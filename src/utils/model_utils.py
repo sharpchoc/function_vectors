@@ -40,7 +40,7 @@ def load_gpt_model_and_tokenizer(model_name:str, device='cuda', revision=None):
     elif 'gpt-j' in model_name.lower():
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         tokenizer.pad_token = tokenizer.eos_token
-        model = AutoModelForCausalLM.from_pretrained(model_name, low_cpu_mem_usage=True).to(device)
+        model = AutoModelForCausalLM.from_pretrained(model_name, low_cpu_mem_usage=True, torch_dtype=torch.float16).to(device)
 
         MODEL_CONFIG={"n_heads":model.config.n_head,
                       "n_layers":model.config.n_layer,
@@ -116,6 +116,22 @@ def load_gpt_model_and_tokenizer(model_name:str, device='cuda', revision=None):
                       "attn_hook_names":[f'model.layers.{layer}.self_attn.o_proj' for layer in range(model.config.num_hidden_layers)],
                       "layer_hook_names":[f'model.layers.{layer}' for layer in range(model.config.num_hidden_layers)],
                       "prepend_bos":True}
+    elif 'qwen2' in model_name.lower() or 'qwen2.5' in model_name.lower():
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        tokenizer.pad_token = tokenizer.eos_token
+        model_dtype = torch.float16 if str(device).startswith('cuda') else torch.float32
+        if revision is not None:
+            model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=model_dtype, revision=revision).to(device)
+        else:
+            model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=model_dtype).to(device)
+
+        MODEL_CONFIG={"n_heads":model.config.num_attention_heads,
+                      "n_layers":model.config.num_hidden_layers,
+                      "resid_dim":model.config.hidden_size,
+                      "name_or_path":model.config._name_or_path,
+                      "attn_hook_names":[f'model.layers.{layer}.self_attn.o_proj' for layer in range(model.config.num_hidden_layers)],
+                      "layer_hook_names":[f'model.layers.{layer}' for layer in range(model.config.num_hidden_layers)],
+                      "prepend_bos":False}
     elif "olmo" in model_name.lower():
         
         model_dtype = torch.float32

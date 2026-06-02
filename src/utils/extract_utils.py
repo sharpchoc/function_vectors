@@ -346,7 +346,7 @@ def compute_function_vector(mean_activations, indirect_effect, model, model_conf
             out_proj = model.transformer.h[L].attn.c_proj
         elif 'gpt-j' in model_config['name_or_path']:
             out_proj = model.transformer.h[L].attn.out_proj
-        elif 'llama' in model_config['name_or_path'] or 'gemma' in model_config['name_or_path'] or 'olmo' in model_config['name_or_path'].lower():
+        elif 'llama' in model_config['name_or_path'] or 'gemma' in model_config['name_or_path'] or 'olmo' in model_config['name_or_path'].lower() or 'qwen' in model_config['name_or_path'].lower():
             out_proj = model.model.layers[L].self_attn.o_proj
         elif 'gpt-neox' in model_config['name_or_path'] or 'pythia' in model_config['name_or_path']:
             out_proj = model.gpt_neox.layers[L].attention.dense
@@ -451,6 +451,9 @@ def compute_universal_function_vector(mean_activations, model, model_config, n_t
                      (12, 21, 0.0008), (8, 18, 0.0008), (12, 35, 0.0008), (9, 10, 0.0008), (19, 40, 0.0008), (38, 5, 0.0008), (13, 31, 0.0007), (10, 38, 0.0007), (10, 12, 0.0007), (11, 31, 0.0007),
                      (10, 1, 0.0007), (23, 15, 0.0007), (13, 40, 0.0007), (9, 5, 0.0007), (22, 33, 0.0007), (13, 36, 0.0006), (8, 32, 0.0006), (16, 21, 0.0006), (14, 11, 0.0006), (13, 61, 0.0006)]
     
+    if 'top_heads' not in locals():
+        raise NotImplementedError(f"Universal function-vector heads are not defined for {model_config['name_or_path']}")
+
     top_heads = top_heads[:n_top_heads]
 
     # Compute Function Vector as sum of influential heads
@@ -462,7 +465,7 @@ def compute_universal_function_vector(mean_activations, model, model_config, n_t
             out_proj = model.transformer.h[L].attn.c_proj
         elif 'gpt-j' in model_config['name_or_path']:
             out_proj = model.transformer.h[L].attn.out_proj
-        elif 'llama' in model_config['name_or_path']:
+        elif 'llama' in model_config['name_or_path'] or 'qwen' in model_config['name_or_path'].lower():
             out_proj = model.model.layers[L].self_attn.o_proj
         elif 'gpt-neox' in model_config['name_or_path']:
             out_proj = model.gpt_neox.layers[L].attention.dense

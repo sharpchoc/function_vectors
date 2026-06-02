@@ -86,7 +86,7 @@ def replace_activation_w_avg(layer_head_token_pairs, avg_activations, model, mod
                 else:
                     new_output = torch.matmul(inputs, out_proj.T)
             
-            elif 'olmo' in model_config['name_or_path'].lower():
+            elif 'olmo' in model_config['name_or_path'].lower() or 'qwen' in model_config['name_or_path'].lower():
                 new_output = torch.matmul(inputs, out_proj.T)
 
             return new_output

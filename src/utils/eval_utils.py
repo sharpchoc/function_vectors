@@ -110,7 +110,7 @@ def fv_to_vocab(function_vector, model, model_config, tokenizer, n_tokens=10):
 
     if 'gpt-j' in model_config['name_or_path']:
         decoder = torch.nn.Sequential(model.transformer.ln_f, model.lm_head, torch.nn.Softmax(dim=-1))
-    elif 'llama' in model_config['name_or_path']:
+    elif 'llama' in model_config['name_or_path'] or 'qwen' in model_config['name_or_path'].lower():
         decoder = torch.nn.Sequential(model.model.norm, model.lm_head, torch.nn.Softmax(dim=-1))
     else:
         raise ValueError("Model not yet supported")
