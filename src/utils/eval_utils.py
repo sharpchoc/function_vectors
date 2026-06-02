@@ -3,6 +3,7 @@ import string
 import itertools
 import re
 import numpy as np
+from collections import Counter
 from tqdm import tqdm
 from .prompt_utils import *
 from .model_utils import *
