@@ -38,6 +38,8 @@ def parse_args():
     parser.add_argument("--storage_dtype", choices=["model", "float16", "float32"], default="model")
     parser.add_argument("--include_embeddings", action="store_true", help="Also store token embeddings before transformer block 0 as the first activation slice.")
     parser.add_argument("--revision", type=str, default=None)
+    parser.add_argument("--no_overwrite_existing", dest="overwrite_existing", action="store_false", help="Keep existing shard files in each output split directory before writing new shards.")
+    parser.set_defaults(overwrite_existing=True)
     return parser.parse_args()
 
 
@@ -125,7 +127,20 @@ def get_residual_stack(prompt_data, model, model_config, tokenizer, include_embe
     return residual_stack, token_labels, prompt_string
 
 
+def make_token_record(token_role, icl_example_index, token):
+    token_position, token_text, token_label = token
+    return {
+        "token_role": token_role,
+        "icl_example_index": icl_example_index,
+        "token_position": int(token_position),
+        "token_text": token_text,
+        "token_label": token_label,
+    }
+
+
 def selected_token_records(token_labels):
+    tokens_by_position = {int(token_position): (token_position, token_text, token_label)
+                          for token_position, token_text, token_label in token_labels}
     label_groups = {}
     for token_position, token_text, token_label in token_labels:
         match = LABEL_TOKEN_RE.match(token_label)
@@ -135,31 +150,36 @@ def selected_token_records(token_labels):
 
     records = []
     for icl_example_index in sorted(label_groups):
-        token_position, token_text, token_label = max(label_groups[icl_example_index], key=lambda x: x[0])
-        records.append(
-            {
-                "token_role": "label_token",
-                "icl_example_index": icl_example_index,
-                "token_position": int(token_position),
-                "token_text": token_text,
-                "token_label": token_label,
-            }
+        label_tokens = sorted(label_groups[icl_example_index], key=lambda x: x[0])
+        first_label_token = label_tokens[0]
+        last_label_token = label_tokens[-1]
+        pre_label_position = int(first_label_token[0]) - 1
+        if pre_label_position < 0 or pre_label_position not in tokens_by_position:
+            raise ValueError(f"Could not find pre-label token for ICL example {icl_example_index}")
+        pre_label_token = tokens_by_position[pre_label_position]
+
+        records.extend(
+            [
+                make_token_record("pre_label_token", icl_example_index, pre_label_token),
+                make_token_record("first_label_token", icl_example_index, first_label_token),
+                make_token_record("last_label_token", icl_example_index, last_label_token),
+                # Backward-compatible alias for earlier analyses that used the last label token.
+                make_token_record("label_token", icl_example_index, last_label_token),
+            ]
         )
 
     final_candidates = [x for x in token_labels if x[2] == "query_predictive_token"]
     if final_candidates:
-        token_position, token_text, token_label = max(final_candidates, key=lambda x: x[0])
+        final_token = max(final_candidates, key=lambda x: x[0])
     else:
-        token_position, token_text, token_label = token_labels[-1]
+        final_token = token_labels[-1]
 
-    records.append(
-        {
-            "token_role": "final_token",
-            "icl_example_index": None,
-            "token_position": int(token_position),
-            "token_text": token_text,
-            "token_label": token_label,
-        }
+    records.extend(
+        [
+            make_token_record("last_prompt_token", None, final_token),
+            # Backward-compatible alias for earlier analyses.
+            make_token_record("final_token", None, final_token),
+        ]
     )
     return records
 
@@ -175,7 +195,7 @@ def build_metadata(task, split, prompt_index, query_idx, demo_indices, prompt_da
         **token_record,
     }
 
-    if token_record["token_role"] == "label_token":
+    if token_record["icl_example_index"] is not None:
         demo_pos = token_record["icl_example_index"] - 1
         demo = prompt_data["examples"][demo_pos]
         metadata.update(
@@ -223,6 +243,13 @@ def extract_split(task, split, dataset, model, model_config, tokenizer, args, ou
     prompt_indices = np.arange(n_prompts)
 
     output_dir = output_root / task / split
+    if args.overwrite_existing and output_dir.exists():
+        for old_shard in output_dir.glob("shard_*.pt"):
+            old_shard.unlink()
+        old_index = output_dir / "index.json"
+        if old_index.exists():
+            old_index.unlink()
+
     config = {
         "task": task,
         "split": split,
@@ -239,6 +266,15 @@ def extract_split(task, split, dataset, model, model_config, tokenizer, args, ou
         "separators": args.separators,
         "storage_dtype": str(store_dtype),
         "include_embeddings": args.include_embeddings,
+        "token_roles": [
+            "pre_label_token",
+            "first_label_token",
+            "last_label_token",
+            "label_token",
+            "last_prompt_token",
+            "final_token",
+        ],
+        "overwrite_existing": args.overwrite_existing,
     }
 
     shard_activations = []
