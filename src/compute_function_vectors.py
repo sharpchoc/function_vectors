@@ -29,6 +29,7 @@ def parse_args():
     parser.add_argument("--n_shots", type=int, default=10)
     parser.add_argument("--n_mean_activations_trials", type=int, default=100)
     parser.add_argument("--n_indirect_effect_trials", type=int, default=25)
+    parser.add_argument("--batch_size", type=int, default=1, help="Number of prompts to batch for filter eval, mean activation extraction, and last-token indirect effects.")
     parser.add_argument("--prefixes", type=json.loads, default={"input": "Q:", "output": "A:", "instructions": ""})
     parser.add_argument("--separators", type=json.loads, default={"input": "\n", "output": "\n\n", "instructions": ""})
     parser.add_argument("--generate_str", action="store_true", help="Use generated-string scoring for the pre-FV ICL filter.")
@@ -89,6 +90,7 @@ def load_or_compute_filter_set(args, dataset_name, dataset, model, model_config,
             test_split="valid",
             prefixes=args.prefixes,
             separators=args.separators,
+            batch_size=args.batch_size,
         )
         with open(fs_validation_file_name, "w") as f:
             json.dump(fs_results_validation, f, indent=2)
@@ -106,6 +108,7 @@ def load_or_compute_filter_set(args, dataset_name, dataset, model, model_config,
             metric=args.metric,
             prefixes=args.prefixes,
             separators=args.separators,
+            batch_size=args.batch_size,
         )
         with open(fs_results_file_name, "w") as f:
             json.dump(fs_results, f, indent=2)
@@ -157,6 +160,7 @@ def load_or_compute_mean_activations(args, dataset_name, dataset, model, model_c
         prefixes=args.prefixes,
         separators=args.separators,
         filter_set=filter_set_validation,
+        batch_size=args.batch_size,
     )
     torch.save(mean_activations, save_path)
     return mean_activations, str(save_path)
@@ -189,6 +193,7 @@ def load_or_compute_indirect_effect(args, dataset_name, dataset, mean_activation
         prefixes=args.prefixes,
         separators=args.separators,
         filter_set=filter_set_validation,
+        batch_size=args.batch_size,
     )
     torch.save(indirect_effect, save_path)
     return indirect_effect, str(save_path)
@@ -253,6 +258,7 @@ def compute_and_save_task_fv(args, dataset_name, model, model_config, tokenizer)
         "n_shots": args.n_shots,
         "n_mean_activations_trials": args.n_mean_activations_trials,
         "n_indirect_effect_trials": args.n_indirect_effect_trials,
+        "batch_size": args.batch_size,
         "n_top_heads": args.n_top_heads,
         "universal_set": args.universal_set,
         "filter_to_correct_icl": args.filter_to_correct_icl,

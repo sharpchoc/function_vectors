@@ -43,7 +43,7 @@ def gather_attn_activations(prompt_data, layers, dummy_labels, model, tokenizer,
 
     return td, idx_map, idx_avg
 
-def get_mean_head_activations(dataset, model, model_config, tokenizer, n_icl_examples = 10, N_TRIALS = 100, shuffle_labels=False, prefixes=None, separators=None, filter_set=None):
+def get_mean_head_activations(dataset, model, model_config, tokenizer, n_icl_examples = 10, N_TRIALS = 100, shuffle_labels=False, prefixes=None, separators=None, filter_set=None, batch_size=1):
     """
     Computes the average activations for each attention head in the model, where multi-token phrases are condensed into a single slot through averaging.
 
@@ -58,6 +58,7 @@ def get_mean_head_activations(dataset, model, model_config, tokenizer, n_icl_exa
     prefixes: ICL template prefixes
     separators: ICL template separators
     filter_set: whether to only include samples the model gets correct via ICL
+    batch_size: Number of prompts to run through the model at once
 
     Returns:
     mean_activations: avg activation of each attention head in the model taken across n_trials ICL prompts
@@ -66,13 +67,31 @@ def get_mean_head_activations(dataset, model, model_config, tokenizer, n_icl_exa
         new_shape = activations.size()[:-1] + (model_config['n_heads'], model_config['resid_dim']//model_config['n_heads']) # split by head: + (n_attn_heads, hidden_size/n_attn_heads)
         activations = activations.view(*new_shape)  # (batch_size, n_tokens, n_heads, head_hidden_dim)
         return activations
-    
+
+    def collect_trial_prompt():
+        word_pairs = dataset['train'][np.random.choice(len(dataset['train']),n_icl_examples, replace=False)]
+        word_pairs_test = dataset['valid'][np.random.choice(filter_set,n_test_examples, replace=False)]
+        if prefixes is not None and separators is not None:
+            prompt_data = word_pairs_to_prompt_data(word_pairs, query_target_pair=word_pairs_test, prepend_bos_token=prepend_bos,
+                                                    shuffle_labels=shuffle_labels, prefixes=prefixes, separators=separators)
+        else:
+            prompt_data = word_pairs_to_prompt_data(word_pairs, query_target_pair=word_pairs_test, prepend_bos_token=prepend_bos, shuffle_labels=shuffle_labels)
+
+        query = prompt_data['query_target']['input']
+        token_labels, prompt_string = get_token_meta_labels(prompt_data, tokenizer, query, prepend_bos=model_config['prepend_bos'])
+        idx_map, idx_avg = compute_duplicated_labels(token_labels, dummy_labels)
+        return prompt_string, idx_map, idx_avg
+
     n_test_examples = 1
+    batch_size = max(1, int(batch_size))
     if prefixes is not None and separators is not None:
         dummy_labels = get_dummy_token_labels(n_icl_examples, tokenizer=tokenizer, prefixes=prefixes, separators=separators, model_config=model_config)
     else:
         dummy_labels = get_dummy_token_labels(n_icl_examples, tokenizer=tokenizer, model_config=model_config)
-    activation_storage = torch.zeros(N_TRIALS, model_config['n_layers'], model_config['n_heads'], len(dummy_labels), model_config['resid_dim']//model_config['n_heads'])
+
+    storage_shape = (model_config['n_layers'], model_config['n_heads'], len(dummy_labels), model_config['resid_dim']//model_config['n_heads'])
+    activation_storage = torch.zeros(storage_shape, device=model.device)
+    activation_counts = torch.zeros(len(dummy_labels), device=model.device)
 
     if filter_set is None:
         filter_set = np.arange(len(dataset['valid']))
@@ -80,29 +99,57 @@ def get_mean_head_activations(dataset, model, model_config, tokenizer, n_icl_exa
     # If the model already prepends a bos token by default, we don't want to add one
     prepend_bos =  False if model_config['prepend_bos'] else True
 
-    for n in range(N_TRIALS):
-        word_pairs = dataset['train'][np.random.choice(len(dataset['train']),n_icl_examples, replace=False)]
-        word_pairs_test = dataset['valid'][np.random.choice(filter_set,n_test_examples, replace=False)]
-        if prefixes is not None and separators is not None:
-            prompt_data = word_pairs_to_prompt_data(word_pairs, query_target_pair=word_pairs_test, prepend_bos_token=prepend_bos, 
-                                                    shuffle_labels=shuffle_labels, prefixes=prefixes, separators=separators)
-        else:
-            prompt_data = word_pairs_to_prompt_data(word_pairs, query_target_pair=word_pairs_test, prepend_bos_token=prepend_bos, shuffle_labels=shuffle_labels)
-        activations_td,idx_map,idx_avg = gather_attn_activations(prompt_data=prompt_data, 
-                                                            layers = model_config['attn_hook_names'], 
-                                                            dummy_labels=dummy_labels, 
-                                                            model=model, 
-                                                            tokenizer=tokenizer, 
-                                                            model_config=model_config)
-        
-        stack_initial = torch.vstack([split_activations_by_head(activations_td[layer].input, model_config) for layer in model_config['attn_hook_names']]).permute(0,2,1,3)
-        stack_filtered = stack_initial[:,:,list(idx_map.keys())]
-        for (i,j) in idx_avg.values():
-            stack_filtered[:,:,idx_map[i]] = stack_initial[:,:,i:j+1].mean(axis=2) # Average activations of multi-token words across all its tokens
-        
-        activation_storage[n] = stack_filtered
+    old_padding_side = tokenizer.padding_side
+    if tokenizer.pad_token_id is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = 'right'
 
-    mean_activations = activation_storage.mean(dim=0)
+    try:
+        for batch_start in range(0, N_TRIALS, batch_size):
+            current_batch_size = min(batch_size, N_TRIALS - batch_start)
+            batch_prompts = [collect_trial_prompt() for _ in range(current_batch_size)]
+            sentences = [prompt_string for prompt_string, _, _ in batch_prompts]
+
+            inputs = tokenizer(sentences, return_tensors='pt', padding=True).to(model.device)
+
+            with TraceDict(model, layers=model_config['attn_hook_names'], retain_input=True, retain_output=False) as activations_td:
+                model(**inputs)
+
+            layer_inputs = []
+            for layer in model_config['attn_hook_names']:
+                layer_input = activations_td[layer].input
+                if isinstance(layer_input, tuple):
+                    layer_input = layer_input[0]
+                layer_inputs.append(split_activations_by_head(layer_input, model_config))
+
+            # (batch, layers, heads, tokens, head_dim)
+            stack_initial = torch.stack(layer_inputs).permute(1, 0, 3, 2, 4)
+
+            for batch_idx, (_, idx_map, idx_avg) in enumerate(batch_prompts):
+                stack_filtered = torch.zeros_like(activation_storage)
+                trial_counts = torch.zeros_like(activation_counts)
+                trial_stack = stack_initial[batch_idx]
+
+                for input_idx, output_idx in idx_map.items():
+                    if input_idx < trial_stack.shape[2] and output_idx < stack_filtered.shape[2]:
+                        stack_filtered[:, :, output_idx] = trial_stack[:, :, input_idx]
+                        trial_counts[output_idx] = 1
+
+                for (i,j) in idx_avg.values():
+                    if i in idx_map and i < trial_stack.shape[2] and idx_map[i] < stack_filtered.shape[2]:
+                        stack_filtered[:,:,idx_map[i]] = trial_stack[:,:,i:j+1].mean(axis=2) # Average activations of multi-token words across all its tokens
+                        trial_counts[idx_map[i]] = 1
+
+                activation_storage += stack_filtered
+                activation_counts += trial_counts
+    finally:
+        tokenizer.padding_side = old_padding_side
+
+    if (activation_counts == 0).any():
+        missing = torch.where(activation_counts == 0)[0].tolist()
+        raise RuntimeError(f"No activations were collected for collapsed token positions: {missing}")
+
+    mean_activations = activation_storage / activation_counts.reshape(1, 1, -1, 1)
     return mean_activations
 
 # Layer Activations

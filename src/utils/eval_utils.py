@@ -332,27 +332,28 @@ def n_shot_eval(dataset, fv_vector, edit_layer: int, n_shots: int, model, model_
 # Evaluate few-shot dataset w/o intervention
 def n_shot_eval_no_intervention(dataset, n_shots, model, model_config, tokenizer, compute_ppl=True, generate_str=False,
                                 shuffle_labels=False, prefixes=None, separators=None, pred_filepath=None,
-                                metric="f1_score", test_split='test'):
+                                metric="f1_score", test_split='test', batch_size=1):
     """
     Evaluate a model (without any interventions) on the provided ICL dataset.
 
     Parameters:
     dataset: ICL dataset
-    n_shots: the number of ICL examples in each in-context prompt
+    n_shots: the number of ICL examples in each ICL prompt
     model: huggingface model
-    model_config: contains model config information (n layers, n heads, etc.)
+    model_config: contains model config information
     tokenizer: huggingface tokenizer
-    compute_ppl: whether to compute perplexity of teacher-forced correct completion for base model & intervened model
+    compute_ppl: whether to compute perplexity of teacher-forced correct completion for base model
     generate_str: whether to generate a string of tokens or predict a single token
     shuffle_labels: Whether to shuffle the ICL labels or not
-    prefixes: dict of ICL template prefixes for each ICL component (input, output, instructions)
-    separators: dict of ICL template separators for each ICL component (input, output, instructions)
+    prefixes: dict of ICL template prefixes for each ICL component
+    separators: dict of ICL template separators for each ICL component
     pred_filepath: filepath to save intermediate generations for debugging
-    metric: metric to use for longer generations (F1, exact match, etc.)
-    test_split: the dataset test split to use as the "test" dataset, typically set to 'test' or 'valid'
+    metric: metric to use for longer generations
+    test_split: the dataset split to evaluate
+    batch_size: Number of prompts to run through the model at once for non-generation eval
 
     Returns:
-    results: dict of topk (k=1,2,3) accuracy on the test_split dataset, for both the model's n-shot
+    results: dict of topk (k=1,2,3) accuracy on the test_split dataset
     """
     clean_rank_list = []
 
@@ -362,6 +363,8 @@ def n_shot_eval_no_intervention(dataset, n_shots, model, model_config, tokenizer
     if generate_str:
         score_list = []
 
+    batch_size = max(1, int(batch_size))
+
     # If the model already prepends a bos token by default, we don't want to add one
     prepend_bos =  False if model_config['prepend_bos'] else True
 
@@ -370,59 +373,103 @@ def n_shot_eval_no_intervention(dataset, n_shots, model, model_config, tokenizer
     else:
         pred_file = None
 
-    for j in tqdm(range(len(dataset[test_split])), total=len(dataset[test_split])):
+    def build_eval_item(j):
         if n_shots == 0:
             word_pairs = {'input':[], 'output':[]}
         else:
             word_pairs = dataset['train'][np.random.choice(len(dataset['train']),n_shots, replace=False)]
         word_pairs_test = dataset[test_split][j]
         if prefixes is not None and separators is not None:
-            prompt_data = word_pairs_to_prompt_data(word_pairs, query_target_pair = word_pairs_test, prepend_bos_token=prepend_bos, 
+            prompt_data = word_pairs_to_prompt_data(word_pairs, query_target_pair = word_pairs_test, prepend_bos_token=prepend_bos,
                                                     shuffle_labels=shuffle_labels, prefixes=prefixes, separators=separators)
         else:
             prompt_data = word_pairs_to_prompt_data(word_pairs, query_target_pair = word_pairs_test, prepend_bos_token=prepend_bos, shuffle_labels=shuffle_labels)
-            
-        # Get relevant parts of the Prompt
-        query, target = prompt_data['query_target']['input'], prompt_data['query_target']['output']
-        query = query[0] if isinstance(query, list) else query
+
+        target = prompt_data['query_target']['output']
         if generate_str:
             target = [target] if not isinstance(target, list) else target
         else:
             target = target[0] if isinstance(target, list) else target
-        
-        sentence = [create_prompt(prompt_data)]
-        
-        # Figure out tokens of interest
-        target_token_id = get_answer_id(sentence[0], target, tokenizer)
-        
-        if compute_ppl:
-            clean_output, clean_nll = sentence_eval(sentence, target = [target],
-                                                    model=model, tokenizer=tokenizer, 
-                                                    compute_nll=compute_ppl)
-            clean_nll_list.append(clean_nll)
-            
-        elif generate_str:
-            if metric == "f1_score":
-                metric_fn = f1_score
-            elif metric == "exact_match_score":
-                metric_fn = exact_match_score
-            elif metric == "first_word_score":
-                metric_fn = first_word_score
-            else:
-                raise ValueError(f"Unknown metric: {metric}. Recognized metrics: [\"f1_score\", \"exact_match_score\"]")
-            score = sentence_eval(sentence, target=target, model=model,
-                                  tokenizer=tokenizer, compute_nll=False,
-                                  generate_str=True, pred_file=pred_file,
-                                  metric_fn=metric_fn)
-            score_list.append(score)
+
+        sentence = create_prompt(prompt_data)
+        target_token_id = get_answer_id(sentence, target, tokenizer)
+        return sentence, target, target_token_id
+
+    old_padding_side = tokenizer.padding_side
+    if tokenizer.pad_token_id is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = 'right'
+
+    try:
+        if generate_str:
+            for j in tqdm(range(len(dataset[test_split])), total=len(dataset[test_split])):
+                sentence, target, _ = build_eval_item(j)
+
+                if metric == "f1_score":
+                    metric_fn = f1_score
+                elif metric == "exact_match_score":
+                    metric_fn = exact_match_score
+                elif metric == "first_word_score":
+                    metric_fn = first_word_score
+                else:
+                    raise ValueError(f'Unknown metric: {metric}. Recognized metrics: ["f1_score", "exact_match_score"]')
+                score = sentence_eval([sentence], target=target, model=model,
+                                      tokenizer=tokenizer, compute_nll=False,
+                                      generate_str=True, pred_file=pred_file,
+                                      metric_fn=metric_fn)
+                score_list.append(score)
         else:
-            clean_output = sentence_eval(sentence, target = [target],
-                                         model=model, tokenizer=tokenizer, compute_nll=False)
+            split_len = len(dataset[test_split])
+            for batch_start in tqdm(range(0, split_len, batch_size), total=(split_len + batch_size - 1)//batch_size):
+                batch_indices = range(batch_start, min(batch_start + batch_size, split_len))
+                batch_items = [build_eval_item(j) for j in batch_indices]
+                sentences = [x[0] for x in batch_items]
+                targets = [x[1] for x in batch_items]
+                target_token_ids = [x[2] for x in batch_items]
 
-        if not generate_str:
-            clean_rank = compute_individual_token_rank(clean_output, target_token_id)
-            clean_rank_list.append(clean_rank)
+                if compute_ppl:
+                    completions = [sentence + target for sentence, target in zip(sentences, targets)]
+                    prompt_lens = [len(tokenizer(sentence, truncation=False, padding=False).input_ids) for sentence in sentences]
+                    completion_tokenized = tokenizer(completions, return_tensors='pt', padding=True).to(model.device)
+                    completion_lens = completion_tokenized.attention_mask.sum(dim=1).tolist()
 
+                    nll_targets = completion_tokenized.input_ids.clone()
+                    for batch_idx, (prompt_len, completion_len) in enumerate(zip(prompt_lens, completion_lens)):
+                        nll_targets[batch_idx, :prompt_len] = -100
+                        nll_targets[batch_idx, completion_len:] = -100
+
+                    output = model(**completion_tokenized)
+                    shift_logits = output.logits[:, :-1, :].contiguous()
+                    shift_labels = nll_targets[:, 1:].contiguous()
+                    flat_losses = torch.nn.functional.cross_entropy(
+                        shift_logits.view(-1, shift_logits.size(-1)),
+                        shift_labels.view(-1),
+                        reduction='none',
+                        ignore_index=-100,
+                    )
+                    token_losses = flat_losses.view(shift_labels.shape)
+                    valid_tokens = shift_labels.ne(-100)
+
+                    for batch_idx, prompt_len in enumerate(prompt_lens):
+                        clean_nll = token_losses[batch_idx][valid_tokens[batch_idx]].mean().item()
+                        clean_nll_list.append(clean_nll)
+
+                        clean_output = output.logits[batch_idx, prompt_len - 1, :]
+                        clean_rank = compute_individual_token_rank(clean_output, target_token_ids[batch_idx])
+                        clean_rank_list.append(clean_rank)
+                else:
+                    inputs = tokenizer(sentences, return_tensors='pt', padding=True).to(model.device)
+                    prompt_lens = inputs.attention_mask.sum(dim=1) - 1
+                    output = model(**inputs).logits
+                    clean_outputs = output[torch.arange(output.shape[0], device=model.device), prompt_lens]
+
+                    for clean_output, target_token_id in zip(clean_outputs, target_token_ids):
+                        clean_rank = compute_individual_token_rank(clean_output, target_token_id)
+                        clean_rank_list.append(clean_rank)
+    finally:
+        tokenizer.padding_side = old_padding_side
+        if pred_file:
+            pred_file.close()
 
     if generate_str:
         results = {"score": score_list}
@@ -432,9 +479,6 @@ def n_shot_eval_no_intervention(dataset, n_shots, model, model_config, tokenizer
     if compute_ppl:
         results['clean_ppl'] = np.exp(clean_nll_list).mean()
 
-    if pred_filepath:
-        pred_file.close()
-    
     return results
 
 

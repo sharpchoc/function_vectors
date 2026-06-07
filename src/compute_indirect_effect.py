@@ -90,7 +90,110 @@ def activation_replacement_per_class_intervention(prompt_data, avg_activations, 
     return indirect_effect_storage
 
 
-def compute_indirect_effect(dataset, mean_activations, model, model_config, tokenizer, n_shots=10, n_trials=25, last_token_only=True, prefixes=None, separators=None, filter_set=None):
+def _project_attention_inputs(inputs, layer_name, model, model_config):
+    proj_module = get_module(model, layer_name)
+    out_proj = proj_module.weight
+
+    if 'gpt2-xl' in model_config['name_or_path']:
+        return torch.matmul(inputs, out_proj) + proj_module.bias
+    elif 'gpt-j' in model_config['name_or_path'] or 'gemma' in model_config['name_or_path']:
+        return torch.matmul(inputs, out_proj.T)
+    elif 'gpt-neox' in model_config['name_or_path'] or 'pythia' in model_config['name_or_path']:
+        return torch.matmul(inputs, out_proj.T) + proj_module.bias
+    elif 'llama' in model_config['name_or_path']:
+        if '70b' in model_config['name_or_path']:
+            out_proj = bnb.functional.dequantize_4bit(out_proj.data, out_proj.quant_state)
+        return torch.matmul(inputs, out_proj.T)
+    elif 'olmo' in model_config['name_or_path'].lower() or 'qwen' in model_config['name_or_path'].lower():
+        return torch.matmul(inputs, out_proj.T)
+
+    raise NotImplementedError(f"Attention output projection is not defined for {model_config['name_or_path']}")
+
+
+def batch_activation_replacement_last_token_intervention(prompt_data_batch, avg_activations, dummy_labels, model, model_config, tokenizer):
+    """Compute last-token indirect effects for a batch of prompts."""
+    device = model.device
+    avg_activations = avg_activations.to(device)
+
+    sentences = []
+    target_token_ids = []
+    avg_token_indices = []
+
+    for prompt_data in prompt_data_batch:
+        query_target_pair = prompt_data['query_target']
+        query = query_target_pair['input']
+        token_labels, prompt_string = get_token_meta_labels(prompt_data, tokenizer, query=query, prepend_bos=model_config['prepend_bos'])
+        idx_map, idx_avg = compute_duplicated_labels(token_labels, dummy_labels)
+        idx_map = update_idx_map(idx_map, idx_avg)
+
+        target = query_target_pair['output']
+        if isinstance(target, list):
+            target = target[0]
+        token_id_of_interest = get_answer_id(prompt_string, target, tokenizer)
+        if isinstance(token_id_of_interest, list):
+            token_id_of_interest = token_id_of_interest[0]
+
+        class_token_inds = [x[0] for x in token_labels if x[2] == 'query_predictive_token']
+        if not class_token_inds:
+            raise RuntimeError("No query_predictive_token found for indirect-effect intervention")
+        avg_token_indices.append(idx_map[class_token_inds[-1]])
+        target_token_ids.append(token_id_of_interest)
+        sentences.append(prompt_string)
+
+    old_padding_side = tokenizer.padding_side
+    if tokenizer.pad_token_id is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = 'right'
+
+    try:
+        inputs = tokenizer(sentences, return_tensors='pt', padding=True).to(device)
+    finally:
+        tokenizer.padding_side = old_padding_side
+
+    prompt_lens = inputs.attention_mask.sum(dim=1) - 1
+    target_token_ids = torch.LongTensor(target_token_ids).to(device)
+    avg_token_indices = torch.LongTensor(avg_token_indices).to(device)
+    batch_indices = torch.arange(len(sentences), device=device)
+
+    clean_output = model(**inputs).logits[batch_indices, prompt_lens]
+    clean_probs = torch.softmax(clean_output, dim=-1)
+
+    indirect_effect_storage = torch.zeros(len(sentences), model_config['n_layers'], model_config['n_heads'], device=device)
+
+    for layer in range(model_config['n_layers']):
+        head_hook_layer = [model_config['attn_hook_names'][layer]]
+
+        for head_n in range(model_config['n_heads']):
+            def make_replace_batch_activation(layer, head_n):
+                def replace_batch_activation(output, layer_name, inputs):
+                    current_layer = int(layer_name.split('.')[2])
+                    if current_layer != layer:
+                        return output
+
+                    if isinstance(inputs, tuple):
+                        inputs = inputs[0]
+
+                    original_shape = inputs.shape
+                    head_dim = model_config['resid_dim']//model_config['n_heads']
+                    head_inputs = inputs.view(*inputs.size()[:-1], model_config['n_heads'], head_dim)
+                    head_inputs[batch_indices, prompt_lens, head_n] = avg_activations[layer, head_n, avg_token_indices].to(head_inputs.dtype)
+                    head_inputs = head_inputs.view(*original_shape)
+                    return _project_attention_inputs(head_inputs, layer_name, model, model_config)
+                return replace_batch_activation
+
+            replace_batch_activation = make_replace_batch_activation(layer, head_n)
+            with TraceDict(model, layers=head_hook_layer, edit_output=replace_batch_activation):
+                output = model(**inputs).logits[batch_indices, prompt_lens]
+
+            intervention_probs = torch.softmax(output, dim=-1)
+            indirect_effect_storage[:, layer, head_n] = (
+                intervention_probs[batch_indices, target_token_ids] - clean_probs[batch_indices, target_token_ids]
+            )
+
+    return indirect_effect_storage.cpu()
+
+
+def compute_indirect_effect(dataset, mean_activations, model, model_config, tokenizer, n_shots=10, n_trials=25, last_token_only=True, prefixes=None, separators=None, filter_set=None, batch_size=1):
     """
     Computes Indirect Effect of each head in the model
 
@@ -103,12 +206,13 @@ def compute_indirect_effect(dataset, mean_activations, model, model_config, toke
     n_shots: Number of shots in each in-context prompt
     n_trials: Number of in-context prompts to average over
     last_token_only: If True, only computes Indirect Effect for heads at the final token position. If False, computes Indirect Effect for heads for all token classes
-
+    batch_size: Number of prompts to run through each indirect-effect intervention at once when last_token_only=True
 
     Returns:
     indirect_effect: torch tensor of the indirect effect for each attention head in the model, size n_trials * n_layers * n_heads
     """
     n_test_examples = 1
+    batch_size = max(1, int(batch_size))
 
     if prefixes is not None and separators is not None:
         dummy_gt_labels = get_dummy_token_labels(n_shots, tokenizer=tokenizer, prefixes=prefixes, separators=separators, model_config=model_config)
@@ -126,22 +230,39 @@ def compute_indirect_effect(dataset, mean_activations, model, model_config, toke
     if filter_set is None:
         filter_set = np.arange(len(dataset['valid']))
     
-    for i in tqdm(range(n_trials), total=n_trials):
+    def sample_prompt_data():
         word_pairs = dataset['train'][np.random.choice(len(dataset['train']),n_shots, replace=False)]
         word_pairs_test = dataset['valid'][np.random.choice(filter_set,n_test_examples, replace=False)]
         if prefixes is not None and separators is not None:
-            prompt_data_random = word_pairs_to_prompt_data(word_pairs, query_target_pair=word_pairs_test, shuffle_labels=True, 
-                                                           prepend_bos_token=prepend_bos, prefixes=prefixes, separators=separators)
-        else:
-            prompt_data_random = word_pairs_to_prompt_data(word_pairs, query_target_pair=word_pairs_test, 
-                                                           shuffle_labels=True, prepend_bos_token=prepend_bos)
-        
-        ind_effects = activation_replacement_per_class_intervention(prompt_data=prompt_data_random, 
-                                                                    avg_activations = mean_activations, 
-                                                                    dummy_labels=dummy_gt_labels, 
-                                                                    model=model, model_config=model_config, tokenizer=tokenizer, 
-                                                                    last_token_only=last_token_only)
-        indirect_effect[i] = ind_effects.squeeze()
+            return word_pairs_to_prompt_data(word_pairs, query_target_pair=word_pairs_test, shuffle_labels=True,
+                                             prepend_bos_token=prepend_bos, prefixes=prefixes, separators=separators)
+        return word_pairs_to_prompt_data(word_pairs, query_target_pair=word_pairs_test,
+                                         shuffle_labels=True, prepend_bos_token=prepend_bos)
+
+    if last_token_only and batch_size > 1:
+        mean_activations = mean_activations.to(model.device)
+        for batch_start in tqdm(range(0, n_trials, batch_size), total=(n_trials + batch_size - 1)//batch_size):
+            current_batch_size = min(batch_size, n_trials - batch_start)
+            prompt_data_batch = [sample_prompt_data() for _ in range(current_batch_size)]
+            ind_effects = batch_activation_replacement_last_token_intervention(
+                prompt_data_batch=prompt_data_batch,
+                avg_activations=mean_activations,
+                dummy_labels=dummy_gt_labels,
+                model=model,
+                model_config=model_config,
+                tokenizer=tokenizer,
+            )
+            indirect_effect[batch_start:batch_start + current_batch_size] = ind_effects
+    else:
+        for i in tqdm(range(n_trials), total=n_trials):
+            prompt_data_random = sample_prompt_data()
+
+            ind_effects = activation_replacement_per_class_intervention(prompt_data=prompt_data_random,
+                                                                        avg_activations = mean_activations,
+                                                                        dummy_labels=dummy_gt_labels,
+                                                                        model=model, model_config=model_config, tokenizer=tokenizer,
+                                                                        last_token_only=last_token_only)
+            indirect_effect[i] = ind_effects.squeeze()
 
     return indirect_effect
 
@@ -157,6 +278,7 @@ if __name__ == "__main__":
     parser.add_argument('--seed', help='Randomized seed', type=int, required=False, default=42)
     parser.add_argument('--n_shots', help="Number of shots in each in-context prompt", type =int, required=False, default=10)
     parser.add_argument('--n_trials', help="Number of in-context prompts to average over", type=int, required=False, default=25)
+    parser.add_argument('--batch_size', help="Number of prompts to batch for last-token indirect effects", type=int, required=False, default=1)
     parser.add_argument('--test_split', help="Percentage corresponding to test set split size", required=False, default=0.3)
     parser.add_argument('--device', help='Device to run on',type=str, required=False, default='cuda' if torch.cuda.is_available() else 'cpu')
     parser.add_argument('--mean_activations_path', help='Path to mean activations file used for intervention', required=False, type=str, default=None)
@@ -174,6 +296,7 @@ if __name__ == "__main__":
     seed = args.seed
     n_shots = args.n_shots
     n_trials = args.n_trials
+    batch_size = args.batch_size
     test_split = args.test_split
     device = args.device
     mean_activations_path = args.mean_activations_path
@@ -211,7 +334,7 @@ if __name__ == "__main__":
 
     print("Computing Indirect Effect")
     indirect_effect = compute_indirect_effect(dataset, mean_activations, model=model, model_config=model_config, tokenizer=tokenizer, 
-                                              n_shots=n_shots, n_trials=n_trials, last_token_only=last_token_only, prefixes=prefixes, separators=separators)
+                                              n_shots=n_shots, n_trials=n_trials, last_token_only=last_token_only, prefixes=prefixes, separators=separators, batch_size=batch_size)
 
     # Write args to file
     args.save_path_root = save_path_root
