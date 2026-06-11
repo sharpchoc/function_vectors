@@ -5,6 +5,43 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-06-11 — FINDING: function is decodable at the query token in FV space, but the label→query map is not low-rank/rotation-like (1-shot)
+
+Phase-1 of the function-geometry experiment (Stream E; scripts `capture_oneshot_paired.py` +
+`analyze_oneshot_geometry.py`; results in `results/oneshot_paired_analysis/`). Same-output-word,
+different-function paired 1-shot prompts; source = demo label token, target = query final token.
+
+- **Function fingerprint is present and linearly decodable at the QUERY token** along the FV difference
+  axis `(fv_f1−fv_f2)`: peak **L11 AUC 0.941 / d 2.22** (antonym↔synonym), **0.894** (landmark↔park),
+  mid-layer band L9–15. This is the robust, positive result.
+- **The label-token difference = one dominant shared axis + a broad high-dim tail.** STABLE rank
+  (Σσ²/σ₁²) of the L11 `D_label` matrix is **5.2** (antonym↔syn, 544×4096) / **3.3** (geography, 84×4096):
+  σ₁ alone holds ~19%/~30% of the energy → a single clear "function axis." BUT 90% of the energy needs
+  k≈315 dims (antonym↔syn) — the residual is high-dimensional/per-word. Stable rank is **lowest at mid
+  layers (min ~4.7 @ L9, ~5 through L15)**, coinciding with peak query-token FV separation; rises to ~9
+  by L24. (The entropy "effective rank" was ~150; the two disagree precisely because of the fat tail —
+  stable rank keys on the dominant axis.) Centered stable rank (mean axis removed) = 18.8 / 9.4.
+  **Robust to magnitude:** unit-normalizing each difference vector before stacking leaves stable rank
+  essentially unchanged (5.4 / 3.5 vs raw 5.2 / 3.3) — so the dominant axis is DIRECTIONAL, not driven
+  by a few high-norm vectors. Magnitudes are themselves tight (CV ~23%/18%) BUT 14/544 antonym↔syn rows
+  are exactly zero (degenerate: demo input collided across functions, e.g. borrow←lend in both → identical
+  prompts; excluded when normalizing → 530 rows). Artifacts: `D_label.pt`, `fig_Dlabel_svd{,_unit}_L11.png`,
+  `fig_Dlabel_magnitude_hist_L11.png`, `fig_Dlabel_stable_rank_by_layer{,_unit}.png`.
+- **But the demo-label → query-token linear map is weak / high-rank / not rotation-like** (held-out
+  R² ≤0.16 mid-layers, eff rank ~190–280, Procrustes gap large). So the original "low-rank manifold +
+  *predictable rotation* from label to next position" hypothesis is **not supported in 1-shot** — even
+  though a single dominant function axis DOES exist at the label token.
+- **Method notes (reusable):** (1) hold the OUTPUT token fixed and vary function → the source-token
+  activation difference is pure contextualization (the label token is literally identical across f1/f2;
+  assertion enforced). (2) For a W-sample map into d=4096 with W≪d, the full-matrix M structural metrics
+  (eff-rank, reduced-rank, ‖MᵀM−I‖) are rank-limited/regularization-dominated — trust **held-out map_R2**
+  and the **FV-separation AUC**, not in-sample reduced-rank R². (3) Project the source→target map into the
+  ≤2W-dim data span before any d×d op — all reported metrics are invariant, ~30× faster.
+- **Decision for Phase 2 (if pursued):** steer along the FV difference axis at/near the query token
+  (well-motivated by the separation); do NOT assume steering the demo label token propagates predictably
+  to the query (Phase 1 contradicts it). A multi-shot variant (stronger function identification) is the
+  natural next probe before drawing strong conclusions.
+
 ## 2026-06-10 — Mixed-task ICL probe: synonym pays for diluted demos, not antonym
 
 Probe (`src/eval_scripts/mixed_icl_antonym_synonym_topk.py`): n=200 prompts, 10 ICL
@@ -43,10 +80,44 @@ rather than import the baukit-laden module. GPT-J weights cached under
   out_proj applied to the head's mean last-token activation.
 - **`_multitask_top10` suffix** on a result/FV dir means it was built from the
   multitask top-10 head set rather than per-task FVs.
+- **Save intermediates (within storage reason).** When a big experiment has an expensive stage
+  (forward passes, CIE, activation capture), persist the *general* intermediate — not just the
+  final answer — so variations rerun in minutes instead of hours. Concretely: store the full
+  per-(layer,head) CIE grid + a generously-sized ranking (top-40, even if top-10 is used) rather
+  than only the chosen heads; store mean activations for **all** heads/positions needed by any
+  plausible N/k, not just the selected ones; keep per-prompt effects when subset re-aggregation
+  might matter; cache residual-stream activations once and reuse across regression targets.
+  Payoff observed 2026-06-11: top-20/30/40 varicl FVs + a whole new PCA-ridge heatmap cost
+  minutes because stage-1 saved all-head activations and the top-40 ranking. Guardrail: this is
+  for O(GB) per-task tensors and grids, not for dumping every forward pass — if an intermediate
+  would cost ≫ recomputing it on demand, skip it and note the recompute command in the metadata
+  instead.
 
 ---
 
 ## Decided
+
+### 2026-06-11 — PCA-space (direct) activation→FV ridge sweep + 16-PC vs full-dim comparison
+
+Companion to the full-dim ridge decoder (Stream C below), run in a 16-PC bottleneck across all 31
+token positions × 29 layers. Per cell: activation PCA (k_act=16) fit per-cell on 20 train; FV PCA
+(k_fv=16) fit once on 20 train FVs; **ridge 16→16, λ by leave-one-train-task-out CV, single
+20-train standardizer**; predict 7 test tasks, reconstruct to 4096-d, score there. Direct
+projection (not the deprecated joint). FV target `train_selected`. cc/pc excluded.
+
+- **Scripts:** NEW `regress_activation_to_fv_pca_ridge.py`; launcher `run_fulldim_ridge_shards.sh`
+  generalized with a `WORKER` env override (drives both sweeps); merge reused unchanged.
+- **Output:** `results/pca_ridge_activation_to_fv/` (combined_metrics.csv = 899 rows + heatmaps).
+- **HEADLINE:** the 16-PC bottleneck is **free at the optimum** — PCA best `icl10/finaltok @ L13 =
+  0.1147` vs full-dim `@ L11 = 0.1161` (PCA marginally *better*; it denoises). In the mid-layer
+  sweet spot (L8–13) PCA ≈/< full-dim; in later/embedding layers PCA is worse (L28 0.158 vs 0.149).
+  Net mean Δ(pca−full)=+0.003. → 16 activation PCs hold all recoverable activation→FV signal where
+  it's concentrated; the regression target genuinely lives in a ~16-dim subspace.
+- **Metric identity:** `fv_test_mse = (k_fv/4096)·pca_test_mse + floor` (FV-PCs orthonormal),
+  verified to 4e-8. FV-PC reconstruction floor (test) ≈ 0.099. So selecting α on PCA-space CV MSE ==
+  selecting on reconstructed MSE (differ by the constant floor).
+- **Comparable metric note:** this reconstructed-4096-d MSE is the same unit as the full-dim ridge
+  (0.116) and the k/layer sweeps — NOT the joint-PCA-space MSE (Open Q3).
 
 ### 2026-06-10 — `train_varicl` RAN to completion; GOTCHA: stage-2 needs test-task activations precomputed
 

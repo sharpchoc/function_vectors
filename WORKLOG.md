@@ -5,6 +5,93 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-06-11 — Stream E: 1-shot paired ICL function geometry (Phase 1, COMPLETE)
+
+**Status:** Ran end-to-end on GPU (RTX PRO 4000 Blackwell). Approved plan:
+`/root/.claude/plans/immutable-finding-boole.md`.
+
+**What:** Same-output-word / different-function paired 1-shot prompts (demo label token = source;
+query final token = target). Substrate: antonym↔synonym (544 shared single-token words) and
+landmark↔park (84). Observational geometry only (steering = gated Phase 2).
+
+**Files (new):** `src/eval_scripts/capture_oneshot_paired.py` (model+baukit; per-row source-token-id
+assertion passed for all words), `src/eval_scripts/analyze_oneshot_geometry.py` (pure; subspace-projected
+the source→target map so per-layer cost is O(m³), m≤2W, not O(4096³) — identical results, ~30× faster).
+Installed `baukit` from git (`pip install git+https://github.com/davidbau/baukit.git`; not on PyPI).
+**Env:** run with `HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1`.
+
+**Outputs:** `results/oneshot_paired/<pair>/` (activations), `results/oneshot_paired_analysis/<pair>/`
+(`{label,final}_geometry.json`, `fv_projection.json`, `source_target_map.json`, `summary.csv`,
+`fig_fv_scatter_L*.png`).
+
+**Findings:**
+- **STRONG positive — function is linearly decodable at the query token in FV space.** Final-token acts
+  separate antonym vs synonym along the FV difference axis `(fv_f1−fv_f2)`: peak **L11 AUC 0.941, d 2.22,
+  88.8% acc** (antonym/syn); **L11 AUC 0.894** (geography). Clean mid-layer band L9–15. Confirmed in scatter.
+- **NUANCED — label-token difference = one dominant axis + broad tail.** STABLE rank (Σσ²/σ₁²) of the
+  L11 `D_label` is **5.2** (antonym/syn 544×4096) / **3.3** (geo 84×4096): σ₁ holds ~19%/~30% of energy →
+  a single clear "function axis"; but 90% energy needs k≈315 dims (high-dim residual). Stable rank is
+  lowest at mid layers (min ~4.7 @ L9), coinciding with peak FV separation. (Entropy eff-rank ~150 keyed
+  on the fat tail; stable rank keys on the dominant axis.) Plots: `fig_Dlabel_svd_L11.png`,
+  `fig_Dlabel_stable_rank_by_layer.png`; tensor `D_label.pt`.
+- **NEGATIVE — the demo-label → query-token map is NOT low-rank, NOT rotation-like, weakly predictive.**
+  Held-out `map_R2` ≤0.16 at mid layers (0.38 at L0, negative by L18); map effective rank ~190–280;
+  in-sample rank-8 R² only ~0.25; Procrustes gap large at informative layers. So "label-space arithmetic
+  → predictable rotation at the next position" is **not supported in 1-shot**.
+- **Caveats:** 1-shot weakly identifies "function"; W(544/84) ≪ d(4096) so full-matrix M structural
+  metrics are rank-limited — the trustworthy signals are held-out `map_R2` and the FV-separation AUC.
+
+**Implication for Phase 2:** steering along the FV difference axis at/near the query token is well-motivated
+(high separation); steering the demo label token expecting predictable low-rank propagation to the query is
+NOT supported by Phase 1. Consider a multi-shot variant (stronger function identification) before concluding.
+
+**Next:** decide whether to run Phase-2 steering (FV-axis at query) and/or a multi-shot variant.
+
+---
+
+## 2026-06-11 — Stream C: PCA-space (direct) activation→FV ridge sweep — DONE + full-dim comparison
+
+**Status:** DONE. 899 cells (31 token positions × 29 layers), merged + heatmapped. Companion to the
+full-dim ridge sweep, in a 16-PC bottleneck.
+
+**Method:** per cell, fit activation PCA (k_act=16) on the pooled 20-train rows; FV PCA (k_fv=16)
+fit once on the 20 train FVs; **ridge 16→16, λ via leave-one-train-task-out CV, single 20-train
+standardizer** (same recipe as full-dim); predict 7 test tasks, **reconstruct to 4096-d**, report
+MSE there. Direct projection (not joint). FV target = `train_selected`. cc/pc excluded.
+
+**Commands:**
+- `WORKER=src/eval_scripts/regress_activation_to_fv_pca_ridge.py OUTPUT_DIR=results/pca_ridge_activation_to_fv
+   SESSION=pcaridge bash src/eval_scripts/run_fulldim_ridge_shards.sh` (3 tmux windows; ~4–5 min total).
+- `python src/eval_scripts/merge_fulldim_ridge_results.py --input_dir results/pca_ridge_activation_to_fv`.
+
+**Files changed:**
+- NEW `src/eval_scripts/regress_activation_to_fv_pca_ridge.py` (worker).
+- EDIT `src/eval_scripts/run_fulldim_ridge_shards.sh`: `WORKER` env override (backward-compatible).
+- REUSED `merge_fulldim_ridge_results.py` unchanged (CSV is a superset of the full-dim schema).
+- Output: `results/pca_ridge_activation_to_fv/{shard_icl1..10,combined_*}`.
+
+**Findings (PCA 16→16 vs full-dim 4096→4096):**
+- **Best cell ~identical:** PCA `icl10/finaltok @ L13 = 0.1147` vs full-dim `icl10/finaltok @ L11 =
+  0.1161`. The 16-PC bottleneck is **free at the optimum** — even ~0.0014 better (PCA denoises →
+  slightly better test transfer). Best layer flat L11–13.
+- **Same structure:** query position (ICL 10) best; clean mid-layer bowl; embedding worst.
+- **Where PCA wins vs loses:** in the sweet spot (L8–13) PCA ≈ or < full-dim (L11: 0.1321 vs
+  0.1325; L13: 0.1320 vs 0.1331). In **later layers it's worse** (L20: 0.1475 vs 0.1407; L28:
+  0.1583 vs 0.1491) and embedding worse (0.2026 vs 0.1960). Net per-cell mean Δ(pca−full)=+0.0032,
+  PCA better in 243/899. → top-16 activation PCs capture all recoverable signal *where it's
+  concentrated* (mid layers) but discard useful directions where it isn't (late/embedding).
+- **Identity verified:** `test_mse = (16/4096)·pca_test_mse + floor` to 4e-8 (orthonormal FV-PCs).
+  FV-PC reconstruction floor (test) ≈ 0.099 — the irreducible MSE of the 16-PC FV target.
+- **α interior** (peak ~100; grid logspace(-2,6,17)); 11 pinned cells are all L0 embedding
+  constant-feature positions (=0.217 predict-the-mean baseline), harmless.
+
+**Next:** Headline comparison ready: a 16-PC activation→FV ridge loses essentially nothing vs full
+4096-d at the best read points. Optional: sweep k_act to map the bottleneck cost by layer.
+
+**Blockers:** None.
+
+---
+
 ## 2026-06-10 — Stream B: mixed-task ICL probe (5 antonym + 5 synonym ICL → antonym vs synonym query)
 
 **Status:** COMPLETE.
