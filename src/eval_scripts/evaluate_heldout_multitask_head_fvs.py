@@ -6,6 +6,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import matplotlib.pyplot as plt
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = REPO_ROOT / "src"
@@ -195,6 +196,33 @@ def summarize_results(zs_results, fs_shuffled_results):
     }
 
 
+def plot_task_effectiveness(task, task_summary, output_dir):
+    plot_path = output_dir / f"{task}_effectiveness_by_layer.png"
+    multitask = task_summary["multitask_heads"]
+    task_specific = task_summary["task_specific_heads"]
+    series = [("Zero-shot + FV", "zs_intervention_top1_by_layer"), ("10-shot shuffled + FV", "fs_shuffled_intervention_top1_by_layer")]
+
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.2), sharey=True)
+    for ax, (title, key) in zip(axes, series):
+        mt = {int(layer): float(score) for layer, score in multitask[key].items()}
+        ts = {int(layer): float(score) for layer, score in task_specific[key].items()}
+        layers = sorted(set(mt) | set(ts))
+        ax.plot(layers, [mt.get(layer, np.nan) for layer in layers], marker="o", label="Multitask heads")
+        ax.plot(layers, [ts.get(layer, np.nan) for layer in layers], marker="s", label="Task-specific heads")
+        ax.set_title(title)
+        ax.set_xlabel("Edit layer")
+        ax.set_ylim(0.0, 1.0)
+        ax.grid(True, alpha=0.3)
+
+    axes[0].set_ylabel("Intervention top-1 accuracy")
+    axes[1].legend(loc="best")
+    fig.suptitle(task)
+    fig.tight_layout()
+    fig.savefig(plot_path, dpi=220)
+    plt.close(fig)
+    return plot_path
+
+
 def write_json(path, data):
     with open(path, "w") as f:
         json.dump(json_safe(data), f, indent=2)
@@ -305,6 +333,9 @@ def main():
                 **summarize_results(task_specific_zs, task_specific_fs),
             },
         }
+        write_json(task_summary_path, task_summary)
+        plot_path = plot_task_effectiveness(task, task_summary, task_output_dir)
+        task_summary["effectiveness_plot_path"] = str(plot_path)
         write_json(task_summary_path, task_summary)
         aggregate["comparisons"][task] = task_summary
 

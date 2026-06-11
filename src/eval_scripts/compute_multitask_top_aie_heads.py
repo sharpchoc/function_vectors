@@ -46,6 +46,23 @@ def parse_args():
         default="train_tasks",
         help="Key in --task_split_path that contains the task names to aggregate.",
     )
+    parser.add_argument(
+        "--task_split_keys",
+        nargs="+",
+        default=None,
+        help=(
+            "Optional list of keys in --task_split_path whose task lists are concatenated "
+            "(e.g. --task_split_keys train_tasks test_tasks). Overrides --task_split_key when set."
+        ),
+    )
+    parser.add_argument(
+        "--all_split_tasks",
+        action="store_true",
+        help=(
+            "Use every task in both train_tasks and test_tasks from --task_split_path. "
+            "Shorthand for --task_split_keys train_tasks test_tasks."
+        ),
+    )
     parser.add_argument("--tasks", nargs="+", default=None, help="Optional explicit task subset/override.")
     parser.add_argument("--root_data_dir", type=str, default="dataset_files")
     parser.add_argument("--save_path_root", type=Path, default=Path("results/multitask_aie_heads"))
@@ -93,8 +110,35 @@ def parse_args():
     parser.set_defaults(filter_to_correct_icl=True)
     parser.add_argument("--batch_size_filter_eval", type=int, default=1)
     parser.add_argument("--recompute_mean_activations", action="store_true")
-    parser.add_argument("--save_per_prompt_effects", action="store_true")
+    parser.add_argument("--save_per_prompt_effects", dest="save_per_prompt_effects", action="store_true")
+    parser.add_argument("--no_save_per_prompt_effects", dest="save_per_prompt_effects", action="store_false")
+    parser.set_defaults(save_per_prompt_effects=False)
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument(
+        "--abstractive_only",
+        action="store_true",
+        help="Assert every selected task lives in dataset_files/abstractive before running.",
+    )
+    parser.add_argument(
+        "--num_shards",
+        type=int,
+        default=1,
+        help="Total number of parallel worker processes splitting the task list (data parallel across GPU instances).",
+    )
+    parser.add_argument(
+        "--shard_index",
+        type=int,
+        default=0,
+        help="This worker's shard id in [0, num_shards). Each worker processes tasks[shard_index::num_shards].",
+    )
+    parser.add_argument(
+        "--reduce",
+        action="store_true",
+        help=(
+            "Skip CIE computation and instead aggregate the per-task <task>_cie_result.pt files already "
+            "present under --save_path_root into the global top-head artifact + metadata."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -107,13 +151,28 @@ def torch_load_trusted(path, **kwargs):
 
 def load_tasks(args):
     if args.tasks is not None:
-        return args.tasks, {}
+        return args.tasks, {}, None
 
     with open(args.task_split_path, "r") as f:
         split = json.load(f)
-    if args.task_split_key not in split:
-        raise KeyError(f"{args.task_split_path} does not contain key '{args.task_split_key}'")
-    return split[args.task_split_key], split
+
+    if args.all_split_tasks:
+        keys = ["train_tasks", "test_tasks"]
+    elif args.task_split_keys is not None:
+        keys = list(args.task_split_keys)
+    else:
+        keys = [args.task_split_key]
+
+    tasks = []
+    seen = set()
+    for key in keys:
+        if key not in split:
+            raise KeyError(f"{args.task_split_path} does not contain key '{key}'")
+        for task in split[key]:
+            if task not in seen:
+                seen.add(task)
+                tasks.append(task)
+    return tasks, split, keys
 
 
 def mean_activations_path(root, task):
@@ -251,6 +310,65 @@ def top_heads_from_scores(scores, n_top_heads):
     ]
 
 
+def task_result_path(root, task):
+    return root / task / f"{task}_cie_result.pt"
+
+
+def assert_abstractive(tasks, root_data_dir):
+    missing = []
+    for task in tasks:
+        if not (Path(root_data_dir) / "abstractive" / f"{task}.json").exists():
+            missing.append(task)
+    if missing:
+        raise FileNotFoundError(
+            f"--abstractive_only set but these tasks are not in {root_data_dir}/abstractive: {missing}"
+        )
+
+
+def select_shard(tasks, shard_index, num_shards):
+    if num_shards <= 1:
+        return list(tasks)
+    if not (0 <= shard_index < num_shards):
+        raise ValueError(f"--shard_index {shard_index} must be in [0, {num_shards})")
+    return list(tasks)[shard_index::num_shards]
+
+
+def aggregate_task_results(args, tasks, n_layers, n_heads):
+    """Read per-task <task>_cie_result.pt files and aggregate into a global mean indirect effect."""
+    global_sum = torch.zeros(n_layers, n_heads, dtype=torch.float64)
+    total_prompts = 0
+    per_task_summary = []
+    missing = []
+    for task in tasks:
+        result_path = task_result_path(args.save_path_root, task)
+        if not result_path.exists():
+            missing.append(task)
+            continue
+        task_result = torch_load_trusted(result_path, map_location="cpu")
+        global_sum += task_result["indirect_effect_sum"].double()
+        total_prompts += int(task_result["n_prompts"])
+        per_task_summary.append(
+            {
+                "task": task,
+                "n_prompts": int(task_result["n_prompts"]),
+                "n_query_candidates": int(task_result.get("n_query_candidates", task_result["n_prompts"])),
+                "filter_to_correct_icl": task_result.get("filter_to_correct_icl", args.filter_to_correct_icl),
+                "filter_path": task_result.get("filter_path"),
+                "mean_activations_path": task_result.get("mean_activations_path"),
+                "mean_indirect_effect_path": task_result.get("mean_indirect_effect_path"),
+                "per_prompt_indirect_effect_path": task_result.get("per_prompt_indirect_effect_path"),
+                "cie_result_path": str(result_path),
+                "top_heads": task_result.get("top_heads"),
+            }
+        )
+    if missing:
+        raise FileNotFoundError(
+            f"--reduce could not find per-task results for {len(missing)} task(s): {missing}. "
+            f"Make sure all worker shards finished writing under {args.save_path_root}."
+        )
+    return global_sum, total_prompts, per_task_summary
+
+
 def compute_task_effects(args, task, task_index, dataset, query_indices, mean_activations, model, model_config, tokenizer):
     query_indices = list(query_indices)
     if args.max_prompts_per_task is not None:
@@ -297,76 +415,13 @@ def compute_task_effects(args, task, task_index, dataset, query_indices, mean_ac
     return task_sum, task_mean, query_count, per_prompt_effects
 
 
-def main():
-    args = parse_args()
-    args.save_path_root.mkdir(parents=True, exist_ok=True)
-    output_path = args.save_path_root / "multitask_top_aie_heads.pt"
-    metadata_path = args.save_path_root / "multitask_top_aie_heads_metadata.json"
-
-    if output_path.exists() and not args.overwrite:
-        raise FileExistsError(f"{output_path} exists. Pass --overwrite to recompute.")
-
-    tasks, split_metadata = load_tasks(args)
-    print(f"Aggregating {len(tasks)} tasks from {args.task_split_key}: {tasks}")
-
-    torch.set_grad_enabled(False)
-    set_seed(args.seed)
-    print("Loading model")
-    model, tokenizer, model_config = load_gpt_model_and_tokenizer(
-        args.model_name, device=args.device, revision=args.revision
-    )
-    model.eval()
-
-    global_sum = torch.zeros(model_config["n_layers"], model_config["n_heads"], dtype=torch.float64)
-    total_prompts = 0
-    per_task_summary = []
-
-    for task_index, task in enumerate(tasks):
-        print(f"\n=== {task} ===")
-        task_output_dir = args.save_path_root / task
-        task_output_dir.mkdir(parents=True, exist_ok=True)
-
-        dataset = load_dataset(task, root_data_dir=args.root_data_dir, test_size=args.test_split, seed=args.seed)
-        query_indices, filter_path = load_or_compute_filter_set(
-            args, task, dataset, model, model_config, tokenizer, task_output_dir
-        )
-        mean_filter_set = query_indices if args.query_split == "valid" else None
-        mean_activations, mean_path = load_or_compute_mean_activations(
-            args, task, dataset, model, model_config, tokenizer, task_output_dir, filter_set=mean_filter_set
-        )
-
-        task_sum, task_mean, n_prompts, per_prompt_effects = compute_task_effects(
-            args, task, task_index, dataset, query_indices, mean_activations, model, model_config, tokenizer
-        )
-        global_sum += task_sum
-        total_prompts += n_prompts
-
-        task_mean_path = task_output_dir / f"{task}_mean_indirect_effect_over_{args.query_split}.pt"
-        torch.save(task_mean.float().cpu(), task_mean_path)
-        per_prompt_path = None
-        if per_prompt_effects is not None:
-            per_prompt_path = task_output_dir / f"{task}_per_prompt_indirect_effect_{args.query_split}.pt"
-            torch.save(per_prompt_effects, per_prompt_path)
-
-        per_task_summary.append(
-            {
-                "task": task,
-                "n_prompts": int(n_prompts),
-                "n_query_candidates": int(len(query_indices)),
-                "filter_to_correct_icl": args.filter_to_correct_icl,
-                "filter_path": filter_path,
-                "mean_activations_path": mean_path,
-                "mean_indirect_effect_path": str(task_mean_path),
-                "per_prompt_indirect_effect_path": None if per_prompt_path is None else str(per_prompt_path),
-                "top_heads": top_heads_from_scores(task_mean.float(), args.n_top_heads),
-            }
-        )
-
-    global_mean = global_sum / max(1, total_prompts)
-    top_heads = top_heads_from_scores(global_mean.float(), args.n_top_heads)
+def write_global_artifact(args, tasks, task_split_keys, split_metadata, global_sum, total_prompts,
+                          per_task_summary, n_layers, n_heads, model_config, output_path, metadata_path):
+    global_mean = (global_sum / max(1, total_prompts)).float()
+    top_heads = top_heads_from_scores(global_mean, args.n_top_heads)
 
     result = {
-        "mean_indirect_effect": global_mean.float().cpu(),
+        "mean_indirect_effect": global_mean.cpu(),
         "top_heads": top_heads,
         "n_top_heads": int(args.n_top_heads),
         "tasks": tasks,
@@ -380,16 +435,22 @@ def main():
         "model_config": model_config,
         "task_split_path": str(args.task_split_path),
         "task_split_key": args.task_split_key,
+        "task_split_keys": task_split_keys,
+        "all_split_tasks": args.all_split_tasks,
+        "abstractive_only": args.abstractive_only,
         "split_metadata": split_metadata,
         "tasks": tasks,
+        "n_tasks": len(tasks),
         "query_split": args.query_split,
         "demo_split": args.demo_split,
         "n_shots": args.n_shots,
         "n_top_heads": args.n_top_heads,
         "batch_size": args.batch_size,
+        "num_shards": args.num_shards,
         "max_prompts_per_task": args.max_prompts_per_task,
         "shuffle_labels": args.shuffle_labels,
         "filter_to_correct_icl": args.filter_to_correct_icl,
+        "save_per_prompt_effects": args.save_per_prompt_effects,
         "batch_size_filter_eval": args.batch_size_filter_eval,
         "seed": args.seed,
         "test_split": args.test_split,
@@ -410,6 +471,159 @@ def main():
         print(f"L{layer} H{head}: {score}")
     print(output_path)
     print(metadata_path)
+
+
+def infer_dims_from_results(args, tasks):
+    """Peek at the first available per-task result file to recover (n_layers, n_heads)."""
+    for task in tasks:
+        result_path = task_result_path(args.save_path_root, task)
+        if result_path.exists():
+            task_result = torch_load_trusted(result_path, map_location="cpu")
+            ie = task_result["indirect_effect_sum"]
+            return int(ie.shape[0]), int(ie.shape[1])
+    raise FileNotFoundError(
+        f"--reduce found no per-task <task>_cie_result.pt files under {args.save_path_root}."
+    )
+
+
+def main():
+    args = parse_args()
+    args.save_path_root.mkdir(parents=True, exist_ok=True)
+    output_path = args.save_path_root / "multitask_top_aie_heads.pt"
+    metadata_path = args.save_path_root / "multitask_top_aie_heads_metadata.json"
+
+    tasks, split_metadata, task_split_keys = load_tasks(args)
+    if args.abstractive_only:
+        assert_abstractive(tasks, args.root_data_dir)
+    if task_split_keys is None:
+        source_desc = "--tasks override"
+    else:
+        source_desc = ", ".join(task_split_keys)
+    print(f"Selected {len(tasks)} tasks from {source_desc}: {tasks}")
+
+    # Only the full single-process run (--num_shards 1) or the explicit --reduce step
+    # produces the combined cross-task artifact. Worker shards write per-task files only.
+    writes_global = args.reduce or args.num_shards <= 1
+    if writes_global and output_path.exists() and not args.overwrite:
+        raise FileExistsError(f"{output_path} exists. Pass --overwrite to recompute.")
+
+    # ---- REDUCE: aggregate already-computed per-task results, no model needed ----
+    if args.reduce:
+        n_layers, n_heads = infer_dims_from_results(args, tasks)
+        global_sum, total_prompts, per_task_summary = aggregate_task_results(args, tasks, n_layers, n_heads)
+        print(f"Reducing {len(per_task_summary)} per-task results, {total_prompts} prompts total.")
+        write_global_artifact(
+            args, tasks, task_split_keys, split_metadata, global_sum, total_prompts,
+            per_task_summary, n_layers, n_heads, model_config=None,
+            output_path=output_path, metadata_path=metadata_path,
+        )
+        return
+
+    # ---- COMPUTE: full run or one worker shard ----
+    shard_tasks = select_shard(tasks, args.shard_index, args.num_shards)
+    if args.num_shards > 1:
+        print(f"Shard {args.shard_index}/{args.num_shards} handling {len(shard_tasks)} tasks: {shard_tasks}")
+
+    torch.set_grad_enabled(False)
+    set_seed(args.seed)
+    print("Loading model")
+    model, tokenizer, model_config = load_gpt_model_and_tokenizer(
+        args.model_name, device=args.device, revision=args.revision
+    )
+    model.eval()
+
+    global_sum = torch.zeros(model_config["n_layers"], model_config["n_heads"], dtype=torch.float64)
+    total_prompts = 0
+    per_task_summary = []
+
+    # task_index is the position within the FULL task list so prompt RNG seeds are
+    # identical regardless of how tasks are sharded across workers.
+    for task in shard_tasks:
+        task_index = tasks.index(task)
+        print(f"\n=== {task} (global index {task_index}) ===")
+        task_output_dir = args.save_path_root / task
+        task_output_dir.mkdir(parents=True, exist_ok=True)
+        result_path = task_result_path(args.save_path_root, task)
+
+        if result_path.exists() and not args.overwrite:
+            print(f"Reusing existing per-task result: {result_path}")
+            continue
+
+        dataset = load_dataset(task, root_data_dir=args.root_data_dir, test_size=args.test_split, seed=args.seed)
+        query_indices, filter_path = load_or_compute_filter_set(
+            args, task, dataset, model, model_config, tokenizer, task_output_dir
+        )
+        mean_filter_set = query_indices if args.query_split == "valid" else None
+        mean_activations, mean_path = load_or_compute_mean_activations(
+            args, task, dataset, model, model_config, tokenizer, task_output_dir, filter_set=mean_filter_set
+        )
+
+        task_sum, task_mean, n_prompts, per_prompt_effects = compute_task_effects(
+            args, task, task_index, dataset, query_indices, mean_activations, model, model_config, tokenizer
+        )
+
+        task_mean_path = task_output_dir / f"{task}_mean_indirect_effect_over_{args.query_split}.pt"
+        torch.save(task_mean.float().cpu(), task_mean_path)
+        per_prompt_path = None
+        if per_prompt_effects is not None:
+            per_prompt_path = task_output_dir / f"{task}_per_prompt_indirect_effect_{args.query_split}.pt"
+            torch.save(per_prompt_effects, per_prompt_path)
+
+        task_top_heads = top_heads_from_scores(task_mean.float(), args.n_top_heads)
+        task_result = {
+            "task": task,
+            "indirect_effect_sum": task_sum.cpu(),
+            "mean_indirect_effect": task_mean.float().cpu(),
+            "n_prompts": int(n_prompts),
+            "n_query_candidates": int(len(query_indices)),
+            "query_split": args.query_split,
+            "demo_split": args.demo_split,
+            "n_top_heads": int(args.n_top_heads),
+            "top_heads": task_top_heads,
+            "filter_to_correct_icl": args.filter_to_correct_icl,
+            "filter_path": filter_path,
+            "mean_activations_path": mean_path,
+            "mean_indirect_effect_path": str(task_mean_path),
+            "per_prompt_indirect_effect_path": None if per_prompt_path is None else str(per_prompt_path),
+            "n_layers": int(model_config["n_layers"]),
+            "n_heads": int(model_config["n_heads"]),
+        }
+        torch.save(task_result, result_path)
+        print(f"Wrote per-task CIE result: {result_path}")
+
+        global_sum += task_sum
+        total_prompts += n_prompts
+        per_task_summary.append(
+            {
+                "task": task,
+                "n_prompts": int(n_prompts),
+                "n_query_candidates": int(len(query_indices)),
+                "filter_to_correct_icl": args.filter_to_correct_icl,
+                "filter_path": filter_path,
+                "mean_activations_path": mean_path,
+                "mean_indirect_effect_path": str(task_mean_path),
+                "per_prompt_indirect_effect_path": None if per_prompt_path is None else str(per_prompt_path),
+                "cie_result_path": str(result_path),
+                "top_heads": task_top_heads,
+            }
+        )
+
+    if not writes_global:
+        print(
+            f"\nShard {args.shard_index}/{args.num_shards} finished. "
+            f"Run with --reduce (same --save_path_root and task selection) to build the combined artifact."
+        )
+        return
+
+    # Single-process full run: aggregate from the per-task files we just wrote so the
+    # result is identical to what --reduce would produce (handles --overwrite skips too).
+    n_layers, n_heads = model_config["n_layers"], model_config["n_heads"]
+    global_sum, total_prompts, per_task_summary = aggregate_task_results(args, tasks, n_layers, n_heads)
+    write_global_artifact(
+        args, tasks, task_split_keys, split_metadata, global_sum, total_prompts,
+        per_task_summary, n_layers, n_heads, model_config=model_config,
+        output_path=output_path, metadata_path=metadata_path,
+    )
 
 
 if __name__ == "__main__":
