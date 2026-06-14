@@ -5,6 +5,49 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-06-14 — `train_selected` FVs now also at top-20 and top-40 heads
+
+The train-pooled (`train_selected`) FVs exist at three head counts: top-10 (original,
+`results/gptj_fv_multitask_top10/`), top-20 (`..._top20/`), top-40 (`..._top40/`), all 29 tasks.
+Built from the same `results/multitask_aie_heads/multitask_top_aie_heads.pt` (stores top-40) +
+cached mean activations — no CIE/forward recompute. Organized views:
+`results/function_vectors/gpt-j/train_selected_top{20,40}/`. FV norms grow with n (more out_proj
+terms summed): top-10 ~30–47, top-20 ~34–54, top-40 ~41–66. NB the n=20/40 head sets are strict
+prefixes of the top-40 ranking, so head sets nest (top-10 ⊂ top-20 ⊂ top-40). Relevant to the
+n=10 degeneracy note below: train vs train+test first diverge ~n=11, so the top-20/40 train_selected
+FVs are the right inputs for a non-degenerate train-vs-train+test comparison (rebuild train+test at
+matching n first).
+
+## 2026-06-11 — FINDING (Phase 2): the mean label-token function axis is CAUSAL — steering it flips synonym→antonym
+
+`steer_label_to_query.py`, results in `results/oneshot_steering/`. Injecting `α·Δ_label` (mean
+antonym−synonym label-token difference, computed on the 530 Phase-1 words) at the demo label token of a
+synonym-context 1-shot prompt, scored on 1,003 disjoint queries with single-token gold ant+syn:
+
+- **Geometric propagation:** the induced query-token shift aligns with the natural syn→ant direction —
+  cos(shift, Δ_final) ≈ **0.71–0.76** (steer L6, read L8; >0.5 through L15), matched-norm **random
+  control ≈ 0.01–0.06**. α-stable over 0.5–4 (linear regime), degrades at 8.
+- **Behavioral flip:** flip rate 0.283 (clean) → **0.64** (L6, α=8); mean logit(ant)−logit(syn)
+  −1.44 → **+1.12**, zero-crossing at α≈2. Random control stays negative (−0.92 @ α=8) — effect is
+  direction-specific. Best steer layers 6≈9 > 11.
+- **Reconciles Phase 1's negative map result:** the dominant shared axis propagates causally and
+  predictably label→query; what the (weak, high-rank) linear map could not capture is the per-word
+  high-dim tail. So "label-token arithmetic moves the next position predictably" is TRUE for the
+  function axis specifically, FALSE for the full per-word geometry.
+- **Geography (landmark↔park) propagates weakly** (cos 0.13–0.23, n=84, geometry-only — no behavioral
+  flip exists since both functions output the same country).
+- **Causal window [L4, ~L15] (full L1–L24 sweep):** steering is null at L1–2 (flip ≈ baseline despite
+  maximal downstream depth; natural ‖Δ_label‖ ~0.7–0.9, the axis doesn't exist yet), onsets sharply
+  L3→L4 (flip 0.34→0.57 @α4), plateaus L4–9 (peak cos 0.76, flip 0.60), decays L11–12, and is
+  **exactly baseline-dead by L16** (L16/20/24: flip 0.282–0.284, cos ≤0.09). Interpretation: the
+  function fingerprint is written into the label token ~L3–6 and transported to the query position
+  before ~L16 — congruent with the CIE top-head band (L8–15). Profile:
+  `results/oneshot_steering/fig_steer_layer_profile_L1to24.png`.
+- **Engineering gotchas (reusable):** baukit `edit_output` hooks MUST be exact 2-arg
+  `(output, layer_name)` closures — extra default-kwargs are mis-bound positionally by
+  `invoke_with_optional_args`. The query-position shift at L_read==L_steer is identically zero
+  (cross-position effects only enter via later blocks' attention) — read strictly downstream.
+
 ## 2026-06-11 — FINDING: function is decodable at the query token in FV space, but the label→query map is not low-rank/rotation-like (1-shot)
 
 Phase-1 of the function-geometry experiment (Stream E; scripts `capture_oneshot_paired.py` +
@@ -41,6 +84,77 @@ different-function paired 1-shot prompts; source = demo label token, target = qu
   (well-motivated by the separation); do NOT assume steering the demo label token propagates predictably
   to the query (Phase 1 contradicts it). A multi-shot variant (stronger function identification) is the
   natural next probe before drawing strong conclusions.
+
+## 2026-06-12 — Criterion for "confusable task pairs": matched input AND output marginals
+
+For the mixed-task ICL / function-geometry substrate, a good pair (f1, f2) must encode
+the function ONLY in the (input, output) relation: neither the input token alone nor the
+output/label token alone may be predictive of which task it is. Formally
+P(input|f1)=P(input|f2) AND P(output|f1)=P(output|f2). Shared input domain + same output
+*type* is NOT enough — the output *marginal* must match too.
+
+This rejects pairs that looked superficially fine:
+- capitalize_first ↔ last: **output** leak (first- vs last-letter distributions differ).
+- english-fr ↔ -de, country-capital ↔ -currency, person-occupation ↔ -sport: **output**
+  leak (you can ID the task from one output token: a language / a city vs currency / etc.).
+- hypernym ↔ hyponym: **input** leak (specific vs general words) — inverse pairs only
+  satisfy the criterion over a *symmetric* domain (input set = output set).
+
+Two construction recipes that satisfy it by design: (1) inverse functions over a
+symmetric/closed domain (next/prev over a cycle; +k/−k; Caesar ±n); (2) two distinct
+relations whose outputs land in the same word pool as the inputs (antonym/synonym;
+synonym/rhyme). Operational test: a probe predicting the task from input-token-only or
+output-token-only embeddings should be at chance.
+
+**A second, sharper constraint — in-context learnability — makes the design space much
+smaller than it looks.** Matched output marginals already require the two functions to
+share an output *pool* (a lone output token can't reveal the task). That alone kills
+factual-attribute pairs (capital vs largest-city → disjoint answer sets), translation
+(disjoint by language), and morphology (suffix leak). On top of that, the function must
+be inferable from ~5 ICL demos — which kills otherwise-legal ideas like alphabetical
+neighbor word (model can't know the candidate lexicon). What survives BOTH = "a general
+rule the model already knows, over a domain with a shared output pool" → arithmetic on
+numbers, or meaning/sound relations over words. That is *exactly* the antonym/synonym/
+rhyme/number region — the apparent "everything looks similar" is the constraint, not a
+lack of imagination. Decision: ship **3 pairs** (antonym|synonym, synonym|rhyme,
+antonym|rhyme, next_number|prev_number); do NOT force a 4th. Letters were generated then
+dropped (26-cap + no new legal+learnable axis). If more variety is ever needed, the only
+honest routes are to *relax* a constraint deliberately and *measure* the cost (e.g.
+morphology with the input/output leakage probe), or curate an association corpus offline.
+
+Datasets live in `dataset_files/paired_tasks/` (generator
+`dataset_files/generate/create_paired_tasks_datasets.py`): next/prev_number (words),
+rhyme (CMUdict, outputs in syn/ant vocab), plus copied synonym/antonym. Note:
+number-words avoid digit clumping but compound forms >20 are multi-token (word-based) —
+score at first/last label-token positions.
+
+## 2026-06-12 — Geography under the matched-marginal rule: only spatial place→place survives
+
+Geography mostly LEAKS: (a) attribute relations (country→capital vs →currency vs
+→continent) have **disjoint output pools** → output-token leak; (b) entity-type→country
+relations leak via the **input** — verified the repo's park-country has "Park"/"National"
+in 747/749 inputs, so landmark|park is identifiable from the input alone (why Stream E
+could only use it geometry-only). The single legal family is **place→place spatial
+relations over one shared pool** — the geographic analog of next/prev_number. Built
+`east_neighbor` / `west_neighbor` (`dataset_files/generate/create_geography_neighbor_datasets.py`):
+country → nearest country in the E/W bearing quadrant, from most-populous-city coords
+(geonamescache, offline; deterministic). Both country→country → matched input AND output
+marginals; identical input set (244 countries with both an E and W neighbour). Multi-token
+country names allowed (first/last label-token, like compound numbers). Approximate for
+island/edge countries (e.g. Bermuda→Cabo Verde) — inherent to nearest-in-quadrant. North/south
+and bordering (needs adjacency data, not available offline) are possible extensions.
+Installed `pycountry-convert` (continents) + `geonamescache` (city coords), and `nltk`+WordNet
+(unused so far — semantic co-hyponym/hypernym/meronym pairs remain an option).
+
+**General principle (what makes geography/periodic-table work):** take a domain the model
+knows that has internal STRUCTURE (1D order, 2D grid, hierarchy) and pair two "neighbour"-type
+relations over it; the shared pool + the structure give matched marginals for free. Instances:
+numbers (1D line: next/prev), geography (2D map: east/west), **periodic table (2D grid:
+next_in_period=right / next_in_group=below)**. Built `next_in_period`/`next_in_group` via
+`mendeleev` (offline): 66 main-group+transition elements with both a right and below neighbour,
+identical input set, multi-token names allowed. f-block excluded (no group_id; model knows them
+worst). Skipped US-presidents (ordinal over a known list, ~46 — too small). Open structured
+domains not yet built: north/south geo neighbours, WordNet taxonomy (co-hyponym; is-a vs has-part).
 
 ## 2026-06-10 — Mixed-task ICL probe: synonym pays for diluted demos, not antonym
 
@@ -96,6 +210,34 @@ rather than import the baukit-laden module. GPT-J weights cached under
 ---
 
 ## Decided
+
+### 2026-06-12 — FVs round 2: east/west_neighbor + next_in_period/group — built, but LOW-N
+
+Same 3-method derivation as the trio below (manifest now `task_splits/paired_tasks_7.json`;
+builder manifests `fv_manifest_paired2.json`; auto no-filter retry available but unused — all 4
+tasks pass the filter). All 12 FVs in the organized folder, norms 24–44. **CAVEAT: GPT-J is weak
+at all four** — ICL-correct counts: canonical 10-shot east 5/51, west 7/51, period 2/14, group
+5/14; varicl east 2, west 3, period 1, group 1 → the correct-only mean activations (esp. varicl,
+1–3 prompts) are HIGH-VARIANCE. Filter kept ON for consistency with the 29 originals. If these
+tasks matter downstream, prefer no-filter variants or bigger datasets. (Effective-n hierarchy among
+paired tasks: next/prev_number excellent (42/42) ≫ elements/geo (1–7) ≥ rhyme (0 → no-filter).)
+
+### 2026-06-12 — FVs derived for the 3 paired tasks (rhyme, next_number, prev_number) × 3 methods
+
+The new `dataset_files/paired_tasks/` trio now has FVs under all of `task_specific`,
+`train_selected`, `train_varicl` (organized folder + underlying caches; `fv_manifest_paired.json`
+in each builder root so the original 29-task manifests are untouched). Conventions adopted:
+- The 3 task JSONs are **symlinked into `dataset_files/abstractive/`** (user-approved; the loader
+  hardcodes abstractive/extractive). Split seed 42 → 140/18/42; valid is only 18.
+- `task_splits/paired_tasks_3.json` = manifest for stage-2 builders (they validate `--tasks`).
+- **rhyme FVs are NO-FILTER** (`--no_filter_to_correct_icl`, both regimes): GPT-J is 0/18
+  ICL-correct on rhyme valid, so the standard correct-only averaging is impossible. Treat rhyme's
+  FV as "attempted-task" activations; flag in any cross-task comparison. next_number (18/18) and
+  prev_number (15/18) are standard.
+- Repro trick: running varicl stage-1 for extra tasks with `--num_shards N>1` keeps
+  `writes_global=False` → per-task files only, existing pooled head artifact safe. We still used an
+  isolated root (`results/multitask_aie_heads_varicl_paired/`, kept for provenance) and copied the
+  `*_mean_head_activations_varicl.pt` into `results/multitask_aie_heads_varicl/<task>/`.
 
 ### 2026-06-11 — PCA-space (direct) activation→FV ridge sweep + 16-PC vs full-dim comparison
 

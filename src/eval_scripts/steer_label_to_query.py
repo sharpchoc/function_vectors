@@ -676,9 +676,21 @@ def main():
     # Plots (matplotlib Agg). Straightforward; skip silently on failure.
     # --------------------------------------------------------------------- #
     try:
-        # cos(shift, Delta_final) vs alpha at the natural read layer (= each L_steer), per L_steer.
+        # cos(shift, Delta_final) vs alpha per L_steer, at the most-aligned read layer.
+        # NOTE: the shift at L_read == L_steer is identically zero at the query position
+        # (the edit at the demo-label position only reaches the query via later blocks),
+        # so pick the read layer with the highest mean cos at the smallest nonzero alpha.
         for L_steer in args.steer_layers:
-            L_read = L_steer if L_steer in read_layers else min(read_layers)
+            alphas_nz = sorted({a for (ls, lr, a) in geo if ls == L_steer and a != 0})
+            if not alphas_nz:
+                continue
+            a0 = alphas_nz[0]
+            candidates = [(lr, mean_ci(geo[(L_steer, lr, a0)])[0])
+                          for (ls, lr, a) in geo if ls == L_steer and a == a0]
+            candidates = [(lr, c) for lr, c in candidates if c == c]  # drop NaN
+            if not candidates:
+                continue
+            L_read = max(candidates, key=lambda t: t[1])[0]
             xs = sorted({a for (ls, lr, a) in geo if ls == L_steer and lr == L_read})
             ys = [mean_ci(geo[(L_steer, L_read, a)])[0] for a in xs]
             fig, ax = plt.subplots(figsize=(6, 4))
@@ -696,44 +708,54 @@ def main():
             fig.savefig(output_dir / f"fig_cos_shift_vs_alpha_L{L_steer}.png", dpi=150)
             plt.close(fig)
 
-        if behavioral and behavioral_summary:
-            # flip rate vs alpha, per L_steer.
-            fig, ax = plt.subplots(figsize=(6, 4))
-            for L_steer in args.steer_layers:
-                xs = sorted({a for (ls, a) in beh_flip if ls == L_steer})
-                ys = [float(np.mean(beh_flip[(L_steer, a)])) for a in xs]
-                ax.plot(xs, ys, marker="o", label=f"L_steer={L_steer}")
-                if args.control_random:
-                    yr = [float(np.mean(beh_flip_rand[(L_steer, a)]))
-                          for a in xs if (L_steer, a) in beh_flip_rand]
-                    if len(yr) == len(xs):
-                        ax.plot(xs, yr, marker="x", linestyle="--", label=f"random L_steer={L_steer}")
-            ax.set_xlabel("alpha")
-            ax.set_ylabel("flip rate (rank(ant) < rank(syn))")
-            ax.set_title("Synonym->antonym flip rate vs alpha")
-            ax.set_ylim(0, 1.05)
-            ax.legend()
+        # cos(shift, Delta_final) vs READ layer, one curve per alpha, per L_steer.
+        for L_steer in args.steer_layers:
+            fig, ax = plt.subplots(figsize=(7, 4.2))
+            alphas_nz = sorted({a for (ls, lr, a) in geo if ls == L_steer and a != 0})
+            for a in alphas_nz:
+                lrs = sorted({lr for (ls, lr, aa) in geo if ls == L_steer and aa == a})
+                ys = [mean_ci(geo[(L_steer, lr, a)])[0] for lr in lrs]
+                ax.plot(lrs, ys, marker="o", ms=3, label=f"alpha={a:g}")
+            if args.control_random and alphas_nz:
+                a_ref = alphas_nz[len(alphas_nz) // 2]
+                lrs = sorted({lr for (ls, lr, aa) in geo_rand if ls == L_steer and aa == a_ref})
+                if lrs:
+                    yr = [mean_ci(geo_rand[(L_steer, lr, a_ref)])[0] for lr in lrs]
+                    ax.plot(lrs, yr, color="gray", linestyle="--", marker="x", ms=3,
+                            label=f"random (alpha={a_ref:g})")
+            ax.set_xlabel("read layer")
+            ax.set_ylabel("mean cos(shift, Delta_final)")
+            ax.set_title(f"cos(shift, Delta_final) by read layer (L_steer={L_steer})")
+            ax.axhline(0.0, color="0.7", linewidth=0.8)
+            ax.legend(fontsize=8)
             ax.grid(alpha=0.3)
             fig.tight_layout()
-            fig.savefig(output_dir / "fig_flip_rate_vs_alpha.png", dpi=150)
+            fig.savefig(output_dir / f"fig_cos_shift_by_readlayer_L{L_steer}.png", dpi=150)
             plt.close(fig)
 
-            # logit diff (ant - syn) vs alpha, per L_steer.
-            fig, ax = plt.subplots(figsize=(6, 4))
-            for L_steer in args.steer_layers:
+        if behavioral and behavioral_summary:
+            # logit diff (ant - syn) vs alpha, per L_steer (±95% CI band).
+            # Headline behavioral metric (flip rate remains in the CSV/JSON only).
+            fig, ax = plt.subplots(figsize=(6.5, 4.3))
+            cmap = plt.get_cmap("tab10")
+            for i, L_steer in enumerate(args.steer_layers):
                 xs = sorted({a for (ls, a) in beh_logitdiff if ls == L_steer})
-                ys = [mean_ci(beh_logitdiff[(L_steer, a)])[0] for a in xs]
-                ax.plot(xs, ys, marker="o", label=f"L_steer={L_steer}")
+                stats = [mean_ci(beh_logitdiff[(L_steer, a)]) for a in xs]
+                ys = np.array([m for m, _ in stats])
+                ci = np.array([c if c == c else 0.0 for _, c in stats])
+                ax.plot(xs, ys, marker="o", color=cmap(i), label=f"L_steer={L_steer}")
+                ax.fill_between(xs, ys - ci, ys + ci, color=cmap(i), alpha=0.15)
                 if args.control_random:
                     yr = [mean_ci(beh_logitdiff_rand[(L_steer, a)])[0]
                           for a in xs if (L_steer, a) in beh_logitdiff_rand]
                     if len(yr) == len(xs):
-                        ax.plot(xs, yr, marker="x", linestyle="--", label=f"random L_steer={L_steer}")
+                        ax.plot(xs, yr, marker="x", linestyle="--", color=cmap(i), alpha=0.45)
             ax.set_xlabel("alpha")
-            ax.set_ylabel("mean (logit_ant - logit_syn)")
-            ax.set_title("Logit difference (ant - syn) vs alpha")
-            ax.axhline(0.0, color="0.7", linewidth=0.8)
-            ax.legend()
+            ax.set_ylabel("mean logit(ant) - logit(syn)")
+            ax.set_title("Logit difference (ant - syn) vs alpha\n"
+                         "solid=steered (±95% CI), dashed=random control")
+            ax.axhline(0.0, color="black", linewidth=1)
+            ax.legend(fontsize=8)
             ax.grid(alpha=0.3)
             fig.tight_layout()
             fig.savefig(output_dir / "fig_logitdiff_vs_alpha.png", dpi=150)

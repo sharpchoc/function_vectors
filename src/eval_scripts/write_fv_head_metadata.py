@@ -22,6 +22,8 @@ import torch
 POOL_DESC = {
     "task_specific": "this task only (per-task CIE)",
     "train_selected": "20 train tasks (pooled CIE)",
+    "train_selected_top20": "20 train tasks (pooled CIE)",
+    "train_selected_top40": "20 train tasks (pooled CIE)",
     "train_test_selected": "all 29 train+test tasks (pooled CIE)",
 }
 

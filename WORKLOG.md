@@ -5,6 +5,329 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-06-14 — Stream A: train_selected FVs at top-20 and top-40 heads
+
+**Owner:** Coordinator (tmux "FV top20/40"). **Status:** DONE — 29 FVs each, both runs + organized + metadata.
+
+**What:** Added `train_selected` FV runs at n_top_heads=20 and 40 for all 29 tasks (previously only
+top-10). No CIE recompute — the train-pooled head artifact `results/multitask_aie_heads/
+multitask_top_aie_heads.pt` already stores top-40, mean head activations cached in `results/gptj_fv/`.
+Just re-summed `out_proj(mean_act[L,H,-1])` over the top-20 / top-40 heads.
+
+**Commands run (HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1):**
+- `compute_all_task_fvs_from_multitask_heads.py --n_top_heads 20 --output_root results/gptj_fv_multitask_top20` → 29 FVs.
+- `compute_all_task_fvs_from_multitask_heads.py --n_top_heads 40 --output_root results/gptj_fv_multitask_top40` → 29 FVs.
+- `write_fv_head_metadata.py --methods train_selected_top20 --n_top_heads 20` (and `_top40 --n_top_heads 40`).
+
+**Files changed:**
+- NEW `results/gptj_fv_multitask_top{20,40}/<task>/<task>_function_vector.pt` (29 each) + `fv_manifest.json`.
+- NEW organized views `results/function_vectors/gpt-j/train_selected_top{20,40}/` (FV symlinks +
+  `heads.pt`/`heads_metadata.json` → multitask_aie_heads + per-task `selected_heads.json`).
+- `write_fv_head_metadata.py`: added `train_selected_top20/40` to `POOL_DESC`.
+
+**Findings:** All 87 FVs (29×3 n) sane. Norms grow with head count: top-10 ~30–47, top-20 ~34–54,
+top-40 ~41–66 (more heads add more head-out-proj terms to the sum). The first-10 / first-20 heads are
+prefixes of the top-40 list (same ranking truncated), so top-10 ⊂ top-20 ⊂ top-40 head sets.
+
+**Next:** optional — held-out steering eval (`evaluate_heldout_multitask_head_fvs.py`) to see whether
+n=20/40 transfers better than n=10. **Blockers:** None.
+
+---
+
+## 2026-06-12 — Stream C: GPT-4-judged rhyme eval — GPT-J truly cannot rhyme (0/42)
+
+**What:** `src/eval_scripts/judge_rhyme_generations.py` — rebuilds the same 10-shot test prompts
+(seed 42), greedy-generates GPT-J's actual answer word, and has GPT-4.1 judge whether it truly
+rhymes (strict: final stressed vowel + coda match; identical word/non-word/inflection = false).
+Tests whether the 0.024 first-token score understates competence via valid alternative rhymes.
+
+**Result: judged accuracy 0/42 = 0.000** (gold exact-match 1/42; the judge rejects even that one —
+`apply→ally` isn't a true rhyme → the dataset's CMUdict gold pairs are themselves loose).
+Failure modes: copies the input (17/42), semantic associates (black→white, birth→death),
+orthographic neighbors (bite→bit, defense→defence). Consistent with BPE models lacking phonology.
+**Implication:** rhyme is a genuine zero-competence task for GPT-J — keep only as a known-zero
+control, or drop. The OpenAI key is available from the container env
+(`/proc/1/environ` → `OPENAI_API_KEY`; pod env vars don't reach interactive shells).
+Artifacts: `results/rhyme_judge_eval/`. The judge harness is reusable for lenient scoring of other
+tasks (e.g. "is X actually east of Y" for the geo pair).
+
+---
+
+## 2026-06-12 — Stream C (round 2): FVs for 4 MORE paired tasks (east/west_neighbor, next_in_period/group) × 3 methods
+
+**Owner:** Coordinator (tmux "FV derivation"). **Status:** DONE — 12 FVs built + verified; LOW-N CAVEAT below.
+
+**Same recipe as round 1 (below)**: symlinked into `dataset_files/abstractive/`; NEW
+`task_splits/paired_tasks_7.json` (supersedes _3); 4 parallel tmux windows (canonical → varicl
+stage-1 shard, num_shards=4); stage-2 builders with `fv_manifest_paired2.json`; organized symlinks
++ `selected_heads.json` for all 3 methods. The auto no-filter retry **never triggered** — all 4
+tasks pass the ICL filter with nonzero correct counts. Norms sane (24.4–43.9).
+
+**IMPORTANT LOW-N CAVEAT — GPT-J is weak at all 4 tasks, so the correct-only averaging rests on
+very few queries:**
+- canonical 10-shot ICL-correct: east_neighbor **5/51**, west_neighbor **7/51**,
+  next_in_period **2/14**, next_in_group **5/14** (vs next/prev_number 42/42).
+- varicl (1–10 shots, valid split): east **2**, west **3**, next_in_period **1**, next_in_group **1**
+  correct queries → those varicl FVs average over 1–3 prompts. Treat all four tasks' FVs (esp.
+  varicl) as high-variance; consider `--no_filter_to_correct_icl` variants if robustness matters
+  (rhyme precedent), or larger datasets / more valid examples.
+- Filter kept ON for methodological consistency with the 29 originals (counts were nonzero).
+
+Logs: `results/_paired_fv_logs/{canonical,varicl}_<task>.log`, `build_{varicl,train_selected}2.log`.
+
+---
+
+## 2026-06-12 — Stream B: periodic-table 2D-grid neighbour pair (next_in_period | next_in_group)
+
+**Status:** COMPLETE (datasets generated).
+
+**What:** Chemistry analog of the geography pair — the periodic table is a 2D grid the
+model knows. `next_in_period` = element → element to its RIGHT (same row, atomic_number+1);
+`next_in_group` = element → element BELOW it (same column, next period down). Both
+element→element → matched input AND output marginals; a lone element name reveals nothing
+about which grid direction. Generator
+`dataset_files/generate/create_periodic_table_neighbor_datasets.py` (data: `mendeleev`, offline).
+
+**Outputs:** `dataset_files/paired_tasks/{next_in_period,next_in_group}.json`, **66 pairs each**,
+IDENTICAL input set (66 main-group + transition-block elements that have BOTH a right and a
+below neighbour) → matched input marginal. f-block (lanthanides/actinides) excluded (no
+group_id in source; also the elements the model knows worst). 0 self-pairs. Element names
+mostly multi-token (only ~14 single-token) → allowed, first/last label-token scoring like
+countries/numbers. Sane (Nitrogen R→Oxygen/B→Phosphorus; Selenium R→Bromine/B→Tellurium).
+
+**Deps:** installed `mendeleev`.
+
+**Intended pair:** next_in_period | next_in_group. (Skipped the US-presidents ordinal idea —
+~46 too small.)
+
+**Next:** capture paired activations (add `next_in_period_next_in_group` to
+capture_oneshot_paired_tasks.py TASK_PAIRS) + geometry analysis.
+
+**Blockers:** None.
+
+---
+
+## 2026-06-12 — Stream B: geography spatial-neighbour pair (east_neighbor | west_neighbor)
+
+**Status:** COMPLETE (datasets generated).
+
+**What:** New geographic task pair under the matched-marginal rule. Most geography leaks
+(attribute pairs → disjoint output pools; landmark/park → input has "Park" in 747/749);
+the only legal family is place→place SPATIAL relations over one shared pool — the geo
+analog of next/prev_number. Built `east_neighbor`/`west_neighbor`: country → nearest
+country in the E/W bearing quadrant, from most-populous-city coords (geonamescache,
+deterministic, offline). Generator `dataset_files/generate/create_geography_neighbor_datasets.py`.
+
+**Outputs:** `dataset_files/paired_tasks/{east_neighbor,west_neighbor}.json`, 244 pairs
+each, IDENTICAL input set (244 countries with both an E and W neighbour) → matched input
+marginal; both output countries → matched output marginal. 0 input==output collisions.
+Multi-token country names allowed (first/last label-token scoring). Sane (Afghanistan
+E→Pakistan/W→Turkmenistan; Netherlands E→Germany/W→UK); approximate for islands.
+
+**Deps installed:** pycountry-convert, geonamescache, nltk+WordNet (WordNet unused so far —
+semantic co-hyponym/hypernym/meronym pairs remain a validated option if wanted).
+
+**Intended pair:** east_neighbor | west_neighbor (and could add north/south).
+
+**Next:** capture paired activations for this pair (capture_oneshot_paired_tasks.py — add
+`east_neighbor_west_neighbor` to TASK_PAIRS) and/or run the geometry analysis.
+
+**Blockers:** None.
+
+---
+
+## 2026-06-12 — Stream C: derive FVs for 3 NEW paired tasks (rhyme, next_number, prev_number) × 3 methods
+
+**Owner:** Coordinator (this session, tmux "FV derivation"). **Status:** DONE — all 9 FVs built + verified.
+
+**RESULTS (all 9 sane: shape [4096]; norms 20–52; correct head-set provenance per method):**
+- `task_specific` (own CIE top-10): rhyme 20.1, next_number 49.4, prev_number 51.9 → real files
+  `results/gptj_fv/<task>/` + symlinks in `function_vectors/gpt-j/task_specific/<task>/`.
+- `train_selected` (existing 20-train pooled heads): norms 37.0/43.5/44.0 → built into
+  `results/gptj_fv_multitask_top10/` (`fv_manifest_paired.json`) + organized symlinks.
+- `train_varicl` (existing varicl pooled heads): norms 32.1/34.8/37.6 → written directly into
+  `function_vectors/gpt-j/train_varicl/<task>/` (`fv_manifest_paired.json`).
+- `selected_heads.json` regenerated for all 3 methods (32 tasks each).
+
+**IMPORTANT CAVEAT — rhyme is filter-less:** GPT-J scored **0/18 ICL-correct** on rhyme's valid
+split (both pipelines crashed on the empty correctness filter), so rhyme was re-run with
+`--no_filter_to_correct_icl` in BOTH the canonical and varicl pipelines. Its FVs average over all
+18 (incorrect) queries — "activations while attempting rhyme", not successful execution. Not
+methodologically comparable to the other 28+2 tasks (which filter to correct). By contrast
+next_number = 18/18 correct, prev_number = 15/18 — number FVs are standard.
+
+**Other notes:** task-specific top heads of next/prev_number overlap heavily with the pooled set
+((15,5),(12,10)…) — the number tasks engage the canonical FV circuitry. Per-task GPU stages ran in
+3 parallel tmux windows (~25 min total incl. the rhyme re-run); varicl stage-1 used the
+`--num_shards 3` trick so writes_global=False protected the existing pooled artifact; isolated
+`results/multitask_aie_heads_varicl_paired/` kept for provenance (mean activations copied into
+`results/multitask_aie_heads_varicl/<task>/` for the builder). Logs: `results/_paired_fv_logs/`.
+
+**Goal:** FVs for the new `dataset_files/paired_tasks/{rhyme,next_number,prev_number}.json` (200 pairs
+each) via (1) **task_specific** (own CIE top-10), (2) **train_selected** (existing 20-train pooled
+head set reused), (3) **train_varicl** (existing varicl train-pooled head set reused).
+
+**Setup:**
+- Symlinked the 3 JSONs into `dataset_files/abstractive/` (user-approved "treat as abstractive";
+  loader hardcodes abstractive/extractive). Split = 140 train / **18 valid** / 42 test (seed 42) —
+  NB small valid split → ≤18 query candidates for CIE/mean-activations (trials redraw demos).
+- NEW `task_splits/paired_tasks_3.json` (the stage-2 builders validate `--tasks` against a manifest).
+
+**Plan (GPU = 1×A100 80GB; GPT-J fp16 ≈ 12GB → 3 concurrent model instances, NOT 6):**
+- 3 tmux windows (one per task), each sequentially: `src/compute_function_vectors.py
+  --dataset_names <task> --batch_size 8` (mean acts + CIE + task-specific FV → `results/gptj_fv/<task>/`),
+  then `compute_multitask_varicl_heads.py --tasks rhyme next_number prev_number --num_shards 3
+  --shard_index <i> --save_path_root results/multitask_aie_heads_varicl_paired ...` (varicl acts+CIE;
+  sharded ⇒ writes_global=False ⇒ existing pooled artifact safe).
+- Then (cheap, single jobs): copy varicl mean activations into `results/multitask_aie_heads_varicl/<task>/`;
+  `compute_all_task_fvs_varicl.py --tasks ... --task_manifest task_splits/paired_tasks_3.json
+  --manifest_name fv_manifest_paired.json --overwrite`; `compute_all_task_fvs_from_multitask_heads.py
+  --tasks ... --manifest_name fv_manifest_paired.json`; organized-folder symlinks; `write_fv_head_metadata.py`.
+
+**Blockers:** None.
+
+---
+
+## 2026-06-12 — Stream B: PAIRED 1-shot activation capture for paired_tasks (step 1 of rerun)
+
+**Status:** COMPLETE (capture done; downstream experiments next).
+
+**What:** First step of rerunning the experiments on the new `paired_tasks` datasets,
+using the PAIRED design (Stream-E style, generalized): for each shared output word `w`
+producible under BOTH functions, build two 1-shot prompts that differ ONLY in the ICL
+demo INPUT (same demo label `w`, same query) — so the activation difference at the
+label token isolates the function, not token identity. New script
+`src/eval_scripts/capture_oneshot_paired_tasks.py`, a sibling of (not an edit to)
+Stream-E's `capture_oneshot_paired.py`; reuses the canonical capture primitives
+(`get_residual_stack`, `selected_token_records`, `make_token_record`, `flush_shard`)
+so locations + on-disk format match `results/residual_activations/*`. Reads
+`dataset_files/paired_tasks/` directly.
+
+(An earlier single-task capture — `capture_oneshot_singletask.py` + results — was the
+wrong reading of the request and has been removed.)
+
+**Design choice:** single-token outputs NOT required (the paired property holds for
+multi-token labels too). This lets the number pair reach 100 (only 26 number-words are
+single-token, but 198 shared). Captured the full standard location set per prompt:
+pre/first/last label_token (+ label alias) and last_prompt_token (+ final alias), 28 layers.
+
+**Pairs + counts (n_target=100, capped by shared-output availability):**
+- antonym_synonym: 100 words → 200 prompts (555 shared available)
+- synonym_rhyme:    82 words → 164 prompts (82 available — max)
+- antonym_rhyme:    60 words → 120 prompts (60 available — max)
+- next_number_prev_number: 100 words → 200 prompts (198 available)
+
+**Command:** `for pair in antonym_synonym synonym_rhyme antonym_rhyme
+next_number_prev_number; do HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1
+python src/eval_scripts/capture_oneshot_paired_tasks.py --pair $pair; done`
+
+**Outputs:** `results/oneshot_paired_tasks/<pair>/{shard_00000.pt, index.json}`. Each
+shared word → 2 functions × 6 roles = 12 rows; activations `[12·n_words, 28, 4096]` fp32.
+
+**Verified:** for each pair, the f1/f2 prompts are identical except the demo input — e.g.
+`Q: seven\nA: eight…` vs `Q: nine\nA: eight…` (next vs prev of eight, same query);
+`Q: unable\nA: able…` vs `Q: can\nA: able…`. Label span decodes to ` w` (assertion in
+script, single- and multi-token).
+
+**Next:** the actual experiments on these captures — FV/geometry analysis (function
+axis at label vs query token), and/or generalize the `mixed_icl_*` top-k probe to the
+four pairs.
+
+**Blockers:** None.
+
+## 2026-06-12 — Stream B: `paired_tasks` datasets for marginal-matched task pairs
+
+**Status:** COMPLETE (datasets generated; experiments not yet run).
+
+**What:** New dataset family for the mixed-task ICL / function-geometry probes, built
+on the sharpened criterion that the function must live ONLY in the (input,output)
+relation — neither the input token nor the output/label token alone may reveal the
+task (matched input AND output marginals). This rules out the leaky pairs
+(capitalize_first/last → output-marginal leak; translation → language ID leak;
+country-capital/currency → output leak; hypernym/hyponym → input leak).
+
+**Files:** `dataset_files/generate/create_paired_tasks_datasets.py` (new generator),
+outputs in `dataset_files/paired_tasks/`:
+- `next_number.json` / `prev_number.json` — k→k+1 / k→k−1, integers as WORDS (digits
+  risk tokeniser clumping; words tokenise per-word). Same input set {1..200} → matched
+  input marginal; outputs {2..201}/{0..199} → near-identical output marginal. 200 each.
+- `rhyme.json` — word→rhyming word (CMUdict via `pronouncing`); inputs from syn/ant
+  vocab, outputs constrained to that same real-word vocab → shares the general-word
+  marginal with synonym & antonym. 200 pairs, single-token real-word outputs.
+- `synonym.json`, `antonym.json` — copied verbatim from `abstractive/`.
+
+**Intended pairs:** antonym|synonym, synonym|rhyme, antonym|rhyme, next_number|prev_number.
+
+**Dropped next/prev_letter** (initially generated, then removed): only 26 letters → can't
+reach 200, and a deeper review (see DECISIONS) showed the strict criterion +
+in-context-learnability is a real double bind — letters added no new legal+learnable axis
+the number/word pairs don't already cover. Decision: keep the 3 pairs, no 4th.
+
+**Verification:** input sets identical across next/prev (matched input marginal);
+0 input==output collisions; number-words never digit-clump (e.g. 200→201 = "two
+hundred"→"two hundred one"); letters & rhyme outputs are single tokens. Compound
+number-words >20 are multi-token but word-based (handled by first/last label-token
+scoring). Installed `pronouncing` (PyPI, CMUdict).
+
+**Next:** run `mixed_icl_*` probe on the new pairs (will need a task-generic variant
+of the script, currently antonym/synonym-specific).
+
+**Blockers:** None.
+
+## 2026-06-11 — Stream E Phase 2: causal steering at the demo label token (COMPLETE, POSITIVE)
+
+**Status:** Full run done on GPU. Plan: `/root/.claude/plans/immutable-finding-boole.md` (Phase-2 rewrite).
+
+**What:** Inject `α·Δ_label(L_steer)` (mean antonym−synonym difference from the Phase-1 capture, 530
+held-out-by-construction words) at the demo's label token of a **synonym-context 1-shot prompt**; read
+(a) the query-final-token shift vs the natural direction `Δ_final(L_read)` and (b) rank/logit of gold
+`ant(q)` vs `syn(q)`. Test queries = 1,003 shared-input words with single-token gold ant+syn (disjoint
+from the Δ words). Steer L∈{6,9,11}, α∈{0,0.5,1,2,4,8}, matched-norm random control on every cell.
+Geography (landmark↔park, 84 queries) geometry-only.
+
+**Files:** NEW `src/eval_scripts/steer_label_to_query.py` (inlined add-hook/eval helpers; baukit only
+inside main). **Two bugs found+fixed during smoke/plots:** (1) hook args must be the exact 2-arg
+`(output, layer_name)` closure — extra default-kwargs get mis-bound positionally by baukit's
+`invoke_with_optional_args` (a `Tensor += tuple` crash); (2) cos-vs-α plot initially read at
+L_read==L_steer where the query-position shift is identically zero → now picks the best-aligned read
+layer; added `fig_cos_shift_by_readlayer_L*.png`.
+
+**Results (n=1003, antonym↔synonym):**
+- **GEOMETRY — strongly positive:** steering at L6 moves the query token along the natural syn→ant
+  direction: mean cos(shift, Δ_final) ≈ **0.71–0.76 at read L8** (α 0.5–2), >0.5 through L15, ~0.36 at
+  L27; **random control ≈ 0.01–0.06 everywhere**. L9/L11 steer: peak cos 0.60/0.48 (read L15). Effect
+  is α-stable in the linear regime (0.5–4) and degrades at α=8.
+- **BEHAVIOR — positive flip:** baseline (α=0) flip rate 0.283, mean logit(ant)−logit(syn) = −1.44.
+  Steering L6: flip **0.595 @ α=4, 0.637 @ α=8**, logit-diff crosses zero at α≈2 and reaches **+1.12**.
+  L9 similar (peak 0.593 @ α=4, overshoot at 8); L11 weaker (0.48). Random control: flip ≤0.35,
+  logit-diff still negative (−0.92) even at α=8 — the effect is direction-specific, not norm.
+- **Geography geometry is much weaker** (cos ~0.13–0.23 vs random ~0; n=84). The landmark↔park
+  "function" contrast at the label token propagates far less — consistent with its tiny Δ-final
+  separation being carried near-entirely by position rather than content in 1-shot? (open question).
+- **Reconciliation with Phase 1:** the *mean* function axis DOES propagate causally label→query
+  (this run), even though the *per-word* label→query map is not linearly predictable (Phase-1 low R²).
+  I.e. the dominant shared axis is causal; the high-dim per-word tail is what defeats the linear map.
+
+**Outputs:** `results/oneshot_steering/<pair>/{per_query.csv, summary.json, fig_cos_shift_vs_alpha_L*.png,
+fig_cos_shift_by_readlayer_L*.png, fig_flip_rate_vs_alpha.png, fig_logitdiff_vs_alpha.png}`.
+
+**Steer-layer sweep extension (L1–5, L12/16/20/24; α∈{0,1,2,4}):** outputs in
+`results/oneshot_steering_early/` and `_late/`; combined profile
+`results/oneshot_steering/fig_steer_layer_profile_L1to24.png`. **A closed causal window [L4, ~L15]:**
+L1–2 null (flip ≈ baseline 0.28, despite max downstream depth); sharp onset L3→L4 (flip 0.34→0.57 @α4,
+cos 0.58→0.72); plateau L4–9 (flip 0.54–0.60, cos 0.61–0.76); decay L11–12 (0.48→0.44); **completely
+dead by L16** (flip 0.282–0.284 = baseline at L16/20/24; cos 0.09→0.00). Natural ‖Δ_label‖ is also tiny
+at L1–2 (0.66–0.94) vs L4 (3.3) — the axis doesn't exist yet. So: the function fingerprint is WRITTEN
+into the label token ~L3–6 and CONSUMED (moved to the query position via attention) before ~L16 —
+matching the CIE top-head band (L8–15) and best read layers (8–15). Caveat: α is scaled to the natural
+per-layer ‖Δ_label‖, so the L1–2 null is "the natural-scale axis doesn't exist," not "no perturbation
+could act there."
+
+**Next (optional):** multi-shot variant (stronger baseline synonym behavior → cleaner flip test);
+steer along top-k SVD directions instead of the mean; geography follow-up on why propagation is weak.
+
+---
+
 ## 2026-06-11 — Stream E: 1-shot paired ICL function geometry (Phase 1, COMPLETE)
 
 **Status:** Ran end-to-end on GPU (RTX PRO 4000 Blackwell). Approved plan:
