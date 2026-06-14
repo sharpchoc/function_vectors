@@ -5,6 +5,33 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-06-14 — Stream F: `ambiguous` task-disambiguation datasets (magnitude | identity)
+
+**Owner:** Coordinator (tmux "magnitude/identity FV"). **Status:** DONE — first pair generated.
+
+**What:** New dataset family for the task-DISAMBIGUATION study (3 ambiguous ICL demos + 1
+differentiating demo + 1 test query). A pair (f1,f2) that AGREE on an overlap region and
+DISAGREE on a differentiator region. First pair: `magnitude` (n→|n|) vs `identity` (n→n).
+- **Overlap** = non-negative integers (|n|==n) → 50 positives (1..50), identical input AND
+  output across both files.
+- **Differentiator** = negative integers → 50 negatives (-1..-50); shared input, output
+  differs (`-5→5` magnitude vs `-5→-5` identity).
+
+**Files:** NEW `dataset_files/generate/create_ambiguous_datasets.py`; NEW folder
+`dataset_files/ambiguous/{magnitude.json,identity.json}` (100 entries each = 50 overlap + 50
+differ). Integers as DIGIT strings (abs is a sign op); switch to words if consistency with
+next/prev_number is wanted.
+
+**Verified:** both files share the same 100 inputs; exactly 50 overlap (non-negative, byte-identical
+output) + 50 differ (negative).
+
+**Next:** (a) more ambiguous pairs from the brainstorm (past-tense|past-participle,
+first|last-letter, capital|largest-city); (b) build the 3+1+1 prompt harness + control arm
+(all-ambiguous 4th) to measure P(f1)−P(f2) swing from a single disambiguating demo.
+**Blockers:** None.
+
+---
+
 ## 2026-06-14 — Stream A: train_selected FVs at top-20 and top-40 heads
 
 **Owner:** Coordinator (tmux "FV top20/40"). **Status:** DONE — 29 FVs each, both runs + organized + metadata.
