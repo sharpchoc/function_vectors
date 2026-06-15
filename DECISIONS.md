@@ -5,6 +5,29 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-06-14 — `ambiguous` task-disambiguation datasets + 3+1+1 eval; FINDING: prior-bias asymmetry
+
+New dataset family `dataset_files/ambiguous/` (generator `create_ambiguous_datasets.py`) for the
+task-DISAMBIGUATION study: pairs (f1,f2) that AGREE on an overlap region and DISAGREE on a
+differentiator region (matched input set; overlap entries byte-identical in both files). Four pairs:
+`magnitude|identity` (50/50), `past_tense|past_participle` (50/50), `first_letter|last_letter`
+(50/50), `capital_city|largest_city` (50 overlap / **35** differ — only ~35 real capital≠largest
+countries exist, ~20 GPT-J-plausible; recall caveat, trim/restrict downstream).
+
+Eval `eval_ambiguous_disambiguation.py` (GPT-J, n=100/task, **cross-prompt batched** greedy gen,
+token-level exact match; `matches_partner` = model emitted the OTHER function's answer). Prompt =
+3 overlap demos + 1 differentiator demo (task's output) + 1 differentiator query.
+
+**FINDING — a single disambiguating demo only redirects GPT-J in the prior-aligned direction.**
+magnitude/identity are ~perfect both ways (.98/1.00). The other pairs are strongly asymmetric: the
+model nails the prior-aligned task and ignores the 4th demo for the anti-prior task, emitting the
+prior answer instead — past_tense .93 vs **past_participle .36** (partner .60); first_letter .97 vs
+**last_letter .04** (partner .89); capital .57 / largest .47 (noisy, recall-limited). So 3 ambiguous
++ 1 disambiguating demos are enough only when the two functions are equally "natural"; a strong prior
+(past-tense over participle, first- over last-letter) is not overcome by one differentiating example.
+The `matches_partner` rate is the key diagnostic (separates "did the other rule" from "neither").
+Next probes: a control arm (4th demo also ambiguous → prior baseline) and k>1 disambiguating demos.
+
 ## 2026-06-14 — `train_selected` FVs now also at top-20 and top-40 heads
 
 The train-pooled (`train_selected`) FVs exist at three head counts: top-10 (original,
@@ -17,6 +40,15 @@ prefixes of the top-40 ranking, so head sets nest (top-10 ⊂ top-20 ⊂ top-40)
 n=10 degeneracy note below: train vs train+test first diverge ~n=11, so the top-20/40 train_selected
 FVs are the right inputs for a non-degenerate train-vs-train+test comparison (rebuild train+test at
 matching n first).
+
+**Held-out steering finding (9 test tasks, `evaluate_heldout_multitask_head_fvs.py --n_top_heads
+{10,20,40}`; combined `results/heldout_multitask_head_eval_nheads_comparison.json`):** adding heads
+helps ZERO-SHOT steering but not ICL-context steering. Best-layer zero-shot+FV mean top-1 rises
+0.376 (n10) → 0.381 (n20) → **0.446 (n40)**, closing most of the gap to task-specific (0.483); some
+tasks jump a lot (capitalize 0.75→0.96, capitalize_first_letter 0.70→0.95). But 10-shot-shuffled+FV
+is flat/down (0.796→0.785→0.780; task-specific 0.812) — with real context present the extra heads add
+nothing. Caveat: at n40 several tasks' best zero-shot layer drifts to L0–1 (larger-norm FV), so verify
+those before citing; the mid-layer L8–13 optimum is stable for antonym/synonym/capitalize_first_letter.
 
 ## 2026-06-11 — FINDING (Phase 2): the mean label-token function axis is CAUSAL — steering it flips synonym→antonym
 

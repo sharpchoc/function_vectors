@@ -22,7 +22,7 @@ import requests
 import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from utils.prompt_utils import load_dataset, word_pairs_to_prompt_data, create_prompt
+from utils.prompt_utils import load_dataset, word_pairs_to_prompt_data, create_prompt, ICLDataset
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 
 
@@ -36,6 +36,13 @@ def parse_args():
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--max_new_tokens", type=int, default=8)
     p.add_argument("--judge_model", type=str, default="gpt-4.1")
+    p.add_argument("--judge_batch_size", type=int, default=50,
+                   help="Pairs per judge request; chunked so large n doesn't overflow one call.")
+    p.add_argument("--all_queries", action="store_true",
+                   help="Use EVERY example in the dataset as a query (max n), drawing the n_shots "
+                        "demos from the other examples (leave-one-out). Overrides --test_split.")
+    p.add_argument("--data_path", type=str, default=None,
+                   help="Explicit dataset json for --all_queries (default: dataset_files/abstractive/<task>.json).")
     p.add_argument("--prefixes", type=json.loads, default={"input": "Q:", "output": "A:", "instructions": ""})
     p.add_argument("--separators", type=json.loads, default={"input": "\n", "output": "\n\n", "instructions": ""})
     p.add_argument("--output_dir", type=Path, default=Path("results/rhyme_judge_eval"))
@@ -65,6 +72,29 @@ def extract_answer(generated_text):
     return m.group(0) if m else ans
 
 
+def _query_demo_iter(args, dataset):
+    """Yield (query_pair, demo_word_pairs) for each query.
+
+    Default: queries from --test_split, demos sampled from train (Stream C behaviour).
+    --all_queries: every example is a query (max n); its demos are sampled leave-one-out
+    from all the OTHER examples, so demos and query stay disjoint with no leakage.
+    """
+    if args.all_queries:
+        full = ICLDataset(args.data_path or f"dataset_files/abstractive/{args.task}.json")
+        n = len(full)
+        print(f"{args.task}: all_queries mode, n={n} (demos drawn leave-one-out, {args.n_shots}-shot)")
+        all_idx = np.arange(n)
+        for j in range(n):
+            pool = all_idx[all_idx != j]
+            demo_idx = np.random.choice(pool, args.n_shots, replace=False)
+            yield full[j], full[demo_idx], n
+    else:
+        n = len(dataset[args.test_split])
+        for j in range(n):
+            demo_idx = np.random.choice(len(dataset["train"]), args.n_shots, replace=False)
+            yield dataset[args.test_split][j], dataset["train"][demo_idx], n
+
+
 def generate_answers(args):
     dataset = load_dataset(args.task, root_data_dir=args.root_data_dir, test_size=0.3, seed=args.seed)
     print(f"{args.task}: split sizes train={len(dataset['train'])} valid={len(dataset['valid'])} test={len(dataset['test'])}")
@@ -75,10 +105,7 @@ def generate_answers(args):
 
     set_seed(args.seed)
     records = []
-    n = len(dataset[args.test_split])
-    for j in range(n):
-        word_pairs = dataset["train"][np.random.choice(len(dataset["train"]), args.n_shots, replace=False)]
-        word_pairs_test = dataset[args.test_split][j]
+    for j, (word_pairs_test, word_pairs, n) in enumerate(_query_demo_iter(args, dataset)):
         prompt_data = word_pairs_to_prompt_data(
             word_pairs, query_target_pair=word_pairs_test, prepend_bos_token=prepend_bos,
             shuffle_labels=False, prefixes=args.prefixes, separators=args.separators,
@@ -110,8 +137,7 @@ JUDGE_SYSTEM = (
 )
 
 
-def judge(records, judge_model, api_key):
-    pairs = [{"input": r["query_input"], "answer": r["generated"]} for r in records]
+def _judge_batch(pairs, judge_model, api_key):
     resp = requests.post(
         "https://api.openai.com/v1/chat/completions",
         headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
@@ -130,10 +156,25 @@ def judge(records, judge_model, api_key):
     content = body["choices"][0]["message"]["content"].strip()
     content = re.sub(r"^```(json)?|```$", "", content, flags=re.M).strip()
     verdicts = json.loads(content)
+    if len(verdicts) != len(pairs):
+        raise ValueError(f"Judge returned {len(verdicts)} verdicts for {len(pairs)} pairs")
+    usage = body.get("usage", {})
+    return verdicts, usage.get("prompt_tokens", 0), usage.get("completion_tokens", 0)
+
+
+def judge(records, judge_model, api_key, batch_size=50):
+    pairs = [{"input": r["query_input"], "answer": r["generated"]} for r in records]
+    verdicts, ptok, ctok = [], 0, 0
+    for i in range(0, len(pairs), batch_size):
+        chunk = pairs[i:i + batch_size]
+        v, p, c = _judge_batch(chunk, judge_model, api_key)
+        verdicts.extend(v)
+        ptok += p
+        ctok += c
+        print(f"  judged pairs {i + 1}-{i + len(chunk)} / {len(pairs)}")
     if len(verdicts) != len(records):
         raise ValueError(f"Judge returned {len(verdicts)} verdicts for {len(records)} pairs")
-    usage = body.get("usage", {})
-    print(f"judge: {judge_model}, {usage.get('prompt_tokens')}+{usage.get('completion_tokens')} tokens")
+    print(f"judge: {judge_model}, {ptok}+{ctok} tokens over {((len(pairs) - 1) // batch_size) + 1} request(s)")
     return verdicts
 
 
@@ -151,7 +192,7 @@ def main():
         print(f"Wrote {gen_path}")
 
     api_key = get_openai_key()
-    verdicts = judge(records, args.judge_model, api_key)
+    verdicts = judge(records, args.judge_model, api_key, batch_size=args.judge_batch_size)
     for r, v in zip(records, verdicts):
         r["judge_rhymes"] = bool(v["rhymes"])
         r["exact_match_gold"] = r["generated"].strip().lower() == r["gold_output"].strip().lower()

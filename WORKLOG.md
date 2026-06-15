@@ -5,30 +5,404 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
-## 2026-06-14 — Stream F: `ambiguous` task-disambiguation datasets (magnitude | identity)
+## 2026-06-15 — Stream E follow-up: stable-rank + pairwise-cos per layer, all vs GPT-4-correct
 
-**Owner:** Coordinator (tmux "magnitude/identity FV"). **Status:** DONE — first pair generated.
+**Owner:** Coordinator (tmux "oneshot-geometry"). **Status:** DONE.
+
+**What:** `src/eval_scripts/plot_stable_rank_by_layer_byjudge.py`. Per layer, per token position, per task
+pair: stable rank (Σσ²/σ₁², unit-normalized rows) and mean pairwise cosine of the stacked
+difference-vector matrix D=act(f1)−act(f2). 2 figures (label, final), each [stable rank | mean cos],
+with per-pair lines × {all (solid), GPT-4-correct-both-functions (dashed)}. Computed on the CORRECTED
+graded capture (shared-input query). Overwrote `fig_compare_{label,final}.png` in BOTH
+`results/oneshot_paired_analysis/` and `results/oneshot_paired_diff_geometry/` (the latter's old 4-pair
+shared-OUTPUT versions superseded; its CSVs left as provenance). Series json in oneshot_paired_analysis.
+
+**Stable rank, label token (all / correct):** antonym_synonym L9 4.85/3.58, L11 5.38/3.83;
+next_number_prev_number L9 1.55/1.42, L11 1.61/1.47. Dips mid-layer (~L9) both pairs; numbers ≈ rank-1
+(one dominant ±1 axis), words higher (~5–9). Mean-cos panel is the mirror (peaks mid-layer); correct >
+all everywhere.
+
+**CAVEAT (flagged):** stable rank depends on #rows W; correct subset has far fewer words (22 vs 544;
+105 vs 198) → stable rank is biased DOWN for the correct line, so "correct < all" in the left panel is
+partly a sample-size artifact. The mean-pairwise-cosine panel is W-robust and IS the trustworthy
+all-vs-correct signal (correct more co-directional). Fix if needed: size-matched subsampling of all-words.
+**Blockers:** None.
+
+---
+
+## 2026-06-15 — Stream E follow-up: pairwise diff-vector cosine histograms by task pair & judge
+
+**Owner:** Coordinator (tmux "oneshot-geometry"). **Status:** DONE.
+
+**What:** `src/eval_scripts/plot_pairwise_cos_hist_byjudge.py`. Histograms of pairwise cosine among the
+per-word function-difference vectors D = act(f1) − act(f2) (unit-normalized), per TASK PAIR and per
+token position. 4 panels: rows {antonym_synonym, next_number_prev_number} × cols {label, final query}.
+Each overlays ALL words (grey) vs the GPT-4-correct subset (green) = words judged top-1 correct under
+BOTH functions of the pair. Reads graded+tagged captures. Output
+`results/oneshot_paired_analysis/fig_pairwise_diffcos_hist_L11_byjudge.png` (+ stats json).
+
+**Mean pairwise cos (L11): all / correct (n_correct_both):**
+- antonym_synonym label 0.152/0.203, final 0.116/0.174 (n=22)
+- next_number_prev_number label 0.593/0.671, final 0.452/0.523 (n=105)
+
+**FINDINGS:** (1) numbers ≫ words — the ±1 difference vectors are strongly co-directional (~0.5–0.6)
+vs the high-dim word-meaning contrast (~0.12–0.15); echoes the stable-rank result (numbers ≈ rank-1).
+(2) label > final in both pairs (function-difference more coherent at the demo label). (3) correct >
+all in EVERY panel — correctly-handled words have more consistent function-difference directions
+(caveat: antonym_synonym both-correct n=22, noisier). "correct" = both functions judge_top1 (can switch
+to either/per-function). **Next:** geometry on judge-correct subsets. **Blockers:** None.
+
+---
+
+## 2026-06-15 — Stream E follow-up: cosine scatter (label vs final) colored by GPT-4 judge
+
+**Owner:** Coordinator (tmux "oneshot-geometry"). **Status:** DONE.
+
+**What:** Remade the cosine scatter on the CORRECTED graded capture (shared-input query, judge-tagged).
+New `src/eval_scripts/plot_cos_label_vs_final_byjudge.py`. One point per shared word (n=544): x =
+cos(antonym act, synonym act) at the demo LABEL token, y = same cos at the FINAL query token (both
+positions already captured). Colored 4 ways by GPT-4 judge_top1 per function: both correct (22),
+antonym-only (128), synonym-only (56), neither (338) — reconciles with judge totals (ant 150, syn 78).
+Output overwrites `results/oneshot_paired_analysis/antonym_synonym/fig_cos_label_vs_final_L11_byjudge.png`
+(+ points `.json`).
+
+**FINDINGS (L11):** (1) ALL points above y=x — f1/f2 activations are MORE aligned at the final query
+token (mean cos ~0.95) than at the label token (~0.89); the two functions converge by the query
+position. (2) Judge correctness does NOT separate in this cosine space — correct points are
+interspersed, per-category means near-identical (both .88/.95, neither .89/.96). So f1–f2 representational
+similarity does not predict answer correctness. **Next:** same plot for numbers if wanted; geometry on
+judge-correct subset. **Blockers:** None.
+
+---
+
+## 2026-06-15 — Stream E follow-up: SAME pipeline for next_number|prev_number
+
+**Owner:** Coordinator (tmux "oneshot-geometry"). **Status:** DONE.
+
+**What:** Replicated the corrected-capture + grade + GPT-4 judge + activation-tag pipeline for the
+`next_number_prev_number` pair (number WORDS). Generalized the scripts:
+- `capture_and_grade_oneshot_paired.py`: added the pair to TASK_PAIRS + `--allow_multitoken_label`
+  (number words are mostly multi-token: only 26/198 shared outputs are single-token). With it, the
+  demo-label pool = all 198 shared outputs and the source is the LAST label token (identical across
+  f1/f2); `expected_src_id` now compares the LAST token of " "+w. Query from shared INPUT (200, gold
+  under both). → 198 paired units, `results/oneshot_paired_graded/next_number_prev_number/` (2 shards,
+  792 rows).
+- `judge_oneshot_paired.py`: added `next_number`/`prev_number` judge prompts (answer denotes input±1 in
+  ANY notation; SAME number doesn't count) + multi-word answer extraction (`one hundred one`, not just
+  the first word). Greedy-generates the FULL answer (max_new_tokens=8).
+
+**Results (n=198/task):**
+| task | GPT-4 judge top-1 (full answer) | first-token top-1 | gold exact | copied |
+|---|---|---|---|---|
+| next_number | **0.818** (162/198) | 0.894 | 0.813 | 24 |
+| prev_number | **0.621** (123/198) | 0.859 | 0.621 | 27 |
+
+**KEY DIFFERENCE vs antonym/synonym:** here the GPT-4 judge is LOWER than first-token top-1 (inverted)
+because **first-token OVER-counts for numbers** — gold "one hundred one" shares first token "one" with a
+wrong "one hundred"/"one hundred two", and the copy-the-query cases (q=fifty, gold=fifty-one, model=fifty)
+score first-token-correct but are wrong. So for numbers you MUST grade the full multi-token answer (judge
+≈ gold-exact-match, 0.818/0.621); first-token is unreliable here. next > prev (GPT-J better at +1 than −1).
+
+**Tagged** 792/792 activation rows + 396 grading rows with `judge_top1` (via
+`tag_oneshot_activations_judge.py`). Activations filter by `top1/2/3` (first-token) and `judge_top1`
+(GPT-4 full-answer). Both pairs now share the same on-disk schema. **Next:** geometry on judge-correct
+subsets. **Blockers:** None.
+
+---
+
+## 2026-06-15 — Stream E follow-up: GPT-4-judged top-1 (antonym+synonym) + activation tagging
+
+**Owner:** Coordinator (tmux "oneshot-geometry"). **Status:** DONE.
+
+**What:** First-token exact-match undercounts open-ended tasks (many valid antonyms/synonyms). Judged
+GPT-J's actual greedy top-1 answer with GPT-4.1 for BOTH tasks. `src/eval_scripts/judge_oneshot_paired.py`
+(supersedes the earlier synonym-only script; one model load, `--function_tasks antonym synonym`):
+rebuilds the EXACT prompts from the corrected capture (`results/oneshot_paired_graded/antonym_synonym/
+grading.json` — shared-input query), greedy-generates the top-1 word, asks GPT-4.1 if it's a valid
+antonym/synonym. **Both judge prompts explicitly state the SAME WORD (or cap/plural/inflection) does
+NOT count** (per user); also reject the opposite relation, non-words, topical associates. Verdict key
+`"correct"`. Key from `/proc/1/environ`, batched 50/request.
+
+**Results (n=544/task):**
+| task | GPT-4 judge top-1 | first-token top-1 | gold exact | copied query |
+|---|---|---|---|---|
+| antonym | **0.276** (150/544) | 0.232 | 0.232 | 263 (0.48) |
+| synonym | **0.143** (78/544) | 0.066 | 0.063 | 339 (0.62) |
+
+**FINDING:** judging the real answer lifts both (antonym +.044, synonym >2×: .143 vs .066) — first-token
+scoring undercounts, much more so for synonym (many valid alternatives). The dominant failure is
+**copying the query word** (antonym 48%, synonym 62%) — in 1-shot with a single `q→w` demo GPT-J largely
+echoes the query; all copies judged false (per same-word rule). Judge accepts non-gold answers
+(synonym fearless→brave; gold "daring"). Outputs `results/oneshot_{antonym,synonym}_judge/judged_results.json`.
+
+**ACTIVATION TAGGING:** `src/eval_scripts/tag_oneshot_activations_judge.py` stamped a `judge_top1` bool
+into EVERY activation row's metadata (match key (function_task, output_word, query_word); both source &
+target roles) in `results/oneshot_paired_graded/antonym_synonym/shard_*.pt` AND grading.json — 2176/2176
+rows tagged. So activations now filter three ways: `top1/2/3` (first-token rank) and `judge_top1` (GPT-4
+semantic). judge_top1 True rows: antonym 300 (=150 prompts×2 roles), synonym 156 (=78×2).
+**Next:** geometry on the new capture; compare stable-rank/cosine on judge_top1-correct subsets. **Blockers:** None.
+
+---
+
+## 2026-06-15 — Stream D: GPT-4-judged rhyme eval scaled to ALL 200 pairs
+
+**Owner:** Coordinator. **Status:** DONE.
+
+**What:** Re-ran the GPT-4.1-judged rhyme eval (Stream C, was n=42 test split) over the FULL
+200-pair dataset. Added `--all_queries` mode to `src/eval_scripts/judge_rhyme_generations.py`:
+each of the 200 examples is the query in turn, its 10-shot ICL demos drawn randomly leave-one-out
+from the other 199 (disjoint, no leakage). Also chunked the judge into batches (`--judge_batch_size`,
+default 50) so large n doesn't overflow one request. Default Stream-C path unchanged.
+
+**Command:**
+`python src/eval_scripts/judge_rhyme_generations.py --all_queries --output_dir results/rhyme_judge_eval_all200 --judge_batch_size 50`
+
+**Result (n=200):** judged-rhyme accuracy **5/200 = 0.025**; gold exact-match **2/200 = 0.010**;
+copied the input verbatim **94/200 = 0.47**. The 5 judge-accepted rhymes: array→delay, ban→man,
+catch→attach, command→band, cry→eye (only the two exact-match ones also match gold). Confirms the
+n=42 finding at full scale: GPT-J essentially cannot rhyme via 10-shot ICL — ~half the time it just
+echoes the query word; near-zero true rhymes. Judge ≈ gold (both ~0–2.5%), so the gold-token metric
+was NOT understating competence.
+
+**Files:** added flags to `judge_rhyme_generations.py`; artifacts `results/rhyme_judge_eval_all200/`
+(generations.json, judged_results.json, run.log). Deleted the superseded n=42 `results/rhyme_judge_eval/`.
+
+---
+
+## 2026-06-15 — Stream E follow-up: CORRECTED paired 1-shot capture (shared-INPUT query) + grading
+
+**Owner:** Coordinator (tmux "oneshot-geometry"). **Status:** DONE (activations + grading).
+
+**Why the redo:** the original Stream-E capture (`capture_oneshot_paired.py`) sampled the QUERY from
+the shared OUTPUT-word pool (just a token to read activations from). That makes the query ill-posed —
+only 464/389 of 544 queries even had a gold antonym/synonym (50 had neither; an earlier scoring pass,
+`score_oneshot_paired_prompts.py`, got ant .280/.431, syn .113/.270 over that biased 853-prompt
+subset). CORRECTED: query is now drawn from the shared INPUT space (words that are a valid input under
+BOTH tasks → gold defined under both). Demo label `w` still from shared OUTPUT (paired design unchanged).
+
+**Shared-space sizes (antonym/synonym):** shared INPUT = **1224** (all single-token), shared OUTPUT =
+555 (544 single-token, used for the demo label). Input vocab > output vocab for both tasks.
+
+**New script** `src/eval_scripts/capture_and_grade_oneshot_paired.py` (supersedes
+`capture_oneshot_paired.py` for graded runs): captures source(demo-label)+target(final-query)
+activations AND grades each prompt in-line (one extra forward; **first-token rank**, top-k = rank<k —
+per user, first-token only, no multi-token gen). The grade (`gold_first_tok_rank`, `top1/2/3`) is
+written into EVERY activation row's metadata → activations filter directly to top-1/2/3-correct.
+
+**DELETED old output-space-query run:** `results/oneshot_paired/antonym_synonym/`,
+`results/oneshot_paired_analysis/antonym_synonym/` (+ its stale top-level `fig_*.png`),
+`results/oneshot_paired_scored/antonym_synonym/`. `landmark_park` + other pairs untouched.
+
+**Outputs** `results/oneshot_paired_graded/antonym_synonym/`: 6 shards, **2176 rows** (544×2 funcs×2
+roles), `index.json`, `grading.json` (per-prompt + model top-1 token), `scores.json`.
+
+**Results (1-shot, first-token, all 544/task now scorable):**
+| task | n | top1 | top2 | top3 |
+|---|---|---|---|---|
+| antonym | 544 | 0.232 | 0.324 | 0.401 |
+| synonym | 544 | 0.066 | 0.195 | 0.263 |
+
+LOWER than the old output-space-query slice (ant .280/.431, syn .113/.270) — expected: that slice was
+an easier/biased subset (queries that happen to be task outputs, gold-having only). These are the
+honest well-posed-query numbers. antonym ≫ synonym persists; synonym ~triples top1→top2 (many valid
+synonyms, single gold first-token misses). **Next:** re-run geometry (`analyze_oneshot_geometry.py`)
+on the new capture; optionally compare stable-rank/cosine when filtered to top-1-correct prompts.
+**Blockers:** None.
+
+---
+
+## 2026-06-15 — Stream G: task-specific + train-pooled FVs & steering for 4 ambiguous tasks
+
+**Owner:** Coordinator (tmux "magnitude/identity FV"). **Status:** RUNNING (pipeline launched).
+
+**What:** For the 4 chosen ambiguous tasks (`magnitude`, `identity`, `count_vowels`,
+`count_consonants`): (1) task-specific FVs (own CIE top-10) + (2) train-pooled-head FVs at top-10/20/40
+(reuse `results/multitask_aie_heads/multitask_top_aie_heads.pt` = original 20-train pool), then steering
+eval (per-layer zero-shot + 10-shot-shuffled) for all.
+
+**Setup:** symlinked the 4 JSONs into `dataset_files/abstractive/` (loader hardcodes abstractive/
+extractive; same precedent as paired_tasks). NEW manifest `task_splits/ambiguous_4.json`. NEW driver
+`src/eval_scripts/run_ambiguous_fv_pipeline.sh`. Installed `bitsandbytes` (intervention_utils imports
+it at module top even though the 4-bit path is unused in fp16).
+
+**GPU/parallelism:** single 24GB card fits ONE GPT-J fp16 (~12GB) → GPU stages serialize. Pipeline:
+stage1 = compute_function_vectors (GPU, all 4 tasks, batch 16); stage2 = 3× top-N builds on **CPU in
+parallel** (out_proj sums, overlap GPU); stage3 = evaluate_heldout ×{10,20,40} (GPU serial; also
+re-evals the task-specific FV each run). Logs in `results/_ambiguous_logs/`.
+
+**CAVEAT (expected):** count_vowels/count_consonants have low ICL accuracy (~0.3 first-token) so the
+correct-ICL filter leaves few prompts → low-N/noisy FVs (cf. rhyme/geo low-N). magnitude/identity are
+high-acc. Outputs: `results/gptj_fv/<task>/` (task-specific), `results/gptj_fv_multitask_top{10,20,40}_
+ambiguous/` (train-pooled), `results/heldout_ambiguous_eval_top{10,20,40}/` (steering).
+
+**DONE (with OOM hiccup).** Stage-1 task-specific FVs built for all 4 (count_* survived the filter:
+n_filtered_test magnitude/identity=21, count_vowels/count_consonants=**6** → low-N as predicted).
+OOM during the run: the 3 parallel CPU model-loads (~12GB RAM each) + GPU steering load tripped the
+OOM-killer (killed steer n=10 + 2 builds). **FIX: re-ran the missing pieces SEQUENTIALLY** (no parallel
+model loads) — `results/_ambiguous_logs/rerun_missing.sh`. All complete now: steering top-10/20/40 (4
+tasks each), persisted train-pooled FVs top-10/20/40 (4 each), task-specific FVs (4).
+**Lesson:** GPT-J CPU loads are ~12GB RAM each; don't run 3 in parallel alongside a GPU load on this box.
+
+**STEERING RESULTS (best-layer zero-shot FV top-1; 10-shot-shuffled in parens) —
+`summarize_ambiguous_steering.py`:**
+
+| task | n_test | task-specific | train top10 | top20 | top40 |
+|---|---|---|---|---|---|
+| magnitude | 21 | 0.62@L12 (0.95) | 0.57@L0 (0.90) | 0.57@L0 (0.95) | 0.57@L0 (0.95) |
+| identity | 21 | 1.00@L0 (1.00) | 1.00@L0 (1.00) | 1.00@L0 (1.00) | 1.00@L0 (1.00) |
+| count_vowels | 6 | 0.00 (0.83) | 0.00 (0.67) | 0.00 (0.67) | 0.00 (0.83) |
+| count_consonants | 6 | 0.17@L14 (0.83) | 0.00 (0.83) | 0.00 (0.83) | 0.00 (0.83) |
+
+**CAVEATS / FINDINGS:**
+- **By-layer curves are nearly FLAT** (magnitude ≈0.57=12/21 at every layer, identity 1.0 everywhere),
+  argmax often at **L0** (large-norm embedding artifact). → the zero-shot numbers largely reflect BASE
+  zero-shot behavior, NOT a clean FV effect. Need the **no-FV baseline** to isolate the causal lift
+  (evaluate_heldout doesn't compute it).
+- **Zero-shot FV steering is weak/absent for these tasks**: magnitude flat ~0.57, count ≈0. Only the
+  10-shot-shuffled (context present) numbers are high (0.83–1.0).
+- **task-specific ≈ train-pooled, and top-10≈20≈40** — adding heads barely changes these (contrast the
+  29-task finding where n40 helped zero-shot). identity is trivially 1.0 (copy).
+- **count_* are low-N (n_test=6) + ~0 zero-shot** — competence/low-N caveat confirmed.
+
+**Next:** run `evaluate_function_vector.py --compute_baseline` for the 4 tasks to get the no-FV
+zero-shot/10-shot baselines → report the FV's causal steering DELTA (the meaningful metric).
+**Blockers:** None.
+
+---
+
+## 2026-06-14 — Stream F: `ambiguous` task-disambiguation datasets (4 pairs)
+
+**Owner:** Coordinator (tmux "magnitude/identity FV"). **Status:** DONE — all 4 brainstormed pairs generated.
 
 **What:** New dataset family for the task-DISAMBIGUATION study (3 ambiguous ICL demos + 1
-differentiating demo + 1 test query). A pair (f1,f2) that AGREE on an overlap region and
-DISAGREE on a differentiator region. First pair: `magnitude` (n→|n|) vs `identity` (n→n).
-- **Overlap** = non-negative integers (|n|==n) → 50 positives (1..50), identical input AND
-  output across both files.
-- **Differentiator** = negative integers → 50 negatives (-1..-50); shared input, output
-  differs (`-5→5` magnitude vs `-5→-5` identity).
+differentiating demo + 1 test query). Each pair (f1,f2) AGREES on an overlap region and
+DISAGREES on a differentiator region; the two task files share the SAME input set, overlap
+entries are byte-identical (input AND output), differ entries share input / split output.
 
-**Files:** NEW `dataset_files/generate/create_ambiguous_datasets.py`; NEW folder
-`dataset_files/ambiguous/{magnitude.json,identity.json}` (100 entries each = 50 overlap + 50
-differ). Integers as DIGIT strings (abs is a sign op); switch to words if consistency with
-next/prev_number is wanted.
+**Pairs (`dataset_files/ambiguous/`):**
+- `magnitude.json | identity.json` — n→|n| vs n→n. Overlap = non-neg ints (1..50); differ =
+  negatives (-1..-50). **50/50.** Digits ("-5"); switch to words for next/prev_number consistency.
+- `past_tense.json | past_participle.json` — verb→past vs verb→participle. Overlap = 50 regular
+  verbs (past==participle); differ = 50 irregulars (ate/eaten…). **50/50.** Strongest pair (rich O+D,
+  known priors).
+- `first_letter.json | last_letter.json` — word→word[0] vs word→word[-1]. Overlap = 50 words with
+  first==last char; differ = 50 others. **50/50.** Vocab sourced from repo synonym+antonym inputs
+  (4054 words; 184 first==last available), seed=0.
+- `capital_city.json | largest_city.json` — country→capital vs →largest. Overlap = 50 (capital IS
+  largest); differ = **35** (capital≠largest). **50/35, NOT 50/50** — only ~35 real capital≠largest
+  countries exist worldwide and only ~20 are GPT-J-plausible (Naypyidaw/Gitega/Ngerulmud etc. are
+  low-freq). RECALL CAVEAT, cf. the geo/element low-N pairs. Trim overlap→35 for a balanced 35/35,
+  or restrict differ to the ~20 famous head of the list, in the eval.
 
-**Verified:** both files share the same 100 inputs; exactly 50 overlap (non-negative, byte-identical
-output) + 50 differ (negative).
+**Files:** NEW `dataset_files/generate/create_ambiguous_datasets.py` (one generator, all 4 pairs);
+NEW folder `dataset_files/ambiguous/` (8 JSONs).
 
-**Next:** (a) more ambiguous pairs from the brainstorm (past-tense|past-participle,
-first|last-letter, capital|largest-city); (b) build the 3+1+1 prompt harness + control arm
-(all-ambiguous 4th) to measure P(f1)−P(f2) swing from a single disambiguating demo.
-**Blockers:** None.
+**Verified:** all pairs share matched inputs; overlap/differ counts as above; differ outputs split
+correctly (eat→ate/eaten; vulgar→v/r; United States→Washington/New York).
+
+**3+1+1 EVAL DONE (n=100/task, cross-prompt batched greedy, token-level exact match):** new
+`src/eval_scripts/eval_ambiguous_disambiguation.py` (batched generate; reuses
+`word_pairs_to_prompt_data`/`create_prompt`; `matches_partner` diagnostic = model produced the OTHER
+function's answer). Each prompt = 3 overlap demos + 1 differentiator demo (task's output) + 1
+differentiator query (seed 42, paired draws). Results → `results/ambiguous_disambiguation/eval_summary.json`.
+
+| task | acc | partner | neither |
+|---|---|---|---|
+| magnitude | 0.98 | 0.02 | 0.00 |
+| identity | 1.00 | 0.00 | 0.00 |
+| past_tense | 0.93 | 0.03 | 0.04 |
+| past_participle | **0.36** | 0.60 | 0.04 |
+| first_letter | 0.97 | 0.01 | 0.02 |
+| last_letter | **0.04** | 0.89 | 0.07 |
+| capital_city | 0.57 | 0.37 | 0.06 |
+| largest_city | 0.47 | 0.45 | 0.08 |
+
+**FINDING — strong within-pair PRIOR-BIAS asymmetry; one disambiguating demo only redirects the
+model in the "easy" direction.** magnitude/identity ~perfect both ways. But the other pairs are
+lopsided: the model nails the *prior-aligned* task (past_tense .93, first_letter .97) and largely
+ignores the 4th demo for the *anti-prior* task, instead emitting the prior answer (past_participle
+.36 with partner .60; last_letter .04 with partner .89). capital/largest both ~chance-ish and noisy
+(recall-limited differ tail + capital↔largest confusion). Spot-checks confirm scoring is correct
+(last_letter gold 'r' → pred 'f' = first letter; past_participle gold 'shown' → pred 'showed').
+
+**3+2+1 EVAL (n_diff_demos=2; `--n_diff_demos 2`):** → `eval_summary_3plus2plus1.json`. A second
+disambiguating demo helps the anti-prior side only partially, and not at all for the strongest prior:
+
+| task | 3+1+1 acc | 3+2+1 acc | partner (3+2+1) |
+|---|---|---|---|
+| magnitude | 0.98 | 1.00 | 0.00 |
+| identity | 1.00 | 1.00 | 0.00 |
+| past_tense | 0.93 | 0.98 | 0.02 |
+| past_participle | 0.36 | **0.51** | 0.49 |
+| first_letter | 0.97 | 0.97 | 0.00 |
+| last_letter | 0.04 | **0.02** | 0.88 |
+| capital_city | 0.57 | 0.60 | 0.37 |
+| largest_city | 0.47 | 0.46 | 0.47 |
+
+**FINDING (k=2 vs k=1 differentiator demos):** the prior-aligned tasks saturate (past_tense→.98,
+magnitude→1.0). past_participle improves +.15 (.36→.51, now ~coin-flip vs its prior). **last_letter
+does NOT budge (.04→.02, partner .88)** — two demos still can't override the first-letter prior.
+capital/largest essentially flat (recall-bound). So a 2nd disambiguating example helps moderate
+priors but not the dominant first-letter one; harness now parametrized (`--n_shared_demos`,
+`--n_diff_demos`) for a k-sweep.
+
+**3 MORE PAIRS ADDED (2026-06-14, all 50/50):** `round|truncate` (1-dp decimals; overlap frac<.5,
+differ frac≥.5), `first_digit|last_digit` (overlap first==last digit; numeric analog of the
+first/last-letter prior diagnostic), `american|british` (input=US spelling, american=identity /
+british=US→UK convert; overlap=invariant words, differ=50 US/UK variants). All wired into
+`eval_ambiguous_disambiguation.py` PAIRS. Not yet eval'd.
+
+**+ reverse|identity_word (50/50):** overlap = 50 palindromes (reverse==identity), differ = 50
+ordinary 3–5 letter words (`prose→esorp` vs `prose`). Partner named `identity_word.json` to avoid
+clashing with the numeric `identity.json`. Wired into eval PAIRS. Prediction: reversal is hard for
+BPE → expect a *competence* failure (high `neither`) not a *prior* failure (high `partner`).
+
+**+ count_vowels|count_consonants (50/50):** overlap = 50 words with #vowels==#consonants
+(`able` 2/2), differ = 50 unequal (`silver` 2/4). Vowels=aeiou. Counting task → expect
+competence-limited (high `neither`), noisy (small int output space); overlap output also = len/2 so
+consistent with several counting rules. Wired into eval PAIRS. (8 pairs total now.)
+
+**3+1+1 EVAL — ALL 8 PAIRS (2026-06-14).** Two scorings, n=100/task, cross-prompt batched:
+exact-match (generation) → `eval_summary_3plus1plus1_all.json`; first-answer-token top-1/top-2
+(single forward pass, `--scoring topk`) → `eval_topk_3plus1plus1.json`. Added `batched_topk`/
+`score_topk` + `--scoring {topk,exact}` to the harness.
+
+| task | top1 | top2 | partner@1 |
+|---|---|---|---|
+| magnitude | 0.98 | 0.99 | 0.02 |
+| identity | 1.00 | 1.00 | 0.00 |
+| past_tense | 0.93 | 0.95 | 0.05 |
+| past_participle | 0.38 | **0.92** | 0.60 |
+| first_letter | 0.97 | 0.99 | 0.01 |
+| last_letter | 0.04 | **0.18** | 0.89 |
+| capital_city | 0.60 | 0.85 | 0.38 |
+| largest_city | 0.48 | 0.76 | 0.48 |
+| round | 0.05 | **0.93** | 0.95 |
+| truncate | 1.00 | 1.00 | 0.00 |
+| first_digit | 0.77 | 0.83 | 0.06 |
+| last_digit | 0.16 | **0.37** | 0.51 |
+| american | 1.00 | 1.00 | 0.15 |
+| british | 0.43 | **0.92** | 0.69 |
+| reverse | 0.00 | 0.01 | 0.66 |
+| identity_word | 1.00 | 1.00 | 0.00 |
+| count_vowels | 0.31 | 0.57 | 0.11 |
+| count_consonants | 0.29 | 0.52 | 0.22 |
+
+**FINDINGS (top-2 separates the failure modes):**
+- **magnitude/identity** still the only pair solid in BOTH directions (.98/1.00).
+- **PRIOR-BIAS pairs (anti-prior side rank-2, not absent):** past_participle .38→**.92**, round .05→**.93**,
+  british .43→**.92** all jump at top-2 → the disambiguating demo IS registered (gold is the #2 token)
+  but the prior owns #1 (partner@1 .60/.95/.69). The model "knows" the right answer, prior overrides.
+- **STRONG-PRIOR pairs (anti-prior side genuinely suppressed):** last_letter .04→.18, last_digit
+  .16→.37 — gold not even rank 2. First-position prior is real for BOTH letters and digits, weaker
+  for digits (last_digit top2 .37 vs last_letter .18).
+- **COMPETENCE failure:** reverse .00/.01 (can't emit the reversed string at all — partner .66, neither
+  high in exact-match); count_vowels/consonants ~.3/.55 (counting hard) — distinct from prior bias.
+- **RECALL:** capital/largest ~.5–.6 top1, .76–.85 top2 (noisy, model-known-entity bound).
+- **american top1=1.0 but partner@1=.15** (identity side occasionally emits the UK form — interesting).
+
+**Next:** 3+2+1 top-k; k-sweep n_diff_demos 0..5 (k=0 control); non-numeric symmetric pairs
+(AND|OR, earlier|later, alphabetical-order). **Blockers:** None.
 
 ---
 
@@ -58,6 +432,34 @@ prefixes of the top-40 list (same ranking truncated), so top-10 ⊂ top-20 ⊂ t
 
 **Next:** optional — held-out steering eval (`evaluate_heldout_multitask_head_fvs.py`) to see whether
 n=20/40 transfers better than n=10. **Blockers:** None.
+
+**UPDATE 2026-06-15 (steering eval done):** ran `evaluate_heldout_multitask_head_fvs.py --n_top_heads
+{20,40} --overwrite` (9 held-out test tasks, seed 42, full 28-layer sweep, zero-shot+FV and
+10-shot-shuffled+FV; cached `fs_results_layer_sweep.json` filters → no baseline recompute). Logs
+`results/_heldout_steering_logs/`.
+
+**Consolidated into ONE folder** `results/heldout_multitask_head_eval_nheads/`:
+- `top20/`, `top40/` — the full per-task result JSONs (moved from the old `_top20`/`_top40` dirs).
+- `<task>_effectiveness_by_layer_nheads.png` (9) + `AGGREGATE_…png` — combined plots overlaying
+  multitask n=10/20/40 + task-specific reference, both conditions. (n=10 data still lives in the
+  pre-existing baseline `results/heldout_multitask_head_eval/`.)
+- `nheads_comparison.json` — best-layer comparison table.
+- NEW plotting script `src/eval_scripts/plot_nheads_steering_comparison.py` (pure; re-renders from
+  the JSONs). Redundant per-folder `*_effectiveness_by_layer.png` were deleted (superseded).
+
+**FINDING — more heads helps ZERO-SHOT steering, neutral/slightly-hurts with ICL context:**
+- best-layer **zero-shot+FV** mean top-1: n10 **0.376** → n20 **0.381** → n40 **0.446** (task-specific 0.483).
+  More heads recovers most of the gap to task-specific. Big n40 winners: capitalize 0.75→0.96,
+  capitalize_first_letter 0.70→0.95; product-company recovers at n40 (0.22→0.24 after dipping to 0.12 @n20).
+  word_length stays 0.00 at every n (FV can't drive it zero-shot).
+- best-layer **10-shot-shuffled+FV** mean: n10 **0.796** → n20 0.785 → n40 0.780 (task-specific 0.812).
+  Flat/slightly down — with real ICL context already present, extra heads add nothing.
+- **Best zero-shot layer drifts EARLIER as n grows** for some tasks (capitalize n10 L13→n40 L1;
+  country-currency L11→L1; product-company L11→L0). The larger-norm 40-head FV scores best injected
+  very early — sanity-check before over-reading those cells; the mid-layer (L8–13) optimum is stable
+  for antonym/synonym/capitalize_first_letter across all n.
+- Takeaway: for zero-shot steering, n=40 train-pooled heads clearly beats n=10; for ICL-context
+  steering, n=10 is already saturated.
 
 ---
 
