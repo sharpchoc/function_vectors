@@ -5,6 +5,159 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-06-18 — variable-ICL FV variant capped at max 4 demos (top-40); zero-shot steering cost is small
+
+New `train_varicl` sibling that caps the per-prompt random ICL count at **1–4 demos** (`--max_shots 4`)
+instead of 1–10, top-40 heads pooled over the 20 train tasks. Single behavioral change; isolated roots
+so the original max-10 artifacts are untouched. NEW scripts: `src/eval_scripts/run_varicl_max4_pipeline.sh`
+(build driver — handles the stage-2 gotcha: test-task activations computed to `results/_varicl_testtasks_max4/`
+then copied into the main root before the 29-task FV build) and `src/eval_scripts/evaluate_heldout_varicl_max4.py`
+(steering eval + 3-series plot; reuses `evaluate_fv`/`get_filter_set`/`summarize_results`, reads the
+max-10 N=40 curve from `results/heldout_varicl_nheads_sweep/<task>/nheads_sweep_by_layer.json` and the
+task-specific curve from `results/heldout_multitask_head_eval/<task>/comparison_summary.json` — no
+recompute of those lines, no no-FV-baseline recompute). Artifact roots:
+`results/multitask_aie_heads_varicl_max4/`, `results/function_vectors/gpt-j/train_varicl_max4_top40/`
+(29 FVs, n_top_heads=40), `results/heldout_varicl_max4_top40/` (9 per-task PNGs + AGGREGATE + summaries).
+
+**FINDING:** shrinking the extraction ICL window to ≤4 demos costs a little **zero-shot** steering
+(mean best-layer top-1 0.353 vs max-10's 0.400; task-specific 0.483) and **~nothing few-shot**
+(10-shot-shuffled 0.777 vs 0.784). Same mid-layer (L6–12) causal window, max-4 a notch below max-10
+throughout; no task collapses. So the variable-ICL FV is fairly robust to a shorter extraction window —
+context at inference time compensates almost entirely, and even zero-shot the FV is only modestly weaker.
+The top-40 pooled head set is the canonical varicl ranking ((9,14)(15,5)(8,1)…), so the shot-cap changes
+the *mean activations* (and thus FV magnitude/direction) more than the head *selection*.
+
+**PCA-ridge activation→FV heatmap (k_act=16, k_fv=16) on the max-4 FVs:** reran
+`regress_activation_to_fv_pca_ridge.py` (×10 ICL shards) + `merge_fulldim_ridge_results.py` with the
+FV target re-pointed to `train_varicl_max4_top40` (cached residual activations in
+`results/residual_activations/` are FV-target-agnostic → only `--fv_root`/`--output_dir` change). Out:
+`results/pca_ridge_activation_to_fv_varicl_max4_top40/`. Same canonical mid-layer (L9–15) bowl; best
+cell icl09/pre @ L13 = 0.1596 (FV-PC floor 0.1433). **Compare via gap-above-floor** (the
+FV-target-agnostic regression-quality metric, since each FV set has its own 16-PC variance floor):
+train_selected 0.0155, varicl_max4 0.0162, varicl_top40 (max10) 0.0214 → the max-4 FVs are as
+regressable from the residual stream as train_selected and a touch tighter than the max-10 varicl FVs.
+Do NOT compare absolute test_mse across FV targets (different floors); use gap-above-floor.
+
+## 2026-06-18 — Paired 1-shot captures carry extra correctness notions (n=5 temp=1 fraction + prob-gated)
+
+The paired 1-shot activation rows (`results/oneshot_paired_graded/{antonym_synonym,
+next_number_prev_number}/shard_*.pt` + `grading.json`) now hold these per-prompt correctness labels,
+all GPT-4.1-judged with the strict same-word-is-false prompts:
+- `judge_top1` — greedy decode (original).
+- `frac_correct_temp1_n5` (float) + `n_correct_temp1_n5` (int 0..5) — **5 temperature=1 samples**
+  (seed 42), each judged; the row stores the FRACTION correct (k/5). This REPLACED an earlier
+  single-sample `judge_top1_temp1` (one noisy Bernoulli draw) — the n=5 fraction is the robust signal;
+  the single-sample field was dropped from all rows. `sample_judge_oneshot_paired.py` (draws via
+  `num_return_sequences`, reuses the judge helpers).
+- `greedy_answer_prob` (float) — model's probability of the greedy answer = product of greedy
+  per-token (top-1) probs over the answer span (tokens before first "\n"); equals first-token prob for
+  single-token answers, joint product for multi-token (numbers). NB it is the probability of the
+  *greedy path itself*, NOT the gold answer's probability (the answer judged IS the greedy output).
+- `judge_top1_p50` (bool) = `judge_top1` AND `greedy_answer_prob` ≥ 0.50. (Threshold walked
+  0.70 → 0.60 → 0.50; each step a free instant re-gate from the stored float, no model rerun — the
+  payoff of saving the continuous prob. p70/p60 fields removed. To change again, re-gate from the float.)
+
+**Activations are decode-independent** (same forward pass), so all decode-dependent labels (temp=1
+fraction, greedy prob/gate) are computed retroactively and stamped by match key
+`(function_task, output_word, query)` — same scheme as the original `judge_top1` tagging. The prob
+gate makes NO API calls (reuses greedy `judge_top1`).
+
+**Lesson / caveat:** in 1-shot, open-ended word tasks (antonym/synonym) are rarely high-confidence
+(mean greedy answer prob ~0.17) so even a 0.50 gate keeps ≤19 prompts (synonym 0) — too few for a
+correct-vs-incorrect geometry contrast on those tasks; use the continuous `greedy_answer_prob` or
+`frac_correct_temp1_n5` as covariates, or the number pair (gate keeps 47–98). Confidence ≠ correctness
+(synonym: 8 prompts ≥0.50 but 0 judge-correct; prev_number 58 ≥0.50, 47 correct). Under temp=1 sampling
+numbers drop vs greedy (greedy argmax was right; sampling injects errors) while synonym RISES (.143 →
+mean frac .229 — many valid non-argmax answers). any-correct ≫ all-correct (most prompts are sometimes
+but not always right), which is exactly the spread the single sample missed and the fraction captures.
+
+## 2026-06-18 — magnitude/identity datasets DOUBLED with decimals (canonical files overwritten)
+
+`dataset_files/ambiguous/{magnitude,identity}.json` were extended from 300 → **600 entries**
+(300 integer + 300 decimal, ≤3 dp) by `dataset_files/generate/add_decimals_magnitude_identity.py`.
+Integer-only originals backed up at `{magnitude,identity}.int_only.json` (restore from these to
+revert). Decimal entries mirror the integer structure: +d overlap (mag=id=d), −d differentiator
+(mag=d, id=−d). Split is now overlap=300 / differentiator=300. **Impact:** any re-run of FV
+extraction / disambiguation evals on these tasks now includes decimals; previously-saved FV `.pt`
+files (e.g. `gptj_fv_ambiguous_constrained*`) are integer-derived and unchanged. When judging
+numeric-answer correctness, use **numeric equality** (`float(a)==float(b)`), NOT `normalize_answer`
+(it strips `.`). Decimal labels are multi-token in BOTH tasks (e.g. ` 97.96`→`[' 97','.','96']`),
+so the first/last-label-token capture finally matters for magnitude too.
+
+## 2026-06-16 — Qwen3-8B 3+1+1 disambiguation + CAVEAT: first-token top-k invalid for digit-splitting tokenizers
+
+Ran the Stream-F 3+1+1 ambiguous eval for `Qwen/Qwen3-8B-Base` (`eval_ambiguous_disambiguation.py`
+already takes `--model_name`). **CAVEAT:** the token-level `topk` scoring (`score_topk`, first answer
+token via `tok(" "+ans).input_ids[0]`) is **invalid for Qwen3 numeric tasks** — Qwen3 tokenizes
+`" 47"` as `[space, "4", "7"]`, so the first token is a bare space for every numeric answer →
+gold and partner both "match" → round/truncate/first_digit/last_digit/count_* spuriously read
+top1=partner@1=1.00. GPT-J merges `" 47"`→single token, so it's fine. **Use the whole-answer
+`wordtopk` (beam) scoring for cross-model comparison** (`eval_wordtopk_3plus1plus1_qwen3.json`).
+Result (whole-answer): Qwen3 mean top1 0.678 vs GPT-J 0.561, mean partner@1 0.170 vs 0.294 — Qwen3
+disambiguates better and is less prior-bound (round 0.06→1.00, british 0.33→0.87, reverse 0.00→0.28),
+but the prior asymmetry persists (last_letter 0.10/partner 0.60, largest_city 0.11/partner 0.70).
+Lesson: any first-token metric is tokenizer-dependent; prefer whole-answer scoring across models.
+
+## 2026-06-16 — BUG: `ICLDataset` int-indexing upcasts mixed-dtype rows (float input corrupts int gold)
+
+`ICLDataset.__getitem__(int)` does `self.raw_data.iloc[i].to_dict()`, building a **1-row pandas
+Series**. A Series is single-dtype, so a row with a float column (e.g. `round`/`truncate` inputs
+like `3.7`) **upcasts an int output gold `4` → `4.0`**. List-indexing (`ds[[i]]`, orient='list')
+preserves per-column dtype and is safe. Symptom: `round`/`truncate` scored ~0.00 because golds were
+`'4.0'`; `normalize_answer` then strips the '.' → `'40'`, so the model's correct `'4'` never matched.
+Only these two tasks are affected (only float-input + int-output tasks); demos were unaffected
+(they use list-indexing). Fix in `recreate_fig8.py`: extract the query via `ds[[idx]]`. After fix:
+round 0.00→~0.77, truncate 0.00→~1.00. **Lesson:** never grab a single ICLDataset row with int
+indexing when columns have mixed dtypes; use list-indexing or coerce ints before `str()`.
+
+## 2026-06-16 — GOTCHA: task-name collisions across dataset folders; key results by `<folder>/<task>`
+
+4 task names exist in BOTH `dataset_files/abstractive` and `dataset_files/ambiguous`:
+`count_consonants`, `count_vowels`, `identity`, `magnitude` (the ambiguous copies are the
+overlap/differentiator-structured variants; `load_dataset` only scans abstractive+extractive and
+would silently grab the abstractive one). Any results store keyed by task name alone
+(`results/.../<task>.json`) will have the second folder's run clobber the first. Convention going
+forward: **key per-folder results by `<model>/<folder>/<task>`** (recreate_fig8.py does this).
+
+## 2026-06-16 — Recreate Fig 8 for two models: generation-until-newline, not first-token rank
+
+For the Fig 8 recreation (Stream H), accuracy is **greedy generation stopped at "\n"** then scored
+with normalized `exact_match_score` over the full answer — matching Stream G's correctness
+definition, NOT the cached first-token `clean_topk`. Efficient multi-shot readout: per trial sample
+10 demos + 1 query, and for k=0..10 use the first k demos (nested prefixes of the 10-shot prompt) so
+shots 1..9 come from the same draw. Batched generation with token-budget batching (left-pad) keeps
+GPT-J's full-MHA KV cache under 80GB. All 2200 responses/task are saved to `<task>_responses.jsonl`
+for inspection. (A single-forward "read every demo answer position" trick is ~11× cheaper but only
+works for first-token scoring; generation requires real decoding, so we batch instead.)
+
+## 2026-06-15 — Per-prompt correctness for the residual-activation captures (Stream G)
+
+To mark capture prompts correct/incorrect, **do not** reuse `fs_results_layer_sweep.json`: it scores
+a different dataset partition (the 504-example `valid` split) than the captures (130 train + 40 test
+sampled by `stable_rng(seed, task, split, "query_indices")`), and stores only first-token ranks.
+
+Instead, `compute_capture_prompt_correctness.py` regenerates the *exact* capture prompts by importing
+the capture's own deterministic helpers (`sample_query_indices` / `sample_demo_indices` / `make_prompt`
+from `extract_targeted_residual_stream_activations.py`, seed 42) and **asserts** the regenerated
+`query_source_index` order equals the capture `index.json`'s `query_indices` (byte-identical prompts).
+
+**"Correct" = full-answer match, not first-token rank** (per request): greedy generate (`do_sample=False`,
+`max_new_tokens=16`), then the repo's `parse_generation(out, [target], exact_match_score)` — its regex
+`([\w. ]+)[\nQ]*` truncates at the **newline** / next `Q:`, and `exact_match_score` is SQuAD-normalized.
+Join correctness to activations by `(split, query_source_index)` (robust; verified zero misses).
+Correctness is one bit per prompt, shared across all 31 token positions of that prompt.
+
+## 2026-06-15 — Cosine(activation, task-specific FV) heatmap (Stream G), companion to the MSE study
+
+Same 31-token-position × 29-layer grid as the full-dim ridge MSE study, metric = per-example mean
+**raw** cosine (no centering) between each residual activation and that task's OWN task-specific FV
+(`results/gptj_fv/<task>/...`), averaged over all 29 tasks. `cosine_activation_to_task_fv.py` is
+model-free; reuses the ridge loader constants + the merge script's `position_key/label` axis ordering;
+diverging heatmap centered at 0, shared scale across the all/correct PNGs. Each activation directory
+targets one ICL index, so `token_role` alone uniquely buckets a prompt's rows (no icl filter needed).
+**Result:** all-positive, mid-layer bowl (peak L10), role banding `last_prompt_token`≈`pre_label_token`
+≫ `first/last_label_token`; correct-only ≈ all at the aggregate level (max|Δ|=0.0016).
+
 ## 2026-06-14 — `ambiguous` task-disambiguation datasets + 3+1+1 eval; FINDING: prior-bias asymmetry
 
 New dataset family `dataset_files/ambiguous/` (generator `create_ambiguous_datasets.py`) for the

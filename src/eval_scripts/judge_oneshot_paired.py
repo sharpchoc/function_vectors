@@ -75,6 +75,12 @@ def parse_args():
     p.add_argument("--function_tasks", nargs="+", default=["antonym", "synonym"])
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--max_new_tokens", type=int, default=8)
+    p.add_argument("--do_sample", action="store_true",
+                   help="Sample instead of greedy decoding (one sample/prompt at --temperature).")
+    p.add_argument("--temperature", type=float, default=1.0,
+                   help="Sampling temperature (only used with --do_sample).")
+    p.add_argument("--output_suffix", type=str, default="",
+                   help="Appended to the per-task output dir (e.g. '_temp1' -> oneshot_<task>_judge_temp1).")
     p.add_argument("--judge_model", type=str, default="gpt-4.1")
     p.add_argument("--judge_batch_size", type=int, default=50)
     p.add_argument("--seed", type=int, default=42)
@@ -123,8 +129,12 @@ def generate_answers(model, tokenizer, args, rows, task):
     for j, r in enumerate(rows):
         prompt = build_prompt(r["demo_input"], r["output_word"], r["query"], args)
         inp = tokenizer(prompt, return_tensors="pt").to(args.device)
-        gen = model.generate(**inp, max_new_tokens=args.max_new_tokens, do_sample=False,
-                             pad_token_id=tokenizer.eos_token_id)
+        gen_kwargs = dict(max_new_tokens=args.max_new_tokens, pad_token_id=tokenizer.eos_token_id)
+        if args.do_sample:
+            gen_kwargs.update(do_sample=True, temperature=args.temperature)
+        else:
+            gen_kwargs.update(do_sample=False)
+        gen = model.generate(**inp, **gen_kwargs)
         completion = tokenizer.decode(gen[0][inp["input_ids"].shape[1]:], skip_special_tokens=True)
         out.append({"function_task": task, "query_input": r["query"], "output_word": r["output_word"],
                     "demo_input": r["demo_input"], "gold_output": r["gold"],
@@ -191,10 +201,12 @@ def main():
         copied = sum(r["copied_input"] for r in records)
         ft1 = sum(r["first_tok_rank"] < 1 for r in records)
         summary = {"function_task": task, "n": n, "judge_model": args.judge_model,
+                   "do_sample": args.do_sample, "temperature": args.temperature if args.do_sample else 0.0,
+                   "seed": args.seed,
                    "judge_top1_accuracy": judged / n, "first_token_top1_accuracy": ft1 / n,
                    "gold_exact_match_accuracy": sum(r["exact_match_gold"] for r in records) / n,
                    "copied_input_count": copied}
-        out_dir = args.output_root / f"oneshot_{task}_judge"
+        out_dir = args.output_root / f"oneshot_{task}_judge{args.output_suffix}"
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / "judged_results.json").write_text(json.dumps({"summary": summary, "records": records}, indent=2))
         overall[task] = summary

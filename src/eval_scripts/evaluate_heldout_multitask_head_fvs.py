@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -65,6 +66,11 @@ def parse_args():
     parser.add_argument("--no_filter_to_correct_icl", dest="filter_to_correct_icl", action="store_false")
     parser.set_defaults(filter_to_correct_icl=True)
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--restrict_differentiator", action="store_true",
+                        help="Restrict steering test queries to the differentiator region (output "
+                             "differs from the partner task). Requires --partners.")
+    parser.add_argument("--partners", type=json.loads, default=None,
+                        help='JSON map {task: partner_task} for --restrict_differentiator.')
     return parser.parse_args()
 
 
@@ -304,6 +310,18 @@ def main():
         )
 
         filter_set, filter_source = get_filter_set(args, task, dataset, model, model_config, tokenizer, task_output_dir)
+        if args.restrict_differentiator and args.partners and task in args.partners:
+            # keep only TEST queries where this task's output differs from its partner's (the
+            # differentiator region) — overlap queries can't distinguish the two functions.
+            partner_path = os.path.join(args.root_data_dir, "abstractive", f"{args.partners[task]}.json")
+            partner_map = {str(r["input"]): str(r["output"]) for r in json.load(open(partner_path))}
+            test_ds = dataset["test"]
+            differ_idx = {i for i, (x, y) in enumerate(zip(test_ds["input"], test_ds["output"]))
+                          if partner_map[str(x)] != str(y)}
+            base = set(range(len(test_ds["input"]))) if filter_set is None else set(int(i) for i in filter_set)
+            filter_set = np.array(sorted(base & differ_idx))
+            print(f"  restrict_differentiator: {len(filter_set)} differentiator test queries "
+                  f"(partner={args.partners[task]})")
         args.filter_set = filter_set
 
         print("Evaluating multitask-head FV")

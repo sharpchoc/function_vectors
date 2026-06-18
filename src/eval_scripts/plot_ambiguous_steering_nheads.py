@@ -1,5 +1,6 @@
 """Per-task steering overlay: task-specific FV vs train-pooled-head FV at top-10/20/40.
 2 panels (zero-shot+FV, 10-shot-shuffled+FV), 4 series each. No GPU."""
+import argparse
 import json
 from pathlib import Path
 
@@ -7,9 +8,16 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+ap = argparse.ArgumentParser()
+ap.add_argument("--eval_prefix", default="results/heldout_ambiguous_eval_top",
+                help="dir prefix; the script reads <prefix>{10,20,40}/<task>/comparison_summary.json")
+ap.add_argument("--out", default="results/heldout_ambiguous_eval_nheads_plots")
+A = ap.parse_args()
+
 TASKS = ["magnitude", "identity", "count_vowels", "count_consonants"]
 NS = [10, 20, 40]
-OUT = Path("results/heldout_ambiguous_eval_nheads_plots")
+PREFIX = A.eval_prefix
+OUT = Path(A.out)
 OUT.mkdir(parents=True, exist_ok=True)
 
 
@@ -20,7 +28,7 @@ def by_layer(block, key):
 
 
 for task in TASKS:
-    summaries = {n: json.loads((Path(f"results/heldout_ambiguous_eval_top{n}") / task /
+    summaries = {n: json.loads((Path(f"{PREFIX}{n}") / task /
                                 "comparison_summary.json").read_text()) for n in NS}
     nfilt = summaries[10]["n_filtered_test_examples"]
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))

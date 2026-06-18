@@ -19,6 +19,10 @@ def parse_args():
     p.add_argument("--graded_dir", type=Path, default=Path("results/oneshot_paired_graded/antonym_synonym"))
     p.add_argument("--judge_root", type=Path, default=Path("results"))
     p.add_argument("--function_tasks", nargs="+", default=["antonym", "synonym"])
+    p.add_argument("--judge_suffix", type=str, default="",
+                   help="Read verdicts from oneshot_<task>_judge<suffix> (e.g. '_temp1').")
+    p.add_argument("--tag_field", type=str, default="judge_top1",
+                   help="Metadata field name to write (e.g. 'judge_top1_temp1').")
     return p.parse_args()
 
 
@@ -27,7 +31,7 @@ def main():
     # build verdict map (function_task, output_word, query) -> judge_top1
     verdict = {}
     for task in args.function_tasks:
-        jr = json.loads((args.judge_root / f"oneshot_{task}_judge" / "judged_results.json").read_text())
+        jr = json.loads((args.judge_root / f"oneshot_{task}_judge{args.judge_suffix}" / "judged_results.json").read_text())
         for r in jr["records"]:
             verdict[(task, r["output_word"], r["query_input"])] = bool(r["judge_correct"])
         print(f"{task}: {len(jr['records'])} verdicts loaded")
@@ -43,10 +47,10 @@ def main():
             n_rows += 1
             v = verdict.get(key_of(m))
             if v is not None:
-                m["judge_top1"] = v
+                m[args.tag_field] = v
                 n_tagged += 1
         torch.save(data, sp)
-    print(f"tagged {n_tagged}/{n_rows} activation rows with judge_top1 across shards")
+    print(f"tagged {n_tagged}/{n_rows} activation rows with {args.tag_field} across shards")
 
     # tag grading.json
     grading_path = args.graded_dir / "grading.json"
@@ -55,16 +59,16 @@ def main():
     for g in grading:
         v = verdict.get((g["function_task"], g["output_word"], g["query"]))
         if v is not None:
-            g["judge_top1"] = v
+            g[args.tag_field] = v
             g_tagged += 1
     grading_path.write_text(json.dumps(grading, indent=2))
-    print(f"tagged {g_tagged}/{len(grading)} grading.json rows with judge_top1")
+    print(f"tagged {g_tagged}/{len(grading)} grading.json rows with {args.tag_field}")
 
     # report counts
     for task in args.function_tasks:
-        rows = [g for g in grading if g["function_task"] == task and "judge_top1" in g]
-        c = sum(g["judge_top1"] for g in rows)
-        print(f"  {task}: judge_top1 True = {c}/{len(rows)} = {c/len(rows):.3f}")
+        rows = [g for g in grading if g["function_task"] == task and args.tag_field in g]
+        c = sum(g[args.tag_field] for g in rows)
+        print(f"  {task}: {args.tag_field} True = {c}/{len(rows)} = {c/len(rows):.3f}")
 
 
 if __name__ == "__main__":

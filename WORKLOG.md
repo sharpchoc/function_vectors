@@ -5,6 +5,346 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-06-18 — Stream E follow-up: BEHAVIORAL task-switch steering (8 accuracy curves)
+
+**Owner:** Coordinator (tmux "switch-steering"). **Status:** RUNNING (generation in background; judge blocked on API key).
+
+**What:** The first *behavioral* (generate + judge) version of switch-steering. Take a 1-shot prompt
+whose single ICL demo is the *source* task, inject `sign·α·Δ_site(L)` at one token position, sample
+**n=10 @ temperature 1**, and measure how often GPT-4.1 judges the answer correct **for the target
+task**. Produces **8 graphs** = 4 directions × 2 injection sites; each graph x=injection layer,
+y=target-task accuracy, one line per α∈{0,0.5,1,2,4,8} (α=0 = unsteered baseline, drawn flat).
+
+- **Directions:** synonym→antonym, antonym→synonym, prev_number→next_number, next_number→prev_number.
+- **Sites:** `label` = demo last_label_token (inject Δ_label); `final` = final prompt token /
+  query predictive position (inject Δ_final). Contrast with the prior `steer_label_to_query.py` which
+  injected ONLY at the demo label and measured logit-diff, never generated/judged/swept the final site.
+- **Δ** = `mean_w[act(f1)−act(f2)]` from existing `results/oneshot_paired_graded/<pair>/` shards via
+  `load_capture_diffs` (NO new capture). sign=+1 if target is f1 (antonym/next), −1 if f2 (synonym/prev).
+- **Scale:** 100 queries/direction (random shared-input subset, seed 42, fixed demo per query reused
+  across all conditions); layers 0,2,…,26 (14); α nonzero {0.5,1,2,4,8}; n=10. No random-norm control.
+- **Hook:** baukit `edit_output`, per-row position, fires ONLY on the prompt forward (seq_len>1) so the
+  perturbation propagates via KV cache during generation. Prompts replicated ×n_samples explicitly
+  (prompt-major), left-padded; label idx = pad_len+label_pos, final idx = −1. α=0 baseline = no hook,
+  once per direction.
+
+**Files:** NEW `src/eval_scripts/steer_switch_judge.py` (`--stage generate|judge`, both resumable;
+reuses helpers from `steer_label_to_query.py` + `judge_oneshot_paired.py`), NEW
+`src/eval_scripts/plot_switch_steering.py`. Outputs `results/oneshot_switch_steering/`
+(`<direction>__{label,final,baseline}/generations.jsonl,judged.jsonl,accuracy.json`, `deltas_used.json`,
+`figures/`).
+
+**Commands:**
+- gen: `python src/eval_scripts/steer_switch_judge.py --stage generate --output_root results/oneshot_switch_steering`
+- judge: `... --stage judge ...` (needs OPENAI_API_KEY)
+- plot: `python src/eval_scripts/plot_switch_steering.py`
+
+**Smoke (synonym→antonym, n=5×2, L6/L26, α4):** hook verified working — α=0 baseline emits
+synonyms/copies (advanced→advancement, sorry→no problem), steered shifts toward antonyms
+(straight→short at final/L26, straight→tall, hold→frightened). Generation pipeline validated.
+
+**BLOCKER:** judge stage needs `OPENAI_API_KEY`; `get_openai_key()` (env → /proc/1/environ) does not
+find it in this session (prior streams read it from /proc/1/environ). Generation runs/caches meanwhile.
+
+**Next:** finish generation sweep; obtain key → run `--stage judge`; render 8 figures + aggregate.
+
+---
+
+## 2026-06-18 — Stream J: variable-ICL FV capped at max 4 demos (top-40 heads) + held-out steering
+
+**Owner:** Coordinator (tmux "varicl-max4"). **Status:** DONE.
+
+**What:** Parallel of the existing `train_varicl` method (random 1–10 ICL demos, top-40 heads pooled
+over 20 train tasks) but with the ICL count capped at **1–4 demos** (`--max_shots 4`). Goal: measure
+what shortening the ICL window costs the resulting FV's held-out steering, plotted directly against
+the max-10 (top-40) varicl line + the task-specific FV reference, on the 9 test tasks.
+
+**Approach:** one behavioral change (`--max_shots 4`); isolated output roots so nothing existing is
+overwritten. Reuses all heavy helpers (`evaluate_fv`/`get_filter_set`/`summarize_results` from
+`evaluate_heldout_multitask_head_fvs.py`); the method-agnostic no-FV baseline cache
+`results/gptj_fv/<task>/fs_results_layer_sweep.json` → no baseline recompute. Max-10 top-40 curve read
+from the prebuilt `results/heldout_varicl_nheads_sweep/<task>/nheads_sweep_by_layer.json` (N=40),
+task-specific from `results/heldout_multitask_head_eval/<task>/comparison_summary.json` → no recompute
+of those lines either. Handles the documented stage-2 gotcha (test-task activations computed
+separately + copied in before the 29-task FV build).
+
+**Files (NEW):** `src/eval_scripts/run_varicl_max4_pipeline.sh` (build driver, stages 1a–1c),
+`src/eval_scripts/evaluate_heldout_varicl_max4.py` (steering eval + 3-series plots). No edits to
+existing source. Outputs: `results/multitask_aie_heads_varicl_max4/`, `results/_varicl_testtasks_max4/`,
+`results/function_vectors/gpt-j/train_varicl_max4_top40/`, `results/heldout_varicl_max4_top40/`.
+
+**Commands:** `bash src/eval_scripts/run_varicl_max4_pipeline.sh` then
+`python src/eval_scripts/evaluate_heldout_varicl_max4.py --overwrite`.
+
+**Build verification:** sampler draws uniformly over {1,2,3,4} only; pooled head artifact = 40 heads
+over 20 train tasks (top-5 = (9,14)(15,5)(8,1)(12,10)(11,0), the canonical varicl FV heads); 29 FVs
+built at n_top_heads=40, finite, norms 46–58 (expected top-40 band); 9 test-task activations copied in.
+Steering eval: 9/9 test tasks evaluated, no missing-curve warnings (all max-10 N=40 + task-specific
+curves read from cache), 9 per-task PNGs + AGGREGATE rendered with 3 lines each, filter sets reused
+from cached `fs_results_layer_sweep.json` (no baseline recompute).
+
+**FINDINGS — capping ICL at ≤4 demos costs a little ZERO-SHOT steering, ~nothing FEW-SHOT.**
+Mean best-layer intervention top-1 over the 9 test tasks (raw argmax over all 28 layers):
+
+| condition | max-4 (top40) | max-10 (top40) | task-specific |
+|---|---|---|---|
+| zero-shot + FV | **0.353** | 0.400 | 0.483 |
+| 10-shot-shuffled + FV | **0.777** | 0.784 | 0.812 |
+
+- **Zero-shot:** max-4 trails max-10 by ~0.05 (0.353 vs 0.400) — both well below task-specific (0.483).
+  Same classic mid-layer (L6–12) steering bump; max-4 sits a notch under max-10 across that band, dies
+  by ~L18 (see `AGGREGATE_..._max4_vs_max10.png`). So fewer ICL demos in extraction → a slightly weaker
+  but still-real zero-shot FV.
+- **Few-shot (10-shot-shuffled):** essentially tied (0.777 vs 0.784, Δ≈0.007) — with real context
+  present at inference the shorter extraction window barely matters; both ~task-specific.
+- **Per-task:** max-4 < max-10 zero-shot on most tasks but only modestly: antonym .473 vs .583,
+  capitalize .917 vs .953, capitalize_first_letter .736 vs .853, product-company .099 vs .148 (both
+  near-dead — needs L11+ task-specific to steer). word_length 0.00 for both (FV can't drive it
+  zero-shot, matches the canonical finding). country-currency ties at .179. No task where max-4
+  collapses relative to max-10. NB many zero-shot argmaxes land at L0 (embedding-norm artifact);
+  restricting to L3–27 gives the same max-4 mean (0.349) and the mid-layer picks (L6–12) are stable.
+
+**ADDENDUM — PCA-ridge activation→FV heatmap on the max-4 FVs (k_act=16, k_fv=16).** Reran the
+direct PCA-space ridge study (`regress_activation_to_fv_pca_ridge.py` × 10 ICL shards +
+`merge_fulldim_ridge_results.py`) with the FV regression TARGET = `train_varicl_max4_top40` (only
+`--fv_root` + `--output_dir` change; the cached residual activations in
+`results/residual_activations/` are FV-target-agnostic, reused unchanged). 7 test tasks (cc/pc
+excluded), 899 cells. Out: `results/pca_ridge_activation_to_fv_varicl_max4_top40/`
+(combined_metrics.csv, combined_test_mse_heatmap.png, combined_best_alpha_heatmap.png, combined_summary.json).
+
+Commands:
+```
+for n in 1..10: python src/eval_scripts/regress_activation_to_fv_pca_ridge.py --icl_index $n \
+  --fv_root results/function_vectors/gpt-j/train_varicl_max4_top40 \
+  --output_dir results/pca_ridge_activation_to_fv_varicl_max4_top40 --overwrite
+python src/eval_scripts/merge_fulldim_ridge_results.py --input_dir results/pca_ridge_activation_to_fv_varicl_max4_top40
+```
+
+**Heatmap result:** same canonical structure as the train_selected / max-10 runs — mid-layer (L9–15)
+bowl of lowest test MSE, brightening with ICL accumulation (icl08–10) and at pre/finaltok roles; L0
+(embedding) worst. Best cell **icl09/pre @ L13 = 0.1596** (FV-PC recon floor 0.1433 → gap 0.0162).
+Cross-run (best cell, abs MSE / FV-PC floor / **gap-above-floor** = the FV-target-agnostic regression
+quality): train_selected 0.1147/0.0992/**0.0155**; varicl_top40 max-10 0.1994/0.1780/**0.0214**;
+varicl_max4_top40 0.1595/0.1433/**0.0162**. Absolute MSE differs only because each FV target has its
+own 16-PC variance floor; the gap-above-floor shows the max-4 FVs are **as regressable from activations
+as train_selected** and a touch tighter than the max-10 varicl FVs — i.e. shrinking the extraction
+window does NOT make the FV harder to decode from the residual stream. 11 alpha-pinned cells, all at
+L0 (degenerate predict-the-mean), none at the optimum — benign, matches prior runs.
+
+**Next (optional):** add the max-4 line into a combined nheads-style overlay, or sweep max_shots
+∈{2,4,6,8} to trace the extraction-window→zero-shot-steering curve. **Blockers:** None.
+Plan: `/root/.claude/plans/can-you-make-a-stateful-blanket.md`.
+
+---
+
+## 2026-06-18 — Stream E follow-up: two MORE correctness notions on the paired 1-shot captures
+
+**Owner:** Coordinator (tmux "oneshot-temp1-judge"). **Status:** DONE.
+
+**What:** Added two new per-prompt correctness labels to BOTH paired 1-shot pairs
+(`antonym_synonym`, `next_number_prev_number`), stamped onto every activation row (source =
+demo-label, target = final-query) AND `grading.json`, alongside the existing greedy `judge_top1`:
+1. **`frac_correct_temp1_n5`** (float in [0,1]) + **`n_correct_temp1_n5`** (int 0..5) — **5
+   temperature=1 samples** per prompt (seed 42), each GPT-4.1-judged with the same strict per-task
+   prompts; the row stores the FRACTION judged correct (k/5). (Started as a single temp=1 sample
+   `judge_top1_temp1`; user upgraded to n=5 fraction for a robust, non-Bernoulli signal — the
+   single-sample field was then DROPPED from all rows + grading.json. Mean frac ≈ single-sample acc,
+   as expected.)
+2. **`greedy_answer_prob`** (float) + **`judge_top1_p50`** (bool) — greedy regeneration capturing
+   per-step probs; answer prob = product of greedy per-token probs over the answer span (tokens
+   before first "\n"; = first-token prob for single-token answers, joint product for numbers).
+   `judge_top1_p50` = greedy `judge_top1` AND prob ≥ 0.50. Raw float stored so the threshold is
+   re-tunable for free (no recompute). Reuses existing greedy GPT-4 verdicts → NO extra API calls.
+   (Threshold walked 0.70 → 0.60 → 0.50 per user; each step a free instant re-gate from the stored
+   float, no model rerun. p70/p60 fields removed; only p50 remains.)
+
+**Files:** MODIFIED `src/eval_scripts/judge_oneshot_paired.py` (`--do_sample`/`--temperature`/
+`--output_suffix`; provenance in summary), `src/eval_scripts/tag_oneshot_activations_judge.py`
+(`--judge_suffix`/`--tag_field`). NEW `src/eval_scripts/sample_judge_oneshot_paired.py` (n-sample
+fraction; reuses judge_oneshot_paired helpers; `num_return_sequences` for the n draws),
+`src/eval_scripts/compute_oneshot_greedy_answer_prob.py`. Outputs:
+`results/oneshot_{task}_judge_sample5/judged_results.json` (per-sample gens + verdicts);
+logs `results/_oneshot_sample5_*.log`, `results/_oneshot_greedyprob_*.log`. Greedy results dirs untouched.
+
+**Commands:**
+- `sample_judge_oneshot_paired.py --graded_dir results/oneshot_paired_graded/<pair> --function_tasks <f1 f2> --n_samples 5 --temperature 1.0`
+- `compute_oneshot_greedy_answer_prob.py --graded_dir .../<pair> --function_tasks <f1 f2> --threshold 0.50`
+- (re-gate at a new threshold = re-derive `judge_top1_pXX` from stored `greedy_answer_prob`; no rerun.)
+
+**Results (n per task: ant/syn 544, next/prev 198):**
+
+| task | greedy judge_top1 | temp1 mean frac (n=5) | any-correct | all-correct | mean greedy prob | judge_top1_p50 |
+|---|---|---|---|---|---|---|
+| antonym | 0.276 | ~0.24 | ~340/544 | 17 | 0.176 | 19/544 |
+| synonym | 0.143 | 0.229 | 323/544 | 3 | 0.163 | 0/544 |
+| next_number | 0.818 | 0.485 | 169/198 | 15 | 0.492 | 98/198 |
+| prev_number | 0.621 | 0.341 | 144/198 | 6 | 0.392 | 47/198 |
+
+**Findings:**
+- **temp=1 sampling vs greedy:** numbers drop hard (next .818→.485, prev .621→.341 mean frac) — greedy
+  picks the right argmax, sampling injects errors. synonym RISES (.143→.229) — many valid answers, so
+  a sampled non-argmax is often still correct; antonym ~flat (.276→~.24).
+- **any-correct ≫ all-correct** (e.g. synonym 323 vs 3; next 169 vs 15): most prompts are *sometimes*
+  right under sampling, rarely *always* — the fraction captures this spread the single sample couldn't.
+- **High greedy confidence is RARE for open-ended words** — mean greedy answer prob ~0.17 for ant/syn,
+  so even p50 keeps few (antonym 19, synonym 0). Numbers far more confident (~0.39–0.49) → p50 keeps 98 / 47.
+- **Confidence ≠ correctness (decoupled):** synonym has 8 answers ≥0.50 but 0 judge-correct;
+  prev_number 58 ≥0.50, 47 judge-correct. The gate is meaningfully stricter than judge alone.
+- **CAVEAT for downstream geometry:** the p50 confident-correct subset for ant/syn is too small (≤19,
+  synonym 0) for a correct-vs-incorrect contrast on those tasks; usable on the number pair (98 / 47).
+  For ant/syn prefer the continuous `frac_correct_temp1_n5` / `greedy_answer_prob` as covariates.
+
+**Schema now on every row:** `judge_top1` (greedy), `frac_correct_temp1_n5` (+`n_correct_temp1_n5`),
+`greedy_answer_prob`, `judge_top1_p50` — plus first-token `top1/2/3`. **Next:** geometry split by the
+new labels (e.g. confident-correct vs rest on numbers; frac as a covariate). **Blockers:** None.
+
+---
+
+## 2026-06-18 — Stream I: GPT-J residual activations on magnitude/identity 3+1+1 prompts (labeled by correctness)
+
+**Owner:** Coordinator (tmux "recreate-fig8"). **Status:** DONE.
+
+**What:** Per-prompt residual-stream capture for the `magnitude|identity` ambiguous pair, for later
+analysis of where/how the disambiguating function is represented. n=200 prompts/task (3 overlap + 1
+differentiator demo of that task + 1 differentiator query), **balanced queries** over all 150
+differentiator items. Same seed both tasks ⇒ paired prompts (identical demo/query INPUTS; only the
+differentiator demo's output label differs). Residual stream (+embeddings ⇒ 29 layers) captured at
+**pre_label / first_label / last_label** tokens of all 4 demos + the **query predictive** position;
+every row tagged correct / partner_match (whole-answer exact match) + role/region/metadata.
+
+**Files:** NEW `src/eval_scripts/capture_magnitude_identity_activations.py` (reuses
+`get_residual_stack` + `selected_token_records` from `extract_residual_stream_activations.py`,
+`split_overlap_differ`/`batched_generate` from `eval_ambiguous_disambiguation.py`). Output
+`results/magnitude_identity_activations/gpt-j-6b/{magnitude,identity}.pt` (590MB each, fp16,
+shape (2600, 29, 4096)) + `{task}_correctness.json`.
+
+**Command:** `python src/eval_scripts/capture_magnitude_identity_activations.py --n_prompts 200`
+
+**UPDATE 2026-06-18 (decimals):** Doubled both datasets to **600 entries** (300 int + 300 decimal,
+≤3 dp) via `dataset_files/generate/add_decimals_magnitude_identity.py` (overwrote canonical
+`{magnitude,identity}.json`; int-only backups at `{task}.int_only.json`). Decimal structure mirrors
+ints: +d overlap (mag=id=d), −d differentiator (mag=d, id=−d). Re-ran capture; correctness switched
+to **numeric equality** (`float(parsed)==float(gold)`, generate-to-newline, max_new_tokens 12) — NOT
+normalize_answer (strips '.'). Results: acc magnitude 0.980 / identity 1.000 (unchanged — GPT-J
+handles decimals: e.g. `-97.96`→`-97.96`); 200 distinct queries (~half decimal); **multi-token labels
+now 400 (magnitude) / 496 (identity)** vs 0/200 before. Regenerated
+`figures/magid_query_fv_projection_by_layer.png` (reusing the integer-derived top-20 FVs): **the FVs
+still cleanly separate the two tasks on decimals** — separation from ~L6, magnitude below / identity
+above the diagonal. Generalization holds int→decimal.
+
+**Findings (original, integer-only):** acc magnitude 0.980 (partner 0.020), identity 1.000 (partner 0.000) — tracks the prior
+3+1+1 GPT-J numbers. Dataset: overlap=150, differentiator=150 (each task 300 total). All checks pass
+(no NaN; 13 rows/prompt = 4 demos×3 roles + query; join clean; 200 distinct prompts, 150 distinct
+queries). **CAVEAT:** the pair is easy ⇒ near-zero incorrect class (magnitude 4 incorrect prompts,
+identity 0) — not enough negatives for a correct-vs-incorrect contrast; would need a harder pair or
+0-differentiator-demo prompts to induce errors.
+
+---
+
+## 2026-06-16 — Stream H: recreate paper Fig 8 (few-shot ICL curves) for GPT-J + Qwen3-8B-Base
+
+**Owner:** Coordinator (tmux "recreate-fig8"). **Status:** DONE.
+
+**What:** Recreate Figure 8 (few-shot ICL accuracy vs. #shots) with TWO model lines per panel —
+GPT-J (`EleutherAI/gpt-j-6B`) and the new Qwen3-8B base (`Qwen/Qwen3-8B-Base`) — plus the dotted
+majority-label baseline. Coverage: all 40 `abstractive` tasks (paper Fig 8 = 25 of them) and all
+18 `ambiguous` tasks. n=200 trials/task, shots 0..10.
+
+- **Method:** per trial, sample 10 demos + 1 query; for k=0..10 build the k-shot prompt (first k of
+  the same demos + query) so shots 1..9 are nested prefixes of the 10-shot draw. **Generate greedily
+  until "\n"** (stop_strings=["\n"]), take text before the newline, score with the repo's normalized
+  `exact_match_score` (full answer, NOT first-token rank). **Every response is stored** for manual
+  review. Batched generation with token-budget batching (left-pad) to stay within 80GB on GPT-J's
+  full-MHA KV cache.
+- **Env:** upgraded `transformers` 4.49→4.57.6 (Qwen3 support; torch nightly untouched, `pip check`
+  clean). Added a `qwen3` branch to `load_gpt_model_and_tokenizer` (broadened the `qwen` match).
+  Qwen3-8B-Base is public (no HF_TOKEN needed).
+
+**Commands:**
+- `python src/recreate_fig8.py --model_name <M> --folder <abstractive|ambiguous> --n_trials 200 --batch_size 256 --token_budget 48000`
+- `python src/plot_fig8_recreation.py --which <abstractive|ambiguous>`
+
+**Files:** NEW `src/recreate_fig8.py`, `src/plot_fig8_recreation.py`. MODIFIED
+`src/utils/model_utils.py` (qwen3). Output `results/recreate_fig8/<model>/<task>.json` (summary) +
+`<task>_responses.jsonl` (all responses); `figures/fig8_abstractive_2models.png`,
+`figures/fig_ambiguous_2models.png`.
+
+**Findings:**
+- Both figures rendered: `figures/fig8_abstractive_2models.png` (paper's 25 panels; all 40 computed)
+  and `figures/fig_ambiguous_2models.png` (18 panels). Curves rise then plateau, as in the paper.
+- Mean acc@10-shot (exact-match): abstractive GPT-J 0.562 vs Qwen3-8B 0.604 (Qwen3 wins 26/40);
+  ambiguous GPT-J 0.664 vs Qwen3-8B 0.682 (5 wins, 6 ties — ties are the saturated/near-0 tasks).
+- Sanity vs prior work: GPT-J antonym 10-shot 0.56 (Stream G 0.529); country-capital 0.04→0.90;
+  count_vowels/consonants stay near baseline (GPT-J zero-competence on counting, matches Stream G).
+- Multi-token answers handled (e.g. "Kuala Lumpur"); 200×11=2200 stored responses per task/model.
+
+**GOTCHA (see DECISIONS):** 4 task names live in BOTH `abstractive` and `ambiguous`
+(count_consonants, count_vowels, identity, magnitude). Saving results as `<model>/<task>.json`
+let the later (ambiguous) run overwrite the abstractive files. Fixed: output is now
+`<model>/<folder>/<task>.json`.
+
+**BUG FOUND + FIXED (see DECISIONS):** `round`/`truncate` initially scored ~0.00 — NOT a model
+failure. `ICLDataset` int-indexing upcast the int gold to float (`4`→`4.0`) on float-input tasks,
+and `normalize_answer` strips '.' (`'4.0'`→`'40'`) so correct `'4'` never matched. Fixed query
+extraction to list-indexing; re-ran both tasks. Corrected: round 0.00→~0.77 (models have a mild
+truncate bias on the decimal≥0.5 differentiator), truncate 0.00→~1.00. Audit of ALL tasks/models
+found **zero** other formatting false-negatives; remaining low scores (rhyme 0.00, next_capital_letter
+0.01, capitalize_last_letter ~0.10) are genuine model failures (verified by inspecting responses).
+
+---
+
+## 2026-06-15 — Stream G: cosine(activation, task-specific FV) heatmaps by token position × layer
+
+**Owner:** Coordinator (tmux "cosine-fv-heatmap"). **Status:** DONE.
+
+**What:** Same 31 token-position × 29 layer grid as the Stream C MSE study, but the per-cell metric
+is the **raw cosine similarity** between each captured residual activation and that task's **own
+task-specific FV** (`results/gptj_fv/<task>/...`), per-example mean, averaged over all 29 tasks.
+Two heatmaps: all prompts, and prompts the model answered correctly.
+
+- **Stage 1** `src/eval_scripts/compute_capture_prompt_correctness.py` (loads GPT-J): rebuilds the
+  exact 170 ten-shot capture prompts per task (seed 42; reuses the capture's sampling +
+  `create_prompt`), greedy-generates, parses at newline via `parse_generation`+`exact_match_score`
+  (full answer, NOT first-token rank), writes `correctness/<task>.json` + summary. Cross-checks
+  regenerated `query_source_index` against the capture `index.json` (assert) → prompts are identical.
+  The cached `fs_results_layer_sweep.json` is NOT reusable (different partition + first-token only).
+- **Stage 2** `src/eval_scripts/cosine_activation_to_task_fv.py` (no model): per-example cosine per
+  cell, correct-mask from Stage 1, aggregate over tasks → `combined_metrics.csv`,
+  `combined_cosine_heatmap_{all,correct}.png` (diverging, shared scale), `combined_summary.json`.
+
+**Commands:**
+- `HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1 python src/eval_scripts/compute_capture_prompt_correctness.py --overwrite`
+- `HF_HUB_OFFLINE=1 python src/eval_scripts/cosine_activation_to_task_fv.py`
+
+**Files:** NEW `src/eval_scripts/compute_capture_prompt_correctness.py`,
+`src/eval_scripts/cosine_activation_to_task_fv.py`. Output `results/cosine_activation_to_task_fv/`
+(correctness/<task>.json, correctness_summary.json, combined_metrics.csv [899 rows],
+combined_cosine_heatmap_{all,correct}.png, combined_summary.json).
+
+**Findings:**
+- **Correctness (10-shot, newline-cutoff exact-match):** mean acc 0.593 over 29 tasks. Low for
+  char-manip (next_capital_letter 0.035, capitalize_last_letter 0.094); ~1.0 for easy maps
+  (singular-plural 0.994, capitalize 0.976, present-past 0.971). antonym 0.529.
+- **Cosine is all positive**, range [-0.01, 0.348]. Embedding L0 ≈ 0 (−0.010, ~orthogonal), clean
+  **mid-layer bowl peak L10 (0.242 mean over positions)**, fades to 0.127 by L28 — same bowl as the
+  Stream C MSE study (its min was L11). Best single cell **icl10/finaltok @ L10 = 0.348**.
+- **Token-role banding dominates the picture:** mean cosine `last_prompt_token` 0.221 >
+  `pre_label_token` 0.194 ≫ `first_label_token` 0.138 ≈ `last_label_token` 0.136. The query's final
+  token and the pre-label (colon/"A:") position — i.e. where the model is about to emit the answer —
+  are most aligned with the FV; the label tokens themselves much less so. Alignment also grows with
+  more accumulated context (icl08–10/pre brighter than icl01–03/pre).
+- **all ≈ correct:** restricting to model-correct prompts barely moves the aggregate cosine
+  (correct−all mean +0.0002, median +0.0001, max|Δ| 0.0016). The two heatmaps are near-identical →
+  at the task-aggregate level the residual stream points along the FV about as much on wrong answers
+  as on right ones. (Per-task differences may be larger; not yet broken out.)
+
+**Verification:** 899 cells (31 pos × 29 layers), n_tasks=29 every cell; independent recompute of
+icl10/finaltok L11 matched CSV to 5 dp (0.32217 vs 0.32216); query_source_index join exact (no misses).
+**Next (optional):** per-task cosine CSV / per-task all-vs-correct deltas; mean-centered variant.
+**Blockers:** None.
+
+---
+
 ## 2026-06-15 — Stream E follow-up: stable-rank + pairwise-cos per layer, all vs GPT-4-correct
 
 **Owner:** Coordinator (tmux "oneshot-geometry"). **Status:** DONE.
@@ -267,6 +607,68 @@ tasks each), persisted train-pooled FVs top-10/20/40 (4 each), task-specific FVs
 **Next:** run `evaluate_function_vector.py --compute_baseline` for the 4 tasks to get the no-FV
 zero-shot/10-shot baselines → report the FV's causal steering DELTA (the meaningful metric).
 **Blockers:** None.
+
+### 2026-06-15 — Stream G2: CONSTRAINED FV re-extraction (overlap contamination fix)
+
+**Why:** user flagged (confirmed) that the FV extraction AND steering eval were contaminated by the
+OVERLAP region. The flat magnitude zero-shot steering 0.57 == the positive (overlap) fraction of the
+test set (12/21) — the model just copies, gets overlap positives right regardless of the FV. On
+overlap queries magnitude≡identity, so they tell us nothing and dilute the FV.
+
+**Fix (recipe agreed w/ user):** every 10-shot extraction prompt = **5 overlap + 5 differentiator
+demos** (order shuffled), **query = differentiator**, keep only **correct** responses. Same for the
+steering eval queries (differentiators only — TODO).
+
+**Implemented:**
+- Expanded the 4 datasets to **150 overlap + 150 differ** (was 50/50) so train+valid differentiator
+  pools are healthy (BIG=150 in `create_ambiguous_datasets.py`). NB the disambiguation-eval results
+  above used the 50/50 version.
+- Additive `prompt_sampler` hook on `get_mean_head_activations` (extract_utils) and
+  `compute_indirect_effect` — default None = original 29-task behavior untouched.
+- NEW `src/eval_scripts/compute_ambiguous_constrained_fv.py`: builds the 5+5/differ-query sampler,
+  filters valid-differ queries to model-correct, runs mean-act + CIE via the hook, saves task-specific
+  FV to `results/gptj_fv_ambiguous_constrained/<task>/` (mirrors gptj_fv layout).
+- **GOTCHA fixed:** script must call `torch.set_grad_enabled(False)` (stock compute_function_vectors
+  does it in main) — without it the extraction forwards retain the autograd graph → OOM on the 24GB card.
+
+**Smoke (magnitude):** train overlap=102 differ=108, valid differ=12 → 12/12 correct query pool; FV
+norm 50.8; top heads (12,10)(15,5)(8,1)(13,13)(20,0) = canonical FV heads (vs the contaminated run).
+Full 4-task extraction running.
+
+**DONE — constrained FVs + differentiator-restricted steering.** Built train-pooled FVs (top10/20/40)
+from constrained mean acts (`results/gptj_fv_ambiguous_constrained_top{10,20,40}/`); added additive
+`--restrict_differentiator`/`--partners` to evaluate_heldout; steering →
+`results/heldout_constrained_differ_top{10,20,40}/`, plots →
+`results/heldout_constrained_differ_plots/`. Driver `run_constrained_steering.sh`. Differentiator test
+queries: magnitude/identity **30**, count_vowels/consonants **12/10**.
+
+**RESULTS — best zero-shot FV-steering top-1 over L3–27 (excl. L0–2 embedding artifact);
+10-shot-shuffled in parens. DIFFERENTIATOR queries only:**
+
+| task | nq | task-specific | train10 | train20 | train40 |
+|---|---|---|---|---|---|
+| magnitude | 30 | **1.00@L14 (1.00)** | 0.20@L12 (0.83) | 0.17@L12 (0.97) | 0.23@L12 (1.00) |
+| identity | 30 | 1.00@L3 (1.00) | 1.00 (1.00) | 1.00 (1.00) | 1.00 (1.00) |
+| count_vowels | 12 | 0.00 (0.67) | 0.00 (0.67) | 0.00 (0.67) | 0.00 (0.67) |
+| count_consonants | 10 | 0.10@L27 (0.70) | 0.00 (0.70) | 0.00 (0.60) | 0.00 (0.60) |
+
+**FINDINGS (the contamination fix changes the conclusions):**
+- **magnitude task-specific FV genuinely steers zero-shot** — clean mid-layer plateau **~0.9–1.0 across
+  L7–14, dead by L16** (classic FV causal window). The old flat 0.57 was purely overlap-copy; on
+  differentiator queries the real effect (≈1.0) is now visible.
+- **task-specific ≫ train-pooled for magnitude zero-shot** (1.00 vs ~0.20) — the generic 20-train-task
+  pooled heads do NOT encode the magnitude-distinguishing computation; adding heads (10→40) barely
+  helps (0.20→0.23). 10-shot-shuffled is high for all (context carries it). Contrast the 29-task result
+  where train-pooled ≈ task-specific.
+- **identity = trivial-copy confound** — 1.0 everywhere for BOTH FV types (copying a negative is trivial
+  zero-shot), so it's not evidence of FV efficacy.
+- **count_* = competence failure** — 0.00 zero-shot steering regardless of FV/heads; only weak
+  context-present (fs 0.6–0.7) on tiny n (10–12). Constrained extraction gave count FVs tiny CIE
+  (~0.003) and 4–5-query pools → no usable steering signal.
+
+**Takeaway:** of the two carried-forward pairs, **magnitude/identity is the one with a real, strong,
+cleanly-steerable distinguishing FV (task-specific, mid-layer)**; count vowels/consonants is
+competence-limited and does not yield a steerable FV. **Blockers:** None.
 
 ---
 

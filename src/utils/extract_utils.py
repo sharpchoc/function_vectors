@@ -43,7 +43,7 @@ def gather_attn_activations(prompt_data, layers, dummy_labels, model, tokenizer,
 
     return td, idx_map, idx_avg
 
-def get_mean_head_activations(dataset, model, model_config, tokenizer, n_icl_examples = 10, N_TRIALS = 100, shuffle_labels=False, prefixes=None, separators=None, filter_set=None, batch_size=1):
+def get_mean_head_activations(dataset, model, model_config, tokenizer, n_icl_examples = 10, N_TRIALS = 100, shuffle_labels=False, prefixes=None, separators=None, filter_set=None, batch_size=1, prompt_sampler=None):
     """
     Computes the average activations for each attention head in the model, where multi-token phrases are condensed into a single slot through averaging.
 
@@ -69,8 +69,11 @@ def get_mean_head_activations(dataset, model, model_config, tokenizer, n_icl_exa
         return activations
 
     def collect_trial_prompt():
-        word_pairs = dataset['train'][np.random.choice(len(dataset['train']),n_icl_examples, replace=False)]
-        word_pairs_test = dataset['valid'][np.random.choice(filter_set,n_test_examples, replace=False)]
+        if prompt_sampler is not None:
+            word_pairs, word_pairs_test = prompt_sampler()
+        else:
+            word_pairs = dataset['train'][np.random.choice(len(dataset['train']),n_icl_examples, replace=False)]
+            word_pairs_test = dataset['valid'][np.random.choice(filter_set,n_test_examples, replace=False)]
         if prefixes is not None and separators is not None:
             prompt_data = word_pairs_to_prompt_data(word_pairs, query_target_pair=word_pairs_test, prepend_bos_token=prepend_bos,
                                                     shuffle_labels=shuffle_labels, prefixes=prefixes, separators=separators)

@@ -116,7 +116,7 @@ def load_gpt_model_and_tokenizer(model_name:str, device='cuda', revision=None):
                       "attn_hook_names":[f'model.layers.{layer}.self_attn.o_proj' for layer in range(model.config.num_hidden_layers)],
                       "layer_hook_names":[f'model.layers.{layer}' for layer in range(model.config.num_hidden_layers)],
                       "prepend_bos":True}
-    elif 'qwen2' in model_name.lower() or 'qwen2.5' in model_name.lower():
+    elif 'qwen' in model_name.lower():  # covers Qwen2 / Qwen2.5 / Qwen3 (same hook layout)
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         tokenizer.pad_token = tokenizer.eos_token
         model_dtype = torch.float16 if str(device).startswith('cuda') else torch.float32

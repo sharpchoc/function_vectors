@@ -193,7 +193,7 @@ def batch_activation_replacement_last_token_intervention(prompt_data_batch, avg_
     return indirect_effect_storage.cpu()
 
 
-def compute_indirect_effect(dataset, mean_activations, model, model_config, tokenizer, n_shots=10, n_trials=25, last_token_only=True, prefixes=None, separators=None, filter_set=None, batch_size=1):
+def compute_indirect_effect(dataset, mean_activations, model, model_config, tokenizer, n_shots=10, n_trials=25, last_token_only=True, prefixes=None, separators=None, filter_set=None, batch_size=1, prompt_sampler=None):
     """
     Computes Indirect Effect of each head in the model
 
@@ -231,8 +231,11 @@ def compute_indirect_effect(dataset, mean_activations, model, model_config, toke
         filter_set = np.arange(len(dataset['valid']))
     
     def sample_prompt_data():
-        word_pairs = dataset['train'][np.random.choice(len(dataset['train']),n_shots, replace=False)]
-        word_pairs_test = dataset['valid'][np.random.choice(filter_set,n_test_examples, replace=False)]
+        if prompt_sampler is not None:
+            word_pairs, word_pairs_test = prompt_sampler()
+        else:
+            word_pairs = dataset['train'][np.random.choice(len(dataset['train']),n_shots, replace=False)]
+            word_pairs_test = dataset['valid'][np.random.choice(filter_set,n_test_examples, replace=False)]
         if prefixes is not None and separators is not None:
             return word_pairs_to_prompt_data(word_pairs, query_target_pair=word_pairs_test, shuffle_labels=True,
                                              prepend_bos_token=prepend_bos, prefixes=prefixes, separators=separators)

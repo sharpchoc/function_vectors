@@ -35,12 +35,16 @@ ABSTRACTIVE = os.path.join(os.path.dirname(__file__), "..", "abstractive")
 N_OVERLAP = 50
 N_DIFFER = 50
 SEED = 0
+# magnitude/identity and count_* are used for the constrained FV extraction (5 overlap + 5
+# differentiator demos, differentiator query), which needs healthy train+valid differentiator
+# pools — so build those four at a larger size.
+BIG = 150
 
 
 # ----------------------------------------------------------------------------
 def build_magnitude_identity():
-    positives = list(range(1, N_OVERLAP + 1))         # overlap: |n| == n
-    negatives = [-k for k in range(1, N_DIFFER + 1)]  # differ:  |n| != n
+    positives = list(range(1, BIG + 1))         # overlap: |n| == n
+    negatives = [-k for k in range(1, BIG + 1)]  # differ:  |n| != n
     inputs = positives + negatives
     magnitude = [{"input": str(n), "output": str(abs(n))} for n in inputs]
     identity = [{"input": str(n), "output": str(n)} for n in inputs]
@@ -268,7 +272,7 @@ def build_vowel_consonant_count():
     vocab = [w for w in _load_vocab() if 3 <= len(w) <= 9]
     eq = [w for w in vocab if vowels(w) == cons(w)]
     neq = [w for w in vocab if vowels(w) != cons(w)]
-    inputs = rng.sample(eq, N_OVERLAP) + rng.sample(neq, N_DIFFER)
+    inputs = rng.sample(eq, BIG) + rng.sample(neq, BIG)
     vowel_count = [{"input": w, "output": str(vowels(w))} for w in inputs]
     cons_count = [{"input": w, "output": str(cons(w))} for w in inputs]
     return vowel_count, cons_count
