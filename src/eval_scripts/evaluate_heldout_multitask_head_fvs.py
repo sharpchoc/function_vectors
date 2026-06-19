@@ -20,6 +20,7 @@ from compute_task_fv_from_multitask_heads import compute_function_vector_from_he
 from src.utils.eval_utils import n_shot_eval, n_shot_eval_no_intervention
 from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from src.utils.prompt_utils import load_dataset
+from utils.paths import ARTIFACTS_ROOT, STEERING_COMPARISON_DIR
 
 
 def parse_args():
@@ -37,13 +38,13 @@ def parse_args():
     parser.add_argument("--task_split_key", type=str, default="test_tasks")
     parser.add_argument("--tasks", nargs="+", default=None, help="Optional explicit task override.")
     parser.add_argument("--root_data_dir", type=str, default="dataset_files")
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"))
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv")
     parser.add_argument(
         "--heads_path",
         type=Path,
-        default=Path("results/multitask_aie_heads/multitask_top_aie_heads.pt"),
+        default=ARTIFACTS_ROOT / "multitask_aie_heads" / "multitask_top_aie_heads.pt",
     )
-    parser.add_argument("--output_root", type=Path, default=Path("results/heldout_multitask_head_eval"))
+    parser.add_argument("--output_root", type=Path, default=STEERING_COMPARISON_DIR / "heldout_multitask_head_eval")
     parser.add_argument("--n_top_heads", type=int, default=10)
     parser.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     parser.add_argument("--revision", type=str, default=None)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Write a small selected_heads.json into each task's function-vector folder.
 
-For a model folder laid out as results/function_vectors/<model>/<method>/<task>/, this
+For a model folder laid out as artifacts/function_vectors/<model>/<method>/<task>/, this
 records which attention heads built each FV:
   * task_specific  -> heads are unique per task; read from that task's *_function_vector.pt
   * train_selected / train_test_selected -> heads are shared; read from the method's heads.pt
@@ -11,13 +11,17 @@ Idempotent: rerun after building new FVs or adding a new model.
 
 Example:
   python src/eval_scripts/write_fv_head_metadata.py \
-    --model_root results/function_vectors/gpt-j --n_top_heads 10
+    --model_root artifacts/function_vectors/gpt-j --n_top_heads 10
 """
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import torch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT
 
 POOL_DESC = {
     "task_specific": "this task only (per-task CIE)",
@@ -30,7 +34,7 @@ POOL_DESC = {
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--model_root", type=Path, default=Path("results/function_vectors/gpt-j"),
+    p.add_argument("--model_root", type=Path, default=ARTIFACTS_ROOT / "function_vectors" / "gpt-j",
                    help="Folder containing <method>/<task>/ subfolders.")
     p.add_argument("--methods", nargs="+", default=list(POOL_DESC),
                    help="Method subfolders to annotate.")

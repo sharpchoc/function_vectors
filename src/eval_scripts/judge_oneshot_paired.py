@@ -3,7 +3,7 @@
 
 First-token exact-match undercounts open-ended tasks (many valid antonyms/synonyms). For each
 task we (1) rebuild the EXACT prompts from the corrected capture
-(results/oneshot_paired_graded/<pair>/grading.json — shared-input query, shared-output demo
+(artifacts/oneshot_paired_graded/<pair>/grading.json — shared-input query, shared-output demo
 label), (2) greedy-generate GPT-J's top-1 answer word, and (3) ask an OpenAI judge whether the
 answer is a valid antonym / synonym of the query. The SAME WORD (or a cap/plural/inflectional
 variant) is explicitly NOT a correct response.
@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import requests
 from utils.prompt_utils import word_pairs_to_prompt_data, create_prompt
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
+from utils.paths import ARTIFACTS_ROOT, LABEL_GEOMETRY_DIR
 
 
 JUDGE_SYSTEMS = {
@@ -71,7 +72,7 @@ JUDGE_SYSTEMS = {
 
 def parse_args():
     p = argparse.ArgumentParser(description="GPT-4-judged top-1 accuracy for paired 1-shot capture (antonym/synonym).")
-    p.add_argument("--graded_dir", type=Path, default=Path("results/oneshot_paired_graded/antonym_synonym"))
+    p.add_argument("--graded_dir", type=Path, default=ARTIFACTS_ROOT / "oneshot_paired_graded" / "antonym_synonym")
     p.add_argument("--function_tasks", nargs="+", default=["antonym", "synonym"])
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--max_new_tokens", type=int, default=8)
@@ -87,7 +88,7 @@ def parse_args():
     p.add_argument("--device", type=str, default="cuda")
     p.add_argument("--prefixes", type=json.loads, default={"input": "Q:", "output": "A:", "instructions": ""})
     p.add_argument("--separators", type=json.loads, default={"input": "\n", "output": "\n\n", "instructions": ""})
-    p.add_argument("--output_root", type=Path, default=Path("results"))
+    p.add_argument("--output_root", type=Path, default=LABEL_GEOMETRY_DIR)
     return p.parse_args()
 
 

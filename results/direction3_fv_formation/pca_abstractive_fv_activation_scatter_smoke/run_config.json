@@ -1,0 +1,89 @@
+{
+  "manifest": {
+    "name": "abstractive_train_test_tasks_29",
+    "description": "Curated train/test split over the 29 abstractive tasks. The 20 train tasks are used to fit PCA bases; the 9 test tasks are held out for projection-only analysis.",
+    "source_dataset_root": "dataset_files/abstractive",
+    "function_vector_root": "results/gptj_fv",
+    "activation_root": "results/residual_activations/gptj_56tasks_170prompts_4tokens",
+    "selection": "Balanced curated mix across lexical transformations, translation, factual associations, simple sequence tasks, and sentiment/classification-style tasks.",
+    "seed": 42,
+    "train_tasks": [
+      "antonym",
+      "synonym",
+      "singular-plural",
+      "present-past",
+      "word_length",
+      "capitalize",
+      "lowercase_first_letter",
+      "lowercase_last_letter",
+      "english-french",
+      "english-german",
+      "english-spanish",
+      "country-capital",
+      "country-currency",
+      "product-company",
+      "person-occupation",
+      "person-sport",
+      "park-country",
+      "next_item",
+      "prev_item",
+      "sentiment"
+    ],
+    "test_tasks": [
+      "ag_news",
+      "capitalize_first_letter",
+      "capitalize_last_letter",
+      "capitalize_second_letter",
+      "commonsense_qa",
+      "landmark-country",
+      "national_parks",
+      "next_capital_letter",
+      "person-instrument"
+    ]
+  },
+  "task_manifest": "task_splits/abstractive_train_test_tasks_29.json",
+  "fv_root": "results/gptj_fv",
+  "activations_root": "results/residual_activations/gptj_56tasks_170prompts_4tokens",
+  "output_dir": "results/pca_abstractive_fv_activation_scatter_smoke",
+  "split": "train",
+  "layer": 11,
+  "token_roles": [
+    "pre_label_token",
+    "first_label_token",
+    "last_label_token",
+    "last_prompt_token"
+  ],
+  "n_components": 2,
+  "train_tasks": [
+    "antonym",
+    "synonym"
+  ],
+  "test_tasks": [
+    "ag_news"
+  ],
+  "all_tasks": [
+    "antonym",
+    "synonym",
+    "ag_news"
+  ],
+  "fv_pca_fit_shape": [
+    2,
+    4096
+  ],
+  "activation_pca_fit_record_counts": {
+    "pre_label_token": 260,
+    "first_label_token": 260,
+    "last_label_token": 260,
+    "last_prompt_token": 260
+  },
+  "projected_fv_count": 3,
+  "projected_activation_count_per_role": {
+    "pre_label_token": 390,
+    "first_label_token": 390,
+    "last_label_token": 390,
+    "last_prompt_token": 390
+  },
+  "coordinate_csv": "results/pca_abstractive_fv_activation_scatter_smoke/pca_projection_points.csv",
+  "plot_png": "results/pca_abstractive_fv_activation_scatter_smoke/layer_11_train_abstractive_fv_activation_pca_grid.png",
+  "plot_pdf": "results/pca_abstractive_fv_activation_scatter_smoke/layer_11_train_abstractive_fv_activation_pca_grid.pdf"
+}

@@ -11,8 +11,8 @@ Method:
   with the repo's normalized exact-match metric.
 
 Outputs per (model, task):
-  results/recreate_fig8/<model_tag>/<task>.json          -- summary accuracy curve + baseline
-  results/recreate_fig8/<model_tag>/<task>_responses.jsonl -- every response, for manual review
+  <GENERAL_DIR>/recreate_fig8/<model_tag>/<task>.json          -- summary accuracy curve + baseline
+  <GENERAL_DIR>/recreate_fig8/<model_tag>/<task>_responses.jsonl -- every response, for manual review
 """
 import os, sys, json, time, argparse
 import numpy as np
@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from utils.prompt_utils import ICLDataset, word_pairs_to_prompt_data, create_prompt
 from utils.eval_utils import exact_match_score
+from utils.paths import GENERAL_DIR
 
 ROOT_DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'dataset_files')
 
@@ -148,8 +149,7 @@ def main():
     ap.add_argument('--max_new_tokens', type=int, default=32)
     ap.add_argument('--do_sample', action='store_true')
     ap.add_argument('--seed', type=int, default=42)
-    ap.add_argument('--out_dir', default=os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                                      '..', 'results', 'recreate_fig8'))
+    ap.add_argument('--out_dir', default=str(GENERAL_DIR / 'recreate_fig8'))
     args = ap.parse_args()
 
     tasks = args.tasks or list_tasks(args.folder)

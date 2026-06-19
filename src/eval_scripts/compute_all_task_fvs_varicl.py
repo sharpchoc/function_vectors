@@ -30,15 +30,16 @@ from src.eval_scripts.compute_all_task_fvs_from_multitask_heads import (
     torch_load_trusted,
 )
 from src.utils.model_utils import load_gpt_model_and_tokenizer
+from src.utils.paths import ARTIFACTS_ROOT
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Build variable-ICL FVs from the train-pooled top-head set for all tasks.")
     parser.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
-    parser.add_argument("--fv_root", type=Path, default=Path("results/multitask_aie_heads_varicl"),
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "multitask_aie_heads_varicl",
                         help="Root holding each task's {task}_mean_head_activations_varicl.pt.")
     parser.add_argument("--heads_path", type=Path,
-                        default=Path("results/multitask_aie_heads_varicl/multitask_top_aie_heads.pt"))
+                        default=ARTIFACTS_ROOT / "multitask_aie_heads_varicl" / "multitask_top_aie_heads.pt")
     parser.add_argument("--n_top_heads", type=int, default=10)
     parser.add_argument("--tasks", nargs="+", default=None,
                         help="Subset of manifest tasks to build (for sharding across instances). "
@@ -46,7 +47,7 @@ def parse_args():
     parser.add_argument("--manifest_name", type=str, default="fv_manifest.json",
                         help="Manifest filename under --output_root. Give each parallel shard a "
                              "distinct name (e.g. fv_manifest.part1.json) so they don't clobber.")
-    parser.add_argument("--output_root", type=Path, default=Path("results/function_vectors/gpt-j/train_varicl"))
+    parser.add_argument("--output_root", type=Path, default=ARTIFACTS_ROOT / "function_vectors" / "gpt-j" / "train_varicl")
     parser.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     parser.add_argument("--revision", type=str, default=None)
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")

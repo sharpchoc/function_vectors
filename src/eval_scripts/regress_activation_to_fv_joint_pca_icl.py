@@ -17,12 +17,16 @@ on held-out test tasks.
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from sklearn.linear_model import LinearRegression
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, FV_FORMATION_DIR
 
 
 # Demonstration examples have no final prompt token, so it is dropped relative to the
@@ -48,20 +52,20 @@ def parse_args():
         )
     )
     parser.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"))
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv")
     parser.add_argument(
         "--activations_root_template",
         type=str,
-        default="results/residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens",
+        default=str(ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens"),
         help="Template with {icl} placeholder for ICL-specific activation roots.",
     )
     parser.add_argument(
         "--pca_root",
         type=Path,
-        default=Path("results/pca_abstractive_icl_examples_fv_activation_scatter"),
+        default=FV_FORMATION_DIR / "pca_abstractive_icl_examples_fv_activation_scatter",
         help="Root with shared fv_pca.pt and per-ICL icl{N}/activation_pca_{role}.pt bases.",
     )
-    parser.add_argument("--output_dir", type=Path, default=Path("results/joint_pca_activation_to_fv_regression_icl"))
+    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "joint_pca_activation_to_fv_regression_icl")
     parser.add_argument("--icl_example_indices", nargs="+", type=int, default=[1, 2, 3, 4])
     parser.add_argument("--split", type=str, default="train")
     parser.add_argument("--layer", type=int, default=11)

@@ -3,22 +3,26 @@
 (fixed-ICL multitask) FV steering curves overlaid. Pure matplotlib from saved JSON -- no GPU.
 
 Per task, reads:
-  - varicl top-N per-layer: results/heldout_varicl_nheads_sweep/<task>/nheads_sweep_by_layer.json
-  - baselines per-layer:    results/heldout_multitask_head_eval/<task>/comparison_summary.json
+  - varicl top-N per-layer: STEERING_COMPARISON_DIR/heldout_varicl_nheads_sweep/<task>/nheads_sweep_by_layer.json
+  - baselines per-layer:    STEERING_COMPARISON_DIR/heldout_multitask_head_eval/<task>/comparison_summary.json
                             (multitask_heads = train-selected fixed-ICL; task_specific_heads)
 Writes <task>_nheads_sweep_with_baselines.png (zero-shot + 10-shot-shuffled panels).
 """
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import STEERING_COMPARISON_DIR
+
 
 def parse_args():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--sweep_root", type=Path, default=Path("results/heldout_varicl_nheads_sweep"))
-    ap.add_argument("--eval_root", type=Path, default=Path("results/heldout_multitask_head_eval"))
+    ap.add_argument("--sweep_root", type=Path, default=STEERING_COMPARISON_DIR / "heldout_varicl_nheads_sweep")
+    ap.add_argument("--eval_root", type=Path, default=STEERING_COMPARISON_DIR / "heldout_multitask_head_eval")
     ap.add_argument("--n_values", nargs="+", type=int, default=[10, 20, 30, 40])
     ap.add_argument("--tasks", nargs="+", default=None)
     return ap.parse_args()

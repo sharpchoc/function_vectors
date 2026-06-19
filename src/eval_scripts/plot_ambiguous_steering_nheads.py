@@ -2,16 +2,20 @@
 2 panels (zero-shot+FV, 10-shot-shuffled+FV), 4 series each. No GPU."""
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import AMBIGUOUS_DIR
+
 ap = argparse.ArgumentParser()
-ap.add_argument("--eval_prefix", default="results/heldout_ambiguous_eval_top",
+ap.add_argument("--eval_prefix", default=str(AMBIGUOUS_DIR / "heldout_ambiguous_eval_top"),
                 help="dir prefix; the script reads <prefix>{10,20,40}/<task>/comparison_summary.json")
-ap.add_argument("--out", default="results/heldout_ambiguous_eval_nheads_plots")
+ap.add_argument("--out", default=str(AMBIGUOUS_DIR / "heldout_ambiguous_eval_nheads_plots"))
 A = ap.parse_args()
 
 TASKS = ["magnitude", "identity", "count_vowels", "count_consonants"]

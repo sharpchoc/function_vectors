@@ -4,19 +4,25 @@
 __pycache__
 *__pycache__
 
-# Results and Figures
-*results
-results/*
-*figures
-
 # External Data/Repositories
 */generate/AntSynNET
 
-# Weights
+# Weights / bulky data — kept out of git everywhere (incl. tracked results/)
 *.pth
 *.npz
 *.npy
 *.pt
+*.jsonl
+*.log
+
+# Large raw result dumps (study dirs are tracked, but these bulky non-summaries are not)
+per_query.csv
+raw.json
+# per-task response dumps (raw generations rendered to markdown) — not summaries
+results/general/recreate_fig8/**/*.md
+
+# Logs root
+/logs/
 
 # Environments
 .env
@@ -27,3 +33,18 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.openai_key
+
+# Intermediate artifacts root — gitignored EXCEPT the small head-selection metadata
+# (output of the expensive CIE head-ranking; committed so FVs can be rebuilt without recompute).
+# Negations come last so they override `artifacts/**` and the global `*.pt` above.
+artifacts/**
+!artifacts/**/
+!artifacts/**/multitask_top_aie_heads_metadata.json
+!artifacts/**/multitask_top_aie_heads.pt
+!artifacts/**/heads_metadata.json
+!artifacts/**/heads.pt
+!artifacts/**/fv_manifest*.json
+!artifacts/**/selected_heads.json
+# but keep the scratch/test caches fully ignored (their head files are not canonical)
+artifacts/_*/**

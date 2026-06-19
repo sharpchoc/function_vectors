@@ -14,6 +14,7 @@ if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from src.utils.model_utils import load_gpt_model_and_tokenizer
+from src.utils.paths import ARTIFACTS_ROOT
 
 
 def parse_args():
@@ -21,11 +22,11 @@ def parse_args():
         description="Build a task function vector using a saved multitask top-head set."
     )
     parser.add_argument("--task", required=True, help="Task name, e.g. antonym.")
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"))
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv")
     parser.add_argument(
         "--heads_path",
         type=Path,
-        default=Path("results/multitask_aie_heads/multitask_top_aie_heads.pt"),
+        default=ARTIFACTS_ROOT / "multitask_aie_heads" / "multitask_top_aie_heads.pt",
         help="Output .pt from compute_multitask_top_aie_heads.py.",
     )
     parser.add_argument("--mean_activations_path", type=Path, default=None)

@@ -20,11 +20,15 @@ ICL index like the full-dim run.
 import argparse
 import csv
 import json
+import sys
 import time
 from pathlib import Path
 
 import numpy as np
 import torch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, FV_FORMATION_DIR
 
 
 DEFAULT_TEST_TASKS_EXCLUDE_CC_PC = [
@@ -59,14 +63,14 @@ def parse_args():
     p.add_argument("--k_act", type=int, default=16, help="Number of activation PCA components (features).")
     p.add_argument("--k_fv", type=int, default=16, help="Number of FV PCA components (targets).")
     p.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
-    p.add_argument("--fv_root", type=Path, default=Path("results/function_vectors/gpt-j/train_selected"))
+    p.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_selected")
     p.add_argument("--icl_activations_root_template", type=str,
-                   default="results/residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens")
+                   default=str(ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens"))
     p.add_argument("--query_activations_root", type=Path,
-                   default=Path("results/residual_activations/gptj_56tasks_170prompts_4tokens"))
+                   default=ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_4tokens")
     p.add_argument("--splits", nargs="+", default=["train", "test"],
                    help="Activation splits pooled into the 170 feature rows per task.")
-    p.add_argument("--output_dir", type=Path, default=Path("results/pca_ridge_activation_to_fv"))
+    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "pca_ridge_activation_to_fv")
     p.add_argument("--train_tasks", nargs="+", default=None, help="Override train tasks.")
     p.add_argument("--test_tasks", nargs="+", default=None,
                    help="Override test tasks. Default: 9 test minus country-currency/product-company (7).")

@@ -5,6 +5,96 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-06-19 — Results layout: gitignored `artifacts/` vs tracked, direction-bucketed `results/`
+
+**Convention (use for all new scripts):** import paths from `src/utils/paths.py`; never hardcode
+`results/...`. Roots are REPO_ROOT-anchored and env-overridable (`FV_ARTIFACTS_ROOT`, `FV_RESULTS_ROOT`,
+`FV_LOGS_ROOT`):
+- **`ARTIFACTS_ROOT`** (`artifacts/`, gitignored) — intermediate caches: activations, captures, function
+  vectors, head selections, scratch. Write all recomputable `.pt`/`.jsonl` here.
+- **`RESULTS_ROOT`** (`results/`, TRACKED) — study deliverables, in 5 bucket constants by research
+  direction: `AMBIGUOUS_DIR` (d1), `LABEL_GEOMETRY_DIR` (d2), `FV_FORMATION_DIR` (d3),
+  `STEERING_COMPARISON_DIR`, `GENERAL_DIR`. Put figures in `<bucket>/<exp>/figures/` or `<bucket>/figures/`.
+- **`LOGS_ROOT`** (`logs/`, gitignored) — run logs.
+
+**What's committed:** under `results/` only `*.png/*.pdf` + summary `*.csv`/`*.json` (binaries `*.pt/*.npy/
+*.npz/*.jsonl/*.log` and raw dumps `per_query.csv`/`raw.json`/`recreate_fig8/**/*.md` are globally
+ignored). **Exception — head selections ARE committed** even though they live in `artifacts/`: the top-N
+head rankings are the output of the expensive CIE computation, so `multitask_top_aie_heads{.pt,_metadata.json}`,
+`heads.pt`, `heads_metadata.json`, `fv_manifest*.json`, `selected_heads.json` are re-included via
+`.gitignore` negations (so FVs can be rebuilt without recomputing CIE). Scratch dirs (`artifacts/_*/**`)
+are re-ignored.
+
+**Gotchas:** (1) `.gitignore` has NO inline comments — `pattern  # note` makes the comment part of the
+pattern; put comments on their own line. (2) To track files under an ignored dir, ignore by glob
+(`artifacts/**`) + re-include directories (`!artifacts/**/`) + re-include specific filenames, with the
+negations LAST so they beat earlier rules (incl. the global `*.pt`).
+
+---
+
+## 2026-06-19 — Logit-readout switch-steering + clean train/test split (preferred over sample+judge)
+
+For task-switch steering where the gold answers are **single tokens**, prefer the logit readout over
+the sample+judge harness — it's exact, ~100× cheaper, and needs no OpenAI key.
+
+- **Metric:** steer source→target, then in ONE forward read `logit(target_gold) - logit(source_gold)`
+  at the query final token. α=0 = clean baseline (negative = prompt favors source answer); steering
+  pushes it up across zero = the switch. Script: `src/eval_scripts/steer_switch_logit.py`,
+  plot `plot_switch_logit.py` (shaded band = 95% CI of the mean over the n=100 test queries = mean ±
+  1.96·SEM/√n, NOT per-query spread).
+- **DIGIT numerals are all single GPT-J tokens** (verified 0–250, with leading space) — vs word-form
+  numbers where compound forms >20 are multi-token. So for number tasks use the digit datasets
+  (`dataset_files/abstractive/{next,prev}_number_digits.json`, inputs 1–200) to get single-token
+  labels/golds. Word next/prev dropped for single-token analyses.
+- **CLEAN TRAIN/TEST SPLIT (no leakage in either the ICL example or the final query):** the two
+  positions Δ is read at are the demo **label token** (Δ_label) and the query **final token**
+  (Δ_final). So hold out a TEST set of 100 label-overlap (shared-output) words AND 100 input-overlap
+  (shared-input, single-token-gold-both) words; estimate Δ ONLY from disjoint TRAIN words, and draw
+  the 1-shot demo for test prompts only from non-test words too (so a test query can't sneak in via the
+  demo slot). Use **equal n_train (=100 prompt pairs) for every task pair** so Δ quality is comparable.
+- **Derive Δ from our own forward passes on train pairs**, NOT `load_capture_diffs` over the full-pool
+  `oneshot_paired_graded` capture — the latter pools over the whole shared vocabulary and overlaps the
+  eval queries (train-on-test). Only hold out the **test query words** from Δ (the positions read);
+  excluding their *golds* too is unnecessary and decimates the small digit pool (collapsed Δ to 5
+  words in one run).
+- **No correctness filtering on Δ collection (deliberate):** activations are averaged over all train
+  pairs regardless of whether the model answers correctly — this diverges from the standard
+  ICL-correct-filtered FV recipe (`get_mean_head_activations`) and likely leaves Δ noisier (1-shot
+  competence is modest), but the user chose to keep it blind. Revisit if Δ looks weak.
+- **Finding:** two distinct causal windows by injection site — demo-label peaks early (L4–8, dead by
+  ~L14); final-prompt-token peaks later (L10–12) and reaches larger logit-diffs. All effects gone by
+  ~L16–20.
+
+---
+
+## 2026-06-18 — Behavioral switch-steering harness + GPT-4 judge must be parallelized
+
+`src/eval_scripts/steer_switch_judge.py` (Stream E) is the behavioral analog of the logit-level
+`steer_label_to_query.py`: inject `sign·α·Δ_site(L)` into a source-task 1-shot prompt, **generate**
+n=10 temp-1 samples, **GPT-4-judge** them for the *target* task, sweep layer×α → accuracy curves.
+
+- **Reuse, don't recompute:** the per-site steering vectors come straight from the existing
+  `results/oneshot_paired_graded/<pair>/` captures via `load_capture_diffs` (`source` role →
+  Δ_label, `target` role → Δ_final). No new capture. sign = +1 if target is f1 (Δ is f1−f2) else −1.
+- **Steering hook during generation:** baukit `edit_output`, add the vector at a per-row position
+  **only on the prompt forward** (`output[0].shape[1] > 1`); cached single-token steps are skipped so
+  the perturbation propagates through the KV cache. Replicate prompts ×n_samples explicitly
+  (prompt-major order) + left-pad; label-site idx = pad_len + label_pos, final-site idx = −1.
+- **α=0 baseline is layer/site-independent** → generate & judge it once per direction, draw flat.
+  Sanity: an unsteered *source*-task prompt judged for the *target* task scores LOW (antonym-demo →
+  synonym ≈ 0.08), confirming headroom for steering to lift.
+- **GPT-4 judge MUST be concurrent.** The stock sequential `judge()` in `judge_oneshot_paired.py`
+  runs ~7 batches/min (~8s/request) → ~27h for this sweep's 11k batches. A `ThreadPoolExecutor`
+  (`judge_parallel`, `--judge_workers 40`, order-preserving, with exp-backoff retry on transient
+  HTTP/JSON errors) cuts it to ~40 min. Use this pattern for any large judge run.
+- **Throughput seen on the 24GB Blackwell:** GPT-J generation ~140 samples/s (gen_batch=20 queries ×
+  n_samples=10 = 200 rows/generate call); the full 564k-sample sweep generated in ~50 min.
+- **OPENAI_API_KEY is NOT in this session's env or /proc/1/environ** (unlike earlier streams). An
+  interactive-shell `export` does NOT reach the agent's fresh shells. Workable route: write the key to
+  a gitignored file (`.openai_key`, chmod 600) and `set -a; . ./.openai_key; set +a` before the run.
+
+---
+
 ## 2026-06-18 — variable-ICL FV variant capped at max 4 demos (top-40); zero-shot steering cost is small
 
 New `train_varicl` sibling that caps the per-prompt random ICL count at **1–4 demos** (`--max_shots 4`)

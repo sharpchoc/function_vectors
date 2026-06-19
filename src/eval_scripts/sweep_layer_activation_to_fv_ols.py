@@ -24,6 +24,7 @@ per ICL example. Defaults to ICL examples 1-5.
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -31,6 +32,9 @@ import numpy as np
 import torch
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, FV_FORMATION_DIR
 
 
 DEFAULT_TOKEN_ROLES = [
@@ -48,13 +52,13 @@ TOKEN_TITLES = {
 def parse_args():
     parser = argparse.ArgumentParser(description="Sweep layers for the OLS joint-PCA activation->FV regression (full-dim MSE).")
     parser.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"))
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv")
     parser.add_argument(
         "--activations_root_template",
         type=str,
-        default="results/residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens",
+        default=str(ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_icl{icl}_3tokens"),
     )
-    parser.add_argument("--output_dir", type=Path, default=Path("results/layer_sweep_activation_to_fv_ols"))
+    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "layer_sweep_activation_to_fv_ols")
     parser.add_argument("--icl_example_indices", nargs="+", type=int, default=[1, 2, 3, 4, 5])
     parser.add_argument("--token_roles", nargs="+", default=DEFAULT_TOKEN_ROLES)
     parser.add_argument("--k", type=int, default=16, help="Activation-side PCA components.")

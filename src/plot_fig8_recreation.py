@@ -2,16 +2,19 @@
 Plot the recreated Figure 8 (and the ambiguous-task companion) with TWO model lines per
 panel (GPT-J and Qwen3-8B-Base) plus the dotted majority-label baseline.
 
-Reads results/recreate_fig8/<model_tag>/<task>.json produced by recreate_fig8.py.
+Reads <GENERAL_DIR>/recreate_fig8/<model_tag>/<task>.json produced by recreate_fig8.py.
 """
-import os, json, math, argparse
+import os, sys, json, math, argparse
+from pathlib import Path
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from utils.paths import AMBIGUOUS_DIR, GENERAL_DIR
+
 HERE = os.path.dirname(os.path.abspath(__file__))
-RESULTS = os.path.join(HERE, '..', 'results', 'recreate_fig8')
-FIGDIR = os.path.join(HERE, '..', 'figures')
+RESULTS = str(GENERAL_DIR / 'recreate_fig8')
 
 # The 25 abstractive tasks shown in the paper's Figure 8 (filename order matches the paper grid)
 PAPER_FIG8 = [
@@ -73,7 +76,7 @@ def make_grid(tasks, folder, out_png, ncols=4, title=None):
     if title:
         fig.suptitle(title, fontsize=12, y=1.0)
     fig.tight_layout(rect=[0, 0.03, 1, 0.99])
-    os.makedirs(FIGDIR, exist_ok=True)
+    os.makedirs(os.path.dirname(out_png), exist_ok=True)
     fig.savefig(out_png, dpi=160, bbox_inches='tight')
     print('wrote', out_png)
 
@@ -89,11 +92,11 @@ def main():
     ap.add_argument('--which', choices=['abstractive', 'ambiguous'], required=True)
     args = ap.parse_args()
     if args.which == 'abstractive':
-        make_grid(PAPER_FIG8, 'abstractive', os.path.join(FIGDIR, 'fig8_abstractive_2models.png'),
+        make_grid(PAPER_FIG8, 'abstractive', str(GENERAL_DIR / 'figures' / 'fig8_abstractive_2models.png'),
                   title='Figure 8 recreation — few-shot ICL accuracy (abstractive tasks)')
     else:
         tasks = all_tasks('ambiguous')
-        make_grid(tasks, 'ambiguous', os.path.join(FIGDIR, 'fig_ambiguous_2models.png'),
+        make_grid(tasks, 'ambiguous', str(AMBIGUOUS_DIR / 'figures' / 'fig_ambiguous_2models.png'),
                   title='Few-shot ICL accuracy (ambiguous tasks)')
 
 

@@ -4,23 +4,25 @@ n_top_heads (10/20/40) into a single PNG per task, with the task-specific FV as 
 reference line.
 
 Reads each n's per-task comparison_summary.json (full per-layer curves) from
-results/heldout_multitask_head_eval{,_top20,_top40}/ and writes one combined PNG per task
+STEERING_COMPARISON_DIR/heldout_multitask_head_eval{,_top20,_top40}/ and writes one combined PNG per task
 (+ an aggregate mean-over-tasks PNG) into a single output folder. Pure plotting; no model.
 """
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import STEERING_COMPARISON_DIR
 
 # n_top_heads -> results root. n=10 is the pre-existing baseline folder; n=20/40 are
-# consolidated under one parent (results/heldout_multitask_head_eval_nheads/top{20,40}).
-NHEADS_DIR = REPO_ROOT / "results/heldout_multitask_head_eval_nheads"
+# consolidated under one parent (heldout_multitask_head_eval_nheads/top{20,40}).
+NHEADS_DIR = STEERING_COMPARISON_DIR / "heldout_multitask_head_eval_nheads"
 DEFAULT_ROOTS = {
-    10: REPO_ROOT / "results/heldout_multitask_head_eval",
+    10: STEERING_COMPARISON_DIR / "heldout_multitask_head_eval",
     20: NHEADS_DIR / "top20",
     40: NHEADS_DIR / "top40",
 }

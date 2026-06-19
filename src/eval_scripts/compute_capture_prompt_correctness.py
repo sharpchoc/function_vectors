@@ -34,6 +34,7 @@ from extract_targeted_residual_stream_activations import (
     sample_demo_indices,
     make_prompt,
 )
+from utils.paths import ARTIFACTS_ROOT, FV_FORMATION_DIR
 
 
 def parse_args():
@@ -41,9 +42,9 @@ def parse_args():
     p.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
     p.add_argument("--splits", nargs="+", default=["train", "test"])
     p.add_argument("--capture_root", type=Path,
-                   default=Path("results/residual_activations/gptj_56tasks_170prompts_4tokens"),
+                   default=ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_4tokens",
                    help="Capture dir whose index.json query_indices are cross-checked for alignment.")
-    p.add_argument("--output_dir", type=Path, default=Path("results/cosine_activation_to_task_fv"))
+    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "cosine_activation_to_task_fv")
     p.add_argument("--root_data_dir", type=str, default="dataset_files")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--revision", type=str, default=None)

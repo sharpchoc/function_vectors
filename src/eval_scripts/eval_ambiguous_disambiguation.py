@@ -31,6 +31,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from utils.prompt_utils import word_pairs_to_prompt_data, create_prompt
+from utils.paths import AMBIGUOUS_DIR
 
 AMBIG_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "dataset_files", "ambiguous")
 
@@ -206,7 +207,7 @@ def main():
                          "exact = full-answer greedy exact match (generation)")
     ap.add_argument("--beam_k", type=int, default=5, help="num beams for wordtopk")
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--output", default="results/ambiguous_disambiguation/eval_summary.json")
+    ap.add_argument("--output", default=str(AMBIGUOUS_DIR / "ambiguous_disambiguation" / "eval_summary.json"))
     args = ap.parse_args()
 
     set_seed(args.seed)

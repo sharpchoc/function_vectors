@@ -23,7 +23,7 @@ Per layer L (all 28) we compute:
       rotation-like tests (||M^T M - I||_F on the active subspace, ||M dx||/||dx||
       mean/std, orthogonal Procrustes residual vs ridge residual).
 
-Outputs under results/oneshot_paired_analysis/<task_pair>/:
+Outputs under direction2_label_geometry/oneshot_paired_analysis/<task_pair>/:
     label_geometry.json, final_geometry.json, fv_projection.json,
     source_target_map.json, summary.csv, fig_*.png
 """
@@ -49,6 +49,7 @@ from regress_activation_to_fv_pca_ridge import (
     ridge_eig_prep,
     ridge_predict,
 )
+from utils.paths import ARTIFACTS_ROOT, LABEL_GEOMETRY_DIR
 
 
 TASK_PAIRS = {
@@ -62,9 +63,9 @@ RR_RANKS = [1, 2, 4, 8, 16, 32]
 def parse_args():
     p = argparse.ArgumentParser(description="Geometry analysis of paired 1-shot ICL activations.")
     p.add_argument("--task_pair", choices=sorted(TASK_PAIRS), default="antonym_synonym")
-    p.add_argument("--capture_root", type=str, default="results/oneshot_paired")
-    p.add_argument("--fv_root", type=str, default="results/function_vectors/gpt-j/train_selected")
-    p.add_argument("--output_root", type=str, default="results/oneshot_paired_analysis")
+    p.add_argument("--capture_root", type=str, default=str(ARTIFACTS_ROOT / "oneshot_paired"))
+    p.add_argument("--fv_root", type=str, default=str(ARTIFACTS_ROOT / "function_vectors" / "gpt-j" / "train_selected"))
+    p.add_argument("--output_root", type=str, default=str(LABEL_GEOMETRY_DIR / "oneshot_paired_analysis"))
     p.add_argument("--ridge_alpha", type=float, default=1.0, help="Ridge lambda for the source->target map.")
     p.add_argument("--n_folds", type=int, default=5,
                    help="K-fold for held-out R^2 of the source->target map; <=0 or >=W uses leave-one-out.")

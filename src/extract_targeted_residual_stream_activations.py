@@ -10,6 +10,7 @@ from baukit import TraceDict
 from tqdm import tqdm
 
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
+from utils.paths import ARTIFACTS_ROOT
 from utils.prompt_utils import get_token_meta_labels, load_dataset, word_pairs_to_prompt_data
 
 
@@ -33,7 +34,7 @@ def parse_args():
     parser.add_argument(
         "--save_path_root",
         type=str,
-        default="results/residual_activations/gptj_40tasks_170prompts_4tokens",
+        default=str(ARTIFACTS_ROOT / "residual_activations" / "gptj_40tasks_170prompts_4tokens"),
     )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--test_split", type=float, default=0.3)

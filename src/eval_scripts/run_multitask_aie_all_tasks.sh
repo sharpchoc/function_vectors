@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Parallel CIE / top-AIE-head selection over ALL abstractive tasks (train_tasks + test_tasks
 # from task_splits/abstractive_train_test_tasks_29.json), stored separately from the
-# train-only run in results/multitask_aie_heads.
+# train-only run in "$ARTIFACTS/multitask_aie_heads".
 #
 # GPT-J loads in fp16 (~12 GB), so several instances fit on one 80 GB A100. Each worker
 # process owns a disjoint shard of tasks (tasks[shard::NUM_SHARDS]) and writes per-task
@@ -13,11 +13,12 @@
 #
 # Env overrides: CUDA_VISIBLE_DEVICES (default 0), NUM_SHARDS, SAVE_PATH_ROOT.
 set -euo pipefail
+ARTIFACTS="${FV_ARTIFACTS_ROOT:-artifacts}"; RESULTS="${FV_RESULTS_ROOT:-results}"; LOGS="${FV_LOGS_ROOT:-logs}"
 
 cd "$(dirname "$0")/../.."   # repo root
 
 NUM_SHARDS="${1:-${NUM_SHARDS:-3}}"
-SAVE_PATH_ROOT="${2:-${SAVE_PATH_ROOT:-results/multitask_aie_heads_all_tasks}}"
+SAVE_PATH_ROOT="${2:-${SAVE_PATH_ROOT:-$ARTIFACTS/multitask_aie_heads_all_tasks}}"
 export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 
 SCRIPT="src/eval_scripts/compute_multitask_top_aie_heads.py"

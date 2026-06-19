@@ -13,7 +13,7 @@ first-token prediction of the query answer against the dataset gold for q
 Only prompts whose query q has a gold entry as an INPUT in that task's dataset are
 scored (antonym 464, synonym 389; 853 total for antonym_synonym).
 
-Outputs results/oneshot_paired_scored/<pair>/scores.json.
+Outputs <LABEL_GEOMETRY_DIR>/oneshot_paired_scored/<pair>/scores.json.
 """
 import argparse
 import hashlib
@@ -31,6 +31,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from utils.prompt_utils import word_pairs_to_prompt_data, create_prompt
+from utils.paths import LABEL_GEOMETRY_DIR
 
 TASK_PAIRS = {
     "antonym_synonym": ("antonym", "synonym"),
@@ -64,7 +65,7 @@ def parse_args():
     p.add_argument("--root_data_dir", type=str, default="dataset_files")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
-    p.add_argument("--output_root", type=str, default="results/oneshot_paired_scored")
+    p.add_argument("--output_root", type=str, default=str(LABEL_GEOMETRY_DIR / "oneshot_paired_scored"))
     p.add_argument("--prefixes", type=json.loads, default={"input": "Q:", "output": "A:", "instructions": ""})
     p.add_argument("--separators", type=json.loads, default={"input": "\n", "output": "\n\n", "instructions": ""})
     return p.parse_args()

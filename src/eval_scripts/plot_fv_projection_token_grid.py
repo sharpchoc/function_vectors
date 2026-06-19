@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, GENERAL_DIR
 
 
 TOKEN_ROLES = ["pre_label_token", "first_label_token", "last_label_token"]
@@ -24,7 +28,7 @@ def parse_args():
         )
     )
     parser.add_argument("--activations_root", type=Path, required=True)
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"))
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv")
     parser.add_argument("--tasks", nargs=2, default=["antonym", "synonym"])
     parser.add_argument("--x_task", type=str, default="synonym")
     parser.add_argument("--y_task", type=str, default="antonym")
@@ -198,7 +202,7 @@ def main():
     }
     grid_data = load_grid_data(args, basis)
 
-    output_dir = args.output_dir or args.activations_root / "fv_projection_token_position_grid"
+    output_dir = args.output_dir or GENERAL_DIR / "embedding_geometry" / "fv_projection_token_position_grid"
     output_path = plot_grid(args, grid_data, fv_markers, output_dir)
 
     config = {

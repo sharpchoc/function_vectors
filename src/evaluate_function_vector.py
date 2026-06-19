@@ -8,6 +8,7 @@ from utils.intervention_utils import *
 from utils.model_utils import *
 from utils.eval_utils import *
 from utils.extract_utils import *
+from utils.paths import RESULTS_ROOT
 from compute_indirect_effect import compute_indirect_effect
 
 if __name__ == "__main__":
@@ -19,7 +20,7 @@ if __name__ == "__main__":
     parser.add_argument('--edit_layer', help='Layer for intervention. If -1, sweep over all layers', type=int, required=False, default=-1) # 
     parser.add_argument('--model_name', help='Name of model to be loaded', type=str, required=False, default='EleutherAI/gpt-j-6b')
     parser.add_argument('--root_data_dir', help='Root directory of data files', type=str, required=False, default='../dataset_files')
-    parser.add_argument('--save_path_root', help='File path to save to', type=str, required=False, default='../results')
+    parser.add_argument('--save_path_root', help='File path to save to', type=str, required=False, default=str(RESULTS_ROOT))
     parser.add_argument('--ie_path_root', help='File path to load indirect effects from', type=str, required=False, default=None)
     parser.add_argument('--seed', help='Randomized seed', type=int, required=False, default=42)
     parser.add_argument('--device', help='Device to run on',type=str, required=False, default='cuda' if torch.cuda.is_available() else 'cpu')

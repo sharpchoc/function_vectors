@@ -34,6 +34,7 @@ with the (k_activations / k_FV) pair used.
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -41,6 +42,9 @@ import numpy as np
 import torch
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, FV_FORMATION_DIR
 
 
 DEFAULT_TOKEN_ROLES = ["pre_label_token", "first_label_token", "last_label_token"]
@@ -54,13 +58,13 @@ TOKEN_TITLES = {
 def parse_args():
     parser = argparse.ArgumentParser(description="Log-spaced (doubling) k sweep for the DIRECT k_activations->k_FV PCA OLS regression.")
     parser.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv_multitask_top10"))
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv_multitask_top10")
     parser.add_argument(
         "--activations_root_template",
         type=str,
-        default="results/residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens",
+        default=str(ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_icl{icl}_3tokens"),
     )
-    parser.add_argument("--output_dir", type=Path, default=Path("results/k_sweeps/activation_to_fv_direct_ols_multitask_top10_log2"))
+    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "k_sweeps" / "activation_to_fv_direct_ols_multitask_top10_log2")
     parser.add_argument("--icl_example_indices", nargs="+", type=int, default=[2, 3, 4, 5])
     parser.add_argument("--token_roles", nargs="+", default=DEFAULT_TOKEN_ROLES)
     parser.add_argument("--layer", type=int, default=11)

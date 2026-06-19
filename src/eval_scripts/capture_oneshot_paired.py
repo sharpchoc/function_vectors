@@ -41,6 +41,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from utils.prompt_utils import word_pairs_to_prompt_data
+from utils.paths import ARTIFACTS_ROOT
 
 from extract_residual_stream_activations import (
     flush_shard,
@@ -77,7 +78,7 @@ def parse_args():
     parser.add_argument("--max_words", type=int, default=None,
                         help="Cap the number of shared output words processed (None=all).")
     parser.add_argument("--store_dtype", choices=["float32", "float16"], default="float32")
-    parser.add_argument("--save_path_root", type=str, default="results/oneshot_paired")
+    parser.add_argument("--save_path_root", type=str, default=str(ARTIFACTS_ROOT / "oneshot_paired"))
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--root_data_dir", type=str, default="dataset_files")
     parser.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")

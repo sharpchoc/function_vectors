@@ -46,6 +46,7 @@ from src.eval_scripts.compute_multitask_top_aie_heads import (
 )
 from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from src.utils.prompt_utils import load_dataset
+from src.utils.paths import ARTIFACTS_ROOT
 from src.utils.varicl_utils import (
     batch_varicl_last_token_intervention,
     build_varicl_prompt_data,
@@ -92,7 +93,7 @@ def parse_args():
     )
     parser.add_argument("--tasks", nargs="+", default=None, help="Optional explicit task subset/override.")
     parser.add_argument("--root_data_dir", type=str, default="dataset_files")
-    parser.add_argument("--save_path_root", type=Path, default=Path("results/multitask_aie_heads_varicl"))
+    parser.add_argument("--save_path_root", type=Path, default=ARTIFACTS_ROOT / "multitask_aie_heads_varicl")
     parser.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     parser.add_argument("--revision", type=str, default=None)
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")

@@ -2,14 +2,14 @@
 """Sample-based correctness for the paired 1-shot capture: n temperature samples per prompt,
 GPT-4-judged, store the FRACTION judged correct (k/n).
 
-For each prompt in results/oneshot_paired_graded/<pair>/grading.json, draw --n_samples completions
+For each prompt in <ARTIFACTS_ROOT>/oneshot_paired_graded/<pair>/grading.json, draw --n_samples completions
 at --temperature (single model load, via num_return_sequences), judge each with the strict per-task
 GPT-4 prompt (reused from judge_oneshot_paired.JUDGE_SYSTEMS), and record k/n. Stamps onto
 grading.json AND every matching activation row (both source and target roles) in shard_*.pt:
   - `frac_correct_temp<T>_n<N>` (float in [0,1])
   - `n_correct_temp<T>_n<N>`    (int 0..N)
 Match key = (function_task, output_word, query) — unique per prompt. In-place rewrite. Writes the
-full per-sample generations + verdicts to results/oneshot_<task>_judge_sample<N>/judged_results.json.
+full per-sample generations + verdicts to <LABEL_GEOMETRY_DIR>/oneshot_<task>_judge_sample<N>/judged_results.json.
 """
 import argparse
 import glob
@@ -21,6 +21,7 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
+from utils.paths import ARTIFACTS_ROOT, LABEL_GEOMETRY_DIR
 from eval_scripts.judge_oneshot_paired import (
     JUDGE_SYSTEMS, get_openai_key, extract_answer, build_prompt, judge,
 )
@@ -28,7 +29,7 @@ from eval_scripts.judge_oneshot_paired import (
 
 def parse_args():
     p = argparse.ArgumentParser(description="n-sample GPT-4-judged fraction-correct for paired 1-shot capture.")
-    p.add_argument("--graded_dir", type=Path, default=Path("results/oneshot_paired_graded/antonym_synonym"))
+    p.add_argument("--graded_dir", type=Path, default=ARTIFACTS_ROOT / "oneshot_paired_graded/antonym_synonym")
     p.add_argument("--function_tasks", nargs="+", default=["antonym", "synonym"])
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--max_new_tokens", type=int, default=8)
@@ -40,7 +41,7 @@ def parse_args():
     p.add_argument("--device", type=str, default="cuda")
     p.add_argument("--prefixes", type=json.loads, default={"input": "Q:", "output": "A:", "instructions": ""})
     p.add_argument("--separators", type=json.loads, default={"input": "\n", "output": "\n\n", "instructions": ""})
-    p.add_argument("--output_root", type=Path, default=Path("results"))
+    p.add_argument("--output_root", type=Path, default=LABEL_GEOMETRY_DIR)
     return p.parse_args()
 
 

@@ -5,10 +5,10 @@ steering comparison.
 The existing held-out eval (`evaluate_heldout_multitask_head_fvs.py`) wrote, for each of the
 9 test tasks, per-layer zero-shot + 10-shot-shuffled intervention top-1 for two methods
 (train-only multitask heads vs task-specific) into
-`results/heldout_multitask_head_eval/<task>/comparison_summary.json`. Rather than recompute
-those (a ~hours-long sweep), this script reuses them and ONLY evaluates the prebuilt
-`train_varicl` FV, using the SAME filter set (clean_rank_list==0 from
-`results/gptj_fv/<task>/fs_results_layer_sweep.json`) and the SAME seed/layer sweep, so the
+`steering_vector_comparison/heldout_multitask_head_eval/<task>/comparison_summary.json`. Rather
+than recompute those (a ~hours-long sweep), this script reuses them and ONLY evaluates the
+prebuilt `train_varicl` FV, using the SAME filter set (clean_rank_list==0 from
+`artifacts/gptj_fv/<task>/fs_results_layer_sweep.json`) and the SAME seed/layer sweep, so the
 new line is directly overlayable. It then writes a 3-series plot
 `<task>_effectiveness_by_layer_with_varicl.png` and a `varicl_comparison_summary.json`.
 """
@@ -39,6 +39,7 @@ from evaluate_heldout_multitask_head_fvs import (
 )
 from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from src.utils.prompt_utils import load_dataset
+from utils.paths import ARTIFACTS_ROOT, STEERING_COMPARISON_DIR
 
 
 def parse_args():
@@ -48,11 +49,11 @@ def parse_args():
     p.add_argument("--tasks", nargs="+", default=None)
     p.add_argument("--root_data_dir", type=str, default="dataset_files")
     # Source of the existing two-series results + the canonical filter set.
-    p.add_argument("--eval_root", type=Path, default=Path("results/heldout_multitask_head_eval"))
-    p.add_argument("--filter_fv_root", type=Path, default=Path("results/gptj_fv"),
+    p.add_argument("--eval_root", type=Path, default=STEERING_COMPARISON_DIR / "heldout_multitask_head_eval")
+    p.add_argument("--filter_fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv",
                    help="Where each task's fs_results_layer_sweep.json (filter source) lives.")
     # The variable-ICL FVs to evaluate.
-    p.add_argument("--varicl_fv_root", type=Path, default=Path("results/function_vectors/gpt-j/train_varicl"))
+    p.add_argument("--varicl_fv_root", type=Path, default=ARTIFACTS_ROOT / "function_vectors" / "gpt-j" / "train_varicl")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--revision", type=str, default=None)
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")

@@ -10,6 +10,7 @@ from compute_indirect_effect import compute_indirect_effect
 from utils.eval_utils import n_shot_eval_no_intervention
 from utils.extract_utils import compute_function_vector, compute_universal_function_vector, get_mean_head_activations
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
+from utils.paths import ARTIFACTS_ROOT
 from utils.prompt_utils import load_dataset
 
 
@@ -21,7 +22,7 @@ def parse_args():
     parser.add_argument("--n_top_heads", type=int, default=10)
     parser.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     parser.add_argument("--root_data_dir", type=str, default="dataset_files")
-    parser.add_argument("--save_path_root", type=str, default="results/gptj_fv")
+    parser.add_argument("--save_path_root", type=str, default=str(ARTIFACTS_ROOT / "gptj_fv"))
     parser.add_argument("--ie_path_root", type=str, default=None, help="Optional root to reuse mean/IE tensors from another result tree.")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")

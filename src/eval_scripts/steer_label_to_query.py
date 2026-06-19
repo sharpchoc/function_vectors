@@ -15,7 +15,7 @@ Setup (1-shot):
     - tasks: antonym_synonym -> (antonym, synonym)  [geometry + behavioral flip]
              landmark_park   -> (landmark-country, park-country)  [geometry only]
 
-Steering vectors (from results/oneshot_paired/<pair>/ shards, roles source/target):
+Steering vectors (from <ARTIFACTS_ROOT>/oneshot_paired/<pair>/ shards, roles source/target):
     Delta_label(L) = mean_w [ act_source(f1,w,L) - act_source(f2,w,L) ]  (label token)
     Delta_final(L) = mean_w [ act_target(f1,w,L) - act_target(f2,w,L) ]  (query final token)
 Default --direction f2_to_f1 adds +Delta (so synonym->antonym for antonym_synonym).
@@ -44,6 +44,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from utils.prompt_utils import get_token_meta_labels, word_pairs_to_prompt_data
+from utils.paths import ARTIFACTS_ROOT, LABEL_GEOMETRY_DIR
 
 # NOTE: extract_residual_stream_activations imports baukit at module top, so we do NOT import
 # from it here (that would pull baukit into this module's top level). Instead we inline its
@@ -146,8 +147,8 @@ def parse_args():
     p.add_argument("--n_queries", type=int, default=None, help="Cap on test queries (None=all).")
     p.add_argument("--control_random", action="store_true",
                    help="Also run a random-vector control matched in norm at the same position.")
-    p.add_argument("--capture_root", type=str, default="results/oneshot_paired")
-    p.add_argument("--output_root", type=str, default="results/oneshot_steering")
+    p.add_argument("--capture_root", type=str, default=str(ARTIFACTS_ROOT / "oneshot_paired"))
+    p.add_argument("--output_root", type=str, default=str(LABEL_GEOMETRY_DIR / "oneshot_steering"))
     p.add_argument("--root_data_dir", type=str, default="dataset_files")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")

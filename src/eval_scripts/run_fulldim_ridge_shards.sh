@@ -18,11 +18,12 @@
 # Monitor:  tmux attach -t "$SESSION"      (Ctrl-b n / Ctrl-b w to switch windows)
 # Then merge:  python src/eval_scripts/merge_fulldim_ridge_results.py --input_dir "$OUTPUT_DIR"
 set -euo pipefail
+ARTIFACTS="${FV_ARTIFACTS_ROOT:-artifacts}"; RESULTS="${FV_RESULTS_ROOT:-results}"; LOGS="${FV_LOGS_ROOT:-logs}"
 
 SESSION="${SESSION:-fvridge}"
 CONCURRENCY="${CONCURRENCY:-3}"
 ICL_INDICES="${ICL_INDICES:-1 2 3 4 5 6 7 8 9 10}"
-OUTPUT_DIR="${OUTPUT_DIR:-results/fulldim_ridge_activation_to_fv}"
+OUTPUT_DIR="${OUTPUT_DIR:-$RESULTS/direction3_fv_formation/fulldim_ridge_activation_to_fv}"
 GPU="${CUDA_VISIBLE_DEVICES:-0}"
 EXTRA_ARGS="${EXTRA_ARGS:-}"
 [ "${OVERWRITE:-0}" = "1" ] && EXTRA_ARGS="$EXTRA_ARGS --overwrite"
@@ -30,7 +31,7 @@ EXTRA_ARGS="${EXTRA_ARGS:-}"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 # Worker is overridable so the same launcher drives the full-dim and PCA-space sweeps, e.g.:
 #   WORKER=src/eval_scripts/regress_activation_to_fv_pca_ridge.py \
-#   OUTPUT_DIR=results/pca_ridge_activation_to_fv SESSION=pcaridge bash <this script>
+#   OUTPUT_DIR="$RESULTS/direction3_fv_formation/pca_ridge_activation_to_fv" SESSION=pcaridge bash <this script>
 WORKER="${WORKER:-src/eval_scripts/regress_activation_to_fv_fulldim_ridge.py}"
 
 read -r -a ALL <<< "$ICL_INDICES"

@@ -24,6 +24,7 @@ import torch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from utils.prompt_utils import load_dataset, word_pairs_to_prompt_data, create_prompt, ICLDataset
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
+from utils.paths import GENERAL_DIR
 
 
 def parse_args():
@@ -45,7 +46,7 @@ def parse_args():
                    help="Explicit dataset json for --all_queries (default: dataset_files/abstractive/<task>.json).")
     p.add_argument("--prefixes", type=json.loads, default={"input": "Q:", "output": "A:", "instructions": ""})
     p.add_argument("--separators", type=json.loads, default={"input": "\n", "output": "\n\n", "instructions": ""})
-    p.add_argument("--output_dir", type=Path, default=Path("results/rhyme_judge_eval"))
+    p.add_argument("--output_dir", type=Path, default=GENERAL_DIR / "rhyme_judge_eval")
     p.add_argument("--device", type=str, default="cuda")
     p.add_argument("--skip_generation", action="store_true",
                    help="Reuse existing generations.json and only (re)run the judge.")

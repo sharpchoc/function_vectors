@@ -6,15 +6,16 @@
 #
 # Usage: bash src/eval_scripts/run_varicl_max4_pipeline.sh
 set -euo pipefail
+ARTIFACTS="${FV_ARTIFACTS_ROOT:-artifacts}"; RESULTS="${FV_RESULTS_ROOT:-results}"; LOGS="${FV_LOGS_ROOT:-logs}"
 
 cd "$(dirname "$0")/../.."   # repo root
 export HF_HOME="${HF_HOME:-/workspace/.cache/huggingface}"
 export HF_HUB_OFFLINE="${HF_HUB_OFFLINE:-1}"
 export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 
-MAIN_ROOT="results/multitask_aie_heads_varicl_max4"
-TEST_ROOT="results/_varicl_testtasks_max4"
-FV_ROOT="results/function_vectors/gpt-j/train_varicl_max4_top40"
+MAIN_ROOT="$ARTIFACTS/multitask_aie_heads_varicl_max4"
+TEST_ROOT="$RESULTS/general/_varicl_testtasks_max4"
+FV_ROOT="$ARTIFACTS/function_vectors/gpt-j/train_varicl_max4_top40"
 LOG_DIR="${MAIN_ROOT}/_logs"
 mkdir -p "${LOG_DIR}"
 

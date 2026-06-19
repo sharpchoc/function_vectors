@@ -1,23 +1,27 @@
 #!/usr/bin/env python
 """Stamp the GPT-4 judge top-1 verdict into the paired-capture activation metadata.
 
-Reads results/oneshot_<task>_judge/judged_results.json for each task and writes a
-`judge_top1` boolean into every matching activation row's metadata (both source and
-target roles) in results/oneshot_paired_graded/<pair>/shard_*.pt, plus into grading.json.
+Reads direction2_label_geometry/oneshot_<task>_judge/judged_results.json for each task and
+writes a `judge_top1` boolean into every matching activation row's metadata (both source and
+target roles) in artifacts/oneshot_paired_graded/<pair>/shard_*.pt, plus into grading.json.
 Match key = (function_task, output_word, query_word) — unique per prompt. In-place rewrite.
 """
 import argparse
 import glob
 import json
+import sys
 from pathlib import Path
 
 import torch
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, LABEL_GEOMETRY_DIR
+
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--graded_dir", type=Path, default=Path("results/oneshot_paired_graded/antonym_synonym"))
-    p.add_argument("--judge_root", type=Path, default=Path("results"))
+    p.add_argument("--graded_dir", type=Path, default=ARTIFACTS_ROOT / "oneshot_paired_graded" / "antonym_synonym")
+    p.add_argument("--judge_root", type=Path, default=LABEL_GEOMETRY_DIR)
     p.add_argument("--function_tasks", nargs="+", default=["antonym", "synonym"])
     p.add_argument("--judge_suffix", type=str, default="",
                    help="Read verdicts from oneshot_<task>_judge<suffix> (e.g. '_temp1').")

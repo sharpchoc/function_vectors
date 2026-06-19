@@ -13,7 +13,7 @@ Per task t in {magnitude, identity}:
     last_label tokens of all 4 demos, plus the query's final predictive position. One row per
     (prompt, position), tagged with role/region/correctness/metadata.
 
-Outputs: results/magnitude_identity_activations/gpt-j-6b/<task>.pt  (+ <task>_correctness.json)
+Outputs: artifacts/magnitude_identity_activations/gpt-j-6b/<task>.pt  (+ <task>_correctness.json)
 
 Run:
   python src/eval_scripts/capture_magnitude_identity_activations.py --model_name EleutherAI/gpt-j-6B
@@ -28,6 +28,7 @@ sys.path.append(os.path.join(HERE, ".."))
 
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from utils.prompt_utils import word_pairs_to_prompt_data, create_prompt
+from utils.paths import ARTIFACTS_ROOT
 from extract_residual_stream_activations import get_residual_stack, selected_token_records
 from eval_scripts.eval_ambiguous_disambiguation import split_overlap_differ, batched_generate
 
@@ -189,8 +190,7 @@ def main():
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--batch_size", type=int, default=100)
     ap.add_argument("--max_new_tokens", type=int, default=12)
-    ap.add_argument("--out_dir", default=os.path.join(
-        HERE, "..", "..", "results", "magnitude_identity_activations", "gpt-j-6b"))
+    ap.add_argument("--out_dir", default=str(ARTIFACTS_ROOT / "magnitude_identity_activations" / "gpt-j-6b"))
     args = ap.parse_args()
 
     set_seed(args.seed)

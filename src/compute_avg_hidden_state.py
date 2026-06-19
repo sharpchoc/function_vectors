@@ -8,6 +8,7 @@ from utils.intervention_utils import *
 from utils.model_utils import *
 from utils.eval_utils import *
 from utils.extract_utils import *
+from utils.paths import RESULTS_ROOT
 
 
 if __name__ == "__main__":
@@ -16,7 +17,7 @@ if __name__ == "__main__":
     parser.add_argument('--dataset_name', help='Name of the dataset to be loaded', type=str, required=True)
     parser.add_argument('--model_name', help='Name of model to be loaded', type=str, required=False, default='EleutherAI/gpt-j-6b')
     parser.add_argument('--root_data_dir', help='Root directory of data files', type=str, required=False, default='../dataset_files')
-    parser.add_argument('--save_path_root', help='File path to save mean activations to', type=str, required=False, default='../results')
+    parser.add_argument('--save_path_root', help='File path to save mean activations to', type=str, required=False, default=str(RESULTS_ROOT))
     parser.add_argument('--n_seeds', help='Number of seeds', type=int, required=False, default=5)
     parser.add_argument('--n_shots', help="Number of shots in each in-context prompt", type=int, required=False, default=10)
     parser.add_argument('--n_trials', help="Number of in-context prompts to average over", type=int, required=False, default=100)

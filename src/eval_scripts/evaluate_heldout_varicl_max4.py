@@ -3,9 +3,11 @@
 against the existing max_shots=10 variable-ICL FV (top-40) and the task-specific FV reference.
 
 Only the max-4 FV is evaluated here (one layer sweep per test task). The max-10 top-40 curve is read
-from the prebuilt nheads sweep (`results/heldout_varicl_nheads_sweep/<task>/nheads_sweep_by_layer.json`,
+from the prebuilt nheads sweep
+(`steering_vector_comparison/heldout_varicl_nheads_sweep/<task>/nheads_sweep_by_layer.json`,
 N=40 entry) and the task-specific curve from the original held-out eval
-(`results/heldout_multitask_head_eval/<task>/comparison_summary.json`, task_specific_heads) — both use
+(`steering_vector_comparison/heldout_multitask_head_eval/<task>/comparison_summary.json`,
+task_specific_heads) — both use
 the SAME filter set / seed / layer sweep, so all three lines are directly overlayable. No recompute of
 the max-10 or task-specific lines, and no no-FV-baseline recompute (the cached fs_results_layer_sweep
 filter is reused).
@@ -36,6 +38,7 @@ from evaluate_heldout_multitask_head_fvs import (
 )
 from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from src.utils.prompt_utils import load_dataset
+from utils.paths import ARTIFACTS_ROOT, STEERING_COMPARISON_DIR
 
 SERIES = [
     ("Zero-shot + FV", "zs_intervention_top1_by_layer"),
@@ -54,16 +57,16 @@ def parse_args():
     p.add_argument("--task_split_key", type=str, default="test_tasks")
     p.add_argument("--tasks", nargs="+", default=None)
     p.add_argument("--root_data_dir", type=str, default="dataset_files")
-    p.add_argument("--max4_fv_root", type=Path, default=Path("results/function_vectors/gpt-j/train_varicl_max4_top40"))
+    p.add_argument("--max4_fv_root", type=Path, default=ARTIFACTS_ROOT / "function_vectors" / "gpt-j" / "train_varicl_max4_top40")
     # Reference curves (read-only, no recompute).
-    p.add_argument("--max10_sweep_root", type=Path, default=Path("results/heldout_varicl_nheads_sweep"),
+    p.add_argument("--max10_sweep_root", type=Path, default=STEERING_COMPARISON_DIR / "heldout_varicl_nheads_sweep",
                    help="Holds <task>/nheads_sweep_by_layer.json with the N=40 max-10 varicl curve.")
     p.add_argument("--max10_n_top_heads", type=str, default="40")
-    p.add_argument("--baseline_eval_root", type=Path, default=Path("results/heldout_multitask_head_eval"),
+    p.add_argument("--baseline_eval_root", type=Path, default=STEERING_COMPARISON_DIR / "heldout_multitask_head_eval",
                    help="Holds <task>/comparison_summary.json with the task_specific_heads curve.")
     # Filter-set source (method-agnostic cached baseline).
-    p.add_argument("--filter_fv_root", type=Path, default=Path("results/gptj_fv"))
-    p.add_argument("--output_root", type=Path, default=Path("results/heldout_varicl_max4_top40"))
+    p.add_argument("--filter_fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv")
+    p.add_argument("--output_root", type=Path, default=STEERING_COMPARISON_DIR / "heldout_varicl_max4_top40")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--revision", type=str, default=None)
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")

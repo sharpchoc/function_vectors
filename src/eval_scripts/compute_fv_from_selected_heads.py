@@ -4,7 +4,7 @@
 Goes quickly from "which heads do we want" -> "function vector for task X" by combining:
   * a head set, from a head-selection artifact (multitask_top_aie_heads.pt or a subset
     selection produced by select_heads_from_cie_subset.py), or given explicitly via --heads
-  * that task's stored mean head activations (reused from results/gptj_fv/<task>/ or any
+  * that task's stored mean head activations (reused from artifacts/gptj_fv/<task>/ or any
     --mean_activations_root; computed and saved once if not present anywhere)
 
 The FV is the sum over selected heads (L,H) of out_proj applied to the head's mean
@@ -13,12 +13,12 @@ last-token activation -- identical to compute_universal_function_vector, but wit
 Examples:
   # FV for one task using the all-tasks multitask head selection
   python src/eval_scripts/compute_fv_from_selected_heads.py \
-    --heads_artifact results/multitask_aie_heads_all_tasks/multitask_top_aie_heads.pt \
+    --heads_artifact artifacts/multitask_aie_heads_all_tasks/multitask_top_aie_heads.pt \
     --tasks antonym --n_top_heads 40
 
   # FVs for several tasks from a subset selection
   python src/eval_scripts/compute_fv_from_selected_heads.py \
-    --heads_artifact results/multitask_aie_heads_all_tasks/subsets/lexical_top_heads.pt \
+    --heads_artifact artifacts/multitask_aie_heads_all_tasks/subsets/lexical_top_heads.pt \
     --tasks antonym synonym country-capital
 """
 import argparse
@@ -38,6 +38,7 @@ for p in (REPO_ROOT, SRC_ROOT):
 from src.utils.extract_utils import get_mean_head_activations
 from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from src.utils.prompt_utils import load_dataset
+from src.utils.paths import ARTIFACTS_ROOT
 
 
 def parse_args():
@@ -65,13 +66,13 @@ def parse_args():
         "--mean_activations_root",
         type=Path,
         nargs="+",
-        default=[Path("results/gptj_fv")],
+        default=[ARTIFACTS_ROOT / "gptj_fv"],
         help="Root(s) searched (in order) for <task>/<task>_mean_head_activations.pt.",
     )
     parser.add_argument(
         "--save_path_root",
         type=Path,
-        default=Path("results/multitask_aie_heads_all_tasks"),
+        default=ARTIFACTS_ROOT / "multitask_aie_heads_all_tasks",
         help="Where to write FVs and any newly-computed mean activations.",
     )
     parser.add_argument("--fv_tag", type=str, default="selected_heads", help="Filename tag for the saved FV.")

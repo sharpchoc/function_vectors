@@ -8,16 +8,16 @@ tasks can be re-aggregated as a prompt-count-weighted mean without recomputing C
 
     mean_subset = sum_t(indirect_effect_sum_t) / sum_t(n_prompts_t)
 
-Examples:
+Examples (paths below live under ARTIFACTS_ROOT, e.g. artifacts/multitask_aie_heads_all_tasks):
   # heads for an explicit subset
   python src/eval_scripts/select_heads_from_cie_subset.py \
-    --cie_root results/multitask_aie_heads_all_tasks \
+    --cie_root artifacts/multitask_aie_heads_all_tasks \
     --tasks antonym synonym country-capital --n_top_heads 40 \
-    --output results/multitask_aie_heads_all_tasks/subsets/lexical_top_heads.pt
+    --output artifacts/multitask_aie_heads_all_tasks/subsets/lexical_top_heads.pt
 
   # heads for the held-out test_tasks split, using the all-tasks CIE cache
   python src/eval_scripts/select_heads_from_cie_subset.py \
-    --cie_root results/multitask_aie_heads_all_tasks \
+    --cie_root artifacts/multitask_aie_heads_all_tasks \
     --task_split_path task_splits/abstractive_train_test_tasks_29.json \
     --task_split_keys test_tasks
 """

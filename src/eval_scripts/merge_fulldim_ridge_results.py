@@ -11,12 +11,16 @@ A "token position" here is the pair (icl_example_index, token_role); the final p
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import FV_FORMATION_DIR
 
 
 ROLE_ORDER = ["pre_label_token", "first_label_token", "last_label_token", "last_prompt_token"]
@@ -30,7 +34,7 @@ ROLE_SHORT = {
 
 def parse_args():
     p = argparse.ArgumentParser(description="Merge full-dim ridge shard results + heatmaps.")
-    p.add_argument("--input_dir", type=Path, default=Path("results/fulldim_ridge_activation_to_fv"))
+    p.add_argument("--input_dir", type=Path, default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv")
     p.add_argument("--expected_cells", type=int, default=899,
                    help="Expected total cell count (31 token positions x 29 layers). 0 to skip the check.")
     return p.parse_args()

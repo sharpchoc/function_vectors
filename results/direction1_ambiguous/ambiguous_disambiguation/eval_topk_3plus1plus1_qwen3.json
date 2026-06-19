@@ -1,0 +1,916 @@
+{
+  "config": {
+    "model_name": "Qwen/Qwen3-8B-Base",
+    "n_prompts": 100,
+    "n_shared_demos": 3,
+    "n_diff_demos": 1,
+    "batch_size": 50,
+    "max_new_tokens": 8,
+    "scoring": "topk",
+    "beam_k": 5,
+    "seed": 42,
+    "output": "results/ambiguous_disambiguation/eval_topk_3plus1plus1_qwen3.json"
+  },
+  "results": {
+    "magnitude": {
+      "pair": "magnitude|identity",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 1.0,
+      "top2": 1.0,
+      "partner_top1": 0.0,
+      "examples": [
+        {
+          "gold": "21",
+          "top2": [
+            "",
+            "-"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "102",
+          "top2": [
+            "",
+            "-"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "31",
+          "top2": [
+            "",
+            "-"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "139",
+          "top2": [
+            "",
+            "-"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "28",
+          "top2": [
+            "",
+            "-"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "identity": {
+      "pair": "magnitude|identity",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 1.0,
+      "top2": 1.0,
+      "partner_top1": 0.0,
+      "examples": [
+        {
+          "gold": "-21",
+          "top2": [
+            "-",
+            ""
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "-102",
+          "top2": [
+            "-",
+            ""
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "-31",
+          "top2": [
+            "-",
+            ""
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "-139",
+          "top2": [
+            "-",
+            ""
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "-28",
+          "top2": [
+            "-",
+            ""
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "past_tense": {
+      "pair": "past_tense|past_participle",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 0.97,
+      "top2": 1.0,
+      "partner_top1": 0.03,
+      "examples": [
+        {
+          "gold": "got",
+          "top2": [
+            "got",
+            "Got"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "froze",
+          "top2": [
+            "froze",
+            "frozen"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "showed",
+          "top2": [
+            "showed",
+            "shown"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "fell",
+          "top2": [
+            "fell",
+            "fallen"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "wore",
+          "top2": [
+            "wore",
+            "worn"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "past_participle": {
+      "pair": "past_tense|past_participle",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 0.42,
+      "top2": 0.91,
+      "partner_top1": 0.58,
+      "examples": [
+        {
+          "gold": "gotten",
+          "top2": [
+            "got",
+            "gotten"
+          ],
+          "top1_correct": false
+        },
+        {
+          "gold": "frozen",
+          "top2": [
+            "frozen",
+            "froze"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "shown",
+          "top2": [
+            "showed",
+            "shown"
+          ],
+          "top1_correct": false
+        },
+        {
+          "gold": "fallen",
+          "top2": [
+            "fallen",
+            "fell"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "worn",
+          "top2": [
+            "wore",
+            "wear"
+          ],
+          "top1_correct": false
+        }
+      ]
+    },
+    "first_letter": {
+      "pair": "first_letter|last_letter",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 0.97,
+      "top2": 0.99,
+      "partner_top1": 0.0,
+      "examples": [
+        {
+          "gold": "f",
+          "top2": [
+            "f",
+            "e"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "c",
+          "top2": [
+            "c",
+            "C"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "s",
+          "top2": [
+            "s",
+            "v"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "f",
+          "top2": [
+            "f",
+            "i"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "p",
+          "top2": [
+            "p",
+            "t"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "last_letter": {
+      "pair": "first_letter|last_letter",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 0.1,
+      "top2": 0.21,
+      "partner_top1": 0.6,
+      "examples": [
+        {
+          "gold": "r",
+          "top2": [
+            "f",
+            "e"
+          ],
+          "top1_correct": false
+        },
+        {
+          "gold": "s",
+          "top2": [
+            "c",
+            "n"
+          ],
+          "top1_correct": false
+        },
+        {
+          "gold": "e",
+          "top2": [
+            "s",
+            "r"
+          ],
+          "top1_correct": false
+        },
+        {
+          "gold": "e",
+          "top2": [
+            "f",
+            "n"
+          ],
+          "top1_correct": false
+        },
+        {
+          "gold": "g",
+          "top2": [
+            "t",
+            "p"
+          ],
+          "top1_correct": false
+        }
+      ]
+    },
+    "capital_city": {
+      "pair": "capital_city|largest_city",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 0.93,
+      "top2": 1.0,
+      "partner_top1": 0.06,
+      "examples": [
+        {
+          "gold": "Sri Jayawardenepura Kotte",
+          "top2": [
+            "Sri",
+            "Col"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "Vaduz",
+          "top2": [
+            "Vad",
+            "V"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "Astana",
+          "top2": [
+            "Ast",
+            "Nur"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "Gitega",
+          "top2": [
+            "B",
+            "G"
+          ],
+          "top1_correct": false
+        },
+        {
+          "gold": "Hanoi",
+          "top2": [
+            "H",
+            "What"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "largest_city": {
+      "pair": "capital_city|largest_city",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 0.25,
+      "top2": 0.62,
+      "partner_top1": 0.75,
+      "examples": [
+        {
+          "gold": "Colombo",
+          "top2": [
+            "Col",
+            "Sri"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "Schaan",
+          "top2": [
+            "Vad",
+            "V"
+          ],
+          "top1_correct": false
+        },
+        {
+          "gold": "Almaty",
+          "top2": [
+            "Al",
+            "Ast"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "Bujumbura",
+          "top2": [
+            "B",
+            "G"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "Ho Chi Minh City",
+          "top2": [
+            "H",
+            "Ho"
+          ],
+          "top1_correct": false
+        }
+      ]
+    },
+    "round": {
+      "pair": "round|truncate",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 1.0,
+      "top2": 1.0,
+      "partner_top1": 1.0,
+      "examples": [
+        {
+          "gold": "40",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "18",
+          "top2": [
+            "",
+            ""
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "30",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "13",
+          "top2": [
+            "",
+            "1"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "37",
+          "top2": [
+            "",
+            ""
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "truncate": {
+      "pair": "round|truncate",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 1.0,
+      "top2": 1.0,
+      "partner_top1": 1.0,
+      "examples": [
+        {
+          "gold": "39",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "17",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "29",
+          "top2": [
+            "",
+            "None"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "12",
+          "top2": [
+            "",
+            "1"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "36",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "first_digit": {
+      "pair": "first_digit|last_digit",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 1.0,
+      "top2": 1.0,
+      "partner_top1": 1.0,
+      "examples": [
+        {
+          "gold": "3",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "1",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "6",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "1",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "3",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "last_digit": {
+      "pair": "first_digit|last_digit",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 1.0,
+      "top2": 1.0,
+      "partner_top1": 1.0,
+      "examples": [
+        {
+          "gold": "0",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "4",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "5",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "4",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "0",
+          "top2": [
+            "",
+            "?"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "american": {
+      "pair": "american|british",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 1.0,
+      "top2": 1.0,
+      "partner_top1": 0.15,
+      "examples": [
+        {
+          "gold": "plow",
+          "top2": [
+            "pl",
+            "Pl"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "theater",
+          "top2": [
+            "theater",
+            "theatre"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "catalog",
+          "top2": [
+            "catalog",
+            "A"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "harbor",
+          "top2": [
+            "harbor",
+            "port"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "jewelry",
+          "top2": [
+            "jewelry",
+            "jewellery"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "british": {
+      "pair": "american|british",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 0.86,
+      "top2": 1.0,
+      "partner_top1": 0.26,
+      "examples": [
+        {
+          "gold": "plough",
+          "top2": [
+            "pl",
+            "Pl"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "theatre",
+          "top2": [
+            "theatre",
+            "theater"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "catalogue",
+          "top2": [
+            "catalogue",
+            "catalog"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "harbour",
+          "top2": [
+            "harbour",
+            "port"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "jewellery",
+          "top2": [
+            "jewellery",
+            "jewelry"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "reverse": {
+      "pair": "reverse|identity_word",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 0.26,
+      "top2": 0.46,
+      "partner_top1": 0.45,
+      "examples": [
+        {
+          "gold": "epar",
+          "top2": [
+            "e",
+            "per"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "lli",
+          "top2": [
+            "ill",
+            "ll"
+          ],
+          "top1_correct": false
+        },
+        {
+          "gold": "dlim",
+          "top2": [
+            "lid",
+            "dl"
+          ],
+          "top1_correct": false
+        },
+        {
+          "gold": "yllat",
+          "top2": [
+            "y",
+            "l"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "weiv",
+          "top2": [
+            "we",
+            "ev"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "identity_word": {
+      "pair": "reverse|identity_word",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 1.0,
+      "top2": 1.0,
+      "partner_top1": 0.0,
+      "examples": [
+        {
+          "gold": "rape",
+          "top2": [
+            "rape",
+            "rap"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "ill",
+          "top2": [
+            "ill",
+            "illness"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "mild",
+          "top2": [
+            "mild",
+            "The"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "tally",
+          "top2": [
+            "tally",
+            "tall"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "view",
+          "top2": [
+            "view",
+            "viewpoint"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "count_vowels": {
+      "pair": "count_vowels|count_consonants",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 1.0,
+      "top2": 1.0,
+      "partner_top1": 1.0,
+      "examples": [
+        {
+          "gold": "2",
+          "top2": [
+            "",
+            "The"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "4",
+          "top2": [
+            "",
+            "The"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "1",
+          "top2": [
+            "",
+            "The"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "3",
+          "top2": [
+            "",
+            ""
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "2",
+          "top2": [
+            "",
+            "The"
+          ],
+          "top1_correct": true
+        }
+      ]
+    },
+    "count_consonants": {
+      "pair": "count_vowels|count_consonants",
+      "n_prompts": 100,
+      "scoring": "topk",
+      "top1": 1.0,
+      "top2": 1.0,
+      "partner_top1": 1.0,
+      "examples": [
+        {
+          "gold": "4",
+          "top2": [
+            "",
+            "The"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "3",
+          "top2": [
+            "",
+            "The"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "3",
+          "top2": [
+            "",
+            "The"
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "5",
+          "top2": [
+            "",
+            ""
+          ],
+          "top1_correct": true
+        },
+        {
+          "gold": "3",
+          "top2": [
+            "",
+            "The"
+          ],
+          "top1_correct": true
+        }
+      ]
+    }
+  }
+}

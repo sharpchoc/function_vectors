@@ -22,6 +22,7 @@ from sklearn.preprocessing import StandardScaler
 
 from plot_fv_projection_scatter import compute_task_fv
 from src.utils.model_utils import load_gpt_model_and_tokenizer
+from src.utils.paths import ARTIFACTS_ROOT
 
 
 def parse_args():
@@ -32,7 +33,7 @@ def parse_args():
             "positions and layers, then writes an accuracy heatmap."
         )
     )
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"))
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv")
     parser.add_argument("--activations_root", type=Path, required=True)
     parser.add_argument("--tasks", nargs=2, default=["antonym", "synonym"])
     parser.add_argument("--x_task", type=str, default="synonym")

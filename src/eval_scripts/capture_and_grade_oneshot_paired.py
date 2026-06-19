@@ -26,7 +26,7 @@ Grading (one extra forward + a short greedy generate per prompt):
     exact_match_full    : greedy generation of len(gold) tokens == gold token ids
     model_top1_token, model_greedy_full : the model's actual output (for inspection)
 
-Outputs results/oneshot_paired_graded/<pair>/:
+Outputs artifacts/oneshot_paired_graded/<pair>/:
     shard_*.pt (+ index.json)  -- activations [rows, 28, 4096] fp32 + rich per-row metadata
     grading.json               -- per-prompt grades (function, w, q, gold, rank, ...)
     scores.json                -- top-1/2/3 summary per task
@@ -47,6 +47,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from utils.prompt_utils import word_pairs_to_prompt_data, create_prompt
+from utils.paths import ARTIFACTS_ROOT
 
 from extract_residual_stream_activations import (
     flush_shard,
@@ -58,6 +59,7 @@ from extract_residual_stream_activations import (
 TASK_PAIRS = {
     "antonym_synonym": ("antonym", "synonym"),
     "next_number_prev_number": ("next_number", "prev_number"),
+    "next_number_digits_prev_number_digits": ("next_number_digits", "prev_number_digits"),
 }
 
 
@@ -75,7 +77,7 @@ def parse_args():
     p.add_argument("--task_pair", choices=sorted(TASK_PAIRS), default="antonym_synonym")
     p.add_argument("--max_words", type=int, default=None)
     p.add_argument("--store_dtype", choices=["float32", "float16"], default="float32")
-    p.add_argument("--save_path_root", type=str, default="results/oneshot_paired_graded")
+    p.add_argument("--save_path_root", type=str, default=str(ARTIFACTS_ROOT / "oneshot_paired_graded"))
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--root_data_dir", type=str, default="dataset_files")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Parallel CIE / top-AIE-head selection under the VARIABLE-ICL regime over the TRAIN
 # abstractive tasks (train_tasks from task_splits/abstractive_train_test_tasks_29.json),
-# stored in results/multitask_aie_heads_varicl.
+# stored in "$ARTIFACTS/multitask_aie_heads_varicl".
 #
 # Each prompt draws a random 1-10 ICL demonstration count, keeps only prompts the model
 # answers correctly (capped at 170 per task), and reads both the mean head activations and
@@ -19,11 +19,12 @@
 #
 # Env overrides: CUDA_VISIBLE_DEVICES (default 0), NUM_SHARDS, SAVE_PATH_ROOT.
 set -euo pipefail
+ARTIFACTS="${FV_ARTIFACTS_ROOT:-artifacts}"; RESULTS="${FV_RESULTS_ROOT:-results}"; LOGS="${FV_LOGS_ROOT:-logs}"
 
 cd "$(dirname "$0")/../.."   # repo root
 
 NUM_SHARDS="${1:-${NUM_SHARDS:-3}}"
-SAVE_PATH_ROOT="${2:-${SAVE_PATH_ROOT:-results/multitask_aie_heads_varicl}}"
+SAVE_PATH_ROOT="${2:-${SAVE_PATH_ROOT:-$ARTIFACTS/multitask_aie_heads_varicl}}"
 export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 
 SCRIPT="src/eval_scripts/compute_multitask_varicl_heads.py"

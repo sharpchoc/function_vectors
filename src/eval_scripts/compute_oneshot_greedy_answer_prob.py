@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Greedy answer probability + probability-gated GPT-4-correct tag for the paired 1-shot capture.
 
-For each prompt in results/oneshot_paired_graded/<pair>/grading.json, regenerate the GREEDY answer
+For each prompt in artifacts/oneshot_paired_graded/<pair>/grading.json, regenerate the GREEDY answer
 while capturing per-step token probabilities, and define the answer probability as the product of
 the greedy (argmax) token probabilities over the ANSWER SPAN = generated tokens before the first
 newline token. For a single-token answer this equals the first-token probability; for a multi-token
@@ -31,11 +31,12 @@ import torch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from utils.prompt_utils import word_pairs_to_prompt_data, create_prompt
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
+from utils.paths import ARTIFACTS_ROOT
 
 
 def parse_args():
     p = argparse.ArgumentParser(description="Greedy answer probability + prob-gated GPT-4-correct tag.")
-    p.add_argument("--graded_dir", type=Path, default=Path("results/oneshot_paired_graded/antonym_synonym"))
+    p.add_argument("--graded_dir", type=Path, default=ARTIFACTS_ROOT / "oneshot_paired_graded" / "antonym_synonym")
     p.add_argument("--function_tasks", nargs="+", default=["antonym", "synonym"])
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--max_new_tokens", type=int, default=8)

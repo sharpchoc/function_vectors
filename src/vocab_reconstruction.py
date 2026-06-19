@@ -7,6 +7,7 @@ from utils.prompt_utils import load_dataset
 from utils.extract_utils import get_mean_head_activations, compute_universal_function_vector
 from utils.eval_utils import n_shot_eval_no_intervention, n_shot_eval
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
+from utils.paths import RESULTS_ROOT
 
 def optim_loop(v_n, target, decoder, loss_fn, optimizer, n_steps:int=1000, verbose:bool=False, restrict_vocab:int=50400):
     if target.shape[-1] != restrict_vocab:
@@ -137,7 +138,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', help='Name of model to be loaded', type=str, required=False, default='EleutherAI/gpt-j-6b')
     parser.add_argument('--root_data_dir', help='Root directory of data files', type=str, required=False, default='../dataset_files')
-    parser.add_argument('--save_path_root', help='File path to save mean activations to', type=str, required=False, default='../results')
+    parser.add_argument('--save_path_root', help='File path to save mean activations to', type=str, required=False, default=str(RESULTS_ROOT))
     parser.add_argument('--n_seeds', help='Number of seeds', type=int, required=False, default=5)
     parser.add_argument('--n_trials', help='Number of trials to use for computing task-conditioned mean head activations', type=int, required=False, default=100)
     parser.add_argument('--n_shots', help='Number of shots to use for prompts when computing task-conditioned mean head activations', type=int, required=False, default=10)

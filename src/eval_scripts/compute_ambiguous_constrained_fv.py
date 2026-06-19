@@ -9,7 +9,7 @@ This makes the FV encode the function that DISTINGUISHES the pair, not the share
 
 Mean head activations + CIE are computed with this sampler (additive `prompt_sampler`
 hook on get_mean_head_activations / compute_indirect_effect); the task-specific FV is
-the top-N heads by CIE. Outputs mirror results/gptj_fv/<task>/ so the downstream
+the top-N heads by CIE. Outputs mirror artifacts/gptj_fv/<task>/ so the downstream
 train-pooled builder and steering eval can consume them via --fv_root.
 
 Run: HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1 python <this>
@@ -29,6 +29,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from utils.prompt_utils import load_dataset, word_pairs_to_prompt_data, create_prompt
 from utils.extract_utils import get_mean_head_activations, compute_function_vector
+from utils.paths import ARTIFACTS_ROOT
 from compute_indirect_effect import compute_indirect_effect
 
 PARTNER = {"magnitude": "identity", "identity": "magnitude",
@@ -96,7 +97,7 @@ def main():
                     default=["magnitude", "identity", "count_vowels", "count_consonants"])
     ap.add_argument("--model_name", default="EleutherAI/gpt-j-6b")
     ap.add_argument("--root_data_dir", default="dataset_files")
-    ap.add_argument("--output_root", default="results/gptj_fv_ambiguous_constrained")
+    ap.add_argument("--output_root", default=str(ARTIFACTS_ROOT / "gptj_fv_ambiguous_constrained"))
     ap.add_argument("--n_each", type=int, default=5, help="demos per region (overlap / differ)")
     ap.add_argument("--n_top_heads", type=int, default=10)
     ap.add_argument("--n_trials", type=int, default=100, help="mean-activation trials")

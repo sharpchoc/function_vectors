@@ -7,6 +7,7 @@ Also a 4x2 aggregate (rows=directions, cols=sites).
 """
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -14,8 +15,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import LABEL_GEOMETRY_DIR
+
 DIRECTIONS = ["synonym_to_antonym", "antonym_to_synonym",
-              "prev_number_to_next_number", "next_number_to_prev_number"]
+              "prev_number_to_next_number", "next_number_to_prev_number",
+              "prev_number_digits_to_next_number_digits", "next_number_digits_to_prev_number_digits"]
 SITES = ["label", "final"]
 SITE_LABEL = {"label": "demo label token", "final": "final prompt token"}
 
@@ -69,8 +74,8 @@ def plot_axis(ax, acc, base, title):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--root", type=Path, default=Path("results/oneshot_switch_steering"))
-    p.add_argument("--figdir", type=Path, default=Path("results/oneshot_switch_steering/figures"))
+    p.add_argument("--root", type=Path, default=LABEL_GEOMETRY_DIR / "oneshot_switch_steering")
+    p.add_argument("--figdir", type=Path, default=LABEL_GEOMETRY_DIR / "oneshot_switch_steering" / "figures")
     args = p.parse_args()
     args.figdir.mkdir(parents=True, exist_ok=True)
 

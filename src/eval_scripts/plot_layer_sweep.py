@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 import argparse
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, STEERING_COMPARISON_DIR
 
 
 METHODS = {
@@ -95,17 +99,17 @@ def plot_task(task, methods, fv_root, avg_hs_root, baseline_root, output_dir, k)
 
 def main():
     parser = argparse.ArgumentParser(description="Plot steering accuracy by intervention layer.")
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"), help="Root containing FV task result directories.")
-    parser.add_argument("--avg_hs_root", type=Path, default=Path("results/gptj_avg_hs"), help="Root containing average hidden-state task result directories.")
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv", help="Root containing FV task result directories.")
+    parser.add_argument("--avg_hs_root", type=Path, default=ARTIFACTS_ROOT / "gptj_avg_hs", help="Root containing average hidden-state task result directories.")
     parser.add_argument("--baseline_root", type=Path, default=None, help="Root containing model_baseline.json task dirs. Defaults to --fv_root.")
-    parser.add_argument("--output_dir", type=Path, default=None, help="Directory for plot PNGs. Defaults to <fv_root>/plots.")
+    parser.add_argument("--output_dir", type=Path, default=None, help="Directory for plot PNGs. Defaults to STEERING_COMPARISON_DIR/fv_layer_sweeps.")
     parser.add_argument("--tasks", nargs="+", default=["antonym", "synonym"], help="Task names to plot. Pass one task, e.g. --tasks antonym, to plot only that task.")
     parser.add_argument("--topks", nargs="+", type=int, default=[1, 2], help="Top-k values to plot.")
     parser.add_argument("--methods", nargs="+", choices=sorted(METHODS), default=["fv", "avg_hs"], help="Methods to overlay.")
     args = parser.parse_args()
 
     baseline_root = args.baseline_root or args.fv_root
-    output_dir = args.output_dir or args.fv_root / "plots"
+    output_dir = args.output_dir or STEERING_COMPARISON_DIR / "fv_layer_sweeps"
 
     for task in args.tasks:
         for k in args.topks:

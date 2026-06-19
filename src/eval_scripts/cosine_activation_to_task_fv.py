@@ -3,7 +3,7 @@
 heatmap over (token position x layer) -- the same grid as the full-dim ridge MSE study, but the
 per-cell metric is raw cosine alignment instead of regression MSE.
 
-For each task, its OWN task-specific function vector (results/gptj_fv/<task>/...) is compared to
+For each task, its OWN task-specific function vector (artifacts/gptj_fv/<task>/...) is compared to
 every captured residual activation: per cell (icl_example_index, token_role, layer) we compute the
 per-example cosine(activation, task_FV) and average over examples (raw, no centering). Cell values
 are then averaged over all 29 tasks.
@@ -39,19 +39,20 @@ from src.eval_scripts.regress_activation_to_fv_fulldim_ridge import (
 from src.eval_scripts.merge_fulldim_ridge_results import (
     ROLE_ORDER, position_key, position_label,
 )
+from src.utils.paths import ARTIFACTS_ROOT, FV_FORMATION_DIR
 
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
-    p.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"),
+    p.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv",
                    help="Root holding each task's own task-specific FV (<task>/<task>_function_vector.pt).")
     p.add_argument("--icl_activations_root_template", type=str,
-                   default="results/residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens")
+                   default=str(ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_icl{icl}_3tokens"))
     p.add_argument("--query_activations_root", type=Path,
-                   default=Path("results/residual_activations/gptj_56tasks_170prompts_4tokens"))
+                   default=ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_4tokens")
     p.add_argument("--splits", nargs="+", default=["train", "test"])
-    p.add_argument("--output_dir", type=Path, default=Path("results/cosine_activation_to_task_fv"))
+    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "cosine_activation_to_task_fv")
     p.add_argument("--correctness_dir", type=Path, default=None,
                    help="Dir with <task>.json from Stage 1 (default: <output_dir>/correctness).")
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")

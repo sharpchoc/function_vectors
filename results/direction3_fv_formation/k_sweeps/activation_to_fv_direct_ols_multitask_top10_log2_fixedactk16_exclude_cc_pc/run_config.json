@@ -1,0 +1,156 @@
+{
+  "task_manifest": "task_splits/abstractive_train_test_tasks_29.json",
+  "fv_root": "results/gptj_fv_multitask_top10",
+  "activations_root_template": "results/residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens",
+  "output_dir": "results/k_sweeps/activation_to_fv_direct_ols_multitask_top10_log2_fixedactk16_exclude_cc_pc",
+  "model": "OLS (LinearRegression, fit_intercept=True)",
+  "regression": "direct k_activations -> k_FV (project activations to k_act PCs, FVs to k_FV PCs, regress between them)",
+  "layer": 11,
+  "k_spacing": "doubling (powers of 2)",
+  "requested_k_values": [
+    1,
+    2,
+    4,
+    8,
+    16
+  ],
+  "k_values_present": [
+    1,
+    2,
+    4,
+    8,
+    16
+  ],
+  "fv_k_cap": 16,
+  "fix_fv_k": false,
+  "fix_act_k": 16,
+  "sweep_variable": "k_FV",
+  "fv_k_rule": "k_activations fixed = 16, sweep k_FV = min(k, fv_k_cap)",
+  "fv_pca_max_components": 16,
+  "test_mse_metric": "fv_test_mse = MSE vs true 4096-d FV, reconstructed from the model's predicted FV-PCs (fv_mean + pred @ FV-PCs[:k_FV])",
+  "best_k_metric": "fv_test_mse",
+  "split": "train",
+  "icl_example_indices": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "token_roles": [
+    "pre_label_token",
+    "first_label_token",
+    "last_label_token"
+  ],
+  "dropped_k_notes": [],
+  "train_tasks": [
+    "national_parks",
+    "english-spanish",
+    "next_capital_letter",
+    "commonsense_qa",
+    "capitalize_last_letter",
+    "country-capital",
+    "english-french",
+    "ag_news",
+    "sentiment",
+    "present-past",
+    "person-occupation",
+    "prev_item",
+    "capitalize_second_letter",
+    "lowercase_last_letter",
+    "singular-plural",
+    "person-sport",
+    "park-country",
+    "english-german",
+    "person-instrument",
+    "next_item"
+  ],
+  "test_tasks": [
+    "landmark-country",
+    "word_length",
+    "capitalize_first_letter",
+    "synonym",
+    "lowercase_first_letter",
+    "capitalize",
+    "antonym"
+  ],
+  "best_k_per_series": {
+    "icl1/pre_label_token": {
+      "k": 2,
+      "fv_k": 2,
+      "fv_test_mse": 0.20002171397209167
+    },
+    "icl1/first_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.15269066393375397
+    },
+    "icl1/last_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.1420607715845108
+    },
+    "icl2/pre_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.1622512936592102
+    },
+    "icl2/first_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.14311377704143524
+    },
+    "icl2/last_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.1375812292098999
+    },
+    "icl3/pre_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.14124315977096558
+    },
+    "icl3/first_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.13421884179115295
+    },
+    "icl3/last_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.12997522950172424
+    },
+    "icl4/pre_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.13124383985996246
+    },
+    "icl4/first_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.13015466928482056
+    },
+    "icl4/last_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.1271541565656662
+    },
+    "icl5/pre_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.1258164793252945
+    },
+    "icl5/first_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.12853248417377472
+    },
+    "icl5/last_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.12590906023979187
+    }
+  },
+  "metrics_csv": "results/k_sweeps/activation_to_fv_direct_ols_multitask_top10_log2_fixedactk16_exclude_cc_pc/k_sweep_metrics.csv",
+  "plot_png": "results/k_sweeps/activation_to_fv_direct_ols_multitask_top10_log2_fixedactk16_exclude_cc_pc/k_sweep_test_mse.png"
+}

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import json
+import sys
 from collections import Counter
 from pathlib import Path
 
@@ -8,12 +9,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, STEERING_COMPARISON_DIR
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Plot how often each layer/head is selected in saved task function vectors."
     )
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"))
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv")
     parser.add_argument("--output_dir", type=Path, default=None)
     parser.add_argument("--output_name", type=str, default="head_selection_frequency_heatmap.png")
     parser.add_argument("--n_layers", type=int, default=None, help="Defaults to the max selected layer + 1.")
@@ -142,7 +146,7 @@ def main():
     counts, per_task = collect_head_counts(args.fv_root, args.tasks)
     grid = make_count_grid(counts, args.n_layers, args.n_heads)
 
-    output_dir = args.output_dir or args.fv_root / "plots"
+    output_dir = args.output_dir or STEERING_COMPARISON_DIR / "fv_layer_sweeps"
     output_path = output_dir / args.output_name
     title = args.title or f"Function-vector head selection frequency ({len(per_task)} tasks)"
 

@@ -6,7 +6,7 @@ function-difference vector at a chosen token site + layer, and measure how often
 model's sampled answers are correct for the *target* task (GPT-4-judged).
 
   steer toward target: add  (sign * alpha * Delta_site(L))  at one prompt position.
-  Delta_site = mean_w[ act(f1) - act(f2) ] from results/oneshot_paired_graded/<pair>/ shards.
+  Delta_site = mean_w[ act(f1) - act(f2) ] from artifacts/oneshot_paired_graded/<pair>/ shards.
     - site "label": Delta_label  (source role = demo last_label_token) injected at the demo label token.
     - site "final": Delta_final  (target role = query last_prompt_token) injected at the final prompt token.
   sign: +1 if target is f1 else -1   (Delta is f1-f2).
@@ -37,13 +37,16 @@ sys.path.insert(0, str(HERE.parents[0]))   # src/ (for utils.*)
 sys.path.insert(0, str(HERE))               # src/eval_scripts/ (for sibling imports)
 
 from utils.prompt_utils import get_token_meta_labels  # noqa: E402
+from utils.paths import ARTIFACTS_ROOT, LABEL_GEOMETRY_DIR  # noqa: E402
 from steer_label_to_query import (  # noqa: E402
     load_capture_diffs, build_prompt_data, extract_positions, pick_demo_pair,
     build_input_to_outputs, load_task_json,
 )
 from judge_oneshot_paired import (  # noqa: E402
-    JUDGE_SYSTEMS, extract_answer, get_openai_key, judge,
+    JUDGE_SYSTEMS, extract_answer, get_openai_key, _judge_batch,
 )
+import time  # noqa: E402
+from concurrent.futures import ThreadPoolExecutor, as_completed  # noqa: E402
 
 # direction -> pair, source task (demo context), target task (steer toward + judge), sign on Delta=f1-f2.
 DIRECTIONS = {
@@ -51,9 +54,20 @@ DIRECTIONS = {
     "antonym_to_synonym":          dict(pair="antonym_synonym",          source="antonym",     target="synonym",     sign=-1.0),
     "prev_number_to_next_number":  dict(pair="next_number_prev_number",  source="prev_number", target="next_number", sign=+1.0),
     "next_number_to_prev_number":  dict(pair="next_number_prev_number",  source="next_number", target="prev_number", sign=-1.0),
+    "prev_number_digits_to_next_number_digits": dict(pair="next_number_digits_prev_number_digits", source="prev_number_digits", target="next_number_digits", sign=+1.0),
+    "next_number_digits_to_prev_number_digits": dict(pair="next_number_digits_prev_number_digits", source="next_number_digits", target="prev_number_digits", sign=-1.0),
 }
 SITES = ["label", "final"]
-MULTIWORD_TASKS = {"next_number", "prev_number"}
+
+
+def judge_system_task(target_task):
+    """Map a target task to its GPT-4 judge prompt key (digit variants reuse the number judges)."""
+    return target_task.replace("_digits", "")
+
+
+def is_multiword(target_task):
+    """Number answers (word or digit form) may be multi-token phrases -> keep full phrase."""
+    return "number" in target_task
 
 
 def parse_args():
@@ -69,14 +83,16 @@ def parse_args():
     p.add_argument("--n_samples", type=int, default=10)
     p.add_argument("--max_new_tokens", type=int, default=8)
     p.add_argument("--gen_batch", type=int, default=20, help="Queries per generate call (x n_samples rows).")
-    p.add_argument("--capture_root", type=Path, default=Path("results/oneshot_paired_graded"))
+    p.add_argument("--capture_root", type=Path, default=ARTIFACTS_ROOT / "oneshot_paired_graded")
     p.add_argument("--root_data_dir", type=str, default="dataset_files")
-    p.add_argument("--output_root", type=Path, default=Path("results/oneshot_switch_steering"))
+    p.add_argument("--output_root", type=Path, default=LABEL_GEOMETRY_DIR / "oneshot_switch_steering")
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
     p.add_argument("--judge_model", type=str, default="gpt-4.1")
     p.add_argument("--judge_batch_size", type=int, default=50)
+    p.add_argument("--judge_workers", type=int, default=24, help="Concurrent judge requests.")
+    p.add_argument("--rejudge", action="store_true", help="Re-judge files even if accuracy.json exists.")
     return p.parse_args()
 
 
@@ -268,15 +284,64 @@ def stage_generate(args):
 # --------------------------------------------------------------------------- #
 # Judge
 # --------------------------------------------------------------------------- #
+def _judge_batch_retry(pairs, system, judge_model, api_key, attempts=5):
+    """Judge a batch robustly:
+      - transient HTTP / JSON-decode errors -> exponential-backoff retry.
+      - verdict-count mismatch (deterministic at temp 0; retry won't help) -> recursively SPLIT
+        the batch and judge halves; a single stubborn pair defaults to correct=False (rare).
+    Always returns exactly len(pairs) verdicts, in order.
+    """
+    last = None
+    for k in range(attempts):
+        try:
+            return _judge_batch(pairs, system, judge_model, api_key)
+        except json.JSONDecodeError as e:        # transient/garbled response
+            last = e
+            time.sleep(min(2 ** k, 30))
+        except ValueError as e:                  # count mismatch from _judge_batch
+            if len(pairs) <= 1:
+                p = pairs[0]
+                print(f"    WARN: unjudgeable pair, defaulting False: {p}", flush=True)
+                return [{"input": p["input"], "answer": p["answer"], "correct": False}]
+            mid = len(pairs) // 2
+            return (_judge_batch_retry(pairs[:mid], system, judge_model, api_key, attempts)
+                    + _judge_batch_retry(pairs[mid:], system, judge_model, api_key, attempts))
+        except Exception as e:                   # noqa: BLE001 (HTTP/rate-limit)
+            last = e
+            time.sleep(min(2 ** k, 30))
+    raise RuntimeError(f"judge batch failed after {attempts} attempts: {last}")
+
+
+def judge_parallel(rows, system, judge_model, api_key, batch_size, workers):
+    """Parallel, order-preserving judge over batches of (input, answer) pairs."""
+    pairs = [{"input": r["query_input"], "answer": r["generated"]} for r in rows]
+    batches = [pairs[i:i + batch_size] for i in range(0, len(pairs), batch_size)]
+    results = [None] * len(batches)
+    done = 0
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        futs = {ex.submit(_judge_batch_retry, b, system, judge_model, api_key): i
+                for i, b in enumerate(batches)}
+        for fut in as_completed(futs):
+            results[futs[fut]] = fut.result()
+            done += 1
+            if done % 25 == 0 or done == len(batches):
+                print(f"    judged {done}/{len(batches)} batches", flush=True)
+    return [v for b in results for v in b]
+
+
 def judge_file(gen_path, target_task, api_key, args):
     """Judge every generation in gen_path for target_task; write judged.jsonl + accuracy.json."""
     out_dir = gen_path.parent
-    multiword = target_task in MULTIWORD_TASKS
+    if (out_dir / "accuracy.json").exists() and not args.rejudge:
+        print(f"  {out_dir.name}: accuracy.json exists, skipping (use --rejudge to force)")
+        return json.load(open(out_dir / "accuracy.json"))
+    multiword = is_multiword(target_task)
     rows = [json.loads(l) for l in gen_path.read_text().splitlines() if l.strip()]
     for r in rows:
         r["generated"] = extract_answer(r["raw"], multiword=multiword)
         r["query_input"] = r["query"]
-    verdicts = judge(rows, JUDGE_SYSTEMS[target_task], args.judge_model, api_key, args.judge_batch_size)
+    verdicts = judge_parallel(rows, JUDGE_SYSTEMS[judge_system_task(target_task)], args.judge_model,
+                              api_key, args.judge_batch_size, args.judge_workers)
     for r, v in zip(rows, verdicts):
         r["judge_correct"] = bool(v["correct"])
     (out_dir / "judged.jsonl").write_text("\n".join(json.dumps(r) for r in rows) + "\n")

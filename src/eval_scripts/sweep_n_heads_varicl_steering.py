@@ -33,6 +33,7 @@ from evaluate_heldout_multitask_head_fvs import (
 )
 from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from src.utils.prompt_utils import load_dataset
+from src.utils.paths import ARTIFACTS_ROOT, STEERING_COMPARISON_DIR
 
 
 def parse_args():
@@ -42,12 +43,12 @@ def parse_args():
     p.add_argument("--tasks", nargs="+", default=None)
     p.add_argument("--n_values", nargs="+", type=int, default=[10, 20, 30, 40])
     p.add_argument("--root_data_dir", type=str, default="dataset_files")
-    p.add_argument("--eval_root", type=Path, default=Path("results/heldout_multitask_head_eval"),
+    p.add_argument("--eval_root", type=Path, default=STEERING_COMPARISON_DIR / "heldout_multitask_head_eval",
                    help="Holds each task's comparison_summary.json (for baseline context + filter source check).")
-    p.add_argument("--filter_fv_root", type=Path, default=Path("results/gptj_fv"))
-    p.add_argument("--fv_root_base", type=Path, default=Path("results/function_vectors/gpt-j"),
+    p.add_argument("--filter_fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv")
+    p.add_argument("--fv_root_base", type=Path, default=ARTIFACTS_ROOT / "function_vectors" / "gpt-j",
                    help="N=10 -> <base>/train_varicl ; N>10 -> <base>/train_varicl_top{N}.")
-    p.add_argument("--output_root", type=Path, default=Path("results/heldout_varicl_nheads_sweep"))
+    p.add_argument("--output_root", type=Path, default=STEERING_COMPARISON_DIR / "heldout_varicl_nheads_sweep")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--revision", type=str, default=None)
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")

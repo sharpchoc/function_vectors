@@ -19,7 +19,7 @@ Computed at two token roles:
   final  = last_prompt_token (the final query token)
 
 Pure numpy/matplotlib; no model, no baukit, no function vectors. Outputs under
-results/oneshot_paired_diff_geometry/: per-pair <pair>_diff_geometry.{json,csv} and
+direction2_label_geometry/oneshot_paired_diff_geometry/: per-pair <pair>_diff_geometry.{json,csv} and
 combined comparison figures across pairs.
 
 Run:  python src/eval_scripts/analyze_paired_diff_geometry.py
@@ -27,6 +27,7 @@ Run:  python src/eval_scripts/analyze_paired_diff_geometry.py
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -34,6 +35,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import torch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, LABEL_GEOMETRY_DIR
 
 PAIRS = ["antonym_synonym", "synonym_rhyme", "antonym_rhyme", "next_number_prev_number"]
 ROLE_MAP = {"label": "last_label_token", "final": "last_prompt_token"}
@@ -119,8 +123,8 @@ def analyze_pair(pair, capture_root):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pairs", nargs="+", default=PAIRS)
-    ap.add_argument("--capture_root", default="results/oneshot_paired_tasks")
-    ap.add_argument("--output_root", default="results/oneshot_paired_diff_geometry")
+    ap.add_argument("--capture_root", default=str(ARTIFACTS_ROOT / "oneshot_paired_tasks"))
+    ap.add_argument("--output_root", default=str(LABEL_GEOMETRY_DIR / "oneshot_paired_diff_geometry"))
     args = ap.parse_args()
 
     out_root = Path(args.output_root)

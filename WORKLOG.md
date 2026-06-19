@@ -5,9 +5,156 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-06-19 — Repo cleanup: results/ split into gitignored artifacts/ + tracked, direction-bucketed results/
+
+**Owner:** Coordinator (tmux "activation-geometry-steering"). **Status:** DONE (staged; NOT committed — left to user).
+
+**What:** `results/` was 124 GB and fully gitignored. Reorganized (NO deletions; same-fs renames) into:
+- `artifacts/` (gitignored) — intermediate caches: `residual_activations/`, `gptj_fv*`,
+  `function_vectors/`, `multitask_aie_heads*`, `oneshot_paired{,_tasks,_graded}/`,
+  `magnitude_identity_activations/`, `magid_decoded_varicl40/`, `gptj_avg_hs/` + scratch (`_smoke_varicl`,
+  `_varicl_testtasks*`). EXCEPT the small head-selection metadata, which IS committed (see DECISIONS).
+- `logs/` (gitignored) — `_*.log` + `_*_logs/`.
+- `results/` (TRACKED) — study deliverables bucketed into **5 dirs**: `direction1_ambiguous/`,
+  `direction2_label_geometry/`, `direction3_fv_formation/`, `steering_vector_comparison/`, `general/`.
+  Top-level `figures/` distributed into bucket `figures/` subdirs. Embedded study figures lifted out of
+  cache dirs: `gptj_fv/plots`+`gptj_avg_hs/plots`→`steering_vector_comparison/fv_layer_sweeps/`;
+  `residual_activations/gptj_with_embeddings/{probes,pca,fv_projection_*}`→`general/embedding_geometry/`.
+
+**Code:** NEW `src/utils/paths.py` (REPO_ROOT-anchored, env-overridable `ARTIFACTS_ROOT`/`RESULTS_ROOT`/
+`LOGS_ROOT` + 5 bucket-dir constants). Rewrote ~89 scripts (.py + .sh) so every hardcoded `results/`/
+`figures/`/`../results` path routes through `paths.py` (caches→ARTIFACTS_ROOT, study outputs→bucket dirs,
+figures→bucket `figures/`). Verified: zero stray literal paths, all py compile, all .sh `bash -n` clean,
+`import utils.paths` works from `src/` and `src/eval_scripts/`.
+
+**.gitignore:** removed blanket `*results`/`results/*`/`*figures`; added `/logs/`, global `*.jsonl`/`*.log`,
+raw-dump ignores (`per_query.csv`, `raw.json`, `recreate_fig8/**/*.md`); `artifacts/**` ignored with
+END negations re-including head metadata; `artifacts/_*/**` re-ignores scratch.
+
+**Staged (not committed):** 116 MB / 2000 files under results+artifacts (288 png, 72 pdf, 1523 json,
+104 csv, 13 head .pt) + 91 code/config files. No file >5 MB; no shards/FVs staged; no unintended deletions.
+**Smoke:** `plot_switch_logit.py` reads+writes its bucket; `steer_switch_judge` defaults resolve to
+`artifacts/oneshot_paired_graded` (exists) and the bucketed output (exists).
+
+**Next:** user to review `git status` and commit (consider a branch first). Deferred: deleting throwaway,
+archiving superseded scripts, regrouping eval_scripts.
+
+---
+
+## 2026-06-19 — Stream E follow-up: LOGIT-READOUT switch-steering, clean train/test split (digits + ant/syn)
+
+**Owner:** Coordinator (tmux "activation-geometry-steering"). **Status:** DONE — 8 logit-diff curves rendered.
+
+**What:** Cheaper, leakage-free readout (replaces sample+judge for single-token pairs). Steer a
+source-task 1-shot prompt toward target; in ONE forward read **logit(target_gold) − logit(source_gold)**
+at the query final token. α=0 = clean baseline (flat). NO sampling, NO GPT-4 judge, NO API key.
+
+**Clean TRAIN/TEST split (the key methodological fix):** LABEL pool = shared single-token outputs;
+QUERY pool = shared inputs with single-token gold under both tasks. Reserve **100 test labels** (ICL
+example) + **100 test queries** (final query); everything else = train. **Δ derived from 100 TRAIN
+prompt pairs** (label∈train_out × query∈train_in) via our own forward passes reading act(f1)−act(f2)
+at the demo-label token (Δ_label) and query-final token (Δ_final) — NOT the contaminated full-pool
+capture. n_train=100 for BOTH pairs → comparable. Test label/query tokens never appear in train, so no
+overlap in either the ICL example or the final query. Pools: ant/syn label 544 / query 1003 (train
+444 / 903 distinct); digits label 198 / query 200 (train 98 / 100 distinct — ~2 labels repeat across
+the 100 train pairs, negligible).
+
+**Files:** NEW `src/eval_scripts/steer_switch_logit.py`, `src/eval_scripts/plot_switch_logit.py`.
+Output `results/oneshot_switch_logit/<direction>/logit_diff.json`, `delta_meta.json`, `figures/`
+(8 panels + `fig_logit_aggregate.png`). Cmd: `python src/eval_scripts/steer_switch_logit.py` then
+`python src/eval_scripts/plot_switch_logit.py`. Runs in a few min on the 24GB card.
+
+**RESULTS — logit(target)−logit(source): baseline(α0) → peak (layer, α):**
+
+| direction | site | baseline | peak | @L | @α |
+|---|---|---|---|---|---|
+| synonym→antonym | label | −1.69 | +0.47 | 8 | 4 |
+| synonym→antonym | final | −1.69 | +1.50 | 12 | 8 |
+| antonym→synonym | label | −0.03 | +2.63 | 6 | 8 |
+| antonym→synonym | final | −0.03 | +3.76 | 12 | 8 |
+| prev_digits→next_digits | label | −0.23 | +2.05 | 6 | 2 |
+| prev_digits→next_digits | final | −0.23 | **+4.41** | 12 | 8 |
+| next_digits→prev_digits | label | −2.12 | +0.38 | 4 | 2 |
+| next_digits→prev_digits | final | −2.12 | +1.84 | 12 | 8 |
+
+**FINDINGS:**
+- **Causal switch in all 8** — every panel rises from a negative baseline (favors source answer) up
+  **across zero into positive** (favors target) = the model now prefers the target-task answer.
+- **Two distinct causal windows by site:** demo-label injection peaks **early (L4–8)** and dies by
+  ~L14; final-prompt-token injection peaks **later (L10–12)** and reaches **higher** logit-diffs
+  (final ≫ label for the peak magnitude). Both dead by ~L16–20.
+- **Digits show the cleanest, sharpest curves** (single-token throughout); prev→next digits final hits
+  +4.41. Direction asymmetry persists in the baselines (next/synonym prompts strongly favor their own
+  answer: −2.12 / −1.69; antonym/prev baselines near 0).
+- This corroborates the earlier sample+judge run but with an exact, leakage-free metric and 1/100th
+  the cost.
+
+**Note:** the earlier digit *sampling* generation (run_generate_digits) was killed as redundant; the
+word next/prev pair is dropped from here on (multi-token). **Blockers:** None.
+
+---
+
+## 2026-06-19 — Stream E follow-up: DIGIT next/prev variant of switch-steering (single-token labels)
+
+**Owner:** Coordinator (tmux "activation-geometry-steering"). **Status:** IN PROGRESS — datasets + capture done, generation running, judge pending (needs OPENAI_API_KEY).
+
+**Why:** the word-form number pair has ~87% MULTI-token gold answers (seventy→seventy-one, one hundred
+sixty-one). Digit form is cleaner: **every integer 0–250 is a single GPT-J token** (verified), so labels
+AND golds are 100% single-token. Lets first-token metrics work and removes the multi-token confound.
+
+**What:** NEW `dataset_files/abstractive/{next_number_digits,prev_number_digits}.json` (inputs 1–200,
+next=i+1 / prev=i−1; mirrors the word pair). Added pair `next_number_digits_prev_number_digits` to
+`capture_and_grade_oneshot_paired.py` TASK_PAIRS and to `steer_switch_judge.py` DIRECTIONS
+(prev_digits→next_digits sign+1, next_digits→prev_digits sign−1). steer_switch_judge now maps digit
+targets to the number judge (`judge_system_task` strips `_digits`) and treats them as multiword.
+
+**Capture done** (`results/oneshot_paired_graded/next_number_digits_prev_number_digits/`): 198 label
+words, 200 query pool. First-token grading (now meaningful — single-token): next_digits top1 **0.848**,
+prev_digits top1 **0.677** (≈ the word pair's full-answer judge 0.818/0.621). 2 directions × 2 sites
+generation running → 2 new plots each. **Next:** judge (key) + `plot_switch_steering.py` (add the 2
+digit directions to its DIRECTIONS list) → 4 new figures. **Blockers:** OPENAI_API_KEY (deleted; rotate).
+
+---
+
 ## 2026-06-18 — Stream E follow-up: BEHAVIORAL task-switch steering (8 accuracy curves)
 
-**Owner:** Coordinator (tmux "switch-steering"). **Status:** RUNNING (generation in background; judge blocked on API key).
+**Owner:** Coordinator (tmux "switch-steering" / "activation-geometry-steering"). **Status:** DONE — 564k gens judged, 8 figures rendered.
+
+**RESULTS (peak target-task acc over the layer×α sweep vs α=0 baseline; n=100 prompts ×10 samples):**
+
+| direction | site | baseline | peak | @L | @α | lift |
+|---|---|---|---|---|---|---|
+| synonym→antonym | label | 0.035 | 0.153 | 6 | 8 | +0.118 |
+| synonym→antonym | final | 0.035 | **0.273** | 8 | 8 | +0.238 |
+| antonym→synonym | label | 0.081 | 0.142 | 6 | 4 | +0.061 |
+| antonym→synonym | final | 0.081 | **0.189** | 14 | 4 | +0.108 |
+| prev_number→next_number | label | 0.107 | **0.463** | 4 | 2 | +0.356 |
+| prev_number→next_number | final | 0.107 | 0.266 | 8 | 8 | +0.159 |
+| next_number→prev_number | label | 0.053 | **0.354** | 4 | 2 | +0.301 |
+| next_number→prev_number | final | 0.053 | 0.130 | 8 | 8 | +0.077 |
+
+**FINDINGS:**
+- **The task switch is causal in ALL 8 cases** — every direction/site lifts target-task accuracy above
+  baseline, peaking **mid-layer (L4–14) and decaying by ~L16** (classic FV causal window).
+- **Site asymmetry by pair type:** NUMBERS steer best at the **demo label token** (prev→next 0.46@L4,
+  next→prev 0.35@L4 — both early, α=2); WORDS steer best at the **final prompt token** (syn→ant
+  0.27@L8, ant→syn 0.19@L14). I.e. the ±1 number function is most steerable upstream at the label;
+  the word-meaning function is most steerable at the predictive position.
+- **Direction asymmetry persists** (prior-bias): toward the easier target lifts more — prev→**next**
+  (0.46) is the strongest panel; syn→**ant** > ant→**syn**.
+- Baselines behave as designed (source-task prompt judged for target = LOW: 0.035–0.107), confirming
+  headroom. Bigger α (4–8) needed for words; α=2 already peaks for numbers at the label site.
+
+**Files added:** `src/eval_scripts/steer_switch_judge.py`, `src/eval_scripts/plot_switch_steering.py`.
+Outputs in `results/oneshot_switch_steering/` (12 dirs × {generations,judged}.jsonl + accuracy.json;
+`deltas_used.json`; `figures/` = 8 panels + `fig_switch_aggregate.png`; run_generate.log, run_judge*.log).
+
+**Compute:** generation ~50 min (564k samples, GPT-J, 24GB); judge ~45 min (GPT-4.1, 40-way parallel,
+~11k batches). GOTCHA fixed mid-run: number-task judge sometimes returns N+1 verdicts for N pairs
+(deterministic at temp 0) → added recursive batch-splitting + skip-if-accuracy.json resume (see DECISIONS).
+
+**SECURITY NOTE:** the user pasted live OPENAI + ANTHROPIC keys into chat; used OpenAI via a gitignored
+`.openai_key` (since deleted). Both keys should be ROTATED.
 
 **What:** The first *behavioral* (generate + judge) version of switch-steering. Take a 1-shot prompt
 whose single ICL demo is the *source* task, inject `sign·α·Δ_site(L)` at one token position, sample

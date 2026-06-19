@@ -12,12 +12,13 @@ i.e. words the model handles correctly both ways.
 
 4 panels: rows = {antonym_synonym, next_number_prev_number}, cols = {label, final query}.
 
-Reads the graded+tagged captures results/oneshot_paired_graded/<pair>/shard_*.pt (+ index.json
-for the f1/f2 task names). Writes results/oneshot_paired_analysis/fig_pairwise_diffcos_hist_L<L>_byjudge.png.
+Reads the graded+tagged captures ARTIFACTS_ROOT/oneshot_paired_graded/<pair>/shard_*.pt (+ index.json
+for the f1/f2 task names). Writes LABEL_GEOMETRY_DIR/oneshot_paired_analysis/fig_pairwise_diffcos_hist_L<L>_byjudge.png.
 """
 import argparse
 import glob
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -26,12 +27,15 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, LABEL_GEOMETRY_DIR
+
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--graded_root", type=Path, default=Path("results/oneshot_paired_graded"))
+    p.add_argument("--graded_root", type=Path, default=ARTIFACTS_ROOT / "oneshot_paired_graded")
     p.add_argument("--pairs", nargs="+", default=["antonym_synonym", "next_number_prev_number"])
-    p.add_argument("--out_dir", type=Path, default=Path("results/oneshot_paired_analysis"))
+    p.add_argument("--out_dir", type=Path, default=LABEL_GEOMETRY_DIR / "oneshot_paired_analysis")
     p.add_argument("--layer", type=int, default=11)
     return p.parse_args()
 

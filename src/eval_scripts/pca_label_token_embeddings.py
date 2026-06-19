@@ -2,12 +2,16 @@
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from sklearn.decomposition import PCA
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, GENERAL_DIR
 
 
 def parse_args():
@@ -65,7 +69,7 @@ def load_task_label_activations(activations_root, task, split, layer_index, requ
     if require_embeddings and not include_embeddings:
         raise ValueError(
             f"{index_path} was not extracted with include_embeddings=true. "
-            "Use an activations_root such as results/residual_activations/gptj_with_embeddings, "
+            f"Use an activations_root such as {ARTIFACTS_ROOT / 'residual_activations' / 'gptj_with_embeddings'}, "
             "or pass --allow_non_embedding_layer0 if you intentionally want transformer block 0."
         )
 
@@ -216,7 +220,7 @@ def plot_pca(rows, tasks, output_dir, explained_variance_ratio, title):
 
 def default_output_dir(args):
     layer_tag = "embedding_layer0" if args.layer_index == 0 else f"layer{args.layer_index}"
-    return args.activations_root / "pca" / f"{args.tasks[0]}_vs_{args.tasks[1]}_label_tokens_{args.split}_{layer_tag}"
+    return GENERAL_DIR / "embedding_geometry" / "pca" / f"{args.tasks[0]}_vs_{args.tasks[1]}_label_tokens_{args.split}_{layer_tag}"
 
 
 def main():

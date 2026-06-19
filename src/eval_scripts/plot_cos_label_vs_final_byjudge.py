@@ -12,12 +12,13 @@ Judge correctness is per (function, w): each word carries an antonym verdict and
 verdict (judge_top1, the GPT-4 full-answer grade), so points are colored 4 ways:
     both correct / antonym-only / synonym-only / neither.
 
-Reads the graded+tagged capture results/oneshot_paired_graded/<pair>/shard_*.pt. Overwrites
-plots under results/oneshot_paired_analysis/<pair>/.
+Reads the graded+tagged capture artifacts/oneshot_paired_graded/<pair>/shard_*.pt. Overwrites
+plots under direction2_label_geometry/oneshot_paired_analysis/<pair>/.
 """
 import argparse
 import glob
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -26,11 +27,14 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, LABEL_GEOMETRY_DIR
+
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--graded_dir", type=Path, default=Path("results/oneshot_paired_graded/antonym_synonym"))
-    p.add_argument("--out_dir", type=Path, default=Path("results/oneshot_paired_analysis/antonym_synonym"))
+    p.add_argument("--graded_dir", type=Path, default=ARTIFACTS_ROOT / "oneshot_paired_graded" / "antonym_synonym")
+    p.add_argument("--out_dir", type=Path, default=LABEL_GEOMETRY_DIR / "oneshot_paired_analysis" / "antonym_synonym")
     p.add_argument("--layers", type=int, nargs="+", default=[11])
     p.add_argument("--f1", type=str, default="antonym")
     p.add_argument("--f2", type=str, default="synonym")

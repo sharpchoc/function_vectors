@@ -5,7 +5,7 @@ magnitude/identity FVs. Per-layer scatter grids (one figure per token position).
 
 Map (refit deterministically; the fitted map was never saved): per (map_role, layer),
   X = 20 abstractive TRAIN tasks' residual activations at that cell
-      (results/residual_activations/gptj_56tasks_170prompts_4tokens, icl10)
+      (artifacts/residual_activations/gptj_56tasks_170prompts_4tokens, icl10)
   Y = train_varicl_top40 FV for each task
   pipeline = act-PCA(k=16) -> standardize -> ridge(alpha from recorded metrics) -> FV-PCs(k=16)
              -> reconstruct to 4096-d   (exactly mirrors regress_activation_to_fv_pca_ridge.py)
@@ -25,14 +25,15 @@ sys.path.insert(0, str(HERE)); sys.path.insert(0, str(REPO / "src"))
 from regress_activation_to_fv_pca_ridge import (
     torch_pca, project, reconstruct, ridge_eig_prep, ridge_predict,
     load_function_vector, load_task_role_pooled, role_load_icl_index, load_json)
+from utils.paths import ARTIFACTS_ROOT, AMBIGUOUS_DIR, FV_FORMATION_DIR
 
-VARICL_DIR = REPO / "results" / "pca_ridge_activation_to_fv_varicl_top40"
-FV_ROOT = REPO / "results" / "function_vectors" / "gpt-j" / "train_varicl_top40"
-ACT_ROOT = REPO / "results" / "residual_activations" / "gptj_56tasks_170prompts_4tokens"
-AMBIG_DIR = REPO / "results" / "magnitude_identity_activations" / "gpt-j-6b"
-CONSTR_FV = REPO / "results" / "gptj_fv_ambiguous_constrained_top20"
-FIG_DIR = REPO / "figures"
-OUT_DIR = REPO / "results" / "magid_decoded_varicl40"
+VARICL_DIR = FV_FORMATION_DIR / "pca_ridge_activation_to_fv_varicl_top40"
+FV_ROOT = ARTIFACTS_ROOT / "function_vectors" / "gpt-j" / "train_varicl_top40"
+ACT_ROOT = ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_4tokens"
+AMBIG_DIR = ARTIFACTS_ROOT / "magnitude_identity_activations" / "gpt-j-6b"
+CONSTR_FV = ARTIFACTS_ROOT / "gptj_fv_ambiguous_constrained_top20"
+FIG_DIR = AMBIGUOUS_DIR / "figures"
+OUT_DIR = ARTIFACTS_ROOT / "magid_decoded_varicl40"
 
 MAP_ROLES = ["pre_label_token", "first_label_token", "last_label_token", "last_prompt_token"]
 SPLITS = ["train", "test"]

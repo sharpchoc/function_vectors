@@ -2,12 +2,16 @@
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from sklearn.linear_model import LinearRegression
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, FV_FORMATION_DIR
 
 
 DEFAULT_TOKEN_ROLES = [
@@ -32,14 +36,14 @@ def parse_args():
         )
     )
     parser.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"))
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv")
     parser.add_argument(
         "--activations_root",
         type=Path,
-        default=Path("results/residual_activations/gptj_56tasks_170prompts_4tokens"),
+        default=ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_4tokens",
     )
-    parser.add_argument("--pca_root", type=Path, default=Path("results/pca_abstractive_fv_activation_scatter"))
-    parser.add_argument("--output_dir", type=Path, default=Path("results/joint_pca_activation_to_fv_regression"))
+    parser.add_argument("--pca_root", type=Path, default=FV_FORMATION_DIR / "pca_abstractive_fv_activation_scatter")
+    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "joint_pca_activation_to_fv_regression")
     parser.add_argument("--split", type=str, default="train")
     parser.add_argument("--layer", type=int, default=11)
     parser.add_argument("--token_roles", nargs="+", default=DEFAULT_TOKEN_ROLES)

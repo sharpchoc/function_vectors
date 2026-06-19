@@ -9,6 +9,7 @@ from utils.prompt_utils import *
 from utils.intervention_utils import *
 from utils.model_utils import *
 from utils.extract_utils import *
+from utils.paths import RESULTS_ROOT
 
 
 def activation_replacement_per_class_intervention(prompt_data, avg_activations, dummy_labels, model, model_config, tokenizer, last_token_only=True):
@@ -277,7 +278,7 @@ if __name__ == "__main__":
     parser.add_argument('--dataset_name', help='Name of the dataset to be loaded', type=str, required=True)
     parser.add_argument('--model_name', help='Name of model to be loaded', type=str, required=False, default='EleutherAI/gpt-j-6b')
     parser.add_argument('--root_data_dir', help='Root directory of data files', type=str, required=False, default='../dataset_files')
-    parser.add_argument('--save_path_root', help='File path to save indirect effect to', type=str, required=False, default='../results')
+    parser.add_argument('--save_path_root', help='File path to save indirect effect to', type=str, required=False, default=str(RESULTS_ROOT))
     parser.add_argument('--seed', help='Randomized seed', type=int, required=False, default=42)
     parser.add_argument('--n_shots', help="Number of shots in each in-context prompt", type =int, required=False, default=10)
     parser.add_argument('--n_trials', help="Number of in-context prompts to average over", type=int, required=False, default=25)

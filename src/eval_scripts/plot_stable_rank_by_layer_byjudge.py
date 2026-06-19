@@ -10,11 +10,12 @@ and report:
 Two line groups per pair: ALL words (solid) and GPT-4-judge-correct-under-BOTH-functions (dashed).
 
 Two figures (label token, final query token), each with [stable rank | mean pairwise cosine] subplots.
-Reads results/oneshot_paired_graded/<pair>/. Overwrites the per-position compare figures.
+Reads ARTIFACTS_ROOT/oneshot_paired_graded/<pair>/. Overwrites the per-position compare figures.
 """
 import argparse
 import glob
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -23,16 +24,19 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import ARTIFACTS_ROOT, LABEL_GEOMETRY_DIR
+
 ROLES = [("source", "label token", "label"), ("target", "final query token", "final")]
 COLORS = {"antonym_synonym": "#1f77b4", "next_number_prev_number": "#d62728"}
 
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--graded_root", type=Path, default=Path("results/oneshot_paired_graded"))
+    p.add_argument("--graded_root", type=Path, default=ARTIFACTS_ROOT / "oneshot_paired_graded")
     p.add_argument("--pairs", nargs="+", default=["antonym_synonym", "next_number_prev_number"])
     p.add_argument("--out_dirs", type=Path, nargs="+",
-                   default=[Path("results/oneshot_paired_analysis"), Path("results/oneshot_paired_diff_geometry")])
+                   default=[LABEL_GEOMETRY_DIR / "oneshot_paired_analysis", LABEL_GEOMETRY_DIR / "oneshot_paired_diff_geometry"])
     return p.parse_args()
 
 

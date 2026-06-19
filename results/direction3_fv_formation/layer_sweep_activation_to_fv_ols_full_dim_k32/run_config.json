@@ -1,0 +1,125 @@
+{
+  "task_manifest": "task_splits/abstractive_train_test_tasks_29.json",
+  "fv_root": "results/gptj_fv",
+  "activations_root_template": "results/residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens",
+  "output_dir": "results/layer_sweep_activation_to_fv_ols_full_dim_k32",
+  "model": "OLS (LinearRegression, fit_intercept=True)",
+  "activation_k": 32,
+  "fv_k": 16,
+  "fv_k_cap": 16,
+  "fv_pca_max_components": 16,
+  "test_mse_metric": "fv_test_mse = MSE vs true 4096-d FV, reconstructed from the model's FV-PC outputs (fv_mean + pred[:,act_k:act_k+fv_k] @ FV-PCs[:fv_k])",
+  "fv_recon_floor_test_mse": 0.1967194378376007,
+  "best_layer_metric": "fv_test_mse",
+  "split": "train",
+  "icl_example_indices": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "token_roles": [
+    "pre_label_token",
+    "first_label_token",
+    "last_label_token"
+  ],
+  "layers": "all",
+  "train_tasks": [
+    "national_parks",
+    "english-spanish",
+    "next_capital_letter",
+    "commonsense_qa",
+    "capitalize_last_letter",
+    "country-capital",
+    "english-french",
+    "ag_news",
+    "sentiment",
+    "present-past",
+    "person-occupation",
+    "prev_item",
+    "capitalize_second_letter",
+    "lowercase_last_letter",
+    "singular-plural",
+    "person-sport",
+    "park-country",
+    "english-german",
+    "person-instrument",
+    "next_item"
+  ],
+  "test_tasks": [
+    "landmark-country",
+    "word_length",
+    "capitalize_first_letter",
+    "synonym",
+    "lowercase_first_letter",
+    "product-company",
+    "capitalize",
+    "country-currency",
+    "antonym"
+  ],
+  "best_layer_per_series": {
+    "icl1/pre_label_token": {
+      "layer": 1,
+      "fv_test_mse": 0.3001715838909149
+    },
+    "icl1/first_label_token": {
+      "layer": 9,
+      "fv_test_mse": 0.25911766290664673
+    },
+    "icl1/last_label_token": {
+      "layer": 9,
+      "fv_test_mse": 0.2434135526418686
+    },
+    "icl2/pre_label_token": {
+      "layer": 15,
+      "fv_test_mse": 0.25758203864097595
+    },
+    "icl2/first_label_token": {
+      "layer": 12,
+      "fv_test_mse": 0.24580127000808716
+    },
+    "icl2/last_label_token": {
+      "layer": 11,
+      "fv_test_mse": 0.24020996689796448
+    },
+    "icl3/pre_label_token": {
+      "layer": 15,
+      "fv_test_mse": 0.24352437257766724
+    },
+    "icl3/first_label_token": {
+      "layer": 12,
+      "fv_test_mse": 0.2385968267917633
+    },
+    "icl3/last_label_token": {
+      "layer": 12,
+      "fv_test_mse": 0.23198099434375763
+    },
+    "icl4/pre_label_token": {
+      "layer": 14,
+      "fv_test_mse": 0.23823782801628113
+    },
+    "icl4/first_label_token": {
+      "layer": 12,
+      "fv_test_mse": 0.23610584437847137
+    },
+    "icl4/last_label_token": {
+      "layer": 12,
+      "fv_test_mse": 0.22980424761772156
+    },
+    "icl5/pre_label_token": {
+      "layer": 14,
+      "fv_test_mse": 0.2310919314622879
+    },
+    "icl5/first_label_token": {
+      "layer": 12,
+      "fv_test_mse": 0.23573876917362213
+    },
+    "icl5/last_label_token": {
+      "layer": 14,
+      "fv_test_mse": 0.22946694493293762
+    }
+  },
+  "metrics_csv": "results/layer_sweep_activation_to_fv_ols_full_dim_k32/layer_sweep_metrics.csv",
+  "plot_png": "results/layer_sweep_activation_to_fv_ols_full_dim_k32/layer_sweep_test_mse.png"
+}

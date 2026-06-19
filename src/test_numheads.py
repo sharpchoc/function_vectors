@@ -6,6 +6,7 @@ import torch
 
 from src.utils.eval_utils import n_shot_eval, n_shot_eval_no_intervention
 from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
+from src.utils.paths import RESULTS_ROOT
 from src.utils.prompt_utils import load_dataset
 from src.evaluate_function_vector import compute_universal_function_vector
 
@@ -20,7 +21,7 @@ if __name__ == "__main__":
     parser.add_argument('--n_heads', type=int, help="upper bound of the number of heads to create the FV", required=True, default=40)
     parser.add_argument('--edit_layer', type=int, help="layer at which to add the function vector", required=True, default=9)
     parser.add_argument('--seed', required=False, type=int, default=42)
-    parser.add_argument('--save_path_root', required=True, type=str, default='../results')
+    parser.add_argument('--save_path_root', required=True, type=str, default=str(RESULTS_ROOT))
 
     
     args = parser.parse_args()

@@ -21,7 +21,7 @@ last_label_token.
 
 Pairs (--pair): antonym_synonym, synonym_rhyme, antonym_rhyme, next_number_prev_number.
 
-Output: results/oneshot_paired_tasks/<pair>/{shard_*.pt, index.json}; each shared word
+Output: artifacts/oneshot_paired_tasks/<pair>/{shard_*.pt, index.json}; each shared word
 contributes 2 functions x 6 roles = 12 rows of [n_layers, 4096] (fp32).
 
 Run:  HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1 \
@@ -42,6 +42,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from utils.prompt_utils import word_pairs_to_prompt_data
+from utils.paths import ARTIFACTS_ROOT
 
 from extract_residual_stream_activations import (
     flush_shard,
@@ -69,7 +70,7 @@ def parse_args():
     p.add_argument("--pair", choices=sorted(TASK_PAIRS), default="antonym_synonym")
     p.add_argument("--data_dir", default="dataset_files/paired_tasks")
     p.add_argument("--n_target", type=int, default=100, help="number of shared output words (paired prompts) to capture")
-    p.add_argument("--save_path_root", default="results/oneshot_paired_tasks")
+    p.add_argument("--save_path_root", default=str(ARTIFACTS_ROOT / "oneshot_paired_tasks"))
     p.add_argument("--model_name", default="EleutherAI/gpt-j-6b")
     p.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     p.add_argument("--revision", default=None)

@@ -25,6 +25,7 @@ from src.utils.eval_utils import n_shot_eval_no_intervention
 from src.utils.extract_utils import get_mean_head_activations
 from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from src.utils.prompt_utils import get_dummy_token_labels, load_dataset, word_pairs_to_prompt_data
+from src.utils.paths import ARTIFACTS_ROOT
 
 
 def parse_args():
@@ -65,11 +66,11 @@ def parse_args():
     )
     parser.add_argument("--tasks", nargs="+", default=None, help="Optional explicit task subset/override.")
     parser.add_argument("--root_data_dir", type=str, default="dataset_files")
-    parser.add_argument("--save_path_root", type=Path, default=Path("results/multitask_aie_heads"))
+    parser.add_argument("--save_path_root", type=Path, default=ARTIFACTS_ROOT / "multitask_aie_heads")
     parser.add_argument(
         "--mean_activations_root",
         type=Path,
-        default=Path("results/gptj_fv"),
+        default=ARTIFACTS_ROOT / "gptj_fv",
         help="Root containing <task>/<task>_mean_head_activations.pt files to reuse.",
     )
     parser.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")

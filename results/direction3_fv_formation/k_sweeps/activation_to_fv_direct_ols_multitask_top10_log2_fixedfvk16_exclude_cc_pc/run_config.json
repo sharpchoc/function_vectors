@@ -1,0 +1,166 @@
+{
+  "task_manifest": "task_splits/abstractive_train_test_tasks_29.json",
+  "fv_root": "results/gptj_fv_multitask_top10",
+  "activations_root_template": "results/residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens",
+  "output_dir": "results/k_sweeps/activation_to_fv_direct_ols_multitask_top10_log2_fixedfvk16_exclude_cc_pc",
+  "model": "OLS (LinearRegression, fit_intercept=True)",
+  "regression": "direct k_activations -> k_FV (project activations to k_act PCs, FVs to k_FV PCs, regress between them)",
+  "layer": 11,
+  "k_spacing": "doubling (powers of 2)",
+  "requested_k_values": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256,
+    512,
+    1024
+  ],
+  "k_values_present": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256,
+    512,
+    1024
+  ],
+  "fv_k_cap": 16,
+  "fix_fv_k": true,
+  "fv_k_rule": "k_FV = fv_k_cap (fixed)",
+  "fv_pca_max_components": 16,
+  "test_mse_metric": "fv_test_mse = MSE vs true 4096-d FV, reconstructed from the model's predicted FV-PCs (fv_mean + pred @ FV-PCs[:k_FV])",
+  "best_k_metric": "fv_test_mse",
+  "split": "train",
+  "icl_example_indices": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "token_roles": [
+    "pre_label_token",
+    "first_label_token",
+    "last_label_token"
+  ],
+  "dropped_k_notes": [],
+  "train_tasks": [
+    "national_parks",
+    "english-spanish",
+    "next_capital_letter",
+    "commonsense_qa",
+    "capitalize_last_letter",
+    "country-capital",
+    "english-french",
+    "ag_news",
+    "sentiment",
+    "present-past",
+    "person-occupation",
+    "prev_item",
+    "capitalize_second_letter",
+    "lowercase_last_letter",
+    "singular-plural",
+    "person-sport",
+    "park-country",
+    "english-german",
+    "person-instrument",
+    "next_item"
+  ],
+  "test_tasks": [
+    "landmark-country",
+    "word_length",
+    "capitalize_first_letter",
+    "synonym",
+    "lowercase_first_letter",
+    "capitalize",
+    "antonym"
+  ],
+  "best_k_per_series": {
+    "icl1/pre_label_token": {
+      "k": 1,
+      "fv_k": 16,
+      "fv_test_mse": 0.20034490525722504
+    },
+    "icl1/first_label_token": {
+      "k": 32,
+      "fv_k": 16,
+      "fv_test_mse": 0.15071332454681396
+    },
+    "icl1/last_label_token": {
+      "k": 64,
+      "fv_k": 16,
+      "fv_test_mse": 0.14148534834384918
+    },
+    "icl2/pre_label_token": {
+      "k": 256,
+      "fv_k": 16,
+      "fv_test_mse": 0.15900368988513947
+    },
+    "icl2/first_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.14304758608341217
+    },
+    "icl2/last_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.13758037984371185
+    },
+    "icl3/pre_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.141230508685112
+    },
+    "icl3/first_label_token": {
+      "k": 32,
+      "fv_k": 16,
+      "fv_test_mse": 0.13233010470867157
+    },
+    "icl3/last_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.12998110055923462
+    },
+    "icl4/pre_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.13123460114002228
+    },
+    "icl4/first_label_token": {
+      "k": 32,
+      "fv_k": 16,
+      "fv_test_mse": 0.1279234141111374
+    },
+    "icl4/last_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.12715868651866913
+    },
+    "icl5/pre_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.12581618130207062
+    },
+    "icl5/first_label_token": {
+      "k": 32,
+      "fv_k": 16,
+      "fv_test_mse": 0.12609246373176575
+    },
+    "icl5/last_label_token": {
+      "k": 16,
+      "fv_k": 16,
+      "fv_test_mse": 0.12590870261192322
+    }
+  },
+  "metrics_csv": "results/k_sweeps/activation_to_fv_direct_ols_multitask_top10_log2_fixedfvk16_exclude_cc_pc/k_sweep_metrics.csv",
+  "plot_png": "results/k_sweeps/activation_to_fv_direct_ols_multitask_top10_log2_fixedfvk16_exclude_cc_pc/k_sweep_test_mse.png"
+}

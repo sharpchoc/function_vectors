@@ -9,6 +9,7 @@ from utils.extract_utils import get_mean_head_activations, compute_universal_fun
 from utils.intervention_utils import fv_intervention_natural_text
 from utils.model_utils import load_gpt_model_and_tokenizer
 from utils.prompt_utils import load_dataset
+from utils.paths import RESULTS_ROOT
 
 
 def natural_text_eval(dataset, fv_vector, model, model_config, tokenizer, filter_set, edit_layer=9, MNT=5, verbose=False, loc_data=False):
@@ -139,7 +140,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', help='Name of model to be loaded', type=str, required=False, default='EleutherAI/gpt-j-6b')
     parser.add_argument('--root_data_dir', help='Root directory of data files', type=str, required=False, default='../dataset_files')
-    parser.add_argument('--save_path_root', help='File path to save mean activations to', type=str, required=False, default='../results')
+    parser.add_argument('--save_path_root', help='File path to save mean activations to', type=str, required=False, default=str(RESULTS_ROOT))
     parser.add_argument('--n_seeds', help='Number of seeds', type=int, required=False, default=5)
     parser.add_argument('--n_trials', help='Number of trials to use for computing task-conditioned mean head activations', type=int, required=False, default=100)
     parser.add_argument('--n_shots', help='Number of shots to use for prompts when computing task-conditioned mean head activations', type=int, required=False, default=10)

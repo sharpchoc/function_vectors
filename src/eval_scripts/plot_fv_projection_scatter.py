@@ -14,13 +14,14 @@ import torch
 
 from src.utils.extract_utils import compute_function_vector
 from src.utils.model_utils import load_gpt_model_and_tokenizer
+from src.utils.paths import ARTIFACTS_ROOT, GENERAL_DIR
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Project saved residual activations onto task function vectors and plot layer-wise scatter plots."
     )
-    parser.add_argument("--fv_root", type=Path, default=Path("results/gptj_fv"), help="Root containing <task> FV result directories.")
+    parser.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv", help="Root containing <task> FV result directories.")
     parser.add_argument("--activations_root", type=Path, required=True, help="Root containing <task>/<split>/index.json activation shards.")
     parser.add_argument("--tasks", nargs=2, default=["antonym", "synonym"], help="Two tasks: y-axis task first, x-axis task second by default.")
     parser.add_argument("--x_task", type=str, default="synonym", help="Task whose FV is used for the x-axis projection.")
@@ -189,7 +190,7 @@ def main():
     output_dir = args.output_dir
     if output_dir is None:
         token_tag = args.token_role if args.icl_example_index is None else f"{args.token_role}_icl{args.icl_example_index}"
-        output_dir = args.activations_root / "fv_projection_scatter" / f"{args.split}_{token_tag}"
+        output_dir = GENERAL_DIR / "embedding_geometry" / "fv_projection_scatter" / f"{args.split}_{token_tag}"
 
     print("Loading model for function-vector reconstruction")
     torch.set_grad_enabled(False)

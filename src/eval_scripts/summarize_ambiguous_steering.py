@@ -1,14 +1,18 @@
 """Collate ambiguous-task steering results: task-specific FV vs train-pooled-head FV at top-10/20/40.
 Headline metric = best-layer zero-shot FV-steering top-1 accuracy (and 10-shot-shuffled)."""
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import AMBIGUOUS_DIR
 
 TASKS = ["magnitude", "identity", "count_vowels", "count_consonants"]
 NS = [10, 20, 40]
 
 
 def load(n, task):
-    p = Path(f"results/heldout_ambiguous_eval_top{n}") / task / "comparison_summary.json"
+    p = AMBIGUOUS_DIR / f"heldout_ambiguous_eval_top{n}" / task / "comparison_summary.json"
     return json.loads(p.read_text()) if p.exists() else None
 
 

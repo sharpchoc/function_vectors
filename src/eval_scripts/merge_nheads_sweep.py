@@ -3,12 +3,16 @@
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from utils.paths import STEERING_COMPARISON_DIR
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--output_root", type=Path, default=Path("results/heldout_varicl_nheads_sweep"))
+    ap.add_argument("--output_root", type=Path, default=STEERING_COMPARISON_DIR / "heldout_varicl_nheads_sweep")
     ap.add_argument("--n_values", nargs="+", type=int, default=[10, 20, 30, 40])
     args = ap.parse_args()
 

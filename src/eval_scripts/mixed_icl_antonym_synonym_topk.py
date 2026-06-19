@@ -26,6 +26,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "utils"))
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from utils.model_utils import load_gpt_model_and_tokenizer
+from utils.paths import GENERAL_DIR
 
 
 # --- inlined from utils.eval_utils (avoids the baukit import chain) ---
@@ -144,10 +145,10 @@ def main():
     p.add_argument("--batch_size", type=int, default=25)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--dataset_dir", default="dataset_files/abstractive")
-    p.add_argument("--output_dir", default="results/mixed_icl_antonym_synonym")
+    p.add_argument("--output_dir", default=str(GENERAL_DIR / "mixed_icl_antonym_synonym"))
     p.add_argument("--icl_order", choices=["antonym_first", "synonym_first"], default="antonym_first",
                    help="order of the 10 ICL demos: 5 antonym then 5 synonym, or vice versa")
-    p.add_argument("--baseline_path", default="results/mixed_icl_antonym_synonym_baseline/pure_baseline.json",
+    p.add_argument("--baseline_path", default=str(GENERAL_DIR / "mixed_icl_antonym_synonym_baseline" / "pure_baseline.json"),
                    help="cache for the same-task 10-shot reference; computed once, reused across graphs")
     p.add_argument("--refresh_baseline", action="store_true",
                    help="recompute the same-task baseline even if the cache exists")
