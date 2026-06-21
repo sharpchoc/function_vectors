@@ -39,7 +39,7 @@ def parse_args():
     p.add_argument("--device", type=str, default="cuda")
     p.add_argument("--prefixes", type=json.loads, default={"input": "Q:", "output": "A:", "instructions": ""})
     p.add_argument("--separators", type=json.loads, default={"input": "\n", "output": "\n\n", "instructions": ""})
-    p.add_argument("--output_root", type=Path, default=LABEL_GEOMETRY_DIR)
+    p.add_argument("--output_root", type=Path, default=LABEL_GEOMETRY_DIR / "twoshot" / "judge")
     return p.parse_args()
 
 
@@ -116,7 +116,7 @@ def main():
                    "judge_top1_accuracy": judged / n, "first_token_top1_accuracy": ft1 / n,
                    "gold_exact_match_accuracy": sum(r["exact_match_gold"] for r in records) / n,
                    "copied_input_count": copied}
-        out_dir = args.output_root / f"twoshot_{task}_judge"
+        out_dir = args.output_root / task
         out_dir.mkdir(parents=True, exist_ok=True)
         (out_dir / "judged_results.json").write_text(json.dumps({"summary": summary, "records": records}, indent=2))
         overall[task] = summary

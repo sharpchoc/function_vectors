@@ -23,7 +23,7 @@ def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--graded_dir", type=Path,
                    default=ARTIFACTS_ROOT / "twoshot_paired_graded" / "antonym_synonym")
-    p.add_argument("--judge_root", type=Path, default=LABEL_GEOMETRY_DIR)
+    p.add_argument("--judge_root", type=Path, default=LABEL_GEOMETRY_DIR / "twoshot" / "judge")
     p.add_argument("--function_tasks", nargs="+", default=["antonym", "synonym"])
     p.add_argument("--tag_field", type=str, default="judge_top1")
     return p.parse_args()
@@ -33,7 +33,7 @@ def main():
     args = parse_args()
     verdict = {}
     for task in args.function_tasks:
-        jr = json.loads((args.judge_root / f"twoshot_{task}_judge" / "judged_results.json").read_text())
+        jr = json.loads((args.judge_root / task / "judged_results.json").read_text())
         for r in jr["records"]:
             verdict[(task, r["label1"], r["label2"], r["query_input"])] = bool(r["judge_correct"])
         print(f"{task}: {len(jr['records'])} verdicts loaded")

@@ -77,9 +77,57 @@ A second matched demo ~2–3× the 1-shot semantic accuracy (antonym 0.276→0.5
 nearly halves the copy-the-query failure (ant 263→125, syn 339→230). Digits at ceiling (0.98), judge ≈
 first-token (single-token golds). Every row now filters by first-token `top1/2/3` AND GPT-4 `judge_top1`.
 
-**Next:** geometry (demo1-vs-demo2 label + pre-label contrast, stable-rank/cosine/FV-separation; can split
-by `judge_top1`), 2-shot switch-steering. **Blockers:** None.
-Plan: `/root/.claude/plans/validated-fluttering-noodle.md`.
+**UPDATE — GEOMETRY: mean-pairwise-cosine heatmap (token position × layer).** NEW
+`src/eval_scripts/plot_twoshot_diffcos_heatmap.py` (generalizes `plot_pairwise_cos_hist_byjudge.py` —
+collapses each histogram to its MEAN and sweeps the full 5-position × 28-layer grid; reuses the
+unit-normalize→Gram→upper-triangle recipe). Cell = mean pairwise cosine of `D = act(f1)−act(f2)` over
+all prompt-keys `(label1,label2,query)`; all prompts, independent color scale per pair. Cmd
+`python src/eval_scripts/plot_twoshot_diffcos_heatmap.py` → `results/direction2_label_geometry/twoshot_diffcos_heatmap/`
+(`<pair>_meancos_heatmap.png` ×2 + `meancos_grid.json`). Verified: grids finite, n=544/198 every cell,
+independent cell recompute matches to 5 dp.
+
+**FINDINGS (peak mean cos, role @ layer):**
+- **antonym_synonym (words):** peak **0.351 @ query_final, L12**. Coherence ranks
+  `query_final > demo2_label (~0.23, L12) > demo1_label (~0.18, L8) ≫ demo2_prelabel (~0.08) > demo1_prelabel (~0)`.
+  Mid-layer band (L8–15); embedding/early layers ~0; decays after ~L16.
+- **digit next/prev (numbers):** peak **0.840 @ demo2_label, L4**. Label + query positions all high
+  (~0.8) and peak **EARLY (L4)** then slowly decay; pre-label positions lower (demo2_prelabel ~0.3–0.6,
+  demo1_prelabel ~0).
+- **The function axis lives at the LABEL token, not the pre-label `A:`** (label rows ≫ pre-label rows in
+  both pairs) — and demo2_prelabel > demo1_prelabel (some axis accumulates by the 2nd demo's pre-label).
+- **Accumulation across demos:** `demo2_label ≥ demo1_label` (words clearly; digits ~tied at ceiling), and
+  `query_final` is the most coherent for words.
+- **numbers ≫ words** (0.84 vs 0.35) — same as 1-shot (numbers ≈ rank-1 ±1 axis); numbers peak early (L4),
+  words mid (L12).
+- **2-shot > 1-shot coherence:** at L11, 2-shot query_final 0.31 vs 1-shot final 0.12; demo2_label 0.20 vs
+  1-shot label 0.15. The second matched demo sharpens the function direction, most at the query.
+
+**UPDATE — GEOMETRY: stable rank of unit-normalised diffs per layer & position.** NEW
+`src/eval_scripts/plot_twoshot_stable_rank_by_layer.py` (generalizes `plot_stable_rank_by_layer_byjudge.py`
+to the 5-role 2-shot capture; same metric `stable rank = Σσ²/σ₁²` of the unit-normalized D matrix +
+companion mean-pairwise-cos panel). One figure per pair, x=layer, one line per role; all prompts. Cmd
+`python src/eval_scripts/plot_twoshot_stable_rank_by_layer.py` → `…/twoshot/stable_rank/`
+(`<pair>_stable_rank.png` ×2 + `stable_rank_by_layer.json`).
+
+**FINDINGS (stable rank @ L9; lower = more rank-1 / one dominant function axis):**
+- **antonym_synonym:** query_final **3.06** < demo2_label 4.35 < demo1_label 4.91 ≪ demo2_prelabel 13.2,
+  demo1_prelabel 16.0. So the function axis is most rank-1 at the query, sharper at demo2 than demo1, and
+  ~random at the pre-label `A:` (D≈0 there). Dips mid-layer (mirror of the cosine heatmap).
+- **digit next/prev:** demo1_label **1.26**, demo2_label 1.36, query_final 1.36 (≈ rank-1, one dominant ±1
+  axis); pre-label higher (demo2_prelabel 2.78, demo1_prelabel 7.35).
+- Exactly the mirror of the mean-cos heatmap and consistent with 1-shot (numbers ≈ rank-1, words ~3–5).
+
+**RESULTS REORG:** all 2-ICL-example deliverables now live under one umbrella
+`results/direction2_label_geometry/twoshot/`:
+`judge/{antonym,synonym,next_number_digits,prev_number_digits}/judged_results.json`, `diffcos_heatmap/`,
+`stable_rank/`. Default output/read paths updated in `judge_twoshot_paired.py` (writes `…/twoshot/judge/<task>`),
+`tag_twoshot_activations_judge.py` (reads same), `plot_twoshot_diffcos_heatmap.py` and
+`plot_twoshot_stable_rank_by_layer.py` (write under `…/twoshot/`). Capture intermediates stay in
+`artifacts/twoshot_paired_graded/`.
+
+**Next:** optional judge-split variants, 2-shot switch-steering. **Blockers:** None.
+Plans: `/root/.claude/plans/validated-fluttering-noodle.md` (capture),
+`/root/.claude/plans/playful-weaving-wilkes.md` (heatmap).
 
 ---
 
