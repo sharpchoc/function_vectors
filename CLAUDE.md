@@ -6,6 +6,14 @@ Before starting work:
 - Rename the tmux window to reflect the task before starting it (if the current name doesn't already fit the work) — this makes it easier to switch between tmux windows running Claude. Use `tmux rename-window <name>`.
 - Add or update your stream entry in WORKLOG.md.
 
+Results & artifacts layout:
+- Intermediates (activation captures, function vectors, head selections, paired-task captures) live in
+  git-ignored `artifacts/`. Study deliverables (figures, summary tables) live in tracked `results/`,
+  bucketed by research direction: `direction1_ambiguous`, `direction2_label_geometry`,
+  `direction3_fv_formation`, `steering_vector_comparison`, `general`. Run logs go in git-ignored `logs/`.
+- NEVER hardcode `results/...` or `figures/...` paths. Import `ARTIFACTS_ROOT`, `RESULTS_ROOT`,
+  `LOGS_ROOT` and the bucket constants from `src/utils/paths.py`. See README "Repository layout".
+
 While working:
 - Keep changes narrowly scoped.
 - Prefer existing repo patterns over new abstractions.

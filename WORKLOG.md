@@ -5,39 +5,81 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
-## 2026-06-19 — Repo cleanup: results/ split into gitignored artifacts/ + tracked, direction-bucketed results/
+> **Results layout (current):** intermediates live in git-ignored `artifacts/`; study deliverables in
+> tracked `results/` bucketed by direction (`direction1_ambiguous`, `direction2_label_geometry`,
+> `direction3_fv_formation`, `steering_vector_comparison`, `general`); run logs in git-ignored `logs/`.
+> Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
+> 2026-06-19 cite the paths that were current when written.**
 
-**Owner:** Coordinator (tmux "activation-geometry-steering"). **Status:** DONE (staged; NOT committed — left to user).
+## 2026-06-19 — Stream K: TWO-shot matched-label paired captures (antonym/synonym + digit next/prev)
 
-**What:** `results/` was 124 GB and fully gitignored. Reorganized (NO deletions; same-fs renames) into:
-- `artifacts/` (gitignored) — intermediate caches: `residual_activations/`, `gptj_fv*`,
-  `function_vectors/`, `multitask_aie_heads*`, `oneshot_paired{,_tasks,_graded}/`,
-  `magnitude_identity_activations/`, `magid_decoded_varicl40/`, `gptj_avg_hs/` + scratch (`_smoke_varicl`,
-  `_varicl_testtasks*`). EXCEPT the small head-selection metadata, which IS committed (see DECISIONS).
-- `logs/` (gitignored) — `_*.log` + `_*_logs/`.
-- `results/` (TRACKED) — study deliverables bucketed into **5 dirs**: `direction1_ambiguous/`,
-  `direction2_label_geometry/`, `direction3_fv_formation/`, `steering_vector_comparison/`, `general/`.
-  Top-level `figures/` distributed into bucket `figures/` subdirs. Embedded study figures lifted out of
-  cache dirs: `gptj_fv/plots`+`gptj_avg_hs/plots`→`steering_vector_comparison/fv_layer_sweeps/`;
-  `residual_activations/gptj_with_embeddings/{probes,pca,fv_projection_*}`→`general/embedding_geometry/`.
+**Owner:** Coordinator (tmux "twoshot-paired"). **Status:** DONE — Stage A (activation gathering) complete; geometry/judge/steering are follow-on stages (not built).
 
-**Code:** NEW `src/utils/paths.py` (REPO_ROOT-anchored, env-overridable `ARTIFACTS_ROOT`/`RESULTS_ROOT`/
-`LOGS_ROOT` + 5 bucket-dir constants). Rewrote ~89 scripts (.py + .sh) so every hardcoded `results/`/
-`figures/`/`../results` path routes through `paths.py` (caches→ARTIFACTS_ROOT, study outputs→bucket dirs,
-figures→bucket `figures/`). Verified: zero stray literal paths, all py compile, all .sh `bash -n` clean,
-`import utils.paths` works from `src/` and `src/eval_scripts/`.
+**What:** New 2-shot prompt style extending the 1-shot paired-difference design. Each prompt has TWO
+demos whose labels `(L1,L2)` are matched position-by-position across the two functions and are DISTINCT
+within a prompt; demo INPUTS differ by function; query `q` shared (shared-input pool, gold under both).
+Per user, additionally capture **demo-2's pre-label token** (the `A:` before L2). Example:
+```
+antonym: Q: unable\nA: able\n\nQ: scarce\nA: abundant\n\nQ: secular\nA:   (gold religious)
+synonym: Q: capable\nA: able\n\nQ: plentiful\nA: abundant\n\nQ: secular\nA: (gold nonreligious)
+```
+Labels (able, abundant) + query (secular) identical across f1/f2; only the 2 demo inputs differ.
 
-**.gitignore:** removed blanket `*results`/`results/*`/`*figures`; added `/logs/`, global `*.jsonl`/`*.log`,
-raw-dump ignores (`per_query.csv`, `raw.json`, `recreate_fig8/**/*.md`); `artifacts/**` ignored with
-END negations re-including head metadata; `artifacts/_*/**` re-ignores scratch.
+**Construction:** one tuple per shared-output label word `w` → L1=w, L2=random distinct label,
+`q` from shared-input pool minus {L1,L2,4 demo inputs}; deterministic per `(seed,task_pair,w)`. Pools
+(unchanged from 1-shot): ant/syn 544 labels / 1224 queries; digits 198 labels / 200 queries.
 
-**Staged (not committed):** 116 MB / 2000 files under results+artifacts (288 png, 72 pdf, 1523 json,
-104 csv, 13 head .pt) + 91 code/config files. No file >5 MB; no shards/FVs staged; no unintended deletions.
-**Smoke:** `plot_switch_logit.py` reads+writes its bucket; `steer_switch_judge` defaults resolve to
-`artifacts/oneshot_paired_graded` (exists) and the bucketed output (exists).
+**Roles captured (5/prompt):** `demo1_prelabel`, `demo1_label`, `demo2_prelabel`, `demo2_label`,
+`query_final` (from `selected_token_records`; `pre_label_token`/`last_label_token` @ icl idx 1 & 2, plus
+`last_prompt_token`). First-token rank grading stamped per row + `grading.json`.
 
-**Next:** user to review `git status` and commit (consider a branch first). Deferred: deleting throwaway,
-archiving superseded scripts, regrouping eval_scripts.
+**Files:** NEW `src/eval_scripts/capture_and_grade_twoshot_paired.py` (sibling of
+`capture_and_grade_oneshot_paired.py`; reuses `get_residual_stack`/`selected_token_records`/`flush_shard`,
+`word_pairs_to_prompt_data`/`create_prompt` — all handle 2 demos with no special-casing). Output (intermediate,
+git-ignored) `artifacts/twoshot_paired_graded/<pair>/` (shard_*.pt + index.json + grading.json + scores.json).
+
+**Commands:**
+`HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1 python src/eval_scripts/capture_and_grade_twoshot_paired.py --task_pair {antonym_synonym|next_number_digits_prev_number_digits}`
+
+**RESULTS — first-token top-1 (2-shot vs 1-shot):**
+
+| task | 2-shot top1 | 1-shot top1 | top2 | top3 |
+|---|---|---|---|---|
+| antonym | **0.439** | 0.232 | 0.539 | 0.623 |
+| synonym | **0.221** | 0.066 | 0.373 | 0.487 |
+| next_number_digits | 0.980 | — | 0.995 | 1.000 |
+| prev_number_digits | 0.990 | — | 1.000 | 1.000 |
+
+**FINDINGS:** A second matched-label demo roughly **doubles** first-token top-1 for the word tasks
+(antonym 0.232→0.439, synonym 0.066→0.221) — two demos identify the function far better than one, and cut
+the dominant 1-shot copy-the-query failure. Digits are at ceiling (0.98–0.99). **Verification:** ant/syn
+5440 rows (544×2×5), digits 1980 (198×2×5); all finite; balanced 5-role sets; 0 degenerate tuples
+(L1≠L2, q∉forbidden); token positions identical across f1/f2 (paired invariant holds at every captured role).
+
+**UPDATE — GPT-4 judge eval DONE + activation rows tagged.** `OPENAI_API_KEY` resolves this session via
+`/proc/1/environ` (the repo's `get_openai_key()` fallback), so the judge ran here. NEW
+`src/eval_scripts/judge_twoshot_paired.py` (2-demo prompt rebuild, batched greedy gen, `_digits`→base
+number-judge mapping; reuses `JUDGE_SYSTEMS`/`judge`/`extract_answer`/`get_openai_key` from
+`judge_oneshot_paired.py`) → `results/direction2_label_geometry/twoshot_<task>_judge/judged_results.json`.
+NEW `src/eval_scripts/tag_twoshot_activations_judge.py` stamped a `judge_top1` bool into ALL activation
+rows (5440 ant/syn + 1980 digits) and grading.json (key = function_task, label1, label2, query).
+
+**GPT-4 judge_top1 (2-shot vs 1-shot), + copy-the-query count:**
+
+| task | 2-shot judge | 1-shot judge | 2-shot copied | 1-shot copied |
+|---|---|---|---|---|
+| antonym | **0.574** | 0.276 | 125 | 263 |
+| synonym | **0.408** | 0.143 | 230 | 339 |
+| next_number_digits | 0.980 | — | 2 | — |
+| prev_number_digits | 0.980 | — | 1 | — |
+
+A second matched demo ~2–3× the 1-shot semantic accuracy (antonym 0.276→0.574, synonym 0.143→0.408) and
+nearly halves the copy-the-query failure (ant 263→125, syn 339→230). Digits at ceiling (0.98), judge ≈
+first-token (single-token golds). Every row now filters by first-token `top1/2/3` AND GPT-4 `judge_top1`.
+
+**Next:** geometry (demo1-vs-demo2 label + pre-label contrast, stable-rank/cosine/FV-separation; can split
+by `judge_top1`), 2-shot switch-steering. **Blockers:** None.
+Plan: `/root/.claude/plans/validated-fluttering-noodle.md`.
 
 ---
 

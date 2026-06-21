@@ -32,6 +32,33 @@ negations LAST so they beat earlier rules (incl. the global `*.pt`).
 
 ---
 
+## 2026-06-19 — TWO-shot matched-label paired captures (Stream K): construction + 5-role schema
+
+Extension of the 1-shot paired-difference design to **two demos**. Use this construction for any 2-shot
+paired study:
+- **Matched labels, distinct within a prompt:** demos carry labels `(L1,L2)`, both from the shared-output
+  pool, with `L1≠L2`. The label SEQUENCE is identical across the two functions (f1 prompt and f2 prompt
+  use the same `(L1,L2)` and the same query); only the demo INPUT tokens differ by function (antonym-of-L
+  vs synonym-of-L; for digits next-input `L−1` vs prev-input `L+1`). So at every demo-label / pre-label
+  position the token is byte-identical across f1/f2 — pure contextualization, as in the 1-shot design.
+- **Enumeration:** one tuple per shared-output label word `w` → `L1=w`, `L2`=random distinct label, query
+  from shared-input pool minus `{L1,L2,4 demo inputs}`, deterministic per `(seed,task_pair,w)`. Yields
+  n_prompts ≈ |label pool| (≈544 ant/syn, ≈198 digits) — comparable to the 1-shot run.
+- **NO train/test split** for activation gathering (full-pool capture). The split only matters where Δ is
+  fit-then-applied (steering); geometry is descriptive. (User-confirmed.)
+- **5 captured roles per prompt:** `demo1_prelabel`, `demo1_label`, `demo2_prelabel`, `demo2_label`,
+  `query_final`. The `*_prelabel` roles are the `A:` token before each demo label (`pre_label_token` @
+  icl_example_index 1/2); `demo2_prelabel` was the specifically-requested new position. `selected_token_records`
+  numbers demos **1-based** (icl_example_index 1,2) and handles 2 demos with no special-casing.
+- **Script:** `src/eval_scripts/capture_and_grade_twoshot_paired.py` (sibling of the 1-shot version;
+  reuses `get_residual_stack`/`selected_token_records`/`flush_shard` + `word_pairs_to_prompt_data`). Output
+  is an INTERMEDIATE → `artifacts/twoshot_paired_graded/<pair>/` (git-ignored `ARTIFACTS_ROOT`), NOT
+  `results/`. First-token rank grading stamped per row.
+- **Finding:** a second matched demo ~doubles first-token top-1 on word tasks (antonym 0.232→0.439,
+  synonym 0.066→0.221) and cuts the 1-shot copy-the-query failure; digits at ceiling (0.98–0.99).
+
+---
+
 ## 2026-06-19 — Logit-readout switch-steering + clean train/test split (preferred over sample+judge)
 
 For task-switch steering where the gold answers are **single tokens**, prefer the logit readout over
