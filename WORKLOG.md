@@ -104,10 +104,11 @@ independent cell recompute matches to 5 dp.
 
 **UPDATE — GEOMETRY: stable rank of unit-normalised diffs per layer & position.** NEW
 `src/eval_scripts/plot_twoshot_stable_rank_by_layer.py` (generalizes `plot_stable_rank_by_layer_byjudge.py`
-to the 5-role 2-shot capture; same metric `stable rank = Σσ²/σ₁²` of the unit-normalized D matrix +
-companion mean-pairwise-cos panel). One figure per pair, x=layer, one line per role; all prompts. Cmd
-`python src/eval_scripts/plot_twoshot_stable_rank_by_layer.py` → `…/twoshot/stable_rank/`
-(`<pair>_stable_rank.png` ×2 + `stable_rank_by_layer.json`).
+to the 5-role 2-shot capture; metric `stable rank = Σσ²/σ₁²` of the unit-normalized D matrix). ONE figure,
+one panel per task pair (x=layer, one line per role); all prompts. The mean-pairwise-cosine view is
+deliberately omitted — it is identical to the cosine heatmap (`twoshot/diffcos_heatmap/`), so plotting it
+again added nothing. Cmd `python src/eval_scripts/plot_twoshot_stable_rank_by_layer.py` →
+`…/twoshot/stable_rank/stable_rank.png` + `stable_rank_by_layer.json`.
 
 **FINDINGS (stable rank @ L9; lower = more rank-1 / one dominant function axis):**
 - **antonym_synonym:** query_final **3.06** < demo2_label 4.35 < demo1_label 4.91 ≪ demo2_prelabel 13.2,

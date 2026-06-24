@@ -1,17 +1,17 @@
 #!/usr/bin/env python
-"""Stable rank (and mean pairwise cosine) per layer of the stacked function-difference matrix
-D = act(f1) - act(f2), for the TWO-shot paired captures, per task pair and token position.
+"""Stable rank per layer of the stacked function-difference matrix D = act(f1) - act(f2), for the
+TWO-shot paired captures, per task pair and token position.
 
 For each task pair (f1,f2), token position (the 5 two-shot roles), and layer L: stack the per-prompt
 difference vectors D[k] = act_f1(k)[L] - act_f2(k)[L] over prompt-keys k=(label1,label2,query),
-UNIT-NORMALIZE the rows, and report:
-    stable rank = Σσ²/σ₁²   (= W/σ₁² for unit rows; low => one dominant axis)
-    mean pairwise cosine of the unit rows.
-One figure per task pair with [stable rank | mean pairwise cosine] panels, x=layer, one line per role.
-All prompts (no judge split). Generalizes plot_stable_rank_by_layer_byjudge.py to the 5-role 2-shot capture.
+UNIT-NORMALIZE the rows, and report stable rank = Σσ²/σ₁² (= W/σ₁² for unit rows; low => one dominant
+axis). All prompts (no judge split).
+
+One figure, one panel per task pair (x=layer, one line per role). The mean-pairwise-cosine view is
+intentionally NOT plotted here -- it is identical to the cosine heatmap (twoshot/diffcos_heatmap/).
 
 Reads ARTIFACTS_ROOT/twoshot_paired_graded/<pair>/. Writes
-RESULTS direction2_label_geometry/twoshot/stable_rank/<pair>_stable_rank.png + stable_rank_by_layer.json.
+RESULTS direction2_label_geometry/twoshot/stable_rank/stable_rank.png + stable_rank_by_layer.json.
 """
 import argparse
 import glob
@@ -55,18 +55,14 @@ def load_pair(graded_dir):
     return f1, f2, acts, n_layers
 
 
-def metrics(D):
-    """unit-normalize rows; return (stable_rank, mean_pairwise_cos)."""
+def stable_rank(D):
+    """unit-normalize rows; return stable rank Σσ²/σ₁²."""
     n = np.linalg.norm(D, axis=1, keepdims=True)
     n[n == 0] = 1.0
     U = D / n
     sv = np.linalg.svd(U, compute_uv=False)
     sv2 = sv ** 2
-    sr = float(sv2.sum() / sv2[0]) if sv2[0] > 0 else 0.0
-    C = U @ U.T
-    iu = np.triu_indices(C.shape[0], k=1)
-    pc = float(C[iu].mean()) if iu[0].size else 0.0
-    return sr, pc
+    return float(sv2.sum() / sv2[0]) if sv2[0] > 0 else 0.0
 
 
 def main():
@@ -74,7 +70,9 @@ def main():
     args.out_dir.mkdir(parents=True, exist_ok=True)
     dump = {}
 
-    for pair in args.pairs:
+    fig, axes = plt.subplots(1, len(args.pairs), figsize=(7 * len(args.pairs), 5))
+    axes = np.atleast_1d(axes)
+    for pi, pair in enumerate(args.pairs):
         f1, f2, acts, n_layers = load_pair(args.graded_root / pair)
         layers = list(range(n_layers))
         series = {}
@@ -84,39 +82,32 @@ def main():
             d1 = np.stack([acts[(role, f1, k)] for k in keys], axis=0)
             d2 = np.stack([acts[(role, f2, k)] for k in keys], axis=0)
             D = d1 - d2
-            srs, pcs = [], []
-            for L in range(n_layers):
-                sr, pc = metrics(D[:, L, :])
-                srs.append(sr); pcs.append(pc)
-            series[role] = {"n": len(keys), "sr": srs, "pc": pcs}
+            srs = [stable_rank(D[:, L, :]) for L in range(n_layers)]
+            series[role] = {"n": len(keys), "sr": srs}
 
-        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+        ax = axes[pi]
         for role in ROLES:
-            s = series[role]
-            axes[0].plot(layers, s["sr"], color=ROLE_COLORS[role], marker="o", ms=2.5,
-                         label=f"{role} (n={s['n']})")
-            axes[1].plot(layers, s["pc"], color=ROLE_COLORS[role], marker="o", ms=2.5,
-                         label=f"{role} (n={s['n']})")
-        axes[0].set_title("Stable rank of unit-normalised diffs  Σσ²/σ₁²")
-        axes[0].set_xlabel("layer"); axes[0].set_ylabel("stable rank (low => one dominant axis)")
-        axes[1].set_title("Mean pairwise cosine of diffs")
-        axes[1].set_xlabel("layer"); axes[1].set_ylabel("mean pairwise cosine")
-        axes[1].axhline(0, color="0.6", lw=0.8)
-        for ax in axes:
-            ax.grid(alpha=0.3); ax.legend(fontsize=8)
-        fig.suptitle(f"{pair} — function-difference geometry per layer & token position "
-                     f"(D = {f1} − {f2}, all prompts)", fontsize=12)
-        fig.tight_layout(rect=[0, 0, 1, 0.96])
-        out_png = args.out_dir / f"{pair}_stable_rank.png"
-        fig.savefig(out_png, dpi=150)
-        plt.close(fig)
-        print(f"wrote {out_png}")
+            ax.plot(layers, series[role]["sr"], color=ROLE_COLORS[role], marker="o", ms=2.5,
+                    label=f"{role} (n={series[role]['n']})")
+        ax.set_title(f"{pair}\nD = {f1} − {f2}")
+        ax.set_xlabel("layer")
+        ax.set_ylabel("stable rank  Σσ²/σ₁²  (low => one dominant axis)")
+        ax.grid(alpha=0.3)
+        ax.legend(fontsize=8)
         dump[pair] = {"f1": f1, "f2": f2, "layers": layers, "roles": ROLES, "series": series}
+
+    fig.suptitle("Two-shot function-difference stable rank (unit-normalised diffs) per layer & token position "
+                 "(all prompts)", fontsize=12)
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    out_png = args.out_dir / "stable_rank.png"
+    fig.savefig(out_png, dpi=150)
+    plt.close(fig)
+    print(f"wrote {out_png}")
 
     (args.out_dir / "stable_rank_by_layer.json").write_text(json.dumps(dump, indent=2))
     print(f"wrote {args.out_dir / 'stable_rank_by_layer.json'}")
     for pair, o in dump.items():
-        print(f"  {pair}: stable rank @ mid-layer (L9) — "
+        print(f"  {pair}: stable rank @ L9 — "
               + ", ".join(f"{r}={o['series'][r]['sr'][9]:.2f}" for r in ROLES))
 
 
