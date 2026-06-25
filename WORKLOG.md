@@ -11,6 +11,74 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-06-25 — Stream L: label→query-final cosine-shift heatmaps (29×29 layer×layer, per task × α)
+
+**Owner:** Coordinator (tmux "label-prelabel-cos-heatmap"). **Status:** DONE — 4 heatmaps rendered.
+
+**What:** 2-D map of the Stream-E label-token steering. For each task pair + fixed source→target
+direction, a **29×29** heatmap (x = intervention layer at the demo **label** token, y = read layer at
+the **query-final** token; layer 0 = embedding / `transformer.drop`, 1–28 = block outputs). Cell =
+mean over prompt pairs of `Δcos = cos(steered_src_final(k), tgt_final(k)) − cos(src_final(k),
+tgt_final(k))` — i.e. how much injecting `α·steer_vec(i)` at the source prompt's label token (layer i)
+pushes the source's query-final representation toward the (unsteered) target's. One heatmap per
+**task × α**, α∈{2,4} → 4 total. Directions: **antonym→synonym**, **prev→next (digits)**.
+
+**Construction:** same overlapping paired-1-shot design as `capture_and_grade_oneshot_paired.py`
+(shared single-token label `w` + shared query `q`; only the demo INPUT differs by function, so the
+label token AND query-final token are byte-identical across the pair). `steer_vec(i) =
+mean_pairs[act_tgt_label(i) − act_src_label(i)]`, added with positive α to the SOURCE prompt. No
+correctness filter (blind Δ, matches prior steering). n_pairs: ant/syn 544, digits 198.
+
+**Files:** NEW `src/eval_scripts/steer_label_cos_heatmap.py` (reuses pair construction +
+`load_gpt_model_and_tokenizer`, `word_pairs_to_prompt_data`/`create_prompt`/`get_token_meta_labels`;
+inlines the baukit-free `selected_token_records`/`extract_positions`; baukit `TraceDict`
+edit_output+retain_output hook from `steer_label_to_query.py`). Output (TRACKED)
+`results/direction2_label_geometry/oneshot_label_intervention_cos_heatmap/`: 4 `figures/*_cos_shift_heatmap.png`,
+4 `<task>_alpha{2,4}_grid.{npy,csv}`, 2 `<task>_summary.json`. Logs `logs/label_cos_heatmap_*.log`.
+NEW `src/eval_scripts/plot_label_cos_heatmap_grid.py` (pure plotting from the saved grids; no GPU) →
+`figures/combined_2x2_cos_shift_heatmap.png` — all 4 panels (rows=task, cols=α) on ONE figure with a
+**shared** symmetric colour scale (vmax 0.043) for direct comparison; the shared scale makes the
+digits≫words gap visible at a glance. Cmd: `python src/eval_scripts/plot_label_cos_heatmap_grid.py`.
+**Env:** upgraded `matplotlib` 3.7.1→3.11.0 (3.7.1 ABI-incompatible with this box's numpy 2.1.2).
+
+**Commands:**
+`HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1 python src/eval_scripts/steer_label_cos_heatmap.py --task_pair {antonym_synonym|next_number_digits_prev_number_digits} --alphas 2 4 --batch_size 128`
+(smoke: add `--max_pairs 16 --layers 0 6 11`). ~2–4 min/task on the 24GB 4090.
+
+**RESULTS — peak Δcos (intervene L, read L):**
+
+| task | α | peak Δcos | intervene L | read L |
+|---|---|---|---|---|
+| antonym→synonym | 2 | **+0.0188** | 8 | 18 |
+| antonym→synonym | 4 | +0.0166 | 6 | 18 |
+| prev→next (digits) | 2 | **+0.0428** | 4 | 16 |
+| prev→next (digits) | 4 | +0.0236 | 7 | 18 |
+
+**FINDINGS:**
+- **Strictly downstream / upper-triangular:** every grid is **exactly 0 for read k ≤ intervene i**
+  (incl. the diagonal) — a label-token edit only reaches the query-final token via later blocks'
+  attention. **Embedding row & column are exactly 0** (label + query-final tokens byte-identical
+  across f1/f2 ⇒ zero embedding diff, baseline cos=1). Both are built-in sanity checks; they hold to 0.
+- **Mid-layer causal band feeding late reads.** Words: intervene ~L5–12 (hot spot L7–9) → read L16–28,
+  peak read **L18**; dead by intervene ~L16. Digits: band starts **earlier** (intervene ~L4–13, peak
+  L4–8) → read L16–18. Mirrors the prior 1-D causal window (L4–9 plateau, dead by L16) and the
+  numbers-steer-earlier / words-mid-layer asymmetry.
+- **Digits ≫ words** (peak 0.043 vs 0.019) — the ±1 digit function axis is ~2× more steerable toward
+  the partner, consistent with numbers≈rank-1 geometry.
+- **α=2 > α=4 at the peak for BOTH** — α=4 already overshoots for this toward-target-cosine metric
+  (prior linear regime 0.5–4 was for the logit/flip readout; the cosine-convergence metric saturates
+  sooner). Absolute shifts are SMALL because baseline cos sits near ceiling (~0.98–0.99 words, ~0.99
+  digits) — little headroom; the *pattern* (where in the layer×layer grid the push lands), not the
+  magnitude, is the result.
+
+**Verification:** structural invariants hold exactly (embedding row/col=0, lower-tri incl diag=0, all
+finite); per-pair byte-identical label & query-final tokens asserted at build time; peak cells land in
+the prior CIE/steering mid-layer band. **Next (optional):** reverse directions (syn→ant, next→prev),
+overlay the 1-D `oneshot_steering` profile as a diagonal slice, or a random-direction control.
+**Blockers:** None. Plan: `/root/.claude/plans/read-claude-md-and-understand-snuggly-fog.md`.
+
+---
+
 ## 2026-06-19 — Stream K: TWO-shot matched-label paired captures (antonym/synonym + digit next/prev)
 
 **Owner:** Coordinator (tmux "twoshot-paired"). **Status:** DONE — Stage A (activation gathering) complete; geometry/judge/steering are follow-on stages (not built).

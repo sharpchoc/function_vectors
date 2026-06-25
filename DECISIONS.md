@@ -5,6 +5,37 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-06-25 — Layer×layer label→query-final cosine-shift heatmap; env + reuse gotchas
+
+New deliverable `src/eval_scripts/steer_label_cos_heatmap.py` (Stream L): 29×29 (intervention-layer ×
+read-layer) heatmap of how injecting `α·steer_vec(i)` at the demo **label** token pushes the source
+prompt's **query-final** activation toward the (unsteered) target's, measured as `Δcos = cos(steered
+src_final, tgt_final) − cos(src_final, tgt_final)`, meaned over overlapping prompt pairs. Layer 0 =
+embedding (`transformer.drop`), 1–28 = block outputs. Reusable facts:
+
+- **The grid is structurally upper-triangular and the embedding row/col is exactly 0.** A label-token
+  edit reaches the query-final token only via *later* blocks' attention, so `Δcos = 0` for read
+  `k ≤ intervene i` (incl. diagonal) — use this as a free correctness check. Embedding diff is 0
+  because the label + query-final tokens are byte-identical across f1/f2 (the overlapping design), so
+  baseline cos at layer 0 = 1 and `steer_vec[0] = 0`.
+- **baukit `edit_output` hooks MUST be exact 2-arg `(output, layer_name)` closures** (already noted
+  2026-06-11). Hit again here: passing per-chunk state via extra default-kwargs made the hook silently
+  no-op (Δcos = 0 everywhere). Fix = a factory returning a 2-arg closure that captures state via scope.
+  Also handle BOTH output shapes: `transformer.h.{l}` returns a tuple (edit `output[0]`), but the
+  embedding module `transformer.drop` returns a bare tensor (edit `output`).
+- **`matplotlib` 3.7.1 is ABI-incompatible with this box's `numpy` 2.1.2** (`numpy.core.multiarray
+  failed to import` on `import matplotlib`). Fixed by `pip install -U "matplotlib>=3.8"` → 3.11.0.
+  Any plotting script will fail to import until this is in place.
+- **Shared output dir → name summaries per task** (`<task_pair>_summary.json`, not a single
+  `summary.json`) so a second task's run doesn't clobber the first's metadata. Grids/PNGs/CSVs are
+  already per-task-named.
+- **Finding:** mid-layer intervention band (words L5–12 peak L7–9; digits earlier, L4–8) feeding read
+  L16–18, dead by intervene ~L16 — mirrors the 1-D causal window. Digits steer ~2× words; α=2 > α=4 at
+  the peak (the toward-target-cosine metric overshoots sooner than the logit-flip readout). Absolute
+  shifts are small (baseline cos near ceiling ~0.98–0.99); the *location* in the grid is the signal.
+
+---
+
 ## 2026-06-19 — Results layout: gitignored `artifacts/` vs tracked, direction-bucketed `results/`
 
 **Convention (use for all new scripts):** import paths from `src/utils/paths.py`; never hardcode
