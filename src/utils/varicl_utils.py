@@ -13,7 +13,14 @@ import torch
 from baukit import TraceDict
 
 from src.compute_indirect_effect import _project_attention_inputs
-from src.utils.eval_utils import compute_individual_token_rank, get_answer_id
+from src.utils.eval_utils import (
+    compute_individual_token_rank,
+    get_answer_id,
+    sentence_eval,
+    f1_score,
+    exact_match_score,
+    first_word_score,
+)
 from src.utils.prompt_utils import create_prompt, word_pairs_to_prompt_data
 
 
@@ -180,6 +187,51 @@ def varicl_correctness_filter(dataset, args, model, model_config, tokenizer, tas
         tokenizer.padding_side = old_padding_side
 
     return clean_rank_list
+
+
+_METRIC_FNS = {
+    "f1_score": f1_score,
+    "exact_match_score": exact_match_score,
+    "first_word_score": first_word_score,
+}
+
+
+def varicl_correctness_filter_generate_str(dataset, args, model, model_config, tokenizer,
+                                           task_index, seed_base, metric="f1_score"):
+    """Full-answer (generated-string) correctness for variable-ICL, unshuffled prompts.
+
+    The generate_str analogue of `varicl_correctness_filter`: builds each item with
+    build_varicl_prompt_data (variable shots, shuffle_labels=False) and scores the whole
+    generated answer with `metric` via sentence_eval. Returns a per-query score list
+    (1.0 == correct). Required on tokenizers that split digits (e.g. Qwen3), where first-token
+    rank is invalid for numeric/multi-token answers.
+    """
+    if metric not in _METRIC_FNS:
+        raise ValueError(f"Unknown metric: {metric}. Options: {list(_METRIC_FNS)}")
+    metric_fn = _METRIC_FNS[metric]
+    score_list = []
+    split_len = len(dataset[args.query_split])
+
+    old_padding_side = tokenizer.padding_side
+    if tokenizer.pad_token_id is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = 'left'
+    try:
+        for query_idx in range(split_len):
+            prompt_data = build_varicl_prompt_data(
+                dataset, args, model_config, task_index=task_index, query_idx=int(query_idx),
+                shuffle_labels=False, seed_base=seed_base,
+            )
+            target = prompt_data['query_target']['output']
+            target = [target] if not isinstance(target, list) else target
+            sentence = create_prompt(prompt_data)
+            score = sentence_eval([sentence], target=target, model=model, tokenizer=tokenizer,
+                                  compute_nll=False, generate_str=True, metric_fn=metric_fn)
+            score_list.append(score)
+    finally:
+        tokenizer.padding_side = old_padding_side
+
+    return score_list
 
 
 def batch_varicl_last_token_intervention(prompt_data_batch, avg_activations, model, model_config, tokenizer):

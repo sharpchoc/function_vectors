@@ -386,13 +386,16 @@ def n_shot_eval_no_intervention(dataset, n_shots, model, model_config, tokenizer
             prompt_data = word_pairs_to_prompt_data(word_pairs, query_target_pair = word_pairs_test, prepend_bos_token=prepend_bos, shuffle_labels=shuffle_labels)
 
         target = prompt_data['query_target']['output']
+        sentence = create_prompt(prompt_data)
         if generate_str:
+            # generate_str path scores the whole string; target may be a list of
+            # acceptable answers. target_token_id is unused here and get_answer_id
+            # cannot take a list, so skip it.
             target = [target] if not isinstance(target, list) else target
+            target_token_id = None
         else:
             target = target[0] if isinstance(target, list) else target
-
-        sentence = create_prompt(prompt_data)
-        target_token_id = get_answer_id(sentence, target, tokenizer)
+            target_token_id = get_answer_id(sentence, target, tokenizer)
         return sentence, target, target_token_id
 
     old_padding_side = tokenizer.padding_side

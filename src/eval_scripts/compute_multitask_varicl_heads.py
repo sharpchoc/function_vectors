@@ -52,6 +52,7 @@ from src.utils.varicl_utils import (
     build_varicl_prompt_data,
     get_last_token_mean_head_activations,
     varicl_correctness_filter,
+    varicl_correctness_filter_generate_str,
 )
 
 
@@ -129,6 +130,14 @@ def parse_args():
     parser.add_argument("--no_filter_to_correct_icl", dest="filter_to_correct_icl", action="store_false")
     parser.set_defaults(filter_to_correct_icl=True)
     parser.add_argument("--batch_size_filter_eval", type=int, default=1)
+    parser.add_argument(
+        "--generate_str",
+        action="store_true",
+        help="Use full-answer (generated-string) scoring for the variable-ICL correctness filter "
+             "instead of first-token rank (required for numeric/multi-token tasks on Qwen3).",
+    )
+    parser.add_argument("--metric", type=str, default="f1_score",
+                        help="Scoring metric when --generate_str (f1_score|exact_match_score|first_word_score).")
     parser.add_argument("--save_per_prompt_effects", dest="save_per_prompt_effects", action="store_true")
     parser.add_argument("--no_save_per_prompt_effects", dest="save_per_prompt_effects", action="store_false")
     parser.set_defaults(save_per_prompt_effects=False)
@@ -166,8 +175,15 @@ def mean_activations_path(root, task):
 
 
 def compute_varicl_filter_set(args, task, dataset, model, model_config, tokenizer, task_index, task_output_dir):
-    """Variable-ICL correctness filter -> correct query indices (rank 0), capped at the limit."""
-    save_path = task_output_dir / f"fs_results_varicl_{args.query_split}.json"
+    """Variable-ICL correctness filter -> correct query indices, capped at the limit.
+
+    With --generate_str, correctness is full-answer (score==1); otherwise first-token rank (==0).
+    Cache files are mode-suffixed so the two never collide.
+    """
+    suffix = "_genstr" if args.generate_str else ""
+    select_key = "score" if args.generate_str else "clean_rank_list"
+    select_val = 1 if args.generate_str else 0
+    save_path = task_output_dir / f"fs_results_varicl_{args.query_split}{suffix}.json"
 
     if save_path.exists() and not args.overwrite:
         print(f"Loading variable-ICL query filter for {task}: {save_path}")
@@ -175,29 +191,37 @@ def compute_varicl_filter_set(args, task, dataset, model, model_config, tokenize
             fs_results = json.load(f)
         source_path = save_path
     else:
-        print(f"Computing variable-ICL query filter for {task} on {args.query_split}")
+        print(f"Computing variable-ICL query filter for {task} on {args.query_split} "
+              f"({'full-answer' if args.generate_str else 'first-token'})")
         set_seed(args.seed)
-        clean_rank_list = varicl_correctness_filter(
-            dataset=dataset,
-            args=args,
-            model=model,
-            model_config=model_config,
-            tokenizer=tokenizer,
-            task_index=task_index,
-            seed_base=args.seed,
-        )
-        fs_results = {"clean_rank_list": clean_rank_list}
+        if args.generate_str:
+            score_list = varicl_correctness_filter_generate_str(
+                dataset=dataset, args=args, model=model, model_config=model_config,
+                tokenizer=tokenizer, task_index=task_index, seed_base=args.seed, metric=args.metric,
+            )
+            fs_results = {"score": score_list}
+        else:
+            clean_rank_list = varicl_correctness_filter(
+                dataset=dataset,
+                args=args,
+                model=model,
+                model_config=model_config,
+                tokenizer=tokenizer,
+                task_index=task_index,
+                seed_base=args.seed,
+            )
+            fs_results = {"clean_rank_list": clean_rank_list}
         with open(save_path, "w") as f:
             json.dump(fs_results, f, indent=2)
         source_path = save_path
 
-    if "clean_rank_list" not in fs_results:
-        raise KeyError(f"{source_path} does not contain clean_rank_list")
+    if select_key not in fs_results:
+        raise KeyError(f"{source_path} does not contain '{select_key}' (generate_str={args.generate_str})")
 
     if args.filter_to_correct_icl:
-        correct = np.where(np.array(fs_results["clean_rank_list"]) == 0)[0]
+        correct = np.where(np.array(fs_results[select_key]) == select_val)[0]
     else:
-        correct = np.arange(len(fs_results["clean_rank_list"]))
+        correct = np.arange(len(fs_results[select_key]))
     if len(correct) == 0:
         raise RuntimeError(f"No ICL-correct {args.query_split} examples found for {task}")
 

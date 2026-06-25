@@ -30,6 +30,7 @@ from utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from utils.prompt_utils import load_dataset, word_pairs_to_prompt_data, create_prompt
 from utils.extract_utils import get_mean_head_activations, compute_function_vector
 from utils.paths import ARTIFACTS_ROOT
+from utils.eval_utils import parse_generation, exact_match_score
 from compute_indirect_effect import compute_indirect_effect
 
 PARTNER = {"magnitude": "identity", "identity": "magnitude",
@@ -82,10 +83,16 @@ def correct_valid_differ(dataset, tok, model, model_config, rng, train_overlap, 
     bs = 8
     for i in range(0, len(prompts), bs):
         enc = tok(prompts[i:i + bs], return_tensors="pt", padding=True).to(device)
+        prompt_len = enc.input_ids.shape[1]  # left-padded => new tokens start here for every row
         with torch.no_grad():
-            out = model(**enc).logits[:, -1, :].argmax(-1).tolist()
-        for j, p in enumerate(out):
-            if p == first_tok(tok, golds[i + j]):
+            gen = model.generate(**enc, max_new_tokens=16, do_sample=False,
+                                 pad_token_id=tok.eos_token_id)
+        for j in range(gen.shape[0]):
+            out_str = tok.decode(gen[j, prompt_len:], skip_special_tokens=True)
+            # whole-answer exact match (handles multi-token numeric answers; Qwen3 splits digits,
+            # so first-token argmax is invalid here)
+            _, score = parse_generation(out_str, [golds[i + j]], exact_match_score)
+            if score == 1:
                 correct.append(valid_differ[i + j])
     torch.cuda.empty_cache()
     return correct

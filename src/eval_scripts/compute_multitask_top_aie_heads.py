@@ -110,6 +110,15 @@ def parse_args():
     parser.add_argument("--no_filter_to_correct_icl", dest="filter_to_correct_icl", action="store_false")
     parser.set_defaults(filter_to_correct_icl=True)
     parser.add_argument("--batch_size_filter_eval", type=int, default=1)
+    parser.add_argument(
+        "--generate_str",
+        action="store_true",
+        help="Use full-answer (generated-string) scoring for the ICL-correct filter instead of "
+             "first-token rank. Required for numeric/multi-token tasks on tokenizers that split "
+             "digits (e.g. Qwen3).",
+    )
+    parser.add_argument("--metric", type=str, default="f1_score",
+                        help="Scoring metric when --generate_str (f1_score|exact_match_score|first_word_score).")
     parser.add_argument("--recompute_mean_activations", action="store_true")
     parser.add_argument("--save_per_prompt_effects", dest="save_per_prompt_effects", action="store_true")
     parser.add_argument("--no_save_per_prompt_effects", dest="save_per_prompt_effects", action="store_false")
@@ -217,12 +226,18 @@ def load_or_compute_filter_set(args, task, dataset, model, model_config, tokeniz
     if not args.filter_to_correct_icl:
         return np.arange(len(dataset[args.query_split])), None
 
+    # full-answer (generate_str) vs first-token-rank filter. Cache files are mode-suffixed so the
+    # two never collide, and the genstr filter can be reused across methods for the same task/split.
+    suffix = "_genstr" if args.generate_str else ""
+    select_key = "score" if args.generate_str else "clean_rank_list"
+    select_val = 1 if args.generate_str else 0
+
     if args.query_split == "valid":
-        reuse_path = args.mean_activations_root / task / "fs_results_validation.json"
-        save_path = task_output_dir / "fs_results_validation.json"
+        base = f"fs_results_validation{suffix}.json"
     else:
-        reuse_path = args.mean_activations_root / task / f"fs_results_{args.query_split}.json"
-        save_path = task_output_dir / f"fs_results_{args.query_split}.json"
+        base = f"fs_results_{args.query_split}{suffix}.json"
+    reuse_path = args.mean_activations_root / task / base
+    save_path = task_output_dir / base
 
     if reuse_path.exists():
         print(f"Loading ICL-correct query filter for {task}: {reuse_path}")
@@ -235,7 +250,8 @@ def load_or_compute_filter_set(args, task, dataset, model, model_config, tokeniz
             fs_results = json.load(f)
         source_path = save_path
     else:
-        print(f"Computing ICL-correct query filter for {task} on {args.query_split}")
+        print(f"Computing ICL-correct query filter for {task} on {args.query_split} "
+              f"({'full-answer' if args.generate_str else 'first-token'})")
         set_seed(args.seed + 42)
         fs_results = n_shot_eval_no_intervention(
             dataset=dataset,
@@ -243,7 +259,9 @@ def load_or_compute_filter_set(args, task, dataset, model, model_config, tokeniz
             model=model,
             model_config=model_config,
             tokenizer=tokenizer,
-            compute_ppl=True,
+            compute_ppl=not args.generate_str,
+            generate_str=args.generate_str,
+            metric=args.metric,
             test_split=args.query_split,
             prefixes=args.prefixes,
             separators=args.separators,
@@ -253,9 +271,10 @@ def load_or_compute_filter_set(args, task, dataset, model, model_config, tokeniz
             json.dump(fs_results, f, indent=2)
         source_path = save_path
 
-    if "clean_rank_list" not in fs_results:
-        raise KeyError(f"{source_path} does not contain clean_rank_list")
-    filter_set = np.where(np.array(fs_results["clean_rank_list"]) == 0)[0]
+    if select_key not in fs_results:
+        raise KeyError(f"{source_path} does not contain '{select_key}' "
+                       f"(generate_str={args.generate_str})")
+    filter_set = np.where(np.array(fs_results[select_key]) == select_val)[0]
     if len(filter_set) == 0:
         raise RuntimeError(f"No ICL-correct {args.query_split} examples found for {task}")
     return filter_set, str(source_path)
