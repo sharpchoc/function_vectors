@@ -405,22 +405,33 @@ def n_shot_eval_no_intervention(dataset, n_shots, model, model_config, tokenizer
 
     try:
         if generate_str:
-            for j in tqdm(range(len(dataset[test_split])), total=len(dataset[test_split])):
-                sentence, target, _ = build_eval_item(j)
-
-                if metric == "f1_score":
-                    metric_fn = f1_score
-                elif metric == "exact_match_score":
-                    metric_fn = exact_match_score
-                elif metric == "first_word_score":
-                    metric_fn = first_word_score
-                else:
-                    raise ValueError(f'Unknown metric: {metric}. Recognized metrics: ["f1_score", "exact_match_score"]')
-                score = sentence_eval([sentence], target=target, model=model,
-                                      tokenizer=tokenizer, compute_nll=False,
-                                      generate_str=True, pred_file=pred_file,
-                                      metric_fn=metric_fn)
-                score_list.append(score)
+            metric_map = {"f1_score": f1_score, "exact_match_score": exact_match_score,
+                          "first_word_score": first_word_score}
+            if metric not in metric_map:
+                raise ValueError(f'Unknown metric: {metric}. Recognized metrics: {list(metric_map)}')
+            metric_fn = metric_map[metric]
+            MAX_NEW_TOKENS = 16
+            split_len = len(dataset[test_split])
+            items = [build_eval_item(j) for j in range(split_len)]
+            sentences = [x[0] for x in items]
+            targets = [x[1] for x in items]
+            # BATCHED greedy generation (left-pad) instead of one prompt at a time -- the
+            # unbatched path was ~batch_size x slower and pathological on long-context tasks.
+            tokenizer.padding_side = 'left'
+            for bstart in tqdm(range(0, split_len, batch_size), total=(split_len + batch_size - 1)//batch_size):
+                bs_sent = sentences[bstart:bstart + batch_size]
+                bs_tgt = targets[bstart:bstart + batch_size]
+                enc = tokenizer(bs_sent, return_tensors='pt', padding=True).to(model.device)
+                with torch.no_grad():
+                    out = model.generate(**enc, max_new_tokens=MAX_NEW_TOKENS, do_sample=False,
+                                         pad_token_id=tokenizer.eos_token_id)
+                plen = enc.input_ids.shape[1]  # left-pad => new tokens start here for every row
+                for k in range(len(bs_sent)):
+                    gen_str = tokenizer.decode(out[k, plen:], skip_special_tokens=True)
+                    parsed, sc = parse_generation(gen_str, bs_tgt[k], metric_fn)
+                    if pred_file:
+                        pred_file.write(f"{parsed.strip()}\n")
+                    score_list.append(sc)
         else:
             split_len = len(dataset[test_split])
             for batch_start in tqdm(range(0, split_len, batch_size), total=(split_len + batch_size - 1)//batch_size):

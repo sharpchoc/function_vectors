@@ -28,7 +28,10 @@ MODEL = "Qwen/Qwen3-8B"
 ART = Path(os.environ.get("FV_ARTIFACTS_ROOT", str(REPO / "artifacts/qwen3-8b")))
 
 # tunables
-BATCH = 32          # CIE / mean-activation batch (n_trials=25 fits a single CIE batch)
+# CIE batch: 8 is safe for the long-context pool tasks (ag_news/commonsense_qa) whose
+# [batch x seq x 152k-vocab] logits OOM 32GB at batch 32. Wave A (short-ctx, separate run)
+# used 32; here we trade some speed for robustness since the run is unattended.
+BATCH = 8
 FBATCH = 16         # rank-filter eval batch (genstr filter is unbatched internally)
 METRIC = "f1_score" # score==1 under f1 is effectively exact for single-word answers
 N_MEAN = 100
@@ -71,6 +74,7 @@ def env_for(gpu):
     e["HF_HUB_OFFLINE"] = "1"
     e["FV_ARTIFACTS_ROOT"] = str(ART)
     e["PYTHONUNBUFFERED"] = "1"
+    e["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"  # reduce fragmentation OOMs
     return e
 
 

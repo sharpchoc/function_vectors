@@ -20,6 +20,7 @@ from src.utils.eval_utils import (
     f1_score,
     exact_match_score,
     first_word_score,
+    parse_generation,
 )
 from src.utils.prompt_utils import create_prompt, word_pairs_to_prompt_data
 
@@ -211,23 +212,38 @@ def varicl_correctness_filter_generate_str(dataset, args, model, model_config, t
     metric_fn = _METRIC_FNS[metric]
     score_list = []
     split_len = len(dataset[args.query_split])
+    batch_size = max(1, int(getattr(args, "batch_size_filter_eval", 1)))
+    MAX_NEW_TOKENS = 16
+
+    # Build all variable-ICL prompts, then BATCHED greedy generation (left-pad) -- the
+    # one-at-a-time path was ~batch_size x slower and pathological on long-context tasks.
+    sentences, targets = [], []
+    for query_idx in range(split_len):
+        prompt_data = build_varicl_prompt_data(
+            dataset, args, model_config, task_index=task_index, query_idx=int(query_idx),
+            shuffle_labels=False, seed_base=seed_base,
+        )
+        target = prompt_data['query_target']['output']
+        targets.append([target] if not isinstance(target, list) else target)
+        sentences.append(create_prompt(prompt_data))
 
     old_padding_side = tokenizer.padding_side
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = 'left'
     try:
-        for query_idx in range(split_len):
-            prompt_data = build_varicl_prompt_data(
-                dataset, args, model_config, task_index=task_index, query_idx=int(query_idx),
-                shuffle_labels=False, seed_base=seed_base,
-            )
-            target = prompt_data['query_target']['output']
-            target = [target] if not isinstance(target, list) else target
-            sentence = create_prompt(prompt_data)
-            score = sentence_eval([sentence], target=target, model=model, tokenizer=tokenizer,
-                                  compute_nll=False, generate_str=True, metric_fn=metric_fn)
-            score_list.append(score)
+        for bstart in range(0, split_len, batch_size):
+            bs_sent = sentences[bstart:bstart + batch_size]
+            bs_tgt = targets[bstart:bstart + batch_size]
+            enc = tokenizer(bs_sent, return_tensors='pt', padding=True).to(model.device)
+            with torch.no_grad():
+                out = model.generate(**enc, max_new_tokens=MAX_NEW_TOKENS, do_sample=False,
+                                     pad_token_id=tokenizer.eos_token_id)
+            plen = enc.input_ids.shape[1]
+            for k in range(len(bs_sent)):
+                gen_str = tokenizer.decode(out[k, plen:], skip_special_tokens=True)
+                _, sc = parse_generation(gen_str, bs_tgt[k], metric_fn)
+                score_list.append(sc)
     finally:
         tokenizer.padding_side = old_padding_side
 
