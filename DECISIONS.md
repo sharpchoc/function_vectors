@@ -5,6 +5,44 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-06-30 — Two-shot token-pair cosine heatmaps (Stream P): conventions + GPU-pod gotchas
+
+- **Steering ≠ patching ⇒ byte-identity is NOT required.** The readout adds `α·mean_pairs[tgt−src]` to
+  a residual stream; that direction is well-defined at any token. So the search space can include the
+  demo-2 INPUT token (`t2 input2`) even though it differs across functions. BUT its steer vector then
+  carries a **lexical/content** component (not pure function context; at layer 0 it is literally a mean
+  token-embedding diff) and its READ baseline cos is < 1 (vs ≈1 at the 5 clean tokens). Keep it, but
+  flag it (suptitle + summary `note_input2`); don't compare its magnitude naively against clean tokens.
+- **Structural asserts that hold exactly:** lower-triangle `k ≤ i` ≡ 0 (a position-i edit at layer i
+  reaches a later position only at read layers `> i`, even across different tokens); embedding column
+  `i=0` ≡ 0 for CLEAN source tokens (same token ⇒ identical `transformer.drop` output ⇒ steer_vec=0; GPT-J
+  has no additive positional emb at the embedding, so position shifts don't matter). `input2` is the
+  documented exception (assert skipped for it).
+- **Token positions for the 6-token 2-shot search space** come from the inlined `selected_token_records`
+  (loops both demos, icl 1 & 2): label1=`last_label_token@1`, prelabel2=`pre_label_token@2`,
+  label2=`last_label_token@2`, qfinal=`last_prompt_token@None`; the two INPUT tokens are `prelabel2−1`
+  and `qfinal−1` (no named role). Assert strictly-increasing positions per prompt.
+- **Memory-lean pattern for ≤20 GB cards:** keep captured acts `[N,6,29,D]` in fp16; compute steer_vec
+  and baseline cos in a chunked loop over pairs (CB≈64) to avoid full-N float copies; convert only
+  per-read-token slices to float in the inner loop. Fits gpt-j-6b + acts at ~18.5/20 GB. Full-precision
+  copies OOM.
+- **GPU-pod gotchas (RunPod):** (1) a fresh pod created with `--networkVolumeId` but the DEFAULT
+  `--volumePath` mounts the shared volume at **`/runpod`**, NOT `/workspace` (the templated pods use
+  `/workspace`). Find the repo at `/runpod/function_vectors`, HF cache `/runpod/.cache/huggingface`.
+  (2) Other pods only trust the USER's SSH key; to reach a self-created pod, pass our pubkey via
+  `--env PUBLIC_KEY="$(cat ~/.ssh/runpod_gpu.pub)" --startSSH`. (3) The project docker image is now the
+  upgraded **torch 2.8 / cu128** stack (runs on Ada AND Blackwell sm_120) — but `matplotlib` is ABI-broken
+  against numpy 2.1.2; `pip install -U matplotlib` (→3.11) before plotting. Compute scripts (numpy+torch
+  only) are unaffected.
+- **Plotting is CPU-only** — the plot scripts just read saved `.npy/.csv` grids. Install `numpy matplotlib`
+  on the editing (CPU) pod (`python3 -m pip install numpy matplotlib`; note the system has TWO pythons —
+  `/usr/bin/python3.10` is the one the scripts use, NOT the `/usr/local/bin/pip` python3.12) and iterate on
+  figures locally — no GPU pod needed once the grids exist on the shared volume.
+- **Comparability across many sub-plots:** when per-figure color scales span a wide dynamic range (here
+  ~100× across token-pairs), per-figure scaling is misleading. Add (a) a single GLOBAL vmax across all
+  grids, (b) a token×token "matrix of heatmaps" master figure (spatially arranged, one colorbar), and
+  (c) a scalar peak-Δcos overview matrix (annotated). Keep per-pair per-scale figures for drill-down.
+
 ## 2026-06-29 — Attention KNOCKOUT (Stream O): monkeypatch GPTJAttention._attn, pre-softmax mask
 
 - **GPT-J (transformers 4.49.0) uses EAGER attention by default** (no `GPTJSdpaAttention` class), so

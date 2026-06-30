@@ -11,6 +11,76 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-06-30 — Stream P: TWO-shot token-pair × layer×layer cosine-shift heatmaps (15 pairs)
+
+**Owner:** Coordinator (CPU editing pod; GPU compute on a fresh RTX 4000 Ada pod). **Status:** DONE —
+120 grids + 15 combined figures + 120 individual panels.
+
+**What:** Generalises Stream L's 1-shot {label→query-final} 29×29 heatmap to **every ordered pair of
+tokens** in a 2-shot paired ICL prompt, in BOTH src→tgt directions. 6 search-space tokens (sequence
+order): `t1 label1`, `t2 input2` (demo-2 last input — the ONE token that differs across functions),
+`t3 prelabel2`, `t4 label2`, `t5 qinput`, `t6 qfinal`. All ordered pairs = C(6,2)=**15**; intervention
+sources are t1–t5 (qfinal is read-only). For direction src→tgt: `steer_vec(t,ℓ)=mean_pairs[tgt(t,ℓ)−
+src(t,ℓ)]`; inject `α·steer_vec(t_i,i)` at t_i in the SOURCE prompt at layer i, read Δcos toward the
+unsteered target at every later token t_j and read layer k. One 29×29 grid (x=intervene layer,
+y=read layer) per (direction, t_i→t_j, α). **4 combinations** = 2 tasks × 2 directions
+(antonym↔synonym, prev↔next digits), **α∈{2,4}**.
+
+**Construction:** Stream-K matched-label paired 2-shot (shared L1,L2 distinct + shared query q; only
+the 2 demo INPUTS differ). 5 of 6 tokens byte-identical across f1/f2 (asserted); t2 (input2) differs —
+its steer dir mixes lexical+function and its read baseline cos<1 (kept in, flagged, NOT hidden).
+n_pairs: ant/syn 544, digits 198.
+
+**Files:** NEW `src/eval_scripts/steer_twoshot_tokenpair_cos_heatmap.py` (ports Stream-K pair build +
+Stream-L baukit TraceDict edit-hook/29-entry residual convention; inlines baukit-free
+`selected_token_records`/`token_positions`; **memory-lean** — keeps acts fp16, chunked steer/baseline,
+per-slice float — fits the 20 GB card at ~18.5 GB). NEW
+`src/eval_scripts/plot_twoshot_tokenpair_heatmap_grid.py` (pure plotting; 15 combined 8-panel figs =
+4 combos rows × 2 α cols, shared per-figure scale, input-2 caveat in suptitle; + 120 single panels).
+**UPDATE 2026-06-30:** per-figure scales aren't comparable across token-pairs (~100× dynamic range), so
+added comparable views on ONE global scale (vmax=0.0856 across all 120 grids): **8 `matrix__<dir>_alpha{a}.png`**
+— a 5×5 token×token grid (rows=intervene token, cols=read token, triangular) where each cell is that pair's
+29×29 layer heatmap, single colorbar — the canonical "every token-pair" view; plus **`scalar_overview.png`**
+— 8 small 5×5 matrices (4 combos × 2 α) of per-pair PEAK Δcos, annotated, one shared `Reds` scale (instant
+"who drives whom"). Plotting is CPU-only: `pip install numpy matplotlib` on the editing pod and run there —
+no GPU needed for figure iteration.
+Output (TRACKED) `results/direction2_label_geometry/twoshot_tokenpair_intervention_cos_heatmap/`:
+`<task_pair>/<dir>__<ti>_to_<tj>_alpha{2,4}_grid.{npy,csv}` (120 grids), 2 `<task_pair>_summary.json`,
+`figures/<ti>_to_<tj>_combined.png` (15). Logs `logs/twoshot_tokenpair_full.log`.
+
+**Commands** (on GPU pod, volume at `/runpod`; HF_HOME=/runpod/.cache/huggingface HF_HUB_OFFLINE=1):
+`python src/eval_scripts/steer_twoshot_tokenpair_cos_heatmap.py --task_pair {antonym_synonym|next_number_digits_prev_number_digits} --alphas 2 4 --batch_size 64`
+then `python src/eval_scripts/plot_twoshot_tokenpair_heatmap_grid.py`. ~50 min total (both tasks) on
+RTX 4000 Ada. Smoke: add `--max_pairs 16 --layers 0 6 11 --batch_size 16`.
+
+**RESULTS — top pairs by peak Δcos (intervene L / read L):**
+
+| task | direction | top pair | α | peak Δcos | i/k |
+|---|---|---|---|---|---|
+| ant/syn | ant→syn | label2→qfinal | 4 | +0.054 | 7/26 |
+| ant/syn | syn→ant | label2→qfinal | 2 | +0.058 | 8/26 |
+| digits | next→prev | label2→qfinal | 2 | +0.078 | 4/18 |
+| digits | prev→next | label2→qfinal | 2 | **+0.086** | 5/18 |
+
+**FINDINGS:**
+- **`label2→qfinal` dominates every combination** (0.048–0.086) — the 2-shot analog of Stream L's
+  label→query-final; same mid-layer causal band (intervene ~L5–12 → late reads) and **digits≫words**.
+- **`label1→qfinal`** is the clear runner-up (demo-1's label still reaches the prediction site,
+  weaker/longer-range), and **`label1→prelabel2`** is a real cross-demo effect (demo-1 label feeds
+  demo-2's pre-label region; strong for digits, 0.067).
+- **`input2→*` is near-zero** (vmax 4e-4…4e-3): intervening at the demo INPUT token barely moves
+  anything downstream — the steerable function signal lives in the LABEL tokens, not the inputs.
+- Read-layer peaks land **very late (k≈26)** for words vs k≈15–18 for digits.
+- Structural invariants held exactly: lower-triangle (k≤i) ≡ 0 everywhere; embedding column ≡ 0 for the
+  5 clean source tokens (input2 the documented exception). α=2 ≳ α=4 at the peak (cosine saturates).
+
+**Verification:** smoke (digits, 16 pairs, 3 layers) passed all asserts; label2→qfinal reproduces the
+Stream-L band; 120 grids finite; 15/15 combined figures rendered 8/8 panels. GPU pod
+(`8en0fiofwwxcbq`, RTX 4000 Ada, sm_89) **terminated** after run. **Next (optional):** GPU pod was the
+upgraded cu128/torch-2.8 image (works on Ada AND Blackwell); could port to Qwen3-8B. **Blockers:** None.
+
+---
+
 ## 2026-06-29 — Stream O: attention KNOCKOUT — does qfin read task info directly from demo-2 pre-label?
 
 **Owner:** Coordinator (tmux "qfinal-attn-knockout"). **Status:** DONE — 4 tasks, verified.
