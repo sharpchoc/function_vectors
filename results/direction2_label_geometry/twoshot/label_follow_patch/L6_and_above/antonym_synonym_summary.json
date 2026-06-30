@@ -1,0 +1,54 @@
+{
+  "task_pair": "antonym_synonym",
+  "src_task": "antonym",
+  "tgt_task": "synonym",
+  "n_pairs": 544,
+  "patch_from_entry": 6,
+  "token_names": [
+    "demo1 label",
+    "demo2 input",
+    "demo2 pre label",
+    "demo2 label",
+    "query input",
+    "query pre label"
+  ],
+  "baseline_logit_diff": -1.9316083192825317,
+  "ceiling_logit_diff": 2.9886653423309326,
+  "conditions": {
+    "demo2_prelabel": {
+      "open": {
+        "positions": [
+          "demo2 pre label"
+        ],
+        "mean_logit_diff": -1.8258092403411865,
+        "recovery": 0.021502681805436692
+      },
+      "isolated": {
+        "positions": [
+          "demo2 pre label"
+        ],
+        "mean_logit_diff": -1.9628475904464722,
+        "recovery": -0.006349092207545301
+      }
+    },
+    "both_labels": {
+      "open": {
+        "positions": [
+          "demo1 label",
+          "demo2 label"
+        ],
+        "mean_logit_diff": 2.727797508239746,
+        "recovery": 0.9469810315376559
+      },
+      "isolated": {
+        "positions": [
+          "demo1 label",
+          "demo2 label"
+        ],
+        "mean_logit_diff": 1.7109769582748413,
+        "recovery": 0.7403216829128343
+      }
+    }
+  },
+  "metric": "logit(tgt_gold)-logit(src_gold) at query-final; all pairs. isolated = patched roles->target, all other non-output tokens pinned to base."
+}

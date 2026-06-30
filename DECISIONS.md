@@ -5,6 +5,81 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-06-29 — Attention KNOCKOUT (Stream O): monkeypatch GPTJAttention._attn, pre-softmax mask
+
+- **GPT-J (transformers 4.49.0) uses EAGER attention by default** (no `GPTJSdpaAttention` class), so
+  pre-softmax attention scores are directly editable. `load_gpt_model_and_tokenizer` already loads eager;
+  assert `model.config._attn_implementation == "eager"`.
+- **Knockout recipe:** monkeypatch `GPTJAttention._attn` with a faithful copy of the 4.49.0 source, and
+  right AFTER `attn_weights = attn_weights + causal_mask` and BEFORE softmax, set the target (query,key)
+  entries to `torch.finfo(attn_weights.dtype).min`. After softmax the key's weight is 0 and the row
+  renormalizes to sum 1 — "ablate by zeroing the score, attention still sums to 1". Per-row, all-heads
+  indexing: `attn_weights[rows[:,None], heads[None,:], q_idx[:,None], k_idx[:,j][:,None]] = mn`.
+- **Threading per-row indices:** stash `(q_idx[B], k_idx[B,K])` on each `model.transformer.h[l].attn._ko`
+  before the forward (helper `set_knockout`/`clear_knockout`); the patched `_attn` reads `_ko` (None =
+  clean). No baukit needed — read logits from the model output. Editing the 4D `attention_mask` does NOT
+  work for per-row key positions (it's shared across the batch); editing `self.bias` fails under
+  left-padding (same for all rows). Monkeypatch is the way.
+- **Verify** with one `output_attentions=True` forward: knocked-out key weight ≈ 0, edited rows sum to 1.
+- **Result:** qfin reads the task directly from the LABEL tokens, not from the demo-2 pre-label (cutting
+  the pre-label edge ≈ cutting a structural-token edge; cutting the label edges collapses the task).
+
+## 2026-06-27 — Patch-onset layer (`--patch_from_entry`) + regime folders; all-layers check
+
+- The two patching experiments take `--patch_from_entry` (default 6 = "L6 and above"; 0 = all entries
+  incl. embedding). Output goes to a per-experiment regime subfolder `<exp>/{L6_and_above,all_layers}/`
+  (`"all_layers" if pe==0 else f"L{pe}_and_above"`); plotters take `--regime`. Implemented by rebinding
+  the module global `PATCH_FROM_ENTRY` at the top of `main()` so the existing hooks/asserts pick it up.
+- **Patching the embedding (entry 0) is a no-op for byte-identical positions** (labels, query, pre-label
+  in the paired design) — so the label-follow result is unchanged between regimes. It is NOT a no-op for
+  the demo INPUT tokens (they differ across base/target): patching entry 0 there swaps the literal input
+  word, which is why the interval grid's demo2-input cells jump in all_layers. Keep this in mind when
+  reading any "all layers" patch that touches positions whose tokens differ across the pair.
+- Conclusion: the label-token findings (Streams M/N) are robust to patch onset; document the all_layers
+  run as a completeness check, not a new result.
+
+## 2026-06-26 — Isolating a token's DIRECT effect (Stream N): pin-everything-else-to-base
+
+- **"Open" set-patching does NOT isolate the patched tokens.** Overwriting token positions ← target with
+  nothing else frozen lets the patched info be **relayed**: later tokens attend to the patched positions
+  (from entry 7+) and pass the signal on. To measure a token set's DIRECT contribution to the output,
+  also **pin every other non-output token to its base value** at the patched entries
+  (`h[:, :-1, :] = base_full[:, :-1, e]`, then set the patched roles → target; leave the last/output
+  column free). Then only the patched positions carry target and only the direct patched→output path
+  remains. The gap (open recovery − isolated recovery) = the relayed share.
+- Requires capturing the base **full** residual stack (all positions, patched entries) — keep it
+  per-chunk (seq differs per chunk under left-pad); ~3GB at N=544 on the 4090, fits with batch 64 +
+  `expandable_segments:True`. (Stream M only needed the 6 named positions; isolation needs all positions.)
+- **Result:** label tokens recover 74% (words) / 95% (numbers) of the task switch even fully isolated →
+  the labels drive the output largely directly; pre-label ≈ 0. See [[stream-m-interval-patch]] WORKLOG.
+
+## 2026-06-26 — Six-token interval activation-PATCHING (Stream M): mechanics + gotchas
+
+- **Interval-patch mechanic** (vs Δ-vector steering): run the base prompt and, at residual entries
+  `6..28`, **overwrite** (assign, not `+=`) token `i` ← the *other* prompt's activation and token `j` ←
+  the base's *own clean* activation. `i` then carries the other function for L6+; `j` is pinned to
+  original (blocks relay). Hooks fire in forward order, so a downstream token `k` first differs at the
+  entry **after** the first patched entry → `Δcos(k, entry 6) ≡ 0` (good cheap invariant; asserted <1e-3).
+- **Pinning the OUTPUT token (`qfin`) to original zeroes any logit effect exactly** — the entire `j=qfin`
+  column is +0.000. Expected, not a bug: the final-position residual is restored to baseline so logits
+  are unchanged. Keep the column (it's the causal boundary), don't special-case it.
+- **Reuse, don't reinvent the trace plumbing:** the exact 2-arg `(output, layer_name)` factory closure,
+  tuple-vs-tensor dispatch (`output[0]` for `transformer.h.*`, bare tensor for `transformer.drop`), and
+  left-pad per-row position table all carry over verbatim from `steer_label_cos_heatmap.py`. The ONLY
+  change for patching is assign instead of add, and a per-row position **vector** (`pos6[:,i]`) so the
+  hook can edit two positions at once.
+- **Positions are NOT fixed even when every word is single-token.** In-context tokenization shifts the
+  query block by ±1 token for some words (e.g. `acceptable`), so the "all single-token ⇒ fixed index"
+  shortcut fails. Always compute positions **per row** and align by ROLE (the named 6 positions), never
+  by absolute index — base and target prompts of a pair can also differ in length.
+- **`retain_output` over all 29 layers is the memory bottleneck**, not the stored captures: it holds
+  every position × every layer for the whole batch. batch 256 OOMs the 4090 (~23 GB); **batch 64 +
+  `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`** is ample and still ~17 short forwards/task.
+- **Single-token-input filter is free** for antonym/synonym: 100% of demo-input options for the 544
+  used labels and 100% of the shared query pool are single-token (verified), so requiring it drops 0
+  tuples. Demo-input-1 and demo-input-2 sample from the SAME distribution (`o2i[L]`); only the query
+  comes from the narrower `shared_in` pool.
+
 ## 2026-06-25 — Layer×layer label→query-final cosine-shift heatmap; env + reuse gotchas
 
 New deliverable `src/eval_scripts/steer_label_cos_heatmap.py` (Stream L): 29×29 (intervention-layer ×

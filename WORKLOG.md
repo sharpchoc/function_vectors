@@ -11,6 +11,231 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-06-29 — Stream O: attention KNOCKOUT — does qfin read task info directly from demo-2 pre-label?
+
+**Owner:** Coordinator (tmux "qfinal-attn-knockout"). **Status:** DONE — 4 tasks, verified.
+
+**What:** Tests whether the **query-final token** (`qfin`, last `A:`) derives the task from the **demo-2
+pre-label token** (the `A:` before L2) or directly from the **label tokens**. Knock out a single attention
+edge — `qfin`'s query attending to a chosen key — at **every layer & head**, by setting the pre-softmax
+score to `finfo.min` so after softmax that key's weight is 0 and the row renormalizes to sum 1. Only
+`qfin`'s query row is edited; all other tokens attend normally.
+
+**Conditions:** `clean`; `ko_demo2_prelabel` (cut qfin→demo2 pre-label — **test**); `ko_both_labels`
+(cut qfin→{demo1,demo2 label} — **+control**, the "reads from labels" alternative); `ko_demo2_qcolon`
+(cut qfin→demo-2 "Q:" colon — **−control**, a structural token). Metric: first-token top-1 accuracy +
+mean gold-token logit at qfin, clean vs each knockout. All prompts per task (matched-label 2-shot;
+single-token labels/inputs; gold = task answer). Tasks: antonym, synonym, next_/prev_number_digits.
+
+**Mechanic:** monkeypatch `GPTJAttention._attn` (faithful transformers-4.49.0 copy + per-row knockout
+reading `attn._ko`); GPT-J is eager by default so pre-softmax scores are editable; no baukit. Verified
+on a live batch (`output_attentions`): knocked-out key weight = 0.0, edited rows sum to 1 (dev 2.5e-4).
+
+**Files:** NEW `src/eval_scripts/ablate_qfinal_attention.py`, `src/eval_scripts/plot_qfinal_attn_knockout.py`.
+**Command:** `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1 python src/eval_scripts/ablate_qfinal_attention.py --batch_size 64`.
+
+**RESULTS (Δ vs clean; top-1 / mean gold logit):**
+
+| task (n) | clean top1 / glogit | cut demo2 pre-label (test) | cut both labels (+ctrl) | cut demo2 'Q:' (−ctrl) |
+|---|---|---|---|---|
+| antonym (1491) | 0.132 / 11.53 | **+0.011 / −0.08** | −0.125 / **−3.17** | +0.003 / −0.03 |
+| synonym (1894) | 0.087 / 11.12 | **−0.003 / −0.12** | −0.082 / **−2.43** | +0.001 / −0.02 |
+| next_number_digits (200) | 0.305 / 15.24 | **+0.010 / +0.09** | −0.305 / **−6.22** | +0.025 / −0.01 |
+| prev_number_digits (200) | 0.270 / 14.70 | **+0.020 / −0.05** | −0.270 / **−5.77** | +0.005 / −0.02 |
+
+**FINDINGS:**
+- **qfin does NOT read task information directly from the demo-2 pre-label token.** Cutting that edge is
+  indistinguishable from cutting an attention edge to a structural token (the demo-2 `Q:` colon): both
+  leave top-1 and the gold logit essentially unchanged (|Δgold_logit| ≤ 0.12, |Δtop1| ≤ 0.02).
+- **It reads directly from the label tokens.** Cutting qfin→{both labels} collapses the task: top-1 → ~0
+  and gold logit drops 2.4–6.2. So the label tokens are where qfin sources the function at the output.
+- Consistent with Streams M/N (the function signal lives at, and is read directly off, the label tokens).
+- **Scope:** this blocks only the DIRECT qfin→demo2_prelabel edge; demo2_prelabel could still influence
+  qfin indirectly via other tokens — but the direct read it would need is shown to be unnecessary.
+
+**Outputs:** `results/direction2_label_geometry/twoshot/qfinal_attn_knockout/{summary.json, metrics.csv,
+figures/qfinal_attn_knockout_bars.png}`. **Verification:** eager-attn assert; knockout zeroes the key &
+renormalizes (live check); −control ≈ clean, +control collapses (sanity holds).
+
+**Next:** none queued. Possible: per-layer knockout sweep; also cut qfin→demo1 pre-label; knock out the
+qfin→labels edge layer-by-layer to localize where the read happens.
+
+---
+
+## 2026-06-27 — Streams M & N: ALL-LAYERS completeness check + regime folder split
+
+**Owner:** Coordinator (tmux "label-follow-patch"). **Status:** DONE — both experiments, both regimes.
+
+**What:** Re-ran the two patching experiments patching **all residual entries 0..28** (embedding + every
+block) instead of just **6..28**, to confirm the findings are robust to the patch onset. Parametrized
+both via `--patch_from_entry` (default 6); output now lands in a per-experiment **regime subfolder**
+(`<exp>/L6_and_above/` and `<exp>/all_layers/`; name = `all_layers` if onset 0 else `L{n}_and_above`).
+Plotters take `--regime`; the interval downstream plot reads its first-read entry from the summary
+(`patch_from_entry+1`). Moved the prior L6 results into `L6_and_above/`.
+
+**Files:** edited `patch_interval_sixtoken.py`, `patch_labelset_follow.py` (arg + `global PATCH_FROM_ENTRY`
++ regime out_dir), `plot_patch_interval_sixtoken.py`, `plot_patch_labelset_follow.py` (`--regime`).
+**Commands:** `… patch_interval_sixtoken.py --task_pair <tp> --patch_from_entry 0 --batch_size 64`,
+`… patch_labelset_follow.py --task_pair <tp> --patch_from_entry 0 --batch_size 64`, then the plotters
+with `--regime all_layers`.
+
+**RESULTS — all_layers vs L6_and_above:**
+
+Label-follow (isolated recovery — the headline) is **essentially identical**:
+
+| | L6_and_above | all_layers |
+|---|---|---|
+| antonym→synonym  both_labels·isolated | 74.0% | 74.0% |
+| antonym→synonym  demo2_prelabel·isolated | −0.6% | −0.7% |
+| prev→next digits  both_labels·isolated | 95.3% | 96.5% |
+| prev→next digits  demo2_prelabel·isolated | −1.0% | −1.0% |
+
+Interval (logit shift) — `demo2 label → query input` essentially unchanged (antonym +2.90→**+2.97**,
+digits +2.80→**+2.88**); pre-label rows ≈0; structure (upper-triangle, `j=query pre label`→0) preserved.
+
+**FINDINGS:**
+- **Conclusions are robust to patch onset.** The label tokens carry/drive the function in both regimes;
+  the pre-label carries ~0; isolated label recovery is unchanged (74% words / ~96% numbers).
+- **Why label-follow is identical:** the demo **label** tokens are byte-identical across base/target
+  (paired design), so patching their **embedding** (entry 0) is a no-op — only entries ≥1 matter, and
+  1..5 add ~nothing on top of 6..28. So `both_labels·isolated` ≈ unchanged.
+- **One expected difference (interval grid):** in `all_layers` the **demo2 INPUT** becomes a strong
+  carrier (antonym `in→pre2` +1.46→**+3.41**, `in→qin` +1.34→**+3.09**; digits similar). This is because
+  the demo inputs DIFFER across base/target, so patching the input's embedding literally swaps the demo
+  input word to the target task's — not a contradiction, just the embedding doing the obvious thing.
+  The label-token story is unaffected.
+
+**Outputs:** `…/interval_patch_sixtoken/{L6_and_above,all_layers}/…` and
+`…/label_follow_patch/{L6_and_above,all_layers}/…` (each with figures/). **Verification:** all_layers
+interval `Δcos[...,entry0]≈0` asserted; isolated hook asserted to change logits; L6 data moved + re-plotted
+identical (interval vmax 2.898 / 0.071 / 0.078 reproduced).
+
+---
+
+## 2026-06-26 — Stream N: ISOLATED label-token patching — do ONLY the labels drive the output?
+
+**Owner:** Coordinator (tmux "label-follow-patch"). **Status:** DONE — both task pairs + figures.
+
+**What:** Tests whether overwriting the two demo **label** tokens with the other prompt's activations
+makes the model follow the OTHER task — and whether the labels do it **directly**. Run base/source
+prompt; at residual entries 6..28 overwrite a token set ← **target**, read output `logit_diff =
+logit(tgt_gold₁) − logit(src_gold₁)` at query-final. Two modes:
+- **open** — overwrite only the patched positions (rest recomputes freely → effect can also be RELAYED
+  via in-between/query tokens).
+- **isolated** — overwrite patched positions ← target AND **pin every other non-output token to its base
+  value** (`h[:, :-1] = base_full[:, :-1, e]` then set patched roles → target). Only the labels carry
+  target; only the DIRECT label→output attention path is open.
+Direction = Stream M (base antonym/prev, patch-in synonym/next). Metric logit-only; all pairs;
+`recovery = (patched − baseline)/(ceiling − baseline)`, baseline = source prompt, ceiling = target prompt.
+
+**Files:** NEW `src/eval_scripts/patch_labelset_follow.py` (reuses Stream-M scaffolding; adds a base
+**full** residual-stack capture at all positions for entries 6..28 per chunk, ~3GB at N=544, and an
+isolated freeze-then-set hook). NEW `src/eval_scripts/plot_patch_labelset_follow.py` (combined grouped
+bars). Output `results/direction2_label_geometry/twoshot/label_follow_patch/`.
+
+**Commands:**
+`PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1 python src/eval_scripts/patch_labelset_follow.py --task_pair {antonym_synonym|next_number_digits_prev_number_digits} --batch_size 64`
+then `python src/eval_scripts/plot_patch_labelset_follow.py`.
+
+**RESULTS — recovery toward target (baseline → ceiling):**
+
+| condition | antonym→synonym (−1.93→+2.99) | prev→next digits (−1.51→+3.23) |
+|---|---|---|
+| demo2 pre-label · open | 2.2% | 1.5% |
+| demo2 pre-label · **isolated** | −0.6% | −1.0% |
+| both labels · open | 94.7% | 96.1% |
+| both labels · **isolated** | **74.0%** | **95.3%** |
+
+**FINDINGS:**
+- **Yes — the label tokens drive the output, largely directly.** With every other non-output token
+  pinned to base (only labels carry target, only the direct label→output path open), patching the two
+  labels still recovers **74% (words) / 95% (numbers)** of the full task switch. So the model essentially
+  follows the other task from the label tokens alone.
+- **Pre-label is ruled out:** demo-2 pre-label recovers ~2% open and ~0% (even slightly negative)
+  isolated — it carries essentially none of the function signal to the output.
+- **Relay gap (open − isolated):** ~**21%** for words but ~**0.8%** for numbers. For digits the label
+  effect is almost entirely *direct*; for words ~a fifth is relayed through the in-between/query tokens
+  (which, in the open case, attend to the patched labels and pass the signal on). Consistent with Stream
+  M (numbers ≈ rank-1, sharper/earlier; words more distributed).
+- Open `both_labels` reproduces the earlier open-path numbers (94.7% / 96.1%); the `> 100%` seen on the
+  16-pair smoke is a small-n artifact (baseline −0.93 vs full −1.93).
+
+**Outputs:** `<pair>_summary.json`, `<pair>_logitdiff.csv`, `figures/<pair>_label_follow_bars.png`,
+`figures/combined_label_follow_bars.png`. **Verification:** isolated hook asserted to change logits;
+baseline/ceiling sanity-matched; the superseded open-only run's files were cleaned before the rerun.
+
+**Next:** none queued. Possible: isolate single demo-1 vs demo-2 label; sweep the pin-onset layer.
+
+---
+
+## 2026-06-26 — Stream M: six-token INTERVAL activation-patching (2-shot; logit flip + downstream cosine)
+
+**Owner:** Coordinator (tmux "sixtoken-interval-patch"). **Status:** DONE — both task pairs, all figures.
+
+**What:** Causal patching on the Stream-K **two-shot** matched-label paired prompts. Study 6 single-token
+positions (prompt order): `L1` (demo-1 label), `in2` (demo-2 input), `pre2` (demo-2 pre-label `A:`),
+`L2` (demo-2 label), `qin` (query input), `qfin` (query-final `A:`). For every ordered token pair
+`(i,j)`, `i<j`: run the **base/source** prompt and at **residual entries 6..28** (29-entry stack;
+0 = embedding) OVERWRITE token `i` ← target prompt's activation (switch i to the other function for
+L6+) and token `j` ← base's own clean activation (pin j to original; blocks relay). Direction
+**antonym→synonym** and **prev→next (digits)** (base = source, patch-in = target), per user.
+
+**Metrics:** (M1) output **logit flip** at `qfin`: `logit(tgt_gold₁) − logit(src_gold₁)`, reported as
+mean steered vs no-patch **baseline** and the shift = steered−baseline → **6×6 upper-triangle grid**.
+(M2) **downstream cosine** per `k>j` per entry L: `Δcos(k,L) = cos(steered_k[L],tgt_k[L]) −
+cos(base_k[L],tgt_k[L])`, valid L≥7 → `[6,6,6,29]` array.
+
+**Files:** NEW `src/eval_scripts/patch_interval_sixtoken.py` (GPU; mirrors Stream-L hook/trace/batching:
+2-arg `(output,layer_name)` factory closure, tuple-vs-tensor dispatch, **assign** not `+=`, per-row
+left-pad positions). NEW `src/eval_scripts/plot_patch_interval_sixtoken.py` (pure plotting). Pair
+construction copies `capture_and_grade_twoshot_paired.py` (matched distinct labels L1,L2), additionally
+requiring single-token demo inputs (drops 0 tuples — verified).
+
+**Commands:**
+`PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True HF_HOME=/workspace/.cache/huggingface HF_HUB_OFFLINE=1 python src/eval_scripts/patch_interval_sixtoken.py --task_pair {antonym_synonym|next_number_digits_prev_number_digits} --batch_size 64`
+then `python src/eval_scripts/plot_patch_interval_sixtoken.py`.
+(batch 256 OOMs on the 4090 — 29-layer `retain_output` over the full batch; 64 is ample. ~17 forwards/task.)
+
+**RESULTS — logit-flip shift (mean steered − baseline; baseline antonym −1.93, digits −1.51):**
+
+| (i switch-on → j pin) | antonym→synonym | prev→next digits |
+|---|---|---|
+| **L2 → qin** | **+2.90** | **+2.80** |
+| in2 → pre2 | +1.46 | +0.08 |
+| in2 → qin | +1.34 | +0.05 |
+| L1 → in2 | +0.91 | +1.56 |
+| L1 → L2 | +0.80 | **+1.83** |
+| pre2 → * | ~0 | ~0 |
+| * → qfin | +0.00 (pinning output blocks all effect) | +0.00 |
+
+**FINDINGS:**
+- **The demo-2 LABEL (`L2`) is the dominant carrier** to the output in both tasks: switching L2 to the
+  target while pinning the query input (`qin`) flips the logit gap by ~+2.8–2.9 (from −1.5/−1.9 baseline
+  to clearly positive). The **pre-label `A:` (`pre2`) carries ~nothing** (≈0 everywhere) — consistent
+  with Stream K (function axis lives at the label token, not the `A:`).
+- **Words vs numbers differ at the INPUT/early-label tokens.** For **words**, the demo-2 **input** (`in2`)
+  is a strong carrier (+1.3–1.5); the demo-1 label (`L1`) is moderate (~+0.8–0.9). For **numbers**, `in2`
+  carries ~0 but **`L1` is strong (+1.5–1.8)** — for ±1 digit maps the input is redundant given the label,
+  and a single demo label already pins the function. (Mirrors Stream K: numbers ≈ rank-1, peak early.)
+- **Pinning the output token `qfin` to original zeroes the logit effect exactly** (column j=qfin all
+  +0.000) — a clean causal boundary: you cannot move the answer if the read position is held at baseline.
+- **Downstream cosine** (M2): switching `L2` (pin `qin`) pushes **`qfin` toward the target** (Δcos grows
+  monotonically across entries 7→28, peak ~+0.07); switching `in2` (pin `pre2`) pushes **`L2`** strongly.
+  Effects are small in magnitude (≤0.08) — the representations are already highly aligned (paired design),
+  so patching nudges rather than reorients. `pre2`-source panels are flat (~0), echoing M1.
+
+**Outputs** `results/direction2_label_geometry/twoshot/interval_patch_sixtoken/`:
+`<pair>_logit_grid.npy`/`_logit_shift_grid.{npy,csv}`/`_downstream_dcos.npy` (npy git-ignored),
+`<pair>_summary.json`, `figures/{combined_logit_shift_heatmap.png, <pair>_logit_shift_heatmap.png,
+<pair>_downstream_propagation.png}`. **Verification:** Δcos@entry6 ≈ 0 (asserted <1e-3); upper-triangle
+finite; paired role-invariant (non-input tokens byte-identical across functions) asserted per pair;
+positions computed per-row (in-context tokenization shifts the query block by ±1 token for some words).
+
+**Next:** none queued. Possible extensions: sweep the patch-onset layer (currently fixed L6); patch only
+one token (i without pinning j) to separate "inject" from "block-relay"; bidirectional (synonym→antonym).
+
+---
+
 ## 2026-06-25 — Stream L: label→query-final cosine-shift heatmaps (29×29 layer×layer, per task × α)
 
 **Owner:** Coordinator (tmux "label-prelabel-cos-heatmap"). **Status:** DONE — 4 heatmaps rendered.
@@ -2188,3 +2413,32 @@ ICL position decode best, and does ridge help?
 layer×k sweep; clean up smoke dirs.
 
 **Blockers:** None known.
+
+---
+
+## Stream: switch-logit pretty aggregate (2026-06-26)
+
+**Status:** Done.
+
+**What:** Added a "pretty" variant of the logit task-switch aggregate figure for
+easier cross-site comparison.
+
+**Files changed:**
+- `src/eval_scripts/plot_switch_logit.py`: added `series_by_alpha`, `best_alpha`,
+  `plot_axis_pretty`, `plot_pretty_aggregate`; called from `main()`.
+
+**Output:** `results/direction2_label_geometry/oneshot_switch_logit/figures/fig_logit_aggregate_pretty.png`
+
+**Changes vs fig_logit_aggregate.png:**
+- Y-axis now shared per row (same task, both steering sites) so left/right panels
+  are directly comparable.
+- Each panel overlays its horizontal neighbour's *best* curve (alpha with highest
+  peak logit diff) as a crimson dotted line — read cross-site comparison in one panel.
+
+**Findings:** Number tasks — label-token best peaks early (~L5-8), final-token best
+peaks late (~L12): same peak height, depth-shifted. Synonym/antonym — final-token
+site sustains larger/longer logit shift out to ~L25 vs early-concentrated label site.
+
+**Next:** None pending.
+
+**Blockers:** None.

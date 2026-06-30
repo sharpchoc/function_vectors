@@ -1,0 +1,54 @@
+{
+  "task_pair": "next_number_digits_prev_number_digits",
+  "src_task": "prev_number_digits",
+  "tgt_task": "next_number_digits",
+  "n_pairs": 198,
+  "patch_from_entry": 6,
+  "token_names": [
+    "demo1 label",
+    "demo2 input",
+    "demo2 pre label",
+    "demo2 label",
+    "query input",
+    "query pre label"
+  ],
+  "baseline_logit_diff": -1.5073390007019043,
+  "ceiling_logit_diff": 3.226167917251587,
+  "conditions": {
+    "demo2_prelabel": {
+      "open": {
+        "positions": [
+          "demo2 pre label"
+        ],
+        "mean_logit_diff": -1.436079502105713,
+        "recovery": 0.015054271564685936
+      },
+      "isolated": {
+        "positions": [
+          "demo2 pre label"
+        ],
+        "mean_logit_diff": -1.554174542427063,
+        "recovery": -0.009894469900850553
+      }
+    },
+    "both_labels": {
+      "open": {
+        "positions": [
+          "demo1 label",
+          "demo2 label"
+        ],
+        "mean_logit_diff": 3.042929172515869,
+        "recovery": 0.9612890087810539
+      },
+      "isolated": {
+        "positions": [
+          "demo1 label",
+          "demo2 label"
+        ],
+        "mean_logit_diff": 3.0029592514038086,
+        "recovery": 0.9528449689169819
+      }
+    }
+  },
+  "metric": "logit(tgt_gold)-logit(src_gold) at query-final; all pairs. isolated = patched roles->target, all other non-output tokens pinned to base."
+}
