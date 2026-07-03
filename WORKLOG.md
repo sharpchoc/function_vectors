@@ -11,6 +11,51 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-07-03 — Stream Q: TEN-shot intervene-token STRIP cosine-shift heatmaps (read fixed at qfinal)
+
+**Owner:** Coordinator (CPU editing pod; GPU compute on a fresh RTX 4090 pod). **Status:** DONE —
+360 grids + scalar overview + 3 strip figures.
+
+**What:** Extends Stream P to 10-shot ICL with a DIFFERENT pairing: **no matched labels** — n=300
+ten-shot prompts/task, pairs share ONLY the query (⇒ byte-identical final "A:"); the 10 demos are
+independently random per function. steer_vec at each of the **30 demo tokens** (input/pre-label/label
+× 10 demos) = `mean_pairs[tgt(t,ℓ)−src(t,ℓ)]` = difference of the two tasks' MEAN activations at that
+slot (unmatched ⇒ mixes lexical+function). Inject α·steer_vec at the source prompt; **read only at
+qfinal** (query predictive token) across all layers → the token×token matrix collapses to a vertical
+STRIP over the 30 intervene tokens. α∈{2,4,8}; 4 combos (2 task pairs × 2 directions).
+
+**Files:** NEW `src/eval_scripts/steer_tenshot_strip_cos_heatmap.py` (port of the Stream-P compute; 10-shot
+random-demo builder; 30 intervene tokens, qfinal read; memory-lean; **resumable** skip-if-exists;
+`model.transformer(...)` forward to SKIP the unused lm_head — see DECISIONS, this was the OOM fix). NEW
+`src/eval_scripts/plot_tenshot_strip_heatmap.py` (CPU-only; global vmax=0.0875): `scalar_overview.png`
+(30 tokens × 12 combo·α, peak Δcos, annotated — headline comparable view) + 3 `strip_alpha{a}.png`
+(30 tokens × 4 combos of layer heatmaps). Output (TRACKED)
+`results/direction2_label_geometry/tenshot_strip_intervention_cos_heatmap/<task_pair>/`: 360 grids
+(.npy gitignored / .csv tracked), 2 summaries. Logs `logs/tenshot_strip_full.log`, runner
+`logs/run_tenshot_strip.sh`.
+
+**Commands** (GPU pod, volume at /runpod; batch 48 fits the 24 GB 4090 at ~21.7 GB):
+`python src/eval_scripts/steer_tenshot_strip_cos_heatmap.py --task_pair {…} --alphas 2 4 8 --n_pairs 300
+--batch_size 48` then `python src/eval_scripts/plot_tenshot_strip_heatmap.py`. ~6 h total on one 4090
+(the 29-layer retain_output per forward dominates; batch 64 pins mem at the 24 GB ceiling, use 48).
+
+**FINDINGS:**
+- **Label tokens carry ~all the steerable signal.** Every top intervene token (all 4 combos) is a demo
+  LABEL token (`d{i}_lab`); the input (`_in`) and pre-label (`_pre`) rows are ≈0 in the scalar overview.
+- **Mid-layer → late read:** peaks at intervene L5–8 → read L16–26 (words k≈26, digits k≈16–18), same
+  band as the 1-/2-shot studies.
+- **Directional asymmetry:** `synonym→antonym` peaks **+0.088** but `antonym→synonym` only **+0.019**;
+  digits ≈0.05 both ways.
+- **Distributed over positions:** unlike 2-shot (where label2 alone dominated), MANY demo-label
+  positions contribute (`d2_lab`,`d10_lab`,`d3_lab`,… all near the top) — no single demo owns it.
+- α=2 ≳ α=4 ≳ α=8 for digits (cosine saturates); words strengthen a bit up to α=8.
+
+**Verification:** smoke (digits & antonym, n=16, 3 layers) passed asserts; lower-tri≡0 on every grid;
+360/360 grids finite; sanity `d10_lab`→qfinal reproduced the label→qfinal band. GPU pod
+(`gmfxnpi460x4rn`, RTX 4090) **terminated** after run. **Blockers:** None.
+
+---
+
 ## 2026-06-30 — Stream P: TWO-shot token-pair × layer×layer cosine-shift heatmaps (15 pairs)
 
 **Owner:** Coordinator (CPU editing pod; GPU compute on a fresh RTX 4000 Ada pod). **Status:** DONE —

@@ -5,6 +5,30 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-07-03 — 10-shot strip steering (Stream Q): lm_head OOM fix + long-prompt batch tuning
+
+- **When you only need hidden states, call `model.transformer(...)`, NOT `model(...)`.** `model(...)`
+  computes `lm_head(hidden_states)` → a `[batch, seq, vocab≈50400]` fp32 tensor (e.g. 1.25 GB at
+  batch 64 × seq 97), which we never use (we read residual streams via baukit TraceDict). This is what
+  OOM'd the 10-shot run at the unsteered pass. `model.transformer(input_ids, attention_mask)` runs the
+  embedding + blocks (where the hooks live) and skips lm_head/final head — identical captured outputs,
+  ~1.25 GB less, and faster. The 2-shot script used `model(...)` and got away with it only because its
+  prompts were short.
+- **Batch vs the 24 GB 4090 for these 29-layer `retain_output` captures:** batch 64 pins memory at the
+  ~23.4 GB ceiling (a longer-prompt batch then OOMs); **batch 48 sits at ~21.7 GB** with margin — use 48.
+  The 29-layer retain_output (holds every block's `[B,seq,D]` output each forward) is the memory AND
+  time driver, so runs are slow (~80 s/grid) regardless of the short prompts. Set
+  `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`.
+- **Kill remote runs by PID, not `pkill -f <pattern>`** when the pattern also appears in the killing
+  shell's own command line — `pkill -f steer_tenshot_strip` matches the ssh shell running it and
+  self-terminates (SSH exits 255, though it does kill the target first). Safe form:
+  `ps -eo pid,args | grep '[s]teer_tenshot_strip_cos' | awk '{print $1}' | xargs -r kill -9` (the `[s]`
+  regex trick prevents grep from matching itself).
+- **Unmatched-demo mean-difference steering** (10-shot, no matched labels): steer_vec at a structural
+  slot = difference of the two tasks' MEAN activations there. Result: the steerable signal lives almost
+  entirely in demo LABEL tokens (input/pre-label ≈ 0), mid-layer→late-read, distributed across demo
+  positions (not just the last). Only the read token (qfinal) is byte-matched, keeping baseline_cos valid.
+
 ## 2026-06-30 — Two-shot token-pair cosine heatmaps (Stream P): conventions + GPU-pod gotchas
 
 - **Steering ≠ patching ⇒ byte-identity is NOT required.** The readout adds `α·mean_pairs[tgt−src]` to
