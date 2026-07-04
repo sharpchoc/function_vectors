@@ -56,6 +56,126 @@ random-demo builder; 30 intervene tokens, qfinal read; memory-lean; **resumable*
 
 ---
 
+## 2026-07-02 — Stream R: causal test of ridge pre-images (per-layer W⁻¹(fv) steering)
+
+**Owner:** Coordinator (tmux "preimage-steer"; GPU on RunPod `ptlrql6hjz6c70` "claude-preimage-steer",
+RTX PRO 6000 Blackwell 96GB, $1.89/hr — TERMINATED, ~1.5h total). **Status:** DONE.
+**Plan:** `/root/.claude/plans/compiled-singing-falcon.md`.
+
+**Question:** Are the full-dim activation→FV ridge maps causally meaningful? Invert the icl10
+pre_label_token regression per layer (target = train_selected_top40 FVs), inject the linear
+pre-image Δx_ℓ (σ⊙solve(W_std, fv)) at edit layer ℓ−1 (block-output hook, last token), compare
+task top-1 layer sweeps vs direct FV steering. Tasks: next_number, prev_number, synonym, antonym
+(all outside the 20 regression-train tasks). Regimes: zero-shot + 10-shot-shuffled. Arms:
+preimage_raw / preimage_normmatched / fv_direct (+ no-intervention baselines).
+
+**Files (NEW):** `src/eval_scripts/fit_prelabel_ridge_preimages.py` (refit w/ saved W, fp64 lstsq
+pre-images, study-reproduction validation; handles stale absolute shard paths in the capture
+index.json), `src/eval_scripts/evaluate_preimage_steering.py` (3-arm layer sweep, cached
+ICL-correct filters, --max_eval_examples cap, exact-match best-layer pass),
+`logs/stream_r_preimage_steering/driver.sh` (stage 1 then 4 task-parallel evals on one 96GB GPU).
+Outputs: `artifacts/preimage_steering/train_selected_top40_icl10_pre/` (maps + banks),
+`results/direction3_fv_formation/preimage_steering/<task>/` + `AGGREGATE_preimage_vs_fv_steering.png`.
+
+**Method notes / gotchas hit:**
+- Refit reproduces the study's saved shard_icl10 metrics to ≤8e-7 at every layer (validation flag).
+- W is severely ill-conditioned (cond 1e9–1e11): the EXACT pre-image W⁻¹(fv) has norm 1e8–1e10
+  (~1e7× activation scale). Added a third arm `preimage_damped`: Tikhonov pre-image, per (task,
+  layer) the best-residual γ with standardized-space norm ≤ 2√D. Damped rel-residual plateaus at
+  ~0.72–0.82 — i.e. only ~20–28% of the FV's norm is reachable from activation-scale
+  displacements; damped norms are FV-scale (~30–70) mid-layers, inflating late (numbers ≫ syn/ant).
+- Upstream bug found: `n_shot_eval(generate_str=True)` crashes (get_answer_id gets a list target);
+  worked around with a documented monkeypatch inside evaluate_preimage_steering.py.
+- Number-word tasks: first-token top-1 is heavily inflated by the copy/compound-number artifact
+  (zs no-FV baseline already 0.55–0.62 first-token; exact-match at the same layers ~0.1–0.2).
+  Trust the EM column for numbers; synonym/antonym EM ≈ first-token (single-token answers).
+
+**FINDINGS — pre-images are PARTIALLY causal; exact inverse is not, damped inverse is.**
+Best-layer intervention top-1 (first-token; EM = exact-match generation at that layer):
+
+| task (n) | regime | no-FV | fv_direct | preimage_damped | normmatched | raw |
+|---|---|---|---|---|---|---|
+| antonym (200) | zs | .010 | **.685** L11 | .095 L11 | .050 | .000 |
+| antonym | fs_shuf | .515 | **.900** L11 | **.680** L11 | .505 | .000 |
+| synonym (148) | zs | .000 | **.223** L11 | .014 | .014 | .000 |
+| synonym | fs_shuf | .095 | **.480** L10 | .189 L8 | .162 | .000 |
+| next_number (42) | zs EM | — | .119 L5 | **.143** L9 | .000 | .000 |
+| prev_number (42) | zs EM | — | .214 L8 | **.214** L11 | .095 | .000 |
+
+- **Exact pre-image (raw): completely non-causal** — 0.000 at every layer/task (norm ~1e9 destroys
+  the forward pass). Norm-matching its direction recovers little (syn/ant ~0.05): the exact
+  inverse's direction is regression noise in near-null singular directions.
+- **Damped pre-image: substantially causal, layer-aligned with the FV.** On antonym it peaks at
+  the SAME layer as FV steering (L11) and recovers 76% of the FV's fs-shuffled effect (.680 vs
+  .900, baseline .515); zero-shot it recovers only ~14%. On the number tasks (EM) it EQUALS
+  fv_direct (.143/.214 vs .119/.214). Synonym weakest (fs .189 vs .480).
+- Interpretation: the ~20-25% FV component reachable at activation scale through the regression's
+  well-conditioned subspace carries most of the steerable task signal in-context, but the FV's
+  zero-shot punch (esp. syn/ant) lives in components the pre-label-token regression cannot
+  produce at natural norms. Consistent with the direction3 story: the map is real but low-rank-ish;
+  its usable inverse is the damped one.
+
+**Next (optional):** γ-sweep steering curve (dose-response); repeat with last_prompt_token maps
+(position-matched to the injection site); project-out-FV control for the damped arm.
+**Blockers:** none.
+
+---
+
+## 2026-07-02 — Stream Q: next/prev_number FVs on the top-40 head bases (fill the gap)
+
+**Owner:** Coordinator (tmux "fv-paired-top40"; CPU pod — GPU compute on a fresh RunPod pod).
+**Status:** DONE — 6 new FVs (2 tasks × 3 bases), SANITY PASS on all 12 (3 bases × 4 tasks), pod terminated.
+
+**Goal:** next_number + prev_number FVs on the same top-40 head bases as the ridge studies, so a
+combined experiment can use all four of {next_number, prev_number, synonym, antonym} on any basis.
+`train_selected` (top-40) already has all four; the gaps are the three top-40 variants:
+
+| basis | heads | acts needed | acts status |
+|---|---|---|---|
+| train_selected_top40 (= gptj_fv_multitask_top40 symlinks) | `multitask_aie_heads/multitask_top_aie_heads.pt` @40 | fixed-shot `gptj_fv/<task>/` | EXIST |
+| train_varicl_top40 | `multitask_aie_heads_varicl/…` @40 | varicl max-10 | EXIST (`multitask_aie_heads_varicl/{next,prev}_number/`) |
+| train_varicl_max4_top40 | `multitask_aie_heads_varicl_max4/…` @40 | varicl max-4 | **MISSING — capture needed** |
+
+**Plan (GPU pod):** (1) capture max-4 varicl mean acts: `compute_multitask_varicl_heads.py --tasks
+next_number prev_number --min_shots 1 --max_shots 4 --query_split valid --demo_split train
+--filter_to_correct_icl --save_path_root artifacts/multitask_aie_heads_varicl_paired_max4` (isolated
+root; copy acts into `multitask_aie_heads_varicl_max4/<task>/` after). (2) FV builds:
+`compute_all_task_fvs_varicl.py --tasks next_number prev_number --task_manifest
+task_splits/paired_tasks_3.json --n_top_heads 40 --manifest_name fv_manifest_paired.json` twice
+(heads_path/fv_root/output_root per varicl basis); `compute_all_task_fvs_from_multitask_heads.py`
+equivalent for the fixed-shot top-40 basis; then train_selected_top40 symlinks. Mirrors the
+2026-06-14 paired-task build (see that entry for the 18-query valid-split caveat; next 18/18,
+prev 15/18 ICL-correct there).
+
+**Run:** RunPod GPU pod `s2hti5fmbs15wm` ("claude-fv-paired-top40", RTX PRO 4500 Blackwell,
+$0.74/hr, shared volume) — TERMINATED after completion (~15 min total). Driver + logs:
+`logs/stream_q_fv_paired_top40/` (driver.sh, driver.log, per-stage logs). Stage order: [1] varicl
+max-10 top-40 FV build, [2] fixed-shot top-40 FV build, [3] max-4 varicl capture (long pole),
+[4] copy acts + max-4 FV build, [5] train_selected_top40 symlinks + selected_heads.json,
+[6] sanity-load all 12 FVs (3 bases × 4 tasks).
+
+**Outputs (all under git-ignored `artifacts/`):**
+- FVs: `function_vectors/gpt-j/train_varicl_top40/{next_number,prev_number}/`,
+  `function_vectors/gpt-j/train_varicl_max4_top40/{next_number,prev_number}/`,
+  `gptj_fv_multitask_top40/{next_number,prev_number}/` + symlinks in
+  `function_vectors/gpt-j/train_selected_top40/` (+ refreshed `selected_heads.json`, 31 tasks).
+  Manifests: `fv_manifest_paired.json` in each output root (kept distinct from `fv_manifest.json`).
+- New max-4 varicl capture: `multitask_aie_heads_varicl_paired_max4/{next_number,prev_number}/`
+  (isolated root, incl. CIE + per-prompt effects); mean acts copied into
+  `multitask_aie_heads_varicl_max4/<task>/` for the builder.
+
+**Findings:**
+- Max-4 ICL-correct filter on the 18-query valid split: next_number 17/18, prev_number 15/18
+  (max-10 reference: 18/18, 15/18) — capping demos at 4 costs number tasks ~nothing.
+- All 12 FVs across the 3 top-40 bases sane: shape (4096,), finite, norms 53.6–60.5 (the
+  established top-40 norm band). next/prev_number norms ≈ synonym/antonym norms on every basis.
+- With `train_selected` (top-40) already complete, all four of {next_number, prev_number,
+  synonym, antonym} now have FVs on ALL top-40 bases used by the ridge studies.
+
+**Next:** the combined experiment (user to specify). **Blockers:** none.
+
+---
+
 ## 2026-06-30 — Stream P: TWO-shot token-pair × layer×layer cosine-shift heatmaps (15 pairs)
 
 **Owner:** Coordinator (CPU editing pod; GPU compute on a fresh RTX 4000 Ada pod). **Status:** DONE —
