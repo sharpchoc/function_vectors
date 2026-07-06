@@ -11,6 +11,195 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-07-06 — Stream U: post-hoc R² for the full-dim ridge (activation→FV)
+
+**Owner:** Coordinator (tmux; CPU pod). **Status:** DONE (untracked; commit pending user request).
+
+**Question:** the full-dim (4096→4096) ridge regressions are only reported as test MSE (heatmaps).
+What are the R²?
+
+**Key trick — no re-fit needed.** The target set is identical in every (token position, layer) cell:
+the 7 test-task FVs, each broadcast to that task's 170 activation rows; only the input features X
+change per cell. So the R² denominator SS_tot is a *single constant* V (per-element target variance
+about a baseline mean), and `R²(cell) = 1 − test_mse(cell)/V`. R² is thus a monotone rescaling of the
+existing test_mse grid. Sanity check passed: the layer-0/strong-reg cell has test_mse ≈ V exactly (ridge
+→ predict train mean), giving R² ≈ 0.
+
+**Baseline choice:** headline uses the TRAIN-target mean (ȳ, the constant ridge centers on → "did the
+map beat predicting the mean train FV?"). Also report the sklearn test-mean-baseline variant.
+
+**Numbers (7 test tasks, hidden=4096):**
+- V(test|train-mean)=0.2171, V(test|test-mean)=0.1902, V(train|train-mean)=0.1978.
+- test R² (train-mean base): min 0.000, median 0.346, **max 0.465** at icl10/last_prompt_token L11.
+- test R² (test-mean base / sklearn): min −0.142, median 0.254, max 0.390; negative in 69/899 cells.
+- train R²: median 0.978 (severe overfit, expected for 4096→4096 with 3400 rows).
+- Best cells cluster at mid-layers (L10–13) at the pre-label and final-prompt-token positions.
+
+**Files:** `src/eval_scripts/compute_fulldim_ridge_r2.py` (new; reuses the FV loader from
+regress_activation_to_fv_fulldim_ridge.py and render_heatmap from merge_fulldim_ridge_results.py).
+**Outputs:** `results/direction3_fv_formation/fulldim_ridge_activation_to_fv/combined_metrics_with_r2.csv`,
+`combined_test_r2_heatmap.png`.
+
+**Extension (2026-07-06): full-dim R² for the PCA ridge.** `pca_ridge_activation_to_fv` (k=16, i.e.
+16 act-PCs → 16 FV-PCs) already reports test_mse in the SAME full 4096-d space vs the raw FV (its
+layer-0 cell = 0.21712 = V exactly), same 7 test tasks → same denominator V=0.2171. So the identical
+R² transform applies (reran compute_fulldim_ridge_r2.py with --input_dir). Result:
+- PCA k=16: test R² median 0.325, **max 0.472** (icl10/finaltok L13); train R² median 0.877.
+- vs full-dim 4096: test R² median 0.346, max 0.465; train R² median 0.978.
+- ⇒ the 16-dim bottleneck TIES full-dim on test while overfitting far less. Extra dims only help train.
+- Reconstruction ceiling: the top-16 train-FV-PC subspace captures 54.3% of test-FV variance (about the
+  train mean); top-32/64 barely move it (55.2%). So held-out task FVs live ~45% in directions the 20
+  training tasks never span — the deep generalization ceiling behind both the ~0.47 R² and the earlier
+  20→7-task story. Outputs: pca_ridge_activation_to_fv/combined_metrics_with_r2.csv + heatmap.
+- NOTE: the two `pca_ridge_..._varicl_*_top40` variants use a DIFFERENT FV target set (layer-0 MSE
+  0.33 / 0.26 ⇒ different V) so are NOT directly comparable to the full-dim ridge; left untouched.
+
+**Next / not done:** joint-PCA(-ICL) ridge/OLS variants report MSE in REDUCED PCA space (per-k), not
+full-dim, so need reconstruction before a comparable R². Ask before extending.
+
+---
+
+## 2026-07-04 — Stream T: 2-shot FV-projection-ablation test of FVs as task-imitation machinery
+
+**Owner:** Coordinator (tmux "fv-ablation"; CPU pod + own RTX 4000 Ada GPU pod, terminated).
+**Status:** DONE (compute + figures on volume; commit pending user request).
+
+**Question:** are Todd-et-al function vectors the machinery mean-difference steering rides on? On
+matched-label 2-shot prompts, steer src→tgt by injecting the mean act-diff vector at a SINGLE residual
+layer ℓ (swept 0..28 — localized, like the heatmap studies) at {label1, label2, qfinal}; then ablate
+the target-FV-specific direction `F'⊥F = F' − proj_F(F')` at qfinal (all 29 layers, fixed). Metric:
+`Δlogit = logit(a_tgt) − logit(a_src)` at qfinal. Curves: `steer(ℓ)` and `steer+ablate(ℓ)` vs `clean`
+and `ablate` flat baselines. F, F' = task-specific top-10 GPT-J FVs (artifacts/gptj_fv).
+
+**Headline metric:** `retention(ℓ) = (steer+ablate − ablate) / (steer − clean)` at effective injection
+layers (where steer_gain > 0.5) — the fraction of the localized steering effect that SURVIVES ablating
+the FV direction. retention ≪ 1 ⇒ the FV direction mediates the steering.
+
+**Files:** `src/eval_scripts/steer_twoshot_fv_ablation_logitgap.py` (compute, per-layer sweep),
+`plot_twoshot_fv_ablation_logitgap.py` (CPU plot). Results under
+`results/direction2_label_geometry/twoshot_fv_ablation_imitation/{antonym_synonym,
+next_number_digits_prev_number_digits}/` (`<dir>_alpha{a}_layersweep.csv`, `_perpair.npz` [gitignored],
+summary.json) + `figures/layersweep_alpha{2,4,8}.png` + `retention_overview.png`. Digit FVs computed
+into `artifacts/gptj_fv/{next,prev}_number_digits` (top-10, n_shots=10).
+
+**Commands:** `compute_function_vectors.py --dataset_names next_number_digits prev_number_digits`;
+`logs/run_fv_ablation_sweep.sh` (both pairs, α 2/4/8, n=300, batch 48, --overwrite). GPT-J-6B;
+`model.transformer(...)` + lm_head-on-last-token readout.
+
+**Findings (n=300):**
+- Localized steering works: `steer(ℓ)` peaks in MID-NETWORK (L10–L14) with steer_gain = +4.8…+7.8
+  logits over the clean baseline (which favors the source answer). Consistent across all 4 directions
+  and where FVs are known to act in GPT-J.
+- **Ablating F'⊥F at qfinal DOES mediate the steering — strongly at moderate α.** At α=2, peak-layer
+  retention = 0.33 (ant→syn), 0.44 (syn→ant), 0.48 (next→prev), 0.45 (prev→next) — i.e. the ablation
+  removes ~55–67 % of the localized steering gain. (The earlier all-layers-at-once version hid this:
+  steering every layer incl. directly at qfinal swamped the single-direction ablation, giving
+  retention≈1.)
+- **α-dependence:** retention rises with α (ant→syn: 0.33→0.80→0.88 at α 2/4/8). The ablation removes a
+  fixed unit direction; as steering strength grows it brute-forces the task through other directions,
+  so the FV direction's mediating share shrinks. The gentle-steering (α=2) regime is the cleanest test
+  and shows the FV direction carrying roughly half-to-two-thirds of the effect.
+- cos(FV_src, FV_tgt) = 0.69 (ant/syn), 0.75 (digits) → F'⊥F is a partial slice of the target FV
+  (‖F_perp‖ ≈ 28–36); even so it mediates a majority of the α=2 steering.
+
+**Interpretation:** supports the claim that function vectors are (a large part of) the machinery of
+task imitation — at the mid-network layers where steering is effective, deleting the target-FV-specific
+direction at the prediction site removes most of the induced imitation at natural steering magnitudes.
+
+**Next:** commit on request. Follow-ups: sweep the ablation layer too (2-D); ablate at all steer sites;
+project out the full target FV (not just its F-orthogonal part) to bound the effect.
+
+**Blockers:** none.
+
+---
+
+## 2026-07-04 — Stream S: two-shot pair-diff variance explained by FV pre-image direction
+
+**Owner:** Coordinator (tmux "pairdiff-preimage"; CPU pod — GPU stages on a fresh RunPod pod).
+**Status:** DONE (compute + figures on volume; commit pending user request).
+
+**Question:** is the Stream-K two-shot paired-prompt activation difference (per-pair
+`d_i = act_f1 − act_f2` at each of the 5 token roles × 28 layers) primarily *FV-related*? At each
+cell, invert the direction3 full-dim ridge map on the FV difference `fv_A − fv_B`
+(pre-image via the fitted W, Tikhonov-damped + exact variants), unit-normalize → `u`;
+report `explained = 1 − var(d − proj_u d)/var(d)` (centered headline, uncentered secondary) as
+role × layer heatmaps, vs controls (raw `unit(fv_A − fv_B)` direction, top-PC 1-D upper bound,
+random-direction floor). Filters: all pairs + both-judge-correct.
+
+**Consistency rule (user gotcha):** regression target FVs and inverted FVs come from ONE root:
+`artifacts/function_vectors/gpt-j/train_varicl_max4_top40` (1–4-shot varicl, varicl-max4 top-40
+heads — shot regime matches the 2-shot prompts). Digit-variant FVs (next/prev_number_digits,
+used by the two-shot capture) don't exist yet → built in stage 0 on that basis.
+
+**Cell matching** (causal attention ⇒ demo-k tokens of the 10-shot ridge captures see a k-shot
+context): demo1_prelabel↔(pre_label_token,icl1), demo1_label↔(last_label_token,icl1),
+demo2_prelabel↔(pre_label_token,icl2), demo2_label↔(last_label_token,icl2),
+query_final↔(pre_label_token,icl3) context-matched + (last_prompt_token,icl10) secondary view.
+Two-shot activations have NO embedding slice: two-shot layer j ↔ capture layer j+1 ↔ bank
+edit_layer j.
+
+**Plan:** [0] digit FVs (varicl max-4 capture → isolated root
+`artifacts/multitask_aie_heads_varicl_digits_max4`, copy into `…_varicl_max4/<task>/`, FV build
+via `compute_all_task_fvs_varicl.py` + new `task_splits/paired_tasks_digits.json`);
+[1] NEW `src/eval_scripts/fit_ridge_preimages_multicell.py` (generalizes Stream R's
+`fit_prelabel_ridge_preimages.py` to 6 (role,icl) cells × 28 layers; pair-diff pre-images;
+validation vs study shard_icl2) → `artifacts/preimage_pairdiff/train_varicl_max4_top40/`;
+[2] NEW `src/eval_scripts/analyze_twoshot_pairdiff_fv_preimage.py` (CPU) →
+`results/direction3_fv_formation/twoshot_pairdiff_fv_preimage/train_varicl_max4_top40/`.
+Driver: `logs/stream_s_pairdiff_preimage/driver.sh`.
+
+**Run:** RunPod pod `mgb6durkq6k0os` ("claude-pairdiff-preimage", RTX PRO 4500 Blackwell,
+$0.74/hr) — TERMINATED after ~1.3 h. Driver + per-stage logs in `logs/stream_s_pairdiff_preimage/`.
+Smokes before full run: analysis loader reproduced the Stream-K meancos grid (max diff 5.1e-5
+antonym / 1.2e-6 digits); fit of the (pre_label, icl2) cell matched saved study metrics to
+≤2.9e-7 across all 28 layers.
+
+**Files:** NEW `src/eval_scripts/fit_ridge_preimages_multicell.py`,
+`src/eval_scripts/analyze_twoshot_pairdiff_fv_preimage.py`, `task_splits/paired_tasks_digits.json`,
+driver. Intermediates (gitignored): digit FV capture `artifacts/multitask_aie_heads_varicl_digits_max4/`
+(acts copied into `…_varicl_max4/<task>/`, FVs into `function_vectors/gpt-j/train_varicl_max4_top40/`,
+norms 52.1/53.0, manifest `fv_manifest_digits.json`); maps + pre-image banks
+`artifacts/preimage_pairdiff/train_varicl_max4_top40/<role>_icl{k}/` (6 cells × 28 layers, ~5.4 GB —
+reusable, see DECISIONS). Deliverables (TRACKED):
+`results/direction3_fv_formation/twoshot_pairdiff_fv_preimage/train_varicl_max4_top40/<pair>/`
+(explained_grid.json + 16 heatmaps + 4 line plots per pair).
+2026-07-06: line plots re-drawn WITHOUT the damped arm per user request — the red line
+("exact", relabeled **inv(fv_diff)** in the legend) is the plain W⁻¹(fv_A−fv_B) pre-image the
+experiment specified. NEW `src/eval_scripts/plot_twoshot_pairdiff_lines.py` replots from
+explained_grid.json on CPU (`--directions` chooses lines; damped numbers remain in the
+JSON + heatmaps).
+
+**Findings** (explained = fraction of pair-diff variance along the unit pre-image of fv_A−fv_B;
+random floor ≈ 2.4e-4; the both-correct filter barely changes any number):
+- **Digits pair, uncentered (total energy):** strongly FV-pre-image aligned at predictive
+  tokens — query_final L4 **0.43** (top-1-direction bound 0.84 → ~52% of the achievable),
+  query_final@lastprompt10 L6 0.39, demo2_label L10 0.27, demo1_label L4 0.18. The damped
+  pre-image beats the raw FV-diff direction unit(fv_A−fv_B) by ~10× at query/label views
+  (0.43 vs 0.03) and is aligned already at L4–7 where fv_diff only rises from L8 — the ridge
+  inversion adds real signal. Exception: demo2_prelabel mid-layers, where raw fv_diff
+  (0.34 @L12) beats the pre-image (0.17).
+- **Digits, centered (fluctuation around the mean diff):** small — best 0.034 (query_final L4)
+  vs centered top-PC bound 0.11: the pre-image direction captures the SYSTEMATIC mean
+  difference, not per-pair fluctuation.
+- **Antonym/synonym:** much weaker — uncentered damped ≤0.05 (query_final views ~L10; raw
+  fv_diff comparable or better there, 0.09–0.10); centered ≤~0.004 at mid layers (~15× floor).
+  Late-layer L27 damped spikes (0.02–0.04) look like an end-of-stack map artifact; treat with
+  caution.
+- **Exact (undamped) pre-image direction ≈ noise everywhere** (mostly ≤4× the random floor,
+  ~100× below damped at hot cells) — Stream R's causal finding reproduced geometrically; the
+  damped-vs-exact choice matters even for pure directions.
+- Headline answer: under the CENTERED definition, no — the FV-pre-image direction explains only
+  1–4% of pair-diff variance (though 10–100× chance). Under the UNCENTERED definition the
+  digits pair's activation difference IS substantially FV-related at label/query tokens (up to
+  ~half of what any single direction could explain); antonym/synonym is not (~3–5%).
+
+**Next:** commit + push on user request. Candidate follow-ups: k-dim pre-image subspace instead
+of the 1-D direction; same analysis on the one-shot paired captures; per-layer gamma sweep of
+the damped direction.
+**Blockers:** none.
+
+---
+
 ## 2026-07-03 — Stream Q: TEN-shot intervene-token STRIP cosine-shift heatmaps (read fixed at qfinal)
 
 **Owner:** Coordinator (CPU editing pod; GPU compute on a fresh RTX 4090 pod). **Status:** DONE —

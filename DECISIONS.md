@@ -5,6 +5,55 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-07-04 — Pair-diff pre-images: invert the FV DIFFERENCE, not per-task pre-images (Stream S)
+
+- **When a direction is needed for a task-pair difference under the ridge maps, damp the inversion
+  of the DIFFERENCE target** `fv_A − fv_B` directly (`fit_ridge_preimages_multicell.py`,
+  `pairdiff_preimages/` banks). The Tikhonov-damped inverse is linear in the target only at FIXED
+  gamma; subtracting two per-task damped pre-images mixes two different gammas (the norm-cap
+  selection rule picks per-target) and injects damping artifacts into the difference direction.
+  Exact (gamma=0) inversion commutes with subtraction, so only the damped variant cares.
+- **Unit-normalizing does NOT make exact vs damped pre-images interchangeable.** cond(W)~1e9-1e10
+  means the exact inverse's *direction* (not just norm) is dominated by the smallest singular
+  values — Stream S confirms it empirically: exact pre-image direction explains ~random-floor
+  levels of the two-shot pair-diff variance while the damped direction explains up to 0.43
+  (uncentered, digits query_final L4).
+- **Reusable intermediates:** `artifacts/preimage_pairdiff/train_varicl_max4_top40/<role>_icl{k}/maps/`
+  holds materialized 4096x4096 ridge maps (W_std fp16 + scaler) for 6 cells x 28 layers with the
+  varicl-max4-top40 FV target — any future pre-image/decoding study at those cells can skip the
+  ~25 s/layer refits. Same layout as Stream R's `artifacts/preimage_steering/` maps (icl10
+  pre_label, train_selected_top40 target).
+- **Centered vs uncentered explained-variance for paired diffs diverge wildly** (digits demo2_label
+  L4: top-1-direction bound 0.85 uncentered vs 0.13 centered): the pair-diff mean is a huge shared
+  component. Report both; say which one a claim uses.
+
+## 2026-07-04 — FV .pt files are dicts (weights_only) + FV-projection-ablation design notes (Stream T)
+
+- **`compute_function_vectors.py` saves each FV as a DICT** `{'function_vector' [resid_dim],
+  'top_heads', 'n_top_heads'}` — NOT a bare tensor. `top_heads` holds numpy int64 scalars, so on
+  torch≥2.6 `torch.load(p)` fails (default `weights_only=True`). Load pattern:
+  `obj = torch.load(p, weights_only=False); fv = obj['function_vector'].reshape(-1).float()`.
+- **GPT-J task-specific FVs live in `artifacts/gptj_fv/<task>/<task>_function_vector.pt`** (top-10,
+  n_shots=10). The `_digits` variants didn't exist and were computed 2026-07-04 (mean-acts 100 trials +
+  indirect-effect 25 trials ≈ 9 min/task on an RTX 4000 Ada, 20 GB).
+- **Logit readout without the full lm_head:** run `model.transformer(...)` under the edit hook, then
+  `model.lm_head(last_hidden[:, -1, :])`. GPTJModel already applies `ln_f`, so `last_hidden_state` is
+  post-norm — applying lm_head to the qfinal slice gives correct next-token logits while avoiding the
+  `[B, seq, 50400]` allocation.
+- **FV-projection-ablation ordering:** when steering (add) and ablation (project-out `u`) target the
+  SAME token (qfinal), apply steer-THEN-ablate within each layer's hook.
+- **Localize the steer, not just the read (Stream T lesson):** "steer across all layers" can mean two
+  very different experiments. Adding the steer vec at ALL 29 layers at once (incl. directly at qfinal)
+  swamps a single-direction ablation → retention≈1, misleadingly looks like the FV doesn't mediate.
+  Injecting at ONE layer at a time (swept 0..28, as in the heatmap studies) while ablating F'⊥F at
+  qfinal reveals the real picture: peak steering is MID-NETWORK (L10–14) and the ablation removes
+  ~55–67 % of the localized gain at α=2 (peak-layer retention 0.33–0.48 across the 4 directions).
+  Retention rises with α (steering brute-forces through other directions), so the gentle-α regime is
+  the cleaner test. Default to a per-layer sweep when asking whether a direction *mediates* an
+  intervention — an all-layers intervention conflates "does this direction matter" with "can I
+  overwhelm the readout." (Supersedes the first pass, which used an all-layers steer and wrongly
+  concluded mediation≈0.)
+
 ## 2026-07-03 — 10-shot strip steering (Stream Q): lm_head OOM fix + long-prompt batch tuning
 
 - **When you only need hidden states, call `model.transformer(...)`, NOT `model(...)`.** `model(...)`
