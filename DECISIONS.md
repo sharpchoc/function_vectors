@@ -42,17 +42,19 @@ Resolved questions move from "Open" to "Decided" with the rationale.
   `[B, seq, 50400]` allocation.
 - **FV-projection-ablation ordering:** when steering (add) and ablation (project-out `u`) target the
   SAME token (qfinal), apply steer-THEN-ablate within each layer's hook.
-- **Localize the steer, not just the read (Stream T lesson):** "steer across all layers" can mean two
-  very different experiments. Adding the steer vec at ALL 29 layers at once (incl. directly at qfinal)
-  swamps a single-direction ablation → retention≈1, misleadingly looks like the FV doesn't mediate.
-  Injecting at ONE layer at a time (swept 0..28, as in the heatmap studies) while ablating F'⊥F at
-  qfinal reveals the real picture: peak steering is MID-NETWORK (L10–14) and the ablation removes
-  ~55–67 % of the localized gain at α=2 (peak-layer retention 0.33–0.48 across the 4 directions).
-  Retention rises with α (steering brute-forces through other directions), so the gentle-α regime is
-  the cleaner test. Default to a per-layer sweep when asking whether a direction *mediates* an
-  intervention — an all-layers intervention conflates "does this direction matter" with "can I
-  overwhelm the readout." (Supersedes the first pass, which used an all-layers steer and wrongly
-  concluded mediation≈0.)
+- **Localize BOTH the layer and the token when asking whether a direction mediates an intervention
+  (Stream T lesson).** "Steer across all layers" was ambiguous and cost two reruns. Three progressively
+  finer designs gave different answers: (1) add the steer vec at ALL 29 layers at once → swamps a
+  single-direction ablation, retention≈1, *looks* like the FV doesn't mediate; (2) one layer at a time
+  but all 3 steer tokens together → reveals mid-net peak + ~0.33–0.48 α=2 retention; (3) one layer AND
+  one token at a time (the right design) → a separate `steer(ℓ)`/`steer+ablate(ℓ)` curve per site.
+  Result at (3): steering works at every site (qfinal peaks mid-net L10–14 gain up to +7.9; demo label
+  tokens peak earlier and weaker), and ablating F'⊥F at qfinal removes ~50–70 % of the localized gain
+  at α=2 at ALL sites — including gain injected back at the demo label tokens. Retention rises with α
+  (strong steering brute-forces other directions), so the gentle-α regime is the clean test. Lesson:
+  an all-at-once intervention conflates "does this direction matter" with "can I overwhelm the readout";
+  sweep every axis you're claiming localization over, and confirm the sweep granularity with the user
+  before spending GPU. (Supersedes the first pass's mediation≈0 conclusion.)
 
 ## 2026-07-03 — 10-shot strip steering (Stream Q): lm_head OOM fix + long-prompt batch tuning
 

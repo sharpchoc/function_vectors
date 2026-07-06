@@ -65,48 +65,56 @@ full-dim, so need reconstruction before a comparable R². Ask before extending.
 **Status:** DONE (compute + figures on volume; commit pending user request).
 
 **Question:** are Todd-et-al function vectors the machinery mean-difference steering rides on? On
-matched-label 2-shot prompts, steer src→tgt by injecting the mean act-diff vector at a SINGLE residual
-layer ℓ (swept 0..28 — localized, like the heatmap studies) at {label1, label2, qfinal}; then ablate
-the target-FV-specific direction `F'⊥F = F' − proj_F(F')` at qfinal (all 29 layers, fixed). Metric:
-`Δlogit = logit(a_tgt) − logit(a_src)` at qfinal. Curves: `steer(ℓ)` and `steer+ablate(ℓ)` vs `clean`
-and `ablate` flat baselines. F, F' = task-specific top-10 GPT-J FVs (artifacts/gptj_fv).
+matched-label 2-shot prompts, steer src→tgt by injecting the mean act-diff vector at a SINGLE
+(token position, layer ℓ) — a SEPARATE layer-sweep (ℓ=0..28) per steer site — then ablate the
+target-FV-specific direction `F'⊥F = F' − proj_F(F')` at qfinal (all 29 layers, fixed). Steer sites:
+{label1, label2, qfinal}. Metric: `Δlogit = logit(a_tgt) − logit(a_src)` at qfinal. Per (direction, α,
+site): curves `steer(ℓ)` and `steer+ablate(ℓ)` vs `clean`/`ablate` flat baselines. F, F' = task-specific
+top-10 GPT-J FVs (artifacts/gptj_fv).
 
 **Headline metric:** `retention(ℓ) = (steer+ablate − ablate) / (steer − clean)` at effective injection
-layers (where steer_gain > 0.5) — the fraction of the localized steering effect that SURVIVES ablating
-the FV direction. retention ≪ 1 ⇒ the FV direction mediates the steering.
+layers (steer_gain > 0.5) — fraction of the localized steering effect that SURVIVES ablating the FV
+direction. retention ≪ 1 ⇒ the FV direction mediates the steering.
 
-**Files:** `src/eval_scripts/steer_twoshot_fv_ablation_logitgap.py` (compute, per-layer sweep),
+**Files:** `src/eval_scripts/steer_twoshot_fv_ablation_logitgap.py` (compute, per-token per-layer sweep),
 `plot_twoshot_fv_ablation_logitgap.py` (CPU plot). Results under
 `results/direction2_label_geometry/twoshot_fv_ablation_imitation/{antonym_synonym,
-next_number_digits_prev_number_digits}/` (`<dir>_alpha{a}_layersweep.csv`, `_perpair.npz` [gitignored],
-summary.json) + `figures/layersweep_alpha{2,4,8}.png` + `retention_overview.png`. Digit FVs computed
-into `artifacts/gptj_fv/{next,prev}_number_digits` (top-10, n_shots=10).
+next_number_digits_prev_number_digits}/` (`<dir>_<token>_alpha{a}_layersweep.csv`, `_perpair.npz`
+[gitignored], summary.json) + `figures/layersweep_by_token_alpha{2,4,8}.png` (4 dir × 3 token grid) +
+`retention_overview.png`. Digit FVs computed into `artifacts/gptj_fv/{next,prev}_number_digits`
+(top-10, n_shots=10).
 
 **Commands:** `compute_function_vectors.py --dataset_names next_number_digits prev_number_digits`;
-`logs/run_fv_ablation_sweep.sh` (both pairs, α 2/4/8, n=300, batch 48, --overwrite). GPT-J-6B;
-`model.transformer(...)` + lm_head-on-last-token readout.
+`logs/run_fv_ablation_bytoken.sh` (both pairs, α 2/4/8, n=300, batch 300, --overwrite). GPT-J-6B on an
+RTX 5090 (~11 min/pair); `model.transformer(...)` + lm_head-on-last-token readout.
 
-**Findings (n=300):**
-- Localized steering works: `steer(ℓ)` peaks in MID-NETWORK (L10–L14) with steer_gain = +4.8…+7.8
-  logits over the clean baseline (which favors the source answer). Consistent across all 4 directions
-  and where FVs are known to act in GPT-J.
-- **Ablating F'⊥F at qfinal DOES mediate the steering — strongly at moderate α.** At α=2, peak-layer
-  retention = 0.33 (ant→syn), 0.44 (syn→ant), 0.48 (next→prev), 0.45 (prev→next) — i.e. the ablation
-  removes ~55–67 % of the localized steering gain. (The earlier all-layers-at-once version hid this:
-  steering every layer incl. directly at qfinal swamped the single-direction ablation, giving
-  retention≈1.)
-- **α-dependence:** retention rises with α (ant→syn: 0.33→0.80→0.88 at α 2/4/8). The ablation removes a
-  fixed unit direction; as steering strength grows it brute-forces the task through other directions,
-  so the FV direction's mediating share shrinks. The gentle-steering (α=2) regime is the cleanest test
-  and shows the FV direction carrying roughly half-to-two-thirds of the effect.
+**Findings (n=300; separate sweep per steer token):**
+- Localized steering works at every site. Peak steer_gain and layer:
+  qfinal peaks MID-NET (L10–14), gain +5.1…+7.9 (largest — it's the prediction site); label2 peaks
+  EARLY-MID (L5–8), gain +3.0…+6.1; label1 earliest/weakest (L4–8), gain +1.0…+3.8. Steering a demo
+  answer token DOES propagate to the query prediction.
+- **Ablating F'⊥F at qfinal mediates the steering at ALL THREE token positions** (n=300, α=2 peak-layer
+  retention): ant→syn label1 0.43 / label2 0.30 / qfinal 0.35; syn→ant 0.31 / 0.30 / 0.35; next→prev
+  0.49 / 0.41 / 0.35; prev→next 0.45 / 0.44 / 0.42. So the ablation removes ~50–70 % of the localized
+  steering gain everywhere — including gain that was INJECTED at the demo label tokens, then killed by
+  removing one direction at the query token. Strong support for FVs being the shared write-channel.
+- **α-dependence:** retention generally rises with α (steering brute-forces other directions as it gets
+  stronger; for the small-gain label tokens on digits it → ~0.9 at α=8 where the gain is near-zero and
+  the ratio is noisy). The gentle α=2 regime is the clean test and shows FVs carrying half-to-two-thirds
+  of the effect at every site.
 - cos(FV_src, FV_tgt) = 0.69 (ant/syn), 0.75 (digits) → F'⊥F is a partial slice of the target FV
   (‖F_perp‖ ≈ 28–36); even so it mediates a majority of the α=2 steering.
 
 **Interpretation:** supports the claim that function vectors are (a large part of) the machinery of
-task imitation — at the mid-network layers where steering is effective, deleting the target-FV-specific
-direction at the prediction site removes most of the induced imitation at natural steering magnitudes.
+task imitation — wherever localized steering installs the target task (demo label tokens or the query),
+deleting the target-FV-specific direction at the prediction site removes most of the induced imitation
+at natural steering magnitudes.
 
-**Next:** commit on request. Follow-ups: sweep the ablation layer too (2-D); ablate at all steer sites;
+**Note on iterations:** first pass steered all layers at once (masked the effect, retention≈1); second
+pass steered one layer at a time but all 3 tokens together; THIS (final) pass sweeps each token
+separately. Earlier same-dir outputs overwritten to avoid confusion (user request).
+
+**Next:** commit on request. Follow-ups: sweep the ablation layer too (2-D site×layer retention map);
 project out the full target FV (not just its F-orthogonal part) to bound the effect.
 
 **Blockers:** none.
