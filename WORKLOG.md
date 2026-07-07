@@ -119,6 +119,24 @@ project out the full target FV (not just its F-orthogonal part) to bound the eff
 
 **Blockers:** none.
 
+### Addendum 2026-07-07 — second ablation direction: raw FV difference F'−F (variant `fdiff`)
+Added `--ablate_variant {fperp,fdiff}` to the compute script; `fdiff` ablates `u = normalize(F'−F)`
+instead of `fperp`'s `normalize(F'−proj_F F')`. Outputs now variant-tagged
+(`<dir>_<token>_alpha{a}_<variant>_layersweep.csv`, `<tp>_<variant>_summary.json`); the original fperp
+files were `git mv`'d to `_fperp` tags (no recompute). New plot overlays both ablation curves per panel
+(`figures/layersweep_compare_alpha{2,4,8}.png`) + a variant retention heatmap (`retention_compare.png`).
+Ran fdiff on RTX 5090 (batch 300, both pairs). **Sanity:** the `steer`/`clean` columns are byte-identical
+between the fperp and fdiff CSVs (max |Δ|=0 over 36 file pairs) — steering & clean baseline are
+ablation-independent, confirming the rename + new run line up.
+**Finding:** ablating F'−F removes AS MUCH OR MORE of the localized steering gain than F'⊥F. At α=2 both
+give peak-layer retention ~0.28–0.45 (similar); the gap widens with α — where strong steering lets F'⊥F
+retention climb to 0.79–0.91 (ablation stops biting), F'−F stays 0.00–0.66. Makes sense: the
+mean-difference steer vector aligns with the FV *difference*, and F'−F keeps the F-parallel component
+that F'⊥F discards, so it is the more complete anti-steering direction. Both support FVs as the
+task-imitation write-channel; F'−F is the stronger knockout.
+
+**Blockers:** none.
+
 ---
 
 ## 2026-07-04 — Stream S: two-shot pair-diff variance explained by FV pre-image direction

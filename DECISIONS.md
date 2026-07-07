@@ -55,6 +55,16 @@ Resolved questions move from "Open" to "Decided" with the rationale.
   an all-at-once intervention conflates "does this direction matter" with "can I overwhelm the readout";
   sweep every axis you're claiming localization over, and confirm the sweep granularity with the user
   before spending GPU. (Supersedes the first pass's mediation≈0 conclusion.)
+- **Which FV-derived direction to ablate — F'−F beats F'⊥F as an anti-steering knockout (2026-07-07).**
+  `steer_twoshot_fv_ablation_logitgap.py --ablate_variant {fperp,fdiff}`: `fperp` removes
+  `normalize(F'−proj_F F')` (target-FV-specific), `fdiff` removes `normalize(F'−F)` (raw FV difference).
+  At α=2 both give similar peak retention (~0.28–0.45); the difference shows at high α — F'⊥F retention
+  climbs to 0.79–0.91 (steering brute-forces past it) while F'−F stays 0.00–0.66. Reason: the
+  mean-difference steer vector is a (target−source) activation difference, so it aligns with the FV
+  *difference* F'−F; F'⊥F throws away the F-parallel component and is a strictly partial knockout.
+  Prefer F'−F when the goal is to maximally cancel difference-of-means steering. (Cheap variant runs:
+  rename the old outputs with a `_<variant>` tag + re-run only the new variant; `steer`/`clean` columns
+  must match byte-for-byte across variants since they're ablation-independent — a free correctness check.)
 
 ## 2026-07-03 — 10-shot strip steering (Stream Q): lm_head OOM fix + long-prompt batch tuning
 

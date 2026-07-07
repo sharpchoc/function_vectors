@@ -12,8 +12,10 @@ Interventions on the SOURCE prompt, two independent switches:
   let the forward recompute downstream. We produce a SEPARATE layer-sweep (ℓ=0..28) for EACH steer site
   t ∈ {label1, label2, qfinal} -- one localized curve per token position, not all sites at once.
       steer_vec(t,ℓ) = mean_pairs[ act_tgt(t,ℓ) − act_src(t,ℓ) ]
-  ABLATE the target-FV-specific direction at ALL 29 layers at qfinal only (fixed, not swept):
-      F = FV(src_task), F' = FV(tgt_task);  F_perp = F' − (F'·F̂)F̂ ;  u = F_perp/‖F_perp‖
+  ABLATE the chosen FV-derived direction at ALL 29 layers at qfinal only (fixed, not swept). With
+  F = FV(src_task), F' = FV(tgt_task), the ablation direction (--ablate_variant) is one of:
+      fperp: u = normalize(F' − (F'·F̂)F̂)   (F' with F projected out -- target-FV-specific)
+      fdiff: u = normalize(F' − F)          (raw FV difference)
       at qfinal, each layer output h ← h − (h·u) u        (steer applied first, then ablate)
 
 Per (direction, α, steer site t) we therefore get:
@@ -185,6 +187,9 @@ def parse_args():
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
     p.add_argument("--revision", type=str, default=None)
     p.add_argument("--overwrite", action="store_true")
+    p.add_argument("--ablate_variant", choices=["fperp", "fdiff"], default="fperp",
+                   help="Ablation direction at qfinal: fperp = F' with F projected out (F'−proj_F F'); "
+                        "fdiff = raw FV difference F'−F.")
     p.add_argument("--output_root", type=str,
                    default=str(LABEL_GEOMETRY_DIR / "twoshot_fv_ablation_imitation"))
     return p.parse_args()
@@ -383,9 +388,12 @@ def main():
                "n_layers": n_layers, "alphas": args.alphas, "steer_tokens": STEER_TOKENS,
                "steer_mode": "single (token position, layer) injection; separate layer-sweep per token",
                "ablate_site": "qfinal, all layers", "fv_root": str(args.fv_root),
+               "ablate_variant": args.ablate_variant,
+               "ablate_dir_def": ("F' with F projected out (F'-proj_F F')" if args.ablate_variant == "fperp"
+                                  else "raw FV difference F'-F"),
                "metric": "logit(a_tgt) - logit(a_src) at qfinal; a_task = task(query)",
                "curves": {"steer": "Δlogit vs injection layer (steer one site, no ablate)",
-                          "steer_ablate": "Δlogit vs injection layer (steer one site, F_perp ablated at qfinal)",
+                          "steer_ablate": "Δlogit vs injection layer (steer one site, ablate_dir removed at qfinal)",
                           "clean": "scalar baseline (no steer, no ablate)",
                           "ablate": "scalar baseline (no steer, ablate)"},
                "directions": {}}
@@ -404,13 +412,18 @@ def main():
         Fp = load_fv(args.fv_root, tgt_task, resid_dim, device)
         assert not torch.allclose(F, Fp), f"FV(src)==FV(tgt) for {dir_name}"
         Fhat = F / F.norm()
-        F_perp = Fp - (Fp @ Fhat) * Fhat
-        fp_norm = float(F_perp.norm())
-        assert fp_norm > 1e-6, f"F_perp ~ 0 for {dir_name} (target FV nearly parallel to source FV)"
-        u_dev = (F_perp / F_perp.norm()).float()
         cos_FFp = float((Fhat @ (Fp / Fp.norm())))
-        print(f"\n=== direction {dir_name} (inject into {src_tag}) ===")
-        print(f"  cos(F,F')={cos_FFp:+.3f}  ||F_perp||={fp_norm:.3f}")
+        # ablation direction depends on the chosen variant
+        if args.ablate_variant == "fperp":
+            abl_raw = Fp - (Fp @ Fhat) * Fhat        # F' with F projected out
+        else:                                         # fdiff
+            abl_raw = Fp - F                          # raw FV difference F' − F
+        abl_norm = float(abl_raw.norm())
+        assert abl_norm > 1e-6, f"ablation dir ~ 0 for {dir_name} variant={args.ablate_variant}"
+        u_dev = (abl_raw / abl_raw.norm()).float()
+        fp_norm = abl_norm                            # kept for summary field name compatibility
+        print(f"\n=== direction {dir_name} (inject into {src_tag}) variant={args.ablate_variant} ===")
+        print(f"  cos(F,F')={cos_FFp:+.3f}  ||ablate_dir({args.ablate_variant})||={abl_norm:.3f}")
 
         a_src_ids = torch.tensor(first_answer_ids(src_tag, src_task), device=device)
         a_tgt_ids = torch.tensor(first_answer_ids(src_tag, tgt_task), device=device)
@@ -424,7 +437,8 @@ def main():
         ablate_mean = float(d_ablate[keep].mean())
 
         dsum = {"src_task": src_task, "tgt_task": tgt_task, "inject_into": src_tag,
-                "n_keep": n_keep, "cos_F_Fprime": cos_FFp, "F_perp_norm": fp_norm,
+                "n_keep": n_keep, "cos_F_Fprime": cos_FFp,
+                "ablate_variant": args.ablate_variant, "ablate_dir_norm": abl_norm,
                 "clean_mean": clean_mean, "ablate_mean": ablate_mean,
                 "steer_vec_norm_by_token_layer": {STEER_TOKENS[t]: steer_norms[t].tolist() for t in range(N_STEER)},
                 "tokens": {}}
@@ -435,8 +449,8 @@ def main():
 
         for alpha in args.alphas:
             for si, tok in enumerate(STEER_TOKENS):
-                csv_path = out_dir / f"{dir_name}_{tok}_alpha{alpha:g}_layersweep.csv"
-                npz_path = out_dir / f"{dir_name}_{tok}_alpha{alpha:g}_perpair.npz"
+                csv_path = out_dir / f"{dir_name}_{tok}_alpha{alpha:g}_{args.ablate_variant}_layersweep.csv"
+                npz_path = out_dir / f"{dir_name}_{tok}_alpha{alpha:g}_{args.ablate_variant}_perpair.npz"
                 if csv_path.exists() and npz_path.exists() and not args.overwrite:
                     print(f"  {tok} α={alpha:g}: exists, skip")
                     z = np.load(npz_path)
@@ -490,9 +504,9 @@ def main():
                       f"| mean ret over {int(eff.sum())} eff. L={mean_ret_eff:.2f}")
 
         summary["directions"][dir_name] = dsum
-        del F, Fp, Fhat, F_perp, u_dev, sv_dev
+        del F, Fp, Fhat, abl_raw, u_dev, sv_dev
 
-    with open(out_dir / f"{args.task_pair}_summary.json", "w") as fh:
+    with open(out_dir / f"{args.task_pair}_{args.ablate_variant}_summary.json", "w") as fh:
         json.dump(summary, fh, indent=2)
     print(f"\nDONE -> {out_dir}")
 

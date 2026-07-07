@@ -1,17 +1,17 @@
 """
 Plot the 2-shot FV-projection-ablation task-imitation study (per-token layer sweeps; CPU-only).
 
-Reads results/direction2_label_geometry/twoshot_fv_ablation_imitation/<task_pair>/
-<direction>_<token>_alpha{a}_layersweep.csv (columns: layer, clean_mean, ablate_mean, steer_mean,
-steer_sem, steer_gain, steer_ablate_mean, steer_ablate_sem, steer_ablate_gain, retention).
+Compares two ablation directions at qfinal (both removed at all 29 layers):
+  fperp = F' with F projected out (F' − proj_F F')   ·   fdiff = raw FV difference F' − F.
 
-For each α, a grid of panels rows = direction (4), cols = steer token position (label1, label2, qfinal):
-each panel plots, vs injection layer ℓ,
-  - steer(t,ℓ)         Δlogit curve (no ablate)      with SEM band
-  - steer+ablate(t,ℓ)  Δlogit curve (F'⊥F ablated)   with SEM band
-  - clean, ablate      horizontal baseline lines (steering-free)
-The localized story, per token: where steer(t,ℓ) rises above clean, does steer+ablate(t,ℓ) fall back
-toward ablate? Plus a retention overview (rows = direction×token×α, cols = layer) at effective layers.
+Reads results/direction2_label_geometry/twoshot_fv_ablation_imitation/<task_pair>/
+<direction>_<token>_alpha{a}_<variant>_layersweep.csv (columns: layer, clean_mean, ablate_mean,
+steer_mean, steer_sem, steer_gain, steer_ablate_mean, steer_ablate_sem, steer_ablate_gain, retention).
+
+Outputs (figures/):
+  layersweep_compare_alpha{a}.png : grid rows=direction, cols=steer token; each panel overlays
+    steer(ℓ) [shared], steer+ablate_fperp(ℓ), steer+ablate_fdiff(ℓ), plus clean + both ablate baselines.
+  retention_compare.png : peak-layer retention, rows=(direction,token,α), cols=[fperp,fdiff].
 See steer_twoshot_fv_ablation_logitgap.py for how the numbers are produced.
 """
 import argparse
@@ -31,6 +31,9 @@ from utils.paths import LABEL_GEOMETRY_DIR
 
 TASK_PAIRS = ["antonym_synonym", "next_number_digits_prev_number_digits"]
 TOKENS = ["label1", "label2", "qfinal"]
+VARIANTS = ["fperp", "fdiff"]
+VAR_COLOR = {"fperp": "#8452a8", "fdiff": "#d1892b"}   # purple / orange
+VAR_LABEL = {"fperp": "F'⊥F", "fdiff": "F'−F"}
 
 
 def parse_args():
@@ -49,49 +52,28 @@ def load_csv(path):
     return {k: np.array(v) for k, v in cols.items()}
 
 
+def cpath(root, tp, direction, tok, ak, variant):
+    return Path(root) / tp / f"{direction}_{tok}_alpha{ak}_{variant}_layersweep.csv"
+
+
 def discover_directions(root):
-    """Ordered list of direction names present (across both task pairs)."""
-    names = []
+    """Ordered [(task_pair, direction)] present, detected from fperp csvs."""
+    out = []
     for tp in TASK_PAIRS:
         d = Path(root) / tp
         if not d.is_dir():
             continue
         seen = set()
-        for p in sorted(d.glob("*_layersweep.csv")):
-            # <direction>_<token>_alpha{a}_layersweep.csv ; token is one of TOKENS
-            stem = p.name[:-len("_layersweep.csv")]
+        for p in sorted(d.glob("*_fperp_layersweep.csv")):
+            stem = p.name[:-len("_layersweep.csv")]           # <dir>_<tok>_alpha{a}_fperp
+            left = stem.split("_alpha")[0]                    # <dir>_<tok>
             for tok in TOKENS:
-                marker = f"_{tok}_alpha"
-                if marker in stem:
-                    name = stem.split(marker)[0]
+                if left.endswith("_" + tok):
+                    name = left[:-(len(tok) + 1)]
                     if name not in seen:
-                        seen.add(name); names.append((tp, name))
+                        seen.add(name); out.append((tp, name))
                     break
-    return names
-
-
-def csv_path(root, tp, name, tok, ak):
-    return Path(root) / tp / f"{name}_{tok}_alpha{ak}_layersweep.csv"
-
-
-def panel(ax, c, title, show_ylabel, show_xlabel):
-    x = c["layer"]
-    clean = c["clean_mean"][0]; ablate = c["ablate_mean"][0]
-    ax.axhline(clean, color="#616161", lw=1.0, ls="--", label=f"clean ({clean:+.2f})")
-    ax.axhline(ablate, color="#b39ddb", lw=1.0, ls="--", label=f"ablate ({ablate:+.2f})")
-    ax.plot(x, c["steer_mean"], color="#4c72b0", lw=1.5, label="steer")
-    ax.fill_between(x, c["steer_mean"] - c["steer_sem"], c["steer_mean"] + c["steer_sem"],
-                    color="#4c72b0", alpha=0.2)
-    ax.plot(x, c["steer_ablate_mean"], color="#8452a8", lw=1.5, label="steer+ablate")
-    ax.fill_between(x, c["steer_ablate_mean"] - c["steer_ablate_sem"],
-                    c["steer_ablate_mean"] + c["steer_ablate_sem"], color="#8452a8", alpha=0.2)
-    ax.axhline(0, color="k", lw=0.4)
-    ax.set_title(title, fontsize=8)
-    if show_xlabel:
-        ax.set_xlabel("injection layer ℓ", fontsize=7)
-    if show_ylabel:
-        ax.set_ylabel("Δlogit = logit(a_tgt)−logit(a_src)", fontsize=7)
-    ax.tick_params(labelsize=6)
+    return out
 
 
 def main():
@@ -105,53 +87,100 @@ def main():
         return
     print(f"{len(dirs)} directions found")
 
-    ret_rows, ret_labels = [], []
+    # ---- overlay grid per alpha ----
     for alpha in args.alphas:
         ak = f"{alpha:g}"
         nr, nc = len(dirs), len(TOKENS)
-        fig, axes = plt.subplots(nr, nc, figsize=(4.3 * nc, 2.9 * nr), squeeze=False)
+        fig, axes = plt.subplots(nr, nc, figsize=(4.5 * nc, 3.0 * nr), squeeze=False)
         any_data = False
         for ri, (tp, name) in enumerate(dirs):
             src, tgt = name.split("_to_")
             for ci, tok in enumerate(TOKENS):
                 ax = axes[ri][ci]
-                p = csv_path(root, tp, name, tok, ak)
-                if not p.exists():
+                cf = cpath(root, tp, name, tok, ak, "fperp")
+                if not cf.exists():
                     ax.set_axis_off(); continue
                 any_data = True
-                c = load_csv(p)
-                peak = int(np.nanargmax(c["steer_gain"]))
-                title = (f"{src}→{tgt}\nsteer@{tok}: peak L{peak} gain {c['steer_gain'][peak]:+.2f}, "
-                         f"ret {c['retention'][peak]:.2f}")
-                panel(ax, c, title, show_ylabel=(ci == 0), show_xlabel=(ri == nr - 1))
+                c = {v: load_csv(cpath(root, tp, name, tok, ak, v))
+                     for v in VARIANTS if cpath(root, tp, name, tok, ak, v).exists()}
+                base = c["fperp"]
+                x = base["layer"]
+                ax.axhline(base["clean_mean"][0], color="#616161", lw=1.0, ls="--",
+                           label=f"clean ({base['clean_mean'][0]:+.2f})")
+                ax.plot(x, base["steer_mean"], color="#4c72b0", lw=1.6, label="steer")
+                ax.fill_between(x, base["steer_mean"] - base["steer_sem"],
+                                base["steer_mean"] + base["steer_sem"], color="#4c72b0", alpha=0.15)
+                titbits = []
+                for v in VARIANTS:
+                    if v not in c:
+                        continue
+                    cc = c[v]
+                    col = VAR_COLOR[v]
+                    ax.axhline(cc["ablate_mean"][0], color=col, lw=0.9, ls=":",
+                               label=f"ablate {VAR_LABEL[v]} ({cc['ablate_mean'][0]:+.2f})")
+                    ax.plot(x, cc["steer_ablate_mean"], color=col, lw=1.5,
+                            label=f"steer+abl {VAR_LABEL[v]}")
+                    ax.fill_between(x, cc["steer_ablate_mean"] - cc["steer_ablate_sem"],
+                                    cc["steer_ablate_mean"] + cc["steer_ablate_sem"], color=col, alpha=0.15)
+                    pk = int(np.nanargmax(cc["steer_gain"]))
+                    titbits.append(f"{VAR_LABEL[v]} ret {cc['retention'][pk]:.2f}")
+                ax.axhline(0, color="k", lw=0.4)
+                pk = int(np.nanargmax(base["steer_gain"]))
+                ax.set_title(f"{src}→{tgt}  steer@{tok}\npeak L{pk} gain {base['steer_gain'][pk]:+.2f} · "
+                             + " · ".join(titbits), fontsize=7.5)
+                if ci == 0:
+                    ax.set_ylabel("Δlogit = logit(a_tgt)−logit(a_src)", fontsize=7)
+                if ri == nr - 1:
+                    ax.set_xlabel("injection layer ℓ", fontsize=7)
+                ax.tick_params(labelsize=6)
                 if ri == 0 and ci == nc - 1:
-                    ax.legend(fontsize=6, loc="best")
-                # collect retention row (effective layers only)
-                eff = c["steer_gain"] > 0.5
-                ret_rows.append(np.where(eff, c["retention"], np.nan))
-                ret_labels.append(f"{src[:5]}→{tgt[:5]} @{tok} α{ak}")
+                    ax.legend(fontsize=5.5, loc="best")
         if not any_data:
             plt.close(fig); continue
-        fig.suptitle(f"2-shot FV-projection-ablation — α={ak}  (separate layer-sweep per steer token)\n"
-                     f"steer ONE token at ONE layer ℓ; ablate F'⊥F at qfinal (all layers)", fontsize=10)
+        fig.suptitle(f"2-shot FV-projection-ablation — α={ak}  (per steer token; ablation dir comparison)\n"
+                     f"steer ONE token at ONE layer ℓ; ablate at qfinal (all layers): "
+                     f"{VAR_LABEL['fperp']} (purple) vs {VAR_LABEL['fdiff']} (orange)", fontsize=10)
         fig.tight_layout(rect=[0, 0, 1, 0.95])
-        fig.savefig(fig_dir / f"layersweep_by_token_alpha{ak}.png", dpi=150)
+        fig.savefig(fig_dir / f"layersweep_compare_alpha{ak}.png", dpi=150)
         plt.close(fig)
-        print(f"saved layersweep_by_token_alpha{ak}.png")
+        print(f"saved layersweep_compare_alpha{ak}.png")
 
-    if ret_rows:
-        M = np.vstack(ret_rows)
-        fig, ax = plt.subplots(figsize=(0.26 * M.shape[1] + 3.5, 0.32 * M.shape[0] + 1.6))
+    # ---- peak-retention comparison heatmap: rows=(dir,token,α), cols=[fperp,fdiff] ----
+    labels, M = [], []
+    for tp, name in dirs:
+        src, tgt = name.split("_to_")
+        for tok in TOKENS:
+            for alpha in args.alphas:
+                ak = f"{alpha:g}"
+                rowvals = []
+                for v in VARIANTS:
+                    p = cpath(root, tp, name, tok, ak, v)
+                    if p.exists():
+                        c = load_csv(p)
+                        pk = int(np.nanargmax(c["steer_gain"]))
+                        rowvals.append(c["retention"][pk])
+                    else:
+                        rowvals.append(np.nan)
+                M.append(rowvals)
+                labels.append(f"{src[:5]}→{tgt[:5]} @{tok} α{ak}")
+    if M:
+        M = np.array(M)
+        fig, ax = plt.subplots(figsize=(3.6, 0.30 * len(labels) + 1.4))
         im = ax.imshow(M, cmap="RdYlGn", vmin=0.0, vmax=1.0, aspect="auto")
-        ax.set_xlabel("injection layer ℓ", fontsize=8)
-        ax.set_yticks(range(len(ret_labels))); ax.set_yticklabels(ret_labels, fontsize=5)
-        fig.colorbar(im, ax=ax, shrink=0.7, label="retention = steer_ablate_gain / steer_gain")
-        ax.set_title("Steering-gain retention under F'⊥F ablation, per token\n"
-                     "(only injection layers with steer_gain>0.5; low=FV direction mediates)", fontsize=9)
+        ax.set_xticks(range(len(VARIANTS)))
+        ax.set_xticklabels([VAR_LABEL[v] for v in VARIANTS], fontsize=9)
+        ax.set_yticks(range(len(labels))); ax.set_yticklabels(labels, fontsize=5)
+        for i in range(len(labels)):
+            for j in range(len(VARIANTS)):
+                if np.isfinite(M[i, j]):
+                    ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=5,
+                            color="black")
+        fig.colorbar(im, ax=ax, shrink=0.5, label="peak-layer retention (low = ablation kills steering)")
+        ax.set_title("Steering-gain retention: F'⊥F vs F'−F", fontsize=9)
         fig.tight_layout()
-        fig.savefig(fig_dir / "retention_overview.png", dpi=150)
+        fig.savefig(fig_dir / "retention_compare.png", dpi=150)
         plt.close(fig)
-        print("saved retention_overview.png")
+        print("saved retention_compare.png")
     print(f"DONE -> {fig_dir}")
 
 
