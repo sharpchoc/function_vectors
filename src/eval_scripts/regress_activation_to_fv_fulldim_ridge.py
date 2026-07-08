@@ -85,6 +85,9 @@ def parse_args():
     p.add_argument("--std_eps", type=float, default=1e-6)
     p.add_argument("--shuffle_train_labels", action="store_true",
                    help="Control: permute the train-task -> FV assignment (test FVs untouched).")
+    p.add_argument("--shuffle_mode", choices=["task", "row"], default="task",
+                   help="'task': every row of a train task gets the same wrong FV. 'row': permute the "
+                        "row->FV assignment across all train rows (each FV still appears n_rows times).")
     p.add_argument("--shuffle_seed", type=int, default=0,
                    help="Seed for the train-label permutation (same seed => same permutation in every shard).")
     p.add_argument("--overwrite", action="store_true")
@@ -219,7 +222,7 @@ def main():
     # Targets.
     fvs = {task: load_function_vector(args.fv_root, task).to(device=device, dtype=dtype) for task in all_tasks}
     shuffle_map = None
-    if args.shuffle_train_labels:
+    if args.shuffle_train_labels and args.shuffle_mode == "task":
         # Shuffled-label control: reassign each train task the FV of another train task
         # (test-task targets stay true, so test MSE/R2 remain comparable to the real run).
         ordered = sorted(train_tasks)
@@ -250,6 +253,40 @@ def main():
     print(f"[icl{args.icl_index}] loaded activations in {time.time()-t0:.1f}s | "
           f"n_layers={n_layers} rows/task={n_rows} | layers={len(layers)}")
 
+    # Row-level shuffled-label control: permute the row->FV assignment across ALL train rows
+    # (each train FV still appears exactly n_rows times; the permutation is a function of the
+    # seed + sorted task list + n_rows only, so it is identical in every cell and shard).
+    row_shuffled_targets = None
+    row_shuffle_hist = None
+    row_shuffle_own_frac = None
+    if args.shuffle_train_labels and args.shuffle_mode == "row":
+        ordered = sorted(train_tasks)
+        src = np.random.default_rng(args.shuffle_seed).permutation(
+            np.repeat(np.arange(len(ordered)), n_rows))
+        row_shuffled_targets = {}
+        row_shuffle_hist = {}
+        own = 0
+        for i, task in enumerate(ordered):
+            idx = src[i * n_rows:(i + 1) * n_rows]
+            row_shuffled_targets[task] = torch.stack([fvs[ordered[j]] for j in idx], dim=0)
+            counts = {}
+            for j in idx:
+                counts[ordered[j]] = counts.get(ordered[j], 0) + 1
+            row_shuffle_hist[task] = counts
+            own += counts.get(task, 0)
+        row_shuffle_own_frac = own / (len(ordered) * n_rows)
+        print(f"[icl{args.icl_index}] ROW-SHUFFLED train labels (seed={args.shuffle_seed}, "
+              f"own-task row fraction={row_shuffle_own_frac:.3f})")
+
+    def train_targets(task, n):
+        """Train-side targets for a task: shuffled per-row matrix in row mode, else broadcast FV."""
+        if row_shuffled_targets is not None:
+            rows = row_shuffled_targets[task]
+            if rows.shape[0] != n:
+                raise ValueError(f"Row count mismatch for {task}: targets {rows.shape[0]} vs features {n}")
+            return rows
+        return fvs[task].unsqueeze(0).expand(n, -1)
+
     rows_out = []
     for role in token_roles:
         for layer in layers:
@@ -271,10 +308,10 @@ def main():
             for held in train_tasks:
                 fit_tasks = [t for t in train_tasks if t != held]
                 x_fit = torch.cat([xs[t] for t in fit_tasks], dim=0)
-                y_fit = torch.cat([fvs[t].unsqueeze(0).expand(xs[t].shape[0], -1) for t in fit_tasks], dim=0)
+                y_fit = torch.cat([train_targets(t, xs[t].shape[0]) for t in fit_tasks], dim=0)
                 xbar, ybar, evals, evecs, c = ridge_eig_prep(x_fit, y_fit)
                 x_val = xs[held]
-                y_val = fvs[held].unsqueeze(0).expand(x_val.shape[0], -1)
+                y_val = train_targets(held, x_val.shape[0])
                 a_val = (x_val - xbar) @ evecs
                 for ai, alpha in enumerate(alphas):
                     pred = (a_val / (evals + alpha)) @ c + ybar
@@ -286,7 +323,7 @@ def main():
 
             # ---- Refit on all 20 train tasks at best alpha; evaluate train + test ----
             x_fit = torch.cat([xs[t] for t in train_tasks], dim=0)
-            y_fit = torch.cat([fvs[t].unsqueeze(0).expand(xs[t].shape[0], -1) for t in train_tasks], dim=0)
+            y_fit = torch.cat([train_targets(t, xs[t].shape[0]) for t in train_tasks], dim=0)
             xbar, ybar, evals, evecs, c = ridge_eig_prep(x_fit, y_fit)
 
             train_pred = ridge_predict(x_fit, xbar, ybar, evals, evecs, c, best_alpha)
@@ -361,8 +398,11 @@ def main():
         "dtype": args.dtype,
         "std_eps": args.std_eps,
         "shuffle_train_labels": bool(args.shuffle_train_labels),
+        "shuffle_mode": args.shuffle_mode if args.shuffle_train_labels else None,
         "shuffle_seed": args.shuffle_seed if args.shuffle_train_labels else None,
         "shuffle_map": shuffle_map,
+        "row_shuffle_histogram": row_shuffle_hist,
+        "row_shuffle_own_task_fraction": row_shuffle_own_frac,
         "n_cells": len(rows_out),
         "method": "direct full-dim ridge (4096->4096), no PCA; single 20-train standardizer; LOO-task CV",
     })
