@@ -24,11 +24,13 @@ for p in (REPO_ROOT, SRC_ROOT):
 from utils.paths import FV_FORMATION_DIR
 
 COLORS = {"damped": "tab:blue", "exact": "tab:red", "fv_diff": "tab:green",
-          "top_pc": "tab:gray", "random": "k"}
-STYLES = {"top_pc": {"ls": "--"}, "random": {"ls": ":", "lw": 1}}
+          "top_pc": "tab:gray", "random": "k", "random_actcov": "tab:orange"}
+STYLES = {"top_pc": {"ls": "--"}, "random": {"ls": ":", "lw": 1},
+          "random_actcov": {"ls": "-.", "lw": 1}}
 # Display names (JSON keys unchanged): make it obvious the red line is the ridge INVERSE of
 # the FV difference, vs the raw FV difference direction itself.
-LABELS = {"exact": "inv(fv_diff)", "damped": "inv(fv_diff) damped"}
+LABELS = {"exact": "inv(fv_diff)", "damped": "inv(fv_diff) damped",
+          "random": "random (isotropic)", "random_actcov": "random (act-cov)"}
 
 
 def parse_args():
@@ -37,7 +39,8 @@ def parse_args():
                    default=FV_FORMATION_DIR / "twoshot_pairdiff_fv_preimage/train_varicl_max4_top40")
     p.add_argument("--pairs", nargs="+",
                    default=["antonym_synonym", "next_number_digits_prev_number_digits"])
-    p.add_argument("--directions", nargs="+", default=["exact", "fv_diff", "top_pc", "random"])
+    p.add_argument("--directions", nargs="+",
+                   default=["exact", "fv_diff", "top_pc", "random", "random_actcov"])
     p.add_argument("--suffix", type=str, default="",
                    help="Filename suffix before .png (empty = overwrite lines_*.png in place).")
     return p.parse_args()

@@ -12,11 +12,17 @@ variance is explained by the 1-D FV-PRE-IMAGE-DIFFERENCE direction u from stage 
 i.e. explained = 1 - var(d - proj_u d) / var(d) for the corresponding var definition.
 
 Directions compared per cell:
-    damped  - Tikhonov-damped pre-image of fv_A - fv_B (headline)
-    exact   - undamped pre-image (expected ~noise: cond(W) ~ 1e9)
-    fv_diff - unit(fv_A - fv_B) in raw activation space (no inversion; same at every layer)
-    top_pc  - top principal direction of {d_i} (the 1-D upper bound; per centering + filter)
-    random  - mean +/- sd over --n_random random unit vectors (floor ~ 1/4096)
+    damped        - Tikhonov-damped pre-image of fv_A - fv_B (headline)
+    exact         - undamped pre-image (expected ~noise: cond(W) ~ 1e9)
+    fv_diff       - unit(fv_A - fv_B) in raw activation space (no inversion; same at every layer)
+    top_pc        - top principal direction of {d_i} (the 1-D upper bound; per centering + filter)
+    random        - mean +/- sd over --n_random isotropic random unit vectors (floor ~ 1/4096)
+    random_actcov - mean +/- sd over --n_random unit vectors sampled from the anisotropic
+                    Gaussian N(0, Sigma_hat), where Sigma_hat is the empirical covariance of the
+                    RAW (undiffed) two-shot activations of both functions at that (role, layer):
+                    v = unit(Xc^T g), g ~ N(0, I). A task-agnostic but residual-stream-geometry-
+                    aware chance level (the residual stream is very anisotropic, so this sits
+                    well above the isotropic floor).
 
 Role -> ridge-cell mapping (context-matched; two-shot layer index j == bank edit_layer j):
     demo1_prelabel -> pre_label_token icl1      demo1_label -> last_label_token icl1
@@ -29,6 +35,12 @@ freshly built diff vectors before computing anything else.
 
 Outputs per pair (TRACKED): explained_grid.json, heatmap PNGs (view x layer) per
 (direction x centering x filter), and per-view line plots.
+
+Secondary metric (cos_grid.json, plotted by plot_twoshot_pairdiff_cos_lines.py): SIGNED
+mean_i cos(d_i, x) per cell for x in {exact pre-image of fv_A - fv_B ("inv_fv_diff"),
+unit(fv_A - fv_B) ("fv_diff")}, with the analytic maximum mean_dir = ||mean_i unit(d_i)||
+and the same isotropic + activation-covariance random baselines (signed expectation ~0;
+compare against their sd bands).
 """
 import argparse
 import json
@@ -68,9 +80,14 @@ ROLE_VIEWS = [
     ("query_final", "query_final", "pre_label_token_icl3"),
     ("query_final@lastprompt10", "query_final", "last_prompt_token_icl10"),
 ]
-DIRECTIONS = ["damped", "exact", "fv_diff", "top_pc", "random"]
+DIRECTIONS = ["damped", "exact", "fv_diff", "top_pc", "random", "random_actcov"]
 CENTERINGS = ["centered", "uncentered"]
 FILTERS = ["all", "both_correct"]
+# Secondary metric: SIGNED mean_i cos(d_i, x) per cell -> cos_grid.json (mean_dir = analytic max)
+# inv_fv_diff_pcak16 = pre-image through the k=16 PCA ridge (fit_pca_ridge_preimages_multicell)
+# inv_fv_diff_tsvdk16 = rank-16 TSVD pre-image of the full-dim maps (fit_tsvd_preimages_multicell)
+COS_KEYS = ["inv_fv_diff", "inv_fv_diff_pcak16", "inv_fv_diff_tsvdk16", "fv_diff", "mean_dir",
+            "random", "random_sd", "random_actcov", "random_actcov_sd"]
 
 
 def parse_args():
@@ -79,6 +96,12 @@ def parse_args():
     p.add_argument("--twoshot_root", type=Path, default=ARTIFACTS_ROOT / "twoshot_paired_graded")
     p.add_argument("--preimage_root", type=Path,
                    default=ARTIFACTS_ROOT / "preimage_pairdiff/train_varicl_max4_top40")
+    p.add_argument("--pca_preimage_root", type=Path,
+                   default=ARTIFACTS_ROOT / "preimage_pairdiff_pcak16/train_varicl_max4_top40",
+                   help="PCA-k16 ridge pre-image banks (optional; cos metric only).")
+    p.add_argument("--tsvd_preimage_root", type=Path,
+                   default=ARTIFACTS_ROOT / "preimage_pairdiff_tsvdk16/train_varicl_max4_top40",
+                   help="Rank-16 TSVD pre-image banks (optional; cos metric only).")
     p.add_argument("--output_root", type=Path, default=None,
                    help="Default: results/direction3_fv_formation/twoshot_pairdiff_fv_preimage/"
                         "<preimage_root basename>.")
@@ -91,7 +114,8 @@ def parse_args():
 
 
 def load_pair_diffs(pair_dir, f1, f2):
-    """Return {role: (keys, D [n_pairs, 28, 4096] fp32, both_correct bool [n_pairs])}."""
+    """Return {role: (keys, D [n_pairs, 28, 4096] fp32, both_correct bool [n_pairs],
+    X [2*n_pairs, 28, 4096] fp32 raw activations, f1 rows then f2 rows, key-aligned)."""
     index = load_json(pair_dir / "index.json")
     roles = index["config"]["roles"]
     per_role = {r: {} for r in roles}       # key -> {function: activation [28, 4096]}
@@ -109,10 +133,12 @@ def load_pair_diffs(pair_dir, f1, f2):
     out = {}
     for role in roles:
         keys = sorted(k for k, v in per_role[role].items() if "f1" in v and "f2" in v)
-        D = torch.stack([per_role[role][k]["f1"] - per_role[role][k]["f2"] for k in keys])
+        A1 = torch.stack([per_role[role][k]["f1"] for k in keys]).float()
+        A2 = torch.stack([per_role[role][k]["f2"] for k in keys]).float()
+        D = A1 - A2
         both = torch.tensor([judge[("f1", k)] and judge[("f2", k)] for k in keys])
-        out[role] = (keys, D.float(), both)
-    (_, D0, b0) = next(iter(out.values()))
+        out[role] = (keys, D, both, torch.cat([A1, A2]))
+    (_, D0, b0, _) = next(iter(out.values()))
     print(f"  {f1} - {f2}: {D0.shape[0]} pairs x {D0.shape[1]} layers "
           f"(both-judge-correct: {int(b0.sum())})")
     return out
@@ -133,7 +159,7 @@ def sanity_check_meancos(diffs, pair_name, reference_path, tol):
         return
     worst = 0.0
     for ri, role in enumerate(ref["roles"]):
-        _, D, _ = diffs[role]
+        _, D, _, _ = diffs[role]
         for li, layer in enumerate(ref["layers"]):
             got = mean_pairwise_cos(D[:, layer, :])
             worst = max(worst, abs(got - ref["mean_cos_grid"][ri][li]))
@@ -166,6 +192,15 @@ def unit(v):
     return v / v.norm().clamp_min(1e-12)
 
 
+def row_unit(D):
+    return D / D.norm(dim=1, keepdim=True).clamp_min(1e-12)
+
+
+def mean_cos(Dn, x):
+    """mean_i cos(d_i, x) for row-normalized Dn [n, dim] and unit x (SIGNED)."""
+    return float((Dn @ x).mean())
+
+
 def main():
     args = parse_args()
     out_base = args.output_root or (FV_FORMATION_DIR / "twoshot_pairdiff_fv_preimage"
@@ -173,6 +208,9 @@ def main():
     stage1_cfg = load_json(args.preimage_root / "run_config.json")
     fv_root = Path(stage1_cfg["fv_root"])
     rng = torch.Generator().manual_seed(args.seed)
+    # Separate stream for the anisotropic draws so the isotropic "random" values reproduce
+    # the original run exactly.
+    rng_cov = torch.Generator().manual_seed(args.seed + 1)
 
     for pair_name in args.pairs:
         f1, f2 = PAIR_DIRS[pair_name]
@@ -184,7 +222,8 @@ def main():
 
         u_fv = unit((load_function_vector(fv_root, f1) - load_function_vector(fv_root, f2)).float())
 
-        grid = {}   # view -> filter -> centering -> direction -> [n_layers]
+        grid = {}       # view -> filter -> centering -> direction -> [n_layers]
+        cos_grid = {}   # view -> filter -> cos key -> [n_layers]
         n_layers = next(iter(diffs.values()))[1].shape[1]
         for view, role, cell in ROLE_VIEWS:
             bank_path = (args.preimage_root / cell / "pairdiff_preimages"
@@ -193,9 +232,24 @@ def main():
                 print(f"  [skip] {view}: no bank at {bank_path}")
                 continue
             bank = torch_load_trusted(bank_path, map_location="cpu")["preimages_by_edit_layer"]
-            _, D_all, both = diffs[role]
-            view_grid = {f: {c: {d: [None] * n_layers for d in DIRECTIONS + ["random_sd"]}
+            pca_bank_path = (args.pca_preimage_root / cell / "pairdiff_preimages"
+                             / f"{f1}__{f2}_pairdiff_preimage_bank.pt")
+            pca_bank = (torch_load_trusted(pca_bank_path, map_location="cpu")["preimages_by_edit_layer"]
+                        if pca_bank_path.exists() else {})
+            if not pca_bank:
+                print(f"  [note] {view}: no PCA-k16 bank at {pca_bank_path}; line will be null")
+            tsvd_bank_path = (args.tsvd_preimage_root / cell / "pairdiff_preimages"
+                              / f"{f1}__{f2}_pairdiff_preimage_bank.pt")
+            tsvd_bank = (torch_load_trusted(tsvd_bank_path, map_location="cpu")["preimages_by_edit_layer"]
+                         if tsvd_bank_path.exists() else {})
+            if not tsvd_bank:
+                print(f"  [note] {view}: no TSVD-k16 bank at {tsvd_bank_path}; line will be null")
+            _, D_all, both, X_all = diffs[role]
+            both2 = torch.cat([both, both])
+            view_grid = {f: {c: {d: [None] * n_layers
+                                 for d in DIRECTIONS + ["random_sd", "random_actcov_sd"]}
                              for c in CENTERINGS} for f in FILTERS}
+            cos_view_grid = {f: {d: [None] * n_layers for d in COS_KEYS} for f in FILTERS}
             for j in range(n_layers):
                 if j not in bank:
                     continue
@@ -203,23 +257,52 @@ def main():
                 u_exact = unit(bank[j]["exact"].float())
                 for filt in FILTERS:
                     D = D_all[:, j, :] if filt == "all" else D_all[both][:, j, :]
+                    X = X_all[:, j, :] if filt == "all" else X_all[both2][:, j, :]
+                    Xc = X - X.mean(dim=0, keepdim=True)
+                    Dn = row_unit(D)
                     vals = {
                         "damped": explained_ratios(D, u_damped),
                         "exact": explained_ratios(D, u_exact),
                         "fv_diff": explained_ratios(D, u_fv),
                         "top_pc": top_pc_explained(D),
                     }
+                    cg = cos_view_grid[filt]
+                    cg["inv_fv_diff"][j] = mean_cos(Dn, u_exact)
+                    if j in pca_bank:
+                        cg["inv_fv_diff_pcak16"][j] = mean_cos(Dn, unit(pca_bank[j]["pca_k16"].float()))
+                    if j in tsvd_bank:
+                        cg["inv_fv_diff_tsvdk16"][j] = mean_cos(Dn, unit(tsvd_bank[j]["tsvd"].float()))
+                    cg["fv_diff"][j] = mean_cos(Dn, u_fv)
+                    # analytic max of mean_i cos(d_i, x) over unit x (at x = unit(mean u_i))
+                    cg["mean_dir"][j] = float(Dn.mean(dim=0).norm())
                     rand = {c: [] for c in CENTERINGS}
+                    rand_cov = {c: [] for c in CENTERINGS}
+                    cos_rand, cos_rand_cov = [], []
                     for _ in range(args.n_random):
-                        r = explained_ratios(D, unit(torch.randn(D.shape[1], generator=rng)))
+                        v_iso = unit(torch.randn(D.shape[1], generator=rng))
+                        r = explained_ratios(D, v_iso)
+                        # v = Xc^T g is an exact sample from N(0, Sigma_hat) (rank <= rows-1)
+                        g = torch.randn(Xc.shape[0], generator=rng_cov)
+                        v_cov = unit(Xc.T @ g)
+                        rc = explained_ratios(D, v_cov)
+                        cos_rand.append(mean_cos(Dn, v_iso))
+                        cos_rand_cov.append(mean_cos(Dn, v_cov))
                         for c in CENTERINGS:
                             rand[c].append(r[c])
+                            rand_cov[c].append(rc[c])
+                    cg["random"][j] = float(np.mean(cos_rand))
+                    cg["random_sd"][j] = float(np.std(cos_rand))
+                    cg["random_actcov"][j] = float(np.mean(cos_rand_cov))
+                    cg["random_actcov_sd"][j] = float(np.std(cos_rand_cov))
                     for c in CENTERINGS:
                         for d in ("damped", "exact", "fv_diff", "top_pc"):
                             view_grid[filt][c][d][j] = vals[d][c]
                         view_grid[filt][c]["random"][j] = float(np.mean(rand[c]))
                         view_grid[filt][c]["random_sd"][j] = float(np.std(rand[c]))
+                        view_grid[filt][c]["random_actcov"][j] = float(np.mean(rand_cov[c]))
+                        view_grid[filt][c]["random_actcov_sd"][j] = float(np.std(rand_cov[c]))
             grid[view] = view_grid
+            cos_grid[view] = cos_view_grid
             print(f"  {view}: done (cell {cell})")
 
         counts = {f: int(next(iter(diffs.values()))[2].sum()) if f == "both_correct"
@@ -229,9 +312,33 @@ def main():
             "preimage_root": str(args.preimage_root), "fv_root": str(fv_root),
             "role_views": [{"view": v, "role": r, "cell": c} for v, r, c in ROLE_VIEWS],
             "n_pairs": counts, "n_random": args.n_random,
+            "random_actcov_note": "unit(Xc^T g), g~N(0,I): direction sampled from the empirical"
+                                  " covariance of the raw (undiffed) two-shot activations of"
+                                  " both functions at that (role, layer), per filter;"
+                                  " seed = --seed + 1",
             "layers": list(range(n_layers)),
             "layer_note": "two-shot layer index j = block output j = ridge capture layer j+1",
             "explained": grid,
+        })
+        write_json(out_dir / "cos_grid.json", {
+            "pair": [f1, f2],
+            "metric": "SIGNED mean_i cos(d_i, x); d_i = act_f1 - act_f2; positive = diffs point"
+                      " toward x. inv_fv_diff = exact (undamped) pre-image of fv_f1 - fv_f2;"
+                      " inv_fv_diff_pcak16 = pre-image through the k=16 PCA ridge"
+                      " (fit_pca_ridge_preimages_multicell.py, same fv_root);"
+                      " inv_fv_diff_tsvdk16 = rank-16 TSVD pre-image of the full-dim maps"
+                      " (fit_tsvd_preimages_multicell.py);"
+                      " mean_dir = ||mean_i unit(d_i)|| = analytic max over unit x"
+                      " (mean_dir^2 ~ Stream K mean pairwise cosine).",
+            "preimage_root": str(args.preimage_root), "fv_root": str(fv_root),
+            "role_views": [{"view": v, "role": r, "cell": c} for v, r, c in ROLE_VIEWS],
+            "n_pairs": counts, "n_random": args.n_random,
+            "random_actcov_note": "same covariance-matched draws as explained_grid.json;"
+                                  " signed expectation ~0 for both baselines - the anisotropy"
+                                  " shows in the sd (band width)",
+            "layers": list(range(n_layers)),
+            "layer_note": "two-shot layer index j = block output j = ridge capture layer j+1",
+            "mean_cos": cos_grid,
         })
 
         views = [v for v, _, _ in ROLE_VIEWS if v in grid]
@@ -255,7 +362,7 @@ def main():
 
         # --- line plots: one figure per (centering, filter); panels = views
         colors = {"damped": "tab:blue", "exact": "tab:red", "fv_diff": "tab:green",
-                  "top_pc": "tab:gray", "random": "k"}
+                  "top_pc": "tab:gray", "random": "k", "random_actcov": "tab:orange"}
         for c in CENTERINGS:
             for filt in FILTERS:
                 fig, axes = plt.subplots(2, 3, figsize=(15, 7), sharex=True)
@@ -268,6 +375,8 @@ def main():
                             style.update(ls="--")
                         if d == "random":
                             style.update(ls=":", lw=1)
+                        if d == "random_actcov":
+                            style.update(ls="-.", lw=1)
                         ax.plot(xs, [np.nan if y is None else y for y in ys], label=d, **style)
                     ax.set_title(v, fontsize=9)
                     ax.set_yscale("log")

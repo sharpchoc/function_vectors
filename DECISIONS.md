@@ -5,6 +5,27 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-07-07 — Ridge-map pre-images: NEVER use the exact inverse; use rank-truncated pseudo-inverse
+
+- The full-dim activation→FV ridge maps have **true rank ≤ #train tasks (20)** — the targets are
+  20 distinct FVs, so W = (ZᵀZ+αI)⁻¹ZᵀY inherits rank(Y). Singular values below ~rank 20
+  (cond(W) ~ 1e9) are float round-off, not structure. Consequences (Stream S diagnostics,
+  `diagnose_pairdiff_preimage_spectrum.py` + `preimage_diagnostics/`):
+  - The EXACT pre-image direction is float noise: |dz_exact|/|dz_damped| ~ 3e7–1e8, and rounding
+    W to fp16 (1e-3 perturbation) reorients it to cos ≈ 0.001 with the fp32 version. Any result
+    computed from an exact inverse of these maps measures numerics, not the model.
+  - The honest inverse is the **rank-k truncated pseudo-inverse (k ≈ 16, ≤ 20)** —
+    `fit_tsvd_preimages_multicell.py`, banks in `artifacts/preimage_pairdiff_tsvdk16/`. It beat
+    every other direction on the digits pair (mean cos +0.73–0.76 @L4, sustained 0.4–0.66 at
+    label tokens where raw fv_diff is ~0) and slightly beat the gamma-selected Tikhonov damped
+    variant (soft version of the same cutoff).
+  - `torch.svd_lowrank` (q = k+32, niter=8) matches the exact fp64 top-k SVD to ~4e-7 on these
+    spectra — use it instead of full 4096² SVDs (seconds vs minutes).
+- Inverting the k=16 PCA ridge instead does NOT work as well (peaks ≪ fv_diff): its FV-PC basis
+  covers only 24–38% of held-out fv_diff targets, and its top-variance activation PCs discard
+  the low-variance directions that carry early-layer task identity. Variance-chosen ≠
+  regression-chosen subspaces.
+
 ## 2026-07-04 — Pair-diff pre-images: invert the FV DIFFERENCE, not per-task pre-images (Stream S)
 
 - **When a direction is needed for a task-pair difference under the ridge maps, damp the inversion

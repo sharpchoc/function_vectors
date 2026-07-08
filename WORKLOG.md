@@ -219,6 +219,119 @@ random floor ≈ 2.4e-4; the both-correct filter barely changes any number):
   digits pair's activation difference IS substantially FV-related at label/query tokens (up to
   ~half of what any single direction could explain); antonym/synonym is not (~3–5%).
 
+**2026-07-07 amendment — anisotropic random baseline (`random_actcov`).** User observation: the
+residual stream is highly anisotropic, so the isotropic random floor (~1/4096) understates
+chance; a fairer null samples from the activations' covariance. Added per (view, layer, filter):
+64 draws `v = unit(Xcᵀ g)`, `g~N(0,I)` — exact samples from the empirical covariance Σ̂ of the
+RAW (undiffed) two-shot activations of both functions at that role/layer (rank ≤ 2n−1; separate
+RNG stream seed+1 so old numbers reproduce, max |old−new| ≤ 3e-7 = cross-pod BLAS noise).
+Modified `analyze_twoshot_pairdiff_fv_preimage.py` (loader now also returns raw acts;
+`random_actcov`+`_sd` in explained_grid.json) and `plot_twoshot_pairdiff_lines.py` (orange
+dash-dot "random (act-cov)" in default lines; isotropic relabeled "random (isotropic)"). Rerun
+entirely on the CPU pod (CPU torch 2.12.1 installed for python3.12); sanity gates re-passed;
+log `logs/stream_s_pairdiff_preimage/actcov_baseline_rerun.log`.
+Findings: the act-cov null sits **~10–100× above the isotropic floor** (median ~0.4–1.3%
+centered, up to 0.15 uncentered at digits query/label views) and always ≤ top_pc. This
+**reorders the centered story**: fv_diff's centered medians (0.001–0.004) are mostly BELOW the
+act-cov null — i.e. beating the isotropic floor there was largely an anisotropy artifact; only
+narrow peaks (antonym query_final L8 0.029 vs null 0.009; digits demo2_prelabel L12) clear it.
+The UNCENTERED digit-pair signal survives cleanly: fv_diff 0.34–0.43 at demo2_prelabel/
+query_final L8–14 vs null 0.12–0.15 (~3× above a covariance-matched random direction); digits
+demo1/demo2_label uncentered fv_diff (~0.01–0.02) drops BELOW the null (~0.07–0.13). Antonym
+uncentered query_final peak (0.13 @L9 vs null 0.045) clears it by ~3×; elsewhere comparable to
+null. inv(fv_diff)=exact stays at/below the isotropic floor throughout (unchanged).
+
+**2026-07-07 metric change — SIGNED mean cosine (cos_grid.json + cos_lines figures).** User
+decided explained-variance is the wrong metric; new headline metric per (view, layer, filter):
+`mean_i cos(d_i, x)` for x ∈ {exact pre-image of fv_A−fv_B ("inv_fv_diff"), unit(fv_A−fv_B)
+("fv_diff")}, plus `mean_dir = ||mean_i unit(d_i)||` (the analytic MAX of the metric over unit
+x; via the resultant identity mean_dir² reproduces the Stream K mean-pairwise-cos grid, checked
+to ≤5.1e-5) and the same isotropic + activation-covariance random baselines (signed expectation
+~0; the anisotropy appears as band WIDTH — the act-cov sd is ~10–50× the isotropic sd because
+covariance-matched draws often align with the dominant direction the diffs concentrate around).
+Same RNG draws as the variance metric (explained_grid.json reproduced bit-identically, checked).
+Defaults chosen while user was away: SIGNED cos (not |cos|), EXACT pre-image only (matches the
+figures' inv(fv_diff) line). Modified analyze script (mean-cos pass + cos_grid.json); NEW
+`src/eval_scripts/plot_twoshot_pairdiff_cos_lines.py` → `cos_lines_{all,both_correct}.png` per
+pair (linear y, zero line, ±2sd baseline bands). Log:
+`logs/stream_s_pairdiff_preimage/cos_metric_rerun.log`.
+Findings (filter=all): **inv(fv_diff) ≈ 0 everywhere** (|mean cos| ≤ 0.05) — the exact pre-image
+direction has no consistent orientation w.r.t. the diffs, matching its noise character.
+**fv_diff is systematically positive** (correct sign at essentially all views/layers past ~L4)
+and peaks mid-stack: digits query_final **+0.66 @L12**, demo2_prelabel +0.58 @L12 (~75% of the
+mean_dir bound 0.88/0.77); antonym query_final +0.34 @L9, demo2_label/prelabel +0.13 @L12.
+Relative to the act-cov band, however, significance is modest: peaks sit at ~1.7–2.2 baseline
+sd (band edge = 2 sd), and the digit label tokens (+0.14 vs 2sd≈0.69) are deep inside the band.
+The sign consistency itself is informative even where the magnitude is within-band.
+
+**2026-07-07 diagnosis — why the exact pre-image scores ~0 (preimage_diagnostics/).** NEW
+`src/eval_scripts/diagnose_pairdiff_preimage_spectrum.py` (cell pre_label_token_icl3 /
+query_final, layers 4/8/12/20; SVD of fp16-saved W in fp64; figures + diagnostics.json under
+`…/train_varicl_max4_top40/preimage_diagnostics/`). Mechanism, in three measurements:
+1. **The FV-informative part of W is only rank ~16–20** — as it must be: the ridge was trained
+   on 20 train-task FVs, so W's column space has signal rank ≤ 20. A TRUNCATED inverse keeping
+   only the top k=8–16 singular directions is strongly diff-aligned — digits mean cos **0.73 /
+   0.66 / 0.62** at L4/8/12 (BEATING the damped pre-image 0.66/0.52/0.44 and raw fv_diff, which
+   is ~0.2 at L4); antonym 0.21 @L12 vs damped 0.12. Alignment collapses to ~0 by k=32 and
+   never recovers.
+2. **The exact inverse buries that 16-dim signal under conditioning noise**: cond(W) =
+   0.5–1.3e9, |dz_exact|/|dz_damped| = 2.5e7–1e8, cos(exact, damped) ≈ 0.00–0.03; the exact
+   vector's energy is spread ~uniformly over the spectrum (bottom-decile fraction ≈ 0.10 =
+   the uniform value), i.e. white-noise-like.
+3. **The exact direction is not even well-defined**: recomputing it from the fp16-rounded W
+   (~1e-3 relative perturbation) gives cos ≈ 0.001–0.06 with the bank's fp32-derived exact —
+   the direction is an artifact of float noise in the smallest singular values (initially
+   tripped the script's sanity gate; converted into the recorded instability probe).
+Conclusion: "inv(fv_diff) ≈ 0" says nothing about FVs — it's pure numerical conditioning. The
+honest inverse is the rank-≲20-truncated one, and it aligns BETTER with the pair diffs than
+either the damped pre-image or the raw fv_diff direction at early/mid layers. Candidate
+follow-up: replace/augment the cos_lines inv(fv_diff) line with the rank-16 truncated inverse
+(cheap: banks + maps already on disk).
+
+**2026-07-07 PCA-k16 ridge inverse (user request: does inverting the k=16 PCA ridge help?).**
+NEW `src/eval_scripts/fit_pca_ridge_preimages_multicell.py`: refits the direction3 PCA ridge
+(act-PCA k=16 per cell/layer on pooled 20-train rows, FV-PCA k=16 on the 20 train FVs, 16→16
+standardized ridge, LOO-task CV, logspace(−2,6,17)) at the 6 Stream-S cells with fv_root
+**train_varicl_max4_top40** (consistency rule — the committed pca_ridge study used
+train_selected, so it was refit, not reused). Pre-image: t = fv_diff@fv_compᵀ, dz = solve(Aᵀ,t)
+(A = fitted 16×16 map, cond(A) ~ 1e2 — well-posed, no damping needed), dx = (dz⊙std)@act_comp.
+Banks: `artifacts/preimage_pairdiff_pcak16/train_varicl_max4_top40/<cell>/`. Analyze script +
+cos plotter extended: purple "inv(fv_diff) PCA-k16" line in cos_lines figures
+(`inv_fv_diff_pcak16` in cos_grid.json); explained_grid untouched (bit-identical rerun).
+**Result: NO — it does not improve on fv_diff, and badly trails the TSVD-k16 inverse of the
+full-dim map.** Digits query_final: PCA-k16 +0.01/+0.24/+0.10 at L4/8/12 vs TSVD-k16
++0.73/+0.66/+0.62 and fv_diff +0.18/+0.57/+0.66; antonym similar story (peak +0.08 vs fv_diff
++0.34). Partial exceptions: query_final@lastprompt10 reaches +0.46–0.49 at L9–12 (approaching
+fv_diff; matches the PCA study's best cells being icl10) and digits demo2_prelabel L27 +0.38.
+Why it fails where TSVD succeeds — two bottlenecks the full-dim ridge doesn't have:
+(1) TARGET side: the 16 train-FV PCs cover only 24% (antonym−synonym) / 38% (digits) of the
+held-out fv_diff energy, so the inversion is aimed at a fraction of the target;
+(2) FEATURE side: top-16 activation-VARIANCE PCs ≠ the predictive directions. The full-dim
+ridge standardizes all 4096 dims and its top singular directions are regression-chosen; at
+early layers (digits L4: TSVD +0.73 vs PCA-k16 +0.01) the task-identity signal evidently lives
+in low-variance activation directions that the PCA feature bottleneck discards before the
+regression ever sees them.
+
+**2026-07-07 TSVD-k16 line added to the cos figures (user request).** NEW
+`src/eval_scripts/fit_tsvd_preimages_multicell.py`: rank-16 truncated-SVD pre-image of the
+stage-1 full-dim maps at all 6 cells × 28 layers via torch.svd_lowrank (randomized top-k;
+validated against the diagnostics' exact fp64 SVDs at query_final L4/8/12/20 to ≤3.9e-7).
+Banks: `artifacts/preimage_pairdiff_tsvdk16/train_varicl_max4_top40/`. Analyze + cos plotter
+extended: blue "inv(fv_diff) TSVD-k16" (`inv_fv_diff_tsvdk16` in cos_grid.json). All
+reproduction checks unchanged.
+**Result: for the digits pair the TSVD-k16 pre-image is the best direction in the whole study.**
+Peaks +0.73/+0.76 at L4 (query_final / @lastprompt10; mean_dir bound 0.92, act-cov 2sd 0.62 —
+clears the anisotropic band), and — unlike every other direction — it is sustained at
+0.4–0.66 across ALL layers at the label tokens, where raw fv_diff is ~0 or negative
+(demo1_label L5: TSVD +0.67 vs fv_diff −0.04; demo2_label L6: +0.66 vs −0.03). It also rises
+at L3–4, four layers before fv_diff wakes up at L8. Antonym: TSVD-k16 +0.21/+0.25 at L10–12,
+slightly below fv_diff's +0.29–0.34 peaks and inside the act-cov band — the weak-pair story is
+unchanged. Reading: for a pair the FV system separates well, the ridge's rank-≲20 core reads
+the task-identity signal from LOW-VARIANCE activation directions present from L4 at every
+label/query token; the raw fv_diff direction only works late and at high-variance tokens.
+(demo1_prelabel stays ~0 for every direction — mean_dir ~0.02 says no consistent pair-diff
+direction exists there at all.)
+
 **Next:** commit + push on user request. Candidate follow-ups: k-dim pre-image subspace instead
 of the 1-D direction; same analysis on the one-shot paired captures; per-layer gamma sweep of
 the damped direction.
