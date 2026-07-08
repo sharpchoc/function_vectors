@@ -83,6 +83,10 @@ def parse_args():
     p.add_argument("--device", type=str, default="cuda")
     p.add_argument("--dtype", type=str, default="float32", choices=["float32", "float64"])
     p.add_argument("--std_eps", type=float, default=1e-6)
+    p.add_argument("--shuffle_train_labels", action="store_true",
+                   help="Control: permute the train-task -> FV assignment (test FVs untouched).")
+    p.add_argument("--shuffle_seed", type=int, default=0,
+                   help="Seed for the train-label permutation (same seed => same permutation in every shard).")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
@@ -211,6 +215,19 @@ def main():
 
     # Targets.
     fvs = {task: load_function_vector(args.fv_root, task).to(device=device, dtype=dtype) for task in all_tasks}
+    shuffle_map = None
+    if args.shuffle_train_labels:
+        # Shuffled-label control: reassign each train task the FV of another train task
+        # (test-task targets stay true, so test MSE/R2 remain comparable to the real run).
+        ordered = sorted(train_tasks)
+        perm = np.random.default_rng(args.shuffle_seed).permutation(len(ordered))
+        shuffle_map = {task: ordered[j] for task, j in zip(ordered, perm)}
+        true_fvs = dict(fvs)
+        for task, source in shuffle_map.items():
+            fvs[task] = true_fvs[source]
+        n_fixed = sum(1 for t, s in shuffle_map.items() if t == s)
+        print(f"[icl{args.icl_index}] SHUFFLED train labels (seed={args.shuffle_seed}, "
+              f"{n_fixed}/{len(ordered)} fixed points)")
 
     # Load activations once per (task, role): [n_rows, n_layers, hidden] fp16 on CPU.
     t0 = time.time()
@@ -340,6 +357,9 @@ def main():
         "device": device,
         "dtype": args.dtype,
         "std_eps": args.std_eps,
+        "shuffle_train_labels": bool(args.shuffle_train_labels),
+        "shuffle_seed": args.shuffle_seed if args.shuffle_train_labels else None,
+        "shuffle_map": shuffle_map,
         "n_cells": len(rows_out),
         "method": "direct full-dim ridge (4096->4096), no PCA; single 20-train standardizer; LOO-task CV",
     })
