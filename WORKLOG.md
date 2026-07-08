@@ -11,6 +11,51 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-07-08 — Stream V: shuffled-label control for the full-dim ridge R²
+
+**Owner:** Coordinator (tmux `fvridge-shuffled-control`; CPU pod + RunPod GPU pod `fv-shuffled-ridge`).
+**Status:** DONE — control collapsed to R² ≈ 0 as required; pod terminated; deliverables committed.
+
+**RESULT: the real R² survives the control.** Shuffled-label test R² (3-seed mean over 899 cells):
+median −0.021, max 0.0000 (the max is icl01/pre L0 — the trivial train-mean cell); per-seed maxima
+1e-7 / 0.016 / 1e-7; only 1.2% of cells microscopically > 0. vs the REAL run's median 0.346 /
+max 0.465. Median test MSE 0.222 ≈ V(test|train-mean)=0.2171. Ridge reacts by pinning alpha at/near
+the 1e8 grid top (35 pinned cells per seed vs a handful in the real run) → predicts the train-mean
+FV. The R² heatmap is structureless (whole grid in [−0.04, 0]); no mid-layer ridge. See DECISIONS.md
+2026-07-08 entry. Runtime: ~2.2h on one RTX PRO 4500 ($0.74/hr), 3 seeds concurrent.
+
+**Question:** sanity-check the full-dim ridge R² (max 0.465): permute the train-task→FV assignment
+(task-level, test targets untouched), retrain the identical pipeline (incl. LOO-task alpha CV), and
+compare test MSE/R² heatmaps. If the real R² is meaningful, the control should collapse to ≈0.
+
+**Design:** task-level permutation over the 20 sorted train tasks via
+`np.random.default_rng(seed).permutation`; 3 seeds (0,1,2) averaged; same seed ⇒ same permutation in
+every shard, so each seed is one coherent shuffled dataset. R² denominator V is permutation-invariant
+(same target set) ⇒ R² directly comparable to the real run.
+
+**Commands:**
+- Worker flags: `--shuffle_train_labels --shuffle_seed {s}` (new); mapping recorded in run_config.json.
+- Pod: RunPod RTX PRO 4500 Blackwell ($0.74/hr, EU-RO-1, shared volume), pod id `09jf2ydfj597he`.
+- Driver: `logs/shuffled_control/run_seeds.sh` (3 concurrent seed processes × 10 serial shards each,
+  then merge + R² per seed, then `average_shuffled_ridge_seeds.py`). Logs: `logs/shuffled_control/seed{s}.log`.
+
+**Smoke tests (on pod):** flag OFF reproduces committed icl10/finaltok L11 test_mse=0.11607 exactly;
+flag ON (seed 0, a derangement, 0/20 fixed points) → test_mse=0.21741 ≈ V(test|train-mean)=0.2171,
+alpha pinned at 1e8 (ridge → train mean), i.e. R² ≈ 0 as predicted.
+
+**Bug found en route:** `residual_activations/*/index.json` shard paths are ABSOLUTE and predate the
+2026-06-19 results→artifacts reorg; loader now falls back to the split dir (commit 42044d9).
+
+**Files:** `regress_activation_to_fv_fulldim_ridge.py` (shuffle flags + path fallback),
+`average_shuffled_ridge_seeds.py` (new). Outputs (pending):
+`results/direction3_fv_formation/fulldim_ridge_activation_to_fv_shuffled_seed{0,1,2}/` + averaged
+`fulldim_ridge_activation_to_fv_shuffled/`.
+
+**Next:** none — stream complete. (Possible follow-up: same control for the k=16 PCA ridge; expected
+to behave identically given the full-dim result.)
+
+---
+
 ## 2026-07-06 — Stream U: post-hoc R² for the full-dim ridge (activation→FV)
 
 **Owner:** Coordinator (tmux; CPU pod). **Status:** DONE (untracked; commit pending user request).

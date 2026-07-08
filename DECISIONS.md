@@ -5,6 +5,20 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-07-08 — Shuffled-label control validates the full-dim ridge R² (Stream V)
+
+- **The activation→FV ridge R² is real signal, not pipeline leakage.** Permuting the train-task→FV
+  assignment (task-level; test targets true; identical pipeline incl. LOO-task alpha CV; 3 seeds
+  averaged) collapses test R² from median 0.346 / max 0.465 to **median −0.021 / max 0.0000**
+  (best "control" cell is layer 0, the trivial train-mean predictor; only 1.2% of cells are even
+  microscopically > 0, worst per-seed max 0.016). Ridge responds by pinning alpha high → predicts
+  the train-mean FV. Control outputs: `fulldim_ridge_activation_to_fv_shuffled{,_seed0,1,2}/`;
+  worker flags `--shuffle_train_labels --shuffle_seed`.
+- **Gotcha fixed en route:** `artifacts/residual_activations/*/index.json` shard paths are ABSOLUTE
+  and predate the 2026-06-19 results→artifacts reorg; any loader following them must fall back to
+  the split dir (done in `regress_activation_to_fv_fulldim_ridge.py`, commit 42044d9). Other
+  scripts copying this loader pattern have the same latent issue.
+
 ## 2026-07-07 — Ridge-map pre-images: NEVER use the exact inverse; use rank-truncated pseudo-inverse
 
 - The full-dim activation→FV ridge maps have **true rank ≤ #train tasks (20)** — the targets are
