@@ -129,6 +129,9 @@ def load_role_activations_all_layers(activations_root, task, split, token_role, 
         shard_path = Path(shard)
         if not shard_path.is_absolute():
             shard_path = split_dir / shard_path
+        elif not shard_path.exists():
+            # index.json may hold absolute paths from before the results->artifacts reorg.
+            shard_path = split_dir / shard_path.name
         data = torch_load_trusted(shard_path, map_location="cpu")
         activations = data["activations"]
         shard_metadata = data["metadata"]
