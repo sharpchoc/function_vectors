@@ -87,6 +87,14 @@ live in span(centered train FVs), the same ~45% reconstruction ceiling as Stream
 confusion blocks: translation trio (english-french/german/spanish), capitalization family.
 Matrices npz in `artifacts/fulldim_ridge_weight_matrices/`.
 
+**Extension (2026-07-09): 3D FV-PCA plots with mapped test predictions**
+(`plot_fv_pca3d_predictions.py`, `fv_pca3d_<cell>.png` × 6): the 27 FVs in their top-3 PCs
+(27.9/16.1/9.6% = 53.6% var), test FVs red, ridge-mapped test-task mean activations as green X
+with dashed connectors to the true FV. Predictions consistently SHRINK toward the train-FV cloud:
+test FVs on the periphery (capitalize, antonym, word_length) have predictions pulled well inside;
+landmark-country (whose FV already sits inside the train cloud near park-country/national_parks)
+is predicted nearly on top of itself. Visual counterpart of the top1=0 confusion result.
+
 **Next:** none — stream complete. (Possible follow-up: same control for the k=16 PCA ridge; expected
 to behave identically given the full-dim result.)
 
