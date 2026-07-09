@@ -11,6 +11,7 @@ A "token position" here is the pair (icl_example_index, token_role); the final p
 import argparse
 import csv
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -40,6 +41,27 @@ def parse_args():
     return p.parse_args()
 
 
+def run_title(dir_name):
+    """Human-readable run descriptor for heatmap suptitles, derived from the run dir name."""
+    model = "Qwen3" if "qwen3" in dir_name else "GPT-J"
+    if dir_name.startswith("pca_ridge_activation_to_fv"):
+        head = f"{model} PCA ridge: activation → FV (16 act PCs → 16 FV PCs, scored in full 4096-d)"
+    elif dir_name.startswith("pca_ridge"):
+        head = f"{model} PCA-space ridge: activation → FV"
+    elif dir_name.startswith("fulldim_ridge"):
+        head = f"{model} full-dim ridge: activation → FV (4096 → 4096, no PCA)"
+    else:
+        head = dir_name
+    m = re.search(r"_rowshuffled(?:_seed(\d+))?", dir_name)
+    kind = "row-shuffled" if m else None
+    if not m:
+        m = re.search(r"_shuffled(?:_seed(\d+))?", dir_name)
+        kind = "task-shuffled" if m else None
+    if m:
+        head += f" — {kind} train-label control " + (f"(seed {m.group(1)})" if m.group(1) else "(seed mean)")
+    return head
+
+
 def position_key(icl, role):
     return (int(icl), ROLE_ORDER.index(role) if role in ROLE_ORDER else 99)
 
@@ -60,7 +82,8 @@ def load_rows(input_dir):
     return rows, shard_csvs
 
 
-def render_heatmap(positions, layers, grid, title, out_path, log_scale=False, cmap="viridis"):
+def render_heatmap(positions, layers, grid, title, out_path, log_scale=False, cmap="viridis",
+                   suptitle=None):
     fig, ax = plt.subplots(figsize=(max(8, len(layers) * 0.32), max(5, len(positions) * 0.3)))
     data = np.array(grid, dtype=float)
     if log_scale:
@@ -76,7 +99,11 @@ def render_heatmap(positions, layers, grid, title, out_path, log_scale=False, cm
     ax.set_title(title)
     cbar = fig.colorbar(im, ax=ax, fraction=0.025)
     cbar.set_label("log10 " + title if log_scale else title, fontsize=8)
-    fig.tight_layout()
+    if suptitle:
+        fig.suptitle(suptitle, fontsize=9)
+        fig.tight_layout(rect=(0, 0, 1, 0.965))
+    else:
+        fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
 
@@ -117,10 +144,13 @@ def main():
 
     # Heatmaps.
     pos_labels = [position_label(*p) for p in pos_set]
+    suptitle = run_title(args.input_dir.name)
     render_heatmap(pos_labels, layer_set, mse_grid, "test_mse",
-                   args.input_dir / "combined_test_mse_heatmap.png", log_scale=True, cmap="viridis_r")
+                   args.input_dir / "combined_test_mse_heatmap.png", log_scale=True, cmap="viridis_r",
+                   suptitle=suptitle)
     render_heatmap(pos_labels, layer_set, alpha_grid, "best_alpha",
-                   args.input_dir / "combined_best_alpha_heatmap.png", log_scale=True, cmap="magma")
+                   args.input_dir / "combined_best_alpha_heatmap.png", log_scale=True, cmap="magma",
+                   suptitle=suptitle)
     print("Wrote heatmaps: combined_test_mse_heatmap.png, combined_best_alpha_heatmap.png")
 
     # Summary.

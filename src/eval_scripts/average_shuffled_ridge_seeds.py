@@ -23,6 +23,7 @@ from eval_scripts.merge_fulldim_ridge_results import (
     position_key,
     position_label,
     render_heatmap,
+    run_title,
 )
 
 
@@ -97,10 +98,13 @@ def main():
         mse_grid[i, j] = r["test_mse"]
         r2_grid[i, j] = r["test_r2"]
     pos_labels = [position_label(*p) for p in pos_set]
-    render_heatmap(pos_labels, layer_set, mse_grid, "test_mse (shuffled labels, seed mean)",
-                   args.output_dir / "combined_test_mse_heatmap.png", log_scale=True, cmap="viridis_r")
-    render_heatmap(pos_labels, layer_set, r2_grid, "test_r2 (shuffled labels, seed mean)",
-                   args.output_dir / "combined_test_r2_heatmap.png", log_scale=False, cmap="viridis")
+    suptitle = run_title(args.output_dir.name)
+    render_heatmap(pos_labels, layer_set, mse_grid, "test_mse (seed mean)",
+                   args.output_dir / "combined_test_mse_heatmap.png", log_scale=True, cmap="viridis_r",
+                   suptitle=suptitle)
+    render_heatmap(pos_labels, layer_set, r2_grid, "test_r2 (seed mean, train-mean baseline)",
+                   args.output_dir / "combined_test_r2_heatmap.png", log_scale=False, cmap="viridis",
+                   suptitle=suptitle)
     print("Wrote heatmaps: combined_test_mse_heatmap.png, combined_test_r2_heatmap.png")
 
     def stats(rows, field):

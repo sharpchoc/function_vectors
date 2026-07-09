@@ -39,6 +39,7 @@ from eval_scripts.merge_fulldim_ridge_results import (
     position_key,
     position_label,
     render_heatmap,
+    run_title,
 )
 
 
@@ -120,7 +121,8 @@ def main():
 
     pos_labels = [position_label(*p) for p in pos_set]
     render_heatmap(pos_labels, layer_set, r2_grid, "test_r2 (train-mean baseline)",
-                   args.input_dir / "combined_test_r2_heatmap.png", log_scale=False, cmap="viridis")
+                   args.input_dir / "combined_test_r2_heatmap.png", log_scale=False, cmap="viridis",
+                   suptitle=run_title(args.input_dir.name))
     print("Wrote combined_test_r2_heatmap.png")
 
     finite = [r for r in rows if np.isfinite(r["test_r2"])]
