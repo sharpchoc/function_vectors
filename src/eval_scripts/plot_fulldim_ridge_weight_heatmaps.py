@@ -220,8 +220,6 @@ def main():
         summary[key]["singular_values_top40"] = [float(v) for v in sv]
         ax.plot(range(1, len(sv) + 1), sv, marker="o", markersize=3, linewidth=1.5,
                 label=f"icl{icl:02d}/{ROLE_SHORT[role]} L{layer}")
-    ax.axvline(20, color="gray", linewidth=1, linestyle="--")
-    ax.text(20.4, ax.get_ylim()[1] * 0.5, "rank bound (20 train tasks)", fontsize=8, color="gray")
     ax.set_yscale("log")
     ax.set_xlabel("singular value index")
     ax.set_ylabel("singular value")
