@@ -51,6 +51,21 @@ alpha pinned at 1e8 (ridge → train mean), i.e. R² ≈ 0 as predicted.
 `results/direction3_fv_formation/fulldim_ridge_activation_to_fv_shuffled_seed{0,1,2}/` + averaged
 `fulldim_ridge_activation_to_fv_shuffled/`.
 
+**Extension (2026-07-08/09): ROW-level shuffle variant — DONE.** Second control: permute the
+row→FV assignment across all 3400 train rows (`--shuffle_mode row`; without replacement, each FV
+keeps 170 rows; fixed per seed across all cells/shards; test rows true). 3 seeds on RunPod pod
+`fv-rowshuffle-ridge` (`m99eh1szzwgyd0`, terminated), driver `logs/shuffled_control/run_rowshuffle_seeds.sh`,
+outputs `fulldim_ridge_activation_to_fv_rowshuffled{,_seed0,1,2}/`. Smoke: flag-off still 0.11607;
+row seed 0 own-task fraction 0.0547, test_mse 0.21618 ≈ V, and train_mse 0.19739 ≈ V_train(0.1978)
+— in row mode the fit can't even memorize train (conflicting targets for near-identical activations).
+
+**Row-shuffle RESULT:** even flatter than the task-level control. Seed-mean test R² median 1.6e-5,
+max 0.0028 (per-seed maxima 0.0043 / 8e-8 / 0.0084); median test MSE 0.21711 = V to 5 decimal
+places; heatmap is noise in ±0.003 with no layer/position structure. Median R² is ~0 (not −0.02 as
+in task mode) because the shuffled targets are balanced WITHIN every CV fold, so LOO-CV finds the
+global-mean predictor exactly optimal — the cleaner collapse of the two controls. Summary table:
+real 0.346/0.465 → task-shuffle −0.021/0.0000 → row-shuffle 0.0000/0.0028 (median/max test R²).
+
 **Next:** none — stream complete. (Possible follow-up: same control for the k=16 PCA ridge; expected
 to behave identically given the full-dim result.)
 

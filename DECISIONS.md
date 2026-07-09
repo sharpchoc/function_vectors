@@ -14,6 +14,14 @@ Resolved questions move from "Open" to "Decided" with the rationale.
   microscopically > 0, worst per-seed max 0.016). Ridge responds by pinning alpha high → predicts
   the train-mean FV. Control outputs: `fulldim_ridge_activation_to_fv_shuffled{,_seed0,1,2}/`;
   worker flags `--shuffle_train_labels --shuffle_seed`.
+- **Row-level variant (`--shuffle_mode row`, 2026-07-09) is equally dead and even cleaner:**
+  permuting the row→FV assignment across all 3400 train rows (balanced, fixed per seed) gives
+  seed-mean test R² median 0.0000 / max 0.0028, median test MSE = V to 5 decimals
+  (`fulldim_ridge_activation_to_fv_rowshuffled{,_seed0,1,2}/`). Two mode differences worth
+  remembering: (a) row mode kills TRAIN fit too (train_mse ≈ V_train — conflicting targets for
+  near-identical rows), task mode can still memorize train; (b) row mode's median R² is ~0 rather
+  than slightly negative — shuffled targets are balanced within every LOO-CV fold, so the CV finds
+  the global-mean predictor exactly optimal.
 - **Gotcha fixed en route:** `artifacts/residual_activations/*/index.json` shard paths are ABSOLUTE
   and predate the 2026-06-19 results→artifacts reorg; any loader following them must fall back to
   the split dir (done in `regress_activation_to_fv_fulldim_ridge.py`, commit 42044d9). Other
