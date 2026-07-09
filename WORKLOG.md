@@ -78,6 +78,15 @@ rank ≤ #train-tasks bound in DECISIONS). last-label maps have larger weights o
 (|W|_F ≈ 2.83 vs 1.99, alpha 1e4 vs 3.16e4). Full-res per-matrix PNGs (50 MB each) live in
 artifacts, not results.
 
+**Extension (2026-07-09): task-space confusion matrices** (`plot_ridge_task_confusion.py`,
+`task_confusion_6cells.png`): per cell, each task's mean activation → map → cosine of centered
+predicted FV vs all 27 centered true FVs. Train diag ≈ 0.995–0.998 (memorized). Test diag ≈
+0.67–0.70 BUT test top-1 = 0/7 in every cell: a held-out task's prediction is always closest to
+some related TRAIN task's FV (capitalize_first_letter→capitalize_last_letter, etc.) — predictions
+live in span(centered train FVs), the same ~45% reconstruction ceiling as Stream U. Visible
+confusion blocks: translation trio (english-french/german/spanish), capitalization family.
+Matrices npz in `artifacts/fulldim_ridge_weight_matrices/`.
+
 **Next:** none — stream complete. (Possible follow-up: same control for the k=16 PCA ridge; expected
 to behave identically given the full-dim result.)
 
