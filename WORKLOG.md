@@ -66,6 +66,18 @@ in task mode) because the shuffled targets are balanced WITHIN every CV fold, so
 global-mean predictor exactly optimal — the cleaner collapse of the two controls. Summary table:
 real 0.346/0.465 → task-shuffle −0.021/0.0000 → row-shuffle 0.0000/0.0028 (median/max test R²).
 
+**Extension (2026-07-09): weight-matrix heatmaps for the 6 best cells** (icl08–10/pre L11;
+icl08/last L11, icl09–10/last L13). `plot_fulldim_ridge_weight_heatmaps.py` refits at stored
+alphas (refit test MSE matches combined_metrics to 5 dp), saves W [4096,4096] + scaler to
+`artifacts/fulldim_ridge_weight_matrices/`, renders signed heatmaps + singular spectra to
+`results/direction3_fv_formation/fulldim_ridge_weight_heatmaps/`. Findings: W is DENSE and
+unstructured in the neuron basis (salt-and-pepper; faint row/col banding from high-norm FV/act
+dims); NOTE mean-pooled downsampling renders it blank — use signed max-|.| pooling. Spectra:
+~19 large singular values then a 5-decade cliff (rank ≤ 19 after target centering, matching the
+rank ≤ #train-tasks bound in DECISIONS). last-label maps have larger weights overall
+(|W|_F ≈ 2.83 vs 1.99, alpha 1e4 vs 3.16e4). Full-res per-matrix PNGs (50 MB each) live in
+artifacts, not results.
+
 **Next:** none — stream complete. (Possible follow-up: same control for the k=16 PCA ridge; expected
 to behave identically given the full-dim result.)
 
