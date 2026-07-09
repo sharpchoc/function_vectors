@@ -39,6 +39,10 @@ from eval_scripts.regress_activation_to_fv_fulldim_ridge import (
 
 ROLE_SHORT = {"pre_label_token": "pre", "first_label_token": "first",
               "last_label_token": "last", "last_prompt_token": "finaltok"}
+# Reader-facing names for the spectra legend: the pre-label position is where the model must
+# produce the answer (cue); the last label token is the answer itself (target).
+ROLE_PLOT = {"pre_label_token": "cue (pre-label)", "first_label_token": "first label token",
+             "last_label_token": "target (last label)", "last_prompt_token": "final prompt token"}
 
 # (icl_example_index, token_role, layer): best-test-MSE layers for the final 3 pre-label and
 # final 3 last-label token positions (from combined_metrics_with_r2.csv).
@@ -211,21 +215,53 @@ def main():
         plt.imsave(args.weights_dir / f"weight_fullres_{key}.png",
                    np.clip(wt, -vmax, vmax), cmap="RdBu_r", vmin=-vmax, vmax=vmax)
 
-    # Singular spectra: W has true rank <= #train tasks (20), so the top ~20 values ARE the map.
-    fig, ax = plt.subplots(figsize=(7.5, 5))
+    # Singular spectra: exact full SVD of each 4096x4096 W (torch.linalg.svdvals, all 4096
+    # values computed; top 40 stored/plotted — the rest sit on the numerical noise floor).
+    spectra = {}
     for (icl, role, layer) in cells:
         key = cell_key(icl, role, layer)
-        _, svals, _ = torch.svd_lowrank(torch.from_numpy(panels[key]), q=40, niter=8)
-        sv = svals.numpy()
-        summary[key]["singular_values_top40"] = [float(v) for v in sv]
-        ax.plot(range(1, len(sv) + 1), sv, marker="o", markersize=3, linewidth=1.5,
-                label=f"icl{icl:02d}/{ROLE_SHORT[role]} L{layer}")
-    ax.set_yscale("log")
-    ax.set_xlabel("singular value index")
-    ax.set_ylabel("singular value")
-    ax.set_title("Singular spectra of the ridge weight matrices")
-    ax.legend(fontsize=8)
-    fig.tight_layout()
+        sv = torch.linalg.svdvals(torch.from_numpy(panels[key]).to(torch.float64)).numpy()
+        spectra[key] = sv
+        summary[key]["singular_values_top40"] = [float(v) for v in sv[:40]]
+        summary[key]["max_singular_value_beyond_40"] = float(sv[40:].max())
+
+    # Plot only the highest-ICL cells (one line per role) to avoid overlapping lines, on a
+    # broken log y-axis: signal spectrum on top, numerical noise floor below.
+    plot_icl = max(icl for icl, _, _ in cells)
+    plot_cells = [(icl, role, layer) for (icl, role, layer) in cells if icl == plot_icl]
+    n_show = 40
+    shown = np.stack([spectra[cell_key(*c)][:n_show] for c in plot_cells])
+    gaps = shown[:, :-1] / shown[:, 1:]
+    split = int(np.argmax(gaps.max(axis=0))) + 1  # index of first noise-floor value
+    signal, noise = shown[:, :split], shown[:, split:]
+
+    fig = plt.figure(figsize=(7.5, 5))
+    gs = fig.add_gridspec(2, 1, height_ratios=[3.2, 1.0], hspace=0.08)
+    ax_top = fig.add_subplot(gs[0])
+    ax_bot = fig.add_subplot(gs[1], sharex=ax_top)
+    for (icl, role, layer) in plot_cells:
+        sv = spectra[cell_key(icl, role, layer)][:n_show]
+        for ax in (ax_top, ax_bot):
+            ax.plot(range(1, n_show + 1), sv, marker="o", markersize=3, linewidth=1.5,
+                    label=f"icl{icl:02d} {ROLE_PLOT[role]} L{layer}")
+    for ax in (ax_top, ax_bot):
+        ax.set_yscale("log")
+    ax_top.set_ylim(signal.min() * 0.6, signal.max() * 1.6)
+    ax_bot.set_ylim(noise.min() * 0.6, noise.max() * 1.6)
+    # Broken-axis styling: hide the facing spines and draw diagonal break marks.
+    ax_top.spines.bottom.set_visible(False)
+    ax_bot.spines.top.set_visible(False)
+    ax_top.tick_params(labelbottom=False, bottom=False)
+    d = 0.5
+    break_kw = dict(marker=[(-1, -d), (1, d)], markersize=10, linestyle="none",
+                    color="k", mec="k", mew=1, clip_on=False)
+    ax_top.plot([0, 1], [0, 0], transform=ax_top.transAxes, **break_kw)
+    ax_bot.plot([0, 1], [1, 1], transform=ax_bot.transAxes, **break_kw)
+    ax_bot.set_xlabel("singular value index")
+    ax_top.set_ylabel("singular value")
+    ax_bot.set_ylabel("noise floor")
+    ax_top.set_title(f"Singular spectra of the ridge weight matrices (exact SVD, top {n_show} of 4096)")
+    ax_top.legend(fontsize=8)
     fig.savefig(args.output_dir / "weight_singular_spectra.png", dpi=150)
     plt.close(fig)
     print("Wrote weight_singular_spectra.png")
