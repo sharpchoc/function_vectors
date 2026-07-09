@@ -95,6 +95,15 @@ test FVs on the periphery (capitalize, antonym, word_length) have predictions pu
 landmark-country (whose FV already sits inside the train cloud near park-country/national_parks)
 is predicted nearly on top of itself. Visual counterpart of the top1=0 confusion result.
 
+**Extension (2026-07-09): ICL trajectories in FV-PCA space** (`plot_fv_pca3d_icl_trajectories.py`;
+fitted the 14 missing banks icl01–07 × pre/last at per-position best layers, refits == stored MSE;
+bank set now covers all 20 (icl, pre/last) cells). `fv_pca3d_icl_trajectories.png` +
+`fv_pred_error_vs_icl.png`: pre-":"-token predictions start near the mean FV at icl01 (error 21–36)
+and converge by ~icl4 with small refinements after; last-label predictions are already near final
+accuracy at icl01 (first completed demonstration carries most of the FV-relevant info) and stay
+flat. Both roles converge to the same shrunk-toward-train-cloud endpoints; landmark-country
+remains the best-predicted test task (‖err‖ ≈ 10–11 vs 18–28 for the rest).
+
 **Next:** none — stream complete. (Possible follow-up: same control for the k=16 PCA ridge; expected
 to behave identically given the full-dim result.)
 
