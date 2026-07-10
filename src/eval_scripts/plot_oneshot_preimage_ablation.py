@@ -7,7 +7,7 @@ answer token. One shared symmetric color scale across ALL arms (the *_cf arms ar
 cross-arm comparability is the point). Also a per-task supplementary grid (tasks x arms).
 
 Outputs under <root>/figures/:
-  heatmap_<arm>.png              task-mean, --metric all170 (default) or test40 suffix
+  heatmap_<arm>.png              task-mean over all 170 prompts/task
   heatmap_all_arms.png           the 6 arms side by side, shared scale + one colorbar
   per_task_grid.png              tasks x arms grid (row-normalized shared scale)
 """
@@ -46,7 +46,6 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--root", type=Path,
                    default=FV_FORMATION_DIR / "oneshot_preimage_ablation/train_varicl_top40")
-    p.add_argument("--metric", choices=["all170", "test40"], default="all170")
     p.add_argument("--rows", nargs="+", default=None,
                    help="Only plot these token rows (e.g. target1). The color scale is computed "
                         "from the kept rows only, so small effects aren't washed out by the "
@@ -56,15 +55,13 @@ def parse_args():
     return p.parse_args()
 
 
-def load_arm(task_dir, arm, metric):
+def load_arm(task_dir, arm):
     """-> (row_names, [n_rows, 28] prompt-mean delta) or None."""
     f = task_dir / f"{arm}_delta_logp.npz"
     if not f.exists():
         return None
     z = np.load(f, allow_pickle=False)
     delta = z["delta_logp"]                       # [rows, 28, n]
-    if metric == "test40":
-        delta = delta[:, :, z["split"] == "test"]
     with np.errstate(invalid="ignore"):
         mean = np.nanmean(delta, axis=2)
     return [str(r) for r in z["row_names"]], mean
@@ -96,7 +93,7 @@ def main():
     args = parse_args()
     fig_dir = args.root / "figures"
     fig_dir.mkdir(parents=True, exist_ok=True)
-    suffix = "" if args.metric == "all170" else f"_{args.metric}"
+    suffix = ""
     if args.rows:
         suffix += "_" + "_".join(args.rows)
 
@@ -108,7 +105,7 @@ def main():
     per_arm = {arm: {} for arm in ARMS}
     for d in task_dirs:
         for arm in ARMS:
-            got = load_arm(d, arm, args.metric)
+            got = load_arm(d, arm)
             if got is None:
                 continue
             if args.rows:
@@ -132,7 +129,7 @@ def main():
 
     vmax = max(np.nanmax(np.abs(g)) for _, g in arm_grids.values())
     print(f"tasks={tasks}")
-    print(f"shared scale vmax={vmax:.3f}  (metric={args.metric})")
+    print(f"shared scale vmax={vmax:.3f}")
 
     # --- per-arm figures ---
     for arm, (row_names, grid) in arm_grids.items():
@@ -158,8 +155,8 @@ def main():
         row_names, grid = arm_grids[arm]
         im = render(ax, grid, row_names, vmax, ARM_TITLES[arm],
                     show_xlabel=(r == 1), show_ylabels=(c == 0))
-    fig.suptitle(f"1-shot projection-ablation: mean Δ log p(correct answer), {len(tasks)} tasks "
-                 f"({args.metric})", fontsize=14)
+    fig.suptitle(f"1-shot projection-ablation: mean Δ log p(correct answer), {len(tasks)} tasks",
+                 fontsize=14)
     fig.colorbar(im, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.85)
     out = fig_dir / f"heatmap_all_arms{suffix}.png"
     fig.savefig(out, dpi=200)
@@ -189,8 +186,7 @@ def main():
                 ax.set_ylabel(task, fontsize=9, rotation=90)
             if ti == len(tasks) - 1:
                 ax.set_xlabel("start layer L", fontsize=8)
-    fig.suptitle(f"per-task Δ log p heatmaps ({args.metric}, shared scale ±{vmax:.2f})",
-                 fontsize=13)
+    fig.suptitle(f"per-task Δ log p heatmaps (shared scale ±{vmax:.2f})", fontsize=13)
     fig.colorbar(last, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.6)
     out = fig_dir / f"per_task_grid{suffix}.png"
     fig.savefig(out, dpi=180)
