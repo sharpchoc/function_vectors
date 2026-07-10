@@ -82,7 +82,7 @@ def parse_args():
                    help="Capture layers to fit (default 1..28; layer 0 = embedding is skipped).")
     p.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
     p.add_argument("--fv_root", type=Path,
-                   default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_varicl_max4_top40")
+                   default=ARTIFACTS_ROOT / "function_vectors/gpt-j/debug/train_varicl_max4_top40")
     p.add_argument("--icl_activations_root_template", type=str,
                    default=str(ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens"))
     p.add_argument("--query_activations_root", type=Path,

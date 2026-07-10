@@ -1,5 +1,11 @@
 # Project Instructions
 
+Canonical definitions:
+- "Function vectors" (GPT-J) means `artifacts/function_vectors/gpt-j/train_varicl_top40`
+  unless explicitly stated otherwise. FV sets under `artifacts/function_vectors/gpt-j/debug/`
+  (e.g. `train_varicl_max4_top40`) were debug tests — do not build new results on them.
+  See DECISIONS.md 2026-07-10.
+
 Before starting work:
 - Read WORKLOG.md and DECISIONS.md.
 - Identify your tmux window/session and current stream.

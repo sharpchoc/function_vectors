@@ -5,6 +5,45 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-07-10 — CANONICAL FV DEFINITION: "function vectors" = train_varicl_top40 (GPT-J)
+
+- **`train_varicl_max4_top40` was a DEBUG test set** (variable-ICL capped at 4 shots), not a
+  canonical FV definition. It has been moved to
+  `artifacts/function_vectors/gpt-j/debug/train_varicl_max4_top40` (README in `debug/`).
+  Unless a study explicitly says otherwise, **"function vectors" means
+  `artifacts/function_vectors/gpt-j/train_varicl_top40`** (variable 1–10-shot CIE, top-40
+  multitask heads). Stated by the project owner 2026-07-10.
+- Consequences: everything fit against the max4 FVs is debug-only — the Stream S ridge maps +
+  preimage banks (`preimage_pairdiff/train_varicl_max4_top40`, `..._tsvdk16/...`), the Stream S
+  cosine analyses, and the Stream W v1 ablation run. Their `run_config.json` files record the
+  pre-move fv_root path (left as historical provenance;
+  `fit_tsvd_preimages_multicell.py` has a `debug/` fallback). Script `--fv_root` defaults that
+  pointed at the max4 set now point at the `debug/` path.
+- Note the FV-definition spread in existing results: the full-dim ridge R² study
+  (`fulldim_ridge_activation_to_fv/`) used `train_selected` (top-10 multitask heads); Stream S/W-v1
+  used the max4 debug set. New preimage/causal work should refit ridge maps against
+  `train_varicl_top40` targets rather than reusing those maps.
+
+## 2026-07-10 — Stream W conventions: projection-ablation indexing + single-task TSVD banks
+
+- **Ablation/edit-layer indexing, pinned:** the preimage banks are keyed by
+  `edit_layer = capture_layer − 1` ∈ 0..27; edit layer b means hooking the output of
+  `transformer.h.{b}` (= capture entry b+1 of the 29-entry residual stack whose entry 0 is the
+  embedding). A "start layer L, all downstream layers" ablation therefore gates a hook over
+  `model_config["layer_hook_names"]` with `if block_idx < L: return output` and NEVER touches the
+  embedding entry (no preimage exists for it; maps start at capture layer 1). Start-layer sweeps
+  run L = 0..27.
+- **Left-padded batching is safe for GPT-J logit readout without position_ids correction:** GPT-J
+  uses rotary (relative) attention and pads are masked, so a uniform left-pad shift leaves
+  real-token logits unchanged; verified in `ablate_oneshot_preimage_logprob.py`'s built-in
+  batched-vs-unbatched cross-check. Site positions must still be offset by the per-row pad amount.
+- **Single-task TSVD preimage banks** (`fit_tsvd_preimages_multicell.py --tasks ...`,
+  `<cell>/preimages/{task}_tsvd_preimage_bank.pt`): the rank-16 inverse is linear in its target,
+  so per-task banks were validated against the existing pairdiff banks via
+  `tsvd(fv_A) − tsvd(fv_B) == tsvd(fv_A − fv_B)` (rel err ~7e-6). The script's skip-guard is now
+  per-requested-bank-file (the old per-cell `diagnostics.json` marker would have skipped existing
+  cells entirely and could never add new banks incrementally).
+
 ## 2026-07-08 — Shuffled-label control validates the full-dim ridge R² (Stream V)
 
 - **The activation→FV ridge R² is real signal, not pipeline leakage.** Permuting the train-task→FV
