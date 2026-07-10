@@ -345,9 +345,12 @@ def main():
                   f"in {time.time() - ta:.0f}s", flush=True)
         print(f"[{task}] done in {time.time() - t0:.0f}s", flush=True)
 
-    # --- summaries over whatever npz exist ---
+    # --- summaries over whatever npz exist (ALL task dirs on disk, not just args.tasks:
+    # per-task invocations must not clobber the combined CSV with a subset) ---
     combined = []
-    for task in args.tasks:
+    summary_tasks = sorted(d.name for d in out_root.iterdir()
+                           if d.is_dir() and any(d.glob("*_delta_logp.npz")))
+    for task in summary_tasks:
         task_dir = out_root / task
         rows_out = []
         for arm in ALL_ARMS:

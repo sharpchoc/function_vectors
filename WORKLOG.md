@@ -37,20 +37,30 @@ Known pod quirk: matplotlib/numpy clash on the pod (v1 stageD ImportError) — p
 on the CPU pod instead.
 
 **Findings (v2, canonical FVs; mean Δ log p of the correct first answer token over 7 tasks × 170
-one-shot prompts; figures `.../oneshot_preimage_ablation/train_varicl_top40/figures/`):**
-- **The final cue (query "A:") dominates; demo tokens carry little in 1-shot.** Ablating from
-  L0 downstream at the final cue: FV −6.4, icl10-cell preimage −4.5, matched-cell
-  (pre_label_icl2) preimage −1.1. cue1 ≈ 0 everywhere; target1 only a small early-layer effect
-  (−0.2 … −0.8 at L0–4, gone by ~L8) — weak support for the "early layers at the target token"
-  hypothesis; the effect exists but is an order of magnitude smaller than the final-cue effect.
-- **Late-layer-only ablation at the final cue still bites** (start L20: icl10 preimage −1.8,
-  FV −1.0) — consistent with the "late layers at the cue" half, but only at the QUERY cue,
-  not the demo cue.
-- **Task-specificity control separates the two preimage arms sharply:** the icl10 preimage's
-  random-other-task twin is ≈ 0 (−0.04 vs −4.5 same-task, a ~100× ratio; FV arm ~13×), but
-  `preimage_matched`'s twin does EQUAL damage (−1.2 cf vs −1.1 same-task) → the pre_label_icl2
-  preimage's final-cue effect is a generic direction, not task-specific mechanism. The weak
-  matched-cell fits (icl1/icl2 pre cells are the worst ridge cells, R² ≈ 0.1) likely explain it.
+one-shot prompts; figures `.../oneshot_preimage_ablation/train_varicl_top40/figures/`).**
+NOTE: an earlier interim readout quoted antonym-only numbers as 7-task means (per-task
+invocations clobbered combined_summary.csv with a subset; script now aggregates all task dirs on
+disk). Numbers below are the corrected 7-task means, verified directly against the npz:
+- **Early layers at the DEMO LABEL (target1) are causally load-bearing — via the PREIMAGE
+  directions, not the FV direction.** Ablating from L0 at target1: matched-cell preimage
+  (last_label_icl1) **−1.78** (cf twin −0.23, ~8× task-specific); icl10 preimage −1.12 (cf −0.13);
+  raw FV direction only −0.39 (cf −0.26, barely specific). Strictly early-layer (≈0 by L8–12).
+  Per-task: driven by landmark-country (−4.1), lowercase_first_letter (−4.5),
+  capitalize_first_letter (−2.6); ≈0 for synonym/antonym. At the label token the task-specific
+  causal coordinates are the ridge PREIMAGE of the FV, not the FV itself.
+- **The final cue (query "A:") carries the largest effects:** FV −7.13 (cf −1.17), icl10 preimage
+  −4.00 (cf −0.90), matched (pre_label_icl2) preimage −1.94 (cf −0.27). Late-start ablation still
+  bites (L20: FV −2.84, icl10 preimage −2.38, matched −0.89) — "late layers at the cue" holds at
+  the query cue. Coordinate flip vs the label token: at the final cue the FV direction itself is
+  the most causal; at the label the preimage is.
+- **cue1 (demo "A:") ≈ 0 everywhere** (all arms ≤ −0.13).
+- **All three same-task arms pass the counterfactual control** (~4–9× same-vs-cf at their active
+  sites). Caveat: lowercase_first_letter's random counterfactual drew its near-twin
+  capitalize_first_letter, inflating cf baselines somewhat.
+- Hypothesis verdict: **supported** — early layers at the target token and late layers at the
+  (query) cue token both reduce log p of the correct answer; the label-token effect is carried by
+  preimage coordinates rather than the FV direction itself. target1-only rescaled figures:
+  `heatmap_all_arms_target1.png`, `per_task_grid_target1.png` (+ `_test40` variants).
 - **Stage-1 ridge quality (canonical root):** V(test|train-mean)=0.333; best cells
   last_prompt/pre_label icl10 L13, test_mse 0.195 → R² ≈ 0.41; pre_label_icl1 weakest (R²≈0.11).
 - **NEW full-dim ridge R² study for train_varicl_top40**
@@ -61,9 +71,12 @@ one-shot prompts; figures `.../oneshot_preimage_ablation/train_varicl_top40/figu
 - Runtime: Stage A 6 cells ≈ 75 min; sweep ≈ 25 min; R² study 10 shards ≈ 100 min — all on one
   RTX PRO 4500 ($0.74/hr). Pod quirk: matplotlib/numpy import clash → all merge/R²/plot steps
   ran on the CPU pod instead.
-**Next:** deeper follow-ups: (a) why the icl10-cell preimage is so much more task-specific than
-the matched-cell one (fit quality vs geometry); (b) sum-over-answer-tokens metric for capitalize
-(52% multi-token); (c) per-task heterogeneity in per_task_grid.png.
+**Next:** deeper follow-ups: (a) why the label-token effect lives in preimage coordinates while
+the final-cue effect lives in FV coordinates (transport/rotation across layers?); (b)
+sum-over-answer-tokens metric for capitalize (52% multi-token); (c) per-task heterogeneity —
+target1 causality is concentrated in landmark-country / lowercase_first_letter /
+capitalize_first_letter; (d) re-draw lowercase_first_letter's confounded counterfactual;
+(e) rank-k ablation at target1; (f) repeat in the paired-prompt logit-gap regime.
 
 **Question:** are the per-layer TSVD-16 ridge preimages of a task's FV causally load-bearing?
 On 1-shot prompts over the 7 ridge held-out tasks (landmark-country, word_length,

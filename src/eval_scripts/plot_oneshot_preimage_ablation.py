@@ -47,6 +47,10 @@ def parse_args():
     p.add_argument("--root", type=Path,
                    default=FV_FORMATION_DIR / "oneshot_preimage_ablation/train_varicl_top40")
     p.add_argument("--metric", choices=["all170", "test40"], default="all170")
+    p.add_argument("--rows", nargs="+", default=None,
+                   help="Only plot these token rows (e.g. target1). The color scale is computed "
+                        "from the kept rows only, so small effects aren't washed out by the "
+                        "final-cue magnitudes. Output filenames get a _<rows> suffix.")
     p.add_argument("--annotate", action="store_true",
                    help="Write the value into each cell of the per-arm heatmaps.")
     return p.parse_args()
@@ -93,6 +97,8 @@ def main():
     fig_dir = args.root / "figures"
     fig_dir.mkdir(parents=True, exist_ok=True)
     suffix = "" if args.metric == "all170" else f"_{args.metric}"
+    if args.rows:
+        suffix += "_" + "_".join(args.rows)
 
     task_dirs = sorted(d for d in args.root.iterdir()
                        if d.is_dir() and d.name != "figures")
@@ -103,8 +109,15 @@ def main():
     for d in task_dirs:
         for arm in ARMS:
             got = load_arm(d, arm, args.metric)
-            if got is not None:
-                per_arm[arm][d.name] = got
+            if got is None:
+                continue
+            if args.rows:
+                row_names, grid = got
+                idx = [i for i, r in enumerate(row_names) if r in set(args.rows)]
+                if not idx:
+                    continue
+                got = ([row_names[i] for i in idx], grid[idx])
+            per_arm[arm][d.name] = got
 
     # task-mean grids per arm
     arm_grids = {}
