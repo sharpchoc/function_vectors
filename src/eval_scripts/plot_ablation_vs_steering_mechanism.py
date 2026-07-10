@@ -81,13 +81,13 @@ def ab_extra(ax, sx, sw, cx, cy):
 panel(axes[1], "ABLATE the direction at target1",
       "remove the blue component; raw tokens & prior untouched",
       1.2, (0, (4, 3)), ("still correct", "Δ log p small"), INK,
-      "null ≠ not causal: backups deliver the same vote\n(measured: −0.4 FV dir / −1.8 preimage, vs −7.1 at final cue)",
+      "null ≠ not causal: backups deliver the same vote",
       extra=ab_extra)
 
 # --- panel 3: steering ---
 def st_extra(ax, sx, sw, cx, cy):
     arrow(ax, (sx + sw + 0.12, 8.75), (cx - 0.28, cy + 0.5), RED, 5.6, zorder=6)
-    ax.text(7.15, 8.0, "injected  α·FV(task B)\nα = 2–8× natural size\nnothing in Σ cancels an addition",
+    ax.text(7.15, 8.0, "injected  α·FV(task B),  α ≫ natural size\nnothing in Σ cancels an addition",
             ha="center", fontsize=8.4, color=RED, fontweight="bold")
 panel(axes[2], "STEER at target1",
       "add a large task-B vector at the same site; blue route still intact",
