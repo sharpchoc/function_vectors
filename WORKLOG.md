@@ -11,6 +11,40 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-07-10 — Stream W: 1-shot preimage-ablation causal test (GPT-J, 7 held-out tasks)
+
+**Owner:** Coordinator (tmux `fv-preimage-ablation`; CPU pod + own RunPod GPU pod).
+**Status:** IN PROGRESS — code stage.
+
+**Question:** are the per-layer TSVD-16 ridge preimages of a task's FV causally load-bearing?
+On 1-shot prompts over the 7 ridge held-out tasks (landmark-country, word_length,
+capitalize_first_letter, synonym, lowercase_first_letter, capitalize, antonym), ablate the
+residual-stream component along a candidate direction at one site token, from start layer L
+through all downstream layers (at that token only), and measure Δ log p (ablated − clean) of the
+first answer token at the final position. Hypothesis (from earlier per-task results): damage
+concentrates at EARLY layers at the target token and LATE layers at the cue token.
+
+**Design:** 170 one-shot prompts/task (130 train-split + 40 test-split queries, seed 42,
+capture-pipeline-identical construction incl. `'<|endoftext|>'` BOS string prepend). Site tokens:
+cue1 (pre_label of demo), target1 (last_label of demo), final_cue (last prompt token). 6 arms:
+{matched-cell preimage, icl10-cell preimage, FV direction} × {same task, random counterfactual
+task from the other 6}. Matched cells: pre_label_icl1 / last_label_icl1 / pre_label_icl2 +
+last_prompt_icl10 (final_cue gets both). Preimages = rank-16 TSVD inverse of the Stream S ridge
+maps (fv_root train_varicl_max4_top40), unit-normalized per edit layer. Start-layer sweep over
+edit layers 0..27 (= `transformer.h.b` outputs; bank edit_layer b ↔ capture entry b+1; embedding
+never ablated). Heatmaps: token-row × start-layer per arm, task-mean Δ log p, shared scale.
+
+**Stages:** A) fit missing ridge cells pre_label_icl10 + last_label_icl10
+(`fit_ridge_preimages_multicell.py`, GPU). B) single-task TSVD banks for the 7 task FVs × 6 cells
+(extended `fit_tsvd_preimages_multicell.py`, CPU; linearity-validated vs the antonym__synonym
+pairdiff bank). C) NEW `src/eval_scripts/ablate_oneshot_preimage_logprob.py` (GPU; resumable
+per (task, arm) npz; ~3.9k batched forwards). D) NEW `plot_oneshot_preimage_ablation.py`.
+Driver: `logs/oneshot_preimage_ablation/driver.sh`. Outputs:
+`results/direction3_fv_formation/oneshot_preimage_ablation/train_varicl_max4_top40/`.
+
+**Findings:** (pending)
+**Next:** (pending)
+
 ## 2026-07-08 — Stream V: shuffled-label control for the full-dim ridge R²
 
 **Owner:** Coordinator (tmux `fvridge-shuffled-control`; CPU pod + RunPod GPU pod `fv-shuffled-ridge`).
