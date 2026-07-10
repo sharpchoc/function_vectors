@@ -5,6 +5,25 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-07-10 — CANONICAL FV DEFINITION: "function vectors" = train_varicl_top40 (GPT-J)
+
+- **`train_varicl_max4_top40` was a DEBUG test set** (variable-ICL capped at 4 shots), not a
+  canonical FV definition. It has been moved to
+  `artifacts/function_vectors/gpt-j/debug/train_varicl_max4_top40` (README in `debug/`).
+  Unless a study explicitly says otherwise, **"function vectors" means
+  `artifacts/function_vectors/gpt-j/train_varicl_top40`** (variable 1–10-shot CIE, top-40
+  multitask heads). Stated by the project owner 2026-07-10.
+- Consequences: everything fit against the max4 FVs is debug-only — the Stream S ridge maps +
+  preimage banks (`preimage_pairdiff/train_varicl_max4_top40`, `..._tsvdk16/...`), the Stream S
+  cosine analyses, and the Stream W v1 ablation run. Their `run_config.json` files record the
+  pre-move fv_root path (left as historical provenance;
+  `fit_tsvd_preimages_multicell.py` has a `debug/` fallback). Script `--fv_root` defaults that
+  pointed at the max4 set now point at the `debug/` path.
+- Note the FV-definition spread in existing results: the full-dim ridge R² study
+  (`fulldim_ridge_activation_to_fv/`) used `train_selected` (top-10 multitask heads); Stream S/W-v1
+  used the max4 debug set. New preimage/causal work should refit ridge maps against
+  `train_varicl_top40` targets rather than reusing those maps.
+
 ## 2026-07-10 — Stream W conventions: projection-ablation indexing + single-task TSVD banks
 
 - **Ablation/edit-layer indexing, pinned:** the preimage banks are keyed by

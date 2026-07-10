@@ -72,6 +72,10 @@ def main():
     torch.manual_seed(0)
     stage1_cfg = load_json(args.preimage_root / "run_config.json")
     fv_root = Path(stage1_cfg["fv_root"])
+    if not fv_root.exists() and (fv_root.parent / "debug" / fv_root.name).exists():
+        # 2026-07-10: debug FV sets (train_varicl_max4_top40) moved under gpt-j/debug/;
+        # older stage-1 run_configs record the pre-move absolute path.
+        fv_root = fv_root.parent / "debug" / fv_root.name
     output_root = args.output_root or (ARTIFACTS_ROOT / f"preimage_pairdiff_tsvdk{args.k}"
                                        / fv_root.name)
     cells = [parse_cell(s) for s in args.cells]

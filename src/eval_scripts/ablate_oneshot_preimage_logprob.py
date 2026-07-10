@@ -91,7 +91,7 @@ def parse_args():
     p.add_argument("--tasks", nargs="+", default=list(DEFAULT_TEST_TASKS_EXCLUDE_CC_PC))
     p.add_argument("--arms", nargs="+", default=ALL_ARMS, choices=ALL_ARMS)
     p.add_argument("--fv_root", type=Path,
-                   default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_varicl_max4_top40")
+                   default=ARTIFACTS_ROOT / "function_vectors/gpt-j/debug/train_varicl_max4_top40")
     p.add_argument("--tsvd_root", type=Path,
                    default=ARTIFACTS_ROOT / "preimage_pairdiff_tsvdk16/train_varicl_max4_top40")
     p.add_argument("--output_root", type=Path, default=None,

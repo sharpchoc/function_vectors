@@ -14,7 +14,12 @@ Newest entries at top. One stream per active line of work.
 ## 2026-07-10 — Stream W: 1-shot preimage-ablation causal test (GPT-J, 7 held-out tasks)
 
 **Owner:** Coordinator (tmux `fv-preimage-ablation`; CPU pod + own RunPod GPU pod).
-**Status:** IN PROGRESS — code stage.
+**Status:** v1 run complete but **fit against the max4 DEBUG FV set** — superseded. Per the
+2026-07-10 DECISIONS entry, "function vectors" = `train_varicl_top40`; the max4 FVs moved to
+`artifacts/function_vectors/gpt-j/debug/`. The v1 results
+(`results/direction3_fv_formation/oneshot_preimage_ablation/train_varicl_max4_top40/`) remain as
+a debug reference; a re-plan against `train_varicl_top40` (refit ridge cells → TSVD banks → rerun)
+is pending.
 
 **Question:** are the per-layer TSVD-16 ridge preimages of a task's FV causally load-bearing?
 On 1-shot prompts over the 7 ridge held-out tasks (landmark-country, word_length,
