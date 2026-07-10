@@ -13,11 +13,13 @@ b >= L (that token only):
 Metric: delta log p (ablated - clean) of the FIRST answer token, read at the final position via
 model.transformer(...) -> lm_head on the last column -> fp32 log_softmax.
 
-Arms (direction sources; *_cf = same cells but a random OTHER task's FV, one draw per task):
-  preimage_matched     cue1 -> tsvd bank pre_label_token_icl1, target1 -> last_label_token_icl1,
-                       final_cue -> BOTH pre_label_token_icl2 (row final_cue_ctx, context-matched)
-                       AND last_prompt_token_icl10 (row final_cue_icl10)
-  preimage_icl10       pre_label_token_icl10 / last_label_token_icl10 / last_prompt_token_icl10
+Arms (direction sources; *_cf = same cells but a random OTHER task's FV, one draw per task).
+Each arm ablates the same 3 site tokens:
+  preimage_matched     position-matched cells: cue1 -> pre_label_token_icl1,
+                       target1 -> last_label_token_icl1, final_cue -> pre_label_token_icl2
+                       (the 1-shot query token IS a "pre label 2" by causal context)
+  preimage_icl10       10th-example cells: cue1 -> pre_label_token_icl10,
+                       target1 -> last_label_token_icl10, final_cue -> last_prompt_token_icl10
   fv                   the task FV direction itself, same unit vector at all 28 edit layers
   preimage_matched_cf, preimage_icl10_cf, fv_cf
 
@@ -70,13 +72,11 @@ SITE_ROLES = ["pre_label_token", "last_label_token", "last_prompt_token"]
 SITE_INDEX = {role: i for i, role in enumerate(SITE_ROLES)}
 # row name -> which site token it ablates
 ROW_SITE = {"cue1": "pre_label_token", "target1": "last_label_token",
-            "final_cue": "last_prompt_token", "final_cue_ctx": "last_prompt_token",
-            "final_cue_icl10": "last_prompt_token"}
+            "final_cue": "last_prompt_token"}
 # base arm -> [(row name, tsvd cell or None=raw FV direction)]
 ARM_ROWS = {
     "preimage_matched": [("cue1", "pre_label_token_icl1"), ("target1", "last_label_token_icl1"),
-                         ("final_cue_ctx", "pre_label_token_icl2"),
-                         ("final_cue_icl10", "last_prompt_token_icl10")],
+                         ("final_cue", "pre_label_token_icl2")],
     "preimage_icl10": [("cue1", "pre_label_token_icl10"), ("target1", "last_label_token_icl10"),
                        ("final_cue", "last_prompt_token_icl10")],
     "fv": [("cue1", None), ("target1", None), ("final_cue", None)],
@@ -91,9 +91,9 @@ def parse_args():
     p.add_argument("--tasks", nargs="+", default=list(DEFAULT_TEST_TASKS_EXCLUDE_CC_PC))
     p.add_argument("--arms", nargs="+", default=ALL_ARMS, choices=ALL_ARMS)
     p.add_argument("--fv_root", type=Path,
-                   default=ARTIFACTS_ROOT / "function_vectors/gpt-j/debug/train_varicl_max4_top40")
+                   default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_varicl_top40")
     p.add_argument("--tsvd_root", type=Path,
-                   default=ARTIFACTS_ROOT / "preimage_pairdiff_tsvdk16/train_varicl_max4_top40")
+                   default=ARTIFACTS_ROOT / "preimage_pairdiff_tsvdk16/train_varicl_top40")
     p.add_argument("--output_root", type=Path, default=None,
                    help="Default: FV_FORMATION_DIR/oneshot_preimage_ablation/<fv_root basename>.")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")

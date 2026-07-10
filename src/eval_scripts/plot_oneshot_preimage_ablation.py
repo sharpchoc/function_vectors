@@ -39,15 +39,13 @@ ARM_TITLES = {
     "fv_cf": "FV direction — counterfactual task",
 }
 ROW_TITLES = {"cue1": "cue1 (demo 'A:')", "target1": "target1 (demo label)",
-              "final_cue": "final cue (query 'A:')",
-              "final_cue_ctx": "final cue [pre_label_icl2]",
-              "final_cue_icl10": "final cue [last_prompt_icl10]"}
+              "final_cue": "final cue (query 'A:')"}
 
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--root", type=Path,
-                   default=FV_FORMATION_DIR / "oneshot_preimage_ablation/train_varicl_max4_top40")
+                   default=FV_FORMATION_DIR / "oneshot_preimage_ablation/train_varicl_top40")
     p.add_argument("--metric", choices=["all170", "test40"], default="all170")
     p.add_argument("--annotate", action="store_true",
                    help="Write the value into each cell of the per-arm heatmaps.")
