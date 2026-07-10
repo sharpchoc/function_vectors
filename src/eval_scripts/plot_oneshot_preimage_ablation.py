@@ -128,7 +128,7 @@ def main():
         im = render(ax, grid, row_names, vmax,
                     f"{ARM_TITLES[arm]} — mean Δ log p(correct) over {len(per_arm[arm])} tasks",
                     annotate=args.annotate)
-        fig.colorbar(im, ax=ax, label="Δ log p (ablated − clean)")
+        fig.colorbar(im, ax=ax, label="log p(ablated) − log p(clean)")
         out = fig_dir / f"heatmap_{arm}{suffix}.png"
         fig.savefig(out, dpi=200)
         plt.close(fig)
@@ -147,7 +147,7 @@ def main():
                     show_xlabel=(r == 1), show_ylabels=(c == 0))
     fig.suptitle(f"1-shot projection-ablation: mean Δ log p(correct answer), {len(tasks)} tasks "
                  f"({args.metric})", fontsize=14)
-    fig.colorbar(im, ax=axes, label="Δ log p (ablated − clean)", shrink=0.85)
+    fig.colorbar(im, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.85)
     out = fig_dir / f"heatmap_all_arms{suffix}.png"
     fig.savefig(out, dpi=200)
     plt.close(fig)
@@ -178,7 +178,7 @@ def main():
                 ax.set_xlabel("start layer L", fontsize=8)
     fig.suptitle(f"per-task Δ log p heatmaps ({args.metric}, shared scale ±{vmax:.2f})",
                  fontsize=13)
-    fig.colorbar(last, ax=axes, label="Δ log p (ablated − clean)", shrink=0.6)
+    fig.colorbar(last, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.6)
     out = fig_dir / f"per_task_grid{suffix}.png"
     fig.savefig(out, dpi=180)
     plt.close(fig)
