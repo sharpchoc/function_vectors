@@ -36,9 +36,34 @@ Driver: `logs/oneshot_preimage_ablation/driver.sh` (v2 flags), tmux `streamw` on
 Known pod quirk: matplotlib/numpy clash on the pod (v1 stageD ImportError) — plots are generated
 on the CPU pod instead.
 
-**Findings:** (pending)
-**Next:** on completion: verify, plots on CPU pod, findings here, merge branch → fork `main`,
-push, terminate pod.
+**Findings (v2, canonical FVs; mean Δ log p of the correct first answer token over 7 tasks × 170
+one-shot prompts; figures `.../oneshot_preimage_ablation/train_varicl_top40/figures/`):**
+- **The final cue (query "A:") dominates; demo tokens carry little in 1-shot.** Ablating from
+  L0 downstream at the final cue: FV −6.4, icl10-cell preimage −4.5, matched-cell
+  (pre_label_icl2) preimage −1.1. cue1 ≈ 0 everywhere; target1 only a small early-layer effect
+  (−0.2 … −0.8 at L0–4, gone by ~L8) — weak support for the "early layers at the target token"
+  hypothesis; the effect exists but is an order of magnitude smaller than the final-cue effect.
+- **Late-layer-only ablation at the final cue still bites** (start L20: icl10 preimage −1.8,
+  FV −1.0) — consistent with the "late layers at the cue" half, but only at the QUERY cue,
+  not the demo cue.
+- **Task-specificity control separates the two preimage arms sharply:** the icl10 preimage's
+  random-other-task twin is ≈ 0 (−0.04 vs −4.5 same-task, a ~100× ratio; FV arm ~13×), but
+  `preimage_matched`'s twin does EQUAL damage (−1.2 cf vs −1.1 same-task) → the pre_label_icl2
+  preimage's final-cue effect is a generic direction, not task-specific mechanism. The weak
+  matched-cell fits (icl1/icl2 pre cells are the worst ridge cells, R² ≈ 0.1) likely explain it.
+- **Stage-1 ridge quality (canonical root):** V(test|train-mean)=0.333; best cells
+  last_prompt/pre_label icl10 L13, test_mse 0.195 → R² ≈ 0.41; pre_label_icl1 weakest (R²≈0.11).
+- **NEW full-dim ridge R² study for train_varicl_top40**
+  (`results/direction3_fv_formation/fulldim_ridge_activation_to_fv_varicl_top40/`, 899 cells):
+  best test R² 0.4128 @ icl10/finaltok L13 (train R² 0.969), 888/899 cells beat the train-mean
+  baseline; same mid-layer ridge (L9–15) and role banding as the train_selected study (max 0.465).
+  11 cells alpha-pinned at a grid endpoint (flagged in the merge log).
+- Runtime: Stage A 6 cells ≈ 75 min; sweep ≈ 25 min; R² study 10 shards ≈ 100 min — all on one
+  RTX PRO 4500 ($0.74/hr). Pod quirk: matplotlib/numpy import clash → all merge/R²/plot steps
+  ran on the CPU pod instead.
+**Next:** deeper follow-ups: (a) why the icl10-cell preimage is so much more task-specific than
+the matched-cell one (fit quality vs geometry); (b) sum-over-answer-tokens metric for capitalize
+(52% multi-token); (c) per-task heterogeneity in per_task_grid.png.
 
 **Question:** are the per-layer TSVD-16 ridge preimages of a task's FV causally load-bearing?
 On 1-shot prompts over the 7 ridge held-out tasks (landmark-country, word_length,

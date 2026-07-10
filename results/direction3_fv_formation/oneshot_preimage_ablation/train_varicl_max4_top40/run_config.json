@@ -1,0 +1,134 @@
+{
+  "tasks": [
+    "landmark-country",
+    "word_length",
+    "capitalize_first_letter",
+    "synonym",
+    "lowercase_first_letter",
+    "capitalize",
+    "antonym"
+  ],
+  "arms": [
+    "preimage_matched",
+    "preimage_icl10",
+    "fv",
+    "preimage_matched_cf",
+    "preimage_icl10_cf",
+    "fv_cf"
+  ],
+  "fv_root": "/workspace/function_vectors/artifacts/function_vectors/gpt-j/train_varicl_max4_top40",
+  "tsvd_root": "/workspace/function_vectors/artifacts/preimage_pairdiff_tsvdk16/train_varicl_max4_top40",
+  "output_root": null,
+  "model_name": "EleutherAI/gpt-j-6b",
+  "revision": null,
+  "device": "cuda",
+  "root_data_dir": "dataset_files",
+  "seed": 42,
+  "test_split": 0.3,
+  "n_shots": 1,
+  "max_train_prompts": 130,
+  "max_test_prompts": 40,
+  "start_layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27
+  ],
+  "batch_size": 170,
+  "max_prompts": null,
+  "prefixes": {
+    "input": "Q:",
+    "output": "A:",
+    "instructions": ""
+  },
+  "separators": {
+    "input": "\n",
+    "output": "\n\n",
+    "instructions": ""
+  },
+  "overwrite": false,
+  "cf_map": {
+    "landmark-country": "word_length",
+    "word_length": "capitalize",
+    "capitalize_first_letter": "landmark-country",
+    "synonym": "word_length",
+    "lowercase_first_letter": "capitalize_first_letter",
+    "capitalize": "antonym",
+    "antonym": "lowercase_first_letter"
+  },
+  "arm_rows": {
+    "preimage_matched": [
+      [
+        "cue1",
+        "pre_label_token_icl1"
+      ],
+      [
+        "target1",
+        "last_label_token_icl1"
+      ],
+      [
+        "final_cue_ctx",
+        "pre_label_token_icl2"
+      ],
+      [
+        "final_cue_icl10",
+        "last_prompt_token_icl10"
+      ]
+    ],
+    "preimage_icl10": [
+      [
+        "cue1",
+        "pre_label_token_icl10"
+      ],
+      [
+        "target1",
+        "last_label_token_icl10"
+      ],
+      [
+        "final_cue",
+        "last_prompt_token_icl10"
+      ]
+    ],
+    "fv": [
+      [
+        "cue1",
+        null
+      ],
+      [
+        "target1",
+        null
+      ],
+      [
+        "final_cue",
+        null
+      ]
+    ]
+  },
+  "git_commit": "32ba2dd9e1d358dc78bb39e73bb85dcd62e63bce",
+  "metric": "delta log p (ablated - clean) of the first answer token at the final position",
+  "edit_layer_mapping": "start layer L ablates transformer.h.{b} outputs for all b >= L (edit layers 0..27; embedding entry never touched)"
+}
