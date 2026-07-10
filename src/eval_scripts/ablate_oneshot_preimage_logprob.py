@@ -124,10 +124,14 @@ def git_commit_hash():
         return None
 
 
-def build_cf_map(tasks, seed):
+def build_cf_map(tasks, seed, pool=None):
+    """Counterfactual task per task, drawn from the FIXED pool (default: the 7 held-out tasks)
+    so the assignment is identical no matter how --tasks shards an invocation."""
+    pool = list(pool) if pool is not None else list(DEFAULT_TEST_TASKS_EXCLUDE_CC_PC)
     cf = {}
     for task in tasks:
-        others = sorted(t for t in tasks if t != task)
+        others = sorted(t for t in pool if t != task)
+        assert others, f"cf pool has no alternative for {task}"
         rng = stable_rng("cf_assignment", seed, task)
         cf[task] = others[int(rng.integers(len(others)))]
     return cf
