@@ -5,6 +5,26 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-07-10 — Stream W conventions: projection-ablation indexing + single-task TSVD banks
+
+- **Ablation/edit-layer indexing, pinned:** the preimage banks are keyed by
+  `edit_layer = capture_layer − 1` ∈ 0..27; edit layer b means hooking the output of
+  `transformer.h.{b}` (= capture entry b+1 of the 29-entry residual stack whose entry 0 is the
+  embedding). A "start layer L, all downstream layers" ablation therefore gates a hook over
+  `model_config["layer_hook_names"]` with `if block_idx < L: return output` and NEVER touches the
+  embedding entry (no preimage exists for it; maps start at capture layer 1). Start-layer sweeps
+  run L = 0..27.
+- **Left-padded batching is safe for GPT-J logit readout without position_ids correction:** GPT-J
+  uses rotary (relative) attention and pads are masked, so a uniform left-pad shift leaves
+  real-token logits unchanged; verified in `ablate_oneshot_preimage_logprob.py`'s built-in
+  batched-vs-unbatched cross-check. Site positions must still be offset by the per-row pad amount.
+- **Single-task TSVD preimage banks** (`fit_tsvd_preimages_multicell.py --tasks ...`,
+  `<cell>/preimages/{task}_tsvd_preimage_bank.pt`): the rank-16 inverse is linear in its target,
+  so per-task banks were validated against the existing pairdiff banks via
+  `tsvd(fv_A) − tsvd(fv_B) == tsvd(fv_A − fv_B)` (rel err ~7e-6). The script's skip-guard is now
+  per-requested-bank-file (the old per-cell `diagnostics.json` marker would have skipped existing
+  cells entirely and could never add new banks incrementally).
+
 ## 2026-07-08 — Shuffled-label control validates the full-dim ridge R² (Stream V)
 
 - **The activation→FV ridge R² is real signal, not pipeline leakage.** Permuting the train-task→FV
