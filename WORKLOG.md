@@ -13,13 +13,32 @@ Newest entries at top. One stream per active line of work.
 
 ## 2026-07-10 — Stream W: 1-shot preimage-ablation causal test (GPT-J, 7 held-out tasks)
 
-**Owner:** Coordinator (tmux `fv-preimage-ablation`; CPU pod + own RunPod GPU pod).
-**Status:** v1 run complete but **fit against the max4 DEBUG FV set** — superseded. Per the
-2026-07-10 DECISIONS entry, "function vectors" = `train_varicl_top40`; the max4 FVs moved to
-`artifacts/function_vectors/gpt-j/debug/`. The v1 results
-(`results/direction3_fv_formation/oneshot_preimage_ablation/train_varicl_max4_top40/`) remain as
-a debug reference; a re-plan against `train_varicl_top40` (refit ridge cells → TSVD banks → rerun)
-is pending.
+**Owner:** Coordinator (tmux `fv-preimage-ablation`; CPU pod + own RunPod GPU pod
+`fv-preimage-ablation` nijtdy6z6jzn18, RTX PRO 4500 $0.74/hr).
+**Status:** v2 IN PROGRESS on the CANONICAL FVs (`train_varicl_top40`). v1 was fit against the
+max4 DEBUG FV set (see DECISIONS 2026-07-10; max4 moved to `.../gpt-j/debug/`) — its results
+(`.../oneshot_preimage_ablation/train_varicl_max4_top40/`) are kept only as a debug reference.
+
+**v2 design deltas vs v1:** both preimage arms have exactly 3 rows. `preimage_matched` =
+position-matched cells {cue1←pre_label_icl1, target1←last_label_icl1, final_cue←pre_label_icl2
+(the 1-shot query token is a "pre label 2" by causal context)}; `preimage_icl10` =
+{pre_label_icl10, last_label_icl10, last_prompt_icl10}. Ridge cells REFIT against
+train_varicl_top40 targets (fit uses the 20 TRAIN tasks only; 7 test tasks fully held out):
+`fit_ridge_preimages_multicell.py --cells <6 cells> --fv_root .../train_varicl_top40
+--output_root artifacts/preimage_pairdiff/train_varicl_top40 --pair_specs antonym:synonym`
+(digits pair dropped — no digits FVs in this root). TSVD banks →
+`artifacts/preimage_pairdiff_tsvdk16/train_varicl_top40/` (linearity-checked). Ablation output →
+`results/direction3_fv_formation/oneshot_preimage_ablation/train_varicl_top40/`. NEW Stage E:
+first-ever full-dim ridge R² study for this root →
+`results/direction3_fv_formation/fulldim_ridge_activation_to_fv_varicl_top40/` (10 shards +
+merge + combined_test_r2_heatmap.png, comparable to the train_selected study).
+Driver: `logs/oneshot_preimage_ablation/driver.sh` (v2 flags), tmux `streamw` on the pod.
+Known pod quirk: matplotlib/numpy clash on the pod (v1 stageD ImportError) — plots are generated
+on the CPU pod instead.
+
+**Findings:** (pending)
+**Next:** on completion: verify, plots on CPU pod, findings here, merge branch → fork `main`,
+push, terminate pod.
 
 **Question:** are the per-layer TSVD-16 ridge preimages of a task's FV causally load-bearing?
 On 1-shot prompts over the 7 ridge held-out tasks (landmark-country, word_length,
