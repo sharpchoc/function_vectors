@@ -66,14 +66,18 @@ def load_arm(task_dir, arm, metric):
     return [str(r) for r in z["row_names"]], mean
 
 
-def render(ax, grid, row_names, vmax, title, annotate=False):
+def render(ax, grid, row_names, vmax, title, annotate=False, show_xlabel=True,
+           show_ylabels=True):
     im = ax.imshow(grid, aspect="auto", cmap="RdBu_r", vmin=-vmax, vmax=vmax,
                    interpolation="nearest")
     ax.set_yticks(range(len(row_names)))
-    ax.set_yticklabels([ROW_TITLES.get(r, r) for r in row_names], fontsize=8)
+    ax.set_yticklabels([ROW_TITLES.get(r, r) for r in row_names] if show_ylabels else [],
+                       fontsize=10)
     ax.set_xticks(range(0, grid.shape[1], 4))
-    ax.set_xlabel("start edit layer L (ablate h.b for all b >= L)", fontsize=8)
-    ax.set_title(title, fontsize=9)
+    ax.tick_params(labelsize=9)
+    if show_xlabel:
+        ax.set_xlabel("start edit layer L (ablate h.b for all b ≥ L)", fontsize=10)
+    ax.set_title(title, fontsize=11, pad=8)
     if annotate:
         for i in range(grid.shape[0]):
             for j in range(grid.shape[1]):
@@ -119,29 +123,31 @@ def main():
 
     # --- per-arm figures ---
     for arm, (row_names, grid) in arm_grids.items():
-        fig, ax = plt.subplots(figsize=(9, 0.6 * len(row_names) + 1.6))
+        fig, ax = plt.subplots(figsize=(10, 0.8 * len(row_names) + 2.2),
+                               constrained_layout=True)
         im = render(ax, grid, row_names, vmax,
                     f"{ARM_TITLES[arm]} — mean Δ log p(correct) over {len(per_arm[arm])} tasks",
                     annotate=args.annotate)
         fig.colorbar(im, ax=ax, label="Δ log p (ablated − clean)")
-        fig.tight_layout()
         out = fig_dir / f"heatmap_{arm}{suffix}.png"
         fig.savefig(out, dpi=200)
         plt.close(fig)
         print(f"wrote {out}")
 
-    # --- combined 2x3 figure ---
-    fig, axes = plt.subplots(2, 3, figsize=(20, 6.5))
+    # --- combined 2x3 figure (labels only on the left column / bottom row) ---
+    fig, axes = plt.subplots(2, 3, figsize=(19, 7.5), constrained_layout=True)
     for k, arm in enumerate(ARMS):
-        ax = axes[k // 3][k % 3]
+        r, c = divmod(k, 3)
+        ax = axes[r][c]
         if arm not in arm_grids:
             ax.axis("off")
             continue
         row_names, grid = arm_grids[arm]
-        im = render(ax, grid, row_names, vmax, ARM_TITLES[arm])
+        im = render(ax, grid, row_names, vmax, ARM_TITLES[arm],
+                    show_xlabel=(r == 1), show_ylabels=(c == 0))
     fig.suptitle(f"1-shot projection-ablation: mean Δ log p(correct answer), {len(tasks)} tasks "
-                 f"({args.metric})", fontsize=12)
-    fig.colorbar(im, ax=axes, label="Δ log p (ablated − clean)", shrink=0.8)
+                 f"({args.metric})", fontsize=14)
+    fig.colorbar(im, ax=axes, label="Δ log p (ablated − clean)", shrink=0.85)
     out = fig_dir / f"heatmap_all_arms{suffix}.png"
     fig.savefig(out, dpi=200)
     plt.close(fig)
@@ -149,7 +155,8 @@ def main():
 
     # --- per-task supplementary grid ---
     fig, axes = plt.subplots(len(tasks), len(ARMS),
-                             figsize=(4.0 * len(ARMS), 1.9 * len(tasks)), squeeze=False)
+                             figsize=(3.6 * len(ARMS), 1.7 * len(tasks) + 1.0),
+                             squeeze=False, constrained_layout=True)
     for ti, task in enumerate(tasks):
         for ai, arm in enumerate(ARMS):
             ax = axes[ti][ai]
@@ -157,17 +164,21 @@ def main():
                 ax.axis("off")
                 continue
             row_names, grid = per_arm[arm][task]
-            ax.imshow(grid, aspect="auto", cmap="RdBu_r", vmin=-vmax, vmax=vmax,
-                      interpolation="nearest")
-            ax.set_xticks([])
+            last = ax.imshow(grid, aspect="auto", cmap="RdBu_r", vmin=-vmax, vmax=vmax,
+                             interpolation="nearest")
+            ax.set_xticks(range(0, grid.shape[1], 8) if ti == len(tasks) - 1 else [])
+            ax.tick_params(labelsize=7)
             ax.set_yticks(range(len(row_names)))
-            ax.set_yticklabels(row_names, fontsize=5)
+            ax.set_yticklabels(row_names if ai == 0 else [], fontsize=8)
             if ti == 0:
-                ax.set_title(ARM_TITLES[arm], fontsize=7)
+                ax.set_title(ARM_TITLES[arm], fontsize=9)
             if ai == 0:
-                ax.set_ylabel(task, fontsize=7)
-    fig.suptitle(f"per-task Δ log p heatmaps ({args.metric}, shared scale ±{vmax:.2f})", fontsize=11)
-    fig.tight_layout(rect=[0, 0, 1, 0.97])
+                ax.set_ylabel(task, fontsize=9, rotation=90)
+            if ti == len(tasks) - 1:
+                ax.set_xlabel("start layer L", fontsize=8)
+    fig.suptitle(f"per-task Δ log p heatmaps ({args.metric}, shared scale ±{vmax:.2f})",
+                 fontsize=13)
+    fig.colorbar(last, ax=axes, label="Δ log p (ablated − clean)", shrink=0.6)
     out = fig_dir / f"per_task_grid{suffix}.png"
     fig.savefig(out, dpi=180)
     plt.close(fig)
