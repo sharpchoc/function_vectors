@@ -93,8 +93,18 @@ def intervene_keys(n_shots):
     return keys
 
 
+INPUT_TOKEN_RE = re.compile(r"^demonstration_(\d+)_token$")
+
+
 def token_positions(token_labels, n_shots):
-    """{tkey: position} for the 3·n_shots demo tokens + 'qfinal' (query predictive token)."""
+    """{tkey: position} for the 3·n_shots demo tokens + 'qfinal' (query predictive token).
+
+    BUGFIX 2026-07-13: d{i}_in was previously pre-label − 1, which is the constant "A" template
+    token, NOT the input word ("Q: hot\\nA: cold" tokenizes as Q,:, hot,\\n,A,:, cold — the label
+    already carries the leading space, so pre−1 lands on "A"). It is now the LAST token of demo
+    i's input word (the `demonstration_{i}_token` group), mirroring last_label_token for labels.
+    All *_in_* grids computed before this date used the "A" token and were deleted/recomputed.
+    """
     recs = selected_token_records(token_labels)
 
     def get(role, icl):
@@ -103,11 +113,19 @@ def token_positions(token_labels, n_shots):
                 return r["token_position"]
         raise ValueError(f"missing {role}@icl={icl}")
 
+    input_last = {}
+    for p, t, l in token_labels:
+        m = INPUT_TOKEN_RE.match(l)
+        if m:
+            g = int(m.group(1))
+            input_last[g] = max(input_last.get(g, -1), int(p))
+
     pos = {}
     for i in range(1, n_shots + 1):
-        pre = get("pre_label_token", i)
-        pos[f"d{i}_in"] = pre - 1      # last input token of demo i
-        pos[f"d{i}_pre"] = pre         # the "A:" before demo i's label
+        if i not in input_last:
+            raise ValueError(f"no input-word token for ICL {i}")
+        pos[f"d{i}_in"] = input_last[i]  # last token of demo i's INPUT WORD
+        pos[f"d{i}_pre"] = get("pre_label_token", i)   # the ":" before demo i's label
         pos[f"d{i}_lab"] = get("last_label_token", i)
     pos["qfinal"] = get("last_prompt_token", None)
     seq = [pos[k] for k in intervene_keys(n_shots)] + [pos["qfinal"]]

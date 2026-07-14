@@ -3199,3 +3199,219 @@ site sustains larger/longer logit shift out to ~L25 vs early-concentrated label 
 **Next:** None pending.
 
 **Blockers:** None.
+
+---
+
+## 2026-07-12 — Stream Q addendum: line-graph summary of the 10-shot strip study
+
+**Owner:** Coordinator (CPU pod; plotting only, no GPU). **Status:** DONE.
+
+**What:** 1-D summary of the Stream Q grids requested as a line chart: x = the 30 intervene
+tokens in sequence order (d1_in…d10_lab), y = peak Δcos at qfinal (same nanmax-over-grid
+reduction as scalar_overview.png), one line per (direction, α) = 12 lines. Hue = direction
+(4 fixed categorical slots), line style = α (solid 2 / dashed 4 / dotted 8).
+
+**Files:** NEW `src/eval_scripts/plot_tenshot_strip_lines.py` (CPU-only; reads the saved .npy
+grids; `--labels_only` restricts x to the 10 demo label tokens; `--top_k N` reduces each grid to
+the mean of its top-N cells instead of the max — top-10 variants saved as `*_top10.png`, nearly
+identical shape to the max, values ~7% lower on average (top10/max = 0.93 mean, 0.85–0.98 across
+the 100 label-token grids with max>0.01) ⇒ the peak sits on a coherent high-Δcos plateau,
+not an isolated spike). Output
+`results/direction2_label_geometry/tenshot_strip_intervention_cos_heatmap/figures/scalar_lines.png`
+and `scalar_lines_labels_only.png`. DELETED `figures/scalar_overview.png` (superseded by the line
+views; `plot_tenshot_strip_heatmap.py` can still regenerate it from the grids if ever needed).
+
+**Findings:** the line view makes the Stream Q claims directly visible — sawtooth with ~all
+signal at `lab` tokens (in/pre ≈ 0); syn→ant ≫ ant→syn at every demo; digits show α=2 ≥ α=4 ≥ α=8
+(saturation) while syn→ant strengthens with α; contribution is spread across demos 2–10 with a
+d10_lab spike for syn→ant α8.
+
+**Next:** none pending. **Blockers:** none.
+
+---
+
+## 2026-07-13 — GPT-J baseline accuracy vs n_shots (0..10), 4 strip-study tasks
+
+**Owner:** Coordinator (CPU pod; GPU compute on a fresh L4 pod — no 4090 in EU-RO-1 stock;
+Blackwells excluded per DECISIONS torch incompat). **Status:** DONE, pod `i4eehnuear0yje` terminated.
+
+**What:** Baseline (no-intervention) top-1/2/3 accuracy for antonym / synonym / next_number_digits /
+prev_number_digits at n_shots 0..10, full test split, same Q:/A: template as the 10-shot strip study
+— companion figure to the scalar_lines strip summaries.
+
+**Files:** NEW `src/eval_scripts/compute_task_accuracy_by_nshots.py` (GPU; resumable per (task,n)
+cell; NOTE wraps the eval in torch.no_grad() — `eval_utils.n_shot_eval_no_intervention`'s batched
+logit path lacks it and OOMs at batch_size 32 from autograd graph retention, latent bug for any
+future batched caller) + `plot_task_accuracy_by_nshots.py` (CPU). Output (TRACKED)
+`results/general/task_accuracies/by_nshots/{task}_n{n}.json` (44 cells); figures
+`gptj_accuracy_by_nshots_top{1,3}.png` live next to the strip summaries in
+`results/direction2_label_geometry/tenshot_strip_intervention_cos_heatmap/figures/` (user request;
+JSONs stay in general/). Log `logs/acc_by_nshots.log`.
+
+**FINDINGS:** digit tasks hit 100% top-1 by n=1 (next) / n=2 (prev); n_test only 42 there.
+Antonym climbs 0.6%→24.6%→47.7%→56.5% (n=0..3), plateaus ~62-66% by n=5. Synonym saturates
+~22-26% from n=5. All four ≈0% at n=0. Shape matches the steering-impact rise over demos 1-3
+(task evidence accumulates over the first ~3 demos then saturates).
+
+**Blockers:** none.
+
+---
+
+## 2026-07-13 — Stream R: 10-shot strip activation-MAGNITUDE heatmaps + d_in token BUGFIX
+
+**Owner:** Coordinator (CPU pod; 6× RTX PRO 4500 Blackwell pods, ~$0.74/hr each). **Status:** DONE,
+all pods terminated after run.
+
+**BUGFIX (affects Stream Q too):** `token_positions` defined `d{i}_in = pre_label − 1`, which is the
+constant "A" template token, NOT the input word ("Q: hot\nA: cold" → Q,:, hot,\n,A,:, cold; the label
+carries the leading space, so pre−1 = "A"). Every `*_in_*` grid in the cos study measured steering at
+"A". Fixed in BOTH tenshot scripts: `d{i}_in` = LAST token of demo i's input word (via
+`demonstration_{i}_token` meta labels; handles multi-token inputs). All old `_in` grids (240 cos,
+124 norm) deleted and recomputed with the corrected position; `_pre`/`_lab`/qfinal grids unaffected.
+Two-shot study unaffected (never had an `_in` slot). Stream Q's "input rows ≈ 0" finding SURVIVES the
+fix (see below), but pre-fix it had only tested the "A" token. Blackwell sm_120 works with the
+template image's torch 2.8 cu128 (smoke-validated).
+
+**What (Stream R):** same sweep as Stream Q (identical pairing, steer vecs, point-edits; n_pairs=300,
+α∈{2,4,8}, both pairs, both directions) but measuring MAGNITUDE of the qfinal move per (intervene
+layer i × read layer k): rel = mean‖Δ‖/‖clean‖ (THE metric of record, per user) and raw = mean‖Δ‖,
+both from one steered pass. Split across 6 pods by (task_pair, α); resumable; merged summaries
+rebuilt via a final full-α resume-run per pair.
+
+**Files:** NEW `src/eval_scripts/steer_tenshot_strip_norm_heatmap.py`, NEW
+`plot_tenshot_strip_norm_heatmap.py` (--metric rel/raw; sequential magma strips + scalar-lines
+summaries). Output (TRACKED rel .csv only, 360; rel/raw .npy gitignored)
+`results/direction2_label_geometry/tenshot_strip_intervention_norm_heatmap/<pair>/` +
+figures (strip_rel_alpha{2,4,8}, scalar_lines_rel[_labels_only]). Cos study figures
+re-rendered with corrected `_in` rows (scalar_overview.png stays deleted; top10 line figures deleted —
+user: same info as max). Logs `logs/normstrip_*.log`.
+
+**FINDINGS:**
+- **Magnitude confirms the label-token story with correct input tokens.** rel peak/median by slot:
+  lab 0.317/0.138 ≫ pre 0.141/0.024, in 0.095/0.019. Corrected cos rows: in max 0.009 (median 0.001)
+  — REAL input-word steering still produces ~no directional shift toward the target task at qfinal.
+- **But input-word edits DO move qfinal.** At α=8 the in-slots reach rel ~0.05–0.12, growing with
+  demo index — the perturbation propagates (magnitude) without rotating qfinal toward the paired
+  task (cos ≈0): consistent with lexical, non-task-directional transport.
+- **A third "gain" metric (mean‖Δ‖/(α·‖steer_vec‖)) was computed and RETIRED same-day** — it was a
+  coordinator addition, not requested (user wanted rel = ‖Δ(k)‖/‖clean(k)‖, which exists). It is
+  also degenerate (user-caught): where the two tasks' mean activations coincide — digit in-slots
+  (identical input distributions), layer 0 — the denominator is sampling noise and the ratio blows
+  up (spikes to ~50; e.g. next→prev d7_in α8 "peak" 22 at intervene L0, ‖steer_vec‖=0.065).
+  Gain grids deleted from disk, dropped from both scripts and figures; the `gain` peak entries
+  still inside the existing summary JSONs are DEPRECATED — do not cite. For the record, masked
+  (‖steer_vec‖≥1) gain medians ordered lab 0.92 > in 0.57 > pre 0.18, consistent with rel.
+- rel lab-token peaks sit at intervene L5–8 → read L~13–26 (median 7→17), same band as the cos study.
+- Norm-growth check: mean clean qfinal norm grows monotonically with read layer (summary
+  `mean_clean_norm_by_read_layer`), which is why raw grids skew late and rel is the headline.
+
+**Verification:** smoke (16 pairs, 3 layers) surfaced a 0/0 at layer 0 (constant-token slots — the
+observation that led to both the d_in bugfix and, later, the gain retirement); full run: lower-tri≡0
+and finiteness asserts pass on all rel/raw norm grids + 360 cos grids; corrected-position sanity
+checked on CPU with multi-token inputs ("mountain top" → " top"); rel figures re-render cleanly
+after the gain removal and --metric gain is rejected by argparse.
+
+**Blockers:** none.
+
+---
+
+## 2026-07-14 — Stream S: per-pair ("nearest neighbour") steering for the two-shot token-pair heatmaps + input2/qinput position BUGFIX
+
+**Owner:** Stream S (CPU pod; 1× A100 80GB PCIe pod `fv-perpair-steering`, $1.39/hr, terminated after run).
+**Status:** DONE. Compute 00:04–00:52 UTC (~48 min, BS=256); figures rendered on the CPU pod
+(the GPU container's system python has a numpy/matplotlib ABI mismatch — plot there fails with
+`_ARRAY_API not found`; plotting is CPU-only anyway).
+
+**What:** user-requested extension of the two-shot token-pair cosine study: `--steer_mode perpair`
+in `steer_twoshot_tokenpair_cos_heatmap.py` — instead of the pair-MEAN steer vector, each source
+prompt is steered by its OWN matched counterfactual's activation diff at the edited (token, layer);
+α=1 ≡ exact single-site activation patching (asserted: cos(steered site, tgt site) > 0.999).
+α∈{0.5,1,2}, both directions, both task pairs; evaluation identical (per-pair Δcos toward the
+matched target acts, averaged). Output NEW root
+`results/direction2_label_geometry/twoshot_tokenpair_perpair_cos_heatmap/` (same file layout →
+`plot_twoshot_tokenpair_heatmap_grid.py --root ... --alphas 0.5 1 2` runs unchanged).
+
+**BUGFIX (corrects Stream R's "two-shot study unaffected" claim):** the twoshot tokenpair script
+HAD the d_in bug — `input2 = prelabel2 − 1` and `qinput = qfinal − 1` are the constant "A" template
+token, not the input/query words. Conclusive: in the existing mean-study summary JSON, input2's
+embedding-layer steer norm ≡ 0 and baseline cos ≡ 1.0 (byte-identical token across f1/f2 despite
+differing demo-2 input words). Fixed like the tenshot scripts (last token of the
+`demonstration_2_token` / `query_demonstration_token` groups) + startup decoded-token print/asserts.
+ALL input2/qinput grids and figures in the EXISTING
+`twoshot_tokenpair_intervention_cos_heatmap/` measured the "A" token — left in place (user's call
+whether to replace), but a position-correct mean rerun (α∈{2,4}) goes ADDITIVELY to
+`twoshot_tokenpair_mean_fixedpos_cos_heatmap/` in the same launch.
+
+**Files:** `src/eval_scripts/steer_twoshot_tokenpair_cos_heatmap.py` (--steer_mode, per-row add_vec
+in capture(), position fix, sanity asserts; mean path bit-identical — verified), NEW launcher
+`logs/run_twoshot_tokenpair_perpair.sh`; log `logs/twoshot_tokenpair_perpair_full.log`.
+
+**Verification so far:** smoke (16 pairs, layers 0/6/11): (1) edited script in mean mode
+bit-identical to `git show HEAD` original on all 12 grids not involving input2/qinput; (2) affected
+grids changed as intended; (3) decoded sample tokens f1/f2 = ' square'/' ring' (input2), 'ner'
+(qinput); CPU multi-token check "mountain top" → ' top'; (4) perpair α=1 patch assert + structural
+asserts (lower-tri≡0, clean embedding col≡0) pass.
+
+**FINDINGS (antonym→synonym unless noted; peaks are max Δcos over the 29×29 grid):**
+- **Per-pair patching at α=1 matches mean steering at α=4 on the label tokens.** label2→qfinal:
+  perpair α=1 +0.054 @ i8/k18 vs mean α=4 +0.054; label1→qfinal perpair α=1 +0.017 vs mean α=4
+  +0.026. Same early-intervene (L7–8) → mid/late-read band as the mean study.
+- **Per-pair is non-monotone in α: α=1 (exact patching) ≥ α=2 almost everywhere** (e.g.
+  input2→prelabel2 +0.123 @α1 vs +0.104 @α2) — overshooting past the counterfactual hurts,
+  unlike mean steering which keeps growing to α=4. α=1 is the natural operating point.
+- **The input-word row flips the story vs mean steering.** Mean steering (position-correct) still
+  barely moves anything from input2 (peaks +0.006–0.010, echoing Stream Q/R "input rows ≈ 0"),
+  but per-pair patching of the demo-2 input word is the STRONGEST cell in the whole matrix:
+  input2→prelabel2 +0.123 @ i7/k24, input2→qfinal +0.075 @ i0 (α=1; digits: input2→label2
+  +0.144/+0.151 @ i0/k10). Interpretation: per-pair input diffs are lexically idiosyncratic and
+  cancel in the mean vector (‖mean diff‖ ≪ mean‖diff‖), so only the matched-counterfactual edit
+  transports them; at i0 it is literally swapping the input token embedding. Caveat: input2 edits
+  mix lexical+function content by construction.
+- **Full-run regression:** in the fixed-pos mean rerun, grids among {label1, prelabel2, label2,
+  qfinal} are numerically identical to the ORIGINAL mean study (same peaks to 4 dp) — the position
+  fix changed nothing it shouldn't. qinput rows DID change (old qinput was the constant "A"):
+  e.g. qinput→qfinal α4 +0.003 (old) → +0.010 (fixed).
+- All structural asserts pass on the full run (perpair α=1 patch-identity, lower-tri≡0, clean
+  embedding col≡0, finiteness).
+
+**Next:** decide whether the ORIGINAL `twoshot_tokenpair_intervention_cos_heatmap/` (pre-fix
+input2/qinput grids) should be replaced by the fixedpos rerun.
+
+**Blockers:** none.
+
+---
+
+## 2026-07-14 — Stream R addendum: signed norm-growth metric (ngrow) + rot
+
+**Owner:** Coordinator (6 fresh RTX PRO 4500 Blackwell pods `fv-ngrow-1..6`, terminated after).
+**Status:** DONE.
+
+**What:** user-requested 4th metric ngrow(i,k) = mean_pairs[‖steered(k)‖₂/‖clean(k)‖₂ − 1] — SIGNED
+norm growth of qfinal (does the activation grow or shrink), needing a full recompute (‖steered‖ was
+never saved). Same sweep/split as Stream R. Also saved (unplotted, future-proofing) rot(i,k) =
+mean_pairs[cos(steered, clean)] — with ngrow this decomposes any move into scaling vs rotation
+without another GPU run. Resume semantics changed: cell skipped iff ALL metric .npys exist; rel/raw
+rewritten identically for consistency. rot lower-tri ≡ 1 within 1e-5 (cos(x,x) float rounding), the
+others exactly 0.
+
+**Files:** extended `steer_tenshot_strip_norm_heatmap.py` + `plot_tenshot_strip_norm_heatmap.py`
+(--metric ngrow: diverging RdBu strips centred on 0; lines reduce by signed extreme = max |cell|).
+NEW figures strip_ngrow_alpha{2,4,8}.png, scalar_lines_ngrow[_labels_only].png. Logs
+`logs/ngrow_*.log`. Summary JSONs now carry peak+trough for ngrow/rot.
+
+**FINDINGS:**
+- **Label steering GROWS the qfinal activation; word-task α=8 steering SHRINKS it.** Sawtooth at lab
+  tokens, amplitude growing with demo index. Extremes per direction: next→prev +0.149 (d10_lab, α=2!)
+  / −0.041 (d10_lab α8); prev→next +0.075; ant→syn +0.042 / −0.040 (d10_pre α8); syn→ant +0.042 /
+  −0.031 (d10_lab α8).
+- **Sign flips with α for the word pair:** small injections grow the norm, α=8 turns growth into
+  shrinkage at late-demo lab/pre slots (visible as the negative dips of the dotted lines) — large
+  pushes move qfinal off-manifold and the norm contracts.
+- ngrow magnitudes (≤0.15) are much smaller than rel (≤0.32): most of the movement is rotation /
+  off-axis displacement, not radial scaling (rot grids saved for the full decomposition).
+
+**Ops note:** first fan-out launched with no `cd` (SSH lands in /root) → all 6 died silently while
+pgrep liveness checks self-matched; caught by user noticing idle GPUs. Rule now in memory: cd
+explicitly, verify via `$!` + `kill -0`, never pgrep. ~$1 idle waste.
+
+**Blockers:** none.

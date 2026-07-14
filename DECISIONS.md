@@ -1154,3 +1154,27 @@ effect. `task_specific` is genuinely distinct from both at every n.
   source file without coordinating (per CLAUDE.md). `compute_multitask_top_aie_heads.py`
   and `evaluate_heldout_multitask_head_fvs.py` are the currently-modified shared files.
 - Nothing is committed yet; all experimental scripts + results are uncommitted.
+
+## 2026-07-13 — Verify token positions against the tokenizer, not by offset arithmetic
+
+The 10-shot strip studies selected the "input" slot as `pre_label − 1`, silently landing on the
+constant "A" template token for months of grids (labels carry their leading space, so the input word
+is 2+ tokens further left). Lesson: when a script picks "the X token" by positional arithmetic,
+print/assert the decoded token string for a sample prompt at startup (or derive positions from the
+`get_token_meta_labels` roles, e.g. `demonstration_{i}_token`), never trust offsets from adjacent
+structural tokens. Fixed in both `steer_tenshot_strip_{cos,norm}_heatmap.py` (see WORKLOG Stream R).
+
+## 2026-07-14 — Two-shot token-pair study: perpair steering mode + the d_in bug applied here too
+
+- `steer_twoshot_tokenpair_cos_heatmap.py --steer_mode perpair` = per-pair (matched-counterfactual,
+  the user's "nearest neighbour") steering: each source prompt is injected with its OWN pair's
+  tgt−src activation diff at the edited (token, layer); α=1 ≡ exact single-site activation patching
+  (asserted at runtime). Results root: `twoshot_tokenpair_perpair_cos_heatmap/` (α∈{0.5,1,2}).
+- The 2026-07-13 "verify token positions" lesson applied to this script as well (contrary to
+  Stream R's "two-shot study unaffected" note): its `input2`/`qinput` were `pre_label−1`/`qfinal−1`
+  = the constant "A". Consequently in the ORIGINAL
+  `twoshot_tokenpair_intervention_cos_heatmap/` results, every grid whose source OR read token is
+  input2/qinput measured the "A" token — do not cite those; grids among
+  {label1, prelabel2, label2, qfinal} are unaffected. A position-correct mean rerun (α∈{2,4}) lives
+  in `twoshot_tokenpair_mean_fixedpos_cos_heatmap/`; the original dir is kept until the user
+  decides to replace it.
