@@ -3378,3 +3378,75 @@ asserts (lower-tri≡0, clean embedding col≡0) pass.
 input2/qinput grids) should be replaced by the fixedpos rerun.
 
 **Blockers:** none.
+
+---
+
+## 2026-07-14 — Stream R addendum: signed norm-growth metric (ngrow) + rot
+
+**Owner:** Coordinator (6 fresh RTX PRO 4500 Blackwell pods `fv-ngrow-1..6`, terminated after).
+**Status:** DONE.
+
+**What:** user-requested 4th metric ngrow(i,k) = mean_pairs[‖steered(k)‖₂/‖clean(k)‖₂ − 1] — SIGNED
+norm growth of qfinal (does the activation grow or shrink), needing a full recompute (‖steered‖ was
+never saved). Same sweep/split as Stream R. Also saved (unplotted, future-proofing) rot(i,k) =
+mean_pairs[cos(steered, clean)] — with ngrow this decomposes any move into scaling vs rotation
+without another GPU run. Resume semantics changed: cell skipped iff ALL metric .npys exist; rel/raw
+rewritten identically for consistency. rot lower-tri ≡ 1 within 1e-5 (cos(x,x) float rounding), the
+others exactly 0.
+
+**Files:** extended `steer_tenshot_strip_norm_heatmap.py` + `plot_tenshot_strip_norm_heatmap.py`
+(--metric ngrow: diverging RdBu strips centred on 0; lines reduce by signed extreme = max |cell|).
+NEW figures strip_ngrow_alpha{2,4,8}.png, scalar_lines_ngrow[_labels_only].png. Logs
+`logs/ngrow_*.log`. Summary JSONs now carry peak+trough for ngrow/rot.
+
+**FINDINGS:**
+- **Label steering GROWS the qfinal activation; word-task α=8 steering SHRINKS it.** Sawtooth at lab
+  tokens, amplitude growing with demo index. Extremes per direction: next→prev +0.149 (d10_lab, α=2!)
+  / −0.041 (d10_lab α8); prev→next +0.075; ant→syn +0.042 / −0.040 (d10_pre α8); syn→ant +0.042 /
+  −0.031 (d10_lab α8).
+- **Sign flips with α for the word pair:** small injections grow the norm, α=8 turns growth into
+  shrinkage at late-demo lab/pre slots (visible as the negative dips of the dotted lines) — large
+  pushes move qfinal off-manifold and the norm contracts.
+- ngrow magnitudes (≤0.15) are much smaller than rel (≤0.32): most of the movement is rotation /
+  off-axis displacement, not radial scaling (rot grids saved for the full decomposition).
+
+**Ops note:** first fan-out launched with no `cd` (SSH lands in /root) → all 6 died silently while
+pgrep liveness checks self-matched; caught by user noticing idle GPUs. Rule now in memory: cd
+explicitly, verify via `$!` + `kill -0`, never pgrep. ~$1 idle waste.
+
+**Blockers:** none.
+
+---
+
+## 2026-07-14 — Stream S addendum: cumulative-CLAMP sanity study (trajectory patching)
+
+**Owner:** Stream S (1× RTX PRO 4500 Blackwell pod `fv-cumclamp-steering`, $0.74/hr, terminated).
+**Status:** DONE. Compute 18:40–18:55 UTC (~15 min, BS=128); figures rendered on the CPU pod.
+
+**What (user-requested sanity check):** `--layer_mode cumulative` in
+`steer_twoshot_tokenpair_cos_heatmap.py` — for intervention token t and start layer i, hard-CLAMP
+t's activation to the matched counterfactual's at EVERY layer ℓ∈[i..28] (layer-specific values =
+per-pair trajectory patching from layer i on; perpair only, argparse-enforced; NO α sweep — grids
+carry the nominal `alpha1` tag so the plot script runs with `--alphas 1`). Same Δcos measurement
+and figures; grid x-axis = clamp START layer. Output
+`results/direction2_label_geometry/twoshot_tokenpair_perpair_cumclamp_cos_heatmap/`. Launcher
+`logs/run_twoshot_tokenpair_cumclamp.sh`; log `logs/twoshot_tokenpair_cumclamp_full.log`.
+
+**FINDINGS (antonym→synonym; digits analogous):**
+- **Sanity check PASSES: cumclamp ≥ single-site perpair α=1 on all 15/15 token-pair peaks** (none
+  weaker by >0.001). Single-site is the ℓ=i-only special case and behaves like a lower bound.
+- **Peaks migrate to start layer i=0** for 13/15 pairs (full-trajectory replacement ≈ counterfactual
+  token substitution is maximal): input2→prelabel2 +0.135 @ i0/k24 (vs +0.123 @ i7 single-site),
+  label2→qfinal +0.068 @ i0/k26 (vs +0.054 @ i8), qinput→qfinal +0.017 @ i0 (vs +0.010 @ i13).
+- Gains over single-site are mostly modest (~1.1–2×), i.e. a single well-placed site already
+  captures the bulk of what the full clamped trajectory transports; the biggest relative gains are
+  on the weak late-token pairs (prelabel2→label2 +0.033 vs +0.017).
+- Clamp-identity asserts (ℓ=i and ℓ=28) and lower-tri≡0 hold on the full run; the clean-token
+  embedding-column assert is single-mode-only by design (a clamp starting at i=0 also patches
+  layers 1..28, so column 0 is legitimately nonzero).
+
+**Verification:** hook refactor regression — edited script in mean/single mode is bit-identical to
+the `claude-perpair-steering` version on all 30 smoke grids; cumulative smoke peaks consistent with
+the full run; `--layer_mode cumulative --steer_mode mean` rejected by argparse.
+
+**Blockers:** none.

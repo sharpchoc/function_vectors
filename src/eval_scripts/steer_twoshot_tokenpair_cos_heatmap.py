@@ -31,6 +31,12 @@ layer k:
     steer_vec_p(t, ℓ) = act_tgt_p(t, ℓ) − act_src_p(t, ℓ)
 injected per prompt (α=1 ≡ exact single-site activation patching; asserted). Evaluation is
 identical. Outputs go to twoshot_tokenpair_perpair_cos_heatmap/ (same file layout).
+
+--layer_mode cumulative (perpair only): instead of a single-site edit at layer i, the intervention
+token's activation is hard-CLAMPED to the matched target's at EVERY layer ℓ∈[i..28] (trajectory
+patching from the start layer i on; asserted at ℓ=i and ℓ=28). No strength sweep (clamping makes α
+irrelevant) — grids are tagged with the nominal alpha1 so the plot script runs with --alphas 1.
+The grid x-axis is the clamp START layer. Outputs: twoshot_tokenpair_perpair_cumclamp_cos_heatmap/.
     cell(i,k) = mean_pairs[ cos(steered_src(t_j,k), tgt(t_j,k)) − cos(src(t_j,k), tgt(t_j,k)) ]
 → one 29×29 grid (x=intervention layer, y=read layer) per (direction, t_i→t_j, α). 15 token-pairs.
 
@@ -189,6 +195,11 @@ def parse_args():
                    help="mean: inject the pair-mean steer vector (original study). perpair: inject each "
                         "pair's OWN tgt−src difference at the edited (token, layer) — α=1 is exact "
                         "single-site activation patching.")
+    p.add_argument("--layer_mode", choices=["single", "cumulative"], default="single",
+                   help="single: edit only at the intervention layer i (original). cumulative: hard-CLAMP "
+                        "the intervention token's activation to the matched target's at EVERY layer "
+                        "ℓ∈[i..28] (trajectory patching from layer i on; perpair only, no α sweep — "
+                        "--alphas is ignored and files are tagged with the nominal alpha1).")
     p.add_argument("--alphas", type=float, nargs="+", default=[2.0, 4.0])
     p.add_argument("--layers", type=int, nargs="+", default=None,
                    help="Subset of INTERVENTION layers (0..28) to sweep; default = all 29. Reads are always all 29.")
@@ -203,9 +214,19 @@ def parse_args():
                    help="Default depends on --steer_mode: twoshot_tokenpair_intervention_cos_heatmap "
                         "(mean) or twoshot_tokenpair_perpair_cos_heatmap (perpair).")
     args = p.parse_args()
+    if args.layer_mode == "cumulative":
+        if args.steer_mode != "perpair":
+            p.error("--layer_mode cumulative requires --steer_mode perpair (clamp is per-pair by definition)")
+        if args.alphas != [1.0]:
+            print(f"NOTE: --layer_mode cumulative clamps (no strength); ignoring --alphas {args.alphas} -> [1.0]")
+            args.alphas = [1.0]
     if args.output_root is None:
-        sub = ("twoshot_tokenpair_intervention_cos_heatmap" if args.steer_mode == "mean"
-               else "twoshot_tokenpair_perpair_cos_heatmap")
+        if args.layer_mode == "cumulative":
+            sub = "twoshot_tokenpair_perpair_cumclamp_cos_heatmap"
+        elif args.steer_mode == "mean":
+            sub = "twoshot_tokenpair_intervention_cos_heatmap"
+        else:
+            sub = "twoshot_tokenpair_perpair_cos_heatmap"
         args.output_root = str(LABEL_GEOMETRY_DIR / sub)
     return args
 
@@ -351,15 +372,36 @@ def main():
             return output
         return hook
 
-    def capture(chunks, edit_name=None, add_vec=None, edit_col=None):
+    def make_clamp_hook(clamp_idx, vals, rows0, edit_pos):
+        # Same 2-arg closure constraint as make_edit_hook. clamp_idx: layer_name -> column into
+        # vals [B, n_clamp, D]; hard-REPLACES the token's activation at every clamped layer.
+        def hook(output, layer_name):
+            j = clamp_idx.get(layer_name)
+            if j is None:
+                return output
+            out = output[0] if isinstance(output, tuple) else output
+            out[rows0, edit_pos] = vals[:, j]
+            return output
+        return hook
+
+    def capture(chunks, edit_name=None, add_vec=None, edit_col=None,
+                clamp_names=None, clamp_vals=None):
         """Forward over chunks; gather acts at all 6 tokens × 29 layers → [N, 6, 29, D] (GPU, model dtype).
 
         add_vec: [D] (shared vector, broadcast over rows — mean mode) or [N, D] (one vector per
-        prompt pair, sliced per chunk in pair order — perpair mode)."""
+        prompt pair, sliced per chunk in pair order — perpair mode).
+        clamp_names/clamp_vals: cumulative mode — hard-clamp the edit_col token to
+        clamp_vals [N, len(clamp_names), D] (model dtype) at each named layer."""
         outs = []
         off = 0
         for ch in chunks:
-            if edit_name is not None:
+            if clamp_names is not None:
+                rows0 = torch.arange(ch["n"], device=device)
+                clamp_idx = {nm: j for j, nm in enumerate(clamp_names)}
+                vals = clamp_vals[off:off + ch["n"]].to(dtype)
+                hook = make_clamp_hook(clamp_idx, vals, rows0, ch["pos"][:, edit_col])
+                cm = TraceDict(model, layers=layer_names, edit_output=hook, retain_output=True)
+            elif edit_name is not None:
                 rows0 = torch.arange(ch["n"], device=device)
                 av = add_vec if add_vec.dim() == 1 else add_vec[off:off + ch["n"]].to(dtype)
                 hook = make_edit_hook(edit_name, av, rows0, ch["pos"][:, edit_col])
@@ -393,7 +435,7 @@ def main():
     (out_dir / "figures").mkdir(parents=True, exist_ok=True)
 
     summary = {"task_pair": args.task_pair, "f1": f1, "f2": f2, "n_pairs": n_pairs,
-               "steer_mode": args.steer_mode,
+               "steer_mode": args.steer_mode, "layer_mode": args.layer_mode,
                "n_layers": n_layers, "alphas": args.alphas, "tokens": TOKENS,
                "clean_token": CLEAN, "intervention_source_tokens": [TOKENS[i] for i in SRC_TOKEN_IDX],
                "intervention_layers": inter_layers,
@@ -422,7 +464,8 @@ def main():
             del sa, ta
         steer_vec = steer_sum / n_pairs                                   # [6,29,D] (mean mode only)
         mean_baseline = baseline_cos.mean(0).cpu().numpy()                # [6,29]
-        print(f"\n=== direction {dir_name} (inject into {src_tag}, steer_mode={args.steer_mode}) ===")
+        print(f"\n=== direction {dir_name} (inject into {src_tag}, steer_mode={args.steer_mode}, "
+              f"layer_mode={args.layer_mode}) ===")
 
         dsum = {"src_task": src_task, "tgt_task": tgt_task, "inject_into": src_tag,
                 "steer_mode": args.steer_mode,
@@ -443,18 +486,28 @@ def main():
                      for si in SRC_TOKEN_IDX for sj in range(si + 1, N_TOKENS)}
             for i in inter_layers:
                 for si in SRC_TOKEN_IDX:
-                    if args.steer_mode == "mean":
-                        add_vec = (alpha * steer_vec[si, i]).to(device=device, dtype=dtype)  # [D]
-                    else:  # perpair: each pair's own tgt−src diff at this (token, layer) site
-                        add_vec = alpha * (tgt_h[:, si, i].float() - src_h[:, si, i].float())  # [N,D] fp32
-                    sfin = capture(src_chunks, edit_name=layer_names[i], add_vec=add_vec, edit_col=si)  # fp16 [N,6,29,D]
-                    if args.steer_mode == "perpair" and alpha == 1.0:
-                        # α=1 ≡ single-site activation patching: the edited site must equal the target
-                        # activation (up to fp16 rounding; skip degenerate zero-diff sites, e.g. layer 0
-                        # of clean tokens where src == tgt exactly and cos is trivially 1 anyway).
-                        pc = F.cosine_similarity(sfin[:, si, i].float(), tgt_h[:, si, i].float(), dim=-1)
-                        assert pc.min().item() > 0.999, \
-                            f"α=1 patch mismatch at {TOKENS[si]} L{i}: min cos {pc.min().item():.6f}"
+                    if args.layer_mode == "cumulative":
+                        # clamp the token to the matched target's activations at EVERY layer ℓ∈[i..28]
+                        sfin = capture(src_chunks, edit_col=si,
+                                       clamp_names=layer_names[i:], clamp_vals=tgt_h[:, si, i:])
+                        for lchk in (i, n_layers - 1):  # clamp identity at the first & last clamped layer
+                            pc = F.cosine_similarity(sfin[:, si, lchk].float(),
+                                                     tgt_h[:, si, lchk].float(), dim=-1)
+                            assert pc.min().item() > 0.999, \
+                                f"clamp mismatch at {TOKENS[si]} L{lchk} (start {i}): min cos {pc.min().item():.6f}"
+                    else:
+                        if args.steer_mode == "mean":
+                            add_vec = (alpha * steer_vec[si, i]).to(device=device, dtype=dtype)  # [D]
+                        else:  # perpair: each pair's own tgt−src diff at this (token, layer) site
+                            add_vec = alpha * (tgt_h[:, si, i].float() - src_h[:, si, i].float())  # [N,D] fp32
+                        sfin = capture(src_chunks, edit_name=layer_names[i], add_vec=add_vec, edit_col=si)  # fp16 [N,6,29,D]
+                        if args.steer_mode == "perpair" and alpha == 1.0:
+                            # α=1 ≡ single-site activation patching: the edited site must equal the target
+                            # activation (up to fp16 rounding; skip degenerate zero-diff sites, e.g. layer 0
+                            # of clean tokens where src == tgt exactly and cos is trivially 1 anyway).
+                            pc = F.cosine_similarity(sfin[:, si, i].float(), tgt_h[:, si, i].float(), dim=-1)
+                            assert pc.min().item() > 0.999, \
+                                f"α=1 patch mismatch at {TOKENS[si]} L{i}: min cos {pc.min().item():.6f}"
                     for sj in range(si + 1, N_TOKENS):
                         steered_cos = F.cosine_similarity(sfin[:, sj].float(), tgt_h[:, sj].float(), dim=-1)  # [N,29]
                         shift = (steered_cos - baseline_cos[:, sj]).mean(0).cpu().numpy()                      # [29]
@@ -472,8 +525,10 @@ def main():
                 # lower triangle (read layer k <= intervention layer i) must be exactly 0
                 for i in inter_layers:
                     assert np.all(grid[: i + 1, i] == 0.0), f"lower-tri nonzero {src_t}->{read_t} i={i}"
-                # embedding column (intervene at layer 0) == 0 for CLEAN source tokens only
-                if 0 in inter_layers and CLEAN[src_t]:
+                # embedding column (intervene at layer 0) == 0 for CLEAN source tokens only.
+                # single mode only: a cumulative clamp starting at i=0 also patches layers 1..28,
+                # so its column 0 is legitimately nonzero even for clean tokens.
+                if 0 in inter_layers and CLEAN[src_t] and args.layer_mode == "single":
                     assert np.all(grid[:, 0] == 0.0), f"embedding col nonzero for clean src {src_t}"
 
                 tag = f"{dir_name}__{src_t}_to_{read_t}_alpha{alpha:g}"

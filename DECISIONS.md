@@ -1178,3 +1178,13 @@ structural tokens. Fixed in both `steer_tenshot_strip_{cos,norm}_heatmap.py` (se
   {label1, prelabel2, label2, qfinal} are unaffected. A position-correct mean rerun (α∈{2,4}) lives
   in `twoshot_tokenpair_mean_fixedpos_cos_heatmap/`; the original dir is kept until the user
   decides to replace it.
+
+## 2026-07-14 — Cumulative clamp mode for the two-shot token-pair study
+
+`steer_twoshot_tokenpair_cos_heatmap.py --layer_mode cumulative` (perpair only) hard-clamps the
+intervention token to the matched counterfactual's activations at every layer from the start
+layer i through 28 — per-pair trajectory patching, no strength sweep (α irrelevant under clamping).
+File/figure names carry a NOMINAL `alpha1` tag purely for plot-script compatibility
+(`plot_twoshot_tokenpair_heatmap_grid.py --alphas 1`); do not read it as a strength. The grid
+x-axis is the clamp START layer, and the clean-token embedding-column≡0 invariant does NOT apply
+in this mode. Results: `twoshot_tokenpair_perpair_cumclamp_cos_heatmap/`.
