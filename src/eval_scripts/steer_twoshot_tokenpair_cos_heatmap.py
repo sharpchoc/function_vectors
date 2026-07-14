@@ -12,11 +12,13 @@ f1/f2 prompts (pure function context); only the demo-2 input token differs.
 
 Search-space tokens (sequence order):
     t1 label1   = last_label_token @ icl 1      (identical across functions)
-    t2 input2   = (pre_label_token @ icl 2) − 1 (demo-2 last input token; DIFFERS across functions)
-    t3 prelabel2= pre_label_token  @ icl 2      (the "A:" before L2; identical)
+    t2 input2   = last token of demo-2 INPUT WORD, via demonstration_2_token meta labels
+                  (DIFFERS across functions; BUGFIX 2026-07-13 — was pre_label−1 = the constant "A")
+    t3 prelabel2= pre_label_token  @ icl 2      (the ":" before L2; identical)
     t4 label2   = last_label_token @ icl 2      (identical)
-    t5 qinput   = (last_prompt_token) − 1       (query last input token; identical)
-    t6 qfinal   = last_prompt_token @ None      (trailing "A:" = query-final/predictive; identical)
+    t5 qinput   = last token of the QUERY WORD, via query_demonstration_token meta labels
+                  (identical; BUGFIX 2026-07-13 — was qfinal−1 = the constant "A")
+    t6 qfinal   = last_prompt_token @ None      (trailing ":" = query-final/predictive; identical)
 
 For a direction src→tgt and per residual layer ℓ:
     steer_vec(t, ℓ)   = mean_pairs[ act_tgt(t, ℓ) − act_src(t, ℓ) ]
@@ -24,6 +26,11 @@ For a direction src→tgt and per residual layer ℓ:
 For each intervention token t_i (t1..t5), strength α and intervention layer i: inject α·steer_vec(t_i,i)
 at t_i's position in the SOURCE prompt at layer i, then for each LATER read token t_j (j>i) and read
 layer k:
+
+--steer_mode perpair replaces the pair-MEAN steer vector with each pair's OWN difference
+    steer_vec_p(t, ℓ) = act_tgt_p(t, ℓ) − act_src_p(t, ℓ)
+injected per prompt (α=1 ≡ exact single-site activation patching; asserted). Evaluation is
+identical. Outputs go to twoshot_tokenpair_perpair_cos_heatmap/ (same file layout).
     cell(i,k) = mean_pairs[ cos(steered_src(t_j,k), tgt(t_j,k)) − cos(src(t_j,k), tgt(t_j,k)) ]
 → one 29×29 grid (x=intervention layer, y=read layer) per (direction, t_i→t_j, α). 15 token-pairs.
 
@@ -107,8 +114,20 @@ def selected_token_records(token_labels):
     return records
 
 
+INPUT_TOKEN_RE = re.compile(r"^demonstration_(\d+)_token$")
+
+
 def token_positions(token_labels):
-    """Return {tN: position} for the 6 search-space tokens of a 2-shot paired prompt."""
+    """Return {tN: position} for the 6 search-space tokens of a 2-shot paired prompt.
+
+    BUGFIX 2026-07-13 (same as the tenshot strip scripts, DECISIONS "Verify token positions
+    against the tokenizer"): input2/qinput were previously pre-label − 1 / qfinal − 1, which is
+    the constant "A" template token, NOT the input word ("Q: hot\\nA: cold" tokenizes as
+    Q,:, hot,\\n,A,:, cold — the label carries the leading space, so −1 lands on "A"). They are
+    now the LAST token of the demo-2 input word (`demonstration_2_token` group) and of the query
+    word (`query_demonstration_token` group). All input2/qinput grids computed before this date
+    measured the "A" token.
+    """
     recs = selected_token_records(token_labels)
 
     def get(role, icl):
@@ -117,16 +136,21 @@ def token_positions(token_labels):
                 return r["token_position"]
         raise ValueError(f"missing {role}@icl={icl}")
 
+    input2 = max((int(p) for p, t, l in token_labels if INPUT_TOKEN_RE.match(l)
+                  and int(INPUT_TOKEN_RE.match(l).group(1)) == 2), default=None)
+    qinput = max((int(p) for p, t, l in token_labels if l == "query_demonstration_token"),
+                 default=None)
+    if input2 is None or qinput is None:
+        raise ValueError("missing demo-2 input / query input word tokens")
+
     label1 = get("last_label_token", 1)
     prelabel2 = get("pre_label_token", 2)
     label2 = get("last_label_token", 2)
     qfinal = get("last_prompt_token", None)
-    pos = {"label1": label1, "input2": prelabel2 - 1, "prelabel2": prelabel2,
-           "label2": label2, "qinput": qfinal - 1, "qfinal": qfinal}
-    # sequence-order invariant (also guards that the −1 input tokens are well-defined)
+    pos = {"label1": label1, "input2": input2, "prelabel2": prelabel2,
+           "label2": label2, "qinput": qinput, "qfinal": qfinal}
     seq = [pos[t] for t in TOKENS]
     assert all(seq[i] < seq[i + 1] for i in range(len(seq) - 1)), f"tokens not strictly ordered: {pos}"
-    assert pos["input2"] >= 0 and pos["qinput"] >= 0, f"input token underflow: {pos}"
     return pos
 # ----------------------------------------------------------------------------------
 
@@ -161,6 +185,10 @@ def build_prompt(demo_inputs, demo_outputs, query_input):
 def parse_args():
     p = argparse.ArgumentParser(description="Two-shot token-pair → layer×layer cosine-shift heatmaps.")
     p.add_argument("--task_pair", choices=sorted(TASK_PAIRS), default="antonym_synonym")
+    p.add_argument("--steer_mode", choices=["mean", "perpair"], default="mean",
+                   help="mean: inject the pair-mean steer vector (original study). perpair: inject each "
+                        "pair's OWN tgt−src difference at the edited (token, layer) — α=1 is exact "
+                        "single-site activation patching.")
     p.add_argument("--alphas", type=float, nargs="+", default=[2.0, 4.0])
     p.add_argument("--layers", type=int, nargs="+", default=None,
                    help="Subset of INTERVENTION layers (0..28) to sweep; default = all 29. Reads are always all 29.")
@@ -171,9 +199,15 @@ def parse_args():
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
     p.add_argument("--revision", type=str, default=None)
-    p.add_argument("--output_root", type=str,
-                   default=str(LABEL_GEOMETRY_DIR / "twoshot_tokenpair_intervention_cos_heatmap"))
-    return p.parse_args()
+    p.add_argument("--output_root", type=str, default=None,
+                   help="Default depends on --steer_mode: twoshot_tokenpair_intervention_cos_heatmap "
+                        "(mean) or twoshot_tokenpair_perpair_cos_heatmap (perpair).")
+    args = p.parse_args()
+    if args.output_root is None:
+        sub = ("twoshot_tokenpair_intervention_cos_heatmap" if args.steer_mode == "mean"
+               else "twoshot_tokenpair_perpair_cos_heatmap")
+        args.output_root = str(LABEL_GEOMETRY_DIR / sub)
+    return args
 
 
 def main():
@@ -266,6 +300,17 @@ def main():
             break
     n_pairs = len(pair_meta)
     print(f"built {n_pairs} prompt pairs")
+    assert n_pairs > 0, "no prompt pairs built"
+    # DECISIONS 2026-07-13 (verify token positions against the tokenizer): print the decoded
+    # token at each of the 6 positions for the first pair, both functions.
+    for tag, ids, pos in (("f1", f1_ids_list[0], f1_pos_list[0]),
+                          ("f2", f2_ids_list[0], f2_pos_list[0])):
+        decoded = {t: tokenizer.decode([ids[pos[t]]]) for t in TOKENS}
+        print(f"  sample pair 0 [{tag}]: " + "  ".join(f"{t}={decoded[t]!r}" for t in TOKENS))
+        assert decoded["input2"].strip() not in ("A", ":", "Q", ""), \
+            f"input2 landed on a template token: {decoded['input2']!r}"
+        assert decoded["qinput"].strip() not in ("A", ":", "Q", ""), \
+            f"qinput landed on a template token: {decoded['qinput']!r}"
 
     inter_layers = sorted(args.layers) if args.layers is not None else list(range(n_layers))
     pad_id = tokenizer.pad_token_id
@@ -307,12 +352,17 @@ def main():
         return hook
 
     def capture(chunks, edit_name=None, add_vec=None, edit_col=None):
-        """Forward over chunks; gather acts at all 6 tokens × 29 layers → [N, 6, 29, D] (GPU, model dtype)."""
+        """Forward over chunks; gather acts at all 6 tokens × 29 layers → [N, 6, 29, D] (GPU, model dtype).
+
+        add_vec: [D] (shared vector, broadcast over rows — mean mode) or [N, D] (one vector per
+        prompt pair, sliced per chunk in pair order — perpair mode)."""
         outs = []
+        off = 0
         for ch in chunks:
             if edit_name is not None:
                 rows0 = torch.arange(ch["n"], device=device)
-                hook = make_edit_hook(edit_name, add_vec, rows0, ch["pos"][:, edit_col])
+                av = add_vec if add_vec.dim() == 1 else add_vec[off:off + ch["n"]].to(dtype)
+                hook = make_edit_hook(edit_name, av, rows0, ch["pos"][:, edit_col])
                 cm = TraceDict(model, layers=layer_names, edit_output=hook, retain_output=True)
             else:
                 cm = TraceDict(model, layers=layer_names, retain_output=True)
@@ -327,6 +377,7 @@ def main():
                     for ti in range(N_TOKENS):
                         acts[:, ti, li, :] = out[rows, ch["pos"][:, ti], :]
             outs.append(acts)
+            off += ch["n"]
         return torch.cat(outs, 0)       # [N, 6, 29, D]
 
     # ---- unsteered passes (shared across both directions) ----
@@ -342,6 +393,7 @@ def main():
     (out_dir / "figures").mkdir(parents=True, exist_ok=True)
 
     summary = {"task_pair": args.task_pair, "f1": f1, "f2": f2, "n_pairs": n_pairs,
+               "steer_mode": args.steer_mode,
                "n_layers": n_layers, "alphas": args.alphas, "tokens": TOKENS,
                "clean_token": CLEAN, "intervention_source_tokens": [TOKENS[i] for i in SRC_TOKEN_IDX],
                "intervention_layers": inter_layers,
@@ -359,22 +411,31 @@ def main():
         # per-token per-layer steer vector + per-pair baseline cos, chunked over pairs to bound
         # transient float memory (full-N float copies would be ~1.5 GB each; CB rows is ~0.2 GB).
         steer_sum = torch.zeros((N_TOKENS, n_layers, resid_dim), device=device, dtype=torch.float32)
+        perpair_norm_sum = torch.zeros((N_TOKENS, n_layers), device=device, dtype=torch.float32)
         baseline_cos = torch.empty((n_pairs, N_TOKENS, n_layers), device=device, dtype=torch.float32)
         CB = 64
         for s in range(0, n_pairs, CB):
             sa = src_h[s:s + CB].float(); ta = tgt_h[s:s + CB].float()
             steer_sum += (ta - sa).sum(0)
+            perpair_norm_sum += torch.linalg.norm(ta - sa, dim=-1).sum(0)
             baseline_cos[s:s + CB] = F.cosine_similarity(sa, ta, dim=-1)
             del sa, ta
-        steer_vec = steer_sum / n_pairs                                   # [6,29,D]
-        steer_norms = torch.linalg.norm(steer_vec, dim=-1).cpu().numpy()  # [6,29]
+        steer_vec = steer_sum / n_pairs                                   # [6,29,D] (mean mode only)
         mean_baseline = baseline_cos.mean(0).cpu().numpy()                # [6,29]
-        print(f"\n=== direction {dir_name} (inject into {src_tag}) ===")
+        print(f"\n=== direction {dir_name} (inject into {src_tag}, steer_mode={args.steer_mode}) ===")
 
         dsum = {"src_task": src_task, "tgt_task": tgt_task, "inject_into": src_tag,
-                "steer_vec_norm_by_token_layer": {TOKENS[t]: steer_norms[t].tolist() for t in range(N_TOKENS)},
+                "steer_mode": args.steer_mode,
                 "mean_baseline_cos_by_token_layer": {TOKENS[t]: mean_baseline[t].tolist() for t in range(N_TOKENS)},
                 "grids": {}}
+        if args.steer_mode == "mean":
+            steer_norms = torch.linalg.norm(steer_vec, dim=-1).cpu().numpy()      # [6,29]
+            dsum["steer_vec_norm_by_token_layer"] = {
+                TOKENS[t]: steer_norms[t].tolist() for t in range(N_TOKENS)}
+        else:
+            perpair_norms = (perpair_norm_sum / n_pairs).cpu().numpy()            # [6,29]
+            dsum["mean_perpair_steer_norm_by_token_layer"] = {
+                TOKENS[t]: perpair_norms[t].tolist() for t in range(N_TOKENS)}
 
         for alpha in args.alphas:
             # grids[(si,sj)] : 29×29 (read_layer k, intervention_layer i)
@@ -382,8 +443,18 @@ def main():
                      for si in SRC_TOKEN_IDX for sj in range(si + 1, N_TOKENS)}
             for i in inter_layers:
                 for si in SRC_TOKEN_IDX:
-                    add_vec = (alpha * steer_vec[si, i]).to(device=device, dtype=dtype)
+                    if args.steer_mode == "mean":
+                        add_vec = (alpha * steer_vec[si, i]).to(device=device, dtype=dtype)  # [D]
+                    else:  # perpair: each pair's own tgt−src diff at this (token, layer) site
+                        add_vec = alpha * (tgt_h[:, si, i].float() - src_h[:, si, i].float())  # [N,D] fp32
                     sfin = capture(src_chunks, edit_name=layer_names[i], add_vec=add_vec, edit_col=si)  # fp16 [N,6,29,D]
+                    if args.steer_mode == "perpair" and alpha == 1.0:
+                        # α=1 ≡ single-site activation patching: the edited site must equal the target
+                        # activation (up to fp16 rounding; skip degenerate zero-diff sites, e.g. layer 0
+                        # of clean tokens where src == tgt exactly and cos is trivially 1 anyway).
+                        pc = F.cosine_similarity(sfin[:, si, i].float(), tgt_h[:, si, i].float(), dim=-1)
+                        assert pc.min().item() > 0.999, \
+                            f"α=1 patch mismatch at {TOKENS[si]} L{i}: min cos {pc.min().item():.6f}"
                     for sj in range(si + 1, N_TOKENS):
                         steered_cos = F.cosine_similarity(sfin[:, sj].float(), tgt_h[:, sj].float(), dim=-1)  # [N,29]
                         shift = (steered_cos - baseline_cos[:, sj]).mean(0).cpu().numpy()                      # [29]
