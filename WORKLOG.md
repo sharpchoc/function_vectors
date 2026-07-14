@@ -65,6 +65,10 @@ best_r2_by_position_lines.png` (plus_numbers study): best-over-layers R² per to
 one line per task. Shows a within-example sawtooth: every task peaks at the `pre` position of
 each cycle (with icl10/finaltok matching the pre-level for antonym/synonym), number tasks sit
 ~0.05–0.08 above antonym/synonym at every position, and positions saturate by ~icl04–05.
+Role-filtered variants (`--roles`): `..._prelabel.png` (pre_label_token only — smooth monotone
+saturation, antonym slowest to saturate ~icl05–07) and `..._label.png` (first/last label tokens
+only — flatter, ~0.03–0.06 lower, first<last early for antonym; label positions carry less
+FV-predictive signal than pre positions at every ICL depth).
 
 **Verification:** icl1 activations for both number tasks load through the ridge's own loader with
 shape (170, 29, 4096) fp16, matching existing tasks; alpha choices and original-task MSEs

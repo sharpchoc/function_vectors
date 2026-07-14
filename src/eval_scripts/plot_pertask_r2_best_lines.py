@@ -31,6 +31,8 @@ def parse_args():
     p.add_argument("--tasks", nargs="+",
                    default=["antonym", "synonym", "prev_number", "next_number"],
                    help="Tasks to plot, in legend/color order.")
+    p.add_argument("--roles", nargs="+", default=None,
+                   help="Only plot these token roles (e.g. pre_label_token). Default: all.")
     p.add_argument("--output", type=Path, default=None,
                    help="Default: <csv dir>/best_r2_by_position_lines.png")
     return p.parse_args()
@@ -44,6 +46,8 @@ def main():
     with open(args.input_csv) as f:
         for r in csv.DictReader(f):
             if r["task"] not in args.tasks:
+                continue
+            if args.roles is not None and r["token_role"] not in args.roles:
                 continue
             key = (r["task"], (int(r["icl_example_index"]), r["token_role"]))
             v = float(r["test_r2"])
@@ -69,7 +73,8 @@ def main():
 
     ax.set_xticks(list(x))
     ax.set_xticklabels(labels, fontsize=7, rotation=90)
-    ax.set_xlim(-0.5, len(positions) + 2.2)  # right headroom for the direct labels
+    pad = max(1.2, len(positions) * 0.08)  # right headroom for the direct labels
+    ax.set_xlim(-0.5, len(positions) - 1 + pad)
     ax.set_xlabel("token position (icl example / role)")
     ax.set_ylabel("best test R² over layers (train-mean baseline)")
     ax.yaxis.grid(True, color="0.92", linewidth=0.8)
@@ -77,7 +82,8 @@ def main():
     for side in ("top", "right"):
         ax.spines[side].set_visible(False)
     ax.legend(fontsize=8, frameon=False, loc="lower right")
-    ax.set_title("Best-over-layers R² by token position, per held-out task")
+    role_note = "" if args.roles is None else f" — {', '.join(args.roles)} only"
+    ax.set_title(f"Best-over-layers R² by token position, per held-out task{role_note}")
     fig.suptitle(run_title(args.input_csv.parent.parent.name), fontsize=9)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
     fig.savefig(out_path, dpi=150)
