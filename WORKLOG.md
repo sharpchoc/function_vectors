@@ -11,6 +11,63 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-07-14 — Stream X: per-test-task R² heatmaps (antonym/synonym/prev_number/next_number)
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; CPU pod + own RunPod GPU pod
+`fv-pertask-r2-capture` bznaqhdemfkl3x, NVIDIA L4 $0.39/hr — no 4090 in EU-RO-1 stock; L4 is
+sm_89 so safe with the image's pinned torch, per DECISIONS Blackwell note; pod TERMINATED).
+**Status:** DONE. Committed on branch `claude-pertask-r2`.
+
+**Goal:** the pooled `combined_test_r2_heatmap.png` (varicl_top40 study) aggregates the 7 held-out
+test tasks; user wants per-task (token position × layer) R² heatmaps for antonym, synonym,
+prev_number, next_number.
+
+**Design:**
+- NEW `src/eval_scripts/plot_fulldim_ridge_pertask_r2.py`: rescales the stored
+  `per_test_task_mse` (present in every shard's metrics.json) into per-task R² with per-task
+  denominator V_task = ||fv_task − ȳ_train||²/hidden (train-mean baseline, same convention as
+  the pooled R²). No refit. Outputs under `<study>/per_task_r2/`: per-task PNGs (shared color
+  scale), combined panel, per_task_r2.csv, summary.json.
+- antonym/synonym: already test tasks → plotted directly from the existing
+  `fulldim_ridge_activation_to_fv_varicl_top40` shards. Best R²: antonym 0.300, synonym 0.289
+  (both icl10/finaltok L13); pooled-study structure (mid-layer band) reproduces per task.
+- prev_number/next_number: NOT in the 29-task split and had no captured activations. Captured
+  them into the EXISTING activation roots (`gptj_56tasks_170prompts_icl{1..9}_3tokens` +
+  `_4tokens`; dir name now understates task count; no consumer globs task subdirs — all pass
+  explicit task lists) via `logs/pertask_r2_numbers/capture_driver.sh` (same config: seed 42,
+  130/40 prompts, fp16, embeddings). Then re-ran the 10 ridge shards with `--test_tasks
+  <7 defaults> prev_number next_number` → NEW study dir
+  `fulldim_ridge_activation_to_fv_varicl_top40_plus_numbers` (fits/CV are train-only, so models
+  are identical to the existing study; only the eval set grows). Driver:
+  `logs/pertask_r2_numbers/ridge_driver.sh`.
+- **Caveat for the number tasks:** `prev_item`/`next_item` (number-word tasks, ~10% pair overlap
+  with prev/next_number) are among the 20 TRAIN tasks, so prev/next_number are held-out in form
+  but leakage-adjacent in content — flag this next to any cross-task comparison.
+
+**Findings (per-task test R², train-mean baseline; `per_task_r2/summary.json` in each study dir):**
+- antonym best **0.300**, synonym **0.289**, both at icl10/finaltok **L13** — same late/mid-layer
+  band as the pooled heatmap, peaks at the final prompt token.
+- prev_number best **0.337** (icl09/pre **L9**), next_number **0.375** (icl08/pre **L9**) — the
+  number tasks are BETTER predicted and peak EARLIER (L6–10) and at PRE-LABEL positions rather
+  than the final token; their high-R² band starts around L4–6 vs L9–10 for antonym/synonym
+  (visible in `test_r2_heatmap_panel.png`, shared scale). Consistent with the leakage-adjacency
+  caveat above (train set contains prev_item/next_item), so treat the level as an upper bound;
+  the position/layer profile shift is the more interesting observation.
+- New-study shard icl1 verified to reproduce the existing varicl_top40 study exactly: identical
+  best_alpha in all 87 cells, 7-task per-task MSEs equal to ~1e-6 relative (L4-vs-prior-GPU fp
+  noise). Pooled 9-task R² (max 0.391 at icl10/finaltok L13) is NOT comparable to the 7-task
+  0.465 — different test-task set → different denominator V.
+- Sanity: shard metrics store `per_test_task_mse` per cell (since the varicl_top40 run), which is
+  what makes per-task R² a pure CPU post-processing step.
+
+**Verification:** icl1 activations for both number tasks load through the ridge's own loader with
+shape (170, 29, 4096) fp16, matching existing tasks; alpha choices and original-task MSEs
+reproduce (above). NOTE layer-0 per-task R² is 0 at the pre-label positions but up to ~0.25 at
+label/final positions (token-identity signal in the embeddings) — only the POOLED L0 pre-label
+cell is ≈0; don't claim "L0 ≈ 0" per task.
+
+---
+
 ## 2026-07-10 — Stream W: 1-shot preimage-ablation causal test (GPT-J, 7 held-out tasks)
 
 **Owner:** Coordinator (tmux `fv-preimage-ablation`; CPU pod + own RunPod GPU pod
