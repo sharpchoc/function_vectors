@@ -60,6 +60,12 @@ prev_number, next_number.
 - Sanity: shard metrics store `per_test_task_mse` per cell (since the varicl_top40 run), which is
   what makes per-task R² a pure CPU post-processing step.
 
+**Addendum:** `src/eval_scripts/plot_pertask_r2_best_lines.py` → `per_task_r2/
+best_r2_by_position_lines.png` (plus_numbers study): best-over-layers R² per token position,
+one line per task. Shows a within-example sawtooth: every task peaks at the `pre` position of
+each cycle (with icl10/finaltok matching the pre-level for antonym/synonym), number tasks sit
+~0.05–0.08 above antonym/synonym at every position, and positions saturate by ~icl04–05.
+
 **Verification:** icl1 activations for both number tasks load through the ridge's own loader with
 shape (170, 29, 4096) fp16, matching existing tasks; alpha choices and original-task MSEs
 reproduce (above). NOTE layer-0 per-task R² is 0 at the pre-label positions but up to ~0.25 at
