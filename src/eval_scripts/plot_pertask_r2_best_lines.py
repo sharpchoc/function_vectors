@@ -33,6 +33,11 @@ def parse_args():
                    help="Tasks to plot, in legend/color order.")
     p.add_argument("--roles", nargs="+", default=None,
                    help="Only plot these token roles (e.g. pre_label_token). Default: all.")
+    p.add_argument("--average_roles", action="store_true",
+                   help="Collapse the selected roles into ONE point per ICL example: the mean of "
+                        "the per-role best-over-layers R^2 values.")
+    p.add_argument("--average_label", type=str, default="mean",
+                   help="Role shorthand shown in x tick labels when --average_roles is set.")
     p.add_argument("--output", type=Path, default=None,
                    help="Default: <csv dir>/best_r2_by_position_lines.png")
     return p.parse_args()
@@ -54,8 +59,20 @@ def main():
             if key not in best or v > best[key]:
                 best[key] = v
 
-    positions = sorted({k[1] for k in best}, key=lambda ir: position_key(*ir))
-    labels = [position_label(*p) for p in positions]
+    if args.average_roles:
+        # One point per ICL example: mean of the per-role best-over-layers values.
+        pooled = {}
+        for (task, (icl, role)), v in best.items():
+            pooled.setdefault((task, icl), []).append(v)
+        n_roles = {len(v) for v in pooled.values()}
+        if len(n_roles) != 1:
+            raise ValueError(f"Uneven role counts per (task, icl): {sorted(n_roles)}")
+        best = {(task, (icl, args.average_label)): sum(v) / len(v) for (task, icl), v in pooled.items()}
+        positions = sorted({k[1] for k in best})
+        labels = [f"icl{icl:02d}/{role}" for icl, role in positions]
+    else:
+        positions = sorted({k[1] for k in best}, key=lambda ir: position_key(*ir))
+        labels = [position_label(*p) for p in positions]
     x = range(len(positions))
 
     fig, ax = plt.subplots(figsize=(12, 5.5))
@@ -83,6 +100,8 @@ def main():
         ax.spines[side].set_visible(False)
     ax.legend(fontsize=8, frameon=False, loc="lower right")
     role_note = "" if args.roles is None else f" — {', '.join(args.roles)} only"
+    if args.average_roles:
+        role_note = f" — mean over {{{', '.join(args.roles or ['all roles'])}}} per example"
     ax.set_title(f"Best-over-layers R² by token position, per held-out task{role_note}")
     fig.suptitle(run_title(args.input_csv.parent.parent.name), fontsize=9)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
