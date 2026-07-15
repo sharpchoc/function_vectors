@@ -1188,3 +1188,21 @@ File/figure names carry a NOMINAL `alpha1` tag purely for plot-script compatibil
 (`plot_twoshot_tokenpair_heatmap_grid.py --alphas 1`); do not read it as a strength. The grid
 x-axis is the clamp START layer, and the clean-token embedding-column≡0 invariant does NOT apply
 in this mode. Results: `twoshot_tokenpair_perpair_cumclamp_cos_heatmap/`.
+
+## 2026-07-14 — METRIC OF RECORD for all steering "cos" studies: dircos (Δcos-to-target DEPRECATED)
+
+Per user (emphatic): the intended steering-impact metric was always the DIRECTION-ALIGNMENT cosine
+    dircos = mean_pairs[ cos( act_tgt − act_src , act_src_steered − act_src ) ]   (at the read site)
+— "does the displacement caused by the intervention point along the counterfactual direction" —
+NOT the previously-implemented Δcos-to-target (cos(steered,tgt) − cos(src,tgt)), which is bounded
+by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates alignment with proximity.
+- Every cos grid/figure/summary number computed BEFORE 2026-07-14 is in the deprecated metric —
+  do not cite (this includes Stream Q/R's tenshot "input rows ≈ 0" cos numbers and all prior
+  twoshot token-pair results). All grids under `twoshot_tokenpair_*_cos_heatmap/` and
+  `tenshot_strip_intervention_cos_heatmap/` were recomputed as dircos on 2026-07-14 (summary JSONs
+  carry a "metric" key; old data recoverable from git history).
+- Convention: structurally-unaffected cells (zero displacement, e.g. read layer ≤ edit layer)
+  render as 0 (F.cosine_similarity's eps does this naturally); dircos ∈ [-1,1] ⇒ scalar-overview
+  panels use symmetric diverging scales, not one-sided Reds.
+- Lesson: confirm the METRIC DEFINITION with the user before building/extending measurement
+  studies — the formula in a docstring is not evidence the user wants that formula.

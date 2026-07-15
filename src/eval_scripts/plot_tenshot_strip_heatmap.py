@@ -76,7 +76,7 @@ def make_scalar_overview(root, alphas, vmax, out_path):
             col_labels.append(f"{clab}\nα{a:g}")
             c += 1
     fig, ax = plt.subplots(figsize=(0.62 * ncol + 3.0, 0.32 * len(IKEYS) + 1.5))
-    im = ax.imshow(M, cmap="Reds", vmin=0.0, vmax=vmax, aspect="auto")
+    im = ax.imshow(M, cmap="RdBu_r", vmin=-vmax, vmax=vmax, aspect="auto")
     ax.set_xticks(range(ncol)); ax.set_xticklabels(col_labels, fontsize=7)
     ax.set_yticks(range(len(IKEYS))); ax.set_yticklabels(IKEYS, fontsize=6)
     ax.set_ylabel("intervene token", fontsize=9)
@@ -85,9 +85,9 @@ def make_scalar_overview(root, alphas, vmax, out_path):
             v = M[r, cc]
             if np.isfinite(v):
                 ax.text(cc, r, f"{v:.3f}", ha="center", va="center", fontsize=5,
-                        color="white" if v > 0.55 * vmax else "black")
-    fig.colorbar(im, ax=ax, shrink=0.6, label="peak Δcos (global scale)")
-    ax.set_title("10-shot: peak Δcos per intervene token → query-final  (read fixed at qfinal)", fontsize=10)
+                        color="white" if abs(v) > 0.55 * vmax else "black")
+    fig.colorbar(im, ax=ax, shrink=0.6, label="peak dircos (global scale)")
+    ax.set_title("10-shot: peak dircos per intervene token → query-final  (read fixed at qfinal)", fontsize=10)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
@@ -118,7 +118,7 @@ def make_strip(root, alpha, vmax, out_path):
             if r == nr - 1:
                 ax.set_xlabel("intervene layer", fontsize=5)
     if im is not None:
-        fig.colorbar(im, ax=axes, shrink=0.4, label="steered − baseline cosine (global scale)")
+        fig.colorbar(im, ax=axes, shrink=0.4, label="dircos: cos(counterfactual Δ, steering Δ) (global scale)")
     fig.suptitle(f"10-shot intervene-token strip — α={alpha:g}  (read fixed at query-final; shared global "
                  f"scale vmax={vmax:.3f})\nrows = intervene token · cols = combo · each cell x=intervene "
                  f"layer, y=read layer (0–28), lower-tri≡0", fontsize=10)

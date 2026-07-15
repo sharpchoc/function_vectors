@@ -25,7 +25,11 @@ For a direction src→tgt and per residual layer ℓ:
     baseline_cos(t,ℓ) = mean_pairs[ cos( act_src(t,ℓ), act_tgt(t,ℓ) ) ]
 For each intervention token t_i (t1..t5), strength α and intervention layer i: inject α·steer_vec(t_i,i)
 at t_i's position in the SOURCE prompt at layer i, then for each LATER read token t_j (j>i) and read
-layer k:
+layer k compute the DIRECTION-ALIGNMENT cosine ("dircos", metric of record since 2026-07-14 — the
+earlier Δcos-to-target metric is deprecated, see DECISIONS):
+    cell(i,k) = mean_pairs[ cos( tgt(t_j,k) − src(t_j,k),  steered_src(t_j,k) − src(t_j,k) ) ]
+i.e. does the displacement caused by the intervention point along the counterfactual direction.
+→ one 29×29 grid (x=intervention layer, y=read layer) per (direction, t_i→t_j, α). 15 token-pairs.
 
 --steer_mode perpair replaces the pair-MEAN steer vector with each pair's OWN difference
     steer_vec_p(t, ℓ) = act_tgt_p(t, ℓ) − act_src_p(t, ℓ)
@@ -37,8 +41,6 @@ token's activation is hard-CLAMPED to the matched target's at EVERY layer ℓ∈
 patching from the start layer i on; asserted at ℓ=i and ℓ=28). No strength sweep (clamping makes α
 irrelevant) — grids are tagged with the nominal alpha1 so the plot script runs with --alphas 1.
 The grid x-axis is the clamp START layer. Outputs: twoshot_tokenpair_perpair_cumclamp_cos_heatmap/.
-    cell(i,k) = mean_pairs[ cos(steered_src(t_j,k), tgt(t_j,k)) − cos(src(t_j,k), tgt(t_j,k)) ]
-→ one 29×29 grid (x=intervention layer, y=read layer) per (direction, t_i→t_j, α). 15 token-pairs.
 
 Layers = 29 residual entries (0 = embedding / transformer.drop, 1..28 = transformer.h.{0..27}).
 Structural invariants (asserted): lower triangle k≤i ≡ 0 (read is downstream of the edit); the
@@ -436,6 +438,8 @@ def main():
 
     summary = {"task_pair": args.task_pair, "f1": f1, "f2": f2, "n_pairs": n_pairs,
                "steer_mode": args.steer_mode, "layer_mode": args.layer_mode,
+               "metric": "dircos: mean_pairs[cos(tgt-src, steered-src)] at the read site "
+                         "(2026-07-14; replaces the deprecated delta-cos-to-target)",
                "n_layers": n_layers, "alphas": args.alphas, "tokens": TOKENS,
                "clean_token": CLEAN, "intervention_source_tokens": [TOKENS[i] for i in SRC_TOKEN_IDX],
                "intervention_layers": inter_layers,
@@ -509,9 +513,15 @@ def main():
                             assert pc.min().item() > 0.999, \
                                 f"α=1 patch mismatch at {TOKENS[si]} L{i}: min cos {pc.min().item():.6f}"
                     for sj in range(si + 1, N_TOKENS):
-                        steered_cos = F.cosine_similarity(sfin[:, sj].float(), tgt_h[:, sj].float(), dim=-1)  # [N,29]
-                        shift = (steered_cos - baseline_cos[:, sj]).mean(0).cpu().numpy()                      # [29]
-                        grids[(si, sj)][:, i] = shift
+                        # METRIC (2026-07-14, user-specified): direction-alignment cosine "dircos" —
+                        # does the DISPLACEMENT caused by steering point along the COUNTERFACTUAL
+                        # direction at the read site. Zero displacement (read layer <= edit layer)
+                        # gives cos 0 via the eps clamp, so the lower-tri==0 invariant holds.
+                        dir_tgt = tgt_h[:, sj].float() - src_h[:, sj].float()          # [N,29,D]
+                        disp = sfin[:, sj].float() - src_h[:, sj].float()              # [N,29,D]
+                        cell = F.cosine_similarity(disp, dir_tgt, dim=-1).mean(0).cpu().numpy()  # [29]
+                        grids[(si, sj)][:, i] = cell
+                        del dir_tgt, disp
                     del sfin
                 if device == "cuda":
                     torch.cuda.empty_cache()

@@ -67,7 +67,7 @@ def load_grid(root, task_pair, dir_name, src_t, read_t, alpha):
 
 
 def global_vmax(root, alphas):
-    """Single |Δcos| ceiling across ALL grids (every combo × α × token-pair) -> one shared scale."""
+    """Single |dircos| ceiling across ALL grids (every combo × α × token-pair) -> one shared scale."""
     vmax = 0.0
     for task_pair, dir_name, _ in COMBOS:
         for src_t, read_t in token_pairs():
@@ -116,7 +116,7 @@ def make_matrix_figure(root, task_pair, dir_name, dir_label, alpha, vmax, out_pa
             if r == 0:                           # top-edge: read TOKEN (row 0 is fully filled)
                 ax.set_title(f"read {TOK_LABEL[read_t]}", fontsize=8, fontweight="bold")
     if im is not None:
-        fig.colorbar(im, ax=axes, shrink=0.6, label="steered − baseline cosine (global scale)")
+        fig.colorbar(im, ax=axes, shrink=0.6, label="dircos: cos(counterfactual Δ, steering Δ) (global scale)")
     # explicit per-cell axis KEY in the empty lower-left triangle (clip off so it can spill across cells)
     key = ("Each cell = 29×29 layer grid:\n"
            "  x → intervention layer (0–28)\n"
@@ -134,7 +134,7 @@ def make_matrix_figure(root, task_pair, dir_name, dir_label, alpha, vmax, out_pa
 
 
 def make_scalar_overview(root, alphas, vmax, out_path):
-    """One figure: for every (combo, α) a small 5×5 matrix whose cells = peak Δcos of that token-pair,
+    """One figure: for every (combo, α) a small 5×5 matrix whose cells = peak dircos of that token-pair,
     annotated, on one shared 0..vmax scale. At-a-glance 'which token drives which'."""
     nr, nc = len(COMBOS), len(alphas)
     fig, axes = plt.subplots(nr, nc, figsize=(3.3 * nc + 1.0, 3.0 * nr),
@@ -167,8 +167,8 @@ def make_scalar_overview(root, alphas, vmax, out_path):
                         ax.text(c, r, f"{v:.3f}", ha="center", va="center", fontsize=6,
                                 color="white" if v > 0.55 * vmax else "black")
     if im is not None:
-        fig.colorbar(im, ax=axes, shrink=0.7, label="peak Δcos (global scale)")
-    fig.suptitle("Peak Δcos per token-pair — scalar overview (2-shot ICL, shared global scale)", fontsize=11)
+        fig.colorbar(im, ax=axes, shrink=0.7, label="peak dircos (global scale)")
+    fig.suptitle("Peak dircos per token-pair — scalar overview (2-shot ICL, shared global scale)", fontsize=11)
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
 
@@ -205,7 +205,7 @@ def main():
                 ax.set_xlabel(f"intervention layer ({TOK_LABEL[src_t]})")
                 ax.set_ylabel(f"read layer ({TOK_LABEL[read_t]})")
                 ax.set_title(f"{dir_name}  α={a:g}\npeak {ps:+.3f} @ i{pi}/k{pk}", fontsize=9)
-                fig.colorbar(im, ax=ax, label="steered − baseline cosine")
+                fig.colorbar(im, ax=ax, label="dircos: cos(counterfactual Δ, steering Δ)")
                 fig.tight_layout()
                 fig.savefig(tp_dir / f"{dir_name}__{src_t}_to_{read_t}_alpha{a:g}_heatmap.png", dpi=130)
                 plt.close(fig)
@@ -242,7 +242,7 @@ def main():
             caveat = ("\n(input-2 differs across functions: steer dir mixes lexical+function; "
                       "read baseline cos < 1)")
         if im is not None:
-            fig.colorbar(im, ax=axes, shrink=0.85, label="steered − baseline cosine (shared scale)")
+            fig.colorbar(im, ax=axes, shrink=0.85, label="dircos: cos(counterfactual Δ, steering Δ) (shared scale)")
         fig.suptitle(f"Steer {TOK_LABEL[src_t]} → read {TOK_LABEL[read_t]}  "
                      f"(2-shot ICL, shared colour scale){caveat}", fontsize=12)
         out = fig_dir / f"{src_t}_to_{read_t}_combined.png"

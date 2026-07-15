@@ -11,6 +11,73 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-07-14 — Stream X: per-test-task R² heatmaps (antonym/synonym/prev_number/next_number)
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; CPU pod + own RunPod GPU pod
+`fv-pertask-r2-capture` bznaqhdemfkl3x, NVIDIA L4 $0.39/hr — no 4090 in EU-RO-1 stock; L4 is
+sm_89 so safe with the image's pinned torch, per DECISIONS Blackwell note; pod TERMINATED).
+**Status:** DONE. Committed on branch `claude-pertask-r2`.
+
+**Goal:** the pooled `combined_test_r2_heatmap.png` (varicl_top40 study) aggregates the 7 held-out
+test tasks; user wants per-task (token position × layer) R² heatmaps for antonym, synonym,
+prev_number, next_number.
+
+**Design:**
+- NEW `src/eval_scripts/plot_fulldim_ridge_pertask_r2.py`: rescales the stored
+  `per_test_task_mse` (present in every shard's metrics.json) into per-task R² with per-task
+  denominator V_task = ||fv_task − ȳ_train||²/hidden (train-mean baseline, same convention as
+  the pooled R²). No refit. Outputs under `<study>/per_task_r2/`: per-task PNGs (shared color
+  scale), combined panel, per_task_r2.csv, summary.json.
+- antonym/synonym: already test tasks → plotted directly from the existing
+  `fulldim_ridge_activation_to_fv_varicl_top40` shards. Best R²: antonym 0.300, synonym 0.289
+  (both icl10/finaltok L13); pooled-study structure (mid-layer band) reproduces per task.
+- prev_number/next_number: NOT in the 29-task split and had no captured activations. Captured
+  them into the EXISTING activation roots (`gptj_56tasks_170prompts_icl{1..9}_3tokens` +
+  `_4tokens`; dir name now understates task count; no consumer globs task subdirs — all pass
+  explicit task lists) via `logs/pertask_r2_numbers/capture_driver.sh` (same config: seed 42,
+  130/40 prompts, fp16, embeddings). Then re-ran the 10 ridge shards with `--test_tasks
+  <7 defaults> prev_number next_number` → NEW study dir
+  `fulldim_ridge_activation_to_fv_varicl_top40_plus_numbers` (fits/CV are train-only, so models
+  are identical to the existing study; only the eval set grows). Driver:
+  `logs/pertask_r2_numbers/ridge_driver.sh`.
+- **Caveat for the number tasks:** `prev_item`/`next_item` (number-word tasks, ~10% pair overlap
+  with prev/next_number) are among the 20 TRAIN tasks, so prev/next_number are held-out in form
+  but leakage-adjacent in content — flag this next to any cross-task comparison.
+
+**Findings (per-task test R², train-mean baseline; `per_task_r2/summary.json` in each study dir):**
+- antonym best **0.300**, synonym **0.289**, both at icl10/finaltok **L13** — same late/mid-layer
+  band as the pooled heatmap, peaks at the final prompt token.
+- prev_number best **0.337** (icl09/pre **L9**), next_number **0.375** (icl08/pre **L9**) — the
+  number tasks are BETTER predicted and peak EARLIER (L6–10) and at PRE-LABEL positions rather
+  than the final token; their high-R² band starts around L4–6 vs L9–10 for antonym/synonym
+  (visible in `test_r2_heatmap_panel.png`, shared scale). Consistent with the leakage-adjacency
+  caveat above (train set contains prev_item/next_item), so treat the level as an upper bound;
+  the position/layer profile shift is the more interesting observation.
+- New-study shard icl1 verified to reproduce the existing varicl_top40 study exactly: identical
+  best_alpha in all 87 cells, 7-task per-task MSEs equal to ~1e-6 relative (L4-vs-prior-GPU fp
+  noise). Pooled 9-task R² (max 0.391 at icl10/finaltok L13) is NOT comparable to the 7-task
+  0.465 — different test-task set → different denominator V.
+- Sanity: shard metrics store `per_test_task_mse` per cell (since the varicl_top40 run), which is
+  what makes per-task R² a pure CPU post-processing step.
+
+**Addendum:** `src/eval_scripts/plot_pertask_r2_best_lines.py` → `per_task_r2/
+best_r2_by_position_lines.png` (plus_numbers study): best-over-layers R² per token position,
+one line per task. Shows a within-example sawtooth: every task peaks at the `pre` position of
+each cycle (with icl10/finaltok matching the pre-level for antonym/synonym), number tasks sit
+~0.05–0.08 above antonym/synonym at every position, and positions saturate by ~icl04–05.
+Role-filtered variants (`--roles`): `..._prelabel.png` (pre_label_token only — smooth monotone
+saturation, antonym slowest to saturate ~icl05–07) and `..._label.png` (label tokens, one point
+per example = mean of first/last best-R² via `--average_roles` — flatter, ~0.03–0.06 lower than
+pre positions at every ICL depth).
+
+**Verification:** icl1 activations for both number tasks load through the ridge's own loader with
+shape (170, 29, 4096) fp16, matching existing tasks; alpha choices and original-task MSEs
+reproduce (above). NOTE layer-0 per-task R² is 0 at the pre-label positions but up to ~0.25 at
+label/final positions (token-identity signal in the embeddings) — only the POOLED L0 pre-label
+cell is ≈0; don't claim "L0 ≈ 0" per task.
+
+---
+
 ## 2026-07-10 — Stream W: 1-shot preimage-ablation causal test (GPT-J, 7 held-out tasks)
 
 **Owner:** Coordinator (tmux `fv-preimage-ablation`; CPU pod + own RunPod GPU pod
@@ -3450,3 +3517,54 @@ the `claude-perpair-steering` version on all 30 smoke grids; cumulative smoke pe
 the full run; `--layer_mode cumulative --steer_mode mean` rejected by argparse.
 
 **Blockers:** none.
+
+---
+
+## 2026-07-14 — Stream S: METRIC MIGRATION — all cos steering studies recomputed as dircos
+
+**Owner:** Stream S (7× GPU pods: fv-dircos-twoshot + fv-dircos-10s-{as,dig}{2,4,8}, all RTX PRO
+4500 Blackwell $0.74/hr; A100 out of stock at launch). **Status:** RUNNING — entry to be finalised.
+
+**What:** user discovered the cos studies plotted Δcos-to-target, not the intended
+dircos = mean_pairs[cos(act_tgt − act_src, act_src_steered − act_src)] (see DECISIONS 2026-07-14
+"METRIC OF RECORD"). Per-pair steered acts were never saved ⇒ full steered-pass re-runs:
+- twoshot token-pair (one pod, sequential): perpair α{0.5,1,2} → `twoshot_tokenpair_perpair_cos_heatmap/`,
+  cumclamp → `twoshot_tokenpair_perpair_cumclamp_cos_heatmap/`, mean α{2,4} → CANONICAL
+  `twoshot_tokenpair_intervention_cos_heatmap/` (supersedes pre-position-fix Δcos data; the interim
+  `twoshot_tokenpair_mean_fixedpos_cos_heatmap/` deleted as redundant — in git on branch).
+- tenshot strip cos (6 pods, one (task_pair, α) shard each; stale Δcos npy/csv/summaries deleted
+  first so resume can't reuse them); merged summaries rebuilt by a full-α resume pass per task_pair
+  after shards land (Stream R norm-study pattern).
+
+**Files:** metric swap in `steer_twoshot_tokenpair_cos_heatmap.py` + `steer_tenshot_strip_cos_heatmap.py`
+(surgical: diff-vs-diff cosine at the read site; docstrings + summary "metric" keys); label/scale
+updates in `plot_twoshot_tokenpair_heatmap_grid.py`, `plot_tenshot_strip_heatmap.py` (scalar
+overview → symmetric RdBu, dircos is signed), `plot_tenshot_strip_lines.py`. New launchers
+`logs/run_twoshot_tokenpair_dircos.sh`, `logs/run_tenshot_strip_dircos_shard.sh`.
+
+**Verification so far:** synthetic unit-check of the exact metric line (aligned→1, zero→0,
+orthogonal→0); twoshot + tenshot smokes pass all structural asserts with correct decoded tokens;
+all 90 smoke grids within [-1,1]; smoke peaks behave as dircos should (twoshot perpair α=1
+input2→label2 +0.94 — near-perfect alignment, vs the Δcos ceiling ~0.15).
+
+**FINDINGS (all values = dircos peaks over the 29×29 grid unless noted):**
+- **Twoshot: steering displacement points almost exactly along the counterfactual direction at the
+  strong sites.** antonym→synonym label2→qfinal: perpair α=1 +0.77, cumclamp +0.85, mean α=4 +0.75
+  (old Δcos ceiling was ~0.09 headroom); input2→label2 perpair α=1 +0.92, cumclamp +0.94.
+- **Tenshot: the Δcos-era "input rows ≈ 0" claim does NOT survive in dircos.** Input-slot steering
+  aligns moderately with the counterfactual direction (peaks +0.25…+0.41, medians ~+0.17…+0.24
+  across the 4 combos) — the old metric hid this because the input-edit displacement is small in
+  MAGNITUDE (norm study rel ~0.02–0.1) and Δcos conflates alignment with proximity. Label slots
+  still dominate decisively: peaks +0.47…+0.78, medians up to +0.74 (ant→syn in-peak 0.36 vs
+  lab-med 0.44; syn→ant lab 0.78). Qualitative ordering lab ≫ pre/in survives; the "≈ 0" wording
+  does not. Stream Q/R should re-quote their cos numbers from the new summaries.
+- Tenshot peaks sit in the same intervene-early → read-mid/late band as before (lab peaks
+  i4–i9 → k15–k27; digits α=2 shows an early k5 peak).
+- Structural asserts (lower-tri≡0, finiteness, twoshot patch/clamp identities) pass on all
+  360 tenshot + 270 twoshot grids; all values within [-1,1].
+
+**Next:** none — figures live in the three twoshot `figures/` dirs and
+`tenshot_strip_intervention_cos_heatmap/figures/` (strip_alpha{2,4,8}, scalar_overview,
+scalar_lines[_labels_only]).
+
+**Blockers:** none. All 7 pods terminated (verified zero remaining).
