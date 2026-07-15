@@ -73,15 +73,24 @@ def main():
     x = np.arange(len(ikeys))
 
     fig, ax = plt.subplots(figsize=(7.5, 5.2) if args.labels_only else (13.5, 5.2))
+    all_y = []
     for (task_pair, dir_name, clab), color in zip(COMBOS, COMBO_COLORS):
         for a in args.alphas:
             y = [g if g is None else reduce_grid(g, args.top_k)
                  for g in (load_grid(args.root, task_pair, dir_name, tk, a) for tk in ikeys)]
             y = np.array([np.nan if v is None else v for v in y], dtype=float)
+            all_y.append(y)
             ax.plot(x, y, ALPHA_STYLES.get(a, "-"), color=color, linewidth=2,
                     marker="o", markersize=3.5, markeredgecolor="white", markeredgewidth=0.6)
 
-    ax.axhline(0.0, color="#bbbbbb", linewidth=0.8, zorder=0)
+    # data-driven y-range (don't force 0 into view: dircos label values sit ~0.4-0.8 and a
+    # 0-anchored axis wastes the bottom half); ~15% headroom at the top for the legends.
+    yv = np.concatenate(all_y)
+    lo, hi = np.nanmin(yv), np.nanmax(yv)
+    pad = 0.05 * max(hi - lo, 1e-3)
+    ax.set_ylim(lo - pad, hi + 3.5 * pad)
+    if lo - pad <= 0.0 <= hi + 3.5 * pad:
+        ax.axhline(0.0, color="#bbbbbb", linewidth=0.8, zorder=0)
     stat = "peak" if args.top_k == 1 else f"top-{args.top_k} mean"
     ax.set_xticks(x)
     if args.labels_only:
