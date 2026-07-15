@@ -7,8 +7,9 @@ chart: x = the 30 intervene tokens in sequence order (d1_in, d1_pre, d1_lab, …
 y = peak Δcos, one line per (task-direction, α) — 12 lines. Hue encodes the task-direction
 combo, line style encodes α, so the four combos stay comparable across α.
 
---labels_only restricts x to the 10 demo label tokens (the in/pre slots are ≈0 everywhere,
-see WORKLOG Stream Q) → figures/scalar_lines_labels_only.png.
+--labels_only restricts x to the 10 demo label tokens (labels dominate; NOTE the old Δcos-era
+"in/pre ≈ 0" claim does not hold under dircos — in/pre peaks reach ~0.2-0.4, see DECISIONS
+2026-07-14 metric change) → figures/scalar_lines_labels_only.png.
 
 Output: figures/scalar_lines.png / figures/scalar_lines_labels_only.png.
 """
@@ -99,7 +100,7 @@ def main():
         ax.set_title(f"10-shot strip study: {stat} dircos per intervene token")
     ax.set_xlim(-0.5, len(ikeys) - 0.5)
     red_lab = ("peak dircos at qfinal (max over intervene × read layers)" if args.top_k == 1
-               else f"Δcos at qfinal (mean of top-{args.top_k} intervene × read cells)")
+               else f"dircos at qfinal (mean of top-{args.top_k} intervene × read cells)")
     ax.set_ylabel(red_lab)
     ax.spines[["top", "right"]].set_visible(False)
     ax.grid(axis="y", color="#eeeeee", linewidth=0.8, zorder=0)
