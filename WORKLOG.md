@@ -11,6 +11,40 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-07-15 — Stream X2: GPT-4.1-judged accuracy-vs-n_shots (antonym/synonym)
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; generate stage on own RunPod 4090 pod
+`fv-judged-accuracy` 2mcpknnn4ncwue $0.69/hr — TERMINATED; judge+plot on CPU pod).
+**Status:** DONE. Committed on branch `claude-pertask-r2`.
+
+**What:** gold-first-token top-1 undercounts open-ended tasks (1-shot judge study, WORKLOG
+2026-06-30). This re-runs the by_nshots accuracy grid for antonym+synonym (n=0..10, full test
+splits, EXACT same prompts: set_seed(seed+n) + per-item np.random.choice in test order) but
+stores per-prompt records and scores the top-1 token with the gpt-4.1 judge (JUDGE_SYSTEMS from
+judge_oneshot_paired.py; same-word/inflection=false). Judge convention: top-1 TOKEN as-is
+(whitespace-trimmed) — word fragments judged false (slightly conservative vs decoding a full
+word).
+
+**Files:** NEW `src/eval_scripts/compute_judged_accuracy_by_nshots.py` (stages generate/judge/
+summarize, resumable per (task,n)) + `plot_judged_accuracy_by_nshots.py`. Data (TRACKED):
+`results/general/task_accuracies/by_nshots_judged/{task}_n{n}.json` (per-prompt: query, gold,
+top-5 tokens, gold_rank, judge_correct) + summary.json. Figure:
+`.../tenshot_strip_intervention_cos_heatmap/figures/gptj_judged_accuracy_by_nshots_top1.png`.
+
+**Findings:**
+- antonym: judged ≈ gold + 0.07–0.10 from n=2 on; plateau 0.70–0.74 (gold 0.62–0.66).
+- synonym: judged ≈ 1.8–2× gold everywhere; plateau 0.41–0.45 (gold 0.23–0.27). The n=1 cell
+  (0.149 vs gold 0.071) reproduces the 1-shot judge study (0.143/0.066) on a different prompt
+  sample. Ordering antonym > synonym unchanged; the GAP is larger judged (~0.28) than gold
+  (~0.40 vs 0.23 → ~0.40 ratio-wise smaller). Both tasks: correction ≈ constant multiple after
+  n≥2, so curve SHAPES (saturation ~n=5) are metric-robust.
+- Gold-top1 re-derived from the same records matches the recorded by_nshots numbers to within
+  1–2 prompts/cell (≤0.4%; exact at n=0,1) — cross-GPU (L4 vs 4090) logit noise flipping
+  near-tied argmaxes, NOT a prompt mismatch. summary.json flags matches_reference at 1e-9
+  tolerance, so False there means "±1-2 prompts", read the gold_top1 columns.
+
+---
+
 ## 2026-07-14 — Stream X: per-test-task R² heatmaps (antonym/synonym/prev_number/next_number)
 
 **Owner:** Coordinator (tmux `pertask-r2-heatmaps`; CPU pod + own RunPod GPU pod
