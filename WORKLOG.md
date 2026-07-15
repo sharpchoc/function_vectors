@@ -29,7 +29,7 @@ word).
 summarize, resumable per (task,n)) + `plot_judged_accuracy_by_nshots.py`. Data (TRACKED):
 `results/general/task_accuracies/by_nshots_judged/{task}_n{n}.json` (per-prompt: query, gold,
 top-5 tokens, gold_rank, judge_correct) + summary.json. Figure:
-`.../tenshot_strip_intervention_cos_heatmap/figures/gptj_judged_accuracy_by_nshots_top1.png`.
+`.../tenshot_strip_intervention_cos_heatmap/figures/gptj_judged_accuracy_by_nshots_top1.png` (all 4 strip-study tasks: judged solid + gold dashed for antonym/synonym; digit tasks gold-only, exact by construction).
 
 **Findings:**
 - antonym: judged ≈ gold + 0.07–0.10 from n=2 on; plateau 0.70–0.74 (gold 0.62–0.66).
