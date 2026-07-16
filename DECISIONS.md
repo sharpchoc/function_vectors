@@ -1178,3 +1178,49 @@ structural tokens. Fixed in both `steer_tenshot_strip_{cos,norm}_heatmap.py` (se
   {label1, prelabel2, label2, qfinal} are unaffected. A position-correct mean rerun (α∈{2,4}) lives
   in `twoshot_tokenpair_mean_fixedpos_cos_heatmap/`; the original dir is kept until the user
   decides to replace it.
+
+## 2026-07-14 — Cumulative clamp mode for the two-shot token-pair study
+
+`steer_twoshot_tokenpair_cos_heatmap.py --layer_mode cumulative` (perpair only) hard-clamps the
+intervention token to the matched counterfactual's activations at every layer from the start
+layer i through 28 — per-pair trajectory patching, no strength sweep (α irrelevant under clamping).
+File/figure names carry a NOMINAL `alpha1` tag purely for plot-script compatibility
+(`plot_twoshot_tokenpair_heatmap_grid.py --alphas 1`); do not read it as a strength. The grid
+x-axis is the clamp START layer, and the clean-token embedding-column≡0 invariant does NOT apply
+in this mode. Results: `twoshot_tokenpair_perpair_cumclamp_cos_heatmap/`.
+
+## 2026-07-14 — METRIC OF RECORD for all steering "cos" studies: dircos (Δcos-to-target DEPRECATED)
+
+Per user (emphatic): the intended steering-impact metric was always the DIRECTION-ALIGNMENT cosine
+    dircos = mean_pairs[ cos( act_tgt − act_src , act_src_steered − act_src ) ]   (at the read site)
+— "does the displacement caused by the intervention point along the counterfactual direction" —
+NOT the previously-implemented Δcos-to-target (cos(steered,tgt) − cos(src,tgt)), which is bounded
+by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates alignment with proximity.
+- Every cos grid/figure/summary number computed BEFORE 2026-07-14 is in the deprecated metric —
+  do not cite (this includes Stream Q/R's tenshot "input rows ≈ 0" cos numbers and all prior
+  twoshot token-pair results). All grids under `twoshot_tokenpair_*_cos_heatmap/` and
+  `tenshot_strip_intervention_cos_heatmap/` were recomputed as dircos on 2026-07-14 (summary JSONs
+  carry a "metric" key; old data recoverable from git history).
+- Convention: structurally-unaffected cells (zero displacement, e.g. read layer ≤ edit layer)
+  render as 0 (F.cosine_similarity's eps does this naturally); dircos ∈ [-1,1] ⇒ scalar-overview
+  panels use symmetric diverging scales, not one-sided Reds.
+- Lesson: confirm the METRIC DEFINITION with the user before building/extending measurement
+  studies — the formula in a docstring is not evidence the user wants that formula.
+
+## 2026-07-16 — Propagated ablation as a MODE of the perlayer script; pod CUDA filter; same-GPU regression tests
+
+- The propagated fixed-direction ablation (Stream X3) is `--mode propagated` on
+  `ablate_oneshot_preimage_logprob.py`, NOT a separate script: only the direction rule
+  (fixed U[L] vs per-layer U[b]), the edited positions (anchor + all later tokens vs anchor
+  only), and the default output root differ; prompts/arms/cf-map/sanity checks are shared.
+  Modes write to SEPARATE results roots (`oneshot_preimage_ablation` vs
+  `..._propagated`) so the summary rebuild never mixes them. Follow this pattern for future
+  edit-rule variants.
+- **RunPod: always pass `allowedCudaVersions: ["12.8","12.9","13.0"]`** in
+  podFindAndDeployOnDemand for the function-vectors-dev template. The image needs CUDA ≥ 12.8;
+  without the filter the scheduler happily lands on 12.4-driver hosts and the pod sits at
+  uptime 0 / ports null forever (two 4090 pods lost to this on 2026-07-16).
+- **Regression-test model outputs on the SAME GPU.** fp16 GPT-J forwards differ by up to
+  ~1.7e-2 in delta-log-p across GPU architectures (L4 vs prior pod, identical code). A code
+  no-op check must compare old-code-vs-new-code on one GPU (expect exactly 0.0), never
+  new-code-on-GPU-A vs stored-run-from-GPU-B with a tight tolerance.

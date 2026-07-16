@@ -52,6 +52,8 @@ def parse_args():
                         "final-cue magnitudes. Output filenames get a _<rows> suffix.")
     p.add_argument("--annotate", action="store_true",
                    help="Write the value into each cell of the per-arm heatmaps.")
+    p.add_argument("--skip_per_arm", action="store_true",
+                   help="Only render heatmap_all_arms and per_task_grid (skip the per-arm figures).")
     return p.parse_args()
 
 
@@ -132,7 +134,7 @@ def main():
     print(f"shared scale vmax={vmax:.3f}")
 
     # --- per-arm figures ---
-    for arm, (row_names, grid) in arm_grids.items():
+    for arm, (row_names, grid) in ({} if args.skip_per_arm else arm_grids).items():
         fig, ax = plt.subplots(figsize=(10, 0.8 * len(row_names) + 2.2),
                                constrained_layout=True)
         im = render(ax, grid, row_names, vmax,

@@ -112,6 +112,50 @@ cell is ≈0; don't claim "L0 ≈ 0" per task.
 
 ---
 
+## 2026-07-16 — Stream X3: PROPAGATED fixed-direction 1-shot preimage ablation
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; own RunPod L4 pod `fv-propagated-ablation-3`
+xfyifkkbdo4am6 $0.39/hr — TERMINATED; two earlier 4090 pods stalled at boot: the template image
+needs **CUDA ≥ 12.8** and those hosts had 12.4 drivers → ALWAYS pass
+`allowedCudaVersions: ["12.8","12.9","13.0"]` in podFindAndDeployOnDemand; see DECISIONS).
+**Status:** DONE. Committed on branch `claude-pertask-r2`.
+
+**Design (user-specified):** same 6 arms/7 tasks/28 start layers as Stream W's perlayer study,
+but (1) the ablated direction is FIXED to U[L], the preimage of the regression at the anchor
+layer L (fv arm unchanged in direction); (2) it is projected out at the anchor token AND every
+later token position, for all blocks b ≥ L. NEW `--mode propagated` on
+`ablate_oneshot_preimage_logprob.py` (default `perlayer` bit-identical — verified); results →
+`results/direction3_fv_formation/oneshot_preimage_ablation_propagated/train_varicl_top40/`
+(full npz kept per (task, arm); figures: heatmap_all_arms + per_task_grid only, via new
+`--skip_per_arm` plot flag). Driver `logs/propagated_ablation/driver.sh`.
+
+**Verification:** (a) perlayer regression — edited script vs HEAD script on the SAME L4 GPU:
+max|Δ| = 0.0 across all 6 arms (an earlier check against the stored v2 smoke tripped at 1.7e-2;
+that is pure cross-GPU fp16 noise — HEAD-vs-HEAD across GPUs shows the same 1.7e-2; regression
+checks must compare same-GPU); (b) cross-mode equivalence — fv arms' final_cue row equal at
+every L, all arms' final_cue equal at L=27 (single-position/single-block cases where the modes
+coincide by construction): all passed (`EQUIVALENCE_OK` in driver log).
+
+**Findings (task-mean Δ log p; per-arm numbers in per-task summary.csv):**
+- **FV direction becomes catastrophic from ANY anchor when propagated:** cue1/target1/final_cue
+  all ≈ −7.1..−7.5 at L0–8 (perlayer: only final_cue −7.2; cue1/target1 ≈ −0.1/−0.4). But
+  specificity DROPS: fv_cf now −2.2..−2.4 at cue1/target1 (perlayer cf ≈ −0.1/−0.3), i.e.
+  propagated FV removal is ~3× task-specific vs ~6× at final_cue and ~8-20× perlayer.
+- **The preimage stack is NOT one direction:** at final_cue (where propagated = fixed-direction
+  anchor-only), icl10-preimage removal collapses from −4.0 (perlayer, removing each layer's own
+  direction) to ≈0.0 at L0 with the fixed U[0]; the only surviving fixed-direction effect is
+  late (−1.65 @ L20). Same collapse for matched at final_cue (−1.94 → ≈0 at L0, −0.99 @ L15).
+  ⇒ the causal preimage content ROTATES across layers; no single layer's preimage direction
+  carries it.
+- **target1 (demo label) effect weakens and loses specificity when fixed+propagated:** matched
+  −1.78→−0.82 at L0 (min −1.53 @ L1) while its cf grows to −0.81 @ L1 (~1.9× specific vs ~8×
+  perlayer).
+- **NEW late-layer band for icl10 preimage at cue1** (min −1.62 @ L20; absent perlayer) —
+  propagating the late-layer icl10 direction over all downstream tokens (which include the
+  final cue) reaches the readout path.
+
+---
+
 ## 2026-07-15 — Stream X2: GPT-4.1-judged accuracy-vs-n_shots (antonym/synonym)
 
 **Owner:** Coordinator (tmux `pertask-r2-heatmaps`; generate stage on own RunPod 4090 pod

@@ -27,6 +27,13 @@ Direction banks are the rank-16 TSVD preimages (fit_tsvd_preimages_multicell.py 
 the Stream S ridge maps; bank key edit_layer b <-> hook on transformer.h.{b} output <-> capture
 entry b+1. Start layers L sweep edit layers 0..27; the embedding entry is never ablated.
 
+--mode propagated (Stream X3 extension) changes the edit rule in two ways: (1) the direction is
+FIXED to u_L — the preimage of the anchor layer L (the fv arm is unchanged in direction, already
+layer-constant); (2) it is ablated at the anchor token AND at every token position after it (to
+the end of the prompt), still for all blocks b >= L. final_cue is the last prompt token, so its
+propagated rows reduce to fixed-direction anchor-only. Default output root moves to
+oneshot_preimage_ablation_propagated/<fv_root basename> so summaries never mix modes.
+
 Resumable: one npz per (task, arm); existing files are skipped unless --overwrite. Summaries
 (per-task summary.csv, top-level combined_summary.csv over the npz present) rebuilt every run.
 
@@ -112,6 +119,10 @@ def parse_args():
                    default={"input": "Q:", "output": "A:", "instructions": ""})
     p.add_argument("--separators", type=json.loads,
                    default={"input": "\n", "output": "\n\n", "instructions": ""})
+    p.add_argument("--mode", choices=["perlayer", "propagated"], default="perlayer",
+                   help="perlayer: ablate U[b] at the site token only, per block b >= L (original "
+                        "study). propagated: ablate the FIXED anchor-layer direction U[L] at the "
+                        "site token and every later token, for all blocks b >= L.")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
@@ -211,7 +222,9 @@ def main():
     args = parse_args()
     from baukit import TraceDict   # import late; precedent steer_label_cos_heatmap.py
 
-    out_root = args.output_root or (FV_FORMATION_DIR / "oneshot_preimage_ablation" / args.fv_root.name)
+    mode_subdir = ("oneshot_preimage_ablation" if args.mode == "perlayer"
+                   else "oneshot_preimage_ablation_propagated")
+    out_root = args.output_root or (FV_FORMATION_DIR / mode_subdir / args.fv_root.name)
     out_root.mkdir(parents=True, exist_ok=True)
 
     set_seed(args.seed)
@@ -234,8 +247,12 @@ def main():
         "cf_map": cf_map, "arm_rows": {a: ARM_ROWS[a] for a in ARM_ROWS},
         "git_commit": git_commit_hash(),
         "metric": "delta log p (ablated - clean) of the first answer token at the final position",
-        "edit_layer_mapping": "start layer L ablates transformer.h.{b} outputs for all b >= L "
-                              "(edit layers 0..27; embedding entry never touched)",
+        "edit_layer_mapping": (
+            "start layer L ablates transformer.h.{b} outputs for all b >= L "
+            "(edit layers 0..27; embedding entry never touched)" if args.mode == "perlayer" else
+            "propagated: start layer L ablates the FIXED anchor-layer direction U[L] from "
+            "transformer.h.{b} outputs for all b >= L, at the anchor token position and every "
+            "later position (edit layers 0..27; embedding entry never touched)"),
     })
 
     def forward_hidden(ch):
@@ -315,16 +332,34 @@ def main():
                         pos_vec = ch["pos"][:, site]
                         rows_idx = torch.arange(ch["n"], device=device)
 
-                        def hook(output, layer_name):
-                            b = name_to_block[layer_name]
-                            if b < L:
+                        if args.mode == "propagated":
+                            # Fixed anchor-layer direction, ablated at the anchor token and every
+                            # later position. Left padding puts all pads before the anchor, so the
+                            # mask never touches padding; for final_cue (always the last token)
+                            # this reduces to the anchor position alone.
+                            seq = ch["input_ids"].shape[1]
+                            mask = torch.arange(seq, device=device)[None, :] >= pos_vec[:, None]
+                            u = U[L]
+
+                            def hook(output, layer_name):
+                                if name_to_block[layer_name] < L:
+                                    return output
+                                h = output[0] if isinstance(output, tuple) else output
+                                v = h[mask].float()
+                                v = v - torch.outer(v @ u, u)
+                                h[mask] = v.to(h.dtype)
                                 return output
-                            h = output[0] if isinstance(output, tuple) else output
-                            u = U[b]
-                            v = h[rows_idx, pos_vec, :].float()
-                            v = v - torch.outer(v @ u, u)
-                            h[rows_idx, pos_vec, :] = v.to(h.dtype)
-                            return output
+                        else:
+                            def hook(output, layer_name):
+                                b = name_to_block[layer_name]
+                                if b < L:
+                                    return output
+                                h = output[0] if isinstance(output, tuple) else output
+                                u = U[b]
+                                v = h[rows_idx, pos_vec, :].float()
+                                v = v - torch.outer(v @ u, u)
+                                h[rows_idx, pos_vec, :] = v.to(h.dtype)
+                                return output
 
                         lp = run_logp([ch], hook=hook)
                         delta[ri, L, s:s + ch["n"]] = (lp - clean_logp[s:s + ch["n"]]).cpu().numpy()
@@ -340,6 +375,7 @@ def main():
                      answer=np.array([p["answer"] for p in prompts]),
                      answer_token_id=np.array([p["answer_id"] for p in prompts]),
                      direction_norms=dir_norms,
+                     mode=np.array(args.mode),
                      cf_task=np.array(cf_map[task] if arm.endswith("_cf") else ""))
             print(f"[{task}] {arm}: {len(rows)} rows x {len(args.start_layers)} layers "
                   f"in {time.time() - ta:.0f}s", flush=True)
