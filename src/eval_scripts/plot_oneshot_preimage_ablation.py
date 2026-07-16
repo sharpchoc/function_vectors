@@ -31,11 +31,11 @@ from utils.paths import FV_FORMATION_DIR
 ARMS = ["preimage_matched", "preimage_icl10", "fv",
         "preimage_matched_cf", "preimage_icl10_cf", "fv_cf"]
 ARM_TITLES = {
-    "preimage_matched": "preimage (matched cells)",
-    "preimage_icl10": "preimage (icl10 cells)",
+    "preimage_matched": "preimage of position-matched regression",
+    "preimage_icl10": "preimage of icl10 regression",
     "fv": "FV direction",
-    "preimage_matched_cf": "preimage matched — counterfactual task",
-    "preimage_icl10_cf": "preimage icl10 — counterfactual task",
+    "preimage_matched_cf": "preimage of position-matched regression — counterfactual task",
+    "preimage_icl10_cf": "preimage of icl10 regression — counterfactual task",
     "fv_cf": "FV direction — counterfactual task",
 }
 ROW_TITLES = {"cue1": "cue1 (demo 'A:')", "target1": "target1 (demo label)",
@@ -136,7 +136,7 @@ def main():
         fig, ax = plt.subplots(figsize=(10, 0.8 * len(row_names) + 2.2),
                                constrained_layout=True)
         im = render(ax, grid, row_names, vmax,
-                    f"{ARM_TITLES[arm]} — mean Δ log p(correct) over {len(per_arm[arm])} tasks",
+                    f"{ARM_TITLES[arm]} — mean Δ log p(correct) over {len(per_arm[arm])} tasks, 1-shot prompts",
                     annotate=args.annotate)
         fig.colorbar(im, ax=ax, label="log p(ablated) − log p(clean)")
         out = fig_dir / f"heatmap_{arm}{suffix}.png"
@@ -155,8 +155,8 @@ def main():
         row_names, grid = arm_grids[arm]
         im = render(ax, grid, row_names, vmax, ARM_TITLES[arm],
                     show_xlabel=(r == 1), show_ylabels=(c == 0))
-    fig.suptitle(f"1-shot projection-ablation: mean Δ log p(correct answer), {len(tasks)} tasks",
-                 fontsize=14)
+    fig.suptitle("1-shot projection-ablation (all ablations applied in 1-shot prompts): "
+                 f"mean Δ log p(correct answer), {len(tasks)} tasks", fontsize=14)
     fig.colorbar(im, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.85)
     out = fig_dir / f"heatmap_all_arms{suffix}.png"
     fig.savefig(out, dpi=200)
@@ -186,7 +186,7 @@ def main():
                 ax.set_ylabel(task, fontsize=9, rotation=90)
             if ti == len(tasks) - 1:
                 ax.set_xlabel("start layer L", fontsize=8)
-    fig.suptitle(f"per-task Δ log p heatmaps (shared scale ±{vmax:.2f})", fontsize=13)
+    fig.suptitle(f"per-task Δ log p heatmaps, 1-shot prompts (shared scale ±{vmax:.2f})", fontsize=13)
     fig.colorbar(last, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.6)
     out = fig_dir / f"per_task_grid{suffix}.png"
     fig.savefig(out, dpi=180)
