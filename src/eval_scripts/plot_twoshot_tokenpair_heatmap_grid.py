@@ -45,7 +45,21 @@ def parse_args():
     p.add_argument("--root", type=str,
                    default=str(LABEL_GEOMETRY_DIR / "twoshot_tokenpair_intervention_cos_heatmap"))
     p.add_argument("--alphas", type=float, nargs="+", default=[2.0, 4.0])
-    return p.parse_args()
+    p.add_argument("--mode_label", type=str, default=None,
+                   help="Intervention-mode tag stamped into every title; inferred from the root "
+                        "dir name if omitted.")
+    args = p.parse_args()
+    if args.mode_label is None:
+        name = Path(args.root).name
+        if "cumclamp" in name:
+            args.mode_label = "CUMULATIVE clamp intervention, layers i→28 (x = clamp start layer)"
+        elif "perpair" in name:
+            args.mode_label = "SINGLE-LAYER intervention (per-pair steer vec)"
+        else:
+            args.mode_label = "SINGLE-LAYER intervention (mean steer vec)"
+    args.mode_short = "cumulative clamp i→28" if "CUMULATIVE" in args.mode_label else "single-layer"
+    args.is_clamp = "CUMULATIVE" in args.mode_label
+    return args
 
 
 def grid_path(root, task_pair, dir_name, src_t, read_t, alpha):
@@ -67,7 +81,7 @@ def load_grid(root, task_pair, dir_name, src_t, read_t, alpha):
 
 
 def global_vmax(root, alphas):
-    """Single |Δcos| ceiling across ALL grids (every combo × α × token-pair) -> one shared scale."""
+    """Single |dircos| ceiling across ALL grids (every combo × α × token-pair) -> one shared scale."""
     vmax = 0.0
     for task_pair, dir_name, _ in COMBOS:
         for src_t, read_t in token_pairs():
@@ -84,7 +98,7 @@ SRC_ROWS = list(range(len(TOKENS) - 1))   # 0..4  -> label1..qinput
 READ_COLS = list(range(1, len(TOKENS)))   # 1..5  -> input2..qfinal
 
 
-def make_matrix_figure(root, task_pair, dir_name, dir_label, alpha, vmax, out_path):
+def make_matrix_figure(root, task_pair, dir_name, dir_label, alpha, vmax, out_path, mode_label="", alpha_txt=None):
     """6-token×6-token grid (5×5 after trimming empties): each cell a 29×29 layer×layer heatmap,
     all on one shared scale, single colorbar. The canonical 'every token-pair' view."""
     nr, nc = len(SRC_ROWS), len(READ_COLS)
@@ -116,7 +130,7 @@ def make_matrix_figure(root, task_pair, dir_name, dir_label, alpha, vmax, out_pa
             if r == 0:                           # top-edge: read TOKEN (row 0 is fully filled)
                 ax.set_title(f"read {TOK_LABEL[read_t]}", fontsize=8, fontweight="bold")
     if im is not None:
-        fig.colorbar(im, ax=axes, shrink=0.6, label="steered − baseline cosine (global scale)")
+        fig.colorbar(im, ax=axes, shrink=0.6, label="dircos: cos(counterfactual Δ, steering Δ) (global scale)")
     # explicit per-cell axis KEY in the empty lower-left triangle (clip off so it can spill across cells)
     key = ("Each cell = 29×29 layer grid:\n"
            "  x → intervention layer (0–28)\n"
@@ -126,15 +140,16 @@ def make_matrix_figure(root, task_pair, dir_name, dir_label, alpha, vmax, out_pa
     axes[len(SRC_ROWS) - 1][0].annotate(key, xy=(0.1, 1.3), xycoords="axes fraction", ha="left",
                                         va="center", fontsize=8.5, annotation_clip=False,
                                         bbox=dict(boxstyle="round", fc="#f4f4f4", ec="#999"))
-    fig.suptitle(f"Token×token intervention map — {dir_label}, α={alpha:g}  (2-shot ICL, shared global "
-                 f"scale, vmax={vmax:.3f})\nrows = intervention token · columns = read token · "
-                 f"each cell x=intervene layer / y=read layer", fontsize=10)
+    alpha_txt = alpha_txt or f"α={alpha:g}"
+    fig.suptitle(f"Token×token intervention map — {dir_label}, {alpha_txt} — {mode_label}\n"
+                 f"(2-shot ICL, shared global scale, vmax={vmax:.3f})  rows = intervention token · "
+                 f"columns = read token · each cell x=intervene layer / y=read layer", fontsize=10)
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
 
 
-def make_scalar_overview(root, alphas, vmax, out_path):
-    """One figure: for every (combo, α) a small 5×5 matrix whose cells = peak Δcos of that token-pair,
+def make_scalar_overview(root, alphas, vmax, out_path, mode_label="", is_clamp=False):
+    """One figure: for every (combo, α) a small 5×5 matrix whose cells = peak dircos of that token-pair,
     annotated, on one shared 0..vmax scale. At-a-glance 'which token drives which'."""
     nr, nc = len(COMBOS), len(alphas)
     fig, axes = plt.subplots(nr, nc, figsize=(3.3 * nc + 1.0, 3.0 * nr),
@@ -155,7 +170,7 @@ def make_scalar_overview(root, alphas, vmax, out_path):
             im = ax.imshow(M, cmap="Reds", vmin=0.0, vmax=vmax, aspect="equal")
             ax.set_xticks(range(len(col_labels))); ax.set_xticklabels(col_labels, fontsize=7)
             ax.set_yticks(range(len(row_labels))); ax.set_yticklabels(row_labels, fontsize=7)
-            ax.set_title(f"{dir_label}, α={a:g}", fontsize=8)
+            ax.set_title(f"{dir_label}, " + ("clamp (no α)" if is_clamp else f"α={a:g}"), fontsize=8)
             if ai == 0:
                 ax.set_ylabel("intervene", fontsize=8)
             if ri == nr - 1:
@@ -167,8 +182,8 @@ def make_scalar_overview(root, alphas, vmax, out_path):
                         ax.text(c, r, f"{v:.3f}", ha="center", va="center", fontsize=6,
                                 color="white" if v > 0.55 * vmax else "black")
     if im is not None:
-        fig.colorbar(im, ax=axes, shrink=0.7, label="peak Δcos (global scale)")
-    fig.suptitle("Peak Δcos per token-pair — scalar overview (2-shot ICL, shared global scale)", fontsize=11)
+        fig.colorbar(im, ax=axes, shrink=0.7, label="peak dircos (global scale)")
+    fig.suptitle(f"Peak dircos per token-pair — scalar overview — {mode_label}\n(2-shot ICL, shared global scale)", fontsize=11)
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
 
@@ -204,8 +219,9 @@ def main():
                 ax.plot([0, n_layers - 1], [0, n_layers - 1], color="k", lw=0.6, ls=":", alpha=0.5)
                 ax.set_xlabel(f"intervention layer ({TOK_LABEL[src_t]})")
                 ax.set_ylabel(f"read layer ({TOK_LABEL[read_t]})")
-                ax.set_title(f"{dir_name}  α={a:g}\npeak {ps:+.3f} @ i{pi}/k{pk}", fontsize=9)
-                fig.colorbar(im, ax=ax, label="steered − baseline cosine")
+                atxt = "clamp (no α)" if args.is_clamp else f"α={a:g}"
+                ax.set_title(f"{dir_name}  {atxt}  [{args.mode_short}]\npeak {ps:+.3f} @ i{pi}/k{pk}", fontsize=9)
+                fig.colorbar(im, ax=ax, label="dircos: cos(counterfactual Δ, steering Δ)")
                 fig.tight_layout()
                 fig.savefig(tp_dir / f"{dir_name}__{src_t}_to_{read_t}_alpha{a:g}_heatmap.png", dpi=130)
                 plt.close(fig)
@@ -231,7 +247,8 @@ def main():
                 im = ax.imshow(g, origin="lower", cmap="RdBu_r", vmin=-vmax, vmax=vmax, aspect="equal")
                 ax.plot([0, n_layers - 1], [0, n_layers - 1], color="k", lw=0.6, ls=":", alpha=0.5)
                 ps, pi, pk = peak(g)
-                ax.set_title(f"{row_label}, α={a:g}  peak {ps:+.3f} @ i{pi}/k{pk}", fontsize=8)
+                atxt = "clamp (no α)" if args.is_clamp else f"α={a:g}"
+                ax.set_title(f"{row_label}, {atxt}  peak {ps:+.3f} @ i{pi}/k{pk}", fontsize=8)
                 if ci == nrows - 1:
                     ax.set_xlabel(f"intervention layer ({TOK_LABEL[src_t]})")
                 if cj == 0:
@@ -242,8 +259,8 @@ def main():
             caveat = ("\n(input-2 differs across functions: steer dir mixes lexical+function; "
                       "read baseline cos < 1)")
         if im is not None:
-            fig.colorbar(im, ax=axes, shrink=0.85, label="steered − baseline cosine (shared scale)")
-        fig.suptitle(f"Steer {TOK_LABEL[src_t]} → read {TOK_LABEL[read_t]}  "
+            fig.colorbar(im, ax=axes, shrink=0.85, label="dircos: cos(counterfactual Δ, steering Δ) (shared scale)")
+        fig.suptitle(f"Steer {TOK_LABEL[src_t]} → read {TOK_LABEL[read_t]} — {args.mode_label}  "
                      f"(2-shot ICL, shared colour scale){caveat}", fontsize=12)
         out = fig_dir / f"{src_t}_to_{read_t}_combined.png"
         fig.savefig(out, dpi=150)
@@ -258,10 +275,12 @@ def main():
     for task_pair, dir_name, dir_label in COMBOS:
         for a in args.alphas:
             out = fig_dir / f"matrix__{dir_name}_alpha{a:g}.png"
-            make_matrix_figure(root, task_pair, dir_name, dir_label, a, gvmax, out)
+            make_matrix_figure(root, task_pair, dir_name, dir_label, a, gvmax, out, mode_label=args.mode_label,
+                               alpha_txt="clamp (no α)" if args.is_clamp else None)
             n_matrix += 1
             print(f"saved {out.name}")
-    make_scalar_overview(root, args.alphas, gvmax, fig_dir / "scalar_overview.png")
+    make_scalar_overview(root, args.alphas, gvmax, fig_dir / "scalar_overview.png", mode_label=args.mode_label,
+                         is_clamp=args.is_clamp)
     print("saved scalar_overview.png")
 
     print(f"\nDONE: {n_combined} per-pair combined + {n_matrix} token×token matrix + 1 scalar overview"

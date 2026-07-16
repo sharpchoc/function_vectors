@@ -11,8 +11,9 @@ Per residual layer ℓ and each of the 30 demo tokens t (input / pre-label / las
 i.e. the difference of the two tasks' MEAN activations at that structural slot (demos unmatched ⇒ this
 carries lexical+function content). We inject α·steer_vec(t_i, i) at t_i's position in the SOURCE prompt
 at layer i (single point-edit; the forward recomputes everything downstream) and READ only at the query
-final token qfinal, at every read layer k:
-    cell(i,k) = mean_pairs[ cos(steered_src_qfinal(k), tgt_qfinal(k)) − cos(src_qfinal(k), tgt_qfinal(k)) ]
+final token qfinal, at every read layer k, computing the DIRECTION-ALIGNMENT cosine ("dircos", metric of
+record since 2026-07-14 — the earlier Δcos-to-target metric is deprecated, see DECISIONS):
+    cell(i,k) = mean_pairs[ cos( tgt_qfinal(k) − src_qfinal(k),  steered_src_qfinal(k) − src_qfinal(k) ) ]
 → one 29×29 grid (x=intervene layer i, y=read layer k) per (direction, intervene token, α). Because the
 read token is fixed, the token×token matrix collapses to a vertical STRIP over the 30 intervene tokens.
 
@@ -326,6 +327,8 @@ def main():
     (out_dir / "figures").mkdir(parents=True, exist_ok=True)
 
     summary = {"task_pair": args.task_pair, "f1": f1, "f2": f2, "n_pairs": n_pairs,
+               "metric": "dircos: mean_pairs[cos(tgt-src, steered-src)] at qfinal "
+                         "(2026-07-14; replaces the deprecated delta-cos-to-target)",
                "n_shots": args.n_shots, "n_layers": n_layers, "alphas": args.alphas,
                "intervene_tokens": IKEYS, "read_token": "qfinal",
                "intervention_layers": inter_layers,
@@ -354,6 +357,8 @@ def main():
         steer_norms = torch.linalg.norm(steer_vec, dim=-1).cpu().numpy()   # [30, 29]
         mean_baseline = baseline_cos.mean(0).cpu().numpy()                 # [29]
         tgt_q = tgt_h[:, READ_COL]                                   # fp16 [N,29,D]
+        src_q = src_h[:, READ_COL]                                   # fp16 [N,29,D] (clean source qfinal)
+        dir_tgt_q = (tgt_q.float() - src_q.float())                  # [N,29,D] counterfactual direction
         print(f"\n=== direction {dir_name} (inject into {src_tag}) ===")
 
         dsum = {"src_task": src_task, "tgt_task": tgt_task, "inject_into": src_tag,
@@ -373,9 +378,12 @@ def main():
                         add_vec = (alpha * steer_vec[t_idx, i]).to(device=device, dtype=dtype)
                         sq = capture(src_chunks, read_cols=[READ_COL],
                                      edit_name=layer_names[i], add_vec=add_vec, edit_col=t_idx)[:, 0]  # [N,29,D]
-                        steered_cos = F.cosine_similarity(sq.float(), tgt_q.float(), dim=-1)            # [N,29]
-                        grid[:, i] = (steered_cos - baseline_cos).mean(0).cpu().numpy()
-                        del sq
+                        # METRIC (2026-07-14, user-specified): dircos — cos(counterfactual direction,
+                        # steering displacement) at qfinal. Zero displacement (read layer <= edit
+                        # layer) -> cos 0 via eps, so the lower-tri==0 assert still holds.
+                        disp = sq.float() - src_q.float()                                               # [N,29,D]
+                        grid[:, i] = F.cosine_similarity(disp, dir_tgt_q, dim=-1).mean(0).cpu().numpy()
+                        del sq, disp
                     # structural assert: read layer k <= intervene layer i must be exactly 0
                     for i in inter_layers:
                         assert np.all(grid[: i + 1, i] == 0.0), f"lower-tri nonzero {tag} i={i}"
