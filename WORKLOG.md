@@ -112,6 +112,39 @@ cell is ≈0; don't claim "L0 ≈ 0" per task.
 
 ---
 
+## 2026-07-17 — Stream X4: prev/next_number in the ORIGINAL 1-shot per-layer ablation (separate study)
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; own RunPod RTX PRO 4500 Blackwell pod
+`fv-numbers-ablation` 79od3s4x9bpjrn $0.74/hr, `allowedCudaVersions` filter per DECISIONS —
+TERMINATED). **Status:** DONE. Committed on branch `claude-pertask-r2`.
+
+**What:** user request — run prev_number/next_number through the original per-layer 1-shot
+ablation, fully SEPARATE from the 7-task aggregate. New TSVD banks for the two tasks (from the
+existing canonical stage-A ridge maps; **TRAP:** `fit_tsvd_preimages_multicell.py` DEFAULTS point
+at the max4 DEBUG preimage_root and the two-shot cell set — pass `--preimage_root .../train_
+varicl_top40` and the 6 ablation cells explicitly, as the v2 driver did; a first run with
+defaults wrote 12 stray banks into the debug tree, deleted). Ablation →
+`results/direction3_fv_formation/oneshot_preimage_ablation_numbers/train_varicl_top40/`
+(summaries only ever see these 2 tasks). Driver `logs/numbers_ablation/driver.sh`. Per-task
+figures via new `--tasks` filter on the plot script: `figures/heatmap_all_arms_{prev,next}_
+number.png` (+ per-task grids). 7-task study dir untouched by this run (verified by mtimes;
+NOTE: its 12 per-arm PNGs were deleted from the working tree at 2026-07-16 21:28 by something
+outside this stream — versions live in git (HEAD pre-retitle; claude-pertask-r2 retitled);
+left as-is for the owning stream to adjudicate).
+
+**Findings (task-level; leakage caveat: prev_item/next_item are TRAIN tasks — upper bounds):**
+- **The 7-task ordering INVERTS at the final cue: the icl10-regression preimage out-damages the
+  FV direction.** prev_number: icl10 preimage −3.54 @ L0 vs FV −2.55 @ L0 (FV min −2.95 @ L9);
+  next_number: icl10 preimage −6.20 @ L0 vs FV −4.15 @ L0 (min −4.76 @ L9). In the 7-task study
+  FV (−7.1) ≫ icl10 preimage (−4.0). Task-specific: icl10_cf only −0.15 / −0.94.
+- position-matched preimage (pre_label_icl2 cell) is weak at final_cue (−0.33 / −0.48), target1
+  effects are tiny for both tasks (≈ −0.1..−0.18; cf ≈ 0) — unlike landmark-country/case tasks,
+  the number tasks carry almost nothing causally at the demo label token.
+- FV arm's max damage at L9 (not L0) for both tasks — the small early-start self-repair shape
+  again.
+
+---
+
 ## 2026-07-16 — Stream X3: PROPAGATED fixed-direction 1-shot preimage ablation
 
 **Owner:** Coordinator (tmux `pertask-r2-heatmaps`; own RunPod L4 pod `fv-propagated-ablation-3`

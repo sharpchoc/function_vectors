@@ -59,6 +59,8 @@ def parse_args():
                         "arms only (e.g. drop fv/fv_cf so preimage structure isn't washed out).")
     p.add_argument("--suffix", type=str, default=None,
                    help="Filename suffix override (default: _<rows> when --rows is used, else '').")
+    p.add_argument("--tasks", nargs="+", default=None,
+                   help="Only include these task dirs (default: every task dir under --root).")
     return p.parse_args()
 
 
@@ -108,8 +110,11 @@ def main():
         suffix = args.suffix
 
     task_dirs = sorted(d for d in args.root.iterdir()
-                       if d.is_dir() and d.name != "figures")
+                       if d.is_dir() and d.name != "figures"
+                       and (args.tasks is None or d.name in set(args.tasks)))
     tasks = [d.name for d in task_dirs]
+    if args.tasks and set(tasks) != set(args.tasks):
+        raise SystemExit(f"missing task dirs: {sorted(set(args.tasks) - set(tasks))}")
 
     # per (arm) -> task -> (row_names, [rows, 28])
     per_arm = {arm: {} for arm in arms}
