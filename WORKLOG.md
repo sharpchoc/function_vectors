@@ -112,6 +112,31 @@ cell is ≈0; don't claim "L0 ≈ 0" per task.
 
 ---
 
+## 2026-07-17 — Stream X5: prev/next_number in the PROPAGATED fixed-direction ablation (separate study)
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; own RunPod Blackwell 4500 pod
+`fv-numbers-prop-ablation` av1de1n4s2wtg3 $0.74/hr — TERMINATED). **Status:** DONE. Committed on
+branch `claude-pertask-r2`.
+
+**What:** the two number tasks through `--mode propagated` (fixed anchor-layer direction U[L],
+anchor + all later tokens, blocks ≥ L), SEPARATE study →
+`results/direction3_fv_formation/oneshot_preimage_ablation_propagated_numbers/train_varicl_top40/`
+(banks from Stream X4; driver `logs/numbers_ablation/driver_propagated.sh`; per-task figures
+`figures/heatmap_all_arms_{prev,next}_number.png`). fv/fv_cf final_cue rows reproduce the X4
+perlayer values exactly (structural equivalence at the last token — free correctness check).
+
+**Findings (leakage caveat as X4):**
+- **The X4 inversion (icl10 preimage > FV at final_cue) does NOT survive fixing the direction:**
+  fixed U[0] does ≈ NOTHING (−0.02 both tasks) vs the per-layer stack −3.54/−6.20 — the number
+  tasks\u2019 preimage advantage lives in the ROTATING per-layer stack, no single layer\u2019s direction
+  carries it. Most-damaging single fixed direction is the LAST layer\u2019s (min at L27: −1.28
+  prev / −1.81 next; 7-task icl10 peaked at L20 instead).
+- **FV propagated from cue1/target1 is near-catastrophic** (prev −3.4, next −5.6 at L9),
+  mirroring the 7-task propagated story, with reduced specificity (fv_cf ~−2.5 early).
+- position-matched fixed directions stay weak everywhere (min −0.23/−0.27 mid-layers).
+
+---
+
 ## 2026-07-17 — Stream X4: prev/next_number in the ORIGINAL 1-shot per-layer ablation (separate study)
 
 **Owner:** Coordinator (tmux `pertask-r2-heatmaps`; own RunPod RTX PRO 4500 Blackwell pod
