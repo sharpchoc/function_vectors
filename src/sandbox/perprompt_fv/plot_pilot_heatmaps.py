@@ -121,7 +121,7 @@ def main():
         ["canonical: FV-broadcast targets", "SANDBOX: per-prompt head-sum targets"],
         out_dir / "heatmap_test_r2_fv_side_by_side.png",
         cbar_label="test_r2 vs stored varicl_top40 test FVs (train-mean baseline)",
-        suptitle="GPT-J full-dim ridge, SAME evaluation target (stored test FVs) — only the TRAIN targets differ",
+        suptitle="GPT-J full-dim ridge (4096 → 4096): test R² vs stored varicl_top40 test FVs, shared color scale",
     )
     vmax = float(np.nanmax(np.abs(grids["dr2_fv"])))
     render_heatmap_diverging(pos_labels, layer_set, grids["dr2_fv"],
