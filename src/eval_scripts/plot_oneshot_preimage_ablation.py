@@ -54,6 +54,11 @@ def parse_args():
                    help="Write the value into each cell of the per-arm heatmaps.")
     p.add_argument("--skip_per_arm", action="store_true",
                    help="Only render heatmap_all_arms and per_task_grid (skip the per-arm figures).")
+    p.add_argument("--arms", nargs="+", default=None, choices=ARMS,
+                   help="Only plot these arms; the shared color scale is computed from the kept "
+                        "arms only (e.g. drop fv/fv_cf so preimage structure isn't washed out).")
+    p.add_argument("--suffix", type=str, default=None,
+                   help="Filename suffix override (default: _<rows> when --rows is used, else '').")
     return p.parse_args()
 
 
@@ -95,18 +100,21 @@ def main():
     args = parse_args()
     fig_dir = args.root / "figures"
     fig_dir.mkdir(parents=True, exist_ok=True)
+    arms = list(args.arms) if args.arms else list(ARMS)
     suffix = ""
     if args.rows:
         suffix += "_" + "_".join(args.rows)
+    if args.suffix is not None:
+        suffix = args.suffix
 
     task_dirs = sorted(d for d in args.root.iterdir()
                        if d.is_dir() and d.name != "figures")
     tasks = [d.name for d in task_dirs]
 
     # per (arm) -> task -> (row_names, [rows, 28])
-    per_arm = {arm: {} for arm in ARMS}
+    per_arm = {arm: {} for arm in arms}
     for d in task_dirs:
-        for arm in ARMS:
+        for arm in arms:
             got = load_arm(d, arm)
             if got is None:
                 continue
@@ -120,7 +128,7 @@ def main():
 
     # task-mean grids per arm
     arm_grids = {}
-    for arm in ARMS:
+    for arm in arms:
         if not per_arm[arm]:
             continue
         row_names = next(iter(per_arm[arm].values()))[0]
@@ -147,9 +155,11 @@ def main():
         print(f"wrote {out}")
 
     # --- combined 2x3 figure (labels only on the left column / bottom row) ---
-    fig, axes = plt.subplots(2, 3, figsize=(19, 7.5), constrained_layout=True)
-    for k, arm in enumerate(ARMS):
-        r, c = divmod(k, 3)
+    ncols = (len(arms) + 1) // 2
+    fig, axes = plt.subplots(2, ncols, figsize=(6.4 * ncols, 7.5), squeeze=False,
+                             constrained_layout=True)
+    for k, arm in enumerate(arms):
+        r, c = divmod(k, ncols)
         ax = axes[r][c]
         if arm not in arm_grids:
             ax.axis("off")
@@ -157,8 +167,10 @@ def main():
         row_names, grid = arm_grids[arm]
         im = render(ax, grid, row_names, vmax, ARM_TITLES[arm],
                     show_xlabel=(r == 1), show_ylabels=(c == 0))
-    fig.suptitle("1-shot projection-ablation (all ablations applied in 1-shot prompts): "
-                 f"mean Δ log p(correct answer), {len(tasks)} tasks", fontsize=14)
+    mode_note = (" — PROPAGATED mode: fixed anchor-layer direction, anchor + all later tokens"
+                 if "propagated" in args.root.name or "propagated" in str(args.root.parent) else "")
+    fig.suptitle("1-shot projection-ablation (all ablations applied in 1-shot prompts)"
+                 f"{mode_note}: mean Δ log p(correct answer), {len(tasks)} tasks", fontsize=14)
     fig.colorbar(im, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.85)
     out = fig_dir / f"heatmap_all_arms{suffix}.png"
     fig.savefig(out, dpi=200)
@@ -166,11 +178,11 @@ def main():
     print(f"wrote {out}")
 
     # --- per-task supplementary grid ---
-    fig, axes = plt.subplots(len(tasks), len(ARMS),
-                             figsize=(3.6 * len(ARMS), 1.7 * len(tasks) + 1.0),
+    fig, axes = plt.subplots(len(tasks), len(arms),
+                             figsize=(3.6 * len(arms), 1.7 * len(tasks) + 1.0),
                              squeeze=False, constrained_layout=True)
     for ti, task in enumerate(tasks):
-        for ai, arm in enumerate(ARMS):
+        for ai, arm in enumerate(arms):
             ax = axes[ti][ai]
             if task not in per_arm[arm]:
                 ax.axis("off")
