@@ -11,6 +11,113 @@ Newest entries at top. One stream per active line of work.
 > Paths come from `src/utils/paths.py` — see README "Repository layout". **Entries below dated before
 > 2026-06-19 cite the paths that were current when written.**
 
+## 2026-07-16 — Stream W-5shot: 5-shot preimage/FV ablation + combined-token rows (GPT-J)
+
+**Owner:** Coordinator (tmux `fv-5shot-ablation`; CPU pod + 4 own RunPod pods
+`fv-5shot-ablation-{1..4}` rib96bs48mq59r / 9yg6cdfkdghfcn / 5f5og0ywb6yejq / 7zq4301lb8davy,
+RTX PRO 4500 $0.74/hr each).
+**Status:** IN PROGRESS.
+
+**What:** extends Stream W (1-shot, canonical `train_varicl_top40` FVs) to 5-shot prompts. Same
+7 held-out tasks, 6 arms, Δ log p metric, seed-42 sampling, cf_map. 14 rows/arm: cue1..5,
+target1..5, final_cue individually + combined simultaneous-ablation rows all_targets, all_cues,
+all_cues_incl_final. Matched arm: cue_i←pre_label_icl{i}, target_i←last_label_icl{i},
+final_cue←pre_label_icl6; combined rows keep per-position matched cells. icl10 arm: cues←
+pre_label_icl10, targets←last_label_icl10; individual final_cue keeps last_prompt_icl10; in
+all_cues_incl_final the final cue gets pre_label_icl10 (user decision: same vector at every
+cue). 8 NEW ridge+TSVD cells (pre_label_icl{3..6}, last_label_icl{2..5}) fit from the existing
+10-shot captures (same provenance as all existing cells; NOTE 5-shot demo draws are a fresh
+deterministic sample — seed excludes n_shots — so 1-shot demos are not nested in 5-shot prompts).
+**USER-REQUIRED GATE:** new cells' per-layer test MSEs must match the stored full-dim ridge R²
+study (`check_ridge_mse_vs_r2_study.py`); on mismatch STOP and inform the user — no
+self-adjudication. Gate pre-validated on the 6 existing cells: rel diff exactly 0.0 (140 rows).
+
+**Files:** NEW `src/eval_scripts/ablate_fiveshot_preimage_logprob.py` (standalone sibling of the
+1-shot script — 1-shot script untouched, another stream is editing it),
+`plot_fiveshot_preimage_ablation.py`, `check_ridge_mse_vs_r2_study.py`,
+`logs/fiveshot_preimage_ablation/driver.sh`. Output →
+`results/direction3_fv_formation/fiveshot_preimage_ablation/train_varicl_top40/`.
+Defaults: batch 85, TraceDict(retain_output=False), use_cache=False (5-shot prompts ~52-64 tok).
+
+**Status update 2026-07-17: DONE.** All 42 (task,arm) npz complete (shape 14x28x170, all finite;
+combined_summary.csv independently re-verified against the npz, 392/392 rows match). Gates:
+TSVD lincheck <7e-6; **MSE gate: all 8 new cells reproduce the stored R² study test MSEs with
+rel diff exactly 0.0 (224 rows)** — no discrepancy to escalate. Pods terminated. Ops note: the
+pod-1 driver rolled from smoke straight into an unsharded serial sweep (~2.3h idle on pods 2-4,
+~$5); killed at capitalize_first_letter midpoint and resharded — future drivers should gate the
+full sweep behind an explicit TASKS_SHARD.
+
+**Findings (7-task mean Δ log p, figures in `.../fiveshot_preimage_ablation/train_varicl_top40/
+figures/`; `_targets`/`_cues` variants are rescaled subsets):**
+- **Combined target ablation is strongly superadditive.** all_targets (5 demo labels at once,
+  matched preimages, L0) = **−2.19** (cf −0.20) vs Σ individual targets ≈ −0.79. Per-token
+  redundancy: each individual target is small in 5-shot (target1 −0.08 vs −1.78 in 1-shot;
+  target5 −0.29) because the other 4 demos still carry the task, but removing the preimage
+  component at ALL labels collapses it. Ordering: later demos matter more (t5>t4>...>t1).
+- **Label-token coordinates are still preimage, not FV:** all_targets via matched preimages
+  −2.19, icl10 preimages −1.53, raw FV direction only −0.16. Strictly early-layer (≈0 by L20),
+  as in 1-shot.
+- **final_cue reproduces 1-shot:** FV −7.41 (cf −0.71; 1-shot was −7.13), icl10 −3.42, matched
+  (pre_label_icl6) −2.86; still biting at L20 (FV −0.93, icl10 −1.22). FV coords dominate at the
+  query cue; preimage coords at the labels.
+- **Cue tokens are causally null even jointly:** every individual cue ≈0 AND all_cues (5 at
+  once) ≈ −0.01; all_cues_incl_final ≈ final_cue alone (−6.58 vs −7.41 FV) — demo cues add
+  nothing on top of the query cue; per icl10-arm design the final cue there uses
+  pre_label_icl10, which costs it ~0.7 vs the individual final_cue row's last_prompt_icl10.
+- **Per-task concentration matches 1-shot:** all_targets(matched, L0) driven by landmark-country
+  −6.09, lowercase_first_letter −5.77 (cf −1.46 — same confounded near-twin cf draw as 1-shot),
+  capitalize_first_letter −2.51; ≈−0.2 for antonym/synonym/capitalize/word_length.
+- Runtime: stage A 8 cells sharded 4 pods ≈ 25 min; sweep ≈ 45-60 min/task (~5.5h GPU-time
+  total across 4x RTX PRO 4500, ~$11 incl. the idle mistake).
+**Next:** (a) superadditivity curve — ablate k=1..5 targets to map the redundancy threshold;
+(b) same combined-row study in the paired-prompt logit-gap regime; (c) re-draw
+lowercase_first_letter's confounded counterfactual; (d) sum-over-answer-tokens metric for
+capitalize.
+
+## 2026-07-16 — Stream X3: PROPAGATED fixed-direction 1-shot preimage ablation
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; own RunPod L4 pod `fv-propagated-ablation-3`
+xfyifkkbdo4am6 $0.39/hr — TERMINATED; two earlier 4090 pods stalled at boot: the template image
+needs **CUDA ≥ 12.8** and those hosts had 12.4 drivers → ALWAYS pass
+`allowedCudaVersions: ["12.8","12.9","13.0"]` in podFindAndDeployOnDemand; see DECISIONS).
+**Status:** DONE. Committed on branch `claude-pertask-r2`.
+
+**Design (user-specified):** same 6 arms/7 tasks/28 start layers as Stream W's perlayer study,
+but (1) the ablated direction is FIXED to U[L], the preimage of the regression at the anchor
+layer L (fv arm unchanged in direction); (2) it is projected out at the anchor token AND every
+later token position, for all blocks b ≥ L. NEW `--mode propagated` on
+`ablate_oneshot_preimage_logprob.py` (default `perlayer` bit-identical — verified); results →
+`results/direction3_fv_formation/oneshot_preimage_ablation_propagated/train_varicl_top40/`
+(full npz kept per (task, arm); figures: heatmap_all_arms + per_task_grid only, via new
+`--skip_per_arm` plot flag). Driver `logs/propagated_ablation/driver.sh`.
+
+**Verification:** (a) perlayer regression — edited script vs HEAD script on the SAME L4 GPU:
+max|Δ| = 0.0 across all 6 arms (an earlier check against the stored v2 smoke tripped at 1.7e-2;
+that is pure cross-GPU fp16 noise — HEAD-vs-HEAD across GPUs shows the same 1.7e-2; regression
+checks must compare same-GPU); (b) cross-mode equivalence — fv arms' final_cue row equal at
+every L, all arms' final_cue equal at L=27 (single-position/single-block cases where the modes
+coincide by construction): all passed (`EQUIVALENCE_OK` in driver log).
+
+**Findings (task-mean Δ log p; per-arm numbers in per-task summary.csv):**
+- **FV direction becomes catastrophic from ANY anchor when propagated:** cue1/target1/final_cue
+  all ≈ −7.1..−7.5 at L0–8 (perlayer: only final_cue −7.2; cue1/target1 ≈ −0.1/−0.4). But
+  specificity DROPS: fv_cf now −2.2..−2.4 at cue1/target1 (perlayer cf ≈ −0.1/−0.3), i.e.
+  propagated FV removal is ~3× task-specific vs ~6× at final_cue and ~8-20× perlayer.
+- **The preimage stack is NOT one direction:** at final_cue (where propagated = fixed-direction
+  anchor-only), icl10-preimage removal collapses from −4.0 (perlayer, removing each layer's own
+  direction) to ≈0.0 at L0 with the fixed U[0]; the only surviving fixed-direction effect is
+  late (−1.65 @ L20). Same collapse for matched at final_cue (−1.94 → ≈0 at L0, −0.99 @ L15).
+  ⇒ the causal preimage content ROTATES across layers; no single layer's preimage direction
+  carries it.
+- **target1 (demo label) effect weakens and loses specificity when fixed+propagated:** matched
+  −1.78→−0.82 at L0 (min −1.53 @ L1) while its cf grows to −0.81 @ L1 (~1.9× specific vs ~8×
+  perlayer).
+- **NEW late-layer band for icl10 preimage at cue1** (min −1.62 @ L20; absent perlayer) —
+  propagating the late-layer icl10 direction over all downstream tokens (which include the
+  final cue) reaches the readout path.
+
+---
+
 ## 2026-07-15 — Stream X2: GPT-4.1-judged accuracy-vs-n_shots (antonym/synonym)
 
 **Owner:** Coordinator (tmux `pertask-r2-heatmaps`; generate stage on own RunPod 4090 pod
@@ -42,6 +149,8 @@ top-5 tokens, gold_rank, judge_correct) + summary.json. Figure:
   1–2 prompts/cell (≤0.4%; exact at n=0,1) — cross-GPU (L4 vs 4090) logit noise flipping
   near-tied argmaxes, NOT a prompt mismatch. summary.json flags matches_reference at 1e-9
   tolerance, so False there means "±1-2 prompts", read the gold_top1 columns.
+
+**Addendum (2026-07-16):** retitled the Stream W ablation-heatmap arms for clarity — "preimage (matched cells)" → "preimage of position-matched regression", "preimage (icl10 cells)" → "preimage of icl10 regression"; suptitles now state all ablations are applied in 1-shot prompts. plot_oneshot_preimage_ablation.py + all figures regenerated (data untouched).
 
 ---
 
