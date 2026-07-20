@@ -5,10 +5,18 @@ Generalises the 1-shot label→query-final heatmap (steer_label_cos_heatmap.py) 
 {intervene label token → read query-final token} pair to **every ordered pair of tokens** in a
 2-shot paired ICL prompt, in BOTH source→target directions.
 
-Construction (matched-label paired 2-shot, same as capture_and_grade_twoshot_paired.py): each pair
-of prompts shares the two demo labels (L1, L2, distinct within a prompt) and the query q; only the
-two demo INPUTS differ by function. So 5 of the 6 search-space tokens are byte-identical across the
-f1/f2 prompts (pure function context); only the demo-2 input token differs.
+Construction (--pair_mode label, default; matched-label paired 2-shot, same as
+capture_and_grade_twoshot_paired.py): each pair of prompts shares the two demo labels (L1, L2,
+distinct within a prompt) and the query q; only the two demo INPUTS differ by function. So 5 of the
+6 search-space tokens are byte-identical across the f1/f2 prompts (pure function context); only the
+demo-2 input token differs.
+
+--pair_mode input (2026-07-20 mirror study): each pair shares the two demo INPUT words (I1, I2) and
+the query q; each function supplies its own labels (f_k(I1), f_k(I2)). Anchor = every shared input
+word whose outputs differ across the functions and are single-token under both (all four demo labels
+single-token, matching the label-mode constraint); I2 must give distinct labels within each prompt;
+q excludes the demo inputs and all four labels. Now label1/label2 are the differing tokens and
+input2 is clean — CLEAN flips accordingly and the label sites carry the counterfactual.
 
 Search-space tokens (sequence order):
     t1 label1   = last_label_token @ icl 1      (identical across functions)
@@ -44,8 +52,9 @@ The grid x-axis is the clamp START layer. Outputs: twoshot_tokenpair_perpair_cum
 
 Layers = 29 residual entries (0 = embedding / transformer.drop, 1..28 = transformer.h.{0..27}).
 Structural invariants (asserted): lower triangle k≤i ≡ 0 (read is downstream of the edit); the
-embedding column i=0 ≡ 0 for CLEAN source tokens (steer_vec=0 at the embedding) — the demo-2 input
-token (t2) is the documented exception (its embedding diff is nonzero ⇒ column 0 may be nonzero).
+embedding column i=0 ≡ 0 for CLEAN source tokens (steer_vec=0 at the embedding) — the differing
+tokens (label mode: t2 input2; input mode: t1/t4 labels) are the documented exceptions (their
+embedding diffs are nonzero ⇒ column 0 may be nonzero).
 
 baukit imported inside main (precedent: steer_label_cos_heatmap.py); the baukit-free position helpers
 are inlined so the module top stays import-safe.
@@ -79,9 +88,15 @@ TASK_PAIRS = {
 PREFIXES = {"input": "Q:", "output": "A:", "instructions": ""}
 SEPARATORS = {"input": "\n", "output": "\n\n", "instructions": ""}
 
-# 6 search-space tokens, in sequence order. CLEAN = byte-identical across f1/f2.
+# 6 search-space tokens, in sequence order. CLEAN = byte-identical across f1/f2; depends on
+# --pair_mode: label-matched pairs differ only at input2 (original study); input-matched pairs
+# share the demo inputs + query and differ at the label tokens (2026-07-20 mirror study).
 TOKENS = ["label1", "input2", "prelabel2", "label2", "qinput", "qfinal"]
-CLEAN = {"label1": True, "input2": False, "prelabel2": True, "label2": True, "qinput": True, "qfinal": True}
+CLEAN_BY_PAIR_MODE = {
+    "label": {"label1": True, "input2": False, "prelabel2": True, "label2": True, "qinput": True, "qfinal": True},
+    "input": {"label1": False, "input2": True, "prelabel2": True, "label2": False, "qinput": True, "qfinal": True},
+}
+CLEAN = CLEAN_BY_PAIR_MODE["label"]     # rebound in main() from --pair_mode
 N_TOKENS = len(TOKENS)
 # intervention sources = every token that has at least one later token (t1..t5; qfinal is read-only)
 SRC_TOKEN_IDX = list(range(N_TOKENS - 1))
@@ -193,6 +208,10 @@ def build_prompt(demo_inputs, demo_outputs, query_input):
 def parse_args():
     p = argparse.ArgumentParser(description="Two-shot token-pair → layer×layer cosine-shift heatmaps.")
     p.add_argument("--task_pair", choices=sorted(TASK_PAIRS), default="antonym_synonym")
+    p.add_argument("--pair_mode", choices=["label", "input"], default="label",
+                   help="label: pairs share demo labels + query, demo inputs differ by function "
+                        "(original study). input: pairs share demo INPUTS + query, each function "
+                        "supplies its own labels — label1/label2 become the differing tokens.")
     p.add_argument("--steer_mode", choices=["mean", "perpair"], default="mean",
                    help="mean: inject the pair-mean steer vector (original study). perpair: inject each "
                         "pair's OWN tgt−src difference at the edited (token, layer) — α=1 is exact "
@@ -229,12 +248,21 @@ def parse_args():
             sub = "twoshot_tokenpair_intervention_cos_heatmap"
         else:
             sub = "twoshot_tokenpair_perpair_cos_heatmap"
+        if args.pair_mode == "input":
+            sub = {"twoshot_tokenpair_perpair_cos_heatmap":
+                       "twoshot_tokenpair_perpair_inputmatch_cos_heatmap",
+                   "twoshot_tokenpair_perpair_cumclamp_cos_heatmap":
+                       "twoshot_tokenpair_perpair_inputmatch_cumclamp_cos_heatmap",
+                   "twoshot_tokenpair_intervention_cos_heatmap":
+                       "twoshot_tokenpair_inputmatch_intervention_cos_heatmap"}[sub]
         args.output_root = str(LABEL_GEOMETRY_DIR / sub)
     return args
 
 
 def main():
+    global CLEAN
     args = parse_args()
+    CLEAN = CLEAN_BY_PAIR_MODE[args.pair_mode]
     set_seed(args.seed)
     torch.set_grad_enabled(False)
     from baukit import TraceDict  # noqa: local import (model-side dep)
@@ -275,50 +303,79 @@ def main():
     query_pool = list(shared_in)
     label_set = list(label_words)
     print(f"label words (shared single-tok output): {len(label_words)}; query pool: {len(query_pool)}")
+    if args.pair_mode == "input":
+        # anchor pool for input-matched pairs: shared inputs whose outputs differ across the two
+        # functions and are single-token under both (all four demo labels stay single tokens)
+        eligible_in = [w for w in shared_in
+                       if i2o_f1[w] != i2o_f2[w] and single(i2o_f1[w]) and single(i2o_f2[w])]
+        print(f"eligible input words (shared, differing single-tok outputs): {len(eligible_in)}")
+        anchor_words = eligible_in
+    else:
+        anchor_words = label_words
 
     # ---- build 2-shot prompt pairs (deterministic, identical to capture_and_grade_twoshot_paired) ----
     f1_ids_list, f2_ids_list = [], []      # token id lists (unpadded)
     f1_pos_list, f2_pos_list = [], []       # per-prompt dict of 6 token positions (unpadded)
     pair_meta = []
-    for w in label_words:
+    for w in anchor_words:
         rng = stable_rng(args.seed, args.task_pair, w)
-        L1 = w
-        cand_L2 = [x for x in label_set if x != L1]
-        if not cand_L2:
-            continue
-        L2 = str(rng.choice(cand_L2))
-        labels = [L1, L2]
-        demo_inputs = {
-            "f1": [str(rng.choice(o2i_f1[L1])), str(rng.choice(o2i_f1[L2]))],
-            "f2": [str(rng.choice(o2i_f2[L1])), str(rng.choice(o2i_f2[L2]))],
-        }
-        forbidden = {L1, L2, *demo_inputs["f1"], *demo_inputs["f2"]}
+        if args.pair_mode == "label":
+            L1 = w
+            cand_L2 = [x for x in label_set if x != L1]
+            if not cand_L2:
+                continue
+            L2 = str(rng.choice(cand_L2))
+            demo_inputs = {
+                "f1": [str(rng.choice(o2i_f1[L1])), str(rng.choice(o2i_f1[L2]))],
+                "f2": [str(rng.choice(o2i_f2[L1])), str(rng.choice(o2i_f2[L2]))],
+            }
+            demo_labels = {"f1": [L1, L2], "f2": [L1, L2]}
+            forbidden = {L1, L2, *demo_inputs["f1"], *demo_inputs["f2"]}
+            meta = {"L1": L1, "L2": L2}
+        else:
+            I1 = w
+            # second demo input: must give distinct labels within EACH prompt (mirror of L1 != L2)
+            cand_I2 = [x for x in anchor_words
+                       if x != I1 and i2o_f1[x] != i2o_f1[I1] and i2o_f2[x] != i2o_f2[I1]]
+            if not cand_I2:
+                continue
+            I2 = str(rng.choice(cand_I2))
+            demo_inputs = {"f1": [I1, I2], "f2": [I1, I2]}
+            demo_labels = {"f1": [i2o_f1[I1], i2o_f1[I2]], "f2": [i2o_f2[I1], i2o_f2[I2]]}
+            forbidden = {I1, I2, *demo_labels["f1"], *demo_labels["f2"]}
+            meta = {"I1": I1, "I2": I2, "demo_labels": demo_labels}
         cand_q = [q for q in query_pool if q not in forbidden]
         if not cand_q:
             continue
         q = str(rng.choice(cand_q))
 
-        expected_label_ids = [tokenizer(" " + lab).input_ids[-1] for lab in labels]
         ok = {}
         for tag in ("f1", "f2"):
-            pd = build_prompt(demo_inputs[tag], labels, q)
+            labs = demo_labels[tag]
+            expected_label_ids = [tokenizer(" " + lab).input_ids[-1] for lab in labs]
+            pd = build_prompt(demo_inputs[tag], labs, q)
             token_labels, prompt_string = get_token_meta_labels(
                 pd, tokenizer, query=q, prepend_bos=model_config["prepend_bos"])
             pos = token_positions(token_labels)
             ids = tokenizer(prompt_string).input_ids
             assert pos["qfinal"] == len(ids) - 1, "query-final not last token"
-            # paired invariant: shared labels identical across f1/f2
+            # per-prompt invariant: the label sites hold this function's expected label tokens
             assert ids[pos["label1"]] == expected_label_ids[0], f"L1 mismatch w={w!r} {tag}"
             assert ids[pos["label2"]] == expected_label_ids[1], f"L2 mismatch w={w!r} {tag}"
             ok[tag] = (ids, pos)
         (f1_ids, f1_pos), (f2_ids, f2_pos) = ok["f1"], ok["f2"]
-        # the 5 CLEAN tokens must be byte-identical across the pair; input2 (t2) may differ
+        # CLEAN tokens must be byte-identical across the pair (label mode: all but input2;
+        # input mode: all but label1/label2, which must actually DIFFER)
         for t in TOKENS:
             if CLEAN[t]:
                 assert f1_ids[f1_pos[t]] == f2_ids[f2_pos[t]], f"clean token {t} differs (w={w!r})"
+        if args.pair_mode == "input":
+            for t in ("label1", "label2"):
+                assert f1_ids[f1_pos[t]] != f2_ids[f2_pos[t]], \
+                    f"label token {t} identical across pair (w={w!r})"
         f1_ids_list.append(f1_ids); f1_pos_list.append(f1_pos)
         f2_ids_list.append(f2_ids); f2_pos_list.append(f2_pos)
-        pair_meta.append({"L1": L1, "L2": L2, "query": q, "demo_inputs": demo_inputs})
+        pair_meta.append({**meta, "query": q, "demo_inputs": demo_inputs})
         if args.max_pairs is not None and len(pair_meta) >= args.max_pairs:
             break
     n_pairs = len(pair_meta)
@@ -437,6 +494,7 @@ def main():
     (out_dir / "figures").mkdir(parents=True, exist_ok=True)
 
     summary = {"task_pair": args.task_pair, "f1": f1, "f2": f2, "n_pairs": n_pairs,
+               "pair_mode": args.pair_mode,
                "steer_mode": args.steer_mode, "layer_mode": args.layer_mode,
                "metric": "dircos: mean_pairs[cos(tgt-src, steered-src)] at the read site "
                          "(2026-07-14; replaces the deprecated delta-cos-to-target)",
@@ -444,10 +502,17 @@ def main():
                "clean_token": CLEAN, "intervention_source_tokens": [TOKENS[i] for i in SRC_TOKEN_IDX],
                "intervention_layers": inter_layers,
                "embedding_entry": "transformer.drop (residual layer 0); layers 1..28 = block outputs",
-               "note_input2": ("demo-2 input token (t2) differs across functions: its steer direction "
-                               "mixes lexical+function content and its read baseline cos < 1; the other "
-                               "5 tokens are byte-identical (pure function context)."),
                "directions": {}}
+    if args.pair_mode == "label":
+        summary["note_input2"] = (
+            "demo-2 input token (t2) differs across functions: its steer direction "
+            "mixes lexical+function content and its read baseline cos < 1; the other "
+            "5 tokens are byte-identical (pure function context).")
+    else:
+        summary["note_labels"] = (
+            "input-matched pairs: label tokens (t1 label1, t4 label2) differ across functions and "
+            "carry the counterfactual; the other 4 tokens are byte-identical (shared demo inputs + "
+            "query). All four demo labels are single-token by construction.")
 
     for src_task, tgt_task, src_tag, tgt_tag in directions:
         dir_name = f"{src_task}_to_{tgt_task}"

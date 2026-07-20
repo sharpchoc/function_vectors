@@ -57,6 +57,8 @@ def parse_args():
             args.mode_label = "SINGLE-LAYER intervention (per-pair steer vec)"
         else:
             args.mode_label = "SINGLE-LAYER intervention (mean steer vec)"
+        if "inputmatch" in name:
+            args.mode_label += " — INPUT-matched pairs (labels differ)"
     args.mode_short = "cumulative clamp i→28" if "CUMULATIVE" in args.mode_label else "single-layer"
     args.is_clamp = "CUMULATIVE" in args.mode_label
     return args
