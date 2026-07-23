@@ -1,10 +1,15 @@
 #!/usr/bin/env python
-"""Stream W: heatmaps for the 1-shot preimage/FV projection-ablation study (CPU).
+"""Stream W-5shot: heatmaps for the 5-shot preimage/FV projection-ablation study (CPU).
 
-Reads the per-(task, arm) npz written by ablate_oneshot_preimage_logprob.py and renders, per arm,
-a token-row x start-layer heatmap of the task-mean delta log p (ablated - clean) of the first
-answer token. One shared symmetric color scale across ALL arms (the *_cf arms are the control, so
-cross-arm comparability is the point). Also a per-task supplementary grid (tasks x arms).
+Reads the per-(task, arm) npz written by ablate_fiveshot_preimage_logprob.py and renders, per
+arm, a token-row x start-layer heatmap of the task-mean delta log p (ablated - clean) of the
+first answer token. One shared symmetric color scale across ALL arms (the *_cf arms are the
+control, so cross-arm comparability is the point). Also a per-task supplementary grid
+(tasks x arms).
+
+14 rows per arm: cue1..cue5, target1..target5, final_cue, all_targets, all_cues,
+all_cues_incl_final. The final-cue/combined rows dominate the shared scale; use --rows to render
+rescaled subsets (e.g. --rows target1 target2 target3 target4 target5 all_targets).
 
 Outputs under <root>/figures/:
   heatmap_<arm>.png              task-mean over all 170 prompts/task
@@ -38,29 +43,30 @@ ARM_TITLES = {
     "preimage_icl10_cf": "preimage of icl10 regression — counterfactual task",
     "fv_cf": "FV direction — counterfactual task",
 }
-ROW_TITLES = {"cue1": "cue1 (demo 'A:')", "target1": "target1 (demo label)",
-              "final_cue": "final cue (query 'A:')"}
+ROW_TITLES = {
+    **{f"cue{i}": f"cue{i} (demo {i} 'A:')" for i in range(1, 6)},
+    **{f"target{i}": f"target{i} (demo {i} label)" for i in range(1, 6)},
+    "final_cue": "final cue (query 'A:')",
+    "all_targets": "all targets (5 demo labels)",
+    "all_cues": "all cues (5 demo 'A:')",
+    "all_cues_incl_final": "all cues + final cue",
+}
 
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--root", type=Path,
-                   default=FV_FORMATION_DIR / "oneshot_preimage_ablation/train_varicl_top40")
+                   default=FV_FORMATION_DIR / "fiveshot_preimage_ablation/train_varicl_top40")
     p.add_argument("--rows", nargs="+", default=None,
-                   help="Only plot these token rows (e.g. target1). The color scale is computed "
-                        "from the kept rows only, so small effects aren't washed out by the "
-                        "final-cue magnitudes. Output filenames get a _<rows> suffix.")
+                   help="Only plot these token rows (e.g. target1 all_targets). The color scale "
+                        "is computed from the kept rows only, so small effects aren't washed out "
+                        "by the final-cue magnitudes. Output filenames get a _<rows> suffix.")
+    p.add_argument("--suffix", type=str, default=None,
+                   help="Override the filename suffix used with --rows (default: _<rows joined>).")
     p.add_argument("--annotate", action="store_true",
                    help="Write the value into each cell of the per-arm heatmaps.")
     p.add_argument("--skip_per_arm", action="store_true",
                    help="Only render heatmap_all_arms and per_task_grid (skip the per-arm figures).")
-    p.add_argument("--arms", nargs="+", default=None, choices=ARMS,
-                   help="Only plot these arms; the shared color scale is computed from the kept "
-                        "arms only (e.g. drop fv/fv_cf so preimage structure isn't washed out).")
-    p.add_argument("--suffix", type=str, default=None,
-                   help="Filename suffix override (default: _<rows> when --rows is used, else '').")
-    p.add_argument("--tasks", nargs="+", default=None,
-                   help="Only include these task dirs (default: every task dir under --root).")
     return p.parse_args()
 
 
@@ -82,7 +88,7 @@ def render(ax, grid, row_names, vmax, title, annotate=False, show_xlabel=True,
                    interpolation="nearest")
     ax.set_yticks(range(len(row_names)))
     ax.set_yticklabels([ROW_TITLES.get(r, r) for r in row_names] if show_ylabels else [],
-                       fontsize=10)
+                       fontsize=8)
     ax.set_xticks(range(0, grid.shape[1], 4))
     ax.tick_params(labelsize=9)
     if show_xlabel:
@@ -102,24 +108,18 @@ def main():
     args = parse_args()
     fig_dir = args.root / "figures"
     fig_dir.mkdir(parents=True, exist_ok=True)
-    arms = list(args.arms) if args.arms else list(ARMS)
     suffix = ""
     if args.rows:
-        suffix += "_" + "_".join(args.rows)
-    if args.suffix is not None:
-        suffix = args.suffix
+        suffix = args.suffix if args.suffix is not None else "_" + "_".join(args.rows)
 
     task_dirs = sorted(d for d in args.root.iterdir()
-                       if d.is_dir() and d.name != "figures"
-                       and (args.tasks is None or d.name in set(args.tasks)))
+                       if d.is_dir() and d.name != "figures")
     tasks = [d.name for d in task_dirs]
-    if args.tasks and set(tasks) != set(args.tasks):
-        raise SystemExit(f"missing task dirs: {sorted(set(args.tasks) - set(tasks))}")
 
     # per (arm) -> task -> (row_names, [rows, 28])
-    per_arm = {arm: {} for arm in arms}
+    per_arm = {arm: {} for arm in ARMS}
     for d in task_dirs:
-        for arm in arms:
+        for arm in ARMS:
             got = load_arm(d, arm)
             if got is None:
                 continue
@@ -133,7 +133,7 @@ def main():
 
     # task-mean grids per arm
     arm_grids = {}
-    for arm in arms:
+    for arm in ARMS:
         if not per_arm[arm]:
             continue
         row_names = next(iter(per_arm[arm].values()))[0]
@@ -142,16 +142,17 @@ def main():
     if not arm_grids:
         raise SystemExit(f"no npz found under {args.root}")
 
+    n_rows = max(len(rn) for rn, _ in arm_grids.values())
     vmax = max(np.nanmax(np.abs(g)) for _, g in arm_grids.values())
     print(f"tasks={tasks}")
     print(f"shared scale vmax={vmax:.3f}")
 
     # --- per-arm figures ---
     for arm, (row_names, grid) in ({} if args.skip_per_arm else arm_grids).items():
-        fig, ax = plt.subplots(figsize=(10, 0.8 * len(row_names) + 2.2),
+        fig, ax = plt.subplots(figsize=(10, 0.55 * len(row_names) + 2.2),
                                constrained_layout=True)
         im = render(ax, grid, row_names, vmax,
-                    f"{ARM_TITLES[arm]} — mean Δ log p(correct) over {len(per_arm[arm])} tasks, 1-shot prompts",
+                    f"{ARM_TITLES[arm]} — mean Δ log p(correct) over {len(per_arm[arm])} tasks, 5-shot prompts",
                     annotate=args.annotate)
         fig.colorbar(im, ax=ax, label="log p(ablated) − log p(clean)")
         out = fig_dir / f"heatmap_{arm}{suffix}.png"
@@ -160,11 +161,10 @@ def main():
         print(f"wrote {out}")
 
     # --- combined 2x3 figure (labels only on the left column / bottom row) ---
-    ncols = (len(arms) + 1) // 2
-    fig, axes = plt.subplots(2, ncols, figsize=(6.4 * ncols, 7.5), squeeze=False,
+    fig, axes = plt.subplots(2, 3, figsize=(19, 0.62 * n_rows + 3.5),
                              constrained_layout=True)
-    for k, arm in enumerate(arms):
-        r, c = divmod(k, ncols)
+    for k, arm in enumerate(ARMS):
+        r, c = divmod(k, 3)
         ax = axes[r][c]
         if arm not in arm_grids:
             ax.axis("off")
@@ -172,10 +172,8 @@ def main():
         row_names, grid = arm_grids[arm]
         im = render(ax, grid, row_names, vmax, ARM_TITLES[arm],
                     show_xlabel=(r == 1), show_ylabels=(c == 0))
-    mode_note = (" — PROPAGATED mode: fixed anchor-layer direction, anchor + all later tokens"
-                 if "propagated" in args.root.name or "propagated" in str(args.root.parent) else "")
-    fig.suptitle("1-shot projection-ablation (all ablations applied in 1-shot prompts)"
-                 f"{mode_note}: mean Δ log p(correct answer), {len(tasks)} tasks", fontsize=14)
+    fig.suptitle("5-shot projection-ablation (all ablations applied in 5-shot prompts): "
+                 f"mean Δ log p(correct answer), {len(tasks)} tasks", fontsize=14)
     fig.colorbar(im, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.85)
     out = fig_dir / f"heatmap_all_arms{suffix}.png"
     fig.savefig(out, dpi=200)
@@ -183,11 +181,12 @@ def main():
     print(f"wrote {out}")
 
     # --- per-task supplementary grid ---
-    fig, axes = plt.subplots(len(tasks), len(arms),
-                             figsize=(3.6 * len(arms), 1.7 * len(tasks) + 1.0),
+    row_h = 0.22 * n_rows + 0.6
+    fig, axes = plt.subplots(len(tasks), len(ARMS),
+                             figsize=(3.6 * len(ARMS), row_h * len(tasks) + 1.2),
                              squeeze=False, constrained_layout=True)
     for ti, task in enumerate(tasks):
-        for ai, arm in enumerate(arms):
+        for ai, arm in enumerate(ARMS):
             ax = axes[ti][ai]
             if task not in per_arm[arm]:
                 ax.axis("off")
@@ -198,14 +197,14 @@ def main():
             ax.set_xticks(range(0, grid.shape[1], 8) if ti == len(tasks) - 1 else [])
             ax.tick_params(labelsize=7)
             ax.set_yticks(range(len(row_names)))
-            ax.set_yticklabels(row_names if ai == 0 else [], fontsize=8)
+            ax.set_yticklabels(row_names if ai == 0 else [], fontsize=6)
             if ti == 0:
                 ax.set_title(ARM_TITLES[arm], fontsize=9)
             if ai == 0:
                 ax.set_ylabel(task, fontsize=9, rotation=90)
             if ti == len(tasks) - 1:
                 ax.set_xlabel("start layer L", fontsize=8)
-    fig.suptitle(f"per-task Δ log p heatmaps, 1-shot prompts (shared scale ±{vmax:.2f})", fontsize=13)
+    fig.suptitle(f"per-task Δ log p heatmaps, 5-shot prompts (shared scale ±{vmax:.2f})", fontsize=13)
     fig.colorbar(last, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.6)
     out = fig_dir / f"per_task_grid{suffix}.png"
     fig.savefig(out, dpi=180)
