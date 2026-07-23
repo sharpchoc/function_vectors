@@ -1,0 +1,140 @@
+{
+  "script": "pca_cue_token_icl_evolution.py",
+  "args": {
+    "task_manifest": "task_splits/abstractive_train_test_tasks_29.json",
+    "icl_activations_root_template": "/workspace/function_vectors/artifacts/residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens",
+    "query_activations_root": "/workspace/function_vectors/artifacts/residual_activations/gptj_56tasks_170prompts_4tokens",
+    "splits": [
+      "train",
+      "test"
+    ],
+    "token_role": "last_label_token",
+    "layer_index": 11,
+    "icl_indices": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "n_components": 10,
+    "variants": [
+      "pca_all_positions",
+      "pca_final_cue"
+    ],
+    "train_tasks": null,
+    "test_tasks": null,
+    "alpha": 0.25,
+    "point_size": 6.0,
+    "mean_point_size": 130.0,
+    "seed": 0,
+    "output_dir": "/workspace/function_vectors/results/direction3_fv_formation/pca_lastlabel_token_icl_evolution",
+    "overwrite": false
+  },
+  "train_tasks": [
+    "ag_news",
+    "capitalize_last_letter",
+    "capitalize_second_letter",
+    "commonsense_qa",
+    "country-capital",
+    "english-french",
+    "english-german",
+    "english-spanish",
+    "lowercase_last_letter",
+    "national_parks",
+    "next_capital_letter",
+    "next_item",
+    "park-country",
+    "person-instrument",
+    "person-occupation",
+    "person-sport",
+    "present-past",
+    "prev_item",
+    "sentiment",
+    "singular-plural"
+  ],
+  "test_tasks": [
+    "antonym",
+    "capitalize",
+    "capitalize_first_letter",
+    "landmark-country",
+    "lowercase_first_letter",
+    "synonym",
+    "word_length"
+  ],
+  "icl_indices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "token_role": "last_label_token",
+  "layer_index": 11,
+  "row_order_note": "rows per (task, icl) follow --splits order (train shards then test shards); row_index is the position in that pooled order",
+  "variants": {
+    "pca_all_positions": {
+      "fit_icl_indices": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "fit_shape": [
+        34000,
+        4096
+      ],
+      "explained_variance_ratio": [
+        0.07123452425003052,
+        0.07084473967552185,
+        0.04148883372545242,
+        0.03357661888003349,
+        0.030764251947402954,
+        0.025835299864411354,
+        0.024833576753735542,
+        0.023946236819028854,
+        0.01857185550034046,
+        0.018223511055111885
+      ],
+      "output_dir": "/workspace/function_vectors/results/direction3_fv_formation/pca_lastlabel_token_icl_evolution/pca_all_positions"
+    },
+    "pca_final_cue": {
+      "fit_icl_indices": [
+        10
+      ],
+      "fit_shape": [
+        3400,
+        4096
+      ],
+      "explained_variance_ratio": [
+        0.08658215403556824,
+        0.07747296243906021,
+        0.044645246118307114,
+        0.037060126662254333,
+        0.030411072075366974,
+        0.028566084802150726,
+        0.027479253709316254,
+        0.023443907499313354,
+        0.02015749178826809,
+        0.01909123919904232
+      ],
+      "output_dir": "/workspace/function_vectors/results/direction3_fv_formation/pca_lastlabel_token_icl_evolution/pca_final_cue"
+    }
+  }
+}

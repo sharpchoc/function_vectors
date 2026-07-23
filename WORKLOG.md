@@ -5,6 +5,41 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-07-23 — Stream P2: PCA of L11 target-token (last_label) representations across ICL positions
+
+**Owner:** Claude Code background session (CPU pod). **Status:** DONE (~4 min run + grid replot).
+
+**What:** target-token mirror of Stream P (below): same 20+7 tasks, 170 prompts, two train-fit
+PCA bases — but `token_role=last_label_token` at **L11** (user choice; ridge heatmaps: L11 best
+for first_label everywhere and tied-best with L13 for last_label, L13 only winning at late
+positions). `pca_cue_token_icl_evolution.py` generalized with `--token_role` (+ default output
+dir per role); per user decision figures are now GRID PNGs ONLY (per-position figures + PDFs
+removed from the script and deleted from the Stream P cue outputs; data npz/csv retained for
+fast ad-hoc replots). `plot_pca_cue_pc1pc2_grid.py` made role-aware.
+
+**Outputs:** `results/direction3_fv_formation/pca_lastlabel_token_icl_evolution/` (same layout
+as the cue study). Verification: fit shapes exact (34,000/3,400 × 4096); hand-recomputed
+projection from pca_model.pt + fresh activation matches npz with diff 0.0 (both variants).
+
+**FINDINGS (vs cue tokens):**
+- **Target tokens are already task-organized at icl01** — semantic-family clusters (person-*,
+  translation, letter-ops, classification) are visible from the very first label, where the cue
+  tokens started as one undifferentiated blob. Makes sense: the label token's literal content is
+  task-typed, so no context accumulation is needed.
+- Evolution with ICL depth is correspondingly mild: geometry is essentially fixed by icl02–03,
+  later shots only tighten clusters slightly. The dramatic blob→clusters transition is specific
+  to cue tokens.
+- Per-task clouds are visibly broader than at cue tokens (label content varies per prompt), and
+  same-family tasks sit closer/overlap more (english-french/spanish; person-instrument/sport;
+  park-country/person-* region).
+- Explained variance is flatter: pooled top-3 = 7.1/7.1/4.1% (cue: 12.2/9.5/8.2), final-position
+  8.7/7.7/4.5% (cue: 15.4/11.7/7.1) — target-token variance is spread over more directions.
+- Test tasks again embed inside the train geometry near related train tasks.
+
+**Next:** none pending.
+
+---
+
 > **Results layout (current):** intermediates live in git-ignored `artifacts/`; study deliverables in
 > tracked `results/` bucketed by direction (`direction1_ambiguous`, `direction2_label_geometry`,
 > `direction3_fv_formation`, `steering_vector_comparison`, `general`); run logs in git-ignored `logs/`.

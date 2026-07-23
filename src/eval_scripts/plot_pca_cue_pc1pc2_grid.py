@@ -19,7 +19,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from utils.paths import FV_FORMATION_DIR
-from eval_scripts.pca_cue_token_icl_evolution import build_task_colors, legend_handles
+from eval_scripts.pca_cue_token_icl_evolution import ROLE_SHORT, build_task_colors, legend_handles
 
 
 def parse_args():
@@ -36,6 +36,8 @@ def parse_args():
 def main():
     args = parse_args()
     run_config = json.loads((args.study_dir / "run_config.json").read_text())
+    role = run_config.get("token_role", run_config.get("cue_role", "pre_label_token"))
+    role_short = ROLE_SHORT[role]
     train_tasks, test_tasks = run_config["train_tasks"], run_config["test_tasks"]
     all_tasks = train_tasks + test_tasks
     task_group = {t: "train" for t in train_tasks}
@@ -70,7 +72,7 @@ def main():
                            color=task_colors[task], edgecolors="black", linewidths=1.0, zorder=3)
             ax.set_xlim(*lims[0])
             ax.set_ylim(*lims[1])
-            ax.set_title(f"icl{icl:02d}/pre", fontsize=11)
+            ax.set_title(f"icl{icl:02d}/{role_short}", fontsize=11)
             if k // args.ncols == nrows - 1:
                 ax.set_xlabel(f"PC1 ({evr[0] * 100:.1f}% var)")
             if k % args.ncols == 0:
@@ -79,14 +81,13 @@ def main():
             axes[k // args.ncols][k % args.ncols].axis("off")
 
         layer = run_config["layer_index"]
-        fig.suptitle(f"{variant} | L{layer} cue tokens | PC1 vs PC2 across ICL positions "
+        fig.suptitle(f"{variant} | L{layer} {role_short} tokens | PC1 vs PC2 across ICL positions "
                      f"(PCA fit on {len(train_tasks)} train tasks)", fontsize=14)
         fig.legend(handles=legend_handles(all_tasks, task_group, task_colors, args.mean_point_size),
                    loc="center left", bbox_to_anchor=(1.0, 0.5), fontsize=8, frameon=False)
         fig.tight_layout(rect=(0, 0, 0.99, 0.96))
         out = vdir / "figures" / "grid_pc1_pc2.png"
         fig.savefig(out, dpi=160, bbox_inches="tight")
-        fig.savefig(out.with_suffix(".pdf"), dpi=160, bbox_inches="tight")
         plt.close(fig)
         print(f"[{variant}] wrote {out}")
 

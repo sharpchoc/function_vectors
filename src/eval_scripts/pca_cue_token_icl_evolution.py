@@ -1,20 +1,20 @@
 #!/usr/bin/env python
-"""PCA visualization of L13 cue-token (pre-label) representations across ICL positions.
+"""PCA visualization of one token role's representations across ICL positions, at one layer.
 
-For every task (20 train + 7 test, the full-dim ridge study's task set) this loads the layer-13
-residual activation at each ICL example's PRE-LABEL token (the cue right before the label) for
-all 170 prompts (train+test splits pooled), then projects everything into two top-PC spaces fit
-on the TRAIN tasks only:
+For every task (20 train + 7 test, the full-dim ridge study's task set) this loads the residual
+activation at each ICL example's chosen token role (--token_role: cue = pre_label_token, or the
+first/last label a.k.a. target tokens) for all 170 prompts (train+test splits pooled), then
+projects everything into two top-PC spaces fit on the TRAIN tasks only:
 
   * pca_all_positions — PCA fit on the pooled activations across ALL ICL positions
     (20 tasks x 10 positions x 170 prompts).
-  * pca_final_cue     — PCA fit on the final cue position only (icl10/pre; 20 tasks x 170).
+  * pca_final_cue     — PCA fit on the final ICL position only (icl10; 20 tasks x 170).
 
-Per variant it writes, for each ICL position, a 1x3 figure of the PC1-PC2 / PC1-PC3 / PC2-PC3
-scatters (per-prompt points colored by task + a larger task-mean marker; train tasks 'o', test
-tasks '^'), a positions-by-pairs grid figure, and the full projected coordinates
-(projections.npz + CSVs) so 3D or alternate-pair views can be replotted without reloading
-activations.
+Per variant it writes a positions-by-PC-pairs grid figure (per-prompt points colored by task +
+a larger task-mean marker; train tasks 'o', test tasks '^') and the full projected coordinates
+(projections.npz + CSVs) so 3D, alternate-pair, or per-position views can be replotted without
+reloading activations. Per user decision 2026-07-23: grid figures ONLY — no per-position
+figures, no PDFs.
 
 Layer axis convention matches the ridge study: index 0 = token embeddings, so --layer_index 13
 is the output of transformer block 12.
@@ -44,7 +44,7 @@ from eval_scripts.regress_activation_to_fv_fulldim_ridge import (
     write_json,
 )
 
-CUE_ROLE = "pre_label_token"
+ROLE_SHORT = {"pre_label_token": "pre", "first_label_token": "first", "last_label_token": "last"}
 VARIANTS = ["pca_all_positions", "pca_final_cue"]
 PC_PAIRS = [(0, 1), (0, 2), (1, 2)]
 
@@ -58,6 +58,8 @@ def parse_args():
                    default=ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_4tokens")
     p.add_argument("--splits", nargs="+", default=["train", "test"],
                    help="Activation splits pooled into the 170 rows per task/position.")
+    p.add_argument("--token_role", type=str, default="pre_label_token", choices=sorted(ROLE_SHORT),
+                   help="Token role to visualize (pre_label_token = cue; *_label_token = target).")
     p.add_argument("--layer_index", type=int, default=13,
                    help="Residual layer index (0 = embeddings, so 13 = output of block 12).")
     p.add_argument("--icl_indices", nargs="+", type=int, default=list(range(1, QUERY_ICL_INDEX + 1)))
@@ -71,17 +73,19 @@ def parse_args():
     p.add_argument("--point_size", type=float, default=6.0)
     p.add_argument("--mean_point_size", type=float, default=130.0)
     p.add_argument("--seed", type=int, default=0)
-    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "pca_cue_token_icl_evolution")
+    p.add_argument("--output_dir", type=Path, default=None,
+                   help="Default: pca_cue_token_icl_evolution for pre_label_token, "
+                        "pca_<short>label_token_icl_evolution otherwise.")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
 
-def load_cue_matrix(activations_root, task, splits, icl_index, layer_index):
-    """[n_rows, 4096] float32 cue-token activations at one layer, with per-row split labels."""
+def load_cue_matrix(activations_root, task, splits, icl_index, layer_index, token_role="pre_label_token"):
+    """[n_rows, 4096] float32 one-role activations at one layer, with per-row split labels."""
     parts = []
     split_labels = []
     for split in splits:
-        a = load_role_activations_all_layers(activations_root, task, split, CUE_ROLE, icl_index)
+        a = load_role_activations_all_layers(activations_root, task, split, token_role, icl_index)
         parts.append(a[:, layer_index, :].float())
         split_labels.extend([split] * a.shape[0])
     return torch.cat(parts, dim=0).numpy().astype(np.float32), split_labels
@@ -175,8 +179,13 @@ def main():
     icl_indices = sorted(args.icl_indices)
     final_icl = icl_indices[-1]
     if "pca_final_cue" in args.variants and final_icl != QUERY_ICL_INDEX:
-        print(f"WARNING: final cue position is icl{final_icl}, not icl{QUERY_ICL_INDEX}")
+        print(f"WARNING: final position is icl{final_icl}, not icl{QUERY_ICL_INDEX}")
 
+    role_short = ROLE_SHORT[args.token_role]
+    if args.output_dir is None:
+        name = ("pca_cue_token_icl_evolution" if args.token_role == "pre_label_token"
+                else f"pca_{role_short}label_token_icl_evolution")
+        args.output_dir = FV_FORMATION_DIR / name
     args.output_dir.mkdir(parents=True, exist_ok=True)
     run_config_path = args.output_dir / "run_config.json"
     if run_config_path.exists() and not args.overwrite:
@@ -193,7 +202,7 @@ def main():
         t0 = time.time()
         for task in all_tasks:
             data[(task, icl)], split_labels[(task, icl)] = load_cue_matrix(
-                root, task, args.splits, icl, args.layer_index)
+                root, task, args.splits, icl, args.layer_index, args.token_role)
         n_rows = {data[(t, icl)].shape[0] for t in all_tasks}
         print(f"[load] icl{icl:02d}: {len(all_tasks)} tasks, rows/task={sorted(n_rows)} "
               f"({time.time() - t0:.1f}s)", flush=True)
@@ -205,7 +214,7 @@ def main():
         "train_tasks": train_tasks,
         "test_tasks": test_tasks,
         "icl_indices": icl_indices,
-        "cue_role": CUE_ROLE,
+        "token_role": args.token_role,
         "layer_index": args.layer_index,
         "row_order_note": "rows per (task, icl) follow --splits order (train shards then test shards); "
                           "row_index is the position in that pooled order",
@@ -231,7 +240,7 @@ def main():
 
         coords = {key: pca.transform(mat).astype(np.float32) for key, mat in data.items()}
 
-        extra = {"variant": variant, "fit_icl_indices": fit_icls, "cue_role": CUE_ROLE,
+        extra = {"variant": variant, "fit_icl_indices": fit_icls, "token_role": args.token_role,
                  "layer_index": args.layer_index, "fit_shape": list(x_fit.shape)}
         torch.save(pca_artifact(pca, train_tasks, extra), vdir / "pca_model.pt")
         write_json(vdir / "pca_model.json", pca_json_summary(pca, train_tasks, extra))
@@ -276,25 +285,8 @@ def main():
         limits = axis_limits(coords, icl_indices, all_tasks)
         handles = legend_handles(all_tasks, task_group, task_colors, args.mean_point_size)
 
-        # Per-position 1x3 pair figures.
-        for icl in icl_indices:
-            fig, axes = plt.subplots(1, 3, figsize=(16.5, 5.0))
-            for ax, (pcx, pcy) in zip(axes, PC_PAIRS):
-                draw_panel(ax, coords, all_tasks, task_group, task_colors, icl, pcx, pcy, args)
-                ax.set_xlim(*limits[pcx])
-                ax.set_ylim(*limits[pcy])
-                ax.set_xlabel(variance_label(pca, pcx))
-                ax.set_ylabel(variance_label(pca, pcy))
-            pos_name = f"icl{icl:02d}/pre"
-            fig.suptitle(f"{variant} | L{args.layer_index} cue tokens | position {pos_name}", fontsize=13)
-            fig.legend(handles=handles, loc="center left", bbox_to_anchor=(1.0, 0.5),
-                       fontsize=7, frameon=False)
-            fig.tight_layout(rect=(0, 0, 0.99, 0.95))
-            for ext in ("png", "pdf"):
-                fig.savefig(fig_dir / f"icl{icl:02d}_pc_pairs.{ext}", dpi=170, bbox_inches="tight")
-            plt.close(fig)
-
-        # Grid: rows = ICL positions, cols = PC pairs.
+        # Grid: rows = ICL positions, cols = PC pairs. (Grid figures only, no PDFs —
+        # per-position views can be replotted from projections.npz on request.)
         n_rows_fig = len(icl_indices)
         fig, axes = plt.subplots(n_rows_fig, 3, figsize=(15.0, 3.6 * n_rows_fig), squeeze=False)
         for r, icl in enumerate(icl_indices):
@@ -306,10 +298,10 @@ def main():
                 if r == n_rows_fig - 1:
                     ax.set_xlabel(variance_label(pca, pcx))
                 if c == 0:
-                    ax.set_ylabel(f"icl{icl:02d}/pre\n{variance_label(pca, pcy)}")
+                    ax.set_ylabel(f"icl{icl:02d}/{role_short}\n{variance_label(pca, pcy)}")
                 else:
                     ax.set_ylabel(variance_label(pca, pcy), fontsize=8)
-        fig.suptitle(f"{variant} | L{args.layer_index} cue-token PCA across ICL positions "
+        fig.suptitle(f"{variant} | L{args.layer_index} {role_short}-token PCA across ICL positions "
                      f"(fit on {len(train_tasks)} train tasks)", fontsize=14, y=1.0)
         fig.legend(handles=handles, loc="center left", bbox_to_anchor=(1.0, 0.5),
                    fontsize=8, frameon=False)
