@@ -57,8 +57,11 @@ def render_heatmap_diverging(pos_labels, layers, grid, title, out_path, vmax, cb
     plt.close(fig)
 
 
-def render_side_by_side(pos_labels, layers, grids, panel_titles, out_path, cbar_label, suptitle):
+def render_side_by_side(pos_labels, layers, grids, panel_titles, out_path, cbar_label, suptitle,
+                        log_scale=False):
     """N heatmap panels on ONE shared color scale + one colorbar, for direct comparison."""
+    if log_scale:
+        grids = [np.log10(np.array(g, dtype=float)) for g in grids]
     vmin = float(np.nanmin([np.nanmin(g) for g in grids]))
     vmax = float(np.nanmax([np.nanmax(g) for g in grids]))
     n = len(grids)
@@ -95,7 +98,7 @@ def main():
     pos_labels = [position_label(icl, role) for icl, role in pos_set]
 
     grids = {k: np.full((len(pos_set), len(layer_set)), np.nan) for k in
-             ("mse_fv", "r2_fv", "mse_pp", "r2_pp", "dr2_fv", "old_r2_fv")}
+             ("mse_fv", "r2_fv", "mse_pp", "r2_pp", "dr2_fv", "old_r2_fv", "old_mse_fv")}
     for r in rows:
         i = pos_index[(int(r["icl_index"]), r["token_role"])]
         j = layer_index[int(r["layer"])]
@@ -106,6 +109,8 @@ def main():
         if r["old_test_r2_fv"] not in ("", "None"):
             grids["old_r2_fv"][i, j] = float(r["old_test_r2_fv"])
             grids["dr2_fv"][i, j] = float(r["new_test_r2_fv"]) - float(r["old_test_r2_fv"])
+        if r["old_test_mse_fv"] not in ("", "None"):
+            grids["old_mse_fv"][i, j] = float(r["old_test_mse_fv"])
 
     sup = "SANDBOX GPT-J full-dim ridge: activation → per-prompt top-40 head-sum target (4096 → 4096)"
     render_heatmap(pos_labels, layer_set, grids["mse_fv"], "test_mse vs stored FV (comparable to canonical)",
@@ -123,13 +128,22 @@ def main():
         cbar_label="test_r2 vs stored varicl_top40 test FVs (train-mean baseline)",
         suptitle="GPT-J full-dim ridge (4096 → 4096): test R² vs stored varicl_top40 test FVs, shared color scale",
     )
+    render_side_by_side(
+        pos_labels, layer_set, [grids["old_mse_fv"], grids["mse_fv"]],
+        ["canonical: FV-broadcast targets", "SANDBOX: per-prompt head-sum targets"],
+        out_dir / "heatmap_test_mse_fv_side_by_side.png",
+        cbar_label="log10 test_mse vs stored varicl_top40 test FVs",
+        suptitle="GPT-J full-dim ridge (4096 → 4096): test MSE vs stored varicl_top40 test FVs, shared color scale",
+        log_scale=True,
+    )
     vmax = float(np.nanmax(np.abs(grids["dr2_fv"])))
     render_heatmap_diverging(pos_labels, layer_set, grids["dr2_fv"],
                              "Δ test_r2 vs stored FV (per-prompt targets − canonical broadcast)",
                              out_dir / "heatmap_delta_test_r2_fv.png", vmax=vmax,
                              cbar_label="Δ test_r2 (red = per-prompt better)")
     for name in ("heatmap_test_mse_fv", "heatmap_test_r2_fv", "heatmap_test_mse_pp",
-                 "heatmap_test_r2_pp", "heatmap_test_r2_fv_side_by_side", "heatmap_delta_test_r2_fv"):
+                 "heatmap_test_r2_pp", "heatmap_test_r2_fv_side_by_side",
+                 "heatmap_test_mse_fv_side_by_side", "heatmap_delta_test_r2_fv"):
         print(f"wrote {out_dir / (name + '.png')}")
 
 
