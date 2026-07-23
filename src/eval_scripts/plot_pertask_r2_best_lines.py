@@ -26,11 +26,13 @@ SERIES_COLORS = ["#2a78d6", "#1baf7a", "#eda100", "#008300", "#4a3aa7", "#e34948
 def parse_args():
     p = argparse.ArgumentParser(description="Best-over-layers per-task R^2 vs token position.")
     p.add_argument("--input_csv", type=Path,
-                   default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv_varicl_top40_plus_numbers"
+                   default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv_varicl_top40_plus_number_digits"
                    / "per_task_r2" / "per_task_r2.csv")
     p.add_argument("--tasks", nargs="+",
-                   default=["antonym", "synonym", "prev_number", "next_number"],
-                   help="Tasks to plot, in legend/color order.")
+                   default=["antonym", "synonym", "prev_number_digits", "next_number_digits"],
+                   help="Tasks to plot, in legend/color order. Number tasks default to the "
+                        "_digits variants (project convention 2026-07-20); pass the word tasks "
+                        "explicitly to plot the old study.")
     p.add_argument("--roles", nargs="+", default=None,
                    help="Only plot these token roles (e.g. pre_label_token). Default: all.")
     p.add_argument("--average_roles", action="store_true",
@@ -38,6 +40,15 @@ def parse_args():
                         "the per-role best-over-layers R^2 values.")
     p.add_argument("--average_label", type=str, default="mean",
                    help="Role shorthand shown in x tick labels when --average_roles is set.")
+    p.add_argument("--value_column", type=str, default="test_r2",
+                   help="CSV column holding the per-cell value to maximize over layers.")
+    p.add_argument("--ylabel", type=str, default="best test R² over layers (train-mean baseline)")
+    p.add_argument("--title_metric", type=str, default="R²",
+                   help="Metric name shown in the axes title.")
+    p.add_argument("--suptitle", type=str, default=None,
+                   help="Override the run_title(...) suptitle derived from the input dir name.")
+    p.add_argument("--no_role_note", action="store_true",
+                   help="Suppress the role-selection suffix in the axes title.")
     p.add_argument("--output", type=Path, default=None,
                    help="Default: <csv dir>/best_r2_by_position_lines.png")
     return p.parse_args()
@@ -55,7 +66,7 @@ def main():
             if args.roles is not None and r["token_role"] not in args.roles:
                 continue
             key = (r["task"], (int(r["icl_example_index"]), r["token_role"]))
-            v = float(r["test_r2"])
+            v = float(r[args.value_column])
             if key not in best or v > best[key]:
                 best[key] = v
 
@@ -93,7 +104,7 @@ def main():
     pad = max(1.2, len(positions) * 0.08)  # right headroom for the direct labels
     ax.set_xlim(-0.5, len(positions) - 1 + pad)
     ax.set_xlabel("token position (icl example / role)")
-    ax.set_ylabel("best test R² over layers (train-mean baseline)")
+    ax.set_ylabel(args.ylabel)
     ax.yaxis.grid(True, color="0.92", linewidth=0.8)
     ax.set_axisbelow(True)
     for side in ("top", "right"):
@@ -102,8 +113,11 @@ def main():
     role_note = "" if args.roles is None else f" — {', '.join(args.roles)} only"
     if args.average_roles:
         role_note = f" — mean over {{{', '.join(args.roles or ['all roles'])}}} per example"
-    ax.set_title(f"Best-over-layers R² by token position, per held-out task{role_note}")
-    fig.suptitle(run_title(args.input_csv.parent.parent.name), fontsize=9)
+    if args.no_role_note:
+        role_note = ""
+    ax.set_title(f"Best-over-layers {args.title_metric} by token position, per held-out task{role_note}")
+    fig.suptitle(args.suptitle if args.suptitle is not None
+                 else run_title(args.input_csv.parent.parent.name), fontsize=9)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
     fig.savefig(out_path, dpi=150)
     plt.close(fig)

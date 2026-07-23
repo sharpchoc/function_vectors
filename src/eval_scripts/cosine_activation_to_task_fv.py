@@ -74,6 +74,9 @@ def load_split_roles_with_meta(activations_root, task, split):
         shard_path = Path(shard)
         if not shard_path.is_absolute():
             shard_path = split_dir / shard_path
+        elif not shard_path.exists():
+            # index.json may hold absolute paths from before the results->artifacts reorg.
+            shard_path = split_dir / shard_path.name
         data = torch_load_trusted(shard_path, map_location="cpu")
         acts = data["activations"]
         meta = data["metadata"]
