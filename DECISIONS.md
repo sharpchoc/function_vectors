@@ -5,6 +5,57 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-07-20 — INPUT-matched two-shot token-pair pairing (--pair_mode input)
+
+- The two-shot token-pair steering script now supports two pairing semantics:
+  **label-matched** (default, original study: pairs share demo labels + query, demo inputs differ
+  by function — input2 carries the counterfactual) and **input-matched** (`--pair_mode input`:
+  pairs share demo INPUTS + query, each function supplies its own labels — label1/label2 carry
+  the counterfactual, input2 is clean). Requested by the project owner 2026-07-20.
+- Input-mode eligibility: shared input words with differing outputs across the two functions and
+  all four demo labels single-token (mirrors the label-mode single-token constraint); one pair per
+  eligible input word, no cap (user choices 2026-07-20). ant/syn 987 pairs, digits 200.
+- Output roots: `twoshot_tokenpair_perpair_inputmatch_cos_heatmap/` and
+  `twoshot_tokenpair_perpair_inputmatch_cumclamp_cos_heatmap/` under direction2_label_geometry;
+  summaries carry a `pair_mode` key. The label-matched dirs/behaviour are unchanged (regression:
+  90/90 smoke grids bit-identical to the pre-change script).
+- Interpretation guard: in input-matched pairs, label1→{input2, prelabel2} dircos ≡ +1.0 by
+  construction (full causal patch for reads before label2) — treat those cells as sanity checks,
+  not findings.
+
+---
+
+## 2026-07-20 — DEFAULT NUMBER TASKS = prev_number_digits / next_number_digits
+
+- **From now on the number tasks are the DIGIT variants by default** (`prev_number_digits`,
+  `next_number_digits`); the word variants (`prev_number`/`next_number`) are used only when
+  explicitly requested. Stated by the project owner 2026-07-20.
+- Why: GPT-J executes the digit tasks near-perfectly (top-1 exact ≈ 1.0 from 1–2 shots vs
+  judged 0.70/0.45 plateaus for antonym/synonym — see the by_nshots judged study), inputs and
+  outputs are 100% single GPT-J tokens (0–250), and there is no leakage adjacency to the
+  `prev_item`/`next_item` train tasks that confounds the word variants' held-out status.
+- Applied 2026-07-20: `--tasks` defaults flipped in `cosine_activation_to_fv_varicl_pertask.py`
+  and `plot_pertask_r2_best_lines.py` (also its `--input_csv` default → the
+  `..._plus_number_digits` ridge study). Existing word-task results stay in place (tracked
+  results are never deleted) but are no longer the reference.
+
+## 2026-07-20 — Per-task cosine-to-FV metric (Stream Y): raw, per-prompt mean, train+test pooled
+
+- Metric per (task, icl_example_index, token_role, layer) cell: cosine(activation, that task's
+  **train_varicl_top40** FV) computed **per prompt**, then **averaged over all 170 prompts**
+  (130 train + 40 test pooled). **Raw cosine — no centering.** All three choices (per-prompt
+  mean rather than cosine-to-the-mean-activation; both splits; raw) confirmed by the user
+  2026-07-20 before compute.
+- Differs from the 2026-06-15 pooled cosine study (`cosine_activation_to_task_fv`) in FV
+  definition (that one used the task-specific `gptj_fv` vectors) and granularity (that one
+  averaged over the 29-task manifest; this one is per task, the 4 tasks of the per-task ridge
+  R² study). Don't compare levels across the two studies.
+- Interpretation caveat (observed): raw-cosine ordering across tasks (word > number) is the
+  REVERSE of ridge-R² decodability ordering (number > word) — cosine alignment and linear
+  decodability are distinct notions; don't use one as a proxy for the other.
+- `plot_pertask_r2_best_lines.py` is now metric-generic via `--value_column/--ylabel/
+  --title_metric/--suptitle`; defaults unchanged (R² plot regenerates byte-identical).
+
 ## 2026-07-10 — CANONICAL FV DEFINITION: "function vectors" = train_varicl_top40 (GPT-J)
 
 - **`train_varicl_max4_top40` was a DEBUG test set** (variable-ICL capped at 4 shots), not a
@@ -1206,3 +1257,21 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   panels use symmetric diverging scales, not one-sided Reds.
 - Lesson: confirm the METRIC DEFINITION with the user before building/extending measurement
   studies — the formula in a docstring is not evidence the user wants that formula.
+
+## 2026-07-16 — Propagated ablation as a MODE of the perlayer script; pod CUDA filter; same-GPU regression tests
+
+- The propagated fixed-direction ablation (Stream X3) is `--mode propagated` on
+  `ablate_oneshot_preimage_logprob.py`, NOT a separate script: only the direction rule
+  (fixed U[L] vs per-layer U[b]), the edited positions (anchor + all later tokens vs anchor
+  only), and the default output root differ; prompts/arms/cf-map/sanity checks are shared.
+  Modes write to SEPARATE results roots (`oneshot_preimage_ablation` vs
+  `..._propagated`) so the summary rebuild never mixes them. Follow this pattern for future
+  edit-rule variants.
+- **RunPod: always pass `allowedCudaVersions: ["12.8","12.9","13.0"]`** in
+  podFindAndDeployOnDemand for the function-vectors-dev template. The image needs CUDA ≥ 12.8;
+  without the filter the scheduler happily lands on 12.4-driver hosts and the pod sits at
+  uptime 0 / ports null forever (two 4090 pods lost to this on 2026-07-16).
+- **Regression-test model outputs on the SAME GPU.** fp16 GPT-J forwards differ by up to
+  ~1.7e-2 in delta-log-p across GPU architectures (L4 vs prior pod, identical code). A code
+  no-op check must compare old-code-vs-new-code on one GPU (expect exactly 0.0), never
+  new-code-on-GPU-A vs stored-run-from-GPU-B with a tight tolerance.
