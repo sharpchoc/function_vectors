@@ -5,6 +5,39 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-07-26 — SANDBOX Stream PP-steer: steering effectiveness of matched per-prompt FVs
+
+**Owner:** Claude Code background session (CPU pod) + own pod `fv-perprompt-steering`
+q7fjo9pg0yc5hj (RTX PRO 4500 Blackwell $0.74/hr, public runpod/pytorch 2.4.0 image +
+volume fv env, allowedCudaVersions 13.0). **Status:** IN PROGRESS.
+
+**What (user-specified arm):** benchmark per-prompt FVs in the held-out steering family —
+each eval query steered by the FV from a 10-shot CLEAN-ICL prompt with that example as final
+query (both conditions: zero-shot+FV, 10-shot-shuffled+FV). Protocol otherwise identical to
+`evaluate_heldout_multitask_head_fvs.py` (seed 42, filter=clean-ICL-correct, +FV at last token
+of each edit layer 0..27, intervention top-1, 9 test tasks, Σ=1,222 filtered queries).
+Existing sandbox capture covers only 40 hash-sampled test queries/task (not ⊇ filter sets) →
+new capture stage.
+
+**Files (all sandbox):** `src/sandbox/perprompt_fv/capture_eval_query_fvs.py` (per-query FV
+banks for all filter-set queries; stable_rng demo convention; GATE: overlap queries must
+reproduce original capture targets), `evaluate_heldout_perprompt_fv.py` (n_shot_eval copy with
+per-query fv_bank[j], identical RNG consumption; GATE mode `--gate_constant_varicl`: constant
+bank must reproduce cached varicl_top40 per-layer curves exactly on word_length),
+`plot_perprompt_steering_comparison.py` (grid + aggregate PNGs + best-layer CSV; baselines
+per user: varicl_top40 + task-specific from cached results). Output →
+`results/sandbox/perprompt_ridge_pilot/steering_eval/`;
+banks → `artifacts/sandbox/perprompt_head_acts/gptj_train_varicl_top40_evalqueries/`;
+logs `logs/sandbox_perprompt/steering_eval/`.
+
+**CPU smokes passed:** imports OK; filter sets load (antonym 319 … word_length 22, Σ1,222);
+overlap counts vs old capture confirmed; demo RNG deterministic.
+
+**Next:** Stage-1 capture running on pod → gate → Stage-2 eval (2 task shards) → plots →
+findings here. Pod MUST be terminated after (only pod q7fjo9pg0yc5hj — created this session).
+
+---
+
 ## 2026-07-23 — Stream P2: PCA of L11 target-token (last_label) representations across ICL positions
 
 **Owner:** Claude Code background session (CPU pod). **Status:** DONE (~4 min run + grid replot).
