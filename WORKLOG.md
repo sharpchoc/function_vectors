@@ -33,8 +33,21 @@ logs `logs/sandbox_perprompt/steering_eval/`.
 **CPU smokes passed:** imports OK; filter sets load (antonym 319 … word_length 22, Σ1,222);
 overlap counts vs old capture confirmed; demo RNG deterministic.
 
-**Next:** Stage-1 capture running on pod → gate → Stage-2 eval (2 task shards) → plots →
-findings here. Pod MUST be terminated after (only pod q7fjo9pg0yc5hj — created this session).
+**Stage 1 DONE + GATE PASSED:** fv banks for all 9 tasks (1,222 FVs) →
+`..._evalqueries/<task>/fv_bank.pt`; all 254 overlap queries reproduce the original capture
+targets bit-identically (rel_l2 = 0.0). GPT-J now cached on the volume
+(`model_cache/huggingface`, export HF_HOME before runs on fresh pods).
+
+**Stage-2 LOOP GATE: HARD STOP (user adjudicating).** Constant-varicl_top40-bank run on
+word_length vs cached `heldout_varicl_nheads_sweep` curves: all 28 zero-shot cells match
+EXACTLY; fs-shuffled L0/L1 match EXACTLY (RNG/prompts in sync); fs-shuffled L2 differs by
+exactly ONE query (8/22 vs cached 7/22). Rerun reproduces 8/22 bit-for-bit → this stack is
+deterministic; discrepancy is cross-stack fp drift vs the mid-June cached run (different
+torch/GPU). Logs `gate.log`/`gate_rerun.log`. Pod terminated while awaiting adjudication
+(re-provision ~3 min; everything restartable from volume).
+
+**Next:** user decides — relax gate tolerance (isolated ±1-query flips) vs re-baseline
+varicl_top40/task-specific on the new stack (~2 extra arm sweeps) — then Stage-2 full run.
 
 ---
 
