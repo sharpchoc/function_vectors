@@ -194,33 +194,27 @@ def main():
     np.savez_compressed(args.output_dir / "spectra.npz", **spectra)
     write_json(args.output_dir / "summary.json", summary)
 
-    # Summary figure: weight spectra (left), target spectra (right).
+    # Figure: the two FINAL maps (own CV-chosen alpha each), one spectrum per panel —
+    # side-by-side qualitative shape comparison, not a magnitude overlay.
+    panels = [
+        ("canonical_alpha_own", f"canonical W  (FV-broadcast targets, α={alphas['canonical']:.3g})", "#4878a8"),
+        ("perprompt_alpha_own", f"per-prompt W  (head-sum targets, α={alphas['perprompt']:.3g})", "#d62728"),
+    ]
     fig, axes = plt.subplots(1, 2, figsize=(13.5, 5.0))
-    styles = {
-        "canonical_alpha_own": dict(color="#4878a8", ls="-", label=f"canonical W (own α={alphas['canonical']:.3g})"),
-        "canonical_alpha_swapped": dict(color="#4878a8", ls="--", label=f"canonical W (α={alphas['perprompt']:.3g})"),
-        "perprompt_alpha_own": dict(color="#d62728", ls="-", label=f"per-prompt W (own α={alphas['perprompt']:.3g})"),
-        "perprompt_alpha_swapped": dict(color="#d62728", ls="--", label=f"per-prompt W (α={alphas['canonical']:.3g})"),
-    }
-    for label, st in styles.items():
+    for ax, (label, title, color) in zip(axes, panels):
         sv = spectra[f"sv_{label}"]
-        axes[0].plot(np.arange(1, len(sv) + 1), sv / sv[0], lw=1.4, **st)
-    axes[0].axvline(20, color="gray", lw=0.8, ls=":", label="rank 20 (# train tasks)")
-    axes[0].set_title("Ridge weight matrix W: normalized singular values")
-    for mode, color in (("canonical", "#4878a8"), ("perprompt", "#d62728")):
-        sv = spectra[f"sv_targets_{mode}"]
-        axes[1].plot(np.arange(1, len(sv) + 1), sv / sv[0], lw=1.4, color=color,
-                     label=f"{mode} targets (centered Y)")
-    axes[1].axvline(20, color="gray", lw=0.8, ls=":")
-    for ax in axes:
+        ax.plot(np.arange(1, len(sv) + 1), sv / sv[0], lw=1.4, color=color)
+        ax.axvline(20, color="gray", lw=0.8, ls=":", label="rank 20 (# train tasks)")
         ax.set_xscale("log")
         ax.set_yscale("log")
         ax.set_xlabel("singular value index")
         ax.set_ylabel("σ_i / σ_1")
         ax.set_ylim(1e-9, 2)
         ax.grid(alpha=0.25)
-        ax.legend(fontsize=8)
-    fig.suptitle(f"SANDBOX per-prompt vs canonical ridge spectra — {summary['cell']}", fontsize=13)
+        ax.set_title(title, fontsize=11)
+        ax.legend(fontsize=8, loc="lower left")
+    fig.suptitle(f"SANDBOX: singular-value structure of the final ridge maps — {summary['cell']}",
+                 fontsize=13)
     fig.tight_layout(rect=(0, 0, 1, 0.94))
     fig.savefig(args.output_dir / "spectra_comparison.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
