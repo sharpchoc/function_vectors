@@ -13,9 +13,12 @@ with `fv_vector` swapped per query; RNG consumption is identical, so prompts mat
 baseline arms exactly.
 
 GATE MODE (--gate_constant_varicl): runs the modified loop with a CONSTANT bank (every query ->
-the task's train_varicl_top40 FV) and requires the per-layer top-1 curves to equal the cached
-varicl_top40 curves from heldout_varicl_nheads_sweep/<task>/nheads_sweep_by_layer.json["40"]
-exactly. Validates the custom loop before the real run; mismatch = hard stop, user adjudicates.
+the task's train_varicl_top40 FV) and compares the per-layer top-1 curves to the cached
+varicl_top40 curves from heldout_varicl_nheads_sweep/<task>/nheads_sweep_by_layer.json["40"].
+Tolerance (user decision 2026-07-26 after adjudicating the initial exact-match failure): each
+cell may differ by at most ONE flipped query (cross-stack fp tie-breaks vs the mid-June cached
+run; determinism on-stack verified), and at most --gate_max_flip_cells cells may differ at all.
+Anything larger = hard stop, user adjudicates.
 """
 import argparse
 import json
@@ -81,7 +84,9 @@ def parse_args():
     p.add_argument("--gate_fv_root", type=Path, default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_varicl_top40")
     p.add_argument("--gate_reference_root", type=Path,
                    default=STEERING_COMPARISON_DIR / "heldout_varicl_nheads_sweep")
-    p.add_argument("--gate_tol", type=float, default=1e-9)
+    p.add_argument("--gate_max_flip_cells", type=int, default=6,
+                   help="Max cells (of 56) allowed to differ from the cached curves, each by "
+                        "at most one flipped query (cross-stack fp tolerance, user-approved).")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
@@ -161,25 +166,38 @@ def evaluate_bank(args, dataset, fv_bank, model, model_config, tokenizer, filter
 
 
 def run_gate(args, task, dataset, model, model_config, tokenizer, filter_set, task_dir):
-    """Constant-bank run must reproduce the cached varicl_top40 per-layer top-1 curves exactly."""
+    """Constant-bank run must reproduce the cached varicl_top40 per-layer top-1 curves, up to
+    isolated single-query fp flips (tolerance user-approved 2026-07-26)."""
     fv, _ = load_function_vector(args.gate_fv_root / task / f"{task}_function_vector.pt")
     bank = {int(j): fv for j in filter_set}
     zs, fs = evaluate_bank(args, dataset, bank, model, model_config, tokenizer, filter_set)
     got = summarize_results(zs, fs)
     ref = json.loads((args.gate_reference_root / task / "nheads_sweep_by_layer.json").read_text())["40"]
-    report = {"task": task, "checked": 0, "max_abs_diff": 0.0}
+    one_flip = 1.0 / len(filter_set) + 1e-9
+    report = {"task": task, "n_queries": int(len(filter_set)), "checked": 0,
+              "exact_cells": 0, "flip_cells": [], "max_abs_diff": 0.0}
     for key in ("zs_intervention_top1_by_layer", "fs_shuffled_intervention_top1_by_layer"):
         for layer, ref_val in ref[key].items():
             diff = abs(float(got[key][layer]) - float(ref_val))
             report["checked"] += 1
             report["max_abs_diff"] = max(report["max_abs_diff"], diff)
-            if diff > args.gate_tol:
+            if diff <= 1e-12:
+                report["exact_cells"] += 1
+            elif diff <= one_flip:
+                report["flip_cells"].append(f"{key}/L{layer}")
+            else:
                 raise RuntimeError(
                     f"LOOP GATE FAILED for {task} {key} L{layer}: got {got[key][layer]} vs cached "
-                    f"{ref_val}. STOP -- user adjudicates.")
-    write_json(task_dir / "loop_gate_report.json", {**report, "reference": str(args.gate_reference_root)})
-    print(f"[GATE] {task}: {report['checked']} curve points match cached varicl_top40 exactly "
-          f"(max diff {report['max_abs_diff']:.2e})")
+                    f"{ref_val} (diff {diff:.4f} > one query = {one_flip:.4f}). "
+                    f"STOP -- user adjudicates.")
+    if len(report["flip_cells"]) > args.gate_max_flip_cells:
+        raise RuntimeError(
+            f"LOOP GATE FAILED for {task}: {len(report['flip_cells'])} cells differ "
+            f"(> {args.gate_max_flip_cells} allowed): {report['flip_cells']}. STOP -- user adjudicates.")
+    write_json(task_dir / "loop_gate_report.json", {**report, "reference": str(args.gate_reference_root),
+                                                    "gate_max_flip_cells": args.gate_max_flip_cells})
+    print(f"[GATE] {task}: PASSED -- {report['exact_cells']}/{report['checked']} cells exact, "
+          f"{len(report['flip_cells'])} single-query flips {report['flip_cells']}")
 
 
 def main():

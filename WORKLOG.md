@@ -46,8 +46,28 @@ deterministic; discrepancy is cross-stack fp drift vs the mid-June cached run (d
 torch/GPU). Logs `gate.log`/`gate_rerun.log`. Pod terminated while awaiting adjudication
 (re-provision ~3 min; everything restartable from volume).
 
-**Next:** user decides — relax gate tolerance (isolated ±1-query flips) vs re-baseline
-varicl_top40/task-specific on the new stack (~2 extra arm sweeps) — then Stage-2 full run.
+**Adjudication (user, 2026-07-26): option 1 — relax gate to isolated single-query flips.**
+Gate reworked (≤1 flipped query per cell, ≤6 differing cells of 56); PASSED on word_length:
+53/56 exact, 3 single-query flips, all fs-shuffled (zs fully exact). Full sweep run on second
+pod `fv-perprompt-steering-2` ixrfu8jnx7i9kh (same recipe; TERMINATED after run), 2 shards,
+both exit 0. Plots + best_layer_summary.csv in the steering_eval root (grid-only PNG policy).
+
+**FINDINGS (best-layer intervention top-1, mean over 9 tasks):**
+- **Per-prompt FVs steer WORSE than the task-level FVs on aggregate:** zs 0.358 vs varicl_top40
+  0.400 (task-specific 0.483); fs-shuffled 0.691 vs 0.784 (0.812). Full-curve aggregate shows
+  per-prompt below both baselines at nearly every layer in the fs condition.
+- **Heterogeneous per task.** Per-prompt BEATS varicl_top40 zero-shot on antonym (0.668 vs
+  0.583), synonym (0.297 vs 0.189), product-company (0.407 vs 0.148); ~ties landmark-country,
+  word_length, country-currency; **collapses on the letter-case tasks** (capitalize_first zs
+  0.331 vs 0.853; lowercase_first fs 0.451 vs 0.927; capitalize zs 0.692 vs 0.953).
+- **Not a scale artifact:** per-prompt norms are LARGER than the task FV (+15–35%), mean
+  cos(per-prompt, task FV) 0.77–0.90 (norm/cos control table in this entry's log).
+- Interpretation (speculative, flagged as such): the prompt-idiosyncratic component that
+  improved ridge decodability does NOT help causally as steering content — averaging into the
+  task FV removes it and steers better; per-prompt extra content actively hurts on format-like
+  (letter-case) tasks while sometimes helping zero-shot on semantic tasks.
+
+**Status: DONE.** Both pods terminated (verified). STILL SANDBOX.
 
 ---
 
