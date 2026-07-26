@@ -277,6 +277,19 @@ main tree untouched). Logs: `logs/sandbox_perprompt/`.
 log10 test-MSE-vs-stored-FV, shared color scale — MSE twin of the R² side-by-side; `plot_pilot_heatmaps.py`
 extended, all figures regenerated from summary CSV, byte-changes only to the new file + replots). NOT yet
 committed to the sandbox branch (working tree on main; GitHub pushes broken since 2026-07-17 account flag).
+**Update 2026-07-26 (weight-spectrum diagnostic, user request):** NEW
+`src/sandbox/perprompt_fv/diagnose_weight_spectrum.py` → `.../weight_spectrum/`
+(spectra_comparison.png + spectra.npz + summary.json). One cell = sandbox best
+(icl10/pre_label_token L13), identical X/standardizer, 4 arms ({canonical, perprompt} ×
+{α=3.16e4, 3.16e3}) + centered-target spectra; repro gates vs stored MSEs passed (rel ≲7e-6).
+Findings: canonical W keeps the algebraic rank-≈19 cliff at BOTH alphas (sv20/sv1 ≤ 9e-6;
+energy-90 rank 15–16). Per-prompt W has NO cliff: sv21/sv1 = 0.64 own-α (0.31 at swapped α),
+energy-90 rank 441 (95 at large α), PR 178 (28) — the tail is target-driven, α only modulates
+its weight. Target spectra: per-prompt centered Y coincides with canonical Y's spectrum over
+the top ~19 (between-task structure) then continues smoothly (σ20/σ1 ≈ 0.16, numrank 3399 =
+within-task prompt variation) — exactly the structure the map's extra directions inherit.
+Open follow-up if wanted: principal angles between the two maps' top-20 singular subspaces.
+
 **Next:** nothing — awaiting user direction (promote / analyze further / discard). STILL SANDBOX.
 
 ## 2026-07-16 — Stream W-5shot: 5-shot preimage/FV ablation + combined-token rows (GPT-J)
