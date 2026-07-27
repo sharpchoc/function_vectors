@@ -69,6 +69,25 @@ both exit 0. Plots + best_layer_summary.csv in the steering_eval root (grid-only
 
 **Status: DONE.** Both pods terminated (verified). STILL SANDBOX.
 
+**Update 2026-07-27 — per-prompt map spectra across token positions (user request):** NEW
+`src/sandbox/perprompt_fv/diagnose_weight_spectrum_positions.py` → `.../weight_spectrum_positions/`
+(grid PNG + spectra.npz + summary.json). 9 cells (cue + target tokens at icl 1/2/9/10 + final
+cue token), each at its best layer by stored test_r2_fv, own CV α; all repro gates passed
+(worst rel 3.5e-5, known cross-arch fp tail). FINDINGS:
+- **Map dimensionality grows monotonically with ICL depth.** Cue tokens: energy-90 rank
+  8 → 74 → 432 → 441 (icl01→02→09→10), PR 7→16→166→178, σ21/σ1 0.04→0.64. Targets:
+  81 → 266 → 273 → 423, PR 17→43→59→143.
+- **icl01/pre is nearly low-rank** (rank90=8) with a visible knee ~10–20 — the cue token at
+  one shot supports only a thin map (matches the PCA blob + R²=0.07 + CV picking α=3.16e5).
+- **Targets start structured** (icl01/last rank90=81 vs cue 8) — mirrors the PCA finding that
+  label tokens are task-typed from the first example while cue tokens accumulate context.
+- **The final cue token has the fattest spectrum of all** (rank90=654, PR=315, α=1e3) and the
+  highest per-prompt-target R² (0.632) — expected, since the per-prompt targets are constructed
+  at that very position.
+- Caveat: per-cell CV α differs (3.16e5 → 1e3) and shrinks tails; endogenous (CV picks big α
+  where per-prompt signal is absent), so the trend reflects real signal availability, but the
+  spectra are not α-matched across panels.
+
 ---
 
 ## 2026-07-23 — Stream P2: PCA of L11 target-token (last_label) representations across ICL positions
