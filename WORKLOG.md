@@ -5,6 +5,46 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-07-27 — Stream R2: effective rank of raw activations by (layer, token position)
+
+**Owner:** Claude Code background session (CPU pod, ~14 min run). **Status:** DONE.
+
+**What (user spec):** stable rank, PCA rank90, and participation ratio of MEAN-CENTERED
+activation matrices at 8 positions (icl {1,2,9,10} × {pre_label_token, last_label_token}) ×
+layers 6–20 (29-axis indices), pooled over the 29-manifest tasks ([4,930×4096] per cell) and
+per task ([170×4096]). NEW `src/eval_scripts/activation_rank_by_position.py` (repo-standard,
+not sandbox) → `results/direction3_fv_formation/activation_rank_by_position/` (2 CSVs, full
+spectra npz, pooled 1×3 line figure + three 29-panel per-task grids).
+
+**Verification:** independent numpy-SVD recompute of one pooled + one per-task cell matches
+CSVs to 1e-6; per-task rank90 ≤ 169 everywhere; pooled n_rows = 4,930 all cells.
+
+**FINDINGS:**
+- **Pooled: label tokens are far higher-rank than cue tokens** (rank90 ≈ 650–800 vs 270–680)
+  — cross-task label-content diversity dominates. Label rank is ~flat in layer; icl09/10
+  labels sit slightly BELOW icl01/02 (mild compression with depth).
+- **Pooled cue tokens: rank90 RISES with layer, and late cues (icl09/10) are the LOWEST-rank
+  representations in the whole set, with a dip at L10–11 (~270)** — exactly the mid-layer band
+  where FV decodability peaks and the PCA task clusters are crispest. Reading: by the late
+  cues the model has compressed prompt variability into a low-dim, task-organized structure;
+  ambient dimensionality re-expands after ~L12.
+- **Per task the ordering INVERTS: cue tokens (rank90 ≈ 80–110) > label tokens** — within a
+  task, label-token rank tracks the label vocabulary (person-sport/instrument ≈ 15–45;
+  translation/antonym/synonym ≈ 110–125, above their cue lines), while cue tokens carry rich
+  prompt-to-prompt (demo-draw) variability regardless of task.
+- **icl01/label is consistently the lowest label line per task** — the first label's
+  representation is nearly a pure function of the label word; later labels pick up
+  context-dependent modulation (rank grows icl01→09/10 for most tasks).
+- Stable rank is tiny everywhere (≈5–18 of 4096; PR 17–90): one dominant direction + modest
+  bulk; label > cue on both, cue metrics rising with layer.
+- NOT a contradiction of the per-prompt map spectra (rank grows with ICL depth): raw rank
+  measures total variance spread; the map spectra measure predictable structure. Late cues
+  have LESS total spread but MORE organized/predictable content.
+
+**Next:** none pending.
+
+---
+
 ## 2026-07-27 — SANDBOX Stream PP-preimage: truncated-SVD pre-images of per-prompt FVs
 
 **Owner:** Claude Code session (CPU pod, tmux `fv-preimages`) + own pod `fv-perprompt-preimages`

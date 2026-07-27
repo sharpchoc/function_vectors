@@ -1,0 +1,108 @@
+{
+  "script": "activation_rank_by_position.py",
+  "args": {
+    "task_manifest": "task_splits/abstractive_train_test_tasks_29.json",
+    "tasks": null,
+    "icl_indices": [
+      1,
+      2,
+      9,
+      10
+    ],
+    "token_roles": [
+      "pre_label_token",
+      "last_label_token"
+    ],
+    "layers": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20
+    ],
+    "splits": [
+      "train",
+      "test"
+    ],
+    "energy_threshold": 0.9,
+    "icl_activations_root_template": "/workspace/function_vectors/artifacts/residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens",
+    "query_activations_root": "/workspace/function_vectors/artifacts/residual_activations/gptj_56tasks_170prompts_4tokens",
+    "output_dir": "/workspace/function_vectors/results/direction3_fv_formation/activation_rank_by_position",
+    "overwrite": false
+  },
+  "tasks": [
+    "ag_news",
+    "capitalize_last_letter",
+    "capitalize_second_letter",
+    "commonsense_qa",
+    "country-capital",
+    "english-french",
+    "english-german",
+    "english-spanish",
+    "lowercase_last_letter",
+    "national_parks",
+    "next_capital_letter",
+    "next_item",
+    "park-country",
+    "person-instrument",
+    "person-occupation",
+    "person-sport",
+    "present-past",
+    "prev_item",
+    "sentiment",
+    "singular-plural",
+    "antonym",
+    "capitalize",
+    "capitalize_first_letter",
+    "country-currency",
+    "landmark-country",
+    "lowercase_first_letter",
+    "product-company",
+    "synonym",
+    "word_length"
+  ],
+  "positions": [
+    "icl01/pre",
+    "icl01/label",
+    "icl02/pre",
+    "icl02/label",
+    "icl09/pre",
+    "icl09/label",
+    "icl10/pre",
+    "icl10/label"
+  ],
+  "layers": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "n_prompts_per_task": 170,
+  "centering": "column-mean subtracted per matrix before all metrics",
+  "metrics": {
+    "stable_rank": "frobenius^2 / sigma1^2",
+    "rank90": "min k with cumulative energy >= 0.9",
+    "participation_ratio": "(sum s^2)^2 / sum s^4"
+  }
+}
