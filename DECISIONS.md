@@ -5,6 +5,19 @@ Resolved questions move from "Open" to "Decided" with the rationale.
 
 ---
 
+## 2026-07-27 — CUDA SVD: always pass driver="gesvd" for spectra/inverses
+
+- `torch.linalg.svd` on CUDA fp32 defaults to the Jacobi driver (gesvdj), which showed backend
+  error ‖W−USVʰ‖/σ₁ ≈ 1e-3 on 4096×4096 ridge maps (torch 2.12+cu130, RTX PRO 4500) — enough to
+  fail a 1e-3 self-consistency gate on truncated-SVD pseudo-inverses. `driver="gesvd"` reaches
+  CPU-LAPACK-level accuracy (~1e-5) and was FASTER (1.2s vs 3.9s). TF32 was off; purely the SVD
+  backend. Convention: any CUDA SVD feeding singular values, ranks, or (pseudo-)inverses must
+  pass `driver="gesvd"` (CPU tensors take no driver arg). Diagnostic pattern kept in
+  `logs/sandbox_perprompt/preimages/diag_svd_driver.py`.
+- rank90 convention for truncated inversions: k = smallest k with cum σ²/Σσ² ≥ 0.90 — the
+  `diagnose_weight_spectrum.spectrum_stats` definition (σ² energy, NOT the plain σ sum;
+  user-adjudicated 2026-07-27).
+
 ## 2026-07-20 — INPUT-matched two-shot token-pair pairing (--pair_mode input)
 
 - The two-shot token-pair steering script now supports two pairing semantics:

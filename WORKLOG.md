@@ -5,6 +5,57 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-07-27 — SANDBOX Stream PP-preimage: truncated-SVD pre-images of per-prompt FVs
+
+**Owner:** Claude Code session (CPU pod, tmux `fv-preimages`) + own pod `fv-perprompt-preimages`
+syplcg7pon4jon (RTX PRO 4500 Blackwell $0.74/hr, public runpod/pytorch 2.4.0 image + volume fv
+env, allowedCudaVersions 13.0). **Status:** IN PROGRESS.
+
+**What (user-specified, toward per-task subspaces at label tokens):** for every cell of the
+sandbox per-prompt ridge (899 = 31 token positions × 29 layers), refit the forward map at the
+stored CV-chosen alpha and invert every per-prompt FV back into activation space via a
+**truncated-SVD pseudo-inverse**: k = rank90 by σ² energy (identical definition to
+`diagnose_weight_spectrum.spectrum_stats`; user chose this over Tikhonov, 2026-07-27), min-norm
+solution, output **raw activation space** fp16. Scope: 27 tasks (20 train + 7 test) × 170
+prompts × 899 cells. **User approved ~34 GB fp16 storage** (27×170×899×4096×2 B = 33.8 GB).
+
+**Files (all sandbox):** `src/sandbox/perprompt_fv/invert_perprompt_fvs_truncsvd.py`
+(reuses the regression's loaders; per-cell REPRO GATE vs stored test_mse_fv/test_mse_pp rel
+≤1e-4, SPECTRUM GATE on icl10/pre_label L13 rank90==441 vs stored spectra.npz, self-consistency
+forward(pre-image)==rank-k projection rel ≤1e-3; resumable, skips existing cell files).
+Outputs → `artifacts/sandbox/perprompt_fv_preimages/gptj_train_varicl_top40/icl{n}/{role}/L{layer}.pt`
+(fp16 [4590,4096] + metadata + sv/standardizer/diagnostics); summaries →
+`results/sandbox/perprompt_ridge_pilot/preimages_truncsvd/cells_icl{n}.csv`;
+logs `logs/sandbox_perprompt/preimages/`.
+
+**CPU smoke (gate cell icl10/pre_label_token L13): ALL GATES PASSED** — repro rel_fv=7.7e-6 /
+rel_pp=1.8e-6, spectrum rank90=441 exact max|Δsv|/σ1=5.2e-5, selfcons 1.6e-6; trunc residual
+mean 0.273, file 37.8 MB as budgeted. Resume/skip path verified.
+
+**Full run:** driver `logs/sandbox_perprompt/preimages/run_all_shards.sh` (shards icl10 then
+1–9, sequential) launched on the pod. Markers RUN.done/RUN.failed on the volume.
+
+**Self-consistency gate TRIPPED on GPU (icl10/pre_label L2, 1.16e-3 > 1e-3) — root-caused, not
+a data issue:** CUDA's default `torch.linalg.svd` driver (gesvdj) has fp32 backend error
+‖W−USVʰ‖/σ₁ ≈ 1e-3 on these matrices; `driver="gesvd"` gives 8.7e-6 (= CPU LAPACK level) and is
+faster (1.2s vs 3.9s; diagnostic `logs/sandbox_perprompt/preimages/diag_svd_driver.py`, TF32
+confirmed off). Fix: pin `driver="gesvd"` on CUDA in the inversion script — **no tolerance or
+definition changed**; repro gates were exact throughout. Deleted the 2 gesvdj-computed cells
+(icl10/pre_label L00–L01) and relaunched; L13 smoke cell was CPU-computed (accurate), kept.
+
+**RUN DONE (all 10 shards, ~1.7 h GPU):** 899/899 cell files, 32 GB (within approved 34 GB),
+merged `cells_summary.csv`, no NaNs. Worst gates across all 899 cells: repro rel_fv 7.7e-6 /
+rel_pp 1.8e-6, selfcons 1.5e-5. rank90 spans 1 (degenerate near-zero-signal early-layer cells,
+trunc_resid→1.0) to 868; median 258 (p25 150, p75 281); best-cell (icl10/pre_label L13)
+trunc_resid mean 0.226–0.273 range across top cells. Spot check at the gate cell: cos(pre-image,
+true activation) mean 0.834 (train tasks 0.871, test tasks 0.727), norms 88 vs 81 —
+informational, no threshold. Pod terminated (verified gone).
+
+**Status: DONE.** Committed to main (sandbox family lives on main since 57b1e53). STILL SANDBOX —
+do not build on without user promotion. Ready for the subspace analyses on top of the pre-images.
+
+---
+
 ## 2026-07-26 — SANDBOX Stream PP-steer: steering effectiveness of matched per-prompt FVs
 
 **Owner:** Claude Code background session (CPU pod) + own pod `fv-perprompt-steering`
