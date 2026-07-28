@@ -13,6 +13,10 @@ Reads the per-(task, arm) npz written by ablate_oneshot_pca_subspace_logprob.py 
       per site token: min-over-start-layers task-mean delta log p vs k, lines per
       (op, base, cf); horizontal reference lines = Stream W single-direction arms
       (preimage_matched / preimage_icl10 / fv, same statistic) when available.
+  figures/specificity_grid.png
+      the headline aggregate: rows = (op x cell set), columns = same task | counterfactual
+      task | difference (same - cf = the task-SPECIFIC part), at k=4 (k=0..4 are
+      indistinguishable). Per-op symmetric color scale, annotated with each panel's min.
 
 Grid/summary PNGs only (repo figure policy).
 """
@@ -136,6 +140,50 @@ def main():
         fig.savefig(out, dpi=180)
         plt.close(fig)
         print(f"wrote {out}")
+
+    # --- specificity grid: same | cf | difference, per (op, cell set), at k=4 ---
+    K_SHOW = 4
+    fig, axes = plt.subplots(4, 3, figsize=(15.5, 9.6), squeeze=False, constrained_layout=True)
+    panel_rows = [(op, b) for op in OPS for b in ["matched", "icl10"]]
+    ims = {}
+    for pi, (op, b) in enumerate(panel_rows):
+        row_names, g_same, _ = grids[arm_name(b, K_SHOW, op)]
+        _, g_cf, _ = grids[arm_name(b + "_cf", K_SHOW, op)]
+        panels = [(g_same, "same task"), (g_cf, "counterfactual task"),
+                  (g_same - g_cf, "difference (same − cf) = task-specific")]
+        vmax_op = max(np.nanmax(np.abs(grids[arm_name(bb, K_SHOW, op)][1]))
+                      for bb in BASES)
+        for ci, (g, ctitle) in enumerate(panels):
+            ax = axes[pi][ci]
+            ims[op] = ax.imshow(g, aspect="auto", cmap="RdBu_r", vmin=-vmax_op, vmax=vmax_op,
+                                interpolation="nearest")
+            ax.set_yticks(range(len(row_names)))
+            ax.set_yticklabels([ROW_TITLES.get(r, r) for r in row_names]
+                               if ci == 0 else [], fontsize=8)
+            ax.set_xticks(range(0, g.shape[1], 8))
+            ax.tick_params(labelsize=7)
+            if pi == 0:
+                ax.set_title(ctitle, fontsize=11)
+            if pi == len(panel_rows) - 1:
+                ax.set_xlabel("start edit layer L (ablate h.b, b ≥ L)", fontsize=8)
+            if ci == 0:
+                ax.set_ylabel(f"{op} op — {BASE_TITLES[b]}\n(scale ±{vmax_op:.1f})", fontsize=9)
+            mn = float(np.nanmin(g))
+            ax.text(0.99, 0.04, f"min {mn:.2f}", transform=ax.transAxes, ha="right",
+                    va="bottom", fontsize=8,
+                    bbox=dict(facecolor="white", alpha=0.8, edgecolor="none", pad=1.5))
+    fig.suptitle("SANDBOX pre-image subspace ablation, TASK SPECIFICITY at k=4 "
+                 "(k=0..4 indistinguishable) — mean Δ log p(correct), "
+                 f"{n_tasks} tasks, 1-shot prompts\n"
+                 "zero op: remove the subspace component (top two panel-rows, one scale); "
+                 "mean op: clamp it to the all-task grand-mean component (bottom two, own scale)",
+                 fontsize=12)
+    fig.colorbar(ims["zero"], ax=axes[:2], label="Δ log p (zero-op scale)", shrink=0.85)
+    fig.colorbar(ims["mean"], ax=axes[2:], label="Δ log p (mean-op scale)", shrink=0.85)
+    out = fig_dir / "specificity_grid.png"
+    fig.savefig(out, dpi=180)
+    plt.close(fig)
+    print(f"wrote {out}")
 
     # --- k-trend summary: min over start layers of the task-mean grid, per site row ---
     ref = task_mean_grids(args.streamw_root, list(STREAMW_ARMS)) if args.streamw_root.exists() else {}
