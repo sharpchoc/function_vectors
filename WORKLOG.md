@@ -45,6 +45,41 @@ CSVs to 1e-6; per-task rank90 ≤ 169 everywhere; pooled n_rows = 4,930 all cell
 
 ---
 
+## 2026-07-28 — SANDBOX Stream PP-preimage part 2: per-task dimensionality of pre-image matrices
+
+**Owner:** Claude Code session (CPU pod, tmux `fv-preimages`). **Status: DONE.**
+
+**What (user-specified):** for 4 seed-42-drawn tasks (train: commonsense_qa, national_parks;
+test: capitalize, capitalize_first_letter), stack each task's 170 pre-images per (layer, token
+position) cell into a [170, 4096] matrix and compute: stable rank, rank90 (σ² energy),
+participation ratio, n_pca50 — all on the MEAN-CENTERED matrix — plus mean pairwise cosine of
+the raw rows (user adjudicated: rows themselves, not pairwise differences; all 14,365 pairs
+exact). Per task, one grid PNG with 5 metric heatmaps (positions × layers, repo style).
+
+**Files:** `src/sandbox/perprompt_fv/analyze_preimage_task_dimensionality.py` (Gram-eigh path,
+`--selfcheck` vs direct SVD passed on degenerate AND non-degenerate cells — exact match).
+Outputs → `results/sandbox/perprompt_ridge_pilot/preimages_truncsvd/task_dimensionality/`
+(metrics.csv 3,596 rows = 899 cells × 4 tasks, metrics.npz grids, heatmaps_<task>.png × 4;
+cell_rank90 joined per cell as the inversion-rank cap caveat). Run: 899 file reads, 218 s CPU.
+
+**Findings (all sanity relations hold; no NaNs):**
+- **Dimensionality is task-dependent and substantial at label tokens:** at the best ridge cell
+  (icl10/pre_label L13), n_pca50 = 12 (commonsense_qa), 18 (national_parks), 26 (both
+  capitalize tasks); rank90 70–90 — far above rank-1, i.e. per-task pre-image subspaces are
+  genuinely multi-dimensional, but well below the cells' inversion caps (441+).
+- **Grows with ICL depth:** mid-layer (L8–18) label-position means roughly double from icl1–2
+  to icl9–10 (e.g. capitalize pca50 13.3 → 25.4; commonsense_qa 5.1 → 9.9).
+- **The two test (letter-case) tasks have the HIGHEST-dimensional, least-coherent pre-image
+  sets** (pca50 ~25–26, mean cos 0.58–0.66 at late-ICL mid layers) while train tasks are more
+  compact (commonsense_qa pca50 ~10, cos 0.82). Grid max n_pca50 sits at
+  icl10/last_prompt_token mid-late layers (18/24/29/29 per task).
+- Early layers (L0–3) and icl1 rows are degenerate (metrics → 1, cos → ~1), consistent with
+  the inversion caps there.
+
+STILL SANDBOX — do not build on without user promotion.
+
+---
+
 ## 2026-07-27 — SANDBOX Stream PP-preimage: truncated-SVD pre-images of per-prompt FVs
 
 **Owner:** Claude Code session (CPU pod, tmux `fv-preimages`) + own pod `fv-perprompt-preimages`
