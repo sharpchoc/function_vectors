@@ -40,11 +40,22 @@ from utils.paths import FV_FORMATION_DIR, RESULTS_ROOT  # noqa: E402
 KS = [0, 2, 3, 4]
 OPS = ["zero", "mean"]
 BASES = ["matched", "matched_cf", "icl10", "icl10_cf"]
+# Display names: per user (2026-07-16 retitle + 2026-07-28): never say "icl10"/"matched cells"
+# bare — it reads as a 10-shot prompt setting. Ablations run in 1-SHOT prompts; the subspaces
+# are PCAs of pre-images extracted from the 10-shot CAPTURE prompts, either at position-matched
+# token roles or at the 10th example's roles.
 BASE_TITLES = {
-    "matched": "position-matched cells",
+    "matched": "subspaces fit at position-matched tokens",
     "matched_cf": "position-matched — counterfactual task",
-    "icl10": "icl10 cells",
-    "icl10_cf": "icl10 — counterfactual task",
+    "icl10": "subspaces fit at 10th-example tokens",
+    "icl10_cf": "10th-example — counterfactual task",
+}
+PROVENANCE = "ablations applied in 1-SHOT prompts"
+BASE_YLAB = {
+    "matched": "position-matched\ntokens",
+    "matched_cf": "position-matched\ncf task",
+    "icl10": "10th-example\ntokens",
+    "icl10_cf": "10th-example\ncf task",
 }
 OP_TITLES = {"zero": "zero op: remove the subspace component",
              "mean": "mean op: clamp to the all-task grand-mean pre-image component"}
@@ -52,8 +63,8 @@ K_TITLES = {0: "k=0 (task-mean dir only)", 2: "k=2 (+top-2 PCs)",
             3: "k=3 (+top-3 PCs)", 4: "k=4 (+top-4 PCs)"}
 ROW_TITLES = {"cue1": "cue1 (demo 'A:')", "target1": "target1 (demo label)",
               "final_cue": "final cue (query 'A:')"}
-STREAMW_ARMS = {"preimage_matched": "Stream W preimage (matched)",
-                "preimage_icl10": "Stream W preimage (icl10)",
+STREAMW_ARMS = {"preimage_matched": "Stream W preimage (position-matched)",
+                "preimage_icl10": "Stream W preimage (10th-example cells)",
                 "fv": "Stream W FV direction"}
 
 
@@ -130,11 +141,11 @@ def main():
                 if bi == len(BASES) - 1:
                     ax.set_xlabel("start edit layer L (ablate h.b, b ≥ L)", fontsize=8)
                 if ki == 0:
-                    ax.set_ylabel(BASE_TITLES[base], fontsize=8)
+                    ax.set_ylabel(BASE_YLAB[base], fontsize=8)
         fig.suptitle("SANDBOX 1-shot ablation of per-prompt pre-image PCA SUBSPACES "
-                     f"(span{{task-mean, top-k PCs}})\n{OP_TITLES[op]} — "
+                     f"(span{{task-mean, top-k PCs}}; {PROVENANCE})\n{OP_TITLES[op]} — "
                      f"mean Δ log p(correct), {n_tasks} tasks (scale ±{vmax:.2f}, per op)",
-                     fontsize=13)
+                     fontsize=12)
         fig.colorbar(last, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.7)
         out = fig_dir / f"heatmap_all_arms__{op}.png"
         fig.savefig(out, dpi=180)
@@ -170,13 +181,13 @@ def main():
                 if bi == len(BASES) - 1:
                     ax.set_xlabel("start edit layer L (ablate h.b, b ≥ L)", fontsize=8)
                 if oi == 0:
-                    ax.set_ylabel(BASE_TITLES[base], fontsize=8)
+                    ax.set_ylabel(BASE_YLAB[base], fontsize=8)
                 ax.text(0.99, 0.05, f"min {float(np.nanmin(g)):.2f}", transform=ax.transAxes,
                         ha="right", va="bottom", fontsize=8,
                         bbox=dict(facecolor="white", alpha=0.8, edgecolor="none", pad=1.5))
         fig.suptitle("SANDBOX 1-shot ablation of per-prompt pre-image PCA SUBSPACES — "
-                     f"{K_TITLES[k]}\nmean Δ log p(correct), {n_tasks} tasks "
-                     "(color scale per op column, fixed across the per-k figures)", fontsize=12)
+                     f"{K_TITLES[k]}\n{PROVENANCE}\nmean Δ log p(correct), {n_tasks} tasks "
+                     "(color scale per op column, fixed across the per-k figures)", fontsize=11)
         for oi, op in enumerate(OPS):
             fig.colorbar(col_ims[op], ax=axes[:, oi], label=f"Δ log p ({op}-op scale)",
                          shrink=0.75)
@@ -211,17 +222,18 @@ def main():
             if pi == len(panel_rows) - 1:
                 ax.set_xlabel("start edit layer L (ablate h.b, b ≥ L)", fontsize=8)
             if ci == 0:
-                ax.set_ylabel(f"{op} op — {BASE_TITLES[b]}\n(scale ±{vmax_op:.1f})", fontsize=9)
+                short = {"matched": "position-matched tokens", "icl10": "10th-example tokens"}[b]
+                ax.set_ylabel(f"{op} op — {short}\n(scale ±{vmax_op:.1f})", fontsize=9)
             mn = float(np.nanmin(g))
             ax.text(0.99, 0.04, f"min {mn:.2f}", transform=ax.transAxes, ha="right",
                     va="bottom", fontsize=8,
                     bbox=dict(facecolor="white", alpha=0.8, edgecolor="none", pad=1.5))
     fig.suptitle("SANDBOX pre-image subspace ablation, TASK SPECIFICITY at k=4 "
                  "(k=0..4 indistinguishable) — mean Δ log p(correct), "
-                 f"{n_tasks} tasks, 1-shot prompts\n"
+                 f"{n_tasks} tasks\n{PROVENANCE}\n"
                  "zero op: remove the subspace component (top two panel-rows, one scale); "
                  "mean op: clamp it to the all-task grand-mean component (bottom two, own scale)",
-                 fontsize=12)
+                 fontsize=11)
     fig.colorbar(ims["zero"], ax=axes[:2], label="Δ log p (zero-op scale)", shrink=0.85)
     fig.colorbar(ims["mean"], ax=axes[2:], label="Δ log p (mean-op scale)", shrink=0.85)
     out = fig_dir / "specificity_grid.png"
