@@ -5,6 +5,42 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-07-28 — SANDBOX Stream PP-preimage part 3: top-k PCA pre-image SUBSPACE ablation (1-shot)
+
+**Owner:** Claude Code background session (CPU pod) + own pod `fv-pcasub-ablation`
+tntocdsxotlhah (RTX PRO 4500 Blackwell $0.74/hr, public runpod/pytorch
+2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 image + volume fv env, allowedCudaVersions 13.0).
+**Status:** IN PROGRESS (GPU sweep running).
+
+**What (user spec 2026-07-28):** are the per-task pre-image SUBSPACES more causally complete
+than Stream W's single directions? For k ∈ {2,3,4} (+ a k=0 bridge arm), ablation subspace =
+QR-orthonormalized span{task-mean pre-image, top-k centered PCs} of the task's 170 per-prompt-FV
+pre-images (part-2 stacks) at each Stream W cell × edit layer (b ↔ capture b+1). Two ops:
+**zero** (remove the subspace component) and **mean** (clamp to the component of the grand mean
+over ALL 27 tasks' 4590 pre-images — user-chosen matched population). Arms
+`pcasub_{matched|icl10}[_cf]_k{0,2,3,4}_{zero|mean}` (32/task); everything else = Stream W
+perlayer protocol exactly (7 test tasks, 170 one-shot prompts seed 42, cue1/target1/final_cue,
+L 0..27, Δ log p of first answer token, same cf_map).
+
+**Files (all sandbox):** `src/sandbox/perprompt_fv/fit_preimage_pca_subspace_banks.py`
+(banks → `artifacts/sandbox/perprompt_fv_preimages/gptj_train_varicl_top40_pca_banks/`,
+42 files, fp64 SVD/QR on CPU; GATES: orthonormality + mean-in-span < 1e-5 everywhere; Gram-vs-SVD
+selfcheck; consistency vs part-2 `task_dimensionality/metrics.csv` — **336/336 overlapping
+(task,cell,layer) rows EXACT** on n_pca50/rank90, rel ≤ 1e-8 on stable_rank/PR),
+`ablate_oneshot_pca_subspace_logprob.py` (imports Stream W's prompt/chunk/cf machinery; Stream W
+script untouched; comparability gate: prompt identity EXACT vs stored Stream W npz, clean-log-p
+advisory max|Δ|=0.0073 on smoke), `plot_oneshot_pca_subspace_ablation.py`.
+Output → `results/sandbox/perprompt_ridge_pilot/oneshot_pca_subspace_ablation/`;
+logs `logs/sandbox_perprompt/pca_subspace_ablation/` (markers RUN.done/RUN.failed).
+
+**GPU smoke passed** (antonym, 3 arms, 8 prompts, `--debug_invariant` hook asserts silent).
+Full sweep: 7 tasks × 32 arms, single pod, ETA ~2–2.5 h.
+
+**Findings:** (pending)
+**Next:** (pending)
+
+---
+
 ## 2026-07-27 — Stream R2: effective rank of raw activations by (layer, token position)
 
 **Owner:** Claude Code background session (CPU pod, ~14 min run). **Status:** DONE.
