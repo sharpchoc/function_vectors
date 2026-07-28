@@ -45,17 +45,17 @@ BASES = ["matched", "matched_cf", "icl10", "icl10_cf"]
 # are PCAs of pre-images extracted from the 10-shot CAPTURE prompts, either at position-matched
 # token roles or at the 10th example's roles.
 BASE_TITLES = {
-    "matched": "subspaces fit at position-matched tokens",
-    "matched_cf": "position-matched — counterfactual task",
-    "icl10": "subspaces fit at 10th-example tokens",
-    "icl10_cf": "10th-example — counterfactual task",
+    "matched": "subspace of position-matched regression pre-images",
+    "matched_cf": "position-matched regression — counterfactual task",
+    "icl10": "subspace of 10th-example regression pre-images",
+    "icl10_cf": "10th-example regression — counterfactual task",
 }
 PROVENANCE = "ablations applied in 1-SHOT prompts"
 BASE_YLAB = {
-    "matched": "position-matched\ntokens",
-    "matched_cf": "position-matched\ncf task",
-    "icl10": "10th-example\ntokens",
-    "icl10_cf": "10th-example\ncf task",
+    "matched": "position-matched\nregression pre-images",
+    "matched_cf": "position-matched regr.\ncf task",
+    "icl10": "10th-example\nregression pre-images",
+    "icl10_cf": "10th-example regr.\ncf task",
 }
 OP_TITLES = {"zero": "zero op: remove the subspace component",
              "mean": "mean op: clamp to the all-task grand-mean pre-image component"}
@@ -63,8 +63,8 @@ K_TITLES = {0: "k=0 (task-mean dir only)", 2: "k=2 (+top-2 PCs)",
             3: "k=3 (+top-3 PCs)", 4: "k=4 (+top-4 PCs)"}
 ROW_TITLES = {"cue1": "cue1 (demo 'A:')", "target1": "target1 (demo label)",
               "final_cue": "final cue (query 'A:')"}
-STREAMW_ARMS = {"preimage_matched": "Stream W preimage (position-matched)",
-                "preimage_icl10": "Stream W preimage (10th-example cells)",
+STREAMW_ARMS = {"preimage_matched": "Stream W preimage of position-matched regression",
+                "preimage_icl10": "Stream W preimage of 10th-example regression",
                 "fv": "Stream W FV direction"}
 
 
@@ -222,8 +222,9 @@ def main():
             if pi == len(panel_rows) - 1:
                 ax.set_xlabel("start edit layer L (ablate h.b, b ≥ L)", fontsize=8)
             if ci == 0:
-                short = {"matched": "position-matched tokens", "icl10": "10th-example tokens"}[b]
-                ax.set_ylabel(f"{op} op — {short}\n(scale ±{vmax_op:.1f})", fontsize=9)
+                short = {"matched": "position-matched", "icl10": "10th-example"}[b]
+                ax.set_ylabel(f"{op} op — {short}\nregr. pre-images (±{vmax_op:.1f})",
+                              fontsize=9)
             mn = float(np.nanmin(g))
             ax.text(0.99, 0.04, f"min {mn:.2f}", transform=ax.transAxes, ha="right",
                     va="bottom", fontsize=8,
