@@ -141,6 +141,50 @@ def main():
         plt.close(fig)
         print(f"wrote {out}")
 
+    # --- per-k grids: one figure per k, arm rows x op columns (per-op scale) ---
+    op_vmax = {op: max(np.nanmax(np.abs(g)) for a, (_, g, _) in grids.items()
+                       if a.endswith(f"_{op}")) for op in OPS}
+    for k in KS:
+        fig, axes = plt.subplots(len(BASES), len(OPS),
+                                 figsize=(5.6 * len(OPS), 2.1 * len(BASES) + 1.2),
+                                 squeeze=False, constrained_layout=True)
+        col_ims = {}
+        for bi, base in enumerate(BASES):
+            for oi, op in enumerate(OPS):
+                ax = axes[bi][oi]
+                got = grids.get(arm_name(base, k, op))
+                if got is None:
+                    ax.axis("off")
+                    continue
+                row_names, g, _ = got
+                col_ims[op] = ax.imshow(g, aspect="auto", cmap="RdBu_r",
+                                        vmin=-op_vmax[op], vmax=op_vmax[op],
+                                        interpolation="nearest")
+                ax.set_yticks(range(len(row_names)))
+                ax.set_yticklabels([ROW_TITLES.get(r, r) for r in row_names]
+                                   if oi == 0 else [], fontsize=8)
+                ax.set_xticks(range(0, g.shape[1], 8))
+                ax.tick_params(labelsize=7)
+                if bi == 0:
+                    ax.set_title(f"{OP_TITLES[op]}\n(scale ±{op_vmax[op]:.2f})", fontsize=10)
+                if bi == len(BASES) - 1:
+                    ax.set_xlabel("start edit layer L (ablate h.b, b ≥ L)", fontsize=8)
+                if oi == 0:
+                    ax.set_ylabel(BASE_TITLES[base], fontsize=8)
+                ax.text(0.99, 0.05, f"min {float(np.nanmin(g)):.2f}", transform=ax.transAxes,
+                        ha="right", va="bottom", fontsize=8,
+                        bbox=dict(facecolor="white", alpha=0.8, edgecolor="none", pad=1.5))
+        fig.suptitle("SANDBOX 1-shot ablation of per-prompt pre-image PCA SUBSPACES — "
+                     f"{K_TITLES[k]}\nmean Δ log p(correct), {n_tasks} tasks "
+                     "(color scale per op column, fixed across the per-k figures)", fontsize=12)
+        for oi, op in enumerate(OPS):
+            fig.colorbar(col_ims[op], ax=axes[:, oi], label=f"Δ log p ({op}-op scale)",
+                         shrink=0.75)
+        out = fig_dir / f"heatmap_all_arms__k{k}.png"
+        fig.savefig(out, dpi=180)
+        plt.close(fig)
+        print(f"wrote {out}")
+
     # --- specificity grid: same | cf | difference, per (op, cell set), at k=4 ---
     K_SHOW = 4
     fig, axes = plt.subplots(4, 3, figsize=(15.5, 9.6), squeeze=False, constrained_layout=True)
