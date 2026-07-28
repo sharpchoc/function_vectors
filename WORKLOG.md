@@ -34,10 +34,42 @@ Output → `results/sandbox/perprompt_ridge_pilot/oneshot_pca_subspace_ablation/
 logs `logs/sandbox_perprompt/pca_subspace_ablation/` (markers RUN.done/RUN.failed).
 
 **GPU smoke passed** (antonym, 3 arms, 8 prompts, `--debug_invariant` hook asserts silent).
-Full sweep: 7 tasks × 32 arms, single pod, ETA ~2–2.5 h.
+Full sweep DONE: 224/224 npz (7 tasks × 32 arms), ~2.4 h on one pod (~$1.8), all 7 per-task
+prompt-identity gates EXACT, no failed asserts; pod TERMINATED (verified — only the two
+long-lived CPU pods remain). Figures: `figures/heatmap_all_arms__{zero,mean}.png` (per-op color
+scale — zero-op damage is ~15× mean-op; scale printed in suptitle) + `ktrend_summary.png`
+(min-over-L vs k with Stream W single-direction reference lines).
 
-**Findings:** (pending)
-**Next:** (pending)
+**Findings (7-task mean Δ log p, min over start layers; k=0 ≈ k=4 throughout):**
+- **k is causally irrelevant: adding the top-2/3/4 within-task PCs on top of the task-mean
+  pre-image direction changes almost nothing in either op** (e.g. matched/zero target1 −3.98 →
+  −3.95 from k=0→4; every mean-op curve flat in k). The extra pre-image dimensions that the
+  part-2 study found (n_pca50 ≈ 12–26) carry ~no additional causal load at these sites — at
+  least not their top-4; the causal content of the pre-image stack is concentrated in its mean.
+- **The zero op is catastrophic but almost task-UNSPECIFIC**, unlike Stream W's TSVD-preimage
+  removal: matched final_cue −12.2 vs cf −9.7..−10.0 (ratio ~1.25×; Stream W preimage arms ran
+  4–9× specific), target1 −3.96 vs cf −3.3, cue1 −2.6 vs cf −2.7 (cue1 was ≈0 in every Stream W
+  arm!), icl10/zero final_cue up to −15.7 (k=0, late L). Reading: the task-mean per-prompt
+  pre-image contains a large task-GENERIC component (all-task grand mean; raw pre-image rows
+  have mean pairwise cos 0.58–0.82), and clamping that shared coordinate to 0 pushes h far
+  off-manifold at every site. Same sign-of-op lesson as the persona-vector study: projection-
+  to-0 is not interpretable when the population mean sits far from 0 — the MEAN op is the
+  meaningful one.
+- **Mean op (clamp to the all-task grand-mean component): small, and the one clearly
+  task-specific effect is at the final cue with icl10 subspaces: −0.97 vs cf −0.15..+0.1**,
+  sustained at ALL start layers incl. late (per-task: word_length −1.79, capitalize_first
+  −1.76 (its cf −1.00 — near-twin cf draw), lowercase_first −1.53, landmark-country −1.37,
+  synonym −0.16). Matched-cell mean op: final_cue only −0.19, target1 −0.14 (driven entirely
+  by landmark-country −0.82; ≈0 elsewhere) — much weaker than Stream W's matched-preimage
+  REMOVAL (−1.78 at target1), i.e. once you only move h to the population-typical value instead
+  of stripping the direction, the demo-label effect largely evaporates; what survives is the
+  query-cue content in the icl10 (last_prompt/pre_label icl10) subspaces.
+- cf caveat unchanged from Stream W: the letter-case tasks draw near-twin counterfactuals.
+
+**Next:** awaiting user direction. Candidates: (a) mean-op with PER-TASK mean target (tests
+whether moving between task means transfers the task, cf. switch-steering); (b) k beyond 4
+(the part-2 n_pca50 says ~12–26 dims matter for reconstruction); (c) same study in the paired
+logit-gap regime.
 
 ---
 

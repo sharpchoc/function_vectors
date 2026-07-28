@@ -6,7 +6,9 @@ Reads the per-(task, arm) npz written by ablate_oneshot_pca_subspace_logprob.py 
   figures/heatmap_all_arms__{zero,mean}.png
       one grid per op: arm rows (matched, matched_cf, icl10, icl10_cf) x k columns
       (0, 2, 3, 4); each panel is the Stream W-style token-row x start-layer heatmap of the
-      task-mean delta log p; ONE shared symmetric color scale across BOTH figures.
+      task-mean delta log p. Color scale is PER OP (zero-op damage is ~15x the mean-op's;
+      a shared scale blanks the mean figure) — the scale is printed in each suptitle and the
+      ktrend figure carries the cross-op comparison on one axis.
   figures/ktrend_summary.png
       per site token: min-over-start-layers task-mean delta log p vs k, lines per
       (op, base, cf); horizontal reference lines = Stream W single-direction arms
@@ -93,12 +95,13 @@ def main():
     grids = task_mean_grids(args.root, arms)
     if not grids:
         raise SystemExit(f"no npz under {args.root}")
-    vmax = max(np.nanmax(np.abs(g)) for _, g, _ in grids.values())
     n_tasks = max(n for _, _, n in grids.values())
-    print(f"shared scale vmax={vmax:.3f}; {n_tasks} tasks")
 
-    # --- heatmap grids: one figure per op, arm rows x k columns ---
+    # --- heatmap grids: one figure per op, arm rows x k columns (per-op scale) ---
     for op in OPS:
+        vmax = max(np.nanmax(np.abs(g)) for a, (_, g, _) in grids.items()
+                   if a.endswith(f"_{op}"))
+        print(f"{op}: scale vmax={vmax:.3f}; {n_tasks} tasks")
         fig, axes = plt.subplots(len(BASES), len(KS),
                                  figsize=(4.6 * len(KS), 2.1 * len(BASES) + 1.2),
                                  squeeze=False, constrained_layout=True)
@@ -126,7 +129,8 @@ def main():
                     ax.set_ylabel(BASE_TITLES[base], fontsize=8)
         fig.suptitle("SANDBOX 1-shot ablation of per-prompt pre-image PCA SUBSPACES "
                      f"(span{{task-mean, top-k PCs}})\n{OP_TITLES[op]} — "
-                     f"mean Δ log p(correct), {n_tasks} tasks", fontsize=13)
+                     f"mean Δ log p(correct), {n_tasks} tasks (scale ±{vmax:.2f}, per op)",
+                     fontsize=13)
         fig.colorbar(last, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.7)
         out = fig_dir / f"heatmap_all_arms__{op}.png"
         fig.savefig(out, dpi=180)

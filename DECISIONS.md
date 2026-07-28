@@ -1,5 +1,26 @@
 # DECISIONS
 
+## 2026-07-28 — Pre-image SUBSPACE ablation conventions (SANDBOX PP-preimage part 3)
+
+- **Subspace definition (user-decided):** ablation subspace = QR-orthonormalized
+  span{task-mean pre-image, top-k CENTERED PCs} of the task's 170 per-prompt-FV pre-images,
+  k ∈ {0,2,3,4} (k=0 = mean direction only; QR is sequential so subspaces are nested and the
+  first basis vector is always the unit task-mean). Mean-replacement target = the subspace
+  component of the grand mean over ALL 27 tasks' 4590 pre-images at that cell (matched
+  population). Banks: `fit_preimage_pca_subspace_banks.py`, fp64 SVD/QR on CPU (CUDA gesvdj
+  rule stays moot).
+- **Zero-op vs mean-op, the recurring lesson:** clamping a subspace containing the task-mean
+  pre-image to ZERO is devastating but almost task-unspecific (cf arms ≈ same damage) — the
+  mean pre-image carries a big all-task shared component, so proj-to-0 is an off-manifold
+  intervention, not a task-content removal. Report the MEAN op as the interpretable one and
+  keep zero-op results only next to their cf controls. (Same asymmetry as the sink/proj
+  findings in the persona-vector ICL study.)
+- **Comparability gates for Stream W-derived studies:** any sibling script must import
+  build_prompts/make_chunks/build_cf_map from `ablate_oneshot_preimage_logprob.py` (never
+  re-implement) and hard-gate on prompt-identity equality (query/answer/answer_token_id arrays)
+  vs the stored Stream W npz; clean-log-p agreement is ADVISORY only (cross-GPU fp noise
+  ~1.7e-2, same-GPU rule from 2026-07-16 applies).
+
 Reusable conventions, project decisions, and open questions. Append; date entries.
 Resolved questions move from "Open" to "Decided" with the rationale.
 
