@@ -5,6 +5,68 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-07-29 — Stream cue-attn part 2: L9H14 position-free content direction, layer x token maps
+
+**Owner:** Claude Code session (CPU pod, GPT-J fp32 on CPU).
+**Status:** DONE.
+
+**What (user spec):** define the position-free content direction of a head as
+`d_content = W_K_pass^T @ q_pass` (GPT-J rotary_dim=64 => head dims 0..63 are the RoPE/
+positional channel, dims 64..255 pass through untouched; q = the final-cue-token query).
+User-adjudicated: exclude the rotary block entirely (it is the "pretend to be closer"
+channel); x = all 97 tokens; compare against the RAW residual stream at all 29 layer
+boundaries (no LN), layer-9 read row marked. For L9H14 on the same present-past q21 prompt:
+two stacked heatmaps (cos to d_content; projection onto unit d_content).
+
+**Files:** NEW `src/eval_scripts/plot_dcontent_layer_token_heatmaps.py` (--layer/--head
+configurable). HARD GATE inside: manual ln_1->q/k->rotary pipeline (imports transformers'
+apply_rotary_pos_emb) must reproduce the model's own attention row — passed, max dev 1.7e-7.
+Output -> `results/direction3_fv_formation/dcontent_layer_token/present_past_q21_L9H14_*`
+(PNG + npz with cos/proj grids, d_content, score decomposition). Projection panel color
+scale excludes <bos> (norm outlier, proj ~713 at L9 vs <=10 elsewhere; column saturates).
+
+**Findings (this prompt):** (1) L9H14's answer-token preference is almost entirely
+position-free: content term 4.3-6.1 vs rotary term -0.03-0.98 across the top-attended
+tokens. (2) d_content is task-content selective, not positional: at the read layer (bnd 9)
+mean cos = 0.108 at the 10 past-tense answer tokens vs 0.032 elsewhere. (3) The content
+builds up over layers 2-8 at answer tokens, peaks at boundary 8 (mean cos 0.119) right
+before the head reads at layer 9, and persists (proj peak ~13 around bnd 16) before fading
+by the final layers — consistent with earlier attn/MLP layers WRITING the label-content
+signal that L9H14 then reads at the cue token.
+
+**Next:** none scheduled; npz allows other heads (--head/--layer) or renderings.
+
+---
+
+## 2026-07-29 — Stream cue-attn: top-10 varicl head attention at the final cue token (one prompt)
+
+**Owner:** Claude Code session (CPU pod, no GPU — GPT-J fp32 forward on CPU).
+**Status:** DONE.
+
+**What (user request):** for ONE exact prompt from the canonical varicl head-selection run —
+present-past (global task_index 9), query_idx 21, the only 10-shot draw among its 21 CIE
+prompts, target ` converted` — plot where each of the top-10 `train_varicl_top40` heads
+attends at the final cue token (the `:` of the last `A:`, the position where CIE selection
+and FV mean activations were measured). Heatmap x = 97 prompt tokens, y = heads ordered by
+descending pooled CIE (labels `L9H14 (CIE 0.0553)` …), color = raw softmax attention weight.
+
+**Files:** NEW `src/eval_scripts/plot_top10_head_attention_cue_token.py` (rebuilds the prompt
+via `build_varicl_prompt_data` seeding, loads GPT-J fp32 on CPU, `output_attentions=True`,
+asserts rows sum to 1). Output → `results/direction3_fv_formation/top10_head_attention_cue_token/`
+(`present_past_q21_cue_attention.png` + regenerable `.npz` with rows/tokens/head list).
+
+**Command:** `python src/eval_scripts/plot_top10_head_attention_cue_token.py` (~3 min on CPU).
+
+**Findings (this one prompt only):** the six highest-CIE heads (L9H14, L15H5, L8H1, L12H10,
+L11H0, L8H0) put their mass on the demos' PAST-TENSE ANSWER tokens (' happened' .19 for L9H14;
+' restored' .32 for L15H5; ' imagined' .43 for L11H0), i.e. they aggregate label/output tokens
+into the cue position. The deeper/tail heads behave differently: L14H0 and L24H6 split between
+BOS and the QUERY word ' convert' (.18/.21); L21H2 and L10H0 are mostly BOS sinks (.60/.43).
+
+**Next:** none scheduled — single-prompt qualitative view; npz allows other renderings.
+
+---
+
 ## 2026-07-28 — SANDBOX Stream PP-preimage part 3: top-k PCA pre-image SUBSPACE ablation (1-shot)
 
 **Owner:** Claude Code background session (CPU pod) + own pod `fv-pcasub-ablation`
@@ -54,12 +116,34 @@ cross-task |cos(d_A, d_B)| mean ≈ 0.16 (was 0.97+); ‖d‖/‖g‖ 0.025 (L0 
 recorded in DECISIONS: surface point-vs-direction/offset consequences BEFORE compute; the user
 gates such definitional choices.
 
-**RUN 2 (2026-07-29, task-offset direction) — IN PROGRESS** on pod `fv-pcasub-ablation-2`
-u28o7c902hyofg (same recipe): smoke (debug_invariant) + full 224-npz sweep, markers in
-`logs/sandbox_perprompt/pca_subspace_ablation/`.
+**RUN 2 (2026-07-29, task-offset direction) — DONE** on pod `fv-pcasub-ablation-2`
+u28o7c902hyofg (same recipe): smoke (debug_invariant) passed, full 224/224 npz (~2.4 h), all 7
+prompt-identity gates EXACT. Results/figures OVERWRITE run 1 in place (user decision).
 
-**Findings:** (pending run 2)
-**Next:** (pending)
+**Findings (7-task mean Δ log p, min over start layers L; cf = counterfactual-task subspace):**
+- **Task specificity is restored** (validating that run 1's cf-effectiveness was the raw-mean
+  flaw, not the protocol): zero op matched target1 −1.09 (k0) vs cf −0.10 (~11×);
+  icl10 final_cue −4.46 (k0) vs cf −0.47 (~9×) — Stream W-like ratios. L-profiles are sane
+  (minima at L0 or L6–8, decaying late; no late-start blow-up).
+- **The per-prompt-map task-offset direction at the 10th-example final-cue cell is the
+  strongest single direction**: −4.46 @L8, slightly beating Stream W's canonical-map icl10
+  preimage (−4.00) at the same site; matched-cell direction −1.09 at target1 vs Stream W's
+  −1.78 (weaker; different centering: ours is offset vs ȳ_all27, Stream W inverted raw fv).
+- **k now adds a modest, mostly SPECIFIC increment at the final cue**: icl10 final_cue k0
+  −4.46 → k2..4 ≈ −5.9 (cf 0.47 → 0.84) — the first 2 PCs add ~1.4 nats then saturate;
+  target1 k0 −1.09 → k4 −1.30 (cf flat). At cue1 the k increment is NON-specific (matched
+  −0.04→−0.46 but cf −0.02→−0.49): the top PCs carry population-generic variance directions.
+- **Mean op (clamp to grand-mean component)**: icl10 final_cue −1.69..−1.72 (cf ≈ +0.1,
+  fully specific), sustained to ~L16; matched target1 −0.39..−0.50 (cf −0.08). Larger than
+  run 1's raw-mean version — the (k+1)-dim span is now concentrated on task content.
+- Ordering at the query cue: FV direction (−7.1, Stream W) > pp-map task-offset subspace k4
+  (−5.9) > k0 single direction (−4.5) > canonical-map preimage (−4.0) ≫ matched-cell subspaces.
+
+**Next:** FV-through-per-prompt-map sanity check (user 2026-07-29, IN PROGRESS on the same
+pod): rank90 TSVD inverse of the RAW canonical FV via the per-prompt maps
+(`fit_fv_ppinverse_preimage_banks.py`, repro+rank90 gates passed on CPU smoke), then the
+UNTOUCHED Stream W ablation/plot scripts recreate heatmap_all_arms.png →
+`results/sandbox/perprompt_ridge_pilot/oneshot_fv_ppinverse_ablation/`.
 
 ---
 
