@@ -139,11 +139,31 @@ prompt-identity gates EXACT. Results/figures OVERWRITE run 1 in place (user deci
 - Ordering at the query cue: FV direction (−7.1, Stream W) > pp-map task-offset subspace k4
   (−5.9) > k0 single direction (−4.5) > canonical-map preimage (−4.0) ≫ matched-cell subspaces.
 
-**Next:** FV-through-per-prompt-map sanity check (user 2026-07-29, IN PROGRESS on the same
-pod): rank90 TSVD inverse of the RAW canonical FV via the per-prompt maps
-(`fit_fv_ppinverse_preimage_banks.py`, repro+rank90 gates passed on CPU smoke), then the
-UNTOUCHED Stream W ablation/plot scripts recreate heatmap_all_arms.png →
-`results/sandbox/perprompt_ridge_pilot/oneshot_fv_ppinverse_ablation/`.
+**SANITY CHECK (user 2026-07-29, DONE): canonical FV inverted via the PER-PROMPT maps.**
+`fit_fv_ppinverse_preimage_banks.py`: rank90 TSVD inverse of the RAW (uncentered, per user —
+byte-faithful to Stream W's own convention) canonical FV through the per-prompt ridge maps,
+dx = std·dz (no μ/x̄); all 168 repro gates vs stored MSEs passed + rank90 EXACT vs
+cells_summary.csv. Ablation + figure via the UNTOUCHED Stream W scripts
+(`ablate_oneshot_preimage_logprob.py --tsvd_root`, `plot_oneshot_preimage_ablation.py`) →
+`results/sandbox/perprompt_ridge_pilot/oneshot_fv_ppinverse_ablation/` (same pod, then
+TERMINATED — verified only the 2 long-lived CPU pods remain).
+**Findings (min over L, 7-task mean; vs original Stream W values):**
+- **Harness validation: the fv/fv_cf arms reproduce the original Stream W summary to 2
+  decimals at every row** (fv final_cue −7.19@L8 both; fv_cf −1.22@L6 both) — same prompts,
+  same mechanics, cross-GPU.
+- **icl10 cells: the per-prompt-map FV inverse ≈ the canonical-map inverse, slightly stronger
+  and MORE specific** (final_cue −4.51@L0 vs −4.00@L0; cf −0.34 vs −0.90) — where the
+  canonical map is well-conditioned, the two maps' inverses agree causally. Sanity check PASSES.
+- **Matched (icl1/icl2) cells COLLAPSE under the per-prompt map** (target1 −0.38 vs Stream W
+  −1.78; final_cue −0.32 vs −1.95): the early-cell per-prompt maps (fat spectra, high rank90,
+  weak per-prompt signal at 1–2 shots) send the FV to a much less causally loaded direction
+  than the canonical rank-≈16 inverse. The task-offset subspace direction from run 2 sits in
+  between at target1 (−1.09). I.e. the early-position demo-label effect is a property of the
+  CANONICAL map's low-rank inverse, not recovered by the per-prompt map's FV inverse.
+
+**Next:** awaiting user direction. Candidates: (a) per-task mean-op clamp target (task
+transfer); (b) k ≫ 4 (part-2 n_pca50 says ~12–26 dims); (c) paired logit-gap regime;
+(d) understand the matched-cell divergence (canonical vs per-prompt inverse at icl1/icl2).
 
 ---
 
