@@ -15,8 +15,12 @@ Reads the per-(task, arm) npz written by ablate_oneshot_pca_subspace_logprob.py 
       (preimage_matched / preimage_icl10 / fv, same statistic) when available.
   figures/specificity_grid.png
       the headline aggregate: rows = (op x cell set), columns = same task | counterfactual
-      task | difference (same - cf = the task-SPECIFIC part), at k=4 (k=0..4 are
-      indistinguishable). Per-op symmetric color scale, annotated with each panel's min.
+      task | difference (same - cf = the task-SPECIFIC part), at k=4. Per-op symmetric
+      color scale, annotated with each panel's min.
+
+Subspace definition (since 2026-07-29, user decision): span{task-mean − grand mean, top-k
+centered PCs}. The original raw-task-mean run (offset-dominated, task-generic zero op) was
+OVERWRITTEN at user request; its summaries/figures survive only in git history (<= 064cf65).
 
 Grid/summary PNGs only (repo figure policy).
 """
@@ -59,7 +63,7 @@ BASE_YLAB = {
 }
 OP_TITLES = {"zero": "zero op: remove the subspace component",
              "mean": "mean op: clamp to the all-task grand-mean pre-image component"}
-K_TITLES = {0: "k=0 (task-mean dir only)", 2: "k=2 (+top-2 PCs)",
+K_TITLES = {0: "k=0 (task-offset dir m_t−g only)", 2: "k=2 (+top-2 PCs)",
             3: "k=3 (+top-3 PCs)", 4: "k=4 (+top-4 PCs)"}
 ROW_TITLES = {"cue1": "cue1 (demo 'A:')", "target1": "target1 (demo label)",
               "final_cue": "final cue (query 'A:')"}
@@ -143,7 +147,7 @@ def main():
                 if ki == 0:
                     ax.set_ylabel(BASE_YLAB[base], fontsize=8)
         fig.suptitle("SANDBOX 1-shot ablation of per-prompt pre-image PCA SUBSPACES "
-                     f"(span{{task-mean, top-k PCs}}; {PROVENANCE})\n{OP_TITLES[op]} — "
+                     f"(span{{task-mean − grand mean, top-k PCs}}; {PROVENANCE})\n{OP_TITLES[op]} — "
                      f"mean Δ log p(correct), {n_tasks} tasks (scale ±{vmax:.2f}, per op)",
                      fontsize=12)
         fig.colorbar(last, ax=axes, label="log p(ablated) − log p(clean)", shrink=0.7)
@@ -229,8 +233,8 @@ def main():
             ax.text(0.99, 0.04, f"min {mn:.2f}", transform=ax.transAxes, ha="right",
                     va="bottom", fontsize=8,
                     bbox=dict(facecolor="white", alpha=0.8, edgecolor="none", pad=1.5))
-    fig.suptitle("SANDBOX pre-image subspace ablation, TASK SPECIFICITY at k=4 "
-                 "(k=0..4 indistinguishable) — mean Δ log p(correct), "
+    fig.suptitle("SANDBOX pre-image subspace ablation, TASK SPECIFICITY at k=4 — "
+                 "mean Δ log p(correct), "
                  f"{n_tasks} tasks\n{PROVENANCE}\n"
                  "zero op: remove the subspace component (top two panel-rows, one scale); "
                  "mean op: clamp it to the all-task grand-mean component (bottom two, own scale)",

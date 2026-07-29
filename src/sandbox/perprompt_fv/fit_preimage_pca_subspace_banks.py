@@ -6,11 +6,16 @@ ablation subspaces for the top-k-PCA pre-image subspace ablation study (user spe
 
   x        = the task's 170 pre-images at (cell, capture layer)   [170, 4096] raw space
   m_t      = row mean of x (the task-mean pre-image)
-  PC1..PC4 = top right singular vectors of the MEAN-CENTERED x (fp64 SVD)
-  Q_k      = QR-orthonormalization of [m_t, PC1..PCk]             [4096, k+1], k in {0,2,3,4}
-             (k=0 bridge arm: the unit task-mean direction alone; QR is sequential, so the
-             k subspaces are nested and all contain the task-mean direction)
   g        = grand mean over ALL 4590 pre-images (27 tasks) at that (cell, layer)
+  d        = the leading ("mean") direction, per --mean_mode:
+               raw:        d = m_t          (ORIGINAL run; raw-space point mean — dominated by
+                           the add-back offsets x̄·std + μ, cos(m_t, g) ≈ 0.99: task-GENERIC)
+               taskoffset: d = m_t − g      (user-mandated 2026-07-29: the offsets cancel in the
+                           difference; equals std·P⁺(ȳ_task − ȳ_all), a true task displacement)
+  PC1..PC4 = top right singular vectors of the MEAN-CENTERED x (fp64 SVD; offset-immune)
+  Q_k      = QR-orthonormalization of [d, PC1..PCk]               [4096, k+1], k in {0,2,3,4}
+             (k=0 bridge arm: the unit d direction alone; QR is sequential, so the
+             k subspaces are nested and all contain d)
   tvec_k   = Q_k^T g   (mean-replacement clamp target in subspace coordinates)
 
 Banks are keyed by edit layer b = capture layer - 1 (b in 0..27; hook on transformer.h.{b}
@@ -82,6 +87,11 @@ def parse_args():
                    default=ARTIFACTS_ROOT / "sandbox/perprompt_fv_preimages/gptj_train_varicl_top40_pca_banks")
     p.add_argument("--dim_metrics_csv", type=Path,
                    default=RESULTS_ROOT / "sandbox/perprompt_ridge_pilot/preimages_truncsvd/task_dimensionality/metrics.csv")
+    p.add_argument("--mean_mode", choices=["raw", "taskoffset"], default="taskoffset",
+                   help="Leading direction. taskoffset (STUDY DEFINITION, user 2026-07-29): "
+                        "task-mean MINUS grand mean, offset-free. raw (legacy, first run only, "
+                        "superseded): raw task-mean pre-image — dominated by the add-back "
+                        "offsets, task-generic; pass an explicit --output_root to rebuild it.")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
@@ -117,38 +127,43 @@ def consistency_gate(x, task, icl, role, cap_layer, ref):
     return 1
 
 
-def subspaces_for_task(x, g):
+def subspaces_for_task(x, g, mean_mode="raw"):
     """x: [170, 4096] fp32 task pre-images; g: [4096] fp32 grand mean over all 27 tasks.
 
     Returns per-k dict with Q [4096, k+1] fp32, tvec [k+1] fp32, plus diagnostics."""
     x64 = x.double()
     m = x64.mean(dim=0)
-    m_norm = float(torch.linalg.norm(m))
-    if m_norm < 1e-8:
-        raise RuntimeError("task-mean pre-image is ~0; subspace undefined.")
+    g64 = g.double()
+    d = m if mean_mode == "raw" else m - g64
+    d_norm = float(torch.linalg.norm(d))
+    if d_norm < 1e-8:
+        raise RuntimeError(f"leading direction ({mean_mode}) is ~0 (norm {d_norm:.2e}); "
+                           "subspace undefined — STOP, user adjudicates.")
     xc = x64 - m
     # fp64 thin SVD on CPU (LAPACK); right singular vectors = centered PCs.
     _, S, Vh = torch.linalg.svd(xc, full_matrices=False)
     pcs = Vh[: max(KS)]                                  # [4, 4096]
     out = {}
-    g64 = g.double()
     for k in KS:
-        A = torch.cat([m.unsqueeze(0), pcs[:k]], dim=0).T    # [4096, k+1]
+        A = torch.cat([d.unsqueeze(0), pcs[:k]], dim=0).T    # [4096, k+1]
         Q, R = torch.linalg.qr(A, mode="reduced")
-        if not torch.all(torch.diagonal(R).abs() > 1e-10 * m_norm):
+        if not torch.all(torch.diagonal(R).abs() > 1e-10 * d_norm):
             raise RuntimeError(f"rank-deficient QR (k={k}): diag(R)={torch.diagonal(R).tolist()}")
-        # Orthonormality + mean-in-span gates.
+        # Orthonormality + leading-direction-in-span gates.
         eye_err = float((Q.T @ Q - torch.eye(k + 1, dtype=torch.float64)).abs().max())
-        proj_m = Q @ (Q.T @ m)
-        span_err = float(torch.linalg.norm(m - proj_m) / m_norm)
+        proj_d = Q @ (Q.T @ d)
+        span_err = float(torch.linalg.norm(d - proj_d) / d_norm)
         if eye_err > 1e-5 or span_err > 1e-5:
             raise RuntimeError(f"ORTHONORMALITY GATE FAILED (k={k}): "
-                               f"||QtQ-I||={eye_err:.2e} mean-span rel={span_err:.2e}")
+                               f"||QtQ-I||={eye_err:.2e} dir-span rel={span_err:.2e}")
         out[k] = {"Q": Q.float(), "tvec": (Q.T @ g64).float(),
                   "eye_err": eye_err, "span_err": span_err}
-    out["diag"] = {"m_norm": m_norm, "g_norm": float(torch.linalg.norm(g64)),
+    g_norm = float(torch.linalg.norm(g64))
+    m_norm = float(torch.linalg.norm(m))
+    out["diag"] = {"m_norm": m_norm, "g_norm": g_norm, "d_norm": d_norm,
+                   "d_over_g": d_norm / g_norm, "mean_mode": mean_mode,
                    "sv_top8": S[:8].float().tolist(),
-                   "cos_m_g": float((m @ g64) / (m_norm * torch.linalg.norm(g64)))}
+                   "cos_m_g": float((m @ g64) / (m_norm * g_norm))}
     return out
 
 
@@ -191,15 +206,16 @@ def main():
                                               ("stable_rank", "rank90", "participation_ratio", "n_pca50")})
                     did_selfcheck = True
                 gate_hits += consistency_gate(x, task, icl, role, cap_layer, ref)
-                banks[task][cap_layer - 1] = subspaces_for_task(x, g)
+                banks[task][cap_layer - 1] = subspaces_for_task(x, g, args.mean_mode)
             del data, pre
         for task in args.tasks:
             assert set(banks[task]) == set(range(N_EDIT_LAYERS))
             torch.save({"sandbox": True, "cell": cell, "icl_index": icl, "token_role": role,
-                        "task": task, "ks": KS,
+                        "task": task, "ks": KS, "mean_mode": args.mean_mode,
                         "subspaces_by_edit_layer": banks[task],
                         "config": {"preimages_root": str(args.preimages_root),
-                                   "basis": "QR([task-mean, top-k centered PCs]), fp64 SVD/QR",
+                                   "basis": f"QR([{'task-mean' if args.mean_mode == 'raw' else 'task-mean − grand mean'}, "
+                                            "top-k centered PCs]), fp64 SVD/QR",
                                    "tvec": "Q^T (grand mean over all 4590 pre-images)"}},
                        out_paths[task])
         report["cells"][cell] = {"tasks_written": args.tasks}

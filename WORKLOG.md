@@ -12,10 +12,12 @@ tntocdsxotlhah (RTX PRO 4500 Blackwell $0.74/hr, public runpod/pytorch
 2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 image + volume fv env, allowedCudaVersions 13.0).
 **Status:** IN PROGRESS (GPU sweep running).
 
-**What (user spec 2026-07-28):** are the per-task pre-image SUBSPACES more causally complete
-than Stream W's single directions? For k ∈ {2,3,4} (+ a k=0 bridge arm), ablation subspace =
-QR-orthonormalized span{task-mean pre-image, top-k centered PCs} of the task's 170 per-prompt-FV
-pre-images (part-2 stacks) at each Stream W cell × edit layer (b ↔ capture b+1). Two ops:
+**What (user spec 2026-07-28; leading-direction REDEFINED 2026-07-29, see below):** are the
+per-task pre-image SUBSPACES more causally complete than Stream W's single directions? For
+k ∈ {2,3,4} (+ a k=0 bridge arm), ablation subspace = QR-orthonormalized
+span{**task-mean − grand-mean** pre-image offset, top-k centered PCs} of the task's 170
+per-prompt-FV pre-images (part-2 stacks) at each Stream W cell × edit layer (b ↔ capture b+1).
+Two ops:
 **zero** (remove the subspace component) and **mean** (clamp to the component of the grand mean
 over ALL 27 tasks' 4590 pre-images — user-chosen matched population). Arms
 `pcasub_{matched|icl10}[_cf]_k{0,2,3,4}_{zero|mean}` (32/task); everything else = Stream W
@@ -33,43 +35,31 @@ advisory max|Δ|=0.0073 on smoke), `plot_oneshot_pca_subspace_ablation.py`.
 Output → `results/sandbox/perprompt_ridge_pilot/oneshot_pca_subspace_ablation/`;
 logs `logs/sandbox_perprompt/pca_subspace_ablation/` (markers RUN.done/RUN.failed).
 
-**GPU smoke passed** (antonym, 3 arms, 8 prompts, `--debug_invariant` hook asserts silent).
-Full sweep DONE: 224/224 npz (7 tasks × 32 arms), ~2.4 h on one pod (~$1.8), all 7 per-task
-prompt-identity gates EXACT, no failed asserts; pod TERMINATED (verified — only the two
-long-lived CPU pods remain). Figures: `figures/heatmap_all_arms__{zero,mean}.png` (per-op color
-scale — zero-op damage is ~15× mean-op; scale printed in suptitle) + `ktrend_summary.png`
-(min-over-L vs k with Stream W single-direction reference lines).
+**RUN 1 (2026-07-28, leading direction = RAW task-mean pre-image) — SUPERSEDED & OVERWRITTEN.**
+The sweep itself was clean (224/224 npz, gates EXACT, ~2.4 h/$1.8, pod tntocdsxotlhah
+terminated), but the user challenged the results (cf nearly as damaging as same-task on the
+zero op; late-start L24 > L0 non-monotonicity) and the diagnosis confirmed a DEFINITIONAL flaw:
+raw-space pre-image POINTS carry the reconstruction offsets (x̄·std + μ), so the raw task-mean
+direction was ~the population-mean activation (cos(m_t, g) = 0.99, cross-task pairwise cos
+0.97–0.98 at early layers; ‖m_t‖ ≈ ‖g‖) — its zero-op removes a task-GENERIC component
+(matched final_cue −12.2 vs cf −9.7, vs Stream W's 4–9× specificity; Stream W is immune
+because it inverts a target DIRECTION, dx = std·dz, where no mean term belongs). The late-L
+blow-up (capitalize_first −5.7 @L0 vs −24.8 @L24) came from ripping the full-norm shared
+component out right before readout vs 24 layers of self-repair. Mean-op results were already
+sensible (they implicitly subtract the offset). **User decision 2026-07-29: leading direction
+redefined to the offset-free task-mean − grand-mean (m_t − g = std·P⁺(ȳ_task − ȳ_all27), exact
+Stream W analog), AND run-1 outputs OVERWRITTEN in place** (same banks/results/figure paths;
+run-1 summaries/figures survive only in git history ≤ 064cf65). Verified new geometry:
+cross-task |cos(d_A, d_B)| mean ≈ 0.16 (was 0.97+); ‖d‖/‖g‖ 0.025 (L0 cues)–2.5. Lesson
+recorded in DECISIONS: surface point-vs-direction/offset consequences BEFORE compute; the user
+gates such definitional choices.
 
-**Findings (7-task mean Δ log p, min over start layers; k=0 ≈ k=4 throughout):**
-- **k is causally irrelevant: adding the top-2/3/4 within-task PCs on top of the task-mean
-  pre-image direction changes almost nothing in either op** (e.g. matched/zero target1 −3.98 →
-  −3.95 from k=0→4; every mean-op curve flat in k). The extra pre-image dimensions that the
-  part-2 study found (n_pca50 ≈ 12–26) carry ~no additional causal load at these sites — at
-  least not their top-4; the causal content of the pre-image stack is concentrated in its mean.
-- **The zero op is catastrophic but almost task-UNSPECIFIC**, unlike Stream W's TSVD-preimage
-  removal: matched final_cue −12.2 vs cf −9.7..−10.0 (ratio ~1.25×; Stream W preimage arms ran
-  4–9× specific), target1 −3.96 vs cf −3.3, cue1 −2.6 vs cf −2.7 (cue1 was ≈0 in every Stream W
-  arm!), icl10/zero final_cue up to −15.7 (k=0, late L). Reading: the task-mean per-prompt
-  pre-image contains a large task-GENERIC component (all-task grand mean; raw pre-image rows
-  have mean pairwise cos 0.58–0.82), and clamping that shared coordinate to 0 pushes h far
-  off-manifold at every site. Same sign-of-op lesson as the persona-vector study: projection-
-  to-0 is not interpretable when the population mean sits far from 0 — the MEAN op is the
-  meaningful one.
-- **Mean op (clamp to the all-task grand-mean component): small, and the one clearly
-  task-specific effect is at the final cue with icl10 subspaces: −0.97 vs cf −0.15..+0.1**,
-  sustained at ALL start layers incl. late (per-task: word_length −1.79, capitalize_first
-  −1.76 (its cf −1.00 — near-twin cf draw), lowercase_first −1.53, landmark-country −1.37,
-  synonym −0.16). Matched-cell mean op: final_cue only −0.19, target1 −0.14 (driven entirely
-  by landmark-country −0.82; ≈0 elsewhere) — much weaker than Stream W's matched-preimage
-  REMOVAL (−1.78 at target1), i.e. once you only move h to the population-typical value instead
-  of stripping the direction, the demo-label effect largely evaporates; what survives is the
-  query-cue content in the icl10 (last_prompt/pre_label icl10) subspaces.
-- cf caveat unchanged from Stream W: the letter-case tasks draw near-twin counterfactuals.
+**RUN 2 (2026-07-29, task-offset direction) — IN PROGRESS** on pod `fv-pcasub-ablation-2`
+u28o7c902hyofg (same recipe): smoke (debug_invariant) + full 224-npz sweep, markers in
+`logs/sandbox_perprompt/pca_subspace_ablation/`.
 
-**Next:** awaiting user direction. Candidates: (a) mean-op with PER-TASK mean target (tests
-whether moving between task means transfers the task, cf. switch-steering); (b) k beyond 4
-(the part-2 n_pca50 says ~12–26 dims matter for reconstruction); (c) same study in the paired
-logit-gap regime.
+**Findings:** (pending run 2)
+**Next:** (pending)
 
 ---
 

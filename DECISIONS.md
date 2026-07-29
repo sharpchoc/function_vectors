@@ -2,13 +2,23 @@
 
 ## 2026-07-28 — Pre-image SUBSPACE ablation conventions (SANDBOX PP-preimage part 3)
 
-- **Subspace definition (user-decided):** ablation subspace = QR-orthonormalized
-  span{task-mean pre-image, top-k CENTERED PCs} of the task's 170 per-prompt-FV pre-images,
-  k ∈ {0,2,3,4} (k=0 = mean direction only; QR is sequential so subspaces are nested and the
-  first basis vector is always the unit task-mean). Mean-replacement target = the subspace
-  component of the grand mean over ALL 27 tasks' 4590 pre-images at that cell (matched
-  population). Banks: `fit_preimage_pca_subspace_banks.py`, fp64 SVD/QR on CPU (CUDA gesvdj
-  rule stays moot).
+- **Subspace definition (user-decided; leading direction REDEFINED 2026-07-29):** ablation
+  subspace = QR-orthonormalized span{**m_t − g**, top-k CENTERED PCs} of the task's 170
+  per-prompt-FV pre-images, k ∈ {0,2,3,4}; m_t = task-mean pre-image, g = grand mean over ALL
+  27 tasks' 4590 pre-images at that cell. QR is sequential so subspaces are nested and the
+  first basis vector is always unit(m_t − g). Mean-replacement target = the subspace component
+  of g (matched population). Banks: `fit_preimage_pca_subspace_banks.py --mean_mode taskoffset`
+  (the default), fp64 SVD/QR on CPU (CUDA gesvdj rule stays moot).
+- **NEVER use a raw-space pre-image POINT mean as an ablation direction.** Pre-image points are
+  reconstructed as x_raw = (x_c + x̄)·std + μ, so their mean is dominated by the population-mean
+  activation (measured cos(m_t, g) = 0.99, cross-task cos 0.97+ at early layers): its removal
+  is task-GENERIC devastation with a pathological late-L profile, and counterfactual controls
+  degenerate (~1.25× vs Stream W's 4–9×). Directions must be built from DIFFERENCES of points
+  (offsets cancel: m_t − g = std·P⁺(ȳ_task − ȳ_all)) — the same reason Stream W's dx = std·dz
+  target-inverse never contained μ. The first run used the raw mean; the user was not shown
+  this consequence beforehand (they should have been — definitional/geometry choices are
+  user-gated like metric choices, 2026-07-14) and mandated redefinition + in-place OVERWRITE
+  of run-1 outputs (recoverable only from git history ≤ 064cf65).
 - **Zero-op vs mean-op, the recurring lesson:** clamping a subspace containing the task-mean
   pre-image to ZERO is devastating but almost task-unspecific (cf arms ≈ same damage) — the
   mean pre-image carries a big all-task shared component, so proj-to-0 is an off-manifold
