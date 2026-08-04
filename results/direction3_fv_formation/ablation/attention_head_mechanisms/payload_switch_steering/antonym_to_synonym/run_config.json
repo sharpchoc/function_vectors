@@ -1,0 +1,74 @@
+{
+  "direction": "antonym_to_synonym",
+  "source": "antonym",
+  "target": "synonym",
+  "arms": [
+    "replace_both",
+    "replace_target_only"
+  ],
+  "layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27
+  ],
+  "alphas": [
+    0.5,
+    1.0,
+    2.0,
+    4.0
+  ],
+  "n_test": 100,
+  "seed": 42,
+  "batch_size": 100,
+  "op": "step1 (replace_both only): v += (c(tgt->src) - v@B_src^T)@B_src; step2: v += (alpha*c(tgt->tgt) - v@B_tgt^T)@B_tgt; single edit layer; site = demo label token; edit layer L uses capture stack row L+1",
+  "means_path": "/workspace/function_vectors/artifacts/payload_switch_steering/tenshot_lastlabel_means.pt",
+  "means_meta": {
+    "basis_files": {
+      "synonym": "/workspace/function_vectors/artifacts/payload_subspaces/synonym_pooled40heads_k4.pt",
+      "antonym": "/workspace/function_vectors/artifacts/payload_subspaces/antonym_pooled40heads_k4.pt"
+    },
+    "counts": {
+      "synonym": 130,
+      "antonym": 130
+    },
+    "role": "last_label_token",
+    "splits": [
+      "train"
+    ],
+    "activations_root": "/workspace/function_vectors/artifacts/residual_activations/gptj_56tasks_170prompts_4tokens",
+    "layer_convention": "stack entry 0 = embedding; entry b+1 = output of transformer.h.b",
+    "git_commit": "450c7335a23b82fac798ba90dd2d670ad798b736"
+  },
+  "clean_logit_diff": -0.029130859300494194,
+  "pool_sizes": {
+    "labels": 544,
+    "queries": 1003
+  },
+  "model_name": "EleutherAI/gpt-j-6b",
+  "git_commit": "450c7335a23b82fac798ba90dd2d670ad798b736"
+}
