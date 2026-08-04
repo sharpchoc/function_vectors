@@ -1,16 +1,14 @@
 #!/usr/bin/env python
 """Comparison: payload-subspace REPLACEMENT steering vs the old paired-Delta method.
 
-Both studies use the SAME 100 eval prompts, the same demo-label-token site and the same
-readout (logit(target_gold) - logit(source_gold) at the final position; clean baselines agree
-to 0.001), so curves are directly overlayable. Left column: layer profiles at the shared
-alphas (solid = new subspace replacement, dashed = old paired-Delta injection). Right column:
-effectiveness-vs-strength (peak over layers vs alpha, including the old study's alpha=8).
-
-Caveat rendered in the suptitle: alpha scales different objects (old: a full-rank 4096-d
-difference-of-means Delta_label; new: the k=4 subspace coords of the 10-shot target mean),
-so per-alpha overlays are a convenience pairing, not an equivalence — the right column's
-best-over-alpha view is the strength-free comparison.
+2x2 grid, rows = directions (synonym->antonym, antonym->synonym), left column = OLD
+paired-Delta injection (oneshot_switch_logit, demo-label site), right column = NEW k=4
+subspace replacement. Each panel shows its own method's full alpha fan (layer profile of
+mean logit(target_gold) - logit(source_gold), ±ci95 band, dashed alpha=0 baseline), plus the
+OTHER method's best curve (highest peak over layers) dotted in crimson for direct reading.
+Y-limits shared within each row. Both studies use the SAME 100 eval prompts and metric
+(clean baselines agree to 0.001), so curves are directly overlayable; note alpha scales
+different objects (full-rank Delta vs k=4 subspace coords).
 """
 import argparse
 import json
@@ -40,6 +38,7 @@ def parse_args():
 
 
 def load_new(root, direction, arm):
+    """{alpha: (layers, mean, ci95)}, baseline — new subspace-replacement npz."""
     z = np.load(root / direction / f"{arm}_sweep.npz", allow_pickle=False)
     contrast = z["logit_tgt"] - z["logit_src"]  # (L, A, N)
     out = {}
@@ -52,6 +51,7 @@ def load_new(root, direction, arm):
 
 
 def load_old(root, direction, site="label"):
+    """{alpha: (layers, mean, ci95)}, baseline — old paired-Delta logit_diff.json."""
     data = json.loads((root / direction / "logit_diff.json").read_text())
     by_alpha = {}
     for c in data["conditions"].values():
@@ -66,63 +66,66 @@ def load_old(root, direction, site="label"):
     return out, float(data["baseline_alpha0"]["mean_logit_diff"])
 
 
+def best_alpha(series):
+    return max(series, key=lambda a: np.nanmax(series[a][1]))
+
+
+def plot_panel(ax, series, baseline, title, neighbour=None):
+    alphas = sorted(series)
+    cmap = plt.cm.viridis(np.linspace(0, 0.9, len(alphas)))
+    for col, alpha in zip(cmap, alphas):
+        x, y, ci = series[alpha]
+        ax.plot(x, y, "-o", color=col, ms=3, lw=1.5, label=f"α={alpha:g}")
+        ok = ~np.isnan(ci)
+        if ok.any():
+            ax.fill_between(np.asarray(x)[ok], (y - ci)[ok], (y + ci)[ok], color=col, alpha=0.10)
+    ax.axhline(baseline, ls="--", color="grey", lw=1.4, label=f"α=0 baseline ({baseline:.2f})")
+    ax.axhline(0, color="black", lw=0.8, alpha=0.5)
+    if neighbour is not None:
+        nx, ny, nlabel = neighbour
+        ax.plot(nx, ny, ls=":", color="crimson", lw=2.0, marker="x", ms=4, label=nlabel)
+    ax.set_xlabel("injection layer")
+    ax.set_ylabel("logit(target) − logit(source)")
+    ax.set_title(title, fontsize=10)
+    ax.grid(alpha=0.25)
+    ax.legend(fontsize=7, ncol=2)
+
+
 def main():
     args = parse_args()
     fig, axes = plt.subplots(len(args.directions), 2,
-                             figsize=(13.5, 4.4 * len(args.directions)), squeeze=False)
+                             figsize=(13.5, 4.6 * len(args.directions)), squeeze=False)
     for i, direction in enumerate(args.directions):
-        new_series, new_base = load_new(args.new_root, direction, args.arm)
         old_series, old_base = load_old(args.old_root, direction)
+        new_series, new_base = load_new(args.new_root, direction, args.arm)
 
-        # ---- left: layer profiles at the shared alphas ----
-        ax = axes[i][0]
-        shared = sorted(set(new_series) & set(old_series))
-        cmap = plt.cm.viridis(np.linspace(0, 0.9, len(shared)))
-        for col, alpha in zip(cmap, shared):
-            x, y, ci = new_series[alpha]
-            ax.plot(x, y, "-o", color=col, ms=3, lw=1.8, label=f"new α={alpha:g}")
-            ax.fill_between(x, y - ci, y + ci, color=col, alpha=0.10)
-            ox, oy, _ = old_series[alpha]
-            ax.plot(ox, oy, "--s", color=col, ms=3, lw=1.2, alpha=0.85, label=f"old α={alpha:g}")
-        ax.axhline(new_base, ls="--", color="grey", lw=1.4, label=f"α=0 baseline ({new_base:.2f})")
-        ax.axhline(0, color="black", lw=0.8, alpha=0.5)
-        ax.set_xlabel("injection layer")
-        ax.set_ylabel("logit(target) − logit(source)")
-        ax.set_title(f"{direction.replace('_', ' ')} — layer profiles @ demo label token\n"
-                     "solid = subspace replacement (new), dashed = paired-Δ injection (old)",
-                     fontsize=10)
-        ax.grid(alpha=0.25)
-        ax.legend(fontsize=6.5, ncol=2)
+        ba_old, ba_new = best_alpha(old_series), best_alpha(new_series)
+        best_old = (old_series[ba_old][0], old_series[ba_old][1], f"best old (α={ba_old:g})")
+        best_new = (new_series[ba_new][0], new_series[ba_new][1], f"best new (α={ba_new:g})")
 
-        # ---- right: peak over layers vs alpha (all alphas each method has) ----
-        ax = axes[i][1]
-        for series, base, col, lab in ((new_series, new_base, "tab:blue", "new: k=4 subspace replacement"),
-                                       (old_series, old_base, "tab:red", "old: paired-Δ injection")):
-            alphas = sorted(series)
-            peaks = [np.nanmax(series[a][1]) for a in alphas]
-            ax.plot([0] + alphas, [base] + peaks, "-o", color=col, lw=1.8, ms=5, label=lab)
-            for a, pk in zip(alphas, peaks):
-                bl = int(series[a][0][np.nanargmax(series[a][1])])
-                ax.annotate(f"L{bl}", (a, pk), textcoords="offset points", xytext=(0, 5),
-                            fontsize=6.5, color=col, ha="center")
-        ax.axhline(0, color="black", lw=0.8, alpha=0.5)
-        ax.axhline(new_base, ls="--", color="grey", lw=1.2, label=f"α=0 baseline ({new_base:.2f})")
-        ax.set_xlabel("steering strength α")
-        ax.set_ylabel("peak-over-layers logit(target) − logit(source)")
-        ax.set_title(f"{direction.replace('_', ' ')} — effectiveness vs strength\n"
-                     "(best injection layer annotated)", fontsize=10)
-        ax.set_xscale("symlog", linthresh=1)
-        ax.set_xticks([0, 0.5, 1, 2, 4, 8])
-        ax.set_xticklabels(["0", "0.5", "1", "2", "4", "8"])
-        ax.grid(alpha=0.25)
-        ax.legend(fontsize=7)
+        dname = direction.replace("_", " ")
+        plot_panel(axes[i][0], old_series, old_base,
+                   f"{dname}\nOLD: paired-Δ injection @ demo label token", neighbour=best_new)
+        plot_panel(axes[i][1], new_series, new_base,
+                   f"{dname}\nNEW: k=4 subspace replacement @ demo label token", neighbour=best_old)
 
-    fig.suptitle("Task-switch steering @ demo label token: new unpaired subspace replacement "
-                 f"({args.arm}) vs old paired-Δ injection\n"
-                 "identical eval prompts & metric; α scales different objects "
-                 "(k=4 subspace coords vs full-rank Δ) — right column is the strength-free view",
+        # shared y-limits across the row (both methods' bands + baselines + neighbours)
+        lo, hi = [], []
+        for series, base in ((old_series, old_base), (new_series, new_base)):
+            for x, y, ci in series.values():
+                ci0 = np.nan_to_num(ci, nan=0.0)
+                lo.append(np.nanmin(y - ci0)); hi.append(np.nanmax(y + ci0))
+            lo.append(base); hi.append(base)
+        pad = 0.06 * (max(hi) - min(lo))
+        for ax in axes[i]:
+            ax.set_ylim(min(lo) - pad, max(hi) + pad)
+
+    fig.suptitle("Task-switch steering @ demo label token — old paired-Δ injection (left) vs "
+                 f"new unpaired k=4 subspace replacement ({args.arm}, right)\n"
+                 "identical eval prompts & metric; crimson dotted = the other panel's best curve; "
+                 "α scales different objects (full-rank Δ vs k=4 subspace coords)",
                  fontsize=10.5)
-    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
     figdir = args.new_root / "figures"
     figdir.mkdir(parents=True, exist_ok=True)
     out = figdir / f"fig_payload_switch_vs_paired_{args.arm}.png"
