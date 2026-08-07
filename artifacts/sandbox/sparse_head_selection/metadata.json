@@ -1,0 +1,152 @@
+{
+  "sandbox": true,
+  "task_split_path": "/workspace/function_vectors/task_splits/abstractive_train_test_tasks_29.json",
+  "task_split_key": "train_tasks",
+  "tasks": [
+    "national_parks",
+    "english-spanish",
+    "next_capital_letter",
+    "commonsense_qa",
+    "capitalize_last_letter",
+    "country-capital",
+    "english-french",
+    "ag_news",
+    "sentiment",
+    "present-past",
+    "person-occupation",
+    "prev_item",
+    "capitalize_second_letter",
+    "lowercase_last_letter",
+    "singular-plural",
+    "person-sport",
+    "park-country",
+    "english-german",
+    "person-instrument",
+    "next_item"
+  ],
+  "n_tasks": 20,
+  "query_split": "valid (cap 100, min 80; short tasks topped up from train)",
+  "n_datapoints": {
+    "national_parks": 80,
+    "english-spanish": 100,
+    "next_capital_letter": 80,
+    "commonsense_qa": 100,
+    "capitalize_last_letter": 80,
+    "country-capital": 80,
+    "english-french": 100,
+    "ag_news": 100,
+    "sentiment": 100,
+    "present-past": 80,
+    "person-occupation": 80,
+    "prev_item": 80,
+    "capitalize_second_letter": 80,
+    "lowercase_last_letter": 80,
+    "singular-plural": 80,
+    "person-sport": 80,
+    "park-country": 80,
+    "english-german": 100,
+    "person-instrument": 80,
+    "next_item": 80
+  },
+  "datapoint_sources": {
+    "national_parks": {
+      "valid": 41,
+      "train": 39
+    },
+    "english-spanish": {
+      "valid": 100,
+      "train": 0
+    },
+    "next_capital_letter": {
+      "valid": 74,
+      "train": 6
+    },
+    "commonsense_qa": {
+      "valid": 100,
+      "train": 0
+    },
+    "capitalize_last_letter": {
+      "valid": 74,
+      "train": 6
+    },
+    "country-capital": {
+      "valid": 18,
+      "train": 62
+    },
+    "english-french": {
+      "valid": 100,
+      "train": 0
+    },
+    "ag_news": {
+      "valid": 100,
+      "train": 0
+    },
+    "sentiment": {
+      "valid": 100,
+      "train": 0
+    },
+    "present-past": {
+      "valid": 27,
+      "train": 53
+    },
+    "person-occupation": {
+      "valid": 75,
+      "train": 5
+    },
+    "prev_item": {
+      "valid": 21,
+      "train": 59
+    },
+    "capitalize_second_letter": {
+      "valid": 72,
+      "train": 8
+    },
+    "lowercase_last_letter": {
+      "valid": 74,
+      "train": 6
+    },
+    "singular-plural": {
+      "valid": 19,
+      "train": 61
+    },
+    "person-sport": {
+      "valid": 29,
+      "train": 51
+    },
+    "park-country": {
+      "valid": 68,
+      "train": 12
+    },
+    "english-german": {
+      "valid": 100,
+      "train": 0
+    },
+    "person-instrument": {
+      "valid": 46,
+      "train": 34
+    },
+    "next_item": {
+      "valid": 21,
+      "train": 59
+    }
+  },
+  "mean_acts_root": "/workspace/function_vectors/artifacts/multitask_aie_heads_varicl",
+  "loss": "raw -log p(full label), teacher-forced, injection ONCE at cue token only",
+  "optimizer": {
+    "name": "AdamW",
+    "lr": 0.01,
+    "batch_size": 128,
+    "micro_batch_size": 32,
+    "max_epochs": 30,
+    "patience": 3,
+    "earlystop_frac": 0.1,
+    "init_c": 0.5,
+    "clip": [
+      0.0,
+      1.0
+    ]
+  },
+  "cv": "leave-one-task-out over the 20 train tasks",
+  "seed": 42,
+  "dtype": "bf16"
+}
