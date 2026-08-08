@@ -1,5 +1,26 @@
 # DECISIONS
 
+## 2026-08-08 — Sparse-optimization head selection + vanilla_sparse_opt23 are SANDBOX-only
+
+- `src/sandbox/sparse_head_selection/` implements Hu et al. 2025 (arXiv:2505.05145 §3.1)
+  joint sparse head selection on GPT-J (73 heads at c>0.2, λ=0.01 by leave-one-task-out CV),
+  and **`vanilla_sparse_opt23`** = the SANDBOX FV definition built from the 23 heads with
+  c > 0.8: UNWEIGHTED sum of varicl mean head outputs (canonical stage-2 construction, the
+  learned coefficients pick heads only). FV set:
+  `artifacts/function_vectors/gpt-j/sandbox/vanilla_sparse_opt23/`.
+- Despite clearly beating canonical AIE selection on held-out tasks (test-task best-layer
+  zero-shot mean 0.600 vs 0.400 for varicl top-40; LOTO train-task 0.421 vs 0.193), this is
+  a SANDBOX trial: "function vectors" still means `train_varicl_top40` (2026-07-10) and
+  nothing may build on the sparse sets without explicit user promotion. Known weakness:
+  loses on lexical-relation tasks (antonym, synonym).
+- Method conventions fixed by the user: zero-shot queries from valid split (cap 100 / min 80,
+  train top-up), loss = raw −log p(full label) over greedy contextualized label tokens,
+  injection ONCE at the cue token (block-9 output), c clipped to [0,1], LOTO CV for λ.
+- Lesson: HF gradient checkpointing breaks (CheckpointError, saved-tensor count mismatch)
+  when a forward hook injects a grad-requiring tensor inside a checkpointed block — use
+  micro-batch gradient accumulation instead (frozen weights ⇒ only post-injection layers
+  store activations).
+
 ## 2026-07-28 — Pre-image SUBSPACE ablation conventions (SANDBOX PP-preimage part 3)
 
 - **Subspace definition (user-decided; leading direction REDEFINED 2026-07-29):** ablation

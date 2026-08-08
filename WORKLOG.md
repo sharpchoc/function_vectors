@@ -5,6 +5,56 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-06→08 — Stream sparse-heads: SANDBOX sparse-optimization head selection + vanilla_sparse_opt23 FV
+
+**Owner:** Claude Code bg session (worktree `.claude/worktrees/sparse-heads-fv23`, branch
+`worktree-sparse-heads-fv23` merged into `claude-sandbox-sparse-heads`). GPU pods (both mine,
+both TERMINATED): fv-sparse-heads mlxcqy1vtfm5yv (~9.3 h, ~$6.7), fv-sparse-fv23-eval
+rgegd6mmyz2w32 (~2.3 h, ~$1.7). **Status:** DONE. NOTE: the main checkout's WORKLOG/DECISIONS
+hold an older uncommitted draft of this entry (phase 1 only) — this one supersedes it.
+
+**Phase 1 (user spec, choices gated 2026-08-06):** Hu et al. 2025 (arXiv:2505.05145 §3.1)
+sparse-optimization head selection on GPT-J, SANDBOX only. c ∈ [0,1]^448 over all heads
+weighting out_proj-projected varicl mean head outputs, injected ONCE at the cue token
+(block-9 output) of zero-shot "Q: x\nA:" prompts; loss = raw −log p(full label) (greedy
+contextualized label tokens, teacher-forced, label positions NOT intervened) + λ‖c‖₁;
+AdamW lr .01, batch 128 (micro-batch 32 accumulation — HF gradient checkpointing is
+INCOMPATIBLE with a grad-carrying hook injection inside a checkpointed block:
+CheckpointError saved-tensor mismatch), clamp [0,1]/step. Queries: valid split cap 100 / min
+80, train-split top-up (NB repo valid split is ~9% of data → 1720 points, 8 tasks with heavy
+top-up). λ ∈ {.01,.02,.05,.1,.2} by LEAVE-ONE-TASK-OUT CV over the 20 train tasks; rule =
+largest λ within 1pt of best mean LOTO acc → λ=0.01. Gates: indicator-c over canonical
+top-40 rebuilds stored train_varicl_top40 FVs (worst rel_err 2.9e-4).
+Final c: 73 heads >0.2 (bimodal: 355 heads <0.01 of which 309 exactly 0; survivors graded
+0.2–1.0, only 6 ≥0.95); overlap 19/40 with canonical. LOTO headline @L9: sparse 0.421 vs
+canonical top-40 unweighted 0.193 vs no-interv 0.015 (wins 17/20 train tasks).
+Outputs: `artifacts/sandbox/sparse_head_selection/` (selection.json, coeffs_final.pt,
+metadata.json, baselines.json, fold_results/), `results/sandbox/sparse_head_selection/`.
+
+**Phase 2 (user spec 2026-08-07): `vanilla_sparse_opt23` SANDBOX FV definition** = UNWEIGHTED
+sum (canonical stage-2 construction, coefficients select only) of the 23 heads with c > 0.8
+(6 early L4–L8, 11 mid L9–L17, 6 late L18–L26; 10/23 canonical; late heads (17,1)(18,3)
+(20,1)(23,7)(25,3)(26,9)(26,14) are all non-canonical). Heads artifact
+`artifacts/sandbox/sparse_head_selection/vanilla_sparse_opt23_heads.{pt,json}`; FVs for all
+29 tasks at `artifacts/function_vectors/gpt-j/sandbox/vanilla_sparse_opt23/` (README marks
+sandbox status). Evaluated on the 9 HELD-OUT test tasks with the exact
+heldout_varicl_nheads_sweep protocol (same filter sets/seed/layer sweep;
+`src/sandbox/sparse_head_selection/eval_vanilla_sparse_fv_heldout.py`) and overlaid on the 9
+per-task PNGs (`plot_nheads_sweep_with_baselines.py` gained `--extra_series`).
+
+**FINDINGS (9 held-out test tasks, best layer per curve):** mean best zero-shot 0.600 for
+sparse-23 vs 0.400/0.393/0.397/0.247 for varicl top-40/30/20/10 — wins 7/9, transformative
+on lowercase_first_letter 0.73-vs-0.02, product-company 0.77-vs-0.15, country-currency
+0.50-vs-0.18, word_length 0.09-vs-0.00 (first nonzero); LOSES the two lexical-relation
+tasks antonym (0.46 vs 0.63) and synonym (0.15 vs 0.24). 10-shot-shuffled ~tied (0.789 vs
+0.784) except synonym degrades. Tables: `heldout_varicl_nheads_sweep/vanilla_sparse_opt23_
+{summary.json,vs_topN.csv}` + per-task `vanilla_sparse_opt23_by_layer.json`.
+
+**Next:** user to direct (candidates: §3.2 mean-ablation refinement of the 73/23 sets;
+antonym/synonym failure analysis; weighted-c FV variant; promotion decision).
+
+---
+
 ## 2026-07-29 — Stream cue-attn part 2: L9H14 position-free content direction, layer x token maps
 
 **Owner:** Claude Code session (CPU pod, GPT-J fp32 on CPU).
