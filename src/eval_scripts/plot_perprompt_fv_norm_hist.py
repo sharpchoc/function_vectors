@@ -48,6 +48,8 @@ def parse_args():
     p.add_argument("--pooled_heads_path", type=Path,
                    default=ARTIFACTS_ROOT / "multitask_aie_heads_varicl" / "multitask_top_aie_heads.pt")
     p.add_argument("--variants", nargs="+", default=["fixed10", "varicl4to10"])
+    p.add_argument("--head_label", type=str, default="pooled top-40 heads",
+                   help="Head-set name shown in figure titles.")
     p.add_argument("--out_dir", type=Path,
                    default=FV_FORMATION_DIR / "attention_head_analysis" / "perprompt_fv_norms")
     return p.parse_args()
@@ -71,6 +73,8 @@ def main():
     args = parse_args()
     heads = [(int(l), int(h)) for l, h, _ in
              torch.load(args.pooled_heads_path, weights_only=False)["top_heads"]]
+    assert heads and len(set(heads)) == len(heads), "head list must be non-empty and unique"
+    print(f"head set: {len(heads)} heads from {args.pooled_heads_path}")
     w_o = load_w_o_slices(heads)
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -119,7 +123,8 @@ def main():
         ax.set_xlabel(r"$\|v^j_A\|_2$  (per-prompt function vector norm)")
         ax.set_ylabel("prompts")
         ax.set_title(f"Per-prompt FV norms, all 27 tasks pooled ({len(pooled)} prompts) — {variant}\n"
-                     r"$v^j_A = \sum_{h\in H} W_O\,h(p^j_A)$ at the final cue token, pooled top-40 heads",
+                     r"$v^j_A = \sum_{h\in H} W_O\,h(p^j_A)$ at the final cue token, "
+                     f"{args.head_label}",
                      fontsize=10.5, loc="left")
         ax.legend(fontsize=9)
         ax.grid(alpha=0.25)
@@ -155,8 +160,8 @@ def main():
         ax.set_xlabel(r"median $\|v^j_A\|$ $\pm$ IQR", fontsize=8)
         ax.tick_params(labelsize=7)
         ax.grid(alpha=0.25)
-        fig.suptitle(f"Per-prompt FV norm by task ({variant}) — panels sorted by median; "
-                     "shared bins; last panel = summary", fontsize=12)
+        fig.suptitle(f"Per-prompt FV norm by task ({variant}, {args.head_label}) — panels "
+                     "sorted by median; shared bins; last panel = summary", fontsize=12)
         fig.tight_layout(rect=(0, 0, 1, 0.97))
         out = args.out_dir / f"fvnorm_hist_pertask_{variant}.png"
         fig.savefig(out); plt.close(fig)
