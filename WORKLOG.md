@@ -52,6 +52,20 @@ summary PNG). Branch `claude-sandbox-sparse-pcs`. **Next:** user to direct (cand
 eval selected PCs on the 9 held-out test tasks; compare PC subspace vs head subspace;
 interpret the late-PC stragglers).
 
+**Top-29 projection eval addendum (2026-08-11, pod fv-pc-proj-eval jxg9vnqvmlc6gq RTX 5090
+~20 min TERMINATED):** NEW `eval_pc_projection.py` — the loto_vs_canonical protocol (same
+1720 zero-shot datapoints, single cue-token injection @L9, full-label acc) with arm =
+sparse23 fixed10-mean FV orthogonally PROJECTED onto span of the 29 c>0.8 PCs (unweighted).
+Per-task means: no-interv 0.015 / full FV 0.4135 / **top-29 proj 0.3921 (94.8% of full)** /
+83-PC c=1 0.4109. Reproduction gate vs stored baselines: EXACT on all arms/tasks. 15/20
+tasks within ±0.01 of full FV (7 bit-identical); the entire deficit is 3 tasks:
+english-french 0.62→0.33, english-spanish 0.53→0.40, english-german 0.20→0.16 (+
+next_capital_letter 0.025→0.0125) — the translation tasks, exactly the tasks whose
+per-prompt FV stacks need the most PCs (part 14c: 60–64 under sparse23). present-past /
+capitalize_second_letter / person-sport slightly IMPROVE under projection. Outputs:
+`results/sandbox/sparse_pc_selection/top29pc_projection_vs_fullfv.csv`,
+`artifacts/sandbox/sparse_pc_selection/top29pc_projection_eval.json`.
+
 ---
 
 ## 2026-08-10 — Stream cue-attn part 14c: per-task stable rank of stacked per-prompt FVs (both head sets)
