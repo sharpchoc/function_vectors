@@ -66,6 +66,25 @@ capitalize_second_letter / person-sport slightly IMPROVE under projection. Outpu
 `results/sandbox/sparse_pc_selection/top29pc_projection_vs_fullfv.csv`,
 `artifacts/sandbox/sparse_pc_selection/top29pc_projection_eval.json`.
 
+**HELD-OUT test-task eval (2026-08-11, pod fv-pc-testeval 8hwlkxs76322ol RTX 5090 ~25 min
+TERMINATED):** the train-task table above is IN-DISTRIBUTION (user flagged); the real
+generalization test = the 9 test tasks, never in the basis or optimization.
+`capture_perprompt_head_activations.py` gained `--extra_tasks` (appended AFTER the 27 so
+query-selection RNG of existing captures is untouched) to capture product-company +
+country-currency; `eval_pc_projection.py` gained `--task_split_key/--v_means_capture_dir/
+--out_tag` (test v_t built from captures with the exact basis recipe, fp64 + checkpoint W_O).
+***HEADLINE: the train-fit PC subspace does NOT transfer.*** Test-task means: no-interv
+0.004 / full FV 0.453 / top-29 proj 0.203 (44.7% of full) / 83-PC c=1 0.239. Per task:
+capitalize 0.91→0.00 (83-PC only 0.05), lowercase_first_letter 0.74→0.16, product-company
+0.50→0.05; survivors landmark-country 0.575 (unchanged), capitalize_first_letter 0.98→0.93.
+Energy retained by the 83-PC subspace is 61–95% for held-out FVs (vs ≥99.8% train) and the
+steering loss FAR exceeds the energy loss (capitalize keeps 80% of norm, loses ~all
+steering) — the causal content of unseen tasks' FVs lives largely OUTSIDE the train-task
+PC span. The 29 PCs are a faithful compression of the train FVs, not a universal task
+subspace. Outputs: `top29pc_projection_vs_fullfv_testtasks.csv`, `..._pertask_testtasks.png`,
+`top29pc_projection_eval_testtasks.json`; claude artifact "Sparse PC selection: narrowing
+83 task-subspace directions to 29" updated with the held-out section.
+
 ---
 
 ## 2026-08-10 — Stream cue-attn part 14c: per-task stable rank of stacked per-prompt FVs (both head sets)

@@ -28,6 +28,8 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--input_csv", type=Path, default=DEFAULT_DIR / "top29pc_projection_vs_fullfv.csv")
     p.add_argument("--out_png", type=Path, default=DEFAULT_DIR / "top29pc_projection_pertask.png")
+    p.add_argument("--task_note", type=str, default="20 train tasks, same 1720 datapoints "
+                   "(loto_vs_canonical protocol)")
     return p.parse_args()
 
 
@@ -61,8 +63,7 @@ def main():
     ax.grid(alpha=0.25, axis="y")
     ax.legend(fontsize=9)
     ax.set_title("SANDBOX: sparse23 fixed10-mean FV vs its top-29-PC / 83-PC projections — "
-                 "single cue-token injection @L9, 20 train tasks, same 1720 datapoints "
-                 "(loto_vs_canonical protocol)", fontsize=10)
+                 f"single cue-token injection @L9, {args.task_note}", fontsize=10)
     fig.tight_layout()
     args.out_png.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(args.out_png)

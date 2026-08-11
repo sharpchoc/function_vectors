@@ -34,13 +34,11 @@ for p in (REPO_ROOT, REPO_ROOT / "src"):
 from src.sandbox.sparse_head_selection.train_sparse_heads import (
     build_task_datapoints,
     evaluate_points,
-    load_train_tasks,
 )
 from src.sandbox.sparse_head_selection.train_sparse_pcs import (
     build_pc_contributions,
     consistency_check_pc,
     evaluate_points_v,
-    load_basis,
 )
 from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
 from src.utils.paths import ARTIFACTS_ROOT, RESULTS_ROOT
@@ -68,22 +66,74 @@ def parse_args():
     p.add_argument("--min_queries", type=int, default=80)
     p.add_argument("--batch_size", type=int, default=128)
     p.add_argument("--tasks", nargs="+", default=None)
+    p.add_argument("--task_split_key", choices=["train_tasks", "test_tasks"], default="train_tasks")
+    p.add_argument("--v_means_capture_dir", type=Path, default=None,
+                   help="Compute task mean FVs from this fixed10 capture dir (fp64, checkpoint "
+                        "W_O slices - identical recipe to build_fv_pc_basis) for tasks missing "
+                        "from the basis, e.g. the held-out test tasks.")
+    p.add_argument("--out_tag", type=str, default="",
+                   help="Suffix for output filenames (e.g. _testtasks).")
     p.add_argument("--output_root", type=Path, default=DEFAULT_ARTIFACT_ROOT)
     p.add_argument("--results_root", type=Path, default=DEFAULT_RESULTS_ROOT)
     return p.parse_args()
+
+
+def v_means_from_capture(capture_dir, heads, tasks):
+    """Fixed10-capture mean FVs, built exactly like build_fv_pc_basis (fp64, mmap'd W_O)."""
+    import glob as _glob
+    import os as _os
+    hd = 256
+    hf_home = Path(_os.environ.get("HF_HOME", Path.home() / ".cache" / "huggingface"))
+    bins = _glob.glob(str(hf_home / "hub" / "models--EleutherAI--gpt-j-6b" /
+                          "snapshots" / "*" / "pytorch_model.bin"))
+    assert bins, "GPT-J pytorch_model.bin not found in HF cache"
+    sd = torch.load(bins[0], map_location="cpu", weights_only=True, mmap=True)
+    w_o = {(l, h): sd[f"transformer.h.{l}.attn.out_proj.weight"][:, h * hd:(h + 1) * hd].double()
+           for l, h in heads}
+    del sd
+    out = {}
+    for task in tasks:
+        acts = torch.load(capture_dir / f"{task}.pt", weights_only=False)["activations"].double()
+        assert acts.shape[0] == 170, f"{task}: {acts.shape[0]} prompts"
+        fvs = torch.zeros(acts.shape[0], 4096, dtype=torch.float64)
+        for (l, h) in heads:
+            fvs += acts[:, l, h] @ w_o[(l, h)].T
+        out[task] = fvs.mean(dim=0)
+    return out
 
 
 def main():
     args = parse_args()
     set_seed(args.seed)
 
-    tasks = load_train_tasks(args)
+    if args.tasks:
+        tasks = list(args.tasks)
+    else:
+        with open(args.task_split_path) as f:
+            tasks = list(json.load(f)[args.task_split_key])
     print(f"tasks ({len(tasks)}): {tasks}")
 
-    basis = load_basis(args, tasks)
+    basis = torch.load(args.basis_path, map_location="cpu", weights_only=False)
+    missing = [t for t in tasks if t not in basis["v_means"]]
+    if missing:
+        assert args.v_means_capture_dir is not None, \
+            f"tasks missing from basis ({missing}) - pass --v_means_capture_dir"
+        print(f"computing v_means from capture for: {missing}")
+        basis["v_means"].update(
+            v_means_from_capture(args.v_means_capture_dir, basis["heads"], missing))
     c_final = torch.load(args.coeffs_path, map_location="cpu", weights_only=False)["c"]
     sel = torch.nonzero(c_final > args.c_high).flatten().tolist()
     print(f"selected PCs (c > {args.c_high}): n={len(sel)} -> {sel}")
+
+    # Subspace containment of each task FV (basis was fit on TRAIN tasks only, so this is
+    # the geometric generalization diagnostic for held-out tasks).
+    U = basis["U"]
+    U29 = U[sel]
+    for t in tasks:
+        v = basis["v_means"][t]
+        e83 = float((U @ v).norm() ** 2 / v.norm() ** 2)
+        e29 = float((U29 @ v).norm() ** 2 / v.norm() ** 2)
+        print(f"  energy retained {t:28s} 83-PC: {e83:.4f}   top-{len(sel)}-PC: {e29:.4f}")
 
     model, tokenizer, model_config = load_gpt_model_and_tokenizer(args.model_name, device=args.device)
     C = build_pc_contributions(basis, tasks, model.device)
@@ -124,24 +174,28 @@ def main():
     means = {k: float(np.mean([r[k] for r in rows])) for k in keys}
     print("MEANS: " + "  ".join(f"{k}={v:.3f}" for k, v in means.items()))
 
-    # Advisory reproduction check vs the stored reduce-time baselines (same GPU model).
+    # Advisory reproduction check vs the stored reduce-time baselines (same GPU model);
+    # only covers tasks present there (i.e. train tasks).
     with open(args.baselines_path) as f:
         stored = json.load(f)
-    dev = []
+    dev, n_checked = [], 0
     for r in rows:
+        if r["task"] not in stored:
+            continue
         for new_k, old_k in (("no_intervention", "no_intervention"),
                              ("full_sparse23_fv_L9", "full_fv_fixed10"),
                              ("proj83_c1_L9", "proj83_c1")):
+            n_checked += 1
             d = abs(r[new_k] - stored[r["task"]][old_k]["acc"])
             if d > 1e-9:
                 dev.append((r["task"], new_k, r[new_k], stored[r["task"]][old_k]["acc"]))
-    print(f"advisory reproduction check vs stored baselines: "
-          f"{'EXACT on all arms/tasks' if not dev else f'{len(dev)} deviations'}")
+    print(f"advisory reproduction check vs stored baselines ({n_checked} cells): "
+          f"{'EXACT' if not dev else f'{len(dev)} deviations'}")
     for d in dev:
         print("   dev:", d)
 
     args.results_root.mkdir(parents=True, exist_ok=True)
-    out_csv = args.results_root / f"top{len(sel)}pc_projection_vs_fullfv.csv"
+    out_csv = args.results_root / f"top{len(sel)}pc_projection_vs_fullfv{args.out_tag}.csv"
     with open(out_csv, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=["task"] + keys)
         w.writeheader()
@@ -149,7 +203,7 @@ def main():
         w.writerow({"task": "MEAN", **{k: round(means[k], 4) for k in keys}})
     print(f"wrote {out_csv}")
 
-    with open(args.output_root / f"top{len(sel)}pc_projection_eval.json", "w") as f:
+    with open(args.output_root / f"top{len(sel)}pc_projection_eval{args.out_tag}.json", "w") as f:
         json.dump({"sandbox": True, "selected_pcs": sel, "c_high": args.c_high,
                    "inject_layer": args.inject_layer, "rows": rows, "means": means,
                    "reproduction_deviations": dev}, f, indent=2)
