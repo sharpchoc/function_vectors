@@ -1,5 +1,25 @@
 # DECISIONS
 
+## 2026-08-12 — LESSON: wordfreq/lemminflect mechanical dataset draws aren't reproducible across environments; freeze the final curated word list
+
+- While strictly recurating `dataset_files/extended_tasks/countable_uncountable.json` (audit found
+  ~186 dual count/mass-sense nouns mislabeled countable, e.g. `water, blood, energy`, plus a
+  non-noun `once`, plus 4 mislabeled uncountable — `childhood, adulthood, yogurt, theft`), reran
+  the task's generator's `build_uncountable()`/`build_countable()` (which gate candidates on
+  `wordfreq.zipf_frequency`) in this repo's `python3.12` (wordfreq 3.1.1) and got a **different
+  total** (1076, not the original 1000) than the file already on disk — several borderline zipf
+  values evidently differ from whatever environment/library version produced the original file,
+  flipping which candidates the mechanical filter drops.
+- Fix applied: for `countable_uncountable.py`, froze the final, already-audited word lists as
+  literal data (`_resources/generators/_frozen_lists.py`) and made `main()` emit those directly
+  instead of recomputing the mechanical draw at runtime. The draw functions/candidate lists stay
+  in the generator as documented provenance but are off `main()`'s execution path.
+- **Any other `generation_method="knowledge"` generator that gates on `wordfreq.zipf_frequency` or
+  `lemminflect.getInflection` for its final output (not just as a one-time curation aid) has this
+  same latent reproducibility risk.** Once a word list has been manually audited/accepted, freeze
+  it as literal data rather than trusting the mechanical filter to reproduce the exact same set on
+  a future rerun in a different environment.
+
 ## 2026-08-08 — Sparse-optimization head selection + vanilla_sparse_opt23 are SANDBOX-only
 
 - `src/sandbox/sparse_head_selection/` implements Hu et al. 2025 (arXiv:2505.05145 §3.1)

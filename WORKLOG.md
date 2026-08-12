@@ -5,6 +5,264 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-12 — Stream sparse-heads: dataset_files/extended_tasks — 42 originals + 100 NEW tasks × 1000 examples
+
+**Owner:** Claude Code bg session (worktree sparse-heads-fv23, coordinator) + multi-agent fleet
+(4 ideation lanes → 126 candidates; coordinator curated to exactly 100, drops documented in
+`_resources/finalize_specs.py`; 20 generation agents (haiku for rule lanes, sonnet for
+knowledge/morphology); 10-agent independent correctness audit + 1 final re-audit; 6 repair
+agents/rounds). **Status:** DONE. No GPU used.
+
+**What (user spec):** copy all abstractive tasks into `dataset_files/extended_tasks/` and add
+100 genuinely different NEW tasks, each with exactly 1000 examples; domains chosen so 1000 is
+comfortable (small-domain relations like country-capital excluded by design).
+
+**Where:** `dataset_files/extended_tasks/` — 142 task JSONs + `manifest.json` + `README.md`;
+`_resources/` holds word lists (12k common words, POS lists via english-words/wordfreq/
+lemminflect), the 100 specs (`new_task_specs.json`), per-task generators (`generators/`,
+knowledge tasks embed curated fact lists), the validation gate
+(`validate_extended_tasks.py`: 1000 exact, unique stripped inputs, no input==output,
+binary-class balance, cross-task content-overlap detection) and 3 documented repair rounds.
+
+**Quality process findings:** structural gate caught 11 issues post-generation (identity pairs,
+larger_than_100's impossible balance → redesigned larger_than_1000, 3 below-1000 shortfalls
+honestly reported by agents; 2 domain-capped tasks swapped: lives_in_water→
+number_word_to_digits, can_fly→last_vowel). Independent audit (rule tasks re-checked 1000/1000
+with independently written checkers; knowledge tasks strict-sampled) caught 3 systematic fails
+(countable_uncountable dual-sense labels — full recuration excluded 190 items incl. flat
+mislabels water/blood; strip_prefix opaque Latin-cognate splits — 29+9 purged over two rounds;
+hypernym_category/animal_class 149-pair overlap introduced by a repair — insect category
+removed, zero-overlap assert added) + 5 warns (all fixed). Final state: 100/100 pass gate;
+re-audit of all touched tasks: pass (2 minor warn residuals fixed in
+`repairs_round3.py`). Lesson recorded in DECISIONS by repair agent: freeze audited word lists
+as literal data — wordfreq zipf values drift across versions and flip borderline candidates.
+
+**Next:** GPT-J 10-shot ICL correctness filter over the 100 new tasks (GPU) before any use in
+head selection / FV work; then a train/test split over the extended set.
+
+---
+
+## 2026-08-12 — Stream sparse-heads (reused worktree): STRICT recuration of `countable_uncountable.json`
+
+**Owner:** Claude Code session, same worktree `.claude/worktrees/sparse-heads-fv23` (branch
+`worktree-sparse-heads-fv23`) — unrelated one-off data-cleanup task, not part of the sparse-heads
+stream. **Status:** DONE.
+
+**What:** Audit found `dataset_files/extended_tasks/countable_uncountable.json` (noun ->
+countable/uncountable) systematically mislabeled dual-sense nouns on one side only
+(`room, light, doubt, care, football, text, need`, etc.) and included a non-noun (`once`). Full
+manual word-by-word screen of all 1000 items (both classes) turned up far more than the flagged
+sample: **186 countable-side items excluded** (non-nouns/verbs/adjectives: `once, can, join, kill,
+old, red/blue/green/...`; genuine dual count+mass-sense nouns: `water, blood, energy, help, damage,
+action, area, cause, chance, class, order, point, study, style, success, water`, ~150 more) and
+**4 uncountable-side items excluded** (`childhood, adulthood` — "a happy childhood"/"childhoods" is
+ordinary; `yogurt` — "a yogurt" (serving) is everyday retail usage; `theft` — "a theft"/"thefts" is
+an ordinary countable sense alongside the abstract one). Net: 314 clean countable + 496 clean
+uncountable survived from the original 1000.
+
+Rebuilt to 1000 by topping the (scarce-relative-to-need) countable side back up with 190 freshly
+hand-picked, unambiguous concrete object/creature/person/place nouns (`elephant, guitar, castle,
+lawyer, bottle, ...` — the uncountable side needed no supplement since it stayed at 496, well
+within the +-10% balance band against 504 countable). Final: **1000 items, 504 countable / 496
+uncountable** (diff 8, well under the 100-item/±10% cap).
+
+Updated `dataset_files/extended_tasks/_resources/generators/countable_uncountable.py`: added
+`COUNTABLE_DUAL_OR_NONNOUN_EXCLUDE` / `UNCOUNTABLE_DUAL_EXCLUDE` (documented, per-category) and a
+`CONCRETE_COUNTABLE_CANDIDATES` supplement pool. Discovered mid-task that the original
+`build_uncountable()`/`build_countable()` mechanical draw (via `wordfreq.zipf_frequency`) is
+**not byte-for-byte reproducible across environments** — this repo's `python3.12` dist-packages
+wordfreq (3.1.1) gives slightly different zipf values than whatever produced the original file,
+flipping several borderline candidates and yielding a different total on rerun (1076, not 1000).
+Rather than chase environment-pinned reproducibility, froze the final audited word lists as literal
+data in a new `_frozen_lists.py` (`FINAL_COUNTABLE`, `FINAL_UNCOUNTABLE`) and made `main()` emit
+those directly — the mechanical-draw functions and candidate lists remain in the file as
+documented provenance/history but are no longer on `main()`'s execution path. **Lesson for other
+generators using wordfreq/lemminflect mechanical filtering: don't trust exact rerun reproducibility
+across Python/library versions — freeze the audited output as literal data once curation is done.**
+
+**Verification:** `n=1000`, `countable=504`/`uncountable=496`, 0 duplicate inputs, no `input ==
+output`, none of the 190 excluded words present as their original (wrong) class. Reran the updated
+generator and diffed its output against the hand-curated file: byte-for-byte identical. 10
+spot-check samples: `dust`->uncountable, `lamp`->countable, `episode`->countable, `wheel`->
+countable, `forgiveness`->uncountable, `defiance`->uncountable, `army`->countable, `barber`->
+countable, `guitar`->countable, `smoking`->uncountable — all correct and unambiguous.
+
+**Files:** `dataset_files/extended_tasks/_resources/generators/countable_uncountable.py` (rewrote
+docstring + `main()`, added exclude sets and concrete-noun pool), `dataset_files/extended_tasks/
+_resources/generators/_frozen_lists.py` (new — the two final audited word lists),
+`dataset_files/extended_tasks/countable_uncountable.json` (regenerated). `dataset_files/` is
+untracked in this git repo (repo-wide) — no commit made/possible.
+
+**Next:** none — task complete, count reached (1000, no padding needed).
+
+**Blockers:** none.
+
+---
+
+## 2026-08-12 — Stream sparse-heads (reused worktree): removed 29 semantically opaque splits from `strip_prefix.json`
+
+**Owner:** Claude Code session, same worktree `.claude/worktrees/sparse-heads-fv23` (branch
+`worktree-sparse-heads-fv23`) — unrelated one-off data-cleanup task, not part of the sparse-heads
+stream above. **Status:** DONE.
+
+**What:** Audit found `dataset_files/extended_tasks/strip_prefix.json` (1000 prefixed-word →
+base-word pairs) had ~17 semantically OPAQUE splits that passed the mechanical + prior `OPAQUE`
+filter in the generator — the string mechanically splits as prefix+base, but the whole word's
+meaning has no real relation to (or contradicts) the base word's meaning, e.g. `discovered`→
+`covered` (discover=find/reveal, cover=conceal), `recover`→`cover`, `redeem`→`deem`,
+`dismissing`→`missing`.
+
+Screened all 1000 current pairs by hand for semantic transparency, grouped by prefix. Found 29
+opaque pairs actually present in the 1000 (more than the ~17 estimate — a full pass turned up
+several the sample audit hadn't caught), added to a new `OPAQUE_EXCLUDE` set in `strip_prefix.py`
+with per-word comments: dis- (`discovered`, `discovering`, `dismissing`, `disappointment`,
+`dismantle`, `dissolve`), re- (`recover`, `recovered`, `recovering`, `redeem`, `recurrent`,
+`reward`, `renews` [false split — real morphology is `renew`+s], `recite`, `recitation`, `rebus`,
+`remediation`, `refraction`, `remission`), pre- (`pretext`), and the `undergo`/`undertake`/
+`understand` inflected family (`undergone`, `undergoing`, `undergoes`, `underwent`,
+`undertaking`, `undertook`, `undertaken`, `understanding`, `understood` — same idiom-not-
+compositional judgment the existing `OPAQUE` set already applied to their base forms, just
+extended to the inflected forms that had slipped through). Kept plenty of borderline cases that
+do have a real, findable dictionary sense supporting the compositional reading even if it's not
+the most common modern sense (`disguise`/guise, `redress`/dress, `resource`/source, `recourse`/
+course, `dissolution`/solution [chemistry sense], `premeditation`/meditation, `discounting`/
+counting, `disbarred`/barred, `resection`/section, `dismember`/member, `undermining`/mining,
+`recognition`/cognition, `reflex`/flex, `reflux`/flux, `restrict`/strict, `resolution`/solution,
+etc.) — those are explainable in one sentence, unlike the removed set.
+
+Rewrote `main()` to preserve the 970 pairs not flagged (rather than fully regenerate/reshuffle,
+which would have meant re-auditing a whole new set of 1000) and backfill only the removed count
+from fresh, not-yet-used candidates in the existing generator's mechanical pool (`build_candidates()`
+already yields 1049 valid candidates post-filter, comfortable headroom over 1000 — no need to
+draw from `common_verbs.txt`/`common_adjs.txt` directly). Backfill candidates picked via
+`random.seed(42)` shuffle of the fresh pool, screened by hand before running (2 more opaque
+candidates found in the fresh pool and also added to `OPAQUE_EXCLUDE`: `disappoint`,
+`resorted` — same families as `disappointment` and the pre-existing `resort`). Reran the
+generator to overwrite `strip_prefix.json`.
+
+**Verification:** `n=1000`, all inputs unique, `input != output` on every pair, none of the 30
+excluded words present in the regenerated file (checked by direct membership test), self-check
+asserts (count, uniqueness, prefix-rederivation) all pass. 10 spot-check samples (`undiluted`→
+diluted, `disinfection`→infection, `undercarriage`→carriage, `prefix`→fix, `resetting`→setting,
+`repay`→pay, `overslept`→slept, `undesired`→desired, `rebuild`→build, `unwillingness`→
+willingness) all read as genuinely transparent prefix+base derivations.
+
+**Files:** `dataset_files/extended_tasks/_resources/generators/strip_prefix.py` (added
+`OPAQUE_EXCLUDE` set with per-word comments, filter now checks both `OPAQUE` and
+`OPAQUE_EXCLUDE`, `main()` reworked to retain-and-backfill instead of full regenerate),
+`dataset_files/extended_tasks/strip_prefix.json` (regenerated). Note: `dataset_files/` is
+untracked in git repo-wide (not just this worktree) — no commit made, per "only commit when
+asked".
+
+**Next:** none — task complete.
+
+**Blockers:** none.
+
+---
+
+## 2026-08-12 — Stream sparse-heads (reused worktree): closed subtler cross-state ambiguity gap in `us-city-state.json`
+
+**Owner:** Claude Code session, same worktree `.claude/worktrees/sparse-heads-fv23` (branch
+`worktree-sparse-heads-fv23`) — unrelated one-off data-cleanup task, not part of the sparse-heads
+stream above. **Status:** DONE.
+
+**What:** Audit WARN on `dataset_files/extended_tasks/us-city-state.json` (1000 US city→state
+pairs): the generator's existing `AMBIGUOUS_NAMES` filter only caught cross-state-ambiguous names
+when the corpus *itself* encoded the same bare name under two different states (e.g. corpus has
+both `Jackson, Mississippi` and `Jackson, Tennessee` → auto-detected). It missed names the corpus
+only ever entered under ONE state but that have an at-least-comparably-known real-world twin
+elsewhere — the reported cases were `Laurel` (only entered as Delaware; real twins in Maryland
+and Mississippi), `Garden City` (only Kansas; NY twin on Long Island), `Indianola` (only
+Mississippi; Iowa twin, Simpson College).
+
+Screened all 1036 unique bare city names in `dataset_files/extended_tasks/_resources/generators/
+us-city-state.py`'s `CITY_STATE` list by hand for real-world cross-state twins (not just corpus-
+internal dupes). Added 41 more names to `AMBIGUOUS_NAMES`, each commented with the competing
+state(s): `Aberdeen` (WA/Nirvana), `Amherst` (NY), `Berea` (OH), `Bluefield` (VA — literal split
+border twin city), `Bowling Green` (OH), `Brookhaven` (NY), `Brunswick` (ME/OH), `Carmel` (CA),
+`Clovis` (CA), `Conway` (SC), `Danville` (CA), `Denton` (TX), `Easton` (PA), `Fredericksburg`
+(TX), `Garden City` (NY), `Glendale` (CA), `Greenville` (NC/MS), `Huntington` (NY), `Indianola`
+(IA), `Jonesboro` (GA), `Kansas City` (KS — literal split twin), `Lafayette` (IN), `Lancaster`
+(CA), `Laurel` (MD/MS), `Lawrence` (MA), `Lynchburg` (TN — Jack Daniel's), `Medford` (MA),
+`Meridian` (ID), `Midland` (MI), `Milton` (MA/GA), `Monroe` (MI/NC), `Ocean City` (NJ), `Oxford`
+(OH), `Petersburg` (VA), `Portsmouth` (VA), `Salisbury` (NC), `Springdale` (AR), `Stillwater`
+(MN), `Superior` (WI), `Texarkana` (TX — literal split twin), `York` (PA). Removing these dropped
+41 states'-worth of records (Maryland -4, Mississippi -4, Virginia -3, Arkansas -3, others -1/-2),
+so replenished with 96 new distinctive, single-state-identity towns (weighted toward the states
+that lost the most: MD +10, MS +10, VA +8, AR +8, WV +5, KS +5, LA +5, DE +4, plus 1-4 each
+across another ~18 states) — verified by script to not collide with any existing corpus bare name
+or with the newly-added ambiguous names. Reran the generator to overwrite `us-city-state.json`.
+
+**Files changed:** `dataset_files/extended_tasks/_resources/generators/us-city-state.py`
+(docstring note, `AMBIGUOUS_NAMES` +41, `CITY_STATE` +96 "EXTRA batch 6" entries),
+`dataset_files/extended_tasks/us-city-state.json` (regenerated).
+
+**Verification:** total candidate pool after the ambiguity filter went 1002 → 1057 (comfortable
+buffer over 1000, vs. the razor-thin +2 margin before); final `n=1000`, all 1000 inputs unique,
+all 50 states represented (min 14 / max 47 per state, up from min 17/max 51 — still fame-weighted,
+not uniform), seed-42 shuffle and self-check asserts intact. Confirmed none of the 41 newly-flagged
+bare names appear in the regenerated JSON's inputs. 10 spot-check samples all read as unambiguous
+(`Auburn University`→AL, `Iowa City`→IA, `Burlington`→VT, `Palm Beach`→FL, `Catonsville`→MD,
+`Gainesville`→FL, `Yankton`→SD, `Sandy Springs`→GA, `Doylestown`→PA, `Townsend`→DE).
+
+**Next:** none — task complete. If another audit pass is wanted, the remaining borderline calls
+that were reasoned through but kept (not excluded) include `Beaufort` (SC vs NC), `Salisbury`-tier
+judgment calls generally, and NYC-neighborhood-not-independent-city cases like `Williamsburg`
+(VA) and `Astoria` (OR) vs their Brooklyn/Queens namesakes — flagged here in case the user wants a
+stricter standard applied to those categories too.
+
+**Blockers:** none.
+
+---
+
+## 2026-08-12 — Stream sparse-heads (reused worktree): fixed `animal_class.json` fused multi-word inputs
+
+**Owner:** Claude Code session, same worktree `.claude/worktrees/sparse-heads-fv23` (branch
+`worktree-sparse-heads-fv23`) — unrelated one-off data-cleanup task, not part of the sparse-heads
+stream above. **Status:** DONE.
+
+**What:** `dataset_files/extended_tasks/animal_class.json` (1000 animal→{mammal,bird,fish,reptile,
+insect} examples) had many multi-word animal names with spaces stripped by the generator
+(`greeniguana`, `cabbagemoth`, `diamondbackterrapin`, `blisterbeetle`, `lightningbug`, ...) —
+garbled for GPT-J tokenization. Added `dataset_files/extended_tasks/_resources/generators/
+_space_fixes.py` — a curated fused-word → correctly-spaced mapping (`MAMMAL_FIXES`,
+`DOG_BREED_FIXES`, `CAT_BREED_FIXES`, `BIRD_FIXES`, `FISH_FIXES`, `REPTILE_FIXES`,
+`INSECT_FIXES`, ~230 entries total) applied inside `animal_class.py`'s pool construction via a
+new `_apply_fixes()` helper (asserts no fix introduces a duplicate). Left alone any fused form
+that is itself an established single-word common name (`housefly`, `kingsnake`, `rattlesnake`,
+`ladybug`, `bumblebee`, `muskox`, `bottlenose`, most colubrid `-snake` names per SSAR
+one-word convention) — only genuine two-(or three-)root concatenations with no one-word
+convention were split (e.g. shark/python/boa/viper/cobra/mamba/turtle/tortoise/gecko/monitor/
+lizard/iguana/chameleon/beetle/moth/ant/bee/cricket/bug/fly compounds, plus the missed trout
+family `rainbowtrout→rainbow trout` etc. and `carpenterbee`, `thornydevil` found on a second
+pass). Relaxed `main()`'s self-check from `w.isalpha()` to per-token alpha+lowercase with
+single-space joins, keeping the count/uniqueness/balance asserts intact. Reran the generator to
+overwrite `animal_class.json`.
+
+**Verification:** self-check asserts pass (1000 total, exactly 1000 unique inputs, classes
+mammal 209 / bird 209 / reptile 201 / fish 191 / insect 190 — 9.1% spread, within ±10%).
+Regex sweep for `^[a-z]{12,}$` dropped from 143 hits pre-fix to 12 post-fix, and every
+remaining hit was manually confirmed to be a real established single-word name (`butterflyfish`,
+`honeycreeper`, `oystercatcher`, `thoroughbred`, `walkingstick`, `yellowjacket`, plus four more
+SSAR-style one-word `-snake` compounds). Spot-checked the task's five named examples
+(`green iguana`, `cabbage moth`, `diamondback terrapin`, `blister beetle`, `lightning bug`) and
+20 random entries — all correctly spaced and classified. No items were dropped for
+low confidence; all originally-curated animals survived, just respaced.
+
+**Files:** `dataset_files/extended_tasks/_resources/generators/animal_class.py` (edited),
+`dataset_files/extended_tasks/_resources/generators/_space_fixes.py` (new),
+`dataset_files/extended_tasks/animal_class.json` (regenerated). Note: `dataset_files/` is
+untracked in git repo-wide (not just this worktree) — no commit made, per "only commit when
+asked".
+
+**Next:** none — task complete. If `animal_class.json` is later promoted into a tracked
+results path, someone should `git add` the whole `dataset_files/extended_tasks/` tree at that
+point.
+
+**Blockers:** none.
+
+---
+
 ## 2026-08-06→08 — Stream sparse-heads: SANDBOX sparse-optimization head selection + vanilla_sparse_opt23 FV
 
 **Owner:** Claude Code bg session (worktree `.claude/worktrees/sparse-heads-fv23`, branch

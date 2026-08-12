@@ -1,0 +1,3525 @@
+{
+ "specs": [
+  {
+   "name": "uppercase_word",
+   "category": "orthographic",
+   "rule": "Lowercase word -> the same word fully uppercased.",
+   "examples": [
+    {
+     "input": "planet",
+     "output": "PLANET"
+    },
+    {
+     "input": "garden",
+     "output": "GARDEN"
+    },
+    {
+     "input": "silver",
+     "output": "SILVER"
+    },
+    {
+     "input": "monkey",
+     "output": "MONKEY"
+    },
+    {
+     "input": "bright",
+     "output": "BRIGHT"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 12000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize (word->Word): same whole-word case transform, just a different target case; pure copy-with-case is what capitalize already tests.",
+   "gptj_confidence": "high",
+   "generation_recipe": "Read common_words.txt; keep alphabetic entries, len>=3, all-lowercase. output = word.upper(). Exclude words containing non a-z chars. Dedup. Self-check: assert output.lower()==input.",
+   "family": "full_case_transform",
+   "lane": "orthographic"
+  },
+  {
+   "name": "lowercase_word",
+   "category": "orthographic",
+   "rule": "Fully uppercased word -> the same word fully lowercased.",
+   "examples": [
+    {
+     "input": "PLANET",
+     "output": "planet"
+    },
+    {
+     "input": "GARDEN",
+     "output": "garden"
+    },
+    {
+     "input": "RIVER",
+     "output": "river"
+    },
+    {
+     "input": "YELLOW",
+     "output": "yellow"
+    },
+    {
+     "input": "STONE",
+     "output": "stone"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 12000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "lowercase_first_letter (WORD->w): same uppercase-input regime; whole-word lowering is a strictly simpler copy op than letter extraction.",
+   "gptj_confidence": "high",
+   "generation_recipe": "Read common_words.txt; keep alphabetic len>=3 words. input = word.upper(), output = word (lowercase). Exclude non a-z. Dedup. Self-check: input.lower()==output.",
+   "family": "full_case_transform",
+   "lane": "orthographic"
+  },
+  {
+   "name": "first_two_letters",
+   "category": "orthographic",
+   "rule": "Word -> its first two letters, lowercase.",
+   "examples": [
+    {
+     "input": "planet",
+     "output": "pl"
+    },
+    {
+     "input": "garden",
+     "output": "ga"
+    },
+    {
+     "input": "window",
+     "output": "wi"
+    },
+    {
+     "input": "stream",
+     "output": "st"
+    },
+    {
+     "input": "yellow",
+     "output": "ye"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 11500,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize_first_letter ('whose'->'W'): identically start-anchored extraction; two chars at word start usually align with the first BPE token.",
+   "gptj_confidence": "high",
+   "generation_recipe": "common_words.txt, alphabetic words len>=4. output = word[:2]. No case change. Dedup inputs. Self-check: word.startswith(output) and len(output)==2.",
+   "family": "affix_extract",
+   "lane": "orthographic"
+  },
+  {
+   "name": "last_two_letters",
+   "category": "orthographic",
+   "rule": "Word -> its last two letters, lowercase.",
+   "examples": [
+    {
+     "input": "planet",
+     "output": "et"
+    },
+    {
+     "input": "garden",
+     "output": "en"
+    },
+    {
+     "input": "window",
+     "output": "ow"
+    },
+    {
+     "input": "stream",
+     "output": "am"
+    },
+    {
+     "input": "chair",
+     "output": "ir"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 11500,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize_last_letter ('skunk'->'K'): same end-anchored access, extracting two chars instead of one; end-of-word is the second-easiest anchor.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, alphabetic words len>=4. output = word[-2:]. Dedup inputs. Self-check: word.endswith(output) and len(output)==2.",
+   "family": "affix_extract",
+   "lane": "orthographic"
+  },
+  {
+   "name": "first_three_letters",
+   "category": "orthographic",
+   "rule": "Word -> its first three letters, lowercase.",
+   "examples": [
+    {
+     "input": "planet",
+     "output": "pla"
+    },
+    {
+     "input": "garden",
+     "output": "gar"
+    },
+    {
+     "input": "window",
+     "output": "win"
+    },
+    {
+     "input": "stream",
+     "output": "str"
+    },
+    {
+     "input": "yellow",
+     "output": "yel"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 11000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize_first_letter: start-anchored prefix extraction; 3-char prefixes often coincide with a whole leading BPE token, keeping it copy-like.",
+   "gptj_confidence": "high",
+   "generation_recipe": "common_words.txt, alphabetic words len>=5 (so the prefix is a proper substring). output = word[:3]. Dedup. Self-check: word.startswith(output) and len(output)==3.",
+   "family": "affix_extract",
+   "lane": "orthographic"
+  },
+  {
+   "name": "remove_first_letter",
+   "category": "orthographic",
+   "rule": "Word -> the word with its first letter deleted.",
+   "examples": [
+    {
+     "input": "brave",
+     "output": "rave"
+    },
+    {
+     "input": "stone",
+     "output": "tone"
+    },
+    {
+     "input": "plant",
+     "output": "lant"
+    },
+    {
+     "input": "glove",
+     "output": "love"
+    },
+    {
+     "input": "chair",
+     "output": "hair"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 11000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize_first_letter: the op is anchored at the word start, but requires re-emitting the remainder, so one notch harder than pure letter extraction.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, alphabetic words len 4-8 (short words keep the copied remainder token-simple). output = word[1:]. Dedup. Self-check: input[0]+output==input.",
+   "family": "letter_removal",
+   "lane": "orthographic"
+  },
+  {
+   "name": "remove_last_letter",
+   "category": "orthographic",
+   "rule": "Word -> the word with its last letter deleted.",
+   "examples": [
+    {
+     "input": "plane",
+     "output": "plan"
+    },
+    {
+     "input": "brave",
+     "output": "brav"
+    },
+    {
+     "input": "stone",
+     "output": "ston"
+    },
+    {
+     "input": "chair",
+     "output": "chai"
+    },
+    {
+     "input": "sport",
+     "output": "spor"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 11000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize_last_letter: end-anchored op; output is a copy of the input truncated by one char, harder than extraction but the copy prefix helps ICL.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, alphabetic words len 4-8. output = word[:-1]. Dedup. Self-check: output+input[-1]==input.",
+   "family": "letter_removal",
+   "lane": "orthographic"
+  },
+  {
+   "name": "prev_capital_letter",
+   "category": "orthographic",
+   "rule": "Word -> the alphabet predecessor of its first letter, uppercased.",
+   "examples": [
+    {
+     "input": "hammock",
+     "output": "G"
+    },
+    {
+     "input": "window",
+     "output": "V"
+    },
+    {
+     "input": "dragon",
+     "output": "C"
+    },
+    {
+     "input": "sunset",
+     "output": "R"
+    },
+    {
+     "input": "melody",
+     "output": "L"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 11000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "next_capital_letter ('hammock'->'I'): exact mirror (predecessor instead of successor of the first letter), same two-step first-letter + alphabet-neighbor op.",
+   "gptj_confidence": "high",
+   "generation_recipe": "common_words.txt, alphabetic words; EXCLUDE words starting with 'a' (no predecessor). output = chr(ord(word[0])-1).upper(). Dedup. Self-check: ord(output.lower())+1==ord(input[0]).",
+   "family": "alphabet_neighbor",
+   "lane": "orthographic"
+  },
+  {
+   "name": "next_letter_of_last_letter",
+   "category": "orthographic",
+   "rule": "Word -> the alphabet successor of its LAST letter, uppercased.",
+   "examples": [
+    {
+     "input": "cat",
+     "output": "U"
+    },
+    {
+     "input": "ribbon",
+     "output": "O"
+    },
+    {
+     "input": "lamp",
+     "output": "Q"
+    },
+    {
+     "input": "sofa",
+     "output": "B"
+    },
+    {
+     "input": "wheel",
+     "output": "M"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 11900,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "next_capital_letter: same alphabet-successor op moved to the last letter; combines the working capitalize_last_letter access pattern with the working successor op.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, alphabetic words; EXCLUDE words ending in 'z'. output = chr(ord(word[-1])+1).upper(). Dedup. Self-check: ord(output.lower())-1==ord(input[-1]).",
+   "family": "alphabet_neighbor",
+   "lane": "orthographic"
+  },
+  {
+   "name": "starts_with_vowel",
+   "category": "orthographic",
+   "rule": "Word -> 'vowel' if its first letter is one of a,e,i,o,u, else 'consonant'.",
+   "examples": [
+    {
+     "input": "apple",
+     "output": "vowel"
+    },
+    {
+     "input": "table",
+     "output": "consonant"
+    },
+    {
+     "input": "orange",
+     "output": "vowel"
+    },
+    {
+     "input": "window",
+     "output": "consonant"
+    },
+    {
+     "input": "igloo",
+     "output": "vowel"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 12000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize_first_letter + sentiment: first-letter access (easy anchor) followed by a 2-way label, like sentiment's binary output format.",
+   "gptj_confidence": "high",
+   "generation_recipe": "common_words.txt, alphabetic words len>=3. 'y' counts as consonant (state this in task doc). output = 'vowel' if word[0] in 'aeiou' else 'consonant'. Sample to roughly 50/50 class balance (vowel-initial words are ~20% of the list; the list still has >2000 of them). Dedup.",
+   "family": "vowel_class",
+   "lane": "orthographic"
+  },
+  {
+   "name": "ends_with_vowel",
+   "category": "orthographic",
+   "rule": "Word -> 'vowel' if its last letter is one of a,e,i,o,u, else 'consonant'.",
+   "examples": [
+    {
+     "input": "sofa",
+     "output": "vowel"
+    },
+    {
+     "input": "planet",
+     "output": "consonant"
+    },
+    {
+     "input": "hero",
+     "output": "vowel"
+    },
+    {
+     "input": "chair",
+     "output": "consonant"
+    },
+    {
+     "input": "tree",
+     "output": "vowel"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 10500,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize_last_letter + sentiment: last-letter access with a binary label; end anchor is proven workable by capitalize_last_letter.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, alphabetic words len>=3; EXCLUDE words ending in 'y' (ambiguous vowel status). output = 'vowel' if word[-1] in 'aeiou' else 'consonant'. Sample to ~50/50 balance. Dedup.",
+   "family": "vowel_class",
+   "lane": "orthographic"
+  },
+  {
+   "name": "contains_letter_e",
+   "category": "orthographic",
+   "rule": "Word -> 'yes' if the letter e occurs anywhere in it, else 'no'.",
+   "examples": [
+    {
+     "input": "planet",
+     "output": "yes"
+    },
+    {
+     "input": "grass",
+     "output": "no"
+    },
+    {
+     "input": "stone",
+     "output": "yes"
+    },
+    {
+     "input": "quick",
+     "output": "no"
+    },
+    {
+     "input": "yellow",
+     "output": "yes"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 12000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "count_vowels: whole-word letter scanning, but reduced to a binary presence query, which is easier than exact counting.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, alphabetic words len 3-9. output = 'yes' if 'e' in word else 'no'. Sample to 50/50 balance (e is common: bias sampling toward no-class words, still >3000 available). Dedup.",
+   "family": "letter_query",
+   "lane": "orthographic"
+  },
+  {
+   "name": "ends_with_ing",
+   "category": "orthographic",
+   "rule": "Word -> 'yes' if it ends with the letters 'ing', else 'no'.",
+   "examples": [
+    {
+     "input": "running",
+     "output": "yes"
+    },
+    {
+     "input": "planet",
+     "output": "no"
+    },
+    {
+     "input": "singing",
+     "output": "yes"
+    },
+    {
+     "input": "butter",
+     "output": "no"
+    },
+    {
+     "input": "walking",
+     "output": "yes"
+    }
+   ],
+   "domain_source": "gerunds of common_verbs.txt via lemminflect + non-ing words from common_nouns.txt",
+   "domain_size_estimate": 7000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "present-past: suffix-sensitive word classification; '-ing' is a single highly salient BPE suffix token, so detection is near-trivial for GPT-J.",
+   "gptj_confidence": "high",
+   "generation_recipe": "yes-class: for each verb in common_verbs.txt take lemminflect getInflection(verb,'VBG'); keep only outputs actually ending 'ing' (~3500). no-class: common_nouns.txt entries NOT ending 'ing'. Balance 50/50, dedup across classes. Self-check: label == word.endswith('ing').",
+   "family": "letter_query",
+   "lane": "orthographic"
+  },
+  {
+   "name": "alphabet_position_first_letter",
+   "category": "orthographic",
+   "rule": "Word (first letter restricted to a-j) -> the alphabet position (1-10) of its first letter.",
+   "examples": [
+    {
+     "input": "apple",
+     "output": "1"
+    },
+    {
+     "input": "banana",
+     "output": "2"
+    },
+    {
+     "input": "cat",
+     "output": "3"
+    },
+    {
+     "input": "dragon",
+     "output": "4"
+    },
+    {
+     "input": "jungle",
+     "output": "10"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt filtered to first letter in a-j",
+   "domain_size_estimate": 4500,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "next_capital_letter: same first-letter access composed with alphabet knowledge; restricting to positions 1-10 keeps the ordinal lookup in the well-known early-alphabet range.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, keep words whose word[0] is in 'abcdefghij'. output = str(ord(word[0])-96). Stratify so each of the 10 first letters appears; dedup. Self-check: 1<=int(output)<=10 and chr(96+int(output))==input[0].",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "first_vowel",
+   "category": "orthographic",
+   "rule": "Word -> the first vowel (a,e,i,o,u) reading left to right.",
+   "examples": [
+    {
+     "input": "planet",
+     "output": "a"
+    },
+    {
+     "input": "stone",
+     "output": "o"
+    },
+    {
+     "input": "bright",
+     "output": "i"
+    },
+    {
+     "input": "flute",
+     "output": "u"
+    },
+    {
+     "input": "wheel",
+     "output": "e"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 11900,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "count_vowels: same vowel-detection skill, but extraction of the first hit instead of a full count; first vowel sits at position 1-3 in most English words, near the easy word start.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, alphabetic words len>=3; EXCLUDE words with no a/e/i/o/u (e.g. 'myth', 'gym'). output = next(c for c in word if c in 'aeiou'). Dedup. Self-check: output in 'aeiou' and everything before its first occurrence is non-vowel.",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "nato_first_letter",
+   "category": "orthographic",
+   "rule": "Word -> the NATO phonetic-alphabet codeword for its first letter (e.g. c -> Charlie).",
+   "examples": [
+    {
+     "input": "cat",
+     "output": "Charlie"
+    },
+    {
+     "input": "dog",
+     "output": "Delta"
+    },
+    {
+     "input": "table",
+     "output": "Tango"
+    },
+    {
+     "input": "house",
+     "output": "Hotel"
+    },
+    {
+     "input": "window",
+     "output": "Whiskey"
+    }
+   ],
+   "domain_source": "common_words.txt + hardcoded 24-entry NATO table (letters a and j excluded)",
+   "domain_size_estimate": 10500,
+   "generation_method": "knowledge",
+   "difficulty_anchor": "next_capital_letter: first-letter access composed with a single very common lookup table; the NATO alphabet is heavily represented in pretraining data.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Hardcode the standard NATO table {b:Bravo, c:Charlie, ..., z:Zulu}; EXCLUDE first letters 'a' (Alfa/Alpha spelling variants) and 'j' (Juliett/Juliet variants) so every answer has one canonical spelling. Domain: common_words.txt words not starting a/j. output = table[word[0]]. Self-check: output[0].lower()==input[0]; scoring should be exact-match on the table spelling.",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "double_last_letter",
+   "category": "orthographic",
+   "rule": "Word -> the word with its final letter written twice.",
+   "examples": [
+    {
+     "input": "run",
+     "output": "runn"
+    },
+    {
+     "input": "sofa",
+     "output": "sofaa"
+    },
+    {
+     "input": "cat",
+     "output": "catt"
+    },
+    {
+     "input": "lamp",
+     "output": "lampp"
+    },
+    {
+     "input": "hero",
+     "output": "heroo"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 10000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "remove_last_letter / singular-plural: copy the word then modify the end, like plural's copy+suffix but purely orthographic; non-word outputs make it harder, hence medium.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, alphabetic words len 3-6; EXCLUDE words already ending in a doubled letter (e.g. 'ball', 'free') so the pattern is visually unambiguous in prompts. output = word + word[-1]. Dedup. Self-check: output[:-1]==input and output[-1]==input[-1].",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "third_letter",
+   "category": "orthographic",
+   "rule": "Word -> its third letter, lowercase.",
+   "examples": [
+    {
+     "input": "planet",
+     "output": "a"
+    },
+    {
+     "input": "window",
+     "output": "n"
+    },
+    {
+     "input": "stream",
+     "output": "r"
+    },
+    {
+     "input": "garden",
+     "output": "r"
+    },
+    {
+     "input": "yellow",
+     "output": "l"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 11800,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize_second_letter ('chinchilla'->'H'): one position deeper and no case flip; deepest still-plausible positional extraction for GPT-J.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, alphabetic words len>=4. output = word[2] (no case change, distinguishing it from the capitalize_* family). Dedup. Self-check: input[2]==output.",
+   "family": "positional_letter_extract",
+   "lane": "orthographic"
+  },
+  {
+   "name": "titlecase_phrase",
+   "category": "orthographic",
+   "rule": "Two-word lowercase phrase -> the phrase with each word capitalized.",
+   "examples": [
+    {
+     "input": "red house",
+     "output": "Red House"
+    },
+    {
+     "input": "old bridge",
+     "output": "Old Bridge"
+    },
+    {
+     "input": "green table",
+     "output": "Green Table"
+    },
+    {
+     "input": "quiet river",
+     "output": "Quiet River"
+    },
+    {
+     "input": "small garden",
+     "output": "Small Garden"
+    }
+   ],
+   "domain_source": "common_adjs.txt x common_nouns.txt bigrams",
+   "domain_size_estimate": 20000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize (word->Word): the identical case transform applied per word of a bigram; title-casing phrases is ubiquitous in pretraining (headlines, titles).",
+   "gptj_confidence": "high",
+   "generation_recipe": "Sample adj from common_adjs.txt (top 1500, alphabetic, len 3-8) and noun from common_nouns.txt (top 2000, same filter); input = f'{adj} {noun}', output = input.title(). Sample ~20000 unique combos, dedup. Self-check: output.lower()==input and both words start uppercase.",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "initials_two_words",
+   "category": "orthographic",
+   "rule": "Two-word phrase -> the two initials, uppercased and concatenated.",
+   "examples": [
+    {
+     "input": "red house",
+     "output": "RH"
+    },
+    {
+     "input": "old bridge",
+     "output": "OB"
+    },
+    {
+     "input": "green table",
+     "output": "GT"
+    },
+    {
+     "input": "quiet river",
+     "output": "QR"
+    },
+    {
+     "input": "silver moon",
+     "output": "SM"
+    }
+   ],
+   "domain_source": "common_adjs.txt x common_nouns.txt bigrams",
+   "domain_size_estimate": 20000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize_first_letter applied twice: acronym/initialism formation is a extremely common pattern in pretraining text, and both letters sit at easy word-start anchors.",
+   "gptj_confidence": "high",
+   "generation_recipe": "Same bigram sampler as titlecase_phrase. output = (adj[0]+noun[0]).upper(). Dedup on input. Self-check: len(output)==2 and output[0].lower()==adj[0] and output[1].lower()==noun[0].",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "first_letter_second_word",
+   "category": "orthographic",
+   "rule": "Two-word phrase -> the first letter of the SECOND word, lowercase.",
+   "examples": [
+    {
+     "input": "red house",
+     "output": "h"
+    },
+    {
+     "input": "old bridge",
+     "output": "b"
+    },
+    {
+     "input": "green table",
+     "output": "t"
+    },
+    {
+     "input": "quiet river",
+     "output": "r"
+    },
+    {
+     "input": "silver moon",
+     "output": "m"
+    }
+   ],
+   "domain_source": "common_adjs.txt x common_nouns.txt bigrams",
+   "domain_size_estimate": 20000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "capitalize_first_letter: same first-letter extraction, retargeted to the second word; word boundaries are token boundaries so the anchor stays easy.",
+   "gptj_confidence": "high",
+   "generation_recipe": "Same bigram sampler. output = noun[0] (lowercase). Dedup on input; stratify so >=15 distinct output letters occur. Self-check: input.split()[1].startswith(output).",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "count_words",
+   "category": "orthographic",
+   "rule": "Phrase of 1-4 space-separated words -> the number of words.",
+   "examples": [
+    {
+     "input": "green table",
+     "output": "2"
+    },
+    {
+     "input": "dog",
+     "output": "1"
+    },
+    {
+     "input": "big red wooden box",
+     "output": "4"
+    },
+    {
+     "input": "quiet river bank",
+     "output": "3"
+    },
+    {
+     "input": "sun",
+     "output": "1"
+    }
+   ],
+   "domain_source": "combinations from common_adjs.txt and common_nouns.txt",
+   "domain_size_estimate": 20000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "word_length ('along'->'5'): counting of surface units, but the units are whitespace-separated tokens, which is easier than character counting.",
+   "gptj_confidence": "high",
+   "generation_recipe": "Build phrases: 1 word = noun; 2 = adj noun; 3 = adj adj noun; 4 = adj adj adj noun, with adjs/nouns drawn from the resource lists (distinct adjs within a phrase). Uniform over lengths 1-4, dedup inputs. output = str(len(input.split())). Self-check trivial.",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "case_of_word",
+   "category": "orthographic",
+   "rule": "Word shown either ALL-CAPS or all-lowercase -> the label 'upper' or 'lower'.",
+   "examples": [
+    {
+     "input": "PLANET",
+     "output": "upper"
+    },
+    {
+     "input": "planet",
+     "output": "lower"
+    },
+    {
+     "input": "RIVER",
+     "output": "upper"
+    },
+    {
+     "input": "garden",
+     "output": "lower"
+    },
+    {
+     "input": "YELLOW",
+     "output": "upper"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt, each word in both cases",
+   "domain_size_estimate": 24000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "sentiment: binary surface classification; case is directly encoded in BPE token identity, so detection (unlike transformation) is essentially free.",
+   "gptj_confidence": "high",
+   "generation_recipe": "common_words.txt, alphabetic len>=3. For each sampled word pick one form: (word.upper(),'upper') or (word,'lower'), 50/50. A word may appear in at most one case form to keep inputs unique. Dedup. Self-check: input.isupper() == (output=='upper').",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "double_word",
+   "category": "orthographic",
+   "rule": "Word -> the word written twice, space-separated.",
+   "examples": [
+    {
+     "input": "cat",
+     "output": "cat cat"
+    },
+    {
+     "input": "moon",
+     "output": "moon moon"
+    },
+    {
+     "input": "river",
+     "output": "river river"
+    },
+    {
+     "input": "sun",
+     "output": "sun sun"
+    },
+    {
+     "input": "grape",
+     "output": "grape grape"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 12000,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "identity (x->x): pure copying, which transformers do perfectly, plus a fixed repeat-twice template; distinct mapping from identity (output != input).",
+   "gptj_confidence": "high",
+   "generation_recipe": "common_words.txt, alphabetic words len 3-7 (keeps output <=3 tokens typically). output = f'{word} {word}'. Dedup. Self-check: output.split()==[input,input].",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "count_letter_e",
+   "category": "orthographic",
+   "rule": "Word -> how many times the letter e occurs in it (0-3).",
+   "examples": [
+    {
+     "input": "sleeve",
+     "output": "3"
+    },
+    {
+     "input": "planet",
+     "output": "1"
+    },
+    {
+     "input": "letter",
+     "output": "2"
+    },
+    {
+     "input": "grass",
+     "output": "0"
+    },
+    {
+     "input": "between",
+     "output": "3"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt",
+   "domain_size_estimate": 11500,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "count_vowels: identical counting skill but over a single target letter and including a 0 class; genuinely different count target from vowels/consonants/length.",
+   "gptj_confidence": "medium",
+   "generation_recipe": "common_words.txt, alphabetic words len 3-9; keep only words with word.count('e') <= 3. output = str(word.count('e')). Stratify sampling so counts 0,1,2,3 all appear substantially (0 and 1 dominate naturally; cap them). Dedup. Self-check by rule.",
+   "family": null,
+   "lane": "orthographic"
+  },
+  {
+   "name": "first_digit",
+   "category": "digit_query",
+   "rule": "Given a positive integer written in digits, output its first (leftmost) digit.",
+   "examples": [
+    {
+     "input": "4729",
+     "output": "4"
+    },
+    {
+     "input": "83",
+     "output": "8"
+    },
+    {
+     "input": "506",
+     "output": "5"
+    },
+    {
+     "input": "91724",
+     "output": "9"
+    },
+    {
+     "input": "37",
+     "output": "3"
+    }
+   ],
+   "family": "digit_extract",
+   "domain_source": "pure rule: random integers with 2-6 digits, no leading zeros",
+   "domain_size_estimate": 100000,
+   "generation_method": "rule",
+   "difficulty_anchor": "capitalize_first_letter \u2014 same positional-extraction operation, applied to digits instead of letters, no case transform needed so strictly easier",
+   "gptj_confidence": "high",
+   "generation_recipe": "Sample unique random integers uniformly over lengths 2-6 (range 10..999999), seed fixed, dedupe. Output = str(n)[0]. No edge cases: leading zeros impossible for integers. Verify programmatically that output == input[0].",
+   "lane": "digit_query"
+  },
+  {
+   "name": "last_digit",
+   "category": "digit_query",
+   "rule": "Given a positive integer written in digits, output its last (rightmost) digit.",
+   "examples": [
+    {
+     "input": "4729",
+     "output": "9"
+    },
+    {
+     "input": "83",
+     "output": "3"
+    },
+    {
+     "input": "506",
+     "output": "6"
+    },
+    {
+     "input": "5170",
+     "output": "0"
+    },
+    {
+     "input": "62",
+     "output": "2"
+    }
+   ],
+   "family": "digit_extract",
+   "domain_source": "pure rule: random integers with 2-6 digits",
+   "domain_size_estimate": 100000,
+   "generation_method": "rule",
+   "difficulty_anchor": "capitalize_last_letter \u2014 same last-position extraction on a short symbol string, without the case step",
+   "gptj_confidence": "high",
+   "generation_recipe": "Sample unique random integers over 10..999999, seed fixed, dedupe. Output = str(n)[-1]. Include some inputs ending in 0 deliberately. Verify output == input[-1].",
+   "lane": "digit_query"
+  },
+  {
+   "name": "second_digit",
+   "category": "digit_query",
+   "rule": "Given a positive integer with at least two digits, output its second digit from the left.",
+   "examples": [
+    {
+     "input": "4729",
+     "output": "7"
+    },
+    {
+     "input": "83",
+     "output": "3"
+    },
+    {
+     "input": "506",
+     "output": "0"
+    },
+    {
+     "input": "91724",
+     "output": "1"
+    },
+    {
+     "input": "3651",
+     "output": "6"
+    }
+   ],
+   "family": "digit_extract",
+   "domain_source": "pure rule: random integers with 2-6 digits",
+   "domain_size_estimate": 100000,
+   "generation_method": "rule",
+   "difficulty_anchor": "capitalize_second_letter \u2014 identical second-position indexing, on digits",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Sample unique random integers over 10..999999, seed fixed, dedupe. Output = str(n)[1]. No exclusions needed (all inputs have >= 2 digits). Verify output == input[1].",
+   "lane": "digit_query"
+  },
+  {
+   "name": "count_digits",
+   "category": "counting",
+   "rule": "Given a positive integer written in digits, output how many digits it has.",
+   "examples": [
+    {
+     "input": "7",
+     "output": "1"
+    },
+    {
+     "input": "42",
+     "output": "2"
+    },
+    {
+     "input": "905",
+     "output": "3"
+    },
+    {
+     "input": "6183",
+     "output": "4"
+    },
+    {
+     "input": "27045",
+     "output": "5"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: random integers with 1-6 digits, balanced across lengths",
+   "domain_size_estimate": 100000,
+   "generation_method": "rule",
+   "difficulty_anchor": "word_length \u2014 same length-counting operation on a shorter symbol alphabet; distinct from existing 'magnitude' task, which maps number->number rather than to a count",
+   "gptj_confidence": "high",
+   "generation_recipe": "Sample unique integers stratified by length: equal counts of 1,2,3,4,5,6-digit numbers (1-digit gives only 9, backfill from other lengths), seed fixed. Output = str(len(str(n))). Verify programmatically.",
+   "lane": "counting"
+  },
+  {
+   "name": "count_zeros",
+   "category": "counting",
+   "rule": "Given a digit string, output how many of its digits are '0'.",
+   "examples": [
+    {
+     "input": "5007",
+     "output": "2"
+    },
+    {
+     "input": "1234",
+     "output": "0"
+    },
+    {
+     "input": "10203",
+     "output": "2"
+    },
+    {
+     "input": "90000",
+     "output": "4"
+    },
+    {
+     "input": "480",
+     "output": "1"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: random integers with 3-6 digits, stratified so zero-counts 0-4 are all represented",
+   "domain_size_estimate": 100000,
+   "generation_method": "rule",
+   "difficulty_anchor": "count_vowels \u2014 counting occurrences of a target symbol class in a short string; here the target class is a single symbol, which is easier",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Generate random integers of length 3-6 (no leading zero); rejection-sample to balance the zero-count label distribution over {0,1,2,3,4} (natural sampling makes high counts rare). Output = str(str(n).count('0')). Verify by recount.",
+   "lane": "counting"
+  },
+  {
+   "name": "largest_digit",
+   "category": "digit_query",
+   "rule": "Given a positive integer written in digits, output its largest digit.",
+   "examples": [
+    {
+     "input": "4729",
+     "output": "9"
+    },
+    {
+     "input": "3512",
+     "output": "5"
+    },
+    {
+     "input": "68",
+     "output": "8"
+    },
+    {
+     "input": "20741",
+     "output": "7"
+    },
+    {
+     "input": "593",
+     "output": "9"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: random integers with 2-5 digits, all digits distinct",
+   "domain_size_estimate": 30000,
+   "generation_method": "rule",
+   "difficulty_anchor": "count_consonants \u2014 requires scanning all symbols of a short string and aggregating; harder than positional extraction, comparable to counting tasks",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Sample unique integers of length 2-5; require all digits distinct (guarantees a unique argmax and avoids ties confusing evaluation, though ties would not change the answer). Output = max(str(n)). Fixed seed, dedupe, verify by recomputation.",
+   "lane": "digit_query"
+  },
+  {
+   "name": "round_down_to_hundred",
+   "category": "arithmetic",
+   "rule": "Given an integer >= 101 that is not a multiple of 100, output it rounded down to the nearest multiple of 100.",
+   "examples": [
+    {
+     "input": "4729",
+     "output": "4700"
+    },
+    {
+     "input": "351",
+     "output": "300"
+    },
+    {
+     "input": "8046",
+     "output": "8000"
+    },
+    {
+     "input": "12345",
+     "output": "12300"
+    },
+    {
+     "input": "563",
+     "output": "500"
+    }
+   ],
+   "family": "rounding",
+   "domain_source": "pure rule: integers 101-99999 excluding multiples of 100",
+   "domain_size_estimate": 98900,
+   "generation_method": "rule",
+   "difficulty_anchor": "lowercase_last_letter \u2014 mechanically it is 'replace the last two digits with 00', a positional overwrite akin to positional case ops, and rounding to hundreds is a very common text pattern",
+   "gptj_confidence": "high",
+   "generation_recipe": "Sample unique integers in 101..99999 with n % 100 != 0 (multiples of 100 map to themselves, overlapping identity). Output = str((n // 100) * 100). Fixed seed, dedupe, verify arithmetically.",
+   "lane": "arithmetic"
+  },
+  {
+   "name": "round_up_to_ten",
+   "category": "arithmetic",
+   "rule": "Given an integer that is not a multiple of 10, output it rounded up to the next multiple of 10.",
+   "examples": [
+    {
+     "input": "47",
+     "output": "50"
+    },
+    {
+     "input": "231",
+     "output": "240"
+    },
+    {
+     "input": "85",
+     "output": "90"
+    },
+    {
+     "input": "1362",
+     "output": "1370"
+    },
+    {
+     "input": "509",
+     "output": "510"
+    }
+   ],
+   "family": "rounding",
+   "domain_source": "pure rule: integers 11-9999 excluding multiples of 10",
+   "domain_size_estimate": 8990,
+   "generation_method": "rule",
+   "difficulty_anchor": "next_number_digits \u2014 increment the tens 'slot' and zero the units; one small local arithmetic step",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Sample unique integers in 11..9999 with n % 10 != 0 (multiples of 10 are ambiguous between 'stay' and 'next'). Output = str(((n // 10) + 1) * 10). Fixed seed, dedupe, verify arithmetically. Note this differs from round_down_to_hundred in both direction and granularity.",
+   "lane": "arithmetic"
+  },
+  {
+   "name": "parity_even_odd",
+   "category": "classification",
+   "rule": "Given an integer, output 'even' if it is even and 'odd' if it is odd.",
+   "examples": [
+    {
+     "input": "47",
+     "output": "odd"
+    },
+    {
+     "input": "82",
+     "output": "even"
+    },
+    {
+     "input": "135",
+     "output": "odd"
+    },
+    {
+     "input": "9006",
+     "output": "even"
+    },
+    {
+     "input": "3",
+     "output": "odd"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: integers 1-99999, balanced 50/50 by parity",
+   "domain_size_estimate": 99999,
+   "generation_method": "rule",
+   "difficulty_anchor": "sentiment \u2014 binary classification with common-word labels; the decision reduces to the last digit, comparable to last-letter tasks",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Sample unique integers in 1..99999, stratified to exactly 50% even / 50% odd so label priors are uninformative. Output = 'even' if n % 2 == 0 else 'odd'. Fixed seed, verify programmatically.",
+   "lane": "classification"
+  },
+  {
+   "name": "ordinal_suffix",
+   "category": "formatting",
+   "rule": "Given an integer in digits, output the same integer with its English ordinal suffix attached (21 -> 21st, 112 -> 112th).",
+   "examples": [
+    {
+     "input": "3",
+     "output": "3rd"
+    },
+    {
+     "input": "21",
+     "output": "21st"
+    },
+    {
+     "input": "47",
+     "output": "47th"
+    },
+    {
+     "input": "112",
+     "output": "112th"
+    },
+    {
+     "input": "92",
+     "output": "92nd"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: integers 1-9999",
+   "domain_size_estimate": 9999,
+   "generation_method": "rule",
+   "difficulty_anchor": "present-past \u2014 a single-step, highly conventionalized English formatting transform GPT-J has seen constantly in pretraining",
+   "gptj_confidence": "high",
+   "generation_recipe": "Sample unique integers 1..9999. Suffix rule: if n % 100 in {11,12,13} -> 'th'; elif n % 10 == 1 -> 'st'; elif n % 10 == 2 -> 'nd'; elif n % 10 == 3 -> 'rd'; else 'th'. Output = str(n) + suffix. Oversample the st/nd/rd cases so 'th' is not >80% of labels. Verify with the same function; unit-test 11,12,13,111,121.",
+   "lane": "formatting"
+  },
+  {
+   "name": "double_no_carry",
+   "category": "arithmetic",
+   "rule": "Given an integer all of whose digits are 4 or less, output its double.",
+   "examples": [
+    {
+     "input": "42",
+     "output": "84"
+    },
+    {
+     "input": "213",
+     "output": "426"
+    },
+    {
+     "input": "1024",
+     "output": "2048"
+    },
+    {
+     "input": "33",
+     "output": "66"
+    },
+    {
+     "input": "40312",
+     "output": "80624"
+    }
+   ],
+   "family": "scale_two",
+   "domain_source": "pure rule: integers with 2-5 digits, every digit in {0,1,2,3,4}",
+   "domain_size_estimate": 3120,
+   "generation_method": "rule",
+   "difficulty_anchor": "next_number_digits \u2014 doubling with all digits <= 4 involves no carries, so it decomposes into independent per-digit doublings, each a trivial single-digit fact",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Enumerate integers whose decimal digits are all in {0,1,2,3,4}, lengths 2-5, leading digit in {1,2,3,4}: 4*5 + 4*25 + 4*125 + 4*625 = 3120 items. Output = str(2*n). The digit constraint guarantees carry-free doubling. Verify 2*n and that no digit of n exceeds 4.",
+   "lane": "arithmetic"
+  },
+  {
+   "name": "plus_ten",
+   "category": "arithmetic",
+   "rule": "Given an integer whose tens digit is not 9, output that integer plus 10.",
+   "examples": [
+    {
+     "input": "47",
+     "output": "57"
+    },
+    {
+     "input": "231",
+     "output": "241"
+    },
+    {
+     "input": "85",
+     "output": "95"
+    },
+    {
+     "input": "1362",
+     "output": "1372"
+    },
+    {
+     "input": "509",
+     "output": "519"
+    }
+   ],
+   "family": "add_k",
+   "domain_source": "pure rule: integers 10-99999 with tens digit != 9",
+   "domain_size_estimate": 80000,
+   "generation_method": "rule",
+   "difficulty_anchor": "next_number_digits \u2014 identical increment operation, applied one decimal place higher; carry-free by construction",
+   "gptj_confidence": "high",
+   "generation_recipe": "Sample unique integers in 10..99999 with (n // 10) % 10 != 9 (excludes carries into the hundreds, keeping the transform a single-digit edit). Output = str(n + 10). Fixed seed, dedupe, verify arithmetically.",
+   "lane": "arithmetic"
+  },
+  {
+   "name": "minus_ten",
+   "category": "arithmetic",
+   "rule": "Given an integer >= 20 whose tens digit is not 0, output that integer minus 10.",
+   "examples": [
+    {
+     "input": "47",
+     "output": "37"
+    },
+    {
+     "input": "231",
+     "output": "221"
+    },
+    {
+     "input": "95",
+     "output": "85"
+    },
+    {
+     "input": "1372",
+     "output": "1362"
+    },
+    {
+     "input": "518",
+     "output": "508"
+    }
+   ],
+   "family": "add_k",
+   "domain_source": "pure rule: integers 20-99999 with tens digit != 0",
+   "domain_size_estimate": 80000,
+   "generation_method": "rule",
+   "difficulty_anchor": "prev_number_digits \u2014 same decrement operation one decimal place higher; borrow-free by construction",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Sample unique integers in 20..99999 with (n // 10) % 10 != 0 (excludes borrows from the hundreds). Output = str(n - 10). Fixed seed, dedupe, verify arithmetically.",
+   "lane": "arithmetic"
+  },
+  {
+   "name": "plus_hundred",
+   "category": "arithmetic",
+   "rule": "Given an integer whose hundreds digit is not 9, output that integer plus 100.",
+   "examples": [
+    {
+     "input": "47",
+     "output": "147"
+    },
+    {
+     "input": "231",
+     "output": "331"
+    },
+    {
+     "input": "852",
+     "output": "952"
+    },
+    {
+     "input": "1362",
+     "output": "1462"
+    },
+    {
+     "input": "709",
+     "output": "809"
+    }
+   ],
+   "family": "add_k",
+   "domain_source": "pure rule: integers 1-99999 with hundreds digit != 9",
+   "domain_size_estimate": 89000,
+   "generation_method": "rule",
+   "difficulty_anchor": "next_number_digits / plus_ten \u2014 single-digit edit at the hundreds place, carry-free by construction",
+   "gptj_confidence": "high",
+   "generation_recipe": "Sample unique integers in 1..99999 with (n // 100) % 10 != 9. Output = str(n + 100). Include some 1-2 digit inputs (47 -> 147) since GPT-J handles prepending '1' well. Fixed seed, dedupe, verify arithmetically.",
+   "lane": "arithmetic"
+  },
+  {
+   "name": "larger_of_pair",
+   "category": "comparison",
+   "rule": "Given two distinct integers separated by a space, output the larger one.",
+   "examples": [
+    {
+     "input": "47 92",
+     "output": "92"
+    },
+    {
+     "input": "310 58",
+     "output": "310"
+    },
+    {
+     "input": "6 71",
+     "output": "71"
+    },
+    {
+     "input": "845 512",
+     "output": "845"
+    },
+    {
+     "input": "29 24",
+     "output": "29"
+    }
+   ],
+   "family": "pair_extreme",
+   "domain_source": "pure rule: ordered pairs of distinct integers from 1-999",
+   "domain_size_estimate": 500000,
+   "generation_method": "rule",
+   "difficulty_anchor": "magnitude / identity \u2014 output copies one of the two visible inputs; magnitude comparison of small numbers is a robust pretraining skill, and the copy operation matches identity",
+   "gptj_confidence": "high",
+   "generation_recipe": "Sample pairs (a, b) uniform in 1..999 with a != b; format input as f'{a} {b}'; randomize whether the larger number is first or second (50/50) so position is uninformative. Output = str(max(a, b)). Prefer pairs with different digit counts for ~half the data (easy) and same digit count for the rest. Dedupe on the input string, fixed seed, verify with max().",
+   "lane": "comparison"
+  },
+  {
+   "name": "smaller_of_pair",
+   "category": "comparison",
+   "rule": "Given two distinct integers separated by a space, output the smaller one.",
+   "examples": [
+    {
+     "input": "47 92",
+     "output": "47"
+    },
+    {
+     "input": "310 58",
+     "output": "58"
+    },
+    {
+     "input": "6 71",
+     "output": "6"
+    },
+    {
+     "input": "845 512",
+     "output": "512"
+    },
+    {
+     "input": "29 24",
+     "output": "24"
+    }
+   ],
+   "family": "pair_extreme",
+   "domain_source": "pure rule: ordered pairs of distinct integers from 1-999",
+   "domain_size_estimate": 500000,
+   "generation_method": "rule",
+   "difficulty_anchor": "larger_of_pair \u2014 identical comparison with the opposite selection; useful as a minimal-pair contrast for function-vector geometry",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Same generator as larger_of_pair (independent seed, dedupe against nothing external): pairs (a, b) in 1..999, a != b, position of the smaller randomized 50/50. Output = str(min(a, b)). Verify with min().",
+   "lane": "comparison"
+  },
+  {
+   "name": "percent_to_decimal",
+   "category": "formatting",
+   "rule": "Given a percentage 'N%' where N is an integer not divisible by 10, output N/100 as a decimal.",
+   "examples": [
+    {
+     "input": "45%",
+     "output": "0.45"
+    },
+    {
+     "input": "7%",
+     "output": "0.07"
+    },
+    {
+     "input": "263%",
+     "output": "2.63"
+    },
+    {
+     "input": "89%",
+     "output": "0.89"
+    },
+    {
+     "input": "1204%",
+     "output": "12.04"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: integers 1-9999 excluding multiples of 10, formatted 'N%'",
+   "domain_size_estimate": 8999,
+   "generation_method": "rule",
+   "difficulty_anchor": "singular-plural \u2014 a conventional single-step surface transform (shift the decimal point two places) heavily attested in pretraining text",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Sample unique N in 1..9999 with N % 10 != 0 (multiples of 10 create trailing-zero ambiguity: 80% could be 0.8 or 0.80). Input = f'{N}%'; output = f'{N/100:.2f}' i.e. always exactly two decimals ('0.07', '2.63', '12.04'). Weight sampling toward N < 100 (the familiar case) at ~70%. Verify float(output) * 100 == N.",
+   "lane": "formatting"
+  },
+  {
+   "name": "iso_date_to_month",
+   "category": "dates",
+   "rule": "Given a date in YYYY-MM-DD format, output the English name of its month.",
+   "examples": [
+    {
+     "input": "2014-07-03",
+     "output": "July"
+    },
+    {
+     "input": "1987-01-22",
+     "output": "January"
+    },
+    {
+     "input": "2003-11-08",
+     "output": "November"
+    },
+    {
+     "input": "1954-04-30",
+     "output": "April"
+    },
+    {
+     "input": "2021-09-17",
+     "output": "September"
+    }
+   ],
+   "family": "iso_date_field",
+   "domain_source": "pure rule: valid dates, years 1900-2099, all 12 months, days 1-28",
+   "domain_size_estimate": 67200,
+   "generation_method": "rule",
+   "difficulty_anchor": "country-capital \u2014 a fixed 12-entry lookup (month number -> name) that GPT-J knows cold, wrapped in a field-extraction step; the full-date input keeps the domain far above 1200 despite only 12 labels",
+   "gptj_confidence": "high",
+   "generation_recipe": "Sample unique (year, month, day) with year in 1900..2099, month 1..12 balanced, day 1..28 (always valid, sidesteps month lengths and leap years). Format f'{y:04d}-{m:02d}-{d:02d}'. Output = calendar month name via a hardcoded 12-entry table. Verify with datetime.strptime(...).strftime('%B').",
+   "lane": "dates"
+  },
+  {
+   "name": "iso_date_day_of_month",
+   "category": "dates",
+   "rule": "Given a date in YYYY-MM-DD format, output the day of the month as a plain number (no leading zero).",
+   "examples": [
+    {
+     "input": "2014-07-03",
+     "output": "3"
+    },
+    {
+     "input": "1987-01-22",
+     "output": "22"
+    },
+    {
+     "input": "2003-11-08",
+     "output": "8"
+    },
+    {
+     "input": "1954-04-30",
+     "output": "30"
+    },
+    {
+     "input": "2021-09-17",
+     "output": "17"
+    }
+   ],
+   "family": "iso_date_field",
+   "domain_source": "pure rule: valid dates, years 1900-2099, days 1-28 plus 29/30 for long months",
+   "domain_size_estimate": 67200,
+   "generation_method": "rule",
+   "difficulty_anchor": "capitalize_first_letter \u2014 positional field extraction with a trivial normalization (strip leading zero), analogous difficulty to single-letter extraction tasks",
+   "gptj_confidence": "high",
+   "generation_recipe": "Same date generator as iso_date_to_month (independent samples). Output = str(int(dd)), i.e. '03' -> '3'. Ensure roughly uniform coverage of days 1-9 vs 10-28 so the leading-zero-strip rule is demonstrated in every 10-shot prompt (include at least one day < 10 among sampled shots by stratification). Verify int(output) == day.",
+   "lane": "dates"
+  },
+  {
+   "name": "iso_date_year_plus_one",
+   "category": "dates",
+   "rule": "Given a date in YYYY-MM-DD format, output the year one greater than the date's year.",
+   "examples": [
+    {
+     "input": "2014-07-03",
+     "output": "2015"
+    },
+    {
+     "input": "1987-01-22",
+     "output": "1988"
+    },
+    {
+     "input": "1899-11-08",
+     "output": "1900"
+    },
+    {
+     "input": "1954-04-30",
+     "output": "1955"
+    },
+    {
+     "input": "2021-09-17",
+     "output": "2022"
+    }
+   ],
+   "family": "iso_date_field",
+   "domain_source": "pure rule: valid dates, years 1800-2099",
+   "domain_size_estimate": 100000,
+   "generation_method": "rule",
+   "difficulty_anchor": "next_number_digits \u2014 extraction of the year field followed by the same +1 increment GPT-J already handles; years are among the most-incremented numbers in pretraining text",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Sample unique valid dates with year in 1800..2099, month 1..12, day 1..28. Output = str(year + 1). Keep century-boundary cases (1899 -> 1900, 1999 -> 2000) to at most ~2% of data since they involve carries. Verify arithmetically.",
+   "lane": "dates"
+  },
+  {
+   "name": "day_after_textual_date",
+   "category": "dates",
+   "rule": "Given a date like 'March 5, 1984' with day 1-27, output the month and next day: 'March 6'.",
+   "examples": [
+    {
+     "input": "March 5, 1984",
+     "output": "March 6"
+    },
+    {
+     "input": "July 19, 2002",
+     "output": "July 20"
+    },
+    {
+     "input": "October 1, 1963",
+     "output": "October 2"
+    },
+    {
+     "input": "January 26, 2015",
+     "output": "January 27"
+    },
+    {
+     "input": "August 9, 1977",
+     "output": "August 10"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: 12 months x days 1-27 x years 1900-2099",
+   "domain_size_estimate": 64800,
+   "generation_method": "rule",
+   "difficulty_anchor": "next_number_digits plus a copy \u2014 the month is copied verbatim and the day gets +1; capping days at 27 removes all month-boundary logic",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Sample unique (month_name, day, year) with day in 1..27 (never crosses a month boundary, so no month-length or leap-year knowledge is needed) and year in 1900..2099. Input f'{month} {day}, {year}'; output f'{month} {day+1}' (year deliberately dropped from the output to keep it 2 tokens). Verify by parsing and adding timedelta(days=1).",
+   "lane": "dates"
+  },
+  {
+   "name": "year_to_decade",
+   "category": "dates",
+   "rule": "Given a four-digit year, output its decade in the standard 'YYY0s' form (1987 -> 1980s).",
+   "examples": [
+    {
+     "input": "1987",
+     "output": "1980s"
+    },
+    {
+     "input": "2004",
+     "output": "2000s"
+    },
+    {
+     "input": "1932",
+     "output": "1930s"
+    },
+    {
+     "input": "1849",
+     "output": "1840s"
+    },
+    {
+     "input": "2016",
+     "output": "2010s"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: years 1000-2999, excluding years ending in 0",
+   "domain_size_estimate": 1800,
+   "generation_method": "rule",
+   "difficulty_anchor": "present-past \u2014 a heavily conventionalized surface transform ('in 1987' -> 'the 1980s') that GPT-J has seen constantly; mechanically it zeroes the last digit and appends 's'",
+   "gptj_confidence": "high",
+   "generation_recipe": "Enumerate years 1000..2999 with last digit != 0 (years like 1980 map to themselves + 's', which is fine, but excluding them keeps the transform visibly non-trivial in every shot): 1800 items. Output = str(y // 10 * 10) + 's'. Weight sampling toward 1500-2099 where decade phrasing is most attested. Verify with the formula.",
+   "lane": "dates"
+  },
+  {
+   "name": "hour_after_time",
+   "category": "time",
+   "rule": "Given a 24-hour clock time HH:MM with hour 00-22, output the time one hour later (minutes unchanged).",
+   "examples": [
+    {
+     "input": "14:37",
+     "output": "15:37"
+    },
+    {
+     "input": "08:15",
+     "output": "09:15"
+    },
+    {
+     "input": "21:04",
+     "output": "22:04"
+    },
+    {
+     "input": "11:59",
+     "output": "12:59"
+    },
+    {
+     "input": "00:30",
+     "output": "01:30"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: 23 hours x 60 minutes = 1380 distinct times",
+   "domain_size_estimate": 1380,
+   "generation_method": "rule",
+   "difficulty_anchor": "next_number_digits plus a copy \u2014 +1 on the hour field with the minutes copied verbatim; excluding hour 23 removes the wraparound case",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Enumerate all times f'{h:02d}:{m:02d}' for h in 0..22, m in 0..59 (1380 items, meets the 1200 floor; extend with seconds HH:MM:SS if more are ever needed). Output = f'{h+1:02d}:{m:02d}'. Hour 23 excluded (00:xx wraparound). Note output keeps two-digit zero-padded hours ('09:15'), demonstrated in shots. Verify with the formula.",
+   "lane": "time"
+  },
+  {
+   "name": "time_extract_minutes",
+   "category": "time",
+   "rule": "Given a 24-hour clock time HH:MM with minutes 10-59, output the minutes as a number.",
+   "examples": [
+    {
+     "input": "14:37",
+     "output": "37"
+    },
+    {
+     "input": "08:15",
+     "output": "15"
+    },
+    {
+     "input": "21:48",
+     "output": "48"
+    },
+    {
+     "input": "11:59",
+     "output": "59"
+    },
+    {
+     "input": "06:40",
+     "output": "40"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: 24 hours x minutes 10-59 = 1200 distinct times",
+   "domain_size_estimate": 1200,
+   "generation_method": "rule",
+   "difficulty_anchor": "capitalize_last_letter \u2014 pure positional field extraction from a rigid short format",
+   "gptj_confidence": "high",
+   "generation_recipe": "Enumerate f'{h:02d}:{m:02d}' for h in 0..23, m in 10..59 (exactly 1200 items; minutes 00-09 excluded so the answer never needs a leading-zero-strip decision like '04' vs '4'). Output = str(m). Verify output == input.split(':')[1].",
+   "lane": "time"
+  },
+  {
+   "name": "date_to_quarter",
+   "category": "dates",
+   "rule": "Given a date in YYYY-MM-DD format, output its calendar quarter as Q1, Q2, Q3, or Q4.",
+   "examples": [
+    {
+     "input": "2014-07-03",
+     "output": "Q3"
+    },
+    {
+     "input": "1987-01-22",
+     "output": "Q1"
+    },
+    {
+     "input": "2003-11-08",
+     "output": "Q4"
+    },
+    {
+     "input": "1954-04-30",
+     "output": "Q2"
+    },
+    {
+     "input": "2021-09-17",
+     "output": "Q3"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: valid dates, years 1900-2099, months balanced across quarters",
+   "domain_size_estimate": 67200,
+   "generation_method": "rule",
+   "difficulty_anchor": "ag_news \u2014 4-way classification with fixed short labels; the month->quarter mapping (Jan-Mar=Q1, ...) is a standard business convention in pretraining text",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Sample unique valid dates (year 1900..2099, month 1..12 balanced, day 1..28). Output = 'Q' + str((month - 1) // 3 + 1). Calendar quarters only (explicitly not fiscal-year quarters \u2014 state this in any task doc). Verify with the formula; balance labels 25/25/25/25.",
+   "lane": "dates"
+  },
+  {
+   "name": "next_month_of_date",
+   "category": "dates",
+   "rule": "Given 'MonthName Year', output the name of the following month (December -> January).",
+   "examples": [
+    {
+     "input": "March 1984",
+     "output": "April"
+    },
+    {
+     "input": "November 2003",
+     "output": "December"
+    },
+    {
+     "input": "January 1967",
+     "output": "February"
+    },
+    {
+     "input": "August 2019",
+     "output": "September"
+    },
+    {
+     "input": "May 1875",
+     "output": "June"
+    }
+   ],
+   "family": "month_shift",
+   "domain_source": "pure rule: 12 months x years 1800-2099 = 3600 inputs",
+   "domain_size_estimate": 3600,
+   "generation_method": "rule",
+   "difficulty_anchor": "next_item \u2014 successor in a memorized cyclic sequence, exactly the operation next_item tests on number words, here on month names (the year makes the input domain large; bare month names alone would be a banned 12-item domain)",
+   "gptj_confidence": "high",
+   "generation_recipe": "Enumerate (month, year) for all 12 months x years 1800..2099. Input f'{month_name} {year}'; output = next month name from a hardcoded cyclic list, December -> 'January' (output contains no year, so the wraparound needs no year+1 logic). Verify against calendar.month_name indexing mod 12.",
+   "lane": "dates"
+  },
+  {
+   "name": "prev_month_of_date",
+   "category": "dates",
+   "rule": "Given 'MonthName Year', output the name of the preceding month (January -> December).",
+   "examples": [
+    {
+     "input": "March 1984",
+     "output": "February"
+    },
+    {
+     "input": "November 2003",
+     "output": "October"
+    },
+    {
+     "input": "January 1967",
+     "output": "December"
+    },
+    {
+     "input": "August 2019",
+     "output": "July"
+    },
+    {
+     "input": "June 1875",
+     "output": "May"
+    }
+   ],
+   "family": "month_shift",
+   "domain_source": "pure rule: 12 months x years 1800-2099 = 3600 inputs",
+   "domain_size_estimate": 3600,
+   "generation_method": "rule",
+   "difficulty_anchor": "prev_item \u2014 predecessor in a memorized cyclic sequence; predecessor tasks run slightly harder than successor tasks, matching the prev_item vs next_item gap",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Same generator as next_month_of_date. Output = previous month name from the hardcoded cyclic list, January -> 'December'. Verify against calendar.month_name indexing mod 12.",
+   "lane": "dates"
+  },
+  {
+   "name": "days_in_month",
+   "category": "dates",
+   "rule": "Given 'MonthName Year' where the month is not February, output the number of days in that month (30 or 31).",
+   "examples": [
+    {
+     "input": "April 2019",
+     "output": "30"
+    },
+    {
+     "input": "January 1988",
+     "output": "31"
+    },
+    {
+     "input": "September 2003",
+     "output": "30"
+    },
+    {
+     "input": "July 1965",
+     "output": "31"
+    },
+    {
+     "input": "November 2021",
+     "output": "30"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: 11 non-February months x years 1800-2099 = 3300 inputs",
+   "domain_size_estimate": 3300,
+   "generation_method": "rule",
+   "difficulty_anchor": "sentiment \u2014 effectively binary classification (30 vs 31) driven by a memorized rhyme-level fact ('Thirty days hath September...'); February is excluded so leap years never matter",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Enumerate (month, year) for the 11 months excluding February, years 1800..2099. Output from the fixed table: {Apr, Jun, Sep, Nov} -> '30', {Jan, Mar, May, Jul, Aug, Oct, Dec} -> '31'. Balance labels by oversampling 30-day months to ~45%. February is excluded because its length depends on the year (leap rule), which would either break determinism or demand a harder rule. Verify with calendar.monthrange.",
+   "lane": "dates"
+  },
+  {
+   "name": "english-italian",
+   "category": "translation",
+   "rule": "Translate a common English word into its most common single-word Italian equivalent.",
+   "examples": [
+    {
+     "input": "dog",
+     "output": "cane"
+    },
+    {
+     "input": "house",
+     "output": "casa"
+    },
+    {
+     "input": "water",
+     "output": "acqua"
+    },
+    {
+     "input": "book",
+     "output": "libro"
+    },
+    {
+     "input": "red",
+     "output": "rosso"
+    }
+   ],
+   "domain_source": "dataset_files/extended_tasks/_resources/common_words.txt (top 12000 frequency-sorted English words), content words only",
+   "domain_size_estimate": 2500,
+   "generation_method": "knowledge",
+   "family": "en_to_x_translation",
+   "difficulty_anchor": "english-french / english-spanish \u2014 identical task shape, Italian is a comparably high-resource Romance language in web corpora",
+   "gptj_confidence": "high",
+   "generation_recipe": "Take common_words.txt, drop function words (keep nouns/verbs/adjectives per wordfreq/lemminflect POS). In chunks of 100, have the LLM produce the single dominant Italian translation. EXCLUDE: words with multiple equally common Italian translations, English words whose Italian form is identical (e.g. 'pizza'), and multi-word translations. Self-check: independent second pass translates each Italian word back to English; keep a pair only if round-trip returns the original word (or its lemma); drop all mismatches. Target >=1500 survivors from ~3000 candidates.",
+   "gptj_confidence_note": null,
+   "lane": "translation"
+  },
+  {
+   "name": "english-portuguese",
+   "category": "translation",
+   "rule": "Translate a common English word into its most common single-word Portuguese equivalent.",
+   "examples": [
+    {
+     "input": "house",
+     "output": "casa"
+    },
+    {
+     "input": "water",
+     "output": "\u00e1gua"
+    },
+    {
+     "input": "book",
+     "output": "livro"
+    },
+    {
+     "input": "red",
+     "output": "vermelho"
+    },
+    {
+     "input": "night",
+     "output": "noite"
+    }
+   ],
+   "domain_source": "common_words.txt (12000 frequency-sorted English words), content words only",
+   "domain_size_estimate": 2500,
+   "generation_method": "knowledge",
+   "family": "en_to_x_translation",
+   "difficulty_anchor": "english-spanish \u2014 Portuguese is very close to Spanish in structure and reasonably represented in the Pile",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Same pipeline as english-italian: filter common_words.txt to content words, translate in chunks of 100 to European/Brazilian-neutral Portuguese, one dominant single-word translation per input. EXCLUDE ambiguous translations, identical spellings, and words whose PT/BR forms differ. Self-check: round-trip back-translation in an independent pass; drop any pair that does not round-trip. Keep diacritics in outputs.",
+   "gptj_confidence_note": null,
+   "lane": "translation"
+  },
+  {
+   "name": "english-dutch",
+   "category": "translation",
+   "rule": "Translate a common English word into its most common single-word Dutch equivalent.",
+   "examples": [
+    {
+     "input": "dog",
+     "output": "hond"
+    },
+    {
+     "input": "book",
+     "output": "boek"
+    },
+    {
+     "input": "milk",
+     "output": "melk"
+    },
+    {
+     "input": "green",
+     "output": "groen"
+    },
+    {
+     "input": "night",
+     "output": "nacht"
+    }
+   ],
+   "domain_source": "common_words.txt (12000 frequency-sorted English words), content words only",
+   "domain_size_estimate": 2000,
+   "generation_method": "knowledge",
+   "family": "en_to_x_translation",
+   "difficulty_anchor": "english-german \u2014 Dutch is closely related to German; slightly lower resource so medium confidence",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Same pipeline as english-italian on common_words.txt content words. EXCLUDE: Dutch translations identical to the English word (frequent for Germanic cognates like 'water'->'water'), ambiguous translations, multi-word outputs. Self-check: round-trip back-translation in a separate pass; drop mismatches. Expect a higher exclusion rate than Romance languages; start from ~4000 candidates to net >=1500.",
+   "gptj_confidence_note": null,
+   "lane": "translation"
+  },
+  {
+   "name": "french-english",
+   "category": "translation",
+   "rule": "Translate a common French word into its most common single-word English equivalent.",
+   "examples": [
+    {
+     "input": "chien",
+     "output": "dog"
+    },
+    {
+     "input": "maison",
+     "output": "house"
+    },
+    {
+     "input": "eau",
+     "output": "water"
+    },
+    {
+     "input": "rouge",
+     "output": "red"
+    },
+    {
+     "input": "fromage",
+     "output": "cheese"
+    }
+   ],
+   "domain_source": "French sides of the pairs produced for the existing english-french task pipeline, or common_words.txt translated to French then reversed",
+   "domain_size_estimate": 2500,
+   "generation_method": "knowledge",
+   "family": "x_to_en_translation",
+   "difficulty_anchor": "english-french \u2014 same lexical knowledge, reversed direction; into-English is typically easier for an English-centric model",
+   "gptj_confidence": "high",
+   "generation_recipe": "Generate EN->FR pairs from common_words.txt content words (chunks of 100), then invert. EXCLUDE: French words with multiple common English senses (e.g. 'livre' = book/pound, 'temps' = time/weather), French-English identical spellings, and any French word appearing as translation of two different English words. Self-check: independent pass translates each French word to English without seeing the intended answer; keep only exact matches (lemma-level).",
+   "gptj_confidence_note": null,
+   "lane": "translation"
+  },
+  {
+   "name": "spanish-english",
+   "category": "translation",
+   "rule": "Translate a common Spanish word into its most common single-word English equivalent.",
+   "examples": [
+    {
+     "input": "perro",
+     "output": "dog"
+    },
+    {
+     "input": "casa",
+     "output": "house"
+    },
+    {
+     "input": "libro",
+     "output": "book"
+    },
+    {
+     "input": "rojo",
+     "output": "red"
+    },
+    {
+     "input": "leche",
+     "output": "milk"
+    }
+   ],
+   "domain_source": "Spanish sides of EN->ES pairs generated from common_words.txt, inverted",
+   "domain_size_estimate": 2500,
+   "generation_method": "knowledge",
+   "family": "x_to_en_translation",
+   "difficulty_anchor": "english-spanish reversed; Spanish is the highest-resource non-English language for GPT-J",
+   "gptj_confidence": "high",
+   "generation_recipe": "Same invert-the-pipeline recipe as french-english, using Spanish. EXCLUDE polysemous Spanish words (e.g. 'tiempo' = time/weather, 'banco' = bank/bench), ES-EN identical spellings ('hospital', 'animal'), and Spanish words mapped from two English sources. Self-check: blind back-translation pass ES->EN, keep exact lemma matches only.",
+   "gptj_confidence_note": null,
+   "lane": "translation"
+  },
+  {
+   "name": "german-english",
+   "category": "translation",
+   "rule": "Translate a common German word into its most common single-word English equivalent.",
+   "examples": [
+    {
+     "input": "Hund",
+     "output": "dog"
+    },
+    {
+     "input": "Haus",
+     "output": "house"
+    },
+    {
+     "input": "Buch",
+     "output": "book"
+    },
+    {
+     "input": "rot",
+     "output": "red"
+    },
+    {
+     "input": "Milch",
+     "output": "milk"
+    }
+   ],
+   "domain_source": "German sides of EN->DE pairs generated from common_words.txt, inverted; German nouns capitalized per orthography",
+   "domain_size_estimate": 2500,
+   "generation_method": "knowledge",
+   "family": "x_to_en_translation",
+   "difficulty_anchor": "english-german reversed \u2014 same lexical knowledge, easier direction",
+   "gptj_confidence": "high",
+   "generation_recipe": "Invert the EN->DE pipeline over common_words.txt content words. Keep standard German orthography (nouns capitalized). EXCLUDE: DE-EN identical or near-identical cognates ('Hand', 'Winter'), polysemous German words, compounds longer than one word. Self-check: blind back-translation pass DE->EN in a separate context; keep exact matches only.",
+   "gptj_confidence_note": null,
+   "lane": "translation"
+  },
+  {
+   "name": "language_identification",
+   "category": "word_classification",
+   "rule": "Given a common word from French, Spanish, German, or Italian, output the name of the language it belongs to.",
+   "examples": [
+    {
+     "input": "fromage",
+     "output": "French"
+    },
+    {
+     "input": "perro",
+     "output": "Spanish"
+    },
+    {
+     "input": "Fenster",
+     "output": "German"
+    },
+    {
+     "input": "ragazzo",
+     "output": "Italian"
+    },
+    {
+     "input": "cheval",
+     "output": "French"
+    }
+   ],
+   "domain_source": "The verified foreign-word sides of the four translation pipelines above (400+ words per language)",
+   "domain_size_estimate": 1600,
+   "generation_method": "knowledge",
+   "family": null,
+   "difficulty_anchor": "ag_news \u2014 fixed 4-way label set; language ID from orthography is a strong surface cue GPT-J picks up easily",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Pool the verified foreign words from the en->fr/es/de/it pipelines (~600+ each). EXCLUDE: words spelled identically in two or more of the four languages (e.g. 'animale' is IT-only, fine; 'central' appears in FR and ES \u2014 drop), words identical to an English word, and proper nouns. Self-check: for each retained word, an independent pass must assert 'this word exists in language L and not in the other three'; drop failures. Balance to ~400 per language.",
+   "gptj_confidence_note": null,
+   "lane": "word_classification"
+  },
+  {
+   "name": "french_noun_gender",
+   "category": "linguistic_knowledge",
+   "rule": "Given a common French noun, output its grammatical gender: masculine or feminine.",
+   "examples": [
+    {
+     "input": "maison",
+     "output": "feminine"
+    },
+    {
+     "input": "livre",
+     "output": "masculine"
+    },
+    {
+     "input": "voiture",
+     "output": "feminine"
+    },
+    {
+     "input": "chapeau",
+     "output": "masculine"
+    },
+    {
+     "input": "table",
+     "output": "feminine"
+    }
+   ],
+   "domain_source": "1500+ common French nouns generated in frequency order by the LLM (seeded from translations of common_nouns.txt)",
+   "domain_size_estimate": 1500,
+   "generation_method": "knowledge",
+   "family": "noun_gender",
+   "difficulty_anchor": "english-french \u2014 same tier of French lexical knowledge; gender is heavily cued by word endings which a 6B model has absorbed",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Translate common_nouns.txt to French (single-word translations only), keep the French nouns. EXCLUDE: nouns usable in both genders ('\u00e9l\u00e8ve', 'artiste', profession nouns with both forms), nouns whose gender varies by sense ('livre', 'tour' \u2014 wait, 'livre' is masculine=book / feminine=pound: DROP such dual-gender words explicitly), plural-only nouns. Self-check: independent pass asks for the article (le/la) for each noun; keep only nouns where article and labeled gender agree and the pass marks it unambiguous.",
+   "gptj_confidence_note": null,
+   "lane": "linguistic_knowledge"
+  },
+  {
+   "name": "german_noun_gender",
+   "category": "linguistic_knowledge",
+   "rule": "Given a common German noun, output its definite article: der, die, or das.",
+   "examples": [
+    {
+     "input": "Haus",
+     "output": "das"
+    },
+    {
+     "input": "Hund",
+     "output": "der"
+    },
+    {
+     "input": "Katze",
+     "output": "die"
+    },
+    {
+     "input": "Fenster",
+     "output": "das"
+    },
+    {
+     "input": "Tisch",
+     "output": "der"
+    }
+   ],
+   "domain_source": "1500+ common German nouns from single-word translations of common_nouns.txt",
+   "domain_size_estimate": 1500,
+   "generation_method": "knowledge",
+   "family": "noun_gender",
+   "difficulty_anchor": "english-german \u2014 same lexical tier; der/die/das completion is an extremely frequent pattern in German web text",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Translate common_nouns.txt to German, keep single-word nouns with standard capitalization. EXCLUDE: nouns with regionally or semantically varying gender ('Joghurt', 'Teil' der/das by sense), plural-only nouns ('Eltern'), and long compounds (>12 characters, to keep tokenization friendly). Output is exactly one of {der, die, das} (all single tokens). Self-check: independent pass produces the article blind; keep only agreements flagged unambiguous.",
+   "gptj_confidence_note": null,
+   "lane": "linguistic_knowledge"
+  },
+  {
+   "name": "spanish_noun_gender",
+   "category": "linguistic_knowledge",
+   "rule": "Given a common Spanish noun, output its grammatical gender: masculine or feminine.",
+   "examples": [
+    {
+     "input": "casa",
+     "output": "feminine"
+    },
+    {
+     "input": "libro",
+     "output": "masculine"
+    },
+    {
+     "input": "mesa",
+     "output": "feminine"
+    },
+    {
+     "input": "coche",
+     "output": "masculine"
+    },
+    {
+     "input": "flor",
+     "output": "feminine"
+    }
+   ],
+   "domain_source": "1500+ common Spanish nouns from single-word translations of common_nouns.txt",
+   "domain_size_estimate": 1500,
+   "generation_method": "knowledge",
+   "family": "noun_gender",
+   "difficulty_anchor": "english-spanish \u2014 Spanish gender is strongly cued by -o/-a endings, which makes the ICL rule especially learnable",
+   "gptj_confidence": "high",
+   "generation_recipe": "Translate common_nouns.txt to Spanish, keep single-word nouns. EXCLUDE: common-gender nouns ('estudiante', 'artista'), sense-dependent gender ('capital', 'orden', 'frente'), plural-only nouns. Keep a mix of regular (-o/-a) and irregular endings ('flor', 'mano', 'd\u00eda') so the mapping is knowledge, not pure orthography, but do not exclude regulars. Self-check: independent el/la article pass; keep only unambiguous agreements.",
+   "gptj_confidence_note": null,
+   "lane": "linguistic_knowledge"
+  },
+  {
+   "name": "city-country",
+   "category": "world_knowledge",
+   "rule": "Given a well-known world city, output the country it is in.",
+   "examples": [
+    {
+     "input": "Barcelona",
+     "output": "Spain"
+    },
+    {
+     "input": "Osaka",
+     "output": "Japan"
+    },
+    {
+     "input": "Marseille",
+     "output": "France"
+    },
+    {
+     "input": "Munich",
+     "output": "Germany"
+    },
+    {
+     "input": "Cusco",
+     "output": "Peru"
+    }
+   ],
+   "domain_source": "Enumerable world knowledge: cities with population >~200k plus historically/touristically famous smaller cities; thousands exist and several thousand are reliably known to LLMs",
+   "domain_size_estimate": 2000,
+   "generation_method": "knowledge",
+   "family": "city_relations",
+   "difficulty_anchor": "landmark-country \u2014 same relation type (place -> country) with a much larger domain of comparably famous places",
+   "gptj_confidence": "high",
+   "generation_recipe": "Generate country-by-country: for each of ~120 countries, list 5-40 of its most famous cities (more for large countries), giving ~2500 candidates. EXCLUDE: city names shared across countries unless one referent is overwhelmingly dominant ('Paris' OK -> France; 'San Jose', 'Cordoba', 'Tripoli' DROP), cities renamed recently, and disputed territories. Use everyday country names ('United States', 'South Korea'). Self-check: independent pass answers 'Which country is <city> in?' blind, plus a spot rule that the city has population >200k OR is famous (capital, tourist, historic); drop disagreements and uncertain items.",
+   "gptj_confidence_note": null,
+   "lane": "world_knowledge"
+  },
+  {
+   "name": "city-continent",
+   "category": "world_knowledge",
+   "rule": "Given a well-known world city, output its continent (Africa, Asia, Europe, North America, South America, or Australia).",
+   "examples": [
+    {
+     "input": "Lagos",
+     "output": "Africa"
+    },
+    {
+     "input": "Lima",
+     "output": "South America"
+    },
+    {
+     "input": "Osaka",
+     "output": "Asia"
+    },
+    {
+     "input": "Prague",
+     "output": "Europe"
+    },
+    {
+     "input": "Melbourne",
+     "output": "Australia"
+    }
+   ],
+   "domain_source": "Same verified city list as city-country; continent derived deterministically from the verified country via a fixed country->continent table",
+   "domain_size_estimate": 2000,
+   "generation_method": "knowledge",
+   "family": "city_relations",
+   "difficulty_anchor": "landmark-country / country-capital \u2014 coarser than city-country, but the label must be inferred rather than recalled verbatim, so medium",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Reuse the verified city->country pairs from city-country, then map country->continent with a hardcoded 195-row lookup table (deterministic, no LLM). Label set fixed to {Africa, Asia, Europe, North America, South America, Australia}. EXCLUDE: transcontinental-country cities where continent is contested (Istanbul, all Russian cities east of the Urals, Cairo OK as Africa but drop Suez-area edge cases), and Pacific island cities (Oceania-vs-Australia label confusion). Self-check inherited from city-country verification; additionally assert every retained country appears in the lookup table.",
+   "gptj_confidence_note": null,
+   "lane": "world_knowledge"
+  },
+  {
+   "name": "us-city-state",
+   "category": "world_knowledge",
+   "rule": "Given a well-known US city, output the US state it is in.",
+   "examples": [
+    {
+     "input": "Chattanooga",
+     "output": "Tennessee"
+    },
+    {
+     "input": "Tucson",
+     "output": "Arizona"
+    },
+    {
+     "input": "Sacramento",
+     "output": "California"
+    },
+    {
+     "input": "Omaha",
+     "output": "Nebraska"
+    },
+    {
+     "input": "Boise",
+     "output": "Idaho"
+    }
+   ],
+   "domain_source": "Enumerable knowledge: ~25-35 well-known cities per state across 50 states (state capitals, metro areas, college towns, tourist towns), heavily represented in US-centric web text",
+   "domain_size_estimate": 1300,
+   "generation_method": "knowledge",
+   "family": "city_relations",
+   "difficulty_anchor": "national_parks (place -> US state) \u2014 identical output space and relation type, larger input domain",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Generate state-by-state: for each of the 50 states list 20-35 well-known cities/towns (capitals, biggest cities, university towns, famous resorts), ~1500 candidates. EXCLUDE: any city name existing in more than one state without a single overwhelmingly dominant referent (DROP Springfield, Portland, Columbus, Aurora, Arlington; KEEP e.g. Boston, Milwaukee where dominance is total \u2014 apply a strict 'would a US reader ever need the state to disambiguate?' test and drop if yes). Self-check: independent blind pass 'Which state is <city> in?'; drop disagreements; also verify each retained name is unique in the final list.",
+   "gptj_confidence_note": null,
+   "lane": "world_knowledge"
+  },
+  {
+   "name": "living_nonliving",
+   "category": "semantic_classification",
+   "rule": "Classify a concrete noun as living (organism: animal, plant, or person) or nonliving.",
+   "examples": [
+    {
+     "input": "tiger",
+     "output": "living"
+    },
+    {
+     "input": "hammer",
+     "output": "nonliving"
+    },
+    {
+     "input": "oak",
+     "output": "living"
+    },
+    {
+     "input": "bucket",
+     "output": "nonliving"
+    },
+    {
+     "input": "farmer",
+     "output": "living"
+    }
+   ],
+   "domain_source": "common_nouns.txt (6000), filtered by LLM to unambiguous cases",
+   "domain_size_estimate": 2500,
+   "generation_method": "knowledge",
+   "family": "noun_dichotomy",
+   "difficulty_anchor": "sentiment \u2014 binary label from a fixed pair; animacy is one of the most salient semantic features in embedding space",
+   "gptj_confidence": "high",
+   "generation_recipe": "Label common_nouns.txt in chunks of 100 as living / nonliving / ambiguous. Living = names an organism (animal, plant, person, occupation/role). EXCLUDE (mark ambiguous): body parts ('heart', 'leaf' as detached part), dead-organism products ('leather', 'wood', 'meat'), collectives ('forest', 'crowd'), abstract nouns, and microorganism/borderline items ('virus'). Self-check: independent second labeling pass; keep only items where both passes agree and neither says ambiguous. Balance classes to at most 60/40.",
+   "gptj_confidence_note": null,
+   "lane": "semantic_classification"
+  },
+  {
+   "name": "natural_manmade",
+   "category": "semantic_classification",
+   "rule": "Classify a concrete noun as naturally occurring (natural) or made by humans (manmade).",
+   "examples": [
+    {
+     "input": "mountain",
+     "output": "natural"
+    },
+    {
+     "input": "chair",
+     "output": "manmade"
+    },
+    {
+     "input": "cloud",
+     "output": "natural"
+    },
+    {
+     "input": "engine",
+     "output": "manmade"
+    },
+    {
+     "input": "sand",
+     "output": "natural"
+    }
+   ],
+   "domain_source": "common_nouns.txt (6000), filtered by LLM to unambiguous cases",
+   "domain_size_estimate": 2000,
+   "generation_method": "knowledge",
+   "family": "noun_dichotomy",
+   "difficulty_anchor": "sentiment \u2014 fixed binary label set; artifact-vs-natural-kind is a robust lexical semantic axis",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Label common_nouns.txt in chunks as natural / manmade / ambiguous. EXCLUDE (ambiguous): cultivated or processed borderline items ('garden', 'farm', 'bread', 'paper', 'pearl'), domesticated animals if the labeler hesitates (default: animals and plants are natural), abstract nouns, and places mixing both ('park', 'harbor'). Self-check: two independent labeling passes; keep only double-agreement items with no ambiguous vote.",
+   "gptj_confidence_note": null,
+   "lane": "semantic_classification"
+  },
+  {
+   "name": "concrete_abstract",
+   "category": "semantic_classification",
+   "rule": "Classify a noun as concrete (a physical thing you can see or touch) or abstract (an idea, quality, or state).",
+   "examples": [
+    {
+     "input": "spoon",
+     "output": "concrete"
+    },
+    {
+     "input": "honesty",
+     "output": "abstract"
+    },
+    {
+     "input": "cloud",
+     "output": "concrete"
+    },
+    {
+     "input": "freedom",
+     "output": "abstract"
+    },
+    {
+     "input": "brick",
+     "output": "concrete"
+    }
+   ],
+   "domain_source": "common_nouns.txt (6000), filtered by LLM to clear extremes; optionally cross-checked against published concreteness norms behavior via wordfreq availability",
+   "domain_size_estimate": 2000,
+   "generation_method": "knowledge",
+   "family": "noun_dichotomy",
+   "difficulty_anchor": "sentiment \u2014 binary semantic judgment; concreteness is well represented in distributional statistics",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Label common_nouns.txt in chunks as concrete / abstract / middle, instructing the labeler to use 'middle' liberally. KEEP only clear extremes: physical objects/substances/animals vs qualities/emotions/concepts. EXCLUDE (middle): events ('party', 'war'), time periods, sounds/light ('noise', 'shadow'), institutions ('school' building-vs-institution polysemy), and any noun with a common concrete AND abstract sense ('key', 'field'). Self-check: two independent passes; retain double-agreed extremes only; balance classes ~50/50.",
+   "gptj_confidence_note": null,
+   "lane": "semantic_classification"
+  },
+  {
+   "name": "animal_plant_object",
+   "category": "semantic_classification",
+   "rule": "Classify a concrete noun as animal, plant, or object.",
+   "examples": [
+    {
+     "input": "falcon",
+     "output": "animal"
+    },
+    {
+     "input": "fern",
+     "output": "plant"
+    },
+    {
+     "input": "kettle",
+     "output": "object"
+    },
+    {
+     "input": "tulip",
+     "output": "plant"
+    },
+    {
+     "input": "otter",
+     "output": "animal"
+    }
+   ],
+   "domain_source": "LLM-enumerated animals (~600) and plants/trees/flowers (~350) plus inanimate concrete nouns from common_nouns.txt (~600)",
+   "domain_size_estimate": 1500,
+   "generation_method": "knowledge",
+   "family": null,
+   "difficulty_anchor": "ag_news \u2014 small fixed label set over highly familiar items; basic taxonomic category is the easiest semantic feature",
+   "gptj_confidence": "high",
+   "generation_recipe": "Enumerate animals in chunks (mammals, birds, fish, insects, reptiles) and plants in chunks (trees, flowers, vegetables-as-plants, herbs, shrubs); take object-class items from common_nouns.txt concrete artifacts. EXCLUDE: plant products that read as food/objects ('apple' fruit-vs-tree, 'wood', 'cotton'), animal products ('wool', 'leather'), fungi and microorganisms, people/occupations. Self-check: independent 3-way relabeling pass; keep agreements; verify rare species names exist via an existence pass.",
+   "gptj_confidence_note": null,
+   "lane": "semantic_classification"
+  },
+  {
+   "name": "person_place_thing",
+   "category": "semantic_classification",
+   "rule": "Classify a noun as person (a human or human role), place (a location), or thing (a physical object).",
+   "examples": [
+    {
+     "input": "dentist",
+     "output": "person"
+    },
+    {
+     "input": "harbor",
+     "output": "place"
+    },
+    {
+     "input": "wrench",
+     "output": "thing"
+    },
+    {
+     "input": "nun",
+     "output": "person"
+    },
+    {
+     "input": "meadow",
+     "output": "place"
+    }
+   ],
+   "domain_source": "common_nouns.txt (6000): occupations/roles (~500), location nouns (~400), object nouns (~1500)",
+   "domain_size_estimate": 2000,
+   "generation_method": "knowledge",
+   "family": null,
+   "difficulty_anchor": "ag_news \u2014 fixed 3-way label set; person/place/thing is a grade-school-salient distinction with massive corpus support",
+   "gptj_confidence": "high",
+   "generation_recipe": "Label common_nouns.txt in chunks as person / place / thing / other-or-ambiguous. person = humans and roles ('teacher', 'uncle'); place = locations one can be at ('beach', 'kitchen', 'stadium'); thing = touchable objects. EXCLUDE ('other'): abstract nouns, events, animals, institutions with building/organization polysemy ('church', 'school', 'bank'), vehicles used as places ('ship' \u2014 drop). Self-check: two independent passes; keep double-agreements only; balance classes to within 2:1.",
+   "gptj_confidence_note": null,
+   "lane": "semantic_classification"
+  },
+  {
+   "name": "animal_class",
+   "category": "semantic_classification",
+   "rule": "Given an animal, output its taxonomic class from the fixed set {mammal, bird, fish, reptile, insect}.",
+   "examples": [
+    {
+     "input": "salmon",
+     "output": "fish"
+    },
+    {
+     "input": "sparrow",
+     "output": "bird"
+    },
+    {
+     "input": "beagle",
+     "output": "mammal"
+    },
+    {
+     "input": "cobra",
+     "output": "reptile"
+    },
+    {
+     "input": "wasp",
+     "output": "insect"
+    }
+   ],
+   "domain_source": "LLM-enumerated animal names including species, breeds, and common names: mammals ~450 (incl. dog/cat/horse breeds), birds ~300, fish ~250, reptiles ~120, insects ~180",
+   "domain_size_estimate": 1300,
+   "generation_method": "knowledge",
+   "family": null,
+   "difficulty_anchor": "ag_news / person-sport \u2014 fixed-label classification requiring item-level knowledge; grade-school biology but with a long tail of species names, hence medium",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Enumerate per class in chunks, using breeds (dog, cat, horse, chicken... wait chicken is bird breeds fine) and species common names to reach counts. EXCLUDE: amphibians and arachnids entirely (not in label set \u2014 no frogs, spiders, scorpions), colloquial misleads ('jellyfish', 'starfish', 'silverfish' \u2014 not fish; 'bat' KEEP as mammal since it is crisp knowledge), extinct animals, and any name the existence-check pass cannot confirm. Self-check: independent blind classification pass over the 5 labels; keep agreements; run a third existence/commonness pass on the rare tail and drop uncertain species.",
+   "gptj_confidence_note": null,
+   "lane": "semantic_classification"
+  },
+  {
+   "name": "singular_or_plural",
+   "category": "grammatical_classification",
+   "rule": "Given a noun form, output singular or plural.",
+   "examples": [
+    {
+     "input": "candles",
+     "output": "plural"
+    },
+    {
+     "input": "mirror",
+     "output": "singular"
+    },
+    {
+     "input": "wolves",
+     "output": "plural"
+    },
+    {
+     "input": "bicycle",
+     "output": "singular"
+    },
+    {
+     "input": "oxen",
+     "output": "plural"
+    }
+   ],
+   "domain_source": "common_nouns.txt (6000): each noun contributes its singular form and its lemminflect plural, minus exclusions",
+   "domain_size_estimate": 8000,
+   "generation_method": "list_rule",
+   "family": null,
+   "difficulty_anchor": "singular-plural \u2014 same morphological knowledge, recast as classification; surface -s cue makes it very learnable",
+   "gptj_confidence": "high",
+   "generation_recipe": "For each noun in common_nouns.txt: emit (lemma, 'singular') and (lemminflect NNS inflection, 'plural'). EXCLUDE: invariant plurals ('sheep', 'series' \u2014 drop any noun whose plural equals its singular), uncountable/mass nouns (no natural plural: drop if lemminflect plural is rarely attested, wordfreq zipf(plural) < 2.5), pluralia tantum ('scissors', 'pants' \u2014 drop nouns whose singular form is rarer than the plural), and words ending in -s in the singular ('bus' KEEP but verify plural differs; 'lens' fine). Deterministic; self-check by asserting singular != plural for every emitted pair and sampling 200 for an LLM sanity pass.",
+   "gptj_confidence_note": null,
+   "lane": "grammatical_classification"
+  },
+  {
+   "name": "countable_uncountable",
+   "category": "grammatical_classification",
+   "rule": "Given an English noun, output countable if it takes a plural and numerals naturally, or uncountable if it is a mass noun.",
+   "examples": [
+    {
+     "input": "chair",
+     "output": "countable"
+    },
+    {
+     "input": "advice",
+     "output": "uncountable"
+    },
+    {
+     "input": "furniture",
+     "output": "uncountable"
+    },
+    {
+     "input": "bottle",
+     "output": "countable"
+    },
+    {
+     "input": "laughter",
+     "output": "uncountable"
+    }
+   ],
+   "domain_source": "common_nouns.txt (6000), labeled by LLM with lemminflect/wordfreq plural-attestation as a mechanical prefilter",
+   "domain_size_estimate": 1600,
+   "generation_method": "knowledge",
+   "family": null,
+   "difficulty_anchor": "sentiment \u2014 binary grammatical judgment; count/mass is strongly cued by distributional patterns ('much X' vs 'many Xs') a 6B model has seen constantly",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Prefilter common_nouns.txt: candidate uncountables = nouns whose lemminflect plural has wordfreq zipf < 2.5 or is unattested; candidate countables = nouns with zipf(plural) >= 3.5. Then LLM-label each candidate countable/uncountable/both in chunks. EXCLUDE ('both'): nouns with common count and mass senses ('coffee', 'paper', 'hair', 'glass', 'chicken', 'experience'). Keep clear cases only ('advice', 'luggage', 'courage' vs 'chair', 'dog', 'window'). Self-check: two independent labeling passes; keep double-agreements; cap countables at ~60% of the set (uncountables are the scarce class, expect ~400-600 \u2014 if under 1200 total, relax the countable cap since countables are abundant).",
+   "gptj_confidence_note": null,
+   "lane": "grammatical_classification"
+  },
+  {
+   "name": "verb_to_gerund",
+   "category": "morphology-inflection",
+   "rule": "Given a verb in base form, output its gerund/present-participle (-ing) form.",
+   "examples": [
+    {
+     "input": "walk",
+     "output": "walking"
+    },
+    {
+     "input": "take",
+     "output": "taking"
+    },
+    {
+     "input": "run",
+     "output": "running"
+    },
+    {
+     "input": "study",
+     "output": "studying"
+    },
+    {
+     "input": "agree",
+     "output": "agreeing"
+    }
+   ],
+   "domain_source": "common_verbs.txt (3610) + lemminflect getInflection(v,'VBG')",
+   "domain_size_estimate": 3608,
+   "generation_method": "rule",
+   "difficulty_anchor": "present-past: identical single-step verb inflection, just a different target form; GPT-J does present-past well",
+   "gptj_confidence": "high",
+   "generation_recipe": "For each alphabetic verb v in common_verbs.txt, g = lemminflect.getInflection(v,'VBG'). Keep pair (v, g[0]) if g is non-empty, len(g)==1 (drop multi-form outputs), and g[0]!=v. Deduplicate inputs. Verified domain: 3608 pairs.",
+   "family": "verb_inflection",
+   "lane": "morphology-inflection"
+  },
+  {
+   "name": "verb_to_third_person",
+   "category": "morphology-inflection",
+   "rule": "Given a verb in base form, output its third-person singular present (-s) form.",
+   "examples": [
+    {
+     "input": "walk",
+     "output": "walks"
+    },
+    {
+     "input": "watch",
+     "output": "watches"
+    },
+    {
+     "input": "study",
+     "output": "studies"
+    },
+    {
+     "input": "go",
+     "output": "goes"
+    },
+    {
+     "input": "play",
+     "output": "plays"
+    }
+   ],
+   "domain_source": "common_verbs.txt (3610) + lemminflect getInflection(v,'VBZ')",
+   "domain_size_estimate": 3607,
+   "generation_method": "rule",
+   "difficulty_anchor": "present-past: same single-step inflection pattern with a different suffix; regular and common",
+   "gptj_confidence": "high",
+   "generation_recipe": "For each alphabetic verb v in common_verbs.txt, f = lemminflect.getInflection(v,'VBZ'). Keep (v, f[0]) if len(f)==1 and f[0]!=v (excludes modals like 'can','may' which lemminflect handles as no-change or missing; explicitly drop 'be','have' style multi-form outputs). Deduplicate inputs. Verified domain: 3607.",
+   "family": "verb_inflection",
+   "lane": "morphology-inflection"
+  },
+  {
+   "name": "past_to_base",
+   "category": "morphology-inflection",
+   "rule": "Given a verb in past tense, output its base (infinitive) form.",
+   "examples": [
+    {
+     "input": "walked",
+     "output": "walk"
+    },
+    {
+     "input": "ran",
+     "output": "run"
+    },
+    {
+     "input": "studied",
+     "output": "study"
+    },
+    {
+     "input": "brought",
+     "output": "bring"
+    },
+    {
+     "input": "spoke",
+     "output": "speak"
+    }
+   ],
+   "domain_source": "common_verbs.txt inverted through lemminflect getInflection(v,'VBD')",
+   "domain_size_estimate": 3565,
+   "generation_method": "rule",
+   "difficulty_anchor": "present-past run in reverse: same lexical knowledge, inverse direction; lemmatization is a very common pattern in pretraining data",
+   "gptj_confidence": "high",
+   "generation_recipe": "Build dict past_form -> set(base verbs) over all alphabetic v in common_verbs.txt using getInflection(v,'VBD')[0]. Keep only past forms that (a) map to exactly one base verb, (b) differ from the base ('put'-type zero-change excluded), (c) are single-form (drop 'was/were'). Input = past form, output = base. Verified domain: 3565 unique past forms.",
+   "family": "verb_lemmatize",
+   "lane": "morphology-inflection"
+  },
+  {
+   "name": "gerund_to_base",
+   "category": "morphology-inflection",
+   "rule": "Given a verb's -ing form, output its base (infinitive) form.",
+   "examples": [
+    {
+     "input": "walking",
+     "output": "walk"
+    },
+    {
+     "input": "running",
+     "output": "run"
+    },
+    {
+     "input": "studying",
+     "output": "study"
+    },
+    {
+     "input": "making",
+     "output": "make"
+    },
+    {
+     "input": "sitting",
+     "output": "sit"
+    }
+   ],
+   "domain_source": "common_verbs.txt inverted through lemminflect getInflection(v,'VBG')",
+   "domain_size_estimate": 3598,
+   "generation_method": "rule",
+   "difficulty_anchor": "present-past: single-step de-inflection, highly regular orthographic rule (drop -ing, undo doubling/e-drop)",
+   "gptj_confidence": "high",
+   "generation_recipe": "Build dict gerund -> set(base verbs) over common_verbs.txt via getInflection(v,'VBG')[0]. Keep gerunds mapping to exactly one base verb; input = gerund, output = base. Verified domain: 3598 unique gerunds.",
+   "family": "verb_lemmatize",
+   "lane": "morphology-inflection"
+  },
+  {
+   "name": "third_person_to_base",
+   "category": "morphology-inflection",
+   "rule": "Given a verb's third-person singular present (-s) form, output its base form.",
+   "examples": [
+    {
+     "input": "walks",
+     "output": "walk"
+    },
+    {
+     "input": "watches",
+     "output": "watch"
+    },
+    {
+     "input": "studies",
+     "output": "study"
+    },
+    {
+     "input": "goes",
+     "output": "go"
+    },
+    {
+     "input": "tries",
+     "output": "try"
+    }
+   ],
+   "domain_source": "common_verbs.txt inverted through lemminflect getInflection(v,'VBZ')",
+   "domain_size_estimate": 3500,
+   "generation_method": "rule",
+   "difficulty_anchor": "present-past: same class of one-step de-inflection; -s stripping is trivial surface morphology",
+   "gptj_confidence": "high",
+   "generation_recipe": "Build dict vbz_form -> set(base verbs) over common_verbs.txt via getInflection(v,'VBZ')[0]. Keep forms with exactly one source verb and form != base. Note the noun-plural homograph (e.g. 'walks' as noun) does not create ambiguity because the output is the same string either way. Estimated domain ~3500 after uniqueness filter.",
+   "family": "verb_lemmatize",
+   "lane": "morphology-inflection"
+  },
+  {
+   "name": "past_to_gerund",
+   "category": "morphology-inflection",
+   "rule": "Given a verb in past tense, output the same verb's -ing form.",
+   "examples": [
+    {
+     "input": "walked",
+     "output": "walking"
+    },
+    {
+     "input": "ran",
+     "output": "running"
+    },
+    {
+     "input": "studied",
+     "output": "studying"
+    },
+    {
+     "input": "spoke",
+     "output": "speaking"
+    },
+    {
+     "input": "made",
+     "output": "making"
+    }
+   ],
+   "domain_source": "common_verbs.txt via lemminflect: VBD form -> VBG form of same lemma",
+   "domain_size_estimate": 3565,
+   "generation_method": "rule",
+   "difficulty_anchor": "present-past: same lexical material but form-to-form conversion (implicitly via the lemma); slightly harder than base-form inflection, hence medium",
+   "gptj_confidence": "medium",
+   "generation_recipe": "For each verb v in common_verbs.txt compute p=getInflection(v,'VBD')[0], g=getInflection(v,'VBG')[0]. Keep (p,g) if p maps to exactly one lemma (reuse past_to_base uniqueness set), p!=v, and both are single-form. Input = past, output = gerund. Domain: 3565 unique pasts.",
+   "family": "verb_form_conversion",
+   "lane": "morphology-inflection"
+  },
+  {
+   "name": "gerund_to_past",
+   "category": "morphology-inflection",
+   "rule": "Given a verb's -ing form, output the same verb's past tense.",
+   "examples": [
+    {
+     "input": "walking",
+     "output": "walked"
+    },
+    {
+     "input": "running",
+     "output": "ran"
+    },
+    {
+     "input": "making",
+     "output": "made"
+    },
+    {
+     "input": "studying",
+     "output": "studied"
+    },
+    {
+     "input": "sitting",
+     "output": "sat"
+    }
+   ],
+   "domain_source": "common_verbs.txt via lemminflect: VBG form -> VBD form of same lemma",
+   "domain_size_estimate": 3598,
+   "generation_method": "rule",
+   "difficulty_anchor": "present-past: identical output space (past forms) but from an inflected input; one implicit lemmatize step, hence medium",
+   "gptj_confidence": "medium",
+   "generation_recipe": "For each verb v in common_verbs.txt compute g=getInflection(v,'VBG')[0], p=getInflection(v,'VBD')[0]. Keep (g,p) if g maps to exactly one lemma and p is single-form and p!=v is not required (output may equal lemma for irregulars like 'put' -> keep, still deterministic). Domain: 3598 unique gerunds.",
+   "family": "verb_form_conversion",
+   "lane": "morphology-inflection"
+  },
+  {
+   "name": "gerund_to_third_person",
+   "category": "morphology-inflection",
+   "rule": "Given a verb's -ing form, output the same verb's third-person singular present (-s) form.",
+   "examples": [
+    {
+     "input": "walking",
+     "output": "walks"
+    },
+    {
+     "input": "running",
+     "output": "runs"
+    },
+    {
+     "input": "studying",
+     "output": "studies"
+    },
+    {
+     "input": "watching",
+     "output": "watches"
+    },
+    {
+     "input": "going",
+     "output": "goes"
+    }
+   ],
+   "domain_source": "common_verbs.txt via lemminflect: VBG form -> VBZ form of same lemma",
+   "domain_size_estimate": 3598,
+   "generation_method": "rule",
+   "difficulty_anchor": "present-past: form-to-form conversion between two regular inflections; near-orthographic (-ing -> -s), hence medium-plus",
+   "gptj_confidence": "medium",
+   "generation_recipe": "For each verb v in common_verbs.txt compute g=getInflection(v,'VBG')[0], s=getInflection(v,'VBZ')[0]. Keep (g,s) if g maps to exactly one lemma and s is single-form and s!=g. Domain: 3598 unique gerunds.",
+   "family": "verb_form_conversion",
+   "lane": "morphology-inflection"
+  },
+  {
+   "name": "plural_to_singular",
+   "category": "morphology-inflection",
+   "rule": "Given a plural noun, output its singular form.",
+   "examples": [
+    {
+     "input": "wallets",
+     "output": "wallet"
+    },
+    {
+     "input": "children",
+     "output": "child"
+    },
+    {
+     "input": "boxes",
+     "output": "box"
+    },
+    {
+     "input": "cities",
+     "output": "city"
+    },
+    {
+     "input": "wolves",
+     "output": "wolf"
+    }
+   ],
+   "domain_source": "common_nouns.txt (6000) inverted through lemminflect getInflection(n,'NNS')",
+   "domain_size_estimate": 5369,
+   "generation_method": "rule",
+   "difficulty_anchor": "singular-plural run in reverse; same knowledge, inverse mapping (repo already pairs next/prev tasks this way)",
+   "gptj_confidence": "high",
+   "generation_recipe": "Build dict plural -> set(singulars) over alphabetic nouns in common_nouns.txt via getInflection(n,'NNS')[0]. Keep plurals that map to exactly one singular and differ from it (drops invariants like 'sheep','series'). Input = plural, output = singular. Verified domain: 5369.",
+   "family": null,
+   "lane": "morphology-inflection"
+  },
+  {
+   "name": "noun_possessive",
+   "category": "morphology-inflection",
+   "rule": "Given a singular noun, output its possessive form (noun + 's).",
+   "examples": [
+    {
+     "input": "dog",
+     "output": "dog's"
+    },
+    {
+     "input": "teacher",
+     "output": "teacher's"
+    },
+    {
+     "input": "city",
+     "output": "city's"
+    },
+    {
+     "input": "child",
+     "output": "child's"
+    },
+    {
+     "input": "government",
+     "output": "government's"
+    }
+   ],
+   "domain_source": "common_nouns.txt (6000), pure string rule",
+   "domain_size_estimate": 5500,
+   "generation_method": "rule",
+   "difficulty_anchor": "singular-plural: appending a clitic to a noun, same operation class and regularity",
+   "gptj_confidence": "high",
+   "generation_recipe": "For each alphabetic noun n in common_nouns.txt that does not end in 's' (avoids the s'/s's style variation), output n + \"'s\". No other edge cases. Domain: ~5500 of 6000 nouns.",
+   "family": null,
+   "lane": "morphology-inflection"
+  },
+  {
+   "name": "adjective_to_adverb",
+   "category": "morphology-derivation",
+   "rule": "Given an adjective, output the corresponding -ly adverb.",
+   "examples": [
+    {
+     "input": "quick",
+     "output": "quickly"
+    },
+    {
+     "input": "happy",
+     "output": "happily"
+    },
+    {
+     "input": "gentle",
+     "output": "gently"
+    },
+    {
+     "input": "basic",
+     "output": "basically"
+    },
+    {
+     "input": "brave",
+     "output": "bravely"
+    }
+   ],
+   "domain_source": "common_adjs.txt + adjectives from wordfreq top_n_list('en',100000) filtered by lemminflect getAllLemmas ADJ; derived adverb validated with wordfreq",
+   "domain_size_estimate": 1410,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "present-past: single regular suffixation with small orthographic adjustments; -ly derivation is at least as frequent in text",
+   "gptj_confidence": "high",
+   "generation_recipe": "Adjective pool = common_adjs.txt plus alphabetic words in wordfreq top 100k whose getAllLemmas contains ADJ; exclude words already ending in -ly. Derive adverb: consonant+'le' -> replace final 'e' with 'y' (gentle->gently); consonant+'y' -> -ily (happy->happily); -ic -> -ically (basic->basically); else +ly. Keep pair only if zipf_frequency(adverb)>=2.0 (validates the derived form exists). Exclude irregulars by construction (good->goodly is filtered only by frequency, so additionally hard-exclude {good, fast, hard, late, early}). Verified domain: 1410.",
+   "family": "ly_derivation",
+   "lane": "morphology-derivation"
+  },
+  {
+   "name": "adverb_to_adjective",
+   "category": "morphology-derivation",
+   "rule": "Given an -ly adverb, output the adjective it is derived from.",
+   "examples": [
+    {
+     "input": "quickly",
+     "output": "quick"
+    },
+    {
+     "input": "happily",
+     "output": "happy"
+    },
+    {
+     "input": "gently",
+     "output": "gentle"
+    },
+    {
+     "input": "basically",
+     "output": "basic"
+    },
+    {
+     "input": "angrily",
+     "output": "angry"
+    }
+   ],
+   "domain_source": "inverse of adjective_to_adverb pair list (same pools and wordfreq validation)",
+   "domain_size_estimate": 1400,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "singular-plural reverse-direction analogy: undoing one regular suffix; surface-decodable from the input string",
+   "gptj_confidence": "high",
+   "generation_recipe": "Take the validated (adjective, adverb) pairs from the adjective_to_adverb recipe and invert them. Keep only adverbs that map to exactly one adjective under the inverse orthographic rules (drop collisions). Input = adverb, output = adjective. Domain ~1400.",
+   "family": "ly_derivation",
+   "lane": "morphology-derivation"
+  },
+  {
+   "name": "agent_noun",
+   "category": "morphology-derivation",
+   "rule": "Given a verb, output the agent noun formed with -er/-or (the person or thing that does the action).",
+   "examples": [
+    {
+     "input": "teach",
+     "output": "teacher"
+    },
+    {
+     "input": "run",
+     "output": "runner"
+    },
+    {
+     "input": "act",
+     "output": "actor"
+    },
+    {
+     "input": "sail",
+     "output": "sailor"
+    },
+    {
+     "input": "drive",
+     "output": "driver"
+    }
+   ],
+   "domain_source": "common_verbs.txt + verbs from wordfreq top 100k (getAllLemmas VERB, lemma==surface); candidate -er/-or forms validated with wordfreq",
+   "domain_size_estimate": 1233,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "present-past plus a touch of lexical lookup (er vs or); agentive derivation is extremely frequent in pretraining text",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Verb pool = common_verbs.txt plus alphabetic wordfreq-top-100k words whose getAllLemmas VERB lemma equals the surface form. Candidates per verb: v+'er' and v+'or'; if v ends in 'e': v+'r' and v[:-1]+'or'; consonant+'y': v[:-1]+'ier'; monosyllabic CVC: doubled consonant +'er'. Keep the verb iff exactly ONE candidate has zipf_frequency>=2.2 (uniqueness makes the mapping deterministic and drops er/or ambiguity like 'convert'). Verified domain: 1233. Self-check: sample 100 pairs, confirm the output is an attested English noun via wordfreq zipf>=2.2 and manual spot-check for semantic agentivity (drop instrumentals that look wrong, e.g. 'timer' is fine, keep).",
+   "family": "agentive",
+   "lane": "morphology-derivation"
+  },
+  {
+   "name": "agent_noun_to_verb",
+   "category": "morphology-derivation",
+   "rule": "Given an -er/-or agent noun, output the verb it is derived from.",
+   "examples": [
+    {
+     "input": "teacher",
+     "output": "teach"
+    },
+    {
+     "input": "runner",
+     "output": "run"
+    },
+    {
+     "input": "actor",
+     "output": "act"
+    },
+    {
+     "input": "painter",
+     "output": "paint"
+    },
+    {
+     "input": "builder",
+     "output": "build"
+    }
+   ],
+   "domain_source": "inverse of agent_noun pair list",
+   "domain_size_estimate": 1233,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "past_to_base analogy: undoing one derivational suffix, surface-decodable; slightly easier than the forward direction",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Invert the validated (verb, agent) pairs from the agent_noun recipe; keep agents that map to exactly one verb. Input = agent noun, output = verb. Domain: 1233.",
+   "family": "agentive",
+   "lane": "morphology-derivation"
+  },
+  {
+   "name": "strip_prefix",
+   "category": "morphology-derivation",
+   "rule": "Given a word formed with a derivational prefix (un-, re-, dis-, mis-, non-, over-, under-, pre-), output the base word with the prefix removed.",
+   "examples": [
+    {
+     "input": "unhappy",
+     "output": "happy"
+    },
+    {
+     "input": "rewrite",
+     "output": "write"
+    },
+    {
+     "input": "disagree",
+     "output": "agree"
+    },
+    {
+     "input": "preheat",
+     "output": "heat"
+    },
+    {
+     "input": "misplace",
+     "output": "place"
+    }
+   ],
+   "domain_source": "wordfreq top 100k scanned for prefix+base where base is in common_words.txt; LLM opacity filter",
+   "domain_size_estimate": 1300,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "antonym (which contains many un- pairs) crossed with a simple surface deletion; the string cue makes it easier than pure antonym",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Scan alphabetic words w (len>=5, zipf>=2.3) in wordfreq top 100k. For prefixes [un,re,dis,mis,non,over,under,pre]: if w startswith prefix, base=w[len(p):], keep if len(base)>=3, base in common_words.txt, zipf(base)>=3.0. Exclude words matching more than one prefix split. Then LLM-filter opaque splits where the word is NOT semantically prefix+base (e.g. 'restrain'!='re'+'strain', 'discover', 'preside', 'republic') \u2014 batch-ask an LLM 'is X literally PREFIX + BASE in meaning? yes/no' and drop 'no'. Measured 972 pairs at stricter thresholds before relaxation, so >=1300 after threshold relaxation and before opacity filtering; verify final count >=1200, else add prefixes [anti, sub, co, out]. Self-check: 50-pair manual audit for opacity leakage.",
+   "family": null,
+   "lane": "morphology-derivation"
+  },
+  {
+   "name": "pos_label",
+   "category": "word-property",
+   "rule": "Given a word with only one part of speech, output that part of speech (noun, verb, adjective, or adverb).",
+   "examples": [
+    {
+     "input": "wisdom",
+     "output": "noun"
+    },
+    {
+     "input": "destroy",
+     "output": "verb"
+    },
+    {
+     "input": "beautiful",
+     "output": "adjective"
+    },
+    {
+     "input": "quickly",
+     "output": "adverb"
+    },
+    {
+     "input": "banana",
+     "output": "noun"
+    }
+   ],
+   "domain_source": "common_words.txt filtered to single-POS words via lemminflect getAllLemmas",
+   "domain_size_estimate": 6603,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "sentiment / ag_news: closed small label set over a lexical input; POS is shallower knowledge than news topic",
+   "gptj_confidence": "medium",
+   "generation_recipe": "For each alphabetic word in common_words.txt, compute getAllLemmas(w) restricted to {NOUN, VERB, ADJ, ADV}; keep words with exactly one POS key. Map to labels 'noun'/'verb'/'adjective'/'adverb'. Verified domain: 6603 (3483 noun, 1558 verb, 1126 adj, 436 adv). Balance classes when sampling prompts. Self-check: spot-check 50 words against wordfreq usage; drop any that an LLM flags as commonly used in a second POS (lemminflect misses some conversions).",
+   "family": null,
+   "lane": "word-property"
+  },
+  {
+   "name": "verb_tense_label",
+   "category": "word-property",
+   "rule": "Given an inflected verb form, output which inflection it is: past, gerund, or present (third-person -s).",
+   "examples": [
+    {
+     "input": "walked",
+     "output": "past"
+    },
+    {
+     "input": "running",
+     "output": "gerund"
+    },
+    {
+     "input": "goes",
+     "output": "present"
+    },
+    {
+     "input": "spoke",
+     "output": "past"
+    },
+    {
+     "input": "studying",
+     "output": "gerund"
+    }
+   ],
+   "domain_source": "common_verbs.txt inflected via lemminflect VBD/VBG/VBZ, collision-filtered",
+   "domain_size_estimate": 10777,
+   "generation_method": "rule",
+   "difficulty_anchor": "ag_news: 3-way closed-label classification; the -ed/-ing/-s suffix cue is strongly surface-visible",
+   "gptj_confidence": "medium",
+   "generation_recipe": "For each verb in common_verbs.txt generate (VBD,'past'), (VBG,'gerund'), (VBZ,'present') forms. Build form->set(labels) across all verbs and keep only forms with exactly one label (drops collisions like 'put' base=past). Verified domain: 10777 (3571 past, 3601 gerund, 3605 present). Balance labels when sampling prompts.",
+   "family": null,
+   "lane": "word-property"
+  },
+  {
+   "name": "article_choice",
+   "category": "word-property",
+   "rule": "Given a singular noun, output the correct indefinite article, 'a' or 'an', determined by the noun's initial sound.",
+   "examples": [
+    {
+     "input": "apple",
+     "output": "an"
+    },
+    {
+     "input": "dog",
+     "output": "a"
+    },
+    {
+     "input": "hour",
+     "output": "an"
+    },
+    {
+     "input": "university",
+     "output": "a"
+    },
+    {
+     "input": "umbrella",
+     "output": "an"
+    }
+   ],
+   "domain_source": "common_nouns.txt (6000), letter rule + explicit exception lists",
+   "domain_size_estimate": 6000,
+   "generation_method": "rule",
+   "difficulty_anchor": "capitalize_first_letter: a property of the word onset; a/an choice is among the most reinforced patterns in English text",
+   "gptj_confidence": "high",
+   "generation_recipe": "For each alphabetic noun in common_nouns.txt: default label 'an' if first letter in aeiou else 'a'. Override list A (vowel letter but consonant sound -> 'a'): words starting with 'uni','use','user','usu','ute','uto','ura','eu', plus {one, once, ewe, ukulele, ubiquity}. Override list B (silent h -> 'an'): words starting with 'hour','honest','honor','honour','heir'. Any word matching neither a clean default nor an explicit override pattern but starting with 'u','eu','h' gets checked by LLM once and added to the appropriate list; ambiguous pronunciations (e.g. 'herb' US/UK) are excluded. Domain ~6000.",
+   "family": null,
+   "lane": "word-property"
+  },
+  {
+   "name": "word_polarity",
+   "category": "lexical-semantic",
+   "rule": "Given a strongly evaluative English word, output whether its connotation is positive or negative.",
+   "examples": [
+    {
+     "input": "wonderful",
+     "output": "positive"
+    },
+    {
+     "input": "horrible",
+     "output": "negative"
+    },
+    {
+     "input": "delightful",
+     "output": "positive"
+    },
+    {
+     "input": "disgusting",
+     "output": "negative"
+    },
+    {
+     "input": "generous",
+     "output": "positive"
+    }
+   ],
+   "domain_source": "NLTK opinion_lexicon (Bing Liu, 2006 positive / 4783 negative words) intersected with wordfreq zipf>=2.5; LLM fallback if corpus unavailable",
+   "domain_size_estimate": 4000,
+   "generation_method": "knowledge",
+   "difficulty_anchor": "sentiment: same label space, but word-level polarity of strongly polar words is easier than review-level sentiment",
+   "gptj_confidence": "high",
+   "generation_recipe": "Primary: nltk.corpus.opinion_lexicon positive()/negative() lists; keep alphabetic words with zipf_frequency>=2.5; drop words appearing in both lists or in common ironic/ambiguous set (e.g. 'killer','sick','cheap' -> LLM double-check any word an LLM rates below 90% confident). Fallback if NLTK download unavailable: LLM-generate 800 clearly positive and 800 clearly negative common words in batches, deduplicate, keep only words the LLM labels identically across 3 independent prompts, filter zipf>=2.5. Self-check: relabel a 200-word sample with a differently-worded prompt; require 98% agreement, drop disagreements.",
+   "family": null,
+   "lane": "lexical-semantic"
+  },
+  {
+   "name": "hypernym_category",
+   "category": "lexical-semantic",
+   "rule": "Given a common noun, output its superordinate category from a fixed set of 18 labels (beverage, bird, building, clothing, fabric, fish, flower, fruit, furniture, instrument, metal, profession, sport, tool, tree, vegetable, vehicle, weapon).",
+   "examples": [
+    {
+     "input": "sparrow",
+     "output": "bird"
+    },
+    {
+     "input": "oak",
+     "output": "tree"
+    },
+    {
+     "input": "salmon",
+     "output": "fish"
+    },
+    {
+     "input": "hammer",
+     "output": "tool"
+    },
+    {
+     "input": "shirt",
+     "output": "clothing"
+    }
+   ],
+   "domain_source": "WordNet hyponym closures of the 12 category synsets, intersected with wordfreq zipf>=2.7; LLM verification pass",
+   "domain_size_estimate": 1500,
+   "generation_method": "knowledge",
+   "difficulty_anchor": "person-occupation: entity -> category-label lookup with a small label set; 'X is a kind of Y' is classic distributional knowledge GPT-J handles",
+   "gptj_confidence": "high",
+   "generation_recipe": "For each of 12 category synsets (bird.n.01, fish.n.01, tree.n.01, flower.n.01, edible_fruit.n.01, vegetable.n.01, tool.n.01, clothing.n.01, furniture.n.01, vehicle.n.01, musical_instrument.n.01, metallic_element.n.01) collect single-word lemma hyponyms with zipf>=2.7. Exclusions: words in more than one closure; polysemous words whose most frequent sense is outside the category (LLM check: 'what is a(n) X primarily? one word'); NO animal-class labels beyond bird/fish (keeps it disjoint from the separate animal_class task); metals capped by nature (~30) \u2014 the bulk comes from the other 11. Verify total >=1200 after filtering; if short, add categories (fabric, beverage, weapon). Self-check: LLM relabels 200-item sample against the fixed label set, require 97% agreement.",
+   "family": null,
+   "lane": "lexical-semantic"
+  },
+  {
+   "name": "compound_head",
+   "category": "lexical-semantic",
+   "rule": "Given a closed compound noun, output its head \u2014 the final constituent word.",
+   "examples": [
+    {
+     "input": "toothbrush",
+     "output": "brush"
+    },
+    {
+     "input": "sunflower",
+     "output": "flower"
+    },
+    {
+     "input": "bedroom",
+     "output": "room"
+    },
+    {
+     "input": "raincoat",
+     "output": "coat"
+    },
+    {
+     "input": "footprint",
+     "output": "print"
+    }
+   ],
+   "domain_source": "LLM-curated list of genuine English closed compounds, orthographically verified against common_words.txt and wordfreq",
+   "domain_size_estimate": 1500,
+   "generation_method": "knowledge",
+   "difficulty_anchor": "capitalize_last_letter: extract a determined part of the input word, but the split point is lexical rather than positional; compounds are transparent to GPT-J's tokenizer-adjacent knowledge",
+   "gptj_confidence": "medium",
+   "generation_recipe": "LLM-generate candidate closed compounds in themed batches (household, nature, body, transport, sports, food, weather, work...) targeting 2000 candidates. Programmatic verification: compound is alphabetic, zipf>=2.0, and equals part1+part2 where both parts are in common_words.txt with zipf>=3.3 and len>=3. Exclusions: words with more than one valid two-word split into common words where an LLM judges both splits plausible (drop); pseudo-compounds that pass string checks but are not compositional ('history','person','rather' \u2014 the LLM curation step, not string scanning, is the primary source precisely to avoid these); second parts in the suffix-like set {ing, er, ed, ion, ness, ment, able, age}. A raw string scan of wordfreq top-50k yields 2484 candidate splits, so after curation >=1500 genuine compounds is realistic; verify >=1200. Self-check: 100-item manual audit that part2 is truly the semantic head.",
+   "family": "compound_split",
+   "lane": "lexical-semantic"
+  },
+  {
+   "name": "compound_first",
+   "category": "lexical-semantic",
+   "rule": "Given a closed compound noun, output its first constituent word (the modifier).",
+   "examples": [
+    {
+     "input": "toothbrush",
+     "output": "tooth"
+    },
+    {
+     "input": "sunflower",
+     "output": "sun"
+    },
+    {
+     "input": "bedroom",
+     "output": "bed"
+    },
+    {
+     "input": "raincoat",
+     "output": "rain"
+    },
+    {
+     "input": "keyboard",
+     "output": "key"
+    }
+   ],
+   "domain_source": "same curated compound list as compound_head",
+   "domain_size_estimate": 1500,
+   "generation_method": "knowledge",
+   "difficulty_anchor": "capitalize_first_letter analogy of compound_head: same lexical segmentation, other constituent; equal difficulty",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Reuse the verified (compound, part1, part2) triples from the compound_head recipe; output part1. Same exclusions apply (unique split required). Domain identical, ~1500.",
+   "family": "compound_split",
+   "lane": "lexical-semantic"
+  },
+  {
+   "name": "compound_join",
+   "category": "lexical-semantic",
+   "rule": "Given two words that form a standard closed compound, output the compound written as one word.",
+   "examples": [
+    {
+     "input": "tooth brush",
+     "output": "toothbrush"
+    },
+    {
+     "input": "sun flower",
+     "output": "sunflower"
+    },
+    {
+     "input": "bed room",
+     "output": "bedroom"
+    },
+    {
+     "input": "rain coat",
+     "output": "raincoat"
+    },
+    {
+     "input": "key board",
+     "output": "keyboard"
+    }
+   ],
+   "domain_source": "same curated compound list, inverted (two-word input)",
+   "domain_size_estimate": 1500,
+   "generation_method": "knowledge",
+   "difficulty_anchor": "capitalize: near-copy orthographic transform (concatenate two given words); lexical validation is implicit, so easier than the split direction",
+   "gptj_confidence": "medium",
+   "generation_recipe": "Reuse verified triples from compound_head; input = 'part1 part2' (space-separated, 2 words <= 4-word limit), output = compound. Keep only pairs whose concatenation is the attested compound (already guaranteed). Domain ~1500.",
+   "family": "compound_split",
+   "lane": "lexical-semantic"
+  },
+  {
+   "name": "larger_than_1000",
+   "category": "classification",
+   "rule": "Given an integer other than 1000, output 'yes' if it is greater than 1000, otherwise 'no'.",
+   "examples": [
+    {
+     "input": "47",
+     "output": "no"
+    },
+    {
+     "input": "352",
+     "output": "yes"
+    },
+    {
+     "input": "99",
+     "output": "no"
+    },
+    {
+     "input": "8041",
+     "output": "yes"
+    },
+    {
+     "input": "6",
+     "output": "no"
+    }
+   ],
+   "family": null,
+   "domain_source": "pure rule: integers 1-99 union 101-99999, balanced 50/50 across the threshold",
+   "domain_size_estimate": 50000,
+   "generation_method": "rule",
+   "difficulty_anchor": "sentiment \u2014 binary classification; the threshold check is equivalent to 'has 3+ digits', which is a length judgment like word_length",
+   "gptj_confidence": "high",
+   "generation_recipe": "500 seeded ints in [2,999] ('no') + 500 in [1001,50000] ('yes'), shuffled seed 42.",
+   "lane": "classification"
+  },
+  {
+   "name": "number_word_to_digits",
+   "category": "formatting",
+   "lane": "numeric_sequence",
+   "rule": "Given a number spelled out in English words (21-1500), output it in digits.",
+   "examples": [
+    {
+     "input": "forty-two",
+     "output": "42"
+    },
+    {
+     "input": "three hundred seventeen",
+     "output": "317"
+    },
+    {
+     "input": "one thousand two hundred fifty",
+     "output": "1250"
+    },
+    {
+     "input": "eighty-six",
+     "output": "86"
+    },
+    {
+     "input": "nine hundred nine",
+     "output": "909"
+    }
+   ],
+   "domain_source": "rule (numbers 21-1500)",
+   "domain_size_estimate": 1480,
+   "generation_method": "rule",
+   "difficulty_anchor": "next_number_digits / ordinal_suffix: number-format conversion, short digit outputs",
+   "gptj_confidence": "high",
+   "generation_recipe": "see repairs_round1.py spell()",
+   "family": null
+  },
+  {
+   "name": "last_vowel",
+   "category": "orthographic",
+   "lane": "orthographic",
+   "rule": "Word -> the last vowel (a,e,i,o,u) reading right to left.",
+   "examples": [
+    {
+     "input": "planet",
+     "output": "e"
+    },
+    {
+     "input": "window",
+     "output": "o"
+    },
+    {
+     "input": "guitar",
+     "output": "a"
+    },
+    {
+     "input": "yellow",
+     "output": "o"
+    },
+    {
+     "input": "strength",
+     "output": "e"
+    }
+   ],
+   "domain_source": "common_words.txt",
+   "domain_size_estimate": 11900,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "first_vowel: mirrored scan direction",
+   "gptj_confidence": "medium",
+   "generation_recipe": "see repairs_round1.py",
+   "family": null
+  }
+ ]
+}
