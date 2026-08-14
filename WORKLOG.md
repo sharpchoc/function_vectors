@@ -42,6 +42,20 @@ product c>0.8 with top-10-by-c non-empty fallback. Rerun on 32 pods (~2.5–3.5 
 - **CIE top-40 second:** zs 0.578, shuf10 0.648, mixed 0.561 (train metric zeroshot ≈
   mixedtask10 > sametask_shuffled10; top-40 > top-10 by ~0.1).
 - mean_act mid-pack (zs 0.283, shuf10 0.577, mixed 0.340) — no training, no metric lever.
+
+**Steerability-predictor analysis (2026-08-14, forked session; installed here):** y = best zs
+steered acc over products; predictors: clean-10-shot acc (NEW eval `eval_clean10.py` on the
+same 30 test queries, correct-label demos), shuffled-10 baseline, npc90/centered-SR of
+per-prompt FV stacks (sparse23), max/top-10 task-specific CIE (zs), label token count,
+output cardinality/entropy, FV norm. **RESULT: clean10 Spearman ρ=0.96** (fail median 0.20
+vs pass 0.80); shuffled-10 baseline ρ=0.47 (a derivative of competence); everything else
+|ρ|≤0.24 n.s. Steered-best/clean10 ratio ≈0.8–1.2 for all tasks with clean10 ≥ 0.45: the
+single-vector zero-shot upper bound ≈ the model's own 10-shot ceiling; the "unsteerable"
+tasks are tasks GPT-J cannot do at 10 shots under the full-label readout (letter-surgery
+family + synonym). **A priori rule: clean10 < ~0.4 ⇒ do not expect zero-shot steering.**
+Files: `analyze_steerability_predictors.py`, `eval_clean10.py`,
+`results/sandbox/isolation_upper_bound/steerability_predictors_{scatter.png,full.csv}`,
+`artifacts/.../clean10_competence.json` (pod fv-hyp-clean10, terminated).
 - **Infra lessons (bare runpod/pytorch pods):** no HF_HOME → 10 pods each DOWNLOADED gpt-j
   from hub (looked like a lock deadlock); full cache copy overflows 40GB container disk;
   fix = per-pod local HF cache with SYMLINKED blobs to the volume (structure local → locks
