@@ -42,10 +42,13 @@ def main():
     fig, axes = plt.subplots(1, 3, figsize=(15, 4.8), dpi=140)
     for ax, (a, b, xl, yl) in zip(axes, panels):
         rho, p = spearmanr(a, b)
+        # y=x reference: steered acc ~ ICL ceiling (panels 1-2), clean6 ~ clean10 (panel 3)
+        ax.plot([0, 1], [0, 1], color="0.6", ls="--", lw=0.9, zorder=0)
         ax.scatter(a[~fail], b[~fail], c="tab:blue", s=38, label="steerable")
         ax.scatter(a[fail], b[fail], c="tab:red", s=48, marker="s", label="fail (<0.40)")
         for ai, bi, t in zip(a, b, tasks):
-            if fail[tasks.index(t)]:
+            # commonsense_qa: borderline case, steers ABOVE its ICL ceiling
+            if fail[tasks.index(t)] or t == "commonsense_qa":
                 ax.annotate(t, (ai, bi), fontsize=6.5, alpha=0.8,
                             xytext=(2, 3), textcoords="offset points")
         ax.set_xlabel(xl); ax.set_ylabel(yl)
