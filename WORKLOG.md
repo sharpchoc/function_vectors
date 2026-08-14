@@ -5,6 +5,28 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-14 — Stream levers-appendix: LaTeX conversion of isolation_methods_levers.md
+
+**Owner:** Claude Code background session (worktree `levers-appendix-tex`).
+**Status:** DONE.
+
+**What (user request):** convert `write_up/isolation_methods_levers.md` into a standalone
+LaTeX appendix for sharing the levers methodology externally: keep the mathematical content
+(levers 1-4 + failure-mode hypotheses), strip all repo/script/artifact references and the
+"Current evidence snapshot" section. Formalised the prose objectives as equations (CIE
+patching, sparse head objective with l1 penalty, per-layer mean activation) and added a
+self-contained notation section (can't reference task_id_im_subspaces.md externally).
+Position naming follows the ":" token convention.
+
+**Files:** NEW `write_up/isolation_methods_levers.tex` (preamble style mirrors the
+pandoc-generated task_id_im_subspaces.tex). Compiles clean with pdflatex (4 pages, PDF not
+committed — write_up/ was previously untracked; only the .tex is added to git).
+Env note: had to run `mktexlsr && updmap-sys` on this pod (pdftex.map was missing).
+
+**Next:** none; user to review wording before circulating.
+
+---
+
 ## 2026-07-29 — Stream cue-attn part 2: L9H14 position-free content direction, layer x token maps
 
 **Owner:** Claude Code session (CPU pod, GPT-J fp32 on CPU).
