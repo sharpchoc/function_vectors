@@ -53,9 +53,12 @@ vs pass 0.80); shuffled-10 baseline ρ=0.47 (a derivative of competence); everyt
 single-vector zero-shot upper bound ≈ the model's own 10-shot ceiling; the "unsteerable"
 tasks are tasks GPT-J cannot do at 10 shots under the full-label readout (letter-surgery
 family + synonym). **A priori rule: clean10 < ~0.4 ⇒ do not expect zero-shot steering.**
-Files: `analyze_steerability_predictors.py`, `eval_clean10.py`,
+Robustness: clean 6-shot competence gives ρ=0.958 (vs 0.960 at 10 shots; clean6~clean10
+ρ=0.98, identical failing set) — the competence screen needs only ~6 shots
+(`eval_clean6.py`, `clean6_competence.json`).
+Files: `analyze_steerability_predictors.py`, `eval_clean10.py`, `eval_clean6.py`,
 `results/sandbox/isolation_upper_bound/steerability_predictors_{scatter.png,full.csv}`,
-`artifacts/.../clean10_competence.json` (pod fv-hyp-clean10, terminated).
+`artifacts/.../clean{10,6}_competence.json` (pods terminated).
 - **Infra lessons (bare runpod/pytorch pods):** no HF_HOME → 10 pods each DOWNLOADED gpt-j
   from hub (looked like a lock deadlock); full cache copy overflows 40GB container disk;
   fix = per-pod local HF cache with SYMLINKED blobs to the volume (structure local → locks
