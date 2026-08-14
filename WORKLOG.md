@@ -5,6 +5,38 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-14 — Stream sparse-heads: extended_tasks n-shot sweep (GPT-J, T=1.0 sampled, 4 pods)
+
+**Owner:** Claude Code bg session (worktree sparse-heads-fv23). 4 own pods fv-nshot-shard0..3
+(RTX PRO 4500, $0.72/hr each; ALL TERMINATED after ~25 min, total ~$1.2). **Status:** DONE.
+
+**What (user spec):** GPT-J accuracy vs n-shot (n=0..6), 50 prompts per (task, n), ALL 142
+extended_tasks; demos+query sampled fully independently per prompt from each task's full
+example list; metric = FULL-LABEL exact match on a TEMPERATURE-1.0 SAMPLED generation
+(one sample/prompt; pure ancestral, max_new_tokens 12, cut at first newline). 49,700 prompts.
+NEW `src/eval_scripts/compute_extended_nshot_sampled.py` (build: deterministic sha-seeded
+specs, token-balanced 4-shard plan; run: global length sort, token-budget batches, LEFT-pad
+batched generate, per-task resumable JSONs incl. every generation) +
+`plot_extended_nshot_sampled.py` (CSV + Wilson CIs + 142-curve grid PNG + aggregate PNG).
+Wall clock: smoke 700 prompts/24 s; full sweep ~15 min across 4 pods.
+
+**Outputs:** results/general/extended_tasks_nshot_sweep/{nshot_accuracy.csv, nshot_grid.png,
+nshot_aggregate.png}; raw generations in gitignored artifacts/extended_tasks_nshot/ (both
+synced to the main checkout).
+
+**FINDINGS:** mean accuracy new-100: 0.00→0.50 (n=0→6); originals-42: 0.00→0.42 — the new
+tasks are slightly EASIER on average, same curve shape (steep to n≈2-3, plateauing by 5-6).
+Top n=6: time_extract_minutes .98, day_after_textual_date/hour_after_time/lowercase_word/
+titlecase_phrase .96. 66/142 tasks in the useful mid-band (0.3–0.7 at n=6). 16/142 near-floor
+(<0.1 at n=6) — 11 new + 5 original (incl. known-hard rhyme, neighbors, next_in_group/period);
+new near-floor ones are letter-surgery/alphabet-neighbor types (double_last_letter,
+last_two_letters, last_vowel, third_letter, remove_first_letter, prev/next_capital-letter
+variants, nato_first_letter, double_no_carry) — candidate exclusions for any split; note
+sampled-T=1 metric reads lower than greedy/teacher-forced, so borderline tasks may pass the
+standard ICL filter later.
+
+---
+
 ## 2026-08-12 — Stream sparse-heads: dataset_files/extended_tasks — 42 originals + 100 NEW tasks × 1000 examples
 
 **Owner:** Claude Code bg session (worktree sparse-heads-fv23, coordinator) + multi-agent fleet
