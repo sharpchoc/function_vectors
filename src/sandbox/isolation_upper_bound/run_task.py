@@ -71,14 +71,17 @@ def parse_args():
     p.add_argument("--cie_batch", type=int, default=8)
     p.add_argument("--capture_batch", type=int, default=8)
     p.add_argument("--kfolds", type=int, default=5)
-    p.add_argument("--lambdas", type=float, nargs="+", default=LAMBDAS)
-    p.add_argument("--accuracy_tolerance", type=float, default=0.01)
+    p.add_argument("--lambdas", type=float, nargs="+", default=[0.005, 0.01, 0.05, 0.2])
     p.add_argument("--c_high", type=float, default=0.8)
-    # train_c hyperparameters (mirroring train_sparse_heads defaults)
-    p.add_argument("--lr", type=float, default=0.01)
+    p.add_argument("--metrics", nargs="+", default=None, choices=TRAIN_METRICS,
+                   help="Subset of train metrics for the sparse stage (per-metric pod sharding).")
+    # train_c hyperparameters, RESCALED for 150-datapoint task-specific runs: batch 128 gives
+    # ~2 optimizer steps/epoch, so the pooled-run settings (lr .01, 30 epochs) truncated
+    # training at ~58 steps with c_max stuck ~0.8 (2026-08-13 bug).
+    p.add_argument("--lr", type=float, default=0.03)
     p.add_argument("--batch_size", type=int, default=128)
-    p.add_argument("--max_epochs", type=int, default=30)
-    p.add_argument("--patience", type=int, default=3)
+    p.add_argument("--max_epochs", type=int, default=60)
+    p.add_argument("--patience", type=int, default=8)
     p.add_argument("--earlystop_frac", type=float, default=0.1)
     p.add_argument("--init_c", type=float, default=0.5)
     p.add_argument("--threshold", type=float, default=0.2)
@@ -272,11 +275,19 @@ def eval_points_fixed_v(model, model_config, tokenizer, points, v, inject_layer,
     return n_correct / len(points)
 
 
-def stage_sparse(args, task, model, model_config, tokenizer, C):
+def select_heads_nonempty(c, c_high):
+    """c > c_high head indices; NEVER empty - falls back to the top-10 by coefficient."""
+    sel = torch.nonzero(c > c_high).flatten().tolist()
+    if sel:
+        return sel, False
+    return torch.argsort(c, descending=True)[:10].tolist(), True
+
+
+def stage_sparse(args, task, model, model_config, tokenizer, C, metrics=None):
     task_index = {task: 0}
     C3 = C.unsqueeze(0)  # (1, 448, resid) for train_c/evaluate_points compatibility
     results = {}
-    for m in TRAIN_METRICS:
+    for m in (metrics or TRAIN_METRICS):
         final_path = args.out_root / task / f"sparse_{m}" / "final.pt"
         if final_path.exists():
             results[m] = torch.load(final_path, map_location="cpu", weights_only=False)
@@ -286,11 +297,12 @@ def stage_sparse(args, task, model, model_config, tokenizer, C):
         tc_args = make_tc_args(args, m, points)
         (args.out_root / task / f"sparse_{m}").mkdir(parents=True, exist_ok=True)
 
-        # K-fold CV over prompts for lambda
+        # K-fold CV over prompts for lambda; fold eval on the WEIGHTED c vector (no
+        # threshold cliff - thresholding is applied only to the final deployed product).
         rng = np.random.RandomState(args.seed + 13_000_000 + (zlib.crc32((task + m).encode()) % 100000))
         order = rng.permutation(len(points))
         folds = np.array_split(order, args.kfolds)
-        per_lambda = {}
+        per_lambda, fold_table = {}, {}
         for lam in args.lambdas:
             accs = []
             for fi, fold in enumerate(folds):
@@ -305,27 +317,33 @@ def stage_sparse(args, task, model, model_config, tokenizer, C):
                 c, history, best_epoch = train_c(model, model_config, tokenizer, tr, es, C3,
                                                  task_index, lam, tc_args, run_seed,
                                                  desc=f"{task} {m} lam={lam:g} fold{fi}")
-                sel = torch.nonzero(c > args.c_high).flatten()
-                v = C[sel].sum(dim=0) if len(sel) else torch.zeros_like(C[0])
+                v = (c.unsqueeze(1) * C).sum(dim=0)  # weighted, no threshold
                 fold_acc = eval_points_fixed_v(model, model_config, tokenizer, heldout, v,
                                                args.inject_layer)
                 torch.save({"lambda": lam, "fold": fi, "c": c.cpu(), "fold_acc": fold_acc,
-                            "best_epoch": best_epoch}, fold_path)
+                            "best_epoch": best_epoch, "fold_eval": "weighted_c"}, fold_path)
                 accs.append(fold_acc)
             per_lambda[lam] = float(np.mean(accs))
+            fold_table[lam] = accs
+        # strict best mean fold accuracy; ties -> smaller lambda
         best = max(per_lambda.values())
-        chosen = max(l for l in args.lambdas if per_lambda[l] >= best - args.accuracy_tolerance)
+        chosen = min(l for l in args.lambdas if per_lambda[l] == best)
 
         run_seed = args.seed + 999
         tr, es = split_earlystop(points, tc_args.earlystop_frac, run_seed)
-        c_final, history, _ = train_c(model, model_config, tokenizer, tr, es, C3, task_index,
-                                      chosen, tc_args, run_seed, desc=f"{task} {m} FINAL lam={chosen:g}")
-        sel = torch.nonzero(c_final > args.c_high).flatten().tolist()
+        c_final, history, best_epoch = train_c(model, model_config, tokenizer, tr, es, C3,
+                                               task_index, chosen, tc_args, run_seed,
+                                               desc=f"{task} {m} FINAL lam={chosen:g}")
+        sel, fallback = select_heads_nonempty(c_final, args.c_high)
         res = {"c": c_final.cpu(), "chosen_lambda": chosen, "per_lambda": per_lambda,
-               "selected_heads": sel, "n_selected": len(sel)}
+               "fold_accs": fold_table, "selected_heads": sel, "n_selected": len(sel),
+               "fallback_top10": fallback, "final_best_epoch": best_epoch,
+               "hyperparams": {"lr": args.lr, "max_epochs": args.max_epochs,
+                               "patience": args.patience, "batch_size": args.batch_size}}
         torch.save(res, final_path)
         results[m] = res
-        print(f"[{task}] sparse {m} done: lam={chosen:g} n_sel(c>{args.c_high})={len(sel)}", flush=True)
+        print(f"[{task}] sparse {m} done: lam={chosen:g} n_sel={len(sel)}"
+              f"{' (FALLBACK top-10)' if fallback else ''} best_epoch={best_epoch}", flush=True)
     return results
 
 
@@ -408,10 +426,25 @@ def main():
         if args.stage == "cie":
             continue
         torch.set_grad_enabled(True)  # train_c needs grad; its eval paths use no_grad
-        sparse = stage_sparse(args, task, model, model_config, tokenizer, C)
+        stage_sparse(args, task, model, model_config, tokenizer, C, metrics=args.metrics)
         torch.set_grad_enabled(False)
         if args.stage == "sparse":
             continue
+        # eval needs ALL 3 metrics' sparse results; other pods may own some metrics -
+        # wait on the shared volume (per-metric pod sharding), then load.
+        import time
+        deadline = time.time() + 3 * 3600
+        while True:
+            missing = [m for m in TRAIN_METRICS
+                       if not (args.out_root / task / f"sparse_{m}" / "final.pt").exists()]
+            if not missing:
+                break
+            if time.time() > deadline:
+                raise RuntimeError(f"{task}: sparse results still missing after wait: {missing}")
+            print(f"[{task}] eval waiting for sparse: {missing}", flush=True)
+            time.sleep(60)
+        sparse = {m: torch.load(args.out_root / task / f"sparse_{m}" / "final.pt",
+                                map_location="cpu", weights_only=False) for m in TRAIN_METRICS}
         stage_eval(args, task, model, model_config, tokenizer, C, cie, sparse,
                    means["resid_means"])
     print("ALL TASKS DONE")

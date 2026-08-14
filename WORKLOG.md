@@ -22,16 +22,26 @@ plot_isolation_upper_bound}.py`; train-side metric prompt files added to isolati
 Gates: prompt-render, W_O linearity (capture-time assert), sparse smoke, CIE advisory
 (sentiment top-10 head overlap 8/10 vs stored gptj_fv indirect effects), baselines sane.
 
-**FINDINGS (mean best-layer acc over 29 tasks; baselines zs 0.015 / shuf10 0.413 / mixed 0.044):**
-- **CIE top-40 dominates every cell:** zs 0.578, shuf10 0.645, mixed 0.561 (train metric
-  zeroshot ≈ mixedtask10 > sametask_shuffled10; top-40 > top-10 by ~0.1).
-- **Task-specific sparse opt COLLAPSED:** zs 0.057–0.139. Cause diagnosed, not a bug: the
-  "largest λ within 1pt of best" rule chose λ=0.5 in 73/87 runs and 61/87 final products
-  selected ZERO heads (empty vector) — with 150 prompts/30-prompt folds the degenerate
-  all-zero solution sits within noise of the best. Opposite of the pooled-1720-datapoint
-  result (sparse 0.421 > top-40 0.193): the method needs pooled data or a non-degenerate
-  selection rule at this scale.
-- mean_act mid-pack (zs 0.280, shuf10 0.571, mixed 0.340) — no training, no metric lever.
+**FINDINGS — CORRECTED 2026-08-14 (sparse stage rerun; results below OVERWRITE the broken
+first pass per user instruction, old numbers only in branch history):**
+The first pass's sparse collapse was a BUG (user caught it): pooled-run hyperparameters
+unscaled — 135 points × batch 128 = ~2 steps/epoch × 30 epochs = ~58 steps, training
+truncated (best_epoch=29 everywhere, c_max ~0.8), so c>0.8 selected 0 heads in 61/87 runs
+and the largest-λ-within-1pt rule then picked λ=0.5 (73/87). Fix (user-adjudicated): lr
+0.03 / 60 epochs / patience 8 (~120 steps, smoke: c separates to 1.0/0.0, es fires);
+fold eval on the WEIGHTED c vector; λ strict-best (grid {0.005,0.01,0.05,0.2}); final
+product c>0.8 with top-10-by-c non-empty fallback. Rerun on 32 pods (~2.5–3.5 h, ≈$75);
+87/87 finals: 0 empty, median 36 heads, 7 fallbacks, λ mostly 0.005 (73/87).
+
+**Corrected results (mean best-layer acc over 29 tasks; baselines zs 0.015 / shuf10 0.410
+/ mixed 0.043):**
+- **Sparse opt (matched train metric) wins every test setting:** zs 0.625 (train=zs),
+  shuf10 0.670 (train=shuf10), mixed 0.623 (train=mixed) — consistent with the pooled
+  sparse-vs-top-40 result. Train/test metric MATCHING matters for sparse (mismatched
+  drops up to 0.24); CIE is metric-robust by comparison.
+- **CIE top-40 second:** zs 0.578, shuf10 0.648, mixed 0.561 (train metric zeroshot ≈
+  mixedtask10 > sametask_shuffled10; top-40 > top-10 by ~0.1).
+- mean_act mid-pack (zs 0.283, shuf10 0.577, mixed 0.340) — no training, no metric lever.
 - **Infra lessons (bare runpod/pytorch pods):** no HF_HOME → 10 pods each DOWNLOADED gpt-j
   from hub (looked like a lock deadlock); full cache copy overflows 40GB container disk;
   fix = per-pod local HF cache with SYMLINKED blobs to the volume (structure local → locks
