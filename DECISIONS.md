@@ -20,6 +20,29 @@
   it as literal data rather than trusting the mechanical filter to reproduce the exact same set on
   a future rerun in a different environment.
 
+## 2026-08-12 — 7 task datasets EXPANDED in place; no-validation split flag; isolation_prompts sets
+
+- **Canonical dataset files overwritten (originals appended-to, backups kept):** present-past
+  293→885, singular-plural 205→1034, prev/next_item 225→674 each (script-generated sequence
+  families, mirrored/inverse-checked), person-sport 318→733, person-instrument 510→670,
+  product-company 522→906, national_parks 451→454 (NPS inventory exhausted). All LLM-generated
+  entries restricted to pre-2021 well-known entities; contested forms excluded. Backups:
+  `dataset_files/abstractive/<task>.pre_expansion_2026-08-12.json` (original = byte-identical
+  prefix of the new file). country-capital/country-currency deliberately unchanged
+  (hard-limited inventories). Old FV/capture artifacts built from the smaller datasets are
+  unaffected on disk but no longer reflect the full example pools.
+- **No-validation example split:** `load_dataset(..., merge_valid_into_train=True)` merges the
+  9% valid split into train (train 79% / test 21%); TEST MEMBERSHIP IS BIT-IDENTICAL to the
+  old two-stage split. Opt-in flag (default unchanged); returned dict has no 'valid' key so
+  stale callers fail loudly. New isolation-methods work uses this split.
+- **`dataset_files/isolation_prompts/<task>/`** (29 tasks, generator
+  `dataset_files/generate/generate_isolation_prompts.py`, seed 42, pools deduplicated by
+  input): 150 fixed 10-shot train prompts (demos+query from TRAIN, correct labels, distinct
+  queries) + 30 test prompts per setting {zeroshot, sametask_shuffled10, mixedtask10
+  (10 demos from 10 distinct other tasks, correct pairs, all 28 eligible)}; the SAME 30
+  test queries across settings (paired design). Queries from TEST, demos always from TRAIN.
+  See write_up/isolation_methods_levers.md for the study context.
+
 ## 2026-08-08 — Sparse-optimization head selection + vanilla_sparse_opt23 are SANDBOX-only
 
 - `src/sandbox/sparse_head_selection/` implements Hu et al. 2025 (arXiv:2505.05145 §3.1)
@@ -39,8 +62,54 @@
 - Lesson: HF gradient checkpointing breaks (CheckpointError, saved-tensor count mismatch)
   when a forward hook injects a grad-requiring tensor inside a checkpointed block — use
   micro-batch gradient accumulation instead (frozen weights ⇒ only post-injection layers
-  store activations).
+  store activations).## 2026-08-06 — Sparse-optimization head selection is SANDBOX-only (not a new head-set standard)
 
+- `src/sandbox/sparse_head_selection/` + `artifacts/sandbox/sparse_head_selection/` implement
+  Hu et al. 2025 (arXiv:2505.05145 §3.1) joint sparse head selection on GPT-J (73 heads,
+  λ=0.01, LOTO-CV). Despite clearly beating the canonical AIE top-40 on held-out-task
+  zero-shot steering (0.421 vs 0.193 mean acc @L9), this is a SANDBOX trial: "function
+  vectors" still means `train_varicl_top40` (2026-07-10 decision) and nothing may build on
+  the sparse head set without explicit user promotion.
+- Method conventions fixed by the user for any follow-up: zero-shot queries from the valid
+  split (cap 100 / min 80 per task, top-up from train split), loss = raw −log p(full label)
+  with greedy contextualized label tokens, injection ONCE at the cue token (block-9 output),
+  λ by leave-one-task-out CV, c clipped to [0,1].
+- Lesson: HF gradient checkpointing breaks (CheckpointError, saved-tensor count mismatch)
+  when a grad-requiring tensor is injected by a forward hook inside a checkpointed block —
+  use micro-batch gradient accumulation instead (only layers after the injection store
+  activations when the model is frozen).
+
+## 2026-08-04 — Payload-subspace REPLACEMENT steering conventions (part 12)
+
+- **Two-step subspace-replacement op (user-specified, ordering is definitional):** to steer a
+  source-task prompt toward a target task inside the two k=4 d_payload subspaces, FIRST set the
+  source-basis coords to the target task's mean coords there
+  (`v += (c(tgt->src) − v@B_src^T)@B_src`), THEN set the target-basis coords to
+  `alpha·c(tgt->tgt)`. Running the target write LAST guarantees that wherever the two subspaces
+  overlap the final state matches the steer-toward task while the source projection is
+  minimised. alpha scales ONLY the target-write coords.
+- **Steering targets = UNPAIRED 10-shot task means** (last demo's label token, train-split
+  capture prompts, `capture_payload_switch_means.py`) projected into the cached bases — the
+  point of the study is that no paired-prompt Delta is needed. Projection of the mean equals
+  the mean of the projections (linear), so storing mean coords is exact.
+- **Eval comparability rule:** task-switch steering studies with logit readout must rebuild
+  the steer_switch_logit.py test pools verbatim (same build_pools, seed, n_test) so the
+  alpha=0 clean baseline doubles as a reproduction check against the stored old-study
+  baseline (reproduced here to 0.001 on both syn<->ant directions).
+- Single-layer edits (block L output, capture stack row L+1); site = demo label token.
+  See WORKLOG part 12 for findings.
+
+## 2026-07-30 — direction3_fv_formation has a fixed 6-folder taxonomy
+
+- `results/direction3_fv_formation/` is organized as: `ablation/` (causal projection-
+  ablation studies, split `preimages/` vs `attention_head_mechanisms/` by direction
+  source), `attention_head_analysis/` (observational head studies), `activation_to_fv_
+  decoding/` (ridge/PCA/OLS/cosine readability studies, controls nested under their
+  study), `activation_geometry/`, `preimage_analysis/` (pre-image work not tied to an
+  ablation setup). NEW outputs must go under the matching folder — do not create new
+  top-level dirs there. Old->new path map: `results/direction3_fv_formation/README.md`;
+  migration script `logs/direction3_reorg/migrate.sh`; WORKLOG 2026-07-30 part 8.
+  Pre-reorg paths cited in older WORKLOG/DECISIONS entries resolve via the README table.
 ## 2026-07-28 — Pre-image SUBSPACE ablation conventions (SANDBOX PP-preimage part 3)
 
 - **Subspace definition (user-decided; leading direction REDEFINED 2026-07-29):** ablation

@@ -368,7 +368,8 @@ class ICLDataset:
         s = "ICLDataset" + "({\n\tfeatures: " + f"{self.raw_data.columns.to_list()},\n\tnum_rows: {self.__len__()}" + "\n})"
         return s
     
-def split_icl_dataset(dataset, train_size=None, test_size=0.3, seed=42) -> Dict[str,ICLDataset]:
+def split_icl_dataset(dataset, train_size=None, test_size=0.3, seed=42,
+                      merge_valid_into_train=False) -> Dict[str,ICLDataset]:
     """
     Uses scikit-learn's train_test split to create train, valid, test dataset from provided dataset.
 
@@ -397,6 +398,15 @@ def split_icl_dataset(dataset, train_size=None, test_size=0.3, seed=42) -> Dict[
     train, valid = train_test_split(dataset.raw_data, test_size=test_size, random_state=seed)
     test, valid = train_test_split(valid, test_size=test_size, random_state=seed)
 
+    if merge_valid_into_train:
+        # No validation split: former valid examples join train; test membership is
+        # bit-identical to the two-stage split (same seeds), so results on 'test'
+        # remain comparable with older runs. No 'valid' key is returned on purpose -
+        # callers that still expect one should fail loudly under this flag.
+        train = pd.concat([train, valid])
+        return {'train': ICLDataset(train.to_dict(orient='list')),
+                'test': ICLDataset(test.to_dict(orient='list'))}
+
     train = ICLDataset(train.to_dict(orient='list'))
     valid = ICLDataset(valid.to_dict(orient='list'))
     test = ICLDataset(test.to_dict(orient='list'))
@@ -406,8 +416,9 @@ def split_icl_dataset(dataset, train_size=None, test_size=0.3, seed=42) -> Dict[
 
 def load_dataset(task_name: str,
                  root_data_dir: str = '../dataset_files',
-                 test_size = 0.3, 
-                 seed=32
+                 test_size = 0.3,
+                 seed=32,
+                 merge_valid_into_train=False
                 ) -> Dict[str,ICLDataset]:
     """
     Loads a dataset with input/output pairs
@@ -416,7 +427,9 @@ def load_dataset(task_name: str,
     task_name: the name of the task dataset
     root_data_dir: the root directory where the data comes from
     test_size: fraction used in train/test split
-    
+    merge_valid_into_train: if True, no validation split is returned - the former valid
+        examples are merged into train (test membership unchanged; dict has no 'valid' key)
+
     Return:
     dataset: the dict contain the train/valid/test dataset splits
     """
@@ -435,6 +448,7 @@ def load_dataset(task_name: str,
     d_path = os.path.join(path, dataset_folder, f'{task_name}.json')
     
     dataset = ICLDataset(d_path)
-    dataset = split_icl_dataset(dataset, test_size=test_size, seed=seed)
+    dataset = split_icl_dataset(dataset, test_size=test_size, seed=seed,
+                                merge_valid_into_train=merge_valid_into_train)
 
     return dataset

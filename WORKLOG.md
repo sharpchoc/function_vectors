@@ -63,6 +63,74 @@ standard ICL filter later.
 
 ---
 
+## 2026-08-13 — SANDBOX: task-specific isolation upper bound (29 tasks × 3 algos × 3×3 metrics)
+
+**Owner:** Claude Code background session (isolation-methods stream), CPU pod + own pods
+fv-iso-ub-{1..10} (10× RTX 5090 $0.99/hr; ALL TERMINATED progressively; ~6 h wall, ≈$60).
+**Status:** DONE. **SANDBOX.**
+
+**What (user spec, adjudicated in-chat):** per-task steering upper bound — every isolation
+algorithm (write_up/isolation_methods_levers.md) fit task-specifically on that task's 150
+train prompts (dataset_files/isolation_prompts/), crossing 1a CIE (top-10 AND top-40) and
+1b sparse opt with 3 train metrics {zeroshot, sametask_shuffled10, mixedtask10}; 1c
+per-layer mean act; eval on 30 paired test prompts × 3 settings × layers 0–27, α=1,
+full-label teacher-forced acc + unsteered baselines. λ by 5-fold CV over 150 prompts.
+NEW `src/sandbox/isolation_upper_bound/{generate_train_variants,run_task,
+plot_isolation_upper_bound}.py`; train-side metric prompt files added to isolation_prompts/.
+Gates: prompt-render, W_O linearity (capture-time assert), sparse smoke, CIE advisory
+(sentiment top-10 head overlap 8/10 vs stored gptj_fv indirect effects), baselines sane.
+
+**FINDINGS — CORRECTED 2026-08-14 (sparse stage rerun; results below OVERWRITE the broken
+first pass per user instruction, old numbers only in branch history):**
+The first pass's sparse collapse was a BUG (user caught it): pooled-run hyperparameters
+unscaled — 135 points × batch 128 = ~2 steps/epoch × 30 epochs = ~58 steps, training
+truncated (best_epoch=29 everywhere, c_max ~0.8), so c>0.8 selected 0 heads in 61/87 runs
+and the largest-λ-within-1pt rule then picked λ=0.5 (73/87). Fix (user-adjudicated): lr
+0.03 / 60 epochs / patience 8 (~120 steps, smoke: c separates to 1.0/0.0, es fires);
+fold eval on the WEIGHTED c vector; λ strict-best (grid {0.005,0.01,0.05,0.2}); final
+product c>0.8 with top-10-by-c non-empty fallback. Rerun on 32 pods (~2.5–3.5 h, ≈$75);
+87/87 finals: 0 empty, median 36 heads, 7 fallbacks, λ mostly 0.005 (73/87).
+
+**Corrected results (mean best-layer acc over 29 tasks; baselines zs 0.015 / shuf10 0.410
+/ mixed 0.043):**
+- **Sparse opt (matched train metric) wins every test setting:** zs 0.625 (train=zs),
+  shuf10 0.670 (train=shuf10), mixed 0.623 (train=mixed) — consistent with the pooled
+  sparse-vs-top-40 result. Train/test metric MATCHING matters for sparse (mismatched
+  drops up to 0.24); CIE is metric-robust by comparison.
+- **CIE top-40 second:** zs 0.578, shuf10 0.648, mixed 0.561 (train metric zeroshot ≈
+  mixedtask10 > sametask_shuffled10; top-40 > top-10 by ~0.1).
+- mean_act mid-pack (zs 0.283, shuf10 0.577, mixed 0.340) — no training, no metric lever.
+
+**Steerability-predictor analysis (2026-08-14, forked session; installed here):** y = best zs
+steered acc over products; predictors: clean-10-shot acc (NEW eval `eval_clean10.py` on the
+same 30 test queries, correct-label demos), shuffled-10 baseline, npc90/centered-SR of
+per-prompt FV stacks (sparse23), max/top-10 task-specific CIE (zs), label token count,
+output cardinality/entropy, FV norm. **RESULT: clean10 Spearman ρ=0.96** (fail median 0.20
+vs pass 0.80); shuffled-10 baseline ρ=0.47 (a derivative of competence); everything else
+|ρ|≤0.24 n.s. Steered-best/clean10 ratio ≈0.8–1.2 for all tasks with clean10 ≥ 0.45: the
+single-vector zero-shot upper bound ≈ the model's own 10-shot ceiling; the "unsteerable"
+tasks are tasks GPT-J cannot do at 10 shots under the full-label readout (letter-surgery
+family + synonym). **A priori rule: clean10 < ~0.4 ⇒ do not expect zero-shot steering.**
+Robustness: clean 6-shot competence gives ρ=0.958 (vs 0.960 at 10 shots; clean6~clean10
+ρ=0.98, identical failing set) — the competence screen needs only ~6 shots
+(`eval_clean6.py`, `clean6_competence.json`).
+Files: `analyze_steerability_predictors.py`, `eval_clean10.py`, `eval_clean6.py`,
+`results/sandbox/isolation_upper_bound/steerability_predictors_{scatter.png,full.csv}`,
+`artifacts/.../clean{10,6}_competence.json` (pods terminated).
+- **Infra lessons (bare runpod/pytorch pods):** no HF_HOME → 10 pods each DOWNLOADED gpt-j
+  from hub (looked like a lock deadlock); full cache copy overflows 40GB container disk;
+  fix = per-pod local HF cache with SYMLINKED blobs to the volume (structure local → locks
+  local; weights read from volume). Long-prompt tasks (commonsense_qa ~1200 tok) OOM fixed
+  batch sizes → all batching token-length-aware (`auto_batch`).
+
+**Outputs:** `artifacts/sandbox/isolation_upper_bound/<task>/` (means, cie_×3, sparse_×3
+incl. fold artifacts, eval_results.json), `results/sandbox/isolation_upper_bound/`
+(29 grid PNGs in figures/, summary.csv 870 rows). Branch `claude-sandbox-isolation-upper-bound`.
+**Next:** user to direct (candidate: rerun λ selection with strict-best rule / non-empty
+constraint — fold artifacts cached, only 87 retrains + evals needed).
+
+---
+
 ## 2026-08-12 — Stream sparse-heads: dataset_files/extended_tasks — 42 originals + 100 NEW tasks × 1000 examples
 
 **Owner:** Claude Code bg session (worktree sparse-heads-fv23, coordinator) + multi-agent fleet
@@ -321,6 +389,305 @@ point.
 
 ---
 
+## 2026-08-12 — Isolation-methods study prep: dataset expansion + prompt sets (CPU)
+
+**Owner:** Claude Code background session (isolation-methods stream). **Status:** DONE.
+**What:** (1) `write_up/isolation_methods_levers.md` — reference doc for the study levers
+(3 isolation algorithms stated generically over the metric-to-optimise lever, data lever,
+success-metric lever, failure hypotheses H1–H3, evidence snapshot). (2) 7 datasets expanded
+via parallel agents to give ≥500 train examples under the new no-valid split; country tasks
+left as-is; see DECISIONS 2026-08-12 for numbers/backups. (3) `merge_valid_into_train` flag
+in `split_icl_dataset`/`load_dataset` (gated: test membership bit-identical, train = old
+train ∪ valid). (4) `dataset_files/isolation_prompts/` generated + independently verified
+(29/29 tasks pass: pair-membership, query distinctness, paired test queries across settings,
+shuffle = exact permutation, mixed-task demos correct in source task; pools deduped by input
+— catches product-company dup inputs and national_parks multi-state contradictions).
+**Files:** `dataset_files/generate/generate_isolation_prompts.py` (NEW),
+`src/utils/prompt_utils.py` (flag), expanded jsons + backups, `write_up/isolation_methods_levers.md`.
+**Next:** user to direct (task-specific FV training under different isolation algos on the
+new prompt sets).
+
+---
+
+## 2026-08-10 — SANDBOX: sparse-optimization selection over 83 FV-stack PC directions
+
+**Owner:** Claude Code background session (sparse-pcs stream), CPU pod + own pods
+fv-sparse-pcs-{1,2,3} (e9gsv928on3ii1, bvgbaed4z5u5jk, uhk8bg6ixzh8j7; 3× RTX 5090 $0.99/hr,
+runpod/pytorch 2.4.0 image + volume fv env; ALL TERMINATED after ~2.6 h, ≈$8.5 total).
+**Status:** DONE.
+**SANDBOX** — builds on the sparse23 head set (chat-scoped FV definition); NOT repo standard.
+
+**What (user spec, gated in-chat 2026-08-10):** Hu et al. §3.1 sparse optimization over PC
+COEFFICIENTS instead of heads: basis = top-83 uncentered PCs (≥90% pooled variance; 15 PCs
+= 80%) of the 20 train tasks' stacked fixed10 sparse23 per-prompt FVs (3400×4096, fp64);
+task FV v_t = fixed10 capture mean (user choice — NOT canonical varicl means); inject
+v_t(c) = Σ_i c_i·(v_t·u_i)·u_i once at the zero-shot cue token @ block-9 output; loss =
+raw −log p(full label) + λ·Σc, c ∈ [0,1]^83; λ ∈ {0.01,0.02,0.05,0.1,0.2,0.5} (extended
+grid, user choice) by LOTO-CV over the 20 train tasks, same selection rule as the head run.
+Goal: narrow 83 PCs to a manageable sparse set retaining most zero-shot steering performance.
+
+**Files:** NEW `src/sandbox/sparse_head_selection/build_fv_pc_basis.py` (CPU; gates: npc80/90
+== 15/83 recomputed, U orthonormal; per-task FV energy retained by subspace ≥ 0.998) →
+`artifacts/sandbox/sparse_pc_selection/pc_basis_83.pt`; NEW
+`src/sandbox/sparse_head_selection/train_sparse_pcs.py` (reuses train_sparse_heads.py
+machinery; PC-contribution tensor C[t,i,:]=(v_t·u_i)u_i; consistency gate c=1 ≡ fp64 subspace
+projection, worst rel_err 1.2e-7; fold seeds keyed to λ VALUE so --lambdas shards across pods
+reproducibly). Smoke passed on-pod (grad reaches c, loss falls, c∈[0,1]).
+**Run:** 3-way λ shard {0.01,0.1}/{0.02,0.2}/{0.05,0.5} via `run_sparse_pcs_shard.sh`
+(120 folds, ~2 h wall); reduce (final retrain + baselines + top-k curve) on pod 1.
+
+**FINDINGS (all 120 folds + final retrain):** chosen λ=0.01 (grid monotone decreasing:
+mean LOTO acc 0.376/0.348/0.322/0.240/0.138/0.093 for λ=0.01…0.5; λ=0.5 n_active=83 is the
+same early-stop-reverts-to-init artifact as the head run's high-λ rows). Final c: **34 PCs
+> 0.2, 29 near 1.0** — mostly the top of the variance ordering (PCs 0–22 nearly all kept)
+plus a handful of late PCs (28,34,45,53,55,59,65); 49 of 83 PCs driven to ~0.
+References on the same 1720 train-task datapoints (pooled): no-interv 0.016, full fixed10
+FV 0.413, 83-PC c=1 projection 0.414 (the ≥99.8%-energy subspace ≈ lossless), final sparse
+c 0.392 (~95% of ceiling). Top-k-by-c curve: k=12 → 0.249, k=20 → 0.297, **k=30 → 0.388
+(~94% of the c=1 ceiling)**, k=50 unweighted → 0.408; so ~30 PCs carry nearly everything,
+consistent with the LOTO-honest 0.376. Sharp per-task structure survives: country-capital
+0.812, singular-plural 0.65 vs next_capital_letter 0.025 (full FV is equally bad there —
+a property of the fixed10 FV at L9, not of the PC truncation). CAVEAT: pooled table is
+train-task (final c trained on those tasks); the held-out number is the LOTO mean 0.376.
+Outputs: `artifacts/sandbox/sparse_pc_selection/` (pc_basis_83.pt, fold_results/ 120×,
+coeffs_final.pt, selection.json, baselines.json, topk_curve.json, metadata.json),
+`results/sandbox/sparse_pc_selection/` (summary.md, lambda_cv_summary.csv, loto_per_fold.csv,
+summary PNG). Branch `claude-sandbox-sparse-pcs`. **Next:** user to direct (candidates:
+eval selected PCs on the 9 held-out test tasks; compare PC subspace vs head subspace;
+interpret the late-PC stragglers).
+
+**Top-29 projection eval addendum (2026-08-11, pod fv-pc-proj-eval jxg9vnqvmlc6gq RTX 5090
+~20 min TERMINATED):** NEW `eval_pc_projection.py` — the loto_vs_canonical protocol (same
+1720 zero-shot datapoints, single cue-token injection @L9, full-label acc) with arm =
+sparse23 fixed10-mean FV orthogonally PROJECTED onto span of the 29 c>0.8 PCs (unweighted).
+Per-task means: no-interv 0.015 / full FV 0.4135 / **top-29 proj 0.3921 (94.8% of full)** /
+83-PC c=1 0.4109. Reproduction gate vs stored baselines: EXACT on all arms/tasks. 15/20
+tasks within ±0.01 of full FV (7 bit-identical); the entire deficit is 3 tasks:
+english-french 0.62→0.33, english-spanish 0.53→0.40, english-german 0.20→0.16 (+
+next_capital_letter 0.025→0.0125) — the translation tasks, exactly the tasks whose
+per-prompt FV stacks need the most PCs (part 14c: 60–64 under sparse23). present-past /
+capitalize_second_letter / person-sport slightly IMPROVE under projection. Outputs:
+`results/sandbox/sparse_pc_selection/top29pc_projection_vs_fullfv.csv`,
+`artifacts/sandbox/sparse_pc_selection/top29pc_projection_eval.json`.
+
+**HELD-OUT test-task eval (2026-08-11, pod fv-pc-testeval 8hwlkxs76322ol RTX 5090 ~25 min
+TERMINATED):** the train-task table above is IN-DISTRIBUTION (user flagged); the real
+generalization test = the 9 test tasks, never in the basis or optimization.
+`capture_perprompt_head_activations.py` gained `--extra_tasks` (appended AFTER the 27 so
+query-selection RNG of existing captures is untouched) to capture product-company +
+country-currency; `eval_pc_projection.py` gained `--task_split_key/--v_means_capture_dir/
+--out_tag` (test v_t built from captures with the exact basis recipe, fp64 + checkpoint W_O).
+***HEADLINE: the train-fit PC subspace does NOT transfer.*** Test-task means: no-interv
+0.004 / full FV 0.453 / top-29 proj 0.203 (44.7% of full) / 83-PC c=1 0.239. Per task:
+capitalize 0.91→0.00 (83-PC only 0.05), lowercase_first_letter 0.74→0.16, product-company
+0.50→0.05; survivors landmark-country 0.575 (unchanged), capitalize_first_letter 0.98→0.93.
+Energy retained by the 83-PC subspace is 61–95% for held-out FVs (vs ≥99.8% train) and the
+steering loss FAR exceeds the energy loss (capitalize keeps 80% of norm, loses ~all
+steering) — the causal content of unseen tasks' FVs lives largely OUTSIDE the train-task
+PC span. The 29 PCs are a faithful compression of the train FVs, not a universal task
+subspace. Outputs: `top29pc_projection_vs_fullfv_testtasks.csv`, `..._pertask_testtasks.png`,
+`top29pc_projection_eval_testtasks.json`; claude artifact "Sparse PC selection: narrowing
+83 task-subspace directions to 29" updated with the held-out section.
+
+---
+
+## 2026-08-10 — Stream cue-attn part 14c: per-task stable rank of stacked per-prompt FVs (both head sets)
+
+**Owner:** Claude Code background session (cue-attn stream), CPU only. **Status:** DONE.
+**What (user request):** per task, stack the 170 fixed10 per-prompt FVs (170×4096) and compute
+stable rank, for BOTH FV definitions (canonical top-40 + SANDBOX vanilla_sparse_opt23); bar
+chart. NEW `src/eval_scripts/plot_perprompt_fv_stablerank.py` →
+`results/sandbox/perprompt_fv_norms_vanilla_sparse_opt23/fvstack_stablerank_pertask.{png,csv}`
+(sandbox folder since one definition is sandbox). Definitional choice SURFACED not hidden:
+both UNCENTERED (repo SR precedent) and MEAN-CENTERED panels reported.
+
+**FINDINGS:**
+- UNCENTERED SR ≈ 1.03–1.94 for every task/definition: within a task the per-prompt FV stack
+  is essentially rank-1 — one dominant shared direction (the task-mean FV) plus small
+  fluctuations. Ordering: retrieval/classification lowest (commonsense_qa, sentiment,
+  person-* ~1.03–1.10), transforms/translation highest (~1.4–1.6); under sparse23 the three
+  translation tasks jump to 1.87–1.94 (largest relative prompt-to-prompt variation observed).
+- MEAN-CENTERED SR (fluctuation dimensionality) ≈ 5–29 of a possible 170: antonym 28.6 /
+  synonym 24.5 / translations 21–22 top the top-40 panel; under sparse23 syn/ant/translation
+  fluctuation dims roughly HALVE (13–17) while capitalize_first/lowercase_first rise to 21–23.
+  Mirrors part 14b: the tasks whose norms (and now variation dims) stand out are largely the
+  ones the head set is tuned to.
+- Cross-view note: centered SR correlates loosely with the norm ordering per definition —
+  high-norm tasks under a head set also vary along more directions under that head set.
+- **Added panel 3 (user request): # UNCENTERED PCs for ≥90% variance (PC1 ≈ task mean).**
+  Far more discriminative than SR (which is σ₁²-weighted): range **1 → 64**. Retrieval/
+  classification tasks need 1–5 PCs (commonsense_qa/sentiment/person-*/ag_news 1–3;
+  PC1 alone ≥90% for several); transforms/translations need 30–64 (synonym 58 top40,
+  translations 60–64 under sparse23, antonym 46–49). sparse23 collapses several retrieval
+  tasks to 1–2 PCs (country-capital 26→2, national_parks 15→1) while inflating translations
+  (42–46→60–64). So "one FV per task" is a ~90%-faithful description for retrieval tasks but
+  misses a fat 40-60-dim tail for transform/translation tasks.
+
+**Owner:** Claude Code background session (cue-attn stream), CPU only. **Status:** DONE.
+**SANDBOX** — head set is the sparse-optimization pick (NOT repo default); results in
+`results/sandbox/perprompt_fv_norms_vanilla_sparse_opt23/` (README there).
+
+**What (user request):** repeat part 14's fixed10 norm plots with H = the 23-head
+`vanilla_sparse_opt23` set (c>0.8, unweighted). Pure CPU rerun — the part-14 capture stored
+all 16 heads/layer. `plot_perprompt_fv_norm_hist.py` gained `--head_label` (titles) + a
+head-list uniqueness assert; NEW `plot_fvnorm_headset_comparison.py` (median-vs-median
+scatter top40 vs sparse23).
+
+**FINDINGS — the part-14 task ordering is substantially a property of the HEAD SET, not
+just the task:**
+- Spearman ρ(top40, sparse23 medians) = **0.44** (Pearson 0.50). Between-task variance share
+  stays high (79.5% vs 86%), grand mean similar (61.6 vs 62.1 — with 23 vs 40 heads, so NOT
+  proportional to head count), and country-capital stays lowest (43.2) / present-past stays
+  high (72.5). But the part-14 headline inverts: **synonym (−20.8) and antonym (−16.2)
+  plummet** from ranks 1–2 to below mid-pack (56.0/57.8), while **sentiment (+9.0, new max
+  75.8), capitalize_last_letter (+7.7), ag_news (+7.5), next_capital_letter (+7.1) rise**;
+  letter-surgery tasks as a block move to the top region.
+- Reading: the canonical CIE-selected top-40 contains heads that fire especially hard on
+  synonym/antonym-style word-pair transforms (they're also the tasks steering/CIE work
+  centered on); the sparse-opt set (10/23 overlap, adds L20-L26 late heads) redistributes
+  that. Norm ORDER across tasks is head-set-relative; the coarse structure (norms all same
+  order of magnitude, task-typed with ~80%+ between-task share, country-capital lowest)
+  is robust. Part-14 point 5b (head-selection bias hypothesis) gains support.
+
+## 2026-08-10 — Stream cue-attn part 14: per-prompt FV norms ||v^j_A|| across 27 tasks
+
+**Owner:** Claude Code background session (cue-attn stream), CPU pod + own GPU pod
+fv-perprompt-capture u1amcngwvmafq7 (RTX PRO 4500 Blackwell $0.72/hr, runpod/pytorch 2.4.0
+image + volume fv env; TERMINATED after ~1.2 h). **Status:** DONE.
+
+**What (user spec):** compute the per-prompt function vector v^j_A = Σ_{h∈H} W_O·h(p^j_A)
+(pooled top-40 varicl heads, final cue token) for 27 tasks (20 train + Stream W TEST7) × 170
+prompts, histogram the norms pooled and per task. Key question: do tasks differ in FV norm?
+User decisions: queries sampled from the FULL dataset (all examples — NOT the tiny valid split,
+NO ICL-correctness filter; the canonical varicl sets have only 3–170 prompts/task because
+valid ≈ 9% of data + correctness filter — flagged and adjudicated 2026-08-10); TWO variants:
+fixed10 (10 shots) and varicl4to10 (uniform 4–10 shots); supplementary norm-vs-shots figure.
+
+**Files:** NEW `src/eval_scripts/capture_perprompt_head_activations.py` (GPU; per-prompt
+out_proj-input head activations (170,28,16,256) fp16 per task/variant →
+`artifacts/perprompt_head_activations/gptj_27tasks_170prompts/<variant>/<task>.pt`, resumable;
+prompt construction reuses build_varicl_prompt_data with query_split=demo_split="all"),
+NEW `src/eval_scripts/plot_perprompt_fv_norm_hist.py` (CPU; mmap W_O slices; figures + npz/csv
+→ `results/direction3_fv_formation/attention_head_analysis/perprompt_fv_norms/`).
+
+**Gates:** (1) exact-reduction gate on antonym, BOTH variants: replicating the reference's
+fp16-batch-sum reduction on the captured tensors matches get_last_token_mean_head_activations
+on identical prompts BITWISE (dev 0.00e+00). Debugging lesson: the naive fp64 per-prompt mean
+differs from the reference by ~2.3e-4 — NOT noise (forward is bitwise deterministic on this
+GPU, ref-vs-ref dev exactly 0) but the reference's fp16 intra-batch sum (varicl_utils.py:136)
+rounding at activation scale ~3.6. (2) count gate 170/task/variant (54 files). (3) advisory:
+cos(our fixed10 task mean, stored canonical varicl mean) = 0.94–0.98 across tasks (different
+prompt population, as expected). Also: get_last_token_mean_head_activations needs the caller's
+global torch.set_grad_enabled(False) — without it the gate call OOMs (31 GB) building graphs.
+
+**FINDINGS — tasks differ strongly and cleanly in FV norm:**
+- Medians span 49 → 77 (fixed10: country-capital 49.2 lowest; synonym 76.8, antonym 74.0,
+  capitalize 73.6, present-past 72.7 highest). Between-task variance = **86%** of total norm
+  variance (fixed10; 84% varicl) — within-task IQRs (~2–4) are tiny vs the 28-point range, so
+  the per-task histograms barely overlap across the span. Ordering is nearly identical in both
+  variants (fixed10 vs varicl medians agree to ~1).
+- Rough pattern: knowledge/relational retrieval tasks (country-capital, park-country,
+  national_parks, landmark-country, person-*, ag_news) sit low (49–57); word-TRANSFORM tasks
+  (synonym/antonym, capitalize, present-past, singular-plural, next/prev_item) sit high (66–77).
+- **Shot count barely matters in 4–10:** corr(norm, n_shots) pooled 0.025, within-task mean
+  0.078; per-task median-vs-shots lines are flat; fixed10 ≈ varicl throughout. FV norm is a
+  task property, not a context-length artifact (at ≥4 shots).
+
+**Next:** nothing pending; possible follow-ups — extend below 4 shots (0–3) where formation
+presumably ramps; norm vs direction (does high-norm correlate with steering efficacy).
+
+**Owner:** Claude Code session (tmux window sparse-heads), CPU pod + own GPU pod fv-sparse-heads
+mlxcqy1vtfm5yv (RTX PRO 4500 Blackwell $0.72/hr, runpod/pytorch 2.4.0 image + volume fv env;
+TERMINATED after ~9.3 h, ~$6.7). **Status:** DONE.
+
+**What (user spec, choices gated 2026-08-06):** SANDBOX trial (NOT repo default) of arXiv
+2505.05145 §3.1 sparse-optimization head selection on GPT-J: learn c ∈ [0,1]^448 over all heads,
+v_task(c) = Σ_h c_h · (out_proj-projected varicl mean head output), injected ONCE at the cue
+token (output of block 9 = 1/3 depth) of ZERO-SHOT "Q: x\nA:" prompts; loss = raw −log p(full
+label) (greedy contextualized label tokens, teacher-forced, label positions NOT intervened)
++ λ‖c‖₁; AdamW lr 0.01 batch 128, clamp [0,1] each step. λ ∈ {0.01,0.02,0.05,0.1,0.2} by
+LEAVE-ONE-TASK-OUT CV over the 20 train tasks (rule: largest λ within 1pt of best mean LOTO
+full-label accuracy); final retrain on all 20 at chosen λ. Queries: valid split cap 100 / min
+80 per task, topped up from train split (user-approved rule). NOTE actual split: repo valid
+split is ~9% of data (not 30%) → 1720 datapoints, 8 tasks with substantial train top-up
+(country-capital 62/80, singular-plural 61/80, prev/next_item 59/80, present-past 53/80,
+person-sport 51/80, national_parks 39/80, person-instrument 34/80).
+
+**Files:** NEW `src/sandbox/sparse_head_selection/train_sparse_heads.py` (modes:
+check/smoke/cv/reduce/all; resumable per-(λ,fold) artifacts; consistency gate: indicator-c over
+canonical top-40 must rebuild stored train_varicl_top40 FVs, else hard stop), NEW
+`src/sandbox/sparse_head_selection/run_sparse_heads.sh`. Outputs →
+`artifacts/sandbox/sparse_head_selection/`, `results/sandbox/sparse_head_selection/`,
+logs → `logs/sandbox_sparse_heads/`.
+
+**Gates passed:** consistency check (indicator-c over canonical top-40 rebuilds every stored
+train_varicl_top40 FV; worst rel_err 2.9e-4, cos 1.000000); smoke (grad reaches c, loss falls,
+c in [0,1]). HF gradient checkpointing was INCOMPATIBLE with a grad-carrying vector injected
+inside a checkpointed block (CheckpointError: saved-tensor count mismatch) → replaced with
+micro-batch 32 gradient accumulation inside each batch-128 AdamW step (identical objective;
+only blocks >9 store activations since only v requires grad; 31.8/32.6 GB, ~9 h for 101 runs).
+
+**FINDINGS (all 100 folds + final retrain):** chosen λ=0.01 (rule: largest within 1pt of best
+mean LOTO acc; grid was monotone decreasing in acc). Final c: 73 heads > 0.2 (21 near 1.0);
+overlap with canonical varicl top-40 = 19/40 — (12,10),(15,5),(9,14),(8,1),(8,0),(11,0) etc.
+survive, plus many NEW mid/late-layer heads (16,10),(20,1),(25,3),(13,9),(23,7).
+HEADLINE (fair, task-held-out LOTO folds @λ=0.01, same datapoints, zero-shot @L9):
+mean acc sparse 0.421 vs canonical top-40 unweighted 0.193 vs no-intervention 0.015; sparse
+wins 17/20 tasks, big on sentiment 0.59-vs-0.00, person-sport 0.85-vs-0.01, ag_news
+0.56-vs-0.08, singular-plural 0.58-vs-0.08; loses only next_item/prev_item (~0.33-vs-0.38,
+0.16-vs-0.23) and ties commonsense_qa. Mirrors Hu et al.'s AIE-vs-optimization gap (0.85 vs
+0.31 on add-k). CAVEATS in summary.md: canonical is unweighted and injected at L9 (its best zs
+layer is ~11); sparse uses learned weights. λ=0.1/0.2 mean n_active inflated (early stop
+reverts toward 0.5 init when strong L1 makes es_nll rise from epoch ~0).
+
+**§3.2 stage 1 (2026-08-08, layer-wise mean-ablation, user-gated: 73-head base, UNWEIGHTED
+Eq.-2 FVs, uniform grand mean; pod fv-sparse-heads-ablate 1hz2oq75020qz9 ~1.2h TERMINATED):**
+NEW `layer_mean_ablation.py`; 328 conditions on the same 1720 datapoints @L9. References:
+all-task-specific (73 unweighted) 0.483, all-mean-ablated 0.017 = no-interv 0.016. Best single
+L13 0.060; best pair L9+L13 0.112 (runners-up L9+L12 0.110, L12+L13 0.108 — flat mid-layer
+spread). UNLIKE the paper (their best pair kept ~98% of full acc), NO pair comes close: task
+content is DISTRIBUTED across many layers for our 20 heterogeneous tasks; the pure-formatting
+(all-mean-ablated) FV does nothing. Results in layer_ablation_results.json / _best_pair.json.
+
+**§3.2 stage 1b (2026-08-08, k=4 layers; pod fv-sparse-heads-quad k0pfngt2ststb5 ~1.3h
+TERMINATED):** NEW `layer_quad_search.py` (greedy from best pair + exhaustive over 12-layer
+pool, 532 cached evals). GREEDY AND EXHAUSTIVE AGREE: best quad = L9+L12+L13+L15, acc 0.278
+(vs pair 0.112, full-73 0.483) — 17 task-specific heads incl. the canonical trio
+(9,14),(12,10),(15,5) at c~1. k-progression 1/2/4/25 layers = 0.060/0.112/0.278/0.483: no
+saturation at k=4, task content stays distributed across layers (unlike add-k's 2-layer story).
+Runner-up quads all mid-layer variations (9,12,13,+{19,20,16}). layer_quad_best.json.
+
+**Per-prompt v23 build (2026-08-10, CPU):** NEW `build_perprompt_fv_sparse23.py` — per-prompt
+FVs under the vanilla_sparse_opt23 definition (23 heads c>0.8; list verified == fv_manifest)
+for all 29 tasks x 170 prompts (130 train- + 40 test-split queries, fixed 10-shot), from the
+sandbox 448-head capture + out_proj slices mmap-read from the checkpoint. NOTE: cache snapshot
+stores fp32 weights; slices fp16-cast to match the capture/repo convention (gate 1 exact after
+cast; without it rel 2e-4 = pure fp16 rounding). Gates: slices==stored top-40 slices (10
+overlap), rebuilt targets match stored (rel ~2e-4). Advisory cos(mean v23, stored 23-head FV)
+0.94-0.99 except capitalize_last_letter 0.904 (same outlier task as the original top-40
+capture, 0.858 — 10-shot vs varicl gap, not a build issue). Output
+`artifacts/sandbox/sparse_head_selection/perprompt_fv_sparse23/<task>.pt` + build_summary.json.
+
+**Per-prompt read directions (2026-08-10, pod fv-readdirs-cheap mb0s53tnxur843 RTX2000Ada
+$0.24/hr ~15min TERMINATED; driver too old for cu130 GPU -> CPU LAPACK):** NEW
+`compute_perprompt_read_dirs_sparse23.py` — glossary Eq. 4-5 r^j = M+ v23^j / ||.|| with
+M = sum of the 23 heads' OV circuits (fp16-cast weights, fp64 SVD, recon 8e-15). Two
+user-gated variants: literal Eq. 5 (machine-eps) and rank90 (90% sigma^2 energy, k=1072).
+M numerically FULL RANK (k_literal=4096, cond 3.7e5, sigma 11.55->3.2e-5). ***HEADLINE: the
+two variants are ESSENTIALLY ORTHOGONAL — median cos(r_lit, r_r90) 0.001-0.007 on every
+task.*** Literal reconstructs v perfectly (cos(Mr,v)=1.0) but its direction is dominated by
+near-kernel 1/sigma amplification (the glossary's own caveat, empirically decisive); rank90
+reconstructs at cos 0.92-0.96. Output perprompt_read_dirs_sparse23/<task>.pt (both variants,
+unit r + preinv_norm + selfcons cosines + task-level r_task) + M_spectrum.npz + summary.
+
+**Files/outputs:** `artifacts/sandbox/sparse_head_selection/` (selection.json, coeffs_final.pt,
+metadata.json, baselines.json, fold_results/ 100×), `results/sandbox/sparse_head_selection/`
+(summary.md incl. fair LOTO table, lambda_cv_summary.csv, loto_vs_canonical.csv, summary PNG),
+branch `claude-sandbox-sparse-heads` (pushed). **Next:** user to direct (candidates: eval the
+73-head set on the 9 held-out test tasks; §3.2-style mean-ablation refinement; layer sweep).
+
+---
+
 ## 2026-08-06→08 — Stream sparse-heads: SANDBOX sparse-optimization head selection + vanilla_sparse_opt23 FV
 
 **Owner:** Claude Code bg session (worktree `.claude/worktrees/sparse-heads-fv23`, branch
@@ -367,8 +734,528 @@ tasks antonym (0.46 vs 0.63) and synonym (0.15 vs 0.24). 10-shot-shuffled ~tied 
 {summary.json,vs_topN.csv}` + per-task `vanilla_sparse_opt23_by_layer.json`.
 
 **Next:** user to direct (candidates: §3.2 mean-ablation refinement of the 73/23 sets;
-antonym/synonym failure analysis; weighted-c FV variant; promotion decision).
+antonym/synonym failure analysis; weighted-c FV variant; promotion decision).## 2026-08-05 — Stream cue-attn part 13: cumulative stable rank of d_payload stacks (quick study)
 
+**Owner:** Claude Code session (CPU pod only). **Status:** DONE.
+
+**What (user request):** stack train tasks' 40 unit d_payloads cumulatively in random order,
+watch the stable rank (sum s^2/s1^2) grow. NEW `src/eval_scripts/plot_dpayload_stablerank_growth.py`
+(CPU; v_proj slices mmap-read straight from the cached pytorch_model.bin — full fp32 model
+load OOMs under the shell's 16 GB cgroup cap; HARD GATE: rebuilt synonym d_payloads match the
+stored subspace artifact to 1e-16). Headline seed-42 order + min-max envelope over 20 orders.
+Output `attention_head_analysis/top40_head_geometry/dpayload_stablerank_growth.{png,csv}`.
+
+**FINDINGS:** single-task SR 9.7-11.8 (mean 10.7; 40 unit rows). Growth saturates immediately:
+mean ~15 at m=2, ~19 by m=4-5, then creeps to 21.4 at m=20 (order-independent endpoint) —
+adding 19 tasks (760 rows) merely doubles the SR, and the last 10 tasks add ~1. All 20 tasks'
+payload geometry together spans only ~2x one task's effective dimensionality: new tasks mostly
+REUSE the same per-head payload directions (part 11's head-dominated geometry), consistent
+with task identity being a small within-head offset. (SR stays low because the shared
+component absorbs energy proportionally: sigma1^2 ~ 4.7% of total at every m.)
+
+---
+
+## 2026-08-07 — Stream cue-attn part 13b: cumulative stable rank of FV head-OUTPUT stacks (quick study)
+
+**Owner:** Claude Code session (CPU pod only). **Status:** DONE.
+
+**What (user request):** part-13 variation with rows = the out_proj-projected task-mean head
+activations o = W_O·z_bar (the per-head FV summands, part 3's "output" stack) instead of the
+d_payloads. NEW `src/eval_scripts/plot_headoutput_stablerank_growth.py` (same mmap route +
+20-order envelope; ADVISORY anchor: present-past single-task SR reproduces part 3's
+4.63 raw / 12.16 unit to 0.002). Two panels: UNIT rows + RAW (FV-weighted) rows. Output
+`attention_head_analysis/top40_head_geometry/headoutput_stablerank_growth.{png,csv}`.
+
+**FINDINGS:** same hard saturation as the payload stacks. UNIT: single-task 11.4-13.2
+(mean 12.3) -> 16.4 at m=2 -> ~19.4 by m=4-5 -> 20.9 at m=20 (1.7x one task). RAW:
+single-task 4.6-6.8 (mean 5.6) -> 12.7 at m=20 (2.3x, absolute SR much lower — the strong
+heads' norms, L15H5 ~17 etc., dominate sigma1 at every m). So the OUTPUT geometry across all
+20 tasks also spans only ~2x one task's effective dimensionality — new tasks reuse the same
+per-head output directions; the FV summand geometry is as head-anchored as the payload
+(W_V-pullback) geometry, on both sides of the attention head.
+
+---
+
+## 2026-08-04 — Stream cue-attn part 12: d_payload subspace-REPLACEMENT task-switch steering (syn<->ant)
+
+**Owner:** Claude Code session (CPU pod) + own pod fv-payload-switch 2i2v436ssjgq2a
+(RTX PRO 4500 Blackwell $0.74/hr, runpod/pytorch 2.4.0 image + volume fv env,
+allowedCudaVersions 13.0; TERMINATED after ~20 min, ~$0.25). **Status:** DONE.
+
+**What (user spec, choices gated 2026-08-04):** steer task identity WITHOUT paired prompts by
+replacing d_payload-subspace projections at the demo label token of a source-task 1-shot
+prompt. Targets = UNPAIRED 10-shot task means (last demo's label token, 130 train-split
+capture prompts from gptj_56tasks_170prompts_4tokens) projected into the cached
+pooled40heads_k4 bases. Two-step op at a SINGLE edit layer L (capture stack row L+1),
+ordering user-specified so the target-task projection wins in any subspace overlap:
+step 1 `v += (c(tgt->src) - v@B_src^T)@B_src` (erase source: set source-basis coords to the
+TARGET task's mean coords there); step 2 `v += (alpha*c(tgt->tgt) - v@B_tgt^T)@B_tgt`.
+Arms: replace_both (steps 1+2) + replace_target_only (step 2 only). Sweeps: layers 0..27
+x alpha {0.5,1,2,4}. Eval prompts/readout IDENTICAL to steer_switch_logit.py (same pools,
+seed 42, n_test=100; queries have single-token gold under BOTH tasks); headline metric
+logit(tgt_gold)-logit(src_gold) at the final position; Δ log p + flip rate also recorded.
+
+**Files:** NEW `src/eval_scripts/capture_payload_switch_means.py` (CPU; means + coords ->
+`artifacts/payload_switch_steering/tenshot_lastlabel_means.pt`; own-subspace captures ~28-30%
+of the mean's norm at mid layers), NEW `src/eval_scripts/steer_payload_switch_logit.py`
+(gates: batched-vs-unbatched, no-op hook == clean, in-hook coord invariant, finite; advisory
+old-study baseline check), NEW `src/eval_scripts/plot_payload_switch_logit.py`. Output root
+`results/direction3_fv_formation/ablation/attention_head_mechanisms/payload_switch_steering/`
+(per-direction npz volume-only per *.npz gitignore; summary.csv + run_config + 2 figures
+tracked). Clean baselines reproduce the old paired-Delta study to 0.001 (same prompts:
+syn->ant -1.692 vs -1.690, ant->syn -0.029 vs -0.028).
+
+**FINDINGS (peak mean logit-diff over layers; n=100, ci95 ~0.5; alphas extended to 8 on a
+second pod fv-payload-switch-a8 0807dhr1tg2194, full --overwrite rerun, TERMINATED ~$0.15):**
+- ant->syn replace_both: alpha=1 +0.20 @L8, alpha=2 +0.89 @L8, alpha=4 +1.75 @L7, alpha=8
+  +2.29 @L7 (flip 0.81 from clean 0.52; dlogp tgt +1.38, src -0.93). syn->ant replace_both:
+  alpha=2 -0.43, alpha=4 +0.51 @L4, alpha=8 +1.04 @L7 (flip 0.64 from clean 0.25; dlogp tgt
+  +2.19).
+- vs the old paired-Delta method (same prompts/metric; comparison figure part 12b): per
+  matched alpha the old full-rank Delta leads by ~one strength doubling, BUT the strength-free
+  ceilings favor different methods per direction — syn->ant: new alpha=8 +1.04 BEATS the old
+  ceiling (+0.46 @alpha=4, declining to +0.42 @alpha=8); ant->syn: new alpha=8 +2.29 reaches
+  ~87% of old alpha=8's +2.63, neither clearly saturated. A 4-dim unpaired replacement matches
+  or exceeds a full-rank paired-difference injection at equal-or-double strength.
+- Effective window = layers ~3-13, dead by ~15-16 in BOTH methods — the payload-ablation
+  early-L transport window.
+- replace_both vs target_only: source-erasure adds a modest gain at gentle alpha (ant->syn
+  alpha=2 +0.89 vs +0.71; alpha=1 +0.20 vs +0.09) and nothing at alpha>=8 (+2.29 vs +2.24) —
+  the target write dominates at high strength.
+- Headline: 4-dim unpaired task-mean subspace replacement steers the task switch at the demo
+  label token with the same layer window as the paired-difference method and a comparable or
+  better ceiling — no paired prompts needed.
+
+**Next:** open — final-cue site variant, digits task pairs, k sweep, cf-task control arm,
+alpha>8 saturation check for ant->syn.
+
+---
+
+## 2026-07-30 — Stream cue-attn part 9: PROPAGATED payload-subspace ablation (ciew k4/k8, test7)
+
+**Owner:** Claude Code session (CPU pod) + own pods fv-prop-k4 v5h0yptqd9zx2c /
+fv-prop-k8 xislhghsfaaezc (RTX 5090 $0.99/hr each, run in PARALLEL per user "powerful GPU,
+fast"; TERMINATED; ~35 min total incl. one crashed launch — smoke with --tasks antonym
+alone trips build_cf_map's no-alternative assertion; use >= 2 tasks in multi-task smoke).
+**Status:** DONE.
+
+**What (user spec, gated):** new --mode propagated on
+ablate_oneshot_payload_subspace_logprob.py: ablate at the anchor site token AND every
+later position (incl. tokens not in the plots: newlines, 'Q:', query word) for all blocks
+b >= L (mask = pos >= anchor; left-pad safe). CIE-weighted k4+k8 subspaces, ZERO op only
+(no matched mean targets for arbitrary positions; user-gated), own + shuffled-cf arms,
+7 test tasks. Roots `ablation/attention_head_mechanisms/test7_propagated/ciew_{k4,k8}`.
+plot_avg now renders 2x1 for zero-only runs. GATES passed incl. propagated
+debug_invariant; HARD sanity: propagated final_cue == anchor-mode final_cue (same
+subspace/op), max |dev| 0.0012 — same-protocol reproduction across GPUs.
+
+**FINDINGS (task-avg min-over-L; anchor-mode zero refs in parens):**
+- cue1: k4 -3.62 (-0.06), k8 -4.21 (-0.09) — from ~nothing to the LARGEST effect: the
+  anchor cue1 token itself is inert, but cue1-propagated covers the demo label + query +
+  everything, i.e. removing the payload subspace across the whole suffix is devastating.
+- target1: k4 -3.43 (-2.59), k8 -4.03 (-2.76) — +0.8-1.3 nats over anchor mode from the
+  positions downstream of the label.
+- final_cue: identical to anchor by construction (-0.27/-0.50).
+- cf grows with edit size as expected for zero-op (cue1 cf -0.37/-0.57) but specificity
+  holds at ~7-10x. cue1 ~ target1 in propagated mode => the suffix damage is dominated by
+  label + downstream content, not the cue token itself.
+- Layer profile: propagated damage confined to early starts (gone by L ~ 12-16), same
+  window as anchor mode — late-layer suffix content in these subspaces is not load-bearing.
+
+---
+
+## 2026-07-31 — Stream cue-attn part 9b: propagated ablation, UNIFORM (unweighted) k4/k8
+
+**Owner:** Claude Code session + own pods fv-prop-uw-k4 fvdckflnrwkv1z / fv-prop-uw-k8
+xuyapdrwrhv9l2 (RTX 5090 $0.99/hr each, parallel; TERMINATED, ~25 min). **Status:** DONE.
+
+**What:** same --mode propagated protocol as part 9 but with the UNIFORM pooled40 k4/k8
+subspaces (already cached). Roots `test7_propagated/{k4,k8}`. Gates passed; final_cue ==
+anchor-mode consistency max |dev| 0.0023/0.0018.
+
+**FINDINGS (task-avg min-over-L, zero op; own | cf):**
+- uniform k4: cue1 -5.31 | -1.57; target1 -5.29 | -1.70; final_cue -1.94 | -0.33
+- uniform k8: cue1 -5.66 | -1.83; target1 -5.60 | -1.99; final_cue -2.03 | -0.41
+- vs ciew propagated (part 9): own damage larger (-5.3 vs -3.6 at k4) but cf damage grows
+  ~4x MORE (-1.6/-2.0 vs -0.37/-0.57) => specificity collapses from ~10x (ciew) to ~3x
+  (uniform). Suffix-wide removal of the uniform basis is substantially generic damage
+  (its tail directions carry population-shared content), while the CIE-weighted basis
+  stays a clean task-content object even under whole-suffix ablation. Same early-L window
+  (gone by ~14-16). Consistent with part 7d: tail directions = where the less-specific
+  content lives.
+
+---
+
+## 2026-07-31 — Stream cue-attn part 10: comparison figure — Stream W pre-image/FV vs uniform payload subspaces
+
+**Owner:** Claude Code session (CPU pod, plotting only). **Status:** DONE.
+
+**What:** NEW `src/eval_scripts/plot_preimage_vs_payload_comparison.py` -> 2x7 grid (own/cf
+x {preimage_matched, preimage_icl10, fv, payload k1,k2,k4,k8 zero-op anchor mode}), shared
+scale, 7-task means on identical prompts (both studies import Stream W build_prompts).
+Output `ablation/attention_head_mechanisms/comparison/heatmap_preimage_vs_payload_ksweep.png`.
+
+**Min-over-L headline (own):** final_cue: FV -7.19 > icl10 preimage -4.00 > payload k8
+-2.03 ~ k4 -1.94 ~ matched preimage -1.95. target1: payload k1 -2.12 already beats BOTH
+pre-images (matched -1.78, icl10 -1.12); k8 -3.01; FV only -0.40. Specificity at target1:
+payload ~13-18x (cf -0.14..-0.17) vs pre-images ~5-8x; FV final_cue 5.9x.
+
+**Propagated variant (--propagated flag; same 3 Stream W columns vs propagated payload
+k1..k8) -> `comparison/heatmap_preimage_vs_payload_ksweep_propagated.png`.** Propagated
+payload cue1/target1 damage (-4.0..-5.7) approaches/rivals the FV's final-cue -7.19 in raw
+magnitude but from a DIFFERENT site+channel and with weaker specificity (~3-4.6x vs
+FV 5.9x); Stream W columns unchanged (single-token by construction).
+READING: the two decompositions are COMPLEMENTARY channels — pre-image/FV directions own
+the FINAL-CUE (readout) site, payload subspaces own the DEMO-LABEL (transport) site with
+the cleanest cf controls; layer windows differ accordingly (payload early-L only, FV
+final-cue persists to ~L16-20).
+
+---
+
+## 2026-07-31 — Stream cue-attn part 11: 27-task d_payload 2D PCA
+
+**What:** NEW `src/eval_scripts/plot_dpayload_pca_alltasks.py` (CPU) — the 40 unit
+d_payload vectors (pooled top-40 heads, cached task-mean activations; exactly the ablation
+SVD rows) for all 27 tasks (20 train + 7 Stream W test), stacked 1080 x 4096, centered
+2D PCA, task-colored scatter (circles train / triangles test) ->
+`attention_head_analysis/top40_head_geometry/pca2d_dpayload_27tasks.{png,npz}`; raw stack
+cached (scratchpad dpayload_27tasks_40heads.npy, session-scoped).
+
+**FINDING:** PC1+PC2 carry only ~5% of variance, and the visible clusters are organized by
+HEAD, not task — verified: mean pairwise cos WITHIN-HEAD across tasks 0.445 (range
+0.16-0.74) vs WITHIN-TASK across heads 0.062. Geometric reason: each head's d_payload is
+confined to its own W_V row space (~orthogonal 256-dim slices of 4096-d), so head identity
+dominates any global PCA; task signal is a within-head modulation.
+
+**Head-centered variant (user asked why tasks don't cluster):** subtract each head's
+across-task mean, renormalize, PCA -> `pca2d_dpayload_27tasks_headcentered.png`. Residual
+cos: same-task/diff-head 0.058 vs diff-task/diff-head -0.002 (weak but real cross-head
+task signal). The scatter now organizes by TASK FAMILY: knowledge/location tasks
+(national_parks, landmark-country, park-country) upper-left; translation tasks
+(en-fr/de/es) right; letter-case tasks (capitalize_*/lowercase_*/next_capital) lower-left
+— matching the ablation cf finding that related tasks (lowercase/capitalize_first_letter)
+share payload content. Task identity in d_payload = a small family-structured offset on
+top of large fixed per-head geometry.
+
+---
+
+## 2026-07-31 — Stream cue-attn part 9c: propagated ablation, uniform k1/k2 (completes the k set)
+
+**Owner:** own pods fv-prop-uw-k1 04yc4alwg2mgvb / fv-prop-uw-k2 so332lnnu4cbp2 (RTX 5090,
+parallel, TERMINATED ~20 min). Roots `test7_propagated/{k1,k2}`. Gates + final_cue==anchor
+consistency passed (max |dev| 0.0016/0.0020).
+
+**Propagated k-progression (task-avg min-over-L, zero op, own | cf | same/cf):**
+- k1: cue1 -4.09 | -0.88 | 4.6x;  target1 -4.04 | -0.96;  final_cue -0.88 | -0.14
+- k2: cue1 -4.90 | -1.26 | 3.9x;  target1 -4.89 | -1.38;  final_cue -1.65 | -0.30
+- k4: cue1 -5.31 | -1.57 | 3.4x;  k8: cue1 -5.66 | -1.83 | 3.1x
+READINGS: (1) even ONE direction per task, removed across the whole suffix, costs ~4 nats
+(~72% of the k8 effect) — the propagated regime saturates much earlier in k than anchor
+mode; (2) specificity is best at k1 (4.6x) and degrades monotonically with k — each added
+uniform-SVD direction contributes proportionally more generic content; (3) cue1 ~ target1
+at every k (suffix damage dominated by label+downstream, never the cue token itself).
+
+---
+
+## 2026-07-30 — Stream cue-attn part 8: direction3_fv_formation REORGANIZED (57 dirs -> 6 folders)
+
+**Owner:** Claude Code session (CPU pod). **Status:** DONE.
+
+**What (user-specified through 3 question rounds):** flat 57-dir direction3 restructured
+into: `ablation/{preimages/{oneshot/{main,numbers,propagated,propagated_numbers},fiveshot},
+attention_head_mechanisms/{train_tasks,test7,test7_k_sweep/k{1,2,8,16},
+test7_cie_weighted/k{4,8}}}`, `attention_head_analysis/` (4 observational head dirs),
+`activation_to_fv_decoding/{fulldim_ridge/{main,qwen3,varicl_top40,+numbers x2,
+weight_heatmaps,controls/{shuffled*,rowshuffled*}},pca_ridge/,joint_pca/,ols_layer_sweeps/,
+cosine/}`, `activation_geometry/` (6 dirs), `preimage_analysis/` (twoshot_pairdiff +
+preimage_steering). Full old->new table in `results/direction3_fv_formation/README.md`.
+
+**Deletions (user-approved exception to never-delete):** the two superseded smoke trial
+dirs (joint_pca_..._smoke, pca_abstractive_fv_activation_scatter_smoke, 37 files ~6MB).
+
+**Mechanics:** migration script `logs/direction3_reorg/migrate.sh` (auditable, plain mv —
+tracked+untracked mixed; git working tree left uncommitted); file count 2692 -> 2655
+(exactly the 37 deleted). Script defaults repointed: bulk rewrite of 55
+FV_FORMATION_DIR-lines across 47 eval scripts + manual fixes (Stream W mode_subdir,
+plot_payload_k_sweep.root_for_k -> test7_k_sweep/k{k}, pca_cue_token_icl_evolution dynamic
+name, merge_fulldim_ridge_results.run_title heuristic -> substring on full path,
+plot_decoded_last3_multitask40's stale pre-bucketing hardcode). run_config.json contents
+inside moved dirs untouched (provenance). VERIFIED: py_compile clean on all eval_scripts;
+plot_payload_k_sweep regenerates IDENTICAL k-trend numbers from new paths; Stream W
+plotter regenerates heatmap_all_arms from ablation/preimages/oneshot/main/; no functional
+old-path references remain (grep sweep; remaining mentions are docstrings/WORKLOG which
+stay per convention).
+
+---
+
+## 2026-07-30 — Stream cue-attn part 7: payload-subspace ablation on the 7 STREAM W TEST tasks
+
+**Owner:** Claude Code session (CPU pod) + own pod `fv-payload-ablation-test7` 5wy0h1qv5lt0wk
+(RTX PRO 4500 Blackwell $0.74/hr; TERMINATED, ~50 min incl. one crashed attempt ~$0.65).
+**Status:** DONE.
+
+**What (user spec, gated):** generalize part 6 to the 7 Stream W held-out tasks
+(landmark-country, word_length, capitalize_first_letter, synonym, lowercase_first_letter,
+capitalize, antonym — user chose the 7 over the 9-task varicl hold-out). Subspace per task =
+top-4 uncentered-SVD dirs of the 40 unit d_payloads built from the POOLED top-40
+train-selected heads (test tasks played no role in head selection) + that task's cached
+varicl mean head activations -> `artifacts/payload_subspaces/<task>_pooled40heads_k4.pt`
+(x7; ~55-57% stack energy, coverage spread over many heads — no tail-head domination like
+the 10-head variants). Ablation protocol unchanged; mean-clamp target = cached 20-TRAIN-task
+grand mean (user-gated reuse); cf = seeded random other test task's subspace via imported
+Stream W build_cf_map (pool = the 7; map recorded in run_config_multi.json).
+
+**Script changes:** build_payload_subspace.py: --tasks multi-task loop + --head_source
+{pertask,pooled40} (+ torch_dtype fix — GPU pod fv env's older transformers rejects
+`dtype=`); ablate_oneshot_payload_subspace_logprob.py: --tasks mode (one model load,
+build_cf_map, per-task cf, cf_map in run_config); plot wrapper: --avg_tasks task-averaged
+2x2. Output root SEPARATE: `results/direction3_fv_formation/payload_subspace_ablation_test7/`
+(+ figures/heatmap_payload_arms_test7avg.png). Gates passed for all 7 tasks (+ smoke w/
+debug_invariant).
+
+**FINDINGS (7-task-averaged min-over-L delta log p):**
+- Same structure as the train-task studies, now on HELD-OUT tasks with a head set that
+  never saw them: target1 zero -2.63 / mean -1.54 (early-L window, gone by ~12-14);
+  final_cue zero -1.94 / mean -0.50; cue1 ~0.
+- Specificity is even stronger than the train-task pair: cf averages -0.16 zero / -0.05
+  mean at target1 => mean-op same/cf ~ 29x (final_cue ~ 36x; zero op 17x / 5.8x).
+- Effect present in ALL 7 tasks (target1 mean-op -1.04..-2.64). Only notable cf response:
+  lowercase_first_letter under capitalize_first_letter's subspace (zero -1.00/-1.49) — the
+  two letter-casing tasks plausibly share payload content; every other cf pair ~0.
+- Interpretation: the d_payload transport-content mechanism GENERALIZES to unseen tasks —
+  per-task content projected into the pooled heads' value channels is causally necessary
+  at the demo label (early layers) and query cue, and is task-specific to ~30x under the
+  interpretable mean op.
+
+**Part 7b — k sweep (2026-07-30, pod fv-payload-ksweep 1sidnz8vdkheyq ~75 min ~$0.95,
+TERMINATED):** k in {1,2,8,16} added around the existing k=4. Builder extended with --ks
+(one SVD per task, one artifact per k; 28 new artifacts). Per-k output roots
+`payload_subspace_ablation_test7_k{1,2,8,16}/`; NEW `plot_payload_k_sweep.py` ->
+`payload_subspace_ablation_test7/figures/ktrend_summary.png` (min-over-L task-mean vs k,
+own solid / cf dashed, per site x op).
+
+Min-over-L task-mean (own, mean op): target1 -1.06 (k=1) -> -1.54 (k4) -> -1.80 (k16);
+final_cue -0.22 -> -0.50 -> -0.77. zero op: target1 -2.12 -> -2.63 -> -3.07; final_cue
+-0.88 -> -1.94 -> -2.08. cf stays flat and tiny at ALL k (mean op <= -0.09 at k=16).
+READINGS: (1) the TOP payload direction alone (k=1) already carries ~60-70% of the
+demo-label effect — the label-site content is low-dimensional; (2) the final-cue effect
+needs k >= 2 (big jump k1->k2) then saturates ~k=8 — cue-site content spreads over a few
+directions; (3) specificity does NOT degrade with k (mean-op same/cf ~ 20x even at k=16) —
+even a 16-dim task-payload removal barely touches shuffled tasks; (4) diminishing returns
+after k ~ 8 everywhere.
+
+**Part 7c — CIE-weighted payload subspaces, k=4 BUILD ONLY (2026-07-30, CPU pod):**
+user spec: scale each unit d_payload row to norm 100 x pooled-train-CIE before the
+uncentered SVD (global 100x cosmetic; relative weights matter). Builder gains --cie_weight
+(suffix `pooled40heads_ciew_k4`; weights + definition stored). Built for the 7 test tasks
+-> `artifacts/payload_subspaces/<task>_pooled40heads_ciew_k4.pt`. NO ablation run yet
+(explicitly deferred by user).
+Characterization vs unweighted k=4: top-4 energy 86% of the weighted stack (vs ~56% unit);
+principal-angle cosines ~[0.85-0.91, 0.4-0.6, 0.2-0.45, ~0] => only ~1 strongly shared
+direction, mean sq cos 0.26-0.34; the weighted basis CONTAINS the top-4-CIE heads' payload
+directions almost exactly (per-head coverage L9H14/L15H5/L8H1/L12H10: 0.28-0.50 unweighted
+-> 0.98-1.00 weighted) — with the 30x CIE range, weighted top-4 SVD ~= span of the 4
+strongest heads' payloads, discarding the 36-head tail the unweighted basis partly tracked.
+
+**Part 7d — ciew_k4 ABLATION (2026-07-30, pod fv-payload-ciew y9xwj5t6t5474u ~20 min
+~$0.30, TERMINATED):** same 4-arm protocol, 7 test tasks, output root
+`payload_subspace_ablation_test7_ciew_k4/` (+ figures/heatmap_payload_arms_test7avg.png).
+Task-avg min-over-L (ciew vs unweighted k4):
+- target1: zero -2.59 vs -2.63, mean -1.46 vs -1.54 — the demo-label effect is FULLY
+  RETAINED by the CIE-weighted basis, with an even cleaner cf (mean-op cf -0.026 =>
+  same/cf ~ 56x).
+- final_cue: zero -0.27 vs -1.94, mean -0.08 vs -0.50 — the query-cue effect essentially
+  VANISHES under CIE weighting.
+- READING: the top-CIE heads' payload directions (which the ciew basis ~= spans, part 7c)
+  carry the demo-LABEL content; the final-cue payload content lives in the directions the
+  weighting discarded (tail heads / lower SVD dims) — consistent with the k-sweep
+  (final_cue needed k >= 2 and kept growing) and with cue1-vs-final_cue site asymmetries.
+  CIE ranks heads by cue-token swap effect, yet what those heads TRANSPORT is label-site
+  content — the cue-site residual content is a distributed, small-head phenomenon.
+
+**Part 7e — ciew_k8 ABLATION (2026-07-30, pod fv-payload-ciew-k8 qovfuikji8x8dm ~25 min
+~$0.35, TERMINATED):** ciew k=8 subspaces built (92% weighted stack energy) + same 4-arm
+protocol -> `payload_subspace_ablation_test7_ciew_k8/`. Task-avg min-over-L
+(ciew k8 | ciew k4 | unweighted k8):
+- target1: zero -2.76 | -2.59 | -3.01; mean -1.58 | -1.46 | -1.76.
+- final_cue: zero -0.50 | -0.27 | -2.03; mean -0.17 | -0.08 | -0.66.
+- cf clean everywhere (worst -0.15).
+READING: doubling the weighted basis nudges target1 toward the unweighted level (~92% of
+it on mean op) and recovers only a sliver of final_cue (-0.50 vs unweighted k8's -2.03
+zero) — the cue-site content genuinely lives in the LOW-CIE-weight directions, not just
+beyond k=4. Demo-label content = top-CIE heads' payloads; cue content = distributed tail.
+(Also fixed a hardcoded '4D' in plot_avg's suptitle; 3 averaged figures regenerated.)
+
+**Next:** direction3 reorg approved-in-principle (plan in session plan file) — awaiting
+user go-ahead; then complement test / 9-task variant / promotion remain open.
+
+---
+
+## 2026-07-29 — Stream cue-attn part 6: 1-shot ablation of the 4D payload subspace (present-past)
+
+**Owner:** Claude Code session (CPU pod) + own pod `fv-payload-ablation` svr9bxxxci0ksl
+(RTX PRO 4500 Blackwell $0.74/hr, runpod/pytorch 2.4.0 image + volume fv env,
+allowedCudaVersions 13.0; TERMINATED after ~25 min, ~$0.35). **Status:** DONE.
+
+**What (user spec, choices gated):** Stream W-protocol causal test of the present-past
+attention_head_payload_subspace (k=4). present-past 1-shot prompts (170, imported Stream W
+build_prompts/make_chunks), 3 site rows, start layers 0..27, FIXED layer-independent 4D basis
+projected out at the site token for all blocks b >= L. Ops: zero + mean-clamp to the
+per-(site, edit layer) grand mean over ALL 20 train tasks (equal task weighting; capture
+stage). cf arms = english-french's k=4 subspace on the same prompts (user-fixed cf).
+Metric delta log p(first answer token). Gates all passed (decoded sites, batched-vs-single,
+no-op L=28, debug_invariant smoke, finite deltas).
+
+**Files:** NEW `src/eval_scripts/capture_train_task_site_means.py` (per-task + grand site
+means -> `artifacts/payload_subspace_ablation/train_task_site_means.pt`; needs
+--batch_size 32 on 32 GB — 170-prompt chunks with output_hidden_states OOM on long-prompt
+tasks), NEW `src/eval_scripts/ablate_oneshot_payload_subspace_logprob.py` (4 arms, Stream W
+npz schema, resumable), NEW `src/eval_scripts/plot_payload_subspace_ablation.py` (2x2).
+Outputs: `results/direction3_fv_formation/payload_subspace_ablation/` (npz + summaries +
+`figures/heatmap_payload_arms.png`); logs `logs/payload_subspace_ablation/`.
+
+**FINDINGS (min-over-L task-mean delta log p; sem <= 0.09):**
+- target1 (demo label) is the dominant site: zero -3.22 (best L=1), mean-clamp -2.16 (L=1);
+  damage requires starting early (gone for L >= ~12-14) — matches where the core payload
+  heads read (L8-15) and where d_payload appears at answer tokens (bnd >= ~6).
+- final_cue: zero -1.87 / mean -1.36 (best L=11), damage persists for late starts.
+- cue1 (demo 'A:'): ~nothing (-0.08).
+- Task-specificity is strong, best on the interpretable MEAN op: same/cf = 2.16/0.27 ~ 7.8x
+  at target1 and 1.36/0.07 ~ 19x at final_cue (zero op: 3.1x / 8.2x). So the 4D payload
+  subspace carries genuinely present-past-specific content at the demo label + query cue.
+
+**Part 6b (2026-07-30, pod fv-payload-ablation-2 brbuegfue2i2h3, ~15 min, TERMINATED):**
+(a) symmetric payload run on ENGLISH-FRENCH prompts (cf = present-past subspace) and
+(b) NEW fv_zero/fv_cf_zero arms on BOTH tasks — unit canonical train_varicl_top40 FV
+projected out at the FINAL CUE token only (k=1 basis through the same hook; cf = other
+task's FV). Script extended (ARM_ROW_NAMES, --fv_root, per-task run_config_<task>.json);
+figures now task-suffixed + `figures/heatmap_fv_final_cue.png` (both tasks side by side).
+
+Min-over-L mean delta log p (n=170 each):
+- english-french payload: target1 zero -3.07 / mean -1.47 (early-L window, same shape as
+  pp); final_cue only -0.67/-0.16 (MUCH weaker than pp's -1.87/-1.36 — asymmetry: the
+  payload subspace matters at the query cue for present-past but barely for
+  english-french); cf (pp subspace) -0.68 zero / -0.16 mean at target1 => mean-op
+  specificity ~9x at target1.
+- FV-direction ablation at final_cue: same-task ~ -5.8 BOTH tasks (ef -5.86, pp -5.77;
+  best L ~ 4-12, damage persists to L~16-20) but cf FV damage is LARGE too (ef prompts w/
+  pp FV -3.02, pp prompts w/ ef FV -1.87) => specificity only 1.9x / 3.1x.
+- Headline contrast: the FV direction is more devastating but only weakly task-specific
+  under projection ablation; the 4D payload subspace (mean op) is smaller in absolute
+  damage but 8-19x task-specific. Consistent with the two tasks' FVs sharing a large
+  generic component while the payload subspaces separate task content.
+
+**Part 6c (2026-07-30, pod fv-payload-ablation-3 zqjuz8vmdw5la5, ~10 min, TERMINATED):**
+fv_zero/fv_cf_zero extended to ALL 3 site rows (ARM_ROW_NAMES now uniform; fv npz
+overwritten via --arms fv_zero fv_cf_zero --overwrite, payload npz untouched). New figure
+`figures/heatmap_fv_arms.png` (2x2: task-prompt columns x same/cf rows, 3 sites each; the
+single-row heatmap_fv_final_cue.png is superseded). Min-over-L (same-task FV / cf FV):
+- final_cue: pp -5.77 / -1.87; ef -5.85 / -3.02 (as in 6b).
+- target1: pp -0.32 / -0.36 (FV at the demo label does ~NOTHING for present-past — cf
+  indistinguishable); ef -1.85 / -0.58.
+- cue1: ~0 everywhere (<= -0.11).
+- Contrast with the payload subspace at target1 (pp -2.16 mean / -3.22 zero): the FV
+  direction and the payload subspace occupy complementary sites — FV = final-cue readout
+  direction, payload subspace = demo-label transport content. english-french's FV does
+  carry some demo-label-site effect (-1.85, cf 3.2x weaker); present-past's carries none.
+
+**Next:** open — k sweep, core-heads-only subspace variant (part-5 basis caveat), or
+FV mean-clamp arm for a like-for-like op comparison.
+
+---
+
+## 2026-07-29 — Stream cue-attn part 5: attention_head_payload_subspace (present-past) + english-french stats
+
+**Owner:** Claude Code session (CPU pod). **Status:** DONE (english-french subspace deferred
+— user deciding how to construct it).
+
+**What:** NEW `src/eval_scripts/build_payload_subspace.py` (--task/--n_heads/--k/
+--stats_only): computes the top-N per-task-CIE heads' unit d_payload =
+unit(W_V^T @ unit(task-mean z_bar)) directly from cached task means + W_V (prompt-free),
+prints dimensionality stats (payload + projected-output stable ranks / pairwise cos), and
+caches the top-k UNcentered-SVD right-singular-vector basis to
+`artifacts/payload_subspaces/<task>_top<N>heads_k<k>.pt` (fp64, orthonormality gated).
+
+**present-past (cached, k=4):** `artifacts/payload_subspaces/present-past_top10heads_k4.pt`
+(basis 4x4096 + svals + the 10 d_payloads + heads + definition). Svals [1.56, 1.11, 1.02,
+0.98] = 56.7% of stack energy. Stats reproduce part-4 numbers exactly (payload SR 4.105 /
+cos 0.116; outputs raw SR 2.811 / unit 4.557). CAVEAT: per-head coverage shows the k=4 basis
+is 1 shared core direction + ~3 directions dominated by the idiosyncratic TAIL heads
+(coverage: L21H2 0.90, L18H11 0.93 vs core heads 0.37-0.50) — it is NOT 4 dimensions of
+"core past-tense payload"; flagged to user before anything is built on it.
+
+**english-french (stats only, top-10 = L15H5 L9H14 L12H10 L8H1 L14H0 L21H2 L8H0 L11H0 L24H6
+L20H0):** payload SR 4.621 / pairwise cos mean 0.110 (max 0.345); outputs raw SR 2.698
+(norms 1.1-10.3, top: L9H14 10.3, L15H5 10.2, L8H1 9.0), unit SR 5.391 / cos 0.059.
+Same shape as present-past: ~2.7-dim raw FV mass, weakly-shared payload core.
+
+**english-french subspace (built later same day, SAME recipe as pp — uncentered SVD k=4;
+user said "PCA" but comparability requires the identical construction, flagged):**
+`artifacts/payload_subspaces/english-french_top10heads_k4.pt`, svals [1.47, 1.21, 1.00,
+0.97] = 55.6% energy; same coverage caveat (tail heads L21H2 0.86 / L11H0 0.78 covered,
+core heads 0.33-0.55). **Subspace overlap pp vs ef:** principal-angle cosines
+[0.674, 0.535, 0.389, 0.013] (angles 47.7/57.7/67.1/89.3 deg), mean squared cos 0.223 vs
+0.001 random-4D baseline; sum cos^2 ~ 0.89 => ~1 effective shared dimension; top
+directions align at cos 0.65. So the two tasks' payload subspaces share a sizable common
+core (plausibly generic answer/label-content transport, given 8/10 shared heads) but keep
+~3 task-distinct dimensions each.
+
+---
+
+## 2026-07-29 — Stream cue-attn part 4: d_payload (value-channel pullback) for present-past top-10
+
+**Owner:** Claude Code session (CPU pod). **Status:** DONE (single prompt/task).
+
+**What (user spec):** for the PRESENT-PAST-specific top-10 CIE heads (L15H5 L12H10 L13H13*
+L11H0 L8H1 L9H14 L24H6 L21H2 L20H0 L18H11*; * = not in pooled top-40 — task mean-acts tensor
+covers all heads so they're still available), define the value-channel payload direction
+d_payload = unit(W_V^T @ unit(z_bar)), z_bar = task-mean head activation (21 prompts).
+Exactly position-free (RoPE never touches V); at fixed attention weights, resid content
+along d_payload at an attended token moves the head output along its task-mean direction,
+scaled by w_t. NEW `src/eval_scripts/plot_dpayload_layer_token_heatmaps.py`
+(--task/--query_idx/--n_heads/--plot_head_rank). HARD GATE: recomposed sum_t w_t*v_t must
+match the captured out_proj input per head — passed, max rel dev 3.3e-7.
+
+**Outputs:** `results/direction3_fv_formation/dpayload_layer_token/`:
+`present_past_q21_dpayload_top10.npz` (10 unit d_payloads + targets + per-head
+cos(cue-output, task-mean) = 0.89-0.96 for the 6 core heads, 0.40/0.55 for L24H6/L20H0)
++ layer x token figure for L15H5 (task rank #1).
+
+**Findings (q21 prompt):** L15H5's d_payload lights up the SAME ten past-tense answer-token
+columns as L9H14's d_content, but stronger and deeper: cos up to 0.19 / proj 17-21 at the
+read boundary (15), stripes persist through L28 (vs d_content peaking at bnd 8 then fading).
+<bos> is strongly ANTI-aligned (proj ~ -20 from bnd ~7 on) — the attention-sink token
+carries negative payload along the task-mean direction, so L15H5's partial BOS attention
+actively dilutes its task output. Payload content appears at answer tokens from bnd ~6.
+
+**Next:** same analysis for english-french; d_payload vs d_content per-head cos.
+
+---
+
+## 2026-07-29 — Stream cue-attn part 3: top-40 head geometry (stable rank, pairwise cos, d_content x40, PCA)
+
+**Owner:** Claude Code session (CPU pod). **Status:** DONE (exploratory, single prompt/task).
+
+**What:** geometry of the 40 canonical varicl heads for present-past. (a) Stacked the 40
+out_proj-projected task-mean activations (the FV summands; task mean = 21 ICL-correct prompts,
+cue token) into 40x4096; stable rank (fp64 SVD) = **4.63 raw / 12.16 unit-rows**; row norms
+0.99-16.9 (top: L15H5 16.9, L12H10 15.7, L8H1 13.9); mean pairwise cos **0.030** (85% of pairs
+|cos|<0.1, max 0.37) — near-orthogonal outputs, stable-rank drop mostly from one weak shared
+component + norm imbalance. (b) Built unit **d_content = normalize(W_K_pass^T q_pass)** for all
+40 heads from the q21 cue-token queries (per-head gate: manual pipeline reproduces each
+attention row, max dev 3.9e-7); q_pass energy fraction splits content heads (top-6 CIE all
+0.73-0.84) from rotary/positional heads (L14H0 0.38, L10H11 0.21, L14H9 0.22). d_content
+geometry: mean pairwise cos **0.085**, stable rank **7.7**, max pair L24H6-L20H0 0.52 — the
+heads' queries are more mutually aligned than their outputs. (c) 2D centered PCA of both sets
+-> `results/direction3_fv_formation/top40_head_geometry/pca2d_top40_dcontent_vs_outputs.png`
+(+ per-panel npz): d_content 2D captures only 12% var but shows layer organization + a
+content-head cluster; raw-output PCA is a norm story (L15H5/L12H10/L8H1/L9H14 outliers, rest a
+blob). Caches (40x4096 stacks): scratchpad `top40_projected_activations_present_past.npz`,
+`dcontent_unit_top40_present_past_q21.npz` (scratchpad is session-scoped — rebuild scripts
+recorded there; regenerate via the WORKLOG commands if needed).
+
+**Next:** possible follow-ups — unit-normalized output PCA, prompt-averaged d_content (21
+prompts), cross-task comparison.
 ---
 
 ## 2026-07-29 — Stream cue-attn part 2: L9H14 position-free content direction, layer x token maps
