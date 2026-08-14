@@ -1,6 +1,6 @@
 {
- "n_tasks": 142,
- "n_original": 42,
+ "n_tasks": 138,
+ "n_original": 38,
  "n_new": 100,
  "tasks": {
   "adjective_to_adverb": {
@@ -8,6 +8,13 @@
    "origin": "new",
    "rule": "Given an adjective, output the corresponding -ly adverb.",
    "lane": "morphology-derivation",
+   "generation_method": "list_rule"
+  },
+  "adjective_to_noun": {
+   "n": 599,
+   "origin": "new",
+   "rule": "Derived adjective -> its base noun (strip -ous/-al/-ic/-ful/-less/-ive etc.).",
+   "lane": "morphology_lexical",
    "generation_method": "list_rule"
   },
   "adverb_to_adjective": {
@@ -194,13 +201,6 @@
    "n": 197,
    "origin": "original_abstractive"
   },
-  "date_to_quarter": {
-   "n": 1000,
-   "origin": "new",
-   "rule": "Given a date in YYYY-MM-DD format, output its calendar quarter as Q1, Q2, Q3, or Q4.",
-   "lane": "dates",
-   "generation_method": "rule"
-  },
   "day_after_textual_date": {
    "n": 1000,
    "origin": "new",
@@ -227,6 +227,13 @@
    "origin": "new",
    "rule": "Given an integer all of whose digits are 4 or less, output its double.",
    "lane": "arithmetic",
+   "generation_method": "rule"
+  },
+  "double_number": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "2-3 digit integer -> its double.",
+   "lane": "numeric_sequence",
    "generation_method": "rule"
   },
   "double_word": {
@@ -364,11 +371,11 @@
    "lane": "morphology-inflection",
    "generation_method": "rule"
   },
-  "gerund_to_third_person": {
+  "halve_even_number": {
    "n": 1000,
    "origin": "new",
-   "rule": "Given a verb's -ing form, output the same verb's third-person singular present (-s) form.",
-   "lane": "morphology-inflection",
+   "rule": "Even 2-4 digit integer -> its half.",
+   "lane": "numeric_sequence",
    "generation_method": "rule"
   },
   "hour_after_time": {
@@ -385,23 +392,12 @@
    "lane": "lexical-semantic",
    "generation_method": "knowledge"
   },
-  "identity": {
-   "n": 600,
-   "origin": "original_abstractive"
-  },
   "initials_two_words": {
    "n": 1000,
    "origin": "new",
    "rule": "Two-word phrase -> the two initials, uppercased and concatenated.",
    "lane": "orthographic",
    "generation_method": "list_rule"
-  },
-  "iso_date_day_of_month": {
-   "n": 1000,
-   "origin": "new",
-   "rule": "Given a date in YYYY-MM-DD format, output the day of the month as a plain number (no leading zero).",
-   "lane": "dates",
-   "generation_method": "rule"
   },
   "iso_date_to_month": {
    "n": 1000,
@@ -492,10 +488,6 @@
    "lane": "orthographic",
    "generation_method": "list_rule"
   },
-  "magnitude": {
-   "n": 600,
-   "origin": "original_abstractive"
-  },
   "minus_ten": {
    "n": 1000,
    "origin": "new",
@@ -551,10 +543,6 @@
    "lane": "dates",
    "generation_method": "rule"
   },
-  "next_number": {
-   "n": 200,
-   "origin": "original_abstractive"
-  },
   "next_number_digits": {
    "n": 200,
    "origin": "original_abstractive"
@@ -595,13 +583,6 @@
    "n": 1000,
    "origin": "new",
    "rule": "Given a verb in past tense, output its base (infinitive) form.",
-   "lane": "morphology-inflection",
-   "generation_method": "rule"
-  },
-  "past_to_gerund": {
-   "n": 1000,
-   "origin": "new",
-   "rule": "Given a verb in past tense, output the same verb's -ing form.",
    "lane": "morphology-inflection",
    "generation_method": "rule"
   },
@@ -672,17 +653,6 @@
   },
   "prev_item": {
    "n": 225,
-   "origin": "original_abstractive"
-  },
-  "prev_month_of_date": {
-   "n": 1000,
-   "origin": "new",
-   "rule": "Given 'MonthName Year', output the name of the preceding month (January -> December).",
-   "lane": "dates",
-   "generation_method": "rule"
-  },
-  "prev_number": {
-   "n": 200,
    "origin": "original_abstractive"
   },
   "prev_number_digits": {
@@ -782,6 +752,13 @@
    "lane": "morphology-derivation",
    "generation_method": "list_rule"
   },
+  "syllable_count": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Word -> its number of syllables.",
+   "lane": "morphology_lexical",
+   "generation_method": "list_rule"
+  },
   "synonym": {
    "n": 2880,
    "origin": "original_abstractive"
@@ -800,11 +777,18 @@
    "lane": "morphology-inflection",
    "generation_method": "rule"
   },
-  "time_extract_minutes": {
+  "time_to_minutes": {
    "n": 1000,
    "origin": "new",
-   "rule": "Given a 24-hour clock time HH:MM with minutes 10-59, output the minutes as a number.",
-   "lane": "time",
+   "rule": "24h clock time HH:MM -> total minutes since midnight (h*60+m).",
+   "lane": "numeric_sequence",
+   "generation_method": "rule"
+  },
+  "times_five": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Integer (10-1200) -> the integer times 5.",
+   "lane": "numeric_sequence",
    "generation_method": "rule"
   },
   "titlecase_phrase": {

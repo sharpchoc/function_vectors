@@ -1506,41 +1506,6 @@
    "lane": "dates"
   },
   {
-   "name": "iso_date_day_of_month",
-   "category": "dates",
-   "rule": "Given a date in YYYY-MM-DD format, output the day of the month as a plain number (no leading zero).",
-   "examples": [
-    {
-     "input": "2014-07-03",
-     "output": "3"
-    },
-    {
-     "input": "1987-01-22",
-     "output": "22"
-    },
-    {
-     "input": "2003-11-08",
-     "output": "8"
-    },
-    {
-     "input": "1954-04-30",
-     "output": "30"
-    },
-    {
-     "input": "2021-09-17",
-     "output": "17"
-    }
-   ],
-   "family": "iso_date_field",
-   "domain_source": "pure rule: valid dates, years 1900-2099, days 1-28 plus 29/30 for long months",
-   "domain_size_estimate": 67200,
-   "generation_method": "rule",
-   "difficulty_anchor": "capitalize_first_letter \u2014 positional field extraction with a trivial normalization (strip leading zero), analogous difficulty to single-letter extraction tasks",
-   "gptj_confidence": "high",
-   "generation_recipe": "Same date generator as iso_date_to_month (independent samples). Output = str(int(dd)), i.e. '03' -> '3'. Ensure roughly uniform coverage of days 1-9 vs 10-28 so the leading-zero-strip rule is demonstrated in every 10-shot prompt (include at least one day < 10 among sampled shots by stratification). Verify int(output) == day.",
-   "lane": "dates"
-  },
-  {
    "name": "iso_date_year_plus_one",
    "category": "dates",
    "rule": "Given a date in YYYY-MM-DD format, output the year one greater than the date's year.",
@@ -1681,76 +1646,6 @@
    "lane": "time"
   },
   {
-   "name": "time_extract_minutes",
-   "category": "time",
-   "rule": "Given a 24-hour clock time HH:MM with minutes 10-59, output the minutes as a number.",
-   "examples": [
-    {
-     "input": "14:37",
-     "output": "37"
-    },
-    {
-     "input": "08:15",
-     "output": "15"
-    },
-    {
-     "input": "21:48",
-     "output": "48"
-    },
-    {
-     "input": "11:59",
-     "output": "59"
-    },
-    {
-     "input": "06:40",
-     "output": "40"
-    }
-   ],
-   "family": null,
-   "domain_source": "pure rule: 24 hours x minutes 10-59 = 1200 distinct times",
-   "domain_size_estimate": 1200,
-   "generation_method": "rule",
-   "difficulty_anchor": "capitalize_last_letter \u2014 pure positional field extraction from a rigid short format",
-   "gptj_confidence": "high",
-   "generation_recipe": "Enumerate f'{h:02d}:{m:02d}' for h in 0..23, m in 10..59 (exactly 1200 items; minutes 00-09 excluded so the answer never needs a leading-zero-strip decision like '04' vs '4'). Output = str(m). Verify output == input.split(':')[1].",
-   "lane": "time"
-  },
-  {
-   "name": "date_to_quarter",
-   "category": "dates",
-   "rule": "Given a date in YYYY-MM-DD format, output its calendar quarter as Q1, Q2, Q3, or Q4.",
-   "examples": [
-    {
-     "input": "2014-07-03",
-     "output": "Q3"
-    },
-    {
-     "input": "1987-01-22",
-     "output": "Q1"
-    },
-    {
-     "input": "2003-11-08",
-     "output": "Q4"
-    },
-    {
-     "input": "1954-04-30",
-     "output": "Q2"
-    },
-    {
-     "input": "2021-09-17",
-     "output": "Q3"
-    }
-   ],
-   "family": null,
-   "domain_source": "pure rule: valid dates, years 1900-2099, months balanced across quarters",
-   "domain_size_estimate": 67200,
-   "generation_method": "rule",
-   "difficulty_anchor": "ag_news \u2014 4-way classification with fixed short labels; the month->quarter mapping (Jan-Mar=Q1, ...) is a standard business convention in pretraining text",
-   "gptj_confidence": "medium",
-   "generation_recipe": "Sample unique valid dates (year 1900..2099, month 1..12 balanced, day 1..28). Output = 'Q' + str((month - 1) // 3 + 1). Calendar quarters only (explicitly not fiscal-year quarters \u2014 state this in any task doc). Verify with the formula; balance labels 25/25/25/25.",
-   "lane": "dates"
-  },
-  {
    "name": "next_month_of_date",
    "category": "dates",
    "rule": "Given 'MonthName Year', output the name of the following month (December -> January).",
@@ -1783,41 +1678,6 @@
    "difficulty_anchor": "next_item \u2014 successor in a memorized cyclic sequence, exactly the operation next_item tests on number words, here on month names (the year makes the input domain large; bare month names alone would be a banned 12-item domain)",
    "gptj_confidence": "high",
    "generation_recipe": "Enumerate (month, year) for all 12 months x years 1800..2099. Input f'{month_name} {year}'; output = next month name from a hardcoded cyclic list, December -> 'January' (output contains no year, so the wraparound needs no year+1 logic). Verify against calendar.month_name indexing mod 12.",
-   "lane": "dates"
-  },
-  {
-   "name": "prev_month_of_date",
-   "category": "dates",
-   "rule": "Given 'MonthName Year', output the name of the preceding month (January -> December).",
-   "examples": [
-    {
-     "input": "March 1984",
-     "output": "February"
-    },
-    {
-     "input": "November 2003",
-     "output": "October"
-    },
-    {
-     "input": "January 1967",
-     "output": "December"
-    },
-    {
-     "input": "August 2019",
-     "output": "July"
-    },
-    {
-     "input": "June 1875",
-     "output": "May"
-    }
-   ],
-   "family": "month_shift",
-   "domain_source": "pure rule: 12 months x years 1800-2099 = 3600 inputs",
-   "domain_size_estimate": 3600,
-   "generation_method": "rule",
-   "difficulty_anchor": "prev_item \u2014 predecessor in a memorized cyclic sequence; predecessor tasks run slightly harder than successor tasks, matching the prev_item vs next_item gap",
-   "gptj_confidence": "medium",
-   "generation_recipe": "Same generator as next_month_of_date. Output = previous month name from the hardcoded cyclic list, January -> 'December'. Verify against calendar.month_name indexing mod 12.",
    "lane": "dates"
   },
   {
@@ -2787,41 +2647,6 @@
    "lane": "morphology-inflection"
   },
   {
-   "name": "past_to_gerund",
-   "category": "morphology-inflection",
-   "rule": "Given a verb in past tense, output the same verb's -ing form.",
-   "examples": [
-    {
-     "input": "walked",
-     "output": "walking"
-    },
-    {
-     "input": "ran",
-     "output": "running"
-    },
-    {
-     "input": "studied",
-     "output": "studying"
-    },
-    {
-     "input": "spoke",
-     "output": "speaking"
-    },
-    {
-     "input": "made",
-     "output": "making"
-    }
-   ],
-   "domain_source": "common_verbs.txt via lemminflect: VBD form -> VBG form of same lemma",
-   "domain_size_estimate": 3565,
-   "generation_method": "rule",
-   "difficulty_anchor": "present-past: same lexical material but form-to-form conversion (implicitly via the lemma); slightly harder than base-form inflection, hence medium",
-   "gptj_confidence": "medium",
-   "generation_recipe": "For each verb v in common_verbs.txt compute p=getInflection(v,'VBD')[0], g=getInflection(v,'VBG')[0]. Keep (p,g) if p maps to exactly one lemma (reuse past_to_base uniqueness set), p!=v, and both are single-form. Input = past, output = gerund. Domain: 3565 unique pasts.",
-   "family": "verb_form_conversion",
-   "lane": "morphology-inflection"
-  },
-  {
    "name": "gerund_to_past",
    "category": "morphology-inflection",
    "rule": "Given a verb's -ing form, output the same verb's past tense.",
@@ -2853,41 +2678,6 @@
    "difficulty_anchor": "present-past: identical output space (past forms) but from an inflected input; one implicit lemmatize step, hence medium",
    "gptj_confidence": "medium",
    "generation_recipe": "For each verb v in common_verbs.txt compute g=getInflection(v,'VBG')[0], p=getInflection(v,'VBD')[0]. Keep (g,p) if g maps to exactly one lemma and p is single-form and p!=v is not required (output may equal lemma for irregulars like 'put' -> keep, still deterministic). Domain: 3598 unique gerunds.",
-   "family": "verb_form_conversion",
-   "lane": "morphology-inflection"
-  },
-  {
-   "name": "gerund_to_third_person",
-   "category": "morphology-inflection",
-   "rule": "Given a verb's -ing form, output the same verb's third-person singular present (-s) form.",
-   "examples": [
-    {
-     "input": "walking",
-     "output": "walks"
-    },
-    {
-     "input": "running",
-     "output": "runs"
-    },
-    {
-     "input": "studying",
-     "output": "studies"
-    },
-    {
-     "input": "watching",
-     "output": "watches"
-    },
-    {
-     "input": "going",
-     "output": "goes"
-    }
-   ],
-   "domain_source": "common_verbs.txt via lemminflect: VBG form -> VBZ form of same lemma",
-   "domain_size_estimate": 3598,
-   "generation_method": "rule",
-   "difficulty_anchor": "present-past: form-to-form conversion between two regular inflections; near-orthographic (-ing -> -s), hence medium-plus",
-   "gptj_confidence": "medium",
-   "generation_recipe": "For each verb v in common_verbs.txt compute g=getInflection(v,'VBG')[0], s=getInflection(v,'VBZ')[0]. Keep (g,s) if g maps to exactly one lemma and s is single-form and s!=g. Domain: 3598 unique gerunds.",
    "family": "verb_form_conversion",
    "lane": "morphology-inflection"
   },
@@ -3519,6 +3309,216 @@
    "difficulty_anchor": "first_vowel: mirrored scan direction",
    "gptj_confidence": "medium",
    "generation_recipe": "see repairs_round1.py",
+   "family": null
+  },
+  {
+   "name": "time_to_minutes",
+   "category": "time",
+   "lane": "numeric_sequence",
+   "rule": "24h clock time HH:MM -> total minutes since midnight (h*60+m).",
+   "examples": [
+    {
+     "input": "13:45",
+     "output": "825"
+    },
+    {
+     "input": "02:10",
+     "output": "130"
+    },
+    {
+     "input": "00:07",
+     "output": "7"
+    },
+    {
+     "input": "21:00",
+     "output": "1260"
+    },
+    {
+     "input": "09:30",
+     "output": "570"
+    }
+   ],
+   "domain_source": "rule (1440 clock times)",
+   "domain_size_estimate": 1440,
+   "generation_method": "rule",
+   "difficulty_anchor": "two-step arithmetic; deliberate difficulty probe (replaces the 0.98-acc extraction task)",
+   "gptj_confidence": "medium",
+   "generation_recipe": "generators/time_to_minutes.py",
+   "family": null
+  },
+  {
+   "name": "times_five",
+   "category": "arithmetic",
+   "lane": "numeric_sequence",
+   "rule": "Integer (10-1200) -> the integer times 5.",
+   "examples": [
+    {
+     "input": "47",
+     "output": "235"
+    },
+    {
+     "input": "120",
+     "output": "600"
+    },
+    {
+     "input": "13",
+     "output": "65"
+    },
+    {
+     "input": "804",
+     "output": "4020"
+    },
+    {
+     "input": "36",
+     "output": "180"
+    }
+   ],
+   "domain_source": "rule (integers 10-1200)",
+   "domain_size_estimate": 1191,
+   "generation_method": "rule",
+   "difficulty_anchor": "between plus_ten (easy) and free multiplication (hard); x5 = halve then x10",
+   "gptj_confidence": "medium",
+   "generation_recipe": "1000 seeded ints from [10,1200], output n*5, seed 42, shuffle",
+   "family": "multiplication"
+  },
+  {
+   "name": "double_number",
+   "category": "arithmetic",
+   "lane": "numeric_sequence",
+   "rule": "2-3 digit integer -> its double.",
+   "examples": [
+    {
+     "input": "84",
+     "output": "168"
+    },
+    {
+     "input": "217",
+     "output": "434"
+    },
+    {
+     "input": "45",
+     "output": "90"
+    },
+    {
+     "input": "133",
+     "output": "266"
+    },
+    {
+     "input": "308",
+     "output": "616"
+    }
+   ],
+   "domain_source": "rule (integers 10-999, extended to 4-digit if needed for 1000 unique)",
+   "domain_size_estimate": 990,
+   "generation_method": "rule",
+   "difficulty_anchor": "FLAG likely hard: double_no_carry floored <10%; deliberate difficulty probe",
+   "gptj_confidence": "medium",
+   "generation_recipe": "1000 seeded ints from [10,1009], output 2n, seed 42, shuffle",
+   "family": "multiplication"
+  },
+  {
+   "name": "halve_even_number",
+   "category": "arithmetic",
+   "lane": "numeric_sequence",
+   "rule": "Even 2-4 digit integer -> its half.",
+   "examples": [
+    {
+     "input": "86",
+     "output": "43"
+    },
+    {
+     "input": "434",
+     "output": "217"
+    },
+    {
+     "input": "90",
+     "output": "45"
+    },
+    {
+     "input": "266",
+     "output": "133"
+    },
+    {
+     "input": "1200",
+     "output": "600"
+    }
+   ],
+   "domain_source": "rule (even integers 10-2200)",
+   "domain_size_estimate": 1095,
+   "generation_method": "rule",
+   "difficulty_anchor": "same flag as double_number",
+   "gptj_confidence": "medium",
+   "generation_recipe": "1000 seeded even ints from [10,2200], output n//2, seed 42, shuffle",
+   "family": "multiplication"
+  },
+  {
+   "name": "syllable_count",
+   "category": "phonology",
+   "lane": "morphology_lexical",
+   "rule": "Word -> its number of syllables.",
+   "examples": [
+    {
+     "input": "elephant",
+     "output": "3"
+    },
+    {
+     "input": "cat",
+     "output": "1"
+    },
+    {
+     "input": "table",
+     "output": "2"
+    },
+    {
+     "input": "university",
+     "output": "5"
+    },
+    {
+     "input": "beautiful",
+     "output": "3"
+    }
+   ],
+   "domain_source": "common_words.txt x CMU pronouncing dictionary (gold labels; 11,692 unambiguous)",
+   "domain_size_estimate": 11692,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "counting task like word_length but phonological",
+   "gptj_confidence": "medium",
+   "generation_recipe": "cmudict.dict(); keep words whose pronunciations all agree on syllable count (count digit-suffixed phones); frequency-ordered top 1000 with class spread over counts 1-5; seed 42",
+   "family": null
+  },
+  {
+   "name": "adjective_to_noun",
+   "category": "morphology-derivation",
+   "lane": "morphology_lexical",
+   "rule": "Derived adjective -> its base noun (strip -ous/-al/-ic/-ful/-less/-ive etc.).",
+   "examples": [
+    {
+     "input": "dangerous",
+     "output": "danger"
+    },
+    {
+     "input": "national",
+     "output": "nation"
+    },
+    {
+     "input": "hopeful",
+     "output": "hope"
+    },
+    {
+     "input": "heroic",
+     "output": "hero"
+    },
+    {
+     "input": "harmless",
+     "output": "harm"
+    }
+   ],
+   "domain_source": "common_adjs.txt suffix families + zipf-validated base + transparency screen",
+   "domain_size_estimate": 599,
+   "generation_method": "list_rule",
+   "difficulty_anchor": "inverse-derivation like agent_noun_to_verb; strip_prefix-style opacity screening required",
+   "gptj_confidence": "high",
+   "generation_recipe": "for suffix families {-ous,-al,-ial,-ic,-ical,-ful,-less,-ive,-y,-ish}: strip with e/i-restoration rules, keep if base is a real noun (zipf>=2.5, lemminflect NOUN lemma) AND semantically transparent (hand-screen Latin-cognate coincidences like 'special'->'speci'); honest-shortfall rule applies | 2026-08-14: USER-APPROVED 599-example exception (domain exhausted at quality bar)",
    "family": null
   }
  ]

@@ -23,6 +23,8 @@ names = [s["name"] for s in specs]
 
 report, failures = {}, []
 pair_sets = {}
+# user-approved exceptions to the exactly-1000 rule (2026-08-14 revision)
+EXPECTED_N = {"adjective_to_noun": 599}
 
 for name in names:
     f = ROOT / f"{name}.json"
@@ -38,7 +40,8 @@ for name in names:
         assert all(isinstance(x, str) and x and x == x.strip() for x in outs), "bad outputs"
         assert len(set(ins)) == len(ins), f"dup inputs ({len(ins)-len(set(ins))})"
         assert all(i != o for i, o in zip(ins, outs)), "input==output pair present"
-        assert len(data) == 1000, f"n={len(data)} != 1000"
+        want = EXPECTED_N.get(name, 1000)
+        assert len(data) == want, f"n={len(data)} != {want}"
         vocab = Counter(outs)
         entry["output_vocab"] = len(vocab)
         if len(vocab) <= 3:

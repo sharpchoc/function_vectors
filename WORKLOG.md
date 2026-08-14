@@ -5,6 +5,32 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-14 — Stream sparse-heads: extended_tasks REVISION (user-approved; 142 → 138 tasks)
+
+**Owner:** Claude Code bg session (worktree sparse-heads-fv23) + 3 generation agents.
+**Status:** DONE. Applied `_resources/revision_2026-08-14.py` after user approval on the
+field-guide artifact:
+- REMOVED 9: magnitude, identity (trivial echoes), next_number, prev_number (word forms;
+  digits variants stay — digits-only policy), prev_month_of_date, date_to_quarter,
+  iso_date_day_of_month (date-lane trim), past_to_gerund, gerund_to_third_person
+  (morphology trim). Stale n-shot results archived to
+  artifacts/extended_tasks_nshot/results_archived_rev20260814/.
+- REDEFINED: time_extract_minutes → **time_to_minutes** (HH:MM → h×60+m, e.g. 13:45→825;
+  deliberate arithmetic-difficulty probe replacing a 0.98-acc extraction task).
+- ADDED 5: times_five (user rejected times_ten as too easy), double_number,
+  halve_even_number (both flagged likely-hard given double_no_carry's floor),
+  syllable_count (CMU-dict gold labels, 11,692-word unambiguous pool),
+  adjective_to_noun (**USER-APPROVED 599-example exception** to the 1000 rule — transparent
+  derivation vocabulary exhausts at 599 after an 81-word opacity screen; agent honestly
+  refused to pad, user chose to keep at 599 over swapping).
+- Bookkeeping: new_task_specs.json still exactly 100 new specs; manifest 138 tasks
+  (38 original + 100 new); validation gate 100/100 pass (gate now carries the 599
+  exception); synced to main checkout via rsync --delete.
+**Next:** rerun the n-shot sweep for ONLY the 6 new/redefined tasks (single pod, ~5 min) and
+refresh nshot_accuracy.csv + figures + the field-guide artifact.
+
+---
+
 ## 2026-08-14 — Stream sparse-heads: extended_tasks n-shot sweep (GPT-J, T=1.0 sampled, 4 pods)
 
 **Owner:** Claude Code bg session (worktree sparse-heads-fv23). 4 own pods fv-nshot-shard0..3

@@ -26,15 +26,19 @@ for f in sorted(ROOT.glob("*.json")):
     manifest["n_original"] += not is_new
 
 assert manifest["n_new"] == 100, manifest["n_new"]
-assert manifest["n_original"] == len(originals), (manifest["n_original"], len(originals))
+# 2026-08-14 revision removed 4 originals (magnitude, identity, next_number, prev_number),
+# so n_original is the count of abstractive-origin files actually present (38), not 42.
+assert manifest["n_original"] == 38, (manifest["n_original"],)
 json.dump(manifest, open(ROOT / "manifest.json", "w"), indent=1)
 
 lanes = Counter(specs[n]["lane"] for n in specs)
 readme = f"""# extended_tasks
 
-{manifest['n_tasks']} ICL word-pair tasks: the {manifest['n_original']} original abstractive tasks
-(copied verbatim from `dataset_files/abstractive/`) plus **100 new tasks with exactly 1000
-examples each**, generated 2026-08 (multi-agent ideation -> curation -> generation -> validation).
+{manifest['n_tasks']} ICL word-pair tasks: {manifest['n_original']} original abstractive tasks
+(copied from `dataset_files/abstractive/`; the 2026-08-14 revision removed magnitude, identity,
+next_number, prev_number) plus **100 new tasks with exactly 1000 examples each**, generated
+2026-08 (multi-agent ideation -> curation -> generation -> validation; revision:
+`_resources/revision_2026-08-14.py`).
 
 - Every new task: deterministic single mapping, unique inputs, short outputs, domain chosen so
   1000 examples exist comfortably (small-domain relations like country-capital were excluded by
