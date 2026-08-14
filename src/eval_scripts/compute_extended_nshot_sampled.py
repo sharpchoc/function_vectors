@@ -101,7 +101,8 @@ def build_task_specs(task):
 def mode_build(args):
     (OUT_ROOT / "shards").mkdir(parents=True, exist_ok=True)
     tasks = task_names()
-    assert len(tasks) == 142, f"expected 142 tasks, found {len(tasks)}"
+    # 138 after the user-approved 2026-08-14 revision (was 142 at the first sweep)
+    assert len(tasks) == 138, f"expected 138 tasks, found {len(tasks)}"
     per_task, cost = {}, {}
     for t in tasks:
         specs = build_task_specs(t)
