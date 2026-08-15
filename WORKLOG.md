@@ -80,6 +80,22 @@ selection trial running in the parallel fork (Batched Train Method). Outputs: pe
 `diag_taskspecific.json`, `results/sandbox/ext_steerability/failing_analysis_taskspecific.csv`.
 Pods fv-diag-{1..4} TERMINATED (~30 min, ≈$2).
 
+**Head-hungriness predictors (2026-08-15, fork "Indicators of high number of attention head
+tasks"):** NEW `diag_headhunger.py` — task-specific sparse on ALL 72 train tasks + top-k-by-c
+sweep at each task's best layer; k90 = min heads for ≥90% of own zs ceiling. 12 fv-hh pods
+(~40 min, ≈$8), 72/72 done. ***acc6 does NOT predict head count*** (ρ=−0.02 vs log2 k90;
+median k90 = 40 in EVERY competence band) — competence predicts WHETHER a task steers
+(ρ=0.62 own-ceiling) but not how many heads it needs, so a 6-shot prune cannot remove
+head-hungry tasks. What does predict k90 (a-priori, dataset-only): output entropy ρ=0.42,
+label token count ρ=0.44, their product ρ=0.50. k90 is also what the pooled selection
+under-serves: ρ(k90, pooled/own ratio) = −0.47. Distribution reality check: k90 median 40,
+IQR 40–80 — needing ~40+ heads is the NORM; genuinely few-head tasks are the minority
+(18/69 at k90 ≤ 20, isolable a-priori by out_entropy ≤ 3.5 & single-token labels →
+median k90 20). Caveats: K-grid coarse {…20,40,80…}, n=69, descriptive. Outputs:
+`failing_analysis_{features,headhunger}.csv`, `failing_analysis_headhunger_scatter.png`,
+per-task `diag_headhunger{.json,_c.pt}`. Branch `claude-hh-indicators` (ext branch was
+checked out by the parent session's worktree — kept off it to avoid a race).
+
 ---
 
 ## 2026-08-13 — SANDBOX: task-specific isolation upper bound (29 tasks × 3 algos × 3×3 metrics)
