@@ -33,6 +33,21 @@ coeffs_final + selection.json, 72 eval_headset.json), `results/sandbox/ext_steer
 (train_tasks_summary.csv, train_tasks_bars.png). **Next:** phase 2 (18 held-out tasks)
 after user review — eval_ext.py runs unchanged on heldout_tasks.
 
+**Failing-task diagnosis (2026-08-15, this stream; 16 tasks with pooled-39 zs < 0.4):**
+NEW `diag_taskspecific_failing.py` — task-specific sparse (corrected recipe, λ∈{.005,.05},
+best kept) per failing task, own-FV zs layer sweep. ***RESULT: it's a pooled-SELECTION
+failure, not task unsteerability.*** All 16 improve with their own heads; 13/16 reach ≥0.44
+(city-continent .38→.92, hour_after_time .28→.90, days_in_month .22→.76, noun_possessive
+.00→.70); only the arithmetic trio stays low even at upper bound (plus_ten .34,
+year_to_decade .30, round_down .42). Task-specific sets are LARGE (median ~65, up to 154
+heads) with only ~10–25 heads overlapping the pooled 39 → the pooled objective (mean log-prob
++ global L1) never pays for heads that help only minority tasks — easy tasks dominate the
+gradient and λ. Norm-energy coverage does NOT separate failing from passing tasks (E39 ≈
+0.6–0.9 both), so the failure is functional, not magnitude. Supports the staged/banded
+selection trial running in the parallel fork (Batched Train Method). Outputs: per-task
+`diag_taskspecific.json`, `results/sandbox/ext_steerability/failing_analysis_taskspecific.csv`.
+Pods fv-diag-{1..4} TERMINATED (~30 min, ≈$2).
+
 ---
 
 ## 2026-08-13 — SANDBOX: task-specific isolation upper bound (29 tasks × 3 algos × 3×3 metrics)
