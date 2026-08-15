@@ -96,6 +96,23 @@ median k90 20). Caveats: K-grid coarse {…20,40,80…}, n=69, descriptive. Outp
 per-task `diag_headhunger{.json,_c.pt}`. Branch `claude-hh-indicators` (ext branch was
 checked out by the parent session's worktree — kept off it to avoid a race).
 
+**A-priori prune-rule search CLOSED + micro-probe result (2026-08-15, same fork):**
+Exhaustive threshold search over ~15 a-priori features (dataset stats, n-shot curve shape
+incl. acc2, label tokens, shuffled-10 unsteered baseline, FV-distinctiveness cos, readout
+gap) against BOTH targets (pooled-39 failing 16; big-head∩failing 9): ***no reliable rule
+exists*** — best LOO-CV ~9/16 at 3–5 collateral; the last ~5 failures are invisible to
+every feature family (incl. single-token-label + high-competence failures). Two informative
+NULLS: c-mass coverage of the pooled 39 (from trained task-specific c) does NOT predict
+failure (ρ=0.04) — head-identity overlap is not the mechanism; cos(v39, v_own) is the best
+mechanistic signal but partial (ρ=0.37). Necessary-condition fact: all 9 big-head∩failing
+tasks have label_tokens ≥ 1.36.
+***WORKING ALTERNATIVE — micro-probe:*** inject the pooled FV at layers {6,9,12} only, 50
+zs queries (~2 s/task GPU): reproduces the full 28-layer verdict with **0/16 failures
+missed, 4/56 good false-flagged** (those 4 peak outside the probed layers; rescue = full
+sweep on probe-flagged only ⇒ exact failing set at ~1/10 total eval cost). Validated
+against stored evals (`failing_analysis_mechanism.csv`); 10-query variant degrades
+(miss ~1–2) — keep 50 queries.
+
 ---
 
 ## 2026-08-13 — SANDBOX: task-specific isolation upper bound (29 tasks × 3 algos × 3×3 metrics)
