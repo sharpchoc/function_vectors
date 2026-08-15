@@ -5,6 +5,38 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-15 — SANDBOX **TRIAL**: staged sparse selection by competence groups (ext_steerability)
+
+**Owner:** Claude Code bg session (Batched Train Method, fork of Train Test Split Works Check),
+CPU pod + own pods fv-stg-{1..30} (30× RTX 5090; ALL TERMINATED; ~1 h 40 min, ≈$50).
+**Status:** TRIAL DONE. **Explicitly a TRIAL of a user hypothesis — not the standard recipe.**
+
+**What (user spec):** 72 train tasks sorted by acc6 desc, split into 5 groups (15/15/14/14/14);
+stage k = sparse opt (zero-shot metric) on group k with stages 1..k-1's heads FROZEN IN
+(constant added to v; L1 only on new c over the complement); λ per stage by LOTO CV over the
+group's tasks (weighted-c fold eval, strict best); selection c>0.8 with a c_max≥0.9 health
+gate per stage (empty increments allowed). NEW `train_staged_sparse_trial.py` (+ --out_name
+in eval_ext.py); CPU orchestrator drove 5 sequential stages (~290 CV runs) + eval fan-out.
+
+**RESULTS:** increments +48/+23/+16/+5/+19 → **111 cumulative heads** (λ=.005 all stages
+except stage-4 .01; all health gates passed); contains 38/39 of the pooled phase-1 set.
+Train-task steering vs pooled 39-head baseline (best-layer, 72 tasks):
+zero-shot mean .602→**.677**, p10 .16→**.42**, ≥.4: 56→**65**, <.2: 8→5;
+mixed-task mean .587→**.705**, ≥.4: 55→65; shuffled-10 ≈unchanged (.765→.774).
+Of the 16 previously-failing tasks, 7 substantially rescued (countable_uncountable +.62,
+city-continent +.56, days_in_month +.52, english-dutch +.36, case_of_word +.36,
+verb_to_gerund +.32, agent_noun +.22); hard core remains dead (noun_possessive,
+year_to_decade, plus_ten, living_nonliving, round_down_to_hundred, hour_after_time,
+compound_join). **CAVEAT (uncontrolled):** staged uses ~3× the head budget of the baseline —
+gains may partly be head-count, not staging; the clean control is a single pooled run tuned
+to ~111 heads (smaller λ). Stage layer profiles are broad at every difficulty band (no
+depth-band pattern). Outputs: `artifacts/sandbox/ext_steerability/staged_sparse_trial/`
+(per-stage selections + cumulative selection.json + stage_of_head), per-task
+`eval_staged_trial.json`, `results/sandbox/ext_steerability/staged_trial_{summary.csv,bars.png}`.
+**Next:** user review (candidates: head-count control run; phase 2 held-out eval with both sets).
+
+---
+
 ## 2026-08-15 — SANDBOX ext_steerability phase 1: pooled sparse head selection on extended tasks
 
 **Owner:** Claude Code background session (Train Test Split Works Check), CPU pod + own pods

@@ -41,6 +41,8 @@ def parse_args():
     p.add_argument("--selection_path", type=Path, default=DEFAULT_OUT / "pooled_sparse" / "selection.json")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--out_name", type=str, default="eval_headset.json",
+                   help="Output filename per task (use a distinct name for trials).")
     return p.parse_args()
 
 
@@ -67,7 +69,7 @@ def main():
         p.requires_grad_(False)
 
     for t in args.tasks:
-        out = args.out_root / t / "eval_headset.json"
+        out = args.out_root / t / args.out_name
         if out.exists():
             print(f"[{t}] eval exists, skip", flush=True)
             continue
