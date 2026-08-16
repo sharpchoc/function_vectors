@@ -5571,3 +5571,30 @@ task-level 90%@18 (= normalized), pooled 90%@36 sr 2.29/3.83 (vs 41, 2.42/4.24),
 median 90%@57 (vs 58).
 
 **Next:** user-driven. **Blockers:** none.
+
+## 2026-08-16 — Read-direction DEFINITION SWEEP materialized (4 brackets, 69 tasks)
+
+**Status:** done (storage only; success metric + analysis deferred by user design).
+Per write_up/read_direction_levers.md and user decisions 2026-08-16: Lever 1 both (cosine,
+dot); Lever 2 FIXED = truncated pseudo-inverse at cum sigma^2 >= 0.90 of each circuit's own
+spectrum (literal excluded); Lever 3 both (summed M, per-head-then-sum) with sub-choice 3' =
+sum UNNORMALIZED per-head solutions, normalize only at the end; Lever 4 both variants stored
+in one file (r = unit rows, norm = magnitudes; natural = r * norm).
+
+**Script:** `src/sandbox/ext_steerability/compute_read_dir_sweep.py` (2 pods, task-sharded,
+terminated). Per-head SVDs run on the 256x4096 factor (QR of W_O, SVD of R W_V) with QR- and
+SVD-reconstruction gates; per-prompt solves are one (4096,256) matrix per head applied to the
+stored raw acts. cosine_M / dot_M repackaged from perprompt_read_dirs (rank90) /
+perprompt_dot_read_dirs; task-level natural magnitudes recovered via linearity (mean of
+unnormalized rows).
+
+**Outputs:** `artifacts/69_task_run/read_dir_sweep/{cosine_M,dot_M,cosine_perhead,dot_perhead}/<task>.pt`
+(uniform schema: r, norm, r_task, r_task_norm, prompt_index, config) + sweep_manifest_shard*.json
+(bracket definitions, per-head k_energy90 79-202 med 183, gate stats). 69 files per bracket,
+unit rows verified; repackaged cosine_M rows match the source rank90 exactly.
+
+**Spot obs (antonym):** per-head brackets agree most with each other (median cos 0.89);
+cosine_M is the most distinct (0.60-0.64 vs others).
+
+**Next:** user to adjudicate the success metric (levers doc "Before any sweep"), then analysis.
+**Blockers:** none; all pods terminated.
