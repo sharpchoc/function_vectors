@@ -5622,3 +5622,20 @@ Pattern: Lever 1 dominates (dot < cosine everywhere); Lever 3 second (per-head <
 cosine, but M < per-head within dot); Lever 4 barely matters (natural slightly lower).
 
 **Next:** success-metric adjudication, then ranking analysis. **Blockers:** none.
+
+## 2026-08-16 — Unit-vs-natural pooled-90% PC subspace containment (4 brackets)
+
+**Status:** done. Question (user): is the natural-norm variant's pooled-90% PC subspace
+contained in its unit-norm counterpart's (which is always larger)? Script:
+`src/eval_scripts/compare_unit_natural_pc_containment.py` (4 pods, one bracket each,
+terminated). Containment of natural PC j = ||P_{unit-90%} v_j||^2; variance-weighted totals.
+
+**Answer: essentially yes, in every bracket** (variance-weighted containment 0.988-0.997;
+median per-PC 0.99+; worst single PC 0.877 (cosine_M) / 0.908 (dot_perhead), both late
+low-variance PCs). Not exact subspace nesting, but >=98.8% of the natural top-90% variance
+lies inside the unit top-90% subspace. Reverse direction also high (0.976-0.990): the two
+variants nearly share a subspace, unit just needs a few extra PCs for the same energy.
+Outputs: `results/69_task_run/Read_direction_geometry/unit_vs_natural_containment/`
+(<bracket>_containment.{png,npz,csv}).
+
+**Next:** success-metric adjudication. **Blockers:** none; all pods terminated.
