@@ -5657,3 +5657,32 @@ Outputs: `results/69_task_run/Read_direction_geometry/cross_bracket_overlap/`
 (overlap_heatmap.png, overlap.npz incl. principal cosines per pair, overlap_summary.csv).
 
 **Next:** success-metric adjudication. **Blockers:** none.
+
+## 2026-08-16 — PC50 label-token ablation eval (causal comparison of read-dir definitions)
+
+**Status:** done. User-designed causal metric: per sweep bracket, top-50 UNCENTERED PCs of
+the pooled unit per-prompt read dirs (compute_sweep_pc50.py; top-50 energy frac cosine_M
+0.78 / dot_M 0.95 / cosine_perhead 0.85 / dot_perhead 0.87) ablated from the residual
+stream entering ALL 28 blocks at every demo-label token of the 150 clean 10-shot train
+prompts; zero-projection AND mean-ablation (to the all-task grand mean over 109,168 label
+tokens); accuracy of T=1 sampled responses (exact match, seeded), 55 train tasks.
+Scripts: compute_sweep_pc50.py + ablate_pc50_labeltokens.py (--stage means/eval; hooks with
+with_kwargs, left-pad generation, prefill-only masking) + summarize_pc50_ablation.py.
+Fleet: 8x RTX 4090 (+1 pc50 pod), all terminated. Pod pitfalls hit & fixed: transformers
+5.15 silently disables torch<2.5 (pin 4.46.3); duplicate incomplete HF snapshot dir (pin
+47e16930); int-typed labels in number tasks break tokenize_labels (str-cast).
+
+**Results (mean acc over 55 tasks; baseline 0.624):**
+- cosine_M:        zero 0.332 (drop 0.291) | mean 0.403 (drop 0.220)   <- SMALLEST drops
+- dot_M:           zero 0.170 (drop 0.454) | mean 0.278 (drop 0.345)
+- cosine_perhead:  zero 0.082 (drop 0.542) | mean 0.153 (drop 0.471)   <- LARGEST drops
+- dot_perhead:     zero 0.085 (drop 0.539) | mean 0.194 (drop 0.430)
+Mean-ablation < zero-ablation everywhere (grand mean restores generic label-token content).
+Ranking by necessity: perhead brackets > dot_M > cosine_M. Caveat: drop size confounds
+"task-relevant reading" with generic damage; the top-50 uncentered PCs include the shared
+mean direction, and brackets differ in top-50 energy coverage (0.78-0.95).
+Outputs: results/69_task_run/pc50_ablation/ (ablation_drops.png, summary.csv,
+per_task_acc.csv); raw per-prompt predictions in artifacts/69_task_run/pc50_ablation/eval/.
+
+**Next:** user interpretation / possible controls (random-50 subspace, matched-energy cuts).
+**Blockers:** none; all pods terminated.
