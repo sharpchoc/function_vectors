@@ -160,7 +160,18 @@ cos(v_proj, v_full) train .992 vs heldout .908 (min .71 ag_news), and heldout zs
 the lost component at Spearman −.84 (uppercase_word cos .84 → .98→.12). The 46-dim
 "steering subspace" is train-task-specific, NOT a universal FV subspace at this dimension.
 Figures/tables: `results/69_task_run/FV_dimensionality_analysis/{pc_sparse_summary.csv,
-pc_sparse_bars.png, pc_selection.png}`.
+pc_sparse_bars.png, pc_selection.png}`; paired-bars view in
+`results/69_task_run/FV_dimensionality_reduction/zeroshot_full_vs_projected.png`.
+
+**Span-coverage debug check (2026-08-16, CPU; confirms the mechanism):** energy of each task
+FV inside the top-k train-PC span (`debug_69_span_coverage.py` →
+`FV_dimensionality_reduction/debugging/{span_coverage.csv,.png}`). Train FVs: 0.9999 in
+top-512 (they define the basis). Held-out: mean 0.94 top-512 / 0.83 in the 46 selected;
+the six lowest-coverage tasks (ag_news .80, uppercase_word, person_place_thing, first_digit,
+pos_label, initials_two_words ≈.89–.91) are exactly the collapse tasks; coverage-vs-zs-change
+Spearman .84. OUTLIER: english-french (top512 .97, sel46 .87) still collapses .60→.08 —
+coverage is necessary, not sufficient; the lost 13% appears to carry the payload
+(speculation: projection pulls it toward its train translation siblings).
 
 **Promotion out of sandbox (2026-08-16, user decision):** the pruned-pool refit results are the
 first entry in NEW tracked bucket `results/69_task_run/` (constant TASK69_RUN_DIR in
