@@ -131,6 +131,20 @@ task_pool_117_summary.csv}` — 69 pass ≥0.30 (49 new + 20 original; 55 train 
 under seed-43), 48 below threshold; mean acc6 .416 pool / .617 passing. Catalog sections
 now 32/27/25/33. The 138-task versions live in git history (commit 4048539).
 
+**FV dimensionality analysis (2026-08-16, session "Geometry Analysis of the Function Vectors";
+pods fv-pp-{1,2} RTX PRO 4500):** per-prompt FVs captured for ALL 69 tasks (150 fixed 10-shot
+train prompts each, 37-head prunedfail_seed43 set) → reusable intermediates
+`artifacts/69_task_run/perprompt_fvs/<task>.pt` {fv (150,4096) fp16, raw head acts (150,37,256)
+fp16, sel_flat, prompt_index}; NEW `src/eval_scripts/capture_69_perprompt_fvs.py` (linearity
+gate kept). Analysis (55 TRAIN tasks only, centered PCA, float64 CPU SVD; consistency gate
+raw-mean vs means.pt cos=1.000): task-mean FVs 90%@24 / 95%@32 of 55 PCs; pooled per-prompt
+stack (8250×4096) 90%@239 / 95%@556, **stable rank 3.0 raw / 5.7 centered**; within-task
+median 90%@85 / 95%@109 of 150. NEW `src/eval_scripts/plot_69_fv_dimensionality.py` →
+`results/69_task_run/FV_dimensionality_analysis/{fv_dimensionality.png, spectra.npz,
+summary.csv}`. Launch lessons: worktree lacks untracked isolation_prompts_ext (pass
+--prompts_root to main checkout); volume script cp is not read-atomic across pods (stage, then
+launch); pkill of a python child leaves its wrapper to touch .failed (kill the process group).
+
 **Promotion out of sandbox (2026-08-16, user decision):** the pruned-pool refit results are the
 first entry in NEW tracked bucket `results/69_task_run/` (constant TASK69_RUN_DIR in
 utils/paths.py) — sparse opt on the zero-shot train metric is now considered working, no longer
