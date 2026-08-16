@@ -41,8 +41,9 @@ def wilson(p, n, z=1.96):
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     manifest = json.load(open(TASK_ROOT / "manifest.json"))["tasks"]
-    files = sorted(IN_ROOT.glob("*.json"))
-    print(f"{len(files)} task result files")
+    # the manifest defines the working pool (tasks moved to subfolders are excluded)
+    files = sorted(f for f in IN_ROOT.glob("*.json") if f.stem in manifest)
+    print(f"{len(files)} task result files (manifest pool)")
 
     rows, curves = [], {}
     for f in files:
@@ -88,9 +89,11 @@ def main():
 
     # aggregate
     fig, axes = plt.subplots(1, 2, figsize=(13, 4.6))
-    groups = {"all (142)": tasks,
-              "original (42)": [t for t in tasks if curves[t][0] != "new"],
-              "new (100)": [t for t in tasks if curves[t][0] == "new"]}
+    orig_ts = [t for t in tasks if curves[t][0] != "new"]
+    new_ts = [t for t in tasks if curves[t][0] == "new"]
+    groups = {f"all ({len(tasks)})": tasks,
+              f"original ({len(orig_ts)})": orig_ts,
+              f"new ({len(new_ts)})": new_ts}
     for label, ts in groups.items():
         means = [sum(curves[t][1][n] for t in ts) / len(ts) for n in N_SHOTS]
         axes[0].plot(N_SHOTS, means, "o-", label=label)
