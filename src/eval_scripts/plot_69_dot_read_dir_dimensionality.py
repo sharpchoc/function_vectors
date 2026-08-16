@@ -14,7 +14,12 @@ summary.csv also reports the mean-of-per-prompt-r PCA (row dot_task_mean_of_r).
 Outputs in results/69_task_run/Read_direction_geometry/dot_product/:
   read_dir_dimensionality.png, spectra.npz, summary.csv
 All SVDs in float64 on CPU.
+
+--unnormalized: analyze the UNNORMALIZED dot-product read dirs M^T v instead (rows scaled
+back by the stored prenorm_MTv; the task-level vector is M^T (mean v) = mean of the
+unnormalized rows, by linearity). Outputs go to .../dot_product_unnormalized/.
 """
+import argparse
 import csv
 import json
 import sys
@@ -34,7 +39,6 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
 RD_ROOT = ARTIFACTS_ROOT / "69_task_run" / "perprompt_dot_read_dirs"
-OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / "dot_product"
 
 
 def evr(mat):
@@ -51,6 +55,15 @@ def n_at(cum, frac):
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--unnormalized", action="store_true",
+                    help="analyze M^T v without unit normalization")
+    args = ap.parse_args()
+    OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / (
+        "dot_product_unnormalized" if args.unnormalized else "dot_product")
+    key = "dot_unnorm" if args.unnormalized else "dot"
+    vlabel = "dot product, unnormalized M^T v" if args.unnormalized else "dot product"
+
     split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
     train = split["train_tasks"]
 
@@ -61,7 +74,11 @@ def main():
         r = d["r"].numpy()  # (150, 4096) fp32 unit rows
         assert r.shape == (150, 4096)
         assert np.abs(np.linalg.norm(r, axis=1) - 1).max() < 1e-5, f"{t}: non-unit read dirs"
-        r_tasks.append(d["r_task"].numpy())
+        if args.unnormalized:
+            r = r * d["prenorm_MTv"].numpy()[:, None]  # rows are M^T v_j
+            r_tasks.append(r.mean(axis=0))             # = M^T (mean v), by linearity
+        else:
+            r_tasks.append(d["r_task"].numpy())
         stacks.append(r)
         _, cum_w = evr(r)
         within.append(cum_w)
@@ -80,10 +97,10 @@ def main():
     med = np.median(within, axis=0)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(OUT_DIR / "spectra.npz", dot_s_rtask=s_task, dot_s_pooled=s_pool,
-                        dot_within_cum=within, tasks=np.array(train))
+    np.savez_compressed(OUT_DIR / "spectra.npz",
+                        **{f"{key}_s_rtask": s_task, f"{key}_s_pooled": s_pool,
+                           f"{key}_within_cum": within}, tasks=np.array(train))
 
-    vlabel = "dot product"
     fig, axes = plt.subplots(1, 3, figsize=(16.5, 4.6), dpi=150)
     ax = axes[0]
     ax.plot(np.arange(1, len(cum_task) + 1), cum_task, "o-", ms=3, color="tab:blue")
@@ -108,7 +125,8 @@ def main():
         ax.set_ylabel("cumulative variance explained")
         ax.set_ylim(0, 1.01)
         ax.grid(alpha=0.25)
-    fig.suptitle("Read-direction dimensionality — dot-product read dirs r = M^T v / ||M^T v|| "
+    form = "M^T v (unnormalized)" if args.unnormalized else "r = M^T v / ||M^T v||"
+    fig.suptitle(f"Read-direction dimensionality — dot-product read dirs {form} "
                  "(55 train tasks, 37-head pooled set, prunedfail_seed43), centered PCA, "
                  "float64 SVD", fontsize=11)
     fig.tight_layout()
@@ -117,12 +135,12 @@ def main():
     with open(OUT_DIR / "summary.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["analysis", "n_rows", "n90_pcs", "n95_pcs", "stable_rank_raw", "stable_rank_centered"])
-        w.writerow(["dot_r_task", len(train), n_at(cum_task, .90), n_at(cum_task, .95), "", ""])
-        w.writerow(["dot_pooled_perprompt", stack.shape[0], n_at(cum_pool, .90), n_at(cum_pool, .95),
+        w.writerow([f"{key}_r_task", len(train), n_at(cum_task, .90), n_at(cum_task, .95), "", ""])
+        w.writerow([f"{key}_pooled_perprompt", stack.shape[0], n_at(cum_pool, .90), n_at(cum_pool, .95),
                     round(float(sr_raw), 2), round(float(sr_cent), 2)])
-        w.writerow(["dot_within_task_median", 150, n_at(med, .90), n_at(med, .95), "", ""])
-        w.writerow(["dot_task_mean_of_r", len(train), n_at(cum_mean_r, .90), n_at(cum_mean_r, .95), "", ""])
-    print(f"[dot] r_task: 90%@{n_at(cum_task,.9)} 95%@{n_at(cum_task,.95)} | "
+        w.writerow([f"{key}_within_task_median", 150, n_at(med, .90), n_at(med, .95), "", ""])
+        w.writerow([f"{key}_task_mean_of_r", len(train), n_at(cum_mean_r, .90), n_at(cum_mean_r, .95), "", ""])
+    print(f"[{key}] r_task: 90%@{n_at(cum_task,.9)} 95%@{n_at(cum_task,.95)} | "
           f"pooled: 90%@{n_at(cum_pool,.9)} 95%@{n_at(cum_pool,.95)} "
           f"sr raw={sr_raw:.2f} cent={sr_cent:.2f} | "
           f"within med: 90%@{n_at(med,.9)} 95%@{n_at(med,.95)}", flush=True)

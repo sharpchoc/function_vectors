@@ -5560,3 +5560,14 @@ intermediate: more concentrated than the rank90 inverse everywhere, slightly mor
 than FV space at task level, no collapse (unlike the literal inverse).
 
 **Next:** user-driven comparison. **Blockers:** none; pod terminated.
+
+## 2026-08-16 — Unnormalized dot-product read-dir geometry (M^T v, no unit norm)
+
+**Status:** done. `plot_69_dot_read_dir_dimensionality.py --unnormalized` (rows rescaled by
+stored prenorm_MTv; task vector = M^T(mean v) = mean of rows, by linearity); outputs in
+`results/69_task_run/Read_direction_geometry/dot_product_unnormalized/`. Pod fv-rd-dotu
+(terminated). Dropping the unit norm barely changes and slightly LOWERS dimensionality:
+task-level 90%@18 (= normalized), pooled 90%@36 sr 2.29/3.83 (vs 41, 2.42/4.24), within-task
+median 90%@57 (vs 58).
+
+**Next:** user-driven. **Blockers:** none.
