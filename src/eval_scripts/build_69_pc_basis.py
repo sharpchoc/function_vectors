@@ -6,6 +6,7 @@ UNCENTERED float64 SVD on CPU, and saves the top-512 right singular vectors as t
 dictionary for sparse PC selection. Gate: orthonormality of the saved basis.
 Writes ARTIFACTS_ROOT/69_task_run/pc_sparse/pc_basis_uncentered.pt.
 """
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -25,8 +26,14 @@ TOP_K = 512
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--which", choices=["train", "all"], default="train",
+                    help="'train' = the 55 train tasks (default); 'all' = all 69 tasks")
+    ap.add_argument("--out_path", type=Path, default=None,
+                    help="Output .pt (default: pc_sparse/pc_basis_uncentered.pt for train)")
+    args = ap.parse_args()
     split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
-    train = split["train_tasks"]
+    train = split["train_tasks"] + (split["heldout_tasks"] if args.which == "all" else [])
     stack = np.concatenate(
         [torch.load(PP_ROOT / f"{t}.pt", map_location="cpu", weights_only=False)["fv"]
          .float().numpy() for t in train], axis=0).astype(np.float64)
@@ -37,12 +44,14 @@ def main():
     gram_err = np.abs(pcs @ pcs.T - np.eye(TOP_K)).max()
     assert gram_err < 1e-8, f"orthonormality gate failed: {gram_err:.3e}"
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = args.out_path or OUT_DIR / "pc_basis_uncentered.pt"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     torch.save({"pcs": torch.from_numpy(pcs).float(),
                 "singular_values": torch.from_numpy(s).float(),
-                "top_k": TOP_K, "centered": False,
+                "top_k": TOP_K, "centered": False, "which_tasks": args.which,
                 "train_tasks": train, "n_rows": stack.shape[0],
                 "source": "artifacts/69_task_run/perprompt_fvs (fv rows, uncentered)"},
-               OUT_DIR / "pc_basis_uncentered.pt")
+               out_path)
     ev = s ** 2
     cum = np.cumsum(ev) / ev.sum()
     print(f"stack {stack.shape}; top-{TOP_K} PCs saved; orthonormality err {gram_err:.2e}")

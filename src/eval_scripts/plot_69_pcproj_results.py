@@ -33,6 +33,17 @@ KEYS = {"zs": "test_zeroshot", "mix": "test_mixedtask10", "shuf": "test_sametask
 
 
 def main():
+    import argparse
+    global PC_ROOT, OUT_DIR
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--pc_root", type=Path, default=PC_ROOT,
+                    help="selection/evals dir (default: train-only pc_sparse)")
+    ap.add_argument("--out_dir", type=Path, default=OUT_DIR)
+    ap.add_argument("--fit_note", type=str, default="pooled fit on the 55 train tasks",
+                    help="describes the fitting pool in figure titles")
+    args = ap.parse_args()
+    PC_ROOT, OUT_DIR = args.pc_root, args.out_dir
+    fit_note = args.fit_note
     split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
     sel = json.load(open(PC_ROOT / "selection.json"))
     ref = {r["task"]: r for r in csv.DictReader(open(REF_CSV))}
@@ -78,7 +89,7 @@ def main():
         ax.legend(fontsize=9, loc="upper left")
         ax.set_title(title, fontsize=11)
     fig.suptitle(f"Steering with the task FV projected onto {n_pcs} sparse-selected uncentered "
-                 f"PCs (lambda={sel['chosen_lambda']}, pooled on 55 train tasks) vs the full "
+                 f"PCs (lambda={sel['chosen_lambda']}, {fit_note}) vs the full "
                  "37-head FV — alpha=1, best layer, 50 queries/task", fontsize=12)
     fig.tight_layout()
     fig.savefig(OUT_DIR / "pc_sparse_bars.png", bbox_inches="tight")

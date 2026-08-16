@@ -185,6 +185,20 @@ sufficient subspace for unseen tasks is closer to a few hundred dims of the trai
 46; (2) the last ~6% off-span energy still costs the lowest-coverage tasks up to half their
 accuracy. `debugging/all512_oracle_probe.csv`.
 
+**All-task sparse PC selection (2026-08-16, user-requested extension; pods fv-pc69 fleet ×2
+rounds + fv-512 ×4 probe pods, ALL TERMINATED; ≈$20 this round):** rebuilt the uncentered PC
+basis on ALL 69 tasks' per-prompt FVs (10,350×4096; top-512 = 96.1% energy, 90%@128) and
+reran the pooled sparse selection with all 69 tasks in the loss
+(task_splits/extended_steerable_69_alltasks_pcafit.json — NOT a split; no held-out
+measurement exists for this run). λ=0.005, **50 PCs selected** (c_max=1.0). **Projection now
+matches the full FV everywhere:** zs train .721 vs .748, former-heldout **.733 vs .734**
+(mix .652/.684 and .763/.779; shuf parity). Confirms the span story end-to-end: once every
+task's directions are in the basis+objective, ~50 uncentered PCs carry the steering payload
+for the whole 69-task pool; the earlier heldout collapse was purely missing directions.
+Artifacts `artifacts/69_task_run/pc_sparse_alltasks/`; results
+`results/69_task_run/FV_dimensionality_reduction/sparse_all69/`; scripts gained
+--which/--out_path (basis) and --pc_root/--out_dir/--fit_note (aggregator) params.
+
 **Promotion out of sandbox (2026-08-16, user decision):** the pruned-pool refit results are the
 first entry in NEW tracked bucket `results/69_task_run/` (constant TASK69_RUN_DIR in
 utils/paths.py) — sparse opt on the zero-shot train metric is now considered working, no longer
