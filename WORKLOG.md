@@ -5,38 +5,6 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
-## 2026-08-15 — SANDBOX **TRIAL**: staged sparse selection by competence groups (ext_steerability)
-
-**Owner:** Claude Code bg session (Batched Train Method, fork of Train Test Split Works Check),
-CPU pod + own pods fv-stg-{1..30} (30× RTX 5090; ALL TERMINATED; ~1 h 40 min, ≈$50).
-**Status:** TRIAL DONE. **Explicitly a TRIAL of a user hypothesis — not the standard recipe.**
-
-**What (user spec):** 72 train tasks sorted by acc6 desc, split into 5 groups (15/15/14/14/14);
-stage k = sparse opt (zero-shot metric) on group k with stages 1..k-1's heads FROZEN IN
-(constant added to v; L1 only on new c over the complement); λ per stage by LOTO CV over the
-group's tasks (weighted-c fold eval, strict best); selection c>0.8 with a c_max≥0.9 health
-gate per stage (empty increments allowed). NEW `train_staged_sparse_trial.py` (+ --out_name
-in eval_ext.py); CPU orchestrator drove 5 sequential stages (~290 CV runs) + eval fan-out.
-
-**RESULTS:** increments +48/+23/+16/+5/+19 → **111 cumulative heads** (λ=.005 all stages
-except stage-4 .01; all health gates passed); contains 38/39 of the pooled phase-1 set.
-Train-task steering vs pooled 39-head baseline (best-layer, 72 tasks):
-zero-shot mean .602→**.677**, p10 .16→**.42**, ≥.4: 56→**65**, <.2: 8→5;
-mixed-task mean .587→**.705**, ≥.4: 55→65; shuffled-10 ≈unchanged (.765→.774).
-Of the 16 previously-failing tasks, 7 substantially rescued (countable_uncountable +.62,
-city-continent +.56, days_in_month +.52, english-dutch +.36, case_of_word +.36,
-verb_to_gerund +.32, agent_noun +.22); hard core remains dead (noun_possessive,
-year_to_decade, plus_ten, living_nonliving, round_down_to_hundred, hour_after_time,
-compound_join). **CAVEAT (uncontrolled):** staged uses ~3× the head budget of the baseline —
-gains may partly be head-count, not staging; the clean control is a single pooled run tuned
-to ~111 heads (smaller λ). Stage layer profiles are broad at every difficulty band (no
-depth-band pattern). Outputs: `artifacts/sandbox/ext_steerability/staged_sparse_trial/`
-(per-stage selections + cumulative selection.json + stage_of_head), per-task
-`eval_staged_trial.json`, `results/sandbox/ext_steerability/staged_trial_{summary.csv,bars.png}`.
-**Next:** user review (candidates: head-count control run; phase 2 held-out eval with both sets).
-
----
-
 ## 2026-08-15 — SANDBOX ext_steerability phase 1: pooled sparse head selection on extended tasks
 
 **Owner:** Claude Code background session (Train Test Split Works Check), CPU pod + own pods
@@ -64,6 +32,19 @@ Outputs: `artifacts/sandbox/ext_steerability/` (90 means, pooled_sparse/ 20 fold
 coeffs_final + selection.json, 72 eval_headset.json), `results/sandbox/ext_steerability/`
 (train_tasks_summary.csv, train_tasks_bars.png). **Next:** phase 2 (18 held-out tasks)
 after user review — eval_ext.py runs unchanged on heldout_tasks.
+
+**PCA-subspace mean-activation trial (2026-08-15, this stream; NULL RESULT):** built the
+task subspace from the 72 task-specific FVs (per-task diag_headhunger c>0.8 sets; centered
+PCA k90=42; `build_pca_subspace43.py`, gated). User construction v_A(ℓ) = μ_FV +
+U42ᵀU42(z̄_A(ℓ) − μ_FV) vs raw-mean control, α∈{1,2,4}, layers 0–27, zs+mixed, 72 train
+tasks (`eval_pcasub_ext.py`, pods fv-pcs-{1..24} TERMINATED). Dose-matched (best-α) the
+projection is indistinguishable from the raw mean (zs .544 vs .545; mixed .547 vs .583)
+and both trail the pooled-39 head FV (.602 @α=1). At α=1 pcasub reads worse only via norm
+shrinkage (best-α piles at 4). Side-finding: mean-act is UNDER-DOSED at α=1 — best-α
+raw-mean reaches .545/.583; algorithm comparisons involving mean-act need an α sweep.
+Third instance of variance-chosen ≠ steering-chosen directions. Also: centered PCA of the
+72 task-specific FVs: 50%/80%/90%/95% var at k=11/30/42/52 (`taskspecific_fv_pca.png`).
+Outputs: per-task diag_pcasub.json, pcasub_train_summary.csv, pca_subspace43.pt.
 
 **Failing-task diagnosis (2026-08-15, this stream; 16 tasks with pooled-39 zs < 0.4):**
 NEW `diag_taskspecific_failing.py` — task-specific sparse (corrected recipe, λ∈{.005,.05},
