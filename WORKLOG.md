@@ -173,6 +173,18 @@ Spearman .84. OUTLIER: english-french (top512 .97, sel46 .87) still collapses .6
 coverage is necessary, not sufficient; the lost 13% appears to carry the payload
 (speculation: projection pulls it toward its train translation siblings).
 
+**All-512 oracle probe (2026-08-16, pods ×2 ~25 min ≈$0.6; REVISES the interpretation):**
+projecting heldout FVs onto the ENTIRE 512-PC dictionary (the ceiling of any selection)
+recovers most of the collapse: heldout zs mean **.677 vs .461 (46 PCs) vs .734 (full FV)**;
+uppercase_word .12→.94, english-french .08→.58, first_digit .58→.90. Residual losses sit in
+the lowest-coverage tasks (ag_news .48, person_place_thing .48, initials_two_words .46; cov
+.80–.91). So the DICTIONARY mostly contains the payload; the 46-PC SELECTION dropped
+directions that are ~useless for train yet critical for heldout — not an optimizer bug: a
+train-only objective cannot see those directions matter. Two-part conclusion: (1) steering-
+sufficient subspace for unseen tasks is closer to a few hundred dims of the train span than
+46; (2) the last ~6% off-span energy still costs the lowest-coverage tasks up to half their
+accuracy. `debugging/all512_oracle_probe.csv`.
+
 **Promotion out of sandbox (2026-08-16, user decision):** the pruned-pool refit results are the
 first entry in NEW tracked bucket `results/69_task_run/` (constant TASK69_RUN_DIR in
 utils/paths.py) — sparse opt on the zero-shot train metric is now considered working, no longer
