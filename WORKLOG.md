@@ -113,6 +113,32 @@ sweep on probe-flagged only ⇒ exact failing set at ~1/10 total eval cost). Val
 against stored evals (`failing_analysis_mechanism.csv`); 10-query variant degrades
 (miss ~1–2) — keep 50 queries.
 
+**Rule v2 + minus_ten mechanism demo (2026-08-15/16, same fork):** pooling all 90 labeled
+tasks (72 train + 18 heldout; 21 pooled-39 zs-best<0.4 failures) + NEW copy-modify feature
+`overlap_tok` (mean fraction of answer tokens already present in the input) →
+**`label_tokens > 2 (strict) AND overlap_tok ≥ 0.058` prunes 9/21 failures at 0 good lost**
+(LOO-CV over the AND-pair family: 9/21 at 0). CAVEATS: feature idea derived from heldout
+failures; a clean train-only fit picks a different rule (acc1≤0.12 & label≥1.37) that
+catches only 1/5 heldout OOS — rule v2 is a hypothesis pending prospective validation, and
+the heldout set is now spent. `failing_analysis_rule_v2.csv`. CPU greedy-generation demo
+(minus_ten, 6 zs prompts): steered model outputs a VERBATIM COPY of the query (never −10);
+BPE chunks 5-digit numbers arbitrarily; −10 usually edits only the last token (borrow cases
+re-chunk entirely) — pooled heads carry copy/format, not the numeric edit. Steering at cue
++ ALL response tokens does NOT fix it (still copies; L12 corrupts digits) — the edit
+operation is absent from the vector, not under-injected.
+
+**Pruned-pool refit (2026-08-16, same fork; pods fv-pf-{1..10} RTX PRO 4500, 1 never got
+SSH → shard re-routed, ALL TERMINATED ~1.5 h, ≈$12):** removed the 21 failures, re-split
+the 69 survivors seed-43 → 55 train / 14 heldout (`task_splits/
+extended_steerable_69_prunedfail.json`); reran the FULL pooled sparse protocol (same 4λ ×
+5-fold task CV, final retrain, c>0.8) in fresh tree `artifacts/.../prunedfail_seed43/`
+(means symlinked). **λ=0.005 again, 37 heads (31/37 shared with the old 39); CV mean .657
+(vs .570 on unpruned 72 — pool composition, not better selection). Eval (best-layer):
+train 55 zs .748 / mix .684; HELDOUT 14 zs .734 / mix .779; 0/69 tasks below 0.4 zs.**
+Same 69 tasks under the old 39-head set: zs .735/.720 — pruning buys only ~+.015 mean but
+eliminates the failure tail entirely on a fresh split; biggest per-task movers ±.18
+(translations up, animal_plant_object down). `prunedfail_seed43_summary.csv`.
+
 ---
 
 ## 2026-08-13 — SANDBOX: task-specific isolation upper bound (29 tasks × 3 algos × 3×3 metrics)
