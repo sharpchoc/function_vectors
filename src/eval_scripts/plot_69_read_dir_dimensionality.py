@@ -16,7 +16,9 @@ Panels per variant (mirror of the FV figure):
 summary.csv additionally reports the PCA of the mean-of-per-prompt-r task vectors
 (row task_mean_of_r_*), which differs from r_task by per-prompt norm weighting.
 
-Outputs in results/69_task_run/Read_direction_geometry/:
+Outputs in results/69_task_run/Read_direction_geometry/cosine_similarity/ (sibling
+dot_product/ holds the same analysis for the M^T v read dirs —
+plot_69_dot_read_dir_dimensionality.py):
   read_dir_dimensionality.png, spectra.npz, summary.csv
 All SVDs in float64 on CPU.
 """
@@ -39,7 +41,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
 RD_ROOT = ARTIFACTS_ROOT / "69_task_run" / "perprompt_read_dirs"
-OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry"
+OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / "cosine_similarity"
 VARIANTS = ("literal", "rank90")
 
 

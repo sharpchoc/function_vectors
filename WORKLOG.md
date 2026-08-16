@@ -5543,3 +5543,20 @@ Deliberately a SEPARATE dir from `perprompt_read_dirs/` (cosine ones) for side-b
 cos(r_dot, r_literal)=0.004, cos(r_dot, r_rank90)=0.60.
 
 **Next:** user to specify comparison analysis. **Blockers:** none; pod terminated.
+
+## 2026-08-16 — Read_direction_geometry split into cosine_similarity/ + dot_product/
+
+**Status:** done. `results/69_task_run/Read_direction_geometry/` now has two subfolders:
+`cosine_similarity/` (the existing literal/rank90-inverse analysis, files moved) and
+`dot_product/` (NEW: same protocol on the M^T v read dirs;
+`src/eval_scripts/plot_69_dot_read_dir_dimensionality.py`, run on throwaway pod
+fv-rd-dot-geom — RTX 4000 Ada was out of stock, used a Blackwell card with CUDA masked
+(numpy-only job; image torch 2.4 can't drive sm_120)).
+
+**Dot-product findings (single variant, 1x3 figure):** task-level 90%@18 PCs (rank90-inv: 29;
+FVs: 24); pooled stable rank 2.42 raw / 4.24 centered, 90%@41 PCs (rank90-inv: 3.64/8.65,
+90%@338); within-task median 90%@58 (rank90-inv: 89). So the dot-product read dirs are
+intermediate: more concentrated than the rank90 inverse everywhere, slightly more compact
+than FV space at task level, no collapse (unlike the literal inverse).
+
+**Next:** user-driven comparison. **Blockers:** none; pod terminated.
