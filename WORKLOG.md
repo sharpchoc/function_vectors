@@ -5503,3 +5503,25 @@ r_task; cos literal-vs-rank90; v fp16 copy; prompt_index) + `M_spectrum.npz` +
   analyses must state which variant they use.
 
 **Next:** analysis on the read directions (user-driven). **Blockers:** none; pod terminated.
+
+## 2026-08-16 — Read-direction geometry (dimensionality mirror of FV_dimensionality_analysis)
+
+**Status:** done. Repeats `results/69_task_run/FV_dimensionality_analysis` on the per-prompt
+READ directions (both truncation variants, one figure row each); 55 train tasks, centered PCA,
+float64 SVD. Run on a throwaway pod (fv-rd-geom, terminated). Script:
+`src/eval_scripts/plot_69_read_dir_dimensionality.py`; outputs in
+`results/69_task_run/Read_direction_geometry/`.
+
+**Findings (FV reference: task-mean 90%@24 PCs; pooled stable rank 3.0 raw / 5.7 centered):**
+- **literal (exact M^{-1}) read dirs COLLAPSE**: pooled 8250 rows hit 90% var @ 4 PCs, stable
+  rank 1.62 raw / 1.63 centered; task-level r_task 90%@4 (vs 24 for FVs); within-task median
+  90%@4. cond(M)=1.2e5 means the inverse is dominated by M's bottom singular directions —
+  every preimage lands in the same tiny subspace, task identity is largely erased.
+- **rank90 read dirs are RICHER than the FVs they invert**: task-level 90%@29 PCs (FVs: 24),
+  pooled stable rank 3.64 raw / 8.65 centered (FVs: 3.0/5.7), pooled 90%@338; within-task
+  median 90%@89 of 150 — per-prompt variation is spread much wider than in FV space
+  (normalization removes the shared-mean concentration that dominates FVs).
+- Definitional note: panel (A) uses r_task = normalized M^+ (task-mean FV); the CSV also has
+  task_mean_of_r rows (mean of unit per-prompt r) — same n90/n95 within 1 PC.
+
+**Next:** user-driven analysis. **Blockers:** none; pod terminated.
