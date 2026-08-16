@@ -145,6 +145,23 @@ summary.csv}`. Launch lessons: worktree lacks untracked isolation_prompts_ext (p
 --prompts_root to main checkout); volume script cp is not read-atomic across pods (stage, then
 launch); pkill of a python child leaves its wrapper to touch .failed (kill the process group).
 
+**Sparse PC-direction selection (2026-08-16, same session; pods fv-pc69-{1..10} RTX PRO 4500,
+ALL TERMINATED, ~2h, ≈$15):** user-adjudicated design: uncentered PCA of the 55-train-task
+per-prompt FV stack, TOP-512 dictionary, pooled c∈[0,1]^512 with steering NLL + λ‖c‖₁
+(v = Σ cᵢ (v_task·PCᵢ) PCᵢ, inject @L9), same λ-CV protocol as head selection; deployed
+vector = unweighted projection onto c>0.8 PCs. NEW `src/eval_scripts/{build_69_pc_basis,
+train_sparse_pcs_69, eval_69_pcproj, plot_69_pcproj_results}.py`; artifacts
+`artifacts/69_task_run/pc_sparse/`. λ=0.005 (CV .600/.591/.476/.264), **46 PCs selected**
+(c_max=1.0; ranks 0–64, median 22 — essentially the TOP of the FV spectrum, unlike prior
+variance≠steering precedents, expected since the basis IS FV-derived). **RESULT — train ≈
+kept, heldout COLLAPSES:** zs train .723 vs .748 full-FV; heldout .461 vs .734 (mix .487 vs
+.779; shuf holds .789 vs .807). Mechanism: heldout FVs stick out of the train-task subspace —
+cos(v_proj, v_full) train .992 vs heldout .908 (min .71 ag_news), and heldout zs drop tracks
+the lost component at Spearman −.84 (uppercase_word cos .84 → .98→.12). The 46-dim
+"steering subspace" is train-task-specific, NOT a universal FV subspace at this dimension.
+Figures/tables: `results/69_task_run/FV_dimensionality_analysis/{pc_sparse_summary.csv,
+pc_sparse_bars.png, pc_selection.png}`.
+
 **Promotion out of sandbox (2026-08-16, user decision):** the pruned-pool refit results are the
 first entry in NEW tracked bucket `results/69_task_run/` (constant TASK69_RUN_DIR in
 utils/paths.py) — sparse opt on the zero-shot train metric is now considered working, no longer
