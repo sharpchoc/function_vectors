@@ -41,7 +41,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
 RD_ROOT = ARTIFACTS_ROOT / "69_task_run" / "perprompt_read_dirs"
-OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / "cosine_similarity"
+OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / "cosine_M__unit"
 VARIANTS = ("literal", "rank90")
 
 

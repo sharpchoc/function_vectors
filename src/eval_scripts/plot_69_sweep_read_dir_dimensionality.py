@@ -1,23 +1,18 @@
 #!/usr/bin/env python
-"""Dimensionality analysis of the DOT-PRODUCT per-prompt read directions (69-run, CPU).
+"""Dimensionality analysis for one cell of the read-direction definition sweep (CPU).
 
-Same protocol as plot_69_read_dir_dimensionality.py (which covers the cosine/pseudo-inverse
-read dirs, results/.../Read_direction_geometry/cosine_similarity/), applied to the
-dot-product read dirs r_dot = M^T v / ||M^T v|| from
-src/sandbox/ext_steerability/compute_perprompt_dot_read_dirs_37.py. Single variant, so one
-figure row:
-  (A) centered PCA of the 55 task-level read directions r_task (unit vectors);
-  (B) pooled per-prompt read dirs (55x150 = 8250 unit rows), stable rank annotated;
-  (C) within-task centered PCA curves (one per task, 150 prompts each).
-summary.csv also reports the mean-of-per-prompt-r PCA (row dot_task_mean_of_r).
+Same protocol as the original Read_direction_geometry figures (centered PCA, float64 SVD,
+55 train tasks): (A) task-level read dirs, (B) pooled per-prompt stack with stable rank,
+(C) within-task curves. Reads the uniform sweep tree
+artifacts/69_task_run/read_dir_sweep/<bracket>/<task>.pt
+(compute_read_dir_sweep.py) and analyzes one (bracket, Lever-4 normalization) cell:
 
-Outputs in results/69_task_run/Read_direction_geometry/dot_product/:
+  --bracket {cosine_M, dot_M, cosine_perhead, dot_perhead}
+  --norm    {unit, natural}   unit: rows r as stored; natural: r * norm (and r_task *
+                              r_task_norm at task level)
+
+Outputs in results/69_task_run/Read_direction_geometry/<bracket>__<norm>/:
   read_dir_dimensionality.png, spectra.npz, summary.csv
-All SVDs in float64 on CPU.
-
---unnormalized: analyze the UNNORMALIZED dot-product read dirs M^T v instead (rows scaled
-back by the stored prenorm_MTv; the task-level vector is M^T (mean v) = mean of the
-unnormalized rows, by linearity). Outputs go to .../dot_product_unnormalized/.
 """
 import argparse
 import csv
@@ -38,7 +33,8 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
-RD_ROOT = ARTIFACTS_ROOT / "69_task_run" / "perprompt_dot_read_dirs"
+SWEEP_ROOT = ARTIFACTS_ROOT / "69_task_run" / "read_dir_sweep"
+BRACKETS = ("cosine_M", "dot_M", "cosine_perhead", "dot_perhead")
 
 
 def evr(mat):
@@ -56,35 +52,33 @@ def n_at(cum, frac):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--unnormalized", action="store_true",
-                    help="analyze M^T v without unit normalization")
+    ap.add_argument("--bracket", required=True, choices=BRACKETS)
+    ap.add_argument("--norm", required=True, choices=("unit", "natural"))
     args = ap.parse_args()
-    OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / (
-        "dot_M__natural" if args.unnormalized else "dot_M__unit")
-    key = "dot_unnorm" if args.unnormalized else "dot"
-    vlabel = "dot product, unnormalized M^T v" if args.unnormalized else "dot product"
+    cell = f"{args.bracket}__{args.norm}"
+    OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / cell
 
     split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
     train = split["train_tasks"]
 
     r_tasks, stacks, within, mean_r = [], [], [], []
     for t in train:
-        d = torch.load(RD_ROOT / f"{t}.pt", map_location="cpu", weights_only=False)
-        assert d["group"] == "train"
-        r = d["r"].numpy()  # (150, 4096) fp32 unit rows
+        d = torch.load(SWEEP_ROOT / args.bracket / f"{t}.pt", map_location="cpu", weights_only=False)
+        assert d["group"] == "train" and d["bracket"] == args.bracket
+        r = d["r"].numpy()
         assert r.shape == (150, 4096)
-        assert np.abs(np.linalg.norm(r, axis=1) - 1).max() < 1e-5, f"{t}: non-unit read dirs"
-        if args.unnormalized:
-            r = r * d["prenorm_MTv"].numpy()[:, None]  # rows are M^T v_j
-            r_tasks.append(r.mean(axis=0))             # = M^T (mean v), by linearity
-        else:
-            r_tasks.append(d["r_task"].numpy())
+        assert np.abs(np.linalg.norm(r, axis=1) - 1).max() < 1e-5, f"{t}: non-unit stored rows"
+        rt = d["r_task"].numpy()
+        if args.norm == "natural":
+            r = r * d["norm"].numpy()[:, None]
+            rt = rt * d["r_task_norm"]
+        r_tasks.append(rt)
         stacks.append(r)
         _, cum_w = evr(r)
         within.append(cum_w)
         mean_r.append(r.mean(axis=0))
-    r_tasks = np.stack(r_tasks)            # (55, 4096)
-    stack = np.concatenate(stacks, 0)      # (8250, 4096)
+    r_tasks = np.stack(r_tasks)
+    stack = np.concatenate(stacks, 0)
     within = np.stack(within)
     mean_r = np.stack(mean_r)
 
@@ -98,9 +92,10 @@ def main():
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(OUT_DIR / "spectra.npz",
-                        **{f"{key}_s_rtask": s_task, f"{key}_s_pooled": s_pool,
-                           f"{key}_within_cum": within}, tasks=np.array(train))
+                        **{f"{cell}_s_rtask": s_task, f"{cell}_s_pooled": s_pool,
+                           f"{cell}_within_cum": within}, tasks=np.array(train))
 
+    vlabel = f"{args.bracket}, {args.norm} norm"
     fig, axes = plt.subplots(1, 3, figsize=(16.5, 4.6), dpi=150)
     ax = axes[0]
     ax.plot(np.arange(1, len(cum_task) + 1), cum_task, "o-", ms=3, color="tab:blue")
@@ -125,22 +120,21 @@ def main():
         ax.set_ylabel("cumulative variance explained")
         ax.set_ylim(0, 1.01)
         ax.grid(alpha=0.25)
-    form = "M^T v (unnormalized)" if args.unnormalized else "r = M^T v / ||M^T v||"
-    fig.suptitle(f"Read-direction dimensionality — dot-product read dirs {form} "
-                 "(55 train tasks, 37-head pooled set, prunedfail_seed43), centered PCA, "
-                 "float64 SVD", fontsize=11)
+    fig.suptitle(f"Read-direction dimensionality — sweep cell {cell} "
+                 "(55 train tasks, 37-head pooled set, prunedfail_seed43, energy-90 "
+                 "truncation), centered PCA, float64 SVD", fontsize=11)
     fig.tight_layout()
     fig.savefig(OUT_DIR / "read_dir_dimensionality.png", bbox_inches="tight")
 
     with open(OUT_DIR / "summary.csv", "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["analysis", "n_rows", "n90_pcs", "n95_pcs", "stable_rank_raw", "stable_rank_centered"])
-        w.writerow([f"{key}_r_task", len(train), n_at(cum_task, .90), n_at(cum_task, .95), "", ""])
-        w.writerow([f"{key}_pooled_perprompt", stack.shape[0], n_at(cum_pool, .90), n_at(cum_pool, .95),
+        w.writerow([f"{cell}_r_task", len(train), n_at(cum_task, .90), n_at(cum_task, .95), "", ""])
+        w.writerow([f"{cell}_pooled_perprompt", stack.shape[0], n_at(cum_pool, .90), n_at(cum_pool, .95),
                     round(float(sr_raw), 2), round(float(sr_cent), 2)])
-        w.writerow([f"{key}_within_task_median", 150, n_at(med, .90), n_at(med, .95), "", ""])
-        w.writerow([f"{key}_task_mean_of_r", len(train), n_at(cum_mean_r, .90), n_at(cum_mean_r, .95), "", ""])
-    print(f"[{key}] r_task: 90%@{n_at(cum_task,.9)} 95%@{n_at(cum_task,.95)} | "
+        w.writerow([f"{cell}_within_task_median", 150, n_at(med, .90), n_at(med, .95), "", ""])
+        w.writerow([f"{cell}_task_mean_of_r", len(train), n_at(cum_mean_r, .90), n_at(cum_mean_r, .95), "", ""])
+    print(f"[{cell}] r_task: 90%@{n_at(cum_task,.9)} 95%@{n_at(cum_task,.95)} | "
           f"pooled: 90%@{n_at(cum_pool,.9)} 95%@{n_at(cum_pool,.95)} "
           f"sr raw={sr_raw:.2f} cent={sr_cent:.2f} | "
           f"within med: 90%@{n_at(med,.9)} 95%@{n_at(med,.95)}", flush=True)

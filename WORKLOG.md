@@ -5598,3 +5598,27 @@ cosine_M is the most distinct (0.60-0.64 vs others).
 
 **Next:** user to adjudicate the success metric (levers doc "Before any sweep"), then analysis.
 **Blockers:** none; all pods terminated.
+
+## 2026-08-16 — Sweep-cell dimensionality analyses + Read_direction_geometry restructure
+
+**Status:** done. `results/69_task_run/Read_direction_geometry/` now has ONE subfolder per
+sweep decision set, named <bracket>__<lever4norm>: existing folders renamed
+(cosine_similarity -> cosine_M__unit [figure still carries the excluded literal-inverse row],
+dot_product -> dot_M__unit, dot_product_unnormalized -> dot_M__natural; old plot scripts'
+OUT_DIRs updated to match), and 5 NEW cells computed via generic
+`src/eval_scripts/plot_69_sweep_read_dir_dimensionality.py --bracket .. --norm ..`
+(5 pods in parallel, all terminated).
+
+**Full 8-cell table (55 train tasks; task-90% | pooled-90% | pooled sr raw/cent | within-med-90%):**
+- cosine_M__unit        29 | 338 | 3.64/8.65 | 89
+- cosine_M__natural     27 | 322 | 3.65/7.87 | 89
+- cosine_perhead__unit  26 | 232 | 3.14/6.64 | 90
+- cosine_perhead__natural 24 | 196 | 3.15/6.04 | 89
+- dot_M__unit           18 |  41 | 2.42/4.24 | 58
+- dot_M__natural        18 |  36 | 2.29/3.83 | 57
+- dot_perhead__unit     24 | 139 | 3.00/5.90 | 75
+- dot_perhead__natural  22 | 120 | 2.94/5.36 | 74
+Pattern: Lever 1 dominates (dot < cosine everywhere); Lever 3 second (per-head < M within
+cosine, but M < per-head within dot); Lever 4 barely matters (natural slightly lower).
+
+**Next:** success-metric adjudication, then ranking analysis. **Blockers:** none.
