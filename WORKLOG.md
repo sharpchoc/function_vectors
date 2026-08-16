@@ -5639,3 +5639,21 @@ Outputs: `results/69_task_run/Read_direction_geometry/unit_vs_natural_containmen
 (<bracket>_containment.{png,npz,csv}).
 
 **Next:** success-metric adjudication. **Blockers:** none; all pods terminated.
+
+## 2026-08-16 — Cross-bracket pooled-90% subspace overlap (unit-norm variants)
+
+**Status:** done. `src/eval_scripts/cross_bracket_subspace_overlap.py` (pod fv-overlap,
+terminated). Pairwise metrics on the 4 unit-norm brackets' pooled-90% PC bases: symmetric
+overlap ||Va'Vb||_F^2/min(k), variance-weighted containments both ways, chance =
+max(k)/4096 (<=0.083 everywhere).
+
+**Findings:** all pairs far above chance but far from nested. Two families:
+per-head & dot brackets mutually similar (dot_M-in-dot_perhead 0.84, cosine_perhead vs
+dot_perhead sym 0.77, dot_M vs cosine_perhead 0.72); cosine_M is the outlier (sym 0.43-0.58
+vs everything, and only 0.37-0.49 of its variance lies in the others' subspaces — its extra
+~100-300 PCs are genuinely its own). dot_M's small 41-dim core is mostly inside the others
+(0.58-0.84) but not fully.
+Outputs: `results/69_task_run/Read_direction_geometry/cross_bracket_overlap/`
+(overlap_heatmap.png, overlap.npz incl. principal cosines per pair, overlap_summary.csv).
+
+**Next:** success-metric adjudication. **Blockers:** none.
