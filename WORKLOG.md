@@ -5468,3 +5468,38 @@ scalar_lines[_labels_only]).
 
 **Blockers:** none. All 7 pods terminated (verified zero remaining).
 
+
+## 2026-08-16 — Per-prompt read directions for the 69-task pool (canonical 37-head set)
+
+**Status:** done.
+
+**What:** converted the 10,350 per-prompt FVs (69 tasks × 150 fixed-10-shot prompts; 55 train +
+14 held-out of `task_splits/extended_steerable_69_prunedfail.json`) into per-prompt read
+directions r^j_A = M⁺ v^j_A / ‖·‖ (glossary Eq. 4–5), M = Σ over the canonical 37 pooled-sparse
+heads (DECISIONS 2026-08-16) of W_O^h W_V^h. Per-prompt FVs were captured by a peer session at
+`artifacts/69_task_run/perprompt_fvs/` ('fv' (150,4096) fp16 + 'raw' (150,37,256) fp16);
+this stream computed only the inversion (division of labor per user instruction).
+
+**Commands:** `src/sandbox/ext_steerability/compute_perprompt_read_dirs_37.py` run on a
+throwaway RTX 4000 Ada pod (fv-readdirs-37, terminated) — user wanted the CPU pod kept free.
+Pod gotcha: bare-`runpodctl create` mounts the volume at `/runpod`, so the capture's
+absolute-`/workspace` symlinks (means.pt) dangled → fixed with `ln -s /runpod /workspace`.
+
+**Files:** outputs `artifacts/69_task_run/perprompt_read_dirs/<task>.pt` (r_literal, r_rank90
+(150,4096) fp32 unit rows; per-variant preinv_norm, cos(Mr,v), cos(Mr,P_k v), task-level
+r_task; cos literal-vs-rank90; v fp16 copy; prompt_index) + `M_spectrum.npz` +
+`build_summary.json` (copied to `results/69_task_run/perprompt_read_dirs/`).
+
+**Findings:**
+- Gates all pass: (a) stored fv vs Σ W_O·raw rebuild worst rel 2.25e-04; (b) fv-mean vs
+  means.pt reconstruction worst rel 5.93e-04 (fp16-storage scale); (c) SVD reconstruction
+  rel 1.8e-14 (gesvd).
+- M (37 heads): numerically full rank — k_literal=4096, cond 1.17e5; k_rank90=1288
+  (k95=1729, k99=2580). Softer spectrum than the sparse23 M.
+- literal variant: cos(M r, v) = 1.0 everywhere (M invertible ⇒ exact preimage).
+  rank90: median cos(M r, v) per task 0.899–0.947 (med 0.932).
+- literal vs rank90 read dirs are near-ORTHOGONAL (median cos 0.003–0.013), reproducing
+  the sparse23 finding — the two truncation conventions give genuinely different objects;
+  analyses must state which variant they use.
+
+**Next:** analysis on the read directions (user-driven). **Blockers:** none; pod terminated.
