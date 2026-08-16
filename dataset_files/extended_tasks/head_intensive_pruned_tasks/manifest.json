@@ -1,0 +1,175 @@
+{
+ "n_tasks": 21,
+ "reason": "pooled-39 FV zero-shot steering best-layer acc < 0.4 despite passing the 6-shot >= 0.30 competence filter (extended_steerable_90); head-intensive / copy-and-modify family",
+ "moved_date": "2026-08-16",
+ "labels_source": "results/sandbox/ext_steerability/{train_tasks_summary.csv, heldout eval_headset.json}",
+ "pooled_zs_best": {
+  "agent_noun": 0.2,
+  "case_of_word": 0.24,
+  "city-continent": 0.38,
+  "compound_join": 0.16,
+  "count_vowels": 0.38,
+  "countable_uncountable": 0.02,
+  "days_in_month": 0.22,
+  "double_word": 0.0,
+  "ends_with_vowel": 0.38,
+  "english-dutch": 0.12,
+  "hour_after_time": 0.28,
+  "living_nonliving": 0.02,
+  "minus_ten": 0.0,
+  "noun_possessive": 0.0,
+  "ordinal_suffix": 0.0,
+  "parity_even_odd": 0.34,
+  "percent_to_decimal": 0.06,
+  "plus_ten": 0.0,
+  "round_down_to_hundred": 0.04,
+  "verb_to_gerund": 0.32,
+  "year_to_decade": 0.0
+ },
+ "tasks": {
+  "agent_noun": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given a verb, output the agent noun formed with -er/-or (the person or thing that does the action).",
+   "lane": "morphology-derivation",
+   "generation_method": "list_rule"
+  },
+  "case_of_word": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Word shown either ALL-CAPS or all-lowercase -> the label 'upper' or 'lower'.",
+   "lane": "orthographic",
+   "generation_method": "list_rule"
+  },
+  "city-continent": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given a well-known world city, output its continent (Africa, Asia, Europe, North America, South America, or Australia).",
+   "lane": "world_knowledge",
+   "generation_method": "knowledge"
+  },
+  "compound_join": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given two words that form a standard closed compound, output the compound written as one word.",
+   "lane": "lexical-semantic",
+   "generation_method": "knowledge"
+  },
+  "count_vowels": {
+   "n": 300,
+   "origin": "original_abstractive"
+  },
+  "countable_uncountable": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given an English noun, output countable if it takes a plural and numerals naturally, or uncountable if it is a mass noun.",
+   "lane": "grammatical_classification",
+   "generation_method": "knowledge"
+  },
+  "days_in_month": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given 'MonthName Year' where the month is not February, output the number of days in that month (30 or 31).",
+   "lane": "dates",
+   "generation_method": "rule"
+  },
+  "double_word": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Word -> the word written twice, space-separated.",
+   "lane": "orthographic",
+   "generation_method": "list_rule"
+  },
+  "ends_with_vowel": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Word -> 'vowel' if its last letter is one of a,e,i,o,u, else 'consonant'.",
+   "lane": "orthographic",
+   "generation_method": "list_rule"
+  },
+  "english-dutch": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Translate a common English word into its most common single-word Dutch equivalent.",
+   "lane": "translation",
+   "generation_method": "knowledge"
+  },
+  "hour_after_time": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given a 24-hour clock time HH:MM with hour 00-22, output the time one hour later (minutes unchanged).",
+   "lane": "time",
+   "generation_method": "rule"
+  },
+  "living_nonliving": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Classify a concrete noun as living (organism: animal, plant, or person) or nonliving.",
+   "lane": "semantic_classification",
+   "generation_method": "knowledge"
+  },
+  "minus_ten": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given an integer >= 20 whose tens digit is not 0, output that integer minus 10.",
+   "lane": "arithmetic",
+   "generation_method": "rule"
+  },
+  "noun_possessive": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given a singular noun, output its possessive form (noun + 's).",
+   "lane": "morphology-inflection",
+   "generation_method": "rule"
+  },
+  "ordinal_suffix": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given an integer in digits, output the same integer with its English ordinal suffix attached (21 -> 21st, 112 -> 112th).",
+   "lane": "formatting",
+   "generation_method": "rule"
+  },
+  "parity_even_odd": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given an integer, output 'even' if it is even and 'odd' if it is odd.",
+   "lane": "classification",
+   "generation_method": "rule"
+  },
+  "percent_to_decimal": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given a percentage 'N%' where N is an integer not divisible by 10, output N/100 as a decimal.",
+   "lane": "formatting",
+   "generation_method": "rule"
+  },
+  "plus_ten": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given an integer whose tens digit is not 9, output that integer plus 10.",
+   "lane": "arithmetic",
+   "generation_method": "rule"
+  },
+  "round_down_to_hundred": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given an integer >= 101 that is not a multiple of 100, output it rounded down to the nearest multiple of 100.",
+   "lane": "arithmetic",
+   "generation_method": "rule"
+  },
+  "verb_to_gerund": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given a verb in base form, output its gerund/present-participle (-ing) form.",
+   "lane": "morphology-inflection",
+   "generation_method": "rule"
+  },
+  "year_to_decade": {
+   "n": 1000,
+   "origin": "new",
+   "rule": "Given a four-digit year, output its decade in the standard 'YYY0s' form (1987 -> 1980s).",
+   "lane": "dates",
+   "generation_method": "rule"
+  }
+ }
+}

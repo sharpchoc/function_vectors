@@ -139,6 +139,15 @@ Same 69 tasks under the old 39-head set: zs .735/.720 — pruning buys only ~+.0
 eliminates the failure tail entirely on a fresh split; biggest per-task movers ±.18
 (translations up, animal_plant_object down). `prunedfail_seed43_summary.csv`.
 
+**Pool cleanup (2026-08-16, user decision):** the 21 failures moved OUT of the working pool —
+`dataset_files/extended_tasks/head_intensive_pruned_tasks/` (own manifest w/ pooled-zs labels
++ README; main manifest now n_tasks=117 with pruned_note; make_ext_split --expect_n on the
+pruned manifest = 69). Working pool treated as if these tasks never existed; revisit later.
+Regenerated the 6-shot pruning figure and pool summary on the 117:
+`results/general/extended_tasks_nshot_sweep/{nshot_bar_6shot_pool117.png,
+task_pool_117_summary.csv}` — 69 pass ≥0.30 (49 new + 20 original; 55 train / 14 heldout
+under seed-43), 48 below threshold; mean acc6 .416 pool / .617 passing.
+
 ---
 
 ## 2026-08-13 — SANDBOX: task-specific isolation upper bound (29 tasks × 3 algos × 3×3 metrics)
