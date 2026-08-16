@@ -69,16 +69,16 @@ def main():
                              gridspec_kw={"height_ratios": [55, 30]})
     for ax, grp, title in ((axes[0], "train", "TRAIN tasks (n=55)"),
                            (axes[1], "heldout", "HELD-OUT tasks (n=14)")):
-        rs = sorted([r for r in rows if r["group"] == grp], key=lambda r: r["zs_best"])
+        rs = sorted([r for r in rows if r["group"] == grp], key=lambda r: r["zs_full_best"])
         x = np.arange(len(rs))
         m_proj = np.mean([r["zs_best"] for r in rs])
         m_full = np.mean([r["zs_full_best"] for r in rs])
         m_base = np.mean([r["zs_base"] for r in rs])
-        ax.bar(x, [r["zs_best"] for r in rs], width=0.72, color="tab:blue",
+        w = 0.4
+        ax.bar(x - w / 2, [r["zs_full_best"] for r in rs], width=w, color="tab:orange",
+               label=f"full 37-head FV — mean {m_full:.2f}")
+        ax.bar(x + w / 2, [r["zs_best"] for r in rs], width=w, color="tab:blue",
                label=f"steered, {n_pcs}-PC projection — mean {m_proj:.2f}")
-        ax.plot(x, [r["zs_full_best"] for r in rs], "_", color="tab:orange", markersize=9,
-                markeredgewidth=1.8, linestyle="none",
-                label=f"full 37-head FV — mean {m_full:.2f}")
         ax.plot(x, [r["zs_base"] for r in rs], "k_", markersize=7, markeredgewidth=1.2,
                 linestyle="none", label=f"no steering — mean {m_base:.2f}")
         ax.set_xticks(x)
