@@ -5525,3 +5525,21 @@ float64 SVD. Run on a throwaway pod (fv-rd-geom, terminated). Script:
   task_mean_of_r rows (mean of unit per-prompt r) — same n90/n95 within 1 PC.
 
 **Next:** user-driven analysis. **Blockers:** none; pod terminated.
+
+## 2026-08-16 — DOT-PRODUCT per-prompt read directions (69 pool, 37-head set)
+
+**Status:** done (compute only; analysis awaits user instruction).
+`src/sandbox/ext_steerability/compute_perprompt_dot_read_dirs_37.py` run on throwaway pod
+fv-rd-dot (terminated). r_dot = M^T v^j / ||M^T v^j|| (argmax of <Mr,v> over unit r) — the
+dot-product counterpart of the cosine/pseudo-inverse read dirs; no SVD/truncation involved.
+
+**Outputs:** `artifacts/69_task_run/perprompt_dot_read_dirs/<task>.pt` (69 files; r
+(150,4096) fp32 unit, prenorm_MTv, cos_Mr_v diagnostic, r_task, v fp16 copy, prompt_index,
+config.definition explicitly says dot-product NOT glossary Eq.4-5) + build_summary.json.
+Deliberately a SEPARATE dir from `perprompt_read_dirs/` (cosine ones) for side-by-side use.
+
+**Quick facts:** gate (a) worst rel 2.25e-04; per-task median cos(M r_dot, v) 0.66–0.80
+(med 0.73) vs literal-inverse 1.0 / rank90-inverse ~0.93. Spot-check (antonym): median
+cos(r_dot, r_literal)=0.004, cos(r_dot, r_rank90)=0.60.
+
+**Next:** user to specify comparison analysis. **Blockers:** none; pod terminated.
