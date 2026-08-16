@@ -5,6 +5,37 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-16 — FV location in the residual stream (69-task pool, canonical 37-head FV)
+
+**Owner:** Claude Code background session (fv-location stream), CPU pod + pods fv-loc-{1,2}
+(RTX PRO 4500, ~15 min, ≈$0.40, BOTH TERMINATED). **Status:** DONE.
+Branch `claude-fv-location-69`; outputs also installed in the main checkout.
+
+**What (user spec):** for all 69 tasks (55 train + 14 held-out treated identically), run the
+150 fixed 10-shot train prompts (`isolation_prompts_ext`) clean, and at every block output
+(layers 0–27, the injection hook points) project the residual stream onto that task's unit
+FV direction (v_A = mean of the per-prompt FVs, gated cos=1.000 vs the means.pt + W_O
+rebuild). Positions collapsed to 32 structural columns — demo1..10 × {input, cue "A:",
+label} + query {input, cue}; multi-token spans averaged, structural "Q:"/newline/BOS tokens
+excluded. Two user-adjudicated metrics: cos(z_ℓ, v_A) and raw dot z_ℓ·v̂_A. Average over
+69 tasks × 150 prompts → one heatmap per metric.
+
+**Files:** NEW `src/eval_scripts/capture_69_fv_location.py` (span-mapping gated: assembled
+segments must equal create_prompt output; every column ≥1 token) and
+`plot_69_fv_location.py`. Artifacts `artifacts/69_task_run/fv_location/<task>.npz`
+(per-task prompt-averaged (28,32) cos/dot). Results
+`results/69_task_run/FV_location/{fv_location_heatmap.png, fv_location.npz,
+summary_cos.csv, summary_dot.csv}` (npz has the full 69-task stacks + train/heldout tags).
+
+**Findings (cos panel):** the FV direction lives at the CUE tokens — peak cos 0.346 at
+layer 13, query cue; at L13 mean cos is cues 0.31 vs labels 0.22 vs inputs 0.14. It BUILDS
+UP across demos (demo1 cue 0.16 → demo10 cue 0.34 at L13) and across depth (near 0 up to
+L4, rising sharply L6–L9, broad plateau L9–L20). Raw dot keeps growing into the last
+layers with the residual-norm blowup (peak ~71 at L27) — layer-comparison claims should
+use the cos panel; the dot panel mainly shows norm growth.
+
+---
+
 ## 2026-08-15 — SANDBOX ext_steerability phase 1: pooled sparse head selection on extended tasks
 
 **Owner:** Claude Code background session (Train Test Split Works Check), CPU pod + own pods
