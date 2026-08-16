@@ -95,20 +95,21 @@ def main():
 
         npz.update({f"{v}_s_rtask": s_task, f"{v}_s_pooled": s_pool,
                     f"{v}_within_cum": within})
+        vlabel = f"{v} inverse"
         ax = axes[vi, 0]
         ax.plot(np.arange(1, len(cum_task) + 1), cum_task, "o-", ms=3, color="tab:blue")
-        ax.set_title(f"[{v}] (A) task-level read dirs r_task (n={len(train)}), centered PCA")
+        ax.set_title(f"[{vlabel}] (A) task-level read dirs r_task (n={len(train)}), centered PCA")
         ax = axes[vi, 1]
         ax.plot(np.arange(1, len(cum_pool) + 1), cum_pool, "-", color="tab:blue")
         ax.set_xscale("log")
-        ax.set_title(f"[{v}] (B) pooled per-prompt read dirs ({stack.shape[0]} rows)\n"
+        ax.set_title(f"[{vlabel}] (B) pooled per-prompt read dirs ({stack.shape[0]} rows)\n"
                      f"stable rank: {sr_raw:.1f} raw / {sr_cent:.1f} centered")
         ax = axes[vi, 2]
         for cum_w in within:
             ax.plot(np.arange(1, len(cum_w) + 1), cum_w, "-", lw=0.6, alpha=0.25, color="tab:blue")
         ax.plot(np.arange(1, len(med) + 1), med, "-", lw=2, color="tab:orange", label="median task")
         ax.legend(fontsize=8)
-        ax.set_title(f"[{v}] (C) within-task per-prompt read dirs (150/task), one curve per task")
+        ax.set_title(f"[{vlabel}] (C) within-task per-prompt read dirs (150/task), one curve per task")
         for ax, cum in zip(axes[vi], (cum_task, cum_pool, med)):
             for frac, c in ((0.90, "#999999"), (0.95, "#cccccc")):
                 ax.axhline(frac, ls=":", lw=0.8, color=c)
@@ -133,7 +134,8 @@ def main():
     np.savez_compressed(OUT_DIR / "spectra.npz", **npz)
     fig.suptitle("Read-direction dimensionality — 55 train tasks, 37-head pooled set "
                  "(prunedfail_seed43), centered PCA, float64 SVD; rows = pseudo-inverse "
-                 "truncation variants", fontsize=11)
+                 "variants: literal inverse (machine-eps) / rank90 inverse (cum sigma^2 >= 0.90)",
+                 fontsize=11)
     fig.tight_layout()
     fig.savefig(OUT_DIR / "read_dir_dimensionality.png", bbox_inches="tight")
 
