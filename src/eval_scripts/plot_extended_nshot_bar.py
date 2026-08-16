@@ -32,8 +32,11 @@ def main():
     args = ap.parse_args()
 
     root = GENERAL_DIR / "extended_tasks_nshot_sweep"
+    # the manifest defines the working pool (tasks moved to subfolders are excluded)
+    import json
+    pool = json.load(open(REPO_ROOT / "dataset_files" / "extended_tasks" / "manifest.json"))["tasks"]
     rows = [r for r in csv.DictReader(open(root / "nshot_accuracy.csv"))
-            if int(r["n_shots"]) == args.n]
+            if int(r["n_shots"]) == args.n and r["task"] in pool]
     assert rows, f"no rows for n={args.n}"
     rows.sort(key=lambda r: float(r["accuracy"]))
     tasks = [r["task"] for r in rows]

@@ -143,10 +143,12 @@ eliminates the failure tail entirely on a fresh split; biggest per-task movers �
 `dataset_files/extended_tasks/head_intensive_pruned_tasks/` (own manifest w/ pooled-zs labels
 + README; main manifest now n_tasks=117 with pruned_note; make_ext_split --expect_n on the
 pruned manifest = 69). Working pool treated as if these tasks never existed; revisit later.
-Regenerated the 6-shot pruning figure and pool summary on the 117:
-`results/general/extended_tasks_nshot_sweep/{nshot_bar_6shot_pool117.png,
+Regenerated the CANONICAL figures on the 117 via the repo scripts (patched:
+plot_extended_nshot_bar.py now filters to manifest tasks; catalog title uses live count):
+`results/general/extended_tasks_nshot_sweep/{nshot_bar_6shot.png, extended_tasks_catalog.png,
 task_pool_117_summary.csv}` — 69 pass ≥0.30 (49 new + 20 original; 55 train / 14 heldout
-under seed-43), 48 below threshold; mean acc6 .416 pool / .617 passing.
+under seed-43), 48 below threshold; mean acc6 .416 pool / .617 passing. Catalog sections
+now 32/27/25/33. The 138-task versions live in git history (commit 4048539).
 
 ---
 

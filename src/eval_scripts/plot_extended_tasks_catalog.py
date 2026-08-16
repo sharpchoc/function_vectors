@@ -152,7 +152,7 @@ def main():
     fig_h = col_lines * LINE_IN + 1.1
     fig_w = 13.6
     fig = plt.figure(figsize=(fig_w, fig_h), facecolor="#fcfcfb")
-    fig.text(0.5, 1 - 0.25 / fig_h, "extended_tasks catalog — 138 ICL tasks", ha="center",
+    fig.text(0.5, 1 - 0.25 / fig_h, f"extended_tasks catalog — {len(entries)} ICL tasks", ha="center",
              fontsize=13, fontweight="bold", color=INK)
     fig.text(0.5, 1 - 0.48 / fig_h,
              "rule, one dataset example, and GPT-J 6-shot accuracy (T=1.0 sampled, 50 prompts); "
