@@ -131,6 +131,14 @@ task_pool_117_summary.csv}` — 69 pass ≥0.30 (49 new + 20 original; 55 train 
 under seed-43), 48 below threshold; mean acc6 .416 pool / .617 passing. Catalog sections
 now 32/27/25/33. The 138-task versions live in git history (commit 4048539).
 
+**Promotion out of sandbox (2026-08-16, user decision):** the pruned-pool refit results are the
+first entry in NEW tracked bucket `results/69_task_run/` (constant TASK69_RUN_DIR in
+utils/paths.py) — sparse opt on the zero-shot train metric is now considered working, no longer
+sandbox. `train_test_generalisation/`: train_heldout_summary.csv (renamed from
+prunedfail_seed43_summary.csv) + two-panel train/heldout bars per test setting via NEW
+`src/eval_scripts/plot_69_task_run_bars.py`: zeroshot (.75/.73 steered vs .03/.09 base),
+mixedtask10 (.68/.78 vs .08/.18), shuffled10 (.82/.81 vs .48/.48).
+
 ---
 
 ## 2026-08-13 — SANDBOX: task-specific isolation upper bound (29 tasks × 3 algos × 3×3 metrics)
