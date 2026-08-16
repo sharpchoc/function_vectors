@@ -1,5 +1,24 @@
 # DECISIONS
 
+## 2026-08-16 — CANONICAL extended-task pool = the 69 steerable tasks (user decision)
+
+- **All future train/test splits and downstream experiments on extended tasks use ONLY the
+  69-task working pool unless the user explicitly asks otherwise.** The canonical split is
+  `task_splits/extended_steerable_69_prunedfail.json` (seed 43, 55 train / 14 heldout). Do NOT
+  build new splits from the old 90-task `extended_steerable_90.json`, and do NOT reintroduce the
+  pruned tasks implicitly.
+- Provenance: 138 generated tasks → 48 fail the 6-shot ≥ 0.30 competence filter (kept in
+  `dataset_files/extended_tasks/` as documentation, grey in the figures) → of the 90 competent
+  tasks, 21 could not be steered by the pooled sparse-opt FV (zero-shot best-layer acc < 0.4).
+  Those 21 are MOVED to `dataset_files/extended_tasks/head_intensive_pruned_tasks/` (own
+  manifest + README with per-task pooled-zs labels) and are out of the working pool — to be
+  revisited later as their own study, never silently mixed back in.
+- The main `manifest.json` (117 tasks) defines the working pool; the plotting scripts
+  (`plot_extended_nshot_{sampled,bar}.py`, `plot_extended_tasks_catalog.py`) filter to it.
+- Current pooled head selection on this pool: 37 heads (λ=0.005), from
+  `artifacts/sandbox/ext_steerability/prunedfail_seed43/pooled_sparse/selection.json`;
+  steers 69/69 tasks ≥ 0.4 zero-shot (train .748 / heldout .734 mean best-layer).
+
 ## 2026-08-12 — LESSON: wordfreq/lemminflect mechanical dataset draws aren't reproducible across environments; freeze the final curated word list
 
 - While strictly recurating `dataset_files/extended_tasks/countable_uncountable.json` (audit found

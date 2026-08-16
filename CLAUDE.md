@@ -5,6 +5,11 @@ Canonical definitions:
   unless explicitly stated otherwise. FV sets under `artifacts/function_vectors/gpt-j/debug/`
   (e.g. `train_varicl_max4_top40`) were debug tests — do not build new results on them.
   See DECISIONS.md 2026-07-10.
+- Extended-task experiments use ONLY the 69-task working pool / split
+  `task_splits/extended_steerable_69_prunedfail.json` (55 train / 14 heldout) unless
+  explicitly stated otherwise. The 21 tasks in
+  `dataset_files/extended_tasks/head_intensive_pruned_tasks/` are excluded — never mix them
+  back in implicitly. See DECISIONS.md 2026-08-16.
 
 Before starting work:
 - Read WORKLOG.md and DECISIONS.md.
