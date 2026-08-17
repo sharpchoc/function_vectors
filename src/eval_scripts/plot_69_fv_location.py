@@ -28,11 +28,29 @@ for p in (REPO_ROOT, REPO_ROOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 
+SPACES = {
+    "full": {"in": "fv_location", "out": "FV_location/direct_FV_presence",
+             "cos": "cosine  cos(z_l, v_A)", "dot": "raw dot  z_l . v_A / ||v_A||"},
+    "pc50": {"in": "fv_location_50d", "out": "FV_location/low_dim_FV_presence",
+             "cos": "50D cosine  cos(U z_l, U v_A)",
+             "dot": "50D raw dot  (U z_l) . (U v_A) / ||U v_A||"},
+}
+
+
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--in_root", type=Path, default=ARTIFACTS_ROOT / "69_task_run" / "fv_location")
-    p.add_argument("--out_dir", type=Path, default=TASK69_RUN_DIR / "FV_location")
-    return p.parse_args()
+    p.add_argument("--space", choices=sorted(SPACES), default="full",
+                   help="full = residual space vs task FV; pc50 = both projected into the "
+                        "50D causal PC subspace (pc_sparse_alltasks)")
+    p.add_argument("--in_root", type=Path, default=None)
+    p.add_argument("--out_dir", type=Path, default=None)
+    args = p.parse_args()
+    sp = SPACES[args.space]
+    if args.in_root is None:
+        args.in_root = ARTIFACTS_ROOT / "69_task_run" / sp["in"]
+    if args.out_dir is None:
+        args.out_dir = TASK69_RUN_DIR / sp["out"]
+    return args
 
 
 def col_label(c):
@@ -65,9 +83,10 @@ def main():
              cos=cos_stack, dot=dot_stack, tasks=np.array(tasks),
              groups=np.array(groups), columns=np.array(columns))
 
+    sp = SPACES[args.space]
     fig, axes = plt.subplots(2, 1, figsize=(13, 11))
-    for ax, mat, name in ((axes[0], cos_stack.mean(0), "cosine  cos(z_l, v_A)"),
-                          (axes[1], dot_stack.mean(0), "raw dot  z_l . v_A / ||v_A||")):
+    for ax, mat, name in ((axes[0], cos_stack.mean(0), sp["cos"]),
+                          (axes[1], dot_stack.mean(0), sp["dot"])):
         vmax = np.abs(mat).max()
         im = ax.imshow(mat, aspect="auto", origin="lower", cmap="RdBu_r",
                        vmin=-vmax, vmax=vmax)
