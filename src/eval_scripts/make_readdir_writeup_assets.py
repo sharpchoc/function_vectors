@@ -130,7 +130,8 @@ def fig1_definitions():
         "pseudo-inverse (cumulative σ² ≥ 0.90); Lever 4 stored both ways.",
         note="Per-head brackets sum the unnormalised per-head solutions and normalise once at the end "
              "(sub-choice 3′).  Per-prompt 90% = principal components needed for 90% of the variance "
-             "of all 8,250 per-prompt read directions (55 train tasks × 150 prompts).",
+             "of all 8,250 per-prompt read directions (55 train tasks × 150 prompts), CENTRED PCA — "
+             "as in every table and matrix here.",
         row_accents=[True, False, False, False], width=13.6,
         align=["left", "left", "left", "left", "right"])
     fig.savefig(OUT / "1_definitions.png", bbox_inches="tight")
@@ -209,8 +210,8 @@ def fig3_overlap():
     cb.ax.tick_params(labelsize=9, length=0, colors=MUTED)
     fig.text(0.03, 0.955, "Do the definitions find the same subspace?",
              fontsize=15, fontweight="bold", color=INK, ha="left", va="top")
-    fig.text(0.03, 0.905, "90% principal subspaces of the 8,250 unit-norm per-prompt read "
-             "directions, 55 train tasks.", fontsize=9.5, color=MUTED, ha="left", va="top")
+    fig.text(0.03, 0.905, "90% principal subspaces (centred PCA) of the 8,250 unit-norm per-prompt "
+             "read directions, 55 train tasks.", fontsize=9.5, color=MUTED, ha="left", va="top")
     fig.text(0.03, 0.075,
              "Upper number: symmetric overlap, 1 = one subspace nested in the other.\n"
              "Lower number: variance-weighted containment of the row's subspace inside the column's.\n"
