@@ -5871,3 +5871,19 @@ raw per-prompt preds in artifacts/.../read_dir_steering_1shot/<task>__sampled_un
 
 **Next:** user call (e.g. patch with more PCs — 24/50 — to find where the steering content
 sits, or centered PCs instead of uncentered). **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — Read-direction write-up artifact + Slack-ready PNGs
+
+**Status:** done. `src/eval_scripts/make_readdir_writeup_assets.py` renders four standalone
+PNGs from the committed summary CSVs into
+`results/69_task_run/Read_direction_geometry/writeup_assets/`:
+1_definitions (the 4 brackets x lever settings), 2_dimensionality (8 cells),
+3_overlap (4x4 pairwise subspace overlap heatmap, diagonal masked), 4_containment
+(unit vs natural). White surface, cool-green neutrals, single teal ramp, warm accent
+reserved for the cosine_M outlier — designed to paste straight into Slack.
+
+Artifact (write-up covering the definitions + preliminary overlap/dimensionality analysis,
+PNGs embedded as data URIs): https://claude.ai/code/artifact/e2b58e9f-116f-406c-9872-ebb8db2ead11
+
+**Next:** user is writing this up; causal metric work continues separately.
+**Blockers:** none.
