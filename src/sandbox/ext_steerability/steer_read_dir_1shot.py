@@ -51,7 +51,8 @@ def parse_args():
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--task", type=str, default=None)
     p.add_argument("--scaffold_mode", choices=("const", "sampled_underscore"), default="const")
-    p.add_argument("--layer", type=int, default=7)
+    p.add_argument("--layers", type=str, default="7",
+                   help="injection layers: single '7' or inclusive range '7-20'")
     p.add_argument("--prompts_root", type=Path,
                    default=REPO_ROOT / "dataset_files" / "isolation_prompts_ext")
     p.add_argument("--sweep_root", type=Path,
@@ -66,13 +67,13 @@ def parse_args():
 
 
 class Injector:
-    """Forward hook on one block: add vec to the block OUTPUT hidden state at masked
-    positions (prefill only)."""
+    """Forward hook on one or more blocks: add vec to each block's OUTPUT hidden state at
+    masked positions (prefill only)."""
 
-    def __init__(self, model, layer):
+    def __init__(self, model, layers):
         self.vec = None    # (D,) fp32 cuda (already alpha-scaled)
         self.mask = None   # (B, L) bool cuda
-        self.h = model.transformer.h[layer].register_forward_hook(self._hook)
+        self.h = [model.transformer.h[l].register_forward_hook(self._hook) for l in layers]
 
     def _hook(self, module, args, output):
         hs = output[0] if isinstance(output, tuple) else output
@@ -133,10 +134,16 @@ def main():
         vecs[fam] = v.cuda()
         print(f"{fam}: |v_task| = {v.norm():.2f}", flush=True)
 
-    inj = Injector(model, args.layer)
+    if "-" in args.layers:
+        lo, hi = (int(x) for x in args.layers.split("-"))
+        layers = list(range(lo, hi + 1))
+    else:
+        layers = [int(args.layers)]
+    print(f"injection layers: {layers}", flush=True)
+    inj = Injector(model, layers)
     conds = [("baseline", None, 0.0)]
     conds += [(f"{fam}_a{a}", fam, a) for fam in FAMILIES for a in ALPHAS]
-    res = {"task": task, "layer": args.layer, "scaffold_mode": args.scaffold_mode,
+    res = {"task": task, "layers": layers, "scaffold_mode": args.scaffold_mode,
            "n_prompts": len(items),
            "v_norms": {f: float(vecs[f].norm()) for f in FAMILIES}, "conditions": {}}
     for cname, fam, a in conds:
@@ -169,6 +176,8 @@ def main():
     res["golds"] = [it["gold"] for it in items]
     args.out_root.mkdir(parents=True, exist_ok=True)
     stem = task if args.scaffold_mode == "const" else f"{task}__{args.scaffold_mode}"
+    if len(layers) > 1 or layers != [7]:
+        stem += f"__L{args.layers}"
     with open(args.out_root / f"{stem}.json", "w") as f:
         json.dump(res, f)
     print(f"wrote {args.out_root / (stem + '.json')}", flush=True)

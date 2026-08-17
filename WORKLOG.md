@@ -5757,3 +5757,22 @@ in results/69_task_run/Read_direction_geometry/steering/ (both scaffolds overlai
 
 **Next:** user call (layer sweep, alpha refinement around 1, more tasks, FV control).
 **Blockers:** none; pod terminated.
+
+## 2026-08-17 — Read-dir steering, variant 3: multi-layer injection L7-20
+
+**Status:** done. Same sampled-input + '_' scaffold, same task/protocol, but the read dir is
+added at the ' _' position at EVERY block output 7..20 (14 layers; --layers 7-20).
+Pod fv-steer3, terminated.
+
+**Result: multi-layer is WORSE than single-layer L7.** baseline 0.000; dot_perhead
+0.047/0.040/0.067/0.053 for alpha 0.5/1/2/4 (peak 0.067 vs 0.153 single-layer L7 @ a=1);
+cosine_perhead <= 0.040 (vs 0.080). Flat, no alpha structure. Qualitative at a=2: outputs
+degrade into off-task text and fragments ('pebbles' for breathe, 'The compiler generates
+bytecode' for compile, 'dejer'/'losser'/'ambler' malformations) — the repeated injection
+derails the residual stream instead of specifying the label slot; the single well-placed
+L7 injection was doing something more surgical.
+Figure/CSV now overlay all 3 variants (const L7, sampled+'_' L7, sampled+'_' L7-20) in
+results/69_task_run/Read_direction_geometry/steering/.
+
+**Next:** if pursued, sweep SINGLE layers (7..20 one at a time) rather than stacking, and
+refine alpha near 1. **Blockers:** none; pod terminated.
