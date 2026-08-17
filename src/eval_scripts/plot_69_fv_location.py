@@ -34,6 +34,9 @@ SPACES = {
     "pc50": {"in": "fv_location_50d", "out": "FV_location/low_dim_FV_presence",
              "cos": "50D cosine  cos(U z_l, U v_A)",
              "dot": "50D raw dot  (U z_l) . (U v_A) / ||U v_A||"},
+    "readdir": {"in": "readdir_location", "out": "FV_location/read_dir_presence",
+                "cos": "cosine  cos(z_l, r_A)  [read dir: cosine_perhead unit mean]",
+                "dot": "raw dot  z_l . r_A / ||r_A||  [read dir: cosine_perhead unit mean]"},
 }
 
 
