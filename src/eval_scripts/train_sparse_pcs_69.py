@@ -160,7 +160,8 @@ def main():
                                         sorted(fold_set), points_by_task, args)
                 torch.save({"lambda": lam, "fold": fi, "c": c.cpu(), "fold_acc": acc,
                             "fold_tasks": sorted(fold_set), "best_epoch": best_epoch,
-                            "fold_eval": "weighted_c@L9", "unit": "pc512_uncentered"}, out)
+                            "fold_eval": f"weighted_c@L{args.inject_layer}",
+                            "inject_layer": args.inject_layer, "unit": "pc512_uncentered"}, out)
                 print(f"[pc lam={lam:g} fold{fi}] heldout-task acc={acc:.3f} "
                       f"best_epoch={best_epoch}", flush=True)
         return

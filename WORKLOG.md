@@ -199,6 +199,17 @@ Artifacts `artifacts/69_task_run/pc_sparse_alltasks/`; results
 `results/69_task_run/FV_dimensionality_reduction/sparse_all69/`; scripts gained
 --which/--out_path (basis) and --pc_root/--out_dir/--fit_note (aggregator) params.
 
+**L13 robustness rerun (2026-08-17, fork session "L13 FV Dim Projection Sweep"; pods
+fv-l13-{1..10} ALL TERMINATED ~1.3h ≈$10):** repeated the all-task sparse PC selection with
+--inject_layer 13 instead of 9 (same all-69 uncentered basis — layer-independent; same λ-CV
+protocol; own tree artifacts/69_task_run/pc_sparse_alltasks_L13/). λ=0.005 again, **48 PCs
+(47/48 shared with the 50 from L9)**; CV means uniformly ~.05 lower at fixed-L13 injection
+(L13 a slightly weaker site) but best-layer deployment is indistinguishable: zs train
+.719/.748, former-heldout **.737/.734** (L9: .721/.748, .733/.734); mix/shuf likewise. The
+L9 choice is NOT load-bearing — selection size, membership, and final performance are stable.
+Cosmetic fix: fold artifact 'fold_eval' label now uses the actual inject layer.
+Results: `results/69_task_run/FV_dimensionality_reduction/sparse_all69_L13/`.
+
 **Promotion out of sandbox (2026-08-16, user decision):** the pruned-pool refit results are the
 first entry in NEW tracked bucket `results/69_task_run/` (constant TASK69_RUN_DIR in
 utils/paths.py) — sparse opt on the zero-shot train metric is now considered working, no longer
