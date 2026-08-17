@@ -38,6 +38,31 @@ onto the injection layer: peak cos 0.71 at L9 query cue (direct space: 0.35 at L
 buildup persists (d1 cue 0.40 → d10 cue 0.71 at L9); at L9 labels are almost as aligned as
 cues (0.64 vs 0.65) with inputs at 0.43. Raw-dot panel still norm-dominated late.
 
+**presence_vs_accuracy (2026-08-17, same stream; pods fv-pva-{1..8} RTX PRO 4500, ~20 min
+≈$2, ALL TERMINATED):** user question — does FV presence in the residual stream predict
+a-priori that the model will do the task well? Per task and n in 0..6: the 150 fixed 10-shot
+train prompts TRUNCATED to their first n demos (paired queries); x = mean cos(z_l, v̂_A) at
+the query cue for layers 9..20 (also per-prompt max/mean over the band); y = temperature-1
+sampled exact-match accuracy on the same prompts (repo `compute_extended_nshot_sampled`
+convention: top_k 0, top_p 1, 12 new tokens, cut at first newline). One point per task per n
+(69 per panel). NEW `capture_69_presence_vs_acc.py`, `plot_69_presence_vs_acc.py`,
+`diag_69_presence_vs_acc.py`; results `FV_location/presence_vs_accuracy/` (14 figures =
+L9..L20 + maxL + meanL, correlation_summary.csv, presence_vs_acc.npz, diagnostics).
+
+***ANSWER: NO — the cross-task correlation is NEGATIVE, not positive.*** meanL9-20 Spearman
+by n: +0.35 (n=0, but a FLOOR — only 13/69 tasks non-zero, max acc 0.027, so meaningless),
+−0.10, **−0.34, −0.41, −0.38, −0.40, −0.36** (n=2..6, p≤4e-3); same sign at every single
+layer 9–20 and for max/mean variants. Controls: the shared-mean FV component does NOT
+explain it (cos(v_A, grand mean) 0.44–0.81 but partial rho unchanged, −0.38 at n=6);
+a-priori features label_tokens/out_entropy/n_unique_out correlate with PRESENCE (−0.44/
+−0.54/−0.54) and controlling for all four weakens but does not remove it (−0.25 at n=6).
+***The positive relation the hypothesis expected exists WITHIN task, not between:*** across
+n=0..6 presence and accuracy rise together with median rho +0.96, positive in 69/69 tasks.
+Reading: cue-token FV presence tracks how much task-identification signal the context has
+supplied (more demos ⇒ more presence ⇒ more accuracy), but at a fixed shot count a task
+showing MORE FV presence tends to be one the model does WORSE on — presence is not an
+a-priori competence predictor across tasks.
+
 **read_dir_presence variant (2026-08-17, same stream; pods fv-locrd-{1,2} ~15 min ≈$0.40,
 BOTH TERMINATED):** same direct-space study with the task READ direction instead of the FV —
 r̂_A = normalized mean of the 150 unit per-prompt read dirs of the cosine_perhead bracket
