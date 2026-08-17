@@ -6034,3 +6034,22 @@ Outputs: results/69_task_run/labeltoken_fv_ridge/ (r2_by_n.png, summary.csv,
 per_task_r2.csv); per-variant jsons in artifacts/69_task_run/labeltoken_fv_ridge/.
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+
+### Addendum — rank-reduced ridge via uncentered PCA-90 of the n=10 activations
+
+User follow-up on improving the 0.464 held-out R^2. First, the ORACLE ceiling
+(/root job tmp oracle_ceiling.py, LOO task-mean predictor): heldout R^2 uniform 0.675
+(weighted 0.714), train 0.729 — so the full-dim ridge (0.464) sits at ~69% of ceiling and
+the gap is almost entirely between-task placement (in-sample the ridge BEATS the oracle,
+0.787 vs 0.729).
+
+Then `ridge_pca90_labeltoken.py`: X projected onto the top-90%-energy UNCENTERED PCs of the
+train-set n=10 activations (k=377 of 4096, PC1 alone 53% energy), SAME basis for all X
+variants (n=1..10 + avg), Y NOT reduced, same 5-fold-task-CV ridge.
+
+**Result: rank reduction does NOT help — it costs ~0.01-0.02 R^2 everywhere.**
+n=10: 0.720/0.376 (vs full-dim 0.751/0.384); avg: 0.755/0.4515 (vs 0.787/0.464); same
+lambdas selected. Reading: the discarded 10% energy tail carries some transferable FV
+signal, and the full-dim ridge at lambda=1e3-1e4 already regularises at least as well as a
+hard 377-PC cut — PCA-90 is strictly a lossy version of what ridge does softly.
+Output: artifacts/69_task_run/labeltoken_fv_ridge/pca90_n10.json.
