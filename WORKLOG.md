@@ -6007,3 +6007,30 @@ Outputs: results/69_task_run/raw_mean_steering/dimensionality/ (pca_curve.png, s
 summary.csv).
 
 **Next:** user call. **Blockers:** none; no pods used.
+
+## 2026-08-18 — Ridge: nth-demo-label L6 activation -> per-prompt FV (labeltoken_fv_ridge)
+
+**Status:** done. For n=1..10: X = per-prompt block-6 output at the LAST token of demo n's
+label (new capture `capture_all10_label_L6.py`, (150,10,4096)/task, all 69 tasks, index +
+linearity-style gates, BOS-free); Y = per-prompt FV (perprompt_fvs, prompt order asserted
+equal). One full-dim 4096->4096 ridge per variant (`ridge_labeltoken_to_fv.py`, Gram-eig
+solver reused from regress_activation_to_fv_fulldim_ridge.py, fp64 GPU), lambda from
+logspace(-1,8,19) by 5-fold CV over TRAIN TASKS, refit on all 55, R^2 = uniform average
+over dims (variance-weighted also reported), test = the 14 held-out tasks. Plus the
+avg-of-all-10 X variant. Fleet: 12 pods (capture sharded by task; ridge one variant/pod),
+all terminated. No lambda pinned at a grid edge.
+
+**Results (R^2 uniform, train / heldout):**
+- n=1: 0.682 / 0.312 ; n=2: 0.739 / 0.348 ; rising monotonically to n=10: 0.751 / 0.384
+  (test-side gain concentrated in n=1->2, then slow: 0.312, 0.348, 0.364, 0.365, 0.370,
+  0.374, 0.374, 0.374, 0.378, 0.384). lambda = 1e4 everywhere except n=1 (3.16e4).
+- avg-of-10 X: **0.787 / 0.464** — beats every single-n variant by a wide margin on
+  held-out tasks (+0.08 over n=10), with a smaller lambda (1e3): averaging denoises X.
+- Reading: any single label token's L6 activation linearly explains ~35-38% of held-out
+  per-prompt FV variance; later demos carry slightly more, but position matters far less
+  than averaging. Sizeable train-heldout gap (~0.37) = the map is substantially
+  task-specific, consistent with earlier PC-transfer findings.
+Outputs: results/69_task_run/labeltoken_fv_ridge/ (r2_by_n.png, summary.csv,
+per_task_r2.csv); per-variant jsons in artifacts/69_task_run/labeltoken_fv_ridge/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
