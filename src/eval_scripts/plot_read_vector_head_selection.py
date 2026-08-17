@@ -104,6 +104,8 @@ def main():
     head_key = max(matched, key=lambda k: np.nanmean(fam[k]))
     md_key = max([k for k in fam if k.startswith("meandiff")],
                  key=lambda k: np.nanmean(fam[k]))
+    raw_key = max([k for k in fam if k.startswith("rawmean")],
+                  key=lambda k: np.nanmean(fam[k]))
     print("matched head-sum cells: " + ", ".join(
         f"{k}={np.nanmean(fam[k]):.4f}" for k in matched))
     print(f"headline head-sum: {head_key} ({np.nanmean(fam[head_key]):.3f}) | "
@@ -113,15 +115,17 @@ def main():
     order = np.argsort(fam[head_key])
     labels = [tasks[i] + (" *" if grp[i] == "heldout" else "") for i in order]
     x = np.arange(len(tasks))
-    w = 0.17
-    fig, ax = plt.subplots(figsize=(max(14, 0.38 * len(tasks)), 7.0), dpi=150)
-    ax.bar(x - 2 * w, zs[order], w, color="0.35", label="0-shot (no demo)")
-    ax.bar(x - w, base[order], w, color="0.72", label="unsteered (1-shot '_' scaffold)")
-    ax.bar(x, fam[md_key][order], w, color="tab:orange",
+    w = 0.145
+    fig, ax = plt.subplots(figsize=(max(15, 0.42 * len(tasks)), 7.0), dpi=150)
+    ax.bar(x - 2.5 * w, zs[order], w, color="0.35", label="0-shot (no demo)")
+    ax.bar(x - 1.5 * w, base[order], w, color="0.72", label="unsteered (1-shot '_' scaffold)")
+    ax.bar(x - 0.5 * w, fam[md_key][order], w, color="tab:orange",
            label=f"mean-activation difference ({md_key.split('@')[1]})")
-    ax.bar(x + w, fam[head_key][order], w, color="tab:blue",
+    ax.bar(x + 0.5 * w, fam[raw_key][order], w, color="tab:red",
+           label=f"raw mean activation ({raw_key.split('@')[1]}) - best steering vector")
+    ax.bar(x + 1.5 * w, fam[head_key][order], w, color="tab:blue",
            label=f"sparse-selected head sum ({head_key})")
-    ax.bar(x + 2 * w, r1[order], w, color="tab:green", label="real 1-shot demo")
+    ax.bar(x + 2.5 * w, r1[order], w, color="tab:green", label="real 1-shot demo")
     ax.set_xticks(x, labels, rotation=90, fontsize=6.4)
     ax.set_ylabel("T=1 sampled exact-match accuracy (150 prompts)")
     ax.set_title("Label-slot steering by task — sparse-selected head vector vs baselines\n"

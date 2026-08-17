@@ -5946,3 +5946,14 @@ summary.csv/per_task_acc.csv) are now drawn as a fifth bar; no recompute. Aggreg
 0-shot 0.0017 | unsteered '_' scaffold 0.0010 | mean-activation difference (L3) 0.0818 |
 sparse-selected head sum (L3sel@L3) 0.0502 | real 1-shot demo 0.2080. (raw mean @L7, not
 plotted, remains the strongest steering family at 0.1212.)
+
+### Addendum 3 — raw-mean bar added (it is the best steering vector)
+
+by_task.png now has six bars: 0-shot | unsteered '_' scaffold | mean-activation difference
+(L3) | RAW mean activation (L7) | sparse-selected head sum (L3sel@L3) | real 1-shot demo.
+raw mean was previously only in layer_alpha.png even though it is the strongest steering
+family (0.121 vs 0.082 meandiff vs 0.050 headsum; real 1-shot 0.208).
+Raw-vs-diff is not a dose artifact: at matched injected norm (raw a=2 ~124 vs diff a=4
+~140) raw still wins 0.109 vs 0.061. Reading: the shared label-slot component that
+differencing removes is itself doing most of the work — it makes the dummy '_' look like a
+real label position; task identity is the smaller increment on top.
