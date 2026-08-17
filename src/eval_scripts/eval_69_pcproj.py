@@ -39,6 +39,10 @@ def parse_args():
     p.add_argument("--out_root", type=Path, default=RUN_ROOT / "pc_sparse")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--alpha", type=float, default=1.0,
+                   help="Scale on the projected steering vector; evals go to evals_alpha<a>/ when != 1.")
+    p.add_argument("--settings", nargs="+", default=None,
+                   help="Subset of test settings (default: all three).")
     return p.parse_args()
 
 
@@ -64,21 +68,23 @@ def main():
         v_full = C_t[head_flat.to(C_t.device)].sum(dim=0).float()
         coef = pcs_sel @ v_full
         v_proj = coef @ pcs_sel  # (4096,)
-        fvs[t] = v_proj
+        fvs[t] = args.alpha * v_proj
         print(f"[{t}] |v_full|={v_full.norm():.1f} |v_proj|={v_proj.norm():.1f} "
               f"cos={torch.nn.functional.cosine_similarity(v_full, v_proj, dim=0):.3f}", flush=True)
     model = model.to(torch.bfloat16)
     for p in model.parameters():
         p.requires_grad_(False)
 
-    (args.out_root / "evals").mkdir(exist_ok=True)
+    evals_dir = "evals" if args.alpha == 1.0 else f"evals_alpha{args.alpha:g}"
+    settings = args.settings or TEST_SETTINGS
+    (args.out_root / evals_dir).mkdir(exist_ok=True)
     for t in args.tasks:
-        out = args.out_root / "evals" / f"{t}.json"
+        out = args.out_root / evals_dir / f"{t}.json"
         if out.exists():
             print(f"[{t}] eval exists, skip", flush=True)
             continue
         results = {}
-        for setting in TEST_SETTINGS:
+        for setting in settings:
             recs = load_records(args, t, setting)
             points = [record_to_point(r, tokenizer, model_config) for r in recs]
             baseline = eval_points_fixed_v(model, model_config, tokenizer, points, None, 9)
@@ -90,7 +96,7 @@ def main():
                   f"@L{accs.index(max(accs))}", flush=True)
         with open(out, "w") as f:
             json.dump({"task": t, "unit": "pc_projection", "n_pcs": sel["n_selected"],
-                       "selected_pcs": sel["selected_pcs"], "alpha": 1.0,
+                       "selected_pcs": sel["selected_pcs"], "alpha": args.alpha,
                        "readout": "full-label teacher-forced", "settings": results}, f, indent=1)
     print("PC-PROJ EVAL DONE")
 

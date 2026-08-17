@@ -220,6 +220,13 @@ rank of the task means, selected by the steering objective with all tasks repres
 `FV_dimensionality_reduction/debugging/taskmean_k90_summary.csv`; basis+evals
 `artifacts/69_task_run/pc_taskmean_k90/`. Full write-up of the dimensionality arc published
 as Claude artifact "The Steering Subspace".
+**α sweep on the top-22 projection (2026-08-17, pods fv-a22-{1..5} ~35 min ≈$2, TERMINATED;
+user hypothesis: projection shrinks norm → under-dosed):** per-task best α over {1,1.25,1.5,2}
+(zs only; eval_69_pcproj gained --alpha/--settings): means .589→.679 train / .600→.679 heldout
+— rescaling recovers ~half the gap (under-dosing real) but only 2/12 cratered tasks reach
+within .1 of full FV (gerund_to_past .50→.96 @α2; german_noun_gender .14→.50). country-capital
+0.00–0.02 at ALL α; translation family barely moves — direction loss, not magnitude, dominates
+the worst failures. `debugging/taskmean_k90_alpha_sweep.csv`; artifact updated.
 
 **Promotion out of sandbox (2026-08-16, user decision):** the pruned-pool refit results are the
 first entry in NEW tracked bucket `results/69_task_run/` (constant TASK69_RUN_DIR in
