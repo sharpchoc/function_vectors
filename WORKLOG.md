@@ -5926,3 +5926,14 @@ summary.csv, per_task_acc.csv, selection_summary.csv); raw preds under
 artifacts/69_task_run/read_vector_head_selection/eval/.
 
 **Next:** user call. **Blockers:** none; all 30 pods terminated.
+
+### Addendum (same day) — by_task.png headline bar corrected
+
+The first version of `by_task.png` showed `headsum_L7sel@L3` (heads selected at L7, injected
+at L3) because the plot picked the global argmax over head-sum cells, which beat the matched
+cell by 0.0006 (0.0508 vs 0.0502) — a mismatched control masquerading as the method.
+`plot_read_vector_head_selection.py` now restricts the headline bar to MATCHED cells
+(selected and injected at the same layer) and reports both: L3sel@L3 0.0502,
+L7sel@L7 0.0501. All four sel x inject cells remain in summary.csv / layer_alpha.png.
+Conclusion is unchanged: the head-sum family sits at 0.040-0.051 however it is configured,
+below meandiff (0.082) and rawmean (0.121).

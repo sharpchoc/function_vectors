@@ -95,11 +95,17 @@ def main():
         if r[1] == "all":
             print("  ".join(str(x) for x in r))
 
-    # headline picks: the best head-sum cell and the best mean-difference cell
-    head_key = max([k for k in fam if k.startswith("headsum")],
-                   key=lambda k: np.nanmean(fam[k]))
+    # Headline head-sum bar = the MATCHED configuration (heads selected at the same layer
+    # they are injected at), choosing the layer whose matched cell scores best. Picking the
+    # global argmax instead would surface a cross term (L7-selected heads injected at L3),
+    # which is a mismatched control rather than the method itself; all four cells are in
+    # summary.csv and layer_alpha.png regardless.
+    matched = [f"headsum_L{l}sel@L{l}" for l in LAYERS if f"headsum_L{l}sel@L{l}" in fam]
+    head_key = max(matched, key=lambda k: np.nanmean(fam[k]))
     md_key = max([k for k in fam if k.startswith("meandiff")],
                  key=lambda k: np.nanmean(fam[k]))
+    print("matched head-sum cells: " + ", ".join(
+        f"{k}={np.nanmean(fam[k]):.4f}" for k in matched))
     print(f"headline head-sum: {head_key} ({np.nanmean(fam[head_key]):.3f}) | "
           f"mean-diff: {md_key} ({np.nanmean(fam[md_key]):.3f})")
 
