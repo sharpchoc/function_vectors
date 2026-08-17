@@ -5880,3 +5880,49 @@ artifacts/69_task_run/read_dir_method_steering/.
 
 **Next:** user call — recommend extending alpha (8, 16) and layers (0-2) for cosine_M.
 **Blockers:** none; all 30 pods terminated.
+
+## 2026-08-17 — Label-slot head selection ("read vector") + mean-activation baselines
+
+**Status:** done. New experiment: sparse optimisation to select heads whose summed
+LABEL-TOKEN mean outputs steer the task when injected at a dummy '_' label slot.
+Pipeline (all new scripts in src/sandbox/ext_steerability/):
+`capture_label_head_means.py` (per-task mean out_proj inputs at the LAST token of the 10th
+demo's label, 150 clean 10-shot prompts, 69 tasks; linearity + index gates) →
+`capture_label_resid_means.py` (same site, residual stream, all 28 layers, for the
+mean-activation baselines) → `train_sparse_label_heads.py` (c over 448 heads, v_A(c) =
+Σ c_h W_O^h m_A[h] injected at the ' _' token, loss −log p(gold) + λ‖c‖₁, 5-fold CV over
+the 55 TRAIN tasks, λ ∈ {0.005,0.01,0.05,0.2}) → `eval_label_slot_vectors.py` (69 tasks ×
+33 conditions, T=1 exact match) → `src/eval_scripts/plot_read_vector_head_selection.py`.
+Fleets: 12 + 8 + 10 pods (30 total), all terminated.
+
+**METHOD CHANGE (documented, user-informed):** the planned CV criterion (exact-match
+accuracy) was degenerate — 0.000 in all 20 cells, incl. the all-448-head vector.
+`diagnose_label_cv_metric.py` showed injection improves −log p by only ~1-1.5 nats out of
+12-16 at L7, never enough to flip the argmax. λ is therefore selected by held-out-task mean
+−log p (graded version of the training objective); no retraining was needed (c vectors were
+saved) — added `--mode rescore`.
+
+**Selections (λ=0.005 both):** L7 site → 107 heads; L3 site → 117 heads. Overlap with the
+canonical 37-head cue-token FV set is only 12/37 (Jaccard 0.09) and 11/37 (0.08) — the
+label slot recruits a substantially different head population, skewed early (L0-L11 holds
+~68% of the L7 set). L3 fits ~2x better than L7 on the objective (mean −logp improvement
+4.66-5.55 vs 2.21-2.79 nats), consistent with the earlier layer sweep where L3 beat L7.
+
+**Eval results (mean over all 69 tasks; unsteered 0.001, 0-shot 0.002, real 1-shot 0.208):**
+- rawmean@L7 **0.121**  ← best of everything tested
+- rawmean@L3 0.094
+- meandiff@L3 0.082 | meandiff@L7 0.080
+- headsum_L7sel@L3 0.051 | headsum_L7sel@L7 0.050 | headsum_L3sel@L3 0.050 |
+  headsum_L3sel@L7 0.040
+So the sparse-selected head-sum is the WEAKEST family: the un-differenced mean residual
+activation at the label token beats it 2.4x, and even the mean-DIFFERENCE beats it 1.6x.
+Cross terms show the injection site barely matters for the head-sum (0.040-0.051 across all
+four sel×inj combinations) — i.e. which heads were selected is not the binding constraint.
+Per-task: mean-activation steering matches/beats the real 1-shot demo on a handful
+(lowercase_word 0.427 vs 0.427, country-capital 0.327 vs 0.460, prev_number_digits 0.313
+vs 0.087 for headsum), but semantic tasks stay near zero for every steering family.
+Outputs: results/69_task_run/read_vector_head_selection/ (by_task.png, layer_alpha.png,
+summary.csv, per_task_acc.csv, selection_summary.csv); raw preds under
+artifacts/69_task_run/read_vector_head_selection/eval/.
+
+**Next:** user call. **Blockers:** none; all 30 pods terminated.
