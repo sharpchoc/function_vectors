@@ -64,6 +64,10 @@ def parse_args():
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_dir", type=Path, default=None)
     p.add_argument("--task_seed", type=int, default=43)
+    p.add_argument("--all_tasks", action="store_true",
+                   help="run every task in the split (sharded) instead of one random task")
+    p.add_argument("--shard_idx", type=int, default=0)
+    p.add_argument("--shard_n", type=int, default=1)
     return p.parse_args()
 
 
@@ -74,6 +78,7 @@ class Injector:
     def __init__(self, model, layers):
         self.vec = None    # (D,) fp32 cuda (already alpha-scaled)
         self.mask = None   # (B, L) bool cuda
+        self.layers = list(layers)
         self.h = [model.transformer.h[l].register_forward_hook(self._hook) for l in layers]
 
     def _hook(self, module, args, output):
@@ -87,15 +92,16 @@ class Injector:
         return hs
 
 
-def main():
-    args = parse_args()
-    split = json.load(open(args.split_path))
-    task = args.task or random.Random(args.task_seed).choice(sorted(split["train_tasks"]))
+def out_stem(args, task, layers):
+    stem = task if args.scaffold_mode == "const" else f"{task}__{args.scaffold_mode}"
+    return stem + (f"__L{args.layers}" if layers != [7] else "")
+
+
+def run_task(args, model, tok, inj, task, group):
+    if (args.out_root / f"{out_stem(args, task, inj.layers)}.json").exists():
+        print(f"task: {task} exists, skip", flush=True)
+        return
     print(f"task: {task}", flush=True)
-
-    model, tok = load_model(args.model_dir)
-    tok.padding_side = "left"
-
     # real_1shot is a reference condition: a genuine demo (input AND its correct label);
     # the anchor is the demo's first label token, so the same alpha sweep can run on top.
     anchor_str = " Output" if args.scaffold_mode == "const" else " _"
@@ -146,17 +152,10 @@ def main():
         vecs[fam] = v.cuda()
         print(f"{fam}: |v_task| = {v.norm():.2f}", flush=True)
 
-    if "-" in args.layers:
-        lo, hi = (int(x) for x in args.layers.split("-"))
-        layers = list(range(lo, hi + 1))
-    else:
-        layers = [int(args.layers)]
-    print(f"injection layers: {layers}", flush=True)
-    inj = Injector(model, layers)
     conds = [("baseline", None, 0.0)]
     conds += [(f"{fam}_a{a}", fam, a) for fam in FAMILIES for a in ALPHAS]
-    res = {"task": task, "layers": layers, "scaffold_mode": args.scaffold_mode,
-           "n_prompts": len(items),
+    res = {"task": task, "group": group, "layers": inj.layers,
+           "scaffold_mode": args.scaffold_mode, "n_prompts": len(items),
            "v_norms": {f: float(vecs[f].norm()) for f in FAMILIES}, "conditions": {}}
     for cname, fam, a in conds:
         inj.vec = None if fam is None else a * vecs[fam]
@@ -187,12 +186,33 @@ def main():
         print(f"{task} | {cname}: acc={acc:.3f}", flush=True)
     res["golds"] = [it["gold"] for it in items]
     args.out_root.mkdir(parents=True, exist_ok=True)
-    stem = task if args.scaffold_mode == "const" else f"{task}__{args.scaffold_mode}"
-    if len(layers) > 1 or layers != [7]:
-        stem += f"__L{args.layers}"
+    stem = out_stem(args, task, inj.layers)
     with open(args.out_root / f"{stem}.json", "w") as f:
         json.dump(res, f)
     print(f"wrote {args.out_root / (stem + '.json')}", flush=True)
+
+
+def main():
+    args = parse_args()
+    split = json.load(open(args.split_path))
+    group = {t: "train" for t in split["train_tasks"]}
+    group.update({t: "heldout" for t in split["heldout_tasks"]})
+    if args.all_tasks:
+        tasks = sorted(group)[args.shard_idx::args.shard_n]
+    else:
+        tasks = [args.task or random.Random(args.task_seed).choice(sorted(split["train_tasks"]))]
+
+    model, tok = load_model(args.model_dir)
+    tok.padding_side = "left"
+    if "-" in args.layers:
+        lo, hi = (int(x) for x in args.layers.split("-"))
+        layers = list(range(lo, hi + 1))
+    else:
+        layers = [int(args.layers)]
+    print(f"injection layers: {layers} | {len(tasks)} task(s)", flush=True)
+    inj = Injector(model, layers)
+    for t in tasks:
+        run_task(args, model, tok, inj, t, group[t])
 
 
 if __name__ == "__main__":

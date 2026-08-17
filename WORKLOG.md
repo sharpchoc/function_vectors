@@ -5796,3 +5796,26 @@ it at higher alpha.
 Figure/CSV now overlay all 4 variants + the 10-shot reference line.
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — Read-dir steering swept over ALL 69 tasks (per-task bars)
+
+**Status:** done. steer_read_dir_1shot.py gained --all_tasks/--shard_idx/--shard_n +
+skip-if-exists; ran both scaffolds (sampled_underscore blank '_' slot, real_1shot) x 69
+tasks x 9 conditions on 8 pods (all terminated). Plot: plot_steering_by_task.py ->
+results/69_task_run/Read_direction_geometry/steering/steering_by_task.{png,csv}.
+
+**Findings (T=1 exact match, 150 prompts/task, L7, natural-magnitude v_task):**
+- blank-'_' unsteered mean 0.001 (floor, as designed); steered (best alpha, dot_perhead)
+  mean 0.090; real 1-shot demo unsteered mean 0.208.
+- Steering beats its own baseline on 62/69 tasks, but reaches/exceeds the real-1-shot demo
+  on only 10/69; median steered/real-1shot ratio 0.314.
+- Strongly task-dependent: the top tasks (lowercase_word 0.313, third_person_to_base 0.300,
+  singular-plural 0.293, first_three_letters 0.273, german-english 0.267) are mostly
+  orthographic/morphological string ops where a read direction can specify the mapping;
+  the bottom ~25 tasks steer at ~0 despite real 1-shot working (e.g. day_after_textual_date
+  0.427, iso_date_to_month 0.333 unsteered-with-demo vs ~0.00-0.01 steered) — semantic /
+  knowledge-retrieval tasks are not induced by the read direction at all.
+- agent_noun_to_verb (the earlier single-task probe, 0.153 steered vs 0.233 1-shot) is
+  mid-pack, i.e. not unrepresentative.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
