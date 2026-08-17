@@ -5937,3 +5937,12 @@ cell by 0.0006 (0.0508 vs 0.0502) — a mismatched control masquerading as the m
 L7sel@L7 0.0501. All four sel x inject cells remain in summary.csv / layer_alpha.png.
 Conclusion is unchanged: the head-sum family sits at 0.040-0.051 however it is configured,
 below meandiff (0.082) and rawmean (0.121).
+
+### Addendum 2 — 0-shot bar added to by_task.png
+
+The 0-shot numbers (already captured for all 69 tasks in
+artifacts/69_task_run/read_dir_steering_1shot/<task>__zero_shot.json, and already present in
+summary.csv/per_task_acc.csv) are now drawn as a fifth bar; no recompute. Aggregate means:
+0-shot 0.0017 | unsteered '_' scaffold 0.0010 | mean-activation difference (L3) 0.0818 |
+sparse-selected head sum (L3sel@L3) 0.0502 | real 1-shot demo 0.2080. (raw mean @L7, not
+plotted, remains the strongest steering family at 0.1212.)
