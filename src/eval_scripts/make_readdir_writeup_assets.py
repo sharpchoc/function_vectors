@@ -237,8 +237,9 @@ def fig4_containment():
         rows, [1.3, 1.5, 1.9, 1.9],
         "Does the magnitude choice change the subspace?",
         "Each definition is built twice, once as a unit direction and once keeping its natural "
-        "magnitude. The two right-hand columns are the same measurement as the lower number in the "
-        "matrix above, applied to those two versions of one definition.",
+        "magnitude. The right-hand columns project one version's directions into the other version's "
+        "90% space and report the fraction of squared length that survives, averaged over directions "
+        "and weighted by the variance each carries. 1.000 would mean nothing is lost.",
         note=f"Both columns stay above 0.976, so neither version holds variance the other misses: "
              f"they describe one space. Even the single worst-behaved direction across all four "
              f"definitions keeps {worst:.2f} of itself inside the other space. Unit norm just "
