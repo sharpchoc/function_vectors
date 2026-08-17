@@ -5715,3 +5715,25 @@ Outputs: results/69_task_run/Read_direction_geometry/dot_perhead_unit_sparse_opt
 artifacts/69_task_run/sparse_ablation_dirs/.
 
 **Next:** user analysis. **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — Read-direction steering test (1-shot content-free scaffold, 1 task)
+
+**Status:** done. Scaffold "Q: Input\nA: Output\n\nQ: {q}\nA:"; inject alpha * v_task at the
+' Output' token, block-7 output; v_task = NATURAL-magnitude per-task read dir (mean of
+per-prompt natural rows = r_task * r_task_norm); families dot_perhead (|v|=108) and
+cosine_perhead (|v|=47); alpha {0.5,1,2,4}; task agent_noun_to_verb (seeded random);
+T=1 sampled exact match, 150 prompts. Script steer_read_dir_1shot.py (pod fv-steer,
+terminated). Tokenizer gotcha: scaffold-final "\n\n" (628) retokenizes as 198,198 in
+context — anchor injection on the ' Output' token, not a prefix-ids match.
+
+**Result: essentially NO steering.** baseline 0.013; best steered 0.067 (dot_perhead a=1);
+all conditions <= 0.067 vs the 37-head FV-injection reference zs_best 0.56 for this task.
+Qualitative: baseline echoes scaffold words; steered outputs become word-like/topical
+(near-misses like 'breath' for breathe, input echoes like 'compiler') but do not perform
+the noun->verb mapping. Read directions (input-side) do NOT act as injectable task vectors
+the way FVs (output-side) do — at least not at L7/'Output'-token/these alphas on this task.
+Outputs: results/69_task_run/Read_direction_geometry/steering/ (png + csv); raw preds in
+artifacts/69_task_run/read_dir_steering_1shot/.
+
+**Next:** user call (other layers/positions/alphas, more tasks, or FV-injection control on
+the same scaffold). **Blockers:** none; pod terminated.
