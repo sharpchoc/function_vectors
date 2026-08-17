@@ -13,6 +13,7 @@ cosine_M outlier; tabular figures; no chartjunk.
 """
 import csv
 import sys
+import textwrap
 from pathlib import Path
 
 import numpy as np
@@ -48,44 +49,69 @@ plt.rcParams.update({
 
 
 def table_fig(col_labels, rows, col_widths, title, subtitle, note=None,
-              row_accents=None, align=None, height_per_row=0.46, width=12.0):
-    """Render a text table as a figure: banded header, hairline row rules, no boxes."""
+              row_accents=None, align=None, width=12.0):
+    """Render a text table as a figure: banded header, hairline row rules, no boxes.
+
+    Geometry is in inches, not axes fractions, so nothing silently overflows the canvas:
+    the title/subtitle/note are wrapped to the table's own width, and column widths are
+    checked against the widest string each column has to hold.
+    """
     n = len(rows)
-    fig_h = 1.45 + height_per_row * n + (0.42 if note else 0)
+    align = align or ["left"] * len(col_labels)
+    # widen any column whose header or cells would not fit (≈ chars -> inches at 10pt)
+    col_widths = list(col_widths)
+    for j in range(len(col_labels)):
+        longest = max([len(str(col_labels[j])) * 0.075]
+                      + [len(str(r[j])) * 0.072 for r in rows]) + 0.18
+        span = width * col_widths[j] / sum(col_widths)
+        if span < longest:
+            col_widths[j] *= longest / span
+    scale = width / sum(col_widths)
+    col_in = [w * scale for w in col_widths]
+
+    sub_lines = textwrap.wrap(subtitle, int(width * 12.6)) if subtitle else []
+    note_lines = textwrap.wrap(note, int(width * 13.8)) if note else []
+    row_h, head_h = 0.40, 0.46
+    top_block = 0.34 + 0.235 * len(sub_lines) + 0.22
+    bot_block = (0.16 + 0.20 * len(note_lines)) if note_lines else 0.10
+    fig_h = top_block + head_h + row_h * n + bot_block
     fig, ax = plt.subplots(figsize=(width, fig_h), dpi=220)
     ax.set_axis_off()
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    xs = np.concatenate([[0.0], np.cumsum(col_widths)])
-    xs = xs / xs[-1]
-    top = 1.0
-    ax.text(0, top, title, fontsize=15, fontweight="bold", va="top", ha="left", color=INK)
-    ax.text(0, top - 0.115 * (4.4 / fig_h), subtitle, fontsize=10, va="top", ha="left", color=MUTED)
+    ax.set_xlim(0, width)
+    ax.set_ylim(0, fig_h)
+    xs = np.concatenate([[0.0], np.cumsum(col_in)])
 
-    head_y = top - 0.30 * (4.4 / fig_h)
-    row_h = (head_y - (0.16 if note else 0.06)) / (n + 1.15)
-    ax.add_patch(plt.Rectangle((0, head_y - row_h * 0.92), 1, row_h * 0.92,
-                               facecolor=BAND, edgecolor="none"))
-    align = align or ["left"] * len(col_labels)
+    y = fig_h - 0.30
+    ax.text(0, y, title, fontsize=15, fontweight="bold", va="top", ha="left", color=INK)
+    y -= 0.40
+    for line in sub_lines:
+        ax.text(0, y, line, fontsize=10, va="top", ha="left", color=MUTED)
+        y -= 0.235
+    y -= 0.16
+
+    ax.add_patch(plt.Rectangle((0, y - head_h), width, head_h, facecolor=BAND, edgecolor="none"))
     for j, lab in enumerate(col_labels):
-        x = xs[j] + 0.008 if align[j] == "left" else xs[j + 1] - 0.008
-        ax.text(x, head_y - row_h * 0.46, lab, fontsize=9.5, fontweight="bold",
+        x = xs[j] + 0.09 if align[j] == "left" else xs[j + 1] - 0.09
+        ax.text(x, y - head_h / 2, lab, fontsize=9.5, fontweight="bold",
                 va="center", ha=align[j], color=ACCENT)
-    y = head_y - row_h * 0.92
+    y -= head_h
     for i, row in enumerate(rows):
         col = SIGNAL if (row_accents and row_accents[i]) else INK
         for j, cell in enumerate(row):
-            x = xs[j] + 0.008 if align[j] == "left" else xs[j + 1] - 0.008
+            x = xs[j] + 0.09 if align[j] == "left" else xs[j + 1] - 0.09
             mono = j > 0 and any(ch.isdigit() for ch in str(cell))
-            ax.text(x, y - row_h * 0.5, str(cell), fontsize=10.5 if j == 0 else 10,
+            ax.text(x, y - row_h / 2, str(cell), fontsize=10.5 if j == 0 else 10,
                     va="center", ha=align[j], color=col,
                     fontweight="bold" if j == 0 else "normal",
                     family="DejaVu Sans Mono" if mono else "DejaVu Sans")
         y -= row_h
-        ax.plot([0, 1], [y, y], color=RULE, lw=0.7, zorder=0)
-    if note:
-        ax.text(0, y - row_h * 0.55, note, fontsize=9, va="center", ha="left", color=MUTED)
-    fig.tight_layout(pad=0.7)
+        ax.plot([0, width], [y, y], color=RULE, lw=0.7, zorder=0)
+    if note_lines:
+        y -= 0.16
+        for line in note_lines:
+            ax.text(0, y, line, fontsize=9, va="top", ha="left", color=MUTED)
+            y -= 0.20
+    fig.subplots_adjust(left=0.012, right=0.988, top=0.995, bottom=0.005)
     return fig
 
 
