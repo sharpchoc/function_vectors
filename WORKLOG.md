@@ -5957,3 +5957,38 @@ Raw-vs-diff is not a dose artifact: at matched injected norm (raw a=2 ~124 vs di
 ~140) raw still wins 0.109 vs 0.061. Reading: the shared label-slot component that
 differencing removes is itself doing most of the work — it makes the dummy '_' look like a
 real label position; task identity is the smaller increment on top.
+
+## 2026-08-17 — Raw mean-activation steering swept over ALL layers (results/69_task_run/raw_mean_steering)
+
+**Status:** done. Follow-up to read_vector_head_selection, where the un-differenced label-token
+mean residual was the strongest steering vector found. Swept over depth:
+for each layer L, inject alpha * m_A(L) additively at the ' _' token of the 1-shot dummy-label
+scaffold, where m_A(L) is the task's mean block-L output at the last-demo-label token (matched
+site). 28 layers x alpha {0.5,1,2,4} + baseline + a task-agnostic SHARED-mean control at every
+layer (mean over the 55 train tasks, no task identity) = 225 conditions x 150 prompts x 69
+tasks. No recapture needed (label_resid_means already had all 28 layers).
+Scripts: `src/sandbox/ext_steerability/sweep_raw_mean_layers.py`,
+`src/eval_scripts/plot_raw_mean_layer_sweep.py`. Fleet: 30 pods (one dud never exposed SSH →
+terminated, its 3 tasks re-run on a healthy pod), all terminated.
+
+**Findings (mean over all 69 tasks, T=1 exact match):**
+- **Best layer = L6, 0.126** (L7 0.125, L5 0.105, L3 0.090, L4 0.085) — a clear early-layer
+  bump peaking at L6-L7, ~0 by L12 and flat thereafter (L12-L27 all <= 0.010).
+- Best alpha is 2.0 at essentially every layer (a=4 close behind, a=0.5 always near zero).
+- Reference lines: unsteered '_' scaffold 0.001, 0-shot 0.002, real 1-shot demo 0.208. So the
+  best layer recovers ~61% of a real demo.
+- **SHARED-MEAN CONTROL IS FLAT AND NEAR ZERO (<= 0.013 at every layer).** The task-agnostic
+  mean carries almost nothing: raw mean's advantage over the mean-difference vector is NOT
+  merely "make the slot look like a label". Task identity is doing the work; differencing
+  hurts for some other reason (likely it also removes task-correlated structure shared with
+  the reference set).
+- Per-task best layers concentrate at L7 (18 tasks), L6 (13), L3 (11), L2 (8); mean accuracy
+  at each task's OWN best layer is 0.164 (median 0.120).
+- Several tasks BEAT a real 1-shot demo at their best layer: lowercase_word 0.607 vs 0.427,
+  singular-plural 0.607 vs 0.467, spanish-english 0.560 vs 0.467, french-english 0.500 vs
+  0.453, german-english 0.493 vs 0.293, third_person_to_base 0.433 vs 0.227.
+Outputs: results/69_task_run/raw_mean_steering/ (layer_curve.png, by_task_best.png,
+by_task_heatmap.png, layer_summary.csv, per_task_by_layer.csv); raw preds in
+artifacts/69_task_run/raw_mean_steering/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
