@@ -38,6 +38,18 @@ onto the injection layer: peak cos 0.71 at L9 query cue (direct space: 0.35 at L
 buildup persists (d1 cue 0.40 → d10 cue 0.71 at L9); at L9 labels are almost as aligned as
 cues (0.64 vs 0.65) with inputs at 0.43. Raw-dot panel still norm-dominated late.
 
+**read_dir_presence variant (2026-08-17, same stream; pods fv-locrd-{1,2} ~15 min ≈$0.40,
+BOTH TERMINATED):** same direct-space study with the task READ direction instead of the FV —
+r̂_A = normalized mean of the 150 unit per-prompt read dirs of the cosine_perhead bracket
+(`read_dir_sweep/cosine_perhead/<task>.pt` 'r'; mean-of-unit-r matches stored r_task at
+cos 1.000, ‖mean r‖ 0.86–0.95). NEW `capture_69_readdir_location.py`; plotter `--space
+readdir`; outputs `FV_location/read_dir_presence/`. **The read direction lives at LABEL
+tokens, complementary to the FV-at-cue pattern:** at L9 labels 0.28 vs cues 0.10 vs inputs
+0.08 (FV map: cues 0.31 > labels 0.22); peak 0.30 at L7 demo8 label; broad L6–L16 band on
+every demo's label with only weak demo1→demo10 buildup (0.24→0.29); query cue is NOT
+elevated (0.10) — consistent with reading happening where label content sits, not where
+the answer is produced.
+
 **Findings (direct_FV_presence, cos panel):** the FV direction lives at the CUE tokens — peak cos 0.346 at
 layer 13, query cue; at L13 mean cos is cues 0.31 vs labels 0.22 vs inputs 0.14. It BUILDS
 UP across demos (demo1 cue 0.16 → demo10 cue 0.34 at L13) and across depth (near 0 up to
