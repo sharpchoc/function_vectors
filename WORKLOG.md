@@ -54,6 +54,10 @@ coloured by shot count (per-n ρ in the legend, pooled ρ/r in the title) — no
 Pooled ρ is POSITIVE and layer-ordered (L9 +0.63 → L20 +0.30; meanL9-20 +0.47, maxL +0.53),
 but that pooled number is the SHOT-COUNT effect: low-n points carry both low presence and
 low accuracy, so pooling recovers the within-task trend. At fixed n the sign flips.
+Also `binned_<variant>.png` + binned_summary.csv (user request): the 483 pooled points
+bucketed by presence in 0.10-wide bins anchored on 0.05, mean accuracy ± SEM per bucket.
+L9 buckets: [.05,.15) 0.000 (47 pts) → [.15,.25) 0.145 (59) → [.25,.35) 0.471 (197) →
+[.35,.45) 0.550 (180) — monotone, steepest below cos 0.3, flattening after.
 
 ***ANSWER: NO — the cross-task correlation is NEGATIVE, not positive.*** meanL9-20 Spearman
 by n: +0.35 (n=0, but a FLOOR — only 13/69 tasks non-zero, max acc 0.027, so meaningless),

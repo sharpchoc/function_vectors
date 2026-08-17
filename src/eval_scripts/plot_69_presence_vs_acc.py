@@ -74,6 +74,50 @@ def scatter_fig(x_tn, acc_tn, groups, label, out_path):
     return rows
 
 
+def binned_fig(x_tn, acc_tn, label, out_path, width=0.10, anchor=0.05):
+    """Bucket every (task, n) point by presence (width-0.10 bins anchored on 0.05, i.e.
+    0.05-0.15, 0.15-0.25, ...) and plot the mean accuracy per bucket."""
+    x, y = x_tn.ravel(), acc_tn.ravel()
+    lo = anchor - width * np.ceil(max(0.0, anchor - x.min()) / width)
+    edges = np.arange(lo, x.max() + width, width)
+    idx = np.digitize(x, edges) - 1
+    rows = []
+    for b in range(len(edges) - 1):
+        m = idx == b
+        if m.sum() == 0:
+            continue
+        sem = y[m].std(ddof=1) / np.sqrt(m.sum()) if m.sum() > 1 else 0.0
+        rows.append((edges[b], edges[b + 1], int(m.sum()), y[m].mean(), sem))
+    ctr = np.array([(a + b) / 2 for a, b, *_ in rows])
+    cnt = np.array([c for *_, c, _, _ in rows])
+    mean = np.array([m for *_, m, _ in rows])
+    sem = np.array([s for *_, s in rows])
+
+    fig, ax = plt.subplots(figsize=(9, 6.5))
+    ax.scatter(x, y, s=8, c="0.8", zorder=1, label=f"individual (task, n) points ({x.size})")
+    ax.errorbar(ctr, mean, yerr=sem, fmt="o-", color="tab:blue", lw=2, ms=9, capsize=4,
+                zorder=3, label="bucket mean ± SEM")
+    for c, m, s, k in zip(ctr, mean, sem, cnt):
+        ax.annotate(f"n={k}", (c, m + s), textcoords="offset points", xytext=(0, 8),
+                    ha="center", fontsize=9, color="tab:blue")
+    for e in edges:
+        ax.axvline(e, color="0.85", lw=0.8, zorder=0)
+    rho, p = spearmanr(x, y)
+    ax.set_xlabel(f"FV presence   cos(z, v_A) at the query cue @ {label}   "
+                  f"(buckets of {width:g})")
+    ax.set_ylabel("sampled exact-match accuracy (temperature 1.0)")
+    ax.set_title(f"Accuracy vs FV presence, bucketed @ {label}\n"
+                 f"all 69 tasks × n=0..6 pooled; point-level Spearman ρ={rho:+.2f} "
+                 f"(p={p:.1e})", fontsize=11)
+    ax.set_ylim(-0.03, 1.03)
+    ax.grid(alpha=0.25, axis="y")
+    ax.legend(fontsize=9, loc="upper left")
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=140)
+    plt.close(fig)
+    return [(label, f"[{a:.2f},{b:.2f})", c, m, s) for a, b, c, m, s in rows]
+
+
 def main():
     args = parse_args()
     files = sorted(args.in_root.glob("*.npz"))
@@ -100,20 +144,22 @@ def main():
              acc=accs, tasks=np.array(tasks), groups=np.array(groups),
              layers=np.array(LAYERS), n_shots=np.array(N_SHOTS))
 
-    all_rows = []
-    for li, l in enumerate(LAYERS):
-        all_rows += scatter_fig(cos_means[:, :, li], accs, groups, f"L{l}",
-                                args.out_dir / f"scatter_L{l}.png")
-    all_rows += scatter_fig(cos_max_means, accs, groups, "maxL9-20",
-                            args.out_dir / "scatter_maxL.png")
-    all_rows += scatter_fig(cos_avg_means, accs, groups, "meanL9-20",
-                            args.out_dir / "scatter_meanL.png")
+    all_rows, bin_rows = [], []
+    variants = [(f"L{l}", cos_means[:, :, li], f"L{l}") for li, l in enumerate(LAYERS)]
+    variants += [("maxL9-20", cos_max_means, "maxL"), ("meanL9-20", cos_avg_means, "meanL")]
+    for label, x_tn, stem in variants:
+        all_rows += scatter_fig(x_tn, accs, groups, label, args.out_dir / f"scatter_{stem}.png")
+        bin_rows += binned_fig(x_tn, accs, label, args.out_dir / f"binned_{stem}.png")
 
     with open(args.out_dir / "correlation_summary.csv", "w") as f:
         f.write("variant,n_shots,spearman_rho,spearman_p,pearson_r,pearson_p\n")
         for row in all_rows:
             f.write(f"{row[0]},{row[1]},{row[2]:.4f},{row[3]:.3e},{row[4]:.4f},{row[5]:.3e}\n")
-    print(f"wrote {args.out_dir} (14 figures, npz, csv)")
+    with open(args.out_dir / "binned_summary.csv", "w") as f:
+        f.write("variant,bucket,n_points,mean_acc,sem_acc\n")
+        for v, b, c, m, s in bin_rows:
+            f.write(f"{v},{b},{c},{m:.4f},{s:.4f}\n")
+    print(f"wrote {args.out_dir} ({2 * len(variants)} figures, npz, 2 csv)")
 
 
 if __name__ == "__main__":
