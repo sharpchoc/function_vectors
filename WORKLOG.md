@@ -5686,3 +5686,32 @@ per_task_acc.csv); raw per-prompt predictions in artifacts/69_task_run/pc50_abla
 
 **Next:** user interpretation / possible controls (random-50 subspace, matched-energy cuts).
 **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — Sparse ablation-direction optimization (139 dot_perhead-unit PCs)
+
+**Status:** done. User experiment: gate c in [0,1]^139 over the centered pooled-90% PCs of
+dot_perhead__unit (dot_perhead_unit_pc139.pt, 55-train-task basis); per direction the demo-
+label-token activation is moved c_j of the way to the ALL-69-task grand mean projection
+(grand_mean69.pt, 135,280 label tokens) at every block input; loss = +log p(gold, teacher-
+forced) + lambda*||c||_1, Adam lr 0.03 clamp [0,1], init 0.1, 25 train + 10 val prompts per
+task, ALL 69 tasks pooled; select c > 0.5; hard mean-ablation of the selected set evaluated
+with the T=1 sampled protocol (150 prompts/task, all 69 tasks + baseline).
+Scripts: compute_dot_perhead_pc139.py, train_sparse_ablation_dirs.py,
+summarize_sparse_ablation_dirs.py; ablate_pc50_labeltokens.py gained --task_set (heldout
+means). Fleet: 5x RTX 4090, terminated. Lessons: HF gradient checkpointing is a NO-OP in
+.eval() mode and reentrant checkpointing drops grads to closure-captured tensors -> use
+model.train() (GPT-J dropouts all 0) + use_reentrant=False + assert c.grad nonzero; pkill
+patterns must live in a separate SSH from the text they'd match.
+
+**Results (baseline 0.623 all-69 mean):** lambda 0.003 -> 122 dirs, acc 0.137 (train 0.104
+/ heldout 0.269); 0.01 -> 87 dirs, 0.172 (0.128/0.345); 0.03 -> 24 dirs, 0.343
+(0.305/0.496); 0.1 -> 5 dirs, 0.414 (0.407/0.444). Notable: (a) just 5 directions take a
+third of ICL performance away; 24 directions halve it; (b) heldout tasks consistently drop
+LESS than train tasks even though c was fit on all 69 — the 139-PC basis itself is
+train-task-derived, so heldout ICL partly rides directions outside the basis; (c) train
+median at 122 dirs is 0.033 — near-total destruction.
+Outputs: results/69_task_run/Read_direction_geometry/dot_perhead_unit_sparse_optimisation/
+(sparsity_curve.png, c_vectors.png, summary.csv, per_task_acc.csv); c vectors + preds in
+artifacts/69_task_run/sparse_ablation_dirs/.
+
+**Next:** user analysis. **Blockers:** none; all pods terminated.

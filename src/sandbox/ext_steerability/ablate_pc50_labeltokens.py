@@ -60,6 +60,7 @@ def parse_args():
     p.add_argument("--model_dir", type=Path, default=None)
     p.add_argument("--token_budget", type=int, default=11000)
     p.add_argument("--batch_cap", type=int, default=16)
+    p.add_argument("--task_set", choices=("train", "heldout", "all"), default="train")
     p.add_argument("--shard_idx", type=int, default=0)
     p.add_argument("--shard_n", type=int, default=1)
     return p.parse_args()
@@ -245,7 +246,9 @@ def run_eval(args, model, tok, tasks):
 def main():
     args = parse_args()
     split = json.load(open(args.split_path))
-    tasks = sorted(split["train_tasks"])[args.shard_idx::args.shard_n]
+    pool = {"train": split["train_tasks"], "heldout": split["heldout_tasks"],
+            "all": split["train_tasks"] + split["heldout_tasks"]}[args.task_set]
+    tasks = sorted(pool)[args.shard_idx::args.shard_n]
     model, tok = load_model(args.model_dir)
     if args.stage == "means":
         run_means(args, model, tok, tasks)
