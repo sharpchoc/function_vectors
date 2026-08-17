@@ -27,7 +27,18 @@ segments must equal create_prompt output; every column ≥1 token) and
 `results/69_task_run/FV_location/{fv_location_heatmap.png, fv_location.npz,
 summary_cos.csv, summary_dot.csv}` (npz has the full 69-task stacks + train/heldout tags).
 
-**Findings (cos panel):** the FV direction lives at the CUE tokens — peak cos 0.346 at
+**low_dim_FV_presence variant (2026-08-17, same stream; pods fv-loc50-{1,2} RTX PRO 4500
+~15 min ≈$0.40, BOTH TERMINATED):** same study with BOTH the residual stream and the task FV
+first projected into the 50-dim causal PC subspace (all-69-task sparse PC selection,
+`artifacts/69_task_run/pc_sparse_alltasks`, orthonormality-gated; task FVs live 99.1% inside
+it). NEW `capture_69_fv_location_50d.py`; plotter gained `--space {full,pc50}`; direct-space
+outputs moved to `FV_location/direct_FV_presence/`, this variant in
+`FV_location/low_dim_FV_presence/`. **Inside the 50D space the signal doubles and sharpens
+onto the injection layer: peak cos 0.71 at L9 query cue (direct space: 0.35 at L13);** demo
+buildup persists (d1 cue 0.40 → d10 cue 0.71 at L9); at L9 labels are almost as aligned as
+cues (0.64 vs 0.65) with inputs at 0.43. Raw-dot panel still norm-dominated late.
+
+**Findings (direct_FV_presence, cos panel):** the FV direction lives at the CUE tokens — peak cos 0.346 at
 layer 13, query cue; at L13 mean cos is cues 0.31 vs labels 0.22 vs inputs 0.14. It BUILDS
 UP across demos (demo1 cue 0.16 → demo10 cue 0.34 at L13) and across depth (near 0 up to
 L4, rising sharply L6–L9, broad plateau L9–L20). Raw dot keeps growing into the last
