@@ -65,6 +65,14 @@ def parse_args():
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_dir", type=Path, default=None)
     p.add_argument("--task_seed", type=int, default=43)
+    p.add_argument("--patch_pcs", type=int, default=0,
+                   help="if >0, SUBSPACE PATCH mode: at the label slot, project out the top-k "
+                        "uncentered PCs of the per-prompt read dirs and patch in alpha * the "
+                        "projection of v_task onto that subspace (instead of plain addition)")
+    p.add_argument("--pc_path", type=Path,
+                   default=ARTIFACTS_ROOT / "69_task_run" / "read_dir_sweep" / "pc50_uncentered.pt")
+    p.add_argument("--patch_family", type=str, default="dot_perhead",
+                   help="read-direction family used for the PC basis and v_task in patch mode")
     p.add_argument("--all_tasks", action="store_true",
                    help="run every task in the split (sharded) instead of one random task")
     p.add_argument("--shard_idx", type=int, default=0)
@@ -77,17 +85,26 @@ class Injector:
     masked positions (prefill only)."""
 
     def __init__(self, model, layers):
-        self.vec = None    # (D,) fp32 cuda (already alpha-scaled)
+        self.vec = None    # (D,) fp32 cuda (already alpha-scaled), or None
+        self.P = None      # (k, D) fp32 cuda orthonormal rows; if set, this subspace is
+                           # projected OUT of the masked positions before vec is added
         self.mask = None   # (B, L) bool cuda
         self.layers = list(layers)
         self.h = [model.transformer.h[l].register_forward_hook(self._hook) for l in layers]
 
     def _hook(self, module, args, output):
         hs = output[0] if isinstance(output, tuple) else output
-        if self.vec is None or self.mask is None or hs.shape[1] != self.mask.shape[1]:
+        if self.mask is None or hs.shape[1] != self.mask.shape[1]:
+            return None
+        if self.vec is None and self.P is None:
             return None
         hs = hs.clone()
-        hs[self.mask] = (hs[self.mask].float() + self.vec).to(hs.dtype)
+        h32 = hs[self.mask].float()
+        if self.P is not None:                       # subspace patch: drop then replace
+            h32 = h32 - (h32 @ self.P.T) @ self.P
+        if self.vec is not None:
+            h32 = h32 + self.vec
+        hs[self.mask] = h32.to(hs.dtype)
         if isinstance(output, tuple):
             return (hs,) + tuple(output[1:])
         return hs
@@ -95,6 +112,8 @@ class Injector:
 
 def out_stem(args, task, layers):
     stem = task if args.scaffold_mode == "const" else f"{task}__{args.scaffold_mode}"
+    if args.patch_pcs:
+        stem += f"__patch{args.patch_pcs}pc"
     return stem + (f"__L{args.layers}" if layers != [7] else "")
 
 
@@ -152,20 +171,40 @@ def run_task(args, model, tok, inj, task, group):
         items.append({"ids": ids, "inj_idx": inj_idx, "gold": gold,
                       "gold_len": len(tok(" " + gold).input_ids)})
 
+    fams = [args.patch_family] if args.patch_pcs else list(FAMILIES)
     vecs = {}
-    for fam in FAMILIES:
+    for fam in fams:
         d = torch.load(args.sweep_root / fam / f"{task}.pt", map_location="cpu", weights_only=False)
         v = d["r_task"].float() * d["r_task_norm"]   # natural-magnitude per-task read dir
         vecs[fam] = v.cuda()
         print(f"{fam}: |v_task| = {v.norm():.2f}", flush=True)
 
-    conds = [("baseline", None, 0.0)]
-    if args.scaffold_mode != "zero_shot":
-        conds += [(f"{fam}_a{a}", fam, a) for fam in FAMILIES for a in ALPHAS]
+    if args.patch_pcs:
+        # SUBSPACE PATCH: drop the top-k uncentered PC content of the label slot and
+        # replace it with alpha * the projection of v_task onto the same subspace.
+        # alpha=0 is the pure projection-out control.
+        P = torch.load(args.pc_path, map_location="cpu",
+                       weights_only=False)["brackets"][args.patch_family]["V"][:args.patch_pcs]
+        inj.P = P.float().cuda()
+        fam = args.patch_family
+        vecs[fam] = (vecs[fam] @ inj.P.T) @ inj.P     # P v_task, patched in at alpha
+        print(f"patch mode: {args.patch_pcs} PCs of {fam}; |P v_task| = "
+              f"{vecs[fam].norm():.2f} ({vecs[fam].norm() / (d['r_task_norm']):.3f} of |v_task|)",
+              flush=True)
+        conds = [("baseline", None, 0.0), ("projout_only", None, 0.0)]
+        conds += [(f"patch_a{a}", fam, a) for a in ALPHAS]
+    else:
+        conds = [("baseline", None, 0.0)]
+        if args.scaffold_mode != "zero_shot":
+            conds += [(f"{fam}_a{a}", fam, a) for fam in FAMILIES for a in ALPHAS]
     res = {"task": task, "group": group, "layers": inj.layers,
            "scaffold_mode": args.scaffold_mode, "n_prompts": len(items),
-           "v_norms": {f: float(vecs[f].norm()) for f in FAMILIES}, "conditions": {}}
+           "patch_pcs": args.patch_pcs, "patch_family": args.patch_family if args.patch_pcs else None,
+           "v_norms": {f: float(vecs[f].norm()) for f in fams}, "conditions": {}}
+    P_active, inj.P = inj.P, None   # baseline must be fully untouched
     for cname, fam, a in conds:
+        # patch conditions (everything but 'baseline') also project the subspace out
+        inj.P = None if cname == "baseline" else P_active
         inj.vec = None if fam is None else a * vecs[fam]
         preds = [None] * len(items)
         for bi, b in enumerate(batches_by_len(items, 24000, 48)):

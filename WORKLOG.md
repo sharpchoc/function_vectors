@@ -5837,3 +5837,37 @@ Full ladder (means): 0-shot 0.002 < blank scaffold 0.001~ < steered 0.090 <
 real 1-shot 0.208 < real 10-shot 0.573 (10-shot from pc50_ablation baselines).
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — PC5 subspace patching vs direct steering (69 tasks)
+
+**Status:** done. New session (fork), worktree pc5-patch-steering, branch
+claude-pc5-patch-steering based on claude-perprompt-readdirs-69.
+
+**Setup (user-adjudicated):** blank-'_' scaffold, L7, label slot only. Patch =
+h <- h - P5 h + alpha * P5 v_task, where P5 = top-5 UNCENTERED PCs of the pooled per-prompt
+dot_perhead unit read dirs (first 5 rows of the existing pc50_uncentered.pt basis, reused —
+no new PCA) and v_task = the same natural-magnitude per-task dot_perhead read direction used
+in the direct steering. Conditions/task: baseline, projout_only (alpha=0 control),
+patch at alpha {0.5,1,2,4}. Script: steer_read_dir_1shot.py --patch_pcs 5 (Injector gained
+an optional projection-out matrix P). 6 pods, all terminated.
+
+**Result: patching is WORSE than direct addition — roughly half the steering.**
+- means over 69 tasks (best alpha): direct 0.090 vs patch 0.042; baseline 0.001.
+- per-alpha means: direct [0.054, 0.072, 0.052, 0.053] vs patch [0.016, 0.036, 0.030, 0.026]
+  — same alpha=1 peak, but uniformly lower.
+- patch beats direct on only 6/69 tasks; mean paired difference -0.047.
+- projout_only = 0.001 (identical to baseline): removing the 5-D subspace from the slot does
+  nothing on its own, so the loss is NOT caused by the projection-out step.
+- P5 captures ~70-76% of |v_task| (cos(v, P5 v) ~ 0.70), so the patched-in vector is most of
+  the direction; the missing ~30% (spread over the remaining 4091 dims) evidently carries a
+  disproportionate share of the steering effect.
+
+**Interpretation:** the steering signal is NOT concentrated in the top-5 uncentered PCs of
+the read-direction stack — those PCs are dominated by the shared/mean component across
+tasks (uncentered), while the task-discriminative content lives in the tail. Consistent with
+the earlier finding that task identity needs ~18-24 PCs at task level.
+Outputs: results/69_task_run/Read_direction_geometry/steering/patch_vs_direct.{png,csv};
+raw per-prompt preds in artifacts/.../read_dir_steering_1shot/<task>__sampled_underscore__patch5pc.json
+
+**Next:** user call (e.g. patch with more PCs — 24/50 — to find where the steering content
+sits, or centered PCs instead of uncentered). **Blockers:** none; all pods terminated.
