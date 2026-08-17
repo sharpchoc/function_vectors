@@ -5992,3 +5992,18 @@ by_task_heatmap.png, layer_summary.csv, per_task_by_layer.csv); raw preds in
 artifacts/69_task_run/raw_mean_steering/.
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+
+## 2026-08-18 — Dimensionality of the L6 label-token task means (raw_mean_steering/dimensionality)
+
+**Status:** done. Centered PCA of the 69 per-task L6 label-token mean activations (the raw-mean
+steering vectors at the best layer; from label_resid_means, no recompute). Script:
+`src/eval_scripts/plot_raw_mean_L6_pca.py` (local CPU, milliseconds).
+
+**Findings:** 50%@7 PCs, 80%@22, 90%@32, 95%@41 of 69; stable rank 5.63; vector norms 50-66.
+Comparable to the other task-level families (task-mean FVs 90%@24, dot_perhead read dirs
+90%@24, cosine_M read dirs 90%@29): the label-token task means are similarly ~30-dimensional
+at the 90% cut — no special compression at the site where steering works best.
+Outputs: results/69_task_run/raw_mean_steering/dimensionality/ (pca_curve.png, spectra.npz,
+summary.csv).
+
+**Next:** user call. **Blockers:** none; no pods used.
