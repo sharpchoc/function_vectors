@@ -3,9 +3,10 @@
 
 Per task and n in 0..6: x = mean over the 150 paired prompts of cos(z_l, v_hat_A) at the
 query cue; y = temperature-1 sampled exact-match accuracy on the same prompts. One point
-per task per n (69 points per panel). 14 figures: one per layer 9..20 plus max-over-layers
-and mean-over-layers (per prompt, then prompt-averaged). Each figure has 7 panels (n=0..6)
-with Spearman rho / Pearson r annotated; train tasks are circles, held-out tasks triangles.
+per task per n. 14 figures: one per layer 9..20 plus max-over-layers and mean-over-layers
+(per prompt, then prompt-averaged). Each figure is a SINGLE panel holding all 69x7 = 483
+points, coloured by shot count, with the pooled Spearman/Pearson in the title and the per-n
+rho in the legend; train tasks are circles, held-out tasks triangles.
 
 Outputs (RESULTS/69_task_run/FV_location/presence_vs_accuracy/):
   scatter_L{9..20}.png, scatter_maxL.png, scatter_meanL.png
@@ -41,28 +42,32 @@ def parse_args():
 
 
 def scatter_fig(x_tn, acc_tn, groups, label, out_path):
-    """x_tn, acc_tn: (n_tasks, 7). One panel per n."""
-    fig, axes = plt.subplots(2, 4, figsize=(17, 8), sharey=True)
+    """x_tn, acc_tn: (n_tasks, 7). ONE panel holding every (task, n) point, coloured by n."""
+    fig, ax = plt.subplots(figsize=(9.5, 7.5))
     rows = []
     tr = np.array([g == "train" for g in groups])
+    cmap = plt.get_cmap("viridis")
     for ni, n in enumerate(N_SHOTS):
-        ax = axes.flat[ni]
         x, y = x_tn[:, ni], acc_tn[:, ni]
-        ax.scatter(x[tr], y[tr], s=18, c="tab:blue", label="train (55)")
-        ax.scatter(x[~tr], y[~tr], s=26, c="tab:red", marker="^", label="held-out (14)")
+        c = [cmap(ni / (len(N_SHOTS) - 1))]
         rho, rho_p = spearmanr(x, y)
         r, r_p = pearsonr(x, y)
         rows.append((label, n, rho, rho_p, r, r_p))
-        ax.set_title(f"n={n}   Spearman ρ={rho:.2f} (p={rho_p:.1e})   r={r:.2f}", fontsize=9)
-        ax.set_xlabel(f"FV presence  cos @ {label}")
-        if ni % 4 == 0:
-            ax.set_ylabel("sampled exact-match accuracy")
-        ax.set_ylim(-0.03, 1.03)
-        ax.grid(alpha=0.25)
-    axes.flat[0].legend(fontsize=8, loc="upper left")
-    axes.flat[7].axis("off")
-    fig.suptitle(f"FV presence at the query cue ({label}) vs n-shot accuracy — 69 tasks, "
-                 "150 paired prompts each", fontsize=12)
+        ax.scatter(x[tr], y[tr], s=20, color=c, label=f"n={n}  (ρ={rho:+.2f})")
+        ax.scatter(x[~tr], y[~tr], s=32, color=c, marker="^")
+    x_all, y_all = x_tn.ravel(), acc_tn.ravel()
+    rho_all, p_all = spearmanr(x_all, y_all)
+    r_all, rp_all = pearsonr(x_all, y_all)
+    rows.append((label, "pooled", rho_all, p_all, r_all, rp_all))
+    ax.set_xlabel(f"FV presence   cos(z, v_A) at the query cue @ {label}")
+    ax.set_ylabel("sampled exact-match accuracy (temperature 1.0)")
+    ax.set_title(f"FV presence vs accuracy @ {label} — 69 tasks × n=0..6 "
+                 f"({x_all.size} points)\npooled Spearman ρ={rho_all:+.2f} "
+                 f"(p={p_all:.1e}), Pearson r={r_all:+.2f}   "
+                 "[circles = train, triangles = held-out]", fontsize=11)
+    ax.set_ylim(-0.03, 1.03)
+    ax.grid(alpha=0.25)
+    ax.legend(fontsize=9, title="shot count (per-n ρ)", loc="best")
     fig.tight_layout()
     fig.savefig(out_path, dpi=140)
     plt.close(fig)

@@ -49,6 +49,12 @@ convention: top_k 0, top_p 1, 12 new tokens, cut at first newline). One point pe
 `diag_69_presence_vs_acc.py`; results `FV_location/presence_vs_accuracy/` (14 figures =
 L9..L20 + maxL + meanL, correlation_summary.csv, presence_vs_acc.npz, diagnostics).
 
+FIGURE FORMAT (user, 2026-08-17): each variant is ONE panel with all 69×7 = 483 points,
+coloured by shot count (per-n ρ in the legend, pooled ρ/r in the title) — not 7 subpanels.
+Pooled ρ is POSITIVE and layer-ordered (L9 +0.63 → L20 +0.30; meanL9-20 +0.47, maxL +0.53),
+but that pooled number is the SHOT-COUNT effect: low-n points carry both low presence and
+low accuracy, so pooling recovers the within-task trend. At fixed n the sign flips.
+
 ***ANSWER: NO — the cross-task correlation is NEGATIVE, not positive.*** meanL9-20 Spearman
 by n: +0.35 (n=0, but a FLOOR — only 13/69 tasks non-zero, max acc 0.027, so meaningless),
 −0.10, **−0.34, −0.41, −0.38, −0.40, −0.36** (n=2..6, p≤4e-3); same sign at every single
