@@ -6007,3 +6007,28 @@ Outputs: results/69_task_run/raw_mean_steering/dimensionality/ (pca_curve.png, s
 summary.csv).
 
 **Next:** user call. **Blockers:** none; no pods used.
+
+## 2026-08-18 — Narrow 41-PC patching at the '_' slot, L6 (raw_mean_steering/narrow_patch)
+
+**Status:** done. User variation on raw-mean steering: with V = the 41-PC / 95%-variance
+basis of the 69 L6 label-token task means (build_L6_pc41_basis.py; PCA center cancels in
+remove-and-replace), patch z <- (I-P) z + alpha * P m_A at the ' _' token, alpha
+{0, 0.5, 1, 2, 4} (0 = remove-only control, 1 = pure patch). Scripts narrow_patch_L6.py +
+plot_narrow_patch_L6.py. Fleet: 12 pods, terminated.
+
+**Results (mean over 69 tasks; plain steering @L6 best-alpha 0.126, real 1-shot 0.208):**
+- pure patch (a=1) 0.039; patch peaks at a=2 with 0.098; best-nonzero-alpha 0.104.
+- remove-only (a=0) 0.0015 == unsteered: the '_' slot has ~nothing in the subspace to remove,
+  so patching here reduces to injecting P m_A — a 41-dim truncation of the steering vector.
+- Patching NEVER beats plain steering (0.104 vs 0.126 at matched best-alpha); the pure patch
+  underperforms because P m_A only carries ~sqrt-energy of m_A (norm ratio ~0.5-0.7) and the
+  discarded (I-P) component of m_A evidently contributes.
+Interpretation: on a DUMMY slot there is no competing content to ablate, so the narrow-patch
+construction's advantage (S4.3: remove competing evidence, then write) has nothing to bite
+on; it just loses the out-of-subspace part of the vector. It would differentiate itself on
+scaffolds with real/conflicting labels (S3 cells with content), not on '_'.
+Outputs: results/69_task_run/raw_mean_steering/narrow_patch/ (patch_vs_steer.png,
+alpha_curve.png, summary.csv, per_task_acc.csv); preds in artifacts/.../narrow_patch/.
+
+**Next:** user call (natural follow-up: same patch on real-label or conflicting-label
+scaffolds where removal has content to act on). **Blockers:** none; all pods terminated.
