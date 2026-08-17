@@ -5737,3 +5737,23 @@ artifacts/69_task_run/read_dir_steering_1shot/.
 
 **Next:** user call (other layers/positions/alphas, more tasks, or FV-injection control on
 the same scaffold). **Blockers:** none; pod terminated.
+
+## 2026-08-17 — Read-dir steering, variant 2: sampled input + '_' label slot
+
+**Status:** done. Same as the const-scaffold test but scaffold = "Q: {demo_input}\nA: _\n\n
+Q: {q}\nA:" (demo_input = the record's first demo's input, in-distribution, never the
+query); inject at the ' _' token (4808, stable single token), L7, natural-magnitude v_task,
+same task/protocol. Script steer_read_dir_1shot.py --scaffold_mode sampled_underscore
+(pod fv-steer2, terminated).
+
+**Result: real but modest steering emerges.** baseline 0.000 (model mostly parrots '_');
+dot_perhead peaks 0.153 @ alpha=1 (0.5/2/4 -> 0.067/0.080/0.067); cosine_perhead <= 0.080.
+~2.3x the const-scaffold best (0.067) but still far under FV injection (0.56). Qualitative
+at alpha=1: outputs are now task-shaped — exact hits (breathe, speed, amble, plot) and
+near-misses that keep the agent-noun form instead of converting (defender->defend,
+copier->copy, loser->lose): the read dir pushes 'this slot relates the demo input
+morphologically' but only partially induces the noun->verb direction. Figure/CSV updated
+in results/69_task_run/Read_direction_geometry/steering/ (both scaffolds overlaid).
+
+**Next:** user call (layer sweep, alpha refinement around 1, more tasks, FV control).
+**Blockers:** none; pod terminated.

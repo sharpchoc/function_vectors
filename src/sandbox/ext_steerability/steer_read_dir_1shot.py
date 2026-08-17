@@ -12,7 +12,12 @@ no injection. Readout: T=1 sampled exact match on the task's 150 train-prompt qu
 (same protocol/seeding as the ablation evals).
 
 Task picked at random from the 55 train tasks (seeded) unless --task is given.
-Outputs: <out_root>/<task>.json (accs + preds) — summarize/plot separately.
+
+--scaffold_mode:
+  const              "Q: Input\nA: Output\n\nQ: {q}\nA:", inject at ' Output' (original)
+  sampled_underscore "Q: {demo_input}\nA: _\n\nQ: {q}\nA:" with demo_input = the record's
+                     first demo's input (in-distribution, never the query); inject at ' _'.
+Outputs: <out_root>/<task>[__<mode>].json (accs + preds) — summarize/plot separately.
 """
 import argparse
 import json
@@ -45,6 +50,7 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--task", type=str, default=None)
+    p.add_argument("--scaffold_mode", choices=("const", "sampled_underscore"), default="const")
     p.add_argument("--layer", type=int, default=7)
     p.add_argument("--prompts_root", type=Path,
                    default=REPO_ROOT / "dataset_files" / "isolation_prompts_ext")
@@ -88,9 +94,10 @@ def main():
     model, tok = load_model(args.model_dir)
     tok.padding_side = "left"
 
-    out_tok_id = tok(" Output").input_ids
-    assert len(out_tok_id) == 1
-    out_tok_id = out_tok_id[0]
+    anchor_str = " Output" if args.scaffold_mode == "const" else " _"
+    anchor_id = tok(anchor_str).input_ids
+    assert len(anchor_id) == 1
+    anchor_id = anchor_id[0]
 
     recs = json.load(open(args.prompts_root / task / "train_prompts.json"))
     assert len(recs) == 150
@@ -99,11 +106,23 @@ def main():
         q = str(rec["query"]["input"])
         gold = rec["query"]["output"]
         gold = str(gold[0] if isinstance(gold, list) else gold).strip()
-        ids = tok(f"{SCAFFOLD}Q: {q}\nA:").input_ids
-        # the scaffold's trailing "\n\n" retokenizes in context (628 -> 198,198), but
-        # ' Output' is stable at index 6; anchor on it directly.
-        inj_idx = ids.index(out_tok_id)
-        assert inj_idx == 6, f"' Output' not at expected scaffold position: {inj_idx}"
+        if args.scaffold_mode == "const":
+            prompt = f"{SCAFFOLD}Q: {q}\nA:"
+            pre = None
+        else:
+            demo_inp = str(rec["demos"][0]["input"])   # in-distribution, never the query
+            assert demo_inp != q
+            pre = f"Q: {demo_inp}\nA:"
+            prompt = f"{pre} _\n\nQ: {q}\nA:"
+        ids = tok(prompt).input_ids
+        # the scaffold's "\n\n" retokenizes in context (628 -> 198,198): anchor on the
+        # injection token directly, then sanity-check its position.
+        inj_idx = ids.index(anchor_id)
+        if args.scaffold_mode == "const":
+            assert inj_idx == 6, f"' Output' not at expected scaffold position: {inj_idx}"
+        else:
+            assert inj_idx == len(tok(pre).input_ids), \
+                f"' _' not directly after the demo cue: {inj_idx}"
         items.append({"ids": ids, "inj_idx": inj_idx, "gold": gold,
                       "gold_len": len(tok(" " + gold).input_ids)})
 
@@ -117,7 +136,8 @@ def main():
     inj = Injector(model, args.layer)
     conds = [("baseline", None, 0.0)]
     conds += [(f"{fam}_a{a}", fam, a) for fam in FAMILIES for a in ALPHAS]
-    res = {"task": task, "layer": args.layer, "scaffold": SCAFFOLD, "n_prompts": len(items),
+    res = {"task": task, "layer": args.layer, "scaffold_mode": args.scaffold_mode,
+           "n_prompts": len(items),
            "v_norms": {f: float(vecs[f].norm()) for f in FAMILIES}, "conditions": {}}
     for cname, fam, a in conds:
         inj.vec = None if fam is None else a * vecs[fam]
@@ -148,9 +168,10 @@ def main():
         print(f"{task} | {cname}: acc={acc:.3f}", flush=True)
     res["golds"] = [it["gold"] for it in items]
     args.out_root.mkdir(parents=True, exist_ok=True)
-    with open(args.out_root / f"{task}.json", "w") as f:
+    stem = task if args.scaffold_mode == "const" else f"{task}__{args.scaffold_mode}"
+    with open(args.out_root / f"{stem}.json", "w") as f:
         json.dump(res, f)
-    print(f"wrote {args.out_root / (task + '.json')}", flush=True)
+    print(f"wrote {args.out_root / (stem + '.json')}", flush=True)
 
 
 if __name__ == "__main__":
