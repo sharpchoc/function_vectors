@@ -5837,3 +5837,46 @@ Full ladder (means): 0-shot 0.002 < blank scaffold 0.001~ < steered 0.090 <
 real 1-shot 0.208 < real 10-shot 0.573 (10-shot from pc50_ablation baselines).
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — Read-dir steering sweep: definition method (S1) x injection layer (S2)
+
+**Status:** done. Levers per write_up/read_direction_eval_levers.md with user decisions
+2026-08-17: S1 = 4 energy-90 brackets, per-task vector = average over the task's 150
+per-prompt read dirs; S2 = each single layer L3..L15 + bands L3-15, L7-11 (15 configs);
+S3 = 1-shot "Q: {in-dist input}\nA: _" scaffold, inject at ' _'; S4 = single-direction.
+20 seeded-random train tasks (seed 43), 150 prompts, T=1 exact match.
+Scripts: `src/sandbox/ext_steerability/steer_read_dir_methods.py` (+
+`src/eval_scripts/plot_steering_methods.py`). Fleet: 30x RTX 4090, ~15 min wall clock
+(short prompts -> ~60 gen/s per pod; my 55-GPU-hour estimate was ~20x pessimistic), all
+terminated. Ops note: I launched the fleet twice by accident; killed all strays (verified
+0 remaining on 30/30 pods, no partial outputs) and relaunched once.
+
+**Degenerate lever found before compute:** cos(mean-of-unit per-prompt dirs, mean-of-natural
+per-prompt dirs) = 1.0000 for every bracket/task — the two averaging conventions give the
+SAME direction, so Lever-4 normalisation is purely a dose choice. User adjudicated: alpha
+is a multiple of each bracket's own natural magnitude (alpha=1 == the earlier natural-
+magnitude run), 16 conditions/cell instead of 20.
+
+**Results (mean over 20 tasks; unsteered 0.001, 0-shot 0.002, real 1-shot 0.199):**
+- cosine_M      0.140 @ alpha=4, L3   <- BEST overall
+- cosine_perhead 0.098 @ alpha=2, L3
+- dot_perhead   0.093 @ alpha=1, L3
+- dot_M         0.053 @ alpha=2, L7-11
+- **Layer profile is monotonically decreasing with depth** for all four methods: L3 best,
+  ~0 by L12-L15. The earlier L7 choice was mediocre (dot_perhead L7 0.055 vs L3 0.093).
+- Bands are worse than their best member (L3-15 <= 0.058, L7-11 <= 0.054) — consistent with
+  the earlier L7-20 finding that stacking over-doses.
+- Both grid EDGES are the optima: cosine_M is still rising at alpha=4 (0.003/0.014/0.140 for
+  alpha 1/2/4) and every method peaks at L3, the shallowest layer swept. The sweep therefore
+  LOWER-BOUNDS the best achievable steering — extend alpha to 8/16 and layers to L0-L2
+  before treating any ranking as final.
+- Per task (methods_by_task.png): cosine_M @ L3 matches or beats the real 1-shot demo on
+  several tasks (prev_number_digits 0.36 vs 0.36, next_number_digits 0.36 vs 0.25,
+  park-country 0.31 vs 0.29, present-past 0.30 vs 0.24), so on number/format tasks a read
+  direction can substitute for a demo entirely.
+Outputs: results/69_task_run/Read_direction_geometry/steering_methods/ (layer_profiles.png,
+methods_alpha_curves.png, methods_by_task.png, summary.csv, per_task_acc.csv); raw preds in
+artifacts/69_task_run/read_dir_method_steering/.
+
+**Next:** user call — recommend extending alpha (8, 16) and layers (0-2) for cosine_M.
+**Blockers:** none; all 30 pods terminated.
