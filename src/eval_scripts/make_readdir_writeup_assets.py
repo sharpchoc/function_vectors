@@ -223,24 +223,29 @@ def fig3_overlap():
 
 def fig4_containment():
     rows, accents = [], []
+    worst = 1.0
     for b in BRACKETS:
         r = next(csv.DictReader(open(RD / "unit_vs_natural_containment" / f"{b}_summary.csv")))
-        rows.append([b, r["k_unit"], r["k_nat"],
+        worst = min(worst, float(r["min_pc_containment"]))
+        rows.append([b, f'{r["k_unit"]} → {r["k_nat"]}',
                      f'{float(r["weighted_containment_nat_in_unit"]):.3f}',
-                     f'{float(r["weighted_containment_unit_in_nat"]):.3f}',
-                     f'{float(r["min_pc_containment"]):.3f}'])
+                     f'{float(r["weighted_containment_unit_in_nat"]):.3f}'])
         accents.append(b == "cosine_M")
     fig = table_fig(
-        ["bracket", "k (unit)", "k (natural)", "natural in unit", "unit in natural",
-         "worst single PC"],
-        rows, [1.3, 0.8, 0.9, 1.1, 1.05, 1.1],
+        ["definition", "dimensions: unit → natural",
+         "natural's variance inside unit's space", "unit's variance inside natural's space"],
+        rows, [1.3, 1.5, 1.9, 1.9],
         "Does the magnitude choice change the subspace?",
-        "Variance-weighted containment of each Lever-4 variant's 90% per-prompt subspace inside "
-        "the other's.",
-        note="No. Both directions sit above 0.976, so the two variants essentially share one "
-             "subspace — unit norm simply spreads the same variance over a few more components.",
-        row_accents=accents, width=10.5,
-        align=["left", "right", "right", "right", "right", "right"])
+        "Each definition is built twice, once as a unit direction and once keeping its natural "
+        "magnitude. The two right-hand columns are the same measurement as the lower number in the "
+        "matrix above, applied to those two versions of one definition.",
+        note=f"Both columns stay above 0.976, so neither version holds variance the other misses: "
+             f"they describe one space. Even the single worst-behaved direction across all four "
+             f"definitions keeps {worst:.2f} of itself inside the other space. Unit norm just "
+             f"spreads that same variance over a few more components, which is why its dimension "
+             f"count is always the larger of the pair.",
+        row_accents=accents, width=12.4,
+        align=["left", "right", "right", "right"])
     fig.savefig(OUT / "4_containment.png", bbox_inches="tight")
     plt.close(fig)
 
