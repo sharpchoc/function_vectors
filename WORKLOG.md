@@ -5819,3 +5819,21 @@ results/69_task_run/Read_direction_geometry/steering/steering_by_task.{png,csv}.
   mid-pack, i.e. not unrepresentative.
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — 0-shot baseline added to the steering plots
+
+**Status:** done. steer_read_dir_1shot.py gained --scaffold_mode zero_shot (bare
+"Q: {q}\nA:", baseline only — no demo label slot to inject into); swept all 69 tasks on 4
+pods (terminated). Plot code split: plot_steering_by_task.py (per-task bars, now 4 bars:
+0-shot / blank-'_' unsteered / blank-'_' steered / real 1-shot) and the new
+plot_steering_alpha_sweep.py (agent_noun_to_verb alpha curves, now with 0-shot and 10-shot
+reference lines) — replaces the ad-hoc tmp summary scripts.
+
+**0-shot numbers:** mean 0.002 over the 69 tasks (agent_noun_to_verb exactly 0.000), i.e.
+indistinguishable from the blank-'_' scaffold floor (0.001) — GPT-J does essentially none
+of these tasks without a demo, so the whole steering ladder sits on a true zero floor.
+Steering beats 0-shot on 62/69 tasks (same count as beats the blank scaffold).
+Full ladder (means): 0-shot 0.002 < blank scaffold 0.001~ < steered 0.090 <
+real 1-shot 0.208 < real 10-shot 0.573 (10-shot from pc50_ablation baselines).
+
+**Next:** user call. **Blockers:** none; all pods terminated.

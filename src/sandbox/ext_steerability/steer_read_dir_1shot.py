@@ -51,7 +51,8 @@ def parse_args():
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--task", type=str, default=None)
     p.add_argument("--scaffold_mode",
-                   choices=("const", "sampled_underscore", "real_1shot"), default="const")
+                   choices=("const", "sampled_underscore", "real_1shot", "zero_shot"),
+                   default="const")
     p.add_argument("--layers", type=str, default="7",
                    help="injection layers: single '7' or inclusive range '7-20'")
     p.add_argument("--prompts_root", type=Path,
@@ -116,7 +117,11 @@ def run_task(args, model, tok, inj, task, group):
         q = str(rec["query"]["input"])
         gold = rec["query"]["output"]
         gold = str(gold[0] if isinstance(gold, list) else gold).strip()
-        if args.scaffold_mode == "real_1shot":
+        if args.scaffold_mode == "zero_shot":
+            # reference condition only: no demo at all, so no label slot to inject into
+            pre = None
+            prompt = f"Q: {q}\nA:"
+        elif args.scaffold_mode == "real_1shot":
             demo_inp = str(rec["demos"][0]["input"])
             demo_out = str(rec["demos"][0]["output"])
             assert demo_inp != q
@@ -133,7 +138,9 @@ def run_task(args, model, tok, inj, task, group):
         ids = tok(prompt).input_ids
         # the scaffold's "\n\n" retokenizes in context (628 -> 198,198): anchor on the
         # injection token directly, then sanity-check its position.
-        if args.scaffold_mode == "real_1shot":
+        if args.scaffold_mode == "zero_shot":
+            inj_idx = 0                         # unused: baseline-only mode
+        elif args.scaffold_mode == "real_1shot":
             inj_idx = len(tok(pre).input_ids)   # first token of the real demo label
         else:
             inj_idx = ids.index(anchor_id)
@@ -153,7 +160,8 @@ def run_task(args, model, tok, inj, task, group):
         print(f"{fam}: |v_task| = {v.norm():.2f}", flush=True)
 
     conds = [("baseline", None, 0.0)]
-    conds += [(f"{fam}_a{a}", fam, a) for fam in FAMILIES for a in ALPHAS]
+    if args.scaffold_mode != "zero_shot":
+        conds += [(f"{fam}_a{a}", fam, a) for fam in FAMILIES for a in ALPHAS]
     res = {"task": task, "group": group, "layers": inj.layers,
            "scaffold_mode": args.scaffold_mode, "n_prompts": len(items),
            "v_norms": {f: float(vecs[f].norm()) for f in FAMILIES}, "conditions": {}}

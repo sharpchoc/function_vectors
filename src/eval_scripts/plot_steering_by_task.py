@@ -3,6 +3,7 @@
 
 Reads artifacts/69_task_run/read_dir_steering_1shot/<task>__{sampled_underscore,real_1shot}
 .json for all 69 tasks and plots, per task (sorted by the blank-slot steered accuracy):
+  - 0-shot (no demo at all): unsteered baseline (the format-free floor)
   - blank-'_' scaffold: unsteered baseline vs BEST steered alpha (dot_perhead family)
   - real 1-shot demo: unsteered baseline (the "one real demo" reference)
 Held-out tasks marked with * in the tick label.
@@ -42,7 +43,9 @@ def main():
     for t in tasks:
         us = json.load(open(AR / f"{t}__sampled_underscore.json"))
         r1 = json.load(open(AR / f"{t}__real_1shot.json"))
+        zs = json.load(open(AR / f"{t}__zero_shot.json"))
         rec = {"task": t, "group": group[t],
+               "zeroshot_baseline": zs["conditions"]["baseline"]["acc"],
                "blank_baseline": us["conditions"]["baseline"]["acc"],
                "real1shot_baseline": r1["conditions"]["baseline"]["acc"]}
         for fam in FAMILIES:
@@ -65,13 +68,15 @@ def main():
     rows.sort(key=lambda r: r["blank_dot_perhead_best"])
     labels = [(r["task"] + (" *" if r["group"] == "heldout" else "")) for r in rows]
     x = np.arange(len(rows))
-    w = 0.27
-    fig, ax = plt.subplots(figsize=(max(14, 0.30 * len(rows)), 7.2), dpi=150)
-    ax.bar(x - w, [r["blank_baseline"] for r in rows], w, color="0.65",
+    w = 0.21
+    fig, ax = plt.subplots(figsize=(max(14, 0.32 * len(rows)), 7.2), dpi=150)
+    ax.bar(x - 1.5 * w, [r["zeroshot_baseline"] for r in rows], w, color="0.35",
+           label="0-shot (no demo), unsteered")
+    ax.bar(x - 0.5 * w, [r["blank_baseline"] for r in rows], w, color="0.72",
            label="blank '_' scaffold, unsteered")
-    ax.bar(x, [r["blank_dot_perhead_best"] for r in rows], w, color="tab:blue",
+    ax.bar(x + 0.5 * w, [r["blank_dot_perhead_best"] for r in rows], w, color="tab:blue",
            label="blank '_' scaffold, steered (best alpha, dot_perhead)")
-    ax.bar(x + w, [r["real1shot_baseline"] for r in rows], w, color="tab:green",
+    ax.bar(x + 1.5 * w, [r["real1shot_baseline"] for r in rows], w, color="tab:green",
            label="real 1-shot demo, unsteered")
     ax.set_xticks(x, labels, rotation=90, fontsize=6.2)
     ax.set_ylabel("T=1 sampled exact-match accuracy (150 prompts)")
@@ -86,8 +91,10 @@ def main():
     b = np.array([r["blank_baseline"] for r in rows])
     s = np.array([r["blank_dot_perhead_best"] for r in rows])
     d = np.array([r["real1shot_baseline"] for r in rows])
-    print(f"blank unsteered mean {b.mean():.3f} | steered mean {s.mean():.3f} | "
-          f"real 1-shot mean {d.mean():.3f}")
+    z = np.array([r["zeroshot_baseline"] for r in rows])
+    print(f"0-shot mean {z.mean():.3f} | blank unsteered mean {b.mean():.3f} | "
+          f"steered mean {s.mean():.3f} | real 1-shot mean {d.mean():.3f}")
+    print(f"steered > 0-shot on {(s > z).sum()}/{len(rows)} tasks")
     print(f"steered > blank baseline on {(s > b).sum()}/{len(rows)} tasks; "
           f"steered >= real 1-shot on {(s >= d).sum()}/{len(rows)}")
     frac = np.divide(s, d, out=np.full_like(s, np.nan), where=d > 0)
