@@ -210,6 +210,17 @@ L9 choice is NOT load-bearing — selection size, membership, and final performa
 Cosmetic fix: fold artifact 'fold_eval' label now uses the actual inject layer.
 Results: `results/69_task_run/FV_dimensionality_reduction/sparse_all69_L13/`.
 
+**Top-22 task-mean-PC truncation probe (2026-08-17, pods fv-k90-{1..5} ~40 min ≈$2.5, ALL
+TERMINATED; NO optimiser):** uncentered PCA of the 69 task-mean FVs reaches 90% energy @ 22
+PCs (PC1 = 40%); steering with plain top-22 projection FAILS: zs .589 train / .600 heldout
+vs full .748/.734; only 29/69 within .05; casualties = the low-coverage tasks predicted a
+priori (country-capital .86→.02 at 67% coverage; translation family →.14–.28). Fourth
+confirmation that variance-ranked ≠ steering-sufficient. Steering needs ~2× the 90%-variance
+rank of the task means, selected by the steering objective with all tasks represented.
+`FV_dimensionality_reduction/debugging/taskmean_k90_summary.csv`; basis+evals
+`artifacts/69_task_run/pc_taskmean_k90/`. Full write-up of the dimensionality arc published
+as Claude artifact "The Steering Subspace".
+
 **Promotion out of sandbox (2026-08-16, user decision):** the pruned-pool refit results are the
 first entry in NEW tracked bucket `results/69_task_run/` (constant TASK69_RUN_DIR in
 utils/paths.py) — sparse opt on the zero-shot train metric is now considered working, no longer
