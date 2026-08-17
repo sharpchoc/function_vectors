@@ -97,14 +97,14 @@ def fig1_definitions():
         ["dot_perhead", "dot product", "r ∝ Σₕ (WₒWᵥ)ᵀ hⱼ", "per head, then sum", "139"],
     ]
     fig = table_fig(
-        ["bracket", "objective (Lever 1)", "closed form", "aggregation (Lever 3)", "pooled 90%"],
-        rows, [1.45, 1.5, 1.8, 1.55, 0.8],
+        ["bracket", "objective (Lever 1)", "closed form", "aggregation (Lever 3)", "per-prompt 90%"],
+        rows, [1.45, 1.5, 1.8, 1.55, 1.0],
         "Four read-direction definitions",
         "GPT-J, 37-head canonical set, 69 tasks × 150 prompts. Lever 2 fixed at the τ-truncated "
         "pseudo-inverse (cumulative σ² ≥ 0.90); Lever 4 stored both ways.",
         note="Per-head brackets sum the unnormalised per-head solutions and normalise once at the end "
-             "(sub-choice 3′).  Pooled 90% = principal components needed for 90% of the variance of "
-             "the 8,250 per-prompt directions.",
+             "(sub-choice 3′).  Per-prompt 90% = principal components needed for 90% of the variance "
+             "of all 8,250 per-prompt read directions (55 train tasks × 150 prompts).",
         row_accents=[True, False, False, False], width=13.6,
         align=["left", "left", "left", "left", "right"])
     fig.savefig(OUT / "1_definitions.png", bbox_inches="tight")
@@ -125,22 +125,22 @@ def fig2_dimensionality():
                 # cosine_M__unit carries the retired literal-inverse rows too; keep rank90
                 if key and not a.startswith("literal"):
                     d[key] = r
-            rows.append([f"{b}", norm, d["task"]["n90_pcs"], d["pooled"]["n90_pcs"],
+            rows.append([f"{b}", norm, d["pooled"]["n90_pcs"],
                          f'{float(d["pooled"]["stable_rank_raw"]):.2f}',
                          f'{float(d["pooled"]["stable_rank_centered"]):.2f}',
                          d["within"]["n90_pcs"]])
             accents.append(b == "cosine_M")
     fig = table_fig(
-        ["bracket", "Lever 4", "task-level 90%", "pooled 90%", "stable rank (raw)",
-         "stable rank (centred)", "within-task 90%"],
-        rows, [1.3, 0.75, 1.05, 0.9, 1.2, 1.5, 1.05],
+        ["bracket", "Lever 4", "90% PCs (all prompts)", "stable rank (raw)",
+         "stable rank (centred)", "90% PCs (one task)"],
+        rows, [1.3, 0.8, 1.45, 1.2, 1.5, 1.35],
         "Dimensionality of each definition",
-        "Centred PCA, float64 SVD, 55 train tasks. Task-level = 55 per-task directions; "
-        "pooled = 8,250 per-prompt directions; within-task = median across tasks of 150 each.",
-        note="Lever 4 barely moves any column — the metric (Lever 1) dominates, aggregation "
+        "Centred PCA, float64 SVD. Every direction here is per-prompt: 8,250 of them, "
+        "55 train tasks × 150 prompts. The last column is one task's 150 prompts, median over tasks.",
+        note="Lever 4 barely moves any column — the objective (Lever 1) dominates, aggregation "
              "(Lever 3) is second.",
-        row_accents=accents, width=13.6,
-        align=["left", "left", "right", "right", "right", "right", "right"])
+        row_accents=accents, width=12.6,
+        align=["left", "left", "right", "right", "right", "right"])
     fig.savefig(OUT / "2_dimensionality.png", bbox_inches="tight")
     plt.close(fig)
 
@@ -183,8 +183,8 @@ def fig3_overlap():
     cb.ax.tick_params(labelsize=9, length=0, colors=MUTED)
     fig.text(0.03, 0.955, "Do the definitions find the same subspace?",
              fontsize=15, fontweight="bold", color=INK, ha="left", va="top")
-    fig.text(0.03, 0.905, "Pooled 90% principal subspaces of the unit-norm per-prompt directions, "
-             "55 train tasks.", fontsize=9.5, color=MUTED, ha="left", va="top")
+    fig.text(0.03, 0.905, "90% principal subspaces of the 8,250 unit-norm per-prompt read "
+             "directions, 55 train tasks.", fontsize=9.5, color=MUTED, ha="left", va="top")
     fig.text(0.03, 0.075,
              "Upper number: symmetric overlap, 1 = one subspace nested in the other.\n"
              "Lower number: variance-weighted containment of the row's subspace inside the column's.\n"
@@ -208,8 +208,8 @@ def fig4_containment():
          "worst single PC"],
         rows, [1.3, 0.8, 0.9, 1.1, 1.05, 1.1],
         "Does the magnitude choice change the subspace?",
-        "Variance-weighted containment of each Lever-4 variant's pooled 90% subspace inside the "
-        "other's.",
+        "Variance-weighted containment of each Lever-4 variant's 90% per-prompt subspace inside "
+        "the other's.",
         note="No. Both directions sit above 0.976, so the two variants essentially share one "
              "subspace — unit norm simply spreads the same variance over a few more components.",
         row_accents=accents, width=10.5,
