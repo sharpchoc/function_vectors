@@ -5776,3 +5776,23 @@ results/69_task_run/Read_direction_geometry/steering/.
 
 **Next:** if pursued, sweep SINGLE layers (7..20 one at a time) rather than stacking, and
 refine alpha near 1. **Blockers:** none; pod terminated.
+
+## 2026-08-17 — Read-dir steering: demo baselines (real 1-shot) added
+
+**Status:** done. Added --scaffold_mode real_1shot (genuine demo: input AND its correct
+label, anchor = first demo-label token) as the reference condition; same task/protocol,
+L7. Pod fv-steer4, terminated.
+
+**Baseline ladder for agent_noun_to_verb (150 prompts, T=1 exact match):**
+- dummy const scaffold 'Q: Input / A: Output' unsteered: 0.013
+- dummy sampled-input + '_' slot unsteered:              0.000
+- REAL 1-shot demo unsteered:                            0.233
+- real 10-shot demos unsteered (pc50_ablation baseline): 0.573
+Best steered results: blank-slot scaffold 0.153 (dot_perhead a=1, from 0.000); real 1-shot
+0.280 (cosine_perhead a=0.5, from 0.233 — i.e. +0.047, and steering HURTS at a>=2:
+0.140-0.220). So the read direction recovers ~2/3 of a real demo's worth of task signal
+when injected into an empty label slot, but adds little on top of a real demo and degrades
+it at higher alpha.
+Figure/CSV now overlay all 4 variants + the 10-shot reference line.
+
+**Next:** user call. **Blockers:** none; all pods terminated.

@@ -50,7 +50,8 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--task", type=str, default=None)
-    p.add_argument("--scaffold_mode", choices=("const", "sampled_underscore"), default="const")
+    p.add_argument("--scaffold_mode",
+                   choices=("const", "sampled_underscore", "real_1shot"), default="const")
     p.add_argument("--layers", type=str, default="7",
                    help="injection layers: single '7' or inclusive range '7-20'")
     p.add_argument("--prompts_root", type=Path,
@@ -95,6 +96,8 @@ def main():
     model, tok = load_model(args.model_dir)
     tok.padding_side = "left"
 
+    # real_1shot is a reference condition: a genuine demo (input AND its correct label);
+    # the anchor is the demo's first label token, so the same alpha sweep can run on top.
     anchor_str = " Output" if args.scaffold_mode == "const" else " _"
     anchor_id = tok(anchor_str).input_ids
     assert len(anchor_id) == 1
@@ -107,7 +110,13 @@ def main():
         q = str(rec["query"]["input"])
         gold = rec["query"]["output"]
         gold = str(gold[0] if isinstance(gold, list) else gold).strip()
-        if args.scaffold_mode == "const":
+        if args.scaffold_mode == "real_1shot":
+            demo_inp = str(rec["demos"][0]["input"])
+            demo_out = str(rec["demos"][0]["output"])
+            assert demo_inp != q
+            pre = f"Q: {demo_inp}\nA:"
+            prompt = f"{pre} {demo_out}\n\nQ: {q}\nA:"
+        elif args.scaffold_mode == "const":
             prompt = f"{SCAFFOLD}Q: {q}\nA:"
             pre = None
         else:
@@ -118,12 +127,15 @@ def main():
         ids = tok(prompt).input_ids
         # the scaffold's "\n\n" retokenizes in context (628 -> 198,198): anchor on the
         # injection token directly, then sanity-check its position.
-        inj_idx = ids.index(anchor_id)
-        if args.scaffold_mode == "const":
-            assert inj_idx == 6, f"' Output' not at expected scaffold position: {inj_idx}"
+        if args.scaffold_mode == "real_1shot":
+            inj_idx = len(tok(pre).input_ids)   # first token of the real demo label
         else:
-            assert inj_idx == len(tok(pre).input_ids), \
-                f"' _' not directly after the demo cue: {inj_idx}"
+            inj_idx = ids.index(anchor_id)
+            if args.scaffold_mode == "const":
+                assert inj_idx == 6, f"' Output' not at expected scaffold position: {inj_idx}"
+            else:
+                assert inj_idx == len(tok(pre).input_ids), \
+                    f"' _' not directly after the demo cue: {inj_idx}"
         items.append({"ids": ids, "inj_idx": inj_idx, "gold": gold,
                       "gold_len": len(tok(" " + gold).input_ids)})
 
