@@ -89,13 +89,6 @@ def main_avg(avg_from=6, avg_to=10, out_stem="heldout_r2_lines"):
                 solid_capstyle="round", zorder=4 if role == "cue" else 3)
 
     pk = int(np.argmax(avg["cue"]))
-    ax.scatter([layers[pk]], [avg["cue"][pk]], s=130, color=ROLE_COLOR["cue"], zorder=7)
-    ax.annotate(f"peaks · L{layers[pk]}  (cue)",
-                xy=(layers[pk], avg["cue"][pk]),
-                xytext=(layers[pk] + 3.0, avg["cue"][pk] + 0.07),
-                fontsize=18, fontweight="bold", color=ROLE_COLOR["cue"],
-                arrowprops=dict(arrowstyle="-", lw=1.4, color=ROLE_COLOR["cue"],
-                                shrinkB=8, connectionstyle="arc3,rad=0.25"))
 
     style_axes(ax, layers)
     ax.set_ylim(min(float(avg["input"].min()), 0.0) - 0.03, 0.78)
