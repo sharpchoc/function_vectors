@@ -6066,3 +6066,15 @@ Conclusion recorded: pooled X->FV maps are task-sample-limited between tasks (~5
 points) and within-task covariance does not transfer; PCA-90 rank reduction strictly hurts
 (pca90_summary.csv). New results files: error_decomposition.txt, pca90_summary.csv in
 results/69_task_run/labeltoken_fv_ridge/.
+
+### Addendum 3 — per-task R^2 bar chart (split-pool denominator)
+
+`src/eval_scripts/plot_labeltoken_ridge_r2_by_task.py`: per-task R^2 for the avg-of-10 X
+ridge (alpha=1e3), denominator variance vs the SPLIT-POOL mean (train pool for train tasks,
+heldout pool for heldout) so between-task placement is credited per task. Train mean 0.627,
+heldout mean 0.207. Heldout is bimodal: morphology/translation tasks 0.23-0.45
+(smaller_of_pair 0.45, gerund_to_base 0.36, past_to_base 0.34, word_polarity 0.32,
+ends_with_ing 0.69 — the best heldout task, sitting mid-pack among train tasks) vs
+classification/symbolic tasks ~0 or negative (pos_label -0.09, ag_news -0.08,
+uppercase_word 0.01, initials_two_words 0.03, first_digit 0.06) — matching the centroid
+cos-similarity pattern in error_decomposition.txt. Outputs: r2_by_task.{png,csv}.
