@@ -6129,3 +6129,17 @@ Outputs: results/69_task_run/labeltoken_fv_ridge/layer_sweep/ (r2_by_layer.png, 
 fit jsons in artifacts/69_task_run/labeltoken_fv_ridge_layer_sweep/.
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+
+### Addendum — layer-sweep maps re-scored against the TASK FV target
+
+Same fitted maps (per-layer CV alphas), predictions scored against each task's FV (mean of
+its 150 per-prompt FVs), baseline/denominator = split-average FV
+(`src/eval_scripts/ridge_layer_sweep_taskfv_r2.py`; per-prompt and centroid granularities).
+- Train tasks (in-sample): per-prompt 0.95-0.97, centroid ~1.00 at every layer — the map
+  hits train centroids essentially exactly (memorization, as established).
+- Held-out tasks: per-prompt 0.59 (L5) rising to 0.653 (L12-L13); centroid 0.62 -> 0.692
+  (best L13). Same gentle depth trend as before.
+So against the task-FV target the held-out numbers are ~0.65-0.69 rather than 0.46-0.50:
+most of the previously "unexplained" variance was within-task target noise, and ~2/3 of
+between-task FV structure transfers to unseen tasks. Outputs: taskfv_r2.{csv,png} in
+results/69_task_run/labeltoken_fv_ridge/layer_sweep/, taskfv_r2.json in artifacts.
