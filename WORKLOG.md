@@ -6200,3 +6200,10 @@ ICL example with input/cue/target rows (target = last label token), white separa
 bracket labels, 6 examples shown (7-10 stay in r2_grid.csv), colour scale fitted to the data
 (-0.30..0.70, nothing reaches 0.8), cyan box over examples 1-4 marking the sawtooth, title
 "Where the function vector is linearly readable".
+
+### Addendum — poster figure v2 (user revisions)
+
+4 ICL examples + the query block (was 6); sawtooth marked by a VERTICAL cyan box spanning
+layers 5-10 across every example (the band where the cue-below-target tooth is clearest),
+label moved inside the box over the dark example-1 rows so it no longer collides with the
+title. Colour range now -0.30..0.65, fitted to the drawn subset.

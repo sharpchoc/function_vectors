@@ -38,7 +38,7 @@ OUT = TASK69_RUN_DIR / "token_layer_regressions" / "poster_visuals"
 ROLE_ROWS = ("input", "cue", "target")
 
 
-def main(n_shots=6, box_from=1, box_to=4):
+def main(n_shots=4, box_l0=5, box_l1=10):
     layers = sorted(int(f.stem[5:]) for f in AR.glob("layer*.json")
                     if "_" not in f.stem[5:])
     lab = {l: json.load(open(AR / f"layer{l}.json"))["results"] for l in layers}
@@ -98,17 +98,16 @@ def main(n_shots=6, box_from=1, box_to=4):
                     xycoords=("data", "data"), annotation_clip=False,
                     arrowprops=dict(arrowstyle="-", lw=2.2, color="0.25"))
 
-    # Sawtooth highlight: within the early examples the cue row sits BELOW its target row
-    # (ex1 -0.02 vs 0.46, ex2 0.35 vs 0.53), the gap closing with each further example and
-    # inverting by example 10. Box the early examples where the tooth is widest.
-    saw_rows = [i for i, b in enumerate(block_of)
-                if isinstance(b, int) and box_from <= b <= box_to]
-    if saw_rows:
-        ax.add_patch(Rectangle((-0.5, min(saw_rows) - 0.5),
-                               len(layers), max(saw_rows) - min(saw_rows) + 1,
-                               fill=False, edgecolor="#00e5ff", lw=3.2, zorder=5))
-        ax.text(len(layers) - 0.3, (min(saw_rows) + max(saw_rows)) / 2, " sawtooth",
-                color="#00b8d4", fontsize=15, fontweight="bold", va="center", ha="left")
+    # Sawtooth highlight: a VERTICAL band over layers box_l0..box_l1, spanning every
+    # example, where the cue-below-target tooth is clearest (the cue row only catches its
+    # target row after several examples: ex1 -0.02 vs 0.46, ex2 0.35 vs 0.53 at L6).
+    x0 = layers.index(box_l0) - 0.5
+    x1 = layers.index(box_l1) + 0.5
+    ax.add_patch(Rectangle((x0, -0.5), x1 - x0, len(rows),
+                           fill=False, edgecolor="#00e5ff", lw=3.4, zorder=5))
+    # label inside the box over the dark example-1 input/cue rows (avoids the title)
+    ax.text((x0 + x1) / 2, 0.5, "sawtooth", color="#00e5ff", fontsize=16,
+            fontweight="bold", ha="center", va="center", zorder=6)
 
     cb = fig.colorbar(im, ax=ax, pad=0.13, shrink=0.85)
     cb.set_label("held-out $R^2$", fontsize=15)
