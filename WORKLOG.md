@@ -6143,3 +6143,37 @@ So against the task-FV target the held-out numbers are ~0.65-0.69 rather than 0.
 most of the previously "unexplained" variance was within-task target noise, and ~2/3 of
 between-task FV structure transfers to unseen tasks. Outputs: taskfv_r2.{csv,png} in
 results/69_task_run/labeltoken_fv_ridge/layer_sweep/, taskfv_r2.json in artifacts.
+
+## 2026-08-18 — FV_location analysis for the best steering vector (L6 mean label-token)
+
+**Status:** done. Repeated the FV_location layer x token-position projection analysis with the
+vector that steers best at the label slot (raw_mean_steering peak 0.126 at L6-L7):
+v_hat_A = m_A(L6)/||m_A(L6)|| from label_resid_means. New capture
+`src/eval_scripts/capture_69_labelmean_location.py` (reuses COLUMNS/token_columns from
+capture_69_fv_location.py verbatim; those three location scripts were cherry-picked into this
+worktree from 2cdaf01 since they lived on a sibling branch), plotted via
+`plot_69_fv_location.py --space labelmean` (new SPACES key). 12 pods (fv-lml-*, ids in my own
+job dir per the shared-tmp lesson), all terminated.
+
+**Findings (69-task x 150-prompt mean):**
+- Cosine peaks exactly where the vector was defined — demo LABEL tokens at L6 (0.805) — and
+  the label columns dominate every other position at every layer (L6: label 0.805 vs input
+  0.569, cue 0.569, query cue 0.593). Partly tautological by construction, but the margin
+  (+0.24 over other positions) shows the direction is genuinely label-token-specific rather
+  than a generic residual-stream direction.
+- Depth profile of cosine is a clean band peaking at L6 and decaying monotonically:
+  label 0.592 (L0) -> 0.642 (L3) -> 0.805 (L6) -> 0.658 (L9) -> 0.512 (L12) -> 0.202 (L27).
+  So presence tracks the steering curve on the way up (both peak L6) but decays much more
+  slowly than steering efficacy, which is ~dead by L12.
+- Raw dot behaves differently from cosine because residual norms grow with depth: dot keeps
+  rising to L27 at demo labels (60.8) and L23 at inputs (41.1), while query_cue dot peaks at
+  L10 (34.6). The query-cue peak at L10 is notable — that is where the FV heads read — and is
+  the one position whose projection peaks mid-network rather than at the end.
+- All positions are positively aligned (no negative cells anywhere), consistent with a large
+  shared component in the label-token mean; the earlier shared-mean steering control (flat
+  <=0.013) shows that shared part is not what makes it steer.
+Outputs: results/69_task_run/FV_location/label_mean_L6_presence/ (fv_location_heatmap.png,
+summary_cos.csv, summary_dot.csv, fv_location.npz); per-task npz in
+artifacts/69_task_run/labelmean_location/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
