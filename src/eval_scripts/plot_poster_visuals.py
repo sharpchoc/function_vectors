@@ -103,102 +103,106 @@ def headline_bars():
           f"real6 {real:.4f} | ratio {steer/real:.3f}")
 
 
-def method_diagram():
-    """Schematic of the intervention on a 1-shot dummy prompt."""
-    fig, ax = plt.subplots(figsize=(10.6, 5.0), dpi=200)
-    fig.patch.set_facecolor(SURFACE)
-    ax.set_facecolor(SURFACE)
-    ax.set_xlim(0, 10.6)
-    ax.set_ylim(0, 5.0)
-    ax.axis("off")
 
-    toks = ["Q:", "climber", "\\n", "A:", "_", "\\n\\n", "Q:", "compiler", "\\n", "A:"]
-    slot = 4          # the '_' token
-    x0, w, gap, ytok = 0.45, 0.86, 0.1, 0.55
+
+def _token_row(ax, toks, y, slot, steered, centers_out=None):
+    """One rollout: the prompt tokens plus the answer the model gives.
+    steered=True colours every token from the intervened slot onward."""
+    x0, w, gap, h = 0.45, 0.86, 0.1, 0.5
     centers = []
     for i, t in enumerate(toks):
         x = x0 + i * (w + gap)
         centers.append(x + w / 2)
-        hot = (i == slot)
-        ax.add_patch(FancyBboxPatch((x, ytok), w, 0.5,
+        touched = steered and i >= slot
+        ec = BLUE if touched else GRID
+        fc = "#eaf2fd" if touched else "#ffffff"
+        tc = BLUE if touched else INK2
+        ax.add_patch(FancyBboxPatch((x, y), w, h,
                                     boxstyle="round,pad=0.02,rounding_size=0.08",
-                                    linewidth=1.6 if hot else 1.0,
-                                    edgecolor=BLUE if hot else GRID,
-                                    facecolor="#eaf2fd" if hot else "#ffffff", zorder=3))
-        ax.text(x + w / 2, ytok + 0.25, t, ha="center", va="center",
-                fontsize=11.5 if hot else 10.5, color=BLUE if hot else INK2,
-                fontweight="bold" if hot else "normal", zorder=4)
-    ax.text(x0, ytok - 0.26, "prompt tokens  (1-shot, dummy '_' label)",
-            fontsize=10, color=INK2, ha="left", va="top")
-    # make the task explicit — the prompt itself never reveals it (placed under the title)
-    ax.text(0.35, 4.12, "task:  agent noun  →  verb", fontsize=13,
-            color=INK, fontweight="bold", ha="left", va="center")
-    ax.text(0.35, 3.80, "a real demo would read  'climber → climb'  —  here the label "
-            "slot is a bare '_'", fontsize=10.5, color=INK2, ha="left", va="center")
-
-    # layer stack over the '_' column
-    lx, lw_ = centers[slot] - 0.55, 1.1
-    bands = [("L0-L5", 1.35, "#f2f1ee"), ("L6", 2.05, "#eaf2fd"), ("L7-L27", 2.75, "#f2f1ee")]
-    for name, y, fc in bands:
-        hot = name == "L6"
-        ax.add_patch(FancyBboxPatch((lx, y), lw_, 0.58,
-                                    boxstyle="round,pad=0.02,rounding_size=0.08",
-                                    linewidth=1.8 if hot else 1.0,
-                                    edgecolor=BLUE if hot else GRID, facecolor=fc, zorder=3))
-        ax.text(lx + lw_ / 2, y + 0.29, name, ha="center", va="center",
-                fontsize=11 if hot else 10, color=BLUE if hot else INK2,
-                fontweight="bold" if hot else "normal", zorder=4)
-    ax.add_patch(FancyArrowPatch((centers[slot], ytok + 0.52), (centers[slot], 1.33),
-                                 arrowstyle="-|>", mutation_scale=13, lw=1.3,
-                                 color=INK2, zorder=2))
-    ax.add_patch(FancyArrowPatch((centers[slot], 1.95), (centers[slot], 2.03),
-                                 arrowstyle="-|>", mutation_scale=13, lw=1.3,
-                                 color=INK2, zorder=2))
-    ax.add_patch(FancyArrowPatch((centers[slot], 2.65), (centers[slot], 2.73),
-                                 arrowstyle="-|>", mutation_scale=13, lw=1.3,
-                                 color=INK2, zorder=2))
-
-    # the injected vector, entering L6 from the left
-    bx, by = 0.35, 2.02
-    ax.add_patch(FancyBboxPatch((bx, by), 3.05, 0.62,
+                                    linewidth=1.5 if touched else 1.0,
+                                    edgecolor=ec, facecolor=fc, zorder=3))
+        ax.text(x + w / 2, y + h / 2, t, ha="center", va="center",
+                fontsize=11 if touched else 10.5, color=tc,
+                fontweight="bold" if (touched and i == slot) else "normal", zorder=4)
+    # the answer
+    ax_x = x0 + len(toks) * (w + gap) + 0.12
+    col = BLUE if steered else "#9c9b96"
+    ax.add_patch(FancyBboxPatch((ax_x, y - 0.03), 1.9, h + 0.06,
                                 boxstyle="round,pad=0.03,rounding_size=0.1",
-                                linewidth=1.6, edgecolor=BLUE, facecolor="#ffffff", zorder=3))
-    ax.text(bx + 1.52, by + 0.31, r"$+\ \alpha\; \bar{h}_{\rm task}$", ha="center",
-            va="center", fontsize=15, color=BLUE, fontweight="bold", zorder=4)
-    ax.add_patch(FancyArrowPatch((bx + 3.08, by + 0.31), (lx - 0.04, by + 0.31),
-                                 arrowstyle="-|>", mutation_scale=15, lw=2.0,
+                                linewidth=1.8, edgecolor=col,
+                                facecolor="#eaf2fd" if steered else "#f2f1ee", zorder=3))
+    ax.text(ax_x + 0.95, y + h / 2, "'compile'" if steered else "wrong answer",
+            ha="center", va="center", fontsize=13 if steered else 11.5,
+            color=col, fontweight="bold", zorder=4)
+    if centers_out is not None:
+        centers_out.extend(centers)
+    return centers
+
+
+def method_diagram():
+    """Two rollouts of the same prompt — with and without the read feature added at L6."""
+    fig, ax = plt.subplots(figsize=(12.6, 6.9), dpi=200)
+    fig.patch.set_facecolor(SURFACE)
+    ax.set_facecolor(SURFACE)
+    ax.set_xlim(0, 12.6)
+    ax.set_ylim(0, 6.9)
+    ax.axis("off")
+
+    toks = ["Q:", "climber", "\\n", "A:", "_", "\\n\\n", "Q:", "compiler", "\\n", "A:"]
+    slot = 4
+    y_top, y_bot = 5.28, 0.42
+
+    ax.text(0.35, 6.62, "Read feature intervention", fontsize=18, fontweight="bold",
+            color=INK, ha="left", va="center")
+    ax.text(0.35, 6.24, "task:  agent noun  →  verb          "
+            "a real demo would read  'climber → climb'  —  here the label slot is a bare '_'",
+            fontsize=10.5, color=INK2, ha="left", va="center")
+
+    centers = _token_row(ax, toks, y_top, slot, steered=True)
+    _token_row(ax, toks, y_bot, slot, steered=False)
+    ax.text(0.45, y_top + 0.66, "with the read feature added", fontsize=11.5,
+            color=BLUE, fontweight="bold", ha="left", va="center")
+    ax.text(0.45, y_bot - 0.26, "without it  —  the same prompt, unsteered",
+            fontsize=11.5, color=INK2, ha="left", va="top")
+
+    # the same token slot in both rollouts
+    ax.plot([centers[slot], centers[slot]], [y_bot + 0.52, y_top - 0.04],
+            color=GRID, lw=1.0, ls=(0, (2, 3)), zorder=1)
+
+    # layer stack at that slot: L6 carries the added feature, everything above it inherits it
+    lx, lw_ = centers[slot] - 0.62, 1.24
+    bands = [("L0-L5", 1.32, "#f2f1ee", GRID, INK2, 1.0),
+             ("L6", 2.16, "#cfe2fa", BLUE, BLUE, 2.2),
+             ("L7-L27", 3.00, "#eaf2fd", BLUE, BLUE, 1.4)]
+    for name, y, fc, ec, tc, lwid in bands:
+        ax.add_patch(FancyBboxPatch((lx, y), lw_, 0.66,
+                                    boxstyle="round,pad=0.02,rounding_size=0.08",
+                                    linewidth=lwid, edgecolor=ec, facecolor=fc, zorder=3))
+        ax.text(lx + lw_ / 2, y + 0.33, name, ha="center", va="center",
+                fontsize=11.5 if name != "L0-L5" else 10.5, color=tc,
+                fontweight="bold" if name == "L6" else "normal", zorder=4)
+    ax.text(lx + lw_ + 0.22, 3.33, "every later layer at this slot\nnow carries it",
+            fontsize=10, color=BLUE, ha="left", va="center")
+    ax.text(lx + lw_ + 0.22, 1.65, "unchanged", fontsize=10, color=INK2,
+            ha="left", va="center")
+
+    # the injected vector
+    bx, by = 0.35, 2.14
+    ax.add_patch(FancyBboxPatch((bx, by), 3.0, 0.70,
+                                boxstyle="round,pad=0.03,rounding_size=0.1",
+                                linewidth=1.8, edgecolor=BLUE, facecolor="#ffffff",
+                                zorder=3))
+    ax.text(bx + 1.5, by + 0.35, r"$+\ \alpha\; \bar{h}_{\rm task}$", ha="center",
+            va="center", fontsize=16, color=BLUE, fontweight="bold", zorder=4)
+    ax.add_patch(FancyArrowPatch((bx + 3.03, by + 0.35), (lx - 0.04, by + 0.35),
+                                 arrowstyle="-|>", mutation_scale=16, lw=2.2,
                                  color=BLUE, zorder=4))
-    ax.text(bx, by - 0.1, "prompt-agnostic task mean \"read feature\"",
+    ax.text(bx, by - 0.12, "prompt-agnostic task mean \"read feature\"",
             fontsize=10.5, color=INK2, ha="left", va="top")
 
-    # the edited stream propagates forward and changes what the FINAL token predicts
-    px, py, pw = centers[-1] - 1.62, 1.98, 1.95
-    ax.add_patch(FancyArrowPatch((lx + lw_, 3.04), (px - 0.03, py + 0.28),
-                                 arrowstyle="-|>", mutation_scale=13, lw=1.3,
-                                 linestyle=(0, (5, 3)), color=INK2, zorder=2,
-                                 connectionstyle="arc3,rad=0.22"))
-    ax.text(centers[slot] + 1.5, 2.92, "attended by later tokens", fontsize=9.5,
-            color=INK2, ha="left", va="center", style="italic")
-    # prediction, read out at the query's final cue token
-    ax.add_patch(FancyBboxPatch((px, py), pw, 0.56,
-                                boxstyle="round,pad=0.03,rounding_size=0.1",
-                                linewidth=1.6, edgecolor=BLUE, facecolor="#eaf2fd",
-                                zorder=3))
-    ax.text(px + pw / 2, py + 0.28, "→  'compile'", ha="center", va="center", fontsize=13.5,
-            color=BLUE, fontweight="bold", zorder=4)
-    ax.text(px + pw / 2, py - 0.08, "prediction at the query's 'A:' token\n"
-            "— the verb for 'compiler'", fontsize=9.5, color=INK2,
-            ha="center", va="top")
-    ax.add_patch(FancyArrowPatch((px + pw / 2, py - 0.62), (centers[-1], ytok + 0.54),
-                                 arrowstyle="-|>", mutation_scale=11, lw=1.0,
-                                 color=GRID, zorder=1))
-
-    ax.text(0.35, 4.6, "Read feature intervention", fontsize=18, fontweight="bold",
-            color=INK, ha="left", va="center")
     fig.tight_layout()
     fig.savefig(OUT / "method_diagram.png", bbox_inches="tight", facecolor=SURFACE)
     print(f"wrote {OUT}")
-
 
 if __name__ == "__main__":
     headline_bars()

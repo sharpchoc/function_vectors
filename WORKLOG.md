@@ -6096,3 +6096,12 @@ heading is removed (poster text covers it); the task is stated explicitly ("agen
 verb", with "a real demo would read 'climber -> climb' — here the label slot is a bare '_'")
 so the 'compile' prediction is interpretable; the injected vector is labelled
 "prompt-agnostic task mean 'read feature'".
+
+### Addendum — method diagram rebuilt as a two-rollout comparison
+
+Per user: removed the implied causal chain (L6 -> L7-27 -> output). The diagram now shows the
+SAME prompt twice — top row steered (every token from the '_' slot onward tinted blue, answer
+'compile'), bottom row unsteered (all grey, answer "wrong answer") — with the layer stack
+between them at the '_' column: L0-L5 grey/"unchanged", L6 solid blue (the injection site),
+L7-L27 blue-shaded/"every later layer at this slot now carries it". A dotted guide marks the
+same token slot across both rollouts; no arrows imply a forward path.
