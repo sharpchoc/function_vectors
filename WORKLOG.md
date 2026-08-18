@@ -6088,3 +6088,11 @@ so the relief rule applies and every bar carries a visible value label.
 **Terminology note for the poster:** the injected object is the task's MEAN LABEL-TOKEN
 ACTIVATION (raw residual mean), not a "read direction" in the glossary sense (no
 pseudo-inverse). Figures are labelled accordingly.
+
+### Addendum — method diagram retitled "Read feature intervention"
+
+Per user: title is now "Read feature intervention"; the explanatory paragraph under the
+heading is removed (poster text covers it); the task is stated explicitly ("agent noun ->
+verb", with "a real demo would read 'climber -> climb' — here the label slot is a bare '_'")
+so the 'compile' prediction is interpretable; the injected vector is labelled
+"prompt-agnostic task mean 'read feature'".

@@ -128,8 +128,13 @@ def method_diagram():
         ax.text(x + w / 2, ytok + 0.25, t, ha="center", va="center",
                 fontsize=11.5 if hot else 10.5, color=BLUE if hot else INK2,
                 fontweight="bold" if hot else "normal", zorder=4)
-    ax.text(x0, ytok - 0.28, "prompt tokens  (1-shot, dummy '_' label)",
+    ax.text(x0, ytok - 0.26, "prompt tokens  (1-shot, dummy '_' label)",
             fontsize=10, color=INK2, ha="left", va="top")
+    # make the task explicit — the prompt itself never reveals it (placed under the title)
+    ax.text(0.35, 4.12, "task:  agent noun  →  verb", fontsize=13,
+            color=INK, fontweight="bold", ha="left", va="center")
+    ax.text(0.35, 3.80, "a real demo would read  'climber → climb'  —  here the label "
+            "slot is a bare '_'", fontsize=10.5, color=INK2, ha="left", va="center")
 
     # layer stack over the '_' column
     lx, lw_ = centers[slot] - 0.55, 1.1
@@ -163,9 +168,8 @@ def method_diagram():
     ax.add_patch(FancyArrowPatch((bx + 3.08, by + 0.31), (lx - 0.04, by + 0.31),
                                  arrowstyle="-|>", mutation_scale=15, lw=2.0,
                                  color=BLUE, zorder=4))
-    ax.text(bx, by - 0.1,
-            "task's mean L6 activation at the label\ntoken of real 10-shot prompts",
-            fontsize=9.5, color=INK2, ha="left", va="top")
+    ax.text(bx, by - 0.1, "prompt-agnostic task mean \"read feature\"",
+            fontsize=10.5, color=INK2, ha="left", va="top")
 
     # the edited stream propagates forward and changes what the FINAL token predicts
     px, py, pw = centers[-1] - 1.62, 1.98, 1.95
@@ -183,19 +187,14 @@ def method_diagram():
     ax.text(px + pw / 2, py + 0.28, "→  'compile'", ha="center", va="center", fontsize=13.5,
             color=BLUE, fontweight="bold", zorder=4)
     ax.text(px + pw / 2, py - 0.08, "prediction at the query's 'A:' token\n"
-            "— the task is now performed", fontsize=9.5, color=INK2,
+            "— the verb for 'compiler'", fontsize=9.5, color=INK2,
             ha="center", va="top")
     ax.add_patch(FancyArrowPatch((px + pw / 2, py - 0.62), (centers[-1], ytok + 0.54),
                                  arrowstyle="-|>", mutation_scale=11, lw=1.0,
                                  color=GRID, zorder=1))
 
-    ax.text(0.35, 4.55, "How the intervention works", fontsize=16, fontweight="bold",
+    ax.text(0.35, 4.6, "Read feature intervention", fontsize=18, fontweight="bold",
             color=INK, ha="left", va="center")
-    ax.text(0.35, 4.15,
-            "The prompt shows the task's format but no example of the mapping — its label "
-            "slot is a bare '_'.\nAt layer 6 we add the task's mean label-token activation "
-            "into that slot's residual stream; nothing else changes.",
-            fontsize=10.5, color=INK2, ha="left", va="center")
     fig.tight_layout()
     fig.savefig(OUT / "method_diagram.png", bbox_inches="tight", facecolor=SURFACE)
     print(f"wrote {OUT}")
