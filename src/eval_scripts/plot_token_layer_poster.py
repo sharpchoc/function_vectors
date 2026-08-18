@@ -38,7 +38,7 @@ OUT = TASK69_RUN_DIR / "token_layer_regressions" / "poster_visuals"
 ROLE_ROWS = ("input", "cue", "target")
 
 
-def main(n_shots=4, box_l0=5, box_l1=10):
+def main(n_shots=4, box_l0=6, box_l1=9):
     layers = sorted(int(f.stem[5:]) for f in AR.glob("layer*.json")
                     if "_" not in f.stem[5:])
     lab = {l: json.load(open(AR / f"layer{l}.json"))["results"] for l in layers}
@@ -98,12 +98,15 @@ def main(n_shots=4, box_l0=5, box_l1=10):
                     xycoords=("data", "data"), annotation_clip=False,
                     arrowprops=dict(arrowstyle="-", lw=2.2, color="0.25"))
 
-    # Sawtooth highlight: a VERTICAL band over layers box_l0..box_l1, spanning every
-    # example, where the cue-below-target tooth is clearest (the cue row only catches its
-    # target row after several examples: ex1 -0.02 vs 0.46, ex2 0.35 vs 0.53 at L6).
+    # Sawtooth highlight: a VERTICAL band over layers box_l0..box_l1, spanning the ICL
+    # example blocks only (the query block has no target row, so it carries no tooth).
+    # This is where the cue-below-target tooth is clearest: the cue row only catches its
+    # target row after several examples (ex1 -0.02 vs 0.46, ex2 0.35 vs 0.53 at L6).
     x0 = layers.index(box_l0) - 0.5
     x1 = layers.index(box_l1) + 0.5
-    ax.add_patch(Rectangle((x0, -0.5), x1 - x0, len(rows),
+    ex_rows = [i for i, b in enumerate(block_of) if isinstance(b, int)]
+    y0, y1 = min(ex_rows) - 0.5, max(ex_rows) + 0.5
+    ax.add_patch(Rectangle((x0, y0), x1 - x0, y1 - y0,
                            fill=False, edgecolor="#00e5ff", lw=3.4, zorder=5))
     # label inside the box over the dark example-1 input/cue rows (avoids the title)
     ax.text((x0 + x1) / 2, 0.5, "sawtooth", color="#00e5ff", fontsize=16,

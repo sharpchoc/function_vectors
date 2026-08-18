@@ -6207,3 +6207,8 @@ bracket labels, 6 examples shown (7-10 stay in r2_grid.csv), colour scale fitted
 layers 5-10 across every example (the band where the cue-below-target tooth is clearest),
 label moved inside the box over the dark example-1 rows so it no longer collides with the
 title. Colour range now -0.30..0.65, fitted to the drawn subset.
+
+### Addendum — poster figure v3
+
+Sawtooth box narrowed to layers 6-9 and clipped to the four ICL example blocks only (the
+query block has no target row, so it carries no tooth).
