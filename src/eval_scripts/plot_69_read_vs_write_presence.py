@@ -47,10 +47,10 @@ WRITE_DIR = "direct_FV_presence"
 #                               actually steers at L6); a raw mean, so it carries the large
 #                               shared residual-stream component and reads high everywhere.
 READ_SOURCES = {
-    "read_dir": ("read_dir_presence", "read  (read direction r_A = M⁺v_A)"),
-    "label_mean": ("label_mean_L6_presence", "read  (L6 label-token mean m_A(L6))"),
+    "read_dir": ("read_dir_presence", "read"),
+    "label_mean": ("label_mean_L6_presence", "read"),
 }
-WRITE_LABEL = "write  (function vector v_A)"
+WRITE_LABEL = "write"
 
 
 def parse_args():
@@ -146,7 +146,7 @@ def main():
         fig, ax = plt.subplots(figsize=(11.5, 6.8))
         fig.subplots_adjust(left=0.085, right=0.912 if args.layout == "dual" else 0.975,
                             top=0.885,
-                            bottom=0.155 if args.layout == "dual" else 0.115)
+                            bottom=0.115)
         if args.layout == "dual":
             axw = ax.twinx()
             Lr, yr = draw_family(ax, profs, read_dir_name, n_layers, "--", "label")
@@ -180,11 +180,6 @@ def main():
         leg_ax = ax
 
     fig.text(0.085, 0.962, title, fontsize=19, color=INK, fontweight="bold", va="top")
-    if args.layout == "dual":
-        # the caption is gone for poster density, but a dual scale cannot go unqualified
-        fig.text(0.085, 0.015, "Separate scales: read left, write right — both are cosines, "
-                 "so vertical ordering and crossings are artefacts; only peak locations "
-                 "are comparable.", fontsize=9.5, color=INK_MUTED, va="bottom")
 
     cat_handles = [Line2D([], [], color=CAT[k], lw=3.2) for k in ("cue", "label", "input")]
     fam_handles = [Line2D([], [], color=INK_MUTED, lw=2.4, ls=ls) for ls in ("-", "--")]
