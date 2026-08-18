@@ -38,6 +38,8 @@ onto the injection layer: peak cos 0.71 at L9 query cue (direct space: 0.35 at L
 buildup persists (d1 cue 0.40 → d10 cue 0.71 at L9); at L9 labels are almost as aligned as
 cues (0.64 vs 0.65) with inputs at 0.43. Raw-dot panel still norm-dominated late.
 
+**Poster visuals (2026-08-18):** `plot_69_fv_location_poster.py` (generalised: --in_dir any presence folder, --metric cos|dot, --band, --band_note) renders poster figures — cosine-only for `direct_FV_presence/poster_visuals/` (user spec) and BOTH metrics for `label_mean_L6_presence/poster_visuals/` (the L6 raw-mean label-token steering vector; its cos+dot heatmaps were already built by the ridge-layer-sweep session). Fitted single-hue sequential scale instead of the symmetric diverging one, token-type category strip, and a per-token-type layer-profile panel; palette + rules per the dataviz skill (validator could not be run - no node on this pod - so the reference palette fixed order is used unchanged). FV cos peaks 0.35 @L13 query cue; label-mean cos peaks 0.83 @L6 demo labels (label 0.805 vs cue/input 0.569), projection peaks late (62 @L27) since residual norms grow with depth.
+
 **presence_vs_accuracy (2026-08-17, same stream; pods fv-pva-{1..8} RTX PRO 4500, ~20 min
 ≈$2, ALL TERMINATED):** user question — does FV presence in the residual stream predict
 a-priori that the model will do the task well? Per task and n in 0..6: the 150 fixed 10-shot

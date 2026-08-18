@@ -1,19 +1,23 @@
 #!/usr/bin/env python
-"""Poster visual for direct_FV_presence: cosine only, fitted sequential scale.
+"""Poster visuals for the FV_location presence studies (direct_FV_presence,
+label_mean_L6_presence, ...): one metric per figure, fitted sequential scale.
 
-Message the figure must carry: the task FV is most present in the MID-DEPTH layers,
-concentrated at the cue ("A:") tokens and partially at the demo label/target tokens,
-while input tokens stay low throughout.
+What a figure must carry: WHERE in the residual stream the reference direction is present —
+which layer band, and which token type (input / cue "A:" / label-target).
 
-Left panel: layer x token-position heatmap of cos(z_l, v_A), single-hue sequential ramp
-(dataviz reference blue 100->700) with the scale fitted to the data range instead of the
-symmetric diverging scale of the analysis figure. A category strip under the x-axis marks
-input / cue / label so the repeating triples are readable without dense tick labels. Right
-panel: the same data collapsed to one line per token category, sharing the layer axis —
-this is what makes the "cue >> label > input, peaking mid-depth" ordering explicit.
+Left panel: layer x token-position heatmap, single-hue sequential ramp (dataviz reference
+blue 100->700) with the scale fitted to the data range instead of the symmetric diverging
+scale of the analysis figures. A category strip under the x-axis marks input / cue / label
+so the repeating triples read without dense tick labels. Right panel: the same data
+collapsed to one line per token category, sharing the layer axis — this is what makes the
+ordering between token types explicit at poster distance.
 
-Reads results/69_task_run/FV_location/direct_FV_presence/fv_location.npz; writes
-poster_visuals/fv_presence_poster.{png,pdf} + the plotted profile as csv.
+Examples:
+  # FV direction, cosine only (the original poster)
+  plot_69_fv_location_poster.py --in_dir .../direct_FV_presence --metric cos --band 9 15
+  # L6 raw-mean label-token steering vector, both metrics
+  plot_69_fv_location_poster.py --in_dir .../label_mean_L6_presence --metric cos --band 5 8
+  plot_69_fv_location_poster.py --in_dir .../label_mean_L6_presence --metric dot --band 5 8
 """
 import argparse
 import sys
@@ -37,7 +41,28 @@ BLUE_RAMP = ["#cde2fb", "#b7d3f6", "#9ec5f4", "#86b6ef", "#6da7ec", "#5598e7", "
              "#2a78d6", "#256abf", "#1c5cab", "#184f95", "#104281", "#0d366b"]
 CAT = {"cue": "#2a78d6", "label": "#eb6834", "input": "#1baf7a"}
 INK, INK_MUTED = "#1a1a19", "#6b6b68"
-BAND = (9, 15)          # the mid-depth band the poster calls out
+
+# per-study wording; keyed by the presence folder name
+STUDIES = {
+    "direct_FV_presence": dict(
+        vec="task function vector",
+        title="Where the function vector lives in the residual stream",
+        band=(9, 15)),
+    "label_mean_L6_presence": dict(
+        vec="L6 label-token task mean  m_A(L6)",
+        title="Where the best steering vector lives in the residual stream",
+        band=(5, 8)),
+    "read_dir_presence": dict(
+        vec="task read direction",
+        title="Where the read direction lives in the residual stream",
+        band=(6, 16)),
+}
+METRICS = {
+    "cos": dict(sym="cos(z, v)", axis="mean cos by token type",
+                blurb="cos(residual stream, {vec})"),
+    "dot": dict(sym="z · v / ||v||", axis="mean projection by token type",
+                blurb="projection magnitude of the residual stream onto {vec}"),
+}
 
 
 def parse_args():
@@ -45,6 +70,12 @@ def parse_args():
     p.add_argument("--in_dir", type=Path,
                    default=TASK69_RUN_DIR / "FV_location" / "direct_FV_presence")
     p.add_argument("--out_dir", type=Path, default=None)
+    p.add_argument("--metric", choices=sorted(METRICS), default="cos")
+    p.add_argument("--band", type=int, nargs=2, default=None,
+                   help="layer band to call out; default from the study table")
+    p.add_argument("--title", type=str, default=None)
+    p.add_argument("--band_note", type=str, default=None,
+                   help="extra text after the band label, e.g. 'steering peak L6-L7'")
     args = p.parse_args()
     if args.out_dir is None:
         args.out_dir = args.in_dir / "poster_visuals"
@@ -53,9 +84,16 @@ def parse_args():
 
 def main():
     args = parse_args()
+    study = STUDIES.get(args.in_dir.name, dict(vec="reference direction",
+                                               title="Presence in the residual stream",
+                                               band=(9, 15)))
+    band = tuple(args.band) if args.band else study["band"]
+    title = args.title or study["title"]
+    met = METRICS[args.metric]
+
     z = np.load(args.in_dir / "fv_location.npz", allow_pickle=False)
     cols = [str(c) for c in z["columns"]]
-    mat = z["cos"].mean(0)                       # (28, 32) mean over 69 tasks
+    mat = z[args.metric].mean(0)                 # (28, 32) mean over 69 tasks
     n_layers = mat.shape[0]
     kinds = [c.split("_", 1)[1] for c in cols]
     cat_idx = {k: [i for i, kk in enumerate(kinds) if kk == k] for k in CAT}
@@ -63,6 +101,7 @@ def main():
 
     cmap = LinearSegmentedColormap.from_list("fv_blue", BLUE_RAMP)
     vmin, vmax = float(mat.min()), float(mat.max())
+    fmt = (lambda v: f"{v:.2f}") if args.metric == "cos" else (lambda v: f"{v:.0f}")
 
     fig = plt.figure(figsize=(14, 6.8))
     gs = fig.add_gridspec(2, 3, width_ratios=[3.05, 1.0, 0.045],
@@ -76,13 +115,17 @@ def main():
     im = ax.imshow(mat, aspect="auto", origin="lower", cmap=cmap, vmin=vmin, vmax=vmax,
                    interpolation="nearest",
                    extent=(-0.5, len(cols) - 0.5, -0.5, n_layers - 0.5))
-    ax.add_patch(Rectangle((-0.5, BAND[0] - 0.5), len(cols), BAND[1] - BAND[0] + 1,
+    ax.add_patch(Rectangle((-0.5, band[0] - 0.5), len(cols), band[1] - band[0] + 1,
                            fill=False, ec="#ffffff", lw=2.2, zorder=4))
-    ax.add_patch(Rectangle((-0.5, BAND[0] - 0.5), len(cols), BAND[1] - BAND[0] + 1,
+    ax.add_patch(Rectangle((-0.5, band[0] - 0.5), len(cols), band[1] - band[0] + 1,
                            fill=False, ec=INK, lw=0.9, ls=(0, (5, 3)), zorder=5))
     pk_l, pk_c = np.unravel_index(mat.argmax(), mat.shape)
-    ax.annotate(f"peak  cos = {mat[pk_l, pk_c]:.2f}\nlayer {pk_l}, query cue",
-                xy=(pk_c - 0.4, pk_l), xytext=(pk_c - 7.6, pk_l + 8.4), fontsize=10.5,
+    pretty = cols[pk_c].replace("_", " ").replace("demo", "demo ")
+    dx, dy = (-7.6, 8.4) if pk_c > len(cols) / 2 else (7.6, 8.4)
+    if pk_l > n_layers - 8:
+        dy = -8.4
+    ax.annotate(f"peak  {fmt(mat[pk_l, pk_c])}\nlayer {pk_l}, {pretty}",
+                xy=(pk_c - 0.4, pk_l), xytext=(pk_c + dx, pk_l + dy), fontsize=10.5,
                 color=INK, ha="center", zorder=6,
                 arrowprops=dict(arrowstyle="->", color=INK, lw=1.3,
                                 connectionstyle="arc3,rad=-0.18"))
@@ -91,11 +134,11 @@ def main():
     ax.set_ylabel("layer  (residual stream, block output)", fontsize=12, color=INK)
     ax.set_yticks(range(0, n_layers, 3))
     ax.tick_params(labelsize=10, colors=INK_MUTED)
-    fig.text(0.055, 0.935, "Where the function vector lives in the residual stream",
-             fontsize=17, color=INK, fontweight="bold", va="top")
+    fig.text(0.055, 0.935, title, fontsize=17, color=INK, fontweight="bold", va="top")
     fig.text(0.055, 0.877,
-             "cos(residual stream, task function vector) — mean over 69 tasks × 150 clean "
-             "10-shot prompts", fontsize=11.5, color=INK_MUTED, va="top")
+             met["blurb"].format(vec=study["vec"])
+             + " — mean over 69 tasks × 150 clean 10-shot prompts",
+             fontsize=11.5, color=INK_MUTED, va="top")
     plt.setp(ax.get_xticklabels(), visible=False)
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
@@ -125,44 +168,61 @@ def main():
                labelcolor=INK)
 
     # --- per-category layer profile (shared y) ---
-    axl.axhspan(BAND[0] - 0.5, BAND[1] + 0.5, color="#f0efec", zorder=0)
+    axl.axhspan(band[0] - 0.5, band[1] + 0.5, color="#f0efec", zorder=0)
+    profs = {k: mat[:, cat_idx[k]].mean(axis=1) for k in CAT}
+    hi = max(p.max() for p in profs.values())
+    # the band note is anchored first (bottom-right, always empty) so line labels avoid it
+    note = f"shaded: layers {band[0]}–{band[1]}" + (f"\n{args.band_note}" if args.band_note else "")
+    axl.text(hi * 1.16, 0.2, note, va="bottom", ha="right", fontsize=10, color=INK_MUTED,
+             linespacing=1.35)
+    placed = [(hi * 1.05, 1.5)]
     for k in ("cue", "label", "input"):
-        prof = mat[:, cat_idx[k]].mean(axis=1)
-        axl.plot(prof, range(n_layers), color=CAT[k], lw=2.4, zorder=3)
-        top = int(np.argmax(prof))
+        axl.plot(profs[k], range(n_layers), color=CAT[k], lw=2.4, zorder=3)
+        # Direct-label a line only where it is clearly separated from the other two AND
+        # the label will not sit on top of one already placed; curves that run together
+        # (e.g. cue vs input for the label-mean vector) rely on the shared category
+        # legend below instead, which is present in every figure.
+        others = [profs[o] for o in CAT if o != k]
+        sep = np.minimum.reduce([np.abs(profs[k] - o) for o in others])
+        best = int(np.argmax(sep))
+        if sep[best] <= 0.09 * hi:
+            continue
+        x_here = profs[k][best]
+        if any(abs(x_here - px) < 0.20 * hi and abs(best - py) < 6 for px, py in placed):
+            continue
+        placed.append((x_here, best))
+        side = 5 if x_here >= max(o[best] for o in others) else -5
         axl.annotate({"cue": "cue “A:”", "label": "label", "input": "input"}[k],
-                     xy=(prof[top], top), xytext=(5, 6), textcoords="offset points",
-                     fontsize=11, color=CAT[k], fontweight="bold")
-    axl.set_xlabel("mean cos by token type", fontsize=11, color=INK_MUTED)
-    axl.set_xlim(0, max(0.36, mat.max() * 1.06))
-    axl.set_xticks([0, 0.1, 0.2, 0.3])
+                     xy=(x_here, best), xytext=(side, 6), textcoords="offset points",
+                     fontsize=11, color=CAT[k], fontweight="bold",
+                     ha="left" if side > 0 else "right")
+    axl.set_xlabel(met["axis"], fontsize=11, color=INK_MUTED)
+    axl.set_xlim(0, hi * 1.18)
     axl.tick_params(labelsize=10, colors=INK_MUTED)
     plt.setp(axl.get_yticklabels(), visible=False)
     axl.grid(axis="x", color="#e6e5e2", lw=0.8, zorder=1)
     axl.set_axisbelow(True)
     for s in ("top", "right"):
         axl.spines[s].set_visible(False)
-    axl.text(0.006, BAND[1] + 0.35, f"layers {BAND[0]}–{BAND[1]}", va="bottom", ha="left",
-             fontsize=10, color=INK_MUTED)
 
     cb = fig.colorbar(im, cax=axc)
-    cb.set_label("cos(z, v_A)", fontsize=11, color=INK_MUTED)
+    cb.set_label(met["sym"], fontsize=11, color=INK_MUTED)
     cb.ax.tick_params(labelsize=10, colors=INK_MUTED)
     cb.outline.set_visible(False)
 
+    stem = f"presence_poster_{args.metric}"
     for ext in ("png", "pdf"):
-        fig.savefig(args.out_dir / f"fv_presence_poster.{ext}", dpi=300, facecolor="white")
+        fig.savefig(args.out_dir / f"{stem}.{ext}", dpi=300, facecolor="white")
     plt.close(fig)
 
-    with open(args.out_dir / "layer_profile_by_token_type.csv", "w") as f:
+    with open(args.out_dir / f"layer_profile_by_token_type_{args.metric}.csv", "w") as f:
         f.write("layer,input,cue,label,query_cue\n")
         q = cols.index("query_cue")
         for l in range(n_layers):
-            f.write(f"{l}," + ",".join(f"{mat[l, cat_idx[k]].mean():.5f}"
-                                       for k in ("input", "cue", "label"))
+            f.write(f"{l}," + ",".join(f"{profs[k][l]:.5f}" for k in ("input", "cue", "label"))
                     + f",{mat[l, q]:.5f}\n")
-    print(f"wrote {args.out_dir} (scale fitted to {vmin:.3f}-{vmax:.3f}; "
-          f"peak cos {mat.max():.3f} at layer {pk_l}, {cols[pk_c]})")
+    print(f"wrote {args.out_dir}/{stem}.png (scale fitted {vmin:.3f}-{vmax:.3f}; "
+          f"peak {fmt(mat.max())} at layer {pk_l}, {cols[pk_c]})")
 
 
 if __name__ == "__main__":
