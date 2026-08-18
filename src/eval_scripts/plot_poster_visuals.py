@@ -22,6 +22,7 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.patheffects as pe
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
 _BOOT = Path(__file__).resolve().parents[2]
@@ -67,9 +68,14 @@ def headline_bars():
         m, e = float(v.mean()), ci95(v)
         ax.bar(i, m, width=0.6, color=c, zorder=3)
         if m > 0:
-            # light whiskers so they read against the dark reference bar
-            ax.errorbar(i, m, yerr=e, fmt="none", ecolor="#fcfcfb", elinewidth=2.4,
-                        capsize=6, capthick=2.4, zorder=4)
+            # dark whiskers with a surface-coloured ring: legible BOTH over the bar and
+            # over the background (the upper arm always crosses onto the background)
+            ring = [pe.withStroke(linewidth=5.0, foreground=SURFACE)]
+            ax.plot([i, i], [m - e, m + e], color=INK, lw=2.0, zorder=4,
+                    solid_capstyle="butt", path_effects=ring)
+            for yy in (m - e, m + e):
+                ax.plot([i - 0.075, i + 0.075], [yy, yy], color=INK, lw=2.0, zorder=4,
+                        solid_capstyle="butt", path_effects=ring)
         ax.text(i, m + e + 0.018, f"{m:.2f}", ha="center", va="bottom", fontsize=20,
                 fontweight="bold", color=INK, zorder=5)
     ax.set_xticks(x, [s[0] for s in series], fontsize=13.5, color=INK)

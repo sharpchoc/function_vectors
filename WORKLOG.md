@@ -6122,3 +6122,10 @@ value labels moved ABOVE the whiskers and rounded to 2 dp; whiskers recoloured t
 surface white (#fcfcfb) so they read against both the blue and the dark graphite bar
 (contrast 4.3:1 and 7.7:1 respectively). Bar colours unchanged and still PASS the ported
 palette checks. Methods detail now lives in the poster text, not the figure.
+
+### Correction — whisker colour (white was invisible)
+
+White whiskers only read INSIDE the bars: the upper CI arm always crosses onto the light
+surface, where white vanished. Fixed by drawing the whiskers in ink (#0b0b0b) with a
+surface-coloured stroke halo (the dataviz "surface ring on overlapping marks" rule), so they
+are legible over the blue bar, over the dark graphite bar, and over the background.
