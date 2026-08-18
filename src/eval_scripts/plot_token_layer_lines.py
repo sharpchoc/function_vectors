@@ -58,7 +58,7 @@ def load():
 
 def style_axes(ax, layers):
     ax.set_xlabel("layer", fontsize=17, labelpad=8)
-    ax.set_ylabel("held-out $R^2$  (activation → FV ridge)", fontsize=17, labelpad=10)
+    ax.set_ylabel("held-out $R^2$", fontsize=17, labelpad=10)
     ax.set_xticks(range(0, len(layers), 2))
     ax.tick_params(labelsize=13)
     ax.set_xlim(layers[0] - 0.4, layers[-1] + 0.4)
