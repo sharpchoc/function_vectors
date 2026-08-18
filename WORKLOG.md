@@ -6105,3 +6105,27 @@ Verdict: task-level overfitting, as the user said — earlier WORKLOG claims of 
 "capturing genuine within-task signal in-sample" are hereby corrected. The centroid map
 still interpolates near-perfectly for held-out morphology/translation tasks and fails for
 classification-like ones (Addendum 4), so coverage remains the actionable lever.
+
+## 2026-08-18 — Ridge layer sweep L5-L15 (mean label-token activation -> per-prompt FV)
+
+**Status:** done. New capture `capture_avg10_label_multilayer.py` (per-prompt MEAN over the
+10 last-label-token block outputs, layers 5..15 in one pass, 69 tasks ->
+artifacts/69_task_run/label_avg10_L5-15_acts). Per layer: `ridge_layer_sweep.py` (avg-X
+ridge, lambda by 5-fold task CV; reports in-sample, UNSEEN-prompt (honest, w/ fair oracle),
+and held-out-task R^2). Fleet: 12 pods (fleet9, coordinated with the sibling session's
+fleet8 seed-split study), all terminated.
+
+**Results (R^2 uniform):** held-out-task R^2 rises monotonically-ish with depth:
+L5 0.444 < L6 0.464 < L7 0.476 < L8 0.486 ~ L9 0.486 < L10 0.489 < L11 0.493 < L12 0.497 ~
+**L13 0.498 (best)** ~ L14 0.496 ~ L15 0.496 — a gentle +0.05 climb from L5 that plateaus
+at L11-L15. Honest train-side (unseen prompts) is FLAT: 0.737-0.745 at every layer, barely
+above the 0.728 oracle — within-task signal stays ~0.05 regardless of depth. lambda shifts
+1e3 -> 3.16e3 at L11+.
+Reading: deeper read layers (L11-L15) transfer slightly better across tasks — the label-slot
+representation there is more task-general — but the improvement is modest (~0.03 over L6)
+and the layer choice does not change the fundamental picture (centroid memorization,
+task-coverage limit). Best steering layer (L6-L7) != best decoding layer (L11-L13).
+Outputs: results/69_task_run/labeltoken_fv_ridge/layer_sweep/ (r2_by_layer.png, summary.csv);
+fit jsons in artifacts/69_task_run/labeltoken_fv_ridge_layer_sweep/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
