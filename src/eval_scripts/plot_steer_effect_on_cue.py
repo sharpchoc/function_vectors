@@ -150,6 +150,50 @@ def main():
                 "…and increases how far it extends along that direction",
                 "headline_proj.png", fmt="{:+.1f}")
 
+    # ---- THE headline: task-specific excess, zero at alpha=0 by construction ----
+    # [cos_task(a) - cos_gen(a)] - [cos_task(0) - cos_gen(0)]  ==  d_cos_task - d_cos_gen
+    excess = delta["cos_task"] - delta["cos_gen"]
+    fig, ax = plt.subplots(figsize=(8.6, 5.6), dpi=200)
+    fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
+    rng = np.random.RandomState(0)
+    for ai in range(len(alphas)):
+        ax.scatter(np.full(excess.shape[0], ai) + rng.uniform(-0.07, 0.07, excess.shape[0]),
+                   excess[:, ai], s=14, alpha=0.34, color=BLUE, linewidths=0, zorder=2)
+    ax.plot(range(len(alphas)), excess.mean(axis=0), "o-", color=BLUE, lw=2.6, ms=9,
+            zorder=4, markeredgecolor=SURFACE, markeredgewidth=1.5)
+    for ai in range(len(alphas)):
+        ax.annotate(f"{excess[:, ai].mean():+.3f}", (ai, excess[:, ai].mean()),
+                    textcoords="offset points", xytext=(0, 13), fontsize=11.5, color=BLUE,
+                    fontweight="bold", ha="center")
+    ax.axhline(0, color=INK2, lw=1.1, ls=":")
+    ax.set_xticks(range(len(alphas)), [str(a) for a in alphas], fontsize=11)
+    ax.set_xlabel("steering strength α  (× the injected vector's own norm)",
+                  fontsize=11.5, color=INK2)
+    ax.set_ylabel(f"cos(act, task FV) − cos(act, all-task FV)\nat L{LAYER}, relative to α = 0",
+                  fontsize=11.5, color=INK2)
+    ax.set_title("Steering moves the cue token towards its OWN task's function\n"
+                 "vector, over and above the shared direction",
+                 fontsize=14.5, fontweight="bold", color=INK, loc="left", pad=12)
+    ax.tick_params(colors=INK2)
+    ax.grid(True, color=GRID, lw=0.9, zorder=0)
+    ax.set_axisbelow(True)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    for s in ("left", "bottom"):
+        ax.spines[s].set_color(GRID)
+    fig.text(0.005, 0.005, f"GPT-J-6B, {len(tasks)} tasks. 6-shot dummy-'_' prompt; "
+             f"α·(task mean L6 label activation) added at all six label slots; readout = "
+             f"layer {LAYER} residual at the final cue token. Zero at α=0 by construction; "
+             f"positive means the representation gained MORE task-specific than generic "
+             f"alignment. One point per task; line = mean over tasks.",
+             fontsize=8.5, color=INK2, ha="left", va="bottom", wrap=True)
+    fig.tight_layout(rect=(0, 0.06, 1, 1))
+    fig.savefig(OUT / "headline_cos_taskspecific.png", bbox_inches="tight", facecolor=SURFACE)
+    print("task-specific excess (d_cos_task - d_cos_gen):")
+    for ai, a in enumerate(alphas):
+        pos = int((excess[:, ai] > 0).sum())
+        print(f"  alpha={a}: {excess[:, ai].mean():+.4f}  (positive on {pos}/{len(tasks)} tasks)")
+
     # absolute-scale companion for cosine (raw values, not deltas)
     scatter_fig(at_layer["cos_task"], at_layer["cos_gen"],
                 f"cosine similarity at L{LAYER}  (absolute)",

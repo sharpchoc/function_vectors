@@ -6144,3 +6144,17 @@ level for each reference). Absolute values, mean over 69 tasks:
 So on an absolute scale the intervention closes a 0.09 gap: unsteered, the cue token looks
 more like the average task than like its own; by alpha=2 it looks equally like both, having
 gained twice as much task-specific as generic alignment.
+
+### Addendum 2 — new HEADLINE figure: task-specific excess
+
+`headline_cos_taskspecific.png` is now the headline: y = [cos(act, task FV) −
+cos(act, all-task FV)] measured relative to alpha=0, so it is exactly 0 at alpha=0 and
+positive means the cue token gained MORE task-specific than generic alignment.
+  alpha 0.5 -> +0.022 (positive on 66/69 tasks)
+  alpha 1.0 -> +0.060 (69/69)
+  alpha 2.0 -> +0.093 (69/69)
+  alpha 4.0 -> +0.098 (69/69)
+Unlike the raw task-FV delta (which peaked at alpha=2 and dipped at 4), this specificity
+measure is still RISING at alpha=4 — the alpha=4 dip in raw alignment is a loss of GENERIC
+alignment, not of task-specific alignment. That removes the apparent dissociation with the
+accuracy curve (which also kept climbing to alpha=4).
