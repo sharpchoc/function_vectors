@@ -6219,3 +6219,9 @@ query block has no target row, so it carries no tooth).
   box (no target row). Label moved onto the box's dark top row for contrast.
 - File: `results/69_task_run/token_layer_regressions/poster_visuals/heldout_r2_poster.png`
   (regen: `FV_ARTIFACTS_ROOT=... python src/eval_scripts/plot_token_layer_poster.py`).
+- v6: added a second variant `heldout_r2_poster_6shot.png` (6 examples, sawtooth box over
+  examples **4-6** at L4-L7). Both figures come out of one run of the plot script
+  (`main()` is called twice in `__main__`; `out_name` / `box_last_example` are new args).
+  Caveat for poster use: the cue-target gap is much smaller this late in the prompt
+  (L4-L7, ex4 +0.06 / ex5 +0.05 / ex6 +0.04) than at examples 1-2 (ex1 ~+0.48 at L6), so
+  the 4-example version shows the tooth far more clearly.

@@ -38,7 +38,8 @@ OUT = TASK69_RUN_DIR / "token_layer_regressions" / "poster_visuals"
 ROLE_ROWS = ("input", "cue", "target")
 
 
-def main(n_shots=4, box_l0=4, box_l1=7, box_first_example=2):
+def main(n_shots=4, box_l0=4, box_l1=7, box_first_example=2, box_last_example=None,
+         out_name="heldout_r2_poster.png"):
     layers = sorted(int(f.stem[5:]) for f in AR.glob("layer*.json")
                     if "_" not in f.stem[5:])
     lab = {l: json.load(open(AR / f"layer{l}.json"))["results"] for l in layers}
@@ -104,9 +105,11 @@ def main(n_shots=4, box_l0=4, box_l1=7, box_first_example=2):
     # target row after several examples (ex1 -0.02 vs 0.46, ex2 0.35 vs 0.53 at L6).
     x0 = layers.index(box_l0) - 0.5
     x1 = layers.index(box_l1) + 0.5
-    # from box_first_example onward: example 1's cue is still flat (no tooth yet)
+    # box_first_example..box_last_example: example 1's cue is still flat (no tooth yet),
+    # and the upper bound lets a longer figure box a later stretch of examples.
+    hi = box_last_example if box_last_example is not None else n_shots
     ex_rows = [i for i, b in enumerate(block_of)
-               if isinstance(b, int) and b >= box_first_example]
+               if isinstance(b, int) and box_first_example <= b <= hi]
     y0, y1 = min(ex_rows) - 0.5, max(ex_rows) + 0.5
     ax.add_patch(Rectangle((x0, y0), x1 - x0, y1 - y0,
                            fill=False, edgecolor="#00e5ff", lw=3.4, zorder=5))
@@ -120,9 +123,14 @@ def main(n_shots=4, box_l0=4, box_l1=7, box_first_example=2):
     ax.set_title("Where the function vector is linearly readable",
                  fontsize=21, fontweight="bold", pad=14)
     fig.tight_layout()
-    fig.savefig(OUT / "heldout_r2_poster.png", bbox_inches="tight")
-    print(f"wrote {OUT / 'heldout_r2_poster.png'}")
+    fig.savefig(OUT / out_name, bbox_inches="tight")
+    plt.close(fig)
+    print(f"wrote {OUT / out_name}")
 
 
 if __name__ == "__main__":
+    # canonical poster: 4 examples, tooth boxed over examples 2-4
     main()
+    # longer variant: 6 examples, tooth boxed over the later examples 4-6
+    main(n_shots=6, box_first_example=4, box_last_example=6,
+         out_name="heldout_r2_poster_6shot.png")
