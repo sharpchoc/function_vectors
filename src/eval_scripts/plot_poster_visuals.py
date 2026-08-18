@@ -113,7 +113,7 @@ def _token_row(ax, toks, y, slot, steered, centers_out=None):
     for i, t in enumerate(toks):
         x = x0 + i * (w + gap)
         centers.append(x + w / 2)
-        touched = steered and i >= slot
+        touched = steered and i == slot   # only the edited slot, not every token
         ec = BLUE if touched else GRID
         fc = "#eaf2fd" if touched else "#ffffff"
         tc = BLUE if touched else INK2
@@ -141,26 +141,26 @@ def _token_row(ax, toks, y, slot, steered, centers_out=None):
 
 def method_diagram():
     """Two rollouts of the same prompt — with and without the read feature added at L6."""
-    fig, ax = plt.subplots(figsize=(12.6, 6.9), dpi=200)
+    fig, ax = plt.subplots(figsize=(12.6, 5.1), dpi=200)
     fig.patch.set_facecolor(SURFACE)
     ax.set_facecolor(SURFACE)
     ax.set_xlim(0, 12.6)
-    ax.set_ylim(0, 6.9)
+    ax.set_ylim(0, 5.1)
     ax.axis("off")
 
     toks = ["Q:", "climber", "\\n", "A:", "_", "\\n\\n", "Q:", "compiler", "\\n", "A:"]
     slot = 4
-    y_top, y_bot = 5.28, 0.42
+    y_top, y_bot = 3.62, 0.40
 
-    ax.text(0.35, 6.62, "Read feature intervention", fontsize=18, fontweight="bold",
+    ax.text(0.35, 4.85, "Read feature intervention", fontsize=18, fontweight="bold",
             color=INK, ha="left", va="center")
-    ax.text(0.35, 6.24, "task:  agent noun  →  verb          "
+    ax.text(0.35, 4.52, "task:  agent noun  →  verb          "
             "a real demo would read  'climber → climb'  —  here the label slot is a bare '_'",
             fontsize=10.5, color=INK2, ha="left", va="center")
 
     centers = _token_row(ax, toks, y_top, slot, steered=True)
     _token_row(ax, toks, y_bot, slot, steered=False)
-    ax.text(0.45, y_top + 0.66, "with the read feature added", fontsize=11.5,
+    ax.text(0.45, y_top + 0.62, "with the read feature added", fontsize=11.5,
             color=BLUE, fontweight="bold", ha="left", va="center")
     ax.text(0.45, y_bot - 0.26, "without it  —  the same prompt, unsteered",
             fontsize=11.5, color=INK2, ha="left", va="top")
@@ -171,9 +171,9 @@ def method_diagram():
 
     # layer stack at that slot: L6 carries the added feature, everything above it inherits it
     lx, lw_ = centers[slot] - 0.62, 1.24
-    bands = [("L0-L5", 1.32, "#f2f1ee", GRID, INK2, 1.0),
-             ("L6", 2.16, "#cfe2fa", BLUE, BLUE, 2.2),
-             ("L7-L27", 3.00, "#eaf2fd", BLUE, BLUE, 1.4)]
+    bands = [("L0-L5", 1.10, "#f2f1ee", GRID, INK2, 1.0),
+             ("L6", 1.86, "#cfe2fa", BLUE, BLUE, 2.2),
+             ("L7-L27", 2.62, "#eaf2fd", BLUE, BLUE, 1.4)]
     for name, y, fc, ec, tc, lwid in bands:
         ax.add_patch(FancyBboxPatch((lx, y), lw_, 0.66,
                                     boxstyle="round,pad=0.02,rounding_size=0.08",
@@ -181,13 +181,13 @@ def method_diagram():
         ax.text(lx + lw_ / 2, y + 0.33, name, ha="center", va="center",
                 fontsize=11.5 if name != "L0-L5" else 10.5, color=tc,
                 fontweight="bold" if name == "L6" else "normal", zorder=4)
-    ax.text(lx + lw_ + 0.22, 3.33, "every later layer at this slot\nnow carries it",
+    ax.text(lx + lw_ + 0.22, 2.95, "every later layer at this slot\nnow carries it",
             fontsize=10, color=BLUE, ha="left", va="center")
-    ax.text(lx + lw_ + 0.22, 1.65, "unchanged", fontsize=10, color=INK2,
+    ax.text(lx + lw_ + 0.22, 1.43, "unchanged", fontsize=10, color=INK2,
             ha="left", va="center")
 
     # the injected vector
-    bx, by = 0.35, 2.14
+    bx, by = 0.35, 1.84
     ax.add_patch(FancyBboxPatch((bx, by), 3.0, 0.70,
                                 boxstyle="round,pad=0.03,rounding_size=0.1",
                                 linewidth=1.8, edgecolor=BLUE, facecolor="#ffffff",

@@ -6105,3 +6105,10 @@ SAME prompt twice — top row steered (every token from the '_' slot onward tint
 between them at the '_' column: L0-L5 grey/"unchanged", L6 solid blue (the injection site),
 L7-L27 blue-shaded/"every later layer at this slot now carries it". A dotted guide marks the
 same token slot across both rollouts; no arrows imply a forward path.
+
+### Addendum — method diagram tightened; only the edited slot is tinted
+
+Per user: (1) only the intervened '_' token and the final 'compile' answer are blue — the
+other tokens stay grey, so it no longer looks like every position is intervened on;
+(2) vertical whitespace between the L7-L27 band and the top rollout removed (canvas 6.9 ->
+5.1 units, bands re-spaced), giving a much denser figure at the same width.
