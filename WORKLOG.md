@@ -6078,3 +6078,18 @@ ends_with_ing 0.69 — the best heldout task, sitting mid-pack among train tasks
 classification/symbolic tasks ~0 or negative (pos_label -0.09, ag_news -0.08,
 uppercase_word 0.01, initials_two_words 0.03, first_digit 0.06) — matching the centroid
 cos-similarity pattern in error_decomposition.txt. Outputs: r2_by_task.{png,csv}.
+
+### Addendum 4 — baselines added to the per-task R^2 chart
+
+Per user: added (a) the constant TRAIN-pool-mean-FV predictor baseline (purple markers;
+exactly 0 for train tasks by construction under the split-pool denominator; heldout mean
+-0.126) and (b) the per-task oracle ceiling (own-task LOO mean, black dashes; heldout mean
++0.488). Heldout comparison: ridge +0.207 beats the baseline on 14/14 tasks; on the
+morphology/translation group the ridge sits AT the oracle (ends_with_ing 0.687 vs 0.685,
+gerund_to_base 0.360 vs 0.378, past_to_base 0.341 vs 0.393, smaller_of_pair 0.450 vs
+0.497, language pairs ~0.23-0.24 vs ~0.26-0.32) — i.e. transfer is near-perfect there —
+while the classification group (pos_label, ag_news, uppercase_word, initials_two_words,
+first_digit, person_place_thing) has large oracle headroom (0.45-0.66) that the ridge
+leaves untouched. User's read confirmed: task-level overfitting/coverage — but note the
+heldout tasks are NOT intrinsically the worst (their oracles are ordinary); the map just
+wasn't taught their region.

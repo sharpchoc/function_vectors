@@ -62,32 +62,49 @@ def main():
     pool_mean = {g: Y[g].mean(dim=0) for g in Y}   # split-pool reference mean
     pool_tot = {g: ((Y[g] - pool_mean[g]) ** 2).sum(dim=0) for g in Y}
 
+    def r2_of(pred, yt, g):
+        tot = ((yt - pool_mean[g]) ** 2).sum(dim=0)
+        ok = tot > 0
+        return float((1 - ((yt - pred) ** 2).sum(dim=0)[ok] / tot[ok]).mean())
+
     rows = []
     for t in train_tasks + test_tasks:
         g, s, e = sl[t]
-        resid = ((Y[g][s:e] - P[g][s:e]) ** 2).sum(dim=0)
-        # per-dim total vs the SPLIT-POOL mean, scaled to this task's row count
-        tot = ((Y[g][s:e] - pool_mean[g]) ** 2).sum(dim=0)
-        ok = tot > 0
-        r2 = float((1 - resid[ok] / tot[ok]).mean())
-        rows.append((t, g, r2))
+        yt = Y[g][s:e]
+        r2 = r2_of(P[g][s:e], yt, g)
+        # cross-pool baseline: constant TRAIN-pool mean FV as the prediction
+        # (for train tasks this equals the split-pool mean -> exactly 0 by construction)
+        r2_base = r2_of(pool_mean["train"].expand_as(yt), yt, g)
+        # oracle ceiling: own-task LOO mean
+        n = len(yt)
+        loo = (yt.sum(dim=0, keepdim=True) - yt) / (n - 1)
+        r2_orc = r2_of(loo, yt, g)
+        rows.append((t, g, r2, r2_base, r2_orc))
 
     OUT.mkdir(parents=True, exist_ok=True)
     with open(OUT / "r2_by_task.csv", "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["task", "split", "r2_uniform_poolref"])
-        w.writerows([(t, g, round(r, 4)) for t, g, r in rows])
+        w.writerow(["task", "split", "r2_ridge", "r2_trainpoolmean_baseline",
+                    "r2_owntaskmean_oracle"])
+        w.writerows([(t, g, round(r, 4), round(b, 4), round(o, 4))
+                     for t, g, r, b, o in rows])
 
     rows.sort(key=lambda r: r[2])
-    labels = [t + (" *" if g == "heldout" else "") for t, g, _ in rows]
-    vals = [r for _, _, r in rows]
-    cols = ["tab:red" if g == "heldout" else "tab:blue" for _, g, _ in rows]
+    labels = [t + (" *" if g == "heldout" else "") for t, g, *_ in rows]
+    vals = [r[2] for r in rows]
+    bases = [r[3] for r in rows]
+    orcs = [r[4] for r in rows]
+    cols = ["tab:red" if r[1] == "heldout" else "tab:blue" for r in rows]
     x = np.arange(len(rows))
     fig, ax = plt.subplots(figsize=(max(15, 0.3 * len(rows)), 6.6), dpi=150)
     ax.bar(x, vals, color=cols)
+    ax.scatter(x, orcs, marker="_", s=110, color="black", lw=1.6,
+               label="oracle ceiling: own-task LOO mean")
+    ax.scatter(x, bases, marker="v", s=16, color="tab:purple",
+               label="baseline: train-pool mean FV (=0 for train tasks by construction)")
     ax.axhline(0, color="0.4", lw=0.9)
-    tr = [r for _, g, r in rows if g == "train"]
-    te = [r for _, g, r in rows if g == "heldout"]
+    tr = [r[2] for r in rows if r[1] == "train"]
+    te = [r[2] for r in rows if r[1] == "heldout"]
     ax.axhline(float(np.mean(tr)), color="tab:blue", ls="--", lw=1.1,
                label=f"train mean = {np.mean(tr):.3f}")
     ax.axhline(float(np.mean(te)), color="tab:red", ls="--", lw=1.1,
