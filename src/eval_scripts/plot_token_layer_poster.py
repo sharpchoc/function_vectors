@@ -38,7 +38,7 @@ OUT = TASK69_RUN_DIR / "token_layer_regressions" / "poster_visuals"
 ROLE_ROWS = ("input", "cue", "target")
 
 
-def main(n_shots=4, box_l0=5, box_l1=8, box_first_example=2):
+def main(n_shots=4, box_l0=4, box_l1=7, box_first_example=2):
     layers = sorted(int(f.stem[5:]) for f in AR.glob("layer*.json")
                     if "_" not in f.stem[5:])
     lab = {l: json.load(open(AR / f"layer{l}.json"))["results"] for l in layers}

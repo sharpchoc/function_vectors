@@ -6214,7 +6214,7 @@ Sawtooth box narrowed to layers 6-9 and clipped to the four ICL example blocks o
 query block has no target row, so it carries no tooth).
 
 ### Addendum: poster figure v4 (2026-08-18)
-- Sawtooth box narrowed to layers **5-8** and to **examples 2-4** (example 1 excluded: its cue
+- Sawtooth box narrowed to layers **4-7** and to **examples 2-4** (example 1 excluded: its cue
   row is still flat at ~-0.02, so there is no tooth there yet). Query block stays outside the
   box (no target row). Label moved onto the box's dark top row for contrast.
 - File: `results/69_task_run/token_layer_regressions/poster_visuals/heldout_r2_poster.png`
