@@ -5989,3 +5989,27 @@ Outputs: results/69_task_run/fv_presence_heatmaps/<task>.png, npz in artifacts/.
   single-position injection.
 
 **Next:** user call. **Blockers:** none; pod terminated.
+
+## 2026-08-18 — Attention from the cue token to the injected ' _' slot (why steering is weak)
+
+**Status:** done. `src/sandbox/ext_steerability/attention_to_label_slot.py` +
+`src/eval_scripts/plot_attention_to_slot.py`; one pod (terminated). Same two tasks and modal
+prompt groups as the FV-presence heatmaps; records attention from the FINAL cue token to
+every source position, per layer and head, unsteered vs steered (dot_perhead read dir,
+alpha=1, ' _' slot, L3).
+
+**Findings (L13, the layer with the biggest FV gain):**
+- The cue token pays only ~3-4% of its attention to the ' _' slot: mean over the 16 heads
+  0.041 (next_number_digits) / 0.028 (day_after_textual_date).
+- ~70% goes to the ATTENTION SINK at positions 0-1 ('Q' and the first ':'): 0.703 and 0.720.
+- Steering does NOT increase attention to the slot: 0.041 -> 0.028 on next_number_digits,
+  0.028 -> 0.033 on day_after. The read direction does not recruit attention to itself.
+- Head-specific exception: L13H13 (an FV head) sits at 0.192-0.200 unsteered and rises
+  0.19 -> 0.32 under steering on day_after. Delivery is concentrated in a few heads.
+- Consistent with the FV-presence result: at ~4% attention weight the delivered FV content
+  is attenuated ~25x, matching the observed cue-token cos of 0.19-0.31 rather than ~1.0.
+Outputs: results/69_task_run/fv_presence_heatmaps/attn_<task>.png.
+
+**Implication:** the read-direction construction assumes the reading head sees the vector
+with weight 1; in this scaffold it sees ~1/25 of it. Steering strength is attention-limited,
+not only direction-quality-limited.
