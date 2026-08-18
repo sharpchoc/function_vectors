@@ -6032,3 +6032,37 @@ alpha_curve.png, summary.csv, per_task_acc.csv); preds in artifacts/.../narrow_p
 
 **Next:** user call (natural follow-up: same patch on real-label or conflicting-label
 scaffolds where removal has content to act on). **Blockers:** none; all pods terminated.
+
+## 2026-08-18 — 6-SHOT dummy-label steering at L6, all six '_' slots (raw_mean_steering/sixshot_dummy)
+
+**Status:** done. Scaffold: six demos with in-distribution inputs (record's demos[0..5]) and
+'_' as every output, then the real query. Steering: z += alpha * m_A(L6) additively at ALL
+SIX ' _' positions at block-6 output, alpha {0.5,1,2,4}. Plain raw-mean steering only (no
+patching). Real 6-shot baseline computed HERE (the repo's older 6-shot numbers are from the
+29-task pool under a different readout, not comparable). Scripts sixshot_dummy_steer.py +
+plot_sixshot_dummy_steer.py; fleet 12 pods (own id file
+/root/.claude/jobs/121308b8/tmp/fleet_6sd_ids.txt), all terminated.
+
+**Bugs fixed en route:** (1) ag_news inputs contain literal '_' so a global ' _' token search
+found 7 slots — now anchors each dummy label STRUCTURALLY (token right after each demo's
+'A:' cue); (2) OOM on long 6-shot prompts → token_budget 9000 / batch_cap 12.
+
+**Results (mean over 69 tasks, T=1 exact match):**
+- 6-shot dummy UNSTEERED: **0.000** (perfect floor — six '_' labels teach nothing)
+- 6-shot dummy STEERED: a=0.5 0.002 | a=1 0.061 | a=2 0.381 | **a=4 0.442** (best 0.447)
+- real 6-shot demos: **0.630**; real 1-shot 0.208; 1-shot dummy steered @L6 0.126
+- So steering six dummy slots reaches **~71% of real 6-shot** and **3.5x the 1-shot
+  dummy-steering result** (0.126 -> 0.447), and comfortably beats a real 1-shot demo (0.208).
+- Dose response has NOT saturated at alpha=4 (0.381 -> 0.442 from a=2 to a=4), unlike the
+  1-shot case which peaked at a=2 — more slots appear to need/tolerate more total signal.
+  A follow-up alpha in {6,8,16} would find the true optimum.
+- Held-out tasks slightly ABOVE train (0.492 vs 0.436) — no fitting advantage, as expected
+  since the vector is just a per-task mean.
+- 17/69 tasks match or beat real 6-shot; the top are string/format tasks at near-ceiling
+  (lowercase_word 0.987 vs 0.973, singular-plural 0.933 vs 0.900, uppercase_word 0.933 vs
+  0.927, next_number_digits 0.893 vs 0.887).
+Outputs: results/69_task_run/raw_mean_steering/sixshot_dummy/ (by_task.png, alpha_curve.png,
+summary.csv, per_task_acc.csv); preds in artifacts/.../sixshot_dummy/.
+
+**Next:** user call (obvious: extend the alpha grid upward since a=4 is the boundary).
+**Blockers:** none; all pods terminated.
