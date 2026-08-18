@@ -6142,3 +6142,38 @@ PCs used — still below the plain full-dim ridge (0.787/0.464).** Together with
 sparsity prior in the input basis costs held-out R^2. The transfer bottleneck is task-level
 (seed-split study), not estimator variance along low-energy input directions.
 Output: artifacts/69_task_run/labeltoken_fv_ridge/lasso_pca_avg.json.
+
+## 2026-08-18 — (token x layer) ridge sweep to per-prompt FV, scored on task FVs
+
+**Status:** done. New study `token_layer_regressions`: for each of 31 token positions
+(per demo n=1..10: pre-label ':' / first label token / last label token; plus the query cue)
+x 28 layers, fit a full-dim ridge from that position's activation to the PER-PROMPT FV on
+the 55 train tasks (alpha by 5-fold CV over train tasks), then score with the TASK FV as
+target: per task R^2 = 1 - sum_i||pred_i - taskFV||^2 / (n*||taskFV - split-pool mean||^2),
+averaged over tasks. Scripts: `src/sandbox/ext_steerability/token_layer_fv_regression.py`
+(one layer per pod; single forward pass serves all 31 positions),
+`src/eval_scripts/plot_token_layer_regressions.py`. Fleet: 28 pods, all terminated.
+
+**BUG FIXED MID-RUN (first pass discarded):** the per-task R^2 was first implemented per-dim
+then averaged, which is degenerate for a constant-within-task target (dims where taskFV sits
+near the pool mean have ~0 denominator) and produced R^2 ~ -2.5e4. Corrected to the
+vector-norm form (sum over dims in numerator AND denominator) and revalidated against an
+independent local computation on the L6/d10_last cell (0.5798 both). fp32 vs fp64 check on
+that cell: identical to 4 dp. No alpha pinned in any of the 868 cells.
+
+**Findings (held-out heatmap):**
+- Best cell **L15 d10_pre = 0.688**; the whole top-15 is pre-label (':') positions of late
+  demos (d7-d10) at L12-L17 — a contiguous bright band.
+- By token role (mean over layers): last label 0.559 > first label 0.536 > pre-label 0.460
+  (but pre-label has the highest CEILING, 0.688, concentrated in mid layers) > query cue
+  0.454 (best 0.587 at L9).
+- By layer: rises steeply L0 0.221 -> L8 0.558, plateaus L12-L16 (~0.58), decays slowly to
+  L24 0.551. FV content is most linearly decodable in the middle third of the network.
+- d1_pre is the dead row (~0 everywhere): before the first label there is no task evidence.
+- Train panel is uniformly ~0.93-0.96 in the bright region (gap ~0.27), consistent with the
+  task-level overfitting established earlier.
+Outputs: results/69_task_run/token_layer_regressions/ (heldout_r2_heatmap.png,
+train_r2_heatmap.png, r2_grid.csv, best_cells.txt); per-layer fits in
+artifacts/69_task_run/token_layer_regressions/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
