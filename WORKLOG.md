@@ -6096,3 +6096,38 @@ heading is removed (poster text covers it); the task is stated explicitly ("agen
 verb", with "a real demo would read 'climber -> climb' — here the label slot is a bare '_'")
 so the 'compile' prediction is interpretable; the injected vector is labelled
 "prompt-agnostic task mean 'read feature'".
+
+## 2026-08-18 — Read-side steering changes the WRITE side: cue-token effect (mean_read_steering_effect_on_write)
+
+**Status:** done. Question: as alpha is turned up on the 6-shot label-slot injection, how does
+the FINAL CUE TOKEN representation move towards the task FV? Same scaffold/vector/site as
+sixshot_dummy_steer.py (six '_' slots, alpha*m_A(L6) at block-6 output, alpha 0/0.5/1/2/4);
+instead of generating we read the residual at the last prompt token at ALL 28 layers (L13 =
+headline) and compute cos + projection against TWO references: the task's own FV (mean of its
+150 per-prompt FVs) and the all-task-averaged FV. Raw values stored; deltas vs alpha=0 plotted.
+Scripts: `src/sandbox/ext_steerability/steer_effect_on_cue.py` (forward passes only, no
+generation) + `src/eval_scripts/plot_steer_effect_on_cue.py`. Fleet 12 pods (ids in
+/root/.claude/jobs/8ecb4da6/tmp/fleet_ids.txt), all terminated. NOTE: plotting needs
+python3.12 on this box (python3.10 has no torch).
+
+**Findings (mean over 69 tasks, L13, delta vs alpha=0):**
+| alpha | d cos -> task FV | d cos -> generic FV | d proj -> task FV | d proj -> generic FV |
+| 0.5 | +0.077 | +0.055 | +7.5 | +5.8 |
+| 1.0 | +0.146 | +0.086 | +14.3 | +9.0 |
+| 2.0 | +0.182 | +0.089 | +17.3 | +8.8 |
+| 4.0 | +0.178 | +0.080 | +16.3 | +7.4 |
+- Raw cos to the task FV rises 0.183 (alpha=0) -> 0.365 (alpha=2): steering DOUBLES the
+  cue-token alignment with the task's function vector.
+- The movement is TASK-SPECIFIC: at alpha=2 the excess (d_cos_task - d_cos_gen) is +0.094 and
+  positive on 69/69 tasks. Roughly half the rotation is shared/generic, half is towards the
+  task's own direction.
+- Saturates at alpha=2 and slightly REVERSES at alpha=4 (+0.182 -> +0.178), i.e. the
+  representational alignment peaks one step BEFORE the accuracy curve does (accuracy was still
+  climbing at alpha=4: 0.381 -> 0.442). Alignment at the cue token is therefore not the whole
+  story for the behavioural gain.
+- Held-out and train tasks are indistinguishable (+0.1835 vs +0.1821 at alpha=2).
+Outputs: results/69_task_run/mean_read_steering_effect_on_write/ (headline_cos.png,
+headline_proj.png, layer_profile.png, summary.csv, per_task.csv); raw per-prompt tensors in
+artifacts/69_task_run/mean_read_steering_effect_on_write/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
