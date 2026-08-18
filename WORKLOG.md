@@ -6131,3 +6131,16 @@ headline_proj.png, layer_profile.png, summary.csv, per_task.csv); raw per-prompt
 artifacts/69_task_run/mean_read_steering_effect_on_write/.
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+
+### Addendum — absolute-scale cosine figure
+
+Added `headline_cos_absolute.png` (raw cos at L13, not deltas; dotted lines mark the alpha=0
+level for each reference). Absolute values, mean over 69 tasks:
+  alpha 0 -> cos(task FV) 0.183, cos(generic FV) 0.275   [the cue token starts CLOSER to the
+             generic FV than to its own task's FV]
+  alpha 2 -> 0.365 vs 0.364                              [they cross: task-specific alignment
+             catches up with, and matches, the generic alignment]
+  alpha 4 -> 0.361 vs 0.355
+So on an absolute scale the intervention closes a 0.09 gap: unsteered, the cue token looks
+more like the average task than like its own; by alpha=2 it looks equally like both, having
+gained twice as much task-specific as generic alignment.

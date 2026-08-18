@@ -92,12 +92,14 @@ def main():
               f"d_proj_gen={delta['proj_gen'][:, ai].mean():+.2f} "
               f"(raw cos_task {at_layer['cos_task'][:, ai].mean():.4f})")
 
-    def scatter_fig(dt, dg, ylabel, title, fname, fmt="{:+.3f}"):
+    def scatter_fig(dt, dg, ylabel, title, fname, fmt="{:+.3f}", zero_line=True,
+                    baseline=None):
         fig, ax = plt.subplots(figsize=(8.6, 5.6), dpi=200)
         fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
         rng = np.random.RandomState(0)
-        for arr, col, lab in ((dt, BLUE, "towards the task's own FV"),
-                              (dg, ORANGE, "towards the all-task averaged FV")):
+        for si, (arr, col, lab) in enumerate(
+                ((dt, BLUE, "towards the task's own FV"),
+                 (dg, ORANGE, "towards the all-task averaged FV"))):
             for ai, a in enumerate(alphas):
                 jitter = rng.uniform(-0.06, 0.06, arr.shape[0])
                 ax.scatter(np.full(arr.shape[0], ai) + jitter, arr[:, ai], s=13,
@@ -108,9 +110,16 @@ def main():
                 if ai == len(alphas) - 1:
                     ax.annotate(fmt.format(arr[:, ai].mean()),
                                 (ai, arr[:, ai].mean()), textcoords="offset points",
-                                xytext=(10, 0), fontsize=11, color=col, fontweight="bold",
-                                va="center")
-        ax.axhline(0, color=INK2, lw=1.0, ls=":")
+                                xytext=(10, 7 if si == 0 else -9), fontsize=11, color=col,
+                                fontweight="bold", va="center")
+        if zero_line:
+            ax.axhline(0, color=INK2, lw=1.0, ls=":")
+        if baseline is not None:
+            for val, col in baseline:
+                ax.axhline(val, color=col, lw=1.0, ls=":", alpha=0.8)
+            ax.annotate("unsteered level (α = 0)", (len(alphas) - 1, baseline[0][0]),
+                        textcoords="offset points", xytext=(-6, -14), fontsize=9.5,
+                        color=INK2, ha="right")
         ax.set_xticks(range(len(alphas)), [str(a) for a in alphas], fontsize=11)
         ax.set_xlabel("steering strength α  (× the injected vector's own norm)",
                       fontsize=11.5, color=INK2)
@@ -140,6 +149,18 @@ def main():
                 f"change in projection magnitude at L{LAYER}  (vs α = 0)",
                 "…and increases how far it extends along that direction",
                 "headline_proj.png", fmt="{:+.1f}")
+
+    # absolute-scale companion for cosine (raw values, not deltas)
+    scatter_fig(at_layer["cos_task"], at_layer["cos_gen"],
+                f"cosine similarity at L{LAYER}  (absolute)",
+                "Absolute cue-token alignment with the function vector",
+                "headline_cos_absolute.png", fmt="{:.3f}", zero_line=False,
+                baseline=[(float(at_layer["cos_task"][:, 0].mean()), BLUE),
+                          (float(at_layer["cos_gen"][:, 0].mean()), ORANGE)])
+    print(f"absolute cos at alpha=0: task {at_layer['cos_task'][:, 0].mean():.4f} | "
+          f"generic {at_layer['cos_gen'][:, 0].mean():.4f}; "
+          f"at alpha=2: task {at_layer['cos_task'][:, 3].mean():.4f} | "
+          f"generic {at_layer['cos_gen'][:, 3].mean():.4f}")
 
     # layer profile of the task-FV delta
     fig, ax = plt.subplots(figsize=(9.2, 5.2), dpi=200)
