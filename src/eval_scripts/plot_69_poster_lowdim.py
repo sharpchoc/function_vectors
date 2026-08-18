@@ -23,21 +23,16 @@ DR = TASK69_RUN_DIR / "FV_dimensionality_reduction"
 
 def main():
     s50 = list(csv.DictReader(open(DR / "sparse_all69/pc_sparse_summary.csv")))
-    k22 = {r["task"]: r for r in csv.DictReader(open(DR / "debugging/taskmean_k90_summary.csv"))}
+    a22 = {r["task"]: float(r["zs_best_over_alphas"]) for r in
+           csv.DictReader(open(DR / "debugging/taskmean_k90_alpha_sweep.csv"))}
     base = np.mean([float(r["zs_base"]) for r in s50])
     full = np.mean([float(r["zs_full_best"]) for r in s50])
-    p50 = np.mean([float(r["zs_best"]) for r in s50])
-    p22 = np.mean([float(k22[r["task"]]["zeroshot_acc_top22_taskmean_pcs"]) for r in s50])
+    p22 = np.mean([a22[r["task"]] for r in s50])
 
     variants = [("poster_lowdim.png",
                  [("no steering", base, "#b9bec6"),
                   ("full FV\n(4096-dim)", full, "#e8862e"),
-                  ("FV projected onto\n50 directions", p50, "#2273b8")]),
-                ("poster_lowdim_with22.png",
-                 [("no steering", base, "#b9bec6"),
-                  ("full FV\n(4096-dim)", full, "#e8862e"),
-                  ("50-dim\nprojection", p50, "#2273b8"),
-                  ("22-dim\nprojection", p22, "#7fabd1")])]
+                  ("FV projected onto\n22 directions", p22, "#2273b8")])]
     for fname, bars in variants:
         fig, ax = plt.subplots(figsize=(6.4, 5.4), dpi=220)
         x = np.arange(len(bars))
@@ -52,7 +47,7 @@ def main():
         ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8])
         ax.tick_params(axis="y", labelsize=12)
         ax.spines[["top", "right"]].set_visible(False)
-        ax.set_title("Steering survives a ~50-dimensional bottleneck\n"
+        ax.set_title("Function-vector steering is low-dimensional\n"
                      "(mean over 69 tasks, GPT-J)", fontsize=14.5, pad=14)
         fig.tight_layout()
         fig.savefig(DR / fname, bbox_inches="tight")
