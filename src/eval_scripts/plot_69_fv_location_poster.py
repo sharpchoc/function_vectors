@@ -211,7 +211,7 @@ def main():
     cb.outline.set_visible(False)
 
     stem = f"presence_poster_{args.metric}"
-    for ext in ("png", "pdf"):
+    for ext in ("png",):
         fig.savefig(args.out_dir / f"{stem}.{ext}", dpi=300, facecolor="white")
     plt.close(fig)
 

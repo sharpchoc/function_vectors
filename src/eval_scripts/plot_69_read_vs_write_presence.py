@@ -122,7 +122,7 @@ def main():
                      fontsize=11.5, title_fontsize=11.5, labelcolor=INK)
     leg2._legend_box.align = "left"
 
-    for ext in ("png", "pdf"):
+    for ext in ("png",):
         fig.savefig(args.out_dir / f"read_vs_write_presence.{ext}", dpi=300,
                     facecolor="white")
     plt.close(fig)
