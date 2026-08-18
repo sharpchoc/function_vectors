@@ -6105,3 +6105,26 @@ Verdict: task-level overfitting, as the user said — earlier WORKLOG claims of 
 "capturing genuine within-task signal in-sample" are hereby corrected. The centroid map
 still interpolates near-perfectly for held-out morphology/translation tasks and fails for
 classification-like ones (Addendum 4), so coverage remains the actionable lever.
+
+## 2026-08-18 — Seed-split robustness of the avg-X ridge (10 random 55/14 splits)
+
+**Status:** done. `ridge_labeltoken_seedsplits.py` (seeds 1001-1010, one pod each, fleet8,
+all terminated; same estimator + per-split 5-fold-task-CV lambda) +
+`plot_labeltoken_ridge_seedsplits.py`. Outputs:
+results/69_task_run/labeltoken_fv_ridge/seedsplits/ (seed_r2.png, seed_summary.csv,
+per_task_heldout.csv).
+
+**Results:** test R^2 mean 0.469 +- 0.040 (range 0.401-0.511) over the 10 random splits;
+train 0.784 +- 0.007; lambda=1e3 chosen every time. The canonical split (0.464) sits AT the
+seed mean — it is not an unlucky draw. Per-task held-out R^2 (pool-ref, averaged over the
+seeds where held out): classification-like tasks stay at ~0 EVEN under random splits that
+keep most of their family in train (pos_label -0.09 x3, initials_two_words -0.02 x2,
+uppercase_word 0.04 x2, first_digit 0.07 x3, person_place_thing 0.11 x4), while
+morphology/translation tasks transfer whenever held out. **This partially falsifies the
+coverage hypothesis** (recorded in Addendums 4-5): having same-family siblings in train
+does NOT rescue the classification tasks; their activation->FV relation appears
+task-idiosyncratic rather than merely under-covered. The stable ~0.31 train-test gap across
+all seeds confirms systematic task-level overfitting, not split luck.
+(6 tasks were never drawn into a test set across the 10 seeds; ag_news among them.)
+
+**Next:** user call. **Blockers:** none; all pods terminated.
