@@ -5957,3 +5957,35 @@ Raw-vs-diff is not a dose artifact: at matched injected norm (raw a=2 ~124 vs di
 ~140) raw still wins 0.109 vs 0.061. Reading: the shared label-slot component that
 differencing removes is itself doing most of the work — it makes the dummy '_' look like a
 real label position; task identity is the smaller increment on top.
+
+## 2026-08-18 — FV-presence heatmaps: does read-direction steering put FV content in the stream?
+
+**Status:** done. `src/sandbox/ext_steerability/fv_presence_heatmaps.py` +
+`src/eval_scripts/plot_fv_presence_heatmaps.py`; one pod (fv-fvp-1, terminated).
+Two tasks: day_after_textual_date (seeded random pick; steers 0.000) and next_number_digits
+(dot_perhead's best task, 0.313). For each: 1-shot '_' scaffold, modal (length, '_' index)
+prompt group so token positions align exactly (53/150 and 150/150 prompts), residual stream
+recorded at all 28 block outputs x all positions, unsteered vs steered (dot_perhead read
+direction, natural magnitude alpha=1, injected at the ' _' slot at L3). Metrics: cos(resid,
+v_A) and projection onto v_A/||v_A||, where v_A = the canonical 37-head CUE-TOKEN FV.
+Outputs: results/69_task_run/fv_presence_heatmaps/<task>.png, npz in artifacts/.
+
+**Findings:**
+- The read direction and the FV are nearly orthogonal to begin with: cos(read dir, FV) =
+  0.084 (next_number_digits) / 0.103 (day_after_textual_date). So a vector "designed to
+  elicit the FV" is not itself FV-aligned — as intended (it is an input-side direction).
+- Steering DOES add FV content, and it survives to the readout site: cos at the final cue
+  token rises 0.108 -> 0.308 (next_number_digits) and 0.075 -> 0.190 (day_after), with the
+  projection at the cue token going 23.5 -> 45.6 and 4.5 -> 17.6. Largest gains at L12-L13.
+- The effect is NOT local to the injection site: the '_' column lights up at L3-L5 as
+  expected, but the biggest cos/projection increases are at the FINAL cue token in the
+  mid-to-late layers, i.e. the OV path really does carry the injected direction forward.
+- Yet behaviour barely moves for day_after (0.000) while next_number_digits reaches 0.313.
+  Both show comparable relative FV gain, so delivering FV content into the stream is
+  necessary-but-not-sufficient: the tasks that fail are failing downstream of FV delivery
+  (they need input-dependent computation, not just task identity).
+- Absolute levels stay modest: cue-token cos 0.19-0.31 vs the ~1.0 that a real FV injection
+  would give by construction, consistent with attention-weight attenuation of a
+  single-position injection.
+
+**Next:** user call. **Blockers:** none; pod terminated.
