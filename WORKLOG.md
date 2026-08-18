@@ -6066,3 +6066,25 @@ summary.csv, per_task_acc.csv); preds in artifacts/.../sixshot_dummy/.
 
 **Next:** user call (obvious: extend the alpha grid upward since a=4 is the boundary).
 **Blockers:** none; all pods terminated.
+
+## 2026-08-18 — Poster visuals for the 6-shot steering result
+
+**Status:** done. `src/eval_scripts/plot_poster_visuals.py` ->
+results/69_task_run/raw_mean_steering/sixshot_dummy/poster_visuals/:
+- `headline_bars.png`: three bars (no steering 0.000 | steered 0.442 | real 6-shot 0.629),
+  means over 69 tasks with 95% CIs and direct value labels; subtitle states the 70% ratio.
+  Uses the FIXED alpha=4 condition (not per-task best-alpha 0.447) to avoid selection.
+- `method_diagram.png`: schematic of the intervention on a 1-shot dummy prompt — token strip
+  with the '_' slot highlighted, layer stack over that column, the injected
+  alpha * mean-label-activation entering at L6, dashed forward arrow to the prediction read
+  out at the query's 'A:' token.
+
+Palette: dataviz reference (blue #2a78d6 for the intervention, neutral inks for references).
+No node runtime on this box, so the validator's six checks were ported to Python
+(/root/.claude/jobs/121308b8/tmp/validate_palette.py, OKLab dE + Machado CVD sim + WCAG):
+PASS — worst normal-vision dE 21.8, worst CVD dE 18.9; the light gray is below 3:1 contrast
+so the relief rule applies and every bar carries a visible value label.
+
+**Terminology note for the poster:** the injected object is the task's MEAN LABEL-TOKEN
+ACTIVATION (raw residual mean), not a "read direction" in the glossary sense (no
+pseudo-inverse). Figures are labelled accordingly.
