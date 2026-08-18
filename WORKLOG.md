@@ -6053,3 +6053,16 @@ lambdas selected. Reading: the discarded 10% energy tail carries some transferab
 signal, and the full-dim ridge at lambda=1e3-1e4 already regularises at least as well as a
 hard 377-PC cut — PCA-90 is strictly a lossy version of what ridge does softly.
 Output: artifacts/69_task_run/labeltoken_fv_ridge/pca90_n10.json.
+
+### Addendum 2 — oracle ceiling + error decomposition promoted to results
+
+Scratch diagnostics promoted: `src/eval_scripts/labeltoken_ridge_oracle_ceiling.py` (LOO
+task-mean oracle: heldout R^2 0.675 uniform / 0.714 weighted; train 0.729) and
+`src/eval_scripts/labeltoken_ridge_error_decomposition.py` (avg-X model, heldout pooled
+0.464 = between-task centroids 0.650 + within-task deviations 0.032; oracle recentring
+0.690 > ceiling; centroid placement bimodal — morphology/translation cos 0.93-0.99, ag_news
+/uppercase_word/initials_two_words/first_digit/pos_label/person_place_thing 0.64-0.76).
+Conclusion recorded: pooled X->FV maps are task-sample-limited between tasks (~55 effective
+points) and within-task covariance does not transfer; PCA-90 rank reduction strictly hurts
+(pca90_summary.csv). New results files: error_decomposition.txt, pca90_summary.csv in
+results/69_task_run/labeltoken_fv_ridge/.
