@@ -6093,3 +6093,15 @@ first_digit, person_place_thing) has large oracle headroom (0.45-0.66) that the 
 leaves untouched. User's read confirmed: task-level overfitting/coverage — but note the
 heldout tasks are NOT intrinsically the worst (their oracles are ordinary); the map just
 wasn't taught their region.
+
+### Addendum 5 — CORRECTION: the above-oracle train R^2 was in-sample optimism
+
+User challenged the "genuine within-task signal" reading; held-out-PROMPT check
+(`src/eval_scripts/labeltoken_ridge_heldout_prompt_check.py`, 120 fit / 30 eval prompts per
+train task, alpha=1e3) settles it: in-sample 0.789 -> unseen prompts of seen tasks 0.740,
+vs fair oracle (fit-row task means) 0.728; within-task deviations R^2 = 0.049. The ridge's
+power is ~entirely memorized task centroids (+0.012 over oracle at the prompt level).
+Verdict: task-level overfitting, as the user said — earlier WORKLOG claims of the ridge
+"capturing genuine within-task signal in-sample" are hereby corrected. The centroid map
+still interpolates near-perfectly for held-out morphology/translation tasks and fails for
+classification-like ones (Addendum 4), so coverage remains the actionable lever.
