@@ -6166,3 +6166,38 @@ FV at L13), no generic-FV line, no footnote, no parenthetical axis text. Values 
 0.33 / 0.37 / 0.36 for alpha 0 / 0.5 / 1 / 2 / 4. The generic-FV comparison and the
 task-specific excess remain available in headline_cos.png, headline_cos_taskspecific.png and
 summary.csv, but the headline answers only "how does alpha change similarity to the target FV".
+
+## 2026-08-18 — Sparse selection over the top-40 read-feature PCs (raw_mean_steering/sparse_pc40)
+
+**Status:** done. Question: can a low-dimensional subspace of the L6 label-token read feature
+retain its steering ability? Basis = the top 40 centered PCs of the 69 per-task L6 means (the
+dimensionality-folder PCA; variance-ordered, so the first 40 of the stored 41-PC basis).
+Shared gate c in [0,1]^40, task A's vector = sum_j c_j (m_A . v_j) v_j; fit on 1-shot dummy
+prompts, inject at the ' _' slot at L6 at alpha=2, loss -log p(gold) + lambda||c||_1; 5-fold
+CV over the 55 train tasks with the GRADED (-log p) criterion (exact-match was 0.000 in all 20
+cells, as at every label-slot fit); selection c > 0.8. Then steered all 69 tasks with each
+lambda's subset, alpha {0.5,1,2,4}, vs the full read feature and the all-40 truncation.
+Scripts: train_sparse_pc40.py (reuses train_c by folding projection coefficients into the
+contribution tensor), eval_sparse_pc40.py, plot_sparse_pc40.py. Fleet 20 pods (own id file),
+all terminated. Two pods/cells needed manual re-runs (one never exposed SSH).
+
+**RESULT — NO low-dimensional subspace retains the steering effect. Retention is roughly
+LINEAR in dimension count, with no knee:**
+| PCs kept |  2  |  5  | 15  | 24  | 25 (final) | 40 |
+| accuracy | 0.016 | 0.028 | 0.055 | 0.068 | 0.071 | 0.094 |
+| % of full (0.123) | 13% | 23% | 44% | 55% | 58% | 76% |
+Unsteered 0.001. Even ALL 40 PCs (95% of the between-task variance) recover only 76% of the
+full read feature, and halving to 20-ish dims costs another ~20 points.
+Interpretation: the steering signal is NOT concentrated in a few leading task-variance
+directions. The PCA basis is built to explain variance ACROSS tasks, which is not the same as
+the directions the model reads; much of what makes steering work lies outside the top-40
+between-task subspace (the remaining 24% even at k=40), and within the basis it is spread
+roughly evenly rather than concentrated. Consistent with the earlier narrow-patch result
+(41-PC projection 0.104 vs full 0.126) and with the dimensionality analysis (90% var needs 32
+PCs, stable rank 5.6 — a gentle spectrum, not a low-rank one).
+NOTE: the final selection skips PC0 (the top-variance direction) — the shared component
+carries no task identity, matching the shared-mean control that steered at ~0.
+Outputs: results/69_task_run/raw_mean_steering/sparse_pc40/ (retention_curve.png,
+alpha_curves.png, summary.csv, per_task_acc.csv, selection.json).
+
+**Next:** user call. **Blockers:** none; all pods terminated.
