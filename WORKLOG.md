@@ -6112,3 +6112,13 @@ Per user: (1) only the intervened '_' token and the final 'compile' answer are b
 other tokens stay grey, so it no longer looks like every position is intervened on;
 (2) vertical whitespace between the L7-L27 band and the top rollout removed (canvas 6.9 ->
 5.1 units, bands re-spaced), giving a much denser figure at the same width.
+
+### Addendum — headline bars stripped down for the poster
+
+Per user: removed the footnote caption and the subtitle; title shortened to "Steering a
+content-free prompt" (no accuracy claim in it); y-axis label is now just "task accuracy";
+x tick labels are "No steering" / "Steered" / "Real 6-shot demos" (bracketed detail gone);
+value labels moved ABOVE the whiskers and rounded to 2 dp; whiskers recoloured to the
+surface white (#fcfcfb) so they read against both the blue and the dark graphite bar
+(contrast 4.3:1 and 7.7:1 respectively). Bar colours unchanged and still PASS the ported
+palette checks. Methods detail now lives in the poster text, not the figure.

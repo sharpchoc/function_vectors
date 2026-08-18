@@ -56,53 +56,41 @@ def ci95(v):
 
 def headline_bars():
     rows, col = load()
-    series = [("No steering\n(6 dummy '_' labels)", col("dummy6_unsteered"), GRAY),
-              ("Steered\n(inject task mean at all 6 label slots)", col(ALPHA_FIXED), BLUE),
-              ("Real 6-shot demos\n(upper reference)", col("real_6shot"), GRAPHITE)]
-    fig, ax = plt.subplots(figsize=(9.2, 6.2), dpi=200)
+    series = [("No steering", col("dummy6_unsteered"), GRAY),
+              ("Steered", col(ALPHA_FIXED), BLUE),
+              ("Real 6-shot demos", col("real_6shot"), GRAPHITE)]
+    fig, ax = plt.subplots(figsize=(8.4, 5.6), dpi=200)
     fig.patch.set_facecolor(SURFACE)
     ax.set_facecolor(SURFACE)
     x = np.arange(len(series))
     for i, (lab, v, c) in enumerate(series):
-        m = float(v.mean())
-        ax.bar(i, m, width=0.62, color=c, zorder=3,
-               error_kw=dict(ecolor=INK2, lw=1.2, capsize=4, zorder=4),
-               yerr=ci95(v) if m > 0 else None)
-        ax.text(i, m + 0.014, f"{m:.3f}", ha="center", va="bottom", fontsize=17,
+        m, e = float(v.mean()), ci95(v)
+        ax.bar(i, m, width=0.6, color=c, zorder=3)
+        if m > 0:
+            # light whiskers so they read against the dark reference bar
+            ax.errorbar(i, m, yerr=e, fmt="none", ecolor="#fcfcfb", elinewidth=2.4,
+                        capsize=6, capthick=2.4, zorder=4)
+        ax.text(i, m + e + 0.018, f"{m:.2f}", ha="center", va="bottom", fontsize=20,
                 fontweight="bold", color=INK, zorder=5)
-    # the headline: how much of the real-demo effect steering recovers
-    steer, real = float(series[1][1].mean()), float(series[2][1].mean())
-    subtitle = (f"On a prompt with no worked example, steering recovers "
-                f"{steer/real:.0%} of what six real demonstrations achieve")
-    ax.set_xticks(x, [s[0] for s in series], fontsize=11.5, color=INK)
-    ax.set_ylabel("task accuracy  (exact match, T=1, 150 prompts/task)",
-                  fontsize=11.5, color=INK2)
-    ax.set_ylim(0, 0.72)
-    ax.set_yticks(np.arange(0, 0.71, 0.1))
-    ax.tick_params(axis="y", colors=INK2, labelsize=10)
+    ax.set_xticks(x, [s[0] for s in series], fontsize=13.5, color=INK)
+    ax.set_ylabel("task accuracy", fontsize=13, color=INK2)
+    ax.set_ylim(0, 0.74)
+    ax.set_yticks(np.arange(0, 0.71, 0.2))
+    ax.tick_params(axis="y", colors=INK2, labelsize=11)
     ax.tick_params(axis="x", length=0)
     ax.yaxis.grid(True, color=GRID, lw=0.9, zorder=0)
     ax.set_axisbelow(True)
-    for s in ("top", "right", "left"):
-        ax.spines[s].set_visible(False)
+    for sp in ("top", "right", "left"):
+        ax.spines[sp].set_visible(False)
     ax.spines["bottom"].set_color(GRID)
-    ax.set_title("Injecting a task's mean label-token activation makes a\n"
-                 "content-free prompt behave like a demonstrated one",
-                 fontsize=16, fontweight="bold", color=INK, pad=30, loc="left")
-    ax.text(0, 1.012, subtitle, transform=ax.transAxes, fontsize=12, color=INK2,
-            ha="left", va="bottom")
-    fig.text(0.005, 0.005,
-             "GPT-J-6B, 69 tasks. Prompt: six demos with real inputs and '_' as every "
-             "label, then the query. Intervention: add 4x the task's mean L6 activation at "
-             "the label token to all six '_' slots. Bars are means over tasks; whiskers 95% CI.",
-             fontsize=8.5, color=INK2, ha="left", va="bottom", wrap=True)
-    fig.tight_layout(rect=(0, 0.045, 1, 1))
+    ax.set_title("Steering a content-free prompt", fontsize=18, fontweight="bold",
+                 color=INK, pad=14, loc="left")
+    fig.tight_layout()
     OUT.mkdir(parents=True, exist_ok=True)
     fig.savefig(OUT / "headline_bars.png", bbox_inches="tight", facecolor=SURFACE)
+    steer, real = float(series[1][1].mean()), float(series[2][1].mean())
     print(f"headline: unsteered {series[0][1].mean():.4f} | steered {steer:.4f} | "
           f"real6 {real:.4f} | ratio {steer/real:.3f}")
-
-
 
 
 def _token_row(ax, toks, y, slot, steered, centers_out=None):
