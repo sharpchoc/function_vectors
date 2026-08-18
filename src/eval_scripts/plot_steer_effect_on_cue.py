@@ -194,17 +194,36 @@ def main():
         pos = int((excess[:, ai] > 0).sum())
         print(f"  alpha={a}: {excess[:, ai].mean():+.4f}  (positive on {pos}/{len(tasks)} tasks)")
 
-    # absolute-scale companion for cosine (raw values, not deltas)
-    scatter_fig(at_layer["cos_task"], at_layer["cos_gen"],
-                f"cosine similarity at L{LAYER}  (absolute)",
-                "Absolute cue-token alignment with the function vector",
-                "headline_cos_absolute.png", fmt="{:.3f}", zero_line=False,
-                baseline=[(float(at_layer["cos_task"][:, 0].mean()), BLUE),
-                          (float(at_layer["cos_gen"][:, 0].mean()), ORANGE)])
-    print(f"absolute cos at alpha=0: task {at_layer['cos_task'][:, 0].mean():.4f} | "
-          f"generic {at_layer['cos_gen'][:, 0].mean():.4f}; "
-          f"at alpha=2: task {at_layer['cos_task'][:, 3].mean():.4f} | "
-          f"generic {at_layer['cos_gen'][:, 3].mean():.4f}")
+    # ---- HEADLINE: absolute alignment with the task FV, single series, minimal chrome ----
+    arr = at_layer["cos_task"]
+    fig, ax = plt.subplots(figsize=(8.0, 5.4), dpi=200)
+    fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
+    rng = np.random.RandomState(0)
+    for ai in range(len(alphas)):
+        ax.scatter(np.full(arr.shape[0], ai) + rng.uniform(-0.07, 0.07, arr.shape[0]),
+                   arr[:, ai], s=14, alpha=0.3, color=BLUE, linewidths=0, zorder=2)
+    ax.plot(range(len(alphas)), arr.mean(axis=0), "o-", color=BLUE, lw=2.6, ms=9, zorder=4,
+            markeredgecolor=SURFACE, markeredgewidth=1.5)
+    for ai in range(len(alphas)):
+        ax.annotate(f"{arr[:, ai].mean():.2f}", (ai, arr[:, ai].mean()),
+                    textcoords="offset points", xytext=(0, 14), fontsize=12.5, color=BLUE,
+                    fontweight="bold", ha="center")
+    ax.set_xticks(range(len(alphas)), [str(a) for a in alphas], fontsize=12)
+    ax.set_xlabel("steering strength α", fontsize=13, color=INK2)
+    ax.set_ylabel("cosine similarity with the task function vector", fontsize=13, color=INK2)
+    ax.set_title("Steering the label slots moves the cue token\ntowards the task's function "
+                 "vector", fontsize=15.5, fontweight="bold", color=INK, loc="left", pad=14)
+    ax.tick_params(colors=INK2, labelsize=11)
+    ax.grid(True, color=GRID, lw=0.9, zorder=0)
+    ax.set_axisbelow(True)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    for s in ("left", "bottom"):
+        ax.spines[s].set_color(GRID)
+    fig.tight_layout()
+    fig.savefig(OUT / "headline_cos_absolute.png", bbox_inches="tight", facecolor=SURFACE)
+    print(f"absolute cos to task FV: " +
+          "  ".join(f"a{a}={arr[:, ai].mean():.4f}" for ai, a in enumerate(alphas)))
 
     # layer profile of the task-FV delta
     fig, ax = plt.subplots(figsize=(9.2, 5.2), dpi=200)

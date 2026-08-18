@@ -6158,3 +6158,11 @@ Unlike the raw task-FV delta (which peaked at alpha=2 and dipped at 4), this spe
 measure is still RISING at alpha=4 — the alpha=4 dip in raw alignment is a loss of GENERIC
 alignment, not of task-specific alignment. That removes the apparent dissociation with the
 accuracy curve (which also kept climbing to alpha=4).
+
+### Addendum 3 — headline simplified (user preference)
+
+`headline_cos_absolute.png` is now the single headline: ONE series (absolute cos to the task
+FV at L13), no generic-FV line, no footnote, no parenthetical axis text. Values 0.18 / 0.26 /
+0.33 / 0.37 / 0.36 for alpha 0 / 0.5 / 1 / 2 / 4. The generic-FV comparison and the
+task-specific excess remain available in headline_cos.png, headline_cos_taskspecific.png and
+summary.csv, but the headline answers only "how does alpha change similarity to the target FV".
