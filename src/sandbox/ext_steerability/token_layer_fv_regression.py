@@ -47,9 +47,17 @@ from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
 
 FVS = ARTIFACTS_ROOT / "69_task_run" / "perprompt_fvs"
 LAB_RE = re.compile(r"^demonstration_(\d+)_label_token$")
+INP_RE = re.compile(r"^demonstration_(\d+)_token$")
 N_DEMOS = 10
-POS_NAMES = [f"d{n}_{r}" for n in range(1, N_DEMOS + 1)
+# label-side positions (the original 31): per demo the ':' before the label, and the first
+# and last token of the label itself, plus the final query cue.
+POS_LABEL = [f"d{n}_{r}" for n in range(1, N_DEMOS + 1)
              for r in ("pre", "first", "last")] + ["query_cue"]
+# input-side positions (added 2026-08-18 on user request): per demo the first and last
+# token of the INPUT word (after "Q:"), plus the query's own input last token.
+POS_INPUT = [f"d{n}_inp_{r}" for n in range(1, N_DEMOS + 1)
+             for r in ("first", "last")] + ["query_inp_last"]
+POS_SETS = {"label31": POS_LABEL, "input21": POS_INPUT, "all52": POS_LABEL + POS_INPUT}
 ALPHAS = list(np.logspace(-1, 8, 19))
 KFOLDS, CV_SEED = 5, 42
 
@@ -66,6 +74,7 @@ def parse_args():
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--batch_size", type=int, default=12)
+    p.add_argument("--pos_set", choices=("label31", "input21", "all52"), default="label31")
     p.add_argument("--dtype", choices=("float32", "float64"), default="float32")
     p.add_argument("--fp64_check_pos", type=int, default=-1,
                    help="also fit this position in fp64 and report the R^2 delta "
@@ -73,8 +82,8 @@ def parse_args():
     return p.parse_args()
 
 
-def prompt_positions(rec, tokenizer):
-    """(prompt_string, [31 token indices]) for one record; no bos anywhere."""
+def prompt_positions(rec, tokenizer, pos_set="label31"):
+    """(prompt_string, [token indices for the chosen position set]); no bos anywhere."""
     wp = {"input": [str(d["input"]) for d in rec["demos"]],
           "output": [str(d["output"]) for d in rec["demos"]]}
     qo = rec["query"]["output"]
@@ -87,20 +96,38 @@ def prompt_positions(rec, tokenizer):
     ids = tokenizer(prompt_string).input_ids
     assert len(ids) == len(token_labels)
     first, last = {}, {}
+    inp_first, inp_last, q_inp_last = {}, {}, None
     for i, _, lab in token_labels:
+        i = int(i)
         m = LAB_RE.match(lab)
         if m:
             n = int(m.group(1))
-            i = int(i)
             first[n] = min(first.get(n, i), i)
             last[n] = max(last.get(n, -1), i)
+            continue
+        m = INP_RE.match(lab)          # demonstration_<n>_token = the input word
+        if m:
+            n = int(m.group(1))
+            inp_first[n] = min(inp_first.get(n, i), i)
+            inp_last[n] = max(inp_last.get(n, -1), i)
+        elif lab == "query_demonstration_token":
+            q_inp_last = i if q_inp_last is None else max(q_inp_last, i)
     assert sorted(first) == list(range(1, N_DEMOS + 1)), f"demos found: {sorted(first)}"
+
     idxs = []
-    for n in range(1, N_DEMOS + 1):
-        assert first[n] - 1 >= 0
-        idxs += [first[n] - 1, first[n], last[n]]
-    idxs.append(len(ids) - 1)
-    assert len(idxs) == len(POS_NAMES)
+    if pos_set in ("label31", "all52"):
+        for n in range(1, N_DEMOS + 1):
+            assert first[n] - 1 >= 0
+            idxs += [first[n] - 1, first[n], last[n]]
+        idxs.append(len(ids) - 1)
+    if pos_set in ("input21", "all52"):
+        assert sorted(inp_first) == list(range(1, N_DEMOS + 1)), \
+            f"input tokens found for demos {sorted(inp_first)}"
+        assert q_inp_last is not None, "no query_demonstration_token"
+        for n in range(1, N_DEMOS + 1):
+            idxs += [inp_first[n], inp_last[n]]
+        idxs.append(q_inp_last)
+    assert len(idxs) == len(POS_SETS[pos_set])
     return prompt_string, idxs
 
 
@@ -176,17 +203,19 @@ def main():
     train_tasks, test_tasks = sorted(split["train_tasks"]), sorted(split["heldout_tasks"])
     args.out_root.mkdir(parents=True, exist_ok=True)
 
+    pos_names = POS_SETS[args.pos_set]
     model, tokenizer, model_config = load_gpt_model_and_tokenizer(args.model_name)
     tokenizer.padding_side = "right"
     lname = model_config["layer_hook_names"][args.layer]
-    print(f"layer {args.layer} -> {lname}", flush=True)
+    print(f"layer {args.layer} -> {lname} | pos_set {args.pos_set} "
+          f"({len(pos_names)} positions)", flush=True)
 
     # ---- one forward pass per task, keep only this layer's 31 positions ----
     def capture(task):
         recs = json.load(open(args.prompts_root / task / "train_prompts.json"))
         assert len(recs) == 150
-        built = [prompt_positions(r, tokenizer) for r in recs]
-        acts = torch.zeros(150, len(POS_NAMES), 4096, dtype=torch.float16)
+        built = [prompt_positions(r, tokenizer, args.pos_set) for r in recs]
+        acts = torch.zeros(150, len(pos_names), 4096, dtype=torch.float16)
         for s in range(0, len(built), args.batch_size):
             chunk = built[s:s + args.batch_size]
             idxs = torch.tensor([c[1] for c in chunk], device=model.device)
@@ -222,7 +251,7 @@ def main():
     print(f"captured X {tuple(X.shape)}", flush=True)
 
     results = {}
-    for pi, pname in enumerate(POS_NAMES):
+    for pi, pname in enumerate(pos_names):
         Xp = X[:, pi].float()
         res, alpha, pinned = ridge_fit_eval(Xp, Y, tr_idx, te_slices, tr_slices, task_fv,
                                             dtype, device)
@@ -243,8 +272,9 @@ def main():
         del Xp
         torch.cuda.empty_cache()
 
-    with open(args.out_root / f"layer{args.layer}.json", "w") as f:
-        json.dump({"layer": args.layer, "positions": POS_NAMES, "dtype": args.dtype,
+    suffix = "" if args.pos_set == "label31" else f"_{args.pos_set}"
+    with open(args.out_root / f"layer{args.layer}{suffix}.json", "w") as f:
+        json.dump({"layer": args.layer, "positions": pos_names, "dtype": args.dtype,
                    "scoring": "target = task FV; per-task R^2 vs split-pool mean; "
                               "uniform over dims; mean across tasks",
                    "results": results}, f, indent=1)

@@ -6177,3 +6177,26 @@ train_r2_heatmap.png, r2_grid.csv, best_cells.txt); per-layer fits in
 artifacts/69_task_run/token_layer_regressions/.
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+
+### Addendum — input-token positions added + poster figure
+
+Extended the (token x layer) sweep with INPUT-side positions (`--pos_set input21`: per demo
+the first/last token of the input word, plus the query's input last token; 28 pods, all
+terminated; layer 24's pod was a dud twice and was rerun on a healthy pod).
+
+**Input tokens carry essentially NO linearly-decodable FV content: R^2 between -0.24 and
++0.03 at every layer, for every demo index** — vs 0.35-0.69 for cue/target positions. The
+FV signal appears only once the label is in view.
+
+Sawtooth (user-spotted, now quantified): the cue row sits BELOW its own target row in early
+examples and the gap closes with demo index — ex1 -0.02 vs 0.46, ex2 0.35 vs 0.53, ex3 0.45
+vs 0.55, ex5 0.52 vs 0.57 (at L6), converging by ex5-6 and INVERTING by ex10 (0.69 vs 0.63
+at L15). So the ':' cue only becomes FV-predictive after several examples have established
+the task, while the label token is informative from the very first example.
+
+Poster figure: `src/eval_scripts/plot_token_layer_poster.py` ->
+results/69_task_run/token_layer_regressions/poster_visuals/heldout_r2_poster.png. Blocks per
+ICL example with input/cue/target rows (target = last label token), white separators and
+bracket labels, 6 examples shown (7-10 stay in r2_grid.csv), colour scale fitted to the data
+(-0.30..0.70, nothing reaches 0.8), cyan box over examples 1-4 marking the sawtooth, title
+"Where the function vector is linearly readable".
