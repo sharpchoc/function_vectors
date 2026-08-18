@@ -6128,3 +6128,17 @@ all seeds confirms systematic task-level overfitting, not split luck.
 (6 tasks were never drawn into a test set across the 10 seeds; ag_news among them.)
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+
+### Addendum 6 — Lasso in the train-PCA basis (rotation + L1) also does not beat ridge
+
+User variant: rotate avg-X into the full centered train-PCA basis (pure rotation, no
+truncation — meaningful only with L1, since ridge is rotation-invariant) and fit a
+multi-output lasso (`src/sandbox/ext_steerability/lasso_pca_labeltoken.py`, FISTA fp32,
+warm-started lam path, 5-fold task CV). First grid pinned at its smallest lam; extended two
+decades: CV interior optimum at lam = 1e-4 * lam_max.
+**Result: train 0.752 / test 0.449 (weighted 0.772/0.499), 4.5% nonzero weights, 1640 input
+PCs used — still below the plain full-dim ridge (0.787/0.464).** Together with PCA-90
+(0.452) the pattern is consistent: CV pushes sparsity toward zero, and every hard or L1
+sparsity prior in the input basis costs held-out R^2. The transfer bottleneck is task-level
+(seed-split study), not estimator variance along low-energy input directions.
+Output: artifacts/69_task_run/labeltoken_fv_ridge/lasso_pca_avg.json.
