@@ -7361,3 +7361,11 @@ Pod fv-meanfree-steering (RTX PRO 4500, ~2.2h, terminated; OOM lesson: steering 
 budget 11000/cap 16 on 32GB now that 24000/48 OOMs in lm_head on long-prompt tasks).
 
 Next: none pending user. Blockers: none.
+
+## Stream: oneshot_dummy results folder (2026-08-19, branch worktree-oneshot-dummy)
+
+Status: done. USER REQUEST: sixshot_dummy-format presentation of the 1-shot dummy-label L6
+steering (data = L6 slice of the existing raw-mean layer sweep; no new compute).
+plot_oneshot_dummy_steer.py -> steering_results/oneshot_dummy/{alpha_curve.png, by_task.png,
+summary.csv, per_task_acc.csv}; includes the sharedL6 control columns. Headline (69 tasks):
+unsteered .001 | steered best-alpha .126 (a2 .112) | shared-mean best .013 | real 1-shot .208.
