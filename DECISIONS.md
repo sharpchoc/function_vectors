@@ -1,5 +1,29 @@
 # DECISIONS
 
+## 2026-08-19 — FV cue-token ablation protocol (user-adjudicated) + pod lessons
+
+- **FV ablation study design (user decisions):** ablate the unit 37-head task-FV direction
+  from the residual stream at the FINAL CUE token of 6-shot prompts, prefill only; ops =
+  zero-projection AND mean-ablation; BOTH layer clamps L9–27 and L0–27 reported side by side;
+  readout = T=1 sampled exact match (sixshot_dummy protocol); counterfactual control =
+  the shared `artifacts/69_task_run/bottom_up_ablation/cf_task_pairs.json` (different
+  semantic family, Haiku-assigned, used verbatim by both ablation studies).
+- **Mean-ablation reference at the cue token = `grand_mean_cue6.pt`:** equal-task-weighted
+  grand mean over all 69 tasks of cue-token block-input residuals of the same 6-shot
+  prompts (per layer). Note this differs from the pc50 label-token grand mean (token-count
+  weighted) and lives at a different site — don't mix them.
+- **LESSON — stored T=1 sampled baselines don't reproduce exactly across runs** even with
+  shared crc32 seeds (fp16 logit differences flip borderline samples; antonym real6 0.36 vs
+  stored 0.32). When comparing ablation arms against a baseline, recompute the baseline
+  in-run (`--with_baseline`) so all arms share the run's exact logit stream; use stored
+  numbers only as floors/references.
+- **LESSON — GPT-J snapshot glob is unsafe:** the volume HF cache now has a second, stale
+  snapshot dir (`f3f...`, only a stray model.safetensors) that `sorted(glob)[-1]` picks over
+  the complete `47e...` one → "Unrecognized model" errors. Pass `--model_dir` (or pin the
+  snapshot hash) in pod drivers.
+- Generation-stage OOM guard for long-prompt tasks (ag_news) on 31 GiB cards: token_budget
+  11000 / batch_cap 16 (pc50 values) + `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`.
+
 ## 2026-08-16 — CANONICAL extended-task pool = the 69 steerable tasks (user decision)
 
 - **All future train/test splits and downstream experiments on extended tasks use ONLY the
