@@ -7460,3 +7460,32 @@ pairwise_cos_L6.npz}. Three panels: conceptual arrow fan (all 69 read features c
 all-task mean), conceptual decomposition m_A = (m_A.mhat)mhat + r_A, and the measured pairwise-cos
 histograms (raw .74 -> task-unique -.01, L6 slot-averaged features). Conceptual panels number-free
 per repo convention; blue/orange pair CVD-checked (OKLab dE normal 32, deutan 32, protan 27).
+
+## Stream: low-dim task-unique projection-swap steering (2026-08-19, branch worktree-lowdim-steering, fork "Low Dim Read Feature Steering")
+
+Status: done. USER REQUEST: same sixshot_dummy setup, but steer by projection swap in the task's
+top task-unique SVD direction(s) at L6: h <- h - P_V h + alpha*sum s_i v_i at every dummy '_' slot.
+User decisions: direction 1 ONLY first (escalate to 3 if it struggles); signs fixed so the task's
+L6 mean-removed feature projects positively; replacement magnitude = s_i (singular values of the
+unit-normed 11-layer stack); alpha grid 0,.5,1,2,4,8 extended to 16/32 pre-launch (calibration:
+natural L6 coord along v1 = 8.0x s1 median, range 4-13) and topped up with 48/64 (curve still rising
+at 32 on 57/69 tasks; resumable per-task JSONs).
+
+Commands: steer_taskunique_svd.py (new; ProjSwap hook on block-6 output, prefill only; budget
+11000/cap 16) on own pods fv-lowdim-steering (1j29pu9u1e6ab2 main run ~2h; 4kcmglg42pd036 top-up
+~25min; both terminated). plot_69_taskunique_svd_steer.py -> results
+.../steering_results/taskunique_svd_dummy/{per_task_acc.csv, summary.csv, alpha_curve.png, by_task.png}.
+
+Findings (mean over 69 tasks):
+- dummy6: .000 baseline -> .341 at a32 (peak; a48 .287, a64 .233), per-task best .372. ONE
+  task-unique direction at ~4x natural magnitude matches the full 4096-dim mean-free vector's best
+  (.339) and reaches 76% of the full-mean reference (.447), 59% of real 6-shot (.629).
+- dummy1: peak .065 at a16 (best .077); references: full mean .126, mean-free .075 — same story.
+- a0 (removal-only) = baseline exactly (dummy slots carry ~no task code to remove).
+- Effect ignites only at alpha>=16 (~2x natural scale) — the original 0-8 grid would have read as
+  a null result; supra-natural optimum matches full-mean steering (best a4 = 4x mean).
+- Baselines reproduce stored runs bit-for-bit (infra cross-check).
+
+Also this stream: poster explainer visual (see prior entry). Next: none pending user. Direction-2/3
+escalation NOT needed by the "struggles" criterion (matches mean-free vector), available if wanted.
+Blockers: none.
