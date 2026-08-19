@@ -1,0 +1,28 @@
+=== presence-vs-accuracy diagnostics (69 tasks, meanL9-20 presence) ===
+
+A. n=0 floor: 13/69 tasks non-zero, max 0.027, mean 0.0020  -> the n=0 panel is a floor, its rho is not meaningful
+
+B. shared-mean control (Spearman across 69 tasks):
+   n | rho(presence,acc) | rho(cos_gm,acc) | rho(cos_gm,presence) | partial(presence,acc|cos_gm)
+   0 |      +0.353        |     +0.375       |        +0.315         |           +0.267
+   1 |      -0.097        |     -0.107       |        +0.135         |           -0.084
+   2 |      -0.343        |     -0.045       |        +0.157         |           -0.341
+   3 |      -0.414        |     -0.010       |        +0.087         |           -0.415
+   4 |      -0.378        |     +0.029       |        +0.065         |           -0.381
+   5 |      -0.404        |     +0.068       |        +0.079         |           -0.411
+   6 |      -0.364        |     +0.098       |        +0.089         |           -0.376
+   cos(v_A, grand mean) range 0.44-0.81; rho(||v_A||, presence@6) = +0.562
+   -> the shared component does NOT explain the negative relation
+
+C. a-priori task features (56/69 tasks with stored features), at n=6:
+   label_tokens   rho(feat,presence)=-0.435  rho(feat,acc)=+0.074
+   out_entropy    rho(feat,presence)=-0.537  rho(feat,acc)=+0.285
+   input_tokens   rho(feat,presence)=-0.104  rho(feat,acc)=+0.034
+   n_unique_out   rho(feat,presence)=-0.538  rho(feat,acc)=+0.288
+   partial rho(presence, acc) controlling for all four:
+   n=2:-0.212 n=3:-0.261 n=4:-0.229 n=5:-0.247 n=6:-0.254
+   -> weakens the negative relation but does not remove it
+
+D. WITHIN-task across n=0..6 (paired): median rho = +0.964, positive in 69/69 tasks
+   -> adding demos raises presence AND accuracy together in every task;
+      the negative sign is purely a BETWEEN-task effect at fixed n

@@ -5,6 +5,99 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-16 — FV location in the residual stream (69-task pool, canonical 37-head FV)
+
+**Owner:** Claude Code background session (fv-location stream), CPU pod + pods fv-loc-{1,2}
+(RTX PRO 4500, ~15 min, ≈$0.40, BOTH TERMINATED). **Status:** DONE.
+Branch `claude-fv-location-69`; outputs also installed in the main checkout.
+
+**What (user spec):** for all 69 tasks (55 train + 14 held-out treated identically), run the
+150 fixed 10-shot train prompts (`isolation_prompts_ext`) clean, and at every block output
+(layers 0–27, the injection hook points) project the residual stream onto that task's unit
+FV direction (v_A = mean of the per-prompt FVs, gated cos=1.000 vs the means.pt + W_O
+rebuild). Positions collapsed to 32 structural columns — demo1..10 × {input, cue "A:",
+label} + query {input, cue}; multi-token spans averaged, structural "Q:"/newline/BOS tokens
+excluded. Two user-adjudicated metrics: cos(z_ℓ, v_A) and raw dot z_ℓ·v̂_A. Average over
+69 tasks × 150 prompts → one heatmap per metric.
+
+**Files:** NEW `src/eval_scripts/capture_69_fv_location.py` (span-mapping gated: assembled
+segments must equal create_prompt output; every column ≥1 token) and
+`plot_69_fv_location.py`. Artifacts `artifacts/69_task_run/fv_location/<task>.npz`
+(per-task prompt-averaged (28,32) cos/dot). Results
+`results/69_task_run/FV_location/{fv_location_heatmap.png, fv_location.npz,
+summary_cos.csv, summary_dot.csv}` (npz has the full 69-task stacks + train/heldout tags).
+
+**low_dim_FV_presence variant (2026-08-17, same stream; pods fv-loc50-{1,2} RTX PRO 4500
+~15 min ≈$0.40, BOTH TERMINATED):** same study with BOTH the residual stream and the task FV
+first projected into the 50-dim causal PC subspace (all-69-task sparse PC selection,
+`artifacts/69_task_run/pc_sparse_alltasks`, orthonormality-gated; task FVs live 99.1% inside
+it). NEW `capture_69_fv_location_50d.py`; plotter gained `--space {full,pc50}`; direct-space
+outputs moved to `FV_location/direct_FV_presence/`, this variant in
+`FV_location/low_dim_FV_presence/`. **Inside the 50D space the signal doubles and sharpens
+onto the injection layer: peak cos 0.71 at L9 query cue (direct space: 0.35 at L13);** demo
+buildup persists (d1 cue 0.40 → d10 cue 0.71 at L9); at L9 labels are almost as aligned as
+cues (0.64 vs 0.65) with inputs at 0.43. Raw-dot panel still norm-dominated late.
+
+**Read-vs-write poster (2026-08-18):** `plot_69_read_vs_write_presence.py` → `FV_location/poster_visuals/read_vs_write_presence.{png,pdf,csv}` — the headline poster figure: mean cos by token type vs depth, overlaying BOTH feature families (colour = token type, solid = write v_A, dashed = read r_A; the two headline curves at full weight, the other four held back). ***READ peaks at L7 on demo LABEL tokens (0.289); WRITE peaks at L13 on CUE tokens (0.307)*** — read is picked up early where label content sits, the FV it produces shows up later where the answer is generated. Read@label is already 0.17 by L3 (vs write@cue 0.08), so the read side leads by ~6 layers.
+
+**Poster visuals (2026-08-18):** `plot_69_fv_location_poster.py` (generalised: --in_dir any presence folder, --metric cos|dot, --band, --band_note) renders poster figures — cosine-only for `direct_FV_presence/poster_visuals/` (user spec) and BOTH metrics for `label_mean_L6_presence/poster_visuals/` (the L6 raw-mean label-token steering vector; its cos+dot heatmaps were already built by the ridge-layer-sweep session). Fitted single-hue sequential scale instead of the symmetric diverging one, token-type category strip, and a per-token-type layer-profile panel; palette + rules per the dataviz skill (validator could not be run - no node on this pod - so the reference palette fixed order is used unchanged). FV cos peaks 0.35 @L13 query cue; label-mean cos peaks 0.83 @L6 demo labels (label 0.805 vs cue/input 0.569), projection peaks late (62 @L27) since residual norms grow with depth.
+
+**presence_vs_accuracy (2026-08-17, same stream; pods fv-pva-{1..8} RTX PRO 4500, ~20 min
+≈$2, ALL TERMINATED):** user question — does FV presence in the residual stream predict
+a-priori that the model will do the task well? Per task and n in 0..6: the 150 fixed 10-shot
+train prompts TRUNCATED to their first n demos (paired queries); x = mean cos(z_l, v̂_A) at
+the query cue for layers 9..20 (also per-prompt max/mean over the band); y = temperature-1
+sampled exact-match accuracy on the same prompts (repo `compute_extended_nshot_sampled`
+convention: top_k 0, top_p 1, 12 new tokens, cut at first newline). One point per task per n
+(69 per panel). NEW `capture_69_presence_vs_acc.py`, `plot_69_presence_vs_acc.py`,
+`diag_69_presence_vs_acc.py`; results `FV_location/presence_vs_accuracy/` (14 figures =
+L9..L20 + maxL + meanL, correlation_summary.csv, presence_vs_acc.npz, diagnostics).
+
+FIGURE FORMAT (user, 2026-08-17): each variant is ONE panel with all 69×7 = 483 points,
+coloured by shot count (per-n ρ in the legend, pooled ρ/r in the title) — not 7 subpanels.
+Pooled ρ is POSITIVE and layer-ordered (L9 +0.63 → L20 +0.30; meanL9-20 +0.47, maxL +0.53),
+but that pooled number is the SHOT-COUNT effect: low-n points carry both low presence and
+low accuracy, so pooling recovers the within-task trend. At fixed n the sign flips.
+Also `binned_<variant>.png` + binned_summary.csv (user request): the 483 pooled points
+bucketed by presence in 0.10-wide bins anchored on 0.05, mean accuracy ± SEM per bucket.
+L9 buckets: [.05,.15) 0.000 (47 pts) → [.15,.25) 0.145 (59) → [.25,.35) 0.471 (197) →
+[.35,.45) 0.550 (180) — monotone, steepest below cos 0.3, flattening after.
+
+***ANSWER: NO — the cross-task correlation is NEGATIVE, not positive.*** meanL9-20 Spearman
+by n: +0.35 (n=0, but a FLOOR — only 13/69 tasks non-zero, max acc 0.027, so meaningless),
+−0.10, **−0.34, −0.41, −0.38, −0.40, −0.36** (n=2..6, p≤4e-3); same sign at every single
+layer 9–20 and for max/mean variants. Controls: the shared-mean FV component does NOT
+explain it (cos(v_A, grand mean) 0.44–0.81 but partial rho unchanged, −0.38 at n=6);
+a-priori features label_tokens/out_entropy/n_unique_out correlate with PRESENCE (−0.44/
+−0.54/−0.54) and controlling for all four weakens but does not remove it (−0.25 at n=6).
+***The positive relation the hypothesis expected exists WITHIN task, not between:*** across
+n=0..6 presence and accuracy rise together with median rho +0.96, positive in 69/69 tasks.
+Reading: cue-token FV presence tracks how much task-identification signal the context has
+supplied (more demos ⇒ more presence ⇒ more accuracy), but at a fixed shot count a task
+showing MORE FV presence tends to be one the model does WORSE on — presence is not an
+a-priori competence predictor across tasks.
+
+**read_dir_presence variant (2026-08-17, same stream; pods fv-locrd-{1,2} ~15 min ≈$0.40,
+BOTH TERMINATED):** same direct-space study with the task READ direction instead of the FV —
+r̂_A = normalized mean of the 150 unit per-prompt read dirs of the cosine_perhead bracket
+(`read_dir_sweep/cosine_perhead/<task>.pt` 'r'; mean-of-unit-r matches stored r_task at
+cos 1.000, ‖mean r‖ 0.86–0.95). NEW `capture_69_readdir_location.py`; plotter `--space
+readdir`; outputs `FV_location/read_dir_presence/`. **The read direction lives at LABEL
+tokens, complementary to the FV-at-cue pattern:** at L9 labels 0.28 vs cues 0.10 vs inputs
+0.08 (FV map: cues 0.31 > labels 0.22); peak 0.30 at L7 demo8 label; broad L6–L16 band on
+every demo's label with only weak demo1→demo10 buildup (0.24→0.29); query cue is NOT
+elevated (0.10) — consistent with reading happening where label content sits, not where
+the answer is produced.
+
+**Findings (direct_FV_presence, cos panel):** the FV direction lives at the CUE tokens — peak cos 0.346 at
+layer 13, query cue; at L13 mean cos is cues 0.31 vs labels 0.22 vs inputs 0.14. It BUILDS
+UP across demos (demo1 cue 0.16 → demo10 cue 0.34 at L13) and across depth (near 0 up to
+L4, rising sharply L6–L9, broad plateau L9–L20). Raw dot keeps growing into the last
+layers with the residual-norm blowup (peak ~71 at L27) — layer-comparison claims should
+use the cos panel; the dot panel mainly shows norm growth.
+
+---
+
 ## 2026-08-15 — SANDBOX ext_steerability phase 1: pooled sparse head selection on extended tasks
 
 **Owner:** Claude Code background session (Train Test Split Works Check), CPU pod + own pods
