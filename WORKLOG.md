@@ -7201,3 +7201,38 @@ Findings (69 tasks, 2346 pairs):
   FV heads' value projections actually read.
 
 Next: none (analysis complete; direction choice back to user). Blockers: none.
+
+## Stream: centered-PCA rank-5 read-feature ablation (2026-08-19, branch worktree-centered-ablation)
+
+Status: done. USER REQUEST: repeat the rank-5 ablation with the top-5 PCs AFTER centering (per task,
+over the same 1500 label-token L6 vectors), so the shared mean direction (mostly) remains and only
+task-unique variance directions are removed.
+
+Commands:
+- build_readdir_pc5_centered_bases.py (CPU float64 SVD) -> pc5_centered_bases.pt. Diagnostic
+  mean_frac_in_V = ||P_V unit-mean||: min .19 / median .47 / max .72 — centering does NOT make the
+  top PCs mean-orthogonal, so a partial mean component is still removed (esp. zero mode).
+- ablate_readdir_pc5.py gained --bases_path/--out_sub (default behavior unchanged); run with
+  --out_sub pc5_centered on own pod fv-centered-ablation (7z7eth1hb17gcg, RTX PRO 4500, ~1.2h,
+  terminated + verified). Verifies pinned (mean target ±1.5e-3, zero ±1.4e-3).
+- plot_69_centered_ablation.py -> results .../ablation/multi_direction_ablation/centered/.
+
+Findings (mean over 69 tasks; uncentered rank-5 in parens):
+- n6 zero-abl own .393 vs cf .550 (uncentered .004/.222): retaining the mean removes the total
+  kill and turns zero mode SPECIFIC — own-cf gap .157, the largest label-side specific effect so
+  far. Baseline .629.
+- n6 mean-abl own .545 vs cf .625 (uncentered .503/.620): specific effect shrinks −.126 -> −.084;
+  roughly a third of the uncentered specific damage rode on the PC1/mean component.
+- n1: own mean .206 ~ baseline .208; zero own .148 vs cf .163 — no specificity at 1-shot, and the
+  1-shot uncentered total kill (.003) also disappears (.148), confirming the kill was the shared
+  mean component, not task-specific structure.
+- Caveat: own and cf centered subspaces both leak the (highly shared, pairwise cos .73) mean
+  direction to a similar degree, so the own-cf gap is unlikely to be mean leakage; still, a
+  mean-orthogonalized basis would be the clean version if pursued further.
+
+Files: src/sandbox/ext_steerability/build_readdir_pc5_centered_bases.py (new),
+ablate_readdir_pc5.py (--bases_path/--out_sub), src/eval_scripts/plot_69_centered_ablation.py (new),
+logs/centered_ablation/{pod_run.sh,pod_admin.py,watch_full.sh}, results .../centered/{per_task_acc.csv,
+aggregate_bars.png, per_task_bars_{1,6}shot.png}; raw JSONs artifacts .../pc5_centered/n{1,6}shot/.
+
+Next: none pending user. Natural options: mean-orthogonalized variance basis; rank sweep. Blockers: none.
