@@ -2058,6 +2058,211 @@ cell is ≈0; don't claim "L0 ≈ 0" per task.
 
 ---
 
+## 2026-07-17 — Stream X5: prev/next_number in the PROPAGATED fixed-direction ablation (separate study)
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; own RunPod Blackwell 4500 pod
+`fv-numbers-prop-ablation` av1de1n4s2wtg3 $0.74/hr — TERMINATED). **Status:** DONE. Committed on
+branch `claude-pertask-r2`.
+
+**What:** the two number tasks through `--mode propagated` (fixed anchor-layer direction U[L],
+anchor + all later tokens, blocks ≥ L), SEPARATE study →
+`results/direction3_fv_formation/oneshot_preimage_ablation_propagated_numbers/train_varicl_top40/`
+(banks from Stream X4; driver `logs/numbers_ablation/driver_propagated.sh`; per-task figures
+`figures/heatmap_all_arms_{prev,next}_number.png`). fv/fv_cf final_cue rows reproduce the X4
+perlayer values exactly (structural equivalence at the last token — free correctness check).
+
+**Findings (leakage caveat as X4):**
+- **The X4 inversion (icl10 preimage > FV at final_cue) does NOT survive fixing the direction:**
+  fixed U[0] does ≈ NOTHING (−0.02 both tasks) vs the per-layer stack −3.54/−6.20 — the number
+  tasks\u2019 preimage advantage lives in the ROTATING per-layer stack, no single layer\u2019s direction
+  carries it. Most-damaging single fixed direction is the LAST layer\u2019s (min at L27: −1.28
+  prev / −1.81 next; 7-task icl10 peaked at L20 instead).
+- **FV propagated from cue1/target1 is near-catastrophic** (prev −3.4, next −5.6 at L9),
+  mirroring the 7-task propagated story, with reduced specificity (fv_cf ~−2.5 early).
+- position-matched fixed directions stay weak everywhere (min −0.23/−0.27 mid-layers).
+
+---
+
+## 2026-07-17 — Stream X4: prev/next_number in the ORIGINAL 1-shot per-layer ablation (separate study)
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; own RunPod RTX PRO 4500 Blackwell pod
+`fv-numbers-ablation` 79od3s4x9bpjrn $0.74/hr, `allowedCudaVersions` filter per DECISIONS —
+TERMINATED). **Status:** DONE. Committed on branch `claude-pertask-r2`.
+
+**What:** user request — run prev_number/next_number through the original per-layer 1-shot
+ablation, fully SEPARATE from the 7-task aggregate. New TSVD banks for the two tasks (from the
+existing canonical stage-A ridge maps; **TRAP:** `fit_tsvd_preimages_multicell.py` DEFAULTS point
+at the max4 DEBUG preimage_root and the two-shot cell set — pass `--preimage_root .../train_
+varicl_top40` and the 6 ablation cells explicitly, as the v2 driver did; a first run with
+defaults wrote 12 stray banks into the debug tree, deleted). Ablation →
+`results/direction3_fv_formation/oneshot_preimage_ablation_numbers/train_varicl_top40/`
+(summaries only ever see these 2 tasks). Driver `logs/numbers_ablation/driver.sh`. Per-task
+figures via new `--tasks` filter on the plot script: `figures/heatmap_all_arms_{prev,next}_
+number.png` (+ per-task grids). 7-task study dir untouched by this run (verified by mtimes;
+NOTE: its 12 per-arm PNGs were deleted from the working tree at 2026-07-16 21:28 by something
+outside this stream — versions live in git (HEAD pre-retitle; claude-pertask-r2 retitled);
+left as-is for the owning stream to adjudicate).
+
+**Findings (task-level; leakage caveat: prev_item/next_item are TRAIN tasks — upper bounds):**
+- **The 7-task ordering INVERTS at the final cue: the icl10-regression preimage out-damages the
+  FV direction.** prev_number: icl10 preimage −3.54 @ L0 vs FV −2.55 @ L0 (FV min −2.95 @ L9);
+  next_number: icl10 preimage −6.20 @ L0 vs FV −4.15 @ L0 (min −4.76 @ L9). In the 7-task study
+  FV (−7.1) ≫ icl10 preimage (−4.0). Task-specific: icl10_cf only −0.15 / −0.94.
+- position-matched preimage (pre_label_icl2 cell) is weak at final_cue (−0.33 / −0.48), target1
+  effects are tiny for both tasks (≈ −0.1..−0.18; cf ≈ 0) — unlike landmark-country/case tasks,
+  the number tasks carry almost nothing causally at the demo label token.
+- FV arm's max damage at L9 (not L0) for both tasks — the small early-start self-repair shape
+  again.
+
+---
+
+## 2026-07-16 — Stream X3: PROPAGATED fixed-direction 1-shot preimage ablation
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; own RunPod L4 pod `fv-propagated-ablation-3`
+xfyifkkbdo4am6 $0.39/hr — TERMINATED; two earlier 4090 pods stalled at boot: the template image
+needs **CUDA ≥ 12.8** and those hosts had 12.4 drivers → ALWAYS pass
+`allowedCudaVersions: ["12.8","12.9","13.0"]` in podFindAndDeployOnDemand; see DECISIONS).
+**Status:** DONE. Committed on branch `claude-pertask-r2`.
+
+**Design (user-specified):** same 6 arms/7 tasks/28 start layers as Stream W's perlayer study,
+but (1) the ablated direction is FIXED to U[L], the preimage of the regression at the anchor
+layer L (fv arm unchanged in direction); (2) it is projected out at the anchor token AND every
+later token position, for all blocks b ≥ L. NEW `--mode propagated` on
+`ablate_oneshot_preimage_logprob.py` (default `perlayer` bit-identical — verified); results →
+`results/direction3_fv_formation/oneshot_preimage_ablation_propagated/train_varicl_top40/`
+(full npz kept per (task, arm); figures: heatmap_all_arms + per_task_grid only, via new
+`--skip_per_arm` plot flag). Driver `logs/propagated_ablation/driver.sh`.
+
+**Verification:** (a) perlayer regression — edited script vs HEAD script on the SAME L4 GPU:
+max|Δ| = 0.0 across all 6 arms (an earlier check against the stored v2 smoke tripped at 1.7e-2;
+that is pure cross-GPU fp16 noise — HEAD-vs-HEAD across GPUs shows the same 1.7e-2; regression
+checks must compare same-GPU); (b) cross-mode equivalence — fv arms' final_cue row equal at
+every L, all arms' final_cue equal at L=27 (single-position/single-block cases where the modes
+coincide by construction): all passed (`EQUIVALENCE_OK` in driver log).
+
+**Findings (task-mean Δ log p; per-arm numbers in per-task summary.csv):**
+- **FV direction becomes catastrophic from ANY anchor when propagated:** cue1/target1/final_cue
+  all ≈ −7.1..−7.5 at L0–8 (perlayer: only final_cue −7.2; cue1/target1 ≈ −0.1/−0.4). But
+  specificity DROPS: fv_cf now −2.2..−2.4 at cue1/target1 (perlayer cf ≈ −0.1/−0.3), i.e.
+  propagated FV removal is ~3× task-specific vs ~6× at final_cue and ~8-20× perlayer.
+- **The preimage stack is NOT one direction:** at final_cue (where propagated = fixed-direction
+  anchor-only), icl10-preimage removal collapses from −4.0 (perlayer, removing each layer's own
+  direction) to ≈0.0 at L0 with the fixed U[0]; the only surviving fixed-direction effect is
+  late (−1.65 @ L20). Same collapse for matched at final_cue (−1.94 → ≈0 at L0, −0.99 @ L15).
+  ⇒ the causal preimage content ROTATES across layers; no single layer's preimage direction
+  carries it.
+- **target1 (demo label) effect weakens and loses specificity when fixed+propagated:** matched
+  −1.78→−0.82 at L0 (min −1.53 @ L1) while its cf grows to −0.81 @ L1 (~1.9× specific vs ~8×
+  perlayer).
+- **NEW late-layer band for icl10 preimage at cue1** (min −1.62 @ L20; absent perlayer) —
+  propagating the late-layer icl10 direction over all downstream tokens (which include the
+  final cue) reaches the readout path.
+
+---
+
+## 2026-07-15 — Stream X2: GPT-4.1-judged accuracy-vs-n_shots (antonym/synonym)
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; generate stage on own RunPod 4090 pod
+`fv-judged-accuracy` 2mcpknnn4ncwue $0.69/hr — TERMINATED; judge+plot on CPU pod).
+**Status:** DONE. Committed on branch `claude-pertask-r2`.
+
+**What:** gold-first-token top-1 undercounts open-ended tasks (1-shot judge study, WORKLOG
+2026-06-30). This re-runs the by_nshots accuracy grid for antonym+synonym (n=0..10, full test
+splits, EXACT same prompts: set_seed(seed+n) + per-item np.random.choice in test order) but
+stores per-prompt records and scores the top-1 token with the gpt-4.1 judge (JUDGE_SYSTEMS from
+judge_oneshot_paired.py; same-word/inflection=false). Judge convention: top-1 TOKEN as-is
+(whitespace-trimmed) — word fragments judged false (slightly conservative vs decoding a full
+word).
+
+**Files:** NEW `src/eval_scripts/compute_judged_accuracy_by_nshots.py` (stages generate/judge/
+summarize, resumable per (task,n)) + `plot_judged_accuracy_by_nshots.py`. Data (TRACKED):
+`results/general/task_accuracies/by_nshots_judged/{task}_n{n}.json` (per-prompt: query, gold,
+top-5 tokens, gold_rank, judge_correct) + summary.json. Figure:
+`.../tenshot_strip_intervention_cos_heatmap/figures/gptj_judged_accuracy_by_nshots_top1.png` (all 4 strip-study tasks: judged solid + gold dashed for antonym/synonym; digit tasks gold-only, exact by construction).
+
+**Findings:**
+- antonym: judged ≈ gold + 0.07–0.10 from n=2 on; plateau 0.70–0.74 (gold 0.62–0.66).
+- synonym: judged ≈ 1.8–2× gold everywhere; plateau 0.41–0.45 (gold 0.23–0.27). The n=1 cell
+  (0.149 vs gold 0.071) reproduces the 1-shot judge study (0.143/0.066) on a different prompt
+  sample. Ordering antonym > synonym unchanged; the GAP is larger judged (~0.28) than gold
+  (~0.40 vs 0.23 → ~0.40 ratio-wise smaller). Both tasks: correction ≈ constant multiple after
+  n≥2, so curve SHAPES (saturation ~n=5) are metric-robust.
+- Gold-top1 re-derived from the same records matches the recorded by_nshots numbers to within
+  1–2 prompts/cell (≤0.4%; exact at n=0,1) — cross-GPU (L4 vs 4090) logit noise flipping
+  near-tied argmaxes, NOT a prompt mismatch. summary.json flags matches_reference at 1e-9
+  tolerance, so False there means "±1-2 prompts", read the gold_top1 columns.
+
+**Addendum (2026-07-16):** retitled the Stream W ablation-heatmap arms for clarity — "preimage (matched cells)" → "preimage of position-matched regression", "preimage (icl10 cells)" → "preimage of icl10 regression"; suptitles now state all ablations are applied in 1-shot prompts. plot_oneshot_preimage_ablation.py + all figures regenerated (data untouched).
+
+---
+
+## 2026-07-14 — Stream X: per-test-task R² heatmaps (antonym/synonym/prev_number/next_number)
+
+**Owner:** Coordinator (tmux `pertask-r2-heatmaps`; CPU pod + own RunPod GPU pod
+`fv-pertask-r2-capture` bznaqhdemfkl3x, NVIDIA L4 $0.39/hr — no 4090 in EU-RO-1 stock; L4 is
+sm_89 so safe with the image's pinned torch, per DECISIONS Blackwell note; pod TERMINATED).
+**Status:** DONE. Committed on branch `claude-pertask-r2`.
+
+**Goal:** the pooled `combined_test_r2_heatmap.png` (varicl_top40 study) aggregates the 7 held-out
+test tasks; user wants per-task (token position × layer) R² heatmaps for antonym, synonym,
+prev_number, next_number.
+
+**Design:**
+- NEW `src/eval_scripts/plot_fulldim_ridge_pertask_r2.py`: rescales the stored
+  `per_test_task_mse` (present in every shard's metrics.json) into per-task R² with per-task
+  denominator V_task = ||fv_task − ȳ_train||²/hidden (train-mean baseline, same convention as
+  the pooled R²). No refit. Outputs under `<study>/per_task_r2/`: per-task PNGs (shared color
+  scale), combined panel, per_task_r2.csv, summary.json.
+- antonym/synonym: already test tasks → plotted directly from the existing
+  `fulldim_ridge_activation_to_fv_varicl_top40` shards. Best R²: antonym 0.300, synonym 0.289
+  (both icl10/finaltok L13); pooled-study structure (mid-layer band) reproduces per task.
+- prev_number/next_number: NOT in the 29-task split and had no captured activations. Captured
+  them into the EXISTING activation roots (`gptj_56tasks_170prompts_icl{1..9}_3tokens` +
+  `_4tokens`; dir name now understates task count; no consumer globs task subdirs — all pass
+  explicit task lists) via `logs/pertask_r2_numbers/capture_driver.sh` (same config: seed 42,
+  130/40 prompts, fp16, embeddings). Then re-ran the 10 ridge shards with `--test_tasks
+  <7 defaults> prev_number next_number` → NEW study dir
+  `fulldim_ridge_activation_to_fv_varicl_top40_plus_numbers` (fits/CV are train-only, so models
+  are identical to the existing study; only the eval set grows). Driver:
+  `logs/pertask_r2_numbers/ridge_driver.sh`.
+- **Caveat for the number tasks:** `prev_item`/`next_item` (number-word tasks, ~10% pair overlap
+  with prev/next_number) are among the 20 TRAIN tasks, so prev/next_number are held-out in form
+  but leakage-adjacent in content — flag this next to any cross-task comparison.
+
+**Findings (per-task test R², train-mean baseline; `per_task_r2/summary.json` in each study dir):**
+- antonym best **0.300**, synonym **0.289**, both at icl10/finaltok **L13** — same late/mid-layer
+  band as the pooled heatmap, peaks at the final prompt token.
+- prev_number best **0.337** (icl09/pre **L9**), next_number **0.375** (icl08/pre **L9**) — the
+  number tasks are BETTER predicted and peak EARLIER (L6–10) and at PRE-LABEL positions rather
+  than the final token; their high-R² band starts around L4–6 vs L9–10 for antonym/synonym
+  (visible in `test_r2_heatmap_panel.png`, shared scale). Consistent with the leakage-adjacency
+  caveat above (train set contains prev_item/next_item), so treat the level as an upper bound;
+  the position/layer profile shift is the more interesting observation.
+- New-study shard icl1 verified to reproduce the existing varicl_top40 study exactly: identical
+  best_alpha in all 87 cells, 7-task per-task MSEs equal to ~1e-6 relative (L4-vs-prior-GPU fp
+  noise). Pooled 9-task R² (max 0.391 at icl10/finaltok L13) is NOT comparable to the 7-task
+  0.465 — different test-task set → different denominator V.
+- Sanity: shard metrics store `per_test_task_mse` per cell (since the varicl_top40 run), which is
+  what makes per-task R² a pure CPU post-processing step.
+
+**Addendum:** `src/eval_scripts/plot_pertask_r2_best_lines.py` → `per_task_r2/
+best_r2_by_position_lines.png` (plus_numbers study): best-over-layers R² per token position,
+one line per task. Shows a within-example sawtooth: every task peaks at the `pre` position of
+each cycle (with icl10/finaltok matching the pre-level for antonym/synonym), number tasks sit
+~0.05–0.08 above antonym/synonym at every position, and positions saturate by ~icl04–05.
+Role-filtered variants (`--roles`): `..._prelabel.png` (pre_label_token only — smooth monotone
+saturation, antonym slowest to saturate ~icl05–07) and `..._label.png` (label tokens, one point
+per example = mean of first/last best-R² via `--average_roles` — flatter, ~0.03–0.06 lower than
+pre positions at every ICL depth).
+
+**Verification:** icl1 activations for both number tasks load through the ridge's own loader with
+shape (170, 29, 4096) fp16, matching existing tasks; alpha choices and original-task MSEs
+reproduce (above). NOTE layer-0 per-task R² is 0 at the pre-label positions but up to ~0.25 at
+label/final positions (token-identity signal in the embeddings) — only the POOLED L0 pre-label
+cell is ≈0; don't claim "L0 ≈ 0" per task.
+
+---
+
 ## 2026-07-10 — Stream W: 1-shot preimage-ablation causal test (GPT-J, 7 held-out tasks)
 
 **Owner:** Coordinator (tmux `fv-preimage-ablation`; CPU pod + own RunPod GPU pod
