@@ -7361,3 +7361,28 @@ Pod fv-meanfree-steering (RTX PRO 4500, ~2.2h, terminated; OOM lesson: steering 
 budget 11000/cap 16 on 32GB now that 24000/48 OOMs in lm_head on long-prompt tasks).
 
 Next: none pending user. Blockers: none.
+
+## Stream: top-3 SVD task-unique ablation + 11-dir plot cleanup (2026-08-19, branch worktree-taskunique3-ablation)
+
+Status: done. USER REQUEST: compress the 11 mean-removed directions per task via SVD of the
+UNIT-NORMED stack, ablate with the top 3; also strip the pc5 comparison bars from the
+task_unique_11dir figures (11-dir + baselines only).
+
+Commands: build_meanremoved_top3_bases.py -> meanremoved_top3_bases.pt (top-3 energy of unit-normed
+stack: min .929 / median .940 / max .959; carrier leakage median .075); ablate_readdir_pc5.py
+--out_sub meanremoved_top3 on own pod fv-taskunique3-ablation (tccg9cmtn2dhap, RTX PRO 4500, ~1.2h,
+terminated). Verifies pinned (1.1e-3 / 7.1e-4). plot_69_taskunique_top3.py -> results
+.../ablation/task_unique_top3/; regenerated task_unique_11dir figures without pc5c bars.
+
+Findings (mean over 69 tasks; 11-dir in parens): rank-3 is a DROP-IN replacement —
+- n6 base .629: own mean .066 (.063) / own zero .065 (.061); cf mean .629 (.629) / cf zero .607 (.603).
+- n1 base .208: own .028/.024 (.026/.023); cf .203/.188 (.202/.182).
+Cleaner story: a 3-direction task-unique subspace (93-96% of the 11-dir stack's energy) carries the
+label-side task-identity code; near-total specific kill with cf control exactly at baseline.
+
+Files: build_meanremoved_top3_bases.py, plot_69_taskunique_top3.py (new),
+plot_69_taskunique_ablation.py (figures 11-dir only), logs/taskunique3_ablation/*,
+results .../ablation/task_unique_top3/*, task_unique_11dir figures regenerated;
+raw JSONs artifacts .../meanremoved_top3/n{1,6}shot/ (condition keys *_pc5, CSV cols *_mr3).
+
+Next: none pending user (rank-1 top-dir the obvious next compression). Blockers: none.
