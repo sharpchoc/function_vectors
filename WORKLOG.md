@@ -7369,3 +7369,18 @@ steering (data = L6 slice of the existing raw-mean layer sweep; no new compute).
 plot_oneshot_dummy_steer.py -> steering_results/oneshot_dummy/{alpha_curve.png, by_task.png,
 summary.csv, per_task_acc.csv}; includes the sharedL6 control columns. Headline (69 tasks):
 unsteered .001 | steered best-alpha .126 (a2 .112) | shared-mean best .013 | real 1-shot .208.
+
+## Stream: 1-shot read->write effect-on-cue (2026-08-19, branch worktree-effect1shot)
+
+Status: done. USER REQUEST: 1-shot version of the read->write study. steer_effect_on_cue.py and
+plot_steer_effect_on_cue.py gained --n_shots (default 6, behavior unchanged); 1-shot arm injects
+alpha*m_A(L6) at the single '_' slot of the 1-shot dummy scaffold, forward-only capture at the cue,
+all 28 layers, refs = own FV / generic FV. Artifacts mean_read_steering_effect_on_write_1shot/,
+results read_write_relationship/bottom_up_1shot/ (same figure set as bottom_up/).
+
+Findings (69 tasks, L13, deltas vs alpha=0): d_cos_task peaks +.088 at a1-a2 (6-shot: +.182 at a2)
+vs d_cos_gen +.044 (6-shot +.089); task-specific excess +.047 at a2, POSITIVE ON 69/69 TASKS
+(a4 drops to +.038, 66/69). Same 2:1 task-specific-to-generic ratio as 6-shot at ~half the
+magnitude (one slot vs six); raw cos_task .207 -> .295. Read->write link holds at 1 shot.
+
+Pod fv-effect1shot (RTX PRO 4500, ~25 min, terminated). Blockers: none.
