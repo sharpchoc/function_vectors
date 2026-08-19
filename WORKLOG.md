@@ -8,8 +8,8 @@ Newest entries at top. One stream per active line of work.
 ## 2026-08-19 — FV-direction ablation at the final cue token (69-task pool, "FV Ablation" session)
 
 **Owner:** Claude Code background session (FV Ablation stream), branch
-`worktree-fv-ablation` (worktree `.claude/worktrees/fv-ablation`). **Status:** IN PROGRESS —
-scripts written, GPU run pending.
+`worktree-fv-ablation` (worktree `.claude/worktrees/fv-ablation`), pods fv-abl-{1,2}
+(RTX PRO 4500 Blackwell $0.72/hr, ~2.5h total, BOTH TERMINATED, ≈$4). **Status:** DONE.
 
 **What (user spec, adjudicated 2026-08-19):** necessity counterpart of FV steering. On the
 150 fixed 6-shot prompts per task (first 6 demos of `isolation_prompts_ext` records, true
@@ -30,7 +30,34 @@ reproduction). Baselines NOT recomputed: `real_6shot` + `zero_shot` merged from
 `FVAblator` rank-1 pre-hook, layer-set gated, prefill-gated; `--with_baseline` runs a
 seed-exact `real6_baseline` for smoke checks) and `src/eval_scripts/plot_fv_ablation.py`
 (→ `results/69_task_run/FV_ablation/{headline_bars.png, by_task_dots.png, summary.csv,
-per_task_acc.csv, cf_pairs.csv}`). Artifacts under `artifacts/69_task_run/FV_ablation/`.
+per_task_acc.csv, cf_pairs.csv}`). Artifacts under `artifacts/69_task_run/FV_ablation/`
+(cue_means/, grand_mean_cue6.pt, eval/<task>.json with all preds).
+
+**Protocol notes:** stored sampled baselines reproduce only within noise across runs
+(antonym real6 0.36 here vs 0.32 stored; known fp16 cross-run variability), so the full
+eval ran `--with_baseline` and the plotter prefers the in-run seed-matched 6-shot baseline;
+zero_shot floor still merged from the stored CSV. Pod gotchas: `load_model`'s snapshot glob
+picks the stale `f3f...` snapshot dir (only a stray model.safetensors) — pass `--model_dir`
+for the `47e...` snapshot explicitly; shard 0 OOMed on ag_news at token_budget 24000 /
+cap 48 → rerun at 11000/16 + `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`.
+
+**Findings (mean acc over 69 tasks, T=1 sampled, 150 prompts; L9–27 clamp ≈ L0–27 clamp
+everywhere):** 6-shot baseline 0.639, 0-shot 0.002. **Own-FV ZERO-ablation collapses
+6-shot ICL to the 0-shot floor: 0.013** (median 0.0; 0.014 train / 0.005 heldout — no
+train/heldout gap, matching the steering result). Counterfactual-task-FV zero-ablation
+only costs 0.16 (0.476), so the kill is task-specific, not "any FV-ish direction damages
+the cue". Mean ablation is far weaker than zero (own 0.242, cf 0.616 ≈ baseline),
+consistent with the pc50 lesson that the grand mean restores generic cue content — but
+own-mean still loses 0.40 while cf-mean loses only 0.02, so the task-specific component
+matters under the mean op too. Partial own-zero survivors (rare): day_after_textual_date
+0.35/0.41, iso_date_to_month ~0.08, next/prev_number_digits ~0.1 @L0to27 — date/number
+tasks where 6-shot context appears to route around the cue-token FV direction.
+**Bidirectional control established: the single 37-head FV direction at the final cue
+token is both sufficient (steering, zs .09→.73) and necessary (ablation, .64→.01).**
+
+**Next:** nothing pending. Possible follow-ups: layer-clamp sweep to find where necessity
+kicks in; ablating at generated-token positions too (do the survivors reform the FV
+downstream of the cue?); per-family breakdown of cf-zero damage vs FV cosine.
 
 
 **Owner:** Claude Code background session (fv-location stream), CPU pod + pods fv-loc-{1,2}
