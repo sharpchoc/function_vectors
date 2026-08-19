@@ -6389,3 +6389,222 @@ Outputs: results/69_task_run/fv_presence_heatmaps/attn_<task>.png.
 **Implication:** the read-direction construction assumes the reading head sees the vector
 with weight 1; in this scaffold it sees ~1/25 of it. Steering strength is attention-limited,
 not only direction-quality-limited.
+## 2026-08-17 — Raw mean-activation steering swept over ALL layers (results/69_task_run/raw_mean_steering)
+
+**Status:** done. Follow-up to read_vector_head_selection, where the un-differenced label-token
+mean residual was the strongest steering vector found. Swept over depth:
+for each layer L, inject alpha * m_A(L) additively at the ' _' token of the 1-shot dummy-label
+scaffold, where m_A(L) is the task's mean block-L output at the last-demo-label token (matched
+site). 28 layers x alpha {0.5,1,2,4} + baseline + a task-agnostic SHARED-mean control at every
+layer (mean over the 55 train tasks, no task identity) = 225 conditions x 150 prompts x 69
+tasks. No recapture needed (label_resid_means already had all 28 layers).
+Scripts: `src/sandbox/ext_steerability/sweep_raw_mean_layers.py`,
+`src/eval_scripts/plot_raw_mean_layer_sweep.py`. Fleet: 30 pods (one dud never exposed SSH →
+terminated, its 3 tasks re-run on a healthy pod), all terminated.
+
+**Findings (mean over all 69 tasks, T=1 exact match):**
+- **Best layer = L6, 0.126** (L7 0.125, L5 0.105, L3 0.090, L4 0.085) — a clear early-layer
+  bump peaking at L6-L7, ~0 by L12 and flat thereafter (L12-L27 all <= 0.010).
+- Best alpha is 2.0 at essentially every layer (a=4 close behind, a=0.5 always near zero).
+- Reference lines: unsteered '_' scaffold 0.001, 0-shot 0.002, real 1-shot demo 0.208. So the
+  best layer recovers ~61% of a real demo.
+- **SHARED-MEAN CONTROL IS FLAT AND NEAR ZERO (<= 0.013 at every layer).** The task-agnostic
+  mean carries almost nothing: raw mean's advantage over the mean-difference vector is NOT
+  merely "make the slot look like a label". Task identity is doing the work; differencing
+  hurts for some other reason (likely it also removes task-correlated structure shared with
+  the reference set).
+- Per-task best layers concentrate at L7 (18 tasks), L6 (13), L3 (11), L2 (8); mean accuracy
+  at each task's OWN best layer is 0.164 (median 0.120).
+- Several tasks BEAT a real 1-shot demo at their best layer: lowercase_word 0.607 vs 0.427,
+  singular-plural 0.607 vs 0.467, spanish-english 0.560 vs 0.467, french-english 0.500 vs
+  0.453, german-english 0.493 vs 0.293, third_person_to_base 0.433 vs 0.227.
+Outputs: results/69_task_run/raw_mean_steering/ (layer_curve.png, by_task_best.png,
+by_task_heatmap.png, layer_summary.csv, per_task_by_layer.csv); raw preds in
+artifacts/69_task_run/raw_mean_steering/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
+
+## 2026-08-18 — Dimensionality of the L6 label-token task means (raw_mean_steering/dimensionality)
+
+**Status:** done. Centered PCA of the 69 per-task L6 label-token mean activations (the raw-mean
+steering vectors at the best layer; from label_resid_means, no recompute). Script:
+`src/eval_scripts/plot_raw_mean_L6_pca.py` (local CPU, milliseconds).
+
+**Findings:** 50%@7 PCs, 80%@22, 90%@32, 95%@41 of 69; stable rank 5.63; vector norms 50-66.
+Comparable to the other task-level families (task-mean FVs 90%@24, dot_perhead read dirs
+90%@24, cosine_M read dirs 90%@29): the label-token task means are similarly ~30-dimensional
+at the 90% cut — no special compression at the site where steering works best.
+Outputs: results/69_task_run/raw_mean_steering/dimensionality/ (pca_curve.png, spectra.npz,
+summary.csv).
+
+**Next:** user call. **Blockers:** none; no pods used.
+
+## 2026-08-18 — Ridge: nth-demo-label L6 activation -> per-prompt FV (labeltoken_fv_ridge)
+
+**Status:** done. For n=1..10: X = per-prompt block-6 output at the LAST token of demo n's
+label (new capture `capture_all10_label_L6.py`, (150,10,4096)/task, all 69 tasks, index +
+linearity-style gates, BOS-free); Y = per-prompt FV (perprompt_fvs, prompt order asserted
+equal). One full-dim 4096->4096 ridge per variant (`ridge_labeltoken_to_fv.py`, Gram-eig
+solver reused from regress_activation_to_fv_fulldim_ridge.py, fp64 GPU), lambda from
+logspace(-1,8,19) by 5-fold CV over TRAIN TASKS, refit on all 55, R^2 = uniform average
+over dims (variance-weighted also reported), test = the 14 held-out tasks. Plus the
+avg-of-all-10 X variant. Fleet: 12 pods (capture sharded by task; ridge one variant/pod),
+all terminated. No lambda pinned at a grid edge.
+
+**Results (R^2 uniform, train / heldout):**
+- n=1: 0.682 / 0.312 ; n=2: 0.739 / 0.348 ; rising monotonically to n=10: 0.751 / 0.384
+  (test-side gain concentrated in n=1->2, then slow: 0.312, 0.348, 0.364, 0.365, 0.370,
+  0.374, 0.374, 0.374, 0.378, 0.384). lambda = 1e4 everywhere except n=1 (3.16e4).
+- avg-of-10 X: **0.787 / 0.464** — beats every single-n variant by a wide margin on
+  held-out tasks (+0.08 over n=10), with a smaller lambda (1e3): averaging denoises X.
+- Reading: any single label token's L6 activation linearly explains ~35-38% of held-out
+  per-prompt FV variance; later demos carry slightly more, but position matters far less
+  than averaging. Sizeable train-heldout gap (~0.37) = the map is substantially
+  task-specific, consistent with earlier PC-transfer findings.
+Outputs: results/69_task_run/labeltoken_fv_ridge/ (r2_by_n.png, summary.csv,
+per_task_r2.csv); per-variant jsons in artifacts/69_task_run/labeltoken_fv_ridge/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
+
+### Addendum — rank-reduced ridge via uncentered PCA-90 of the n=10 activations
+
+User follow-up on improving the 0.464 held-out R^2. First, the ORACLE ceiling
+(/root job tmp oracle_ceiling.py, LOO task-mean predictor): heldout R^2 uniform 0.675
+(weighted 0.714), train 0.729 — so the full-dim ridge (0.464) sits at ~69% of ceiling and
+the gap is almost entirely between-task placement (in-sample the ridge BEATS the oracle,
+0.787 vs 0.729).
+
+Then `ridge_pca90_labeltoken.py`: X projected onto the top-90%-energy UNCENTERED PCs of the
+train-set n=10 activations (k=377 of 4096, PC1 alone 53% energy), SAME basis for all X
+variants (n=1..10 + avg), Y NOT reduced, same 5-fold-task-CV ridge.
+
+**Result: rank reduction does NOT help — it costs ~0.01-0.02 R^2 everywhere.**
+n=10: 0.720/0.376 (vs full-dim 0.751/0.384); avg: 0.755/0.4515 (vs 0.787/0.464); same
+lambdas selected. Reading: the discarded 10% energy tail carries some transferable FV
+signal, and the full-dim ridge at lambda=1e3-1e4 already regularises at least as well as a
+hard 377-PC cut — PCA-90 is strictly a lossy version of what ridge does softly.
+Output: artifacts/69_task_run/labeltoken_fv_ridge/pca90_n10.json.
+
+### Addendum 2 — oracle ceiling + error decomposition promoted to results
+
+Scratch diagnostics promoted: `src/eval_scripts/labeltoken_ridge_oracle_ceiling.py` (LOO
+task-mean oracle: heldout R^2 0.675 uniform / 0.714 weighted; train 0.729) and
+`src/eval_scripts/labeltoken_ridge_error_decomposition.py` (avg-X model, heldout pooled
+0.464 = between-task centroids 0.650 + within-task deviations 0.032; oracle recentring
+0.690 > ceiling; centroid placement bimodal — morphology/translation cos 0.93-0.99, ag_news
+/uppercase_word/initials_two_words/first_digit/pos_label/person_place_thing 0.64-0.76).
+Conclusion recorded: pooled X->FV maps are task-sample-limited between tasks (~55 effective
+points) and within-task covariance does not transfer; PCA-90 rank reduction strictly hurts
+(pca90_summary.csv). New results files: error_decomposition.txt, pca90_summary.csv in
+results/69_task_run/labeltoken_fv_ridge/.
+
+### Addendum 3 — per-task R^2 bar chart (split-pool denominator)
+
+`src/eval_scripts/plot_labeltoken_ridge_r2_by_task.py`: per-task R^2 for the avg-of-10 X
+ridge (alpha=1e3), denominator variance vs the SPLIT-POOL mean (train pool for train tasks,
+heldout pool for heldout) so between-task placement is credited per task. Train mean 0.627,
+heldout mean 0.207. Heldout is bimodal: morphology/translation tasks 0.23-0.45
+(smaller_of_pair 0.45, gerund_to_base 0.36, past_to_base 0.34, word_polarity 0.32,
+ends_with_ing 0.69 — the best heldout task, sitting mid-pack among train tasks) vs
+classification/symbolic tasks ~0 or negative (pos_label -0.09, ag_news -0.08,
+uppercase_word 0.01, initials_two_words 0.03, first_digit 0.06) — matching the centroid
+cos-similarity pattern in error_decomposition.txt. Outputs: r2_by_task.{png,csv}.
+
+### Addendum 4 — baselines added to the per-task R^2 chart
+
+Per user: added (a) the constant TRAIN-pool-mean-FV predictor baseline (purple markers;
+exactly 0 for train tasks by construction under the split-pool denominator; heldout mean
+-0.126) and (b) the per-task oracle ceiling (own-task LOO mean, black dashes; heldout mean
++0.488). Heldout comparison: ridge +0.207 beats the baseline on 14/14 tasks; on the
+morphology/translation group the ridge sits AT the oracle (ends_with_ing 0.687 vs 0.685,
+gerund_to_base 0.360 vs 0.378, past_to_base 0.341 vs 0.393, smaller_of_pair 0.450 vs
+0.497, language pairs ~0.23-0.24 vs ~0.26-0.32) — i.e. transfer is near-perfect there —
+while the classification group (pos_label, ag_news, uppercase_word, initials_two_words,
+first_digit, person_place_thing) has large oracle headroom (0.45-0.66) that the ridge
+leaves untouched. User's read confirmed: task-level overfitting/coverage — but note the
+heldout tasks are NOT intrinsically the worst (their oracles are ordinary); the map just
+wasn't taught their region.
+
+### Addendum 5 — CORRECTION: the above-oracle train R^2 was in-sample optimism
+
+User challenged the "genuine within-task signal" reading; held-out-PROMPT check
+(`src/eval_scripts/labeltoken_ridge_heldout_prompt_check.py`, 120 fit / 30 eval prompts per
+train task, alpha=1e3) settles it: in-sample 0.789 -> unseen prompts of seen tasks 0.740,
+vs fair oracle (fit-row task means) 0.728; within-task deviations R^2 = 0.049. The ridge's
+power is ~entirely memorized task centroids (+0.012 over oracle at the prompt level).
+Verdict: task-level overfitting, as the user said — earlier WORKLOG claims of the ridge
+"capturing genuine within-task signal in-sample" are hereby corrected. The centroid map
+still interpolates near-perfectly for held-out morphology/translation tasks and fails for
+classification-like ones (Addendum 4), so coverage remains the actionable lever.
+
+## 2026-08-18 — Ridge layer sweep L5-L15 (mean label-token activation -> per-prompt FV)
+
+**Status:** done. New capture `capture_avg10_label_multilayer.py` (per-prompt MEAN over the
+10 last-label-token block outputs, layers 5..15 in one pass, 69 tasks ->
+artifacts/69_task_run/label_avg10_L5-15_acts). Per layer: `ridge_layer_sweep.py` (avg-X
+ridge, lambda by 5-fold task CV; reports in-sample, UNSEEN-prompt (honest, w/ fair oracle),
+and held-out-task R^2). Fleet: 12 pods (fleet9, coordinated with the sibling session's
+fleet8 seed-split study), all terminated.
+
+**Results (R^2 uniform):** held-out-task R^2 rises monotonically-ish with depth:
+L5 0.444 < L6 0.464 < L7 0.476 < L8 0.486 ~ L9 0.486 < L10 0.489 < L11 0.493 < L12 0.497 ~
+**L13 0.498 (best)** ~ L14 0.496 ~ L15 0.496 — a gentle +0.05 climb from L5 that plateaus
+at L11-L15. Honest train-side (unseen prompts) is FLAT: 0.737-0.745 at every layer, barely
+above the 0.728 oracle — within-task signal stays ~0.05 regardless of depth. lambda shifts
+1e3 -> 3.16e3 at L11+.
+Reading: deeper read layers (L11-L15) transfer slightly better across tasks — the label-slot
+representation there is more task-general — but the improvement is modest (~0.03 over L6)
+and the layer choice does not change the fundamental picture (centroid memorization,
+task-coverage limit). Best steering layer (L6-L7) != best decoding layer (L11-L13).
+Outputs: results/69_task_run/labeltoken_fv_ridge/layer_sweep/ (r2_by_layer.png, summary.csv);
+fit jsons in artifacts/69_task_run/labeltoken_fv_ridge_layer_sweep/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
+
+### Addendum — layer-sweep maps re-scored against the TASK FV target
+
+Same fitted maps (per-layer CV alphas), predictions scored against each task's FV (mean of
+its 150 per-prompt FVs), baseline/denominator = split-average FV
+(`src/eval_scripts/ridge_layer_sweep_taskfv_r2.py`; per-prompt and centroid granularities).
+- Train tasks (in-sample): per-prompt 0.95-0.97, centroid ~1.00 at every layer — the map
+  hits train centroids essentially exactly (memorization, as established).
+- Held-out tasks: per-prompt 0.59 (L5) rising to 0.653 (L12-L13); centroid 0.62 -> 0.692
+  (best L13). Same gentle depth trend as before.
+So against the task-FV target the held-out numbers are ~0.65-0.69 rather than 0.46-0.50:
+most of the previously "unexplained" variance was within-task target noise, and ~2/3 of
+between-task FV structure transfers to unseen tasks. Outputs: taskfv_r2.{csv,png} in
+results/69_task_run/labeltoken_fv_ridge/layer_sweep/, taskfv_r2.json in artifacts.
+
+## 2026-08-18 — FV_location analysis for the best steering vector (L6 mean label-token)
+
+**Status:** done. Repeated the FV_location layer x token-position projection analysis with the
+vector that steers best at the label slot (raw_mean_steering peak 0.126 at L6-L7):
+v_hat_A = m_A(L6)/||m_A(L6)|| from label_resid_means. New capture
+`src/eval_scripts/capture_69_labelmean_location.py` (reuses COLUMNS/token_columns from
+capture_69_fv_location.py verbatim; those three location scripts were cherry-picked into this
+worktree from 2cdaf01 since they lived on a sibling branch), plotted via
+`plot_69_fv_location.py --space labelmean` (new SPACES key). 12 pods (fv-lml-*, ids in my own
+job dir per the shared-tmp lesson), all terminated.
+
+**Findings (69-task x 150-prompt mean):**
+- Cosine peaks exactly where the vector was defined — demo LABEL tokens at L6 (0.805) — and
+  the label columns dominate every other position at every layer (L6: label 0.805 vs input
+  0.569, cue 0.569, query cue 0.593). Partly tautological by construction, but the margin
+  (+0.24 over other positions) shows the direction is genuinely label-token-specific rather
+  than a generic residual-stream direction.
+- Depth profile of cosine is a clean band peaking at L6 and decaying monotonically:
+  label 0.592 (L0) -> 0.642 (L3) -> 0.805 (L6) -> 0.658 (L9) -> 0.512 (L12) -> 0.202 (L27).
+  So presence tracks the steering curve on the way up (both peak L6) but decays much more
+  slowly than steering efficacy, which is ~dead by L12.
+- Raw dot behaves differently from cosine because residual norms grow with depth: dot keeps
+  rising to L27 at demo labels (60.8) and L23 at inputs (41.1), while query_cue dot peaks at
+  L10 (34.6). The query-cue peak at L10 is notable — that is where the FV heads read — and is
+  the one position whose projection peaks mid-network rather than at the end.
+- All positions are positively aligned (no negative cells anywhere), consistent with a large
+  shared component in the label-token mean; the earlier shared-mean steering control (flat
+  <=0.013) shows that shared part is not what makes it steer.
+Outputs: results/69_task_run/FV_location/label_mean_L6_presence/ (fv_location_heatmap.png,
+summary_cos.csv, summary_dot.csv, fv_location.npz); per-task npz in
+artifacts/69_task_run/labelmean_location/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
