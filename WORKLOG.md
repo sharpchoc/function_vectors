@@ -7070,3 +7070,20 @@ prepend_space -> "Q:{query}" while demos read "Q: {input}"; the pc50 study's pro
 consistent, but its query differs from the sixshot_dummy f-string prompts). This study omits the override.
 **Compute:** own pod fv-bottomup-ablation (807xcnzg2mxabh, RTX PRO 4500 Blackwell, $0.72/hr), fv env from volume,
 runner logs/bottomup_ablation/pod_run.sh, outputs -> shared artifacts/69_task_run/bottom_up_ablation/n{1,6}shot/.
+**Status: DONE** (~2.5h GPU, pod TERMINATED verified). All verifies passed (knockout leak 0.0 at prefill AND decode
+steps; mean-ablation projection pinned to grand-mean coefficient +-5e-3; zero to 0 +-3e-3). 6-shot pass needed
+--token_budget 11000 --batch_cap 16 (eager-attention fp32 weights OOM'd the 24000/48 default on 32GB).
+**RESULTS (mean acc over 69 tasks, T=1 sampled):**
+  n=1: baseline .208 | attnmask .021 | mean_abl .170 | zero_abl .005 | cf_mean .202 | cf_zero .049 | 0-shot .002
+  n=6: baseline .629 | attnmask .046 | mean_abl .567 | zero_abl .009 | cf_mean .623 | cf_zero .278 | 0-shot .002
+Reading: (1) zero-projection of the own-task L6 direction at all layers/label-tokens flattens ICL to ~0-shot, but
+the counterfactual-direction control shows much of that is NON-specific (cf_zero .278 vs .629 at 6-shot — removing
+the shared label-token component along ANY raw-mean direction does big generic damage); still a large specific gap
+(.009 vs .278). (2) mean-ablation — the specificity-clean test (removes only the task-specific offset along d, keeps
+the generic component) — costs only ~.06 at 6-shot (.567 vs .629; cf_mean .623 = clean near-null control), i.e. the
+model still learns the task: the single fixed L6 read direction is NOT necessary for ICL. (3) attn-masking the final
+cue + generated tokens from all demo-label positions collapses accuracy to near-0-shot (.046) — label-token attention
+is the near-exclusive route for task info into the query. Anomaly scan: no task with zero_abl > baseline; only
+lowercase_word retains >.05 under own-dir zero-ablation (n6 .073).
+Deliverables: results/69_task_run/bottom_up_read_features/ablation/{per_task_acc.csv, aggregate_bars.png,
+per_task_bars_{1,6}shot.png, cf_task_pairs.csv}. **Next:** user review; merge branch on sign-off. **Blockers:** none.
