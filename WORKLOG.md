@@ -7157,3 +7157,16 @@ plot_69_multidir_ablation.py (per_task_acc.csv incl. rank-1 columns, aggregate_b
 grouped by mode, per_task_bars_{1,6}shot.png).
 **Compute:** own pod fv-multidir-ablation (u1lhbkv5b8r4td, RTX PRO 4500 Blackwell, $0.72/hr). Smoke verifies OK
 (mean-mode projection pinned to grand coefficient +-7.5e-3, zero +-1.7e-3).
+**Status: DONE** (~1.5h GPU, pod TERMINATED verified).
+**RESULTS (mean acc over 69 tasks; rank-1 numbers in parentheses):**
+  n=1: base .208 | mean_pc5 .172 (.170) | zero_pc5 .003 (.005) | cf_mean_pc5 .184 (.202) | cf_zero_pc5 .032 (.049)
+  n=6: base .629 | mean_pc5 .503 (.567) | zero_pc5 .004 (.009) | cf_mean_pc5 .620 (.623) | cf_zero_pc5 .222 (.278)
+Reading: widening the ablated object from 1 direction to the top-5 uncentered PCs DOUBLES the specificity-clean
+mean-ablation effect at 6-shot (drop .126 vs .062) while the cf 5-PC control stays at baseline (.620) — the causal
+read-feature object is higher-dimensional than the mean direction, and the extra PCs carry task-specific signal
+(supports the user's higher-dimensional-subspace hypothesis; still far from the FV_ablation-style full kill).
+At 1-shot the extra PCs add nothing (mean_pc5 .172 ~ .170) — with one demo there is little per-prompt variation
+for PCs 2-5 to matter. Zero mode: still a near-total kill with a large non-specific share (cf .222), own-vs-cf gap
+essentially unchanged. Deliverables: results/69_task_run/bottom_up_read_features/ablation/multi_direction_ablation/
+{per_task_acc.csv (incl. rank-1 columns), aggregate_bars.png, per_task_bars_{1,6}shot.png}.
+**Next:** natural extension = rank sweep (k=1..~20) to trace the dose-response curve. **Blockers:** none.
