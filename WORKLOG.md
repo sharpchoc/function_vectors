@@ -7140,3 +7140,20 @@ is the near-exclusive route for task info into the query. Anomaly scan: no task 
 lowercase_word retains >.05 under own-dir zero-ablation (n6 .073).
 Deliverables: results/69_task_run/bottom_up_read_features/ablation/{per_task_acc.csv, aggregate_bars.png,
 per_task_bars_{1,6}shot.png, cf_task_pairs.csv}. **Next:** user review; merge branch on sign-off. **Blockers:** none.
+
+## Stream: multi-direction (rank-5) read-feature ablation (2026-08-20, branch worktree-multidir-ablation)
+**Status:** in progress. Follow-up to the single-direction baselines (user: those looked mixed/negative vs the
+FV_ablation pattern; hypothesis = read-feature subspace is higher-dimensional). New subfolder
+results/69_task_run/bottom_up_read_features/ablation/multi_direction_ablation/.
+**Design (user-adjudicated):** per task, top-5 UNCENTERED PCs of ALL 1500 per-prompt read-feature activations
+(label_all10_L6_acts: 150 prompts x 10 label slots, L6 block output) — PC1 ~ the raw mean already ablated
+(cos to unit resid_means[6]: min .982, median .990 over 69 tasks; asserted >= .98 in the run script). Zero mode
+removes the full rank-5 projection; mean mode replaces all 5 projections with the cross-task grand mean's
+(P_V m_l add-back), per user's explicit wording. Counterfactual arms = cf task's OWN 5-PC basis, same
+cf_task_pairs.json. Same T=1 sampled protocol / prompt bank / seeds scheme as the rank-1 run.
+**Scripts:** build_readdir_pc5_bases.py (CPU float64 SVD -> artifacts/69_task_run/bottom_up_ablation/pc5_bases.pt),
+ablate_readdir_pc5.py (reuses rank-1 run's prep/batch/verify + pc50 Ablator; outputs pc5/n{1,6}shot/<task>.json),
+plot_69_multidir_ablation.py (per_task_acc.csv incl. rank-1 columns, aggregate_bars.png with 1-dir vs 5-PC vs cf
+grouped by mode, per_task_bars_{1,6}shot.png).
+**Compute:** own pod fv-multidir-ablation (u1lhbkv5b8r4td, RTX PRO 4500 Blackwell, $0.72/hr). Smoke verifies OK
+(mean-mode projection pinned to grand coefficient +-7.5e-3, zero +-1.7e-3).
