@@ -70,15 +70,12 @@ def main():
     def mean_of(col):
         return float(np.mean([float(rows[t][col]) for t in tasks]))
 
-    order = ["mean_ablation_mr3", "mean_ablation_mr11",
-             "cf_mean_ablation_mr3", "cf_mean_ablation_mr11",
-             "zero_ablation_mr3", "zero_ablation_mr11",
-             "cf_zero_ablation_mr3", "cf_zero_ablation_mr11"]
-    short = {c: ("cf " if c.startswith("cf_") else "own ")
-             + ("3-dir" if c.endswith("mr3") else "11-dir") for c in order}
-    fig, axes = plt.subplots(1, 2, figsize=(13.5, 5.8), dpi=200, sharey=True)
+    order = ["mean_ablation_mr3", "cf_mean_ablation_mr3",
+             "zero_ablation_mr3", "cf_zero_ablation_mr3"]
+    short = {c: ("cf " if c.startswith("cf_") else "own ") + "3-dir" for c in order}
+    fig, axes = plt.subplots(1, 2, figsize=(11, 5.8), dpi=200, sharey=True)
     for ax, n in zip(axes, (1, 6)):
-        xs = np.array([0, 1, 2, 3, 4.6, 5.6, 6.6, 7.6])
+        xs = np.array([0, 1, 2.6, 3.6])
         vals = [mean_of(f"n{n}_{c}") for c in order]
         ax.bar(xs, vals, color=[COLOR[c] for c in order], width=0.8)
         for x, v in zip(xs, vals):
@@ -86,23 +83,23 @@ def main():
         base, zs = mean_of(f"n{n}_baseline"), mean_of("zero_shot")
         ax.axhline(base, color="0.35", lw=1.6, ls=(0, (5, 3)))
         ax.axhline(zs, color="0.6", lw=1.4, ls=(0, (2, 2)))
-        ax.annotate(f"unablated {base:.3f}", (7.9, base), ha="right", va="bottom",
+        ax.annotate(f"unablated {base:.3f}", (3.9, base), ha="right", va="bottom",
                     fontsize=10, color="0.25")
-        ax.annotate(f"0-shot {zs:.3f}", (7.9, zs), ha="right", va="bottom",
+        ax.annotate(f"0-shot {zs:.3f}", (3.9, zs), ha="right", va="bottom",
                     fontsize=10, color="0.45")
         ax.set_xticks(xs)
         ax.set_xticklabels([short[c] for c in order], fontsize=10, rotation=20, ha="right")
-        ax.text(1.5, -0.16, "mean ablation", transform=ax.get_xaxis_transform(),
+        ax.text(0.5, -0.16, "mean ablation", transform=ax.get_xaxis_transform(),
                 ha="center", fontsize=12, fontweight="bold", color="#2f7fe0")
-        ax.text(6.1, -0.16, "zero ablation", transform=ax.get_xaxis_transform(),
+        ax.text(3.1, -0.16, "zero ablation", transform=ax.get_xaxis_transform(),
                 ha="center", fontsize=12, fontweight="bold", color="#d94f3d")
         ax.set_title(f"{n}-shot", fontsize=14)
         ax.grid(axis="y", color="0.92")
         for s in ("top", "right"):
             ax.spines[s].set_visible(False)
     axes[0].set_ylabel("accuracy (T=1 sampled exact match, mean over 69 tasks)", fontsize=11)
-    fig.suptitle("Task-unique read-feature ablation: top-3 SVD compression vs full 11 "
-                 "directions (all layers, all demo-label tokens)",
+    fig.suptitle("Task-unique (mean-removed, L5-15) top-3 read-feature ablation "
+                 "(all layers, all demo-label tokens)",
                  fontsize=13.5, fontweight="bold")
     fig.tight_layout(rect=[0, 0.02, 1, 0.94])
     fig.savefig(OUT / "aggregate_bars.png", bbox_inches="tight")
