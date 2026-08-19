@@ -121,7 +121,7 @@ def main():
             verified = True
         if res is None:
             res = {"task": task, "n_shots": args.n_shots, "cf_task": pairs[task],
-                   "rank": 5, "bases_path": str(args.bases_path),
+                   "rank": int(V_own.shape[0]), "bases_path": str(args.bases_path),
                    "n_prompts": len(items), "conditions": {},
                    "golds": [it["gold"] for it in items]}
         for cname in todo:

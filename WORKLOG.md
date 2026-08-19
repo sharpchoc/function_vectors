@@ -7293,3 +7293,71 @@ agent_noun_to_verb prompt #0 verbatim from the run (steered answer 'breathe' = g
 labels highlighted at the injection sites, each annotated with its source task (recovered by
 re-running the seeded sampling; asserted equal to the stored labels). Palette: dataviz categorical
 slots 1-2 (blue #2a78d6 intervention / orange #eb6834 dummy variant) + neutral inks.
+## Stream: task-unique (mean-removed, L5-15) 11-direction ablation (2026-08-19, branch worktree-taskunique-ablation)
+
+Status: done. USER REQUEST: per task, take the 11 layer-wise task-level read features (mean over the
+150 slot-averaged label activations, label_avg10_L5-15_acts), remove each layer's cross-task mean
+direction, orthonormalize the 11 residuals (SVD; effective rank ~1.4), and ablate that basis at all
+28 block inputs at every demo-label token. Same conditions/pairs as rank-1/rank-5 runs.
+
+Commands: build_meanremoved11_bases.py (CPU float64) -> meanremoved11_bases.pt (max |cos| to any
+layer mean dir: median .084, max .155 — near carrier-free); ablate_readdir_pc5.py --out_sub
+meanremoved11 on own pod fv-taskunique-ablation (mmzi3ainh7uwqf, RTX PRO 4500, ~1.2h, terminated).
+Verifies pinned (mean 8e-4, zero 1.4e-3). plot_69_taskunique_ablation.py -> results
+.../ablation/task_unique_11dir/.
+
+Findings (mean over 69 tasks) — HEADLINE double dissociation, FV-ablation-grade specificity on the
+label side:
+- n6 baseline .629: own mean-abl .063 / own zero .061 vs cf mean .629 / cf zero .603. Near-total
+  kill, essentially zero collateral (cf-mean = baseline exactly; no task with cf-mean < 70% of
+  baseline).
+- n1 baseline .208: own .026/.023 vs cf .202/.182 — FIRST variant with 1-shot specificity (all
+  earlier variants had none).
+- Mean and zero modes coincide (basis ~orthogonal to carrier), as predicted.
+- vs centered 5-PC: own-cf gap .566 vs .157; the between-task mean differential (a ~rank-1.4 object
+  from just 11 slot-averaged means) is the label-side task-identity code; within-task variance PCs
+  were a weak proxy.
+- Partial survivors under own-abl (n6 > 30% of baseline): lowercase_word .46/.97, larger/smaller_of_pair,
+  fr/de/es-english .22-.29, number_word_to_digits, verb_tense_label, adjective_to_noun — mostly tasks
+  with echo/copy or highly redundant label content.
+
+Files: src/sandbox/ext_steerability/build_meanremoved11_bases.py (new), ablate_readdir_pc5.py
+(rank recorded from V), src/eval_scripts/plot_69_taskunique_ablation.py (new),
+logs/taskunique_ablation/*, results .../ablation/task_unique_11dir/{per_task_acc.csv,
+aggregate_bars.png, per_task_bars_{1,6}shot.png}; raw JSONs artifacts .../meanremoved11/n{1,6}shot/.
+NOTE: JSON condition keys still read *_pc5 (script reuse); columns renamed *_mr11 in the CSV.
+
+Next: none pending user. Natural follow-ups: rank-1 version (top SVD dir only) to test if the single
+task-unique direction suffices; steering counterpart running in fork session (mean-removed L6 steer).
+Blockers: none.
+## Stream: mean-free read-feature steering on dummy scaffolds (2026-08-19, branch worktree-meanfree-steering)
+
+Status: done. USER REQUEST: steer at L6 with the task read feature AFTER removing its projection
+along the overall mean read feature (task-unique part only), alpha-swept, 1-shot + 6-shot dummy
+scaffolds, all 69 tasks.
+
+Definitions: v_A = m_A(L6) − proj_{s_hat} m_A(L6), s_hat = unit mean of the 55 TRAIN tasks'
+m_A(L6) (the sweep_raw_mean_layers shared-mean control object). cos(m_A, s_hat) median .856;
+||v_A||/||m_A|| median .516 → alphas {.5,1,2,4,8} (one extra octave). Same scaffolds/sites as the
+originals: 1-shot sampled-underscore + 6-shot all-'_' slots, block-6 output, established T=1
+protocol. Script: meanfree_dummy_steer.py (resumable; dummy6_baseline reproduces the sixshot_dummy
+run's accuracies — preds not bit-identical across pods, fp sampling nondeterminism).
+
+Findings (mean over 69 tasks; per-task best alpha):
+- 6-shot dummy: unsteered .000 → mean-free best .339 (a4 .307, a2 .231) vs full-vector best .447
+  → the task-unique component alone recovers ~3/4 of full-vector steering.
+- 1-shot dummy: unsteered .002 → mean-free best .075 vs full-vector best .126, shared-mean best
+  .013 → shared mean alone steers ~nothing; the unique part carries the signal (~60% of full).
+- Dose optimum shifts right one octave (a4 vs a2), matching the halved norm; a8 overdoses (.187).
+- Caveat: mean-free best is a max over 5 alphas vs 4 for full vector (slight max-statistic edge).
+- Consistent with the ablation side (task_unique_11dir double dissociation): the task-unique
+  label-side component is both necessary (ablation) and largely sufficient (steering); the shared
+  carrier contributes but is not the task signal.
+
+Files: src/sandbox/ext_steerability/meanfree_dummy_steer.py, src/eval_scripts/plot_69_meanfree_steering.py,
+logs/meanfree_steering/*; results .../steering_results/meanfree_dummy/{per_task_acc.csv,
+aggregate_bars.png, per_task_bars_{1,6}shot.png}; raw JSONs artifacts .../raw_mean_steering/meanfree_dummy/.
+Pod fv-meanfree-steering (RTX PRO 4500, ~2.2h, terminated; OOM lesson: steering runs also need
+budget 11000/cap 16 on 32GB now that 24000/48 OOMs in lm_head on long-prompt tasks).
+
+Next: none pending user. Blockers: none.
