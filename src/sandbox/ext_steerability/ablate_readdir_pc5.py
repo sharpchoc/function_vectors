@@ -57,6 +57,9 @@ def parse_args():
     p.add_argument("--model_dir", type=Path, default=None)
     p.add_argument("--token_budget", type=int, default=11000)
     p.add_argument("--batch_cap", type=int, default=16)
+    p.add_argument("--out_sub", type=str, default="pc5",
+                   help="output subdir under out_root (e.g. pc5_centered for the "
+                        "centered-PCA bases variant)")
     p.add_argument("--task_set", choices=("train", "heldout", "all"), default="all")
     p.add_argument("--shard_idx", type=int, default=0)
     p.add_argument("--shard_n", type=int, default=1)
@@ -77,14 +80,18 @@ def main():
     pairs = json.load(open(args.pairs_path))["pairs"]
     bases = torch.load(args.bases_path, map_location="cpu", weights_only=False)["tasks"]
     for t, b in bases.items():
-        assert b["cos_pc1_mean"] >= 0.98, f"{t}: PC1 drifted from mean ({b['cos_pc1_mean']:.3f})"
+        # uncentered bases: PC1 must be the mean direction; centered bases carry
+        # mean_frac_in_V instead and deliberately exclude the mean.
+        if "cos_pc1_mean" in b:
+            assert b["cos_pc1_mean"] >= 0.98, \
+                f"{t}: PC1 drifted from mean ({b['cos_pc1_mean']:.3f})"
     grand = torch.load(args.grand_mean_path, map_location="cpu",
                        weights_only=False)["mean"].float().cuda()   # (28, 4096)
 
     model, tok = load_model_eager(args.model_dir)
     ab = Ablator(model)
     tok.padding_side = "left"
-    outdir = args.out_root / "pc5" / f"n{args.n_shots}shot"
+    outdir = args.out_root / args.out_sub / f"n{args.n_shots}shot"
     outdir.mkdir(parents=True, exist_ok=True)
 
     verified = False
@@ -114,7 +121,8 @@ def main():
             verified = True
         if res is None:
             res = {"task": task, "n_shots": args.n_shots, "cf_task": pairs[task],
-                   "rank": 5, "n_prompts": len(items), "conditions": {},
+                   "rank": 5, "bases_path": str(args.bases_path),
+                   "n_prompts": len(items), "conditions": {},
                    "golds": [it["gold"] for it in items]}
         for cname in todo:
             V, mproj = setup[cname]
