@@ -30,8 +30,18 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
-AR = ARTIFACTS_ROOT / "69_task_run" / "mean_read_steering_effect_on_write"
-OUT = TASK69_RUN_DIR / "read_write_relationship" / "bottom_up"
+import argparse
+_ap = argparse.ArgumentParser()
+_ap.add_argument("--n_shots", type=int, default=6, choices=(1, 6),
+                 help="which capture to summarise: 6 (original) or the 1-shot variant")
+_NS = _ap.parse_args().n_shots
+_SUF = "" if _NS == 6 else "_1shot"
+AR = ARTIFACTS_ROOT / "69_task_run" / ("mean_read_steering_effect_on_write" + _SUF)
+OUT = TASK69_RUN_DIR / "read_write_relationship" / ("bottom_up" + _SUF)
+SCAF = ("6-shot dummy-'_' prompt; α·(task mean L6 label activation) added at all six "
+        "label slots" if _NS == 6 else
+        "1-shot dummy-'_' prompt; α·(task mean L6 label activation) added at the single "
+        "label slot")
 LAYER = 13
 SURFACE, INK, INK2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
 BLUE, ORANGE = "#2a78d6", "#eb6834"   # task FV / generic FV — validated adjacent pair
@@ -133,8 +143,7 @@ def main():
         for s in ("left", "bottom"):
             ax.spines[s].set_color(GRID)
         ax.legend(fontsize=10, frameon=False, loc="upper left")
-        fig.text(0.005, 0.005, f"GPT-J-6B, {len(tasks)} tasks. 6-shot dummy-'_' prompt; "
-                 f"α·(task mean L6 label activation) added at all six label slots; readout = "
+        fig.text(0.005, 0.005, f"GPT-J-6B, {len(tasks)} tasks. {SCAF}; readout = "
                  f"layer {LAYER} residual at the final cue token. One point per task "
                  f"(mean over its 150 prompts); line = mean over tasks.",
                  fontsize=8.5, color=INK2, ha="left", va="bottom", wrap=True)
@@ -181,8 +190,7 @@ def main():
         ax.spines[s].set_visible(False)
     for s in ("left", "bottom"):
         ax.spines[s].set_color(GRID)
-    fig.text(0.005, 0.005, f"GPT-J-6B, {len(tasks)} tasks. 6-shot dummy-'_' prompt; "
-             f"α·(task mean L6 label activation) added at all six label slots; readout = "
+    fig.text(0.005, 0.005, f"GPT-J-6B, {len(tasks)} tasks. {SCAF}; readout = "
              f"layer {LAYER} residual at the final cue token. Zero at α=0 by construction; "
              f"positive means the representation gained MORE task-specific than generic "
              f"alignment. One point per task; line = mean over tasks.",
