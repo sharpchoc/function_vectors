@@ -7408,3 +7408,11 @@ vs d_cos_gen +.044 (6-shot +.089); task-specific excess +.047 at a2, POSITIVE ON
 magnitude (one slot vs six); raw cos_task .207 -> .295. Read->write link holds at 1 shot.
 
 Pod fv-effect1shot (RTX PRO 4500, ~25 min, terminated). Blockers: none.
+
+## Stream: poster explainer visual — read-feature decomposition (2026-08-19, branch worktree-lowdim-steering)
+
+make_readfeature_explainer.py -> results .../ablation/explainer_visuals/{readfeature_decomposition.png,
+pairwise_cos_L6.npz}. Three panels: conceptual arrow fan (all 69 read features cluster around the
+all-task mean), conceptual decomposition m_A = (m_A.mhat)mhat + r_A, and the measured pairwise-cos
+histograms (raw .74 -> task-unique -.01, L6 slot-averaged features). Conceptual panels number-free
+per repo convention; blue/orange pair CVD-checked (OKLab dE normal 32, deutan 32, protan 27).
