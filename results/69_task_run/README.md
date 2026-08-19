@@ -11,6 +11,7 @@ Reorganised 2026-08-19; WORKLOG entries before that date use the old paths (mapp
 | `FV_dimensionality_reduction/train_test_split/` | 46-PC sparse selection on the TRAIN-fit 512-PC basis (+ `debugging/`: span coverage, all-512 oracle probe — heldout drop is basis-fit artifact). Files were in `FV_dimensionality_analysis/` + `FV_dimensionality_reduction/debugging/`. |
 | `FV_dimensionality_reduction/train_test_together_50d/` | Sparse PC selection on the all-69 basis (50 PCs @L9, 48 @L13) — heldout fully recovered. Was `sparse_all69{,_L13}/`. |
 | `FV_dimensionality_reduction/low_dim_22d/` | Fixed 22-PC task-mean subspace, alpha-rescaled: .68 vs .75 zs, no train/heldout gap. Was `debugging/taskmean_k90_*` + `poster_lowdim.png`. |
+| `FV_ablation/` | FV-direction ablation at the final cue token of 6-shot prompts: {zero, mean} × {own FV, cf-task FV} × layer clamps {9–27, 0–27}; T=1 sampled readout; baselines merged from `sixshot_dummy`. New 2026-08-19. |
 | `FV_linear_decodability/token_layer_regressions/` | Ridge activation→FV over the (token, layer) grid; heldout R² peaks at pre-label cue tokens, mid layers. |
 | `FV_linear_decodability/labeltoken_fv_ridge/` | Label-token L6 ridge (+ layer sweep, seed splits, error decomposition: task-identity readout, not per-prompt). |
 | `write_feature_and_model_accuracy/` | FV presence (cos at query cue, L9–20) vs task accuracy; within-task positive, between-task negative (Simpson). Was `FV_location/presence_vs_accuracy/`. |

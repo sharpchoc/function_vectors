@@ -5,7 +5,33 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
-## 2026-08-16 — FV location in the residual stream (69-task pool, canonical 37-head FV)
+## 2026-08-19 — FV-direction ablation at the final cue token (69-task pool, "FV Ablation" session)
+
+**Owner:** Claude Code background session (FV Ablation stream), branch
+`worktree-fv-ablation` (worktree `.claude/worktrees/fv-ablation`). **Status:** IN PROGRESS —
+scripts written, GPU run pending.
+
+**What (user spec, adjudicated 2026-08-19):** necessity counterpart of FV steering. On the
+150 fixed 6-shot prompts per task (first 6 demos of `isolation_prompts_ext` records, true
+labels), remove the unit task-FV direction (37-head pooled selection, rebuilt as in
+`eval_ext.py`) from the residual stream at the FINAL QUERY CUE token only, prefill only.
+Conditions = {zero-projection, mean-ablation} × {own FV, counterfactual-task FV} × two layer
+clamps {blocks 9–27, blocks 0–27} = 8 per task, all 69 tasks. Mean reference =
+equal-task-weighted grand mean over all 69 tasks of cue-token block-input residuals (new
+capture, `grand_mean_cue6.pt`). Counterfactual pairs = the bottom-up ablation session's
+`artifacts/69_task_run/bottom_up_ablation/cf_task_pairs.json` (different semantic family,
+Haiku-assigned; shared across both studies; borderline pair day_after_textual_date→
+first_digit flagged to user). Readout = T=1 sampled exact match, crc32 seeding
+(sixshot_dummy protocol; token_budget 24000 / cap 48 kept for seed-exact baseline
+reproduction). Baselines NOT recomputed: `real_6shot` + `zero_shot` merged from
+`sixshot_dummy/per_task_acc.csv`.
+
+**Files:** NEW `src/sandbox/ext_steerability/ablate_fv_cue6.py` (stages means/combine/eval;
+`FVAblator` rank-1 pre-hook, layer-set gated, prefill-gated; `--with_baseline` runs a
+seed-exact `real6_baseline` for smoke checks) and `src/eval_scripts/plot_fv_ablation.py`
+(→ `results/69_task_run/FV_ablation/{headline_bars.png, by_task_dots.png, summary.csv,
+per_task_acc.csv, cf_pairs.csv}`). Artifacts under `artifacts/69_task_run/FV_ablation/`.
+
 
 **Owner:** Claude Code background session (fv-location stream), CPU pod + pods fv-loc-{1,2}
 (RTX PRO 4500, ~15 min, ≈$0.40, BOTH TERMINATED). **Status:** DONE.
