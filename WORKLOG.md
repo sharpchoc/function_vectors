@@ -5454,3 +5454,24 @@ scalar_lines[_labels_only]).
 
 **Blockers:** none. All 7 pods terminated (verified zero remaining).
 
+
+---
+
+## 2026-08-16 — Stream: read-direction definition levers doc
+
+**Status:** done (doc only, no compute).
+
+**Files:** new `write_up/read_direction_levers.md` — enumerates the definitional levers for read directions (dot product vs cosine; literal vs τ-truncated pseudo-inverse; summed circuit M vs per-head-then-sum(+normalise); unit norm vs natural magnitude), maps the glossary's existing definitions and the retired d_payload transpose onto the crossing. Companion to `isolation_methods_levers.md`; `task_id_im_subspaces.md` untouched.
+
+**Next:** user to adjudicate the success metric before any sweep over the crossing.
+
+(2026-08-16 addendum) Also produced paper-appendix LaTeX `write_up/read_direction_levers.tex` (+ compiled PDF): purely mathematical statement of the four levers, no repo/script references, "previous misunderstanding" framing dropped per glossary rule.
+
+(2026-08-17 addendum) New `write_up/read_direction_eval_levers.md` — evaluation-side companion: levers for testing a read direction. Part I steering (S1 layer(s), S2 3x3 demo-input x demo-output prompt-pattern grid {in-dist, OOD, dummy}, S3 patching vs single-direction vs subspace ablate-and-inject), Part II ablation (A1 layer(s), A2 token positions, A3 zero-projection vs mean ablation, A4 single vs subspace + random-subspace controls). Success metric flagged for user adjudication before any sweep.
+
+(2026-08-17 addendum 2) read_direction_eval_levers.md: inserted new steering Lever S1 "which read direction to steer with" (definition-crossing names + task-level vs averaged-per-prompt target, noting nonlinearity means avg of r^j_A != r of avg v^j_A); old S1-S3 renumbered S2-S4, cross-refs fixed. Added rule: alpha sweep applies to unit-normed read directions only; natural-magnitude ones inject at native scale (alpha=1).
+
+(2026-08-18 addendum) Poster visuals for the 69-task generalisation result: NEW `src/eval_scripts/plot_69_task_run_poster.py` → `results/69_task_run/train_test_generalisation/poster_visuals/` (headline_bars.png, per_task_lift.png, poster_summary.png, poster_numbers.csv, README.md). Aggregate-only recuts of the existing per-task bars (no new compute, same train_heldout_summary.csv): zs train .75 / heldout .73 vs heldout base .09; mix .68 / .78 vs .18. Verified 0/69 tasks un-lifted in both settings (min lift +.30 zs, +.14 mix) before putting "every task is lifted" on a figure.
+(2026-08-18 addendum 2) Added `selected_heads.png` + `selected_heads.csv` to poster_visuals (same script): 28x16 layer x head grid of the 37 selected heads with a heads-per-layer marginal, read from prunedfail_seed43/pooled_sparse/selection.json (c 0.82-1.00, layers 3-27, densest 12-15, layer 13 = 5 heads).
+(2026-08-18 addendum 3) poster_visuals: dropped all figure subtitles and shortened titles to "Steering transfers to held-out tasks" (headline_bars, poster_summary), "Every task improves" (per_task_lift), "The selected heads" (selected_heads); layouts retightened. Setup details (37 heads, GPT-J, alpha=1, split) now live only in poster_visuals/README.md.
+(2026-08-19 addendum) results/69_task_run REORGANISED per user spec (disk moves only, no commits): 12 study folders regrouped into FV_train_test_generalisation / FV_dimensionality_analysis / FV_dimensionality_reduction/{train_test_split,train_test_together_50d,low_dim_22d} / FV_linear_decodability / write_feature_and_model_accuracy / feature_locations / bottom_up_read_features/{layer_selection,head_selection,steering_results,dimensionality_analysis,ablation} / top_down_read_features/{definition_sweep,steering_results,dimensionality_analysis,ablation} / read_write_relationship/{bottom_up,top_down}. Full old→new mapping in results/69_task_run/README.md. USER-REQUESTED DELETION: FV_location/poster_visuals reduced to read_vs_write_presence_label_mean_dual.{png,csv} (10 files deleted). Parity verified: 224→214 files, only the 10 deletions missing. Script output-path fixes on branch worktree-tlr-line-poster (not merged); scripts on other experiment branches still use old paths — fix at merge time.

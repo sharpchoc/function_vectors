@@ -1,0 +1,283 @@
+% Appendix: Isolation Methods — Study Levers
+% Standalone mathematical reference for the design space of isolation methods.
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks}
+
+\newcommand{\dmodel}{d_{\mathrm{model}}}
+\newcommand{\dhead}{d_{\mathrm{head}}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section{Appendix: Isolation Methods — Study Levers}\label{isolation-methods-study-levers}
+
+An \emph{isolation method} is a procedure that isolates the parts of the model or
+residual stream responsible for learning a simple function in context, as a
+lower-dimensional representation (a vector, a set of heads, a subspace) that can be
+injected back into the model to induce the task. This appendix defines the design
+space of such methods as four largely independent levers: the isolation algorithm,
+the metric it optimises, the data it is fit on, and the metric by which it is judged.
+The model is GPT-J-6B unless stated otherwise.
+
+Motivating problem: zero-shot steering on held-out tasks is bimodal. Several tasks
+(e.g.~synonym, word-length, country--currency) get essentially no steering benefit
+from any current isolation product, while others steer at their few-shot ceiling. The
+levers below define the design space; the hypotheses at the end define what a result
+would mean.
+
+\subsection{Notation}\label{notation}
+
+\begin{itemize}
+\tightlist
+\item
+  \(\dmodel\) is the residual-stream width and \(\dhead\) is the per-head width
+  (\(\dmodel = 4096\), \(\dhead = 256\) for GPT-J, which has 28 layers of 16 heads,
+  448 heads in total).
+\item
+  \(\mathcal{T}\) is the task universe and \(A \in \mathcal{T}\) is a task.
+\item
+  \(p_A^j\) is the \(j\)-th prompt for task \(A\), and
+  \(\mathcal{P}_A = \{p_A^j\}_j\) is the prompt set for \(A\) (varying in ICL context
+  length from 1 to 10 demonstrations, unless explicitly mentioned otherwise).
+\item
+  The ``:'' token is the final prompt token, i.e.~the pre-label position at which the
+  model must produce the answer. All activations are read, and all isolation products
+  are injected, at this position.
+\item
+  \(h(p_A^j) \in \mathbb{R}^{\dmodel}\) is the output of head \(h\) at the ``:''
+  token on prompt \(p_A^j\), mapped into the residual stream.
+\item
+  The head vector \(h_A = \frac{1}{|\mathcal{P}_A|} \sum_j h(p_A^j)\) is the average
+  head activation for task \(A\), taken over prompts the model answers correctly
+  in context.
+\item
+  \(v_A = \sum_{h \in H} h_A\) is the function vector (FV) for task \(A\), where
+  \(H\) is a selected subset of heads.
+\item
+  \(v^j_A = \sum_{h \in H} h(p_A^j)\) is the per-prompt function vector for prompt
+  \(j\) on task \(A\).
+\item
+  \(z^t_\ell\) is the residual stream at layer \(\ell\) at token \(t\).
+\end{itemize}
+
+Every isolation product below is a vector (or family of vectors) injected additively
+into the residual stream at the ``:'' token:
+\[
+z^{\text{``:''}}_\ell \;\leftarrow\; z^{\text{``:''}}_\ell + v. \tag{1}
+\]
+
+\subsection{Lever 1 — Isolation algorithm}\label{lever-1-isolation-algorithm}
+
+Three algorithms are in play. Each produces, for a task \(A\), an injectable product.
+
+\subsubsection{1a. CIE top-\texorpdfstring{\(k\)}{k} hard head selection}\label{lever-1a}
+
+The Function Vectors algorithm of Todd et al. For every attention head \(h\), compute
+the \emph{causal indirect effect} (CIE): patch the head's task-mean vector \(h_A\)
+into prompts drawn from the chosen optimisation setting (Lever 2) and measure the
+resulting improvement in recovery of the correct answer. Writing \(\tilde p\) for a
+prompt from that setting and \(y\) for the correct answer,
+\[
+\mathrm{CIE}_A(h) \;=\; \mathbb{E}_{\tilde p}\!\left[\,
+  p\big(y \mid \tilde p;\ h \leftarrow h_A\big) \;-\; p\big(y \mid \tilde p\big)
+\,\right], \tag{2}
+\]
+where \(h \leftarrow h_A\) denotes replacing the head's output at the ``:'' token by
+its task mean. The per-head score is averaged over the fitting tasks,
+\(\mathrm{CIE}(h) = \frac{1}{|\mathcal{T}_{\mathrm{fit}}|}
+\sum_{A \in \mathcal{T}_{\mathrm{fit}}} \mathrm{CIE}_A(h)\), and the shared head set
+\(H\) is the hard selection of the top-\(k\) heads (canonically \(k = 40\)). The
+isolation product is the function vector
+\[
+v_A \;=\; \sum_{h \in H} h_A, \tag{3}
+\]
+one vector per task, injected at a single layer (either swept over all layers with
+the best layer reported, or a fixed convention layer). In the original formulation
+the optimisation setting is the same-task shuffled-label 10-shot prompt; that is one
+point of Lever 2, not part of the algorithm.
+
+The selection criterion is \emph{implicit}: per-head answer recovery in a corrupted
+(shuffled-label) 10-shot context. In its original form the algorithm never sees a
+zero-shot prompt.
+
+\subsubsection{1b. Sparse optimisation over heads}\label{lever-1b}
+
+The algorithm of Hu et al.~2025 (arXiv:2505.05145, \S3.1), stated generically. Learn
+a coefficient vector \(c \in [0,1]^{448}\) over all heads. The candidate vector
+\[
+v_A(c) \;=\; \sum_{h} c_h\, h_A \tag{4}
+\]
+is injected once at the ``:'' token of prompts drawn from the chosen optimisation
+setting (Lever 2), and \(c\) is fit by minimising the teacher-forced negative
+log-likelihood of the correct answer plus an \(\ell_1\) sparsity penalty,
+\[
+\mathcal{L}(c) \;=\;
+\mathbb{E}\!\left[-\log p\big(y \mid \tilde p;\ v_A(c)\big)\right]
+\;+\; \lambda \,\lVert c \rVert_1, \tag{5}
+\]
+with \(\lambda\) chosen by leave-one-task-out cross-validation over the fitting
+tasks, and \(y\) scored as the full label (all of its tokens), not only its first
+token. The isolation product used downstream is the hard set
+\(H = \{h : c_h > 0.8\}\), summed \emph{unweighted}; that is, exactly the
+construction of Eq.~(3) with the head list swapped.
+
+The selection criterion is \emph{explicit and differentiable}, and generic over
+Lever 2. The instantiation used in our experiments fits under the zero-shot setting
+and yields a 23-head set.
+
+\subsubsection{1c. Per-layer mean ``:''-token activation}\label{lever-1c}
+
+No selection at all. For each layer \(\ell\), the isolation product is the mean
+residual stream at the ``:'' token over 10-shot prompts of task \(A\),
+\[
+m^\ell_A \;=\; \frac{1}{|\mathcal{P}_A|} \sum_j z^{\text{``:''}}_\ell\!\big(p^j_A\big), \tag{6}
+\]
+one vector per layer, each injected at its own layer \(\ell\). This is the ``average
+hidden state'' baseline of Todd et al.: it carries everything the residual stream
+carries at that point (task identity, format, position, token statistics), not just
+head-mediated task content.
+
+\subsubsection{Compatibility note}\label{compatibility-note}
+
+Algorithms 1a and 1b are both generic over the fitting objective (Lever 2): the CIE
+can score heads by answer recovery in any prompt setting, and the sparse objective
+can be evaluated under any prompt setting. Existing runs pin particular choices: the
+CIE top-40 selection was fit under the same-task shuffled-label 10-shot setting, and
+the sparse 23-head selection under the zero-shot setting. Algorithm 1c has no
+optimisation step and is a fixed point of the crossing (though the prompts its mean
+is taken over could in principle also vary).
+
+\subsection{Lever 2 — Metric to optimise (fitting objective)}\label{lever-2-metric-to-optimise}
+
+The prompt setting the isolation algorithm is fit against (applies to both 1a and
+1b; see the compatibility note):
+
+\begin{enumerate}
+\tightlist
+\item
+  \textbf{Zero-shot accuracy.} Inject at the ``:'' token of a bare
+  \texttt{Q:\ x\textbackslash nA:} prompt with no demonstrations; the objective in
+  practice is the teacher-forced negative log-likelihood of the full label, a
+  differentiable surrogate for accuracy.
+\item
+  \textbf{Uplift on same-task shuffled-label 10-shot prompts.} Ten demonstrations
+  from task \(A\) with labels shuffled within the prompt (the corrupted context of
+  Todd et al.); uplift is steered accuracy minus unsteered accuracy on the same
+  prompts.
+\item
+  \textbf{Uplift on mixed-task mixed-label 10-shot prompts.} Demonstrations drawn
+  from multiple tasks with labels mixed. The precise construction (which tasks mix,
+  whether labels are additionally shuffled, how uplift is defined) is left open and
+  must be fixed before first use.
+\end{enumerate}
+
+\subsection{Lever 3 — Data to fit on}\label{lever-3-data-to-fit-on}
+
+\begin{enumerate}
+\tightlist
+\item
+  \textbf{Train/test task split.} Fit on 20 train tasks and evaluate on 9 held-out
+  test tasks (landmark--country, word-length, capitalize-first-letter, synonym,
+  lowercase-first-letter, product--company, capitalize, country--currency, antonym).
+  This is the transfer setting: the isolation product is shared across tasks it has
+  never seen.
+\item
+  \textbf{Task-specific.} Fit on the evaluated task's own data. No generalisation
+  claim; upper-bounds what the algorithm can do when allowed to see the task.
+\item
+  \textbf{All tasks pooled.} Fit on all 29 tasks together with no held-out tasks;
+  measures the capacity of a \emph{shared} isolation product, not transfer.
+\end{enumerate}
+
+\subsection{Lever 4 — Metric of success (evaluation)}\label{lever-4-metric-of-success}
+
+The same three metrics as Lever 2, now used as evaluations, crossed with \emph{where}
+they are measured: on the train tasks, on the held-out tasks, or on the fitting task
+itself. Two readout conventions coexist and are \textbf{not numerically comparable}:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Best-layer first-token readout.} First-token top-1 accuracy of the gold
+  answer; the injection layer is swept over all layers and the best layer is
+  reported; queries are filtered to items the model answers correctly under clean
+  10-shot ICL. Produces both zero-shot and shuffled-10-shot curves.
+\item
+  \textbf{Fixed-layer full-label readout.} Teacher-forced accuracy of the full label
+  at a fixed injection layer, on unfiltered queries.
+\end{itemize}
+
+Any cross-method comparison must hold the readout convention fixed; when quoting
+numbers, state which convention they came from.
+
+\subsection{Failure-mode hypotheses}\label{failure-mode-hypotheses}
+
+For tasks with poor held-out zero-shot steering (synonym, word-length,
+country--currency, partially antonym and product--company):
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{H1 — Overfitting to train tasks.} The isolation method (head set or basis)
+  fits the train tasks and fails to transfer. \emph{Test:} task-specific fitting
+  (Lever 3.2) should rescue the failing tasks if H1 holds.
+\item
+  \textbf{H2 — A single direction is not enough.} No single injected vector can
+  induce these tasks zero-shot, regardless of how it is found. \emph{Test:} directly
+  optimise an unconstrained \(v \in \mathbb{R}^{\dmodel}\) per task against the
+  zero-shot objective; if even this upper bound fails, no head-selection method can
+  succeed zero-shot on that task.
+\item
+  \textbf{H3 — Wrong success metric.} Zero-shot induction is simply the wrong bar
+  for some tasks; the honest metric is uplift in a corrupted 10-shot context, where
+  the format scaffold exists and steering supplies task identity. \emph{Test:} score
+  the same isolation products under Lever 4.2/4.3; if the failures vanish there,
+  adopt the mixed-context metric as primary.
+\end{itemize}
+
+These hypotheses are not exclusive: H2 and H3 can both be true (a task can need
+context for the format \emph{and} more than one direction for the content).
+
+\end{document}

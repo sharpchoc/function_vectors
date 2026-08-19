@@ -9,7 +9,7 @@ per-prompt cosine(activation, task FV) and average over all prompts of both spli
 40 test). No centering; no model is loaded -- pure tensor math over the existing captures.
 
 Outputs (per_task_cosine.csv, per-task diverging heatmaps + shared-scale panel, summary.json) go
-under FV_FORMATION_DIR/cosine_activation_to_fv_varicl_top40_pertask/. The CSV feeds
+under FV_FORMATION_DIR/activation_to_fv_decoding/cosine/varicl_top40_pertask/. The CSV feeds
 plot_pertask_r2_best_lines.py via --value_column mean_cosine.
 """
 import argparse
@@ -49,7 +49,7 @@ def parse_args():
                    default=ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_4tokens")
     p.add_argument("--splits", nargs="+", default=["train", "test"])
     p.add_argument("--output_dir", type=Path,
-                   default=FV_FORMATION_DIR / "cosine_activation_to_fv_varicl_top40_pertask")
+                   default=FV_FORMATION_DIR / "activation_to_fv_decoding/cosine/varicl_top40_pertask")
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
     p.add_argument("--eps", type=float, default=1e-8)
     return p.parse_args()

@@ -139,7 +139,7 @@ def parse_args():
     p.add_argument("--tsvd_root", type=Path,
                    default=ARTIFACTS_ROOT / "preimage_pairdiff_tsvdk16/train_varicl_top40")
     p.add_argument("--output_root", type=Path, default=None,
-                   help="Default: FV_FORMATION_DIR/fiveshot_preimage_ablation/<fv_root basename> "
+                   help="Default: FV_FORMATION_DIR/ablation/preimages/fiveshot/<fv_root basename> "
                         "(required explicitly when --n_shots != 5).")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--revision", type=str, default=None)
@@ -276,7 +276,7 @@ def main():
 
     if args.output_root is None:
         assert args.n_shots == 5, "--output_root must be given explicitly when --n_shots != 5"
-    out_root = args.output_root or (FV_FORMATION_DIR / "fiveshot_preimage_ablation"
+    out_root = args.output_root or (FV_FORMATION_DIR / "ablation/preimages/fiveshot"
                                     / args.fv_root.name)
     out_root.mkdir(parents=True, exist_ok=True)
 

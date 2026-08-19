@@ -56,7 +56,7 @@ ROW_TITLES = {
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--root", type=Path,
-                   default=FV_FORMATION_DIR / "fiveshot_preimage_ablation/train_varicl_top40")
+                   default=FV_FORMATION_DIR / "ablation/preimages/fiveshot/train_varicl_top40")
     p.add_argument("--rows", nargs="+", default=None,
                    help="Only plot these token rows (e.g. target1 all_targets). The color scale "
                         "is computed from the kept rows only, so small effects aren't washed out "

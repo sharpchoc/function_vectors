@@ -119,7 +119,7 @@ def parse_args():
                    help="Also refit with the study's top-10 FV target and compare test_mse to the "
                         "saved shard_icl10 metrics (tolerance check).")
     p.add_argument("--study_metrics_json", type=Path,
-                   default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv/shard_icl10/metrics.json")
+                   default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/main/shard_icl10/metrics.json")
     p.add_argument("--study_fv_root", type=Path,
                    default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_selected")
     p.add_argument("--overwrite", action="store_true")

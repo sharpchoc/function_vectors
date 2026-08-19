@@ -33,7 +33,7 @@ def parse_args():
     p.add_argument("--preimage_root", type=Path,
                    default=ARTIFACTS_ROOT / "preimage_pairdiff/train_varicl_top40")
     p.add_argument("--r2_csv", type=Path,
-                   default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv_varicl_top40"
+                   default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/varicl_top40"
                    / "combined_metrics.csv")
     p.add_argument("--cells", nargs="+", required=True,
                    help="Cell dir names, e.g. pre_label_token_icl3.")

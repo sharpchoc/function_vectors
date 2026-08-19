@@ -60,7 +60,7 @@ def parse_args():
                    default=str(ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_icl{icl}_3tokens"))
     p.add_argument("--query_activations_root", type=Path,
                    default=ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_4tokens")
-    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_rank_by_position")
+    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_geometry/activation_rank_by_position")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 

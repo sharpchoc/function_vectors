@@ -45,7 +45,7 @@ from eval_scripts.merge_fulldim_ridge_results import (
 
 def parse_args():
     p = argparse.ArgumentParser(description="Post-hoc R^2 for full-dim ridge from stored MSE.")
-    p.add_argument("--input_dir", type=Path, default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv")
+    p.add_argument("--input_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/main")
     p.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_selected")
     p.add_argument("--task_manifest", type=Path,
                    default=Path("task_splits/abstractive_train_test_tasks_29.json"))

@@ -48,7 +48,7 @@ def parse_args():
     p.add_argument("--query_activations_root", type=Path,
                    default=ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_4tokens")
     p.add_argument("--splits", nargs="+", default=["train", "test"])
-    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "fulldim_ridge_weight_heatmaps")
+    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/weight_heatmaps")
     return p.parse_args()
 
 

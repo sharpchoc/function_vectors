@@ -183,8 +183,9 @@ def main():
 
     role_short = ROLE_SHORT[args.token_role]
     if args.output_dir is None:
-        name = ("pca_cue_token_icl_evolution" if args.token_role == "pre_label_token"
-                else f"pca_{role_short}label_token_icl_evolution")
+        name = ("activation_geometry/pca_cue_token_icl_evolution"
+                if args.token_role == "pre_label_token"
+                else f"activation_geometry/pca_{role_short}label_token_icl_evolution")
         args.output_dir = FV_FORMATION_DIR / name
     args.output_dir.mkdir(parents=True, exist_ok=True)
     run_config_path = args.output_dir / "run_config.json"

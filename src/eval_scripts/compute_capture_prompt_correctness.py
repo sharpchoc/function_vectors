@@ -44,7 +44,7 @@ def parse_args():
     p.add_argument("--capture_root", type=Path,
                    default=ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_4tokens",
                    help="Capture dir whose index.json query_indices are cross-checked for alignment.")
-    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "cosine_activation_to_task_fv")
+    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/cosine/activation_to_task_fv")
     p.add_argument("--root_data_dir", type=str, default="dataset_files")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--revision", type=str, default=None)

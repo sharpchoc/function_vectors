@@ -102,7 +102,7 @@ def parse_args():
     p.add_argument("--tsvd_root", type=Path,
                    default=ARTIFACTS_ROOT / "preimage_pairdiff_tsvdk16/train_varicl_top40")
     p.add_argument("--output_root", type=Path, default=None,
-                   help="Default: FV_FORMATION_DIR/oneshot_preimage_ablation/<fv_root basename>.")
+                   help="Default: FV_FORMATION_DIR/ablation/preimages/oneshot/main/<fv_root basename>.")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--revision", type=str, default=None)
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
@@ -222,8 +222,8 @@ def main():
     args = parse_args()
     from baukit import TraceDict   # import late; precedent steer_label_cos_heatmap.py
 
-    mode_subdir = ("oneshot_preimage_ablation" if args.mode == "perlayer"
-                   else "oneshot_preimage_ablation_propagated")
+    mode_subdir = ("ablation/preimages/oneshot/main" if args.mode == "perlayer"
+                   else "ablation/preimages/oneshot/propagated")
     out_root = args.output_root or (FV_FORMATION_DIR / mode_subdir / args.fv_root.name)
     out_root.mkdir(parents=True, exist_ok=True)
 

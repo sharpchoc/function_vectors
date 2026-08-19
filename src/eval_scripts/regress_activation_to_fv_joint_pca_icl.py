@@ -62,10 +62,10 @@ def parse_args():
     parser.add_argument(
         "--pca_root",
         type=Path,
-        default=FV_FORMATION_DIR / "pca_abstractive_icl_examples_fv_activation_scatter",
+        default=FV_FORMATION_DIR / "activation_geometry/pca_abstractive_icl_examples_fv_activation_scatter",
         help="Root with shared fv_pca.pt and per-ICL icl{N}/activation_pca_{role}.pt bases.",
     )
-    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "joint_pca_activation_to_fv_regression_icl")
+    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/joint_pca/icl")
     parser.add_argument("--icl_example_indices", nargs="+", type=int, default=[1, 2, 3, 4])
     parser.add_argument("--split", type=str, default="train")
     parser.add_argument("--layer", type=int, default=11)

@@ -203,7 +203,7 @@ def mean_cos(Dn, x):
 
 def main():
     args = parse_args()
-    out_base = args.output_root or (FV_FORMATION_DIR / "twoshot_pairdiff_fv_preimage"
+    out_base = args.output_root or (FV_FORMATION_DIR / "preimage_analysis/twoshot_pairdiff_fv_preimage"
                                     / args.preimage_root.name)
     stage1_cfg = load_json(args.preimage_root / "run_config.json")
     fv_root = Path(stage1_cfg["fv_root"])

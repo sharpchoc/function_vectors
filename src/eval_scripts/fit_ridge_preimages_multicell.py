@@ -98,7 +98,7 @@ def parse_args():
     p.add_argument("--validate_cells", nargs="+", default=["pre_label_token:2"],
                    help="Cells (role:icl) to validate against the study metrics shards.")
     p.add_argument("--study_metrics_template", type=str,
-                   default=str(FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv/shard_icl{icl}/metrics.json"))
+                   default=str(FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/main/shard_icl{icl}/metrics.json"))
     p.add_argument("--study_fv_root", type=Path,
                    default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_selected")
     p.add_argument("--overwrite", action="store_true")

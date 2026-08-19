@@ -15,7 +15,7 @@ from regress_activation_to_fv_pca_ridge import (
     torch_pca, project, reconstruct, ridge_eig_prep, ridge_predict,
     load_function_vector, load_task_role_pooled, role_load_icl_index, load_json)
 
-VARICL = REPO / "results" / "pca_ridge_activation_to_fv_varicl_top40"
+VARICL = REPO / "results" / "direction3_fv_formation" / "activation_to_fv_decoding" / "pca_ridge" / "varicl_top40"
 FV_TARGET = REPO / "results" / "function_vectors" / "gpt-j" / "train_varicl_top40"
 PROJ_FV = REPO / "results" / "gptj_fv_multitask_top40_ambiguous"     # NEW axis
 ACT_ROOT = REPO / "results" / "residual_activations" / "gptj_56tasks_170prompts_4tokens"

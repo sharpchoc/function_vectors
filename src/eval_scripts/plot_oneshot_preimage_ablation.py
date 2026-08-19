@@ -45,7 +45,7 @@ ROW_TITLES = {"cue1": "cue1 (demo 'A:')", "target1": "target1 (demo label)",
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--root", type=Path,
-                   default=FV_FORMATION_DIR / "oneshot_preimage_ablation/train_varicl_top40")
+                   default=FV_FORMATION_DIR / "ablation/preimages/oneshot/main/train_varicl_top40")
     p.add_argument("--rows", nargs="+", default=None,
                    help="Only plot these token rows (e.g. target1). The color scale is computed "
                         "from the kept rows only, so small effects aren't washed out by the "

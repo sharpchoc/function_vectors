@@ -37,7 +37,7 @@ BANDED = ["random", "random_actcov"]   # drawn as mean line +/-2 sd band
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--results_root", type=Path,
-                   default=FV_FORMATION_DIR / "twoshot_pairdiff_fv_preimage/train_varicl_max4_top40")
+                   default=FV_FORMATION_DIR / "preimage_analysis/twoshot_pairdiff_fv_preimage/train_varicl_max4_top40")
     p.add_argument("--pairs", nargs="+",
                    default=["antonym_synonym", "next_number_digits_prev_number_digits"])
     p.add_argument("--suffix", type=str, default="",

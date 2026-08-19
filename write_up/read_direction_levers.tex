@@ -1,0 +1,217 @@
+% Appendix: Read Directions — Definition Levers
+% Standalone mathematical reference for the design space of read-direction definitions.
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  hidelinks}
+
+\newcommand{\dmodel}{d_{\mathrm{model}}}
+\newcommand{\dhead}{d_{\mathrm{head}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\author{}
+\date{}
+
+\begin{document}
+
+\section{Appendix: Read Directions — Definition Levers}\label{read-direction-levers}
+
+A \emph{read direction} is an input-side direction of the residual stream that the OV
+circuits of the selected function-vector heads map onto the task imitation space: the
+direction the circuit ``reads'' in order to write the task content it outputs. Given a
+head $h$ with OV circuit $W^h_O W^h_V \in \mathbb{R}^{\dmodel \times \dmodel}$, its mean
+task activation $h_A \in \mathbb{R}^{\dmodel}$, the selected head set $H$, and the
+function vector $v_A = \sum_{h \in H} h_A$, a read direction is some vector
+$r_A \in \mathbb{R}^{\dmodel}$ whose image under the circuit is aligned with the task
+content. For GPT-J-6B, $\dmodel = 4096$ and $\dhead = 256$, so each single-head circuit
+$W^h_O W^h_V$ has rank at most $256$ and a kernel of dimension at least $3840$.
+
+There is more than one defensible way to make ``aligned with the task content'' precise,
+and the choices interact. Rather than committing to a single definition, we state the
+design space as four levers and sweep over the resulting definitions, selecting among
+them empirically. Throughout, ``target'' denotes the vector the read direction should
+reproduce through the circuit --- $h_A$ for a single head, $v_A$ (or its per-prompt
+analogue $v^j_A$) for the aggregated constructions. The choice of task-level versus
+per-prompt target is orthogonal to the levers below and is held fixed within any sweep.
+
+\subsection{Lever 1 — Optimisation metric: dot product vs.\ cosine
+similarity}\label{lever-1-metric}
+
+The first choice is what ``the input direction whose image is maximally aligned with the
+target'' means. Let $W$ stand for the relevant circuit (a single head's $W^h_O W^h_V$,
+or the summed circuit $M$ of Lever 3) and $t$ for the target.
+
+\begin{enumerate}
+\item
+  \textbf{Dot product.} Maximise the inner product of the image with the target,
+  \begin{equation}
+  r \;=\; \argmax_{\|z\| = 1} \; \langle W z,\, t \rangle
+  \;\;\propto\;\; W^{\top} t. \tag{1}
+  \end{equation}
+  The closed form follows from
+  $\langle Wz, t\rangle = \langle z, W^{\top} t\rangle$. No kernel constraint is
+  needed: $W^{\top} t$ lies in the row space of $W$ automatically. This objective
+  rewards output \emph{magnitude}: input directions the circuit transmits strongly are
+  favoured even when their image is less purely aligned with $t$.
+\item
+  \textbf{Cosine similarity.} Maximise the angle-based alignment of the image with the
+  target,
+  \begin{equation}
+  r \;=\; \argmax_{\substack{\|z\| = 1 \\ z \,\perp\, \ker(W)}}
+  \; \cos\!\left(W z,\, t\right)
+  \;\;\propto\;\; W^{+} t, \tag{2}
+  \end{equation}
+  where $W^{+}$ is the Moore--Penrose pseudo-inverse and the kernel constraint makes
+  the maximiser unique (adding any $u \in \ker(W)$ to a maximiser leaves the output
+  unchanged). This objective is indifferent to output magnitude and rewards purity of
+  alignment; the price is that $W^{+}$ scales components by $1/\sigma_i$, so
+  near-zero singular values can dominate the solution. Lever 2 exists to control this.
+\end{enumerate}
+
+The two objectives are genuinely different optimisation problems with different
+solutions: the unit-norm constraint fixes the norm of the \emph{input} $z$, but the
+cosine additionally normalises by the norm of the \emph{output} $Wz$, which still varies
+with $z$. The dot product rewards output magnitude along $t$; the cosine does not.
+
+\subsection{Lever 2 — Inversion: literal pseudo-inverse vs.\
+\texorpdfstring{$\tau$}{tau}-truncation (cosine metric only)}\label{lever-2-inversion}
+
+This lever applies when Lever 1 selects the cosine metric; the dot-product solution
+involves no inversion, so the lever collapses there.
+
+\begin{enumerate}
+\item
+  \textbf{Literal pseudo-inverse $W^{+}$.} Invert every nonzero singular value. This is
+  the exact maximiser of the cosine objective, but it amplifies whatever the circuit
+  barely transmits: components of $t$ along output directions with small $\sigma_i$
+  receive weight $1/\sigma_i$ in the solution, so the read direction can be dominated
+  by directions of near-zero causal throughput.
+\item
+  \textbf{$\tau$-truncated pseudo-inverse $W^{+}_{\tau}$.} Invert only the singular
+  values $\sigma_i \ge \tau$; equivalently, additionally constrain $z$ to be orthogonal
+  to the right-singular subspace with $\sigma_i < \tau$. This trades a small loss in
+  achievable cosine for robustness to directions the circuit does not meaningfully
+  transmit. The threshold $\tau$ (equivalently, a rank cut $k$) is a hyperparameter of
+  the sweep; $\tau \to 0$ recovers the literal pseudo-inverse, and truncation to the
+  top singular direction is the opposite extreme.
+\end{enumerate}
+
+(A truncated variant of the dot-product solution --- projecting $W^{\top} t$ onto the
+top-$k$ right-singular subspace --- is definable but is not part of the present
+crossing.)
+
+\subsection{Lever 3 — Aggregation across heads: summed circuit vs.\
+per-head-then-sum}\label{lever-3-aggregation}
+
+The function vector is carried by multiple heads, so a single task-level read direction
+requires a choice of how the heads combine.
+
+\begin{enumerate}
+\item
+  \textbf{Summed circuit.} Form the summed OV circuit of the selected heads,
+  \begin{equation}
+  M \;=\; \sum_{h \in H} W^h_O W^h_V \;\in\; \mathbb{R}^{\dmodel \times \dmodel},
+  \tag{3}
+  \end{equation}
+  take the target $t = v_A$ (or $v^j_A$), and solve the Lever 1 problem once against
+  $M$. This treats every head as reading the \emph{same} residual-stream vector $z$,
+  even though the heads sit at different layers --- a physical inconsistency accepted
+  for tractability. Note that $\operatorname{rank}(M)$ can reach $\dhead\,|H|$, so with
+  $|H| \gtrsim \dmodel/\dhead = 16$ heads $M$ can be full rank; the kernel constraint
+  of eq.~(2) is then vacuous and $\tau$-truncation (Lever 2) becomes the only
+  regulariser.
+\item
+  \textbf{Per-head, then sum and normalise.} For each head $h \in H$, solve the Lever 1
+  problem for that head's own circuit $W^h_O W^h_V$ against that head's own mean
+  activation $h_A$, giving a per-head read direction $r^h_A$; then aggregate:
+  \begin{equation}
+  r_A \;=\; \frac{\sum_{h \in H} r^h_A}{\bigl\|\sum_{h \in H} r^h_A\bigr\|}. \tag{4}
+  \end{equation}
+  This respects each head's own input geometry but loses cross-head interactions: no
+  head can compensate for another's blind spot, unlike in the summed circuit.
+
+  \emph{Sub-choice (3$'$).} Each $r^h_A$ is unit-norm by construction, so the plain sum
+  in eq.~(4) weights heads equally. An alternative weights each head by the magnitude
+  of its unnormalised solution --- $\|(W^h_O W^h_V)^{+} h_A\|$ under the cosine metric,
+  or $\|(W^h_O W^h_V)^{\top} h_A\|$ under the dot product --- before summing.
+\end{enumerate}
+
+\subsection{Lever 4 — Final normalisation: unit norm or natural
+magnitude}\label{lever-4-normalisation}
+
+The last choice is whether the final $r_A$ is unit-normalised.
+
+\begin{enumerate}
+\item
+  \textbf{Unit norm.} $r_A$ is a pure direction; any intervention strength is delegated
+  entirely to the steering-coefficient sweep over $\alpha$.
+\item
+  \textbf{Natural magnitude.} Keep the norm the construction produces ---
+  $\|W^{+} t\|$ under the cosine metric, $\|W^{\top} t\|$ under the dot product, or the
+  norm of the per-head sum in Lever 3.2. These magnitudes carry meaning (for instance,
+  $\|M^{+} v_A\|$ is the input scale required to produce a $v_A$-sized output through
+  $M$), and they differ across tasks and heads, so this option changes the relative
+  dosing across tasks in any comparison at fixed $\alpha$.
+\end{enumerate}
+
+This lever is immaterial for purely correlational uses of read directions (the cosine of
+$r_A$ against residual activations is scale-invariant); it matters for causal uses ---
+injection, ablation, or projection-removal at a fixed intervention strength.
+
+\subsection{The resulting crossing}\label{the-resulting-crossing}
+
+Under the dot-product metric Lever 2 collapses, giving
+$1 \times 2 \times 2 = 4$ definitions; under the cosine metric the crossing is
+$\{\text{literal},\ \tau\text{-truncated over a grid of } \tau\} \times 2 \times 2$.
+Two points of the crossing correspond to the definitions used in the main text: the
+single-head read direction $r^h_A$ (cosine, literal pseudo-inverse, per-head, unit norm)
+and the summed-circuit read direction $r_A \propto M^{+} v_A$ (cosine, literal
+pseudo-inverse, summed circuit, unit norm). The transpose formula
+$r \propto W^{\top} t$, sometimes proposed as the solution of the cosine problem, is
+in fact the solution of the dot-product problem; within this crossing it is a
+legitimate lever point rather than an approximation.
+
+Finally, the criterion by which the best definition is selected is itself a
+definitional choice --- correlational alignment with residual activations at early
+tokens, or the causal effect of intervening along $r_A$, and in either case under which
+prompt distribution --- and must be fixed before the sweep is run.
+
+\end{document}

@@ -38,7 +38,7 @@ def parse_args():
                    default=ARTIFACTS_ROOT / "fulldim_ridge_weight_matrices/icl_trajectory_predictions.npz")
     p.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
     p.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_selected")
-    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "fulldim_ridge_weight_heatmaps")
+    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/weight_heatmaps")
     return p.parse_args()
 
 

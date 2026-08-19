@@ -73,6 +73,8 @@ def parse_args():
     p.add_argument("--out_root", type=Path,
                    default=ARTIFACTS_ROOT / "perprompt_head_activations" / "gptj_27tasks_170prompts")
     p.add_argument("--overwrite", action="store_true")
+    p.add_argument("--extra_tasks", nargs="+", default=None,
+                   help="Additional tasks appended AFTER the standard 27 (indices preserved).")
     return p.parse_args()
 
 
@@ -172,6 +174,12 @@ def main():
     train_tasks = list(json.loads(args.task_split_path.read_text())["train_tasks"])
     tasks = train_tasks + TEST7
     assert len(tasks) == 27 and len(set(tasks)) == 27
+    # Extra tasks are APPENDED so the query-selection RNG (keyed by task_index) of the
+    # original 27 is untouched; existing captures are skipped by the resume guard anyway.
+    for t in args.extra_tasks or []:
+        if t not in tasks:
+            tasks.append(t)
+    assert len(set(tasks)) == len(tasks)
 
     model, tokenizer, model_config = load_gpt_model_and_tokenizer(args.model_name)
     model.eval()

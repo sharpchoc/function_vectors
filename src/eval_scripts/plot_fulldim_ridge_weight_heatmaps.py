@@ -61,7 +61,7 @@ def parse_args():
     p.add_argument("--cells", nargs="+", default=None,
                    help="Cells as icl:role:layer (e.g. 10:pre_label_token:11). Default: 6 study cells.")
     p.add_argument("--metrics_csv", type=Path,
-                   default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv/combined_metrics_with_r2.csv")
+                   default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/main/combined_metrics_with_r2.csv")
     p.add_argument("--task_manifest", type=Path, default=Path("task_splits/abstractive_train_test_tasks_29.json"))
     p.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_selected")
     p.add_argument("--icl_activations_root_template", type=str,
@@ -70,7 +70,7 @@ def parse_args():
                    default=ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_4tokens")
     p.add_argument("--splits", nargs="+", default=["train", "test"])
     p.add_argument("--weights_dir", type=Path, default=ARTIFACTS_ROOT / "fulldim_ridge_weight_matrices")
-    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "fulldim_ridge_weight_heatmaps")
+    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/weight_heatmaps")
     p.add_argument("--std_eps", type=float, default=1e-6)
     p.add_argument("--downsample", type=int, default=4, help="Block-mean factor for the combined figure.")
     return p.parse_args()

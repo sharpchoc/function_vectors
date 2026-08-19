@@ -52,7 +52,7 @@ def parse_args():
     p.add_argument("--query_activations_root", type=Path,
                    default=ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_4tokens")
     p.add_argument("--splits", nargs="+", default=["train", "test"])
-    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "cosine_activation_to_task_fv")
+    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/cosine/activation_to_task_fv")
     p.add_argument("--correctness_dir", type=Path, default=None,
                    help="Dir with <task>.json from Stage 1 (default: <output_dir>/correctness).")
     p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")

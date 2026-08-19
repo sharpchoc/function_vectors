@@ -58,7 +58,7 @@ def parse_args():
         type=str,
         default=str(ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_icl{icl}_3tokens"),
     )
-    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "layer_sweep_activation_to_fv_ols")
+    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/ols_layer_sweeps/main")
     parser.add_argument("--icl_example_indices", nargs="+", type=int, default=[1, 2, 3, 4, 5])
     parser.add_argument("--token_roles", nargs="+", default=DEFAULT_TOKEN_ROLES)
     parser.add_argument("--k", type=int, default=16, help="Activation-side PCA components.")

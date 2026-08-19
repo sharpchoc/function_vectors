@@ -26,7 +26,7 @@ SERIES_COLORS = ["#2a78d6", "#1baf7a", "#eda100", "#008300", "#4a3aa7", "#e34948
 def parse_args():
     p = argparse.ArgumentParser(description="Best-over-layers per-task R^2 vs token position.")
     p.add_argument("--input_csv", type=Path,
-                   default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv_varicl_top40_plus_number_digits"
+                   default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/varicl_top40_plus_number_digits"
                    / "per_task_r2" / "per_task_r2.csv")
     p.add_argument("--tasks", nargs="+",
                    default=["antonym", "synonym", "prev_number_digits", "next_number_digits"],

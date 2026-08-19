@@ -67,7 +67,7 @@ def parse_args():
                    default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_selected_top40")
     p.add_argument("--filter_root", type=Path, default=ARTIFACTS_ROOT / "gptj_fv",
                    help="Root of cached fs_results_layer_sweep.json (ICL-correct filter source).")
-    p.add_argument("--output_root", type=Path, default=FV_FORMATION_DIR / "preimage_steering")
+    p.add_argument("--output_root", type=Path, default=FV_FORMATION_DIR / "preimage_analysis/preimage_steering")
     p.add_argument("--root_data_dir", type=str, default="dataset_files")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
     p.add_argument("--revision", type=str, default=None)

@@ -70,7 +70,7 @@ def parse_args():
                    default=ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_4tokens")
     p.add_argument("--splits", nargs="+", default=["train", "test"],
                    help="Activation splits pooled into the 170 feature rows per task.")
-    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "pca_ridge_activation_to_fv")
+    p.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/pca_ridge/main")
     p.add_argument("--train_tasks", nargs="+", default=None, help="Override train tasks.")
     p.add_argument("--test_tasks", nargs="+", default=None,
                    help="Override test tasks. Default: 9 test minus country-currency/product-company (7).")

@@ -24,7 +24,7 @@ from eval_scripts.pca_cue_token_icl_evolution import ROLE_SHORT, build_task_colo
 
 def parse_args():
     p = argparse.ArgumentParser(description="PC1-vs-PC2 grid over ICL positions per PCA variant.")
-    p.add_argument("--study_dir", type=Path, default=FV_FORMATION_DIR / "pca_cue_token_icl_evolution")
+    p.add_argument("--study_dir", type=Path, default=FV_FORMATION_DIR / "activation_geometry/pca_cue_token_icl_evolution")
     p.add_argument("--variants", nargs="+", default=["pca_all_positions", "pca_final_cue"])
     p.add_argument("--ncols", type=int, default=5)
     p.add_argument("--alpha", type=float, default=0.25)

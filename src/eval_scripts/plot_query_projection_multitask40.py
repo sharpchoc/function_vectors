@@ -20,7 +20,7 @@ from regress_activation_to_fv_pca_ridge import (
 from utils.paths import ARTIFACTS_ROOT, FV_FORMATION_DIR, AMBIGUOUS_DIR
 import csv
 
-VARICL_DIR = FV_FORMATION_DIR / "pca_ridge_activation_to_fv_varicl_top40"
+VARICL_DIR = FV_FORMATION_DIR / "activation_to_fv_decoding/pca_ridge/varicl_top40"
 FV_TARGET = ARTIFACTS_ROOT / "function_vectors" / "gpt-j" / "train_varicl_top40"     # decoder target
 PROJ_FV = ARTIFACTS_ROOT / "gptj_fv_multitask_top40_ambiguous"                       # NEW axes
 ACT_ROOT = ARTIFACTS_ROOT / "residual_activations" / "gptj_56tasks_170prompts_4tokens"

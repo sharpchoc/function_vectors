@@ -104,7 +104,7 @@ fig.text(0.5, -0.045,
          "so a null ablation bounds necessity, it does not rule out causal use.",
          ha="center", fontsize=10.5, color=INK)
 fig.tight_layout(rect=[0, 0.0, 1, 0.98])
-out = (FV_FORMATION_DIR / "oneshot_preimage_ablation/train_varicl_top40/figures"
+out = (FV_FORMATION_DIR / "ablation/preimages/oneshot/main/train_varicl_top40/figures"
        / "ablation_vs_steering_mechanism.png")
 out.parent.mkdir(parents=True, exist_ok=True)
 fig.savefig(out, dpi=200, bbox_inches="tight", facecolor="white")

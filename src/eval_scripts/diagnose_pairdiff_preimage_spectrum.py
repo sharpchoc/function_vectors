@@ -76,7 +76,7 @@ def parse_args():
 
 def main():
     args = parse_args()
-    out_dir = args.output_root or (FV_FORMATION_DIR / "twoshot_pairdiff_fv_preimage"
+    out_dir = args.output_root or (FV_FORMATION_DIR / "preimage_analysis/twoshot_pairdiff_fv_preimage"
                                    / args.preimage_root.name / "preimage_diagnostics")
     out_dir.mkdir(parents=True, exist_ok=True)
     fv_root = Path(load_json(args.preimage_root / "run_config.json")["fv_root"])

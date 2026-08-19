@@ -35,7 +35,7 @@ ROLE_SHORT = {
 
 def parse_args():
     p = argparse.ArgumentParser(description="Merge full-dim ridge shard results + heatmaps.")
-    p.add_argument("--input_dir", type=Path, default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv")
+    p.add_argument("--input_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/main")
     p.add_argument("--expected_cells", type=int, default=899,
                    help="Expected total cell count (31 token positions x 29 layers). 0 to skip the check.")
     return p.parse_args()
@@ -44,11 +44,9 @@ def parse_args():
 def run_title(dir_name):
     """Human-readable run descriptor for heatmap suptitles, derived from the run dir name."""
     model = "Qwen3" if "qwen3" in dir_name else "GPT-J"
-    if dir_name.startswith("pca_ridge_activation_to_fv"):
+    if "pca_ridge" in dir_name:
         head = f"{model} PCA ridge: activation → FV (16 act PCs → 16 FV PCs, scored in full 4096-d)"
-    elif dir_name.startswith("pca_ridge"):
-        head = f"{model} PCA-space ridge: activation → FV"
-    elif dir_name.startswith("fulldim_ridge"):
+    elif "fulldim_ridge" in dir_name:
         head = f"{model} full-dim ridge: activation → FV (4096 → 4096, no PCA)"
     else:
         head = dir_name
@@ -144,7 +142,7 @@ def main():
 
     # Heatmaps.
     pos_labels = [position_label(*p) for p in pos_set]
-    suptitle = run_title(args.input_dir.name)
+    suptitle = run_title(str(args.input_dir))
     render_heatmap(pos_labels, layer_set, mse_grid, "test_mse",
                    args.input_dir / "combined_test_mse_heatmap.png", log_scale=True, cmap="viridis_r",
                    suptitle=suptitle)

@@ -35,7 +35,7 @@ def parse_args():
     p.add_argument("--seed_dirs", nargs="+", type=Path, default=None,
                    help="Per-seed run dirs (default: fulldim_ridge_activation_to_fv_shuffled_seed{0,1,2}).")
     p.add_argument("--output_dir", type=Path,
-                   default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv_shuffled")
+                   default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/controls/shuffled")
     return p.parse_args()
 
 
@@ -54,7 +54,7 @@ def load_seed(seed_dir):
 def main():
     args = parse_args()
     seed_dirs = args.seed_dirs or [
-        FV_FORMATION_DIR / f"fulldim_ridge_activation_to_fv_shuffled_seed{s}" for s in range(3)
+        FV_FORMATION_DIR / f"activation_to_fv_decoding/fulldim_ridge/controls/shuffled_seed{s}" for s in range(3)
     ]
     per_seed = [load_seed(d) for d in seed_dirs]
     keys = set(per_seed[0])

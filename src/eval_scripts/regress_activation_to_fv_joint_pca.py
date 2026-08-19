@@ -42,8 +42,8 @@ def parse_args():
         type=Path,
         default=ARTIFACTS_ROOT / "residual_activations/gptj_56tasks_170prompts_4tokens",
     )
-    parser.add_argument("--pca_root", type=Path, default=FV_FORMATION_DIR / "pca_abstractive_fv_activation_scatter")
-    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "joint_pca_activation_to_fv_regression")
+    parser.add_argument("--pca_root", type=Path, default=FV_FORMATION_DIR / "activation_geometry/pca_abstractive_fv_activation_scatter")
+    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_to_fv_decoding/joint_pca/main")
     parser.add_argument("--split", type=str, default="train")
     parser.add_argument("--layer", type=int, default=11)
     parser.add_argument("--token_roles", nargs="+", default=DEFAULT_TOKEN_ROLES)

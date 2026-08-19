@@ -1,5 +1,15 @@
 # Project Instructions
 
+Terminology & notation:
+- `write_up/task_id_im_subspaces.md` is the canonical glossary for terminology, notation, and
+  definitions (head vector $h_A$, function vector $v_A$, per-prompt FV $v^j_A$, read direction
+  $r^h_A$, task imitation space vs task identification space, ...). Read it before writing plot
+  labels, figure legends, variable names, or write-up text, and keep them consistent with it.
+- Ignore the "Previous misunderstanding" section in that file — it is a personal note for the
+  user only. Do not propagate it into plots, write-ups, code comments, or discussion.
+- That file is user-authored. NEVER edit it (or `task_id_im_subspaces.tex`) unless explicitly
+  asked to.
+
 Canonical definitions:
 - "Function vectors" (GPT-J) means `artifacts/function_vectors/gpt-j/train_varicl_top40`
   unless explicitly stated otherwise. FV sets under `artifacts/function_vectors/gpt-j/debug/`

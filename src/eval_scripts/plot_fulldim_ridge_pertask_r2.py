@@ -39,7 +39,7 @@ from eval_scripts.merge_fulldim_ridge_results import (
 def parse_args():
     p = argparse.ArgumentParser(description="Per-test-task R^2 heatmaps from stored per_test_task_mse.")
     p.add_argument("--input_dir", type=Path,
-                   default=FV_FORMATION_DIR / "fulldim_ridge_activation_to_fv_varicl_top40")
+                   default=FV_FORMATION_DIR / "activation_to_fv_decoding/fulldim_ridge/varicl_top40")
     p.add_argument("--fv_root", type=Path,
                    default=ARTIFACTS_ROOT / "function_vectors/gpt-j/train_varicl_top40")
     p.add_argument("--task_manifest", type=Path,

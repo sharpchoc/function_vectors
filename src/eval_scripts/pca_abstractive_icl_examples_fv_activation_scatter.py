@@ -47,7 +47,7 @@ def parse_args():
     parser.add_argument("--layer", type=int, default=11)
     parser.add_argument("--token_roles", nargs="+", default=DEFAULT_TOKEN_ROLES)
     parser.add_argument("--n_components", type=int, default=10)
-    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "pca_abstractive_icl_examples_fv_activation_scatter")
+    parser.add_argument("--output_dir", type=Path, default=FV_FORMATION_DIR / "activation_geometry/pca_abstractive_icl_examples_fv_activation_scatter")
     parser.add_argument("--train_tasks", nargs="+", default=None, help="Optional override for smoke tests.")
     parser.add_argument("--test_tasks", nargs="+", default=None, help="Optional override for smoke tests.")
     parser.add_argument("--alpha", type=float, default=0.36)
