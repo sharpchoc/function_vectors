@@ -7408,3 +7408,23 @@ vs d_cos_gen +.044 (6-shot +.089); task-specific excess +.047 at a2, POSITIVE ON
 magnitude (one slot vs six); raw cos_task .207 -> .295. Read->write link holds at 1 shot.
 
 Pod fv-effect1shot (RTX PRO 4500, ~25 min, terminated). Blockers: none.
+
+## Stream: first-label-only steering, per-cue propagation (2026-08-19, branch worktree-firstlabel-cues)
+
+Status: done. USER REQUEST: 6-shot dummy scaffold, steer alpha*m_A(L6) at ONLY the first '_' slot,
+stack the read->write panels for each downstream cue token (demo-2..demo-6 cue = token before each
+'_', + final query cue; demo-1 cue precedes the intervention, skipped).
+Scripts: steer_firstlabel_effect_on_cues.py (MultiCueReader, (n_alpha,150,6,28) per task),
+plot_firstlabel_effect_on_cues.py. Artifacts mean_read_steering_effect_on_write_firstlabel/;
+results read_write_relationship/bottom_up_firstlabel/{headline_cos_by_cue.png, excess_decay.png,
+summary.csv, per_task.csv}.
+
+Findings (69 tasks, L13, d_cos vs alpha=0 at a1/a2): monotone decay with distance —
+cue2 +.087/.088 (own) vs +.044/.041 (generic); cue3 +.052/.054; cue4 +.035; cue5 +.029;
+cue6 +.026; query cue +.023/.023 vs +.013/.013 (generic). The ~2:1 specific:generic ratio holds at
+EVERY position. cue2 (one steered label, adjacent) reproduces the 1-shot study's query-cue number
+(+.087) exactly — structural consistency check. Decay is steep early (cue2->cue3 -40%) then
+flattens (~1/distance-ish); a single steered label still measurably moves the query cue 5 demos
+later. Consistent with dilution: attention over an increasing number of unsteered label slots.
+
+Pod fv-firstlabel-cues (RTX PRO 4500, ~30 min, terminated). Blockers: none.
