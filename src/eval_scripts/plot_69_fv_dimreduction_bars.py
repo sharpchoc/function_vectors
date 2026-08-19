@@ -19,8 +19,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 from utils.paths import TASK69_RUN_DIR  # noqa: E402
 
-SRC = TASK69_RUN_DIR / "FV_dimensionality_analysis" / "pc_sparse_summary.csv"
-OUT_DIR = TASK69_RUN_DIR / "FV_dimensionality_reduction"
+SRC = TASK69_RUN_DIR / "FV_dimensionality_reduction" / "train_test_split" / "pc_sparse_summary.csv"
+OUT_DIR = TASK69_RUN_DIR / "FV_dimensionality_reduction" / "train_test_split"
 
 
 def main():

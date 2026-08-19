@@ -22,9 +22,9 @@ DR = TASK69_RUN_DIR / "FV_dimensionality_reduction"
 
 
 def main():
-    s50 = list(csv.DictReader(open(DR / "sparse_all69/pc_sparse_summary.csv")))
+    s50 = list(csv.DictReader(open(DR / "train_test_together_50d/sparse_all69/pc_sparse_summary.csv")))
     a22 = {r["task"]: float(r["zs_best_over_alphas"]) for r in
-           csv.DictReader(open(DR / "debugging/taskmean_k90_alpha_sweep.csv"))}
+           csv.DictReader(open(DR / "low_dim_22d/taskmean_k90_alpha_sweep.csv"))}
     base = np.mean([float(r["zs_base"]) for r in s50])
     full = np.mean([float(r["zs_full_best"]) for r in s50])
     p22 = np.mean([a22[r["task"]] for r in s50])
@@ -50,9 +50,9 @@ def main():
         ax.set_title("Function-vector steering is low-dimensional\n"
                      "(mean over 69 tasks, GPT-J)", fontsize=14.5, pad=14)
         fig.tight_layout()
-        fig.savefig(DR / fname, bbox_inches="tight")
+        fig.savefig(DR / "low_dim_22d" / fname, bbox_inches="tight")
         plt.close(fig)
-        print(f"wrote {DR / fname}")
+        print(f"wrote {DR / 'low_dim_22d' / fname}")
 
 
 if __name__ == "__main__":

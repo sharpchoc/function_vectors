@@ -23,9 +23,9 @@ C_FULL, C_50, C_22 = "tab:orange", "tab:blue", "#b34040"
 
 
 def main():
-    k90 = {r["task"]: r for r in csv.DictReader(open(DR / "debugging/taskmean_k90_summary.csv"))}
+    k90 = {r["task"]: r for r in csv.DictReader(open(DR / "low_dim_22d/taskmean_k90_summary.csv"))}
     p50 = {r["task"]: float(r["zs_best"]) for r in
-           csv.DictReader(open(DR / "sparse_all69/pc_sparse_summary.csv"))}
+           csv.DictReader(open(DR / "train_test_together_50d/sparse_all69/pc_sparse_summary.csv"))}
     rows = [{"task": t, "group": r["group"], "full": float(r["zeroshot_acc_full_fv"]),
              "k22": float(r["zeroshot_acc_top22_taskmean_pcs"]), "k50": p50[t]}
             for t, r in k90.items()]
@@ -54,7 +54,7 @@ def main():
                  "variance PCs of the task means — alpha=1, best layer, 50 queries/task, "
                  "ascending by full-FV accuracy", fontsize=12)
     fig.tight_layout()
-    out = DR / "debugging/taskmean_k90_bars.png"
+    out = DR / "low_dim_22d/taskmean_k90_bars.png"
     fig.savefig(out, bbox_inches="tight")
     print(f"wrote {out}")
 

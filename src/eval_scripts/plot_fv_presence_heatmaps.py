@@ -23,7 +23,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "fv_presence"
-OUT = TASK69_RUN_DIR / "fv_presence_heatmaps"
+OUT = TASK69_RUN_DIR / "read_write_relationship" / "top_down" / "fv_presence_heatmaps"
 
 
 def panel(ax, M, title, tokens, inj_idx, cmap, vmin=None, vmax=None, center=False):

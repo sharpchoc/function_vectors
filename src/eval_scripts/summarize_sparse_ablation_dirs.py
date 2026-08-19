@@ -27,7 +27,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "sparse_ablation_dirs"
-OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / "dot_perhead_unit_sparse_optimisation"
+OUT_DIR = TASK69_RUN_DIR / "top_down_read_features" / "ablation" / "dot_perhead_unit_sparse_optimisation"
 LAMS = (0.003, 0.01, 0.03, 0.1)
 
 

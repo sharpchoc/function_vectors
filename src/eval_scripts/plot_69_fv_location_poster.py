@@ -68,7 +68,7 @@ METRICS = {
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--in_dir", type=Path,
-                   default=TASK69_RUN_DIR / "FV_location" / "direct_FV_presence")
+                   default=TASK69_RUN_DIR / "feature_locations" / "direct_FV_presence")
     p.add_argument("--out_dir", type=Path, default=None)
     p.add_argument("--metric", choices=sorted(METRICS), default="cos")
     p.add_argument("--band", type=int, nargs=2, default=None,

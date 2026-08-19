@@ -31,7 +31,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "mean_read_steering_effect_on_write"
-OUT = TASK69_RUN_DIR / "mean_read_steering_effect_on_write"
+OUT = TASK69_RUN_DIR / "read_write_relationship" / "bottom_up"
 LAYER = 13
 SURFACE, INK, INK2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
 BLUE, ORANGE = "#2a78d6", "#eb6834"   # task FV / generic FV — validated adjacent pair

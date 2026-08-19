@@ -28,7 +28,7 @@ from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 PC_ROOT = ARTIFACTS_ROOT / "69_task_run" / "pc_sparse"
 PP_ROOT = ARTIFACTS_ROOT / "69_task_run" / "perprompt_fvs"
-OUT_DIR = TASK69_RUN_DIR / "FV_dimensionality_reduction" / "debugging"
+OUT_DIR = TASK69_RUN_DIR / "FV_dimensionality_reduction" / "train_test_split" / "debugging"
 K_GRID = [6, 12, 24, 46, 64, 128, 256, 512]
 
 
@@ -38,7 +38,7 @@ def main():
     pcs = basis["pcs"].double().numpy()  # (512, 4096) orthonormal rows
     sel_idx = np.array(json.load(open(PC_ROOT / "selection.json"))["selected_pcs"])
     ref = {r["task"]: r for r in csv.DictReader(
-        open(TASK69_RUN_DIR / "FV_dimensionality_analysis" / "pc_sparse_summary.csv"))}
+        open(TASK69_RUN_DIR / "FV_dimensionality_reduction" / "train_test_split" / "pc_sparse_summary.csv"))}
 
     rows = []
     for grp, tasks in (("train", split["train_tasks"]), ("heldout", split["heldout_tasks"])):

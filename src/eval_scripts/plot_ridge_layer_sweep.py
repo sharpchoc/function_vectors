@@ -24,7 +24,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "labeltoken_fv_ridge_layer_sweep"
-OUT = TASK69_RUN_DIR / "labeltoken_fv_ridge" / "layer_sweep"
+OUT = TASK69_RUN_DIR / "FV_linear_decodability" / "labeltoken_fv_ridge" / "layer_sweep"
 LAYERS = list(range(5, 16))
 
 

@@ -28,7 +28,7 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import TASK69_RUN_DIR  # noqa: E402
 
-RD = TASK69_RUN_DIR / "Read_direction_geometry"
+RD = TASK69_RUN_DIR / "top_down_read_features" / "dimensionality_analysis"
 OUT = RD / "writeup_assets"
 
 INK = "#111917"

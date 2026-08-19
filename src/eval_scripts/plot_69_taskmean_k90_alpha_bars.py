@@ -18,7 +18,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 from utils.paths import TASK69_RUN_DIR  # noqa: E402
 
-DBG = TASK69_RUN_DIR / "FV_dimensionality_reduction" / "debugging"
+DBG = TASK69_RUN_DIR / "FV_dimensionality_reduction" / "low_dim_22d"
 C_FULL, C_A1, C_BEST = "tab:orange", "#b34040", "#2e7d8a"
 
 

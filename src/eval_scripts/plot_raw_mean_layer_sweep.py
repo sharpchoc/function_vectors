@@ -31,7 +31,7 @@ from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering"
 REF = ARTIFACTS_ROOT / "69_task_run" / "read_dir_steering_1shot"
-OUT = TASK69_RUN_DIR / "raw_mean_steering"
+OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "layer_selection"
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
 LAYERS = list(range(28))
 

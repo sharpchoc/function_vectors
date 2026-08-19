@@ -21,7 +21,7 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 from utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 EVALS = ARTIFACTS_ROOT / "69_task_run" / "pc_sparse" / "all512_probe" / "evals"
-REF = TASK69_RUN_DIR / "FV_dimensionality_analysis" / "pc_sparse_summary.csv"
+REF = TASK69_RUN_DIR / "FV_dimensionality_reduction" / "train_test_split" / "pc_sparse_summary.csv"
 OUT = TASK69_RUN_DIR / "FV_dimensionality_reduction" / "debugging" / "zeroshot_full_vs_projected512.png"
 
 

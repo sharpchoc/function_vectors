@@ -56,7 +56,7 @@ def main():
     ap.add_argument("--norm", required=True, choices=("unit", "natural"))
     args = ap.parse_args()
     cell = f"{args.bracket}__{args.norm}"
-    OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / cell
+    OUT_DIR = TASK69_RUN_DIR / "top_down_read_features" / "dimensionality_analysis" / cell
 
     split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
     train = split["train_tasks"]

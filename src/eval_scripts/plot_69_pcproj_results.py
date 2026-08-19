@@ -27,8 +27,8 @@ for p in (REPO_ROOT, REPO_ROOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 PC_ROOT = ARTIFACTS_ROOT / "69_task_run" / "pc_sparse"
-OUT_DIR = TASK69_RUN_DIR / "FV_dimensionality_analysis"
-REF_CSV = TASK69_RUN_DIR / "train_test_generalisation" / "train_heldout_summary.csv"
+OUT_DIR = TASK69_RUN_DIR / "FV_dimensionality_reduction" / "train_test_split"
+REF_CSV = TASK69_RUN_DIR / "FV_train_test_generalisation" / "train_heldout_summary.csv"
 KEYS = {"zs": "test_zeroshot", "mix": "test_mixedtask10", "shuf": "test_sametask_shuffled10"}
 
 

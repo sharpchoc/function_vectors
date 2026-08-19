@@ -28,7 +28,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "read_dir_steering_1shot"
-OUT = TASK69_RUN_DIR / "Read_direction_geometry" / "steering"
+OUT = TASK69_RUN_DIR / "top_down_read_features" / "steering_results" / "steering"
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
 FAMILIES = ("dot_perhead", "cosine_perhead")
 

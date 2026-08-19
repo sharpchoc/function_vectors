@@ -33,7 +33,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
 SWEEP_ROOT = ARTIFACTS_ROOT / "69_task_run" / "read_dir_sweep"
-OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / "unit_vs_natural_containment"
+OUT_DIR = TASK69_RUN_DIR / "top_down_read_features" / "definition_sweep" / "unit_vs_natural_containment"
 BRACKETS = ("cosine_M", "dot_M", "cosine_perhead", "dot_perhead")
 
 

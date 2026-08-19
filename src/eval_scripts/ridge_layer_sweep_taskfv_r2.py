@@ -35,7 +35,7 @@ from src.eval_scripts.regress_activation_to_fv_fulldim_ridge import (  # noqa: E
 ACTS = ARTIFACTS_ROOT / "69_task_run" / "label_avg10_L5-15_acts"
 FVS = ARTIFACTS_ROOT / "69_task_run" / "perprompt_fvs"
 SWEEP = ARTIFACTS_ROOT / "69_task_run" / "labeltoken_fv_ridge_layer_sweep"
-OUT = TASK69_RUN_DIR / "labeltoken_fv_ridge" / "layer_sweep"
+OUT = TASK69_RUN_DIR / "FV_linear_decodability" / "labeltoken_fv_ridge" / "layer_sweep"
 LAYERS = list(range(5, 16))
 
 

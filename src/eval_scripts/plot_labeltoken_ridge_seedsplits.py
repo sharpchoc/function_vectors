@@ -27,7 +27,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "labeltoken_fv_ridge" / "seedsplits"
-OUT = TASK69_RUN_DIR / "labeltoken_fv_ridge" / "seedsplits"
+OUT = TASK69_RUN_DIR / "FV_linear_decodability" / "labeltoken_fv_ridge" / "seedsplits"
 CANONICAL_TEST_R2 = 0.4641
 SEEDS = list(range(1001, 1011))
 

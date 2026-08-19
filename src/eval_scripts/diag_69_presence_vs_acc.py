@@ -37,7 +37,7 @@ FEATURES = ["label_tokens", "out_entropy", "input_tokens", "n_unique_out"]
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--res_dir", type=Path,
-                   default=TASK69_RUN_DIR / "FV_location" / "presence_vs_accuracy")
+                   default=TASK69_RUN_DIR / "write_feature_and_model_accuracy")
     p.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "69_task_run" / "perprompt_fvs")
     p.add_argument("--features_csv", type=Path,
                    default=RESULTS_ROOT / "sandbox" / "ext_steerability" / "failing_analysis_features.csv")

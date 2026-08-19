@@ -28,7 +28,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
 RM_ROOT = ARTIFACTS_ROOT / "69_task_run" / "label_resid_means"
-OUT = TASK69_RUN_DIR / "raw_mean_steering" / "dimensionality"
+OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "dimensionality_analysis" / "dimensionality"
 LAYER = 6
 
 

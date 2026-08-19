@@ -38,7 +38,7 @@ SEL3 = (ARTIFACTS_ROOT / "69_task_run" / "read_vector_head_selection_L3"
         / "pooled_sparse" / "selection.json")
 FV37 = (ARTIFACTS_ROOT / "sandbox" / "ext_steerability" / "prunedfail_seed43"
         / "pooled_sparse" / "selection.json")
-OUT = TASK69_RUN_DIR / "read_vector_head_selection"
+OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "head_selection"
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
 LAYERS = (3, 7)
 

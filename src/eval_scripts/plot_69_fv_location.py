@@ -29,16 +29,16 @@ from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 
 SPACES = {
-    "full": {"in": "fv_location", "out": "FV_location/direct_FV_presence",
+    "full": {"in": "fv_location", "out": "feature_locations/direct_FV_presence",
              "cos": "cosine  cos(z_l, v_A)", "dot": "raw dot  z_l . v_A / ||v_A||"},
-    "pc50": {"in": "fv_location_50d", "out": "FV_location/low_dim_FV_presence",
+    "pc50": {"in": "fv_location_50d", "out": "feature_locations/low_dim_FV_presence",
              "cos": "50D cosine  cos(U z_l, U v_A)",
              "dot": "50D raw dot  (U z_l) . (U v_A) / ||U v_A||"},
-    "readdir": {"in": "readdir_location", "out": "FV_location/read_dir_presence",
+    "readdir": {"in": "readdir_location", "out": "feature_locations/top_down_read_dir_presence",
                 "cos": "cosine  cos(z_l, r_A)  [read dir: cosine_perhead unit mean]",
                 "dot": "raw dot  z_l . r_A / ||r_A||  [read dir: cosine_perhead unit mean]"},
     "labelmean": {"in": "labelmean_location",
-                  "out": "FV_location/label_mean_L6_presence",
+                  "out": "feature_locations/bottom_up_label_mean_L6_presence",
                   "cos": "cosine  cos(z_l, m_A(L6))  [best steering vector: L6 mean "
                          "label-token activation]",
                   "dot": "raw dot  z_l . m_A(L6) / ||m_A(L6)||  [best steering vector]"},

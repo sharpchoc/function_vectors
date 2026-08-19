@@ -25,7 +25,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "labeltoken_fv_ridge"
-OUT = TASK69_RUN_DIR / "labeltoken_fv_ridge"
+OUT = TASK69_RUN_DIR / "FV_linear_decodability" / "labeltoken_fv_ridge"
 VARIANTS = [str(n) for n in range(1, 11)] + ["avg"]
 
 

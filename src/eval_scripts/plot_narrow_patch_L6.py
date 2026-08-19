@@ -30,7 +30,7 @@ from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E
 NP_AR = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering" / "narrow_patch"
 RMS_AR = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering"
 REF = ARTIFACTS_ROOT / "69_task_run" / "read_dir_steering_1shot"
-OUT = TASK69_RUN_DIR / "raw_mean_steering" / "narrow_patch"
+OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / "narrow_patch"
 PATCH_ALPHAS = (0.0, 0.5, 1.0, 2.0, 4.0)
 STEER_ALPHAS = (0.5, 1.0, 2.0, 4.0)
 LAYER = 6

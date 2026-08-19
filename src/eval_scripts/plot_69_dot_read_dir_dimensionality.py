@@ -59,7 +59,7 @@ def main():
     ap.add_argument("--unnormalized", action="store_true",
                     help="analyze M^T v without unit normalization")
     args = ap.parse_args()
-    OUT_DIR = TASK69_RUN_DIR / "Read_direction_geometry" / (
+    OUT_DIR = TASK69_RUN_DIR / "top_down_read_features" / "dimensionality_analysis" / (
         "dot_M__natural" if args.unnormalized else "dot_M__unit")
     key = "dot_unnorm" if args.unnormalized else "dot"
     vlabel = "dot product, unnormalized M^T v" if args.unnormalized else "dot product"

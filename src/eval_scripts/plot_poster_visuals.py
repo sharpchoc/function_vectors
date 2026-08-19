@@ -31,7 +31,7 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import TASK69_RUN_DIR  # noqa: E402
 
-SRC = TASK69_RUN_DIR / "raw_mean_steering" / "sixshot_dummy"
+SRC = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / "sixshot_dummy"
 OUT = SRC / "poster_visuals"
 
 SURFACE = "#fcfcfb"

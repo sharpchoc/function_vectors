@@ -37,7 +37,7 @@ def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--in_root", type=Path, default=ARTIFACTS_ROOT / "69_task_run" / "presence_vs_acc")
     p.add_argument("--out_dir", type=Path,
-                   default=TASK69_RUN_DIR / "FV_location" / "presence_vs_accuracy")
+                   default=TASK69_RUN_DIR / "write_feature_and_model_accuracy")
     return p.parse_args()
 
 

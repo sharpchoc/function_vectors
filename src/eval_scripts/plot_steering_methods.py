@@ -30,7 +30,7 @@ from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "read_dir_method_steering"
 REF = ARTIFACTS_ROOT / "69_task_run" / "read_dir_steering_1shot"
-OUT = TASK69_RUN_DIR / "Read_direction_geometry" / "steering_methods"
+OUT = TASK69_RUN_DIR / "top_down_read_features" / "steering_results" / "steering_methods"
 BRACKETS = ("cosine_M", "dot_M", "cosine_perhead", "dot_perhead")
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
 SINGLE = [str(l) for l in range(3, 16)]

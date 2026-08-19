@@ -55,7 +55,7 @@ WRITE_LABEL = "write"
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--root", type=Path, default=TASK69_RUN_DIR / "FV_location")
+    p.add_argument("--root", type=Path, default=TASK69_RUN_DIR / "feature_locations")
     p.add_argument("--out_dir", type=Path, default=None)
     p.add_argument("--read_source", choices=sorted(READ_SOURCES), default="read_dir")
     p.add_argument("--layout", choices=["single", "dual", "stacked"], default="single")

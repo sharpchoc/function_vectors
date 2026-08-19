@@ -25,7 +25,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 EVAL_DIR = ARTIFACTS_ROOT / "69_task_run" / "pc50_ablation" / "eval"
-OUT_DIR = TASK69_RUN_DIR / "pc50_ablation"
+OUT_DIR = TASK69_RUN_DIR / "top_down_read_features" / "ablation" / "pc50_ablation"
 BRACKETS = ("cosine_M", "dot_M", "cosine_perhead", "dot_perhead")
 CONDS = ["baseline"] + [f"{b}__{m}" for b in BRACKETS for m in ("zero", "mean")]
 

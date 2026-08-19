@@ -34,7 +34,7 @@ from src.eval_scripts.regress_activation_to_fv_fulldim_ridge import (  # noqa: E
 
 ACTS = ARTIFACTS_ROOT / "69_task_run" / "label_all10_L6_acts"
 FVS = ARTIFACTS_ROOT / "69_task_run" / "perprompt_fvs"
-OUT = TASK69_RUN_DIR / "labeltoken_fv_ridge"
+OUT = TASK69_RUN_DIR / "FV_linear_decodability" / "labeltoken_fv_ridge"
 ALPHA = 1000.0  # CV-chosen for the avg-of-10 X variant
 
 

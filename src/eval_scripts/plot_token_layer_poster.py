@@ -34,7 +34,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "token_layer_regressions"
-OUT = TASK69_RUN_DIR / "token_layer_regressions" / "poster_visuals"
+OUT = TASK69_RUN_DIR / "FV_linear_decodability" / "token_layer_regressions" / "poster_visuals"
 ROLE_ROWS = ("input", "cue", "target")
 
 

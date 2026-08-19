@@ -28,7 +28,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering" / "sparse_pc40" / "eval"
-OUT = TASK69_RUN_DIR / "raw_mean_steering" / "sparse_pc40"
+OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "dimensionality_analysis" / "sparse_pc40"
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
 SURFACE, INK, INK2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
 BLUE, GRAPHITE, GRAY = "#2a78d6", "#52514e", "#b8b7b2"
