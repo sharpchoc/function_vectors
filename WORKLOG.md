@@ -7282,3 +7282,14 @@ Deliverables: results/69_task_run/bottom_up_read_features/steering_results/sixsh
 {summary.csv, per_task_acc.csv, alpha_curve.png, by_task.png}. Scripts sixshot_randomlabel_steer.py +
 plot_sixshot_randomlabel_steer.py; runner logs/sixshot_randomlabel/pod_run.sh.
 **Next:** user review; merge branch on sign-off. **Blockers:** none; all pods terminated.
+
+### Addendum — poster visuals (aggregate bars + example prompt)
+
+`src/eval_scripts/plot_sixshot_randomlabel_poster.py` -> poster_visuals/{aggregate_bars.png,
+example_prompt.png}. Bars: 0-shot 0.00 | random unsteered 0.00 | real 1-shot 0.21 | dummy '_'
+steered best-alpha 0.45 (orange) | random labels steered best-alpha 0.49 (blue) | real 6-shot 0.63;
+95% CIs, ink whiskers with surface halo, no whiskers on the ~0 floor bars. Example prompt =
+agent_noun_to_verb prompt #0 verbatim from the run (steered answer 'breathe' = gold): six random
+labels highlighted at the injection sites, each annotated with its source task (recovered by
+re-running the seeded sampling; asserted equal to the stored labels). Palette: dataviz categorical
+slots 1-2 (blue #2a78d6 intervention / orange #eb6834 dummy variant) + neutral inks.
