@@ -154,8 +154,11 @@ def prep_task_nshot(task, prompts_root, tok, n_shots):
         q = {"input": str(rec["query"]["input"]), "output": qo}
         pd_ = word_pairs_to_prompt_data(wp, query_target_pair=q, prepend_bos_token=False,
                                         shuffle_labels=False)
-        token_labels, prompt_string = get_token_meta_labels(pd_, tok, query=q["input"],
-                                                            prepend_bos=False)
+        # NOTE: no query= override — passing the raw (unspaced) query, as some older
+        # scripts do, yields "Q:{query}" while the demos read "Q: {input}"; the stored
+        # query_target already carries the prepend_space, matching the f-string prompts
+        # the reused sixshot_dummy baselines were sampled on.
+        token_labels, prompt_string = get_token_meta_labels(pd_, tok, prepend_bos=False)
         fstr = "".join(f"Q: {str(d['input'])}\nA: {str(d['output']).strip()}\n\n"
                        for d in demos) + f"Q: {q['input']}\nA:"
         assert prompt_string == fstr, \
