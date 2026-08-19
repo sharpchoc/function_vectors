@@ -11,7 +11,7 @@ and one line per ICL example (1..n_shots), light-to-bold with example index, so 
 sawtooth ratchet reads as a fan of curves instead of striped heatmap rows. The query
 cue (the canonical FV site) is the dashed line.
 
-Output: results/69_task_run/token_layer_regressions/poster_visuals/
+Output: results/69_task_run/FV_linear_decodability/token_layer_regressions/poster_visuals/
         heldout_r2_lines_6shot.png (+ .csv with the plotted values)
 """
 import argparse
@@ -33,10 +33,10 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "token_layer_regressions"
-OUT = TASK69_RUN_DIR / "token_layer_regressions" / "poster_visuals"
+OUT = TASK69_RUN_DIR / "FV_linear_decodability" / "token_layer_regressions" / "poster_visuals"
 
 ROLE_COLOR = {"cue": "#2f7fe0", "target": "#e8623d", "input": "#2fae82"}
-ROLE_LABEL = {"cue": 'cue ":"', "target": "target / label", "input": "input"}
+ROLE_LABEL = {"cue": 'cue ":"', "target": "target", "input": "input"}
 
 
 def main(n_shots=6, out_stem="heldout_r2_lines_6shot"):

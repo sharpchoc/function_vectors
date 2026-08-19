@@ -4,7 +4,7 @@
 For each test setting (zeroshot, mixedtask10, sametask_shuffled10): two panels
 (55 train / 14 held-out tasks), steered best-layer accuracy ascending with the
 37-head pooled FV (prunedfail_seed43 selection, alpha=1), unsteered baselines
-as black dashes. Reads results/69_task_run/train_test_generalisation/
+as black dashes. Reads results/69_task_run/FV_train_test_generalisation/
 train_heldout_summary.csv (from eval_headset.json aggregation).
 """
 import csv
@@ -20,7 +20,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 from utils.paths import TASK69_RUN_DIR  # noqa: E402
 
-OUT_DIR = TASK69_RUN_DIR / "train_test_generalisation"
+OUT_DIR = TASK69_RUN_DIR / "FV_train_test_generalisation"
 SETTINGS = [
     ("zs", "zeroshot_bars.png", "zero-shot"),
     ("mix", "mixedtask10_bars.png", "mixed-task mixed-label 10-shot"),
