@@ -6608,3 +6608,124 @@ summary_cos.csv, summary_dot.csv, fv_location.npz); per-task npz in
 artifacts/69_task_run/labelmean_location/.
 
 **Next:** user call. **Blockers:** none; all pods terminated.
+## 2026-08-18 — Narrow 41-PC patching at the '_' slot, L6 (raw_mean_steering/narrow_patch)
+
+**Status:** done. User variation on raw-mean steering: with V = the 41-PC / 95%-variance
+basis of the 69 L6 label-token task means (build_L6_pc41_basis.py; PCA center cancels in
+remove-and-replace), patch z <- (I-P) z + alpha * P m_A at the ' _' token, alpha
+{0, 0.5, 1, 2, 4} (0 = remove-only control, 1 = pure patch). Scripts narrow_patch_L6.py +
+plot_narrow_patch_L6.py. Fleet: 12 pods, terminated.
+
+**Results (mean over 69 tasks; plain steering @L6 best-alpha 0.126, real 1-shot 0.208):**
+- pure patch (a=1) 0.039; patch peaks at a=2 with 0.098; best-nonzero-alpha 0.104.
+- remove-only (a=0) 0.0015 == unsteered: the '_' slot has ~nothing in the subspace to remove,
+  so patching here reduces to injecting P m_A — a 41-dim truncation of the steering vector.
+- Patching NEVER beats plain steering (0.104 vs 0.126 at matched best-alpha); the pure patch
+  underperforms because P m_A only carries ~sqrt-energy of m_A (norm ratio ~0.5-0.7) and the
+  discarded (I-P) component of m_A evidently contributes.
+Interpretation: on a DUMMY slot there is no competing content to ablate, so the narrow-patch
+construction's advantage (S4.3: remove competing evidence, then write) has nothing to bite
+on; it just loses the out-of-subspace part of the vector. It would differentiate itself on
+scaffolds with real/conflicting labels (S3 cells with content), not on '_'.
+Outputs: results/69_task_run/raw_mean_steering/narrow_patch/ (patch_vs_steer.png,
+alpha_curve.png, summary.csv, per_task_acc.csv); preds in artifacts/.../narrow_patch/.
+
+**Next:** user call (natural follow-up: same patch on real-label or conflicting-label
+scaffolds where removal has content to act on). **Blockers:** none; all pods terminated.
+
+## 2026-08-18 — 6-SHOT dummy-label steering at L6, all six '_' slots (raw_mean_steering/sixshot_dummy)
+
+**Status:** done. Scaffold: six demos with in-distribution inputs (record's demos[0..5]) and
+'_' as every output, then the real query. Steering: z += alpha * m_A(L6) additively at ALL
+SIX ' _' positions at block-6 output, alpha {0.5,1,2,4}. Plain raw-mean steering only (no
+patching). Real 6-shot baseline computed HERE (the repo's older 6-shot numbers are from the
+29-task pool under a different readout, not comparable). Scripts sixshot_dummy_steer.py +
+plot_sixshot_dummy_steer.py; fleet 12 pods (own id file
+/root/.claude/jobs/121308b8/tmp/fleet_6sd_ids.txt), all terminated.
+
+**Bugs fixed en route:** (1) ag_news inputs contain literal '_' so a global ' _' token search
+found 7 slots — now anchors each dummy label STRUCTURALLY (token right after each demo's
+'A:' cue); (2) OOM on long 6-shot prompts → token_budget 9000 / batch_cap 12.
+
+**Results (mean over 69 tasks, T=1 exact match):**
+- 6-shot dummy UNSTEERED: **0.000** (perfect floor — six '_' labels teach nothing)
+- 6-shot dummy STEERED: a=0.5 0.002 | a=1 0.061 | a=2 0.381 | **a=4 0.442** (best 0.447)
+- real 6-shot demos: **0.630**; real 1-shot 0.208; 1-shot dummy steered @L6 0.126
+- So steering six dummy slots reaches **~71% of real 6-shot** and **3.5x the 1-shot
+  dummy-steering result** (0.126 -> 0.447), and comfortably beats a real 1-shot demo (0.208).
+- Dose response has NOT saturated at alpha=4 (0.381 -> 0.442 from a=2 to a=4), unlike the
+  1-shot case which peaked at a=2 — more slots appear to need/tolerate more total signal.
+  A follow-up alpha in {6,8,16} would find the true optimum.
+- Held-out tasks slightly ABOVE train (0.492 vs 0.436) — no fitting advantage, as expected
+  since the vector is just a per-task mean.
+- 17/69 tasks match or beat real 6-shot; the top are string/format tasks at near-ceiling
+  (lowercase_word 0.987 vs 0.973, singular-plural 0.933 vs 0.900, uppercase_word 0.933 vs
+  0.927, next_number_digits 0.893 vs 0.887).
+Outputs: results/69_task_run/raw_mean_steering/sixshot_dummy/ (by_task.png, alpha_curve.png,
+summary.csv, per_task_acc.csv); preds in artifacts/.../sixshot_dummy/.
+
+**Next:** user call (obvious: extend the alpha grid upward since a=4 is the boundary).
+**Blockers:** none; all pods terminated.
+
+## 2026-08-18 — Poster visuals for the 6-shot steering result
+
+**Status:** done. `src/eval_scripts/plot_poster_visuals.py` ->
+results/69_task_run/raw_mean_steering/sixshot_dummy/poster_visuals/:
+- `headline_bars.png`: three bars (no steering 0.000 | steered 0.442 | real 6-shot 0.629),
+  means over 69 tasks with 95% CIs and direct value labels; subtitle states the 70% ratio.
+  Uses the FIXED alpha=4 condition (not per-task best-alpha 0.447) to avoid selection.
+- `method_diagram.png`: schematic of the intervention on a 1-shot dummy prompt — token strip
+  with the '_' slot highlighted, layer stack over that column, the injected
+  alpha * mean-label-activation entering at L6, dashed forward arrow to the prediction read
+  out at the query's 'A:' token.
+
+Palette: dataviz reference (blue #2a78d6 for the intervention, neutral inks for references).
+No node runtime on this box, so the validator's six checks were ported to Python
+(/root/.claude/jobs/121308b8/tmp/validate_palette.py, OKLab dE + Machado CVD sim + WCAG):
+PASS — worst normal-vision dE 21.8, worst CVD dE 18.9; the light gray is below 3:1 contrast
+so the relief rule applies and every bar carries a visible value label.
+
+**Terminology note for the poster:** the injected object is the task's MEAN LABEL-TOKEN
+ACTIVATION (raw residual mean), not a "read direction" in the glossary sense (no
+pseudo-inverse). Figures are labelled accordingly.
+
+### Addendum — method diagram retitled "Read feature intervention"
+
+Per user: title is now "Read feature intervention"; the explanatory paragraph under the
+heading is removed (poster text covers it); the task is stated explicitly ("agent noun ->
+verb", with "a real demo would read 'climber -> climb' — here the label slot is a bare '_'")
+so the 'compile' prediction is interpretable; the injected vector is labelled
+"prompt-agnostic task mean 'read feature'".
+
+### Addendum — method diagram rebuilt as a two-rollout comparison
+
+Per user: removed the implied causal chain (L6 -> L7-27 -> output). The diagram now shows the
+SAME prompt twice — top row steered (every token from the '_' slot onward tinted blue, answer
+'compile'), bottom row unsteered (all grey, answer "wrong answer") — with the layer stack
+between them at the '_' column: L0-L5 grey/"unchanged", L6 solid blue (the injection site),
+L7-L27 blue-shaded/"every later layer at this slot now carries it". A dotted guide marks the
+same token slot across both rollouts; no arrows imply a forward path.
+
+### Addendum — method diagram tightened; only the edited slot is tinted
+
+Per user: (1) only the intervened '_' token and the final 'compile' answer are blue — the
+other tokens stay grey, so it no longer looks like every position is intervened on;
+(2) vertical whitespace between the L7-L27 band and the top rollout removed (canvas 6.9 ->
+5.1 units, bands re-spaced), giving a much denser figure at the same width.
+
+### Addendum — headline bars stripped down for the poster
+
+Per user: removed the footnote caption and the subtitle; title shortened to "Steering a
+content-free prompt" (no accuracy claim in it); y-axis label is now just "task accuracy";
+x tick labels are "No steering" / "Steered" / "Real 6-shot demos" (bracketed detail gone);
+value labels moved ABOVE the whiskers and rounded to 2 dp; whiskers recoloured to the
+surface white (#fcfcfb) so they read against both the blue and the dark graphite bar
+(contrast 4.3:1 and 7.7:1 respectively). Bar colours unchanged and still PASS the ported
+palette checks. Methods detail now lives in the poster text, not the figure.
+
+### Correction — whisker colour (white was invisible)
+
+White whiskers only read INSIDE the bars: the upper CI arm always crosses onto the light
+surface, where white vanished. Fixed by drawing the whiskers in ink (#0b0b0b) with a
+surface-coloured stroke halo (the dataviz "surface ring on overlapping marks" rule), so they
+are legible over the blue bar, over the dark graphite bar, and over the background.
