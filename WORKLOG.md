@@ -5796,3 +5796,421 @@ scalar_lines[_labels_only]).
 (2026-08-18 addendum 2) Added `selected_heads.png` + `selected_heads.csv` to poster_visuals (same script): 28x16 layer x head grid of the 37 selected heads with a heads-per-layer marginal, read from prunedfail_seed43/pooled_sparse/selection.json (c 0.82-1.00, layers 3-27, densest 12-15, layer 13 = 5 heads).
 (2026-08-18 addendum 3) poster_visuals: dropped all figure subtitles and shortened titles to "Steering transfers to held-out tasks" (headline_bars, poster_summary), "Every task improves" (per_task_lift), "The selected heads" (selected_heads); layouts retightened. Setup details (37 heads, GPT-J, alpha=1, split) now live only in poster_visuals/README.md.
 (2026-08-19 addendum) results/69_task_run REORGANISED per user spec (disk moves only, no commits): 12 study folders regrouped into FV_train_test_generalisation / FV_dimensionality_analysis / FV_dimensionality_reduction/{train_test_split,train_test_together_50d,low_dim_22d} / FV_linear_decodability / write_feature_and_model_accuracy / feature_locations / bottom_up_read_features/{layer_selection,head_selection,steering_results,dimensionality_analysis,ablation} / top_down_read_features/{definition_sweep,steering_results,dimensionality_analysis,ablation} / read_write_relationship/{bottom_up,top_down}. Full old→new mapping in results/69_task_run/README.md. USER-REQUESTED DELETION: FV_location/poster_visuals reduced to read_vs_write_presence_label_mean_dual.{png,csv} (10 files deleted). Parity verified: 224→214 files, only the 10 deletions missing. Script output-path fixes on branch worktree-tlr-line-poster (not merged); scripts on other experiment branches still use old paths — fix at merge time.
+## 2026-08-16 — Per-prompt read directions for the 69-task pool (canonical 37-head set)
+
+**Status:** done.
+
+**What:** converted the 10,350 per-prompt FVs (69 tasks × 150 fixed-10-shot prompts; 55 train +
+14 held-out of `task_splits/extended_steerable_69_prunedfail.json`) into per-prompt read
+directions r^j_A = M⁺ v^j_A / ‖·‖ (glossary Eq. 4–5), M = Σ over the canonical 37 pooled-sparse
+heads (DECISIONS 2026-08-16) of W_O^h W_V^h. Per-prompt FVs were captured by a peer session at
+`artifacts/69_task_run/perprompt_fvs/` ('fv' (150,4096) fp16 + 'raw' (150,37,256) fp16);
+this stream computed only the inversion (division of labor per user instruction).
+
+**Commands:** `src/sandbox/ext_steerability/compute_perprompt_read_dirs_37.py` run on a
+throwaway RTX 4000 Ada pod (fv-readdirs-37, terminated) — user wanted the CPU pod kept free.
+Pod gotcha: bare-`runpodctl create` mounts the volume at `/runpod`, so the capture's
+absolute-`/workspace` symlinks (means.pt) dangled → fixed with `ln -s /runpod /workspace`.
+
+**Files:** outputs `artifacts/69_task_run/perprompt_read_dirs/<task>.pt` (r_literal, r_rank90
+(150,4096) fp32 unit rows; per-variant preinv_norm, cos(Mr,v), cos(Mr,P_k v), task-level
+r_task; cos literal-vs-rank90; v fp16 copy; prompt_index) + `M_spectrum.npz` +
+`build_summary.json` (copied to `results/69_task_run/perprompt_read_dirs/`).
+
+**Findings:**
+- Gates all pass: (a) stored fv vs Σ W_O·raw rebuild worst rel 2.25e-04; (b) fv-mean vs
+  means.pt reconstruction worst rel 5.93e-04 (fp16-storage scale); (c) SVD reconstruction
+  rel 1.8e-14 (gesvd).
+- M (37 heads): numerically full rank — k_literal=4096, cond 1.17e5; k_rank90=1288
+  (k95=1729, k99=2580). Softer spectrum than the sparse23 M.
+- literal variant: cos(M r, v) = 1.0 everywhere (M invertible ⇒ exact preimage).
+  rank90: median cos(M r, v) per task 0.899–0.947 (med 0.932).
+- literal vs rank90 read dirs are near-ORTHOGONAL (median cos 0.003–0.013), reproducing
+  the sparse23 finding — the two truncation conventions give genuinely different objects;
+  analyses must state which variant they use.
+
+**Next:** analysis on the read directions (user-driven). **Blockers:** none; pod terminated.
+
+## 2026-08-16 — Read-direction geometry (dimensionality mirror of FV_dimensionality_analysis)
+
+**Status:** done. Repeats `results/69_task_run/FV_dimensionality_analysis` on the per-prompt
+READ directions (both truncation variants, one figure row each); 55 train tasks, centered PCA,
+float64 SVD. Run on a throwaway pod (fv-rd-geom, terminated). Script:
+`src/eval_scripts/plot_69_read_dir_dimensionality.py`; outputs in
+`results/69_task_run/Read_direction_geometry/`.
+
+**Findings (FV reference: task-mean 90%@24 PCs; pooled stable rank 3.0 raw / 5.7 centered):**
+- **literal (exact M^{-1}) read dirs COLLAPSE**: pooled 8250 rows hit 90% var @ 4 PCs, stable
+  rank 1.62 raw / 1.63 centered; task-level r_task 90%@4 (vs 24 for FVs); within-task median
+  90%@4. cond(M)=1.2e5 means the inverse is dominated by M's bottom singular directions —
+  every preimage lands in the same tiny subspace, task identity is largely erased.
+- **rank90 read dirs are RICHER than the FVs they invert**: task-level 90%@29 PCs (FVs: 24),
+  pooled stable rank 3.64 raw / 8.65 centered (FVs: 3.0/5.7), pooled 90%@338; within-task
+  median 90%@89 of 150 — per-prompt variation is spread much wider than in FV space
+  (normalization removes the shared-mean concentration that dominates FVs).
+- Definitional note: panel (A) uses r_task = normalized M^+ (task-mean FV); the CSV also has
+  task_mean_of_r rows (mean of unit per-prompt r) — same n90/n95 within 1 PC.
+
+**Next:** user-driven analysis. **Blockers:** none; pod terminated.
+
+## 2026-08-16 — DOT-PRODUCT per-prompt read directions (69 pool, 37-head set)
+
+**Status:** done (compute only; analysis awaits user instruction).
+`src/sandbox/ext_steerability/compute_perprompt_dot_read_dirs_37.py` run on throwaway pod
+fv-rd-dot (terminated). r_dot = M^T v^j / ||M^T v^j|| (argmax of <Mr,v> over unit r) — the
+dot-product counterpart of the cosine/pseudo-inverse read dirs; no SVD/truncation involved.
+
+**Outputs:** `artifacts/69_task_run/perprompt_dot_read_dirs/<task>.pt` (69 files; r
+(150,4096) fp32 unit, prenorm_MTv, cos_Mr_v diagnostic, r_task, v fp16 copy, prompt_index,
+config.definition explicitly says dot-product NOT glossary Eq.4-5) + build_summary.json.
+Deliberately a SEPARATE dir from `perprompt_read_dirs/` (cosine ones) for side-by-side use.
+
+**Quick facts:** gate (a) worst rel 2.25e-04; per-task median cos(M r_dot, v) 0.66–0.80
+(med 0.73) vs literal-inverse 1.0 / rank90-inverse ~0.93. Spot-check (antonym): median
+cos(r_dot, r_literal)=0.004, cos(r_dot, r_rank90)=0.60.
+
+**Next:** user to specify comparison analysis. **Blockers:** none; pod terminated.
+
+## 2026-08-16 — Read_direction_geometry split into cosine_similarity/ + dot_product/
+
+**Status:** done. `results/69_task_run/Read_direction_geometry/` now has two subfolders:
+`cosine_similarity/` (the existing literal/rank90-inverse analysis, files moved) and
+`dot_product/` (NEW: same protocol on the M^T v read dirs;
+`src/eval_scripts/plot_69_dot_read_dir_dimensionality.py`, run on throwaway pod
+fv-rd-dot-geom — RTX 4000 Ada was out of stock, used a Blackwell card with CUDA masked
+(numpy-only job; image torch 2.4 can't drive sm_120)).
+
+**Dot-product findings (single variant, 1x3 figure):** task-level 90%@18 PCs (rank90-inv: 29;
+FVs: 24); pooled stable rank 2.42 raw / 4.24 centered, 90%@41 PCs (rank90-inv: 3.64/8.65,
+90%@338); within-task median 90%@58 (rank90-inv: 89). So the dot-product read dirs are
+intermediate: more concentrated than the rank90 inverse everywhere, slightly more compact
+than FV space at task level, no collapse (unlike the literal inverse).
+
+**Next:** user-driven comparison. **Blockers:** none; pod terminated.
+
+## 2026-08-16 — Unnormalized dot-product read-dir geometry (M^T v, no unit norm)
+
+**Status:** done. `plot_69_dot_read_dir_dimensionality.py --unnormalized` (rows rescaled by
+stored prenorm_MTv; task vector = M^T(mean v) = mean of rows, by linearity); outputs in
+`results/69_task_run/Read_direction_geometry/dot_product_unnormalized/`. Pod fv-rd-dotu
+(terminated). Dropping the unit norm barely changes and slightly LOWERS dimensionality:
+task-level 90%@18 (= normalized), pooled 90%@36 sr 2.29/3.83 (vs 41, 2.42/4.24), within-task
+median 90%@57 (vs 58).
+
+**Next:** user-driven. **Blockers:** none.
+
+## 2026-08-16 — Read-direction DEFINITION SWEEP materialized (4 brackets, 69 tasks)
+
+**Status:** done (storage only; success metric + analysis deferred by user design).
+Per write_up/read_direction_levers.md and user decisions 2026-08-16: Lever 1 both (cosine,
+dot); Lever 2 FIXED = truncated pseudo-inverse at cum sigma^2 >= 0.90 of each circuit's own
+spectrum (literal excluded); Lever 3 both (summed M, per-head-then-sum) with sub-choice 3' =
+sum UNNORMALIZED per-head solutions, normalize only at the end; Lever 4 both variants stored
+in one file (r = unit rows, norm = magnitudes; natural = r * norm).
+
+**Script:** `src/sandbox/ext_steerability/compute_read_dir_sweep.py` (2 pods, task-sharded,
+terminated). Per-head SVDs run on the 256x4096 factor (QR of W_O, SVD of R W_V) with QR- and
+SVD-reconstruction gates; per-prompt solves are one (4096,256) matrix per head applied to the
+stored raw acts. cosine_M / dot_M repackaged from perprompt_read_dirs (rank90) /
+perprompt_dot_read_dirs; task-level natural magnitudes recovered via linearity (mean of
+unnormalized rows).
+
+**Outputs:** `artifacts/69_task_run/read_dir_sweep/{cosine_M,dot_M,cosine_perhead,dot_perhead}/<task>.pt`
+(uniform schema: r, norm, r_task, r_task_norm, prompt_index, config) + sweep_manifest_shard*.json
+(bracket definitions, per-head k_energy90 79-202 med 183, gate stats). 69 files per bracket,
+unit rows verified; repackaged cosine_M rows match the source rank90 exactly.
+
+**Spot obs (antonym):** per-head brackets agree most with each other (median cos 0.89);
+cosine_M is the most distinct (0.60-0.64 vs others).
+
+**Next:** user to adjudicate the success metric (levers doc "Before any sweep"), then analysis.
+**Blockers:** none; all pods terminated.
+
+## 2026-08-16 — Sweep-cell dimensionality analyses + Read_direction_geometry restructure
+
+**Status:** done. `results/69_task_run/Read_direction_geometry/` now has ONE subfolder per
+sweep decision set, named <bracket>__<lever4norm>: existing folders renamed
+(cosine_similarity -> cosine_M__unit [figure still carries the excluded literal-inverse row],
+dot_product -> dot_M__unit, dot_product_unnormalized -> dot_M__natural; old plot scripts'
+OUT_DIRs updated to match), and 5 NEW cells computed via generic
+`src/eval_scripts/plot_69_sweep_read_dir_dimensionality.py --bracket .. --norm ..`
+(5 pods in parallel, all terminated).
+
+**Full 8-cell table (55 train tasks; task-90% | pooled-90% | pooled sr raw/cent | within-med-90%):**
+- cosine_M__unit        29 | 338 | 3.64/8.65 | 89
+- cosine_M__natural     27 | 322 | 3.65/7.87 | 89
+- cosine_perhead__unit  26 | 232 | 3.14/6.64 | 90
+- cosine_perhead__natural 24 | 196 | 3.15/6.04 | 89
+- dot_M__unit           18 |  41 | 2.42/4.24 | 58
+- dot_M__natural        18 |  36 | 2.29/3.83 | 57
+- dot_perhead__unit     24 | 139 | 3.00/5.90 | 75
+- dot_perhead__natural  22 | 120 | 2.94/5.36 | 74
+Pattern: Lever 1 dominates (dot < cosine everywhere); Lever 3 second (per-head < M within
+cosine, but M < per-head within dot); Lever 4 barely matters (natural slightly lower).
+
+**Next:** success-metric adjudication, then ranking analysis. **Blockers:** none.
+
+## 2026-08-16 — Unit-vs-natural pooled-90% PC subspace containment (4 brackets)
+
+**Status:** done. Question (user): is the natural-norm variant's pooled-90% PC subspace
+contained in its unit-norm counterpart's (which is always larger)? Script:
+`src/eval_scripts/compare_unit_natural_pc_containment.py` (4 pods, one bracket each,
+terminated). Containment of natural PC j = ||P_{unit-90%} v_j||^2; variance-weighted totals.
+
+**Answer: essentially yes, in every bracket** (variance-weighted containment 0.988-0.997;
+median per-PC 0.99+; worst single PC 0.877 (cosine_M) / 0.908 (dot_perhead), both late
+low-variance PCs). Not exact subspace nesting, but >=98.8% of the natural top-90% variance
+lies inside the unit top-90% subspace. Reverse direction also high (0.976-0.990): the two
+variants nearly share a subspace, unit just needs a few extra PCs for the same energy.
+Outputs: `results/69_task_run/Read_direction_geometry/unit_vs_natural_containment/`
+(<bracket>_containment.{png,npz,csv}).
+
+**Next:** success-metric adjudication. **Blockers:** none; all pods terminated.
+
+## 2026-08-16 — Cross-bracket pooled-90% subspace overlap (unit-norm variants)
+
+**Status:** done. `src/eval_scripts/cross_bracket_subspace_overlap.py` (pod fv-overlap,
+terminated). Pairwise metrics on the 4 unit-norm brackets' pooled-90% PC bases: symmetric
+overlap ||Va'Vb||_F^2/min(k), variance-weighted containments both ways, chance =
+max(k)/4096 (<=0.083 everywhere).
+
+**Findings:** all pairs far above chance but far from nested. Two families:
+per-head & dot brackets mutually similar (dot_M-in-dot_perhead 0.84, cosine_perhead vs
+dot_perhead sym 0.77, dot_M vs cosine_perhead 0.72); cosine_M is the outlier (sym 0.43-0.58
+vs everything, and only 0.37-0.49 of its variance lies in the others' subspaces — its extra
+~100-300 PCs are genuinely its own). dot_M's small 41-dim core is mostly inside the others
+(0.58-0.84) but not fully.
+Outputs: `results/69_task_run/Read_direction_geometry/cross_bracket_overlap/`
+(overlap_heatmap.png, overlap.npz incl. principal cosines per pair, overlap_summary.csv).
+
+**Next:** success-metric adjudication. **Blockers:** none.
+
+## 2026-08-16 — PC50 label-token ablation eval (causal comparison of read-dir definitions)
+
+**Status:** done. User-designed causal metric: per sweep bracket, top-50 UNCENTERED PCs of
+the pooled unit per-prompt read dirs (compute_sweep_pc50.py; top-50 energy frac cosine_M
+0.78 / dot_M 0.95 / cosine_perhead 0.85 / dot_perhead 0.87) ablated from the residual
+stream entering ALL 28 blocks at every demo-label token of the 150 clean 10-shot train
+prompts; zero-projection AND mean-ablation (to the all-task grand mean over 109,168 label
+tokens); accuracy of T=1 sampled responses (exact match, seeded), 55 train tasks.
+Scripts: compute_sweep_pc50.py + ablate_pc50_labeltokens.py (--stage means/eval; hooks with
+with_kwargs, left-pad generation, prefill-only masking) + summarize_pc50_ablation.py.
+Fleet: 8x RTX 4090 (+1 pc50 pod), all terminated. Pod pitfalls hit & fixed: transformers
+5.15 silently disables torch<2.5 (pin 4.46.3); duplicate incomplete HF snapshot dir (pin
+47e16930); int-typed labels in number tasks break tokenize_labels (str-cast).
+
+**Results (mean acc over 55 tasks; baseline 0.624):**
+- cosine_M:        zero 0.332 (drop 0.291) | mean 0.403 (drop 0.220)   <- SMALLEST drops
+- dot_M:           zero 0.170 (drop 0.454) | mean 0.278 (drop 0.345)
+- cosine_perhead:  zero 0.082 (drop 0.542) | mean 0.153 (drop 0.471)   <- LARGEST drops
+- dot_perhead:     zero 0.085 (drop 0.539) | mean 0.194 (drop 0.430)
+Mean-ablation < zero-ablation everywhere (grand mean restores generic label-token content).
+Ranking by necessity: perhead brackets > dot_M > cosine_M. Caveat: drop size confounds
+"task-relevant reading" with generic damage; the top-50 uncentered PCs include the shared
+mean direction, and brackets differ in top-50 energy coverage (0.78-0.95).
+Outputs: results/69_task_run/pc50_ablation/ (ablation_drops.png, summary.csv,
+per_task_acc.csv); raw per-prompt predictions in artifacts/69_task_run/pc50_ablation/eval/.
+
+**Next:** user interpretation / possible controls (random-50 subspace, matched-energy cuts).
+**Blockers:** none; all pods terminated.
+
+## 2026-08-17 — Sparse ablation-direction optimization (139 dot_perhead-unit PCs)
+
+**Status:** done. User experiment: gate c in [0,1]^139 over the centered pooled-90% PCs of
+dot_perhead__unit (dot_perhead_unit_pc139.pt, 55-train-task basis); per direction the demo-
+label-token activation is moved c_j of the way to the ALL-69-task grand mean projection
+(grand_mean69.pt, 135,280 label tokens) at every block input; loss = +log p(gold, teacher-
+forced) + lambda*||c||_1, Adam lr 0.03 clamp [0,1], init 0.1, 25 train + 10 val prompts per
+task, ALL 69 tasks pooled; select c > 0.5; hard mean-ablation of the selected set evaluated
+with the T=1 sampled protocol (150 prompts/task, all 69 tasks + baseline).
+Scripts: compute_dot_perhead_pc139.py, train_sparse_ablation_dirs.py,
+summarize_sparse_ablation_dirs.py; ablate_pc50_labeltokens.py gained --task_set (heldout
+means). Fleet: 5x RTX 4090, terminated. Lessons: HF gradient checkpointing is a NO-OP in
+.eval() mode and reentrant checkpointing drops grads to closure-captured tensors -> use
+model.train() (GPT-J dropouts all 0) + use_reentrant=False + assert c.grad nonzero; pkill
+patterns must live in a separate SSH from the text they'd match.
+
+**Results (baseline 0.623 all-69 mean):** lambda 0.003 -> 122 dirs, acc 0.137 (train 0.104
+/ heldout 0.269); 0.01 -> 87 dirs, 0.172 (0.128/0.345); 0.03 -> 24 dirs, 0.343
+(0.305/0.496); 0.1 -> 5 dirs, 0.414 (0.407/0.444). Notable: (a) just 5 directions take a
+third of ICL performance away; 24 directions halve it; (b) heldout tasks consistently drop
+LESS than train tasks even though c was fit on all 69 — the 139-PC basis itself is
+train-task-derived, so heldout ICL partly rides directions outside the basis; (c) train
+median at 122 dirs is 0.033 — near-total destruction.
+Outputs: results/69_task_run/Read_direction_geometry/dot_perhead_unit_sparse_optimisation/
+(sparsity_curve.png, c_vectors.png, summary.csv, per_task_acc.csv); c vectors + preds in
+artifacts/69_task_run/sparse_ablation_dirs/.
+
+**Next:** user analysis. **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — Read-direction steering test (1-shot content-free scaffold, 1 task)
+
+**Status:** done. Scaffold "Q: Input\nA: Output\n\nQ: {q}\nA:"; inject alpha * v_task at the
+' Output' token, block-7 output; v_task = NATURAL-magnitude per-task read dir (mean of
+per-prompt natural rows = r_task * r_task_norm); families dot_perhead (|v|=108) and
+cosine_perhead (|v|=47); alpha {0.5,1,2,4}; task agent_noun_to_verb (seeded random);
+T=1 sampled exact match, 150 prompts. Script steer_read_dir_1shot.py (pod fv-steer,
+terminated). Tokenizer gotcha: scaffold-final "\n\n" (628) retokenizes as 198,198 in
+context — anchor injection on the ' Output' token, not a prefix-ids match.
+
+**Result: essentially NO steering.** baseline 0.013; best steered 0.067 (dot_perhead a=1);
+all conditions <= 0.067 vs the 37-head FV-injection reference zs_best 0.56 for this task.
+Qualitative: baseline echoes scaffold words; steered outputs become word-like/topical
+(near-misses like 'breath' for breathe, input echoes like 'compiler') but do not perform
+the noun->verb mapping. Read directions (input-side) do NOT act as injectable task vectors
+the way FVs (output-side) do — at least not at L7/'Output'-token/these alphas on this task.
+Outputs: results/69_task_run/Read_direction_geometry/steering/ (png + csv); raw preds in
+artifacts/69_task_run/read_dir_steering_1shot/.
+
+**Next:** user call (other layers/positions/alphas, more tasks, or FV-injection control on
+the same scaffold). **Blockers:** none; pod terminated.
+
+## 2026-08-17 — Read-dir steering, variant 2: sampled input + '_' label slot
+
+**Status:** done. Same as the const-scaffold test but scaffold = "Q: {demo_input}\nA: _\n\n
+Q: {q}\nA:" (demo_input = the record's first demo's input, in-distribution, never the
+query); inject at the ' _' token (4808, stable single token), L7, natural-magnitude v_task,
+same task/protocol. Script steer_read_dir_1shot.py --scaffold_mode sampled_underscore
+(pod fv-steer2, terminated).
+
+**Result: real but modest steering emerges.** baseline 0.000 (model mostly parrots '_');
+dot_perhead peaks 0.153 @ alpha=1 (0.5/2/4 -> 0.067/0.080/0.067); cosine_perhead <= 0.080.
+~2.3x the const-scaffold best (0.067) but still far under FV injection (0.56). Qualitative
+at alpha=1: outputs are now task-shaped — exact hits (breathe, speed, amble, plot) and
+near-misses that keep the agent-noun form instead of converting (defender->defend,
+copier->copy, loser->lose): the read dir pushes 'this slot relates the demo input
+morphologically' but only partially induces the noun->verb direction. Figure/CSV updated
+in results/69_task_run/Read_direction_geometry/steering/ (both scaffolds overlaid).
+
+**Next:** user call (layer sweep, alpha refinement around 1, more tasks, FV control).
+**Blockers:** none; pod terminated.
+
+## 2026-08-17 — Read-dir steering, variant 3: multi-layer injection L7-20
+
+**Status:** done. Same sampled-input + '_' scaffold, same task/protocol, but the read dir is
+added at the ' _' position at EVERY block output 7..20 (14 layers; --layers 7-20).
+Pod fv-steer3, terminated.
+
+**Result: multi-layer is WORSE than single-layer L7.** baseline 0.000; dot_perhead
+0.047/0.040/0.067/0.053 for alpha 0.5/1/2/4 (peak 0.067 vs 0.153 single-layer L7 @ a=1);
+cosine_perhead <= 0.040 (vs 0.080). Flat, no alpha structure. Qualitative at a=2: outputs
+degrade into off-task text and fragments ('pebbles' for breathe, 'The compiler generates
+bytecode' for compile, 'dejer'/'losser'/'ambler' malformations) — the repeated injection
+derails the residual stream instead of specifying the label slot; the single well-placed
+L7 injection was doing something more surgical.
+Figure/CSV now overlay all 3 variants (const L7, sampled+'_' L7, sampled+'_' L7-20) in
+results/69_task_run/Read_direction_geometry/steering/.
+
+**Next:** if pursued, sweep SINGLE layers (7..20 one at a time) rather than stacking, and
+refine alpha near 1. **Blockers:** none; pod terminated.
+
+## 2026-08-17 — Read-dir steering: demo baselines (real 1-shot) added
+
+**Status:** done. Added --scaffold_mode real_1shot (genuine demo: input AND its correct
+label, anchor = first demo-label token) as the reference condition; same task/protocol,
+L7. Pod fv-steer4, terminated.
+
+**Baseline ladder for agent_noun_to_verb (150 prompts, T=1 exact match):**
+- dummy const scaffold 'Q: Input / A: Output' unsteered: 0.013
+- dummy sampled-input + '_' slot unsteered:              0.000
+- REAL 1-shot demo unsteered:                            0.233
+- real 10-shot demos unsteered (pc50_ablation baseline): 0.573
+Best steered results: blank-slot scaffold 0.153 (dot_perhead a=1, from 0.000); real 1-shot
+0.280 (cosine_perhead a=0.5, from 0.233 — i.e. +0.047, and steering HURTS at a>=2:
+0.140-0.220). So the read direction recovers ~2/3 of a real demo's worth of task signal
+when injected into an empty label slot, but adds little on top of a real demo and degrades
+it at higher alpha.
+Figure/CSV now overlay all 4 variants + the 10-shot reference line.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — Read-dir steering swept over ALL 69 tasks (per-task bars)
+
+**Status:** done. steer_read_dir_1shot.py gained --all_tasks/--shard_idx/--shard_n +
+skip-if-exists; ran both scaffolds (sampled_underscore blank '_' slot, real_1shot) x 69
+tasks x 9 conditions on 8 pods (all terminated). Plot: plot_steering_by_task.py ->
+results/69_task_run/Read_direction_geometry/steering/steering_by_task.{png,csv}.
+
+**Findings (T=1 exact match, 150 prompts/task, L7, natural-magnitude v_task):**
+- blank-'_' unsteered mean 0.001 (floor, as designed); steered (best alpha, dot_perhead)
+  mean 0.090; real 1-shot demo unsteered mean 0.208.
+- Steering beats its own baseline on 62/69 tasks, but reaches/exceeds the real-1-shot demo
+  on only 10/69; median steered/real-1shot ratio 0.314.
+- Strongly task-dependent: the top tasks (lowercase_word 0.313, third_person_to_base 0.300,
+  singular-plural 0.293, first_three_letters 0.273, german-english 0.267) are mostly
+  orthographic/morphological string ops where a read direction can specify the mapping;
+  the bottom ~25 tasks steer at ~0 despite real 1-shot working (e.g. day_after_textual_date
+  0.427, iso_date_to_month 0.333 unsteered-with-demo vs ~0.00-0.01 steered) — semantic /
+  knowledge-retrieval tasks are not induced by the read direction at all.
+- agent_noun_to_verb (the earlier single-task probe, 0.153 steered vs 0.233 1-shot) is
+  mid-pack, i.e. not unrepresentative.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — 0-shot baseline added to the steering plots
+
+**Status:** done. steer_read_dir_1shot.py gained --scaffold_mode zero_shot (bare
+"Q: {q}\nA:", baseline only — no demo label slot to inject into); swept all 69 tasks on 4
+pods (terminated). Plot code split: plot_steering_by_task.py (per-task bars, now 4 bars:
+0-shot / blank-'_' unsteered / blank-'_' steered / real 1-shot) and the new
+plot_steering_alpha_sweep.py (agent_noun_to_verb alpha curves, now with 0-shot and 10-shot
+reference lines) — replaces the ad-hoc tmp summary scripts.
+
+**0-shot numbers:** mean 0.002 over the 69 tasks (agent_noun_to_verb exactly 0.000), i.e.
+indistinguishable from the blank-'_' scaffold floor (0.001) — GPT-J does essentially none
+of these tasks without a demo, so the whole steering ladder sits on a true zero floor.
+Steering beats 0-shot on 62/69 tasks (same count as beats the blank scaffold).
+Full ladder (means): 0-shot 0.002 < blank scaffold 0.001~ < steered 0.090 <
+real 1-shot 0.208 < real 10-shot 0.573 (10-shot from pc50_ablation baselines).
+
+**Next:** user call. **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — PC5 subspace patching vs direct steering (69 tasks)
+
+**Status:** done. New session (fork), worktree pc5-patch-steering, branch
+claude-pc5-patch-steering based on claude-perprompt-readdirs-69.
+
+**Setup (user-adjudicated):** blank-'_' scaffold, L7, label slot only. Patch =
+h <- h - P5 h + alpha * P5 v_task, where P5 = top-5 UNCENTERED PCs of the pooled per-prompt
+dot_perhead unit read dirs (first 5 rows of the existing pc50_uncentered.pt basis, reused —
+no new PCA) and v_task = the same natural-magnitude per-task dot_perhead read direction used
+in the direct steering. Conditions/task: baseline, projout_only (alpha=0 control),
+patch at alpha {0.5,1,2,4}. Script: steer_read_dir_1shot.py --patch_pcs 5 (Injector gained
+an optional projection-out matrix P). 6 pods, all terminated.
+
+**Result: patching is WORSE than direct addition — roughly half the steering.**
+- means over 69 tasks (best alpha): direct 0.090 vs patch 0.042; baseline 0.001.
+- per-alpha means: direct [0.054, 0.072, 0.052, 0.053] vs patch [0.016, 0.036, 0.030, 0.026]
+  — same alpha=1 peak, but uniformly lower.
+- patch beats direct on only 6/69 tasks; mean paired difference -0.047.
+- projout_only = 0.001 (identical to baseline): removing the 5-D subspace from the slot does
+  nothing on its own, so the loss is NOT caused by the projection-out step.
+- P5 captures ~70-76% of |v_task| (cos(v, P5 v) ~ 0.70), so the patched-in vector is most of
+  the direction; the missing ~30% (spread over the remaining 4091 dims) evidently carries a
+  disproportionate share of the steering effect.
+
+**Interpretation:** the steering signal is NOT concentrated in the top-5 uncentered PCs of
+the read-direction stack — those PCs are dominated by the shared/mean component across
+tasks (uncentered), while the task-discriminative content lives in the tail. Consistent with
+the earlier finding that task identity needs ~18-24 PCs at task level.
+Outputs: results/69_task_run/Read_direction_geometry/steering/patch_vs_direct.{png,csv};
+raw per-prompt preds in artifacts/.../read_dir_steering_1shot/<task>__sampled_underscore__patch5pc.json
+
+**Next:** user call (e.g. patch with more PCs — 24/50 — to find where the steering content
+sits, or centered PCs instead of uncentered). **Blockers:** none; all pods terminated.
+
+## 2026-08-17 — Read-direction write-up artifact + Slack-ready PNGs
+
+**Status:** done. `src/eval_scripts/make_readdir_writeup_assets.py` renders four standalone
+PNGs from the committed summary CSVs into
+`results/69_task_run/Read_direction_geometry/writeup_assets/`:
+1_definitions (the 4 brackets x lever settings), 2_dimensionality (8 cells),
+3_overlap (4x4 pairwise subspace overlap heatmap, diagonal masked), 4_containment
+(unit vs natural). White surface, cool-green neutrals, single teal ramp, warm accent
+reserved for the cosine_M outlier — designed to paste straight into Slack.
+
+Artifact (write-up covering the definitions + preliminary overlap/dimensionality analysis,
+PNGs embedded as data URIs): https://claude.ai/code/artifact/e2b58e9f-116f-406c-9872-ebb8db2ead11
+
+**Next:** user is writing this up; causal metric work continues separately.
+**Blockers:** none.
