@@ -9,6 +9,7 @@ Reads artifacts/69_task_run/raw_mean_steering/<task>.json and, for context, the 
 real-1-shot references (read_dir_steering_1shot/<task>__*.json).
 
 Writes to results/69_task_run/bottom_up_read_features/steering_results/oneshot_dummy/:
+  aggregate_bars.png  headline: one bar per condition, mean over the 69 tasks
   by_task.png     per-task bars: dummy-1 unsteered | dummy-1 steered (best alpha) |
                   real 1-shot   (* = held-out task)
   alpha_curve.png mean accuracy vs alpha (raw mean + shared-mean control), with the
@@ -96,6 +97,32 @@ def main():
     ax.grid(alpha=0.25); ax.legend(fontsize=8)
     fig.tight_layout()
     fig.savefig(OUT / "alpha_curve.png", bbox_inches="tight")
+
+    # ---------------- aggregate bar figure ----------------
+    agg = ([("0-shot", zs, "0.8"), ("dummy 1-shot\nunsteered", base1, "0.6")]
+           + [(f"steered\nα={a:g}", steer[a], "#63a3e8") for a in ALPHAS]
+           + [("steered\nbest α", best1, "#1f5fb0"),
+              ("shared mean\nbest α", shared_best, "#b0b0b0"),
+              ("real 1-shot\ndemo", r1, "#3a9e5f")])
+    fig, ax = plt.subplots(figsize=(9.5, 5.4), dpi=200)
+    xs = np.arange(len(agg), dtype=float)
+    xs[-3:] += 0.35
+    vals = [float(arr.mean()) for _, arr, _ in agg]
+    ax.bar(xs, vals, color=[c for _, _, c in agg], width=0.8)
+    for x_, v in zip(xs, vals):
+        ax.annotate(f"{v:.3f}", (x_, v), ha="center", va="bottom", fontsize=9.5)
+    ax.set_xticks(xs)
+    ax.set_xticklabels([n for n, _, _ in agg], fontsize=9)
+    ax.set_ylabel(f"accuracy (T=1 sampled exact match, mean over {len(tasks)} tasks)",
+                  fontsize=10)
+    ax.set_title("1-shot dummy-label steering at L6 — aggregate", fontsize=12,
+                 fontweight="bold")
+    ax.grid(axis="y", color="0.92")
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    fig.tight_layout()
+    fig.savefig(OUT / "aggregate_bars.png", bbox_inches="tight")
+    plt.close(fig)
 
     order = np.argsort(best1)
     labels = [tasks[i] + (" *" if grp[i] == "heldout" else "") for i in order]
