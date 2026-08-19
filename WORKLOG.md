@@ -7252,3 +7252,33 @@ stores sampled labels + n_label_eq_gold), src/eval_scripts/plot_sixshot_randomla
 results/69_task_run/bottom_up_read_features/steering_results/sixshot_randomlabel/).
 **Local verify (CPU tokenizer):** all 69 tasks pass span asserts; ~7.9 injected tokens/prompt; label ~1.3
 tokens; gold-collision rate <=0.067 labels/prompt (contains_letter_e worst); sampling deterministic.
+**Compute:** 12 own pods fv-srl-{smoke,1..11} (RTX PRO 4500 Blackwell, $0.72/hr, ~1.2h), ALL TERMINATED
+(verified via pod list; ids in job tmp fleet_srl_ids.txt). Fleet-launch gotcha: ssh inside a while-read
+loop ate the pod-id list from stdin — read from fd 3 / redirect ssh stdin to /dev/null.
+**Status: DONE.** All 69 task JSONs in artifacts/69_task_run/raw_mean_steering/sixshot_randomlabel/;
+plotted locally (FV_ARTIFACTS_ROOT=/workspace/function_vectors/artifacts). Sanity anchors verified:
+zero/real-1shot/real-6shot columns identical to the sixshot_dummy CSV on all 69 tasks.
+**RESULTS (mean over 69 tasks, T=1 exact match):**
+- random 6-shot UNSTEERED: 0.002 (= 0-shot 0.002) — six mixed WRONG labels teach nothing but also
+  do NOT hurt below the 0-shot floor (the dummy '_' scaffold was 0.000).
+- random 6-shot STEERED: a=0.5 0.030 | a=1 0.248 | a=2 0.458 | a=4 0.471 (best-per-task 0.494)
+- **Random-label steering BEATS dummy-slot steering: 0.494 vs 0.447 best (78% vs 71% of real 6-shot
+  0.630), and wins on 44/69 tasks; 15/69 match/beat real 6-shot demos.**
+- Dose-response onset is much STEEPER than dummy (a=1: 0.248 vs 0.061) and flatter on top (a=2->4:
+  0.458->0.471) — with real-token labels underneath, less signal is needed; the injected read feature
+  overrides actively-conflicting label content at least as well as it fills an empty '_' slot.
+  (Confound to keep in mind: the random variant injects at ~7.9 tokens/prompt vs 6 — labels average
+  ~1.3 tokens — and label token identities differ per demo; site count alone doesn't explain the a=1
+  gap since dummy@a=2 with 6 slots already beats random@a=1's total dose.)
+- Held-out > train again (0.524 vs 0.486) — no fitting advantage, vector is a per-task mean.
+- Per-task pattern: biggest LOSSES vs dummy are single-token-answer string tasks where the '_' scaffold
+  was near-ceiling (lowercase_first_letter 0.367 vs 0.747, capitalize_first_letter 0.453 vs 0.760);
+  biggest GAINS are format/classification tasks (iso_date_to_month 0.553 vs 0.220, language_identification
+  0.427 vs 0.147, spanish_noun_gender 0.473 vs 0.220, iso_date_year_plus_one 0.353 vs 0.087) —
+  speculation (unverified): real-token labels may prime answer-format expectations that '_' cannot.
+- Gold-collision control: sampled label == query gold on only 0.004 labels/prompt (max task 0.07) —
+  copying-a-matching-label cannot explain the results.
+Deliverables: results/69_task_run/bottom_up_read_features/steering_results/sixshot_randomlabel/
+{summary.csv, per_task_acc.csv, alpha_curve.png, by_task.png}. Scripts sixshot_randomlabel_steer.py +
+plot_sixshot_randomlabel_steer.py; runner logs/sixshot_randomlabel/pod_run.sh.
+**Next:** user review; merge branch on sign-off. **Blockers:** none; all pods terminated.
