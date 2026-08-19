@@ -6214,3 +6214,178 @@ PNGs embedded as data URIs): https://claude.ai/code/artifact/e2b58e9f-116f-406c-
 
 **Next:** user is writing this up; causal metric work continues separately.
 **Blockers:** none.
+## 2026-08-17 — Read-dir steering sweep: definition method (S1) x injection layer (S2)
+
+**Status:** done. Levers per write_up/read_direction_eval_levers.md with user decisions
+2026-08-17: S1 = 4 energy-90 brackets, per-task vector = average over the task's 150
+per-prompt read dirs; S2 = each single layer L3..L15 + bands L3-15, L7-11 (15 configs);
+S3 = 1-shot "Q: {in-dist input}\nA: _" scaffold, inject at ' _'; S4 = single-direction.
+20 seeded-random train tasks (seed 43), 150 prompts, T=1 exact match.
+Scripts: `src/sandbox/ext_steerability/steer_read_dir_methods.py` (+
+`src/eval_scripts/plot_steering_methods.py`). Fleet: 30x RTX 4090, ~15 min wall clock
+(short prompts -> ~60 gen/s per pod; my 55-GPU-hour estimate was ~20x pessimistic), all
+terminated. Ops note: I launched the fleet twice by accident; killed all strays (verified
+0 remaining on 30/30 pods, no partial outputs) and relaunched once.
+
+**Degenerate lever found before compute:** cos(mean-of-unit per-prompt dirs, mean-of-natural
+per-prompt dirs) = 1.0000 for every bracket/task — the two averaging conventions give the
+SAME direction, so Lever-4 normalisation is purely a dose choice. User adjudicated: alpha
+is a multiple of each bracket's own natural magnitude (alpha=1 == the earlier natural-
+magnitude run), 16 conditions/cell instead of 20.
+
+**Results (mean over 20 tasks; unsteered 0.001, 0-shot 0.002, real 1-shot 0.199):**
+- cosine_M      0.140 @ alpha=4, L3   <- BEST overall
+- cosine_perhead 0.098 @ alpha=2, L3
+- dot_perhead   0.093 @ alpha=1, L3
+- dot_M         0.053 @ alpha=2, L7-11
+- **Layer profile is monotonically decreasing with depth** for all four methods: L3 best,
+  ~0 by L12-L15. The earlier L7 choice was mediocre (dot_perhead L7 0.055 vs L3 0.093).
+- Bands are worse than their best member (L3-15 <= 0.058, L7-11 <= 0.054) — consistent with
+  the earlier L7-20 finding that stacking over-doses.
+- Both grid EDGES are the optima: cosine_M is still rising at alpha=4 (0.003/0.014/0.140 for
+  alpha 1/2/4) and every method peaks at L3, the shallowest layer swept. The sweep therefore
+  LOWER-BOUNDS the best achievable steering — extend alpha to 8/16 and layers to L0-L2
+  before treating any ranking as final.
+- Per task (methods_by_task.png): cosine_M @ L3 matches or beats the real 1-shot demo on
+  several tasks (prev_number_digits 0.36 vs 0.36, next_number_digits 0.36 vs 0.25,
+  park-country 0.31 vs 0.29, present-past 0.30 vs 0.24), so on number/format tasks a read
+  direction can substitute for a demo entirely.
+Outputs: results/69_task_run/Read_direction_geometry/steering_methods/ (layer_profiles.png,
+methods_alpha_curves.png, methods_by_task.png, summary.csv, per_task_acc.csv); raw preds in
+artifacts/69_task_run/read_dir_method_steering/.
+
+**Next:** user call — recommend extending alpha (8, 16) and layers (0-2) for cosine_M.
+**Blockers:** none; all 30 pods terminated.
+
+## 2026-08-17 — Label-slot head selection ("read vector") + mean-activation baselines
+
+**Status:** done. New experiment: sparse optimisation to select heads whose summed
+LABEL-TOKEN mean outputs steer the task when injected at a dummy '_' label slot.
+Pipeline (all new scripts in src/sandbox/ext_steerability/):
+`capture_label_head_means.py` (per-task mean out_proj inputs at the LAST token of the 10th
+demo's label, 150 clean 10-shot prompts, 69 tasks; linearity + index gates) →
+`capture_label_resid_means.py` (same site, residual stream, all 28 layers, for the
+mean-activation baselines) → `train_sparse_label_heads.py` (c over 448 heads, v_A(c) =
+Σ c_h W_O^h m_A[h] injected at the ' _' token, loss −log p(gold) + λ‖c‖₁, 5-fold CV over
+the 55 TRAIN tasks, λ ∈ {0.005,0.01,0.05,0.2}) → `eval_label_slot_vectors.py` (69 tasks ×
+33 conditions, T=1 exact match) → `src/eval_scripts/plot_read_vector_head_selection.py`.
+Fleets: 12 + 8 + 10 pods (30 total), all terminated.
+
+**METHOD CHANGE (documented, user-informed):** the planned CV criterion (exact-match
+accuracy) was degenerate — 0.000 in all 20 cells, incl. the all-448-head vector.
+`diagnose_label_cv_metric.py` showed injection improves −log p by only ~1-1.5 nats out of
+12-16 at L7, never enough to flip the argmax. λ is therefore selected by held-out-task mean
+−log p (graded version of the training objective); no retraining was needed (c vectors were
+saved) — added `--mode rescore`.
+
+**Selections (λ=0.005 both):** L7 site → 107 heads; L3 site → 117 heads. Overlap with the
+canonical 37-head cue-token FV set is only 12/37 (Jaccard 0.09) and 11/37 (0.08) — the
+label slot recruits a substantially different head population, skewed early (L0-L11 holds
+~68% of the L7 set). L3 fits ~2x better than L7 on the objective (mean −logp improvement
+4.66-5.55 vs 2.21-2.79 nats), consistent with the earlier layer sweep where L3 beat L7.
+
+**Eval results (mean over all 69 tasks; unsteered 0.001, 0-shot 0.002, real 1-shot 0.208):**
+- rawmean@L7 **0.121**  ← best of everything tested
+- rawmean@L3 0.094
+- meandiff@L3 0.082 | meandiff@L7 0.080
+- headsum_L7sel@L3 0.051 | headsum_L7sel@L7 0.050 | headsum_L3sel@L3 0.050 |
+  headsum_L3sel@L7 0.040
+So the sparse-selected head-sum is the WEAKEST family: the un-differenced mean residual
+activation at the label token beats it 2.4x, and even the mean-DIFFERENCE beats it 1.6x.
+Cross terms show the injection site barely matters for the head-sum (0.040-0.051 across all
+four sel×inj combinations) — i.e. which heads were selected is not the binding constraint.
+Per-task: mean-activation steering matches/beats the real 1-shot demo on a handful
+(lowercase_word 0.427 vs 0.427, country-capital 0.327 vs 0.460, prev_number_digits 0.313
+vs 0.087 for headsum), but semantic tasks stay near zero for every steering family.
+Outputs: results/69_task_run/read_vector_head_selection/ (by_task.png, layer_alpha.png,
+summary.csv, per_task_acc.csv, selection_summary.csv); raw preds under
+artifacts/69_task_run/read_vector_head_selection/eval/.
+
+**Next:** user call. **Blockers:** none; all 30 pods terminated.
+
+### Addendum (same day) — by_task.png headline bar corrected
+
+The first version of `by_task.png` showed `headsum_L7sel@L3` (heads selected at L7, injected
+at L3) because the plot picked the global argmax over head-sum cells, which beat the matched
+cell by 0.0006 (0.0508 vs 0.0502) — a mismatched control masquerading as the method.
+`plot_read_vector_head_selection.py` now restricts the headline bar to MATCHED cells
+(selected and injected at the same layer) and reports both: L3sel@L3 0.0502,
+L7sel@L7 0.0501. All four sel x inject cells remain in summary.csv / layer_alpha.png.
+Conclusion is unchanged: the head-sum family sits at 0.040-0.051 however it is configured,
+below meandiff (0.082) and rawmean (0.121).
+
+### Addendum 2 — 0-shot bar added to by_task.png
+
+The 0-shot numbers (already captured for all 69 tasks in
+artifacts/69_task_run/read_dir_steering_1shot/<task>__zero_shot.json, and already present in
+summary.csv/per_task_acc.csv) are now drawn as a fifth bar; no recompute. Aggregate means:
+0-shot 0.0017 | unsteered '_' scaffold 0.0010 | mean-activation difference (L3) 0.0818 |
+sparse-selected head sum (L3sel@L3) 0.0502 | real 1-shot demo 0.2080. (raw mean @L7, not
+plotted, remains the strongest steering family at 0.1212.)
+
+### Addendum 3 — raw-mean bar added (it is the best steering vector)
+
+by_task.png now has six bars: 0-shot | unsteered '_' scaffold | mean-activation difference
+(L3) | RAW mean activation (L7) | sparse-selected head sum (L3sel@L3) | real 1-shot demo.
+raw mean was previously only in layer_alpha.png even though it is the strongest steering
+family (0.121 vs 0.082 meandiff vs 0.050 headsum; real 1-shot 0.208).
+Raw-vs-diff is not a dose artifact: at matched injected norm (raw a=2 ~124 vs diff a=4
+~140) raw still wins 0.109 vs 0.061. Reading: the shared label-slot component that
+differencing removes is itself doing most of the work — it makes the dummy '_' look like a
+real label position; task identity is the smaller increment on top.
+
+## 2026-08-18 — FV-presence heatmaps: does read-direction steering put FV content in the stream?
+
+**Status:** done. `src/sandbox/ext_steerability/fv_presence_heatmaps.py` +
+`src/eval_scripts/plot_fv_presence_heatmaps.py`; one pod (fv-fvp-1, terminated).
+Two tasks: day_after_textual_date (seeded random pick; steers 0.000) and next_number_digits
+(dot_perhead's best task, 0.313). For each: 1-shot '_' scaffold, modal (length, '_' index)
+prompt group so token positions align exactly (53/150 and 150/150 prompts), residual stream
+recorded at all 28 block outputs x all positions, unsteered vs steered (dot_perhead read
+direction, natural magnitude alpha=1, injected at the ' _' slot at L3). Metrics: cos(resid,
+v_A) and projection onto v_A/||v_A||, where v_A = the canonical 37-head CUE-TOKEN FV.
+Outputs: results/69_task_run/fv_presence_heatmaps/<task>.png, npz in artifacts/.
+
+**Findings:**
+- The read direction and the FV are nearly orthogonal to begin with: cos(read dir, FV) =
+  0.084 (next_number_digits) / 0.103 (day_after_textual_date). So a vector "designed to
+  elicit the FV" is not itself FV-aligned — as intended (it is an input-side direction).
+- Steering DOES add FV content, and it survives to the readout site: cos at the final cue
+  token rises 0.108 -> 0.308 (next_number_digits) and 0.075 -> 0.190 (day_after), with the
+  projection at the cue token going 23.5 -> 45.6 and 4.5 -> 17.6. Largest gains at L12-L13.
+- The effect is NOT local to the injection site: the '_' column lights up at L3-L5 as
+  expected, but the biggest cos/projection increases are at the FINAL cue token in the
+  mid-to-late layers, i.e. the OV path really does carry the injected direction forward.
+- Yet behaviour barely moves for day_after (0.000) while next_number_digits reaches 0.313.
+  Both show comparable relative FV gain, so delivering FV content into the stream is
+  necessary-but-not-sufficient: the tasks that fail are failing downstream of FV delivery
+  (they need input-dependent computation, not just task identity).
+- Absolute levels stay modest: cue-token cos 0.19-0.31 vs the ~1.0 that a real FV injection
+  would give by construction, consistent with attention-weight attenuation of a
+  single-position injection.
+
+**Next:** user call. **Blockers:** none; pod terminated.
+
+## 2026-08-18 — Attention from the cue token to the injected ' _' slot (why steering is weak)
+
+**Status:** done. `src/sandbox/ext_steerability/attention_to_label_slot.py` +
+`src/eval_scripts/plot_attention_to_slot.py`; one pod (terminated). Same two tasks and modal
+prompt groups as the FV-presence heatmaps; records attention from the FINAL cue token to
+every source position, per layer and head, unsteered vs steered (dot_perhead read dir,
+alpha=1, ' _' slot, L3).
+
+**Findings (L13, the layer with the biggest FV gain):**
+- The cue token pays only ~3-4% of its attention to the ' _' slot: mean over the 16 heads
+  0.041 (next_number_digits) / 0.028 (day_after_textual_date).
+- ~70% goes to the ATTENTION SINK at positions 0-1 ('Q' and the first ':'): 0.703 and 0.720.
+- Steering does NOT increase attention to the slot: 0.041 -> 0.028 on next_number_digits,
+  0.028 -> 0.033 on day_after. The read direction does not recruit attention to itself.
+- Head-specific exception: L13H13 (an FV head) sits at 0.192-0.200 unsteered and rises
+  0.19 -> 0.32 under steering on day_after. Delivery is concentrated in a few heads.
+- Consistent with the FV-presence result: at ~4% attention weight the delivered FV content
+  is attenuated ~25x, matching the observed cue-token cos of 0.19-0.31 rather than ~1.0.
+Outputs: results/69_task_run/fv_presence_heatmaps/attn_<task>.png.
+
+**Implication:** the read-direction construction assumes the reading head sees the vector
+with weight 1; in this scaffold it sees ~1/25 of it. Steering strength is attention-limited,
+not only direction-quality-limited.
