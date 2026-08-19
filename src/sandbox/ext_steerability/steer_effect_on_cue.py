@@ -35,12 +35,12 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
 try:
     from src.sandbox.ext_steerability.steer_read_dir_1shot import load_model, batches_by_len
-    from src.sandbox.ext_steerability.steer_read_dir_methods import Injector
+    from src.sandbox.ext_steerability.steer_read_dir_methods import Injector, build_items
     from src.sandbox.ext_steerability.sixshot_dummy_steer import build_items_6shot
 except ModuleNotFoundError:  # staged copy outside the repo tree
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from steer_read_dir_1shot import load_model, batches_by_len
-    from steer_read_dir_methods import Injector
+    from steer_read_dir_methods import Injector, build_items
     from sixshot_dummy_steer import build_items_6shot
 
 ALPHAS = (0.0, 0.5, 1.0, 2.0, 4.0)
@@ -58,8 +58,10 @@ def parse_args():
                    default=ARTIFACTS_ROOT / "69_task_run" / "perprompt_fvs")
     p.add_argument("--prompts_root", type=Path,
                    default=REPO_ROOT / "dataset_files" / "isolation_prompts_ext")
-    p.add_argument("--out_root", type=Path,
-                   default=ARTIFACTS_ROOT / "69_task_run" / "mean_read_steering_effect_on_write")
+    p.add_argument("--n_shots", type=int, default=6, choices=(1, 6),
+                   help="dummy scaffold: 6 = six '_' slots (original), 1 = the single-'_' "
+                        "1-shot scaffold; out_root default gains a _1shot suffix")
+    p.add_argument("--out_root", type=Path, default=None)
     p.add_argument("--split_path", type=Path,
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_dir", type=Path, default=None)
@@ -94,6 +96,10 @@ class CueReader:
 
 def main():
     args = parse_args()
+    if args.out_root is None:
+        args.out_root = (ARTIFACTS_ROOT / "69_task_run" /
+                         ("mean_read_steering_effect_on_write" +
+                          ("" if args.n_shots == 6 else "_1shot")))
     split = json.load(open(args.split_path))
     group = {t: "train" for t in split["train_tasks"]}
     group.update({t: "heldout" for t in split["heldout_tasks"]})
@@ -121,7 +127,12 @@ def main():
         if out_path.exists():
             print(f"{task}: exists, skip", flush=True)
             continue
-        items = build_items_6shot(task, args.prompts_root, tok, real_labels=False)
+        if args.n_shots == 6:
+            items = build_items_6shot(task, args.prompts_root, tok, real_labels=False)
+        else:
+            items = build_items(task, args.prompts_root, tok)
+            for it in items:
+                it["inj_idx_list"] = [it["inj_idx"]]
         m = torch.load(args.resid_means_root / f"{task}.pt", map_location="cpu",
                        weights_only=False)["resid_means"][INJECT_LAYER].float().cuda()
         vt = fvs[task].cuda()
@@ -168,7 +179,7 @@ def main():
                   f"proj_task={res['proj_task'][ai, :, 13].mean():.2f}", flush=True)
         inj.vec = None
         res.update({"task": task, "group": group[task], "alphas": list(ALPHAS),
-                    "inject_layer": INJECT_LAYER, "n_prompts": n,
+                    "inject_layer": INJECT_LAYER, "n_prompts": n, "n_shots": args.n_shots,
                     "norm_v_task": float(vt.norm()), "norm_v_generic": float(vg.norm()),
                     "norm_m": float(m.norm()),
                     "site": "final prompt token (query cue), all 28 block outputs"})
