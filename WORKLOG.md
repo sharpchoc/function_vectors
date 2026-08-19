@@ -7319,3 +7319,34 @@ NOTE: JSON condition keys still read *_pc5 (script reuse); columns renamed *_mr1
 Next: none pending user. Natural follow-ups: rank-1 version (top SVD dir only) to test if the single
 task-unique direction suffices; steering counterpart running in fork session (mean-removed L6 steer).
 Blockers: none.
+## Stream: mean-free read-feature steering on dummy scaffolds (2026-08-19, branch worktree-meanfree-steering)
+
+Status: done. USER REQUEST: steer at L6 with the task read feature AFTER removing its projection
+along the overall mean read feature (task-unique part only), alpha-swept, 1-shot + 6-shot dummy
+scaffolds, all 69 tasks.
+
+Definitions: v_A = m_A(L6) − proj_{s_hat} m_A(L6), s_hat = unit mean of the 55 TRAIN tasks'
+m_A(L6) (the sweep_raw_mean_layers shared-mean control object). cos(m_A, s_hat) median .856;
+||v_A||/||m_A|| median .516 → alphas {.5,1,2,4,8} (one extra octave). Same scaffolds/sites as the
+originals: 1-shot sampled-underscore + 6-shot all-'_' slots, block-6 output, established T=1
+protocol. Script: meanfree_dummy_steer.py (resumable; dummy6_baseline reproduces the sixshot_dummy
+run's accuracies — preds not bit-identical across pods, fp sampling nondeterminism).
+
+Findings (mean over 69 tasks; per-task best alpha):
+- 6-shot dummy: unsteered .000 → mean-free best .339 (a4 .307, a2 .231) vs full-vector best .447
+  → the task-unique component alone recovers ~3/4 of full-vector steering.
+- 1-shot dummy: unsteered .002 → mean-free best .075 vs full-vector best .126, shared-mean best
+  .013 → shared mean alone steers ~nothing; the unique part carries the signal (~60% of full).
+- Dose optimum shifts right one octave (a4 vs a2), matching the halved norm; a8 overdoses (.187).
+- Caveat: mean-free best is a max over 5 alphas vs 4 for full vector (slight max-statistic edge).
+- Consistent with the ablation side (task_unique_11dir double dissociation): the task-unique
+  label-side component is both necessary (ablation) and largely sufficient (steering); the shared
+  carrier contributes but is not the task signal.
+
+Files: src/sandbox/ext_steerability/meanfree_dummy_steer.py, src/eval_scripts/plot_69_meanfree_steering.py,
+logs/meanfree_steering/*; results .../steering_results/meanfree_dummy/{per_task_acc.csv,
+aggregate_bars.png, per_task_bars_{1,6}shot.png}; raw JSONs artifacts .../raw_mean_steering/meanfree_dummy/.
+Pod fv-meanfree-steering (RTX PRO 4500, ~2.2h, terminated; OOM lesson: steering runs also need
+budget 11000/cap 16 on 32GB now that 24000/48 OOMs in lm_head on long-prompt tasks).
+
+Next: none pending user. Blockers: none.
