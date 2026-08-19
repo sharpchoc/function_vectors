@@ -131,6 +131,103 @@ task_pool_117_summary.csv}` — 69 pass ≥0.30 (49 new + 20 original; 55 train 
 under seed-43), 48 below threshold; mean acc6 .416 pool / .617 passing. Catalog sections
 now 32/27/25/33. The 138-task versions live in git history (commit 4048539).
 
+**FV dimensionality analysis (2026-08-16, session "Geometry Analysis of the Function Vectors";
+pods fv-pp-{1,2} RTX PRO 4500):** per-prompt FVs captured for ALL 69 tasks (150 fixed 10-shot
+train prompts each, 37-head prunedfail_seed43 set) → reusable intermediates
+`artifacts/69_task_run/perprompt_fvs/<task>.pt` {fv (150,4096) fp16, raw head acts (150,37,256)
+fp16, sel_flat, prompt_index}; NEW `src/eval_scripts/capture_69_perprompt_fvs.py` (linearity
+gate kept). Analysis (55 TRAIN tasks only, centered PCA, float64 CPU SVD; consistency gate
+raw-mean vs means.pt cos=1.000): task-mean FVs 90%@24 / 95%@32 of 55 PCs; pooled per-prompt
+stack (8250×4096) 90%@239 / 95%@556, **stable rank 3.0 raw / 5.7 centered**; within-task
+median 90%@85 / 95%@109 of 150. NEW `src/eval_scripts/plot_69_fv_dimensionality.py` →
+`results/69_task_run/FV_dimensionality_analysis/{fv_dimensionality.png, spectra.npz,
+summary.csv}`. Launch lessons: worktree lacks untracked isolation_prompts_ext (pass
+--prompts_root to main checkout); volume script cp is not read-atomic across pods (stage, then
+launch); pkill of a python child leaves its wrapper to touch .failed (kill the process group).
+
+**Sparse PC-direction selection (2026-08-16, same session; pods fv-pc69-{1..10} RTX PRO 4500,
+ALL TERMINATED, ~2h, ≈$15):** user-adjudicated design: uncentered PCA of the 55-train-task
+per-prompt FV stack, TOP-512 dictionary, pooled c∈[0,1]^512 with steering NLL + λ‖c‖₁
+(v = Σ cᵢ (v_task·PCᵢ) PCᵢ, inject @L9), same λ-CV protocol as head selection; deployed
+vector = unweighted projection onto c>0.8 PCs. NEW `src/eval_scripts/{build_69_pc_basis,
+train_sparse_pcs_69, eval_69_pcproj, plot_69_pcproj_results}.py`; artifacts
+`artifacts/69_task_run/pc_sparse/`. λ=0.005 (CV .600/.591/.476/.264), **46 PCs selected**
+(c_max=1.0; ranks 0–64, median 22 — essentially the TOP of the FV spectrum, unlike prior
+variance≠steering precedents, expected since the basis IS FV-derived). **RESULT — train ≈
+kept, heldout COLLAPSES:** zs train .723 vs .748 full-FV; heldout .461 vs .734 (mix .487 vs
+.779; shuf holds .789 vs .807). Mechanism: heldout FVs stick out of the train-task subspace —
+cos(v_proj, v_full) train .992 vs heldout .908 (min .71 ag_news), and heldout zs drop tracks
+the lost component at Spearman −.84 (uppercase_word cos .84 → .98→.12). The 46-dim
+"steering subspace" is train-task-specific, NOT a universal FV subspace at this dimension.
+Figures/tables: `results/69_task_run/FV_dimensionality_analysis/{pc_sparse_summary.csv,
+pc_sparse_bars.png, pc_selection.png}`; paired-bars view in
+`results/69_task_run/FV_dimensionality_reduction/zeroshot_full_vs_projected.png`.
+
+**Span-coverage debug check (2026-08-16, CPU; confirms the mechanism):** energy of each task
+FV inside the top-k train-PC span (`debug_69_span_coverage.py` →
+`FV_dimensionality_reduction/debugging/{span_coverage.csv,.png}`). Train FVs: 0.9999 in
+top-512 (they define the basis). Held-out: mean 0.94 top-512 / 0.83 in the 46 selected;
+the six lowest-coverage tasks (ag_news .80, uppercase_word, person_place_thing, first_digit,
+pos_label, initials_two_words ≈.89–.91) are exactly the collapse tasks; coverage-vs-zs-change
+Spearman .84. OUTLIER: english-french (top512 .97, sel46 .87) still collapses .60→.08 —
+coverage is necessary, not sufficient; the lost 13% appears to carry the payload
+(speculation: projection pulls it toward its train translation siblings).
+
+**All-512 oracle probe (2026-08-16, pods ×2 ~25 min ≈$0.6; REVISES the interpretation):**
+projecting heldout FVs onto the ENTIRE 512-PC dictionary (the ceiling of any selection)
+recovers most of the collapse: heldout zs mean **.677 vs .461 (46 PCs) vs .734 (full FV)**;
+uppercase_word .12→.94, english-french .08→.58, first_digit .58→.90. Residual losses sit in
+the lowest-coverage tasks (ag_news .48, person_place_thing .48, initials_two_words .46; cov
+.80–.91). So the DICTIONARY mostly contains the payload; the 46-PC SELECTION dropped
+directions that are ~useless for train yet critical for heldout — not an optimizer bug: a
+train-only objective cannot see those directions matter. Two-part conclusion: (1) steering-
+sufficient subspace for unseen tasks is closer to a few hundred dims of the train span than
+46; (2) the last ~6% off-span energy still costs the lowest-coverage tasks up to half their
+accuracy. `debugging/all512_oracle_probe.csv`.
+
+**All-task sparse PC selection (2026-08-16, user-requested extension; pods fv-pc69 fleet ×2
+rounds + fv-512 ×4 probe pods, ALL TERMINATED; ≈$20 this round):** rebuilt the uncentered PC
+basis on ALL 69 tasks' per-prompt FVs (10,350×4096; top-512 = 96.1% energy, 90%@128) and
+reran the pooled sparse selection with all 69 tasks in the loss
+(task_splits/extended_steerable_69_alltasks_pcafit.json — NOT a split; no held-out
+measurement exists for this run). λ=0.005, **50 PCs selected** (c_max=1.0). **Projection now
+matches the full FV everywhere:** zs train .721 vs .748, former-heldout **.733 vs .734**
+(mix .652/.684 and .763/.779; shuf parity). Confirms the span story end-to-end: once every
+task's directions are in the basis+objective, ~50 uncentered PCs carry the steering payload
+for the whole 69-task pool; the earlier heldout collapse was purely missing directions.
+Artifacts `artifacts/69_task_run/pc_sparse_alltasks/`; results
+`results/69_task_run/FV_dimensionality_reduction/sparse_all69/`; scripts gained
+--which/--out_path (basis) and --pc_root/--out_dir/--fit_note (aggregator) params.
+
+**L13 robustness rerun (2026-08-17, fork session "L13 FV Dim Projection Sweep"; pods
+fv-l13-{1..10} ALL TERMINATED ~1.3h ≈$10):** repeated the all-task sparse PC selection with
+--inject_layer 13 instead of 9 (same all-69 uncentered basis — layer-independent; same λ-CV
+protocol; own tree artifacts/69_task_run/pc_sparse_alltasks_L13/). λ=0.005 again, **48 PCs
+(47/48 shared with the 50 from L9)**; CV means uniformly ~.05 lower at fixed-L13 injection
+(L13 a slightly weaker site) but best-layer deployment is indistinguishable: zs train
+.719/.748, former-heldout **.737/.734** (L9: .721/.748, .733/.734); mix/shuf likewise. The
+L9 choice is NOT load-bearing — selection size, membership, and final performance are stable.
+Cosmetic fix: fold artifact 'fold_eval' label now uses the actual inject layer.
+Results: `results/69_task_run/FV_dimensionality_reduction/sparse_all69_L13/`.
+
+**Top-22 task-mean-PC truncation probe (2026-08-17, pods fv-k90-{1..5} ~40 min ≈$2.5, ALL
+TERMINATED; NO optimiser):** uncentered PCA of the 69 task-mean FVs reaches 90% energy @ 22
+PCs (PC1 = 40%); steering with plain top-22 projection FAILS: zs .589 train / .600 heldout
+vs full .748/.734; only 29/69 within .05; casualties = the low-coverage tasks predicted a
+priori (country-capital .86→.02 at 67% coverage; translation family →.14–.28). Fourth
+confirmation that variance-ranked ≠ steering-sufficient. Steering needs ~2× the 90%-variance
+rank of the task means, selected by the steering objective with all tasks represented.
+`FV_dimensionality_reduction/debugging/taskmean_k90_summary.csv`; basis+evals
+`artifacts/69_task_run/pc_taskmean_k90/`. Full write-up of the dimensionality arc published
+as Claude artifact "The Steering Subspace".
+**α sweep on the top-22 projection (2026-08-17, pods fv-a22-{1..5} ~35 min ≈$2, TERMINATED;
+user hypothesis: projection shrinks norm → under-dosed):** per-task best α over {1,1.25,1.5,2}
+(zs only; eval_69_pcproj gained --alpha/--settings): means .589→.679 train / .600→.679 heldout
+— rescaling recovers ~half the gap (under-dosing real) but only 2/12 cratered tasks reach
+within .1 of full FV (gerund_to_past .50→.96 @α2; german_noun_gender .14→.50). country-capital
+0.00–0.02 at ALL α; translation family barely moves — direction loss, not magnitude, dominates
+the worst failures. `debugging/taskmean_k90_alpha_sweep.csv`; artifact updated.
+
 **Promotion out of sandbox (2026-08-16, user decision):** the pruned-pool refit results are the
 first entry in NEW tracked bucket `results/69_task_run/` (constant TASK69_RUN_DIR in
 utils/paths.py) — sparse opt on the zero-shot train metric is now considered working, no longer
