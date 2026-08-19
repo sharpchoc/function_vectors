@@ -7,8 +7,10 @@ LOGDIR=$REPO/logs/bottomup_ablation
 M=models--EleutherAI--gpt-j-6b
 SNAP=47e169305d2e8376be1d31e765533382721b2cc1
 
-mkdir -p /root/hf/hub
-rsync -a --exclude blobs /workspace/.cache/huggingface/hub/$M /root/hf/hub/
+# bare runpod/pytorch image has no rsync: copy the small metadata dirs, symlink blobs
+mkdir -p /root/hf/hub/$M
+cp -a /workspace/.cache/huggingface/hub/$M/snapshots /root/hf/hub/$M/ 2>/dev/null || true
+cp -a /workspace/.cache/huggingface/hub/$M/refs /root/hf/hub/$M/ 2>/dev/null || true
 ln -sfn /workspace/.cache/huggingface/hub/$M/blobs /root/hf/hub/$M/blobs
 export HF_HOME=/root/hf
 export HF_HUB_OFFLINE=1

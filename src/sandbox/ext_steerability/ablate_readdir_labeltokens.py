@@ -51,7 +51,21 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
 from src.utils.prompt_utils import get_token_meta_labels, word_pairs_to_prompt_data
 from src.sandbox.ext_steerability.ablate_pc50_labeltokens import (
-    Ablator, LABEL_RE, batches_by_len, load_model)
+    Ablator, LABEL_RE, batches_by_len)
+
+
+def load_model_eager(model_dir):
+    """pc50's load_model + attn_implementation='eager': transformers 4.49 GPT-J otherwise
+    dispatches to GPTJSdpaAttention, whose forward never calls the patched _attn."""
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    md = model_dir or sorted(Path("/workspace/.cache/huggingface/hub/"
+                                  "models--EleutherAI--gpt-j-6b/snapshots").glob("*"))[-1]
+    tok = AutoTokenizer.from_pretrained(md)
+    tok.pad_token = tok.eos_token
+    model = AutoModelForCausalLM.from_pretrained(
+        md, torch_dtype=torch.float16, attn_implementation="eager").cuda().eval()
+    assert model.config._attn_implementation == "eager", model.config._attn_implementation
+    return model, tok
 
 N_LAYERS, D = 28, 4096
 CONDITIONS = ("attnmask", "mean_ablation", "zero_ablation",
@@ -85,19 +99,21 @@ def parse_args():
     return p.parse_args()
 
 
-# ------------------- attention knockout (transformers 5.13 GPTJAttention._attn) -------------------
-# GPTJAttention.forward always calls self._attn(query, key, value, attention_mask) — both at
-# prefill (q_len == k_len) and at cached decode steps (q_len == 1) — so one patch covers the
-# final cue token AND every generated token. `_ko` on each attn module holds k_idx [B, K]
-# (absolute key positions of the demo-label tokens, left-pad offsets included; ragged rows
-# padded by repeating the first index, masking the same entry twice is harmless).
-def _attn_with_knockout(self, query, key, value, attention_mask=None):
+# ------------------- attention knockout (transformers 4.49 GPTJAttention._attn) -------------------
+# With attn_implementation="eager", GPTJAttention.forward calls self._attn(query, key, value,
+# attention_mask, head_mask) — both at prefill (q_len == k_len) and at cached decode steps
+# (q_len == 1) — so one patch covers the final cue token AND every generated token. `_ko` on
+# each attn module holds k_idx [B, K] (absolute key positions of the demo-label tokens,
+# left-pad offsets included; ragged rows padded by repeating the first index, masking the
+# same entry twice is harmless). Faithful copy of the 4.49.0 _attn + the knockout block.
+def _attn_with_knockout(self, query, key, value, attention_mask=None, head_mask=None):
     query = query.to(torch.float32)
     key = key.to(torch.float32)
     attn_weights = torch.matmul(query, key.transpose(-1, -2))
     attn_weights = attn_weights / self.scale_attn
-    if attention_mask is not None:
-        attn_weights = attn_weights + attention_mask
+    if attention_mask is not None:  # no matter the length, we just slice it
+        causal_mask = attention_mask[:, :, :, : key.shape[-2]]
+        attn_weights = attn_weights + causal_mask
 
     k_idx = getattr(self, "_ko", None)
     if k_idx is not None:
@@ -115,6 +131,8 @@ def _attn_with_knockout(self, query, key, value, attention_mask=None):
     attn_weights = nn.functional.softmax(attn_weights, dim=-1)
     attn_weights = attn_weights.to(value.dtype)
     attn_weights = self.attn_dropout(attn_weights)
+    if head_mask is not None:
+        attn_weights = attn_weights * head_mask
     attn_output = torch.matmul(attn_weights, value)
     return attn_output, attn_weights
 
@@ -272,7 +290,7 @@ def main():
     grand = torch.load(args.grand_mean_path, map_location="cpu",
                        weights_only=False)["mean"].float().cuda()   # (N_LAYERS, D)
 
-    model, tok = load_model(args.model_dir)
+    model, tok = load_model_eager(args.model_dir)
     install_knockout_patch(model)
     ab = Ablator(model)
     tok.padding_side = "left"
