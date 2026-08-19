@@ -7236,3 +7236,19 @@ logs/centered_ablation/{pod_run.sh,pod_admin.py,watch_full.sh}, results .../cent
 aggregate_bars.png, per_task_bars_{1,6}shot.png}; raw JSONs artifacts .../pc5_centered/n{1,6}shot/.
 
 Next: none pending user. Natural options: mean-orthogonalized variance basis; rank sweep. Blockers: none.
+
+## Stream: 6-shot RANDOM-label steering (2026-08-19, branch worktree-sixshot-randomlabel)
+**Status:** in progress. User variation on sixshot_dummy: the six demo outputs are WRONG labels sampled
+from other tasks (mixed/random), then the same L6 raw-mean steering — does the read feature override
+actively-conflicting label evidence rather than just fill a '_' vacuum?
+**Design (user-adjudicated 2026-08-19):** labels sampled INDEPENDENTLY per slot (uniform over the other
+68 tasks, then uniform over that task's distinct output strings; redraw if == the demo's true output;
+gold collisions allowed but counted); injection at ALL tokens of each random label (mask per label span,
+structural growing-prefix anchoring with prefix-tokenization asserts); alpha {0.5,1,2,4} unchanged; same
+pool/split/prompt bank/T=1 sampled readout. random6_baseline computed fresh; real6/real1/0-shot reused
+from sixshot_dummy at plot time.
+**Scripts:** src/sandbox/ext_steerability/sixshot_randomlabel_steer.py (run; per-task JSON resumable,
+stores sampled labels + n_label_eq_gold), src/eval_scripts/plot_sixshot_randomlabel_steer.py (->
+results/69_task_run/bottom_up_read_features/steering_results/sixshot_randomlabel/).
+**Local verify (CPU tokenizer):** all 69 tasks pass span asserts; ~7.9 injected tokens/prompt; label ~1.3
+tokens; gold-collision rate <=0.067 labels/prompt (contains_letter_e worst); sampling deterministic.
