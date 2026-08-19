@@ -6729,3 +6729,122 @@ White whiskers only read INSIDE the bars: the upper CI arm always crosses onto t
 surface, where white vanished. Fixed by drawing the whiskers in ink (#0b0b0b) with a
 surface-coloured stroke halo (the dataviz "surface ring on overlapping marks" rule), so they
 are legible over the blue bar, over the dark graphite bar, and over the background.
+## 2026-08-18 — Seed-split robustness of the avg-X ridge (10 random 55/14 splits)
+
+**Status:** done. `ridge_labeltoken_seedsplits.py` (seeds 1001-1010, one pod each, fleet8,
+all terminated; same estimator + per-split 5-fold-task-CV lambda) +
+`plot_labeltoken_ridge_seedsplits.py`. Outputs:
+results/69_task_run/labeltoken_fv_ridge/seedsplits/ (seed_r2.png, seed_summary.csv,
+per_task_heldout.csv).
+
+**Results:** test R^2 mean 0.469 +- 0.040 (range 0.401-0.511) over the 10 random splits;
+train 0.784 +- 0.007; lambda=1e3 chosen every time. The canonical split (0.464) sits AT the
+seed mean — it is not an unlucky draw. Per-task held-out R^2 (pool-ref, averaged over the
+seeds where held out): classification-like tasks stay at ~0 EVEN under random splits that
+keep most of their family in train (pos_label -0.09 x3, initials_two_words -0.02 x2,
+uppercase_word 0.04 x2, first_digit 0.07 x3, person_place_thing 0.11 x4), while
+morphology/translation tasks transfer whenever held out. **This partially falsifies the
+coverage hypothesis** (recorded in Addendums 4-5): having same-family siblings in train
+does NOT rescue the classification tasks; their activation->FV relation appears
+task-idiosyncratic rather than merely under-covered. The stable ~0.31 train-test gap across
+all seeds confirms systematic task-level overfitting, not split luck.
+(6 tasks were never drawn into a test set across the 10 seeds; ag_news among them.)
+
+**Next:** user call. **Blockers:** none; all pods terminated.
+
+### Addendum 6 — Lasso in the train-PCA basis (rotation + L1) also does not beat ridge
+
+User variant: rotate avg-X into the full centered train-PCA basis (pure rotation, no
+truncation — meaningful only with L1, since ridge is rotation-invariant) and fit a
+multi-output lasso (`src/sandbox/ext_steerability/lasso_pca_labeltoken.py`, FISTA fp32,
+warm-started lam path, 5-fold task CV). First grid pinned at its smallest lam; extended two
+decades: CV interior optimum at lam = 1e-4 * lam_max.
+**Result: train 0.752 / test 0.449 (weighted 0.772/0.499), 4.5% nonzero weights, 1640 input
+PCs used — still below the plain full-dim ridge (0.787/0.464).** Together with PCA-90
+(0.452) the pattern is consistent: CV pushes sparsity toward zero, and every hard or L1
+sparsity prior in the input basis costs held-out R^2. The transfer bottleneck is task-level
+(seed-split study), not estimator variance along low-energy input directions.
+Output: artifacts/69_task_run/labeltoken_fv_ridge/lasso_pca_avg.json.
+
+## 2026-08-18 — (token x layer) ridge sweep to per-prompt FV, scored on task FVs
+
+**Status:** done. New study `token_layer_regressions`: for each of 31 token positions
+(per demo n=1..10: pre-label ':' / first label token / last label token; plus the query cue)
+x 28 layers, fit a full-dim ridge from that position's activation to the PER-PROMPT FV on
+the 55 train tasks (alpha by 5-fold CV over train tasks), then score with the TASK FV as
+target: per task R^2 = 1 - sum_i||pred_i - taskFV||^2 / (n*||taskFV - split-pool mean||^2),
+averaged over tasks. Scripts: `src/sandbox/ext_steerability/token_layer_fv_regression.py`
+(one layer per pod; single forward pass serves all 31 positions),
+`src/eval_scripts/plot_token_layer_regressions.py`. Fleet: 28 pods, all terminated.
+
+**BUG FIXED MID-RUN (first pass discarded):** the per-task R^2 was first implemented per-dim
+then averaged, which is degenerate for a constant-within-task target (dims where taskFV sits
+near the pool mean have ~0 denominator) and produced R^2 ~ -2.5e4. Corrected to the
+vector-norm form (sum over dims in numerator AND denominator) and revalidated against an
+independent local computation on the L6/d10_last cell (0.5798 both). fp32 vs fp64 check on
+that cell: identical to 4 dp. No alpha pinned in any of the 868 cells.
+
+**Findings (held-out heatmap):**
+- Best cell **L15 d10_pre = 0.688**; the whole top-15 is pre-label (':') positions of late
+  demos (d7-d10) at L12-L17 — a contiguous bright band.
+- By token role (mean over layers): last label 0.559 > first label 0.536 > pre-label 0.460
+  (but pre-label has the highest CEILING, 0.688, concentrated in mid layers) > query cue
+  0.454 (best 0.587 at L9).
+- By layer: rises steeply L0 0.221 -> L8 0.558, plateaus L12-L16 (~0.58), decays slowly to
+  L24 0.551. FV content is most linearly decodable in the middle third of the network.
+- d1_pre is the dead row (~0 everywhere): before the first label there is no task evidence.
+- Train panel is uniformly ~0.93-0.96 in the bright region (gap ~0.27), consistent with the
+  task-level overfitting established earlier.
+Outputs: results/69_task_run/token_layer_regressions/ (heldout_r2_heatmap.png,
+train_r2_heatmap.png, r2_grid.csv, best_cells.txt); per-layer fits in
+artifacts/69_task_run/token_layer_regressions/.
+
+**Next:** user call. **Blockers:** none; all pods terminated.
+
+### Addendum — input-token positions added + poster figure
+
+Extended the (token x layer) sweep with INPUT-side positions (`--pos_set input21`: per demo
+the first/last token of the input word, plus the query's input last token; 28 pods, all
+terminated; layer 24's pod was a dud twice and was rerun on a healthy pod).
+
+**Input tokens carry essentially NO linearly-decodable FV content: R^2 between -0.24 and
++0.03 at every layer, for every demo index** — vs 0.35-0.69 for cue/target positions. The
+FV signal appears only once the label is in view.
+
+Sawtooth (user-spotted, now quantified): the cue row sits BELOW its own target row in early
+examples and the gap closes with demo index — ex1 -0.02 vs 0.46, ex2 0.35 vs 0.53, ex3 0.45
+vs 0.55, ex5 0.52 vs 0.57 (at L6), converging by ex5-6 and INVERTING by ex10 (0.69 vs 0.63
+at L15). So the ':' cue only becomes FV-predictive after several examples have established
+the task, while the label token is informative from the very first example.
+
+Poster figure: `src/eval_scripts/plot_token_layer_poster.py` ->
+results/69_task_run/token_layer_regressions/poster_visuals/heldout_r2_poster.png. Blocks per
+ICL example with input/cue/target rows (target = last label token), white separators and
+bracket labels, 6 examples shown (7-10 stay in r2_grid.csv), colour scale fitted to the data
+(-0.30..0.70, nothing reaches 0.8), cyan box over examples 1-4 marking the sawtooth, title
+"Where the function vector is linearly readable".
+
+### Addendum — poster figure v2 (user revisions)
+
+4 ICL examples + the query block (was 6); sawtooth marked by a VERTICAL cyan box spanning
+layers 5-10 across every example (the band where the cue-below-target tooth is clearest),
+label moved inside the box over the dark example-1 rows so it no longer collides with the
+title. Colour range now -0.30..0.65, fitted to the drawn subset.
+
+### Addendum — poster figure v3
+
+Sawtooth box narrowed to layers 6-9 and clipped to the four ICL example blocks only (the
+query block has no target row, so it carries no tooth).
+
+### Addendum: poster figure v4 (2026-08-18)
+- Sawtooth box narrowed to layers **4-7** and to **examples 2-4** (example 1 excluded: its cue
+  row is still flat at ~-0.02, so there is no tooth there yet). Query block stays outside the
+  box (no target row). Label moved onto the box's dark top row for contrast.
+- File: `results/69_task_run/token_layer_regressions/poster_visuals/heldout_r2_poster.png`
+  (regen: `FV_ARTIFACTS_ROOT=... python src/eval_scripts/plot_token_layer_poster.py`).
+- v6: added a second variant `heldout_r2_poster_6shot.png` (6 examples, sawtooth box over
+  examples **4-6** at L4-L7). Both figures come out of one run of the plot script
+  (`main()` is called twice in `__main__`; `out_name` / `box_last_example` are new args).
+  Caveat for poster use: the cue-target gap is much smaller this late in the prompt
+  (L4-L7, ex4 +0.06 / ex5 +0.05 / ex6 +0.04) than at examples 1-2 (ex1 ~+0.48 at L6), so
+  the 4-example version shows the tooth far more clearly.
