@@ -7428,3 +7428,28 @@ flattens (~1/distance-ish); a single steered label still measurably moves the qu
 later. Consistent with dilution: attention over an increasing number of unsteered label slots.
 
 Pod fv-firstlabel-cues (RTX PRO 4500, ~30 min, terminated). Blockers: none.
+## Stream: top-1 + L6-9 band task-unique ablation variants (2026-08-19, branch worktree-taskunique1-ablation)
+
+Status: done. Two parallel pods (fv-taskunique1-ablation b2e1jdjygirbo2, fv-taskunique-l6to9-ablation
+fn30ml41d77ilz; both terminated). USER REQUESTS: (a) rank-1 = top SVD direction only of the
+unit-normed 11 mean-removed dirs (meanremoved_top1_bases.pt, top-1 energy median .80); (b) basis from
+layers 6-9 ONLY (4 residuals, top-3, meanremoved_L6to9_top3_bases.pt, 98% of band energy) —
+interpreted as basis construction restricted to L6-9, ablation protocol unchanged (all 28 layers,
+demo-label tokens). Smoke verifies pinned on both.
+
+Findings (mean over 69; full-range top-3 = .066/.065 own, .629/.607 cf, baseline .629):
+- top-1: n6 own .103/.100 vs cf .630/.610; n1 own .039/.042 vs cf .206/.194. ONE direction per task
+  removes ~84% of 6-shot ICL with cf exactly at baseline; ranks 2-3 add the last ~.04.
+- L6-9 top-3: n6 own .096/.088 vs cf .630/.610; n1 own .032/.030 vs cf .203/.189. Narrow band nearly
+  suffices; L10-15 adds ~.03.
+- Rank/band dose-response: 1-dir .10 -> 3-dir(L6-9) .09 -> 3-dir(L5-15) .066 -> 11-dir .063.
+
+Files: build_meanremoved_top1_bases.py (slice of top3 SVD), build_meanremoved_L6to9_top3_bases.py,
+plot_69_taskunique_top{1,L6to9 -> plot_69_taskunique_L6to9}.py, logs/taskunique{1,_L6to9}_ablation/*,
+results .../ablation/task_unique_top1/ and task_unique_top3_L6to9/ (figures variant-only per user
+pref; CSVs carry full-range top-3 columns). Raw JSONs artifacts .../meanremoved_top1|
+meanremoved_L6to9_top3/n{1,6}shot/. Also cos(train55-mean, all69-mean) >= .9992 all layers L5-15
+(logs/taskunique_L6to9_ablation/cos_train_vs_all.py) — steering (55-mean) and ablation (69-mean)
+constructions interchangeable.
+
+Next: none pending user. Blockers: none.
