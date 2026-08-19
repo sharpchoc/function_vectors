@@ -58,8 +58,13 @@ def main():
     with open(BASE_CSV) as f:
         for row in csv.DictReader(f):
             base[row["task"]] = row
+    # 6-shot baseline: prefer the in-run seed-matched real6_baseline; fall back to the
+    # sixshot_dummy CSV (same protocol, different run -> small fp/sampling offset)
     acc = {"zero_shot": np.array([float(base[t]["zero_shot"]) for t in tasks]),
-           "real_6shot": np.array([float(base[t]["real_6shot"]) for t in tasks])}
+           "real_6shot": np.array(
+               [d[t]["conditions"]["real6_baseline"]["acc"]
+                if "real6_baseline" in d[t]["conditions"]
+                else float(base[t]["real_6shot"]) for t in tasks])}
     for cfg in CFGS:
         for who in ("own", "cf"):
             for op in ("zero", "mean"):
