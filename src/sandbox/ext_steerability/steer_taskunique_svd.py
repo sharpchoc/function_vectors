@@ -48,7 +48,7 @@ except ModuleNotFoundError:  # staged copy outside the repo tree
     from steer_read_dir_methods import build_items
     from sixshot_dummy_steer import build_items_6shot
 
-ALPHAS = (0.0, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0)
+ALPHAS = (0.0, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 48.0, 64.0)
 LAYER = 6
 
 
