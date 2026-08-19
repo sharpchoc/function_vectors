@@ -95,9 +95,7 @@ def main():
         ax.plot([xs[0] * 0.55], [mean_of(f"dummy{n}_swap1_a0.0")], marker="s", ms=7,
                 color=GRAY, ls="none", label="$\\alpha$=0 (removal only)")
         for v, c, lab in ((mean_of(f"real_{n}shot"), "0.25", f"real {n}-shot"),
-                          (mean_of(f"dummy{n}_fullvec_best"), BLUE, "full mean, best $\\alpha$"),
-                          (mean_of(f"dummy{n}_meanfree_best"), "#7fb3ea",
-                           "mean-free vector, best $\\alpha$")):
+                          (mean_of(f"dummy{n}_fullvec_best"), BLUE, "full mean, best $\\alpha$")):
             ax.axhline(v, color=c, lw=1.5, ls=(0, (5, 3)))
             ax.annotate(f"{lab} {v:.3f}", (xs[-1], v), ha="right", va="bottom",
                         fontsize=10, color=c if c != "0.25" else "0.25")
