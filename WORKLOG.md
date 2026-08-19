@@ -7236,3 +7236,41 @@ logs/centered_ablation/{pod_run.sh,pod_admin.py,watch_full.sh}, results .../cent
 aggregate_bars.png, per_task_bars_{1,6}shot.png}; raw JSONs artifacts .../pc5_centered/n{1,6}shot/.
 
 Next: none pending user. Natural options: mean-orthogonalized variance basis; rank sweep. Blockers: none.
+
+## Stream: task-unique (mean-removed, L5-15) 11-direction ablation (2026-08-19, branch worktree-taskunique-ablation)
+
+Status: done. USER REQUEST: per task, take the 11 layer-wise task-level read features (mean over the
+150 slot-averaged label activations, label_avg10_L5-15_acts), remove each layer's cross-task mean
+direction, orthonormalize the 11 residuals (SVD; effective rank ~1.4), and ablate that basis at all
+28 block inputs at every demo-label token. Same conditions/pairs as rank-1/rank-5 runs.
+
+Commands: build_meanremoved11_bases.py (CPU float64) -> meanremoved11_bases.pt (max |cos| to any
+layer mean dir: median .084, max .155 — near carrier-free); ablate_readdir_pc5.py --out_sub
+meanremoved11 on own pod fv-taskunique-ablation (mmzi3ainh7uwqf, RTX PRO 4500, ~1.2h, terminated).
+Verifies pinned (mean 8e-4, zero 1.4e-3). plot_69_taskunique_ablation.py -> results
+.../ablation/task_unique_11dir/.
+
+Findings (mean over 69 tasks) — HEADLINE double dissociation, FV-ablation-grade specificity on the
+label side:
+- n6 baseline .629: own mean-abl .063 / own zero .061 vs cf mean .629 / cf zero .603. Near-total
+  kill, essentially zero collateral (cf-mean = baseline exactly; no task with cf-mean < 70% of
+  baseline).
+- n1 baseline .208: own .026/.023 vs cf .202/.182 — FIRST variant with 1-shot specificity (all
+  earlier variants had none).
+- Mean and zero modes coincide (basis ~orthogonal to carrier), as predicted.
+- vs centered 5-PC: own-cf gap .566 vs .157; the between-task mean differential (a ~rank-1.4 object
+  from just 11 slot-averaged means) is the label-side task-identity code; within-task variance PCs
+  were a weak proxy.
+- Partial survivors under own-abl (n6 > 30% of baseline): lowercase_word .46/.97, larger/smaller_of_pair,
+  fr/de/es-english .22-.29, number_word_to_digits, verb_tense_label, adjective_to_noun — mostly tasks
+  with echo/copy or highly redundant label content.
+
+Files: src/sandbox/ext_steerability/build_meanremoved11_bases.py (new), ablate_readdir_pc5.py
+(rank recorded from V), src/eval_scripts/plot_69_taskunique_ablation.py (new),
+logs/taskunique_ablation/*, results .../ablation/task_unique_11dir/{per_task_acc.csv,
+aggregate_bars.png, per_task_bars_{1,6}shot.png}; raw JSONs artifacts .../meanremoved11/n{1,6}shot/.
+NOTE: JSON condition keys still read *_pc5 (script reuse); columns renamed *_mr11 in the CSV.
+
+Next: none pending user. Natural follow-ups: rank-1 version (top SVD dir only) to test if the single
+task-unique direction suffices; steering counterpart running in fork session (mean-removed L6 steer).
+Blockers: none.
