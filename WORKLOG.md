@@ -7170,3 +7170,34 @@ for PCs 2-5 to matter. Zero mode: still a near-total kill with a large non-speci
 essentially unchanged. Deliverables: results/69_task_run/bottom_up_read_features/ablation/multi_direction_ablation/
 {per_task_acc.csv (incl. rank-1 columns), aggregate_bars.png, per_task_bars_{1,6}shot.png}.
 **Next:** natural extension = rank sweep (k=1..~20) to trace the dose-response curve. **Blockers:** none.
+
+## Stream: ablation debugging — read-feature vs FV cross-task geometry (2026-08-19, branch worktree-ablation-debugging)
+
+Status: done. Diagnosis of why read-feature ablation (rank-1 and rank-5) is weak/non-specific while
+FV-cue ablation is strong+specific: the ablated directions differ hugely in cross-task similarity.
+
+Commands:
+- `python src/eval_scripts/debug_ablation_cossim.py <gptj snapshot dir>` (CPU-only; needs
+  FV_ARTIFACTS_ROOT when run from a worktree). Rebuilds the 69 unit FVs exactly as
+  ablate_fv_cue6.unit_fv (pooled 37-head selection, build_contributions_single) and unit read
+  features (label_resid_means row 6); all 69 rebuilt FV norms match the FV_ablation eval JSONs'
+  norm_fv_own to <1%.
+
+Files: src/eval_scripts/debug_ablation_cossim.py (new);
+results/69_task_run/bottom_up_read_features/ablation/debugging/{cossim_hist.png, cossim_summary.csv,
+pairwise_cos.npz}.
+
+Findings (69 tasks, 2346 pairs):
+- Read features: mean pairwise cos .727 (median .712, min .478 — NO pair is even close to
+  orthogonal); the 69 assigned cf pairs average .726, i.e. the counterfactual direction shares
+  ~73% of its length with the own direction. Own-vs-cf ablation can therefore differ only through
+  a <=.5-cos residual component — consistent with the small own-minus-cf gaps observed.
+- Task FVs: mean pairwise cos .393 (median .355, min .05); cf pairs .383. Far more
+  task-differentiated, matching the large specific FV-ablation effects.
+- Interpretation: the L6 label-token mean is dominated by a shared "answer-token" component;
+  task identity is a modest differential on top. Uncentered within-task PCA (rank-5 study) keeps
+  selecting that shared structure. If a stronger label-side ablation is wanted, the candidates are
+  between-task contrastive directions (own mean minus grand mean, LDA-style) or the subspace the
+  FV heads' value projections actually read.
+
+Next: none (analysis complete; direction choice back to user). Blockers: none.
