@@ -5,6 +5,45 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-20 — FV-direction cue-token ablation, 1-SHOT arm (69-task pool, "Write Up Helper" session)
+
+**Owner:** Claude Code background session, branch `worktree-fv-ablation-1shot` (worktree
+`.claude/worktrees/fv-ablation-1shot`), own pod fv-abl-1shot u6qly3zeuog1tk (RTX PRO 4500
+Blackwell, ~55 min incl. two ~7-min model loads, TERMINATED, ≈$0.70). **Status:** DONE.
+
+**What (user request 2026-08-20):** the write-up's FV-ablation figure showed the two layer clamps
+side by side on 6-shot prompts; the user wanted one panel per shot count (6-shot and 1-shot) instead.
+No 1-shot data existed, so the 2026-08-19 study was rerun with `--n_shots 1` on the same 150 queries
+(first demo of each `isolation_prompts_ext` record, true label, same "Q:/A:" format), L9–27 clamp
+only (the two clamps were indistinguishable at 6-shot), with an in-run seed-matched `real1_baseline`.
+Mean reference = new equal-task-weighted grand mean of 1-shot cue-token block inputs
+(`grand_mean_cue1.pt`). Counterfactual pairs, 37-head selection, readout (T=1 sampled exact match,
+crc32 seeding) unchanged.
+
+**Files:** `ablate_fv_cue6.py` gained `--n_shots` (default 6; N≠6 writes suffixed artifacts
+`cue_means_{N}shot/`, `grand_mean_cue{N}.pt`, `eval_{N}shot/`; 6-shot path byte-identical — new
+`build_items_nshot` verified token-identical to `build_items_6shot` at N=6) and `--layer_cfgs`.
+NEW `run_fv_ablation_1shot.sh` (pod launcher), NEW `src/eval_scripts/plot_fv_ablation_shots.py`
+(→ `results/69_task_run/FV_ablation/{headline_bars_by_shots.png, summary_1shot.csv,
+per_task_acc_1shot.csv}`; 6-shot panel re-reads `eval/`, reproduces headline_bars.png numbers).
+Artifacts `artifacts/69_task_run/FV_ablation/{cue_means_1shot/, grand_mean_cue1.pt, eval_1shot/}`.
+
+**Findings (mean acc, 69 tasks, 1-shot, L9–27):** baseline 0.211 (train .209 / heldout .218;
+0-shot floor .002). **Own-FV zero-ablation 0.001** — floor on every task (none > .02, train .001 /
+heldout .001). Own-FV mean-ablation 0.036 (−83% rel., vs −62% at 6-shot). Counterfactual-FV
+zero-ablation 0.107 (train .115 / heldout .077): the control costs relatively MORE than at 6-shot
+(−49% vs −26% of baseline); the tasks where cf-zero also kills (spanish-english, gerund_to_base,
+plural_to_singular, adjective_to_adverb, …) are the high cos(own, cf) pairs (.54–.79), so part of
+the own direction goes with the cf direction — consistent with a weaker 1-shot FV having less
+margin. Counterfactual mean-ablation 0.205 ≈ baseline → damage is specific to the projected-out
+direction. The 6-shot own-vs-cf double dissociation therefore holds at 1 shot as well.
+
+**Write-up:** section 2 figure swapped to `headline_bars_by_shots.png` (+ 1-shot stat chips),
+Appendix C gained the 1-shot table. Artifact rebuilt from the worktree results path.
+
+**Next:** nothing pending. Merge `worktree-fv-ablation-1shot` into main (main's WORKLOG.md has
+uncommitted edits from the same session — commit those first).
+
 ## 2026-08-19 — FV-direction ablation at the final cue token (69-task pool, "FV Ablation" session)
 
 **Owner:** Claude Code background session (FV Ablation stream), branch

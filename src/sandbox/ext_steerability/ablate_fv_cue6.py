@@ -20,6 +20,11 @@ Stages:
   --stage eval    : requires grand mean + cf pairs; writes <out>/eval/<task>.json
 
 Sharding: --shard_idx/--shard_n over the sorted 69 tasks.
+
+--n_shots N (default 6, the original study): same prompt format with the first N demos of
+each record. For N != 6 every output is suffixed so the 6-shot artifacts are untouched:
+cue_means_{N}shot/, grand_mean_cue{N}.pt, eval_{N}shot/, baseline condition real{N}_baseline.
+--layer_cfgs restricts the layer clamps (default: both).
 """
 import argparse
 import json
@@ -76,7 +81,45 @@ def parse_args():
                         "reproduction of sixshot_dummy_steer's real6_baseline; smoke checks)")
     p.add_argument("--shard_idx", type=int, default=0)
     p.add_argument("--shard_n", type=int, default=1)
+    p.add_argument("--n_shots", type=int, default=6,
+                   help="demos per prompt (first N of each record); 6 = original study")
+    p.add_argument("--layer_cfgs", nargs="+", default=list(LAYER_CFGS),
+                   choices=list(LAYER_CFGS), help="layer clamps to run")
     return p.parse_args()
+
+
+def build_items_nshot(task, prompts_root, tok, n_shots):
+    """True-label N-shot prompts in the sixshot_dummy_steer format (first N demos of each
+    of the 150 records). Identical to build_items_6shot(real_labels=True) at N=6."""
+    recs = json.load(open(prompts_root / task / "train_prompts.json"))
+    assert len(recs) == 150
+    items = []
+    for rec in recs:
+        q = str(rec["query"]["input"])
+        gold = rec["query"]["output"]
+        gold = str(gold[0] if isinstance(gold, list) else gold).strip()
+        demos = rec["demos"][:n_shots]
+        assert len(demos) == n_shots
+        parts = []
+        for d in demos:
+            di = str(d["input"])
+            assert di != q
+            parts.append(f"Q: {di}\nA: {str(d['output']).strip()}\n\n")
+        prompt = "".join(parts) + f"Q: {q}\nA:"
+        items.append({"ids": tok(prompt).input_ids, "inj_idx_list": [], "gold": gold,
+                      "gold_len": len(tok(" " + gold).input_ids)})
+    return items
+
+
+def build_items(task, args, tok):
+    if args.n_shots == 6:
+        return build_items_6shot(task, args.prompts_root, tok, real_labels=True)
+    return build_items_nshot(task, args.prompts_root, tok, args.n_shots)
+
+
+def sfx(args, six, other):
+    """6-shot keeps the original artifact names; other shot counts get suffixed names."""
+    return six if args.n_shots == 6 else other.format(n=args.n_shots)
 
 
 class FVAblator:
@@ -130,7 +173,7 @@ def unit_fv(task, args, model, sel_flat):
 
 
 def run_means(args, model, tok, tasks):
-    outdir = args.out_root / "cue_means"
+    outdir = args.out_root / sfx(args, "cue_means", "cue_means_{n}shot")
     outdir.mkdir(parents=True, exist_ok=True)
     ab = FVAblator(model)
     for task in tasks:
@@ -138,7 +181,7 @@ def run_means(args, model, tok, tasks):
         if out.exists():
             print(f"means {task}: exists, skip", flush=True)
             continue
-        items = build_items_6shot(task, args.prompts_root, tok, real_labels=True)
+        items = build_items(task, args, tok)
         cap = {"sums": torch.zeros(N_LAYERS, D, dtype=torch.float64), "count": 0}
         ab.capture = cap
         for b in batches_by_len(items, args.token_budget, args.batch_cap):
@@ -166,16 +209,16 @@ def run_means(args, model, tok, tasks):
 def run_combine(args, tasks_all):
     per = []
     for t in tasks_all:
-        d = torch.load(args.out_root / "cue_means" / f"{t}.pt", map_location="cpu",
-                       weights_only=False)
+        d = torch.load(args.out_root / sfx(args, "cue_means", "cue_means_{n}shot") / f"{t}.pt",
+                       map_location="cpu", weights_only=False)
         assert d["n_prompts"] == 150, f"{t}: {d['n_prompts']} prompts"
         per.append(d["mean"].double())
     gm = torch.stack(per).mean(dim=0).float()
-    out = args.out_root / "grand_mean_cue6.pt"
-    torch.save({"mean": gm, "n_tasks": len(tasks_all),
+    out = args.out_root / f"grand_mean_cue{args.n_shots}.pt"
+    torch.save({"mean": gm, "n_tasks": len(tasks_all), "n_shots": args.n_shots,
                 "definition": "equal-task-weighted grand mean of block-input residuals at "
-                              "the final cue token of the 150 six-shot prompts, all 69 "
-                              "tasks (train+heldout)"}, out)
+                              f"the final cue token of the 150 {args.n_shots}-shot prompts, "
+                              "all 69 tasks (train+heldout)"}, out)
     print(f"combined {len(tasks_all)} tasks -> {out}")
 
 
@@ -184,9 +227,10 @@ def run_eval(args, model, tok, tasks, group):
     pairs, families = cf["pairs"], cf["families"]
     sel = json.load(open(args.selection_path))
     sel_flat = torch.tensor(sel["selected_flat"])
-    gm = torch.load(args.out_root / "grand_mean_cue6.pt", map_location="cpu",
+    gm_path = args.out_root / f"grand_mean_cue{args.n_shots}.pt"
+    gm = torch.load(gm_path, map_location="cpu",
                     weights_only=False)["mean"].float().cuda()   # (N_LAYERS, D)
-    outdir = args.out_root / "eval"
+    outdir = args.out_root / sfx(args, "eval", "eval_{n}shot")
     outdir.mkdir(parents=True, exist_ok=True)
     ab = FVAblator(model)
     tok.padding_side = "left"
@@ -195,7 +239,7 @@ def run_eval(args, model, tok, tasks, group):
         if out_path.exists():
             print(f"{task}: exists, skip", flush=True)
             continue
-        items = build_items_6shot(task, args.prompts_root, tok, real_labels=True)
+        items = build_items(task, args, tok)
         u_own, norm_own = unit_fv(task, args, model, sel_flat)
         u_cf, norm_cf = unit_fv(pairs[task], args, model, sel_flat)
         u_own, u_cf = u_own.cuda(), u_cf.cuda()
@@ -203,17 +247,18 @@ def run_eval(args, model, tok, tasks, group):
                "family": families[task], "cf_family": families[pairs[task]],
                "cos_own_cf": round(float(u_own @ u_cf), 4),
                "norm_fv_own": round(norm_own, 2), "norm_fv_cf": round(norm_cf, 2),
-               "n_prompts": len(items), "n_shots": 6,
+               "n_prompts": len(items), "n_shots": args.n_shots,
                "definition": "remove rank-1 FV component at final cue token, prefill, "
                              "blocks in layer clamp; mean op adds back grand-mean proj",
                "selection_path": str(args.selection_path),
-               "grand_mean": "grand_mean_cue6.pt (equal-task-weighted, 69 tasks)",
+               "grand_mean": f"{gm_path.name} (equal-task-weighted, 69 tasks)",
                "conditions": {}}
 
         conds = []
         if args.with_baseline:
-            conds.append(("real6_baseline", None, None, None))
-        for cfg, layers in LAYER_CFGS.items():
+            conds.append((f"real{args.n_shots}_baseline", None, None, None))
+        for cfg in args.layer_cfgs:
+            layers = LAYER_CFGS[cfg]
             for who, u in (("own", u_own), ("cf", u_cf)):
                 mproj = torch.outer(gm @ u, u)           # (N_LAYERS, D)
                 conds.append((f"{who}_zero_{cfg}", u, None, layers))
