@@ -7445,3 +7445,32 @@ Findings (mean over 69 tasks):
 Also this stream: poster explainer visual (see prior entry). Next: none pending user. Direction-2/3
 escalation NOT needed by the "struggles" criterion (matches mean-free vector), available if wanted.
 Blockers: none.
+
+## Stream: L13 cue->label attention theory test (2026-08-20, branch worktree-lowdim-steering)
+
+Status: done. USER THEORY: full-mean steering beats task-unique steering because the injected mean
+makes the final cue "pay more attention" to the label token. Test (1-shot, 69 tasks, prefill-only):
+L13 16-head-mean post-softmax attention final-cue -> final-label token, 150 prompts/task;
+conditions unsteered dummy1 / real 1-shot / full-mean alphas .5-4 / swap alphas 0-64 (full sweep,
+user choice). capture_cue_attention_L13.py on own pod fv-lowdim-steering (gxwhuypz4mmil6, ~35min,
+terminated); plot_69_cue_attention_L13.py -> steering_results/attention_to_label_1shot/.
+
+Findings (mean over 69 tasks):
+- Premise holds at baseline: real label .0561 vs dummy '_' .0376 (+49%) — label content does
+  modulate L13 cue attention.
+- The CARRIER is the attention-attractor: full-mean injection raises attention (.0451 at a1,
+  ~40% of the dummy->real gap) while the task-unique swap NEVER does (flat .038 for a<=16).
+  Direct support for carrier = "read here" salience signal.
+- BUT attention does NOT mediate the accuracy gains: at each method's accuracy peak, attention is
+  at/below unsteered (full mean a2: attn .0355 < .0376 while acc peaks .112; swap a16: .0386).
+  Across alpha, accuracy rises exactly where attention falls — decoupled.
+- Both methods depress attention at large alpha (off-distribution keys?), labeled speculation.
+- Caveat: 16-head average can mask a minority of reader heads moving the other way; per-head
+  breakdown is the natural follow-up.
+
+Files: capture_cue_attention_L13.py, plot_69_cue_attention_L13.py (new);
+steering_results/attention_to_label_1shot/{headline_bars.png, attn_vs_alpha.png, per_task_attn.csv,
+summary.csv}; raw per-prompt values artifacts .../raw_mean_steering/cue_attention_L13/.
+
+Next: none pending user (per-head L13 breakdown / value-content metrics are natural follow-ups).
+Blockers: none.
