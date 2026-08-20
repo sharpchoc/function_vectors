@@ -5,6 +5,57 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-20 — FV presence ABOVE the generic-FV baseline vs accuracy @ L13 (69-task pool, "presence-gm" agent)
+
+**Owner:** Claude Code background agent, branch `worktree-agent-a873fed4d84e79f82` (worktree
+`.claude/worktrees/agent-a873fed4d84e79f82`), own pod fv-presence-gm `1xwvgqw1nc70t8` (RTX PRO 4500
+Blackwell $0.72/h, created 21:07 UTC, capture 21:09–21:20 incl. ~3-min model load, TERMINATED 21:21,
+≈14 min ≈ $0.17). **Status:** DONE.
+
+**What (user request):** a new variant of the 2026-08-17 "FV presence vs model accuracy" scatter in
+which the x-axis is presence ABOVE the generic-FV baseline: Δcos = cos(z, v̂_A) − cos(z, v̂_gm) at the
+query cue, L13. Needed a GPU recapture because `presence_vs_acc/<task>.npz` only stores cos to the
+task's own FV.
+
+**Definitions (fixed):** task FV v_A = mean of the 150 per-prompt FVs in `perprompt_fvs/<task>.pt`
+(double), v̂_A = v_A/‖v_A‖ (as in the original capture). Generic FV v_gm = equal-task-weighted mean over
+all 69 task FVs v_A (‖v_gm‖ = 39.7), v̂_gm = v_gm/‖v_gm‖. z_l = block-l residual output at the query cue
+(last real token, right padding), layers 9..20, prompts = the 150 fixed 10-shot `isolation_prompts_ext`
+train_prompts truncated to their first n demos, n = 0..6 — identical to part (a) of
+`capture_69_presence_vs_acc.py`. Accuracies NOT recomputed: `match` from the original capture.
+
+**Files:** NEW `src/eval_scripts/capture_69_presence_gm.py` (→
+`artifacts/69_task_run/presence_vs_acc_gm/<task>.npz`: `cos_own`, `cos_gm` (7,150,12) f32, `cue_L13`
+(7,150,4096) f16 so future L13 variants need no recapture, layers, n_shots, group; 575 MB total;
+resumable; built-in sanity check vs the original `cos`), NEW `src/eval_scripts/run_presence_gm.sh`
+(pod launcher, single forward-only process, all 69 tasks), NEW `src/eval_scripts/plot_69_presence_gm.py`
+(→ `results/69_task_run/write_feature_and_model_accuracy/baseline_subtracted/`:
+`scatter_L13_minus_gm.png`, `scatter_L13_cos_gm.png` (reference: cos to the generic FV alone),
+`scatter_meanL9-20_minus_gm.png`, `presence_gm_L13.csv` (per task × n: mean cos_own, cos_gm, Δcos, acc),
+`correlation_summary.csv`). Same figure conventions as `plot_69_presence_vs_acc.py`: one panel, 483
+points, viridis by n, train circles / held-out triangles, per-n Spearman in legend, pooled ρ/r in title,
+NO binning, no fitted lines.
+
+**Sanity check:** `cos_own` vs the original `presence_vs_acc/<task>.npz["cos"]`: max abs diff =
+0.00e+00 on ALL 69 tasks (bit-identical fp16 forward on the same GPU class).
+
+**Findings (Spearman ρ across 69 tasks; n=0 is an accuracy floor, its ρ is not meaningful):**
+- Δcos @ L13: pooled ρ = +0.40 (r = +0.49); per-n ρ: n=0 +0.38, n=1 +0.13, n=2 −0.17, n=3 −0.26,
+  n=4 −0.31, n=5 −0.31, n=6 −0.39. Compare own-FV cos @ L13 (original): pooled +0.52; n=2..6
+  −0.23/−0.30/−0.29/−0.32/−0.31. Subtracting the generic-FV baseline therefore does NOT remove the
+  negative between-task relation at fixed n — at n=6 it is slightly stronger (−0.39 vs −0.31).
+- cos_gm @ L13 alone: pooled ρ = +0.55 (r = +0.62); per-n ρ: +0.10, −0.10, +0.06, +0.12, +0.17,
+  +0.16, +0.25 (only n=6 reaches p<0.05). Task-mean cos_gm ranges 0.17–0.41 (n=0 ≈ 0.20–0.29, n≥1 ≈
+  0.30–0.41), i.e. the generic-FV component carries most of the raw cosine and most of the pooled
+  (shot-count) effect; the own-minus-generic residual ranges −0.18 .. +0.13 (negative at n=0 on 63/69
+  tasks, positive on 57/69 at n=2 rising to 67/69 at n=6).
+- Δcos averaged over L9–20: pooled ρ = +0.37 (r = +0.45); per-n ρ n=2..6: −0.28, −0.40, −0.43, −0.46,
+  −0.52 — the fixed-n negative relation is stronger over the band than at L13 alone, and stronger than
+  the own-FV meanL9-20 numbers (−0.34 .. −0.41).
+
+**Next:** nothing pending. Branch pushed, not merged. Caller to decide whether the baseline-subtracted
+panel goes into the write-up.
+
 ## 2026-08-20 — Repo housekeeping: everything on main; direction3 reorg landed ("Write Up Helper" session)
 
 User request: make all work reachable from `main` for a fresh session/account. Done, pushed:
