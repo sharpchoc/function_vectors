@@ -7540,3 +7540,100 @@ Files: steer_randlabel_swap.py, plot_69_randlabel_swap.py (new); results
 steering_results/randlabel_swap/{alpha_curve.png, per_task_acc.csv, summary.csv}; raw JSONs
 artifacts .../raw_mean_steering/randlabel_swap/. Next: user to pick next hypothesis test
 (carrier+unique separate-scaling beta/alpha experiment is the natural hyp-2/4 discriminator).
+## 2026-08-20 — Task-level ridge: mean label-token activation -> task FV, ALL 28 layers (linear_mapping)
+
+**Status:** done (CPU-only; write-up-helper session). User request: treat the 55 train TASKS
+as samples (task-mean label-token activation at layer L -> task FV), harsh-regularisation
+expectation tested; then swept every layer. No new capture needed —
+`artifacts/69_task_run/label_resid_means/` already stores all 28 layers.
+
+Method: dual/kernel ridge with intercept (train-centered X and Y), lambda by
+leave-one-task-out CV on train (grid 1e-2..1e6), scored on the 14 held-out tasks against
+the train-mean-FV baseline (same convention as labeltoken_fv_ridge/layer_sweep) and the
+test-mean baseline.
+
+Findings:
+- Held-out R^2 (train-mean baseline): L0 0.464 -> L6 0.669, broad plateau L6-L20 with peak
+  0.683 @L12-13, gentle decay to 0.652 @L27. Full-depth answer to "what happens outside
+  L5-15": early layers climb steeply, late layers barely decay.
+- Harsh regularisation NOT needed despite n=55 << d=4096: LOO picks the smallest lambda
+  from L6 on (min-norm interpolation generalizes; in-sample R^2 = 1.000); shrinkage only
+  hurts (L6: lam 1e3 -> 0.55, 1e4 -> 0.27). L0-L5 prefer lam 10-32.
+- Matches the per-prompt sweep where they overlap (0.683 vs 0.692 @L13): the 55 task
+  centroids carry all the transferable signal (consistent with centroid memorization).
+- L6 per-task: morphology/translation near-perfect (ends_with_ing cos .995), ag_news worst
+  (.63). Held-out mean cos(pred, true FV) 0.89 at plateau vs 0.64 train-mean baseline.
+
+Files: results/69_task_run/read_write_relationship/linear_mapping/ (README.md,
+tasklevel_ridge_all_layers.csv, tasklevel_ridge_r2_by_layer.png, and the three scripts
+tasklevel_ridge.py / tasklevel_ridge_all_layers.py / plot_tasklevel_ridge_layers.py).
+Not committed to git (shared checkout; user to review/commit).
+
+Next: none pending user (write-up artifact update deliberately held — user reviewing plots
+first). Blockers: none.
+
+## 2026-08-20 — Per-prompt ridge layer sweep extended to ALL 28 layers (labeltoken_fv_ridge/layer_sweep)
+
+**Status:** done. Session "All layer linear map R^2 check" (background job). User request:
+repeat the original L5-L15 per-prompt sweep setup for every layer and update the write-up
+plot. Faithful repeat of the 2026-08-18 protocol — NOT the task-level variant the
+write-up-helper session ran the same day (results agree where comparable: tasklevel 0.683
+vs per-prompt-centroid 0.692 @L13).
+
+Compute: 2 own GPU pods fv-ridge-alllayers-{1,2} (5xnkac15ume2ru, hun1kes0us5p7v; RTX PRO
+4500 Blackwell $0.72/hr, runpod/pytorch:1.1.0-cu1290-torch291-ubuntu2404 — old 2.4.0 image
+tag retired from Docker Hub — + volume fv env; both TERMINATED after ~35 min, ~$0.90 total).
+- Capture: `capture_avg10_label_multilayer.py --layers 0..4,16..27` (2 task shards) →
+  `artifacts/69_task_run/label_avg10_L0-4_16-27_acts/` (69 × (150,17,4096) fp16, 1.4G).
+- Ridge: `ridge_layer_sweep.py` per layer with `--acts_root` the new dir → layer_<L>.json
+  for all 28 in `artifacts/69_task_run/labeltoken_fv_ridge_layer_sweep/`.
+- Rescore/plots: staged extended copies in /workspace/fv_alllayers_run/ (LAYERS 0..27,
+  dual acts roots); overwrote results/69_task_run/FV_linear_decodability/labeltoken_fv_ridge/
+  layer_sweep/{summary.csv,r2_by_layer.png,taskfv_r2.csv,taskfv_r2.png} + artifacts
+  taskfv_r2.json with the all-layer versions. Driver scripts + logs also in fv_alllayers_run/.
+
+Findings (held-out tasks): peak unchanged at L13 (uniform per-prompt-target 0.498; vs task
+FV 0.653 per-prompt / 0.692 centroid). Full-depth shape: steep climb L0 (0.26 uniform /
+0.36 centroid) → L8, broad plateau L8-L18, gentle decay to L27 (0.462 / 0.647). Honest
+train-side (unseen prompts) flat 0.66 (L0 only) then 0.73-0.74 everywhere — within-task
+signal unchanged by depth. lambda drifts up with depth (1e3 → 3.16e3 @L11+ → 1e4 @L24+).
+
+Write-up artifact updated (section 7 + appendix G now quote the 28-layer sweep;
+label "all-28-layer-ridge-sweep"). Not committed to git (shared checkout; user to
+review/commit). Next: none. Blockers: none.
+
+### Addendum (2026-08-20, same session) — overwrite reverted to side-by-side files
+
+User was unhappy the all-28 outputs replaced the original L5-15 files in place. Reverted:
+originals restored from git (results/.../layer_sweep/{summary.csv,r2_by_layer.png,
+taskfv_r2.csv,taskfv_r2.png}) and artifacts taskfv_r2.json rebuilt with its original 11
+rows; the extended sweep now lives alongside as *_all28.{csv,png,json} in the same dirs.
+Overlapping L5-15 values are identical between the two versions (verified vs git HEAD).
+
+### Addendum (2026-08-20, session "All layer linear map R^2 check") — direct task-level ridge + presentation figures
+
+User-requested variants of the all-28-layer sweep figure (all in
+results/.../labeltoken_fv_ridge/layer_sweep/, scripts in /workspace/fv_alllayers_run/):
+- taskfv_r2_all28_heldout.png / _perprompt.png — presentation versions (held-out only).
+- tasklevel_ridge_direct.csv + heldout_r2_perprompt_vs_tasklevel.png — task-level ridge
+  computed DIRECTLY from this sweep's own capture (X = mean of the 150 per-prompt avg-of-10
+  label activations, Y = task FV, 55 train samples, LOO-CV lambda logspace(-2,6,17), dual
+  ridge with intercept). Held-out testmean R^2: L0 0.343 -> peak L13 0.598, L27 0.549;
+  LOO picks moderate lambda 3-32 (not heavy, not min-norm).
+- DISCREPANCY flagged to user (not adjudicated): read_write_relationship/linear_mapping/
+  tasklevel_ridge_all_layers.csv (write-up-helper session, X from label_resid_means capture)
+  gives higher heldout testmean (peak 0.657 @L12) and picks lambda=0.01 from L6 on. Same
+  nominal experiment, different X capture site/prompt bank. Also its README calls the
+  trainmean column "comparable to the per-prompt layer sweep", but the per-prompt sweep's
+  test-group denominator is the TEST-mean FV -> testmean is the comparable column.
+
+## 2026-08-20 — ICL circuit mechanism diagram (write_up/graphics)
+
+**Status:** done. New folder `write_up/graphics/` with `icl_read_write_circuit.svg`: conceptual
+token-position x layer-depth schematic of the identified ICL circuit (antonym example prompt).
+Label tokens attend to their inputs -> read feature (task identity) at label tokens, early
+layers (~L6) -> cue attends to labels, read feature linearly transformed -> write feature
+(function vector v_A) at the cue, mid layers (~L13) -> steers the answer. Purely conceptual
+per the theory-figure convention: no measured values; only the L6/L13 locations are named.
+Hand-authored SVG (white background, read teal #0e7c6b / write blue #2a5fd1, matching the
+write-up artifact palette). Not committed to git (shared checkout; user to review/commit).
