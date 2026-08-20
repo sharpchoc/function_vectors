@@ -5,6 +5,22 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-20 — Repo housekeeping: everything on main; direction3 reorg landed ("Write Up Helper" session)
+
+User request: make all work reachable from `main` for a fresh session/account. Done, pushed:
+- Standalone write-up `write_up/icl_read_write_features/` (HTML with inlined figures + template +
+  builder + README) and `write_up/graphics/` (ICL circuit diagram); CLAUDE.md now points there.
+- Today's results (1-shot FV ablation, all-28-layer ridge sweeps, task-level ridge, L6 presentation
+  curve) + WORKLOG entries; branch `worktree-fv-ablation-1shot` merged.
+- Branch audit: all 36 remote branches fully merged into main; only local `claude-pertask-r2` had 3
+  unmerged July commits whose unique content (13 oneshot preimage heatmaps) is on main via the reorg.
+- `results/direction3_fv_formation/` 2026-07-30 reorganisation (on disk only since then; see its
+  README for the old→new map) committed; 42 old flat dirs removed after byte-for-byte verification
+  (1669/1670 identical; the one differing `oneshot .../per_task_grid.png` kept in both renders as
+  `per_task_grid.png` (07-30 re-render) and `per_task_grid_render20260723.png`); the 2 smoke dirs the
+  README marks DELETED removed. Three stray `results/sandbox` files added. LaTeX build by-products
+  under `write_up/` gitignored. `git status` on main is clean.
+
 ## 2026-08-20 — FV-direction cue-token ablation, 1-SHOT arm (69-task pool, "Write Up Helper" session)
 
 **Owner:** Claude Code background session, branch `worktree-fv-ablation-1shot` (worktree
