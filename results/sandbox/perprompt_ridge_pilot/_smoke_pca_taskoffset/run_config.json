@@ -1,0 +1,71 @@
+{
+  "tasks": [
+    "antonym"
+  ],
+  "arms": [
+    "pcasub_matched_k4_zero",
+    "pcasub_matched_k4_mean",
+    "pcasub_icl10_cf_k0_zero"
+  ],
+  "banks_root": "/workspace/function_vectors/artifacts/sandbox/perprompt_fv_preimages/gptj_train_varicl_top40_pca_banks",
+  "reference_root": "/workspace/function_vectors/results/direction3_fv_formation/oneshot_preimage_ablation/train_varicl_top40",
+  "output_root": "results/sandbox/perprompt_ridge_pilot/_smoke_pca_taskoffset",
+  "model_name": "EleutherAI/gpt-j-6b",
+  "revision": null,
+  "device": "cuda",
+  "root_data_dir": "dataset_files",
+  "seed": 42,
+  "test_split": 0.3,
+  "n_shots": 1,
+  "max_train_prompts": 130,
+  "max_test_prompts": 40,
+  "start_layers": [
+    0,
+    20
+  ],
+  "batch_size": 170,
+  "max_prompts": 8,
+  "prefixes": {
+    "input": "Q:",
+    "output": "A:",
+    "instructions": ""
+  },
+  "separators": {
+    "input": "\n",
+    "output": "\n\n",
+    "instructions": ""
+  },
+  "debug_invariant": true,
+  "skip_reference_gate": false,
+  "overwrite": false,
+  "sandbox": true,
+  "cf_map": {
+    "antonym": "lowercase_first_letter"
+  },
+  "base_cells": {
+    "matched": {
+      "cue1": "pre_label_token_icl1",
+      "target1": "last_label_token_icl1",
+      "final_cue": "pre_label_token_icl2"
+    },
+    "icl10": {
+      "cue1": "pre_label_token_icl10",
+      "target1": "last_label_token_icl10",
+      "final_cue": "last_prompt_token_icl10"
+    }
+  },
+  "ks": [
+    0,
+    2,
+    3,
+    4
+  ],
+  "ops": [
+    "zero",
+    "mean"
+  ],
+  "git_commit": "b2eec93d541f01e46087a847536267317f7833ed",
+  "metric": "delta log p (ablated - clean) of the first answer token at the final position",
+  "subspace": "span{task-mean pre-image, top-k centered PCs} of the per-prompt-FV pre-images; mean op clamps to the all-27-task grand-mean pre-image's subspace component",
+  "edit_layer_mapping": "start layer L edits transformer.h.{b} outputs for all b >= L with layer b's OWN subspace (edit layers 0..27; embedding never touched)"
+}
