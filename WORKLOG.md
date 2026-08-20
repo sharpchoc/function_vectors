@@ -7474,3 +7474,25 @@ summary.csv}; raw per-prompt values artifacts .../raw_mean_steering/cue_attentio
 
 Next: none pending user (per-head L13 breakdown / value-content metrics are natural follow-ups).
 Blockers: none.
+
+## Stream: hypothesis-1 test — swap steering on random-label scaffold (2026-08-20, branch worktree-lowdim-steering)
+
+Status: done. HYPOTHESIS 1 ("carrier repairs the defective '_' base") REJECTED. Setup: task-unique
+projection swap (alpha*s1*v1, every token of all six labels, L6) on the peer sixshot_randomlabel
+scaffold — demo labels sampled from OTHER tasks' output pools (steer_randlabel_swap.py; reuses
+build_items_randomlabel verbatim; rand_labels verified identical to the peer full-mean run, so
+prompts byte-identical; own pod fv-lowdim-steering 1vxaguufxina0m ~1.3h, terminated).
+
+Findings (mean over 69 tasks, 6-shot): swap on random-label base .388 at a32 (per-task best .418,
+a64 declines .278; a0 removal-only .001 = baseline .002). Full-mean on same base .494 (peer).
+Gap fullmean-swap: '_' base .447-.372 = .075 (per-task best) / .447-.341 = .106 (aggregate peak);
+random-label base .494-.418 = .076 / .494-.388 = .107 — UNCHANGED to 3 decimals. Real-word bases
+lift BOTH methods ~+.05 uniformly; the carrier advantage is NOT base repair at the label slot.
+Confound noted: random labels retain their own (wrong-task) unique components beyond the removed
+own-v1 projection — despite that, swap improved on this base. Remaining candidate hypotheses:
+LN/composite-code (2), label-position elaboration (3), cue-side generic/format push (4).
+
+Files: steer_randlabel_swap.py, plot_69_randlabel_swap.py (new); results
+steering_results/randlabel_swap/{alpha_curve.png, per_task_acc.csv, summary.csv}; raw JSONs
+artifacts .../raw_mean_steering/randlabel_swap/. Next: user to pick next hypothesis test
+(carrier+unique separate-scaling beta/alpha experiment is the natural hyp-2/4 discriminator).
