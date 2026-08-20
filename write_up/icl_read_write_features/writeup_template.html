@@ -1,0 +1,593 @@
+<title>ICL Read & Write Features</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #f7f8f6;
+    --surface: #ffffff;
+    --ink: #181c1e;
+    --muted: #5d6771;
+    --faint: #8b949c;
+    --border: #e2e5e1;
+    --read: #0e7c6b;
+    --read-soft: #e2f0ed;
+    --write: #2a5fd1;
+    --write-soft: #e6ecf9;
+    --chip-bg: #eef0ed;
+    --code-bg: #eef0ed;
+    --fig-surface: #ffffff;   /* figures are white PNGs: card stays white in both themes */
+    --fig-border: #dcdfdb;
+    --placeholder: #a8742a;
+    --placeholder-bg: #f7efe2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #15181b;
+      --surface: #1d2126;
+      --ink: #e7eaec;
+      --muted: #9aa4ad;
+      --faint: #6d7780;
+      --border: #2c3238;
+      --read: #43c3ae;
+      --read-soft: #12332e;
+      --write: #84a8f2;
+      --write-soft: #1c2a45;
+      --chip-bg: #262c32;
+      --code-bg: #262c32;
+      --fig-border: #3a4148;
+      --placeholder: #d8a95c;
+      --placeholder-bg: #322a1c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #15181b;
+    --surface: #1d2126;
+    --ink: #e7eaec;
+    --muted: #9aa4ad;
+    --faint: #6d7780;
+    --border: #2c3238;
+    --read: #43c3ae;
+    --read-soft: #12332e;
+    --write: #84a8f2;
+    --write-soft: #1c2a45;
+    --chip-bg: #262c32;
+    --code-bg: #262c32;
+    --fig-border: #3a4148;
+    --placeholder: #d8a95c;
+    --placeholder-bg: #322a1c;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    font-size: 1.02rem;
+    line-height: 1.62;
+  }
+  .page {
+    max-width: 46rem;
+    margin: 0 auto;
+    padding: 3rem 1.4rem 5rem;
+  }
+  header.masthead { margin-bottom: 2.4rem; }
+  .masthead .kicker {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.9rem;
+  }
+  h1 {
+    font-family: "Spectral", Georgia, serif;
+    font-weight: 600;
+    font-size: 2.15rem;
+    line-height: 1.2;
+    margin: 0 0 0.8rem;
+    text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 62ch; margin: 0; }
+  .lede strong { color: var(--ink); }
+
+  h2 {
+    font-family: "Spectral", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.42rem;
+    line-height: 1.28;
+    margin: 0 0 0.6rem;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: "Spectral", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.08rem;
+    margin: 1.6rem 0 0.4rem;
+  }
+  p { margin: 0 0 0.9rem; }
+  section.claim {
+    border-top: 1px solid var(--border);
+    padding-top: 1.7rem;
+    margin-top: 2.2rem;
+  }
+  .tagrow {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    margin-bottom: 0.55rem;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  .secnum { font-size: 0.8rem; color: var(--faint); }
+  .tag {
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.14rem 0.5rem;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+  .tag.write { color: var(--write); background: var(--write-soft); }
+  .tag.read  { color: var(--read);  background: var(--read-soft); }
+  .tag.rw    { color: var(--read);  background: var(--read-soft); }
+  .tag.rw .arrow { color: var(--write); }
+
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin: 0.9rem 0 1.1rem;
+  }
+  .stat {
+    background: var(--chip-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.42rem 0.7rem;
+    min-width: 7rem;
+  }
+  .stat .v {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.02rem;
+    font-weight: 500;
+    display: block;
+  }
+  .stat .l { font-size: 0.74rem; color: var(--muted); line-height: 1.3; display: block; }
+  .stat.write .v { color: var(--write); }
+  .stat.read .v  { color: var(--read); }
+
+  figure {
+    margin: 1.2rem 0 1.4rem;
+  }
+  .figcard {
+    background: var(--fig-surface);
+    border: 1px solid var(--fig-border);
+    border-radius: 6px;
+    padding: 0.7rem;
+    overflow-x: auto;
+  }
+  .figcard img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .figrow { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+  @media (max-width: 40rem) { .figrow { grid-template-columns: 1fr; } }
+  figcaption {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    line-height: 1.45;
+  }
+  figcaption code, p code, li code, td code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.86em;
+    background: var(--code-bg);
+    border-radius: 3px;
+    padding: 0.05em 0.3em;
+  }
+  .num {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.92em;
+  }
+
+  .setup {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.2rem 1.4rem;
+    margin: 2rem 0 0.4rem;
+  }
+  .setup h2 { font-size: 1.05rem; margin-bottom: 0.7rem; }
+  .setup dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; column-gap: 1.1rem; row-gap: 0.45rem; }
+  .setup dt {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-top: 0.15rem;
+    white-space: nowrap;
+  }
+  .setup dd { margin: 0; font-size: 0.94rem; }
+  @media (max-width: 40rem) {
+    .setup dl { grid-template-columns: 1fr; row-gap: 0.1rem; }
+    .setup dd { margin-bottom: 0.55rem; }
+  }
+
+  .placeholder-box {
+    border: 1px dashed var(--placeholder);
+    background: var(--placeholder-bg);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    margin: 1.4rem 0;
+  }
+  .placeholder-box .ph-tag {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--placeholder);
+    font-weight: 500;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .placeholder-box h3 { margin-top: 0; }
+
+  .appendix { margin-top: 3.2rem; border-top: 2px solid var(--border); padding-top: 2rem; }
+  .appendix > h2 { font-size: 1.6rem; }
+  details {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    margin: 0.8rem 0;
+    padding: 0;
+  }
+  details summary {
+    cursor: pointer;
+    padding: 0.85rem 1.1rem;
+    font-family: "Spectral", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.02rem;
+    list-style-position: outside;
+  }
+  details summary:focus-visible { outline: 2px solid var(--write); outline-offset: 2px; border-radius: 6px; }
+  details .body { padding: 0.2rem 1.2rem 1.1rem; font-size: 0.95rem; }
+  details .body p { margin-bottom: 0.7rem; }
+  table {
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    margin: 0.8rem 0 1rem;
+    min-width: 100%;
+  }
+  .tablewrap { overflow-x: auto; }
+  th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; }
+  td.n, th.n { text-align: right; font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  thead th { background: var(--chip-bg); font-weight: 600; }
+  ul { padding-left: 1.2rem; margin: 0 0 0.9rem; }
+  li { margin-bottom: 0.3rem; }
+  em.v { font-style: italic; font-family: "Spectral", Georgia, serif; }
+  sub { font-size: 0.72em; }
+  a { color: var(--write); }
+</style>
+
+<div class="page">
+
+<header class="masthead">
+  <div class="kicker">Results summary · 69-task run · GPT-J-6B</div>
+  <h1>Read &amp; write features of in-context learning</h1>
+  <p class="lede">In-context learning in GPT-J runs through two residual-stream features: a <strong style="color:var(--read)">read feature</strong> that sits at demonstration label tokens in the early layers, and a <strong style="color:var(--write)">write feature</strong> (the function vector) that forms at cue tokens in the middle layers and drives the answer. This note walks through the evidence for each feature and for the pipeline between them. Numbers and figures come from <code>results/69_task_run/</code>; the appendix holds protocol detail and per-section deep dives.</p>
+</header>
+
+<div class="setup">
+  <h2>Setup</h2>
+  <dl>
+    <dt>Model</dt><dd>GPT-J-6B (28 layers &times; 16 heads).</dd>
+    <dt>Tasks</dt><dd>69 word-level ICL tasks (translation, morphology, world knowledge, string ops, classification, numerical); fixed split of 55 train / 14 held-out tasks (<code>task_splits/extended_steerable_69_prunedfail.json</code>).</dd>
+    <dt>Write feature</dt><dd>The function vector <em class="v">v<sub>A</sub></em> = &Sigma;<sub>h&isin;H</sub> <em class="v">h&#772;<sub>A</sub></em>: the sum of 37 attention heads&rsquo; mean final-cue-token outputs for task A. The head set H is selected once, by pooled sparse optimisation on the 55 train tasks only.</dd>
+    <dt>Read feature</dt><dd>The task-mean residual-stream activation at demonstration <em>label</em> tokens, layer 6 (<em class="v">m<sub>A</sub></em>(L6)). A raw mean &mdash; no head selection, no differencing.</dd>
+    <dt>Readout</dt><dd>150 fixed prompts per task; temperature-1 sampled exact-match accuracy. &alpha; is the injection scale for steering.</dd>
+  </dl>
+</div>
+
+<!-- ============ 1 ============ -->
+<section class="claim">
+  <div class="tagrow"><span class="secnum">1</span><span class="tag write">Write feature</span></div>
+  <h2>Write features generalise to unseen tasks</h2>
+  <p>The 37-head set is chosen on the 55 train tasks only, yet summing those heads&rsquo; mean activations gives a steering vector for <em>any</em> task, including the 14 the selection never saw. Injected at the final cue token of a zero-shot prompt, the task&rsquo;s own <em class="v">v<sub>A</sub></em> takes held-out tasks from 0.09 to 0.73 &mdash; indistinguishable from train tasks &mdash; and every single one of the 69 tasks improves in both test settings.</p>
+  <div class="stats">
+    <div class="stat write"><span class="v">0.75 / 0.73</span><span class="l">zero-shot steered, train / held-out</span></div>
+    <div class="stat"><span class="v">0.09</span><span class="l">held-out unsteered baseline</span></div>
+    <div class="stat write"><span class="v">0.68 / 0.78</span><span class="l">mixed-task 10-shot steered (base 0.18)</span></div>
+    <div class="stat"><span class="v">69 / 69</span><span class="l">tasks lifted (min +0.30 zero-shot)</span></div>
+  </div>
+  <figure>
+    <div class="figrow">
+      <div class="figcard"><img alt="Bar chart: steered accuracy for train and held-out tasks vs the held-out baseline, zero-shot and mixed-task settings" src="{{IMG:FV_train_test_generalisation/poster_visuals/headline_bars.png}}"></div>
+      <div class="figcard"><img alt="All 69 tasks ranked by steered accuracy, each a line from its unsteered baseline; held-out tasks interleave with train tasks" src="{{IMG:FV_train_test_generalisation/poster_visuals/per_task_lift.png}}"></div>
+    </div>
+    <figcaption>Steering with the train-selected 37-head write feature transfers to held-out tasks; per-task view shows the lift is universal and held-out tasks (orange) interleave with train. Source: <code>FV_train_test_generalisation/</code>.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="claim">
+  <div class="tagrow"><span class="secnum">2</span><span class="tag write">Write feature</span></div>
+  <h2>Write features are low dimensional</h2>
+  <p><strong>Across the pool: a 22-dimensional subspace carries most of the steering.</strong> The top 22 uncentered PCs of the 69 task-mean function vectors (90% of their energy) define one fixed subspace. Projecting each task&rsquo;s <em class="v">v<sub>A</sub></em> into it and rescaling the strength per task (&alpha; up to 2, since projection shrinks the norm) recovers zero-shot steering of 0.68 on both train and held-out tasks, against 0.75 / 0.73 for the full 4096-dimensional vectors &mdash; and the train/held-out gap vanishes entirely.</p>
+  <figure>
+    <div class="figcard"><img alt="Per-task bars: steering accuracy from the fixed 22-PC subspace vs the full function vector" src="{{IMG:FV_dimensionality_reduction/low_dim_22d/poster_lowdim.png}}"></div>
+    <figcaption>Steering from a fixed 22-PC task-mean subspace, per-task best &alpha; &isin; {1&hellip;2}. Source: <code>FV_dimensionality_reduction/low_dim_22d/</code>.</figcaption>
+  </figure>
+  <p><strong>Per task: a single direction, with bidirectional control.</strong> For an individual task the write feature is effectively rank one. The same unit direction <em class="v">v&#770;<sub>A</sub></em> that steers zero-shot prompts (sufficiency, above) is also necessary: zero-projecting it out of the residual stream at just the final cue token collapses 6-shot ICL from 0.639 to 0.013 &mdash; the zero-shot floor. The kill is task-specific: ablating a counterfactual task&rsquo;s direction costs only 0.16, and mean-ablation (which keeps the generic cue-token content) shows the same own-vs-counterfactual gap. The same holds on 1-shot prompts, where ICL is weaker to begin with (0.211): own-FV zero-ablation again lands on the floor (0.001) while the counterfactual direction leaves 0.107 and counterfactual mean-ablation leaves the baseline intact (0.205).</p>
+  <div class="stats">
+    <div class="stat write"><span class="v">0.639 &rarr; 0.013</span><span class="l">6-shot acc, own-FV zero-ablation at the cue</span></div>
+    <div class="stat write"><span class="v">0.211 &rarr; 0.001</span><span class="l">1-shot acc, own-FV zero-ablation at the cue</span></div>
+    <div class="stat"><span class="v">0.476 / 0.107</span><span class="l">counterfactual-FV zero-ablation, 6-shot / 1-shot</span></div>
+    <div class="stat"><span class="v">0.242 vs 0.616</span><span class="l">6-shot mean-ablation, own vs counterfactual</span></div>
+  </div>
+  <figure>
+    <div class="figcard"><img alt="Two bar charts, 6-shot and 1-shot prompts, of accuracy under own vs counterfactual FV-direction ablation, zero and mean variants, layers 9 to 27" src="{{IMG:FV_ablation/headline_bars_by_shots.png}}"></div>
+    <figcaption>Removing one direction at one token position destroys ICL &mdash; at 6 shots and at 1 shot &mdash; only for the task that owns the direction (layer clamp 9&ndash;27). Source: <code>FV_ablation/</code>.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="claim">
+  <div class="tagrow"><span class="secnum">3</span><span class="tag read">Read feature</span></div>
+  <h2>Read features exist: task identity is linearly present at label tokens, early</h2>
+  <p>For every (token position, layer) cell, a ridge regression maps that single activation to the prompt&rsquo;s function vector; fits use train tasks only and are scored on held-out tasks. The pattern locates where the model can read the task off the prompt: demonstration <em>label</em> tokens are predictive from the very first example, while the &ldquo;A:&rdquo; cue token starts dead and only catches up after several examples have established the task (the sawtooth). Input tokens carry essentially nothing at any layer.</p>
+  <div class="stats">
+    <div class="stat read"><span class="v">0.688</span><span class="l">peak held-out R&sup2; (L15, late-demo pre-label)</span></div>
+    <div class="stat"><span class="v">&minus;0.24&hellip;+0.03</span><span class="l">held-out R&sup2; at input tokens, all layers</span></div>
+    <div class="stat"><span class="v">0.245</span><span class="l">embedding-only baseline at label tokens</span></div>
+  </div>
+  <figure>
+    <div class="figcard"><img alt="Line plot: held-out R-squared by layer for cue, target and input token roles, one line per ICL example" src="{{IMG:FV_linear_decodability/token_layer_regressions/poster_visuals/heldout_r2_lines_6shot.png}}"></div>
+    <figcaption>Held-out decodability by layer and token role, one line per ICL example (light &rarr; bold). Labels are informative from example 1; the cue catches up example by example. Source: <code>FV_linear_decodability/token_layer_regressions/poster_visuals/</code>.</figcaption>
+  </figure>
+  <figure>
+    <div class="figcard"><img alt="Heatmap of held-out R-squared over the full token-by-layer grid" src="{{IMG:FV_linear_decodability/token_layer_regressions/heldout_r2_heatmap.png}}"></div>
+    <figcaption>The full (token &times; layer) grid. The bright band is pre-label and label positions of later demos at layers ~8&ndash;17. Source: <code>FV_linear_decodability/token_layer_regressions/</code>.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="claim">
+  <div class="tagrow"><span class="secnum">4</span><span class="tag read">Read feature</span></div>
+  <h2>Read features are causal to the output</h2>
+  <p>The causal test replaces information with the feature: demonstrations keep their real inputs but every label is a bare <code>&nbsp;_</code>, so the prompt teaches nothing (unsteered accuracy 0.000). Injecting &alpha;&middot;<em class="v">m<sub>A</sub></em>(L6) at the dummy label slots restores the task. L6 is not assumed &mdash; it is selected by a full injection-layer sweep (all 28 layers, 1-shot scaffold, best &alpha; per layer, right panel below): steering works only in a narrow early-layer window, peaking at L6 (0.126, with L7 at 0.125), collapsing to 0.010 by L12 and to the ~0.003 floor everywhere later. A task-agnostic shared-mean control never exceeds 0.013 at any layer, so task identity, not generic label-token content, carries the effect (per-task sweep in Appendix E). With six dummy slots steered at &alpha;=4 the model recovers 70% of what six <em>real</em> demonstrations deliver.</p>
+  <div class="stats">
+    <div class="stat read"><span class="v">0.000 &rarr; 0.442</span><span class="l">6 dummy slots steered @&alpha;=4</span></div>
+    <div class="stat"><span class="v">0.630</span><span class="l">real 6-shot reference (70% recovered)</span></div>
+    <div class="stat"><span class="v">&le; 0.013</span><span class="l">shared-mean control, every layer</span></div>
+    <div class="stat"><span class="v">L6</span><span class="l">best injection layer (sweep over all 28)</span></div>
+  </div>
+  <figure>
+    <div class="figcard"><img alt="Method diagram: the same one-shot dummy-label prompt run steered and unsteered, injection at layer 6 at the underscore slot" src="{{IMG:bottom_up_read_features/steering_results/sixshot_dummy/poster_visuals/method_diagram.png}}"></div>
+    <figcaption>The intervention: a content-free label slot, the task-mean read feature injected at L6. Source: <code>bottom_up_read_features/steering_results/sixshot_dummy/poster_visuals/</code>.</figcaption>
+  </figure>
+  <figure>
+    <div class="figrow">
+      <div class="figcard"><img alt="Bar chart: no steering 0.00, steered 0.44, real six-shot demos 0.63" src="{{IMG:bottom_up_read_features/steering_results/sixshot_dummy/poster_visuals/headline_bars.png}}"></div>
+      <div class="figcard"><img alt="Steering accuracy by injection layer, best alpha per layer, peaking sharply at layers 6 to 7" src="{{IMG:bottom_up_read_features/layer_selection/layer_curve_presentation.png}}"></div>
+    </div>
+    <figcaption>Left: six steered dummy slots vs real demonstrations. Right: why L6 &mdash; the injection-layer sweep (1-shot scaffold, best &alpha; per layer, vector = same-layer task mean): a clean early-layer peak at L6&ndash;L7 (0.126 / 0.125), dead by L12. Sources: <code>bottom_up_read_features/steering_results/sixshot_dummy/</code>, <code>bottom_up_read_features/layer_selection/</code>.</figcaption>
+  </figure>
+
+  <div class="placeholder-box">
+    <span class="ph-tag">Results in progress</span>
+    <h3>Bidirectional control &amp; per-task dimensionality of the read space</h3>
+    <p>The ablation counterpart (necessity) is running; the full rank sweep (k = 1&hellip;~20 per-task PCs) will estimate the read space&rsquo;s per-task dimensionality. Preliminary results already indicate the read object is <em>multi</em>-dimensional: mean-ablating the single rank-1 direction at label tokens costs only &minus;0.06 at 6-shot, but widening to the task&rsquo;s top-5 read-feature PCs doubles the specific effect to &minus;0.126 while the counterfactual 5-PC control stays at baseline (0.620 vs 0.629).</p>
+    <p>One structural caveat makes this control problem harder than on the write side: read features are far more similar across tasks than function vectors are &mdash; mean pairwise cosine 0.727 vs 0.393 (and the chosen counterfactual pairs specifically: 0.726 vs 0.383). A counterfactual-task ablation therefore removes much of the <em>same shared direction</em> as the own-task ablation, which compresses the own-vs-counterfactual gap by construction. Consistent with this, zero-projection kills ICL for either direction (own 0.009, counterfactual 0.278 from a 0.629 baseline) &mdash; a large non-specific component that the mean-ablation variant is designed to factor out.</p>
+    <figure>
+      <div class="figrow">
+        <div class="figcard"><img alt="Histogram: pairwise cosine similarity across tasks for read features vs function vectors" src="{{IMG:bottom_up_read_features/ablation/debugging/cossim_hist.png}}"></div>
+        <div class="figcard"><img alt="Aggregate bars: rank-1 vs rank-5 read-feature ablation, own vs counterfactual, mean and zero modes" src="{{IMG:bottom_up_read_features/ablation/multi_direction_ablation/aggregate_bars.png}}"></div>
+      </div>
+      <figcaption>Left: cross-task similarity of read features (cos &asymp; 0.73) vs write features (cos &asymp; 0.39) &mdash; the counterfactual control overlaps the target far more on the read side. Right: preliminary rank-1 vs rank-5 ablation. Sources: <code>bottom_up_read_features/ablation/debugging/</code>, <code>bottom_up_read_features/ablation/multi_direction_ablation/</code>.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="claim">
+  <div class="tagrow"><span class="secnum">5</span><span class="tag rw">Read <span class="arrow">&rarr; write</span></span></div>
+  <h2>Read features cause the write feature to form</h2>
+  <p>The same six-slot injection, but instead of generating, we read the residual stream at the final cue token &mdash; the site where the write feature forms. As &alpha; increases, the cue-token representation rotates toward the task&rsquo;s own function vector: cosine at L13 doubles from 0.18 to 0.37 between &alpha;=0 and &alpha;=2. The rotation is task-specific &mdash; the gain over alignment to a generic all-task FV is positive on 69/69 tasks and still rising at &alpha;=4.</p>
+  <div class="stats">
+    <div class="stat"><span class="v">0.18 &rarr; 0.37</span><span class="l">cos(cue token @L13, own v<sub>A</sub>), &alpha; 0 &rarr; 2</span></div>
+    <div class="stat"><span class="v">+0.093</span><span class="l">task-specific excess over generic FV @&alpha;=2</span></div>
+    <div class="stat"><span class="v">69 / 69</span><span class="l">tasks with positive task-specific gain</span></div>
+  </div>
+  <figure>
+    <div class="figcard"><img alt="Line plot: absolute cosine between the cue-token activation and the task function vector rising with alpha" src="{{IMG:read_write_relationship/bottom_up/headline_cos_absolute.png}}"></div>
+    <figcaption>Injecting the read feature at label slots makes the task&rsquo;s own write feature appear downstream at the cue token. Source: <code>read_write_relationship/bottom_up/</code>.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="claim">
+  <div class="tagrow"><span class="secnum">6</span><span class="tag rw">Read <span class="arrow">&rarr; write</span></span></div>
+  <h2>Read features appear earlier in the residual stream than write features</h2>
+  <p>Presence maps &mdash; the mean cosine between the residual stream and each feature, by layer and token type, over clean 10-shot prompts &mdash; separate the two features in both depth and position. The read feature peaks at demonstration <em>label</em> tokens at layer 6 (cos 0.80); the write feature peaks at <em>cue</em> tokens at layer 13 (cos 0.31; 0.35 at the query cue). Reading happens where label content sits, roughly seven layers before writing happens where the answer is produced.</p>
+  <div class="stats">
+    <div class="stat read"><span class="v">L6 · labels</span><span class="l">read-feature peak (cos 0.80)</span></div>
+    <div class="stat write"><span class="v">L13 · cues</span><span class="l">write-feature peak (cos 0.31)</span></div>
+  </div>
+  <figure>
+    <div class="figcard"><img alt="Dual line plot over layers: read-feature presence peaking early at label tokens, write-feature presence peaking mid-network at cue tokens" src="{{IMG:feature_locations/poster_visuals/read_vs_write_presence_label_mean_dual.png}}"></div>
+    <figcaption>Presence by depth and token type for both features, averaged over 69 tasks &times; 150 prompts. Source: <code>feature_locations/poster_visuals/</code>.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="claim">
+  <div class="tagrow"><span class="secnum">7</span><span class="tag rw">Read <span class="arrow">&rarr; write</span></span></div>
+  <h2>Read features linearly map to write features</h2>
+  <p>A single ridge regression from the mean label-token activation to the per-prompt function vector, fit on the 55 train tasks, predicts the <em>held-out</em> tasks&rsquo; function vectors with R&sup2; &asymp; 0.7 (0.65 per-prompt, 0.69 at task centroids, reading from L13). The map is one linear transform shared across tasks &mdash; it was never shown the held-out tasks&rsquo; FVs, yet it places most of them from their read features alone. The sweep covers all 28 layers (figure shows the per-prompt curve): held-out R&sup2; climbs steeply from 0.35 at L0, plateaus from L8, peaks at L12&ndash;L13 (0.65; 0.69 at task centroids), and declines only gently to 0.61 at the final layer &mdash; task identity stays linearly readable at the label slots through the entire second half of the network.</p>
+  <div class="stats">
+    <div class="stat"><span class="v">0.65 / 0.69</span><span class="l">held-out R&sup2; vs task FV, per-prompt / centroid</span></div>
+    <div class="stat"><span class="v">L13</span><span class="l">best read layer; broad L8&ndash;L18 plateau (all 28 layers swept)</span></div>
+  </div>
+  <figure>
+    <div class="figcard"><img alt="Line plot over all 28 layers: held-out R-squared of the ridge from per-prompt read features to the task function vector, rising steeply to a broad plateau that peaks near layer 13" src="{{IMG:FV_linear_decodability/labeltoken_fv_ridge/layer_sweep/taskfv_r2_all28_heldout_perprompt.png}}"></div>
+    <figcaption>One train-fit linear map from read feature to write feature, scored against held-out tasks&rsquo; function vectors (per-prompt granularity), by read layer &mdash; all 28 layers. Source: <code>FV_linear_decodability/labeltoken_fv_ridge/layer_sweep/</code>.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="claim">
+  <div class="tagrow"><span class="secnum">8</span><span class="tag write">Write feature</span></div>
+  <h2>Write-feature presence tracks task accuracy</h2>
+  <p>Within a task, the strength of the write feature at the query cue moves in lockstep with performance. Truncating the same prompts to n = 0&hellip;6 demonstrations, presence &mdash; mean cos with <em class="v">v&#770;<sub>A</sub></em> over layers 9&ndash;20 &mdash; and sampled accuracy rise together in every single task (median Spearman &rho; +0.96, positive in 69/69). Binning all task &times; shot-count points by presence gives a monotone curve: below cos 0.15 the model scores 0.00; by the 0.35&ndash;0.45 bucket it scores ~0.50.</p>
+  <div class="stats">
+    <div class="stat write"><span class="v">+0.96</span><span class="l">median within-task &rho;(presence, acc)</span></div>
+    <div class="stat"><span class="v">69 / 69</span><span class="l">tasks with positive within-task &rho;</span></div>
+    <div class="stat"><span class="v">0.00 &rarr; 0.50</span><span class="l">binned accuracy, cos &lt;0.15 &rarr; 0.35&ndash;0.45</span></div>
+  </div>
+  <figure>
+    <div class="figcard"><img alt="Binned curve: mean accuracy per write-feature presence bucket, rising monotonically" src="{{IMG:write_feature_and_model_accuracy/binned_meanL.png}}"></div>
+    <figcaption>All 69 tasks &times; 7 shot counts, bucketed by presence (mean cos, L9&ndash;20 at the query cue); mean accuracy &plusmn; SEM per bucket. Source: <code>write_feature_and_model_accuracy/</code>.</figcaption>
+  </figure>
+</section>
+
+<!-- ============ APPENDIX ============ -->
+<section class="appendix">
+  <h2>Appendix</h2>
+
+  <details>
+    <summary>A &mdash; Setup &amp; protocol</summary>
+    <div class="body">
+      <p><strong>Task pool.</strong> 69 tasks survive a two-stage filter of a 138-task extended pool: 6-shot sampled accuracy &ge; 0.30, then removal of 21 &ldquo;head-intensive&rdquo; tasks that fail pooled-head steering. Seed-43 split into 55 train / 14 held-out. Each task has 150 fixed 10-shot train prompts plus paired test queries.</p>
+      <p><strong>Head selection.</strong> Pooled sparse optimisation: a gate c &isin; [0,1]<sup>448</sup> over all heads, steering loss on zero-shot prompts summed over the 55 train tasks, + &lambda;&#8214;c&#8214;&#8321;; &lambda;=0.005 by 5-fold task cross-validation; heads kept at c &gt; 0.8 &rarr; 37 heads spanning layers 3&ndash;27, densest at 12&ndash;15.</p>
+      <p><strong>Definitions</strong> (per the project glossary): head vector <em class="v">h&#772;<sub>A</sub></em> = mean final-cue-token output of head h on task A&rsquo;s prompts; function vector <em class="v">v<sub>A</sub></em> = &Sigma;<sub>h&isin;H</sub> <em class="v">h&#772;<sub>A</sub></em>; per-prompt FV <em class="v">v<sup>j</sup><sub>A</sub></em> = the same sum on a single prompt. The read feature <em class="v">m<sub>A</sub></em>(L6) is the task-mean block-6 residual at demonstration label tokens.</p>
+      <p><strong>Readout.</strong> Temperature-1 sampled generation, exact match against the gold label, seeded per prompt; steering evaluation reports each task&rsquo;s best injection layer at &alpha;=1 unless stated otherwise.</p>
+      <figure>
+        <div class="figcard"><img alt="Layer-by-head grid marking the 37 selected heads with a heads-per-layer marginal" src="{{IMG:FV_train_test_generalisation/poster_visuals/selected_heads.png}}"></div>
+        <figcaption>The 37 selected heads (of 448). Source: <code>FV_train_test_generalisation/poster_visuals/</code>.</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <details>
+    <summary>B &mdash; Write-feature dimensionality in detail</summary>
+    <div class="body">
+      <p><strong>Spectra.</strong> The 55 train task-mean FVs need 24 PCs for 90% of centered variance; the pooled per-prompt stack (8,250 &times; 4096) has stable rank 3.0 raw / 5.7 centered.</p>
+      <p><strong>Why the basis must see every task.</strong> A sparse PC selection fit on the <em>train</em> tasks&rsquo; per-prompt basis (46 PCs) keeps train steering but collapses held-out tasks (0.46 vs 0.73): held-out FVs stick partly out of the train span, and the drop tracks the lost energy (Spearman 0.84). Projecting onto the entire 512-PC train dictionary recovers most of it (0.68), so the failure is the train-only <em>selection</em>, not the dictionary. Rebuilding the basis and selection on all 69 tasks gives 50 PCs that match the full FV everywhere (held-out 0.733 vs 0.734); an L13 rerun reproduces the selection (47/48 shared PCs), so the injection-layer choice is not load-bearing.</p>
+      <p><strong>The 22D result in context.</strong> Plain truncation to the top-22 task-mean PCs fails at &alpha;=1 (0.59 / 0.60) mostly through norm shrinkage; per-task &alpha;-rescaling recovers to 0.68 / 0.68. The residual gap to the full FV is direction loss concentrated in a few low-coverage tasks (country-capital stays &le; 0.02 at every &alpha;; the translation family moves little) &mdash; variance-ranked PCs are not exactly the steering-relevant ones, a pattern seen in four independent analyses in this project.</p>
+      <figure>
+        <div class="figrow">
+          <div class="figcard"><img alt="PCA spectra of task-mean and per-prompt function vectors" src="{{IMG:FV_dimensionality_analysis/fv_dimensionality.png}}"></div>
+          <div class="figcard"><img alt="Per-task bars of best-alpha 22-PC steering vs the full function vector" src="{{IMG:FV_dimensionality_reduction/low_dim_22d/taskmean_k90_alpha_bars.png}}"></div>
+        </div>
+        <figcaption>Left: FV spectra. Right: 22-PC steering with per-task &alpha;, against the full FV. Sources: <code>FV_dimensionality_analysis/</code>, <code>FV_dimensionality_reduction/low_dim_22d/</code>.</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <details>
+    <summary>C &mdash; Write-feature ablation in detail</summary>
+    <div class="body">
+      <p>Conditions: {zero-projection, mean-ablation} &times; {own <em class="v">v&#770;<sub>A</sub></em>, counterfactual task&rsquo;s direction} &times; layer clamps {blocks 9&ndash;27, 0&ndash;27}, applied at the final query cue token only, on 150 fixed 6-shot prompts per task. The two layer clamps are indistinguishable everywhere, so the main text quotes the 9&ndash;27 numbers. The mean reference is the equal-task-weighted grand mean of cue-token residuals; counterfactual pairs are drawn from different semantic families.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Condition</th><th class="n">Mean acc (69 tasks)</th><th class="n">Drop vs 6-shot</th></tr></thead>
+        <tbody>
+          <tr><td>Real 6-shot baseline</td><td class="n">0.639</td><td class="n">&mdash;</td></tr>
+          <tr><td>Own FV, zero-projection</td><td class="n">0.013</td><td class="n">&minus;0.626</td></tr>
+          <tr><td>Counterfactual FV, zero-projection</td><td class="n">0.476</td><td class="n">&minus;0.163</td></tr>
+          <tr><td>Own FV, mean-ablation</td><td class="n">0.242</td><td class="n">&minus;0.397</td></tr>
+          <tr><td>Counterfactual FV, mean-ablation</td><td class="n">0.616</td><td class="n">&minus;0.023</td></tr>
+          <tr><td>Zero-shot floor</td><td class="n">0.002</td><td class="n">&minus;0.637</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>1-shot prompts</strong> (same 150 queries with only the first demonstration, same ablation, layer clamp 9&ndash;27 only; in-run seed-matched 1-shot baseline):</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Condition</th><th class="n">Mean acc (69 tasks)</th><th class="n">Drop vs 1-shot</th></tr></thead>
+        <tbody>
+          <tr><td>Real 1-shot baseline</td><td class="n">0.211</td><td class="n">&mdash;</td></tr>
+          <tr><td>Own FV, zero-projection</td><td class="n">0.001</td><td class="n">&minus;0.210</td></tr>
+          <tr><td>Counterfactual FV, zero-projection</td><td class="n">0.107</td><td class="n">&minus;0.104</td></tr>
+          <tr><td>Own FV, mean-ablation</td><td class="n">0.036</td><td class="n">&minus;0.175</td></tr>
+          <tr><td>Counterfactual FV, mean-ablation</td><td class="n">0.205</td><td class="n">&minus;0.006</td></tr>
+          <tr><td>Zero-shot floor</td><td class="n">0.002</td><td class="n">&minus;0.209</td></tr>
+        </tbody>
+      </table></div>
+      <p>At 1 shot no task keeps more than 0.02 under own-direction zero-ablation (train 0.001 / held-out 0.001). The counterfactual zero-ablation control is relatively costlier than at 6 shots (&minus;49% vs &minus;26% of baseline; train 0.115 / held-out 0.077): the tasks where the counterfactual direction also kills 1-shot ICL (e.g. spanish-english, gerund_to_base, plural_to_singular) are those whose own and counterfactual directions are most similar (cos 0.54&ndash;0.79), so part of the own direction is removed with them. Counterfactual mean-ablation stays at baseline (0.205), so the damage is specific to the projected-out direction, not to perturbing the cue.</p>
+      <p>No train/held-out gap at 6 shots either (own-zero 0.014 / 0.005). Rare partial survivors of own-direction zero-ablation are date/number tasks (day_after_textual_date 0.35&ndash;0.41; iso_date_to_month &asymp;0.08; next/prev_number_digits &asymp;0.1), where 6-shot context appears to route around the cue-token direction.</p>
+      <figure>
+        <div class="figcard"><img alt="Per-task dot plot of accuracy under each ablation condition" src="{{IMG:FV_ablation/by_task_dots.png}}"></div>
+        <figcaption>Per-task view of the ablation grid. Source: <code>FV_ablation/</code>.</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <details>
+    <summary>D &mdash; Decodability grid in detail</summary>
+    <div class="body">
+      <p>868 cells: 31 token positions (per demo: pre-label &ldquo;:&rdquo;, first and last label token; plus the query cue) &times; 28 layers, later extended with 21 input-side positions and an embedding-only baseline (X = the token embedding; GPT-J has no absolute position embeddings, so this is the exact pre-attention input). Each cell is a full-dimensional ridge (&lambda; by 5-fold CV over train tasks) from the activation to the per-prompt FV, scored against the task FV on the 14 held-out tasks.</p>
+      <ul>
+        <li>Peak cell: L15, demo-10 pre-label, held-out R&sup2; 0.688; the whole top-15 is pre-label positions of demos 7&ndash;10 at L12&ndash;L17.</li>
+        <li>By layer: steep rise L0 &rarr; L8 (0.22 &rarr; 0.56), plateau L12&ndash;L16 (~0.58), slow decay.</li>
+        <li>Train-side R&sup2; is 0.93&ndash;0.96 in the bright band &mdash; a ~0.27 generalisation gap, i.e. the maps are partly task-specific (see G).</li>
+        <li>Sawtooth: at L6 the cue trails its own demo&rsquo;s label by ~0.48 R&sup2; at example 1, converges by example 5&ndash;6, and inverts by example 10.</li>
+        <li>Embedding baseline: label tokens 0.245 (token identity alone carries a share of the early-layer signal); cue and input positions are at or below zero.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>E &mdash; Read-feature steering in detail</summary>
+    <div class="body">
+      <p><strong>Where to inject (why L6).</strong> The layer choice comes from a 28-layer sweep on the 1-shot dummy-slot scaffold (&alpha; &isin; {0.5, 1, 2, 4}, best per layer, mean taken at the same layer as the injection): accuracy climbs from 0.018 at L0 to the 0.126 peak at L6 (L7 essentially tied at 0.125), then falls off a cliff &mdash; 0.070 at L8, 0.010 at L12, and the ~0.003 unsteered floor from L13 onward. Held-out tasks peak at the same place (0.149 at L6, 0.160 at L7). The per-task view below shows this is not an averaging artifact: nearly every task that steers at all has its hot band inside L3&ndash;L10, and no task responds late; L6 is the best single layer across the pool, with individual tasks peaking a layer or two either side.</p>
+      <figure>
+        <div class="figcard"><img alt="Task-by-layer heatmap of best-alpha steering accuracy: a hot band at layers 3 to 10 across tasks, black everywhere later" src="{{IMG:bottom_up_read_features/layer_selection/by_task_heatmap.png}}"></div>
+        <figcaption>Task &times; injection-layer steering accuracy (best &alpha; per cell): the effective window is early (L3&ndash;L10) for every responsive task, centred on L6&ndash;L7. Source: <code>bottom_up_read_features/layer_selection/</code>.</figcaption>
+      </figure>
+      <p><strong>Which vector steers.</strong> On the 1-shot dummy-slot scaffold, the raw task mean beats every engineered alternative: raw mean @L7 0.121 &gt; mean-difference (task mean &minus; shared mean) 0.082 &gt; sparse-selected label-slot head sum 0.050. The shared-mean control alone is flat (&le;0.013 at every layer), so the shared component is not what steers &mdash; but differencing it out still hurts, suggesting task-correlated structure is removed with it.</p>
+      <p><strong>Dose and slots.</strong> The 1-shot injection peaks at &alpha;=2; six slots peak at &alpha;=4 and have not saturated (0.381 &rarr; 0.442 from &alpha;=2 to 4). Held-out tasks steer slightly better than train (0.49 vs 0.44) &mdash; expected, since the vector is a per-task mean with nothing fit. 17/69 tasks match or beat real 6-shot demos; the best are string/format tasks at near-ceiling.</p>
+      <p><strong>No low-dimensional shortcut (across tasks).</strong> Restricting the steering vector to top-k centered PCs of the 69 task means retains accuracy roughly linearly in k with no knee: k=40 (95% of between-task variance) keeps only 76% of the full effect. The between-task variance basis is not the basis the model reads.</p>
+      <figure>
+        <div class="figcard"><img alt="Retention curve: steering accuracy vs number of PCs kept, roughly linear" src="{{IMG:bottom_up_read_features/dimensionality_analysis/sparse_pc40/retention_curve.png}}"></div>
+        <figcaption>Steering retention vs subspace dimension. Source: <code>bottom_up_read_features/dimensionality_analysis/sparse_pc40/</code>.</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <details>
+    <summary>F &mdash; Read-feature ablation (preliminary) in detail</summary>
+    <div class="body">
+      <p>Design: ablate along the fixed unit L6 read-feature direction (rank-1) or the task&rsquo;s top-5 uncentered per-prompt read-feature PCs (rank-5) at <em>every demo label token, every layer&rsquo;s block input</em>; mean mode moves the projection to the cross-task grand mean (specificity-clean), zero mode removes it. Baselines share the exact prompt bank and seeding with the steering runs.</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Condition (6-shot)</th><th class="n">Rank-1</th><th class="n">Rank-5</th></tr></thead>
+        <tbody>
+          <tr><td>Baseline</td><td class="n">0.629</td><td class="n">0.629</td></tr>
+          <tr><td>Own, mean-ablation</td><td class="n">0.567</td><td class="n">0.503</td></tr>
+          <tr><td>Counterfactual, mean-ablation</td><td class="n">0.623</td><td class="n">0.620</td></tr>
+          <tr><td>Own, zero-projection</td><td class="n">0.009</td><td class="n">0.004</td></tr>
+          <tr><td>Counterfactual, zero-projection</td><td class="n">0.278</td><td class="n">0.222</td></tr>
+          <tr><td>Attention-mask control</td><td class="n" colspan="2">0.046</td></tr>
+        </tbody>
+      </table></div>
+      <p>Readings: (1) the specificity-clean mean-ablation effect doubles from rank-1 to rank-5 (&minus;0.062 &rarr; &minus;0.126) with the counterfactual control clean &mdash; the causal read object is wider than one direction; at 1-shot the extra PCs add nothing (little per-prompt variation for them to carry). (2) Zero mode kills ICL for either direction &mdash; the shared label-token component is load-bearing but non-specific, and because read features overlap heavily across tasks (cos &asymp; 0.73, vs 0.39 for FVs) the counterfactual arm removes much of the same thing, capping the achievable own-vs-cf separation. (3) Masking the final cue&rsquo;s (and generated tokens&rsquo;) attention to demo label positions collapses accuracy to 0.046 &mdash; label-token attention is the near-exclusive route for task information into the query.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>G &mdash; The read &rarr; write linear map in detail</summary>
+    <div class="body">
+      <p><strong>What transfers is the centroid map.</strong> Against per-prompt FV targets the held-out R&sup2; is 0.44&ndash;0.50 over L5&ndash;L15; the full 28-layer sweep spans 0.26 (L0) to the 0.498 peak (L13) and still holds 0.46 at L27. Decomposing it, between-task centroid placement carries 0.65 while within-task deviations contribute &asymp;0.03 &mdash; and a held-out-prompt check on train tasks confirms the within-task share is &asymp;0.05 even in-distribution. The map is a task-centroid interpolator; scored against task FVs (the centroid target) it reaches the ~0.7 quoted in the main text.</p>
+      <p><strong>Robustness.</strong> Over 10 random 55/14 splits: held-out R&sup2; 0.469 &plusmn; 0.040 (canonical split at the mean); the oracle ceiling (leave-one-out task-mean predictor) is 0.675. Transfer is bimodal: morphology/translation tasks sit essentially at their oracle, while classification-like tasks (pos_label, ag_news, uppercase_word, initials_two_words, first_digit, person_place_thing) stay near zero under <em>every</em> split &mdash; their read&rarr;write relation is task-idiosyncratic, not merely under-covered. Neither PCA-90 rank reduction nor lasso in the PCA basis beats the plain full-dimensional ridge.</p>
+      <figure>
+        <div class="figcard"><img alt="Held-out R-squared across ten random task splits" src="{{IMG:FV_linear_decodability/labeltoken_fv_ridge/seedsplits/seed_r2.png}}"></div>
+        <figcaption>Seed-split robustness of the read&rarr;write ridge. Source: <code>FV_linear_decodability/labeltoken_fv_ridge/seedsplits/</code>.</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <details>
+    <summary>H &mdash; Presence-vs-accuracy method</summary>
+    <div class="body">
+      <p>For each task and n &isin; 0&hellip;6, the 150 fixed 10-shot prompts are truncated to their first n demonstrations (paired queries throughout). Presence = mean cos between the residual stream at the query cue and the unit <em class="v">v&#770;<sub>A</sub></em>, averaged over layers 9&ndash;20 (per-layer and max-over-band variants behave the same); accuracy = the standard temperature-1 sampled exact match on the same prompts. One point per task per shot count (483 points); the within-task statistic pairs each task&rsquo;s presence and accuracy across its own seven shot counts.</p>
+    </div>
+  </details>
+
+</section>
+
+</div>
