@@ -9,6 +9,10 @@ Terminology & notation:
   user only. Do not propagate it into plots, write-ups, code comments, or discussion.
 - That file is user-authored. NEVER edit it (or `task_id_im_subspaces.tex`) unless explicitly
   asked to.
+- `write_up/icl_read_write_features/` holds the current results write-up of the 69-task
+  read/write-feature study (standalone `icl_read_write_features.html`, its template, and the
+  build script — see its README). `write_up/graphics/` holds the ICL circuit diagram. Start
+  there (plus `results/69_task_run/README.md` and WORKLOG.md) to pick the project up cold.
 
 Canonical definitions:
 - "Function vectors" (GPT-J) means `artifacts/function_vectors/gpt-j/train_varicl_top40`
