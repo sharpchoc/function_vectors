@@ -27,6 +27,7 @@ Reorganised 2026-08-19; WORKLOG entries before that date use the old paths (mapp
 | `top_down_read_features/ablation/` | `pc50_ablation/` (4 definitions' 50-PC subspaces ablated at label tokens), `dot_perhead_unit_sparse_optimisation/` (24-dir learned ablation halves 10-shot acc). |
 | `read_write_relationship/bottom_up/` | Injecting the L6 label-mean at dummy slots makes the task's own FV form at L13. Was `mean_read_steering_effect_on_write/`. |
 | `read_write_relationship/top_down/fv_presence_heatmaps/` | Read-dir@L3 injection → downstream FV presence + attention-to-slot maps (2 tasks). |
+| `understanding_read_write_linear_map/` | Understanding the read→write linear map. Centered (grand-mean-removed) pairwise cosine histograms of task-level read features vs task FVs. New 2026-08-23. |
 
 Note: plotting scripts on main and on the unmerged experiment branches still write to the OLD paths;
 path fixes for the three scripts in this tree live on branch `worktree-tlr-line-poster` (merge later).

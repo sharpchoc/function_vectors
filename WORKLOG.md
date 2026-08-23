@@ -7743,3 +7743,26 @@ layers (~L6) -> cue attends to labels, read feature linearly transformed -> writ
 per the theory-figure convention: no measured values; only the L6/L13 locations are named.
 Hand-authored SVG (white background, read teal #0e7c6b / write blue #2a5fd1, matching the
 write-up artifact palette). Not committed to git (shared checkout; user to review/commit).
+
+## Stream: understanding the read->write linear map — centered similarity baseline (2026-08-23, branch worktree-readwrite-map-understanding)
+
+Status: step 1 done. New results bucket
+`results/69_task_run/understanding_read_write_linear_map/` (goal: understand the task-level
+read-feature -> task-FV linear map; first look BEFORE any map: how similar the two families
+are once each family's grand mean is removed).
+
+Method (centered_cossim_hists.py, CPU, fp64): task-level read feature = label_resid_means
+resid_means[L] (L6 canonical, L13 = map-peak layer as secondary); write feature = mean of the
+150 per-prompt FVs. Center = subtract equal-weighted mean over the 69 task vectors per family;
+all 2346 pairwise cosines.
+
+Findings (cossim_summary.csv):
+- Uncentered reproduces the known reference exactly: read L6 mean .727, FV .393 (L13 read .651).
+- Centered, BOTH families drop to ~0 mean overlap (read L6 -.010, FV -.010, read L13 -.012):
+  the read family's much higher raw similarity was almost entirely the shared grand mean.
+- After centering the two families have similar spread (read p5/p95 -.275/+.441, FV -.339/+.481)
+  and both keep a long positive tail (max .995 read / .993 FV — near-duplicate task pairs,
+  e.g. translation family).
+
+Files: centered_cossim_hists.{py,png}, cossim_summary.csv, pairwise_cos.npz. README.md table
+row added. Next: user directs next step of the linear-map understanding study.
