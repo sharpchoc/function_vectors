@@ -23,3 +23,11 @@ ANSWER: yes, to first order the map re-embeds an almost-unchanged task geometry 
 nearly orthogonal subspace — a rotation; ridge adds modest direction-dependent gain.
 Note: cross-family cosines answer the user's "distribution of cos(read, write) per task"
 question — stored in rotation_vs_ridge_spectra.npz + crossfamily_cos_hists.png.
+
+### Addendum (2026-08-23) — Procrustes scale values
+
+rotation+scale predictor is exactly: v_hat = fv_train_mean + s * R(m_A - read_train_mean).
+Fitted s: L6 = 1.550 (centered read norms 30.7 vs FV 49.1, ratio 1.60 -> early-layer
+task-unique signal must be amplified); L13 = 0.927 (norms 52.1 vs 49.1, ~matched -> pure
+rotation suffices). Task-unique component grows 0.63x -> ~1x of FV magnitude from L6 to L13
+while keeping its geometry.
