@@ -7743,3 +7743,21 @@ layers (~L6) -> cue attends to labels, read feature linearly transformed -> writ
 per the theory-figure convention: no measured values; only the L6/L13 locations are named.
 Hand-authored SVG (white background, read teal #0e7c6b / write blue #2a5fd1, matching the
 write-up artifact palette). Not committed to git (shared checkout; user to review/commit).
+
+## 2026-08-24 — Error anatomy: task-unique swap vs full-mean steering (hypothesis-2 test)
+
+**Status:** done, CPU-only. `steering_results/error_analysis_swap_vs_fullmean/` +
+`src/eval_scripts/error_analysis_swap_vs_fullmean.py`. Classified all stored 6-shot '_'
+predictions (per-task best alpha; golds from sixshot_dummy JSONs, index-aligned by identical
+build order) into correct / near_miss(case) / underscore-echo / empty / own-pool-wrong /
+other-task-pool / other. Overall: swap .372 correct vs fullmean .447 (matches headline).
+Distinctive swap signatures are format-type: underscore echo x3 (.055 vs .018), empty x2.6
+(.018 vs .007); but own-pool mapping errors nearly identical (.145 vs .137). Gap prompts
+(fullmean right, swap wrong, n=2122): 55% 'other', 20% own-pool, 12% other-pool, 8% echo —
+vs the reverse gap (n=1350) 50/28/17/3. Sampling 'other' shows mostly DEGRADED ON-TASK
+attempts (right transformation, garbled/near-miss token: 'smoother', 'ltr', 'AMD' for Intel,
+'purpelles'), not off-task garbage. Verdict: cue-side emission-drive (hyp B) explains only a
+small slice (~11% of gap = echo+empty); the bulk looks like a NOISY/DISTORTED code — consistent
+with the ratio-preserving composite-direction account (carrier and unique must be co-scaled).
+Next discriminator: two-knob beta*carrier + alpha*s1*v1 sweep (design pending user
+adjudication of knob units).
