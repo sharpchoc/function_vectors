@@ -7816,3 +7816,22 @@ small slice (~11% of gap = echo+empty); the bulk looks like a NOISY/DISTORTED co
 with the ratio-preserving composite-direction account (carrier and unique must be co-scaled).
 Next discriminator: two-knob beta*carrier + alpha*s1*v1 sweep (design pending user
 adjudication of knob units).
+
+## Stream: write-up update — full 69_task_run story (2026-08-24, branch worktree-readwrite-map-understanding)
+
+Status: done. Extended write_up/icl_read_write_features to cover everything in
+results/69_task_run as of today. Changes to writeup_template.html:
+- S4: "results in progress" placeholder replaced with the finished necessity results
+  (task-unique 11-dir double dissociation .629->.063 own vs .629 cf; top-1 .103; 1-shot).
+- S5 (new): read feature = shared carrier + low-dim task-unique code (mean-free steering
+  .339 vs .447; single-dir swap .341@a32; carrier alone <=.013; hypothesis-test summary).
+- S6 (old 5): added 1-shot effect-on-cue + first-label per-cue propagation numbers.
+- S9 (new): read->write map is ~a rotation (congruence .93-.96, near-orthogonal subspaces,
+  Procrustes .625 vs ridge .657 @L13, scale 1.55@L6->0.93@L13). Old S8 -> S10.
+- S10: between-task Simpson note. Appendices: F rewritten as full rank/band ladder table;
+  I (new): task-unique steering + hyp-1 rejection + attention non-mediation + error anatomy;
+  J (new): rotation analysis detail; E: random-label scaffold robustness; G: task-level
+  ridge agreement; H: between-task diagnostics + per-prompt + baseline-subtracted.
+Rebuilt icl_read_write_features.html (6.16 MB, 27 figures, build clean). Published as new
+artifact https://claude.ai/code/artifact/157ad0cd-e3aa-48a4-bcfe-cb9e327951df (old 21031c63
+URL 403/inaccessible); README updated. All numbers verified against results CSVs this session.

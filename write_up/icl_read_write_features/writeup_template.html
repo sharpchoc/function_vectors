@@ -272,7 +272,7 @@
 <header class="masthead">
   <div class="kicker">Results summary · 69-task run · GPT-J-6B</div>
   <h1>Read &amp; write features of in-context learning</h1>
-  <p class="lede">In-context learning in GPT-J runs through two residual-stream features: a <strong style="color:var(--read)">read feature</strong> that sits at demonstration label tokens in the early layers, and a <strong style="color:var(--write)">write feature</strong> (the function vector) that forms at cue tokens in the middle layers and drives the answer. This note walks through the evidence for each feature and for the pipeline between them. Numbers and figures come from <code>results/69_task_run/</code>; the appendix holds protocol detail and per-section deep dives.</p>
+  <p class="lede">In-context learning in GPT-J runs through two residual-stream features: a <strong style="color:var(--read)">read feature</strong> that sits at demonstration label tokens in the early layers, and a <strong style="color:var(--write)">write feature</strong> (the function vector) that forms at cue tokens in the middle layers and drives the answer. Both are causally necessary and sufficient, the read feature decomposes into a shared carrier plus a low-dimensional task-unique code, and the map between the two codes is &mdash; to first order &mdash; a rigid rotation between nearly orthogonal subspaces. This note walks through the evidence for each feature and for the pipeline between them. Numbers and figures come from <code>results/69_task_run/</code>; the appendix holds protocol detail and per-section deep dives.</p>
 </header>
 
 <div class="setup">
@@ -371,24 +371,47 @@
     <figcaption>Left: six steered dummy slots vs real demonstrations. Right: why L6 &mdash; the injection-layer sweep (1-shot scaffold, best &alpha; per layer, vector = same-layer task mean): a clean early-layer peak at L6&ndash;L7 (0.126 / 0.125), dead by L12. Sources: <code>bottom_up_read_features/steering_results/sixshot_dummy/</code>, <code>bottom_up_read_features/layer_selection/</code>.</figcaption>
   </figure>
 
-  <div class="placeholder-box">
-    <span class="ph-tag">Results in progress</span>
-    <h3>Bidirectional control &amp; per-task dimensionality of the read space</h3>
-    <p>The ablation counterpart (necessity) is running; the full rank sweep (k = 1&hellip;~20 per-task PCs) will estimate the read space&rsquo;s per-task dimensionality. Preliminary results already indicate the read object is <em>multi</em>-dimensional: mean-ablating the single rank-1 direction at label tokens costs only &minus;0.06 at 6-shot, but widening to the task&rsquo;s top-5 read-feature PCs doubles the specific effect to &minus;0.126 while the counterfactual 5-PC control stays at baseline (0.620 vs 0.629).</p>
-    <p>One structural caveat makes this control problem harder than on the write side: read features are far more similar across tasks than function vectors are &mdash; mean pairwise cosine 0.727 vs 0.393 (and the chosen counterfactual pairs specifically: 0.726 vs 0.383). A counterfactual-task ablation therefore removes much of the <em>same shared direction</em> as the own-task ablation, which compresses the own-vs-counterfactual gap by construction. Consistent with this, zero-projection kills ICL for either direction (own 0.009, counterfactual 0.278 from a 0.629 baseline) &mdash; a large non-specific component that the mean-ablation variant is designed to factor out.</p>
-    <figure>
-      <div class="figrow">
-        <div class="figcard"><img alt="Histogram: pairwise cosine similarity across tasks for read features vs function vectors" src="{{IMG:bottom_up_read_features/ablation/debugging/cossim_hist.png}}"></div>
-        <div class="figcard"><img alt="Aggregate bars: rank-1 vs rank-5 read-feature ablation, own vs counterfactual, mean and zero modes" src="{{IMG:bottom_up_read_features/ablation/multi_direction_ablation/aggregate_bars.png}}"></div>
-      </div>
-      <figcaption>Left: cross-task similarity of read features (cos &asymp; 0.73) vs write features (cos &asymp; 0.39) &mdash; the counterfactual control overlaps the target far more on the read side. Right: preliminary rank-1 vs rank-5 ablation. Sources: <code>bottom_up_read_features/ablation/debugging/</code>, <code>bottom_up_read_features/ablation/multi_direction_ablation/</code>.</figcaption>
-    </figure>
+  <h3>Bidirectional control: the necessity side</h3>
+  <p>The ablation counterpart is done, and it closes the loop. The naive controls fail for a structural reason: read features are far more similar across tasks than function vectors are (mean pairwise cosine 0.727 vs 0.393), so a counterfactual-task ablation removes much of the <em>same shared direction</em> as the own-task ablation &mdash; zero-projecting either direction at the label tokens kills ICL (own 0.009, counterfactual 0.278 from a 0.629 baseline). The shared label-token component is load-bearing but carries no task identity.</p>
+  <p>Splitting the read feature accordingly &mdash; a shared carrier plus a <em>task-unique</em> part (&sect;5) &mdash; resolves the control problem completely. Ablating the task&rsquo;s mean-removed 11-direction basis (top per-task PCs of the L5&ndash;15 label-token means after removing each layer&rsquo;s cross-task mean) at demo label tokens collapses 6-shot ICL to 0.063 while the counterfactual task&rsquo;s basis leaves it at 0.629 &mdash; exactly baseline. The same double dissociation holds at 1 shot (own 0.026 vs counterfactual 0.202, baseline 0.208). And the necessary object is genuinely low-rank: the top-3 SVD compression of that basis is a drop-in match (0.066), the top single direction alone removes ~84% of ICL (0.103), and restricting the basis to layers 6&ndash;9 nearly suffices (0.096).</p>
+  <div class="stats">
+    <div class="stat read"><span class="v">0.629 &rarr; 0.063</span><span class="l">6-shot acc, own task-unique 11-dir ablation</span></div>
+    <div class="stat"><span class="v">0.629</span><span class="l">counterfactual-task 11-dir ablation (= baseline)</span></div>
+    <div class="stat read"><span class="v">0.103</span><span class="l">top-1 task-unique direction alone</span></div>
+    <div class="stat"><span class="v">0.026 / 0.202</span><span class="l">1-shot own / counterfactual (baseline 0.211)</span></div>
   </div>
+  <figure>
+    <div class="figrow">
+      <div class="figcard"><img alt="Histogram: pairwise cosine similarity across tasks for read features vs function vectors" src="{{IMG:bottom_up_read_features/ablation/debugging/cossim_hist.png}}"></div>
+      <div class="figcard"><img alt="Aggregate bars: task-unique 11-direction ablation, own vs counterfactual, mean and zero modes, 6-shot and 1-shot" src="{{IMG:bottom_up_read_features/ablation/task_unique_11dir/aggregate_bars.png}}"></div>
+    </div>
+    <figcaption>Left: why naive controls fail &mdash; read features overlap heavily across tasks (cos &asymp; 0.73 vs 0.39 for FVs). Right: the task-unique basis separates cleanly &mdash; own-task ablation lands near the floor, counterfactual stays at baseline. The rank/band ladder (rank-5, centered-5, 11-dir, top-3, top-1, L6&ndash;9) is in Appendix F. Sources: <code>bottom_up_read_features/ablation/debugging/</code>, <code>bottom_up_read_features/ablation/task_unique_11dir/</code>.</figcaption>
+  </figure>
 </section>
 
 <!-- ============ 5 ============ -->
 <section class="claim">
-  <div class="tagrow"><span class="secnum">5</span><span class="tag rw">Read <span class="arrow">&rarr; write</span></span></div>
+  <div class="tagrow"><span class="secnum">5</span><span class="tag read">Read feature</span></div>
+  <h2>The read feature = a shared carrier + a low-dimensional task-unique code</h2>
+  <p>The ablation controls force a decomposition: <em class="v">m<sub>A</sub></em> = <em class="v">m&#772;</em> (the cross-task mean at label tokens, cos &asymp; 0.73 between tasks) + a task-unique remainder. Steering separates the roles. On the dummy-label scaffold, the task-unique part alone recovers about three quarters of full-vector steering (6 slots: 0.000 &rarr; 0.339 vs 0.447 full), while the shared carrier alone does nothing (&le; 0.013 at every layer and dose). The code side compresses hard: swapping in a <em>single</em> task-unique direction (&alpha;&middot;s&#8321;&middot;v&#8321; at L6, all label slots) reaches 0.341 &mdash; matching the full mean-free vector &mdash; though it ignites only at &alpha; &asymp; 16&ndash;32, well above the direction&rsquo;s natural per-prompt scale.</p>
+  <div class="stats">
+    <div class="stat read"><span class="v">0.000 &rarr; 0.339</span><span class="l">task-unique part only, 6 dummy slots (full 0.447)</span></div>
+    <div class="stat read"><span class="v">0.341</span><span class="l">ONE task-unique direction, &alpha;=32</span></div>
+    <div class="stat"><span class="v">&le; 0.013</span><span class="l">shared carrier alone, any layer/dose</span></div>
+  </div>
+  <figure>
+    <div class="figrow">
+      <div class="figcard"><img alt="Diagram decomposing the read feature into shared-mean carrier and task-unique components" src="{{IMG:bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png}}"></div>
+      <div class="figcard"><img alt="Alpha curve: single task-unique direction swap steering rises to about 0.34 at alpha 32" src="{{IMG:bottom_up_read_features/steering_results/taskunique_svd_dummy/alpha_curve.png}}"></div>
+    </div>
+    <figcaption>Left: the decomposition. Right: one task-unique direction carries the code &mdash; but needs to be over-driven. Sources: <code>bottom_up_read_features/ablation/explainer_visuals/</code>, <code>bottom_up_read_features/steering_results/taskunique_svd_dummy/</code>.</figcaption>
+  </figure>
+  <p><strong>Why does the carrier help steering if it carries no identity?</strong> Full-vector steering beats the task-unique part by a stable margin (~0.08&ndash;0.11). Three hypotheses tested so far (detail in Appendix I): <em>base repair</em> &mdash; rejected: on a scaffold whose labels are real words from <em>other</em> tasks&rsquo; output pools, the gap is unchanged to three decimals; <em>attention capture</em> &mdash; partial: the carrier does attract cue&rarr;label attention at L13 (0.045 vs a flat 0.038 for the code alone; real labels 0.056), but attention does not mediate accuracy &mdash; at the accuracy-peak dose, attention is at or below unsteered; <em>error anatomy</em> &mdash; the code-only condition&rsquo;s extra misses are 3&times; more underscore-echoes (0.055 vs 0.018) with <em>identical</em> own-pool mapping-error rates (0.145 vs 0.137), and over half the gap is degraded on-task attempts. The surviving interpretation is a ratio-preserving composite code: carrier and code arrive together at a preserved proportion in natural prompts, and downstream machinery is calibrated to that composition.</p>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="claim">
+  <div class="tagrow"><span class="secnum">6</span><span class="tag rw">Read <span class="arrow">&rarr; write</span></span></div>
   <h2>Read features cause the write feature to form</h2>
   <p>The same six-slot injection, but instead of generating, we read the residual stream at the final cue token &mdash; the site where the write feature forms. As &alpha; increases, the cue-token representation rotates toward the task&rsquo;s own function vector: cosine at L13 doubles from 0.18 to 0.37 between &alpha;=0 and &alpha;=2. The rotation is task-specific &mdash; the gain over alignment to a generic all-task FV is positive on 69/69 tasks and still rising at &alpha;=4.</p>
   <div class="stats">
@@ -400,11 +423,12 @@
     <div class="figcard"><img alt="Line plot: absolute cosine between the cue-token activation and the task function vector rising with alpha" src="{{IMG:read_write_relationship/bottom_up/headline_cos_absolute.png}}"></div>
     <figcaption>Injecting the read feature at label slots makes the task&rsquo;s own write feature appear downstream at the cue token. Source: <code>read_write_relationship/bottom_up/</code>.</figcaption>
   </figure>
+  <p>Two finer-grained variants agree. On the 1-shot scaffold the same rotation appears at half strength (&Delta;cos to own <em class="v">v<sub>A</sub></em> +0.088 at &alpha;=2, vs +0.044 to the generic FV). And steering <em>only the first</em> label slot shows the effect propagating forward with decay: the task-specific excess alignment is largest at the very next cue (+0.047 at &alpha;=2) and falls monotonically to +0.010 by the query cue &mdash; each demonstration&rsquo;s label refreshes a signal that would otherwise fade. Sources: <code>read_write_relationship/{bottom_up_1shot, bottom_up_firstlabel}/</code>.</p>
 </section>
 
-<!-- ============ 6 ============ -->
+<!-- ============ 7 ============ -->
 <section class="claim">
-  <div class="tagrow"><span class="secnum">6</span><span class="tag rw">Read <span class="arrow">&rarr; write</span></span></div>
+  <div class="tagrow"><span class="secnum">7</span><span class="tag rw">Read <span class="arrow">&rarr; write</span></span></div>
   <h2>Read features appear earlier in the residual stream than write features</h2>
   <p>Presence maps &mdash; the mean cosine between the residual stream and each feature, by layer and token type, over clean 10-shot prompts &mdash; separate the two features in both depth and position. The read feature peaks at demonstration <em>label</em> tokens at layer 6 (cos 0.80); the write feature peaks at <em>cue</em> tokens at layer 13 (cos 0.31; 0.35 at the query cue). Reading happens where label content sits, roughly seven layers before writing happens where the answer is produced.</p>
   <div class="stats">
@@ -417,9 +441,9 @@
   </figure>
 </section>
 
-<!-- ============ 7 ============ -->
+<!-- ============ 8 ============ -->
 <section class="claim">
-  <div class="tagrow"><span class="secnum">7</span><span class="tag rw">Read <span class="arrow">&rarr; write</span></span></div>
+  <div class="tagrow"><span class="secnum">8</span><span class="tag rw">Read <span class="arrow">&rarr; write</span></span></div>
   <h2>Read features linearly map to write features</h2>
   <p>A single ridge regression from the mean label-token activation to the per-prompt function vector, fit on the 55 train tasks, predicts the <em>held-out</em> tasks&rsquo; function vectors with R&sup2; &asymp; 0.7 (0.65 per-prompt, 0.69 at task centroids, reading from L13). The map is one linear transform shared across tasks &mdash; it was never shown the held-out tasks&rsquo; FVs, yet it places most of them from their read features alone. The sweep covers all 28 layers (figure shows the per-prompt curve): held-out R&sup2; climbs steeply from 0.35 at L0, plateaus from L8, peaks at L12&ndash;L13 (0.65; 0.69 at task centroids), and declines only gently to 0.61 at the final layer &mdash; task identity stays linearly readable at the label slots through the entire second half of the network.</p>
   <div class="stats">
@@ -432,11 +456,30 @@
   </figure>
 </section>
 
-<!-- ============ 8 ============ -->
+<!-- ============ 9 ============ -->
 <section class="claim">
-  <div class="tagrow"><span class="secnum">8</span><span class="tag write">Write feature</span></div>
+  <div class="tagrow"><span class="secnum">9</span><span class="tag rw">Read <span class="arrow">&rarr;</span> write</span></div>
+  <h2>The read&rarr;write map is, to first order, a rotation</h2>
+  <p>What does that linear map actually do? Removing each family&rsquo;s grand mean answers it. The two task clouds are already the <em>same shape</em>: centered pairwise cosines match pair-by-pair (Pearson 0.93 at L6 / 0.96 at L13, gram-CKA 0.93/0.95), and even the centered norms correlate (r &asymp; 0.79). But they occupy <em>nearly orthogonal directions</em> of the residual stream: the largest principal cosine between the two 90%-variance subspaces is 0.26 (L6) / 0.41 (L13), and each task&rsquo;s read feature is nearly orthogonal to its own FV (matched cos 0.08 / 0.19, vs exactly 0 for mismatched pairs).</p>
+  <p>Congruent shapes in orthogonal subspaces is precisely the geometry a rotation solves &mdash; and it does: an orthogonal Procrustes map (fit on the 55 train tasks) reaches held-out R&sup2; 0.625 vs the unconstrained ridge&rsquo;s 0.657 when reading at L13 &mdash; 95% of the ridge. Reading at L6 additionally needs one global scalar, s = 1.55: the task-unique read signal at L6 is only 0.63&times; FV magnitude (centered norms 30.7 vs 49.1) and grows to parity by L13 (52.1 vs 49.1, s = 0.93). In full: <em class="v">v&#770;<sub>A</sub></em> = <em class="v">v&#772;</em> + s&middot;R(<em class="v">m<sub>A</sub></em> &minus; <em class="v">m&#772;</em>) &mdash; remove the label-token carrier, rigidly rotate the task-identity geometry into the FV subspace, rescale if reading early, add the generic-FV mean back. The ridge&rsquo;s remaining ~5% is direction-dependent gain (its singular spectrum decays; Appendix J).</p>
+  <div class="stats">
+    <div class="stat"><span class="v">0.93 / 0.96</span><span class="l">pairwise-cos congruence, L6 / L13 (Pearson)</span></div>
+    <div class="stat"><span class="v">0.26 / 0.41</span><span class="l">max principal cos between subspaces</span></div>
+    <div class="stat"><span class="v">0.625 vs 0.657</span><span class="l">held-out R&sup2;: rotation vs ridge @L13</span></div>
+    <div class="stat"><span class="v">1.55 &rarr; 0.93</span><span class="l">Procrustes scale, L6 &rarr; L13</span></div>
+  </div>
+  <figure>
+    <div class="figcard"><img alt="Three panels: pairwise cosine congruence scatter, held-out R-squared bars for ridge vs rotation vs rotation plus scale, and the ridge map singular spectrum" src="{{IMG:understanding_read_write_linear_map/rotation_vs_ridge.png}}"></div>
+    <figcaption>Left: the centered pairwise cosines of the two families match pair-by-pair. Middle: a pure rotation captures most of the ridge&rsquo;s held-out performance (L6 needs the one global scale). Right: the ridge&rsquo;s extra freedom is a decaying, direction-dependent gain. Source: <code>understanding_read_write_linear_map/</code>.</figcaption>
+  </figure>
+  <p>Scope of the claim: with 55 training tasks the map is constrained only on the &le;55-dimensional task-identity span, and it is the <em>centroid</em> map (&sect;8) &mdash; the statement is that whatever the network computes between label tokens and cue is functionally equivalent, at task level, to a rigid re-embedding of an unchanged task geometry, not that the circuitry is literally an orthogonal matrix.</p>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="claim">
+  <div class="tagrow"><span class="secnum">10</span><span class="tag write">Write feature</span></div>
   <h2>Write-feature presence tracks task accuracy</h2>
-  <p>Within a task, the strength of the write feature at the query cue moves in lockstep with performance. Truncating the same prompts to n = 0&hellip;6 demonstrations, presence &mdash; mean cos with <em class="v">v&#770;<sub>A</sub></em> over layers 9&ndash;20 &mdash; and sampled accuracy rise together in every single task (median Spearman &rho; +0.96, positive in 69/69). Binning all task &times; shot-count points by presence gives a monotone curve: below cos 0.15 the model scores 0.00; by the 0.35&ndash;0.45 bucket it scores ~0.50.</p>
+  <p>Within a task, the strength of the write feature at the query cue moves in lockstep with performance. Truncating the same prompts to n = 0&hellip;6 demonstrations, presence &mdash; mean cos with <em class="v">v&#770;<sub>A</sub></em> over layers 9&ndash;20 &mdash; and sampled accuracy rise together in every single task (median Spearman &rho; +0.96, positive in 69/69). Binning all task &times; shot-count points by presence gives a monotone curve: below cos 0.15 the model scores 0.00; by the 0.35&ndash;0.45 bucket it scores ~0.50. (Between tasks at fixed n the correlation is negative &mdash; a Simpson&rsquo;s pattern; presence is a within-task dial, not a cross-task difficulty score. Appendix H.)</p>
   <div class="stats">
     <div class="stat write"><span class="v">+0.96</span><span class="l">median within-task &rho;(presence, acc)</span></div>
     <div class="stat"><span class="v">69 / 69</span><span class="l">tasks with positive within-task &rho;</span></div>
@@ -542,6 +585,7 @@
       </figure>
       <p><strong>Which vector steers.</strong> On the 1-shot dummy-slot scaffold, the raw task mean beats every engineered alternative: raw mean @L7 0.121 &gt; mean-difference (task mean &minus; shared mean) 0.082 &gt; sparse-selected label-slot head sum 0.050. The shared-mean control alone is flat (&le;0.013 at every layer), so the shared component is not what steers &mdash; but differencing it out still hurts, suggesting task-correlated structure is removed with it.</p>
       <p><strong>Dose and slots.</strong> The 1-shot injection peaks at &alpha;=2; six slots peak at &alpha;=4 and have not saturated (0.381 &rarr; 0.442 from &alpha;=2 to 4). Held-out tasks steer slightly better than train (0.49 vs 0.44) &mdash; expected, since the vector is a per-task mean with nothing fit. 17/69 tasks match or beat real 6-shot demos; the best are string/format tasks at near-ceiling.</p>
+      <p><strong>Scaffold robustness.</strong> The dummy &ldquo;_&rdquo; label is not load-bearing: on a scaffold whose six demo labels are real words sampled from <em>other</em> tasks&rsquo; output pools, full-mean steering reaches 0.494 (vs 0.447 on underscores) &mdash; the injection overrides actively wrong label content, not just empty slots. Source: <code>bottom_up_read_features/steering_results/sixshot_randomlabel/</code>.</p>
       <p><strong>No low-dimensional shortcut (across tasks).</strong> Restricting the steering vector to top-k centered PCs of the 69 task means retains accuracy roughly linearly in k with no knee: k=40 (95% of between-task variance) keeps only 76% of the full effect. The between-task variance basis is not the basis the model reads.</p>
       <figure>
         <div class="figcard"><img alt="Retention curve: steering accuracy vs number of PCs kept, roughly linear" src="{{IMG:bottom_up_read_features/dimensionality_analysis/sparse_pc40/retention_curve.png}}"></div>
@@ -551,21 +595,51 @@
   </details>
 
   <details>
-    <summary>F &mdash; Read-feature ablation (preliminary) in detail</summary>
+    <summary>F &mdash; Read-feature ablation in detail: the rank/band ladder</summary>
     <div class="body">
-      <p>Design: ablate along the fixed unit L6 read-feature direction (rank-1) or the task&rsquo;s top-5 uncentered per-prompt read-feature PCs (rank-5) at <em>every demo label token, every layer&rsquo;s block input</em>; mean mode moves the projection to the cross-task grand mean (specificity-clean), zero mode removes it. Baselines share the exact prompt bank and seeding with the steering runs.</p>
+      <p>Design: ablate a per-task subspace at <em>every demo label token, every layer&rsquo;s block input</em>; mean mode moves the projection to the cross-task grand mean (specificity-clean), zero mode removes it. Baselines share the exact prompt bank and seeding with the steering runs. Bases, in the order they were tried: the fixed unit L6 read-feature direction (rank-1); the task&rsquo;s top-5 uncentered per-prompt read-feature PCs (rank-5); the same after centering (centered-5); and the <strong>task-unique</strong> family &mdash; take the 11 layer-wise task-level read features (L5&ndash;15), remove each layer&rsquo;s cross-task mean direction, and orthonormalize the residuals (effective rank &asymp; 1.4; max |cos| to any layer-mean direction: median 0.08 &mdash; near carrier-free). Top-3 / top-1 = SVD compressions of that basis; L6&ndash;9 = the band-restricted variant.</p>
       <div class="tablewrap"><table>
-        <thead><tr><th>Condition (6-shot)</th><th class="n">Rank-1</th><th class="n">Rank-5</th></tr></thead>
+        <thead><tr><th>Basis (6-shot, baseline 0.629)</th><th class="n">Own, mean-abl</th><th class="n">Cf, mean-abl</th><th class="n">Own, zero</th><th class="n">Cf, zero</th></tr></thead>
         <tbody>
-          <tr><td>Baseline</td><td class="n">0.629</td><td class="n">0.629</td></tr>
-          <tr><td>Own, mean-ablation</td><td class="n">0.567</td><td class="n">0.503</td></tr>
-          <tr><td>Counterfactual, mean-ablation</td><td class="n">0.623</td><td class="n">0.620</td></tr>
-          <tr><td>Own, zero-projection</td><td class="n">0.009</td><td class="n">0.004</td></tr>
-          <tr><td>Counterfactual, zero-projection</td><td class="n">0.278</td><td class="n">0.222</td></tr>
-          <tr><td>Attention-mask control</td><td class="n" colspan="2">0.046</td></tr>
+          <tr><td>Rank-1 (unit L6 read dir)</td><td class="n">0.567</td><td class="n">0.623</td><td class="n">0.009</td><td class="n">0.278</td></tr>
+          <tr><td>Rank-5 (uncentered PCs)</td><td class="n">0.503</td><td class="n">0.620</td><td class="n">0.004</td><td class="n">0.222</td></tr>
+          <tr><td>Centered-5 PCs</td><td class="n">0.545</td><td class="n">0.625</td><td class="n">0.393</td><td class="n">0.550</td></tr>
+          <tr><td><strong>Task-unique 11-dir (L5&ndash;15)</strong></td><td class="n"><strong>0.063</strong></td><td class="n"><strong>0.629</strong></td><td class="n">0.061</td><td class="n">0.603</td></tr>
+          <tr><td>&mdash; top-3 SVD</td><td class="n">0.066</td><td class="n">0.629</td><td class="n">0.065</td><td class="n">0.607</td></tr>
+          <tr><td>&mdash; top-1 direction</td><td class="n">0.103</td><td class="n">0.630</td><td class="n">0.100</td><td class="n">0.610</td></tr>
+          <tr><td>&mdash; top-3, L6&ndash;9 band only</td><td class="n">0.096</td><td class="n">0.630</td><td class="n">0.088</td><td class="n">0.610</td></tr>
+          <tr><td>Attention-mask control</td><td class="n" colspan="4">0.046</td></tr>
         </tbody>
       </table></div>
-      <p>Readings: (1) the specificity-clean mean-ablation effect doubles from rank-1 to rank-5 (&minus;0.062 &rarr; &minus;0.126) with the counterfactual control clean &mdash; the causal read object is wider than one direction; at 1-shot the extra PCs add nothing (little per-prompt variation for them to carry). (2) Zero mode kills ICL for either direction &mdash; the shared label-token component is load-bearing but non-specific, and because read features overlap heavily across tasks (cos &asymp; 0.73, vs 0.39 for FVs) the counterfactual arm removes much of the same thing, capping the achievable own-vs-cf separation. (3) Masking the final cue&rsquo;s (and generated tokens&rsquo;) attention to demo label positions collapses accuracy to 0.046 &mdash; label-token attention is the near-exclusive route for task information into the query.</p>
+      <p>Readings: (1) uncentered bases can&rsquo;t separate own from counterfactual in zero mode because read features overlap heavily across tasks (cos &asymp; 0.73 vs 0.39 for FVs) &mdash; the shared carrier is load-bearing but non-specific; centering fixes the zero-mode collateral (cf 0.278 &rarr; 0.550) but the within-task variance PCs are a weak proxy for identity (own only 0.393). (2) The between-task mean differential &mdash; the task-unique basis &mdash; is the label-side task-identity code: near-total own-task kill with the counterfactual control <em>exactly</em> at baseline, in both modes (the basis is orthogonal to the carrier, so mean and zero coincide). It is the first and only variant with 1-shot specificity too (own 0.026 vs cf 0.202, baseline 0.208). (3) Partial survivors of own-task ablation (&gt;30% of baseline) are echo/copy-heavy tasks (lowercase_word, larger/smaller_of_pair, several X-english translations). (4) Masking the final cue&rsquo;s attention to demo label positions collapses accuracy to 0.046 &mdash; label-token attention is the near-exclusive route for task information into the query.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>I &mdash; Task-unique steering &amp; the carrier-gap hypothesis tests</summary>
+    <div class="body">
+      <p><strong>Mean-free steering.</strong> Dummy-slot injection of the mean-removed read feature (per-task vector minus the shared L6 mean): 6 slots 0.000 &rarr; 0.339 at best &alpha; vs 0.447 for the full vector; 1 slot 0.126 full vs 0.075 mean-free. The shared mean alone: &le;0.013 anywhere. cos(<em class="v">m<sub>A</sub></em>, shared mean) is 0.72&ndash;0.93 per task (mean 0.85), i.e. the carrier is most of the vector&rsquo;s norm but none of its identity.</p>
+      <p><strong>Single-direction swap.</strong> Remove the own top task-unique direction&rsquo;s natural projection at L6 label slots and write &alpha;&middot;s&#8321;&middot;v&#8321; instead: aggregate accuracy is dead through &alpha;=4 (&le;0.001, and removal-only = baseline), ignites at &alpha;=8&ndash;16 (0.012 &rarr; 0.191), peaks 0.341 at &alpha;=32, declines by 64. Per-task best 0.373. The code is one direction, but the model only responds well above its natural scale.</p>
+      <p><strong>Hypothesis 1 &mdash; carrier repairs the defective &ldquo;_&rdquo; base: rejected.</strong> On a scaffold whose six demo labels are real words sampled from <em>other</em> tasks&rsquo; output pools, full-mean steering reaches 0.494 and the swap 0.418 (aggregate 0.388) &mdash; the fullmean&minus;swap gap (0.076 per-task best / 0.107 aggregate) is unchanged to three decimals vs the underscore base, while the real-word base lifts both methods ~+0.05 uniformly.</p>
+      <p><strong>Hypothesis &mdash; attention capture: attention does not mediate.</strong> Mean L13 cue&rarr;label attention: real 1-shot 0.056, dummy unsteered 0.038; full-mean steering raises it to 0.045 (&alpha;=1) but at its accuracy-peak dose attention is back at or below unsteered (0.028 at &alpha;=4); the swap leaves attention flat (&asymp;0.038) at every &alpha; including its accuracy peak. The carrier attracts cue attention, but accuracy moves without it.</p>
+      <p><strong>Error anatomy (10,350 generations each).</strong> Swap vs fullmean at matched best doses: correct 0.373 vs 0.447; underscore-echo 0.055 vs 0.018 (3&times;); own-pool wrong-answer rate <em>identical</em> (0.145 vs 0.137); other-pool 0.078 vs 0.095; unparseable/&ldquo;other&rdquo; 0.326 vs 0.293. Of the 2,122 items fullmean gets right and swap gets wrong, 55% are &ldquo;other&rdquo; (degraded on-task attempts), only 8% underscore echoes. The gap is not a different task being executed &mdash; it is the same task executed worse, favouring a <em>ratio-preserving composite code</em>: downstream machinery expects carrier and code in natural proportion. Sources: <code>bottom_up_read_features/steering_results/{meanfree_dummy, taskunique_svd_dummy, randlabel_swap, attention_to_label_1shot, error_analysis_swap_vs_fullmean}/</code>.</p>
+      <figure>
+        <div class="figcard"><img alt="Stacked error-category bars for swap vs full-mean steering" src="{{IMG:bottom_up_read_features/steering_results/error_analysis_swap_vs_fullmean/breakdown_bars.png}}"></div>
+        <figcaption>Error anatomy of the carrier gap. Source: <code>bottom_up_read_features/steering_results/error_analysis_swap_vs_fullmean/</code>.</figcaption>
+      </figure>
+    </div>
+  </details>
+
+  <details>
+    <summary>J &mdash; The rotation analysis in detail</summary>
+    <div class="body">
+      <p><strong>Data.</strong> X = task-mean label-token residual <em class="v">m<sub>A</sub></em>(L) (<code>label_resid_means</code>, L &isin; {6, 13}), Y = task FV (mean of the 150 per-prompt FVs); 55 train / 14 held-out, fp64.</p>
+      <p><strong>Congruence.</strong> All-69 family-centered pairwise cosines: read vs write Pearson 0.932 (L6) / 0.959 (L13), Spearman 0.905 / 0.946; centered-norm correlation 0.786 / 0.790; gram-CKA 0.930 / 0.952. Subspace overlap in activation space: feature-side alignment 0.014 / 0.051; principal cosines between the 90%-variance subspaces (32 vs 28 dims): max 0.256 / 0.407, median 0.091 / 0.171. Cross-family matched cos(<em class="v">m<sub>A</sub></em>, <em class="v">v<sub>A</sub></em>) centered: mean 0.076 (L6) / 0.195 (L13), mismatched pairs &asymp; 0; matched exceeds the mismatched 95th percentile for 40/69 (L6) and 57/69 (L13) tasks. Highest matched overlap: the translation family (0.31&ndash;0.35 at L13); lowest: label-classification tasks (&asymp;0.00&ndash;0.10) &mdash; the same family that transfers worst through the map.</p>
+      <p><strong>Fits.</strong> Predictor: <em class="v">v&#770;<sub>A</sub></em> = <em class="v">v&#772;</em> + s&middot;R(<em class="v">m<sub>A</sub></em> &minus; <em class="v">m&#772;</em>) with means from the train tasks; R by orthogonal Procrustes on the 55 centered train pairs; s = 1 (rotation) or the trace-formula scalar (rotation+scale); ridge = dual with intercept, &lambda; by LOO-CV. Held-out testmean R&sup2;: L13 &mdash; ridge 0.657, rotation 0.625, rotation+scale 0.624 (s = 0.93); L6 &mdash; ridge 0.642, rotation 0.482, rotation+scale 0.586 (s = 1.55; centered read norms 30.7 vs FV 49.1). Held-out mean cos of centered predictions: rotation 0.82 vs ridge 0.84 (L13). The fitted ridge map&rsquo;s singular spectrum on the train span decays smoothly (&sigma;&#8321;&#8320;/&sigma;&#8321; &asymp; 0.7, &sigma;&#8324;&#8320;/&sigma;&#8321; &asymp; 0.42) &mdash; the ~5% it adds over the rotation is direction-dependent gain, not a different geometry. Source: <code>understanding_read_write_linear_map/</code>.</p>
+      <figure>
+        <div class="figcard"><img alt="Cross-family cosine histograms: matched read-to-own-FV vs mismatched pairs, centered and uncentered, L6 and L13" src="{{IMG:understanding_read_write_linear_map/crossfamily_cos_hists.png}}"></div>
+        <figcaption>Each task&rsquo;s read feature vs its own / other tasks&rsquo; FVs. Source: <code>understanding_read_write_linear_map/</code>.</figcaption>
+      </figure>
     </div>
   </details>
 
@@ -574,6 +648,7 @@
     <div class="body">
       <p><strong>What transfers is the centroid map.</strong> Against per-prompt FV targets the held-out R&sup2; is 0.44&ndash;0.50 over L5&ndash;L15; the full 28-layer sweep spans 0.26 (L0) to the 0.498 peak (L13) and still holds 0.46 at L27. Decomposing it, between-task centroid placement carries 0.65 while within-task deviations contribute &asymp;0.03 &mdash; and a held-out-prompt check on train tasks confirms the within-task share is &asymp;0.05 even in-distribution. The map is a task-centroid interpolator; scored against task FVs (the centroid target) it reaches the ~0.7 quoted in the main text.</p>
       <p><strong>Robustness.</strong> Over 10 random 55/14 splits: held-out R&sup2; 0.469 &plusmn; 0.040 (canonical split at the mean); the oracle ceiling (leave-one-out task-mean predictor) is 0.675. Transfer is bimodal: morphology/translation tasks sit essentially at their oracle, while classification-like tasks (pos_label, ag_news, uppercase_word, initials_two_words, first_digit, person_place_thing) stay near zero under <em>every</em> split &mdash; their read&rarr;write relation is task-idiosyncratic, not merely under-covered. Neither PCA-90 rank reduction nor lasso in the PCA basis beats the plain full-dimensional ridge.</p>
+      <p><strong>Task-level fit agrees.</strong> Treating each task as one sample (55 train centroids &rarr; task FV, LOO-CV &lambda;) reproduces the per-prompt sweep where they overlap (held-out R&sup2; 0.683 vs 0.692 at L13, train-mean convention) &mdash; consistent with the centroid-memorization reading: the 55 task centroids already carry all the transferable signal. Despite n=55 &lt;&lt; d=4096, LOO-CV picks the smallest &lambda; from L6 on (min-norm interpolation generalizes; explicit shrinkage hurts). Source: <code>read_write_relationship/linear_mapping/</code>.</p>
       <figure>
         <div class="figcard"><img alt="Held-out R-squared across ten random task splits" src="{{IMG:FV_linear_decodability/labeltoken_fv_ridge/seedsplits/seed_r2.png}}"></div>
         <figcaption>Seed-split robustness of the read&rarr;write ridge. Source: <code>FV_linear_decodability/labeltoken_fv_ridge/seedsplits/</code>.</figcaption>
@@ -585,6 +660,7 @@
     <summary>H &mdash; Presence-vs-accuracy method</summary>
     <div class="body">
       <p>For each task and n &isin; 0&hellip;6, the 150 fixed 10-shot prompts are truncated to their first n demonstrations (paired queries throughout). Presence = mean cos between the residual stream at the query cue and the unit <em class="v">v&#770;<sub>A</sub></em>, averaged over layers 9&ndash;20 (per-layer and max-over-band variants behave the same); accuracy = the standard temperature-1 sampled exact match on the same prompts. One point per task per shot count (483 points); the within-task statistic pairs each task&rsquo;s presence and accuracy across its own seven shot counts.</p>
+      <p><strong>Between-task, the sign flips</strong> (Simpson&rsquo;s pattern): at fixed n &ge; 2, tasks with higher presence tend to score <em>lower</em> (&rho; &asymp; &minus;0.3 to &minus;0.4 at n = 3&hellip;6), even though every task individually moves up with n. Diagnostics: a shared-mean control (cos to the grand-mean FV) does not explain it &mdash; the partial correlation is unchanged; a-priori task features (label token count, output entropy, output-pool size) correlate with presence (&rho; &asymp; &minus;0.44&hellip;&minus;0.54) and weaken the negative relation but do not remove it (partial &rho; &asymp; &minus;0.21&hellip;&minus;0.26). Subtracting each task&rsquo;s generic-FV alignment (presence minus cos-to-grand-mean, L13) strengthens the between-task negativity (&rho; &minus;0.39 at n=6), while alignment to the grand-mean FV itself relates <em>positively</em> pooled (&rho; 0.54) &mdash; the between-task sign is a property of the task-specific component. Per-prompt granularity (72,450 generations): pooled point-biserial r = 0.36 (L13), driven by the shot-count sweep; within a fixed n it is &asymp; 0. Sources: <code>write_feature_and_model_accuracy/{diagnostics.txt, per_prompt/, baseline_subtracted/}</code>.</p>
     </div>
   </details>
 

@@ -2,8 +2,11 @@
 
 Standalone copy of the Claude-artifact write-up of the 69-task GPT-J study
 (read feature = L6 task-mean label-token activation; write feature = 37-head function
-vector). Mirrors https://claude.ai/code/artifact/21031c63-73ae-48a1-b36e-6c04f17eeac2
-as of 2026-08-20.
+vector). Mirrors https://claude.ai/code/artifact/157ad0cd-e3aa-48a4-bcfe-cb9e327951df
+as of 2026-08-24 (the pre-2026-08-24 artifact URL 21031c63 became inaccessible; the
+write-up was republished at the new URL). Sections 1-10: full story including the
+task-unique read code (S4-5), the carrier-gap hypothesis tests (App. I), and the
+read->write rotation result (S9, App. J).
 
 - `icl_read_write_features.html` — the complete document with all figures inlined as
   base64 (≈5 MB). Open it directly in a browser; no server or network needed.
