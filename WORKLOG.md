@@ -7816,3 +7816,29 @@ small slice (~11% of gap = echo+empty); the bulk looks like a NOISY/DISTORTED co
 with the ratio-preserving composite-direction account (carrier and unique must be co-scaled).
 Next discriminator: two-knob beta*carrier + alpha*s1*v1 sweep (design pending user
 adjudication of knob units).
+
+## 2026-08-28 — Two-knob carrier/unique steering + mean-free randlabel C-arm
+
+**Status:** done (2 RTX PRO 4500 pods, sharded, both terminated). Scripts
+steer_twoknob_dummy.py / steer_meanfree_randlabel.py; figures in
+steering_results/{twoknob_dummy,meanfree_randlabel}/.
+
+Two-knob (user-adjudicated): full two-coordinate swap at L6 dummy '_' slots,
+h <- h - P_span(c_hat,v1) h + a*c_A*c_hat + b*n_A*v1, both knobs in x-natural units
+(c_hat = unit all-69 L6 acts mean; c_A median 49.3, n_A median 24.0 — natural ratio ~2:1;
+grid a,b in {0,1,2,4,8}). RESULT — ratio hypothesis CONFIRMED, and stronger: the 2-dim code
+at ratio-preserved supra-natural scale BEATS the full 4096-dim mean vector. Diagonal
+.012 (1x) -> .346 (2x) -> .535 (4x) -> .531 (8x) vs fullmean best .447; per-task best cell
+.569; argmax on/near diagonal for ~65/69 tasks. Unique-only edge (carrier REMOVED) tops at
+.129 — far below the old swap .341 that kept the base's natural carrier -> carrier presence
+gates the unique code causally. Carrier-only edge .063 max. Off-ratio collapse both ways
+(c8_u2 .150 vs c2_u2 .346), extra unique tolerated better than extra carrier (c4_u8 .510 vs
+c8_u4 .357). (1,1) = re-imposed natural coordinates gives .0125 — natural scale doesn't
+ignite, consistent with the >=2x threshold.
+
+C-arm: additive mean-free r_A (full-rank unique) on the random-label scaffold, alphas
+{.5,1,2,4,8}: peak .357 @a2, per-task best .391 — does NOT close the gap to fullmean .494
+(top-1 swap same base .418). Higher-rank unique content is not the carrier advantage;
+theory C rejected. Bottom line across hyp tests: the carrier's contribution is keeping the
+composite code's internal ratio right (LN/direction account), not attention capture, not
+base repair, not extra unique dims, not (mostly) emission drive.

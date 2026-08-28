@@ -33,7 +33,7 @@ BLUE, ORANGE, GRAY = "#2f7fe0", "#e07b2f", "#6b7280"
 def agg(path):
     out = {}
     for r in csv.DictReader(open(path)):
-        if r["task_group"] == "all":
+        if r.get("task_group", "all") == "all":
             out[r["condition"]] = float(r["mean_acc"])
     return out
 
