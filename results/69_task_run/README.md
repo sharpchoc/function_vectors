@@ -1,5 +1,11 @@
 # results/69_task_run — structure
 
+**This is the MAINSTREAM results bucket** — the settled research line and the foundation for
+all future work (DECISIONS 2026-08-28): ICL split into a *write feature* (the 37-head function
+vector) and a *read feature* (early-layer label-token mean). New studies extend this line and
+land in one of the buckets below. The full narrative write-up is
+`write_up/icl_read_write_features/`.
+
 All studies on the canonical 69-task pool (split `task_splits/extended_steerable_69_prunedfail.json`,
 55 train / 14 heldout; pooled 37-head FV from `prunedfail_seed43/pooled_sparse/selection.json`).
 Reorganised 2026-08-19; WORKLOG entries before that date use the old paths (mapping below).

@@ -1,5 +1,20 @@
 # Project Instructions
 
+THE MAINSTREAM RESEARCH LINE — read this first:
+- This project's settled research direction, and the foundation for ALL future work, is the
+  **69-task read/write-feature study** in `results/69_task_run/`: in-context learning is
+  mediated by a *write feature* (the function vector, built from 37 attention heads) and a
+  *read feature* (the early-layer mean activation at label tokens), and the studies there
+  characterize both features, their locations, dimensionality, ablation effects, steering,
+  and the read→write linear map.
+- New experiments extend this line and their deliverables go into `results/69_task_run/`
+  buckets (see its README) or `results/steering_vector_comparison/`, unless the user says
+  otherwise.
+- To pick the project up cold: `results/69_task_run/README.md` →
+  `write_up/icl_read_write_features/` (the full results write-up) → WORKLOG.md + DECISIONS.md.
+- Everything under `results/exploratory/` and `results/sandbox/` is NOT part of this line
+  (retired directions / quarantined trials) — see "Results & artifacts layout" below.
+
 Terminology & notation:
 - `write_up/task_id_im_subspaces.md` is the canonical glossary for terminology, notation, and
   definitions (head vector $h_A$, function vector $v_A$, per-prompt FV $v^j_A$, read direction
