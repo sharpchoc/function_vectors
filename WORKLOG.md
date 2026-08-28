@@ -5,6 +5,46 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-28 — Chat-template ICL transfer, Qwen2.5-7B-Instruct 6-shot × 117 tasks (NEW branch)
+
+**Owner:** Claude Code background agent, main working tree (no worktree). **Status:** DONE.
+
+**What (user request):** new research branch — 6-shot ICL accuracy over the 117-task extended
+pool with demos as chat turns (Qwen2.5-7B-Instruct; arms chat_blank_system / chat_no_system /
+plain Q:/A: control). Protocol mirrors the locked extended n-shot sweep exactly (same sampling
+seeds, T=1 sampled first-line exact match, 50 prompts/task). See DECISIONS.md 2026-08-28
+(chat-template entry) for the user decisions.
+
+**Changes:** `src/utils/paths.py` + `CHAT_TEMPLATE_TRANSFER_DIR`; new
+`src/eval_scripts/eval_chat_template_ext117.py` (GPU, sharded, resumable) and
+`plot_chat_template_ext117.py` (aggregate + ranked bars + arm comparison); new
+`results/chat_template_transfer/README.md`; `logs/chat_template_transfer/pod_run.sh`;
+README/CLAUDE.md one-liners. Qwen2.5-7B-Instruct downloaded to the shared HF cache.
+
+**Compute:** 4 RunPod GPU pods (RTX PRO 4500 Blackwell, EU-RO-1, shared volume), shards 0..3/4,
+driver `logs/chat_template_transfer/pod_run.sh <idx> 4`; artifacts land in
+`artifacts/chat_template_transfer/ext117_6shot/<format>/<task>.json`.
+
+**Findings (117/117 tasks, all arms complete):** mean 6-shot acc — Qwen2.5 plain Q:/A: **0.708**,
+chat no-system **0.629**, chat blank-system **0.615**, GPT-J reference 0.416. Chat template
+HURTS vs plain on the same model (mean −.08/−.09; 59 tasks worse by >.05, 13 better).
+Biggest chat drops: ends_with_ing .64→.00, compound_first .86→.28, person-sport .90→.34
+(blank-system). Error anatomy (spot-checks): the chat arms break the terse-label convention —
+the assistant answers conversationally ("Yes, \"eddying\" refers to…" vs gold "yes"), so part
+of the deficit is style/format non-imitation rather than task failure; plain-arm errors look
+like classic base-model ICL misses. no_system ≥ blank_system on most big-drop tasks.
+Deliverables in `results/chat_template_transfer/ext117_6shot_accuracy/` (CSV + 3 ranked bars +
+arm-comparison profile). Raw generations kept per (arm, task) for metric re-analysis.
+
+**Compute actual:** 4 pods × ~10 min end-to-end (each shard ran 67–92 s of GPU time after model
+load); pods terminated after harvest.
+
+**Next (open):** possible follow-ups — semantic/lenient scoring of chat generations (the
+underscore between style vs capability deficit), n-shot sweep in chat format, read/write-feature
+analysis inside the chat regime.
+
+---
+
 ## 2026-08-28 — Repo restructure: mainstream vs results/exploratory/ (user-approved plan)
 
 **Owner:** Claude Code background agent, main working tree (no worktree). **Status:** DONE.

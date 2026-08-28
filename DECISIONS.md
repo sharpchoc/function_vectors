@@ -1,6 +1,23 @@
 # DECISIONS
 
-## 2026-08-28 — Repo restructured around the mainstream line; retired directions → results/exploratory/ (user decision)
+## 2026-08-28 — New research branch: chat-template transfer → results/chat_template_transfer/ (user decision)
+
+- **New live branch, separate folder by explicit user decision:** does ICL transfer when demos
+  are chat turns (user = input, assistant = label) instead of `Q:`/`A:`? Results go in the new
+  top-level `results/chat_template_transfer/` (`CHAT_TEMPLATE_TRANSFER_DIR` in paths.py) —
+  NEVER into `results/69_task_run/` ("should not pollute" the settled line) and not exploratory
+  (it is live, forward-looking work).
+- **Model:** Qwen/Qwen2.5-7B-Instruct (bf16). No thinking mode exists for Qwen2.5. System-prompt
+  handling is an experimental variable: arms `chat_blank_system` (explicit empty system message —
+  Qwen2.5's template otherwise auto-inserts its default "You are Qwen, …") and `chat_no_system`
+  (system block stripped entirely), plus a `plain` Q:/A: arm on the same model as the
+  model-change control. Exact rendered chat strings user-confirmed 2026-08-28 (country-capital
+  example); `eval_chat_template_ext117.assert_template` guards the rendering at run time.
+- **Protocol = the locked extended n-shot sweep** (`compute_extended_nshot_sampled.py`,
+  2026-08-13): 117-task manifest pool (user chose the FULL pool, not the filtered 69), n=6
+  (user revised from the initial 10), 50 prompts/task with the identical sha256 sampling seeds,
+  T=1.0 pure ancestral sampling, first-line/strip/exact-match metric. Main deliverable = ranked
+  bar chart in the style of `extended_tasks_nshot_sweep/nshot_bar_6shot.png`.
 
 - **The mainstream research line is the 69-task read/write-feature study** (write feature =
   37-head FV, read feature = early-layer label-token mean). Mainstream results buckets:

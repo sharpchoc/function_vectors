@@ -43,6 +43,8 @@ Results are split into two roots, configured centrally in `src/utils/paths.py` (
     bucket taxonomy).
   - `steering_vector_comparison/` — **mainstream**: steering effectiveness of different
     FV-construction methods.
+  - `chat_template_transfer/` — **live new branch** (2026-08-28): chat-template transfer of the
+    ICL line on Qwen2.5-7B-Instruct; separate from 69_task_run by user decision (see its README).
   - `sandbox/` — quarantined trials, not repo standard (see DECISIONS.md); never build on these
     without explicit user promotion.
   - `exploratory/` — research directions that did not pan out, kept for possible revisits (see its
@@ -56,7 +58,7 @@ Code follows the same split: `src/eval_scripts/` holds the mainstream scripts, a
 69-task line despite its location).
 
 Scripts never hardcode these paths: import `ARTIFACTS_ROOT`, `RESULTS_ROOT`, `LOGS_ROOT` and the bucket
-constants (`TASK69_RUN_DIR`, `STEERING_COMPARISON_DIR`, `EXPLORATORY_ROOT`, `AMBIGUOUS_DIR`,
+constants (`TASK69_RUN_DIR`, `STEERING_COMPARISON_DIR`, `CHAT_TEMPLATE_TRANSFER_DIR`, `EXPLORATORY_ROOT`, `AMBIGUOUS_DIR`,
 `LABEL_GEOMETRY_DIR`, `FV_FORMATION_DIR`, `GENERAL_DIR`) from `src/utils/paths.py`.
 
 ## Code
