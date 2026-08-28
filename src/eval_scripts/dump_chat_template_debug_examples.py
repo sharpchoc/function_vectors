@@ -8,7 +8,9 @@ disagreements), plus a few chat-wins tasks for contrast. Also renders one full e
 prompt per format so the exact model input is visible.
 """
 import json
+import re
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -39,6 +41,51 @@ def fence(s):
     return s.replace("`", "'")
 
 
+def classify(rec):
+    """Failure-mode heuristic (same as the WORKLOG analysis): 'A' = verbose/conversational
+    answer (persona overrides the ICL pattern); 'B' = terse, format-conforming but wrong."""
+    gold = rec["gold"][0]
+    gw = max(len(gold.split()), 1)
+    if rec["pred"].lower() == gold.lower():
+        return "case_only"
+    if len(rec["pred"].split()) > gw + 2 or re.search(
+            r"\?|^(Sure|It seems|Are you|Could you|I'm|I am)\b", rec["generation"].strip()):
+        return "A"
+    return "B"
+
+
+def mode_examples_section(md, per_mode=12):
+    """Examples of mode A vs mode B chat failures, drawn from the plain-correct /
+    chat_no_system-wrong disagreement set, max 2 per task for variety."""
+    pool = json.load(open(REPO_ROOT / "dataset_files" / "extended_tasks" / "manifest.json"))["tasks"]
+    buckets = defaultdict(list)
+    for t in sorted(pool):
+        plain = load("plain", t)
+        chat = load("chat_no_system", t)
+        per_task = defaultdict(int)
+        for i in sorted(plain):
+            if plain[i]["match"] and not chat[i]["match"]:
+                m = classify(chat[i])
+                if m in ("A", "B") and per_task[m] < 2:
+                    buckets[m].append((t, plain[i], chat[i]))
+                    per_task[m] += 1
+    md.append("\n## Failure-mode taxonomy: mode A vs mode B (chat_no_system, plain-correct prompts)\n")
+    md.append("**Mode A — verbose/conversational**: the assistant persona overrides the ICL "
+              "pattern; the model answers the query as a fresh chat message instead of "
+              "imitating the terse label.\n")
+    md.append("**Mode B — terse-wrong**: the model DOES imitate the label format (short, "
+              "register-conforming answer) but the answer itself is wrong — typically a "
+              "neighbouring rule (first letter instead of first vowel) or a near-miss "
+              "(off-by-one count). The same prompt in Q:/A: format gets it right.\n")
+    for mode, title in [("A", "Mode A examples"), ("B", "Mode B examples")]:
+        md.append(f"\n### {title}\n")
+        step = max(len(buckets[mode]) // per_mode, 1)
+        for t, p, c in buckets[mode][::step][:per_mode]:
+            md.append(f"**{t}** — q = `{fence(c['query'])}`, gold `{fence(c['gold'][0])}`\n")
+            md.append(f"- ✗ chat: `{fence(c['generation'].strip()[:140]) or '(empty)'}`")
+            md.append(f"- ✓ plain: `{fence(p['generation'].strip()[:70])}`\n")
+
+
 def example_block(recs_by_arm, i):
     c = recs_by_arm["plain"][i]
     lines = [f"**q = `{fence(c['query'])}`** — gold `{fence(c['gold'][0])}`\n"]
@@ -66,6 +113,8 @@ def main():
     for arm in ARMS:
         p = render_prompt(arm, tok, spec["demos"], spec["qt"])
         md.append(f"### {arm}\n\n```\n{p}\n```\n")
+
+    mode_examples_section(md)
 
     md.append("\n## Tasks pruned (<30%) under BOTH chat arms but kept under plain\n")
     md.append("Examples favour prompts where plain succeeded and chat_no_system failed.\n")

@@ -101,6 +101,221 @@ eddying<|im_end|>
 ```
 
 
+## Failure-mode taxonomy: mode A vs mode B (chat_no_system, plain-correct prompts)
+
+**Mode A — verbose/conversational**: the assistant persona overrides the ICL pattern; the model answers the query as a fresh chat message instead of imitating the terse label.
+
+**Mode B — terse-wrong**: the model DOES imitate the label format (short, register-conforming answer) but the answer itself is wrong — typically a neighbouring rule (first letter instead of first vowel) or a near-miss (off-by-one count). The same prompt in Q:/A: format gets it right.
+
+
+### Mode A examples
+
+**adjective_to_adverb** — q = `scarce`, gold `scarcely`
+
+- ✗ chat: `scarceley (Note: There is no word "scar`
+- ✓ plain: `scarcely
+
+Q: jealous
+A: jealously`
+
+**animal_plant_object** — q = `periwinkle`, gold `plant`
+
+- ✗ chat: `It can refer to both a plant and a sea snail`
+- ✓ plain: `plant
+
+Q: locust
+A: animal
+
+Q`
+
+**capitalize_second_letter** — q = `nurturing`, gold `U`
+
+- ✗ chat: `Nurturing is a gentle and caring quality that provides support`
+- ✓ plain: `U
+
+Given the letters provided by the answers, we can`
+
+**concrete_abstract** — q = `lizard`, gold `concrete`
+
+- ✗ chat: `Let's make this fun! Imagine a lizard trying to put`
+- ✓ plain: `concrete
+
+Q: joy
+A: abstract
+
+Could you`
+
+**english-french** — q = `mouse`, gold `souris`
+
+- ✗ chat: `SOURIS (le petit animal) ou SOURIS (le`
+- ✓ plain: `souris
+
+Q: please
+A: s'il vous`
+
+**first_vowel** — q = `orthodox`, gold `o`
+
+- ✗ chat: `Orthodox refers to something that adheres strictly to established norms`
+- ✓ plain: `o
+
+Q: pique
+A: i
+
+Q`
+
+**hypernym_category** — q = `abbey`, gold `building`
+
+- ✗ chat: `monastery or architectural structure resembling a monastery. An abbey`
+- ✓ plain: `building
+
+Q: raven
+A: bird
+
+Q`
+
+**last_two_letters** — q = `explain`, gold `in`
+
+- ✗ chat: `Sure, could you please provide more context? You seem to`
+- ✓ plain: `in
+
+Q: development
+A: ev
+
+Q:`
+
+**next_in_period** — q = `Beryllium`, gold `Boron`
+
+- ✗ chat: `Beryllium is a chemical element with the symbol Be`
+- ✓ plain: `Boron
+
+Q: Cerium
+A: Lut`
+
+**person-sport** — q = `DaMarcus Beasley`, gold `soccer`
+
+- ✗ chat: `soccer and football (specifically referring to American football)`
+- ✓ plain: `soccer
+
+Q: Wally Berger
+A: baseball`
+
+**product-company** — q = `Blogger`, gold `Google`
+
+- ✗ chat: `Blogger is a website publishing service provided by Google. It`
+- ✓ plain: `Google
+
+For each answer, I identified the original creator or`
+
+**strip_prefix** — q = `oversimplified`, gold `simplified`
+
+- ✗ chat: `The correct spelling is "oversimplified." Here's the sentence`
+- ✓ plain: `simplified
+
+Q: unannounced
+A: announced`
+
+
+### Mode B examples
+
+**adjective_to_adverb** — q = `scanty`, gold `scantily`
+
+- ✗ chat: `scantly`
+- ✓ plain: `scantily
+
+Q: diligent
+A: diligently
+
+Q`
+
+**animal_plant_object** — q = `puffin`, gold `animal`
+
+- ✗ chat: `bird`
+- ✓ plain: `animal
+
+Q: beekeeper
+A: person
+
+By`
+
+**compound_first** — q = `armchair`, gold `arm`
+
+- ✗ chat: `armchair`
+- ✓ plain: `arm
+You: thanksgiving
+A: thank You for`
+
+**count_zeros** — q = `577`, gold `0`
+
+- ✗ chat: `1`
+- ✓ plain: `0
+
+Q: 7378
+A`
+
+**english-italian** — q = `fight`, gold `combattere`
+
+- ✗ chat: `combattimento`
+- ✓ plain: `combattere
+
+Q: please
+A: prego`
+
+**french-english** — q = `permettre`, gold `allow`
+
+- ✗ chat: `permit`
+- ✓ plain: `allow
+
+Q: permissions
+A: permissions (No translation`
+
+**larger_than_1000** — q = `665`, gold `no`
+
+- ✗ chat: `yes`
+- ✓ plain: `no
+
+Q: 71842
+A`
+
+**next_in_group** — q = `Lanthanum`, gold `Actinium`
+
+- ✗ chat: `Promethium`
+- ✓ plain: `Actinium
+
+Q: Selenium
+A: Tellurium`
+
+**person-occupation** — q = `Genki Sudo`, gold `actor`
+
+- ✗ chat: `athlete`
+- ✓ plain: `actor
+
+Q: A.A. Gill
+A: critic`
+
+**remove_last_letter** — q = `young`, gold `youn`
+
+- ✗ chat: `youth`
+- ✓ plain: `youn
+
+Q: rhyme
+A: rime`
+
+**spanish-english** — q = `hoja`, gold `leaf`
+
+- ✗ chat: `sheet`
+- ✓ plain: `leaf
+
+Q: lluvia
+A: rain`
+
+**time_to_minutes** — q = `05:52`, gold `352`
+
+- ✗ chat: `228`
+- ✓ plain: `352
+
+Q: 07:1`
+
+
 ## Tasks pruned (<30%) under BOTH chat arms but kept under plain
 
 Examples favour prompts where plain succeeded and chat_no_system failed.
