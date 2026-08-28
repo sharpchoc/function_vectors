@@ -64,8 +64,8 @@ elif cmd == "list":
 elif cmd == "terminate":
     pid = sys.argv[2]
     own = Path(__file__).parent / "own_pod_id"
-    assert own.exists() and own.read_text().strip() == pid, \
-        "refusing: not the pod id recorded by this session"
+    assert own.exists() and pid in own.read_text().split(), \
+        "refusing: not a pod id recorded by this session"
     print(json.dumps(gql('mutation { podTerminate(input:{podId:"%s"}) }' % pid, write=True)))
 else:
     raise SystemExit("unknown cmd")
