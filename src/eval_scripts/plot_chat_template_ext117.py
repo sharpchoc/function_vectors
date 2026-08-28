@@ -36,8 +36,9 @@ ARM_TITLES = {"chat_blank_system": "chat template, blank system prompt",
 
 # validated reference palette (matches plot_extended_nshot_bar.py)
 C_NEW, C_ORIG = "#2a78d6", "#eb6834"
+C_PRUNED = "#c3c8ce"
 SURFACE, INK, INK2 = "#fcfcfb", "#0b0b0b", "#52514e"
-REF_LINE = 0.30
+PRUNE_AT = 0.30
 ARM_COLORS = {"chat_blank_system": "#2a78d6", "chat_no_system": "#7c4dbe",
               "plain": "#eb6834", "gptj": "#52514e"}
 
@@ -97,7 +98,10 @@ def main():
     for arm in ARMS:
         rows = sorted(tasks, key=lambda t: acc[arm][t])
         accs = [acc[arm][t] for t in rows]
-        colors = [C_NEW if meta[t]["origin"] == "new" else C_ORIG for t in rows]
+        # same pruning rule as the GPT-J reference plot: tasks under 30% in THIS arm are greyed
+        colors = [C_PRUNED if acc[arm][t] < PRUNE_AT
+                  else (C_NEW if meta[t]["origin"] == "new" else C_ORIG) for t in rows]
+        n_pruned = sum(1 for a in accs if a < PRUNE_AT)
         fig, ax = plt.subplots(figsize=(30, 6.5))
         fig.patch.set_facecolor(SURFACE)
         ax.set_facecolor(SURFACE)
@@ -116,12 +120,16 @@ def main():
             ax.spines[s].set_visible(False)
         for s in ("left", "bottom"):
             ax.spines[s].set_color(INK2)
-        ax.axhline(REF_LINE, color=INK2, lw=1.1, ls="--", alpha=0.7)
-        ax.text(1, REF_LINE + 0.012, "30% reference (GPT-J pruning threshold)", fontsize=9, color=INK2)
-        n_new = sum(1 for t in rows if meta[t]["origin"] == "new")
+        ax.axhline(PRUNE_AT, color=INK2, lw=1.1, ls="--", alpha=0.7)
+        ax.text(1, PRUNE_AT + 0.012, "pruning threshold (30%)", fontsize=9, color=INK2)
+        n_new = sum(1 for t in rows if meta[t]["origin"] == "new" and acc[arm][t] >= PRUNE_AT)
+        n_orig = sum(1 for t in rows if meta[t]["origin"] != "new" and acc[arm][t] >= PRUNE_AT)
         ax.legend(handles=[Patch(color=C_NEW, label=f"new task ({n_new})"),
-                           Patch(color=C_ORIG, label=f"original abstractive ({len(rows) - n_new})")],
+                           Patch(color=C_ORIG, label=f"original abstractive ({n_orig})"),
+                           Patch(color=C_PRUNED, label=f"pruned tasks, <30% ({n_pruned})")],
                   loc="upper left", fontsize=10, frameon=False)
+        print(f"{arm}: {n_pruned} pruned (<30%), {len(rows) - n_pruned} kept "
+              f"({n_new} new + {n_orig} original)")
         fig.tight_layout()
         out = OUT_DIR / f"bar_{args.n}shot_{arm}.png"
         fig.savefig(out, dpi=150, facecolor=SURFACE)
