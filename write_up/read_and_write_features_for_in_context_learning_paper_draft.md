@@ -9,20 +9,40 @@ We study how models learn in context. Namely, previous work has shown the existe
 ## Related Work
 (TBD)
 
+## Terminology
+
+- $L$ — the set of layers; $J$ — the set of attention heads.
+- $d_{\mathrm{model}}$ — residual-stream width; $d_{\mathrm{head}}$ — per-head width.
+- $\mathcal{T}$ — the task universe (antonym, synonym, English–French, country–capital, …);
+  $A \in \mathcal{T}$ is a task.
+- $p_A^j$ — the $j$-th prompt for task $A$; $\mathcal{P}_A = \{p_A^j\}_j$ — the prompt set
+  for $A$ (varying in ICL context length, unless explicitly mentioned otherwise).
+- $a_{\ell, A} \in \mathbb{R}^{d_{\mathrm{model}}}$ — the activation at layer $\ell$ for
+  task $A$.
+- $z^t_\ell$ — the residual stream at layer $\ell$ at token $t$.
+- $h$ — a head; $h(p_A^j) \in \mathbb{R}^{d_{\mathrm{model}}}$ — the head activation at the
+  final token position (final cue token) on prompt $p_A^j$.
+- The head vector $h_A = \frac{1}{|\mathcal{P}_A|} \sum_j h(p_A^j)$ — the average head
+  activation for task $A$.
+- $v_A = \sum_{h \in H} h_A$ — the function vector for task $A$, where $H$ is the selected
+  subset of heads in our definition of function vectors (the **write feature**).
+- $v^j_A = \sum_{h \in H} h(p_A^j)$ — the per-prompt function vector for prompt $j$ on
+  task $A$.
+- $m_A(\ell)$ — the task-mean residual-stream activation at demonstration *label* tokens
+  at layer $\ell$; $m_A(\mathrm{L6})$ is the **read feature**.
+
 ## Setup
 
 - **Model:** GPT-J-6B (28 layers × 16 heads).
 - **Tasks:** 69 word-level ICL tasks (translation, morphology, world knowledge, string ops,
   classification, numerical); fixed split of 55 train / 14 held-out tasks
-- **Write feature:** the function vector $v_A = \sum_{h \in H} \bar h_A$: the sum of 37
+- **Write feature:** the function vector $v_A = \sum_{h \in H} h_A$: the sum of 37
   attention heads' mean final-cue-token outputs for task $A$. The head set $H$ is selected
   once, by pooled sparse optimisation on the 55 train tasks only.
 - **Read feature:** the task-mean residual-stream activation at demonstration *label*
   tokens, layer 6 ($m_A(\mathrm{L6})$). A raw mean — no head selection, no differencing.
 - **Readout:** 150 fixed prompts per task; temperature-1 sampled exact-match accuracy.
   $\alpha$ is the injection scale for steering.
-## Terminology
-
 ## 1. Write features generalise to unseen tasks
 
 The 37-head set is chosen on the 55 train tasks only, yet summing those heads' mean
@@ -250,8 +270,8 @@ steering loss on zero-shot prompts summed over the 55 train tasks, + $\lambda\|c
 $\lambda = 0.005$ by 5-fold task cross-validation; heads kept at $c > 0.8$ → 37 heads
 spanning layers 3–27, densest at 12–15.
 
-**Definitions** (per the project glossary): head vector $\bar h_A$ = mean final-cue-token
-output of head $h$ on task $A$'s prompts; function vector $v_A = \sum_{h\in H} \bar h_A$;
+**Definitions** (per the project glossary): head vector $h_A$ = mean final-cue-token
+output of head $h$ on task $A$'s prompts; function vector $v_A = \sum_{h\in H} h_A$;
 per-prompt FV $v^j_A$ = the same sum on a single prompt. The read feature
 $m_A(\mathrm{L6})$ is the task-mean block-6 residual at demonstration label tokens.
 
