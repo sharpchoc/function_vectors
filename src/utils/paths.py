@@ -30,16 +30,22 @@ ARTIFACTS_ROOT = _root("FV_ARTIFACTS_ROOT", "artifacts")   # gitignored intermed
 RESULTS_ROOT = _root("FV_RESULTS_ROOT", "results")         # tracked study deliverables
 LOGS_ROOT = _root("FV_LOGS_ROOT", "logs")                  # gitignored run logs
 
-# Research-direction buckets under results/ (tracked).
-AMBIGUOUS_DIR = RESULTS_ROOT / "direction1_ambiguous"
-LABEL_GEOMETRY_DIR = RESULTS_ROOT / "direction2_label_geometry"
-FV_FORMATION_DIR = RESULTS_ROOT / "direction3_fv_formation"
-STEERING_COMPARISON_DIR = RESULTS_ROOT / "steering_vector_comparison"
-GENERAL_DIR = RESULTS_ROOT / "general"
+# Mainstream buckets under results/ (tracked) — the settled research line (DECISIONS 2026-08-28):
+# the 69-task read/write-feature study and steering-vector-method comparisons.
 TASK69_RUN_DIR = RESULTS_ROOT / "69_task_run"  # canonical 69-task pool studies (DECISIONS 2026-08-16)
+STEERING_COMPARISON_DIR = RESULTS_ROOT / "steering_vector_comparison"
+
+# Exploratory buckets — research directions that did not pan out, quarantined under
+# results/exploratory/ on 2026-08-28 (DECISIONS entry of that date). Kept for possible
+# later revisits; do NOT build new mainstream results on them without user promotion.
+EXPLORATORY_ROOT = RESULTS_ROOT / "exploratory"
+AMBIGUOUS_DIR = EXPLORATORY_ROOT / "direction1_ambiguous"
+LABEL_GEOMETRY_DIR = EXPLORATORY_ROOT / "direction2_label_geometry"
+FV_FORMATION_DIR = EXPLORATORY_ROOT / "direction3_fv_formation"
+GENERAL_DIR = EXPLORATORY_ROOT / "general"
 
 __all__ = [
     "REPO_ROOT", "ARTIFACTS_ROOT", "RESULTS_ROOT", "LOGS_ROOT",
-    "AMBIGUOUS_DIR", "LABEL_GEOMETRY_DIR", "FV_FORMATION_DIR",
-    "STEERING_COMPARISON_DIR", "GENERAL_DIR", "TASK69_RUN_DIR",
+    "TASK69_RUN_DIR", "STEERING_COMPARISON_DIR", "EXPLORATORY_ROOT",
+    "AMBIGUOUS_DIR", "LABEL_GEOMETRY_DIR", "FV_FORMATION_DIR", "GENERAL_DIR",
 ]

@@ -25,6 +25,11 @@ The datasets used in our project can be found in the `dataset_files` folder.
 
 ## Repository layout
 
+**The mainstream research line of this fork is the 69-task read/write-feature study**: in-context
+learning is mediated by a *write feature* (the function vector, built from 37 attention heads) and a
+*read feature* (the early-layer mean activation at label tokens). Start with
+`results/69_task_run/README.md`, `write_up/icl_read_write_features/`, WORKLOG.md, and DECISIONS.md.
+
 Results are split into two roots, configured centrally in `src/utils/paths.py` (override with
 `FV_ARTIFACTS_ROOT` / `FV_RESULTS_ROOT` / `FV_LOGS_ROOT`):
 
@@ -33,18 +38,26 @@ Results are split into two roots, configured centrally in `src/utils/paths.py` (
   small head-selection metadata (`multitask_top_aie_heads*`, `heads.pt`, `heads_metadata.json`,
   `fv_manifest*.json`, `selected_heads.json`) — the output of the expensive CIE head-ranking, kept so
   function vectors can be rebuilt without recomputing it.
-- **`results/`** (tracked) — study deliverables (figures + summary tables), organized by research direction:
-  - `direction1_ambiguous/` — FV development on ambiguous ICL tasks (e.g. magnitude/identity).
-  - `direction2_label_geometry/` — label- vs pre-label-token geometry and task-switch steering.
-  - `direction3_fv_formation/` — FV formation across layers/positions (activation→FV regression,
-    decodability and cosine heatmaps).
-  - `steering_vector_comparison/` — steering effectiveness of different FV-construction methods.
-  - `general/` — exploratory / uncategorized results.
+- **`results/`** (tracked) — study deliverables (figures + summary tables):
+  - `69_task_run/` — **mainstream**: the 69-task read/write-feature study (see its README for the
+    bucket taxonomy).
+  - `steering_vector_comparison/` — **mainstream**: steering effectiveness of different
+    FV-construction methods.
+  - `sandbox/` — quarantined trials, not repo standard (see DECISIONS.md); never build on these
+    without explicit user promotion.
+  - `exploratory/` — research directions that did not pan out, kept for possible revisits (see its
+    README): `direction1_ambiguous/`, `direction2_label_geometry/`, `direction3_fv_formation/`,
+    `general/`. Same rule: never build on these without explicit user promotion.
 - **`logs/`** (git-ignored) — run logs.
 
+Code follows the same split: `src/eval_scripts/` holds the mainstream scripts, and
+`src/eval_scripts/exploratory/` the scripts that only serve the exploratory buckets.
+`src/sandbox/` is unchanged (note `src/sandbox/ext_steerability/` is the compute backend of the
+69-task line despite its location).
+
 Scripts never hardcode these paths: import `ARTIFACTS_ROOT`, `RESULTS_ROOT`, `LOGS_ROOT` and the bucket
-constants (`AMBIGUOUS_DIR`, `LABEL_GEOMETRY_DIR`, `FV_FORMATION_DIR`, `STEERING_COMPARISON_DIR`,
-`GENERAL_DIR`) from `src/utils/paths.py`.
+constants (`TASK69_RUN_DIR`, `STEERING_COMPARISON_DIR`, `EXPLORATORY_ROOT`, `AMBIGUOUS_DIR`,
+`LABEL_GEOMETRY_DIR`, `FV_FORMATION_DIR`, `GENERAL_DIR`) from `src/utils/paths.py`.
 
 ## Code
 Our main evaluation scripts are contained in the `src` directory with sample script wrappers in `src/eval_scripts`.

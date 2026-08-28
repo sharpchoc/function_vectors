@@ -5,6 +5,65 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-28 — Repo restructure: mainstream vs results/exploratory/ (user-approved plan)
+
+**Owner:** Claude Code background agent, main working tree (no worktree). **Status:** DONE.
+
+**What (user request):** structure the repo around the settled mainstream line (the 69-task
+read/write-feature study + steering-vector comparisons + write_up) and quarantine the retired
+research directions in a clearly non-mainstream location. See the new DECISIONS.md 2026-08-28
+entry for the rules.
+
+**Commands / changes:**
+- `git mv results/{direction1_ambiguous,direction2_label_geometry,direction3_fv_formation,general}`
+  → `results/exploratory/` (file counts verified identical: 222 / 4859 / 2828 / 509; untracked
+  npz etc. came along). Added `results/exploratory/README.md`.
+- `git mv` of 129 exploratory-only scripts → `src/eval_scripts/exploratory/` (109 by bucket-constant
+  grep + 17 artifacts-only old-direction compute scripts + 4 Qwen3 scripts, minus
+  `regress_activation_to_fv_fulldim_ridge.py` moved back: it's a ridge library imported by the
+  mainstream labeltoken-ridge scripts). `results/sandbox/`, `src/sandbox/` untouched.
+- `src/utils/paths.py`: new `EXPLORATORY_ROOT`; `AMBIGUOUS_DIR`/`LABEL_GEOMETRY_DIR`/
+  `FV_FORMATION_DIR`/`GENERAL_DIR` reparented under it. `.gitignore` recreate_fig8 rule updated.
+- Moved scripts: sys.path bootstraps bumped one level (`parents[2]`→`[3]`, `parents[1]`→`[2]`,
+  `".."`→`"..", ".."`, plus HERE/REPO variants); `eval_scripts.<mod>` imports of moved modules
+  rewritten to `eval_scripts.exploratory.<mod>` (also in `src/sandbox/perprompt_fv/`, whose import
+  targets moved). `plot_magid_fv_projection*.py` stale pre-split `results/gptj_fv_ambiguous...`
+  input paths fixed to `artifacts/...`. `make_ext_split.py` inline `RESULTS_ROOT/"general"` →
+  `GENERAL_DIR`. Docstring/help-text `results/<old bucket>` mentions sed-updated across `src/`.
+- Doc pass: README "Repository layout", CLAUDE.md "Results & artifacts layout", DECISIONS.md entry.
+
+**Verification:** `py_compile` over all of `src/` clean; `--help` smoke tests green on 15+ moved,
+mainstream, and sandbox scripts; `from utils.paths import *` resolves; no stale imports or
+`results/<old>` runtime refs left (grep).
+
+**Findings:** `decode_fv_map_and_project.py` was already stale before the move (reads
+long-gone `results/residual_activations/`; left as-is in exploratory). The `from src.eval_scripts.*`
+import style requires repo root on PYTHONPATH — pre-existing convention, unchanged.
+
+**Next:** other live streams should merge main before their next plotting run — scripts on old
+branches inherit the new paths via paths.py automatically after merge. **Blockers:** none.
+
+---
+
+## 2026-08-28 — Paper draft: Terminology section filled from glossary §1
+
+**Owner:** Claude Code background agent, main working tree (no worktree). **Status:** DONE.
+
+**What (user request):** make `write_up/read_and_write_features_for_in_context_learning_paper_draft.md`
+self-contained by copying the §1 Terminology definitions from `write_up/task_id_im_subspaces.md`
+into the draft's empty "## Terminology" section. §1 ONLY — the glossary's §2–3 read-direction
+definition is stale per user, so nothing from those sections was carried over.
+
+**Files:** `write_up/read_and_write_features_for_in_context_learning_paper_draft.md` only —
+filled the Terminology section (L/J/h, d_model/d_head, T and A, p^j_A and P_A, a_{ℓ,A}, z^t_ℓ,
+h(p^j_A), head vector h_A, function vector v_A, per-prompt FV v^j_A) and removed the duplicate
+empty "## Terminology" heading that sat between Setup and §1. Glossary untouched.
+
+**Note:** the draft's Setup and Appendix A write the head-vector mean as $\bar h_A$; the glossary
+(and the new Terminology section) use plain $h_A$. Not changed — flagged for the user to adjudicate.
+
+---
+
 ## 2026-08-20 — FV presence ABOVE the generic-FV baseline vs accuracy @ L13 (69-task pool, "presence-gm" agent)
 
 **Owner:** Claude Code background agent, branch `worktree-agent-a873fed4d84e79f82` (worktree

@@ -1,5 +1,34 @@
 # DECISIONS
 
+## 2026-08-28 — Repo restructured around the mainstream line; retired directions → results/exploratory/ (user decision)
+
+- **The mainstream research line is the 69-task read/write-feature study** (write feature =
+  37-head FV, read feature = early-layer label-token mean). Mainstream results buckets:
+  `results/69_task_run/` and `results/steering_vector_comparison/`. `write_up/` is entirely
+  mainstream. Anything essential to 69_task_run work counts as mainstream regardless of where
+  it lives (e.g. `src/sandbox/ext_steerability/` — its compute backend — and
+  `src/eval_scripts/regress_activation_to_fv_fulldim_ridge.py`, a ridge library the
+  labeltoken-ridge scripts import).
+- **Retired directions moved to `results/exploratory/`** (git mv, history preserved):
+  `direction1_ambiguous/`, `direction2_label_geometry/`, `direction3_fv_formation/`,
+  `general/`. They did not pan out; kept for possible revisits, but NEVER build new results
+  on them without explicit user promotion (same rule as sandbox). See
+  `results/exploratory/README.md`.
+- **Their scripts moved to `src/eval_scripts/exploratory/`** (129 files): every script whose
+  only results bucket was a moved one (by grep on the `AMBIGUOUS_DIR`/`LABEL_GEOMETRY_DIR`/
+  `FV_FORMATION_DIR`/`GENERAL_DIR` constants), plus artifacts-only compute scripts of those
+  directions (paired captures, payload/preimage fits, magid plots) and the retired Qwen3
+  side line (`run_qwen3_*`, `run_varicl_qwen3`). Their sys.path bootstraps were bumped one
+  level and `eval_scripts.<module>` imports of moved modules rewritten to
+  `eval_scripts.exploratory.<module>`.
+- **`results/sandbox/` and `src/sandbox/` are unchanged** (already quarantined by the
+  2026-08-06/08 decisions).
+- **`paths.py` is why this move was cheap:** the four bucket constants were reparented under
+  the new `EXPLORATORY_ROOT`; no runtime code hardcoded the old paths, so scripts on old
+  branches pick up the new locations automatically after merging main. Docstring/help-text
+  path mentions in `src/` were sed-updated; WORKLOG/DECISIONS history intentionally keeps
+  old paths (prepend `exploratory/` when reading pre-2026-08-28 entries).
+
 ## 2026-08-19 — FV cue-token ablation protocol (user-adjudicated) + pod lessons
 
 - **FV ablation study design (user decisions):** ablate the unit 37-head task-FV direction

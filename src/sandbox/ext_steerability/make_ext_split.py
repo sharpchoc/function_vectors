@@ -2,7 +2,7 @@
 """SANDBOX: build the extended-tasks steerable-90 train/heldout task split.
 
 Filter: 6-shot accuracy >= 0.30 in the stored extended-tasks n-shot sweep
-(results/general/extended_tasks_nshot_sweep/nshot_accuracy.csv; full-label exact match on
+(results/exploratory/general/extended_tasks_nshot_sweep/nshot_accuracy.csv; full-label exact match on
 T=1.0 samples, 50 prompts/task). Split: numpy RandomState(seed).permutation of the SORTED
 filtered list, first 80% train / rest heldout. Hard gate: filtered count == 90.
 """
@@ -18,13 +18,13 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 for p in (REPO_ROOT, REPO_ROOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
-from src.utils.paths import RESULTS_ROOT
+from src.utils.paths import GENERAL_DIR
 
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--nshot_csv", type=Path,
-                   default=RESULTS_ROOT / "general" / "extended_tasks_nshot_sweep" / "nshot_accuracy.csv")
+                   default=GENERAL_DIR / "extended_tasks_nshot_sweep" / "nshot_accuracy.csv")
     p.add_argument("--dataset_root", type=Path, default=REPO_ROOT / "dataset_files" / "extended_tasks")
     p.add_argument("--threshold", type=float, default=0.30)
     p.add_argument("--n_shots", type=int, default=6)

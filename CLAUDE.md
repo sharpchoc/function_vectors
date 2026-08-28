@@ -33,9 +33,16 @@ Before starting work:
 
 Results & artifacts layout:
 - Intermediates (activation captures, function vectors, head selections, paired-task captures) live in
-  git-ignored `artifacts/`. Study deliverables (figures, summary tables) live in tracked `results/`,
-  bucketed by research direction: `direction1_ambiguous`, `direction2_label_geometry`,
-  `direction3_fv_formation`, `steering_vector_comparison`, `general`. Run logs go in git-ignored `logs/`.
+  git-ignored `artifacts/`. Study deliverables (figures, summary tables) live in tracked `results/`.
+  Run logs go in git-ignored `logs/`.
+- MAINSTREAM results buckets (DECISIONS 2026-08-28): `results/69_task_run/` (the read/write-feature
+  study — new results go in one of its buckets, see its README) and
+  `results/steering_vector_comparison/`. New work lands there unless the user says otherwise.
+- NOT mainstream: `results/exploratory/` (retired research directions direction1_ambiguous,
+  direction2_label_geometry, direction3_fv_formation, general — see its README) and
+  `results/sandbox/` (quarantined trials). NEVER build new results on either without explicit user
+  promotion. Their scripts live in `src/eval_scripts/exploratory/` and `src/sandbox/` respectively
+  (`src/sandbox/ext_steerability/` is the exception: it is the 69-task line's compute backend).
 - NEVER hardcode `results/...` or `figures/...` paths. Import `ARTIFACTS_ROOT`, `RESULTS_ROOT`,
   `LOGS_ROOT` and the bucket constants from `src/utils/paths.py`. See README "Repository layout".
 

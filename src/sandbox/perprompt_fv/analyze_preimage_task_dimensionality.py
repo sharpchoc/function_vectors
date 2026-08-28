@@ -41,7 +41,7 @@ for p in (str(REPO_ROOT), str(SRC_ROOT)):
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from eval_scripts.merge_fulldim_ridge_results import position_key, position_label  # noqa: E402
+from eval_scripts.exploratory.merge_fulldim_ridge_results import position_key, position_label  # noqa: E402
 from utils.paths import ARTIFACTS_ROOT, RESULTS_ROOT  # noqa: E402
 
 DEFAULT_TASKS = ["commonsense_qa", "national_parks", "capitalize", "capitalize_first_letter"]

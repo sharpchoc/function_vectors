@@ -46,7 +46,7 @@ for p in (str(REPO_ROOT), str(SRC_ROOT)):
     if p not in sys.path:
         sys.path.insert(0, p)
 
-from src.eval_scripts.ablate_oneshot_preimage_logprob import (  # noqa: E402
+from src.eval_scripts.exploratory.ablate_oneshot_preimage_logprob import (  # noqa: E402
     N_EDIT_LAYERS,
     ROW_SITE,
     SITE_INDEX,
