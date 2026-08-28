@@ -35,6 +35,10 @@ GPT-J 6-shot reference joined from
 Files: `accuracy_6shot.csv` (per task), `summary.csv` (per arm), `bar_6shot_<arm>.png`
 (ranked ascending bars, style of the GPT-J `nshot_bar_6shot.png`), `arm_comparison_6shot.png`.
 
+`debug/failure_mode_analysis.md` — READ THIS for why chat underperforms: the two failure modes
+(persona override vs loose rule binding), their rates, and why adjusting for the persona still
+leaves a real deficit. `debug/sampled_responses.md` — readable example generations per arm.
+
 ## Scripts
 
 - compute (GPU): `src/eval_scripts/eval_chat_template_ext117.py` (sharded `--shard_idx/--shard_n`,
