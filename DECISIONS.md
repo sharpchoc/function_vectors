@@ -1472,3 +1472,14 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   ~1.7e-2 in delta-log-p across GPU architectures (L4 vs prior pod, identical code). A code
   no-op check must compare old-code-vs-new-code on one GPU (expect exactly 0.0), never
   new-code-on-GPU-A vs stored-run-from-GPU-B with a tight tolerance.
+
+## 2026-08-28 — No more side branches for background sessions
+
+USER DECISION: all work should land directly on the fork's main / the shared checkout —
+no more worktree-* side branches. Background-session worktree isolation is to be disabled
+by creating .claude/settings.json with {"worktree": {"bgIsolation": "none"}} (the file
+must be created by the user; the harness blocks sessions from writing their own settings).
+Until that file exists, any background session will still be forced onto a worktree branch
+— it should then remind the user to merge, and keep everything pushed.
+Caveat accepted: with isolation off, PARALLEL background jobs edit the same checkout —
+avoid running two agents on overlapping files at the same time (see WORKLOG conventions).
