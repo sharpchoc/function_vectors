@@ -1,23 +1,19 @@
 # Read and Write Features for In-Context Learning
 
-*Paper draft — mirrors the HTML write-up (`icl_read_write_features/`) as of 2026-08-28. All
-numbers from `results/69_task_run/`; figure paths are relative to `write_up/`. Terminology
-follows `task_id_im_subspaces.md`.*
+## Abstract
+(TBD)
 
-In-context learning in GPT-J runs through two residual-stream features: a **read feature**
-that sits at demonstration label tokens in the early layers, and a **write feature** (the
-function vector) that forms at cue tokens in the middle layers and drives the answer. Both
-are causally necessary and sufficient, the read feature decomposes into a shared carrier
-plus a low-dimensional task-unique code, and the map between the two codes is — to first
-order — a rigid rotation between nearly orthogonal subspaces. This note walks through the
-evidence for each feature and for the pipeline between them.
+## Introduction
+We study how models learn in context. Namely, previous work has shown the existence of "function vectors" which are the write features that are causal representations of functions at the tokens directly prior to the output of the function. We define this as the write feature so that we can introduce the concept of read features which are representations that the model uses to infer the task, but not actually imitate it. The **read feature** sits at demonstration label tokens in the early layers, and is causal in forming the **write feature** at cue tokens in the middle layers and drives the answer. We show that both are causally necessary and sufficient and various claims about the nature of these features and their relationship.
+
+## Related Work
+(TBD)
 
 ## Setup
 
 - **Model:** GPT-J-6B (28 layers × 16 heads).
 - **Tasks:** 69 word-level ICL tasks (translation, morphology, world knowledge, string ops,
   classification, numerical); fixed split of 55 train / 14 held-out tasks
-  (`task_splits/extended_steerable_69_prunedfail.json`).
 - **Write feature:** the function vector $v_A = \sum_{h \in H} \bar h_A$: the sum of 37
   attention heads' mean final-cue-token outputs for task $A$. The head set $H$ is selected
   once, by pooled sparse optimisation on the 55 train tasks only.
@@ -25,6 +21,7 @@ evidence for each feature and for the pipeline between them.
   tokens, layer 6 ($m_A(\mathrm{L6})$). A raw mean — no head selection, no differencing.
 - **Readout:** 150 fixed prompts per task; temperature-1 sampled exact-match accuracy.
   $\alpha$ is the injection scale for steering.
+## Terminology
 
 ## 1. Write features generalise to unseen tasks
 
@@ -39,8 +36,7 @@ single one of the 69 tasks improves in both test settings (mixed-task 10-shot: 0
 ![Per-task lift, all 69 tasks](../results/69_task_run/FV_train_test_generalisation/poster_visuals/per_task_lift.png)
 
 *Steering with the train-selected 37-head write feature transfers to held-out tasks; the
-per-task view shows the lift is universal and held-out tasks interleave with train.
-Source: `FV_train_test_generalisation/`.*
+per-task view shows the lift is universal and held-out tasks interleave with train.*
 
 ## 2. Write features are low dimensional
 
@@ -66,7 +62,7 @@ direction leaves 0.107 and counterfactual mean-ablation leaves the baseline inta
 ![FV-direction ablation, 6-shot and 1-shot](../results/69_task_run/FV_ablation/headline_bars_by_shots.png)
 
 *Removing one direction at one token position destroys ICL — at 6 shots and at 1 shot —
-only for the task that owns the direction (layer clamp 9–27). Source: `FV_ablation/`.*
+only for the task that owns the direction (layer clamp 9–27).*
 
 ## 3. Read features exist: task identity is linearly present at label tokens, early
 
@@ -83,8 +79,7 @@ tokens is 0.245.
 ![Full token × layer held-out R² grid](../results/69_task_run/FV_linear_decodability/token_layer_regressions/heldout_r2_heatmap.png)
 
 *Labels are informative from example 1; the cue catches up example by example. The bright
-band is pre-label and label positions of later demos at layers ~8–17.
-Source: `FV_linear_decodability/token_layer_regressions/`.*
+band is pre-label and label positions of later demos at layers ~8–17.*
 
 ## 4. Read features are causal to the output
 
@@ -169,8 +164,7 @@ strength ($\Delta\cos$ to own $v_A$ +0.088 at $\alpha=2$, vs +0.044 to the gener
 And steering *only the first* label slot shows the effect propagating forward with decay:
 the task-specific excess alignment is largest at the very next cue (+0.047 at $\alpha=2$)
 and falls monotonically to +0.010 by the query cue — each demonstration's label refreshes
-a signal that would otherwise fade. Sources:
-`read_write_relationship/{bottom_up_1shot, bottom_up_firstlabel}/`.
+a signal that would otherwise fade.
 
 ## 7. Read features appear earlier in the residual stream than write features
 
@@ -379,8 +373,7 @@ at near-ceiling.
 **Scaffold robustness.** The dummy `_` label is not load-bearing: on a scaffold whose six
 demo labels are real words sampled from *other* tasks' output pools, full-mean steering
 reaches 0.494 (vs 0.447 on underscores) — the injection overrides actively wrong label
-content, not just empty slots. Source:
-`bottom_up_read_features/steering_results/sixshot_randomlabel/`.
+content, not just empty slots.
 
 **No low-dimensional shortcut (across tasks).** Restricting the steering vector to top-k
 centered PCs of the 69 task means retains accuracy roughly linearly in k with no knee:
@@ -450,7 +443,7 @@ LOO-CV $\lambda$) reproduces the per-prompt sweep where they overlap (held-out $
 vs 0.692 at L13, train-mean convention) — consistent with the centroid-memorization
 reading: the 55 task centroids already carry all the transferable signal. Despite
 n=55 << d=4096, LOO-CV picks the smallest $\lambda$ from L6 on (min-norm interpolation
-generalizes; explicit shrinkage hurts). Source: `read_write_relationship/linear_mapping/`.
+generalizes; explicit shrinkage hurts).
 
 ![Seed-split robustness](../results/69_task_run/FV_linear_decodability/labeltoken_fv_ridge/seedsplits/seed_r2.png)
 
@@ -475,8 +468,7 @@ cos-to-grand-mean, L13) strengthens the between-task negativity (ρ −0.39 at n
 alignment to the grand-mean FV itself relates *positively* pooled (ρ 0.54) — the
 between-task sign is a property of the task-specific component. Per-prompt granularity
 (72,450 generations): pooled point-biserial r = 0.36 (L13), driven by the shot-count
-sweep; within a fixed n it is ≈ 0. Sources:
-`write_feature_and_model_accuracy/{diagnostics.txt, per_prompt/, baseline_subtracted/}`.
+sweep; within a fixed n it is ≈ 0.
 
 ## I. Task-unique steering & the carrier-gap hypothesis tests
 
@@ -511,14 +503,12 @@ correct 0.373 vs 0.447; underscore-echo 0.055 vs 0.018 (3×); own-pool wrong-ans
 (degraded on-task attempts), only 8% underscore echoes. The gap is not a different task
 being executed — it is the same task executed worse, favouring a *ratio-preserving
 composite code*: downstream machinery expects carrier and code in natural proportion.
-Sources: `bottom_up_read_features/steering_results/{meanfree_dummy, taskunique_svd_dummy,
-randlabel_swap, attention_to_label_1shot, error_analysis_swap_vs_fullmean}/`.
 
 ![Error anatomy of the carrier gap](../results/69_task_run/bottom_up_read_features/steering_results/error_analysis_swap_vs_fullmean/breakdown_bars.png)
 
 ## J. The rotation analysis in detail
 
-**Data.** X = task-mean label-token residual $m_A(L)$ (`label_resid_means`, L ∈ {6, 13}),
+**Data.** X = task-mean label-token residual $m_A(L)$, L ∈ {6, 13},
 Y = task FV (mean of the 150 per-prompt FVs); 55 train / 14 held-out, fp64.
 
 **Congruence.** All-69 family-centered pairwise cosines: read vs write Pearson 0.932 (L6)
@@ -541,6 +531,5 @@ predictions: rotation 0.82 vs ridge 0.84 (L13). The fitted ridge map's singular 
 on the train span decays smoothly ($\sigma_{10}/\sigma_1 \approx 0.7$,
 $\sigma_{40}/\sigma_1 \approx 0.42$) — the ~5% it adds over the rotation is
 direction-dependent gain, not a different geometry.
-Source: `understanding_read_write_linear_map/`.
 
 ![Cross-family cosine histograms](../results/69_task_run/understanding_read_write_linear_map/crossfamily_cos_hists.png)
