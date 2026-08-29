@@ -85,6 +85,82 @@ branches inherit the new paths via paths.py automatically after merge. **Blocker
 
 ---
 
+## 2026-08-29 — Qwen2.5-7B-Instruct FV derivation (repeat of the GPT-J 69-task pipeline) — NEW branch
+
+**Owner:** Claude Code background agent, main working tree (no worktree). **Status:** IN PROGRESS
+(round-1 fleet running).
+
+**What (user request):** derive FVs for Qwen2.5-7B-Instruct exactly like the GPT-J 69-task line —
+base-sampling Q:/A: prompts (NO chat template, NO `<|endoftext|>` prefix: Qwen has no BOS
+convention, user decision 2026-08-29), competence screen → pooled sparse head selection →
+zs/shuffled/mixed steering eval on train+heldout → prune-refit. Results → NEW top-level
+`results/qwen25_fv/` (`QWEN25_FV_DIR`). Prune threshold: USER decides after seeing round-1
+zs_best distribution (not auto-0.4). λ grid extended to [0.002, 0.005, 0.01, 0.05, 0.2].
+
+**Port (code changes, GPT-J behavior unchanged):** `model_utils.py` + `get_decoder_block` /
+`get_attn_out_proj` / `use_bos_literal`; the 4 hardcoded `model.transformer.h` lookups in
+`run_task.py` / `train_sparse_heads.py` now go through the helpers; `run_task.stage_capture`
+asserts relaxed 150→(≥40, all-consumed) for small-pool tasks; `eval_points_fixed_v` +
+`eval_ext.py` got `--token_budget/--batch_cap` (Qwen 152k vocab → 2500/16); `--mode final` now
+uses `--lambdas` (was module constant); `make_ext_split.py` names the split from the out stem.
+
+**Setup:** screen reused the ext117 plain-arm artifacts (same locked protocol) via new
+`make_qwen25_acc6_csv.py` → 104/117 pass acc6 ≥ 0.30 → `task_splits/qwen25_ext_steerable_104.json`
+(seed 42, 83 train / 21 heldout) → `dataset_files/isolation_prompts_ext_qwen25/` (104 tasks;
+next_in_group/next_in_period capped at 52 train / 14 test prompts — 66-example datasets).
+
+**Smoke (pod, all gates passed):** linearity gate OK on 6 tasks (GQA is a non-issue at o_proj);
+means (28,28,128); sparse training converges (784 heads); tiny-split eval: country-capital zs
+.00→.88 @L9, park-country (heldout) zs .00→.84.
+
+**Fleet:** 10 RTX PRO 4500 pods (2 DOA, replaced by doubling shards on healthy pods); capture
+104/104 done; 25 CV cells running. Driver `logs/qwen25_fv/pod_run.sh`; artifacts
+`artifacts/sandbox/ext_steerability_qwen25/`. New committed `aggregate_eval_headset.py`
+(GPT-J's aggregation was an uncommitted snippet).
+
+**Next:** final selection → eval 104 → aggregate → SHOW USER zs_best distribution for the prune
+decision → refit on pruned split → results/qwen25_fv/ + figures.
+
+---
+
+## 2026-08-29 — Paper draft: claims-table cleanup + Todd et al. (2024) novelty positioning
+
+**Owner:** Claude Code background agent, main working tree. **Status:** DONE.
+
+**What (user request):** in the paper draft — (1) clean the claims table's Section column
+("§Claim N" → "Claim N"); (2) read the function vectors paper (arXiv 2310.15213, Todd et al.,
+ICLR 2024) and reference it where appropriate, stating novelty per claim.
+
+**Key fact verified from the paper:** GPT-J head set = top-10 AIE over ONLY 18 abstractive tasks
+(their App. E, |T|=18 above-baseline filter); Table 2 + App. E.3 then explicitly report those
+same-head FVs working on 34 additional tasks not used in selection (80.4% shuffled / 46.1%
+zero-shot). So per user's conditional, Claim 1 is framed as a *controlled recreation* of their
+result (not "more concrete allusion"). Added: citation at first $v_A$ mention in the circuit
+section; global novelty sentence (claim 1 recreation, claims 2–8 novel); "Relation to Todd et al."
+notes in Claim 1 (recreation, what our version adds), Claim 2 (sufficiency-only there; subspace +
+necessity novel), Claim 3 (their Fig 3b label-attention is the closest contact; representation
+result new), Claim 6 (mid-layer write site consistent with their Figs 3–4; read side has no
+counterpart). PDF cached at $CLAUDE_JOB_DIR/tmp/fv_paper.pdf.
+
+---
+
+## 2026-08-28 — Paper draft: restructured around the circuit diagram + claims table
+
+**Owner:** Claude Code background agent, main working tree. **Status:** DONE.
+
+**What (user request):** restructure everything after Setup in
+`write_up/read_and_write_features_for_in_context_learning_paper_draft.md` around the annotated
+circuit PNG (`write_up/graphics/icl_read_write_circuit.png`). Added a "The circuit and our claims"
+section right after Setup: circuit narrative, the PNG, operational definitions of write/read
+feature (moved there since Setup was trimmed), and a table of the figure's 8 claims with headline
+evidence. Renumbered the ten result sections into eight "Claim N — ..." sections matching the
+figure: old §4+§5 merged into Claim 4 (causal and low dimensional; carrier+code becomes a
+subsection), old §8+§9 merged into Claim 7 (linear map; rotation becomes a subsection). All
+evidence text, numbers, and figure embeds preserved; internal §-references fixed. Appendix
+untouched. Content before Setup untouched (user-approved).
+
+---
+
 ## 2026-08-28 — Paper draft: Terminology section filled from glossary §1
 
 **Owner:** Claude Code background agent, main working tree (no worktree). **Status:** DONE.

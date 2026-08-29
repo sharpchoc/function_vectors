@@ -40,6 +40,11 @@ STEERING_COMPARISON_DIR = RESULTS_ROOT / "steering_vector_comparison"
 # Deliberately separate from 69_task_run — do not mix results between the two.
 CHAT_TEMPLATE_TRANSFER_DIR = RESULTS_ROOT / "chat_template_transfer"
 
+# Live new research branch (2026-08-29): Qwen2.5-7B-Instruct FV derivation — repeat of the
+# GPT-J 69-task pipeline (competence screen → pooled sparse head selection → train/heldout
+# steering eval) on base-sampling Q:/A: prompts. Sibling of chat_template_transfer.
+QWEN25_FV_DIR = RESULTS_ROOT / "qwen25_fv"
+
 # Exploratory buckets — research directions that did not pan out, quarantined under
 # results/exploratory/ on 2026-08-28 (DECISIONS entry of that date). Kept for possible
 # later revisits; do NOT build new mainstream results on them without user promotion.
@@ -51,6 +56,7 @@ GENERAL_DIR = EXPLORATORY_ROOT / "general"
 
 __all__ = [
     "REPO_ROOT", "ARTIFACTS_ROOT", "RESULTS_ROOT", "LOGS_ROOT",
-    "TASK69_RUN_DIR", "STEERING_COMPARISON_DIR", "CHAT_TEMPLATE_TRANSFER_DIR", "EXPLORATORY_ROOT",
+    "TASK69_RUN_DIR", "STEERING_COMPARISON_DIR", "CHAT_TEMPLATE_TRANSFER_DIR", "QWEN25_FV_DIR",
+    "EXPLORATORY_ROOT",
     "AMBIGUOUS_DIR", "LABEL_GEOMETRY_DIR", "FV_FORMATION_DIR", "GENERAL_DIR",
 ]

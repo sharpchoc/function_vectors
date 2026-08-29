@@ -43,6 +43,9 @@ def parse_args():
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--out_name", type=str, default="eval_headset.json",
                    help="Output filename per task (use a distinct name for trials).")
+    p.add_argument("--token_budget", type=int, default=6000,
+                   help="auto_batch token budget for eval forwards (lower for large-vocab models).")
+    p.add_argument("--batch_cap", type=int, default=32)
     return p.parse_args()
 
 
@@ -77,8 +80,10 @@ def main():
         for setting in TEST_SETTINGS:
             recs = load_records(args, t, setting)
             points = [record_to_point(r, tokenizer, model_config) for r in recs]
-            baseline = eval_points_fixed_v(model, model_config, tokenizer, points, None, 9)
-            accs = [eval_points_fixed_v(model, model_config, tokenizer, points, fvs[t], L)
+            baseline = eval_points_fixed_v(model, model_config, tokenizer, points, None, 9,
+                                           token_budget=args.token_budget, batch_cap=args.batch_cap)
+            accs = [eval_points_fixed_v(model, model_config, tokenizer, points, fvs[t], L,
+                                        token_budget=args.token_budget, batch_cap=args.batch_cap)
                     for L in range(n_layers)]
             results[setting] = {"baseline": baseline, "acc_by_layer": accs,
                                 "n_prompts": len(points)}

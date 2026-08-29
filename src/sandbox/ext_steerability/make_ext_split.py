@@ -58,7 +58,7 @@ def main():
 
     counts = {t: len(json.load(open(args.dataset_root / f"{t}.json"))) for t in filtered}
     out = {
-        "name": "extended_steerable_90",
+        "name": args.out.stem,
         "description": f"Extended tasks with 6-shot sampled-exact-match accuracy >= {args.threshold} "
                        f"(n-shot sweep, T=1.0, 50 prompts/task), split {args.train_frac:.0%} train via "
                        f"np.RandomState({args.seed}).permutation over the sorted filtered list.",

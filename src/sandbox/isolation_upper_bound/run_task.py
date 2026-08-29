@@ -43,7 +43,12 @@ from src.sandbox.sparse_head_selection.train_sparse_heads import (
     split_earlystop,
     train_c,
 )
-from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
+from src.utils.model_utils import (
+    get_attn_out_proj,
+    load_gpt_model_and_tokenizer,
+    set_seed,
+    use_bos_literal,
+)
 from src.utils.prompt_utils import create_prompt, word_pairs_to_prompt_data
 from src.utils.eval_utils import get_answer_id
 from src.utils.varicl_utils import (
@@ -107,7 +112,7 @@ def record_to_prompt_data(rec, model_config):
                   "output": [d["output"] for d in rec["demos"]]}
     return word_pairs_to_prompt_data(
         word_pairs, query_target_pair=dict(rec["query"]),
-        prepend_bos_token=(not model_config["prepend_bos"]), shuffle_labels=False)
+        prepend_bos_token=use_bos_literal(model_config), shuffle_labels=False)
 
 
 def record_to_point(rec, tokenizer, model_config):
@@ -139,7 +144,9 @@ def stage_capture(args, task, model, model_config, tokenizer):
     if out.exists():
         return torch.load(out, map_location="cpu", weights_only=False)
     recs = load_records(args, task, "train_prompts")
-    assert len(recs) == 150
+    # 150 in the standard prompt sets; small-pool tasks are capped by the generator
+    # (qwen25 pool: next_in_group/next_in_period have 66 examples). Floor guards truncation.
+    assert len(recs) >= 40, f"{task}: only {len(recs)} train prompts"
     n_layers, n_heads, resid = model_config["n_layers"], model_config["n_heads"], model_config["resid_dim"]
     head_dim = resid // n_heads
 
@@ -171,7 +178,7 @@ def stage_capture(args, task, model, model_config, tokenizer):
                 head_sum[li] += cue.double().sum(dim=0).cpu()
                 if not linearity_checked:
                     # linearity gate: sum over heads of W_O slices @ head acts == attn output
-                    w = model.transformer.h[li].attn.out_proj.weight.detach()
+                    w = get_attn_out_proj(model, li).weight.detach()
                     rebuilt = torch.einsum("bhd,ehd->be", cue.to(w.dtype),
                                            w.view(resid, n_heads, head_dim))
                     outp = td[lname].output
@@ -187,7 +194,7 @@ def stage_capture(args, task, model, model_config, tokenizer):
             n_seen += len(sentences)
     finally:
         tokenizer.padding_side = old_side
-    assert n_seen == 150
+    assert n_seen == len(recs)
     means = {"head_means": (head_sum / n_seen).float(),
              "resid_means": (resid_sum / n_seen).float(), "n_prompts": n_seen}
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -203,7 +210,7 @@ def build_contributions_single(head_means, model, model_config):
     C = torch.zeros(n_layers * n_heads, resid, dtype=torch.float32, device=model.device)
     hm = head_means.to(model.device)
     for l in range(n_layers):
-        w = model.transformer.h[l].attn.out_proj.weight.detach().float().view(resid, n_heads, head_dim)
+        w = get_attn_out_proj(model, l).weight.detach().float().view(resid, n_heads, head_dim)
         C[l * n_heads:(l + 1) * n_heads] = torch.einsum("ohd,hd->ho", w, hm[l].float())
     return C
 
@@ -260,10 +267,12 @@ def make_tc_args(args, metric, points):
         threshold=args.threshold, earlystop_frac=args.earlystop_frac)
 
 
-def eval_points_fixed_v(model, model_config, tokenizer, points, v, inject_layer, batch_size=None):
+def eval_points_fixed_v(model, model_config, tokenizer, points, v, inject_layer, batch_size=None,
+                        token_budget=6000, batch_cap=32):
     # logits are materialized [B, seq, vocab] and .float()ed - bound B by token budget
+    # (large-vocab models like Qwen2.5, 152k, need ~2500/16 instead of the GPT-J 6000/32)
     if batch_size is None:
-        batch_size = auto_batch(max_prompt_len(points), 6000, 32)
+        batch_size = auto_batch(max_prompt_len(points), token_budget, batch_cap)
     n_correct = 0
     with torch.no_grad():
         for start in range(0, len(points), batch_size):

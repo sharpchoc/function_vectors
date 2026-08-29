@@ -154,9 +154,10 @@ def main():
                       f"best_epoch={best_epoch}", flush=True)
         return
 
-    # final: strict-best lambda from all fold artifacts, retrain on all train tasks
+    # final: strict-best lambda from all fold artifacts (grid = --lambdas, default LAMBDAS),
+    # retrain on all train tasks
     per_lambda = {}
-    for lam in LAMBDAS:
+    for lam in args.lambdas:
         accs = []
         for fi in range(args.kfolds):
             fp = args.out_root / "pooled_sparse" / f"lambda{lam:g}_fold{fi}.pt"
@@ -164,7 +165,7 @@ def main():
             accs.append(torch.load(fp, map_location="cpu", weights_only=False)["fold_acc"])
         per_lambda[lam] = float(np.mean(accs))
     best = max(per_lambda.values())
-    chosen = min(l for l in LAMBDAS if per_lambda[l] == best)
+    chosen = min(l for l in args.lambdas if per_lambda[l] == best)
     print(f"per-lambda CV: {per_lambda} -> chosen {chosen:g}", flush=True)
 
     all_points = [p for t in train_tasks for p in points_by_task[t]]

@@ -155,6 +155,35 @@ def load_gpt_model_and_tokenizer(model_name:str, device='cuda', revision=None):
     
     return model, tokenizer, MODEL_CONFIG
 
+def get_decoder_block(model, layer_idx: int):
+    """Transformer block module at layer_idx across architectures
+    (GPT-J/GPT-2: model.transformer.h[i]; Qwen/Llama-style: model.model.layers[i])."""
+    if hasattr(model, "transformer"):
+        return model.transformer.h[layer_idx]
+    return model.model.layers[layer_idx]
+
+
+def get_attn_out_proj(model, layer_idx: int):
+    """Attention output projection module (GPT-J attn.out_proj / Qwen self_attn.o_proj)."""
+    block = get_decoder_block(model, layer_idx)
+    attn = getattr(block, "attn", None)
+    if attn is None:
+        attn = block.self_attn
+    proj = getattr(attn, "out_proj", None)
+    if proj is None:
+        proj = attn.o_proj
+    return proj
+
+
+def use_bos_literal(model_config) -> bool:
+    """Repo convention: GPT-2-family models (no tokenizer BOS; e.g. GPT-J) get the literal
+    '<|endoftext|>' prompt prefix standing in for BOS. Models with no BOS convention at all
+    (Qwen: bos_token null, prompts start with content) get NO prefix (user decision 2026-08-29).
+    Models whose tokenizer prepends a real BOS (prepend_bos=True) also get no literal."""
+    name = model_config["name_or_path"].lower()
+    return (not model_config["prepend_bos"]) and "gpt" in name
+
+
 def set_seed(seed: int) -> None:
     """
     Sets the seed to make everything deterministic, for reproducibility of experiments

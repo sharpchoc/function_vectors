@@ -56,6 +56,10 @@ Results & artifacts layout:
 - LIVE NEW BRANCH (2026-08-28): `results/chat_template_transfer/` — chat-template transfer of the
   ICL line on Qwen2.5-7B-Instruct (demos as user/assistant chat turns instead of Q:/A:). Separate
   from 69_task_run by user decision — never mix results between the two. See its README.
+- LIVE NEW BRANCH (2026-08-29): `results/qwen25_fv/` — Qwen2.5-7B-Instruct FV derivation, a repeat
+  of the GPT-J 69-task pipeline (base-sampling Q:/A:, no BOS prefix). Sibling of
+  chat_template_transfer; artifacts in `artifacts/sandbox/ext_steerability_qwen25/`,
+  split `task_splits/qwen25_*.json`, prompts `dataset_files/isolation_prompts_ext_qwen25/`.
 - NOT mainstream: `results/exploratory/` (retired research directions direction1_ambiguous,
   direction2_label_geometry, direction3_fv_formation, general — see its README) and
   `results/sandbox/` (quarantined trials). NEVER build new results on either without explicit user

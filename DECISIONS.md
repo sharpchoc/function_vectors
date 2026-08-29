@@ -1,5 +1,25 @@
 # DECISIONS
 
+## 2026-08-29 — Qwen2.5-7B-Instruct FV derivation → results/qwen25_fv/ (user decisions)
+
+- **New top-level bucket `results/qwen25_fv/`** (`QWEN25_FV_DIR`): repeat of the GPT-J 69-task FV
+  pipeline (competence screen → pooled sparse head selection → zs/shuf/mix steering eval →
+  prune-refit) on Qwen2.5-7B-Instruct. Sibling of chat_template_transfer, not inside it.
+- **Prompt convention: base sampling, NO prefix.** Qwen prompts start directly with `Q:` — no chat
+  template, no `<|endoftext|>` literal (that token is Qwen's PAD; Qwen trains with no BOS). The
+  GPT-J `<|endoftext|>`-prefix convention is now dispatched per model family via
+  `model_utils.use_bos_literal` (GPT-2-family only) — GPT-J runs are bit-identical.
+- **λ grid extended** to [0.002, 0.005, 0.01, 0.05, 0.2] (both GPT-J runs chose the boundary
+  0.005; superset keeps comparability).
+- **Prune threshold is user-adjudicated this time:** after round 1 the zs_best distribution is
+  shown to the user, who picks the threshold (GPT-J used auto zs_best < 0.4). Qwen-pruned tasks
+  are recorded ONLY in the qwen25 split JSON + results README — dataset_files/ is not touched
+  (the GPT-J pool stays intact).
+- Qwen pool: 104/117 manifest tasks pass acc6 ≥ 0.30 (screen = the ext117 plain-arm artifacts,
+  same locked protocol; adapter `make_qwen25_acc6_csv.py`). Split seed 42 → 83/21.
+  Capped small tasks kept (next_in_group/next_in_period: 52 train prompts; capture assert relaxed
+  to ≥40 + all-consumed).
+
 ## 2026-08-28 — New research branch: chat-template transfer → results/chat_template_transfer/ (user decision)
 
 - **New live branch, separate folder by explicit user decision:** does ICL transfer when demos

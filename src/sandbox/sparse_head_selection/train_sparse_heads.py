@@ -47,7 +47,13 @@ for p in (REPO_ROOT, SRC_ROOT):
         sys.path.insert(0, str(p))
 
 from src.utils.eval_utils import get_answer_id
-from src.utils.model_utils import load_gpt_model_and_tokenizer, set_seed
+from src.utils.model_utils import (
+    get_attn_out_proj,
+    get_decoder_block,
+    load_gpt_model_and_tokenizer,
+    set_seed,
+    use_bos_literal,
+)
 from src.utils.prompt_utils import create_prompt, load_dataset, word_pairs_to_prompt_data
 from src.utils.paths import ARTIFACTS_ROOT, RESULTS_ROOT
 
@@ -129,7 +135,7 @@ def build_task_datapoints(task, args, tokenizer, model_config):
             idx = rng.choice(n_train, n_top_up, replace=False)
             picks += [("train", int(i)) for i in idx]
 
-    prepend_bos = not model_config["prepend_bos"]
+    prepend_bos = use_bos_literal(model_config)
     points = []
     for split_name, i in picks:
         word_pairs = {"input": [], "output": []}
@@ -174,7 +180,7 @@ def build_contributions(tasks, args, model, model_config):
 
     C = torch.zeros(len(tasks), n_layers * n_heads, resid, device=device, dtype=torch.float32)
     for layer in range(n_layers):
-        w = model.transformer.h[layer].attn.out_proj.weight.detach().float()  # (out, in)
+        w = get_attn_out_proj(model, layer).weight.detach().float()  # (out, in)
         w = w.view(resid, n_heads, head_dim)  # (o, h, d)
         C[:, layer * n_heads:(layer + 1) * n_heads, :] = torch.einsum("ohd,thd->tho", w, means[:, layer])
     return C
@@ -248,7 +254,7 @@ def batch_label_logprobs(model, model_config, tokenizer, batch, v=None, inject_l
 
     handle = None
     if v is not None:
-        block = model.transformer.h[inject_layer]
+        block = get_decoder_block(model, inject_layer)
 
         def hook(module, inputs, output):
             hidden = output[0] if isinstance(output, tuple) else output
