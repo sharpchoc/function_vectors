@@ -5,6 +5,39 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-31 — (L6/7 mean + top-1 dir) dummy-target steering: sweep + 6-shot @L1
+
+**Owner:** Claude Code background agent, worktree `fv-l5to7-top1`. Pods fv-l67top1-{a,b,c}
+(3× RTX PRO 4500 $0.72/h, ≈2.2h each ≈ $4.8, all TERMINATED; shard-2 pod reused for the
+6-shot run). **Status:** DONE.
+
+**Definition (user-adjudicated):** w_A = 0.5·(m_A(L6)+m_A(L7)) + ⟨base, v1⟩·v1 with v1 = the
+L5-7 top-1 task-unique unit direction (meanremoved_L5to7_top1_bases). ⟨base,v1⟩ doubles the
+natural component (median |n_A| ≈ 0.51·‖base‖; sign-invariant construction). One global α on
+w_A. Protocol: 1-shot dummy layer sweep (all 28 layers × α{0.5,1,2,4}, per-task best) → pick
+peak layer → 6-shot dummy all-six-slots at that layer.
+
+**Findings:** 1-shot sweep: fixed w_A beats the matched-site raw mean at EVERY layer; peak
+L1 = 0.226 (L0-L3 plateau 0.213-0.224, all ≥ real-1-shot 0.208; raw-mean peak was 0.126@L6);
+best α = 1 early, clean dose-response; held-out ≥ train. 6-shot @L1: α=1 **0.5505**
+(held-out 0.570), per-task best **0.5912** — beats full-mean@L6 best-α 0.4471, mean-free
+0.339, swap 0.341, and the two-knob diagonal 0.535; recovers 87-94% of real 6-shot demos
+(0.6295). CAVEAT: layer changed along with the vector (L1 vs the L6 reference) — full-mean@L1
+control not run, so vector-composition vs injection-layer attribution is open.
+
+**Ops:** first 6-shot attempt OOM'd at fp32 lm_head logits with sixshot_dummy defaults
+(24000/48) on the 32GB 4500 → rerun with --token_budget 11000 --batch_cap 16.
+
+**Files:** NEW build_l67_plus_top1_vectors.py (→ bottom_up_ablation/l67_plus_top1_vectors.pt),
+sweep_l67top1_layers.py (→ artifacts/69_task_run/l67top1_steering/<task>.json),
+sixshot_l67top1_steer.py (→ .../l67top1_steering/sixshot/), run_l67top1_{sweep,sixshot}.sh,
+plot_l67top1_{sweep,sixshot}.py (→ results/69_task_run/bottom_up_read_features/
+steering_results/l67top1/: sweep_layer_{summary.csv,curve.png}, sixshot_{summary.csv,bars.png}).
+
+**Next:** full-mean@L1 (and w_A@L6) controls to attribute the gain; merge branch to main.
+
+---
+
 ## 2026-08-31 — L5-7 top-1 task-unique ablation (rank/band ladder extension)
 
 **Owner:** Claude Code background agent, worktree `fv-l5to7-top1` (branch
