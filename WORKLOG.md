@@ -5,6 +5,38 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-08-31 — L5-7 top-1 task-unique ablation (rank/band ladder extension)
+
+**Owner:** Claude Code background agent, worktree `fv-l5to7-top1` (branch
+`worktree-fv-l5to7-top1`; artifacts symlinked to the main checkout). Own pod fv-l5to7-top1
+`9hmy89612jchi1` (RTX PRO 4500 Blackwell $0.72/h, created 17:23 UTC, TERMINATED ~18:37,
+≈1.2 h ≈ $0.86). **Status:** DONE.
+
+**What (user request):** top-1 direction of the L5–7 mean-removed task-level target-token means
+(same construction as the L6–9 top-3 band variant, but layers {5,6,7} and rank 1). Standard
+4-condition ablation, all 28 block inputs, demo target tokens, locked T=1 protocol.
+
+**Findings (69-task means):** 6-shot base 0.629 → own mean-abl **0.097** / own zero **0.086**,
+cf 0.633 / 0.615 (clean control). 1-shot base 0.208 → own 0.032 / 0.029, cf 0.205 / 0.193.
+So ONE direction from the narrow L5–7 band matches L6–9 top-3 (0.096) and slightly beats
+L5–15 top-1 (0.103); top-3 L5–15 SVD reference remains best (0.066). Basis top-1 energy ≈ 0.90
+of the 3 directions, carrier leak ≤ 0.044.
+
+**Files:** NEW `src/sandbox/ext_steerability/build_meanremoved_L5to7_top1_bases.py` (→
+`artifacts/69_task_run/bottom_up_ablation/meanremoved_L5to7_top1_bases.pt`), NEW
+`src/sandbox/ext_steerability/run_l5to7_top1_ablation.sh` (pod launcher; passes explicit
+`--model_dir` because load_model_eager's sorted(glob)[-1] default now picks the weights-only
+f3f42882 HF snapshot with no config.json — latent bug, fix in ablate_readdir_labeltokens.py
+someday), eval JSONs `artifacts/69_task_run/bottom_up_ablation/meanremoved_L5to7_top1/n{1,6}shot/`,
+NEW `src/eval_scripts/plot_69_taskunique_L5to7_top1.py` (→
+`results/69_task_run/bottom_up_read_features/ablation/task_unique_top1_L5to7/`:
+per_task_acc.csv, aggregate_bars.png, per_task_bars_{1,6}shot.png).
+
+**Next:** merge branch `worktree-fv-l5to7-top1` to main (no-side-branches rule — worktree was
+forced by the background-edit guard); optionally add the row to paper-draft Appendix F table.
+
+---
+
 ## 2026-08-20 — FV presence ABOVE the generic-FV baseline vs accuracy @ L13 (69-task pool, "presence-gm" agent)
 
 **Owner:** Claude Code background agent, branch `worktree-agent-a873fed4d84e79f82` (worktree
