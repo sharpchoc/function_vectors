@@ -46,6 +46,9 @@ def parse_args():
     p.add_argument("--token_budget", type=int, default=6000,
                    help="auto_batch token budget for eval forwards (lower for large-vocab models).")
     p.add_argument("--batch_cap", type=int, default=32)
+    p.add_argument("--settings", nargs="+", default=list(TEST_SETTINGS),
+                   choices=list(TEST_SETTINGS),
+                   help="subset of test settings to evaluate (default: all three).")
     return p.parse_args()
 
 
@@ -77,7 +80,7 @@ def main():
             print(f"[{t}] eval exists, skip", flush=True)
             continue
         results = {}
-        for setting in TEST_SETTINGS:
+        for setting in args.settings:
             recs = load_records(args, t, setting)
             points = [record_to_point(r, tokenizer, model_config) for r in recs]
             baseline = eval_points_fixed_v(model, model_config, tokenizer, points, None, 9,
