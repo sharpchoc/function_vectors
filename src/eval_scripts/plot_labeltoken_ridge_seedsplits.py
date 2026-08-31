@@ -96,7 +96,7 @@ def main():
     ax.set_title("(B) per-task held-out R^2 averaged over the seeds where the task was "
                  "held out (red * = canonical held-out task)", fontsize=10)
     ax.grid(alpha=0.25, axis="y")
-    fig.suptitle("Seed-split robustness of the avg-label-token -> FV ridge", fontsize=11.5)
+    fig.suptitle("Seed-split robustness of the avg-target-token -> FV ridge", fontsize=11.5)
     fig.tight_layout()
     fig.savefig(OUT / "seed_r2.png", bbox_inches="tight")
     print(f"wrote {OUT}")

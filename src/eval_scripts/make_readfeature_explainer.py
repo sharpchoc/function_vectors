@@ -146,7 +146,7 @@ def main():
                  fontsize=14.5, pad=10)
 
     fig.suptitle("From one read feature to two components: shared carrier + task-unique code "
-                 "(L6 label-token features, 69 tasks)", fontsize=16, fontweight="bold")
+                 "(L6 target-token features, 69 tasks)", fontsize=16, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.92])
     fig.savefig(OUT / "readfeature_decomposition.png", bbox_inches="tight")
     print(f"raw mean {raw.mean():.3f} sd {raw.std():.3f} | unique mean {uniq.mean():.3f} "

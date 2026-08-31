@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 560" role="img"
-     aria-label="Mechanism of in-context learning: read features form at demonstration label tokens in early layers, are moved by attention to the query cue token, where the write feature (the function vector) forms in mid layers and steers the model's answer. Numbered badges anchor the eight write-up claims to the circuit elements they concern, listed in a sidebar."
+     aria-label="Mechanism of in-context learning: read features form at demonstration target tokens in early layers, are moved by attention to the query cue token, where the write feature (the function vector) forms in mid layers and steers the model's answer. Numbered badges anchor the seven write-up claims to the circuit elements they concern, listed in a sidebar."
      font-family="Helvetica, Arial, sans-serif">
   <defs>
     <marker id="arrGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -58,9 +58,9 @@
   <!-- token roles -->
   <g font-size="11.5" fill="#8a8a8a" text-anchor="middle">
     <text x="170" y="532">input</text>
-    <text x="280" y="532">label</text>
+    <text x="280" y="532">target</text>
     <text x="400" y="532">input</text>
-    <text x="510" y="532">label</text>
+    <text x="510" y="532">target</text>
     <text x="650" y="532">query input</text>
     <text x="780" y="532">cue</text>
   </g>
@@ -68,19 +68,19 @@
   <!-- pair-encoding arrows: input -> label read node -->
   <path d="M172,420 Q220,392 268,340" fill="none" stroke="#7a7a7a" stroke-width="1.5" marker-end="url(#arrGray)"/>
   <path d="M402,420 Q450,392 498,340" fill="none" stroke="#7a7a7a" stroke-width="1.5" marker-end="url(#arrGray)"/>
-  <text x="337" y="432" font-size="12" fill="#7a7a7a" text-anchor="middle">each label token attends to its input:</text>
-  <text x="337" y="447" font-size="12" fill="#7a7a7a" text-anchor="middle">the (input &#8594; label) pair is encoded</text>
+  <text x="337" y="432" font-size="12" fill="#7a7a7a" text-anchor="middle">each target token attends to its input:</text>
+  <text x="337" y="447" font-size="12" fill="#7a7a7a" text-anchor="middle">the (input &#8594; target) pair is encoded</text>
 
   <!-- read feature nodes -->
   <circle cx="280" cy="330" r="9" fill="#0e7c6b"/>
   <circle cx="510" cy="330" r="9" fill="#0e7c6b"/>
   <text x="395" y="291" font-size="13.5" fill="#0e7c6b" font-weight="bold" text-anchor="middle">read feature</text>
-  <text x="395" y="307" font-size="12" fill="#0e7c6b" text-anchor="middle">task identity at label tokens</text>
+  <text x="395" y="307" font-size="12" fill="#0e7c6b" text-anchor="middle">task identity at target tokens</text>
 
   <!-- transport arrows: read -> write -->
   <path d="M290,326 Q560,318 763,218" fill="none" stroke="#0e7c6b" stroke-width="2" marker-end="url(#arrTeal)"/>
   <path d="M520,325 Q660,302 769,228" fill="none" stroke="#0e7c6b" stroke-width="2" marker-end="url(#arrTeal)"/>
-  <text x="450" y="253" font-size="12" fill="#555" text-anchor="middle">the cue attends to the labels; along the way the</text>
+  <text x="450" y="253" font-size="12" fill="#555" text-anchor="middle">the cue attends to the targets; along the way the</text>
   <text x="450" y="268" font-size="12" fill="#555" text-anchor="middle">read feature is linearly transformed into the write feature</text>
 
   <!-- write feature node -->
@@ -95,25 +95,24 @@
   <text x="780" y="98" font-size="14" fill="#333" text-anchor="middle" font-weight="bold">slow</text>
   <text x="726" y="98" font-size="11.5" fill="#8a8a8a" text-anchor="end">answer</text>
 
-  <!-- claim 6 depth bracket between bands -->
+  <!-- claim 5 depth bracket between bands -->
   <line x1="155" y1="248" x2="155" y2="292" stroke="#7a7a7a" stroke-width="1.4"
         marker-start="url(#arrGray)" marker-end="url(#arrGray)"/>
 
   <!-- claim badges on the diagram -->
   <g font-size="11.5" font-weight="bold" text-anchor="middle">
-    <!-- 1, 2: at the write feature -->
+    <!-- 1: at the write feature -->
     <circle cx="802" cy="252" r="10" fill="#2a5fd1"/><text x="802" y="256" fill="#ffffff">1</text>
-    <circle cx="826" cy="252" r="10" fill="#2a5fd1"/><text x="826" y="256" fill="#ffffff">2</text>
-    <!-- 3, 4: at the read feature -->
-    <circle cx="300" cy="283" r="10" fill="#0e7c6b"/><text x="300" y="287" fill="#ffffff">3</text>
-    <circle cx="324" cy="283" r="10" fill="#0e7c6b"/><text x="324" y="287" fill="#ffffff">4</text>
-    <!-- 5, 7: on the read-to-write transport arrows -->
-    <circle cx="543" cy="295" r="10" fill="#0e7c6b" stroke="#2a5fd1" stroke-width="2.5"/><text x="543" y="299" fill="#ffffff">5</text>
-    <circle cx="652" cy="289" r="10" fill="#0e7c6b" stroke="#2a5fd1" stroke-width="2.5"/><text x="652" y="293" fill="#ffffff">7</text>
-    <!-- 6: between the layer bands -->
-    <circle cx="132" cy="270" r="10" fill="#0e7c6b"/><text x="132" y="274" fill="#ffffff">6</text>
-    <!-- 8: on the prediction arrow -->
-    <circle cx="634" cy="162" r="10" fill="#2a5fd1"/><text x="634" y="166" fill="#ffffff">8</text>
+    <!-- 2, 3: at the read feature -->
+    <circle cx="300" cy="283" r="10" fill="#0e7c6b"/><text x="300" y="287" fill="#ffffff">2</text>
+    <circle cx="324" cy="283" r="10" fill="#0e7c6b"/><text x="324" y="287" fill="#ffffff">3</text>
+    <!-- 4, 6: on the read-to-write transport arrows -->
+    <circle cx="543" cy="295" r="10" fill="#0e7c6b" stroke="#2a5fd1" stroke-width="2.5"/><text x="543" y="299" fill="#ffffff">4</text>
+    <circle cx="652" cy="289" r="10" fill="#0e7c6b" stroke="#2a5fd1" stroke-width="2.5"/><text x="652" y="293" fill="#ffffff">6</text>
+    <!-- 5: between the layer bands -->
+    <circle cx="132" cy="270" r="10" fill="#0e7c6b"/><text x="132" y="274" fill="#ffffff">5</text>
+    <!-- 7: on the prediction arrow -->
+    <circle cx="634" cy="162" r="10" fill="#2a5fd1"/><text x="634" y="166" fill="#ffffff">7</text>
   </g>
 
   <!-- sidebar: the claims -->
@@ -122,21 +121,19 @@
   <g font-size="12.5" fill="#333">
     <g font-size="11.5" font-weight="bold" text-anchor="middle">
       <circle cx="1010" cy="132" r="10" fill="#2a5fd1"/><text x="1010" y="136" fill="#ffffff">1</text>
-      <circle cx="1010" cy="176" r="10" fill="#2a5fd1"/><text x="1010" y="180" fill="#ffffff">2</text>
+      <circle cx="1010" cy="176" r="10" fill="#0e7c6b"/><text x="1010" y="180" fill="#ffffff">2</text>
       <circle cx="1010" cy="220" r="10" fill="#0e7c6b"/><text x="1010" y="224" fill="#ffffff">3</text>
-      <circle cx="1010" cy="264" r="10" fill="#0e7c6b"/><text x="1010" y="268" fill="#ffffff">4</text>
-      <circle cx="1010" cy="308" r="10" fill="#0e7c6b" stroke="#2a5fd1" stroke-width="2.5"/><text x="1010" y="312" fill="#ffffff">5</text>
-      <circle cx="1010" cy="352" r="10" fill="#0e7c6b"/><text x="1010" y="356" fill="#ffffff">6</text>
-      <circle cx="1010" cy="396" r="10" fill="#0e7c6b" stroke="#2a5fd1" stroke-width="2.5"/><text x="1010" y="400" fill="#ffffff">7</text>
-      <circle cx="1010" cy="440" r="10" fill="#2a5fd1"/><text x="1010" y="444" fill="#ffffff">8</text>
+      <circle cx="1010" cy="264" r="10" fill="#0e7c6b" stroke="#2a5fd1" stroke-width="2.5"/><text x="1010" y="268" fill="#ffffff">4</text>
+      <circle cx="1010" cy="308" r="10" fill="#0e7c6b"/><text x="1010" y="312" fill="#ffffff">5</text>
+      <circle cx="1010" cy="352" r="10" fill="#0e7c6b" stroke="#2a5fd1" stroke-width="2.5"/><text x="1010" y="356" fill="#ffffff">6</text>
+      <circle cx="1010" cy="396" r="10" fill="#2a5fd1"/><text x="1010" y="400" fill="#ffffff">7</text>
     </g>
     <text x="1032" y="136">Write features generalise to unseen tasks</text>
-    <text x="1032" y="180">Write features are low dimensional</text>
-    <text x="1032" y="224">Read features exist</text>
-    <text x="1032" y="268">Read features are causal and low dimensional</text>
-    <text x="1032" y="312">Read features cause the write feature to form</text>
-    <text x="1032" y="356">Read features appear earlier than write features</text>
-    <text x="1032" y="400">Read features linearly map to write features</text>
-    <text x="1032" y="444">Write-feature presence tracks task accuracy</text>
+    <text x="1032" y="180">Read features exist</text>
+    <text x="1032" y="224">Read features are causal and low dimensional</text>
+    <text x="1032" y="268">Read features cause the write feature to form</text>
+    <text x="1032" y="312">Read features appear earlier than write features</text>
+    <text x="1032" y="356">Read features linearly map to write features</text>
+    <text x="1032" y="400">Write-feature presence tracks task accuracy</text>
   </g>
 </svg>

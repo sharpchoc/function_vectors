@@ -38,10 +38,10 @@ _NS = _ap.parse_args().n_shots
 _SUF = "" if _NS == 6 else "_1shot"
 AR = ARTIFACTS_ROOT / "69_task_run" / ("mean_read_steering_effect_on_write" + _SUF)
 OUT = TASK69_RUN_DIR / "read_write_relationship" / ("bottom_up" + _SUF)
-SCAF = ("6-shot dummy-'_' prompt; α·(task mean L6 label activation) added at all six "
-        "label slots" if _NS == 6 else
-        "1-shot dummy-'_' prompt; α·(task mean L6 label activation) added at the single "
-        "label slot")
+SCAF = ("6-shot dummy-'_' prompt; α·(task mean L6 target activation) added at all six "
+        "target slots" if _NS == 6 else
+        "1-shot dummy-'_' prompt; α·(task mean L6 target activation) added at the single "
+        "target slot")
 LAYER = 13
 SURFACE, INK, INK2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
 BLUE, ORANGE = "#2a78d6", "#eb6834"   # task FV / generic FV — validated adjacent pair
@@ -152,7 +152,7 @@ def main():
 
     scatter_fig(delta["cos_task"], delta["cos_gen"],
                 f"change in cosine similarity at L{LAYER}  (vs α = 0)",
-                "Steering the label slots rotates the cue-token\nrepresentation towards the "
+                "Steering the target slots rotates the cue-token\nrepresentation towards the "
                 "task's function vector", "headline_cos.png")
     scatter_fig(delta["proj_task"], delta["proj_gen"],
                 f"change in projection magnitude at L{LAYER}  (vs α = 0)",
@@ -248,7 +248,7 @@ def main():
     ax.axhline(0, color=INK2, lw=1.0, ls=":")
     ax.set_xlabel("layer of the cue-token readout", fontsize=11.5, color=INK2)
     ax.set_ylabel("change in cos(cue activation, task FV)", fontsize=11.5, color=INK2)
-    ax.set_title("Where the injected label-slot signal shows up at the cue token",
+    ax.set_title("Where the injected target-slot signal shows up at the cue token",
                  fontsize=14, fontweight="bold", color=INK, loc="left", pad=12)
     ax.set_xticks(range(0, 28, 2))
     ax.tick_params(colors=INK2)

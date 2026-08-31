@@ -149,7 +149,7 @@ def method_diagram():
     ax.text(0.35, 4.85, "Read feature intervention", fontsize=18, fontweight="bold",
             color=INK, ha="left", va="center")
     ax.text(0.35, 4.52, "task:  agent noun  →  verb          "
-            "a real demo would read  'climber → climb'  —  here the label slot is a bare '_'",
+            "a real demo would read  'climber → climb'  —  here the target slot is a bare '_'",
             fontsize=10.5, color=INK2, ha="left", va="center")
 
     centers = _token_row(ax, toks, y_top, slot, steered=True)

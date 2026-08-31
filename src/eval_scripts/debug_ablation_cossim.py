@@ -139,7 +139,7 @@ def main():
     fig, axes = plt.subplots(1, 2, figsize=(11, 4), sharey=True)
     bins = np.linspace(-0.2, 1.0, 61)
     for ax, vals, cfv, title, color in (
-            (axes[0], r_all, r_cf, "read features (L6 label means)", "tab:blue"),
+            (axes[0], r_all, r_cf, "read features (L6 target means)", "tab:blue"),
             (axes[1], f_all, f_cf, "task FVs (37-head sums)", "tab:orange")):
         ax.hist(vals, bins=bins, color=color, alpha=0.75,
                 label=f"all pairs (mean {vals.mean():.3f})")

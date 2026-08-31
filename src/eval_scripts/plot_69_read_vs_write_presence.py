@@ -38,7 +38,7 @@ for p in (REPO_ROOT, REPO_ROOT / "src"):
 from src.utils.paths import TASK69_RUN_DIR  # noqa: E402
 
 CAT = {"cue": "#2a78d6", "label": "#eb6834", "input": "#1baf7a"}
-PRETTY = {"cue": "cue “A:”", "label": "label / target", "input": "input"}
+PRETTY = {"cue": "cue “A:”", "label": "target", "input": "input"}
 INK, INK_MUTED, GRID = "#1a1a19", "#6b6b68", "#e6e5e2"
 WRITE_DIR = "direct_FV_presence"
 # Two different objects can play the "read" role; they are NOT on a comparable scale:
@@ -47,8 +47,8 @@ WRITE_DIR = "direct_FV_presence"
 #                               actually steers at L6); a raw mean, so it carries the large
 #                               shared residual-stream component and reads high everywhere.
 READ_SOURCES = {
-    "read_dir": ("read_dir_presence", "read"),
-    "label_mean": ("label_mean_L6_presence", "read"),
+    "read_dir": ("top_down_read_dir_presence", "read"),
+    "label_mean": ("bottom_up_label_mean_L6_presence", "read"),
 }
 WRITE_LABEL = "write"
 
@@ -90,7 +90,7 @@ def draw_family(ax, profs, folder, n_layers, ls, headline_kind):
 
 def mark_peak(ax, L, y, k, kind, tx, ty):
     ax.plot([L], [y], "o", ms=11, color=CAT[k], mec="white", mew=2.2, zorder=6)
-    short = {"label": "label tokens", "cue": "cue tokens"}[k]
+    short = {"label": "target tokens", "cue": "cue tokens"}[k]
     ax.annotate(f"{kind} peaks · L{L}  ({short})", xy=(L, y), xytext=(tx, ty),
                 ha="left", va="bottom", fontsize=12.5, color=CAT[k], fontweight="bold",
                 zorder=7, arrowprops=dict(arrowstyle="-", color=CAT[k], lw=1.2, alpha=0.65,

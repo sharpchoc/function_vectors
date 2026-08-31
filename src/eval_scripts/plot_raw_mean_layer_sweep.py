@@ -109,7 +109,7 @@ def main():
     ax.set_xticks(LAYERS, [str(l) for l in LAYERS], fontsize=8)
     ax.set_xlabel("injection layer (mean taken at the same layer)")
     ax.set_ylabel(f"mean T=1 exact-match accuracy ({len(tasks)} tasks)")
-    ax.set_title("Raw mean-activation steering at the label slot, swept over depth\n"
+    ax.set_title("Raw mean-activation steering at the target slot, swept over depth\n"
                  "1-shot 'Q: {input} / A: _' scaffold, injection at the '_' token, "
                  "alpha x the vector's own norm", fontsize=11)
     ax.legend(fontsize=8)

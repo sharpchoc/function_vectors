@@ -157,29 +157,14 @@ def main_fan(n_shots=6, out_stem="heldout_r2_lines_6shot"):
                     alpha=0.18 + 0.42 * frac if not last else 1.0,
                     lw=1.2 + 0.8 * frac if not last else 4.0,
                     solid_capstyle="round", zorder=3 + (2 if last else frac))
+    # query cue deliberately NOT plotted (user decision 2026-08-31): the ridge targets
+    # are the per-prompt FVs, which form at the query cue itself, so that curve is not
+    # comparable to the demo-token roles. Kept in the CSV. Peak / example-1 callouts
+    # moved to the paper-draft caption — no annotations on the plot.
     qc = (np.concatenate([[emb_series("query_cue")], query_cue])
           if have_emb else query_cue)
-    ax.plot(xs, qc, color=ROLE_COLOR["cue"], lw=3.0, ls=(0, (5, 2.2)),
-            alpha=0.9, zorder=4)
-
-    # peak of the bold cue line
     cue_last = full("cue", n_shots)
     pk = int(np.argmax(cue_last))
-    ax.scatter([xs[pk]], [cue_last[pk]], s=130, color=ROLE_COLOR["cue"], zorder=7)
-    ax.annotate(f"peaks · L{xs[pk]}  (cue, example {n_shots})",
-                xy=(xs[pk], cue_last[pk]), xytext=(xs[pk] + 2.2, cue_last[pk] + 0.06),
-                fontsize=17, fontweight="bold", color=ROLE_COLOR["cue"],
-                arrowprops=dict(arrowstyle="-", lw=1.4, color=ROLE_COLOR["cue"],
-                                connectionstyle="arc3,rad=-0.25"))
-    # direct-label the dead example-1 cue line: before any label exists there is
-    # nothing to read at the cue, so the fan starts at example 2
-    cue_1 = full("cue", 1)
-    x_lab = 6 + (1 if have_emb else 0)
-    ax.annotate("example 1 cue  (no label seen yet)",
-                xy=(x_lab - 0.2, cue_1[x_lab]), xytext=(x_lab + 1.8, 0.20),
-                fontsize=14, color=ROLE_COLOR["cue"], alpha=0.85,
-                arrowprops=dict(arrowstyle="-", lw=1.2, color=ROLE_COLOR["cue"],
-                                alpha=0.5, connectionstyle="arc3,rad=0.25"))
 
     style_axes(ax, xs, emb=have_emb)
     ax.set_ylim(-0.32, 0.78)
@@ -191,8 +176,7 @@ def main_fan(n_shots=6, out_stem="heldout_r2_lines_6shot"):
     ax.add_artist(leg1)
     handles2 = [Line2D([], [], color="0.35", lw=1.3, alpha=0.4,
                        label="example 1  (light)"),
-                Line2D([], [], color="0.35", lw=4.0, label=f"example {n_shots}  (bold)"),
-                Line2D([], [], color="0.35", lw=3.0, ls=(0, (5, 2.2)), label="query cue")]
+                Line2D([], [], color="0.35", lw=4.0, label=f"example {n_shots}  (bold)")]
     ax.legend(handles=handles2, title="line", loc="lower right",
               bbox_to_anchor=(0.99, 0.02), fontsize=14, title_fontsize=14,
               frameon=True, framealpha=0.92, edgecolor="none", alignment="left")

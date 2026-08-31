@@ -100,7 +100,7 @@ def main():
             ax.spines[s].set_visible(False)
     axes[0].set_ylabel("accuracy (T=1 sampled exact match, mean over 69 tasks)", fontsize=11)
     fig.suptitle("Task-unique (mean-removed, L5-15) 11-direction read-feature ablation "
-                 "(all layers, all demo-label tokens)",
+                 "(all layers, all demo-target tokens)",
                  fontsize=13.5, fontweight="bold")
     fig.tight_layout(rect=[0, 0.02, 1, 0.94])
     fig.savefig(OUT / "aggregate_bars.png", bbox_inches="tight")

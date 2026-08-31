@@ -123,6 +123,125 @@ decision → refit on pruned split → results/qwen25_fv/ + figures.
 
 ---
 
+## 2026-08-31 — Claim 7 layer-robustness appendix (no cherry-picking) + Claim 3 necessity restructure
+
+**Owner:** Claude Code background agent, main working tree. **Status:** DONE.
+
+**Claim 7 (user request):** verified the meanL9-20 choice is not load-bearing — recomputed the
+within-task median Spearman per presence variant from `presence_vs_acc/<task>.npz`: EVERY variant
+(L9…L20 single layers, max, mean) gives the identical +0.964, 69/69 positive (7 near-monotone
+points/task ⇒ rank correlation saturates). Pooled point-level ρ differs (L9 0.629 … L20 0.298,
+mean 0.469, from correlation_summary.csv) but mixes in the negative between-task relation.
+Added: robustness table + explanation in Appendix H; pointer sentence in Claim 7; stored
+`write_feature_and_model_accuracy/within_task_rho_by_variant.csv`. Also explained to user why
+the binned plot title says pooled ρ=0.47 while the text says within-task +0.96 (both correct,
+different statistics) — plot title fix deferred by user.
+
+**Claim 3 necessity (user request, earlier today):** restructured to decomposition-first
+(m_A = m̄ + u_A displayed equation) → task-unique ablation results → Appendix F link for the
+raw-mean-ablation failure motivation (that prose + cossim_hist figure moved to top of App F);
+readfeature_decomposition.png moved up to sit right under the decomposition equation.
+Also inserted the layer-sweep figure + real-1-shot baseline into Claim 3 (see prior entry).
+
+---
+
+## 2026-08-31 — Vocab sweep label→target (draft + 12 figures) + Claim 3 layer-sweep figure
+
+**Owner:** Claude Code background agent, main working tree. **Status:** DONE.
+
+**Vocab (USER DECISION, now in DECISIONS.md):** "target tokens" replaces "label tokens"
+everywhere in the paper draft and its embedded figures. Draft: scripted regex sweep (code
+spans/paths/task names shielded); $t^j_{lab}$ → $t^j_{tgt}$. Scripts edited (display strings
+only): plot_poster_visuals, plot_69_task_run_poster (mixed-target), plot_69_read_vs_write_presence
+(+ fixed stale presence folder names → top_down_read_dir_presence / bottom_up_label_mean_L6_presence),
+plot_raw_mean_layer_sweep, debug_ablation_cossim, plot_69_taskunique_ablation,
+plot_69_taskunique_svd_steer, plot_steer_effect_on_cue (both --n_shots), make_readfeature_explainer,
+plot_labeltoken_ridge_seedsplits, plot_69_taskmean_k90_alpha_bars, + circuit SVG re-rendered.
+All regenerated OK; heatmap row keys (d1_pre…) and binned_meanL etc. had no visible "label".
+
+**Claim 3 layer-sweep figure (user request):** layer_selection/plot_layer_curve_presentation.py
+rewritten (was a stale one-off writing to another job's tmp): reads layer_summary.csv +
+per_task_by_layer.csv, title "Dummy target token steering (1-shot)", added dashed real-1-shot
+baseline (mean 0.208). Embedded in Claim 3 after the sweep sentence with caption (peak L6 0.126 /
+L7 0.125, coincides with Claim 2 band); duplicate embed removed from the later results block.
+
+---
+
+## 2026-08-31 — Claim 2 decodability lines figure decluttered (heldout_r2_lines_6shot)
+
+**Owner:** Claude Code background agent, main working tree. **Status:** DONE.
+
+**What (user request):** `plot_token_layer_lines.py` main_fan(): removed the two arrow
+annotations ("peaks · L13", "example 1 cue") + peak dot, and removed the dashed query-cue
+trace + its legend entry — USER DECISION: with per-prompt-FV regression targets the query-cue
+curve is not comparable to the demo-token roles (the FV forms at the query cue itself). Kept:
+3 token roles × examples 1–6 fan, both legends. query_cue column kept in the companion CSV.
+Regenerated poster_visuals/heldout_r2_lines_6shot.png/.csv (peak L13 = 0.663 unchanged).
+Paper-draft caption in Claim 2 now carries the peak/example-1/query-cue-omitted notes.
+
+---
+
+## 2026-08-31 — Claim 1 headline bars: 4-bar paired layout (train/held-out × unsteered/steered)
+
+**Owner:** Claude Code background agent, main working tree. **Status:** DONE.
+
+**What (user request):** show no-steering performance for BOTH train and held-out tasks.
+`src/eval_scripts/plot_69_task_run_poster.py` bar_panel() rewritten: two pairs (Train blue,
+Held-out orange), within each pair no-steering = light+hatched same hue, steered = solid; legend
+added to fig_headline; fig_combined legend's "No steering" patch matched to the hatched style.
+Regenerated poster_visuals/ (headline_bars.png — the file the paper draft embeds — and
+poster_summary.png changed; per_task_lift/selected_heads/poster_numbers identical). Data already
+in train_heldout_summary.csv (train bases: zs 0.028, mix 0.080); no recompute needed.
+
+---
+
+## 2026-08-31 — Paper draft: "The dataset" section added before Claim 1
+
+**Owner:** Claude Code background agent, main working tree. **Status:** DONE.
+
+**What (user request):** short "## The dataset" section between the claims table and Claim 1 —
+69 word-level tasks, Q:/A: prompt rendering (verified in `src/utils/prompt_utils.py:291`
+prefixes), six task families with examples, 138→69 two-stage filter, 55/14 split, 150 fixed
+10-shot prompts, pointer to Appendix A. Also added the **full 55+14 task list** to Appendix A
+(from `task_splits/extended_steerable_69_prunedfail.json`) so the pointer has a target.
+
+---
+
+## 2026-08-31 — Paper draft: m_A adopted in Terminology + layer-numbering convention documented
+
+**Owner:** Claude Code background agent, main working tree. **Status:** DONE.
+
+**What (user request):** (1) adopt $m_A$ (previously only defined in draft Appendix A) as the
+read-feature notation — added a Terminology bullet: $m_A(\ell)$ = task-mean label-token residual
+at layer $\ell$ = $z^t_{\ell,A}$ averaged over label positions; default $m_A = m_A(L6)$.
+(2) Document the layer-numbering convention, VERIFIED from code: "L$\ell$" = residual stream at
+the OUTPUT of transformer block $\ell$ (= input to block $\ell+1$); block 0 = first attn+MLP
+block, embedding output not counted. Evidence: `capture_label_resid_means.py` hooks
+`layer_hook_names` = `transformer.h.{l}` and stores the block OUTPUT hidden state; the steering
+`Injector` (steer_read_dir_methods.py:87) adds to the same block-output site. GPT-J attn+MLP are
+parallel, so block output is post-attn AND post-MLP (no mid-block site). Note: the read-feature
+ABLATION scripts edit the residual *entering* every block (block input) — same stream, shifted
+index (input of block l = output of block l−1); m_A itself is block-output.
+
+---
+
+## 2026-08-31 — Paper draft: Claim 2 (FV low-dim) demoted to appendix; claims renumbered to 7
+
+**Owner:** Claude Code background agent, main working tree. **Status:** DONE.
+
+**What (user request):** "Write features are low dimensional" is no longer a headline claim.
+Numbering-only change per user (they will edit prose themselves): the section's content was moved
+VERBATIM to the appendix as an unlettered section "## Write features are low dimensional" placed
+just before "B. Write-feature dimensionality in detail" (user to choose final lettering/wording);
+remaining claims renumbered 3–8 → 2–7 in the table (row deleted) and section headers. Circuit
+diagram updated to match: `write_up/graphics/icl_read_write_circuit.svg` renumbered (badge 2
+removed at the write feature, 3/4→2/3, 5→4, 7→6, 6→5, 8→7; sidebar row removed and reflowed;
+aria-label says seven) and the PNG re-rendered from it at 3× (4200×1680) via cairosvg
+(python3.12; note `pip`→3.12 but `python3`→other version on this box). Appendix letters A–J
+unchanged, so in-text Appendix F/H/I/J references remain valid.
+
+---
+
 ## 2026-08-29 — Paper draft: claims-table cleanup + Todd et al. (2024) novelty positioning
 
 **Owner:** Claude Code background agent, main working tree. **Status:** DONE.

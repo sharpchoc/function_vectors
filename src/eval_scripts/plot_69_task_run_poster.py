@@ -17,6 +17,7 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.colors import to_rgba
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 
@@ -33,7 +34,7 @@ GREY = "#a3a19b"          # "no steering" — absence, not an identity
 INK, INK2 = "#0b0b0b", "#52514e"
 SURFACE = "#fcfcfb"
 
-SETTINGS = [("zs", "Zero-shot"), ("mix", "Mixed-task, mixed-label 10-shot")]
+SETTINGS = [("zs", "Zero-shot"), ("mix", "Mixed-task, mixed-target 10-shot")]
 
 
 def load():
@@ -54,22 +55,27 @@ def style(ax):
 
 
 def bar_panel(ax, train, held, key, title, show_ylabel):
-    """Three bars: train steered, held-out steered, held-out unsteered."""
-    vals = [np.mean([float(r[f"{key}_best"]) for r in train]),
-            np.mean([float(r[f"{key}_best"]) for r in held]),
-            np.mean([float(r[f"{key}_base"]) for r in held])]
-    colors = [BLUE, ORANGE, GREY]
-    x = np.array([0.0, 1.0, 2.15])
-    ax.bar(x, vals, width=0.68, color=colors, zorder=3)
-    for xi, v in zip(x, vals):
-        ax.text(xi, v + 0.025, f"{v:.2f}", ha="center", va="bottom",
-                fontsize=19, fontweight="bold", color=INK)
-    ax.set_xticks(x)
-    ax.set_xticklabels(["Train\n55 tasks", "Held-out\n14 tasks", "Held-out\nno steering"],
-                       fontsize=15, color=INK)
+    """Two pairs of bars — train and held-out — each no-steering vs steered.
+
+    Steered bars are solid; no-steering bars are the same hue, light and hatched."""
+    pairs = [(np.mean([float(r[f"{key}_base"]) for r in train]),
+              np.mean([float(r[f"{key}_best"]) for r in train]), BLUE, 0.0),
+             (np.mean([float(r[f"{key}_base"]) for r in held]),
+              np.mean([float(r[f"{key}_best"]) for r in held]), ORANGE, 2.0)]
+    vals = []
+    for base, best, c, x0 in pairs:
+        ax.bar([x0], [base], width=0.68, facecolor=to_rgba(c, 0.20),
+               edgecolor=c, lw=1.6, hatch="//", zorder=3)
+        ax.bar([x0 + 0.8], [best], width=0.68, color=c, zorder=3)
+        for xi, v in ((x0, base), (x0 + 0.8, best)):
+            ax.text(xi, v + 0.025, f"{v:.2f}", ha="center", va="bottom",
+                    fontsize=19, fontweight="bold", color=INK)
+        vals += [base, best]
+    ax.set_xticks([0.4, 2.4])
+    ax.set_xticklabels(["Train\n55 tasks", "Held-out\n14 tasks"], fontsize=15, color=INK)
     ax.set_ylim(0, 1.12)
     ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0])
-    ax.set_xlim(-0.62, 2.77)
+    ax.set_xlim(-0.62, 3.42)
     if show_ylabel:
         ax.set_ylabel("Task accuracy", fontsize=15, color=INK)
     else:
@@ -84,9 +90,13 @@ def fig_headline():
     fig, axes = plt.subplots(1, 2, figsize=(12.5, 5.8), dpi=200, facecolor=SURFACE)
     for i, (ax, (key, label)) in enumerate(zip(axes, SETTINGS)):
         bar_panel(ax, train, held, key, label, show_ylabel=(i == 0))
+    handles = [Patch(facecolor="#eceae5", edgecolor=INK2, hatch="//", label="No steering"),
+               Patch(facecolor=INK2, label="Steered with the task's own $v_A$")]
+    fig.legend(handles=handles, loc="lower center", ncol=2, frameon=False,
+               fontsize=15, bbox_to_anchor=(0.5, 0.0))
     fig.suptitle("Steering transfers to held-out tasks",
                  fontsize=23, color=INK, fontweight="bold", y=0.985)
-    fig.tight_layout(rect=[0, 0, 1, 0.93])
+    fig.tight_layout(rect=[0, 0.07, 1, 0.93])
     p = OUT_DIR / "headline_bars.png"
     fig.savefig(p, facecolor=SURFACE, bbox_inches="tight")
     plt.close(fig)
@@ -151,7 +161,7 @@ def fig_combined():
     ax.set_yticklabels([])
     handles = [Patch(facecolor=BLUE, label="Train tasks (55)"),
                Patch(facecolor=ORANGE, label="Held-out tasks (14)"),
-               Patch(facecolor=GREY, label="No steering")]
+               Patch(facecolor="#eceae5", edgecolor=INK2, hatch="//", label="No steering")]
     fig.legend(handles=handles, loc="lower center", ncol=3, frameon=False,
                fontsize=15.5, bbox_to_anchor=(0.5, 0.005))
     fig.suptitle("Steering transfers to held-out tasks",

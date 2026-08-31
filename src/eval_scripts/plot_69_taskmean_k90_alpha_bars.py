@@ -45,7 +45,7 @@ def main():
                         fontsize=5.6, color=C_BEST)
         ax.set_xticks(x)
         ax.set_xticklabels([r["task"] for r in rs], rotation=60, ha="right", fontsize=7.5)
-        ax.set_ylabel("zero-shot full-label acc")
+        ax.set_ylabel("zero-shot full-target acc")
         ax.set_ylim(0, 1.05)
         ax.set_xlim(-0.8, len(rs) - 0.2)
         ax.grid(alpha=0.25, axis="y")

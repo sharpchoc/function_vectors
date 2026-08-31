@@ -1,5 +1,18 @@
 # DECISIONS
 
+## 2026-08-31 — Paper-draft vocabulary: "target tokens", not "label tokens" (user decision)
+
+- The paper draft (`write_up/read_and_write_features_for_in_context_learning_paper_draft.md`)
+  and every figure it embeds say **target token(s)** — never "label token(s)". Same for
+  derived phrases: target slots, demo targets, pre-target, dummy-target scaffold,
+  random-target scaffold, mixed-task mixed-target 10-shot, gold target.
+- Applies to visible plot text (titles, legends, axis labels, annotations). NOT renamed:
+  artifact/results paths and setting keys (`label_resid_means`, `labeltoken_fv_ridge`,
+  `sixshot_randomlabel`, `test_mixedtask10`, …), task names (`pos_label`,
+  `verb_tense_label`), and code variable names.
+- Figure scripts updated + figures regenerated 2026-08-31 (see WORKLOG). The circuit SVG
+  (`write_up/graphics/icl_read_write_circuit.svg`) also uses "target".
+
 ## 2026-08-29 — Qwen2.5-7B-Instruct FV derivation → results/qwen25_fv/ (user decisions)
 
 - **New top-level bucket `results/qwen25_fv/`** (`QWEN25_FV_DIR`): repeat of the GPT-J 69-task FV
