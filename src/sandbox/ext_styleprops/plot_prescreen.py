@@ -115,12 +115,6 @@ def main():
             a.plot([K_BINS[i] for i in solid], [ys[i] for i in solid], mk, color=col)
             a.plot([K_BINS[i] for i in thin], [ys[i] for i in thin], mk, color=col,
                    mfc="none")
-        ys_pool = []
-        for kb in K_BINS:
-            sub = [r for r in recs if kbin(r["k"]) == kb]
-            v, _ = rate_ctx(sub)
-            ys_pool.append(v)
-        a.plot(K_BINS, ys_pool, "k--", lw=1.2, label="pooled")
         a.set_title(name, fontsize=9)
         a.set_ylim(-0.05, 1.05)
         a.set_xlabel("k prior manifestations (4=4+)")
