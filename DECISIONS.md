@@ -1,5 +1,23 @@
 # DECISIONS
 
+## 2026-09-01 — Read feature estimator: final-target-site (bank a) is canonical (user decision)
+
+- The read feature $m_A(\ell)$ is estimated from `label_resid_means`: the residual (block
+  output) at the LAST token of the FINAL demonstration's target, averaged over the 150 clean
+  10-shot prompts. This is the paper's convention everywhere: ablation bases, steering
+  vectors, regression inputs, presence maps.
+- The ten-site-average estimator (`label_avg10*`, mean over all 10 demo targets) is retired
+  to an appendix comparison (paper-draft Appendix K). It is a lower-noise estimate of the
+  same feature (top-1 directions match at |cos| median 0.979) and gives sharper numbers where
+  estimation precision matters (few-direction bases, ridge X) — quote it only as the
+  estimator variant, never as the definition.
+- Canonical artifacts: bases in `bottom_up_ablation/bankA/`, eval runs in `bankA_*` subdirs,
+  per-prompt X in `label_resid_perprompt/`. Plot scripts take `BANKA=1` to read them; the
+  results/ deliverables are regenerated from bank (a) as of 2026-09-01.
+- Not yet re-run under (a): App G's detailed ridge sub-analyses (seed splits, centroid
+  decomposition, oracle) and App I's carrier-gap hypothesis tests — marked with convention
+  notes in the draft.
+
 ## 2026-08-31 — Paper-draft vocabulary: "target tokens", not "label tokens" (user decision)
 
 - The paper draft (`write_up/read_and_write_features_for_in_context_learning_paper_draft.md`)

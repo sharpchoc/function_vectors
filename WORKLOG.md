@@ -302,6 +302,30 @@ empty "## Terminology" heading that sat between Setup and §1. Glossary untouche
 
 **Note:** the draft's Setup and Appendix A write the head-vector mean as $\bar h_A$; the glossary
 (and the new Terminology section) use plain $h_A$. Not changed — flagged for the user to adjudicate.
+## 2026-09-01 — Bank-(a) standardised: deliverables + paper draft updated, branch merged
+
+**Owner:** Claude Code background agent, main checkout (worktree guard lifted by user;
+branch `worktree-fv-l5to7-top1` merged to main). **Status:** DONE.
+
+**USER DECISION:** final-target-site (bank a) is THE read-feature estimator; ten-site
+average (bank b) demoted to paper-draft Appendix K as an estimator-variant comparison.
+See DECISIONS.md 2026-09-01.
+
+**Deliverables regenerated from bankA artifacts** (plot scripts take BANKA=1):
+task_unique_{11dir,top3,top1,top3_L6to9,top1_L5to7}/, steering_results/taskunique_svd_dummy/,
+ablation/explainer_visuals/readfeature_decomposition.png (carrier cos 0.727 under (a) too),
+NEW labeltoken_fv_ridge/layer_sweep_bankA/taskfv_r2_heldout_perprompt.png
+(plot_ridge_bankA_presentation.py).
+
+**Paper draft:** number swaps only (no rephrasing): claims-table row 3 .063→.095, row 6
+R²≈.7→≈.64; Claim 3 necessity .063→.095, top3 .066→.099, top1 ~84%(.103)→~77%(.146),
+L6-9 .096→.135, 1-shot own .026→.035; swap .341→.327; Claim 6 (0.65pp/0.69cen L13)→
+(0.56pp/0.63cen L12), sweep 0.35→0.28 (L0), 0.61→0.53 (L27), figure → layer_sweep_bankA;
+App F table (4 rows updated + NEW L5-7 top-1 row; leak median .08→.09); App I swap numbers;
+convention notes added to App G and App I; NEW Appendix K (bank-b estimator table).
+
+---
+
 ## 2026-09-01 — Bank-(a) read-feature migration: all (b)-derived results re-run
 
 **Owner:** Claude Code background agent, worktree `fv-l5to7-top1`. Pods fv-bankA-{abl,steer,

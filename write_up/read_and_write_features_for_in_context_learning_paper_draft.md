@@ -58,7 +58,7 @@ shown there. The rest of the claims are to our knowledge novel.
 |---|---|---|---|
 | 1 | General write features exist at middle layers and are low dimensional per-task | A single vector can steer models to perform the task on zero shot prompts with peak accuracy when injected in middle layers (shown in Todd et al. 2024). The 37 heads selected from train tasks only, can be used to form function vectors for 14 never-seen tasks' accuracy from 0.09 to 0.73 (same as train tasks' accuracy uplift to 0.75). | Claim 1 |
 | 2 | Read features exist at early layers | Write features are linearly decodable from single target-token activations at early layers (held-out $R^2$ up to 0.688) | Claim 2 |
-| 3 | Read features are causal and low dimensional per-task | We can achieve bidirectional control on task performance using 2 directions per task. Sufficiency: Injecting $m_A$ in dummy prompts recovers 70% of real prompt accuracy. Neccesity: ablating a 2-direction task-unique basis kills ICL (accuracy drops from 0.629 to 0.063) | Claim 3 |
+| 3 | Read features are causal and low dimensional per-task | We can achieve bidirectional control on task performance using 2 directions per task. Sufficiency: Injecting $m_A$ in dummy prompts recovers 70% of real prompt accuracy. Neccesity: ablating a 2-direction task-unique basis kills ICL (accuracy drops from 0.629 to 0.095) | Claim 3 |
 | 4 | Read features are causal for the formation of write features | Label token injection steers the cue representation toward the task's own $v_A$ (cos 0.18 → 0.37) | Claim 4 |
 | 5 | Read features appear earlier than write features | Read feature cosine similarity peaks at target tokens, L6 (cos 0.80). Write feature cosine similarity peaks at cue tokens, L13. | Claim 5 |
 | 6 | Read features linearly map to write features | Training a linear map on a set of train tasks predicts held-out tasks' mpaping ($R^2 \approx 0.7$). | Claim 6 |
@@ -157,12 +157,12 @@ The ablation then removes only the task-unique
 subspace: the task's 11-direction basis formed from the L5–15 target-token means after
 removing each layer's cross-task mean direction (orthonormalised; effective rank ≈ 1.4).
 
-Ablating this basis at demo target tokens collapses 6-shot ICL from 0.629 to 0.063, while
+Ablating this basis at demo target tokens collapses 6-shot ICL from 0.629 to 0.095, while
 ablating a *counterfactual* task's basis leaves accuracy exactly at baseline (0.629) — a
-clean double dissociation, which also holds at 1 shot (own 0.026 vs counterfactual 0.202,
+clean double dissociation, which also holds at 1 shot (own 0.035 vs counterfactual 0.202,
 baseline 0.208). The necessary object is genuinely low-rank: the top-3 SVD compression of
-the basis is a drop-in match (0.066), the top single direction alone removes ~84% of ICL
-(0.103), and restricting the basis to layers 6–9 nearly suffices (0.096).
+the basis is a drop-in match (0.099), the top single direction alone removes ~77% of ICL
+(0.146), and restricting the basis to layers 6–9 nearly suffices (0.135).
 
 ![Task-unique 11-direction ablation, own vs counterfactual](../results/69_task_run/bottom_up_read_features/ablation/task_unique_11dir/aggregate_bars.png)
 
@@ -180,7 +180,7 @@ On the dummy-target scaffold, the task-unique part alone recovers about three qu
 full-vector steering (6 slots: 0.000 → 0.339 vs 0.447 full), while the shared carrier alone
 does nothing (≤ 0.013 at every layer and dose). The code side compresses hard: swapping in
 a *single* task-unique direction ($\alpha \cdot s_1 \cdot v_1$ at L6, all target slots)
-reaches 0.341 — matching the full mean-free vector — though it ignites only at
+reaches 0.327 — matching the full mean-free vector — though it ignites only at
 $\alpha \approx 16$–32, well above the direction's natural per-prompt scale.
 
 ![Single task-unique direction swap steering, alpha curve](../results/69_task_run/bottom_up_read_features/steering_results/taskunique_svd_dummy/alpha_curve.png)
@@ -237,14 +237,14 @@ counterpart in that paper.
 
 A single ridge regression from the mean target-token activation to the per-prompt function
 vector, fit on the 55 train tasks, predicts the *held-out* tasks' function vectors with
-$R^2 \approx 0.7$ (0.65 per-prompt, 0.69 at task centroids, reading from L13). The map is
+$R^2 \approx 0.64$ (0.56 per-prompt, 0.63 at task centroids, reading from L12). The map is
 one linear transform shared across tasks — it was never shown the held-out tasks' FVs, yet
 it places most of them from their read features alone. The sweep covers all 28 layers:
-held-out $R^2$ climbs steeply from 0.35 at L0, plateaus from L8, peaks at L12–13, and
-declines only gently to 0.61 at the final layer — task identity stays linearly readable at
+held-out $R^2$ climbs steeply from 0.28 at L0, plateaus from L8, peaks at L12–13, and
+declines only gently to 0.53 at the final layer — task identity stays linearly readable at
 the target slots through the entire second half of the network.
 
-![Held-out R² of the read→write ridge, all 28 layers](../results/69_task_run/FV_linear_decodability/labeltoken_fv_ridge/layer_sweep/taskfv_r2_all28_heldout_perprompt.png)
+![Held-out R² of the read→write ridge, all 28 layers](../results/69_task_run/FV_linear_decodability/labeltoken_fv_ridge/layer_sweep_bankA/taskfv_r2_heldout_perprompt.png)
 
 ### The read→write map is, to first order, a rotation
 
@@ -610,7 +610,7 @@ Bases, in the order they were tried: the fixed unit L6 read-feature direction (r
 the task's top-5 uncentered per-prompt read-feature PCs (rank-5); the same after centering
 (centered-5); and the **task-unique** family — take the 11 layer-wise task-level read
 features (L5–15), remove each layer's cross-task mean direction, and orthonormalize the
-residuals (effective rank ≈ 1.4; max |cos| to any layer-mean direction: median 0.08 —
+residuals (effective rank ≈ 1.4; max |cos| to any layer-mean direction: median 0.09 —
 near carrier-free). Top-3 / top-1 = SVD compressions of that basis; L6–9 = the
 band-restricted variant.
 
@@ -619,10 +619,11 @@ band-restricted variant.
 | Rank-1 (unit L6 read dir) | 0.567 | 0.623 | 0.009 | 0.278 |
 | Rank-5 (uncentered PCs) | 0.503 | 0.620 | 0.004 | 0.222 |
 | Centered-5 PCs | 0.545 | 0.625 | 0.393 | 0.550 |
-| **Task-unique 11-dir (L5–15)** | **0.063** | **0.629** | 0.061 | 0.603 |
-| — top-3 SVD | 0.066 | 0.629 | 0.065 | 0.607 |
-| — top-1 direction | 0.103 | 0.630 | 0.100 | 0.610 |
-| — top-3, L6–9 band only | 0.096 | 0.630 | 0.088 | 0.610 |
+| **Task-unique 11-dir (L5–15)** | **0.095** | **0.629** | 0.080 | 0.604 |
+| — top-3 SVD | 0.099 | 0.629 | 0.089 | 0.608 |
+| — top-1 direction | 0.146 | 0.630 | 0.145 | 0.611 |
+| — top-3, L6–9 band only | 0.135 | 0.630 | 0.127 | 0.611 |
+| — top-1, L5–7 band only | 0.130 | 0.632 | 0.119 | 0.614 |
 | Attention-mask control | 0.046 | | | |
 
 Readings: (1) uncentered bases can't separate own from counterfactual in zero mode because
@@ -632,7 +633,7 @@ carrier is load-bearing but non-specific; centering fixes the zero-mode collater
 0.393). (2) The between-task mean differential — the task-unique basis — is the target-side
 task-identity code: near-total own-task kill with the counterfactual control *exactly* at
 baseline, in both modes (the basis is orthogonal to the carrier, so mean and zero
-coincide). It is the first and only variant with 1-shot specificity too (own 0.026 vs cf
+coincide). It is the first and only variant with 1-shot specificity too (own 0.035 vs cf
 0.202, baseline 0.208). (3) Partial survivors of own-task ablation (>30% of baseline) are
 echo/copy-heavy tasks (lowercase_word, larger/smaller_of_pair, several X-english
 translations). (4) Masking the final cue's attention to demo target positions collapses
@@ -640,6 +641,11 @@ accuracy to 0.046 — target-token attention is the near-exclusive route for tas
 into the query.
 
 ## G. The read → write linear map in detail
+
+*(Convention note: the detailed numbers in this appendix were computed with the ten-site
+average of the demonstration target activations as the per-prompt X — the estimator
+variant of Appendix K — and have not been re-run under the final-target-site convention;
+the main-text Claim 6 numbers and figure use the final-target-site X.)*
 
 **What transfers is the centroid map.** Against per-prompt FV targets the held-out $R^2$
 is 0.44–0.50 over L5–L15; the full 28-layer sweep spans 0.26 (L0) to the 0.498 peak (L13)
@@ -735,6 +741,11 @@ sweep; within a fixed n it is ≈ 0. Sources:
 
 ## I. Task-unique steering & the carrier-gap hypothesis tests
 
+*(Convention note: the mean-free and swap headline numbers here use the final-target-site
+read feature; the carrier-gap hypothesis tests — random-word scaffold, attention capture,
+error anatomy — were run with the ten-site-average swap direction (Appendix K) and have
+not been re-run.)*
+
 **Mean-free steering.** Dummy-slot injection of the mean-removed read feature (per-task
 vector minus the shared L6 mean): 6 slots 0.000 → 0.339 at best $\alpha$ vs 0.447 for the
 full vector; 1 slot 0.126 full vs 0.075 mean-free. The shared mean alone: ≤0.013 anywhere.
@@ -744,7 +755,7 @@ vector's norm but none of its identity.
 **Single-direction swap.** Remove the own top task-unique direction's natural projection
 at L6 target slots and write $\alpha \cdot s_1 \cdot v_1$ instead: aggregate accuracy is
 dead through $\alpha=4$ (≤0.001, and removal-only = baseline), ignites at $\alpha=8$–16
-(0.012 → 0.191), peaks 0.341 at $\alpha=32$, declines by 64. Per-task best 0.373. The code
+(0.007 → 0.160), peaks 0.327 at $\alpha=32$, declines by 64. Per-task best 0.351. The code
 is one direction, but the model only responds well above its natural scale.
 
 **Hypothesis 1 — carrier repairs the defective "_" base: rejected.** On a scaffold whose
@@ -799,6 +810,33 @@ direction-dependent gain, not a different geometry.
 Source: `understanding_read_write_linear_map/`.
 
 ![Cross-family cosine histograms](../results/69_task_run/understanding_read_write_linear_map/crossfamily_cos_hists.png)
+
+## K. Estimator variant: ten-site-average read features
+
+Every quantity in this paper estimates the read feature from the residual at the **last
+token of the final demonstration's target** (150 prompts per task). An alternative
+estimator averages the same residual over **all ten** demonstrations' target tokens before
+taking the task mean — ten times more sites, and therefore a lower-noise estimate of the
+same feature, at the cost of blending in shallow-context positions. The two estimators'
+task-unique top directions nearly coincide ($|\cos(v_1^{\mathrm{final}},
+v_1^{\mathrm{avg10}})|$: median 0.979, min 0.966 over the 69 tasks), and every qualitative
+result is identical under both; the ten-site average gives sharper numbers exactly where
+estimation precision matters (few-direction ablation bases, regression inputs), and
+indistinguishable numbers for prompt-mean-level steering:
+
+| Result (69-task mean) | final-site (main text) | ten-site avg |
+|---|---:|---:|
+| Task-unique 11-dir ablation, own mean-abl (6-shot, base 0.629) | 0.095 | 0.063 |
+| — top-3 SVD | 0.099 | 0.066 |
+| — top-1 direction | 0.146 | 0.103 |
+| — top-3, L6–9 band only | 0.135 | 0.096 |
+| — top-1, L5–7 band only | 0.130 | 0.097 |
+| Single-direction swap steering, best aggregate $\alpha$ | 0.327 | 0.341 |
+| Read→write ridge, held-out per-prompt $R^2$ (peak layer) | 0.557 (L12) | 0.653 (L13) |
+| Read→write ridge, held-out centroid $R^2$ | 0.636 | 0.692 |
+
+Counterfactual controls sit at baseline under both estimators, and 1-shot specificity
+holds under both.
 
 ---
 
