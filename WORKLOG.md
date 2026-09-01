@@ -137,6 +137,12 @@ Added: robustness table + explanation in Appendix H; pointer sentence in Claim 7
 the binned plot title says pooled ρ=0.47 while the text says within-task +0.96 (both correct,
 different statistics) — plot title fix deferred by user.
 
+**App H per-task examples (user request):** NEW `src/eval_scripts/plot_69_within_task_rho_examples.py`
+→ `write_feature_and_model_accuracy/within_task_rho_examples.png`: 3 illustrative panels
+(adjective_to_adverb ρ=1.000 perfect / english-french ρ=0.964 median+held-out /
+french_noun_gender ρ=0.643 worst), seven (presence, acc) points each from
+diagnostics_per_task.csv. Embedded in App H with distribution stats (min 0.643, q25 0.964).
+
 **Claim 3 necessity (user request, earlier today):** restructured to decomposition-first
 (m_A = m̄ + u_A displayed equation) → task-unique ablation results → Appendix F link for the
 raw-mean-ablation failure motivation (that prose + cossim_hist figure moved to top of App F);

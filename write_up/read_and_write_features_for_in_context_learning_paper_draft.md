@@ -281,7 +281,7 @@ the circuitry is literally an orthogonal matrix.
 
 Can we predict the model perfomance on these simple tasks before we see the model output using a mechanisitic metric? We find that the strength of the write feature at the query cue can be used to predict performance. 
 
-We define strength of write feature as the cosine similarity of the residual stream with the write feature for that task (mean cosine similarity across layer 9 to 20). We study prompts from n = 0…6 in context demonstrations. We try other variations to averaging over layers 9–20 in Appendix H and find similar results across the board. We group different presence strengths and plot against model accuracy to get a monotone curve (shown below). Below cos 0.15 the model has 0% accuracy and by the 0.35–0.45 bucket it achieves 50% accuracy. These results are for all tasks grouped together, if we study each task at a time, the spearman coefficient is much higher (~0.95).
+We define strength of write feature as the cosine similarity of the residual stream with the write feature for that task (mean cosine similarity across layer 9 to 20). We study prompts from n = 0…6 in context demonstrations. We try other variations of measuring cosine similarity in Appendix H and find similar results across the board. We group different presence strengths and plot against model accuracy to get a monotone curve (shown below). Below cos 0.15 the model has 0% accuracy and by the 0.35–0.45 bucket it achieves 50% accuracy. These results are for all tasks grouped together, if we study each task at a time, the spearman coefficient is much higher (~0.95).
 
 ![Binned presence vs accuracy](../results/69_task_run/write_feature_and_model_accuracy/binned_meanL.png)
 
@@ -706,6 +706,18 @@ between-task component; since the claim is the within-task relationship, the ban
 reported in the main text as the assumption-free default rather than any per-layer
 optimum. Source: `write_feature_and_model_accuracy/correlation_summary.csv` (pooled) and
 the per-task recomputation over `presence_vs_acc/<task>.npz` (within-task).
+
+**What the within-task correlation looks like.** Per-task values are tight: minimum
+0.643, 25th percentile already at 0.964, maximum 1.000 (per-task list in
+`diagnostics_per_task.csv`). Three illustrative tasks — the perfect case, the median
+case, and the single worst case in the pool:
+
+![Illustrative within-task presence-vs-accuracy trajectories](../results/69_task_run/write_feature_and_model_accuracy/within_task_rho_examples.png)
+
+*One task = seven (presence, accuracy) points, n = 0…6. Even the worst task
+(french_noun_gender, ρ = 0.643) is strongly positive — its rank violations are confined
+to the saturated top of its curve, where accuracy plateaus while presence still creeps
+up.*
 
 **Between-task, the sign flips** (Simpson's pattern): at fixed n ≥ 2, tasks with higher
 presence tend to score *lower* (ρ ≈ −0.3 to −0.4 at n = 3…6), even though every task
