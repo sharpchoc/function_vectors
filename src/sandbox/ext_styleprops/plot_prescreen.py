@@ -98,16 +98,23 @@ def main():
         if pi == 0:
             a.legend(fontsize=7)
 
-        # accuracy analog: adherence to the context's own polarity, by k
+        # accuracy analog: adherence to the context's own polarity, by k.
+        # cells with <20 scorable samples get open markers (thin-data flag).
         a = ax3[pi // ncol][pi % ncol]
-        for pol, style, lab in (("nat", "o-", "nat-convention doc"),
-                                ("alt", "s-", "alt-convention doc")):
-            ys = []
+        for pol, mk, col, lab in (("nat", "o", "#1f77b4", "nat-convention doc"),
+                                  ("alt", "s", "#ff7f0e", "alt-convention doc")):
+            ys, ms = [], []
             for kb in K_BINS:
                 sub = [r for r in recs if r["pol"] == pol and kbin(r["k"]) == kb]
-                v, _ = rate_ctx(sub)
+                v, m = rate_ctx(sub)
                 ys.append(v)
-            a.plot(K_BINS, ys, style, label=lab, alpha=0.8)
+                ms.append(m)
+            a.plot(K_BINS, ys, "-", color=col, alpha=0.8, label=lab)
+            solid = [i for i in range(len(ys)) if ms[i] >= 20]
+            thin = [i for i in range(len(ys)) if 0 < ms[i] < 20]
+            a.plot([K_BINS[i] for i in solid], [ys[i] for i in solid], mk, color=col)
+            a.plot([K_BINS[i] for i in thin], [ys[i] for i in thin], mk, color=col,
+                   mfc="none")
         ys_pool = []
         for kb in K_BINS:
             sub = [r for r in recs if kbin(r["k"]) == kb]
@@ -166,9 +173,9 @@ def main():
         ax2[k // ncol][k % ncol].axis("off")
         ax3[k // ncol][k % ncol].axis("off")
     fig3.suptitle("Style-following accuracy (ICL accuracy-vs-shots analog): fraction of "
-                  "T=1 sampled continuations at decision points that follow the "
-                  "convention the document has used so far, by # prior manifestations",
-                  fontsize=11)
+                  "T=1 sampled continuations at decision points\nthat follow the "
+                  "convention the document has used so far, by # prior manifestations. "
+                  "Open markers = cell has <20 scorable samples.", fontsize=11)
     fig1.suptitle("Sampled adherence at decision points: fraction of T=1 continuations "
                   "classified as the nat pole, under nat-polarity vs alt-polarity context "
                   "(dashed = their difference, the context separation)", fontsize=11)
