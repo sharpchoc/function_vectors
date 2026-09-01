@@ -66,6 +66,27 @@ Generator: google/gemini-2.5-flash via OpenRouter, feature-mix instructions in
 7. **Head-sum FV analog (W2)**: deferred (most expensive item; only after residual-stream
    write-feature steering works).
 
+## Pre-screen outcome (2026-09-01, GPT-J, corrected run)
+
+**16/17 properties pass** (only `whilst` fails: separation 0.167 at k≥4, 8.5% scorable).
+Separation s = P(classified nat | nat ctx) − P(classified nat | alt ctx) at k≥4:
+curly_quotes .973, percent_sign .966, all_caps .940, us_uk .909, quote_punct .901,
+double_space .855, oxford_comma .850, sentence_caps .792, ordinal_words .784,
+brit_t_past .667, ampersand .667, contractions .663, num_words .643, ise_ize .435,
+em_dash 1.0 and ellipsis 1.0 (both on thin scorable counts). s at k=0 ≈ 0 everywhere
+(identical-prompt control), rising monotonically in k for all passers. Pool artifact:
+`task_splits/style_properties_pool.json`. Provisional passes to re-examine with
+multi-sample scoring: ellipsis (3.7% scorable), brit_t_past (5.0%); curly_quotes has a
+mild k=0 offset (+0.214, ~2.8σ).
+
+**Bug caught by the k=0 control** (first run, discarded): when the decision boundary
+fell inside the opportunity span, the inconsistent expected-continuation was built as
+the full other rendering instead of its remainder — the strict-fallback classifier could
+then only confirm the context's own polarity (contractions showed s_k0 = 0.949 on
+IDENTICAL prompts). Fixed in build_datasets (delta-remainder rule) together with curly
+apostrophe normalization ('’' → "'"), datasets rebuilt, full rerun. Lesson: always keep
+a k=0 identical-prompt cell as a classifier-leak control.
+
 Known limitations to carry forward: ellipsis is low-n (37 docs); oxford_comma, whilst,
 brit_t_past have thin k ≥ 4 cells (29–45 sites/polarity); scorable rates at lexicon
 properties depend on the loose classifier's hit rate (reported per property in the

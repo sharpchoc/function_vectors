@@ -27,7 +27,7 @@ _BOOT = Path(__file__).resolve().parents[3]
 for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
-from src.utils.paths import ARTIFACTS_ROOT, STYLE_PROPERTIES_DIR
+from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, STYLE_PROPERTIES_DIR
 
 IN_DIR = ARTIFACTS_ROOT / "style_properties" / "prescreen"
 OUT_DIR = STYLE_PROPERTIES_DIR / "behavioral_prescreen"
@@ -136,8 +136,15 @@ def main():
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)
+    pool = {"description": "style-property pool passing the A4 behavioral pre-screen "
+                           "(gate thresholds: adjudication memo item 4)",
+            "pass": [r["property"] for r in rows if r["PASS"]],
+            "fail": [r["property"] for r in rows if not r["PASS"]]}
+    json.dump(pool, open(REPO_ROOT / "task_splits" / "style_properties_pool.json", "w"),
+              indent=2)
     for r in rows:
         print("  ".join(f"{k}={v}" for k, v in r.items()))
+    print(f"pool: {len(pool['pass'])} pass -> task_splits/style_properties_pool.json")
     print(f"-> {OUT_DIR}")
 
 

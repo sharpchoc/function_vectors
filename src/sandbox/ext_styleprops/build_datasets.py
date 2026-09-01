@@ -105,10 +105,15 @@ def build_property(prop, docs, tok):
                 keep = False
             if keep and len(sites) < MAX_SITES:
                 cs_n, cs_a = off_n[dec_n][1], off_a[dec_a][1]
+                # inconsistent expected continuation: when the decision boundary sits
+                # INSIDE the opp span (delta>0), it is the other rendering's REMAINDER
+                # from delta, not the full rendering (delta <= div, so the skipped chars
+                # are shared between renderings).
+                d_n, d_a = cs_n - sn[0], cs_a - sa[0]
                 exp = {
                     "nat_ctx": {"nat": nat_text[cs_n:sn[1]],
-                                "alt": nat_text[cs_n:sn[0]] + o.alt},
-                    "alt_ctx": {"nat": alt_text[cs_a:sa[0]] + o.nat,
+                                "alt": o.alt[d_n:] if d_n > 0 else nat_text[cs_n:sn[0]] + o.alt},
+                    "alt_ctx": {"nat": o.nat[d_a:] if d_a > 0 else alt_text[cs_a:sa[0]] + o.nat,
                                 "alt": alt_text[cs_a:sa[1]]},
                 }
                 exp_toks = max(len(tok(v).input_ids)
@@ -142,6 +147,11 @@ def main():
 
     tok = AutoTokenizer.from_pretrained("EleutherAI/gpt-j-6B")
     docs = json.load(open(BASE_PATH))
+    # normalize curly apostrophes: the contraction lexicon and detectors use straight ',
+    # and the generator emits it's/it’s inconsistently (double curly quotes are left
+    # alone — the curly_quotes property detects both forms).
+    for d in docs:
+        d["text"] = d["text"].replace("’", "'").replace("‘", "'")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     STYLE_PROPERTIES_DIR.mkdir(parents=True, exist_ok=True)
 
