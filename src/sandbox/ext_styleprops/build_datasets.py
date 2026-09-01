@@ -135,9 +135,63 @@ def build_property(prop, docs, tok):
                 last_ev["alt"] = ev_a[-1]
         if sites:
             audit["n_docs_used"] += 1
+            bg = background_sites(opps, nat_spans, alt_spans, nat_text, alt_text,
+                                  ids_n, off_n, ids_a, off_a)
             out_docs.append({"doc_id": d["doc_id"], "text_nat": nat_text,
-                             "text_alt": alt_text, "n_opps": len(opps), "sites": sites})
+                             "text_alt": alt_text, "n_opps": len(opps), "sites": sites,
+                             "bg": bg})
     return out_docs, audit
+
+
+MAX_BG = 10
+
+
+def background_sites(opps, nat_spans, alt_spans, nat_text, alt_text,
+                     ids_n, off_n, ids_a, off_a):
+    """Identity-matched background positions (Stage B state-vs-lookback probes):
+    tokens strictly inside the shared-text gaps between consecutive opportunity spans,
+    located at the same gap offset in both twins, token id asserted equal. Annotated
+    with k (opps before the position) and per-twin token distance since the last
+    evidence token."""
+    def tok_at(offs, ch):
+        for j, (s, e) in enumerate(offs):
+            if s <= ch < e:
+                return j
+        return None
+
+    out = []
+    for i in range(len(opps)):
+        gn = (nat_spans[i][1], nat_spans[i + 1][0]) if i + 1 < len(opps) \
+            else (nat_spans[i][1], len(nat_text))
+        ga = (alt_spans[i][1], alt_spans[i + 1][0]) if i + 1 < len(opps) \
+            else (alt_spans[i][1], len(alt_text))
+        glen = gn[1] - gn[0]
+        assert glen == ga[1] - ga[0]
+        if glen < 8:
+            continue
+        for frac in (0.5, 0.25, 0.75):
+            if len(out) >= MAX_BG:
+                break
+            delta = int(glen * frac)
+            jn, ja = tok_at(off_n, gn[0] + delta), tok_at(off_a, ga[0] + delta)
+            if jn is None or ja is None:
+                continue
+            # token fully inside the shared gap in both twins, same id
+            if not (gn[0] <= off_n[jn][0] and off_n[jn][1] <= gn[1]):
+                continue
+            if not (ga[0] <= off_a[ja][0] and off_a[ja][1] <= ga[1]):
+                continue
+            if ids_n[jn] != ids_a[ja] or any(b["tok_idx"]["nat"] == jn for b in out):
+                continue
+            ev_n = tok_at(off_n, nat_spans[i][1] - 1)
+            ev_a = tok_at(off_a, alt_spans[i][1] - 1)
+            out.append({"tok_idx": {"nat": jn, "alt": ja}, "tok_id": ids_n[jn],
+                        "k": i + 1,
+                        "dist": {"nat": jn - ev_n if ev_n is not None else -1,
+                                 "alt": ja - ev_a if ev_a is not None else -1}})
+        if len(out) >= MAX_BG:
+            break
+    return out
 
 
 def main():
