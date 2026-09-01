@@ -7860,3 +7860,41 @@ C-arm: additive mean-free r_A (full-rank unique) on the random-label scaffold, a
 theory C rejected. Bottom line across hyp tests: the carrier's contribution is keeping the
 composite code's internal ratio right (LN/direction account), not attention capture, not
 base repair, not extra unique dims, not (mostly) emission drive.
+
+## Stream: style-properties — free-form style-property extension, Stage 0+A (2026-09-01, branch worktree-style-properties)
+
+**Status:** pipeline built and audited; GPU pre-screen pending.
+
+Extension of the read/write-feature line to free-form text: 17 binary style properties
+(sentence_caps, all_caps, us_uk, ise_ize, brit_t_past, whilst, double_space,
+oxford_comma, curly_quotes, em_dash, ellipsis, quote_punct, num_words, percent_sign,
+ordinal_words, contractions, ampersand). Evidence tokens = manifestations (label
+analog); decision token = last token before the nat/alt divergence, identity-matched
+across minimal-pair twins (cue analog). USER DECISIONS 2026-09-01: GPT-J only; ~15-20
+pre-screened properties; SAMPLED ADHERENCE ONLY as readout; descriptive stages first.
+Full design: results/style_properties/adjudication_memo.md (+ plan in session notes).
+
+**Commands:**
+- python src/sandbox/ext_styleprops/gen_corpus.py (+ --batch num/dlg/dsh/ukv/msc):
+  758 docs via OpenRouter gemini-2.5-flash -> dataset_files/style_properties/base_corpus.json
+- python src/sandbox/ext_styleprops/build_datasets.py -> props/<prop>.json +
+  results/style_properties/dataset_audit.csv
+
+**Files:** src/sandbox/ext_styleprops/{properties,gen_corpus,build_datasets,
+prescreen_adherence,plot_prescreen}.py; paths.py += STYLE_PROPERTIES_DIR;
+results/style_properties/{README.md,adjudication_memo.md,dataset_audit.csv}.
+
+**Findings/lessons:**
+- Decision-token rule needs a COMMON-BOUNDARY intersection across the twin pair: BPE
+  merges differ between twins (',"' merges only in the straight-quote twin; the alt
+  double-space twin emits a standalone ' ' token). Naive last-token-before-divergence
+  dropped 100% of double_space and 55% of curly_quotes sites; the intersection rule
+  drops <=1% everywhere except all_caps (~9%).
+- Corpus generator disobeys single-space/typography instructions ~often; absorbed by
+  detecting BOTH surface forms of every property and rendering each twin fully
+  consistent (never rely on generation-side style compliance).
+- 32,026 prescreen items total (median prefix ~200 tokens, max_new <=10).
+
+**Next:** GPU pod -> prescreen_adherence.py (2 shards) -> plot_prescreen.py -> pool
+artifact task_splits/style_properties_pool.json; then Stage B decodability captures.
+**Blockers:** none.

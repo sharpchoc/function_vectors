@@ -37,9 +37,11 @@ FV_FORMATION_DIR = RESULTS_ROOT / "direction3_fv_formation"
 STEERING_COMPARISON_DIR = RESULTS_ROOT / "steering_vector_comparison"
 GENERAL_DIR = RESULTS_ROOT / "general"
 TASK69_RUN_DIR = RESULTS_ROOT / "69_task_run"  # canonical 69-task pool studies (DECISIONS 2026-08-16)
+STYLE_PROPERTIES_DIR = RESULTS_ROOT / "style_properties"  # free-form style-property read/write study
 
 __all__ = [
     "REPO_ROOT", "ARTIFACTS_ROOT", "RESULTS_ROOT", "LOGS_ROOT",
     "AMBIGUOUS_DIR", "LABEL_GEOMETRY_DIR", "FV_FORMATION_DIR",
     "STEERING_COMPARISON_DIR", "GENERAL_DIR", "TASK69_RUN_DIR",
+    "STYLE_PROPERTIES_DIR",
 ]
