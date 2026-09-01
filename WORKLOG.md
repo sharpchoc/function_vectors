@@ -8222,3 +8222,72 @@ C-arm: additive mean-free r_A (full-rank unique) on the random-label scaffold, a
 theory C rejected. Bottom line across hyp tests: the carrier's contribution is keeping the
 composite code's internal ratio right (LN/direction account), not attention capture, not
 base repair, not extra unique dims, not (mostly) emission drive.
+
+## Stream: style-properties — free-form style-property extension, Stage 0+A (2026-09-01, branch worktree-style-properties)
+
+**Status:** pipeline built and audited; GPU pre-screen pending.
+
+Extension of the read/write-feature line to free-form text: 17 binary style properties
+(sentence_caps, all_caps, us_uk, ise_ize, brit_t_past, whilst, double_space,
+oxford_comma, curly_quotes, em_dash, ellipsis, quote_punct, num_words, percent_sign,
+ordinal_words, contractions, ampersand). Evidence tokens = manifestations (label
+analog); decision token = last token before the nat/alt divergence, identity-matched
+across minimal-pair twins (cue analog). USER DECISIONS 2026-09-01: GPT-J only; ~15-20
+pre-screened properties; SAMPLED ADHERENCE ONLY as readout; descriptive stages first.
+Full design: results/style_properties/adjudication_memo.md (+ plan in session notes).
+
+**Commands:**
+- python src/sandbox/ext_styleprops/gen_corpus.py (+ --batch num/dlg/dsh/ukv/msc):
+  758 docs via OpenRouter gemini-2.5-flash -> dataset_files/style_properties/base_corpus.json
+- python src/sandbox/ext_styleprops/build_datasets.py -> props/<prop>.json +
+  results/style_properties/dataset_audit.csv
+
+**Files:** src/sandbox/ext_styleprops/{properties,gen_corpus,build_datasets,
+prescreen_adherence,plot_prescreen}.py; paths.py += STYLE_PROPERTIES_DIR;
+results/style_properties/{README.md,adjudication_memo.md,dataset_audit.csv}.
+
+**Findings/lessons:**
+- Decision-token rule needs a COMMON-BOUNDARY intersection across the twin pair: BPE
+  merges differ between twins (',"' merges only in the straight-quote twin; the alt
+  double-space twin emits a standalone ' ' token). Naive last-token-before-divergence
+  dropped 100% of double_space and 55% of curly_quotes sites; the intersection rule
+  drops <=1% everywhere except all_caps (~9%).
+- Corpus generator disobeys single-space/typography instructions ~often; absorbed by
+  detecting BOTH surface forms of every property and rendering each twin fully
+  consistent (never rely on generation-side style compliance).
+- 32,026 prescreen items total (median prefix ~200 tokens, max_new <=10).
+
+**Next:** GPU pod -> prescreen_adherence.py (2 shards) -> plot_prescreen.py -> pool
+artifact task_splits/style_properties_pool.json; then Stage B decodability captures.
+**Blockers:** none.
+
+## style-properties Stage B: decodability grid (2026-09-01, branch worktree-style-properties)
+
+**Status:** done. Captures: capture_sites.py on RTX PRO 4500 pod (24 GB fp16,
+artifacts/style_properties/site_acts/, 16 props x 2 polarities, 29 layers x
+{evidence-mean, decision, background} sites). Probes: probe_grid.py (logreg, doc-level
+splits, 3 seeds; per-prop cache in artifacts/style_properties/probe_cache -> resumable;
+driver run_probe_grid.sh). Deliverables: results/style_properties/decodability/.
+
+**Findings:**
+- Evidence tokens: L0 (embedding) probe acc = 1.0 -> token-identity shortcut quantified;
+  never probe evidence sites for state claims.
+- Decision tokens: L0 acc = 0.5 exactly (identity-matched control holds) but 0.80-1.0
+  from context at best layers; jumps 0.5 -> 0.8-1.0 after ONE manifestation (k-curve),
+  mirroring the ICL "labels informative from example 1" result.
+- Background tokens: 0.71-0.99 decodable -> the polarity is carried as PERSISTENT
+  residual-stream state between manifestations, not merely looked up at decisions.
+  Distance curves: typography/spelling props (curly_quotes, double_space, us_uk,
+  ise_ize, em_dash, sentence_caps) stay ~0.95 out to 91+ tokens; quote_punct,
+  contractions, num_words, oxford_comma decay to ~0.6-0.65 -> property-dependent
+  state half-life.
+- Best layers are property-dependent: sentence_caps/double_space/percent peak early
+  (L6-8); most lexicon/typography peak late (L26-28) — different depth profile than the
+  ICL read (L6) / write (L13) features; interpret with care (late peaks may reflect
+  next-token preparation).
+- LESSON: silent background-run deaths — pipeline exit codes mask python's; per-item
+  caching + a driver loop is the robust pattern.
+
+**Next:** Stage C feature extraction (R1/R2/R3 + W1 candidates from these captures,
+geometry: carrier cosine matrix, polarity symmetry) — needs user adjudication of the
+headline read-feature definition (memo items 5-6) before Stage D causal work.
