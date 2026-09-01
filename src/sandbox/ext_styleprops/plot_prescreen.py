@@ -80,10 +80,12 @@ def main():
         a = ax1[pi // ncol][pi % ncol]
         a.plot(K_BINS, curves["nat"][1], "o-", label="nat ctx")
         a.plot(K_BINS, curves["alt"][1], "s-", label="alt ctx")
-        a.plot(K_BINS, s_curve, "k--", lw=1, label="separation")
+        a.plot(K_BINS, s_curve, "k--", lw=1, label="separation (nat − alt)")
         a.set_title(name, fontsize=9)
         a.set_ylim(-0.05, 1.05)
         a.set_xlabel("k prior manifestations (4=4+)")
+        if pi % ncol == 0:
+            a.set_ylabel("P(continuation = nat pole)", fontsize=8)
         if pi == 0:
             a.legend(fontsize=7)
 
@@ -101,6 +103,8 @@ def main():
         a.set_title(name, fontsize=9)
         a.set_ylim(-0.2, 1.0)
         a.set_xlabel("tok distance since last manifestation (k>=2)")
+        if pi % ncol == 0:
+            a.set_ylabel("separation s", fontsize=8)
 
         # gate
         scorable = np.mean([r["label"] is not None for r in recs])
@@ -124,10 +128,16 @@ def main():
                          adh_disfavored_k4=round(adh_disf, 3) if not np.isnan(adh_disf) else "",
                          PASS=passed))
 
+    for k in range(len(props), nrow * ncol):
+        ax1[k // ncol][k % ncol].axis("off")
+        ax2[k // ncol][k % ncol].axis("off")
+    fig1.suptitle("Sampled adherence at decision points: fraction of T=1 continuations "
+                  "classified as the nat pole, under nat-polarity vs alt-polarity context "
+                  "(dashed = their difference, the context separation)", fontsize=11)
+    fig2.suptitle("Context separation s = P(nat | nat ctx) − P(nat | alt ctx) at decision "
+                  "points, by token distance since the property last manifested", fontsize=11)
     for f_, name_ in ((fig1, "adherence_by_k.png"), (fig2, "separation_by_dist.png")):
-        for axrow in (ax1 if f_ is fig1 else ax2):
-            pass
-        f_.tight_layout()
+        f_.tight_layout(rect=(0, 0, 1, 0.96))
         f_.savefig(OUT_DIR / name_, dpi=150)
     np.savez(OUT_DIR / "prescreen_records.npz", **npz)
 
