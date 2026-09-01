@@ -179,10 +179,14 @@ def main():
                     record(f"meandiff_evid_L{L}_a{a}", adh, scf, n)
         else:
             sweep = json.load(open(OUT_ROOT / "sweep" / f"{name}.json"))["conditions"]
-            best = max((c for c in sweep if c.startswith("meandiff")),
-                       key=lambda c: sweep[c]["adherence_tgt"])
-            L = int(best.split("_L")[1].split("_")[0])
-            a = float(best.split("_a")[1])
+            valid = [c for c in sweep if c.startswith("meandiff")
+                     and not np.isnan(sweep[c]["adherence_tgt"])]
+            if valid:
+                best = max(valid, key=lambda c: sweep[c]["adherence_tgt"])
+                L = int(best.split("_L")[1].split("_")[0])
+                a = float(best.split("_a")[1])
+            else:  # all-nan sweep (near-zero scorable rate): fall back to mid depth
+                best, L, a = "fallback", 10, 4.0
             res["best_from_sweep"] = {"cond": best, "L": L, "alpha": a}
             items_n = build_items(name, tok, "nat", n_docs, max_sites)
             items_a = build_items(name, tok, "alt", n_docs, max_sites)

@@ -34,6 +34,7 @@ from src.utils.model_utils import load_gpt_model_and_tokenizer
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
 from src.sandbox.isolation_upper_bound.run_task import build_contributions_single
 from src.sandbox.ext_styleprops.steer_adherence import build_items
+from src.sandbox.ext_steerability.ablate_pc50_labeltokens import batches_by_len
 
 HEAD_DIR = ARTIFACTS_ROOT / "style_properties" / "head_means"
 SWEEP_DIR = ARTIFACTS_ROOT / "style_properties" / "steering" / "sweep"
@@ -46,11 +47,16 @@ def parse_args():
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--props", nargs="*", default=None)
     p.add_argument("--model_name", default="EleutherAI/gpt-j-6b")
-    p.add_argument("--lam", type=float, default=0.005)
+    p.add_argument("--lam", type=float, default=0.002)
+    p.add_argument("--lam_warmup", type=int, default=2,
+                   help="epochs with lam=0 so weak steering gradients aren't crushed "
+                        "before c finds signal (ampersand collapsed to 0 gates otherwise)")
+    p.add_argument("--train_alpha", type=float, default=4.0,
+                   help="fixed dose multiplier on v(c) during training; the sweep shows "
+                        "steering typically ignites at alpha 2-16")
     p.add_argument("--lr", type=float, default=0.05)
     p.add_argument("--init_c", type=float, default=0.1)
     p.add_argument("--epochs", type=int, default=6)
-    p.add_argument("--batch_size", type=int, default=8)
     p.add_argument("--max_items", type=int, default=600)
     p.add_argument("--c_high", type=float, default=0.8)
     p.add_argument("--docs", type=int, default=120)
@@ -92,13 +98,15 @@ def nll_batch(model, batch, v, inject_block, device):
 
     h = model.transformer.h[inject_block].register_forward_hook(hook)
     try:
-        logits = model(input_ids=ids, attention_mask=att).logits.float()
+        logits = model(input_ids=ids, attention_mask=att).logits
     finally:
         h.remove()
     nll = 0.0
     for i, b in enumerate(batch):
         p0 = len(b["ids"])
-        lp = torch.log_softmax(logits[i, p0 - 1:p0 - 1 + len(b["cont_ids"])], dim=-1)
+        # slice BEFORE the fp32 cast: a full-batch fp32 logits copy OOMs when the
+        # injection block is early (deep backprop already holds ~10 GB of activations)
+        lp = torch.log_softmax(logits[i, p0 - 1:p0 - 1 + len(b["cont_ids"])].float(), dim=-1)
         tgt = torch.tensor(b["cont_ids"], device=device)
         nll = nll - lp.gather(1, tgt[:, None]).sum()
     return nll / len(batch)
@@ -123,7 +131,10 @@ def main():
         inject_block = cap_layer - 1
         items = build_items(name, tok, "nat", args.docs, 8)
         for it in items:
-            it["cont_ids"] = tok(it["exp"]["alt"]).input_ids
+            # cap the loss to the property-committing region: long continuations
+            # (all_caps = a whole uppercase sentence) dilute the objective with
+            # unpredictable content tokens
+            it["cont_ids"] = tok(it["exp"]["alt"]).input_ids[:8]
         items = [it for it in items if it["cont_ids"]][:args.max_items]
         print(f"{name}: {len(items)} items, inject block {inject_block} "
               f"(capture layer {cap_layer})", flush=True)
@@ -133,19 +144,32 @@ def main():
         opt = torch.optim.AdamW([c], lr=args.lr)
         rng = np.random.RandomState(zlib.crc32(name.encode()) % 2**31)
         history = []
+        # length-bucketed batches; budget shrinks with backprop depth (early inject
+        # block = activations held for nearly the whole stack; GPT-J attention runs
+        # fp32 internally, so long sequences dominate memory)
+        if inject_block < 8:
+            budget, cap = 1500, 4
+        elif inject_block < 16:
+            budget, cap = 2400, 6
+        else:
+            budget, cap = 3500, 8
+        buckets = batches_by_len(items, budget, cap)
+        first = True
         for epoch in range(args.epochs):
-            order = rng.permutation(len(items))
+            order = rng.permutation(len(buckets))
             ep_nll, nb = 0.0, 0
-            for s0 in range(0, len(items), args.batch_size):
-                batch = [items[i] for i in order[s0:s0 + args.batch_size]]
+            for bidx in order:
+                batch = [items[i] for i in buckets[bidx]]
                 opt.zero_grad(set_to_none=True)
-                v = torch.einsum("h,hd->d", c, C)
+                v = args.train_alpha * torch.einsum("h,hd->d", c, C)
+                lam = 0.0 if epoch < args.lam_warmup else args.lam
                 loss = nll_batch(model, batch, v, inject_block, device) \
-                    + args.lam * c.abs().sum()
+                    + lam * c.abs().sum()
                 loss.backward()
-                if epoch == 0 and s0 == 0:
+                if first:
                     assert c.grad is not None and torch.isfinite(c.grad).all() \
                         and c.grad.abs().sum() > 0, "no gradient reached c"
+                    first = False
                 opt.step()
                 with torch.no_grad():
                     c.clamp_(0.0, 1.0)
@@ -164,10 +188,11 @@ def main():
         v_headsum = C[sel].sum(0)
         np.savez(out, c=cd.cpu().numpy(), selected=sel.cpu().numpy(),
                  v_headsum=v_headsum.cpu().numpy(), inject_block=inject_block,
-                 cap_layer=cap_layer, lam=args.lam,
+                 cap_layer=cap_layer, lam=args.lam, train_alpha=args.train_alpha,
                  history=json.dumps(history))
         print(f"{name}: {len(sel)} heads selected, |v|={float(v_headsum.norm()):.1f}",
               flush=True)
+        torch.cuda.empty_cache()
     print("sparse opt done", flush=True)
 
 
