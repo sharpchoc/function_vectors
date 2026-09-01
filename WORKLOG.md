@@ -5,6 +5,37 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-09-01 — Bank-(a) read-feature migration: all (b)-derived results re-run
+
+**Owner:** Claude Code background agent, worktree `fv-l5to7-top1`. Pods fv-bankA-{abl,steer,
+sw0,sw1,sw2} (5× RTX PRO 4500 $0.72/h, ~13 pod-h ≈ $9.4, all TERMINATED). **Status:** compute
+DONE; write-up HELD pending user decision (see below).
+
+**USER DECISION 2026-09-01:** the read feature standardises on bank (a) = `label_resid_means`
+(final-demo-target site). Everything that used bank (b) (`label_avg10*`) re-derived:
+bases (bankA/, construction-identical; |cos(v1_a, v1_b)| median 0.979), 5-config ablation
+ladder n{1,6}, swap, two-knob, w_A sweep + 6-shot, per-prompt (a) capture
+(`label_resid_perprompt`, fp16, rel-tol sanity), ridge layer sweep refit (alphas re-CV'd).
+
+**Old (b) → new (a), 69-task means:** ablation own mean-abl 6-shot: mr11 .063→.095,
+top3 .066→.099, top1 .103→.146, L6to9 .096→.135, L5to7 .097→.130 (cf controls all at
+baseline .629-.632; 1-shot specificity intact). Swap best .341→.327 (@a32). Two-knob peak
+.535→.486 (@c4_u4). w_A sweep peak L1 .226→.220; 6-shot @L1 a=1 .551→.544, best .591→.584.
+Ridge held-out: per-prompt .653→.557 (peak L13→L12), centroid .692→.636.
+
+**FINDING (systematic):** bank (a) = same object, noisier estimate (1 site/prompt vs 10);
+precision-sensitive constructions (few-direction bases, regression X, two-knob coords) lose
+measurably; prompt-mean-level constructions (steering vectors) barely move. PENDING USER
+CALL: quote pure-(a) numbers everywhere vs "(a) defines the feature, ten-site average as
+lower-noise estimator where estimation matters". Both number sets on disk
+(bankA_* dirs vs originals). No paper-draft edits made yet.
+
+**Ops:** capture sanity assert tightened→relaxed (fp16 outlier dims, rel tol);
+watcher false-alarm lessons (bitsandbytes import noise); steer chain marker 'failed' =
+pre-fix capture step only.
+
+---
+
 ## 2026-08-31 — (L6/7 mean + top-1 dir) dummy-target steering: sweep + 6-shot @L1
 
 **Owner:** Claude Code background agent, worktree `fv-l5to7-top1`. Pods fv-l67top1-{a,b,c}
