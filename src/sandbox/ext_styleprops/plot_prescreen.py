@@ -168,11 +168,6 @@ def main():
         ax3[k // ncol][k % ncol].axis("off")
     fig3.suptitle("Style-following accuracy vs. number of prior examples "
                   "(GPT-J, T=1 sampling)", fontsize=14, fontweight="bold", y=0.985)
-    fig3.text(0.5, 0.955,
-              "Each point: the fraction of sampled continuations at decision points that "
-              "match the document's own convention,\nafter k earlier occurrences of that "
-              "convention in the document. Open markers: fewer than 20 scorable samples.",
-              ha="center", fontsize=10)
     fig1.suptitle("Sampled adherence at decision points: fraction of T=1 continuations "
                   "classified as the nat pole, under nat-polarity vs alt-polarity context "
                   "(dashed = their difference, the context separation)", fontsize=11)
@@ -180,7 +175,7 @@ def main():
                   "points, by token distance since the property last manifested", fontsize=11)
     for f_, name_, top in ((fig1, "adherence_by_k.png", 0.96),
                            (fig2, "separation_by_dist.png", 0.96),
-                           (fig3, "accuracy_by_k.png", 0.93)):
+                           (fig3, "accuracy_by_k.png", 0.965)):
         f_.tight_layout(rect=(0, 0, 1, top))
         f_.savefig(OUT_DIR / name_, dpi=150)
     np.savez(OUT_DIR / "prescreen_records.npz", **npz)
