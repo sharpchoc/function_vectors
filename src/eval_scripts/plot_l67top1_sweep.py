@@ -26,9 +26,11 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
-AR = ARTIFACTS_ROOT / "69_task_run" / "l67top1_steering"
+import os
+_SUF = os.environ.get("L67_SUFFIX", "")          # "" (bank b) or "_bankA"
+AR = ARTIFACTS_ROOT / "69_task_run" / ("l67top1_steering" + _SUF)
 REFDIR = TASK69_RUN_DIR / "bottom_up_read_features" / "layer_selection"
-OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / "l67top1"
+OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / ("l67top1" + _SUF)
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
 LAYERS = list(range(28))
 
