@@ -46,6 +46,14 @@ def rate_nat(recs):
     return float(np.mean([r["label"] == "nat" for r in sc])), len(sc)
 
 
+def rate_ctx(recs):
+    """Adherence to the CONTEXT's own polarity (the ICL accuracy-vs-shots analog)."""
+    sc = [r for r in recs if r["label"] is not None]
+    if not sc:
+        return np.nan, 0
+    return float(np.mean([r["label"] == r["pol"] for r in sc])), len(sc)
+
+
 def main():
     paths = sorted(IN_DIR.glob("*.json"))
     assert paths, f"no prescreen outputs in {IN_DIR}"
@@ -57,6 +65,7 @@ def main():
 
     fig1, ax1 = plt.subplots(nrow, ncol, figsize=(4 * ncol, 3 * nrow), squeeze=False)
     fig2, ax2 = plt.subplots(nrow, ncol, figsize=(4 * ncol, 3 * nrow), squeeze=False)
+    fig3, ax3 = plt.subplots(nrow, ncol, figsize=(4 * ncol, 3 * nrow), squeeze=False)
     rows = []
     npz = {}
     for pi, pdata in enumerate(props):
@@ -86,6 +95,30 @@ def main():
         a.set_xlabel("k prior manifestations (4=4+)")
         if pi % ncol == 0:
             a.set_ylabel("P(continuation = nat pole)", fontsize=8)
+        if pi == 0:
+            a.legend(fontsize=7)
+
+        # accuracy analog: adherence to the context's own polarity, by k
+        a = ax3[pi // ncol][pi % ncol]
+        for pol, style, lab in (("nat", "o-", "nat-convention doc"),
+                                ("alt", "s-", "alt-convention doc")):
+            ys = []
+            for kb in K_BINS:
+                sub = [r for r in recs if r["pol"] == pol and kbin(r["k"]) == kb]
+                v, _ = rate_ctx(sub)
+                ys.append(v)
+            a.plot(K_BINS, ys, style, label=lab, alpha=0.8)
+        ys_pool = []
+        for kb in K_BINS:
+            sub = [r for r in recs if kbin(r["k"]) == kb]
+            v, _ = rate_ctx(sub)
+            ys_pool.append(v)
+        a.plot(K_BINS, ys_pool, "k--", lw=1.2, label="pooled")
+        a.set_title(name, fontsize=9)
+        a.set_ylim(-0.05, 1.05)
+        a.set_xlabel("k prior manifestations (4=4+)")
+        if pi % ncol == 0:
+            a.set_ylabel("P(continuation follows ctx polarity)", fontsize=8)
         if pi == 0:
             a.legend(fontsize=7)
 
@@ -131,12 +164,18 @@ def main():
     for k in range(len(props), nrow * ncol):
         ax1[k // ncol][k % ncol].axis("off")
         ax2[k // ncol][k % ncol].axis("off")
+        ax3[k // ncol][k % ncol].axis("off")
+    fig3.suptitle("Style-following accuracy (ICL accuracy-vs-shots analog): fraction of "
+                  "T=1 sampled continuations at decision points that follow the "
+                  "convention the document has used so far, by # prior manifestations",
+                  fontsize=11)
     fig1.suptitle("Sampled adherence at decision points: fraction of T=1 continuations "
                   "classified as the nat pole, under nat-polarity vs alt-polarity context "
                   "(dashed = their difference, the context separation)", fontsize=11)
     fig2.suptitle("Context separation s = P(nat | nat ctx) − P(nat | alt ctx) at decision "
                   "points, by token distance since the property last manifested", fontsize=11)
-    for f_, name_ in ((fig1, "adherence_by_k.png"), (fig2, "separation_by_dist.png")):
+    for f_, name_ in ((fig1, "adherence_by_k.png"), (fig2, "separation_by_dist.png"),
+                      (fig3, "accuracy_by_k.png")):
         f_.tight_layout(rect=(0, 0, 1, 0.96))
         f_.savefig(OUT_DIR / name_, dpi=150)
     np.savez(OUT_DIR / "prescreen_records.npz", **npz)
