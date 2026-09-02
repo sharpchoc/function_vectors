@@ -58,7 +58,7 @@ shown there. The rest of the claims are to our knowledge novel.
 |---|---|---|---|
 | 1 | General write features exist at middle layers and are low dimensional per-task | A single vector can steer models to perform the task on zero shot prompts with peak accuracy when injected in middle layers (shown in Todd et al. 2024). The 37 heads selected from train tasks only, can be used to form function vectors for 14 never-seen tasks' accuracy from 0.09 to 0.73 (same as train tasks' accuracy uplift to 0.75). | Claim 1 |
 | 2 | Read features exist at early layers | Write features are linearly decodable from single target-token activations at early layers (held-out $R^2$ up to 0.688) | Claim 2 |
-| 3 | Read features are causal and low dimensional per-task | We can achieve bidirectional control on task performance using 2 directions per task. Sufficiency: Injecting $m_A$ in dummy prompts recovers 70% of real prompt accuracy. Neccesity: ablating one task-unique direction kills ICL (accuracy drops from 0.629 to 0.130) | Claim 3 |
+| 3 | Read features are causal and low dimensional per-task | We can achieve bidirectional control on task performance using 2 directions per task. Sufficiency: Injecting the shared carrier plus one task-unique direction in dummy prompts recovers 95% of real prompt accuracy (0.596 vs 0.630). Neccesity: ablating one task-unique direction kills ICL (accuracy drops from 0.629 to 0.130) | Claim 3 |
 | 4 | Read features are causal for the formation of write features | Label token injection steers the cue representation toward the task's own $v_A$ (cos 0.18 → 0.37) | Claim 4 |
 | 5 | Read features appear earlier than write features | Read feature cosine similarity peaks at target tokens, L6 (cos 0.80). Write feature cosine similarity peaks at cue tokens, L13. | Claim 5 |
 | 6 | Read features linearly map to write features | Training a linear map on a set of train tasks predicts held-out tasks' mpaping ($R^2 \approx 0.64$). | Claim 6 |
@@ -176,28 +176,33 @@ along the way, are in Appendix F.
 
 ### The read feature = a shared carrier + a low-dimensional task-unique code
 
-Steering separates the roles of the two parts.
-On the dummy-target scaffold, the task-unique part alone recovers about three quarters of
-full-vector steering (6 slots: 0.000 → 0.339 vs 0.447 full), while the shared carrier alone
-does nothing (≤ 0.013 at every layer and dose). The code side compresses hard: swapping in
-a *single* task-unique direction ($\alpha \cdot s_1 \cdot v_1$ at L6, all target slots)
-reaches 0.327 — matching the full mean-free vector — though it ignites only at
-$\alpha \approx 16$–32, well above the direction's natural per-prompt scale.
+The necessity result removed one direction; the matching sufficiency test adds it back.
+We build a steering vector from exactly the ablation's decomposition: the task-agnostic
+carrier plus the task's single top direction at its natural magnitude,
 
-![Single task-unique direction swap steering, alpha curve](../results/69_task_run/bottom_up_read_features/steering_results/taskunique_svd_dummy/alpha_curve.png)
+$$
+u_A \;=\; c + n_A\, v_1, \qquad
+c = \frac{1}{|\mathcal{T}|}\sum_{A'} \bar m_{A'}^{\,5\text{–}7}, \qquad
+n_A = \big\langle \bar m_A^{\,5\text{–}7} - c,\; v_1 \big\rangle,
+$$
 
-**Why does the carrier help steering if it carries no identity?** Full-vector steering
-beats the task-unique part by a stable margin (~0.08–0.11). Three hypotheses tested so far
-(detail in Appendix I): *base repair* — rejected: on a scaffold whose targets are real words
-from other tasks' output pools, the gap is unchanged to three decimals; *attention
-capture* — partial: the carrier does attract cue→target attention at L13 (0.045 vs a flat
-0.038 for the code alone; real targets 0.056), but attention does not mediate accuracy — at
-the accuracy-peak dose, attention is at or below unsteered; *error anatomy* — the code-only
-condition's extra misses are 3× more underscore-echoes (0.055 vs 0.018) with *identical*
-own-pool mapping-error rates (0.145 vs 0.137), and over half the gap is degraded on-task
-attempts. The surviving interpretation is a ratio-preserving composite code: carrier and
-code arrive together at a preserved proportion in natural prompts, and downstream machinery
-is calibrated to that composition.
+where $\bar m_A^{\,5\text{–}7}$ is the task's read feature averaged over layers 5–7 and
+$v_1$ is the same L5–7 top-1 direction that was ablated above. Every task-specific bit of
+$u_A$ therefore lives in one direction; the carrier $c$ is identical for all 69 tasks and
+carries no task identity (steering with $c$ alone stays ≤ 0.013 at every layer and dose).
+Swept over injection layers on the 1-shot scaffold, $u_A$ steers best when injected early
+(L0–L3 plateau, 0.195; Appendix I). Injected at L0 at all six dummy target slots it reaches
+**0.570 at $\alpha = 2$ and 0.596 at per-task best $\alpha$** — above the full read feature
+$m_A(\mathrm{L6})$ (0.447) and 95% of what six real demonstrations deliver (0.630).
+
+![Carrier + one task-unique direction: 6-shot dummy-target steering](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L0/sixshot_bars.png)
+
+*The one direction whose removal collapses the task's ICL (0.629 → 0.130) is, on top of a
+task-agnostic carrier, sufficient to restore it (0.000 → 0.596): necessity and
+sufficiency for the same object. Held-out tasks steer better than train (0.615 vs 0.591),
+so nothing is fitted. Variants of the read feature as a steering vector — the full mean,
+the mean-free part, the single-direction swap, the task's-own-mean composite — and the
+carrier-gap analysis are in Appendix I.*
 
 ## Claim 4: Read features are causal for the formation of write features
 
@@ -746,6 +751,49 @@ sweep; within a fixed n it is ≈ 0. Sources:
 read feature; the carrier-gap hypothesis tests — random-word scaffold, attention capture,
 error anatomy — were run with the ten-site-average swap direction (Appendix K) and have
 not been re-run.)*
+
+**Read-feature steering variants (6-shot dummy-target scaffold, 69-task means).** The
+main text reports the carrier + one-direction vector $u_A$; the other vectors built from
+the read feature, all on the same scaffold and readout:
+
+| Steering vector | injected at | best acc |
+|---|---|---:|
+| Full read feature $m_A(\mathrm{L6})$ | L6 | 0.447 |
+| Mean-free part $m_A - \bar m$ | L6 | 0.339 |
+| Shared carrier alone | any | ≤ 0.013 |
+| Single-direction swap $\alpha\, s_1 v_1$ (removes natural component first) | L6 | 0.327 |
+| $w_A$ = task's own L6/7 mean + $n_A v_1$ (doubles the $v_1$ component) | L1 | 0.583 |
+| **$u_A$ = carrier $c$ + $n_A v_1$ (main text)** | L0 | **0.596** |
+| Real 6-shot demonstrations | — | 0.630 |
+
+The two composites ($w_A$, $u_A$) were located by a 1-shot injection-layer sweep (all 28
+layers, $\alpha \in \{0.5,1,2,4\}$, per-task best $\alpha$): both sit on an L0–L3 plateau
+(0.220 and 0.195 respectively; the matched-site raw mean $m_A(\ell)$ peaks at 0.126 at L6)
+and are dead from L12. $u_A$ is the shorter vector (‖$u_A$‖ ≈ 55 vs ≈ 79) and prefers
+$\alpha = 2$; $w_A$ additionally carries the task's residual unique directions and twice the
+$v_1$ component, which helps on a single slot (+0.025 at 1 shot) but not at six. Not yet
+run: the full mean injected at L0/L1 (to separate the injection-layer effect from the
+vector composition) and $c + 2 n_A v_1$ (to match $w_A$'s $v_1$ dose).
+
+![$u_A$ injection-layer sweep, 1-shot](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sweep_layer_curve.png)
+
+**The carrier gap.** The task-unique part alone recovers about three quarters of full-vector
+steering (0.339 vs 0.447) while the carrier alone does nothing; the code side compresses to
+one direction (the swap reaches 0.327, matching the mean-free vector, but ignites only at
+$\alpha \approx 16$–32, far above its natural scale). Why does the carrier help if it carries
+no identity? Three hypotheses were tested (detail below): *base repair* — rejected: on a
+scaffold whose targets are real words from other tasks' output pools, the gap is unchanged
+to three decimals; *attention capture* — partial: the carrier does attract cue→target
+attention at L13 (0.045 vs a flat 0.038 for the code alone; real targets 0.056), but
+attention does not mediate accuracy — at the accuracy-peak dose attention is at or below
+unsteered; *error anatomy* — the code-only condition's extra misses are 3× more
+underscore-echoes (0.055 vs 0.018) with *identical* own-pool mapping-error rates (0.145 vs
+0.137), and over half the gap is degraded on-task attempts. The surviving interpretation is
+a ratio-preserving composite code: carrier and code arrive together at a preserved
+proportion in natural prompts, and downstream machinery is calibrated to that composition —
+which is exactly what $u_A$ re-imposes at its natural coordinate.
+
+![Single task-unique direction swap steering, alpha curve](../results/69_task_run/bottom_up_read_features/steering_results/taskunique_svd_dummy/alpha_curve.png)
 
 **Mean-free steering.** Dummy-slot injection of the mean-removed read feature (per-task
 vector minus the shared L6 mean): 6 slots 0.000 → 0.339 at best $\alpha$ vs 0.447 for the

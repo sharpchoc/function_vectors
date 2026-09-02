@@ -302,6 +302,19 @@ empty "## Terminology" heading that sat between Setup and §1. Glossary untouche
 
 **Note:** the draft's Setup and Appendix A write the head-vector mean as $\bar h_A$; the glossary
 (and the new Terminology section) use plain $h_A$. Not changed — flagged for the user to adjudicate.
+## 2026-09-02 — Paper draft: u_A is the headline sufficiency result; other read-feature vectors → App I
+
+**Owner:** Claude Code background agent, main checkout. **Status:** DONE (user decision).
+Claim 3 carrier/code subsection rewritten around $u_A = c + n_A v_1$ (definition displayed,
+6-shot 0.570 @α=2 / 0.596 best @L0, figure ctop1/sixshot_L0/sixshot_bars.png, caption stating
+necessity+sufficiency for one object). Claims-table row 3 sufficiency clause → 95% (0.596 vs
+0.630). Moved to App I: steering-variant table (full mean .447, mean-free .339, carrier ≤.013,
+swap .327, w_A .583, u_A .596, real .630), the 1-shot sweep figure, and the carrier-gap
+hypothesis paragraph + swap alpha curve. Open controls listed in App I: full mean @L0/L1,
+c + 2n_A v1. Sufficiency-by-m_A(L6) (0.442) text earlier in Claim 3 left as is (user prose).
+
+---
+
 ## 2026-09-02 — ctop1: carrier + n_A·v1 steering vector (mirrors the ablation object)
 
 **Owner:** Claude Code background agent, main checkout. Pods fv-ctop1-sw{0,1,2} + fv-ctop1-six0

@@ -18,6 +18,10 @@
   (`bankA/L5to7_top1_bases.pt`) — the same $v_1$ the composite steering vector boosts, so
   necessity and sufficiency are stated for one direction. The 11-dir/top-3/top-1 (L5–15) and
   L6–9 variants stay in the App F ladder as comparisons.
+- **Headline steering object (user decision 2026-09-02): $u_A = c + n_A v_1$** — the
+  task-agnostic L5–7 carrier plus the same ablated $v_1$ at its natural coordinate
+  (`bankA/carrier_plus_top1_vectors.pt`, `build_carrier_plus_top1_vectors.py`); injected at
+  L0 (6-shot 0.570 @α=2, 0.596 best). Full mean, mean-free, swap, $w_A$ = App I variants.
 - Not yet re-run under (a): App G's detailed ridge sub-analyses (seed splits, centroid
   decomposition, oracle) and App I's carrier-gap hypothesis tests — marked with convention
   notes in the draft.
