@@ -56,13 +56,12 @@ def arrow(ax, x0, y0, x1, y1, color, lw=2.2, ls="-", alpha=1.0, z=3, head=14):
 
 
 def main():
-    """Four panels following the paper-draft definition (user wording 2026-09-02):
+    """Three panels following the paper-draft definition (user wording 2026-09-02):
       A (conceptual): the per-task L5-7 mean read features all point nearly the same way;
          their cross-task mean is the shared carrier c.
       B (data):       pairwise cosine between tasks: raw mbar_A (~0.73) vs carrier-removed.
       C (conceptual): per task, project the carrier out of each of m_A(5), m_A(6), m_A(7);
          stack the three residuals into a 3 x d matrix and take its top SVD direction v1.
-      D (data):       energy of that top direction (fraction of the 3 residuals' energy).
     Uses bank (a) (label_resid_means) rows 5, 6, 7."""
     split = json.load(open(SPLIT))
     tasks = sorted(split["train_tasks"] + split["heldout_tasks"])
@@ -96,8 +95,8 @@ def main():
     np.savez(OUT / "pairwise_cos_L5to7.npz", tasks=np.array(tasks), raw=raw,
              task_unique=uniq, top1_energy=energy)
 
-    fig, axes = plt.subplots(1, 4, figsize=(21.0, 5.0), dpi=250,
-                             gridspec_kw={"width_ratios": [1, 1.2, 1.1, 0.9]})
+    fig, axes = plt.subplots(1, 3, figsize=(16.5, 5.0), dpi=250,
+                             gridspec_kw={"width_ratios": [1, 1.2, 1.1]})
     for ax in (axes[0], axes[2]):
         ax.set_xlim(-0.05, 1.12)
         ax.set_ylim(-0.05, 1.08)
@@ -167,21 +166,6 @@ def main():
     ax.set_xlim(-0.65, 1.15); ax.set_ylim(-0.05, 1.08)
     ax.set_title("C. per layer: project out $c$, stack the 3\nresiduals, take the top SVD direction",
                  fontsize=14, pad=10)
-
-    # ---------- D: energy of the top direction ----------
-    ax = axes[3]
-    ax.hist(energy, bins=np.linspace(0.6, 1.0, 21), color=ORANGE, alpha=0.8)
-    ax.axvline(np.median(energy), color=ORANGE, lw=1.8, ls=(0, (5, 3)))
-    ax.annotate(f"median {np.median(energy):.2f}", (np.median(energy), ax.get_ylim()[1]),
-                xytext=(np.median(energy) - 0.01, ax.get_ylim()[1] * 0.97), ha="right",
-                fontsize=12.5, color=ORANGE)
-    ax.set_xlabel("energy in $v_1$ (fraction of the 3 residuals)", fontsize=12.5)
-    ax.set_ylabel("tasks", fontsize=12.5)
-    ax.tick_params(labelsize=11)
-    ax.grid(axis="y", color="0.92")
-    for s_ in ("top", "right"):
-        ax.spines[s_].set_visible(False)
-    ax.set_title("D. the task-unique part is\nnearly one direction", fontsize=14, pad=10)
 
     fig.suptitle("Read feature = shared carrier $c$ + one task-unique direction $v_1$ "
                  "(L5–7 target-token activations, 69 tasks)", fontsize=16, fontweight="bold")
