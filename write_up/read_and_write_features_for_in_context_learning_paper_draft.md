@@ -137,8 +137,18 @@ three layers and decompose them. Averaging over the three layers gives one vecto
 
 $$
 c \;=\; \frac{1}{|\mathcal{T}|}\sum_{A'} \bar m_{A'}, \qquad
-v_1 \;=\; \text{top singular direction of the mean-removed } \{m_A(5), m_A(6), m_A(7)\},
+\hat c(\ell) \;=\; \frac{\sum_{A'} m_{A'}(\ell)}{\big\|\sum_{A'} m_{A'}(\ell)\big\|}, \qquad
+r_A(\ell) \;=\; m_A(\ell) - \big\langle m_A(\ell),\, \hat c(\ell)\big\rangle\, \hat c(\ell),
 $$
+
+$$
+v_1 \;=\; \text{top singular direction of } \begin{bmatrix} \hat r_A(5) \\ \hat r_A(6) \\ \hat r_A(7) \end{bmatrix}
+\quad (\hat r_A(\ell) = r_A(\ell)/\|r_A(\ell)\|),
+$$
+
+where $\hat c(\ell)$ is the **cross-task** carrier direction at layer $\ell$ — the task's own
+mean is never subtracted, only the shared component — and the SVD is over a $3 \times
+d_{\mathrm{model}}$ matrix with one row per layer.
 
 ![Read-feature decomposition into shared carrier and task-unique part](../results/69_task_run/bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png)
 
