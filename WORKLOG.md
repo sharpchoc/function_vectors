@@ -8346,3 +8346,45 @@ driver run_probe_grid.sh). Deliverables: results/style_properties/decodability/.
 **Next:** Stage C feature extraction (R1/R2/R3 + W1 candidates from these captures,
 geometry: carrier cosine matrix, polarity symmetry) — needs user adjudication of the
 headline read-feature definition (memo items 5-6) before Stage D causal work.
+
+## style-properties: steering vectors — mean-diff + sparse head selection (2026-09-01, on main)
+
+**Status:** done. Scripts src/sandbox/ext_styleprops/{build_steering_vectors,
+steer_adherence,capture_head_means,train_sparse_heads_props,plot_steering}.py;
+3 pods (RTX PRO 4500); artifacts/style_properties/{steering_vectors,steering,
+head_means,sparse_heads}; results/style_properties/steering/.
+
+USER-DIRECTED: (1) mean-activation steering per layer; (2) sparse head selection
+re-pointed at property steering, NO train/test split. Readout = sampled adherence only.
+
+**Findings (nat->alt at evidence spans unless noted; adherence among scorable):**
+- MEAN-DIFF (m_alt - m_nat at evidence tokens) steers 15/16 props 0.71-1.0 from
+  baselines <=0.11 (brit_t_past 0.667). Counterfactual-property control clean for
+  ~12/16 (<=0.13, most <=0.04); leaks: contractions cf .452 (cf=ise_ize; register
+  carrier suspect, matches its confound rating), quote_punct cf .351; ordinal cf =
+  its high baseline. Peak layers EARLY-MID (L2-L16 capture), dose supra-natural
+  (alpha 2-16) - matches the ICL >=2x-natural-scale ignition lesson.
+- RAW ALT MEAN steers far worse than the diff almost everywhere (all_caps .007 vs
+  .984) — OPPOSITE of the ICL raw-mean>mean-diff lesson: for binary properties the
+  polarity DIFFERENCE is the steering object, the raw mean is carrier-dominated.
+- REVERSE direction (negated diff on alt text) works 0.7-1.0 for 11/16, FAILS for
+  sentence_caps (.158<base .248), ordinal (.167), us_uk (.343) — bidirectionality is
+  property-dependent (asymmetric polarity geometry).
+- INJECTION SITE dissociation: evid >> dec for punctuation-emission props (ampersand/
+  ellipsis/em_dash/num/quote_punct dec=0.0) but dec >= evid for brit_t_past (1.0),
+  sentence_caps (.995), oxford (1.0) — read-side vs write-side steerability varies.
+- SPARSE HEAD-SUM: steers well for all_caps 1.0, curly .984, ordinal 1.0, sentence_caps
+  .832, oxford .75; weak (<0.32) for 7/16. NOT actually sparse: lam=.002 after 2-epoch
+  warmup selected 69-196 heads/prop — a lambda sweep is needed for true sparsity
+  (first attempt lam=.005 no warmup collapsed ampersand to 0 gates; capped-cont
+  objective + warmup fixed collapse but under-sparsifies).
+- Overlap with the 37 ICL FV heads ~= CHANCE (e.g. 135 selected -> expect 11.1, got 17;
+  86 -> expect 7.1, got 4) — no evidence the ICL write-feature heads carry style.
+- LESSONS: full-batch fp32 logits copy + early-block injection OOMs 32GB (slice logits
+  per row BEFORE .float(); depth-aware token budgets; GPT-J attn is fp32 internally);
+  teacher-forced objective capped to first 8 continuation tokens (long alt-continuations
+  dilute the gradient — all_caps loss was flat before the cap).
+
+**Next:** lambda sweep for genuinely sparse head sets; decode-time injection for
+long-generation persistence; carrier/unique decomposition (Stage D3); adjudication
+memo items 5-6 still pending user decision.
