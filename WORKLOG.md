@@ -302,6 +302,36 @@ empty "## Terminology" heading that sat between Setup and §1. Glossary untouche
 
 **Note:** the draft's Setup and Appendix A write the head-vector mean as $\bar h_A$; the glossary
 (and the new Terminology section) use plain $h_A$. Not changed — flagged for the user to adjudicate.
+## 2026-09-02 — Main text on the new method: Claim 3 rewrite, Claim 4 on u_A, explainer figure
+
+**Owner:** Claude Code background agent, main checkout. Pod fv-ctop1-cue `egjsd9efwd503r`
+(RTX PRO 4500, ≈1.1 h ≈ $0.8, TERMINATED). **Status:** DONE.
+
+**Claim 3 (user request: main text = carrier + top-1 SVD of L5–7 only):** motivation paragraph
+written from the user's sentence (L5–7 peak → \bar m_A → carrier c via cos 0.73 → per-layer
+carrier removal → 3×d stack → top SVD v1, ~88% energy); Necessity = ablate v1 (.130/.632;
+1-shot .043/.205); Sufficiency = inject u_A = c + n_A v1 @L0 (.570 @α=2, .596 best). Simple
+3-bar headline figure (dummy / steered α=2 / real) = ctop1/sixshot_L0/headline_bars.png
+(user feedback: main-section figures must be simple). Raw m_A(L6) sufficiency (0.442/70%),
+its figure, mean-free/swap/carrier-gap, and the 7-bar comparison → App I.
+
+**Claim 4 on u_A (new capture, steer_effect_on_cue.py --vectors_path/--inject_layer 0):**
+6-shot cue cos to own FV 0.18→0.42 @α=2 (was 0.37 under raw m_A), task-specific excess +0.138
+on 69/69 (was +0.093), saturates at α=2; 1-shot Δcos +0.121 / excess +0.071 on 68/69. Figure
+read_write_relationship/ctop1/headline_cos_absolute.png; old raw-m_A Claim-4 text → App I.
+Artifacts: 69_task_run/ctop1_effect_on_write{,_1shot}/.
+
+**Explainer figure rewritten** (make_readfeature_explainer.py, bank a, L5–7): A concept
+(\bar m_A fan + carrier), B data (pairwise cos raw 0.725 vs carrier-removed −0.01), C concept
+(per-layer projection, 3-residual stack, v1), D data (v1 energy median 0.88, min 0.84).
+/workspace/read_feature_explainer.md: SVD matrix shape clarified (3 rows = layers, prompt-averaged).
+
+**Open (awaiting user):** linear-map suite re-run with X = bank-(a) L5–7 read feature
+(recommended) — ridge/seed-splits/decomposition/oracle + Procrustes/congruence; CPU only.
+Also open: full-mean @L0/L1 and c + 2n_A v1 controls (App I lists them).
+
+---
+
 ## 2026-09-02 — Paper draft: u_A is the headline sufficiency result; other read-feature vectors → App I
 
 **Owner:** Claude Code background agent, main checkout. **Status:** DONE (user decision).

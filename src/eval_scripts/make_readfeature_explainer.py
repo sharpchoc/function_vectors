@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Poster explainer: decomposing read features into shared carrier + task-unique part.
+"""Explainer: read feature = shared carrier c + one task-unique direction v1 (L5-7).
 
 Three panels:
   A (conceptual): the 69 per-task L6 read features all point nearly the same way,
@@ -56,104 +56,140 @@ def arrow(ax, x0, y0, x1, y1, color, lw=2.2, ls="-", alpha=1.0, z=3, head=14):
 
 
 def main():
+    """Four panels following the paper-draft definition (user wording 2026-09-02):
+      A (conceptual): the per-task L5-7 mean read features all point nearly the same way;
+         their cross-task mean is the shared carrier c.
+      B (data):       pairwise cosine between tasks: raw mbar_A (~0.73) vs carrier-removed.
+      C (conceptual): per task, project the carrier out of each of m_A(5), m_A(6), m_A(7);
+         stack the three residuals into a 3 x d matrix and take its top SVD direction v1.
+      D (data):       energy of that top direction (fraction of the 3 residuals' energy).
+    Uses bank (a) (label_resid_means) rows 5, 6, 7."""
     split = json.load(open(SPLIT))
     tasks = sorted(split["train_tasks"] + split["heldout_tasks"])
-    feats, layers = {}, None
+    RM = ARTIFACTS_ROOT / "69_task_run" / "label_resid_means"
+    L3 = [5, 6, 7]
+    per_layer = {}
     for t in tasks:
-        d = torch.load(ACTS / f"{t}.pt", map_location="cpu", weights_only=False)
-        layers = d["layers"]
-        feats[t] = d["acts"].double().mean(dim=0)[layers.index(LAYER)]
-    X = torch.stack([feats[t] for t in tasks])            # (69, 4096)
-    mhat = X.mean(dim=0)
-    mhat = mhat / mhat.norm()
-    R = X - (X @ mhat)[:, None] * mhat                    # task-unique parts
+        rm = torch.load(RM / f"{t}.pt", map_location="cpu", weights_only=False)["resid_means"]
+        per_layer[t] = rm[L3].double()                          # (3, 4096)
+    mbar = torch.stack([per_layer[t].mean(dim=0) for t in tasks])   # (69, 4096) L5-7 mean
+    c = mbar.mean(dim=0)
+    chat = c / c.norm()
+    R_bar = mbar - (mbar @ chat)[:, None] * chat               # carrier-removed L5-7 means
 
-    raw = pairwise(X)
-    uniq = pairwise(R)
+    raw = pairwise(mbar)
+    uniq = pairwise(R_bar)
+
+    # per-task SVD of the three carrier-removed layer vectors (per-layer carrier direction,
+    # as in build_bankA_taskunique_bases.py)
+    Xl = torch.stack([per_layer[t] for t in tasks])            # (69, 3, 4096)
+    cdirs = Xl.mean(dim=0); cdirs = cdirs / cdirs.norm(dim=1, keepdim=True)
+    Rl = Xl - (Xl * cdirs).sum(-1, keepdim=True) * cdirs
+    energy = []
+    for ti in range(len(tasks)):
+        U = Rl[ti] / Rl[ti].norm(dim=1, keepdim=True)
+        sv = torch.linalg.svdvals(U)
+        energy.append(float(sv[0] ** 2 / (sv ** 2).sum()))
+    energy = np.array(energy)
 
     OUT.mkdir(parents=True, exist_ok=True)
-    np.savez(OUT / "pairwise_cos_L6.npz", tasks=np.array(tasks), raw=raw, task_unique=uniq)
+    np.savez(OUT / "pairwise_cos_L5to7.npz", tasks=np.array(tasks), raw=raw,
+             task_unique=uniq, top1_energy=energy)
 
-    fig, axes = plt.subplots(1, 3, figsize=(16.5, 5.0), dpi=250,
-                             gridspec_kw={"width_ratios": [1, 1, 1.25]})
-    for ax in axes[:2]:
+    fig, axes = plt.subplots(1, 4, figsize=(21.0, 5.0), dpi=250,
+                             gridspec_kw={"width_ratios": [1, 1.2, 1.1, 0.9]})
+    for ax in (axes[0], axes[2]):
         ax.set_xlim(-0.05, 1.12)
         ax.set_ylim(-0.05, 1.08)
         ax.set_aspect("equal")
         ax.axis("off")
 
-    # ---------- panel A: all tasks point nearly the same way ----------
+    # ---------- A: all tasks point nearly the same way ----------
     ax = axes[0]
     base = np.deg2rad(52)
     rng = np.random.RandomState(3)
-    for i, off in enumerate(np.linspace(-16, 16, 8)):
+    for off in np.linspace(-16, 16, 8):
         th = base + np.deg2rad(off)
         L = 0.92 + rng.uniform(-0.05, 0.05)
         arrow(ax, 0, 0, L * np.cos(th), L * np.sin(th), BLUE, lw=1.8, alpha=0.65, head=11)
     arrow(ax, 0, 0, 1.02 * np.cos(base), 1.02 * np.sin(base), GRAY, lw=4.0, head=18)
-    ax.annotate("all-task mean $\\bar{m}$\n(shared carrier)",
+    ax.annotate("shared carrier $c$\n(cross-task mean)",
                 (1.02 * np.cos(base), 1.02 * np.sin(base)), xytext=(0.30, 1.00),
                 fontsize=13, color="0.25", ha="left", va="top")
-    ax.annotate("read features $m_A$\none per task", (0.86, 0.42), fontsize=13,
-                color=BLUE, ha="left")
-    ax.set_title("one read feature per task —\nthey all point nearly the same way",
-                 fontsize=14.5, pad=10)
+    ax.annotate("$\\bar{m}_A$ = mean of\n$m_A(5), m_A(6), m_A(7)$\none per task", (0.80, 0.36),
+                fontsize=12.5, color=BLUE, ha="left")
+    ax.set_title("A. read features (L5–7 mean) —\nthey all point nearly the same way",
+                 fontsize=14, pad=10)
 
-    # ---------- panel B: decomposition ----------
+    # ---------- B: pairwise cos before/after removing the carrier ----------
     ax = axes[1]
-    th_m, th_a = np.deg2rad(38), np.deg2rad(66)
-    Lm = 1.0
-    mA = np.array([Lm * np.cos(th_a), Lm * np.sin(th_a)])
-    mdir = np.array([np.cos(th_m), np.sin(th_m)])
-    proj = float(mA @ mdir) * mdir
-    r = mA - proj
-    arrow(ax, 0, 0, *(1.06 * mdir), GRAY, lw=1.6, ls=(0, (4, 3)), alpha=0.8, head=10)
-    arrow(ax, 0, 0, *mA, BLUE, lw=3.2, head=16)
-    arrow(ax, 0, 0, *proj, GRAY, lw=3.2, head=16)
-    arrow(ax, *proj, *(proj + r), ORANGE, lw=3.2, head=16)
-    # right-angle marker at the foot of the perpendicular
-    s = 0.055
-    p1 = proj - s * mdir
-    p2 = p1 + s * (r / np.linalg.norm(r))
-    p3 = proj + s * (r / np.linalg.norm(r))
-    ax.plot([p1[0], p2[0], p3[0]], [p1[1], p2[1], p3[1]], color="0.45", lw=1.2, zorder=2)
-    ax.annotate("$m_A$", mA * 0.55 + np.array([-0.11, 0.05]), fontsize=16, color=BLUE)
-    ax.annotate("shared carrier\n$(m_A\\!\\cdot\\!\\hat{m})\\,\\hat{m}$",
-                proj * 0.52 + np.array([0.05, -0.13]), fontsize=13, color="0.25")
-    ax.annotate("task-unique part\n$r_A \\perp \\hat{m}$",
-                proj + r * 0.45 + np.array([0.04, 0.0]), fontsize=13, color=ORANGE)
-    ax.set_title("split each feature into carrier +\northogonal task-unique part",
-                 fontsize=14.5, pad=10)
-
-    # ---------- panel C: pairwise cos before/after ----------
-    ax = axes[2]
     bins = np.linspace(-0.6, 1.0, 65)
-    ax.hist(raw, bins=bins, color=BLUE, alpha=0.75, label="raw read features")
-    ax.hist(uniq, bins=bins, color=ORANGE, alpha=0.75, label="task-unique parts")
-    for v, c in ((raw.mean(), BLUE), (uniq.mean(), ORANGE)):
-        ax.axvline(v, color=c, lw=1.8, ls=(0, (5, 3)))
-    ax.annotate(f"mean {raw.mean():.2f}", (raw.mean(), ax.get_ylim()[1]),
-                xytext=(raw.mean() - 0.03, ax.get_ylim()[1] * 0.97), ha="right",
-                fontsize=13, color=BLUE)
-    ax.annotate(f"mean {uniq.mean():.2f}", (uniq.mean(), ax.get_ylim()[1]),
-                xytext=(uniq.mean() + 0.03, ax.get_ylim()[1] * 0.97), ha="left",
-                fontsize=13, color=ORANGE)
-    ax.set_xlabel("pairwise cosine similarity between tasks", fontsize=13)
-    ax.set_ylabel("task pairs", fontsize=13)
+    ax.hist(raw, bins=bins, color=BLUE, alpha=0.75, label="raw $\\bar{m}_A$")
+    ax.hist(uniq, bins=bins, color=ORANGE, alpha=0.75, label="carrier removed")
+    for v, col in ((raw.mean(), BLUE), (uniq.mean(), ORANGE)):
+        ax.axvline(v, color=col, lw=1.8, ls=(0, (5, 3)))
+    top = ax.get_ylim()[1]
+    ax.annotate(f"mean {raw.mean():.2f}", (raw.mean(), top), xytext=(raw.mean() - 0.03, top * 0.97),
+                ha="right", fontsize=12.5, color=BLUE)
+    ax.annotate(f"mean {uniq.mean():.2f}", (uniq.mean(), top), xytext=(uniq.mean() + 0.03, top * 0.97),
+                ha="left", fontsize=12.5, color=ORANGE)
+    ax.set_xlabel("pairwise cosine similarity between tasks", fontsize=12.5)
+    ax.set_ylabel("task pairs", fontsize=12.5)
     ax.tick_params(labelsize=11)
-    ax.legend(fontsize=12, loc="upper left", frameon=False)
+    ax.legend(fontsize=11.5, loc="upper left", frameon=False)
     ax.grid(axis="y", color="0.92")
     for s_ in ("top", "right"):
         ax.spines[s_].set_visible(False)
-    ax.set_title("carrier removed: tasks become\nnear-orthogonal (identity code)",
-                 fontsize=14.5, pad=10)
+    ax.set_title("B. tasks share a carrier; removing it\nleaves near-orthogonal remainders",
+                 fontsize=14, pad=10)
 
-    fig.suptitle("From one read feature to two components: shared carrier + task-unique code "
-                 "(L6 target-token features, 69 tasks)", fontsize=16, fontweight="bold")
+    # ---------- C: per-layer projection + stack + SVD (conceptual) ----------
+    ax = axes[2]
+    th_c = np.deg2rad(30)
+    cdir = np.array([np.cos(th_c), np.sin(th_c)])
+    perp = np.array([-cdir[1], cdir[0]])                      # true task-unique direction
+    arrow(ax, 0, 0, *(1.05 * cdir), GRAY, lw=1.6, ls=(0, (4, 3)), alpha=0.8, head=10)
+    ax.annotate("$c$", 1.05 * cdir + np.array([0.02, -0.03]), fontsize=14, color="0.35")
+    cols = ("#1f5fb4", BLUE, "#8db8f0")
+    # three layer means: same carrier-ish component, slightly different residual sizes/tilts
+    specs = ((0.62, 0.34, -6), (0.70, 0.40, 0), (0.66, 0.30, 6))   # (along c, along perp, tilt deg)
+    for k, ((a, b, tilt), col) in enumerate(zip(specs, cols)):
+        rdir = np.array([np.cos(np.deg2rad(90 + 30 + tilt)), np.sin(np.deg2rad(90 + 30 + tilt))])
+        m = a * cdir + b * rdir
+        proj = float(m @ cdir) * cdir
+        arrow(ax, 0, 0, *m, col, lw=2.0, alpha=0.9, head=12)
+        arrow(ax, *proj, *m, ORANGE, lw=1.5, alpha=0.55, head=9)   # residual = m - proj
+        ax.annotate(f"$m_A({5 + k})$", m + np.array([-0.02, 0.035]), fontsize=11.5,
+                    color=col, ha="center")
+    arrow(ax, 0, 0, *(0.50 * perp), ORANGE, lw=3.4, head=17)
+    ax.annotate("$v_1$: top SVD direction\nof the 3 residuals\n(task-unique part)",
+                0.50 * perp + np.array([0.03, 0.02]), fontsize=12.5, color=ORANGE,
+                ha="left", va="bottom")
+    ax.set_xlim(-0.55, 1.15); ax.set_ylim(-0.05, 1.08)
+    ax.set_title("C. per layer: project out $c$, stack the 3\nresiduals, take the top SVD direction",
+                 fontsize=14, pad=10)
+
+    # ---------- D: energy of the top direction ----------
+    ax = axes[3]
+    ax.hist(energy, bins=np.linspace(0.6, 1.0, 21), color=ORANGE, alpha=0.8)
+    ax.axvline(np.median(energy), color=ORANGE, lw=1.8, ls=(0, (5, 3)))
+    ax.annotate(f"median {np.median(energy):.2f}", (np.median(energy), ax.get_ylim()[1]),
+                xytext=(np.median(energy) - 0.01, ax.get_ylim()[1] * 0.97), ha="right",
+                fontsize=12.5, color=ORANGE)
+    ax.set_xlabel("energy in $v_1$ (fraction of the 3 residuals)", fontsize=12.5)
+    ax.set_ylabel("tasks", fontsize=12.5)
+    ax.tick_params(labelsize=11)
+    ax.grid(axis="y", color="0.92")
+    for s_ in ("top", "right"):
+        ax.spines[s_].set_visible(False)
+    ax.set_title("D. the task-unique part is\nnearly one direction", fontsize=14, pad=10)
+
+    fig.suptitle("Read feature = shared carrier $c$ + one task-unique direction $v_1$ "
+                 "(L5–7 target-token activations, 69 tasks)", fontsize=16, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.92])
     fig.savefig(OUT / "readfeature_decomposition.png", bbox_inches="tight")
-    print(f"raw mean {raw.mean():.3f} sd {raw.std():.3f} | unique mean {uniq.mean():.3f} "
-          f"sd {uniq.std():.3f}")
+    print(f"raw mean {raw.mean():.3f} sd {raw.std():.3f} | carrier-removed mean {uniq.mean():.3f} "
+          f"| v1 energy median {np.median(energy):.3f} min {energy.min():.3f}")
     print(f"wrote {OUT / 'readfeature_decomposition.png'}")
 
 

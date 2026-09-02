@@ -753,7 +753,7 @@ alignment is largest at the very next cue (+0.047 at $\alpha=2$) and falls monot
 +0.010 by the query cue — each demonstration's target refreshes a signal that would otherwise
 fade. Sources: `read_write_relationship/{bottom_up, bottom_up_1shot, bottom_up_firstlabel}/`.
 Under the main-text $u_A$ injection the rotation is larger (0.18 → 0.42; task-specific
-excess +0.138 at $\alpha=2$); its 1-shot variant is in `read_write_relationship/ctop1_1shot/`.
+excess +0.138 at $\alpha=2$); its 1-shot variant shows the same rotation at half strength ($\Delta\cos$ to own $v_A$ +0.121 at $\alpha=2$, vs +0.051 to the generic FV; task-specific excess positive on 68/69 tasks); `read_write_relationship/ctop1_1shot/`.
 
 ![Cue-token cosine under the raw $m_A(\mathrm{L6})$ injection](../results/69_task_run/read_write_relationship/bottom_up/headline_cos_absolute.png)
 
