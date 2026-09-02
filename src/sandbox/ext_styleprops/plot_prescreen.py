@@ -135,7 +135,7 @@ def main():
         a.set_title(name, fontsize=9)
         a.set_ylim(-0.05, 1.05)
         a.set_xticks(PLOT_BINS)
-        a.set_xlabel("k prior manifestations (exact)")
+        a.set_xlabel("k prior manifestations")
         if pi % ncol == 0:
             a.set_ylabel("P(continuation = nat pole)", fontsize=8)
         if pi == 0:
@@ -161,7 +161,7 @@ def main():
         a.set_title(name, fontsize=9)
         a.set_ylim(-0.05, 1.05)
         a.set_xticks(PLOT_BINS)
-        a.set_xlabel("k prior manifestations (exact)")
+        a.set_xlabel("k prior manifestations")
         if pos3[name][1] == 0:
             a.set_ylabel("P(continuation follows ctx polarity)", fontsize=8)
         if pi == 0:
