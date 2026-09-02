@@ -78,9 +78,17 @@ def main():
     fig.patch.set_facecolor("white"); ax.set_facecolor("white")
     ax.plot(LAYERS, curve, color=PURPLE, lw=2.2, marker="o", ms=5, mfc=PURPLE,
             mec="white", mew=0.9, zorder=4,
-            label="fixed $w_A$ = L6/7 mean + top-1 dir (best $\\alpha$)")
+            label=(("$u_A$ = carrier + $n_A v_1$" if _NAME.startswith("ctop1") else "fixed $w_A$ = L6/7 mean + top-1 dir") + " (best $\\alpha$)"))
     ax.plot(LAYERS, [raw[l] for l in LAYERS], color=TEAL, lw=1.6, alpha=0.55, zorder=3,
             label="matched-site raw mean $m_A(\\ell)$ (best $\\alpha$)")
+    if WA_CSV.exists() and _NAME != "l67top1_steering_bankA":
+        wa = {}
+        for r in csv.DictReader(open(WA_CSV)):
+            if r["alpha"] == "best":
+                wa[int(r["layer"])] = float(r["mean_acc_all"])
+        ax.plot(LAYERS, [wa[l] for l in LAYERS], color="#c2410c", lw=1.6, alpha=0.7,
+                ls=(0, (2, 2)), zorder=3,
+                label="$w_A$ = task's own L6/7 mean + boosted $v_1$ (best $\\alpha$)")
     ax.axhline(r1, color=GREEN, lw=1.6, ls=(0, (5, 2.5)), zorder=2,
                label=f"real 1-shot demonstration = {r1:.3f}")
     pk = int(np.argmax(curve))
@@ -89,9 +97,9 @@ def main():
     ax.set_xticks(range(0, 28, 3))
     ax.set_xlabel("injection layer", color=INK, fontsize=11)
     ax.set_ylabel("steered accuracy (mean, 69 tasks)", color=INK, fontsize=11)
-    ax.set_title("Dummy target token steering with the fixed L6/7+top-1 vector (1-shot)",
+    ax.set_title(("Dummy target token steering with the carrier + $n_A v_1$ vector (1-shot)" if _NAME.startswith("ctop1") else "Dummy target token steering with the fixed L6/7+top-1 vector (1-shot)"),
                  fontsize=12.5, color=INK, loc="left", pad=10)
-    ax.legend(loc="upper right", fontsize=9, frameon=False)
+    ax.legend(loc="center right", fontsize=9, frameon=False)
     ax.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
     for s in ["top", "right"]: ax.spines[s].set_visible(False)
     for s in ["left", "bottom"]: ax.spines[s].set_color("#c9ccc7")

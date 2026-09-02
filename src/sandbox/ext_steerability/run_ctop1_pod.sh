@@ -13,7 +13,7 @@ export HF_HUB_OFFLINE=1
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 LOG=$REPO/logs/ctop1
 mkdir -p "$LOG"
-rm -f "$LOG/$CHAIN.done" "$LOG/$CHAIN.failed"
+MARK=$CHAIN${2:+_L$2}; rm -f "$LOG/$MARK.done" "$LOG/$MARK.failed"
 nvidia-smi --query-gpu=name,driver_version --format=csv,noheader
 # explicit COMPLETE snapshot (default glob picks the weights-only f3f42882 snapshot)
 MD=/workspace/.cache/huggingface/hub/models--EleutherAI--gpt-j-6b/snapshots/47e169305d2e8376be1d31e765533382721b2cc1
@@ -31,11 +31,11 @@ case "$CHAIN" in
   sixshot)
     LAYER=${2:?layer}
     python src/sandbox/ext_steerability/sixshot_l67top1_steer.py --layer "$LAYER" \
-      --model_dir "$MD" --vectors_path "$VEC" --out_root "$OUT/sixshot" \
+      --model_dir "$MD" --vectors_path "$VEC" --out_root "$OUT/sixshot_L$LAYER" \
       --token_budget 11000 --batch_cap 16 || rc=1
     ;;
   *) echo "unknown chain $CHAIN"; rc=1 ;;
 esac
 date -u
-if [ $rc -eq 0 ]; then touch "$LOG/$CHAIN.done"; else touch "$LOG/$CHAIN.failed"; fi
+if [ $rc -eq 0 ]; then touch "$LOG/$MARK.done"; else touch "$LOG/$MARK.failed"; fi
 echo "exit $rc"
