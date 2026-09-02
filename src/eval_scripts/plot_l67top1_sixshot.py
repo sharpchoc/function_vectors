@@ -75,6 +75,31 @@ def main():
              (f"{vname} @{lay}\nbest $\\alpha$", m("best"), "#7c3aad"),
              ("real 6-shot\ndemos", m("ref_real6"), "0.35")]
     bars = [b for b in bars if b is not None]
+    # --- SIMPLE headline figure (main text): dummy baseline | steered | real demos ---
+    if is_c:
+        hb = [("dummy 6-shot\n(unsteered)", m("baseline"), "0.72"),
+              (f"dummy 6-shot\n+ read feature steering", m("a2.0"), "#7c3aad"),
+              ("real 6-shot\ndemonstrations", m("ref_real6"), "0.35")]
+        fh, axh = plt.subplots(figsize=(6.0, 4.4), dpi=150)
+        fh.patch.set_facecolor("white"); axh.set_facecolor("white")
+        xh = np.arange(3)
+        for xi, (lab, v, c) in zip(xh, hb):
+            axh.bar([xi], [v], width=0.6, color=c, zorder=3)
+            axh.text(xi, v + 0.012, f"{v:.2f}", ha="center", va="bottom",
+                     fontsize=13, fontweight="bold", color="#181c1e")
+        axh.set_xticks(xh, [b[0] for b in hb], fontsize=11)
+        axh.set_ylim(0, 0.74)
+        axh.set_yticks([0, 0.2, 0.4, 0.6])
+        axh.set_ylabel("task accuracy (mean, 69 tasks)", fontsize=11)
+        axh.set_title("Steering dummy targets with the read feature", fontsize=12.5,
+                      loc="left", pad=10)
+        axh.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
+        for sp in ["top", "right"]: axh.spines[sp].set_visible(False)
+        fh.tight_layout()
+        fh.savefig(OUT / "headline_bars.png", facecolor="white")
+        plt.close(fh)
+        print(f"wrote {OUT}/headline_bars.png")
+
     fig, ax = plt.subplots(figsize=(8.8 if is_c else 7.6, 4.6), dpi=150)
     fig.patch.set_facecolor("white"); ax.set_facecolor("white")
     x = np.arange(len(bars))

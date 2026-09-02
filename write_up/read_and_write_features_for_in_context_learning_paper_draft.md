@@ -132,24 +132,13 @@ tied at 0.125), coinciding with the early-layer band where the write feature is 
 readable at target tokens (Claim 2). The dashed line is the mean accuracy of a real
 1-shot demonstration (0.208), so the single best-layer injection recovers a majority of real demonstration accuracy.*
 
-There is a peak of steering ability around L5-L7, so we take the read features of those
-three layers as our working object and decompose them. Averaging over the three layers gives
-one vector per task, $\bar m_A = \tfrac13\sum_{\ell=5}^{7} m_A(\ell)$, and these vectors are
-strikingly similar across tasks (mean pairwise cosine 0.727, vs 0.393 for function vectors):
-most of every read feature is a **shared carrier** $c$ — the cross-task mean — that carries
-no task identity, and only a small remainder distinguishes tasks. That remainder is itself
-nearly one-dimensional: after removing each layer's cross-task mean direction, the top
-singular direction $v_1$ of a task's three residuals carries ~88% of their energy. So we
-represent each task's read feature by two objects,
+There is a peak of steering ability around L5-L7, so we take the mean activations of those
+three layers and decompose them. Averaging over the three layers gives one vector per task, $\bar m_A = \tfrac13\sum_{\ell=5}^{7} m_A(\ell)$, and these vectors are very similar across tasks - cosine similarity of 0.73. This suggests that all these activations point along a similar direction, which we call the **shared carrier** $c$, the cross-task mean. We then take each layer's mean activation from L5-L7 for each task and project out the shared carrier and stack the 3 vectors into a matrix and do SVD to extract the top SVD direction,  $v_1$. We define this as the task-unique part.
 
 $$
 c \;=\; \frac{1}{|\mathcal{T}|}\sum_{A'} \bar m_{A'}, \qquad
 v_1 \;=\; \text{top singular direction of the mean-removed } \{m_A(5), m_A(6), m_A(7)\},
 $$
-
-and test both sides of causality with the *same* $v_1$: ablate it to test necessity, and add
-it back on top of the carrier at its natural coordinate $n_A = \langle \bar m_A - c,\, v_1\rangle$
-to test sufficiency.
 
 ![Read-feature decomposition into shared carrier and task-unique part](../results/69_task_run/bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png)
 
@@ -187,7 +176,7 @@ Injected at L0 it reaches **0.570 at $\alpha = 2$ and 0.596 at per-task best $\a
 of what six real demonstrations deliver (0.630), and above the full read feature
 $m_A(\mathrm{L6})$ injected at its own layer (0.447; Appendix I).
 
-![Carrier + one task-unique direction: 6-shot dummy-target steering](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L0/sixshot_bars.png)
+![Steering dummy targets with the read feature: unsteered, steered, real demonstrations](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L0/headline_bars.png)
 
 *The one direction whose removal collapses the task's ICL (0.629 → 0.130) is, on top of a
 task-agnostic carrier, sufficient to restore it (0.000 → 0.596): necessity and sufficiency
@@ -778,6 +767,8 @@ $\alpha = 2$; $w_A$ additionally carries the task's residual unique directions a
 $v_1$ component, which helps on a single slot (+0.025 at 1 shot) but not at six. Not yet
 run: the full mean injected at L0/L1 (to separate the injection-layer effect from the
 vector composition) and $c + 2 n_A v_1$ (to match $w_A$'s $v_1$ dose).
+
+![All read-feature steering vectors on the 6-shot dummy scaffold](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L0/sixshot_bars.png)
 
 ![$u_A$ injection-layer sweep, 1-shot](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sweep_layer_curve.png)
 
