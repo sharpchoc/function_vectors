@@ -26,6 +26,7 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, STYLE_PROPERTIES_DIR
+from src.sandbox.ext_styleprops.properties import PROPS
 
 STEER = ARTIFACTS_ROOT / "style_properties" / "steering"
 HEADS = ARTIFACTS_ROOT / "style_properties" / "sparse_heads"
@@ -81,19 +82,35 @@ def main():
         fig.colorbar(im, ax=ax, fraction=0.04)
     for k in range(n, nrow * ncol):
         axes[k // ncol][k % ncol].axis("off")
-    fig.suptitle("mean-diff steering at evidence spans: adherence-to-alt (nat context)")
+    fig.suptitle("Layer × dose sweep of the mean-difference steering vector (added at evidence tokens of standard-convention text)\n"
+                 "colour = fraction of T=1 samples following the ALT convention at decision points (panel title: unsteered baseline); "
+                 "capture layer 0 = embedding, l = output of block l−1", fontsize=10)
     fig.tight_layout()
     fig.savefig(OUT / "sweep_heatmaps.png", dpi=150)
 
     # headline bars + summary csv
+    # (condition key, legend text, color, hatch, x-slot). Two groups: make the ALT
+    # convention appear in standard (nat) text; then the reverse direction.
     conds_show = [
-        ("baseline_nat2alt", "base n→a"), ("meandiff_evid_nat2alt", "meandiff evid"),
-        ("meandiff_dec_nat2alt", "meandiff dec"), ("cfprop_evid_nat2alt", "cf-prop ctl"),
-        ("rawalt_best", "rawalt best"), ("headsum_best", "headsum best"),
-        ("baseline_alt2nat", "base a→n"), ("meandiff_evid_alt2nat", "meandiff a→n"),
+        ("baseline_nat2alt", "unsteered baseline: how often the model follows the ALT convention on its own",
+         "#9e9e9e", None, 0),
+        ("meandiff_evid_nat2alt", "mean-DIFFERENCE vector (alt − nat evidence-token mean) added at the EVIDENCE tokens",
+         "#e63946", None, 1),
+        ("meandiff_dec_nat2alt", "same mean-difference vector, added at the DECISION token only",
+         "#f4a261", None, 2),
+        ("cfprop_evid_nat2alt", "CONTROL: a different property's mean-difference vector at the evidence tokens (should stay near baseline)",
+         "#457b9d", "//", 3),
+        ("rawalt_best", "RAW alt-polarity mean vector (not the difference), best α of {0.5, 1, 2}",
+         "#2a9d8f", None, 4),
+        ("headsum_best", "sparse head-sum vector (Σ selected heads' evidence-token differences), best α of {1, 2, 4, 8}",
+         "#9b5de5", None, 5),
+        ("baseline_alt2nat", "REVERSE baseline: alt-convention text, how often the model reverts to NAT on its own",
+         "#cfcfcf", None, 7),
+        ("meandiff_evid_alt2nat", "REVERSE steering: negated mean-difference vector at the evidence tokens of alt text",
+         "#e76f51", None, 8),
     ]
     rows = []
-    fig, axes = plt.subplots(nrow, ncol, figsize=(4.6 * ncol, 3.2 * nrow), squeeze=False)
+    fig, axes = plt.subplots(nrow, ncol, figsize=(4.6 * ncol, 3.6 * nrow), squeeze=False)
     for pi, name in enumerate(props):
         fl = json.load(open(STEER / "full" / f"{name}.json"))
         c = fl["conditions"]
@@ -102,29 +119,58 @@ def main():
         hs_best = max((k for k in c if k.startswith("headsum")),
                       key=lambda k: c[k]["adherence_tgt"], default=None)
         get = {"rawalt_best": raw_best, "headsum_best": hs_best}
-        vals, labs = [], []
         row = {"property": name, "best_L": fl["best_from_sweep"]["L"],
                "best_alpha": fl["best_from_sweep"]["alpha"], "cf_property": fl["cf_property"]}
-        for key, lab in conds_show:
+        ax = axes[pi // ncol][pi % ncol]
+        for key, lab, color, hatch, slot in conds_show:
             k = get.get(key, key)
             v = c[k]["adherence_tgt"] if k and k in c else np.nan
-            vals.append(v)
-            labs.append(lab)
             row[key] = round(v, 3) if not np.isnan(v) else ""
             if key in ("rawalt_best", "headsum_best") and k:
                 row[key + "_cond"] = k
+            if not np.isnan(v):
+                ax.bar(slot, v, color=color, hatch=hatch, edgecolor="white" if hatch else color,
+                       width=0.8)
+                ax.text(slot, v + 0.02, f"{v:.2f}", ha="center", va="bottom", fontsize=6)
         rows.append(row)
-        ax = axes[pi // ncol][pi % ncol]
-        colors = ["#999", "#e63946", "#f4a261", "#457b9d", "#2a9d8f", "#9b5de5",
-                  "#bbb", "#e76f51"]
-        ax.bar(range(len(vals)), vals, color=colors)
-        ax.set_xticks(range(len(vals)), labs, rotation=45, ha="right", fontsize=6.5)
-        ax.set_ylim(0, 1.02)
-        ax.set_title(f"{name}  (L{row['best_L']}, α{row['best_alpha']})", fontsize=9)
+        ax.axvline(6.0, color="#666", lw=0.8, ls=":")
+        ax.set_xticks([2.5, 7.5], ["make ALT appear\nin nat text", "reverse:\nalt → nat"],
+                      fontsize=7)
+        ax.set_xlim(-0.6, 8.6)
+        ax.set_ylim(0, 1.12)
+        ax.set_yticks([0, 0.25, 0.5, 0.75, 1.0])
+        ax.tick_params(axis="y", labelsize=7)
+        if pi % ncol == 0:
+            ax.set_ylabel("adherence to TARGET\nconvention", fontsize=8)
+        prop = PROPS[name]
+        import textwrap
+        t1 = textwrap.fill(f"{name}:  {prop.nat_label}  →  {prop.alt_label}", 58)
+        ax.set_title(t1 + f"\nvector from capture layer {row['best_L']}, α={row['best_alpha']:g}; "
+                     f"control vector = {row['cf_property']}", fontsize=7)
     for k in range(n, nrow * ncol):
         axes[k // ncol][k % ncol].axis("off")
-    fig.suptitle("steering headline: adherence to the TARGET polarity (sampled readout)")
-    fig.tight_layout()
+    from matplotlib.patches import Patch
+    handles = [Patch(facecolor=col, hatch=h, edgecolor="white" if h else col, label=lab)
+               for _, lab, col, h, _ in conds_show]
+    wrapped = [textwrap.fill(hh.get_label(), 62) for hh in handles]
+    fig.suptitle("Can a steering vector make GPT-J switch style convention?\n"
+                 "Each bar = fraction of T=1 sampled continuations that follow the TARGET convention at the decision points "
+                 "(scorable samples only; 80 docs × ≤8 sites per property). Higher = steering worked.",
+                 fontsize=11)
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    n_empty = nrow * ncol - n
+    if n_empty >= 2:
+        # legend in the empty slots of the last row
+        left = axes[nrow - 1][ncol - n_empty].get_position()
+        right = axes[nrow - 1][ncol - 1].get_position()
+        fig.legend(handles=handles, labels=wrapped, loc="center", fontsize=8, frameon=True,
+                   ncol=1 if n_empty < 3 else 2,
+                   bbox_to_anchor=((left.x0 + right.x1) / 2, (left.y0 + left.y1) / 2),
+                   bbox_transform=fig.transFigure, title="bar colours", title_fontsize=9)
+    else:
+        fig.legend(handles=handles, labels=wrapped, loc="lower center", ncol=2, fontsize=8,
+                   frameon=False)
+        fig.subplots_adjust(bottom=0.18)
     fig.savefig(OUT / "headline_bars.png", dpi=150)
     with open(OUT / "steering_summary.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=sorted({k for r in rows for k in r}))
