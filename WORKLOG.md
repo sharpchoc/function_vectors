@@ -8480,3 +8480,13 @@ adherence by k=1..4+ is now .82/.78/.79/.86 (flat/rising); nat-context .89/.72/.
 Prescreen figures regenerated. NOTE: steering results for num_words (aggregate only, tails not
 stored) still reflect the old classifier — rerun steer_adherence for num_words to refresh.
 Lesson: a property classifier must have EXACTLY the scope of its opportunity detector.
+
+## 2026-09-01 — num_words steering rerun with the range-faithful classifier
+
+sweep+full re-run for num_words only (pod, ~12 min); previous results archived at
+artifacts/style_properties/steering/_old_classifier/. steer_adherence.py now STORES the
+sampled tails per condition so future classifier fixes are a rescoring, not a GPU rerun.
+Changes (old → new): baseline nat→alt .070→.112; meandiff evid nat→alt .935→.949; cf control
+.119→.151 (≈ baseline, still clean); reverse baseline alt→nat .262→.143 (the old classifier
+counted out-of-range digits as "reverting to digits"); meandiff reverse .939→.951; rawalt best
+.453→.623; headsum best .721→.662. Headline conclusions for num_words unchanged.

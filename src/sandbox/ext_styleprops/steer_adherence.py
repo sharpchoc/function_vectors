@@ -97,7 +97,7 @@ def run_condition(model, tok, inj, prop, items, vec, block_layer, alpha, pos_mod
                   tgt_pol, seed_tag, token_budget, batch_cap):
     """One condition -> (adherence_to_tgt, scorable_frac, n)."""
     inj.vec = None if vec is None else (alpha * vec.float()).cuda()
-    labels = [None] * len(items)
+    labels, tails = [None] * len(items), [None] * len(items)
     for bi, b in enumerate(batches_by_len(items, token_budget, batch_cap)):
         lens = [len(items[i]["ids"]) for i in b]
         L = max(lens)
@@ -122,10 +122,11 @@ def run_condition(model, tok, inj, prop, items, vec, block_layer, alpha, pos_mod
         for r, i in enumerate(b):
             tail = tok.decode(gen[r, L:], skip_special_tokens=True)
             labels[i] = classify(prop, tail, items[i]["exp"])
+            tails[i] = tail
     inj.vec = None
     sc = [l for l in labels if l is not None]
     adh = float(np.mean([l == tgt_pol for l in sc])) if sc else float("nan")
-    return adh, len(sc) / max(len(labels), 1), len(labels)
+    return adh, len(sc) / max(len(labels), 1), len(labels), tails
 
 
 def main():
@@ -157,26 +158,24 @@ def main():
         vz = np.load(VEC_DIR / f"{name}.npz")
         res = {"property": name, "mode": args.mode, "n_docs": n_docs, "conditions": {}}
 
-        def record(cname, adh, scf, n):
+        def record(cname, adh, scf, n, tails=None):
+            # tails are stored so a classifier fix can be applied by rescoring (no GPU)
             res["conditions"][cname] = {"adherence_tgt": round(adh, 4),
-                                        "scorable": round(scf, 3), "n": n}
+                                        "scorable": round(scf, 3), "n": n, "tails": tails}
             print(f"{name} | {cname}: adh={adh:.3f} scorable={scf:.2f} n={n}", flush=True)
 
         if args.mode == "sweep":
             items = build_items(name, tok, "nat", n_docs, max_sites)
             set_layer(SWEEP_LAYERS[0] - 1)
-            adh, scf, n = run_condition(model, tok, inj, prop, items, None, None, 0,
-                                        "evid", "alt", "base", args.token_budget,
-                                        args.batch_cap)
-            record("baseline_nat2alt", adh, scf, n)
+            record("baseline_nat2alt", *run_condition(model, tok, inj, prop, items, None,
+                   None, 0, "evid", "alt", "base", args.token_budget, args.batch_cap))
             for L in SWEEP_LAYERS:
                 set_layer(L - 1)
                 v = torch.tensor(vz["meandiff"][L], dtype=torch.float16)
                 for a in SWEEP_ALPHAS:
-                    adh, scf, n = run_condition(model, tok, inj, prop, items, v, L - 1,
-                                                a, "evid", "alt", f"L{L}a{a}",
-                                                args.token_budget, args.batch_cap)
-                    record(f"meandiff_evid_L{L}_a{a}", adh, scf, n)
+                    record(f"meandiff_evid_L{L}_a{a}", *run_condition(model, tok, inj, prop,
+                           items, v, L - 1, a, "evid", "alt", f"L{L}a{a}",
+                           args.token_budget, args.batch_cap))
         else:
             sweep = json.load(open(OUT_ROOT / "sweep" / f"{name}.json"))["conditions"]
             valid = [c for c in sweep if c.startswith("meandiff")
