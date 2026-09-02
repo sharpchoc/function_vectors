@@ -152,20 +152,19 @@ def main():
     ax.annotate("$c$", 1.05 * cdir + np.array([0.02, -0.03]), fontsize=14, color="0.35")
     cols = ("#1f5fb4", BLUE, "#8db8f0")
     # three layer means: same carrier-ish component, slightly different residual sizes/tilts
-    specs = ((0.62, 0.34, -6), (0.70, 0.40, 0), (0.66, 0.30, 6))   # (along c, along perp, tilt deg)
+    specs = ((0.50, 0.42, -14), (0.62, 0.52, 0), (0.56, 0.36, 14))   # (along c, along perp, tilt deg)
     for k, ((a, b, tilt), col) in enumerate(zip(specs, cols)):
         rdir = np.array([np.cos(np.deg2rad(90 + 30 + tilt)), np.sin(np.deg2rad(90 + 30 + tilt))])
         m = a * cdir + b * rdir
         proj = float(m @ cdir) * cdir
         arrow(ax, 0, 0, *m, col, lw=2.0, alpha=0.9, head=12)
         arrow(ax, *proj, *m, ORANGE, lw=1.5, alpha=0.55, head=9)   # residual = m - proj
-        ax.annotate(f"$m_A({5 + k})$", m + np.array([-0.02, 0.035]), fontsize=11.5,
+        ax.annotate(f"$m_A({5 + k})$", m * 1.08 + np.array([0.0, 0.01]), fontsize=11.5,
                     color=col, ha="center")
     arrow(ax, 0, 0, *(0.50 * perp), ORANGE, lw=3.4, head=17)
     ax.annotate("$v_1$: top SVD direction\nof the 3 residuals\n(task-unique part)",
-                0.50 * perp + np.array([0.03, 0.02]), fontsize=12.5, color=ORANGE,
-                ha="left", va="bottom")
-    ax.set_xlim(-0.55, 1.15); ax.set_ylim(-0.05, 1.08)
+                (-0.62, 0.62), fontsize=12.5, color=ORANGE, ha="left", va="top")
+    ax.set_xlim(-0.65, 1.15); ax.set_ylim(-0.05, 1.08)
     ax.set_title("C. per layer: project out $c$, stack the 3\nresiduals, take the top SVD direction",
                  fontsize=14, pad=10)
 
