@@ -8388,3 +8388,28 @@ re-pointed at property steering, NO train/test split. Readout = sampled adherenc
 **Next:** lambda sweep for genuinely sparse head sets; decode-time injection for
 long-generation persistence; carrier/unique decomposition (Stage D3); adjudication
 memo items 5-6 still pending user decision.
+
+## style-properties: prunes, 15% scorable floor, item rebalancing (2026-09-02, main)
+
+**Status:** done. User decisions today: prune ellipsis (one-sided classifier) and any
+property below a 15% scorable floor (brit_t_past 5.0%, ise_ize 10.7%) -> pool of 13
+(`plot_prescreen.PRUNED`, reasons in task_splits/style_properties_pool.json); exact k
+bins 0-5 in the k-axis figures (gate keeps pooled k>=4); item rebalancing for number
+properties (`Property.resample`: uniform ordinal 1st-10th / cardinal 2-20 per site, same
+draw in both twins, per-doc seeded) so item identity is independent of k.
+
+**Commands:** build_datasets.py (rebuilt all; only num_words/ordinal_words change);
+pod tiigmq1ete4zvn (terminated): prescreen/capture_sites/steering vectors/sweep/head
+means/sparse heads/full eval with --props num_words ordinal_words; plot_prescreen,
+probe_grid (cache cleared for the two), plot_steering, plot_property_catalog.
+
+**Findings:**
+- Rebalancing: k=0 "first" share 86% -> 13%; ordinal_words separation .78 -> .68 (honest:
+  high ordinals now appear at every k); both props still pass; pool unchanged (13).
+- Residual downward drift of the ordinal alt-doc curve survives rebalancing: misses are
+  the model emitting HIGH digit ordinals (9th/10th) regardless of expected item, 8/9 in
+  num-batch (digit-dense) docs whose share of alt sites rises with k (0.5 -> 1.0 at k=5).
+  => document-composition confound, small (2 misses / 13-16 at k=4-5). Cure = corpus
+  design (ordinal-rich docs that are not otherwise number-heavy) or within-batch k-curves.
+- Explainer figures: highlight drift root-caused to 100-vs-150 dpi glyph hinting; figures
+  now created at save dpi. terminology/corpus/catalog explainers in explainer_visuals/.
