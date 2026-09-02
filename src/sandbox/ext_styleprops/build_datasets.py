@@ -45,6 +45,10 @@ MAX_DOCS = 200
 # batch added 2026-09-02 (document-composition confound at high k); doc ids sort
 # 'ord' after 'num', so the default cap would cut them.
 MAX_DOCS_OVERRIDE = {"ordinal_words": 340}
+# corpus batches restricted to specific properties: the `ord` batch exists only to fix
+# ordinal_words' high-k composition; letting it into other properties' datasets would
+# silently change them (and desync them from their computed artifacts).
+BATCH_ONLY_FOR = {"ord": {"ordinal_words"}}
 MAX_SITES = 8          # sites scored per doc (all opps are still rendered)
 MIN_PREFIX_TOKS = 12   # a cue token needs some context before it
 
@@ -82,6 +86,9 @@ def build_property(prop, docs, tok):
         "tok_delta": [], "opps_redetect_mismatch": 0,
     }
     for d in docs:
+        batch = d["doc_id"][:3]
+        if batch in BATCH_ONLY_FOR and prop.name not in BATCH_ONLY_FOR[batch]:
+            continue
         opps = prop.find_opps(d["text"])
         # item rebalancing (number properties): resample each site's lexical item with a
         # per-document seeded RNG so item identity is independent of position / k
