@@ -29,7 +29,9 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
-AR = ARTIFACTS_ROOT / "69_task_run" / "bottom_up_ablation" / "meanremoved_L5to7_top1"
+import os
+_BANKA = os.environ.get("BANKA") == "1"
+AR = ARTIFACTS_ROOT / "69_task_run" / "bottom_up_ablation" / ("bankA_L5to7_top1" if _BANKA else "meanremoved_L5to7_top1")
 ABL = TASK69_RUN_DIR / "bottom_up_read_features" / "ablation"
 OUT = ABL / "task_unique_top1_L5to7"
 
@@ -54,7 +56,7 @@ def main():
         for n in (1, 6):
             r = json.load(open(AR / f"n{n}shot" / f"{t}.json"))
             assert r["n_prompts"] == 150 and r["cf_task"] == rows[t]["cf_task"]
-            assert r["rank"] == 1 and "meanremoved_L5to7_top1_bases" in r["bases_path"]
+            assert r["rank"] == 1 and "L5to7_top1_bases" in r["bases_path"]
             for jc, cc in zip(JSON_CONDS, MR1):
                 rows[t][f"n{n}_{cc}"] = r["conditions"][jc]["acc"]
 

@@ -29,7 +29,9 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
-AR = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering" / "taskunique_svd_dummy"
+import os
+_BANKA = os.environ.get("BANKA") == "1"
+AR = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering" / ("bankA_taskunique_svd_dummy" if _BANKA else "taskunique_svd_dummy")
 SR = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results"
 OUT = SR / "taskunique_svd_dummy"
 ALPHAS = (0.0, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 48.0, 64.0)
