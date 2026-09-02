@@ -31,7 +31,9 @@ from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, STYLE_PROPERTIES_DIR
 
 IN_DIR = ARTIFACTS_ROOT / "style_properties" / "prescreen"
 OUT_DIR = STYLE_PROPERTIES_DIR / "behavioral_prescreen"
-K_BINS = [0, 1, 2, 3, 4]          # last bin = k>=4
+K_BINS = [0, 1, 2, 3, 4]          # GATE bins: last bin = k>=4 (pool membership uses these)
+PLOT_BINS = [0, 1, 2, 3, 4, 5]    # PLOT bins: exact k, sites with k>=6 not shown (user
+                                  # decision 2026-09-02); k=0 = identical-prompt control
 
 # Manual prunes (user decisions) applied on top of the numeric gate. The pool file
 # records the reason so a regenerate can never silently re-admit them.
@@ -115,13 +117,25 @@ def main():
         s_curve = [a - b if not (np.isnan(a) or np.isnan(b)) else np.nan
                    for a, b in zip(curves["nat"][1], curves["alt"][1])]
 
+        # plotting curves: exact k over PLOT_BINS (the gate above keeps its pooled bins)
+        pcurves = {}
+        for pol in ("nat", "alt"):
+            ys = []
+            for kb in PLOT_BINS:
+                sub = [r for r in recs if r["pol"] == pol and r["k"] == kb]
+                ys.append(rate_nat(sub)[0])
+            pcurves[pol] = ys
+        ps_curve = [a - b if not (np.isnan(a) or np.isnan(b)) else np.nan
+                    for a, b in zip(pcurves["nat"], pcurves["alt"])]
+
         a = ax1[pi // ncol][pi % ncol]
-        a.plot(K_BINS, curves["nat"][1], "o-", label="nat ctx")
-        a.plot(K_BINS, curves["alt"][1], "s-", label="alt ctx")
-        a.plot(K_BINS, s_curve, "k--", lw=1, label="separation (nat − alt)")
+        a.plot(PLOT_BINS, pcurves["nat"], "o-", label="nat ctx")
+        a.plot(PLOT_BINS, pcurves["alt"], "s-", label="alt ctx")
+        a.plot(PLOT_BINS, ps_curve, "k--", lw=1, label="separation (nat − alt)")
         a.set_title(name, fontsize=9)
         a.set_ylim(-0.05, 1.05)
-        a.set_xlabel("k prior manifestations (4=4+)")
+        a.set_xticks(PLOT_BINS)
+        a.set_xlabel("k prior manifestations (exact)")
         if pi % ncol == 0:
             a.set_ylabel("P(continuation = nat pole)", fontsize=8)
         if pi == 0:
@@ -133,20 +147,21 @@ def main():
         for pol, mk, col, lab in (("nat", "o", "#1f77b4", "nat-convention doc"),
                                   ("alt", "s", "#ff7f0e", "alt-convention doc")):
             ys, ms = [], []
-            for kb in K_BINS:
-                sub = [r for r in recs if r["pol"] == pol and kbin(r["k"]) == kb]
+            for kb in PLOT_BINS:
+                sub = [r for r in recs if r["pol"] == pol and r["k"] == kb]
                 v, m = rate_ctx(sub)
                 ys.append(v)
                 ms.append(m)
-            a.plot(K_BINS, ys, "-", color=col, alpha=0.8, label=lab)
+            a.plot(PLOT_BINS, ys, "-", color=col, alpha=0.8, label=lab)
             solid = [i for i in range(len(ys)) if ms[i] >= 20]
             thin = [i for i in range(len(ys)) if 0 < ms[i] < 20]
-            a.plot([K_BINS[i] for i in solid], [ys[i] for i in solid], mk, color=col)
-            a.plot([K_BINS[i] for i in thin], [ys[i] for i in thin], mk, color=col,
+            a.plot([PLOT_BINS[i] for i in solid], [ys[i] for i in solid], mk, color=col)
+            a.plot([PLOT_BINS[i] for i in thin], [ys[i] for i in thin], mk, color=col,
                    mfc="none")
         a.set_title(name, fontsize=9)
         a.set_ylim(-0.05, 1.05)
-        a.set_xlabel("k prior manifestations (4=4+)")
+        a.set_xticks(PLOT_BINS)
+        a.set_xlabel("k prior manifestations (exact)")
         if pos3[name][1] == 0:
             a.set_ylabel("P(continuation follows ctx polarity)", fontsize=8)
         if pi == 0:
