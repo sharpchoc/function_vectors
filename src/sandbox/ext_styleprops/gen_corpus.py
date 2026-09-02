@@ -110,6 +110,11 @@ BATCHES = {
             "ellipsis (...); use the past forms learned, spelled, burned, dreamed, leaped, "
             "leaned, spilled, and spoiled at least 6 times in total; and use the words "
             "while, among, and amid at least 6 times in total."),
+    "ord": ("\nAdditionally, this text must be ORDINAL-rich but otherwise number-light: use at "
+            "least 8 ordinals written like 1st, 2nd, 3rd ... 10th (spread across first to "
+            "tenth, e.g. steps, rounds, floors, attempts, anniversaries), and do NOT use any "
+            "other numerals or percentages anywhere — write any other quantities as words or "
+            "avoid them. Ignore the earlier requests for numerals and a percentage."),
     "ukv": ("\nAdditionally, use MANY of these words — at least 14 occurrences in total: "
             "color, colors, colorful, favorite, center, organize, organized, organization, "
             "realize, realized, recognize, recognized, neighbor, neighbors, neighborhood, "

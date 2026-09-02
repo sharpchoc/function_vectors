@@ -41,6 +41,10 @@ MIN_SITES = {
     "quote_punct": 4, "num_words": 6, "percent_sign": 4, "ordinal_words": 3,
 }
 MAX_DOCS = 200
+# per-property cap overrides: ordinal_words gets the ordinal-rich number-light `ord`
+# batch added 2026-09-02 (document-composition confound at high k); doc ids sort
+# 'ord' after 'num', so the default cap would cut them.
+MAX_DOCS_OVERRIDE = {"ordinal_words": 340}
 MAX_SITES = 8          # sites scored per doc (all opps are still rendered)
 MIN_PREFIX_TOKS = 12   # a cue token needs some context before it
 
@@ -86,7 +90,7 @@ def build_property(prop, docs, tok):
         if len(opps) < MIN_SITES[prop.name]:
             continue
         audit["n_docs_eligible"] += 1
-        if audit["n_docs_used"] >= MAX_DOCS:
+        if audit["n_docs_used"] >= MAX_DOCS_OVERRIDE.get(prop.name, MAX_DOCS):
             continue
         nat_text, nat_spans = render(d["text"], opps, "nat")
         alt_text, alt_spans = render(d["text"], opps, "alt")
