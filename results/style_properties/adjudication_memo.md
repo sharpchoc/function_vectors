@@ -136,6 +136,19 @@ Lexicon properties (us_uk, contractions, …) share the structure but cannot be 
 randomized without breaking meaning; for those, item-stratified re-analysis is the
 tool, and their k-curves should be read with the composition caveat.
 
+**Second confound and fix (same day): document composition.** After item rebalancing the
+spelled-ordinal curve still drifted down at high k. Split by corpus batch it was flat
+within batch (~1.0 in ordinary docs, ~0.95 in the statistics-heavy `num` docs); the
+drift came from the num-batch share of alt-doc sites rising from 0.5 at k=0 to 1.0 at
+k=5 (only number-dense docs had 6+ ordinals) plus two-miss noise in 9–13-sample cells.
+Fix: a 120-doc `ord` corpus batch — ordinal-rich but otherwise number-light (no other
+numerals/percentages) — with the ordinal_words doc cap raised to 340 (323 docs used,
+1801 sites, 632 at k≥4). Num-batch share is now flat (~0.30–0.37) across k. Result: the
+alt-doc curve is flat at ceiling (1.00/.98/.99/.98/1.00/1.00 for k=0..5), flat within
+every batch, and separation at k≥4 rose from .68 to .88. The earlier "worse with k"
+reading was composition + noise, not the model. num_words is unchanged by the new docs
+(no numerals in them) and was rerun for consistency.
+
 Known limitations to carry forward: ellipsis is low-n (37 docs); oxford_comma, whilst,
 brit_t_past have thin k ≥ 4 cells (29–45 sites/polarity); scorable rates at lexicon
 properties depend on the loose classifier's hit rate (reported per property in the
