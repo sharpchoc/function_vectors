@@ -77,7 +77,21 @@ def main():
 
     fig1, ax1 = plt.subplots(nrow, ncol, figsize=(4 * ncol, 3 * nrow), squeeze=False)
     fig2, ax2 = plt.subplots(nrow, ncol, figsize=(4 * ncol, 3 * nrow), squeeze=False)
-    fig3, ax3 = plt.subplots(nrow, ncol, figsize=(4 * ncol, 3 * nrow), squeeze=False)
+    # accuracy figure: pool properties in the top block, excluded (failed / pruned) in
+    # a separate bottom block. Pool membership from the durable pool file (previous run).
+    pool_path = REPO_ROOT / "task_splits" / "style_properties_pool.json"
+    pool_pass = set(json.load(open(pool_path))["pass"]) if pool_path.exists() else \
+        {p["property"] for p in props}
+    names_all = [p["property"] for p in props]
+    in_pool = [nm for nm in names_all if nm in pool_pass]
+    excluded = [nm for nm in names_all if nm not in pool_pass]
+    nrow_pool = int(np.ceil(len(in_pool) / ncol))
+    nrow_excl = int(np.ceil(len(excluded) / ncol)) if excluded else 0
+    pos3 = {nm: (i // ncol, i % ncol) for i, nm in enumerate(in_pool)}
+    pos3.update({nm: (nrow_pool + j // ncol, j % ncol) for j, nm in enumerate(excluded)})
+    nrow3 = nrow_pool + nrow_excl
+    fig3, ax3 = plt.subplots(nrow3, ncol, figsize=(4 * ncol, 3 * nrow3 + 0.8),
+                             squeeze=False)
     rows = []
     npz = {}
     for pi, pdata in enumerate(props):
@@ -112,7 +126,7 @@ def main():
 
         # accuracy analog: adherence to the context's own polarity, by k.
         # cells with <20 scorable samples get open markers (thin-data flag).
-        a = ax3[pi // ncol][pi % ncol]
+        a = ax3[pos3[name][0]][pos3[name][1]]
         for pol, mk, col, lab in (("nat", "o", "#1f77b4", "nat-convention doc"),
                                   ("alt", "s", "#ff7f0e", "alt-convention doc")):
             ys, ms = [], []
@@ -130,7 +144,7 @@ def main():
         a.set_title(name, fontsize=9)
         a.set_ylim(-0.05, 1.05)
         a.set_xlabel("k prior manifestations (4=4+)")
-        if pi % ncol == 0:
+        if pos3[name][1] == 0:
             a.set_ylabel("P(continuation follows ctx polarity)", fontsize=8)
         if pi == 0:
             a.legend(fontsize=7)
@@ -177,7 +191,15 @@ def main():
     for k in range(len(props), nrow * ncol):
         ax1[k // ncol][k % ncol].axis("off")
         ax2[k // ncol][k % ncol].axis("off")
-        ax3[k // ncol][k % ncol].axis("off")
+    used3 = set(pos3.values())
+    for r_ in range(nrow3):
+        for c_ in range(ncol):
+            if (r_, c_) not in used3:
+                ax3[r_][c_].axis("off")
+    for nm in excluded:
+        a = ax3[pos3[nm][0]][pos3[nm][1]]
+        why = "pruned" if nm in PRUNED else "failed screen"
+        a.set_title(f"{nm}  ({why})", fontsize=9, color="#c0392b")
     fig3.suptitle("Style-following accuracy vs. number of prior examples "
                   "(GPT-J, T=1 sampling)", fontsize=14, fontweight="bold", y=0.985)
     fig1.suptitle("Sampled adherence at decision points: fraction of T=1 continuations "
@@ -186,10 +208,24 @@ def main():
     fig2.suptitle("Context separation s = P(nat | nat ctx) − P(nat | alt ctx) at decision "
                   "points, by token distance since the property last manifested", fontsize=11)
     for f_, name_, top in ((fig1, "adherence_by_k.png", 0.96),
-                           (fig2, "separation_by_dist.png", 0.96),
-                           (fig3, "accuracy_by_k.png", 0.965)):
+                           (fig2, "separation_by_dist.png", 0.96)):
         f_.tight_layout(rect=(0, 0, 1, top))
         f_.savefig(OUT_DIR / name_, dpi=150)
+    # accuracy figure: section headers + separator between pool and excluded blocks
+    fig3.tight_layout(rect=(0, 0, 1, 0.955), h_pad=3.2)
+    top_pool = ax3[0][0].get_position().y1
+    fig3.text(0.01, top_pool + 0.012, f"IN POOL ({len(in_pool)} properties)",
+              fontsize=11, fontweight="bold", color="#2a9d8f", va="bottom")
+    if excluded:
+        top_excl = ax3[nrow_pool][0].get_position().y1
+        bot_pool = ax3[nrow_pool - 1][0].get_position().y0
+        y_sep = top_excl + 0.034   # just above the EXCLUDED header, clear of pool x-labels
+        fig3.add_artist(plt.Line2D([0.01, 0.99], [y_sep, y_sep], color="#999", lw=1,
+                                   ls="--", transform=fig3.transFigure))
+        fig3.text(0.01, top_excl + 0.012, f"EXCLUDED ({len(excluded)}: failed the "
+                  "behavioral screen or pruned)", fontsize=11, fontweight="bold",
+                  color="#c0392b", va="bottom")
+    fig3.savefig(OUT_DIR / "accuracy_by_k.png", dpi=150)
     np.savez(OUT_DIR / "prescreen_records.npz", **npz)
 
     import csv
