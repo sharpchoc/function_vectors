@@ -187,22 +187,18 @@ are in Appendix I.*
 
 ## Claim 4: Read features are causal for the formation of write features
 
-The same six-slot injection, but instead of generating, we read the residual stream at the
-final cue token — the site where the write feature forms. As $\alpha$ increases, the
-cue-token representation rotates toward the task's own function vector: cosine at L13
-doubles from 0.18 to 0.37 between $\alpha=0$ and $\alpha=2$. The rotation is task-specific
-— the gain over alignment to a generic all-task FV is positive on 69/69 tasks (+0.093 at
-$\alpha=2$) and still rising at $\alpha=4$.
+The same six-slot injection of $u_A$ at L0, but instead of generating, we read the residual
+stream at the final cue token — the site where the write feature forms. As $\alpha$
+increases, the cue-token representation rotates toward the task's own function vector:
+cosine at L13 rises from 0.18 to 0.42 between $\alpha=0$ and $\alpha=2$. The rotation is
+task-specific — the gain over alignment to a generic all-task FV is positive on 69/69 tasks
+(+0.138 at $\alpha=2$) — and it saturates at the same dose that maximises accuracy.
 
-![Cue-token cosine to own FV rising with alpha](../results/69_task_run/read_write_relationship/bottom_up/headline_cos_absolute.png)
+![Cue-token cosine to own FV rising with alpha](../results/69_task_run/read_write_relationship/ctop1/headline_cos_absolute.png)
 
-Two finer-grained variants agree. On the 1-shot scaffold the same rotation appears at half
-strength ($\Delta\cos$ to own $v_A$ +0.088 at $\alpha=2$, vs +0.044 to the generic FV).
-And steering *only the first* target slot shows the effect propagating forward with decay:
-the task-specific excess alignment is largest at the very next cue (+0.047 at $\alpha=2$)
-and falls monotonically to +0.010 by the query cue — each demonstration's target refreshes
-a signal that would otherwise fade. Sources:
-`read_write_relationship/{bottom_up_1shot, bottom_up_firstlabel}/`.
+*Injecting the carrier plus one task-unique direction at the target slots moves the write
+site toward the task's function vector. Finer-grained variants (1-shot scaffold, first-slot
+only) and the same measurement under the raw $m_A(\mathrm{L6})$ injection are in Appendix I.*
 
 ## Claim 5: Read features appear earlier than write features
 
@@ -744,6 +740,22 @@ $\alpha = 4$ the model recovers 70% of what six real demonstrations deliver
 (0.000 → 0.442 vs the 0.630 real 6-shot reference).
 
 ![Six dummy slots steered with $m_A(\mathrm{L6})$ vs real demonstrations](../results/69_task_run/bottom_up_read_features/steering_results/sixshot_dummy/poster_visuals/headline_bars.png)
+
+**Effect on the write site under the raw $m_A(\mathrm{L6})$ injection.** With
+$\alpha \cdot m_A(\mathrm{L6})$ at all six dummy slots (the original sufficiency test above),
+the cue-token cosine to the task's own FV at L13 rises from 0.18 to 0.37 between $\alpha=0$
+and $\alpha=2$; the task-specific gain over the generic all-task FV is positive on 69/69
+tasks (+0.093 at $\alpha=2$) and still rising at $\alpha=4$. Two finer-grained variants
+agree. On the 1-shot scaffold the same rotation appears at half strength ($\Delta\cos$ to
+own $v_A$ +0.088 at $\alpha=2$, vs +0.044 to the generic FV). And steering *only the first*
+target slot shows the effect propagating forward with decay: the task-specific excess
+alignment is largest at the very next cue (+0.047 at $\alpha=2$) and falls monotonically to
++0.010 by the query cue — each demonstration's target refreshes a signal that would otherwise
+fade. Sources: `read_write_relationship/{bottom_up, bottom_up_1shot, bottom_up_firstlabel}/`.
+Under the main-text $u_A$ injection the rotation is larger (0.18 → 0.42; task-specific
+excess +0.138 at $\alpha=2$); its 1-shot variant is in `read_write_relationship/ctop1_1shot/`.
+
+![Cue-token cosine under the raw $m_A(\mathrm{L6})$ injection](../results/69_task_run/read_write_relationship/bottom_up/headline_cos_absolute.png)
 
 **Read-feature steering variants (6-shot dummy-target scaffold, 69-task means).** The
 main text reports the carrier + one-direction vector $u_A$; the other vectors built from
