@@ -6,8 +6,8 @@ artifacts/style_properties/sparse_heads/<prop>.npz. Outputs in
 results/style_properties/steering/:
   sweep_heatmaps.png    layer x alpha adherence-to-alt per property (evid injection)
   steering_by_layer.png adherence vs steering layer, one line per dose (simple view)
-  headline_bars.png     per property: baselines vs meandiff (evid/cue), cf control,
-                        rawalt best, headsum best; both directions for meandiff
+  headline.png          THE result: one panel, per property unsteered / steered / natural-context reference
+  appendix_all_conditions.png  every condition (cue-site, control, raw-mean, head-sum, reverse)
   steering_summary.csv  the numbers behind the bars
   sparse_heads_summary.csv  heads per property + overlap with the 37 ICL FV heads
   head_overlap_matrix.png   property x property selected-head overlap (Jaccard)
@@ -201,11 +201,41 @@ def main():
         fig.legend(handles=handles, labels=wrapped, loc="lower center", ncol=2, fontsize=8,
                    frameon=False)
         fig.subplots_adjust(bottom=0.18)
-    fig.savefig(OUT / "headline_bars.png", dpi=150)
+    fig.savefig(OUT / "appendix_all_conditions.png", dpi=150)
     with open(OUT / "steering_summary.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=sorted({k for r in rows for k in r}))
         w.writeheader()
         w.writerows(rows)
+
+    # ---- HEADLINE: one point. Per property: unsteered vs steered vs the natural reference
+    # (how often the model follows the ALT convention when it genuinely reads ALT context,
+    # k>=4, from the prescreen records). Sorted by steered adherence.
+    PRE = ARTIFACTS_ROOT / "style_properties" / "prescreen"
+    trip = []
+    for name in props:
+        c = json.load(open(STEER / "full" / f"{name}.json"))["conditions"]
+        recs = json.load(open(PRE / f"{name}.json"))["records"]
+        ref = [r for r in recs if r["pol"] == "alt" and r["k"] >= 4 and r["label"]]
+        ref_v = np.mean([r["label"] == "alt" for r in ref]) if ref else np.nan
+        trip.append((name, c["baseline_nat2alt"]["adherence_tgt"],
+                     c["meandiff_evid_nat2alt"]["adherence_tgt"], ref_v))
+    trip.sort(key=lambda t: -t[2])
+    fig, ax = plt.subplots(figsize=(12, 5.2))
+    x = np.arange(len(trip))
+    w = 0.27
+    ax.bar(x - w, [t[1] for t in trip], w, color="#bdbdbd", label="unsteered (standard-convention text)")
+    ax.bar(x, [t[2] for t in trip], w, color="#e63946", label="steered: mean-difference vector added at the evidence tokens")
+    ax.bar(x + w, [t[3] for t in trip], w, color="#457b9d", label="reference: model reading genuine ALT-convention context (k ≥ 4 prior examples)")
+    ax.set_xticks(x, [t[0] for t in trip], rotation=30, ha="right", fontsize=9)
+    ax.set_ylim(0, 1.05)
+    ax.set_ylabel("fraction of sampled continuations\nin the ALT convention", fontsize=10)
+    ax.set_title("One steering vector per property makes GPT-J switch style convention in free text\n"
+                 "(GPT-J, T=1 sampling at cue tokens; steered from standard-convention documents)",
+                 fontsize=12)
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.28), ncol=3, fontsize=8.5, frameon=False)
+    ax.grid(axis="y", alpha=0.25)
+    fig.tight_layout()
+    fig.savefig(OUT / "headline.png", dpi=170, bbox_inches="tight")
 
     # sparse-head summaries
     icl, icl_src = icl_heads()

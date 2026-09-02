@@ -23,3 +23,4 @@ Data: `dataset_files/style_properties/` (base corpus + per-property minimal-pair
 datasets); scripts: `src/sandbox/ext_styleprops/`; run artifacts:
 `artifacts/style_properties/` (gitignored). Pool artifact after the gate:
 `task_splits/style_properties_pool.json`.
+| `steering/` | **Start with `headline.png`**: one steering vector per property (mean of evidence-token activations under the ALT convention minus under the standard one), added at the evidence tokens of a standard-convention document, makes GPT-J switch convention at the cue tokens — from ≈0 to 0.7–1.0, matching what the model does when it genuinely reads that convention in context. `steering_by_layer.png`: where in the network it works. Appendix: `appendix_all_conditions.png` (cue-site injection, counterfactual-property controls, raw-mean and sparse head-sum vectors, reverse direction), `sweep_heatmaps.png`, `sparse_heads_summary.csv`, `head_overlap_matrix.png`. |
