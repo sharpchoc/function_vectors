@@ -87,10 +87,11 @@ IDENTICAL prompts). Fixed in build_datasets (delta-remainder rule) together with
 apostrophe normalization ('’' → "'"), datasets rebuilt, full rerun. Lesson: always keep
 a k=0 identical-prompt cell as a classifier-leak control.
 
-## Prunes 2026-09-02 (user decisions): ellipsis + brit_t_past removed — pool is 14
+## Prunes 2026-09-02 (user decisions): ellipsis + brit_t_past + ise_ize removed — pool is 13
 
-Rule adopted: properties below a **10% scorable floor** are pruned (brit_t_past 5.0%;
-whilst 8.5% already failed the gate; ise_ize at 10.7% stays). Ellipsis was pruned first
+Rule adopted: properties below a **15% scorable floor** are pruned (brit_t_past 5.0%,
+ise_ize 10.7%; whilst 8.5% already failed the gate; us_uk at 19.7% is the thinnest
+survivor). The floor was first set at 10% and raised to 15% the same day. Ellipsis was pruned first
 on structural grounds (below):
 
 The ellipsis classifier is one-sided: a continuation scores only when the model produces
@@ -105,9 +106,9 @@ classifier needs the construct to appear — reported scorable rates (corrected 
 | property | scorable | note |
 |---|---|---|
 | ellipsis | 0.037 | PRUNED (one-sided classifier) |
-| brit_t_past | 0.050 | PRUNED 2026-09-02 (user decision: <10% scorable floor) |
+| brit_t_past | 0.050 | PRUNED 2026-09-02 (user decision: <15% scorable floor) |
 | whilst | 0.085 | already failed the gate |
-| ise_ize | 0.107 | needs a lexicon word to appear |
+| ise_ize | 0.107 | PRUNED 2026-09-02 (user decision: <15% scorable floor) |
 | us_uk | 0.197 | needs a lexicon word to appear; strong separation where scorable |
 | ordinal_words | 0.268 | needs an ordinal to appear |
 | em_dash | 0.285 | one-sided like ellipsis (needs a dash of either kind); reads 1.0 |

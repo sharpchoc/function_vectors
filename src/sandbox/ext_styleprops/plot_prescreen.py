@@ -39,11 +39,14 @@ PRUNED = {
     "ellipsis": ("2026-09-02 user prune: one-sided classifier — a continuation only scores "
                  "when the model produces SOME ellipsis, so 'no ellipsis' is discarded as "
                  "unscorable instead of counting against adherence; 3.7% scorable."),
-    "brit_t_past": ("2026-09-02 user prune: scorable rate below the 10% floor (5.0%) — "
+    "brit_t_past": ("2026-09-02 user prune: scorable rate below the 15% floor (5.0%) — "
                     "adherence is conditional on the model producing a lexicon verb at "
                     "all, and every k-cell is thin."),
+    "ise_ize": ("2026-09-02 user prune: scorable rate below the 15% floor (10.7%) — "
+                "adherence conditional on the model producing an -ize/-ise word at all."),
 }
-# (whilst, 8.5% scorable, is also below the 10% floor but already fails the numeric gate.)
+# Scorable floor = 15% (user decision 2026-09-02; raised from an initial 10%).
+# (whilst, 8.5% scorable, is also below the floor but already fails the numeric gate.)
 DIST_BINS = [(1, 15), (16, 40), (41, 90), (91, 10_000)]
 
 
