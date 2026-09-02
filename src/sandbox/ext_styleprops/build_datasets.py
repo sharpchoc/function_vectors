@@ -16,6 +16,7 @@ import argparse
 import csv
 import json
 import sys
+import zlib
 from pathlib import Path
 
 import numpy as np
@@ -78,6 +79,10 @@ def build_property(prop, docs, tok):
     }
     for d in docs:
         opps = prop.find_opps(d["text"])
+        # item rebalancing (number properties): resample each site's lexical item with a
+        # per-document seeded RNG so item identity is independent of position / k
+        rng = np.random.default_rng(zlib.crc32(f"{prop.name}|{d['doc_id']}".encode()))
+        opps = [prop.resample(o, rng) for o in opps]
         if len(opps) < MIN_SITES[prop.name]:
             continue
         audit["n_docs_eligible"] += 1

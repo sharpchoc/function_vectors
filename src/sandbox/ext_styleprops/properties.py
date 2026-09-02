@@ -87,6 +87,14 @@ class Property:
         prefix; None = unscorable / no loose rule."""
         return None
 
+    def resample(self, opp, rng):
+        """Optionally replace the lexical ITEM at an opportunity (same item in both
+        twins) to decorrelate item identity from document position / k. Default:
+        identity. Number properties override (user decision 2026-09-02: at every k the
+        items must be equally distributed — 'first' otherwise dominates k=0 and the high
+        ordinals only appear deep in ordinal-rich documents)."""
+        return opp
+
 
 # --------------------------------------------------------------------------- case
 class SentenceCaps(Property):
@@ -441,6 +449,14 @@ class NumWords(Property):
             opps.append(Opp(m.start(1), m.end(1), nat, alt))
         return _dedup(opps)
 
+    def resample(self, opp, rng):
+        """Uniform cardinal in 2..20 (item balanced across k); keeps capitalization."""
+        n = int(rng.integers(2, 21))
+        word = _D2W[str(n)]
+        if opp.alt[:1].isupper():
+            word = word.capitalize()
+        return Opp(opp.start, opp.end, str(n), word)
+
     def classify(self, tail):
         s = tail.lstrip()
         if not s:
@@ -490,6 +506,14 @@ class OrdinalWords(Property):
         _map[w] = (d, w)
         _map[w.capitalize()] = (d, w)
     _rx = re.compile(r"\b(" + "|".join(_ORD_D + _ORD_W + [w.capitalize() for w in _ORD_W]) + r")\b")
+
+    def resample(self, opp, rng):
+        """Uniform ordinal in 1st..10th (item balanced across k); keeps capitalization."""
+        i = int(rng.integers(0, len(_ORD_D)))
+        word = _ORD_W[i]
+        if opp.alt[:1].isupper():
+            word = word.capitalize()
+        return Opp(opp.start, opp.end, _ORD_D[i], word)
 
     def find_opps(self, text):
         opps = []

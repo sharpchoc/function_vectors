@@ -120,6 +120,22 @@ Interpretive rule: adherence numbers for sub-30% properties are conditional on t
 choosing to produce the construct at all; the production rate itself (scorable fraction
 by context polarity) is an unreported complementary readout worth adding.
 
+## Item rebalancing for number properties (user decision 2026-09-02)
+
+In free text, k follows document order, so lexical-item identity was confounded with k:
+for ordinal_words, 86% of k=0 sites were "first" while 8th–10th appeared only deep in
+ordinal-rich (num-batch) documents — and the only alt-doc misses were the model
+producing "9th"/"10th" where a spelled high ordinal was expected. Fix at dataset
+construction: `Property.resample` lets a property replace each site's lexical item with a
+uniform draw (same draw in both twins, per-document seeded RNG), so at every k the item
+distribution is identical by construction. Applied to ordinal_words (uniform 1st–10th)
+and num_words (uniform 2–20); datasets rebuilt, all downstream artifacts for these two
+properties regenerated (prescreen, captures, probes, steering). Verified: k=0 "first"
+share fell from 86% to 13%, all k-cells near-uniform over first…tenth.
+Lexicon properties (us_uk, contractions, …) share the structure but cannot be item-
+randomized without breaking meaning; for those, item-stratified re-analysis is the
+tool, and their k-curves should be read with the composition caveat.
+
 Known limitations to carry forward: ellipsis is low-n (37 docs); oxford_comma, whilst,
 brit_t_past have thin k ≥ 4 cells (29–45 sites/polarity); scorable rates at lexicon
 properties depend on the loose classifier's hit rate (reported per property in the
