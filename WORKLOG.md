@@ -5,6 +5,49 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-09-02 — ctop1 6-shot steering by injection layer: u_A at L5, L6, L7 (vs L0/L1)
+
+**Owner:** Claude Code subagent (fable), main checkout. Pod fv-ctop1-L567 `5100qd0zr8o12e`
+(RTX PRO 4500 Blackwell, EU-RO-1, $0.72/h, ≈1.5 h ≈ $1.1, TERMINATED + re-listed). **Status:** DONE.
+
+**What (user request):** the headline steering vector u_A = c + n_A·v1 (bankA/
+carrier_plus_top1_vectors.pt, NOT rebuilt) injected additively at the block output of layer
+L ∈ {5, 6, 7} at all six ' _' dummy-target slots of the 6-shot dummy scaffold — the same
+protocol as the existing L0/L1 runs (sixshot_l67top1_steer.py, α ∈ {0.5, 1, 2, 4}, T=1
+sampled exact match, 150 prompts/task, 69 tasks). Three sequential runs on one pod via
+`run_ctop1_pod.sh sixshot <L>` (~22 min GPU each after model load; --token_budget 11000
+--batch_cap 16; explicit complete GPT-J snapshot 47e16930). Purpose: how much of the L0
+result survives when u_A is injected AT the layers the read feature lives in (L5–7).
+
+**Findings (69-task means; L0/L1 from the existing summaries):**
+
+| inject | α=0.5 | α=1 | α=2 | α=4 | best α | train α=2 / best | held-out α=2 / best |
+|---|---|---|---|---|---|---|---|
+| L0 | .008 | .400 | **.570** | .562 | **.596** | .564 / .591 | .595 / .615 |
+| L1 | .007 | .393 | .568 | .567 | .593 | .560 / .588 | .596 / .614 |
+| L5 | .001 | .098 | .457 | .500 | .507 | .453 / .500 | .475 / .536 |
+| L6 | .001 | .060 | .403 | .475 | .478 | .400 / .470 | .416 / .508 |
+| L7 | .000 | .032 | .345 | .452 | .453 | .347 / .447 | .338 / .476 |
+
+References: full mean m_A(L6) best α 0.447; real 6-shot demos 0.630; unsteered dummy 0.000.
+Monotone decline with depth (L0 ≈ L1 > L5 > L6 > L7), as the 1-shot sweep predicted, but the
+6-shot penalty is roughly half the 1-shot one in relative terms: 1-shot best L5/L6/L7 were
+−31/−33/−45 % vs L0 (0.135/0.131/0.108 vs 0.195); 6-shot best is −15/−20/−24 %
+(0.507/0.478/0.453 vs 0.596). The peak dose shifts to α=4 at L5–7 (α=2 at L0/L1); at α=1 the
+deep injections barely ignite (.03–.10 vs .40 at L0). u_A @L5 (best .507) and @L6 (.478) still
+beat the full mean m_A(L6) injected at L6 (.447); u_A @L7 (.453) matches it. Held-out ≥ train
+at every layer except L7 α=2.
+
+**Files:** artifacts `69_task_run/ctop1_steering/sixshot_L{5,6,7}/<task>.json` (gitignored);
+`results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L{5,6,7}/`
+{sixshot_summary.csv, sixshot_bars.png, headline_bars.png} (plot_l67top1_sixshot.py with
+L67_NAME/L67_OUT/L67_SIXSHOT_SUB); NEW `src/eval_scripts/plot_ctop1_sixshot_by_layer.py` →
+`steering_results/ctop1/sixshot_by_layer.{png,csv}` (x = layer {0,1,5,6,7}; α=2 and per-task
+best series; dashed refs full-mean 0.447 / real 0.630). Logs `logs/ctop1/sixshot_L{5,6,7}.log`.
+DECISIONS.md and the paper draft NOT edited (user to decide placement).
+
+---
+
 ## 2026-08-28 — Chat-template ICL transfer, Qwen2.5-7B-Instruct 6-shot × 117 tasks (NEW branch)
 
 **Owner:** Claude Code background agent, main working tree (no worktree). **Status:** DONE.
