@@ -5,6 +5,7 @@ Reads artifacts/style_properties/steering/{sweep,full}/<prop>.json and
 artifacts/style_properties/sparse_heads/<prop>.npz. Outputs in
 results/style_properties/steering/:
   sweep_heatmaps.png    layer x alpha adherence-to-alt per property (evid injection)
+  steering_by_layer.png adherence vs steering layer, one line per dose (simple view)
   headline_bars.png     per property: baselines vs meandiff (evid/dec), cf control,
                         rawalt best, headsum best; both directions for meandiff
   steering_summary.csv  the numbers behind the bars
@@ -88,6 +89,38 @@ def main():
     fig.tight_layout()
     fig.savefig(OUT / "sweep_heatmaps.png", dpi=150)
 
+    # simple view: adherence vs steering layer, one line per dose (mean-diff at evidence tokens)
+    fig, axes = plt.subplots(nrow, ncol, figsize=(3.9 * ncol, 3.0 * nrow), squeeze=False,
+                             sharex=True, sharey=True)
+    alpha_colors = {2.0: "#a8dadc", 4.0: "#457b9d", 8.0: "#e63946", 16.0: "#6a040f"}
+    for pi, name in enumerate(props):
+        sw = json.load(open(STEER / "sweep" / f"{name}.json"))["conditions"]
+        ax = axes[pi // ncol][pi % ncol]
+        for a in SWEEP_ALPHAS:
+            ys = [sw.get(f"meandiff_evid_L{L}_a{a}", {}).get("adherence_tgt", np.nan)
+                  for L in SWEEP_LAYERS]
+            ax.plot(SWEEP_LAYERS, ys, "o-", ms=3.5, lw=1.4, color=alpha_colors[a], label=f"α = {a:g}")
+        ax.axhline(sw["baseline_nat2alt"]["adherence_tgt"], color="#888", ls="--", lw=1,
+                   label="unsteered")
+        ax.set_title(name, fontsize=10, fontweight="bold")
+        ax.set_ylim(-0.03, 1.03)
+        ax.set_xticks(SWEEP_LAYERS)
+        ax.tick_params(labelsize=7)
+        ax.grid(alpha=0.25)
+        if pi % ncol == 0:
+            ax.set_ylabel("adherence to target style", fontsize=8)
+        if pi // ncol == nrow - 1 or pi + ncol >= n:
+            ax.set_xlabel("steering layer", fontsize=8)
+    for k in range(n, nrow * ncol):
+        axes[k // ncol][k % ncol].axis("off")
+    h, l = axes[0][0].get_legend_handles_labels()
+    fig.legend(h, l, loc="lower right", bbox_to_anchor=(0.97, 0.06), fontsize=9, frameon=True,
+               title="steering dose (α × mean-difference vector)")
+    fig.suptitle("Steering effectiveness by layer: mean-difference vector added at evidence tokens, "
+                 "target = the ALT convention", fontsize=12)
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    fig.savefig(OUT / "steering_by_layer.png", dpi=150)
+
     # headline bars + summary csv
     # (condition key, legend text, color, hatch, x-slot). Two groups: make the ALT
     # convention appear in standard (nat) text; then the reverse direction.
@@ -142,21 +175,18 @@ def main():
         ax.tick_params(axis="y", labelsize=7)
         if pi % ncol == 0:
             ax.set_ylabel("adherence to TARGET\nconvention", fontsize=8)
-        prop = PROPS[name]
         import textwrap
-        t1 = textwrap.fill(f"{name}:  {prop.nat_label}  →  {prop.alt_label}", 58)
-        ax.set_title(t1 + f"\nvector from capture layer {row['best_L']}, α={row['best_alpha']:g}; "
-                     f"control vector = {row['cf_property']}", fontsize=7)
+        ax.set_title(name, fontsize=10, fontweight="bold")
+        ax.text(0.02, 0.97, f"L{row["best_L"]} α{row["best_alpha"]:g}", transform=ax.transAxes,
+                ha="left", va="top", fontsize=6.5, color="#555")
     for k in range(n, nrow * ncol):
         axes[k // ncol][k % ncol].axis("off")
     from matplotlib.patches import Patch
     handles = [Patch(facecolor=col, hatch=h, edgecolor="white" if h else col, label=lab)
                for _, lab, col, h, _ in conds_show]
     wrapped = [textwrap.fill(hh.get_label(), 62) for hh in handles]
-    fig.suptitle("Can a steering vector make GPT-J switch style convention?\n"
-                 "Each bar = fraction of T=1 sampled continuations that follow the TARGET convention at the decision points "
-                 "(scorable samples only; 80 docs × ≤8 sites per property). Higher = steering worked.",
-                 fontsize=11)
+    fig.suptitle("Steering GPT-J's style convention: fraction of sampled continuations following the TARGET convention",
+                 fontsize=12)
     fig.tight_layout(rect=(0, 0, 1, 0.95))
     n_empty = nrow * ncol - n
     if n_empty >= 2:
