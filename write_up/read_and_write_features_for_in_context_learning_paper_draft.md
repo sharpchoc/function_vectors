@@ -202,12 +202,15 @@ site toward the task's function vector. More variants can be found in Appendix I
 
 Presence maps — the mean cosine between the residual stream and each feature, by layer and
 token type, over clean 10-shot prompts — separate the two features in both depth and
-position. The read feature peaks at demonstration *target* tokens at layer 6 (cos 0.80);
-the write feature peaks at *cue* tokens at layer 13 (cos 0.31; 0.35 at the query cue).
+position. The task-unique read direction $v_1$ peaks at demonstration *target* tokens at
+layer 7 (cos 0.38) and is essentially absent at cue and input tokens (≤ 0.03 at every
+layer); the write feature peaks at *cue* tokens at layer 13 (cos 0.31; 0.35 at the query cue).
+The shared carrier, by contrast, is present at every token type (cos 0.6–0.7 through L8) and
+carries no positional task signal (Appendix I).
 Reading happens where target content sits, roughly seven layers before writing happens where
 the answer is produced.
 
-![Read vs write presence by depth and token type](../results/69_task_run/feature_locations/poster_visuals/read_vs_write_presence_label_mean_dual.png)
+![Read (task-unique direction at target tokens) vs write (function vector at cue tokens) presence by layer](../results/69_task_run/feature_locations/ctop1/presence_headline.png)
 
 The write-feature side of this picture is consistent with Todd et al. (2024), who find the
 causal FV heads clustered in early-middle layers and FV injection effective there (their
@@ -802,6 +805,18 @@ vector needing more push the fewer blocks remain to process it. Even injected in
 band, $u_A$ beats the full read feature $m_A(\mathrm{L6})$ injected at L6 (0.447), so the
 vector's advantage is not only an early-injection effect. Source:
 `steering_results/ctop1/sixshot_L{0,1,5,6,7}/` and `sixshot_by_layer.png`.
+
+**Presence maps in full (Claim 5).** Mean cosine between the clean 10-shot residual stream
+and each direction, by layer and token type (69-task means). The carrier $c$ is present
+everywhere target-like content sits and even at cue and input tokens (0.6–0.7 through L8,
+decaying after) — it is a generic "ICL context" component with no positional task identity.
+The task-unique direction $v_1$ is a target-token phenomenon: 0.38 at L7 at target tokens
+versus ≤ 0.03 at cue and input tokens. The write feature $v_A$ is a cue-token phenomenon
+peaking at L13. ($v_1$'s SVD sign is arbitrary; it is oriented along the task's own
+carrier-removed read feature for these plots.) Under the previous raw-mean definition the
+read presence at target tokens peaked at L6 with cos 0.80 — almost all of it carrier.
+
+![Presence of the carrier, the task-unique direction and the function vector, by token type](../results/69_task_run/feature_locations/ctop1/presence_full.png)
 
 **The carrier gap.** The task-unique part alone recovers about three quarters of full-vector
 steering (0.339 vs 0.447) while the carrier alone does nothing; the code side compresses to
