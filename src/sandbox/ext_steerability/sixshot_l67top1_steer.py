@@ -85,7 +85,7 @@ def main():
         w = vecs[task]["vec"].cuda()
         res = {"task": task, "group": group[task], "n_prompts": len(dummy),
                "n_shots": 6, "layer": args.layer,
-               "vec_norm": vecs[task]["vec_norm"], "n_A": vecs[task]["n_A"],
+               "vec_norm": vecs[task]["vec_norm"], "n_A": vecs[task].get("n_A", vecs[task].get("u_norm")),
                "definition": "z += alpha*w_A at ALL six '_' target slots, "
                              "w_A = 0.5*(m_A(L6)+m_A(L7)) + <base,v1>*v1",
                "alphas": list(ALPHAS), "conditions": {}}
