@@ -121,7 +121,7 @@ $$
 
 with $\alpha$ the injection strength.
 
-![Method diagram: dummy-target injection at L6](../results/69_task_run/bottom_up_read_features/steering_results/sixshot_dummy/poster_visuals/method_diagram.png)
+![Method diagram: dummy-target injection](../results/69_task_run/bottom_up_read_features/steering_results/sixshot_dummy/poster_visuals/method_diagram.png)
 
 Then we sweep over all layers (and steering strengths for each layer) and see if any layers can steer 1 shot dummy prompts and whether they conincide with the earlier results that we had.
 
@@ -132,77 +132,69 @@ tied at 0.125), coinciding with the early-layer band where the write feature is 
 readable at target tokens (Claim 2). The dashed line is the mean accuracy of a real
 1-shot demonstration (0.208), so the single best-layer injection recovers a majority of real demonstration accuracy.*
 
-We continue by defining the mean activation at layer 6 of the residual stream at the target token as the read feature and see if it provides bidirectional control (sufficient and neccessary).
-
-**Sufficiency:** We use the setting of 6 shot prompts but replace the target tokens with dummy tokens (ICL example keep their real inputs but every target is a bare `_`, so the prompt does not teach the correct task - unsteered
-accuracy 0.000). We then inject $\alpha \cdot m_A(\mathrm{L6})$ at the dummy target slots and recover a substantial portion of the original task performance.
-
-![Six steered dummy slots vs real demonstrations](../results/69_task_run/bottom_up_read_features/steering_results/sixshot_dummy/poster_visuals/headline_bars.png)
-
-**Necessity:** We first decompose the read feature into a shared part and a task-unique
-part,
+There is a peak of steering ability around L5-L7, so we take the read features of those
+three layers as our working object and decompose them. Averaging over the three layers gives
+one vector per task, $\bar m_A = \tfrac13\sum_{\ell=5}^{7} m_A(\ell)$, and these vectors are
+strikingly similar across tasks (mean pairwise cosine 0.727, vs 0.393 for function vectors):
+most of every read feature is a **shared carrier** $c$ — the cross-task mean — that carries
+no task identity, and only a small remainder distinguishes tasks. That remainder is itself
+nearly one-dimensional: after removing each layer's cross-task mean direction, the top
+singular direction $v_1$ of a task's three residuals carries ~88% of their energy. So we
+represent each task's read feature by two objects,
 
 $$
-m_A \;=\; \bar m + u_A, \qquad \bar m = \frac{1}{|\mathcal{T}|} \sum_{A' \in \mathcal{T}} m_{A'},
+c \;=\; \frac{1}{|\mathcal{T}|}\sum_{A'} \bar m_{A'}, \qquad
+v_1 \;=\; \text{top singular direction of the mean-removed } \{m_A(5), m_A(6), m_A(7)\},
 $$
 
-where the *shared carrier* $\bar m$ (the cross-task mean at target tokens) is most of each
-vector's norm but carries no task identity — read features are strikingly similar across
-tasks (mean pairwise cosine 0.727, vs 0.393 for function vectors) — and the *task-unique*
-part $u_A$ is what distinguishes tasks.
+and test both sides of causality with the *same* $v_1$: ablate it to test necessity, and add
+it back on top of the carrier at its natural coordinate $n_A = \langle \bar m_A - c,\, v_1\rangle$
+to test sufficiency.
 
 ![Read-feature decomposition into shared carrier and task-unique part](../results/69_task_run/bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png)
 
-The ablation then removes only the task-unique
-part, and only one direction of it: the top singular direction of the task's L5–7
-target-token means after removing each layer's cross-task mean direction (unit-normed
-residuals; this single direction carries ~88% of their energy).
-
-Ablating this one direction at demo target tokens collapses 6-shot ICL from 0.629 to 0.130,
-while ablating a *counterfactual* task's direction leaves accuracy at baseline (0.632) — a
-clean double dissociation, which also holds at 1 shot (own 0.043 vs counterfactual 0.205,
-baseline 0.208). Using more of the task-unique subspace only sharpens the kill: the full
-11-direction basis over layers 5–15 reaches 0.095, its top-3 SVD compression 0.099, and its
-single top direction 0.146 (the full rank/band ladder is in Appendix F).
+**Necessity:** At every demonstration target token we project the residual stream onto the
+task's $v_1$ and remove that component (or move it to the cross-task mean; both give the same
+answer). This collapses 6-shot ICL from 0.629 to 0.130, while removing a *counterfactual*
+task's $v_1$ leaves accuracy at baseline (0.632) — a clean double dissociation, which also
+holds at 1 shot (own 0.043 vs counterfactual 0.205, baseline 0.208). Using more of the
+task-unique subspace only sharpens the kill slightly: the full 11-direction basis over layers
+5–15 reaches 0.095 (the rank/band ladder is in Appendix F).
 
 ![Task-unique L5–7 top-1 direction ablation, own vs counterfactual](../results/69_task_run/bottom_up_read_features/ablation/task_unique_top1_L5to7/aggregate_bars.png)
 
-*Ablating the task-unique direction kills the task's own ICL while the counterfactual control
-sits exactly at baseline.* Why not simply ablate the raw mean direction $m_A$ itself? That
-was our first attempt, and it kills ICL non-specifically — the counterfactual control dies
-too, because the shared carrier is load-bearing for every task while carrying no identity.
-The motivation for moving to the task-unique setup, and the full ladder of bases we tried
-along the way, are in Appendix F.
+*Ablating one task-unique direction kills the task's own ICL while the counterfactual control
+sits at baseline.* Why not simply ablate the raw mean direction $m_A$ itself? That was our
+first attempt, and it kills ICL non-specifically — the counterfactual control dies too,
+because the shared carrier is load-bearing for every task while carrying no identity. The
+motivation for the task-unique setup, and the full ladder of bases we tried, are in
+Appendix F.
 
-### The read feature = a shared carrier + a low-dimensional task-unique code
-
-The necessity result removed one direction; the matching sufficiency test adds it back.
-We build a steering vector from exactly the ablation's decomposition: the task-agnostic
-carrier plus the task's single top direction at its natural magnitude,
+**Sufficiency:** We use 6-shot prompts but replace the target tokens with dummy tokens (ICL
+examples keep their real inputs but every target is a bare `_`, so the prompt does not teach
+the task — unsteered accuracy 0.000). We then inject the carrier plus the task's single
+direction at its natural magnitude,
 
 $$
-u_A \;=\; c + n_A\, v_1, \qquad
-c = \frac{1}{|\mathcal{T}|}\sum_{A'} \bar m_{A'}^{\,5\text{–}7}, \qquad
-n_A = \big\langle \bar m_A^{\,5\text{–}7} - c,\; v_1 \big\rangle,
+u_A \;=\; c + n_A\, v_1,
 $$
 
-where $\bar m_A^{\,5\text{–}7}$ is the task's read feature averaged over layers 5–7 and
-$v_1$ is the same L5–7 top-1 direction that was ablated above. Every task-specific bit of
-$u_A$ therefore lives in one direction; the carrier $c$ is identical for all 69 tasks and
-carries no task identity (steering with $c$ alone stays ≤ 0.013 at every layer and dose).
-Swept over injection layers on the 1-shot scaffold, $u_A$ steers best when injected early
-(L0–L3 plateau, 0.195; Appendix I). Injected at L0 at all six dummy target slots it reaches
-**0.570 at $\alpha = 2$ and 0.596 at per-task best $\alpha$** — above the full read feature
-$m_A(\mathrm{L6})$ (0.447) and 95% of what six real demonstrations deliver (0.630).
+scaled by $\alpha$, at every dummy target slot. Every task-specific bit of $u_A$ lives in the
+one direction that the ablation removed; the carrier is identical for all 69 tasks (steering
+with $c$ alone stays ≤ 0.013 at every layer and dose). Swept over injection layers on the
+1-shot scaffold, $u_A$ steers best when injected early (L0–L3 plateau; Appendix I).
+Injected at L0 it reaches **0.570 at $\alpha = 2$ and 0.596 at per-task best $\alpha$** — 95%
+of what six real demonstrations deliver (0.630), and above the full read feature
+$m_A(\mathrm{L6})$ injected at its own layer (0.447; Appendix I).
 
 ![Carrier + one task-unique direction: 6-shot dummy-target steering](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L0/sixshot_bars.png)
 
 *The one direction whose removal collapses the task's ICL (0.629 → 0.130) is, on top of a
-task-agnostic carrier, sufficient to restore it (0.000 → 0.596): necessity and
-sufficiency for the same object. Held-out tasks steer better than train (0.615 vs 0.591),
-so nothing is fitted. Variants of the read feature as a steering vector — the full mean,
-the mean-free part, the single-direction swap, the task's-own-mean composite — and the
-carrier-gap analysis are in Appendix I.*
+task-agnostic carrier, sufficient to restore it (0.000 → 0.596): necessity and sufficiency
+for the same object. Held-out tasks steer better than train (0.615 vs 0.591), so nothing is
+fitted. Other steering vectors built from the read feature — the full mean, its mean-free
+part, the single-direction swap, the task's-own-mean composite — and the carrier-gap analysis
+are in Appendix I.*
 
 ## Claim 4: Read features are causal for the formation of write features
 
@@ -751,6 +743,18 @@ sweep; within a fixed n it is ≈ 0. Sources:
 read feature; the carrier-gap hypothesis tests — random-word scaffold, attention capture,
 error anatomy — were run with the ten-site-average swap direction (Appendix K) and have
 not been re-run.)*
+
+**Sufficiency with the raw read feature $m_A(\mathrm{L6})$ (the original test).** Before the
+decomposition, the causal test injected $\alpha \cdot m_A(\mathrm{L6})$ — the full task mean
+at the best layer of the 1-shot sweep — at the dummy target slots. L6 is selected by a full
+injection-layer sweep (all 28 layers, 1-shot scaffold, best $\alpha$ per layer): steering
+works only in a narrow early-layer window, peaking at L6 (0.126, with L7 at 0.125),
+collapsing to 0.010 by L12 and to the ~0.003 floor everywhere later; a task-agnostic
+shared-mean control never exceeds 0.013 at any layer. With six dummy slots steered at
+$\alpha = 4$ the model recovers 70% of what six real demonstrations deliver
+(0.000 → 0.442 vs the 0.630 real 6-shot reference).
+
+![Six dummy slots steered with $m_A(\mathrm{L6})$ vs real demonstrations](../results/69_task_run/bottom_up_read_features/steering_results/sixshot_dummy/poster_visuals/headline_bars.png)
 
 **Read-feature steering variants (6-shot dummy-target scaffold, 69-task means).** The
 main text reports the carrier + one-direction vector $u_A$; the other vectors built from
