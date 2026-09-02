@@ -794,17 +794,20 @@ L5–7 activations, so we also injected it at each of L5, L6 and L7 on the 6-sho
 | L0 (main text) | 0.570 | 0.562 | 0.596 |
 | L1 | 0.568 | 0.567 | 0.593 |
 | L5 | 0.457 | 0.500 | 0.507 |
-| L6 | *(pending)* | *(pending)* | *(pending)* |
-| L7 | *(pending)* | *(pending)* | *(pending)* |
+| L6 | 0.403 | 0.475 | 0.478 |
+| L7 | 0.345 | 0.452 | 0.453 |
 
-Two readings. First, early injection is genuinely better — L5 costs ~0.07 at the best fixed
-dose (0.500 vs 0.570) and ~0.09 at per-task best — but the penalty is much smaller than the
-1-shot sweep suggested (L5 was ~30% below L0 there): six steered slots saturate the effect.
-Second, the preferred dose shifts with depth (α=2 at L0, α=4 at L5), consistent with a fixed
-vector needing more push the fewer blocks remain to process it. Even injected in its own
-band, $u_A$ beats the full read feature $m_A(\mathrm{L6})$ injected at L6 (0.447), so the
-vector's advantage is not only an early-injection effect. Source:
-`steering_results/ctop1/sixshot_L{0,1,5,6,7}/` and `sixshot_by_layer.png`.
+Three readings. First, accuracy falls monotonically with injection depth (per-task best:
+0.596 → 0.507 → 0.478 → 0.453 for L0 → L5 → L6 → L7), so early injection is genuinely
+better — but the penalty is about half what the 1-shot sweep suggested (−15/−20/−24% vs
+−31/−33/−45%): six steered slots saturate the effect. Second, the preferred dose shifts with
+depth (α=2 at L0–L1, α=4 at L5–7; α=1 barely ignites at depth), consistent with a fixed
+vector needing more push the fewer blocks remain to process it. Third, injected in its own
+band $u_A$ still beats (L5, L6) or matches (L7) the full read feature $m_A(\mathrm{L6})$
+injected at L6 (0.447) — so part of $u_A$'s advantage in the main text comes from injecting
+early, and part from its composition; at matched layer the composition alone is worth
+~0.03. Held-out ≥ train at every layer. Source: `steering_results/ctop1/sixshot_L{0,1,5,6,7}/`
+and `sixshot_by_layer.png`.
 
 **Presence maps in full (Claim 5).** Mean cosine between the clean 10-shot residual stream
 and each direction, by layer and token type (69-task means). The carrier $c$ is present
