@@ -457,14 +457,24 @@ class NumWords(Property):
             word = word.capitalize()
         return Opp(opp.start, opp.end, str(n), word)
 
+    # classifier mirrors the opportunity detector's scope: digits count only if the value
+    # is 2-20 AND not in an excluded context (times 5:30, percentages, decimals, ranges,
+    # ordinals, AM/PM). Before this fix any digit scored "nat", so alt-context docs were
+    # penalised for "1,500 books" / "5:30" — numbers the convention doesn't govern — and the
+    # penalty grew with k in number-dense documents (2026-09-01 audit).
+    _cls_rx = re.compile(r"^\s*(\d+|[A-Za-z]+)(.{0,6})", re.S)
+    _excl_rx = re.compile(r"\s*(:|%|\.\d|/|-|,\d|\d|st\b|nd\b|rd\b|th\b|o'clock|\s?[AaPp]\.?[Mm]\b)")
+
     def classify(self, tail):
-        s = tail.lstrip()
-        if not s:
+        m = self._cls_rx.match(tail)
+        if not m:
             return None
-        if s[0].isdigit():
+        tok, after = m.group(1), m.group(2)
+        if tok.isdigit():
+            if not (2 <= int(tok) <= 20) or self._excl_rx.match(after):
+                return None
             return "nat"
-        w = re.match(r"[a-zA-Z]+", s)
-        if w and w.group(0).lower() in _W2D:
+        if tok.lower() in _W2D:
             return "alt"
         return None
 

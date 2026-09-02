@@ -8453,3 +8453,17 @@ probe_grid (cache cleared for the two), plot_steering, plot_property_catalog.
   design (ordinal-rich docs that are not otherwise number-heavy) or within-batch k-curves.
 - Explainer figures: highlight drift root-caused to 100-vs-150 dpi glyph hinting; figures
   now created at save dpi. terminology/corpus/catalog explainers in explainer_visuals/.
+
+## 2026-09-01 — num_words classifier bias fixed (range-faithful scoring)
+
+**Why:** alt-context (spelled-word) adherence appeared to DECLINE with k (.73→.64); audit of
+stored tails showed the classifier scored ANY digit as nat while the property only governs
+cardinals 2-20 — "1,500 books", "223 copies", "5:30", "8 PM" were counted as violations, and
+their share grew with k (20% → 44% of alt-context "violations") because later sites in the
+number-dense seeded docs sit in quantity/time contexts. **Fix:** NumWords.classify mirrors the
+opportunity detector's scope (digits only if 2-20 and not followed by : % . / - , digits,
+ordinal suffix, o'clock, AM/PM). Rescored the stored prescreen tails (no GPU): alt-context
+adherence by k=1..4+ is now .82/.78/.79/.86 (flat/rising); nat-context .89/.72/.90/.88.
+Prescreen figures regenerated. NOTE: steering results for num_words (aggregate only, tails not
+stored) still reflect the old classifier — rerun steer_adherence for num_words to refresh.
+Lesson: a property classifier must have EXACTLY the scope of its opportunity detector.
