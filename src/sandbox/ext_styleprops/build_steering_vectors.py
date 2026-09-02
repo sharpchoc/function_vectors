@@ -5,6 +5,8 @@ From the Stage B site captures (artifacts/style_properties/site_acts/<prop>__<po
   meandiff[l] = mean evidence-token activation under alt − under nat   (primary vector)
   rawalt[l]   = mean evidence-token activation under alt               (raw-mean arm,
                 the ICL raw-mean-vs-mean-diff comparison)
+  cuediff[l]  = mean CUE-token activation under alt − under nat         (write-feature analog)
+  rawalt_cue[l] = mean cue-token activation under alt
 for every capture layer l (0 = embedding, l>=1 = output of block l-1).
 
 Output: artifacts/style_properties/steering_vectors/<prop>.npz
@@ -25,7 +27,7 @@ from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
 IN_DIR = ARTIFACTS_ROOT / "style_properties" / "site_acts"
 OUT_DIR = ARTIFACTS_ROOT / "style_properties" / "steering_vectors"
 POOL_PATH = REPO_ROOT / "task_splits" / "style_properties_pool.json"
-ROLE_EVID = 0
+ROLE_EVID, ROLE_CUE = 0, 1
 
 
 def main():
@@ -35,17 +37,25 @@ def main():
         means, ns = {}, {}
         for pol in ("nat", "alt"):
             z = np.load(IN_DIR / f"{name}__{pol}.npz")
-            m = z["role"] == ROLE_EVID
-            means[pol] = z["acts"][m].astype(np.float32).mean(0)   # [29, 4096]
-            ns[pol] = int(m.sum())
-        meandiff = means["alt"] - means["nat"]
-        np.savez(OUT_DIR / f"{name}.npz", meandiff=meandiff, rawalt=means["alt"],
-                 n_nat=ns["nat"], n_alt=ns["alt"],
+            acts = z["acts"]
+            for role, tag in ((ROLE_EVID, "evid"), (ROLE_CUE, "cue")):
+                m = z["role"] == role
+                means[(pol, tag)] = acts[m].astype(np.float32).mean(0)   # [29, 4096]
+                ns[(pol, tag)] = int(m.sum())
+        meandiff = means[("alt", "evid")] - means[("nat", "evid")]
+        # write-feature analog: the same difference taken at the CUE token (identity-matched
+        # positions across the twins, so the difference is pure contextual state)
+        cuediff = means[("alt", "cue")] - means[("nat", "cue")]
+        np.savez(OUT_DIR / f"{name}.npz", meandiff=meandiff, rawalt=means[("alt", "evid")],
+                 cuediff=cuediff, rawalt_cue=means[("alt", "cue")],
+                 n_nat=ns[("nat", "evid")], n_alt=ns[("alt", "evid")],
+                 n_cue_nat=ns[("nat", "cue")], n_cue_alt=ns[("alt", "cue")],
                  norm_diff=np.linalg.norm(meandiff, axis=1),
-                 norm_rawalt=np.linalg.norm(means["alt"], axis=1))
-        nd = np.linalg.norm(meandiff, axis=1)
-        print(f"{name}: n={ns['nat']}/{ns['alt']}  |diff| L2={nd[2]:.1f} L6={nd[6]:.1f} "
-              f"L13={nd[13]:.1f} L24={nd[24]:.1f}", flush=True)
+                 norm_cuediff=np.linalg.norm(cuediff, axis=1),
+                 norm_rawalt=np.linalg.norm(means[("alt", "evid")], axis=1))
+        nd, nc = np.linalg.norm(meandiff, axis=1), np.linalg.norm(cuediff, axis=1)
+        print(f"{name}: |evid diff| L6={nd[6]:.1f} L13={nd[13]:.1f} | |cue diff| L6={nc[6]:.1f} "
+              f"L13={nc[13]:.1f} L24={nc[24]:.1f}", flush=True)
 
 
 if __name__ == "__main__":

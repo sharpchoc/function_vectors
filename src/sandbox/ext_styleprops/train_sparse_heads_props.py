@@ -60,21 +60,25 @@ def parse_args():
     p.add_argument("--max_items", type=int, default=600)
     p.add_argument("--c_high", type=float, default=0.8)
     p.add_argument("--docs", type=int, default=120)
+    p.add_argument("--site", choices=("evid", "cue"), default="evid",
+                   help="cue = FV analog: head means at the cue token, v(c) injected at the cue")
     return p.parse_args()
 
 
-def best_sweep_layer(name):
-    """Capture layer of the best mean-diff sweep condition (fallback 10)."""
-    path = SWEEP_DIR / f"{name}.json"
+def best_sweep_layer(name, site="evid"):
+    """Capture layer of the best mean-diff sweep condition for this site (fallback 10)."""
+    path = (SWEEP_DIR if site == "evid" else SWEEP_DIR.parent / "sweep_cue") / f"{name}.json"
     if not path.exists():
         return 10
     conds = json.load(open(path))["conditions"]
-    best = max((c for c in conds if c.startswith("meandiff")),
-               key=lambda c: conds[c]["adherence_tgt"])
+    valid = [c for c in conds if ("diff_" in c) and not np.isnan(conds[c]["adherence_tgt"])]
+    if not valid:
+        return 10
+    best = max(valid, key=lambda c: conds[c]["adherence_tgt"])
     return int(best.split("_L")[1].split("_")[0])
 
 
-def nll_batch(model, batch, v, inject_block, device):
+def nll_batch(model, batch, v, inject_block, device, site="evid"):
     """Teacher-forced −log p(alt continuation) per item; v [4096] fp32 differentiable,
     injected at each item's evidence positions at inject_block's output."""
     seqs = [b["ids"] + b["cont_ids"] for b in batch]
@@ -85,7 +89,7 @@ def nll_batch(model, batch, v, inject_block, device):
     for i, (b, s) in enumerate(zip(batch, seqs)):
         ids[i, :len(s)] = torch.tensor(s)
         att[i, :len(s)] = 1
-        for p_ in b["evid_pos"]:
+        for p_ in (b["evid_pos"] if site == "evid" else [b["cue_pos"]]):
             add_mask[i, p_] = True
     ids, att, add_mask = ids.to(device), att.to(device), add_mask.to(device)
 
@@ -115,21 +119,23 @@ def nll_batch(model, batch, v, inject_block, device):
 def main():
     args = parse_args()
     props = args.props or sorted(json.load(open(POOL_PATH))["pass"])
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    head_dir = HEAD_DIR if args.site == "evid" else HEAD_DIR.parent / "head_means_cue"
+    out_dir = OUT_DIR if args.site == "evid" else OUT_DIR.parent / "sparse_heads_cue"
+    out_dir.mkdir(parents=True, exist_ok=True)
     model, tok, mc = load_gpt_model_and_tokenizer(args.model_name)
     model.requires_grad_(False)
     device = model.device
 
     for name in props:
-        out = OUT_DIR / f"{name}.npz"
+        out = out_dir / f"{name}.npz"
         if out.exists():
             print(f"{name}: exists, skip", flush=True)
             continue
-        hd = torch.load(HEAD_DIR / f"{name}.pt", weights_only=False)
+        hd = torch.load(head_dir / f"{name}.pt", weights_only=False)
         C = build_contributions_single(hd["head_diff"], model, mc)   # [448, 4096] fp32
-        cap_layer = best_sweep_layer(name)
+        cap_layer = best_sweep_layer(name, args.site)
         inject_block = cap_layer - 1
-        items = build_items(name, tok, "nat", args.docs, 8)
+        items = build_items(name, tok, "nat", args.docs, 8, require_evid=(args.site == "evid"))
         for it in items:
             # cap the loss to the property-committing region: long continuations
             # (all_caps = a whole uppercase sentence) dilute the objective with
@@ -163,7 +169,7 @@ def main():
                 opt.zero_grad(set_to_none=True)
                 v = args.train_alpha * torch.einsum("h,hd->d", c, C)
                 lam = 0.0 if epoch < args.lam_warmup else args.lam
-                loss = nll_batch(model, batch, v, inject_block, device) \
+                loss = nll_batch(model, batch, v, inject_block, device, args.site) \
                     + lam * c.abs().sum()
                 loss.backward()
                 if first:

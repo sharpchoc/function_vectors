@@ -63,19 +63,24 @@ def parse_args():
                    help="k>=1 sites per doc cap (default: 4 sweep / 8 full)")
     p.add_argument("--token_budget", type=int, default=16000)
     p.add_argument("--batch_cap", type=int, default=32)
+    p.add_argument("--site", choices=("evid", "cue"), default="evid",
+                   help="injection site: evidence tokens (read-side) or the cue token "
+                        "(write-side; the function-vector analog). cue includes k=0 sites.")
     return p.parse_args()
 
 
-def build_items(prop_name, tok, ctx_pol, n_docs, max_sites):
-    """Items = k>=1 sites of the ctx-polarity twin: prefix through the cue token,
-    with the PRIOR sites' evidence spans as the evid-injection mask."""
+def build_items(prop_name, tok, ctx_pol, n_docs, max_sites, require_evid=True):
+    """Items = sites of the ctx-polarity twin: prefix through the cue token, with the PRIOR
+    sites' evidence spans as the evid-injection mask. require_evid=True keeps k>=1 sites
+    with a non-empty mask (evidence-site steering); False keeps every site incl. k=0
+    (cue-site steering: the zero-shot analog)."""
     data = json.load(open(PROPS_DIR / f"{prop_name}.json"))
     items = []
     for d in data["docs"][:n_docs]:
         ids = tok(d[f"text_{ctx_pol}"]).input_ids
         kept = 0
         for si, s in enumerate(d["sites"]):
-            if s["k"] == 0 or kept >= max_sites:
+            if (require_evid and s["k"] == 0) or kept >= max_sites:
                 continue
             cue = s["cue_idx"][ctx_pol]
             assert ids[cue] == s["cue_tok_id"]
@@ -84,7 +89,7 @@ def build_items(prop_name, tok, ctx_pol, n_docs, max_sites):
                 if s2["k"] < s["k"]:
                     e0, e1 = s2["evid_idx"][ctx_pol]
                     evid_pos.extend(range(e0, min(e1, cue - 1) + 1))
-            if not evid_pos:
+            if require_evid and not evid_pos:
                 continue
             kept += 1
             items.append({"ids": ids[:cue + 1], "evid_pos": evid_pos, "cue_pos": cue,
@@ -135,8 +140,11 @@ def main():
     props = sorted(args.props) if args.props else pool
     n_docs = args.docs or (30 if args.mode == "sweep" else 80)
     max_sites = args.max_sites or (4 if args.mode == "sweep" else 8)
-    out_dir = OUT_ROOT / args.mode
+    out_dir = OUT_ROOT / (args.mode if args.site == "evid" else f"{args.mode}_cue")
     out_dir.mkdir(parents=True, exist_ok=True)
+    req_evid = args.site == "evid"
+    alphas = SWEEP_ALPHAS if args.site == "evid" else SWEEP_ALPHAS + (32.0,)
+    vec_srcs = ("meandiff",) if args.site == "evid" else ("cuediff", "meandiff")
     # counterfactual pairing: rotate the pool by 5 (fixed derangement)
     cf_of = {p: pool[(i + 5) % len(pool)] for i, p in enumerate(pool)}
 
@@ -158,68 +166,94 @@ def main():
         vz = np.load(VEC_DIR / f"{name}.npz")
         res = {"property": name, "mode": args.mode, "n_docs": n_docs, "conditions": {}}
 
-        def record(cname, adh, scf, n, tails=None):
-            # tails are stored so a classifier fix can be applied by rescoring (no GPU)
+        res["site"] = args.site
+
+        def record(cname, adh, scf, n, tails=None, ks=None):
+            # tails (+ per-item k) are stored so a classifier fix / k-split is a rescoring
             res["conditions"][cname] = {"adherence_tgt": round(adh, 4),
-                                        "scorable": round(scf, 3), "n": n, "tails": tails}
+                                        "scorable": round(scf, 3), "n": n, "tails": tails,
+                                        "ks": ks}
             print(f"{name} | {cname}: adh={adh:.3f} scorable={scf:.2f} n={n}", flush=True)
 
         if args.mode == "sweep":
-            items = build_items(name, tok, "nat", n_docs, max_sites)
+            items = build_items(name, tok, "nat", n_docs, max_sites, require_evid=req_evid)
+            ks = [it["k"] for it in items]
             set_layer(SWEEP_LAYERS[0] - 1)
             record("baseline_nat2alt", *run_condition(model, tok, inj, prop, items, None,
-                   None, 0, "evid", "alt", "base", args.token_budget, args.batch_cap))
-            for L in SWEEP_LAYERS:
-                set_layer(L - 1)
-                v = torch.tensor(vz["meandiff"][L], dtype=torch.float16)
-                for a in SWEEP_ALPHAS:
-                    record(f"meandiff_evid_L{L}_a{a}", *run_condition(model, tok, inj, prop,
-                           items, v, L - 1, a, "evid", "alt", f"L{L}a{a}",
-                           args.token_budget, args.batch_cap))
+                   None, 0, args.site, "alt", "base", args.token_budget, args.batch_cap), ks)
+            for vsrc in vec_srcs:
+                for L in SWEEP_LAYERS:
+                    set_layer(L - 1)
+                    v = torch.tensor(vz[vsrc][L], dtype=torch.float16)
+                    for a in alphas:
+                        record(f"{vsrc}_{args.site}_L{L}_a{a}", *run_condition(model, tok, inj,
+                               prop, items, v, L - 1, a, args.site, "alt", f"{vsrc}L{L}a{a}",
+                               args.token_budget, args.batch_cap), ks)
         else:
-            sweep = json.load(open(OUT_ROOT / "sweep" / f"{name}.json"))["conditions"]
-            valid = [c for c in sweep if c.startswith("meandiff")
+            sweep = json.load(open(out_dir.parent / ("sweep" if args.site == "evid" else "sweep_cue")
+                                   / f"{name}.json"))["conditions"]
+            valid = [c for c in sweep if any(c.startswith(v) for v in vec_srcs)
                      and not np.isnan(sweep[c]["adherence_tgt"])]
             if valid:
                 best = max(valid, key=lambda c: sweep[c]["adherence_tgt"])
+                vsrc = best.split("_")[0]
                 L = int(best.split("_L")[1].split("_")[0])
                 a = float(best.split("_a")[1])
-            else:  # all-nan sweep (near-zero scorable rate): fall back to mid depth
-                best, L, a = "fallback", 10, 4.0
-            res["best_from_sweep"] = {"cond": best, "L": L, "alpha": a}
-            items_n = build_items(name, tok, "nat", n_docs, max_sites)
-            items_a = build_items(name, tok, "alt", n_docs, max_sites)
+            else:
+                best, vsrc, L, a = "fallback", vec_srcs[0], 10, 4.0
+            res["best_from_sweep"] = {"cond": best, "vector": vsrc, "L": L, "alpha": a}
+            items_n = build_items(name, tok, "nat", n_docs, max_sites, require_evid=req_evid)
+            items_a = build_items(name, tok, "alt", n_docs, max_sites, require_evid=req_evid)
+            ks_n, ks_a = [it["k"] for it in items_n], [it["k"] for it in items_a]
             set_layer(L - 1)
-            v = torch.tensor(vz["meandiff"][L], dtype=torch.float16)
+            v = torch.tensor(vz[vsrc][L], dtype=torch.float16)
             cfz = np.load(VEC_DIR / f"{cf_of[name]}.npz")
-            vcf = torch.tensor(cfz["meandiff"][L], dtype=torch.float16)
+            vcf = torch.tensor(cfz[vsrc][L], dtype=torch.float16)
             res["cf_property"] = cf_of[name]
+            S = args.site
+            R = lambda *aa, **kw: run_condition(model, tok, inj, prop, *aa, **kw)
 
-            record("baseline_nat2alt", *run_condition(model, tok, inj, prop, items_n,
-                   None, None, 0, "evid", "alt", "bn", args.token_budget, args.batch_cap))
-            record("meandiff_evid_nat2alt", *run_condition(model, tok, inj, prop, items_n,
-                   v, L - 1, a, "evid", "alt", "mn", args.token_budget, args.batch_cap))
-            record("meandiff_cue_nat2alt", *run_condition(model, tok, inj, prop, items_n,
-                   v, L - 1, a, "cue", "alt", "md", args.token_budget, args.batch_cap))
-            record("cfprop_evid_nat2alt", *run_condition(model, tok, inj, prop, items_n,
-                   vcf, L - 1, a, "evid", "alt", "cf", args.token_budget, args.batch_cap))
-            record("baseline_alt2nat", *run_condition(model, tok, inj, prop, items_a,
-                   None, None, 0, "evid", "nat", "ba", args.token_budget, args.batch_cap))
-            record("meandiff_evid_alt2nat", *run_condition(model, tok, inj, prop, items_a,
-                   -v, L - 1, a, "evid", "nat", "ma", args.token_budget, args.batch_cap))
-            vraw = torch.tensor(vz["rawalt"][L], dtype=torch.float16)
+            record("baseline_nat2alt", *R(items_n, None, None, 0, S, "alt", "bn",
+                   args.token_budget, args.batch_cap), ks_n)
+            record(f"{vsrc}_{S}_nat2alt", *R(items_n, v, L - 1, a, S, "alt", "mn",
+                   args.token_budget, args.batch_cap), ks_n)
+            if S == "evid":   # write-side probe of the read-side vector (legacy condition)
+                record(f"{vsrc}_cue_nat2alt", *R(items_n, v, L - 1, a, "cue", "alt", "md",
+                       args.token_budget, args.batch_cap), ks_n)
+            record(f"cfprop_{S}_nat2alt", *R(items_n, vcf, L - 1, a, S, "alt", "cf",
+                   args.token_budget, args.batch_cap), ks_n)
+            record("baseline_alt2nat", *R(items_a, None, None, 0, S, "nat", "ba",
+                   args.token_budget, args.batch_cap), ks_a)
+            record(f"{vsrc}_{S}_alt2nat", *R(items_a, -v, L - 1, a, S, "nat", "ma",
+                   args.token_budget, args.batch_cap), ks_a)
+            # the other vector source at ITS best sweep setting (comparison)
+            for other in vec_srcs:
+                if other == vsrc:
+                    continue
+                ov = [c for c in valid if c.startswith(other)]
+                if ov:
+                    ob = max(ov, key=lambda c: sweep[c]["adherence_tgt"])
+                    oL = int(ob.split("_L")[1].split("_")[0]); oa = float(ob.split("_a")[1])
+                    set_layer(oL - 1)
+                    record(f"{other}_{S}_nat2alt_best", *R(items_n,
+                           torch.tensor(vz[other][oL], dtype=torch.float16), oL - 1, oa, S,
+                           "alt", "ob", args.token_budget, args.batch_cap), ks_n)
+                    set_layer(L - 1)
+            raw_key = "rawalt" if vsrc == "meandiff" else "rawalt_cue"
+            vraw = torch.tensor(vz[raw_key][L], dtype=torch.float16)
             for ar in (0.5, 1.0, 2.0):
-                record(f"rawalt_evid_nat2alt_a{ar}", *run_condition(model, tok, inj,
-                       prop, items_n, vraw, L - 1, ar, "evid", "alt", f"rw{ar}",
-                       args.token_budget, args.batch_cap))
-            hs_path = HEADSUM_DIR / f"{name}.npz"
+                record(f"{raw_key}_{S}_nat2alt_a{ar}", *R(items_n, vraw, L - 1, ar, S, "alt",
+                       f"rw{ar}", args.token_budget, args.batch_cap), ks_n)
+            hs_dir = HEADSUM_DIR if S == "evid" else HEADSUM_DIR.parent / "sparse_heads_cue"
+            hs_path = hs_dir / f"{name}.npz"
             if hs_path.exists():
                 hz = np.load(hs_path)
                 vh = torch.tensor(hz["v_headsum"], dtype=torch.float16)
+                hL = int(hz["cap_layer"]) if "cap_layer" in hz else L
+                set_layer(hL - 1)
                 for ah in (1.0, 2.0, 4.0, 8.0):
-                    record(f"headsum_evid_nat2alt_a{ah}", *run_condition(model, tok, inj,
-                           prop, items_n, vh, L - 1, ah, "evid", "alt", f"hs{ah}",
-                           args.token_budget, args.batch_cap))
+                    record(f"headsum_{S}_nat2alt_a{ah}", *R(items_n, vh, hL - 1, ah, S, "alt",
+                           f"hs{ah}", args.token_budget, args.batch_cap), ks_n)
         json.dump(res, open(out_path, "w"), indent=1)
     print(f"{args.mode} done", flush=True)
 

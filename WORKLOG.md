@@ -8563,3 +8563,22 @@ Changes (old → new): baseline nat→alt .070→.112; meandiff evid nat→alt .
 .119→.151 (≈ baseline, still clean); reverse baseline alt→nat .262→.143 (the old classifier
 counted out-of-range digits as "reverting to digits"); meandiff reverse .939→.951; rawalt best
 .453→.623; headsum best .721→.662. Headline conclusions for num_words unchanged.
+
+## 2026-09-02 — CUE-token steering = the write-feature analog (user-directed)
+
+Pipeline (steer_adherence/capture_head_means/train_sparse_heads_props --site cue; plot_steering_cue.py):
+cue-site layer×dose sweep with two vector sources (cue-derived = mean cue-token act alt−nat, identity-
+matched positions; evidence-derived), all cue tokens incl. k=0 (zero-shot analog); per-head means AT
+THE CUE; gates trained with v(c) injected at the cue; full eval with cf-property control, reverse
+direction, raw mean, cue-trained head-sum. Results results/style_properties/steering/cue/.
+- Cue-derived vector at the cue: 12/13 props 0.90–1.00 (curly_quotes .65, evidence-derived vector
+  best there) from baselines ≤.21; cf controls at baseline (contractions .32 vs base .21 the only
+  leak; two cf cells unscorable); reverse .71–1.0 for all 13. Best layers L6–L20, mostly L16–20
+  (mid-late) with α 16–32 — the write side sits deeper than the read side (evid-site peaks L2–L12).
+- Raw alt-mean at the cue fails (≤.35) — difference vector is the object, as at the evidence site.
+- Cue-trained sparse heads: genuinely SPARSE (19–167 heads, median ~53; evid-site gave 69–196) and
+  steer .77–1.0 for 12/13 (curly .51). Overlap with the 37 ICL FV heads ≈ 2× chance for most
+  (e.g. contractions 8 vs 2.4 expected; num_words 15 vs 5.8; percent 7 vs 2.2) — unlike the
+  evid-site selection (≈ chance).
+Bottom line: a property vector written at the cue token behaves like a function vector — the
+free-text write feature exists, is late-mid-layer, sparse-head-decomposable, and specific.

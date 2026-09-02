@@ -34,13 +34,17 @@ def parse_args():
     p.add_argument("--props", nargs="*", default=None)
     p.add_argument("--model_name", default="EleutherAI/gpt-j-6b")
     p.add_argument("--batch_size", type=int, default=8)
+    p.add_argument("--site", choices=("evid", "cue"), default="evid",
+                   help="evid = mean over evidence-token spans; cue = the cue token "
+                        "(FV convention: head outputs at the cue)")
     return p.parse_args()
 
 
 def main():
     args = parse_args()
     props = args.props or sorted(json.load(open(POOL_PATH))["pass"])
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_dir = OUT_DIR if args.site == "evid" else OUT_DIR.parent / "head_means_cue"
+    out_dir.mkdir(parents=True, exist_ok=True)
     model, tokenizer, mc = load_gpt_model_and_tokenizer(args.model_name)
     n_layers, n_heads = mc["n_layers"], mc["n_heads"]
     head_dim = mc["resid_dim"] // n_heads
@@ -48,7 +52,7 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
 
     for name in props:
-        out = OUT_DIR / f"{name}.pt"
+        out = out_dir / f"{name}.pt"
         if out.exists():
             print(f"{name}: exists, skip", flush=True)
             continue
@@ -69,8 +73,11 @@ def main():
                     ids[r, :len(x)] = torch.tensor(x)
                     att[r, :len(x)] = 1
                     for s in d["sites"]:
-                        e0, e1 = s["evid_idx"][pol]
-                        mask[r, e0:e1 + 1] = True
+                        if args.site == "evid":
+                            e0, e1 = s["evid_idx"][pol]
+                            mask[r, e0:e1 + 1] = True
+                        else:
+                            mask[r, s["cue_idx"][pol]] = True
                 mask_d = mask.to(model.device)
                 with torch.no_grad(), TraceDict(model, layers=mc["attn_hook_names"],
                                                 retain_input=True) as td:
@@ -88,7 +95,7 @@ def main():
                     "head_mean_alt": res["alt"],
                     "head_diff": res["alt"] - res["nat"],
                     "n_pos_nat": res["n_pos_nat"], "n_pos_alt": res["n_pos_alt"],
-                    "site": "all evidence tokens (all sites, both twins separately)"}, out)
+                    "site": args.site}, out)
         print(f"{name}: nat_pos={res['n_pos_nat']} alt_pos={res['n_pos_alt']}", flush=True)
     print("head capture done", flush=True)
 
