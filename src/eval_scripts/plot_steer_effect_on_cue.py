@@ -225,7 +225,7 @@ def main():
                     fontweight="bold", ha="center")
     ax.set_xticks(range(len(alphas)), [str(a) for a in alphas], fontsize=12)
     ax.set_xlabel("steering strength α", fontsize=13, color=INK2)
-    ax.set_ylabel("cosine similarity with the task function vector", fontsize=13, color=INK2)
+    ax.set_ylabel(f"cosine similarity with the task function vector\n(layer {LAYER}, final cue token)", fontsize=13, color=INK2)
     ax.set_title("Read feature affects write feature", fontsize=17, fontweight="bold",
                  color=INK, loc="left", pad=14)
     ax.tick_params(colors=INK2, labelsize=11)

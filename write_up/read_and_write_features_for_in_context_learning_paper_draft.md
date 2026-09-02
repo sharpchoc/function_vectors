@@ -146,59 +146,50 @@ v_1 \;=\; \text{top singular direction of } \begin{bmatrix} \hat r_A(5) \\ \hat 
 \quad (\hat r_A(\ell) = r_A(\ell)/\|r_A(\ell)\|),
 $$
 
-where $\hat c(\ell)$ is the **cross-task** carrier direction at layer $\ell$ — the task's own
-mean is never subtracted, only the shared component — and the SVD is over a $3 \times
+where $\hat c(\ell)$ is the **cross-task** carrier direction at layer $\ell$ and the SVD is over a $3 \times
 d_{\mathrm{model}}$ matrix with one row per layer.
 
 ![Read-feature decomposition into shared carrier and task-unique part](../results/69_task_run/bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png)
 
-**Necessity:** At every demonstration target token we project the residual stream onto the
-task's $v_1$ and remove that component (or move it to the cross-task mean; both give the same
-answer). This collapses 6-shot ICL from 0.629 to 0.130, while removing a *counterfactual*
-task's $v_1$ leaves accuracy at baseline (0.632) — a clean double dissociation, which also
-holds at 1 shot (own 0.043 vs counterfactual 0.205, baseline 0.208). Using more of the
-task-unique subspace only sharpens the kill slightly: the full 11-direction basis over layers
-5–15 reaches 0.095 (the rank/band ladder is in Appendix F).
+**Necessity:** At every demonstration target token we ablate the projection of the residual stream onto the
+task's $v_1$. We find that this collapses 1-shot and 6-shot ICL, while removing a counterfactual
+task's $v_1$ leaves accuracy at baseline.
 
 ![Task-unique L5–7 top-1 direction ablation, own vs counterfactual](../results/69_task_run/bottom_up_read_features/ablation/task_unique_top1_L5to7/aggregate_bars.png)
 
 *Ablating one task-unique direction kills the task's own ICL while the counterfactual control
-sits at baseline.* Why not simply ablate the raw mean direction $m_A$ itself? That was our
-first attempt, and it kills ICL non-specifically — the counterfactual control dies too,
-because the shared carrier is load-bearing for every task while carrying no identity. The
-motivation for the task-unique setup, and the full ladder of bases we tried, are in
+sits at baseline.* 
+
+(Why not simply ablate the raw mean direction $m_A$ itself? That was our
+first attempt, but found that the counterfactual control performed equally as well as the specific task - likely because the shared direction contains some relevant computation for general in context learning. The
+motivation for the task-unique setup, and the full list of variations we tried are in
 Appendix F.
 
-**Sufficiency:** We use 6-shot prompts but replace the target tokens with dummy tokens (ICL
-examples keep their real inputs but every target is a bare `_`, so the prompt does not teach
-the task — unsteered accuracy 0.000). We then inject the carrier plus the task's single
-direction at its natural magnitude,
+**Sufficiency:** We use 6-shot prompts but replace the target tokens with dummy tokens (same as the 1 shot setting at the start of Claim 3). We then inject the carrier plus the task's single
+direction at its natural magnitude, $n_A = \langle \bar m_A - c,, v_1\rangle$ (the natural size of that component in the model's own activations),
 
 $$
 u_A \;=\; c + n_A\, v_1,
 $$
 
-scaled by $\alpha$, at every dummy target slot. Every task-specific bit of $u_A$ lives in the
-one direction that the ablation removed; the carrier is identical for all 69 tasks (steering
-with $c$ alone stays ≤ 0.013 at every layer and dose). Swept over injection layers on the
-1-shot scaffold, $u_A$ steers best when injected early (L0–L3 plateau; Appendix I).
-Injected at L0 it reaches **0.570 at $\alpha = 2$ and 0.596 at per-task best $\alpha$** — 95%
-of what six real demonstrations deliver (0.630), and above the full read feature
-$m_A(\mathrm{L6})$ injected at its own layer (0.447; Appendix I).
+$u_A$ is what we inject at every dummy target slot. We sweep steering strength $\alpha$ for for each layer we can inject and report the results of the best one. Swept over injection layers on the
+1-shot dummy prompts, $u_A$ steers best when injected early (L0–L3 plateau, see Appendix I).
+We inject it on 6-shot dummy prompts and find that it recovers 95%
+of what a real 6-shot prompt would achieve, which is significantly higher than the unsteered performance.
 
 ![Steering dummy targets with the read feature: unsteered, steered, real demonstrations](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L0/headline_bars.png)
 
-*The one direction whose removal collapses the task's ICL (0.629 → 0.130) is, on top of a
-task-agnostic carrier, sufficient to restore it (0.000 → 0.596): necessity and sufficiency
-for the same object. Held-out tasks steer better than train (0.615 vs 0.591), so nothing is
-fitted. Other steering vectors built from the read feature — the full mean, its mean-free
-part, the single-direction swap, the task's-own-mean composite — and the carrier-gap analysis
-are in Appendix I.*
+So to recap: 
+1. We decompose the mean layer activations into a shared carrier direction and a task unique direction
+2. Ablating the task unique direction at the target tokens kills task performance
+3. Steering with the combination of the shared carrier direction and the task unique direction can boost task performance.
+
+This shows that by controlling the subspace spanned by the shared carrier direction and the task specific direction, we can acheive bidirectional control - suggesting that this 2D subspace is responsible for the model reading these simple functions in context. We will refer to the acitvations in this 2D subspace as **read features**.
 
 ## Claim 4: Read features are causal for the formation of write features
 
-The same six-slot injection of $u_A$ at L0, but instead of generating, we read the residual
-stream at the final cue token — the site where the write feature forms. As $\alpha$
+So far, we have shown that the model uses read features and write features to learn tasks, but have not studied the relationship between the two. We go back to the six-shot dummy prompts from the previous section and inject $u_A$ at the target tokens, but instead of measuring the model output, we measure the residual
+stream at the final cue token for presence of the write feature (i.e. the task's function vectors). We inject $u_A$ at different strengths, $\alpha$, and observe the change in cosine similarity of the residual stream with the 
 increases, the cue-token representation rotates toward the task's own function vector:
 cosine at L13 rises from 0.18 to 0.42 between $\alpha=0$ and $\alpha=2$. The rotation is
 task-specific — the gain over alignment to a generic all-task FV is positive on 69/69 tasks
@@ -206,7 +197,7 @@ task-specific — the gain over alignment to a generic all-task FV is positive o
 
 ![Cue-token cosine to own FV rising with alpha](../results/69_task_run/read_write_relationship/ctop1/headline_cos_absolute.png)
 
-*Injecting the carrier plus one task-unique direction at the target slots moves the write
+*Cosine between the L13 residual at the final cue token and the task's function vector, as a function of injection strength. Injecting the carrier plus one task-unique direction at the target slots moves the write
 site toward the task's function vector. Finer-grained variants (1-shot scaffold, first-slot
 only) and the same measurement under the raw $m_A(\mathrm{L6})$ injection are in Appendix I.*
 
