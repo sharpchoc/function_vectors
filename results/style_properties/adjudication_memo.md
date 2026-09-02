@@ -87,7 +87,11 @@ IDENTICAL prompts). Fixed in build_datasets (delta-remainder rule) together with
 apostrophe normalization ('’' → "'"), datasets rebuilt, full rerun. Lesson: always keep
 a k=0 identical-prompt cell as a classifier-leak control.
 
-## Prune 2026-09-02 (user decision): ellipsis removed — pool is 15
+## Prunes 2026-09-02 (user decisions): ellipsis + brit_t_past removed — pool is 14
+
+Rule adopted: properties below a **10% scorable floor** are pruned (brit_t_past 5.0%;
+whilst 8.5% already failed the gate; ise_ize at 10.7% stays). Ellipsis was pruned first
+on structural grounds (below):
 
 The ellipsis classifier is one-sided: a continuation scores only when the model produces
 SOME ellipsis ("..." → nat, "…" → alt); a continuation with no ellipsis is discarded as
@@ -100,8 +104,8 @@ classifier needs the construct to appear — reported scorable rates (corrected 
 
 | property | scorable | note |
 |---|---|---|
-| ellipsis | 0.037 | PRUNED |
-| brit_t_past | 0.050 | needs a lexicon verb to appear; thin cells throughout |
+| ellipsis | 0.037 | PRUNED (one-sided classifier) |
+| brit_t_past | 0.050 | PRUNED 2026-09-02 (user decision: <10% scorable floor) |
 | whilst | 0.085 | already failed the gate |
 | ise_ize | 0.107 | needs a lexicon word to appear |
 | us_uk | 0.197 | needs a lexicon word to appear; strong separation where scorable |

@@ -16,7 +16,7 @@ readouts anywhere in reported results.
 | Folder / file | Contents |
 |---|---|
 | `dataset_audit.csv` | Stage A2 tokenization audit: eligible/used docs, sites, decision-token mismatch drops, nat/alt token-count deltas, k coverage. |
-| `behavioral_prescreen/` | Stage A4: sampled adherence by (context polarity, k prior manifestations) and by token distance since last manifestation; `prescreen_summary.csv` with the proposed pass/fail gate. 16/17 properties pass (whilst fails); ellipsis then PRUNED 2026-09-02 (one-sided classifier) → pool of 15. |
+| `behavioral_prescreen/` | Stage A4: sampled adherence by (context polarity, k prior manifestations) and by token distance since last manifestation; `prescreen_summary.csv` with the proposed pass/fail gate. 16/17 properties pass (whilst fails); then PRUNED 2026-09-02: ellipsis (one-sided classifier) and brit_t_past (<10% scorable floor) → pool of 14. |
 | `decodability/` | Stage B: polarity logistic probes over (site role × 29 layers), doc-level splits. Evidence tokens are L0-decodable (token identity — the quantified shortcut); decision and background tokens are exactly 0.5 at L0 (identity-matched control) yet 0.80–1.0 decodable in context. Decision decodability jumps 0.5 → 0.8–1.0 after ONE manifestation. Background decodability persists ≥ 90 tokens for typography/spelling properties and decays to ~0.6 for others — persistent style-state with property-dependent half-life. |
 
 Data: `dataset_files/style_properties/` (base corpus + per-property minimal-pair

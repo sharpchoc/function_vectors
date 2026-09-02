@@ -140,9 +140,9 @@ def main():
             y -= row_h
         y -= 1.0
     fig.text(0.5, 0.03, f"Pool = the {len(pool['pass'])} properties GPT-J demonstrably "
-             "follows in context (behavioral pre-screen); whilst failed the screen, "
-             "ellipsis was pruned (one-sided classifier).", ha="center", fontsize=10,
-             color="#444")
+             "follows in context (behavioral pre-screen); whilst failed the screen; "
+             "ellipsis (one-sided classifier) and brit_t_past (<10% scorable) were pruned.",
+             ha="center", fontsize=10, color="#444")
     fig.savefig(OUT / "property_catalog.png", dpi=150)
     print(OUT / "property_catalog.png")
 
