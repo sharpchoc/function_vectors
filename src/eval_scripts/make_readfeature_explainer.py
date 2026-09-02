@@ -32,7 +32,10 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, TASK69_RUN_DIR  # noqa: E402
 
-ACTS = ARTIFACTS_ROOT / "69_task_run" / "label_avg10_L5-15_acts"
+import os
+_BANKA = os.environ.get("BANKA") == "1"
+ACTS = (ARTIFACTS_ROOT / "69_task_run" / "bottom_up_ablation" / "bankA" / "actsfmt"
+        if _BANKA else ARTIFACTS_ROOT / "69_task_run" / "label_avg10_L5-15_acts")
 SPLIT = REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"
 OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "ablation" / "explainer_visuals"
 LAYER = 6
