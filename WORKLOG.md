@@ -302,6 +302,19 @@ empty "## Terminology" heading that sat between Setup and §1. Glossary untouche
 
 **Note:** the draft's Setup and Appendix A write the head-vector mean as $\bar h_A$; the glossary
 (and the new Terminology section) use plain $h_A$. Not changed — flagged for the user to adjudicate.
+## 2026-09-01 — Headline ablation object → L5–7 top-1 direction (user decision)
+
+**Owner:** Claude Code background agent, main checkout. **Status:** DONE. Claim 3 necessity now
+leads with the single L5–7 top-1 direction (own .130 / cf .632 @6-shot; .043 / .205 @1-shot;
+~79% of ICL removed), figure → task_unique_top1_L5to7/aggregate_bars.png, claims-table row 3
+and App F bold row updated; 11-dir (.095) etc. kept as ladder comparisons. Explainer
+/workspace/read_feature_explainer.md §3 rewritten accordingly. Also fixed: bank-(a) deliverables
+had been left uncommitted in the worktree at the first merge (main showed bank-b figures) — now
+committed, merged (3 binary conflicts → bank-a), re-rendered from merged scripts, pushed. Reverted
+an over-eager `git add -A` that had staged another session's style-properties WIP.
+
+---
+
 ## 2026-09-01 — Bank-(a) standardised: deliverables + paper draft updated, branch merged
 
 **Owner:** Claude Code background agent, main checkout (worktree guard lifted by user;

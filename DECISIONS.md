@@ -14,6 +14,10 @@
 - Canonical artifacts: bases in `bottom_up_ablation/bankA/`, eval runs in `bankA_*` subdirs,
   per-prompt X in `label_resid_perprompt/`. Plot scripts take `BANKA=1` to read them; the
   results/ deliverables are regenerated from bank (a) as of 2026-09-01.
+- **Headline ablation object (user decision 2026-09-01): the L5–7 top-1 task-unique direction**
+  (`bankA/L5to7_top1_bases.pt`) — the same $v_1$ the composite steering vector boosts, so
+  necessity and sufficiency are stated for one direction. The 11-dir/top-3/top-1 (L5–15) and
+  L6–9 variants stay in the App F ladder as comparisons.
 - Not yet re-run under (a): App G's detailed ridge sub-analyses (seed splits, centroid
   decomposition, oracle) and App I's carrier-gap hypothesis tests — marked with convention
   notes in the draft.

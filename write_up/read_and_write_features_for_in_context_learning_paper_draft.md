@@ -58,10 +58,10 @@ shown there. The rest of the claims are to our knowledge novel.
 |---|---|---|---|
 | 1 | General write features exist at middle layers and are low dimensional per-task | A single vector can steer models to perform the task on zero shot prompts with peak accuracy when injected in middle layers (shown in Todd et al. 2024). The 37 heads selected from train tasks only, can be used to form function vectors for 14 never-seen tasks' accuracy from 0.09 to 0.73 (same as train tasks' accuracy uplift to 0.75). | Claim 1 |
 | 2 | Read features exist at early layers | Write features are linearly decodable from single target-token activations at early layers (held-out $R^2$ up to 0.688) | Claim 2 |
-| 3 | Read features are causal and low dimensional per-task | We can achieve bidirectional control on task performance using 2 directions per task. Sufficiency: Injecting $m_A$ in dummy prompts recovers 70% of real prompt accuracy. Neccesity: ablating a 2-direction task-unique basis kills ICL (accuracy drops from 0.629 to 0.095) | Claim 3 |
+| 3 | Read features are causal and low dimensional per-task | We can achieve bidirectional control on task performance using 2 directions per task. Sufficiency: Injecting $m_A$ in dummy prompts recovers 70% of real prompt accuracy. Neccesity: ablating one task-unique direction kills ICL (accuracy drops from 0.629 to 0.130) | Claim 3 |
 | 4 | Read features are causal for the formation of write features | Label token injection steers the cue representation toward the task's own $v_A$ (cos 0.18 → 0.37) | Claim 4 |
 | 5 | Read features appear earlier than write features | Read feature cosine similarity peaks at target tokens, L6 (cos 0.80). Write feature cosine similarity peaks at cue tokens, L13. | Claim 5 |
-| 6 | Read features linearly map to write features | Training a linear map on a set of train tasks predicts held-out tasks' mpaping ($R^2 \approx 0.7$). | Claim 6 |
+| 6 | Read features linearly map to write features | Training a linear map on a set of train tasks predicts held-out tasks' mpaping ($R^2 \approx 0.64$). | Claim 6 |
 | 7 | Write-feature presence predicts task accuracy | Presence at the cue token and task accuracy rise together (median Spearman ρ +0.96) | Claim 7 |
 
 ## The dataset
@@ -154,19 +154,20 @@ part $u_A$ is what distinguishes tasks.
 ![Read-feature decomposition into shared carrier and task-unique part](../results/69_task_run/bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png)
 
 The ablation then removes only the task-unique
-subspace: the task's 11-direction basis formed from the L5–15 target-token means after
-removing each layer's cross-task mean direction (orthonormalised; effective rank ≈ 1.4).
+part, and only one direction of it: the top singular direction of the task's L5–7
+target-token means after removing each layer's cross-task mean direction (unit-normed
+residuals; this single direction carries ~88% of their energy).
 
-Ablating this basis at demo target tokens collapses 6-shot ICL from 0.629 to 0.095, while
-ablating a *counterfactual* task's basis leaves accuracy exactly at baseline (0.629) — a
-clean double dissociation, which also holds at 1 shot (own 0.035 vs counterfactual 0.202,
-baseline 0.208). The necessary object is genuinely low-rank: the top-3 SVD compression of
-the basis is a drop-in match (0.099), the top single direction alone removes ~77% of ICL
-(0.146), and restricting the basis to layers 6–9 nearly suffices (0.135).
+Ablating this one direction at demo target tokens collapses 6-shot ICL from 0.629 to 0.130,
+while ablating a *counterfactual* task's direction leaves accuracy at baseline (0.632) — a
+clean double dissociation, which also holds at 1 shot (own 0.043 vs counterfactual 0.205,
+baseline 0.208). Using more of the task-unique subspace only sharpens the kill: the full
+11-direction basis over layers 5–15 reaches 0.095, its top-3 SVD compression 0.099, and its
+single top direction 0.146 (the full rank/band ladder is in Appendix F).
 
-![Task-unique 11-direction ablation, own vs counterfactual](../results/69_task_run/bottom_up_read_features/ablation/task_unique_11dir/aggregate_bars.png)
+![Task-unique L5–7 top-1 direction ablation, own vs counterfactual](../results/69_task_run/bottom_up_read_features/ablation/task_unique_top1_L5to7/aggregate_bars.png)
 
-*Ablating the task-unique basis kills the task's own ICL while the counterfactual control
+*Ablating the task-unique direction kills the task's own ICL while the counterfactual control
 sits exactly at baseline.* Why not simply ablate the raw mean direction $m_A$ itself? That
 was our first attempt, and it kills ICL non-specifically — the counterfactual control dies
 too, because the shared carrier is load-bearing for every task while carrying no identity.
@@ -619,11 +620,11 @@ band-restricted variant.
 | Rank-1 (unit L6 read dir) | 0.567 | 0.623 | 0.009 | 0.278 |
 | Rank-5 (uncentered PCs) | 0.503 | 0.620 | 0.004 | 0.222 |
 | Centered-5 PCs | 0.545 | 0.625 | 0.393 | 0.550 |
-| **Task-unique 11-dir (L5–15)** | **0.095** | **0.629** | 0.080 | 0.604 |
+| Task-unique 11-dir (L5–15) | 0.095 | 0.629 | 0.080 | 0.604 |
 | — top-3 SVD | 0.099 | 0.629 | 0.089 | 0.608 |
 | — top-1 direction | 0.146 | 0.630 | 0.145 | 0.611 |
 | — top-3, L6–9 band only | 0.135 | 0.630 | 0.127 | 0.611 |
-| — top-1, L5–7 band only | 0.130 | 0.632 | 0.119 | 0.614 |
+| **— top-1, L5–7 band only (main-text object)** | **0.130** | **0.632** | 0.119 | 0.614 |
 | Attention-mask control | 0.046 | | | |
 
 Readings: (1) uncentered bases can't separate own from counterfactual in zero mode because
