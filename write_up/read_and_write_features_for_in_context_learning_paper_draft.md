@@ -173,7 +173,9 @@ u_A \;=\; c + n_A\, v_1,
 $$
 
 $u_A$ is what we inject at every dummy target slot. We sweep steering strength $\alpha$ for for each layer we can inject and report the results of the best one. Swept over injection layers on the
-1-shot dummy prompts, $u_A$ steers best when injected early (L0–L3 plateau, see Appendix I).
+1-shot dummy prompts, $u_A$ steers best when injected early (L0–L3 plateau, see Appendix I) — earlier
+than the L5–7 band it was built from; injecting at L5–7 instead still steers, at a modest
+cost (Appendix I, "injection layer").
 We inject it on 6-shot dummy prompts and find that it recovers 95%
 of what a real 6-shot prompt would achieve, which is significantly higher than the unsteered performance.
 
@@ -779,6 +781,27 @@ vector composition) and $c + 2 n_A v_1$ (to match $w_A$'s $v_1$ dose).
 ![All read-feature steering vectors on the 6-shot dummy scaffold](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L0/sixshot_bars.png)
 
 ![$u_A$ injection-layer sweep, 1-shot](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sweep_layer_curve.png)
+
+**Injection layer (6-shot, $u_A$).** The 1-shot sweep picks L0–L3, but $u_A$ is built from
+L5–7 activations, so we also injected it at each of L5, L6 and L7 on the 6-shot scaffold
+(same vector, same prompts, same readout):
+
+| injection layer | $\alpha=2$ | $\alpha=4$ | per-task best $\alpha$ |
+|---|---:|---:|---:|
+| L0 (main text) | 0.570 | 0.562 | 0.596 |
+| L1 | 0.568 | 0.567 | 0.593 |
+| L5 | 0.457 | 0.500 | 0.507 |
+| L6 | *(pending)* | *(pending)* | *(pending)* |
+| L7 | *(pending)* | *(pending)* | *(pending)* |
+
+Two readings. First, early injection is genuinely better — L5 costs ~0.07 at the best fixed
+dose (0.500 vs 0.570) and ~0.09 at per-task best — but the penalty is much smaller than the
+1-shot sweep suggested (L5 was ~30% below L0 there): six steered slots saturate the effect.
+Second, the preferred dose shifts with depth (α=2 at L0, α=4 at L5), consistent with a fixed
+vector needing more push the fewer blocks remain to process it. Even injected in its own
+band, $u_A$ beats the full read feature $m_A(\mathrm{L6})$ injected at L6 (0.447), so the
+vector's advantage is not only an early-injection effect. Source:
+`steering_results/ctop1/sixshot_L{0,1,5,6,7}/` and `sixshot_by_layer.png`.
 
 **The carrier gap.** The task-unique part alone recovers about three quarters of full-vector
 steering (0.339 vs 0.447) while the carrier alone does nothing; the code side compresses to
