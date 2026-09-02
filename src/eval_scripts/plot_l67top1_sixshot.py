@@ -27,9 +27,12 @@ from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 import os
 _SUF = os.environ.get("L67_SUFFIX", "")          # "" (bank b) or "_bankA"
-AR = ARTIFACTS_ROOT / "69_task_run" / ("l67top1_steering" + _SUF) / "sixshot"
+_NAME = os.environ.get("L67_NAME", "l67top1_steering" + _SUF)   # artifact dir
+_OUTN = os.environ.get("L67_OUT", "l67top1" + _SUF)             # results subdir
+AR = ARTIFACTS_ROOT / "69_task_run" / _NAME / "sixshot"
 REF = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering" / "sixshot_dummy"
-OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / ("l67top1" + _SUF)
+OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / _OUTN
+WA_CSV = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / "l67top1_bankA" / "sixshot_summary.csv"
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
 
 
