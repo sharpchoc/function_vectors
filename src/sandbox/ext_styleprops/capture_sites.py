@@ -5,12 +5,12 @@ One forward pass per (property, polarity, doc) with output_hidden_states=True; g
 29 layers (index 0 = the token embedding — GPT-J adds no absolute position embeddings,
 so layer 0 is the exact identity baseline; 1..28 = block outputs) at three site roles:
   evid — mean over each opportunity's evidence-token span
-  dec  — the site's decision token (identity-matched across twins; id re-asserted here)
+  cue  — the site's cue token (identity-matched across twins; id re-asserted here)
   bg   — identity-matched background tokens between manifestations (state probes)
 
 Output (resumable per property × polarity):
   artifacts/style_properties/site_acts/<prop>__<pol>.npz
-    acts [N, 29, 4096] fp16; role (0/1/2 = evid/dec/bg), doc, k, dist [N]; doc_ids
+    acts [N, 29, 4096] fp16; role (0/1/2 = evid/cue/bg), doc, k, dist [N]; doc_ids
 """
 import argparse
 import json
@@ -29,7 +29,7 @@ from src.sandbox.ext_styleprops.prescreen_adherence import load_model
 
 PROPS_DIR = REPO_ROOT / "dataset_files" / "style_properties" / "props"
 POOL_PATH = REPO_ROOT / "task_splits" / "style_properties_pool.json"
-ROLE = {"evid": 0, "dec": 1, "bg": 2}
+ROLE = {"evid": 0, "cue": 1, "bg": 2}
 
 
 def parse_args():
@@ -78,10 +78,10 @@ def main():
                         e0, e1 = s["evid_idx"][pol]
                         acts.append(hs[r, e0:e1 + 1].mean(0).half().cpu())
                         meta.append((ROLE["evid"], di, s["k"], s["dist"][pol]))
-                        dec = s["dec_idx"][pol]
-                        assert idlists[r][dec] == s["dec_tok_id"]
-                        acts.append(hs[r, dec].half().cpu())
-                        meta.append((ROLE["dec"], di, s["k"], s["dist"][pol]))
+                        cue = s["cue_idx"][pol]
+                        assert idlists[r][cue] == s["cue_tok_id"]
+                        acts.append(hs[r, cue].half().cpu())
+                        meta.append((ROLE["cue"], di, s["k"], s["dist"][pol]))
                     for g in d["bg"]:
                         j = g["tok_idx"][pol]
                         assert idlists[r][j] == g["tok_id"]

@@ -1,14 +1,14 @@
 #!/usr/bin/env python
-"""Stage A4 behavioral pre-screen: sampled adherence at style-property decision points.
+"""Stage A4 behavioral pre-screen: sampled adherence at style-property cue tokens.
 
 For every (property, context polarity, doc, site): the prompt is the polarity twin's
-text truncated AFTER the site's decision token (the point of no return, identity-matched
+text truncated AFTER the site's cue token (the point of no return, identity-matched
 across twins); readout is ONE T=1 seeded sampled continuation (repo readout convention —
 sixshot_dummy protocol; user decision 2026-09-01: sampled adherence is the ONLY readout).
 The continuation is classified nat / alt / unscorable by the property's loose classifier
 with a strict expected-continuation prefix match as fallback.
 
-Positions are tokenizer-verified: the doc is re-tokenized here and the stored decision
+Positions are tokenizer-verified: the doc is re-tokenized here and the stored cue
 token id is asserted (DECISIONS 2026-07-13).
 
 Output: artifacts/style_properties/prescreen/<prop>.json (resumable per property)
@@ -72,11 +72,11 @@ def build_items(prop_name, tok):
         ids = {pol: tok(d[f"text_{pol}"]).input_ids for pol in ("nat", "alt")}
         for s in d["sites"]:
             for pol in ("nat", "alt"):
-                dec = s["dec_idx"][pol]
-                assert ids[pol][dec] == s["dec_tok_id"], \
-                    f"{prop_name}/{d['doc_id']}/k{s['k']}/{pol}: decision token mismatch"
+                cue = s["cue_idx"][pol]
+                assert ids[pol][cue] == s["cue_tok_id"], \
+                    f"{prop_name}/{d['doc_id']}/k{s['k']}/{pol}: cue token mismatch"
                 items.append({
-                    "ids": ids[pol][:dec + 1],
+                    "ids": ids[pol][:cue + 1],
                     "max_new": s["max_new"],
                     "doc_id": d["doc_id"], "k": s["k"], "dist": s["dist"][pol],
                     "pol": pol, "exp": s["exp"][f"{pol}_ctx"],

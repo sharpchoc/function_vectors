@@ -2,9 +2,9 @@
 """Build the minimal-pair style-property datasets from the base corpus (Stage A1+A2).
 
 Per property: render each eligible base doc under both polarities (nat / alt), locate
-every opportunity site's decision token and evidence tokens in BOTH twins via the fast
+every opportunity site's cue token and evidence tokens in BOTH twins via the fast
 tokenizer's offset mapping (tokenizer-verified positions — DECISIONS 2026-07-13), and
-keep only sites whose decision token is IDENTICAL across the twin pair (the identity-
+keep only sites whose cue token is IDENTICAL across the twin pair (the identity-
 matched "point of no return"). Sites are annotated with k (# prior manifestations) and
 token distance since the last one.
 
@@ -41,7 +41,7 @@ MIN_SITES = {
 }
 MAX_DOCS = 200
 MAX_SITES = 8          # sites scored per doc (all opps are still rendered)
-MIN_PREFIX_TOKS = 12   # a decision point needs some context before it
+MIN_PREFIX_TOKS = 12   # a cue token needs some context before it
 
 
 def token_spans(tok, text):
@@ -55,7 +55,7 @@ def evid(offs, span):
 
 
 def locate_common(offs_n, span_n, offs_a, span_a, div):
-    """Decision token pair: the latest token end that is a token boundary in BOTH twins,
+    """Cue token pair: the latest token end that is a token boundary in BOTH twins,
     at or before the divergence char, in shared-prefix coordinates (delta = char offset
     relative to the opp span start; chars at the same delta < div are identical across
     twins by construction). Handles BPE merges that differ between the twins, e.g. ',\"'
@@ -73,7 +73,7 @@ def locate_common(offs_n, span_n, offs_a, span_a, div):
 def build_property(prop, docs, tok):
     out_docs, audit = [], {
         "n_docs_eligible": 0, "n_docs_used": 0, "n_sites": 0,
-        "dropped_dec_mismatch": 0, "dropped_short_prefix": 0,
+        "dropped_cue_mismatch": 0, "dropped_short_prefix": 0,
         "tok_delta": [], "opps_redetect_mismatch": 0,
     }
     for d in docs:
@@ -94,18 +94,18 @@ def build_property(prop, docs, tok):
         sites, last_ev = [], {"nat": None, "alt": None}
         for i, o in enumerate(opps):
             sn, sa = nat_spans[i], alt_spans[i]
-            dec_n, dec_a = locate_common(off_n, sn, off_a, sa, o.div)
+            cue_n, cue_a = locate_common(off_n, sn, off_a, sa, o.div)
             ev_n, ev_a = evid(off_n, sn), evid(off_a, sa)
             keep = True
-            if dec_n is None or dec_a is None or ids_n[dec_n] != ids_a[dec_a]:
-                audit["dropped_dec_mismatch"] += 1
+            if cue_n is None or cue_a is None or ids_n[cue_n] != ids_a[cue_a]:
+                audit["dropped_cue_mismatch"] += 1
                 keep = False
-            elif min(dec_n, dec_a) < MIN_PREFIX_TOKS:
+            elif min(cue_n, cue_a) < MIN_PREFIX_TOKS:
                 audit["dropped_short_prefix"] += 1
                 keep = False
             if keep and len(sites) < MAX_SITES:
-                cs_n, cs_a = off_n[dec_n][1], off_a[dec_a][1]
-                # inconsistent expected continuation: when the decision boundary sits
+                cs_n, cs_a = off_n[cue_n][1], off_a[cue_a][1]
+                # inconsistent expected continuation: when the cue boundary sits
                 # INSIDE the opp span (delta>0), it is the other rendering's REMAINDER
                 # from delta, not the full rendering (delta <= div, so the skipped chars
                 # are shared between renderings).
@@ -120,11 +120,11 @@ def build_property(prop, docs, tok):
                                for side in exp.values() for v in side.values())
                 sites.append({
                     "k": i,
-                    "dec_idx": {"nat": dec_n, "alt": dec_a},
-                    "dec_tok_id": ids_n[dec_n],
+                    "cue_idx": {"nat": cue_n, "alt": cue_a},
+                    "cue_tok_id": ids_n[cue_n],
                     "evid_idx": {"nat": [ev_n[0], ev_n[-1]], "alt": [ev_a[0], ev_a[-1]]},
-                    "dist": {"nat": dec_n - last_ev["nat"] if last_ev["nat"] is not None else -1,
-                             "alt": dec_a - last_ev["alt"] if last_ev["alt"] is not None else -1},
+                    "dist": {"nat": cue_n - last_ev["nat"] if last_ev["nat"] is not None else -1,
+                             "alt": cue_a - last_ev["alt"] if last_ev["alt"] is not None else -1},
                     "exp": exp,
                     "max_new": min(exp_toks + 4, prop.max_new_cap),
                 })
@@ -220,7 +220,7 @@ def main():
         row = {
             "property": name, "docs_eligible": a["n_docs_eligible"],
             "docs_used": a["n_docs_used"], "sites": a["n_sites"],
-            "dropped_dec_mismatch": a["dropped_dec_mismatch"],
+            "dropped_cue_mismatch": a["dropped_cue_mismatch"],
             "dropped_short_prefix": a["dropped_short_prefix"],
             "redetect_mismatch_docs": a["opps_redetect_mismatch"],
             "mean_tok_delta": round(float(np.mean(a["tok_delta"])), 2) if a["tok_delta"] else 0,

@@ -46,7 +46,7 @@ CHAT_TEMPLATE_TRANSFER_DIR = RESULTS_ROOT / "chat_template_transfer"
 QWEN25_FV_DIR = RESULTS_ROOT / "qwen25_fv"
 
 # Live new research branch (2026-09-01): free-form style-property extension of the
-# read/write-feature line (evidence/decision sites in free text, GPT-J,
+# read/write-feature line (evidence/cue sites in free text, GPT-J,
 # sampled-adherence readout). See results/style_properties/README.md + adjudication memo.
 STYLE_PROPERTIES_DIR = RESULTS_ROOT / "style_properties"
 

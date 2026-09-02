@@ -4,7 +4,7 @@
 Two panels (us_uk and sentence_caps), each showing the nat/alt minimal-pair twins
 tokenized with the real GPT-J tokenizer, with the actual site machinery
 (properties.find_opps / render, build_datasets.locate_common / evid) marking
-evidence tokens, decision tokens, and background tokens. Purely conceptual —
+evidence tokens, cue tokens, and background tokens. Purely conceptual —
 no measured numbers (mechanism-diagram convention).
 
 Output: results/style_properties/explainer_visuals/terminology_example.png
@@ -35,7 +35,7 @@ EXAMPLES = {
 }
 
 C_EVID = "#f4a261"   # evidence
-C_DEC = "#e63946"    # decision
+C_CUE = "#e63946"    # cue
 C_BG = "#a8dadc"     # background
 C_PLAIN = "#e9ecef"
 
@@ -56,13 +56,13 @@ def draw_panel(ax, tok, prop_name, base_text):
     # site machinery, exactly as the datasets are built
     sites = []
     for i, o in enumerate(opps):
-        dec_n, dec_a = locate_common(off_n, nat_spans[i], off_a, alt_spans[i], o.div)
-        sites.append(dict(k=i, dec=(dec_n, dec_a),
+        cue_n, cue_a = locate_common(off_n, nat_spans[i], off_a, alt_spans[i], o.div)
+        sites.append(dict(k=i, cue=(cue_n, cue_a),
                           ev=(evid(off_n, nat_spans[i]), evid(off_a, alt_spans[i]))))
 
     char_w = 0.105
     rows = [("nat twin", nat_text, off_n, 1.0, 0), ("alt twin", alt_text, off_a, 0.0, 1)]
-    dec_x = {}
+    cue_x = {}
     for label, text, offs, y, twin in rows:
         x = 0.0
         ax.text(-0.25, y + 0.13, label, ha="right", va="center", fontsize=10,
@@ -71,30 +71,30 @@ def draw_panel(ax, tok, prop_name, base_text):
             tstr = text[s:e]
             w = max(len(tstr), 1) * char_w + 0.06
             color, lw, edge = C_PLAIN, 0.6, "#666666"
-            is_dec = any(st["dec"][twin] == j for st in sites)
+            is_cue = any(st["cue"][twin] == j for st in sites)
             is_ev = any(j in st["ev"][twin] for st in sites)
             if is_ev:
                 color = C_EVID
-            if is_dec:
-                color, lw, edge = "#ffd6d9", 2.2, C_DEC
+            if is_cue:
+                color, lw, edge = "#ffd6d9", 2.2, C_CUE
             ax.add_patch(FancyBboxPatch((x, y), w, 0.26, boxstyle="round,pad=0.015",
                                         fc=color, ec=edge, lw=lw))
             ax.text(x + w / 2, y + 0.13, tstr.replace(" ", "␣"), ha="center",
                     va="center", fontsize=8.5, family="monospace")
-            if is_dec:
-                k = next(st["k"] for st in sites if st["dec"][twin] == j)
-                dec_x.setdefault(k, {})[twin] = x + w
+            if is_cue:
+                k = next(st["k"] for st in sites if st["cue"][twin] == j)
+                cue_x.setdefault(k, {})[twin] = x + w
                 if twin == 0:
                     ax.text(x + w / 2, y + 0.40, f"k={k}", ha="center", fontsize=8,
-                            color=C_DEC, fontweight="bold")
+                            color=C_CUE, fontweight="bold")
             x += w + 0.03
         if twin == 0:
             total_w = x
     # divergence markers + identical-token tie between twins
-    for k, d in dec_x.items():
+    for k, d in cue_x.items():
         if 0 in d and 1 in d:
             ax.plot([d[0] - 0.015, d[1] - 0.015], [1.0 - 0.035, 0.26 + 0.035], ls=":",
-                    color=C_DEC, lw=1.2)
+                    color=C_CUE, lw=1.2)
     ax.set_xlim(-1.6, max(total_w, 0) + 0.2)
     ax.set_ylim(-0.25, 1.62)
     ax.axis("off")
@@ -112,8 +112,8 @@ def main():
     legend = [
         (C_EVID, "evidence token — the property has just manifested here "
                  "(read site; ICL analog: demo label token)"),
-        ("#ffd6d9", "decision token — point of no return: the last token that is IDENTICAL in "
-                    "both twins before they diverge (write site; ICL analog: cue token). "
+        ("#ffd6d9", "cue token — point of no return: the last token that is IDENTICAL in "
+                    "both twins before they diverge (write site — the same term as the ICL cue token). "
                     "Dotted line ties the same token across twins."),
         (C_PLAIN, "other tokens (identity-matched background tokens between manifestations "
                   "are sampled from these for state probes)"),
@@ -124,7 +124,7 @@ def main():
                                          ec="#666666", transform=fig.transFigure))
         fig.text(0.062, y + 0.009, txt, fontsize=8.8, va="center")
         y -= 0.034
-    fig.text(0.045, 0.175, "k = number of prior manifestations before this decision point "
+    fig.text(0.045, 0.175, "k = number of prior manifestations before this cue token "
                            "(the ICL shot-count analog). ␣ marks token-leading spaces.",
              fontsize=8.8)
     fig.suptitle("Style-property site terminology: minimal-pair twins of one base text",

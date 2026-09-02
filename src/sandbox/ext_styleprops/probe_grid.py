@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 """Stage B decodability grid: linear polarity probes over (site role, layer).
 
-Per (property, role in {evid, dec, bg}, layer 0..28): logistic regression nat vs alt on
+Per (property, role in {evid, cue, bg}, layer 0..28): logistic regression nat vs alt on
 the captured activations, split BY BASE DOCUMENT (twins share content — never split
 within a pair; 3 group-shuffle seeds, 30% test). Layer 0 is the token-embedding
 baseline: at evidence sites it quantifies the token-identity shortcut (the R^2=0.245
-lesson); decision and background tokens are identity-matched, so ANY decodability there
+lesson); cue and background tokens are identity-matched, so ANY decodability there
 is contextual state.
 
-Extras: decision-role accuracy by k (prior manifestations) at the best decision layer;
+Extras: cue-role accuracy by k (prior manifestations) at the best cue layer;
 background-role accuracy by token distance since the last manifestation (state decay).
 
 Outputs in results/style_properties/decodability/:
@@ -36,7 +36,7 @@ from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, STYLE_PROPERTIES_DIR
 IN_DIR = ARTIFACTS_ROOT / "style_properties" / "site_acts"
 OUT_DIR = STYLE_PROPERTIES_DIR / "decodability"
 POOL_PATH = REPO_ROOT / "task_splits" / "style_properties_pool.json"
-ROLES = ("evid", "dec", "bg")
+ROLES = ("evid", "cue", "bg")
 N_LAYERS = 29
 SEEDS = 3
 MAX_PER_CLASS = 1200
@@ -112,7 +112,7 @@ def main():
                                   best_acc=round(float(np.nanmax(grid[pi, ri])), 3),
                                   emb_baseline_L0=round(float(grid[pi, ri, 0]), 3)))
             print(prop_rows[-1], flush=True)
-        # k / distance curves (decision and background roles) at their best layers
+        # k / distance curves (cue and background roles) at their best layers
         if np.all(np.isnan(grid[pi, 1])):
             lbest, kc = -1, [np.nan] * 5
         else:
@@ -159,7 +159,7 @@ def main():
         axes[0].plot(range(5), kcurves[name][1], "o-", label=name, alpha=0.7)
         axes[1].plot(range(4), dcurves[name][1], "o-", label=name, alpha=0.7)
     axes[0].set_xlabel("k prior manifestations (4=4+)")
-    axes[0].set_title("decision-token decodability vs k (best dec layer)")
+    axes[0].set_title("cue-token decodability vs k (best cue layer)")
     axes[1].set_xticks(range(4), ["1-15", "16-40", "41-90", "91+"])
     axes[1].set_xlabel("token distance since last manifestation")
     axes[1].set_title("background-token decodability vs distance (best bg layer)")

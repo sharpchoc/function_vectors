@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Style-property steering eval: sampled adherence at decision points under injection.
+"""Style-property steering eval: sampled adherence at cue tokens under injection.
 
 Injection: z <- z + alpha * v[L] additively at chosen positions of the prefix (Injector,
 prefill-only), where v comes from build_steering_vectors.py (meandiff / rawalt) or the
@@ -8,7 +8,7 @@ hidden_states (0=emb, l>=1 = block l-1 output), so the hook goes on block L-1.
 
 Positions: 'evid' = evidence-token spans of all PRIOR manifestation sites in the prefix
 (k>=1 sites only), i.e. read-side steering at the places the property would have been
-read from; 'dec' = the decision token itself (write-side).
+read from; 'cue' = the cue token itself (write-side).
 
 Readout (the only readout, per user decision): ONE T=1 seeded sample per (site,
 condition), classified nat/alt/unscorable by the property classifier; report
@@ -17,7 +17,7 @@ adherence-to-target among scorable.
 Modes:
   sweep — meandiff vector, nat->alt, evid injection, layer x alpha grid, subsampled docs.
   full  — best (L, alpha) per property from the sweep results, then: baseline both
-          directions, meandiff evid/dec both directions, counterfactual-property control,
+          directions, meandiff evid/cue both directions, counterfactual-property control,
           rawalt arm, and (if present) the sparse head-sum vector arm.
 
 Outputs: artifacts/style_properties/steering/{sweep,full}/<prop>.json (resumable).
@@ -67,7 +67,7 @@ def parse_args():
 
 
 def build_items(prop_name, tok, ctx_pol, n_docs, max_sites):
-    """Items = k>=1 sites of the ctx-polarity twin: prefix through the decision token,
+    """Items = k>=1 sites of the ctx-polarity twin: prefix through the cue token,
     with the PRIOR sites' evidence spans as the evid-injection mask."""
     data = json.load(open(PROPS_DIR / f"{prop_name}.json"))
     items = []
@@ -77,17 +77,17 @@ def build_items(prop_name, tok, ctx_pol, n_docs, max_sites):
         for si, s in enumerate(d["sites"]):
             if s["k"] == 0 or kept >= max_sites:
                 continue
-            dec = s["dec_idx"][ctx_pol]
-            assert ids[dec] == s["dec_tok_id"]
+            cue = s["cue_idx"][ctx_pol]
+            assert ids[cue] == s["cue_tok_id"]
             evid_pos = []
             for s2 in d["sites"][:si]:
                 if s2["k"] < s["k"]:
                     e0, e1 = s2["evid_idx"][ctx_pol]
-                    evid_pos.extend(range(e0, min(e1, dec - 1) + 1))
+                    evid_pos.extend(range(e0, min(e1, cue - 1) + 1))
             if not evid_pos:
                 continue
             kept += 1
-            items.append({"ids": ids[:dec + 1], "evid_pos": evid_pos, "dec_pos": dec,
+            items.append({"ids": ids[:cue + 1], "evid_pos": evid_pos, "cue_pos": cue,
                           "max_new": s["max_new"], "doc_id": d["doc_id"], "k": s["k"],
                           "exp": s["exp"][f"{ctx_pol}_ctx"]})
     return items
@@ -108,7 +108,7 @@ def run_condition(model, tok, inj, prop, items, vec, block_layer, alpha, pos_mod
             off = L - lens[r]
             ids[r, off:] = torch.tensor(items[i]["ids"])
             att[r, off:] = 1
-            pos = items[i]["evid_pos"] if pos_mode == "evid" else [items[i]["dec_pos"]]
+            pos = items[i]["evid_pos"] if pos_mode == "evid" else [items[i]["cue_pos"]]
             for p_ in pos:
                 mask[r, off + p_] = True
         inj.mask = mask.cuda() if vec is not None else None
@@ -200,8 +200,8 @@ def main():
                    None, None, 0, "evid", "alt", "bn", args.token_budget, args.batch_cap))
             record("meandiff_evid_nat2alt", *run_condition(model, tok, inj, prop, items_n,
                    v, L - 1, a, "evid", "alt", "mn", args.token_budget, args.batch_cap))
-            record("meandiff_dec_nat2alt", *run_condition(model, tok, inj, prop, items_n,
-                   v, L - 1, a, "dec", "alt", "md", args.token_budget, args.batch_cap))
+            record("meandiff_cue_nat2alt", *run_condition(model, tok, inj, prop, items_n,
+                   v, L - 1, a, "cue", "alt", "md", args.token_budget, args.batch_cap))
             record("cfprop_evid_nat2alt", *run_condition(model, tok, inj, prop, items_n,
                    vcf, L - 1, a, "evid", "alt", "cf", args.token_budget, args.batch_cap))
             record("baseline_alt2nat", *run_condition(model, tok, inj, prop, items_a,

@@ -2,7 +2,7 @@
 
 User decisions already made (2026-09-01, before compute): model = GPT-J-6B only;
 pool = ~15–20 candidates behaviorally pre-screened; readout = **sampled adherence only**
-(T=1 seeded generation, classified at decision points; no logit-diff); first deliverable
+(T=1 seeded generation, classified at cue tokens; no logit-diff); first deliverable
 = pipeline + behavioral pre-screen + decodability grid.
 
 ## Property spec sheet (17 candidates)
@@ -38,7 +38,7 @@ Generator: google/gemini-2.5-flash via OpenRouter, feature-mix instructions in
 
 ## Definitional choices — PROPOSED defaults (user adjudication requested)
 
-1. **Decision-token rule** (new, load-bearing): the decision token pair is the latest
+1. **Cue-token rule** (new, load-bearing): the cue token pair is the latest
    token end, in shared-prefix coordinates relative to the opportunity span, that is a
    token boundary in BOTH twins at or before the nat/alt divergence char, with the token
    ids asserted equal. This backs off BPE merges that differ between twins (e.g. `,"`
@@ -79,7 +79,7 @@ em_dash 1.0 and ellipsis 1.0 (both on thin scorable counts). s at k=0 ≈ 0 ever
 multi-sample scoring: ellipsis (3.7% scorable), brit_t_past (5.0%); curly_quotes has a
 mild k=0 offset (+0.214, ~2.8σ).
 
-**Bug caught by the k=0 control** (first run, discarded): when the decision boundary
+**Bug caught by the k=0 control** (first run, discarded): when the cue boundary
 fell inside the opportunity span, the inconsistent expected-continuation was built as
 the full other rendering instead of its remainder — the strict-fallback classifier could
 then only confirm the context's own polarity (contractions showed s_k0 = 0.949 on

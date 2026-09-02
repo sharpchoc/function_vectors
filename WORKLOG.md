@@ -8286,7 +8286,7 @@ Extension of the read/write-feature line to free-form text: 17 binary style prop
 (sentence_caps, all_caps, us_uk, ise_ize, brit_t_past, whilst, double_space,
 oxford_comma, curly_quotes, em_dash, ellipsis, quote_punct, num_words, percent_sign,
 ordinal_words, contractions, ampersand). Evidence tokens = manifestations (label
-analog); decision token = last token before the nat/alt divergence, identity-matched
+analog); cue token = last token before the nat/alt divergence, identity-matched
 across minimal-pair twins (cue analog). USER DECISIONS 2026-09-01: GPT-J only; ~15-20
 pre-screened properties; SAMPLED ADHERENCE ONLY as readout; descriptive stages first.
 Full design: results/style_properties/adjudication_memo.md (+ plan in session notes).
@@ -8302,7 +8302,7 @@ prescreen_adherence,plot_prescreen}.py; paths.py += STYLE_PROPERTIES_DIR;
 results/style_properties/{README.md,adjudication_memo.md,dataset_audit.csv}.
 
 **Findings/lessons:**
-- Decision-token rule needs a COMMON-BOUNDARY intersection across the twin pair: BPE
+- Cue-token rule needs a COMMON-BOUNDARY intersection across the twin pair: BPE
   merges differ between twins (',"' merges only in the straight-quote twin; the alt
   double-space twin emits a standalone ' ' token). Naive last-token-before-divergence
   dropped 100% of double_space and 55% of curly_quotes sites; the intersection rule
@@ -8327,7 +8327,7 @@ driver run_probe_grid.sh). Deliverables: results/style_properties/decodability/.
 **Findings:**
 - Evidence tokens: L0 (embedding) probe acc = 1.0 -> token-identity shortcut quantified;
   never probe evidence sites for state claims.
-- Decision tokens: L0 acc = 0.5 exactly (identity-matched control holds) but 0.80-1.0
+- Cue tokens: L0 acc = 0.5 exactly (identity-matched control holds) but 0.80-1.0
   from context at best layers; jumps 0.5 -> 0.8-1.0 after ONE manifestation (k-curve),
   mirroring the ICL "labels informative from example 1" result.
 - Background tokens: 0.71-0.99 decodable -> the polarity is carried as PERSISTENT

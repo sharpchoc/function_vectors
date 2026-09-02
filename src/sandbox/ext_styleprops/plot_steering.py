@@ -6,7 +6,7 @@ artifacts/style_properties/sparse_heads/<prop>.npz. Outputs in
 results/style_properties/steering/:
   sweep_heatmaps.png    layer x alpha adherence-to-alt per property (evid injection)
   steering_by_layer.png adherence vs steering layer, one line per dose (simple view)
-  headline_bars.png     per property: baselines vs meandiff (evid/dec), cf control,
+  headline_bars.png     per property: baselines vs meandiff (evid/cue), cf control,
                         rawalt best, headsum best; both directions for meandiff
   steering_summary.csv  the numbers behind the bars
   sparse_heads_summary.csv  heads per property + overlap with the 37 ICL FV heads
@@ -84,7 +84,7 @@ def main():
     for k in range(n, nrow * ncol):
         axes[k // ncol][k % ncol].axis("off")
     fig.suptitle("Layer × dose sweep of the mean-difference steering vector (added at evidence tokens of standard-convention text)\n"
-                 "colour = fraction of T=1 samples following the ALT convention at decision points (panel title: unsteered baseline); "
+                 "colour = fraction of T=1 samples following the ALT convention at cue tokens (panel title: unsteered baseline); "
                  "capture layer 0 = embedding, l = output of block l−1", fontsize=10)
     fig.tight_layout()
     fig.savefig(OUT / "sweep_heatmaps.png", dpi=150)
@@ -129,7 +129,7 @@ def main():
          "#9e9e9e", None, 0),
         ("meandiff_evid_nat2alt", "mean-DIFFERENCE vector (alt − nat evidence-token mean) added at the EVIDENCE tokens",
          "#e63946", None, 1),
-        ("meandiff_dec_nat2alt", "same mean-difference vector, added at the DECISION token only",
+        ("meandiff_cue_nat2alt", "same mean-difference vector, added at the CUE token only",
          "#f4a261", None, 2),
         ("cfprop_evid_nat2alt", "CONTROL: a different property's mean-difference vector at the evidence tokens (should stay near baseline)",
          "#457b9d", "//", 3),

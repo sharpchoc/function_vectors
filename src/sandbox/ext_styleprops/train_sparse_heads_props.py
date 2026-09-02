@@ -8,7 +8,7 @@ head_diff = per-head mean out_proj input at evidence tokens, alt − nat
 
 Objective (differentiable optimizer internals only — the reported readout stays sampled
 adherence): teacher-forced −log p(property-consistent ALT continuation | nat-twin prefix
-through the decision token), with v(c) injected additively at the prefix's prior
+through the cue token), with v(c) injected additively at the prefix's prior
 evidence positions at one block, + lam * ||c||_1.
 
 Selection: c > 0.8, top-10 fallback (repo convention). Head-sum steering vector =

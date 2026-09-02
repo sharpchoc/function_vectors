@@ -205,10 +205,10 @@ def main():
         a.set_title(f"{nm}  ({why})", fontsize=9, color="#c0392b")
     fig3.suptitle("Style-following accuracy vs. number of prior examples "
                   "(GPT-J, T=1 sampling)", fontsize=14, fontweight="bold", y=0.985)
-    fig1.suptitle("Sampled adherence at decision points: fraction of T=1 continuations "
+    fig1.suptitle("Sampled adherence at cue tokens: fraction of T=1 continuations "
                   "classified as the nat pole, under nat-polarity vs alt-polarity context "
                   "(dashed = their difference, the context separation)", fontsize=11)
-    fig2.suptitle("Context separation s = P(nat | nat ctx) − P(nat | alt ctx) at decision "
+    fig2.suptitle("Context separation s = P(nat | nat ctx) − P(nat | alt ctx) at cue "
                   "points, by token distance since the property last manifested", fontsize=11)
     for f_, name_, top in ((fig1, "adherence_by_k.png", 0.96),
                            (fig2, "separation_by_dist.png", 0.96)):

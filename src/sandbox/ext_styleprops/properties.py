@@ -10,17 +10,17 @@ A property provides:
     doc is fully polarity-consistent after rendering regardless of the form it was
     generated with.
   * classify(tail) -> "nat" | "alt" | None: property-level classification of a sampled
-    continuation at a decision point, applied AFTER the strict expected-continuation
+    continuation at a cue token, applied AFTER the strict expected-continuation
     prefix match fails (loose fallback; None = unscorable). Properties without a
     meaningful loose rule return None.
 
 Rendering (render()) applies the opp substitutions and returns the text plus the
-rendered char span of every opp, so downstream code can locate decision/evidence tokens
+rendered char span of every opp, so downstream code can locate cue/evidence tokens
 via fast-tokenizer offset mappings (tokenizer-verified positions — DECISIONS 2026-07-13).
 
 Terminology mapping to the 69-task study: opportunity sites where the property has
 manifested = evidence (read) sites; the last token before a site's nat/alt divergence =
-the decision (write/cue) token, identity-matched across the twin pair by construction.
+the cue (write-site) token, identity-matched across the twin pair by construction.
 """
 import re
 from dataclasses import dataclass, field
