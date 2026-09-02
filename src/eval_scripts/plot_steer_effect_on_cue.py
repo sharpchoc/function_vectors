@@ -237,6 +237,35 @@ def main():
         ax.spines[s].set_color(GRID)
     fig.tight_layout()
     fig.savefig(OUT / "headline_cos_absolute.png", bbox_inches="tight", facecolor=SURFACE)
+    # ---- two-line absolute figure: own-task FV vs generic (all-task mean) FV ----
+    arr_g = at_layer["cos_gen"]
+    fig, ax = plt.subplots(figsize=(8.0, 5.4), dpi=200)
+    fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
+    xs = np.arange(len(alphas))
+    for series, col, lab in ((arr, BLUE, "task's own function vector $v_A$"),
+                             (arr_g, "#6b7280", "generic (all-task mean) function vector")):
+        ax.plot(xs, series.mean(axis=0), "o-", color=col, lw=2.6, ms=9, zorder=4,
+                markeredgecolor=SURFACE, markeredgewidth=1.5, label=lab)
+        for ai in xs:
+            ax.annotate(f"{series[:, ai].mean():.2f}", (ai, series[:, ai].mean()),
+                        textcoords="offset points", xytext=(0, 12 if col == BLUE else -18),
+                        fontsize=11.5, color=col, fontweight="bold", ha="center")
+    ax.set_xticks(xs, [str(a) for a in alphas], fontsize=12)
+    ax.set_xlabel("steering strength α", fontsize=13, color=INK2)
+    ax.set_ylabel(f"cosine similarity at layer {LAYER}, final cue token", fontsize=13, color=INK2)
+    ax.set_title("The rotation is task-specific", fontsize=17, fontweight="bold",
+                 color=INK, loc="left", pad=14)
+    ax.legend(fontsize=11.5, frameon=False, loc="upper left")
+    ax.tick_params(colors=INK2, labelsize=11)
+    ax.grid(True, color=GRID, lw=0.9, zorder=0)
+    ax.set_axisbelow(True)
+    for s_ in ("top", "right"):
+        ax.spines[s_].set_visible(False)
+    for s_ in ("left", "bottom"):
+        ax.spines[s_].set_color(GRID)
+    fig.tight_layout()
+    fig.savefig(OUT / "headline_cos_task_vs_generic.png", bbox_inches="tight", facecolor=SURFACE)
+
     print(f"absolute cos to task FV: " +
           "  ".join(f"a{a}={arr[:, ai].mean():.4f}" for ai, a in enumerate(alphas)))
 
