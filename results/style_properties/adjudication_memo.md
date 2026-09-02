@@ -87,6 +87,34 @@ IDENTICAL prompts). Fixed in build_datasets (delta-remainder rule) together with
 apostrophe normalization ('’' → "'"), datasets rebuilt, full rerun. Lesson: always keep
 a k=0 identical-prompt cell as a classifier-leak control.
 
+## Prune 2026-09-02 (user decision): ellipsis removed — pool is 15
+
+The ellipsis classifier is one-sided: a continuation scores only when the model produces
+SOME ellipsis ("..." → nat, "…" → alt); a continuation with no ellipsis is discarded as
+unscorable instead of counting against adherence. Its 3.7% scorable rate therefore
+measured "which glyph, given the model produced one" and said nothing about whether the
+model adopts the habit. Pruned from the pool (recorded in `plot_prescreen.PRUNED`, so a
+regenerate cannot re-admit it); its artifacts are kept but excluded from pool-driven
+figures. The same structural caveat applies in weaker form to every property whose
+classifier needs the construct to appear — reported scorable rates (corrected run):
+
+| property | scorable | note |
+|---|---|---|
+| ellipsis | 0.037 | PRUNED |
+| brit_t_past | 0.050 | needs a lexicon verb to appear; thin cells throughout |
+| whilst | 0.085 | already failed the gate |
+| ise_ize | 0.107 | needs a lexicon word to appear |
+| us_uk | 0.197 | needs a lexicon word to appear; strong separation where scorable |
+| ordinal_words | 0.268 | needs an ordinal to appear |
+| em_dash | 0.285 | one-sided like ellipsis (needs a dash of either kind); reads 1.0 |
+| ampersand | 0.307 | borderline |
+
+Everything else is ≥0.45 (contractions .45, curly_quotes .49, num_words .55, oxford .63,
+quote_punct .71, percent .73, double_space .79, sentence_caps .95, all_caps .99).
+Interpretive rule: adherence numbers for sub-30% properties are conditional on the model
+choosing to produce the construct at all; the production rate itself (scorable fraction
+by context polarity) is an unreported complementary readout worth adding.
+
 Known limitations to carry forward: ellipsis is low-n (37 docs); oxford_comma, whilst,
 brit_t_past have thin k ≥ 4 cells (29–45 sites/polarity); scorable rates at lexicon
 properties depend on the loose classifier's hit rate (reported per property in the

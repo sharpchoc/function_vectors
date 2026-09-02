@@ -53,7 +53,8 @@ def icl_heads():
 
 
 def main():
-    props = sorted(p.stem for p in (STEER / "full").glob("*.json"))
+    pool_pass = set(json.load(open(REPO_ROOT / "task_splits" / "style_properties_pool.json"))["pass"])
+    props = sorted(p.stem for p in (STEER / "full").glob("*.json") if p.stem in pool_pass)
     OUT.mkdir(parents=True, exist_ok=True)
 
     # sweep heatmaps

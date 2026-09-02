@@ -32,6 +32,14 @@ from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, STYLE_PROPERTIES_DIR
 IN_DIR = ARTIFACTS_ROOT / "style_properties" / "prescreen"
 OUT_DIR = STYLE_PROPERTIES_DIR / "behavioral_prescreen"
 K_BINS = [0, 1, 2, 3, 4]          # last bin = k>=4
+
+# Manual prunes (user decisions) applied on top of the numeric gate. The pool file
+# records the reason so a regenerate can never silently re-admit them.
+PRUNED = {
+    "ellipsis": ("2026-09-02 user prune: one-sided classifier — a continuation only scores "
+                 "when the model produces SOME ellipsis, so 'no ellipsis' is discarded as "
+                 "unscorable instead of counting against adherence; 3.7% scorable."),
+}
 DIST_BINS = [(1, 15), (16, 40), (41, 90), (91, 10_000)]
 
 
@@ -185,10 +193,13 @@ def main():
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)
+    for r in rows:
+        r["pruned"] = r["property"] in PRUNED
     pool = {"description": "style-property pool passing the A4 behavioral pre-screen "
-                           "(gate thresholds: adjudication memo item 4)",
-            "pass": [r["property"] for r in rows if r["PASS"]],
-            "fail": [r["property"] for r in rows if not r["PASS"]]}
+                           "(gate thresholds: adjudication memo item 4) minus manual prunes",
+            "pass": [r["property"] for r in rows if r["PASS"] and not r["pruned"]],
+            "fail": [r["property"] for r in rows if not r["PASS"]],
+            "pruned": PRUNED}
     json.dump(pool, open(REPO_ROOT / "task_splits" / "style_properties_pool.json", "w"),
               indent=2)
     for r in rows:

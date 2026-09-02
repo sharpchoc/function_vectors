@@ -129,12 +129,19 @@ def main():
             draw_hl_text(ax, cols["alt"], y, alt, display_spans(alt, sa), HI["alt"], char_w)
             ax.text(cols["k"], y, kunit, fontsize=9.5, va="center", color="#333")
             ok = name in pool["pass"]
-            ax.text(cols["pool"], y, "yes" if ok else "no (failed)", fontsize=9.5,
-                    va="center", color="#2a9d8f" if ok else "#c0392b")
+            if ok:
+                label = "yes"
+            elif name in pool.get("pruned", {}):
+                label = "no (pruned)"
+            else:
+                label = "no (failed)"
+            ax.text(cols["pool"], y, label, fontsize=9.5, va="center",
+                    color="#2a9d8f" if ok else "#c0392b")
             y -= row_h
         y -= 1.0
-    fig.text(0.5, 0.03, "Pool = the 16 properties GPT-J demonstrably follows in context "
-             "(behavioral pre-screen); whilst was dropped.", ha="center", fontsize=10,
+    fig.text(0.5, 0.03, f"Pool = the {len(pool['pass'])} properties GPT-J demonstrably "
+             "follows in context (behavioral pre-screen); whilst failed the screen, "
+             "ellipsis was pruned (one-sided classifier).", ha="center", fontsize=10,
              color="#444")
     fig.savefig(OUT / "property_catalog.png", dpi=150)
     print(OUT / "property_catalog.png")
