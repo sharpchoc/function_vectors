@@ -49,7 +49,17 @@ def main():
     for name in props:
         fl = json.load(open(STEER / "full_cue" / f"{name}.json"))
         c, b = fl["conditions"], fl["best_from_sweep"]
-        steered_key = f"{b['vector']}_cue_nat2alt"
+        # cue-derived vector only (user decision); if the sweep's overall best was the
+        # evidence-derived vector, the cue-derived one was run at ITS best setting
+        if b["vector"] != "cuediff":
+            sw = json.load(open(STEER / "sweep_cue" / f"{name}.json"))["conditions"]
+            cb = max((k for k in sw if k.startswith("cuediff") and not np.isnan(sw[k]["adherence_tgt"])),
+                     key=lambda k: sw[k]["adherence_tgt"])
+            b = {"vector": "cuediff", "L": int(cb.split("_L")[1].split("_")[0]),
+                 "alpha": float(cb.split("_a")[1])}
+            steered_key = "cuediff_cue_nat2alt_best"
+        else:
+            steered_key = "cuediff_cue_nat2alt"
         recs = json.load(open(PRE / f"{name}.json"))["records"]
         ref = [r for r in recs if r["pol"] == "alt" and r["k"] >= 4 and r["label"]]
         ref_v = float(np.mean([r["label"] == "alt" for r in ref])) if ref else np.nan
@@ -65,7 +75,7 @@ def main():
     x = np.arange(len(trip)); w = 0.27
     ax.bar(x - w, [t[1] for t in trip], w, color="#bdbdbd", label="unsteered (standard-convention text)")
     ax.bar(x, [t[2] for t in trip], w, color="#e63946",
-           label="steered: property vector added at the CUE token only")
+           label="steered: cue-derived property vector added at the CUE token only")
     ax.bar(x + w, [t[3] for t in trip], w, color="#457b9d",
            label="reference: model reading genuine ALT-convention context (k ≥ 4)")
     for xi, t in zip(x, trip):
@@ -87,11 +97,9 @@ def main():
     for pi, name in enumerate(props):
         sw = json.load(open(STEER / "sweep_cue" / f"{name}.json"))["conditions"]
         ax = axes[pi // ncol][pi % ncol]
-        for vsrc, ls in (("cuediff", "-"), ("meandiff", "--")):
-            for a in ALPHAS:
-                ys = [sw.get(f"{vsrc}_cue_L{L}_a{a}", {}).get("adherence_tgt", np.nan) for L in LAYERS]
-                ax.plot(LAYERS, ys, ls, marker="o" if vsrc == "cuediff" else None, ms=3, lw=1.3,
-                        color=ACOL[a], label=f"α={a:g}" if vsrc == "cuediff" else None)
+        for a in ALPHAS:
+            ys = [sw.get(f"cuediff_cue_L{L}_a{a}", {}).get("adherence_tgt", np.nan) for L in LAYERS]
+            ax.plot(LAYERS, ys, "-", marker="o", ms=3, lw=1.3, color=ACOL[a], label=f"α={a:g}")
         ax.axhline(sw["baseline_nat2alt"]["adherence_tgt"], color="#888", ls=":", lw=1, label="unsteered")
         ax.set_title(name, fontsize=10, fontweight="bold")
         ax.set_ylim(-0.03, 1.03); ax.set_xticks(LAYERS); ax.tick_params(labelsize=7); ax.grid(alpha=0.25)
@@ -103,15 +111,14 @@ def main():
         axes[k // ncol][k % ncol].axis("off")
     h, l = axes[0][0].get_legend_handles_labels()
     fig.legend(h, l, loc="lower right", bbox_to_anchor=(0.97, 0.05), fontsize=9,
-               title="dose α — solid: cue-derived vector, dashed: evidence-derived vector")
-    fig.suptitle("Cue-token steering by injection layer (vector added at the cue token only)", fontsize=12)
+               title="dose α (× cue-derived vector)")
+    fig.suptitle("Cue-token steering by injection layer (cue-derived vector added at the cue token only)", fontsize=12)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
     fig.savefig(OUT / "steering_by_layer_cue.png", dpi=150)
 
     # ---- appendix: all cue-site conditions
     show = [("baseline_nat2alt", "unsteered", "#9e9e9e"),
-            ("BEST", "best vector at cue", "#e63946"),
-            ("OTHER", "other vector source at its best", "#f4a261"),
+            ("BEST", "cue-derived vector at cue", "#e63946"),
             ("CF", "control: other property's vector", "#457b9d"),
             ("RAW", "raw alt-mean at cue (best α)", "#2a9d8f"),
             ("HS", "cue-trained head-sum (best α)", "#9b5de5"),
@@ -123,20 +130,21 @@ def main():
         def best_of(prefix):
             ks = [k for k in c if k.startswith(prefix)]
             return max((c[k]["adherence_tgt"] for k in ks), default=np.nan)
+        cue_based = vs == "cuediff"
         vals = {"baseline_nat2alt": c["baseline_nat2alt"]["adherence_tgt"],
-                "BEST": c[f"{vs}_cue_nat2alt"]["adherence_tgt"],
-                "OTHER": best_of(("meandiff" if vs == "cuediff" else "cuediff") + "_cue_nat2alt_best"),
-                "CF": c["cfprop_cue_nat2alt"]["adherence_tgt"],
-                "RAW": best_of("rawalt"), "HS": best_of("headsum"),
+                "BEST": c["cuediff_cue_nat2alt"]["adherence_tgt"] if cue_based
+                        else best_of("cuediff_cue_nat2alt_best"),
+                "CF": c["cfprop_cue_nat2alt"]["adherence_tgt"] if cue_based else np.nan,
+                "RAW": best_of("rawalt_cue") if cue_based else np.nan, "HS": best_of("headsum"),
                 "baseline_alt2nat": c["baseline_alt2nat"]["adherence_tgt"],
-                "REV": c[f"{vs}_cue_alt2nat"]["adherence_tgt"]}
+                "REV": c["cuediff_cue_alt2nat"]["adherence_tgt"] if cue_based else np.nan}
         ax = axes[pi // ncol][pi % ncol]
         for i, (k, lab, col) in enumerate(show):
             v = vals[k]
             if not np.isnan(v):
                 ax.bar(i, v, color=col); ax.text(i, v + 0.02, f"{v:.2f}", ha="center", fontsize=6)
         ax.set_xticks([]); ax.set_ylim(0, 1.12)
-        ax.set_title(f"{name}  ({vs}, L{fl['best_from_sweep']['L']}, α{fl['best_from_sweep']['alpha']:g})", fontsize=8.5)
+        ax.set_title(name + ("" if cue_based else "  (control/reverse not run with cue vector)"), fontsize=8.5)
         if pi % ncol == 0:
             ax.set_ylabel("adherence to target", fontsize=8)
     for k in range(n, nrow * ncol):
