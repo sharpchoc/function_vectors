@@ -66,8 +66,25 @@ def display_spans(text, spans):
     return out
 
 
+CTX = {}   # renderer handle set in main(); used for exact text-width measurement
+
+
+def text_w(ax, s, fs=10.5):
+    """Rendered width of string s in axis units, measured with the real renderer
+    (a trailing sentinel keeps trailing spaces from being dropped)."""
+    inv = ax.transData.inverted()
+
+    def raw(t):
+        obj = ax.text(0, 0, t, family="monospace", fontsize=fs)
+        bb = obj.get_window_extent(renderer=CTX["rend"])
+        obj.remove()
+        return inv.transform((bb.x1, 0))[0] - inv.transform((bb.x0, 0))[0]
+    return raw(s + "|") - raw("|")
+
+
 def draw_text(ax, x0, y0, text, spans, color, char_w, line_h):
-    """Monospace wrap; highlight char spans. Returns lines used."""
+    """Monospace wrap; highlight char spans (positions measured, not estimated).
+    Returns lines used."""
     lines, line_start = [], 0
     for ln in textwrap.wrap(text, WRAP, break_long_words=False, break_on_hyphens=False):
         idx = text.index(ln, line_start)
@@ -75,21 +92,22 @@ def draw_text(ax, x0, y0, text, spans, color, char_w, line_h):
         line_start = idx + len(ln)
     for li, (start, ln) in enumerate(lines):
         y = y0 - li * line_h
+        disp = ln.replace("  ", "␣␣")
         for s, e in spans:
             a, b = max(s, start), min(e, start + len(ln))
             if a < b:
-                ax.add_patch(Rectangle((x0 + (a - start) * char_w, y - 0.3 * line_h),
-                                       (b - a) * char_w, 0.95 * line_h,
+                xa = x0 + text_w(ax, disp[:a - start])
+                xb = x0 + text_w(ax, disp[:b - start])
+                ax.add_patch(Rectangle((xa, y - 0.3 * line_h), xb - xa, 0.95 * line_h,
                                        fc=color, ec="none", zorder=1))
-        ax.text(x0, y, ln.replace("  ", "␣␣"), family="monospace", fontsize=10.5,
-                va="center", zorder=2)
+        ax.text(x0, y, disp, family="monospace", fontsize=10.5, va="center", zorder=2)
     return len(lines)
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     docs = json.load(open(BASE))
-    fig = plt.figure(figsize=(16, 9))
+    fig = plt.figure(figsize=(16, 9), dpi=150)   # measure text at the SAVE dpi (hinting drift otherwise)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set_xlim(0, 100)
     ax.set_ylim(0, 100)
@@ -113,6 +131,7 @@ def main():
     probe.remove()
     char_w = (xb - xa) / 50
     line_h = (yb - ya) * 1.45
+    CTX["rend"] = rend
     col_x = {"nat": 6, "alt": 53}
     y = 82
     used = set()

@@ -75,18 +75,34 @@ def display_spans(text, spans):
     return out
 
 
+CTX = {}   # renderer handle set in main(); used for exact text-width measurement
+
+
+def text_w(ax, s, fs=10.5):
+    """Rendered width of s in axis units via the real renderer (sentinel keeps
+    trailing spaces from being dropped)."""
+    inv = ax.transData.inverted()
+
+    def raw(t):
+        obj = ax.text(0, 0, t, family="monospace", fontsize=fs)
+        bb = obj.get_window_extent(renderer=CTX["rend"])
+        obj.remove()
+        return inv.transform((bb.x1, 0))[0] - inv.transform((bb.x0, 0))[0]
+    return raw(s + "|") - raw("|")
+
+
 def draw_hl_text(ax, x, y, text, spans, color, char_w, fs=10.5):
+    disp = text.replace("  ", "␣␣")
     for s, e in spans:
-        ax.add_patch(Rectangle((x + s * char_w, y - 0.95), (e - s) * char_w, 1.9,
-                               fc=color, ec="none", zorder=1))
-    ax.text(x, y, text.replace("  ", "␣␣"), family="monospace", fontsize=fs, va="center",
-            zorder=2)
+        xa, xb = x + text_w(ax, disp[:s], fs), x + text_w(ax, disp[:e], fs)
+        ax.add_patch(Rectangle((xa, y - 0.95), xb - xa, 1.9, fc=color, ec="none", zorder=1))
+    ax.text(x, y, disp, family="monospace", fontsize=fs, va="center", zorder=2)
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     pool = json.load(open(POOL))
-    fig = plt.figure(figsize=(16, 9))
+    fig = plt.figure(figsize=(16, 9), dpi=150)   # measure text at the SAVE dpi (hinting drift otherwise)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set_xlim(0, 100)
     ax.set_ylim(0, 100)
@@ -105,6 +121,7 @@ def main():
     (xa, _), (xb, _) = inv.transform((bb.x0, bb.y0)), inv.transform((bb.x1, bb.y1))
     probe.remove()
     char_w = (xb - xa) / 50
+    CTX["rend"] = rend
 
     cols = {"name": 2, "nat": 17, "alt": 47, "k": 76, "pool": 90}
     y = 85
