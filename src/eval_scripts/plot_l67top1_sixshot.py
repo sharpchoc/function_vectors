@@ -61,12 +61,21 @@ def main():
     def m(k):
         return float(np.mean([r[k] for r in rows]))
 
+    is_c = _NAME.startswith("ctop1")
+    lay = os.environ.get("L67_SIXSHOT_SUB", "sixshot").replace("sixshot_", "") or "L1"
+    lay = lay if lay.startswith("L") else "L1"
+    vname = "$u_A$" if is_c else "$w_A$"
     bars = [("unsteered\ndummy", m("baseline"), "0.72"),
-            ("full mean\n@L6, best $\\alpha$", m("ref_fullmeanL6_best"), "#0e7c6b"),
-            ("$w_A$ @L1\n$\\alpha$=1", m("a1.0"), "#7c3aad"),
-            ("$w_A$ @L1\nbest $\\alpha$", m("best"), "#7c3aad"),
-            ("real 6-shot\ndemos", m("ref_real6"), "0.35")]
-    fig, ax = plt.subplots(figsize=(7.6, 4.6), dpi=150)
+            ("full mean\n@L6, best $\\alpha$", m("ref_fullmeanL6_best"), "#0e7c6b")]
+    if is_c and WA_CSV.exists():
+        wa_best = float(np.mean([float(r["best"]) for r in csv.DictReader(open(WA_CSV))]))
+        bars.append(("$w_A$ @L1\nbest $\\alpha$", wa_best, "#c2410c"))
+    bars += [(f"{vname} @{lay}\n$\\alpha$=1", m("a1.0"), "#7c3aad"),
+             (f"{vname} @{lay}\n$\\alpha$=2", m("a2.0"), "#9d6ad1") if is_c else None,
+             (f"{vname} @{lay}\nbest $\\alpha$", m("best"), "#7c3aad"),
+             ("real 6-shot\ndemos", m("ref_real6"), "0.35")]
+    bars = [b for b in bars if b is not None]
+    fig, ax = plt.subplots(figsize=(8.8 if is_c else 7.6, 4.6), dpi=150)
     fig.patch.set_facecolor("white"); ax.set_facecolor("white")
     x = np.arange(len(bars))
     for xi, (lab, v, c) in zip(x, bars):
@@ -76,7 +85,7 @@ def main():
     ax.set_xticks(x, [b[0] for b in bars], fontsize=10)
     ax.set_ylim(0, 0.74)
     ax.set_ylabel("task accuracy (mean, 69 tasks)", fontsize=11)
-    ax.set_title("6-shot dummy-target steering: $w_A$ = L6/7 mean + top-1 dir, injected at L1",
+    ax.set_title(("6-shot dummy-target steering: $u_A$ = carrier + $n_A v_1$, injected at " + lay) if is_c else "6-shot dummy-target steering: $w_A$ = L6/7 mean + top-1 dir, injected at L1",
                  fontsize=11.5, loc="left", pad=10)
     ax.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
     for s in ["top", "right"]: ax.spines[s].set_visible(False)

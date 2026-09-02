@@ -302,6 +302,33 @@ empty "## Terminology" heading that sat between Setup and §1. Glossary untouche
 
 **Note:** the draft's Setup and Appendix A write the head-vector mean as $\bar h_A$; the glossary
 (and the new Terminology section) use plain $h_A$. Not changed — flagged for the user to adjudicate.
+## 2026-09-02 — ctop1: carrier + n_A·v1 steering vector (mirrors the ablation object)
+
+**Owner:** Claude Code background agent, main checkout. Pods fv-ctop1-sw{0,1,2} + fv-ctop1-six0
+(4× RTX PRO 4500 $0.72/h, ≈7.6 pod-h ≈ $5.5, all TERMINATED). **Status:** DONE.
+
+**Definition (user-adjudicated 2026-09-02):** mbar_A = mean_{l=5,6,7} m_A(l) (bank a);
+carrier c = 69-task mean of mbar_A (‖c‖ 47.0); v1 = bankA L5to7_top1 (the headline ablation
+direction); n_A = ⟨mbar_A − c, v1⟩ (median −28.2; |⟨c,v1⟩|/‖c‖ ≤ 0.019); **u_A = c + n_A·v1**.
+All task identity rides on the single ablated direction. Protocol = w_A: 1-shot 28-layer
+sweep (α{0.5,1,2,4}, per-task best) → 6-shot at peak; L0/L1 tied (0.195/0.194) so BOTH run.
+
+**Findings (69-task means):** 1-shot sweep peak L0 0.195, plateau L0–3 0.189–0.195 (raw mean
+0.126@L6; w_A 0.220@L1; real 1-shot 0.208); best dose α=2 (shorter vector than w_A). 6-shot:
+@L0 α=2 **0.570**, per-task best **0.596**; @L1 α=2 0.568, best 0.593 — beats w_A (0.584) and
+full mean (0.447), 95% of real 6-shot demos (0.630). Held-out ≥ train throughout. ⇒ the
+direction whose removal kills ICL (own 0.130) is, on top of a task-agnostic carrier,
+sufficient to steer it: exact necessity/sufficiency symmetry for one direction.
+
+**Files:** NEW build_carrier_plus_top1_vectors.py (→ bankA/carrier_plus_top1_vectors.pt),
+run_ctop1_pod.sh; sweep/sixshot runners reused via --vectors_path/--out_root (artifacts
+`69_task_run/ctop1_steering/{<task>.json, sixshot_L0/, sixshot_L1/}`); plot_l67top1_{sweep,
+sixshot}.py generalised (L67_NAME/L67_OUT/L67_SIXSHOT_SUB, w_A overlay/reference bar) →
+`results/69_task_run/bottom_up_read_features/steering_results/ctop1/` (sweep curve+CSV,
+sixshot_L0/, sixshot_L1/ bars+CSVs). Paper draft NOT edited (user to decide placement).
+
+---
+
 ## 2026-09-01 — Headline ablation object → L5–7 top-1 direction (user decision)
 
 **Owner:** Claude Code background agent, main checkout. **Status:** DONE. Claim 3 necessity now
