@@ -44,7 +44,7 @@ except ModuleNotFoundError:  # staged copy outside the repo tree
     from sixshot_dummy_steer import build_items_6shot
 
 ALPHAS = (0.0, 0.5, 1.0, 2.0, 4.0)
-INJECT_LAYER = 6
+INJECT_LAYER = 6   # default; overridden by --inject_layer
 N_LAYERS = 28
 D_MODEL = 4096
 
@@ -62,6 +62,11 @@ def parse_args():
                    help="dummy scaffold: 6 = six '_' slots (original), 1 = the single-'_' "
                         "1-shot scaffold; out_root default gains a _1shot suffix")
     p.add_argument("--out_root", type=Path, default=None)
+    p.add_argument("--vectors_path", type=Path, default=None,
+                   help="fixed per-task steering vectors {tasks:{task:{vec}}} (e.g. the "
+                        "carrier + n_A*v1 bank); overrides --resid_means_root")
+    p.add_argument("--inject_layer", type=int, default=None,
+                   help="block-output layer to inject at (default INJECT_LAYER=6)")
     p.add_argument("--split_path", type=Path,
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_dir", type=Path, default=None)
@@ -117,6 +122,11 @@ def main():
 
     model, tok = load_model(args.model_dir)
     tok.padding_side = "left"
+    global INJECT_LAYER
+    if args.inject_layer is not None:
+        INJECT_LAYER = args.inject_layer
+    fixed = (torch.load(args.vectors_path, map_location="cpu", weights_only=False)["tasks"]
+             if args.vectors_path else None)
     inj = Injector(model, [INJECT_LAYER])
     reader = CueReader(model)
     vg = v_generic.cuda()
@@ -133,8 +143,11 @@ def main():
             items = build_items(task, args.prompts_root, tok)
             for it in items:
                 it["inj_idx_list"] = [it["inj_idx"]]
-        m = torch.load(args.resid_means_root / f"{task}.pt", map_location="cpu",
-                       weights_only=False)["resid_means"][INJECT_LAYER].float().cuda()
+        if fixed is not None:
+            m = fixed[task]["vec"].float().cuda()
+        else:
+            m = torch.load(args.resid_means_root / f"{task}.pt", map_location="cpu",
+                           weights_only=False)["resid_means"][INJECT_LAYER].float().cuda()
         vt = fvs[task].cuda()
         vt_hat = vt / vt.norm()
         n = len(items)

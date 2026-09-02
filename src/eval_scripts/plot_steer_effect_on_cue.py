@@ -34,13 +34,20 @@ import argparse
 _ap = argparse.ArgumentParser()
 _ap.add_argument("--n_shots", type=int, default=6, choices=(1, 6),
                  help="which capture to summarise: 6 (original) or the 1-shot variant")
-_NS = _ap.parse_args().n_shots
+_ap.add_argument("--variant", default="mean", choices=("mean", "ctop1"),
+                 help="mean = α·m_A(L6) at L6 (original); ctop1 = α·u_A (carrier + n_A v1) at L0")
+_args = _ap.parse_args()
+_NS = _args.n_shots
 _SUF = "" if _NS == 6 else "_1shot"
-AR = ARTIFACTS_ROOT / "69_task_run" / ("mean_read_steering_effect_on_write" + _SUF)
-OUT = TASK69_RUN_DIR / "read_write_relationship" / ("bottom_up" + _SUF)
-SCAF = ("6-shot dummy-'_' prompt; α·(task mean L6 target activation) added at all six "
+_CT = _args.variant == "ctop1"
+AR = ARTIFACTS_ROOT / "69_task_run" / (("ctop1_effect_on_write" if _CT else
+                                        "mean_read_steering_effect_on_write") + _SUF)
+OUT = TASK69_RUN_DIR / "read_write_relationship" / (("ctop1" if _CT else "bottom_up") + _SUF)
+_VEC = ("α·u_A (carrier + n_A·v_1, L5–7) added at L0 to" if _CT else
+        "α·(task mean L6 target activation) added at")
+SCAF = (f"6-shot dummy-'_' prompt; {_VEC} all six "
         "target slots" if _NS == 6 else
-        "1-shot dummy-'_' prompt; α·(task mean L6 target activation) added at the single "
+        f"1-shot dummy-'_' prompt; {_VEC} the single "
         "target slot")
 LAYER = 13
 SURFACE, INK, INK2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
