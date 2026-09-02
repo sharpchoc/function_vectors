@@ -50,6 +50,22 @@ def pick_excerpt(prop, docs, used):
     raise RuntimeError(prop.name)
 
 
+def display_spans(text, spans):
+    """Widen a toggled span to its whole word when it is a partial alphabetic span
+    (sentence_caps toggles one letter; the evidence TOKEN is the whole word)."""
+    out = []
+    for s, e in spans:
+        seg = text[s:e]
+        if seg.isalpha() and ((s > 0 and text[s - 1].isalpha()) or
+                              (e < len(text) and text[e].isalpha())):
+            while s > 0 and text[s - 1].isalpha():
+                s -= 1
+            while e < len(text) and text[e].isalpha():
+                e += 1
+        out.append((s, e))
+    return out
+
+
 def draw_text(ax, x0, y0, text, spans, color, char_w, line_h):
     """Monospace wrap; highlight char spans. Returns lines used."""
     lines, line_start = [], 0
@@ -113,7 +129,7 @@ def main():
             txt, spans = render(ex, opps, pol)
             ax.text(col_x[pol], y - 0.3, f"{pol} twin", fontsize=10, style="italic",
                     color="#666", va="center")
-            n = draw_text(ax, col_x[pol], y - 2.6, txt, spans, HI[pol], char_w, line_h)
+            n = draw_text(ax, col_x[pol], y - 2.6, txt, display_spans(txt, spans), HI[pol], char_w, line_h)
             n_lines = max(n_lines, n)
         y -= 2.6 + n_lines * line_h + 3.6
 
