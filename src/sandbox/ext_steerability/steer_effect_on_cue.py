@@ -195,7 +195,8 @@ def main():
                     "inject_layer": INJECT_LAYER, "n_prompts": n, "n_shots": args.n_shots,
                     "norm_v_task": float(vt.norm()), "norm_v_generic": float(vg.norm()),
                     "norm_m": float(m.norm()),
-                    "site": "final prompt token (query cue), all 28 block outputs"})
+                    "site": "final prompt token (query cue), all 28 block outputs",
+                    "vectors_path": str(args.vectors_path) if args.vectors_path else None})
         torch.save(res, out_path)
     print("shard done", flush=True)
 
