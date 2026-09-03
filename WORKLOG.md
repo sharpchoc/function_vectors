@@ -421,6 +421,10 @@ task RELATION; input content and a weak output-format prior survive its removal.
 
 ---
 
+## 2026-09-03 — Paper draft: Appendices B (write-feature dimensionality) and C (write-feature ablation) removed (user request; unreferenced); D–K re-lettered to B–I and all in-text references remapped (Appendix D→B, E→C, F→D, G→E, H→F, I→G, J→H, K→I). Their figures remain on disk under results/.
+
+---
+
 ## 2026-09-03 — Claim 6 on the new read feature (u_A → v_A) + k-dimensional rotation sweep (user request)
 
 **Owner:** Claude Code background agent, main checkout. CPU only (~20 s). **Status:** DONE.

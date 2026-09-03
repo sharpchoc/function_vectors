@@ -92,12 +92,12 @@ per-task view shows the lift in all tasks.*
 
 ## Claim 2: Read features exist at early layers
 
-Next, we want to understand where computations related to the write features might lie. We do this by getting activations for each (token position, layer) in 6 shot prompts and train a (ridge) regression on a train set to predict the write feature for that task (for more details see Appendix D). We can see expected patterns such as the function vector becoming more linearly decodable as you go deeper into the prompt (i.e. after the model has seen more examples of the task), but also at early layers (L5-L10), the target tokens contain more linearly decoadable parts of the write feature than the cue tokens! This suggests there is a computational node prior to the write feature, which we define as the read feature.
+Next, we want to understand where computations related to the write features might lie. We do this by getting activations for each (token position, layer) in 6 shot prompts and train a (ridge) regression on a train set to predict the write feature for that task (for more details see Appendix B). We can see expected patterns such as the function vector becoming more linearly decodable as you go deeper into the prompt (i.e. after the model has seen more examples of the task), but also at early layers (L5-L10), the target tokens contain more linearly decoadable parts of the write feature than the cue tokens! This suggests there is a computational node prior to the write feature, which we define as the read feature.
 
 ![Held-out R² by layer and token role](../results/69_task_run/FV_linear_decodability/token_layer_regressions/poster_visuals/heldout_r2_lines_6shot.png)
 
 *Labels are informative from early layers and early tokens, the cue catches up example by example. The bold example-6 cue line peaks at L13 ($R^2$ 0.663). The weakest cue line is example 1, where the model has not seen a full example of the task yet. The full token × layer grid is in
-Appendix D. Source: `FV_linear_decodability/token_layer_regressions/`.*
+Appendix B. Source: `FV_linear_decodability/token_layer_regressions/`.*
 
 (Note: The closest observation in Todd et al. (2024) is attentional: their FV heads primarily
 attend to the demonstrations' output (target) tokens (their Figure 3b), but they do not go into detail on the nature of the relationship)
@@ -145,7 +145,7 @@ $$
 where $\hat c(\ell)$ is the **cross-task** carrier direction at layer $\ell$. $u_A$ is orthogonal to the shared carrier by
 construction. We call $u_A$ the **task-unique component** of the read feature. Its unit
 direction $\hat u_A = u_A/\|u_A\|$ is what we ablate below, and $c + u_A$ is what we inject.
-(See Appendix I for other variations of steering and ablation)
+(See Appendix G for other variations of steering and ablation)
 
 ![Read-feature decomposition into shared carrier and task-unique part](../results/69_task_run/bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png)
 
@@ -159,7 +159,7 @@ sits at baseline.*
 Note: Why not simply ablate the raw mean direction $m_A$ itself? That was our
 first attempt, but found that the counterfactual control performed equally as well as the specific task - likely because the shared direction contains some relevant computation for general in context learning. The
 motivation for the task-unique setup, and the full list of variations we tried are in
-Appendix F.
+Appendix D.
 
 **Sufficiency:** We set up dummy 6-shot prompts (same set up as before where we replace the correct answers with `_`), and
 inject the shared carrier plus the task-unique part:
@@ -169,7 +169,7 @@ s_A \;=\; c + u_A, \qquad z^{\,t}_{\ell} \;\leftarrow\; z^{\,t}_{\ell} + \alpha\
 \quad\text{at every dummy target slot } t .
 $$
 
-A 1-shot sweep over injection layers (Appendix I) places the optimal layer at early layers ( L0–L3). We therefore inject at L0 on the 6-shot dummy prompts at all the target tokens and
+A 1-shot sweep over injection layers (Appendix G) places the optimal layer at early layers ( L0–L3). We therefore inject at L0 on the 6-shot dummy prompts at all the target tokens and
 sweep $\alpha \in \{0.5, 1, 2, 4\}$. At $\alpha = 2$ the six steered dummy slots lift
 accuracy from 0.000 to 0.570, which is 90% of what six real demonstrations achieve.
 
@@ -189,7 +189,7 @@ So far, we have shown that read features and write features are causal for the m
 ![Cue-token cosine to own FV rising with alpha](../results/69_task_run/read_write_relationship/meanresid/headline_cos_absolute.png)
 
 *Cosine between the L13 residual at the final cue token and the task's function vector, as a function of injection strength. Injecting the carrier plus the task-unique direction at the target tokens moves the write
-site toward the task's function vector. More variants can be found in Appendix I*
+site toward the task's function vector. More variants can be found in Appendix G*
 
 ## Claim 5: Read features appear earlier than write features
 
@@ -202,19 +202,19 @@ Note: Since we have two axis for the read feature subspace, we measure cosine si
 ## Claim 6: Read features linearly map to write features
 
 A single linear map from the read feature to the write feature, fit on the 55 train tasks,
-predicts the *held-out* tasks' function vectors. The input is the task unique read feature of Claim 3, $u_A$, and targets are the tasks' write features. Ridge regression from $u_A$ to the task write feature reaches held-out $R^2 = 0.64$ on the 14 held-out tasks. The map is one linear transform shared across tasks. (See Appendix G for more details of how the regression was trained and other variations). We can also see that the cosine between the predicted and the true function vector averages 0.89 whilst predicting just the generic train-mean FV (dashed line) would only score 0.64.
+predicts the *held-out* tasks' function vectors. The input is the task unique read feature of Claim 3, $u_A$, and targets are the tasks' write features. Ridge regression from $u_A$ to the task write feature reaches held-out $R^2 = 0.64$ on the 14 held-out tasks. The map is one linear transform shared across tasks. (See Appendix E for more details of how the regression was trained and other variations). We can also see that the cosine between the predicted and the true function vector averages 0.89 whilst predicting just the generic train-mean FV (dashed line) would only score 0.64.
 
 ![Held-out tasks: write feature predicted from the read feature by one linear map](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/linear_map_simple.png)
 
 *Each bar is one held-out task. The cosine between the write feature predicted from its read feature by the linear map (fit on the train tasks) and its true write feature. The dashed line is the same cosine when the generic train-mean write feature vector is used as the prediction for every task (mean 0.64), as a naive baseline*
 
-We study the geometry of the linear map in more detail in Appendix J.
+We study the geometry of the linear map in more detail in Appendix H.
 
 ## Claim 7: Write-feature presence predicts task accuracy
 
 Can we predict the model perfomance on these simple tasks before we see the model output using a mechanisitic metric? We find that the strength of the write feature at the query cue can be used to predict performance. 
 
-We define strength of write feature as the cosine similarity of the residual stream with the write feature for that task (mean cosine similarity across layer 9 to 20). We study prompts from n = 0…6 in context demonstrations. We try other variations of measuring cosine similarity in Appendix H and find similar results across the board. We group different presence strengths and plot against model accuracy to get a monotone curve (shown below). Below cos 0.15 the model has 0% accuracy and by the 0.35–0.45 bucket it achieves 50% accuracy. These results are for all tasks grouped together, if we study each task at a time, the spearman coefficient is much higher (~0.95).
+We define strength of write feature as the cosine similarity of the residual stream with the write feature for that task (mean cosine similarity across layer 9 to 20). We study prompts from n = 0…6 in context demonstrations. We try other variations of measuring cosine similarity in Appendix F and find similar results across the board. We group different presence strengths and plot against model accuracy to get a monotone curve (shown below). Below cos 0.15 the model has 0% accuracy and by the 0.35–0.45 bucket it achieves 50% accuracy. These results are for all tasks grouped together, if we study each task at a time, the spearman coefficient is much higher (~0.95).
 
 ![Binned presence vs accuracy](../results/69_task_run/write_feature_and_model_accuracy/binned_meanL.png)
 
@@ -251,19 +251,10 @@ person_place_thing, pos_label, smaller_of_pair, spanish-english, uppercase_word,
 word_polarity.
 
 **Head selection.** A function vector is the summed output of a small set of attention heads
-(Todd et al., 2024): the task signal at the cue token is carried by a sparse subset of the
-model's 448 heads, so the heads have to be selected before their outputs can be summed. Todd
-et al. rank heads by their average indirect effect on shuffled-label prompts; we instead
-follow Hu et al. (2025) and select them by sparse optimisation, learning a gate over all heads
-jointly. Pooled sparse optimisation: a gate $c \in [0,1]^{448}$ over all heads,
-steering loss on zero-shot prompts summed over the 55 train tasks, + $\lambda\|c\|_1$;
-$\lambda = 0.005$ by 5-fold task cross-validation; heads kept at $c > 0.8$ → 37 heads
-spanning layers 3–27, densest at 12–15.
+(Todd et al., 2024). The task signal at the cue token is carried by a sparse subset of the
+model's 448 heads, so the heads have to be selected before their outputs can be summed. Todd et al. rank heads by their average indirect effect on shuffled-label prompts. Hu et al. (2025) show that selecting them by sparse optimisation leads to better results, so we learn a gate over all heads jointly using a similar sparse optimisation. Pooled sparse optimisation: a gate $c \in [0,1]^{448}$ over all heads, steering loss on zero-shot prompts summed over the 55 train tasks, + $\lambda\|c\|_1$; $\lambda = 0.005$ by 5-fold task cross-validation. We keep heads that have $c > 0.8$, which are 37 heads spanning layers 3–27, densest at 12–15.
 
-**Definitions** (per the project glossary): head vector $\bar h_A$ = mean final-cue-token
-output of head $h$ on task $A$'s prompts; function vector $v_A = \sum_{h\in H} \bar h_A$;
-per-prompt FV $v^j_A$ = the same sum on a single prompt. The read feature
-$m_A(\mathrm{L6})$ is the task-mean block-6 residual at demonstration target tokens.
+**Definitions**: head vector $\bar h_A$ = mean final-cue-token output of head $h$ on task $A$'s prompts; function vector $v_A = \sum_{h\in H} \bar h_A$. Per-prompt FV $v^j_A$ = the same sum on a single prompt.
 
 **Readout.** Temperature-1 sampled generation, exact match against the gold target, seeded
 per prompt; steering evaluation reports each task's best injection layer at $\alpha=1$
@@ -271,9 +262,11 @@ unless stated otherwise.
 
 ![The 37 selected heads](../results/69_task_run/FV_train_test_generalisation/poster_visuals/selected_heads.png)
 
-**Prompt structures.** One example of every prompt structure used in this paper (all
-examples use the antonym task; every structure ends at the query cue `A:`, where
-generation is scored).
+### Prompt structures
+**One example of every prompt structure used in this paper** 
+
+(all examples use the antonym task; every structure ends at the query cue `A:`, where
+generation is scored)
 
 *Clean n-shot* — the 150 fixed 10-shot prompts; an n-shot prompt is the same prompt
 truncated to its first n demonstrations (zero-shot keeps only the query):
@@ -298,7 +291,7 @@ Q: miraculous
 A:
 ```
 
-*Mixed-task, mixed-target 10-shot* (Claim 1 test setting) — each demonstration is drawn
+*Mixed-task, mixed-target 10-shot* (Claim 1 test setting) has each demonstration drawn
 from a *different* task with its own correct target (here: year_to_decade,
 landmark-country, spanish-english, …); the pairs are internally correct but only the
 query belongs to the evaluated task, so the context provides format but no task
@@ -317,9 +310,9 @@ Q: miraculous
 A:
 ```
 
-*Dummy-target scaffold* (read-feature sufficiency, Claim 3) — the task's own inputs, but
-every target is replaced by a bare `_`, so the prompt teaches nothing (unsteered accuracy
-0.000); the read feature is injected at the `_` slots:
+*Dummy-target scaffold* (read-feature sufficiency, Claim 3) the task's own inputs, but
+every target is replaced by a bare `_`, so the prompt does not teach the correct task (unsteered accuracy
+0.000):
 
 ```
 Q: unfair
@@ -334,7 +327,7 @@ Q: due
 A:
 ```
 
-*Random-target scaffold* (scaffold-robustness control, Appendix E/I) — as the dummy
+*Random-target scaffold* (scaffold-robustness control, Appendix C/G) — as the dummy
 scaffold, but each `_` is replaced by a real word sampled from *other* tasks' output
 pools (illustrative targets shown), so the targets are actively wrong rather than empty:
 
@@ -358,99 +351,20 @@ uncentered PCs of the 69 task-mean function vectors (90% of their energy) define
 subspace. Projecting each task's $v_A$ into it and rescaling the strength per task
 ($\alpha$ up to 2, since projection shrinks the norm) recovers zero-shot steering of 0.68
 on both train and held-out tasks, against 0.75 / 0.73 for the full 4096-dimensional
-vectors — and the train/held-out gap vanishes entirely.
+vectors.
 
 ![22-PC subspace steering vs full FV](../results/69_task_run/FV_dimensionality_reduction/low_dim_22d/poster_lowdim.png)
 
-**Per task: a single direction, with bidirectional control.** For an individual task the
-write feature is effectively rank one. The same unit direction $\hat v_A$ that steers
-zero-shot prompts (sufficiency) is also necessary: zero-projecting it out of the residual
-stream at just the final cue token collapses 6-shot ICL from 0.639 to 0.013 — the
-zero-shot floor. The kill is task-specific: ablating a counterfactual task's direction
-costs only 0.16, and mean-ablation (which keeps the generic cue-token content) shows the
-same own-vs-counterfactual gap (0.242 vs 0.616). The same holds on 1-shot prompts
-(baseline 0.211): own-FV zero-ablation lands on the floor (0.001) while the counterfactual
-direction leaves 0.107 and counterfactual mean-ablation leaves the baseline intact (0.205).
+**Per task: a single direction, with bidirectional control.** For an individual task the write feature is effectively rank one. The same unit direction $\hat v_A$ that steers
+zero-shot prompts (sufficiency) is also necessary: ablating (zero ablation and mean ablation) it out of the residual stream at just the final cue token collapses 6-shot ICL whilst ablating a counterfactual task's direction
+costs doesn't impact it anywhere near as much. We show the full results in detail on 1 shot and 6 shot prompts.
 
 ![FV-direction ablation, 6-shot and 1-shot](../results/69_task_run/FV_ablation/headline_bars_by_shots.png)
 
 *Removing one direction at one token position destroys ICL — at 6 shots and at 1 shot —
 only for the task that owns the direction (layer clamp 9–27). Source: `FV_ablation/`.*
 
-**Relation to Todd et al. (2024).** Both results in this section are novel. That paper
-establishes sufficiency only — adding an FV triggers the task — and does not study the
-geometry of the FV set (its closest analysis is decoding single FVs to vocabulary, §3.2
-there) or test whether the model's own ICL *depends* on the FV direction. The shared
-22-dimensional steering subspace and the necessity result (own-direction ablation kills
-natural ICL, task-specifically and bidirectionally) have no counterpart there.
-
-## B. Write-feature dimensionality in detail
-
-**Spectra.** The 55 train task-mean FVs need 24 PCs for 90% of centered variance; the
-pooled per-prompt stack (8,250 × 4096) has stable rank 3.0 raw / 5.7 centered.
-
-**Why the basis must see every task.** A sparse PC selection fit on the *train* tasks'
-per-prompt basis (46 PCs) keeps train steering but collapses held-out tasks (0.46 vs
-0.73): held-out FVs stick partly out of the train span, and the drop tracks the lost
-energy (Spearman 0.84). Projecting onto the entire 512-PC train dictionary recovers most
-of it (0.68), so the failure is the train-only *selection*, not the dictionary. Rebuilding
-the basis and selection on all 69 tasks gives 50 PCs that match the full FV everywhere
-(held-out 0.733 vs 0.734); an L13 rerun reproduces the selection (47/48 shared PCs), so
-the injection-layer choice is not load-bearing.
-
-**The 22D result in context.** Plain truncation to the top-22 task-mean PCs fails at
-$\alpha=1$ (0.59 / 0.60) mostly through norm shrinkage; per-task $\alpha$-rescaling
-recovers to 0.68 / 0.68. The residual gap to the full FV is direction loss concentrated in
-a few low-coverage tasks (country-capital stays ≤ 0.02 at every $\alpha$; the translation
-family moves little) — variance-ranked PCs are not exactly the steering-relevant ones, a
-pattern seen in four independent analyses in this project.
-
-![FV spectra](../results/69_task_run/FV_dimensionality_analysis/fv_dimensionality.png)
-![22-PC steering with per-task alpha](../results/69_task_run/FV_dimensionality_reduction/low_dim_22d/taskmean_k90_alpha_bars.png)
-
-## C. Write-feature ablation in detail
-
-Conditions: {zero-projection, mean-ablation} × {own $\hat v_A$, counterfactual task's
-direction} × layer clamps {blocks 9–27, 0–27}, applied at the final query cue token only,
-on 150 fixed 6-shot prompts per task. The two layer clamps are indistinguishable
-everywhere, so the main text quotes the 9–27 numbers. The mean reference is the
-equal-task-weighted grand mean of cue-token residuals; counterfactual pairs are drawn from
-different semantic families.
-
-| Condition (6-shot) | Mean acc (69 tasks) | Drop vs 6-shot |
-|---|---:|---:|
-| Real 6-shot baseline | 0.639 | — |
-| Own FV, zero-projection | 0.013 | −0.626 |
-| Counterfactual FV, zero-projection | 0.476 | −0.163 |
-| Own FV, mean-ablation | 0.242 | −0.397 |
-| Counterfactual FV, mean-ablation | 0.616 | −0.023 |
-| Zero-shot floor | 0.002 | −0.637 |
-
-**1-shot prompts** (same 150 queries with only the first demonstration, layer clamp 9–27):
-
-| Condition (1-shot) | Mean acc (69 tasks) | Drop vs 1-shot |
-|---|---:|---:|
-| Real 1-shot baseline | 0.211 | — |
-| Own FV, zero-projection | 0.001 | −0.210 |
-| Counterfactual FV, zero-projection | 0.107 | −0.104 |
-| Own FV, mean-ablation | 0.036 | −0.175 |
-| Counterfactual FV, mean-ablation | 0.205 | −0.006 |
-| Zero-shot floor | 0.002 | −0.209 |
-
-At 1 shot no task keeps more than 0.02 under own-direction zero-ablation (train 0.001 /
-held-out 0.001). The counterfactual zero-ablation control is relatively costlier than at 6
-shots (−49% vs −26% of baseline): the tasks where the counterfactual direction also kills
-1-shot ICL (e.g. spanish-english, gerund_to_base, plural_to_singular) are those whose own
-and counterfactual directions are most similar (cos 0.54–0.79). Counterfactual
-mean-ablation stays at baseline, so the damage is specific to the projected-out direction.
-No train/held-out gap at 6 shots either (own-zero 0.014 / 0.005). Rare partial survivors
-are date/number tasks (day_after_textual_date 0.35–0.41; iso_date_to_month ≈0.08;
-next/prev_number_digits ≈0.1), where 6-shot context appears to route around the cue-token
-direction.
-
-![Per-task ablation grid](../results/69_task_run/FV_ablation/by_task_dots.png)
-
-## D. Decodability grid in detail
+## B. Decodability grid in detail
 
 868 cells: 31 token positions (per demo: pre-target ":", first and last target token; plus
 the query cue) × 28 layers, later extended with 21 input-side positions and an
@@ -472,7 +386,7 @@ then scores what we actually care about: predictions on the 14 held-out tasks ar
 compared to the *task* FV $v_A$ (the per-prompt mean), per task, with the held-out pool's
 mean FV as the reference in the $R^2$ denominator — so a cell scores highly only if the
 activation places unseen tasks' write features correctly, not if it reproduces per-prompt
-jitter. Consistent with this, decomposing the related target-token map (Appendix G) shows
+jitter. Consistent with this, decomposing the related target-token map (Appendix E) shows
 between-task centroid placement carries ~0.65 of the $R^2$ while within-task deviations
 contribute only ≈0.03–0.05: the transferable signal is the task centroid, and evaluating
 against it measures exactly that.
@@ -492,7 +406,7 @@ against it measures exactly that.
 *The full token × layer grid behind the Claim 2 line figure. The bright band is the
 pre-target and target positions of later demos at layers ~8–17.*
 
-## E. Read-feature steering in detail
+## C. Read-feature steering in detail
 
 **Where to inject (why L6).** The layer choice comes from a 28-layer sweep on the 1-shot
 dummy-slot scaffold ($\alpha \in \{0.5, 1, 2, 4\}$, best per layer, mean taken at the same
@@ -529,7 +443,7 @@ variance basis is not the basis the model reads.
 
 ![Steering retention vs subspace dimension](../results/69_task_run/bottom_up_read_features/dimensionality_analysis/sparse_pc40/retention_curve.png)
 
-## F. Read-feature ablation in detail: the rank/band ladder
+## D. Read-feature ablation in detail: the rank/band ladder
 
 **Why ablating the raw mean direction fails (motivation for the task-unique setup).** The
 natural first attempt is to zero-project the task's own unit read-feature direction
@@ -583,7 +497,7 @@ translations). (4) Masking the final cue's attention to demo target positions co
 accuracy to 0.046 — target-token attention is the near-exclusive route for task information
 into the query.
 
-## G. The read → write linear map in detail
+## E. The read → write linear map in detail
 
 **Layer sweep with the raw per-layer read feature.** A ridge regression from the raw per-layer read feature $m_A(\ell)$ (final-target-site X, per prompt) to the per-prompt function
 vector, fit on the 55 train tasks, predicts the *held-out* tasks' function vectors with
@@ -598,7 +512,7 @@ the target slots through the entire second half of the network.
 
 *(Convention note: the detailed numbers in this appendix were computed with the ten-site
 average of the demonstration target activations as the per-prompt X — the estimator
-variant of Appendix K — and have not been re-run under the final-target-site convention;
+variant of Appendix I — and have not been re-run under the final-target-site convention;
 the main-text Claim 6 numbers and figure use the final-target-site X.)*
 
 **What transfers is the centroid map.** Against per-prompt FV targets the held-out $R^2$
@@ -626,7 +540,7 @@ generalizes; explicit shrinkage hurts). Source: `read_write_relationship/linear_
 
 ![Seed-split robustness](../results/69_task_run/FV_linear_decodability/labeltoken_fv_ridge/seedsplits/seed_r2.png)
 
-## H. Presence-vs-accuracy method
+## F. Presence-vs-accuracy method
 
 For each task and n ∈ 0…6, the 150 fixed 10-shot prompts are truncated to their first n
 demonstrations (paired queries throughout). Presence = mean cos between the residual
@@ -693,11 +607,11 @@ between-task sign is a property of the task-specific component. Per-prompt granu
 sweep; within a fixed n it is ≈ 0. Sources:
 `write_feature_and_model_accuracy/{diagnostics.txt, per_prompt/, baseline_subtracted/}`.
 
-## I. Task-unique steering & the carrier-gap hypothesis tests
+## G. Task-unique steering & the carrier-gap hypothesis tests
 
 *(Convention note: the mean-free and swap headline numbers here use the final-target-site
 read feature; the carrier-gap hypothesis tests — random-word scaffold, attention capture,
-error anatomy — were run with the ten-site-average swap direction (Appendix K) and have
+error anatomy — were run with the ten-site-average swap direction (Appendix I) and have
 not been re-run.)*
 
 **Sufficiency with the raw read feature $m_A(\mathrm{L6})$ (the original test).** Before the
@@ -851,7 +765,7 @@ randlabel_swap, attention_to_label_1shot, error_analysis_swap_vs_fullmean}/`.
 
 ![Error anatomy of the carrier gap](../results/69_task_run/bottom_up_read_features/steering_results/error_analysis_swap_vs_fullmean/breakdown_bars.png)
 
-## J. The read→write map is a rotation, but not a low-dimensional one
+## H. The read→write map is a rotation, but not a low-dimensional one
 
 **The map is, to first order, a rotation.**
 
@@ -946,7 +860,7 @@ against 0.27 held-out.
 
 ![Cross-family cosine histograms](../results/69_task_run/understanding_read_write_linear_map/crossfamily_cos_hists.png)
 
-## K. Estimator variant: ten-site-average read features
+## I. Estimator variant: ten-site-average read features
 
 Every quantity in this paper estimates the read feature from the residual at the **last
 token of the final demonstration's target** (150 prompts per task). An alternative
