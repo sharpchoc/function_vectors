@@ -461,42 +461,27 @@ Findings:
 
 ## E. The read → write linear map in detail
 
-**Method (Claim 6 fit).**
+**Method**
 
-- Input: the task-unique part $u_A$ of the read feature (mean of the carrier-projected L5–7
-  task means). Target: the task's function vector $v_A$ (mean of its 150 per-prompt FVs).
+- Input: the task-unique part $u_A$ of the read feature (mean of the L5–7
+  acitvations projections along the shared carrier direction removed). Target: the task's function vector $v_A$
 - One row per task: 55 train tasks fit the map, 14 held-out tasks score it. Both sides are
   centred on the train means, so the shared carrier drops out of the input.
-- Map: ridge regression in dual form, $\lambda$ chosen by leave-one-out cross-validation on
-  the train tasks (it picks the smallest value on the grid, 0.01, i.e. minimum-norm
-  interpolation generalises best).
+- Map: ridge regression with $\lambda$ chosen by leave-one-out cross-validation on
+  the train tasks (0.01 was best).
 - Score: pooled held-out $R^2$ with the held-out mean FV as reference, and per-task
-  cos(predicted, true). Source: `understanding_read_write_linear_map/meanresid_map/`
-  (`claim6_meanresid_map.py`, `claim6_meanresid_robustness.py`).
+  cos(predicted, true)
 
-**Split robustness.** Over 10 random 55/14 task splits the held-out $R^2$ of the ridge is
-0.60 ± 0.06 (range 0.50–0.68); the canonical split's 0.64 sits inside that range. The
+**Test-Train Split robustness:** Over 10 random 55/14 task splits the held-out $R^2$ of the ridge is
+0.60 ± 0.06 (range 0.50–0.68). The
 rotation + scalar map of Appendix H tracks it at 0.57 ± 0.05 (canonical 0.59).
 
 ![Held-out R² across task splits](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/seed_r2.png)
 
 **Which tasks transfer.** Averaging each task's cos(predicted, true FV) over the random
-splits in which it was held out (63 of 69 tasks are held out at least once): median 0.89.
-The weakest are classification-style tasks — ag_news 0.61, natural_manmade 0.73,
-concrete_abstract 0.73, person-instrument 0.75 — the same family whose read features are
-least aligned with their own FVs (Appendix H); no task falls below 0.6.
-
-**The map places task centroids, not individual prompts.** Scored against the *per-prompt*
-FVs $v^j_A$ of the 14 held-out tasks (held-out-mean reference):
-
-- map applied to each prompt's own read feature $u^j_A$: $R^2$ 0.40;
-- map applied to the task centroid $u_A$ (one prediction per task): 0.46;
-- oracle, each prompt's own task-mean FV (leave-one-prompt-out): 0.71;
-- train-mean FV for every prompt: −0.06.
-
-The centroid prediction recovers 65% of what a perfect centroid predictor could; feeding the
-map per-prompt inputs lowers the score, so the within-task variation of the read feature is
-noise to this map, not signal.
+splits in which it was held out: median 0.89.
+The weakest are classification-style tasks: ag_news 0.61, natural_manmade 0.73,
+concrete_abstract 0.73, person-instrument 0.75, which are the same family whose read features are least aligned with their own FVs (Appendix H).
 
 **Layer sweep with the raw per-layer read feature.** Regressing from the raw task mean
 $m_A(\ell)$ instead (per-prompt X, all 28 layers) shows where task identity is linearly

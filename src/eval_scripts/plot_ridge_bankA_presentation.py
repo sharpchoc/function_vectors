@@ -29,16 +29,14 @@ BLUE, INK, MUTED = "#2a78d6", "#181c1e", "#5d6771"
 fig, ax = plt.subplots(figsize=(8.6, 4.4), dpi=150)
 fig.patch.set_facecolor("white"); ax.set_facecolor("white")
 ax.plot(L, y, color=BLUE, lw=2.2, marker="o", ms=5, mfc=BLUE, mec="white", mew=0.9,
-        zorder=3, label="held-out, per-prompt predictions")
-ax.plot(L, yc, color=BLUE, lw=1.6, ls=(0, (5, 2.5)), alpha=0.6, zorder=2,
-        label="held-out, task centroids")
+        zorder=3, label="held-out $R^2$")
 pk = max(range(len(L)), key=lambda i: y[i])
 ax.set_xlim(-0.6, 27.6)
 ax.set_ylim(0, 0.75)
 ax.set_xticks(range(0, 28, 3))
 ax.set_xlabel("layer of the target-token activation (X)", color=INK, fontsize=11)
 ax.set_ylabel("held-out $R^2$ vs task FV", color=INK, fontsize=11)
-ax.set_title("Ridge: target-token activation → write feature, all 28 layers",
+ax.set_title("Where the write feature is linearly readable from the raw read feature $m_A(\\ell)$",
              fontsize=12.5, color=INK, loc="left", pad=10)
 ax.legend(loc="lower right", fontsize=9.5, frameon=False)
 ax.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
