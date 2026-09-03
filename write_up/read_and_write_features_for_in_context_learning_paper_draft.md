@@ -527,20 +527,6 @@ case, and the single worst case in the pool:
 to the saturated top of its curve, where accuracy plateaus while presence still creeps
 up.*
 
-**Between-task, the sign flips** (Simpson's pattern): at fixed n ≥ 2, tasks with higher
-presence tend to score *lower* (ρ ≈ −0.3 to −0.4 at n = 3…6), even though every task
-individually moves up with n. Diagnostics: a shared-mean control (cos to the grand-mean
-FV) does not explain it — the partial correlation is unchanged; a-priori task features
-(target token count, output entropy, output-pool size) correlate with presence
-(ρ ≈ −0.44…−0.54) and weaken the negative relation but do not remove it (partial
-ρ ≈ −0.21…−0.26). Subtracting each task's generic-FV alignment (presence minus
-cos-to-grand-mean, L13) strengthens the between-task negativity (ρ −0.39 at n=6), while
-alignment to the grand-mean FV itself relates *positively* pooled (ρ 0.54) — the
-between-task sign is a property of the task-specific component. Per-prompt granularity
-(72,450 generations): pooled point-biserial r = 0.36 (L13), driven by the shot-count
-sweep; within a fixed n it is ≈ 0. Sources:
-`write_feature_and_model_accuracy/{diagnostics.txt, per_prompt/, baseline_subtracted/}`.
-
 ## G. The read→write map is a rotation, but not a low-dimensional one
 
 **The map is, to first order, a rotation.**
@@ -575,26 +561,15 @@ handful of privileged directions.
 
 *Data*
 
-- X = task-unique part $u_A$ of the read feature (mean of the carrier-projected L5–7 task
-  means); a per-prompt variant is built the same way from `label_resid_perprompt`.
-- Y = task FV (mean of the 150 per-prompt FVs).
-- 55 train / 14 held-out tasks, fp64. Source:
-  `understanding_read_write_linear_map/meanresid_map/` (`claim6_meanresid_map.py`).
-
-*Congruence (all 69 tasks, family-centered)*
-
-- Pairwise cosines, read vs write: Pearson 0.932, Spearman 0.906; centered-norm correlation
-  0.780; gram-CKA 0.924.
-- Subspace overlap in activation space: principal cosines between the 90%-variance
-  subspaces (32 read vs 28 write dims) max 0.258, median 0.090.
-- Matched cos($u_A$, $v_A$), centered: mean 0.064; mismatched pairs ≈ 0. Matched exceeds the
-  mismatched 95th percentile for 36/69 tasks.
+- X = task-unique part $u_A$ of the read feature
+- Y = write feature, the task function vector
+- 55 train / 14 held-out tasks
 
 *Fits*
 
 - Predictor: $\hat v_A = \bar v + s \cdot R\,(u_A - \bar u)$, means from the train tasks.
 - $R$: orthogonal Procrustes on the 55 centered train pairs; $s = 1$ (rotation) or the
-  trace-formula scalar (rotation+scale, $s = 1.66$; centered read norms 28.2 vs FV 47.7).
+  trace-formula scalar (rotation+scale, $s = 1.66$).
 - Ridge: dual form with intercept, $\lambda$ by LOO-CV (picks the smallest grid value, 0.01).
 - Held-out $R^2$ (test-mean reference), task centroids / per-prompt read features:
   ridge 0.641 / 0.531; rotation+scale 0.588 / 0.484; rotation alone 0.457 / 0.419;
