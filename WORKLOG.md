@@ -8783,3 +8783,30 @@ direction, raw mean, cue-trained head-sum. Results results/style_properties/stee
   evid-site selection (≈ chance).
 Bottom line: a property vector written at the cue token behaves like a function vector — the
 free-text write feature exists, is late-mid-layer, sparse-head-decomposable, and specific.
+
+## 2026-09-02 — steering respecified: FIRST cue only + LLM coherence filter (user spec)
+
+Old steering results DELETED from results/ (raw artifacts archived at
+artifacts/style_properties/steering/_archive_allk/). New spec: one item per document = its
+FIRST cue token (k=0 for 11/13 props; all_caps & sentence_caps have no k=0 site so k=1),
+32-token T=1 rollouts, LLM judge (gemini-2.5-flash) drops gibberish rollouts, and the
+PRIMARY metric is now STRICT: P(adopts ALT | rollout coherent) — an unscorable rollout
+counts as NOT adopting. Layer/dose picked by strict rate among settings whose incoherent
+rate is <= baseline + 0.10 (coherence guard). Scripts: steer_adherence --first_cue_only
+--site cue --max_new 32 --shortlist 3; judge_coherence.py; plot_steering_cue1.py.
+
+**Results (strict, base -> steered):** double_space .00->1.00, oxford_comma .15->1.00,
+quote_punct .06->1.00, sentence_caps .00->1.00 (0% unscorable, all four) | all_caps
+.00->.76 but 34% INCOHERENT (no setting met the guard) | contractions .16->.69,
+us_uk .01->.57, percent_sign .15->.56, num_words .05->.42, ampersand .00->.34 (29-66%
+unscorable) | ordinal_words .15->.15, em_dash .02->.10, curly_quotes .02->.03 (84-92%
+unscorable) = NO effect.
+
+**Findings/lessons:** (1) unscorable rate is the deciding statistic — under the old
+conditional metric 12/13 props looked like .9-1.0; strictly, only 4 are clean successes,
+5 partial, 4 failures. (2) all_caps steering buys convention at the cost of coherence.
+(3) JUDGE PITFALLS: max_tokens=3 truncated "INCOHER" -> unparseable (95% judge-fail); and
+the first rubric called plainly readable text incoherent for ending mid-word (52% baseline
+"incoherent"). Fixed rubric = FLUENT/GIBBERISH with explicit allowances + few-shot;
+validated 10/10 on unsteered samples. Always calibrate a judge on control data first.
+(4) pkill -f judge_coherence.py killed the launching shell (self-match) — use "[j]udge".

@@ -63,13 +63,21 @@ def parse_args():
                    help="k>=1 sites per doc cap (default: 4 sweep / 8 full)")
     p.add_argument("--token_budget", type=int, default=16000)
     p.add_argument("--batch_cap", type=int, default=32)
+    p.add_argument("--first_cue_only", action="store_true",
+                   help="one item per document: its FIRST cue token (min k). User spec 2026-09-02.")
+    p.add_argument("--max_new", type=int, default=None,
+                   help="override the per-site max_new (e.g. 32 for coherence judging)")
+    p.add_argument("--shortlist", type=int, default=1,
+                   help="full mode: run the top-N sweep settings (final pick after judging)")
+    p.add_argument("--tag", default="", help="suffix for the output dir (e.g. cue1)")
     p.add_argument("--site", choices=("evid", "cue"), default="evid",
                    help="injection site: evidence tokens (read-side) or the cue token "
                         "(write-side; the function-vector analog). cue includes k=0 sites.")
     return p.parse_args()
 
 
-def build_items(prop_name, tok, ctx_pol, n_docs, max_sites, require_evid=True):
+def build_items(prop_name, tok, ctx_pol, n_docs, max_sites, require_evid=True,
+                first_only=False, max_new=None):
     """Items = sites of the ctx-polarity twin: prefix through the cue token, with the PRIOR
     sites' evidence spans as the evid-injection mask. require_evid=True keeps k>=1 sites
     with a non-empty mask (evidence-site steering); False keeps every site incl. k=0
@@ -82,6 +90,8 @@ def build_items(prop_name, tok, ctx_pol, n_docs, max_sites, require_evid=True):
         for si, s in enumerate(d["sites"]):
             if (require_evid and s["k"] == 0) or kept >= max_sites:
                 continue
+            if first_only and kept >= 1:
+                break
             cue = s["cue_idx"][ctx_pol]
             assert ids[cue] == s["cue_tok_id"]
             evid_pos = []
@@ -93,8 +103,9 @@ def build_items(prop_name, tok, ctx_pol, n_docs, max_sites, require_evid=True):
                 continue
             kept += 1
             items.append({"ids": ids[:cue + 1], "evid_pos": evid_pos, "cue_pos": cue,
-                          "max_new": s["max_new"], "doc_id": d["doc_id"], "k": s["k"],
-                          "exp": s["exp"][f"{ctx_pol}_ctx"]})
+                          "max_new": max_new or s["max_new"], "doc_id": d["doc_id"],
+                          "k": s["k"], "exp": s["exp"][f"{ctx_pol}_ctx"],
+                          "ctx": tok.decode(ids[max(0, cue - 60):cue + 1])})
     return items
 
 
@@ -140,7 +151,7 @@ def main():
     props = sorted(args.props) if args.props else pool
     n_docs = args.docs or (30 if args.mode == "sweep" else 80)
     max_sites = args.max_sites or (4 if args.mode == "sweep" else 8)
-    out_dir = OUT_ROOT / (args.mode if args.site == "evid" else f"{args.mode}_cue")
+    out_dir = OUT_ROOT / ((args.mode if args.site == "evid" else f"{args.mode}_cue") + args.tag)
     out_dir.mkdir(parents=True, exist_ok=True)
     req_evid = args.site == "evid"
     alphas = SWEEP_ALPHAS if args.site == "evid" else SWEEP_ALPHAS + (32.0,)
@@ -176,8 +187,10 @@ def main():
             print(f"{name} | {cname}: adh={adh:.3f} scorable={scf:.2f} n={n}", flush=True)
 
         if args.mode == "sweep":
-            items = build_items(name, tok, "nat", n_docs, max_sites, require_evid=req_evid)
+            items = build_items(name, tok, "nat", n_docs, max_sites, require_evid=req_evid,
+                                first_only=args.first_cue_only, max_new=args.max_new)
             ks = [it["k"] for it in items]
+            res["ctx"] = [it["ctx"] for it in items]
             set_layer(SWEEP_LAYERS[0] - 1)
             record("baseline_nat2alt", *run_condition(model, tok, inj, prop, items, None,
                    None, 0, args.site, "alt", "base", args.token_budget, args.batch_cap), ks)
@@ -190,7 +203,7 @@ def main():
                                prop, items, v, L - 1, a, args.site, "alt", f"{vsrc}L{L}a{a}",
                                args.token_budget, args.batch_cap), ks)
         else:
-            sweep = json.load(open(out_dir.parent / ("sweep" if args.site == "evid" else "sweep_cue")
+            sweep = json.load(open(out_dir.parent / (("sweep" if args.site == "evid" else "sweep_cue") + args.tag)
                                    / f"{name}.json"))["conditions"]
             valid = [c for c in sweep if any(c.startswith(v) for v in vec_srcs)
                      and not np.isnan(sweep[c]["adherence_tgt"])]
@@ -202,8 +215,12 @@ def main():
             else:
                 best, vsrc, L, a = "fallback", vec_srcs[0], 10, 4.0
             res["best_from_sweep"] = {"cond": best, "vector": vsrc, "L": L, "alpha": a}
-            items_n = build_items(name, tok, "nat", n_docs, max_sites, require_evid=req_evid)
-            items_a = build_items(name, tok, "alt", n_docs, max_sites, require_evid=req_evid)
+            items_n = build_items(name, tok, "nat", n_docs, max_sites, require_evid=req_evid,
+                                  first_only=args.first_cue_only, max_new=args.max_new)
+            items_a = build_items(name, tok, "alt", n_docs, max_sites, require_evid=req_evid,
+                                  first_only=args.first_cue_only, max_new=args.max_new)
+            res["ctx_nat"] = [it["ctx"] for it in items_n]
+            res["ctx_alt"] = [it["ctx"] for it in items_a]
             ks_n, ks_a = [it["k"] for it in items_n], [it["k"] for it in items_a]
             set_layer(L - 1)
             v = torch.tensor(vz[vsrc][L], dtype=torch.float16)
@@ -217,6 +234,16 @@ def main():
                    args.token_budget, args.batch_cap), ks_n)
             record(f"{vsrc}_{S}_nat2alt", *R(items_n, v, L - 1, a, S, "alt", "mn",
                    args.token_budget, args.batch_cap), ks_n)
+            if args.shortlist > 1:
+                ranked = sorted((c for c in valid if c.startswith(vsrc)),
+                                key=lambda c: -sweep[c]["adherence_tgt"])
+                for cnd in ranked[1:args.shortlist]:
+                    sL = int(cnd.split("_L")[1].split("_")[0]); sa = float(cnd.split("_a")[1])
+                    set_layer(sL - 1)
+                    record(f"{vsrc}_{S}_nat2alt_L{sL}_a{sa}", *R(items_n,
+                           torch.tensor(vz[vsrc][sL], dtype=torch.float16), sL - 1, sa, S, "alt",
+                           f"sl{sL}{sa}", args.token_budget, args.batch_cap), ks_n)
+                set_layer(L - 1)
             if S == "evid":   # write-side probe of the read-side vector (legacy condition)
                 record(f"{vsrc}_cue_nat2alt", *R(items_n, v, L - 1, a, "cue", "alt", "md",
                        args.token_budget, args.batch_cap), ks_n)
