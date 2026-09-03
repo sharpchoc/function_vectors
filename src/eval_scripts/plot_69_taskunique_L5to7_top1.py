@@ -75,7 +75,8 @@ def main():
 
     order = ["mean_ablation_mr157", "cf_mean_ablation_mr157",
              "zero_ablation_mr157", "cf_zero_ablation_mr157"]
-    short = {c: ("cf " if c.startswith("cf_") else "own ") + "L6-9" for c in order}
+    DIR = "$\\hat u_A$" if _MR else "$v_1$"
+    short = {c: ("counterfactual task's " if c.startswith("cf_") else "own ") + DIR for c in order}
     fig, axes = plt.subplots(1, 2, figsize=(11, 5.8), dpi=200, sharey=True)
     for ax, n in zip(axes, (1, 6)):
         xs = np.array([0, 1, 2.6, 3.6])
@@ -101,11 +102,37 @@ def main():
         for s in ("top", "right"):
             ax.spines[s].set_visible(False)
     axes[0].set_ylabel("accuracy (T=1 sampled exact match, mean over 69 tasks)", fontsize=11)
-    fig.suptitle("Task-unique (mean-removed, layers 5-7 only) top-1 read-feature ablation "
-                 "(all layers, all demo-label tokens)",
-                 fontsize=13.5, fontweight="bold")
+    fig.suptitle(("Task-unique direction " + DIR + " (mean of carrier-removed L5–7 read features) ablated "
+                  "at every demo target token, every block") if _MR else
+                 "Task-unique (carrier-removed, layers 5-7 only) top-1 SVD direction ablation (all layers, all demo target tokens)",
+                 fontsize=12.5, fontweight="bold")
     fig.tight_layout(rect=[0, 0.02, 1, 0.94])
-    fig.savefig(OUT / "aggregate_bars.png", bbox_inches="tight")
+    fig.savefig(OUT / "aggregate_bars_full.png", bbox_inches="tight")
+    plt.close(fig)
+
+    # ---- SIMPLE headline: mean-ablation only — unablated | own direction | counterfactual direction ----
+    INK, MUTED = "#181c1e", "#5d6771"
+    fig, axes = plt.subplots(1, 2, figsize=(9.6, 4.4), dpi=150, sharey=True)
+    fig.patch.set_facecolor("white")
+    for ax, n in zip(axes, (1, 6)):
+        ax.set_facecolor("white")
+        vals = [mean_of(f"n{n}_baseline"), mean_of(f"n{n}_mean_ablation_mr157"), mean_of(f"n{n}_cf_mean_ablation_mr157")]
+        bars = ax.bar([0, 1, 2], vals, color=["0.45", "#7c3aad", "#c7b3e3"], width=0.62, zorder=3)
+        for b, v in zip(bars, vals):
+            ax.text(b.get_x() + b.get_width() / 2, v + 0.012, f"{v:.2f}", ha="center", fontsize=12, fontweight="bold", color=INK)
+        ax.set_xticks([0, 1, 2], ["unablated", "ablate own\n" + DIR, "ablate counterfactual\ntask's " + DIR], fontsize=10.5)
+        ax.set_title(f"{n}-shot prompts", fontsize=12, loc="left", color=INK)
+        ax.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
+        for s_ in ("top", "right"):
+            ax.spines[s_].set_visible(False)
+        for s_ in ("left", "bottom"):
+            ax.spines[s_].set_color("#c9ccc7")
+        ax.tick_params(colors=MUTED, labelsize=10)
+    axes[0].set_ylabel("task accuracy (mean, 69 tasks)", fontsize=11, color=INK)
+    axes[0].set_ylim(0, max(mean_of("n6_baseline"), mean_of("n6_cf_mean_ablation_mr157")) + 0.09)
+    fig.suptitle("Ablating one task-unique direction at the demonstration target tokens", fontsize=12.5, fontweight="bold", x=0.02, ha="left")
+    fig.tight_layout()
+    fig.savefig(OUT / "aggregate_bars.png", facecolor="white")
     plt.close(fig)
 
     for n in (1, 6):
@@ -128,7 +155,7 @@ def main():
         for s in ("top", "right"):
             ax.spines[s].set_visible(False)
         ax.legend(fontsize=9, ncol=5, loc="upper right")
-        ax.set_title(f"L5-7 top-1 task-unique read-feature ablation, per task ({n}-shot)",
+        ax.set_title(("Task-unique direction " + DIR + " ablation, per task" if _MR else "L5-7 top-1 task-unique read-feature ablation, per task") + f" ({n}-shot)",
                      fontsize=14, fontweight="bold", loc="left")
         fig.tight_layout()
         fig.savefig(OUT / f"per_task_bars_{n}shot.png", bbox_inches="tight")
