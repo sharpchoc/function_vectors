@@ -206,7 +206,7 @@ predicts the *held-out* tasks' function vectors. The input is the task unique re
 
 Per task the prediction points the right way: for the 14 held-out tasks the cosine between
 the predicted and the true function vector averages 0.89 (0.81–1.00 for 13 of them, 0.62 for
-ag_news), against 0.64 for the generic train-mean FV.
+ag_news), against 0.64 for the generic train-mean FV (dashed line).
 
 ![Held-out tasks: write feature predicted from the read feature by one linear map](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/linear_map_simple.png)
 
