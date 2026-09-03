@@ -397,83 +397,61 @@ layer as the injection): accuracy climbs from 0.018 at L0 to the 0.126 peak at L
 essentially tied at 0.125), then falls off - 0.070 at L8, 0.010 at L12, and the
 ~0.003 from L13 onward.
 
-**Which vector steers.** On the 1-shot dummy-slot scaffold, the raw task mean beats the engineered alternatives that we tried: raw mean @L7 0.121 > mean-difference (task mean − shared mean) 0.082 > sparse-selected target-slot head sum 0.050. The shared-mean control alone is flat (≤0.013 at every layer), so the shared component is not what steers — but differencing it
-out still hurts, suggesting task-correlated structure is removed with it.
+**Which vector steers.** On the 1-shot dummy-slot scaffold, the raw task mean beats the engineered alternatives that we tried: raw mean @L7 0.121 > mean-difference (task mean − shared mean) 0.082 > sparse-selected target token heads sum 0.050 (same as function vectors but on target tokens instead of the final cue token).
 
 ![Which vector steers: raw mean vs mean-difference vs sparse head sum](../results/69_task_run/bottom_up_read_features/head_selection/method_bars.png)
 
-**Dose and slots.** The 1-shot injection peaks at $\alpha=2$; six slots peak at $\alpha=4$
-and have not saturated (0.381 → 0.442 from $\alpha=2$ to 4). Held-out tasks steer slightly
-better than train (0.49 vs 0.44) — expected, since the vector is a per-task mean with
-nothing fit. 17/69 tasks match or beat real 6-shot demos; the best are string/format tasks
+**Dose and slots.** The 1-shot injection peaks at $\alpha=2$ whilst six slots peak at $\alpha=4$. 17/69 tasks match or beat real 6-shot demos, the best are string/format tasks
 at near-ceiling.
 
-**Scaffold robustness.** The dummy `_` target is not load-bearing: on a scaffold whose six
-demo targets are real words sampled from *other* tasks' output pools, full-mean steering
-reaches 0.494 (vs 0.447 on underscores) — the injection overrides actively wrong target
-content, not just empty slots. Source:
-`bottom_up_read_features/steering_results/sixshot_randomlabel/`.
+**Scaffold robustness.** The results hold regardless of what target replacement is used. For example, instead of `_`, if we use 6-shot prompts whose six demo targets are real words sampled from other tasks' output pools, full-mean steering reaches 0.494 (vs 0.447 on underscores) — the injection overrides actively wrong target content, not just empty slots.
 
-**No low-dimensional shortcut (across tasks).** Restricting the steering vector to top-k
-centered PCs of the 69 task means retains accuracy roughly linearly in k with no knee:
-k=40 (95% of between-task variance) keeps only 76% of the full effect. The between-task
-variance basis is not the basis the model reads.
+**No low-dimensional shortcut across tasks:** Restricting the steering vector to top-k
+centered PCs of the 69 task means retains accuracy roughly linearly in k with inflection point.
 
 ![Steering retention vs subspace dimension](../results/69_task_run/bottom_up_read_features/dimensionality_analysis/sparse_pc40/retention_curve.png)
 
-## D. Read-feature ablation in detail: the rank/band ladder
+## D. Read-feature ablation in detail
 
-**Why ablating the raw mean direction fails (motivation for the task-unique setup).** The
-natural first attempt is to zero-project the task's own unit read-feature direction
-$\hat m_A(\mathrm{L6})$ at the target tokens. This kills ICL (own 0.009 from a 0.629
-baseline) — but the counterfactual control fails: zero-projecting a *different* task's
-direction also collapses accuracy (0.278), so the kill cannot be attributed to task
-identity. The reason is structural: read features are far more similar across tasks than
-function vectors are (mean pairwise cosine 0.727 vs 0.393; figure below), so any task's
+**Ablating the raw mean direction fails:** The
+natural first attempt is to ablate the task's own unit read-feature direction, e.g.
+$\hat m_A(\mathrm{L6})$, at the target tokens. This kills ICL (own 0.009 from a 0.629
+baseline), but the counterfactual control also collapses accuracy (0.278), so the kill cannot be attributed to task
+identity. Upon further investigation, we realied that the read features are far more similar across tasks than function vectors are (mean pairwise cosine 0.727 vs 0.393, see figure below), so any task's
 raw direction contains mostly the shared carrier, and removing it removes the same
-load-bearing shared component regardless of which task the direction came from. This is
-what forced the decomposition of $m_A$ into a shared carrier and a task-unique part used in Claim 3: ablate only the
-task-unique part and the counterfactual control lands exactly at baseline.
+neccesary shared component regardless of which task the direction came from. This is
+what inspired the decomposition of $m_A$ into a shared carrier and a task-unique part used in Claim 3 and ablating only the
+task-unique part, which did the trick.
 
 ![Cross-task cosine similarity of read features vs FVs](../results/69_task_run/bottom_up_read_features/ablation/debugging/cossim_hist.png)
 
-Design: ablate a per-task subspace at *every demo target token, every layer's block input*;
-mean mode moves the projection to the cross-task grand mean (specificity-clean), zero mode
-removes it. Baselines share the exact prompt bank and seeding with the steering runs.
-Bases, in the order they were tried: the fixed unit L6 read-feature direction (rank-1);
-the task's top-5 uncentered per-prompt read-feature PCs (rank-5); the same after centering
-(centered-5); and the **task-unique** family — take the 11 layer-wise task-level read
-features (L5–15), remove each layer's cross-task mean direction, and orthonormalize the
-residuals (effective rank ≈ 1.4; max |cos| to any layer-mean direction: median 0.09 —
-near carrier-free). Top-3 / top-1 = SVD compressions of that basis; L6–9 = the
-band-restricted variant.
+**Design.** Ablate a per-task subspace at every demonstration target token, at the input
+of every block. Mean-ablation replaces the residual's projection onto the subspace with the
+cross-task grand mean's projection; zero-ablation removes it. The control repeats the
+operation with another task's subspace. Baselines share prompts and seeds with the steering
+runs. Besides the main-text direction $\hat u_A$ we report three variants: the task's raw
+unit read direction $\hat m_A(\mathrm{L6})$ (rank-1); the top-3 SVD directions of the
+carrier-removed L5–15 task means (a rank-3 version of $\hat u_A$); and an attention-mask
+control that ablates nothing but blocks the final cue token from attending to the
+demonstration target positions.
 
 | Basis (6-shot, baseline 0.629) | Own, mean-abl | Cf, mean-abl | Own, zero | Cf, zero |
 |---|---:|---:|---:|---:|
-| Rank-1 (unit L6 read dir) | 0.567 | 0.623 | 0.009 | 0.278 |
-| Rank-5 (uncentered PCs) | 0.503 | 0.620 | 0.004 | 0.222 |
-| Centered-5 PCs | 0.545 | 0.625 | 0.393 | 0.550 |
-| Task-unique 11-dir (L5–15) | 0.095 | 0.629 | 0.080 | 0.604 |
-| — top-3 SVD | 0.099 | 0.629 | 0.089 | 0.608 |
-| — top-1 direction | 0.146 | 0.630 | 0.145 | 0.611 |
-| — top-3, L6–9 band only | 0.135 | 0.630 | 0.127 | 0.611 |
-| **— task-unique part $\hat u_A$, L5–7 (main-text object)** | **0.132** | **0.632** | 0.120 | 0.614 |
-| — top SVD direction of the same three residuals ($v_1$) | 0.130 | 0.632 | 0.119 | 0.614 |
-| Attention-mask control | 0.046 | | | |
+| Rank-1: raw unit read direction $\hat m_A(\mathrm{L6})$ | 0.567 | 0.623 | 0.009 | 0.278 |
+| **Task-unique part $\hat u_A$, L5–7 (main text)** | **0.132** | **0.632** | 0.120 | 0.614 |
+| Top-3 SVD of carrier-removed L5–15 means | 0.099 | 0.629 | 0.089 | 0.608 |
+| Attention-mask control (cue → demo targets) | 0.046 | | | |
 
-Readings: (1) uncentered bases can't separate own from counterfactual in zero mode because
-read features overlap heavily across tasks (cos ≈ 0.73 vs 0.39 for FVs) — the shared
-carrier is load-bearing but non-specific; centering fixes the zero-mode collateral (cf
-0.278 → 0.550) but the within-task variance PCs are a weak proxy for identity (own only
-0.393). (2) The between-task mean differential — the task-unique basis — is the target-side
-task-identity code: near-total own-task kill with the counterfactual control *exactly* at
-baseline, in both modes (the basis is orthogonal to the carrier, so mean and zero
-coincide). It is the first and only variant with 1-shot specificity too (own 0.035 vs cf
-0.202, baseline 0.208). (3) Partial survivors of own-task ablation (>30% of baseline) are
-echo/copy-heavy tasks (lowercase_word, larger/smaller_of_pair, several X-english
-translations). (4) Masking the final cue's attention to demo target positions collapses
-accuracy to 0.046 — target-token attention is the near-exclusive route for task information
-into the query.
+Three readings. (1) The raw direction cannot separate task identity from the carrier:
+mean-ablating it barely hurts (0.567), zero-ablating it kills own *and* counterfactual
+(0.009 / 0.278), because the direction is mostly the shared carrier, which is load-bearing
+but not task-specific. (2) Once the carrier is projected out, the ablation is specific and
+the control sits at baseline in both modes (mean and zero coincide because the basis is
+orthogonal to the carrier). Three directions kill slightly harder than one (0.099 vs 0.132 at
+6-shot; 0.038 vs 0.044 at 1-shot, counterfactual 0.204 / 0.205 against a 0.208 baseline), so
+a single direction carries nearly all of the target-side identity code. (3) Blocking the
+cue's attention to the demonstration targets collapses accuracy to 0.046: target-token
+attention is the route by which the read feature reaches the query.
 
 ## E. The read → write linear map in detail
 

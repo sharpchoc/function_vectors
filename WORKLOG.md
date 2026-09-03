@@ -421,6 +421,10 @@ task RELATION; input content and a weak output-format prior survive its removal.
 
 ---
 
+## 2026-09-03 — Paper draft: Appendix D narrowed (user request) to rank-1 raw direction / û_A / top-3 SVD of carrier-removed L5–15 means / attention-mask control; rank-5, centered-5, 11-dir, top-1 (L5–15), L6–9 and v_1 rows dropped from the table (their CSVs stay under results/…/ablation/). Readings rewritten to three points; numbers re-verified against ablation/per_task_acc.csv and task_unique_meanresid/per_task_acc.csv (top-3 1-shot own 0.038 / cf 0.204).
+
+---
+
 ## 2026-09-03 — Paper draft: Appendices B (write-feature dimensionality) and C (write-feature ablation) removed (user request; unreferenced); D–K re-lettered to B–I and all in-text references remapped (Appendix D→B, E→C, F→D, G→E, H→F, I→G, J→H, K→I). Their figures remain on disk under results/.
 
 ---
