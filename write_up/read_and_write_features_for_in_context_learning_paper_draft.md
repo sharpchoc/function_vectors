@@ -204,8 +204,8 @@ This shows that by controlling the subspace spanned by the shared carrier direct
 
 ## Claim 4: Read features are causal for the formation of write features
 
-So far, we have shown that the model uses read features and write features to learn tasks, but have not studied the relationship between the two. We go back to the six-shot dummy prompts from the previous section and inject $u_A$ at the target tokens, but instead of measuring the model output, we measure the residual
-stream at the final cue token for presence of the write feature (i.e. the task's function vectors). We inject $u_A$ at different strengths, $\alpha$, and observe the change in cosine similarity of the residual stream at L13 at the final cue token with that task's respective write feature. We find that presence increases as you increase the strength of the read feature steering.
+So far, we have shown that the model uses read features and write features to learn tasks, but have not studied the relationship between the two. We go back to the six-shot dummy prompts from the previous section and inject $s_A$ at the target tokens, but instead of measuring the model output, we measure the residual
+stream at the final cue token for presence of the write feature (i.e. the task's function vectors). We inject $s_A$ at different strengths, $\alpha$, and observe the change in cosine similarity of the residual stream at L13 at the final cue token with that task's respective write feature. We find that presence increases as you increase the strength of the read feature steering.
 
 ![Cue-token cosine to own FV rising with alpha](../results/69_task_run/read_write_relationship/meanresid/headline_cos_absolute.png)
 
