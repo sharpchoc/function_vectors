@@ -404,7 +404,7 @@ essentially tied at 0.125), then falls off - 0.070 at L8, 0.010 at L12, and the
 **Dose and slots.** The 1-shot injection peaks at $\alpha=2$ whilst six slots peak at $\alpha=4$. 17/69 tasks match or beat real 6-shot demos, the best are string/format tasks
 at near-ceiling.
 
-**Scaffold robustness.** The results hold regardless of what target replacement is used. For example, instead of `_`, if we use 6-shot prompts whose six demo targets are real words sampled from other tasks' output pools, full-mean steering reaches 0.494 (vs 0.447 on underscores) — the injection overrides actively wrong target content, not just empty slots.
+**Scaffold robustness.** The results hold regardless of what target replacement is used. For example, instead of `_`, if we use 6-shot prompts whose six demo targets are real words sampled from other tasks' output pools, full-mean steering reaches 0.494 (vs 0.447 on underscores) and the main-text vector $s_A$ at L0 reaches 0.566 at $\alpha=2$ / 0.610 at per-task best $\alpha$ (vs 0.570 / 0.597 on underscores) — the injection overrides actively wrong target content, not just empty slots. Source: `steering_results/sixshot_randomlabel/`, `steering_results/meanresid/sixshot_L0_randlabel/`.
 
 **No low-dimensional shortcut across tasks:** Restricting the steering vector to top-k
 centered PCs of the 69 task means retains accuracy roughly linearly in k with inflection point.

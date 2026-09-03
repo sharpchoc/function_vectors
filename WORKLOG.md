@@ -421,6 +421,14 @@ task RELATION; input content and a weak output-format prior survive its removal.
 
 ---
 
+## 2026-09-03 — s_A on the random-target scaffold (scaffold-robustness check for the main-text vector; user request)
+
+**Owner:** Claude Code background agent, main checkout. Pod fv-mr-randlabel (1× RTX PRO 4500, ≈1.1 h ≈ $0.8, TERMINATED, re-listed gone). **Status:** DONE.
+
+`sixshot_l67top1_steer.py --scaffold randlabel` (new flag; reuses sixshot_randomlabel_steer.build_items_randomlabel: six demo targets = real words sampled from OTHER tasks' output pools), s_A = c + u_A injected at L0, α∈{0.5,1,2,4}, 69 tasks × 150 prompts. **Result:** unsteered 0.002; α=1 0.399, α=2 **0.566**, α=4 0.580, per-task best **0.610** (train 0.563/0.608, held-out 0.579/0.618) vs the underscore scaffold 0.570 / 0.597 — s_A is scaffold-robust like the full mean (0.494 random vs 0.447 underscore). Artifacts `69_task_run/meanresid_steering/sixshot_L0_randlabel/`; results `steering_results/meanresid/sixshot_L0_randlabel/{sixshot_summary.csv, aggregate.txt}`. Paper draft App C "Scaffold robustness" now quotes both vectors.
+
+---
+
 ## 2026-09-03 — Paper draft: Appendix D narrowed (user request) to rank-1 raw direction / û_A / top-3 SVD of carrier-removed L5–15 means / attention-mask control; rank-5, centered-5, 11-dir, top-1 (L5–15), L6–9 and v_1 rows dropped from the table (their CSVs stay under results/…/ablation/). Readings rewritten to three points; numbers re-verified against ablation/per_task_acc.csv and task_unique_meanresid/per_task_acc.csv (top-3 1-shot own 0.038 / cf 0.204).
 
 ---
