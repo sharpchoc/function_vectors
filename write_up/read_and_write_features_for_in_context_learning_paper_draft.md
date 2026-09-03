@@ -366,45 +366,28 @@ only for the task that owns the direction (layer clamp 9–27). Source: `FV_abla
 
 ## B. Decodability grid in detail
 
-868 cells: 31 token positions (per demo: pre-target ":", first and last target token; plus
-the query cue) × 28 layers, later extended with 21 input-side positions and an
-embedding-only baseline (X = the token embedding; GPT-J has no absolute position
-embeddings, so this is the exact pre-attention input). Each cell is a full-dimensional
-ridge ($\lambda$ by 5-fold CV over train tasks) from the activation to the per-prompt FV,
-scored against the task FV on the 14 held-out tasks.
-
 **Regression design: train on per-prompt FVs, evaluate on task FVs.** Each cell's ridge
 is fit with one row per (task, prompt) — X = that single position's residual activation,
-Y = that prompt's *per-prompt* function vector $v^j_A$ — giving 55 tasks × 150 prompts =
+Y = that prompt's *per-prompt* function vector $v^j_A$, giving 55 tasks × 150 prompts =
 8,250 training rows. Fitting task-level targets directly would leave 55 samples for a
 4096 → 4096 linear map, a massively over-specified problem that a ridge can satisfy
 without learning anything transferable. The per-prompt targets both multiply the sample
-count 150-fold and scatter around each task's mean; that within-task spread is largely
+count 150-fold and scatter around each task's mean. This within-task spread is largely
 unpredictable from a single token activation, so it acts as target noise that discourages
-the fit from chasing prompt-specific detail rather than the task-level signal. Evaluation
-then scores what we actually care about: predictions on the 14 held-out tasks are
-compared to the *task* FV $v_A$ (the per-prompt mean), per task, with the held-out pool's
-mean FV as the reference in the $R^2$ denominator — so a cell scores highly only if the
-activation places unseen tasks' write features correctly, not if it reproduces per-prompt
-jitter. Consistent with this, decomposing the related target-token map (Appendix E) shows
-between-task centroid placement carries ~0.65 of the $R^2$ while within-task deviations
-contribute only ≈0.03–0.05: the transferable signal is the task centroid, and evaluating
-against it measures exactly that.
+the fit from chasing prompt-specific detail rather than the task-level signal. We also empirically got better results for predicting the task level function vector by training to predicting prompt level function vectors. Evaluation and all held out R^2 claims are scored on the the *task* FV $v_A$, which is what we actually care about.
 
-- Peak cell: L15, demo-10 pre-target, held-out $R^2$ 0.688; the whole top-15 is pre-target
-  positions of demos 7–10 at L12–L17.
+- Grid rows: each demonstration's cue token and the last token of its target, plus the query cue.
+- Peak cell: L15, demo-10 cue token, held-out $R^2$ 0.688
 - By layer: steep rise L0 → L8 (0.22 → 0.56), plateau L12–L16 (~0.58), slow decay.
-- Train-side $R^2$ is 0.93–0.96 in the bright band — a ~0.27 generalisation gap, i.e. the
-  maps are partly task-specific (see G).
-- Sawtooth: at L6 the cue trails its own demo's target by ~0.48 $R^2$ at example 1,
-  converges by example 5–6, and inverts by example 10.
+- Sawtooth pattern: at L6 the cue trails its own demo's target by ~0.48 $R^2$ at example 1,
+converges by example 5–6, and inverts by example 10.
 - Embedding baseline: target tokens 0.245 (token identity alone carries a share of the
   early-layer signal); cue and input positions are at or below zero.
 
 ![Full token × layer held-out R² grid](../results/69_task_run/FV_linear_decodability/token_layer_regressions/heldout_r2_heatmap.png)
 
-*The full token × layer grid behind the Claim 2 line figure. The bright band is the
-pre-target and target positions of later demos at layers ~8–17.*
+*The full token × layer grid behind the Claim 2 line figure. The bright band is the cue
+and target tokens of later demos at layers ~8–17.*
 
 ## C. Read-feature steering in detail
 

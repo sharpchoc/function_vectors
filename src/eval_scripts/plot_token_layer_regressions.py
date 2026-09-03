@@ -58,11 +58,22 @@ def main():
                     "best_alpha", "alpha_pinned"])
         w.writerows(rows)
 
+    # heatmap rows: paper terminology — each demo's cue token (was "_pre") and the LAST token of
+    # its target (was "_last"); the first-target-token rows are dropped to avoid confusion.
+    def relabel(name):
+        if name == "query_cue":
+            return "query cue"
+        d, kind = name.split("_", 1)
+        return {"pre": f"demo {d[1:]} cue", "last": f"demo {d[1:]} target"}.get(kind)
+    keep = [i for i, n in enumerate(positions) if relabel(n) is not None]
+    positions = [relabel(positions[i]) for i in keep]
+    H, T = H[keep], T[keep]
+
     def heat(M, title, fname, vmin=None, vmax=None):
         fig, ax = plt.subplots(figsize=(13.5, 9.5), dpi=150)
         im = ax.imshow(M, aspect="auto", cmap="viridis", vmin=vmin, vmax=vmax)
         ax.set_xticks(range(len(layers)), [str(l) for l in layers], fontsize=7.5)
-        ax.set_yticks(range(len(positions)), positions, fontsize=7)
+        ax.set_yticks(range(len(positions)), positions, fontsize=8)
         ax.set_xlabel("layer")
         ax.set_ylabel("token position")
         ax.set_title(title, fontsize=11)
