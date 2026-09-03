@@ -210,6 +210,11 @@ ag_news), against 0.64 for the generic train-mean FV (dashed line).
 
 ![Held-out tasks: write feature predicted from the read feature by one linear map](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/linear_map_simple.png)
 
+*Each bar is one held-out task: the cosine between the function vector predicted from its read
+feature by the linear map (fit on the 55 train tasks) and its true function vector. The dashed
+line is the same cosine when the generic train-mean function vector is used as the prediction
+for every task (mean 0.64), i.e. what is known about the write feature before reading the task.*
+
 The map has more structure than "linear": to first order it is a rotation of the
 read-feature geometry into the write subspace, and that rotation is not low dimensional —
 it needs the full ~30-dimensional task-identity space (Appendix J).

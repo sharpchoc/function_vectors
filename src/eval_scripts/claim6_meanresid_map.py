@@ -274,8 +274,7 @@ def main():
     ax.set_xticks(xs, [te_tasks[i] for i in ordr], rotation=35, ha="right", fontsize=9)
     ax.set_ylabel("cos(predicted FV, true FV)", fontsize=11, color=INK)
     ax.set_ylim(0, 1.0)
-    ax.set_title(f"Held-out tasks: write feature predicted from the read feature by one linear map\n"
-                 f"(mean cos {cos_map.mean():.2f}; dashed: mean cos when the generic train-mean FV is used as the prediction, {cos_gen.mean():.2f})",
+    ax.set_title("Predicting held-out tasks' write features with one linear map",
                  loc="left", fontsize=11.5, color=INK, pad=10)
     fig.tight_layout(); fig.savefig(OUT / "linear_map_simple.png", facecolor="white"); plt.close(fig)
     print(f"linear map per held-out task: mean cos {cos_map.mean():.3f} (min {cos_map.min():.3f}) vs generic FV {cos_gen.mean():.3f}")
