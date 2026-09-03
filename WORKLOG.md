@@ -421,6 +421,24 @@ task RELATION; input content and a weak output-format prior survive its removal.
 
 ---
 
+## 2026-09-03 — Appendix E re-based on the u_A → v_A map: split robustness, per-task transfer, centroid decomposition (user request)
+
+CPU only. `src/eval_scripts/claim6_meanresid_robustness.py` (imports load/ridge/procrustes from
+claim6_meanresid_map.py). **Findings:** 10 random 55/14 splits → ridge held-out R² 0.602 ± 0.057
+(range 0.502–0.682; canonical 0.641 inside), rotation+scale 0.566 ± 0.049 (canonical 0.588).
+Per-task cos(pred, true FV) averaged over splits where held out (63/69 covered): median 0.885;
+weakest ag_news 0.61, natural_manmade 0.73, concrete_abstract 0.73, person-instrument 0.75,
+country-capital 0.75 — classification-style tasks, none below 0.6 (the old bank-(b) raw-m_A
+"near zero" bimodality does not recur). Per-prompt-FV targets on the canonical held-out tasks:
+map on per-prompt u^j 0.397 < map on task centroid 0.460 < oracle task-mean FV (LOO) 0.714;
+train-mean −0.06 → centroid prediction = 65% of the oracle, within-task read variation is
+noise to the map. Outputs `meanresid_map/{robustness_seeds,per_task_transfer,
+centroid_decomposition}.csv, seed_r2.png`. Paper draft App E rewritten: bullet-point method,
+robustness (+figure), which tasks transfer, centroid decomposition, raw-m_A(ℓ) layer sweep kept
+as the last paragraph; all ten-site-estimator (bank b) paragraphs and the convention note removed.
+
+---
+
 ## 2026-09-03 — s_A on the random-target scaffold (scaffold-robustness check for the main-text vector; user request)
 
 **Owner:** Claude Code background agent, main checkout. Pod fv-mr-randlabel (1× RTX PRO 4500, ≈1.1 h ≈ $0.8, TERMINATED, re-listed gone). **Status:** DONE.

@@ -448,59 +448,63 @@ Besides the main-text direction $\hat u_A$ we report three variants:
 | Top-3 SVD of carrier-removed L5–15 means | 0.099 | 0.629 | 0.089 | 0.608 |
 | Attention-mask control (cue → demo targets) | 0.046 | | | |
 
+Findings:
 - **The raw direction cannot separate task identity from the carrier.** Mean-ablating it
-  barely hurts (0.567); zero-ablating it kills own *and* counterfactual (0.009 / 0.278). The
-  direction is mostly the shared carrier, which is load-bearing but not task-specific.
+  barely hurts (0.567) but zero-ablating it kills own *and* counterfactual (0.009 / 0.278). The direction is mostly the shared carrier, which is causally neccesary but not task-specific.
 - **Once the carrier is projected out, the ablation is specific** and the control sits at
   baseline in both modes (mean and zero coincide because the basis is orthogonal to the
   carrier). Three directions kill slightly harder than one (0.099 vs 0.132 at 6-shot; 0.038 vs
   0.044 at 1-shot, counterfactual 0.204 / 0.205 against a 0.208 baseline), so a single
   direction carries nearly all of the target-side identity code.
 - **Blocking the cue's attention to the demonstration targets collapses accuracy to 0.046:**
-  target-token attention is the route by which the read feature reaches the query.
+  target token attention is the route by which the read feature reaches the query - i.e. it goes directly, not via some intermediary representations at other cue tokens for example.
 
 ## E. The read → write linear map in detail
 
-**Layer sweep with the raw per-layer read feature.** A ridge regression from the raw per-layer read feature $m_A(\ell)$ (final-target-site X, per prompt) to the per-prompt function
-vector, fit on the 55 train tasks, predicts the *held-out* tasks' function vectors with
-$R^2 \approx 0.64$ (0.56 per-prompt, 0.63 at task centroids, reading from L12). The map is
-one linear transform shared across tasks — it was never shown the held-out tasks' FVs, yet
-it places most of them from their read features alone. The sweep covers all 28 layers:
-held-out $R^2$ climbs steeply from 0.28 at L0, plateaus from L8, peaks at L12–13, and
-declines only gently to 0.53 at the final layer — task identity stays linearly readable at
-the target slots through the entire second half of the network.
+**Method (Claim 6 fit).**
+
+- Input: the task-unique part $u_A$ of the read feature (mean of the carrier-projected L5–7
+  task means). Target: the task's function vector $v_A$ (mean of its 150 per-prompt FVs).
+- One row per task: 55 train tasks fit the map, 14 held-out tasks score it. Both sides are
+  centred on the train means, so the shared carrier drops out of the input.
+- Map: ridge regression in dual form, $\lambda$ chosen by leave-one-out cross-validation on
+  the train tasks (it picks the smallest value on the grid, 0.01, i.e. minimum-norm
+  interpolation generalises best).
+- Score: pooled held-out $R^2$ with the held-out mean FV as reference, and per-task
+  cos(predicted, true). Source: `understanding_read_write_linear_map/meanresid_map/`
+  (`claim6_meanresid_map.py`, `claim6_meanresid_robustness.py`).
+
+**Split robustness.** Over 10 random 55/14 task splits the held-out $R^2$ of the ridge is
+0.60 ± 0.06 (range 0.50–0.68); the canonical split's 0.64 sits inside that range. The
+rotation + scalar map of Appendix H tracks it at 0.57 ± 0.05 (canonical 0.59).
+
+![Held-out R² across task splits](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/seed_r2.png)
+
+**Which tasks transfer.** Averaging each task's cos(predicted, true FV) over the random
+splits in which it was held out (63 of 69 tasks are held out at least once): median 0.89.
+The weakest are classification-style tasks — ag_news 0.61, natural_manmade 0.73,
+concrete_abstract 0.73, person-instrument 0.75 — the same family whose read features are
+least aligned with their own FVs (Appendix H); no task falls below 0.6.
+
+**The map places task centroids, not individual prompts.** Scored against the *per-prompt*
+FVs $v^j_A$ of the 14 held-out tasks (held-out-mean reference):
+
+- map applied to each prompt's own read feature $u^j_A$: $R^2$ 0.40;
+- map applied to the task centroid $u_A$ (one prediction per task): 0.46;
+- oracle, each prompt's own task-mean FV (leave-one-prompt-out): 0.71;
+- train-mean FV for every prompt: −0.06.
+
+The centroid prediction recovers 65% of what a perfect centroid predictor could; feeding the
+map per-prompt inputs lowers the score, so the within-task variation of the read feature is
+noise to this map, not signal.
+
+**Layer sweep with the raw per-layer read feature.** Regressing from the raw task mean
+$m_A(\ell)$ instead (per-prompt X, all 28 layers) shows where task identity is linearly
+readable in depth: held-out $R^2$ climbs from 0.28 at L0, plateaus from L8, peaks at
+L12–13 (0.64) and is still 0.53 at the last layer. Task identity stays readable at the
+target slots through the whole second half of the network.
 
 ![Held-out R² of the read→write ridge, all 28 layers](../results/69_task_run/FV_linear_decodability/labeltoken_fv_ridge/layer_sweep_bankA/taskfv_r2_heldout_perprompt.png)
-
-*(Convention note: the detailed numbers in this appendix were computed with the ten-site
-average of the demonstration target activations as the per-prompt X — the estimator
-variant of Appendix I — and have not been re-run under the final-target-site convention;
-the main-text Claim 6 numbers and figure use the final-target-site X.)*
-
-**What transfers is the centroid map.** Against per-prompt FV targets the held-out $R^2$
-is 0.44–0.50 over L5–L15; the full 28-layer sweep spans 0.26 (L0) to the 0.498 peak (L13)
-and still holds 0.46 at L27. Decomposing it, between-task centroid placement carries 0.65
-while within-task deviations contribute ≈0.03 — and a held-out-prompt check on train tasks
-confirms the within-task share is ≈0.05 even in-distribution. The map is a task-centroid
-interpolator; scored against task FVs (the centroid target) it reaches the ~0.7 quoted in
-the main text.
-
-**Robustness.** Over 10 random 55/14 splits: held-out $R^2$ 0.469 ± 0.040 (canonical split
-at the mean); the oracle ceiling (leave-one-out task-mean predictor) is 0.675. Transfer is
-bimodal: morphology/translation tasks sit essentially at their oracle, while
-classification-like tasks (pos_label, ag_news, uppercase_word, initials_two_words,
-first_digit, person_place_thing) stay near zero under *every* split — their read→write
-relation is task-idiosyncratic, not merely under-covered. Neither PCA-90 rank reduction
-nor lasso in the PCA basis beats the plain full-dimensional ridge.
-
-**Task-level fit agrees.** Treating each task as one sample (55 train centroids → task FV,
-LOO-CV $\lambda$) reproduces the per-prompt sweep where they overlap (held-out $R^2$ 0.683
-vs 0.692 at L13, train-mean convention) — consistent with the centroid-memorization
-reading: the 55 task centroids already carry all the transferable signal. Despite
-n=55 << d=4096, LOO-CV picks the smallest $\lambda$ from L6 on (min-norm interpolation
-generalizes; explicit shrinkage hurts). Source: `read_write_relationship/linear_mapping/`.
-
-![Seed-split robustness](../results/69_task_run/FV_linear_decodability/labeltoken_fv_ridge/seedsplits/seed_r2.png)
 
 ## F. Presence-vs-accuracy method
 
