@@ -388,6 +388,39 @@ c + 2n_A v1. Sufficiency-by-m_A(L6) (0.442) text earlier in Claim 3 left as is (
 
 ---
 
+## 2026-09-03 — What the model says under own-û_A ablation: failure-mode bucketing (user question)
+
+**Owner:** Claude Code background agent, main checkout. CPU only. **Status:** DONE (report to user;
+paper draft NOT changed).
+
+**Method:** `src/eval_scripts/ablation_failure_modes.py` — reads the stored per-prompt preds of
+the mean-residual ablation JSONs (bankA_meanresid_top1/n{1,6}shot), rebuilds query/demos from
+isolation_prompts_ext/<task>/train_prompts.json (same order), buckets each prediction: correct /
+copy_query / copy_demo_target / copy_demo_input / in_pool_wrong (valid task output, wrong one) /
+input_variant (shares ≥4-char prefix or substring with the query) / other. All 69 tasks, 6- and
+1-shot, own vs counterfactual arm. Output: `ablation/task_unique_meanresid/failure_modes/
+{bucket_counts.csv, examples.md}` (10 own-error examples per task).
+
+**Findings (6-shot, own û_A ablated, 69×150 prompts):** correct 15.6%, copy_query 12.9%,
+input_variant 8.5%, in_pool_wrong 4.3%, copy_demo_target 4.4%, copy_demo_input 0.3%, other
+54.0% (cf arm: correct 63.5%, other 16.2%). Modes by task family: (i) morphological /
+±1-number tasks → echo the input unchanged (present-past 130/148 errors, verb_to_third_person
+119/148, singular-plural 107/142, next/prev_number ~77/140); (ii) translation & knowledge →
+mangled or associated forms of the INPUT (english-french 'garden'→'gardén', 'turned'→'turnt';
+country-capital 'Ireland'→'Hibern on', 'Nigeria'→'Ikwerre'), relation lost, topic kept;
+(iii) antonym → synonyms/neighbours ('unveil'→'reveal', 'rely'→'faith'); (iv) date/number
+arithmetic → keeps the output FORMAT but loses the operation ('June 26, 1933'→'June 28',
+'78'→'77'); (v) classification tasks → abandons the label vocabulary entirely: across the 25
+tasks with ≤12 distinct outputs only 22% of own-ablated outputs lie in the label set vs 85%
+under counterfactual ablation (sentiment → 'manageable', 'holiday', 'exam'; language_id →
+continues in the input's language, 'Gebäude'→'molto ricco'); (vi) surface-format tasks
+(uppercase, capitalize) mostly survive (88/112 of 150 correct), errors are typos. Copying a
+demo target/input is rare (≤4.4%) — the model is not attending to the wrong demo; it is not
+applying any demo-defined relation at all. Interpretation offered to user: û_A carries the
+task RELATION; input content and a weak output-format prior survive its removal.
+
+---
+
 ## 2026-09-03 — Claim 6 on the new read feature (u_A → v_A) + k-dimensional rotation sweep (user request)
 
 **Owner:** Claude Code background agent, main checkout. CPU only (~20 s). **Status:** DONE.
