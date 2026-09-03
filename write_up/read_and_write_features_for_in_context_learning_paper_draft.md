@@ -788,7 +788,7 @@ vector composition) and $c + 2 u_A$ (to match $w_A$'s dose).
 **Injection layer (6-shot, $s_A$).** The 1-shot sweep picks L0–L3, but $s_A$ is built from
 L5–7 activations, so we also injected it at each of L5, L6 and L7 on the 6-shot scaffold
 (same vector, same prompts, same readout; run with the SVD-variant twin $c + n_A v_1$, which
-matches $s_A$ to 0.001 at L0):
+matches $s_A$ to ≤0.001 at both layers where both were run — L0 and L5, where $s_A$ gives 0.458 / 0.508 at $\alpha=2$ / per-task best):
 
 | injection layer | $\alpha=2$ | $\alpha=4$ | per-task best $\alpha$ |
 |---|---:|---:|---:|

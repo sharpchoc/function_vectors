@@ -388,6 +388,42 @@ c + 2n_A v1. Sufficiency-by-m_A(L6) (0.442) text earlier in Claim 3 left as is (
 
 ---
 
+## 2026-09-03 — Task-unique part := mean of carrier-removed L5–7 residuals (u_A); s_A = c + u_A (user decision)
+
+**Owner:** Claude Code background agent, main checkout. Pod fv-meanresid (1× RTX PRO 4500
+$0.72/h, ≈2.3 pod-h ≈ $1.7, TERMINATED, re-listed gone). **Status:** DONE.
+
+**Why:** user asked (2026-09-02) whether the SVD top-1 direction of the three unit-normed
+carrier-removed residuals is just their mean, and proposed the simpler object: per layer
+ℓ∈{5,6,7} project the shared carrier direction ĉ(ℓ) out of m_A(ℓ) → r_A(ℓ); **u_A =
+(1/3)Σ r_A(ℓ)** (natural magnitude, no SVD, no unit-norming, no n_A coefficient). Ablate
+û_A = u_A/‖u_A‖; steer with **s_A = c + u_A**.
+
+**Checks (69 tasks, bank a):** |cos(û_A, v1)| median 0.9993 (min ≥ 0.997); ‖u_A‖/|n_A|
+median 1.0008 (0.998–1.004); median ‖u_A‖ 28.1, ‖c‖ 47.0, ‖s_A‖ 55.2. **Ablation** (mean-abl
+at all demo targets, all 28 blocks): 6-shot own **0.132** / cf 0.632 (baseline 0.629; SVD:
+0.130/0.632); 1-shot own **0.044** / cf 0.205 (baseline 0.208; SVD 0.043/0.205). **Steering**
+(6-shot dummy scaffold): @L0 α=1 0.398, α=2 **0.570**, per-task best **0.597** (SVD 0.570 /
+0.596); @L5 α=2 0.458, best 0.508 (SVD 0.457 / 0.507). ⇒ the two definitions are the same
+object; the mean-residual one is adopted as the paper's task-unique part (DECISIONS 2026-09-03).
+
+**Files:** NEW `src/sandbox/ext_steerability/build_meanresid_taskunique.py` (→
+`bankA/meanresid_top1_bases.pt` unit û_A, `bankA/carrier_plus_meanresid_vectors.pt` s_A with
+u_norm/carrier_norm/vec_norm), `run_meanresid_pod.sh` (ablation 6+1-shot → steering L0, L5);
+`sixshot_l67top1_steer.py` n_A→`.get(n_A, u_norm)`; `plot_69_taskunique_L5to7_top1.py`
+`MEANRESID=1` switch → `results/…/ablation/task_unique_meanresid/`; `plot_l67top1_sixshot.py`
+meanresid labels (s_A) → `results/…/steering_results/meanresid/sixshot_L{0,5}/`;
+`make_readfeature_explainer.py` panel C = project out c, then average. Artifacts
+`69_task_run/{bankA_meanresid_top1, meanresid_steering/sixshot_L{0,5}}/`. Paper draft Claim 3
+rewritten to the u_A definition (motivation, definition block, necessity, sufficiency figures);
+Claims 4/5 + App I/F/presence prose reconciled (steering vector now $s_A$, SVD composite kept
+as labelled variant row); `/workspace/read_feature_explainer.md` §2/§3 updated.
+
+**Next:** none for this definition. Open: Claim 6 linear-map re-run with X = bank-(a) L5–7
+read feature (CPU-only, awaiting user go).
+
+---
+
 ## 2026-09-02 — ctop1: carrier + n_A·v1 steering vector (mirrors the ablation object)
 
 **Owner:** Claude Code background agent, main checkout. Pods fv-ctop1-sw{0,1,2} + fv-ctop1-six0

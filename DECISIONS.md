@@ -1,5 +1,24 @@
 # DECISIONS
 
+## 2026-09-03 — Task-unique part of the read feature = mean of the carrier-removed L5–7 residuals (user decision)
+
+- For each ℓ ∈ {5,6,7}: $\hat c(\ell)$ = unit cross-task mean of $m_A(\ell)$ (shared
+  carrier direction); $r_A(\ell) = m_A(\ell) - \langle m_A(\ell), \hat c(\ell)\rangle \hat c(\ell)$
+  (carrier PROJECTED OUT, not subtracted). **$u_A = \tfrac13 \sum_\ell r_A(\ell)$** is the
+  task-unique part — a vector with natural magnitude (median ‖u_A‖ 28 vs ‖c‖ 47).
+- **Ablation object:** $\hat u_A = u_A/‖u_A‖$ (`bankA/meanresid_top1_bases.pt`).
+  **Steering object:** $s_A = c + u_A$ with $c$ the layer-averaged L5–7 carrier
+  (`bankA/carrier_plus_meanresid_vectors.pt`); no coefficient to fit.
+- Supersedes the SVD definition (top singular direction $v_1$ of the three unit-normed
+  residuals; $n_A = \langle \bar m_A - c, v_1\rangle$; $c + n_A v_1$): the two agree at
+  |cos| median 0.9993, ‖u_A‖/|n_A| ≈ 1.001, and give identical ablation/steering numbers
+  (±0.002). Reason for the switch: simpler to explain, no arbitrary SVD sign, natural
+  magnitude. The SVD variant stays in App I as a labelled row; App F/K/presence prose notes
+  the equivalence where their numbers were computed with $v_1$.
+- Notation in the draft: $u_A$ = task-unique part, $s_A$ = steering vector. (Before
+  2026-09-03, $u_A$ denoted the steering vector $c + n_A v_1$ — WORKLOG 2026-09-02 entries use
+  that older meaning.)
+
 ## 2026-09-01 — Read feature estimator: final-target-site (bank a) is canonical (user decision)
 
 - The read feature $m_A(\ell)$ is estimated from `label_resid_means`: the residual (block
