@@ -20,6 +20,9 @@
   was re-run with $\hat u_A$ / $s_A$ and reproduces to ±0.005 — the paper reports only the
   mean-residual numbers (WORKLOG 2026-09-03). The swap's α is now in natural units
   ($\alpha u_A$, α=1 = natural magnitude), not $s_1$ units.
+- Claim 6 (read→write map) is likewise stated on $u_A$: after train-mean centering the
+  carrier drops out, so X = $u_A$ (task level and per prompt). Raw per-layer $m_A(\ell)$ maps
+  stay only as the App G layer-readability sweep and one App J reference sentence.
 - Notation in the draft: $u_A$ = task-unique part, $s_A$ = steering vector. (Before
   2026-09-03, $u_A$ denoted the steering vector $c + n_A v_1$ — WORKLOG 2026-09-02 entries use
   that older meaning.)

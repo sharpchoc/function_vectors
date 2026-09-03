@@ -225,47 +225,55 @@ causal FV heads clustered in early-middle layers and FV injection most effective
 
 ## Claim 6: Read features linearly map to write features
 
-A single ridge regression from the mean target-token activation to the per-prompt function
-vector, fit on the 55 train tasks, predicts the *held-out* tasks' function vectors with
-$R^2 \approx 0.64$ (0.56 per-prompt, 0.63 at task centroids, reading from L12). The map is
-one linear transform shared across tasks — it was never shown the held-out tasks' FVs, yet
-it places most of them from their read features alone. The sweep covers all 28 layers:
-held-out $R^2$ climbs steeply from 0.28 at L0, plateaus from L8, peaks at L12–13, and
-declines only gently to 0.53 at the final layer — task identity stays linearly readable at
-the target slots through the entire second half of the network.
-
-![Held-out R² of the read→write ridge, all 28 layers](../results/69_task_run/FV_linear_decodability/labeltoken_fv_ridge/layer_sweep_bankA/taskfv_r2_heldout_perprompt.png)
+A single linear map from the read feature to the write feature, fit on the 55 train tasks,
+predicts the *held-out* tasks' function vectors. The input is the read feature of Claim 3:
+after the train-mean shift the shared carrier $c$ drops out, so the map acts on the
+task-unique part $u_A$. Ridge regression from $u_A$ to the task FV reaches held-out
+$R^2 = 0.64$ on the 14 held-out tasks (0.53 when the same map is applied to individual
+prompts' read features). The map is one linear transform shared across tasks — it was never
+shown the held-out tasks' FVs, yet it places most of them from their read features alone.
+(Regressing from the raw per-layer read feature $m_A(\ell)$ instead shows that task identity
+stays linearly readable at the target slots through the whole network; Appendix G.)
 
 ### The read→write map is, to first order, a rotation
 
-What does that linear map actually do? Removing each family's grand mean answers it. The
-two task clouds are already the *same shape*: centered pairwise cosines match pair-by-pair
-(Pearson 0.93 at L6 / 0.96 at L13, gram-CKA 0.93/0.95), and even the centered norms
-correlate (r ≈ 0.79). But they occupy *nearly orthogonal directions* of the residual
-stream: the largest principal cosine between the two 90%-variance subspaces is 0.26 (L6) /
-0.41 (L13), and each task's read feature is nearly orthogonal to its own FV (matched cos
-0.08 / 0.19, vs exactly 0 for mismatched pairs).
+What does that linear map actually do? Removing each family's mean answers it. The two task
+clouds are already the *same shape*: centered pairwise cosines between tasks match
+pair-by-pair (Pearson 0.93, gram-CKA 0.92), and even the centered norms correlate
+(r ≈ 0.78). But they occupy *nearly orthogonal directions* of the residual stream: the
+largest principal cosine between the two 90%-variance subspaces is 0.26, and each task's
+$u_A$ is nearly orthogonal to its own FV (matched cos 0.06, vs 0 for mismatched pairs).
 
 Congruent shapes in orthogonal subspaces is precisely the geometry a rotation solves — and
-it does: an orthogonal Procrustes map (fit on the 55 train tasks) reaches held-out $R^2$
-0.625 vs the unconstrained ridge's 0.657 when reading at L13 — 95% of the ridge. Reading
-at L6 additionally needs one global scalar, $s = 1.55$: the task-unique read signal at L6
-is only 0.63× FV magnitude (centered norms 30.7 vs 49.1) and grows to parity by L13
-(52.1 vs 49.1, $s = 0.93$). In full:
+it does: an orthogonal Procrustes map (fit on the 55 train tasks) plus one global scalar
+reaches held-out $R^2$ 0.59, 92% of the unconstrained ridge's 0.64. The scalar is
+$s = 1.66$: the task-unique read signal is about 0.6× the FV's magnitude (centered norms
+28 vs 48), so the rotation has to be scaled up once. In full:
 
-$$\hat v_A = \bar v + s \cdot R\,(m_A - \bar m)$$
+$$\hat v_A = \bar v + s \cdot R\,(u_A - \bar u)$$
 
-— remove the target-token carrier, rigidly rotate the task-identity geometry into the FV
-subspace, rescale if reading early, add the generic-FV mean back. The ridge's remaining
-~5% is direction-dependent gain (its singular spectrum decays; Appendix J).
+— rigidly rotate the task-identity geometry of the read feature into the FV subspace,
+rescale once, add the generic-FV mean back. The ridge's remaining 8% is
+direction-dependent gain (its singular spectrum decays; Appendix J).
 
-![Congruence, rotation vs ridge, ridge-map spectrum](../results/69_task_run/understanding_read_write_linear_map/rotation_vs_ridge.png)
+![Predicting held-out write features from read features: mean shift, rotation, rotation + scalar, ridge](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/rotation_simple.png)
 
-Scope of the claim: with 55 training tasks the map is constrained only on the
-≤55-dimensional task-identity span, and it is the *centroid* map (above) — the statement is
-that whatever the network computes between target tokens and cue is functionally
-equivalent, at task level, to a rigid re-embedding of an unchanged task geometry, not that
-the circuitry is literally an orthogonal matrix.
+### How many read dimensions does the map use?
+
+Is the rotation secretly low dimensional? We run PCA on the 55 train tasks' $u_A$, keep only
+the top $k$ read components, and fit the map (rotation + scalar, or unconstrained linear)
+from those $k$ coordinates alone, scoring on the held-out tasks. Held-out $R^2$ rises
+steadily with $k$ — 0.14 at $k=1$, 0.18 at $k=2$, 0.27 at $k=4$, 0.36 at $k=8$, 0.48 at
+$k=16$, 0.54 at $k=32$ — with no plateau before the full 54-dimensional train span (0.59).
+At every $k$ the rotation of $k$ read components recovers 80–85% of the ceiling set by the
+write feature's *own* top-$k$ principal components, so the map is not the bottleneck: the
+task identity carried across 69 tasks is itself high dimensional (32 read / 28 write
+directions for 90% of the variance), and the rotation transports all of it, not a
+handful of privileged directions. The unconstrained linear map from the same $k$
+coordinates does no better, so nothing beyond a rotation and one scalar is gained at any
+$k$ either.
+
+![Held-out R² vs number of read-feature principal components used](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/kdim_sweep.png)
 
 ## Claim 7: Write-feature presence predicts task accuracy
 
@@ -633,6 +641,17 @@ into the query.
 
 ## G. The read → write linear map in detail
 
+**Layer sweep with the raw per-layer read feature.** A ridge regression from the raw per-layer read feature $m_A(\ell)$ (final-target-site X, per prompt) to the per-prompt function
+vector, fit on the 55 train tasks, predicts the *held-out* tasks' function vectors with
+$R^2 \approx 0.64$ (0.56 per-prompt, 0.63 at task centroids, reading from L12). The map is
+one linear transform shared across tasks — it was never shown the held-out tasks' FVs, yet
+it places most of them from their read features alone. The sweep covers all 28 layers:
+held-out $R^2$ climbs steeply from 0.28 at L0, plateaus from L8, peaks at L12–13, and
+declines only gently to 0.53 at the final layer — task identity stays linearly readable at
+the target slots through the entire second half of the network.
+
+![Held-out R² of the read→write ridge, all 28 layers](../results/69_task_run/FV_linear_decodability/labeltoken_fv_ridge/layer_sweep_bankA/taskfv_r2_heldout_perprompt.png)
+
 *(Convention note: the detailed numbers in this appendix were computed with the ten-site
 average of the demonstration target activations as the per-prompt X — the estimator
 variant of Appendix K — and have not been re-run under the final-target-site convention;
@@ -890,30 +909,54 @@ randlabel_swap, attention_to_label_1shot, error_analysis_swap_vs_fullmean}/`.
 
 ## J. The rotation analysis in detail
 
-**Data.** X = task-mean target-token residual $m_A(L)$ (`label_resid_means`, L ∈ {6, 13}),
-Y = task FV (mean of the 150 per-prompt FVs); 55 train / 14 held-out, fp64.
+**Data.** X = task-unique part $u_A$ of the read feature (mean of the carrier-projected L5–7
+task means, `label_resid_means`; per-prompt variant built the same way from
+`label_resid_perprompt`), Y = task FV (mean of the 150 per-prompt FVs); 55 train / 14
+held-out, fp64. Source: `understanding_read_write_linear_map/meanresid_map/`
+(`claim6_meanresid_map.py`).
 
-**Congruence.** All-69 family-centered pairwise cosines: read vs write Pearson 0.932 (L6)
-/ 0.959 (L13), Spearman 0.905 / 0.946; centered-norm correlation 0.786 / 0.790; gram-CKA
-0.930 / 0.952. Subspace overlap in activation space: feature-side alignment 0.014 / 0.051;
-principal cosines between the 90%-variance subspaces (32 vs 28 dims): max 0.256 / 0.407,
-median 0.091 / 0.171. Cross-family matched cos($m_A$, $v_A$) centered: mean 0.076 (L6) /
-0.195 (L13), mismatched pairs ≈ 0; matched exceeds the mismatched 95th percentile for
-40/69 (L6) and 57/69 (L13) tasks. Highest matched overlap: the translation family
-(0.31–0.35 at L13); lowest: target-classification tasks (≈0.00–0.10) — the same family
-that transfers worst through the map.
+**Congruence.** All-69 family-centered pairwise cosines: read vs write Pearson 0.932,
+Spearman 0.906; centered-norm correlation 0.780; gram-CKA 0.924. Subspace overlap in
+activation space: principal cosines between the 90%-variance subspaces (32 read vs 28 write
+dims): max 0.258, median 0.090. Cross-family matched cos($u_A$, $v_A$) centered: mean 0.064,
+mismatched pairs ≈ 0 (−0.000); matched exceeds the mismatched 95th percentile for 36/69
+tasks.
 
-**Fits.** Predictor: $\hat v_A = \bar v + s \cdot R\,(m_A - \bar m)$ with means from the
-train tasks; $R$ by orthogonal Procrustes on the 55 centered train pairs; $s = 1$
-(rotation) or the trace-formula scalar (rotation+scale); ridge = dual with intercept,
-$\lambda$ by LOO-CV. Held-out testmean $R^2$: L13 — ridge 0.657, rotation 0.625,
-rotation+scale 0.624 ($s = 0.93$); L6 — ridge 0.642, rotation 0.482, rotation+scale 0.586
-($s = 1.55$; centered read norms 30.7 vs FV 49.1). Held-out mean cos of centered
-predictions: rotation 0.82 vs ridge 0.84 (L13). The fitted ridge map's singular spectrum
-on the train span decays smoothly ($\sigma_{10}/\sigma_1 \approx 0.7$,
-$\sigma_{40}/\sigma_1 \approx 0.42$) — the ~5% it adds over the rotation is
-direction-dependent gain, not a different geometry.
-Source: `understanding_read_write_linear_map/`.
+**Fits.** Predictor: $\hat v_A = \bar v + s \cdot R\,(u_A - \bar u)$ with means from the
+train tasks; $R$ by orthogonal Procrustes on the 55 centered train pairs; $s = 1$ (rotation)
+or the trace-formula scalar (rotation+scale); ridge = dual with intercept, $\lambda$ by
+LOO-CV (picks the smallest value on the grid, 0.01). Held-out $R^2$ (test-mean reference),
+task centroids / per-prompt read features: ridge 0.641 / 0.531; rotation+scale 0.588 /
+0.484 ($s = 1.66$; centered read norms 28.2 vs FV 47.7); rotation alone 0.457 / 0.419;
+train-mean baseline −0.084. Train-mean-reference $R^2$: ridge 0.669, rotation+scale 0.620.
+Held-out mean cos of centered predictions: rotation 0.80, ridge 0.83. The fitted ridge
+map's singular spectrum on the train span decays smoothly ($\sigma_{10}/\sigma_1 \approx 0.67$,
+$\sigma_{40}/\sigma_1 \approx 0.40$) — the 8% it adds over the rotation is
+direction-dependent gain, not a different geometry. For reference, the raw single-layer
+read feature gives the same picture (ridge / rotation+scale: $m_A(\mathrm{L6})$ 0.642 / 0.586
+with $s = 1.55$; $m_A(\mathrm{L13})$ 0.657 / 0.624 with $s = 0.93$).
+
+**$k$-dimensional maps.** PCA on the 55 train $u_A$ (train-centered); the top-$k$ read
+components are the only input. "Linear" = ridge from the $k$ scores (LOO-CV $\lambda$);
+"rotation+scale" = Procrustes on the rank-$k$ projected read features; "write ceiling" =
+held-out FVs projected onto their own top-$k$ train write PCs (the best any rank-$k$
+output can do); "read recon" = held-out read variance kept by the $k$ read PCs. Held-out
+$R^2$, test-mean reference:
+
+| $k$ | linear | rotation+scale | write ceiling | read recon | train var. kept |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 0.138 | 0.138 | 0.151 | 0.165 | 0.16 |
+| 2 | 0.181 | 0.181 | 0.209 | 0.204 | 0.26 |
+| 4 | 0.273 | 0.270 | 0.336 | 0.312 | 0.41 |
+| 8 | 0.349 | 0.363 | 0.453 | 0.408 | 0.55 |
+| 16 | 0.487 | 0.481 | 0.566 | 0.510 | 0.74 |
+| 32 | 0.569 | 0.538 | 0.651 | 0.568 | 0.94 |
+| 54 (all) | 0.641 | 0.588 | 0.712 | 0.616 | 1.00 |
+
+The per-$k$ scalar $s$ falls from 1.99 ($k=1$) to 1.66 (full rank). Per-prompt held-out
+$R^2$ follows the same curve about 0.05 lower. Train $R^2$ of the full ridge is 1.00 (55
+points in 4096 dimensions interpolate), of rotation+scale 0.94; at $k=4$ both are 0.44–0.45
+against 0.27 held-out.
 
 ![Cross-family cosine histograms](../results/69_task_run/understanding_read_write_linear_map/crossfamily_cos_hists.png)
 

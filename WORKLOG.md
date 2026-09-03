@@ -388,6 +388,41 @@ c + 2n_A v1. Sufficiency-by-m_A(L6) (0.442) text earlier in Claim 3 left as is (
 
 ---
 
+## 2026-09-03 — Claim 6 on the new read feature (u_A → v_A) + k-dimensional rotation sweep (user request)
+
+**Owner:** Claude Code background agent, main checkout. CPU only (~20 s). **Status:** DONE.
+
+**Setup:** `src/eval_scripts/claim6_meanresid_map.py` — X = u_A (mean carrier-projected
+L5-7 task mean; per-prompt variant from label_resid_perprompt with the same construction),
+Y = task FV; protocol of rotation_vs_ridge.py (55/14 split, train-mean centering, dual ridge
+LOO-CV λ, thin Procrustes, trace scalar, pooled held-out R² test-mean ref). Extension (user):
+PCA on the 55 train u_A, keep top-k read PCs (k=1,2,3,4,6,8,12,16,24,32,54), fit linear
+(ridge on k scores) and rotation+scale (Procrustes on the rank-k projection); references =
+held-out FVs on their own top-k train write PCs (ceiling) and read-side PCA reconstruction.
+
+**Findings:** full rank — ridge 0.641 (per-prompt 0.531), rotation 0.457, rotation+scale
+0.588 (s=1.66; read norm 28.2 vs FV 47.7), baseline −0.084 → 92% of ridge from a rotation +
+one scalar (m_A(L6) gave 0.642/0.586, s=1.55: same picture). Congruence u_A vs v_A: Pearson
+0.932, CKA 0.924, max principal cos 0.258, matched cos 0.064 (36/69 above mismatched p95).
+**k-sweep: NO low-dim plateau** — rot+scale 0.138/0.181/0.270/0.363/0.481/0.538/0.588 at
+k=1/2/4/8/16/32/54; linear from the same k coords is equal within ±0.03; at every k the
+rotation reaches 80–85% of the write feature's own top-k ceiling (0.151/…/0.712). Task
+identity across 69 tasks is itself ~30-dim (90% var: 32 read / 28 write PCs) and the rotation
+transports all of it; nothing beyond rotation + scalar is gained at any k.
+
+**Files:** new script above; results
+`understanding_read_write_linear_map/meanresid_map/{fits_summary,congruence,kdim_sweep}.csv,
+rotation_simple.png (main text), kdim_sweep.png (main text), rotation_detail.png, spectra.npz`.
+Paper draft: Claim 6 rewritten on u_A (ridge 0.64 → rotation+scale 0.59; simple 4-bar figure),
+new subsection "How many read dimensions does the map use?" with the k-sweep figure; the raw
+per-layer 28-layer ridge sweep paragraph + figure moved to the top of App G; App J rewritten
+for u_A with the k-sweep table (raw m_A(L6)/L13 numbers kept as one reference sentence).
+`rotation_vs_ridge.png` / `rotation_l6_simple.png` (raw m_A) remain on disk, unreferenced.
+
+**Next:** none. **Blockers:** none.
+
+---
+
 ## 2026-09-03 — ALL SVD-era (v1 / ctop1) results re-run with the mean-residual objects (user request)
 
 **Owner:** Claude Code background agent, main checkout. Pods fv-mr-{sA0,sA1,sA2,wA0,wA1,wA2}
