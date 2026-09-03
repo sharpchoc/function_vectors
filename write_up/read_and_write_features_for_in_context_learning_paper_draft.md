@@ -391,21 +391,18 @@ and target tokens of later demos at layers ~8–17.*
 
 ## C. Read-feature steering in detail
 
-**Where to inject (why L6).** The layer choice comes from a 28-layer sweep on the 1-shot
+**Where to inject?** The layer choice comes from a 28-layer sweep on the 1-shot
 dummy-slot scaffold ($\alpha \in \{0.5, 1, 2, 4\}$, best per layer, mean taken at the same
 layer as the injection): accuracy climbs from 0.018 at L0 to the 0.126 peak at L6 (L7
-essentially tied at 0.125), then falls off a cliff — 0.070 at L8, 0.010 at L12, and the
-~0.003 unsteered floor from L13 onward. Held-out tasks peak at the same place. The
-per-task view shows this is not an averaging artifact: nearly every task that steers at
-all has its hot band inside L3–L10, and no task responds late.
+essentially tied at 0.125), then falls off - 0.070 at L8, 0.010 at L12, and the
+~0.003 from L13 onward.
 
-![Task × injection-layer heatmap](../results/69_task_run/bottom_up_read_features/layer_selection/by_task_heatmap.png)
+**Which vector steers.** On the 1-shot dummy-slot scaffold, the raw task mean beats the engineered alternatives that we tried: raw mean @L7 0.121 > mean-difference (task mean − shared mean) 0.082 > sparse-selected target-slot head sum 0.050. The shared-mean control alone is flat (≤0.013 at every layer), so the shared component is not what steers — but differencing it
+out still hurts, suggesting task-correlated structure is removed with it. The composite vectors of Claim 3 do better still and prefer early injection:
+$s_A = c + u_A$ peaks at 0.194 (L0) and $w_A$ = own L6/7 mean + $u_A$ at 0.220 (L3), against
+0.126 for the raw mean at its best layer (figure).
 
-**Which vector steers.** On the 1-shot dummy-slot scaffold, the raw task mean beats every
-engineered alternative: raw mean @L7 0.121 > mean-difference (task mean − shared mean)
-0.082 > sparse-selected target-slot head sum 0.050. The shared-mean control alone is flat
-(≤0.013 at every layer), so the shared component is not what steers — but differencing it
-out still hurts, suggesting task-correlated structure is removed with it.
+![1-shot injection-layer sweep: raw task mean vs $s_A$ vs $w_A$](../results/69_task_run/bottom_up_read_features/steering_results/meanresid/sweep_layer_curve.png)
 
 **Dose and slots.** The 1-shot injection peaks at $\alpha=2$; six slots peak at $\alpha=4$
 and have not saturated (0.381 → 0.442 from $\alpha=2$ to 4). Held-out tasks steer slightly
@@ -655,7 +652,7 @@ reproduces every number here to ±0.005.
 
 ![All read-feature steering vectors on the 6-shot dummy scaffold](../results/69_task_run/bottom_up_read_features/steering_results/meanresid/sixshot_L0/sixshot_bars.png)
 
-![$s_A$ injection-layer sweep, 1-shot](../results/69_task_run/bottom_up_read_features/steering_results/meanresid/sweep_layer_curve.png)
+(The 1-shot injection-layer sweep of $s_A$, $w_A$ and the raw mean is shown in Appendix C.)
 
 **Injection layer (6-shot, $s_A$).** The 1-shot sweep picks L0–L3, but $s_A$ is built from
 L5–7 activations, so we also injected it at each of L5, L6 and L7 on the 6-shot scaffold
