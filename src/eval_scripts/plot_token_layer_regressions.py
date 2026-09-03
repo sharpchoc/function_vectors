@@ -32,7 +32,8 @@ OUT = TASK69_RUN_DIR / "FV_linear_decodability" / "token_layer_regressions"
 
 
 def main():
-    files = sorted(AR.glob("layer*.json"), key=lambda p: int(p.stem[5:]))
+    files = sorted((f for f in AR.glob("layer*.json") if f.stem[5:].isdigit()),   # skip later per-position files
+                   key=lambda p: int(p.stem[5:]))
     assert files, f"no layer jsons in {AR}"
     layers = [int(f.stem[5:]) for f in files]
     data = {l: json.load(open(f)) for l, f in zip(layers, files)}
@@ -65,20 +66,16 @@ def main():
         ax.set_xlabel("layer")
         ax.set_ylabel("token position")
         ax.set_title(title, fontsize=11)
-        fig.colorbar(im, ax=ax, label="mean per-task R^2 (target = task FV)")
-        # annotate the best cell
-        bi = np.unravel_index(np.nanargmax(M), M.shape)
-        ax.plot(bi[1], bi[0], marker="*", color="red", ms=13)
-        ax.text(bi[1], bi[0] - 0.6, f"{M[bi]:.3f}", color="red", ha="center", fontsize=8)
+        fig.colorbar(im, ax=ax, label="held-out $R^2$")
+        bi = np.unravel_index(np.nanargmax(M), M.shape)   # reported, not drawn
         fig.tight_layout()
         fig.savefig(OUT / fname, bbox_inches="tight")
         return bi
 
     vmax = float(np.nanmax(T))
-    bh = heat(H, "Ridge from (token, layer) activation to per-prompt FV\n"
-                 "colour = mean R^2 on the 14 HELD-OUT tasks (target = task FV)",
+    bh = heat(H, "Where the write feature is linearly decodable (held-out $R^2$)",
               "heldout_r2_heatmap.png", vmin=0.0, vmax=vmax)
-    bt = heat(T, "Same models scored in-sample on the 55 TRAIN tasks (target = task FV)",
+    bt = heat(T, "Same map scored on the 55 train tasks ($R^2$)",
               "train_r2_heatmap.png", vmin=0.0, vmax=vmax)
 
     order = np.argsort(H, axis=None)[::-1]
