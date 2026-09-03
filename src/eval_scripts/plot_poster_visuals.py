@@ -186,12 +186,12 @@ def method_diagram():
                                 boxstyle="round,pad=0.03,rounding_size=0.1",
                                 linewidth=1.8, edgecolor=BLUE, facecolor="#ffffff",
                                 zorder=3))
-    ax.text(bx + 1.5, by + 0.35, r"$+\ \alpha\; \bar{h}_{\rm task}$", ha="center",
+    ax.text(bx + 1.5, by + 0.35, r"$+\ \alpha\; m_A(\ell)$", ha="center",
             va="center", fontsize=16, color=BLUE, fontweight="bold", zorder=4)
     ax.add_patch(FancyArrowPatch((bx + 3.03, by + 0.35), (lx - 0.04, by + 0.35),
                                  arrowstyle="-|>", mutation_scale=16, lw=2.2,
                                  color=BLUE, zorder=4))
-    ax.text(bx, by - 0.12, "prompt-agnostic task mean \"read feature\"",
+    ax.text(bx, by - 0.12, "task-mean read-feature candidate at layer $\\ell$ (here $\\ell$ = 6)",
             fontsize=10.5, color=INK2, ha="left", va="top")
 
     fig.tight_layout()
