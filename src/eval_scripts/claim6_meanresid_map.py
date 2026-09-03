@@ -274,7 +274,7 @@ def main():
     ax.set_xticks(xs, [te_tasks[i] for i in ordr], rotation=35, ha="right", fontsize=9)
     ax.set_ylabel("cos(predicted FV, true FV)", fontsize=11, color=INK)
     ax.set_ylim(0, 1.0)
-    ax.legend(frameon=False, fontsize=9.5, loc="upper right")
+    ax.legend(frameon=False, fontsize=9.5, loc="lower left")
     ax.set_title(f"Held-out tasks: write feature predicted from the read feature by one linear map (held-out $R^2$ = {full_ridge_val:.2f})",
                  loc="left", fontsize=11.5, color=INK, pad=10)
     fig.tight_layout(); fig.savefig(OUT / "linear_map_simple.png", facecolor="white"); plt.close(fig)
