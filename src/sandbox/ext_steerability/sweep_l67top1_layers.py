@@ -80,9 +80,8 @@ def main():
         items = build_items(task, args.prompts_root, tok)
         w = vecs[task]["vec"].cuda()
         res = {"task": task, "group": group[task], "n_prompts": len(items),
-               "vec_norm": vecs[task]["vec_norm"], "n_A": vecs[task]["n_A"],
-               "site": "fixed w_A = 0.5*(m_A(L6)+m_A(L7)) + <base,v1>*v1, injected "
-                       "additively at the swept layer",
+               "vec_norm": vecs[task]["vec_norm"], "n_A": vecs[task].get("n_A", vecs[task].get("u_norm")),
+               "site": f"fixed vector from {args.vectors_path.name}, injected additively at the swept layer",
                "alphas": list(ALPHAS), "conditions": {}}
 
         def run(cname, vec, layer):

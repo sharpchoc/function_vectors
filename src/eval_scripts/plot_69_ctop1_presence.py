@@ -26,9 +26,12 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
-AR = ARTIFACTS_ROOT / "69_task_run" / "ctop1_presence"
+import os
+_MR = os.environ.get("MEANRESID") == "1"   # mean-residual task-unique part (u_hat_A) instead of SVD v1
+AR = ARTIFACTS_ROOT / "69_task_run" / ("meanresid_presence" if _MR else "ctop1_presence")
+UL = "$\\hat u_A$" if _MR else "$v_1$"
 WRITE = TASK69_RUN_DIR / "feature_locations" / "direct_FV_presence" / "fv_location.npz"
-OUT = TASK69_RUN_DIR / "feature_locations" / "ctop1"
+OUT = TASK69_RUN_DIR / "feature_locations" / ("meanresid" if _MR else "ctop1")
 CAT = {"cue": "#2a78d6", "target": "#eb6834", "input": "#1baf7a"}
 
 
@@ -58,13 +61,13 @@ def main():
     # read feature (sign of n_A = <mbar_A - c, v1>) so "presence" reads as positive alignment.
     import torch
     vecs = torch.load(ARTIFACTS_ROOT / "69_task_run" / "bottom_up_ablation" / "bankA"
-                      / "carrier_plus_top1_vectors.pt", map_location="cpu", weights_only=False)["tasks"]
+                      / ("carrier_plus_meanresid_vectors.pt" if _MR else "carrier_plus_top1_vectors.pt"), map_location="cpu", weights_only=False)["tasks"]
     acc = {"carrier": {k: [] for k in CAT}, "v1": {k: [] for k in CAT}}
     cols = None
     for f in files:
         z = np.load(f, allow_pickle=True)
         cols = [str(c) for c in z["columns"]]
-        sgn = 1.0 if vecs[f.stem]["n_A"] >= 0 else -1.0
+        sgn = 1.0 if _MR else (1.0 if vecs[f.stem]["n_A"] >= 0 else -1.0)   # u_hat_A is already oriented
         for d in ("carrier", "v1"):
             prof = type_profiles(z[f"cos_{d}"] * (sgn if d == "v1" else 1.0), cols)
             for k in CAT:
@@ -96,7 +99,7 @@ def main():
     ax = axes[0]; ax.set_facecolor("white")
     y = prof[("v1", "target")]; pk = int(np.nanargmax(y))
     ax.plot(L, y, color=CAT["target"], lw=2.4, marker="o", ms=4.5, mfc=CAT["target"], mec="white",
-            label="task-unique direction $v_1$")
+            label=f"task-unique direction {UL}")
     ax.plot(L, prof[("carrier", "target")], color="0.6", lw=1.6, ls=(0, (4, 3)),
             label="shared carrier $c$")
     ax.set_title(f"READ: cosine at demonstration target tokens (peak L{pk})", fontsize=12, loc="left")
@@ -117,7 +120,7 @@ def main():
     fig, axes = plt.subplots(1, 3, figsize=(16.5, 4.4), dpi=150, sharex=True)
     fig.patch.set_facecolor("white")
     for ax, (title, series) in zip(axes, (("shared carrier $c$", {k: prof[("carrier", k)] for k in CAT}),
-                                          ("task-unique direction $v_1$", {k: prof[("v1", k)] for k in CAT}),
+                                          (f"task-unique direction {UL}", {k: prof[("v1", k)] for k in CAT}),
                                           ("function vector $v_A$ (write)", wprof))):
         ax.set_facecolor("white")
         for k in ("cue", "target", "input"):

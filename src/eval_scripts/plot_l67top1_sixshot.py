@@ -111,7 +111,7 @@ def main():
     ax.set_xticks(x, [b[0] for b in bars], fontsize=10)
     ax.set_ylim(0, 0.74)
     ax.set_ylabel("task accuracy (mean, 69 tasks)", fontsize=11)
-    ax.set_title(("6-shot dummy-target steering: " + ("$s_A$ = $c + u_A$" if is_mr else "$u_A$ = carrier + $n_A v_1$") + ", injected at " + lay) if is_c else "6-shot dummy-target steering: $w_A$ = L6/7 mean + top-1 dir, injected at L1",
+    ax.set_title(("6-shot dummy-target steering: " + ("$s_A$ = $c + u_A$" if is_mr else "$u_A$ = carrier + $n_A v_1$") + ", injected at " + lay) if is_c else ("6-shot dummy-target steering: $w_A$ = own L6/7 mean + $u_A$, injected at " + lay if _NAME.startswith("l67meanresid") else "6-shot dummy-target steering: $w_A$ = L6/7 mean + top-1 dir, injected at L1"),
                  fontsize=11.5, loc="left", pad=10)
     ax.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
     for s in ["top", "right"]: ax.spines[s].set_visible(False)

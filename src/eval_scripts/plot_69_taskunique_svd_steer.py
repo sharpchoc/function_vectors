@@ -31,10 +31,11 @@ from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 import os
 _BANKA = os.environ.get("BANKA") == "1"
-AR = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering" / ("bankA_taskunique_svd_dummy" if _BANKA else "taskunique_svd_dummy")
+_MR = os.environ.get("MEANRESID") == "1"   # alpha*u_A swap (mean-residual task-unique part, natural units)
+AR = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering" / ("bankA_meanresid_swap_dummy" if _MR else "bankA_taskunique_svd_dummy" if _BANKA else "taskunique_svd_dummy")
 SR = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results"
-OUT = SR / "taskunique_svd_dummy"
-ALPHAS = (0.0, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 48.0, 64.0)
+OUT = SR / ("taskunique_meanresid_swap" if _MR else "taskunique_svd_dummy")
+ALPHAS = (0.0, 0.5, 1.0, 2.0, 4.0, 8.0) if _MR else (0.0, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 48.0, 64.0)
 BLUE, ORANGE, GRAY = "#2f7fe0", "#e07b2f", "#6b7280"
 
 
@@ -93,7 +94,7 @@ def main():
     for ax, n in zip(axes, (1, 6)):
         ys = [mean_of(f"dummy{n}_swap1_a{a}") for a in ALPHAS[1:]]
         ax.plot(xs, ys, "-o", color=ORANGE, lw=2.2, ms=6,
-                label="swap steer $\\alpha\\, s_1 v_1$ (1 direction)")
+                label=("swap steer $\\alpha\\, u_A$" if _MR else "swap steer $\\alpha\\, s_1 v_1$ (1 direction)"))
         ax.plot([xs[0] * 0.55], [mean_of(f"dummy{n}_swap1_a0.0")], marker="s", ms=7,
                 color=GRAY, ls="none", label="$\\alpha$=0 (removal only)")
         for v, c, lab in ((mean_of(f"real_{n}shot"), "0.25", f"real {n}-shot"),
@@ -115,7 +116,7 @@ def main():
     axes[0].set_ylabel("accuracy (T=1 sampled exact match,\nmean over 69 tasks)", fontsize=11)
     axes[0].legend(fontsize=10, loc="upper left", frameon=False)
     fig.suptitle("Steering with ONE task-unique direction: projection swap "
-                 "$h \\leftarrow h - (h\\!\\cdot\\!v_1)v_1 + \\alpha s_1 v_1$ at L6 dummy target slots",
+                 ("$h \\leftarrow h - (h\\!\\cdot\\!\\hat u_A)\\hat u_A + \\alpha u_A$ at L6 dummy target slots" if _MR else "$h \\leftarrow h - (h\\!\\cdot\\!v_1)v_1 + \\alpha s_1 v_1$ at L6 dummy target slots"),
                  fontsize=13.5, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.93])
     fig.savefig(OUT / "alpha_curve.png", bbox_inches="tight")

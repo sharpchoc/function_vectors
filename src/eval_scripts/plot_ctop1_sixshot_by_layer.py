@@ -26,7 +26,8 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import TASK69_RUN_DIR  # noqa: E402
 
-CTOP1 = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / "ctop1"
+import os
+CTOP1 = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / os.environ.get("BYLAYER_NAME", "ctop1")
 LAYERS = (0, 1, 5, 6, 7)
 ALPHAS = ("a0.5", "a1.0", "a2.0", "a4.0")
 
@@ -87,7 +88,7 @@ def main():
     ax.set_xticks(xs, [f"L{L}" for L in LAYERS])
     ax.set_xlim(-0.4, len(LAYERS) - 0.6)
     ax.set_ylim(0, 0.72)
-    ax.set_xlabel("injection layer of $u_A = c + n_A v_1$ (block output, all six target slots)")
+    ax.set_xlabel("injection layer of " + ("$s_A = c + u_A$" if os.environ.get("BYLAYER_NAME", "ctop1").startswith("meanresid") else "$u_A = c + n_A v_1$") + " (block output, all six target slots)")
     ax.set_ylabel("6-shot dummy-target accuracy (mean, 69 tasks)")
     ax.set_title("6-shot steering by injection layer", loc="left", fontsize=11.5, pad=10)
     ax.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)

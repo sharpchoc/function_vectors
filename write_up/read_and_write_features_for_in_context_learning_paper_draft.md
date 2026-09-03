@@ -132,8 +132,12 @@ tied at 0.125), coinciding with the early-layer band where the write feature is 
 readable at target tokens (Claim 2). The dashed line is the mean accuracy of a real
 1-shot demonstration (0.208), so the single best-layer injection recovers a majority of real demonstration accuracy.*
 
-There is a peak of steering ability around L5-L7, so we take the mean activations of those
-three layers and decompose them. Averaging over the three layers gives one vector per task, $\bar m_A = \tfrac13\sum_{\ell=5}^{7} m_A(\ell)$, and these vectors are very similar across tasks - cosine similarity of 0.73. This suggests that all these activations point along a similar direction, which we call the **shared carrier** $c$, the cross-task mean. We then take each layer's mean activation from L5-L7 for each task, project out the shared carrier direction, and average the three residuals to get a single vector $u_A$. We define this as the task-unique part; it keeps its natural magnitude, so no further scaling is needed.
+Steering peaks in the L5–7 band, so we build the read feature from the task means of those
+three layers. Averaged over the band, $\bar m_A = \tfrac13\sum_{\ell=5}^{7} m_A(\ell)$, the 69
+task vectors are strikingly alike (mean pairwise cosine 0.73): most of every task's vector is
+a component shared by all tasks, which we call the **shared carrier** $c$ (the cross-task mean
+of $\bar m_A$). To isolate what is specific to task $A$ we project the shared carrier
+*direction* out of each layer's task mean and average the three residuals:
 
 $$
 c \;=\; \frac{1}{|\mathcal{T}|}\sum_{A'} \bar m_{A'}, \qquad
@@ -145,17 +149,23 @@ $$
 u_A \;=\; \frac{1}{3}\sum_{\ell=5}^{7} r_A(\ell),
 $$
 
-where $\hat c(\ell)$ is the **cross-task** carrier direction at layer $\ell$ — the task's own
-mean is never subtracted, only the shared component — so $u_A$ is orthogonal to the carrier
-by construction. (The top singular direction of the three residuals, an alternative
-definition, agrees with $\hat u_A$ to $|\cos| \ge 0.997$ on every task; Appendix F.)
+where $\hat c(\ell)$ is the **cross-task** carrier direction at layer $\ell$. Only the shared
+component is removed, never the task's own mean, so $u_A$ is orthogonal to the carrier by
+construction and keeps its natural magnitude (median $\|u_A\| \approx 28$ against
+$\|c\| \approx 47$). We call $u_A$ the **task-unique part** of the read feature. Its unit
+direction $\hat u_A = u_A/\|u_A\|$ is what we ablate below, and $c + u_A$ is what we inject.
+(An SVD-based alternative — the top singular direction of the three unit-normed residuals —
+gives the same direction to $|\cos| \ge 0.997$ on every task and identical results;
+Appendix I.)
 
 ![Read-feature decomposition into shared carrier and task-unique part](../results/69_task_run/bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png)
 
-**Necessity:** At every demonstration target token we ablate the projection of the residual stream onto the
-task's unit direction $\hat u_A = u_A/\|u_A\|$. We find that this collapses 1-shot and 6-shot ICL
-(6-shot 0.629 → 0.132; 1-shot 0.208 → 0.044), while removing a counterfactual
-task's $\hat u_A$ leaves accuracy at baseline (0.632 / 0.205).
+**Necessity:** On clean prompts, at every demonstration target token and at the input of every
+block, we replace the residual stream's component along $\hat u_A$ with its cross-task mean
+value (mean-ablation), leaving the other 4095 directions untouched. This single-direction
+ablation collapses ICL (6-shot 0.629 → 0.132; 1-shot 0.208 → 0.044), while ablating a
+counterfactual task's $\hat u_A$ in exactly the same way leaves accuracy at baseline
+(0.632 / 0.205).
 
 ![Task-unique direction ablation, own vs counterfactual](../results/69_task_run/bottom_up_read_features/ablation/task_unique_meanresid/aggregate_bars.png)
 
@@ -167,19 +177,21 @@ first attempt, but found that the counterfactual control performed equally as we
 motivation for the task-unique setup, and the full list of variations we tried are in
 Appendix F.
 
-**Sufficiency:** We use 6-shot prompts but replace the target tokens with dummy tokens (same as the 1 shot setting at the start of Claim 3). We then inject the carrier plus the task-unique part, at the magnitude it has in the model's
-own activations,
+**Sufficiency:** We return to the dummy-target scaffold, now with six demonstrations, and
+inject the carrier plus the task-unique part at the magnitude it has in the model's own
+activations,
 
 $$
-s_A \;=\; c + u_A,
+s_A \;=\; c + u_A, \qquad z^{\,t}_{\ell} \;\leftarrow\; z^{\,t}_{\ell} + \alpha\, s_A
+\quad\text{at every dummy target slot } t .
 $$
 
-$s_A$ is what we inject at every dummy target slot. We sweep steering strength $\alpha$ for for each layer we can inject and report the results of the best one. Swept over injection layers on the
-1-shot dummy prompts, $s_A$ steers best when injected early (L0–L3 plateau, see Appendix I) — earlier
-than the L5–7 band it was built from; injecting at L5–7 instead still steers, at a modest
-cost (Appendix I, "injection layer").
-We inject it on 6-shot dummy prompts and find that it recovers 95%
-of what a real 6-shot prompt would achieve, which is significantly higher than the unsteered performance.
+A 1-shot sweep over injection layers (Appendix I) places the optimum early — an L0–L3
+plateau, earlier than the L5–7 band the vector was built from; injecting inside L5–7 still
+steers, at a modest cost (Appendix I, "injection layer"). We therefore inject at L0 and
+sweep $\alpha \in \{0.5, 1, 2, 4\}$. At $\alpha = 2$ the six steered dummy slots lift
+accuracy from 0.000 to 0.570, 90% of what six real demonstrations achieve (0.630); with
+the best $\alpha$ chosen per task it reaches 0.597 (95%).
 
 ![Steering dummy targets with the read feature: unsteered, steered, real demonstrations](../results/69_task_run/bottom_up_read_features/steering_results/meanresid/sixshot_L0/headline_bars.png)
 
@@ -912,8 +924,8 @@ token of the final demonstration's target** (150 prompts per task). An alternati
 estimator averages the same residual over **all ten** demonstrations' target tokens before
 taking the task mean — ten times more sites, and therefore a lower-noise estimate of the
 same feature, at the cost of blending in shallow-context positions. The two estimators'
-task-unique top directions nearly coincide ($|\cos(v_1^{\mathrm{final}},
-v_1^{\mathrm{avg10}})|$: median 0.979, min 0.966 over the 69 tasks), and every qualitative
+task-unique directions nearly coincide ($|\cos(\hat u_A^{\mathrm{final}},
+\hat u_A^{\mathrm{avg10}})|$: median 0.978, min 0.967 over the 69 tasks), and every qualitative
 result is identical under both; the ten-site average gives sharper numbers exactly where
 estimation precision matters (few-direction ablation bases, regression inputs), and
 indistinguishable numbers for prompt-mean-level steering:
@@ -924,7 +936,7 @@ indistinguishable numbers for prompt-mean-level steering:
 | — top-3 SVD | 0.099 | 0.066 |
 | — top-1 direction | 0.146 | 0.103 |
 | — top-3, L6–9 band only | 0.135 | 0.096 |
-| — top-1, L5–7 band only | 0.130 | 0.097 |
+| — task-unique part $\hat u_A$, L5–7 (main text) | 0.132 | 0.097 (SVD top-1) |
 | Single-direction swap steering, best aggregate $\alpha$ | 0.327 | 0.341 |
 | Read→write ridge, held-out per-prompt $R^2$ (peak layer) | 0.557 (L12) | 0.653 (L13) |
 | Read→write ridge, held-out centroid $R^2$ | 0.636 | 0.692 |

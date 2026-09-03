@@ -99,6 +99,8 @@ def parse_args():
     p.add_argument("--shard_idx", type=int, default=0)
     p.add_argument("--shard_n", type=int, default=1)
     p.add_argument("--max_tasks", type=int, default=None)
+    p.add_argument("--alphas", type=float, nargs="+", default=None,
+                   help="override the alpha grid (e.g. natural-unit grid for the mean-residual bases)")
     return p.parse_args()
 
 
@@ -129,7 +131,10 @@ def signed_dirs(bases, acts_root, split):
 
 
 def main():
+    global ALPHAS
     args = parse_args()
+    if args.alphas:
+        ALPHAS = tuple(args.alphas)
     split = json.load(open(args.split_path))
     group = {t: "train" for t in split["train_tasks"]}
     group.update({t: "heldout" for t in split["heldout_tasks"]})
