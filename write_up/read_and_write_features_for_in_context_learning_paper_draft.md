@@ -202,22 +202,13 @@ Note: Since we have two axis for the read feature subspace, we measure cosine si
 ## Claim 6: Read features linearly map to write features
 
 A single linear map from the read feature to the write feature, fit on the 55 train tasks,
-predicts the *held-out* tasks' function vectors. The input is the task unique read feature of Claim 3, $u_A$, and targets are the tasks' write features. Ridge regression from $u_A$ to the task write feature reaches held-out $R^2 = 0.64$ on the 14 held-out tasks. The map is one linear transform shared across tasks. (See Appendix G for more details of how the regression was trained and other variations)
-
-Per task the prediction points the right way: for the 14 held-out tasks the cosine between
-the predicted and the true function vector averages 0.89 (0.81–1.00 for 13 of them, 0.62 for
-ag_news), against 0.64 for the generic train-mean FV (dashed line).
+predicts the *held-out* tasks' function vectors. The input is the task unique read feature of Claim 3, $u_A$, and targets are the tasks' write features. Ridge regression from $u_A$ to the task write feature reaches held-out $R^2 = 0.64$ on the 14 held-out tasks. The map is one linear transform shared across tasks. (See Appendix G for more details of how the regression was trained and other variations). We can also see that the cosine between the predicted and the true function vector averages 0.89 whilst predicting just the generic train-mean FV (dashed line) would only score 0.64.
 
 ![Held-out tasks: write feature predicted from the read feature by one linear map](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/linear_map_simple.png)
 
-*Each bar is one held-out task: the cosine between the function vector predicted from its read
-feature by the linear map (fit on the 55 train tasks) and its true function vector. The dashed
-line is the same cosine when the generic train-mean function vector is used as the prediction
-for every task (mean 0.64), i.e. what is known about the write feature before reading the task.*
+*Each bar is one held-out task. The cosine between the write feature predicted from its read feature by the linear map (fit on the train tasks) and its true write feature. The dashed line is the same cosine when the generic train-mean write feature vector is used as the prediction for every task (mean 0.64), as a naive baseline*
 
-The map has more structure than "linear": to first order it is a rotation of the
-read-feature geometry into the write subspace, and that rotation is not low dimensional —
-it needs the full ~30-dimensional task-identity space (Appendix J).
+We study the geometry of the linear map in more detail in Appendix J.
 
 ## Claim 7: Write-feature presence predicts task accuracy
 
@@ -227,15 +218,19 @@ We define strength of write feature as the cosine similarity of the residual str
 
 ![Binned presence vs accuracy](../results/69_task_run/write_feature_and_model_accuracy/binned_meanL.png)
 
+## Conclusion and Future Work
+
+(Concise version for now, needs fleshing out)
+
+We have shown the the general machinery that models use to learn simple functions can be viewed as a two step process of reading the task and writing the task (task execution). Future work could see if this machinery or two step breakdown extends to more real world settings like in context jailbreaks and in context persona drift.
+
 ---
 
 # Appendix
 
 ## A. Setup & protocol
 
-**Task pool.** 69 tasks survive a 6-shot sampled-accuracy ≥ 0.30 filter of a 117-task
-pool (48 tasks fall below threshold). Seed-43 split into 55 train / 14 held-out. Each task
-has 150 fixed 10-shot train prompts plus paired test queries.
+**Task pool.** We start with ~120 tasks, and test the model on 6 shot prompts to keep only tasks that the model can complete (otherwise it wouldn't make sense to study their activations). We use a threshold of 30% accruacy or higher, which means 69 tasks survive the filter. Each task used 150 unique prompts to determine the accuracy.
 
 **Full task list.** *Train (55):* adjective_to_adverb, adjective_to_noun,
 agent_noun_to_verb, animal_class, animal_plant_object, antonym, article_choice,
@@ -255,7 +250,12 @@ first_digit, french-english, gerund_to_base, initials_two_words, past_to_base,
 person_place_thing, pos_label, smaller_of_pair, spanish-english, uppercase_word,
 word_polarity.
 
-**Head selection.** Pooled sparse optimisation: a gate $c \in [0,1]^{448}$ over all heads,
+**Head selection.** A function vector is the summed output of a small set of attention heads
+(Todd et al., 2024): the task signal at the cue token is carried by a sparse subset of the
+model's 448 heads, so the heads have to be selected before their outputs can be summed. Todd
+et al. rank heads by their average indirect effect on shuffled-label prompts; we instead
+follow Hu et al. (2025) and select them by sparse optimisation, learning a gate over all heads
+jointly. Pooled sparse optimisation: a gate $c \in [0,1]^{448}$ over all heads,
 steering loss on zero-shot prompts summed over the 55 train tasks, + $\lambda\|c\|_1$;
 $\lambda = 0.005$ by 5-fold task cross-validation; heads kept at $c > 0.8$ → 37 heads
 spanning layers 3–27, densest at 12–15.
