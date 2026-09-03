@@ -169,7 +169,7 @@ s_A \;=\; c + u_A, \qquad z^{\,t}_{\ell} \;\leftarrow\; z^{\,t}_{\ell} + \alpha\
 \quad\text{at every dummy target slot } t .
 $$
 
-A 1-shot sweep over injection layers (Appendix C) places the optimal layer at early layers ( L0–L3). We therefore inject at L0 on the 6-shot dummy prompts at all the target tokens and
+A 1-shot sweep over injection layers places the optimal layer at early layers ( L0–L3). We therefore inject at L0 on the 6-shot dummy prompts at all the target tokens and
 sweep $\alpha \in \{0.5, 1, 2, 4\}$. At $\alpha = 2$ the six steered dummy slots lift
 accuracy from 0.000 to 0.570, which is 90% of what six real demonstrations achieve.
 
@@ -189,7 +189,7 @@ So far, we have shown that read features and write features are causal for the m
 ![Cue-token cosine to own FV rising with alpha](../results/69_task_run/read_write_relationship/meanresid/headline_cos_absolute.png)
 
 *Cosine between the L13 residual at the final cue token and the task's function vector, as a function of injection strength. Injecting the carrier plus the task-unique direction at the target tokens moves the write
-site toward the task's function vector. More variants can be found in Appendix F*
+site toward the task's function vector.*
 
 ## Claim 5: Read features appear earlier than write features
 
@@ -485,38 +485,33 @@ concrete_abstract 0.73, person-instrument 0.75, which are the same family whose 
 
 ## F. Presence-vs-accuracy method
 
-For each task and n ∈ 0…6, the 150 fixed 10-shot prompts are truncated to their first n
-demonstrations (paired queries throughout). Presence = mean cos between the residual
-stream at the query cue and the unit $\hat v_A$, averaged over layers 9–20 (per-layer and
-max-over-band variants behave the same); accuracy = the standard temperature-1 sampled
-exact match on the same prompts. One point per task per shot count (483 points); the
-within-task statistic pairs each task's presence and accuracy across its own seven shot
-counts.
+For each task and n ∈ 0…6, the 150 fixed prompts are truncated to their first n
+demonstrations. Presence = mean cos between the residual stream at the query cue and the unit $\hat v_A$, averaged over layers 9–20 (per-layer and max-over-band variants behave the same, shown below). Accuracy is using the standard temperature-1 sampled reponse. One point per task per shot count (483 points).
 
-**Layer-choice robustness (no cherry-picking).** The headline within-task statistic is
+**Layer-choice robustness:** The headline within-task statistic is
 insensitive to where presence is read: every single layer L9–L20, the max over the band,
-and the band mean give the *identical* median within-task Spearman ρ = +0.964, positive
-in 69/69 tasks — with seven near-monotone points per task, the within-task ranking is the
+and the band mean give the same median within-task Spearman ρ = +0.964, positive
+in 69/69 tasks, the within-task ranking is the
 same at every layer, so the rank correlation saturates. Where the variants do differ is
 the pooled point-level correlation over all 483 (task, n) points, which mixes in the
 negative between-task relation discussed below:
 
-| Presence variant | Median within-task ρ | Positive tasks | Pooled point-level ρ |
-|---|---:|---:|---:|
-| L9 | +0.964 | 69/69 | 0.629 |
-| L10 | +0.964 | 69/69 | 0.573 |
-| L11 | +0.964 | 69/69 | 0.599 |
-| L12 | +0.964 | 69/69 | 0.559 |
-| L13 | +0.964 | 69/69 | 0.524 |
-| L14 | +0.964 | 69/69 | 0.458 |
-| L15 | +0.964 | 69/69 | 0.519 |
-| L16 | +0.964 | 69/69 | 0.424 |
-| L17 | +0.964 | 69/69 | 0.396 |
-| L18 | +0.964 | 69/69 | 0.343 |
-| L19 | +0.964 | 69/69 | 0.295 |
-| L20 | +0.964 | 69/69 | 0.298 |
-| max over L9–20 | +0.964 | 69/69 | 0.533 |
-| **mean over L9–20 (main text)** | **+0.964** | **69/69** | **0.469** |
+| Presence variant | Median within-task ρ | Pooled point-level ρ |
+|---|---:|---:|
+| L9 | +0.964 | 0.629 |
+| L10 | +0.964 | 0.573 |
+| L11 | +0.964 | 0.599 |
+| L12 | +0.964 | 0.559 |
+| L13 | +0.964 | 0.524 |
+| L14 | +0.964 | 0.458 |
+| L15 | +0.964 | 0.519 |
+| L16 | +0.964 | 0.424 |
+| L17 | +0.964 | 0.396 |
+| L18 | +0.964 | 0.343 |
+| L19 | +0.964 | 0.295 |
+| L20 | +0.964 | 0.298 |
+| max over L9–20 | +0.964 | 0.533 |
+| **mean over L9–20 (main text)** | **+0.964** | **0.469** |
 
 Single early layers give somewhat higher pooled values (L9: 0.629) purely through the
 between-task component; since the claim is the within-task relationship, the band mean is
