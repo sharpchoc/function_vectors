@@ -22,7 +22,8 @@ Writes results/69_task_run/understanding_read_write_linear_map/meanresid_map/
   fits_summary.csv           full-rank fits (baseline / rotation / rotation+scale / ridge)
   congruence.csv             family-centered geometry of u_A vs v_A
   kdim_sweep.csv             held-out R^2 vs k for the rank-k fits
-  rotation_simple.png        SIMPLE 4-bar main-text figure
+  linear_map_simple.png      SIMPLE main-text figure: per held-out task cos(predicted, true FV)
+  rotation_simple.png        SIMPLE 4-bar appendix figure (mean shift / rotation / +scale / ridge)
   kdim_sweep.png             SIMPLE held-out R^2 vs k
   rotation_detail.png        3-panel appendix figure (congruence / bars / ridge spectrum)
   spectra.npz
@@ -207,6 +208,8 @@ def main():
               f"{r_['heldout_r2_trainmean']:.3f} | per-prompt {r_['heldout_perprompt_r2']:.3f} | "
               f"train {r_['train_r2']:.3f} lam={r_['lambda']} s={r_['scale']}")
 
+    full_ridge_val = next(r_["heldout_r2_testmean"] for r_ in fit_rows if r_["method"] == "ridge")
+
     # ---- k-degrees-of-freedom sweep ----
     _, Sx, Vx = np.linalg.svd(Xc, full_matrices=False)
     _, Sy, Vy = np.linalg.svd(Yc, full_matrices=False)
@@ -253,6 +256,28 @@ def main():
     ax.set_ylim(min(-0.15, min(vals) - 0.05), max(vals) + 0.12)
     ax.set_title("Predicting a held-out task's write feature from its read feature", loc="left", fontsize=12, color=INK, pad=10)
     fig.tight_layout(); fig.savefig(OUT / "rotation_simple.png", facecolor="white"); plt.close(fig)
+
+    # ---- SIMPLE figure 0 (main text): per held-out task, cos(predicted FV, true FV) for the linear map ----
+    p_ridge = preds["ridge"][0]
+    cos_map = np.einsum("ij,ij->i", p_ridge, Yte) / (np.linalg.norm(p_ridge, axis=1) * np.linalg.norm(Yte, axis=1))
+    cos_gen = (Yte @ ym) / (np.linalg.norm(Yte, axis=1) * np.linalg.norm(ym))
+    ordr = np.argsort(-cos_map)
+    with open(OUT / "linear_map_per_task.csv", "w", newline="") as fh:
+        fh.write("task,cos_pred_true,cos_trainmeanFV_true\n")
+        for i in ordr:
+            fh.write(f"{te_tasks[i]},{cos_map[i]:.4f},{cos_gen[i]:.4f}\n")
+    fig, ax = plt.subplots(figsize=(9.2, 4.6), dpi=150); fig.patch.set_facecolor("white"); style(ax)
+    xs = np.arange(len(ordr))
+    ax.bar(xs, cos_gen[ordr], width=0.72, color="0.78", zorder=2, label=f"generic FV (train mean), mean cos {cos_gen.mean():.2f}")
+    ax.bar(xs, cos_map[ordr], width=0.44, color=TEAL, zorder=3, label=f"linear map from read feature, mean cos {cos_map.mean():.2f}")
+    ax.set_xticks(xs, [te_tasks[i] for i in ordr], rotation=35, ha="right", fontsize=9)
+    ax.set_ylabel("cos(predicted FV, true FV)", fontsize=11, color=INK)
+    ax.set_ylim(0, 1.0)
+    ax.legend(frameon=False, fontsize=9.5, loc="upper right")
+    ax.set_title(f"Held-out tasks: write feature predicted from the read feature by one linear map (held-out $R^2$ = {full_ridge_val:.2f})",
+                 loc="left", fontsize=11.5, color=INK, pad=10)
+    fig.tight_layout(); fig.savefig(OUT / "linear_map_simple.png", facecolor="white"); plt.close(fig)
+    print(f"linear map per held-out task: mean cos {cos_map.mean():.3f} (min {cos_map.min():.3f}) vs generic FV {cos_gen.mean():.3f}")
 
     # ---- SIMPLE figure 2: R^2 vs k ----
     ks = [r_["k"] for r_ in krows]

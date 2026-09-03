@@ -443,6 +443,11 @@ rotation reaches 80–85% of the write feature's own top-k ceiling (0.151/…/0.
 identity across 69 tasks is itself ~30-dim (90% var: 32 read / 28 write PCs) and the rotation
 transports all of it; nothing beyond rotation + scalar is gained at any k.
 
+**Restructure (user, later same day):** Claim 6 main text = the LINEAR claim only (ridge R² 0.64;
+per held-out task cos(pred, true FV) mean 0.89 vs generic 0.64; new `linear_map_simple.png`,
+`linear_map_per_task.csv`); the rotation + k-sweep prose and figures moved into Appendix J, now
+titled "The read→write map is a rotation, but not a low-dimensional one".
+
 **Files:** new script above; results
 `understanding_read_write_linear_map/meanresid_map/{fits_summary,congruence,kdim_sweep}.csv,
 rotation_simple.png (main text), kdim_sweep.png (main text), rotation_detail.png, spectra.npz`.

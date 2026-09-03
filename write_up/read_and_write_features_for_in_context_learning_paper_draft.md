@@ -54,12 +54,12 @@ shown there. The rest of the claims are to our knowledge novel.
 | # | Claim | Headline evidence | Section |
 |---|---|---|---|
 | 1 | General write features exist at middle layers and are low dimensional per-task | A single vector can steer models to perform the task on zero shot prompts with peak accuracy when injected in middle layers (shown in Todd et al. 2024). The 37 heads selected from train tasks only, can be used to form function vectors for 14 never-seen tasks' accuracy from 0.09 to 0.73 (same as train tasks' accuracy uplift to 0.75). | Claim 1 |
-| 2 | Read features exist at early layers | Write features are linearly decodable from single target-token activations at early layers (held-out $R^2$ up to 0.62) | Claim 2 |
+| 2 | Read features exist at early layers | Write features are linearly decodable from single target-token activations at early layers | Claim 2 |
 | 3 | Read features are causal and low dimensional per-task | We can achieve bidirectional control on task performance using 2 directions per task. Sufficiency: Injecting the shared carrier plus one task-unique direction in dummy prompts recovers 95% of real prompt accuracy (0.597 vs 0.630). Neccesity: ablating one task-unique direction kills ICL (accuracy drops from 0.629 to 0.132) | Claim 3 |
 | 4 | Read features are causal for the formation of write features | Label token injection steers the cue representation toward the task's own $v_A$ (cos 0.18 → 0.42) | Claim 4 |
-| 5 | Read features appear earlier than write features | Read feature cosine similarity peaks at target tokens, L7 (cos 0.38). Write feature cosine similarity peaks at cue tokens, L13. | Claim 5 |
+| 5 | Read features appear earlier than write features | Read feature cosine similarity peaks at target tokens, L7. Write feature cosine similarity peaks at cue tokens, L13. | Claim 5 |
 | 6 | Read features linearly map to write features | Training a linear map on a set of train tasks predicts held-out tasks' mpaping ($R^2 \approx 0.64$). | Claim 6 |
-| 7 | Write-feature presence predicts task accuracy | Presence at the cue token and task accuracy rise together (median Spearman ρ +0.96) | Claim 7 |
+| 7 | Write-feature presence predicts task accuracy | Presence at the cue token and task accuracy rise together | Claim 7 |
 
 ## The dataset
 
@@ -199,59 +199,20 @@ Note: Since we have two axis for the read feature subspace, we measure cosine si
 
 ![Read (task-unique direction at target tokens) vs write (function vector at cue tokens) presence by layer](../results/69_task_run/feature_locations/meanresid/presence_headline.png)
 
-The write-feature side of this picture is consistent with Todd et al. (2024), who found the causal FV heads clustered in early-middle layers and FV injection most effective there.
-
 ## Claim 6: Read features linearly map to write features
 
 A single linear map from the read feature to the write feature, fit on the 55 train tasks,
-predicts the *held-out* tasks' function vectors. The input is the read feature of Claim 3:
-after the train-mean shift the shared carrier $c$ drops out, so the map acts on the
-task-unique part $u_A$. Ridge regression from $u_A$ to the task FV reaches held-out
-$R^2 = 0.64$ on the 14 held-out tasks (0.53 when the same map is applied to individual
-prompts' read features). The map is one linear transform shared across tasks — it was never
-shown the held-out tasks' FVs, yet it places most of them from their read features alone.
-(Regressing from the raw per-layer read feature $m_A(\ell)$ instead shows that task identity
-stays linearly readable at the target slots through the whole network; Appendix G.)
+predicts the *held-out* tasks' function vectors. The input is the task unique read feature of Claim 3, $u_A$, and targets are the tasks' write features. Ridge regression from $u_A$ to the task write feature reaches held-out $R^2 = 0.64$ on the 14 held-out tasks. The map is one linear transform shared across tasks. (See Appendix G for more details of how the regression was trained and other variations)
 
-### The read→write map is, to first order, a rotation
+Per task the prediction points the right way: for the 14 held-out tasks the cosine between
+the predicted and the true function vector averages 0.89 (0.81–1.00 for 13 of them, 0.62 for
+ag_news), against 0.64 for the generic train-mean FV.
 
-What does that linear map actually do? Removing each family's mean answers it. The two task
-clouds are already the *same shape*: centered pairwise cosines between tasks match
-pair-by-pair (Pearson 0.93, gram-CKA 0.92), and even the centered norms correlate
-(r ≈ 0.78). But they occupy *nearly orthogonal directions* of the residual stream: the
-largest principal cosine between the two 90%-variance subspaces is 0.26, and each task's
-$u_A$ is nearly orthogonal to its own FV (matched cos 0.06, vs 0 for mismatched pairs).
+![Held-out tasks: write feature predicted from the read feature by one linear map](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/linear_map_simple.png)
 
-Congruent shapes in orthogonal subspaces is precisely the geometry a rotation solves — and
-it does: an orthogonal Procrustes map (fit on the 55 train tasks) plus one global scalar
-reaches held-out $R^2$ 0.59, 92% of the unconstrained ridge's 0.64. The scalar is
-$s = 1.66$: the task-unique read signal is about 0.6× the FV's magnitude (centered norms
-28 vs 48), so the rotation has to be scaled up once. In full:
-
-$$\hat v_A = \bar v + s \cdot R\,(u_A - \bar u)$$
-
-— rigidly rotate the task-identity geometry of the read feature into the FV subspace,
-rescale once, add the generic-FV mean back. The ridge's remaining 8% is
-direction-dependent gain (its singular spectrum decays; Appendix J).
-
-![Predicting held-out write features from read features: mean shift, rotation, rotation + scalar, ridge](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/rotation_simple.png)
-
-### How many read dimensions does the map use?
-
-Is the rotation secretly low dimensional? We run PCA on the 55 train tasks' $u_A$, keep only
-the top $k$ read components, and fit the map (rotation + scalar, or unconstrained linear)
-from those $k$ coordinates alone, scoring on the held-out tasks. Held-out $R^2$ rises
-steadily with $k$ — 0.14 at $k=1$, 0.18 at $k=2$, 0.27 at $k=4$, 0.36 at $k=8$, 0.48 at
-$k=16$, 0.54 at $k=32$ — with no plateau before the full 54-dimensional train span (0.59).
-At every $k$ the rotation of $k$ read components recovers 80–85% of the ceiling set by the
-write feature's *own* top-$k$ principal components, so the map is not the bottleneck: the
-task identity carried across 69 tasks is itself high dimensional (32 read / 28 write
-directions for 90% of the variance), and the rotation transports all of it, not a
-handful of privileged directions. The unconstrained linear map from the same $k$
-coordinates does no better, so nothing beyond a rotation and one scalar is gained at any
-$k$ either.
-
-![Held-out R² vs number of read-feature principal components used](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/kdim_sweep.png)
+The map has more structure than "linear": to first order it is a rotation of the
+read-feature geometry into the write subspace, and that rotation is not low dimensional —
+it needs the full ~30-dimensional task-identity space (Appendix J).
 
 ## Claim 7: Write-feature presence predicts task accuracy
 
@@ -885,7 +846,49 @@ randlabel_swap, attention_to_label_1shot, error_analysis_swap_vs_fullmean}/`.
 
 ![Error anatomy of the carrier gap](../results/69_task_run/bottom_up_read_features/steering_results/error_analysis_swap_vs_fullmean/breakdown_bars.png)
 
-## J. The rotation analysis in detail
+## J. The read→write map is a rotation, but not a low-dimensional one
+
+**The map is, to first order, a rotation.**
+
+What does that linear map actually do? Removing each family's mean answers it. The two task
+clouds are already the *same shape*: centered pairwise cosines between tasks match
+pair-by-pair (Pearson 0.93, gram-CKA 0.92), and even the centered norms correlate
+(r ≈ 0.78). But they occupy *nearly orthogonal directions* of the residual stream: the
+largest principal cosine between the two 90%-variance subspaces is 0.26, and each task's
+$u_A$ is nearly orthogonal to its own FV (matched cos 0.06, vs 0 for mismatched pairs).
+
+Congruent shapes in orthogonal subspaces is precisely the geometry a rotation solves — and
+it does: an orthogonal Procrustes map (fit on the 55 train tasks) plus one global scalar
+reaches held-out $R^2$ 0.59, 92% of the unconstrained ridge's 0.64. The scalar is
+$s = 1.66$: the task-unique read signal is about 0.6× the FV's magnitude (centered norms
+28 vs 48), so the rotation has to be scaled up once. In full:
+
+$$\hat v_A = \bar v + s \cdot R\,(u_A - \bar u)$$
+
+— rigidly rotate the task-identity geometry of the read feature into the FV subspace,
+rescale once, add the generic-FV mean back. The ridge's remaining 8% is
+direction-dependent gain (its singular spectrum decays; see "In detail" below).
+
+![Predicting held-out write features from read features: mean shift, rotation, rotation + scalar, ridge](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/rotation_simple.png)
+
+**But not a low-dimensional one.**
+
+Is the rotation secretly low dimensional? We run PCA on the 55 train tasks' $u_A$, keep only
+the top $k$ read components, and fit the map (rotation + scalar, or unconstrained linear)
+from those $k$ coordinates alone, scoring on the held-out tasks. Held-out $R^2$ rises
+steadily with $k$ — 0.14 at $k=1$, 0.18 at $k=2$, 0.27 at $k=4$, 0.36 at $k=8$, 0.48 at
+$k=16$, 0.54 at $k=32$ — with no plateau before the full 54-dimensional train span (0.59).
+At every $k$ the rotation of $k$ read components recovers 80–85% of the ceiling set by the
+write feature's *own* top-$k$ principal components, so the map is not the bottleneck: the
+task identity carried across 69 tasks is itself high dimensional (32 read / 28 write
+directions for 90% of the variance), and the rotation transports all of it, not a
+handful of privileged directions. The unconstrained linear map from the same $k$
+coordinates does no better, so nothing beyond a rotation and one scalar is gained at any
+$k$ either.
+
+![Held-out R² vs number of read-feature principal components used](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/kdim_sweep.png)
+
+**In detail.**
 
 **Data.** X = task-unique part $u_A$ of the read feature (mean of the carrier-projected L5–7
 task means, `label_resid_means`; per-prompt variant built the same way from
