@@ -29,9 +29,6 @@ Notation used throughout (see the project glossary, `task_id_im_subspaces.md`):
   subset of heads in our definition of function vectors.
 - The **per-prompt function vector** $v^j_A = \sum_{h \in H} h(p_A^j)$ for prompt $j$ on
   task $A$. Note that averaging the per prompt function vectors  gives the function vector $v_A = \frac{1}{|\mathcal{P}_A|} \sum_{j} v^j_A$
-- The **read feature** $m_A(\ell) \in \mathbb{R}^{d_{\mathrm{model}}}$ is the task-mean
-  residual-stream activation at demonstration target tokens at layer $\ell$ - i.e.
-  $z^t_{\ell, A}$ averaged over target tokens $t$ (defined in below).
 - Note: "Layer $\ell$" means the residual stream at the output of transformer block $\ell$
 
 ## Setup
@@ -57,10 +54,10 @@ shown there. The rest of the claims are to our knowledge novel.
 | # | Claim | Headline evidence | Section |
 |---|---|---|---|
 | 1 | General write features exist at middle layers and are low dimensional per-task | A single vector can steer models to perform the task on zero shot prompts with peak accuracy when injected in middle layers (shown in Todd et al. 2024). The 37 heads selected from train tasks only, can be used to form function vectors for 14 never-seen tasks' accuracy from 0.09 to 0.73 (same as train tasks' accuracy uplift to 0.75). | Claim 1 |
-| 2 | Read features exist at early layers | Write features are linearly decodable from single target-token activations at early layers (held-out $R^2$ up to 0.688) | Claim 2 |
-| 3 | Read features are causal and low dimensional per-task | We can achieve bidirectional control on task performance using 2 directions per task. Sufficiency: Injecting the shared carrier plus one task-unique direction in dummy prompts recovers 95% of real prompt accuracy (0.596 vs 0.630). Neccesity: ablating one task-unique direction kills ICL (accuracy drops from 0.629 to 0.130) | Claim 3 |
-| 4 | Read features are causal for the formation of write features | Label token injection steers the cue representation toward the task's own $v_A$ (cos 0.18 → 0.37) | Claim 4 |
-| 5 | Read features appear earlier than write features | Read feature cosine similarity peaks at target tokens, L6 (cos 0.80). Write feature cosine similarity peaks at cue tokens, L13. | Claim 5 |
+| 2 | Read features exist at early layers | Write features are linearly decodable from single target-token activations at early layers (held-out $R^2$ up to 0.62) | Claim 2 |
+| 3 | Read features are causal and low dimensional per-task | We can achieve bidirectional control on task performance using 2 directions per task. Sufficiency: Injecting the shared carrier plus one task-unique direction in dummy prompts recovers 95% of real prompt accuracy (0.597 vs 0.630). Neccesity: ablating one task-unique direction kills ICL (accuracy drops from 0.629 to 0.132) | Claim 3 |
+| 4 | Read features are causal for the formation of write features | Label token injection steers the cue representation toward the task's own $v_A$ (cos 0.18 → 0.42) | Claim 4 |
+| 5 | Read features appear earlier than write features | Read feature cosine similarity peaks at target tokens, L7 (cos 0.38). Write feature cosine similarity peaks at cue tokens, L13. | Claim 5 |
 | 6 | Read features linearly map to write features | Training a linear map on a set of train tasks predicts held-out tasks' mpaping ($R^2 \approx 0.64$). | Claim 6 |
 | 7 | Write-feature presence predicts task accuracy | Presence at the cue token and task accuracy rise together (median Spearman ρ +0.96) | Claim 7 |
 
@@ -113,7 +110,9 @@ $$
 m_A(\ell) \;=\; \frac{1}{|\mathcal{P}_A|} \sum_{j} z^{\,t^j_{\mathrm{tgt}}}_{\ell,\, p_A^j},
 $$
 
-computed from the 150 clean 10-shot prompts, giving one candidate per layer. To test a candidate causally we steer with it on the dummy-target scaffold (Appendix A): every demonstration target is replaced by a bare `_`, and we add the candidate to the residual stream at each dummy target slot $t$ at its own layer,
+computed from the 150 clean 10-shot prompts, giving one candidate per layer. 
+
+To test a candidate, we steer with it on dummy prompts (Appendix A). Dummy prompts are the same as a 1-shot prompts but with the target token in the example replaced with `_`. We steer with the mean activation direction in the residual stream at the dummy `_` token:
 
 $$
 z^{\,t}_{\ell} \;\leftarrow\; z^{\,t}_{\ell} + \alpha\, m_A(\ell),
@@ -123,21 +122,15 @@ with $\alpha$ the injection strength.
 
 ![Method diagram: dummy-target injection](../results/69_task_run/bottom_up_read_features/steering_results/sixshot_dummy/poster_visuals/method_diagram.png)
 
-Then we sweep over all layers (and steering strengths for each layer) and see if any layers can steer 1 shot dummy prompts and whether they conincide with the earlier results that we had.
+Then we sweep over all layers (and steering strengths for each layer) and see if any layers can steer the model to complete the task on 1 shot dummy prompts.
 
 ![Injection-layer sweep on the 1-shot dummy-target scaffold, best alpha per layer](../results/69_task_run/bottom_up_read_features/layer_selection/layer_curve_presentation.png)
 
-*Steering works only in a narrow early-layer window, peaking at L6 (accuracy of 0.126, L7 essentially
-tied at 0.125), coinciding with the early-layer band where the write feature is linearly
-readable at target tokens (Claim 2). The dashed line is the mean accuracy of a real
-1-shot demonstration (0.208), so the single best-layer injection recovers a majority of real demonstration accuracy.*
+*Steering works only in a narrow early-layer window, peaking at L6 (accuracy of 0.126, L7 essentially tied at 0.125), coinciding with the early-layer band where the write feature is linearly decodable at target tokens (Claim 2). The dashed line is the baseline of mean accuracy of a real 1-shot prompt, so the single best-layer injection recovers a majority of real prompt accuracy.*
 
 Steering peaks in the L5–7 band, so we build the read feature from the task means of those
-three layers. Averaged over the band, $\bar m_A = \tfrac13\sum_{\ell=5}^{7} m_A(\ell)$, the 69
-task vectors are strikingly alike (mean pairwise cosine 0.73): most of every task's vector is
-a component shared by all tasks, which we call the **shared carrier** $c$ (the cross-task mean
-of $\bar m_A$). To isolate what is specific to task $A$ we project the shared carrier
-*direction* out of each layer's task mean and average the three residuals:
+three layers. We start by studying the average $\bar m_A = \tfrac13\sum_{\ell=5}^{7} m_A(\ell)$. We find that the 69 have a mean pairwise cosine of 0.73, suggesting that most of every task's vector is a component shared by all tasks. We define the **shared carrier** $c$ as the the cross-task mean of $\bar m_A$. To isolate what is specific to task $A$ we project the shared carrier
+direction out of each layer's task mean and average the three residuals:
 
 $$
 c \;=\; \frac{1}{|\mathcal{T}|}\sum_{A'} \bar m_{A'}, \qquad
@@ -149,63 +142,49 @@ $$
 u_A \;=\; \frac{1}{3}\sum_{\ell=5}^{7} r_A(\ell),
 $$
 
-where $\hat c(\ell)$ is the **cross-task** carrier direction at layer $\ell$. Only the shared
-component is removed, never the task's own mean, so $u_A$ is orthogonal to the carrier by
-construction and keeps its natural magnitude (median $\|u_A\| \approx 28$ against
-$\|c\| \approx 47$). We call $u_A$ the **task-unique part** of the read feature. Its unit
+where $\hat c(\ell)$ is the **cross-task** carrier direction at layer $\ell$. $u_A$ is orthogonal to the shared carrier by
+construction. We call $u_A$ the **task-unique component** of the read feature. Its unit
 direction $\hat u_A = u_A/\|u_A\|$ is what we ablate below, and $c + u_A$ is what we inject.
-(An SVD-based alternative — the top singular direction of the three unit-normed residuals —
-gives the same direction to $|\cos| \ge 0.997$ on every task and identical results;
-Appendix I.)
+(See Appendix I for other variations of steering and ablation)
 
 ![Read-feature decomposition into shared carrier and task-unique part](../results/69_task_run/bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png)
 
-**Necessity:** On clean prompts, at every demonstration target token and at the input of every
-block, we replace the residual stream's component along $\hat u_A$ with its cross-task mean
-value (mean-ablation), leaving the other 4095 directions untouched. This single-direction
-ablation collapses ICL (6-shot 0.629 → 0.132; 1-shot 0.208 → 0.044), while ablating a
-counterfactual task's $\hat u_A$ in exactly the same way leaves accuracy at baseline
-(0.632 / 0.205).
+**Necessity:** We take clean 1 shot and 6 shot prompts and ablate out the the task unique direction,$u_A$, out of the residual stream at all the target tokens and observe how the task accuracy changes. As as control, we also ablate the task unique direction of a different task, $u_{A'}$ at all the target tokens as well. We show that ablating $u_A$ destroys task accuracy, whilst ablating $u_{A'}$ does not - showing that $u_A$ is a causally necessary direction for the model learning the task.
 
 ![Task-unique direction ablation, own vs counterfactual](../results/69_task_run/bottom_up_read_features/ablation/task_unique_meanresid/aggregate_bars.png)
 
 *Ablating one task-unique direction kills the task's own ICL while the counterfactual control
-sits at baseline.* 
+sits at baseline.*
 
-(Why not simply ablate the raw mean direction $m_A$ itself? That was our
+Note: Why not simply ablate the raw mean direction $m_A$ itself? That was our
 first attempt, but found that the counterfactual control performed equally as well as the specific task - likely because the shared direction contains some relevant computation for general in context learning. The
 motivation for the task-unique setup, and the full list of variations we tried are in
 Appendix F.
 
-**Sufficiency:** We return to the dummy-target scaffold, now with six demonstrations, and
-inject the carrier plus the task-unique part at the magnitude it has in the model's own
-activations,
+**Sufficiency:** We set up dummy 6-shot prompts (same set up as before where we replace the correct answers with `_`), and
+inject the shared carrier plus the task-unique part:
 
 $$
 s_A \;=\; c + u_A, \qquad z^{\,t}_{\ell} \;\leftarrow\; z^{\,t}_{\ell} + \alpha\, s_A
 \quad\text{at every dummy target slot } t .
 $$
 
-A 1-shot sweep over injection layers (Appendix I) places the optimum early — an L0–L3
-plateau, earlier than the L5–7 band the vector was built from; injecting inside L5–7 still
-steers, at a modest cost (Appendix I, "injection layer"). We therefore inject at L0 and
+A 1-shot sweep over injection layers (Appendix I) places the optimal layer at early layers ( L0–L3). We therefore inject at L0 on the 6-shot dummy prompts at all the target tokens and
 sweep $\alpha \in \{0.5, 1, 2, 4\}$. At $\alpha = 2$ the six steered dummy slots lift
-accuracy from 0.000 to 0.570, 90% of what six real demonstrations achieve (0.630); with
-the best $\alpha$ chosen per task it reaches 0.597 (95%).
+accuracy from 0.000 to 0.570, which is 90% of what six real demonstrations achieve.
 
 ![Steering dummy targets with the read feature: unsteered, steered, real demonstrations](../results/69_task_run/bottom_up_read_features/steering_results/meanresid/sixshot_L0/headline_bars.png)
 
-So to recap: 
+So to recap:
 1. We decompose the mean layer activations into a shared carrier direction and a task unique direction
 2. Ablating the task unique direction at the target tokens kills task performance
 3. Steering with the combination of the shared carrier direction and the task unique direction can boost task performance.
 
-This shows that by controlling the subspace spanned by the shared carrier direction and the task specific direction, we can acheive bidirectional control - suggesting that this 2D subspace is responsible for the model reading these simple functions in context. We will refer to the acitvations in this 2D subspace as **read features**.
+This shows that by controlling the subspace spanned by the shared carrier and the task unique component, we can acheive bidirectional control - suggesting that this 2D subspace is responsible for the model reading these simple functions in context. We will refer to the acitvations in this 2D subspace as **read features**.
 
 ## Claim 4: Read features are causal for the formation of write features
 
-So far, we have shown that the model uses read features and write features to learn tasks, but have not studied the relationship between the two. We go back to the six-shot dummy prompts from the previous section and inject $s_A$ at the target tokens, but instead of measuring the model output, we measure the residual
-stream at the final cue token for presence of the write feature (i.e. the task's function vectors). We inject $s_A$ at different strengths, $\alpha$, and observe the change in cosine similarity of the residual stream at L13 at the final cue token with that task's respective write feature. We find that presence increases as you increase the strength of the read feature steering.
+So far, we have shown that read features and write features are causal for the model to learn tasks, but have not studied the relationship between the two. We go back to the six-shot dummy prompts from the previous section and inject $s_A$ at the target tokens, but instead of measuring the model output, we measure the residual stream at the final cue token for presence of the write feature (i.e. the task's function vectors). We inject $s_A$ at different strengths, $\alpha$, and observe the change in cosine similarity of the residual stream at L13 at the final cue token with that task's respective write feature. We find that presence increases as you increase the strength of the read feature steering.
 
 ![Cue-token cosine to own FV rising with alpha](../results/69_task_run/read_write_relationship/meanresid/headline_cos_absolute.png)
 
@@ -214,14 +193,13 @@ site toward the task's function vector. More variants can be found in Appendix I
 
 ## Claim 5: Read features appear earlier than write features
 
-Now that we have defined our read and write features and shown that they are a causal mechanism for bidirectional control of the task, the next thing to pin down is the mechanistic story of where they appear in the residual stream. We study the mean cosine between the residual stream and each feature, by layer and token type, over clean 10-shot prompts - separate the two features in both depth and position. The task-unique read direction $v_1$ peaks at early layers of target tokens whilst the write features peak at the middle layers of cue tokens.
+Now that we have defined our read and write features and shown that they are a causal mechanism for bidirectional control of the task, the next thing to pin down is the mechanistic story of where they appear in the residual stream. We study the mean cosine between the residual stream and each feature, by layer and token type, over clean 10-shot prompts. The task-unique read direction $u_A$ peaks at early layers of target tokens whilst the write features peak at the middle layers of cue tokens.
 
-Note: Since we have two axis for the read feature subspace, we measure cosine simlarity for each part (shared carrier and task-unique) separately.
+Note: Since we have two axis for the read feature subspace, we measure cosine simlarity for each part (shared carrier and task-unique) separately, but they both peak at around the same layers.
 
 ![Read (task-unique direction at target tokens) vs write (function vector at cue tokens) presence by layer](../results/69_task_run/feature_locations/meanresid/presence_headline.png)
 
-The write-feature side of this picture is consistent with Todd et al. (2024), who find the
-causal FV heads clustered in early-middle layers and FV injection most effective there.
+The write-feature side of this picture is consistent with Todd et al. (2024), who found the causal FV heads clustered in early-middle layers and FV injection most effective there.
 
 ## Claim 6: Read features linearly map to write features
 
