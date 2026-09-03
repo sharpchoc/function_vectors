@@ -448,16 +448,16 @@ Besides the main-text direction $\hat u_A$ we report three variants:
 | Top-3 SVD of carrier-removed L5–15 means | 0.099 | 0.629 | 0.089 | 0.608 |
 | Attention-mask control (cue → demo targets) | 0.046 | | | |
 
-Three readings. (1) The raw direction cannot separate task identity from the carrier:
-mean-ablating it barely hurts (0.567), zero-ablating it kills own *and* counterfactual
-(0.009 / 0.278), because the direction is mostly the shared carrier, which is load-bearing
-but not task-specific. (2) Once the carrier is projected out, the ablation is specific and
-the control sits at baseline in both modes (mean and zero coincide because the basis is
-orthogonal to the carrier). Three directions kill slightly harder than one (0.099 vs 0.132 at
-6-shot; 0.038 vs 0.044 at 1-shot, counterfactual 0.204 / 0.205 against a 0.208 baseline), so
-a single direction carries nearly all of the target-side identity code. (3) Blocking the
-cue's attention to the demonstration targets collapses accuracy to 0.046: target-token
-attention is the route by which the read feature reaches the query.
+- **The raw direction cannot separate task identity from the carrier.** Mean-ablating it
+  barely hurts (0.567); zero-ablating it kills own *and* counterfactual (0.009 / 0.278). The
+  direction is mostly the shared carrier, which is load-bearing but not task-specific.
+- **Once the carrier is projected out, the ablation is specific** and the control sits at
+  baseline in both modes (mean and zero coincide because the basis is orthogonal to the
+  carrier). Three directions kill slightly harder than one (0.099 vs 0.132 at 6-shot; 0.038 vs
+  0.044 at 1-shot, counterfactual 0.204 / 0.205 against a 0.208 baseline), so a single
+  direction carries nearly all of the target-side identity code.
+- **Blocking the cue's attention to the demonstration targets collapses accuracy to 0.046:**
+  target-token attention is the route by which the read feature reaches the query.
 
 ## E. The read → write linear map in detail
 
