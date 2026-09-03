@@ -191,7 +191,7 @@ def method_diagram():
     ax.add_patch(FancyArrowPatch((bx + 3.03, by + 0.35), (lx - 0.04, by + 0.35),
                                  arrowstyle="-|>", mutation_scale=16, lw=2.2,
                                  color=BLUE, zorder=4))
-    ax.text(bx, by - 0.12, "task-mean read-feature candidate at layer $\\ell$ (here $\\ell$ = 6)",
+    ax.text(bx, by - 0.12, "task-mean read-feature candidate\nat layer $\\ell$ (here $\\ell$ = 6)",
             fontsize=10.5, color=INK2, ha="left", va="top")
 
     fig.tight_layout()
