@@ -388,6 +388,50 @@ c + 2n_A v1. Sufficiency-by-m_A(L6) (0.442) text earlier in Claim 3 left as is (
 
 ---
 
+## 2026-09-03 — ALL SVD-era (v1 / ctop1) results re-run with the mean-residual objects (user request)
+
+**Owner:** Claude Code background agent, main checkout. Pods fv-mr-{sA0,sA1,sA2,wA0,wA1,wA2}
+(6× RTX PRO 4500 $0.72/h, ≈2.5–3 h each ≈ 16 pod-h ≈ $12, ALL TERMINATED, re-listed gone).
+**Status:** DONE.
+
+**What was re-run (all bank a, `run_meanresid_all.sh`):** s_A 1-shot 28-layer sweep (3 shards);
+s_A 6-shot at L1/L6/L7 (L0/L5 done earlier); w_A' = own L6/7 mean + u_A (new
+`l67_plus_meanresid_vectors.pt`) sweep + 6-shot at L1 and L3; Claim-5 presence capture of
+carrier + û_A (`meanresid_presence/`); Claim-4 cue effect of s_A@L0, 6- and 1-shot
+(`meanresid_effect_on_write{,_1shot}/`); projection swap α·u_A at L6 with a natural-unit grid
+α∈{0,.5,1,2,4,8} (`meanresid_swap_bases.pt`: V=û_A, s=‖u_A‖; `raw_mean_steering/
+bankA_meanresid_swap_dummy/`). CPU: bank-(b) û_A (`meanresid_top1_bases_avg10.pt`) for App K;
+cross-task cosine figure (`understanding_read_write_linear_map/meanresid/`).
+
+**Findings (69-task means; SVD-era value in brackets):** sweep s_A peak L0 0.194 [0.195],
+plateau L0–3, dead from L12; w_A' peak L3 0.220 / L1 0.219 [L1 0.220]. 6-shot s_A by layer,
+α=2 / best: L0 .570/.597, L1 .569/.593 [.568/.593], L5 .458/.508, L6 .404/.479 [.403/.478],
+L7 .345/.455 [.345/.453]. w_A' 6-shot L1 α=1 .543 / best .588 [.544/.584]; L3 .535/.577.
+Presence û_A@target peak L7 0.379 [0.38], carrier@target 0.672, v_A@cue L13 0.307. Cue effect
+6-shot cos 0.183→0.424 @α=2, excess +0.138 on 69/69 [0.18→0.42, +0.138]; 1-shot Δcos +0.121
+vs generic +0.051, excess +0.070 on 68/69 [+0.121/+0.051/+0.071]. Swap α·u_A 6-shot: dead
+≤α=1 (0.030), 0.244 @2, peak 0.309 @4, 0.192 @8; per-task best 0.346 [0.327 @α=32 s_1-units
+≈ 4× natural; 0.351]. App K |cos(û_A^final, û_A^avg10)| median 0.978 min 0.967 [0.979/0.966].
+⇒ every result reproduces; the SVD construction survives only as one comparison row (App F)
+and one equivalence sentence (App I).
+
+**Files:** `build_meanresid_taskunique.py` (+w_A', swap bases, `--bank b`),
+`run_meanresid_all.sh` (new), `sweep_l67top1_layers.py` (n_A→.get), `steer_taskunique_svd.py`
+(`--alphas`); plot variants: `plot_69_ctop1_presence.py` (MEANRESID=1 → feature_locations/
+meanresid), `plot_steer_effect_on_cue.py --variant meanresid` (read_write_relationship/
+meanresid{,_1shot}), `plot_l67top1_{sweep,sixshot}.py` (L67_NAME=meanresid_steering |
+l67meanresid_steering → steering_results/{meanresid,l67meanresid}), `plot_ctop1_sixshot_by_layer.py`
+(BYLAYER_NAME=meanresid), `plot_69_taskunique_svd_steer.py` (MEANRESID=1 → steering_results/
+taskunique_meanresid_swap), `plot_ctop1_centered_cossim.py` (MEANRESID=1). Paper draft: Claim 3
+methodology rewritten on the u_A definition (carrier projected out per layer → averaged; mean-
+ablation protocol spelled out; s_A injection at L0, α=2 0.570 = 90% of real, best-α 0.597 =
+95%); Claims 4/5 figures → meanresid; App F/I/K rows and prose → meanresid numbers.
+ctop1/* result dirs kept on disk as the SVD-era record (not referenced by the draft).
+
+**Next:** none. Open (awaiting user): Claim 6 linear-map re-run with X = bank-(a) L5–7 read feature.
+
+---
+
 ## 2026-09-03 — Task-unique part := mean of carrier-removed L5–7 residuals (u_A); s_A = c + u_A (user decision)
 
 **Owner:** Claude Code background agent, main checkout. Pod fv-meanresid (1× RTX PRO 4500

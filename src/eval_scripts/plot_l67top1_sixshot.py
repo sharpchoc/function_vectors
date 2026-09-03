@@ -32,7 +32,9 @@ _OUTN = os.environ.get("L67_OUT", "l67top1" + _SUF)             # results subdir
 AR = ARTIFACTS_ROOT / "69_task_run" / _NAME / os.environ.get("L67_SIXSHOT_SUB", "sixshot")
 REF = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering" / "sixshot_dummy"
 OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / _OUTN
-WA_CSV = TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / "l67top1_bankA" / "sixshot_summary.csv"
+WA_CSV = (TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / "l67meanresid" / "sixshot_L1" / "sixshot_summary.csv"
+          if _NAME.startswith("meanresid") else
+          TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" / "l67top1_bankA" / "sixshot_summary.csv")
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
 
 

@@ -15,6 +15,11 @@
   (±0.002). Reason for the switch: simpler to explain, no arbitrary SVD sign, natural
   magnitude. The SVD variant stays in App I as a labelled row; App F/K/presence prose notes
   the equivalence where their numbers were computed with $v_1$.
+- 2026-09-03 (later): every downstream result that had been computed with the SVD $v_1$ (layer
+  sweep, 6-shot by layer, $w_A$ variant, presence maps, Claim-4 cue effect, swap, App K cos)
+  was re-run with $\hat u_A$ / $s_A$ and reproduces to ±0.005 — the paper reports only the
+  mean-residual numbers (WORKLOG 2026-09-03). The swap's α is now in natural units
+  ($\alpha u_A$, α=1 = natural magnitude), not $s_1$ units.
 - Notation in the draft: $u_A$ = task-unique part, $s_A$ = steering vector. (Before
   2026-09-03, $u_A$ denoted the steering vector $c + n_A v_1$ — WORKLOG 2026-09-02 entries use
   that older meaning.)

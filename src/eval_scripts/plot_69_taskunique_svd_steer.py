@@ -115,7 +115,7 @@ def main():
             ax.spines[s_].set_visible(False)
     axes[0].set_ylabel("accuracy (T=1 sampled exact match,\nmean over 69 tasks)", fontsize=11)
     axes[0].legend(fontsize=10, loc="upper left", frameon=False)
-    fig.suptitle("Steering with ONE task-unique direction: projection swap "
+    fig.suptitle("Steering with ONE task-unique direction: projection swap " +
                  ("$h \\leftarrow h - (h\\!\\cdot\\!\\hat u_A)\\hat u_A + \\alpha u_A$ at L6 dummy target slots" if _MR else "$h \\leftarrow h - (h\\!\\cdot\\!v_1)v_1 + \\alpha s_1 v_1$ at L6 dummy target slots"),
                  fontsize=13.5, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.93])

@@ -207,7 +207,7 @@ This shows that by controlling the subspace spanned by the shared carrier direct
 So far, we have shown that the model uses read features and write features to learn tasks, but have not studied the relationship between the two. We go back to the six-shot dummy prompts from the previous section and inject $u_A$ at the target tokens, but instead of measuring the model output, we measure the residual
 stream at the final cue token for presence of the write feature (i.e. the task's function vectors). We inject $u_A$ at different strengths, $\alpha$, and observe the change in cosine similarity of the residual stream at L13 at the final cue token with that task's respective write feature. We find that presence increases as you increase the strength of the read feature steering.
 
-![Cue-token cosine to own FV rising with alpha](../results/69_task_run/read_write_relationship/ctop1/headline_cos_absolute.png)
+![Cue-token cosine to own FV rising with alpha](../results/69_task_run/read_write_relationship/meanresid/headline_cos_absolute.png)
 
 *Cosine between the L13 residual at the final cue token and the task's function vector, as a function of injection strength. Injecting the carrier plus the task-unique direction at the target tokens moves the write
 site toward the task's function vector. More variants can be found in Appendix I*
@@ -218,7 +218,7 @@ Now that we have defined our read and write features and shown that they are a c
 
 Note: Since we have two axis for the read feature subspace, we measure cosine simlarity for each part (shared carrier and task-unique) separately.
 
-![Read (task-unique direction at target tokens) vs write (function vector at cue tokens) presence by layer](../results/69_task_run/feature_locations/ctop1/presence_headline.png)
+![Read (task-unique direction at target tokens) vs write (function vector at cue tokens) presence by layer](../results/69_task_run/feature_locations/meanresid/presence_headline.png)
 
 The write-feature side of this picture is consistent with Todd et al. (2024), who find the
 causal FV heads clustered in early-middle layers and FV injection most effective there.
@@ -613,7 +613,8 @@ band-restricted variant.
 | — top-3 SVD | 0.099 | 0.629 | 0.089 | 0.608 |
 | — top-1 direction | 0.146 | 0.630 | 0.145 | 0.611 |
 | — top-3, L6–9 band only | 0.135 | 0.630 | 0.127 | 0.611 |
-| **— top-1, L5–7 band only (main-text object)** | **0.130** | **0.632** | 0.119 | 0.614 |
+| **— task-unique part $\hat u_A$, L5–7 (main-text object)** | **0.132** | **0.632** | 0.120 | 0.614 |
+| — top SVD direction of the same three residuals ($v_1$) | 0.130 | 0.632 | 0.119 | 0.614 |
 | Attention-mask control | 0.046 | | | |
 
 Readings: (1) uncentered bases can't separate own from counterfactual in zero mode because
@@ -759,8 +760,8 @@ target slot shows the effect propagating forward with decay: the task-specific e
 alignment is largest at the very next cue (+0.047 at $\alpha=2$) and falls monotonically to
 +0.010 by the query cue — each demonstration's target refreshes a signal that would otherwise
 fade. Sources: `read_write_relationship/{bottom_up, bottom_up_1shot, bottom_up_firstlabel}/`.
-Under the main-text steering vector $s_A$ (measured with its SVD-variant twin $c + n_A v_1$, |cos| ≥ 0.997) the rotation is larger (0.18 → 0.42; task-specific
-excess +0.138 at $\alpha=2$); its 1-shot variant shows the same rotation at half strength ($\Delta\cos$ to own $v_A$ +0.121 at $\alpha=2$, vs +0.051 to the generic FV; task-specific excess positive on 68/69 tasks); `read_write_relationship/ctop1_1shot/`.
+Under the main-text steering vector $s_A$ the rotation is larger (0.18 → 0.42; task-specific
+excess +0.138 at $\alpha=2$); its 1-shot variant shows the same rotation at half strength ($\Delta\cos$ to own $v_A$ +0.121 at $\alpha=2$, vs +0.051 to the generic FV; task-specific excess positive on 68/69 tasks); `read_write_relationship/meanresid_1shot/`.
 
 ![Cue-token cosine under the raw $m_A(\mathrm{L6})$ injection](../results/69_task_run/read_write_relationship/bottom_up/headline_cos_absolute.png)
 
@@ -774,44 +775,42 @@ readout:
 | Full read feature $m_A(\mathrm{L6})$ | L6 | 0.447 |
 | Mean-free part $m_A - \bar m$ | L6 | 0.339 |
 | Shared carrier alone | any | ≤ 0.013 |
-| Single-direction swap $\alpha\, s_1 v_1$ (removes natural component first) | L6 | 0.327 |
-| $w_A$ = task's own L6/7 mean + $n_A v_1$ (doubles the $v_1$ component) | L1 | 0.583 |
-| $c + n_A v_1$: carrier + top SVD direction $v_1$ at coefficient $n_A = \langle \bar m_A - c, v_1\rangle$ | L0 | 0.596 |
+| Single-direction swap $\alpha\, u_A$ (removes the natural $\hat u_A$ component first) | L6 | 0.309 |
+| $w_A$ = task's own L6/7 mean + $u_A$ (doubles the task-unique component) | L1 | 0.588 |
 | **$s_A = c + u_A$ (main text)** | L0 | **0.597** |
 | Real 6-shot demonstrations | — | 0.630 |
 
-The SVD composite $c + n_A v_1$ and the main-text $s_A$ are the same vector to within
-|cos| ≥ 0.997 per task ($\hat u_A$ and $v_1$ agree at median |cos| 0.9993, and ‖$u_A$‖ ≈ |$n_A$|),
-and they steer identically (6-shot L0: 0.570 vs 0.570 at $\alpha=2$; 0.596 vs 0.597 at
-per-task best $\alpha$; ablation 0.130 vs 0.132). The two composites ($w_A$ and
-$c + n_A v_1$) were located by a 1-shot injection-layer sweep (all 28 layers,
-$\alpha \in \{0.5,1,2,4\}$, per-task best $\alpha$): both sit on an L0–L3 plateau
-(0.220 and 0.195 respectively; the matched-site raw mean $m_A(\ell)$ peaks at 0.126 at L6)
-and are dead from L12. $s_A$ is the shorter vector (‖$s_A$‖ ≈ 55 vs ≈ 79) and prefers
-$\alpha = 2$; $w_A$ additionally carries the task's residual unique directions and twice the
-task-unique component, which helps on a single slot (+0.025 at 1 shot) but not at six. Not
-yet run: the full mean injected at L0/L1 (to separate the injection-layer effect from the
-vector composition) and $c + 2 u_A$ (to match $w_A$'s dose).
+The two composites ($s_A$ and $w_A$) were located by a 1-shot injection-layer sweep (all 28
+layers, $\alpha \in \{0.5,1,2,4\}$, per-task best $\alpha$): both sit on an L0–L3 plateau
+($s_A$ peaks at L0 with 0.194; $w_A$ at L3 with 0.220, L1 tied at 0.219; the matched-site raw
+mean $m_A(\ell)$ peaks at 0.126 at L6) and are dead from L12. $s_A$ is the shorter vector
+(‖$s_A$‖ ≈ 55 vs ≈ 78) and prefers $\alpha = 2$; $w_A$ additionally carries the task's
+residual unique directions and twice the task-unique component, which helps on a single slot
+(+0.026 at 1 shot) but not at six (6-shot 0.588 at L1, 0.577 at L3). Not yet run: the full
+mean injected at L0/L1 (to separate the injection-layer effect from the vector composition)
+and $c + 2 u_A$ (to match $w_A$'s dose). An SVD-based construction of the same objects (top
+singular direction $v_1$ of the three unit-normed residuals with coefficient
+$n_A = \langle \bar m_A - c, v_1\rangle$) agrees with $\hat u_A$ at median |cos| 0.9993 and
+reproduces every number here to ±0.005.
 
-![All read-feature steering vectors on the 6-shot dummy scaffold](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L0/sixshot_bars.png)
+![All read-feature steering vectors on the 6-shot dummy scaffold](../results/69_task_run/bottom_up_read_features/steering_results/meanresid/sixshot_L0/sixshot_bars.png)
 
-![$c + n_A v_1$ injection-layer sweep, 1-shot](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sweep_layer_curve.png)
+![$s_A$ injection-layer sweep, 1-shot](../results/69_task_run/bottom_up_read_features/steering_results/meanresid/sweep_layer_curve.png)
 
 **Injection layer (6-shot, $s_A$).** The 1-shot sweep picks L0–L3, but $s_A$ is built from
 L5–7 activations, so we also injected it at each of L5, L6 and L7 on the 6-shot scaffold
-(same vector, same prompts, same readout; run with the SVD-variant twin $c + n_A v_1$, which
-matches $s_A$ to ≤0.001 at both layers where both were run — L0 and L5, where $s_A$ gives 0.458 / 0.508 at $\alpha=2$ / per-task best):
+(same vector, same prompts, same readout):
 
 | injection layer | $\alpha=2$ | $\alpha=4$ | per-task best $\alpha$ |
 |---|---:|---:|---:|
-| L0 (main text) | 0.570 | 0.562 | 0.596 |
-| L1 | 0.568 | 0.567 | 0.593 |
-| L5 | 0.457 | 0.500 | 0.507 |
-| L6 | 0.403 | 0.475 | 0.478 |
-| L7 | 0.345 | 0.452 | 0.453 |
+| L0 (main text) | 0.570 | 0.562 | 0.597 |
+| L1 | 0.569 | 0.568 | 0.593 |
+| L5 | 0.458 | 0.501 | 0.508 |
+| L6 | 0.404 | 0.475 | 0.479 |
+| L7 | 0.345 | 0.453 | 0.455 |
 
 Three readings. First, accuracy falls monotonically with injection depth (per-task best:
-0.596 → 0.507 → 0.478 → 0.453 for L0 → L5 → L6 → L7), so early injection is genuinely
+0.597 → 0.508 → 0.479 → 0.455 for L0 → L5 → L6 → L7), so early injection is genuinely
 better — but the penalty is about half what the 1-shot sweep suggested (−15/−20/−24% vs
 −31/−33/−45%): six steered slots saturate the effect. Second, the preferred dose shifts with
 depth (α=2 at L0–L1, α=4 at L5–7; α=1 barely ignites at depth), consistent with a fixed
@@ -819,7 +818,7 @@ vector needing more push the fewer blocks remain to process it. Third, injected 
 band $s_A$ still beats (L5, L6) or matches (L7) the full read feature $m_A(\mathrm{L6})$
 injected at L6 (0.447) — so part of $s_A$'s advantage in the main text comes from injecting
 early, and part from its composition; at matched layer the composition alone is worth
-~0.03. Held-out ≥ train at every layer. Source: `steering_results/ctop1/sixshot_L{0,1,5,6,7}/`
+~0.03. Held-out ≥ train at every layer. Source: `steering_results/meanresid/sixshot_L{0,1,5,6,7}/`
 and `sixshot_by_layer.png`.
 
 **Presence maps in full (Claim 5).** Mean cosine between the clean 10-shot residual stream
@@ -828,16 +827,15 @@ everywhere target-like content sits and even at cue and input tokens (0.6–0.7 
 decaying after) — it is a generic "ICL context" component with no positional task identity.
 The task-unique direction $\hat u_A$ is a target-token phenomenon: 0.38 at L7 at target tokens
 versus ≤ 0.03 at cue and input tokens. The write feature $v_A$ is a cue-token phenomenon
-peaking at L13. (Presence was captured with the SVD variant $v_1$, oriented along the task's
-own carrier-removed read feature; it agrees with $\hat u_A$ to |cos| ≥ 0.997.) Under the previous raw-mean definition the
+peaking at L13. Under the previous raw-mean definition the
 read presence at target tokens peaked at L6 with cos 0.80 — almost all of it carrier.
 
-![Presence of the carrier, the task-unique direction and the function vector, by token type](../results/69_task_run/feature_locations/ctop1/presence_full.png)
+![Presence of the carrier, the task-unique direction and the function vector, by token type](../results/69_task_run/feature_locations/meanresid/presence_full.png)
 
 **The carrier gap.** The task-unique part alone recovers about three quarters of full-vector
 steering (0.339 vs 0.447) while the carrier alone does nothing; the code side compresses to
-one direction (the swap reaches 0.327, matching the mean-free vector, but ignites only at
-$\alpha \approx 16$–32, far above its natural scale). Why does the carrier help if it carries
+one direction (the swap reaches 0.309, close to the mean-free vector, but ignites only at
+2–4× the task-unique part's natural magnitude). Why does the carrier help if it carries
 no identity? Three hypotheses were tested (detail below): *base repair* — rejected: on a
 scaffold whose targets are real words from other tasks' output pools, the gap is unchanged
 to three decimals; *attention capture* — partial: the carrier does attract cue→target
@@ -858,11 +856,13 @@ full vector; 1 slot 0.126 full vs 0.075 mean-free. The shared mean alone: ≤0.0
 cos($m_A$, shared mean) is 0.72–0.93 per task (mean 0.85), i.e. the carrier is most of the
 vector's norm but none of its identity.
 
-**Single-direction swap.** Remove the own top task-unique direction's natural projection
-at L6 target slots and write $\alpha \cdot s_1 \cdot v_1$ instead: aggregate accuracy is
-dead through $\alpha=4$ (≤0.001, and removal-only = baseline), ignites at $\alpha=8$–16
-(0.007 → 0.160), peaks 0.327 at $\alpha=32$, declines by 64. Per-task best 0.351. The code
-is one direction, but the model only responds well above its natural scale.
+**Single-direction swap.** Remove the residual's natural component along $\hat u_A$ at L6
+target slots and write $\alpha \cdot u_A$ instead ($\alpha = 1$ is the task-unique part at
+exactly its natural magnitude): aggregate accuracy is dead through $\alpha = 1$ (0.030;
+removal-only = baseline), ignites at $\alpha = 2$ (0.244), peaks 0.309 at $\alpha = 4$ and
+declines by 8 (0.192). Per-task best 0.346. The code is one direction, but the model only
+responds well above its natural scale — without the carrier, the task-unique part alone needs
+2–4× its natural magnitude to match the mean-free vector (0.339).
 
 **Hypothesis 1 — carrier repairs the defective "_" base: rejected.** On a scaffold whose
 six demo targets are real words sampled from *other* tasks' output pools, full-mean
@@ -937,7 +937,7 @@ indistinguishable numbers for prompt-mean-level steering:
 | — top-1 direction | 0.146 | 0.103 |
 | — top-3, L6–9 band only | 0.135 | 0.096 |
 | — task-unique part $\hat u_A$, L5–7 (main text) | 0.132 | 0.097 (SVD top-1) |
-| Single-direction swap steering, best aggregate $\alpha$ | 0.327 | 0.341 |
+| Single-direction swap steering, best aggregate $\alpha$ | 0.309 ($\alpha u_A$ grid; 0.327 on the SVD grid) | 0.341 (SVD grid) |
 | Read→write ridge, held-out per-prompt $R^2$ (peak layer) | 0.557 (L12) | 0.653 (L13) |
 | Read→write ridge, held-out centroid $R^2$ | 0.636 | 0.692 |
 
