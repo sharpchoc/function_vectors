@@ -490,13 +490,9 @@ demonstrations. Presence = mean cos between the residual stream at the query cue
 
 **Layer-choice robustness:** The headline within-task statistic is
 insensitive to where presence is read: every single layer L9–L20, the max over the band,
-and the band mean give the same median within-task Spearman ρ = +0.964, positive
-in 69/69 tasks, the within-task ranking is the
-same at every layer, so the rank correlation saturates. Where the variants do differ is
-the pooled point-level correlation over all 483 (task, n) points, which mixes in the
-negative between-task relation discussed below:
+and the band mean give the same median within-task Spearman ρ = +0.964. However the variants differ in the task pooled spearman's rank correlation over different points of measurement:
 
-| Presence variant | Median within-task ρ | Pooled point-level ρ |
+| Presence variant | Median within-task ρ | Task Pooled ρ |
 |---|---:|---:|
 | L9 | +0.964 | 0.629 |
 | L10 | +0.964 | 0.573 |
@@ -550,78 +546,75 @@ sweep; within a fixed n it is ≈ 0. Sources:
 **The map is, to first order, a rotation.**
 
 What does that linear map actually do? Removing each family's mean answers it. The two task
-clouds are already the *same shape*: centered pairwise cosines between tasks match
+clouds are roughly the same shape: centered pairwise cosines between tasks match
 pair-by-pair (Pearson 0.93, gram-CKA 0.92), and even the centered norms correlate
-(r ≈ 0.78). But they occupy *nearly orthogonal directions* of the residual stream: the
-largest principal cosine between the two 90%-variance subspaces is 0.26, and each task's
-$u_A$ is nearly orthogonal to its own FV (matched cos 0.06, vs 0 for mismatched pairs).
+(r ≈ 0.78). But the largest principal cosine between the two 90%-variance subspaces is 0.26, and each task's $u_A$ is nearly orthogonal to its own FV (matched cos 0.06, vs 0 for mismatched pairs).
 
-Congruent shapes in orthogonal subspaces is precisely the geometry a rotation solves — and
-it does: an orthogonal Procrustes map (fit on the 55 train tasks) plus one global scalar
-reaches held-out $R^2$ 0.59, 92% of the unconstrained ridge's 0.64. The scalar is
-$s = 1.66$: the task-unique read signal is about 0.6× the FV's magnitude (centered norms
-28 vs 48), so the rotation has to be scaled up once. In full:
+Thus we see if the linear map is just a rotation. We fit an orthogonal Procrustes map plus one global scalar on the train tasks and find that it reaches held-out $R^2$ 0.59, 92% of the unconstrained linea map's 0.64. The scalar is $s = 1.66$, suggesting the task-unique read signal is about 0.6× the FV's magnitude, so the rotation has to be scaled up once. In full:
 
 $$\hat v_A = \bar v + s \cdot R\,(u_A - \bar u)$$
 
-— rigidly rotate the task-identity geometry of the read feature into the FV subspace,
+rigidly rotate the task-identity geometry of the read feature into the FV subspace,
 rescale once, add the generic-FV mean back. The ridge's remaining 8% is
 direction-dependent gain (its singular spectrum decays; see "In detail" below).
 
 ![Predicting held-out write features from read features: mean shift, rotation, rotation + scalar, ridge](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/rotation_simple.png)
 
-**But not a low-dimensional one.**
+**Dimensionality**
 
-Is the rotation secretly low dimensional? We run PCA on the 55 train tasks' $u_A$, keep only
-the top $k$ read components, and fit the map (rotation + scalar, or unconstrained linear)
-from those $k$ coordinates alone, scoring on the held-out tasks. Held-out $R^2$ rises
-steadily with $k$ — 0.14 at $k=1$, 0.18 at $k=2$, 0.27 at $k=4$, 0.36 at $k=8$, 0.48 at
-$k=16$, 0.54 at $k=32$ — with no plateau before the full 54-dimensional train span (0.59).
-At every $k$ the rotation of $k$ read components recovers 80–85% of the ceiling set by the
-write feature's *own* top-$k$ principal components, so the map is not the bottleneck: the
-task identity carried across 69 tasks is itself high dimensional (32 read / 28 write
-directions for 90% of the variance), and the rotation transports all of it, not a
-handful of privileged directions. The unconstrained linear map from the same $k$
-coordinates does no better, so nothing beyond a rotation and one scalar is gained at any
-$k$ either.
+A rotation still has $$\binom{d}{2}$$ degrees of freedom, where $d=4096$. This is not much of reduction from the $d^2$ degrees of freedom of an uncontrained map. So we next ask if the rotation is low dimensional? We run PCA on the 55 train tasks' $u_A$, keeping only
+the top $k$ read components, and fitting the map (rotation + scalar, or unconstrained linear)
+from those $k$ coordinates alone, scoring on the held-out tasks to test this. 
+Held-out $R^2$ rises steadily with $k$ — 0.14 at $k=1$, 0.18 at $k=2$, 0.27 at $k=4$, 0.36 at $k=8$, 0.48 at $k=16$, 0.54 at $k=32$. There is no plateau before the full 54-dimensional train span (0.59).
+This suggests the map is not low dimensional, and the rotation transports all of it, not a
+handful of privileged directions.
 
 ![Held-out R² vs number of read-feature principal components used](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/kdim_sweep.png)
 
-**In detail.**
+**Details:**
 
-**Data.** X = task-unique part $u_A$ of the read feature (mean of the carrier-projected L5–7
-task means, `label_resid_means`; per-prompt variant built the same way from
-`label_resid_perprompt`), Y = task FV (mean of the 150 per-prompt FVs); 55 train / 14
-held-out, fp64. Source: `understanding_read_write_linear_map/meanresid_map/`
-(`claim6_meanresid_map.py`).
+*Data*
 
-**Congruence.** All-69 family-centered pairwise cosines: read vs write Pearson 0.932,
-Spearman 0.906; centered-norm correlation 0.780; gram-CKA 0.924. Subspace overlap in
-activation space: principal cosines between the 90%-variance subspaces (32 read vs 28 write
-dims): max 0.258, median 0.090. Cross-family matched cos($u_A$, $v_A$) centered: mean 0.064,
-mismatched pairs ≈ 0 (−0.000); matched exceeds the mismatched 95th percentile for 36/69
-tasks.
+- X = task-unique part $u_A$ of the read feature (mean of the carrier-projected L5–7 task
+  means); a per-prompt variant is built the same way from `label_resid_perprompt`.
+- Y = task FV (mean of the 150 per-prompt FVs).
+- 55 train / 14 held-out tasks, fp64. Source:
+  `understanding_read_write_linear_map/meanresid_map/` (`claim6_meanresid_map.py`).
 
-**Fits.** Predictor: $\hat v_A = \bar v + s \cdot R\,(u_A - \bar u)$ with means from the
-train tasks; $R$ by orthogonal Procrustes on the 55 centered train pairs; $s = 1$ (rotation)
-or the trace-formula scalar (rotation+scale); ridge = dual with intercept, $\lambda$ by
-LOO-CV (picks the smallest value on the grid, 0.01). Held-out $R^2$ (test-mean reference),
-task centroids / per-prompt read features: ridge 0.641 / 0.531; rotation+scale 0.588 /
-0.484 ($s = 1.66$; centered read norms 28.2 vs FV 47.7); rotation alone 0.457 / 0.419;
-train-mean baseline −0.084. Train-mean-reference $R^2$: ridge 0.669, rotation+scale 0.620.
-Held-out mean cos of centered predictions: rotation 0.80, ridge 0.83. The fitted ridge
-map's singular spectrum on the train span decays smoothly ($\sigma_{10}/\sigma_1 \approx 0.67$,
-$\sigma_{40}/\sigma_1 \approx 0.40$) — the 8% it adds over the rotation is
-direction-dependent gain, not a different geometry. For reference, the raw single-layer
-read feature gives the same picture (ridge / rotation+scale: $m_A(\mathrm{L6})$ 0.642 / 0.586
-with $s = 1.55$; $m_A(\mathrm{L13})$ 0.657 / 0.624 with $s = 0.93$).
+*Congruence (all 69 tasks, family-centered)*
 
-**$k$-dimensional maps.** PCA on the 55 train $u_A$ (train-centered); the top-$k$ read
-components are the only input. "Linear" = ridge from the $k$ scores (LOO-CV $\lambda$);
-"rotation+scale" = Procrustes on the rank-$k$ projected read features; "write ceiling" =
-held-out FVs projected onto their own top-$k$ train write PCs (the best any rank-$k$
-output can do); "read recon" = held-out read variance kept by the $k$ read PCs. Held-out
-$R^2$, test-mean reference:
+- Pairwise cosines, read vs write: Pearson 0.932, Spearman 0.906; centered-norm correlation
+  0.780; gram-CKA 0.924.
+- Subspace overlap in activation space: principal cosines between the 90%-variance
+  subspaces (32 read vs 28 write dims) max 0.258, median 0.090.
+- Matched cos($u_A$, $v_A$), centered: mean 0.064; mismatched pairs ≈ 0. Matched exceeds the
+  mismatched 95th percentile for 36/69 tasks.
+
+*Fits*
+
+- Predictor: $\hat v_A = \bar v + s \cdot R\,(u_A - \bar u)$, means from the train tasks.
+- $R$: orthogonal Procrustes on the 55 centered train pairs; $s = 1$ (rotation) or the
+  trace-formula scalar (rotation+scale, $s = 1.66$; centered read norms 28.2 vs FV 47.7).
+- Ridge: dual form with intercept, $\lambda$ by LOO-CV (picks the smallest grid value, 0.01).
+- Held-out $R^2$ (test-mean reference), task centroids / per-prompt read features:
+  ridge 0.641 / 0.531; rotation+scale 0.588 / 0.484; rotation alone 0.457 / 0.419;
+  train-mean baseline −0.084. With the train-mean reference: ridge 0.669, rotation+scale
+  0.620.
+- Held-out mean cos of centered predictions: rotation 0.80, ridge 0.83.
+- Ridge-map singular spectrum on the train span decays smoothly ($\sigma_{10}/\sigma_1 \approx
+  0.67$, $\sigma_{40}/\sigma_1 \approx 0.40$): the 8% it adds over the rotation is
+  direction-dependent gain, not a different geometry.
+- Reference, raw single-layer read feature (ridge / rotation+scale): $m_A(\mathrm{L6})$
+  0.642 / 0.586 with $s = 1.55$; $m_A(\mathrm{L13})$ 0.657 / 0.624 with $s = 0.93$.
+
+*$k$-dimensional maps*
+
+- PCA on the 55 train $u_A$ (train-centered); only the top-$k$ read components enter.
+- *Linear*: ridge from the $k$ scores (LOO-CV $\lambda$). *Rotation+scale*: Procrustes on the
+  rank-$k$ projected read features.
+- *Write ceiling*: held-out FVs projected onto their own top-$k$ train write PCs, the best
+  any rank-$k$ output can do. *Read recon*: held-out read variance kept by the $k$ read PCs.
+- Held-out $R^2$, test-mean reference:
 
 | $k$ | linear | rotation+scale | write ceiling | read recon | train var. kept |
 |---:|---:|---:|---:|---:|---:|
@@ -633,10 +626,10 @@ $R^2$, test-mean reference:
 | 32 | 0.569 | 0.538 | 0.651 | 0.568 | 0.94 |
 | 54 (all) | 0.641 | 0.588 | 0.712 | 0.616 | 1.00 |
 
-The per-$k$ scalar $s$ falls from 1.99 ($k=1$) to 1.66 (full rank). Per-prompt held-out
-$R^2$ follows the same curve about 0.05 lower. Train $R^2$ of the full ridge is 1.00 (55
-points in 4096 dimensions interpolate), of rotation+scale 0.94; at $k=4$ both are 0.44–0.45
-against 0.27 held-out.
+- The per-$k$ scalar $s$ falls from 1.99 ($k=1$) to 1.66 (full rank).
+- Per-prompt held-out $R^2$ follows the same curve about 0.05 lower.
+- Train $R^2$: full ridge 1.00 (55 points in 4096 dimensions interpolate), rotation+scale
+  0.94; at $k=4$ both are 0.44–0.45 against 0.27 held-out.
 
 ![Cross-family cosine histograms](../results/69_task_run/understanding_read_write_linear_map/crossfamily_cos_hists.png)
 
@@ -645,11 +638,10 @@ against 0.27 held-out.
 Every quantity in this paper estimates the read feature from the residual at the **last
 token of the final demonstration's target** (150 prompts per task). An alternative
 estimator averages the same residual over **all ten** demonstrations' target tokens before
-taking the task mean — ten times more sites, and therefore a lower-noise estimate of the
-same feature, at the cost of blending in shallow-context positions. The two estimators'
-task-unique directions nearly coincide ($|\cos(\hat u_A^{\mathrm{final}},
-\hat u_A^{\mathrm{avg10}})|$: median 0.978, min 0.967 over the 69 tasks), and every qualitative
-result is identical under both; the ten-site average gives sharper numbers exactly where
+taking the task mean. This gives ten times more sites, and therefore a lower-noise estimate of the same feature, at the cost of blending in shallow-context positions. The two estimators'
+task-unique directions nearly coincide: $|\cos(\hat u_A^{\mathrm{final}},
+\hat u_A^{\mathrm{avg10}})|$: median 0.978, min 0.967 over the 69 tasks, and every qualitative
+result is identical under both. The ten-site average gives sharper numbers exactly where
 estimation precision matters (few-direction ablation bases, regression inputs), and
 indistinguishable numbers for prompt-mean-level steering:
 
