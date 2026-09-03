@@ -275,7 +275,7 @@ def main():
     ax.set_ylabel("cos(predicted FV, true FV)", fontsize=11, color=INK)
     ax.set_ylim(0, 1.0)
     ax.set_title(f"Held-out tasks: write feature predicted from the read feature by one linear map\n"
-                 f"(mean cos {cos_map.mean():.2f}, vs {cos_gen.mean():.2f} for the generic train-mean FV, dashed; held-out $R^2$ = {full_ridge_val:.2f})",
+                 f"(mean cos {cos_map.mean():.2f}; dashed: mean cos when the generic train-mean FV is used as the prediction, {cos_gen.mean():.2f})",
                  loc="left", fontsize=11.5, color=INK, pad=10)
     fig.tight_layout(); fig.savefig(OUT / "linear_map_simple.png", facecolor="white"); plt.close(fig)
     print(f"linear map per held-out task: mean cos {cos_map.mean():.3f} (min {cos_map.min():.3f}) vs generic FV {cos_gen.mean():.3f}")
