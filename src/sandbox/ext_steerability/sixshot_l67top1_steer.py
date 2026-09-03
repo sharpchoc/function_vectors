@@ -59,6 +59,9 @@ def parse_args():
     p.add_argument("--batch_cap", type=int, default=48)
     p.add_argument("--shard_idx", type=int, default=0)
     p.add_argument("--shard_n", type=int, default=1)
+    p.add_argument("--scaffold", choices=("dummy", "randlabel"), default="dummy",
+                   help="dummy = six '_' targets (default); randlabel = six real-word targets sampled from "
+                        "OTHER tasks' output pools (sixshot_randomlabel_steer.build_items_randomlabel)")
     return p.parse_args()
 
 
@@ -72,6 +75,10 @@ def main():
     print(f"{len(tasks)} tasks on this shard, layer {args.layer}", flush=True)
 
     vecs = torch.load(args.vectors_path, map_location="cpu", weights_only=False)["tasks"]
+    pools = None
+    if args.scaffold == "randlabel":
+        from src.sandbox.ext_steerability.sixshot_randomlabel_steer import build_output_pools, build_items_randomlabel
+        pools = build_output_pools(sorted(group), args.prompts_root)
     model, tok = load_model(args.model_dir)
     tok.padding_side = "left"
     inj = Injector(model, [args.layer])
@@ -81,10 +88,11 @@ def main():
         if out_path.exists():
             print(f"{task}: exists, skip", flush=True)
             continue
-        dummy = build_items_6shot(task, args.prompts_root, tok, real_labels=False)
+        dummy = (build_items_6shot(task, args.prompts_root, tok, real_labels=False) if args.scaffold == "dummy"
+                 else build_items_randomlabel(task, args.prompts_root, tok, pools))
         w = vecs[task]["vec"].cuda()
         res = {"task": task, "group": group[task], "n_prompts": len(dummy),
-               "n_shots": 6, "layer": args.layer,
+               "n_shots": 6, "layer": args.layer, "scaffold": args.scaffold,
                "vec_norm": vecs[task]["vec_norm"], "n_A": vecs[task].get("n_A", vecs[task].get("u_norm")),
                "definition": "z += alpha*w_A at ALL six '_' target slots, "
                              "w_A = 0.5*(m_A(L6)+m_A(L7)) + <base,v1>*v1",

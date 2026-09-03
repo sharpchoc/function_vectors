@@ -64,6 +64,11 @@ case "$CHAIN" in
         ;;
     esac
     ;;
+  randlabel)
+    # s_A at L0 on the random-target scaffold (six real-word targets from other tasks' pools)
+    python src/sandbox/ext_steerability/sixshot_l67top1_steer.py --layer 0 --model_dir "$MD" \
+      --vectors_path "$SVEC" --scaffold randlabel --out_root "$SOUT/sixshot_L0_randlabel" $SIX || rc=1
+    ;;
   wsix)
     L=${2:?layer}
     python src/sandbox/ext_steerability/sixshot_l67top1_steer.py --layer "$L" --model_dir "$MD" \
