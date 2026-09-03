@@ -61,7 +61,7 @@ def main():
     def m(k):
         return float(np.mean([r[k] for r in rows]))
 
-    is_c = _NAME.startswith("ctop1")
+    is_c = _NAME.startswith(("ctop1", "meanresid"))
     lay = os.environ.get("L67_SIXSHOT_SUB", "sixshot").replace("sixshot_", "") or "L1"
     lay = lay if lay.startswith("L") else "L1"
     vname = "$u_A$" if is_c else "$w_A$"

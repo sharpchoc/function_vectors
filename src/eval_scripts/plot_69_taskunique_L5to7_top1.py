@@ -31,9 +31,10 @@ from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
 import os
 _BANKA = os.environ.get("BANKA") == "1"
-AR = ARTIFACTS_ROOT / "69_task_run" / "bottom_up_ablation" / ("bankA_L5to7_top1" if _BANKA else "meanremoved_L5to7_top1")
+_MR = os.environ.get("MEANRESID") == "1"
+AR = ARTIFACTS_ROOT / "69_task_run" / "bottom_up_ablation" / ("bankA_meanresid_top1" if _MR else ("bankA_L5to7_top1" if _BANKA else "meanremoved_L5to7_top1"))
 ABL = TASK69_RUN_DIR / "bottom_up_read_features" / "ablation"
-OUT = ABL / "task_unique_top1_L5to7"
+OUT = ABL / ("task_unique_meanresid" if _MR else "task_unique_top1_L5to7")
 
 JSON_CONDS = ("mean_ablation_pc5", "zero_ablation_pc5",
               "cf_mean_ablation_pc5", "cf_zero_ablation_pc5")   # names inside the JSONs
@@ -56,7 +57,7 @@ def main():
         for n in (1, 6):
             r = json.load(open(AR / f"n{n}shot" / f"{t}.json"))
             assert r["n_prompts"] == 150 and r["cf_task"] == rows[t]["cf_task"]
-            assert r["rank"] == 1 and "L5to7_top1_bases" in r["bases_path"]
+            assert r["rank"] == 1 and ("meanresid_top1_bases" if _MR else "L5to7_top1_bases") in r["bases_path"]
             for jc, cc in zip(JSON_CONDS, MR1):
                 rows[t][f"n{n}_{cc}"] = r["conditions"][jc]["acc"]
 

@@ -142,32 +142,36 @@ def main():
     ax.set_title("B. tasks share a carrier; removing it\nleaves near-orthogonal remainders",
                  fontsize=14, pad=10)
 
-    # ---------- C: per-layer projection + stack + SVD (conceptual) ----------
+    # ---------- C: per-layer projection, then average (conceptual) ----------
     ax = axes[2]
-    th_c = np.deg2rad(30)
+    th_c = np.deg2rad(38)
     cdir = np.array([np.cos(th_c), np.sin(th_c)])
-    perp = np.array([-cdir[1], cdir[0]])                      # true task-unique direction
-    arrow(ax, 0, 0, *(1.05 * cdir), GRAY, lw=1.6, ls=(0, (4, 3)), alpha=0.8, head=10)
-    ax.annotate("$c$", 1.05 * cdir + np.array([0.02, -0.03]), fontsize=14, color="0.35")
+    perp = np.array([-cdir[1], cdir[0]])
+    arrow(ax, 0, 0, *(1.02 * cdir), GRAY, lw=1.6, ls=(0, (4, 3)), alpha=0.8, head=10)
+    ax.annotate("$c$", 1.02 * cdir + np.array([0.02, -0.02]), fontsize=14, color="0.35")
     cols = ("#1f5fb4", BLUE, "#8db8f0")
-    # three layer means: same carrier-ish component, slightly different residual sizes/tilts
-    specs = ((0.50, 0.42, -14), (0.62, 0.52, 0), (0.56, 0.36, 14))   # (along c, along perp, tilt deg)
+    specs = ((0.42, 0.44, -18), (0.62, 0.52, 0), (0.58, 0.30, 18))   # (along c, along perp, tilt deg)
+    resids = []
     for k, ((a, b, tilt), col) in enumerate(zip(specs, cols)):
-        rdir = np.array([np.cos(np.deg2rad(90 + 30 + tilt)), np.sin(np.deg2rad(90 + 30 + tilt))])
-        m = a * cdir + b * rdir
-        proj = float(m @ cdir) * cdir
+        rot = np.deg2rad(tilt)
+        r_dir = np.cos(rot) * perp + np.sin(rot) * cdir
+        r_dir = r_dir - (r_dir @ cdir) * cdir; r_dir /= np.linalg.norm(r_dir)
+        m = a * cdir + b * r_dir
+        proj = (m @ cdir) * cdir
         arrow(ax, 0, 0, *m, col, lw=2.0, alpha=0.9, head=12)
-        arrow(ax, *proj, *m, ORANGE, lw=1.5, alpha=0.55, head=9)   # residual = m - proj
-        ax.annotate(f"$m_A({5 + k})$", m * 1.08 + np.array([0.0, 0.01]), fontsize=11.5,
-                    color=col, ha="center")
-    arrow(ax, 0, 0, *(0.50 * perp), ORANGE, lw=3.4, head=17)
-    ax.annotate("$v_1$: top SVD direction\nof the 3 residuals\n(task-unique part)",
+        arrow(ax, *proj, *m, ORANGE, lw=1.4, alpha=0.5, head=8)
+        offs = (np.array([-0.16, 0.02]), np.array([0.0, 0.035]), np.array([0.13, -0.01]))[k]
+        ax.annotate(f"$m_A({5 + k})$", m + offs, fontsize=11.5, color=col, ha="center")
+        resids.append(m - proj)
+    u = np.mean(resids, axis=0)
+    arrow(ax, 0, 0, *u, ORANGE, lw=3.4, head=17)
+    ax.annotate("$u_A$: mean of the 3\ncarrier-removed residuals\n(task-unique part)",
                 (-0.62, 0.62), fontsize=12.5, color=ORANGE, ha="left", va="top")
     ax.set_xlim(-0.65, 1.15); ax.set_ylim(-0.05, 1.08)
-    ax.set_title("C. per layer: project out $c$, stack the 3\nresiduals, take the top SVD direction",
+    ax.set_title("C. per layer: project out $c$, then\naverage the 3 residuals",
                  fontsize=14, pad=10)
 
-    fig.suptitle("Read feature = shared carrier $c$ + one task-unique direction $v_1$ "
+    fig.suptitle("Read feature = shared carrier $c$ + task-unique part $u_A$ "
                  "(L5–7 target-token activations, 69 tasks)", fontsize=16, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.92])
     fig.savefig(OUT / "readfeature_decomposition.png", bbox_inches="tight")

@@ -133,7 +133,7 @@ readable at target tokens (Claim 2). The dashed line is the mean accuracy of a r
 1-shot demonstration (0.208), so the single best-layer injection recovers a majority of real demonstration accuracy.*
 
 There is a peak of steering ability around L5-L7, so we take the mean activations of those
-three layers and decompose them. Averaging over the three layers gives one vector per task, $\bar m_A = \tfrac13\sum_{\ell=5}^{7} m_A(\ell)$, and these vectors are very similar across tasks - cosine similarity of 0.73. This suggests that all these activations point along a similar direction, which we call the **shared carrier** $c$, the cross-task mean. We then take each layer's mean activation from L5-L7 for each task and project out the shared carrier and stack the 3 vectors into a matrix and do SVD to extract the top SVD direction,  $v_1$. We define this as the task-unique part.
+three layers and decompose them. Averaging over the three layers gives one vector per task, $\bar m_A = \tfrac13\sum_{\ell=5}^{7} m_A(\ell)$, and these vectors are very similar across tasks - cosine similarity of 0.73. This suggests that all these activations point along a similar direction, which we call the **shared carrier** $c$, the cross-task mean. We then take each layer's mean activation from L5-L7 for each task, project out the shared carrier direction, and average the three residuals to get a single vector $u_A$. We define this as the task-unique part; it keeps its natural magnitude, so no further scaling is needed.
 
 $$
 c \;=\; \frac{1}{|\mathcal{T}|}\sum_{A'} \bar m_{A'}, \qquad
@@ -142,20 +142,22 @@ r_A(\ell) \;=\; m_A(\ell) - \big\langle m_A(\ell),\, \hat c(\ell)\big\rangle\, \
 $$
 
 $$
-v_1 \;=\; \text{top singular direction of } \begin{bmatrix} \hat r_A(5) \\ \hat r_A(6) \\ \hat r_A(7) \end{bmatrix}
-\quad (\hat r_A(\ell) = r_A(\ell)/\|r_A(\ell)\|),
+u_A \;=\; \frac{1}{3}\sum_{\ell=5}^{7} r_A(\ell),
 $$
 
-where $\hat c(\ell)$ is the **cross-task** carrier direction at layer $\ell$ and the SVD is over a $3 \times
-d_{\mathrm{model}}$ matrix with one row per layer.
+where $\hat c(\ell)$ is the **cross-task** carrier direction at layer $\ell$ — the task's own
+mean is never subtracted, only the shared component — so $u_A$ is orthogonal to the carrier
+by construction. (The top singular direction of the three residuals, an alternative
+definition, agrees with $\hat u_A$ to $|\cos| \ge 0.997$ on every task; Appendix F.)
 
 ![Read-feature decomposition into shared carrier and task-unique part](../results/69_task_run/bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png)
 
 **Necessity:** At every demonstration target token we ablate the projection of the residual stream onto the
-task's $v_1$. We find that this collapses 1-shot and 6-shot ICL, while removing a counterfactual
-task's $v_1$ leaves accuracy at baseline.
+task's unit direction $\hat u_A = u_A/\|u_A\|$. We find that this collapses 1-shot and 6-shot ICL
+(6-shot 0.629 → 0.132; 1-shot 0.208 → 0.044), while removing a counterfactual
+task's $\hat u_A$ leaves accuracy at baseline (0.632 / 0.205).
 
-![Task-unique L5–7 top-1 direction ablation, own vs counterfactual](../results/69_task_run/bottom_up_read_features/ablation/task_unique_top1_L5to7/aggregate_bars.png)
+![Task-unique direction ablation, own vs counterfactual](../results/69_task_run/bottom_up_read_features/ablation/task_unique_meanresid/aggregate_bars.png)
 
 *Ablating one task-unique direction kills the task's own ICL while the counterfactual control
 sits at baseline.* 
@@ -165,21 +167,21 @@ first attempt, but found that the counterfactual control performed equally as we
 motivation for the task-unique setup, and the full list of variations we tried are in
 Appendix F.
 
-**Sufficiency:** We use 6-shot prompts but replace the target tokens with dummy tokens (same as the 1 shot setting at the start of Claim 3). We then inject the carrier plus the task's single
-direction at its natural magnitude, $n_A = \langle \bar m_A - c,, v_1\rangle$ (the natural size of that component in the model's own activations),
+**Sufficiency:** We use 6-shot prompts but replace the target tokens with dummy tokens (same as the 1 shot setting at the start of Claim 3). We then inject the carrier plus the task-unique part, at the magnitude it has in the model's
+own activations,
 
 $$
-u_A \;=\; c + n_A\, v_1,
+s_A \;=\; c + u_A,
 $$
 
-$u_A$ is what we inject at every dummy target slot. We sweep steering strength $\alpha$ for for each layer we can inject and report the results of the best one. Swept over injection layers on the
-1-shot dummy prompts, $u_A$ steers best when injected early (L0–L3 plateau, see Appendix I) — earlier
+$s_A$ is what we inject at every dummy target slot. We sweep steering strength $\alpha$ for for each layer we can inject and report the results of the best one. Swept over injection layers on the
+1-shot dummy prompts, $s_A$ steers best when injected early (L0–L3 plateau, see Appendix I) — earlier
 than the L5–7 band it was built from; injecting at L5–7 instead still steers, at a modest
 cost (Appendix I, "injection layer").
 We inject it on 6-shot dummy prompts and find that it recovers 95%
 of what a real 6-shot prompt would achieve, which is significantly higher than the unsteered performance.
 
-![Steering dummy targets with the read feature: unsteered, steered, real demonstrations](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L0/headline_bars.png)
+![Steering dummy targets with the read feature: unsteered, steered, real demonstrations](../results/69_task_run/bottom_up_read_features/steering_results/meanresid/sixshot_L0/headline_bars.png)
 
 So to recap: 
 1. We decompose the mean layer activations into a shared carrier direction and a task unique direction
@@ -200,22 +202,14 @@ site toward the task's function vector. More variants can be found in Appendix I
 
 ## Claim 5: Read features appear earlier than write features
 
-Presence maps — the mean cosine between the residual stream and each feature, by layer and
-token type, over clean 10-shot prompts — separate the two features in both depth and
-position. The task-unique read direction $v_1$ peaks at demonstration *target* tokens at
-layer 7 (cos 0.38) and is essentially absent at cue and input tokens (≤ 0.03 at every
-layer); the write feature peaks at *cue* tokens at layer 13 (cos 0.31; 0.35 at the query cue).
-The shared carrier, by contrast, is present at every token type (cos 0.6–0.7 through L8) and
-carries no positional task signal (Appendix I).
-Reading happens where target content sits, roughly seven layers before writing happens where
-the answer is produced.
+Now that we have defined our read and write features and shown that they are a causal mechanism for bidirectional control of the task, the next thing to pin down is the mechanistic story of where they appear in the residual stream. We study the mean cosine between the residual stream and each feature, by layer and token type, over clean 10-shot prompts - separate the two features in both depth and position. The task-unique read direction $v_1$ peaks at early layers of target tokens whilst the write features peak at the middle layers of cue tokens.
+
+Note: Since we have two axis for the read feature subspace, we measure cosine simlarity for each part (shared carrier and task-unique) separately.
 
 ![Read (task-unique direction at target tokens) vs write (function vector at cue tokens) presence by layer](../results/69_task_run/feature_locations/ctop1/presence_headline.png)
 
 The write-feature side of this picture is consistent with Todd et al. (2024), who find the
-causal FV heads clustered in early-middle layers and FV injection effective there (their
-Figures 3–4); the read feature, and the read-before-write depth ordering, have no
-counterpart in that paper.
+causal FV heads clustered in early-middle layers and FV injection most effective there.
 
 ## Claim 6: Read features linearly map to write features
 
@@ -582,7 +576,7 @@ identity. The reason is structural: read features are far more similar across ta
 function vectors are (mean pairwise cosine 0.727 vs 0.393; figure below), so any task's
 raw direction contains mostly the shared carrier, and removing it removes the same
 load-bearing shared component regardless of which task the direction came from. This is
-what forced the decomposition $m_A = \bar m + u_A$ used in Claim 3: ablate only the
+what forced the decomposition of $m_A$ into a shared carrier and a task-unique part used in Claim 3: ablate only the
 task-unique part and the counterfactual control lands exactly at baseline.
 
 ![Cross-task cosine similarity of read features vs FVs](../results/69_task_run/bottom_up_read_features/ablation/debugging/cossim_hist.png)
@@ -753,14 +747,15 @@ target slot shows the effect propagating forward with decay: the task-specific e
 alignment is largest at the very next cue (+0.047 at $\alpha=2$) and falls monotonically to
 +0.010 by the query cue — each demonstration's target refreshes a signal that would otherwise
 fade. Sources: `read_write_relationship/{bottom_up, bottom_up_1shot, bottom_up_firstlabel}/`.
-Under the main-text $u_A$ injection the rotation is larger (0.18 → 0.42; task-specific
+Under the main-text steering vector $s_A$ (measured with its SVD-variant twin $c + n_A v_1$, |cos| ≥ 0.997) the rotation is larger (0.18 → 0.42; task-specific
 excess +0.138 at $\alpha=2$); its 1-shot variant shows the same rotation at half strength ($\Delta\cos$ to own $v_A$ +0.121 at $\alpha=2$, vs +0.051 to the generic FV; task-specific excess positive on 68/69 tasks); `read_write_relationship/ctop1_1shot/`.
 
 ![Cue-token cosine under the raw $m_A(\mathrm{L6})$ injection](../results/69_task_run/read_write_relationship/bottom_up/headline_cos_absolute.png)
 
 **Read-feature steering variants (6-shot dummy-target scaffold, 69-task means).** The
-main text reports the carrier + one-direction vector $u_A$; the other vectors built from
-the read feature, all on the same scaffold and readout:
+main text reports $s_A = c + u_A$ (carrier plus the mean of the three carrier-removed L5–7
+residuals); the other vectors built from the read feature, all on the same scaffold and
+readout:
 
 | Steering vector | injected at | best acc |
 |---|---|---:|
@@ -769,25 +764,31 @@ the read feature, all on the same scaffold and readout:
 | Shared carrier alone | any | ≤ 0.013 |
 | Single-direction swap $\alpha\, s_1 v_1$ (removes natural component first) | L6 | 0.327 |
 | $w_A$ = task's own L6/7 mean + $n_A v_1$ (doubles the $v_1$ component) | L1 | 0.583 |
-| **$u_A$ = carrier $c$ + $n_A v_1$ (main text)** | L0 | **0.596** |
+| $c + n_A v_1$: carrier + top SVD direction $v_1$ at coefficient $n_A = \langle \bar m_A - c, v_1\rangle$ | L0 | 0.596 |
+| **$s_A = c + u_A$ (main text)** | L0 | **0.597** |
 | Real 6-shot demonstrations | — | 0.630 |
 
-The two composites ($w_A$, $u_A$) were located by a 1-shot injection-layer sweep (all 28
-layers, $\alpha \in \{0.5,1,2,4\}$, per-task best $\alpha$): both sit on an L0–L3 plateau
+The SVD composite $c + n_A v_1$ and the main-text $s_A$ are the same vector to within
+|cos| ≥ 0.997 per task ($\hat u_A$ and $v_1$ agree at median |cos| 0.9993, and ‖$u_A$‖ ≈ |$n_A$|),
+and they steer identically (6-shot L0: 0.570 vs 0.570 at $\alpha=2$; 0.596 vs 0.597 at
+per-task best $\alpha$; ablation 0.130 vs 0.132). The two composites ($w_A$ and
+$c + n_A v_1$) were located by a 1-shot injection-layer sweep (all 28 layers,
+$\alpha \in \{0.5,1,2,4\}$, per-task best $\alpha$): both sit on an L0–L3 plateau
 (0.220 and 0.195 respectively; the matched-site raw mean $m_A(\ell)$ peaks at 0.126 at L6)
-and are dead from L12. $u_A$ is the shorter vector (‖$u_A$‖ ≈ 55 vs ≈ 79) and prefers
+and are dead from L12. $s_A$ is the shorter vector (‖$s_A$‖ ≈ 55 vs ≈ 79) and prefers
 $\alpha = 2$; $w_A$ additionally carries the task's residual unique directions and twice the
-$v_1$ component, which helps on a single slot (+0.025 at 1 shot) but not at six. Not yet
-run: the full mean injected at L0/L1 (to separate the injection-layer effect from the
-vector composition) and $c + 2 n_A v_1$ (to match $w_A$'s $v_1$ dose).
+task-unique component, which helps on a single slot (+0.025 at 1 shot) but not at six. Not
+yet run: the full mean injected at L0/L1 (to separate the injection-layer effect from the
+vector composition) and $c + 2 u_A$ (to match $w_A$'s dose).
 
 ![All read-feature steering vectors on the 6-shot dummy scaffold](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sixshot_L0/sixshot_bars.png)
 
-![$u_A$ injection-layer sweep, 1-shot](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sweep_layer_curve.png)
+![$c + n_A v_1$ injection-layer sweep, 1-shot](../results/69_task_run/bottom_up_read_features/steering_results/ctop1/sweep_layer_curve.png)
 
-**Injection layer (6-shot, $u_A$).** The 1-shot sweep picks L0–L3, but $u_A$ is built from
+**Injection layer (6-shot, $s_A$).** The 1-shot sweep picks L0–L3, but $s_A$ is built from
 L5–7 activations, so we also injected it at each of L5, L6 and L7 on the 6-shot scaffold
-(same vector, same prompts, same readout):
+(same vector, same prompts, same readout; run with the SVD-variant twin $c + n_A v_1$, which
+matches $s_A$ to 0.001 at L0):
 
 | injection layer | $\alpha=2$ | $\alpha=4$ | per-task best $\alpha$ |
 |---|---:|---:|---:|
@@ -803,8 +804,8 @@ better — but the penalty is about half what the 1-shot sweep suggested (−15/
 −31/−33/−45%): six steered slots saturate the effect. Second, the preferred dose shifts with
 depth (α=2 at L0–L1, α=4 at L5–7; α=1 barely ignites at depth), consistent with a fixed
 vector needing more push the fewer blocks remain to process it. Third, injected in its own
-band $u_A$ still beats (L5, L6) or matches (L7) the full read feature $m_A(\mathrm{L6})$
-injected at L6 (0.447) — so part of $u_A$'s advantage in the main text comes from injecting
+band $s_A$ still beats (L5, L6) or matches (L7) the full read feature $m_A(\mathrm{L6})$
+injected at L6 (0.447) — so part of $s_A$'s advantage in the main text comes from injecting
 early, and part from its composition; at matched layer the composition alone is worth
 ~0.03. Held-out ≥ train at every layer. Source: `steering_results/ctop1/sixshot_L{0,1,5,6,7}/`
 and `sixshot_by_layer.png`.
@@ -813,10 +814,10 @@ and `sixshot_by_layer.png`.
 and each direction, by layer and token type (69-task means). The carrier $c$ is present
 everywhere target-like content sits and even at cue and input tokens (0.6–0.7 through L8,
 decaying after) — it is a generic "ICL context" component with no positional task identity.
-The task-unique direction $v_1$ is a target-token phenomenon: 0.38 at L7 at target tokens
+The task-unique direction $\hat u_A$ is a target-token phenomenon: 0.38 at L7 at target tokens
 versus ≤ 0.03 at cue and input tokens. The write feature $v_A$ is a cue-token phenomenon
-peaking at L13. ($v_1$'s SVD sign is arbitrary; it is oriented along the task's own
-carrier-removed read feature for these plots.) Under the previous raw-mean definition the
+peaking at L13. (Presence was captured with the SVD variant $v_1$, oriented along the task's
+own carrier-removed read feature; it agrees with $\hat u_A$ to |cos| ≥ 0.997.) Under the previous raw-mean definition the
 read presence at target tokens peaked at L6 with cos 0.80 — almost all of it carrier.
 
 ![Presence of the carrier, the task-unique direction and the function vector, by token type](../results/69_task_run/feature_locations/ctop1/presence_full.png)
@@ -835,7 +836,7 @@ underscore-echoes (0.055 vs 0.018) with *identical* own-pool mapping-error rates
 0.137), and over half the gap is degraded on-task attempts. The surviving interpretation is
 a ratio-preserving composite code: carrier and code arrive together at a preserved
 proportion in natural prompts, and downstream machinery is calibrated to that composition —
-which is exactly what $u_A$ re-imposes at its natural coordinate.
+which is exactly what $s_A$ re-imposes at its natural coordinate.
 
 ![Single task-unique direction swap steering, alpha curve](../results/69_task_run/bottom_up_read_features/steering_results/taskunique_svd_dummy/alpha_curve.png)
 
