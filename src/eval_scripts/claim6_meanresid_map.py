@@ -268,8 +268,9 @@ def main():
             fh.write(f"{te_tasks[i]},{cos_map[i]:.4f},{cos_gen[i]:.4f}\n")
     fig, ax = plt.subplots(figsize=(9.2, 4.6), dpi=150); fig.patch.set_facecolor("white"); style(ax)
     xs = np.arange(len(ordr))
-    ax.bar(xs, cos_gen[ordr], width=0.72, color="0.78", zorder=2, label=f"generic FV (train mean), mean cos {cos_gen.mean():.2f}")
-    ax.bar(xs, cos_map[ordr], width=0.44, color=TEAL, zorder=3, label=f"linear map from read feature, mean cos {cos_map.mean():.2f}")
+    ax.bar(xs, cos_map[ordr], width=0.62, color=TEAL, zorder=3, label=f"linear map from read feature, mean cos {cos_map.mean():.2f}")
+    ax.axhline(cos_gen.mean(), color="0.45", lw=1.4, ls=(0, (5, 3)), zorder=4,
+               label=f"generic FV (train mean) as predictor, mean cos {cos_gen.mean():.2f}")
     ax.set_xticks(xs, [te_tasks[i] for i in ordr], rotation=35, ha="right", fontsize=9)
     ax.set_ylabel("cos(predicted FV, true FV)", fontsize=11, color=INK)
     ax.set_ylim(0, 1.0)
