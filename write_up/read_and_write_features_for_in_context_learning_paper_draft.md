@@ -199,8 +199,6 @@ Note: Since we have two axis for the read feature subspace, we measure cosine si
 
 ![Read (task-unique direction at target tokens) vs write (function vector at cue tokens) presence by layer](../results/69_task_run/feature_locations/meanresid/presence_headline.png)
 
-*Full maps for all three token types and the shared carrier are in Appendix G.*
-
 ## Claim 6: Read features linearly map to write features
 
 A single linear map from the read feature to the write feature, fit on the 55 train tasks,
@@ -210,7 +208,7 @@ predicts the *held-out* tasks' function vectors. The input is the task unique re
 
 *Each bar is one held-out task. The cosine between the write feature predicted from its read feature by the linear map (fit on the train tasks) and its true write feature. The dashed line is the same cosine when the generic train-mean write feature vector is used as the prediction for every task (mean 0.64), as a naive baseline*
 
-We study the geometry of the linear map in more detail in Appendix H.
+We study the geometry of the linear map in more detail in Appendix G.
 
 ## Claim 7: Write-feature presence predicts task accuracy
 
@@ -413,62 +411,6 @@ centered PCs of the 69 task means retains accuracy roughly linearly in k with in
 
 ![Steering retention vs subspace dimension](../results/69_task_run/bottom_up_read_features/dimensionality_analysis/sparse_pc40/retention_curve.png)
 
-**Steering vectors compared (6-shot dummy-target scaffold, 69-task means).** The
-main text reports $s_A = c + u_A$ (carrier plus the mean of the three carrier-removed L5–7
-residuals); the other vectors built from the read feature, all on the same scaffold and
-readout:
-
-| Steering vector | injected at | best acc |
-|---|---|---:|
-| Full read feature $m_A(\mathrm{L6})$ | L6 | 0.447 |
-| Mean-free part $m_A - \bar m$ | L6 | 0.339 |
-| Shared carrier alone | any | ≤ 0.013 |
-| Single-direction swap $\alpha\, u_A$ (removes the natural $\hat u_A$ component first) | L6 | 0.309 |
-| $w_A$ = task's own L6/7 mean + $u_A$ (doubles the task-unique component) | L1 | 0.588 |
-| **$s_A = c + u_A$ (main text)** | L0 | **0.597** |
-| Real 6-shot demonstrations | — | 0.630 |
-
-The two composites ($s_A$ and $w_A$) were located by a 1-shot injection-layer sweep (all 28
-layers, $\alpha \in \{0.5,1,2,4\}$, per-task best $\alpha$): both sit on an L0–L3 plateau
-($s_A$ peaks at L0 with 0.194; $w_A$ at L3 with 0.220, L1 tied at 0.219; the matched-site raw
-mean $m_A(\ell)$ peaks at 0.126 at L6) and are dead from L12. $s_A$ is the shorter vector
-(‖$s_A$‖ ≈ 55 vs ≈ 78) and prefers $\alpha = 2$; $w_A$ additionally carries the task's
-residual unique directions and twice the task-unique component, which helps on a single slot
-(+0.026 at 1 shot) but not at six (6-shot 0.588 at L1, 0.577 at L3). Not yet run: the full
-mean injected at L0/L1 (to separate the injection-layer effect from the vector composition)
-and $c + 2 u_A$ (to match $w_A$'s dose). An SVD-based construction of the same objects (top
-singular direction $v_1$ of the three unit-normed residuals with coefficient
-$n_A = \langle \bar m_A - c, v_1\rangle$) agrees with $\hat u_A$ at median |cos| 0.9993 and
-reproduces every number here to ±0.005.
-
-![All read-feature steering vectors on the 6-shot dummy scaffold](../results/69_task_run/bottom_up_read_features/steering_results/meanresid/sixshot_L0/sixshot_bars.png)
-
-![$s_A$ injection-layer sweep, 1-shot](../results/69_task_run/bottom_up_read_features/steering_results/meanresid/sweep_layer_curve.png)
-
-**Injection layer (6-shot, $s_A$).** The 1-shot sweep picks L0–L3, but $s_A$ is built from
-L5–7 activations, so we also injected it at each of L5, L6 and L7 on the 6-shot scaffold
-(same vector, same prompts, same readout):
-
-| injection layer | $\alpha=2$ | $\alpha=4$ | per-task best $\alpha$ |
-|---|---:|---:|---:|
-| L0 (main text) | 0.570 | 0.562 | 0.597 |
-| L1 | 0.569 | 0.568 | 0.593 |
-| L5 | 0.458 | 0.501 | 0.508 |
-| L6 | 0.404 | 0.475 | 0.479 |
-| L7 | 0.345 | 0.453 | 0.455 |
-
-Three readings. First, accuracy falls monotonically with injection depth (per-task best:
-0.597 → 0.508 → 0.479 → 0.455 for L0 → L5 → L6 → L7), so early injection is genuinely
-better — but the penalty is about half what the 1-shot sweep suggested (−15/−20/−24% vs
-−31/−33/−45%): six steered slots saturate the effect. Second, the preferred dose shifts with
-depth (α=2 at L0–L1, α=4 at L5–7; α=1 barely ignites at depth), consistent with a fixed
-vector needing more push the fewer blocks remain to process it. Third, injected in its own
-band $s_A$ still beats (L5, L6) or matches (L7) the full read feature $m_A(\mathrm{L6})$
-injected at L6 (0.447) — so part of $s_A$'s advantage in the main text comes from injecting
-early, and part from its composition; at matched layer the composition alone is worth
-~0.03. Held-out ≥ train at every layer. Source: `steering_results/meanresid/sixshot_L{0,1,5,6,7}/`
-and `sixshot_by_layer.png`.
-
 ## D. Read-feature ablation in detail
 
 **Ablating the raw mean direction fails:** The
@@ -532,14 +474,14 @@ Findings:
 
 **Test-Train Split robustness:** Over 10 random 55/14 task splits the held-out $R^2$ of the ridge is
 0.60 ± 0.06 (range 0.50–0.68). The
-rotation + scalar map of Appendix H tracks it at 0.57 ± 0.05 (canonical 0.59).
+rotation + scalar map of Appendix G tracks it at 0.57 ± 0.05 (canonical 0.59).
 
 ![Held-out R² across task splits](../results/69_task_run/understanding_read_write_linear_map/meanresid_map/seed_r2.png)
 
 **Which tasks transfer.** Averaging each task's cos(predicted, true FV) over the random
 splits in which it was held out: median 0.89.
 The weakest are classification-style tasks: ag_news 0.61, natural_manmade 0.73,
-concrete_abstract 0.73, person-instrument 0.75, which are the same family whose read features are least aligned with their own FVs (Appendix H).
+concrete_abstract 0.73, person-instrument 0.75, which are the same family whose read features are least aligned with their own FVs (Appendix G).
 
 ## F. Presence-vs-accuracy method
 
@@ -608,36 +550,7 @@ between-task sign is a property of the task-specific component. Per-prompt granu
 sweep; within a fixed n it is ≈ 0. Sources:
 `write_feature_and_model_accuracy/{diagnostics.txt, per_prompt/, baseline_subtracted/}`.
 
-**Presence under read-feature injection (Claim 4 variant).** With
-$\alpha \cdot m_A(\mathrm{L6})$ at all six dummy slots (the raw read feature as steering vector, Appendix C),
-the cue-token cosine to the task's own FV at L13 rises from 0.18 to 0.37 between $\alpha=0$
-and $\alpha=2$; the task-specific gain over the generic all-task FV is positive on 69/69
-tasks (+0.093 at $\alpha=2$) and still rising at $\alpha=4$. Two finer-grained variants
-agree. On the 1-shot scaffold the same rotation appears at half strength ($\Delta\cos$ to
-own $v_A$ +0.088 at $\alpha=2$, vs +0.044 to the generic FV). And steering *only the first*
-target slot shows the effect propagating forward with decay: the task-specific excess
-alignment is largest at the very next cue (+0.047 at $\alpha=2$) and falls monotonically to
-+0.010 by the query cue — each demonstration's target refreshes a signal that would otherwise
-fade. Sources: `read_write_relationship/{bottom_up, bottom_up_1shot, bottom_up_firstlabel}/`.
-Under the main-text steering vector $s_A$ the rotation is larger (0.18 → 0.42; task-specific
-excess +0.138 at $\alpha=2$); its 1-shot variant shows the same rotation at half strength ($\Delta\cos$ to own $v_A$ +0.121 at $\alpha=2$, vs +0.051 to the generic FV; task-specific excess positive on 68/69 tasks); `read_write_relationship/meanresid_1shot/`.
-
-![Cue-token cosine under the raw $m_A(\mathrm{L6})$ injection](../results/69_task_run/read_write_relationship/bottom_up/headline_cos_absolute.png)
-
-## G. Presence maps in full
-
-**Method and reading.** Mean cosine between the clean 10-shot residual stream
-and each direction, by layer and token type (69-task means). The carrier $c$ is present
-everywhere target-like content sits and even at cue and input tokens (0.6–0.7 through L8,
-decaying after) — it is a generic "ICL context" component with no positional task identity.
-The task-unique direction $\hat u_A$ is a target-token phenomenon: 0.38 at L7 at target tokens
-versus ≤ 0.03 at cue and input tokens. The write feature $v_A$ is a cue-token phenomenon
-peaking at L13. Under the previous raw-mean definition the
-read presence at target tokens peaked at L6 with cos 0.80 — almost all of it carrier.
-
-![Presence of the carrier, the task-unique direction and the function vector, by token type](../results/69_task_run/feature_locations/meanresid/presence_full.png)
-
-## H. The read→write map is a rotation, but not a low-dimensional one
+## G. The read→write map is a rotation, but not a low-dimensional one
 
 **The map is, to first order, a rotation.**
 
@@ -732,7 +645,7 @@ against 0.27 held-out.
 
 ![Cross-family cosine histograms](../results/69_task_run/understanding_read_write_linear_map/crossfamily_cos_hists.png)
 
-## I. Estimator variant: ten-site-average read features
+## H. Estimator variant: ten-site-average read features
 
 Every quantity in this paper estimates the read feature from the residual at the **last
 token of the final demonstration's target** (150 prompts per task). An alternative

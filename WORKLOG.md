@@ -421,6 +421,10 @@ task RELATION; input content and a weak output-format prior survive its removal.
 
 ---
 
+## 2026-09-03 — REVERTED (user): the Appendix-G material was NOT to be merged anywhere. Appendices C and F restored byte-identical to commit 3275083; the new 'Presence maps in full' appendix and the Claim 5 pointer line removed; old G's content is simply dropped (results stay on disk). Re-lettered H→G (rotation), I→H (estimator) and remapped references. Dangling main-text pointers flagged to user: Claim 3 sweep '(Appendix C)' and Claim 4 caption 'Appendix F'.
+
+---
+
 ## 2026-09-03 — Paper draft: old Appendix G (task-unique steering & carrier-gap tests) dissolved (user request). Steering-variant table + 7-bar figure + s_A sweep + 6-shot injection-layer table → Appendix C; raw-m_A cue-effect variant → Appendix F ("Presence under read-feature injection"); full presence maps → new short Appendix G (pointer added under the Claim 5 figure); carrier-gap block (mean-free, swap curve, hypotheses 1/attention, error anatomy) and raw-m_A sufficiency paragraph CUT (results stay on disk). Pointers: Claim 3 → C + D, sweep → C, Claim 4 caption → F. H/I letters unchanged.
 
 ---
