@@ -38,7 +38,6 @@ ax.set_xlabel("layer of the target-token activation (X)", color=INK, fontsize=11
 ax.set_ylabel("held-out $R^2$ vs task FV", color=INK, fontsize=11)
 ax.set_title("Where the write feature is linearly readable from the raw read feature $m_A(\\ell)$",
              fontsize=12.5, color=INK, loc="left", pad=10)
-ax.legend(loc="lower right", fontsize=9.5, frameon=False)
 ax.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
 for s in ["top", "right"]: ax.spines[s].set_visible(False)
 for s in ["left", "bottom"]: ax.spines[s].set_color("#c9ccc7")

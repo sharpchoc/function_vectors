@@ -486,7 +486,7 @@ concrete_abstract 0.73, person-instrument 0.75, which are the same family whose 
 **Layer sweep with the raw per-layer read feature.** Regressing from the raw task mean
 $m_A(\ell)$ instead (per-prompt X, all 28 layers) shows where task identity is linearly
 readable in depth: held-out $R^2$ climbs from 0.28 at L0, plateaus from L8, peaks at
-L12–13 (0.64) and is still 0.53 at the last layer. Task identity stays readable at the
+L12 (0.56) and is still 0.53 at the last layer. Task identity stays readable at the
 target slots through the whole second half of the network.
 
 ![Held-out R² of the read→write ridge, all 28 layers](../results/69_task_run/FV_linear_decodability/labeltoken_fv_ridge/layer_sweep_bankA/taskfv_r2_heldout_perprompt.png)
