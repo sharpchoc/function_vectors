@@ -421,6 +421,10 @@ task RELATION; input content and a weak output-format prior survive its removal.
 
 ---
 
+## 2026-09-03 — Paper draft: old Appendix G (task-unique steering & carrier-gap tests) dissolved (user request). Steering-variant table + 7-bar figure + s_A sweep + 6-shot injection-layer table → Appendix C; raw-m_A cue-effect variant → Appendix F ("Presence under read-feature injection"); full presence maps → new short Appendix G (pointer added under the Claim 5 figure); carrier-gap block (mean-free, swap curve, hypotheses 1/attention, error anatomy) and raw-m_A sufficiency paragraph CUT (results stay on disk). Pointers: Claim 3 → C + D, sweep → C, Claim 4 caption → F. H/I letters unchanged.
+
+---
+
 ## 2026-09-03 — Appendix E re-based on the u_A → v_A map: split robustness, per-task transfer, centroid decomposition (user request)
 
 CPU only. `src/eval_scripts/claim6_meanresid_robustness.py` (imports load/ridge/procrustes from
