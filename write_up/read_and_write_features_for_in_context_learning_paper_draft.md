@@ -425,8 +425,21 @@ task-unique part, which did the trick.
 
 ![Cross-task cosine similarity of read features vs FVs](../results/69_task_run/bottom_up_read_features/ablation/debugging/cossim_hist.png)
 
-**Ablation Variations:** We ablate a per-task subspace at every demonstration target token, at the input of every block. Mean-ablation replaces the residual's projection onto the subspace with the cross-task grand mean's projection; zero-ablation removes it. The control repeats the operation with another task's subspace. Baselines share prompts and seeds with the steering runs. Besides the main-text direction $\hat u_A$ we report three variants: the task's raw unit read direction $\hat m_A(\mathrm{L6})$ (rank-1); the top-3 SVD directions of the carrier-removed L5–15 task means (a rank-3 version of $\hat u_A$); and an attention-mask control that ablates nothing but blocks the final cue token from attending to the
-demonstration target positions.
+**Ablation Variations:** We ablate a per-task subspace at every demonstration target token,
+at the input of every block.
+
+- *Mean-ablation* replaces the residual's projection onto the subspace with the cross-task
+  grand mean's projection; *zero-ablation* removes it.
+- *Control:* the same operation with another task's subspace.
+- Baselines share prompts and seeds with the steering runs.
+
+Besides the main-text direction $\hat u_A$ we report three variants:
+
+- *Rank-1:* the task's raw unit read direction $\hat m_A(\mathrm{L6})$.
+- *Top-3 SVD:* the three leading directions of the carrier-removed L5–15 task means, a
+  rank-3 version of $\hat u_A$.
+- *Attention-mask control:* ablates nothing, but blocks the final cue token from attending
+  to the demonstration target positions.
 
 | Basis (6-shot, baseline 0.629) | Own, mean-abl | Cf, mean-abl | Own, zero | Cf, zero |
 |---|---:|---:|---:|---:|
