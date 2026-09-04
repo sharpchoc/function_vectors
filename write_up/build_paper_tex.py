@@ -32,18 +32,22 @@ MATH_MAP = {"–": "-", "—": "-", "…": r"\ldots", "→": r"\rightarrow", "×
             "Δ": r"\Delta", "ℓ": r"\ell", "·": r"\cdot", "✓": r"\checkmark"}
 MATH_RE = re.compile(r"(```.*?```|`[^`\n]+`|\$\$.*?\$\$|(?<!\\)\$[^$\n]+?\$)", re.S)
 
-PREAMBLE = r"""\documentclass[10pt]{article}
+TEMPLATE = HERE / "iclr2026_template"      # ICLR 2026 Master-Template files (sty/bst), shipped in the zip
+TEMPLATE_FILES = ("iclr2026_conference.sty", "fancyhdr.sty", "natbib.sty", "math_commands.tex", "iclr2026_conference.bst")
+
+PREAMBLE = r"""\documentclass{article}
+\usepackage{iclr2026_conference,times}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{newtxtext,newtxmath}
-\usepackage[textwidth=5.5in,textheight=9in,centering]{geometry}
-\usepackage{amsmath}
+\usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs,longtable,array,calc}
 \usepackage{xcolor}
-\usepackage{float}
-\usepackage[hidelinks]{hyperref}
+\usepackage{etoolbox}
+\usepackage{enumitem}
 \usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{url}
 \setcounter{secnumdepth}{0}
 \DeclareUnicodeCharacter{22EE}{\ensuremath{\vdots}}
 \DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
@@ -61,26 +65,17 @@ PREAMBLE = r"""\documentclass[10pt]{article}
 \setlength{\emergencystretch}{3em}
 \providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \providecommand{\pandocbounded}[1]{#1}
-\makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\makeatother
-\setkeys{Gin}{width=\maxwidth,keepaspectratio}
-\setlength{\parskip}{2pt}
-\usepackage{etoolbox}
-\usepackage{titlesec}
-\titleformat{\section}{\large\bfseries}{}{0pt}{}
-\titleformat{\subsection}{\normalsize\bfseries}{}{0pt}{}
-\titlespacing*{\section}{0pt}{1.4ex plus .4ex}{0.6ex}
-\titlespacing*{\subsection}{0pt}{1.0ex plus .3ex}{0.4ex}
+\setlist{nosep,leftmargin=1.4em}
 \AtBeginEnvironment{longtable}{\small}
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
-\usepackage{enumitem}
-\setlist{nosep,leftmargin=1.4em}
 \title{%(title)s}
-\author{}
-\date{}
+\author{Anonymous authors}
+%% \iclrfinalcopy   %% uncomment for the camera-ready (de-anonymised) version
 \begin{document}
 \maketitle
+\begin{abstract}
+%(abstract)s
+\end{abstract}
 """
 
 
@@ -165,6 +160,12 @@ def main():
     title = lines[0][2:].strip()
     md = "\n".join(lines[1:])
 
+    # abstract -> ICLR abstract environment
+    m = re.search(r"\n## Abstract\n(.*?)(?=\n## )", md, re.S)
+    abstract = m.group(1).strip() if m else ""
+    if m:
+        md = md[:m.start()] + md[m.end():]
+
     # figures: copy + rewrite paths
     seen = {}
     def fig_sub(m):
@@ -178,7 +179,7 @@ def main():
     md = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", fig_sub, md)
 
     # top-level headings other than the title -> raw LaTeX
-    md = md.replace("\n# Appendix\n", "\n```{=latex}\n\\clearpage\n\\begin{center}{\\LARGE\\bfseries Appendix}\\end{center}\n```\n")
+    md = md.replace("\n# Appendix\n", "\n```{=latex}\n\\clearpage\n\\appendix\n\\begin{center}{\\LARGE\\bfseries Appendix}\\end{center}\n```\n")
     md = md.replace("\n# References\n", "\n```{=latex}\n\\section*{References}\n```\n")
     assert "\n# " not in md, "unexpected level-1 heading left"
 
@@ -200,7 +201,10 @@ def main():
                   lambda m: fig_tex(m.group(2)), body, flags=re.M)
     body = re.sub(r"^\\includegraphics(\[[^\]]*\])?\{([^}]+)\}\s*$",
                   lambda m: fig_tex(m.group(2)), body, flags=re.M)
-    tex = PREAMBLE % {"title": title} + body + "\n\\end{document}\n"
+    abs_tex = pypandoc.convert_text(abstract, "latex", format="markdown", extra_args=["--wrap=none"]).strip() if abstract else ""
+    tex = PREAMBLE % {"title": title, "abstract": abs_tex} + body + "\n\\end{document}\n"
+    for f in TEMPLATE_FILES:
+        shutil.copy(TEMPLATE / f, BUILD / f)
     (BUILD / "main.tex").write_text(tex)
 
     # compile check
@@ -217,6 +221,8 @@ def main():
 
     with zipfile.ZipFile(ZIP, "w", zipfile.ZIP_DEFLATED) as z:
         z.write(BUILD / "main.tex", "main.tex")
+        for f in TEMPLATE_FILES:
+            z.write(BUILD / f, f)
         for f in sorted((BUILD / "figures").iterdir()):
             z.write(f, f"figures/{f.name}")
     print(f"wrote {ZIP} ({ZIP.stat().st_size/1e6:.1f} MB); pdf at {BUILD/'main.pdf'}")

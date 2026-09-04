@@ -431,6 +431,8 @@ task RELATION; input content and a weak output-format prior survive its removal.
 
 ## 2026-09-03 — Overleaf export: write_up/paper_draft_v1.zip (user request)
 
+UPDATE (same day): now built on the ICLR 2026 Master-Template (`write_up/iclr2026_template/`: iclr2026_conference.sty, fancyhdr.sty, natbib.sty, math_commands.tex, .bst — shipped in the zip). `## Abstract` becomes the abstract environment; `# Appendix` → \appendix + heading; sections unnumbered so headings read as in the .md; `\iclrfinalcopy` commented (anonymous, line-numbered review layout). 21 pages, 0 errors/warnings/overfull.
+
 `write_up/build_paper_tex.py` (pandoc 3.9 via pypandoc_binary + pdflatex/latexmk): copies the 25 referenced PNGs into figures/, normalises Markdown that pandoc is strict about (blank lines before lists, one image per paragraph), sizes pipe-table columns by content, maps unicode in math to LaTeX macros (text-mode symbols via \DeclareUnicodeCharacter fallbacks), converts with implicit_figures OFF so images sit inline where they are in the .md (author's italic captions kept as text), wraps in an article preamble (unnumbered sections, `# Appendix`/`# References` as raw headings), compiles (0 errors / 0 warnings / 0 overfull boxes, 29 pages) and zips main.tex + figures/. Rebuild with `python3.12 write_up/build_paper_tex.py`. Build dir `write_up/_tex_build/` is git-ignored; the zip is tracked.
 
 ---
