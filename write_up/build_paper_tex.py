@@ -68,6 +68,7 @@ PREAMBLE = r"""\documentclass{article}
 \setlist{nosep,leftmargin=1.4em}
 \AtBeginEnvironment{longtable}{\small}
 \setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\AtBeginDocument{\setlength{\abovedisplayskip}{5pt}\setlength{\belowdisplayskip}{5pt}\setlength{\abovedisplayshortskip}{2pt}\setlength{\belowdisplayshortskip}{2pt}}
 \title{%(title)s}
 \author{Anonymous authors}
 %% \iclrfinalcopy   %% uncomment for the camera-ready (de-anonymised) version
@@ -193,14 +194,29 @@ def main():
         extra_args=["--wrap=none"])
     # bare images on their own paragraph -> centred; wide multi-panel figures get the full text
     # width, everything else 72% (paper look), all capped in height
-    def fig_tex(path):
+    def fig_tex(path, width=None):
         w, h = Image.open(BUILD / path).size
-        width = "\\linewidth" if w / h > 2.2 else "0.72\\linewidth"
-        return "\\begin{center}\\includegraphics[width=%s,height=0.34\\textheight,keepaspectratio]{%s}\\end{center}" % (width, path)
-    body = re.sub(r"^\\pandocbounded\{\\includegraphics(\[[^\]]*\])?\{([^}]+)\}\}\s*$",
-                  lambda m: fig_tex(m.group(2)), body, flags=re.M)
-    body = re.sub(r"^\\includegraphics(\[[^\]]*\])?\{([^}]+)\}\s*$",
-                  lambda m: fig_tex(m.group(2)), body, flags=re.M)
+        if width is None:
+            width = "\\linewidth" if w / h > 2.2 else "0.6\\linewidth"
+        cap = "0.27\\textheight" if w / h > 2.2 else "0.23\\textheight"
+        return "\\includegraphics[width=%s,height=%s,keepaspectratio]{%s}" % (width, cap, path)
+    IMG = r"^(?:\\pandocbounded\{)?\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}\}?\s*$"
+    lines = body.split("\n")
+    out, k = [], 0
+    while k < len(lines):
+        m = re.match(IMG, lines[k])
+        if not m:
+            out.append(lines[k]); k += 1; continue
+        # consecutive image paragraphs (separated by one blank line) -> side by side
+        m2 = re.match(IMG, lines[k + 2]) if k + 2 < len(lines) and lines[k + 1].strip() == "" else None
+        if m2:
+            out.append("\\begin{center}\\vspace{-4pt}%s\\hfill %s\\vspace{-4pt}\\end{center}"
+                       % (fig_tex(m.group(1), "0.49\\linewidth"), fig_tex(m2.group(1), "0.49\\linewidth")))
+            k += 3
+        else:
+            out.append("\\begin{center}\\vspace{-4pt}%s\\vspace{-4pt}\\end{center}" % fig_tex(m.group(1)))
+            k += 1
+    body = "\n".join(out)
     abs_tex = pypandoc.convert_text(abstract, "latex", format="markdown", extra_args=["--wrap=none"]).strip() if abstract else ""
     tex = PREAMBLE % {"title": title, "abstract": abs_tex} + body + "\n\\end{document}\n"
     for f in TEMPLATE_FILES:
@@ -225,7 +241,12 @@ def main():
             z.write(BUILD / f, f)
         for f in sorted((BUILD / "figures").iterdir()):
             z.write(f, f"figures/{f.name}")
-    print(f"wrote {ZIP} ({ZIP.stat().st_size/1e6:.1f} MB); pdf at {BUILD/'main.pdf'}")
+    shutil.copy(BUILD / "main.tex", HERE / "paper_draft_v1.tex")
+    with zipfile.ZipFile(HERE / "paper_draft_v1_update.zip", "w", zipfile.ZIP_DEFLATED) as z:
+        z.write(BUILD / "main.tex", "main.tex")
+        for f in TEMPLATE_FILES:
+            z.write(BUILD / f, f)
+    print(f"wrote {ZIP} ({ZIP.stat().st_size/1e6:.1f} MB), paper_draft_v1.tex, paper_draft_v1_update.zip; pdf at {BUILD/'main.pdf'}")
 
 
 if __name__ == "__main__":
