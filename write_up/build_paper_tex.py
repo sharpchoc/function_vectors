@@ -18,6 +18,7 @@ import zipfile
 from pathlib import Path
 
 import pypandoc
+from PIL import Image
 
 HERE = Path(__file__).resolve().parent
 MD = HERE / "read_and_write_features_for_in_context_learning_paper_draft.md"
@@ -31,12 +32,12 @@ MATH_MAP = {"–": "-", "—": "-", "…": r"\ldots", "→": r"\rightarrow", "×
             "Δ": r"\Delta", "ℓ": r"\ell", "·": r"\cdot", "✓": r"\checkmark"}
 MATH_RE = re.compile(r"(```.*?```|`[^`\n]+`|\$\$.*?\$\$|(?<!\\)\$[^$\n]+?\$)", re.S)
 
-PREAMBLE = r"""\documentclass[11pt]{article}
+PREAMBLE = r"""\documentclass[10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{lmodern}
-\usepackage[margin=1in]{geometry}
-\usepackage{amsmath,amssymb}
+\usepackage{newtxtext,newtxmath}
+\usepackage[textwidth=5.5in,textheight=9in,centering]{geometry}
+\usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{booktabs,longtable,array,calc}
 \usepackage{xcolor}
@@ -64,7 +65,17 @@ PREAMBLE = r"""\documentclass[11pt]{article}
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
 \makeatother
 \setkeys{Gin}{width=\maxwidth,keepaspectratio}
-\setlength{\parskip}{4pt}
+\setlength{\parskip}{2pt}
+\usepackage{etoolbox}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{}{0pt}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{1.4ex plus .4ex}{0.6ex}
+\titlespacing*{\subsection}{0pt}{1.0ex plus .3ex}{0.4ex}
+\AtBeginEnvironment{longtable}{\small}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=1.4em}
 \title{%(title)s}
 \author{}
 \date{}
@@ -179,13 +190,16 @@ def main():
     body = pypandoc.convert_text(
         md, "latex", format="markdown-implicit_figures+tex_math_dollars+pipe_tables+raw_attribute",
         extra_args=["--wrap=none"])
-    # bare images on their own paragraph -> centred, full width
+    # bare images on their own paragraph -> centred; wide multi-panel figures get the full text
+    # width, everything else 72% (paper look), all capped in height
+    def fig_tex(path):
+        w, h = Image.open(BUILD / path).size
+        width = "\\linewidth" if w / h > 2.2 else "0.72\\linewidth"
+        return "\\begin{center}\\includegraphics[width=%s,height=0.34\\textheight,keepaspectratio]{%s}\\end{center}" % (width, path)
     body = re.sub(r"^\\pandocbounded\{\\includegraphics(\[[^\]]*\])?\{([^}]+)\}\}\s*$",
-                  lambda m: "\\begin{center}\\includegraphics[width=\\linewidth,height=0.45\\textheight,keepaspectratio]{%s}\\end{center}" % m.group(2),
-                  body, flags=re.M)
+                  lambda m: fig_tex(m.group(2)), body, flags=re.M)
     body = re.sub(r"^\\includegraphics(\[[^\]]*\])?\{([^}]+)\}\s*$",
-                  lambda m: "\\begin{center}\\includegraphics[width=\\linewidth,height=0.45\\textheight,keepaspectratio]{%s}\\end{center}" % m.group(2),
-                  body, flags=re.M)
+                  lambda m: fig_tex(m.group(2)), body, flags=re.M)
     tex = PREAMBLE % {"title": title} + body + "\n\\end{document}\n"
     (BUILD / "main.tex").write_text(tex)
 
