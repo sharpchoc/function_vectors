@@ -1,0 +1,686 @@
+\documentclass{article}
+\usepackage{iclr2026_conference,times}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs,longtable,array,calc}
+\usepackage{xcolor}
+\usepackage{etoolbox}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{url}
+\setcounter{secnumdepth}{0}
+\DeclareUnicodeCharacter{22EE}{\ensuremath{\vdots}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
+\DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+\DeclareUnicodeCharacter{03C1}{\ensuremath{\rho}}
+\DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\DeclareUnicodeCharacter{00B1}{\ensuremath{\pm}}
+\DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+\DeclareUnicodeCharacter{2208}{\ensuremath{\in}}
+\DeclareUnicodeCharacter{2265}{\ensuremath{\geq}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}
+\DeclareUnicodeCharacter{2016}{\ensuremath{\|}}
+\DeclareUnicodeCharacter{2113}{\ensuremath{\ell}}
+\renewcommand{\_}{\textunderscore\allowbreak}
+\setlength{\emergencystretch}{3em}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\pandocbounded}[1]{#1}
+\setlist{nosep,leftmargin=1.4em}
+\AtBeginEnvironment{longtable}{\small}
+\setlength{\LTpre}{6pt}\setlength{\LTpost}{6pt}
+\title{Read and Write Features for In-Context Learning}
+\author{Anonymous authors}
+% \iclrfinalcopy   % uncomment for the camera-ready (de-anonymised) version
+\begin{document}
+\maketitle
+\begin{abstract}
+(TBD)
+\end{abstract}
+\subsection{Introduction}\label{introduction}
+
+We study how models learn in context. Namely, previous work has shown the existence of ``function vectors'' which are the write features that are causal representations of functions at the tokens directly prior to the output of the function. We define this as the write feature so that we can introduce the concept of read features which are representations that the model uses to infer the task, but not actually imitate it. The \textbf{read feature} sits at demonstration target tokens in the early layers, and is causal in forming the \textbf{write feature} at cue tokens in the middle layers and drives the answer. We show that both are causally necessary and sufficient and various claims about the nature of these features and their relationship.
+
+\subsection{Related Work}\label{related-work}
+
+(TBD)
+
+\subsection{Terminology}\label{terminology}
+
+Notation used throughout (see the project glossary, \texttt{task\_id\_im\_subspaces.md}):
+
+\begin{itemize}
+\tightlist
+\item
+  \(L\) is the set of layers and \(h\) denotes a head.
+\item
+  \(d_{\mathrm{model}}\) is the residual-stream width and \(d_{\mathrm{head}}\) the per-head width.
+\item
+  \(\mathcal{T}\) is the task universe (antonym, synonym, English--French, country--capital, \ldots) and \(A \in \mathcal{T}\) is a task.
+\item
+  \(p_A^j\) is the \(j\)-th prompt for task \(A\), and \(\mathcal{P}_A = \{p_A^j\}_j\) is the prompt set for \(A\) (varying in ICL context length, unless explicitly stated otherwise).
+\item
+  \(z^t_{\ell, p_A^j}\) is the residual stream at layer \(\ell\) at token \(t\) for prompt \(p_A^j\) and \(z^t_{\ell, A}\) is the same but averaged across all prompts in \(\mathcal{P}_A\)
+\item
+  \(h(p_A^j) \in \mathbb{R}^{d_{\mathrm{model}}}\) is the head activation at the final token position (final cue token) on prompt \(p_A^j\).
+\item
+  The \textbf{head vector} \(h_A = \frac{1}{|\mathcal{P}_A|} \sum_j h(p_A^j)\) is the average head activation for task \(A\).
+\item
+  The \textbf{function vector} \(v_A = \sum_{h \in H} h_A\) for task \(A\), where \(H\) is the selected subset of heads in our definition of function vectors.
+\item
+  The \textbf{per-prompt function vector} \(v^j_A = \sum_{h \in H} h(p_A^j)\) for prompt \(j\) on task \(A\). Note that averaging the per prompt function vectors gives the function vector \(v_A = \frac{1}{|\mathcal{P}_A|} \sum_{j} v^j_A\)
+\item
+  Note: ``Layer \(\ell\)'' means the residual stream at the output of transformer block \(\ell\)
+\end{itemize}
+
+\subsection{Setup}\label{setup}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Model:} GPT-J-6B (28 layers × 16 heads).
+\item
+  \textbf{Tasks:} 69 simple short-string ICL tasks (translation, morphology, world knowledge, string ops, classification, numerical); fixed split of 55 train / 14 held-out tasks
+\item
+  \textbf{Prompts:} Each task has 150 fixed 10-shot prompts per task (which we can truncate to get varying length prompts). We use temperature-1 sampling everywhere unless explicitly mentioend otherwise.
+\end{itemize}
+
+\subsection{The circuit and our claims}\label{the-circuit-and-our-claims}
+
+Our main contribution is idenitfying and studying a two-step general circuit for in-context learning of simple functions, summarised in the figure below. We separate out the circuit into \textbf{read features}, where the model learns what the task is, and \textbf{write features}, where the model has to execute the task. Each of our simple function go from an input to a target separated by standard ``Q:'' and ``A:'' formatting (for example the country to capital task has the country as the input and the capital as the target). At the end of each demonstration, the target token attends to its input and a representation of the task can be found there - the read feature. We refer to the ``:'' token in ``A:'' as the cue token, which is where the model is forced to execute the task. We show that the cue attends to the targets, and along the way the read feature is (approximiately linearly) transformed into the write feature. We summarise our findings with the following circuit diagram drawing:
+
+\begin{center}\includegraphics[width=\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig01_icl_read_write_circuit.png}\end{center}
+The numbered marks in the figure are the claims of this paper and they form the structure of this paper.
+
+We define the write feature as function vectors from (Todd et al., 2024), who established it's existence and causality - injecting an FV triggers the task on out-of-distribution contexts. We will use function vectors and write features interchangeably in the context of this paper. Claim 1 is a controlled recreation of a result already shown there. The rest of the claims are to our knowledge novel.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1143}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3857}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3857}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1143}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\#
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Claim
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Headline evidence
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Section
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & General write features exist at middle layers and are low dimensional per-task & A single vector can steer models to perform the task on zero shot prompts with peak accuracy when injected in middle layers (shown in Todd et al.~2024). The 37 heads selected from train tasks only, can be used to form function vectors for 14 never-seen tasks' accuracy from 0.09 to 0.73 (same as train tasks' accuracy uplift to 0.75). & Claim 1 \\
+2 & Read features exist at early layers & Write features are linearly decodable from single target-token activations at early layers & Claim 2 \\
+3 & Read features are causal and low dimensional per-task & We can achieve bidirectional control on task performance using 2 directions per task. Sufficiency: Injecting the shared carrier plus one task-unique direction in dummy prompts recovers 95\% of real prompt accuracy (0.597 vs 0.630). Neccesity: ablating one task-unique direction kills ICL (accuracy drops from 0.629 to 0.132) & Claim 3 \\
+4 & Read features are causal for the formation of write features & Label token injection steers the cue representation toward the task's own \(v_A\) (cos 0.18 → 0.42) & Claim 4 \\
+5 & Read features appear earlier than write features & Read feature cosine similarity peaks at target tokens, L7. Write feature cosine similarity peaks at cue tokens, L13. & Claim 5 \\
+6 & Read features linearly map to write features & Training a linear map on a set of train tasks predicts held-out tasks' mpaping (\(R^2 \approx 0.64\)). & Claim 6 \\
+7 & Write-feature presence predicts task accuracy & Presence at the cue token and task accuracy rise together & Claim 7 \\
+\end{longtable}
+}
+
+\subsection{The dataset}\label{the-dataset}
+
+We study simple ICL tasks, each a single input to output mapping going to and from words, numbers, or dates, rendered as Q:/A: pairs (e.g.~antonym: \texttt{Q:\ unfair} / \texttt{A:\ fair}). The tasks span six rough families: translation (english-spanish, german-english, \ldots), morphology (present-past, plural\_to\_singular, \ldots), world knowledge (country-capital, person-sport, \ldots), string operations (capitalize, first\_three\_letters, \ldots), classification (sentiment, animal\_class, \ldots) and number/date tasks (next\_number\_digits, iso\_date\_to\_month, \ldots). We consider a universe of \textasciitilde120 tasks and prune out tasks that the model cannot complete sufficiently well to end up with 69 tasks that we use for the rest of the study. (Completing a task sufficiently well here means that the model can achieve at least 30\% accuracy on 10 shot prompts from that task). Worked examples of every prompt structure used in this paper (clean n-shot, zero-shot, mixed-task mixed-target, dummy-target, random-target) are given in Appendix A.
+
+\subsection{Claim 1: General write features exist at middle layers and are low dimensional per-task}\label{claim-1-general-write-features-exist-at-middle-layers-and-are-low-dimensional-per-task}
+
+Following the work of Todd et al.~(2024) and Hu et al.~(2025), we use sparse optimisation to select a subset \(H\) of attention heads, and form each task's function vector by adding together those heads' mean activations at the final cue token of 10 shot prompts: \(v_A = \sum_{h \in H} h_A\) (as in the Terminology section). Our sparse optimisation selects \(|H| = 37\) heads.
+
+The 37-head set is chosen on the 55 train tasks only, yet using that same selection of heads and forming function vectors on held-out tasks still gives an effective steering vector. We show effectivenss of the write feature on 0 shot prompts (e.g.~\texttt{Q:\ unfair} / \texttt{A:}) and on 10-shot prompts whose demonstrations come from other tasks to obfuscate the task (e.g.~\texttt{Q:\ 2597} / \texttt{A:\ 2590s}, \texttt{Q:\ Mbale\ District} / \texttt{A:\ Uganda}, \ldots{} eight more demonstrations, each from a different task \ldots{} \texttt{Q:\ miraculous} / \texttt{A:} --- the mixed-task, mixed-target structure; see Appendix A). We can see that under both metrics, the steered performance shows strong uplift in accuracy.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig02_headline_bars.png}\end{center}
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig03_per_task_lift.png}\end{center}
+\emph{Steering with the train-selected 37-head write feature transfers to held-out tasks. The per-task view shows the lift in all tasks.}
+
+\subsection{Claim 2: Read features exist at early layers}\label{claim-2-read-features-exist-at-early-layers}
+
+Next, we want to understand where computations related to the write features might lie. We do this by getting activations for each (token position, layer) in 6 shot prompts and train a (ridge) regression on a train set to predict the write feature for that task (for more details see Appendix B). We can see expected patterns such as the function vector becoming more linearly decodable as you go deeper into the prompt (i.e.~after the model has seen more examples of the task), but also at early layers (L5-L10), the target tokens contain more linearly decoadable parts of the write feature than the cue tokens! This suggests there is a computational node prior to the write feature, which we define as the read feature.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig04_heldout_r2_lines_6shot.png}\end{center}
+\emph{Labels are informative from early layers and early tokens, the cue catches up example by example. The bold example-6 cue line peaks at L13 (\(R^2\) 0.663). The weakest cue line is example 1, where the model has not seen a full example of the task yet. The full token × layer grid is in Appendix B. Source: \texttt{FV\_linear\_decodability/token\_layer\_regressions/}.}
+
+(Note: The closest observation in Todd et al.~(2024) is attentional: their FV heads primarily attend to the demonstrations' output (target) tokens (their Figure 3b), but they do not go into detail on the nature of the relationship)
+
+\subsection{Claim 3: Read features are causal and low dimensional per-task}\label{claim-3-read-features-are-causal-and-low-dimensional-per-task}
+
+We test for read feature candidates that are causal and in this identified region by averaging the activations of the layers at the target token and using it to steer on dummy prompts. Namely: let \(t^j_{\mathrm{tgt}}\) be the position of the last token of the final demonstration's target in prompt \(p_A^j\). The candidate read feature at layer \(\ell\) is the task mean of the residual stream at that position,
+
+\[
+m_A(\ell) \;=\; \frac{1}{|\mathcal{P}_A|} \sum_{j} z^{\,t^j_{\mathrm{tgt}}}_{\ell,\, p_A^j},
+\]
+
+computed from the 150 clean 10-shot prompts, giving one candidate per layer.
+
+To test a candidate, we steer with it on dummy prompts (Appendix A). Dummy prompts are the same as a 1-shot prompts but with the target token in the example replaced with \texttt{\_}. We steer with the mean activation direction in the residual stream at the dummy \texttt{\_} token:
+
+\[
+z^{\,t}_{\ell} \;\leftarrow\; z^{\,t}_{\ell} + \alpha\, m_A(\ell),
+\]
+
+with \(\alpha\) the injection strength.
+
+\begin{center}\includegraphics[width=\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig05_method_diagram.png}\end{center}
+Then we sweep over all layers (and steering strengths for each layer) and see if any layers can steer the model to complete the task on 1 shot dummy prompts.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig06_layer_curve_presentation.png}\end{center}
+\emph{Steering works only in a narrow early-layer window, peaking at L6 (accuracy of 0.126, L7 essentially tied at 0.125), coinciding with the early-layer band where the write feature is linearly decodable at target tokens (Claim 2). The dashed line is the baseline of mean accuracy of a real 1-shot prompt, so the single best-layer injection recovers a majority of real prompt accuracy.}
+
+Steering peaks in the L5--7 band, so we build the read feature from the task means of those three layers. We start by studying the average \(\bar m_A = \tfrac13\sum_{\ell=5}^{7} m_A(\ell)\). We find that the 69 have a mean pairwise cosine of 0.73, suggesting that most of every task's vector is a component shared by all tasks. We define the \textbf{shared carrier} \(c\) as the the cross-task mean of \(\bar m_A\). To isolate what is specific to task \(A\) we project the shared carrier direction out of each layer's task mean and average the three residuals:
+
+\[
+c \;=\; \frac{1}{|\mathcal{T}|}\sum_{A'} \bar m_{A'}, \qquad
+\hat c(\ell) \;=\; \frac{\sum_{A'} m_{A'}(\ell)}{\big\|\sum_{A'} m_{A'}(\ell)\big\|}, \qquad
+r_A(\ell) \;=\; m_A(\ell) - \big\langle m_A(\ell),\, \hat c(\ell)\big\rangle\, \hat c(\ell),
+\]
+
+\[
+u_A \;=\; \frac{1}{3}\sum_{\ell=5}^{7} r_A(\ell),
+\]
+
+where \(\hat c(\ell)\) is the \textbf{cross-task} carrier direction at layer \(\ell\). \(u_A\) is orthogonal to the shared carrier by construction. We call \(u_A\) the \textbf{task-unique component} of the read feature. Its unit direction \(\hat u_A = u_A/\|u_A\|\) is what we ablate below, and \(c + u_A\) is what we inject. (See Appendix C for other variations of steering and Appendix D for variations of ablation)
+
+\begin{center}\includegraphics[width=\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig07_readfeature_decomposition.png}\end{center}
+\textbf{Necessity:} We take clean 1 shot and 6 shot prompts and ablate out the the task unique direction,\(u_A\), out of the residual stream at all the target tokens and observe how the task accuracy changes. As as control, we also ablate the task unique direction of a different task, \(u_{A'}\) at all the target tokens as well. We show that ablating \(u_A\) destroys task accuracy, whilst ablating \(u_{A'}\) does not - showing that \(u_A\) is a causally necessary direction for the model learning the task.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig08_aggregate_bars.png}\end{center}
+\emph{Ablating one task-unique direction kills the task's own ICL while the counterfactual control sits at baseline.}
+
+Note: Why not simply ablate the raw mean direction \(m_A\) itself? That was our first attempt, but found that the counterfactual control performed equally as well as the specific task - likely because the shared direction contains some relevant computation for general in context learning. The motivation for the task-unique setup, and the full list of variations we tried are in Appendix D.
+
+\textbf{Sufficiency:} We set up dummy 6-shot prompts (same set up as before where we replace the correct answers with \texttt{\_}), and inject the shared carrier plus the task-unique part:
+
+\[
+s_A \;=\; c + u_A, \qquad z^{\,t}_{\ell} \;\leftarrow\; z^{\,t}_{\ell} + \alpha\, s_A
+\quad\text{at every dummy target slot } t .
+\]
+
+A 1-shot sweep over injection layers places the optimal layer at early layers ( L0--L3). We therefore inject at L0 on the 6-shot dummy prompts at all the target tokens and sweep \(\alpha \in \{0.5, 1, 2, 4\}\). At \(\alpha = 2\) the six steered dummy slots lift accuracy from 0.000 to 0.570, which is 90\% of what six real demonstrations achieve.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig09_headline_bars.png}\end{center}
+So to recap:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  We decompose the mean layer activations into a shared carrier direction and a task unique direction
+\item
+  Ablating the task unique direction at the target tokens kills task performance
+\item
+  Steering with the combination of the shared carrier direction and the task unique direction can boost task performance.
+\end{enumerate}
+
+This shows that by controlling the subspace spanned by the shared carrier and the task unique component, we can acheive bidirectional control - suggesting that this 2D subspace is responsible for the model reading these simple functions in context. We will refer to the acitvations in this 2D subspace as \textbf{read features}.
+
+\subsection{Claim 4: Read features are causal for the formation of write features}\label{claim-4-read-features-are-causal-for-the-formation-of-write-features}
+
+So far, we have shown that read features and write features are causal for the model to learn tasks, but have not studied the relationship between the two. We go back to the six-shot dummy prompts from the previous section and inject \(s_A\) at the target tokens, but instead of measuring the model output, we measure the residual stream at the final cue token for presence of the write feature (i.e.~the task's function vectors). We inject \(s_A\) at different strengths, \(\alpha\), and observe the change in cosine similarity of the residual stream at L13 at the final cue token with that task's respective write feature. We find that presence increases as you increase the strength of the read feature steering.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig10_headline_cos_absolute.png}\end{center}
+\emph{Cosine between the L13 residual at the final cue token and the task's function vector, as a function of injection strength. Injecting the carrier plus the task-unique direction at the target tokens moves the write site toward the task's function vector.}
+
+\subsection{Claim 5: Read features appear earlier than write features}\label{claim-5-read-features-appear-earlier-than-write-features}
+
+Now that we have defined our read and write features and shown that they are a causal mechanism for bidirectional control of the task, the next thing to pin down is the mechanistic story of where they appear in the residual stream. We study the mean cosine between the residual stream and each feature, by layer and token type, over clean 10-shot prompts. The task-unique read direction \(u_A\) peaks at early layers of target tokens whilst the write features peak at the middle layers of cue tokens.
+
+Note: Since we have two axis for the read feature subspace, we measure cosine simlarity for each part (shared carrier and task-unique) separately, but they both peak at around the same layers.
+
+\begin{center}\includegraphics[width=\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig11_presence_headline.png}\end{center}
+\subsection{Claim 6: Read features linearly map to write features}\label{claim-6-read-features-linearly-map-to-write-features}
+
+A single linear map from the read feature to the write feature, fit on the 55 train tasks, predicts the \emph{held-out} tasks' function vectors. The input is the task unique read feature of Claim 3, \(u_A\), and targets are the tasks' write features. Ridge regression from \(u_A\) to the task write feature reaches held-out \(R^2 = 0.64\) on the 14 held-out tasks. The map is one linear transform shared across tasks. (See Appendix E for more details of how the regression was trained and other variations). We can also see that the cosine between the predicted and the true function vector averages 0.89 whilst predicting just the generic train-mean FV (dashed line) would only score 0.64.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig12_linear_map_simple.png}\end{center}
+\emph{Each bar is one held-out task. The cosine between the write feature predicted from its read feature by the linear map (fit on the train tasks) and its true write feature. The dashed line is the same cosine when the generic train-mean write feature vector is used as the prediction for every task (mean 0.64), as a naive baseline}
+
+We study the geometry of the linear map in more detail in Appendix G.
+
+\subsection{Claim 7: Write-feature presence predicts task accuracy}\label{claim-7-write-feature-presence-predicts-task-accuracy}
+
+Can we predict the model perfomance on these simple tasks before we see the model output using a mechanisitic metric? We find that the strength of the write feature at the query cue can be used to predict performance.
+
+We define strength of write feature as the cosine similarity of the residual stream with the write feature for that task (mean cosine similarity across layer 9 to 20). We study prompts from n = 0\ldots6 in context demonstrations. We try other variations of measuring cosine similarity in Appendix F and find similar results across the board. We group different presence strengths and plot against model accuracy to get a monotone curve (shown below). Below cos 0.15 the model has 0\% accuracy and by the 0.35--0.45 bucket it achieves 50\% accuracy. These results are for all tasks grouped together, if we study each task at a time, the spearman coefficient is much higher (\textasciitilde0.95).
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig13_binned_meanL.png}\end{center}
+\subsection{Conclusion and Future Work}\label{conclusion-and-future-work}
+
+(Concise version for now, needs fleshing out)
+
+We have shown the the general machinery that models use to learn simple functions can be viewed as a two step process of reading the task and writing the task (task execution). Future work could see if this machinery or two step breakdown extends to more real world settings like in context jailbreaks and in context persona drift.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\clearpage
+\appendix
+\begin{center}{\LARGE\bfseries Appendix}\end{center}
+
+\subsection{A. Setup \& protocol}\label{a.-setup-protocol}
+
+\textbf{Task pool.} We start with \textasciitilde120 tasks, and test the model on 6 shot prompts to keep only tasks that the model can complete (otherwise it wouldn't make sense to study their activations). We use a threshold of 30\% accruacy or higher, which means 69 tasks survive the filter. Each task used 150 unique prompts to determine the accuracy.
+
+\textbf{Full task list.} \emph{Train (55):} adjective\_to\_adverb, adjective\_to\_noun, agent\_noun\_to\_verb, animal\_class, animal\_plant\_object, antonym, article\_choice, capitalize, capitalize\_first\_letter, city-country, compound\_first, concrete\_abstract, contains\_letter\_e, country-capital, day\_after\_textual\_date, english-italian, english-portuguese, english-spanish, first\_three\_letters, french\_noun\_gender, german-english, german\_noun\_gender, gerund\_to\_past, hypernym\_category, iso\_date\_to\_month, iso\_date\_year\_plus\_one, landmark-country, language\_identification, larger\_of\_pair, larger\_than\_1000, lowercase\_first\_letter, lowercase\_word, national\_parks, natural\_manmade, next\_item, next\_month\_of\_date, next\_number\_digits, number\_word\_to\_digits, park-country, person-instrument, person-sport, plural\_to\_singular, present-past, prev\_number\_digits, product-company, sentiment, singular-plural, singular\_or\_plural, spanish\_noun\_gender, starts\_with\_vowel, third\_person\_to\_base, titlecase\_phrase, us-city-state, verb\_tense\_label, verb\_to\_third\_person. \emph{Held-out (14):} ag\_news, ends\_with\_ing, english-french, first\_digit, french-english, gerund\_to\_base, initials\_two\_words, past\_to\_base, person\_place\_thing, pos\_label, smaller\_of\_pair, spanish-english, uppercase\_word, word\_polarity.
+
+\textbf{Head selection.} A function vector is the summed output of a small set of attention heads (Todd et al., 2024). The task signal at the cue token is carried by a sparse subset of the model's 448 heads, so the heads have to be selected before their outputs can be summed. Todd et al.~rank heads by their average indirect effect on shuffled-label prompts. Hu et al.~(2025) show that selecting them by sparse optimisation leads to better results, so we learn a gate over all heads jointly using a similar sparse optimisation. Pooled sparse optimisation: a gate \(c \in [0,1]^{448}\) over all heads, steering loss on zero-shot prompts summed over the 55 train tasks, + \(\lambda\|c\|_1\); \(\lambda = 0.005\) by 5-fold task cross-validation. We keep heads that have \(c > 0.8\), which are 37 heads spanning layers 3--27, densest at 12--15.
+
+\textbf{Definitions}: head vector \(\bar h_A\) = mean final-cue-token output of head \(h\) on task \(A\)'s prompts; function vector \(v_A = \sum_{h\in H} \bar h_A\). Per-prompt FV \(v^j_A\) = the same sum on a single prompt.
+
+\textbf{Readout.} Temperature-1 sampled generation, exact match against the gold target, seeded per prompt; steering evaluation reports each task's best injection layer at \(\alpha=1\) unless stated otherwise.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig14_selected_heads.png}\end{center}
+\subsubsection{Prompt structures}\label{prompt-structures}
+
+\textbf{One example of every prompt structure used in this paper}
+
+(all examples use the antonym task; every structure ends at the query cue \texttt{A:}, where generation is scored)
+
+\emph{Clean n-shot} --- the 150 fixed 10-shot prompts; an n-shot prompt is the same prompt truncated to its first n demonstrations (zero-shot keeps only the query):
+
+\begin{verbatim}
+Q: unfair
+A: fair
+
+Q: anterior
+A: posterior
+
+⋮   (8 more demonstrations)
+
+Q: due
+A:
+\end{verbatim}
+
+\emph{Zero-shot} (the steering test bed of Claim 1):
+
+\begin{verbatim}
+Q: miraculous
+A:
+\end{verbatim}
+
+\emph{Mixed-task, mixed-target 10-shot} (Claim 1 test setting) has each demonstration drawn from a \emph{different} task with its own correct target (here: year\_to\_decade, landmark-country, spanish-english, \ldots); the pairs are internally correct but only the query belongs to the evaluated task, so the context provides format but no task identity:
+
+\begin{verbatim}
+Q: 2597
+A: 2590s
+
+Q: Mbale District
+A: Uganda
+
+⋮   (8 more demonstrations, each from another task)
+
+Q: miraculous
+A:
+\end{verbatim}
+
+\emph{Dummy-target scaffold} (read-feature sufficiency, Claim 3) the task's own inputs, but every target is replaced by a bare \texttt{\_}, so the prompt does not teach the correct task (unsteered accuracy 0.000):
+
+\begin{verbatim}
+Q: unfair
+A: _
+
+Q: anterior
+A: _
+
+⋮   (6 demonstrations in total)
+
+Q: due
+A:
+\end{verbatim}
+
+\emph{Random-target scaffold} (scaffold-robustness control, Appendix C) --- as the dummy scaffold, but each \texttt{\_} is replaced by a real word sampled from \emph{other} tasks' output pools (illustrative targets shown), so the targets are actively wrong rather than empty:
+
+\begin{verbatim}
+Q: unfair
+A: piano
+
+Q: anterior
+A: Uganda
+
+⋮   (6 demonstrations in total)
+
+Q: due
+A:
+\end{verbatim}
+
+\subsection{Write features are low dimensional}\label{write-features-are-low-dimensional}
+
+\textbf{Across the pool: a 22-dimensional subspace carries most of the steering.} The top 22 uncentered PCs of the 69 task-mean function vectors (90\% of their energy) define one fixed subspace. Projecting each task's \(v_A\) into it and rescaling the strength per task (\(\alpha\) up to 2, since projection shrinks the norm) recovers zero-shot steering of 0.68 on both train and held-out tasks, against 0.75 / 0.73 for the full 4096-dimensional vectors.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig15_poster_lowdim.png}\end{center}
+\textbf{Per task: a single direction, with bidirectional control.} For an individual task the write feature is effectively rank one. The same unit direction \(\hat v_A\) that steers zero-shot prompts (sufficiency) is also necessary: ablating (zero ablation and mean ablation) it out of the residual stream at just the final cue token collapses 6-shot ICL whilst ablating a counterfactual task's direction costs doesn't impact it anywhere near as much. We show the full results in detail on 1 shot and 6 shot prompts.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig16_headline_bars_by_shots.png}\end{center}
+\emph{Removing one direction at one token position destroys ICL --- at 6 shots and at 1 shot --- only for the task that owns the direction (layer clamp 9--27). Source: \texttt{FV\_ablation/}.}
+
+\subsection{B. Decodability grid in detail}\label{b.-decodability-grid-in-detail}
+
+\textbf{Regression design: train on per-prompt FVs, evaluate on task FVs.} Each cell's ridge is fit with one row per (task, prompt) --- X = that single position's residual activation, Y = that prompt's \emph{per-prompt} function vector \(v^j_A\), giving 55 tasks × 150 prompts = 8,250 training rows. Fitting task-level targets directly would leave 55 samples for a 4096 → 4096 linear map, a massively over-specified problem that a ridge can satisfy without learning anything transferable. The per-prompt targets both multiply the sample count 150-fold and scatter around each task's mean. This within-task spread is largely unpredictable from a single token activation, so it acts as target noise that discourages the fit from chasing prompt-specific detail rather than the task-level signal. We also empirically got better results for predicting the task level function vector by training to predicting prompt level function vectors. Evaluation and all held out R\^{}2 claims are scored on the the \emph{task} FV \(v_A\), which is what we actually care about.
+
+\begin{itemize}
+\item
+  Grid rows: each demonstration's cue token and the last token of its target, plus the query cue.
+\item
+  Peak cell: L15, demo-10 cue token, held-out \(R^2\) 0.688
+\item
+  By layer: steep rise L0 → L8 (0.22 → 0.56), plateau L12--L16 (\textasciitilde0.58), slow decay.
+\item
+  Sawtooth pattern: at L6 the cue trails its own demo's target by \textasciitilde0.48 \(R^2\) at example 1, converges by example 5--6, and inverts by example 10.
+\item
+  Embedding baseline: target tokens 0.245 (token identity alone carries a share of the early-layer signal); cue and input positions are at or below zero.
+\end{itemize}
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig17_heldout_r2_heatmap.png}\end{center}
+\emph{The full token × layer grid behind the Claim 2 line figure. The bright band is the cue and target tokens of later demos at layers \textasciitilde8--17.}
+
+\subsection{C. Read-feature steering in detail}\label{c.-read-feature-steering-in-detail}
+
+\textbf{Where to inject?} The layer choice comes from a 28-layer sweep on the 1-shot dummy-slot scaffold (\(\alpha \in \{0.5, 1, 2, 4\}\), best per layer, mean taken at the same layer as the injection): accuracy climbs from 0.018 at L0 to the 0.126 peak at L6 (L7 essentially tied at 0.125), then falls off - 0.070 at L8, 0.010 at L12, and the \textasciitilde0.003 from L13 onward.
+
+\textbf{Which vector steers.} On the 1-shot dummy-slot scaffold, the raw task mean beats the engineered alternatives that we tried: raw mean @L7 0.121 \textgreater{} mean-difference (task mean − shared mean) 0.082 \textgreater{} sparse-selected target token heads sum 0.050 (same as function vectors but on target tokens instead of the final cue token).
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig18_method_bars.png}\end{center}
+\textbf{Dose and slots.} The 1-shot injection peaks at \(\alpha=2\) whilst six slots peak at \(\alpha=4\). 17/69 tasks match or beat real 6-shot demos, the best are string/format tasks at near-ceiling.
+
+\textbf{Scaffold robustness.} The results hold regardless of what target replacement is used. For example, instead of \texttt{\_}, if we use 6-shot prompts whose six demo targets are real words sampled from other tasks' output pools, full-mean steering reaches 0.494 (vs 0.447 on underscores) and the main-text vector \(s_A\) at L0 reaches 0.566 at \(\alpha=2\) / 0.610 at per-task best \(\alpha\) (vs 0.570 / 0.597 on underscores) --- the injection overrides actively wrong target content, not just empty slots. Source: \texttt{steering\_results/sixshot\_randomlabel/}, \texttt{steering\_results/meanresid/sixshot\_L0\_randlabel/}.
+
+\textbf{No low-dimensional shortcut across tasks:} Restricting the steering vector to top-k centered PCs of the 69 task means retains accuracy roughly linearly in k with inflection point.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig19_retention_curve.png}\end{center}
+\subsection{D. Read-feature ablation in detail}\label{d.-read-feature-ablation-in-detail}
+
+\textbf{Ablating the raw mean direction fails:} The natural first attempt is to ablate the task's own unit read-feature direction, e.g. \(\hat m_A(\mathrm{L6})\), at the target tokens. This kills ICL (own 0.009 from a 0.629 baseline), but the counterfactual control also collapses accuracy (0.278), so the kill cannot be attributed to task identity. Upon further investigation, we realied that the read features are far more similar across tasks than function vectors are (mean pairwise cosine 0.727 vs 0.393, see figure below), so any task's raw direction contains mostly the shared carrier, and removing it removes the same neccesary shared component regardless of which task the direction came from. This is what inspired the decomposition of \(m_A\) into a shared carrier and a task-unique part used in Claim 3 and ablating only the task-unique part, which did the trick.
+
+\begin{center}\includegraphics[width=\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig20_cossim_hist.png}\end{center}
+\textbf{Ablation Variations:} We ablate a per-task subspace at every demonstration target token, at the input of every block.
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Mean-ablation} replaces the residual's projection onto the subspace with the cross-task grand mean's projection; \emph{zero-ablation} removes it.
+\item
+  \emph{Control:} the same operation with another task's subspace.
+\item
+  Baselines share prompts and seeds with the steering runs.
+\end{itemize}
+
+Besides the main-text direction \(\hat u_A\) we report three variants:
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Rank-1:} the task's raw unit read direction \(\hat m_A(\mathrm{L6})\).
+\item
+  \emph{Top-3 SVD:} the three leading directions of the carrier-removed L5--15 task means, a rank-3 version of \(\hat u_A\).
+\item
+  \emph{Attention-mask control:} ablates nothing, but blocks the final cue token from attending to the demonstration target positions.
+\end{itemize}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.4857}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1286}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1286}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1286}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1286}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Basis (6-shot, baseline 0.629)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Own, mean-abl
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Cf, mean-abl
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Own, zero
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Cf, zero
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Rank-1: raw unit read direction \(\hat m_A(\mathrm{L6})\) & 0.567 & 0.623 & 0.009 & 0.278 \\
+\textbf{Task-unique part \(\hat u_A\), L5--7 (main text)} & \textbf{0.132} & \textbf{0.632} & 0.120 & 0.614 \\
+Top-3 SVD of carrier-removed L5--15 means & 0.099 & 0.629 & 0.089 & 0.608 \\
+Attention-mask control (cue → demo targets) & 0.046 & & & \\
+\end{longtable}
+}
+
+Findings:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{The raw direction cannot separate task identity from the carrier.} Mean-ablating it barely hurts (0.567) but zero-ablating it kills own \emph{and} counterfactual (0.009 / 0.278). The direction is mostly the shared carrier, which is causally neccesary but not task-specific.
+\item
+  \textbf{Once the carrier is projected out, the ablation is specific} and the control sits at baseline in both modes (mean and zero coincide because the basis is orthogonal to the carrier). Three directions kill slightly harder than one (0.099 vs 0.132 at 6-shot; 0.038 vs 0.044 at 1-shot, counterfactual 0.204 / 0.205 against a 0.208 baseline), so a single direction carries nearly all of the target-side identity code.
+\item
+  \textbf{Blocking the cue's attention to the demonstration targets collapses accuracy to 0.046:} target token attention is the route by which the read feature reaches the query - i.e.~it goes directly, not via some intermediary representations at other cue tokens for example.
+\end{itemize}
+
+\subsection{E. The read → write linear map in detail}\label{e.-the-read-write-linear-map-in-detail}
+
+\textbf{Method}
+
+\begin{itemize}
+\tightlist
+\item
+  Input: the task-unique part \(u_A\) of the read feature (mean of the L5--7 acitvations projections along the shared carrier direction removed). Target: the task's function vector \(v_A\)
+\item
+  One row per task: 55 train tasks fit the map, 14 held-out tasks score it. Both sides are centred on the train means, so the shared carrier drops out of the input.
+\item
+  Map: ridge regression with \(\lambda\) chosen by leave-one-out cross-validation on the train tasks (0.01 was best).
+\item
+  Score: pooled held-out \(R^2\) with the held-out mean FV as reference, and per-task cos(predicted, true)
+\end{itemize}
+
+\textbf{Test-Train Split robustness:} Over 10 random 55/14 task splits the held-out \(R^2\) of the ridge is 0.60 ± 0.06 (range 0.50--0.68). The rotation + scalar map of Appendix G tracks it at 0.57 ± 0.05 (canonical 0.59).
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig21_seed_r2.png}\end{center}
+\textbf{Which tasks transfer.} Averaging each task's cos(predicted, true FV) over the random splits in which it was held out: median 0.89. The weakest are classification-style tasks: ag\_news 0.61, natural\_manmade 0.73, concrete\_abstract 0.73, person-instrument 0.75, which are the same family whose read features are least aligned with their own FVs (Appendix G).
+
+\subsection{F. Presence-vs-accuracy method}\label{f.-presence-vs-accuracy-method}
+
+For each task and n ∈ 0\ldots6, the 150 fixed prompts are truncated to their first n demonstrations. Presence = mean cos between the residual stream at the query cue and the unit \(\hat v_A\), averaged over layers 9--20 (per-layer and max-over-band variants behave the same, shown below). Accuracy is using the standard temperature-1 sampled reponse. One point per task per shot count (483 points).
+
+\textbf{Layer-choice robustness:} The headline within-task statistic is insensitive to where presence is read: every single layer L9--L20, the max over the band, and the band mean give the same median within-task Spearman ρ = +0.964. However the variants differ in the task pooled spearman's rank correlation over different points of measurement:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrr@{}}
+\toprule\noalign{}
+Presence variant & Median within-task ρ & Task Pooled ρ \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+L9 & +0.964 & 0.629 \\
+L10 & +0.964 & 0.573 \\
+L11 & +0.964 & 0.599 \\
+L12 & +0.964 & 0.559 \\
+L13 & +0.964 & 0.524 \\
+L14 & +0.964 & 0.458 \\
+L15 & +0.964 & 0.519 \\
+L16 & +0.964 & 0.424 \\
+L17 & +0.964 & 0.396 \\
+L18 & +0.964 & 0.343 \\
+L19 & +0.964 & 0.295 \\
+L20 & +0.964 & 0.298 \\
+max over L9--20 & +0.964 & 0.533 \\
+\textbf{mean over L9--20 (main text)} & \textbf{+0.964} & \textbf{0.469} \\
+\end{longtable}
+}
+
+Single early layers give somewhat higher pooled values (L9: 0.629) purely through the between-task component; since the claim is the within-task relationship, the band mean is reported in the main text as the assumption-free default rather than any per-layer optimum. Source: \texttt{write\_feature\_and\_model\_accuracy/correlation\_summary.csv} (pooled) and the per-task recomputation over \texttt{presence\_vs\_acc/\textless{}task\textgreater{}.npz} (within-task).
+
+\textbf{What the within-task correlation looks like.} Per-task values are tight: minimum 0.643, 25th percentile already at 0.964, maximum 1.000 (per-task list in \texttt{diagnostics\_per\_task.csv}). Three illustrative tasks --- the perfect case, the median case, and the single worst case in the pool:
+
+\begin{center}\includegraphics[width=\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig22_within_task_rho_examples.png}\end{center}
+\emph{One task = seven (presence, accuracy) points, n = 0\ldots6. Even the worst task (french\_noun\_gender, ρ = 0.643) is strongly positive --- its rank violations are confined to the saturated top of its curve, where accuracy plateaus while presence still creeps up.}
+
+\subsection{G. The read→write map is a rotation, but not a low-dimensional one}\label{g.-the-readwrite-map-is-a-rotation-but-not-a-low-dimensional-one}
+
+\textbf{The map is, to first order, a rotation.}
+
+What does that linear map actually do? Removing each family's mean answers it. The two task clouds are roughly the same shape: centered pairwise cosines between tasks match pair-by-pair (Pearson 0.93, gram-CKA 0.92), and even the centered norms correlate (r ≈ 0.78). But the largest principal cosine between the two 90\%-variance subspaces is 0.26, and each task's \(u_A\) is nearly orthogonal to its own FV (matched cos 0.06, vs 0 for mismatched pairs).
+
+Thus we see if the linear map is just a rotation. We fit an orthogonal Procrustes map plus one global scalar on the train tasks and find that it reaches held-out \(R^2\) 0.59, 92\% of the unconstrained linea map's 0.64. The scalar is \(s = 1.66\), suggesting the task-unique read signal is about 0.6× the FV's magnitude, so the rotation has to be scaled up once. In full:
+
+\[\hat v_A = \bar v + s \cdot R\,(u_A - \bar u)\]
+
+rigidly rotate the task-identity geometry of the read feature into the FV subspace, rescale once, add the generic-FV mean back. The ridge's remaining 8\% is direction-dependent gain (its singular spectrum decays; see ``In detail'' below).
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig23_rotation_simple.png}\end{center}
+\textbf{Dimensionality}
+
+A rotation still has \[\binom{d}{2}\] degrees of freedom, where \(d=4096\). This is not much of reduction from the \(d^2\) degrees of freedom of an uncontrained map. So we next ask if the rotation is low dimensional? We run PCA on the 55 train tasks' \(u_A\), keeping only the top \(k\) read components, and fitting the map (rotation + scalar, or unconstrained linear) from those \(k\) coordinates alone, scoring on the held-out tasks to test this. Held-out \(R^2\) rises steadily with \(k\) --- 0.14 at \(k=1\), 0.18 at \(k=2\), 0.27 at \(k=4\), 0.36 at \(k=8\), 0.48 at \(k=16\), 0.54 at \(k=32\). There is no plateau before the full 54-dimensional train span (0.59). This suggests the map is not low dimensional, and the rotation transports all of it, not a handful of privileged directions.
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig24_kdim_sweep.png}\end{center}
+\textbf{Details:}
+
+\emph{Data}
+
+\begin{itemize}
+\tightlist
+\item
+  X = task-unique part \(u_A\) of the read feature
+\item
+  Y = write feature, the task function vector
+\item
+  55 train / 14 held-out tasks
+\end{itemize}
+
+\emph{Fits}
+
+\begin{itemize}
+\tightlist
+\item
+  Predictor: \(\hat v_A = \bar v + s \cdot R\,(u_A - \bar u)\), means from the train tasks.
+\item
+  \(R\): orthogonal Procrustes on the 55 centered train pairs; \(s = 1\) (rotation) or the trace-formula scalar (rotation+scale, \(s = 1.66\)).
+\item
+  Ridge: dual form with intercept, \(\lambda\) by LOO-CV (picks the smallest grid value, 0.01).
+\item
+  Held-out \(R^2\) (test-mean reference), task centroids / per-prompt read features: ridge 0.641 / 0.531; rotation+scale 0.588 / 0.484; rotation alone 0.457 / 0.419; train-mean baseline −0.084. With the train-mean reference: ridge 0.669, rotation+scale 0.620.
+\item
+  Held-out mean cos of centered predictions: rotation 0.80, ridge 0.83.
+\item
+  Ridge-map singular spectrum on the train span decays smoothly (\(\sigma_{10}/\sigma_1 \approx
+  0.67\), \(\sigma_{40}/\sigma_1 \approx 0.40\)): the 8\% it adds over the rotation is direction-dependent gain, not a different geometry.
+\item
+  Reference, raw single-layer read feature (ridge / rotation+scale): \(m_A(\mathrm{L6})\) 0.642 / 0.586 with \(s = 1.55\); \(m_A(\mathrm{L13})\) 0.657 / 0.624 with \(s = 0.93\).
+\end{itemize}
+
+\emph{\(k\)-dimensional maps}
+
+\begin{itemize}
+\tightlist
+\item
+  PCA on the 55 train \(u_A\) (train-centered); only the top-\(k\) read components enter.
+\item
+  \emph{Linear}: ridge from the \(k\) scores (LOO-CV \(\lambda\)). \emph{Rotation+scale}: Procrustes on the rank-\(k\) projected read features.
+\item
+  \emph{Write ceiling}: held-out FVs projected onto their own top-\(k\) train write PCs, the best any rank-\(k\) output can do. \emph{Read recon}: held-out read variance kept by the \(k\) read PCs.
+\item
+  Held-out \(R^2\), test-mean reference:
+\end{itemize}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1667}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedleft
+\(k\)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+linear
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+rotation+scale
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+write ceiling
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+read recon
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+train var. kept
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & 0.138 & 0.138 & 0.151 & 0.165 & 0.16 \\
+2 & 0.181 & 0.181 & 0.209 & 0.204 & 0.26 \\
+4 & 0.273 & 0.270 & 0.336 & 0.312 & 0.41 \\
+8 & 0.349 & 0.363 & 0.453 & 0.408 & 0.55 \\
+16 & 0.487 & 0.481 & 0.566 & 0.510 & 0.74 \\
+32 & 0.569 & 0.538 & 0.651 & 0.568 & 0.94 \\
+54 (all) & 0.641 & 0.588 & 0.712 & 0.616 & 1.00 \\
+\end{longtable}
+}
+
+\begin{itemize}
+\tightlist
+\item
+  The per-\(k\) scalar \(s\) falls from 1.99 (\(k=1\)) to 1.66 (full rank).
+\item
+  Per-prompt held-out \(R^2\) follows the same curve about 0.05 lower.
+\item
+  Train \(R^2\): full ridge 1.00 (55 points in 4096 dimensions interpolate), rotation+scale 0.94; at \(k=4\) both are 0.44--0.45 against 0.27 held-out.
+\end{itemize}
+
+\begin{center}\includegraphics[width=0.72\linewidth,height=0.34\textheight,keepaspectratio]{figures/fig25_crossfamily_cos_hists.png}\end{center}
+\subsection{H. Estimator variant: ten-site-average read features}\label{h.-estimator-variant-ten-site-average-read-features}
+
+Every quantity in this paper estimates the read feature from the residual at the \textbf{last token of the final demonstration's target} (150 prompts per task). An alternative estimator averages the same residual over \textbf{all ten} demonstrations' target tokens before taking the task mean. This gives ten times more sites, and therefore a lower-noise estimate of the same feature, at the cost of blending in shallow-context positions. The two estimators' task-unique directions nearly coincide: \(|\cos(\hat u_A^{\mathrm{final}},
+\hat u_A^{\mathrm{avg10}})|\): median 0.978, min 0.967 over the 69 tasks, and every qualitative result is identical under both. The ten-site average gives sharper numbers exactly where estimation precision matters (few-direction ablation bases, regression inputs), and indistinguishable numbers for prompt-mean-level steering:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4677}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3871}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1452}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Result (69-task mean)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+final-site (main text)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+ten-site avg
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Task-unique 11-dir ablation, own mean-abl (6-shot, base 0.629) & 0.095 & 0.063 \\
+--- top-3 SVD & 0.099 & 0.066 \\
+--- top-1 direction & 0.146 & 0.103 \\
+--- top-3, L6--9 band only & 0.135 & 0.096 \\
+--- task-unique part \(\hat u_A\), L5--7 (main text) & 0.132 & 0.097 (SVD top-1) \\
+Single-direction swap steering, best aggregate \(\alpha\) & 0.309 (\(\alpha u_A\) grid; 0.327 on the SVD grid) & 0.341 (SVD grid) \\
+Read→write ridge, held-out per-prompt \(R^2\) (peak layer) & 0.557 (L12) & 0.653 (L13) \\
+Read→write ridge, held-out centroid \(R^2\) & 0.636 & 0.692 \\
+\end{longtable}
+}
+
+Counterfactual controls sit at baseline under both estimators, and 1-shot specificity holds under both.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section*{References}
+
+\begin{itemize}
+\tightlist
+\item
+  Todd, E., Li, M. L., Sen Sharma, A., Mueller, A., Wallace, B. C., \& Bau, D. (2024). \emph{Function Vectors in Large Language Models.} ICLR 2024. \href{https://arxiv.org/abs/2310.15213}{arXiv:2310.15213}.
+\item
+  Hu, X., Yin, K., Jordan, M. I., Steinhardt, J., \& Chen, L. (2025). \emph{Understanding In-context Learning of Addition via Activation Subspaces.} \href{https://arxiv.org/abs/2505.05145}{arXiv:2505.05145}.
+\end{itemize}
+
+\end{document}
