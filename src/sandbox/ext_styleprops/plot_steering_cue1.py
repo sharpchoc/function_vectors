@@ -33,6 +33,7 @@ from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, STYLE_PROPERTIES_DIR
 from src.sandbox.ext_styleprops.properties import PROPS
 
 FULL = ARTIFACTS_ROOT / "style_properties" / "steering" / "full_cuecue1"
+SWEEP = ARTIFACTS_ROOT / "style_properties" / "steering" / "sweep_cuecue1"
 PRE = ARTIFACTS_ROOT / "style_properties" / "prescreen"
 OUT = STYLE_PROPERTIES_DIR / "steering"
 GUARD = 0.10
@@ -72,8 +73,16 @@ def main():
         pick = max(pick_pool, key=lambda k: pick_pool[k]["strict"])
         st = cands[pick]
         b = d["best_from_sweep"]
-        if pick in ("cuediff_cue_nat2alt", "cuediff_cue_nat2alt_best"):
-            L, a = b["L"], b["alpha"]
+        if pick == "cuediff_cue_nat2alt":
+            L, a = b["L"], b["alpha"]        # sweep winner was already the cue-derived vector
+        elif pick == "cuediff_cue_nat2alt_best":
+            # sweep winner was the evidence-derived vector; this bar used the CUE-derived
+            # vector at ITS own best sweep setting -> read that setting from the sweep
+            sw = json.load(open(SWEEP / f"{name}.json"))["conditions"]
+            cb = max((k for k in sw if k.startswith("cuediff_cue_L")
+                      and not np.isnan(sw[k]["adherence_tgt"])),
+                     key=lambda k: sw[k]["adherence_tgt"])
+            L = int(cb.split("_L")[1].split("_")[0]); a = float(cb.split("_a")[1])
         else:
             L = int(pick.split("_L")[1].split("_")[0]); a = float(pick.split("_a")[1])
         recs = json.load(open(PRE / f"{name}.json"))["records"]
