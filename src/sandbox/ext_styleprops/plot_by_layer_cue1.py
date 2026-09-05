@@ -101,9 +101,6 @@ def main():
         for a in ALPHAS:
             ys = [grid.get((L, a), np.nan) for L in LAYERS]
             ax.plot(LAYERS, ys, "o-", ms=3.2, lw=1.4, color=ACOL[a], label=f"α={a:g}")
-        if coh_line:
-            ax.plot(sorted(coh_line), [coh_line[L] for L in sorted(coh_line)], "s--", ms=2.6,
-                    lw=1.1, color="#2a9d8f", label="coherent share (best α)")
         ax.axhline(base, color="#888", ls=":", lw=1, label="unsteered")
         ax.set_title(name, fontsize=10, fontweight="bold")
         ax.set_ylim(-0.03, 1.03); ax.set_xticks(LAYERS); ax.tick_params(labelsize=7)
@@ -124,8 +121,7 @@ def main():
     fig.legend(h, l, loc="lower right", bbox_to_anchor=(0.98, 0.04), fontsize=8.5,
                title="dose α (× cue-derived vector), added at the first cue token")
     fig.suptitle("Steering effectiveness by injection layer — fraction of rollouts adopting the ALT convention\n"
-                 "(first cue token of each document; unscorable rollouts count as NOT adopting; "
-                 "green dashed = share judged fluent at that layer's best dose)", fontsize=11)
+                 "(first cue token of each document; unscorable rollouts count as NOT adopting)", fontsize=11)
     fig.tight_layout(rect=(0, 0, 1, 0.95))
     fig.savefig(OUT / "steering_by_layer.png", dpi=150)
     with open(OUT / "steering_by_layer.csv", "w", newline="") as fh:
