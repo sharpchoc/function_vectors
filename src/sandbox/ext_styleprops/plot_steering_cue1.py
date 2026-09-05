@@ -15,6 +15,7 @@ Outputs in results/style_properties/steering/:
   quality_table.png     per property: unscorable % and incoherent %, unsteered vs steered
   steering_summary.csv  all numbers
 """
+import argparse
 import csv
 import json
 import sys
@@ -32,8 +33,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, STYLE_PROPERTIES_DIR
 from src.sandbox.ext_styleprops.properties import PROPS
 
-FULL = ARTIFACTS_ROOT / "style_properties" / "steering" / "full_cuecue1"
-SWEEP = ARTIFACTS_ROOT / "style_properties" / "steering" / "sweep_cuecue1"
+STEER_ROOT = ARTIFACTS_ROOT / "style_properties" / "steering"
 PRE = ARTIFACTS_ROOT / "style_properties" / "prescreen"
 OUT = STYLE_PROPERTIES_DIR / "steering"
 GUARD = 0.10
@@ -59,6 +59,16 @@ def stats(prop, cond, tgt="alt"):
 
 
 def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--tag", default="cue1", help="steering run tag: cue1 (orig vectors) or k4")
+    ap.add_argument("--prefix", default=None, help="steered-condition prefix (auto from tag)")
+    ap.add_argument("--suffix", default="", help="output filename suffix")
+    args = ap.parse_args()
+    global FULL, SWEEP
+    FULL = STEER_ROOT / f"full_cue{args.tag}"
+    SWEEP = STEER_ROOT / f"sweep_cue{args.tag}"
+    prefix = args.prefix or ("cuediff_k4_cue_nat2alt" if args.tag == "k4" else "cuediff_cue_nat2alt")
+    sweep_prefix = "cuediff_k4_cue_L" if args.tag == "k4" else "cuediff_cue_L"
     pool = set(json.load(open(REPO_ROOT / "task_splits" / "style_properties_pool.json"))["pass"])
     props = sorted(p.stem for p in FULL.glob("*.json") if p.stem in pool)
     OUT.mkdir(parents=True, exist_ok=True)
@@ -66,20 +76,20 @@ def main():
     for name in props:
         d = json.load(open(FULL / f"{name}.json")); c = d["conditions"]
         base = stats(name, c["baseline_nat2alt"])
-        cands = {k: stats(name, v) for k, v in c.items() if k.startswith("cuediff_cue_nat2alt")}
+        cands = {k: stats(name, v) for k, v in c.items() if k.startswith(prefix)}
         guarded = {k: s for k, s in cands.items() if s["incoherent"] <= base["incoherent"] + GUARD
                    and not np.isnan(s["strict"])}
         pick_pool = guarded or cands
         pick = max(pick_pool, key=lambda k: pick_pool[k]["strict"])
         st = cands[pick]
         b = d["best_from_sweep"]
-        if pick == "cuediff_cue_nat2alt":
+        if pick == prefix:
             L, a = b["L"], b["alpha"]        # sweep winner was already the cue-derived vector
-        elif pick == "cuediff_cue_nat2alt_best":
+        elif pick == prefix + "_best":
             # sweep winner was the evidence-derived vector; this bar used the CUE-derived
             # vector at ITS own best sweep setting -> read that setting from the sweep
             sw = json.load(open(SWEEP / f"{name}.json"))["conditions"]
-            cb = max((k for k in sw if k.startswith("cuediff_cue_L")
+            cb = max((k for k in sw if k.startswith(sweep_prefix)
                       and not np.isnan(sw[k]["adherence_tgt"])),
                      key=lambda k: sw[k]["adherence_tgt"])
             L = int(cb.split("_L")[1].split("_")[0]); a = float(cb.split("_a")[1])
@@ -128,7 +138,7 @@ def main():
                  "as NOT adopting", fontsize=10)
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.3), ncol=3, fontsize=8.5, frameon=False)
     ax.grid(axis="y", alpha=0.25)
-    fig.tight_layout(); fig.savefig(OUT / "headline.png", dpi=170, bbox_inches="tight")
+    fig.tight_layout(); fig.savefig(OUT / f"headline{args.suffix}.png", dpi=170, bbox_inches="tight")
 
     # quality table figure: unscorable / incoherent, unsteered vs steered
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.6), sharey=True)
@@ -142,9 +152,9 @@ def main():
         ax.invert_yaxis()
     axes[0].legend(fontsize=8, loc="lower right")
     fig.suptitle("Rollout quality under first-cue steering", fontsize=12)
-    fig.tight_layout(); fig.savefig(OUT / "quality_table.png", dpi=160)
+    fig.tight_layout(); fig.savefig(OUT / f"quality_table{args.suffix}.png", dpi=160)
 
-    with open(OUT / "steering_summary.csv", "w", newline="") as f:
+    with open(OUT / f"steering_summary{args.suffix}.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
     print(f"{'property':15s} STRICT base->steer  (cond.adh)  unscor%  incoh%  n_coh  guard  pick")
     for t in trip:
