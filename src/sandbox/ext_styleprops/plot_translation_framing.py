@@ -40,6 +40,14 @@ OUT_DIR = STYLE_PROPERTIES_DIR / "translation_framing"
 POOL = json.load(open(REPO_ROOT / "task_splits" / "style_properties_pool.json"))["pass"]
 PLOT_BINS = list(range(6))
 MIN_N = 20
+# Items of these properties are RESAMPLED at dataset build (properties.py NumWords/OrdinalWords
+# .resample, user decision 2026-09-02), so the English twin's number differs from the Spanish
+# source at the scored site: translation correctness is undefined there (see README).
+RESAMPLED = {"num_words", "ordinal_words"}
+
+
+def panel_title(p):
+    return f"{p} †" if p in RESAMPLED else p
 LABEL_CODE = {"nat": 1, "alt": 0, None: -1}
 
 
@@ -143,7 +151,7 @@ def main():
         for framing in ("plain", "trans"):
             for key in ("k", "pol", "label", "exact", "judge"):
                 npz[f"{p}__{framing}__{key}"] = data[p][framing][key]
-        ax.set_title(p, fontsize=10)
+        ax.set_title(panel_title(p), fontsize=10, color="#8c564b" if p in RESAMPLED else "black")
         ax.set_ylim(-0.03, 1.03)
         ax.set_xticks(PLOT_BINS)
         ax.grid(alpha=0.3)
@@ -155,11 +163,14 @@ def main():
         ax.set_xlabel("k = prior manifestations in the English prefix")
     for ax in axes[::ncol]:
         ax.set_ylabel("P(adopt context convention)")
-    fig.suptitle("Style continuation vs k: English-only prefix vs translation framing "
-                 "(Spanish source, then English translation in the convention). "
-                 "Filled = style AND judge-correct translation; open markers: n < 20. GPT-J-6B, T=1.",
+    fig.suptitle("Style continuation vs k: English-only prefix (grey) vs translation framing "
+                 "(Spanish source, then English translation in the convention)\n"
+                 "thin = style only, thick filled = style AND judge-correct translation; "
+                 "hollow markers: n < 20. GPT-J-6B, one T=1 sample per site.\n"
+                 "† items resampled at dataset build: the twin's number differs from the Spanish "
+                 "source, so the translation metric is undefined for these two properties.",
                  fontsize=10)
-    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
     fig.savefig(OUT_DIR / "accuracy_by_k.png", dpi=150)
     plt.close(fig)
 
@@ -179,7 +190,7 @@ def main():
                   filled=False, lw=1.3)
         plot_line(ax, allp, "unscorable", "#c5b0d5", ":", "^", "English-only: style-unscorable fraction",
                   filled=False, lw=1.3)
-        ax.set_title(p, fontsize=10)
+        ax.set_title(panel_title(p), fontsize=10, color="#8c564b" if p in RESAMPLED else "black")
         ax.set_ylim(-0.03, 1.03)
         ax.set_xticks(PLOT_BINS)
         ax.grid(alpha=0.3)
@@ -191,10 +202,13 @@ def main():
         ax.set_xlabel("k = prior manifestations in the English prefix")
     for ax in axes[::ncol]:
         ax.set_ylabel("rate (all items, both polarities)")
-    fig.suptitle("Translation correctness of the sampled fragment vs k (both context polarities pooled). "
-                 "Judge = Gemini 2.5 Flash, conventions ignored; exact = normalised prefix match.",
+    fig.suptitle("Translation correctness of the sampled fragment vs k (both context polarities pooled)\n"
+                 "judge = Gemini 2.5 Flash with conventions ignored; exact = normalised prefix match "
+                 "to the document's own continuation\n"
+                 "† items resampled at dataset build: the twin's number differs from the Spanish "
+                 "source, so the translation metric is undefined for these two properties.",
                  fontsize=10)
-    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
     fig.savefig(OUT_DIR / "translation_by_k.png", dpi=150)
     plt.close(fig)
 

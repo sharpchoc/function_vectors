@@ -8842,3 +8842,48 @@ key matching mis-assigned sentence_caps (0.87 vs 1.00), contractions (0.27 vs 0.
 us_uk (0.26 vs 0.57) until the losslessness check caught it.
 
 **Next:** user will specify which of the 8 empty cells to fill.
+
+## Stream: style-properties — translation-framed continuation (SANDBOX variant, 2026-09-06)
+
+**Status:** done. Question (user): is "Spanish source, then English translation in the
+convention" a good way to teach a style convention in context? Answer: no better than plain
+English examples for convention adoption (k≥4 within ±0.05 for 8/11 valid props; +0.16
+ampersand, +0.07 double_space; −0.16 us_uk, −0.09 contractions on alt docs), but it anchors
+content: style-unscorable fraction drops 0.2–0.8 → 0.0–0.3 and translation stays 80–92 %
+judge-correct while holding the convention (ALL CAPS costs the most: 0.68). Joint accuracy
+(style AND correct translation) at k≥4 alt docs 0.61–0.92 ≈ style × judge.
+Deliverables: `results/style_properties/translation_framing/` (README with decisions, metric
+definitions, table, caveats; accuracy_by_k.png; translation_by_k.png; summary.csv; records.npz;
+es_audit.csv). DECISIONS 2026-09-06 (translation framing) records the four user decisions.
+
+**Commands:** `translate_corpus.py` (878 base docs → `dataset_files/style_properties/
+base_corpus_es.json`, Gemini 2.5 Flash T=0, deterministic typography fix-up incl. `--refix`
+dash rule; audit clean) · pod: `prescreen_adherence.py --framing plain --add_refs --props
+<pool>` (backfills ref_nat/ref_alt/ctx_tail into the 2026-09-01 plain records, order asserted)
+then `--framing translate --token_budget 8000 --batch_cap 16` (30,102 items, ~75 min) ·
+`judge_translation.py --dir .../prescreen --exact_only` (plain baseline) and `judge_translation.py`
+(translate; 30,102 Gemini calls, 0 failures) · `plot_translation_framing.py`.
+
+**Findings / lessons:**
+- **Resampled items break translation scoring:** `num_words`/`ordinal_words` items are
+  uniformly resampled at build (2026-09-02), so the twin's number ≠ Spanish source at every
+  scored site → judge 0.35–0.53 is an artefact; marked † everywhere. Any future
+  source-anchored variant must use unresampled datasets or twin-specific sources (user call).
+- **"Neutral" Spanish carries a pole for typographic properties** (k=0 shift between framings):
+  ` - ` is em_dash's ALT pole (nat docs k0 1.00 → 0.04), no serial comma / punctuation outside
+  quotes = alt for oxford_comma (0.16 → 0.44) and quote_punct (0.06 → 0.46), `%`/straight
+  quotes/digits = nat for percent_sign (0.29 → 0.02), curly_quotes (0.21 → 0.07), num_words.
+  From k≥1 the English prefix dominates everywhere. Report k=0 of this framing as "source
+  typography prior", never as the model prior.
+- Translation fidelity is flat in k; exact match 0.15–0.36 vs ≈0 for English-only free
+  continuation (the model is translating, and paraphrasing freely).
+- Infra: doubling prompt length (median ~1000 tok) OOMs GPT-J fp16 generate on 32 GB at
+  token_budget 16000 (full-vocab logits over the prompt); 8000/batch 16 +
+  `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` runs at ~9 min per 3000 items. Header ids
+  PREPENDED to unchanged doc ids keep every stored cue assertion valid. Worktree guard blocks
+  heredocs/`setsid`/`source`: write helper scripts to `$CLAUDE_JOB_DIR/tmp` and run them; use
+  Monitor (≤1 h, re-arm) for judge loops. Pod b0thtqx0mr7h5v terminated (~2 h, ~$1.5).
+
+**Next (needs user decision):** fix the † properties (unresampled datasets vs twin-specific
+Spanish); optionally a mirrored-convention Spanish arm to separate "source typography" from
+"in-context teaching"; a no-label layout arm.

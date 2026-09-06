@@ -74,6 +74,64 @@ Artifacts: `artifacts/style_properties/prescreen_translate/<prop>.json` (records
 tails, refs, judge verdicts); plain records in `artifacts/style_properties/prescreen/` gained
 `ref_nat/ref_alt/ctx_tail/trans_exact`. Run: one RTX PRO 4500 Blackwell pod, 2026-09-06.
 
-## Findings
+## Findings (run 2026-09-06; 30,102 translate-framed items, 0 judge failures)
 
-_(filled after the run)_
+**Short answer to "is this a good way to teach the convention in context?": not better than
+plain English examples.** At k ≥ 4 the translation framing continues the convention about as
+often as the English-only prefix does (8 of 11 valid properties within ±0.05 on the
+alt-convention docs); it is clearly better only for `ampersand` (+0.16) and `double_space`
+(+0.07), clearly worse for `us_uk` (−0.16) and `contractions` (−0.09). What it adds is
+*content anchoring*: the fragment reproduces the source, so it reaches the feature slot far
+more often (style-unscorable fraction drops from 0.2–0.8 to 0.0–0.3), and the model keeps
+translating correctly 80–92 % of the time while holding the convention.
+
+Alt-convention docs (the disfavoured pole for most properties), k ≥ 4, from `summary.csv`:
+
+| property | style, English-only | style, translation framing | judge-correct translation | **joint** (style AND correct) | style-unscorable, English-only → framing |
+|---|---|---|---|---|---|
+| all_caps | 0.942 | 0.918 | 0.684 | 0.609 | 0.01 → 0.00 |
+| ampersand | 0.667 | 0.829 | 0.887 | 0.747 | 0.72 → 0.08 |
+| contractions | 0.754 | 0.669 | 0.889 | 0.616 | 0.58 → 0.20 |
+| curly_quotes | 0.975 | 0.956 | 0.823 | 0.786 | 0.51 → 0.04 |
+| double_space | 0.864 | 0.932 | 0.836 | 0.743 | 0.22 → 0.01 |
+| em_dash | 1.000 | 1.000 | 0.856 | 0.924 | 0.72 → 0.33 |
+| oxford_comma | 0.850 | 0.857 | 0.865 | 0.821 | 0.37 → 0.06 |
+| percent_sign | 0.966 | 0.907 | 0.918 | 0.804 | 0.28 → 0.01 |
+| quote_punct | 0.901 | 0.931 | 0.822 | 0.744 | 0.29 → 0.02 |
+| sentence_caps | 0.798 | 0.845 | 0.804 | 0.675 | 0.06 → 0.00 |
+| us_uk | 0.917 | 0.755 | 0.882 | 0.723 | 0.80 → 0.20 |
+| num_words † | 0.856 | 0.710 | (0.534) | (0.390) | 0.61 → 0.25 |
+| ordinal_words † | 0.994 | 0.917 | (0.354) | (0.202) | 0.79 → 0.17 |
+
+Nat-convention docs sit at 0.93–1.0 style in both framings (see `summary.csv`, `ctx=nat`).
+
+- **Translation fidelity is flat in k** (`translation_by_k.png`): 0.80–0.92 judge-correct for
+  the 11 valid properties, independent of how many manifestations precede the site. The one
+  convention that costs translation accuracy is ALL CAPS: 0.68 judge-correct on alt docs vs 0.85
+  on nat docs of the same property. Exact match is 0.15–0.36 (strict lower bound; the model
+  paraphrases freely) vs ≈0.00 for English-only free continuation, confirming the model *is*
+  translating rather than continuing.
+- **Joint ≈ style × judge**: the two events are close to independent, so the framing's
+  accuracy is the style curve scaled by ~0.8–0.9.
+- **† `num_words` / `ordinal_words`: translation metric undefined.** Their items are resampled
+  at dataset build (`properties.py` `NumWords.resample` / `OrdinalWords.resample`, user decision
+  2026-09-02), so in every document the English twin's number differs from the Spanish source
+  at exactly the scored site; the judge is asked for a number the source never contained
+  (`judge` 0.35–0.53 there is an artefact, and the style curve is also contaminated because the
+  Spanish always shows digits). Fixing this needs a user decision: either translate the twin
+  text for these two properties (breaks "one Spanish per base doc") or build an unresampled
+  variant of the two datasets for this framing.
+- **The "neutral" Spanish is not neutral for typographic properties — it instantiates one
+  pole.** Visible as the k = 0 gap between framings (`summary.csv` `style_k0`): `em_dash` nat
+  docs 1.00 → 0.04 (the Spanish ` - ` rendering is this property's *alt* pole, so at k = 0 the
+  model copies the dash form from the source and only the first English manifestation
+  overrides it); `oxford_comma` alt docs 0.16 → 0.44 and `quote_punct` alt docs 0.06 → 0.46
+  (Spanish has no serial comma and puts punctuation outside quotes = alt pole); `percent_sign`
+  alt docs 0.29 → 0.02, `curly_quotes` alt docs 0.21 → 0.07, `num_words` alt 0.31 → 0.10
+  (Spanish `%`, straight quotes, digits = nat pole). `us_uk`, `contractions`, `ampersand`,
+  `double_space`, `sentence_caps`, `all_caps` show no k = 0 shift. So the k = 0 point of the
+  framing is "Spanish typography prior", not the model's own prior; from k ≥ 1 the English
+  prefix dominates for every property.
+- **Provenance**: sampling on pod `b0thtqx0mr7h5v` (RTX PRO 4500 Blackwell, ~2 h incl. one OOM
+  restart at token budget 16000 → rerun at 8000/batch 16, seeds `crc32("<prop>|prescreen|translate|<batch>")`);
+  judge = `google/gemini-2.5-flash` T=0 via OpenRouter, 30,102 calls, 0 failures after retry.
