@@ -1604,3 +1604,31 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   ~1.7e-2 in delta-log-p across GPU architectures (L4 vs prior pod, identical code). A code
   no-op check must compare old-code-vs-new-code on one GPU (expect exactly 0.0), never
   new-code-on-GPU-A vs stored-run-from-GPU-B with a tight tolerance.
+
+## 2026-09-06 — Style-property STEERING is a sandbox: no default result (user decision)
+
+- **All steering work under `results/style_properties/steering/` is exploratory. There is
+  NO default, headline, or recommended steering technique.** Promotion of any variant to
+  repo standard requires an explicit user decision recorded here. Do not describe any cell
+  as "the" steering result, and do not create root-level headline figures in that folder.
+- **Variant grid** (the only organising structure): {`meandiff`, `meanact`, `sparsehead`}
+  × {`kall`, `k4`} × {`succno`, `succyes`} = 12 cells, named
+  `<technique>__<kfilter>__<successfilter>`. Registry: `src/sandbox/ext_styleprops/variants.py`
+  (single source of truth; adding a technique = adding one entry, not a script).
+- **Fixed shared protocol** so cells are comparable: first cue token per document · 200 docs
+  · 32-token T=1 seeded rollouts · LLM coherence judge drops gibberish · primary metric =
+  strict rate with an unscorable rollout counted as NOT adopting · counterfactual + reverse
+  controls expected for every variant · shared sweep grid layers 2-24 × doses 0.5-32. A cell
+  that searched less records it in its spec and is flagged in the comparison figure.
+- **Comparison presentation**: alphabetical, unranked, no best-cell highlight (so the table
+  cannot imply a default).
+- **Excluded from the grid** (kept, not deleted): the pre-2026-09-02 runs at all cue sites
+  with unjudged short rollouts (`artifacts/.../_archive_allk`), and arms whose vector was
+  derived from EVIDENCE tokens rather than cue tokens — derivation site is not a grid axis.
+- **LESSON — arm keys are not stable literals:** the runner named a property's arm
+  `<vec>_cue_nat2alt` when that vector won the property's sweep and `<vec>_cue_nat2alt_best`
+  when it did not, with per-property `_L<l>_a<a>` shortlist suffixes; and `rawalt_cue_cue_*`
+  (cue-derived) vs `rawalt_cue_*` (evidence-derived) differ by one segment. Match arms by
+  REGEX with explicit vector gating, and verify with a losslessness check against previously
+  reported numbers (`build_variant_results.py --check`) — a literal-key assignment silently
+  mis-assigned three properties before that check caught it.
