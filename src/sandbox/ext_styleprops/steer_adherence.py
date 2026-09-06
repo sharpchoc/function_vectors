@@ -44,6 +44,7 @@ from src.sandbox.ext_steerability.steer_read_dir_methods import Injector
 PROPS_DIR = REPO_ROOT / "dataset_files" / "style_properties" / "props"
 POOL_PATH = REPO_ROOT / "task_splits" / "style_properties_pool.json"
 VEC_DIR = ARTIFACTS_ROOT / "style_properties" / "steering_vectors"
+VEC_DIR_K4 = ARTIFACTS_ROOT / "style_properties" / "steering_vectors_k4"
 HEADSUM_DIR = ARTIFACTS_ROOT / "style_properties" / "sparse_heads"
 OUT_ROOT = ARTIFACTS_ROOT / "style_properties" / "steering"
 
@@ -70,6 +71,9 @@ def parse_args():
     p.add_argument("--shortlist", type=int, default=1,
                    help="full mode: run the top-N sweep settings (final pick after judging)")
     p.add_argument("--tag", default="", help="suffix for the output dir (e.g. cue1)")
+    p.add_argument("--vec_set", choices=("orig", "k4"), default="orig",
+                   help="k4 = high-k, behaviourally-verified cue vectors (user spec 2026-09-05); "
+                        "sweeps low doses since these carry the natural displacement")
     p.add_argument("--site", choices=("evid", "cue"), default="evid",
                    help="injection site: evidence tokens (read-side) or the cue token "
                         "(write-side; the function-vector analog). cue includes k=0 sites.")
@@ -154,8 +158,12 @@ def main():
     out_dir = OUT_ROOT / ((args.mode if args.site == "evid" else f"{args.mode}_cue") + args.tag)
     out_dir.mkdir(parents=True, exist_ok=True)
     req_evid = args.site == "evid"
-    alphas = SWEEP_ALPHAS if args.site == "evid" else SWEEP_ALPHAS + (32.0,)
-    vec_srcs = ("meandiff",) if args.site == "evid" else ("cuediff", "meandiff")
+    if args.vec_set == "k4":
+        alphas = (0.5, 1.0, 2.0, 4.0, 8.0, 16.0)
+        vec_srcs = ("cuediff_k4",)
+    else:
+        alphas = SWEEP_ALPHAS if args.site == "evid" else SWEEP_ALPHAS + (32.0,)
+        vec_srcs = ("meandiff",) if args.site == "evid" else ("cuediff", "meandiff")
     # counterfactual pairing: rotate the pool by 5 (fixed derangement)
     cf_of = {p: pool[(i + 5) % len(pool)] for i, p in enumerate(pool)}
 
@@ -174,7 +182,9 @@ def main():
             print(f"{name}: exists, skip", flush=True)
             continue
         prop = PROPS[name]
-        vz = np.load(VEC_DIR / f"{name}.npz")
+        vz = dict(np.load(VEC_DIR / f"{name}.npz"))
+        if args.vec_set == "k4":
+            vz["cuediff_k4"] = np.load(VEC_DIR_K4 / f"{name}.npz")["cuediff_k4"]
         res = {"property": name, "mode": args.mode, "n_docs": n_docs, "conditions": {}}
 
         res["site"] = args.site
@@ -224,8 +234,9 @@ def main():
             ks_n, ks_a = [it["k"] for it in items_n], [it["k"] for it in items_a]
             set_layer(L - 1)
             v = torch.tensor(vz[vsrc][L], dtype=torch.float16)
-            cfz = np.load(VEC_DIR / f"{cf_of[name]}.npz")
-            vcf = torch.tensor(cfz[vsrc][L], dtype=torch.float16)
+            cf_dir = VEC_DIR_K4 if args.vec_set == "k4" else VEC_DIR
+            cf_key = "cuediff_k4" if args.vec_set == "k4" else vsrc
+            vcf = torch.tensor(np.load(cf_dir / f"{cf_of[name]}.npz")[cf_key][L], dtype=torch.float16)
             res["cf_property"] = cf_of[name]
             S = args.site
             R = lambda *aa, **kw: run_condition(model, tok, inj, prop, *aa, **kw)
@@ -266,7 +277,7 @@ def main():
                            torch.tensor(vz[other][oL], dtype=torch.float16), oL - 1, oa, S,
                            "alt", "ob", args.token_budget, args.batch_cap), ks_n)
                     set_layer(L - 1)
-            raw_key = "rawalt" if vsrc == "meandiff" else "rawalt_cue"
+            raw_key = "rawalt_cue" if vsrc.startswith("cuediff") else "rawalt"
             vraw = torch.tensor(vz[raw_key][L], dtype=torch.float16)
             for ar in (0.5, 1.0, 2.0):
                 record(f"{raw_key}_{S}_nat2alt_a{ar}", *R(items_n, vraw, L - 1, ar, S, "alt",

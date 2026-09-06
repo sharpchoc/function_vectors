@@ -8814,3 +8814,31 @@ the first rubric called plainly readable text incoherent for ending mid-word (52
 "incoherent"). Fixed rubric = FLUENT/GIBBERISH with explicit allowances + few-shot;
 validated 10/10 on unsteered samples. Always calibrate a judge on control data first.
 (4) pkill -f judge_coherence.py killed the launching shell (self-match) — use "[j]udge".
+
+## 2026-09-06 — Steering results restructured as a sandbox variant grid (no new compute)
+
+**Status:** done, no GPU used. `results/style_properties/steering/` no longer has any
+root-level result: it is now a SANDBOX with `README.md` (coverage matrix + shared protocol
++ promotion rule), `comparison_table.{png,csv}` (alphabetical, unranked, caveat flags), and
+`variants/<cell>/{spec.md,results.csv,adherence.png}` for each of the 12 grid cells
+({meandiff,meanact,sparsehead} × {kall,k4} × {succno,succyes}).
+
+Populated 4 cells by extracting arms from the two completed runs (metrics recomputed from
+stored rollouts + judge verdicts, verified lossless):
+- `meandiff__kall__succno` — full arms (cf control + reverse), layers 2-24 × α 2-32
+- `meandiff__k4__succyes` — main + cf; NO reverse (that run's reverse injected the all-k
+  vector — provenance bug now recorded in the spec)
+- `meanact__kall__succno` — main only, borrowed layer, α 0.5-2, unjudged
+- `sparsehead__kall__succno` — main only, layer = gate's training layer, α 1-8, unjudged
+8 cells marked NOT RUN in `variants/NOT_RUN.md` with what each would require.
+
+**New code:** variants.py (registry), variant_metrics.py (single metric definition),
+build_variant_results.py (`--check` losslessness gate), compare_variants.py. Deleted
+superseded plot_steering.py / plot_steering_cue.py; by-layer view moved inside the
+meandiff__kall__succno cell (it is that cell's sweep).
+
+**Findings:** see the DECISIONS entry of this date for the arm-key/regex lesson — literal
+key matching mis-assigned sentence_caps (0.87 vs 1.00), contractions (0.27 vs 0.69) and
+us_uk (0.26 vs 0.57) until the losslessness check caught it.
+
+**Next:** user will specify which of the 8 empty cells to fill.
