@@ -1632,3 +1632,28 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   REGEX with explicit vector gating, and verify with a losslessness check against previously
   reported numbers (`build_variant_results.py --check`) — a literal-key assignment silently
   mis-assigned three properties before that check caught it.
+
+## 2026-09-06 — Translation-framed style continuation is a SANDBOX variant (user decisions)
+
+- **What it is:** an alternative way to teach a style convention in context — the document is
+  given in Spanish (`Spanish:` header), then an `English:` section translates it back in the
+  target convention, truncated after the cue token; readout = the plain prescreen's sampled
+  continuation, scored for style AND translation correctness. Lives in
+  `results/style_properties/translation_framing/`; exploratory, not a headline result.
+- **Spanish is neutral and fixed (user decision):** one Gemini translation per base doc in
+  standard Spanish typography (single spaces, straight quotes, digits, `%`, sentence caps,
+  parenthetical dashes → ` - `), shared by both English polarities, enforced by a deterministic
+  fix-up and audited (`es_audit.csv`). The English prefix is the only carrier of the convention.
+  Do not build "mirrored-convention Spanish" variants without a new user decision.
+- **Translation metric (user decision):** Gemini judge PRIMARY (conventions explicitly
+  ignored, gold reference = the document's own next tokens), normalised exact match SECONDARY.
+  Accuracy of the framing = style adopted AND judge-correct, over style-scorable judged items.
+  English-only comparison carries exact match only (free continuation has no translation
+  target) — state the asymmetry wherever the two are plotted together.
+- **Prompt layout (user decision):** language labels `Spanish:` / `English:` (not bare text).
+- **Scope (user decision):** only the translation framing is sampled; the English-only curve is
+  the 2026-09-01/02 prescreen record set (same items, seeds differ by the framing tag).
+- **Mechanics to keep:** the header is tokenised separately and PREPENDED to the unchanged
+  English ids so the stored cue index/id assertions still hold; `prescreen_adherence.py
+  --add_refs` backfills `ref_nat/ref_alt/ctx_tail` into existing records in `build_items` order
+  (asserted) rather than re-sampling.
