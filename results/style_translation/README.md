@@ -76,8 +76,8 @@ translation; the "style-only" column shows the convention-adoption rate alone.
 | ellipsis | alt | 0.03 | 0.55 | 0.61 | 0.63 | 0.63 | 0.04→0.81 | 0.04 | 0.54 |
 | num_words | nat | 0.55 | 0.74 | 0.70 | 0.73 | 0.79 | 0.69→0.93 | 0.12 | 0.83 |
 | num_words | alt | 0.06 | 0.32 | 0.24 | 0.33 | 0.28 | 0.10→0.34 | 0.11 | 0.79 |
-| percent_sign | nat | 0.53 | 0.85 | 0.85 | 0.86 | 0.86 | 0.65→0.97 | 0.06 | 0.86 |
-| percent_sign | alt | 0.09 | 0.72 | 0.79 | 0.84 | 0.81 | 0.10→0.98 | 0.09 | 0.85 |
+| percent_sign | nat | 0.72 | 0.87 | 0.85 | 0.86 | 0.88 | 0.89→0.99 | 0.01 | 0.86 |
+| percent_sign | alt | 0.10 | 0.72 | 0.80 | 0.84 | 0.81 | 0.12→0.98 | 0.01 | 0.85 |
 | ordinal_words | nat | 0.24 | 0.65 | 0.74 | 0.72 | 0.78 | 0.33→0.97 | 0.05 | 0.75 |
 | ordinal_words | alt | 0.42 | 0.46 | 0.51 | 0.64 | 0.65 | 0.57→0.79 | 0.06 | 0.76 |
 
@@ -86,7 +86,7 @@ Reading the plot (`accuracy_by_k.png`, red = the flipped convention, blue = hous
 - **Fast learners (one example is enough):** all_caps, sentence_caps, double_space, em_dash,
   ellipsis, percent_sign, quote_punct, curly_quotes, oxford_comma, ampersand. The flipped style goes
   from ≈0 at k = 0 to 60–90 % adoption by k = 1–2 (style-only), e.g. all_caps 0.01 → 0.84 → 0.98,
-  percent_sign 0.10 → 0.86 → 0.94, sentence_caps 0.00 → 0.12 → 0.82 (this one needs two examples).
+  percent_sign 0.65 → 0.98 (sign) / 0.10 → 0.86 → 0.98 (spelled), sentence_caps 0.00 → 0.12 → 0.82 (this one needs two examples).
 - **Partial learners:** us_uk (British 0.09 → 0.65 style-only), ise_ize (0.04 → 0.59–0.69), whilst
   (0.01 → 0.53–0.65), contractions (both directions ≈0.6–0.8 by k = 4), ordinal_words (spelled
   0.57 → 0.79; digits 0.33 → 0.97).
@@ -105,7 +105,7 @@ Reading the plot (`accuracy_by_k.png`, red = the flipped convention, blue = hous
   is adopted 98 % of the time.
 - **Unscorable completions** (`unscorable_by_k.png`, `unscorable.csv`): the model avoids the
   decision mostly at k = 0 (curly_quotes 0.40–0.45: it drops the quotation marks (94/170), copies
-  the Spanish « » (43) or uses single quotes (33); percent_sign 0.26–0.34; quote_punct 0.23) and
+  the Spanish « » (43) or uses single quotes (33); quote_punct 0.23) and
   the rate drops to ≤ 0.10 after one example. Persistently high: brit_t_past 0.21–0.38 (other
   verbs chosen), whilst ≈0.20–0.24, us_uk / ise_ize 0.10–0.23 (synonyms without a spelling split),
   contractions 0.09–0.20. Everything else ≤ 0.10.
@@ -113,6 +113,7 @@ Reading the plot (`accuracy_by_k.png`, red = the flipped convention, blue = hous
   tokenise into many more pieces); the judge is told when a completion was capped.
 
 ## Provenance / caveats
+- **percent_sign scoring (user decision 2026-09-07):** a completion writing `50 %` (space before the sign, copied from the Spanish typography — 110 of the 119 k=0 no-decision cases) counts as the SIGN convention, and `per cent` counts as spelled out (`PercentSign.classify`). Before this decision percent_sign was 26–34 % unscorable at k=0 and its k=0 accuracies were 0.53 / 0.09; after it 0.01 unscorable and 0.72 / 0.10. Angular quotes copied from the Spanish in curly_quotes remain unscorable (they are neither straight nor curly).
 - Rollouts 2026-09-07 on three RTX PRO 4500 Blackwell pods (ynswjnas0a608z, f8ajl4h7q85xn0,
   g7t6kx7ugh4p6c; ≈1.5 h each, all terminated), GPT-J-6B fp16, seed `crc32(f"{family}|rollout|{batch}")`,
   token budget 8000 / batch cap 16; 34,000 completions. Judge: `google/gemini-2.5-flash`, T = 0, one

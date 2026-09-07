@@ -507,9 +507,11 @@ class PercentSign(Property):
         return _dedup(opps)
 
     def classify(self, tail):
-        if tail.startswith("%"):
+        # USER DECISION 2026-09-07: a space before the sign ("50 %", copied from the Spanish
+        # typography) still counts as the sign convention; "per cent" counts as spelled out.
+        if re.match(r"\s?%", tail):
             return "nat"
-        if tail.startswith(" percent"):
+        if re.match(r"\s?per\s?cent\b", tail):
             return "alt"
         return None
 
