@@ -43,7 +43,7 @@ where the verbs are natural; contractions needed one small top-up.)
 | feature | fixed form in every text |
 |---|---|
 | cardinals | digits: `3 días`, `12 personas` (never words) |
-| ordinals | digits with the marker, ONE form: `1.º`, `2.ª`, `3.º` … `10.º` (the RAE apocope `3.er` is normalised to `3.º`) |
+| ordinals | digits with the marker, ONE form: `1.º`, `2.ª`, `3.º` … `10.º`, plurals `1.os` / `1.as` (the RAE apocope `3.er` and word forms incl. plurals primeros/primeras are normalised; the noun «segundos» = seconds of time is left as a word) |
 | percentages | `15 %` (digits, space, sign; never «por ciento») |
 | quotations | angular quotes `« »` only |
 | asides | rayas attached to the aside: `palabra —inciso— palabra` |

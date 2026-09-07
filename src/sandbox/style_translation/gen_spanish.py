@@ -100,6 +100,10 @@ _ORD = [("primer", 1), ("primero", 1), ("primera", 1), ("segundo", 2), ("segunda
 _CARD_RX = re.compile(r"\b(" + "|".join(_CARD) + r")\b", re.I)
 _ORD_RX = re.compile(r"\b(" + "|".join(w for w, _ in _ORD) + r")\b", re.I)
 _ORD_N = dict(_ORD)
+# plural ordinal words -> RAE digit plurals (1.os / 1.as). "segundos" is excluded: in running
+# prose it almost always means seconds of time, not "second ones".
+_ORD_PL = {w + "s": n for w, n in _ORD if w.endswith(("o", "a")) and w != "segundo"}
+_ORD_PL_RX = re.compile(r"\b(" + "|".join(_ORD_PL) + r")\b", re.I)
 
 
 def fixup(t):
@@ -123,6 +127,7 @@ def fixup(t):
     t = re.sub(r"(\d)\s+por ciento\b", r"\1 %", t, flags=re.I)
     t = _CARD_RX.sub(lambda m: str(_CARD[m.group(1).lower()]), t)
     t = _ORD_RX.sub(lambda m: f"{_ORD_N[m.group(1).lower()]}.{'ª' if m.group(1).lower().endswith('a') else 'º'}", t)
+    t = _ORD_PL_RX.sub(lambda m: f"{_ORD_PL[m.group(1).lower()]}.{'as' if m.group(1).lower().endswith('as') else 'os'}", t)
     t = re.sub(r"[ \t]{2,}", " ", t)
     t = re.sub(r"\s*\n\s*", " ", t)          # one paragraph
     return t.strip()
@@ -141,7 +146,8 @@ def violations(t):
     if re.search(r"\bpor ciento\b", t, re.I): v.append("por ciento")
     if _CARD_RX.search(t): v.append("cardinal in words")
     if _ORD_RX.search(t): v.append("ordinal in words")
-    if re.search(r"\d\.(?:er|o|a)\b", t): v.append("ordinal form not .º/.ª")
+    if _ORD_PL_RX.search(t): v.append("plural ordinal in words")
+    if re.search(r"\d\.(?:er|o|a)\b(?!s)", t): v.append("ordinal form not .º/.ª")
     for s in _SENT.findall(t):
         letters = [c for c in s if c.isalpha()]
         if len(letters) >= 8 and sum(c.isupper() for c in letters) / len(letters) > 0.8:
