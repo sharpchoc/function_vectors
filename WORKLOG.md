@@ -9059,3 +9059,5 @@ for families < 200 usable) → retries → verify → `collect_english.py --coll
 **Next (user):** step 3 — prompt construction `Spanish: …\n\nEnglish: <twin up to cue k>` and the
 GPT-J run.
 
+
+**Step 3a — cue tokens (2026-09-07):** `cue_tokens.py` adds `cues.{nat,alt}` to every pair (definition and format in the README "Step 3a" section). All 3,400 pairs x 2 contexts computed; k=0 cue identical across contexts in every pair; max prompt 840 tokens. Naming: only "cue token" is fixed (user); other positions unnamed. curly_quotes: one decision per quotation (opening mark) — all 200 texts still have >=5 quotations.

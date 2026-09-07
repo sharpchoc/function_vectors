@@ -246,3 +246,11 @@ days.", "first, …" → now "Three days.", "First, …").
 - `k_en` can exceed the Spanish k (English adds anchors, e.g. extra contractions or quotes) — fine;
   ≥5 is the floor.
 - "1st, …" at sentence start (Spanish "Lo 1.º") is house style but reads stiffly; it is consistent.
+
+---
+
+# Step 3a — cue tokens (`pairs/<family>.json` → `cues`)
+
+**Cue token (user definition 2026-09-07):** the token immediately preceding a style choice = the last token that is the same whichever style the model is about to produce. k = 0: the last token shared by the two twins (may be word-internal, e.g. `learn|ed` vs `learn|t`, `it|'s` vs `it| is`). k >= 1: judged on the context as it actually reads (nat or alt twin): the twin up to opportunity k versus the version that differs only in how opportunity k is rendered; cue = last shared token. Sentence families: the period closing the previous sentence; the first sentence of all_caps / sentence_caps has the newline after `English:` as its cue. curly_quotes: one decision per quotation, at the opening mark. Only "cue token" is a fixed term so far.
+
+Computed with the GPT-J tokenizer on the full prompt `Spanish:\n{text_es}\n\nEnglish:\n{twin}` (`cue_tokens.py`). Each record has `cues.nat` and `cues.alt` (per CONTEXT twin), one entry per decision point: `k, opp_index, cue_idx (token index in the prompt), cue_tok, cue_tok_id, cue_char_end, opp_char_start, word_internal, next_nat, next_alt (first tokens after the cue under each rendering), in_header`. Checks: the k=0 cue token id is identical in both contexts for every pair; decision-point counts match. Longest prompt 840 GPT-J tokens. Typical cues: sentence families `.` / `\n`; us_uk / ise_ize / brit_t_past / num_words / ordinal_words the word before the item (` the`, ` to`, ` I`); percent_sign the number (` 50` → `%` vs ` percent`); quote_punct the last quoted word (`." It` vs `". It`); contractions the pronoun (` it` → `'s` vs ` is`); word-internal cues in ~14% of all_caps sentences (` I|t` vs ` IT`) and ~7-10% of the spelling families.
