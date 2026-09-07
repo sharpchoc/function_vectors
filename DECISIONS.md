@@ -1680,3 +1680,25 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   if the Edit-tool guard still refuses in-place edits, write via shell/python instead of
   creating a worktree. Files another agent has uncommitted in the shared checkout are never
   staged.
+
+## 2026-09-07 — Translation-framing study RETRACTED and deleted (user decision); restart from scratch
+
+- **All translation-framing data and results are deleted at the user's request**: the Spanish
+  corpora (`base_corpus_es.json`, the k>=5 supplement `base_corpus_k5*.json` and `props_k5/`),
+  the sampled records (`artifacts/style_properties/prescreen_translate*`, `prescreen_k5`), the
+  results folder `results/style_properties/translation_framing/`, and the three study scripts
+  (`translate_corpus.py`, `judge_translation.py`, `plot_translation_framing.py`);
+  `prescreen_adherence.py` is back to its 2026-09-06 form and the backfilled
+  `ref_nat/ref_alt/ctx_tail/trans_exact` keys were stripped from `artifacts/style_properties/
+  prescreen/*.json`. The 2026-09-06/07 DECISIONS entries and WORKLOG findings about that study
+  are void. Git history keeps the code if a redesign wants to reuse pieces.
+- **Why**: the Spanish source was not held to ONE fixed convention — the translation prompt
+  preserved each number's source form, so ordinals were mixed digit/word within and across
+  documents (ordinal_words docs: 177 of 323 mixed). USER PRINCIPLE (must hold in any redesign):
+  the Spanish text is identical for both polarities AND internally in one fixed convention for
+  every feature; the English translation in context is the ONLY thing that varies and the only
+  carrier of the convention. Also: say "English translation so far", never "English prefix".
+- **Kept (predates the study, other work depends on it)**: the 878-doc base corpus, the 17
+  property datasets and registry, the A4 prescreen records, decodability, and the steering
+  sandbox. The pool is still 13.
+- **Redesign**: to be agreed with the user BEFORE any generation or compute.

@@ -8966,3 +8966,7 @@ meanact .57-.63/.69-.71 -> .55-.61/.67-.69. Ranking unchanged (mean-difference >
 activation; k and success filters still within noise).
 Per-property the change bites only where steering damages fluency: all_caps .83 -> .45
 (46% incoherent) and sentence_caps 1.00 -> .89 (11%); every other property moves <= .03.
+
+## Stream: style-properties — translation framing RETRACTED (2026-09-07)
+
+**Status:** all translation-framing data, records, results and scripts deleted at user request (see DECISIONS 2026-09-07 retraction entry for the list and the reason: the Spanish source was not in one fixed convention). Base corpus / 17 datasets / prescreen / decodability / steering untouched; prescreen records restored to original schema. Pods terminated. Redesign to be agreed with the user before any compute.
