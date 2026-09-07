@@ -9005,3 +9005,5 @@ ONE text per call) · `collect_verdicts.py --collect --finalize` · `calibration
 
 **Next (ask the user):** step 2 of the study — English side / prompt construction / GPT-J.
 
+
+**Consistency fixes after user spot-checks (2026-09-07, later):** plural ordinal words (primeros/primeras, 168) -> `1.os/1.as`; 1 quotation with the period inside the closing quote -> outside; ~15 sentence-final asides without closing raya -> `—inciso—.` (RAE). Two buggy normaliser drafts (a raya rule that also matched closing rayas; a quote rule that ate the last dot of `«...»`) were caught by edge-case tests / the audit BEFORE commit; the corpus was restored from git each time. Rule: never run a new text-rewriting rule over the corpus without a multi-case unit test first and a git-restorable state. Sweeps that found NOTHING to fix: word-form numbers of any size (0), serial commas inside lists in oxford_comma (0; 51 comma-before-y cases are clause joins), vague magnitude words (miles/cientos/un par de, 50) left as words by design.

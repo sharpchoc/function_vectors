@@ -122,6 +122,10 @@ def fixup(t):
     t = re.sub(r"\.{4,}", "...", t)
     t = t.replace("–", "—")
     t = re.sub(r"\s—\s", " —", t)            # spaced raya after a word: attach to the aside
+    # RAE: an aside that ends the sentence keeps its closing raya before the period (—inciso—.)
+    t = re.sub(r"(?<=\s)—([^—.]{2,}?)\.(?=\s|$)", r"—\1—.", t)   # opening raya = preceded by a space
+    # Spanish puts the period/comma OUTSIDE the closing quote: «...». not «....»
+    t = re.sub(r"(?<!\.)([.,])»", r"»\1", t)   # but an ellipsis inside the quote stays («pero...»)
     t = re.sub(r"(\d)\.(?:er|o)\b", r"\1.º", t)     # one ordinal form: 3.er / 3.o -> 3.º
     t = re.sub(r"(\d)\s*%", r"\1 %", t)
     t = re.sub(r"(\d)\s+por ciento\b", r"\1 %", t, flags=re.I)
@@ -153,6 +157,8 @@ def violations(t):
         if len(letters) >= 8 and sum(c.isupper() for c in letters) / len(letters) > 0.8:
             v.append("all-caps sentence"); break
     if "\n" in t: v.append("multiple paragraphs")
+    if re.search(r"(?<!\.)[.,]»", t): v.append("punctuation inside closing quote")
+    if re.search(r"(?<=\s)—[^—.]{2,}\.(?=\s|$)", t): v.append("sentence-final aside without closing raya")
     if re.search(r"</?\w+>|\*\*|(?<!\w)\*\S", t): v.append("markup")
     return v
 

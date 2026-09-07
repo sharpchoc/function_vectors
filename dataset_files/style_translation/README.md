@@ -45,8 +45,8 @@ where the verbs are natural; contractions needed one small top-up.)
 | cardinals | digits: `3 días`, `12 personas` (never words) |
 | ordinals | digits with the marker, ONE form: `1.º`, `2.ª`, `3.º` … `10.º`, plurals `1.os` / `1.as` (the RAE apocope `3.er` and word forms incl. plurals primeros/primeras are normalised; the noun «segundos» = seconds of time is left as a word) |
 | percentages | `15 %` (digits, space, sign; never «por ciento») |
-| quotations | angular quotes `« »` only |
-| asides | rayas attached to the aside: `palabra —inciso— palabra` |
+| quotations | angular quotes `« »` only; a period or comma goes OUTSIDE the closing quote (`«...».`), except an ellipsis that belongs to the quote (`«pero...»`) |
+| asides | rayas attached to the aside: `palabra —inciso— palabra`; an aside that ends a sentence keeps its closing raya before the period (`—inciso—.`, RAE) |
 | ellipsis | three dots `...` |
 | spacing / case / markup | one space after periods, normal sentence capitalisation, no markdown/HTML |
 | form | one paragraph, 100–230 words (median ~140), 6–8 sentences |
