@@ -37,7 +37,7 @@ prescreen (≤10), classified nat / alt / unscorable by the same property classi
 | Spanish form | **neutral and fixed**: one translation per base doc (Gemini 2.5 Flash via OpenRouter, T=0), identical for both English polarities, standard Spanish typography — single spaces, straight quotes, digits, `%`, sentence caps, parenthetical dashes rendered as ` - `. Enforced by a deterministic fix-up; `es_audit.csv` shows zero remaining double spaces / curly quotes / em-dashes / all-caps sentences, length ratio es/en median 1.16 [1.02, 1.32], paragraph structure preserved in all 878 docs. The English prefix is the only source of the convention. |
 | translation metric | **Gemini judge primary, normalised exact match secondary** (definitions below) |
 | prompt layout | **language labels** `Spanish:` / `English:` |
-| scope | translation framing only is sampled; the English-only comparison reuses the 2026-09-01/02 prescreen records (same items, different sampling run) |
+| scope | translation framing only is sampled (13-property pool on 2026-09-06, the 4 excluded properties added 2026-09-07 at the user's request — see Extension below); the English-only comparison reuses the 2026-09-01/02 prescreen records (same items, different sampling run) |
 
 ## Metrics
 
@@ -63,6 +63,7 @@ prescreen (≤10), classified nat / alt / unscorable by the same property classi
 | `accuracy_by_k.png` | per property: English-only style (grey dashed) vs translation-framed style-only (open) and joint style+translation (filled), by exact k 0..5, both context polarities |
 | `translation_by_k.png` | judge-correct and exact-match rates vs k (translate framing), English-only exact-match reference, style-unscorable fractions |
 | `summary.csv` | per property × framing × context polarity: style/judge/exact/joint/unscorable by k with denominators, k≥4 aggregates, judge-failure counts |
+| `gate.csv` | the Stage-A4 prescreen gate (separation, Spearman, disfavoured-pole adherence, 15 % scorable floor) re-evaluated for all 17 properties under both framings (extension 2026-09-07) |
 | `records.npz` | per property × framing arrays `k, pol, label, exact, judge` to regenerate views |
 | `es_audit.csv` | per-doc Spanish audit (word ratios, leak counts, paragraph counts) |
 
@@ -132,6 +133,46 @@ Nat-convention docs sit at 0.93–1.0 style in both framings (see `summary.csv`,
   `double_space`, `sentence_caps`, `all_caps` show no k = 0 shift. So the k = 0 point of the
   framing is "Spanish typography prior", not the model's own prior; from k ≥ 1 the English
   prefix dominates for every property.
+## Extension 2026-09-07: the four properties excluded by the English-only prescreen
+
+User request: the prescreen pruning (`whilst` failed the gate; `ellipsis`, `brit_t_past`,
+`ise_ize` pruned for one-sided classifier / < 15 % scorable) was decided under free
+continuation, so the four were run through the translation framing too and the **same gate**
+(separation at k ≥ 4 ≥ 0.3, Spearman(k, separation) > 0, adherence to the prior-disfavoured pole
+at k ≥ 4 ≥ 0.4, plus the 15 % scorable floor) re-evaluated under both framings for all 17
+properties → `gate.csv` (`plot_translation_framing.py` reproduces
+`behavioral_prescreen/prescreen_summary.csv` exactly on the English-only records).
+
+| property | scorable, English-only → framing | separation k≥4, framing | adherence disfavoured pole k≥4 (n) | judge-correct | gate under framing |
+|---|---|---|---|---|---|
+| ise_ize (pruned) | 0.107 → 0.690 | 0.805 | 0.805 (118) | 0.889 | **PASS** |
+| whilst (failed) | 0.085 → 0.506 | 0.611 | 0.778 (18) | 0.794 | PASS, thin k≥4 cells |
+| ellipsis (pruned) | 0.037 → 0.584 | 1.000 | 1.000 (8) | 0.561 * | PASS, very thin (148 sites) |
+| brit_t_past (pruned) | 0.050 → 0.608 | 0.266 | 0.316 (19) | 0.850 | **FAIL** (separation) |
+
+- **The scorable-rate objection disappears under the framing**: content anchoring makes the
+  model reach the lexical slot (the -ise/-ize word, whilst/while, the past-tense verb, the
+  ellipsis), so all four clear the 15 % floor by a wide margin. That was the reason three of
+  them were pruned.
+- **ise_ize now behaves like a pool property** (0.805 adherence to the British pole at k ≥ 4,
+  n = 118) and is the clearest candidate for re-admission — *for this framing*. Whether it
+  re-enters the English-only pool is a separate user decision: under free continuation its
+  scorable rate is still 10.7 %.
+- **whilst and ellipsis pass but on 18 and 8 disfavoured-pole items** at k ≥ 4 — their
+  documents rarely contain ≥ 5 opportunities. Treat as provisional.
+- **brit_t_past fails on separation, not on scorability**: with ≥ 4 British "-t" pasts in the
+  prefix the model still writes the regular form 68 % of the time (alt docs, k ≥ 4: 0.316). The
+  convention is not adopted in either framing.
+- \* ellipsis judge score is deflated by an artefact, not by bad translation: many ellipsis
+  sites end a sentence or the document, so the reference continuation is just "..." and the
+  fragment runs on into text the source does not contain, which the judge marks INCORRECT.
+- Figures now show all 17 panels; excluded properties are titled in red with their
+  original status. `gate.csv` PASS applies the 15 % floor, so the English-only rows for the
+  pruned properties read False there although their numeric gate values were True in
+  `prescreen_summary.csv`.
+- **Provenance (extension)**: pod `obv6xh4cp970td` (RTX PRO 4500 Blackwell, ~30 min incl.
+  boot), 3,860 items, judge 3,860 calls, 0 failures.
+
 - **Provenance**: sampling on pod `b0thtqx0mr7h5v` (RTX PRO 4500 Blackwell, ~2 h incl. one OOM
   restart at token budget 16000 → rerun at 8000/batch 16, seeds `crc32("<prop>|prescreen|translate|<batch>")`);
   judge = `google/gemini-2.5-flash` T=0 via OpenRouter, 30,102 calls, 0 failures after retry.

@@ -37,9 +37,19 @@ from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, STYLE_PROPERTIES_DIR
 PLAIN_DIR = ARTIFACTS_ROOT / "style_properties" / "prescreen"
 TRANS_DIR = ARTIFACTS_ROOT / "style_properties" / "prescreen_translate"
 OUT_DIR = STYLE_PROPERTIES_DIR / "translation_framing"
-POOL = json.load(open(REPO_ROOT / "task_splits" / "style_properties_pool.json"))["pass"]
+_POOL_FILE = json.load(open(REPO_ROOT / "task_splits" / "style_properties_pool.json"))
+POOL = _POOL_FILE["pass"]
+# The 4 properties excluded from the pool by the ENGLISH-ONLY prescreen (whilst failed the
+# gate; ellipsis / brit_t_past / ise_ize pruned for one-sided classifier / <15% scorable).
+# User request 2026-09-07: run them through the translation framing too and re-evaluate the
+# gate under it — the framing anchors content, so they may reach the feature slot far more often.
+EXCLUDED = {p: "failed screen" for p in _POOL_FILE.get("fail", [])}
+EXCLUDED.update({p: "pruned" for p in _POOL_FILE.get("pruned", [])})
+ALL_PROPS = POOL + sorted(EXCLUDED)
 PLOT_BINS = list(range(6))
+K_BINS = [0, 1, 2, 3, 4]          # gate bins, last = k>=4 (plot_prescreen convention)
 MIN_N = 20
+SCORABLE_FLOOR = 0.15
 # Items of these properties are RESAMPLED at dataset build (properties.py NumWords/OrdinalWords
 # .resample, user decision 2026-09-02), so the English twin's number differs from the Spanish
 # source at the scored site: translation correctness is undefined there (see README).
@@ -47,7 +57,12 @@ RESAMPLED = {"num_words", "ordinal_words"}
 
 
 def panel_title(p):
-    return f"{p} †" if p in RESAMPLED else p
+    t = f"{p} †" if p in RESAMPLED else p
+    return f"{t} ({EXCLUDED[p]})" if p in EXCLUDED else t
+
+
+def title_color(p):
+    return "#d62728" if p in EXCLUDED else ("#8c564b" if p in RESAMPLED else "black")
 LABEL_CODE = {"nat": 1, "alt": 0, None: -1}
 
 
@@ -87,6 +102,64 @@ def curves(a, sel):
     return out
 
 
+def spearman(xs, ys):
+    """Spearman rho without scipy (few points, ties unlikely)."""
+    xs, ys = np.asarray(xs, float), np.asarray(ys, float)
+    if len(xs) < 3 or np.ptp(xs) == 0 or np.ptp(ys) == 0:
+        return np.nan          # constant input -> undefined, as scipy.stats.spearmanr
+
+    def avg_rank(v):           # average ranks for ties (scipy rankdata default)
+        u, inv = np.unique(v, return_inverse=True)
+        pos = np.argsort(np.argsort(v, kind="stable"), kind="stable").astype(float)
+        r = np.empty_like(pos)
+        for i in range(len(u)):
+            m = inv == i
+            r[m] = pos[m].mean()
+        return r
+    rx, ry = avg_rank(xs), avg_rank(ys)
+    rx, ry = rx - rx.mean(), ry - ry.mean()
+    den = np.sqrt((rx ** 2).sum() * (ry ** 2).sum())
+    return float((rx * ry).sum() / den) if den else np.nan
+
+
+def gate_stats(a):
+    """The Stage-A4 prescreen gate (plot_prescreen.py, memo item 4) on one record set:
+    separation s(k) = P(nat | nat ctx) - P(nat | alt ctx) over scorable items in gate bins
+    k=0..3, k>=4; PASS = s_k4 >= 0.3 AND Spearman(k, s) > 0 (or undefined) AND adherence to
+    the prior-DISFAVOURED pole at k>=4 >= 0.4 AND scorable >= 15% floor."""
+    kb = np.minimum(a["k"], 4)
+    sc = a["scorable"]
+    is_nat_lab = a["label"] == 1
+    s_curve = []
+    for k in K_BINS:
+        m = sc & (kb == k)
+        pn = rate(is_nat_lab, m & a["pol"])[0]
+        pa = rate(is_nat_lab, m & ~a["pol"])[0]
+        s_curve.append(pn - pa)
+    scorable = float(sc.mean())
+    s_k4 = s_curve[-1]
+    valid = [(k, s) for k, s in zip(K_BINS, s_curve) if not np.isnan(s)]
+    rho = spearman([v[0] for v in valid], [v[1] for v in valid]) if len(valid) >= 3 else np.nan
+    m0 = sc & (kb == 0)
+    nat_k0 = rate(is_nat_lab, m0 & a["pol"])[0]
+    alt_k0 = rate(is_nat_lab, m0 & ~a["pol"])[0]
+    with np.errstate(all="ignore"):
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            prior_nat = bool(np.nanmean([nat_k0, alt_k0]) > 0.5)   # nan > 0.5 is False, as in plot_prescreen
+    disf_is_nat = not prior_nat
+    sub = sc & (kb == 4) & (a["pol"] == disf_is_nat)
+    v = rate(is_nat_lab, sub)[0]
+    adh_disf = v if disf_is_nat else (1 - v)
+    passed = (not np.isnan(s_k4) and s_k4 >= 0.3 and (np.isnan(rho) or rho > 0)
+              and not np.isnan(adh_disf) and adh_disf >= 0.4 and scorable >= SCORABLE_FLOOR)
+    r3 = lambda x: "" if np.isnan(x) else round(float(x), 3)
+    return dict(scorable=round(scorable, 3), s_k0=r3(s_curve[0]), s_k4=r3(s_k4),
+                spearman_k=r3(rho), disfavored_pole="nat" if disf_is_nat else "alt",
+                adh_disfavored_k4=r3(adh_disf), n_disfavored_k4=int(sub.sum()), PASS=passed)
+
+
 def plot_line(ax, cur, key, color, ls, marker, label, filled=True, lw=1.6):
     xs = [k for k in PLOT_BINS if not np.isnan(cur[k][key][0])]
     ys = [cur[k][key][0] for k in xs]
@@ -99,8 +172,8 @@ def plot_line(ax, cur, key, color, ls, marker, label, filled=True, lw=1.6):
 
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    props = [p for p in POOL if (TRANS_DIR / f"{p}.json").exists()]
-    missing = [p for p in POOL if p not in props]
+    props = [p for p in ALL_PROPS if (TRANS_DIR / f"{p}.json").exists()]
+    missing = [p for p in ALL_PROPS if p not in props]
     if missing:
         print("missing translate records:", missing)
     data = {p: {"plain": load(PLAIN_DIR / f"{p}.json"), "trans": load(TRANS_DIR / f"{p}.json")}
@@ -151,7 +224,7 @@ def main():
         for framing in ("plain", "trans"):
             for key in ("k", "pol", "label", "exact", "judge"):
                 npz[f"{p}__{framing}__{key}"] = data[p][framing][key]
-        ax.set_title(panel_title(p), fontsize=10, color="#8c564b" if p in RESAMPLED else "black")
+        ax.set_title(panel_title(p), fontsize=10, color=title_color(p))
         ax.set_ylim(-0.03, 1.03)
         ax.set_xticks(PLOT_BINS)
         ax.grid(alpha=0.3)
@@ -190,7 +263,7 @@ def main():
                   filled=False, lw=1.3)
         plot_line(ax, allp, "unscorable", "#c5b0d5", ":", "^", "English-only: style-unscorable fraction",
                   filled=False, lw=1.3)
-        ax.set_title(panel_title(p), fontsize=10, color="#8c564b" if p in RESAMPLED else "black")
+        ax.set_title(panel_title(p), fontsize=10, color=title_color(p))
         ax.set_ylim(-0.03, 1.03)
         ax.set_xticks(PLOT_BINS)
         ax.grid(alpha=0.3)
@@ -211,6 +284,25 @@ def main():
     fig.tight_layout(rect=(0, 0, 1, 0.93))
     fig.savefig(OUT_DIR / "translation_by_k.png", dpi=150)
     plt.close(fig)
+
+    # ---- gate.csv: the English-only prescreen gate re-evaluated under both framings ---------
+    gate_rows = []
+    for p in props:
+        for framing in ("plain", "trans"):
+            g = gate_stats(data[p][framing])
+            gate_rows.append({"property": p, "framing": framing,
+                              "pool_status": EXCLUDED.get(p, "in pool"),
+                              "n": int(len(data[p][framing]["k"])), **g})
+    with open(OUT_DIR / "gate.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(gate_rows[0].keys()))
+        w.writeheader()
+        w.writerows(gate_rows)
+    print(f"\n{'property':14s} {'status':13s} {'framing':7s} {'scorable':>8s} {'s_k4':>6s} "
+          f"{'rho':>6s} {'adh_disf':>8s} {'n_disf':>6s} PASS")
+    for r in gate_rows:
+        print(f"{r['property']:14s} {r['pool_status']:13s} {r['framing']:7s} {r['scorable']:>8} "
+              f"{str(r['s_k4']):>6} {str(r['spearman_k']):>6} {str(r['adh_disfavored_k4']):>8} "
+              f"{r['n_disfavored_k4']:>6} {r['PASS']}")
 
     cols = list(summary[0].keys())
     with open(OUT_DIR / "summary.csv", "w", newline="") as f:

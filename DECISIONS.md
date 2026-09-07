@@ -1657,3 +1657,26 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   English ids so the stored cue index/id assertions still hold; `prescreen_adherence.py
   --add_refs` backfills `ref_nat/ref_alt/ctx_tail` into existing records in `build_items` order
   (asserted) rather than re-sampling.
+
+## 2026-09-07 — Translation framing covers all 17 style properties; pool re-admission is a pending user decision
+
+- **Scope extension (user request):** the 4 properties excluded by the English-only prescreen
+  (`whilst`, `ellipsis`, `brit_t_past`, `ise_ize`) were run through the translation framing and
+  the Stage-A4 gate re-evaluated under both framings for all 17
+  (`results/style_properties/translation_framing/gate.csv`). The pruning reason (scorable rate
+  below 15 %) does not hold under the framing (0.51–0.69 scorable), because the source anchors
+  content and the model reaches the lexical slot.
+- **Pool status is UNCHANGED until the user decides.** `task_splits/style_properties_pool.json`
+  still lists 13; `ise_ize` passes the gate under the framing (n = 118), `whilst`/`ellipsis`
+  pass on thin cells (18 / 8), `brit_t_past` fails on separation. Re-admitting any of them —
+  and whether that applies to the English-only pool too — requires an explicit user decision.
+- **Gate reimplementation rule:** `plot_translation_framing.gate_stats` must reproduce
+  `behavioral_prescreen/prescreen_summary.csv` on the English-only records before any new-framing
+  gate number is reported (it does; the nan-at-k=0 prior-pole fallback and constant-curve
+  Spearman = undefined are the two details that had to match `plot_prescreen.py`).
+- **Repo hygiene (user-approved 2026-09-07):** all `worktree-*`/`claude-*` side branches
+  deleted on origin and locally, all worktrees removed; the repo has only `main`. Background
+  sessions must never call EnterWorktree here (`.claude/settings.json` has `bgIsolation: none`);
+  if the Edit-tool guard still refuses in-place edits, write via shell/python instead of
+  creating a worktree. Files another agent has uncommitted in the shared checkout are never
+  staged.
