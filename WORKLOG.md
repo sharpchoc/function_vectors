@@ -8970,3 +8970,38 @@ Per-property the change bites only where steering damages fluency: all_caps .83 
 ## Stream: style-properties — translation framing RETRACTED (2026-09-07)
 
 **Status:** all translation-framing data, records, results and scripts deleted at user request (see DECISIONS 2026-09-07 retraction entry for the list and the reason: the Spanish source was not in one fixed convention). Base corpus / 17 datasets / prescreen / decodability / steering untouched; prescreen records restored to original schema. Pods terminated. Redesign to be agreed with the user before any compute.
+
+## Stream: style-translation — step 1, Spanish source corpus (2026-09-07)
+
+**Status:** done, on main. 17 families × 200 unique, verified Spanish paragraphs in
+`dataset_files/style_translation/final/<family>.json` (3,400 texts; 5,103 candidates generated);
+README there has conventions, opportunity definitions, protocol, per-family table, caveats.
+Only Spanish was built — no English, no GPT-J (user: "just complete this step").
+
+**Commands:** `src/sandbox/style_translation/gen_spanish.py --n_topics 92 --angles abc --workers 64`
+(all 17 families in one pool, Gemini 2.5 Flash/OpenRouter; top-ups: brit_t_past
+`--topic_offset 92 --n_topics 50` and `--topic_offset 142 --n_topics 67`, contractions
+`--topic_offset 92 --n_topics 20`) · `verify_spanish.py --workers 48` (Claude Haiku 4.5/OpenRouter,
+ONE text per call) · `collect_verdicts.py --collect --finalize` · `calibration.py show`.
+
+**Findings / lessons:**
+- **Sub-agents handed 276 texts do not read them.** The first verification round (17 Haiku
+  Agent-tool sub-agents, one per family) produced heuristic scripts instead of judgments: empty
+  notes, an "English-word detector" marking 87 % of oxford_comma texts non-fluent, 241
+  hallucinated "numbers as words" violations in ise_ize (grep: 0), length counted as incoherence.
+  Discarded. Rule: LLM verification = one item per call with a strict JSON schema; deterministic
+  audits own conventions/length; never let a judge report conventions it can hallucinate.
+- Generator quirks caught by the audit/judge: markdown bold around target words (36 texts in
+  brit_t_past, 10 in us_uk) → stripped in fixup; numbers > 20 / "1 vez" in num_words → judge
+  rule excludes them; RAE apocope `3.er` → normalised to `3.º` (user: one ordinal form).
+- brit_t_past: forcing 8 specific verbs into arbitrary topics yields semantically forced
+  sentences (tickets that spill) → 151/426 pass; rewriting the instruction to demand natural
+  situations (kitchen, lesson, sleep) lifted the round-2 yield to ~65 %.
+- Haiku k-count vs regex: |diff| ≤ 1 for ≥ 90 % of texts in 10 families; large gaps are regex
+  artefacts (em_dash pairs double-counted, ampersand adjective pairs, narrow contractions
+  regex). Pass rule requires BOTH ≥ 5, so the regex only ever tightens.
+- Throughput: 4,600 Gemini calls ≈ 100/min at 24 workers, ≈ 250/min at 64; 4,700 Haiku calls
+  ≈ 20 min at 48 workers. Monitor (1 h cap) instead of background Bash (10 min cap) for these.
+
+**Next (ask the user):** step 2 of the study — English side / prompt construction / GPT-J.
+

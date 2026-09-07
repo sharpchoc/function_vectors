@@ -49,6 +49,7 @@ QWEN25_FV_DIR = RESULTS_ROOT / "qwen25_fv"
 # read/write-feature line (evidence/cue sites in free text, GPT-J,
 # sampled-adherence readout). See results/style_properties/README.md + adjudication memo.
 STYLE_PROPERTIES_DIR = RESULTS_ROOT / "style_properties"
+STYLE_TRANSLATION_DATA = REPO_ROOT / "dataset_files" / "style_translation"  # Spanish source corpus (2026-09-07 restart)
 
 # Exploratory buckets — research directions that did not pan out, quarantined under
 # results/exploratory/ on 2026-08-28 (DECISIONS entry of that date). Kept for possible
@@ -62,6 +63,6 @@ GENERAL_DIR = EXPLORATORY_ROOT / "general"
 __all__ = [
     "REPO_ROOT", "ARTIFACTS_ROOT", "RESULTS_ROOT", "LOGS_ROOT",
     "TASK69_RUN_DIR", "STEERING_COMPARISON_DIR", "CHAT_TEMPLATE_TRANSFER_DIR", "QWEN25_FV_DIR",
-    "STYLE_PROPERTIES_DIR", "EXPLORATORY_ROOT",
+    "STYLE_PROPERTIES_DIR", "STYLE_TRANSLATION_DATA", "EXPLORATORY_ROOT",
     "AMBIGUOUS_DIR", "LABEL_GEOMETRY_DIR", "FV_FORMATION_DIR", "GENERAL_DIR",
 ]
