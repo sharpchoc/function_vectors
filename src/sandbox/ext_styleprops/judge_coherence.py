@@ -28,8 +28,7 @@ from src.sandbox.ext_styleprops.gen_corpus import load_key
 URL = "https://openrouter.ai/api/v1/chat/completions"
 PROMPT = """Decide whether a text fragment is FLUENT ENGLISH or GIBBERISH.
 
-The fragment is a language model's continuation of a passage. It was cut off after a fixed
-number of tokens, so it almost always ends mid-sentence or mid-word.
+The fragment is a language model's continuation of a passage.{capnote}
 
 Answer GIBBERISH only if the text itself is broken: word salad, random characters, repeated
 tokens, collapsed syntax, strings of unrelated fragments.
@@ -56,9 +55,17 @@ FRAGMENT TO JUDGE: {tail}
 Reply with exactly one word: FLUENT or GIBBERISH."""
 
 
-def judge_one(key, model, ctx, tail):
+CAPNOTE_CAPPED = (" It was CUT OFF at a token limit, so it very likely ends mid-sentence or\n"
+                  "mid-word. Do NOT mark it GIBBERISH for being truncated or incomplete.")
+CAPNOTE_WHOLE = (" It is a COMPLETE sentence (generation stopped at the sentence boundary),\n"
+                 "so judge it as a whole sentence.")
+
+
+def judge_one(key, model, ctx, tail, capped=True):
     body = {"model": model, "temperature": 0, "max_tokens": 8,
-            "messages": [{"role": "user", "content": PROMPT.format(ctx=ctx[-300:], tail=tail)}]}
+            "messages": [{"role": "user", "content": PROMPT.format(
+                ctx=ctx[-300:], tail=tail,
+                capnote=CAPNOTE_CAPPED if capped else CAPNOTE_WHOLE)}]}
     for attempt in range(4):
         try:
             r = requests.post(URL, json=body, timeout=60, headers={"Authorization": f"Bearer {key}"})
@@ -92,15 +99,18 @@ def main():
             cond = d["conditions"][c]
             if cond.get("coherent") is not None and len(cond["coherent"]) == len(cond["tails"]):
                 continue
-            ctxs = d["ctx_alt"] if c.endswith("alt2nat") else d["ctx_nat"]
+            ctxs = (d.get("ctx_ref") if c.startswith("reference") else None) \
+                or d.get("ctx") or (d["ctx_alt"] if c.endswith("alt2nat") else d["ctx_nat"])
             cond["coherent"] = [None] * len(cond["tails"])
+            caps = cond.get("capped") or [True] * len(cond["tails"])
             for i, t in enumerate(cond["tails"]):
-                jobs.append((c, i, ctxs[i], t))
+                jobs.append((c, i, ctxs[i], t, bool(caps[i])))
         if not jobs:
             print(f"{d['property']}: already judged", flush=True)
             continue
         with ThreadPoolExecutor(max_workers=args.workers) as ex:
-            futs = {ex.submit(judge_one, key, args.model, ctx, t): (c, i) for c, i, ctx, t in jobs}
+            futs = {ex.submit(judge_one, key, args.model, ctx, t, cp): (c, i)
+                    for c, i, ctx, t, cp in jobs}
             for fu in as_completed(futs):
                 c, i = futs[fu]
                 d["conditions"][c]["coherent"][i] = fu.result()

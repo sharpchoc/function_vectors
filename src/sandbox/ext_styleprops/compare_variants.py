@@ -20,71 +20,61 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import STYLE_PROPERTIES_DIR
-from src.sandbox.ext_styleprops.variants import POPULATED, EMPTY, PROTOCOL
+from src.sandbox.ext_styleprops.grid import CELLS, DIRECTIONS
 
 OUT = STYLE_PROPERTIES_DIR / "steering"
 
 
 def main():
-    data, caveat_flags = {}, {}
-    for v in POPULATED:
-        f = OUT / "variants" / v.name / "results.csv"
-        if not f.exists():
-            continue
-        rows = {r["property"]: r for r in csv.DictReader(open(f))}
-        data[v.name] = rows
-        flags = []
-        if not v.layers_searched:
-            flags.append("no layer sweep")
-        if not v.has_cf:
-            flags.append("no cf control")
-        if not v.has_reverse:
-            flags.append("no reverse")
-        if not all(r["judged"] == "True" for r in rows.values()):
-            flags.append("unjudged")
-        caveat_flags[v.name] = flags
-    variants = sorted(data)
+    data = {}
+    for c in CELLS:
+        f = OUT / "variants" / c.name / "results.csv"
+        if f.exists():
+            data[c.name] = {r["property"]: r for r in csv.DictReader(open(f))}
+    cells = sorted(data)
     props = sorted({p for rows in data.values() for p in rows})
 
     with open(OUT / "comparison_table.csv", "w", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["property", "unsteered_strict"]
-                   + [f"{v}::{m}" for v in variants for m in ("strict", "unscorable", "cf_strict")])
+        head = ["property"]
+        for d in DIRECTIONS:
+            head += [f"unsteered_{d}", f"reference_{d}"]
+        head += [f"{c}::steered_{d}" for c in cells for d in DIRECTIONS]
+        w.writerow(head)
         for p in props:
-            base = next((data[v][p]["baseline_strict"] for v in variants if p in data[v]), "")
-            row = [p, base]
-            for v in variants:
-                r = data[v].get(p, {})
-                row += [r.get("strict", ""), r.get("unscorable", ""), r.get("cf_strict", "")]
+            any_row = next(data[c][p] for c in cells if p in data[c])
+            row = [p]
+            for d in DIRECTIONS:
+                row += [any_row.get(f"unsteered_{d}", ""), any_row.get(f"reference_{d}", "")]
+            row += [data[c].get(p, {}).get(f"steered_{d}", "") for c in cells for d in DIRECTIONS]
             w.writerow(row)
 
-    # figure: grouped bars, alphabetical, no highlight
-    fig, ax = plt.subplots(figsize=(max(11, 1.05 * len(props) + 3), 5.6))
+    fig, axes = plt.subplots(2, 1, figsize=(max(12, 1.15 * len(props) + 3), 9), sharex=True)
     x = np.arange(len(props))
-    w_ = 0.8 / (len(variants) + 1)
-    greys = ["#9e9e9e"]
-    cols = ["#4c72b0", "#dd8452", "#55a868", "#c44e52", "#8172b3", "#937860"]
-    ax.bar(x - 0.4 + w_ / 2, [float(next((data[v][p]["baseline_strict"] for v in variants if p in data[v]), 0)) for p in props],
-           w_, color=greys[0], label="unsteered")
-    for i, v in enumerate(variants, start=1):
-        vals = [float(data[v][p]["strict"]) if p in data[v] and data[v][p]["strict"] != "" else np.nan
-                for p in props]
-        lab = v + (f"  [{', '.join(caveat_flags[v])}]" if caveat_flags[v] else "")
-        ax.bar(x - 0.4 + w_ * i + w_ / 2, vals, w_, color=cols[(i - 1) % len(cols)], label=lab)
-    ax.set_xticks(x, props, rotation=30, ha="right", fontsize=8)
-    ax.set_ylim(0, 1.05)
-    ax.set_ylabel("adopt target convention\n(unscorable = no)", fontsize=9)
-    ax.set_title("STEERING SANDBOX — variant comparison (alphabetical, unranked)\n"
-                 "no cell is canonical; bracketed flags mark cells that searched less or "
-                 "lack controls, so peaks are not directly comparable", fontsize=10)
-    ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.24), ncol=2, fontsize=8, frameon=False)
-    ax.grid(axis="y", alpha=0.25)
-    fig.tight_layout(); fig.savefig(OUT / "comparison_table.png", dpi=150, bbox_inches="tight")
-
-    print(f"{len(variants)} populated cells, {len(EMPTY)} not run; {len(props)} properties")
-    for v in variants:
-        print(f"  {v:32s} flags: {caveat_flags[v] or ['-']}")
-    print(f"-> {OUT}/comparison_table.png")
+    cols = plt.cm.tab20(np.linspace(0, 1, max(len(cells), 2)))
+    for ax, d in zip(axes, DIRECTIONS):
+        w_ = 0.8 / (len(cells) + 2)
+        f = lambda r, k: float(r[k]) if r.get(k) not in (None, "") else np.nan
+        base = [f(next(data[c][p] for c in cells if p in data[c]), f"unsteered_{d}") for p in props]
+        ref = [f(next(data[c][p] for c in cells if p in data[c]), f"reference_{d}") for p in props]
+        ax.bar(x - 0.4 + w_ / 2, base, w_, color="#bdbdbd", label="unsteered (0-shot)")
+        for i, c in enumerate(cells, start=1):
+            ax.bar(x - 0.4 + w_ * i + w_ / 2, [f(data[c].get(p, {}), f"steered_{d}") for p in props],
+                   w_, color=cols[i - 1], label=c)
+        ax.bar(x - 0.4 + w_ * (len(cells) + 1) + w_ / 2, ref, w_, color="#7f9c8b",
+               label="reference: k>=4 in context")
+        ax.set_ylim(0, 1.05)
+        ax.set_ylabel(f"adopt {d.upper()} convention\n(unscorable = no)", fontsize=9)
+        ax.set_title(f"steering direction: -> {d}", fontsize=9, loc="left")
+        ax.grid(axis="y", alpha=0.25)
+    axes[0].legend(fontsize=6.5, ncol=4, loc="upper right", framealpha=0.9)
+    axes[-1].set_xticks(x, props, rotation=30, ha="right", fontsize=8)
+    fig.suptitle("STEERING SANDBOX - variant comparison (alphabetical, unranked; no cell is canonical)\n"
+                 "0-shot text - sentence rollouts - gibberish dropped by LLM judge - unscorable counts as not adopted",
+                 fontsize=11)
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.savefig(OUT / "comparison_table.png", dpi=150)
+    print(f"{len(cells)} cells x {len(DIRECTIONS)} directions, {len(props)} properties -> {OUT}/comparison_table.png")
 
 
 if __name__ == "__main__":

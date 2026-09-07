@@ -1,4 +1,4 @@
-# Variant `meanact__kall__succno`
+# Variant `meanact__k2__succno`
 
 > **SANDBOX.** One cell of the steering variant grid. Not canonical, not a headline result.
 > Promotion to repo standard requires an explicit user decision (DECISIONS.md).
@@ -7,12 +7,12 @@
 |---|---|
 | technique | `meanact` |
 | pairing | `n/a` |
-| k filter | `kall` (k >= 0) |
+| k filter | `k2` (k >= 2) |
 | success filter | `succno` |
-| vector formula | v_dir = mean(act_dir)   [raw mean of the target convention] |
+| vector formula | v_dir = mean(act_dir | k >= 2)   [raw mean of the target convention] |
 | directions run | alt, nat |
-| vectors | `artifacts/style_properties/steering_vectors_grid/meanact__kall__succno/<prop>.npz` (`v_alt`, `v_nat`) |
-| capture sites (us_uk example) | alt 1310, nat 1310 |
+| vectors | `artifacts/style_properties/steering_vectors_grid/meanact__k2__succno/<prop>.npz` (`v_alt`, `v_nat`) |
+| capture sites (us_uk example) | alt 966, nat 966 |
 | injection site | the cue token only |
 | layers searched | 2, 4, 6, 8, 10, 12, 16, 20, 24 |
 | doses searched | 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32 |
@@ -49,6 +49,6 @@ injection layer, each layer at its own best dose), `results.csv`, `by_layer.csv`
 
 ## Provenance
 
-`artifacts/style_properties/steering/grid/{screen,headline,bylayer}/meanact__kall__succno__<direction>/<prop>.json`
+`artifacts/style_properties/steering/grid/{screen,headline,bylayer}/meanact__k2__succno__<direction>/<prop>.json`
 (rollouts + judge verdicts stored), picks in `.../grid/screen_picks.json`, shared arms in
 `.../grid/refs/<direction>/<prop>.json`.

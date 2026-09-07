@@ -1,26 +1,26 @@
-# Variant `meanact__kall__succno`
+# Variant `meandiff_paired__kall__succyes`
 
 > **SANDBOX.** One cell of the steering variant grid. Not canonical, not a headline result.
 > Promotion to repo standard requires an explicit user decision (DECISIONS.md).
 
 | field | value |
 |---|---|
-| technique | `meanact` |
-| pairing | `n/a` |
+| technique | `meandiff` |
+| pairing | `paired` |
 | k filter | `kall` (k >= 0) |
-| success filter | `succno` |
-| vector formula | v_dir = mean(act_dir)   [raw mean of the target convention] |
+| success filter | `succyes` |
+| vector formula | v = AVG_sites[ act_alt - act_nat ] | continuation followed that context's convention   [paired, sites passing in BOTH twins] |
 | directions run | alt, nat |
-| vectors | `artifacts/style_properties/steering_vectors_grid/meanact__kall__succno/<prop>.npz` (`v_alt`, `v_nat`) |
-| capture sites (us_uk example) | alt 1310, nat 1310 |
+| vectors | `artifacts/style_properties/steering_vectors_grid/meandiff_paired__kall__succyes/<prop>.npz` (`v_alt`, `v_nat`) |
+| capture sites (us_uk example) | alt 105, nat 105, paired 105 |
 | injection site | the cue token only |
 | layers searched | 2, 4, 6, 8, 10, 12, 16, 20, 24 |
-| doses searched | 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32 |
+| doses searched | 0.5, 1, 2, 4, 8, 16, 32 |
 
 ## Direction handling
 
-- `alt`: mean of the ALT-convention activations
-- `nat`: mean of the NAT-convention activations (its own mean, not a negation)
+- `alt`: +v (the difference)
+- `nat`: -v (same object, opposite sign)
 
 ## Protocol (identical across all cells)
 
@@ -49,6 +49,6 @@ injection layer, each layer at its own best dose), `results.csv`, `by_layer.csv`
 
 ## Provenance
 
-`artifacts/style_properties/steering/grid/{screen,headline,bylayer}/meanact__kall__succno__<direction>/<prop>.json`
+`artifacts/style_properties/steering/grid/{screen,headline,bylayer}/meandiff_paired__kall__succyes__<direction>/<prop>.json`
 (rollouts + judge verdicts stored), picks in `.../grid/screen_picks.json`, shared arms in
 `.../grid/refs/<direction>/<prop>.json`.

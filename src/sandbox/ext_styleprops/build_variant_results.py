@@ -180,8 +180,13 @@ def figure(variant, rows, path):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--check", action="store_true", help="verify extraction is lossless, write nothing")
+    ap.add_argument("--out_subdir", default="", help="write under variants/<subdir>/ (used to park "
+                    "the legacy 32-token cells so their names cannot collide with the current grid)")
     args = ap.parse_args()
     props = set(json.load(open(REPO_ROOT / "task_splits" / "style_properties_pool.json"))["pass"])
+    global VAR_OUT
+    if args.out_subdir:
+        VAR_OUT = VAR_OUT / args.out_subdir
     if not args.check:
         VAR_OUT.mkdir(parents=True, exist_ok=True)
     ok = True

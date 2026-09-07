@@ -8918,3 +8918,36 @@ edits, so use shell/python writes for files in the shared checkout.
 **Next (user decisions):** re-admit ise_ize (framing-only or also English-only pool?); collect
 more whilst/ellipsis documents if they are to count; fix the † resample confound for
 num_words/ordinal_words.
+
+## 2026-09-07 — Full steering grid run: 12 cells x 2 directions on 0-shot text (user spec)
+
+**Status:** done. Pod mdiruwsqh7dzs2 (RTX PRO 4500, ~11 GPU-h, terminated). ~225k rollouts
+judged for coherence (32 workers, ~2.5h CPU/API).
+
+Grid: {meandiff_paired, meandiff_unpaired, meanact} x {kall, k2} x {succno, succyes} = 12
+cells, both steering directions each. Protocol: 0-shot items (first cue, no manifestation of
+either convention in the prefix; sentence_caps/all_caps use their k=1 minimum per user
+decision), sentence rollouts (to first sentence boundary, cap 48, capped flag passed to the
+judge), strict metric with unscorable counted as not adopted, shared unsteered + k>=4
+reference arms, counterfactual control per cell/direction. Search: 9 layers x 7 doses
+(+0.125/0.25 for meanact).
+
+**Mean strict rate over 13 properties (unsteered -> steered, reference in brackets):**
+- meandiff (any filter combo): alt .04 -> .80-.83 (.46) | nat .38 -> .75-.77 (.54)
+- meanact: alt .04 -> .57-.63 (.46) | nat .38 -> .69-.71 (.54)
+- counterfactual control: alt .01-.03, nat .12-.29
+
+**Findings:** (1) mean difference beats mean activation in both directions (.80-.83 vs
+.57-.63 for alt). (2) Steering EXCEEDS the k>=4 in-context reference on most properties -
+a single cue-token vector is stronger than four in-context examples. (3) The k and success
+filters barely matter (<=.03 spread within a technique) - the axes the user asked about are
+near-null effects on this protocol. (4) paired == unpaired without a success filter (proved
+cos=1.0000, run shared); they diverge under succyes (cos .79) but score the same. (5) nat
+direction has a high unsteered floor (.38, the model's prior) and a leakier control (.12-.29).
+
+**Lessons:** dataset-build dropped the k=0 site of some documents, so `min(k)` per document
+silently admitted k=1 items - 0-shot items must be selected by the property's GLOBAL minimum
+k with an assert. Cell-name collision between the new grid and the old one overwrote a
+results.csv; legacy cells now live in variants/_legacy_32tok/ via --out_subdir.
+
+**Next:** user to say which cells (if any) get promoted, or what to vary next.
