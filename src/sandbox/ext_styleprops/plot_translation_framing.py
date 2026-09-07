@@ -34,8 +34,12 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, STYLE_PROPERTIES_DIR
 
-PLAIN_DIR = ARTIFACTS_ROOT / "style_properties" / "prescreen"
-TRANS_DIR = ARTIFACTS_ROOT / "style_properties" / "prescreen_translate"
+# Record dirs are POOLED per property: the 2026-09-01/06 base runs plus the k>=5 supplement
+# (2026-09-07, user request: >=100 samples per k). Missing files are skipped.
+PLAIN_DIRS = [ARTIFACTS_ROOT / "style_properties" / "prescreen",
+              ARTIFACTS_ROOT / "style_properties" / "prescreen_k5"]
+TRANS_DIRS = [ARTIFACTS_ROOT / "style_properties" / "prescreen_translate",
+              ARTIFACTS_ROOT / "style_properties" / "prescreen_translate_k5"]
 OUT_DIR = STYLE_PROPERTIES_DIR / "translation_framing"
 _POOL_FILE = json.load(open(REPO_ROOT / "task_splits" / "style_properties_pool.json"))
 POOL = _POOL_FILE["pass"]
@@ -66,8 +70,12 @@ def title_color(p):
 LABEL_CODE = {"nat": 1, "alt": 0, None: -1}
 
 
-def load(path):
-    recs = json.load(open(path))["records"]
+def load(dirs, prop):
+    recs = []
+    for d in dirs:
+        f = d / f"{prop}.json"
+        if f.exists():
+            recs.extend(json.load(open(f))["records"])
     n = len(recs)
     a = {
         "k": np.array([r["k"] for r in recs]),
@@ -172,12 +180,11 @@ def plot_line(ax, cur, key, color, ls, marker, label, filled=True, lw=1.6):
 
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    props = [p for p in ALL_PROPS if (TRANS_DIR / f"{p}.json").exists()]
+    props = [p for p in ALL_PROPS if any((d / f"{p}.json").exists() for d in TRANS_DIRS)]
     missing = [p for p in ALL_PROPS if p not in props]
     if missing:
         print("missing translate records:", missing)
-    data = {p: {"plain": load(PLAIN_DIR / f"{p}.json"), "trans": load(TRANS_DIR / f"{p}.json")}
-            for p in props}
+    data = {p: {"plain": load(PLAIN_DIRS, p), "trans": load(TRANS_DIRS, p)} for p in props}
 
     C_NAT, C_ALT, C_GREY = "#1f77b4", "#d62728", "#7f7f7f"
     ncol = 4

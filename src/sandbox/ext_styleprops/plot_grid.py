@@ -63,18 +63,19 @@ def collect(cell_name, props):
             hd = load_headline(cell_name, direction, prop)
             if refs:
                 u = stats(prop, refs["conditions"]["unsteered_zeroshot"], tgt=direction)
-                r[f"unsteered_{direction}"] = round(u["strict"], 3)
+                r[f"unsteered_{direction}"] = round(u["overall"], 3)
                 rk = refs["conditions"].get(f"reference_k{REFERENCE_K}")
                 if rk:
                     s = stats(prop, rk, tgt=direction)
-                    r[f"reference_{direction}"] = round(s["strict"], 3)
+                    r[f"reference_{direction}"] = round(s["overall"], 3)
                     r[f"reference_{direction}_unscorable"] = round(s["unscorable"], 3)
             if hd:
                 C = hd["conditions"]
                 sk = [k for k in C if k.startswith("steered_")]
                 if sk:
                     s = stats(prop, C[sk[0]], tgt=direction)
-                    r[f"steered_{direction}"] = round(s["strict"], 3)
+                    r[f"steered_{direction}"] = round(s["overall"], 3)
+                    r[f"steered_{direction}_coherentonly"] = round(s["strict"], 3)
                     r[f"steered_{direction}_conditional"] = round(s["conditional"], 3)
                     r[f"steered_{direction}_unscorable"] = round(s["unscorable"], 3)
                     r[f"steered_{direction}_incoherent"] = round(s["incoherent"], 3)
@@ -82,7 +83,7 @@ def collect(cell_name, props):
                     r[f"L_{direction}"] = hd["pick"]["L"]
                     r[f"alpha_{direction}"] = hd["pick"]["alpha"]
                 if "cfprop" in C:
-                    r[f"cf_{direction}"] = round(stats(prop, C["cfprop"], tgt=direction)["strict"], 3)
+                    r[f"cf_{direction}"] = round(stats(prop, C["cfprop"], tgt=direction)["overall"], 3)
         rows[prop] = r
     return rows
 
@@ -108,13 +109,14 @@ def fig_summary(cell, rows, path):
                 ax.text(xi, -0.055, f"{u*100:.0f}", ha="center", fontsize=6.5, color="#a00")
         ax.text(-0.9, -0.055, "unscorable %", ha="right", fontsize=6.5, color="#a00")
         ax.set_ylim(-0.1, 1.05)
-        ax.set_ylabel(f"adopt {direction.upper()} convention\n(unscorable = no)", fontsize=9)
+        ax.set_ylabel(f"success rate -> {direction.upper()}\n(incoherent or unscorable = failure)", fontsize=9)
         ax.legend(fontsize=7.5, ncol=4, loc="upper right", framealpha=0.9)
         ax.grid(axis="y", alpha=0.25)
         ax.set_title(f"steering direction: -> {direction}", fontsize=9, loc="left")
     axes[-1].set_xticks(x, props, rotation=30, ha="right", fontsize=8)
     fig.suptitle(f"SANDBOX variant  {cell.name}\n{cell.formula}\n"
-                 "0-shot text · sentence rollouts · gibberish dropped by LLM judge", fontsize=10)
+                 "0-shot text · sentence rollouts · a rollout counts only if it is COHERENT and "
+                 "adopts the convention", fontsize=10)
     fig.tight_layout(rect=(0, 0, 1, 0.94))
     fig.savefig(path, dpi=150); plt.close(fig)
 
@@ -138,21 +140,22 @@ def fig_by_layer(cell, props, path):
                 if not keys:
                     continue
                 s = stats(prop, C[keys[0]], tgt=direction)
-                xs.append(L); ys.append(s["strict"])
+                xs.append(L); ys.append(s["overall"])
                 rows_csv.append(dict(property=prop, direction=direction, layer=L,
-                                     alpha=keys[0].split("_a")[1], strict=round(s["strict"], 3),
+                                     alpha=keys[0].split("_a")[1], overall=round(s["overall"], 3),
+                                     coherent_only=round(s["strict"], 3),
                                      unscorable=round(s["unscorable"], 3),
                                      incoherent=round(s["incoherent"], 3), n=s["n"]))
             ax.plot(xs, ys, "o-", ms=3.5, lw=1.5, color=DCOL[direction], label=f"-> {direction}")
             refs = load_refs(direction, prop)
             if refs:
-                u = stats(prop, refs["conditions"]["unsteered_zeroshot"], tgt=direction)["strict"]
+                u = stats(prop, refs["conditions"]["unsteered_zeroshot"], tgt=direction)["overall"]
                 ax.axhline(u, color=DCOL[direction], ls=":", lw=1, alpha=0.7)
         ax.set_title(prop, fontsize=9, fontweight="bold")
         ax.set_ylim(-0.03, 1.03); ax.set_xticks(SCREEN_LAYERS); ax.tick_params(labelsize=7)
         ax.grid(alpha=0.25)
         if pi % ncol == 0:
-            ax.set_ylabel("adopt target convention", fontsize=8)
+            ax.set_ylabel("success rate\n(incoh/unscorable = fail)", fontsize=8)
         if pi + ncol >= n:
             ax.set_xlabel("injection layer", fontsize=8)
     for k in range(n, nrow * ncol):

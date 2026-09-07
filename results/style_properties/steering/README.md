@@ -38,10 +38,12 @@ become 12 cells.
 - **Rollout**: T=1 seeded, generated to the **first sentence boundary**, cap 48
   tokens; a `capped` flag is passed to the judge so truncation is never scored as incoherent.
 - **Coherence**: an LLM judge labels each rollout fluent/gibberish, ignoring the manipulated
-  convention. Gibberish is dropped; the rate is reported.
-- **Metric**: **strict** = P(target convention | coherent). An **unscorable** rollout — the
-  model never produced the feature in that sentence — counts as **not adopting**, and the
-  unscorable share is printed under every bar.
+  convention. Gibberish counts as a failure (see Metric); the rate is reported.
+- **Metric** (user decision 2026-09-07): a rollout counts as a **success only if it is judged
+  coherent AND adopts the target convention**. Both **incoherent** and **unscorable** rollouts
+  (the model never produced the feature in that sentence) count as **failures**, so the
+  denominator is every rollout. The unscorable share is printed under every bar, and each
+  `results.csv` also carries the coherent-only conditional rate as a secondary column.
 - **Shared arms** (computed once, reused by all cells): unsteered baseline on the same items,
   and the **k ≥ 4 in-context reference** (a document that does show ≥ 4
   manifestations, then its next cue).
@@ -53,6 +55,7 @@ become 12 cells.
 
 | path | contents |
 |---|---|
+| `headline_methods.png` / `.csv` | **method-level headline**: mean success rate per method, one panel per direction, 95% bootstrap CI over properties |
 | `comparison_table.png` / `.csv` | all 12 cells × both directions side by side, alphabetical and unranked |
 | `variants/<cell>/summary.png` | **figure 1**: per property, both directions — unsteered / steered / k ≥ 4 reference / control |
 | `variants/<cell>/by_layer.png` | **figure 2**: per property, accuracy vs injection layer, one line per direction |

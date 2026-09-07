@@ -53,6 +53,7 @@ CTX_TAIL_CHARS = 400
 
 
 def parse_args():
+    global PROPS_DIR
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--framing", choices=["plain", "translate"], default="plain")
@@ -61,6 +62,8 @@ def parse_args():
     p.add_argument("--out_root", type=Path, default=None,
                    help="default: artifacts/style_properties/prescreen[_translate]")
     p.add_argument("--es_corpus", type=Path, default=ES_CORPUS)
+    p.add_argument("--props_dir", type=Path, default=PROPS_DIR,
+                   help="per-property dataset dir (supplement: dataset_files/style_properties/props_k5)")
     p.add_argument("--model_dir", type=Path, default=None)
     p.add_argument("--token_budget", type=int, default=16000)
     p.add_argument("--batch_cap", type=int, default=32)
@@ -71,6 +74,7 @@ def parse_args():
     p.add_argument("--dry_run", action="store_true",
                    help="build items, print layout/length stats and 3 decoded prompts, exit")
     a = p.parse_args()
+    PROPS_DIR = a.props_dir
     if a.props is None:
         a.props = sorted(PROPS) if a.framing == "plain" \
             else json.load(open(POOL_PATH))["pass"]

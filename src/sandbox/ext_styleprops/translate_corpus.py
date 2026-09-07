@@ -110,15 +110,20 @@ def translate_one(key, model, doc):
 
 
 def main():
+    global BASE_PATH, OUT_PATH, AUDIT_PATH
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--model", default="google/gemini-2.5-flash")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--limit", type=int, default=None, help="translate only the first N docs")
+    ap.add_argument("--base", type=Path, default=BASE_PATH)
+    ap.add_argument("--out", type=Path, default=OUT_PATH)
+    ap.add_argument("--audit", type=Path, default=AUDIT_PATH)
     ap.add_argument("--audit_only", action="store_true")
     ap.add_argument("--refix", action="store_true",
                     help="re-apply fixup() to the stored translations, rewrite, audit; no API")
     args = ap.parse_args()
+    BASE_PATH, OUT_PATH, AUDIT_PATH = args.base, args.out, args.audit
 
     base = {d["doc_id"]: d for d in json.load(open(BASE_PATH))}
     done = {}

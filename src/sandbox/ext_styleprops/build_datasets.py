@@ -211,9 +211,22 @@ def background_sites(opps, nat_spans, alt_spans, nat_text, alt_text,
 
 
 def main():
+    global BASE_PATH, OUT_DIR, MAX_DOCS, MAX_DOCS_OVERRIDE
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--props", nargs="*", default=sorted(PROPS))
+    ap.add_argument("--base", type=Path, default=BASE_PATH)
+    ap.add_argument("--out_dir", type=Path, default=OUT_DIR)
+    ap.add_argument("--audit", type=Path, default=STYLE_PROPERTIES_DIR / "dataset_audit.csv")
+    ap.add_argument("--min_sites", type=int, default=None,
+                    help="override MIN_SITES for every property (supplement: 6 => k=0..5 in every doc)")
+    ap.add_argument("--max_docs", type=int, default=None, help="override MAX_DOCS (all properties)")
     args = ap.parse_args()
+    BASE_PATH, OUT_DIR = args.base, args.out_dir
+    if args.min_sites is not None:
+        for k in MIN_SITES:
+            MIN_SITES[k] = args.min_sites
+    if args.max_docs is not None:
+        MAX_DOCS, MAX_DOCS_OVERRIDE = args.max_docs, {}
 
     tok = AutoTokenizer.from_pretrained("EleutherAI/gpt-j-6B")
     docs = json.load(open(BASE_PATH))
@@ -247,11 +260,11 @@ def main():
         rows.append(row)
         print("  ".join(f"{k}={v}" for k, v in row.items()), flush=True)
 
-    with open(STYLE_PROPERTIES_DIR / "dataset_audit.csv", "w", newline="") as f:
+    with open(args.audit, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)
-    print(f"audit -> {STYLE_PROPERTIES_DIR / 'dataset_audit.csv'}", flush=True)
+    print(f"audit -> {args.audit}", flush=True)
 
 
 if __name__ == "__main__":

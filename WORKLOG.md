@@ -8951,3 +8951,18 @@ k with an assert. Cell-name collision between the new grid and the old one overw
 results.csv; legacy cells now live in variants/_legacy_32tok/ via --out_subdir.
 
 **Next:** user to say which cells (if any) get promoted, or what to vary next.
+
+## 2026-09-07 — Steering metric: incoherent rollouts now count as FAILURES (user decision)
+
+Primary metric changed from strict = P(target | coherent) to **overall = successes / ALL
+rollouts**, where a success requires the rollout to be judged coherent AND to adopt the
+target convention. Incoherent and unscorable rollouts are both failures. The coherent-only
+conditional rate is kept as a secondary column (`steered_<dir>_coherentonly`).
+Implemented in variant_metrics.stats (`overall`); plot_grid, plot_grid_headline,
+compare_variants, README and all 12 specs regenerated. No recompute (rescoring only).
+
+Effect on the method means (alt / nat): meandiff .80-.83/.75-.77 -> .75-.78/.72-.73;
+meanact .57-.63/.69-.71 -> .55-.61/.67-.69. Ranking unchanged (mean-difference > mean
+activation; k and success filters still within noise).
+Per-property the change bites only where steering damages fluency: all_caps .83 -> .45
+(46% incoherent) and sentence_caps 1.00 -> .89 (11%); every other property moves <= .03.

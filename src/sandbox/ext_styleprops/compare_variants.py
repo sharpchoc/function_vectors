@@ -64,13 +64,13 @@ def main():
         ax.bar(x - 0.4 + w_ * (len(cells) + 1) + w_ / 2, ref, w_, color="#7f9c8b",
                label="reference: k>=4 in context")
         ax.set_ylim(0, 1.05)
-        ax.set_ylabel(f"adopt {d.upper()} convention\n(unscorable = no)", fontsize=9)
+        ax.set_ylabel(f"success rate -> {d.upper()}\n(incoherent or unscorable = failure)", fontsize=9)
         ax.set_title(f"steering direction: -> {d}", fontsize=9, loc="left")
         ax.grid(axis="y", alpha=0.25)
     axes[0].legend(fontsize=6.5, ncol=4, loc="upper right", framealpha=0.9)
     axes[-1].set_xticks(x, props, rotation=30, ha="right", fontsize=8)
     fig.suptitle("STEERING SANDBOX - variant comparison (alphabetical, unranked; no cell is canonical)\n"
-                 "0-shot text - sentence rollouts - gibberish dropped by LLM judge - unscorable counts as not adopted",
+                 "0-shot text - sentence rollouts - a rollout counts only if COHERENT and adopting the convention",
                  fontsize=11)
     fig.tight_layout(rect=(0, 0, 1, 0.94))
     fig.savefig(OUT / "comparison_table.png", dpi=150)

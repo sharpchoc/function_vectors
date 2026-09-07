@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 """Shared metric implementation for the steering sandbox (one definition, all variants).
 
-strict      = P(target convention | rollout coherent)   <- PRIMARY. An unscorable rollout
-              (model never produced the feature) counts as NOT adopting.
+overall     = successes / ALL rollouts   <- PRIMARY (user decision 2026-09-07).
+              A rollout counts as a success ONLY if it is judged coherent AND adopts the
+              target convention. Incoherent rollouts and unscorable rollouts (the model
+              never produced the feature) both count as FAILURES.
+strict      = P(target convention | rollout coherent)   <- secondary: drops incoherent
+              rollouts from the denominator instead of failing them.
 conditional = P(target | coherent AND scorable)         <- secondary, conditional on the
               model reaching for the feature at all.
 unscorable  = share of coherent rollouts the classifier cannot score.
@@ -21,7 +25,9 @@ def stats(prop: str, cond: dict, tgt: str = "alt") -> dict:
     n = len(tails)
     coherent_idx = [i for i in range(n) if coh[i] is not False]
     good = [labs[i] for i in coherent_idx if labs[i] is not None]
+    successes = sum(1 for i in coherent_idx if labs[i] == tgt)
     return dict(
+        overall=successes / n if n else np.nan,
         strict=float(np.mean([labs[i] == tgt for i in coherent_idx])) if coherent_idx else np.nan,
         conditional=float(np.mean([l == tgt for l in good])) if good else np.nan,
         unscorable=sum(labs[i] is None for i in coherent_idx) / max(len(coherent_idx), 1),

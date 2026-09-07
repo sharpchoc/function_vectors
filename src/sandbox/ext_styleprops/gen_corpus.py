@@ -121,6 +121,35 @@ BATCHES = {
             "traveled, traveling, labeled, gray, meter, meters, behavior, flavor, honor, "
             "learned, spelled, burned, dreamed, while, among, analyze, emphasize, "
             "summarize, theater, catalog, defense."),
+    # k>=5 SUPPLEMENT batches (2026-09-07, user request: >=100 samples per k for every property
+    # => >=100 docs with >=6 opportunities per short property). Doc-id prefixes k??.
+    "kem": ("\nAdditionally: include at least 9 asides or interruptions set off by em dashes (—), "
+            "spread through the whole text, roughly one per sentence."),
+    "knu": ("\nAdditionally, this text MUST be count-heavy. Include at least 12 small whole numbers "
+            "between 2 and 20, each written as a bare numeral used as a plain count or quantity "
+            "(for example \"takes 3 tries\", \"12 bolts\", \"about 7 minutes\", \"every 4 weeks\"), "
+            "spread through the whole text. Do NOT write any number above 20, no ranges like "
+            "100 to 200, no decimals, no times of day, and use at most one percentage and one "
+            "ordinal in the entire text."),
+    "kox": ("\nAdditionally: include at least 10 lists of exactly three SINGLE-WORD items joined with "
+            "\"and\" or \"or\" and written with the serial comma, exactly like \"bread, cheese, and "
+            "wine\" or \"walk, cycle, or drive\" (each item one word, no adjectives), spread through "
+            "the whole text."),
+    "kpc": ("\nAdditionally: include at least 9 percentages written with the % sign (such as 40%), "
+            "spread through the text."),
+    "ktp": ("\nAdditionally: use the past-tense forms learned, spelled, burned, dreamed, leaped, "
+            "leaned, spilled, and spoiled at least 14 times in total, spread through the whole "
+            "text, each of them at least once (write little anecdotes in the past tense)."),
+    "kel": ("\nAdditionally: include at least 9 sentences that pause or trail off with a three-dot "
+            "ellipsis (...) spread through the text; every ellipsis must be followed by more text "
+            "in the same paragraph, and the passage must not end with an ellipsis."),
+    "kiz": ("\nAdditionally: use words from this list at least 10 times in total, spread through "
+            "the text: organize, organized, organization, recognize, recognized, realize, "
+            "realized, apologize, criticize, emphasize, summarize, minimize, maximize, "
+            "prioritize, specialize, specialized, characterize, categorize, standardize, "
+            "utilize, memorize, finalize, generalize, analyze, analyzed."),
+    "kwh": ("\nAdditionally: use the words while (as a conjunction, e.g. \"while the paint dries\"), "
+            "among, and amid at least 10 times in total, spread through the text."),
 }
 
 
@@ -162,14 +191,18 @@ def gen_one(key, model, topic, doc_id, variant, batch_extra=""):
 
 
 def main():
+    global OUT_PATH
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--model", default="google/gemini-2.5-flash")
     ap.add_argument("--per_topic", type=int, default=4)
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--batch", default="gen", choices=sorted(BATCHES))
+    ap.add_argument("--out", type=Path, default=OUT_PATH,
+                    help="corpus file to append to (default: the base corpus)")
     ap.add_argument("--n_topics", type=int, default=None,
                     help="use only the first N topics (seeded batches)")
     args = ap.parse_args()
+    OUT_PATH = args.out
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     docs = {}

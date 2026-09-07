@@ -130,18 +130,21 @@ def prefix_frac(rec, docs):
 
 
 def main():
+    global PROPS_DIR
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dir", type=Path,
                     default=ARTIFACTS_ROOT / "style_properties" / "prescreen_translate")
     ap.add_argument("--props", nargs="*", default=None)
     ap.add_argument("--es_corpus", type=Path, default=ES_CORPUS)
+    ap.add_argument("--props_dir", type=Path, default=PROPS_DIR)
     ap.add_argument("--model", default="google/gemini-2.5-flash")
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--exact_only", action="store_true")
     ap.add_argument("--limit", type=int, default=None,
                     help="judge only the first N unjudged records per property (sanity runs)")
     args = ap.parse_args()
+    PROPS_DIR = args.props_dir
 
     files = sorted(args.dir.glob("*.json"))
     if args.props:

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 """Headline: mean steering accuracy per method, one panel per steering direction.
 
-Average of the strict rate over the 13 style properties (unscorable counts as not adopted),
+Average success rate over the 13 style properties - a rollout counts ONLY if it is judged
+coherent AND adopts the target convention (incoherent and unscorable both count as failures),
 with 95% bootstrap CIs over properties (properties are the sampling unit). No baselines -
 this figure answers one question: which vector construction steers best.
 
@@ -74,13 +75,13 @@ def main():
             ax.text(m + 0.015, yi, f"{m:.2f}", va="center", fontsize=9, fontweight="bold")
         ax.set_xlim(0, 1.0)
         ax.invert_yaxis()
-        ax.set_xlabel("mean fraction of rollouts adopting the target convention", fontsize=9)
+        ax.set_xlabel("mean success rate (coherent AND correct convention)", fontsize=9)
         ax.set_title(f"steering → {'ALT' if d == 'alt' else 'NAT'} convention", fontsize=12,
                      fontweight="bold")
         ax.grid(axis="x", alpha=0.3)
     axes[0].set_yticks(y, [pretty(n) for n in order], fontsize=9)
     fig.suptitle("Which steering vector works best?  mean over 13 style properties, 95% bootstrap CI\n"
-                 "(sandbox comparison — 0-shot text, one vector at the cue token, unscorable counts as failure)",
+                 "(sandbox — 0-shot text, one vector at the cue token; incoherent OR unscorable rollouts count as failures)",
                  fontsize=12)
     fig.tight_layout(rect=(0, 0, 1, 0.93))
     fig.savefig(OUT / "headline_methods.png", dpi=170, bbox_inches="tight")

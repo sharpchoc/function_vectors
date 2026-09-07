@@ -34,9 +34,10 @@ Rollout: T=1 seeded, generated to the first sentence boundary, cap 48 tokens; a
 incoherent. Documents per stage: screen 25, headline 200, by-layer 60
 (fewer where a property has fewer eligible documents).
 
-Metric: **strict** = P(target convention | rollout coherent); an unscorable rollout (the model
-never produced the feature in that sentence) counts as **NOT adopting**. `results.csv` also
-carries conditional adherence, unscorable %, incoherent % and n.
+Metric (user decision 2026-09-07): a rollout is a **success only if judged coherent AND
+adopting the target convention**; **incoherent and unscorable rollouts both count as
+failures** (denominator = all rollouts). `results.csv` also carries the coherent-only
+conditional rate, unscorable %, incoherent % and n.
 
 Arms: the unsteered baseline and the k >= 4 in-context reference are shared across
 cells (computed once per direction); the counterfactual control uses another property's vector
