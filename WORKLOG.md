@@ -9007,3 +9007,20 @@ ONE text per call) · `collect_verdicts.py --collect --finalize` · `calibration
 
 
 **Consistency fixes after user spot-checks (2026-09-07, later):** plural ordinal words (primeros/primeras, 168) -> `1.os/1.as`; 1 quotation with the period inside the closing quote -> outside; ~15 sentence-final asides without closing raya -> `—inciso—.` (RAE). Two buggy normaliser drafts (a raya rule that also matched closing rayas; a quote rule that ate the last dot of `«...»`) were caught by edge-case tests / the audit BEFORE commit; the corpus was restored from git each time. Rule: never run a new text-rewriting rule over the corpus without a multi-case unit test first and a git-restorable state. Sweeps that found NOTHING to fix: word-form numbers of any size (0), serial commas inside lists in oxford_comma (0; 51 comma-before-y cases are clause joins), vague magnitude words (miles/cientos/un par de, 50) left as words by design.
+
+## 2026-09-07 — Figure 1 circuit diagram redrawn in vector "metamodel-schematic" style
+
+**Status:** DONE (files added; paper draft NOT switched over yet — user to decide).
+**Ask:** redraw `write_up/graphics/icl_read_write_circuit.png` in the style of an external reference
+schematic (`/workspace/fig1_schematic.pdf`: unrolled LM token×layer grid, stacked-cell vectors,
+boxed linear model, LaTeX math labels).
+**Files:** `write_up/graphics/icl_read_write_circuit_v2.{tex,pdf,png}` — TikZ standalone source
+(pdflatex + `inter` font), vector PDF, 300 dpi PNG. Old PNG/SVG left untouched.
+**Content:** 13-token antonym prompt (`Q: hot A: cold \n Q: big A: small … Q: fast A:`), layers 1 /
+ℓ_r(≈6) / ℓ_w(≈13) / L; target tokens (green) attend to their inputs; cue (blue) attends to the
+targets; right side: read feature m̄_A (mean over targets) → remove shared carrier c → u_A → boxed
+linear map W u_A + b → v̂_A, fitted to the write feature v_A = Σ_{h∈H} h_A extracted at the cue;
+answer "slow" above the cue. Numbered markers 1–7 = the paper's claims (legend bottom right).
+Notation follows paper_draft_v1.tex / task_id_im_subspaces.md; no measured numbers on the figure.
+**Rebuild:** `cd write_up/graphics && pdflatex icl_read_write_circuit_v2.tex && pdftoppm -r 300 -png -singlefile icl_read_write_circuit_v2.pdf icl_read_write_circuit_v2`
+**To use in the paper:** point `build_paper_tex.py` / the md draft at `graphics/icl_read_write_circuit_v2.png` (or the PDF) instead of `icl_read_write_circuit.png`.
