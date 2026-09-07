@@ -9082,3 +9082,13 @@ last-bit BLAS/SVD differences vs the 2026-09-03 file, but not verifiable (old co
 **Observation left alone:** `linear_map_simple.png` defines legend labels but never draws a legend
 (before and after) — adding one is a content change for the user to decide.
 **Draft edits:** three image paths in the .md (Fig 1/5/7 → `graphics/…`). No text changed.
+
+## Stream: style-translation — step 3, GPT-J accuracy vs k (2026-09-07)
+
+**Status:** done, on main. `results/style_translation/` (README with protocol, per-family table, findings; accuracy_by_k.png; unscorable_by_k.png; summary.csv; unscorable.csv; records.npz). 34,000 GPT-J rollouts (17 families x 2 styles x k=0..4 x 200 texts), one seeded T=1 sample each, cut at sentence end (cap 48, `capped` flag), style decided by the registry classifiers, faithfulness/coherence by Gemini 2.5 Flash (one call per completion). Accuracy = style AND faithful.
+
+**Commands:** `build_prompts.py` (token-exact prompts at cue k, 34,000 items, assertions) → scorer unit test (each twin's own continuation classified as its style: 100% in all families) → 3 pods `logs/roll_job.sh <shard>` → `judge_rollouts.py --workers 48` (loop as files landed) → `analyze.py`.
+
+**Findings:** most conventions are picked up from 1-2 in-context examples (style-only adoption 0→0.6-0.99 by k=1-2: all_caps, sentence_caps, double_space, em_dash, ellipsis, percent_sign, quote_punct, curly_quotes, oxford_comma, ampersand); partial: us_uk, ise_ize, whilst, contractions, ordinal_words; not learned: brit_t_past (-t pasts ≤0.26) and num_words (spelled cardinals ≤0.37 while digits reach 0.93 — the Spanish shows digits). k=0 priors: no serial comma, spelled ordinals, expanded contractions, punctuation outside quotes. Accuracy is capped by translation quality (judge OK 0.75-0.88; 0.39 in the ALL CAPS context vs 0.68 standard case — capitals degrade GPT-J's translation; ellipsis 0.54-0.61). Unscorable: high only at k=0 (curly_quotes 0.40-0.45: quotes dropped / « » copied / single quotes; percent_sign 0.26-0.34) and persistently for brit_t_past (0.21-0.38), whilst (~0.22), us_uk/ise_ize (0.10-0.23).
+
+**Lessons:** judge calibration by reading verdicts before trusting rates; the all_caps judge dip is real translation degradation, not judge bias (checked); ALL CAPS completions hit the 48-token cap 27-48% (more tokens) — the capped flag matters. Pods ynswjnas0a608z / f8ajl4h7q85xn0 / g7t6kx7ugh4p6c terminated (~1.5 h each).

@@ -1735,3 +1735,9 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   counterfactual / other-task controls → `C.accent` (gold), secondary method variant → `C.purple`.
   Value labels via `label_bars`. No per-script rcParams, facecolors, or ad-hoc palettes.
 - Restyling is style-only: titles, labels, numbers, filenames and output dirs never change with it.
+
+## 2026-09-07 — Style-translation step 3 metric (user decisions)
+
+- **accuracy(family, style, k)** = P(the completion uses the context's convention at cue k AND is a faithful, coherent English translation), one seeded T=1 sample per (text, style, k), n = 200. Style decision = registry classifier on the completion (word-internal cues prefixed by the already-generated word start); faithfulness/coherence = Gemini 2.5 Flash, one completion per call, told when the completion was cut by the 48-token cap. A completion that avoids the decision is inaccurate; its share is reported separately (`unscorable.csv`).
+- **Cue token** (definition recorded 2026-09-07): the last token identical whichever style follows; k>=1 judged on the context as it reads; sentence families use the closing period (newline after `English:` for the first sentence); curly_quotes = one decision per quotation.
+- Results bucket: `results/style_translation/` (`STYLE_TRANSLATION_RESULTS` in paths.py); artifacts `artifacts/style_translation/{prompts,rollouts}`.
