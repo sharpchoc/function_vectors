@@ -81,11 +81,10 @@ def main():
     C = {"nat": "#1f77b4", "alt": "#d62728"}
     for metric, fname, ylabel, title in (
         (0, "accuracy_by_k.png", "accuracy",
-         "GPT-J: does it pick up the convention in context? accuracy vs k (number of in-context examples of the style)\n"
-         "accuracy = P(context convention used AND faithful, coherent translation); one T=1 sample per text, n = 200 per point, Wilson 95% CI\n"
-         "prompt = Spanish source, then the English translation up to cue token k"),
+         "Does GPT-J learn a writing convention from in-context examples while translating Spanish to English?\n"
+         "Accuracy = uses the convention shown in context AND translates faithfully (n = 200 per point, 95% CI)"),
         (4, "unscorable_by_k.png", "unscorable share",
-         "Completions that avoid the decision (neither style produced), by k — scored as inaccurate in accuracy_by_k")):
+         "Share of completions that use neither convention (counted as inaccurate in the accuracy plot)")):
         fig, axes = plt.subplots(nrow, ncol, figsize=(3.6 * ncol, 2.9 * nrow), sharex=True, sharey=True)
         axes = axes.ravel()
         for ax, fam in zip(axes, fams):
@@ -105,11 +104,11 @@ def main():
         for ax in axes[len(fams):]:
             ax.axis("off")
         for ax in axes[-ncol:]:
-            ax.set_xlabel("k = in-context examples of the style before the cue")
+            ax.set_xlabel("k = number of in-context examples of the convention")
         for ax in axes[::ncol]:
             ax.set_ylabel(ylabel, fontsize=9)
-        fig.suptitle(title, fontsize=10)
-        fig.tight_layout(rect=(0, 0, 1, 0.94))
+        fig.suptitle(title, fontsize=13, y=0.995)
+        fig.tight_layout(rect=(0, 0, 1, 0.955))
         fig.savefig(OUT / fname, dpi=150); plt.close(fig)
 
     # unscorable table: per family x style, pooled over k and per k
