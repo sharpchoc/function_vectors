@@ -9061,3 +9061,24 @@ GPT-J run.
 
 
 **Step 3a — cue tokens (2026-09-07):** `cue_tokens.py` adds `cues.{nat,alt}` to every pair (definition and format in the README "Step 3a" section). All 3,400 pairs x 2 contexts computed; k=0 cue identical across contexts in every pair; max prompt 840 tokens. Naming: only "cue token" is fixed (user); other positions unnamed. curly_quotes: one decision per quotation (opening mark) — all 200 texts still have >=5 quotations.
+
+## 2026-09-07 — All paper-draft visuals moved to the new house style
+
+**Status:** DONE. Paper rebuilt (`build_paper_tex.py`: 25 figures, 0 LaTeX errors).
+**Schematics (TikZ, `write_up/graphics/`):** `figstyle.tex` (shared preamble/palette/macros);
+`icl_read_write_circuit_v2` (Fig 1, now referenced by the draft); `dummy_target_injection` (Fig 5,
+replaces matplotlib `method_diagram.png`); `readfeature_decomposition_v2` (Fig 7, panels: carrier fan,
+per-layer projection, residual average — the old histogram panel B was dropped because mechanism
+figures carry no data; the cross-task cosine histogram remains in Appendix `cossim_hist.png`).
+**Data plots:** new `src/utils/paper_style.py` (Inter + CM math, palette `C`, `label_bars`); 18
+plotting scripts now call `apply_paper_style()` and use `C.*` (list in the commit). All 22 paper
+plots regenerated from cached data on CPU with `/workspace/micromamba/envs/fv/bin/python`; sibling
+PNGs written by the same scripts were regenerated too. `debug_ablation_cossim.py` gained `--plot_only`
+(redraws from `pairwise_cos.npz`, no GPT-J load).
+**Data check:** every tracked CSV/npz rewritten by the scripts is byte-identical (md5). One flag for
+the user: git-ignored `understanding_read_write_linear_map/meanresid_map/spectra.npz` changed md5
+(37782→37786 bytes) on regeneration; all CSVs derived from it are unchanged at 4 dp, so likely
+last-bit BLAS/SVD differences vs the 2026-09-03 file, but not verifiable (old copy gone).
+**Observation left alone:** `linear_map_simple.png` defines legend labels but never draws a legend
+(before and after) — adding one is a content change for the user to decide.
+**Draft edits:** three image paths in the .md (Fig 1/5/7 → `graphics/…`). No text changed.

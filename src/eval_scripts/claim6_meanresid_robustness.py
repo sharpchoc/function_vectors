@@ -28,8 +28,10 @@ _BOOT = Path(__file__).resolve().parents[2]
 for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
-from src.eval_scripts.claim6_meanresid_map import (FV, OUT, SPLIT, load, procrustes, r2,  # noqa: E402
-                                                   ridge_dual, style, TEAL, PURPLE, INK)
+from src.eval_scripts.claim6_meanresid_map import FV, OUT, SPLIT, load, procrustes, r2, ridge_dual  # noqa: E402
+from utils.paper_style import apply_paper_style, C  # noqa: E402
+
+apply_paper_style()
 
 N_SEEDS, N_HELDOUT = 10, 14
 
@@ -102,17 +104,17 @@ def main():
     print("per-prompt-FV targets (14 held-out tasks):", {k: round(v, 3) for k, v in dec.items()})
 
     # simple figure: seeds vs canonical
-    fig, ax = plt.subplots(figsize=(6.4, 4.0), dpi=150); fig.patch.set_facecolor("white"); style(ax)
-    ax.scatter(np.zeros(N_SEEDS) + np.linspace(-0.12, 0.12, N_SEEDS), rr, color=TEAL, s=36, zorder=3, label="10 random 55/14 splits")
-    ax.scatter([0], [can["ridge"]], color="#c2410c", marker="D", s=60, zorder=4, label="canonical split (main text)")
-    ax.scatter(np.ones(N_SEEDS) + np.linspace(-0.12, 0.12, N_SEEDS), rs, color=PURPLE, s=36, zorder=3)
-    ax.scatter([1], [can["rotscale"]], color="#c2410c", marker="D", s=60, zorder=4)
-    ax.set_xticks([0, 1], ["unconstrained linear\n(ridge)", "rotation + one scalar"], fontsize=10.5)
+    fig, ax = plt.subplots(figsize=(6.4, 4.0))
+    ax.scatter(np.zeros(N_SEEDS) + np.linspace(-0.12, 0.12, N_SEEDS), rr, color=C.map, s=30, zorder=3, label="10 random 55/14 splits")
+    ax.scatter([0], [can["ridge"]], color=C.accent, marker="D", s=50, zorder=4, label="canonical split (main text)")
+    ax.scatter(np.ones(N_SEEDS) + np.linspace(-0.12, 0.12, N_SEEDS), rs, color=C.purple, s=30, zorder=3)
+    ax.scatter([1], [can["rotscale"]], color=C.accent, marker="D", s=50, zorder=4)
+    ax.set_xticks([0, 1], ["unconstrained linear\n(ridge)", "rotation + one scalar"])
     ax.set_xlim(-0.5, 1.5); ax.set_ylim(0, 0.85)
-    ax.set_ylabel("held-out $R^2$", fontsize=11, color=INK)
-    ax.legend(frameon=False, fontsize=9.5, loc="lower left")
-    ax.set_title("Read→write map: held-out $R^2$ across task splits", loc="left", fontsize=12, color=INK, pad=10)
-    fig.tight_layout(); fig.savefig(OUT / "seed_r2.png", facecolor="white"); plt.close(fig)
+    ax.set_ylabel("held-out $R^2$")
+    ax.legend(loc="lower left")
+    ax.set_title("Read→write map: held-out $R^2$ across task splits")
+    fig.tight_layout(); fig.savefig(OUT / "seed_r2.png"); plt.close(fig)
     print(f"wrote {OUT}")
 
 

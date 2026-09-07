@@ -20,15 +20,23 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
 
 _BOOT = Path(__file__).resolve().parents[2]
 for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402,F401
+
+apply_paper_style()
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "token_layer_regressions"
 OUT = TASK69_RUN_DIR / "FV_linear_decodability" / "token_layer_regressions"
+
+# single-hue sequential map keyed to the linear-map colour: near-white -> C.map -> dark teal
+# (low end is a faint tint, not pure white, so cells clipped at vmin=0 still read as cells)
+CMAP = LinearSegmentedColormap.from_list("paper_map", ["#EEF4F6", C.map_light, C.map, "#0B2E38"])
 
 
 def main():
@@ -71,13 +79,18 @@ def main():
 
     def heat(M, title, fname, vmin=None, vmax=None):
         fig, ax = plt.subplots(figsize=(13.5, 9.5), dpi=150)
-        im = ax.imshow(M, aspect="auto", cmap="viridis", vmin=vmin, vmax=vmax)
+        im = ax.imshow(M, aspect="auto", cmap=CMAP, vmin=vmin, vmax=vmax)
+        ax.grid(False)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
+        ax.tick_params(length=0)
         ax.set_xticks(range(len(layers)), [str(l) for l in layers], fontsize=7.5)
         ax.set_yticks(range(len(positions)), positions, fontsize=8)
         ax.set_xlabel("layer")
         ax.set_ylabel("token position")
         ax.set_title(title, fontsize=11)
-        fig.colorbar(im, ax=ax, label="held-out $R^2$")
+        cb = fig.colorbar(im, ax=ax, label="held-out $R^2$")
+        cb.outline.set_visible(False)
         bi = np.unravel_index(np.nanargmax(M), M.shape)   # reported, not drawn
         fig.tight_layout()
         fig.savefig(OUT / fname, bbox_inches="tight")

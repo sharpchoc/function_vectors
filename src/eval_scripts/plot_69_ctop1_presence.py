@@ -25,6 +25,8 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402,F401
+apply_paper_style()
 
 import os
 _MR = os.environ.get("MEANRESID") == "1"   # mean-residual task-unique part (u_hat_A) instead of SVD v1
@@ -88,32 +90,28 @@ def main():
             f.write(f"{l}," + ",".join(f"{v:.5f}" for v in vals) + "\n")
 
     def style(ax):
-        ax.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
-        for s in ("top", "right"): ax.spines[s].set_visible(False)
         ax.set_xticks(range(0, n_layers, 3))
-        ax.tick_params(labelsize=10.5)
 
     # ---- SIMPLE headline: read (v1 @ target) | write (v_A @ cue) ----
     fig, axes = plt.subplots(1, 2, figsize=(12.0, 4.4), dpi=150)
-    fig.patch.set_facecolor("white")
-    ax = axes[0]; ax.set_facecolor("white")
+    ax = axes[0]
     y = prof[("v1", "target")]; pk = int(np.nanargmax(y))
-    ax.plot(L, y, color=CAT["target"], lw=2.4, marker="o", ms=4.5, mfc=CAT["target"], mec="white",
+    ax.plot(L, y, color=C.read, lw=1.8, marker="o", ms=4.5, mfc=C.read, mec="white",
             label=f"task-unique direction {UL}")
-    ax.plot(L, prof[("carrier", "target")], color="0.6", lw=1.6, ls=(0, (4, 3)),
+    ax.plot(L, prof[("carrier", "target")], color=C.grey, lw=1.4, ls=(0, (4, 3)),
             label="shared carrier $c$")
-    ax.set_title(f"READ: cosine at demonstration target tokens (peak L{pk})", fontsize=12, loc="left")
+    ax.set_title(f"READ: cosine at demonstration target tokens (peak L{pk})")
     ax.set_xlabel("layer"); ax.set_ylabel("mean cosine (69 tasks)")
-    ax.legend(frameon=False, fontsize=10); style(ax)
-    ax = axes[1]; ax.set_facecolor("white")
+    ax.legend(); style(ax)
+    ax = axes[1]
     yw = wprof["cue"]; pkw = int(np.nanargmax(yw))
-    ax.plot(L, yw, color=CAT["cue"], lw=2.4, marker="o", ms=4.5, mfc=CAT["cue"], mec="white",
+    ax.plot(L, yw, color=C.write, lw=1.8, marker="o", ms=4.5, mfc=C.write, mec="white",
             label="function vector $v_A$")
-    ax.set_title(f"WRITE: cosine at cue tokens (peak L{pkw})", fontsize=12, loc="left")
-    ax.set_xlabel("layer"); ax.legend(frameon=False, fontsize=10); style(ax)
-    fig.suptitle("Where the read and write features are present", fontsize=13.5, fontweight="bold", x=0.02, ha="left")
+    ax.set_title(f"WRITE: cosine at cue tokens (peak L{pkw})")
+    ax.set_xlabel("layer"); ax.legend(); style(ax)
+    fig.suptitle("Where the read and write features are present", x=0.02, ha="left")
     fig.tight_layout()
-    fig.savefig(OUT / "presence_headline.png", facecolor="white")
+    fig.savefig(OUT / "presence_headline.png")
     plt.close(fig)
 
     # ---- full: three token types × three directions ----

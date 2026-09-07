@@ -26,6 +26,8 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402
+apply_paper_style()
 
 ABL = ARTIFACTS_ROOT / "69_task_run" / "FV_ablation"
 BASE_CSV = (TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" /
@@ -33,9 +35,9 @@ BASE_CSV = (TASK69_RUN_DIR / "bottom_up_read_features" / "steering_results" /
 OUT = TASK69_RUN_DIR / "FV_ablation"
 CFG = "L9to27"
 CONDS = ("zero_shot", "real", "own_zero", "own_mean", "cf_zero", "cf_mean")
-COLORS = {"zero_shot": "#bfbfbf", "real": "#2ca02c",
-          "own_zero": "#b2182b", "own_mean": "#ef8a62",
-          "cf_zero": "#2166ac", "cf_mean": "#67a9cf"}
+COLORS = {"zero_shot": C.lightgrey, "real": C.grey,
+          "own_zero": C.red, "own_mean": C.write,
+          "cf_zero": C.accent, "cf_mean": C.accent_light}
 LABELS = {"zero_shot": "0-shot (no demos)", "real": "n-shot, unablated",
           "own_zero": "own-FV zero-ablated", "own_mean": "own-FV mean-ablated",
           "cf_zero": "cf-task-FV zero-ablated", "cf_mean": "cf-task-FV mean-ablated"}
@@ -98,25 +100,22 @@ def main():
         acc = per_shot[n]
         vals = [float(acc[c].mean()) for c in CONDS]
         x = np.arange(len(CONDS))
+        ax.set_ylim(0, 1)
         bars = ax.bar(x, vals, 0.62, color=[COLORS[c] for c in CONDS],
                       edgecolor="white", linewidth=1.0)
         for b, c in zip(bars, CONDS):
             if c.startswith("cf_"):
                 b.set_hatch("//")
-        for xi, v in zip(x, vals):
-            ax.text(xi, v + 0.012, f"{v:.2f}", ha="center", fontsize=8.5, color="0.25")
-        ax.set_xticks(x, ["0-shot", f"{n}-shot", "own\nzero", "own\nmean", "cf\nzero", "cf\nmean"],
-                      fontsize=8.5)
-        ax.set_title(f"{n}-shot prompts", fontsize=10.5)
-        ax.grid(alpha=0.25, axis="y")
-        ax.set_ylim(0, 1)
+        label_bars(ax, bars, fontsize=8.5)
+        ax.set_xticks(x, ["0-shot", f"{n}-shot", "own\nzero", "own\nmean", "cf\nzero", "cf\nmean"])
+        ax.set_title(f"{n}-shot prompts")
     axes[0, 0].set_ylabel(f"mean T=1 exact-match accuracy ({len(tasks)} tasks, 150 prompts)")
     handles = [plt.Rectangle((0, 0), 1, 1, color=COLORS[c],
                              hatch="//" if c.startswith("cf_") else None, ec="white")
                for c in CONDS]
-    fig.legend(handles, [LABELS[c] for c in CONDS], fontsize=7.6, ncol=3,
+    fig.legend(handles, [LABELS[c] for c in CONDS], ncol=3,
                loc="upper center", bbox_to_anchor=(0.5, 0.02))
-    fig.suptitle("FV-Direction Ablation at the Final Cue Token (layers 9–27)", fontsize=11)
+    fig.suptitle("FV-Direction Ablation at the Final Cue Token (layers 9–27)", x=0.02, ha="left")
     fig.tight_layout(rect=(0, 0.04, 1, 1))
     fig.savefig(OUT / "headline_bars_by_shots.png", bbox_inches="tight")
     print(f"wrote {OUT / 'headline_bars_by_shots.png'}")

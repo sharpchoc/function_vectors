@@ -28,6 +28,9 @@ for p in (REPO_ROOT, REPO_ROOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402,F401
+
+apply_paper_style()
 
 LAYERS = list(range(9, 21))
 N_SHOTS = list(range(0, 7))
@@ -64,12 +67,12 @@ def scatter_fig(x_tn, acc_tn, groups, label, out_path):
     ax.set_title(f"FV presence vs accuracy @ {label} — 69 tasks × n=0..6 "
                  f"({x_all.size} points)\npooled Spearman ρ={rho_all:+.2f} "
                  f"(p={p_all:.1e}), Pearson r={r_all:+.2f}   "
-                 "[circles = train, triangles = held-out]", fontsize=11)
+                 "[circles = train, triangles = held-out]")
     ax.set_ylim(-0.03, 1.03)
-    ax.grid(alpha=0.25)
-    ax.legend(fontsize=9, title="shot count (per-n ρ)", loc="best")
+    ax.grid(True, axis="both")
+    ax.legend(title="shot count (per-n ρ)", loc="best")
     fig.tight_layout()
-    fig.savefig(out_path, dpi=140)
+    fig.savefig(out_path)
     plt.close(fig)
     return rows
 
@@ -94,26 +97,26 @@ def binned_fig(x_tn, acc_tn, label, out_path, width=0.10, anchor=0.05):
     sem = np.array([s for *_, s in rows])
 
     fig, ax = plt.subplots(figsize=(9, 6.5))
-    ax.scatter(x, y, s=8, c="0.8", zorder=1, label=f"individual (task, n) points ({x.size})")
-    ax.errorbar(ctr, mean, yerr=sem, fmt="o-", color="tab:blue", lw=2, ms=9, capsize=4,
+    ax.scatter(x, y, s=8, color=C.lightgrey, zorder=1,
+               label=f"individual (task, n) points ({x.size})")
+    ax.errorbar(ctr, mean, yerr=sem, fmt="o-", color=C.write, lw=1.8, ms=7, capsize=3,
                 zorder=3, label="bucket mean ± SEM")
     for c, m, s, k in zip(ctr, mean, sem, cnt):
-        ax.annotate(f"n={k}", (c, m + s), textcoords="offset points", xytext=(0, 8),
-                    ha="center", fontsize=9, color="tab:blue")
+        ax.annotate(f"n={k}", (c, m + s), textcoords="offset points", xytext=(0, 7),
+                    ha="center", color=C.write, fontweight="semibold")
     for e in edges:
-        ax.axvline(e, color="0.85", lw=0.8, zorder=0)
+        ax.axvline(e, color="#E4E4E4", lw=0.5, zorder=0)
     rho, p = spearmanr(x, y)
     ax.set_xlabel(f"FV presence   cos(z, v_A) at the query cue @ {label}   "
                   f"(buckets of {width:g})")
     ax.set_ylabel("sampled exact-match accuracy (temperature 1.0)")
     ax.set_title(f"Accuracy vs FV presence, bucketed @ {label}\n"
                  f"all 69 tasks × n=0..6 pooled; point-level Spearman ρ={rho:+.2f} "
-                 f"(p={p:.1e})", fontsize=11)
+                 f"(p={p:.1e})")
     ax.set_ylim(-0.03, 1.03)
-    ax.grid(alpha=0.25, axis="y")
-    ax.legend(fontsize=9, loc="upper left")
+    ax.legend(loc="upper left")
     fig.tight_layout()
-    fig.savefig(out_path, dpi=140)
+    fig.savefig(out_path)
     plt.close(fig)
     return [(label, f"[{a:.2f},{b:.2f})", c, m, s) for a, b, c, m, s in rows]
 

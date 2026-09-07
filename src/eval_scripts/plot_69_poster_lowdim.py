@@ -17,6 +17,9 @@ import matplotlib.pyplot as plt
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 from utils.paths import TASK69_RUN_DIR  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402
+
+apply_paper_style()
 
 DR = TASK69_RUN_DIR / "FV_dimensionality_reduction"
 
@@ -30,25 +33,22 @@ def main():
     p22 = np.mean([a22[r["task"]] for r in s50])
 
     variants = [("poster_lowdim.png",
-                 [("no steering", base, "#b9bec6"),
-                  ("full FV\n(4096-dim)", full, "#e8862e"),
-                  ("FV projected onto\n22 directions", p22, "#2273b8")])]
+                 [("no steering", base, C.grey),
+                  ("full FV\n(4096-dim)", full, C.write),
+                  ("FV projected onto\n22 directions", p22, C.write_light)])]
     for fname, bars in variants:
-        fig, ax = plt.subplots(figsize=(6.4, 5.4), dpi=220)
+        fig, ax = plt.subplots(figsize=(6.4, 5.4))
         x = np.arange(len(bars))
-        for xi, (lbl, val, color) in zip(x, bars):
-            ax.bar(xi, val, width=0.62, color=color)
-            ax.text(xi, val + 0.02, f"{val:.2f}", ha="center", fontsize=17,
-                    fontweight="bold", color="#333333")
-        ax.set_xticks(x)
-        ax.set_xticklabels([b[0] for b in bars], fontsize=13.5)
-        ax.set_ylabel("zero-shot task accuracy", fontsize=14)
+        bb = ax.bar(x, [b[1] for b in bars], width=0.62, color=[b[2] for b in bars], zorder=3)
         ax.set_ylim(0, 0.88)
+        label_bars(ax, bb, fmt="{:.2f}", fontsize=13)
+        ax.set_xticks(x)
+        ax.set_xticklabels([b[0] for b in bars], fontsize=11)
+        ax.set_ylabel("zero-shot task accuracy", fontsize=11)
         ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8])
-        ax.tick_params(axis="y", labelsize=12)
-        ax.spines[["top", "right"]].set_visible(False)
+        ax.tick_params(axis="y", labelsize=10)
         ax.set_title("Function-vector steering is low-dimensional\n"
-                     "(mean over 69 tasks, GPT-J)", fontsize=14.5, pad=14)
+                     "(mean over 69 tasks, GPT-J)", fontsize=12.5)
         fig.tight_layout()
         fig.savefig(DR / "low_dim_22d" / fname, bbox_inches="tight")
         plt.close(fig)

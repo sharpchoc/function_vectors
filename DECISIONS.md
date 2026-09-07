@@ -1722,3 +1722,16 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - **Judge scope (user):** Haiku checks only the initial translation; gates = coherent + faithful. Style/conventions are judged deterministically (`k_en >= 5`, `audit_nat == []`) — the judge hallucinated style verdicts, as it did for the Spanish conventions. `fluent` and `style_consistent` are recorded, not gating.
 - **Registry fixes (properties.py):** Contractions skips the modal "have to"; NumWords/OrdinalWords capitalise a spelled-out word that opens a sentence. Any later scoring uses the same detectors, so this is the definition from now on.
 - **Corpus of record for step 3:** `dataset_files/style_translation/pairs/<family>.json` (200 per family; `opps[k].nat_span/alt_span` are the cue sites). `english/` keeps all attempts; `final/` stays the Spanish-only step-1 output.
+
+## 2026-09-07 — Paper figure house style (user decision: "use this type of style" for all paper visuals)
+
+- **Schematics** (circuit, method, decomposition explainers) are TikZ vector figures in
+  `write_up/graphics/`, sharing `figstyle.tex` (Inter text, CM math, palette, `\vstack`/`\bstack`
+  residual-cell macros). Build: `pdflatex <name>.tex && pdftoppm -r 300 -png -singlefile <name>.pdf <name>`.
+  They stay purely conceptual — no measured numbers (2026-09-02 rule).
+- **Data plots** call `apply_paper_style()` from `src/utils/paper_style.py` before creating figures
+  and take colours from its palette `C`: read feature / targets → `C.read` (green), write feature /
+  FV / cue → `C.write` (blue), linear map / ridge → `C.map` (teal), baselines / unsteered → `C.grey`,
+  counterfactual / other-task controls → `C.accent` (gold), secondary method variant → `C.purple`.
+  Value labels via `label_bars`. No per-script rcParams, facecolors, or ad-hoc palettes.
+- Restyling is style-only: titles, labels, numbers, filenames and output dirs never change with it.

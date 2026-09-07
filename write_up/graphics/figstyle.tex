@@ -1,0 +1,61 @@
+% Shared preamble for the paper's TikZ schematics (2026-09-07). \input this after \documentclass.
+% Palette mirrors src/utils/paper_style.py (read = green, write = blue, map = teal, grey = controls).
+\usepackage[T1]{fontenc}
+\usepackage{inter}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath,amssymb}
+\usetikzlibrary{arrows.meta,calc,decorations.pathreplacing,positioning,backgrounds}
+
+\definecolor{readc}{RGB}{27,127,107}
+\definecolor{writec}{RGB}{47,85,201}
+\definecolor{mapc}{RGB}{31,108,128}
+\definecolor{accentc}{RGB}{184,134,11}
+\definecolor{blk}{RGB}{232,232,232}
+\definecolor{blkb}{RGB}{160,160,160}
+\definecolor{txt}{RGB}{60,60,60}
+\definecolor{note}{RGB}{110,110,110}
+\definecolor{panel}{RGB}{245,245,245}
+
+\tikzset{
+  blk/.style={draw=blkb,fill=blk,rounded corners=1.2pt,minimum width=0.50cm,minimum height=0.28cm,inner sep=0pt,line width=0.4pt},
+  up/.style={-{Stealth[length=1.3mm,width=1.1mm]},blkb,line width=0.45pt},
+  dots/.style={blkb,line width=0.45pt,dotted},
+  lab/.style={font=\small,text=txt},
+  small/.style={font=\scriptsize,text=note},
+  tok/.style={font=\ttfamily\small,text=txt,rotate=90,anchor=east},
+  marker/.style={circle,inner sep=0pt,minimum size=0.36cm,text=white,font=\bfseries\scriptsize},
+  attn/.style={-{Stealth[length=1.6mm,width=1.4mm]},line width=0.7pt},
+  halo/.style={white,line width=2.4pt},
+  flow/.style={-{Stealth[length=1.6mm,width=1.4mm]},line width=0.8pt},
+  vec/.style={-{Stealth[length=1.8mm,width=1.5mm]},line width=0.9pt},
+  thinvec/.style={-{Stealth[length=1.3mm,width=1.1mm]},line width=0.55pt},
+  ptitle/.style={font=\small\bfseries,text=txt,anchor=north west,align=left},
+}
+
+% \vstack{name}{x}{y}{base colour}{shade list (4 entries, % of base)} — residual-stream cell in the LM grid
+\newcommand{\vstack}[5]{%
+  \begin{scope}[shift={(#2,#3)}]
+    \foreach \s [count=\k] in {#5}{%
+      \fill[#4!\s!white,draw=white,line width=0.3pt] (-0.15,{0.46-0.23*\k}) rectangle (0.15,{0.46-0.23*(\k-1)});
+    }
+    \draw[#4!60!black,line width=0.35pt,rounded corners=0.6pt] (-0.15,-0.46) rectangle (0.15,0.46);
+    \coordinate (#1) at (0,0);
+    \coordinate (#1-n) at (0,0.46);
+    \coordinate (#1-s) at (0,-0.46);
+    \coordinate (#1-e) at (0.15,0);
+    \coordinate (#1-w) at (-0.15,0);
+  \end{scope}}
+
+% \bstack{name}{x}{y}{base colour}{shade list (5 entries)} — free-standing feature vector
+\newcommand{\bstack}[5]{%
+  \begin{scope}[shift={(#2,#3)}]
+    \foreach \s [count=\k] in {#5}{%
+      \fill[#4!\s!white,draw=white,line width=0.4pt] (-0.19,{0.7-0.28*\k}) rectangle (0.19,{0.7-0.28*(\k-1)});
+    }
+    \draw[#4!60!black,line width=0.4pt,rounded corners=0.8pt] (-0.19,-0.7) rectangle (0.19,0.7);
+    \coordinate (#1) at (0,0);
+    \coordinate (#1-n) at (0,0.7);
+    \coordinate (#1-s) at (0,-0.7);
+    \coordinate (#1-e) at (0.19,0);
+    \coordinate (#1-w) at (-0.19,0);
+  \end{scope}}

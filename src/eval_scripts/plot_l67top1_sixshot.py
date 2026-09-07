@@ -24,6 +24,8 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402
+apply_paper_style()
 
 import os
 _SUF = os.environ.get("L67_SUFFIX", "")          # "" (bank b) or "_bankA"
@@ -80,26 +82,20 @@ def main():
     bars = [b for b in bars if b is not None]
     # --- SIMPLE headline figure (main text): dummy baseline | steered | real demos ---
     if is_c:
-        hb = [("dummy 6-shot\n(unsteered)", m("baseline"), "0.72"),
-              (f"dummy 6-shot\n+ read feature steering", m("a2.0"), "#7c3aad"),
-              ("real 6-shot\ndemonstrations", m("ref_real6"), "0.35")]
+        hb = [("dummy 6-shot\n(unsteered)", m("baseline"), C.lightgrey),
+              (f"dummy 6-shot\n+ read feature steering", m("a2.0"), C.read),
+              ("real 6-shot\ndemonstrations", m("ref_real6"), C.grey)]
         fh, axh = plt.subplots(figsize=(6.0, 4.4), dpi=150)
-        fh.patch.set_facecolor("white"); axh.set_facecolor("white")
         xh = np.arange(3)
-        for xi, (lab, v, c) in zip(xh, hb):
-            axh.bar([xi], [v], width=0.6, color=c, zorder=3)
-            axh.text(xi, v + 0.012, f"{v:.2f}", ha="center", va="bottom",
-                     fontsize=13, fontweight="bold", color="#181c1e")
-        axh.set_xticks(xh, [b[0] for b in hb], fontsize=11)
         axh.set_ylim(0, 0.74)
+        hbars = axh.bar(xh, [b[1] for b in hb], width=0.6, color=[b[2] for b in hb], zorder=3)
+        label_bars(axh, hbars, fontsize=10.5)
+        axh.set_xticks(xh, [b[0] for b in hb])
         axh.set_yticks([0, 0.2, 0.4, 0.6])
-        axh.set_ylabel("task accuracy (mean, 69 tasks)", fontsize=11)
-        axh.set_title("Steering dummy targets with the read feature", fontsize=12.5,
-                      loc="left", pad=10)
-        axh.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
-        for sp in ["top", "right"]: axh.spines[sp].set_visible(False)
+        axh.set_ylabel("task accuracy (mean, 69 tasks)")
+        axh.set_title("Steering dummy targets with the read feature")
         fh.tight_layout()
-        fh.savefig(OUT / "headline_bars.png", facecolor="white")
+        fh.savefig(OUT / "headline_bars.png")
         plt.close(fh)
         print(f"wrote {OUT}/headline_bars.png")
 

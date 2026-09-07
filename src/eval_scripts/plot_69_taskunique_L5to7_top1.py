@@ -28,6 +28,8 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402
+apply_paper_style()
 
 import os
 _BANKA = os.environ.get("BANKA") == "1"
@@ -111,28 +113,18 @@ def main():
     plt.close(fig)
 
     # ---- SIMPLE headline: mean-ablation only — unablated | own direction | counterfactual direction ----
-    INK, MUTED = "#181c1e", "#5d6771"
     fig, axes = plt.subplots(1, 2, figsize=(9.6, 4.4), dpi=150, sharey=True)
-    fig.patch.set_facecolor("white")
-    for ax, n in zip(axes, (1, 6)):
-        ax.set_facecolor("white")
-        vals = [mean_of(f"n{n}_baseline"), mean_of(f"n{n}_mean_ablation_mr157"), mean_of(f"n{n}_cf_mean_ablation_mr157")]
-        bars = ax.bar([0, 1, 2], vals, color=["0.45", "#7c3aad", "#c7b3e3"], width=0.62, zorder=3)
-        for b, v in zip(bars, vals):
-            ax.text(b.get_x() + b.get_width() / 2, v + 0.012, f"{v:.2f}", ha="center", fontsize=12, fontweight="bold", color=INK)
-        ax.set_xticks([0, 1, 2], ["unablated", "ablate own\n" + DIR, "ablate counterfactual\ntask's " + DIR], fontsize=10.5)
-        ax.set_title(f"{n}-shot prompts", fontsize=12, loc="left", color=INK)
-        ax.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
-        for s_ in ("top", "right"):
-            ax.spines[s_].set_visible(False)
-        for s_ in ("left", "bottom"):
-            ax.spines[s_].set_color("#c9ccc7")
-        ax.tick_params(colors=MUTED, labelsize=10)
-    axes[0].set_ylabel("task accuracy (mean, 69 tasks)", fontsize=11, color=INK)
     axes[0].set_ylim(0, max(mean_of("n6_baseline"), mean_of("n6_cf_mean_ablation_mr157")) + 0.09)
-    fig.suptitle("Ablating one task-unique direction at the demonstration target tokens", fontsize=12.5, fontweight="bold", x=0.02, ha="left")
+    for ax, n in zip(axes, (1, 6)):
+        vals = [mean_of(f"n{n}_baseline"), mean_of(f"n{n}_mean_ablation_mr157"), mean_of(f"n{n}_cf_mean_ablation_mr157")]
+        bars = ax.bar([0, 1, 2], vals, color=[C.grey, C.read, C.accent], width=0.62, zorder=3)
+        label_bars(ax, bars, fontsize=10)
+        ax.set_xticks([0, 1, 2], ["unablated", "ablate own\n" + DIR, "ablate counterfactual\ntask's " + DIR])
+        ax.set_title(f"{n}-shot prompts")
+    axes[0].set_ylabel("task accuracy (mean, 69 tasks)")
+    fig.suptitle("Ablating one task-unique direction at the demonstration target tokens", x=0.02, ha="left")
     fig.tight_layout()
-    fig.savefig(OUT / "aggregate_bars.png", facecolor="white")
+    fig.savefig(OUT / "aggregate_bars.png")
     plt.close(fig)
 
     for n in (1, 6):

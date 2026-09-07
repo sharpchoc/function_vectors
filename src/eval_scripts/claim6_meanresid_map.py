@@ -46,8 +46,11 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, TASK69_RUN_DIR  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402
 
-PP = ARTIFACTS_ROOT / "69_task_run" / "label_resid_perprompt"
+apply_paper_style()
+
+PP =ARTIFACTS_ROOT / "69_task_run" / "label_resid_perprompt"
 RM = ARTIFACTS_ROOT / "69_task_run" / "label_resid_means"
 FV = ARTIFACTS_ROOT / "69_task_run" / "perprompt_fvs"
 OUT = TASK69_RUN_DIR / "understanding_read_write_linear_map" / "meanresid_map"
@@ -55,8 +58,6 @@ SPLIT = REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"
 LAYERS = (5, 6, 7)
 LAMBDA_GRID = np.logspace(-2, 6, 17)
 KS = (1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 54)
-
-TEAL, PURPLE, INK, MUTED, ORANGE, BLUE = "#0e7c6b", "#7c3aad", "#181c1e", "#5d6771", "#c2410c", "#2a78d6"
 
 
 def r2(pred, true, ref):
@@ -121,16 +122,6 @@ def principal_cos(X, Y, energy=0.90):
     return np.linalg.svd(out[0].T @ out[1], compute_uv=False), out[0].shape[1], out[1].shape[1]
 
 
-def style(ax):
-    for s_ in ("top", "right"):
-        ax.spines[s_].set_visible(False)
-    for s_ in ("left", "bottom"):
-        ax.spines[s_].set_color("#c9ccc7")
-    ax.tick_params(colors=MUTED, labelsize=10)
-    ax.grid(axis="y", color="#e8eae6", lw=0.8, zorder=0)
-    ax.set_facecolor("white")
-
-
 def load():
     split = json.load(open(SPLIT))
     tasks = sorted(split["train_tasks"] + split["heldout_tasks"])
@@ -168,8 +159,8 @@ def main():
     pac, kx, ky = principal_cos(X, Y)
     Xn = (X - X.mean(0)) / np.linalg.norm(X - X.mean(0), axis=1, keepdims=True)
     Yn = (Y - Y.mean(0)) / np.linalg.norm(Y - Y.mean(0), axis=1, keepdims=True)
-    C = Xn @ Yn.T
-    matched, mism = np.diag(C), C[~np.eye(len(X), dtype=bool)]
+    Cm = Xn @ Yn.T
+    matched, mism = np.diag(Cm), Cm[~np.eye(len(X), dtype=bool)]
     with open(OUT / "congruence.csv", "w") as fh:
         fh.write("pairwise_cos_pearson,pairwise_cos_spearman,centered_norm_pearson,gram_cka,"
                  "max_principal_cos,median_principal_cos,k90_read,k90_fv,matched_cos_mean,"
@@ -245,17 +236,15 @@ def main():
     order = ["trainmean_baseline", "rotation", "rotation+scale", "ridge"]
     labels = ["mean shift only\n($\\bar v$)", "rotation\n(Procrustes)", "rotation\n+ one scalar", "unconstrained\nlinear (ridge)"]
     vals = [next(r_["heldout_r2_testmean"] for r_ in fit_rows if r_["method"] == m) for m in order]
-    fig, ax = plt.subplots(figsize=(7.2, 4.4), dpi=150); fig.patch.set_facecolor("white"); style(ax)
-    bars = ax.bar(range(4), vals, color=["0.72", PURPLE, PURPLE, TEAL], width=0.62, zorder=3)
-    bars[1].set_alpha(0.55)
-    for b, v in zip(bars, vals):
-        ax.text(b.get_x() + b.get_width() / 2, max(v, 0) + 0.015, f"{v:.2f}", ha="center", fontsize=12, fontweight="bold", color=INK)
-    ax.axhline(0, color="0.5", lw=0.8)
-    ax.set_xticks(range(4), labels, fontsize=10.5)
-    ax.set_ylabel("held-out $R^2$ (14 tasks)", fontsize=11, color=INK)
+    fig, ax = plt.subplots(figsize=(7.2, 4.4))
+    bars = ax.bar(range(4), vals, color=[C.grey, C.purple_light, C.purple, C.map], width=0.62, zorder=3)
+    ax.axhline(0, color=C.grey, lw=0.8)
+    ax.set_xticks(range(4), labels)
+    ax.set_ylabel("held-out $R^2$ (14 tasks)")
     ax.set_ylim(min(-0.15, min(vals) - 0.05), max(vals) + 0.12)
-    ax.set_title("Predicting a held-out task's write feature from its read feature", loc="left", fontsize=12, color=INK, pad=10)
-    fig.tight_layout(); fig.savefig(OUT / "rotation_simple.png", facecolor="white"); plt.close(fig)
+    label_bars(ax, bars)
+    ax.set_title("Predicting a held-out task's write feature from its read feature")
+    fig.tight_layout(); fig.savefig(OUT / "rotation_simple.png"); plt.close(fig)
 
     # ---- SIMPLE figure 0 (main text): per held-out task, cos(predicted FV, true FV) for the linear map ----
     p_ridge = preds["ridge"][0]
@@ -266,57 +255,56 @@ def main():
         fh.write("task,cos_pred_true,cos_trainmeanFV_true\n")
         for i in ordr:
             fh.write(f"{te_tasks[i]},{cos_map[i]:.4f},{cos_gen[i]:.4f}\n")
-    fig, ax = plt.subplots(figsize=(9.2, 4.6), dpi=150); fig.patch.set_facecolor("white"); style(ax)
+    fig, ax = plt.subplots(figsize=(9.2, 4.6))
     xs = np.arange(len(ordr))
-    ax.bar(xs, cos_map[ordr], width=0.62, color=TEAL, zorder=3, label=f"linear map from read feature, mean cos {cos_map.mean():.2f}")
-    ax.axhline(cos_gen.mean(), color="0.45", lw=1.4, ls=(0, (5, 3)), zorder=4,
+    ax.bar(xs, cos_map[ordr], width=0.62, color=C.map, zorder=3, label=f"linear map from read feature, mean cos {cos_map.mean():.2f}")
+    ax.axhline(cos_gen.mean(), color=C.grey, lw=1.2, ls=(0, (5, 3)), zorder=4,
                label=f"generic FV (train mean) as predictor, mean cos {cos_gen.mean():.2f}")
-    ax.set_xticks(xs, [te_tasks[i] for i in ordr], rotation=35, ha="right", fontsize=9)
-    ax.set_ylabel("cos(predicted FV, true FV)", fontsize=11, color=INK)
+    ax.set_xticks(xs, [te_tasks[i] for i in ordr], rotation=35, ha="right")
+    ax.set_ylabel("cos(predicted FV, true FV)")
     ax.set_ylim(0, 1.0)
-    ax.set_title("Predicting held-out tasks' write features with one linear map",
-                 loc="left", fontsize=11.5, color=INK, pad=10)
-    fig.tight_layout(); fig.savefig(OUT / "linear_map_simple.png", facecolor="white"); plt.close(fig)
+    ax.set_title("Predicting held-out tasks' write features with one linear map")
+    fig.tight_layout(); fig.savefig(OUT / "linear_map_simple.png"); plt.close(fig)
     print(f"linear map per held-out task: mean cos {cos_map.mean():.3f} (min {cos_map.min():.3f}) vs generic FV {cos_gen.mean():.3f}")
 
     # ---- SIMPLE figure 2: R^2 vs k ----
     ks = [r_["k"] for r_ in krows]
-    fig, ax = plt.subplots(figsize=(7.6, 4.4), dpi=150); fig.patch.set_facecolor("white"); style(ax)
-    ax.plot(ks, [r_["write_pca_ceiling_r2"] for r_ in krows], color="0.55", lw=1.5, ls=(0, (4, 3)), marker="o", ms=3.5,
+    fig, ax = plt.subplots(figsize=(7.6, 4.4))
+    ax.plot(ks, [r_["write_pca_ceiling_r2"] for r_ in krows], color=C.grey, lw=1.2, ls=(0, (4, 3)), marker="o", ms=3.5,
             label="ceiling: write feature's own top-$k$ PCs")
-    ax.plot(ks, [r_["linear_r2"] for r_ in krows], color=TEAL, lw=2.0, marker="o", ms=4.5, label="unconstrained linear from $k$ read PCs")
-    ax.plot(ks, [r_["rotscale_r2"] for r_ in krows], color=PURPLE, lw=2.2, marker="o", ms=4.5, label="rotation + one scalar of $k$ read PCs")
+    ax.plot(ks, [r_["linear_r2"] for r_ in krows], color=C.map, lw=1.6, marker="o", label="unconstrained linear from $k$ read PCs")
+    ax.plot(ks, [r_["rotscale_r2"] for r_ in krows], color=C.purple, lw=1.6, marker="o", label="rotation + one scalar of $k$ read PCs")
     full_ridge = next(r_["heldout_r2_testmean"] for r_ in fit_rows if r_["method"] == "ridge")
-    ax.axhline(full_ridge, color=TEAL, lw=1.0, ls=":", alpha=0.8)
-    ax.text(ks[-1], full_ridge + 0.012, f"full ridge {full_ridge:.2f}", ha="right", fontsize=9, color=TEAL)
+    ax.axhline(full_ridge, color=C.map, lw=0.9, ls=":", alpha=0.9)
+    ax.text(ks[0], full_ridge + 0.012, f"full ridge {full_ridge:.2f}", ha="left", fontsize=8.5, color=C.map)
     ax.set_xscale("log", base=2); ax.set_xticks(ks); ax.set_xticklabels([str(k) for k in ks])
-    ax.set_xlabel("$k$ = number of read-feature principal components used", fontsize=11, color=INK)
-    ax.set_ylabel("held-out $R^2$ (14 tasks)", fontsize=11, color=INK)
+    ax.set_xlabel("$k$ = number of read-feature principal components used")
+    ax.set_ylabel("held-out $R^2$ (14 tasks)")
     ax.set_ylim(min(0, min(r_["rotscale_r2"] for r_ in krows) - 0.05), 1.02)
-    ax.legend(frameon=False, fontsize=9.5, loc="lower right")
-    ax.set_title("How many read dimensions does the read→write map need?", loc="left", fontsize=12, color=INK, pad=10)
-    fig.tight_layout(); fig.savefig(OUT / "kdim_sweep.png", facecolor="white"); plt.close(fig)
+    ax.legend(loc="lower right")
+    ax.set_title("How many read dimensions does the read→write map need?")
+    fig.tight_layout(); fig.savefig(OUT / "kdim_sweep.png"); plt.close(fig)
 
     # ---- detail figure (appendix) ----
-    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4), dpi=150); fig.patch.set_facecolor("white")
-    ax = axes[0]; style(ax)
-    ax.plot([-0.6, 1], [-0.6, 1], color="0.7", lw=0.8)
-    ax.scatter(cx, cy, s=4, alpha=0.25, color=TEAL, edgecolors="none")
+    fig, axes = plt.subplots(1, 3, figsize=(13.5, 4))
+    ax = axes[0]
+    ax.plot([-0.6, 1], [-0.6, 1], color=C.lightgrey, lw=0.8)
+    ax.scatter(cx, cy, s=4, alpha=0.25, color=C.map, edgecolors="none")
     ax.set_xlabel("centered pairwise cos, read $u_A$"); ax.set_ylabel("centered pairwise cos, write $v_A$")
-    ax.set_title(f"Pairwise congruence ({len(cx)} pairs)\nPearson {pearsonr(cx, cy)[0]:.3f} · gram-CKA {gram_cka(X, Y):.3f}", fontsize=10)
-    ax = axes[1]; style(ax)
+    ax.set_title(f"Pairwise congruence ({len(cx)} pairs)\nPearson {pearsonr(cx, cy)[0]:.3f} · gram-CKA {gram_cka(X, Y):.3f}")
+    ax = axes[1]
     v1 = [next(r_["heldout_r2_testmean"] for r_ in fit_rows if r_["method"] == m) for m in order]
     v2 = [next(r_["heldout_perprompt_r2"] for r_ in fit_rows if r_["method"] == m) for m in order]
-    ax.bar(np.arange(4) - 0.19, v1, width=0.38, color=TEAL, label="task centroids")
-    ax.bar(np.arange(4) + 0.19, v2, width=0.38, color=BLUE, label="per-prompt read features")
-    ax.set_xticks(range(4), ["mean shift", "rotation", "rotation\n+scale", "ridge"], fontsize=8.5)
-    ax.axhline(0, color="0.5", lw=0.8); ax.set_ylabel("held-out $R^2$ (test-mean ref.)"); ax.legend(frameon=False, fontsize=9)
-    ax.set_title("Held-out prediction of task FVs (14 tasks)", fontsize=10)
-    ax = axes[2]; style(ax)
-    sv = spectra["ridge_sv"]; ax.plot(np.arange(1, len(sv) + 1), sv / sv[0], color=TEAL, label="ridge map, read $u_A$")
+    ax.bar(np.arange(4) - 0.19, v1, width=0.38, color=C.map, label="task centroids")
+    ax.bar(np.arange(4) + 0.19, v2, width=0.38, color=C.map_light, label="per-prompt read features")
+    ax.set_xticks(range(4), ["mean shift", "rotation", "rotation\n+scale", "ridge"])
+    ax.axhline(0, color=C.grey, lw=0.8); ax.set_ylabel("held-out $R^2$ (test-mean ref.)"); ax.legend()
+    ax.set_title("Held-out prediction of task FVs (14 tasks)")
+    ax = axes[2]
+    sv = spectra["ridge_sv"]; ax.plot(np.arange(1, len(sv) + 1), sv / sv[0], color=C.map, label="ridge map, read $u_A$")
     ax.set_yscale("log"); ax.set_xlabel("singular value index"); ax.set_ylabel("$\\sigma_i/\\sigma_1$")
-    ax.set_title("Ridge-map spectrum on the train span\n(flat = scaled rotation)", fontsize=10); ax.legend(frameon=False, fontsize=9)
-    fig.tight_layout(); fig.savefig(OUT / "rotation_detail.png", facecolor="white"); plt.close(fig)
+    ax.set_title("Ridge-map spectrum on the train span\n(flat = scaled rotation)"); ax.legend()
+    fig.tight_layout(); fig.savefig(OUT / "rotation_detail.png"); plt.close(fig)
     print(f"wrote {OUT}")
 
 

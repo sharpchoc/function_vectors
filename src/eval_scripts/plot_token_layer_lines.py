@@ -31,6 +31,7 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from matplotlib.lines import Line2D
 
 _BOOT = Path(__file__).resolve().parents[2]
@@ -38,11 +39,24 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402,F401
+
+apply_paper_style()
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "token_layer_regressions"
 OUT = TASK69_RUN_DIR / "FV_linear_decodability" / "token_layer_regressions" / "poster_visuals"
 
-ROLE_COLOR = {"cue": "#2f7fe0", "target": "#e8623d", "input": "#2fae82"}
+# house palette: cue = write feature (blue), target = read feature (green), input = baseline grey
+ROLE_COLOR = {"cue": C.write, "target": C.read, "input": C.grey}
+ROLE_LIGHT = {"cue": C.write_light, "target": C.read_light, "input": C.lightgrey}
+
+
+def blend(c_light, c_full, frac):
+    """Linear RGB blend from the light tint (frac=0) to the full concept colour (frac=1)."""
+    a, b = np.array(mcolors.to_rgb(c_light)), np.array(mcolors.to_rgb(c_full))
+    return tuple(a + (b - a) * frac)
+
+
 ROLE_LABEL = {"cue": 'cue ":"', "target": "target", "input": "input"}
 
 
@@ -84,12 +98,8 @@ def style_axes(ax, xs, emb=False):
     ax.set_xticks(range(0, len(xs), 2))
     ax.set_xlim(xs[0] - 0.4, xs[-1] + 0.4)
     ax.tick_params(labelsize=13)
-    ax.axhline(0, color="0.75", lw=1.0, zorder=1)
-    ax.grid(axis="y", color="0.90", lw=0.9)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
-    ax.set_title("Where the function vector is linearly readable",
-                 fontsize=24, fontweight="bold", pad=18, loc="left")
+    ax.axhline(0, color=C.lightgrey, lw=1.0, zorder=1)
+    ax.set_title("Where the function vector is linearly readable", fontsize=22, pad=18)
 
 
 def write_csv(path, layers, cols):
@@ -124,8 +134,7 @@ def main_avg(avg_from=6, avg_to=10, out_stem="heldout_r2_lines"):
     handles = [Line2D([], [], color=ROLE_COLOR[r], lw=4.2, label=ROLE_LABEL[r])
                for r in ("cue", "target", "input")]
     ax.legend(handles=handles, title="token type", loc="upper left",
-              bbox_to_anchor=(0.015, 0.99), fontsize=15, title_fontsize=15,
-              frameon=True, framealpha=0.92, edgecolor="none", alignment="left")
+              bbox_to_anchor=(0.015, 0.99), fontsize=15, title_fontsize=15, alignment="left")
 
     OUT.mkdir(parents=True, exist_ok=True)
     fig.tight_layout()
@@ -153,8 +162,9 @@ def main_fan(n_shots=6, out_stem="heldout_r2_lines_6shot"):
         for n in range(1, n_shots + 1):
             frac = (n - 1) / max(n_shots - 1, 1)
             last = n == n_shots
-            ax.plot(xs, full(role, n), color=ROLE_COLOR[role],
-                    alpha=0.18 + 0.42 * frac if not last else 1.0,
+            ax.plot(xs, full(role, n),
+                    color=ROLE_COLOR[role] if last
+                    else blend(ROLE_LIGHT[role], ROLE_COLOR[role], 0.55 * frac),
                     lw=1.2 + 0.8 * frac if not last else 4.0,
                     solid_capstyle="round", zorder=3 + (2 if last else frac))
     # query cue deliberately NOT plotted (user decision 2026-08-31): the ridge targets
@@ -172,14 +182,13 @@ def main_fan(n_shots=6, out_stem="heldout_r2_lines_6shot"):
                for r in ("cue", "target", "input")]
     leg1 = ax.legend(handles=handles, title="token type", loc="upper left",
                      bbox_to_anchor=(0.015, 0.99), fontsize=14, title_fontsize=14,
-                     frameon=True, framealpha=0.92, edgecolor="none", alignment="left")
+                     alignment="left")
     ax.add_artist(leg1)
-    handles2 = [Line2D([], [], color="0.35", lw=1.3, alpha=0.4,
-                       label="example 1  (light)"),
-                Line2D([], [], color="0.35", lw=4.0, label=f"example {n_shots}  (bold)")]
-    ax.legend(handles=handles2, title="line", loc="lower right",
-              bbox_to_anchor=(0.99, 0.02), fontsize=14, title_fontsize=14,
-              frameon=True, framealpha=0.92, edgecolor="none", alignment="left")
+    handles2 = [Line2D([], [], color=C.lightgrey, lw=1.3, label="example 1  (light)"),
+                Line2D([], [], color=C.note, lw=4.0, label=f"example {n_shots}  (bold)")]
+    ax.legend(handles=handles2, title="line", loc="center right",
+              bbox_to_anchor=(0.99, 0.44), fontsize=14, title_fontsize=14,
+              alignment="left")
 
     OUT.mkdir(parents=True, exist_ok=True)
     fig.tight_layout()

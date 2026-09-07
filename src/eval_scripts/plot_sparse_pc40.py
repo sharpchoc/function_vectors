@@ -19,19 +19,27 @@ from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
+from matplotlib.ticker import NullFormatter
 
 _BOOT = Path(__file__).resolve().parents[2]
 for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402,F401
+
+apply_paper_style()
 
 AR = ARTIFACTS_ROOT / "69_task_run" / "raw_mean_steering" / "sparse_pc40" / "eval"
 OUT = TASK69_RUN_DIR / "bottom_up_read_features" / "dimensionality_analysis" / "sparse_pc40"
 ALPHAS = (0.5, 1.0, 2.0, 4.0)
-SURFACE, INK, INK2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
-BLUE, GRAPHITE, GRAY = "#2a78d6", "#52514e", "#b8b7b2"
+
+
+def _tint(color, frac):
+    """Blend `color` towards white; frac=1 is the full colour."""
+    return mcolors.to_hex(tuple(frac * v + (1 - frac) for v in mcolors.to_rgb(color)))
 
 
 def main():
@@ -95,62 +103,47 @@ def main():
                        [round(float(best[v][i]), 4) for v in vnames if v != "full"])
 
     # retention curve
-    fig, ax = plt.subplots(figsize=(8.4, 5.4), dpi=200)
-    fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
+    fig, ax = plt.subplots(figsize=(8.4, 5.4))
     xs = [k for k, _, _ in pts]
     ys = [m for _, m, _ in pts]
-    ax.plot(xs, ys, "o-", color=BLUE, lw=2.6, ms=9, zorder=4,
-            markeredgecolor=SURFACE, markeredgewidth=1.5)
+    ax.plot(xs, ys, "o-", color=C.read, lw=1.8, ms=7, zorder=4,
+            markeredgecolor="white", markeredgewidth=1.0)
     for i, (k, m, _) in enumerate(pts):
         # stagger labels so near-identical points (24 vs 25 PCs) do not overlap
-        dy = 13 if i % 2 == 0 else -20
+        dy = 11 if i % 2 == 0 else -17
         ax.annotate(f"{m/full_mean:.0%}", (k, m), textcoords="offset points",
-                    xytext=(0, dy), fontsize=11.5, color=BLUE, fontweight="bold", ha="center")
-    ax.axhline(full_mean, color=GRAPHITE, lw=1.6,
+                    xytext=(0, dy), color=C.read, fontweight="semibold", ha="center")
+    ax.axhline(full_mean, color=C.grey, lw=1.2,
                label=f"full read feature = {full_mean:.3f}")
-    ax.axhline(float(base.mean()), color=GRAY, ls=":", lw=1.4,
+    ax.axhline(float(base.mean()), color=C.grey, ls=":", lw=1.2,
                label=f"unsteered = {base.mean():.3f}")
-    ax.set_xlabel("number of PC directions kept", fontsize=13, color=INK2)
-    ax.set_ylabel("steering accuracy", fontsize=13, color=INK2)
-    ax.set_title("The steering effect is spread across many directions",
-                 fontsize=16, fontweight="bold", color=INK, loc="left", pad=14)
-    ax.tick_params(colors=INK2, labelsize=11)
-    ax.grid(True, color=GRID, lw=0.9, zorder=0)
-    ax.set_axisbelow(True)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
-    for s in ("left", "bottom"):
-        ax.spines[s].set_color(GRID)
-    ax.legend(fontsize=10, frameon=False, loc="lower right")
+    ax.set_xlabel("number of PC directions kept")
+    ax.set_ylabel("steering accuracy")
+    ax.set_title("The steering effect is spread across many directions")
+    ax.grid(True, axis="both")
+    ax.legend(loc="lower right")
     fig.tight_layout()
-    fig.savefig(OUT / "retention_curve.png", bbox_inches="tight", facecolor=SURFACE)
+    fig.savefig(OUT / "retention_curve.png")
 
     # alpha curves per subset
-    fig, ax = plt.subplots(figsize=(8.6, 5.4), dpi=200)
-    fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
-    shades = ["#cde2fb", "#9ec5f4", "#5598e7", "#2a78d6", "#184f95"]
+    fig, ax = plt.subplots(figsize=(8.6, 5.4))
     ordered = sorted([p for p in pts], key=lambda p: p[0])
+    shades = [_tint(C.read, f) for f in np.linspace(0.3, 1.0, len(ordered))]
     for i, (k, _, v) in enumerate(ordered):
-        ax.plot(ALPHAS, [acc[v][a].mean() for a in ALPHAS], "o-", ms=6, lw=2,
-                color=shades[i % len(shades)], label=f"{k} PCs")
-    ax.plot(ALPHAS, [acc["full"][a].mean() for a in ALPHAS], "o--", ms=6, lw=2,
-            color=GRAPHITE, label="full read feature")
-    ax.axhline(float(base.mean()), color=GRAY, ls=":", lw=1.3)
+        ax.plot(ALPHAS, [acc[v][a].mean() for a in ALPHAS], "o-", ms=5,
+                color=shades[i], label=f"{k} PCs")
+    ax.plot(ALPHAS, [acc["full"][a].mean() for a in ALPHAS], "o--", ms=5,
+            color=C.grey, label="full read feature")
+    ax.axhline(float(base.mean()), color=C.grey, ls=":", lw=1.2)
     ax.set_xscale("log"); ax.set_xticks(ALPHAS, [str(a) for a in ALPHAS])
-    ax.set_xlabel("steering strength α", fontsize=12.5, color=INK2)
-    ax.set_ylabel("steering accuracy", fontsize=12.5, color=INK2)
-    ax.set_title("Dose response by subspace size", fontsize=14, fontweight="bold",
-                 color=INK, loc="left", pad=12)
-    ax.tick_params(colors=INK2)
-    ax.grid(True, color=GRID, lw=0.9, zorder=0)
-    ax.set_axisbelow(True)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
-    for s in ("left", "bottom"):
-        ax.spines[s].set_color(GRID)
-    ax.legend(fontsize=9.5, frameon=False, ncol=2)
+    ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.set_xlabel("steering strength α")
+    ax.set_ylabel("steering accuracy")
+    ax.set_title("Dose response by subspace size")
+    ax.grid(True, axis="both")
+    ax.legend(ncol=2)
     fig.tight_layout()
-    fig.savefig(OUT / "alpha_curves.png", bbox_inches="tight", facecolor=SURFACE)
+    fig.savefig(OUT / "alpha_curves.png")
     print(f"wrote {OUT}")
 
 

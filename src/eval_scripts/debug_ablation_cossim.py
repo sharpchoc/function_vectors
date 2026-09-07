@@ -16,7 +16,11 @@ results/69_task_run/bottom_up_read_features/ablation/debugging/:
   cossim_hist.png    two-panel histogram (read features | FVs), means + cf-pair means
   cossim_summary.csv mean/median/p5/p95 of all 2346 pairs + the 69 assigned cf pairs
   pairwise_cos.npz   raw pair values + index arrays (regenerate any view)
+
+Usage: debug_ablation_cossim.py [model_dir] [--plot_only]
+  --plot_only  skip the model load and redraw cossim_hist.png from the cached pairwise_cos.npz.
 """
+import argparse
 import json
 import sys
 from itertools import combinations
@@ -35,6 +39,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT, TASK69_RUN_DIR
+from utils.paper_style import apply_paper_style, C
+
+apply_paper_style()
 
 SPLIT_PATH = REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"
 READDIR_ROOT = ARTIFACTS_ROOT / "69_task_run" / "label_resid_means"
@@ -105,8 +112,41 @@ def pair_stats(M, tasks, cf_pairs):
     return all_pairs, cf_vals, iu
 
 
+def plot_hist(r_all, r_cf, f_all, f_cf):
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4), sharey=True)
+    bins = np.linspace(-0.2, 1.0, 61)
+    for ax, vals, cfv, title, color in (
+            (axes[0], r_all, r_cf, "read features (L6 target means)", C.read),
+            (axes[1], f_all, f_cf, "task FVs (37-head sums)", C.write)):
+        ax.hist(vals, bins=bins, color=color, alpha=0.75,
+                label=f"all pairs (mean {vals.mean():.3f})")
+        ax.hist(cfv, bins=bins, color=C.text, histtype="step", lw=1.2,
+                label=f"assigned cf pairs (mean {cfv.mean():.3f})")
+        ax.axvline(vals.mean(), color=color, ls="--", lw=1)
+        ax.set_title(title)
+        ax.set_xlabel("pairwise cosine similarity")
+        ax.legend()
+    axes[0].set_ylabel("pair count")
+    fig.suptitle("Cross-task similarity of the ablated directions (69 tasks, 2346 pairs)")
+    fig.tight_layout()
+    fig.savefig(OUT_DIR / "cossim_hist.png")
+    plt.close(fig)
+
+
 def main():
-    model_dir = sys.argv[1] if len(sys.argv) > 1 else "EleutherAI/gpt-j-6b"
+    ap = argparse.ArgumentParser()
+    ap.add_argument("model_dir", nargs="?", default="EleutherAI/gpt-j-6b")
+    ap.add_argument("--plot_only", action="store_true",
+                    help="redraw cossim_hist.png from the cached pairwise_cos.npz (no model load)")
+    args = ap.parse_args()
+    if args.plot_only:
+        z = np.load(OUT_DIR / "pairwise_cos.npz")
+        plot_hist(z["read_all"], z["read_cf"], z["fv_all"], z["fv_cf"])
+        print(f"read features: mean {z['read_all'].mean():.4f} (cf pairs {z['read_cf'].mean():.4f})")
+        print(f"task FVs     : mean {z['fv_all'].mean():.4f} (cf pairs {z['fv_cf'].mean():.4f})")
+        print(f"redrew {OUT_DIR / 'cossim_hist.png'}")
+        return
+    model_dir = args.model_dir
     split = json.load(open(SPLIT_PATH))
     tasks = sorted(split["train_tasks"] + split["heldout_tasks"])
     assert len(tasks) == 69
@@ -136,23 +176,7 @@ def main():
                 v.mean(), np.median(v), np.percentile(v, 5), np.percentile(v, 95),
                 v.min(), v.max()))])
 
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4), sharey=True)
-    bins = np.linspace(-0.2, 1.0, 61)
-    for ax, vals, cfv, title, color in (
-            (axes[0], r_all, r_cf, "read features (L6 target means)", "tab:blue"),
-            (axes[1], f_all, f_cf, "task FVs (37-head sums)", "tab:orange")):
-        ax.hist(vals, bins=bins, color=color, alpha=0.75,
-                label=f"all pairs (mean {vals.mean():.3f})")
-        ax.hist(cfv, bins=bins, color="k", histtype="step", lw=1.5,
-                label=f"assigned cf pairs (mean {cfv.mean():.3f})")
-        ax.axvline(vals.mean(), color=color, ls="--", lw=1)
-        ax.set_title(title)
-        ax.set_xlabel("pairwise cosine similarity")
-        ax.legend(fontsize=8)
-    axes[0].set_ylabel("pair count")
-    fig.suptitle("Cross-task similarity of the ablated directions (69 tasks, 2346 pairs)")
-    fig.tight_layout()
-    fig.savefig(OUT_DIR / "cossim_hist.png", dpi=150)
+    plot_hist(r_all, r_cf, f_all, f_cf)
 
     print(f"read features: mean {r_all.mean():.4f} (cf pairs {r_cf.mean():.4f})")
     print(f"task FVs     : mean {f_all.mean():.4f} (cf pairs {f_cf.mean():.4f})")

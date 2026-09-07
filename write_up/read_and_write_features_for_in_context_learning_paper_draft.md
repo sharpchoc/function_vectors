@@ -44,7 +44,7 @@ Our main contribution is idenitfying and studying a two-step general circuit for
 the figure below. We separate out the circuit into **read features**, where the model learns what the task is, and **write features**, where the model has to execute the task. Each of our simple function go from an input to a target separated by standard "Q:" and "A:" formatting (for example the country to capital task has the country as the input and the capital as the target). At the end of each demonstration, the target token attends to its input and a representation of the task can be found there - the read feature. We refer to the ":" token in "A:" as the cue token, which is where the model is forced to execute the task. We show that the cue attends to the targets, and along the way the read feature
 is (approximiately linearly) transformed into the write feature. We summarise our findings with the following circuit diagram drawing:
 
-![The ICL read/write circuit, annotated with the paper's claims](graphics/icl_read_write_circuit.png)
+![The ICL read/write circuit, annotated with the paper's claims](graphics/icl_read_write_circuit_v2.png)
 
 The numbered marks in the figure are the claims of this paper and they form the structure of this paper.
 
@@ -120,7 +120,7 @@ $$
 
 with $\alpha$ the injection strength.
 
-![Method diagram: dummy-target injection](../results/69_task_run/bottom_up_read_features/steering_results/sixshot_dummy/poster_visuals/method_diagram.png)
+![Method diagram: dummy-target injection](graphics/dummy_target_injection.png)
 
 Then we sweep over all layers (and steering strengths for each layer) and see if any layers can steer the model to complete the task on 1 shot dummy prompts.
 
@@ -147,7 +147,7 @@ construction. We call $u_A$ the **task-unique component** of the read feature. I
 direction $\hat u_A = u_A/\|u_A\|$ is what we ablate below, and $c + u_A$ is what we inject.
 (See Appendix C for other variations of steering and Appendix D for variations of ablation)
 
-![Read-feature decomposition into shared carrier and task-unique part](../results/69_task_run/bottom_up_read_features/ablation/explainer_visuals/readfeature_decomposition.png)
+![Read-feature decomposition into shared carrier and task-unique part](graphics/readfeature_decomposition_v2.png)
 
 **Necessity:** We take clean 1 shot and 6 shot prompts and ablate out the the task unique direction,$u_A$, out of the residual stream at all the target tokens and observe how the task accuracy changes. As as control, we also ablate the task unique direction of a different task, $u_{A'}$ at all the target tokens as well. We show that ablating $u_A$ destroys task accuracy, whilst ablating $u_{A'}$ does not - showing that $u_A$ is a causally necessary direction for the model learning the task.
 

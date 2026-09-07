@@ -29,6 +29,8 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
+from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402,F401
+apply_paper_style()
 
 import argparse
 _ap = argparse.ArgumentParser()
@@ -213,31 +215,22 @@ def main():
     # ---- HEADLINE: absolute alignment with the task FV, single series, minimal chrome ----
     arr = at_layer["cos_task"]
     fig, ax = plt.subplots(figsize=(8.0, 5.4), dpi=200)
-    fig.patch.set_facecolor(SURFACE); ax.set_facecolor(SURFACE)
     rng = np.random.RandomState(0)
     for ai in range(len(alphas)):
         ax.scatter(np.full(arr.shape[0], ai) + rng.uniform(-0.07, 0.07, arr.shape[0]),
-                   arr[:, ai], s=14, alpha=0.3, color=BLUE, linewidths=0, zorder=2)
-    ax.plot(range(len(alphas)), arr.mean(axis=0), "o-", color=BLUE, lw=2.6, ms=9, zorder=4,
-            markeredgecolor=SURFACE, markeredgewidth=1.5)
+                   arr[:, ai], s=14, alpha=0.6, color=C.write_light, linewidths=0, zorder=2)
+    ax.plot(range(len(alphas)), arr.mean(axis=0), "o-", color=C.write, lw=2.0, ms=7, zorder=4,
+            markeredgecolor="white", markeredgewidth=1.2)
     for ai in range(len(alphas)):
         ax.annotate(f"{arr[:, ai].mean():.2f}", (ai, arr[:, ai].mean()),
-                    textcoords="offset points", xytext=(0, 14), fontsize=12.5, color=BLUE,
-                    fontweight="bold", ha="center")
-    ax.set_xticks(range(len(alphas)), [str(a) for a in alphas], fontsize=12)
-    ax.set_xlabel("steering strength α", fontsize=13, color=INK2)
-    ax.set_ylabel(f"cosine similarity with the task function vector\n(layer {LAYER}, final cue token)", fontsize=13, color=INK2)
-    ax.set_title("Read feature affects write feature", fontsize=17, fontweight="bold",
-                 color=INK, loc="left", pad=14)
-    ax.tick_params(colors=INK2, labelsize=11)
-    ax.grid(True, color=GRID, lw=0.9, zorder=0)
-    ax.set_axisbelow(True)
-    for s in ("top", "right"):
-        ax.spines[s].set_visible(False)
-    for s in ("left", "bottom"):
-        ax.spines[s].set_color(GRID)
+                    textcoords="offset points", xytext=(0, 12), fontsize=10.5, color=C.write,
+                    fontweight="semibold", ha="center")
+    ax.set_xticks(range(len(alphas)), [str(a) for a in alphas])
+    ax.set_xlabel("steering strength α")
+    ax.set_ylabel(f"cosine similarity with the task function vector\n(layer {LAYER}, final cue token)")
+    ax.set_title("Read feature affects write feature", pad=12)
     fig.tight_layout()
-    fig.savefig(OUT / "headline_cos_absolute.png", bbox_inches="tight", facecolor=SURFACE)
+    fig.savefig(OUT / "headline_cos_absolute.png", bbox_inches="tight")
     # ---- two-line absolute figure: own-task FV vs generic (all-task mean) FV ----
     arr_g = at_layer["cos_gen"]
     fig, ax = plt.subplots(figsize=(8.0, 5.4), dpi=200)
