@@ -1702,3 +1702,9 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   property datasets and registry, the A4 prescreen records, decodability, and the steering
   sandbox. The pool is still 13.
 - **Redesign**: to be agreed with the user BEFORE any generation or compute.
+
+## 2026-09-07 — Style-properties line RESET (user decision)
+
+- Everything downstream of the style registry was removed: `dataset_files/style_properties/` (base corpus + 17 datasets), `task_splits/style_properties_pool.json`, all `src/sandbox/ext_styleprops/` scripts except `properties.py` (the 17-style registry, KEPT), and `artifacts/style_properties/` (26 GB, gitignored — gone for good). `results/style_properties/` was archived with history to `archive/style_properties/` (prescreen, decodability, steering sandbox, adjudication memo). `STYLE_PROPERTIES_DIR` in `src/utils/paths.py` is kept for the restart.
+- Reason: accumulated confounds (translation source not in one fixed convention, resampled number items, thin k-cells, wording confusion) — the user prefers a clean restart over stacked fixes.
+- Redesign of the free-form style study is to be agreed with the user BEFORE any generation or compute. Rules carried forward: one fixed convention per feature in any source text (audited), >=100 samples per k for k=0..5 per property, features must not occur inside the first 12 tokens of a document.
