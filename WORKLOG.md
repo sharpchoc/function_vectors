@@ -9024,3 +9024,38 @@ answer "slow" above the cue. Numbered markers 1–7 = the paper's claims (legend
 Notation follows paper_draft_v1.tex / task_id_im_subspaces.md; no measured numbers on the figure.
 **Rebuild:** `cd write_up/graphics && pdflatex icl_read_write_circuit_v2.tex && pdftoppm -r 300 -png -singlefile icl_read_write_circuit_v2.pdf icl_read_write_circuit_v2`
 **To use in the paper:** point `build_paper_tex.py` / the md draft at `graphics/icl_read_write_circuit_v2.png` (or the PDF) instead of `icl_read_write_circuit.png`.
+
+## Stream: style-translation — step 2, English twins (2026-09-07)
+
+**Status:** done, on main. `dataset_files/style_translation/pairs/<family>.json` = 200 pairs per
+family (3,400): `text_nat` (house style) + `text_alt` (same text with ONLY the tested family
+flipped) + `opps` (k, nat/alt renderings, char spans in each twin = later cue sites) + Spanish
+record + Haiku verdicts. README section "Step 2" has the house style, construction, results table,
+caveats. Only translation + twins were built — no prompts, no GPT-J (user: one step at a time).
+
+**Commands (`src/sandbox/style_translation/`):** `translate_english.py --workers 64` (Gemini 2.5
+Flash, house-style prompt) → `--retry_failed` ×4 (feedback: Spanish anchors to preserve +
+family hints) → `verify_english.py --workers 48` (Haiku 4.5, one text per call: coherent, fluent,
+faithful, style_consistent, anchors) → `translate_english.py --fill 10` (spare Spanish pass texts
+for families < 200 usable) → retries → verify → `collect_english.py --collect --finalize` →
+`pairs_check.py` (integrity sweep). 3,664 translation attempts, ≈3,800 judge calls.
+
+**Findings / lessons:**
+- House style = nat pole of all 17 families, enforced by running every registry detector +
+  renderer over the translation (`normalise_nat`), audited to 0 residual non-nat manifestations.
+  Alt twin = `render(text_nat, find_opps(text_nat), "alt")`; identical outside spans (0 diffs).
+- Judge reliability: Haiku's `style_consistent` hallucinated (quote_punct "all periods outside" on
+  a text with all inside; self-contradicting brit_t_past notes) → conventions gated
+  deterministically only, judge gates coherent + faithful. Same lesson as step 1.
+- Detector strictness costs anchors in translation: oxford_comma needs single-word final items,
+  quote_punct needs the quote followed by ./, ; double_space ignores boundaries followed by a digit
+  ("1st, …") → 26/26/10 spare Spanish texts used for those families.
+- Two registry bugs found by the sweep and fixed in `properties.py`: contractions contracted the
+  modal "have to" ("you've to"); spelled numbers/ordinals at sentence start rendered lowercase.
+  Both would have affected the old corpus too.
+- Known house-style artefacts (consistent, documented, not fixed): "At 1st," / "1st, …" from the
+  Spanish "1.º,"; ellipses followed by capitals (from the Spanish); "1 winter" for "un invierno".
+
+**Next (user):** step 3 — prompt construction `Spanish: …\n\nEnglish: <twin up to cue k>` and the
+GPT-J run.
+

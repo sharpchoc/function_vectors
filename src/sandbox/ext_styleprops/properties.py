@@ -422,6 +422,18 @@ class QuotePunct(Property):
         return "nat" if m.group(0)[0] in ",." else "alt"
 
 
+
+
+def _at_sentence_start(text, pos):
+    """True if a token at char `pos` opens a sentence (start of text, or after . ! ? possibly
+    followed by a closing quote). Used so spelled-out numbers/ordinals keep sentence caps."""
+    prev = text[:pos].rstrip()
+    if not prev:
+        return True
+    if prev[-1] in ".!?":
+        return True
+    return prev[-1] in '"\u201d' and len(prev) > 1 and prev[-2] in ".!?"
+
 # ------------------------------------------------------------------ number rendering
 _NUM_WORDS = ["two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
               "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen",
@@ -446,6 +458,8 @@ class NumWords(Property):
                 nat, alt = g, _D2W[g]
             else:
                 nat, alt = _W2D[g.lower()], g.lower()
+            if _at_sentence_start(text, m.start(1)):      # "3 days." -> "Three days." (2026-09-07)
+                alt = alt[:1].upper() + alt[1:]
             opps.append(Opp(m.start(1), m.end(1), nat, alt))
         return _dedup(opps)
 
@@ -529,6 +543,8 @@ class OrdinalWords(Property):
         opps = []
         for m in self._rx.finditer(text):
             nat, alt = self._map[m.group(1)]
+            if _at_sentence_start(text, m.start(1)):      # "1st, ..." -> "First, ..." (2026-09-07)
+                alt = alt[:1].upper() + alt[1:]
             opps.append(Opp(m.start(1), m.end(1), nat, alt))
         return _dedup(opps)
 
@@ -570,8 +586,15 @@ class Contractions(Property):
     _rx = re.compile(r"\b(" + "|".join(sorted(map(re.escape, _map), key=len, reverse=True)) + r")\b")
 
     def find_opps(self, text):
-        return _dedup([Opp(m.start(1), m.end(1), *self._map[m.group(1)])
-                       for m in self._rx.finditer(text)])
+        opps = []
+        for m in self._rx.finditer(text):
+            nat, alt = self._map[m.group(1)]
+            # the modal "have to" (you have to / you've to) is not a contraction site:
+            # contracting it is ungrammatical (2026-09-07, found by the English verifier)
+            if alt.lower().endswith(" have") and re.match(r"\s+to\b", text[m.end(1):]):
+                continue
+            opps.append(Opp(m.start(1), m.end(1), nat, alt))
+        return _dedup(opps)
 
     def classify(self, tail):
         m = self._rx.search(tail)

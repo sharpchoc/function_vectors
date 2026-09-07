@@ -126,3 +126,123 @@ the texts.
 - Texts naturally contain features of OTHER families (digits, percentages, quotes, rayas) because
   the fixed conventions require them; that is intended and identical across the two polarities
   that will later be tested.
+
+---
+
+# Step 2 — English twins (`pairs/<family>.json`)
+
+For every Spanish text, two English versions that differ **only** in the tested family's style:
+`text_nat` (house style) and `text_alt` (the same text with that one family flipped). Built
+2026-09-07; user decisions: minimal pairs by translate-once-then-restyle; Gemini translates,
+Haiku (one text per call, OpenRouter) checks only the initial translation; pass = style at every
+anchor ∧ ≥5 anchors ∧ coherent ∧ faithful.
+
+## House style (= the nat pole of all 17 families; standard American English)
+
+sentence-initial capitals · standard case · US spelling (color, neighbor, center) · -ize
+(organize) · -ed pasts (learned) · while/among/amid · one space after periods · serial comma
+("bread, cheese, and wine") · straight quotes with the period/comma INSIDE (`"like this,"`) ·
+attached em dash (`word—aside—word`) · three-dot ellipsis · digits 2–20 · `15%` · digit
+ordinals (1st, 3rd) · contracted forms (don't, it's) · the word "and".
+
+Why: the Spanish already fixes every feature to one convention; if the English did not, the
+non-tested features would vary from text to text and confound the later comparison. The house
+style is **enforced deterministically**: after Gemini's translation, every family's detector
+(`src/sandbox/ext_styleprops/properties.py`) finds its manifestations and the registry renderer
+rewrites each to its nat form (`translate_english.normalise_nat`), then an audit confirms no
+manifestation of any family remains in alt form (`audit_nat` → must be empty).
+
+## Twin construction
+
+`text_alt = render(text_nat, PROPS[family].find_opps(text_nat), "alt")`. Because both twins are
+rendered from the same normalised text, they are identical outside the opportunity spans (checked
+per pair). Each record stores `opps = [{k, nat, alt, nat_span, alt_span}]`, the k-th opportunity's
+renderings and character spans in each twin — these are the later cue sites. `k_en` = number of
+opportunities the detector finds in the English (≥5 required). No item resampling anywhere.
+
+## Verification (Claude Haiku 4.5 via OpenRouter, one translation per call)
+
+Given the Spanish and `text_nat`, the judge returns `coherent`, `fluent`, `faithful` (same
+content and sentence order; nothing added, dropped, or merged; numbers, quotations, lists
+preserved), `style_consistent` (the tested family appears only in its nat form), `anchors`,
+`notes`. Counts and conventions are deterministic (`k_en`, `audit_nat`).
+
+Pass = `k_en ≥ 5` ∧ `audit_nat == []` ∧ coherent ∧ fluent ∧ faithful ∧ style_consistent.
+Failures were re-translated with feedback (the Spanish anchors that must survive, family-specific
+hints such as "the last two list items must be single words" for oxford_comma, whose detector
+requires `A, B, and C` with single-word B and C), up to 6 rounds.
+
+## Files (this step)
+
+| path | contents |
+|---|---|
+| `pairs/<family>.json` | 200 records per family: everything from `final/` (Spanish + Spanish verification) plus `text_nat`, `text_alt`, `opps`, `k_en`, `verify_en`, `rounds_en` |
+| `english/<family>.json` | all translation attempts with raw output, normalised text, audit, verdict, pass |
+| `english_audit.csv` | per-family tallies: translated, verified, pass, failure reasons, max rounds, median k_en |
+
+## Example pair (us_uk, `us_uk__t000a`, abridged)
+
+nat: "… which can accumulate a dark **color** from oil and grime. … to prevent any **rumor** of
+looseness. If the bicycle is **aluminum**, …"
+alt: "… which can accumulate a dark **colour** from oil and grime. … to prevent any **rumour** of
+looseness. If the bicycle is **aluminium**, …"
+Everything else in the two paragraphs is byte-identical.
+
+## Results
+All 17 families reached **200 pairs** (3,400 pairs; 3,664 translation attempts incl. retries and spares;
+up to 6 rounds). Integrity sweep over the final pairs (`pairs_check.py`):
+
+```
+family         pairs spare k_en med k_en min nat audit bad alt other-fam bad outside-span diff fluent style_ok(judge) k_judge~k_en
+sentence_caps    200     2        7        5             0                 0                 0    191             197         0.99
+all_caps         200     2        7        5             0                 0                 0    186             197         0.02
+double_space     200    10        6        5             0                 0                 0    191             198         0.91
+us_uk            200     0        7        5             0                 0                 0    191             190         0.40
+ise_ize          200     5        7        5             0                 0                 0    196             200         0.69
+brit_t_past      200    10        5        5             0                 0                 0    190              92         0.96
+whilst           200     2        7        5             0                 0                 0    194             184         0.73
+contractions     200     1        9        5             0                 0                 0    169             165         0.90
+ampersand        200     0       13        7             0                 0                 0    186             176         0.51
+oxford_comma     200    26        7        5             0                 0                 0    190             162         0.46
+curly_quotes     200     0       14       10             0               195                 0    194             200         0.00
+quote_punct      200    26        6        5             0                 0                 0    181             143         0.95
+em_dash          200     2       13        6             0                 0                 0    186             195         0.01
+ellipsis         200     7        7        5             0                 0                 0    145             197         0.99
+num_words        200     2        7        5             0                 0                 0    177             157         0.55
+percent_sign     200     0        7        5             0                 0                 0    184             200         0.99
+ordinal_words    200     1        7        5             0                 0                 0    192             194         0.99
+total pairs 3400
+```
+
+Columns: `spare` = pairs whose Spanish text came from the spare pass pool (the original text
+could not keep ≥5 anchors in English, e.g. multi-word list items for oxford_comma, quotations not
+followed by a period/comma for quote_punct); `nat audit bad` = nat twins with any non-house-style
+manifestation (0 everywhere); `alt other-fam bad` = alt twins where a *different* family's
+detector finds a non-nat form — 0 everywhere except curly_quotes, where the quote_punct detector
+sees `.”` instead of `."` (same punctuation-inside placement, curly glyph: benign, by
+construction); `outside-span diff` = pairs that differ outside their opportunity spans (0);
+`fluent` / `style_ok(judge)` = Haiku's non-gating columns; `k_judge~k_en` = share of pairs where
+Haiku's anchor count is within 1 of the detector's (low for all_caps/em_dash/curly_quotes because
+the judge counts sentences/pairs differently, not because of disagreement about the text).
+
+Gating: the deterministic checks (`k_en ≥ 5`, `audit_nat == []`, twin identity) plus Haiku's
+`coherent` and `faithful`. Haiku's `style_consistent` was NOT used as a gate: it contradicted the
+detectors on texts that are demonstrably correct (e.g. "all seven quotations put the period
+outside the quote" on a text with every period inside; self-contradicting notes for brit_t_past),
+so, as for the Spanish, conventions are judged deterministically. `fluent` is reported but not
+gating: most flags are consequences of the fixed conventions ("At 1st," from the Spanish
+"1.º,", capitals after ellipses inherited from the Spanish) rather than translation errors.
+
+Two defects the sweep DID catch and that were fixed in the registry (`properties.py`): the
+contractions lexicon turned the modal "you have to" into "you've to" (now skipped), and
+spelled-out numbers/ordinals opening a sentence were rendered lowercase in the alt twin ("three
+days.", "first, …" → now "Three days.", "First, …").
+
+## Caveats
+- The translator sometimes paraphrases an anchor away (labor → task, viajero → rider), or merges
+  sentences (double_space), or produces list items of more than one word (oxford_comma's detector
+  then does not count the list); the retry loop with hints recovers most of these. Families that
+  end below 200 pairs are listed in Results.
+- `k_en` can exceed the Spanish k (English adds anchors, e.g. extra contractions or quotes) — fine;
+  ≥5 is the floor.
+- "1st, …" at sentence start (Spanish "Lo 1.º") is house style but reads stiffly; it is consistent.
