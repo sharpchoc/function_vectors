@@ -9094,3 +9094,13 @@ last-bit BLAS/SVD differences vs the 2026-09-03 file, but not verifiable (old co
 **Lessons:** judge calibration by reading verdicts before trusting rates; the all_caps judge dip is real translation degradation, not judge bias (checked); ALL CAPS completions hit the 48-token cap 27-48% (more tokens) — the capped flag matters. Pods ynswjnas0a608z / f8ajl4h7q85xn0 / g7t6kx7ugh4p6c terminated (~1.5 h each).
 
 **Addendum 2026-09-07:** user decision — `50 %` counts as the sign convention (classifier patched, percent_sign re-scored without resampling: k=0 accuracy 0.53→0.72 nat, unscorable 0.26-0.34→0.01; plots regenerated).
+
+## Stream: style_free_text — the convention test without the translation scaffold (2026-09-07)
+
+**Status:** done, on main. `results/style_free_text/` (README, accuracy_by_k.png, unscorable_by_k.png, style_only_vs_translation.png, summary.csv, unscorable.csv, records.npz). Same 34,000 (family, style, k, text) items as results/style_translation but the prompt is the English twin alone, cut after cue k (cues recomputed header-free; 740 empty-context prompts start from <|endoftext|>). Judge = coherence only (no source). Accuracy = convention AND coherent.
+
+**Commands (`src/sandbox/style_free_text/`):** `build_prompts_plain.py` → scorer unit test 100% → 3 pods `logs/sft_job.sh <shard>` → `judge_plain.py --workers 48` (loop) → `analyze_plain.py`.
+
+**Findings:** without the source the decision mostly never arises — lexical/number families 60-95% unscorable (vs 5-30% with the scaffold); forced decisions (sentence boundaries, open quotation, number awaiting %) still learn in context but weaker (all_caps 0.01→0.70 vs 0.99; quote_punct 0.20→0.86 vs 0.89; percent 0.12→0.73 vs 0.98; sentence_caps 0.14→0.65 vs 0.92; double_space 0.00→0.52 vs 0.93). Frequency learning visible in unscorable curves (ellipsis production 1→42%); double_space unscorable rises with k (paragraph ends). Coherence 65-88% (sentence families 40-46%: empty completions/topic drift; ALL CAPS 23%).
+
+**Lessons:** judge artefact — punctuation-only completions (`."`) get called "not a continuation" without a reference; rule: count them coherent when a decision was made (718 quote_punct cases). Coordinated with the parallel session (Free Form Language Translation) via SendMessage: disjoint paths, no conflicts. Pods terminated (~45 min each).

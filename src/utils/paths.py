@@ -51,6 +51,7 @@ QWEN25_FV_DIR = RESULTS_ROOT / "qwen25_fv"
 STYLE_PROPERTIES_DIR = RESULTS_ROOT / "style_properties"
 STYLE_TRANSLATION_DATA = REPO_ROOT / "dataset_files" / "style_translation"  # Spanish source corpus (2026-09-07 restart)
 STYLE_TRANSLATION_RESULTS = RESULTS_ROOT / "style_translation"   # step-3 results (accuracy vs k)
+STYLE_FREE_TEXT_RESULTS = RESULTS_ROOT / "style_free_text"       # variation: plain English, no translation scaffold
 
 # Exploratory buckets — research directions that did not pan out, quarantined under
 # results/exploratory/ on 2026-08-28 (DECISIONS entry of that date). Kept for possible
@@ -64,6 +65,6 @@ GENERAL_DIR = EXPLORATORY_ROOT / "general"
 __all__ = [
     "REPO_ROOT", "ARTIFACTS_ROOT", "RESULTS_ROOT", "LOGS_ROOT",
     "TASK69_RUN_DIR", "STEERING_COMPARISON_DIR", "CHAT_TEMPLATE_TRANSFER_DIR", "QWEN25_FV_DIR",
-    "STYLE_PROPERTIES_DIR", "STYLE_TRANSLATION_DATA", "STYLE_TRANSLATION_RESULTS", "EXPLORATORY_ROOT",
+    "STYLE_PROPERTIES_DIR", "STYLE_TRANSLATION_DATA", "STYLE_TRANSLATION_RESULTS", "STYLE_FREE_TEXT_RESULTS", "EXPLORATORY_ROOT",
     "AMBIGUOUS_DIR", "LABEL_GEOMETRY_DIR", "FV_FORMATION_DIR", "GENERAL_DIR",
 ]

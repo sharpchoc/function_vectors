@@ -1743,3 +1743,7 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - Results bucket: `results/style_translation/` (`STYLE_TRANSLATION_RESULTS` in paths.py); artifacts `artifacts/style_translation/{prompts,rollouts}`.
 
 - **percent_sign classifier (user decision 2026-09-07):** `50 %` (space before the sign) counts as the sign convention, `per cent` as spelled out. Rationale: the space is copied from the Spanish source typography, not a third English convention. `properties.PercentSign.classify` changed; step-3 percent_sign rollouts re-scored (134 decisions changed), plots regenerated. Angular quotes « » copied into curly_quotes completions stay unscorable.
+
+## 2026-09-07 — style_free_text variation (user request): definitions
+
+- Prompt = the English twin alone cut after cue token k (no Spanish, no header); cues recomputed on the header-free tokenisation; empty-context prompts start from `<|endoftext|>`. Judge = coherence/fluency only (no source to be faithful to — user decision); accuracy = convention AND coherent. Punctuation-only completions that close the sentence and carry a decision count as coherent (analysis rule; judge artefact without a reference). `style_only_vs_translation.png` is the like-for-like comparison with the translation run (judge-independent). Results bucket `results/style_free_text/` (`STYLE_FREE_TEXT_RESULTS`), artifacts `artifacts/style_free_text/`. `results/style_translation/` and its scripts unchanged.
