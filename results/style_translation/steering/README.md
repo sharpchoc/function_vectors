@@ -119,6 +119,45 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
    organise/realise) — the cue-token state encodes "this text is British English" rather than the
    specific word class, so either family's vector flips the other's spelling.
 
+## Failure modes of the three weak families (analysis 2026-09-08, confirm records, n = 200 per arm)
+
+| family → target | style | judge OK | accuracy | what fails |
+|---|---|---|---|---|
+| sentence_caps → lowercase (L20 α4) | .96 | .14 (base .56) | .14 | translation quality, plus a judge artefact (below) |
+| all_caps → ALL CAPS (L10 α1 / α2) | .56 / .65 | .28 / .10 (base .54) | .12 / .03 | translation quality; style only half-forced |
+| curly_quotes → curly (L24 α4 / α2) | .34 / .38 | .65 / .67 (base .64) | .22 / .28 | the decision itself: single curly quotes and dropped quotations |
+
+- **sentence_caps and all_caps are real generation damage, measured without the judge.** Content-word
+  F1 between completion and reference falls from .51 (unsteered) to .33 (lowercase steer) and from .49
+  to .33 / .22 (ALL CAPS α1 / α2); the share of completions sharing < 20 % of content words with the
+  reference rises .17 → .46 and .14 → .36 / .60. ALL CAPS output is also shorter (18 → 11 words at α2,
+  29 % under 5 words) and 35 % of it never becomes ALL CAPS (normal case, or capitals for two words then
+  lowercase). Rejected steered completions are fragments ("to a small urban garden."), restarts, list
+  openers ("step one) Learn"), repetition loops, unrelated text ("MEEWASTHERS.COM IS A WAY TO SHOW
+  THANKS"), or letter-salad ("i s m y d e in te r min i pes s ."). Both families' cue is the newline
+  after `English:`, i.e. the vector is injected before any English exists, and α = 4 (or ALL CAPS at
+  any α) there derails the whole first sentence rather than only its case.
+- **Judge case-bias is small: re-judging the rejected style-correct completions with the case
+  normalised** (first letter capitalised; ALL CAPS → sentence case) flips 20 of 164 (12 %) for
+  sentence_caps and 4 of 87 (5 %) for all_caps. The remaining rejections are the content failures above.
+- **Judge artefact at the first-sentence cue (affects all arms, inflated in the lowercase arm).** For
+  k = 0 sentence families the completion IS the first sentence, and Gemini sometimes rejects a faithful
+  rendering as "repeats the beginning of the passage instead of continuing" (these have median F1 .58–.61
+  to the reference, the same as accepted completions). It fires on 22 / 200 unsteered, 19 / 200
+  nat-steered and 59 / 200 lowercase-steered completions; counting every rejected completion with F1 ≥ .5
+  as possibly faithful bounds the sentence_caps lowercase accuracy at ≈ .14–.20 + .24 ≈ .4, still far
+  below the .68 reached with 4 examples and below the unsteered translation quality (.56). all_caps shows
+  no such asymmetry (rejected-yet-F1 ≥ .5: .14 base, .12 steered). Step-3 baselines carry the same
+  artefact (sentence_caps k = 0 judge OK .53–.58), so comparisons within the family are fair.
+- **curly_quotes is not a coherence failure** (judge OK and F1 unchanged under steering). The vector
+  moves the quotation mark away from straight `"` (.40 → .05 of completions) but only .33–.37 land on
+  the scored curly pair “ ”; **.31 (α4) / .15 (α2) use single curly quotes ‘ ’**, which the classifier
+  does not score (the alt convention is defined as “ ”), .21–.23 drop the quotation altogether
+  (paraphrase without quotes, up from .15), and .05–.12 copy « » from the Spanish. If ‘ ’ counted as
+  the curly convention the style-only rate would be .65 (α4) — a definitional choice for the user, not
+  changed here. The house-style vector works (.80 straight quotes) because straight `"` is one token
+  the model already prefers.
+
 ## Provenance / caveats
 - GPT-J-6B fp16, 3 RunPod RTX PRO 4500 Blackwell pods (l0z8ws4hbilpdw / 6v7f5fgbdvd5q9 /
   z7o86hs5wxw55g, sharded 6/6/5 families, `logs/steer_job.sh <shard>`: capture → screen → confirm,
