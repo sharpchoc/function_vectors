@@ -107,8 +107,10 @@ def tc_args(L, micro):
 
 def per_family_nll(model, cfg, tok, points, C, task_index, c, args):
     out = {}
-    for fam in FAMS:
+    for fam in task_index:                                   # families present in this run (smoke runs use a subset)
         sel = [p for p in points if p["task"] == fam]
+        if not sel:
+            continue
         nll, acc = TSH.evaluate_points(model, cfg, tok, sel, C, task_index, c, args)
         out[fam] = {"nll": nll, "acc": acc, "n": len(sel)}
     return out
@@ -119,9 +121,9 @@ def main():
     ap.add_argument("mode", choices=["points", "train", "select"])
     ap.add_argument("--layers", type=int, nargs="*", default=LAYERS)
     ap.add_argument("--lambdas", type=float, nargs="*", default=LAMBDAS)
-    ap.add_argument("--micro", type=int, default=16)
+    ap.add_argument("--micro", type=int, default=0, help="micro-batch; 0 = per-layer auto (saved activations scale with 28-L)")
     ap.add_argument("--families", nargs="*", default=FAMS, help="train: restrict pooled families (smoke)")
-    ap.add_argument("--max_epochs", type=int, default=30)
+    ap.add_argument("--max_epochs", type=int, default=15)
     ap.add_argument("--tol", type=float, default=0.02)
     args = ap.parse_args()
 
@@ -194,7 +196,9 @@ def main():
     print(f"points: train {len(train)} es {len(es)} test {len(test)} | families {len(fams)} | C {tuple(C.shape)}", flush=True)
     for L in args.layers:
         out = TRAIN / f"L{L}"; out.mkdir(parents=True, exist_ok=True)
-        a = tc_args(L, args.micro); a.max_epochs = args.max_epochs
+        micro = args.micro or {6: 8, 9: 8, 12: 12, 16: 12, 20: 16}.get(L, 4)     # measured: micro 16 OOMs at L7 (21 blocks of activations), fits at L20
+        a = tc_args(L, micro); a.max_epochs = args.max_epochs
+        print(f"L{L}: micro-batch {micro}", flush=True)
         bfile = out / "baseline_c0.json"
         if not bfile.exists():
             torch.set_grad_enabled(False)
