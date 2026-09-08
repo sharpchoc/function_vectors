@@ -157,6 +157,19 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
   the curly convention the style-only rate would be .65 (α4) — a definitional choice for the user, not
   changed here. The house-style vector works (.80 straight quotes) because straight `"` is one token
   the model already prefers.
+- **ordinal_words → digits (nat) stalls at .47 (style .61, unscorable .32) against .65–.78 with 1–4
+  examples because the vector carries "digit here" but not the English surface form "1st".** At k = 0
+  the cue is the sentence start ("the | 1st step…"), so no English ordinal has been seen. Steering at
+  L16 α4 makes 87 % of completions digit-initial (unsteered 42 %), but 17.5 % come out as the hybrid
+  `1.st` / `1.er` / `1.eth`, 4 % as a bare `1.` that then stalls, 2 % as the Spanish `1.º` (the source's
+  own typography), and 4 % other digit forms — 27.5 % unscorable digit-initial completions (unsteered
+  8.5 %), and these are also worse translations (judge OK .47 vs .76 for the clean `1st` ones). One
+  in-context example fixes this immediately (style .33 → .91 at k = 1) because it shows the form; the
+  mean-difference vector, extracted from contexts that already contained "1st"/"first", encodes the
+  digit-vs-word choice but the model has to guess the ordinal suffix and reaches for the Spanish `1.º`
+  pattern sitting in the prompt. The word direction has no such problem ("first" is one whole-word
+  token): .95 style, .74 accuracy, above the k = 4 reference. Among clean `1st` completions the judge
+  rate (.76) is ordinary translation error (bufanda → afghan/blanket), not steering damage.
 
 ## Provenance / caveats
 - GPT-J-6B fp16, 3 RunPod RTX PRO 4500 Blackwell pods (l0z8ws4hbilpdw / 6v7f5fgbdvd5q9 /
