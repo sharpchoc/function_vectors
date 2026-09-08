@@ -124,9 +124,9 @@ def main():
                 base = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == "base"][0]
                 b = best[(fam, target)]
                 cf = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == f"{target}_cf"][0]
-                bars = [(base, C["base"], "no steering"), (b, C["steer"][target], f"steered L{b['layer']} α{b['alpha']:g}")]
+                bars = [(base, C["base"], "unsteered"), (b, C["steer"][target], f"L{b['layer']}, α = {b['alpha']:g}")]
                 if with_controls:
-                    bars.append((cf, C["cf"], f"{cf['cf_family']}'s vector"))
+                    bars.append((cf, C["cf"], f"{cf['cf_family']} vector"))
                 for j, (r, col, lab) in enumerate(bars):
                     ax.bar(x + j, r["accuracy"], color=col, edgecolor="black" if j == 1 else "none", linewidth=0.8,
                            yerr=[[r["accuracy"] - r["ci_lo"]], [r["ci_hi"] - r["accuracy"]]], capsize=2)
@@ -141,19 +141,19 @@ def main():
         for ax in axes[len(fams):]:
             ax.axis("off")
         for ax in axes[::ncol]:
-            ax.set_ylabel("accuracy at k = 0", fontsize=9)
-        handles = [Patch(color=C["base"], label="no steering (k = 0 prompt as is)"),
-                   Patch(color=C["steer"]["nat"], label="steered toward nat: the family's own vector, best (layer, α)"),
-                   Patch(color=C["steer"]["alt"], label="steered toward alt: the family's own vector, best (layer, α)")]
+            ax.set_ylabel("accuracy", fontsize=9)
+        handles = [Patch(color=C["base"], label="unsteered"),
+                   Patch(color=C["steer"]["nat"], label="steered toward nat (best layer, α)"),
+                   Patch(color=C["steer"]["alt"], label="steered toward alt (best layer, α)")]
         if with_controls:
-            handles.append(Patch(color=C["cf"], label="control: another family's vector (named on the axis) at the same (layer, α)"))
+            handles.append(Patch(color=C["cf"], label="control: another family's vector, same layer and α"))
         handles.append(Line2D([], [], color="black", linestyle="dashed",
-                              label="reference: accuracy with 4 in-context examples and NO steering (step 3), same colour code"))
-        fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.955), ncol=2, fontsize=9, frameon=False)
-        fig.suptitle("Can one mean-difference vector, added at the first cue token, induce a convention with no in-context example?\n"
-                     "accuracy = target convention used at the cue AND faithful, coherent translation (Gemini judge); n = 200 texts per bar, 95% CI",
-                     fontsize=11, y=0.995)
-        fig.tight_layout(rect=(0, 0, 1, 0.91)); fig.savefig(path, dpi=150); plt.close(fig)
+                              label="4 in-context examples, no steering"))
+        fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.945), ncol=len(handles), fontsize=9.5, frameon=False)
+        fig.suptitle("Steering a writing convention with a mean-difference vector at the cue token, no in-context examples\n"
+                     "accuracy = target convention used AND faithful, coherent translation; 200 texts per bar, 95% CI",
+                     fontsize=12, y=0.995)
+        fig.tight_layout(rect=(0, 0, 1, 0.925)); fig.savefig(path, dpi=150); plt.close(fig)
 
     summary_figure(OUT / "steering_summary.png", with_controls=False)
     summary_figure(OUT / "steering_summary_controls.png", with_controls=True)
