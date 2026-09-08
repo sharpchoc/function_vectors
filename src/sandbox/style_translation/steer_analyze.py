@@ -119,7 +119,8 @@ def main():
             base = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == "base"][0]
             b = best[(fam, target)]
             cf = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == f"{target}_cf"][0]
-            for j, (r, col, lab) in enumerate(((base, C["base"], "no steer"), (b, C["steer"][target], f"steer L{b['layer']} α{b['alpha']:g}"), (cf, C["cf"], "other family's vec"))):
+            for j, (r, col, lab) in enumerate(((base, C["base"], "no steering"), (b, C["steer"][target], f"steered L{b['layer']} α{b['alpha']:g}"),
+                                              (cf, C["cf"], f"{cf['cf_family']}'s vector"))):
                 ax.bar(x + j, r["accuracy"], color=col, edgecolor="black" if j == 1 else "none", linewidth=0.8,
                        yerr=[[r["accuracy"] - r["ci_lo"]], [r["ci_hi"] - r["accuracy"]]], capsize=2)
                 ticks.append(x + j); labels.append(lab)
@@ -134,11 +135,18 @@ def main():
         ax.axis("off")
     for ax in axes[::ncol]:
         ax.set_ylabel("accuracy at k = 0", fontsize=9)
-    fig.suptitle("Steering a style at the first cue token with a mean-difference vector (no in-context example)\n"
-                 "bars: unsteered k=0 · steered at the best (layer, α) · another family's vector at the same setting; "
-                 "dashed = accuracy reached with 4 in-context examples (step 3)\n"
-                 "accuracy = target style used AND faithful, coherent translation; n = 200, 95% CI", fontsize=11, y=0.995)
-    fig.tight_layout(rect=(0, 0, 1, 0.95)); fig.savefig(OUT / "steering_summary.png", dpi=150); plt.close(fig)
+    from matplotlib.patches import Patch
+    from matplotlib.lines import Line2D
+    handles = [Patch(color=C["base"], label="no steering (k = 0 prompt as is)"),
+               Patch(color=C["steer"]["nat"], label="steered toward nat: the family's own vector, best (layer, α)"),
+               Patch(color=C["steer"]["alt"], label="steered toward alt: the family's own vector, best (layer, α)"),
+               Patch(color=C["cf"], label="control: another family's vector (named on the axis) at the same (layer, α)"),
+               Line2D([], [], color="black", linestyle="dashed", label="reference: accuracy with 4 in-context examples and NO steering (step 3), same colour code")]
+    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.955), ncol=2, fontsize=9, frameon=False)
+    fig.suptitle("Can one mean-difference vector, added at the first cue token, induce a convention with no in-context example?\n"
+                 "accuracy = target convention used at the cue AND faithful, coherent translation (Gemini judge); n = 200 texts per bar, 95% CI",
+                 fontsize=11, y=0.995)
+    fig.tight_layout(rect=(0, 0, 1, 0.91)); fig.savefig(OUT / "steering_summary.png", dpi=150); plt.close(fig)
 
     # ---- screen heatmaps -----------------------------------------------------------------------
     fig, axes = plt.subplots(len(sfams), 2, figsize=(7.5, 1.55 * len(sfams)))

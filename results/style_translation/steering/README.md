@@ -32,7 +32,7 @@ pairs/cue tokens in `dataset_files/style_translation/`.
 
 | file | contents |
 |---|---|
-| `steering_summary.png` | per family: unsteered k = 0 · steered at best (L, α) · other family's vector; dashed = step-3 accuracy at k = 4 |
+| `steering_summary.png` | per family: unsteered k = 0 · steered at best (L, α) · the named other family's vector at the same setting; dashed line = step-3 accuracy with 4 in-context examples and no steering (legend on the figure) |
 | `screen_heatmaps.png` | layer × α target-style rate on the 50-text screen, per family and target |
 | `best_config.csv` | final (L, α) per (family, target) with accuracy, CI, style-only, unscorable, judge OK, base, cf, step-3 k0/k4 |
 | `steering_summary.csv` | every confirm arm (base, top1, top2, cf) per family/target |
@@ -108,6 +108,14 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
    vectors disrupt rather than steer: ellipsis' nat vector at L24 α2 makes em_dash emit `--`
    (unscorable .52, accuracy .59 → .10); all_caps' vector at L20 α4 turns sentence_caps
    completions into ALL CAPS.
+   The us_uk transfer is explained by the vectors themselves: at L20, cos(v_us_uk, v_ise_ize) = 0.52
+   while the median cosine between two families' vectors is 0.01 (90th percentile 0.14; the only other
+   pair above 0.4 is curly_quotes/ellipsis at 0.45). The ise_ize vector is also 1.6× longer than
+   us_uk's, so its projection onto the us_uk direction (8.6) is 85 % of us_uk's own vector (10.1):
+   at the same α it delivers almost the same push along the British-spelling direction. Both
+   vectors are extracted from prompts whose English context so far is British (colour/centre vs
+   organise/realise) — the cue-token state encodes "this text is British English" rather than the
+   specific word class, so either family's vector flips the other's spelling.
 
 ## Provenance / caveats
 - GPT-J-6B fp16, 3 RunPod RTX PRO 4500 Blackwell pods (l0z8ws4hbilpdw / 6v7f5fgbdvd5q9 /
