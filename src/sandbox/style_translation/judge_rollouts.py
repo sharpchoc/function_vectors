@@ -87,24 +87,24 @@ def main():
     ap.add_argument("--model", default="google/gemini-2.5-flash")
     ap.add_argument("--workers", type=int, default=48)
     ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--dir", type=Path, default=ROLL, help="record dir (step-3 rollouts by default; steering confirm dir for step 4)")
     args = ap.parse_args()
     key = load_key()
     for fam in args.families:
-        f = ROLL / f"{fam}.json"
+        f = args.dir / f"{fam}.json"
         if not f.exists():
             continue
         recs = json.load(open(f))
-        todo = [r for r in recs if r.get("judge") is None][: args.limit]
+        todo = [(i, r) for i, r in enumerate(recs) if r.get("judge") is None][: args.limit]
         if not todo:
             print(f"{fam}: already judged", flush=True); continue
-        idx = {(r["doc_id"], r["style"], r["k"]): r for r in recs}
         done = 0
         with ThreadPoolExecutor(max_workers=args.workers) as ex:
-            futs = [ex.submit(judge_one, key, args.model, r) for r in todo]
+            futs = {ex.submit(judge_one, key, args.model, r): i for i, r in todo}   # write back by record index
             for fu in as_completed(futs):
-                d, s, k, v = fu.result(); done += 1
+                _, _, _, v = fu.result(); done += 1
                 if v is not None:
-                    idx[(d, s, k)]["judge"] = v
+                    recs[futs[fu]]["judge"] = v
                 if done % 1000 == 0:
                     json.dump(recs, open(f, "w"), ensure_ascii=False)
         json.dump(recs, open(f, "w"), ensure_ascii=False)
