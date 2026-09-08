@@ -9119,3 +9119,4 @@ last-bit BLAS/SVD differences vs the 2026-09-03 file, but not verifiable (old co
 
 **Addendum 2026-09-08 (user request):** steering_summary.png now has a legend (dashed = step-3 accuracy with 4 in-context examples, no steering) and names the control family on each axis. us_uk ↔ ise_ize transfer explained by vector geometry: cos 0.52 at L20 (median pair 0.01), ise_ize's projection on the us_uk direction = 85 % of |v_us_uk| — a shared British-English direction at the cue token; added to the README.
 **Addendum 2026-09-08 (user request):** headline `steering_summary.png` now shows only unsteered vs steered (plus the k = 4 reference line); the other-family control bars moved to `steering_summary_controls.png` (detailed view).
+**Addendum 2026-09-08 (user request):** screen heatmaps replaced by `screen_layer_alpha.png` — target-style rate vs layer, one line per α, α = 0 as a dashed reference (17 families × 2 targets).

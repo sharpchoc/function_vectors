@@ -20,7 +20,7 @@ pairs/cue tokens in `dataset_files/style_translation/`.
   per call). accuracy = P(both). Unscorable (neither style) counts as inaccurate and is reported.
 - **Sweep.** Screen: layers {2,4,6,8,10,12,16,20,24} × α ∈ {0, 0.5, 1, 2, 4} on 50 texts per
   (family, target), style-only, 16-token completions (`steer_screen.py`; `screen.csv`,
-  `screen_heatmaps.png`). Confirm: the top-2 screen settings per (family, target) on all 200 k = 0
+  `screen_layer_alpha.png`). Confirm: the top-2 screen settings per (family, target) on all 200 k = 0
   texts with full grading; the final setting is the one with the higher full accuracy
   (`steer_confirm.py`, `judge_rollouts.py --dir …/confirm`, `steer_analyze.py`).
 - **Controls.** `base`: α = 0 on the same 200 texts and seeds (in-run baseline; step-3 k = 0 and k = 4
@@ -34,7 +34,7 @@ pairs/cue tokens in `dataset_files/style_translation/`.
 |---|---|
 | `steering_summary.png` | HEADLINE — per family: unsteered k = 0 · steered at best (L, α); dashed line = step-3 accuracy with 4 in-context examples and no steering (legend on the figure) |
 | `steering_summary_controls.png` | DETAILED — the same plus the named other family's vector at the same (L, α) (control) |
-| `screen_heatmaps.png` | layer × α target-style rate on the 50-text screen, per family and target |
+| `screen_layer_alpha.png` | screen: target-style rate vs injection layer, one line per α (dashed = α = 0), per family and target, all 17 families |
 | `best_config.csv` | final (L, α) per (family, target) with accuracy, CI, style-only, unscorable, judge OK, base, cf, step-3 k0/k4 |
 | `steering_summary.csv` | every confirm arm (base, top1, top2, cf) per family/target |
 | `screen.csv` | the full screen grid |
@@ -45,7 +45,7 @@ pairs/cue tokens in `dataset_files/style_translation/`.
 lifetime budget mid-judging; `brit_t_past`, `oxford_comma`, `curly_quotes`, `quote_punct` (5,600
 completions) and 7 `ellipsis` records have GPU rollouts but no faithfulness verdict yet and are
 excluded from `best_config.csv` / `steering_summary.*` (their screens are in `screen.csv` /
-`screen_heatmaps.png`). To finish once the budget is restored:
+`screen_layer_alpha.png`). To finish once the budget is restored:
 `judge_rollouts.py --dir artifacts/style_translation/steering/confirm --families brit_t_past oxford_comma curly_quotes quote_punct ellipsis --workers 48`
 then `steer_analyze.py` (both idempotent). Style-only confirm rates for the four pending families
 (n = 200, best of top-2): brit_t_past → -t past 0.33 (base 0.09), oxford_comma → serial comma 0.88
@@ -91,7 +91,7 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
    whilst (.69 → .89) and em_dash (.59 → .76), where the vector removes the unscorable/mixed
    completions of the baseline.
 4. **Layer and scale.** The best alt setting is late (L20/24 in 11 of 13, L16 for percent_sign,
-   L10 for all_caps) and at the top of the α grid (α = 4 in 9 of 13): the heatmaps rise
+   L10 for all_caps) and at the top of the α grid (α = 4 in 9 of 13): the screen curves rise
    monotonically with α at L16–24 for most alt targets. Since the screen ranks on style only, it
    picks the largest α even where α = 4 costs faithfulness; a smaller α could score higher on
    full accuracy for sentence_caps / all_caps (not tested — the confirm run took the screen's

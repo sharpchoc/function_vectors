@@ -5,7 +5,7 @@ accuracy(arm) = P(target style used at the cue AND judge OK) over the 200 k=0 te
 as step 3). Final setting per (family, target) = the confirmed top-2 setting with the higher
 accuracy. Controls: base (alpha = 0, same seeds), counterfactual-family vector at the top-1 setting.
 Outputs -> results/style_translation/steering/: steering_summary.png (headline, no controls),
-steering_summary_controls.png (with the other-family control), screen_heatmaps.png,
+steering_summary_controls.png (with the other-family control), screen_layer_alpha.png,
 best_config.csv, steering_summary.csv, screen.csv, records.npz.
 """
 import csv
@@ -158,20 +158,35 @@ def main():
     summary_figure(OUT / "steering_summary.png", with_controls=False)
     summary_figure(OUT / "steering_summary_controls.png", with_controls=True)
 
-    # ---- screen heatmaps -----------------------------------------------------------------------
-    fig, axes = plt.subplots(len(sfams), 2, figsize=(7.5, 1.55 * len(sfams)))
-    for i, fam in enumerate(sfams):
-        for j, target in enumerate(("nat", "alt")):
-            ax = axes[i, j]
-            M = np.array([[grid[(fam, target, layer, a)] for layer in SCREEN_LAYERS] for a in [0.0] + ALPHAS])
-            im = ax.imshow(M, vmin=0, vmax=1, cmap="viridis", aspect="auto")
-            ax.set_yticks(range(len(ALPHAS) + 1)); ax.set_yticklabels([f"α={a:g}" for a in [0.0] + ALPHAS], fontsize=6)
-            ax.set_xticks(range(len(SCREEN_LAYERS))); ax.set_xticklabels([f"L{l}" for l in SCREEN_LAYERS], fontsize=6)
-            ax.set_title(f"{fam} → {target}  (unsteered {grid[(fam, target, SCREEN_LAYERS[0], 0.0)]:.2f})", fontsize=7.5)
-            for (r, c), v in np.ndenumerate(M):
-                ax.text(c, r, f"{v:.2f}", ha="center", va="center", fontsize=5, color="white" if v < 0.6 else "black")
-    fig.suptitle("Screen: target-style rate (style only, 50 texts, 16-token completions) by layer and α", fontsize=10, y=0.999)
-    fig.tight_layout(rect=(0, 0, 1, 0.99)); fig.savefig(OUT / "screen_heatmaps.png", dpi=150); plt.close(fig)
+    # ---- screen line plots: target-style rate vs layer, one line per alpha ---------------------
+    panels = [(fam, target) for fam in sfams for target in ("nat", "alt")]
+    ncol = 6; nrow = math.ceil(len(panels) / ncol)
+    fig, axes = plt.subplots(nrow, ncol, figsize=(2.9 * ncol, 2.3 * nrow), sharex=True, sharey=True)
+    axes = axes.ravel()
+    acol = dict(zip(ALPHAS, plt.cm.viridis(np.linspace(0.15, 0.9, len(ALPHAS)))))
+    for ax, (fam, target) in zip(axes, panels):
+        b0 = grid[(fam, target, SCREEN_LAYERS[0], 0.0)]
+        ax.axhline(b0, color="#9e9e9e", linestyle="dashed", lw=1.2, label="α = 0 (unsteered)")
+        for a in ALPHAS:
+            ax.plot(SCREEN_LAYERS, [grid[(fam, target, layer, a)] for layer in SCREEN_LAYERS], marker="o", ms=3, lw=1.3,
+                    color=acol[a], label=f"α = {a:g}")
+        ax.set_title(f"{fam} → {target}", fontsize=8.5, color={"nat": "#1f77b4", "alt": "#d62728"}[target])
+        ax.set_ylim(-0.03, 1.03); ax.set_xticks(SCREEN_LAYERS); ax.tick_params(labelsize=6.5); ax.grid(alpha=0.3)
+    for ax in axes[len(panels):]:
+        ax.axis("off")
+    for ax in axes[::ncol]:
+        ax.set_ylabel("target-style rate", fontsize=8)
+    for ax in axes[len(panels) - ncol:len(panels)]:
+        ax.set_xlabel("layer", fontsize=8)
+    h, l = axes[0].get_legend_handles_labels()
+    fig.legend(h, l, loc="upper center", bbox_to_anchor=(0.5, 0.965), ncol=len(ALPHAS) + 1, fontsize=9, frameon=False)
+    fig.suptitle("Screen: rate of the target convention at the cue vs injection layer, one line per α\n"
+                 "style only (no faithfulness judge), 50 texts per point, 16-token completions; dashed = unsteered rate on the same texts",
+                 fontsize=11, y=0.995)
+    fig.tight_layout(rect=(0, 0, 1, 0.93)); fig.savefig(OUT / "screen_layer_alpha.png", dpi=150); plt.close(fig)
+    old_heat = OUT / "screen_heatmaps.png"
+    if old_heat.exists():
+        old_heat.unlink()
 
     print(f"{'family':14s} {'tgt':3s} {'L':>3s} {'α':>4s} {'base':>5s} {'steer':>5s} {'cf':>5s} {'k4 ref':>6s} {'style-only':>10s} {'unscor':>6s} {'judge':>5s}")
     for (fam, target), b in sorted(best.items(), key=lambda kv: (fams.index(kv[0][0]), kv[0][1])):
