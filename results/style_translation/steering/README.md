@@ -41,16 +41,7 @@ pairs/cue tokens in `dataset_files/style_translation/`.
 | `records.npz` | per-completion arrays of the confirm run |
 
 ## Findings
-**Status (2026-09-08): 13 of 17 families fully graded.** The OpenRouter workspace hit its $100
-lifetime budget mid-judging; `brit_t_past`, `oxford_comma`, `curly_quotes`, `quote_punct` (5,600
-completions) and 7 `ellipsis` records have GPU rollouts but no faithfulness verdict yet and are
-excluded from `best_config.csv` / `steering_summary.*` (their screens are in `screen.csv` /
-`screen_layer_alpha.png`). To finish once the budget is restored:
-`judge_rollouts.py --dir artifacts/style_translation/steering/confirm --families brit_t_past oxford_comma curly_quotes quote_punct ellipsis --workers 48`
-then `steer_analyze.py` (both idempotent). Style-only confirm rates for the four pending families
-(n = 200, best of top-2): brit_t_past → -t past 0.33 (base 0.09), oxford_comma → serial comma 0.88
-(base 0.27) / → none 0.96 (base 0.70), curly_quotes → straight 0.82 (base 0.42) / → curly 0.38
-(base 0.18, 0.56 unscorable), quote_punct → inside 0.87 (base 0.31) / → outside 0.72 (base 0.44).
+**Status (2026-09-08): all 17 families fully graded** (judge finished after the OpenRouter budget was restored; 23,800 confirm completions).
 
 **Best (L, α) per family and target, full grading, n = 200** (`best_config.csv`; "k4" = step-3
 accuracy with 4 in-context examples; "cf" = another family's vector at the same setting):
@@ -62,9 +53,13 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
 | double_space | two spaces after period | 24 | 4 | .00 → **.64** | .00 | .74 | one space | 8 | 0.5 | .65 → .70 | .69 | .77 |
 | us_uk | British spelling | 20 | 4 | .09 → **.56** | .55 | .55 | American | 24 | 2 | .62 → .73 | .65 | .71 |
 | ise_ize | -ise | 20 | 4 | .04 → **.56** | .27 | .55 | -ize | 10 | 1 | .67 → .70 | .70 | .76 |
+| brit_t_past | -t past (learnt, spelt) | 24 | 2 | .07 → **.19** | .11 | .20 | -ed past | 10 | 1 | .55 → .56 | .58 | .51 |
 | whilst | whilst/amongst | 24 | 4 | .01 → **.90** | .01 | .54 | while/among | 24 | 4 | .69 → .89 | .67 | .58 |
 | contractions | expanded (do not) | 20 | 4 | .41 → **.80** | .23 | .61 | contracted (don't) | 20 | 4 | .23 → .65 | .07 | .69 |
 | ampersand | & | 24 | 4 | .00 → **.85** | .00 | .62 | and | 8 | 1 | .81 → .84 | .83 | .83 |
+| oxford_comma | no serial comma | 20 | 1 | .64 → **.86** | .73 | .70 | serial comma | 20 | 2 | .24 → .80 | .18 | .84 |
+| curly_quotes | curly quotes | 24 | 2 | .10 → **.28** | .04 | .66 | straight quotes | 16 | 4 | .24 → .54 | .12 | .67 |
+| quote_punct | punctuation outside quotes | 20 | 1 | .39 → **.63** | .49 | .83 | inside quotes | 24 | 2 | .28 → .74 | .32 | .88 |
 | em_dash | spaced hyphen | 24 | 4 | .02 → **.57** | .00 | .64 | em dash | 24 | 4 | .59 → .76 | .10 | .72 |
 | ellipsis | … character | 20 | 4 | .03 → **.74** | .02 | .63 | three periods | 12 | 2 | .45 → .55 | .48 | .71 |
 | num_words | spelled cardinals | 24 | 4 | .06 → **.74** | .53 | .28 | digits | 16 | 4 | .66 → .72 | .64 | .79 |
@@ -72,14 +67,19 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
 | ordinal_words | spelled ordinals | 20 | 2 | .37 → **.74** | .46 | .65 | 1st/2nd | 16 | 4 | .29 → .47 | .38 | .78 |
 
 1. **One vector at one token induces most conventions with no example.** Toward the rare (alt)
-   convention, steering the single cue token lifts full accuracy from ≈0 to 0.56–0.90 in 9 of 13
-   families. In 7 of them the steered k = 0 accuracy matches or beats 4 in-context examples
-   (whilst .90 vs .54, ampersand .85 vs .62, contractions .80 vs .61, num_words .74 vs .28,
-   ellipsis .74 vs .63, ordinal_words .74 vs .65, percent_sign .86 vs .81); us_uk and ise_ize tie
-   their k = 4 value (.56 vs .55). num_words is the clearest case: in-context examples never taught
+   convention, steering the single cue token lifts full accuracy to 0.56–0.90 in 13 of 17
+   families. In 10 of them the steered k = 0 accuracy matches or beats 4 in-context examples
+   (whilst .90 vs .54, oxford_comma .86 vs .70, percent_sign .86 vs .81, ampersand .85 vs .62,
+   contractions .80 vs .61, num_words .74 vs .28, ellipsis .74 vs .63, ordinal_words .74 vs .65;
+   us_uk and ise_ize tie at .56 vs .55). Below the k = 4 reference: double_space (.64 vs .74),
+   quote_punct (.63 vs .83), em_dash (.57 vs .64), curly_quotes (.28 vs .66; .56 unscorable —
+   quotes dropped or « » copied, as at k = 0 in step 3), sentence_caps (.20 vs .68), all_caps (.12
+   vs .35), and brit_t_past (.19 vs .20 — neither examples nor the vector make GPT-J write
+   "learnt/spelt"; style-only .23). num_words is the clearest case: in-context examples never taught
    spelled-out cardinals (≤ .37 in step 3, the Spanish shows digits) but the vector does (.74).
 2. **Where steering falls short of ICL it is the translation that breaks, not the style.** The
-   style-only rate is 0.79–1.00 in every family except all_caps (.56) and us_uk/ise_ize (.65).
+   style-only rate is 0.72–1.00 in every family except all_caps (.56), us_uk/ise_ize (.65),
+   curly_quotes (.38) and brit_t_past (.23).
    sentence_caps (style .94, accuracy .20) and all_caps (.56 / .12) lose because the α = 4 push at
    the first sentence produces fragments, restarts and repetition loops: judge OK falls from .56
    (base) to .20 and from .54 to .28. Elsewhere the judge OK rate under steering stays within a
@@ -87,17 +87,18 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
    changes the convention without damaging the translation.
 3. **Toward the house (nat) convention the gain is bounded by the baseline**: nat is already the
    k = 0 default in most families, so steering adds 0–.05 there. The exceptions are the families
-   whose k = 0 prior is the alt pole — contractions (.23 → .65), ordinal_words (.29 → .47) — plus
-   whilst (.69 → .89) and em_dash (.59 → .76), where the vector removes the unscorable/mixed
-   completions of the baseline.
-4. **Layer and scale.** The best alt setting is late (L20/24 in 11 of 13, L16 for percent_sign,
-   L10 for all_caps) and at the top of the α grid (α = 4 in 9 of 13): the screen curves rise
+   whose k = 0 prior is the alt pole — oxford_comma (.24 → .80), quote_punct (.28 → .74),
+   contractions (.23 → .65), curly_quotes (.24 → .54), ordinal_words (.29 → .47) — plus whilst
+   (.69 → .89) and em_dash (.59 → .76), where the vector removes the unscorable/mixed completions
+   of the baseline.
+4. **Layer and scale.** The best alt setting is late (L20/24 in 15 of 17, L16 for percent_sign,
+   L10 for all_caps) and high on the α grid (α = 4 in 9 of 17, α = 2 in 5, α = 1 in 3): the screen curves rise
    monotonically with α at L16–24 for most alt targets. Since the screen ranks on style only, it
    picks the largest α even where α = 4 costs faithfulness; a smaller α could score higher on
    full accuracy for sentence_caps / all_caps (not tested — the confirm run took the screen's
    top-2 as specified). nat targets peak earlier and at small α (L4–12, α = 0.5–1) where the
    baseline is already high.
-5. **Controls.** The counterfactual-family vector leaves accuracy at baseline in 7 of 13 alt
+5. **Controls.** The counterfactual-family vector leaves accuracy near baseline in 10 of 17 alt
    targets and never reaches the own-vector value, except where two families share a convention
    axis — and those transfers are interpretable: the ise_ize (-ise) vector moves us_uk to British
    spelling as well as us_uk's own vector (.55 vs .56); brit_t_past's -t-past vector moves ise_ize

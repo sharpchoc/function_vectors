@@ -62,6 +62,8 @@ CAPNOTE = (" NOTE: this completion was CUT OFF by a token limit before the sente
 def judge_one(key, model, r):
     if not r["tail"].strip():
         return r["doc_id"], r["style"], r["k"], {"ok": False, "notes": "empty completion", "judge": model}
+    if r["tail"].strip() == r["ref_sentence"].strip():   # identical to the reference -> faithful by definition (the model echoes the prompt on these)
+        return r["doc_id"], r["style"], r["k"], {"ok": True, "notes": "identical to the reference (deterministic)", "judge": "rule"}
     body = {"model": model, "temperature": 0.0, "max_tokens": 120,
             "messages": [{"role": "user", "content": PROMPT.format(
                 capnote=CAPNOTE if r["capped"] else "", es=r["es_text"], ctx=r["context_tail"],
@@ -72,7 +74,13 @@ def judge_one(key, model, r):
             resp.raise_for_status()
             raw = resp.json()["choices"][0]["message"]["content"].strip()
             raw = re.sub(r"^```(?:json)?|```$", "", raw, flags=re.M).strip()
-            v, _ = json.JSONDecoder(strict=False).raw_decode(raw[raw.index("{"):])
+            try:
+                v, _ = json.JSONDecoder(strict=False).raw_decode(raw[raw.index("{"):])
+            except (ValueError, json.JSONDecodeError):
+                m = re.search(r'"ok"\s*:\s*(true|false)', raw)   # notes ran past max_tokens -> unterminated JSON; verdict still present
+                if not m:
+                    raise
+                v = {"ok": m.group(1) == "true", "notes": raw.split('"notes"', 1)[-1].strip(' :"')[:200] + " [truncated]"}
             return r["doc_id"], r["style"], r["k"], {"ok": bool(v.get("ok")), "notes": str(v.get("notes", ""))[:200], "judge": model}
         except Exception as e:
             if attempt == 4:
