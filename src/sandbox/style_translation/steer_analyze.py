@@ -4,7 +4,8 @@
 accuracy(arm) = P(target style used at the cue AND judge OK) over the 200 k=0 texts (same grading
 as step 3). Final setting per (family, target) = the confirmed top-2 setting with the higher
 accuracy. Controls: base (alpha = 0, same seeds), counterfactual-family vector at the top-1 setting.
-Outputs -> results/style_translation/steering/: steering_summary.png, screen_heatmaps.png,
+Outputs -> results/style_translation/steering/: steering_summary.png (headline, no controls),
+steering_summary_controls.png (with the other-family control), screen_heatmaps.png,
 best_config.csv, steering_summary.csv, screen.csv, records.npz.
 """
 import csv
@@ -108,45 +109,54 @@ def main():
                             cf_accuracy=cf["accuracy"], step3_k0=b["step3_k0"], step3_k4=b["step3_k4"]))
     np.savez_compressed(OUT / "records.npz", **npz)
 
-    # ---- summary figure ------------------------------------------------------------------------
-    ncol = 4; nrow = math.ceil(len(fams) / ncol)
-    fig, axes = plt.subplots(nrow, ncol, figsize=(3.9 * ncol, 3.0 * nrow), sharey=True)
-    axes = axes.ravel()
-    C = {"base": "#9e9e9e", "steer": {"nat": "#1f77b4", "alt": "#d62728"}, "cf": "#c7c7c7"}
-    for ax, fam in zip(axes, fams):
-        x = 0; ticks, labels = [], []
-        for target in ("nat", "alt"):
-            base = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == "base"][0]
-            b = best[(fam, target)]
-            cf = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == f"{target}_cf"][0]
-            for j, (r, col, lab) in enumerate(((base, C["base"], "no steering"), (b, C["steer"][target], f"steered L{b['layer']} α{b['alpha']:g}"),
-                                              (cf, C["cf"], f"{cf['cf_family']}'s vector"))):
-                ax.bar(x + j, r["accuracy"], color=col, edgecolor="black" if j == 1 else "none", linewidth=0.8,
-                       yerr=[[r["accuracy"] - r["ci_lo"]], [r["ci_hi"] - r["accuracy"]]], capsize=2)
-                ticks.append(x + j); labels.append(lab)
-            k4 = b["step3_k4"]
-            if k4 is not None:
-                ax.hlines(k4, x - 0.5, x + 2.5, colors=C["steer"][target], linestyles="dashed", lw=1)
-            ax.text(x + 1, 1.02, f"→ {target}", ha="center", fontsize=8, color=C["steer"][target])
-            x += 4
-        ax.set_xticks(ticks); ax.set_xticklabels(labels, rotation=60, ha="right", fontsize=6.5)
-        ax.set_title(fam, fontsize=10); ax.set_ylim(0, 1.1); ax.grid(axis="y", alpha=0.3)
-    for ax in axes[len(fams):]:
-        ax.axis("off")
-    for ax in axes[::ncol]:
-        ax.set_ylabel("accuracy at k = 0", fontsize=9)
+    # ---- summary figures: headline (no controls) + detailed (with the other-family control) ----
     from matplotlib.patches import Patch
     from matplotlib.lines import Line2D
-    handles = [Patch(color=C["base"], label="no steering (k = 0 prompt as is)"),
-               Patch(color=C["steer"]["nat"], label="steered toward nat: the family's own vector, best (layer, α)"),
-               Patch(color=C["steer"]["alt"], label="steered toward alt: the family's own vector, best (layer, α)"),
-               Patch(color=C["cf"], label="control: another family's vector (named on the axis) at the same (layer, α)"),
-               Line2D([], [], color="black", linestyle="dashed", label="reference: accuracy with 4 in-context examples and NO steering (step 3), same colour code")]
-    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.955), ncol=2, fontsize=9, frameon=False)
-    fig.suptitle("Can one mean-difference vector, added at the first cue token, induce a convention with no in-context example?\n"
-                 "accuracy = target convention used at the cue AND faithful, coherent translation (Gemini judge); n = 200 texts per bar, 95% CI",
-                 fontsize=11, y=0.995)
-    fig.tight_layout(rect=(0, 0, 1, 0.91)); fig.savefig(OUT / "steering_summary.png", dpi=150); plt.close(fig)
+    C = {"base": "#9e9e9e", "steer": {"nat": "#1f77b4", "alt": "#d62728"}, "cf": "#c7c7c7"}
+
+    def summary_figure(path, with_controls):
+        ncol = 4; nrow = math.ceil(len(fams) / ncol); w = 3 if with_controls else 2
+        fig, axes = plt.subplots(nrow, ncol, figsize=(3.9 * ncol, 3.0 * nrow), sharey=True)
+        axes = axes.ravel()
+        for ax, fam in zip(axes, fams):
+            x = 0; ticks, labels = [], []
+            for target in ("nat", "alt"):
+                base = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == "base"][0]
+                b = best[(fam, target)]
+                cf = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == f"{target}_cf"][0]
+                bars = [(base, C["base"], "no steering"), (b, C["steer"][target], f"steered L{b['layer']} α{b['alpha']:g}")]
+                if with_controls:
+                    bars.append((cf, C["cf"], f"{cf['cf_family']}'s vector"))
+                for j, (r, col, lab) in enumerate(bars):
+                    ax.bar(x + j, r["accuracy"], color=col, edgecolor="black" if j == 1 else "none", linewidth=0.8,
+                           yerr=[[r["accuracy"] - r["ci_lo"]], [r["ci_hi"] - r["accuracy"]]], capsize=2)
+                    ticks.append(x + j); labels.append(lab)
+                k4 = b["step3_k4"]
+                if k4 is not None:
+                    ax.hlines(k4, x - 0.5, x + w - 0.5, colors=C["steer"][target], linestyles="dashed", lw=1)
+                ax.text(x + (w - 1) / 2, 1.02, f"→ {target}", ha="center", fontsize=8, color=C["steer"][target])
+                x += w + 1
+            ax.set_xticks(ticks); ax.set_xticklabels(labels, rotation=60, ha="right", fontsize=6.5)
+            ax.set_title(fam, fontsize=10); ax.set_ylim(0, 1.1); ax.grid(axis="y", alpha=0.3)
+        for ax in axes[len(fams):]:
+            ax.axis("off")
+        for ax in axes[::ncol]:
+            ax.set_ylabel("accuracy at k = 0", fontsize=9)
+        handles = [Patch(color=C["base"], label="no steering (k = 0 prompt as is)"),
+                   Patch(color=C["steer"]["nat"], label="steered toward nat: the family's own vector, best (layer, α)"),
+                   Patch(color=C["steer"]["alt"], label="steered toward alt: the family's own vector, best (layer, α)")]
+        if with_controls:
+            handles.append(Patch(color=C["cf"], label="control: another family's vector (named on the axis) at the same (layer, α)"))
+        handles.append(Line2D([], [], color="black", linestyle="dashed",
+                              label="reference: accuracy with 4 in-context examples and NO steering (step 3), same colour code"))
+        fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.955), ncol=2, fontsize=9, frameon=False)
+        fig.suptitle("Can one mean-difference vector, added at the first cue token, induce a convention with no in-context example?\n"
+                     "accuracy = target convention used at the cue AND faithful, coherent translation (Gemini judge); n = 200 texts per bar, 95% CI",
+                     fontsize=11, y=0.995)
+        fig.tight_layout(rect=(0, 0, 1, 0.91)); fig.savefig(path, dpi=150); plt.close(fig)
+
+    summary_figure(OUT / "steering_summary.png", with_controls=False)
+    summary_figure(OUT / "steering_summary_controls.png", with_controls=True)
 
     # ---- screen heatmaps -----------------------------------------------------------------------
     fig, axes = plt.subplots(len(sfams), 2, figsize=(7.5, 1.55 * len(sfams)))

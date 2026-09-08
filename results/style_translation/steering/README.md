@@ -32,7 +32,8 @@ pairs/cue tokens in `dataset_files/style_translation/`.
 
 | file | contents |
 |---|---|
-| `steering_summary.png` | per family: unsteered k = 0 · steered at best (L, α) · the named other family's vector at the same setting; dashed line = step-3 accuracy with 4 in-context examples and no steering (legend on the figure) |
+| `steering_summary.png` | HEADLINE — per family: unsteered k = 0 · steered at best (L, α); dashed line = step-3 accuracy with 4 in-context examples and no steering (legend on the figure) |
+| `steering_summary_controls.png` | DETAILED — the same plus the named other family's vector at the same (L, α) (control) |
 | `screen_heatmaps.png` | layer × α target-style rate on the 50-text screen, per family and target |
 | `best_config.csv` | final (L, α) per (family, target) with accuracy, CI, style-only, unscorable, judge OK, base, cf, step-3 k0/k4 |
 | `steering_summary.csv` | every confirm arm (base, top1, top2, cf) per family/target |
