@@ -5,6 +5,40 @@ Newest entries at top. One stream per active line of work.
 
 ---
 
+## 2026-09-09 — Appendix G follow-up: rotation restricted to m planes (user request)
+
+**Owner:** Claude Code background agent, main checkout. CPU only (~8 min). **Status:** DONE.
+
+**Question (user):** the k-sweep in Appendix G restricts the read INPUT to top-k PCs (rank of the
+map). Does a rotation in only a few planes — rank-2m skew generator, identity elsewhere, still
+centered + one scalar — recover most of the full Procrustes map? `src/eval_scripts/
+claim6_mplane_rotation.py`: R = exp(A), A = Q S Q^T rank 2m, Adam on the 55 train tasks, three
+inits per m (Procrustes-seeded + 2 random, all converge to the same train loss; m=54 train R^2
+0.943 = full Procrustes), best-train fit kept, held-out R^2 (14 tasks, test-mean ref).
+
+**Findings:** m=1/2/3/4/8/16/24/32 planes → held-out 0.01/0.11/0.17/0.22/0.39/0.50/0.57/0.59
+(input projected onto the train read span, the Appendix-G convention). Three planes recover 29%
+of the full 0.588; 24 planes 98%, 32 planes 100% — consistent with the ~30-dim task-identity code
+(k90 32 read / 28 write PCs). Above m≈8 the m-plane rotation beats the rank-k PCA map at k=m
+(0.57 vs 0.51 at 24), so "few planes" is not bounded by the k-sweep, but it is still no
+low-dim shortcut. Geometry behind it: all 54 principal angles between train read span and write
+span ≥ 65° (39 ≥ 80°), 2% shared variance, each read PC turned ~87° by R — the map is a
+subspace swap, not a rotation about a few axes.
+
+**Convention caveat (for the user to adjudicate; draft NOT edited):** the Appendix-G Procrustes R
+is a rank-54 partial isometry (||R^T R − I|| = 63.6), i.e. held-out u_A is implicitly projected
+onto the train read span (61.6% of held-out read variance) before rotating. The dual-form ridge
+makes the identical implicit projection, so rotation-vs-ridge (92%) is fair, but a GENUINE
+full-space rotation (identity outside the fitted planes) scores only 0.27 held-out at any m
+because the out-of-span 38% passes through unrotated, orthogonal to the FVs. Appendix G's
+"rigidly rotate" should read "project onto the train read span, rotate, rescale once".
+
+**Files:** script above; `understanding_read_write_linear_map/meanresid_map/mplane_sweep.{csv,png}`
+(figure: m-plane rotation projected / full-space vs the existing rank-k reference curve).
+**Next:** none (paper wording is the user's call). **Blockers:** none.
+
+---
+
 ## 2026-09-02 — ctop1 6-shot steering by injection layer: u_A at L5, L6, L7 (vs L0/L1)
 
 **Owner:** Claude Code subagent (fable), main checkout. Pod fv-ctop1-L567 `5100qd0zr8o12e`
