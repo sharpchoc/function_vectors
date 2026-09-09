@@ -33,8 +33,12 @@ full-space rotation (identity outside the fitted planes) scores only 0.27 held-o
 because the out-of-span 38% passes through unrotated, orthogonal to the FVs. Appendix G's
 "rigidly rotate" should read "project onto the train read span, rotate, rescale once".
 
-**Files:** script above; `understanding_read_write_linear_map/meanresid_map/mplane_sweep.{csv,png}`
-(figure: m-plane rotation projected / full-space vs the existing rank-k reference curve).
+**Files:** script above; `understanding_read_write_linear_map/meanresid_map/mplane_sweep.{csv,png}`.
+**Figure (USER DECISION, same day):** the genuine full-space rotation curve ONLY (red), against the
+unconstrained ridge 0.64 as the reference — ridge is a legitimate full-space linear map (it
+annihilates the out-of-span component, which a rotation cannot), so the two are on the same
+footing; the projected-input curve and the rank-k reference were dropped from the figure (the
+projected column stays in the CSV). `--plot_only` redraws from the CSV.
 **Next:** none (paper wording is the user's call). **Blockers:** none.
 
 ---

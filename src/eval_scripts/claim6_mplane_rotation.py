@@ -19,11 +19,14 @@ is kept. Held-out R^2 on the 14 tasks, test-mean reference, is reported two ways
   fullspace  : the same fitted R applied as a true rotation of R^d. The 38% of held-out read
                variance outside the train span passes through unrotated (orthogonal to the FVs).
 
-Reference curve: rotation+scale of the existing rank-k sweep (meanresid_map/kdim_sweep.csv).
+Figure (user decision 2026-09-09): the genuine full-space rotation only, against the unconstrained
+linear map (ridge, meanresid_map/fits_summary.csv) as the reference. Ridge is a legitimate
+full-space linear map (it annihilates the out-of-span component; a rotation cannot), so the two are
+on the same footing. The projected-input column stays in the CSV. `--plot_only` redraws from the CSV.
 
 Writes results/69_task_run/understanding_read_write_linear_map/meanresid_map/
   mplane_sweep.csv, mplane_sweep.png
-CPU, fp64, ~8 min.
+CPU, fp64, ~8 min (plot only: seconds).
 """
 import csv
 import sys
@@ -116,24 +119,30 @@ def main():
     with open(OUT / "mplane_sweep.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
 
-    kd = list(csv.DictReader(open(OUT / "kdim_sweep.csv")))
-    fig, ax = plt.subplots(figsize=(7.6, 4.4))
-    ax.plot([int(r["k"]) for r in kd], [float(r["rotscale_r2"]) for r in kd], color=C.grey, lw=1.2, ls=(0, (4, 3)),
-            marker="o", ms=3.5, label="reference: rank-$k$ map (top-$k$ read PCs, existing sweep)")
-    ax.plot(MS, [r["heldout_r2_projected_input"] for r in rows], color=C.purple, lw=1.6, marker="o",
-            label="rotation in $m$ planes, input projected to train read span")
-    ax.plot(MS, [r["heldout_r2_fullspace"] for r in rows], color=C.red, lw=1.6, marker="o",
-            label="rotation in $m$ planes, genuine full-space rotation")
-    ax.axhline(full_rs, color=C.purple, lw=0.9, ls=":", alpha=0.9)
-    ax.text(MS[0], full_rs + 0.012, f"full Procrustes rotation + scalar {full_rs:.2f}", ha="left", fontsize=8.5, color=C.purple)
-    ax.set_xscale("log", base=2); ax.set_xticks(MS); ax.set_xticklabels([str(m) for m in MS])
-    ax.set_xlabel("$m$ = number of rotation planes ($k$ for the reference curve)")
-    ax.set_ylabel("held-out $R^2$ (14 tasks)")
-    ax.set_ylim(-0.05, 1.02); ax.legend(loc="upper left", fontsize=8)
-    ax.set_title("How many planes does the read→write rotation need?")
-    fig.tight_layout(); fig.savefig(OUT / "mplane_sweep.png"); plt.close(fig)
+    plot(rows)
     print("wrote", OUT / "mplane_sweep.csv", OUT / "mplane_sweep.png")
 
 
+def plot(rows):
+    ridge = next(float(r["heldout_r2_testmean"]) for r in csv.DictReader(open(OUT / "fits_summary.csv"))
+                 if r["method"] == "ridge")
+    ms = [int(r["m_planes"]) for r in rows]
+    fig, ax = plt.subplots(figsize=(7.6, 4.4))
+    ax.plot(ms, [float(r["heldout_r2_fullspace"]) for r in rows], color=C.red, lw=1.6, marker="o",
+            label="rotation in $m$ planes + one scalar")
+    ax.axhline(ridge, color=C.map, lw=0.9, ls=":", alpha=0.9)
+    ax.text(ms[0], ridge + 0.012, f"unconstrained linear map (ridge) {ridge:.2f}", ha="left", fontsize=8.5, color=C.map)
+    ax.set_xscale("log", base=2); ax.set_xticks(ms); ax.set_xticklabels([str(m) for m in ms])
+    ax.set_xlabel("$m$ = number of planes the rotation acts in")
+    ax.set_ylabel("held-out $R^2$ (14 tasks)")
+    ax.set_ylim(-0.05, 1.02); ax.legend(loc="upper left", fontsize=8.5)
+    ax.set_title("Can a rotation in a few planes carry the read feature to the write feature?")
+    fig.tight_layout(); fig.savefig(OUT / "mplane_sweep.png"); plt.close(fig)
+
+
 if __name__ == "__main__":
-    main()
+    if "--plot_only" in sys.argv:
+        plot(list(csv.DictReader(open(OUT / "mplane_sweep.csv"))))
+        print("wrote", OUT / "mplane_sweep.png")
+    else:
+        main()
