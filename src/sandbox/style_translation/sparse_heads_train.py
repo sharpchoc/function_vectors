@@ -196,7 +196,7 @@ def main():
     print(f"points: train {len(train)} es {len(es)} test {len(test)} | families {len(fams)} | C {tuple(C.shape)}", flush=True)
     for L in args.layers:
         out = TRAIN / f"L{L}"; out.mkdir(parents=True, exist_ok=True)
-        micro = args.micro or {6: 8, 9: 8, 12: 12, 16: 12, 20: 16}.get(L, 4)     # measured: micro 16 OOMs at L7 (21 blocks of activations), fits at L20
+        micro = args.micro or {6: 4, 9: 4, 12: 6, 16: 8, 20: 10}.get(L, 4)     # measured: micro 16 OOMs at L7, micro 8 OOMs at L6 (~500-token all_caps sequences)
         a = tc_args(L, micro); a.max_epochs = args.max_epochs
         print(f"L{L}: micro-batch {micro}", flush=True)
         bfile = out / "baseline_c0.json"

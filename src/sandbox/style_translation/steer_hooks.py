@@ -43,14 +43,16 @@ def unit_test(model, tok, layer=6):
               return_tensors="pt", padding=True).to(model.device)
     with torch.no_grad():
         base = model(**enc, output_hidden_states=True)
-        v = torch.randn(model.config.n_embd, device=model.device) * 0.1
+        v = torch.randn(model.config.n_embd, device=model.device, generator=torch.Generator(device=model.device).manual_seed(0)) * 0.1
         with CueSteer(model, layer, v, 0.0):
             zero = model(**enc, output_hidden_states=True)
         with CueSteer(model, layer, v, 1.0) as s:
             one = model(**enc, output_hidden_states=True)
     assert torch.equal(base.logits, zero.logits), "alpha=0 must be an identity"
     d = (one.hidden_states[layer] - base.hidden_states[layer]).float()
-    assert torch.allclose(d[:, -1, :], v.float().expand_as(d[:, -1, :]), atol=2e-2), "last position must move by v"
+    # fp16-aware tolerance: hidden entries at late layers reach the hundreds, where the fp16 spacing is 0.25
+    h = base.hidden_states[layer][:, -1, :].float().abs()
+    assert ((d[:, -1, :] - v.float()).abs() <= 2e-2 + 1.5e-3 * h).all(), "last position must move by v"
     assert d[:, :-1, :].abs().max().item() == 0.0, "other positions must be unchanged"
     assert s.calls == 1
     return True

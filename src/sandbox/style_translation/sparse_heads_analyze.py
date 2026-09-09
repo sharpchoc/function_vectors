@@ -114,12 +114,12 @@ def main():
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     ax = axes[0]
     for Lr in sorted({int(r["layer"]) for r in ll}):
-        pts = sorted([(int(r["n_heads_02"]), float(r["es_nll"]), float(r["lam"])) for r in ll if int(r["layer"]) == Lr])
+        pts = sorted([(int(r["n_heads_02"]), float(r["es_nll"]), float(r["lam"])) for r in ll if int(r["layer"]) == Lr and int(r["n_heads_02"]) < 448])  # drop degenerate fits (c stayed at init)
         ax.plot([p[0] for p in pts], [p[1] for p in pts], marker="o", label=f"layer {Lr}" + (" (selected)" if Lr == L else ""), lw=2 if Lr == L else 1)
         for n, nll, lm in pts:
             ax.annotate(f"λ={lm:g}", (n, nll), fontsize=6, xytext=(3, 3), textcoords="offset points")
     c0 = float(ll[0]["es_nll_c0"]); ax.axhline(c0, color="grey", linestyle="dashed", lw=1, label="no steering")
-    ax.set_xlabel("number of heads with c > 0.2"); ax.set_ylabel("validation NLL per label token"); ax.set_title("Fit quality vs sparsity (validation slice)", fontsize=10); ax.legend(fontsize=8); ax.grid(alpha=0.3)
+    ax.set_xlabel("number of heads with c > 0.2"); ax.set_ylabel("validation NLL per label token"); ax.set_title("Fit quality vs sparsity (validation slice; λ = 0.1 omitted: coefficients never left initialisation)", fontsize=9); ax.legend(fontsize=8); ax.grid(alpha=0.3)
     ax = axes[1]
     lam_dir = ROOT / "eval_lambda"
     if lam_dir.exists() and any(lam_dir.glob("*.json")):
@@ -131,7 +131,7 @@ def main():
             for r in json.load(open(f)):
                 if r.get("judge"):
                     curve.setdefault((r["lam"], r["n_heads"]), []).append(r["decision"] == "alt" and r["judge"]["ok"])
-        pts = sorted((n, float(np.mean(v)), lm) for (lm, n), v in curve.items())
+        pts = sorted((n, float(np.mean(v)), lm) for (lm, n), v in curve.items() if n < 448)   # drop the degenerate lambda = 0.1 fit
         ax.plot([p[0] for p in pts], [p[1] for p in pts], marker="o", color=COL["sparse_w"])
         for n, a, lm in pts:
             ax.annotate(f"λ={lm:g}", (n, a), fontsize=6, xytext=(3, 3), textcoords="offset points")
