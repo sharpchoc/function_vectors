@@ -9175,3 +9175,15 @@ last-bit BLAS/SVD differences vs the 2026-09-03 file, but not verifiable (old co
 **Next:** user decisions pending from steps 4–5: count ‘ ’ as curly; lower-α judged confirm for sentence_caps/all_caps; per-family sparse fits or an α sweep for the sparse vectors; ise_ize lexicon inflections.
 
 **Addendum 2026-09-08 — explainer graphic (user request):** `results/style_translation/explainer/prompt_formats_and_cue_token.png` — poster-style schematic: English-only vs Spanish→English prompt, twins, cue token, sample → classifier → judge → accuracy. PNG only in the folder (user); TikZ source built with write_up/graphics/figstyle.tex kept outside the repo (job scratch), re-creatable from the WORKLOG description.
+
+## Stream: style-translation — step 4 PAIRED rerun (2026-09-09/10, user decision)
+
+**Status:** done, on main; `results/style_translation/steering/` OVERWRITTEN with the paired-vector results (unpaired version: commit 17c52c5e; artifacts moved to `artifacts/style_translation/steering_unpaired/`). `capture_cues.py` now pairs by default (`--unpaired` = old behaviour). Same screen/confirm/judge/analysis protocol; 3 pods avjdbbxxghcbaa / g6d0gx85kq6t5s / aoo1a76hsg5qxb (~2.5 h each, terminated); 23,800 confirm completions judged (Gemini 2.5 Flash via the rotated OpenRouter key, 0 failures, 5 rule verdicts).
+
+**Findings:** paired vectors are far more reliable (split-half cos at L20 ≥ .97 everywhere; unpaired us_uk .68, curly_quotes .79, brit_t_past .83) and gain exactly where the old vectors were noisy: brit_t_past → -t past .19→.43 (now beats k4 .20), ise_ize → -ise .56→.67, brit_t_past nat .56→.62, contractions nat .65→.71; all other cells within ±.03. Totals: rare convention lifted to .58–.90 in 13/17, matches/beats 4 in-context examples in 11/17. Vector geometry sharpened into a British-English cluster (ise_ize/us_uk .82, brit_t_past/ise_ize .69, /us_uk .69, /whilst .62) and a spelled-numbers axis (num_words/ordinal_words .62). Failure modes unchanged in kind (first-sentence damage for sentence_caps/all_caps; curly ‘ ’ tokenisation spill; ordinal `1.st` hybrids).
+
+**Judge fix during the run:** my identical-to-reference rule had fired on all 470 bare `...` ellipsis completions (Gemini judged only half OK in step 3) → reverted to "rule only when Gemini returns no verdict", 936 verdicts reset and re-judged; ellipsis OK rate back to .61 (= step 3).
+
+**Lessons:** (1) always pair the two pools of a mean-difference vector on (item, k) — the unpaired k skew (nat 15–20 % k = 0, alt ≈ 0) cost reliability without changing the headline; (2) a deterministic override of an LLM judge must be scoped to the judge's failure path, or it silently changes the metric on a whole family; (3) `ssh host "setsid job &"` keeps the ssh session open until the job ends — harmless, but launch with `-f` or accept the hang.
+
+**Next:** none pending. Open questions for the user: count ‘ ’ as curly? lower-α judged confirm for sentence_caps/all_caps? `sparse_heads_analyze.py` (step 5) now compares against the paired confirm/best_config (its README numbers were computed against the unpaired ones).

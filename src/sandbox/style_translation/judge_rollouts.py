@@ -62,8 +62,6 @@ CAPNOTE = (" NOTE: this completion was CUT OFF by a token limit before the sente
 def judge_one(key, model, r):
     if not r["tail"].strip():
         return r["doc_id"], r["style"], r["k"], {"ok": False, "notes": "empty completion", "judge": model}
-    if r["tail"].strip() == r["ref_sentence"].strip():   # identical to the reference -> faithful by definition (the model echoes the prompt on these)
-        return r["doc_id"], r["style"], r["k"], {"ok": True, "notes": "identical to the reference (deterministic)", "judge": "rule"}
     body = {"model": model, "temperature": 0.0, "max_tokens": 120,
             "messages": [{"role": "user", "content": PROMPT.format(
                 capnote=CAPNOTE if r["capped"] else "", es=r["es_text"], ctx=r["context_tail"],
@@ -84,6 +82,8 @@ def judge_one(key, model, r):
             return r["doc_id"], r["style"], r["k"], {"ok": bool(v.get("ok")), "notes": str(v.get("notes", ""))[:200], "judge": model}
         except Exception as e:
             if attempt == 4:
+                if r["tail"].strip() == r["ref_sentence"].strip():   # judge never answered (echoes the prompt on these); identical to the reference -> OK by rule
+                    return r["doc_id"], r["style"], r["k"], {"ok": True, "notes": "identical to the reference; judge gave no verdict (rule)", "judge": "rule"}
                 print(f"{r['doc_id']}/{r['style']}/{r['k']} JUDGE FAILED: {e}", flush=True)
                 return r["doc_id"], r["style"], r["k"], None
             time.sleep(2 * (attempt + 1))

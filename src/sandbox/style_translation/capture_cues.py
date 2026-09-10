@@ -1,18 +1,25 @@
 #!/usr/bin/env python
 """Step 4a — mean cue-token activations per family, style and layer (GPU).
 
-Selection (user decision): rollout records whose completion was CORRECT = used the context's
-convention AND was judged faithful/coherent (`style_ok and judge.ok`), all k, both styles.
-For each such prompt (ids from artifacts/style_translation/prompts) a forward pass collects the
-hidden state at the last position (the cue token) for L = 1..28 (= hidden_states[1..28]).
+Selection — PAIRED design (user decision 2026-09-09, the default): a (text, k) pair enters BOTH
+means only if the nat-context AND the alt-context completions were correct (used the context's
+convention AND judged faithful/coherent: `style_ok and judge.ok`). The two pools then contain the
+same texts at the same k and differ only in the convention shown in the context, so the mean
+difference cannot pick up "which texts / which k are easy" (the unpaired pools had 15-20 % k = 0
+prompts on the nat side and ~0 % on the alt side). `--unpaired` restores the old independent
+selection (results of that version: commit 17c52c5e).
+For each selected prompt (ids from artifacts/style_translation/prompts) a forward pass collects
+the hidden state at the last position (the cue token) for L = 1..28 (= hidden_states[1..28]).
 
 Saves artifacts/style_translation/steering/vectors/<family>.npz:
-  mean_nat[28,4096], mean_alt[28,4096] (fp32), v_nat = mean_nat - mean_alt, n_nat, n_alt,
-  norm_v[28], norm_mean_nat[28], split_half_cos[28] (v from a random half vs the other half).
+  mean_nat[28,4096], mean_alt[28,4096] (fp32), v_nat = mean_nat - mean_alt, n_nat, n_alt (= n_pairs
+  when paired), paired flag, norm_v[28], norm_mean_nat[28], split_half_cos[28] (halves split by
+  (text, k) so each half is itself paired).
 """
 import argparse
 import json
 import sys
+import zlib
 from pathlib import Path
 
 import numpy as np
@@ -38,6 +45,7 @@ def main():
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
     ap.add_argument("--token_budget", type=int, default=8000)
     ap.add_argument("--batch_cap", type=int, default=16)
+    ap.add_argument("--unpaired", action="store_true", help="old independent selection per pole (default: paired)")
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     model, tok = load_model()
@@ -47,9 +55,13 @@ def main():
             print(f"{fam}: exists, skip", flush=True); continue
         recs = json.load(open(ROLL / f"{fam}.json"))
         prompts = {(p["doc_id"], p["style"], p["k"]): p["prompt_ids"] for p in json.load(open(PROMPTS / f"{fam}.json"))}
-        items = [{"ids": prompts[(r["doc_id"], r["style"], r["k"])], "style": r["style"],
-                  "half": hash((r["doc_id"], r["k"])) % 2}
-                 for r in recs if r["style_ok"] and r.get("judge") and r["judge"]["ok"]]
+        correct = {(r["doc_id"], r["style"], r["k"]) for r in recs if r["style_ok"] and r.get("judge") and r["judge"]["ok"]}
+        if args.unpaired:
+            keep = correct
+        else:   # paired: (doc, k) must be correct under BOTH contexts
+            pairs = {(d, k) for (d, s_, k) in correct if s_ == "nat"} & {(d, k) for (d, s_, k) in correct if s_ == "alt"}
+            keep = {(d, s_, k) for (d, s_, k) in correct if (d, k) in pairs}
+        items = [{"ids": prompts[key], "style": key[1], "half": zlib.crc32(f"{key[0]}|{key[2]}".encode()) % 2} for key in sorted(keep)]
         sums = {(s, h): np.zeros((NL, D), np.float64) for s in ("nat", "alt") for h in (0, 1)}
         cnt = {(s, h): 0 for s in ("nat", "alt") for h in (0, 1)}
         for bi, b in enumerate(batches_by_len(items, args.token_budget, args.batch_cap)):
@@ -74,8 +86,9 @@ def main():
         cos = (v0 * v1).sum(1) / (np.linalg.norm(v0, axis=1) * np.linalg.norm(v1, axis=1) + 1e-9)
         np.savez_compressed(OUT / f"{fam}.npz", mean_nat=mean["nat"].astype(np.float32), mean_alt=mean["alt"].astype(np.float32),
                             v_nat=v.astype(np.float32), n_nat=cnt[("nat", 0)] + cnt[("nat", 1)], n_alt=cnt[("alt", 0)] + cnt[("alt", 1)],
+                            paired=not args.unpaired,
                             norm_v=np.linalg.norm(v, axis=1), norm_mean_nat=np.linalg.norm(mean["nat"], axis=1), split_half_cos=cos)
-        print(f"{fam}: n_nat={cnt[('nat',0)]+cnt[('nat',1)]} n_alt={cnt[('alt',0)]+cnt[('alt',1)]} | "
+        print(f"{fam}: {'paired' if not args.unpaired else 'unpaired'} n_nat={cnt[('nat',0)]+cnt[('nat',1)]} n_alt={cnt[('alt',0)]+cnt[('alt',1)]} | "
               f"|v|/|mean| at L=6,12,20: " + ", ".join(f"{np.linalg.norm(v[l-1])/np.linalg.norm(mean['nat'][l-1]):.3f}" for l in (6, 12, 20)) +
               f" | split-half cos at L=6,12,20: " + ", ".join(f"{cos[l-1]:.2f}" for l in (6, 12, 20)), flush=True)
     print("capture done", flush=True)
