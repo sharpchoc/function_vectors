@@ -51,45 +51,49 @@ heads. Validation NLL per label token 2.62 (unsteered) → 0.68; test 2.61 → 0
 kept the epoch-0 coefficients, all ≈ 0.5) and are excluded from the curves.
 
 **Accuracy on the 80 held-out texts per family, alt direction** (`sparse_summary.csv`; k4 = 4 in-context
-examples, resid = step-4 residual vector at its per-family best (L, α), both on the same 80 texts):
+examples, resid = step-4 residual mean-difference vector — PAIRED version, 2026-09-10 — at its per-family best (L, α), both on the same 80 texts):
 
 | family | unsteered | sparse 114 heads | unweighted | other family | resid (step 4) | k4 |
 |---|---|---|---|---|---|---|
-| sentence_caps | .00 | .19 | .21 | .00 | .26 | .65 |
-| all_caps | .00 | .06 | .05 | .00 | .10 | .44 |
-| double_space | .00 | .45 | .38 | .00 | .65 | .75 |
-| us_uk | .11 | .64 | .68 | .74 | .60 | .56 |
-| ise_ize | .06 | **.79** | .60 | .24 | .61 | .57 |
-| brit_t_past | .09 | .25 | .19 | .07 | .19 | .24 |
-| whilst | .00 | .75 | .71 | .00 | .88 | .54 |
-| contractions | .36 | .62 | .53 | .29 | .76 | .72 |
-| ampersand | .01 | .55 | .51 | .00 | .82 | .61 |
+| sentence_caps | .00 | .19 | .21 | .00 | .17 | .65 |
+| all_caps | .00 | .06 | .05 | .00 | .03 | .44 |
+| double_space | .00 | .45 | .38 | .00 | .66 | .75 |
+| us_uk | .11 | .64 | .68 | .74 | .61 | .56 |
+| ise_ize | .06 | **.79** | .60 | .24 | .72 | .57 |
+| brit_t_past | .09 | .25 | .19 | .07 | .45 | .24 |
+| whilst | .00 | .75 | .71 | .00 | .90 | .54 |
+| contractions | .36 | .62 | .53 | .29 | .80 | .72 |
+| ampersand | .01 | .55 | .51 | .00 | .81 | .61 |
 | oxford_comma | .61 | .75 | .85 | .71 | .85 | .72 |
-| curly_quotes | .14 | **.36** | .39 | .05 | .23 | .68 |
-| quote_punct | .40 | .57 | .56 | .50 | .62 | .81 |
-| em_dash | .04 | .45 | .45 | .00 | .50 | .65 |
-| ellipsis | .01 | .55 | .68 | .10 | .69 | .68 |
-| num_words | .07 | .25 | .24 | .09 | .71 | .31 |
-| percent_sign | .07 | .75 | .81 | .11 | .84 | .79 |
+| curly_quotes | .14 | **.36** | .39 | .05 | .28 | .68 |
+| quote_punct | .40 | .57 | .56 | .50 | .61 | .81 |
+| em_dash | .04 | .45 | .45 | .00 | .53 | .65 |
+| ellipsis | .01 | .55 | .68 | .10 | .79 | .68 |
+| num_words | .07 | .25 | .24 | .09 | .70 | .31 |
+| percent_sign | .07 | .75 | .81 | .11 | .88 | .79 |
 | ordinal_words | .38 | .51 | .45 | .29 | .74 | .64 |
-| **mean** | .14 | **.50** | .49 | .19 | .59 | .61 |
+| **mean** | .14 | **.50** | .49 | .19 | .62 | .61 |
 
 1. **One shared set of 114 heads, summed and injected once at the cue token, induces the rare
    convention in most families with no example**: mean accuracy .14 → .50 (unweighted indicator sum
    .49, so the learned weights matter little once the set is chosen). It matches or beats 4 in-context
    examples in 5 families (ise_ize .79 vs .57, whilst .75 vs .54, us_uk .64 vs .56, oxford_comma .75
-   vs .72, brit_t_past .25 vs .24) and is within .05 of the per-family-tuned residual vector in 7.
-2. **Versus the residual mean-difference vector (step 4): lower style forcing, better translations.**
-   The sparse heads use the target convention less often (style-only .64 vs .79 averaged over
-   families) but keep the judge rate at the unsteered level (.76 vs .73; unsteered .78). They win
-   clearly on ise_ize (.79 vs .61), curly_quotes (.36 vs .23; unscorable .25 vs .56 — the heads
-   produce the two-token “ more often than the residual vector) and brit_t_past (.25 vs .19), tie on
-   us_uk / all_caps / em_dash / quote_punct / sentence_caps, and lose by > .10 on ampersand (.55 vs
-   .82), num_words (.25 vs .71), ordinal_words (.51 vs .74), double_space (.45 vs .65), contractions,
-   ellipsis and whilst — the symbol / digit conventions, where the residual vector's per-family α = 4
-   push was decisive. Caveat: the residual comparison is per-family tuned (best of 45 (L, α) cells per
-   family) whereas the sparse set is one shared vector at one layer with α = 1 and was chosen by
-   validation NLL, not by accuracy.
+   vs .72, brit_t_past .25 vs .24) and is within .05 of the per-family-tuned residual vector in 4
+   (sentence_caps, all_caps, us_uk, quote_punct).
+2. **Versus the residual mean-difference vector (step 4, paired vectors): lower style forcing, better
+   translations, lower accuracy.** Mean accuracy .50 vs .62 (residual) on the same 80 texts. The sparse
+   heads use the target convention less often (style-only .64 vs .82 averaged over families) but keep
+   the judge rate at the unsteered level (.76 vs .72; unsteered .78). They win on ise_ize (.79 vs .72)
+   and curly_quotes (.36 vs .28; unscorable .25 vs .56 — the heads produce the two-token “ more often
+   than the residual vector), tie within .05 on sentence_caps / all_caps / us_uk / quote_punct, and lose
+   by > .10 on double_space (.45 vs .66), brit_t_past (.25 vs .45), whilst (.75 vs .90), contractions
+   (.62 vs .80), ampersand (.55 vs .81), ellipsis (.55 vs .79), num_words (.25 vs .70), percent_sign
+   (.75 vs .88) and ordinal_words (.51 vs .74) — the symbol / digit conventions and the two families
+   whose paired residual vector improved most. Caveat: the residual comparison is per-family tuned
+   (best of 45 (L, α) cells per family) whereas the sparse set is one shared vector at one layer with
+   α = 1 and was chosen by validation NLL, not by accuracy. (Against the earlier unpaired residual
+   vectors the residual mean was .59 and brit_t_past was a sparse-heads win, .25 vs .19; see git
+   history before 2026-09-10.)
 3. **Sparsity trades accuracy smoothly.** Graded accuracy at layer 20 (mean over families,
    `heads_vs_accuracy.png`): 114 heads .47, 90 heads .46, 39 heads .40, 16 heads .32 (unsteered .14;
    the 114-head point re-sampled with other seeds gives .50 in the main run, so ±.03 is seed noise).
@@ -121,4 +125,7 @@ examples, resid = step-4 residual vector at its per-family best (L, α), both on
 - Caveats: (i) one shared head set for all 17 families — per-family fits were not run; (ii) α fixed
   at 1 (the coefficients set the scale) — no α sweep; (iii) selection by validation NLL with a 0.02-nat
   tolerance picks the densest fit; the accuracy curve shows 90 heads within .02 of it; (iv) the
-  residual-vector reference inherits step 4's selection optimism (screen on 50 texts incl. these).
+  residual-vector reference inherits step 4's selection optimism (screen on 50 texts incl. these);
+  (v) the residual reference is the PAIRED step-4 vector (2026-09-10; `results/style_translation/steering/`),
+  re-analysed with `sparse_heads_analyze.py` on 2026-09-10 — the sparse head means themselves are
+  alt-correct-only means on the 120 fit texts (no pairing applies: they are not a nat−alt difference).
