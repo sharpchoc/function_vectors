@@ -9203,3 +9203,15 @@ last-bit BLAS/SVD differences vs the 2026-09-03 file, but not verifiable (old co
 **Lessons:** "Among" vs "Among|st" — when the rendered span is entirely shared, the evidence must be the divergence token (the next word), otherwise the extraction is empty; all_caps alt tokenises into ~1.7× more pieces than nat. Pod terminated.
 
 **Next:** await user (natural follow-ups: read → write linear map as in the 69-task study; per-instance-index analysis from `inst_*`).
+
+## Stream: style-translation — step 7, steering at the evidence tokens (2026-09-10)
+
+**Status:** done, on main. `results/style_translation/read_steer/` (README, read_steer_summary.png, _controls.png, read_steer_layer_alpha.png, best_config.csv, read_steer_summary.csv, screen.csv, records.npz); artifacts `artifacts/style_translation/read_steer/{screen,confirm}`. 3 pods hvoj51p99eb6g0 / xjk0sj1lk9m2fc / 80ppa2z6ty93vw (~2.5 h each, terminated); 61,200 screen + 27,200 confirm rollouts; 27,200 Gemini verdicts, 0 failures.
+
+**Commands (`src/sandbox/style_translation/`):** `steer_hooks.PositionSteer` (+ unit test) → `read_steer_screen.py` (k = 3 prompts, evidence positions of instances 0..2, u = r_nat − r_alt, 9 layers × 4 α × 50 texts, both directions) → `read_steer_confirm.py` (200 texts; base_nat/alt, top-2 per direction, other-family control) via `logs/read_steer_job.sh` → `judge_rollouts.py --dir …/read_steer/confirm` (loop) → `read_steer_analyze.py`.
+
+**Findings:** evidence-token steering re-reads the context: mean accuracy toward the target .07 → .64 = the genuine-context reference (.64); 29/34 cells within .10 of it, 21 ≥ it. Best layers EARLY (≤ 12 in 31/34, L2–6 in 20) — the mirror image of cue steering (20–24). Translation intact (judge .76 vs .78); sentence_caps lowercase .59/.76 where cue steering managed .17–.24. Misses: all_caps (judge), ellipsis alt→nat (judge artefact: bare `...` vs `…` reference = "empty", as in step 3), brit_t_past → -t (.17 = its ceiling). Controls transfer along the British-spelling and spelled-numbers axes (ise_ize↔us_uk .65; ordinal→percent .84), otherwise ≤ .13.
+
+**Lessons:** adjacent opportunities make the 3rd instance's last token the 4th decision's cue (all_caps 182/200) — flag rather than exclude; the read difference is large (α = 1 ≈ state swap), α = 2 is the sweet spot; judge artefact on bare-ellipsis completions is pole-asymmetric (`...` vs `…` reference) — user to adjudicate if it matters.
+
+**Next:** await user. Natural follow-ups: number of steered instances (1/2/3), read → write relation (cue-token read-out after evidence steering), lexical vs fixed-marker contrast.
