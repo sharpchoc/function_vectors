@@ -44,6 +44,7 @@ here**). Builds on `../` (step 3: accuracy vs k) and the pairs/cue tokens in `da
 | `best_config.csv` | final (L, α) per (family, target) with accuracy, CI, style-only, unscorable, judge OK, base, cf, step-3 k0/k4 |
 | `steering_summary.csv` | every confirm arm (base, top1, top2, cf) per family/target |
 | `screen.csv` | the full screen grid |
+| `common_layer.png` / `common_layer.csv` | one common injection layer (L24) with a per-family α vs each family's own best (layer, α); all 4 α at L24 per family and target, full grading (`steer_common_layer.py`, `steer_common_analyze.py`) |
 | `records.npz` | per-completion arrays of the confirm run |
 
 ## Findings
@@ -117,6 +118,31 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
    Typographic families show no transfer (cf ≤ .02). Some cf vectors disrupt rather than steer: the
    ellipsis nat vector at L20 α4 makes em_dash emit `--` (unscorable .52, accuracy .60 → .09); the
    all_caps vector at L16 α4 turns sentence_caps completions into ALL CAPS.
+
+## One common layer for every family? (2026-09-10, user question)
+
+Setting: inject at **layer 24 for all 17 families**, α still chosen per family and target, and ask whether
+each stays within −0.03 of the accuracy at its own best (layer, α) from the table above. Layer 24 is
+the only candidate the screen allows (style-only: 13/17 alt and 14/17 nat targets within .03 at L24;
+7/17 and 9/17 at L20; nothing earlier). Every (family, target) was then sampled at L24 with all four
+α on the 200 texts and fully graded (27 of 136 arms reused from the confirm run; 21,800 new rollouts,
+judged with 0 failures). α per family is picked by full accuracy on the same 200 texts — the same
+kind of selection optimism as the per-family best, which picked the better of two confirmed settings.
+
+**Result: 30 of 34 targets are within 0.03 of their own best at layer 24** (alt 14/17, nat 16/17;
+`common_layer.png`). Mean accuracy over the 34 targets is 0.67 at the common layer vs 0.66 at the
+per-family best. The four misses are all inside their 95 % intervals (±.06–.07): all_caps → ALL CAPS
+.05 vs .10 (L8), em_dash → em dash .72 vs .77 (L20), ellipsis → … .67 vs .73 (L16), ordinal_words →
+spelled ordinals .70 vs .74 (L20). Nine targets already had L24 as their own best; six others improve
+at L24 with a different α (sentence_caps → lowercase .24 vs .17 at α = 2 instead of 4 — the gentler
+push keeps more translations intact; ise_ize → -ize .81 vs .74; brit_t_past → -ed .68 vs .62; quote_punct
+→ outside .67 vs .62; oxford_comma → none .91 vs .86; contractions → expanded .85 vs .81). With the α
+picked by the style-only screen instead (protocol parity with step 4), 28 of 34 stay within .03.
+
+So a single late layer suffices for this family of conventions; the per-family layer choice in the
+main table buys ≤ .06 anywhere, and per-family α is what matters. The α at L24 is 4 for the strong
+symbol/digit conventions (double_space, whilst, ampersand, num_words, em_dash, brit_t_past → -t) and
+0.5–2 where a strong push damages the translation (sentence_caps, all_caps, quote_punct, ellipsis).
 
 ## Failure modes of the weak families (confirm records, n = 200 per arm)
 
