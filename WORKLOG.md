@@ -9191,3 +9191,15 @@ last-bit BLAS/SVD differences vs the 2026-09-03 file, but not verifiable (old co
 **Addendum 2026-09-10 — two-category figure layout (user request):** new `family_groups.py` (LEXICAL 6 / FIXED 11 per user ruling; `grouped_grid` = two tinted, titled blocks side by side). `analyze.py`, `steer_analyze.py` (summary, controls, screen lines) and `sparse_heads_analyze.py` regenerated with it; READMEs carry a "Figure layout" note; DECISIONS entry. Data unchanged.
 
 **Addendum 2026-09-10 — common injection layer (user question):** `steer_common_layer.py` (all 4 α at L24 per family/target, 200 texts, reuses confirmed arms) on 3 pods fkpibj5fexjebg / fu1arh6anukjym / v5rh5hjmz8jsmp (~1 h, terminated); 21,800 new rollouts judged (0 failures); `steer_common_analyze.py` → `common_layer.{png,csv}`. Result: 30/34 targets within .03 of their own best (alt 14/17, nat 16/17); misses all_caps alt −.05, em_dash nat −.05, ellipsis alt −.06, ordinal_words alt −.04, all within CI; 6 targets improve at L24 with a different α (sentence_caps lowercase .17→.24 at α=2). Screen-picked α: 28/34. Conclusion: one late layer (24) suffices, α per family matters. README section added.
+
+## Stream: style-translation — step 6, read features at the evidence tokens (2026-09-10)
+
+**Status:** done, on main. `results/style_translation/read_features/` (README, read_feature_summary.png, read_features.csv, evidence_tokens.csv); artifacts `artifacts/style_translation/read_features/{evidence/<fam>.json, <fam>.npz}` (mean_nat/mean_alt [28,4096], per-instance means, split-half). 17 families × 2 poles × 200 k = 4 prompts.
+
+**Commands (`src/sandbox/style_translation/`):** `evidence_tokens.py` (CPU; natural-tokenisation evidence rule, all assertions passed, examples printed) → pod 9zlp5ccfoluurj `logs/read_job.sh` → `capture_evidence.py` (trunk forward, hidden_states[1..28] at evidence positions, per-prompt mean) → `read_features_analyze.py`.
+
+**Findings:** read features reliable (split-half ≥ .99 every layer); ‖r_nat − r_alt‖/‖mean‖ .25–.52 at L6 (evidence tokens differ by identity). cos(read diff, paired cue-token write vector) modest and depth-increasing for lexical families (us_uk .51, ise_ize .41 at L24), ≈ 0 or negative for fixed-marker families (percent .02, oxford −.30, double_space −.04), all_caps .84 (cue sits in capitalised text). Read and write directions are largely different objects here.
+
+**Lessons:** "Among" vs "Among|st" — when the rendered span is entirely shared, the evidence must be the divergence token (the next word), otherwise the extraction is empty; all_caps alt tokenises into ~1.7× more pieces than nat. Pod terminated.
+
+**Next:** await user (natural follow-ups: read → write linear map as in the 69-task study; per-instance-index analysis from `inst_*`).
