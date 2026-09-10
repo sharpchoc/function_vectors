@@ -26,6 +26,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
 from src.sandbox.style_translation.families import FAMILIES, FAMILY
 from src.sandbox.style_translation.steer_screen import SCREEN_LAYERS, ALPHAS
+from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order
 
 SCREEN = ARTIFACTS_ROOT / "style_translation" / "steering" / "screen"
 CONFIRM = ARTIFACTS_ROOT / "style_translation" / "steering" / "confirm"
@@ -115,10 +116,10 @@ def main():
     C = {"base": "#9e9e9e", "steer": {"nat": "#1f77b4", "alt": "#d62728"}, "cf": "#c7c7c7"}
 
     def summary_figure(path, with_controls):
-        ncol = 4; nrow = math.ceil(len(fams) / ncol); w = 3 if with_controls else 2
-        fig, axes = plt.subplots(nrow, ncol, figsize=(3.9 * ncol, 3.0 * nrow), sharey=True)
-        axes = axes.ravel()
-        for ax, fam in zip(axes, fams):
+        w = 3 if with_controls else 2
+        fig, gax = grouped_grid(fams, panel_w=3.9, panel_h=3.0, top=0.855, sharey=True)
+        for fam in grouped_order(fams):
+            ax = gax[(fam, 0)]
             x = 0; ticks, labels = [], []
             for target in ("nat", "alt"):
                 base = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == "base"][0]
@@ -138,9 +139,7 @@ def main():
                 x += w + 1
             ax.set_xticks(ticks); ax.set_xticklabels(labels, rotation=60, ha="right", fontsize=6.5)
             ax.set_title(fam, fontsize=10); ax.set_ylim(0, 1.1); ax.grid(axis="y", alpha=0.3)
-        for ax in axes[len(fams):]:
-            ax.axis("off")
-        for ax in axes[::ncol]:
+        for ax in fig.axes_meta["left"]:
             ax.set_ylabel("accuracy", fontsize=9)
         handles = [Patch(color=C["base"], label="unsteered"),
                    Patch(color=C["steer"]["nat"], label="steered toward nat (best layer, α)"),
@@ -149,22 +148,21 @@ def main():
             handles.append(Patch(color=C["cf"], label="control: another family's vector, same layer and α"))
         handles.append(Line2D([], [], color="black", linestyle="dashed",
                               label="4 in-context examples, no steering"))
-        fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.945), ncol=len(handles), fontsize=9.5, frameon=False)
+        fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.935), ncol=len(handles), fontsize=9.5, frameon=False)
         fig.suptitle("Steering a writing convention with a mean-difference vector at the cue token, no in-context examples\n"
                      "accuracy = target convention used AND faithful, coherent translation; 200 texts per bar, 95% CI",
                      fontsize=12, y=0.995)
-        fig.tight_layout(rect=(0, 0, 1, 0.925)); fig.savefig(path, dpi=150); plt.close(fig)
+        fig.savefig(path, dpi=150); plt.close(fig)
 
     summary_figure(OUT / "steering_summary.png", with_controls=False)
     summary_figure(OUT / "steering_summary_controls.png", with_controls=True)
 
     # ---- screen line plots: target-style rate vs layer, one line per alpha ---------------------
-    panels = [(fam, target) for fam in sfams for target in ("nat", "alt")]
-    ncol = 6; nrow = math.ceil(len(panels) / ncol)
-    fig, axes = plt.subplots(nrow, ncol, figsize=(2.9 * ncol, 2.3 * nrow), sharex=True, sharey=True)
-    axes = axes.ravel()
+    panels = [(fam, target) for fam in grouped_order(sfams) for target in ("nat", "alt")]
+    fig, gax = grouped_grid(sfams, slots_per_family=2, fam_cols=(1, 2), panel_w=2.9, panel_h=2.3, top=0.915, bottom=0.04, sharex=True, sharey=True)
     acol = dict(zip(ALPHAS, plt.cm.viridis(np.linspace(0.15, 0.9, len(ALPHAS)))))
-    for ax, (fam, target) in zip(axes, panels):
+    for (fam, target) in panels:
+        ax = gax[(fam, 0 if target == "nat" else 1)]
         b0 = grid[(fam, target, SCREEN_LAYERS[0], 0.0)]
         ax.axhline(b0, color="#9e9e9e", linestyle="dashed", lw=1.2, label="α = 0 (unsteered)")
         for a in ALPHAS:
@@ -172,18 +170,16 @@ def main():
                     color=acol[a], label=f"α = {a:g}")
         ax.set_title(f"{fam} → {target}", fontsize=8.5, color={"nat": "#1f77b4", "alt": "#d62728"}[target])
         ax.set_ylim(-0.03, 1.03); ax.set_xticks(SCREEN_LAYERS); ax.tick_params(labelsize=6.5); ax.grid(alpha=0.3)
-    for ax in axes[len(panels):]:
-        ax.axis("off")
-    for ax in axes[::ncol]:
+    for ax in fig.axes_meta["left"]:
         ax.set_ylabel("target-style rate", fontsize=8)
-    for ax in axes[len(panels) - ncol:len(panels)]:
+    for ax in fig.axes_meta["bottom"]:
         ax.set_xlabel("layer", fontsize=8)
-    h, l = axes[0].get_legend_handles_labels()
+    h, l = next(iter(gax.values())).get_legend_handles_labels()
     fig.legend(h, l, loc="upper center", bbox_to_anchor=(0.5, 0.965), ncol=len(ALPHAS) + 1, fontsize=9, frameon=False)
     fig.suptitle("Screen: rate of the target convention at the cue vs injection layer, one line per α\n"
                  "style only (no faithfulness judge), 50 texts per point, 16-token completions; dashed = unsteered rate on the same texts",
                  fontsize=11, y=0.995)
-    fig.tight_layout(rect=(0, 0, 1, 0.93)); fig.savefig(OUT / "screen_layer_alpha.png", dpi=150); plt.close(fig)
+    fig.savefig(OUT / "screen_layer_alpha.png", dpi=150); plt.close(fig)
     old_heat = OUT / "screen_heatmaps.png"
     if old_heat.exists():
         old_heat.unlink()

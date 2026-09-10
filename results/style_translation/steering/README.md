@@ -184,3 +184,6 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
   re-sampled with new seeds, so they differ from step-3 k = 0 by sampling noise (≤ .05); (vi) the paired
   pools contain almost no k = 0 prompts (0–22 per family), so the vectors describe the convention as it
   appears after ≥ 1 prior decision in the context.
+
+## Figure layout (2026-09-10)
+Per-family panels are grouped into two blocks: **left, blue tint = lexically diverse conventions** (us_uk, ise_ize, brit_t_past, contractions, num_words, ordinal_words — the rule applies across many different words) and **right, warm tint = lexically identical conventions** (whilst, ampersand, percent_sign, em_dash, ellipsis, curly_quotes, quote_punct, double_space, oxford_comma, sentence_caps, all_caps — one fixed marker or formatting choice). Definition in DECISIONS 2026-09-10; lists in `src/sandbox/style_translation/family_groups.py`.

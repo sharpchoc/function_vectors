@@ -129,3 +129,6 @@ examples, resid = step-4 residual mean-difference vector — PAIRED version, 202
   (v) the residual reference is the PAIRED step-4 vector (2026-09-10; `results/style_translation/steering/`),
   re-analysed with `sparse_heads_analyze.py` on 2026-09-10 — the sparse head means themselves are
   alt-correct-only means on the 120 fit texts (no pairing applies: they are not a nat−alt difference).
+
+## Figure layout (2026-09-10)
+Per-family panels are grouped into two blocks: **left, blue tint = lexically diverse conventions** (us_uk, ise_ize, brit_t_past, contractions, num_words, ordinal_words — the rule applies across many different words) and **right, warm tint = lexically identical conventions** (whilst, ampersand, percent_sign, em_dash, ellipsis, curly_quotes, quote_punct, double_space, oxford_comma, sentence_caps, all_caps — one fixed marker or formatting choice). Definition in DECISIONS 2026-09-10; lists in `src/sandbox/style_translation/family_groups.py`.

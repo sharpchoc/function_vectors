@@ -24,6 +24,7 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
 from src.sandbox.style_translation.families import FAMILIES, FAMILY
+from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order
 
 ROLL = ARTIFACTS_ROOT / "style_translation" / "rollouts"
 OUT = STYLE_TRANSLATION_RESULTS
@@ -85,9 +86,9 @@ def main():
          "Accuracy = uses the convention shown in context AND translates faithfully (n = 200 per point, 95% CI)"),
         (4, "unscorable_by_k.png", "unscorable share",
          "Share of completions that use neither convention (counted as inaccurate in the accuracy plot)")):
-        fig, axes = plt.subplots(nrow, ncol, figsize=(3.6 * ncol, 2.9 * nrow), sharex=True, sharey=True)
-        axes = axes.ravel()
-        for ax, fam in zip(axes, fams):
+        fig, gax = grouped_grid(fams, panel_w=3.6, panel_h=2.9, top=0.89, sharex=True, sharey=True)
+        for fam in grouped_order(fams):
+            ax = gax[(fam, 0)]
             for style in ("nat", "alt"):
                 pts = [(k,) + data[fam][(style, k)] for k in KS if (style, k) in data[fam]]
                 if not pts:
@@ -101,14 +102,11 @@ def main():
                     ax.plot(xs, ys, color=C[style], marker="o", ms=5, lw=1.8, label=lab[:60])
             ax.set_title(fam, fontsize=10); ax.set_xticks(KS); ax.set_ylim(-0.03, 1.03); ax.grid(alpha=0.3)
             ax.legend(fontsize=6.5, loc="lower right" if metric == 0 else "upper right", frameon=False)
-        for ax in axes[len(fams):]:
-            ax.axis("off")
-        for ax in axes[-ncol:]:
-            ax.set_xlabel("k = number of in-context examples of the convention")
-        for ax in axes[::ncol]:
+        for ax in fig.axes_meta["bottom"]:
+            ax.set_xlabel("k = in-context examples of the convention", fontsize=8)
+        for ax in fig.axes_meta["left"]:
             ax.set_ylabel(ylabel, fontsize=9)
-        fig.suptitle(title, fontsize=13, y=0.995)
-        fig.tight_layout(rect=(0, 0, 1, 0.955))
+        fig.suptitle(title, fontsize=13, y=0.99)
         fig.savefig(OUT / fname, dpi=150); plt.close(fig)
 
     # unscorable table: per family x style, pooled over k and per k

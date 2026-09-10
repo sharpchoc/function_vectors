@@ -29,6 +29,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
 from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.steer_analyze import wilson
+from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order
 
 ROOT = ARTIFACTS_ROOT / "style_translation" / "sparse_heads"
 CONFIRM = ARTIFACTS_ROOT / "style_translation" / "steering" / "confirm"
@@ -86,9 +87,9 @@ def main():
 
     # ---- headline figure ------------------------------------------------------------------------
     arms_plot = ["base", "sparse_w", "sparse_unw", "sparse_cf", "resid4"]
-    ncol = 4; nrow = math.ceil(len(fams) / ncol)
-    fig, axes = plt.subplots(nrow, ncol, figsize=(3.9 * ncol, 3.0 * nrow), sharey=True); axes = axes.ravel()
-    for ax, fam in zip(axes, fams):
+    fig, gax = grouped_grid(fams, panel_w=3.9, panel_h=3.0, top=0.855, sharey=True)
+    for fam in grouped_order(fams):
+        ax = gax[(fam, 0)]
         for j, arm in enumerate(arms_plot):
             r = R.get((fam, arm))
             if r is None or math.isnan(r["accuracy"]):
@@ -99,15 +100,13 @@ def main():
         ax.axhline(k4, color="black", linestyle="dashed", lw=1)
         ax.set_xticks(range(len(arms_plot))); ax.set_xticklabels(["unsteered", f"sparse {sel['heads_02'].__len__()}h", "unweighted", "other family", "residual vec"], rotation=60, ha="right", fontsize=6.5)
         ax.set_title(fam, fontsize=10); ax.set_ylim(0, 1.1); ax.grid(axis="y", alpha=0.3)
-    for ax in axes[len(fams):]:
-        ax.axis("off")
-    for ax in axes[::ncol]:
+    for ax in fig.axes_meta["left"]:
         ax.set_ylabel("accuracy", fontsize=9)
     handles = [Patch(color=COL[a], label=LABEL[a]) for a in arms_plot] + [Line2D([], [], color="black", linestyle="dashed", label="4 in-context examples, no steering")]
-    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.945), ncol=3, fontsize=9, frameon=False)
+    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.94), ncol=3, fontsize=9, frameon=False)
     fig.suptitle(f"Steering the rare convention with a sparse set of {len(sel['heads_02'])} attention-head means at the cue token (layer {L}, no in-context examples)\n"
                  "accuracy = target convention used AND faithful, coherent translation; 80 held-out texts per bar, 95% CI", fontsize=12, y=0.995)
-    fig.tight_layout(rect=(0, 0, 1, 0.92)); fig.savefig(OUT / "sparse_summary.png", dpi=150); plt.close(fig)
+    fig.savefig(OUT / "sparse_summary.png", dpi=150); plt.close(fig)
 
     # ---- heads vs accuracy / NLL ------------------------------------------------------------------
     ll = list(csv.DictReader(open(ROOT / "layer_lambda.csv")))

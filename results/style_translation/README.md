@@ -126,3 +126,6 @@ Reading the plot (`accuracy_by_k.png`, red = the flipped convention, blue = hous
   ("At 1st,", capitals after ellipses) may depress the judge's fluency for a few families;
   (3) one T = 1 sample per prompt: per-point CI ≈ ±0.07 at n = 200; (4) T = 1 samples are not
   reproducible across GPU types.
+
+## Figure layout (2026-09-10)
+Per-family panels are grouped into two blocks: **left, blue tint = lexically diverse conventions** (us_uk, ise_ize, brit_t_past, contractions, num_words, ordinal_words — the rule applies across many different words) and **right, warm tint = lexically identical conventions** (whilst, ampersand, percent_sign, em_dash, ellipsis, curly_quotes, quote_punct, double_space, oxford_comma, sentence_caps, all_caps — one fixed marker or formatting choice). Definition in DECISIONS 2026-09-10; lists in `src/sandbox/style_translation/family_groups.py`.
