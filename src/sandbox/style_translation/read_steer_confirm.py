@@ -63,9 +63,9 @@ def main():
             sign = 1 if target == "nat" else -1
             tops = top_settings(fam, direction, 2)
             for rank, (layer, a, _) in enumerate(tops, 1):
-                arms.append((f"{direction}_top{rank}", ctx_pole, target, layer, a, u[layer - 1] * sign, None))
+                arms.append((f"{direction}_top{rank}", ctx_pole, target, layer, a, u[layer] * sign, None))
             layer, a, _ = tops[0]
-            arms.append((f"{direction}_cf", ctx_pole, target, layer, a, u_cf[layer - 1] * sign, cf_fam))
+            arms.append((f"{direction}_cf", ctx_pole, target, layer, a, u_cf[layer] * sign, cf_fam))
         recs = []
         for arm, ctx_pole, target, layer, alpha, v, cf in arms:
             its = items[ctx_pole]

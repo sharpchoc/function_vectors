@@ -41,6 +41,7 @@ difference at every evidence token of those three instances, and see whether the
 | `best_config.csv` | final (L, α) per (family, direction) with accuracy, CI, style-only, unscorable, judge OK, unsteered, control, genuine-context reference |
 | `read_steer_summary.csv` | every confirm arm |
 | `screen.csv`, `records.npz` | the screen grid; per-completion arrays of the confirm run |
+| `read_steer_layer_alpha_full.png`, `read_steer_layer_mean.png`, `screen_full.csv`, `best_layer_full.csv` | full-layer sweep (every layer 0–27, 0 = embedding output): per-cell curves, mean over cells per group, best layer per cell vs the 9-layer sweep |
 
 ## Findings (n = 200 per bar; accuracy = target convention at the 4th decision ∧ faithful, coherent)
 
@@ -97,6 +98,36 @@ step 3 (0 of 32 OK), so this cell is a judge artefact, not a steering failure.
    ≥ reference − .03), and where the write-side cue vector was weakest — the read side carries the
    lexical conventions better than the cue side does.
 
+## Full-layer sweep (layers 0–27, 2026-09-11)
+
+The 9-layer screen was extended to every layer, including **layer 0 = the embedding output** (GPT-J adds
+no positional vector to the residual stream, so the layer-0 read difference is exactly the mean embedding
+difference of the evidence tokens; steering there is a token swap in embedding space). Same protocol:
+50 texts, style only, α ∈ {0.5,1,2,4}, both directions (`read_steer_screen.py --layers … --tag screen_extra`,
+`read_steer_layers_analyze.py`).
+
+- **Denser layers change little.** Mean best rate over the 34 cells: .89 with the 9 screened layers, .91
+  with all 28; only 4 cells gain more than .05 (num_words → words .74 → .86 at L25, contractions → contracted
+  .74 → .84 at L1, curly_quotes → curly .76 → .86 at L3, us_uk → American .86 → .94 at L3). 22 of 34 cells
+  now have their best layer at 0–3.
+- **Layer 0 alone gives .82 on average**, i.e. adding the mean *embedding* difference at the evidence tokens
+  already flips the reading in most cells (26 of 34 within .10 of the best layer). So for most conventions the
+  intervention is well described as a token swap in the model's input space, which the network then reads
+  normally — a shared direction across all the family's word pairs (one vector serves 712 distinct us_uk pairs),
+  but an input-level one.
+- **Where the embedding difference is not enough**, the residual stream at layers 3–9 carries something the
+  embeddings do not: em_dash → spaced hyphen .18 at L0 vs .92 at L5; ise_ize → -ise .58 vs .80 (L4);
+  oxford_comma → serial comma .66 vs .86 (L3); double_space → two spaces .72 at L0 but .10 at L2 and .70 only
+  from L10; num_words → words .64 at L0 vs .86 at L25; brit_t_past → -t .12 vs .28. These are the cells where
+  activation geometry beyond token identity does the work; they are a minority.
+- **The mean curves** (`read_steer_layer_mean.png`) are flat and high from layer 0 to ~10 for both groups at
+  α ≥ 2, then fall toward the unsteered rate by layers 20–27; the lexically identical group falls earlier and
+  further than the lexically diverse one. The read-side window is the first third of the network.
+- Caveat: this is the screen metric (style only, 50 texts); the judged 200-text confirm was run for the
+  9-layer settings only. cos(read difference at layer 1, embedding difference) ≈ .1 in every family — the
+  first block already rotates the token representation away from the embedding, yet steering at either
+  layer works, so the flip does not depend on the exact direction being the embedding difference.
+
 ## Provenance / caveats
 
 - GPT-J-6B fp16; 3 RunPod RTX PRO 4500 Blackwell pods (hvoj51p99eb6g0 / xjk0sj1lk9m2fc / 80ppa2z6ty93vw,
@@ -104,6 +135,7 @@ step 3 (0 of 32 OK), so this cell is a judge artefact, not a steering failure.
   Screen 61,200 16-token rollouts; confirm 27,200 48-token rollouts; 27,200 Gemini verdicts, 0 failures.
   `PositionSteer` unit test passed on every pod (α = 0 identity; exactly the listed positions move by v).
   Screen α = 0 rates match the step-3 k = 3 style rates (both poles) within ±.08.
+- Full-layer sweep: 3 pods 5dfax5jhq3bdvl / yqqiaonph7ryxa / 9sezvyj8ea1oap (~2 h each, terminated); 19 extra layers × 4 α × 50 texts × 34 cells = 129,200 16-token rollouts; hook unit test incl. layer 0 passed on each pod.
 - Caveats: (i) the same vector is added at every evidence token of an instance, including sub-word
   pieces and the ~77 tokens of an all-caps sentence; (ii) selection optimism from the 50-text screen and
   from picking the better of two confirmed settings (same protocol as step 4); (iii) the genuine-context

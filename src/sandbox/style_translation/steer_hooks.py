@@ -65,7 +65,8 @@ class PositionSteer:
     (caller offsets the prompt-relative indices by the padding). Decode steps (length 1) untouched.
     """
     def __init__(self, model, layer, vec, alpha, positions):
-        self.block = model.transformer.h[layer - 1]
+        # layer 0 = the embedding output (GPT-J adds no positional vector to the residual stream), L >= 1 = output of block L
+        self.block = model.transformer.wte if layer == 0 else model.transformer.h[layer - 1]
         self.vec = torch.as_tensor(vec, dtype=torch.float16, device=next(model.parameters()).device)
         self.alpha = float(alpha)
         self.positions = positions
@@ -93,6 +94,7 @@ class PositionSteer:
 
 
 def unit_test_positions(model, tok, layer=6):
+    """Works for layer = 0 (embedding output) as well as block outputs."""
     """alpha = 0 identity; alpha = 1 shifts exactly the listed positions of layer L by v, nothing else."""
     enc = tok(["Spanish:\nHola mundo.\n\nEnglish:\nHello there my", "Spanish:\nAdiós.\n\nEnglish:\nGood"],
               return_tensors="pt", padding=True).to(model.device)

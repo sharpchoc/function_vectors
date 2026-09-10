@@ -51,8 +51,11 @@ def k3_items(fam, pole, n=None):
 
 
 def read_vectors(fam):
+    """u_nat per layer, indexed by LAYER (0 = embedding output, 1..28 = block outputs): shape [29, D]."""
     d = np.load(RF / f"{fam}.npz")
-    return d["mean_nat"] - d["mean_alt"]            # [28, D] = u_nat per layer
+    u = d["mean_nat"] - d["mean_alt"]                                   # [28, D], index L-1
+    u0 = (d["mean_nat_L0"] - d["mean_alt_L0"])[None] if "mean_nat_L0" in d else np.zeros((1, u.shape[1]), u.dtype)
+    return np.concatenate([u0, u], 0)
 
 
 def sample_positions(model, tok, items, layer, vec, alpha, seed_tag, max_new):
@@ -92,13 +95,16 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
     ap.add_argument("--batch", type=int, default=25)
+    ap.add_argument("--layers", nargs="*", type=int, default=SCREEN_LAYERS, help="injection layers (0 = embedding output)")
+    ap.add_argument("--tag", default="screen", help="output subdir under read_steer/")
     args = ap.parse_args()
-    (ROOT / "screen").mkdir(parents=True, exist_ok=True)
+    layers = args.layers
+    (ROOT / args.tag).mkdir(parents=True, exist_ok=True)
     model, tok = load_model()
-    assert unit_test_positions(model, tok, layer=6) and unit_test_positions(model, tok, layer=20)
+    assert unit_test_positions(model, tok, layer=6) and unit_test_positions(model, tok, layer=20) and unit_test_positions(model, tok, layer=0)
     print("position hook unit test passed", flush=True)
     for fam in args.families:
-        out_path = ROOT / "screen" / f"{fam}.json"
+        out_path = ROOT / args.tag / f"{fam}.json"
         if out_path.exists():
             print(f"{fam}: exists, skip", flush=True); continue
         u = read_vectors(fam); recs = []
@@ -110,9 +116,9 @@ def main():
         for direction, (ctx_pole, target) in DIRECTIONS.items():
             sign = 1 if target == "nat" else -1
             best = (-1, None, None)
-            for layer in SCREEN_LAYERS:
+            for layer in layers:
                 for a in ALPHAS:
-                    rs = run_arm(model, tok, fam, items[ctx_pole], layer, u[layer - 1] * sign, a, f"screen|{direction}|L{layer}|a{a}", MAX_NEW, args.batch,
+                    rs = run_arm(model, tok, fam, items[ctx_pole], layer, u[layer] * sign, a, f"screen|{direction}|L{layer}|a{a}", MAX_NEW, args.batch,
                                  {"direction": direction, "target": target})
                     recs += rs
                     rate = float(np.mean([r["decision"] == target for r in rs]))
