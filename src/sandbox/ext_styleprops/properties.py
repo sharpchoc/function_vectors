@@ -595,6 +595,10 @@ class Contractions(Property):
             # contracting it is ungrammatical (2026-09-07, found by the English verifier)
             if alt.lower().endswith(" have") and re.match(r"\s+to\b", text[m.end(1):]):
                 continue
+            # the connective ", that is," (= i.e.) is never contracted (latin_abbr family, 2026-09-11)
+            if alt.lower() == "that is" and re.match(r",", text[m.end(1):]) \
+                    and (m.start(1) == 0 or re.search(r"[,;(.!?]\s*$", text[max(0, m.start(1) - 3):m.start(1)])):
+                continue
             opps.append(Opp(m.start(1), m.end(1), nat, alt))
         return _dedup(opps)
 
@@ -802,10 +806,10 @@ class LatinAbbr(Property):
     family = "lexical"
     nat_label = "English phrases (for example, that is, and so on, versus, approximately)"
     alt_label = "Latin abbreviations (e.g., i.e., etc., vs., approx.)"
-    _pairs = [("for example", "e.g."), ("For example", "E.g."), ("that is", "i.e."), ("and so on", "etc."),
-              ("versus", "vs."), ("approximately", "approx."), ("Approximately", "Approx.")]
-    _nat_rx = re.compile(r"\b(For example|for example|that is|and so on|versus|approximately|Approximately)\b(?=[,;:.\s)]|$)")
-    _alt_rx = re.compile(r"(?<![\w.])(E\.g\.|e\.g\.|i\.e\.|etc\.|vs\.|approx\.|Approx\.)")
+    _pairs = [("for example", "e.g."), ("For example", "E.g."), ("that is", "i.e."), ("That is", "I.e."), ("and so on", "etc."),
+              ("versus", "vs."), ("Versus", "Vs."), ("approximately", "approx."), ("Approximately", "Approx.")]
+    _nat_rx = re.compile(r"\b(For example|for example|that is|That is|and so on|versus|Versus|approximately|Approximately)\b(?=[,;:.\s)]|$)")
+    _alt_rx = re.compile(r"(?<![\w.])(E\.g\.|e\.g\.|i\.e\.|I\.e\.|etc\.|vs\.|Vs\.|approx\.|Approx\.)")
     _alt_of = dict(_pairs)
     _nat_of = {b: a for a, b in _pairs}
 
@@ -815,6 +819,8 @@ class LatinAbbr(Property):
             w = m.group(1)
             if w == "that is" and not re.search(r"[,(]\s*$", text[max(0, m.start() - 3):m.start()]):
                 continue                                   # "a tool that is useful" is not the connective
+            if w == "That is" and not re.match(r",", text[m.end():]):
+                continue                                   # "That is why..." is not the connective
             alt = self._alt_of[w]
             if text[m.end():m.end() + 1] == "." and alt.endswith("."):
                 alt = alt[:-1]                             # avoid "etc.." at a sentence end
@@ -829,6 +835,8 @@ class LatinAbbr(Property):
     def classify(self, tail):
         a, b = self._nat_rx.search(tail), self._alt_rx.search(tail)
         if a and a.group(1) == "that is" and a.start() > 1 and not re.search(r"[,(]\s*$", tail[max(0, a.start() - 3):a.start()]):
+            a = None
+        if a and a.group(1) == "That is" and not re.match(r",", tail[a.end():]):
             a = None
         if a and (not b or a.start() <= b.start()):
             return "nat"
@@ -849,55 +857,67 @@ class FlatAdverb(Property):
               ("differently", "different"), ("wrongly", "wrong"), ("firmly", "firm"), ("softly", "soft"),
               ("evenly", "even"), ("smoothly", "smooth"), ("carefully", "careful"), ("quietly", "quiet"),
               ("closely", "close"), ("steadily", "steady"), ("clearly", "clear"), ("easily", "easy"),
-              ("brightly", "bright"), ("lightly", "light"), ("thinly", "thin"), ("finely", "fine"),
+              ("brightly", "bright"), ("thinly", "thin"), ("finely", "fine"),
               ("freshly", "fresh"), ("properly", "proper"), ("slower", "slower")]
     _pairs = [p for p in _pairs if p[0] != p[1]]
     _map = {}
     for a, b in _pairs:
         _map[a] = (a, b); _map[b] = (a, b)
-    _VERBS = ("go|goes|went|going|gone|drive|drives|drove|driving|driven|ride|rides|rode|riding|ridden|pedal|pedals|pedaled|pedaling|"
-              "brake|brakes|braked|braking|turn|turns|turned|turning|move|moves|moved|moving|walk|walks|walked|walking|run|runs|ran|running|"
-              "work|works|worked|working|breathe|breathes|breathed|breathing|hold|holds|held|holding|grip|grips|gripped|gripping|"
-              "stir|stirs|stirred|stirring|mix|mixes|mixed|mixing|chop|chops|chopped|chopping|slice|slices|sliced|slicing|cut|cuts|cutting|"
-              "spread|spreads|spreading|speak|speaks|spoke|speaking|talk|talks|talked|talking|sing|sings|sang|singing|play|plays|played|playing|"
-              "press|presses|pressed|pressing|push|pushes|pushed|pushing|pull|pulls|pulled|pulling|squeeze|squeezes|squeezed|squeezing|"
-              "tighten|tightens|tightened|tightening|screw|screws|screwed|screwing|twist|twists|twisted|twisting|lift|lifts|lifted|lifting|"
-              "step|steps|stepped|stepping|land|lands|landed|landing|sit|sits|sat|sitting|stand|stands|stood|standing|lean|leans|leaned|leaning|"
-              "listen|listens|listened|listening|look|looks|looked|looking|think|thinks|thought|thinking|sleep|sleeps|slept|sleeping|"
-              "eat|eats|ate|eating|chew|chews|chewed|chewing|pour|pours|poured|pouring|heat|heats|heated|heating|cook|cooks|cooked|cooking|"
-              "fry|fries|fried|frying|bake|bakes|baked|baking|dry|dries|dried|drying|clean|cleans|cleaned|cleaning|wipe|wipes|wiped|wiping|"
-              "rinse|rinses|rinsed|rinsing|wash|washes|washed|washing|apply|applies|applied|applying|fold|folds|folded|folding|"
-              "roll|rolls|rolled|rolling|knead|kneads|kneaded|kneading|pack|packs|packed|packing|load|loads|loaded|loading|"
-              "climb|climbs|climbed|climbing|follow|follows|followed|following|shine|shines|shone|shining|glow|glows|glowed|glowing|"
-              "water|waters|watered|watering|plant|plants|planted|planting|prune|prunes|pruned|pruning|dig|digs|dug|digging|"
-              "chopped|sliced|ground|grated|grate|grates|grating|season|seasons|seasoned|seasoning|simmer|simmers|simmered|simmering|"
-              "boil|boils|boiled|boiling|whisk|whisks|whisked|whisking|beat|beats|beating|fasten|fastens|fastened|fastening|"
-              "attach|attaches|attached|attaching|fit|fits|fitted|fitting|close|closes|closed|closing|open|opens|opened|opening|"
-              "start|starts|started|starting|stop|stops|stopped|stopping|breathe|move|proceed|proceeds|proceeded|proceeding|"
-              "act|acts|acted|acting|behave|behaves|behaved|behaving|treat|treats|treated|treating|answer|answers|answered|answering|"
-              "reply|replies|replied|replying|explain|explains|explained|explaining|shout|shouts|shouted|shouting|sang|sung|hum|hums|hummed|humming|"
-              "accelerate|accelerates|accelerated|accelerating|descend|descends|descended|descending|steer|steers|steered|steering")
-    _OBJ = r"(?:(?:it|them|him|her|us|me|this|that|everything|the [a-z]+|your [a-z]+|a [a-z]+|an [a-z]+|my [a-z]+|each [a-z]+) )?"
+    # pre-verbal / non-verb context words: an adverb right after one of these is NOT in post-verbal position
+    _STOP = ("to|very|so|too|quite|really|pretty|is|are|was|were|be|been|being|am|can|could|will|would|"
+             "should|may|might|must|has|have|had|do|does|did|not|and|or|but|then|also|more|most|less|a|an|the|this|that|these|"
+             "those|how|as|by|of|in|on|at|for|with|from|into|than|something|anything|nothing|who|which|when|while|if|because|"
+             "still|just|only|even|always|never|often|usually|already|1st|first|"
+             "seem|seems|seemed|look|looks|looked|feel|feels|felt|sound|sounds|sounded|taste|tastes|tasted|smell|smells|"
+             "become|becomes|became|get|gets|got|getting|stay|stays|stayed|remain|remains|remained|grow|grows|grew|turn|turns|turned")
+    # "made it clear", "keep it tight": causative verb + object + ADJECTIVE — not an adverb site
+    _CAUS = re.compile(r"\b(?:make|makes|made|making|keep|keeps|kept|keeping|find|finds|found|consider|considers|considered|leave|leaves|left|"
+                       r"get|gets|got|call|calls|called|deem|deemed|render|rendered)\s+[\w'’]+\s*$", re.IGNORECASE)
+    # a bare (flat) form is ambiguous with an adjective ("select firm apples", "good light"): in running text it only counts
+    # after a clearly verbal word (-ing/-ed form, a listed verb) or an object pronoun
+    _VERBISH = re.compile(r"(?:\w{3,}(?:ing|ed)|it|them|him|her|us|me|go|goes|went|gone|drive|drives|drove|driven|ride|rides|rode|ridden|"
+                          r"run|runs|ran|walk|walks|breathe|breathes|hold|holds|held|grip|grips|speak|speaks|spoke|spoken|talk|talks|"
+                          r"sing|sings|sang|sung|think|thinks|thought|cut|cuts|hit|hits|do|does|did|done|buy|buys|bought|sit|sits|sat|"
+                          r"stand|stands|stood|sleep|sleeps|slept|eat|eats|ate|eaten|dig|digs|dug|shine|shines|shone|play|plays|"
+                          r"work|works|move|moves|step|steps|turn|turns|brake|brakes|pedal|pedals|steer|steers|land|lands|fly|flies|flew|"
+                          r"swim|swims|swam|dive|dives|dove|climb|climbs|come|comes|came|take|takes|took|taken|put|puts|set|sets|"
+                          r"write|writes|wrote|read|reads|say|says|said|answer|answers|reply|replies|explain|explains|act|acts|"
+                          r"tread|treads|trod|aim|aims|hang|hangs|hung|tie|ties|tied|wrap|wraps|pack|packs|pull|pulls|push|pushes|"
+                          r"press|presses|squeeze|squeezes|stir|stirs|mix|mixes|chop|chops|slice|slices|spread|spreads|pour|pours)$", re.IGNORECASE)
+    # a (flat) adverb only counts in adverb position: before punctuation, a conjunction or a preposition — never before a noun/verb
+    _ALT_TAIL = re.compile(r"(?=[,.;:!?)]|\s+(?:and|or|to|so|as|until|while|when|before|after|through|into|on|in|at|with|from|for|"
+                           r"over|down|up|out|off|around|against|onto|toward|towards|by|if|because|but|enough|again|there|here|now|"
+                           r"every|each|during|without|along|across|between|under|behind|toward|whenever|once|like)\b|\s*$)")
     _forms = "|".join(sorted(map(re.escape, _map), key=len, reverse=True))
-    _rx = re.compile(r"\b(?:" + _VERBS + r")\s+" + _OBJ + r"(" + _forms + r")\b(?!-)", re.IGNORECASE)
+    _rx = re.compile(r"\b(?!(?:" + _STOP + r")\s)([\w'’]{2,})\s+(" + _forms + r")\b(?!-)", re.IGNORECASE)
     _lead = re.compile(r"^\s?(" + _forms + r")\b(?!-)")
 
     def find_opps(self, text):
         opps = []
         for m in self._rx.finditer(text):
-            w = m.group(1)
+            w = m.group(2)
             if w.lower() not in self._map:
                 continue
             nat, alt = self._map[w.lower()]
-            opps.append(Opp(m.start(1), m.end(1), nat, alt))
+            if not self._ALT_TAIL.match(text, m.end(2)):
+                continue                                   # "carefully casting", "a fresh loaf": pre-verbal or adjectival
+            if w.lower() == alt and self._CAUS.search(text[max(0, m.start(1) - 12):m.start(2)]):
+                continue                                   # "made it clear", "keep it tight": object complement
+            if w.lower() == alt and not self._VERBISH.match(m.group(1)):
+                continue                                   # "select firm apples", "good light": adjective/noun, not a flat adverb
+            opps.append(Opp(m.start(2), m.end(2), nat, alt))
         return _dedup(opps)
 
     def classify(self, tail):
-        m = self._lead.match(tail) or self._rx.search(tail)
-        if m is None or m.group(1).lower() not in self._map:
+        m = self._lead.match(tail)
+        w = m.group(1) if m else None
+        if w is None:
+            m = self._rx.search(tail)
+            w = m.group(2) if m else None
+        if w is None or w.lower() not in self._map:
             return None
-        nat, alt = self._map[m.group(1).lower()]
-        return "nat" if m.group(1).lower() == nat else "alt"
+        nat, alt = self._map[w.lower()]
+        return "nat" if w.lower() == nat else "alt"
 
 
 class TitleAbbr(Property):
