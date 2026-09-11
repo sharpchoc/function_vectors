@@ -254,3 +254,99 @@ days.", "first, …" → now "Three days.", "First, …").
 **Cue token (user definition 2026-09-07):** the token immediately preceding a style choice = the last token that is the same whichever style the model is about to produce. k = 0: the last token shared by the two twins (may be word-internal, e.g. `learn|ed` vs `learn|t`, `it|'s` vs `it| is`). k >= 1: judged on the context as it actually reads (nat or alt twin): the twin up to opportunity k versus the version that differs only in how opportunity k is rendered; cue = last shared token. Sentence families: the period closing the previous sentence; the first sentence of all_caps / sentence_caps has the newline after `English:` as its cue. curly_quotes: one decision per quotation, at the opening mark. Only "cue token" is a fixed term so far.
 
 Computed with the GPT-J tokenizer on the full prompt `Spanish:\n{text_es}\n\nEnglish:\n{twin}` (`cue_tokens.py`). Each record has `cues.nat` and `cues.alt` (per CONTEXT twin), one entry per decision point: `k, opp_index, cue_idx (token index in the prompt), cue_tok, cue_tok_id, cue_char_end, opp_char_start, word_internal, next_nat, next_alt (first tokens after the cue under each rendering), in_header`. Checks: the k=0 cue token id is identical in both contexts for every pair; decision-point counts match. Longest prompt 840 GPT-J tokens. Typical cues: sentence families `.` / `\n`; us_uk / ise_ize / brit_t_past / num_words / ordinal_words the word before the item (` the`, ` to`, ` I`); percent_sign the number (` 50` → `%` vs ` percent`); quote_punct the last quoted word (`." It` vs `". It`); contractions the pronoun (` it` → `'s` vs ` is`); word-internal cues in ~14% of all_caps sentences (` I|t` vs ` IT`) and ~7-10% of the spelling families.
+
+---
+
+# Extension 2026-09-11 — 10 lexically diverse families (27 families in total)
+
+User decision (2026-09-11, after a 20-item brainstorm): add ten families whose two conventions differ in
+**vocabulary rather than a fixed marker**, so that the LEXICAL group (previously 6 families) becomes 16.
+Same design rules, same pipeline (`gen_spanish` → `verify_spanish` → `collect_verdicts --families` →
+`translate_english` → `verify_english` → `collect_english --families` → `cue_tokens` → `build_prompts`);
+only the Spanish→English translation setting is built for them (no English-only variant, user).
+
+| family | nat (house style) | alt | Spanish must contain ≥5 … |
+|---|---|---|---|
+| uk_vocab | US words (truck, vacation, trash, flashlight, sidewalk, cookie, sweater …) | UK words (lorry, holiday, rubbish, torch, pavement, biscuit, jumper …) | objects/places from a 36-item lexicon (camión, vacaciones, basura, linterna, acera, galleta …) |
+| register | plain words (begin, buy, try, kids, show, later, also, big, fix …) | formal/Latinate words (commence, purchase, attempt, children, demonstrate, subsequently …) | verbs/nouns from a 19-item lexicon (empezar, comprar, intentar, niños, mostrar, más tarde …) |
+| unit_abbr | unit symbols with a space (5 km, 2 kg, 30 ml, 15 °C) | units spelled out (5 kilometers, 2 kilograms) | numbers followed by km/cm/mm/kg/g/ml/°C |
+| diacritics | loanwords without accents (cafe, naive, cliche, fiance, facade, decor, entree, pinata …) | with accents (café, naïve, cliché, fiancé, façade, décor, entrée, piñata …) | items from a 25-item lexicon (café, ingenuo, cliché, prometido, fachada, decoración, plato principal …) |
+| latin_abbr | for example / that is / and so on / versus / approximately | e.g. / i.e. / etc. / vs. / approx. | por ejemplo, es decir, etcétera / y así sucesivamente, frente a / contra, aproximadamente / unos N |
+| hyphen_compound | closed compounds (email, online, website, wellbeing, cooperate, reuse, nonstop, checkup …) | hyphenated (e-mail, on-line, web-site, well-being, co-operate, re-use, non-stop, check-up …) | items from a 40-item lexicon (correo electrónico, en línea, sitio web, bienestar, reutilizar, chequeo …) |
+| flat_adverb | -ly adverb after the verb (drive slowly, hold it tightly) | flat adverb (drive slow, hold it tight) | manner adverbs right after their verb (despacio, rápido, con fuerza, suavemente, hondo, en voz alta, bajito, con cuidado, firmemente …) |
+| irreg_past | irregular pasts (dove, snuck, lit, pled, sped, wove, shone, strove, knelt) | regular pasts (dived, sneaked, lighted, pleaded, speeded, weaved, shined, strived, kneeled) | preterites of the nine actions (se zambulló, se coló, encendió, rogó, aceleró, tejió, brilló, se esforzó, se arrodilló) |
+| latin_plural | anglicised plurals (indexes, formulas, cactuses, appendixes, curriculums, stadiums, forums, antennas, syllabuses, octopuses …) | classical plurals (indices, formulae, cacti, appendices, curricula, stadia, fora, antennae, syllabi, octopi …) | plural nouns from a 23-item lexicon (índices, fórmulas, cactus, apéndices, planes de estudio, estadios, foros …) |
+| title_abbr | titles/street words in full (Doctor, Professor, Mister, Mount, Saint, X Street, X Avenue) | abbreviated (Dr., Prof., Mr., Mt., St., X St., X Ave.) | title/street word + capitalised name (el doctor García, la calle Mayor, san Isidro …) |
+
+The house style now also fixes these ten features to their nat pole (`translate_english.HOUSE_STYLE`,
+`NORMALISE_ORDER` = all 27 detectors). **Scope caveat:** the 17 original families' English texts were
+normalised in 2026-09-07 with the 17-family house style and are left untouched (their step-3–7 results are
+final); in those texts the new families' alt forms can occur (e.g. "repair", "railway", "well-being"), which is
+why `pairs_check.py` reports ~100 "nat audit bad" texts per original family and 0 per new family. Within a
+family's own decision the two twins are still identical outside the family's spans.
+
+## Spanish (step 1)
+
+| family | candidates | pass | kept | Haiku k median | regex k median | words median |
+|---|---|---|---|---|---|---|
+| uk_vocab | 276 | 223 | 200 | 7 | 7 | 147 |
+| register | 276 | 246 | 200 | 12 | 10 | 128 |
+| unit_abbr | 552 | 302 | 200 | 7 | 6 | 153 |
+| diacritics | 552 | 367 | 200 | 7 | 7 | 134 |
+| latin_abbr | 552 | 356 | 200 | 5 | 5 | 135 |
+| hyphen_compound | 276 | 255 | 200 | 9 | 9 | 130 |
+| flat_adverb | 1242 | 723 | 200 | 7 | 7 | 116 |
+| irreg_past | 690 | 475 | 200 | 7 | 6 | 118 |
+| latin_plural | 1242 | 469 | 200 | 7 | 6 | 139 |
+| title_abbr | 552 | 375 | 200 | 6 | 6 | 152 |
+
+6,210 candidates, 2,000 kept. Rounds: unit_abbr/diacritics/latin_abbr/title_abbr needed one top-up round
+(stricter instruction: exactly seven measurements with the seven allowed symbols; "each word only where it
+makes literal sense"); `title_abbr` also needed a case-insensitive Spanish counter (capitalised «Doctor»);
+`irreg_past` and `flat_adverb` were regenerated from scratch (the first round ignored the per-family
+instruction: 2 and 26 texts with ≥5 anchors) with explicit action lists / adverb lists and broader Spanish
+patterns, then topped up; `latin_plural` was topped up twice and its lexicon pruned (below). An imperative-style
+flat_adverb variant («Pedalea despacio.») was tried and discarded: the texts came out too short (median 94
+words) and their English translations still put the adverb before the verb.
+
+## English twins (step 2)
+
+| family | translated | usable (k_en ≥ 5, audit clean) | verified pass | pairs | k_en median | !faithful | !coherent |
+|---|---|---|---|---|---|---|---|
+| uk_vocab | 223 | 221 | 216 | 200 | 7 | 4 | 4 |
+| register | 229 | 229 | 211 | 200 | 10 | 8 | 5 |
+| unit_abbr | 221 | 221 | 220 | 200 | 6 | 1 | 1 |
+| diacritics | 243 | 236 | 231 | 200 | 6 | 5 | 0 |
+| latin_abbr | 281 | 207 | 205 | 200 | 5 | 4 | 1 |
+| hyphen_compound | 222 | 222 | 222 | 200 | 8 | 0 | 0 |
+| flat_adverb | 723 | 287 | 274 | 200 | 6 | 27 | 0 |
+| irreg_past | 241 | 215 | 211 | 200 | 6 | 4 | 0 |
+| latin_plural | 327 | 223 | 215 | 200 | 5 | 10 | 1 |
+| title_abbr | 252 | 228 | 218 | 200 | 6 | 10 | 0 |
+
+Pass rule as implemented in `collect_english.decide`: `k_en ≥ 5` ∧ `audit_nat == []` ∧ Haiku coherent ∧
+faithful (fluency and the Haiku `style_consistent` flag are recorded but not gating: for these lexical families
+the flag was unreliable — notes such as "'begin' is formal, should be 'start'" or "all NAT forms used" with a
+False flag; style is audited deterministically). Short records were re-translated with feedback up to six rounds
+(`--retry_failed`), then spare Spanish texts were added (`--fill`) until 200 usable pairs existed.
+
+Translator failure modes fixed deterministically or by detector design (all in the commits of 2026-09-11):
+- **latin_abbr:** Gemini renders «es decir» as "that's," in ~55% of texts → normalised to "that is," before the
+  house-style pass; the connective ", that is," / sentence-initial "That is," is exempt from the contractions
+  renderer and recognised by the latin_abbr detector; sentence-initial "Versus" recognised.
+- **flat_adverb:** the translator front-loads adverbs ("carefully inflating", "clearly explaining"); only
+  post-verbal adverbs are opportunities. The detector was rewritten positionally: an -ly adverb from the 27-pair
+  list counts when it follows a non-auxiliary word and ends its clause (before punctuation, a conjunction or a
+  preposition). Bare (flat) forms are ambiguous with adjectives, so in running text they only count after a
+  verbal word within 8 words, with no copula in between and not after a measure ("30 cm deep"), never the focus
+  adverb "even"; the twin check falls back to the classifier when the conservative alt detector under-counts.
+  The light/lightly pair was dropped (noun).
+- **latin_plural:** the anglicised forms funguses / nucleuses / larvas / vertebras / alumnuses are not standard
+  American English (Haiku flagged them as non-fluent) → the five pairs were removed from the registry and the
+  Spanish lexicon (hongos, larvas, núcleos, vértebras, antiguos alumnos), texts recounted, corpus topped up.
+- **irreg_past:** synonyms/negations ("turned on", "begged", "didn't shine") → explicit form list in the hint.
+
+Provenance: generation `google/gemini-2.5-flash` (≈6,200 + ≈3,200 translation calls incl. retries),
+verification `anthropic/claude-haiku-4.5` (≈6,200 Spanish + ≈3,000 English calls), OpenRouter, 2026-09-11.
+Files: `spanish/<f>.json`, `final/<f>.json`, `english/<f>.json`, `pairs/<f>.json` for the ten families; audits in
+`spanish_audit.csv` / `english_audit.csv` (rows for all 27 families).
