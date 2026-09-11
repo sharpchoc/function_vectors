@@ -1,7 +1,7 @@
 # results/style_translation — does GPT-J pick up a style convention in context while translating?
 
 Step 3 of the style-translation study (2026-09-07). Data: `dataset_files/style_translation/pairs/`
-(17 families × 200 Spanish texts, each with two English twins that differ only in the tested
+(27 families × 200 Spanish texts — 17 built 2026-09-07, 10 lexically diverse families added 2026-09-11, each with two English twins that differ only in the tested
 family's style, and cue tokens for every decision point — see that folder's README).
 
 ## Protocol
@@ -16,7 +16,7 @@ family's style, and cue tokens for every decision point — see that folder's RE
 - **Style decision** (deterministic, registry classifiers in `src/sandbox/ext_styleprops/
   properties.py`): the completion (prefixed by the already-generated start of a word-internal cue)
   is classified nat / alt / None. Unit test: every twin's own continuation is classified as its own
-  style (100% in all 17 families).
+  style (100% in all 27 families).
 - **Faithfulness / coherence** (Gemini 2.5 Flash via OpenRouter, one completion per call): OK if
   the completion is coherent English that faithfully renders what comes next in the Spanish
   (paraphrase allowed; capped completions are not penalised for truncation); style/typography
@@ -30,7 +30,7 @@ family's style, and cue tokens for every decision point — see that folder's RE
 
 | file | contents |
 |---|---|
-| `accuracy_by_k.png` | 17 panels; accuracy vs k (0..4), one line per style (nat = house style, alt = the flipped convention), CI bars |
+| `accuracy_by_k.png` | 27 panels (grouped LEXICAL 16 / FIXED 11); accuracy vs k (0..4), one line per style (nat = house style, alt = the flipped convention), CI bars |
 | `unscorable_by_k.png`, `unscorable.csv` | share of completions with no style decision, per family × style, per k and pooled |
 | `summary.csv` | per (family, style, k): accuracy, CI, style_ok, wrong_style, unscorable, style_ok_but_unfaithful, judge_ok, capped, n |
 | `records.npz` | per-completion arrays (style, k, decision, judge_ok, capped) to regenerate views |
@@ -80,6 +80,26 @@ translation; the "style-only" column shows the convention-adoption rate alone.
 | percent_sign | alt | 0.10 | 0.72 | 0.80 | 0.84 | 0.81 | 0.12→0.98 | 0.01 | 0.85 |
 | ordinal_words | nat | 0.24 | 0.65 | 0.74 | 0.72 | 0.78 | 0.33→0.97 | 0.05 | 0.75 |
 | ordinal_words | alt | 0.42 | 0.46 | 0.51 | 0.64 | 0.65 | 0.57→0.79 | 0.06 | 0.76 |
+| uk_vocab | nat | 0.51 | 0.51 | 0.42 | 0.51 | 0.51 | 0.60→0.58 | 0.34 | 0.82 |
+| uk_vocab | alt | 0.07 | 0.20 | 0.25 | 0.28 | 0.25 | 0.09→0.29 | 0.34 | 0.81 |
+| register | nat | 0.37 | 0.56 | 0.59 | 0.55 | 0.59 | 0.48→0.73 | 0.19 | 0.82 |
+| register | alt | 0.14 | 0.17 | 0.21 | 0.21 | 0.22 | 0.17→0.27 | 0.20 | 0.84 |
+| unit_abbr | nat | 0.73 | 0.83 | 0.83 | 0.80 | 0.84 | 0.92→0.97 | 0.02 | 0.84 |
+| unit_abbr | alt | 0.03 | 0.28 | 0.29 | 0.28 | 0.32 | 0.03→0.38 | 0.05 | 0.82 |
+| diacritics | nat | 0.43 | 0.32 | 0.33 | 0.38 | 0.30 | 0.48→0.37 | 0.25 | 0.81 |
+| diacritics | alt | 0.28 | 0.30 | 0.32 | 0.28 | 0.30 | 0.32→0.35 | 0.27 | 0.84 |
+| latin_abbr | nat | 0.41 | 0.38 | 0.35 | 0.35 | 0.38 | 0.52→0.42 | 0.47 | 0.84 |
+| latin_abbr | alt | 0.07 | 0.12 | 0.14 | 0.17 | 0.17 | 0.08→0.19 | 0.45 | 0.83 |
+| hyphen_compound | nat | 0.55 | 0.63 | 0.60 | 0.60 | 0.54 | 0.62→0.63 | 0.22 | 0.88 |
+| hyphen_compound | alt | 0.18 | 0.17 | 0.12 | 0.14 | 0.20 | 0.19→0.23 | 0.21 | 0.86 |
+| flat_adverb | nat | 0.60 | 0.59 | 0.57 | 0.58 | 0.56 | 0.69→0.69 | 0.27 | 0.86 |
+| flat_adverb | alt | 0.04 | 0.07 | 0.04 | 0.09 | 0.06 | 0.06→0.07 | 0.29 | 0.86 |
+| irreg_past | nat | 0.41 | 0.38 | 0.34 | 0.31 | 0.30 | 0.51→0.36 | 0.48 | 0.80 |
+| irreg_past | alt | 0.11 | 0.09 | 0.08 | 0.04 | 0.10 | 0.17→0.11 | 0.48 | 0.78 |
+| latin_plural | nat | 0.47 | 0.55 | 0.48 | 0.42 | 0.43 | 0.54→0.49 | 0.15 | 0.83 |
+| latin_plural | alt | 0.23 | 0.29 | 0.28 | 0.28 | 0.28 | 0.27→0.32 | 0.17 | 0.85 |
+| title_abbr | nat | 0.17 | 0.39 | 0.28 | 0.40 | 0.45 | 0.21→0.52 | 0.36 | 0.74 |
+| title_abbr | alt | 0.14 | 0.20 | 0.30 | 0.27 | 0.40 | 0.20→0.52 | 0.37 | 0.73 |
 
 Reading the plot (`accuracy_by_k.png`, red = the flipped convention, blue = house style):
 
@@ -111,6 +131,25 @@ Reading the plot (`accuracy_by_k.png`, red = the flipped convention, blue = hous
   contractions 0.09–0.20. Everything else ≤ 0.10.
 - Completions cut by the 48-token cap: 1–5 % except the all_caps flipped context (27–48 %, capitals
   tokenise into many more pieces); the judge is told when a completion was capped.
+
+- **Ten lexically diverse families added 2026-09-11** (uk_vocab, register, unit_abbr, diacritics,
+  latin_abbr, hyphen_compound, flat_adverb, irreg_past, latin_plural, title_abbr; rows above, bottom
+  of the left block in the plot): **in-context learning is weak for all of them and absent for
+  most.** Only title_abbr learns in the ordinary sense (abbreviated titles 0.20 → 0.52 style-only,
+  accuracy 0.14 → 0.40); unit_abbr (spelled-out units 0.03 → 0.38), uk_vocab (British words
+  0.09 → 0.29) and register (formal words 0.17 → 0.27) move a little; diacritics, latin_abbr,
+  hyphen_compound, latin_plural stay within ±0.05 of their k = 0 rate, and flat_adverb
+  (0.06 → 0.07) and irreg_past (0.17 → 0.11) do not move at all — against 0.59–0.98 for the
+  fixed-marker families and 0.26–0.79 for the six earlier lexical families. Even the house-style
+  pole is reached only 0.4–0.7 of the time and does not improve with k (diacritics, latin_abbr,
+  irreg_past, latin_plural decline slightly). A large share of completions avoids the decision
+  altogether (unscorable 0.2–0.5): with a free choice of words GPT-J paraphrases rather than copies
+  the convention — "begged"/"turned on" for pled/lit, "around 30 mins"/"et cetera" for approx./etc.,
+  "promptly"/"with confidence" for quick/safe, and for titles it keeps the Spanish ("Señor Delgado",
+  "San Juan") or uses a title outside the registry ("Ms.", "Mrs."). (title_abbr's rows were rescored
+  after the sentence-cutter fix of 2026-09-11 — "Mr."/"Dr." had been cut off before the name and
+  counted as unscorable.) The step-4/6/7 reruns on these families therefore measure steering on top of
+  a near-zero in-context baseline — see those folders' READMEs.
 
 ## Provenance / caveats
 - **percent_sign scoring (user decision 2026-09-07):** a completion writing `50 %` (space before the sign, copied from the Spanish typography — 110 of the 119 k=0 no-decision cases) counts as the SIGN convention, and `per cent` counts as spelled out (`PercentSign.classify`). Before this decision percent_sign was 26–34 % unscorable at k=0 and its k=0 accuracies were 0.53 / 0.09; after it 0.01 unscorable and 0.72 / 0.10. Angular quotes copied from the Spanish in curly_quotes remain unscorable (they are neither straight nor curly).
