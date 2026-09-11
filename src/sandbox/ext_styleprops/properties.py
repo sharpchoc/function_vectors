@@ -728,13 +728,12 @@ _IRREG_PAST = [   # (irregular = standard American, regular)
 _LATIN_PLURAL = [   # (anglicised, classical)
     ("indexes", "indices"), ("formulas", "formulae"), ("cactuses", "cacti"), ("appendixes", "appendices"),
     ("curriculums", "curricula"), ("stadiums", "stadia"), ("forums", "fora"), ("antennas", "antennae"),
-    ("funguses", "fungi"), ("syllabuses", "syllabi"), ("octopuses", "octopi"), ("radiuses", "radii"),
-    ("nucleuses", "nuclei"), ("memorandums", "memoranda"), ("referendums", "referenda"),
+    ("syllabuses", "syllabi"), ("octopuses", "octopi"), ("radiuses", "radii"),
+    ("memorandums", "memoranda"), ("referendums", "referenda"),
     ("millenniums", "millennia"), ("aquariums", "aquaria"), ("terrariums", "terraria"),
-    ("vertexes", "vertices"), ("matrixes", "matrices"), ("larvas", "larvae"), ("nebulas", "nebulae"),
-    ("vertebras", "vertebrae"), ("thesauruses", "thesauri"), ("gymnasiums", "gymnasia"),
-    ("symposiums", "symposia"), ("hippopotamuses", "hippopotami"), ("alumnuses", "alumni"),
-]
+    ("vertexes", "vertices"), ("matrixes", "matrices"), ("nebulas", "nebulae"),
+    ("thesauruses", "thesauri"), ("gymnasiums", "gymnasia"),
+    ("symposiums", "symposia"), ("hippopotamuses", "hippopotami")]
 
 UkVocab = _lexicon_property("UkVocab", "uk_vocab", _UK_VOCAB, "American vocabulary (truck, vacation, trash)",
                             "British vocabulary (lorry, holiday, rubbish)", confound="medium")
@@ -872,7 +871,8 @@ class FlatAdverb(Property):
              "become|becomes|became|get|gets|got|getting|stay|stays|stayed|remain|remains|remained|grow|grows|grew|turn|turns|turned")
     # "made it clear", "keep it tight": causative verb + object + ADJECTIVE — not an adverb site
     _CAUS = re.compile(r"\b(?:make|makes|made|making|keep|keeps|kept|keeping|find|finds|found|consider|considers|considered|leave|leaves|left|"
-                       r"get|gets|got|call|calls|called|deem|deemed|render|rendered)\s+[\w'’]+\s*$", re.IGNORECASE)
+                       r"get|gets|got|call|calls|called|deem|deemed|render|rendered)\s+(?:it|them|him|her|us|me|this|that|everything|things|"
+                       r"the [\w'’]+|this [\w'’]+|that [\w'’]+|your [\w'’]+|my [\w'’]+|his [\w'’]+|her [\w'’]+|our [\w'’]+|their [\w'’]+)\s+$", re.IGNORECASE)
     # a bare (flat) form is ambiguous with an adjective ("select firm apples", "good light"): in running text it only counts
     # after a clearly verbal word (-ing/-ed form, a listed verb) or an object pronoun
     _VERBISH = re.compile(r"(?:\w{3,}(?:ing|ed)|it|them|him|her|us|me|go|goes|went|gone|drive|drives|drove|driven|ride|rides|rode|ridden|"
@@ -901,10 +901,26 @@ class FlatAdverb(Property):
             nat, alt = self._map[w.lower()]
             if not self._ALT_TAIL.match(text, m.end(2)):
                 continue                                   # "carefully casting", "a fresh loaf": pre-verbal or adjectival
-            if w.lower() == alt and self._CAUS.search(text[max(0, m.start(1) - 12):m.start(2)]):
-                continue                                   # "made it clear", "keep it tight": object complement
-            if w.lower() == alt and not self._VERBISH.match(m.group(1)):
-                continue                                   # "select firm apples", "good light": adjective/noun, not a flat adverb
+            if w.lower() == alt and self._CAUS.search(text[max(0, m.start(1) - 40):m.start(2)]):
+                continue                                   # "made it clear", "keep the room tight": object complement
+            if w.lower() == alt:
+                # bare forms are ambiguous with adjectives, so in running text they only count after a verbal word
+                # (within 8 words), with no copula in between ("it's easy", "the road is slow", "30 cm deep" are adjectives)
+                prev = re.findall(r"[\w'’]+", text[max(0, m.start(1) - 80):m.start(2)])[-8:]
+                if prev and re.fullmatch(r"(?i)\d+(?:[.,]\d+)?|cm|mm|km|m|inches?|feet|foot|meters?|up|even", prev[-1]):
+                    continue
+                if alt == "even":
+                    continue                               # focus adverb "even" is far more common than the flat adverb
+                ok = False
+                for x in reversed(prev):
+                    if re.fullmatch(r"(?i)(?:is|are|was|were|be|been|being|am|seems?|seemed|looks?|looked|feels?|felt|becomes?|became|"
+                                    r"stays?|stayed|remains?|remained|it[’']s|that[’']s|wasn[’']t|isn[’']t|aren[’']t|weren[’']t|they[’']re|"
+                                    r"you[’']re|we[’']re|he[’']s|she[’']s|there[’']s|what[’']s|which|who|though)", x):
+                        break
+                    if self._VERBISH.match(x):
+                        ok = True; break
+                if not ok:
+                    continue
             opps.append(Opp(m.start(2), m.end(2), nat, alt))
         return _dedup(opps)
 

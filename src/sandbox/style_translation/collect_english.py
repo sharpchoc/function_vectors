@@ -32,7 +32,7 @@ TARGET = 200
 # gating: style is judged deterministically (audit_nat / k_en; the judge hallucinated style
 # inconsistencies, e.g. "periods outside quotes" on texts that have them inside), and most
 # fluency flags are consequences of the fixed conventions ("At 1st", capitals after ...).
-KEYS = ("coherent", "faithful")
+KEYS = ("coherent", "faithful")   # fluency/style are not gating: style is audited deterministically (audit_nat)
 INFO_KEYS = ("fluent", "style_consistent")
 
 
@@ -59,7 +59,11 @@ def build_twins(r):
             problems.append(f"nat twin surface not nat at {a}")
             break
     if prop.name != "all_caps" and len(prop.find_opps(text_alt)) != len(opps):
-        problems.append("alt twin opp count differs")
+        # the detector is deliberately conservative on ambiguous alt surfaces (flat_adverb: bare forms vs adjectives);
+        # what matters downstream is that the classifier reads every rendered site as alt and every nat site as nat
+        if not all(prop.classify(text_alt[max(0, a - 1):]) == "alt" for a, b in spans_alt) \
+                or not all(prop.classify(text_nat[max(0, a - 1):]) == "nat" for a, b in spans_nat):
+            problems.append("alt twin opp count differs")
     # identical outside the spans
     def strip(t, spans):
         out, pos = [], 0

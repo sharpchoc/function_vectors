@@ -184,9 +184,9 @@ ES_IRREGPAST = [
 ]
 
 ES_LATINPLURAL = ["índices", "fórmulas", "cactus", "apéndices", "planes de estudio", "currículos", "estadios", "foros", "antenas",
-    "hongos", "temarios", "programas de estudio", "pulpos", "radios", "núcleos", "memorandos", "referéndums", "referendos",
-    "milenios", "acuarios", "terrarios", "vértices", "matrices", "larvas", "nebulosas", "vértebras", "tesauros", "gimnasios",
-    "simposios", "hipopótamos", "antiguos alumnos", "exalumnos"]
+    "temarios", "programas de estudio", "pulpos", "radios", "memorandos", "referéndums", "referendos",
+    "milenios", "acuarios", "terrarios", "vértices", "matrices", "nebulosas", "tesauros", "gimnasios",
+    "simposios", "hipopótamos", ]
 
 
 def count_unit_symbols(t):
@@ -316,7 +316,7 @@ FAMILIES: List[Family] = [
        count_lexicon(ES_HYPHEN), "each Spanish term whose English equivalent is a compound that can be closed or hyphenated"),
     _f("flat_adverb",
        "-ly adverb vs flat adverb after a verb (drive slowly/drive slow, hold tightly/hold tight, brake gently/brake gentle, breathe deeply/breathe deep, speak quietly/speak quiet, cut thinly/cut thin, drive safely/drive safe, turn the screw firmly/firm)",
-       "Write mostly short imperative or first-person past sentences in which a manner adverb comes AT THE END of its clause, directly after an intransitive verb or after a very short object (never before the verb, never inside a gerund phrase): «Pedalea despacio.», «Respiré hondo.», «Sujeta el manillar con fuerza.», «Frena suave.», «Habla bajito.», «Ve directo al taller.», «Lo compré barato.», «Córtalo fino.», «Lo hice mal.», «Mírala de cerca.», «Pisa firme.», «Trabaja en silencio.». Use at least 7 DIFFERENT adverbs from this list, each in that position: despacio, rápido, con fuerza, suave/suavemente, hondo, en voz alta, bajito, con cuidado, firme/firmemente, directo/directamente, barato, mal, fino, recién, claro/claramente, fácilmente, de cerca, en silencio, uniformemente, con seguridad, ligeramente. Do NOT use other -mente adverbs.",
+       "Use at least 7 DIFFERENT manner adverbs from this list, each placed RIGHT AFTER its verb (or after a short object) and at the END of its clause, followed by a comma, a period or a preposition — never before the verb and never inside a gerund phrase (write «pedalea despacio,» / «sujeta el manillar con fuerza.» / «frena suavemente antes de...», NOT «suavemente frenando»): despacio, rápido, con fuerza, suavemente, hondo, en voz alta, bajito, con cuidado, firmemente, directamente, barato, mal, fino, recién, claramente, fácilmente, de cerca, en silencio, uniformemente, con seguridad, ligeramente. Do NOT rely on other -mente adverbs (regularmente, periódicamente, adecuadamente do not count). Keep the paragraph 130-180 words long.",
        count_patterns(ES_FLATADV), "each verb followed by one of the listed manner adverbs"),
     _f("irreg_past",
        "irregular vs regular English past form of a verb (dove/dived, snuck/sneaked, lit/lighted, pled/pleaded, sped/speeded, wove/weaved, shone/shined, strove/strived, knelt/kneeled)",
@@ -324,7 +324,7 @@ FAMILIES: List[Family] = [
        count_patterns(ES_IRREGPAST), "each preterite verb from the list of 9 actions"),
     _f("latin_plural",
        "anglicised vs classical plural (indexes/indices, formulas/formulae, cactuses/cacti, appendixes/appendices, curriculums/curricula, stadiums/stadia, forums/fora, antennas/antennae, funguses/fungi, syllabuses/syllabi, octopuses/octopi, radiuses/radii, nucleuses/nuclei, memorandums/memoranda, referendums/referenda, millenniums/millennia, aquariums/aquaria, terrariums/terraria, vertexes/vertices, matrixes/matrices, larvas/larvae, nebulas/nebulae, vertebras/vertebrae, thesauruses/thesauri, gymnasiums/gymnasia, symposiums/symposia, hippopotamuses/hippopotami, alumnuses/alumni)",
-       "Use at least 6 (ideally 7) DIFFERENT plural nouns from this list, always in the PLURAL and each used ONLY where it makes literal sense (never as a metaphor, joke or forced comparison): hongos, larvas and cactus (garden and plant care), acuarios and terrarios (pets), gimnasios and estadios (sport), fórmulas, índices, matrices and radios (a spreadsheet, a budget, geometry), foros (online discussion boards), temarios, planes de estudio and antiguos alumnos (a course or school), memorandos and simposios (an office or conference), antenas and núcleos (technical), vértebras (posture, back pain), nebulosas (stargazing), milenios (history), apéndices (documents). Set the topic in a context where 6–7 of these fit naturally (a school science club, a community garden, a gym, an evening course, a spreadsheet at work) and keep every sentence plausible.",
+       "Use at least 6 (ideally 7) DIFFERENT plural nouns from this list, always in the PLURAL and each used ONLY where it makes literal sense (never as a metaphor, joke or forced comparison): cactus (plants), acuarios and terrarios (pets), gimnasios and estadios (sport), fórmulas, índices, matrices and radios (a spreadsheet, a budget, geometry), foros (online discussion boards), temarios and planes de estudio (a course or school), memorandos and simposios (an office or conference), antenas (technical), nebulosas (stargazing), milenios (history), apéndices (documents). Set the topic in a context where 6–7 of these fit naturally (a school science club, a community garden, a gym, an evening course, a spreadsheet at work) and keep every sentence plausible.",
        count_lexicon(ES_LATINPLURAL), "each plural noun whose English plural has an anglicised and a classical form"),
     _f("title_abbr",
        "title or street word in full vs abbreviated before/after a name (Doctor Smith/Dr. Smith, Professor Lee/Prof. Lee, Mister Brown/Mr. Brown, Mount Fuji/Mt. Fuji, Saint Paul/St. Paul, Main Street/Main St., Fifth Avenue/Fifth Ave., Oak Road/Oak Rd., Sunset Boulevard/Sunset Blvd.)",
