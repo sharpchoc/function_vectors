@@ -71,6 +71,18 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
 | num_words | spelled cardinals | 24 | 4 | .06 → **.73** | .55 | .28 | digits | 24 | 4 | .65 → .76 | .20 | .79 |
 | percent_sign | "percent" | 24 | 2 | .12 → **.87** | .34 | .81 | % | 24 | 0.5 | .75 → .85 | .81 | .88 |
 | ordinal_words | spelled ordinals | 20 | 2 | .37 → **.74** | .45 | .65 | 1st/2nd | 16 | 4 | .29 → .47 | .40 | .78 |
+| uk_vocab ¹ | British words | 20 | 4 | .10 → **.51** | .12 | .25 | American words | 24 | 4 | .48 → .65 | .56 | .51 |
+| register ¹ | formal words | 24 | 4 | .09 → **.20** | .14 | .22 | plain words | 10 | 2 | .41 → .44 | .42 | .59 |
+| unit_abbr ¹ | units spelled out | 24 | 4 | .03 → **.70** | .02 | .32 | unit symbols | 16 | 1 | .70 → .78 | .74 | .84 |
+| diacritics ¹ | accented loanwords | 8 | 1 | .24 → .31 | .23 | .30 | unaccented | 8 | 1 | .43 → .41 | .41 | .30 |
+| latin_abbr ¹ | e.g./i.e./etc. | 24 | 4 | .08 → **.46** | .10 | .17 | for example/that is | 24 | 4 | .41 → .54 | .47 | .38 |
+| hyphen_compound ¹ | hyphenated compounds | 10 | 1 | .15 → .19 | .23 | .20 | closed compounds | 10 | 2 | .52 → .54 | .61 | .54 |
+| flat_adverb ¹ | flat adverbs | 24 | 4 | .07 → .09 | .07 | .06 | -ly adverbs | 2 | 1 | .62 → .61 | .65 | .56 |
+| irreg_past ¹ | regular pasts (dived) | 6 | 0.5 | .11 → .11 | .11 | .10 | irregular (dove) | 24 | 2 | .38 → .42 | .41 | .30 |
+| latin_plural ¹ | classical plurals | 4 | 0.5 | .18 → .26 | .20 | .28 | anglicised plurals | 6 | 2 | .45 → .48 | .46 | .43 |
+| title_abbr ¹ | Dr./Mr./St. | 24 | 4 | .22 → **.38** | .21 | .40 | Doctor/Mister/Saint | 24 | 4 | .17 → .47 | .25 | .45 |
+
+¹ the ten lexically diverse families added 2026-09-11 (finding 7 below); bold = gain ≥ .10 over the unsteered baseline.
 
 1. **One vector at one token induces most conventions with no example.** Toward the rare (alt)
    convention, steering the single cue token lifts full accuracy to 0.58–0.90 in 13 of 17 families.
@@ -99,7 +111,7 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
    prior is the alt pole — oxford_comma (.23 → .79), quote_punct (.28 → .74), contractions (.23 → .71),
    curly_quotes (.25 → .57), ordinal_words (.29 → .47) — plus whilst (.70 → .87) and em_dash (.60 → .77),
    where the vector removes the unscorable/mixed completions of the baseline.
-5. **Layer and scale.** The best alt setting is late (L20/24 in 14 of 17; L16 for sentence_caps and
+5. **Layer and scale.** The best alt setting is late (L20/24 in 14 of the 17 original families; L16 for sentence_caps and
    ellipsis, L8 for all_caps) and high on the α grid (α = 4 in 9, α = 2 in 6, α = 1 in 2): the screen
    curves rise monotonically with α at L16–24 for most alt targets. Since the screen ranks on style
    only, it picks the largest α even where α = 4 costs faithfulness; a smaller α could score higher on
@@ -118,6 +130,21 @@ accuracy with 4 in-context examples; "cf" = another family's vector at the same 
    Typographic families show no transfer (cf ≤ .02). Some cf vectors disrupt rather than steer: the
    ellipsis nat vector at L20 α4 makes em_dash emit `--` (unscorable .52, accuracy .60 → .09); the
    all_caps vector at L16 α4 turns sentence_caps completions into ALL CAPS.
+
+7. **The ten lexically diverse families added 2026-09-11** (rows marked ¹; step-3 showed that in-context
+   examples barely move them). **The cue-token vector does what the examples cannot for half of them:**
+   toward the rare convention, uk_vocab → British .10 → .51 (4 examples: .25), unit_abbr → spelled-out units
+   .03 → .70 (.32), latin_abbr → e.g./i.e./etc. .08 → .46 (.17), title_abbr → Dr./Mr. .22 → .38 (.40) and
+   register → formal .09 → .20 (.22) — every one of the ten steered accuracies is at or above its 4-example
+   accuracy (mean .32 vs .23; unsteered .13). The other five (diacritics, hyphen_compound, flat_adverb,
+   irreg_past, latin_plural) do not move under either intervention (gains ≤ .08; style-only ≤ .34): for
+   these conventions GPT-J has no single direction at the cue that selects the marked word form, and the
+   screen curves (`screen_layer_alpha.png`) are flat at every layer and α. Where steering works it is late
+   (L20–24, α = 4) as for the original lexical families, and specific — the other family's vector stays at
+   baseline (mean cf .14). Toward the house convention the gains are again bounded by the baseline
+   (uk_vocab .48 → .65, title_abbr .17 → .47, latin_abbr .41 → .54; the rest ≤ .04). The judge-OK rate
+   under steering stays at .70–.88 (unsteered .74–.89): the translations survive; what limits accuracy is
+   the model avoiding the decision (unscorable .19–.43, title_abbr .43).
 
 ## One common layer for every family? (2026-09-10, user question)
 
