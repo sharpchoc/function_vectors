@@ -16,19 +16,24 @@ for p in (_BOOT, _BOOT / "src"):
 from src.sandbox.ext_styleprops.properties import PROPS
 
 _SENT_END = re.compile(r'[.!?]+["”’\')]*(?=\s|$)')
+# a period after one of these is an abbreviation, not a sentence end (title_abbr / latin_abbr alt forms, 2026-09-11)
+_ABBREV = re.compile(r"(?:\b(?:Dr|Mr|Mrs|Ms|Mx|Prof|St|Mt|Ave|Rd|Blvd|Sr|Jr|No|vs|approx|Fig|Vol|Inc|Ltd|Co)|\b[ei]\.g|\bi\.e|\b[A-Z])$")
 
 
 def cut_sentence(tail):
     """Cut the completion at the end of the current sentence (or at a newline / new header).
-    Returns (cut_tail, capped) — capped = no sentence end found (the 48-token cap hit first)."""
+    Returns (cut_tail, capped) — capped = no sentence end found (the 48-token cap hit first).
+    A period that belongs to an abbreviation (Dr., Mr., St., e.g., i.e., vs., approx.) is not a sentence end."""
     t = tail
     stop = len(t); capped = True
     m_nl = re.search(r"\n|\bSpanish:|\bEnglish:", t)
     if m_nl:
         stop = m_nl.start(); capped = False
-    m = _SENT_END.search(t[:stop])
-    if m:
+    for m in _SENT_END.finditer(t[:stop]):
+        if m.group(0).startswith(".") and _ABBREV.search(t[:m.start()]):
+            continue
         stop = m.end(); capped = False
+        break
     return t[:stop].rstrip("\n"), capped
 
 
