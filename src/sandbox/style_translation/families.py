@@ -164,16 +164,25 @@ ES_HYPHEN = ["correo electrónico", "correos electrónicos", "en línea", "sitio
     "cepillo de dientes", "hecho a mano", "hecha a mano", "cronología", "nombre de usuario", "inicio de sesión", "sin conexión",
     "microondas", "agua de lluvia", "leña", "invernadero", "cortacésped", "carretilla", "manillar", "pata de cabra",
     "faro delantero", "faros", "luz trasera", "tija", "mochila", "mochilas"]
-ES_FLATADV = [r"despacio", r"lentamente", r"rápido", r"rápidamente", r"deprisa", r"con suavidad", r"suavemente", r"con fuerza",
-    r"firmemente", r"\bfuerte\b", r"en voz alta", r"\balto\b", r"con seguridad", r"de forma segura", r"profundamente", r"\bhondo\b",
-    r"barato", r"directamente", r"\bdirecto\b", r"de otra manera", r"de forma distinta", r"\bmal\b", r"\bfirme\b", r"bajito",
-    r"en voz baja", r"uniformemente", r"de manera uniforme", r"con cuidado", r"cuidadosamente", r"en silencio", r"calladamente",
-    r"de cerca", r"con constancia", r"de forma constante", r"claramente", r"\bclaro\b", r"fácilmente", r"brillante", r"ligeramente",
-    r"en rodajas finas", r"\bfino\b", r"finamente", r"recién", r"correctamente", r"como es debido"]
-ES_IRREGPAST = [r"se (zambull|lanz)(ó|aron|é|amos) al agua", r"buce(ó|aron|é|amos)", r"se zambull(ó|eron|í|imos)",
-    r"se (col|escabull)(ó|aron|é|amos|ió|eron|í|imos)", r"entr(ó|aron|é|amos) a hurtadillas", r"encend(ió|ieron|í|imos)",
-    r"(suplic|rog)(ó|aron|é|amos)", r"aceler(ó|aron|é|amos)", r"(fue|fueron|fui|fuimos) a toda velocidad", r"tej(ió|ieron|í|imos)",
-    r"brill(ó|aron)", r"se esforz(ó|aron)", r"me esforcé", r"nos esforzamos", r"se arrodill(ó|aron)", r"me arrodillé", r"nos arrodillamos"]
+ES_FLATADV = [r"despacio", r"lentamente", r"con lentitud", r"\brápido\b", r"rápidamente", r"con rapidez", r"deprisa", r"con suavidad",
+    r"suavemente", r"con fuerza", r"firmemente", r"con firmeza", r"\bfuerte\b", r"en voz alta", r"con seguridad", r"de forma segura",
+    r"profundamente", r"\bhondo\b", r"a fondo", r"barato", r"directamente", r"\bdirecto\b", r"de otra manera", r"de forma distinta",
+    r"\bmal\b", r"\bfirme\b", r"bajito", r"en voz baja", r"uniformemente", r"de manera uniforme", r"con cuidado", r"cuidadosamente",
+    r"en silencio", r"calladamente", r"de cerca", r"con constancia", r"de forma constante", r"claramente", r"\bclaro\b", r"fácilmente",
+    r"con facilidad", r"brillante", r"ligeramente", r"en rodajas finas", r"\bfino\b", r"finamente", r"recién", r"correctamente", r"como es debido"]
+ES_IRREGPAST = [
+    r"(se |me |nos |te )?(zambull|sumerg)(ió|ieron|í|imos|iste)", r"buce(ó|aron|é|amos|aste)",
+    r"(se |me |nos |te )?(lanz|tir|arroj)(ó|aron|é|amos|aste) al (agua|lago|río|mar|piscina|estanque)", r"salt(ó|aron|é|amos) al (agua|lago|río|mar|piscina)",
+    r"(se |me |nos |te )?(col|escabull)(ó|aron|é|amos|aste|ió|eron|í|imos|iste)", r"entr(ó|aron|é|amos|aste) (a hurtadillas|sigilosamente|sin hacer ruido|de puntillas)",
+    r"(encend|prend)(ió|ieron|í|imos|iste)", r"ilumin(ó|aron|é|amos)",
+    r"(suplic|rog|implor)(ó|aron|é|amos|aste|ué|uemos)",
+    r"aceler(ó|aron|é|amos|aste)", r"(fue|fueron|fui|fuimos|corri(ó|eron|í|imos)|pas(ó|aron|é|amos)|sali(ó|eron|í|imos)) (a toda velocidad|a toda prisa|disparad[oa]s?)",
+    r"tej(ió|ieron|í|imos|iste)", r"entretej(ió|ieron|í|imos)",
+    r"(brill|resplandec|reluci)(ó|aron|é|amos|ió|ieron)",
+    r"(se |me |nos |te )?esforz(ó|aron|amos|aste)", r"me esforcé", r"luch(ó|aron|é|amos) por",
+    r"(se |me |nos |te )?(arrodill|hinc)(ó|aron|é|amos|aste)",
+]
+
 ES_LATINPLURAL = ["índices", "fórmulas", "cactus", "apéndices", "planes de estudio", "currículos", "estadios", "foros", "antenas",
     "hongos", "temarios", "programas de estudio", "pulpos", "radios", "núcleos", "memorandos", "referéndums", "referendos",
     "milenios", "acuarios", "terrarios", "vértices", "matrices", "larvas", "nebulosas", "vértebras", "tesauros", "gimnasios",
@@ -185,7 +194,7 @@ def count_unit_symbols(t):
 
 
 def count_titles(t):
-    return len(re.findall(r"\b(?:doctor|doctora|profesor|profesora|señor|monte|san|santa|calle|avenida|carretera|camino|bulevar)\s+[A-ZÁÉÍÓÚÑ]", t))
+    return len(re.findall(r"\b(?:doctor|doctora|profesor|profesora|señor|monte|san|santa|calle|avenida|carretera|camino|bulevar)\s+[A-ZÁÉÍÓÚÑ]", t, re.I))
 
 
 def count_patterns(pats):
@@ -289,16 +298,16 @@ FAMILIES: List[Family] = [
        count_lexicon(ES_REGISTER), "each Spanish word whose English equivalent has a plain and a formal variant"),
     _f("unit_abbr",
        "unit symbols vs spelled-out units after a number (5 km/5 kilometers, 2 kg/2 kilograms, 30 ml/30 milliliters, 20 cm/20 centimeters, 3 mm/3 millimeters, 250 g/250 grams, 15 °C/15 degrees Celsius)",
-       "Include at least 6 (ideally 6 to 7) measurements with a number and a metric unit, spread through the paragraph and using DIFFERENT units where possible: distances in km or cm or mm, weights in kg or g, volumes in ml, temperatures in °C. Write the unit as its symbol after a space (5 km, 2 kg, 30 ml, 15 °C), never as a word.",
+       "Include at least 7 measurements, each a number followed by a space and ONE of these seven unit symbols only: km, cm, mm, kg, g, ml, °C (e.g. «5 km», «30 cm», «2 kg», «250 g», «30 ml», «15 °C»). Use at least 4 different symbols from that list. Do NOT use any other unit (no m, l, L, min, h, bar, %, MB, Nm) and never write a unit as a word (no «kilómetros», «gramos»).",
        count_unit_symbols, "each number followed by a metric unit symbol",
        "- Units of measurement always as symbols after a space: 5 km, 2 kg, 30 ml, 20 cm, 15 °C (never «kilómetros», «kilos», «grados»)."),
     _f("diacritics",
        "whether a loanword keeps its accent in English (cafe/café, naive/naïve, cliche/cliché, fiance/fiancé, fiancee/fiancée, facade/façade, jalapeno/jalapeño, decor/décor, saute/sauté, puree/purée, creme/crème, entree/entrée, matinee/matinée, debut/début, elite/élite, senor/señor, pinata/piñata, protege/protégé, deja vu/déjà vu, a la carte/à la carte, soiree/soirée, canape/canapé, pate/pâté, macrame/macramé, applique/appliqué, fete/fête, creche/crèche, papier-mache/papier-mâché, naivete/naïveté, vis-a-vis/vis-à-vis, blase/blasé)",
-       "Use at least 6 (ideally 6 to 7) DIFFERENT items from this list, spread through the paragraph, so that the English translation naturally uses the corresponding loanword: café/cafetería, ingenuo/ingenua, cliché/tópico, prometido/prometida, fachada, jalapeño, decoración, saltear/salteado, puré, crema (as in crème), plato principal (entrée), matiné, debut/estreno, élite, señor/señora (as a form of address kept in English), piñata, protegido/pupilo (protégé), déjà vu, a la carta, velada (soirée), canapé, paté, macramé, aplique, guardería (crèche), papel maché, ingenuidad.",
+       "Use at least 7 DIFFERENT items from this list, each in a sentence where it makes literal sense (food, a party, decoration, a couple, the theatre): café/cafetería, cliché/tópico, prometido/prometida, fachada, jalapeño, decoración, saltear/salteado, puré, plato principal (entrée), matiné, debut/estreno, élite, piñata, protegido/pupilo (protégé), déjà vu, a la carta, velada (soirée), canapé, paté, macramé, guardería (crèche), papel maché, ingenuo/ingenua, ingenuidad, aplique. Keep the paragraph natural — no forced insertions, no lists of unrelated things.",
        count_lexicon(ES_DIACRITICS), "each Spanish word whose English equivalent is a loanword that can carry an accent"),
     _f("latin_abbr",
        "English phrase vs Latin abbreviation (for example/e.g., that is/i.e., and so on/etc., versus/vs., approximately/approx.)",
-       "Use at least 6 (ideally 6 to 7) of these connectives, spread through the paragraph and written IN FULL in Spanish: «por ejemplo», «es decir», «etcétera» or «y así sucesivamente» (after a short list), «frente a» or «contra» (as versus, comparing two options), «aproximadamente» or «unos/unas» before a number. Use at least 4 different ones.",
+       "Use at least 7 of these connectives, spread through the paragraph and written IN FULL in Spanish, with at least 4 different ones: «por ejemplo», «es decir», «etcétera» or «y así sucesivamente» (after a short list), «frente a» or «contra» (as versus, comparing two options), «aproximadamente» or «unos/unas» directly before a number. Every one must be used in its normal sense inside a fluent sentence.",
        count_patterns(ES_LATINABBR), "each connective (por ejemplo, es decir, etcétera, frente a/contra, aproximadamente/unos)",
        "- Write connectives in full: «por ejemplo», «es decir», «etcétera» (never «p. ej.», «etc.», «aprox.»)."),
     _f("hyphen_compound",
@@ -307,19 +316,19 @@ FAMILIES: List[Family] = [
        count_lexicon(ES_HYPHEN), "each Spanish term whose English equivalent is a compound that can be closed or hyphenated"),
     _f("flat_adverb",
        "-ly adverb vs flat adverb after a verb (drive slowly/drive slow, hold tightly/hold tight, brake gently/brake gentle, breathe deeply/breathe deep, speak quietly/speak quiet, cut thinly/cut thin, drive safely/drive safe, turn the screw firmly/firm)",
-       "Include at least 6 (ideally 6 to 7) DIFFERENT verb + manner-adverb combinations describing HOW an action is performed, right after the verb (or after a short object), e.g. pedalear despacio, sujetar el manillar con fuerza, frenar suavemente, respirar hondo, hablar bajo, conducir con cuidado, girar el tornillo firmemente, cortar fino, moverse rápido, mirar de cerca, brillar con fuerza, apretar con firmeza. Vary the adverbs.",
-       count_patterns(ES_FLATADV), "each verb followed by a manner adverb"),
+       "Use at least 6 (ideally 6 to 7) DIFFERENT manner adverbs from this list, each placed RIGHT AFTER its verb (or after a short object) to say how the action is done: despacio, rápido, con fuerza, suavemente, hondo, en voz alta, bajito, con cuidado, firmemente, directamente, barato, mal, fino, recién, claramente, fácilmente, de cerca, en silencio, uniformemente, con seguridad, ligeramente, brillante (e.g. «pedalea despacio», «sujeta el manillar con fuerza», «frena suavemente», «respira hondo», «habla bajito», «corta fino»). Do NOT rely on other -mente adverbs (regularmente, periódicamente, adecuadamente do not count).",
+       count_patterns(ES_FLATADV), "each verb followed by one of the listed manner adverbs"),
     _f("irreg_past",
        "irregular vs regular English past form of a verb (dove/dived, snuck/sneaked, lit/lighted, pled/pleaded, sped/speeded, wove/weaved, shone/shined, strove/strived, knelt/kneeled)",
-       "Narrate a past episode (preterite) in which at least 6 of these actions happen NATURALLY as part of the story (do not force them): zambullirse/lanzarse al agua/bucear (dive), colarse/entrar a hurtadillas/escabullirse (sneak), encender una vela/una hoguera/una luz (light), suplicar/rogar (plead), acelerar/ir a toda velocidad (speed), tejer (weave), brillar (the sun/a light shone), esforzarse (strive), arrodillarse (kneel). Choose a topic where these fit: a camping trip, a night hike, a rescue, a festival, a childhood memory.",
-       count_patterns(ES_IRREGPAST), "each preterite verb whose English past has an irregular and a regular form"),
+       "Write the paragraph as a FIRST-PERSON NARRATIVE of one past episode (all verbs in the pretérito indefinido, never the imperfecto for these actions), loosely connected to the topic, in which AT LEAST 6 of these 9 actions happen, each as a finished past event: (1) zambullirse/lanzarse al agua/bucear — «me zambullí», «se lanzó al agua»; (2) colarse/escabullirse/entrar a hurtadillas — «me colé», «se escabulló»; (3) encender una vela/una hoguera/una linterna — «encendí», «encendió»; (4) suplicar/rogar — «le rogué», «suplicó»; (5) acelerar/ir a toda velocidad — «aceleré», «salió a toda velocidad»; (6) tejer — «tejió», «tejimos»; (7) brillar (el sol, una luz) — «brilló», «brillaron»; (8) esforzarse — «me esforcé», «se esforzaron»; (9) arrodillarse — «me arrodillé», «se arrodilló». Make the story natural (a camping trip, a night hike, a rescue, a festival, a childhood memory that fits the topic).",
+       count_patterns(ES_IRREGPAST), "each preterite verb from the list of 9 actions"),
     _f("latin_plural",
        "anglicised vs classical plural (indexes/indices, formulas/formulae, cactuses/cacti, appendixes/appendices, curriculums/curricula, stadiums/stadia, forums/fora, antennas/antennae, funguses/fungi, syllabuses/syllabi, octopuses/octopi, radiuses/radii, nucleuses/nuclei, memorandums/memoranda, referendums/referenda, millenniums/millennia, aquariums/aquaria, terrariums/terraria, vertexes/vertices, matrixes/matrices, larvas/larvae, nebulas/nebulae, vertebras/vertebrae, thesauruses/thesauri, gymnasiums/gymnasia, symposiums/symposia, hippopotamuses/hippopotami, alumnuses/alumni)",
-       "Use at least 6 (ideally 6 to 7) DIFFERENT plural nouns from this list, spread through the paragraph and always in the PLURAL: índices, fórmulas, cactus (plural), apéndices, planes de estudio/currículos, estadios, foros, antenas, hongos, temarios, pulpos, radios (of circles), núcleos, memorandos, referéndums, milenios, acuarios, terrarios, vértices, matrices, larvas, nebulosas, vértebras, tesauros, gimnasios, simposios, hipopótamos, antiguos alumnos. Pick a topic where several fit (a science museum, a school, a garden centre, an aquarium, a sports complex).",
+       "Use at least 6 (ideally 7) DIFFERENT plural nouns from this list, always in the PLURAL and each used ONLY where it makes literal sense (never as a metaphor, joke or forced comparison): hongos, larvas and cactus (garden and plant care), acuarios and terrarios (pets), gimnasios and estadios (sport), fórmulas, índices, matrices and radios (a spreadsheet, a budget, geometry), foros (online discussion boards), temarios, planes de estudio and antiguos alumnos (a course or school), memorandos and simposios (an office or conference), antenas and núcleos (technical), vértebras (posture, back pain), nebulosas (stargazing), milenios (history), apéndices (documents). Set the topic in a context where 6–7 of these fit naturally (a school science club, a community garden, a gym, an evening course, a spreadsheet at work) and keep every sentence plausible.",
        count_lexicon(ES_LATINPLURAL), "each plural noun whose English plural has an anglicised and a classical form"),
     _f("title_abbr",
        "title or street word in full vs abbreviated before/after a name (Doctor Smith/Dr. Smith, Professor Lee/Prof. Lee, Mister Brown/Mr. Brown, Mount Fuji/Mt. Fuji, Saint Paul/St. Paul, Main Street/Main St., Fifth Avenue/Fifth Ave., Oak Road/Oak Rd., Sunset Boulevard/Sunset Blvd.)",
-       "Mention at least 6 (ideally 6 to 7) DIFFERENT named people or places with a title or street word written IN FULL in Spanish: «el doctor García», «la doctora Ruiz», «el profesor Ortega», «el señor Pérez» (a man addressed as Mister), «el monte Perdido», «san Isidro»/«santa Clara» (a church or place named after a saint), «la calle Mayor», «la avenida Libertad», «la carretera de Toledo», «el bulevar Central». Use invented but plausible names and at least 4 different kinds (doctor/profesor/señor, monte/san, calle/avenida/carretera/bulevar).",
+       "Mention at least 7 DIFFERENT named people or places with a title or street word written IN FULL in Spanish and immediately followed by a capitalised name: «el doctor García», «la doctora Ruiz», «el profesor Ortega», «el señor Pérez», «el monte Perdido», «san Isidro» / «santa Clara» (a church, square or town named after a saint), «la calle Mayor», «la avenida Libertad», «la carretera Nacional», «el bulevar Central». Use invented but plausible names, at least 4 different kinds of title/street word, and never abbreviate (no Dr., Sr., Avda.).",
        count_titles, "each title or street word followed by a proper name",
        "- Titles and street words always in full: «doctor», «profesor», «señor», «monte», «san»/«santa», «calle», «avenida» (never «Dr.», «Sr.», «c/», «avda.»)."),
 ]

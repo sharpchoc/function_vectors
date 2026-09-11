@@ -155,7 +155,7 @@ def finalize():
         print(f"{fam.name:14s} pass={len(recs):4d} unique kept={len(kept):4d}")
         if len(kept) < TARGET:
             short[fam.name] = TARGET - len(kept)
-    print("SHORT:", short if short else "none — all 17 families have 200")
+    print("SHORT:", short if short else "none — all selected families have 200")
     return short
 
 
@@ -165,7 +165,10 @@ if __name__ == "__main__":
     ap.add_argument("--prepare", action="store_true")
     ap.add_argument("--collect", action="store_true")
     ap.add_argument("--finalize", action="store_true")
+    ap.add_argument("--families", nargs="*", default=None, help="restrict collect/finalize to these families (others untouched)")
     a = ap.parse_args()
+    if a.families:
+        FAMILIES[:] = [f for f in FAMILIES if f.name in a.families]
     if a.prepare: prepare(a.out_root)
     if a.collect and a.out_root is None: pass
     if a.collect: collect(a.out_root)

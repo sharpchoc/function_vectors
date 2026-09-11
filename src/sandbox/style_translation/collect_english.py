@@ -120,7 +120,7 @@ def finalize():
         print(f"{fam.name:14s} pass={len(recs):4d} twin-problems={twin_problems:3d} final pairs={len(out):4d}")
         if len(out) < TARGET:
             short[fam.name] = TARGET - len(out)
-    print("SHORT:", short if short else "none — all 17 families have 200 pairs")
+    print("SHORT:", short if short else "none — all selected families have 200 pairs")
     return short
 
 
@@ -128,6 +128,9 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--collect", action="store_true")
     ap.add_argument("--finalize", action="store_true")
+    ap.add_argument("--families", nargs="*", default=None, help="restrict collect/finalize to these families (others untouched)")
     a = ap.parse_args()
+    if a.families:
+        FAMILIES[:] = [f for f in FAMILIES if f.name in a.families]
     if a.collect: collect()
     if a.finalize: finalize()
