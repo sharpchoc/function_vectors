@@ -41,6 +41,13 @@ def wilson(p, n, z=1.96):
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(); ap.add_argument("--model", default="gptj", help="models.MODELS key")
+    args = ap.parse_args()
+    from src.sandbox.style_translation.models import paths as model_paths
+    MP = model_paths(args.model)
+    global ROLL, OUT, MODEL_LABEL
+    ROLL, OUT, MODEL_LABEL = MP["rollouts"], MP["results"], MP["label"]
     OUT.mkdir(parents=True, exist_ok=True)
     rows, npz = [], {}
     fams = [f.name for f in FAMILIES if (ROLL / f"{f.name}.json").exists()]
@@ -82,7 +89,7 @@ def main():
     C = {"nat": "#1f77b4", "alt": "#d62728"}
     for metric, fname, ylabel, title in (
         (0, "accuracy_by_k.png", "accuracy",
-         "Does GPT-J learn a writing convention from in-context examples while translating Spanish to English?\n"
+         f"Does {MODEL_LABEL} learn a writing convention from in-context examples while translating Spanish to English?\n"
          "Accuracy = uses the convention shown in context AND translates faithfully (n = 200 per point, 95% CI)"),
         (4, "unscorable_by_k.png", "unscorable share",
          "Share of completions that use neither convention (counted as inaccurate in the accuracy plot)")):

@@ -121,9 +121,14 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
     ap.add_argument("--examples", type=int, default=0, help="print N example cues per family")
+    ap.add_argument("--model", default="gptj", help="models.MODELS key; non-default models write cues to artifacts, not into pairs/")
     args = ap.parse_args()
     from transformers import AutoTokenizer
+    from src.sandbox.style_translation.models import paths as model_paths
+    MP = model_paths(args.model); TOKENIZER = MP["tokenizer"]
     tok = AutoTokenizer.from_pretrained(TOKENIZER)
+    if MP["cues"] is not None:
+        MP["cues"].mkdir(parents=True, exist_ok=True)
 
     print(f"{'family':14s} {'pairs':>5s} {'cues/text':>9s} {'word-internal':>13s} {'in header':>9s} {'max prompt tok':>14s}  top cue tokens (nat ctx)")
     for fam in args.families:
@@ -140,7 +145,10 @@ def main():
             # identity check: k=0 cue token id must be the same in both contexts
             assert r["cues"]["nat"][0]["cue_tok_id"] == r["cues"]["alt"][0]["cue_tok_id"], r["doc_id"]
             assert len(r["cues"]["nat"]) == len(r["cues"]["alt"]) == len(decision_points(r))
-        json.dump(recs, open(PAIRS / f"{fam}.json", "w"), indent=0, ensure_ascii=False)
+        if MP["cues"] is None:
+            json.dump(recs, open(PAIRS / f"{fam}.json", "w"), indent=0, ensure_ascii=False)
+        else:
+            json.dump([{"doc_id": r["doc_id"], "cues": r["cues"]} for r in recs], open(MP["cues"] / f"{fam}.json", "w"))
         print(f"{fam:14s} {len(recs):5d} {ncue/len(recs):9.1f} {wi/ncue:13.2f} {ih/ncue:9.2f} {maxlen:14d}  "
               + ", ".join(f"{t!r}:{c}" for t, c in top.most_common(5)))
         if args.examples:

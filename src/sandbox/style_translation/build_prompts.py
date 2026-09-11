@@ -37,13 +37,20 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
     ap.add_argument("--K", type=int, default=5)
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (tokeniser + artifact folder)")
     args = ap.parse_args()
     from transformers import AutoTokenizer
-    tok = AutoTokenizer.from_pretrained(TOKENIZER)
+    from src.sandbox.style_translation.models import paths as model_paths
+    MP = model_paths(args.model); OUT = MP["prompts"]
+    tok = AutoTokenizer.from_pretrained(MP["tokenizer"])
     OUT.mkdir(parents=True, exist_ok=True)
     total = 0
     for fam in args.families:
         recs = json.load(open(PAIRS / f"{fam}.json"))
+        if MP["cues"] is not None:                     # tokeniser-specific cues live in artifacts for non-default models
+            cues = {c["doc_id"]: c["cues"] for c in json.load(open(MP["cues"] / f"{fam}.json"))}
+            for r in recs:
+                r["cues"] = cues[r["doc_id"]]
         items = []
         for r in recs:
             header = HEADER.format(es=r["text_es"]); h = len(header)

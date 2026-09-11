@@ -28,19 +28,15 @@ OUT = ARTIFACTS_ROOT / "style_translation" / "rollouts"
 MAX_NEW = 48
 
 
-def load_model(model_dir=None):
+def load_model(model_dir=None, model="gptj"):
     from transformers import AutoModelForCausalLM, AutoTokenizer
-    md = model_dir
-    if md is None:
-        snaps = sorted(Path("/workspace/.cache/huggingface/hub/models--EleutherAI--gpt-j-6b/snapshots").glob("*"))
-        snaps = [s for s in snaps if (s / "config.json").exists()]
-        assert snaps, "no complete GPT-J snapshot; pass --model_dir"
-        md = snaps[-1]
+    from src.sandbox.style_translation.models import MODELS, snapshot_dir
+    md = model_dir if model_dir is not None else snapshot_dir(model)
     tok = AutoTokenizer.from_pretrained(md)
     tok.pad_token = tok.eos_token
     tok.padding_side = "left"
-    model = AutoModelForCausalLM.from_pretrained(md, torch_dtype=torch.float16).cuda().eval()
-    return model, tok
+    model_ = AutoModelForCausalLM.from_pretrained(md, torch_dtype=getattr(torch, MODELS[model]["dtype"])).cuda().eval()
+    return model_, tok
 
 
 def main():
@@ -51,12 +47,17 @@ def main():
     ap.add_argument("--batch_cap", type=int, default=16)
     ap.add_argument("--limit", type=int, default=None, help="items per family (dry runs)")
     ap.add_argument("--dry_run", action="store_true", help="decode 2 prompts per family, no model")
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (weights, prompts and rollouts folders)")
     args = ap.parse_args()
+    from src.sandbox.style_translation.models import paths as model_paths
+    MP = model_paths(args.model)
+    global PROMPTS, OUT
+    PROMPTS, OUT = MP["prompts"], MP["rollouts"]
     OUT.mkdir(parents=True, exist_ok=True)
 
     if args.dry_run:
         from transformers import AutoTokenizer
-        tok = AutoTokenizer.from_pretrained("EleutherAI/gpt-j-6B")
+        tok = AutoTokenizer.from_pretrained(MP["tokenizer"])
         for fam in args.families:
             items = json.load(open(PROMPTS / f"{fam}.json"))
             for it in (items[0], items[len(items) // 2]):
@@ -64,7 +65,7 @@ def main():
                       f"\n   cue={it['cue_tok']!r} ref={it['ref_sentence'][:60]!r}")
         return
 
-    model, tok = load_model(args.model_dir)
+    model, tok = load_model(args.model_dir, args.model)
     for fam in args.families:
         out_path = OUT / f"{fam}.json"
         if out_path.exists():
