@@ -159,7 +159,7 @@ def main():
 
     # ---- screen line plots: target-style rate vs layer, one line per alpha ---------------------
     panels = [(fam, target) for fam in grouped_order(sfams) for target in ("nat", "alt")]
-    fig, gax = grouped_grid(sfams, slots_per_family=2, fam_cols=(1, 2), panel_w=2.9, panel_h=2.3, top=0.915, bottom=0.04, sharex=True, sharey=True)
+    fig, gax = grouped_grid(sfams, slots_per_family=2, fam_cols=(2, 2), panel_w=2.9, panel_h=2.3, top=0.915, bottom=0.04, sharex=True, sharey=True)
     acol = dict(zip(ALPHAS, plt.cm.viridis(np.linspace(0.15, 0.9, len(ALPHAS)))))
     for (fam, target) in panels:
         ax = gax[(fam, 0 if target == "nat" else 1)]

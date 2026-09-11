@@ -133,11 +133,11 @@ difference of the evidence tokens; steering there is a token swap in embedding s
 50 texts, style only, α ∈ {0.5,1,2,4}, both directions (`read_steer_screen.py --layers … --tag screen_extra`,
 `read_steer_layers_analyze.py`).
 
-- **Denser layers change little.** Mean best rate over the 34 cells: .89 with the 9 screened layers, .91
+- **Denser layers change little (17 original families).** Mean best rate over the 34 cells: .89 with the 9 screened layers, .91
   with all 28; only 4 cells gain more than .05 (num_words → words .74 → .86 at L25, contractions → contracted
   .74 → .84 at L1, curly_quotes → curly .76 → .86 at L3, us_uk → American .86 → .94 at L3). 22 of 34 cells
   now have their best layer at 0–3.
-- **Layer 0 alone gives .82 on average**, i.e. adding the mean *embedding* difference at the evidence tokens
+- **Layer 0 alone gives .82 on average (17 original families)**, i.e. adding the mean *embedding* difference at the evidence tokens
   already flips the reading in most cells (26 of 34 within .10 of the best layer). So for most conventions the
   intervention is well described as a token swap in the model's input space, which the network then reads
   normally — a shared direction across all the family's word pairs (one vector serves 712 distinct us_uk pairs),
@@ -150,6 +150,18 @@ difference of the evidence tokens; steering there is a token swap in embedding s
 - **The mean curves** (`read_steer_layer_mean.png`) are flat and high from layer 0 to ~10 for both groups at
   α ≥ 2, then fall toward the unsteered rate by layers 20–27; the lexically identical group falls earlier and
   further than the lexically diverse one. The read-side window is the first third of the network.
+- **The ten lexically diverse families added 2026-09-11 break the "token swap" picture.** For the 17
+  original families layer 0 accounts for .87 of the best-layer gain on average (L0 .82 vs best .91, unsteered
+  .10; L0 is itself the best layer in 8 of 34 cells). For the ten new families it accounts for .14 (L0 .34 vs
+  best .55, unsteered .30; L0 is never the best layer): uk_vocab → British .12 at L0 vs .68 at L7, unit_abbr
+  → spelled-out .02 vs .62 (L3), title_abbr → abbreviated .32 vs .56 (L5) and → full .24 vs .68 (L4),
+  register → formal .20 vs .50 (L9), latin_plural → classical .34 vs .42 (L10), hyphen_compound → closed
+  .66 vs .80 (L3), latin_abbr → Latin .12 vs .30 (L10). The best layers are 1–10 in 18 of 20 cells. So the
+  mean embedding difference of the evidence tokens is NOT what re-reads a lexically diverse context; the
+  residual-stream direction that the first blocks build from it is. In the mean curves
+  (`read_steer_layer_mean.png`) the lexically diverse block now rises from L0 to a plateau at L2–12 before
+  decaying, while the fixed-marker block starts high at L0. (Screen metric, 50 texts; the judged 200-text
+  confirm of the 9-layer settings for these families is in the table above.)
 - Caveat: this is the screen metric (style only, 50 texts); the judged 200-text confirm was run for the
   9-layer settings only. cos(read difference at layer 1, embedding difference) ≈ .1 in every family — the
   first block already rotates the token representation away from the embedding, yet steering at either
