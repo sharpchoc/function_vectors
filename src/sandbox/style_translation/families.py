@@ -135,6 +135,63 @@ def count_ordinals(t):
     return len(re.findall(r"\b(?:[1-9]|10)\.(?:[ºª]|er|o|a)\b", t))
 
 
+# ---- lexically diverse families (2026-09-11) ------------------------------------------------
+ES_UKVOCAB = ["camión", "camiones", "vacaciones", "basura", "cubo de basura", "gasolina", "linterna", "linternas",
+    "teléfono móvil", "móvil", "celular", "acera", "aceras", "galleta", "galletas", "jersey", "suéter", "pantalones",
+    "pañal", "pañales", "armario", "armarios", "berenjena", "berenjenas", "calabacín", "calabacines", "cilantro",
+    "matemáticas", "autopista", "autopistas", "aparcamiento", "estacionamiento", "gasolinera", "gasolineras",
+    "carrito de la compra", "carrito", "cochecito", "carriola", "cuna", "parabrisas", "llave inglesa", "guardabarros",
+    "sentido antihorario", "contrario a las agujas del reloj", "gachas", "avena", "comida para llevar", "código postal",
+    "ferrocarril", "matrícula", "buzón", "cartero", "chaleco", "grifo", "farmacia", "piso", "apartamento", "ascensor"]
+ES_REGISTER = ["empezar", "empezó", "empezamos", "empecé", "comenzar", "comenzó", "comencé", "comprar", "compró", "compré",
+    "compramos", "intentar", "intenté", "intentó", "intentamos", "vivir", "vivo", "vive", "vivimos", "vivía", "revisar", "revisé",
+    "revisó", "comprobar", "comprobé", "comprobó", "arreglar", "arreglé", "arregló", "reparar", "reparé", "niños", "niñas", "niño",
+    "mostrar", "mostró", "mostré", "enseñar", "enseñó", "más tarde", "luego", "también", "quizá", "quizás", "tal vez", "grande",
+    "grandes", "averiguar", "averigüé", "averiguó", "descubrir", "descubrí", "descubrió", "investigar", "investigué", "tirar",
+    "tiré", "tiró", "desechar", "resolver", "resolví", "determinar", "participar", "participé", "participó", "deshacerse de",
+    "deshacerme de", "eliminar", "eliminé", "buscar", "busqué", "buscó", "buscando"]
+ES_DIACRITICS = ["café", "cafetería", "ingenuo", "ingenua", "cliché", "tópico", "prometido", "prometida", "fachada", "jalapeño",
+    "jalapeños", "decoración", "saltear", "salteado", "salteada", "puré", "crema", "plato principal", "matiné", "debut", "estreno",
+    "élite", "señor", "señora", "piñata", "pupilo", "protegido", "déjà vu", "a la carta", "velada", "canapé", "canapés", "paté",
+    "macramé", "aplique", "guardería", "papel maché", "ingenuidad"]
+ES_LATINABBR = [r"por ejemplo", r"es decir", r"etcétera", r"y así sucesivamente", r"frente a", r"\bcontra\b", r"\bversus\b",
+    r"aproximadamente", r"\bunos? \d", r"\bunas \d"]
+ES_HYPHEN = ["correo electrónico", "correos electrónicos", "en línea", "sitio web", "página web", "bienestar", "cooperar",
+    "cooperación", "reutilizar", "reutilizable", "reutilizables", "casero", "casera", "caseros", "sin parar", "estilo de vida",
+    "entrenamiento", "entrenamientos", "revisión médica", "chequeo", "maquillaje", "configuración", "copia de seguridad",
+    "empresa emergente", "coordinar", "coordinación", "precalentar", "precalienta", "multitarea", "teléfono inteligente",
+    "trabajo en equipo", "durante el día", "durante la noche", "fin de semana", "fines de semana", "protector solar",
+    "cepillo de dientes", "hecho a mano", "hecha a mano", "cronología", "nombre de usuario", "inicio de sesión", "sin conexión",
+    "microondas", "agua de lluvia", "leña", "invernadero", "cortacésped", "carretilla", "manillar", "pata de cabra",
+    "faro delantero", "faros", "luz trasera", "tija", "mochila", "mochilas"]
+ES_FLATADV = [r"despacio", r"lentamente", r"rápido", r"rápidamente", r"deprisa", r"con suavidad", r"suavemente", r"con fuerza",
+    r"firmemente", r"\bfuerte\b", r"en voz alta", r"\balto\b", r"con seguridad", r"de forma segura", r"profundamente", r"\bhondo\b",
+    r"barato", r"directamente", r"\bdirecto\b", r"de otra manera", r"de forma distinta", r"\bmal\b", r"\bfirme\b", r"bajito",
+    r"en voz baja", r"uniformemente", r"de manera uniforme", r"con cuidado", r"cuidadosamente", r"en silencio", r"calladamente",
+    r"de cerca", r"con constancia", r"de forma constante", r"claramente", r"\bclaro\b", r"fácilmente", r"brillante", r"ligeramente",
+    r"en rodajas finas", r"\bfino\b", r"finamente", r"recién", r"correctamente", r"como es debido"]
+ES_IRREGPAST = [r"se (zambull|lanz)(ó|aron|é|amos) al agua", r"buce(ó|aron|é|amos)", r"se zambull(ó|eron|í|imos)",
+    r"se (col|escabull)(ó|aron|é|amos|ió|eron|í|imos)", r"entr(ó|aron|é|amos) a hurtadillas", r"encend(ió|ieron|í|imos)",
+    r"(suplic|rog)(ó|aron|é|amos)", r"aceler(ó|aron|é|amos)", r"(fue|fueron|fui|fuimos) a toda velocidad", r"tej(ió|ieron|í|imos)",
+    r"brill(ó|aron)", r"se esforz(ó|aron)", r"me esforcé", r"nos esforzamos", r"se arrodill(ó|aron)", r"me arrodillé", r"nos arrodillamos"]
+ES_LATINPLURAL = ["índices", "fórmulas", "cactus", "apéndices", "planes de estudio", "currículos", "estadios", "foros", "antenas",
+    "hongos", "temarios", "programas de estudio", "pulpos", "radios", "núcleos", "memorandos", "referéndums", "referendos",
+    "milenios", "acuarios", "terrarios", "vértices", "matrices", "larvas", "nebulosas", "vértebras", "tesauros", "gimnasios",
+    "simposios", "hipopótamos", "antiguos alumnos", "exalumnos"]
+
+
+def count_unit_symbols(t):
+    return len(re.findall(r"\d+(?:[.,]\d+)? ?(?:km|cm|mm|kg|g|ml|°C)\b", t))
+
+
+def count_titles(t):
+    return len(re.findall(r"\b(?:doctor|doctora|profesor|profesora|señor|monte|san|santa|calle|avenida|carretera|camino|bulevar)\s+[A-ZÁÉÍÓÚÑ]", t))
+
+
+def count_patterns(pats):
+    return lambda t: sum(len(re.findall(p, t, re.I)) for p in pats)
+
+
 @dataclass
 class Family:
     name: str
@@ -221,6 +278,50 @@ FAMILIES: List[Family] = [
        "a digit ordinal (3rd) vs a spelled-out ordinal (third)",
        "Include at least 6 (ideally 6 to 7) DIFFERENT ordinals from 1.º to 10.º, written as digits with the marker (1.º, 2.ª, 3.º, 4.º, ...), spread through the paragraph (steps, attempts, floors, rounds, anniversaries). Do not use other numbers.",
        count_ordinals, "each ordinal 1st-10th"),
+    # ---- lexically diverse families (2026-09-11) ----
+    _f("uk_vocab",
+       "American vs British vocabulary for the same object (truck/lorry, vacation/holiday, trash/rubbish, gasoline/petrol, flashlight/torch, cell phone/mobile phone, sidewalk/pavement, cookie/biscuit, sweater/jumper, pants/trousers, diaper/nappy, closet/wardrobe, eggplant/aubergine, zucchini/courgette, cilantro/coriander, math/maths, highway/motorway, parking lot/car park, gas station/petrol station, shopping cart/trolley, stroller/pushchair, crib/cot, windshield/windscreen, wrench/spanner, fender/mudguard, counterclockwise/anticlockwise, oatmeal/porridge, takeout/takeaway, zip code/postcode, railroad/railway, license plate/number plate, mailbox/postbox, mailman/postman, vest/waistcoat, faucet/tap, drugstore/chemist's, apartment/flat, elevator/lift)",
+       "Use at least 6 (ideally 6 to 7) DIFFERENT objects from this list, spread through the paragraph, each named with the everyday Spanish word: camión, vacaciones, basura / cubo de basura, gasolina, linterna, teléfono móvil, acera, galletas, jersey, pantalones, pañal, armario, berenjena, calabacín, cilantro, matemáticas, autopista, aparcamiento, gasolinera, carrito de la compra, cochecito (de bebé), cuna, parabrisas, llave inglesa, guardabarros, sentido antihorario, gachas de avena, comida para llevar, código postal, ferrocarril, matrícula (del coche), buzón, cartero, chaleco, grifo, farmacia, piso, ascensor.",
+       count_lexicon(ES_UKVOCAB), "each Spanish word whose English equivalent differs between American and British vocabulary"),
+    _f("register",
+       "plain everyday wording vs formal/Latinate wording with the same meaning (begin/commence, buy/purchase, try/attempt, live/reside, check/verify, fix/repair, kids/children, show/demonstrate, later/subsequently, also/additionally, maybe/perhaps, big/large, find out/discover, look into/investigate, throw away/discard, figure out/determine, take part/participate, get rid of/eliminate, look for/seek)",
+       "Use at least 6 (ideally 6 to 7) DIFFERENT items from this list, spread through the paragraph: empezar/comenzar, comprar, intentar, vivir, revisar/comprobar, arreglar/reparar, niños, mostrar/enseñar, más tarde/luego, también, quizá/tal vez, grande, averiguar/descubrir, investigar, tirar/desechar, resolver/determinar, participar, deshacerse de/eliminar, buscar.",
+       count_lexicon(ES_REGISTER), "each Spanish word whose English equivalent has a plain and a formal variant"),
+    _f("unit_abbr",
+       "unit symbols vs spelled-out units after a number (5 km/5 kilometers, 2 kg/2 kilograms, 30 ml/30 milliliters, 20 cm/20 centimeters, 3 mm/3 millimeters, 250 g/250 grams, 15 °C/15 degrees Celsius)",
+       "Include at least 6 (ideally 6 to 7) measurements with a number and a metric unit, spread through the paragraph and using DIFFERENT units where possible: distances in km or cm or mm, weights in kg or g, volumes in ml, temperatures in °C. Write the unit as its symbol after a space (5 km, 2 kg, 30 ml, 15 °C), never as a word.",
+       count_unit_symbols, "each number followed by a metric unit symbol",
+       "- Units of measurement always as symbols after a space: 5 km, 2 kg, 30 ml, 20 cm, 15 °C (never «kilómetros», «kilos», «grados»)."),
+    _f("diacritics",
+       "whether a loanword keeps its accent in English (cafe/café, naive/naïve, cliche/cliché, fiance/fiancé, fiancee/fiancée, facade/façade, jalapeno/jalapeño, decor/décor, saute/sauté, puree/purée, creme/crème, entree/entrée, matinee/matinée, debut/début, elite/élite, senor/señor, pinata/piñata, protege/protégé, deja vu/déjà vu, a la carte/à la carte, soiree/soirée, canape/canapé, pate/pâté, macrame/macramé, applique/appliqué, fete/fête, creche/crèche, papier-mache/papier-mâché, naivete/naïveté, vis-a-vis/vis-à-vis, blase/blasé)",
+       "Use at least 6 (ideally 6 to 7) DIFFERENT items from this list, spread through the paragraph, so that the English translation naturally uses the corresponding loanword: café/cafetería, ingenuo/ingenua, cliché/tópico, prometido/prometida, fachada, jalapeño, decoración, saltear/salteado, puré, crema (as in crème), plato principal (entrée), matiné, debut/estreno, élite, señor/señora (as a form of address kept in English), piñata, protegido/pupilo (protégé), déjà vu, a la carta, velada (soirée), canapé, paté, macramé, aplique, guardería (crèche), papel maché, ingenuidad.",
+       count_lexicon(ES_DIACRITICS), "each Spanish word whose English equivalent is a loanword that can carry an accent"),
+    _f("latin_abbr",
+       "English phrase vs Latin abbreviation (for example/e.g., that is/i.e., and so on/etc., versus/vs., approximately/approx.)",
+       "Use at least 6 (ideally 6 to 7) of these connectives, spread through the paragraph and written IN FULL in Spanish: «por ejemplo», «es decir», «etcétera» or «y así sucesivamente» (after a short list), «frente a» or «contra» (as versus, comparing two options), «aproximadamente» or «unos/unas» before a number. Use at least 4 different ones.",
+       count_patterns(ES_LATINABBR), "each connective (por ejemplo, es decir, etcétera, frente a/contra, aproximadamente/unos)",
+       "- Write connectives in full: «por ejemplo», «es decir», «etcétera» (never «p. ej.», «etc.», «aprox.»)."),
+    _f("hyphen_compound",
+       "closed vs hyphenated compound word (email/e-mail, online/on-line, website/web-site, wellbeing/well-being, cooperate/co-operate, reuse/re-use, homemade/home-made, nonstop/non-stop, lifestyle/life-style, workout/work-out, checkup/check-up, makeup/make-up, setup/set-up, backup/back-up, startup/start-up, coordinate/co-ordinate, preheat/pre-heat, multitask/multi-task, smartphone/smart-phone, teamwork/team-work, daytime/day-time, nighttime/night-time, weekend/week-end, sunscreen/sun-screen, toothbrush/tooth-brush, handmade/hand-made, overnight/over-night, timeline/time-line, username/user-name, login/log-in, offline/off-line, microwave/micro-wave, rainwater/rain-water, firewood/fire-wood, greenhouse/green-house, lawnmower/lawn-mower, wheelbarrow/wheel-barrow, handlebars/handle-bars, kickstand/kick-stand, headlight/head-light, taillight/tail-light, seatpost/seat-post, backpack/back-pack)",
+       "Use at least 6 (ideally 6 to 7) DIFFERENT items from this list, spread through the paragraph: correo electrónico, en línea, sitio web/página web, bienestar, cooperar, reutilizar/reutilizable, casero/casera, sin parar, estilo de vida, entrenamiento, revisión médica/chequeo, maquillaje, configuración, copia de seguridad, empresa emergente, coordinar/coordinación, precalentar, multitarea, teléfono inteligente, trabajo en equipo, durante el día, durante la noche, fin de semana, protector solar, cepillo de dientes, hecho a mano, cronología, nombre de usuario, inicio de sesión, sin conexión, microondas, agua de lluvia, leña, invernadero, cortacésped, carretilla, manillar, pata de cabra (de la bici), faro delantero, luz trasera, tija (del sillín), mochila.",
+       count_lexicon(ES_HYPHEN), "each Spanish term whose English equivalent is a compound that can be closed or hyphenated"),
+    _f("flat_adverb",
+       "-ly adverb vs flat adverb after a verb (drive slowly/drive slow, hold tightly/hold tight, brake gently/brake gentle, breathe deeply/breathe deep, speak quietly/speak quiet, cut thinly/cut thin, drive safely/drive safe, turn the screw firmly/firm)",
+       "Include at least 6 (ideally 6 to 7) DIFFERENT verb + manner-adverb combinations describing HOW an action is performed, right after the verb (or after a short object), e.g. pedalear despacio, sujetar el manillar con fuerza, frenar suavemente, respirar hondo, hablar bajo, conducir con cuidado, girar el tornillo firmemente, cortar fino, moverse rápido, mirar de cerca, brillar con fuerza, apretar con firmeza. Vary the adverbs.",
+       count_patterns(ES_FLATADV), "each verb followed by a manner adverb"),
+    _f("irreg_past",
+       "irregular vs regular English past form of a verb (dove/dived, snuck/sneaked, lit/lighted, pled/pleaded, sped/speeded, wove/weaved, shone/shined, strove/strived, knelt/kneeled)",
+       "Narrate a past episode (preterite) in which at least 6 of these actions happen NATURALLY as part of the story (do not force them): zambullirse/lanzarse al agua/bucear (dive), colarse/entrar a hurtadillas/escabullirse (sneak), encender una vela/una hoguera/una luz (light), suplicar/rogar (plead), acelerar/ir a toda velocidad (speed), tejer (weave), brillar (the sun/a light shone), esforzarse (strive), arrodillarse (kneel). Choose a topic where these fit: a camping trip, a night hike, a rescue, a festival, a childhood memory.",
+       count_patterns(ES_IRREGPAST), "each preterite verb whose English past has an irregular and a regular form"),
+    _f("latin_plural",
+       "anglicised vs classical plural (indexes/indices, formulas/formulae, cactuses/cacti, appendixes/appendices, curriculums/curricula, stadiums/stadia, forums/fora, antennas/antennae, funguses/fungi, syllabuses/syllabi, octopuses/octopi, radiuses/radii, nucleuses/nuclei, memorandums/memoranda, referendums/referenda, millenniums/millennia, aquariums/aquaria, terrariums/terraria, vertexes/vertices, matrixes/matrices, larvas/larvae, nebulas/nebulae, vertebras/vertebrae, thesauruses/thesauri, gymnasiums/gymnasia, symposiums/symposia, hippopotamuses/hippopotami, alumnuses/alumni)",
+       "Use at least 6 (ideally 6 to 7) DIFFERENT plural nouns from this list, spread through the paragraph and always in the PLURAL: índices, fórmulas, cactus (plural), apéndices, planes de estudio/currículos, estadios, foros, antenas, hongos, temarios, pulpos, radios (of circles), núcleos, memorandos, referéndums, milenios, acuarios, terrarios, vértices, matrices, larvas, nebulosas, vértebras, tesauros, gimnasios, simposios, hipopótamos, antiguos alumnos. Pick a topic where several fit (a science museum, a school, a garden centre, an aquarium, a sports complex).",
+       count_lexicon(ES_LATINPLURAL), "each plural noun whose English plural has an anglicised and a classical form"),
+    _f("title_abbr",
+       "title or street word in full vs abbreviated before/after a name (Doctor Smith/Dr. Smith, Professor Lee/Prof. Lee, Mister Brown/Mr. Brown, Mount Fuji/Mt. Fuji, Saint Paul/St. Paul, Main Street/Main St., Fifth Avenue/Fifth Ave., Oak Road/Oak Rd., Sunset Boulevard/Sunset Blvd.)",
+       "Mention at least 6 (ideally 6 to 7) DIFFERENT named people or places with a title or street word written IN FULL in Spanish: «el doctor García», «la doctora Ruiz», «el profesor Ortega», «el señor Pérez» (a man addressed as Mister), «el monte Perdido», «san Isidro»/«santa Clara» (a church or place named after a saint), «la calle Mayor», «la avenida Libertad», «la carretera de Toledo», «el bulevar Central». Use invented but plausible names and at least 4 different kinds (doctor/profesor/señor, monte/san, calle/avenida/carretera/bulevar).",
+       count_titles, "each title or street word followed by a proper name",
+       "- Titles and street words always in full: «doctor», «profesor», «señor», «monte», «san»/«santa», «calle», «avenida» (never «Dr.», «Sr.», «c/», «avda.»)."),
 ]
 FAMILY = {f.name: f for f in FAMILIES}
-assert len(FAMILIES) == 17 and set(FAMILY) == set(PROPS)
+assert len(FAMILIES) == 27 and set(FAMILY) == set(PROPS)

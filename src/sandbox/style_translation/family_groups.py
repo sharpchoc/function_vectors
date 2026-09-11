@@ -15,7 +15,10 @@ import math
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch
 
-LEXICAL = ["us_uk", "ise_ize", "brit_t_past", "contractions", "num_words", "ordinal_words"]
+LEXICAL = ["us_uk", "ise_ize", "brit_t_past", "contractions", "num_words", "ordinal_words",
+           # added 2026-09-11 (user-approved lexically diverse families)
+           "uk_vocab", "register", "unit_abbr", "diacritics", "latin_abbr", "hyphen_compound",
+           "flat_adverb", "irreg_past", "latin_plural", "title_abbr"]
 FIXED = ["whilst", "ampersand", "percent_sign", "em_dash", "ellipsis", "curly_quotes", "quote_punct",
          "double_space", "oxford_comma", "sentence_caps", "all_caps"]
 GROUPS = [
@@ -30,7 +33,7 @@ def grouped_order(fams):
     return [f for _, group, _ in GROUPS for f in group if f in fams]
 
 
-def grouped_grid(fams, slots_per_family=1, fam_cols=(2, 3), nrows=None, panel_w=3.9, panel_h=3.0,
+def grouped_grid(fams, slots_per_family=1, fam_cols=(3, 3), nrows=None, panel_w=3.9, panel_h=3.0,
                  top=0.84, bottom=0.06, sharex=False, sharey=True, gap=0.05):
     """Two side-by-side blocks of panels. Returns (fig, axes) with axes[(fam, slot)].
 

@@ -630,12 +630,334 @@ class Ampersand(Property):
         return None
 
 
+
+# ================================================================ lexically diverse families (2026-09-11)
+# User decision: ten more families where the convention applies across many different words.
+# nat = house style (standard American English), alt = the flipped convention. Only sense-unambiguous
+# items are kept so that both detection directions are safe.
+
+_UK_VOCAB = [   # (US, UK)
+    ("truck", "lorry"), ("trucks", "lorries"), ("vacation", "holiday"), ("vacations", "holidays"),
+    ("trash", "rubbish"), ("trash can", "rubbish bin"), ("gasoline", "petrol"),
+    ("flashlight", "torch"), ("flashlights", "torches"), ("cell phone", "mobile phone"),
+    ("cell phones", "mobile phones"), ("sidewalk", "pavement"), ("sidewalks", "pavements"),
+    ("cookie", "biscuit"), ("cookies", "biscuits"), ("sweater", "jumper"), ("sweaters", "jumpers"),
+    ("pants", "trousers"), ("diaper", "nappy"), ("diapers", "nappies"), ("closet", "wardrobe"),
+    ("closets", "wardrobes"), ("eggplant", "aubergine"), ("eggplants", "aubergines"),
+    ("zucchini", "courgette"), ("zucchinis", "courgettes"), ("cilantro", "coriander"),
+    ("math", "maths"), ("highway", "motorway"), ("highways", "motorways"),
+    ("parking lot", "car park"), ("parking lots", "car parks"), ("gas station", "petrol station"),
+    ("gas stations", "petrol stations"), ("shopping cart", "trolley"), ("shopping carts", "trolleys"),
+    ("stroller", "pushchair"), ("strollers", "pushchairs"), ("crib", "cot"), ("cribs", "cots"),
+    ("windshield", "windscreen"), ("wrench", "spanner"), ("wrenches", "spanners"),
+    ("fender", "mudguard"), ("fenders", "mudguards"), ("counterclockwise", "anticlockwise"),
+    ("oatmeal", "porridge"), ("takeout", "takeaway"), ("zip code", "postcode"), ("zip codes", "postcodes"),
+    ("subway", "underground"), ("railroad", "railway"), ("license plate", "number plate"),
+    ("mailbox", "postbox"), ("mailboxes", "postboxes"), ("mailman", "postman"), ("vest", "waistcoat"),
+    ("vests", "waistcoats"), ("faucet", "tap"), ("faucets", "taps"), ("drugstore", "chemist's"),
+    ("apartment", "flat"), ("apartments", "flats"), ("elevator", "lift"), ("elevators", "lifts"),
+]
+# NOTE: "flat", "lift", "tap" are ambiguous as ALT forms (adjective / verb); the classifier only sees the
+# continuation after a cue whose Spanish source names the object, so the risk is accepted (audited).
+
+_REGISTER = [   # (plain, formal) incl. inflections; phrasal verb <-> single verb
+    ("begin", "commence"), ("begins", "commences"), ("began", "commenced"), ("beginning", "commencing"),
+("buy", "purchase"), ("buys", "purchases"), ("bought", "purchased"),
+    ("buying", "purchasing"), ("try", "attempt"), ("tries", "attempts"), ("tried", "attempted"),
+    ("trying", "attempting"), ("live", "reside"), ("lives", "resides"), ("lived", "resided"),
+    ("living", "residing"), ("check", "verify"), ("checks", "verifies"), ("checked", "verified"),
+    ("checking", "verifying"), ("fix", "repair"), ("fixes", "repairs"), ("fixed", "repaired"),
+    ("fixing", "repairing"), ("kids", "children"), ("kid", "child"), ("show", "demonstrate"),
+    ("shows", "demonstrates"), ("showed", "demonstrated"), ("showing", "demonstrating"),
+    ("later", "subsequently"), ("also", "additionally"), ("maybe", "perhaps"), ("big", "large"),
+    ("bigger", "larger"), ("biggest", "largest"), ("find out", "discover"), ("finds out", "discovers"),
+    ("found out", "discovered"), ("finding out", "discovering"),     ("look into", "investigate"), ("looks into", "investigates"), ("looked into", "investigated"),
+    ("looking into", "investigating"), ("throw away", "discard"),
+    ("throws away", "discards"), ("threw away", "discarded"), ("throwing away", "discarding"),
+    ("figure out", "determine"), ("figures out", "determines"), ("figured out", "determined"),
+    ("figuring out", "determining"), ("take part", "participate"), ("takes part", "participates"),
+    ("took part", "participated"), ("taking part", "participating"), ("get rid of", "eliminate"),
+    ("gets rid of", "eliminates"), ("got rid of", "eliminated"), ("getting rid of", "eliminating"),
+    ("look for", "seek"), ("looks for", "seeks"), ("looked for", "sought"), ("looking for", "seeking"),
+]
+
+_DIACRITICS = [   # (plain ASCII, accented)
+    ("cafe", "café"), ("cafes", "cafés"), ("naive", "naïve"), ("cliche", "cliché"), ("cliches", "clichés"),
+    ("fiance", "fiancé"), ("fiancee", "fiancée"), ("facade", "façade"), ("facades", "façades"),
+    ("jalapeno", "jalapeño"), ("jalapenos", "jalapeños"), ("decor", "décor"), ("saute", "sauté"),
+    ("sauteed", "sautéed"), ("sauteing", "sautéing"), ("puree", "purée"), ("pureed", "puréed"),
+    ("creme", "crème"), ("entree", "entrée"), ("entrees", "entrées"), ("matinee", "matinée"),
+    ("debut", "début"), ("elite", "élite"), ("senor", "señor"), ("senora", "señora"), ("pinata", "piñata"),
+    ("pinatas", "piñatas"), ("protege", "protégé"), ("deja vu", "déjà vu"), ("a la carte", "à la carte"),
+    ("soiree", "soirée"), ("canape", "canapé"), ("canapes", "canapés"), ("pate", "pâté"),
+    ("macrame", "macramé"), ("applique", "appliqué"), ("fete", "fête"), ("creche", "crèche"),
+    ("papier-mache", "papier-mâché"), ("naivete", "naïveté"), ("vis-a-vis", "vis-à-vis"), ("blase", "blasé"),
+]
+
+_HYPHEN = [   # (closed compound, hyphenated)
+    ("email", "e-mail"), ("emails", "e-mails"), ("emailed", "e-mailed"), ("online", "on-line"),
+    ("website", "web-site"), ("websites", "web-sites"), ("wellbeing", "well-being"),
+    ("cooperate", "co-operate"), ("cooperation", "co-operation"), ("cooperative", "co-operative"),
+    ("reuse", "re-use"), ("reused", "re-used"), ("reusable", "re-usable"), ("reusing", "re-using"),
+    ("homemade", "home-made"), ("nonstop", "non-stop"), ("lifestyle", "life-style"), ("workout", "work-out"),
+    ("workouts", "work-outs"), ("checkup", "check-up"), ("checkups", "check-ups"), ("makeup", "make-up"),
+    ("setup", "set-up"), ("backup", "back-up"), ("backups", "back-ups"), ("startup", "start-up"),
+    ("startups", "start-ups"), ("coordinate", "co-ordinate"), ("coordinates", "co-ordinates"),
+    ("coordinated", "co-ordinated"), ("coordination", "co-ordination"), ("preheat", "pre-heat"),
+    ("preheated", "pre-heated"), ("multitask", "multi-task"), ("multitasking", "multi-tasking"),
+    ("smartphone", "smart-phone"), ("smartphones", "smart-phones"), ("teamwork", "team-work"),
+    ("daytime", "day-time"), ("nighttime", "night-time"), ("weekend", "week-end"), ("weekends", "week-ends"),
+    ("sunscreen", "sun-screen"), ("toothbrush", "tooth-brush"), ("handmade", "hand-made"),
+    ("overnight", "over-night"), ("timeline", "time-line"), ("username", "user-name"), ("login", "log-in"),
+    ("offline", "off-line"), ("microwave", "micro-wave"), ("rainwater", "rain-water"),
+    ("firewood", "fire-wood"), ("greenhouse", "green-house"), ("lawnmower", "lawn-mower"),
+    ("wheelbarrow", "wheel-barrow"), ("handlebars", "handle-bars"), ("kickstand", "kick-stand"),
+    ("headlight", "head-light"), ("headlights", "head-lights"), ("taillight", "tail-light"),
+    ("seatpost", "seat-post"), ("chainring", "chain-ring"), ("backpack", "back-pack"), ("backpacks", "back-packs"),
+]
+
+_IRREG_PAST = [   # (irregular = standard American, regular)
+    ("dove", "dived"), ("snuck", "sneaked"), ("lit", "lighted"), ("pled", "pleaded"), ("sped", "speeded"),
+    ("wove", "weaved"), ("shone", "shined"), ("strove", "strived"), ("knelt", "kneeled"),
+]
+
+_LATIN_PLURAL = [   # (anglicised, classical)
+    ("indexes", "indices"), ("formulas", "formulae"), ("cactuses", "cacti"), ("appendixes", "appendices"),
+    ("curriculums", "curricula"), ("stadiums", "stadia"), ("forums", "fora"), ("antennas", "antennae"),
+    ("funguses", "fungi"), ("syllabuses", "syllabi"), ("octopuses", "octopi"), ("radiuses", "radii"),
+    ("nucleuses", "nuclei"), ("memorandums", "memoranda"), ("referendums", "referenda"),
+    ("millenniums", "millennia"), ("aquariums", "aquaria"), ("terrariums", "terraria"),
+    ("vertexes", "vertices"), ("matrixes", "matrices"), ("larvas", "larvae"), ("nebulas", "nebulae"),
+    ("vertebras", "vertebrae"), ("thesauruses", "thesauri"), ("gymnasiums", "gymnasia"),
+    ("symposiums", "symposia"), ("hippopotamuses", "hippopotami"), ("alumnuses", "alumni"),
+]
+
+UkVocab = _lexicon_property("UkVocab", "uk_vocab", _UK_VOCAB, "American vocabulary (truck, vacation, trash)",
+                            "British vocabulary (lorry, holiday, rubbish)", confound="medium")
+Register = _lexicon_property("Register", "register", _REGISTER, "plain everyday words (begin, buy, kids, find out)",
+                             "formal/Latinate words (commence, purchase, children, discover)", confound="medium-register")
+Diacritics = _lexicon_property("Diacritics", "diacritics", _DIACRITICS, "loanwords without accents (cafe, naive)",
+                               "loanwords with accents (café, naïve)")
+HyphenCompound = _lexicon_property("HyphenCompound", "hyphen_compound", _HYPHEN, "closed compounds (email, online)",
+                                   "hyphenated compounds (e-mail, on-line)")
+IrregPast = _lexicon_property("IrregPast", "irreg_past", _IRREG_PAST, "irregular past forms (dove, snuck, lit)",
+                              "regular past forms (dived, sneaked, lighted)")
+LatinPlural = _lexicon_property("LatinPlural", "latin_plural", _LATIN_PLURAL, "anglicised plurals (indexes, formulas)",
+                                "classical plurals (indices, formulae)")
+for _c in (UkVocab, Register, Diacritics, HyphenCompound, IrregPast, LatinPlural):
+    _c.family = "lexical"
+
+
+class UnitAbbr(Property):
+    """5 km / 2 kg / 30 ml / 15 °C (nat, symbol with a space) vs 5 kilometers / 2 kilograms (alt)."""
+    name = "unit_abbr"
+    family = "lexical"
+    nat_label = "unit symbols after the number (5 km, 2 kg, 15 °C)"
+    alt_label = "units spelled out (5 kilometers, 2 kilograms, 15 degrees Celsius)"
+    _units = {"km": "kilometer", "cm": "centimeter", "mm": "millimeter", "kg": "kilogram", "g": "gram",
+              "ml": "milliliter", "°C": "degrees Celsius"}
+    _words = {v: k for k, v in _units.items()}
+    _rx_nat = re.compile(r"(\d+(?:[.,]\d+)?)( ?)(km|cm|mm|kg|g|ml|°C)(?![\w°])")
+    _rx_alt = re.compile(r"(\d+(?:[.,]\d+)?) (kilometers?|centimeters?|millimeters?|kilograms?|grams?|milliliters?|degrees Celsius)\b")
+
+    def _alt_word(self, num, unit):
+        base = self._units[unit]
+        if base == "degrees Celsius":
+            return base
+        return base if num.replace(",", ".") in ("1", "1.0") else base + "s"
+
+    def find_opps(self, text):
+        opps = []
+        for m in self._rx_nat.finditer(text):
+            num, unit = m.group(1), m.group(3)
+            opps.append(Opp(m.end(1), m.end(3), " " + unit, " " + self._alt_word(num, unit)))
+        for m in self._rx_alt.finditer(text):
+            num, word = m.group(1), m.group(2)
+            base = word if word == "degrees Celsius" else word.rstrip("s") if word != "degrees Celsius" else word
+            base = "degrees Celsius" if word == "degrees Celsius" else word[:-1] if word.endswith("s") else word
+            unit = self._words.get(base)
+            if unit:
+                opps.append(Opp(m.end(1), m.end(2), " " + unit, " " + word))
+        return _dedup(opps)
+
+    _lead_nat = re.compile(r"^\s?(km|cm|mm|kg|g|ml|°C)(?![\w°])")
+    _lead_alt = re.compile(r"^\s?(kilometers?|centimeters?|millimeters?|kilograms?|grams?|milliliters?|degrees Celsius)\b")
+
+    def classify(self, tail):
+        if self._lead_nat.match(tail):
+            return "nat"
+        if self._lead_alt.match(tail):
+            return "alt"
+        a, b = self._rx_nat.search(tail), self._rx_alt.search(tail)
+        if a and (not b or a.start() <= b.start()):
+            return "nat"
+        if b:
+            return "alt"
+        return None
+
+
+class LatinAbbr(Property):
+    """for example / that is / and so on / versus / approximately (nat) vs e.g. / i.e. / etc. / vs. / approx. (alt)."""
+    name = "latin_abbr"
+    family = "lexical"
+    nat_label = "English phrases (for example, that is, and so on, versus, approximately)"
+    alt_label = "Latin abbreviations (e.g., i.e., etc., vs., approx.)"
+    _pairs = [("for example", "e.g."), ("For example", "E.g."), ("that is", "i.e."), ("and so on", "etc."),
+              ("versus", "vs."), ("approximately", "approx."), ("Approximately", "Approx.")]
+    _nat_rx = re.compile(r"\b(For example|for example|that is|and so on|versus|approximately|Approximately)\b(?=[,;:.\s)]|$)")
+    _alt_rx = re.compile(r"(?<![\w.])(E\.g\.|e\.g\.|i\.e\.|etc\.|vs\.|approx\.|Approx\.)")
+    _alt_of = dict(_pairs)
+    _nat_of = {b: a for a, b in _pairs}
+
+    def find_opps(self, text):
+        opps = []
+        for m in self._nat_rx.finditer(text):
+            w = m.group(1)
+            if w == "that is" and not re.search(r"[,(]\s*$", text[max(0, m.start() - 3):m.start()]):
+                continue                                   # "a tool that is useful" is not the connective
+            alt = self._alt_of[w]
+            if text[m.end():m.end() + 1] == "." and alt.endswith("."):
+                alt = alt[:-1]                             # avoid "etc.." at a sentence end
+            opps.append(Opp(m.start(1), m.end(1), w, alt))
+        for m in self._alt_rx.finditer(text):
+            a = m.group(1); nat = self._nat_of[a]; end = m.end(1)
+            if re.match(r"\s+[A-Z¿¡«\"]|\s*$", text[end:end + 3]):        # sentence-final: the period is the sentence's
+                end -= 1; a = a[:-1]
+            opps.append(Opp(m.start(1), end, nat, a))
+        return _dedup(opps)
+
+    def classify(self, tail):
+        a, b = self._nat_rx.search(tail), self._alt_rx.search(tail)
+        if a and a.group(1) == "that is" and a.start() > 1 and not re.search(r"[,(]\s*$", tail[max(0, a.start() - 3):a.start()]):
+            a = None
+        if a and (not b or a.start() <= b.start()):
+            return "nat"
+        if b:
+            return "alt"
+        return None
+
+
+class FlatAdverb(Property):
+    """-ly adverb after a verb (drive slowly, hold it tightly) vs the colloquial flat form (drive slow, hold it tight)."""
+    name = "flat_adverb"
+    family = "lexical"
+    nat_label = "-ly adverbs after verbs (drive slowly, hold tightly)"
+    alt_label = "flat adverbs (drive slow, hold tight)"
+    confound = "medium-register"
+    _pairs = [("slowly", "slow"), ("quickly", "quick"), ("gently", "gentle"), ("tightly", "tight"), ("loudly", "loud"),
+              ("safely", "safe"), ("deeply", "deep"), ("cheaply", "cheap"), ("directly", "direct"),
+              ("differently", "different"), ("wrongly", "wrong"), ("firmly", "firm"), ("softly", "soft"),
+              ("evenly", "even"), ("smoothly", "smooth"), ("carefully", "careful"), ("quietly", "quiet"),
+              ("closely", "close"), ("steadily", "steady"), ("clearly", "clear"), ("easily", "easy"),
+              ("brightly", "bright"), ("lightly", "light"), ("thinly", "thin"), ("finely", "fine"),
+              ("freshly", "fresh"), ("properly", "proper"), ("slower", "slower")]
+    _pairs = [p for p in _pairs if p[0] != p[1]]
+    _map = {}
+    for a, b in _pairs:
+        _map[a] = (a, b); _map[b] = (a, b)
+    _VERBS = ("go|goes|went|going|gone|drive|drives|drove|driving|driven|ride|rides|rode|riding|ridden|pedal|pedals|pedaled|pedaling|"
+              "brake|brakes|braked|braking|turn|turns|turned|turning|move|moves|moved|moving|walk|walks|walked|walking|run|runs|ran|running|"
+              "work|works|worked|working|breathe|breathes|breathed|breathing|hold|holds|held|holding|grip|grips|gripped|gripping|"
+              "stir|stirs|stirred|stirring|mix|mixes|mixed|mixing|chop|chops|chopped|chopping|slice|slices|sliced|slicing|cut|cuts|cutting|"
+              "spread|spreads|spreading|speak|speaks|spoke|speaking|talk|talks|talked|talking|sing|sings|sang|singing|play|plays|played|playing|"
+              "press|presses|pressed|pressing|push|pushes|pushed|pushing|pull|pulls|pulled|pulling|squeeze|squeezes|squeezed|squeezing|"
+              "tighten|tightens|tightened|tightening|screw|screws|screwed|screwing|twist|twists|twisted|twisting|lift|lifts|lifted|lifting|"
+              "step|steps|stepped|stepping|land|lands|landed|landing|sit|sits|sat|sitting|stand|stands|stood|standing|lean|leans|leaned|leaning|"
+              "listen|listens|listened|listening|look|looks|looked|looking|think|thinks|thought|thinking|sleep|sleeps|slept|sleeping|"
+              "eat|eats|ate|eating|chew|chews|chewed|chewing|pour|pours|poured|pouring|heat|heats|heated|heating|cook|cooks|cooked|cooking|"
+              "fry|fries|fried|frying|bake|bakes|baked|baking|dry|dries|dried|drying|clean|cleans|cleaned|cleaning|wipe|wipes|wiped|wiping|"
+              "rinse|rinses|rinsed|rinsing|wash|washes|washed|washing|apply|applies|applied|applying|fold|folds|folded|folding|"
+              "roll|rolls|rolled|rolling|knead|kneads|kneaded|kneading|pack|packs|packed|packing|load|loads|loaded|loading|"
+              "climb|climbs|climbed|climbing|follow|follows|followed|following|shine|shines|shone|shining|glow|glows|glowed|glowing|"
+              "water|waters|watered|watering|plant|plants|planted|planting|prune|prunes|pruned|pruning|dig|digs|dug|digging|"
+              "chopped|sliced|ground|grated|grate|grates|grating|season|seasons|seasoned|seasoning|simmer|simmers|simmered|simmering|"
+              "boil|boils|boiled|boiling|whisk|whisks|whisked|whisking|beat|beats|beating|fasten|fastens|fastened|fastening|"
+              "attach|attaches|attached|attaching|fit|fits|fitted|fitting|close|closes|closed|closing|open|opens|opened|opening|"
+              "start|starts|started|starting|stop|stops|stopped|stopping|breathe|move|proceed|proceeds|proceeded|proceeding|"
+              "act|acts|acted|acting|behave|behaves|behaved|behaving|treat|treats|treated|treating|answer|answers|answered|answering|"
+              "reply|replies|replied|replying|explain|explains|explained|explaining|shout|shouts|shouted|shouting|sang|sung|hum|hums|hummed|humming|"
+              "accelerate|accelerates|accelerated|accelerating|descend|descends|descended|descending|steer|steers|steered|steering")
+    _OBJ = r"(?:(?:it|them|him|her|us|me|this|that|everything|the [a-z]+|your [a-z]+|a [a-z]+|an [a-z]+|my [a-z]+|each [a-z]+) )?"
+    _forms = "|".join(sorted(map(re.escape, _map), key=len, reverse=True))
+    _rx = re.compile(r"\b(?:" + _VERBS + r")\s+" + _OBJ + r"(" + _forms + r")\b(?!-)", re.IGNORECASE)
+    _lead = re.compile(r"^\s?(" + _forms + r")\b(?!-)")
+
+    def find_opps(self, text):
+        opps = []
+        for m in self._rx.finditer(text):
+            w = m.group(1)
+            if w.lower() not in self._map:
+                continue
+            nat, alt = self._map[w.lower()]
+            opps.append(Opp(m.start(1), m.end(1), nat, alt))
+        return _dedup(opps)
+
+    def classify(self, tail):
+        m = self._lead.match(tail) or self._rx.search(tail)
+        if m is None or m.group(1).lower() not in self._map:
+            return None
+        nat, alt = self._map[m.group(1).lower()]
+        return "nat" if m.group(1).lower() == nat else "alt"
+
+
+class TitleAbbr(Property):
+    """Doctor Smith / Mount Fuji / Main Street (nat, full words) vs Dr. Smith / Mt. Fuji / Main St. (alt)."""
+    name = "title_abbr"
+    family = "lexical"
+    nat_label = "titles and street words in full (Doctor Smith, Mount Fuji, Main Street)"
+    alt_label = "abbreviated titles and street words (Dr. Smith, Mt. Fuji, Main St.)"
+    _pre = {"Doctor": "Dr.", "Professor": "Prof.", "Mister": "Mr.", "Mount": "Mt.", "Saint": "St."}
+    _post = {"Street": "St.", "Avenue": "Ave.", "Road": "Rd.", "Boulevard": "Blvd."}
+    _pre_rev = {v: k for k, v in _pre.items()}
+    _post_rev = {v: k for k, v in _post.items()}
+    _rx_pre_nat = re.compile(r"\b(Doctor|Professor|Mister|Mount|Saint)(?= [A-Z][a-z])")
+    _rx_pre_alt = re.compile(r"\b(Dr\.|Prof\.|Mr\.|Mt\.|St\.)(?= [A-Z][a-z])")
+    _rx_post_nat = re.compile(r"\b[A-Z][a-z]{1,20} (Street|Avenue|Road|Boulevard)\b")
+    _rx_post_alt = re.compile(r"\b[A-Z][a-z]{1,20} (St\.|Ave\.|Rd\.|Blvd\.)")
+
+    def find_opps(self, text):
+        opps = []
+        for m in self._rx_pre_nat.finditer(text):
+            opps.append(Opp(m.start(1), m.end(1), m.group(1), self._pre[m.group(1)]))
+        for m in self._rx_pre_alt.finditer(text):
+            opps.append(Opp(m.start(1), m.end(1), self._pre_rev[m.group(1)], m.group(1)))
+        for m in self._rx_post_nat.finditer(text):
+            alt = self._post[m.group(1)]
+            if text[m.end(1):m.end(1) + 1] == ".":
+                alt = alt[:-1]                               # "Oak Rd." at a sentence end, not "Oak Rd.."
+            opps.append(Opp(m.start(1), m.end(1), m.group(1), alt))
+        for m in self._rx_post_alt.finditer(text):
+            a = m.group(1); end = m.end(1)
+            if re.match(r"\s+[A-Z¿¡«\"]|\s*$", text[end:end + 3]):        # sentence-final: the period is the sentence's
+                end -= 1; a = a[:-1]
+            opps.append(Opp(m.start(1), end, self._post_rev[m.group(1)], a))
+        return _dedup(opps)
+
+    _lead_nat = re.compile(r"^\s?(Street|Avenue|Road|Boulevard)\b")
+    _lead_alt = re.compile(r"^\s?(St|Ave|Rd|Blvd)\.")
+
+    def classify(self, tail):
+        if self._lead_nat.match(tail):
+            return "nat"
+        if self._lead_alt.match(tail):
+            return "alt"
+        cands = []
+        for rx, lab in ((self._rx_pre_nat, "nat"), (self._rx_post_nat, "nat"), (self._rx_pre_alt, "alt"), (self._rx_post_alt, "alt")):
+            m = rx.search(tail)
+            if m:
+                cands.append((m.start(), lab))
+        return min(cands)[1] if cands else None
+
+
 ALL_PROPERTIES = [
     SentenceCaps(), AllCaps(),
     UsUk(), IseIze(), TPast(), Whilst(),
     DoubleSpace(), OxfordComma(), CurlyQuotes(), EmDash(), Ellipsis3(), QuotePunct(),
     NumWords(), PercentSign(), OrdinalWords(),
     Contractions(), Ampersand(),
+    # lexically diverse families added 2026-09-11
+    UkVocab(), Register(), UnitAbbr(), Diacritics(), LatinAbbr(), HyphenCompound(), FlatAdverb(),
+    IrregPast(), LatinPlural(), TitleAbbr(),
 ]
 PROPS = {p.name: p for p in ALL_PROPERTIES}
 assert len(PROPS) == len(ALL_PROPERTIES)

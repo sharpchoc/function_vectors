@@ -38,7 +38,10 @@ Answer OK if the completion is coherent English that faithfully renders what com
 Spanish (the REFERENCE shows one correct rendering; a paraphrase with the same meaning is fine;
 the completion may be shorter than the reference). IGNORE completely: upper/lower case, American
 vs British spelling, single vs double spaces, straight vs curly quotes, hyphens vs dashes, digits vs
-words, "%" vs "percent", ampersands, contractions, comma placement.{capnote}
+words, "%" vs "percent", ampersands, contractions, comma placement, British vs American vocabulary for
+the same object, plain vs formal word choice with the same meaning, accents on loanwords, unit symbols vs
+unit words, Latin abbreviations vs English phrases, hyphenation of compounds, adverb form (slow/slowly),
+regular vs irregular past forms, Latin vs English plurals, abbreviated vs full titles and street words.{capnote}
 
 Answer NOT OK if the completion is in Spanish, restarts or repeats the passage, introduces content
 that is not in the source at this point, begins an unrelated text or a new heading, contradicts the
