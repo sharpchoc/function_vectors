@@ -9230,3 +9230,14 @@ last-bit BLAS/SVD differences vs the 2026-09-03 file, but not verifiable (old co
 **Next:** nothing pending for this stream; a typos family was requested and then withdrawn by the user (not built).
 
 **Blockers:** none.
+
+## Stream: style_translation — read→write linear map test (fork session, 2026-09-11)
+- Status: DONE, negative. Committed 2bcfc992 on main.
+- Commands: `capture_prompt_pairs.py` (1 RTX PRO 4500 pod seazlhj9ad9ju6, ~25 min, terminated) → `read_write_ridge.py`
+  (main + controls; LOFO/layer-sweep stages stopped for CPU) → `read_write_ridge_mixed.py` (20 splits).
+- Files: `results/style_translation/read_write_map/` (README, ridge_summary.csv, mixed_splits*.csv),
+  `artifacts/style_translation/prompt_pairs/<family>.npz` (per-prompt read L{0,2,4,8,12,24} / write L{12,16,20,24}, fp16).
+- Findings: no shared linear map from the layer-0 evidence-token read feature to the layer-24 cue write feature across
+  convention families: held-out R² ≤ 0 (identical→diverse, mixed, reverse), convention-vector cos .21–.26 vs shuffled .02;
+  the 69-task map off the shelf gives cos .09 (case families only above null). See the bucket README.
+- Next: none planned (read side at L4–8 not run; not expected to change the verdict).
