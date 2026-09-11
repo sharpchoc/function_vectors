@@ -64,13 +64,25 @@ difference at every evidence token of those three instances, and see whether the
 | oxford_comma | .07 → **.88** (L8, 4) | .70 | .10 → .66 (L6, 2) | .77 |
 | sentence_caps | .00 → .59 (L4, 1) | .67 | .04 → **.76** (L4, 2) | .70 |
 | all_caps | .00 → .21 (L6, 2) | .36 | .00 → .34 (L4, 1) | .71 |
+| uk_vocab ¹ | .09 → **.47** (L6, 4) | .28 | .30 → **.52** (L6, 4) | .51 |
+| register ¹ | .14 → **.28** (L8, 4) | .21 | .52 → **.65** (L6, 2) | .55 |
+| unit_abbr ¹ | .00 → **.56** (L2, 4) | .28 | .59 → **.82** (L6, 1) | .80 |
+| diacritics ¹ | .24 → **.41** (L2, 4) | .28 | .30 → **.38** (L6, .5) | .38 |
+| latin_abbr ¹ | .10 → **.21** (L6, 4) | .17 | .30 → **.42** (L6, 4) | .35 |
+| hyphen_compound ¹ | .10 → **.12** (L8, 4) | .14 | .46 → **.57** (L10, 2) | .60 |
+| flat_adverb ¹ | .07 → **.14** (L10, 4) | .09 | .52 → **.61** (L8, 4) | .58 |
+| irreg_past ¹ | .02 → **.07** (L2, .5) | .04 | .29 → **.34** (L10, 4) | .31 |
+| latin_plural ¹ | .26 → **.29** (L10, 2) | .28 | .36 → **.47** (L10, .5) | .42 |
+| title_abbr ¹ | .14 → .21 (L2, 2) | .27 | .22 → **.47** (L4, 4) | .40 |
+
+¹ the ten lexically diverse families added 2026-09-11 (paragraph 7 below); bold = within .03 of the genuine-context reference or above it.
 
 † ellipsis alt → nat: style .98 (the model writes `...`) but a bare `...` completion against a reference
 starting with `…` is judged "empty" (1 % OK) — the same verdict the judge gave the identical completions in
 step 3 (0 of 32 OK), so this cell is a judge artefact, not a steering failure.
 
 1. **Yes — steering the evidence tokens alone makes the model re-read the context as the other
-   convention.** Mean accuracy toward the target over the 34 (family, direction) cells: unsteered .07,
+   convention.** Mean accuracy toward the target over the 34 (family, direction) cells of the 17 original families: unsteered .07,
    steered .64, genuine-context reference .64. 29 of 34 cells come within .10 of the reference and 21
    match or exceed it: after the intervention the model behaves as if the three examples had been
    written in the other convention. The two clear misses are all_caps (style flips — 1.00 / .92 — but
@@ -97,6 +109,21 @@ step 3 (0 of 32 OK), so this cell is a judge artefact, not a steering failure.
    matches the genuine context most closely (us_uk, ise_ize, contractions, num_words, ordinal_words all
    ≥ reference − .03), and where the write-side cue vector was weakest — the read side carries the
    lexical conventions better than the cue side does.
+7. **The ten lexically diverse families added 2026-09-11** (uk_vocab … title_abbr; rows marked ¹).
+   Evidence-token steering reaches the genuine-context reference here too — 17 of 20 cells match or
+   exceed it (mean steered .40 vs reference .35, unsteered .25; best layers L2–10, α mostly 4) — and
+   for unit_abbr (spelled-out units .00 → .56 vs genuine .28) and uk_vocab (British words .09 → .47 vs
+   .28) the steered model adopts the flipped convention about twice as often as a real 3-shot context
+   makes it. But the references themselves are low (step 3: these families barely learn in context),
+   so the flips toward alt stay at .07–.56 in absolute terms, and title_abbr → abbreviated (.21 vs .27)
+   is the one miss. **Controls differ by direction:** toward alt, another family's read vector does
+   nothing (mean control .13 vs steered .28, unsteered .12 — specific); toward nat, the control is
+   almost as effective as the family's own vector (mean control .40 vs steered .53, unsteered .38;
+   register .59 vs .65, hyphen_compound .54 vs .57, flat_adverb .52 vs .61, latin_plural .46 vs .47).
+   For these families any large perturbation at the evidence tokens erases the alt evidence and the
+   model falls back to its default — the house-style word — so the alt → nat "re-reading" is largely
+   evidence destruction, whereas the nat → alt flip requires the family-specific direction. The judge
+   OK rate stays within .1 of the unsteered rate in all 20 cells (translation intact).
 
 ## Full-layer sweep (layers 0–27, 2026-09-11)
 

@@ -60,6 +60,17 @@ at the **evidence tokens** — the tokens of the English context that realise th
    175 (alt) tokens per prompt; double_space 4 vs 8; curly_quotes 8 vs 16; oxford_comma 8 vs 4;
    ordinal_words 8 vs 4 (` 1st` is often 2 tokens). The per-prompt average removes the count from the
    mean, but the alt-pole ALL-CAPS features average over many sub-word pieces.
+4. **Ten lexically diverse families added 2026-09-11** (uk_vocab, register, unit_abbr, diacritics,
+   latin_abbr, hyphen_compound, flat_adverb, irreg_past, latin_plural, title_abbr; bottom of the left
+   block). Same reliability (split-half cosine ≥ .97 at every layer; ‖r_nat − r_alt‖/‖mean‖ = .21–.42 at
+   L6, .17–.42 at L24) and the same read ≠ write picture with one exception: **register** is the only
+   family whose read difference and paired cue-token steering vector are substantially aligned at every
+   layer (cos .44 at L6 → .50 at L24), and uk_vocab aligns from L12 on (.07 → .45); all others stay
+   ≤ .2 (unit_abbr .02–.11, diacritics .05–.12, flat_adverb .07–.12, latin_plural ≤ .10, irreg_past
+   ≤ .11, title_abbr .04–.17, latin_abbr .11–.20, hyphen_compound .28 → .10). Token-count asymmetries:
+   latin_abbr 6.8 (nat) vs 11.5 (alt) tokens per prompt (" e.g.," splits into several pieces),
+   hyphen_compound 4.1 vs 11.7 (hyphenated compounds), diacritics 6.1 vs 8.2 (accented letters),
+   title_abbr 4.0 vs 7.6 ("Dr." is two tokens).
 
 ## Provenance / caveats
 
