@@ -9241,3 +9241,13 @@ last-bit BLAS/SVD differences vs the 2026-09-03 file, but not verifiable (old co
   convention families: held-out R² ≤ 0 (identical→diverse, mixed, reverse), convention-vector cos .21–.26 vs shuffled .02;
   the 69-task map off the shelf gives cos .09 (case families only above null). See the bucket README.
 - Next: none planned (read side at L4–8 not run; not expected to change the verdict).
+
+## Stream: style-translation — accuracy vs k on Qwen2.5-7B base (2026-09-11)
+
+**Status:** DONE, on main. `results/style_translation/qwen25_base/` (accuracy_by_k.png, unscorable_by_k.png, summary.csv, records.npz, README with the GPT-J comparison). Artifacts `artifacts/style_translation/qwen25_base/{cues,prompts,rollouts}`; weights downloaded to `/workspace/.cache/huggingface/hub/models--Qwen--Qwen2.5-7B`. Pods v9ehfud1icyy93 / jz9rfsiwtxqare (~1 h each, terminated; forward and reverse family order, rollout skips finished families). 54,000 Gemini verdicts, 0 failures.
+
+**Commands:** `cue_tokens.py --model qwen25_base` → `build_prompts.py --model qwen25_base` → pods `logs/roll_qwen_job.sh <tag> <families>` → `tmp/st/judge_loop_qwen.sh` → `analyze.py --model qwen25_base`.
+
+**Findings:** judge OK .95 (GPT-J .79) → fixed-marker accuracy .82 vs .66 at k = 4 with identical style-only adoption (.85 vs .86); original lexical families learned somewhat better (style-only .62 vs .55); the ten new lexical families remain essentially unlearned (style-only .33 vs .27; flat_adverb .10, irreg_past .12, hyphen_compound .23, latin_abbr .24, uk_vocab .31) with the same avoidance pattern — not a translation-quality effect.
+
+**Next:** none requested. **Blockers:** none.
