@@ -111,3 +111,13 @@ identical set) — the identical group is even closer to full rank. The positive
 coverage, cos) = −.71 across the 11: at this coverage the cosines are noise (curly_quotes: |pred|/|true| 2.3 at cos .09).
 Conclusion unchanged: no shared linear map within either group; the only visible read→write consistency is inside the
 two clusters of related lexical families (British axis, digits-vs-words axis).
+
+### Constrained maps: orthogonal Procrustes (2026-09-12, `read_write_procrustes.py`, `logs/read_write_procrustes_L12.log`)
+
+Read L12 → write L24, fit on the 11 identical families' 4400 centred prompts, scored on the 6 diverse families.
+Ridge λ=10: R²(train-mean) −.02, convention cos .38. Procrustes + scalar scale: full rank R² −.42 / cos .29 (s = 2.6 —
+the rotation fits content variance and inflates); rank-restricted (rotation between the top-k read/write PCs) 1000 →
+−.17 / .32, 200 → −.05 / .36, 50 → −.02 / .25, 11 → −.03 / .05; no-scale full rank −.03 / .29; fit on the 11 centroid
+differences only −.23 / .22. Shuffled-pairing controls: cos −.01 (full), .01 (rank 200). Rank-200 Procrustes ≈ ridge
+per family; the constraint changes the parametrisation, not the information — the held-out directions are outside the
+training span whatever the map class.
