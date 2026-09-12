@@ -41,3 +41,22 @@ and layer-sweep stages were stopped for CPU and are not reported), `mixed_splits
   differences overlap only at .17 (identical) / .29 (diverse).
 - Not run: the read side at layers 4–8 (where evidence-token steering showed information beyond token identity). Given the
   same-layer cosines it is not expected to change the verdict.
+
+## Layer sweep (2026-09-12, `read_write_ridge_layers.py`, identical → diverse, λ by leave-one-family-out CV on 1e-1…1e5; `layer_sweep.csv`)
+
+| read → write | held-out R² (train-mean) | within-family R² | cos convention vector (mean of 6) | per family (us_uk / ise_ize / brit_t_past / num_words / ordinal_words / contractions) |
+|---|---|---|---|---|
+| L0 → L24 | −.03 | .00 | .21 | .26 / .35 / .29 / .12 / .16 / .07 |
+| L2 → L24 | −.05 | .00 | .26 | .43 / .37 / .22 / .17 / .20 / .18 |
+| L4 → L24 | −.04 | .00 | .30 | .47 / .44 / .34 / .22 / .23 / .10 |
+| L8 → L24 | −.03 | .00 | .33 | .49 / .43 / .37 / .31 / .26 / .14 |
+| L12 → L24 | −.02 | .00 | .38 | .51 / .50 / .45 / .35 / .29 / .18 |
+| L24 → L24 | .00 | .01 | .38 | .51 / .43 / .41 / .38 / .37 / .16 |
+| L4 → L12 / L16 / L20 | −.15 / −.09 / −.05 | .00 | .22 / .31 / .29 | — |
+| L8 → L12 / L16 / L20 | −.13 / −.08 / −.04 | .00 | .26 / .34 / .32 | — |
+| L0 → L12 / L16 / L20 | −.17 / −.11 / −.06 | .00 | .13 / .20 / .18 | — |
+
+CV picked λ = 10 in every setting. Deeper read layers raise the transferred convention *direction* monotonically
+(.21 → .38, plateau from L12), concentrated in the families that share an axis with a training neighbour; earlier
+write layers are uniformly worse than L24. Prompt-level R² stays at zero everywhere, and the R² of the predicted
+convention vector is ≤ 0 in every setting. The layer choice does not change the verdict.
