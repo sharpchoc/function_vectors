@@ -60,3 +60,21 @@ CV picked λ = 10 in every setting. Deeper read layers raise the transferred con
 (.21 → .38, plateau from L12), concentrated in the families that share an axis with a training neighbour; earlier
 write layers are uniformly worse than L24. Prompt-level R² stays at zero everywhere, and the R² of the predicted
 convention vector is ≤ 0 in every setting. The layer choice does not change the verdict.
+
+## Why the map fails: coverage, not inconsistency (2026-09-12)
+
+Family-centroid differences (nat − alt) from `prompt_pairs`, read at L12 and write at L24:
+- **Each convention is its own axis.** Participation ratio of the 17 unit read differences 15.1 / 17, of the 17 write
+  differences 15.0 / 17; mean |cos| between families .13 (read L12), .05 (read L0), .11 (write L24).
+- **Held-out directions lie only partly in the training span** (fraction of norm inside the span of the 11 identical
+  families' differences; read L12 / write L24): us_uk .68/.52, ise_ize .62/.54, brit_t_past .56/.62, contractions .49/.35,
+  num_words .43/.46, ordinal_words .39/.44 (read L0: .11–.34). The ridge's convention cosines (.51/.50/.45/.18/.35/.29)
+  track this ceiling; predicted norms are .3–.5 of the true ones. Within the training set the leave-one-family-out CV
+  R² is only .06–.09 — the map fails among the identical families for the same reason.
+- **Where families overlap, read and write agree.** corr(cos read, cos write) over the 136 family pairs = .84 (L12) / .68
+  (L0): ise_ize–us_uk .83 → .88, brit_t_past–ise_ize .62 → .72, brit_t_past–us_uk .51 → .67, num_words–ordinal_words
+  .57 → .65, us_uk–whilst .58 → .42. The read→write relation is angle-preserving where it can be observed; with 11
+  near-orthogonal training directions in a ≥ 15-dimensional code it cannot be learned as a linear map.
+- Contrast with the 69-task line: 55 training tasks whose read features had cross-task cosines ≈ .7, so held-out tasks lay
+  inside the training span. Same circuit stage (layers), different coverage. The 27-family corpus (21 training
+  directions) is the natural next test.
