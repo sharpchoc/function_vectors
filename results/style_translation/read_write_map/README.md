@@ -78,3 +78,25 @@ Family-centroid differences (nat − alt) from `prompt_pairs`, read at L12 and w
 - Contrast with the 69-task line: 55 training tasks whose read features had cross-task cosines ≈ .7, so held-out tasks lay
   inside the training span. Same circuit stage (layers), different coverage. The 27-family corpus (21 training
   directions) is the natural next test.
+
+### Coverage, measured against the training PROMPTS (not just centroids), and the 69-task comparison (2026-09-12)
+
+Fraction of a held-out convention direction (nat − alt centroid difference) inside the top-k principal components of
+the 4400 training prompts (centred), range over the 6 diverse families; chance for a random direction = √(k/4096):
+
+| k | read L12 | read L0 | write L24 | chance |
+|---|---|---|---|---|
+| 11 | .35–.49 | .11–.28 | .10–.15 | .05 |
+| 50 | .47–.69 | .23–.39 | .31–.43 | .11 |
+| 200 | .53–.75 | .35–.49 | .48–.68 | .22 |
+| 1000 | .69–.86 | .66–.80 | .72–.81 | .49 |
+| span of the 11 training centroid differences | .39–.68 | .11–.34 | .35–.62 | .05 |
+
+Same statistic for the 69-task line (55 train / 14 held-out tasks, features centred on the train mean): held-out read
+(L6) inside the span of the 55 training task means .78 (min .48); held-out task FV inside the span of the 55 training
+FVs .86 (min .64); inside the top-50 / top-200 PCs of the 8250 training per-prompt FVs .86 / .91. Chance .11.
+NB the 69 tasks are NOT more mutually similar once centred: mean |cos| between training tasks .15 (read L6) / .21 (FV),
+participation ratios 39 / 34 of 55 — the earlier "cross-task cos ≈ .7" was the uncentred (shared-mean) figure. The
+difference is sampling density: 55 tasks in a ~35-dim code vs 11 conventions in a ~15-dim code. A ridge recovers the
+in-span part of a held-out direction in both studies; here that part is .4–.6 and the observed cosines (.2–.5) follow it.
+Before fitting on the 27-family corpus, compute this coverage number for each candidate held-out family first.
