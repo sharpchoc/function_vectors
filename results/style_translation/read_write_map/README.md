@@ -100,3 +100,14 @@ participation ratios 39 / 34 of 55 — the earlier "cross-task cos ≈ .7" was t
 difference is sampling density: 55 tasks in a ~35-dim code vs 11 conventions in a ~15-dim code. A ridge recovers the
 in-span part of a held-out direction in both studies; here that part is .4–.6 and the observed cosines (.2–.5) follow it.
 Before fitting on the 27-family corpus, compute this coverage number for each candidate held-out family first.
+
+### Leave-one-family-out within the 11 lexically identical families (2026-09-12, `logs/read_write_ridge_lofo_identical.log`)
+
+Read L12 → write L24, λ = 10 (the CV choice everywhere): mean convention-vector cos .23 (range .04 all_caps … .32
+ampersand), mean R²(train-mean) +.09, within-family R² ≤ .10. Read L0: cos .12, R² +.05. Held-out typographic
+conventions lie only ≈ .32 inside the span of the other ten on BOTH sides (vs .4–.7 for the diverse families against the
+identical set) — the identical group is even closer to full rank. The positive R² of double_space (.24) and sentence_caps
+(.25) is family *location* (whitespace / case shared with all_caps), not the nat–alt direction (cos .22 / .29). corr(read
+coverage, cos) = −.71 across the 11: at this coverage the cosines are noise (curly_quotes: |pred|/|true| 2.3 at cos .09).
+Conclusion unchanged: no shared linear map within either group; the only visible read→write consistency is inside the
+two clusters of related lexical families (British axis, digits-vs-words axis).
