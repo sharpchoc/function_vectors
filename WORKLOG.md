@@ -9251,3 +9251,97 @@ last-bit BLAS/SVD differences vs the 2026-09-03 file, but not verifiable (old co
 **Findings:** judge OK .95 (GPT-J .79) → fixed-marker accuracy .82 vs .66 at k = 4 with identical style-only adoption (.85 vs .86); original lexical families learned somewhat better (style-only .62 vs .55); the ten new lexical families remain essentially unlearned (style-only .33 vs .27; flat_adverb .10, irreg_past .12, hyphen_compound .23, latin_abbr .24, uk_vocab .31) with the same avoidance pattern — not a translation-quality effect.
 
 **Next:** none requested. **Blockers:** none.
+
+## 2026-09-12 — Qwen2.5-7B-Instruct FV: finished the steering-prune (104->96) + train/test generalisation
+**Status:** DONE (round-2). **Owner:** Claude Code bg agent, main tree (no worktree).
+**What:** completed the prune-refit step the 2026-08-29 run left as "Next". Applied GPT-J's
+steering-prune (drop zs_best<0.4) to the round1 104 -> dropped 8 tasks (count_consonants,
+count_zeros, country-currency, double_last_letter, plus_hundred, time_to_minutes, verb_tense_label,
+word_length) -> 96 tasks, re-split 80/20 seed 43 (77 train / 19 heldout) mirroring GPT-J prunedfail.
+**Commands:** built split `task_splits/qwen25_ext_steerable_96_prunedfail.json` (script in
+/workspace/msj_icl/icl_69/); refit selection at FIXED lambda=0.001 (the value round1 104-CV chose;
+runner /workspace/msj_icl/icl_69/refit_selection_96.py reuses train_c) reusing symlinked means.pt ->
+`artifacts/sandbox/ext_steerability_qwen25_96/pooled_sparse/selection.json` (140 heads, best_epoch 17);
+eval_ext.py (token_budget 2500, batch_cap 16) sharded over 3 RTX-4500 pods -> per-task eval_headset;
+aggregate_eval_headset -> `results/qwen25_fv/round2_96_prunedfail/train_heldout_summary.csv` + figure.
+**Findings:** train/test FV steering generalisation holds strongly on Qwen. Zero-shot: train (77)
+0.024->0.826, heldout (19) 0.058->0.758 (cf GPT-J 0.09->0.73). shuffled: 0.327->0.789 / 0.348->0.710.
+mixed: 0.110->0.746 / 0.148->0.717. Heldout weak tail: next_in_group/last_two_letters 0.36,
+starts_with_vowel 0.44; strong: number_word_to_digits/double_no_carry 1.0. lambda de-scoped to fixed
+(user: only generalisation matters, no low-dim analysis). Figure train_heldout_generalisation.png.
+**Next:** (downstream, separate) read->write linear map refit on Qwen using these FVs as write targets.
+**Blockers:** none. RunPod EU-RO-1 4500 stock flaky but 3 pods obtained; all terminated.
+
+## 2026-09-12 — Qwen2.5-7B read-feature LAYER-SELECTION (recreate of 69_task_run bottom_up_read_features/layer_selection)
+**Status:** DONE. **Owner:** Claude Code bg agent, main tree.
+**What:** exact recreation of the GPT-J raw-label-mean layer-selection study on Qwen2.5-7B-Instruct,
+96-task pruned split. Capture per-layer task-mean residual at the 10th demo label token
+(qwen_capture_read.py, model-agnostic capture_label_resid_means logic, 150-assert relaxed + skip rare
+punctuation-label gate fails e.g. "Washington, D.C."); dummy 1-shot "_" scaffold steering, inject
+alpha*mean[L] at the "_" slot at layer L, sweep L=0..27 x alpha{0.5,1,2,4}*norm, T=1 sampled exact
+match, 150 prompts/task, + shared-mean control (from 77 train tasks). Scripts in
+/workspace/msj_icl/icl_69/readfeat/ (qwen_capture_read.py, qwen_raw_mean_sweep.py; Injector ported to
+get_decoder_block). 5-pod fleet.
+**Qwen tokenizer notes:** " _\n\n" fuses into ONE token 'Ġ_ĊĊ' -> inject at len(tok(pre)) (the fused
+dummy-slot token), not an anchor lookup. Capture at clean demo-label token (real labels don't fuse).
+**Findings:** READ FEATURE CONFIRMED. Best-over-alpha accuracy rises L0 0.09 -> broad mid peak
+**L12 = 0.556** (plateau L8-14 ~0.50-0.56) -> decays to ~0 by L20. Shared-mean control flat ~0.05-0.07
+(<< 0.56 -> carries task identity, not generic label-slot content); unsteered "_" scaffold 0.004.
+Qwen read-feature layer L12 vs GPT-J L6 (both 28-layer; Qwen's read feature sits deeper, mid-network,
+near the write feature). Recovers ~the full one-shot ICL level (step-1 k=1 ~0.56), stronger than
+GPT-J's ~61% of its 1-shot ceiling.
+**Files:** results/qwen25_fv/read_feature_layer_selection/{layer_summary.csv, per_task_by_layer.csv,
+layer_curve.png}; artifacts artifacts/qwen25_read/{label_resid_means,raw_mean_steering}/.
+**Next:** (downstream) read->write map refit on Qwen (read feature @L12 -> write FV). **Blockers:** none; pods terminated.
+
+## 2026-09-12 — Qwen2.5-7B read->write LINEAR MAP (per-prompt ridge; recreate of understanding_read_write_linear_map)
+**Status:** DONE. **Owner:** Claude Code bg agent, main tree.
+**What:** per-prompt ridge from read feature (per-prompt label-token residual, block L) to write feature
+(per-prompt 140-head FV), fit on 77 train tasks' prompts, scored on 19 heldout tasks. Captures: adapted
+capture_label_resid_perprompt (read, (N,28,3584)) + capture_69_perprompt_fvs (FV, (N,3584); get_attn_out_proj,
+140-head selection) -> artifacts/qwen25_read/{label_resid_perprompt,perprompt_fvs}/. Ridge reuses the GPT-J
+solver+protocol verbatim (ridge_eig_prep/ridge_predict, logspace(-1,8,19) 5-fold task-CV, r2 uniform per-dim
+eval-mean ref) with prompt_index pairing (read drops gated prompts). Scripts /workspace/msj_icl/icl_69/readfeat/
+{qwen_capture_read_perprompt,qwen_capture_perprompt_fvs,qwen_ridge_readwrite}.py.
+**Findings:** MAP GENERALISES train->test on Qwen. Heldout task-centroid R² rises L0 0.41 -> broad plateau
+peak **L22 = 0.554**; heldout per-prompt R² peak **L20 = 0.290**. (GPT-J: centroid 0.69 / per-prompt 0.50 @L13
+-> Qwen lower but clearly positive.) Map read-peak L20-22 is LATER than the read-STEERING peak L12 (Δ~8-10),
+mirroring GPT-J (steer L6 -> map L13). alpha not pinned. Files results/qwen25_fv/read_write_map/{summary_all28.csv,
+taskfv_r2_all28.csv, layer_curve.png}.
+**Compute notes:** ag_news OOM'd read capture (fixed batch 8 on ~2k-token prompts) -> patched to auto_batch
+(token_budget 2500); double-launch on one pod caused a 2-process OOM -> pkill + single relaunch. bitsandbytes
+import Traceback false-fires grep waiters (key on file counts / done markers).
+**Next:** read/write line on Qwen COMPLETE (ICL competence, FV train/test generalisation, read-feature layer,
+read->write map). **Blockers:** none; all pods terminated.
+
+## 2026-09-12 — Does the ICL read->write map transfer to MSJ jailbreaks? (geometry cosine) — NEGATIVE
+**Status:** DONE. **Owner:** Claude Code bg agent, main tree. CPU-only (no GPU).
+**What:** refit the ICL read->write ridge per read layer (from artifacts/qwen25_read captures, best_alpha from
+read_write_map/summary_all28.csv), applied W_L to the MSJ read feature r_raw[L] (mean over response tokens,
+/workspace/msj_icl/results/readvec_meanresp), cosine to the MSJ steering direction d_contrast[L13]
+(/workspace/msj_icl/results/writevec, the vector that gave ASR 0.65). Sweep all 28 read layers + read×write
+heatmap + controls. Script /workspace/msj_icl/icl_69/readfeat/msj_transfer.py.
+**Findings:** NO TRANSFER. cos(ICL-map(read@L), d_contrast@L13) ~ 0 at every read layer (-0.085..-0.005),
+indistinguishable from a random matched-norm control; the full read×write heatmap max |cos| = 0.107. The raw
+no-map read is weakly positive (max ~0.10) and actually BEATS the mapped version — the ICL map rotates the read
+feature AWAY from the steering direction. Meanwhile the same map predicts ICL FVs at held-out cos ~0.55. So the
+benign-ICL read->write map does not predict the jailbreak steering direction.
+**Caveats (why negative — not necessarily "different circuit"):** (1) target mismatch — MSJ write d_contrast is the
+FULL residual mean; the ICL map outputs the 140-head FV SUBCOMPONENT (could be ~orthogonal even if a relation
+exists in the FV subspace); (2) read-site mismatch — MSJ read = mean over response tokens vs ICL map trained on
+label-token reads; (3) format — MSJ chat (im_end) vs ICL base Q:/A:. To separate mechanism from definition, build
+an MSJ 140-head FV target (match the map's output space) — user declined earlier.
+**Files:** results/qwen25_fv/readwrite_msj_transfer/{cosine_summary.csv,.json, cosine_readxwrite.npy, layer_curve.png, cosine_heatmap.png}.
+**Next:** user's call — MSJ-FV target variant, or accept the negative. **Blockers:** none.
+
+## 2026-09-12 — MSJ read feature: refusal-scaffold steering (corrects earlier null)
+**Status:** DONE. The earlier "_"-dummy read-feature null was a headroom artifact (baseline 0.235 ~= 1-shot).
+On-policy refusal-demo scaffold (baseline 0.088) restores headroom -> the MSJ read feature STEERS: contrast_refusal
+peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inverted-U dose (a4). Scripts/results in
+/workspace/msj_icl/{refusal,results/refusal_readsteer}. Pods terminated.
+
+## Stream: style_translation — multilingual-target pilot (2026-09-13)
+- Status: DONE, negative for GPT-J. results/style_translation/multilingual_pilot/README.md.
+- GPT-J writes de/pt/fr/es/nl/ro at faithful∧fluent = .00 (n = 20 per language and arm); Spanish best in coverage (.79 with demo)
+  but lexically broken. Non-English convention families need Qwen2.5-7B as the writer (separate geometry).
+- Also this session: read→write linear-map bucket extended (layer sweep, LOFO-identical, Procrustes, coverage vs 69-task).
