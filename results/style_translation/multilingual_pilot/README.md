@@ -23,3 +23,28 @@ often stay in English or produce non-words ("engarrafadores", "laitage"); German
 decisive: the accuracy metric (convention ∧ faithful ∧ coherent) would be judge-limited near zero for every family.
 Non-English-target families therefore require a different writer (Qwen2.5-7B), which means re-deriving the read/write
 geometry on that model — the map question is per model.
+
+## Qwen2.5-7B base (2026-09-13; `multilingual_pilot.py --model qwen25_base`, pods vxmqjpia3ziqr1 / 2kantpu35vn4mg, terminated)
+
+Same 20 texts, prompts and judge. Calibration arm: the study's own direction, Spanish → English, on the same texts
+(`--calib_only`, `rollouts_calib.json` / `judged_calib.json`).
+
+| target (demo arm) | in language | faithful | fluent | faithful ∧ fluent | coverage |
+|---|---|---|---|---|---|
+| **Spanish → English (calibration)** | 1.00 | .85 | .95 | **.80** | .97 |
+| English → Portuguese | 1.00 | .60 | .55 | .45 | .96 |
+| English → Spanish | 1.00 | .50 | .40 | .35 | .95 |
+| English → French | 1.00 | .60 | .25 | .15 | .96 |
+| English → German | 1.00 | .25 | .15 | .10 | .85 |
+| English → Dutch / Romanian | 1.00 / .95 | .00 | .00 | .00 | .79 / .58 |
+
+Header-only arm within ±.10 of the demo arm except faithfulness (lower without the demo). Qwen stays in language and
+covers the source everywhere (GPT-J did neither); the judge's complaints are gender agreement, word choice and, for
+German, hallucinated clauses. Since the same judge gives Qwen's English .80, the gap is model competence, not judge
+strictness. Per-sentence extrapolation (cube root of the 3-sentence passage rate, independence assumed): English ≈ .93
+(matches the judge-OK rates of `../qwen25_base/`), Portuguese ≈ .77, Spanish ≈ .70, French ≈ .55–.65, German ≈ .45.
+
+**Recommendation.** Qwen2.5-7B base can carry Portuguese (BR/PT, Acordo PT, Acordo BR — a 3-family cluster on one
+axis) and Spanish 2010 RAE as multilingual convention families at an accuracy ceiling of ≈ .7–.8; French is marginal
+(judge-limited like all_caps), German/Dutch/Romanian are out on the base model. English-target additions (Canadian/Oxford
+spelling, place names, inclusive language, sub-families of us_uk / contractions / num_words) keep the .93 ceiling.

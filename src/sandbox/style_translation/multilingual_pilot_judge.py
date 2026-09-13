@@ -12,10 +12,10 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT
 from src.sandbox.style_translation.gen_spanish import load_key, URL
 D = ARTIFACTS_ROOT / "style_translation" / "multilingual_pilot"
-LANGS = {"de": "German", "pt": "Portuguese", "fr": "French", "es": "Spanish", "nl": "Dutch", "ro": "Romanian"}
-PROMPT = """You are grading a machine translation from English into {lang}.
+LANGS = {"en": "English", "de": "German", "pt": "Portuguese", "fr": "French", "es": "Spanish", "nl": "Dutch", "ro": "Romanian"}
+PROMPT = """You are grading a machine translation from {srclang} into {lang}.
 
-English source:
+{srclang} source:
 {src}
 
 Candidate {lang} translation (it may stop early; do not penalise incompleteness, judge what is there):
@@ -24,7 +24,7 @@ Candidate {lang} translation (it may stop early; do not penalise incompleteness,
 Answer with JSON only: {{"in_language": true/false (is the candidate written in {lang}?), "faithful": true/false (does what is there convey the source meaning without inventions or omissions of whole clauses?), "fluent": true/false (would a native speaker find it grammatical and natural?), "coverage": fraction 0-1 of the source content covered, "notes": "<15 words"}}"""
 
 def judge(key, model, r):
-    body = {"model": model, "temperature": 0.0, "max_tokens": 150, "messages": [{"role": "user", "content": PROMPT.format(lang=LANGS[r["lang"]], src=r["source"], out=r["output"] or "(empty)")}]}
+    body = {"model": model, "temperature": 0.0, "max_tokens": 150, "messages": [{"role": "user", "content": PROMPT.format(lang=LANGS[r["lang"]], srclang="Spanish" if r["lang"] == "en" else "English", src=r["source"], out=r["output"] or "(empty)")}]}
     for attempt in range(5):
         try:
             resp = requests.post(URL, json=body, timeout=90, headers={"Authorization": f"Bearer {key}"}); resp.raise_for_status()
@@ -35,11 +35,13 @@ def judge(key, model, r):
             time.sleep(2 * (attempt + 1))
 
 def main():
-    recs = json.load(open(D / "rollouts.json")); key = load_key(); model = "google/gemini-2.5-flash"
+    d = D if len(sys.argv) < 2 else D / sys.argv[1]
+    fn = sys.argv[2] if len(sys.argv) > 2 else "rollouts.json"
+    recs = json.load(open(d / fn)); key = load_key(); model = "google/gemini-2.5-flash"
     with ThreadPoolExecutor(24) as ex:
         futs = {ex.submit(judge, key, model, r): r for r in recs}
         for f in as_completed(futs): futs[f]["judge"] = f.result()
-    json.dump(recs, open(D / "judged.json", "w"), ensure_ascii=False, indent=1)
+    json.dump(recs, open(d / fn.replace("rollouts", "judged"), "w"), ensure_ascii=False, indent=1)
     print(f"{'lang':5s} {'arm':7s} {'n':>3s} {'in-lang':>8s} {'faithful':>9s} {'fluent':>7s} {'faith∧flu':>10s} {'coverage':>9s} {'empty':>6s}")
     for code in LANGS:
         for arm in ("header", "demo"):

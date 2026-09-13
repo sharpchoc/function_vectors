@@ -6,7 +6,7 @@ up to 160 tokens, and a second arm with a one-sentence demo pair in front (headr
 Sources: the first 20 house-style English texts of the `ampersand` family (bicycle topics, ~160 words), truncated to
 their first 3 sentences (~60 words) so the translation fits in 160 tokens.
 Output: artifacts/style_translation/multilingual_pilot/rollouts.json (list of dicts: lang, arm, doc_id, source, output)."""
-import json, re, sys
+import argparse, json, re, sys
 from pathlib import Path
 import torch
 _BOOT = Path(__file__).resolve().parents[3]
@@ -29,11 +29,34 @@ def first_sentences(t, n=3):
     s = re.split(r"(?<=[.!?])\s+", t.strip()); return " ".join(s[:n])
 
 def main():
-    OUT.mkdir(parents=True, exist_ok=True)
+    ap = argparse.ArgumentParser(); ap.add_argument("--model", default="gptj"); ap.add_argument("--calib_only", action="store_true"); args = ap.parse_args()
+    out_dir = OUT if args.model == "gptj" else OUT / args.model
+    out_dir.mkdir(parents=True, exist_ok=True)
     recs = json.load(open(_BOOT / "dataset_files" / "style_translation" / "english" / "ampersand.json"))[:20]
     srcs = [(r["doc_id"], first_sentences(r["text_nat"])) for r in recs]
-    model, tok = load_model()
+    srcs_es = [(r["doc_id"], first_sentences(r["text_es"])) for r in recs]
+    model, tok = load_model(model=args.model)
     out = []
+    # calibration: Spanish -> English (the study's own direction) on the same 20 texts, same judge
+    for arm in ("header", "demo"):
+        prompts = []
+        for doc, text in srcs_es:
+            p = f"Spanish:\n{text}\n\nEnglish:\n"
+            if arm == "demo":
+                p = "Spanish:\nHoy hace buen tiempo, así que vamos a dar un paseo por el parque.\n\nEnglish:\nThe weather is nice today, so we are going for a walk in the park.\n\n" + p
+            prompts.append(p)
+        for i in range(0, len(prompts), 10):
+            batch = prompts[i:i + 10]
+            enc = tok(batch, return_tensors="pt", padding=True).to("cuda")
+            torch.manual_seed(0)
+            with torch.no_grad():
+                gen = model.generate(**enc, do_sample=True, temperature=1.0, top_p=1.0, max_new_tokens=160, pad_token_id=tok.eos_token_id)
+            for j, g in enumerate(gen):
+                txt = tok.decode(g[enc.input_ids.shape[1]:], skip_special_tokens=True).split("\n\n")[0].strip()
+                out.append(dict(lang="en", arm=arm, doc_id=srcs_es[i + j][0], source=srcs_es[i + j][1], output=txt))
+        print(f"English (from Spanish) {arm:6s} done; sample: {out[-1]['output'][:120]!r}", flush=True)
+    if args.calib_only:
+        json.dump(out, open(out_dir / "rollouts_calib.json", "w"), ensure_ascii=False, indent=1); print("saved", len(out)); return
     for code, lang in LANGS.items():
         for arm in ("header", "demo"):
             prompts = []
@@ -53,7 +76,7 @@ def main():
                     txt = txt.split("\n\n")[0].strip()          # stop at the next blank line (next header)
                     out.append(dict(lang=code, arm=arm, doc_id=srcs[i + j][0], source=srcs[i + j][1], output=txt))
             print(f"{lang:10s} {arm:6s} done; sample: {out[-1]['output'][:120]!r}", flush=True)
-    json.dump(out, open(OUT / "rollouts.json", "w"), ensure_ascii=False, indent=1)
+    json.dump(out, open(out_dir / "rollouts.json", "w"), ensure_ascii=False, indent=1)
     print("saved", len(out))
 
 if __name__ == "__main__":
