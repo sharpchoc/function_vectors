@@ -14,8 +14,9 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.sandbox.ext_styleprops.properties import PROPS
+import src.sandbox.style_translation.ml_families  # noqa: F401  (registers the multilingual properties into PROPS)
 
-_SENT_END = re.compile(r'[.!?]+["”’\')]*(?=\s|$)')
+_SENT_END = re.compile(r'(?:[.!?]+["”’\')]*(?=\s|$)|[。！？]+[」』”）]*)')   # CJK sentence ends need no following space
 # a period after one of these is an abbreviation, not a sentence end (title_abbr / latin_abbr alt forms, 2026-09-11)
 _ABBREV = re.compile(r"(?:\b(?:Dr|Mr|Mrs|Ms|Mx|Prof|St|Mt|Ave|Rd|Blvd|Sr|Jr|No|vs|approx|Fig|Vol|Inc|Ltd|Co)|\b[ei]\.g|\bi\.e|\b[A-Z])$")
 
@@ -26,7 +27,7 @@ def cut_sentence(tail):
     A period that belongs to an abbreviation (Dr., Mr., St., e.g., i.e., vs., approx.) is not a sentence end."""
     t = tail
     stop = len(t); capped = True
-    m_nl = re.search(r"\n|\bSpanish:|\bEnglish:", t)
+    m_nl = re.search(r"\n|\b(?:Spanish|English|Portuguese|French|German|Chinese|Japanese|Russian|Ukrainian):", t)
     if m_nl:
         stop = m_nl.start(); capped = False
     for m in _SENT_END.finditer(t[:stop]):

@@ -20,7 +20,7 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_DATA
 from src.sandbox.style_translation.families import FAMILIES
-from src.sandbox.style_translation.cue_tokens import HEADER, TOKENIZER
+from src.sandbox.style_translation.cue_tokens import HEADER, TOKENIZER, header_for
 
 PAIRS = STYLE_TRANSLATION_DATA / "pairs"
 OUT = ARTIFACTS_ROOT / "style_translation" / "prompts"
@@ -53,7 +53,7 @@ def main():
                 r["cues"] = cues[r["doc_id"]]
         items = []
         for r in recs:
-            header = HEADER.format(es=r["text_es"]); h = len(header)
+            header = header_for(r); h = len(header)
             for P in ("nat", "alt"):
                 text = r[f"text_{P}"]
                 enc = tok(header + text, return_offsets_mapping=True)
@@ -69,7 +69,7 @@ def main():
                         "next_nat": c["next_nat"], "next_alt": c["next_alt"],
                         "ref_sentence": ref_sentence(text, c["cue_char_end"], c["opp_char_start"]),
                         "context_tail": text[: c["cue_char_end"]][-500:],
-                        "es_text": r["text_es"],
+                        "es_text": r["text_es"], "langs": r.get("langs"),
                     })
         json.dump(items, open(OUT / f"{fam}.json", "w"))
         total += len(items)

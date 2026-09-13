@@ -35,10 +35,20 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import STYLE_TRANSLATION_DATA
 from src.sandbox.style_translation.families import FAMILIES
+import src.sandbox.style_translation.ml_families  # noqa: F401  (registers the multilingual properties)
 
 PAIRS = STYLE_TRANSLATION_DATA / "pairs"
 HEADER = "Spanish:\n{es}\n\nEnglish:\n"
 TOKENIZER = "EleutherAI/gpt-j-6B"
+
+
+def header_for(rec):
+    """Prompt header: Spanish→English by default; multilingual families carry rec["langs"] = {"src", "tgt"} and
+    use "{src}:\n{source}\n\n{tgt}:\n" (source text is stored in text_es for schema compatibility)."""
+    l = rec.get("langs")
+    if not l:
+        return HEADER.format(es=rec["text_es"])
+    return f"{l['src']}:\n{rec['text_es']}\n\n{l['tgt']}:\n"
 
 
 def decision_points(rec):
@@ -83,7 +93,7 @@ def next_tokens(ids, start, other_ids, max_n=4):
 
 
 def cues_for(rec, tok, pol):
-    header = HEADER.format(es=rec["text_es"])
+    header = header_for(rec)
     text = rec[f"text_{pol}"]
     full = header + text
     enc = tok(full, return_offsets_mapping=True)
@@ -135,7 +145,7 @@ def main():
         recs = json.load(open(PAIRS / f"{fam}.json"))
         top = collections.Counter(); wi = ih = ncue = 0; maxlen = 0
         for r in recs:
-            r["cues"] = {"tokenizer": TOKENIZER, "prompt_format": HEADER.replace("\n", "\\n") + "{english}"}
+            r["cues"] = {"tokenizer": TOKENIZER, "prompt_format": header_for({**r, "text_es": "{source}"}).replace("\n", "\\n") + "{twin}"}
             for pol in ("nat", "alt"):
                 cues, L = cues_for(r, tok, pol)
                 r["cues"][pol] = cues; maxlen = max(maxlen, L)

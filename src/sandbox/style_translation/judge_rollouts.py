@@ -27,30 +27,34 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT
 from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.gen_spanish import load_key, URL
+from src.sandbox.style_translation.ml_families import ML_FAMILY
 
 ROLL = ARTIFACTS_ROOT / "style_translation" / "rollouts"
 
-PROMPT = """A language model is translating a Spanish paragraph into English. It has produced the English
+PROMPT = """A language model is translating a {src} paragraph into {tgt}. It has produced the {tgt}
 up to a point and then generated a COMPLETION. Decide whether the completion is acceptable as a
 continuation of the translation.
 
-Answer OK if the completion is coherent English that faithfully renders what comes next in the
-Spanish (the REFERENCE shows one correct rendering; a paraphrase with the same meaning is fine;
+Answer OK if the completion is coherent {tgt} that faithfully renders what comes next in the
+{src} (the REFERENCE shows one correct rendering; a paraphrase with the same meaning is fine;
 the completion may be shorter than the reference). IGNORE completely: upper/lower case, American
 vs British spelling, single vs double spaces, straight vs curly quotes, hyphens vs dashes, digits vs
 words, "%" vs "percent", ampersands, contractions, comma placement, British vs American vocabulary for
 the same object, plain vs formal word choice with the same meaning, accents on loanwords, unit symbols vs
 unit words, Latin abbreviations vs English phrases, hyphenation of compounds, adverb form (slow/slowly),
-regular vs irregular past forms, Latin vs English plurals, abbreviated vs full titles and street words.{capnote}
+regular vs irregular past forms, Latin vs English plurals, abbreviated vs full titles and street words,
+and any regional or reform spelling variant of the same word (Brazilian vs European Portuguese, pre- vs post-reform
+orthography, accents, ß vs ss, circumflexes, Simplified vs Traditional Chinese characters, the letter ё written as е,
+the Japanese long-vowel mark, hyphenation){ignore_extra}.{capnote}
 
-Answer NOT OK if the completion is in Spanish, restarts or repeats the passage, introduces content
+Answer NOT OK if the completion is in {src}, restarts or repeats the passage, introduces content
 that is not in the source at this point, begins an unrelated text or a new heading, contradicts the
 source, or is incoherent / gibberish.
 
-SPANISH SOURCE:
+{SRC} SOURCE:
 {es}
 
-ENGLISH SO FAR (end): ...{ctx}
+{TGT} SO FAR (end): ...{ctx}
 
 REFERENCE (one correct continuation): {ref}
 
@@ -62,13 +66,22 @@ CAPNOTE = (" NOTE: this completion was CUT OFF by a token limit before the sente
            " mid-sentence or mid-word. Do NOT mark it NOT OK for being truncated or incomplete.")
 
 
+def _langs(r):
+    fam = r.get("family")
+    if fam in ML_FAMILY:
+        f = ML_FAMILY[fam]
+        return dict(src="English", tgt=f.tgt_lang, SRC="ENGLISH", TGT=f.tgt_lang.upper(), ignore_extra=f" (in particular: {f.judge_ignore})" if f.judge_ignore else "")
+    return dict(src="Spanish", tgt="English", SRC="SPANISH", TGT="ENGLISH", ignore_extra="")
+
+
 def judge_one(key, model, r):
     if not r["tail"].strip():
         return r["doc_id"], r["style"], r["k"], {"ok": False, "notes": "empty completion", "judge": model}
     body = {"model": model, "temperature": 0.0, "max_tokens": 120,
             "messages": [{"role": "user", "content": PROMPT.format(
                 capnote=CAPNOTE if r["capped"] else "", es=r["es_text"], ctx=r["context_tail"],
-                ref=json.dumps(r["ref_sentence"]), tail=json.dumps(r["tail"]))}]}
+                ref=json.dumps(r["ref_sentence"], ensure_ascii=False), tail=json.dumps(r["tail"], ensure_ascii=False),
+                **_langs(r))}]}
     for attempt in range(5):
         try:
             resp = requests.post(URL, json=body, timeout=90, headers={"Authorization": f"Bearer {key}"})
