@@ -64,7 +64,10 @@ def main():
             print(f"{f.name}: {len(recs) - judged} unjudged records skipped", flush=True)
     if pending:
         print(f"PENDING JUDGE (excluded from confirm outputs): {pending}", flush=True)
-    step3 = {(r["family"], r["style"], int(r["k"])): float(r["accuracy"]) for r in csv.DictReader(open(STEP3))}
+    step3 = {(r["family"], r["style"], int(r["k"])): float(r["accuracy"]) for r in csv.DictReader(open(STEP3))} if STEP3.exists() else {}
+    for extra in sorted(STEP3.parent.glob("*/k4_check.csv")):        # cheap k = 4 checks (multilingual_k4*, code_k4)
+        for r in csv.DictReader(open(extra)):
+            step3.setdefault((r["family"], r["style"], int(float(r["k"]))), float(r["accuracy"]))
 
     # ---- screen grid csv ----------------------------------------------------------------------
     screen_rows, grid = [], {}

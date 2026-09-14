@@ -25,7 +25,8 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT
 from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.rollout import load_model
-from src.sandbox.style_translation.scoring import decide, cut_sentence
+from src.sandbox.style_translation.scoring import decide, cut_sentence, cut_code
+from src.sandbox.style_translation.ml_families import ML_FAMILY
 from src.sandbox.style_translation.steer_screen import k0_items, sample, SCREEN_LAYERS, ALPHAS
 import src.sandbox.style_translation.steer_screen as steer_screen
 from src.sandbox.style_translation.models import paths as model_paths, arch
@@ -86,7 +87,7 @@ def main():
                 chunk = items[bi:bi + args.batch]
                 tails = sample(model, tok, chunk, layer, v, alpha, f"{fam}|confirm|{arm}|{bi}", MAX_NEW)
                 for it, raw in zip(chunk, tails):
-                    cut, capped = cut_sentence(raw)
+                    cut, capped = cut_code(raw) if getattr(ML_FAMILY.get(fam), 'domain', 'text') == 'code' else cut_sentence(raw)
                     d = decide(fam, it["seg_prefix"], cut, it["next_nat"], it["next_alt"])
                     recs.append({k: it[k] for k in ("doc_id", "family", "k", "cue_tok", "seg_prefix", "next_nat",
                                                     "next_alt", "ref_sentence", "context_tail", "es_text")}

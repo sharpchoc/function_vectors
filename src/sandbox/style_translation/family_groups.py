@@ -24,9 +24,15 @@ LEXICAL = ["us_uk", "ise_ize", "brit_t_past", "contractions", "num_words", "ordi
            "ja_long_vowel", "de_swiss", "fr_1990", "pt_acordo_br", "uk_2019"]
 FIXED = ["whilst", "ampersand", "percent_sign", "em_dash", "ellipsis", "curly_quotes", "quote_punct",
          "double_space", "oxford_comma", "sentence_caps", "all_caps"]
+try:
+    from src.sandbox.style_translation.code_families import CODE_FAMILIES as _CF
+    CODE = [f.name for f in _CF]
+except Exception:      # pragma: no cover
+    CODE = []
 GROUPS = [
     ("Lexically diverse conventions — the rule applies across many different words", LEXICAL, "#e6edf7"),
     ("Lexically identical conventions — one fixed marker or formatting choice", FIXED, "#f9f0e3"),
+    ("Code conventions — task → code, the rule applies across many identifiers / literals / statements", CODE, "#e8f4e8"),
 ]
 GROUP_OF = {f: g for g, (_, fams, _) in enumerate(GROUPS) for f in fams}
 
@@ -48,6 +54,7 @@ def grouped_grid(fams, slots_per_family=1, fam_cols=(3, 3), nrows=None, panel_w=
     {"bottom": [...], "left": [...]} axes per block for axis labels.
     """
     groups = [[f for f in group if f in fams] for _, group, _ in GROUPS]
+    fam_cols = tuple(fam_cols) + (6,) * (len(GROUPS) - len(fam_cols))   # code group: 6 families per row unless given
     active = [gi for gi, g in enumerate(groups) if g] or [0]          # an empty group (e.g. no fixed-marker families in a pool) is dropped
     if nrows is None:
         nrows = max(math.ceil(len(groups[gi]) / fam_cols[gi]) for gi in active)
