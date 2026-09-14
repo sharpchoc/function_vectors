@@ -48,19 +48,22 @@ def grouped_grid(fams, slots_per_family=1, fam_cols=(3, 3), nrows=None, panel_w=
     {"bottom": [...], "left": [...]} axes per block for axis labels.
     """
     groups = [[f for f in group if f in fams] for _, group, _ in GROUPS]
+    active = [gi for gi, g in enumerate(groups) if g] or [0]          # an empty group (e.g. no fixed-marker families in a pool) is dropped
     if nrows is None:
-        nrows = max(math.ceil(len(g) / c) for g, c in zip(groups, fam_cols))
+        nrows = max(math.ceil(len(groups[gi]) / fam_cols[gi]) for gi in active)
     ncols = [c * slots_per_family for c in fam_cols]
-    width = panel_w * sum(ncols) + panel_w * 0.6
+    width = panel_w * sum(ncols[gi] for gi in active) + panel_w * 0.6
     fig = plt.figure(figsize=(width, panel_h * nrows + 2.2))
-    # horizontal extents of the two blocks (figure fraction)
+    # horizontal extents of the active blocks (figure fraction)
     lm, rm = 0.045, 0.995
-    usable = rm - lm - gap
-    w_left = usable * ncols[0] / sum(ncols); w_right = usable - w_left
-    extents = [(lm, lm + w_left), (rm - w_right, rm)]
+    usable = rm - lm - gap * (len(active) - 1)
+    tot = sum(ncols[gi] for gi in active); extents = {}; x = lm
+    for gi in active:
+        w_ = usable * ncols[gi] / tot; extents[gi] = (x, x + w_); x += w_ + gap
     axes, first = {}, None
     meta = {"bottom": [], "left": []}
-    for gi, ((title, _, tint), group, (x0, x1)) in enumerate(zip(GROUPS, groups, extents)):
+    for gi in active:
+        (title, _, tint), group, (x0, x1) = GROUPS[gi], groups[gi], extents[gi]
         gs = fig.add_gridspec(nrows, ncols[gi], left=x0, right=x1, top=top, bottom=bottom, wspace=0.28, hspace=0.75)
         fig.patches.append(FancyBboxPatch((x0 - 0.012, bottom - 0.05), x1 - x0 + 0.024, top - bottom + 0.085,
                                           boxstyle="round,pad=0,rounding_size=0.01", transform=fig.transFigure,
