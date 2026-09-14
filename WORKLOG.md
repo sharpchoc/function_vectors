@@ -9345,3 +9345,16 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
 - GPT-J writes de/pt/fr/es/nl/ro at faithful∧fluent = .00 (n = 20 per language and arm); Spanish best in coverage (.79 with demo)
   but lexically broken. Non-English convention families need Qwen2.5-7B as the writer (separate geometry).
 - Also this session: read→write linear-map bucket extended (layer sweep, LOFO-identical, Procrustes, coverage vs 69-task).
+
+## Stream: style_translation — Qwen2.5-7B base read/write features + read→write map for the 18 lexically diverse families (plan 2026-09-14)
+- Plan: /root/.claude/plans/okay-cool-can-you-velvet-thimble.md (user-approved). Pool = 18 lexically diverse families passing k=4 both-poles ≥ .30
+  (11 English + 7 non-English); drop any family that falls below on the full corpus; feature gate = significant lift over unsteered (both
+  directions); split = LOFO + fixed stratified; coverage diagnostics before steering; GPT-J prompt protocol.
+- Phase 0 DONE (5dc8a699): models.paths() gained steering/read_features/evidence/read_steer/prompt_pairs roots; models.arch(); --model on all
+  steering/read/capture/analysis scripts; steer_hooks dtype-aware; evidence_tokens uses header_for + model tokeniser.
+- Phase 1 (in progress): ml_build (250–400 base texts, adapt→back-translate) + ml_verify (Gemini) + ml_finalize → 200 pairs each
+  (ru_yo 198); cue tokens + k=0..4 prompts on Qwen (13,980 items); step-3 rollouts on pod r968v40ukhmcvb (logs/qwen_step3_ml_job.sh).
+  Cheap k∈{0,4} rollouts moved to artifacts/style_translation/qwen25_base/rollouts_cheap_k4/.
+- Phase 2 prepared: evidence tokens for all 18 done (qwen25_base/read_features/evidence); read_write_coverage.py (also run on GPT-J:
+  results/style_translation/read_write_map/coverage.*); capture job logs/qwen_pairs_job.sh; read_write_ridge.py --pool mode (LOFO + fixed split).
+- Next: judge step 3 → analyze → lexical_selection (full corpus) → capture_prompt_pairs → coverage → steering (Phase 3) → read features (Phase 4) → map (Phase 5).
