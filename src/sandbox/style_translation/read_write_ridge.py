@@ -36,9 +36,21 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, RESULTS_ROOT
 from src.sandbox.style_translation.family_groups import LEXICAL, FIXED
+from src.sandbox.style_translation.models import paths as model_paths
 
 PAIRS = ARTIFACTS_ROOT / "style_translation" / "prompt_pairs"
 OUT = RESULTS_ROOT / "style_translation" / "read_write_map"
+
+
+def configure(model="gptj"):
+    global PAIRS, OUT
+    MP = model_paths(model); PAIRS, OUT = MP["prompt_pairs"], MP["results"] / "read_write_map"
+
+
+# axis clusters for the stratified split / within-axis reporting (plan 2026-09-14)
+AXES = {"british": ["us_uk", "ise_ize", "uk_vocab", "brit_t_past"], "portuguese": ["pt_acordo_eu", "pt_br_eu"], "chinese": ["zh_simp_trad", "zh_tw_hk"],
+        "digits": ["num_words", "ordinal_words", "unit_abbr"]}
+AXIS_OF = {f: a for a, fs in AXES.items() for f in fs}
 LAMBDA_GRID = np.logspace(-2, 8, 21)
 ORIGINAL_LEX = ("us_uk", "ise_ize", "brit_t_past", "contractions", "num_words", "ordinal_words")   # the 17-family study
 
@@ -122,8 +134,14 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--read_layer", type=int, default=0)
     ap.add_argument("--write_layer", type=int, default=24)
+    ap.add_argument("--model", default="gptj")
+    ap.add_argument("--pool", nargs="*", default=None, help="Phase-5 mode: families of the pool (LOFO + fixed stratified split) instead of identical→diverse")
+    ap.add_argument("--fixed_split", default=None, help="JSON file {train:[...], test:[...]} for the fixed split (written on first use if absent)")
     args = ap.parse_args()
+    configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
+    if args.pool:
+        return pool_mode(args)
     LEX = [f for f in LEXICAL if f in ORIGINAL_LEX and (PAIRS / f"{f}.npz").exists()]
     FIX = [f for f in FIXED if (PAIRS / f"{f}.npz").exists()]
     print(f"train (lexically identical): {FIX}\ntest (lexically diverse): {LEX}")
@@ -187,6 +205,69 @@ def main():
     with open(OUT / "lambda_curve.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(curve[0])); w.writeheader(); w.writerows(curve)
     plot(rows, per_rows, curve, lr, lw)
+
+
+def pool_mode(args):
+    """LOFO over the pool + one fixed stratified split; λ by leave-one-family-out CV in the training set."""
+    import json as _json
+    lr, lw = args.read_layer, args.write_layer
+    pool = [f for f in args.pool if (PAIRS / f"{f}.npz").exists()]
+    print(f"pool ({len(pool)}): {pool}")
+    Xa, Ya, fa, pa = load(pool, lr, lw)
+    grid = LAMBDA_GRID[::2]
+    rows, per_rows = [], []
+    rng = np.random.default_rng(0)
+    for f in pool:
+        m = fa == f
+        cv = group_cv(Xa[~m], Ya[~m], fa[~m], grid); lam = grid[int(np.argmax(cv))]
+        R = DualRidge(Xa[~m], Ya[~m]).fit(lam)
+        o, per = evaluate(R, Xa[m], Ya[m], fa[m], pa[m], f"lofo|{f}")
+        Xsh = Xa[~m][rng.permutation((~m).sum())]
+        osh, _ = evaluate(DualRidge(Xsh, Ya[~m]).fit(lam), Xa[m], Ya[m], fa[m], pa[m], f"lofo-shuffled|{f}")
+        axis = AXIS_OF.get(f); mates = [g for g in pool if g != f and AXIS_OF.get(g) == axis] if axis else []
+        o.update(protocol="lofo", family=f, axis=axis or "-", axis_mates_in_train=len(mates), cv_r2=float(cv.max()), shuffled_cos_diff=osh["cos_diff_mean"],
+                 shuffled_r2_trainmean=osh["r2_trainmean"], read_layer=lr, write_layer=lw); rows.append(o)
+        per_rows += [dict(protocol="lofo", **x) for x in per]
+        print(f"LOFO {f:14s} axis={axis or '-':10s} mates={len(mates)} λ={lam:8.3g} R²(train-mean) {o['r2_trainmean']:+.3f} within {o['r2_within']:+.3f} "
+              f"convention cos {o['cos_diff_mean']:.2f} (shuffled {osh['cos_diff_mean']:.2f}) R² {o['r2_diff']:+.3f}", flush=True)
+    # fixed stratified split: 1/3 test, each axis with ≥1 member on both sides where possible
+    split_path = Path(args.fixed_split) if args.fixed_split else OUT / "fixed_split.json"
+    if split_path.exists():
+        sp = _json.load(open(split_path)); train, test = [f for f in sp["train"] if f in pool], [f for f in sp["test"] if f in pool]
+    else:
+        srng = np.random.default_rng(2026); test = []
+        for a, fs in AXES.items():
+            fs = [f for f in fs if f in pool]
+            if len(fs) >= 2: test.append(str(srng.choice(fs)))
+        rest = [f for f in pool if f not in test and f not in AXIS_OF]
+        n_test = max(len(pool) // 3, len(test)); extra = list(srng.choice(rest, size=max(0, n_test - len(test)), replace=False)) if rest else []
+        test = sorted(test + [str(x) for x in extra]); train = [f for f in pool if f not in test]
+        _json.dump({"train": train, "test": test, "note": "stratified by AXES, seed 2026, written before fitting"}, open(split_path, "w"), indent=1)
+    print(f"\nfixed split: train {train}\n             test  {test}")
+    mtr, mte = np.isin(fa, train), np.isin(fa, test)
+    cv = group_cv(Xa[mtr], Ya[mtr], fa[mtr], grid); lam = grid[int(np.argmax(cv))]
+    R = DualRidge(Xa[mtr], Ya[mtr]).fit(lam)
+    o, per = evaluate(R, Xa[mte], Ya[mte], fa[mte], pa[mte], "fixed")
+    Xsh = Xa[mtr][rng.permutation(mtr.sum())]
+    osh, _ = evaluate(DualRidge(Xsh, Ya[mtr]).fit(lam), Xa[mte], Ya[mte], fa[mte], pa[mte], "fixed-shuffled")
+    o.update(protocol="fixed", family="ALL", axis="-", axis_mates_in_train=-1, cv_r2=float(cv.max()), shuffled_cos_diff=osh["cos_diff_mean"],
+             shuffled_r2_trainmean=osh["r2_trainmean"], read_layer=lr, write_layer=lw); rows.append(o)
+    per_rows += [dict(protocol="fixed", **x) for x in per]
+    print(f"FIXED  λ={lam:8.3g} R²(train-mean) {o['r2_trainmean']:+.3f} R²(test-mean) {o['r2_testmean']:+.3f} within {o['r2_within']:+.3f} | "
+          f"convention cos {o['cos_diff_mean']:.2f} (shuffled {osh['cos_diff_mean']:.2f}) R² {o['r2_diff']:+.3f}")
+    for x in per:
+        f = x["family"]; axis = AXIS_OF.get(f); mates = [g for g in train if AXIS_OF.get(g) == axis] if axis else []
+        print(f"    {f:14s} axis={axis or '-':10s} mates in train={len(mates)} cos {x['cos_diff']:.2f} R² {x['r2_diff']:+.3f} |pred|/|true| {x['norm_ratio']:.2f}")
+    with open(OUT / f"pool_summary_L{lr}_L{lw}.csv", "w", newline="") as fh:
+        keys = sorted({k for r in rows for k in r}, key=lambda k: (k != "protocol", k != "family", k)); w = csv.DictWriter(fh, fieldnames=keys); w.writeheader(); w.writerows(rows)
+    with open(OUT / f"pool_per_family_L{lr}_L{lw}.csv", "w", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(per_rows[0])); w.writeheader(); w.writerows(per_rows)
+    lofo = [r for r in rows if r["protocol"] == "lofo"]
+    wa = [r for r in lofo if r["axis_mates_in_train"] > 0]; xa = [r for r in lofo if r["axis_mates_in_train"] == 0]
+    print(f"\nLOFO mean: R²(train-mean) {np.mean([r['r2_trainmean'] for r in lofo]):+.3f} | convention cos {np.mean([r['cos_diff_mean'] for r in lofo]):.2f} "
+          f"(shuffled {np.mean([r['shuffled_cos_diff'] for r in lofo]):.2f}) | within-axis hold-outs ({len(wa)}) cos {np.mean([r['cos_diff_mean'] for r in wa]) if wa else float('nan'):.2f} | "
+          f"cross-axis hold-outs ({len(xa)}) cos {np.mean([r['cos_diff_mean'] for r in xa]) if xa else float('nan'):.2f}")
+    print("->", OUT)
 
 
 def plot(rows, per_rows, curve, lr, lw):

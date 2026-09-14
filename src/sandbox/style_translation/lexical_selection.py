@@ -34,9 +34,14 @@ for f in LEXICAL:
     if np.isnan(a): continue
     items.append(dict(family=f, group="English", lang="English", nat=a, alt=b, n=n, nat_label=FAMILY[f].nat, alt_label=FAMILY[f].alt))
 for fm in ML_FAMILIES:
-    (a, n), (b, _) = get(ml, fm.name, "nat"), get(ml, fm.name, "alt")
+    (a, n), (b, _) = get(en, fm.name, "nat"), get(en, fm.name, "alt")          # full corpus (summary.csv) if step 3 has run
+    src = "full"
+    if np.isnan(a):
+        (a, n), (b, _) = get(ml, fm.name, "nat"), get(ml, fm.name, "alt"); src = "cheap"
     if np.isnan(a): continue
-    items.append(dict(family=fm.name, group="non-English", lang=fm.tgt_lang, nat=a, alt=b, n=n, nat_label=fm.nat, alt_label=fm.alt))
+    items.append(dict(family=fm.name, group="non-English", lang=fm.tgt_lang, nat=a, alt=b, n=n, nat_label=fm.nat, alt_label=fm.alt, source=src))
+for it in items:
+    it.setdefault("source", "full")
 for it in items:
     it["min"] = min(it["nat"], it["alt"]); it["accept"] = it["min"] >= CUT
 items.sort(key=lambda it: (it["group"] != "English", -it["min"]))
@@ -57,7 +62,9 @@ from matplotlib.patches import Patch
 ax.set_xticks(x); ax.set_xticklabels([f"{it['family']}\n({it['lang']})" if it["group"] != "English" else it["family"] for it in items], rotation=40, ha="right", fontsize=9)
 ax.set_ylim(0, 1.08); ax.set_ylabel("accuracy at k = 4  (uses the context's convention ∧ faithful)"); ax.grid(axis="y", alpha=0.3)
 ax.text((n_en - 1) / 2, 1.04, f"English target (200 texts per family) — {sum(it['accept'] for it in items if it['group']=='English')} of {n_en} accepted", ha="center", fontsize=10.5, fontweight="bold")
-ax.text(n_en + (len(items) - n_en - 1) / 2, 1.04, f"non-English target (cheap check, 45–60 texts) — {sum(it['accept'] for it in items if it['group']!='English')} of {len(items)-n_en} accepted", ha="center", fontsize=10.5, fontweight="bold")
+_ne = [it for it in items if it["group"] != "English"]
+_lab = "full corpus" if all(it["source"] == "full" for it in _ne) else ("cheap check, 45–60 texts" if all(it["source"] == "cheap" for it in _ne) else "full corpus where available, else cheap check")
+ax.text(n_en + (len(items) - n_en - 1) / 2, 1.04, f"non-English target ({_lab}) — {sum(it['accept'] for it in _ne)} of {len(_ne)} accepted", ha="center", fontsize=10.5, fontweight="bold")
 ax.set_ylim(0, 1.10)
 h, l = ax.get_legend_handles_labels()
 h.append(Patch(facecolor="#f3d6d6", edgecolor="none")); l.append("rejected: at least one pole below the cutoff")

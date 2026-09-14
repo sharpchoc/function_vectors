@@ -31,7 +31,7 @@ Gemini 2.5 Flash faithful/coherent judge with source/target language filled in a
 | uk_2019 | Ukrainian (2019 orthography) | .05 → .05 | .43 → .30 | .55 | .53 | .38 | not learned; judge-limited |
 
 Files: `k4_check.png` (bars = k = 4 accuracy per pole, black ticks = style-only rate, hollow circles = k = 0 baseline),
-`k4_check.csv`. Rollouts: `artifacts/style_translation/qwen25_base/rollouts/<family>.json` (k ∈ {0, 4} only); pairs:
+`k4_check.csv`. Rollouts: `artifacts/style_translation/qwen25_base/rollouts_cheap_k4/<family>.json` (k ∈ {0, 4} only; moved out of `rollouts/` on 2026-09-14 so the full-protocol step-3 files can take their place); pairs:
 `dataset_files/style_translation/pairs/<family>.json` (with `langs`); raw adaptations: `dataset_files/style_translation/multilingual/`.
 Pod o9guv3c5v632z6 (~12 min, terminated); 2,260 completions, 2,260 verdicts, 0 failures.
 
