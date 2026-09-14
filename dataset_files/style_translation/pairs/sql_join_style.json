@@ -1,0 +1,6155 @@
+[
+{
+"doc_id": "sql_join_style__t001",
+"family": "sql_join_style",
+"topic": "Basic Customer Orders",
+"angle": "code",
+"text_es": "Schema: Customers (customer_id INT, name VARCHAR, email VARCHAR), Orders (order_id INT, customer_id INT, order_date DATE, total_amount DECIMAL).\n\nQueries:\n1. Select all customers.\n2. Find all orders placed by a specific customer (e.g., customer_id = 1).\n3. Calculate the total amount of all orders.\n4. Insert a new customer.\n5. Update a customer's email address.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT * FROM Customers;\n\nSELECT Orders.*, Customers.name\nFROM Orders\nJOIN Customers ON Orders.customer_id = Customers.customer_id\nWHERE Orders.customer_id = 1;\n\nSELECT SUM(total_amount) AS total_orders_amount FROM Orders;\n\nINSERT INTO Customers (customer_id, name, email) VALUES (4, 'Jane Doe', 'jane.doe@example.com');\n\nUPDATE Customers\nSET email = 'new.email@example.com'\nFROM Customers AS C\nJOIN Orders AS O ON C.customer_id = O.customer_id\nWHERE C.customer_id = 2;\n\nSELECT C.name, O.order_id, O.order_date\nFROM Customers AS C\nJOIN Orders AS O ON C.customer_id = O.customer_id\nWHERE C.name = 'Alice Smith';\n",
+"text_alt": "SELECT * FROM Customers;\n\nSELECT Orders.*, Customers.name\nFROM Orders, Customers\nWHERE Orders.customer_id = Customers.customer_id\nAND Orders.customer_id = 1;\n\nSELECT SUM(total_amount) AS total_orders_amount FROM Orders;\n\nINSERT INTO Customers (customer_id, name, email) VALUES (4, 'Jane Doe', 'jane.doe@example.com');\n\nUPDATE Customers\nSET email = 'new.email@example.com'\nFROM Customers AS C, Orders AS O\nWHERE C.customer_id = O.customer_id\nAND C.customer_id = 2;\n\nSELECT C.name, O.order_id, O.order_date\nFROM Customers AS C, Orders AS O\nWHERE C.customer_id = O.customer_id\nAND C.name = 'Alice Smith';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN Customers ON",
+"alt": ", Customers\nWHERE",
+"nat_span": [
+69,
+87
+],
+"alt_span": [
+69,
+86
+]
+},
+{
+"k": 1,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+131,
+136
+],
+"alt_span": [
+130,
+133
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+394,
+399
+],
+"alt_span": [
+391,
+392
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+411,
+414
+],
+"alt_span": [
+404,
+410
+]
+},
+{
+"k": 4,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+445,
+450
+],
+"alt_span": [
+441,
+444
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+530,
+535
+],
+"alt_span": [
+524,
+525
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+547,
+550
+],
+"alt_span": [
+537,
+543
+]
+},
+{
+"k": 7,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+581,
+586
+],
+"alt_span": [
+574,
+577
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.934,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t003",
+"family": "sql_join_style",
+"topic": "Employee Department Tracking",
+"angle": "code",
+"text_es": "Schema: Employees (employee_id INT, first_name VARCHAR, last_name VARCHAR, department_id INT, salary DECIMAL), Departments (department_id INT, department_name VARCHAR, location VARCHAR).\n\nQueries:\n1. Select all employees and their department names.\n2. Find employees in a specific department (e.g., 'Sales').\n3. Calculate the average salary per department.\n4. Insert a new employee.\n5. Update an employee's department.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT e.employee_id, e.first_name, e.last_name, d.department_name\nFROM Employees e\nJOIN Departments d ON e.department_id = d.department_id;\n\nSELECT e.employee_id, e.first_name, e.last_name, d.department_name\nFROM Employees e\nJOIN Departments d ON e.department_id = d.department_id\nWHERE d.department_name = 'Sales';\n\nSELECT d.department_name, AVG(e.salary) AS average_salary\nFROM Employees e\nJOIN Departments d ON e.department_id = d.department_id\nGROUP BY d.department_name;\n\nINSERT INTO Employees (employee_id, first_name, last_name, department_id, salary)\nVALUES (101, 'John', 'Doe', (SELECT department_id FROM Departments WHERE department_name = 'Sales'), 60000.00);\n\nUPDATE Employees\nSET department_id = (SELECT d.department_id FROM Departments d WHERE d.department_name = 'Marketing')\nWHERE employee_id = 101;\n",
+"text_alt": "SELECT e.employee_id, e.first_name, e.last_name, d.department_name\nFROM Employees e, Departments d\nWHERE e.department_id = d.department_id;\n\nSELECT e.employee_id, e.first_name, e.last_name, d.department_name\nFROM Employees e, Departments d\nWHERE e.department_id = d.department_id\nAND d.department_name = 'Sales';\n\nSELECT d.department_name, AVG(e.salary) AS average_salary\nFROM Employees e, Departments d\nWHERE e.department_id = d.department_id\nGROUP BY d.department_name;\n\nINSERT INTO Employees (employee_id, first_name, last_name, department_id, salary)\nVALUES (101, 'John', 'Doe', (SELECT department_id FROM Departments WHERE department_name = 'Sales'), 60000.00);\n\nUPDATE Employees\nSET department_id = (SELECT d.department_id FROM Departments d WHERE d.department_name = 'Marketing')\nWHERE employee_id = 101;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+83,
+88
+],
+"alt_span": [
+83,
+84
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+102,
+105
+],
+"alt_span": [
+98,
+104
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+225,
+230
+],
+"alt_span": [
+224,
+225
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+244,
+247
+],
+"alt_span": [
+239,
+245
+]
+},
+{
+"k": 4,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+282,
+287
+],
+"alt_span": [
+280,
+283
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+392,
+397
+],
+"alt_span": [
+388,
+389
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+411,
+414
+],
+"alt_span": [
+403,
+409
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.951,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t004",
+"family": "sql_join_style",
+"topic": "Student Course Enrollment",
+"angle": "code",
+"text_es": "Schema: Students (student_id INT, first_name VARCHAR, last_name VARCHAR, major VARCHAR), Courses (course_id INT, course_name VARCHAR, credits INT), Enrollments (enrollment_id INT, student_id INT, course_id INT, grade VARCHAR).\n\nQueries:\n1. List all students and the courses they are enrolled in.\n2. Find all students enrolled in a specific course (e.g., 'Calculus I').\n3. Calculate the number of students per major.\n4. Enroll a student in a new course.\n5. Update a student's grade in a course.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n  s.first_name,\n  s.last_name,\n  c.course_name\nFROM Students AS s\nJOIN Enrollments AS e\n  ON s.student_id = e.student_id\nJOIN Courses AS c\n  ON e.course_id = c.course_id;\n\nSELECT\n  s.first_name,\n  s.last_name\nFROM Students AS s\nJOIN Enrollments AS e\n  ON s.student_id = e.student_id\nJOIN Courses AS c\n  ON e.course_id = c.course_id\nWHERE\n  c.course_name = 'Calculus I';\n\nSELECT\n  s.major,\n  COUNT(s.student_id) AS number_of_students\nFROM Students AS s\nGROUP BY\n  s.major;\n\nINSERT INTO Enrollments (\n  student_id,\n  course_id,\n  grade\n)\nSELECT\n  s.student_id,\n  c.course_id,\n  NULL\nFROM Students AS s\nJOIN Courses AS c\n  ON c.course_name = 'History of Art'\nWHERE\n  s.first_name = 'Alice' AND s.last_name = 'Smith';\n\nUPDATE Enrollments\nSET\n  grade = 'A'\nFROM Enrollments AS e\nJOIN Students AS s\n  ON e.student_id = s.student_id\nJOIN Courses AS c\n  ON e.course_id = c.course_id\nWHERE\n  s.first_name = 'Alice' AND s.last_name = 'Smith' AND c.course_name = 'History of Art';\n",
+"text_alt": "SELECT\n  s.first_name,\n  s.last_name,\n  c.course_name\nFROM Students AS s, Enrollments AS e, Courses AS c\nWHERE s.student_id = e.student_id\n  AND e.course_id = c.course_id;\n\nSELECT\n  s.first_name,\n  s.last_name\nFROM Students AS s, Enrollments AS e, Courses AS c\nWHERE s.student_id = e.student_id\n  AND e.course_id = c.course_id\n  AND c.course_name = 'Calculus I';\n\nSELECT\n  s.major,\n  COUNT(s.student_id) AS number_of_students\nFROM Students AS s\nGROUP BY\n  s.major;\n\nINSERT INTO Enrollments (\n  student_id,\n  course_id,\n  grade\n)\nSELECT\n  s.student_id,\n  c.course_id,\n  NULL\nFROM Students AS s, Courses AS c\nWHERE c.course_name = 'History of Art'\n  AND s.first_name = 'Alice' AND s.last_name = 'Smith';\n\nUPDATE Enrollments\nSET\n  grade = 'A'\nFROM Enrollments AS e, Students AS s, Courses AS c\nWHERE e.student_id = s.student_id\n  AND e.course_id = c.course_id\n  AND s.first_name = 'Alice' AND s.last_name = 'Smith' AND c.course_name = 'History of Art';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+72,
+77
+],
+"alt_span": [
+72,
+73
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": ", Courses AS c\nWHERE",
+"nat_span": [
+94,
+99
+],
+"alt_span": [
+90,
+110
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Courses AS c\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+127,
+150
+],
+"alt_span": [
+138,
+144
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+234,
+239
+],
+"alt_span": [
+228,
+229
+]
+},
+{
+"k": 4,
+"nat": "\n  ON",
+"alt": ", Courses AS c\nWHERE",
+"nat_span": [
+256,
+261
+],
+"alt_span": [
+246,
+266
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN Courses AS c\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+289,
+312
+],
+"alt_span": [
+294,
+300
+]
+},
+{
+"k": 6,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+338,
+347
+],
+"alt_span": [
+326,
+333
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+606,
+611
+],
+"alt_span": [
+592,
+593
+]
+},
+{
+"k": 8,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+624,
+629
+],
+"alt_span": [
+606,
+612
+]
+},
+{
+"k": 9,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+662,
+671
+],
+"alt_span": [
+645,
+652
+]
+},
+{
+"k": 10,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+780,
+785
+],
+"alt_span": [
+761,
+762
+]
+},
+{
+"k": 11,
+"nat": "\n  ON",
+"alt": ", Courses AS c\nWHERE",
+"nat_span": [
+799,
+804
+],
+"alt_span": [
+776,
+796
+]
+},
+{
+"k": 12,
+"nat": "\nJOIN Courses AS c\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+832,
+855
+],
+"alt_span": [
+824,
+830
+]
+},
+{
+"k": 13,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+881,
+890
+],
+"alt_span": [
+856,
+863
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.866,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t005",
+"family": "sql_join_style",
+"topic": "Book Library System",
+"angle": "code",
+"text_es": "Schema: Books (book_id INT, title VARCHAR, author VARCHAR, publication_year INT), Borrowings (borrowing_id INT, book_id INT, borrower_name VARCHAR, borrow_date DATE, return_date DATE).\n\nQueries:\n1. Select all books and their authors.\n2. Find all books borrowed by a specific borrower (e.g., 'Alice Smith').\n3. Count the number of books published before a certain year (e.g., 2000).\n4. Add a new book to the library.\n5. Record a book return.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "-- 1. Select all books and their authors.\nSELECT book_id, title, author FROM Books;\n\n-- 2. Find all books borrowed by a specific borrower ('Alice Smith').\nSELECT B.title, B.author\nFROM Books AS B\nJOIN Borrowings AS BR ON B.book_id = BR.book_id\nWHERE BR.borrower_name = 'Alice Smith';\n\n-- 3. Count the number of books published before a certain year (e.g., 2000).\nSELECT COUNT(book_id)\nFROM Books\nWHERE publication_year < 2000;\n\n-- 4. Add a new book to the library.\nINSERT INTO Books (book_id, title, author, publication_year)\nVALUES (101, 'The Great Adventure', 'John Doe', 2023);\n\n-- 5. Record a book return.\n-- Assuming we want to mark a specific borrowing record as returned.\nUPDATE Borrowings\nSET return_date = CURRENT_DATE\nWHERE borrowing_id = 5\nAND book_id = (SELECT B.book_id FROM Books AS B JOIN Borrowings AS BR ON B.book_id = BR.book_id WHERE BR.borrowing_id = 5);\n\n-- Example of another join, e.g., to find books currently borrowed:\nSELECT B.title, B.author, BR.borrower_name\nFROM Books AS B\nJOIN Borrowings AS BR ON B.book_id = BR.book_id\nWHERE BR.return_date IS NULL;\n\n-- Example of another join, e.g., to list all borrowings with book details:\nSELECT BR.borrowing_id, B.title, B.author, BR.borrower_name, BR.borrow_date, BR.return_date\nFROM Borrowings AS BR\nJOIN Books AS B ON BR.book_id = B.book_id;\n",
+"text_alt": "-- 1. Select all books and their authors.\nSELECT book_id, title, author FROM Books;\n\n-- 2. Find all books borrowed by a specific borrower ('Alice Smith').\nSELECT B.title, B.author\nFROM Books AS B, Borrowings AS BR\nWHERE B.book_id = BR.book_id\nAND BR.borrower_name = 'Alice Smith';\n\n-- 3. Count the number of books published before a certain year (e.g., 2000).\nSELECT COUNT(book_id)\nFROM Books\nWHERE publication_year < 2000;\n\n-- 4. Add a new book to the library.\nINSERT INTO Books (book_id, title, author, publication_year)\nVALUES (101, 'The Great Adventure', 'John Doe', 2023);\n\n-- 5. Record a book return.\n-- Assuming we want to mark a specific borrowing record as returned.\nUPDATE Borrowings\nSET return_date = CURRENT_DATE\nWHERE borrowing_id = 5\nAND book_id = (SELECT B.book_id FROM Books AS B, Borrowings AS BR WHERE B.book_id = BR.book_id AND BR.borrowing_id = 5);\n\n-- Example of another join, e.g., to find books currently borrowed:\nSELECT B.title, B.author, BR.borrower_name\nFROM Books AS B, Borrowings AS BR\nWHERE B.book_id = BR.book_id\nAND BR.return_date IS NULL;\n\n-- Example of another join, e.g., to list all borrowings with book details:\nSELECT BR.borrowing_id, B.title, B.author, BR.borrower_name, BR.borrow_date, BR.return_date\nFROM Borrowings AS BR, Books AS B\nWHERE BR.book_id = B.book_id;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+195,
+200
+],
+"alt_span": [
+195,
+196
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+217,
+220
+],
+"alt_span": [
+213,
+219
+]
+},
+{
+"k": 2,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+244,
+249
+],
+"alt_span": [
+243,
+246
+]
+},
+{
+"k": 3,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+798,
+803
+],
+"alt_span": [
+795,
+796
+]
+},
+{
+"k": 4,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+821,
+823
+],
+"alt_span": [
+814,
+819
+]
+},
+{
+"k": 5,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+847,
+852
+],
+"alt_span": [
+843,
+846
+]
+},
+{
+"k": 6,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1002,
+1007
+],
+"alt_span": [
+996,
+997
+]
+},
+{
+"k": 7,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+1024,
+1027
+],
+"alt_span": [
+1014,
+1020
+]
+},
+{
+"k": 8,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1051,
+1056
+],
+"alt_span": [
+1044,
+1047
+]
+},
+{
+"k": 9,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1271,
+1276
+],
+"alt_span": [
+1262,
+1263
+]
+},
+{
+"k": 10,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+1287,
+1290
+],
+"alt_span": [
+1274,
+1280
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.966,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t006",
+"family": "sql_join_style",
+"topic": "Event RSVP Management",
+"angle": "code",
+"text_es": "Schema: Events (event_id INT, event_name VARCHAR, event_date DATE, location VARCHAR), RSVPs (rsvp_id INT, event_id INT, participant_name VARCHAR, attendance_status VARCHAR).\n\nQueries:\n1. List all events and their locations.\n2. Find all participants for a specific event (e.g., 'Annual Gala').\n3. Count the number of 'Attending' RSVPs for each event.\n4. Add a new event.\n5. Update a participant's RSVP status.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "-- 1. List all events and their locations.\nSELECT event_name, location\nFROM Events;\n\n-- 2. Find all participants for a specific event (e.g., 'Annual Gala').\nSELECT P.participant_name\nFROM RSVPs AS P\nJOIN Events AS E ON P.event_id = E.event_id\nWHERE E.event_name = 'Annual Gala';\n\n-- 3. Count the number of 'Attending' RSVPs for each event.\nSELECT E.event_name, COUNT(R.rsvp_id) AS attending_count\nFROM Events AS E\nJOIN RSVPs AS R ON E.event_id = R.event_id\nWHERE R.attendance_status = 'Attending'\nGROUP BY E.event_name;\n\n-- 4. Add a new event.\nINSERT INTO Events (event_name, event_date, location)\nVALUES ('Tech Conference', '2024-11-15', 'Convention Center');\n\n-- 5. Update a participant's RSVP status.\nUPDATE RSVPs\nSET attendance_status = 'Attending'\nWHERE participant_name = 'Alice Smith' AND event_id = (SELECT event_id FROM Events WHERE event_name = 'Annual Gala');\n",
+"text_alt": "-- 1. List all events and their locations.\nSELECT event_name, location\nFROM Events;\n\n-- 2. Find all participants for a specific event (e.g., 'Annual Gala').\nSELECT P.participant_name\nFROM RSVPs AS P, Events AS E\nWHERE P.event_id = E.event_id\nAND E.event_name = 'Annual Gala';\n\n-- 3. Count the number of 'Attending' RSVPs for each event.\nSELECT E.event_name, COUNT(R.rsvp_id) AS attending_count\nFROM Events AS E, RSVPs AS R\nWHERE E.event_id = R.event_id\nAND R.attendance_status = 'Attending'\nGROUP BY E.event_name;\n\n-- 4. Add a new event.\nINSERT INTO Events (event_name, event_date, location)\nVALUES ('Tech Conference', '2024-11-15', 'Convention Center');\n\n-- 5. Update a participant's RSVP status.\nUPDATE RSVPs\nSET attendance_status = 'Attending'\nWHERE participant_name = 'Alice Smith' AND event_id = (SELECT event_id FROM Events WHERE event_name = 'Annual Gala');\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+198,
+203
+],
+"alt_span": [
+198,
+199
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+215,
+218
+],
+"alt_span": [
+211,
+217
+]
+},
+{
+"k": 2,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+243,
+248
+],
+"alt_span": [
+242,
+245
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+413,
+418
+],
+"alt_span": [
+410,
+411
+]
+},
+{
+"k": 4,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+429,
+432
+],
+"alt_span": [
+422,
+428
+]
+},
+{
+"k": 5,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+457,
+462
+],
+"alt_span": [
+453,
+456
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.971,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t007",
+"family": "sql_join_style",
+"topic": "Movie Rental Store",
+"angle": "code",
+"text_es": "Schema: Movies (movie_id INT, title VARCHAR, genre VARCHAR, release_year INT), Rentals (rental_id INT, movie_id INT, customer_id INT, rental_date DATE, return_date DATE).\n\nQueries:\n1. Select all movies and their genres.\n2. Find all movies rented by a specific customer (e.g., customer_id = 101).\n3. Count the number of movies per genre.\n4. Add a new movie.\n5. Record a movie return.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "INSERT INTO Movies (movie_id, title, genre, release_year) VALUES (1, 'Inception', 'Sci-Fi', 2010);\nINSERT INTO Movies (movie_id, title, genre, release_year) VALUES (2, 'The Dark Knight', 'Action', 2008);\nINSERT INTO Movies (movie_id, title, genre, release_year) VALUES (3, 'Pulp Fiction', 'Crime', 1994);\nINSERT INTO Movies (movie_id, title, genre, release_year) VALUES (4, 'Interstellar', 'Sci-Fi', 2014);\n\nINSERT INTO Rentals (rental_id, movie_id, customer_id, rental_date, return_date) VALUES (101, 1, 101, '2023-01-01', '2023-01-05');\nINSERT INTO Rentals (rental_id, movie_id, customer_id, rental_date, return_date) VALUES (102, 2, 102, '2023-01-02', '2023-01-06');\nINSERT INTO Rentals (rental_id, movie_id, customer_id, rental_date, return_date) VALUES (103, 3, 101, '2023-01-03', '2023-01-07');\nINSERT INTO Rentals (rental_id, movie_id, customer_id, rental_date, return_date) VALUES (104, 1, 103, '2023-01-04', NULL);\n\nSELECT title, genre\nFROM Movies;\n\nSELECT m.title, m.genre\nFROM Movies AS m\nJOIN Rentals AS r ON m.movie_id = r.movie_id\nWHERE r.customer_id = 101;\n\nSELECT genre, COUNT(movie_id) AS movie_count\nFROM Movies\nGROUP BY genre;\n\nINSERT INTO Movies (movie_id, title, genre, release_year)\nVALUES (5, 'The Matrix', 'Sci-Fi', 1999);\n\nUPDATE Rentals\nSET return_date = '2023-01-08'\nWHERE rental_id = 104;\n\nSELECT m.title, r.rental_date, r.return_date\nFROM Movies AS m\nJOIN Rentals AS r ON m.movie_id = r.movie_id\nWHERE r.return_date IS NOT NULL;\n\nSELECT m.title, m.release_year, r.rental_date\nFROM Movies AS m\nLEFT JOIN Rentals AS r ON m.movie_id = r.movie_id\nORDER BY m.release_year DESC;\n\nSELECT m.title, m.genre, COUNT(r.rental_id) AS rental_count\nFROM Movies AS m\nLEFT JOIN Rentals AS r ON m.movie_id = r.movie_id\nGROUP BY m.movie_id, m.title, m.genre\nORDER BY rental_count DESC;\n\nSELECT m.title, m.genre, r.rental_date\nFROM Movies AS m\nJOIN Rentals AS r ON m.movie_id = r.movie_id\nWHERE r.rental_date BETWEEN '2023-01-01' AND '2023-01-05';\n",
+"text_alt": "INSERT INTO Movies (movie_id, title, genre, release_year) VALUES (1, 'Inception', 'Sci-Fi', 2010);\nINSERT INTO Movies (movie_id, title, genre, release_year) VALUES (2, 'The Dark Knight', 'Action', 2008);\nINSERT INTO Movies (movie_id, title, genre, release_year) VALUES (3, 'Pulp Fiction', 'Crime', 1994);\nINSERT INTO Movies (movie_id, title, genre, release_year) VALUES (4, 'Interstellar', 'Sci-Fi', 2014);\n\nINSERT INTO Rentals (rental_id, movie_id, customer_id, rental_date, return_date) VALUES (101, 1, 101, '2023-01-01', '2023-01-05');\nINSERT INTO Rentals (rental_id, movie_id, customer_id, rental_date, return_date) VALUES (102, 2, 102, '2023-01-02', '2023-01-06');\nINSERT INTO Rentals (rental_id, movie_id, customer_id, rental_date, return_date) VALUES (103, 3, 101, '2023-01-03', '2023-01-07');\nINSERT INTO Rentals (rental_id, movie_id, customer_id, rental_date, return_date) VALUES (104, 1, 103, '2023-01-04', NULL);\n\nSELECT title, genre\nFROM Movies;\n\nSELECT m.title, m.genre\nFROM Movies AS m, Rentals AS r\nWHERE m.movie_id = r.movie_id\nAND r.customer_id = 101;\n\nSELECT genre, COUNT(movie_id) AS movie_count\nFROM Movies\nGROUP BY genre;\n\nINSERT INTO Movies (movie_id, title, genre, release_year)\nVALUES (5, 'The Matrix', 'Sci-Fi', 1999);\n\nUPDATE Rentals\nSET return_date = '2023-01-08'\nWHERE rental_id = 104;\n\nSELECT m.title, r.rental_date, r.return_date\nFROM Movies AS m, Rentals AS r\nWHERE m.movie_id = r.movie_id\nAND r.return_date IS NOT NULL;\n\nSELECT m.title, m.release_year, r.rental_date\nFROM Movies AS m LEFT JOIN Rentals AS r ON m.movie_id = r.movie_id\nORDER BY m.release_year DESC;\n\nSELECT m.title, m.genre, COUNT(r.rental_id) AS rental_count\nFROM Movies AS m LEFT JOIN Rentals AS r ON m.movie_id = r.movie_id\nGROUP BY m.movie_id, m.title, m.genre\nORDER BY rental_count DESC;\n\nSELECT m.title, m.genre, r.rental_date\nFROM Movies AS m, Rentals AS r\nWHERE m.movie_id = r.movie_id\nAND r.rental_date BETWEEN '2023-01-01' AND '2023-01-05';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+999,
+1004
+],
+"alt_span": [
+999,
+1000
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+1017,
+1020
+],
+"alt_span": [
+1013,
+1019
+]
+},
+{
+"k": 2,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1045,
+1050
+],
+"alt_span": [
+1044,
+1047
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1379,
+1384
+],
+"alt_span": [
+1376,
+1377
+]
+},
+{
+"k": 4,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+1397,
+1400
+],
+"alt_span": [
+1390,
+1396
+]
+},
+{
+"k": 5,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1425,
+1430
+],
+"alt_span": [
+1421,
+1424
+]
+},
+{
+"k": 6,
+"nat": "\n",
+"alt": " ",
+"nat_span": [
+1521,
+1522
+],
+"alt_span": [
+1515,
+1516
+]
+},
+{
+"k": 7,
+"nat": "\n",
+"alt": " ",
+"nat_span": [
+1679,
+1680
+],
+"alt_span": [
+1673,
+1674
+]
+},
+{
+"k": 8,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1852,
+1857
+],
+"alt_span": [
+1846,
+1847
+]
+},
+{
+"k": 9,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+1870,
+1873
+],
+"alt_span": [
+1860,
+1866
+]
+},
+{
+"k": 10,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1898,
+1903
+],
+"alt_span": [
+1891,
+1894
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.979,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t010",
+"family": "sql_join_style",
+"topic": "Restaurant Menu Management",
+"angle": "code",
+"text_es": "Schema: MenuItems (item_id INT, item_name VARCHAR, category VARCHAR, price DECIMAL), Orders (order_id INT, order_date DATE, total_amount DECIMAL), OrderItems (order_item_id INT, order_id INT, item_id INT, quantity INT).\n\nQueries:\n1. List all menu items and their prices.\n2. Find all items in a specific order (e.g., order_id = 200).\n3. Calculate the total revenue from all orders.\n4. Add a new menu item.\n5. Update the price of a menu item.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT item_name, price\nFROM MenuItems;\n\nSELECT mi.item_name, oi.quantity, mi.price\nFROM OrderItems oi\nJOIN MenuItems mi ON oi.item_id = mi.item_id\nWHERE oi.order_id = 200;\n\nSELECT SUM(o.total_amount) AS total_revenue\nFROM Orders o;\n\nINSERT INTO MenuItems (item_id, item_name, category, price)\nVALUES (101, 'Chicken Caesar Salad', 'Salads', 12.50);\n\nUPDATE MenuItems\nSET price = 15.75\nWHERE item_name = 'Chicken Caesar Salad';\n\nSELECT o.order_id, o.order_date, SUM(oi.quantity * mi.price) AS calculated_total\nFROM Orders o\nJOIN OrderItems oi ON o.order_id = oi.order_id\nJOIN MenuItems mi ON oi.item_id = mi.item_id\nGROUP BY o.order_id, o.order_date;\n\nSELECT mi.category, COUNT(oi.order_item_id) AS total_items_sold\nFROM MenuItems mi\nJOIN OrderItems oi ON mi.item_id = oi.item_id\nGROUP BY mi.category\nORDER BY total_items_sold DESC;\n",
+"text_alt": "SELECT item_name, price\nFROM MenuItems;\n\nSELECT mi.item_name, oi.quantity, mi.price\nFROM OrderItems oi, MenuItems mi\nWHERE oi.item_id = mi.item_id\nAND oi.order_id = 200;\n\nSELECT SUM(o.total_amount) AS total_revenue\nFROM Orders o;\n\nINSERT INTO MenuItems (item_id, item_name, category, price)\nVALUES (101, 'Chicken Caesar Salad', 'Salads', 12.50);\n\nUPDATE MenuItems\nSET price = 15.75\nWHERE item_name = 'Chicken Caesar Salad';\n\nSELECT o.order_id, o.order_date, SUM(oi.quantity * mi.price) AS calculated_total\nFROM Orders o, OrderItems oi, MenuItems mi\nWHERE o.order_id = oi.order_id\nAND oi.item_id = mi.item_id\nGROUP BY o.order_id, o.order_date;\n\nSELECT mi.category, COUNT(oi.order_item_id) AS total_items_sold\nFROM MenuItems mi, OrderItems oi\nWHERE mi.item_id = oi.item_id\nGROUP BY mi.category\nORDER BY total_items_sold DESC;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+102,
+107
+],
+"alt_span": [
+102,
+103
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+120,
+123
+],
+"alt_span": [
+116,
+122
+]
+},
+{
+"k": 2,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+148,
+153
+],
+"alt_span": [
+147,
+150
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+522,
+527
+],
+"alt_span": [
+519,
+520
+]
+},
+{
+"k": 4,
+"nat": " ON",
+"alt": ", MenuItems mi\nWHERE",
+"nat_span": [
+541,
+544
+],
+"alt_span": [
+534,
+554
+]
+},
+{
+"k": 5,
+"nat": "JOIN MenuItems mi ON",
+"alt": "AND",
+"nat_span": [
+570,
+590
+],
+"alt_span": [
+580,
+583
+]
+},
+{
+"k": 6,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+732,
+737
+],
+"alt_span": [
+725,
+726
+]
+},
+{
+"k": 7,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+751,
+754
+],
+"alt_span": [
+740,
+746
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.937,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t011",
+"family": "sql_join_style",
+"topic": "Software Bug Tracker",
+"angle": "code",
+"text_es": "Schema: Bugs (bug_id INT, title VARCHAR, description TEXT, status VARCHAR, assigned_to_user_id INT), Users (user_id INT, username VARCHAR, email VARCHAR).\n\nQueries:\n1. Select all bugs and their assigned users.\n2. Find all bugs with a specific status (e.g., 'Open').\n3. Count the number of bugs assigned to each user.\n4. Create a new bug report.\n5. Update the status of a bug.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n    b.bug_id,\n    b.title,\n    b.description,\n    b.status,\n    u.username AS assigned_to_username,\n    u.email AS assigned_to_email\nFROM Bugs AS b\nJOIN Users AS u\nON b.assigned_to_user_id = u.user_id;\n\nSELECT\n    b.bug_id,\n    b.title,\n    b.description,\n    b.status,\n    u.username\nFROM Bugs AS b\nJOIN Users AS u\nON b.assigned_to_user_id = u.user_id\nWHERE b.status = 'Open';\n\nSELECT\n    u.username,\n    COUNT(b.bug_id) AS bug_count\nFROM Users AS u\nLEFT JOIN Bugs AS b\nON u.user_id = b.assigned_to_user_id\nGROUP BY u.username\nORDER BY bug_count DESC;\n\nINSERT INTO Bugs (title, description, status, assigned_to_user_id)\nVALUES ('New Feature Request', 'Add a dark mode to the application.', 'New', (SELECT user_id FROM Users WHERE username = 'dev_user'));\n\nUPDATE Bugs\nSET status = 'Closed'\nWHERE bug_id = 101;\n",
+"text_alt": "SELECT\n    b.bug_id,\n    b.title,\n    b.description,\n    b.status,\n    u.username AS assigned_to_username,\n    u.email AS assigned_to_email\nFROM Bugs AS b, Users AS u\nWHERE b.assigned_to_user_id = u.user_id;\n\nSELECT\n    b.bug_id,\n    b.title,\n    b.description,\n    b.status,\n    u.username\nFROM Bugs AS b, Users AS u\nWHERE b.assigned_to_user_id = u.user_id\nAND b.status = 'Open';\n\nSELECT\n    u.username,\n    COUNT(b.bug_id) AS bug_count\nFROM Users AS u LEFT JOIN Bugs AS b\nON u.user_id = b.assigned_to_user_id\nGROUP BY u.username\nORDER BY bug_count DESC;\n\nINSERT INTO Bugs (title, description, status, assigned_to_user_id)\nVALUES ('New Feature Request', 'Add a dark mode to the application.', 'New', (SELECT user_id FROM Users WHERE username = 'dev_user'));\n\nUPDATE Bugs\nSET status = 'Closed'\nWHERE bug_id = 101;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+154,
+159
+],
+"alt_span": [
+154,
+155
+]
+},
+{
+"k": 1,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+171,
+173
+],
+"alt_span": [
+167,
+172
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+306,
+311
+],
+"alt_span": [
+305,
+306
+]
+},
+{
+"k": 3,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+323,
+325
+],
+"alt_span": [
+318,
+323
+]
+},
+{
+"k": 4,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+360,
+365
+],
+"alt_span": [
+358,
+361
+]
+},
+{
+"k": 5,
+"nat": "\n",
+"alt": " ",
+"nat_span": [
+457,
+458
+],
+"alt_span": [
+453,
+454
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.973,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t012",
+"family": "sql_join_style",
+"topic": "University Research Projects",
+"angle": "code",
+"text_es": "Schema: Projects (project_id INT, project_name VARCHAR, start_date DATE, end_date DATE, budget DECIMAL), Researchers (researcher_id INT, first_name VARCHAR, last_name VARCHAR, department VARCHAR), ProjectResearchers (project_id INT, researcher_id INT).\n\nQueries:\n1. List all projects and their associated researchers.\n2. Find all projects in a specific department (e.g., 'Computer Science').\n3. Calculate the total budget for all projects.\n4. Add a new research project.\n5. Assign a researcher to a project.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n    p.project_name,\n    r.first_name,\n    r.last_name\nFROM\n    Projects AS p\nJOIN\n    ProjectResearchers AS pr ON p.project_id = pr.project_id\nJOIN\n    Researchers AS r ON pr.researcher_id = r.researcher_id;\n\nSELECT\n    p.project_name\nFROM\n    Projects AS p\nJOIN\n    ProjectResearchers AS pr ON p.project_id = pr.project_id\nJOIN\n    Researchers AS r ON pr.researcher_id = r.researcher_id\nWHERE\n    r.department = 'Computer Science';\n\nSELECT\n    SUM(budget) AS total_budget\nFROM\n    Projects;\n\nINSERT INTO Projects (project_id, project_name, start_date, end_date, budget)\nVALUES (101, 'AI for Healthcare', '2023-01-01', '2024-12-31', 500000.00);\n\nINSERT INTO ProjectResearchers (project_id, researcher_id)\nVALUES (101, (SELECT researcher_id FROM Researchers WHERE first_name = 'Alice' AND last_name = 'Smith'));\n",
+"text_alt": "SELECT\n    p.project_name,\n    r.first_name,\n    r.last_name\nFROM\n    Projects AS p,\n    ProjectResearchers AS pr,\n    Researchers AS r\nWHERE\n    p.project_id = pr.project_id AND pr.researcher_id = r.researcher_id;\n\nSELECT\n    p.project_name\nFROM\n    Projects AS p,\n    ProjectResearchers AS pr,\n    Researchers AS r\nWHERE\n    p.project_id = pr.project_id AND pr.researcher_id = r.researcher_id\nAND\n    r.department = 'Computer Science';\n\nSELECT\n    SUM(budget) AS total_budget\nFROM\n    Projects;\n\nINSERT INTO Projects (project_id, project_name, start_date, end_date, budget)\nVALUES (101, 'AI for Healthcare', '2023-01-01', '2024-12-31', 500000.00);\n\nINSERT INTO ProjectResearchers (project_id, researcher_id)\nVALUES (101, (SELECT researcher_id FROM Researchers WHERE first_name = 'Alice' AND last_name = 'Smith'));\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+83,
+88
+],
+"alt_span": [
+83,
+84
+]
+},
+{
+"k": 1,
+"nat": " ON ",
+"alt": ",\n    Researchers AS r\nWHERE\n    ",
+"nat_span": [
+117,
+121
+],
+"alt_span": [
+113,
+146
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN\n    Researchers AS r ON",
+"alt": " AND",
+"nat_span": [
+149,
+178
+],
+"alt_span": [
+174,
+178
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+264,
+269
+],
+"alt_span": [
+264,
+265
+]
+},
+{
+"k": 4,
+"nat": " ON ",
+"alt": ",\n    Researchers AS r\nWHERE\n    ",
+"nat_span": [
+298,
+302
+],
+"alt_span": [
+294,
+327
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN\n    Researchers AS r ON",
+"alt": " AND",
+"nat_span": [
+330,
+359
+],
+"alt_span": [
+355,
+359
+]
+},
+{
+"k": 6,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+395,
+400
+],
+"alt_span": [
+395,
+398
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.905,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t013",
+"family": "sql_join_style",
+"topic": "Online Forum Posts",
+"angle": "code",
+"text_es": "Schema: Users (user_id INT, username VARCHAR, join_date DATE), Posts (post_id INT, user_id INT, title VARCHAR, content TEXT, post_date DATETIME).\n\nQueries:\n1. Select all posts and their authors.\n2. Find all posts by a specific user (e.g., username = 'TechGeek').\n3. Count the number of posts made by each user.\n4. Create a new forum post.\n5. Update the content of a post.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT p.post_id, p.title, p.content, p.post_date, u.username\nFROM Posts AS p\nJOIN Users AS u ON p.user_id = u.user_id;\n\nSELECT p.post_id, p.title, p.content, p.post_date, u.username\nFROM Posts AS p\nJOIN Users AS u ON p.user_id = u.user_id\nWHERE u.username = 'TechGeek';\n\nSELECT u.username, COUNT(p.post_id) AS number_of_posts\nFROM Users AS u\nLEFT JOIN Posts AS p ON u.user_id = p.user_id\nGROUP BY u.username;\n\nINSERT INTO Posts (user_id, title, content, post_date)\nSELECT user_id, 'New Forum Post Title', 'This is the content of the new forum post.', NOW()\nFROM Users\nWHERE username = 'TechGeek';\n\nUPDATE Posts\nSET content = 'Updated content for this post.'\nWHERE post_id = (\n    SELECT p.post_id\n    FROM Posts AS p\n    JOIN Users AS u ON p.user_id = u.user_id\n    WHERE u.username = 'TechGeek' AND p.title = 'New Forum Post Title'\n);\n",
+"text_alt": "SELECT p.post_id, p.title, p.content, p.post_date, u.username\nFROM Posts AS p, Users AS u\nWHERE p.user_id = u.user_id;\n\nSELECT p.post_id, p.title, p.content, p.post_date, u.username\nFROM Posts AS p, Users AS u\nWHERE p.user_id = u.user_id\nAND u.username = 'TechGeek';\n\nSELECT u.username, COUNT(p.post_id) AS number_of_posts\nFROM Users AS u\nLEFT JOIN Posts AS p ON u.user_id = p.user_id\nGROUP BY u.username;\n\nINSERT INTO Posts (user_id, title, content, post_date)\nSELECT user_id, 'New Forum Post Title', 'This is the content of the new forum post.', NOW()\nFROM Users\nWHERE username = 'TechGeek';\n\nUPDATE Posts\nSET content = 'Updated content for this post.'\nWHERE post_id = (\n    SELECT p.post_id\n    FROM Posts AS p, Users AS u\n    WHERE p.user_id = u.user_id\n    AND u.username = 'TechGeek' AND p.title = 'New Forum Post Title'\n);\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+77,
+82
+],
+"alt_span": [
+77,
+78
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+93,
+96
+],
+"alt_span": [
+89,
+95
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+198,
+203
+],
+"alt_span": [
+197,
+198
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+214,
+217
+],
+"alt_span": [
+209,
+215
+]
+},
+{
+"k": 4,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+240,
+245
+],
+"alt_span": [
+238,
+241
+]
+},
+{
+"k": 5,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+717,
+726
+],
+"alt_span": [
+713,
+714
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": "\n    WHERE",
+"nat_span": [
+737,
+740
+],
+"alt_span": [
+725,
+735
+]
+},
+{
+"k": 7,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+767,
+772
+],
+"alt_span": [
+762,
+765
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.96,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t015",
+"family": "sql_join_style",
+"topic": "Music Streaming Playlists",
+"angle": "code",
+"text_es": "Schema: Artists (artist_id INT, artist_name VARCHAR, genre VARCHAR), Songs (song_id INT, title VARCHAR, artist_id INT, duration_seconds INT), Playlists (playlist_id INT, playlist_name VARCHAR, user_id INT), PlaylistSongs (playlist_id INT, song_id INT).\n\nQueries:\n1. Select all songs and their artists.\n2. Find all songs in a specific playlist (e.g., 'Workout Jams').\n3. Count the number of songs by each artist.\n4. Add a new song.\n5. Add a song to a playlist.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT s.title, a.artist_name\nFROM Songs s JOIN Artists a ON s.artist_id = a.artist_id;\n\nSELECT s.title, a.artist_name\nFROM Songs s JOIN Artists a ON s.artist_id = a.artist_id\nJOIN PlaylistSongs ps ON s.song_id = ps.song_id\nJOIN Playlists p ON ps.playlist_id = p.playlist_id\nWHERE p.playlist_name = 'Workout Jams';\n\nSELECT a.artist_name, COUNT(s.song_id) AS song_count\nFROM Artists a JOIN Songs s ON a.artist_id = s.artist_id\nGROUP BY a.artist_name;\n\nINSERT INTO Songs (song_id, title, artist_id, duration_seconds)\nVALUES (104, 'New Day', 1, 240);\n\nINSERT INTO PlaylistSongs (playlist_id, song_id)\nSELECT p.playlist_id, s.song_id\nFROM Playlists p JOIN Songs s ON s.title = 'New Day'\nWHERE p.playlist_name = 'Morning Mix';\n",
+"text_alt": "SELECT s.title, a.artist_name\nFROM Songs s, Artists a \nWHERE s.artist_id = a.artist_id;\n\nSELECT s.title, a.artist_name\nFROM Songs s, Artists a, PlaylistSongs ps, Playlists p \nWHERE s.artist_id = a.artist_id\nAND s.song_id = ps.song_id\nAND ps.playlist_id = p.playlist_id\nAND p.playlist_name = 'Workout Jams';\n\nSELECT a.artist_name, COUNT(s.song_id) AS song_count\nFROM Artists a, Songs s \nWHERE a.artist_id = s.artist_id\nGROUP BY a.artist_name;\n\nINSERT INTO Songs (song_id, title, artist_id, duration_seconds)\nVALUES (104, 'New Day', 1, 240);\n\nINSERT INTO PlaylistSongs (playlist_id, song_id)\nSELECT p.playlist_id, s.song_id\nFROM Playlists p, Songs s \nWHERE s.title = 'New Day'\nAND p.playlist_name = 'Morning Mix';\n",
+"opps": [
+{
+"k": 0,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+42,
+47
+],
+"alt_span": [
+42,
+43
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": " \nWHERE",
+"nat_span": [
+57,
+60
+],
+"alt_span": [
+53,
+60
+]
+},
+{
+"k": 2,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+131,
+136
+],
+"alt_span": [
+131,
+132
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": ", PlaylistSongs ps, Playlists p \nWHERE",
+"nat_span": [
+146,
+149
+],
+"alt_span": [
+142,
+180
+]
+},
+{
+"k": 4,
+"nat": "JOIN PlaylistSongs ps ON",
+"alt": "AND",
+"nat_span": [
+176,
+200
+],
+"alt_span": [
+207,
+210
+]
+},
+{
+"k": 5,
+"nat": "JOIN Playlists p ON",
+"alt": "AND",
+"nat_span": [
+224,
+243
+],
+"alt_span": [
+234,
+237
+]
+},
+{
+"k": 6,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+275,
+280
+],
+"alt_span": [
+269,
+272
+]
+},
+{
+"k": 7,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+383,
+388
+],
+"alt_span": [
+375,
+376
+]
+},
+{
+"k": 8,
+"nat": " ON",
+"alt": " \nWHERE",
+"nat_span": [
+396,
+399
+],
+"alt_span": [
+384,
+391
+]
+},
+{
+"k": 9,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+646,
+651
+],
+"alt_span": [
+638,
+639
+]
+},
+{
+"k": 10,
+"nat": " ON",
+"alt": " \nWHERE",
+"nat_span": [
+659,
+662
+],
+"alt_span": [
+647,
+654
+]
+},
+{
+"k": 11,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+683,
+688
+],
+"alt_span": [
+675,
+678
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.888,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t017",
+"family": "sql_join_style",
+"topic": "Online Retail Product Reviews",
+"angle": "code",
+"text_es": "Schema: Products (product_id INT, product_name VARCHAR, brand VARCHAR), Customers (customer_id INT, username VARCHAR), Reviews (review_id INT, product_id INT, customer_id INT, rating INT, review_text TEXT, review_date DATE).\n\nQueries:\n1. Select all products and their average ratings.\n2. Find all reviews for a specific product (e.g., product_id = 10).\n3. Count the number of reviews made by each customer.\n4. Add a new product review.\n5. Update a review's rating.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT p.product_name, AVG(r.rating) AS average_rating\nFROM Products AS p\nLEFT JOIN Reviews AS r ON p.product_id = r.product_id\nGROUP BY p.product_name;\n\nSELECT r.review_id, c.username, r.rating, r.review_text, r.review_date\nFROM Reviews AS r\nJOIN Customers AS c ON r.customer_id = c.customer_id\nWHERE r.product_id = 10;\n\nSELECT c.username, COUNT(r.review_id) AS review_count\nFROM Customers AS c\nLEFT JOIN Reviews AS r ON c.customer_id = r.customer_id\nGROUP BY c.username\nORDER BY review_count DESC;\n\nINSERT INTO Reviews (product_id, customer_id, rating, review_text, review_date)\nVALUES (15, 20, 5, 'Absolutely loved this product! Highly recommend.', '2023-10-26');\n\nUPDATE Reviews\nSET rating = 4\nWHERE review_id = 101;\n",
+"text_alt": "SELECT p.product_name, AVG(r.rating) AS average_rating\nFROM Products AS p, Reviews AS r\nWHERE p.product_id = r.product_id\nGROUP BY p.product_name;\n\nSELECT r.review_id, c.username, r.rating, r.review_text, r.review_date\nFROM Reviews AS r, Customers AS c\nWHERE r.customer_id = c.customer_id AND r.product_id = 10;\n\nSELECT c.username, COUNT(r.review_id) AS review_count\nFROM Customers AS c, Reviews AS r\nWHERE c.customer_id = r.customer_id\nGROUP BY c.username\nORDER BY review_count DESC;\n\nINSERT INTO Reviews (product_id, customer_id, rating, review_text, review_date)\nVALUES (15, 20, 5, 'Absolutely loved this product! Highly recommend.', '2023-10-26');\n\nUPDATE Reviews\nSET rating = 4\nWHERE review_id = 101;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nLEFT JOIN",
+"alt": ",",
+"nat_span": [
+73,
+83
+],
+"alt_span": [
+73,
+74
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+96,
+99
+],
+"alt_span": [
+87,
+93
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+242,
+247
+],
+"alt_span": [
+236,
+237
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+262,
+265
+],
+"alt_span": [
+252,
+258
+]
+},
+{
+"k": 4,
+"nat": "\nWHERE",
+"alt": " AND",
+"nat_span": [
+295,
+301
+],
+"alt_span": [
+288,
+292
+]
+},
+{
+"k": 5,
+"nat": "\nLEFT JOIN",
+"alt": ",",
+"nat_span": [
+395,
+405
+],
+"alt_span": [
+386,
+387
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+418,
+421
+],
+"alt_span": [
+400,
+406
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.933,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t018",
+"family": "sql_join_style",
+"topic": "Supply Chain Shipments",
+"angle": "code",
+"text_es": "Schema: Suppliers (supplier_id INT, supplier_name VARCHAR, country VARCHAR), Products (product_id INT, product_name VARCHAR, supplier_id INT, unit_price DECIMAL), Shipments (shipment_id INT, product_id INT, quantity INT, shipment_date DATE, delivery_date DATE).\n\nQueries:\n1. List all products and their suppliers.\n2. Find all shipments for a specific product (e.g., product_id = 5).\n3. Calculate the total quantity shipped for each product.\n4. Add a new shipment record.\n5. Update a shipment's delivery date.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "-- 1. List all products and their suppliers.\nSELECT p.product_name, s.supplier_name\nFROM Products p\nJOIN Suppliers s ON p.supplier_id = s.supplier_id;\n\n-- 2. Find all shipments for a specific product (e.g., product_id = 5).\nSELECT sh.shipment_id, sh.quantity, sh.shipment_date, sh.delivery_date\nFROM Shipments sh\nJOIN Products p ON sh.product_id = p.product_id\nWHERE p.product_id = 5;\n\n-- 3. Calculate the total quantity shipped for each product.\nSELECT p.product_name, SUM(sh.quantity) AS total_shipped_quantity\nFROM Products p\nJOIN Shipments sh ON p.product_id = sh.product_id\nGROUP BY p.product_name;\n\n-- 4. Add a new shipment record.\nINSERT INTO Shipments (shipment_id, product_id, quantity, shipment_date, delivery_date)\nVALUES (101, 3, 20, '2023-10-26', '2023-11-05');\n\n-- 5. Update a shipment's delivery date.\nUPDATE Shipments sh\nSET delivery_date = '2023-11-10'\nWHERE sh.shipment_id = 101;\n\nSELECT s.supplier_name, p.product_name, sh.quantity\nFROM Suppliers s\nJOIN Products p ON s.supplier_id = p.supplier_id\nJOIN Shipments sh ON p.product_id = sh.product_id\nWHERE sh.shipment_id = 101;\n",
+"text_alt": "-- 1. List all products and their suppliers.\nSELECT p.product_name, s.supplier_name\nFROM Products p, Suppliers s\nWHERE p.supplier_id = s.supplier_id;\n\n-- 2. Find all shipments for a specific product (e.g., product_id = 5).\nSELECT sh.shipment_id, sh.quantity, sh.shipment_date, sh.delivery_date\nFROM Shipments sh, Products p\nWHERE sh.product_id = p.product_id\nAND p.product_id = 5;\n\n-- 3. Calculate the total quantity shipped for each product.\nSELECT p.product_name, SUM(sh.quantity) AS total_shipped_quantity\nFROM Products p, Shipments sh\nWHERE p.product_id = sh.product_id\nGROUP BY p.product_name;\n\n-- 4. Add a new shipment record.\nINSERT INTO Shipments (shipment_id, product_id, quantity, shipment_date, delivery_date)\nVALUES (101, 3, 20, '2023-10-26', '2023-11-05');\n\n-- 5. Update a shipment's delivery date.\nUPDATE Shipments sh\nSET delivery_date = '2023-11-10'\nWHERE sh.shipment_id = 101;\n\nSELECT s.supplier_name, p.product_name, sh.quantity\nFROM Suppliers s, Products p, Shipments sh\nWHERE s.supplier_id = p.supplier_id\nAND p.product_id = sh.product_id\nAND sh.shipment_id = 101;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+99,
+104
+],
+"alt_span": [
+99,
+100
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+116,
+119
+],
+"alt_span": [
+112,
+118
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+312,
+317
+],
+"alt_span": [
+311,
+312
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+328,
+331
+],
+"alt_span": [
+323,
+329
+]
+},
+{
+"k": 4,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+361,
+366
+],
+"alt_span": [
+359,
+362
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+528,
+533
+],
+"alt_span": [
+524,
+525
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+546,
+549
+],
+"alt_span": [
+538,
+544
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+967,
+972
+],
+"alt_span": [
+962,
+963
+]
+},
+{
+"k": 8,
+"nat": " ON",
+"alt": ", Shipments sh\nWHERE",
+"nat_span": [
+983,
+986
+],
+"alt_span": [
+974,
+994
+]
+},
+{
+"k": 9,
+"nat": "JOIN Shipments sh ON",
+"alt": "AND",
+"nat_span": [
+1017,
+1037
+],
+"alt_span": [
+1025,
+1028
+]
+},
+{
+"k": 10,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1067,
+1072
+],
+"alt_span": [
+1058,
+1061
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.941,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t019",
+"family": "sql_join_style",
+"topic": "Clinical Trial Participants",
+"angle": "code",
+"text_es": "Schema: Trials (trial_id INT, trial_name VARCHAR, start_date DATE, end_date DATE), Participants (participant_id INT, first_name VARCHAR, last_name VARCHAR, gender VARCHAR, age INT), TrialParticipants (trial_id INT, participant_id INT).\n\nQueries:\n1. Select all trials and their participants.\n2. Find all participants in a specific trial (e.g., 'Phase 3 Drug Study').\n3. Count the number of male and female participants.\n4. Add a new trial.\n5. Enroll a participant in a trial.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "INSERT INTO Trials (trial_id, trial_name, start_date, end_date) VALUES (101, 'Phase 3 Drug Study', '2023-01-15', '2023-06-30');\n\nINSERT INTO TrialParticipants (trial_id, participant_id) VALUES (101, 1);\n\nSELECT\n  T.trial_id,\n  T.trial_name,\n  P.participant_id,\n  P.first_name,\n  P.last_name\nFROM Trials AS T\nJOIN TrialParticipants AS TP\n  ON T.trial_id = TP.trial_id\nJOIN Participants AS P\n  ON TP.participant_id = P.participant_id;\n\nSELECT\n  P.participant_id,\n  P.first_name,\n  P.last_name\nFROM Trials AS T\nJOIN TrialParticipants AS TP\n  ON T.trial_id = TP.trial_id\nJOIN Participants AS P\n  ON TP.participant_id = P.participant_id\nWHERE\n  T.trial_name = 'Phase 3 Drug Study';\n\nSELECT\n  P.gender,\n  COUNT(P.participant_id) AS participant_count\nFROM Participants AS P\nGROUP BY\n  P.gender;\n",
+"text_alt": "INSERT INTO Trials (trial_id, trial_name, start_date, end_date) VALUES (101, 'Phase 3 Drug Study', '2023-01-15', '2023-06-30');\n\nINSERT INTO TrialParticipants (trial_id, participant_id) VALUES (101, 1);\n\nSELECT\n  T.trial_id,\n  T.trial_name,\n  P.participant_id,\n  P.first_name,\n  P.last_name\nFROM Trials AS T, TrialParticipants AS TP, Participants AS P\nWHERE T.trial_id = TP.trial_id\n  AND TP.participant_id = P.participant_id;\n\nSELECT\n  P.participant_id,\n  P.first_name,\n  P.last_name\nFROM Trials AS T, TrialParticipants AS TP, Participants AS P\nWHERE T.trial_id = TP.trial_id\n  AND TP.participant_id = P.participant_id\n  AND T.trial_name = 'Phase 3 Drug Study';\n\nSELECT\n  P.gender,\n  COUNT(P.participant_id) AS participant_count\nFROM Participants AS P\nGROUP BY\n  P.gender;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+307,
+312
+],
+"alt_span": [
+307,
+308
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": ", Participants AS P\nWHERE",
+"nat_span": [
+336,
+341
+],
+"alt_span": [
+332,
+357
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Participants AS P\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+366,
+394
+],
+"alt_span": [
+382,
+388
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+507,
+512
+],
+"alt_span": [
+501,
+502
+]
+},
+{
+"k": 4,
+"nat": "\n  ON",
+"alt": ", Participants AS P\nWHERE",
+"nat_span": [
+536,
+541
+],
+"alt_span": [
+526,
+551
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN Participants AS P\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+566,
+594
+],
+"alt_span": [
+576,
+582
+]
+},
+{
+"k": 6,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+631,
+640
+],
+"alt_span": [
+619,
+626
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.897,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t020",
+"family": "sql_join_style",
+"topic": "Blog Post Categories",
+"angle": "code",
+"text_es": "Schema: Posts (post_id INT, title VARCHAR, content TEXT, publish_date DATE), Categories (category_id INT, category_name VARCHAR), PostCategories (post_id INT, category_id INT).\n\nQueries:\n1. List all posts and their categories.\n2. Find all posts belonging to a specific category (e.g., 'Technology').\n3. Count the number of posts per category.\n4. Create a new blog post.\n5. Add a category to an existing post.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT p.post_id, p.title, p.content, p.publish_date, c.category_name\nFROM Posts AS p\nJOIN PostCategories AS pc ON p.post_id = pc.post_id\nJOIN Categories AS c ON pc.category_id = c.category_id;\n\nSELECT p.post_id, p.title, p.content, p.publish_date\nFROM Posts AS p\nJOIN PostCategories AS pc ON p.post_id = pc.post_id\nJOIN Categories AS c ON pc.category_id = c.category_id\nWHERE c.category_name = 'Technology';\n\nSELECT c.category_name, COUNT(p.post_id) AS post_count\nFROM Categories AS c\nLEFT JOIN PostCategories AS pc ON c.category_id = pc.category_id\nLEFT JOIN Posts AS p ON pc.post_id = p.post_id\nGROUP BY c.category_name;\n\nINSERT INTO Posts (post_id, title, content, publish_date)\nVALUES (101, 'New SQL Features', 'Exploring the latest SQL standards.', '2023-10-27');\n\nINSERT INTO PostCategories (post_id, category_id)\nSELECT p.post_id, c.category_id\nFROM Posts AS p\nJOIN Categories AS c ON c.category_name = 'Programming'\nWHERE p.title = 'New SQL Features';\n",
+"text_alt": "SELECT p.post_id, p.title, p.content, p.publish_date, c.category_name\nFROM Posts AS p, PostCategories AS pc, Categories AS c\nWHERE p.post_id = pc.post_id AND pc.category_id = c.category_id;\n\nSELECT p.post_id, p.title, p.content, p.publish_date\nFROM Posts AS p, PostCategories AS pc, Categories AS c\nWHERE p.post_id = pc.post_id AND pc.category_id = c.category_id\nAND c.category_name = 'Technology';\n\nSELECT c.category_name, COUNT(p.post_id) AS post_count\nFROM Categories AS c\nLEFT JOIN PostCategories AS pc ON c.category_id = pc.category_id\nLEFT JOIN Posts AS p ON pc.post_id = p.post_id\nGROUP BY c.category_name;\n\nINSERT INTO Posts (post_id, title, content, publish_date)\nVALUES (101, 'New SQL Features', 'Exploring the latest SQL standards.', '2023-10-27');\n\nINSERT INTO PostCategories (post_id, category_id)\nSELECT p.post_id, c.category_id\nFROM Posts AS p, Categories AS c\nWHERE c.category_name = 'Programming'\nAND p.title = 'New SQL Features';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+85,
+90
+],
+"alt_span": [
+85,
+86
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", Categories AS c\nWHERE",
+"nat_span": [
+111,
+114
+],
+"alt_span": [
+107,
+130
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Categories AS c ON",
+"alt": " AND",
+"nat_span": [
+137,
+161
+],
+"alt_span": [
+153,
+157
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+263,
+268
+],
+"alt_span": [
+259,
+260
+]
+},
+{
+"k": 4,
+"nat": " ON",
+"alt": ", Categories AS c\nWHERE",
+"nat_span": [
+289,
+292
+],
+"alt_span": [
+281,
+304
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN Categories AS c ON",
+"alt": " AND",
+"nat_span": [
+315,
+339
+],
+"alt_span": [
+327,
+331
+]
+},
+{
+"k": 6,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+371,
+376
+],
+"alt_span": [
+363,
+366
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+868,
+873
+],
+"alt_span": [
+858,
+859
+]
+},
+{
+"k": 8,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+889,
+892
+],
+"alt_span": [
+875,
+881
+]
+},
+{
+"k": 9,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+925,
+930
+],
+"alt_span": [
+914,
+917
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.917,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t022",
+"family": "sql_join_style",
+"topic": "Project Task Management",
+"angle": "code",
+"text_es": "Schema: Projects (project_id INT, project_name VARCHAR, start_date DATE, end_date DATE), Tasks (task_id INT, project_id INT, task_name VARCHAR, status VARCHAR, due_date DATE, assigned_to VARCHAR).\n\nQueries:\n1. List all tasks for a specific project (e.g., project_id = 1).\n2. Find all tasks with a 'Pending' status.\n3. Count the number of tasks per project.\n4. Add a new task to a project.\n5. Update a task's status to 'Completed'.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT * FROM Tasks AS T JOIN Projects AS P ON T.project_id = P.project_id WHERE T.project_id = 1;\n\nSELECT * FROM Tasks WHERE status = 'Pending';\n\nSELECT P.project_name, COUNT(T.task_id) AS total_tasks FROM Projects AS P JOIN Tasks AS T ON P.project_id = T.project_id GROUP BY P.project_name;\n\nINSERT INTO Tasks (project_id, task_name, status, due_date, assigned_to) VALUES (1, 'Design UI', 'Pending', '2023-12-31', 'Alice');\n\nUPDATE Tasks SET status = 'Completed' WHERE task_id = 101;\n\nSELECT T.task_name, T.status, P.project_name FROM Tasks AS T JOIN Projects AS P ON T.project_id = P.project_id WHERE T.assigned_to = 'Alice';\n\nSELECT P.project_name, T.task_name, T.due_date FROM Projects AS P JOIN Tasks AS T ON P.project_id = T.project_id WHERE T.status = 'Pending' ORDER BY T.due_date;\n",
+"text_alt": "SELECT * FROM Tasks AS T , Projects AS P WHERE T.project_id = P.project_id AND T.project_id = 1;\n\nSELECT * FROM Tasks WHERE status = 'Pending';\n\nSELECT P.project_name, COUNT(T.task_id) AS total_tasks FROM Projects AS P , Tasks AS T WHERE P.project_id = T.project_id GROUP BY P.project_name;\n\nINSERT INTO Tasks (project_id, task_name, status, due_date, assigned_to) VALUES (1, 'Design UI', 'Pending', '2023-12-31', 'Alice');\n\nUPDATE Tasks SET status = 'Completed' WHERE task_id = 101;\n\nSELECT T.task_name, T.status, P.project_name FROM Tasks AS T , Projects AS P WHERE T.project_id = P.project_id AND T.assigned_to = 'Alice';\n\nSELECT P.project_name, T.task_name, T.due_date FROM Projects AS P , Tasks AS T WHERE P.project_id = T.project_id AND T.status = 'Pending' ORDER BY T.due_date;\n",
+"opps": [
+{
+"k": 0,
+"nat": "JOIN",
+"alt": ",",
+"nat_span": [
+25,
+29
+],
+"alt_span": [
+25,
+26
+]
+},
+{
+"k": 1,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+44,
+46
+],
+"alt_span": [
+41,
+46
+]
+},
+{
+"k": 2,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+75,
+80
+],
+"alt_span": [
+75,
+78
+]
+},
+{
+"k": 3,
+"nat": "JOIN",
+"alt": ",",
+"nat_span": [
+221,
+225
+],
+"alt_span": [
+219,
+220
+]
+},
+{
+"k": 4,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+237,
+239
+],
+"alt_span": [
+232,
+237
+]
+},
+{
+"k": 5,
+"nat": "JOIN",
+"alt": ",",
+"nat_span": [
+548,
+552
+],
+"alt_span": [
+546,
+547
+]
+},
+{
+"k": 6,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+567,
+569
+],
+"alt_span": [
+562,
+567
+]
+},
+{
+"k": 7,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+598,
+603
+],
+"alt_span": [
+596,
+599
+]
+},
+{
+"k": 8,
+"nat": "JOIN",
+"alt": ",",
+"nat_span": [
+696,
+700
+],
+"alt_span": [
+692,
+693
+]
+},
+{
+"k": 9,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+712,
+714
+],
+"alt_span": [
+705,
+710
+]
+},
+{
+"k": 10,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+743,
+748
+],
+"alt_span": [
+739,
+742
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.965,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t023",
+"family": "sql_join_style",
+"topic": "Financial Transaction Tracking",
+"angle": "code",
+"text_es": "Schema: Accounts (account_id INT, account_name VARCHAR, account_type VARCHAR, balance DECIMAL), Transactions (transaction_id INT, account_id INT, transaction_date DATE, amount DECIMAL, description VARCHAR).\n\nQueries:\n1. Select all accounts and their current balances.\n2. Find all transactions for a specific account (e.g., account_id = 101).\n3. Calculate the total amount of transactions per account type.\n4. Record a new transaction.\n5. Update an account's balance after a transaction (e.g., debit).",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n    a.account_id,\n    a.account_name,\n    a.balance\nFROM\n    Accounts AS a;\n\nSELECT\n    t.transaction_id,\n    t.transaction_date,\n    t.amount,\n    t.description,\n    a.account_name\nFROM\n    Transactions AS t\nJOIN\n    Accounts AS a ON t.account_id = a.account_id\nWHERE\n    t.account_id = 101;\n\nSELECT\n    a.account_type,\n    SUM(t.amount) AS total_transaction_amount\nFROM\n    Accounts AS a\nJOIN\n    Transactions AS t ON a.account_id = t.account_id\nGROUP BY\n    a.account_type;\n\nINSERT INTO Transactions (account_id, transaction_date, amount, description)\nVALUES (101, '2023-10-26', 50.00, 'Online purchase');\n\nUPDATE\n    Accounts AS a\nSET\n    balance = a.balance - 50.00\nWHERE\n    a.account_id = 101;\n",
+"text_alt": "SELECT\n    a.account_id,\n    a.account_name,\n    a.balance\nFROM\n    Accounts AS a;\n\nSELECT\n    t.transaction_id,\n    t.transaction_date,\n    t.amount,\n    t.description,\n    a.account_name\nFROM\n    Transactions AS t,\n    Accounts AS a\nWHERE\n    t.account_id = a.account_id AND t.account_id = 101;\n\nSELECT\n    a.account_type,\n    SUM(t.amount) AS total_transaction_amount\nFROM\n    Accounts AS a,\n    Transactions AS t\nWHERE\n    a.account_id = t.account_id\nGROUP BY\n    a.account_type;\n\nINSERT INTO Transactions (account_id, transaction_date, amount, description)\nVALUES (101, '2023-10-26', 50.00, 'Online purchase');\n\nUPDATE\n    Accounts AS a\nSET\n    balance = a.balance - 50.00\nWHERE\n    a.account_id = 101;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+215,
+220
+],
+"alt_span": [
+215,
+216
+]
+},
+{
+"k": 1,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+238,
+242
+],
+"alt_span": [
+234,
+245
+]
+},
+{
+"k": 2,
+"nat": "\nWHERE\n    ",
+"alt": " AND ",
+"nat_span": [
+269,
+280
+],
+"alt_span": [
+272,
+277
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+396,
+401
+],
+"alt_span": [
+393,
+394
+]
+},
+{
+"k": 4,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+423,
+427
+],
+"alt_span": [
+416,
+427
+]
+}
+],
+"k_en": 5,
+"shared_fraction": 0.943,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t024",
+"family": "sql_join_style",
+"topic": "Sports League Teams and Players",
+"angle": "code",
+"text_es": "Schema: Teams (team_id INT, team_name VARCHAR, city VARCHAR), Players (player_id INT, first_name VARCHAR, last_name VARCHAR, team_id INT, position VARCHAR, jersey_number INT).\n\nQueries:\n1. List all players and their teams.\n2. Find all players on a specific team (e.g., 'Lakers').\n3. Count the number of players per position.\n4. Add a new player to a team.\n5. Update a player's position.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT p.first_name, p.last_name, t.team_name\nFROM Players p JOIN Teams t ON p.team_id = t.team_id;\n\nSELECT p.first_name, p.last_name, p.position\nFROM Players p JOIN Teams t ON p.team_id = t.team_id\nWHERE t.team_name = 'Lakers';\n\nSELECT position, COUNT(player_id) AS total_players\nFROM Players\nGROUP BY position;\n\nINSERT INTO Players (first_name, last_name, team_id, position, jersey_number)\nSELECT 'LeBron', 'James', t.team_id, 'Forward', 23\nFROM Teams t\nWHERE t.team_name = 'Lakers';\n\nUPDATE Players\nSET position = 'Guard'\nWHERE first_name = 'LeBron' AND last_name = 'James' AND player_id IN (\n    SELECT p.player_id\n    FROM Players p JOIN Teams t ON p.team_id = t.team_id\n    WHERE t.team_name = 'Lakers'\n);\n",
+"text_alt": "SELECT p.first_name, p.last_name, t.team_name\nFROM Players p, Teams t WHERE p.team_id = t.team_id;\n\nSELECT p.first_name, p.last_name, p.position\nFROM Players p, Teams t WHERE p.team_id = t.team_id\nAND t.team_name = 'Lakers';\n\nSELECT position, COUNT(player_id) AS total_players\nFROM Players\nGROUP BY position;\n\nINSERT INTO Players (first_name, last_name, team_id, position, jersey_number)\nSELECT 'LeBron', 'James', t.team_id, 'Forward', 23\nFROM Teams t\nWHERE t.team_name = 'Lakers';\n\nUPDATE Players\nSET position = 'Guard'\nWHERE first_name = 'LeBron' AND last_name = 'James' AND player_id IN (\n    SELECT p.player_id\n    FROM Players p, Teams t WHERE p.team_id = t.team_id\n    AND t.team_name = 'Lakers'\n);\n",
+"opps": [
+{
+"k": 0,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+60,
+65
+],
+"alt_span": [
+60,
+61
+]
+},
+{
+"k": 1,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+74,
+76
+],
+"alt_span": [
+70,
+75
+]
+},
+{
+"k": 2,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+160,
+165
+],
+"alt_span": [
+159,
+160
+]
+},
+{
+"k": 3,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+174,
+176
+],
+"alt_span": [
+169,
+174
+]
+},
+{
+"k": 4,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+199,
+204
+],
+"alt_span": [
+197,
+200
+]
+},
+{
+"k": 5,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+637,
+642
+],
+"alt_span": [
+633,
+634
+]
+},
+{
+"k": 6,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+651,
+653
+],
+"alt_span": [
+643,
+648
+]
+},
+{
+"k": 7,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+680,
+685
+],
+"alt_span": [
+675,
+678
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.959,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t025",
+"family": "sql_join_style",
+"topic": "Art Gallery Exhibitions",
+"angle": "code",
+"text_es": "Schema: Artists (artist_id INT, artist_name VARCHAR, nationality VARCHAR), Artworks (artwork_id INT, title VARCHAR, artist_id INT, year INT, medium VARCHAR), Exhibitions (exhibition_id INT, exhibition_name VARCHAR, start_date DATE, end_date DATE, location VARCHAR), ExhibitionArtworks (exhibition_id INT, artwork_id INT).\n\nQueries:\n1. Select all artworks and their artists.\n2. Find all artworks in a specific exhibition (e.g., 'Modern Masters').\n3. Count the number of artworks by each artist.\n4. Add a new artwork.\n5. Add an artwork to an exhibition.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n  A.title,\n  AR.artist_name\nFROM Artworks AS A\nJOIN Artists AS AR\n  ON A.artist_id = AR.artist_id;\n\nSELECT\n  A.title,\n  AR.artist_name\nFROM Artworks AS A\nJOIN Artists AS AR\n  ON A.artist_id = AR.artist_id\nJOIN ExhibitionArtworks AS EA\n  ON A.artwork_id = EA.artwork_id\nJOIN Exhibitions AS E\n  ON EA.exhibition_id = E.exhibition_id\nWHERE\n  E.exhibition_name = 'Modern Masters';\n\nSELECT\n  AR.artist_name,\n  COUNT(A.artwork_id) AS artwork_count\nFROM Artists AS AR\nLEFT JOIN Artworks AS A\n  ON AR.artist_id = A.artist_id\nGROUP BY\n  AR.artist_name;\n\nINSERT INTO Artworks (artwork_id, title, artist_id, year, medium)\nVALUES\n  (101, 'Sunset Over Lake', 1, 2023, 'Oil on Canvas');\n\nINSERT INTO ExhibitionArtworks (exhibition_id, artwork_id)\nSELECT\n  E.exhibition_id,\n  A.artwork_id\nFROM Exhibitions AS E\nJOIN Artworks AS A\n  ON E.exhibition_name = 'Modern Masters' AND A.title = 'Sunset Over Lake';\n",
+"text_alt": "SELECT\n  A.title,\n  AR.artist_name\nFROM Artworks AS A, Artists AS AR\nWHERE\n  A.artist_id = AR.artist_id;\n\nSELECT\n  A.title,\n  AR.artist_name\nFROM Artworks AS A, Artists AS AR, ExhibitionArtworks AS EA, Exhibitions AS E\nWHERE\n  A.artist_id = AR.artist_id AND A.artwork_id = EA.artwork_id AND EA.exhibition_id = E.exhibition_id AND E.exhibition_name = 'Modern Masters';\n\nSELECT\n  AR.artist_name,\n  COUNT(A.artwork_id) AS artwork_count\nFROM Artists AS AR\nLEFT JOIN Artworks AS A\n  ON AR.artist_id = A.artist_id\nGROUP BY\n  AR.artist_name;\n\nINSERT INTO Artworks (artwork_id, title, artist_id, year, medium)\nVALUES\n  (101, 'Sunset Over Lake', 1, 2023, 'Oil on Canvas');\n\nINSERT INTO ExhibitionArtworks (exhibition_id, artwork_id)\nSELECT\n  E.exhibition_id,\n  A.artwork_id\nFROM Exhibitions AS E, Artworks AS A\nWHERE\n  E.exhibition_name = 'Modern Masters' AND A.title = 'Sunset Over Lake';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+53,
+58
+],
+"alt_span": [
+53,
+54
+]
+},
+{
+"k": 1,
+"nat": "\n  ON ",
+"alt": "\nWHERE\n  ",
+"nat_span": [
+72,
+78
+],
+"alt_span": [
+68,
+77
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+160,
+165
+],
+"alt_span": [
+159,
+160
+]
+},
+{
+"k": 3,
+"nat": "\n  ON ",
+"alt": ", ExhibitionArtworks AS EA, Exhibitions AS E\nWHERE\n  ",
+"nat_span": [
+179,
+185
+],
+"alt_span": [
+174,
+227
+]
+},
+{
+"k": 4,
+"nat": "\nJOIN ExhibitionArtworks AS EA\n  ON",
+"alt": " AND",
+"nat_span": [
+211,
+246
+],
+"alt_span": [
+253,
+257
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN Exhibitions AS E\n  ON",
+"alt": " AND",
+"nat_span": [
+275,
+302
+],
+"alt_span": [
+286,
+290
+]
+},
+{
+"k": 6,
+"nat": "\nWHERE\n  ",
+"alt": " AND ",
+"nat_span": [
+337,
+346
+],
+"alt_span": [
+325,
+330
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+802,
+807
+],
+"alt_span": [
+786,
+787
+]
+},
+{
+"k": 8,
+"nat": "\n  ON ",
+"alt": "\nWHERE\n  ",
+"nat_span": [
+821,
+827
+],
+"alt_span": [
+801,
+810
+]
+}
+],
+"k_en": 9,
+"shared_fraction": 0.895,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t026",
+"family": "sql_join_style",
+"topic": "Hotel Room Bookings",
+"angle": "code",
+"text_es": "Schema: Rooms (room_id INT, room_number VARCHAR, room_type VARCHAR, price_per_night DECIMAL), Guests (guest_id INT, first_name VARCHAR, last_name VARCHAR, email VARCHAR), Bookings (booking_id INT, room_id INT, guest_id INT, check_in_date DATE, check_out_date DATE, total_cost DECIMAL).\n\nQueries:\n1. List all rooms and their types.\n2. Find all bookings for a specific guest (e.g., guest_id = 7).\n3. Calculate the total cost of all bookings.\n4. Make a new room booking.\n5. Update a booking's check-out date.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT room_number, room_type FROM Rooms;\n\nSELECT B.booking_id, R.room_number, G.first_name, G.last_name, B.check_in_date, B.check_out_date, B.total_cost\nFROM Bookings B JOIN Rooms R ON B.room_id = R.room_id\nJOIN Guests G ON B.guest_id = G.guest_id\nWHERE B.guest_id = 7;\n\nSELECT SUM(total_cost) AS total_revenue FROM Bookings;\n\nINSERT INTO Bookings (room_id, guest_id, check_in_date, check_out_date, total_cost)\nSELECT R.room_id, G.guest_id, '2023-12-25', '2023-12-30', 500.00\nFROM Rooms R JOIN Guests G ON R.room_type = 'Suite' AND G.first_name = 'Alice' AND G.last_name = 'Smith'\nLIMIT 1;\n\nUPDATE Bookings\nSET check_out_date = '2023-10-20'\nWHERE booking_id = (SELECT B.booking_id FROM Bookings B JOIN Guests G ON B.guest_id = G.guest_id WHERE G.first_name = 'John' AND G.last_name = 'Doe' LIMIT 1);\n",
+"text_alt": "SELECT room_number, room_type FROM Rooms;\n\nSELECT B.booking_id, R.room_number, G.first_name, G.last_name, B.check_in_date, B.check_out_date, B.total_cost\nFROM Bookings B, Rooms R, Guests G\nWHERE B.room_id = R.room_id\nAND B.guest_id = G.guest_id\nAND B.guest_id = 7;\n\nSELECT SUM(total_cost) AS total_revenue FROM Bookings;\n\nINSERT INTO Bookings (room_id, guest_id, check_in_date, check_out_date, total_cost)\nSELECT R.room_id, G.guest_id, '2023-12-25', '2023-12-30', 500.00\nFROM Rooms R, Guests G\nWHERE R.room_type = 'Suite' AND G.first_name = 'Alice' AND G.last_name = 'Smith'\nLIMIT 1;\n\nUPDATE Bookings\nSET check_out_date = '2023-10-20'\nWHERE booking_id = (SELECT B.booking_id FROM Bookings B, Guests G WHERE B.guest_id = G.guest_id AND G.first_name = 'John' AND G.last_name = 'Doe' LIMIT 1);\n",
+"opps": [
+{
+"k": 0,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+169,
+174
+],
+"alt_span": [
+169,
+170
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", Guests G\nWHERE",
+"nat_span": [
+182,
+185
+],
+"alt_span": [
+178,
+194
+]
+},
+{
+"k": 2,
+"nat": "JOIN Guests G ON",
+"alt": "AND",
+"nat_span": [
+208,
+224
+],
+"alt_span": [
+217,
+220
+]
+},
+{
+"k": 3,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+249,
+254
+],
+"alt_span": [
+245,
+248
+]
+},
+{
+"k": 4,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+489,
+494
+],
+"alt_span": [
+483,
+484
+]
+},
+{
+"k": 5,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+503,
+506
+],
+"alt_span": [
+493,
+499
+]
+},
+{
+"k": 6,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+697,
+702
+],
+"alt_span": [
+690,
+691
+]
+},
+{
+"k": 7,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+712,
+714
+],
+"alt_span": [
+701,
+706
+]
+},
+{
+"k": 8,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+739,
+744
+],
+"alt_span": [
+731,
+734
+]
+}
+],
+"k_en": 9,
+"shared_fraction": 0.939,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t027",
+"family": "sql_join_style",
+"topic": "Job Application Tracking",
+"angle": "code",
+"text_es": "Schema: Applicants (applicant_id INT, first_name VARCHAR, last_name VARCHAR, email VARCHAR), Jobs (job_id INT, job_title VARCHAR, department VARCHAR, salary_range VARCHAR), Applications (application_id INT, applicant_id INT, job_id INT, application_date DATE, status VARCHAR).\n\nQueries:\n1. Select all applications and their corresponding job titles.\n2. Find all applicants for a specific job (e.g., job_title = 'Software Engineer').\n3. Count the number of applications per job status.\n4. Submit a new job application.\n5. Update an application's status to 'Interviewing'.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n  A.application_id,\n  A.application_date,\n  A.status,\n  J.job_title\nFROM Applications AS A\nJOIN Jobs AS J\n  ON A.job_id = J.job_id;\n\nSELECT\n  Ap.first_name,\n  Ap.last_name,\n  Ap.email\nFROM Applicants AS Ap\nJOIN Applications AS App\n  ON Ap.applicant_id = App.applicant_id\nJOIN Jobs AS J\n  ON App.job_id = J.job_id\nWHERE\n  J.job_title = 'Software Engineer';\n\nSELECT\n  status,\n  COUNT(application_id) AS total_applications\nFROM Applications\nGROUP BY\n  status;\n\nINSERT INTO Applications (applicant_id, job_id, application_date, status)\nVALUES (101, 205, '2023-10-26', 'Submitted');\n\nUPDATE Applications\nSET\n  status = 'Interviewing'\nFROM Applications AS App\nJOIN Applicants AS Ap\n  ON App.applicant_id = Ap.applicant_id\nWHERE\n  App.application_id = 123\n  AND Ap.first_name = 'John'\n  AND Ap.last_name = 'Doe';\n",
+"text_alt": "SELECT\n  A.application_id,\n  A.application_date,\n  A.status,\n  J.job_title\nFROM Applications AS A, Jobs AS J\nWHERE A.job_id = J.job_id;\n\nSELECT\n  Ap.first_name,\n  Ap.last_name,\n  Ap.email\nFROM Applicants AS Ap, Applications AS App, Jobs AS J\nWHERE Ap.applicant_id = App.applicant_id\n  AND App.job_id = J.job_id\nWHERE\n  J.job_title = 'Software Engineer';\n\nSELECT\n  status,\n  COUNT(application_id) AS total_applications\nFROM Applications\nGROUP BY\n  status;\n\nINSERT INTO Applications (applicant_id, job_id, application_date, status)\nVALUES (101, 205, '2023-10-26', 'Submitted');\n\nUPDATE Applications\nSET\n  status = 'Interviewing'\nFROM Applications AS App, Applicants AS Ap\nWHERE App.applicant_id = Ap.applicant_id\nWHERE\n  App.application_id = 123\n  AND Ap.first_name = 'John'\n  AND Ap.last_name = 'Doe';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+97,
+102
+],
+"alt_span": [
+97,
+98
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+112,
+117
+],
+"alt_span": [
+108,
+114
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+212,
+217
+],
+"alt_span": [
+209,
+210
+]
+},
+{
+"k": 3,
+"nat": "\n  ON",
+"alt": ", Jobs AS J\nWHERE",
+"nat_span": [
+237,
+242
+],
+"alt_span": [
+230,
+247
+]
+},
+{
+"k": 4,
+"nat": "\nJOIN Jobs AS J\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+277,
+297
+],
+"alt_span": [
+282,
+288
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+660,
+665
+],
+"alt_span": [
+651,
+652
+]
+},
+{
+"k": 6,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+682,
+687
+],
+"alt_span": [
+669,
+675
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.923,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t028",
+"family": "sql_join_style",
+"topic": "School Staff Directory",
+"angle": "code",
+"text_es": "Schema: Staff (staff_id INT, first_name VARCHAR, last_name VARCHAR, role VARCHAR, department_id INT), Departments (department_id INT, department_name VARCHAR, head_of_department VARCHAR).\n\nQueries:\n1. List all staff members and their departments.\n2. Find all staff members in a specific role (e.g., 'Teacher').\n3. Count the number of staff per department.\n4. Add a new staff member.\n5. Update a staff member's role.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "CREATE TABLE Staff (\n    staff_id INT PRIMARY KEY,\n    first_name VARCHAR(50),\n    last_name VARCHAR(50),\n    role VARCHAR(50),\n    department_id INT\n);\n\nCREATE TABLE Departments (\n    department_id INT PRIMARY KEY,\n    department_name VARCHAR(50),\n    head_of_department VARCHAR(100)\n);\n\nINSERT INTO Departments (department_id, department_name, head_of_department) VALUES\n(1, 'Math', 'Dr. Smith'),\n(2, 'Science', 'Dr. Jones'),\n(3, 'English', 'Dr. Brown');\n\nINSERT INTO Staff (staff_id, first_name, last_name, role, department_id) VALUES\n(101, 'Alice', 'Smith', 'Teacher', 1),\n(102, 'Bob', 'Johnson', 'Teacher', 2),\n(103, 'Charlie', 'Davis', 'Administrator', 1),\n(104, 'Diana', 'Miller', 'Teacher', 3),\n(105, 'Eve', 'Wilson', 'Assistant', 2);\n\nSELECT s.first_name, s.last_name, d.department_name\nFROM Staff AS s\nJOIN Departments AS d ON s.department_id = d.department_id;\n\nSELECT s.first_name, s.last_name, s.role, d.department_name\nFROM Staff AS s\nJOIN Departments AS d ON s.department_id = d.department_id\nWHERE s.role = 'Teacher';\n\nSELECT d.department_name, COUNT(s.staff_id) AS number_of_staff\nFROM Departments AS d\nLEFT JOIN Staff AS s ON d.department_id = s.department_id\nGROUP BY d.department_name;\n\nINSERT INTO Staff (staff_id, first_name, last_name, role, department_id)\nVALUES (106, 'Frank', 'White', 'Teacher', 3);\n\nUPDATE Staff\nSET role = 'Senior Teacher'\nWHERE staff_id = 101;\n\nSELECT s.first_name, s.last_name, s.role, d.department_name\nFROM Staff AS s\nJOIN Departments AS d ON s.department_id = d.department_id\nWHERE s.staff_id = 101;\n",
+"text_alt": "CREATE TABLE Staff (\n    staff_id INT PRIMARY KEY,\n    first_name VARCHAR(50),\n    last_name VARCHAR(50),\n    role VARCHAR(50),\n    department_id INT\n);\n\nCREATE TABLE Departments (\n    department_id INT PRIMARY KEY,\n    department_name VARCHAR(50),\n    head_of_department VARCHAR(100)\n);\n\nINSERT INTO Departments (department_id, department_name, head_of_department) VALUES\n(1, 'Math', 'Dr. Smith'),\n(2, 'Science', 'Dr. Jones'),\n(3, 'English', 'Dr. Brown');\n\nINSERT INTO Staff (staff_id, first_name, last_name, role, department_id) VALUES\n(101, 'Alice', 'Smith', 'Teacher', 1),\n(102, 'Bob', 'Johnson', 'Teacher', 2),\n(103, 'Charlie', 'Davis', 'Administrator', 1),\n(104, 'Diana', 'Miller', 'Teacher', 3),\n(105, 'Eve', 'Wilson', 'Assistant', 2);\n\nSELECT s.first_name, s.last_name, d.department_name\nFROM Staff AS s, Departments AS d\nWHERE s.department_id = d.department_id;\n\nSELECT s.first_name, s.last_name, s.role, d.department_name\nFROM Staff AS s, Departments AS d\nWHERE s.department_id = d.department_id\nAND s.role = 'Teacher';\n\nSELECT d.department_name, COUNT(s.staff_id) AS number_of_staff\nFROM Departments AS d\nLEFT JOIN Staff AS s ON d.department_id = s.department_id\nGROUP BY d.department_name;\n\nINSERT INTO Staff (staff_id, first_name, last_name, role, department_id)\nVALUES (106, 'Frank', 'White', 'Teacher', 3);\n\nUPDATE Staff\nSET role = 'Senior Teacher'\nWHERE staff_id = 101;\n\nSELECT s.first_name, s.last_name, s.role, d.department_name\nFROM Staff AS s, Departments AS d\nWHERE s.department_id = d.department_id\nAND s.staff_id = 101;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+811,
+816
+],
+"alt_span": [
+811,
+812
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+833,
+836
+],
+"alt_span": [
+829,
+835
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+948,
+953
+],
+"alt_span": [
+947,
+948
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+970,
+973
+],
+"alt_span": [
+965,
+971
+]
+},
+{
+"k": 4,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1008,
+1013
+],
+"alt_span": [
+1006,
+1009
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1466,
+1471
+],
+"alt_span": [
+1462,
+1463
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+1488,
+1491
+],
+"alt_span": [
+1480,
+1486
+]
+},
+{
+"k": 7,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1526,
+1531
+],
+"alt_span": [
+1521,
+1524
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.976,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t029",
+"family": "sql_join_style",
+"topic": "E-commerce Shopping Carts",
+"angle": "code",
+"text_es": "Schema: Customers (customer_id INT, username VARCHAR, email VARCHAR), Products (product_id INT, product_name VARCHAR, price DECIMAL), Carts (cart_id INT, customer_id INT, creation_date DATE), CartItems (cart_item_id INT, cart_id INT, product_id INT, quantity INT).\n\nQueries:\n1. Select all customers and their active carts.\n2. Find all products in a specific customer's cart (e.g., customer_id = 12).\n3. Calculate the total value of items in a specific cart.\n4. Add a product to a cart.\n5. Update the quantity of a product in a cart.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "-- 1. Select all customers and their active carts.\nSELECT\n    c.customer_id,\n    c.username,\n    c.email,\n    ca.cart_id,\n    ca.creation_date\nFROM\n    Customers AS c\nJOIN\n    Carts AS ca ON c.customer_id = ca.customer_id;\n\n-- 2. Find all products in a specific customer's cart (e.g., customer_id = 12).\nSELECT\n    p.product_name,\n    ci.quantity,\n    p.price\nFROM\n    Customers AS cust\nJOIN\n    Carts AS cart ON cust.customer_id = cart.customer_id\nJOIN\n    CartItems AS ci ON cart.cart_id = ci.cart_id\nJOIN\n    Products AS p ON ci.product_id = p.product_id\nWHERE\n    cust.customer_id = 12;\n\n-- 3. Calculate the total value of items in a specific cart (e.g., cart_id = 101).\nSELECT\n    SUM(p.price * ci.quantity) AS total_cart_value\nFROM\n    CartItems AS ci\nJOIN\n    Products AS p ON ci.product_id = p.product_id\nWHERE\n    ci.cart_id = 101;\n\n-- 4. Add a product to a cart (assuming cart_id = 101, product_id = 205, quantity = 2).\nINSERT INTO CartItems (cart_id, product_id, quantity)\nVALUES (101, 205, 2);\n\n-- 5. Update the quantity of a product in a cart (e.g., cart_id = 101, product_id = 201, new_quantity = 5).\nUPDATE\n    CartItems\nSET\n    quantity = 5\nWHERE\n    cart_id = 101 AND product_id = 201;\n",
+"text_alt": "-- 1. Select all customers and their active carts.\nSELECT\n    c.customer_id,\n    c.username,\n    c.email,\n    ca.cart_id,\n    ca.creation_date\nFROM\n    Customers AS c,\n    Carts AS ca\nWHERE\n    c.customer_id = ca.customer_id;\n\n-- 2. Find all products in a specific customer's cart (e.g., customer_id = 12).\nSELECT\n    p.product_name,\n    ci.quantity,\n    p.price\nFROM\n    Customers AS cust,\n    Carts AS cart,\n    CartItems AS ci,\n    Products AS p\nWHERE\n    cust.customer_id = cart.customer_id AND\n    cart.cart_id = ci.cart_id AND\n    ci.product_id = p.product_id AND\n    cust.customer_id = 12;\n\n-- 3. Calculate the total value of items in a specific cart (e.g., cart_id = 101).\nSELECT\n    SUM(p.price * ci.quantity) AS total_cart_value\nFROM\n    CartItems AS ci,\n    Products AS p\nWHERE\n    ci.product_id = p.product_id AND\n    ci.cart_id = 101;\n\n-- 4. Add a product to a cart (assuming cart_id = 101, product_id = 205, quantity = 2).\nINSERT INTO CartItems (cart_id, product_id, quantity)\nVALUES (101, 205, 2);\n\n-- 5. Update the quantity of a product in a cart (e.g., cart_id = 101, product_id = 201, new_quantity = 5).\nUPDATE\n    CartItems\nSET\n    quantity = 5\nWHERE\n    cart_id = 101 AND product_id = 201;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+166,
+171
+],
+"alt_span": [
+166,
+167
+]
+},
+{
+"k": 1,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+187,
+191
+],
+"alt_span": [
+183,
+194
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+386,
+391
+],
+"alt_span": [
+389,
+390
+]
+},
+{
+"k": 3,
+"nat": " ON ",
+"alt": ",\n    CartItems AS ci,\n    Products AS p\nWHERE\n    ",
+"nat_span": [
+409,
+413
+],
+"alt_span": [
+408,
+459
+]
+},
+{
+"k": 4,
+"nat": "\nJOIN\n    CartItems AS ci ON ",
+"alt": " AND\n    ",
+"nat_span": [
+448,
+477
+],
+"alt_span": [
+494,
+503
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN\n    Products AS p ON ",
+"alt": " AND\n    ",
+"nat_span": [
+502,
+529
+],
+"alt_span": [
+528,
+537
+]
+},
+{
+"k": 6,
+"nat": "\nWHERE",
+"alt": " AND",
+"nat_span": [
+557,
+563
+],
+"alt_span": [
+565,
+569
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+757,
+762
+],
+"alt_span": [
+763,
+764
+]
+},
+{
+"k": 8,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+780,
+784
+],
+"alt_span": [
+782,
+793
+]
+},
+{
+"k": 9,
+"nat": "\nWHERE",
+"alt": " AND",
+"nat_span": [
+812,
+818
+],
+"alt_span": [
+821,
+825
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.92,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t030",
+"family": "sql_join_style",
+"topic": "Patient Appointment Scheduling",
+"angle": "code",
+"text_es": "Schema: Patients (patient_id INT, first_name VARCHAR, last_name VARCHAR, phone VARCHAR), Doctors (doctor_id INT, first_name VARCHAR, last_name VARCHAR, specialty VARCHAR), Appointments (appointment_id INT, patient_id INT, doctor_id INT, appointment_date DATETIME, reason VARCHAR).\n\nQueries:\n1. List all appointments with patient and doctor names.\n2. Find all appointments for a specific doctor (e.g., doctor_id = 2).\n3. Count the number of appointments per specialty.\n4. Schedule a new appointment.\n5. Update an appointment's reason.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n  A.appointment_id,\n  P.first_name AS patient_first_name,\n  P.last_name AS patient_last_name,\n  D.first_name AS doctor_first_name,\n  D.last_name AS doctor_last_name,\n  A.appointment_date,\n  A.reason\nFROM Appointments AS A\nJOIN Patients AS P\n  ON A.patient_id = P.patient_id\nJOIN Doctors AS D\n  ON A.doctor_id = D.doctor_id;\n\nSELECT\n  A.appointment_id,\n  P.first_name AS patient_first_name,\n  P.last_name AS patient_last_name,\n  A.appointment_date,\n  A.reason\nFROM Appointments AS A\nJOIN Patients AS P\n  ON A.patient_id = P.patient_id\nWHERE\n  A.doctor_id = 2;\n\nSELECT\n  D.specialty,\n  COUNT(A.appointment_id) AS total_appointments\nFROM Appointments AS A\nJOIN Doctors AS D\n  ON A.doctor_id = D.doctor_id\nGROUP BY\n  D.specialty;\n\nINSERT INTO Appointments (patient_id, doctor_id, appointment_date, reason)\nVALUES\n  (1, 3, '2023-11-15 10:00:00', 'Routine check-up');\n\nUPDATE Appointments\nSET\n  reason = 'Follow-up on previous visit'\nWHERE\n  appointment_id = 1;\n",
+"text_alt": "SELECT\n  A.appointment_id,\n  P.first_name AS patient_first_name,\n  P.last_name AS patient_last_name,\n  D.first_name AS doctor_first_name,\n  D.last_name AS doctor_last_name,\n  A.appointment_date,\n  A.reason\nFROM Appointments AS A, Patients AS P, Doctors AS D\nWHERE A.patient_id = P.patient_id\n  AND A.doctor_id = D.doctor_id;\n\nSELECT\n  A.appointment_id,\n  P.first_name AS patient_first_name,\n  P.last_name AS patient_last_name,\n  A.appointment_date,\n  A.reason\nFROM Appointments AS A, Patients AS P\nWHERE A.patient_id = P.patient_id\n  AND A.doctor_id = 2;\n\nSELECT\n  D.specialty,\n  COUNT(A.appointment_id) AS total_appointments\nFROM Appointments AS A, Doctors AS D\nWHERE A.doctor_id = D.doctor_id\nGROUP BY\n  D.specialty;\n\nINSERT INTO Appointments (patient_id, doctor_id, appointment_date, reason)\nVALUES\n  (1, 3, '2023-11-15 10:00:00', 'Routine check-up');\n\nUPDATE Appointments\nSET\n  reason = 'Follow-up on previous visit'\nWHERE\n  appointment_id = 1;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+228,
+233
+],
+"alt_span": [
+228,
+229
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": ", Doctors AS D\nWHERE",
+"nat_span": [
+247,
+252
+],
+"alt_span": [
+243,
+263
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Doctors AS D\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+280,
+303
+],
+"alt_span": [
+291,
+297
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+488,
+493
+],
+"alt_span": [
+482,
+483
+]
+},
+{
+"k": 4,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+507,
+512
+],
+"alt_span": [
+497,
+503
+]
+},
+{
+"k": 5,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+540,
+549
+],
+"alt_span": [
+531,
+538
+]
+},
+{
+"k": 6,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+659,
+664
+],
+"alt_span": [
+648,
+649
+]
+},
+{
+"k": 7,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+677,
+682
+],
+"alt_span": [
+662,
+668
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.927,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t031",
+"family": "sql_join_style",
+"topic": "Subscription Service Management",
+"angle": "code",
+"text_es": "Schema: Users (user_id INT, username VARCHAR, email VARCHAR), Plans (plan_id INT, plan_name VARCHAR, price_monthly DECIMAL, features TEXT), Subscriptions (subscription_id INT, user_id INT, plan_id INT, start_date DATE, end_date DATE, status VARCHAR).\n\nQueries:\n1. Select all users and their active subscriptions.\n2. Find all users subscribed to a specific plan (e.g., 'Premium Plan').\n3. Count the number of subscriptions per plan.\n4. Create a new subscription for a user.\n5. Change a subscription's status to 'Cancelled'.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT u.user_id, u.username, s.subscription_id, s.start_date, s.end_date\nFROM Users u\nJOIN Subscriptions s ON u.user_id = s.user_id\nWHERE s.status = 'active';\n\nSELECT u.user_id, u.username, u.email\nFROM Users u\nJOIN Subscriptions s ON u.user_id = s.user_id\nJOIN Plans p ON s.plan_id = p.plan_id\nWHERE p.plan_name = 'Premium Plan';\n\nSELECT p.plan_name, COUNT(s.subscription_id) AS subscription_count\nFROM Plans p\nLEFT JOIN Subscriptions s ON p.plan_id = s.plan_id\nGROUP BY p.plan_name;\n\nINSERT INTO Subscriptions (user_id, plan_id, start_date, end_date, status)\nSELECT u.user_id, p.plan_id, '2023-10-26', '2024-10-25', 'active'\nFROM Users u\nJOIN Plans p ON p.plan_name = 'Basic Plan'\nWHERE u.username = 'new_user_name';\n\nUPDATE Subscriptions\nSET status = 'Cancelled'\nWHERE subscription_id = (SELECT s.subscription_id\n                         FROM Subscriptions s\n                         JOIN Users u ON s.user_id = u.user_id\n                         WHERE u.username = 'example_user' AND s.status = 'active');\n",
+"text_alt": "SELECT u.user_id, u.username, s.subscription_id, s.start_date, s.end_date\nFROM Users u, Subscriptions s\nWHERE u.user_id = s.user_id\nAND s.status = 'active';\n\nSELECT u.user_id, u.username, u.email\nFROM Users u, Subscriptions s, Plans p\nWHERE u.user_id = s.user_id\nAND s.plan_id = p.plan_id\nAND p.plan_name = 'Premium Plan';\n\nSELECT p.plan_name, COUNT(s.subscription_id) AS subscription_count\nFROM Plans p, Subscriptions s\nWHERE p.plan_id = s.plan_id\nGROUP BY p.plan_name;\n\nINSERT INTO Subscriptions (user_id, plan_id, start_date, end_date, status)\nSELECT u.user_id, p.plan_id, '2023-10-26', '2024-10-25', 'active'\nFROM Users u, Plans p\nWHERE p.plan_name = 'Basic Plan'\nAND u.username = 'new_user_name';\n\nUPDATE Subscriptions\nSET status = 'Cancelled'\nWHERE subscription_id = (SELECT s.subscription_id\n                         FROM Subscriptions s, Users u\n                         WHERE s.user_id = u.user_id\n                         AND u.username = 'example_user' AND s.status = 'active');\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+86,
+91
+],
+"alt_span": [
+86,
+87
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+107,
+110
+],
+"alt_span": [
+103,
+109
+]
+},
+{
+"k": 2,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+133,
+138
+],
+"alt_span": [
+132,
+135
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+211,
+216
+],
+"alt_span": [
+208,
+209
+]
+},
+{
+"k": 4,
+"nat": " ON",
+"alt": ", Plans p\nWHERE",
+"nat_span": [
+232,
+235
+],
+"alt_span": [
+225,
+240
+]
+},
+{
+"k": 5,
+"nat": "JOIN Plans p ON",
+"alt": "AND",
+"nat_span": [
+258,
+273
+],
+"alt_span": [
+263,
+266
+]
+},
+{
+"k": 6,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+296,
+301
+],
+"alt_span": [
+289,
+292
+]
+},
+{
+"k": 7,
+"nat": "\nLEFT JOIN",
+"alt": ",",
+"nat_span": [
+412,
+422
+],
+"alt_span": [
+403,
+404
+]
+},
+{
+"k": 8,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+438,
+441
+],
+"alt_span": [
+420,
+426
+]
+},
+{
+"k": 9,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+640,
+645
+],
+"alt_span": [
+625,
+626
+]
+},
+{
+"k": 10,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+653,
+656
+],
+"alt_span": [
+634,
+640
+]
+},
+{
+"k": 11,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+684,
+689
+],
+"alt_span": [
+668,
+671
+]
+},
+{
+"k": 12,
+"nat": "\n                         JOIN",
+"alt": ",",
+"nat_span": [
+862,
+892
+],
+"alt_span": [
+844,
+845
+]
+},
+{
+"k": 13,
+"nat": " ON",
+"alt": "\n                         WHERE",
+"nat_span": [
+900,
+903
+],
+"alt_span": [
+853,
+884
+]
+},
+{
+"k": 14,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+951,
+956
+],
+"alt_span": [
+932,
+935
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 0.911,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t032",
+"family": "sql_join_style",
+"topic": "Conference Session Scheduling",
+"angle": "code",
+"text_es": "Schema: Sessions (session_id INT, session_title VARCHAR, session_time DATETIME, room_number VARCHAR), Speakers (speaker_id INT, first_name VARCHAR, last_name VARCHAR, affiliation VARCHAR), SessionSpeakers (session_id INT, speaker_id INT).\n\nQueries:\n1. List all sessions and their speakers.\n2. Find all sessions presented by a specific speaker (e.g., speaker_id = 3).\n3. Count the number of sessions per room number.\n4. Add a new conference session.\n5. Assign a speaker to a session.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n  s.session_id,\n  s.session_title,\n  s.session_time,\n  s.room_number,\n  sp.first_name,\n  sp.last_name\nFROM Sessions AS s\nJOIN SessionSpeakers AS ss\n  ON s.session_id = ss.session_id\nJOIN Speakers AS sp\n  ON ss.speaker_id = sp.speaker_id;\n\nSELECT\n  s.session_id,\n  s.session_title,\n  s.session_time,\n  s.room_number\nFROM Sessions AS s\nJOIN SessionSpeakers AS ss\n  ON s.session_id = ss.session_id\nWHERE\n  ss.speaker_id = 3;\n\nSELECT\n  room_number,\n  COUNT(session_id) AS session_count\nFROM Sessions\nGROUP BY\n  room_number;\n\nINSERT INTO Sessions (session_id, session_title, session_time, room_number)\nVALUES\n  (101, 'Advanced SQL Techniques', '2024-11-15 10:00:00', 'Room A');\n\nINSERT INTO SessionSpeakers (session_id, speaker_id)\nSELECT\n  101,\n  sp.speaker_id\nFROM Speakers AS sp\nWHERE\n  sp.first_name = 'John' AND sp.last_name = 'Doe';\n",
+"text_alt": "SELECT\n  s.session_id,\n  s.session_title,\n  s.session_time,\n  s.room_number,\n  sp.first_name,\n  sp.last_name\nFROM Sessions AS s, SessionSpeakers AS ss, Speakers AS sp\nWHERE s.session_id = ss.session_id\n  AND ss.speaker_id = sp.speaker_id;\n\nSELECT\n  s.session_id,\n  s.session_title,\n  s.session_time,\n  s.room_number\nFROM Sessions AS s, SessionSpeakers AS ss\nWHERE s.session_id = ss.session_id\n  AND ss.speaker_id = 3;\n\nSELECT\n  room_number,\n  COUNT(session_id) AS session_count\nFROM Sessions\nGROUP BY\n  room_number;\n\nINSERT INTO Sessions (session_id, session_title, session_time, room_number)\nVALUES\n  (101, 'Advanced SQL Techniques', '2024-11-15 10:00:00', 'Room A');\n\nINSERT INTO SessionSpeakers (session_id, speaker_id)\nSELECT\n  101,\n  sp.speaker_id\nFROM Speakers AS sp\nWHERE\n  sp.first_name = 'John' AND sp.last_name = 'Doe';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+127,
+132
+],
+"alt_span": [
+127,
+128
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": ", Speakers AS sp\nWHERE",
+"nat_span": [
+154,
+159
+],
+"alt_span": [
+150,
+172
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Speakers AS sp\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+188,
+213
+],
+"alt_span": [
+201,
+207
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+340,
+345
+],
+"alt_span": [
+334,
+335
+]
+},
+{
+"k": 4,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+367,
+372
+],
+"alt_span": [
+357,
+363
+]
+},
+{
+"k": 5,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+401,
+410
+],
+"alt_span": [
+392,
+399
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.931,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t033",
+"family": "sql_join_style",
+"topic": "Survey Response Analysis",
+"angle": "code",
+"text_es": "Schema: Surveys (survey_id INT, survey_title VARCHAR, creation_date DATE), Questions (question_id INT, survey_id INT, question_text TEXT, question_type VARCHAR), Responses (response_id INT, question_id INT, participant_id INT, response_text TEXT, submission_date DATE).\n\nQueries:\n1. Select all questions for a specific survey (e.g., survey_id = 1).\n2. Find all responses to a specific question (e.g., question_id = 10).\n3. Count the number of responses per question type.\n4. Add a new survey question.\n5. Record a new survey response.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT question_id, question_text, question_type\nFROM Questions\nWHERE survey_id = 1;\n\nSELECT response_id, participant_id, response_text, submission_date\nFROM Responses\nWHERE question_id = 10;\n\nSELECT q.question_type, COUNT(r.response_id) AS response_count\nFROM Questions AS q\nJOIN Responses AS r ON q.question_id = r.question_id\nGROUP BY q.question_type;\n\nINSERT INTO Questions (survey_id, question_text, question_type)\nVALUES (1, 'What is your favorite color?', 'text');\n\nINSERT INTO Responses (question_id, participant_id, response_text, submission_date)\nVALUES (15, 101, 'Blue', '2023-10-27');\n\nSELECT s.survey_title, q.question_text\nFROM Surveys AS s\nJOIN Questions AS q ON s.survey_id = q.survey_id\nWHERE s.survey_id = 2;\n\nSELECT r.response_text, q.question_text\nFROM Responses AS r\nJOIN Questions AS q ON r.question_id = q.question_id\nWHERE r.participant_id = 5;\n\nSELECT s.survey_title, COUNT(DISTINCT r.participant_id) AS distinct_participants\nFROM Surveys AS s\nJOIN Questions AS q ON s.survey_id = q.survey_id\nJOIN Responses AS r ON q.question_id = r.question_id\nGROUP BY s.survey_title;\n",
+"text_alt": "SELECT question_id, question_text, question_type\nFROM Questions\nWHERE survey_id = 1;\n\nSELECT response_id, participant_id, response_text, submission_date\nFROM Responses\nWHERE question_id = 10;\n\nSELECT q.question_type, COUNT(r.response_id) AS response_count\nFROM Questions AS q, Responses AS r \nWHERE q.question_id = r.question_id\nGROUP BY q.question_type;\n\nINSERT INTO Questions (survey_id, question_text, question_type)\nVALUES (1, 'What is your favorite color?', 'text');\n\nINSERT INTO Responses (question_id, participant_id, response_text, submission_date)\nVALUES (15, 101, 'Blue', '2023-10-27');\n\nSELECT s.survey_title, q.question_text\nFROM Surveys AS s, Questions AS q \nWHERE s.survey_id = q.survey_id\nAND s.survey_id = 2;\n\nSELECT r.response_text, q.question_text\nFROM Responses AS r, Questions AS q \nWHERE r.question_id = q.question_id\nAND r.participant_id = 5;\n\nSELECT s.survey_title, COUNT(DISTINCT r.participant_id) AS distinct_participants\nFROM Surveys AS s, Questions AS q, Responses AS r \nWHERE s.survey_id = q.survey_id\nAND q.question_id = r.question_id\nGROUP BY s.survey_title;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+275,
+280
+],
+"alt_span": [
+275,
+276
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": " \nWHERE",
+"nat_span": [
+295,
+298
+],
+"alt_span": [
+291,
+298
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+654,
+659
+],
+"alt_span": [
+654,
+655
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": " \nWHERE",
+"nat_span": [
+674,
+677
+],
+"alt_span": [
+670,
+677
+]
+},
+{
+"k": 4,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+704,
+709
+],
+"alt_span": [
+704,
+707
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+787,
+792
+],
+"alt_span": [
+785,
+786
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": " \nWHERE",
+"nat_span": [
+807,
+810
+],
+"alt_span": [
+801,
+808
+]
+},
+{
+"k": 7,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+841,
+846
+],
+"alt_span": [
+839,
+842
+]
+},
+{
+"k": 8,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+968,
+973
+],
+"alt_span": [
+964,
+965
+]
+},
+{
+"k": 9,
+"nat": " ON",
+"alt": ", Responses AS r \nWHERE",
+"nat_span": [
+988,
+991
+],
+"alt_span": [
+980,
+1003
+]
+},
+{
+"k": 10,
+"nat": "JOIN Responses AS r ON",
+"alt": "AND",
+"nat_span": [
+1018,
+1040
+],
+"alt_span": [
+1030,
+1033
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.929,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t034",
+"family": "sql_join_style",
+"topic": "Asset Management System",
+"angle": "code",
+"text_es": "Schema: Assets (asset_id INT, asset_name VARCHAR, asset_type VARCHAR, purchase_date DATE, value DECIMAL), Locations (location_id INT, location_name VARCHAR, building VARCHAR), AssetLocations (asset_id INT, location_id INT, assign_date DATE).\n\nQueries:\n1. List all assets and their current locations.\n2. Find all assets of a specific type (e.g., 'Computer').\n3. Calculate the total value of assets in each location.\n4. Add a new asset.\n5. Update an asset's location.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT a.asset_id, a.asset_name, l.location_name\nFROM Assets a\nJOIN AssetLocations al ON a.asset_id = al.asset_id\nJOIN Locations l ON al.location_id = l.location_id;\n\nSELECT asset_id, asset_name, asset_type\nFROM Assets\nWHERE asset_type = 'Computer';\n\nSELECT l.location_name, SUM(a.value) AS total_value\nFROM Assets a\nJOIN AssetLocations al ON a.asset_id = al.asset_id\nJOIN Locations l ON al.location_id = l.location_id\nGROUP BY l.location_name;\n\nINSERT INTO Assets (asset_id, asset_name, asset_type, purchase_date, value)\nVALUES (101, 'New Server', 'Server', '2023-01-15', 5000.00);\n\nUPDATE AssetLocations\nSET location_id = (SELECT location_id FROM Locations WHERE location_name = 'Data Center A')\nWHERE asset_id = (SELECT asset_id FROM Assets WHERE asset_name = 'New Server');\n",
+"text_alt": "SELECT a.asset_id, a.asset_name, l.location_name\nFROM Assets a, AssetLocations al, Locations l\nWHERE a.asset_id = al.asset_id\nAND al.location_id = l.location_id;\n\nSELECT asset_id, asset_name, asset_type\nFROM Assets\nWHERE asset_type = 'Computer';\n\nSELECT l.location_name, SUM(a.value) AS total_value\nFROM Assets a, AssetLocations al, Locations l\nWHERE a.asset_id = al.asset_id\nAND al.location_id = l.location_id\nGROUP BY l.location_name;\n\nINSERT INTO Assets (asset_id, asset_name, asset_type, purchase_date, value)\nVALUES (101, 'New Server', 'Server', '2023-01-15', 5000.00);\n\nUPDATE AssetLocations\nSET location_id = (SELECT location_id FROM Locations WHERE location_name = 'Data Center A')\nWHERE asset_id = (SELECT asset_id FROM Assets WHERE asset_name = 'New Server');\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+62,
+67
+],
+"alt_span": [
+62,
+63
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", Locations l\nWHERE",
+"nat_span": [
+85,
+88
+],
+"alt_span": [
+81,
+100
+]
+},
+{
+"k": 2,
+"nat": "JOIN Locations l ON",
+"alt": "AND",
+"nat_span": [
+114,
+133
+],
+"alt_span": [
+126,
+129
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+316,
+321
+],
+"alt_span": [
+312,
+313
+]
+},
+{
+"k": 4,
+"nat": " ON",
+"alt": ", Locations l\nWHERE",
+"nat_span": [
+339,
+342
+],
+"alt_span": [
+331,
+350
+]
+},
+{
+"k": 5,
+"nat": "JOIN Locations l ON",
+"alt": "AND",
+"nat_span": [
+368,
+387
+],
+"alt_span": [
+376,
+379
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.926,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t035",
+"family": "sql_join_style",
+"topic": "Online Course Progress Tracking",
+"angle": "code",
+"text_es": "Schema: Courses (course_id INT, course_name VARCHAR, instructor VARCHAR), Students (student_id INT, first_name VARCHAR, last_name VARCHAR), Progress (progress_id INT, student_id INT, course_id INT, completion_percentage INT, last_accessed DATE).\n\nQueries:\n1. Select all students and their progress in courses.\n2. Find all students enrolled in a specific course (e.g., 'Database Fundamentals').\n3. Count the number of students who completed a course (completion_percentage = 100).\n4. Enroll a student in a new course.\n5. Update a student's course completion percentage.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n  s.first_name,\n  s.last_name,\n  c.course_name,\n  p.completion_percentage\nFROM Students AS s\nJOIN Progress AS p\n  ON s.student_id = p.student_id\nJOIN Courses AS c\n  ON p.course_id = c.course_id;\n\nSELECT\n  s.first_name,\n  s.last_name\nFROM Students AS s\nJOIN Progress AS p\n  ON s.student_id = p.student_id\nJOIN Courses AS c\n  ON p.course_id = c.course_id\nWHERE\n  c.course_name = 'Database Fundamentals';\n\nSELECT\n  COUNT(DISTINCT s.student_id)\nFROM Students AS s\nJOIN Progress AS p\n  ON s.student_id = p.student_id\nWHERE\n  p.completion_percentage = 100;\n\nINSERT INTO Progress (student_id, course_id, completion_percentage, last_accessed)\nSELECT\n  s.student_id,\n  c.course_id,\n  0,\n  CURRENT_DATE\nFROM Students AS s\nJOIN Courses AS c\n  ON c.course_name = 'Web Development Basics'\nWHERE\n  s.first_name = 'Alice' AND s.last_name = 'Smith';\n\nUPDATE Progress AS p\nSET\n  completion_percentage = 75,\n  last_accessed = CURRENT_DATE\nFROM Students AS s\nJOIN Courses AS c\n  ON p.student_id = s.student_id AND p.course_id = c.course_id\nWHERE\n  s.first_name = 'Alice' AND s.last_name = 'Smith' AND c.course_name = 'Database Fundamentals';\n",
+"text_alt": "SELECT\n  s.first_name,\n  s.last_name,\n  c.course_name,\n  p.completion_percentage\nFROM Students AS s, Progress AS p, Courses AS c\nWHERE s.student_id = p.student_id\n  AND p.course_id = c.course_id;\n\nSELECT\n  s.first_name,\n  s.last_name\nFROM Students AS s, Progress AS p, Courses AS c\nWHERE s.student_id = p.student_id\n  AND p.course_id = c.course_id\n  AND c.course_name = 'Database Fundamentals';\n\nSELECT\n  COUNT(DISTINCT s.student_id)\nFROM Students AS s, Progress AS p\nWHERE s.student_id = p.student_id\n  AND p.completion_percentage = 100;\n\nINSERT INTO Progress (student_id, course_id, completion_percentage, last_accessed)\nSELECT\n  s.student_id,\n  c.course_id,\n  0,\n  CURRENT_DATE\nFROM Students AS s, Courses AS c\nWHERE c.course_name = 'Web Development Basics'\n  AND s.first_name = 'Alice' AND s.last_name = 'Smith';\n\nUPDATE Progress AS p\nSET\n  completion_percentage = 75,\n  last_accessed = CURRENT_DATE\nFROM Students AS s, Courses AS c\nWHERE p.student_id = s.student_id AND p.course_id = c.course_id\n  AND s.first_name = 'Alice' AND s.last_name = 'Smith' AND c.course_name = 'Database Fundamentals';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+99,
+104
+],
+"alt_span": [
+99,
+100
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": ", Courses AS c\nWHERE",
+"nat_span": [
+118,
+123
+],
+"alt_span": [
+114,
+134
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Courses AS c\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+151,
+174
+],
+"alt_span": [
+162,
+168
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+258,
+263
+],
+"alt_span": [
+252,
+253
+]
+},
+{
+"k": 4,
+"nat": "\n  ON",
+"alt": ", Courses AS c\nWHERE",
+"nat_span": [
+277,
+282
+],
+"alt_span": [
+267,
+287
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN Courses AS c\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+310,
+333
+],
+"alt_span": [
+315,
+321
+]
+},
+{
+"k": 6,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+359,
+368
+],
+"alt_span": [
+347,
+354
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+466,
+471
+],
+"alt_span": [
+452,
+453
+]
+},
+{
+"k": 8,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+485,
+490
+],
+"alt_span": [
+467,
+473
+]
+},
+{
+"k": 9,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+518,
+527
+],
+"alt_span": [
+501,
+508
+]
+},
+{
+"k": 10,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+718,
+723
+],
+"alt_span": [
+699,
+700
+]
+},
+{
+"k": 11,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+736,
+741
+],
+"alt_span": [
+713,
+719
+]
+},
+{
+"k": 12,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+782,
+791
+],
+"alt_span": [
+760,
+767
+]
+},
+{
+"k": 13,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+946,
+951
+],
+"alt_span": [
+922,
+923
+]
+},
+{
+"k": 14,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+964,
+969
+],
+"alt_span": [
+936,
+942
+]
+},
+{
+"k": 15,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+1027,
+1036
+],
+"alt_span": [
+1000,
+1007
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.882,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t036",
+"family": "sql_join_style",
+"topic": "Vendor Contact Management",
+"angle": "code",
+"text_es": "Schema: Vendors (vendor_id INT, vendor_name VARCHAR, industry VARCHAR, phone VARCHAR), Contacts (contact_id INT, vendor_id INT, first_name VARCHAR, last_name VARCHAR, email VARCHAR, role VARCHAR).\n\nQueries:\n1. List all vendors and their primary contacts.\n2. Find all contacts for a specific vendor (e.g., vendor_name = 'ABC Supplies').\n3. Count the number of contacts per industry.\n4. Add a new vendor.\n5. Update a contact's email address.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n  v.vendor_name,\n  c.first_name,\n  c.last_name,\n  c.email\nFROM Vendors AS v\nJOIN Contacts AS c\n  ON v.vendor_id = c.vendor_id\nWHERE\n  c.role = 'Primary';\n\nSELECT\n  c.first_name,\n  c.last_name,\n  c.email,\n  c.role\nFROM Contacts AS c\nJOIN Vendors AS v\n  ON c.vendor_id = v.vendor_id\nWHERE\n  v.vendor_name = 'ABC Supplies';\n\nSELECT\n  v.industry,\n  COUNT(c.contact_id) AS number_of_contacts\nFROM Vendors AS v\nJOIN Contacts AS c\n  ON v.vendor_id = c.vendor_id\nGROUP BY\n  v.industry;\n\nINSERT INTO Vendors (vendor_name, industry, phone)\nVALUES\n  ('XYZ Corp', 'Technology', '555-1234');\n\nUPDATE Contacts\nSET\n  email = 'jane.doe.new@example.com'\nFROM Contacts AS c\nJOIN Vendors AS v\n  ON c.vendor_id = v.vendor_id\nWHERE\n  c.first_name = 'Jane' AND c.last_name = 'Doe' AND v.vendor_name = 'ABC Supplies';\n",
+"text_alt": "SELECT\n  v.vendor_name,\n  c.first_name,\n  c.last_name,\n  c.email\nFROM Vendors AS v, Contacts AS c\nWHERE v.vendor_id = c.vendor_id\n  AND c.role = 'Primary';\n\nSELECT\n  c.first_name,\n  c.last_name,\n  c.email,\n  c.role\nFROM Contacts AS c, Vendors AS v\nWHERE c.vendor_id = v.vendor_id\n  AND v.vendor_name = 'ABC Supplies';\n\nSELECT\n  v.industry,\n  COUNT(c.contact_id) AS number_of_contacts\nFROM Vendors AS v, Contacts AS c\nWHERE v.vendor_id = c.vendor_id\nGROUP BY\n  v.industry;\n\nINSERT INTO Vendors (vendor_name, industry, phone)\nVALUES\n  ('XYZ Corp', 'Technology', '555-1234');\n\nUPDATE Contacts\nSET\n  email = 'jane.doe.new@example.com'\nFROM Contacts AS c, Vendors AS v\nWHERE c.vendor_id = v.vendor_id\n  AND c.first_name = 'Jane' AND c.last_name = 'Doe' AND v.vendor_name = 'ABC Supplies';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+82,
+87
+],
+"alt_span": [
+82,
+83
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+101,
+106
+],
+"alt_span": [
+97,
+103
+]
+},
+{
+"k": 2,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+132,
+141
+],
+"alt_span": [
+129,
+136
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+238,
+243
+],
+"alt_span": [
+233,
+234
+]
+},
+{
+"k": 4,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+256,
+261
+],
+"alt_span": [
+247,
+253
+]
+},
+{
+"k": 5,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+287,
+296
+],
+"alt_span": [
+279,
+286
+]
+},
+{
+"k": 6,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+411,
+416
+],
+"alt_span": [
+401,
+402
+]
+},
+{
+"k": 7,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+430,
+435
+],
+"alt_span": [
+416,
+422
+]
+},
+{
+"k": 8,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+662,
+667
+],
+"alt_span": [
+649,
+650
+]
+},
+{
+"k": 9,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+680,
+685
+],
+"alt_span": [
+663,
+669
+]
+},
+{
+"k": 10,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+711,
+720
+],
+"alt_span": [
+695,
+702
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.929,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t037",
+"family": "sql_join_style",
+"topic": "Game Leaderboard System",
+"angle": "code",
+"text_es": "Schema: Players (player_id INT, username VARCHAR, join_date DATE), Games (game_id INT, game_name VARCHAR, genre VARCHAR), Scores (score_id INT, player_id INT, game_id INT, score INT, score_date DATETIME).\n\nQueries:\n1. Select all players and their highest scores in any game.\n2. Find all scores for a specific game (e.g., 'Space Invaders').\n3. Calculate the average score for each player.\n4. Add a new player.\n5. Record a new game score.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n  p.username,\n  MAX(s.score) AS highest_score\nFROM Players AS p\nJOIN Scores AS s\n  ON p.player_id = s.player_id\nGROUP BY\n  p.username;\n\nSELECT\n  s.score_id,\n  p.username,\n  g.game_name,\n  s.score,\n  s.score_date\nFROM Scores AS s\nJOIN Players AS p\n  ON s.player_id = p.player_id\nJOIN Games AS g\n  ON s.game_id = g.game_id\nWHERE\n  g.game_name = 'Space Invaders';\n\nSELECT\n  p.username,\n  AVG(s.score) AS average_score\nFROM Players AS p\nJOIN Scores AS s\n  ON p.player_id = s.player_id\nGROUP BY\n  p.username;\n\nINSERT INTO Players (username, join_date)\nVALUES ('NewPlayer', '2023-10-27');\n\nINSERT INTO Scores (player_id, game_id, score, score_date)\nSELECT\n  p.player_id,\n  g.game_id,\n  1500,\n  CURRENT_TIMESTAMP\nFROM Players AS p\nJOIN Games AS g\n  ON p.username = 'NewPlayer' AND g.game_name = 'Space Invaders';\n",
+"text_alt": "SELECT\n  p.username,\n  MAX(s.score) AS highest_score\nFROM Players AS p, Scores AS s\nWHERE p.player_id = s.player_id\nGROUP BY\n  p.username;\n\nSELECT\n  s.score_id,\n  p.username,\n  g.game_name,\n  s.score,\n  s.score_date\nFROM Scores AS s, Players AS p, Games AS g\nWHERE s.player_id = p.player_id\n  AND s.game_id = g.game_id\nWHERE\n  g.game_name = 'Space Invaders';\n\nSELECT\n  p.username,\n  AVG(s.score) AS average_score\nFROM Players AS p, Scores AS s\nWHERE p.player_id = s.player_id\nGROUP BY\n  p.username;\n\nINSERT INTO Players (username, join_date)\nVALUES ('NewPlayer', '2023-10-27');\n\nINSERT INTO Scores (player_id, game_id, score, score_date)\nSELECT\n  p.player_id,\n  g.game_id,\n  1500,\n  CURRENT_TIMESTAMP\nFROM Players AS p, Games AS g\nWHERE p.username = 'NewPlayer' AND g.game_name = 'Space Invaders';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+70,
+75
+],
+"alt_span": [
+70,
+71
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+87,
+92
+],
+"alt_span": [
+83,
+89
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+235,
+240
+],
+"alt_span": [
+232,
+233
+]
+},
+{
+"k": 3,
+"nat": "\n  ON",
+"alt": ", Games AS g\nWHERE",
+"nat_span": [
+253,
+258
+],
+"alt_span": [
+246,
+264
+]
+},
+{
+"k": 4,
+"nat": "\nJOIN Games AS g\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+284,
+305
+],
+"alt_span": [
+290,
+296
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+439,
+444
+],
+"alt_span": [
+430,
+431
+]
+},
+{
+"k": 6,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+456,
+461
+],
+"alt_span": [
+443,
+449
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+730,
+735
+],
+"alt_span": [
+718,
+719
+]
+},
+{
+"k": 8,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+746,
+751
+],
+"alt_span": [
+730,
+736
+]
+}
+],
+"k_en": 9,
+"shared_fraction": 0.919,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t038",
+"family": "sql_join_style",
+"topic": "Social Media User Posts",
+"angle": "code",
+"text_es": "Schema: Users (user_id INT, username VARCHAR, registration_date DATE), Posts (post_id INT, user_id INT, post_text TEXT, post_timestamp DATETIME), Likes (like_id INT, post_id INT, user_id INT).\n\nQueries:\n1. List all posts and their authors.\n2. Find all posts liked by a specific user (e.g., user_id = 5).\n3. Count the number of likes for each post.\n4. Create a new user post.\n5. Add a like to a post.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT P.post_id, P.post_text, U.username\nFROM Posts P\nJOIN Users U ON P.user_id = U.user_id;\n\nSELECT P.post_id, P.post_text, U.username\nFROM Posts P\nJOIN Likes L ON P.post_id = L.post_id\nJOIN Users U ON P.user_id = U.user_id\nWHERE L.user_id = 5;\n\nSELECT P.post_id, P.post_text, COUNT(L.like_id) AS like_count\nFROM Posts P\nLEFT JOIN Likes L ON P.post_id = L.post_id\nGROUP BY P.post_id, P.post_text;\n\nINSERT INTO Posts (user_id, post_text, post_timestamp)\nVALUES (1, 'This is a new post from User 1.', NOW());\n\nINSERT INTO Likes (post_id, user_id)\nSELECT P.post_id, 2\nFROM Posts P\nWHERE P.post_id = 10;\n",
+"text_alt": "SELECT P.post_id, P.post_text, U.username\nFROM Posts P, Users U\nWHERE P.user_id = U.user_id;\n\nSELECT P.post_id, P.post_text, U.username\nFROM Posts P, Likes L, Users U\nWHERE P.post_id = L.post_id AND P.user_id = U.user_id\nAND L.user_id = 5;\n\nSELECT P.post_id, P.post_text, COUNT(L.like_id) AS like_count\nFROM Posts P LEFT JOIN Likes L ON P.post_id = L.post_id\nGROUP BY P.post_id, P.post_text;\n\nINSERT INTO Posts (user_id, post_text, post_timestamp)\nVALUES (1, 'This is a new post from User 1.', NOW());\n\nINSERT INTO Likes (post_id, user_id)\nSELECT P.post_id, 2\nFROM Posts P\nWHERE P.post_id = 10;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+54,
+59
+],
+"alt_span": [
+54,
+55
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+67,
+70
+],
+"alt_span": [
+63,
+69
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+149,
+154
+],
+"alt_span": [
+148,
+149
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": ", Users U\nWHERE",
+"nat_span": [
+162,
+165
+],
+"alt_span": [
+157,
+172
+]
+},
+{
+"k": 4,
+"nat": "\nJOIN Users U ON",
+"alt": " AND",
+"nat_span": [
+187,
+203
+],
+"alt_span": [
+194,
+198
+]
+},
+{
+"k": 5,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+226,
+231
+],
+"alt_span": [
+221,
+224
+]
+},
+{
+"k": 6,
+"nat": "\n",
+"alt": " ",
+"nat_span": [
+322,
+323
+],
+"alt_span": [
+315,
+316
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.938,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t039",
+"family": "sql_join_style",
+"topic": "Warehouse Stock Control",
+"angle": "code",
+"text_es": "Schema: Products (product_id INT, product_name VARCHAR, unit_cost DECIMAL), Warehouses (warehouse_id INT, warehouse_name VARCHAR, location VARCHAR), Stock (product_id INT, warehouse_id INT, quantity_on_hand INT, last_checked DATE).\n\nQueries:\n1. Select all products and their quantities in each warehouse.\n2. Find all products in a specific warehouse (e.g., 'Main Warehouse').\n3. Calculate the total quantity of each product across all warehouses.\n4. Add a new product to stock in a warehouse.\n5. Update the quantity of a product in a warehouse.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n  p.product_name,\n  w.warehouse_name,\n  s.quantity_on_hand\nFROM Products AS p\nJOIN Stock AS s\n  ON p.product_id = s.product_id\nJOIN Warehouses AS w\n  ON s.warehouse_id = w.warehouse_id;\n\nSELECT\n  p.product_name,\n  s.quantity_on_hand\nFROM Products AS p\nJOIN Stock AS s\n  ON p.product_id = s.product_id\nJOIN Warehouses AS w\n  ON s.warehouse_id = w.warehouse_id\nWHERE\n  w.warehouse_name = 'Main Warehouse';\n\nSELECT\n  p.product_name,\n  SUM(s.quantity_on_hand) AS total_quantity\nFROM Products AS p\nJOIN Stock AS s\n  ON p.product_id = s.product_id\nGROUP BY\n  p.product_name;\n\nINSERT INTO Stock (product_id, warehouse_id, quantity_on_hand, last_checked)\nSELECT\n  p.product_id,\n  w.warehouse_id,\n  100,\n  CURRENT_DATE\nFROM Products AS p\nJOIN Warehouses AS w\n  ON w.warehouse_name = 'Main Warehouse'\nWHERE\n  p.product_name = 'New Product X';\n\nUPDATE Stock\nSET\n  quantity_on_hand = 150,\n  last_checked = CURRENT_DATE\nFROM Products AS p\nJOIN Warehouses AS w\n  ON Stock.product_id = p.product_id AND Stock.warehouse_id = w.warehouse_id\nWHERE\n  p.product_name = 'Laptop' AND w.warehouse_name = 'Main Warehouse';\n",
+"text_alt": "SELECT\n  p.product_name,\n  w.warehouse_name,\n  s.quantity_on_hand\nFROM Products AS p, Stock AS s, Warehouses AS w\nWHERE p.product_id = s.product_id\n  AND s.warehouse_id = w.warehouse_id;\n\nSELECT\n  p.product_name,\n  s.quantity_on_hand\nFROM Products AS p, Stock AS s, Warehouses AS w\nWHERE p.product_id = s.product_id\n  AND s.warehouse_id = w.warehouse_id\n  AND w.warehouse_name = 'Main Warehouse';\n\nSELECT\n  p.product_name,\n  SUM(s.quantity_on_hand) AS total_quantity\nFROM Products AS p, Stock AS s\nWHERE p.product_id = s.product_id\nGROUP BY\n  p.product_name;\n\nINSERT INTO Stock (product_id, warehouse_id, quantity_on_hand, last_checked)\nSELECT\n  p.product_id,\n  w.warehouse_id,\n  100,\n  CURRENT_DATE\nFROM Products AS p, Warehouses AS w\nWHERE w.warehouse_name = 'Main Warehouse'\n  AND p.product_name = 'New Product X';\n\nUPDATE Stock\nSET\n  quantity_on_hand = 150,\n  last_checked = CURRENT_DATE\nFROM Products AS p, Warehouses AS w\nWHERE Stock.product_id = p.product_id AND Stock.warehouse_id = w.warehouse_id\n  AND p.product_name = 'Laptop' AND w.warehouse_name = 'Main Warehouse';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+84,
+89
+],
+"alt_span": [
+84,
+85
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": ", Warehouses AS w\nWHERE",
+"nat_span": [
+100,
+105
+],
+"alt_span": [
+96,
+119
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Warehouses AS w\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+133,
+159
+],
+"alt_span": [
+147,
+153
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+258,
+263
+],
+"alt_span": [
+252,
+253
+]
+},
+{
+"k": 4,
+"nat": "\n  ON",
+"alt": ", Warehouses AS w\nWHERE",
+"nat_span": [
+274,
+279
+],
+"alt_span": [
+264,
+287
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN Warehouses AS w\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+307,
+333
+],
+"alt_span": [
+315,
+321
+]
+},
+{
+"k": 6,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+365,
+374
+],
+"alt_span": [
+353,
+360
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+499,
+504
+],
+"alt_span": [
+485,
+486
+]
+},
+{
+"k": 8,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+515,
+520
+],
+"alt_span": [
+497,
+503
+]
+},
+{
+"k": 9,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+735,
+740
+],
+"alt_span": [
+718,
+719
+]
+},
+{
+"k": 10,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+756,
+761
+],
+"alt_span": [
+735,
+741
+]
+},
+{
+"k": 11,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+797,
+806
+],
+"alt_span": [
+777,
+784
+]
+},
+{
+"k": 12,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+932,
+937
+],
+"alt_span": [
+910,
+911
+]
+},
+{
+"k": 13,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+953,
+958
+],
+"alt_span": [
+927,
+933
+]
+},
+{
+"k": 14,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+1030,
+1039
+],
+"alt_span": [
+1005,
+1012
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 0.879,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t040",
+"family": "sql_join_style",
+"topic": "Automotive Service Records",
+"angle": "code",
+"text_es": "Schema: Vehicles (vehicle_id INT, make VARCHAR, model VARCHAR, year INT, vin VARCHAR), Owners (owner_id INT, first_name VARCHAR, last_name VARCHAR, phone VARCHAR), Services (service_id INT, vehicle_id INT, service_date DATE, description TEXT, cost DECIMAL).\n\nQueries:\n1. List all vehicles and their owners.\n2. Find all service records for a specific vehicle (e.g., vehicle_id = 20).\n3. Calculate the total service cost for each vehicle.\n4. Add a new service record for a vehicle.\n5. Update a service record's description.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n    v.vehicle_id,\n    v.make,\n    v.model,\n    v.year,\n    o.first_name,\n    o.last_name\nFROM Vehicles AS v\nJOIN Owners AS o ON v.owner_id = o.owner_id;\n\nSELECT\n    s.service_id,\n    s.service_date,\n    s.description,\n    s.cost\nFROM Services AS s\nJOIN Vehicles AS v ON s.vehicle_id = v.vehicle_id\nWHERE v.vehicle_id = 20;\n\nSELECT\n    v.make,\n    v.model,\n    SUM(s.cost) AS total_service_cost\nFROM Vehicles AS v\nJOIN Services AS s ON v.vehicle_id = s.vehicle_id\nGROUP BY\n    v.make,\n    v.model;\n\nINSERT INTO Services (vehicle_id, service_date, description, cost)\nVALUES (1, '2023-10-27', 'Oil change and tire rotation', 75.00);\n\nUPDATE Services\nSET description = 'Replaced spark plugs and air filter'\nFROM Services AS s\nJOIN Vehicles AS v ON s.vehicle_id = v.vehicle_id\nWHERE s.service_id = 5 AND v.vehicle_id = 1;\n",
+"text_alt": "SELECT\n    v.vehicle_id,\n    v.make,\n    v.model,\n    v.year,\n    o.first_name,\n    o.last_name\nFROM Vehicles AS v, Owners AS o\nWHERE v.owner_id = o.owner_id;\n\nSELECT\n    s.service_id,\n    s.service_date,\n    s.description,\n    s.cost\nFROM Services AS s, Vehicles AS v\nWHERE s.vehicle_id = v.vehicle_id\nAND v.vehicle_id = 20;\n\nSELECT\n    v.make,\n    v.model,\n    SUM(s.cost) AS total_service_cost\nFROM Vehicles AS v, Services AS s\nWHERE v.vehicle_id = s.vehicle_id\nGROUP BY\n    v.make,\n    v.model;\n\nINSERT INTO Services (vehicle_id, service_date, description, cost)\nVALUES (1, '2023-10-27', 'Oil change and tire rotation', 75.00);\n\nUPDATE Services\nSET description = 'Replaced spark plugs and air filter'\nFROM Services AS s, Vehicles AS v\nWHERE s.vehicle_id = v.vehicle_id\nAND s.service_id = 5 AND v.vehicle_id = 1;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+114,
+119
+],
+"alt_span": [
+114,
+115
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+131,
+134
+],
+"alt_span": [
+127,
+133
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+254,
+259
+],
+"alt_span": [
+253,
+254
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+273,
+276
+],
+"alt_span": [
+268,
+274
+]
+},
+{
+"k": 4,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+305,
+310
+],
+"alt_span": [
+303,
+306
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+419,
+424
+],
+"alt_span": [
+415,
+416
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+438,
+441
+],
+"alt_span": [
+430,
+436
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+728,
+733
+],
+"alt_span": [
+723,
+724
+]
+},
+{
+"k": 8,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+747,
+750
+],
+"alt_span": [
+738,
+744
+]
+},
+{
+"k": 9,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+779,
+784
+],
+"alt_span": [
+773,
+776
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.942,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t041",
+"family": "sql_join_style",
+"topic": "Public Library Memberships",
+"angle": "code",
+"text_es": "Schema: Members (member_id INT, first_name VARCHAR, last_name VARCHAR, address VARCHAR, join_date DATE), Books (book_id INT, title VARCHAR, author VARCHAR, isbn VARCHAR), Loans (loan_id INT, member_id INT, book_id INT, loan_date DATE, due_date DATE, return_date DATE).\n\nQueries:\n1. Select all members and the books they currently have on loan.\n2. Find all loans for a specific book (e.g., book_id = 50).\n3. Count the number of overdue loans.\n4. Register a new library member.\n5. Record a book return.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT M.first_name, M.last_name, B.title\nFROM Members AS M\nJOIN Loans AS L ON M.member_id = L.member_id\nJOIN Books AS B ON L.book_id = B.book_id\nWHERE L.return_date IS NULL;\n\nSELECT L.loan_id, M.first_name, M.last_name, L.loan_date, L.due_date, L.return_date\nFROM Loans AS L\nJOIN Members AS M ON L.member_id = M.member_id\nWHERE L.book_id = 50;\n\nSELECT COUNT(L.loan_id)\nFROM Loans AS L\nWHERE L.due_date < CURRENT_DATE AND L.return_date IS NULL;\n\nINSERT INTO Members (first_name, last_name, address, join_date)\nVALUES ('Jane', 'Doe', '123 Library Lane', CURRENT_DATE);\n\nUPDATE Loans AS L\nSET return_date = CURRENT_DATE\nWHERE L.loan_id = 101 AND L.return_date IS NULL;\n",
+"text_alt": "SELECT M.first_name, M.last_name, B.title\nFROM Members AS M, Loans AS L, Books AS B\nWHERE M.member_id = L.member_id AND L.book_id = B.book_id\nAND L.return_date IS NULL;\n\nSELECT L.loan_id, M.first_name, M.last_name, L.loan_date, L.due_date, L.return_date\nFROM Loans AS L, Members AS M\nWHERE L.member_id = M.member_id\nAND L.book_id = 50;\n\nSELECT COUNT(L.loan_id)\nFROM Loans AS L\nWHERE L.due_date < CURRENT_DATE AND L.return_date IS NULL;\n\nINSERT INTO Members (first_name, last_name, address, join_date)\nVALUES ('Jane', 'Doe', '123 Library Lane', CURRENT_DATE);\n\nUPDATE Loans AS L\nSET return_date = CURRENT_DATE\nWHERE L.loan_id = 101 AND L.return_date IS NULL;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+59,
+64
+],
+"alt_span": [
+59,
+60
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", Books AS B\nWHERE",
+"nat_span": [
+75,
+78
+],
+"alt_span": [
+71,
+89
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Books AS B ON",
+"alt": " AND",
+"nat_span": [
+104,
+123
+],
+"alt_span": [
+115,
+119
+]
+},
+{
+"k": 3,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+146,
+151
+],
+"alt_span": [
+142,
+145
+]
+},
+{
+"k": 4,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+275,
+280
+],
+"alt_span": [
+269,
+270
+]
+},
+{
+"k": 5,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+293,
+296
+],
+"alt_span": [
+283,
+289
+]
+},
+{
+"k": 6,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+323,
+328
+],
+"alt_span": [
+316,
+319
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.932,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t042",
+"family": "sql_join_style",
+"topic": "Online Course Reviews",
+"angle": "code",
+"text_es": "Schema: Courses (course_id INT, course_name VARCHAR, instructor VARCHAR), Students (student_id INT, first_name VARCHAR, last_name VARCHAR), Reviews (review_id INT, course_id INT, student_id INT, rating INT, comment TEXT, review_date DATE).\n\nQueries:\n1. List all courses and their average ratings.\n2. Find all reviews for a specific course (e.g., 'Introduction to Python').\n3. Count the number of 5-star reviews for each instructor.\n4. Add a new course review.\n5. Update a review's comment.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT c.course_name, AVG(r.rating) AS average_rating\nFROM Courses c\nLEFT JOIN Reviews r ON c.course_id = r.course_id\nGROUP BY c.course_name;\n\nSELECT s.first_name, s.last_name, r.rating, r.comment\nFROM Reviews r\nJOIN Students s ON r.student_id = s.student_id\nJOIN Courses c ON r.course_id = c.course_id\nWHERE c.course_name = 'Introduction to Python';\n\nSELECT c.instructor, COUNT(r.review_id) AS five_star_reviews_count\nFROM Reviews r\nJOIN Courses c ON r.course_id = c.course_id\nWHERE r.rating = 5\nGROUP BY c.instructor;\n\nINSERT INTO Reviews (course_id, student_id, rating, comment, review_date)\nVALUES ( (SELECT course_id FROM Courses WHERE course_name = 'Introduction to Python'),\n         (SELECT student_id FROM Students WHERE first_name = 'Alice' AND last_name = 'Smith'),\n         4, 'Good course, learned a lot!', '2023-10-26');\n\nUPDATE Reviews\nSET comment = 'Excellent course, highly recommend!'\nWHERE review_id = 101 AND student_id IN (SELECT s.student_id FROM Students s JOIN Reviews r ON s.student_id = r.student_id WHERE r.review_id = 101);\n",
+"text_alt": "SELECT c.course_name, AVG(r.rating) AS average_rating\nFROM Courses c, Reviews r\nWHERE c.course_id = r.course_id(+)\nGROUP BY c.course_name;\n\nSELECT s.first_name, s.last_name, r.rating, r.comment\nFROM Reviews r, Students s, Courses c\nWHERE r.student_id = s.student_id\nAND r.course_id = c.course_id\nAND c.course_name = 'Introduction to Python';\n\nSELECT c.instructor, COUNT(r.review_id) AS five_star_reviews_count\nFROM Reviews r, Courses c\nWHERE r.course_id = c.course_id\nAND r.rating = 5\nGROUP BY c.instructor;\n\nINSERT INTO Reviews (course_id, student_id, rating, comment, review_date)\nVALUES ( (SELECT course_id FROM Courses WHERE course_name = 'Introduction to Python'),\n         (SELECT student_id FROM Students WHERE first_name = 'Alice' AND last_name = 'Smith'),\n         4, 'Good course, learned a lot!', '2023-10-26');\n\nUPDATE Reviews\nSET comment = 'Excellent course, highly recommend!'\nWHERE review_id = 101 AND student_id IN (SELECT s.student_id FROM Students s, Reviews r WHERE s.student_id = r.student_id AND r.review_id = 101);\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nLEFT JOIN",
+"alt": ",",
+"nat_span": [
+68,
+78
+],
+"alt_span": [
+68,
+69
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+88,
+91
+],
+"alt_span": [
+79,
+85
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(+)",
+"nat_span": [
+117,
+117
+],
+"alt_span": [
+111,
+114
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+211,
+216
+],
+"alt_span": [
+208,
+209
+]
+},
+{
+"k": 4,
+"nat": " ON",
+"alt": ", Courses c\nWHERE",
+"nat_span": [
+227,
+230
+],
+"alt_span": [
+220,
+237
+]
+},
+{
+"k": 5,
+"nat": "JOIN Courses c ON",
+"alt": "AND",
+"nat_span": [
+259,
+276
+],
+"alt_span": [
+266,
+269
+]
+},
+{
+"k": 6,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+303,
+308
+],
+"alt_span": [
+296,
+299
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+433,
+438
+],
+"alt_span": [
+424,
+425
+]
+},
+{
+"k": 8,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+448,
+451
+],
+"alt_span": [
+435,
+441
+]
+},
+{
+"k": 9,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+478,
+483
+],
+"alt_span": [
+468,
+471
+]
+},
+{
+"k": 10,
+"nat": " JOIN",
+"alt": ",",
+"nat_span": [
+979,
+984
+],
+"alt_span": [
+967,
+968
+]
+},
+{
+"k": 11,
+"nat": "ON",
+"alt": "WHERE",
+"nat_span": [
+995,
+997
+],
+"alt_span": [
+979,
+984
+]
+},
+{
+"k": 12,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1026,
+1031
+],
+"alt_span": [
+1013,
+1016
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.932,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t043",
+"family": "sql_join_style",
+"topic": "Retail Store Sales Performance",
+"angle": "code",
+"text_es": "Schema: Stores (store_id INT, store_name VARCHAR, city VARCHAR), Products (product_id INT, product_name VARCHAR, category VARCHAR), Sales (sale_id INT, store_id INT, product_id INT, sale_date DATE, quantity INT, unit_price DECIMAL).\n\nQueries:\n1. Select all sales transactions and their associated products and stores.\n2. Find all sales of a specific product category (e.g., 'Apparel').\n3. Calculate the total revenue generated by each store.\n4. Record a new sale transaction.\n5. Update the quantity of an item in a sale.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n  s.sale_id,\n  s.sale_date,\n  s.quantity,\n  s.unit_price,\n  st.store_name,\n  st.city,\n  p.product_name,\n  p.category\nFROM Sales AS s\nJOIN Stores AS st\n  ON s.store_id = st.store_id\nJOIN Products AS p\n  ON s.product_id = p.product_id;\n\nSELECT\n  sa.sale_id,\n  sa.sale_date,\n  sa.quantity,\n  sa.unit_price,\n  pr.product_name,\n  pr.category,\n  sr.store_name\nFROM Sales AS sa\nJOIN Products AS pr\n  ON sa.product_id = pr.product_id\nJOIN Stores AS sr\n  ON sa.store_id = sr.store_id\nWHERE\n  pr.category = 'Apparel';\n\nSELECT\n  st.store_name,\n  SUM(s.quantity * s.unit_price) AS total_revenue\nFROM Sales AS s\nJOIN Stores AS st\n  ON s.store_id = st.store_id\nGROUP BY\n  st.store_name;\n\nINSERT INTO Sales (store_id, product_id, sale_date, quantity, unit_price)\nVALUES\n  (1, 101, '2023-10-26', 2, 25.50);\n\nUPDATE Sales\nSET\n  quantity = 5\nWHERE\n  sale_id = 1\n  AND store_id IN (\n    SELECT\n      s.store_id\n    FROM Sales AS s\n    JOIN Stores AS st\n      ON s.store_id = st.store_id\n    WHERE\n      st.store_name = 'Downtown Store'\n  );\n",
+"text_alt": "SELECT\n  s.sale_id,\n  s.sale_date,\n  s.quantity,\n  s.unit_price,\n  st.store_name,\n  st.city,\n  p.product_name,\n  p.category\nFROM Sales AS s, Stores AS st, Products AS p\nWHERE s.store_id = st.store_id\n  AND s.product_id = p.product_id;\n\nSELECT\n  sa.sale_id,\n  sa.sale_date,\n  sa.quantity,\n  sa.unit_price,\n  pr.product_name,\n  pr.category,\n  sr.store_name\nFROM Sales AS sa, Products AS pr, Stores AS sr\nWHERE sa.product_id = pr.product_id\n  AND sa.store_id = sr.store_id\n  AND pr.category = 'Apparel';\n\nSELECT\n  st.store_name,\n  SUM(s.quantity * s.unit_price) AS total_revenue\nFROM Sales AS s, Stores AS st\nWHERE s.store_id = st.store_id\nGROUP BY\n  st.store_name;\n\nINSERT INTO Sales (store_id, product_id, sale_date, quantity, unit_price)\nVALUES\n  (1, 101, '2023-10-26', 2, 25.50);\n\nUPDATE Sales\nSET\n  quantity = 5\nWHERE\n  sale_id = 1\n  AND store_id IN (\n    SELECT\n      s.store_id\n    FROM Sales AS s, Stores AS st\n    WHERE s.store_id = st.store_id\n      AND st.store_name = 'Downtown Store'\n  );\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+139,
+144
+],
+"alt_span": [
+139,
+140
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": ", Products AS p\nWHERE",
+"nat_span": [
+157,
+162
+],
+"alt_span": [
+153,
+174
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Products AS p\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+187,
+211
+],
+"alt_span": [
+199,
+205
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+377,
+382
+],
+"alt_span": [
+371,
+372
+]
+},
+{
+"k": 4,
+"nat": "\n  ON",
+"alt": ", Stores AS sr\nWHERE",
+"nat_span": [
+397,
+402
+],
+"alt_span": [
+387,
+407
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN Stores AS sr\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+432,
+455
+],
+"alt_span": [
+437,
+443
+]
+},
+{
+"k": 6,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+481,
+490
+],
+"alt_span": [
+469,
+476
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+605,
+610
+],
+"alt_span": [
+591,
+592
+]
+},
+{
+"k": 8,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+623,
+628
+],
+"alt_span": [
+605,
+611
+]
+},
+{
+"k": 9,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+918,
+927
+],
+"alt_span": [
+901,
+902
+]
+},
+{
+"k": 10,
+"nat": "\n      ON",
+"alt": "\n    WHERE",
+"nat_span": [
+940,
+949
+],
+"alt_span": [
+915,
+925
+]
+},
+{
+"k": 11,
+"nat": "\n    WHERE\n      ",
+"alt": "\n      AND ",
+"nat_span": [
+974,
+991
+],
+"alt_span": [
+950,
+961
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.899,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t044",
+"family": "sql_join_style",
+"topic": "Employee Training Records",
+"angle": "code",
+"text_es": "Schema: Employees (employee_id INT, first_name VARCHAR, last_name VARCHAR, department VARCHAR), TrainingCourses (course_id INT, course_name VARCHAR, duration_hours INT), Enrollments (enrollment_id INT, employee_id INT, course_id INT, enrollment_date DATE, completion_status VARCHAR).\n\nQueries:\n1. List all employees and the training courses they are enrolled in.\n2. Find all employees who completed a specific course (e.g., 'Data Security Basics').\n3. Count the number of employees per department who completed at least one course.\n4. Enroll an employee in a new training course.\n5. Update an enrollment's completion status to 'Completed'.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n    e.first_name,\n    e.last_name,\n    tc.course_name\nFROM\n    Employees AS e\nJOIN\n    Enrollments AS en ON e.employee_id = en.employee_id\nJOIN\n    TrainingCourses AS tc ON en.course_id = tc.course_id;\n\nSELECT\n    e.first_name,\n    e.last_name\nFROM\n    Employees AS e\nJOIN\n    Enrollments AS en ON e.employee_id = en.employee_id\nJOIN\n    TrainingCourses AS tc ON en.course_id = tc.course_id\nWHERE\n    tc.course_name = 'Data Security Basics' AND en.completion_status = 'Completed';\n\nSELECT\n    e.department,\n    COUNT(DISTINCT e.employee_id) AS num_employees_completed_course\nFROM\n    Employees AS e\nJOIN\n    Enrollments AS en ON e.employee_id = en.employee_id\nWHERE\n    en.completion_status = 'Completed'\nGROUP BY\n    e.department;\n\nINSERT INTO Enrollments (employee_id, course_id, enrollment_date, completion_status)\nVALUES (101, 203, '2023-11-15', 'In Progress');\n\nUPDATE Enrollments\nSET completion_status = 'Completed'\nWHERE enrollment_id = 501;\n",
+"text_alt": "SELECT\n    e.first_name,\n    e.last_name,\n    tc.course_name\nFROM\n    Employees AS e,\n    Enrollments AS en,\n    TrainingCourses AS tc\nWHERE\n    e.employee_id = en.employee_id AND en.course_id = tc.course_id;\n\nSELECT\n    e.first_name,\n    e.last_name\nFROM\n    Employees AS e,\n    Enrollments AS en,\n    TrainingCourses AS tc\nWHERE\n    e.employee_id = en.employee_id AND en.course_id = tc.course_id\nAND\n    tc.course_name = 'Data Security Basics' AND en.completion_status = 'Completed';\n\nSELECT\n    e.department,\n    COUNT(DISTINCT e.employee_id) AS num_employees_completed_course\nFROM\n    Employees AS e,\n    Enrollments AS en\nWHERE\n    e.employee_id = en.employee_id\nAND\n    en.completion_status = 'Completed'\nGROUP BY\n    e.department;\n\nINSERT INTO Enrollments (employee_id, course_id, enrollment_date, completion_status)\nVALUES (101, 203, '2023-11-15', 'In Progress');\n\nUPDATE Enrollments\nSET completion_status = 'Completed'\nWHERE enrollment_id = 501;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+84,
+89
+],
+"alt_span": [
+84,
+85
+]
+},
+{
+"k": 1,
+"nat": " ON ",
+"alt": ",\n    TrainingCourses AS tc\nWHERE\n    ",
+"nat_span": [
+111,
+115
+],
+"alt_span": [
+107,
+145
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN\n    TrainingCourses AS tc ON",
+"alt": " AND",
+"nat_span": [
+145,
+179
+],
+"alt_span": [
+175,
+179
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+274,
+279
+],
+"alt_span": [
+274,
+275
+]
+},
+{
+"k": 4,
+"nat": " ON ",
+"alt": ",\n    TrainingCourses AS tc\nWHERE\n    ",
+"nat_span": [
+301,
+305
+],
+"alt_span": [
+297,
+335
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN\n    TrainingCourses AS tc ON",
+"alt": " AND",
+"nat_span": [
+335,
+369
+],
+"alt_span": [
+365,
+369
+]
+},
+{
+"k": 6,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+398,
+403
+],
+"alt_span": [
+398,
+401
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+605,
+610
+],
+"alt_span": [
+603,
+604
+]
+},
+{
+"k": 8,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+632,
+636
+],
+"alt_span": [
+626,
+637
+]
+},
+{
+"k": 9,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+667,
+672
+],
+"alt_span": [
+668,
+671
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.893,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t045",
+"family": "sql_join_style",
+"topic": "Recipe Ingredient Management",
+"angle": "code",
+"text_es": "Schema: Recipes (recipe_id INT, recipe_name VARCHAR, cuisine VARCHAR, prep_time_minutes INT), Ingredients (ingredient_id INT, ingredient_name VARCHAR, unit VARCHAR), RecipeIngredients (recipe_id INT, ingredient_id INT, quantity DECIMAL).\n\nQueries:\n1. Select all recipes and their ingredients.\n2. Find all recipes that contain a specific ingredient (e.g., 'Chicken').\n3. Count the number of recipes per cuisine.\n4. Add a new recipe.\n5. Add an ingredient to a recipe.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n    r.recipe_name,\n    i.ingredient_name,\n    ri.quantity,\n    i.unit\nFROM\n    Recipes AS r\nJOIN\n    RecipeIngredients AS ri ON r.recipe_id = ri.recipe_id\nJOIN\n    Ingredients AS i ON ri.ingredient_id = i.ingredient_id;\n\nSELECT\n    r.recipe_name,\n    r.cuisine\nFROM\n    Recipes AS r\nJOIN\n    RecipeIngredients AS ri ON r.recipe_id = ri.recipe_id\nJOIN\n    Ingredients AS i ON ri.ingredient_id = i.ingredient_id\nWHERE\n    i.ingredient_name = 'Chicken';\n\nSELECT\n    cuisine,\n    COUNT(recipe_id) AS number_of_recipes\nFROM\n    Recipes\nGROUP BY\n    cuisine;\n\nINSERT INTO Recipes (recipe_id, recipe_name, cuisine, prep_time_minutes)\nVALUES (4, 'Spaghetti Bolognese', 'Italian', 45);\n\nINSERT INTO RecipeIngredients (recipe_id, ingredient_id, quantity)\nSELECT\n    r.recipe_id,\n    i.ingredient_id,\n    300.0\nFROM\n    Recipes AS r\nJOIN\n    Ingredients AS i ON r.recipe_name = 'Spaghetti Bolognese' AND i.ingredient_name = 'Ground Beef';\n",
+"text_alt": "SELECT\n    r.recipe_name,\n    i.ingredient_name,\n    ri.quantity,\n    i.unit\nFROM\n    Recipes AS r,\n    RecipeIngredients AS ri,\n    Ingredients AS i\nWHERE\n    r.recipe_id = ri.recipe_id AND ri.ingredient_id = i.ingredient_id;\n\nSELECT\n    r.recipe_name,\n    r.cuisine\nFROM\n    Recipes AS r,\n    RecipeIngredients AS ri,\n    Ingredients AS i\nWHERE\n    r.recipe_id = ri.recipe_id AND ri.ingredient_id = i.ingredient_id\n    AND i.ingredient_name = 'Chicken';\n\nSELECT\n    cuisine,\n    COUNT(recipe_id) AS number_of_recipes\nFROM\n    Recipes\nGROUP BY\n    cuisine;\n\nINSERT INTO Recipes (recipe_id, recipe_name, cuisine, prep_time_minutes)\nVALUES (4, 'Spaghetti Bolognese', 'Italian', 45);\n\nINSERT INTO RecipeIngredients (recipe_id, ingredient_id, quantity)\nSELECT\n    r.recipe_id,\n    i.ingredient_id,\n    300.0\nFROM\n    Recipes AS r,\n    Ingredients AS i\nWHERE\n    r.recipe_name = 'Spaghetti Bolognese' AND i.ingredient_name = 'Ground Beef';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+98,
+103
+],
+"alt_span": [
+98,
+99
+]
+},
+{
+"k": 1,
+"nat": " ON ",
+"alt": ",\n    Ingredients AS i\nWHERE\n    ",
+"nat_span": [
+131,
+135
+],
+"alt_span": [
+127,
+160
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN\n    Ingredients AS i ON",
+"alt": " AND",
+"nat_span": [
+161,
+190
+],
+"alt_span": [
+186,
+190
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+289,
+294
+],
+"alt_span": [
+289,
+290
+]
+},
+{
+"k": 4,
+"nat": " ON ",
+"alt": ",\n    Ingredients AS i\nWHERE\n    ",
+"nat_span": [
+322,
+326
+],
+"alt_span": [
+318,
+351
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN\n    Ingredients AS i ON",
+"alt": " AND",
+"nat_span": [
+352,
+381
+],
+"alt_span": [
+377,
+381
+]
+},
+{
+"k": 6,
+"nat": "\nWHERE\n    ",
+"alt": "\n    AND ",
+"nat_span": [
+416,
+427
+],
+"alt_span": [
+416,
+425
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+828,
+833
+],
+"alt_span": [
+826,
+827
+]
+},
+{
+"k": 8,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+854,
+858
+],
+"alt_span": [
+848,
+859
+]
+}
+],
+"k_en": 9,
+"shared_fraction": 0.891,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t046",
+"family": "sql_join_style",
+"topic": "Customer Support Tickets",
+"angle": "code",
+"text_es": "Schema: Customers (customer_id INT, name VARCHAR, email VARCHAR), Tickets (ticket_id INT, customer_id INT, subject VARCHAR, description TEXT, status VARCHAR, assigned_to VARCHAR, created_date DATETIME).\n\nQueries:\n1. List all tickets and the customers who opened them.\n2. Find all 'Open' tickets assigned to a specific agent (e.g., 'John Doe').\n3. Count the number of tickets per status.\n4. Create a new support ticket.\n5. Update a ticket's status to 'Resolved'.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n    T.ticket_id,\n    T.subject,\n    T.description,\n    C.name AS customer_name,\n    C.email AS customer_email\nFROM\n    Tickets AS T\nJOIN\n    Customers AS C ON T.customer_id = C.customer_id;\n\nSELECT\n    T.ticket_id,\n    T.subject,\n    T.description,\n    C.name AS customer_name\nFROM\n    Tickets AS T\nJOIN\n    Customers AS C ON T.customer_id = C.customer_id\nWHERE\n    T.status = 'Open' AND T.assigned_to = 'John Doe';\n\nSELECT\n    status,\n    COUNT(ticket_id) AS ticket_count\nFROM\n    Tickets\nGROUP BY\n    status;\n\nINSERT INTO Tickets (customer_id, subject, description, status, assigned_to, created_date)\nVALUES (101, 'Printer Issue', 'My printer is not working.', 'Open', 'Agent Smith', NOW());\n\nUPDATE\n    Tickets\nSET\n    status = 'Resolved'\nWHERE\n    ticket_id = 1;\n\nSELECT\n    T.ticket_id,\n    T.subject,\n    T.status,\n    C.name AS customer_name\nFROM\n    Tickets AS T\nJOIN\n    Customers AS C ON T.customer_id = C.customer_id\nWHERE\n    T.status = 'Resolved';\n",
+"text_alt": "SELECT\n    T.ticket_id,\n    T.subject,\n    T.description,\n    C.name AS customer_name,\n    C.email AS customer_email\nFROM\n    Tickets AS T,\n    Customers AS C\nWHERE\n    T.customer_id = C.customer_id;\n\nSELECT\n    T.ticket_id,\n    T.subject,\n    T.description,\n    C.name AS customer_name\nFROM\n    Tickets AS T,\n    Customers AS C\nWHERE\n    T.customer_id = C.customer_id AND\n    T.status = 'Open' AND T.assigned_to = 'John Doe';\n\nSELECT\n    status,\n    COUNT(ticket_id) AS ticket_count\nFROM\n    Tickets\nGROUP BY\n    status;\n\nINSERT INTO Tickets (customer_id, subject, description, status, assigned_to, created_date)\nVALUES (101, 'Printer Issue', 'My printer is not working.', 'Open', 'Agent Smith', NOW());\n\nUPDATE\n    Tickets\nSET\n    status = 'Resolved'\nWHERE\n    ticket_id = 1;\n\nSELECT\n    T.ticket_id,\n    T.subject,\n    T.status,\n    C.name AS customer_name\nFROM\n    Tickets AS T,\n    Customers AS C\nWHERE\n    T.customer_id = C.customer_id AND\n    T.status = 'Resolved';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+138,
+143
+],
+"alt_span": [
+138,
+139
+]
+},
+{
+"k": 1,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+162,
+166
+],
+"alt_span": [
+158,
+169
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+305,
+310
+],
+"alt_span": [
+308,
+309
+]
+},
+{
+"k": 3,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+329,
+333
+],
+"alt_span": [
+328,
+339
+]
+},
+{
+"k": 4,
+"nat": "\nWHERE",
+"alt": " AND",
+"nat_span": [
+362,
+368
+],
+"alt_span": [
+368,
+372
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+877,
+882
+],
+"alt_span": [
+881,
+882
+]
+},
+{
+"k": 6,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+901,
+905
+],
+"alt_span": [
+901,
+912
+]
+},
+{
+"k": 7,
+"nat": "\nWHERE",
+"alt": " AND",
+"nat_span": [
+934,
+940
+],
+"alt_span": [
+941,
+945
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.942,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t047",
+"family": "sql_join_style",
+"topic": "Project Milestone Tracking",
+"angle": "code",
+"text_es": "Schema: Projects (project_id INT, project_name VARCHAR, start_date DATE, end_date DATE), Milestones (milestone_id INT, project_id INT, milestone_name VARCHAR, due_date DATE, completion_date DATE, status VARCHAR).\n\nQueries:\n1. Select all milestones for a specific project (e.g., project_id = 10).\n2. Find all 'Overdue' milestones.\n3. Count the number of completed milestones per project.\n4. Add a new milestone to a project.\n5. Update a milestone's status to 'Completed' and set completion date.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT *\nFROM Milestones\nJOIN Projects ON Milestones.project_id = Projects.project_id\nWHERE Projects.project_id = 10;\n\nSELECT *\nFROM Milestones\nWHERE status = 'Overdue' AND completion_date IS NULL AND due_date < CURDATE();\n\nSELECT p.project_name, COUNT(m.milestone_id) AS completed_milestones_count\nFROM Projects p\nJOIN Milestones m ON p.project_id = m.project_id\nWHERE m.status = 'Completed'\nGROUP BY p.project_name;\n\nINSERT INTO Milestones (project_id, milestone_name, due_date, status)\nVALUES (15, 'Initial Design Review', '2023-11-30', 'Pending');\n\nUPDATE Milestones\nSET status = 'Completed', completion_date = CURDATE()\nWHERE milestone_id = 101 AND project_id = (SELECT project_id FROM Projects WHERE project_name = 'Alpha Project');\n",
+"text_alt": "SELECT *\nFROM Milestones, Projects\nWHERE Milestones.project_id = Projects.project_id\nAND Projects.project_id = 10;\n\nSELECT *\nFROM Milestones\nWHERE status = 'Overdue' AND completion_date IS NULL AND due_date < CURDATE();\n\nSELECT p.project_name, COUNT(m.milestone_id) AS completed_milestones_count\nFROM Projects p, Milestones m\nWHERE p.project_id = m.project_id\nAND m.status = 'Completed'\nGROUP BY p.project_name;\n\nINSERT INTO Milestones (project_id, milestone_name, due_date, status)\nVALUES (15, 'Initial Design Review', '2023-11-30', 'Pending');\n\nUPDATE Milestones\nSET status = 'Completed', completion_date = CURDATE()\nWHERE milestone_id = 101 AND project_id = (SELECT project_id FROM Projects WHERE project_name = 'Alpha Project');\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN Projects ON",
+"alt": ", Projects\nWHERE",
+"nat_span": [
+24,
+41
+],
+"alt_span": [
+24,
+40
+]
+},
+{
+"k": 1,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+86,
+91
+],
+"alt_span": [
+85,
+88
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+314,
+319
+],
+"alt_span": [
+311,
+312
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+332,
+335
+],
+"alt_span": [
+325,
+331
+]
+},
+{
+"k": 4,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+364,
+369
+],
+"alt_span": [
+360,
+363
+]
+}
+],
+"k_en": 5,
+"shared_fraction": 0.959,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t048",
+"family": "sql_join_style",
+"topic": "Marketing Campaign Performance",
+"angle": "code",
+"text_es": "Schema: Campaigns (campaign_id INT, campaign_name VARCHAR, start_date DATE, end_date DATE, budget DECIMAL), Channels (channel_id INT, channel_name VARCHAR, channel_type VARCHAR), Performance (performance_id INT, campaign_id INT, channel_id INT, date DATE, impressions INT, clicks INT, conversions INT).\n\nQueries:\n1. List all campaigns and their performance metrics.\n2. Find performance data for a specific campaign (e.g., 'Summer Sale').\n3. Calculate the total clicks for each channel type.\n4. Add a new marketing campaign.\n5. Record new performance data for a campaign and channel.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "-- 1. List all campaigns and their performance metrics.\nSELECT\n    c.campaign_name,\n    p.date,\n    p.impressions,\n    p.clicks,\n    p.conversions\nFROM\n    Campaigns c\nJOIN\n    Performance p ON c.campaign_id = p.campaign_id;\n\n-- 2. Find performance data for a specific campaign (e.g., 'Summer Sale').\nSELECT\n    p.date,\n    p.impressions,\n    p.clicks,\n    p.conversions,\n    ch.channel_name\nFROM\n    Performance p\nJOIN\n    Campaigns c ON p.campaign_id = c.campaign_id\nJOIN\n    Channels ch ON p.channel_id = ch.channel_id\nWHERE\n    c.campaign_name = 'Summer Sale';\n\n-- 3. Calculate the total clicks for each channel type.\nSELECT\n    ch.channel_type,\n    SUM(p.clicks) AS total_clicks\nFROM\n    Performance p\nJOIN\n    Channels ch ON p.channel_id = ch.channel_id\nGROUP BY\n    ch.channel_type;\n\n-- 4. Add a new marketing campaign.\nINSERT INTO Campaigns (campaign_id, campaign_name, start_date, end_date, budget)\nVALUES (4, 'Winter Promo', '2023-12-01', '2023-12-31', 15000.00);\n\n-- 5. Record new performance data for a campaign and channel.\nINSERT INTO Performance (performance_id, campaign_id, channel_id, date, impressions, clicks, conversions)\nSELECT\n    (SELECT COALESCE(MAX(performance_id), 0) + 1 FROM Performance),\n    c.campaign_id,\n    ch.channel_id,\n    '2023-12-05',\n    1500,\n    50,\n    5\nFROM\n    Campaigns c\nJOIN\n    Channels ch ON ch.channel_name = 'Email'\nWHERE\n    c.campaign_name = 'Winter Promo';\n",
+"text_alt": "-- 1. List all campaigns and their performance metrics.\nSELECT\n    c.campaign_name,\n    p.date,\n    p.impressions,\n    p.clicks,\n    p.conversions\nFROM\n    Campaigns c, Performance p\nWHERE\n    c.campaign_id = p.campaign_id;\n\n-- 2. Find performance data for a specific campaign (e.g., 'Summer Sale').\nSELECT\n    p.date,\n    p.impressions,\n    p.clicks,\n    p.conversions,\n    ch.channel_name\nFROM\n    Performance p, Campaigns c, Channels ch\nWHERE\n    p.campaign_id = c.campaign_id AND p.channel_id = ch.channel_id\nAND\n    c.campaign_name = 'Summer Sale';\n\n-- 3. Calculate the total clicks for each channel type.\nSELECT\n    ch.channel_type,\n    SUM(p.clicks) AS total_clicks\nFROM\n    Performance p, Channels ch\nWHERE\n    p.channel_id = ch.channel_id\nGROUP BY\n    ch.channel_type;\n\n-- 4. Add a new marketing campaign.\nINSERT INTO Campaigns (campaign_id, campaign_name, start_date, end_date, budget)\nVALUES (4, 'Winter Promo', '2023-12-01', '2023-12-31', 15000.00);\n\n-- 5. Record new performance data for a campaign and channel.\nINSERT INTO Performance (performance_id, campaign_id, channel_id, date, impressions, clicks, conversions)\nSELECT\n    (SELECT COALESCE(MAX(performance_id), 0) + 1 FROM Performance),\n    c.campaign_id,\n    ch.channel_id,\n    '2023-12-05',\n    1500,\n    50,\n    5\nFROM\n    Campaigns c, Channels ch\nWHERE\n    ch.channel_name = 'Email'\nAND\n    c.campaign_name = 'Winter Promo';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN\n    ",
+"alt": ", ",
+"nat_span": [
+167,
+177
+],
+"alt_span": [
+167,
+169
+]
+},
+{
+"k": 1,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+190,
+194
+],
+"alt_span": [
+182,
+193
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN\n    ",
+"alt": ", ",
+"nat_span": [
+414,
+424
+],
+"alt_span": [
+413,
+415
+]
+},
+{
+"k": 3,
+"nat": " ON ",
+"alt": ", Channels ch\nWHERE\n    ",
+"nat_span": [
+435,
+439
+],
+"alt_span": [
+426,
+450
+]
+},
+{
+"k": 4,
+"nat": "\nJOIN\n    Channels ch ON",
+"alt": " AND",
+"nat_span": [
+468,
+492
+],
+"alt_span": [
+479,
+483
+]
+},
+{
+"k": 5,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+522,
+527
+],
+"alt_span": [
+513,
+516
+]
+},
+{
+"k": 6,
+"nat": "\nJOIN\n    ",
+"alt": ", ",
+"nat_span": [
+706,
+716
+],
+"alt_span": [
+695,
+697
+]
+},
+{
+"k": 7,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+727,
+731
+],
+"alt_span": [
+708,
+719
+]
+},
+{
+"k": 8,
+"nat": "\nJOIN\n    ",
+"alt": ", ",
+"nat_span": [
+1318,
+1328
+],
+"alt_span": [
+1306,
+1308
+]
+},
+{
+"k": 9,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+1339,
+1343
+],
+"alt_span": [
+1319,
+1330
+]
+},
+{
+"k": 10,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1369,
+1374
+],
+"alt_span": [
+1356,
+1359
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.936,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t049",
+"family": "sql_join_style",
+"topic": "Healthcare Provider Network",
+"angle": "code",
+"text_es": "Schema: Providers (provider_id INT, provider_name VARCHAR, specialty VARCHAR, phone VARCHAR), Patients (patient_id INT, first_name VARCHAR, last_name VARCHAR), Referrals (referral_id INT, patient_id INT, referring_provider_id INT, referred_provider_id INT, referral_date DATE, reason TEXT).\n\nQueries:\n1. Select all referrals and the names of the referring and referred providers.\n2. Find all patients referred by a specific provider (e.g., referring_provider_id = 1).\n3. Count the number of referrals per specialty.\n4. Add a new healthcare provider.\n5. Record a new patient referral.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "SELECT\n    r.referral_id,\n    p_ref.provider_name AS referring_provider_name,\n    p_rec.provider_name AS referred_provider_name,\n    r.referral_date,\n    r.reason\nFROM\n    Referrals AS r\nJOIN\n    Providers AS p_ref ON r.referring_provider_id = p_ref.provider_id\nJOIN\n    Providers AS p_rec ON r.referred_provider_id = p_rec.provider_id;\n\nSELECT\n    DISTINCT p.first_name,\n    p.last_name\nFROM\n    Patients AS p\nJOIN\n    Referrals AS r ON p.patient_id = r.patient_id\nWHERE\n    r.referring_provider_id = 1;\n\nSELECT\n    pr.specialty,\n    COUNT(r.referral_id) AS referral_count\nFROM\n    Referrals AS r\nJOIN\n    Providers AS pr ON r.referred_provider_id = pr.provider_id\nGROUP BY\n    pr.specialty;\n\nINSERT INTO Providers (provider_name, specialty, phone)\nVALUES ('Dr. Sarah Connor', 'Neurology', '555-123-4567');\n\nINSERT INTO Referrals (patient_id, referring_provider_id, referred_provider_id, referral_date, reason)\nVALUES (101, 1, 3, '2023-10-26', 'Persistent headaches');\n",
+"text_alt": "SELECT\n    r.referral_id,\n    p_ref.provider_name AS referring_provider_name,\n    p_rec.provider_name AS referred_provider_name,\n    r.referral_date,\n    r.reason\nFROM\n    Referrals AS r,\n    Providers AS p_ref,\n    Providers AS p_rec\nWHERE\n    r.referring_provider_id = p_ref.provider_id AND r.referred_provider_id = p_rec.provider_id;\n\nSELECT\n    DISTINCT p.first_name,\n    p.last_name\nFROM\n    Patients AS p,\n    Referrals AS r\nWHERE\n    p.patient_id = r.patient_id\nAND\n    r.referring_provider_id = 1;\n\nSELECT\n    pr.specialty,\n    COUNT(r.referral_id) AS referral_count\nFROM\n    Referrals AS r,\n    Providers AS pr\nWHERE\n    r.referred_provider_id = pr.provider_id\nGROUP BY\n    pr.specialty;\n\nINSERT INTO Providers (provider_name, specialty, phone)\nVALUES ('Dr. Sarah Connor', 'Neurology', '555-123-4567');\n\nINSERT INTO Referrals (patient_id, referring_provider_id, referred_provider_id, referral_date, reason)\nVALUES (101, 1, 3, '2023-10-26', 'Persistent headaches');\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+186,
+191
+],
+"alt_span": [
+186,
+187
+]
+},
+{
+"k": 1,
+"nat": " ON ",
+"alt": ",\n    Providers AS p_rec\nWHERE\n    ",
+"nat_span": [
+214,
+218
+],
+"alt_span": [
+210,
+245
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN\n    Providers AS p_rec ON",
+"alt": " AND",
+"nat_span": [
+261,
+292
+],
+"alt_span": [
+288,
+292
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+410,
+415
+],
+"alt_span": [
+410,
+411
+]
+},
+{
+"k": 4,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+434,
+438
+],
+"alt_span": [
+430,
+441
+]
+},
+{
+"k": 5,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+466,
+471
+],
+"alt_span": [
+469,
+472
+]
+},
+{
+"k": 6,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+597,
+602
+],
+"alt_span": [
+598,
+599
+]
+},
+{
+"k": 7,
+"nat": " ON ",
+"alt": "\nWHERE\n    ",
+"nat_span": [
+622,
+626
+],
+"alt_span": [
+619,
+630
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.919,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "sql_join_style__t050",
+"family": "sql_join_style",
+"topic": "Fitness Tracker Workouts",
+"angle": "code",
+"text_es": "Schema: Users (user_id INT, username VARCHAR, age INT), Activities (activity_id INT, activity_name VARCHAR, activity_type VARCHAR), Workouts (workout_id INT, user_id INT, activity_id INT, workout_date DATE, duration_minutes INT, calories_burned INT).\n\nQueries:\n1. List all workouts and their associated users and activities.\n2. Find all workouts of a specific activity type (e.g., 'Cardio').\n3. Calculate the total calories burned by each user.\n4. Add a new user.\n5. Record a new workout for a user.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "-- 1. List all workouts and their associated users and activities.\nSELECT\n  w.workout_id,\n  w.workout_date,\n  w.duration_minutes,\n  w.calories_burned,\n  u.username,\n  a.activity_name,\n  a.activity_type\nFROM Workouts AS w\nJOIN Users AS u\n  ON w.user_id = u.user_id\nJOIN Activities AS a\n  ON w.activity_id = a.activity_id;\n\n-- 2. Find all workouts of a specific activity type (e.g., 'Cardio').\nSELECT\n  w.workout_id,\n  w.workout_date,\n  w.duration_minutes,\n  w.calories_burned,\n  u.username,\n  a.activity_name\nFROM Workouts AS w\nJOIN Users AS u\n  ON w.user_id = u.user_id\nJOIN Activities AS a\n  ON w.activity_id = a.activity_id\nWHERE\n  a.activity_type = 'Cardio';\n\n-- 3. Calculate the total calories burned by each user.\nSELECT\n  u.username,\n  SUM(w.calories_burned) AS total_calories_burned\nFROM Users AS u\nJOIN Workouts AS w\n  ON u.user_id = w.user_id\nGROUP BY\n  u.username;\n\n-- 4. Add a new user.\nINSERT INTO Users (user_id, username, age)\nVALUES\n  (4, 'Eve', 28);\n\n-- 5. Record a new workout for a user.\nINSERT INTO Workouts (workout_id, user_id, activity_id, workout_date, duration_minutes, calories_burned)\nSELECT\n  104,\n  u.user_id,\n  a.activity_id,\n  '2023-11-20',\n  45,\n  300\nFROM Users AS u\nJOIN Activities AS a\n  ON a.activity_name = 'Running'\nWHERE\n  u.username = 'Alice';\n",
+"text_alt": "-- 1. List all workouts and their associated users and activities.\nSELECT\n  w.workout_id,\n  w.workout_date,\n  w.duration_minutes,\n  w.calories_burned,\n  u.username,\n  a.activity_name,\n  a.activity_type\nFROM Workouts AS w, Users AS u, Activities AS a\nWHERE w.user_id = u.user_id\n  AND w.activity_id = a.activity_id;\n\n-- 2. Find all workouts of a specific activity type (e.g., 'Cardio').\nSELECT\n  w.workout_id,\n  w.workout_date,\n  w.duration_minutes,\n  w.calories_burned,\n  u.username,\n  a.activity_name\nFROM Workouts AS w, Users AS u, Activities AS a\nWHERE w.user_id = u.user_id\n  AND w.activity_id = a.activity_id\n  AND a.activity_type = 'Cardio';\n\n-- 3. Calculate the total calories burned by each user.\nSELECT\n  u.username,\n  SUM(w.calories_burned) AS total_calories_burned\nFROM Users AS u, Workouts AS w\nWHERE u.user_id = w.user_id\nGROUP BY\n  u.username;\n\n-- 4. Add a new user.\nINSERT INTO Users (user_id, username, age)\nVALUES\n  (4, 'Eve', 28);\n\n-- 5. Record a new workout for a user.\nINSERT INTO Workouts (workout_id, user_id, activity_id, workout_date, duration_minutes, calories_burned)\nSELECT\n  104,\n  u.user_id,\n  a.activity_id,\n  '2023-11-20',\n  45,\n  300\nFROM Users AS u, Activities AS a\nWHERE a.activity_name = 'Running'\n  AND u.username = 'Alice';\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+220,
+225
+],
+"alt_span": [
+220,
+221
+]
+},
+{
+"k": 1,
+"nat": "\n  ON",
+"alt": ", Activities AS a\nWHERE",
+"nat_span": [
+236,
+241
+],
+"alt_span": [
+232,
+255
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Activities AS a\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+263,
+289
+],
+"alt_span": [
+277,
+283
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+526,
+531
+],
+"alt_span": [
+520,
+521
+]
+},
+{
+"k": 4,
+"nat": "\n  ON",
+"alt": ", Activities AS a\nWHERE",
+"nat_span": [
+542,
+547
+],
+"alt_span": [
+532,
+555
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN Activities AS a\n  ON",
+"alt": "\n  AND",
+"nat_span": [
+569,
+595
+],
+"alt_span": [
+577,
+583
+]
+},
+{
+"k": 6,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+625,
+634
+],
+"alt_span": [
+613,
+620
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+805,
+810
+],
+"alt_span": [
+791,
+792
+]
+},
+{
+"k": 8,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+824,
+829
+],
+"alt_span": [
+806,
+812
+]
+},
+{
+"k": 9,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1198,
+1203
+],
+"alt_span": [
+1181,
+1182
+]
+},
+{
+"k": 10,
+"nat": "\n  ON",
+"alt": "\nWHERE",
+"nat_span": [
+1219,
+1224
+],
+"alt_span": [
+1198,
+1204
+]
+},
+{
+"k": 11,
+"nat": "\nWHERE\n  ",
+"alt": "\n  AND ",
+"nat_span": [
+1252,
+1261
+],
+"alt_span": [
+1232,
+1239
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.92,
+"pass": true,
+"verify": null
+}
+]

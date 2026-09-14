@@ -1,0 +1,9818 @@
+[
+{
+"doc_id": "js_func_pascal__t001",
+"family": "js_func_pascal",
+"topic": "Reverse a String",
+"angle": "code",
+"text_es": "Implement a function `reverseString(str)` that takes a string and returns its reversed version. Input is a string, output is a string. Example: `reverseString('hello')` should return `'olleh'`, `reverseString('JavaScript')` should return `'tpircSavaJ'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getCharacterArray = (str) => Array.from(str);\n\nconst reverseArrayElements = (arr) => arr.reverse();\n\nconst joinArrayIntoString = (arr) => arr.join('');\n\nconst isInputValidString = (input) => typeof input === 'string';\n\nconst handleEmptyString = (str) => (str === '' ? '' : null);\n\nconst ensureStringInput = (input) => {\n  if (!isInputValidString(input)) {\n    throw new Error('Input must be a string.');\n  }\n  return input;\n};\n\nconst reverseString = (str) => {\n  const validatedString = ensureStringInput(str);\n  const emptyStringResult = handleEmptyString(validatedString);\n  if (emptyStringResult !== null) return emptyStringResult;\n\n  const characters = getCharacterArray(validatedString);\n  const reversedCharacters = reverseArrayElements(characters);\n  return joinArrayIntoString(reversedCharacters);\n};\n",
+"text_alt": "const GetCharacterArray = (str) => Array.from(str);\n\nconst ReverseArrayElements = (arr) => arr.reverse();\n\nconst JoinArrayIntoString = (arr) => arr.join('');\n\nconst IsInputValidString = (input) => typeof input === 'string';\n\nconst HandleEmptyString = (str) => (str === '' ? '' : null);\n\nconst EnsureStringInput = (input) => {\n  if (!IsInputValidString(input)) {\n    throw new Error('Input must be a string.');\n  }\n  return input;\n};\n\nconst ReverseString = (str) => {\n  const validatedString = EnsureStringInput(str);\n  const emptyStringResult = HandleEmptyString(validatedString);\n  if (emptyStringResult !== null) return emptyStringResult;\n\n  const characters = GetCharacterArray(validatedString);\n  const reversedCharacters = ReverseArrayElements(characters);\n  return JoinArrayIntoString(reversedCharacters);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getCharacterArray",
+"alt": "GetCharacterArray",
+"nat_span": [
+6,
+23
+],
+"alt_span": [
+6,
+23
+]
+},
+{
+"k": 1,
+"nat": "reverseArrayElements",
+"alt": "ReverseArrayElements",
+"nat_span": [
+59,
+79
+],
+"alt_span": [
+59,
+79
+]
+},
+{
+"k": 2,
+"nat": "joinArrayIntoString",
+"alt": "JoinArrayIntoString",
+"nat_span": [
+113,
+132
+],
+"alt_span": [
+113,
+132
+]
+},
+{
+"k": 3,
+"nat": "isInputValidString",
+"alt": "IsInputValidString",
+"nat_span": [
+165,
+183
+],
+"alt_span": [
+165,
+183
+]
+},
+{
+"k": 4,
+"nat": "handleEmptyString",
+"alt": "HandleEmptyString",
+"nat_span": [
+231,
+248
+],
+"alt_span": [
+231,
+248
+]
+},
+{
+"k": 5,
+"nat": "ensureStringInput",
+"alt": "EnsureStringInput",
+"nat_span": [
+293,
+310
+],
+"alt_span": [
+293,
+310
+]
+},
+{
+"k": 6,
+"nat": "isInputValidString",
+"alt": "IsInputValidString",
+"nat_span": [
+333,
+351
+],
+"alt_span": [
+333,
+351
+]
+},
+{
+"k": 7,
+"nat": "reverseString",
+"alt": "ReverseString",
+"nat_span": [
+440,
+453
+],
+"alt_span": [
+440,
+453
+]
+},
+{
+"k": 8,
+"nat": "ensureStringInput",
+"alt": "EnsureStringInput",
+"nat_span": [
+493,
+510
+],
+"alt_span": [
+493,
+510
+]
+},
+{
+"k": 9,
+"nat": "handleEmptyString",
+"alt": "HandleEmptyString",
+"nat_span": [
+545,
+562
+],
+"alt_span": [
+545,
+562
+]
+},
+{
+"k": 10,
+"nat": "getCharacterArray",
+"alt": "GetCharacterArray",
+"nat_span": [
+663,
+680
+],
+"alt_span": [
+663,
+680
+]
+},
+{
+"k": 11,
+"nat": "reverseArrayElements",
+"alt": "ReverseArrayElements",
+"nat_span": [
+728,
+748
+],
+"alt_span": [
+728,
+748
+]
+},
+{
+"k": 12,
+"nat": "joinArrayIntoString",
+"alt": "JoinArrayIntoString",
+"nat_span": [
+771,
+790
+],
+"alt_span": [
+771,
+790
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.952,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t002",
+"family": "js_func_pascal",
+"topic": "Factorial Calculation",
+"angle": "code",
+"text_es": "Write a function `calculateFactorial(n)` that computes the factorial of a non-negative integer `n`. Input is an integer, output is an integer. Example: `calculateFactorial(5)` should return `120`, `calculateFactorial(0)` should return `1`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const isNonNegative = num => num >= 0;\nconst convertToInteger = num => Math.floor(num);\nconst initializeResult = () => 1;\nconst multiplyNumbers = (a, b) => a * b;\nconst decrementNumber = num => num - 1;\nconst isGreaterThanZero = num => num > 0;\n\nconst calculateFactorial = n => {\n  const sanitizedN = convertToInteger(n);\n  if (!isNonNegative(sanitizedN)) {\n    throw new Error(\"Input must be a non-negative integer.\");\n  }\n\n  let result = initializeResult();\n  let currentNum = sanitizedN;\n\n  while (isGreaterThanZero(currentNum)) {\n    result = multiplyNumbers(result, currentNum);\n    currentNum = decrementNumber(currentNum);\n  }\n\n  return result;\n};\n",
+"text_alt": "const IsNonNegative = num => num >= 0;\nconst ConvertToInteger = num => Math.floor(num);\nconst InitializeResult = () => 1;\nconst MultiplyNumbers = (a, b) => a * b;\nconst DecrementNumber = num => num - 1;\nconst IsGreaterThanZero = num => num > 0;\n\nconst CalculateFactorial = n => {\n  const sanitizedN = ConvertToInteger(n);\n  if (!IsNonNegative(sanitizedN)) {\n    throw new Error(\"Input must be a non-negative integer.\");\n  }\n\n  let result = InitializeResult();\n  let currentNum = sanitizedN;\n\n  while (IsGreaterThanZero(currentNum)) {\n    result = MultiplyNumbers(result, currentNum);\n    currentNum = DecrementNumber(currentNum);\n  }\n\n  return result;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "isNonNegative",
+"alt": "IsNonNegative",
+"nat_span": [
+6,
+19
+],
+"alt_span": [
+6,
+19
+]
+},
+{
+"k": 1,
+"nat": "convertToInteger",
+"alt": "ConvertToInteger",
+"nat_span": [
+45,
+61
+],
+"alt_span": [
+45,
+61
+]
+},
+{
+"k": 2,
+"nat": "initializeResult",
+"alt": "InitializeResult",
+"nat_span": [
+94,
+110
+],
+"alt_span": [
+94,
+110
+]
+},
+{
+"k": 3,
+"nat": "multiplyNumbers",
+"alt": "MultiplyNumbers",
+"nat_span": [
+128,
+143
+],
+"alt_span": [
+128,
+143
+]
+},
+{
+"k": 4,
+"nat": "decrementNumber",
+"alt": "DecrementNumber",
+"nat_span": [
+169,
+184
+],
+"alt_span": [
+169,
+184
+]
+},
+{
+"k": 5,
+"nat": "isGreaterThanZero",
+"alt": "IsGreaterThanZero",
+"nat_span": [
+209,
+226
+],
+"alt_span": [
+209,
+226
+]
+},
+{
+"k": 6,
+"nat": "calculateFactorial",
+"alt": "CalculateFactorial",
+"nat_span": [
+252,
+270
+],
+"alt_span": [
+252,
+270
+]
+},
+{
+"k": 7,
+"nat": "convertToInteger",
+"alt": "ConvertToInteger",
+"nat_span": [
+301,
+317
+],
+"alt_span": [
+301,
+317
+]
+},
+{
+"k": 8,
+"nat": "isNonNegative",
+"alt": "IsNonNegative",
+"nat_span": [
+329,
+342
+],
+"alt_span": [
+329,
+342
+]
+},
+{
+"k": 9,
+"nat": "initializeResult",
+"alt": "InitializeResult",
+"nat_span": [
+440,
+456
+],
+"alt_span": [
+440,
+456
+]
+},
+{
+"k": 10,
+"nat": "isGreaterThanZero",
+"alt": "IsGreaterThanZero",
+"nat_span": [
+501,
+518
+],
+"alt_span": [
+501,
+518
+]
+},
+{
+"k": 11,
+"nat": "multiplyNumbers",
+"alt": "MultiplyNumbers",
+"nat_span": [
+547,
+562
+],
+"alt_span": [
+547,
+562
+]
+},
+{
+"k": 12,
+"nat": "decrementNumber",
+"alt": "DecrementNumber",
+"nat_span": [
+601,
+616
+],
+"alt_span": [
+601,
+616
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.946,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t003",
+"family": "js_func_pascal",
+"topic": "Check for Palindrome",
+"angle": "code",
+"text_es": "Create a function `isPalindrome(str)` that checks if a given string is a palindrome (reads the same forwards and backwards, ignoring case and non-alphanumeric characters). Input is a string, output is a boolean. Example: `isPalindrome('Racecar')` should return `true`, `isPalindrome('hello world')` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const isPalindrome = (str) => {\n  const sanitizeString = (inputStr) => inputStr.toLowerCase();\n  const removeNonAlphanumeric = (sanitizedStr) => sanitizedStr.replace(/[^a-z0-9]/g, '');\n  const reverseString = (alphanumericStr) => alphanumericStr.split('').reverse().join('');\n  const compareStrings = (str1, str2) => str1 === str2;\n\n  const lowercasedStr = sanitizeString(str);\n  const cleanedStr = removeNonAlphanumeric(lowercasedStr);\n  const reversedCleanedStr = reverseString(cleanedStr);\n\n  const performComparison = (s1, s2) => compareStrings(s1, s2);\n  return performComparison(cleanedStr, reversedCleanedStr);\n};\n",
+"text_alt": "const IsPalindrome = (str) => {\n  const SanitizeString = (inputStr) => inputStr.toLowerCase();\n  const RemoveNonAlphanumeric = (sanitizedStr) => sanitizedStr.replace(/[^a-z0-9]/g, '');\n  const ReverseString = (alphanumericStr) => alphanumericStr.split('').reverse().join('');\n  const CompareStrings = (str1, str2) => str1 === str2;\n\n  const lowercasedStr = SanitizeString(str);\n  const cleanedStr = RemoveNonAlphanumeric(lowercasedStr);\n  const reversedCleanedStr = ReverseString(cleanedStr);\n\n  const PerformComparison = (s1, s2) => CompareStrings(s1, s2);\n  return PerformComparison(cleanedStr, reversedCleanedStr);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "isPalindrome",
+"alt": "IsPalindrome",
+"nat_span": [
+6,
+18
+],
+"alt_span": [
+6,
+18
+]
+},
+{
+"k": 1,
+"nat": "sanitizeString",
+"alt": "SanitizeString",
+"nat_span": [
+40,
+54
+],
+"alt_span": [
+40,
+54
+]
+},
+{
+"k": 2,
+"nat": "removeNonAlphanumeric",
+"alt": "RemoveNonAlphanumeric",
+"nat_span": [
+103,
+124
+],
+"alt_span": [
+103,
+124
+]
+},
+{
+"k": 3,
+"nat": "reverseString",
+"alt": "ReverseString",
+"nat_span": [
+193,
+206
+],
+"alt_span": [
+193,
+206
+]
+},
+{
+"k": 4,
+"nat": "compareStrings",
+"alt": "CompareStrings",
+"nat_span": [
+284,
+298
+],
+"alt_span": [
+284,
+298
+]
+},
+{
+"k": 5,
+"nat": "sanitizeString",
+"alt": "SanitizeString",
+"nat_span": [
+357,
+371
+],
+"alt_span": [
+357,
+371
+]
+},
+{
+"k": 6,
+"nat": "removeNonAlphanumeric",
+"alt": "RemoveNonAlphanumeric",
+"nat_span": [
+399,
+420
+],
+"alt_span": [
+399,
+420
+]
+},
+{
+"k": 7,
+"nat": "reverseString",
+"alt": "ReverseString",
+"nat_span": [
+466,
+479
+],
+"alt_span": [
+466,
+479
+]
+},
+{
+"k": 8,
+"nat": "performComparison",
+"alt": "PerformComparison",
+"nat_span": [
+502,
+519
+],
+"alt_span": [
+502,
+519
+]
+},
+{
+"k": 9,
+"nat": "compareStrings",
+"alt": "CompareStrings",
+"nat_span": [
+534,
+548
+],
+"alt_span": [
+534,
+548
+]
+},
+{
+"k": 10,
+"nat": "performComparison",
+"alt": "PerformComparison",
+"nat_span": [
+567,
+584
+],
+"alt_span": [
+567,
+584
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.946,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t004",
+"family": "js_func_pascal",
+"topic": "Find Maximum in Array",
+"angle": "code",
+"text_es": "Implement a function `findMax(arr)` that takes an array of numbers and returns the largest number in the array. Input is an array of numbers, output is a number. Example: `findMax([1, 5, 2, 8, 3])` should return `8`, `findMax([-10, -2, -5])` should return `-2`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const isInputValid = arr => Array.isArray(arr) && arr.every(Number.isFinite);\nconst isEmptyArray = arr => arr.length === 0;\nconst getFirstElement = arr => arr[0];\nconst compareNumbers = (a, b) => a > b ? a : b;\nconst updateCurrentMax = (currentMax, element) => compareNumbers(currentMax, element);\nconst getRemainingElements = arr => arr.slice(1);\n\nconst findMax = arr => {\n  if (!isInputValid(arr)) {\n    throw new Error(\"Input must be an array of numbers.\");\n  }\n  if (isEmptyArray(arr)) {\n    throw new Error(\"Array cannot be empty.\");\n  }\n\n  let currentMax = getFirstElement(arr);\n  let remaining = getRemainingElements(arr);\n\n  for (const element of remaining) {\n    currentMax = updateCurrentMax(currentMax, element);\n  }\n\n  return currentMax;\n};\n",
+"text_alt": "const IsInputValid = arr => Array.isArray(arr) && arr.every(Number.isFinite);\nconst IsEmptyArray = arr => arr.length === 0;\nconst GetFirstElement = arr => arr[0];\nconst CompareNumbers = (a, b) => a > b ? a : b;\nconst UpdateCurrentMax = (currentMax, element) => CompareNumbers(currentMax, element);\nconst GetRemainingElements = arr => arr.slice(1);\n\nconst FindMax = arr => {\n  if (!IsInputValid(arr)) {\n    throw new Error(\"Input must be an array of numbers.\");\n  }\n  if (IsEmptyArray(arr)) {\n    throw new Error(\"Array cannot be empty.\");\n  }\n\n  let currentMax = GetFirstElement(arr);\n  let remaining = GetRemainingElements(arr);\n\n  for (const element of remaining) {\n    currentMax = UpdateCurrentMax(currentMax, element);\n  }\n\n  return currentMax;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "isInputValid",
+"alt": "IsInputValid",
+"nat_span": [
+6,
+18
+],
+"alt_span": [
+6,
+18
+]
+},
+{
+"k": 1,
+"nat": "isEmptyArray",
+"alt": "IsEmptyArray",
+"nat_span": [
+84,
+96
+],
+"alt_span": [
+84,
+96
+]
+},
+{
+"k": 2,
+"nat": "getFirstElement",
+"alt": "GetFirstElement",
+"nat_span": [
+130,
+145
+],
+"alt_span": [
+130,
+145
+]
+},
+{
+"k": 3,
+"nat": "compareNumbers",
+"alt": "CompareNumbers",
+"nat_span": [
+169,
+183
+],
+"alt_span": [
+169,
+183
+]
+},
+{
+"k": 4,
+"nat": "updateCurrentMax",
+"alt": "UpdateCurrentMax",
+"nat_span": [
+217,
+233
+],
+"alt_span": [
+217,
+233
+]
+},
+{
+"k": 5,
+"nat": "compareNumbers",
+"alt": "CompareNumbers",
+"nat_span": [
+261,
+275
+],
+"alt_span": [
+261,
+275
+]
+},
+{
+"k": 6,
+"nat": "getRemainingElements",
+"alt": "GetRemainingElements",
+"nat_span": [
+304,
+324
+],
+"alt_span": [
+304,
+324
+]
+},
+{
+"k": 7,
+"nat": "findMax",
+"alt": "FindMax",
+"nat_span": [
+355,
+362
+],
+"alt_span": [
+355,
+362
+]
+},
+{
+"k": 8,
+"nat": "isInputValid",
+"alt": "IsInputValid",
+"nat_span": [
+381,
+393
+],
+"alt_span": [
+381,
+393
+]
+},
+{
+"k": 9,
+"nat": "isEmptyArray",
+"alt": "IsEmptyArray",
+"nat_span": [
+471,
+483
+],
+"alt_span": [
+471,
+483
+]
+},
+{
+"k": 10,
+"nat": "getFirstElement",
+"alt": "GetFirstElement",
+"nat_span": [
+563,
+578
+],
+"alt_span": [
+563,
+578
+]
+},
+{
+"k": 11,
+"nat": "getRemainingElements",
+"alt": "GetRemainingElements",
+"nat_span": [
+603,
+623
+],
+"alt_span": [
+603,
+623
+]
+},
+{
+"k": 12,
+"nat": "updateCurrentMax",
+"alt": "UpdateCurrentMax",
+"nat_span": [
+685,
+701
+],
+"alt_span": [
+685,
+701
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.955,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t005",
+"family": "js_func_pascal",
+"topic": "Convert Celsius to Fahrenheit",
+"angle": "code",
+"text_es": "Write a function `celsiusToFahrenheit(celsius)` that converts a temperature from Celsius to Fahrenheit. The formula is `F = C * 9/5 + 32`. Input is a number, output is a number. Example: `celsiusToFahrenheit(0)` should return `32`, `celsiusToFahrenheit(25)` should return `77`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const multiplyByNineFifths = (celsius) => celsius * (9 / 5);\nconst addThirtyTwo = (product) => product + 32;\nconst ensureNumberType = (value) => Number(value);\nconst roundToTwoDecimalPlaces = (num) => Math.round(num * 100) / 100;\n\nconst convertCelsiusToFahrenheit = (celsius) => {\n  const numericCelsius = ensureNumberType(celsius);\n  const multipliedValue = multiplyByNineFifths(numericCelsius);\n  const fahrenheitValue = addThirtyTwo(multipliedValue);\n  const formattedFahrenheit = roundToTwoDecimalPlaces(fahrenheitValue);\n  return formattedFahrenheit;\n};\n\nconst celsiusToFahrenheit = (celsius) => convertCelsiusToFahrenheit(celsius);\n",
+"text_alt": "const MultiplyByNineFifths = (celsius) => celsius * (9 / 5);\nconst AddThirtyTwo = (product) => product + 32;\nconst EnsureNumberType = (value) => Number(value);\nconst RoundToTwoDecimalPlaces = (num) => Math.round(num * 100) / 100;\n\nconst ConvertCelsiusToFahrenheit = (celsius) => {\n  const numericCelsius = EnsureNumberType(celsius);\n  const multipliedValue = MultiplyByNineFifths(numericCelsius);\n  const fahrenheitValue = AddThirtyTwo(multipliedValue);\n  const formattedFahrenheit = RoundToTwoDecimalPlaces(fahrenheitValue);\n  return formattedFahrenheit;\n};\n\nconst CelsiusToFahrenheit = (celsius) => ConvertCelsiusToFahrenheit(celsius);\n",
+"opps": [
+{
+"k": 0,
+"nat": "multiplyByNineFifths",
+"alt": "MultiplyByNineFifths",
+"nat_span": [
+6,
+26
+],
+"alt_span": [
+6,
+26
+]
+},
+{
+"k": 1,
+"nat": "addThirtyTwo",
+"alt": "AddThirtyTwo",
+"nat_span": [
+67,
+79
+],
+"alt_span": [
+67,
+79
+]
+},
+{
+"k": 2,
+"nat": "ensureNumberType",
+"alt": "EnsureNumberType",
+"nat_span": [
+115,
+131
+],
+"alt_span": [
+115,
+131
+]
+},
+{
+"k": 3,
+"nat": "roundToTwoDecimalPlaces",
+"alt": "RoundToTwoDecimalPlaces",
+"nat_span": [
+166,
+189
+],
+"alt_span": [
+166,
+189
+]
+},
+{
+"k": 4,
+"nat": "convertCelsiusToFahrenheit",
+"alt": "ConvertCelsiusToFahrenheit",
+"nat_span": [
+237,
+263
+],
+"alt_span": [
+237,
+263
+]
+},
+{
+"k": 5,
+"nat": "ensureNumberType",
+"alt": "EnsureNumberType",
+"nat_span": [
+306,
+322
+],
+"alt_span": [
+306,
+322
+]
+},
+{
+"k": 6,
+"nat": "multiplyByNineFifths",
+"alt": "MultiplyByNineFifths",
+"nat_span": [
+359,
+379
+],
+"alt_span": [
+359,
+379
+]
+},
+{
+"k": 7,
+"nat": "addThirtyTwo",
+"alt": "AddThirtyTwo",
+"nat_span": [
+423,
+435
+],
+"alt_span": [
+423,
+435
+]
+},
+{
+"k": 8,
+"nat": "roundToTwoDecimalPlaces",
+"alt": "RoundToTwoDecimalPlaces",
+"nat_span": [
+484,
+507
+],
+"alt_span": [
+484,
+507
+]
+},
+{
+"k": 9,
+"nat": "celsiusToFahrenheit",
+"alt": "CelsiusToFahrenheit",
+"nat_span": [
+566,
+585
+],
+"alt_span": [
+566,
+585
+]
+},
+{
+"k": 10,
+"nat": "convertCelsiusToFahrenheit",
+"alt": "ConvertCelsiusToFahrenheit",
+"nat_span": [
+601,
+627
+],
+"alt_span": [
+601,
+627
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.94,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t006",
+"family": "js_func_pascal",
+"topic": "Count Vowels in String",
+"angle": "code",
+"text_es": "Create a function `countVowels(str)` that counts the number of vowels (a, e, i, o, u, case-insensitive) in a given string. Input is a string, output is an integer. Example: `countVowels('Hello World')` should return `3`, `countVowels('JavaScript')` should return `3`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const convertToLower = (char) => char.toLowerCase();\nconst isVowelChar = (char) => ['a', 'e', 'i', 'o', 'u'].includes(char);\nconst getCharAtIndex = (str, index) => str.charAt(index);\nconst getStringLength = (str) => str.length;\nconst incrementCounter = (count) => count + 1;\nconst initializeCounter = () => 0;\n\nconst countVowels = (str) => {\n  let vowelCount = initializeCounter();\n  const len = getStringLength(str);\n\n  for (let i = 0; i < len; i++) {\n    const char = getCharAtIndex(str, i);\n    const lowerChar = convertToLower(char);\n    if (isVowelChar(lowerChar)) {\n      vowelCount = incrementCounter(vowelCount);\n    }\n  }\n  return vowelCount;\n};\n",
+"text_alt": "const ConvertToLower = (char) => char.toLowerCase();\nconst IsVowelChar = (char) => ['a', 'e', 'i', 'o', 'u'].includes(char);\nconst GetCharAtIndex = (str, index) => str.charAt(index);\nconst GetStringLength = (str) => str.length;\nconst IncrementCounter = (count) => count + 1;\nconst InitializeCounter = () => 0;\n\nconst CountVowels = (str) => {\n  let vowelCount = InitializeCounter();\n  const len = GetStringLength(str);\n\n  for (let i = 0; i < len; i++) {\n    const char = GetCharAtIndex(str, i);\n    const lowerChar = ConvertToLower(char);\n    if (IsVowelChar(lowerChar)) {\n      vowelCount = IncrementCounter(vowelCount);\n    }\n  }\n  return vowelCount;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "convertToLower",
+"alt": "ConvertToLower",
+"nat_span": [
+6,
+20
+],
+"alt_span": [
+6,
+20
+]
+},
+{
+"k": 1,
+"nat": "isVowelChar",
+"alt": "IsVowelChar",
+"nat_span": [
+59,
+70
+],
+"alt_span": [
+59,
+70
+]
+},
+{
+"k": 2,
+"nat": "getCharAtIndex",
+"alt": "GetCharAtIndex",
+"nat_span": [
+131,
+145
+],
+"alt_span": [
+131,
+145
+]
+},
+{
+"k": 3,
+"nat": "getStringLength",
+"alt": "GetStringLength",
+"nat_span": [
+189,
+204
+],
+"alt_span": [
+189,
+204
+]
+},
+{
+"k": 4,
+"nat": "incrementCounter",
+"alt": "IncrementCounter",
+"nat_span": [
+234,
+250
+],
+"alt_span": [
+234,
+250
+]
+},
+{
+"k": 5,
+"nat": "initializeCounter",
+"alt": "InitializeCounter",
+"nat_span": [
+281,
+298
+],
+"alt_span": [
+281,
+298
+]
+},
+{
+"k": 6,
+"nat": "countVowels",
+"alt": "CountVowels",
+"nat_span": [
+317,
+328
+],
+"alt_span": [
+317,
+328
+]
+},
+{
+"k": 7,
+"nat": "initializeCounter",
+"alt": "InitializeCounter",
+"nat_span": [
+361,
+378
+],
+"alt_span": [
+361,
+378
+]
+},
+{
+"k": 8,
+"nat": "getStringLength",
+"alt": "GetStringLength",
+"nat_span": [
+396,
+411
+],
+"alt_span": [
+396,
+411
+]
+},
+{
+"k": 9,
+"nat": "getCharAtIndex",
+"alt": "GetCharAtIndex",
+"nat_span": [
+470,
+484
+],
+"alt_span": [
+470,
+484
+]
+},
+{
+"k": 10,
+"nat": "convertToLower",
+"alt": "ConvertToLower",
+"nat_span": [
+516,
+530
+],
+"alt_span": [
+516,
+530
+]
+},
+{
+"k": 11,
+"nat": "isVowelChar",
+"alt": "IsVowelChar",
+"nat_span": [
+546,
+557
+],
+"alt_span": [
+546,
+557
+]
+},
+{
+"k": 12,
+"nat": "incrementCounter",
+"alt": "IncrementCounter",
+"nat_span": [
+591,
+607
+],
+"alt_span": [
+591,
+607
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.951,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t007",
+"family": "js_func_pascal",
+"topic": "Generate Fibonacci Sequence",
+"angle": "code",
+"text_es": "Implement a function `generateFibonacci(n)` that generates the first `n` numbers of the Fibonacci sequence. Input is an integer `n`, output is an array of numbers. Example: `generateFibonacci(5)` should return `[0, 1, 1, 2, 3]`, `generateFibonacci(1)` should return `[0]`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const initializeSequence = (n) => {\n  if (n <= 0) return [];\n  return [0];\n};\n\nconst appendNextNumber = (sequence) => {\n  const lastIndex = sequence.length - 1;\n  const secondLastIndex = sequence.length - 2;\n  const nextValue = sequence[lastIndex] + sequence[secondLastIndex];\n  sequence.push(nextValue);\n};\n\nconst handleSingleElementCase = (sequence, n) => {\n  if (n === 1) return sequence;\n  sequence.push(1);\n  return sequence;\n};\n\nconst ensureMinimumLength = (n) => {\n  if (n < 0) return 0;\n  return n;\n};\n\nconst calculateRemainingIterations = (n, currentLength) => {\n  return n - currentLength;\n};\n\nconst iterateAndAppend = (sequence, iterations) => {\n  for (let i = 0; i < iterations; i++) {\n    appendNextNumber(sequence);\n  }\n  return sequence;\n};\n\nconst generateFibonacci = (n) => {\n  const validatedN = ensureMinimumLength(n);\n  let fibSequence = initializeSequence(validatedN);\n\n  if (validatedN <= 1) {\n    return handleSingleElementCase(fibSequence, validatedN);\n  }\n\n  handleSingleElementCase(fibSequence, 2); // Handles n=2 case: [0, 1]\n\n  const remainingIterations = calculateRemainingIterations(validatedN, fibSequence.length);\n  return iterateAndAppend(fibSequence, remainingIterations);\n};\n",
+"text_alt": "const InitializeSequence = (n) => {\n  if (n <= 0) return [];\n  return [0];\n};\n\nconst AppendNextNumber = (sequence) => {\n  const lastIndex = sequence.length - 1;\n  const secondLastIndex = sequence.length - 2;\n  const nextValue = sequence[lastIndex] + sequence[secondLastIndex];\n  sequence.push(nextValue);\n};\n\nconst HandleSingleElementCase = (sequence, n) => {\n  if (n === 1) return sequence;\n  sequence.push(1);\n  return sequence;\n};\n\nconst EnsureMinimumLength = (n) => {\n  if (n < 0) return 0;\n  return n;\n};\n\nconst CalculateRemainingIterations = (n, currentLength) => {\n  return n - currentLength;\n};\n\nconst IterateAndAppend = (sequence, iterations) => {\n  for (let i = 0; i < iterations; i++) {\n    AppendNextNumber(sequence);\n  }\n  return sequence;\n};\n\nconst GenerateFibonacci = (n) => {\n  const validatedN = EnsureMinimumLength(n);\n  let fibSequence = InitializeSequence(validatedN);\n\n  if (validatedN <= 1) {\n    return HandleSingleElementCase(fibSequence, validatedN);\n  }\n\n  HandleSingleElementCase(fibSequence, 2); // Handles n=2 case: [0, 1]\n\n  const remainingIterations = CalculateRemainingIterations(validatedN, fibSequence.length);\n  return IterateAndAppend(fibSequence, remainingIterations);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "initializeSequence",
+"alt": "InitializeSequence",
+"nat_span": [
+6,
+24
+],
+"alt_span": [
+6,
+24
+]
+},
+{
+"k": 1,
+"nat": "appendNextNumber",
+"alt": "AppendNextNumber",
+"nat_span": [
+85,
+101
+],
+"alt_span": [
+85,
+101
+]
+},
+{
+"k": 2,
+"nat": "handleSingleElementCase",
+"alt": "HandleSingleElementCase",
+"nat_span": [
+315,
+338
+],
+"alt_span": [
+315,
+338
+]
+},
+{
+"k": 3,
+"nat": "ensureMinimumLength",
+"alt": "EnsureMinimumLength",
+"nat_span": [
+441,
+460
+],
+"alt_span": [
+441,
+460
+]
+},
+{
+"k": 4,
+"nat": "calculateRemainingIterations",
+"alt": "CalculateRemainingIterations",
+"nat_span": [
+517,
+545
+],
+"alt_span": [
+517,
+545
+]
+},
+{
+"k": 5,
+"nat": "iterateAndAppend",
+"alt": "IterateAndAppend",
+"nat_span": [
+610,
+626
+],
+"alt_span": [
+610,
+626
+]
+},
+{
+"k": 6,
+"nat": "appendNextNumber",
+"alt": "AppendNextNumber",
+"nat_span": [
+702,
+718
+],
+"alt_span": [
+702,
+718
+]
+},
+{
+"k": 7,
+"nat": "generateFibonacci",
+"alt": "GenerateFibonacci",
+"nat_span": [
+763,
+780
+],
+"alt_span": [
+763,
+780
+]
+},
+{
+"k": 8,
+"nat": "ensureMinimumLength",
+"alt": "EnsureMinimumLength",
+"nat_span": [
+813,
+832
+],
+"alt_span": [
+813,
+832
+]
+},
+{
+"k": 9,
+"nat": "initializeSequence",
+"alt": "InitializeSequence",
+"nat_span": [
+857,
+875
+],
+"alt_span": [
+857,
+875
+]
+},
+{
+"k": 10,
+"nat": "handleSingleElementCase",
+"alt": "HandleSingleElementCase",
+"nat_span": [
+926,
+949
+],
+"alt_span": [
+926,
+949
+]
+},
+{
+"k": 11,
+"nat": "handleSingleElementCase",
+"alt": "HandleSingleElementCase",
+"nat_span": [
+983,
+1006
+],
+"alt_span": [
+983,
+1006
+]
+},
+{
+"k": 12,
+"nat": "calculateRemainingIterations",
+"alt": "CalculateRemainingIterations",
+"nat_span": [
+1083,
+1111
+],
+"alt_span": [
+1083,
+1111
+]
+},
+{
+"k": 13,
+"nat": "iterateAndAppend",
+"alt": "IterateAndAppend",
+"nat_span": [
+1154,
+1170
+],
+"alt_span": [
+1154,
+1170
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.967,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t008",
+"family": "js_func_pascal",
+"topic": "Remove Duplicates from Array",
+"angle": "code",
+"text_es": "Write a function `removeDuplicates(arr)` that takes an array and returns a new array with duplicate elements removed. Input is an array, output is an array. Example: `removeDuplicates([1, 2, 2, 3, 1])` should return `[1, 2, 3]`, `removeDuplicates(['a', 'b', 'a', 'c'])` should return `['a', 'b', 'c']`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const createNewSet = (arr) => new Set(arr);\nconst convertSetToArray = (set) => Array.from(set);\nconst checkIfArray = (input) => Array.isArray(input);\nconst throwInvalidInputError = () => { throw new Error(\"Input must be an array.\"); };\nconst getUniqueElements = (arr) => convertSetToArray(createNewSet(arr));\nconst handleEmptyArray = (arr) => (arr.length === 0 ? [] : null);\n\nconst removeDuplicates = (arr) => {\n  if (!checkIfArray(arr)) {\n    throwInvalidInputError();\n  }\n  const emptyArrayResult = handleEmptyArray(arr);\n  if (emptyArrayResult !== null) {\n    return emptyArrayResult;\n  }\n  return getUniqueElements(arr);\n};\n",
+"text_alt": "const CreateNewSet = (arr) => new Set(arr);\nconst ConvertSetToArray = (set) => Array.from(set);\nconst CheckIfArray = (input) => Array.isArray(input);\nconst ThrowInvalidInputError = () => { throw new Error(\"Input must be an array.\"); };\nconst GetUniqueElements = (arr) => ConvertSetToArray(CreateNewSet(arr));\nconst HandleEmptyArray = (arr) => (arr.length === 0 ? [] : null);\n\nconst RemoveDuplicates = (arr) => {\n  if (!CheckIfArray(arr)) {\n    ThrowInvalidInputError();\n  }\n  const emptyArrayResult = HandleEmptyArray(arr);\n  if (emptyArrayResult !== null) {\n    return emptyArrayResult;\n  }\n  return GetUniqueElements(arr);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "createNewSet",
+"alt": "CreateNewSet",
+"nat_span": [
+6,
+18
+],
+"alt_span": [
+6,
+18
+]
+},
+{
+"k": 1,
+"nat": "convertSetToArray",
+"alt": "ConvertSetToArray",
+"nat_span": [
+50,
+67
+],
+"alt_span": [
+50,
+67
+]
+},
+{
+"k": 2,
+"nat": "checkIfArray",
+"alt": "CheckIfArray",
+"nat_span": [
+102,
+114
+],
+"alt_span": [
+102,
+114
+]
+},
+{
+"k": 3,
+"nat": "throwInvalidInputError",
+"alt": "ThrowInvalidInputError",
+"nat_span": [
+156,
+178
+],
+"alt_span": [
+156,
+178
+]
+},
+{
+"k": 4,
+"nat": "getUniqueElements",
+"alt": "GetUniqueElements",
+"nat_span": [
+242,
+259
+],
+"alt_span": [
+242,
+259
+]
+},
+{
+"k": 5,
+"nat": "convertSetToArray(createNewSet",
+"alt": "ConvertSetToArray(CreateNewSet",
+"nat_span": [
+271,
+301
+],
+"alt_span": [
+271,
+301
+]
+},
+{
+"k": 6,
+"nat": "handleEmptyArray",
+"alt": "HandleEmptyArray",
+"nat_span": [
+315,
+331
+],
+"alt_span": [
+315,
+331
+]
+},
+{
+"k": 7,
+"nat": "removeDuplicates",
+"alt": "RemoveDuplicates",
+"nat_span": [
+382,
+398
+],
+"alt_span": [
+382,
+398
+]
+},
+{
+"k": 8,
+"nat": "checkIfArray",
+"alt": "CheckIfArray",
+"nat_span": [
+419,
+431
+],
+"alt_span": [
+419,
+431
+]
+},
+{
+"k": 9,
+"nat": "throwInvalidInputError",
+"alt": "ThrowInvalidInputError",
+"nat_span": [
+444,
+466
+],
+"alt_span": [
+444,
+466
+]
+},
+{
+"k": 10,
+"nat": "handleEmptyArray",
+"alt": "HandleEmptyArray",
+"nat_span": [
+501,
+517
+],
+"alt_span": [
+501,
+517
+]
+},
+{
+"k": 11,
+"nat": "getUniqueElements",
+"alt": "GetUniqueElements",
+"nat_span": [
+601,
+618
+],
+"alt_span": [
+601,
+618
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.945,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t009",
+"family": "js_func_pascal",
+"topic": "Calculate Average of Numbers",
+"angle": "code",
+"text_es": "Create a function `calculateAverage(arr)` that computes the average of numbers in an array. Input is an array of numbers, output is a number. Example: `calculateAverage([10, 20, 30])` should return `20`, `calculateAverage([5, 5, 5, 5])` should return `5`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const ensureArrayNotEmpty = arr => { if (arr.length === 0) throw new Error(\"Array cannot be empty.\"); };\nconst calculateSumOfElements = arr => arr.reduce((acc, current) => acc + current, 0);\nconst getArrayLength = arr => arr.length;\nconst isNumber = val => typeof val === 'number' && !isNaN(val);\nconst validateAllElementsAreNumbers = arr => { if (!arr.every(isNumber)) throw new Error(\"All elements must be numbers.\"); };\nconst divideSumByCount = (sum, count) => sum / count;\n\nconst calculateAverage = arr => {\n  ensureArrayNotEmpty(arr);\n  validateAllElementsAreNumbers(arr);\n  const totalSum = calculateSumOfElements(arr);\n  const elementCount = getArrayLength(arr);\n  return divideSumByCount(totalSum, elementCount);\n};\n",
+"text_alt": "const EnsureArrayNotEmpty = arr => { if (arr.length === 0) throw new Error(\"Array cannot be empty.\"); };\nconst CalculateSumOfElements = arr => arr.reduce((acc, current) => acc + current, 0);\nconst GetArrayLength = arr => arr.length;\nconst IsNumber = val => typeof val === 'number' && !isNaN(val);\nconst ValidateAllElementsAreNumbers = arr => { if (!arr.every(IsNumber)) throw new Error(\"All elements must be numbers.\"); };\nconst DivideSumByCount = (sum, count) => sum / count;\n\nconst CalculateAverage = arr => {\n  EnsureArrayNotEmpty(arr);\n  ValidateAllElementsAreNumbers(arr);\n  const totalSum = CalculateSumOfElements(arr);\n  const elementCount = GetArrayLength(arr);\n  return DivideSumByCount(totalSum, elementCount);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "ensureArrayNotEmpty",
+"alt": "EnsureArrayNotEmpty",
+"nat_span": [
+6,
+25
+],
+"alt_span": [
+6,
+25
+]
+},
+{
+"k": 1,
+"nat": "calculateSumOfElements",
+"alt": "CalculateSumOfElements",
+"nat_span": [
+111,
+133
+],
+"alt_span": [
+111,
+133
+]
+},
+{
+"k": 2,
+"nat": "getArrayLength",
+"alt": "GetArrayLength",
+"nat_span": [
+197,
+211
+],
+"alt_span": [
+197,
+211
+]
+},
+{
+"k": 3,
+"nat": "isNumber",
+"alt": "IsNumber",
+"nat_span": [
+239,
+247
+],
+"alt_span": [
+239,
+247
+]
+},
+{
+"k": 4,
+"nat": "validateAllElementsAreNumbers",
+"alt": "ValidateAllElementsAreNumbers",
+"nat_span": [
+303,
+332
+],
+"alt_span": [
+303,
+332
+]
+},
+{
+"k": 5,
+"nat": "isNumber",
+"alt": "IsNumber",
+"nat_span": [
+359,
+367
+],
+"alt_span": [
+359,
+367
+]
+},
+{
+"k": 6,
+"nat": "divideSumByCount",
+"alt": "DivideSumByCount",
+"nat_span": [
+429,
+445
+],
+"alt_span": [
+429,
+445
+]
+},
+{
+"k": 7,
+"nat": "calculateAverage",
+"alt": "CalculateAverage",
+"nat_span": [
+484,
+500
+],
+"alt_span": [
+484,
+500
+]
+},
+{
+"k": 8,
+"nat": "ensureArrayNotEmpty",
+"alt": "EnsureArrayNotEmpty",
+"nat_span": [
+514,
+533
+],
+"alt_span": [
+514,
+533
+]
+},
+{
+"k": 9,
+"nat": "validateAllElementsAreNumbers",
+"alt": "ValidateAllElementsAreNumbers",
+"nat_span": [
+542,
+571
+],
+"alt_span": [
+542,
+571
+]
+},
+{
+"k": 10,
+"nat": "calculateSumOfElements",
+"alt": "CalculateSumOfElements",
+"nat_span": [
+597,
+619
+],
+"alt_span": [
+597,
+619
+]
+},
+{
+"k": 11,
+"nat": "getArrayLength",
+"alt": "GetArrayLength",
+"nat_span": [
+649,
+663
+],
+"alt_span": [
+649,
+663
+]
+},
+{
+"k": 12,
+"nat": "divideSumByCount",
+"alt": "DivideSumByCount",
+"nat_span": [
+679,
+695
+],
+"alt_span": [
+679,
+695
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.952,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t010",
+"family": "js_func_pascal",
+"topic": "Simple Calculator",
+"angle": "code",
+"text_es": "Implement a function `simpleCalculator(num1, operator, num2)` that performs basic arithmetic operations (+, -, *, /). Input includes two numbers and an operator string, output is a number or `null` for invalid operator/division by zero. Example: `simpleCalculator(10, '+', 5)` should return `15`, `simpleCalculator(10, '/', 0)` should return `null`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const isNumber = (val) => typeof val === 'number';\nconst isValidOperator = (op) => ['+', '-', '*', '/'].includes(op);\nconst addNumbers = (a, b) => a + b;\nconst subtractNumbers = (a, b) => a - b;\nconst multiplyNumbers = (a, b) => a * b;\nconst divideNumbers = (a, b) => (b === 0 ? null : a / b);\n\nconst simpleCalculator = (num1, operator, num2) => {\n  if (!isNumber(num1) || !isNumber(num2) || !isValidOperator(operator)) {\n    return null;\n  }\n\n  switch (operator) {\n    case '+':\n      return addNumbers(num1, num2);\n    case '-':\n      return subtractNumbers(num1, num2);\n    case '*':\n      return multiplyNumbers(num1, num2);\n    case '/':\n      return divideNumbers(num1, num2);\n    default:\n      return null;\n  }\n};\n",
+"text_alt": "const IsNumber = (val) => typeof val === 'number';\nconst IsValidOperator = (op) => ['+', '-', '*', '/'].includes(op);\nconst AddNumbers = (a, b) => a + b;\nconst SubtractNumbers = (a, b) => a - b;\nconst MultiplyNumbers = (a, b) => a * b;\nconst DivideNumbers = (a, b) => (b === 0 ? null : a / b);\n\nconst SimpleCalculator = (num1, operator, num2) => {\n  if (!IsNumber(num1) || !IsNumber(num2) || !IsValidOperator(operator)) {\n    return null;\n  }\n\n  switch (operator) {\n    case '+':\n      return AddNumbers(num1, num2);\n    case '-':\n      return SubtractNumbers(num1, num2);\n    case '*':\n      return MultiplyNumbers(num1, num2);\n    case '/':\n      return DivideNumbers(num1, num2);\n    default:\n      return null;\n  }\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "isNumber",
+"alt": "IsNumber",
+"nat_span": [
+6,
+14
+],
+"alt_span": [
+6,
+14
+]
+},
+{
+"k": 1,
+"nat": "isValidOperator",
+"alt": "IsValidOperator",
+"nat_span": [
+57,
+72
+],
+"alt_span": [
+57,
+72
+]
+},
+{
+"k": 2,
+"nat": "addNumbers",
+"alt": "AddNumbers",
+"nat_span": [
+124,
+134
+],
+"alt_span": [
+124,
+134
+]
+},
+{
+"k": 3,
+"nat": "subtractNumbers",
+"alt": "SubtractNumbers",
+"nat_span": [
+160,
+175
+],
+"alt_span": [
+160,
+175
+]
+},
+{
+"k": 4,
+"nat": "multiplyNumbers",
+"alt": "MultiplyNumbers",
+"nat_span": [
+201,
+216
+],
+"alt_span": [
+201,
+216
+]
+},
+{
+"k": 5,
+"nat": "divideNumbers",
+"alt": "DivideNumbers",
+"nat_span": [
+242,
+255
+],
+"alt_span": [
+242,
+255
+]
+},
+{
+"k": 6,
+"nat": "simpleCalculator",
+"alt": "SimpleCalculator",
+"nat_span": [
+301,
+317
+],
+"alt_span": [
+301,
+317
+]
+},
+{
+"k": 7,
+"nat": "isNumber",
+"alt": "IsNumber",
+"nat_span": [
+355,
+363
+],
+"alt_span": [
+355,
+363
+]
+},
+{
+"k": 8,
+"nat": "isNumber",
+"alt": "IsNumber",
+"nat_span": [
+374,
+382
+],
+"alt_span": [
+374,
+382
+]
+},
+{
+"k": 9,
+"nat": "isValidOperator",
+"alt": "IsValidOperator",
+"nat_span": [
+393,
+408
+],
+"alt_span": [
+393,
+408
+]
+},
+{
+"k": 10,
+"nat": "addNumbers",
+"alt": "AddNumbers",
+"nat_span": [
+493,
+503
+],
+"alt_span": [
+493,
+503
+]
+},
+{
+"k": 11,
+"nat": "subtractNumbers",
+"alt": "SubtractNumbers",
+"nat_span": [
+544,
+559
+],
+"alt_span": [
+544,
+559
+]
+},
+{
+"k": 12,
+"nat": "multiplyNumbers",
+"alt": "MultiplyNumbers",
+"nat_span": [
+600,
+615
+],
+"alt_span": [
+600,
+615
+]
+},
+{
+"k": 13,
+"nat": "divideNumbers",
+"alt": "DivideNumbers",
+"nat_span": [
+656,
+669
+],
+"alt_span": [
+656,
+669
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.957,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t011",
+"family": "js_func_pascal",
+"topic": "Capitalize First Letter",
+"angle": "code",
+"text_es": "Write a function `capitalizeFirstLetter(str)` that capitalizes the first letter of each word in a given string. Input is a string, output is a string. Example: `capitalizeFirstLetter('hello world')` should return `'Hello World'`, `capitalizeFirstLetter('javascript is fun')` should return `'Javascript Is Fun'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const capitalizeFirstLetter = (str) => {\n  const splitStringIntoWords = (inputString) => inputString.split(' ');\n  const capitalizeWord = (word) => {\n    if (word.length === 0) return '';\n    const getFirstChar = (s) => s.charAt(0);\n    const getRemainingChars = (s) => s.slice(1);\n    const makeUpperCase = (char) => char.toUpperCase();\n\n    const firstChar = getFirstChar(word);\n    const capitalizedFirstChar = makeUpperCase(firstChar);\n    const remainingChars = getRemainingChars(word);\n    return capitalizedFirstChar + remainingChars;\n  };\n  const joinWordsIntoString = (wordsArray) => wordsArray.join(' ');\n\n  const words = splitStringIntoWords(str);\n  const capitalizedWords = words.map(capitalizeWord);\n  return joinWordsIntoString(capitalizedWords);\n};\n",
+"text_alt": "const CapitalizeFirstLetter = (str) => {\n  const SplitStringIntoWords = (inputString) => inputString.split(' ');\n  const CapitalizeWord = (word) => {\n    if (word.length === 0) return '';\n    const GetFirstChar = (s) => s.charAt(0);\n    const GetRemainingChars = (s) => s.slice(1);\n    const MakeUpperCase = (char) => char.toUpperCase();\n\n    const firstChar = GetFirstChar(word);\n    const capitalizedFirstChar = MakeUpperCase(firstChar);\n    const remainingChars = GetRemainingChars(word);\n    return capitalizedFirstChar + remainingChars;\n  };\n  const JoinWordsIntoString = (wordsArray) => wordsArray.join(' ');\n\n  const words = SplitStringIntoWords(str);\n  const capitalizedWords = words.map(CapitalizeWord);\n  return JoinWordsIntoString(capitalizedWords);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "capitalizeFirstLetter",
+"alt": "CapitalizeFirstLetter",
+"nat_span": [
+6,
+27
+],
+"alt_span": [
+6,
+27
+]
+},
+{
+"k": 1,
+"nat": "splitStringIntoWords",
+"alt": "SplitStringIntoWords",
+"nat_span": [
+49,
+69
+],
+"alt_span": [
+49,
+69
+]
+},
+{
+"k": 2,
+"nat": "capitalizeWord",
+"alt": "CapitalizeWord",
+"nat_span": [
+121,
+135
+],
+"alt_span": [
+121,
+135
+]
+},
+{
+"k": 3,
+"nat": "getFirstChar",
+"alt": "GetFirstChar",
+"nat_span": [
+198,
+210
+],
+"alt_span": [
+198,
+210
+]
+},
+{
+"k": 4,
+"nat": "getRemainingChars",
+"alt": "GetRemainingChars",
+"nat_span": [
+243,
+260
+],
+"alt_span": [
+243,
+260
+]
+},
+{
+"k": 5,
+"nat": "makeUpperCase",
+"alt": "MakeUpperCase",
+"nat_span": [
+292,
+305
+],
+"alt_span": [
+292,
+305
+]
+},
+{
+"k": 6,
+"nat": "getFirstChar",
+"alt": "GetFirstChar",
+"nat_span": [
+361,
+373
+],
+"alt_span": [
+361,
+373
+]
+},
+{
+"k": 7,
+"nat": "makeUpperCase",
+"alt": "MakeUpperCase",
+"nat_span": [
+414,
+427
+],
+"alt_span": [
+414,
+427
+]
+},
+{
+"k": 8,
+"nat": "getRemainingChars",
+"alt": "GetRemainingChars",
+"nat_span": [
+467,
+484
+],
+"alt_span": [
+467,
+484
+]
+},
+{
+"k": 9,
+"nat": "joinWordsIntoString",
+"alt": "JoinWordsIntoString",
+"nat_span": [
+555,
+574
+],
+"alt_span": [
+555,
+574
+]
+},
+{
+"k": 10,
+"nat": "splitStringIntoWords",
+"alt": "SplitStringIntoWords",
+"nat_span": [
+632,
+652
+],
+"alt_span": [
+632,
+652
+]
+},
+{
+"k": 11,
+"nat": "capitalizeWord",
+"alt": "CapitalizeWord",
+"nat_span": [
+696,
+710
+],
+"alt_span": [
+696,
+710
+]
+},
+{
+"k": 12,
+"nat": "joinWordsIntoString",
+"alt": "JoinWordsIntoString",
+"nat_span": [
+722,
+741
+],
+"alt_span": [
+722,
+741
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.947,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t012",
+"family": "js_func_pascal",
+"topic": "Find Longest Word",
+"angle": "code",
+"text_es": "Create a function `findLongestWord(str)` that takes a sentence and returns the longest word in it. If there are ties, return the first longest word. Input is a string, output is a string. Example: `findLongestWord('The quick brown fox')` should return `'quick'`, `findLongestWord('hello world')` should return `'hello'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getWordsFromString = (str) => str.split(' ');\nconst removePunctuation = (word) => word.replace(/[.,!?;:]/g, '');\nconst getWordLength = (word) => word.length;\nconst isLongerThanCurrent = (newLength, currentLength) => newLength > currentLength;\nconst updateLongestWord = (newWord, currentLongest) => newWord;\nconst initializeLongestWord = () => '';\n\nconst findLongestWord = (str) => {\n  let longestWord = initializeLongestWord();\n  let maxLength = 0;\n\n  const words = getWordsFromString(str);\n\n  for (const word of words) {\n    const cleanedWord = removePunctuation(word);\n    const currentLength = getWordLength(cleanedWord);\n\n    if (isLongerThanCurrent(currentLength, maxLength)) {\n      maxLength = currentLength;\n      longestWord = updateLongestWord(cleanedWord, longestWord);\n    }\n  }\n\n  return longestWord;\n};\n",
+"text_alt": "const GetWordsFromString = (str) => str.split(' ');\nconst RemovePunctuation = (word) => word.replace(/[.,!?;:]/g, '');\nconst GetWordLength = (word) => word.length;\nconst IsLongerThanCurrent = (newLength, currentLength) => newLength > currentLength;\nconst UpdateLongestWord = (newWord, currentLongest) => newWord;\nconst InitializeLongestWord = () => '';\n\nconst FindLongestWord = (str) => {\n  let longestWord = InitializeLongestWord();\n  let maxLength = 0;\n\n  const words = GetWordsFromString(str);\n\n  for (const word of words) {\n    const cleanedWord = RemovePunctuation(word);\n    const currentLength = GetWordLength(cleanedWord);\n\n    if (IsLongerThanCurrent(currentLength, maxLength)) {\n      maxLength = currentLength;\n      longestWord = UpdateLongestWord(cleanedWord, longestWord);\n    }\n  }\n\n  return longestWord;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getWordsFromString",
+"alt": "GetWordsFromString",
+"nat_span": [
+6,
+24
+],
+"alt_span": [
+6,
+24
+]
+},
+{
+"k": 1,
+"nat": "removePunctuation",
+"alt": "RemovePunctuation",
+"nat_span": [
+58,
+75
+],
+"alt_span": [
+58,
+75
+]
+},
+{
+"k": 2,
+"nat": "getWordLength",
+"alt": "GetWordLength",
+"nat_span": [
+125,
+138
+],
+"alt_span": [
+125,
+138
+]
+},
+{
+"k": 3,
+"nat": "isLongerThanCurrent",
+"alt": "IsLongerThanCurrent",
+"nat_span": [
+170,
+189
+],
+"alt_span": [
+170,
+189
+]
+},
+{
+"k": 4,
+"nat": "updateLongestWord",
+"alt": "UpdateLongestWord",
+"nat_span": [
+255,
+272
+],
+"alt_span": [
+255,
+272
+]
+},
+{
+"k": 5,
+"nat": "initializeLongestWord",
+"alt": "InitializeLongestWord",
+"nat_span": [
+319,
+340
+],
+"alt_span": [
+319,
+340
+]
+},
+{
+"k": 6,
+"nat": "findLongestWord",
+"alt": "FindLongestWord",
+"nat_span": [
+360,
+375
+],
+"alt_span": [
+360,
+375
+]
+},
+{
+"k": 7,
+"nat": "initializeLongestWord",
+"alt": "InitializeLongestWord",
+"nat_span": [
+409,
+430
+],
+"alt_span": [
+409,
+430
+]
+},
+{
+"k": 8,
+"nat": "getWordsFromString",
+"alt": "GetWordsFromString",
+"nat_span": [
+472,
+490
+],
+"alt_span": [
+472,
+490
+]
+},
+{
+"k": 9,
+"nat": "removePunctuation",
+"alt": "RemovePunctuation",
+"nat_span": [
+552,
+569
+],
+"alt_span": [
+552,
+569
+]
+},
+{
+"k": 10,
+"nat": "getWordLength",
+"alt": "GetWordLength",
+"nat_span": [
+603,
+616
+],
+"alt_span": [
+603,
+616
+]
+},
+{
+"k": 11,
+"nat": "isLongerThanCurrent",
+"alt": "IsLongerThanCurrent",
+"nat_span": [
+640,
+659
+],
+"alt_span": [
+640,
+659
+]
+},
+{
+"k": 12,
+"nat": "updateLongestWord",
+"alt": "UpdateLongestWord",
+"nat_span": [
+742,
+759
+],
+"alt_span": [
+742,
+759
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.951,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t013",
+"family": "js_func_pascal",
+"topic": "Check Prime Number",
+"angle": "code",
+"text_es": "Implement a function `isPrime(num)` that determines if a given number is a prime number. Input is an integer, output is a boolean. Example: `isPrime(7)` should return `true`, `isPrime(10)` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const isPrime = (num) => {\n  if (numberIsLessThanTwo(num)) return false;\n  if (numberIsTwo(num)) return true;\n  if (numberIsEven(num)) return false;\n\n  for (let i = 3; i <= getSquareRoot(num); i += 2) {\n    if (numberIsDivisibleBy(num, i)) {\n      return false;\n    }\n  }\n  return true;\n};\n\nconst numberIsLessThanTwo = (n) => n < 2;\nconst numberIsTwo = (n) => n === 2;\nconst numberIsEven = (n) => n % 2 === 0;\nconst getSquareRoot = (n) => Math.sqrt(n);\nconst numberIsDivisibleBy = (n, divisor) => n % divisor === 0;\n",
+"text_alt": "const IsPrime = (num) => {\n  if (NumberIsLessThanTwo(num)) return false;\n  if (NumberIsTwo(num)) return true;\n  if (NumberIsEven(num)) return false;\n\n  for (let i = 3; i <= GetSquareRoot(num); i += 2) {\n    if (NumberIsDivisibleBy(num, i)) {\n      return false;\n    }\n  }\n  return true;\n};\n\nconst NumberIsLessThanTwo = (n) => n < 2;\nconst NumberIsTwo = (n) => n === 2;\nconst NumberIsEven = (n) => n % 2 === 0;\nconst GetSquareRoot = (n) => Math.sqrt(n);\nconst NumberIsDivisibleBy = (n, divisor) => n % divisor === 0;\n",
+"opps": [
+{
+"k": 0,
+"nat": "isPrime",
+"alt": "IsPrime",
+"nat_span": [
+6,
+13
+],
+"alt_span": [
+6,
+13
+]
+},
+{
+"k": 1,
+"nat": "numberIsLessThanTwo",
+"alt": "NumberIsLessThanTwo",
+"nat_span": [
+33,
+52
+],
+"alt_span": [
+33,
+52
+]
+},
+{
+"k": 2,
+"nat": "numberIsTwo",
+"alt": "NumberIsTwo",
+"nat_span": [
+79,
+90
+],
+"alt_span": [
+79,
+90
+]
+},
+{
+"k": 3,
+"nat": "numberIsEven",
+"alt": "NumberIsEven",
+"nat_span": [
+116,
+128
+],
+"alt_span": [
+116,
+128
+]
+},
+{
+"k": 4,
+"nat": "getSquareRoot",
+"alt": "GetSquareRoot",
+"nat_span": [
+173,
+186
+],
+"alt_span": [
+173,
+186
+]
+},
+{
+"k": 5,
+"nat": "numberIsDivisibleBy",
+"alt": "NumberIsDivisibleBy",
+"nat_span": [
+211,
+230
+],
+"alt_span": [
+211,
+230
+]
+},
+{
+"k": 6,
+"nat": "numberIsLessThanTwo",
+"alt": "NumberIsLessThanTwo",
+"nat_span": [
+297,
+316
+],
+"alt_span": [
+297,
+316
+]
+},
+{
+"k": 7,
+"nat": "numberIsTwo",
+"alt": "NumberIsTwo",
+"nat_span": [
+339,
+350
+],
+"alt_span": [
+339,
+350
+]
+},
+{
+"k": 8,
+"nat": "numberIsEven",
+"alt": "NumberIsEven",
+"nat_span": [
+375,
+387
+],
+"alt_span": [
+375,
+387
+]
+},
+{
+"k": 9,
+"nat": "getSquareRoot",
+"alt": "GetSquareRoot",
+"nat_span": [
+416,
+429
+],
+"alt_span": [
+416,
+429
+]
+},
+{
+"k": 10,
+"nat": "numberIsDivisibleBy",
+"alt": "NumberIsDivisibleBy",
+"nat_span": [
+459,
+478
+],
+"alt_span": [
+459,
+478
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.954,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t014",
+"family": "js_func_pascal",
+"topic": "Sum of Array Elements",
+"angle": "code",
+"text_es": "Write a function `sumArray(arr)` that calculates the sum of all numbers in an array. Input is an array of numbers, output is a number. Example: `sumArray([1, 2, 3])` should return `6`, `sumArray([-1, 0, 1])` should return `0`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const sumArray = (arr) => {\n  const getInitialSum = () => 0;\n  const checkIfNumber = (val) => typeof val === 'number';\n  const addValueToSum = (currentSum, value) => currentSum + value;\n  const isArrayEmpty = (array) => array.length === 0;\n  const calculateTotal = (array) => array.reduce(addValueToSum, getInitialSum());\n  const filterNonNumbers = (array) => array.filter(checkIfNumber);\n\n  if (isArrayEmpty(arr)) {\n    return getInitialSum();\n  }\n\n  const numericValues = filterNonNumbers(arr);\n  return calculateTotal(numericValues);\n};\n",
+"text_alt": "const SumArray = (arr) => {\n  const GetInitialSum = () => 0;\n  const CheckIfNumber = (val) => typeof val === 'number';\n  const AddValueToSum = (currentSum, value) => currentSum + value;\n  const IsArrayEmpty = (array) => array.length === 0;\n  const CalculateTotal = (array) => array.reduce(AddValueToSum, GetInitialSum());\n  const FilterNonNumbers = (array) => array.filter(CheckIfNumber);\n\n  if (IsArrayEmpty(arr)) {\n    return GetInitialSum();\n  }\n\n  const numericValues = FilterNonNumbers(arr);\n  return CalculateTotal(numericValues);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "sumArray",
+"alt": "SumArray",
+"nat_span": [
+6,
+14
+],
+"alt_span": [
+6,
+14
+]
+},
+{
+"k": 1,
+"nat": "getInitialSum",
+"alt": "GetInitialSum",
+"nat_span": [
+36,
+49
+],
+"alt_span": [
+36,
+49
+]
+},
+{
+"k": 2,
+"nat": "checkIfNumber",
+"alt": "CheckIfNumber",
+"nat_span": [
+69,
+82
+],
+"alt_span": [
+69,
+82
+]
+},
+{
+"k": 3,
+"nat": "addValueToSum",
+"alt": "AddValueToSum",
+"nat_span": [
+127,
+140
+],
+"alt_span": [
+127,
+140
+]
+},
+{
+"k": 4,
+"nat": "isArrayEmpty",
+"alt": "IsArrayEmpty",
+"nat_span": [
+194,
+206
+],
+"alt_span": [
+194,
+206
+]
+},
+{
+"k": 5,
+"nat": "calculateTotal",
+"alt": "CalculateTotal",
+"nat_span": [
+248,
+262
+],
+"alt_span": [
+248,
+262
+]
+},
+{
+"k": 6,
+"nat": "addValueToSum, getInitialSum",
+"alt": "AddValueToSum, GetInitialSum",
+"nat_span": [
+289,
+317
+],
+"alt_span": [
+289,
+317
+]
+},
+{
+"k": 7,
+"nat": "filterNonNumbers",
+"alt": "FilterNonNumbers",
+"nat_span": [
+330,
+346
+],
+"alt_span": [
+330,
+346
+]
+},
+{
+"k": 8,
+"nat": "checkIfNumber",
+"alt": "CheckIfNumber",
+"nat_span": [
+373,
+386
+],
+"alt_span": [
+373,
+386
+]
+},
+{
+"k": 9,
+"nat": "isArrayEmpty",
+"alt": "IsArrayEmpty",
+"nat_span": [
+396,
+408
+],
+"alt_span": [
+396,
+408
+]
+},
+{
+"k": 10,
+"nat": "getInitialSum",
+"alt": "GetInitialSum",
+"nat_span": [
+428,
+441
+],
+"alt_span": [
+428,
+441
+]
+},
+{
+"k": 11,
+"nat": "filterNonNumbers",
+"alt": "FilterNonNumbers",
+"nat_span": [
+474,
+490
+],
+"alt_span": [
+474,
+490
+]
+},
+{
+"k": 12,
+"nat": "calculateTotal",
+"alt": "CalculateTotal",
+"nat_span": [
+506,
+520
+],
+"alt_span": [
+506,
+520
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.927,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t015",
+"family": "js_func_pascal",
+"topic": "Object Key-Value Swap",
+"angle": "code",
+"text_es": "Create a function `swapKeysAndValues(obj)` that takes an object and returns a new object where keys become values and values become keys. Assume values are unique and primitive. Input is an object, output is an object. Example: `swapKeysAndValues({a: 1, b: 2})` should return `{1: 'a', 2: 'b'}`, `swapKeysAndValues({name: 'Alice', age: 30})` should return `{Alice: 'name', 30: 'age'}`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getObjectKeys = obj => Object.keys(obj);\nconst getObjectValue = (obj, key) => obj[key];\nconst createNewObject = () => ({});\nconst setKeyValue = (obj, key, value) => { obj[key] = value; };\nconst isObjectEmpty = obj => getObjectKeys(obj).length === 0;\nconst iterateOverKeys = (obj, callback) => getObjectKeys(obj).forEach(callback);\n\nconst swapKeysAndValues = obj => {\n  if (isObjectEmpty(obj)) {\n    return createNewObject();\n  }\n\n  const swapped = createNewObject();\n  iterateOverKeys(obj, key => {\n    const value = getObjectValue(obj, key);\n    setKeyValue(swapped, value, key);\n  });\n  return swapped;\n};\n",
+"text_alt": "const GetObjectKeys = obj => Object.keys(obj);\nconst GetObjectValue = (obj, key) => obj[key];\nconst CreateNewObject = () => ({});\nconst SetKeyValue = (obj, key, value) => { obj[key] = value; };\nconst IsObjectEmpty = obj => GetObjectKeys(obj).length === 0;\nconst IterateOverKeys = (obj, callback) => GetObjectKeys(obj).forEach(callback);\n\nconst SwapKeysAndValues = obj => {\n  if (IsObjectEmpty(obj)) {\n    return CreateNewObject();\n  }\n\n  const swapped = CreateNewObject();\n  IterateOverKeys(obj, key => {\n    const value = GetObjectValue(obj, key);\n    SetKeyValue(swapped, value, key);\n  });\n  return swapped;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getObjectKeys",
+"alt": "GetObjectKeys",
+"nat_span": [
+6,
+19
+],
+"alt_span": [
+6,
+19
+]
+},
+{
+"k": 1,
+"nat": "getObjectValue",
+"alt": "GetObjectValue",
+"nat_span": [
+53,
+67
+],
+"alt_span": [
+53,
+67
+]
+},
+{
+"k": 2,
+"nat": "createNewObject",
+"alt": "CreateNewObject",
+"nat_span": [
+100,
+115
+],
+"alt_span": [
+100,
+115
+]
+},
+{
+"k": 3,
+"nat": "setKeyValue",
+"alt": "SetKeyValue",
+"nat_span": [
+136,
+147
+],
+"alt_span": [
+136,
+147
+]
+},
+{
+"k": 4,
+"nat": "isObjectEmpty",
+"alt": "IsObjectEmpty",
+"nat_span": [
+200,
+213
+],
+"alt_span": [
+200,
+213
+]
+},
+{
+"k": 5,
+"nat": "getObjectKeys",
+"alt": "GetObjectKeys",
+"nat_span": [
+223,
+236
+],
+"alt_span": [
+223,
+236
+]
+},
+{
+"k": 6,
+"nat": "iterateOverKeys",
+"alt": "IterateOverKeys",
+"nat_span": [
+262,
+277
+],
+"alt_span": [
+262,
+277
+]
+},
+{
+"k": 7,
+"nat": "getObjectKeys",
+"alt": "GetObjectKeys",
+"nat_span": [
+299,
+312
+],
+"alt_span": [
+299,
+312
+]
+},
+{
+"k": 8,
+"nat": "swapKeysAndValues",
+"alt": "SwapKeysAndValues",
+"nat_span": [
+344,
+361
+],
+"alt_span": [
+344,
+361
+]
+},
+{
+"k": 9,
+"nat": "isObjectEmpty",
+"alt": "IsObjectEmpty",
+"nat_span": [
+379,
+392
+],
+"alt_span": [
+379,
+392
+]
+},
+{
+"k": 10,
+"nat": "createNewObject",
+"alt": "CreateNewObject",
+"nat_span": [
+412,
+427
+],
+"alt_span": [
+412,
+427
+]
+},
+{
+"k": 11,
+"nat": "createNewObject",
+"alt": "CreateNewObject",
+"nat_span": [
+454,
+469
+],
+"alt_span": [
+454,
+469
+]
+},
+{
+"k": 12,
+"nat": "iterateOverKeys",
+"alt": "IterateOverKeys",
+"nat_span": [
+475,
+490
+],
+"alt_span": [
+475,
+490
+]
+},
+{
+"k": 13,
+"nat": "getObjectValue",
+"alt": "GetObjectValue",
+"nat_span": [
+523,
+537
+],
+"alt_span": [
+523,
+537
+]
+},
+{
+"k": 14,
+"nat": "setKeyValue",
+"alt": "SetKeyValue",
+"nat_span": [
+553,
+564
+],
+"alt_span": [
+553,
+564
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 0.938,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t016",
+"family": "js_func_pascal",
+"topic": "Area of a Circle",
+"angle": "code",
+"text_es": "Implement a function `calculateCircleArea(radius)` that calculates the area of a circle given its radius. Use `Math.PI`. Input is a number, output is a number. Example: `calculateCircleArea(1)` should return `Math.PI`, `calculateCircleArea(2)` should return `4 * Math.PI`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const multiplyTwoNumbers = (num1, num2) => num1 * num2;\nconst squareNumber = (num) => multiplyTwoNumbers(num, num);\nconst getPiValue = () => Math.PI;\n\nconst calculateCircleArea = (radius) => {\n  const getRadiusSquared = (r) => squareNumber(r);\n  const getAreaProduct = (rSquared, pi) => multiplyTwoNumbers(rSquared, pi);\n  const roundResult = (value, decimalPlaces = 10) => parseFloat(value.toFixed(decimalPlaces));\n\n  const radiusSquared = getRadiusSquared(radius);\n  const pi = getPiValue();\n  const rawArea = getAreaProduct(radiusSquared, pi);\n  return roundResult(rawArea);\n};\n",
+"text_alt": "const MultiplyTwoNumbers = (num1, num2) => num1 * num2;\nconst SquareNumber = (num) => MultiplyTwoNumbers(num, num);\nconst GetPiValue = () => Math.PI;\n\nconst CalculateCircleArea = (radius) => {\n  const GetRadiusSquared = (r) => SquareNumber(r);\n  const GetAreaProduct = (rSquared, pi) => MultiplyTwoNumbers(rSquared, pi);\n  const RoundResult = (value, decimalPlaces = 10) => parseFloat(value.toFixed(decimalPlaces));\n\n  const radiusSquared = GetRadiusSquared(radius);\n  const pi = GetPiValue();\n  const rawArea = GetAreaProduct(radiusSquared, pi);\n  return RoundResult(rawArea);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "multiplyTwoNumbers",
+"alt": "MultiplyTwoNumbers",
+"nat_span": [
+6,
+24
+],
+"alt_span": [
+6,
+24
+]
+},
+{
+"k": 1,
+"nat": "squareNumber",
+"alt": "SquareNumber",
+"nat_span": [
+62,
+74
+],
+"alt_span": [
+62,
+74
+]
+},
+{
+"k": 2,
+"nat": "multiplyTwoNumbers",
+"alt": "MultiplyTwoNumbers",
+"nat_span": [
+86,
+104
+],
+"alt_span": [
+86,
+104
+]
+},
+{
+"k": 3,
+"nat": "getPiValue",
+"alt": "GetPiValue",
+"nat_span": [
+122,
+132
+],
+"alt_span": [
+122,
+132
+]
+},
+{
+"k": 4,
+"nat": "calculateCircleArea",
+"alt": "CalculateCircleArea",
+"nat_span": [
+157,
+176
+],
+"alt_span": [
+157,
+176
+]
+},
+{
+"k": 5,
+"nat": "getRadiusSquared",
+"alt": "GetRadiusSquared",
+"nat_span": [
+201,
+217
+],
+"alt_span": [
+201,
+217
+]
+},
+{
+"k": 6,
+"nat": "squareNumber",
+"alt": "SquareNumber",
+"nat_span": [
+227,
+239
+],
+"alt_span": [
+227,
+239
+]
+},
+{
+"k": 7,
+"nat": "getAreaProduct",
+"alt": "GetAreaProduct",
+"nat_span": [
+252,
+266
+],
+"alt_span": [
+252,
+266
+]
+},
+{
+"k": 8,
+"nat": "multiplyTwoNumbers",
+"alt": "MultiplyTwoNumbers",
+"nat_span": [
+287,
+305
+],
+"alt_span": [
+287,
+305
+]
+},
+{
+"k": 9,
+"nat": "roundResult",
+"alt": "RoundResult",
+"nat_span": [
+329,
+340
+],
+"alt_span": [
+329,
+340
+]
+},
+{
+"k": 10,
+"nat": "getRadiusSquared",
+"alt": "GetRadiusSquared",
+"nat_span": [
+441,
+457
+],
+"alt_span": [
+441,
+457
+]
+},
+{
+"k": 11,
+"nat": "getPiValue",
+"alt": "GetPiValue",
+"nat_span": [
+480,
+490
+],
+"alt_span": [
+480,
+490
+]
+},
+{
+"k": 12,
+"nat": "getAreaProduct",
+"alt": "GetAreaProduct",
+"nat_span": [
+512,
+526
+],
+"alt_span": [
+512,
+526
+]
+},
+{
+"k": 13,
+"nat": "roundResult",
+"alt": "RoundResult",
+"nat_span": [
+556,
+567
+],
+"alt_span": [
+556,
+567
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.93,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t017",
+"family": "js_func_pascal",
+"topic": "Remove all occurrences of a character",
+"angle": "code",
+"text_es": "Write a function `removeChar(str, charToRemove)` that removes all occurrences of a specified character from a string. Input is a string and a character string, output is a string. Example: `removeChar('hello world', 'l')` should return `'heo word'`, `removeChar('banana', 'a')` should return `'bnn'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const convertStringToArray = (str) => Array.from(str);\nconst filterArrayByChar = (arr, char) => arr.filter((c) => c !== char);\nconst joinArrayToString = (arr) => arr.join('');\nconst isEmptyString = (str) => str.length === 0;\nconst isSingleChar = (char) => char.length === 1;\nconst validateInput = (str, char) => !isEmptyString(str) && !isEmptyString(char) && isSingleChar(char);\n\nconst removeChar = (str, charToRemove) => {\n  if (!validateInput(str, charToRemove)) {\n    return str;\n  }\n  const stringAsArray = convertStringToArray(str);\n  const filteredArray = filterArrayByChar(stringAsArray, charToRemove);\n  const resultString = joinArrayToString(filteredArray);\n  return resultString;\n};\n",
+"text_alt": "const ConvertStringToArray = (str) => Array.from(str);\nconst FilterArrayByChar = (arr, char) => arr.filter((c) => c !== char);\nconst JoinArrayToString = (arr) => arr.join('');\nconst IsEmptyString = (str) => str.length === 0;\nconst IsSingleChar = (char) => char.length === 1;\nconst ValidateInput = (str, char) => !IsEmptyString(str) && !IsEmptyString(char) && IsSingleChar(char);\n\nconst RemoveChar = (str, charToRemove) => {\n  if (!ValidateInput(str, charToRemove)) {\n    return str;\n  }\n  const stringAsArray = ConvertStringToArray(str);\n  const filteredArray = FilterArrayByChar(stringAsArray, charToRemove);\n  const resultString = JoinArrayToString(filteredArray);\n  return resultString;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "convertStringToArray",
+"alt": "ConvertStringToArray",
+"nat_span": [
+6,
+26
+],
+"alt_span": [
+6,
+26
+]
+},
+{
+"k": 1,
+"nat": "filterArrayByChar",
+"alt": "FilterArrayByChar",
+"nat_span": [
+61,
+78
+],
+"alt_span": [
+61,
+78
+]
+},
+{
+"k": 2,
+"nat": "joinArrayToString",
+"alt": "JoinArrayToString",
+"nat_span": [
+133,
+150
+],
+"alt_span": [
+133,
+150
+]
+},
+{
+"k": 3,
+"nat": "isEmptyString",
+"alt": "IsEmptyString",
+"nat_span": [
+182,
+195
+],
+"alt_span": [
+182,
+195
+]
+},
+{
+"k": 4,
+"nat": "isSingleChar",
+"alt": "IsSingleChar",
+"nat_span": [
+231,
+243
+],
+"alt_span": [
+231,
+243
+]
+},
+{
+"k": 5,
+"nat": "validateInput",
+"alt": "ValidateInput",
+"nat_span": [
+281,
+294
+],
+"alt_span": [
+281,
+294
+]
+},
+{
+"k": 6,
+"nat": "isEmptyString",
+"alt": "IsEmptyString",
+"nat_span": [
+313,
+326
+],
+"alt_span": [
+313,
+326
+]
+},
+{
+"k": 7,
+"nat": "isEmptyString",
+"alt": "IsEmptyString",
+"nat_span": [
+336,
+349
+],
+"alt_span": [
+336,
+349
+]
+},
+{
+"k": 8,
+"nat": "isSingleChar",
+"alt": "IsSingleChar",
+"nat_span": [
+359,
+371
+],
+"alt_span": [
+359,
+371
+]
+},
+{
+"k": 9,
+"nat": "removeChar",
+"alt": "RemoveChar",
+"nat_span": [
+386,
+396
+],
+"alt_span": [
+386,
+396
+]
+},
+{
+"k": 10,
+"nat": "validateInput",
+"alt": "ValidateInput",
+"nat_span": [
+431,
+444
+],
+"alt_span": [
+431,
+444
+]
+},
+{
+"k": 11,
+"nat": "convertStringToArray",
+"alt": "ConvertStringToArray",
+"nat_span": [
+511,
+531
+],
+"alt_span": [
+511,
+531
+]
+},
+{
+"k": 12,
+"nat": "filterArrayByChar",
+"alt": "FilterArrayByChar",
+"nat_span": [
+562,
+579
+],
+"alt_span": [
+562,
+579
+]
+},
+{
+"k": 13,
+"nat": "joinArrayToString",
+"alt": "JoinArrayToString",
+"nat_span": [
+633,
+650
+],
+"alt_span": [
+633,
+650
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.945,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t018",
+"family": "js_func_pascal",
+"topic": "Count Word Occurrences",
+"angle": "code",
+"text_es": "Create a function `countWordOccurrences(sentence, word)` that counts how many times a specific word appears in a sentence (case-insensitive). Input is two strings, output is an integer. Example: `countWordOccurrences('Hello world, hello!', 'hello')` should return `2`, `countWordOccurrences('JavaScript is fun', 'python')` should return `0`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const normalizeText = (text) => text.toLowerCase();\nconst splitIntoWords = (text) => text.split(/\\W+/);\nconst filterEmptyStrings = (words) => words.filter(word => word.length > 0);\nconst compareWords = (wordA, wordB) => wordA === wordB;\nconst incrementCount = (currentCount) => currentCount + 1;\nconst initializeCount = () => 0;\n\nconst countWordOccurrences = (sentence, word) => {\n  const normalizedSentence = normalizeText(sentence);\n  const normalizedTargetWord = normalizeText(word);\n  const wordsInSentence = filterEmptyStrings(splitIntoWords(normalizedSentence));\n\n  let occurrenceCount = initializeCount();\n  for (const currentWord of wordsInSentence) {\n    if (compareWords(currentWord, normalizedTargetWord)) {\n      occurrenceCount = incrementCount(occurrenceCount);\n    }\n  }\n  return occurrenceCount;\n};\n",
+"text_alt": "const NormalizeText = (text) => text.toLowerCase();\nconst SplitIntoWords = (text) => text.split(/\\W+/);\nconst FilterEmptyStrings = (words) => words.filter(word => word.length > 0);\nconst CompareWords = (wordA, wordB) => wordA === wordB;\nconst IncrementCount = (currentCount) => currentCount + 1;\nconst InitializeCount = () => 0;\n\nconst CountWordOccurrences = (sentence, word) => {\n  const normalizedSentence = NormalizeText(sentence);\n  const normalizedTargetWord = NormalizeText(word);\n  const wordsInSentence = FilterEmptyStrings(SplitIntoWords(normalizedSentence));\n\n  let occurrenceCount = InitializeCount();\n  for (const currentWord of wordsInSentence) {\n    if (CompareWords(currentWord, normalizedTargetWord)) {\n      occurrenceCount = IncrementCount(occurrenceCount);\n    }\n  }\n  return occurrenceCount;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "normalizeText",
+"alt": "NormalizeText",
+"nat_span": [
+6,
+19
+],
+"alt_span": [
+6,
+19
+]
+},
+{
+"k": 1,
+"nat": "splitIntoWords",
+"alt": "SplitIntoWords",
+"nat_span": [
+58,
+72
+],
+"alt_span": [
+58,
+72
+]
+},
+{
+"k": 2,
+"nat": "filterEmptyStrings",
+"alt": "FilterEmptyStrings",
+"nat_span": [
+110,
+128
+],
+"alt_span": [
+110,
+128
+]
+},
+{
+"k": 3,
+"nat": "compareWords",
+"alt": "CompareWords",
+"nat_span": [
+187,
+199
+],
+"alt_span": [
+187,
+199
+]
+},
+{
+"k": 4,
+"nat": "incrementCount",
+"alt": "IncrementCount",
+"nat_span": [
+243,
+257
+],
+"alt_span": [
+243,
+257
+]
+},
+{
+"k": 5,
+"nat": "initializeCount",
+"alt": "InitializeCount",
+"nat_span": [
+302,
+317
+],
+"alt_span": [
+302,
+317
+]
+},
+{
+"k": 6,
+"nat": "countWordOccurrences",
+"alt": "CountWordOccurrences",
+"nat_span": [
+336,
+356
+],
+"alt_span": [
+336,
+356
+]
+},
+{
+"k": 7,
+"nat": "normalizeText",
+"alt": "NormalizeText",
+"nat_span": [
+410,
+423
+],
+"alt_span": [
+410,
+423
+]
+},
+{
+"k": 8,
+"nat": "normalizeText",
+"alt": "NormalizeText",
+"nat_span": [
+466,
+479
+],
+"alt_span": [
+466,
+479
+]
+},
+{
+"k": 9,
+"nat": "filterEmptyStrings(splitIntoWords",
+"alt": "FilterEmptyStrings(SplitIntoWords",
+"nat_span": [
+513,
+546
+],
+"alt_span": [
+513,
+546
+]
+},
+{
+"k": 10,
+"nat": "initializeCount",
+"alt": "InitializeCount",
+"nat_span": [
+594,
+609
+],
+"alt_span": [
+594,
+609
+]
+},
+{
+"k": 11,
+"nat": "compareWords",
+"alt": "CompareWords",
+"nat_span": [
+668,
+680
+],
+"alt_span": [
+668,
+680
+]
+},
+{
+"k": 12,
+"nat": "incrementCount",
+"alt": "IncrementCount",
+"nat_span": [
+743,
+757
+],
+"alt_span": [
+743,
+757
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.945,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t019",
+"family": "js_func_pascal",
+"topic": "FizzBuzz",
+"angle": "code",
+"text_es": "Implement a function `fizzBuzz(n)` that returns an array from 1 to `n`. For multiples of 3, replace with 'Fizz'. For multiples of 5, replace with 'Buzz'. For multiples of both, replace with 'FizzBuzz'. Input is an integer `n`, output is an array of strings/numbers. Example: `fizzBuzz(5)` should return `[1, 2, 'Fizz', 4, 'Buzz']`, `fizzBuzz(3)` should return `[1, 2, 'Fizz']`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const isDivisibleBy = (num, divisor) => num % divisor === 0;\nconst createRangeArray = (num) => Array.from({ length: num }, (_, i) => i + 1);\nconst convertToString = (val) => String(val);\nconst generateFizzBuzz = (num) => {\n  let output = '';\n  if (isDivisibleBy(num, 3)) {\n    output += 'Fizz';\n  }\n  if (isDivisibleBy(num, 5)) {\n    output += 'Buzz';\n  }\n  return output || num;\n};\nconst applyFizzBuzzLogic = (arr) => arr.map(generateFizzBuzz);\nconst combineResults = (transformedArr) => transformedArr.map(item => typeof item === 'number' ? convertToString(item) : item);\n\nconst fizzBuzz = (n) => {\n  const numberRange = createRangeArray(n);\n  const fizzBuzzApplied = applyFizzBuzzLogic(numberRange);\n  return fizzBuzzApplied;\n};\n",
+"text_alt": "const IsDivisibleBy = (num, divisor) => num % divisor === 0;\nconst CreateRangeArray = (num) => Array.from({ length: num }, (_, i) => i + 1);\nconst ConvertToString = (val) => String(val);\nconst GenerateFizzBuzz = (num) => {\n  let output = '';\n  if (IsDivisibleBy(num, 3)) {\n    output += 'Fizz';\n  }\n  if (IsDivisibleBy(num, 5)) {\n    output += 'Buzz';\n  }\n  return output || num;\n};\nconst ApplyFizzBuzzLogic = (arr) => arr.map(GenerateFizzBuzz);\nconst CombineResults = (transformedArr) => transformedArr.map(item => typeof item === 'number' ? ConvertToString(item) : item);\n\nconst FizzBuzz = (n) => {\n  const numberRange = CreateRangeArray(n);\n  const fizzBuzzApplied = ApplyFizzBuzzLogic(numberRange);\n  return fizzBuzzApplied;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "isDivisibleBy",
+"alt": "IsDivisibleBy",
+"nat_span": [
+6,
+19
+],
+"alt_span": [
+6,
+19
+]
+},
+{
+"k": 1,
+"nat": "createRangeArray",
+"alt": "CreateRangeArray",
+"nat_span": [
+67,
+83
+],
+"alt_span": [
+67,
+83
+]
+},
+{
+"k": 2,
+"nat": "convertToString",
+"alt": "ConvertToString",
+"nat_span": [
+147,
+162
+],
+"alt_span": [
+147,
+162
+]
+},
+{
+"k": 3,
+"nat": "generateFizzBuzz",
+"alt": "GenerateFizzBuzz",
+"nat_span": [
+193,
+209
+],
+"alt_span": [
+193,
+209
+]
+},
+{
+"k": 4,
+"nat": "isDivisibleBy",
+"alt": "IsDivisibleBy",
+"nat_span": [
+248,
+261
+],
+"alt_span": [
+248,
+261
+]
+},
+{
+"k": 5,
+"nat": "isDivisibleBy",
+"alt": "IsDivisibleBy",
+"nat_span": [
+305,
+318
+],
+"alt_span": [
+305,
+318
+]
+},
+{
+"k": 6,
+"nat": "applyFizzBuzzLogic",
+"alt": "ApplyFizzBuzzLogic",
+"nat_span": [
+389,
+407
+],
+"alt_span": [
+389,
+407
+]
+},
+{
+"k": 7,
+"nat": "generateFizzBuzz",
+"alt": "GenerateFizzBuzz",
+"nat_span": [
+427,
+443
+],
+"alt_span": [
+427,
+443
+]
+},
+{
+"k": 8,
+"nat": "combineResults",
+"alt": "CombineResults",
+"nat_span": [
+452,
+466
+],
+"alt_span": [
+452,
+466
+]
+},
+{
+"k": 9,
+"nat": "convertToString",
+"alt": "ConvertToString",
+"nat_span": [
+543,
+558
+],
+"alt_span": [
+543,
+558
+]
+},
+{
+"k": 10,
+"nat": "fizzBuzz",
+"alt": "FizzBuzz",
+"nat_span": [
+581,
+589
+],
+"alt_span": [
+581,
+589
+]
+},
+{
+"k": 11,
+"nat": "createRangeArray",
+"alt": "CreateRangeArray",
+"nat_span": [
+623,
+639
+],
+"alt_span": [
+623,
+639
+]
+},
+{
+"k": 12,
+"nat": "applyFizzBuzzLogic",
+"alt": "ApplyFizzBuzzLogic",
+"nat_span": [
+670,
+688
+],
+"alt_span": [
+670,
+688
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.956,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t020",
+"family": "js_func_pascal",
+"topic": "Check Anagrams",
+"angle": "code",
+"text_es": "Write a function `areAnagrams(str1, str2)` that checks if two strings are anagrams of each other (contain the same characters in a different order, ignoring case and spaces). Input is two strings, output is a boolean. Example: `areAnagrams('listen', 'silent')` should return `true`, `areAnagrams('hello', 'world')` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const normalizeString = (str) => str.toLowerCase().replace(/\\s/g, '');\nconst sortCharacters = (normalizedStr) => normalizedStr.split('').sort().join('');\nconst areLengthsEqual = (strA, strB) => strA.length === strB.length;\nconst getNormalizedAndSorted = (str) => sortCharacters(normalizeString(str));\nconst compareSortedStrings = (sortedA, sortedB) => sortedA === sortedB;\nconst hasContent = (str) => str.length > 0;\n\nconst areAnagrams = (str1, str2) => {\n  if (!hasContent(str1) || !hasContent(str2)) {\n    return false;\n  }\n  const normalized1 = normalizeString(str1);\n  const normalized2 = normalizeString(str2);\n\n  if (!areLengthsEqual(normalized1, normalized2)) {\n    return false;\n  }\n\n  const sorted1 = getNormalizedAndSorted(str1);\n  const sorted2 = getNormalizedAndSorted(str2);\n\n  return compareSortedStrings(sorted1, sorted2);\n};\n",
+"text_alt": "const NormalizeString = (str) => str.toLowerCase().replace(/\\s/g, '');\nconst SortCharacters = (normalizedStr) => normalizedStr.split('').sort().join('');\nconst AreLengthsEqual = (strA, strB) => strA.length === strB.length;\nconst GetNormalizedAndSorted = (str) => SortCharacters(NormalizeString(str));\nconst CompareSortedStrings = (sortedA, sortedB) => sortedA === sortedB;\nconst HasContent = (str) => str.length > 0;\n\nconst AreAnagrams = (str1, str2) => {\n  if (!HasContent(str1) || !HasContent(str2)) {\n    return false;\n  }\n  const normalized1 = NormalizeString(str1);\n  const normalized2 = NormalizeString(str2);\n\n  if (!AreLengthsEqual(normalized1, normalized2)) {\n    return false;\n  }\n\n  const sorted1 = GetNormalizedAndSorted(str1);\n  const sorted2 = GetNormalizedAndSorted(str2);\n\n  return CompareSortedStrings(sorted1, sorted2);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "normalizeString",
+"alt": "NormalizeString",
+"nat_span": [
+6,
+21
+],
+"alt_span": [
+6,
+21
+]
+},
+{
+"k": 1,
+"nat": "sortCharacters",
+"alt": "SortCharacters",
+"nat_span": [
+77,
+91
+],
+"alt_span": [
+77,
+91
+]
+},
+{
+"k": 2,
+"nat": "areLengthsEqual",
+"alt": "AreLengthsEqual",
+"nat_span": [
+160,
+175
+],
+"alt_span": [
+160,
+175
+]
+},
+{
+"k": 3,
+"nat": "getNormalizedAndSorted",
+"alt": "GetNormalizedAndSorted",
+"nat_span": [
+229,
+251
+],
+"alt_span": [
+229,
+251
+]
+},
+{
+"k": 4,
+"nat": "sortCharacters(normalizeString",
+"alt": "SortCharacters(NormalizeString",
+"nat_span": [
+263,
+293
+],
+"alt_span": [
+263,
+293
+]
+},
+{
+"k": 5,
+"nat": "compareSortedStrings",
+"alt": "CompareSortedStrings",
+"nat_span": [
+307,
+327
+],
+"alt_span": [
+307,
+327
+]
+},
+{
+"k": 6,
+"nat": "hasContent",
+"alt": "HasContent",
+"nat_span": [
+379,
+389
+],
+"alt_span": [
+379,
+389
+]
+},
+{
+"k": 7,
+"nat": "areAnagrams",
+"alt": "AreAnagrams",
+"nat_span": [
+424,
+435
+],
+"alt_span": [
+424,
+435
+]
+},
+{
+"k": 8,
+"nat": "hasContent",
+"alt": "HasContent",
+"nat_span": [
+463,
+473
+],
+"alt_span": [
+463,
+473
+]
+},
+{
+"k": 9,
+"nat": "hasContent",
+"alt": "HasContent",
+"nat_span": [
+484,
+494
+],
+"alt_span": [
+484,
+494
+]
+},
+{
+"k": 10,
+"nat": "normalizeString",
+"alt": "NormalizeString",
+"nat_span": [
+548,
+563
+],
+"alt_span": [
+548,
+563
+]
+},
+{
+"k": 11,
+"nat": "normalizeString",
+"alt": "NormalizeString",
+"nat_span": [
+593,
+608
+],
+"alt_span": [
+593,
+608
+]
+},
+{
+"k": 12,
+"nat": "areLengthsEqual",
+"alt": "AreLengthsEqual",
+"nat_span": [
+624,
+639
+],
+"alt_span": [
+624,
+639
+]
+},
+{
+"k": 13,
+"nat": "getNormalizedAndSorted",
+"alt": "GetNormalizedAndSorted",
+"nat_span": [
+710,
+732
+],
+"alt_span": [
+710,
+732
+]
+},
+{
+"k": 14,
+"nat": "getNormalizedAndSorted",
+"alt": "GetNormalizedAndSorted",
+"nat_span": [
+758,
+780
+],
+"alt_span": [
+758,
+780
+]
+},
+{
+"k": 15,
+"nat": "compareSortedStrings",
+"alt": "CompareSortedStrings",
+"nat_span": [
+798,
+818
+],
+"alt_span": [
+798,
+818
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.942,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t021",
+"family": "js_func_pascal",
+"topic": "Get Current Date in YYYY-MM-DD",
+"angle": "code",
+"text_es": "Create a function `getCurrentDateFormatted()` that returns the current date formatted as 'YYYY-MM-DD'. Input is none, output is a string. Example: `getCurrentDateFormatted()` might return `'2023-10-27'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getZeroPadded = (num) => String(num).padStart(2, '0');\n\nconst getFullYearString = (dateObj) => String(dateObj.getFullYear());\n\nconst getMonthString = (dateObj) => getZeroPadded(dateObj.getMonth() + 1);\n\nconst getDayString = (dateObj) => getZeroPadded(dateObj.getDate());\n\nconst createDateString = (year, month, day) => `${year}-${month}-${day}`;\n\nconst getCurrentDate = () => new Date();\n\nconst getCurrentDateFormatted = () => {\n  const currentDate = getCurrentDate();\n  const year = getFullYearString(currentDate);\n  const month = getMonthString(currentDate);\n  const day = getDayString(currentDate);\n  return createDateString(year, month, day);\n};\n",
+"text_alt": "const GetZeroPadded = (num) => String(num).padStart(2, '0');\n\nconst GetFullYearString = (dateObj) => String(dateObj.getFullYear());\n\nconst GetMonthString = (dateObj) => GetZeroPadded(dateObj.getMonth() + 1);\n\nconst GetDayString = (dateObj) => GetZeroPadded(dateObj.getDate());\n\nconst CreateDateString = (year, month, day) => `${year}-${month}-${day}`;\n\nconst GetCurrentDate = () => new Date();\n\nconst GetCurrentDateFormatted = () => {\n  const currentDate = GetCurrentDate();\n  const year = GetFullYearString(currentDate);\n  const month = GetMonthString(currentDate);\n  const day = GetDayString(currentDate);\n  return CreateDateString(year, month, day);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getZeroPadded",
+"alt": "GetZeroPadded",
+"nat_span": [
+6,
+19
+],
+"alt_span": [
+6,
+19
+]
+},
+{
+"k": 1,
+"nat": "getFullYearString",
+"alt": "GetFullYearString",
+"nat_span": [
+68,
+85
+],
+"alt_span": [
+68,
+85
+]
+},
+{
+"k": 2,
+"nat": "getMonthString",
+"alt": "GetMonthString",
+"nat_span": [
+139,
+153
+],
+"alt_span": [
+139,
+153
+]
+},
+{
+"k": 3,
+"nat": "getZeroPadded",
+"alt": "GetZeroPadded",
+"nat_span": [
+169,
+182
+],
+"alt_span": [
+169,
+182
+]
+},
+{
+"k": 4,
+"nat": "getDayString",
+"alt": "GetDayString",
+"nat_span": [
+215,
+227
+],
+"alt_span": [
+215,
+227
+]
+},
+{
+"k": 5,
+"nat": "getZeroPadded",
+"alt": "GetZeroPadded",
+"nat_span": [
+243,
+256
+],
+"alt_span": [
+243,
+256
+]
+},
+{
+"k": 6,
+"nat": "createDateString",
+"alt": "CreateDateString",
+"nat_span": [
+284,
+300
+],
+"alt_span": [
+284,
+300
+]
+},
+{
+"k": 7,
+"nat": "getCurrentDate",
+"alt": "GetCurrentDate",
+"nat_span": [
+359,
+373
+],
+"alt_span": [
+359,
+373
+]
+},
+{
+"k": 8,
+"nat": "getCurrentDateFormatted",
+"alt": "GetCurrentDateFormatted",
+"nat_span": [
+401,
+424
+],
+"alt_span": [
+401,
+424
+]
+},
+{
+"k": 9,
+"nat": "getCurrentDate",
+"alt": "GetCurrentDate",
+"nat_span": [
+457,
+471
+],
+"alt_span": [
+457,
+471
+]
+},
+{
+"k": 10,
+"nat": "getFullYearString",
+"alt": "GetFullYearString",
+"nat_span": [
+490,
+507
+],
+"alt_span": [
+490,
+507
+]
+},
+{
+"k": 11,
+"nat": "getMonthString",
+"alt": "GetMonthString",
+"nat_span": [
+538,
+552
+],
+"alt_span": [
+538,
+552
+]
+},
+{
+"k": 12,
+"nat": "getDayString",
+"alt": "GetDayString",
+"nat_span": [
+581,
+593
+],
+"alt_span": [
+581,
+593
+]
+},
+{
+"k": 13,
+"nat": "createDateString",
+"alt": "CreateDateString",
+"nat_span": [
+617,
+633
+],
+"alt_span": [
+617,
+633
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.941,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t022",
+"family": "js_func_pascal",
+"topic": "Calculate Age from Birthdate",
+"angle": "code",
+"text_es": "Implement a function `calculateAge(birthdateStr)` that takes a birthdate string (YYYY-MM-DD) and returns the current age in years. Assume current date is known. Input is a string, output is an integer. Example: `calculateAge('1990-01-01')` might return `33` (depending on current date), `calculateAge('2020-10-27')` might return `3`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const parseDateString = (dateStr) => new Date(dateStr);\nconst getCurrentDate = () => new Date();\nconst getYearFromDate = (date) => date.getFullYear();\nconst getMonthFromDate = (date) => date.getMonth();\nconst getDayFromDate = (date) => date.getDate();\n\nconst calculateAge = (birthdateStr) => {\n  const birthDate = parseDateString(birthdateStr);\n  const today = getCurrentDate();\n\n  let age = getYearFromDate(today) - getYearFromDate(birthDate);\n\n  const currentMonth = getMonthFromDate(today);\n  const birthMonth = getMonthFromDate(birthDate);\n  const currentDay = getDayFromDate(today);\n  const birthDay = getDayFromDate(birthDate);\n\n  const hasNotReachedBirthMonth = () => currentMonth < birthMonth;\n  const hasReachedBirthMonth = () => currentMonth === birthMonth;\n  const hasNotReachedBirthDay = () => currentDay < birthDay;\n\n  if (hasNotReachedBirthMonth()) {\n    age--;\n  } else if (hasReachedBirthMonth() && hasNotReachedBirthDay()) {\n    age--;\n  }\n\n  return age;\n};\n",
+"text_alt": "const ParseDateString = (dateStr) => new Date(dateStr);\nconst GetCurrentDate = () => new Date();\nconst GetYearFromDate = (date) => date.getFullYear();\nconst GetMonthFromDate = (date) => date.getMonth();\nconst GetDayFromDate = (date) => date.getDate();\n\nconst CalculateAge = (birthdateStr) => {\n  const birthDate = ParseDateString(birthdateStr);\n  const today = GetCurrentDate();\n\n  let age = GetYearFromDate(today) - GetYearFromDate(birthDate);\n\n  const currentMonth = GetMonthFromDate(today);\n  const birthMonth = GetMonthFromDate(birthDate);\n  const currentDay = GetDayFromDate(today);\n  const birthDay = GetDayFromDate(birthDate);\n\n  const HasNotReachedBirthMonth = () => currentMonth < birthMonth;\n  const HasReachedBirthMonth = () => currentMonth === birthMonth;\n  const HasNotReachedBirthDay = () => currentDay < birthDay;\n\n  if (HasNotReachedBirthMonth()) {\n    age--;\n  } else if (HasReachedBirthMonth() && HasNotReachedBirthDay()) {\n    age--;\n  }\n\n  return age;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "parseDateString",
+"alt": "ParseDateString",
+"nat_span": [
+6,
+21
+],
+"alt_span": [
+6,
+21
+]
+},
+{
+"k": 1,
+"nat": "getCurrentDate",
+"alt": "GetCurrentDate",
+"nat_span": [
+62,
+76
+],
+"alt_span": [
+62,
+76
+]
+},
+{
+"k": 2,
+"nat": "getYearFromDate",
+"alt": "GetYearFromDate",
+"nat_span": [
+103,
+118
+],
+"alt_span": [
+103,
+118
+]
+},
+{
+"k": 3,
+"nat": "getMonthFromDate",
+"alt": "GetMonthFromDate",
+"nat_span": [
+157,
+173
+],
+"alt_span": [
+157,
+173
+]
+},
+{
+"k": 4,
+"nat": "getDayFromDate",
+"alt": "GetDayFromDate",
+"nat_span": [
+209,
+223
+],
+"alt_span": [
+209,
+223
+]
+},
+{
+"k": 5,
+"nat": "calculateAge",
+"alt": "CalculateAge",
+"nat_span": [
+259,
+271
+],
+"alt_span": [
+259,
+271
+]
+},
+{
+"k": 6,
+"nat": "parseDateString",
+"alt": "ParseDateString",
+"nat_span": [
+314,
+329
+],
+"alt_span": [
+314,
+329
+]
+},
+{
+"k": 7,
+"nat": "getCurrentDate",
+"alt": "GetCurrentDate",
+"nat_span": [
+361,
+375
+],
+"alt_span": [
+361,
+375
+]
+},
+{
+"k": 8,
+"nat": "getYearFromDate",
+"alt": "GetYearFromDate",
+"nat_span": [
+392,
+407
+],
+"alt_span": [
+392,
+407
+]
+},
+{
+"k": 9,
+"nat": "getYearFromDate",
+"alt": "GetYearFromDate",
+"nat_span": [
+417,
+432
+],
+"alt_span": [
+417,
+432
+]
+},
+{
+"k": 10,
+"nat": "getMonthFromDate",
+"alt": "GetMonthFromDate",
+"nat_span": [
+469,
+485
+],
+"alt_span": [
+469,
+485
+]
+},
+{
+"k": 11,
+"nat": "getMonthFromDate",
+"alt": "GetMonthFromDate",
+"nat_span": [
+515,
+531
+],
+"alt_span": [
+515,
+531
+]
+},
+{
+"k": 12,
+"nat": "getDayFromDate",
+"alt": "GetDayFromDate",
+"nat_span": [
+565,
+579
+],
+"alt_span": [
+565,
+579
+]
+},
+{
+"k": 13,
+"nat": "getDayFromDate",
+"alt": "GetDayFromDate",
+"nat_span": [
+607,
+621
+],
+"alt_span": [
+607,
+621
+]
+},
+{
+"k": 14,
+"nat": "hasNotReachedBirthMonth",
+"alt": "HasNotReachedBirthMonth",
+"nat_span": [
+643,
+666
+],
+"alt_span": [
+643,
+666
+]
+},
+{
+"k": 15,
+"nat": "hasReachedBirthMonth",
+"alt": "HasReachedBirthMonth",
+"nat_span": [
+710,
+730
+],
+"alt_span": [
+710,
+730
+]
+},
+{
+"k": 16,
+"nat": "hasNotReachedBirthDay",
+"alt": "HasNotReachedBirthDay",
+"nat_span": [
+776,
+797
+],
+"alt_span": [
+776,
+797
+]
+},
+{
+"k": 17,
+"nat": "hasNotReachedBirthMonth",
+"alt": "HasNotReachedBirthMonth",
+"nat_span": [
+836,
+859
+],
+"alt_span": [
+836,
+859
+]
+},
+{
+"k": 18,
+"nat": "hasReachedBirthMonth",
+"alt": "HasReachedBirthMonth",
+"nat_span": [
+889,
+909
+],
+"alt_span": [
+889,
+909
+]
+},
+{
+"k": 19,
+"nat": "hasNotReachedBirthDay",
+"alt": "HasNotReachedBirthDay",
+"nat_span": [
+915,
+936
+],
+"alt_span": [
+915,
+936
+]
+}
+],
+"k_en": 20,
+"shared_fraction": 0.937,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t023",
+"family": "js_func_pascal",
+"topic": "Parse URL Parameters",
+"angle": "code",
+"text_es": "Write a function `parseUrlParams(url)` that takes a URL string and returns an object containing its query parameters. Input is a string, output is an object. Example: `parseUrlParams('http://example.com?name=Alice&age=30')` should return `{name: 'Alice', age: '30'}`, `parseUrlParams('http://example.com')` should return `{}`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const extractQueryParams = (url) => url.split('?')[1] || '';\nconst decodeUriComponent = (str) => decodeURIComponent(str.replace(/\\+/g, ' '));\nconst splitIntoPairs = (params) => params.split('&');\nconst splitPair = (pair) => pair.split('=');\nconst addKeyValuePair = (obj, key, value) => { obj[key] = value; return obj; };\nconst isNotEmptyString = (str) => str !== '';\n\nconst parseUrlParams = (url) => {\n  const queryString = extractQueryParams(url);\n  if (!isNotEmptyString(queryString)) {\n    return {};\n  }\n  return splitIntoPairs(queryString).reduce((params, pair) => {\n    const [key, value] = splitPair(pair);\n    if (isNotEmptyString(key)) {\n      return addKeyValuePair(params, decodeUriComponent(key), decodeUriComponent(value || ''));\n    }\n    return params;\n  }, {});\n};\n",
+"text_alt": "const ExtractQueryParams = (url) => url.split('?')[1] || '';\nconst DecodeUriComponent = (str) => decodeURIComponent(str.replace(/\\+/g, ' '));\nconst SplitIntoPairs = (params) => params.split('&');\nconst SplitPair = (pair) => pair.split('=');\nconst AddKeyValuePair = (obj, key, value) => { obj[key] = value; return obj; };\nconst IsNotEmptyString = (str) => str !== '';\n\nconst ParseUrlParams = (url) => {\n  const queryString = ExtractQueryParams(url);\n  if (!IsNotEmptyString(queryString)) {\n    return {};\n  }\n  return SplitIntoPairs(queryString).reduce((params, pair) => {\n    const [key, value] = SplitPair(pair);\n    if (IsNotEmptyString(key)) {\n      return AddKeyValuePair(params, DecodeUriComponent(key), DecodeUriComponent(value || ''));\n    }\n    return params;\n  }, {});\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "extractQueryParams",
+"alt": "ExtractQueryParams",
+"nat_span": [
+6,
+24
+],
+"alt_span": [
+6,
+24
+]
+},
+{
+"k": 1,
+"nat": "decodeUriComponent",
+"alt": "DecodeUriComponent",
+"nat_span": [
+67,
+85
+],
+"alt_span": [
+67,
+85
+]
+},
+{
+"k": 2,
+"nat": "splitIntoPairs",
+"alt": "SplitIntoPairs",
+"nat_span": [
+148,
+162
+],
+"alt_span": [
+148,
+162
+]
+},
+{
+"k": 3,
+"nat": "splitPair",
+"alt": "SplitPair",
+"nat_span": [
+202,
+211
+],
+"alt_span": [
+202,
+211
+]
+},
+{
+"k": 4,
+"nat": "addKeyValuePair",
+"alt": "AddKeyValuePair",
+"nat_span": [
+247,
+262
+],
+"alt_span": [
+247,
+262
+]
+},
+{
+"k": 5,
+"nat": "isNotEmptyString",
+"alt": "IsNotEmptyString",
+"nat_span": [
+327,
+343
+],
+"alt_span": [
+327,
+343
+]
+},
+{
+"k": 6,
+"nat": "parseUrlParams",
+"alt": "ParseUrlParams",
+"nat_span": [
+374,
+388
+],
+"alt_span": [
+374,
+388
+]
+},
+{
+"k": 7,
+"nat": "extractQueryParams",
+"alt": "ExtractQueryParams",
+"nat_span": [
+424,
+442
+],
+"alt_span": [
+424,
+442
+]
+},
+{
+"k": 8,
+"nat": "isNotEmptyString",
+"alt": "IsNotEmptyString",
+"nat_span": [
+456,
+472
+],
+"alt_span": [
+456,
+472
+]
+},
+{
+"k": 9,
+"nat": "splitIntoPairs",
+"alt": "SplitIntoPairs",
+"nat_span": [
+517,
+531
+],
+"alt_span": [
+517,
+531
+]
+},
+{
+"k": 10,
+"nat": "splitPair",
+"alt": "SplitPair",
+"nat_span": [
+597,
+606
+],
+"alt_span": [
+597,
+606
+]
+},
+{
+"k": 11,
+"nat": "isNotEmptyString",
+"alt": "IsNotEmptyString",
+"nat_span": [
+622,
+638
+],
+"alt_span": [
+622,
+638
+]
+},
+{
+"k": 12,
+"nat": "addKeyValuePair",
+"alt": "AddKeyValuePair",
+"nat_span": [
+660,
+675
+],
+"alt_span": [
+660,
+675
+]
+},
+{
+"k": 13,
+"nat": "decodeUriComponent",
+"alt": "DecodeUriComponent",
+"nat_span": [
+684,
+702
+],
+"alt_span": [
+684,
+702
+]
+},
+{
+"k": 14,
+"nat": "decodeUriComponent",
+"alt": "DecodeUriComponent",
+"nat_span": [
+709,
+727
+],
+"alt_span": [
+709,
+727
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 0.952,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t024",
+"family": "js_func_pascal",
+"topic": "Simple Dice Roll Simulation",
+"angle": "code",
+"text_es": "Create a function `rollDice(sides)` that simulates rolling a dice with a given number of sides. Returns a random integer between 1 and `sides` (inclusive). Input is an integer, output is an integer. Example: `rollDice(6)` could return `3`, `rollDice(20)` could return `15`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const generateRandomNumber = (max) => Math.floor(Math.random() * max);\nconst addOneToResult = (number) => number + 1;\nconst validateInput = (input) => Number.isInteger(input) && input > 0;\nconst throwError = (message) => { throw new Error(message); };\nconst calculateRange = (sides) => sides;\nconst getValidResult = (rawResult) => addOneToResult(rawResult);\n\nconst rollDice = (sides) => {\n  if (!validateInput(sides)) {\n    throwError(\"Sides must be a positive integer.\");\n  }\n  const maxRange = calculateRange(sides);\n  const rawRoll = generateRandomNumber(maxRange);\n  const finalResult = getValidResult(rawRoll);\n  return finalResult;\n};\n",
+"text_alt": "const GenerateRandomNumber = (max) => Math.floor(Math.random() * max);\nconst AddOneToResult = (number) => number + 1;\nconst ValidateInput = (input) => Number.isInteger(input) && input > 0;\nconst ThrowError = (message) => { throw new Error(message); };\nconst CalculateRange = (sides) => sides;\nconst GetValidResult = (rawResult) => AddOneToResult(rawResult);\n\nconst RollDice = (sides) => {\n  if (!ValidateInput(sides)) {\n    ThrowError(\"Sides must be a positive integer.\");\n  }\n  const maxRange = CalculateRange(sides);\n  const rawRoll = GenerateRandomNumber(maxRange);\n  const finalResult = GetValidResult(rawRoll);\n  return finalResult;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "generateRandomNumber",
+"alt": "GenerateRandomNumber",
+"nat_span": [
+6,
+26
+],
+"alt_span": [
+6,
+26
+]
+},
+{
+"k": 1,
+"nat": "addOneToResult",
+"alt": "AddOneToResult",
+"nat_span": [
+77,
+91
+],
+"alt_span": [
+77,
+91
+]
+},
+{
+"k": 2,
+"nat": "validateInput",
+"alt": "ValidateInput",
+"nat_span": [
+124,
+137
+],
+"alt_span": [
+124,
+137
+]
+},
+{
+"k": 3,
+"nat": "throwError",
+"alt": "ThrowError",
+"nat_span": [
+195,
+205
+],
+"alt_span": [
+195,
+205
+]
+},
+{
+"k": 4,
+"nat": "calculateRange",
+"alt": "CalculateRange",
+"nat_span": [
+258,
+272
+],
+"alt_span": [
+258,
+272
+]
+},
+{
+"k": 5,
+"nat": "getValidResult",
+"alt": "GetValidResult",
+"nat_span": [
+299,
+313
+],
+"alt_span": [
+299,
+313
+]
+},
+{
+"k": 6,
+"nat": "addOneToResult",
+"alt": "AddOneToResult",
+"nat_span": [
+331,
+345
+],
+"alt_span": [
+331,
+345
+]
+},
+{
+"k": 7,
+"nat": "rollDice",
+"alt": "RollDice",
+"nat_span": [
+365,
+373
+],
+"alt_span": [
+365,
+373
+]
+},
+{
+"k": 8,
+"nat": "validateInput",
+"alt": "ValidateInput",
+"nat_span": [
+396,
+409
+],
+"alt_span": [
+396,
+409
+]
+},
+{
+"k": 9,
+"nat": "throwError",
+"alt": "ThrowError",
+"nat_span": [
+424,
+434
+],
+"alt_span": [
+424,
+434
+]
+},
+{
+"k": 10,
+"nat": "calculateRange",
+"alt": "CalculateRange",
+"nat_span": [
+496,
+510
+],
+"alt_span": [
+496,
+510
+]
+},
+{
+"k": 11,
+"nat": "generateRandomNumber",
+"alt": "GenerateRandomNumber",
+"nat_span": [
+537,
+557
+],
+"alt_span": [
+537,
+557
+]
+},
+{
+"k": 12,
+"nat": "getValidResult",
+"alt": "GetValidResult",
+"nat_span": [
+591,
+605
+],
+"alt_span": [
+591,
+605
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.944,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t025",
+"family": "js_func_pascal",
+"topic": "Calculate Distance Between Two Points",
+"angle": "code",
+"text_es": "Implement a function `calculateDistance(p1, p2)` that calculates the Euclidean distance between two 2D points. Points are objects like `{x: 0, y: 0}`. Input is two objects, output is a number. Example: `calculateDistance({x: 0, y: 0}, {x: 3, y: 4})` should return `5`, `calculateDistance({x: 1, y: 1}, {x: 1, y: 1})` should return `0`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getCoordinateX = (point) => point.x;\nconst getCoordinateY = (point) => point.y;\nconst calculateDifference = (val1, val2) => val1 - val2;\nconst squareValue = (value) => value * value;\nconst sumValues = (val1, val2) => val1 + val2;\nconst getSquareRoot = (value) => Math.sqrt(value);\n\nconst calculateDistance = (p1, p2) => {\n  const x1 = getCoordinateX(p1);\n  const y1 = getCoordinateY(p1);\n  const x2 = getCoordinateX(p2);\n  const y2 = getCoordinateY(p2);\n\n  const deltaX = calculateDifference(x2, x1);\n  const deltaY = calculateDifference(y2, y1);\n\n  const squaredDeltaX = squareValue(deltaX);\n  const squaredDeltaY = squareValue(deltaY);\n\n  const sumOfSquares = sumValues(squaredDeltaX, squaredDeltaY);\n\n  return getSquareRoot(sumOfSquares);\n};\n",
+"text_alt": "const GetCoordinateX = (point) => point.x;\nconst GetCoordinateY = (point) => point.y;\nconst CalculateDifference = (val1, val2) => val1 - val2;\nconst SquareValue = (value) => value * value;\nconst SumValues = (val1, val2) => val1 + val2;\nconst GetSquareRoot = (value) => Math.sqrt(value);\n\nconst CalculateDistance = (p1, p2) => {\n  const x1 = GetCoordinateX(p1);\n  const y1 = GetCoordinateY(p1);\n  const x2 = GetCoordinateX(p2);\n  const y2 = GetCoordinateY(p2);\n\n  const deltaX = CalculateDifference(x2, x1);\n  const deltaY = CalculateDifference(y2, y1);\n\n  const squaredDeltaX = SquareValue(deltaX);\n  const squaredDeltaY = SquareValue(deltaY);\n\n  const sumOfSquares = SumValues(squaredDeltaX, squaredDeltaY);\n\n  return GetSquareRoot(sumOfSquares);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getCoordinateX",
+"alt": "GetCoordinateX",
+"nat_span": [
+6,
+20
+],
+"alt_span": [
+6,
+20
+]
+},
+{
+"k": 1,
+"nat": "getCoordinateY",
+"alt": "GetCoordinateY",
+"nat_span": [
+49,
+63
+],
+"alt_span": [
+49,
+63
+]
+},
+{
+"k": 2,
+"nat": "calculateDifference",
+"alt": "CalculateDifference",
+"nat_span": [
+92,
+111
+],
+"alt_span": [
+92,
+111
+]
+},
+{
+"k": 3,
+"nat": "squareValue",
+"alt": "SquareValue",
+"nat_span": [
+149,
+160
+],
+"alt_span": [
+149,
+160
+]
+},
+{
+"k": 4,
+"nat": "sumValues",
+"alt": "SumValues",
+"nat_span": [
+195,
+204
+],
+"alt_span": [
+195,
+204
+]
+},
+{
+"k": 5,
+"nat": "getSquareRoot",
+"alt": "GetSquareRoot",
+"nat_span": [
+242,
+255
+],
+"alt_span": [
+242,
+255
+]
+},
+{
+"k": 6,
+"nat": "calculateDistance",
+"alt": "CalculateDistance",
+"nat_span": [
+294,
+311
+],
+"alt_span": [
+294,
+311
+]
+},
+{
+"k": 7,
+"nat": "getCoordinateX",
+"alt": "GetCoordinateX",
+"nat_span": [
+341,
+355
+],
+"alt_span": [
+341,
+355
+]
+},
+{
+"k": 8,
+"nat": "getCoordinateY",
+"alt": "GetCoordinateY",
+"nat_span": [
+374,
+388
+],
+"alt_span": [
+374,
+388
+]
+},
+{
+"k": 9,
+"nat": "getCoordinateX",
+"alt": "GetCoordinateX",
+"nat_span": [
+407,
+421
+],
+"alt_span": [
+407,
+421
+]
+},
+{
+"k": 10,
+"nat": "getCoordinateY",
+"alt": "GetCoordinateY",
+"nat_span": [
+440,
+454
+],
+"alt_span": [
+440,
+454
+]
+},
+{
+"k": 11,
+"nat": "calculateDifference",
+"alt": "CalculateDifference",
+"nat_span": [
+478,
+497
+],
+"alt_span": [
+478,
+497
+]
+},
+{
+"k": 12,
+"nat": "calculateDifference",
+"alt": "CalculateDifference",
+"nat_span": [
+524,
+543
+],
+"alt_span": [
+524,
+543
+]
+},
+{
+"k": 13,
+"nat": "squareValue",
+"alt": "SquareValue",
+"nat_span": [
+578,
+589
+],
+"alt_span": [
+578,
+589
+]
+},
+{
+"k": 14,
+"nat": "squareValue",
+"alt": "SquareValue",
+"nat_span": [
+623,
+634
+],
+"alt_span": [
+623,
+634
+]
+},
+{
+"k": 15,
+"nat": "sumValues",
+"alt": "SumValues",
+"nat_span": [
+668,
+677
+],
+"alt_span": [
+668,
+677
+]
+},
+{
+"k": 16,
+"nat": "getSquareRoot",
+"alt": "GetSquareRoot",
+"nat_span": [
+719,
+732
+],
+"alt_span": [
+719,
+732
+]
+}
+],
+"k_en": 17,
+"shared_fraction": 0.937,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t026",
+"family": "js_func_pascal",
+"topic": "Inventory Management: Add Item",
+"angle": "code",
+"text_es": "Write a function `addItemToInventory(inventory, item, quantity)` that adds a given quantity of an item to an inventory object. If the item exists, update quantity; otherwise, add new item. Input is an object, two strings, and a number. Output is the modified inventory object. Example: `addItemToInventory({apple: 10}, 'banana', 5)` should return `{apple: 10, banana: 5}`, `addItemToInventory({apple: 10}, 'apple', 3)` should return `{apple: 13}`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const updateItemQuantity = (inventory, item, quantity) => ({ ...inventory, [item]: inventory[item] + quantity });\nconst addNewItem = (inventory, item, quantity) => ({ ...inventory, [item]: quantity });\nconst doesItemExist = (inventory, item) => Object.prototype.hasOwnProperty.call(inventory, item);\nconst createNewInventory = () => ({});\nconst getInventoryItem = (inventory, item) => inventory[item];\nconst isQuantityPositive = (quantity) => quantity > 0;\n\nconst addItemToInventory = (inventory, item, quantity) => {\n  if (!isQuantityPositive(quantity)) {\n    return inventory;\n  }\n  const currentInventory = inventory || createNewInventory();\n  if (doesItemExist(currentInventory, item)) {\n    return updateItemQuantity(currentInventory, item, quantity);\n  } else {\n    return addNewItem(currentInventory, item, quantity);\n  }\n};\n",
+"text_alt": "const UpdateItemQuantity = (inventory, item, quantity) => ({ ...inventory, [item]: inventory[item] + quantity });\nconst AddNewItem = (inventory, item, quantity) => ({ ...inventory, [item]: quantity });\nconst DoesItemExist = (inventory, item) => Object.prototype.hasOwnProperty.call(inventory, item);\nconst CreateNewInventory = () => ({});\nconst GetInventoryItem = (inventory, item) => inventory[item];\nconst IsQuantityPositive = (quantity) => quantity > 0;\n\nconst AddItemToInventory = (inventory, item, quantity) => {\n  if (!IsQuantityPositive(quantity)) {\n    return inventory;\n  }\n  const currentInventory = inventory || CreateNewInventory();\n  if (DoesItemExist(currentInventory, item)) {\n    return UpdateItemQuantity(currentInventory, item, quantity);\n  } else {\n    return AddNewItem(currentInventory, item, quantity);\n  }\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "updateItemQuantity",
+"alt": "UpdateItemQuantity",
+"nat_span": [
+6,
+24
+],
+"alt_span": [
+6,
+24
+]
+},
+{
+"k": 1,
+"nat": "addNewItem",
+"alt": "AddNewItem",
+"nat_span": [
+120,
+130
+],
+"alt_span": [
+120,
+130
+]
+},
+{
+"k": 2,
+"nat": "doesItemExist",
+"alt": "DoesItemExist",
+"nat_span": [
+208,
+221
+],
+"alt_span": [
+208,
+221
+]
+},
+{
+"k": 3,
+"nat": "createNewInventory",
+"alt": "CreateNewInventory",
+"nat_span": [
+306,
+324
+],
+"alt_span": [
+306,
+324
+]
+},
+{
+"k": 4,
+"nat": "getInventoryItem",
+"alt": "GetInventoryItem",
+"nat_span": [
+345,
+361
+],
+"alt_span": [
+345,
+361
+]
+},
+{
+"k": 5,
+"nat": "isQuantityPositive",
+"alt": "IsQuantityPositive",
+"nat_span": [
+408,
+426
+],
+"alt_span": [
+408,
+426
+]
+},
+{
+"k": 6,
+"nat": "addItemToInventory",
+"alt": "AddItemToInventory",
+"nat_span": [
+464,
+482
+],
+"alt_span": [
+464,
+482
+]
+},
+{
+"k": 7,
+"nat": "isQuantityPositive",
+"alt": "IsQuantityPositive",
+"nat_span": [
+525,
+543
+],
+"alt_span": [
+525,
+543
+]
+},
+{
+"k": 8,
+"nat": "createNewInventory",
+"alt": "CreateNewInventory",
+"nat_span": [
+623,
+641
+],
+"alt_span": [
+623,
+641
+]
+},
+{
+"k": 9,
+"nat": "doesItemExist",
+"alt": "DoesItemExist",
+"nat_span": [
+651,
+664
+],
+"alt_span": [
+651,
+664
+]
+},
+{
+"k": 10,
+"nat": "updateItemQuantity",
+"alt": "UpdateItemQuantity",
+"nat_span": [
+703,
+721
+],
+"alt_span": [
+703,
+721
+]
+},
+{
+"k": 11,
+"nat": "addNewItem",
+"alt": "AddNewItem",
+"nat_span": [
+779,
+789
+],
+"alt_span": [
+779,
+789
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.958,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t027",
+"family": "js_func_pascal",
+"topic": "Basic Task Scheduler: Add Task",
+"angle": "code",
+"text_es": "Create a function `addTask(schedule, taskName, startTime)` that adds a task to a schedule object. The schedule object maps days to arrays of tasks. Assume 'today' is the key for the schedule. Input is an object, two strings. Output is the modified schedule object. Example: `addTask({}, 'Meeting', '10:00')` should return `{today: [{name: 'Meeting', time: '10:00'}]}`, `addTask({today: [{name: 'Lunch', time: '12:00'}]}, 'Call', '14:00')` should return `{today: [{name: 'Lunch', time: '12:00'}, {name: 'Call', time: '14:00'}]}`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const createNewTask = (name, time) => ({ name, time });\nconst ensureDayExists = (schedule, dayKey) => schedule[dayKey] = schedule[dayKey] || [];\nconst getCurrentDayKey = () => 'today';\nconst getDayTasks = (schedule, dayKey) => schedule[dayKey];\nconst addSingleTask = (tasksArray, task) => tasksArray.push(task);\nconst returnModifiedSchedule = (schedule) => schedule;\n\nconst addTask = (schedule, taskName, startTime) => {\n  const currentDay = getCurrentDayKey();\n  ensureDayExists(schedule, currentDay);\n  const newTask = createNewTask(taskName, startTime);\n  const dayTasks = getDayTasks(schedule, currentDay);\n  addSingleTask(dayTasks, newTask);\n  return returnModifiedSchedule(schedule);\n};\n",
+"text_alt": "const CreateNewTask = (name, time) => ({ name, time });\nconst EnsureDayExists = (schedule, dayKey) => schedule[dayKey] = schedule[dayKey] || [];\nconst GetCurrentDayKey = () => 'today';\nconst GetDayTasks = (schedule, dayKey) => schedule[dayKey];\nconst AddSingleTask = (tasksArray, task) => tasksArray.push(task);\nconst ReturnModifiedSchedule = (schedule) => schedule;\n\nconst AddTask = (schedule, taskName, startTime) => {\n  const currentDay = GetCurrentDayKey();\n  EnsureDayExists(schedule, currentDay);\n  const newTask = CreateNewTask(taskName, startTime);\n  const dayTasks = GetDayTasks(schedule, currentDay);\n  AddSingleTask(dayTasks, newTask);\n  return ReturnModifiedSchedule(schedule);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "createNewTask",
+"alt": "CreateNewTask",
+"nat_span": [
+6,
+19
+],
+"alt_span": [
+6,
+19
+]
+},
+{
+"k": 1,
+"nat": "ensureDayExists",
+"alt": "EnsureDayExists",
+"nat_span": [
+62,
+77
+],
+"alt_span": [
+62,
+77
+]
+},
+{
+"k": 2,
+"nat": "getCurrentDayKey",
+"alt": "GetCurrentDayKey",
+"nat_span": [
+151,
+167
+],
+"alt_span": [
+151,
+167
+]
+},
+{
+"k": 3,
+"nat": "getDayTasks",
+"alt": "GetDayTasks",
+"nat_span": [
+191,
+202
+],
+"alt_span": [
+191,
+202
+]
+},
+{
+"k": 4,
+"nat": "addSingleTask",
+"alt": "AddSingleTask",
+"nat_span": [
+251,
+264
+],
+"alt_span": [
+251,
+264
+]
+},
+{
+"k": 5,
+"nat": "returnModifiedSchedule",
+"alt": "ReturnModifiedSchedule",
+"nat_span": [
+318,
+340
+],
+"alt_span": [
+318,
+340
+]
+},
+{
+"k": 6,
+"nat": "addTask",
+"alt": "AddTask",
+"nat_span": [
+374,
+381
+],
+"alt_span": [
+374,
+381
+]
+},
+{
+"k": 7,
+"nat": "getCurrentDayKey",
+"alt": "GetCurrentDayKey",
+"nat_span": [
+442,
+458
+],
+"alt_span": [
+442,
+458
+]
+},
+{
+"k": 8,
+"nat": "ensureDayExists",
+"alt": "EnsureDayExists",
+"nat_span": [
+464,
+479
+],
+"alt_span": [
+464,
+479
+]
+},
+{
+"k": 9,
+"nat": "createNewTask",
+"alt": "CreateNewTask",
+"nat_span": [
+521,
+534
+],
+"alt_span": [
+521,
+534
+]
+},
+{
+"k": 10,
+"nat": "getDayTasks",
+"alt": "GetDayTasks",
+"nat_span": [
+576,
+587
+],
+"alt_span": [
+576,
+587
+]
+},
+{
+"k": 11,
+"nat": "addSingleTask",
+"alt": "AddSingleTask",
+"nat_span": [
+613,
+626
+],
+"alt_span": [
+613,
+626
+]
+},
+{
+"k": 12,
+"nat": "returnModifiedSchedule",
+"alt": "ReturnModifiedSchedule",
+"nat_span": [
+656,
+678
+],
+"alt_span": [
+656,
+678
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.944,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t028",
+"family": "js_func_pascal",
+"topic": "Calculate Median of Array",
+"angle": "code",
+"text_es": "Implement a function `calculateMedian(arr)` that calculates the median of an array of numbers. For an even number of elements, take the average of the two middle numbers. Input is an array of numbers, output is a number. Example: `calculateMedian([1, 2, 3, 4, 5])` should return `3`, `calculateMedian([1, 2, 3, 4])` should return `2.5`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getSortedNumbers = (arr) => [...arr].sort((a, b) => a - b);\n\nconst getArrayLength = (arr) => arr.length;\n\nconst isEvenLength = (length) => length % 2 === 0;\n\nconst getMiddleIndex = (length) => Math.floor(length / 2);\n\nconst getPreviousIndex = (index) => index - 1;\n\nconst calculateAverage = (num1, num2) => (num1 + num2) / 2;\n\nconst calculateMedian = (arr) => {\n  const sortedArr = getSortedNumbers(arr);\n  const len = getArrayLength(sortedArr);\n  const midIndex = getMiddleIndex(len);\n\n  if (isEvenLength(len)) {\n    const firstMiddle = sortedArr[getPreviousIndex(midIndex)];\n    const secondMiddle = sortedArr[midIndex];\n    return calculateAverage(firstMiddle, secondMiddle);\n  } else {\n    return sortedArr[midIndex];\n  }\n};\n",
+"text_alt": "const GetSortedNumbers = (arr) => [...arr].sort((a, b) => a - b);\n\nconst GetArrayLength = (arr) => arr.length;\n\nconst IsEvenLength = (length) => length % 2 === 0;\n\nconst GetMiddleIndex = (length) => Math.floor(length / 2);\n\nconst GetPreviousIndex = (index) => index - 1;\n\nconst CalculateAverage = (num1, num2) => (num1 + num2) / 2;\n\nconst CalculateMedian = (arr) => {\n  const sortedArr = GetSortedNumbers(arr);\n  const len = GetArrayLength(sortedArr);\n  const midIndex = GetMiddleIndex(len);\n\n  if (IsEvenLength(len)) {\n    const firstMiddle = sortedArr[GetPreviousIndex(midIndex)];\n    const secondMiddle = sortedArr[midIndex];\n    return CalculateAverage(firstMiddle, secondMiddle);\n  } else {\n    return sortedArr[midIndex];\n  }\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getSortedNumbers",
+"alt": "GetSortedNumbers",
+"nat_span": [
+6,
+22
+],
+"alt_span": [
+6,
+22
+]
+},
+{
+"k": 1,
+"nat": "getArrayLength",
+"alt": "GetArrayLength",
+"nat_span": [
+73,
+87
+],
+"alt_span": [
+73,
+87
+]
+},
+{
+"k": 2,
+"nat": "isEvenLength",
+"alt": "IsEvenLength",
+"nat_span": [
+118,
+130
+],
+"alt_span": [
+118,
+130
+]
+},
+{
+"k": 3,
+"nat": "getMiddleIndex",
+"alt": "GetMiddleIndex",
+"nat_span": [
+170,
+184
+],
+"alt_span": [
+170,
+184
+]
+},
+{
+"k": 4,
+"nat": "getPreviousIndex",
+"alt": "GetPreviousIndex",
+"nat_span": [
+230,
+246
+],
+"alt_span": [
+230,
+246
+]
+},
+{
+"k": 5,
+"nat": "calculateAverage",
+"alt": "CalculateAverage",
+"nat_span": [
+278,
+294
+],
+"alt_span": [
+278,
+294
+]
+},
+{
+"k": 6,
+"nat": "calculateMedian",
+"alt": "CalculateMedian",
+"nat_span": [
+339,
+354
+],
+"alt_span": [
+339,
+354
+]
+},
+{
+"k": 7,
+"nat": "getSortedNumbers",
+"alt": "GetSortedNumbers",
+"nat_span": [
+388,
+404
+],
+"alt_span": [
+388,
+404
+]
+},
+{
+"k": 8,
+"nat": "getArrayLength",
+"alt": "GetArrayLength",
+"nat_span": [
+425,
+439
+],
+"alt_span": [
+425,
+439
+]
+},
+{
+"k": 9,
+"nat": "getMiddleIndex",
+"alt": "GetMiddleIndex",
+"nat_span": [
+471,
+485
+],
+"alt_span": [
+471,
+485
+]
+},
+{
+"k": 10,
+"nat": "isEvenLength",
+"alt": "IsEvenLength",
+"nat_span": [
+499,
+511
+],
+"alt_span": [
+499,
+511
+]
+},
+{
+"k": 11,
+"nat": "getPreviousIndex",
+"alt": "GetPreviousIndex",
+"nat_span": [
+554,
+570
+],
+"alt_span": [
+554,
+570
+]
+},
+{
+"k": 12,
+"nat": "calculateAverage",
+"alt": "CalculateAverage",
+"nat_span": [
+640,
+656
+],
+"alt_span": [
+640,
+656
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.953,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t029",
+"family": "js_func_pascal",
+"topic": "Rock Paper Scissors Game",
+"angle": "code",
+"text_es": "Write a function `playRockPaperScissors(playerChoice)` that simulates a single round of Rock-Paper-Scissors against a random computer choice. Returns 'Win', 'Loss', or 'Tie'. Input is a string ('rock', 'paper', 'scissors'), output is a string. Example: `playRockPaperScissors('rock')` could return 'Win' (if computer chose 'scissors'), `playRockPaperScissors('paper')` could return 'Tie' (if computer chose 'paper').",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getRandomChoice = () => {\n  const choices = ['rock', 'paper', 'scissors'];\n  const randomIndex = Math.floor(Math.random() * choices.length);\n  return choices[randomIndex];\n};\n\nconst determineWinner = (player, computer) => {\n  if (player === computer) {\n    return 'Tie';\n  }\n  if (\n    (player === 'rock' && computer === 'scissors') ||\n    (player === 'paper' && computer === 'rock') ||\n    (player === 'scissors' && computer === 'paper')\n  ) {\n    return 'Win';\n  }\n  return 'Loss';\n};\n\nconst formatChoiceInput = (choice) => choice.toLowerCase();\n\nconst isValidChoice = (choice) => ['rock', 'paper', 'scissors'].includes(choice);\n\nconst handleInvalidInput = () => {\n  throw new Error(\"Invalid player choice. Must be 'rock', 'paper', or 'scissors'.\");\n};\n\nconst getComputerPlay = () => getRandomChoice();\n\nconst playRockPaperScissors = (playerChoice) => {\n  const formattedPlayerChoice = formatChoiceInput(playerChoice);\n  if (!isValidChoice(formattedPlayerChoice)) {\n    handleInvalidInput();\n  }\n  const computerChoice = getComputerPlay();\n  const gameResult = determineWinner(formattedPlayerChoice, computerChoice);\n  return gameResult;\n};\n",
+"text_alt": "const GetRandomChoice = () => {\n  const choices = ['rock', 'paper', 'scissors'];\n  const randomIndex = Math.floor(Math.random() * choices.length);\n  return choices[randomIndex];\n};\n\nconst DetermineWinner = (player, computer) => {\n  if (player === computer) {\n    return 'Tie';\n  }\n  if (\n    (player === 'rock' && computer === 'scissors') ||\n    (player === 'paper' && computer === 'rock') ||\n    (player === 'scissors' && computer === 'paper')\n  ) {\n    return 'Win';\n  }\n  return 'Loss';\n};\n\nconst FormatChoiceInput = (choice) => choice.toLowerCase();\n\nconst IsValidChoice = (choice) => ['rock', 'paper', 'scissors'].includes(choice);\n\nconst HandleInvalidInput = () => {\n  throw new Error(\"Invalid player choice. Must be 'rock', 'paper', or 'scissors'.\");\n};\n\nconst GetComputerPlay = () => GetRandomChoice();\n\nconst PlayRockPaperScissors = (playerChoice) => {\n  const formattedPlayerChoice = FormatChoiceInput(playerChoice);\n  if (!IsValidChoice(formattedPlayerChoice)) {\n    HandleInvalidInput();\n  }\n  const computerChoice = GetComputerPlay();\n  const gameResult = DetermineWinner(formattedPlayerChoice, computerChoice);\n  return gameResult;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getRandomChoice",
+"alt": "GetRandomChoice",
+"nat_span": [
+6,
+21
+],
+"alt_span": [
+6,
+21
+]
+},
+{
+"k": 1,
+"nat": "determineWinner",
+"alt": "DetermineWinner",
+"nat_span": [
+188,
+203
+],
+"alt_span": [
+188,
+203
+]
+},
+{
+"k": 2,
+"nat": "formatChoiceInput",
+"alt": "FormatChoiceInput",
+"nat_span": [
+500,
+517
+],
+"alt_span": [
+500,
+517
+]
+},
+{
+"k": 3,
+"nat": "isValidChoice",
+"alt": "IsValidChoice",
+"nat_span": [
+561,
+574
+],
+"alt_span": [
+561,
+574
+]
+},
+{
+"k": 4,
+"nat": "handleInvalidInput",
+"alt": "HandleInvalidInput",
+"nat_span": [
+644,
+662
+],
+"alt_span": [
+644,
+662
+]
+},
+{
+"k": 5,
+"nat": "getComputerPlay",
+"alt": "GetComputerPlay",
+"nat_span": [
+768,
+783
+],
+"alt_span": [
+768,
+783
+]
+},
+{
+"k": 6,
+"nat": "getRandomChoice",
+"alt": "GetRandomChoice",
+"nat_span": [
+792,
+807
+],
+"alt_span": [
+792,
+807
+]
+},
+{
+"k": 7,
+"nat": "playRockPaperScissors",
+"alt": "PlayRockPaperScissors",
+"nat_span": [
+818,
+839
+],
+"alt_span": [
+818,
+839
+]
+},
+{
+"k": 8,
+"nat": "formatChoiceInput",
+"alt": "FormatChoiceInput",
+"nat_span": [
+894,
+911
+],
+"alt_span": [
+894,
+911
+]
+},
+{
+"k": 9,
+"nat": "isValidChoice",
+"alt": "IsValidChoice",
+"nat_span": [
+934,
+947
+],
+"alt_span": [
+934,
+947
+]
+},
+{
+"k": 10,
+"nat": "handleInvalidInput",
+"alt": "HandleInvalidInput",
+"nat_span": [
+978,
+996
+],
+"alt_span": [
+978,
+996
+]
+},
+{
+"k": 11,
+"nat": "getComputerPlay",
+"alt": "GetComputerPlay",
+"nat_span": [
+1029,
+1044
+],
+"alt_span": [
+1029,
+1044
+]
+},
+{
+"k": 12,
+"nat": "determineWinner",
+"alt": "DetermineWinner",
+"nat_span": [
+1069,
+1084
+],
+"alt_span": [
+1069,
+1084
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.97,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t030",
+"family": "js_func_pascal",
+"topic": "Extract Email Addresses",
+"angle": "code",
+"text_es": "Create a function `extractEmails(text)` that finds and returns an array of all valid email addresses from a given text. Use a simple regex. Input is a string, output is an array of strings. Example: `extractEmails('Contact us at test@example.com or support@domain.net')` should return `['test@example.com', 'support@domain.net']`, `extractEmails('No emails here.')` should return `[]`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const validateEmailRegex = () => /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n\nconst findMatchesInText = (text, regex) => text.match(regex);\n\nconst returnEmptyArrayIfNull = (result) => result || [];\n\nconst ensureArrayIsUnique = (arr) => [...new Set(arr)];\n\nconst convertAllToLowerCase = (arr) => arr.map(email => email.toLowerCase());\n\nconst checkIfInputIsValid = (input) => typeof input === 'string';\n\nconst extractEmails = (text) => {\n  if (!checkIfInputIsValid(text)) {\n    return [];\n  }\n  const emailRegex = validateEmailRegex();\n  const rawMatches = findMatchesInText(text, emailRegex);\n  const potentialEmails = returnEmptyArrayIfNull(rawMatches);\n  const lowercasedEmails = convertAllToLowerCase(potentialEmails);\n  return ensureArrayIsUnique(lowercasedEmails);\n};\n",
+"text_alt": "const ValidateEmailRegex = () => /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\n\nconst FindMatchesInText = (text, regex) => text.match(regex);\n\nconst ReturnEmptyArrayIfNull = (result) => result || [];\n\nconst EnsureArrayIsUnique = (arr) => [...new Set(arr)];\n\nconst ConvertAllToLowerCase = (arr) => arr.map(email => email.toLowerCase());\n\nconst CheckIfInputIsValid = (input) => typeof input === 'string';\n\nconst ExtractEmails = (text) => {\n  if (!CheckIfInputIsValid(text)) {\n    return [];\n  }\n  const emailRegex = ValidateEmailRegex();\n  const rawMatches = FindMatchesInText(text, emailRegex);\n  const potentialEmails = ReturnEmptyArrayIfNull(rawMatches);\n  const lowercasedEmails = ConvertAllToLowerCase(potentialEmails);\n  return EnsureArrayIsUnique(lowercasedEmails);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "validateEmailRegex",
+"alt": "ValidateEmailRegex",
+"nat_span": [
+6,
+24
+],
+"alt_span": [
+6,
+24
+]
+},
+{
+"k": 1,
+"nat": "findMatchesInText",
+"alt": "FindMatchesInText",
+"nat_span": [
+91,
+108
+],
+"alt_span": [
+91,
+108
+]
+},
+{
+"k": 2,
+"nat": "returnEmptyArrayIfNull",
+"alt": "ReturnEmptyArrayIfNull",
+"nat_span": [
+154,
+176
+],
+"alt_span": [
+154,
+176
+]
+},
+{
+"k": 3,
+"nat": "ensureArrayIsUnique",
+"alt": "EnsureArrayIsUnique",
+"nat_span": [
+212,
+231
+],
+"alt_span": [
+212,
+231
+]
+},
+{
+"k": 4,
+"nat": "convertAllToLowerCase",
+"alt": "ConvertAllToLowerCase",
+"nat_span": [
+269,
+290
+],
+"alt_span": [
+269,
+290
+]
+},
+{
+"k": 5,
+"nat": "checkIfInputIsValid",
+"alt": "CheckIfInputIsValid",
+"nat_span": [
+348,
+367
+],
+"alt_span": [
+348,
+367
+]
+},
+{
+"k": 6,
+"nat": "extractEmails",
+"alt": "ExtractEmails",
+"nat_span": [
+415,
+428
+],
+"alt_span": [
+415,
+428
+]
+},
+{
+"k": 7,
+"nat": "checkIfInputIsValid",
+"alt": "CheckIfInputIsValid",
+"nat_span": [
+450,
+469
+],
+"alt_span": [
+450,
+469
+]
+},
+{
+"k": 8,
+"nat": "validateEmailRegex",
+"alt": "ValidateEmailRegex",
+"nat_span": [
+519,
+537
+],
+"alt_span": [
+519,
+537
+]
+},
+{
+"k": 9,
+"nat": "findMatchesInText",
+"alt": "FindMatchesInText",
+"nat_span": [
+562,
+579
+],
+"alt_span": [
+562,
+579
+]
+},
+{
+"k": 10,
+"nat": "returnEmptyArrayIfNull",
+"alt": "ReturnEmptyArrayIfNull",
+"nat_span": [
+625,
+647
+],
+"alt_span": [
+625,
+647
+]
+},
+{
+"k": 11,
+"nat": "convertAllToLowerCase",
+"alt": "ConvertAllToLowerCase",
+"nat_span": [
+688,
+709
+],
+"alt_span": [
+688,
+709
+]
+},
+{
+"k": 12,
+"nat": "ensureArrayIsUnique",
+"alt": "EnsureArrayIsUnique",
+"nat_span": [
+737,
+756
+],
+"alt_span": [
+737,
+756
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.954,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t031",
+"family": "js_func_pascal",
+"topic": "String Truncation",
+"angle": "code",
+"text_es": "Implement a function `truncateString(str, maxLength)` that truncates a string if it's longer than `maxLength`, adding '...' to the end. Input is a string and an integer, output is a string. Example: `truncateString('Hello world, this is a long string', 10)` should return `'Hello wo...'`, `truncateString('Short', 10)` should return `'Short'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const createEllipsis = () => '...';\n\nconst stringLengthIsGreaterThan = (str, length) => str.length > length;\n\nconst calculateTruncationLength = (maxLength) => maxLength - createEllipsis().length;\n\nconst getSubstringUpToLength = (str, length) => str.substring(0, length);\n\nconst appendEllipsis = (str) => str + createEllipsis();\n\nconst returnOriginalString = (str) => str;\n\nconst truncateString = (str, maxLength) => {\n  if (stringLengthIsGreaterThan(str, maxLength)) {\n    const effectiveTruncationLength = calculateTruncationLength(maxLength);\n    const truncatedPart = getSubstringUpToLength(str, effectiveTruncationLength);\n    return appendEllipsis(truncatedPart);\n  }\n  return returnOriginalString(str);\n};\n",
+"text_alt": "const CreateEllipsis = () => '...';\n\nconst StringLengthIsGreaterThan = (str, length) => str.length > length;\n\nconst CalculateTruncationLength = (maxLength) => maxLength - CreateEllipsis().length;\n\nconst GetSubstringUpToLength = (str, length) => str.substring(0, length);\n\nconst AppendEllipsis = (str) => str + CreateEllipsis();\n\nconst ReturnOriginalString = (str) => str;\n\nconst TruncateString = (str, maxLength) => {\n  if (StringLengthIsGreaterThan(str, maxLength)) {\n    const effectiveTruncationLength = CalculateTruncationLength(maxLength);\n    const truncatedPart = GetSubstringUpToLength(str, effectiveTruncationLength);\n    return AppendEllipsis(truncatedPart);\n  }\n  return ReturnOriginalString(str);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "createEllipsis",
+"alt": "CreateEllipsis",
+"nat_span": [
+6,
+20
+],
+"alt_span": [
+6,
+20
+]
+},
+{
+"k": 1,
+"nat": "stringLengthIsGreaterThan",
+"alt": "StringLengthIsGreaterThan",
+"nat_span": [
+43,
+68
+],
+"alt_span": [
+43,
+68
+]
+},
+{
+"k": 2,
+"nat": "calculateTruncationLength",
+"alt": "CalculateTruncationLength",
+"nat_span": [
+116,
+141
+],
+"alt_span": [
+116,
+141
+]
+},
+{
+"k": 3,
+"nat": "createEllipsis",
+"alt": "CreateEllipsis",
+"nat_span": [
+171,
+185
+],
+"alt_span": [
+171,
+185
+]
+},
+{
+"k": 4,
+"nat": "getSubstringUpToLength",
+"alt": "GetSubstringUpToLength",
+"nat_span": [
+203,
+225
+],
+"alt_span": [
+203,
+225
+]
+},
+{
+"k": 5,
+"nat": "appendEllipsis",
+"alt": "AppendEllipsis",
+"nat_span": [
+278,
+292
+],
+"alt_span": [
+278,
+292
+]
+},
+{
+"k": 6,
+"nat": "createEllipsis",
+"alt": "CreateEllipsis",
+"nat_span": [
+310,
+324
+],
+"alt_span": [
+310,
+324
+]
+},
+{
+"k": 7,
+"nat": "returnOriginalString",
+"alt": "ReturnOriginalString",
+"nat_span": [
+335,
+355
+],
+"alt_span": [
+335,
+355
+]
+},
+{
+"k": 8,
+"nat": "truncateString",
+"alt": "TruncateString",
+"nat_span": [
+379,
+393
+],
+"alt_span": [
+379,
+393
+]
+},
+{
+"k": 9,
+"nat": "stringLengthIsGreaterThan",
+"alt": "StringLengthIsGreaterThan",
+"nat_span": [
+424,
+449
+],
+"alt_span": [
+424,
+449
+]
+},
+{
+"k": 10,
+"nat": "calculateTruncationLength",
+"alt": "CalculateTruncationLength",
+"nat_span": [
+507,
+532
+],
+"alt_span": [
+507,
+532
+]
+},
+{
+"k": 11,
+"nat": "getSubstringUpToLength",
+"alt": "GetSubstringUpToLength",
+"nat_span": [
+571,
+593
+],
+"alt_span": [
+571,
+593
+]
+},
+{
+"k": 12,
+"nat": "appendEllipsis",
+"alt": "AppendEllipsis",
+"nat_span": [
+638,
+652
+],
+"alt_span": [
+638,
+652
+]
+},
+{
+"k": 13,
+"nat": "returnOriginalString",
+"alt": "ReturnOriginalString",
+"nat_span": [
+682,
+702
+],
+"alt_span": [
+682,
+702
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.934,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t032",
+"family": "js_func_pascal",
+"topic": "Convert Object to Array of Key-Value Pairs",
+"angle": "code",
+"text_es": "Write a function `objectToKeyValueArray(obj)` that converts an object into an array of `[key, value]` pairs. Input is an object, output is an array of arrays. Example: `objectToKeyValueArray({a: 1, b: 'hello'})` should return `[['a', 1], ['b', 'hello']]`, `objectToKeyValueArray({})` should return `[]`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const createKeyValueArray = (key, value) => [key, value];\n\nconst getObjectKeys = obj => Object.keys(obj);\n\nconst getObjectValue = (obj, key) => obj[key];\n\nconst checkIfObjectEmpty = obj => getObjectKeys(obj).length === 0;\n\nconst createEmptyArray = () => [];\n\nconst mapKeysToKeyValuePairs = (obj, keys) => keys.map(key => createKeyValueArray(key, getObjectValue(obj, key)));\n\nconst objectToKeyValueArray = obj => {\n  if (checkIfObjectEmpty(obj)) {\n    return createEmptyArray();\n  }\n  const keys = getObjectKeys(obj);\n  return mapKeysToKeyValuePairs(obj, keys);\n};\n",
+"text_alt": "const CreateKeyValueArray = (key, value) => [key, value];\n\nconst GetObjectKeys = obj => Object.keys(obj);\n\nconst GetObjectValue = (obj, key) => obj[key];\n\nconst CheckIfObjectEmpty = obj => GetObjectKeys(obj).length === 0;\n\nconst CreateEmptyArray = () => [];\n\nconst MapKeysToKeyValuePairs = (obj, keys) => keys.map(key => CreateKeyValueArray(key, GetObjectValue(obj, key)));\n\nconst ObjectToKeyValueArray = obj => {\n  if (CheckIfObjectEmpty(obj)) {\n    return CreateEmptyArray();\n  }\n  const keys = GetObjectKeys(obj);\n  return MapKeysToKeyValuePairs(obj, keys);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "createKeyValueArray",
+"alt": "CreateKeyValueArray",
+"nat_span": [
+6,
+25
+],
+"alt_span": [
+6,
+25
+]
+},
+{
+"k": 1,
+"nat": "getObjectKeys",
+"alt": "GetObjectKeys",
+"nat_span": [
+65,
+78
+],
+"alt_span": [
+65,
+78
+]
+},
+{
+"k": 2,
+"nat": "getObjectValue",
+"alt": "GetObjectValue",
+"nat_span": [
+113,
+127
+],
+"alt_span": [
+113,
+127
+]
+},
+{
+"k": 3,
+"nat": "checkIfObjectEmpty",
+"alt": "CheckIfObjectEmpty",
+"nat_span": [
+161,
+179
+],
+"alt_span": [
+161,
+179
+]
+},
+{
+"k": 4,
+"nat": "getObjectKeys",
+"alt": "GetObjectKeys",
+"nat_span": [
+189,
+202
+],
+"alt_span": [
+189,
+202
+]
+},
+{
+"k": 5,
+"nat": "createEmptyArray",
+"alt": "CreateEmptyArray",
+"nat_span": [
+229,
+245
+],
+"alt_span": [
+229,
+245
+]
+},
+{
+"k": 6,
+"nat": "mapKeysToKeyValuePairs",
+"alt": "MapKeysToKeyValuePairs",
+"nat_span": [
+265,
+287
+],
+"alt_span": [
+265,
+287
+]
+},
+{
+"k": 7,
+"nat": "createKeyValueArray",
+"alt": "CreateKeyValueArray",
+"nat_span": [
+321,
+340
+],
+"alt_span": [
+321,
+340
+]
+},
+{
+"k": 8,
+"nat": "getObjectValue",
+"alt": "GetObjectValue",
+"nat_span": [
+346,
+360
+],
+"alt_span": [
+346,
+360
+]
+},
+{
+"k": 9,
+"nat": "objectToKeyValueArray",
+"alt": "ObjectToKeyValueArray",
+"nat_span": [
+381,
+402
+],
+"alt_span": [
+381,
+402
+]
+},
+{
+"k": 10,
+"nat": "checkIfObjectEmpty",
+"alt": "CheckIfObjectEmpty",
+"nat_span": [
+420,
+438
+],
+"alt_span": [
+420,
+438
+]
+},
+{
+"k": 11,
+"nat": "createEmptyArray",
+"alt": "CreateEmptyArray",
+"nat_span": [
+458,
+474
+],
+"alt_span": [
+458,
+474
+]
+},
+{
+"k": 12,
+"nat": "getObjectKeys",
+"alt": "GetObjectKeys",
+"nat_span": [
+497,
+510
+],
+"alt_span": [
+497,
+510
+]
+},
+{
+"k": 13,
+"nat": "mapKeysToKeyValuePairs",
+"alt": "MapKeysToKeyValuePairs",
+"nat_span": [
+526,
+548
+],
+"alt_span": [
+526,
+548
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.932,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t033",
+"family": "js_func_pascal",
+"topic": "Days Between Two Dates",
+"angle": "code",
+"text_es": "Create a function `daysBetweenDates(date1Str, date2Str)` that calculates the number of days between two dates given as 'YYYY-MM-DD' strings. Input is two strings, output is an integer. Example: `daysBetweenDates('2023-01-01', '2023-01-03')` should return `2`, `daysBetweenDates('2023-01-01', '2023-01-01')` should return `0`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const parseDateString = (dateStr) => new Date(dateStr);\nconst getMsPerDay = () => 1000 * 60 * 60 * 24;\nconst getTimeInMs = (dateObj) => dateObj.getTime();\nconst calculateTimeDifference = (ms1, ms2) => Math.abs(ms1 - ms2);\nconst convertMsToDays = (msDiff, msPerDay) => Math.floor(msDiff / msPerDay);\nconst ensurePositiveResult = (value) => Math.abs(value);\n\nconst daysBetweenDates = (date1Str, date2Str) => {\n  const date1Obj = parseDateString(date1Str);\n  const date2Obj = parseDateString(date2Str);\n\n  const time1Ms = getTimeInMs(date1Obj);\n  const time2Ms = getTimeInMs(date2Obj);\n\n  const timeDifferenceMs = calculateTimeDifference(time1Ms, time2Ms);\n  const millisecondsPerDay = getMsPerDay();\n\n  const daysDifference = convertMsToDays(timeDifferenceMs, millisecondsPerDay);\n  return ensurePositiveResult(daysDifference);\n};\n",
+"text_alt": "const ParseDateString = (dateStr) => new Date(dateStr);\nconst GetMsPerDay = () => 1000 * 60 * 60 * 24;\nconst GetTimeInMs = (dateObj) => dateObj.getTime();\nconst CalculateTimeDifference = (ms1, ms2) => Math.abs(ms1 - ms2);\nconst ConvertMsToDays = (msDiff, msPerDay) => Math.floor(msDiff / msPerDay);\nconst EnsurePositiveResult = (value) => Math.abs(value);\n\nconst DaysBetweenDates = (date1Str, date2Str) => {\n  const date1Obj = ParseDateString(date1Str);\n  const date2Obj = ParseDateString(date2Str);\n\n  const time1Ms = GetTimeInMs(date1Obj);\n  const time2Ms = GetTimeInMs(date2Obj);\n\n  const timeDifferenceMs = CalculateTimeDifference(time1Ms, time2Ms);\n  const millisecondsPerDay = GetMsPerDay();\n\n  const daysDifference = ConvertMsToDays(timeDifferenceMs, millisecondsPerDay);\n  return EnsurePositiveResult(daysDifference);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "parseDateString",
+"alt": "ParseDateString",
+"nat_span": [
+6,
+21
+],
+"alt_span": [
+6,
+21
+]
+},
+{
+"k": 1,
+"nat": "getMsPerDay",
+"alt": "GetMsPerDay",
+"nat_span": [
+62,
+73
+],
+"alt_span": [
+62,
+73
+]
+},
+{
+"k": 2,
+"nat": "getTimeInMs",
+"alt": "GetTimeInMs",
+"nat_span": [
+109,
+120
+],
+"alt_span": [
+109,
+120
+]
+},
+{
+"k": 3,
+"nat": "calculateTimeDifference",
+"alt": "CalculateTimeDifference",
+"nat_span": [
+161,
+184
+],
+"alt_span": [
+161,
+184
+]
+},
+{
+"k": 4,
+"nat": "convertMsToDays",
+"alt": "ConvertMsToDays",
+"nat_span": [
+228,
+243
+],
+"alt_span": [
+228,
+243
+]
+},
+{
+"k": 5,
+"nat": "ensurePositiveResult",
+"alt": "EnsurePositiveResult",
+"nat_span": [
+305,
+325
+],
+"alt_span": [
+305,
+325
+]
+},
+{
+"k": 6,
+"nat": "daysBetweenDates",
+"alt": "DaysBetweenDates",
+"nat_span": [
+363,
+379
+],
+"alt_span": [
+363,
+379
+]
+},
+{
+"k": 7,
+"nat": "parseDateString",
+"alt": "ParseDateString",
+"nat_span": [
+427,
+442
+],
+"alt_span": [
+427,
+442
+]
+},
+{
+"k": 8,
+"nat": "parseDateString",
+"alt": "ParseDateString",
+"nat_span": [
+473,
+488
+],
+"alt_span": [
+473,
+488
+]
+},
+{
+"k": 9,
+"nat": "getTimeInMs",
+"alt": "GetTimeInMs",
+"nat_span": [
+519,
+530
+],
+"alt_span": [
+519,
+530
+]
+},
+{
+"k": 10,
+"nat": "getTimeInMs",
+"alt": "GetTimeInMs",
+"nat_span": [
+560,
+571
+],
+"alt_span": [
+560,
+571
+]
+},
+{
+"k": 11,
+"nat": "calculateTimeDifference",
+"alt": "CalculateTimeDifference",
+"nat_span": [
+611,
+634
+],
+"alt_span": [
+611,
+634
+]
+},
+{
+"k": 12,
+"nat": "getMsPerDay",
+"alt": "GetMsPerDay",
+"nat_span": [
+683,
+694
+],
+"alt_span": [
+683,
+694
+]
+},
+{
+"k": 13,
+"nat": "convertMsToDays",
+"alt": "ConvertMsToDays",
+"nat_span": [
+724,
+739
+],
+"alt_span": [
+724,
+739
+]
+},
+{
+"k": 14,
+"nat": "ensurePositiveResult",
+"alt": "EnsurePositiveResult",
+"nat_span": [
+788,
+808
+],
+"alt_span": [
+788,
+808
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 0.943,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t034",
+"family": "js_func_pascal",
+"topic": "Simple Text Search",
+"angle": "code",
+"text_es": "Implement a function `searchText(text, keyword)` that checks if a `keyword` exists in a `text` (case-insensitive). Input is two strings, output is a boolean. Example: `searchText('Hello World', 'world')` should return `true`, `searchText('JavaScript', 'python')` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const convertToLowerCase = (str) => str.toLowerCase();\nconst trimWhitespace = (str) => str.trim();\nconst checkIsEmpty = (str) => str === '';\n\nconst normalizeString = (str) => trimWhitespace(convertToLowerCase(str));\n\nconst stringIncludes = (mainStr, subStr) => mainStr.includes(subStr);\n\nconst searchText = (text, keyword) => {\n  if (checkIsEmpty(text) || checkIsEmpty(keyword)) {\n    return false;\n  }\n\n  const normalizedText = normalizeString(text);\n  const normalizedKeyword = normalizeString(keyword);\n\n  const performInclusionCheck = (main, sub) => stringIncludes(main, sub);\n\n  return performInclusionCheck(normalizedText, normalizedKeyword);\n};\n",
+"text_alt": "const ConvertToLowerCase = (str) => str.toLowerCase();\nconst TrimWhitespace = (str) => str.trim();\nconst CheckIsEmpty = (str) => str === '';\n\nconst NormalizeString = (str) => TrimWhitespace(ConvertToLowerCase(str));\n\nconst StringIncludes = (mainStr, subStr) => mainStr.includes(subStr);\n\nconst SearchText = (text, keyword) => {\n  if (CheckIsEmpty(text) || CheckIsEmpty(keyword)) {\n    return false;\n  }\n\n  const normalizedText = NormalizeString(text);\n  const normalizedKeyword = NormalizeString(keyword);\n\n  const PerformInclusionCheck = (main, sub) => StringIncludes(main, sub);\n\n  return PerformInclusionCheck(normalizedText, normalizedKeyword);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "convertToLowerCase",
+"alt": "ConvertToLowerCase",
+"nat_span": [
+6,
+24
+],
+"alt_span": [
+6,
+24
+]
+},
+{
+"k": 1,
+"nat": "trimWhitespace",
+"alt": "TrimWhitespace",
+"nat_span": [
+61,
+75
+],
+"alt_span": [
+61,
+75
+]
+},
+{
+"k": 2,
+"nat": "checkIsEmpty",
+"alt": "CheckIsEmpty",
+"nat_span": [
+105,
+117
+],
+"alt_span": [
+105,
+117
+]
+},
+{
+"k": 3,
+"nat": "normalizeString",
+"alt": "NormalizeString",
+"nat_span": [
+148,
+163
+],
+"alt_span": [
+148,
+163
+]
+},
+{
+"k": 4,
+"nat": "trimWhitespace(convertToLowerCase",
+"alt": "TrimWhitespace(ConvertToLowerCase",
+"nat_span": [
+175,
+208
+],
+"alt_span": [
+175,
+208
+]
+},
+{
+"k": 5,
+"nat": "stringIncludes",
+"alt": "StringIncludes",
+"nat_span": [
+223,
+237
+],
+"alt_span": [
+223,
+237
+]
+},
+{
+"k": 6,
+"nat": "searchText",
+"alt": "SearchText",
+"nat_span": [
+294,
+304
+],
+"alt_span": [
+294,
+304
+]
+},
+{
+"k": 7,
+"nat": "checkIsEmpty",
+"alt": "CheckIsEmpty",
+"nat_span": [
+334,
+346
+],
+"alt_span": [
+334,
+346
+]
+},
+{
+"k": 8,
+"nat": "checkIsEmpty",
+"alt": "CheckIsEmpty",
+"nat_span": [
+356,
+368
+],
+"alt_span": [
+356,
+368
+]
+},
+{
+"k": 9,
+"nat": "normalizeString",
+"alt": "NormalizeString",
+"nat_span": [
+429,
+444
+],
+"alt_span": [
+429,
+444
+]
+},
+{
+"k": 10,
+"nat": "normalizeString",
+"alt": "NormalizeString",
+"nat_span": [
+480,
+495
+],
+"alt_span": [
+480,
+495
+]
+},
+{
+"k": 11,
+"nat": "performInclusionCheck",
+"alt": "PerformInclusionCheck",
+"nat_span": [
+515,
+536
+],
+"alt_span": [
+515,
+536
+]
+},
+{
+"k": 12,
+"nat": "stringIncludes",
+"alt": "StringIncludes",
+"nat_span": [
+554,
+568
+],
+"alt_span": [
+554,
+568
+]
+},
+{
+"k": 13,
+"nat": "performInclusionCheck",
+"alt": "PerformInclusionCheck",
+"nat_span": [
+591,
+612
+],
+"alt_span": [
+591,
+612
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.931,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t035",
+"family": "js_func_pascal",
+"topic": "Calculate Hypotenuse",
+"angle": "code",
+"text_es": "Write a function `calculateHypotenuse(a, b)` that calculates the length of the hypotenuse of a right-angled triangle given the lengths of the other two sides. Use `Math.sqrt` and `Math.pow`. Input is two numbers, output is a number. Example: `calculateHypotenuse(3, 4)` should return `5`, `calculateHypotenuse(5, 12)` should return `13`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const squareNumber = num => Math.pow(num, 2);\nconst addTwoNumbers = (num1, num2) => num1 + num2;\nconst getSquareRoot = num => Math.sqrt(num);\nconst calculateSumOfSquares = (sideA, sideB) => addTwoNumbers(squareNumber(sideA), squareNumber(sideB));\nconst isPositiveNumber = num => num > 0;\nconst validateInputSides = (a, b) => isPositiveNumber(a) && isPositiveNumber(b);\n\nconst calculateHypotenuse = (a, b) => {\n  if (!validateInputSides(a, b)) {\n    throw new Error(\"Sides must be positive numbers.\");\n  }\n  const sumOfSquaredSides = calculateSumOfSquares(a, b);\n  const hypotenuseLength = getSquareRoot(sumOfSquaredSides);\n  return hypotenuseLength;\n};\n",
+"text_alt": "const SquareNumber = num => Math.pow(num, 2);\nconst AddTwoNumbers = (num1, num2) => num1 + num2;\nconst GetSquareRoot = num => Math.sqrt(num);\nconst CalculateSumOfSquares = (sideA, sideB) => AddTwoNumbers(SquareNumber(sideA), SquareNumber(sideB));\nconst IsPositiveNumber = num => num > 0;\nconst ValidateInputSides = (a, b) => IsPositiveNumber(a) && IsPositiveNumber(b);\n\nconst CalculateHypotenuse = (a, b) => {\n  if (!ValidateInputSides(a, b)) {\n    throw new Error(\"Sides must be positive numbers.\");\n  }\n  const sumOfSquaredSides = CalculateSumOfSquares(a, b);\n  const hypotenuseLength = GetSquareRoot(sumOfSquaredSides);\n  return hypotenuseLength;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "squareNumber",
+"alt": "SquareNumber",
+"nat_span": [
+6,
+18
+],
+"alt_span": [
+6,
+18
+]
+},
+{
+"k": 1,
+"nat": "addTwoNumbers",
+"alt": "AddTwoNumbers",
+"nat_span": [
+52,
+65
+],
+"alt_span": [
+52,
+65
+]
+},
+{
+"k": 2,
+"nat": "getSquareRoot",
+"alt": "GetSquareRoot",
+"nat_span": [
+103,
+116
+],
+"alt_span": [
+103,
+116
+]
+},
+{
+"k": 3,
+"nat": "calculateSumOfSquares",
+"alt": "CalculateSumOfSquares",
+"nat_span": [
+148,
+169
+],
+"alt_span": [
+148,
+169
+]
+},
+{
+"k": 4,
+"nat": "addTwoNumbers(squareNumber",
+"alt": "AddTwoNumbers(SquareNumber",
+"nat_span": [
+190,
+216
+],
+"alt_span": [
+190,
+216
+]
+},
+{
+"k": 5,
+"nat": "squareNumber",
+"alt": "SquareNumber",
+"nat_span": [
+225,
+237
+],
+"alt_span": [
+225,
+237
+]
+},
+{
+"k": 6,
+"nat": "isPositiveNumber",
+"alt": "IsPositiveNumber",
+"nat_span": [
+253,
+269
+],
+"alt_span": [
+253,
+269
+]
+},
+{
+"k": 7,
+"nat": "validateInputSides",
+"alt": "ValidateInputSides",
+"nat_span": [
+294,
+312
+],
+"alt_span": [
+294,
+312
+]
+},
+{
+"k": 8,
+"nat": "isPositiveNumber",
+"alt": "IsPositiveNumber",
+"nat_span": [
+325,
+341
+],
+"alt_span": [
+325,
+341
+]
+},
+{
+"k": 9,
+"nat": "isPositiveNumber",
+"alt": "IsPositiveNumber",
+"nat_span": [
+348,
+364
+],
+"alt_span": [
+348,
+364
+]
+},
+{
+"k": 10,
+"nat": "calculateHypotenuse",
+"alt": "CalculateHypotenuse",
+"nat_span": [
+376,
+395
+],
+"alt_span": [
+376,
+395
+]
+},
+{
+"k": 11,
+"nat": "validateInputSides",
+"alt": "ValidateInputSides",
+"nat_span": [
+417,
+435
+],
+"alt_span": [
+417,
+435
+]
+},
+{
+"k": 12,
+"nat": "calculateSumOfSquares",
+"alt": "CalculateSumOfSquares",
+"nat_span": [
+533,
+554
+],
+"alt_span": [
+533,
+554
+]
+},
+{
+"k": 13,
+"nat": "getSquareRoot",
+"alt": "GetSquareRoot",
+"nat_span": [
+589,
+602
+],
+"alt_span": [
+589,
+602
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.936,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t036",
+"family": "js_func_pascal",
+"topic": "Filter Array of Objects by Property",
+"angle": "code",
+"text_es": "Create a function `filterByProperty(arr, prop, value)` that filters an array of objects, returning only objects where `prop` equals `value`. Input is an array of objects, two strings. Output is an array of objects. Example: `filterByProperty([{id:1, type:'A'}, {id:2, type:'B'}], 'type', 'A')` should return `[{id:1, type:'A'}]`, `filterByProperty([{id:1, type:'A'}], 'type', 'C')` should return `[]`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getPropertyValue = (obj, prop) => obj[prop];\nconst doesValueMatch = (val1, val2) => val1 === val2;\nconst isObjectPresent = (obj) => obj !== undefined && obj !== null;\nconst createNewArray = () => [];\nconst addItemToArray = (arr, item) => { arr.push(item); };\nconst isEmptyArray = (arr) => arr.length === 0;\n\nconst filterByProperty = (arr, prop, value) => {\n  const filteredResults = createNewArray();\n  if (isEmptyArray(arr)) return filteredResults;\n\n  for (const item of arr) {\n    if (isObjectPresent(item)) {\n      const itemPropertyValue = getPropertyValue(item, prop);\n      if (doesValueMatch(itemPropertyValue, value)) {\n        addItemToArray(filteredResults, item);\n      }\n    }\n  }\n  return filteredResults;\n};\n",
+"text_alt": "const GetPropertyValue = (obj, prop) => obj[prop];\nconst DoesValueMatch = (val1, val2) => val1 === val2;\nconst IsObjectPresent = (obj) => obj !== undefined && obj !== null;\nconst CreateNewArray = () => [];\nconst AddItemToArray = (arr, item) => { arr.push(item); };\nconst IsEmptyArray = (arr) => arr.length === 0;\n\nconst FilterByProperty = (arr, prop, value) => {\n  const filteredResults = CreateNewArray();\n  if (IsEmptyArray(arr)) return filteredResults;\n\n  for (const item of arr) {\n    if (IsObjectPresent(item)) {\n      const itemPropertyValue = GetPropertyValue(item, prop);\n      if (DoesValueMatch(itemPropertyValue, value)) {\n        AddItemToArray(filteredResults, item);\n      }\n    }\n  }\n  return filteredResults;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getPropertyValue",
+"alt": "GetPropertyValue",
+"nat_span": [
+6,
+22
+],
+"alt_span": [
+6,
+22
+]
+},
+{
+"k": 1,
+"nat": "doesValueMatch",
+"alt": "DoesValueMatch",
+"nat_span": [
+57,
+71
+],
+"alt_span": [
+57,
+71
+]
+},
+{
+"k": 2,
+"nat": "isObjectPresent",
+"alt": "IsObjectPresent",
+"nat_span": [
+111,
+126
+],
+"alt_span": [
+111,
+126
+]
+},
+{
+"k": 3,
+"nat": "createNewArray",
+"alt": "CreateNewArray",
+"nat_span": [
+179,
+193
+],
+"alt_span": [
+179,
+193
+]
+},
+{
+"k": 4,
+"nat": "addItemToArray",
+"alt": "AddItemToArray",
+"nat_span": [
+212,
+226
+],
+"alt_span": [
+212,
+226
+]
+},
+{
+"k": 5,
+"nat": "isEmptyArray",
+"alt": "IsEmptyArray",
+"nat_span": [
+271,
+283
+],
+"alt_span": [
+271,
+283
+]
+},
+{
+"k": 6,
+"nat": "filterByProperty",
+"alt": "FilterByProperty",
+"nat_span": [
+320,
+336
+],
+"alt_span": [
+320,
+336
+]
+},
+{
+"k": 7,
+"nat": "createNewArray",
+"alt": "CreateNewArray",
+"nat_span": [
+389,
+403
+],
+"alt_span": [
+389,
+403
+]
+},
+{
+"k": 8,
+"nat": "isEmptyArray",
+"alt": "IsEmptyArray",
+"nat_span": [
+413,
+425
+],
+"alt_span": [
+413,
+425
+]
+},
+{
+"k": 9,
+"nat": "isObjectPresent",
+"alt": "IsObjectPresent",
+"nat_span": [
+493,
+508
+],
+"alt_span": [
+493,
+508
+]
+},
+{
+"k": 10,
+"nat": "getPropertyValue",
+"alt": "GetPropertyValue",
+"nat_span": [
+550,
+566
+],
+"alt_span": [
+550,
+566
+]
+},
+{
+"k": 11,
+"nat": "doesValueMatch",
+"alt": "DoesValueMatch",
+"nat_span": [
+590,
+604
+],
+"alt_span": [
+590,
+604
+]
+},
+{
+"k": 12,
+"nat": "addItemToArray",
+"alt": "AddItemToArray",
+"nat_span": [
+642,
+656
+],
+"alt_span": [
+642,
+656
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.952,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t037",
+"family": "js_func_pascal",
+"topic": "Generate Random Password",
+"angle": "code",
+"text_es": "Implement a function `generateRandomPassword(length)` that generates a random password of a specified length using alphanumeric characters. Input is an integer, output is a string. Example: `generateRandomPassword(8)` could return `'aBc1XyZ9'`, `generateRandomPassword(4)` could return `'pQ7k'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getRandomCharIndex = (max) => Math.floor(Math.random() * max);\nconst getRandomLowerCaseLetter = () => String.fromCharCode(97 + getRandomCharIndex(26));\nconst getRandomUpperCaseLetter = () => String.fromCharCode(65 + getRandomCharIndex(26));\nconst getRandomDigitChar = () => String.fromCharCode(48 + getRandomCharIndex(10));\n\nconst chooseRandomCharType = () => {\n  const charType = getRandomCharIndex(3);\n  if (charType === 0) return getRandomLowerCaseLetter();\n  if (charType === 1) return getRandomUpperCaseLetter();\n  return getRandomDigitChar();\n};\n\nconst buildPasswordString = (length) => {\n  let password = '';\n  for (let i = 0; i < length; i++) {\n    password += chooseRandomCharType();\n  }\n  return password;\n};\n\nconst generateRandomPassword = (length) => {\n  if (length <= 0) return '';\n  return buildPasswordString(length);\n};\n",
+"text_alt": "const GetRandomCharIndex = (max) => Math.floor(Math.random() * max);\nconst GetRandomLowerCaseLetter = () => String.fromCharCode(97 + GetRandomCharIndex(26));\nconst GetRandomUpperCaseLetter = () => String.fromCharCode(65 + GetRandomCharIndex(26));\nconst GetRandomDigitChar = () => String.fromCharCode(48 + GetRandomCharIndex(10));\n\nconst ChooseRandomCharType = () => {\n  const charType = GetRandomCharIndex(3);\n  if (charType === 0) return GetRandomLowerCaseLetter();\n  if (charType === 1) return GetRandomUpperCaseLetter();\n  return GetRandomDigitChar();\n};\n\nconst BuildPasswordString = (length) => {\n  let password = '';\n  for (let i = 0; i < length; i++) {\n    password += ChooseRandomCharType();\n  }\n  return password;\n};\n\nconst GenerateRandomPassword = (length) => {\n  if (length <= 0) return '';\n  return BuildPasswordString(length);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getRandomCharIndex",
+"alt": "GetRandomCharIndex",
+"nat_span": [
+6,
+24
+],
+"alt_span": [
+6,
+24
+]
+},
+{
+"k": 1,
+"nat": "getRandomLowerCaseLetter",
+"alt": "GetRandomLowerCaseLetter",
+"nat_span": [
+75,
+99
+],
+"alt_span": [
+75,
+99
+]
+},
+{
+"k": 2,
+"nat": "getRandomCharIndex",
+"alt": "GetRandomCharIndex",
+"nat_span": [
+133,
+151
+],
+"alt_span": [
+133,
+151
+]
+},
+{
+"k": 3,
+"nat": "getRandomUpperCaseLetter",
+"alt": "GetRandomUpperCaseLetter",
+"nat_span": [
+164,
+188
+],
+"alt_span": [
+164,
+188
+]
+},
+{
+"k": 4,
+"nat": "getRandomCharIndex",
+"alt": "GetRandomCharIndex",
+"nat_span": [
+222,
+240
+],
+"alt_span": [
+222,
+240
+]
+},
+{
+"k": 5,
+"nat": "getRandomDigitChar",
+"alt": "GetRandomDigitChar",
+"nat_span": [
+253,
+271
+],
+"alt_span": [
+253,
+271
+]
+},
+{
+"k": 6,
+"nat": "getRandomCharIndex",
+"alt": "GetRandomCharIndex",
+"nat_span": [
+305,
+323
+],
+"alt_span": [
+305,
+323
+]
+},
+{
+"k": 7,
+"nat": "chooseRandomCharType",
+"alt": "ChooseRandomCharType",
+"nat_span": [
+337,
+357
+],
+"alt_span": [
+337,
+357
+]
+},
+{
+"k": 8,
+"nat": "getRandomCharIndex",
+"alt": "GetRandomCharIndex",
+"nat_span": [
+387,
+405
+],
+"alt_span": [
+387,
+405
+]
+},
+{
+"k": 9,
+"nat": "getRandomLowerCaseLetter",
+"alt": "GetRandomLowerCaseLetter",
+"nat_span": [
+439,
+463
+],
+"alt_span": [
+439,
+463
+]
+},
+{
+"k": 10,
+"nat": "getRandomUpperCaseLetter",
+"alt": "GetRandomUpperCaseLetter",
+"nat_span": [
+496,
+520
+],
+"alt_span": [
+496,
+520
+]
+},
+{
+"k": 11,
+"nat": "getRandomDigitChar",
+"alt": "GetRandomDigitChar",
+"nat_span": [
+533,
+551
+],
+"alt_span": [
+533,
+551
+]
+},
+{
+"k": 12,
+"nat": "buildPasswordString",
+"alt": "BuildPasswordString",
+"nat_span": [
+565,
+584
+],
+"alt_span": [
+565,
+584
+]
+},
+{
+"k": 13,
+"nat": "chooseRandomCharType",
+"alt": "ChooseRandomCharType",
+"nat_span": [
+675,
+695
+],
+"alt_span": [
+675,
+695
+]
+},
+{
+"k": 14,
+"nat": "generateRandomPassword",
+"alt": "GenerateRandomPassword",
+"nat_span": [
+732,
+754
+],
+"alt_span": [
+732,
+754
+]
+},
+{
+"k": 15,
+"nat": "buildPasswordString",
+"alt": "BuildPasswordString",
+"nat_span": [
+810,
+829
+],
+"alt_span": [
+810,
+829
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.946,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t038",
+"family": "js_func_pascal",
+"topic": "Sort Array of Numbers Ascending",
+"angle": "code",
+"text_es": "Write a function `sortNumbersAscending(arr)` that sorts an array of numbers in ascending order. Input is an array of numbers, output is a new sorted array of numbers. Example: `sortNumbersAscending([3, 1, 4, 1, 5])` should return `[1, 1, 3, 4, 5]`, `sortNumbersAscending([10, 2, 8])` should return `[2, 8, 10]`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const createNewArray = arr => [...arr];\nconst compareNumbers = (a, b) => a - b;\nconst performSort = arr => arr.sort(compareNumbers);\nconst isEmptyArray = arr => arr.length === 0;\nconst getSortedResult = arr => performSort(arr);\nconst handleEmptyInput = arr => isEmptyArray(arr) ? [] : getSortedResult(arr);\n\nconst sortNumbersAscending = arr => {\n  const originalArrayCopy = createNewArray(arr);\n  return handleEmptyInput(originalArrayCopy);\n};\n",
+"text_alt": "const CreateNewArray = arr => [...arr];\nconst CompareNumbers = (a, b) => a - b;\nconst PerformSort = arr => arr.sort(CompareNumbers);\nconst IsEmptyArray = arr => arr.length === 0;\nconst GetSortedResult = arr => PerformSort(arr);\nconst HandleEmptyInput = arr => IsEmptyArray(arr) ? [] : GetSortedResult(arr);\n\nconst SortNumbersAscending = arr => {\n  const originalArrayCopy = CreateNewArray(arr);\n  return HandleEmptyInput(originalArrayCopy);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "createNewArray",
+"alt": "CreateNewArray",
+"nat_span": [
+6,
+20
+],
+"alt_span": [
+6,
+20
+]
+},
+{
+"k": 1,
+"nat": "compareNumbers",
+"alt": "CompareNumbers",
+"nat_span": [
+46,
+60
+],
+"alt_span": [
+46,
+60
+]
+},
+{
+"k": 2,
+"nat": "performSort",
+"alt": "PerformSort",
+"nat_span": [
+86,
+97
+],
+"alt_span": [
+86,
+97
+]
+},
+{
+"k": 3,
+"nat": "compareNumbers",
+"alt": "CompareNumbers",
+"nat_span": [
+116,
+130
+],
+"alt_span": [
+116,
+130
+]
+},
+{
+"k": 4,
+"nat": "isEmptyArray",
+"alt": "IsEmptyArray",
+"nat_span": [
+139,
+151
+],
+"alt_span": [
+139,
+151
+]
+},
+{
+"k": 5,
+"nat": "getSortedResult",
+"alt": "GetSortedResult",
+"nat_span": [
+185,
+200
+],
+"alt_span": [
+185,
+200
+]
+},
+{
+"k": 6,
+"nat": "performSort",
+"alt": "PerformSort",
+"nat_span": [
+210,
+221
+],
+"alt_span": [
+210,
+221
+]
+},
+{
+"k": 7,
+"nat": "handleEmptyInput",
+"alt": "HandleEmptyInput",
+"nat_span": [
+234,
+250
+],
+"alt_span": [
+234,
+250
+]
+},
+{
+"k": 8,
+"nat": "isEmptyArray",
+"alt": "IsEmptyArray",
+"nat_span": [
+260,
+272
+],
+"alt_span": [
+260,
+272
+]
+},
+{
+"k": 9,
+"nat": "getSortedResult",
+"alt": "GetSortedResult",
+"nat_span": [
+285,
+300
+],
+"alt_span": [
+285,
+300
+]
+},
+{
+"k": 10,
+"nat": "sortNumbersAscending",
+"alt": "SortNumbersAscending",
+"nat_span": [
+314,
+334
+],
+"alt_span": [
+314,
+334
+]
+},
+{
+"k": 11,
+"nat": "createNewArray",
+"alt": "CreateNewArray",
+"nat_span": [
+374,
+388
+],
+"alt_span": [
+374,
+388
+]
+},
+{
+"k": 12,
+"nat": "handleEmptyInput",
+"alt": "HandleEmptyInput",
+"nat_span": [
+404,
+420
+],
+"alt_span": [
+404,
+420
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.921,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t039",
+"family": "js_func_pascal",
+"topic": "Check if Object is Empty",
+"angle": "code",
+"text_es": "Create a function `isObjectEmpty(obj)` that checks if an object has no own enumerable properties. Input is an object, output is a boolean. Example: `isObjectEmpty({})` should return `true`, `isObjectEmpty({a: 1})` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const hasOwnProperties = obj => Object.keys(obj).length > 0;\nconst hasNoOwnProperties = obj => !hasOwnProperties(obj);\nconst isAnObject = obj => typeof obj === 'object';\nconst isNotNull = obj => obj !== null;\nconst isValidObject = obj => isAnObject(obj) && isNotNull(obj);\nconst safelyCheckForProperties = obj => isValidObject(obj) && hasNoOwnProperties(obj);\n\nconst isObjectEmpty = obj => {\n  const isUndefinedOrNull = obj === undefined || obj === null;\n  if (isUndefinedOrNull) {\n    return true; \n  }\n  return safelyCheckForProperties(obj);\n};\n",
+"text_alt": "const HasOwnProperties = obj => Object.keys(obj).length > 0;\nconst HasNoOwnProperties = obj => !HasOwnProperties(obj);\nconst IsAnObject = obj => typeof obj === 'object';\nconst IsNotNull = obj => obj !== null;\nconst IsValidObject = obj => IsAnObject(obj) && IsNotNull(obj);\nconst SafelyCheckForProperties = obj => IsValidObject(obj) && HasNoOwnProperties(obj);\n\nconst IsObjectEmpty = obj => {\n  const isUndefinedOrNull = obj === undefined || obj === null;\n  if (isUndefinedOrNull) {\n    return true; \n  }\n  return SafelyCheckForProperties(obj);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "hasOwnProperties",
+"alt": "HasOwnProperties",
+"nat_span": [
+6,
+22
+],
+"alt_span": [
+6,
+22
+]
+},
+{
+"k": 1,
+"nat": "hasNoOwnProperties",
+"alt": "HasNoOwnProperties",
+"nat_span": [
+67,
+85
+],
+"alt_span": [
+67,
+85
+]
+},
+{
+"k": 2,
+"nat": "hasOwnProperties",
+"alt": "HasOwnProperties",
+"nat_span": [
+96,
+112
+],
+"alt_span": [
+96,
+112
+]
+},
+{
+"k": 3,
+"nat": "isAnObject",
+"alt": "IsAnObject",
+"nat_span": [
+125,
+135
+],
+"alt_span": [
+125,
+135
+]
+},
+{
+"k": 4,
+"nat": "isNotNull",
+"alt": "IsNotNull",
+"nat_span": [
+176,
+185
+],
+"alt_span": [
+176,
+185
+]
+},
+{
+"k": 5,
+"nat": "isValidObject",
+"alt": "IsValidObject",
+"nat_span": [
+215,
+228
+],
+"alt_span": [
+215,
+228
+]
+},
+{
+"k": 6,
+"nat": "isAnObject",
+"alt": "IsAnObject",
+"nat_span": [
+238,
+248
+],
+"alt_span": [
+238,
+248
+]
+},
+{
+"k": 7,
+"nat": "isNotNull",
+"alt": "IsNotNull",
+"nat_span": [
+257,
+266
+],
+"alt_span": [
+257,
+266
+]
+},
+{
+"k": 8,
+"nat": "safelyCheckForProperties",
+"alt": "SafelyCheckForProperties",
+"nat_span": [
+279,
+303
+],
+"alt_span": [
+279,
+303
+]
+},
+{
+"k": 9,
+"nat": "isValidObject",
+"alt": "IsValidObject",
+"nat_span": [
+313,
+326
+],
+"alt_span": [
+313,
+326
+]
+},
+{
+"k": 10,
+"nat": "hasNoOwnProperties",
+"alt": "HasNoOwnProperties",
+"nat_span": [
+335,
+353
+],
+"alt_span": [
+335,
+353
+]
+},
+{
+"k": 11,
+"nat": "isObjectEmpty",
+"alt": "IsObjectEmpty",
+"nat_span": [
+367,
+380
+],
+"alt_span": [
+367,
+380
+]
+},
+{
+"k": 12,
+"nat": "safelyCheckForProperties",
+"alt": "SafelyCheckForProperties",
+"nat_span": [
+513,
+537
+],
+"alt_span": [
+513,
+537
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.936,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t040",
+"family": "js_func_pascal",
+"topic": "Basic String Compression",
+"angle": "code",
+"text_es": "Implement a function `compressString(str)` that performs basic string compression using the counts of repeated characters. If compressed string is not smaller, return original. Example: `compressString('aaabbbccc')` should return `'a3b3c3'`, `compressString('abc')` should return `'abc'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getCharCount = (str, index) => {\n  let count = 0;\n  const char = str[index];\n  while (index < str.length && str[index] === char) {\n    count++;\n    index++;\n  }\n  return count;\n};\n\nconst appendCharAndCount = (result, char, count) => result + char + count;\n\nconst buildCompressedString = (str) => {\n  let compressed = '';\n  let i = 0;\n  while (i < str.length) {\n    const char = str[i];\n    const count = getCharCount(str, i);\n    compressed = appendCharAndCount(compressed, char, count);\n    i = advanceIndexByCount(i, count);\n  }\n  return compressed;\n};\n\nconst isCompressedSmaller = (original, compressed) => compressed.length < original.length;\n\nconst advanceIndexByCount = (index, count) => index + count;\n\nconst getOriginalString = (str) => str;\n\nconst compressString = (str) => {\n  if (str.length === 0) return getOriginalString(str);\n\n  const compressed = buildCompressedString(str);\n\n  if (isCompressedSmaller(str, compressed)) {\n    return compressed;\n  } else {\n    return getOriginalString(str);\n  }\n};\n",
+"text_alt": "const GetCharCount = (str, index) => {\n  let count = 0;\n  const char = str[index];\n  while (index < str.length && str[index] === char) {\n    count++;\n    index++;\n  }\n  return count;\n};\n\nconst AppendCharAndCount = (result, char, count) => result + char + count;\n\nconst BuildCompressedString = (str) => {\n  let compressed = '';\n  let i = 0;\n  while (i < str.length) {\n    const char = str[i];\n    const count = GetCharCount(str, i);\n    compressed = AppendCharAndCount(compressed, char, count);\n    i = AdvanceIndexByCount(i, count);\n  }\n  return compressed;\n};\n\nconst IsCompressedSmaller = (original, compressed) => compressed.length < original.length;\n\nconst AdvanceIndexByCount = (index, count) => index + count;\n\nconst GetOriginalString = (str) => str;\n\nconst CompressString = (str) => {\n  if (str.length === 0) return GetOriginalString(str);\n\n  const compressed = BuildCompressedString(str);\n\n  if (IsCompressedSmaller(str, compressed)) {\n    return compressed;\n  } else {\n    return GetOriginalString(str);\n  }\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getCharCount",
+"alt": "GetCharCount",
+"nat_span": [
+6,
+18
+],
+"alt_span": [
+6,
+18
+]
+},
+{
+"k": 1,
+"nat": "appendCharAndCount",
+"alt": "AppendCharAndCount",
+"nat_span": [
+193,
+211
+],
+"alt_span": [
+193,
+211
+]
+},
+{
+"k": 2,
+"nat": "buildCompressedString",
+"alt": "BuildCompressedString",
+"nat_span": [
+269,
+290
+],
+"alt_span": [
+269,
+290
+]
+},
+{
+"k": 3,
+"nat": "getCharCount",
+"alt": "GetCharCount",
+"nat_span": [
+410,
+422
+],
+"alt_span": [
+410,
+422
+]
+},
+{
+"k": 4,
+"nat": "appendCharAndCount",
+"alt": "AppendCharAndCount",
+"nat_span": [
+449,
+467
+],
+"alt_span": [
+449,
+467
+]
+},
+{
+"k": 5,
+"nat": "advanceIndexByCount",
+"alt": "AdvanceIndexByCount",
+"nat_span": [
+502,
+521
+],
+"alt_span": [
+502,
+521
+]
+},
+{
+"k": 6,
+"nat": "isCompressedSmaller",
+"alt": "IsCompressedSmaller",
+"nat_span": [
+568,
+587
+],
+"alt_span": [
+568,
+587
+]
+},
+{
+"k": 7,
+"nat": "advanceIndexByCount",
+"alt": "AdvanceIndexByCount",
+"nat_span": [
+660,
+679
+],
+"alt_span": [
+660,
+679
+]
+},
+{
+"k": 8,
+"nat": "getOriginalString",
+"alt": "GetOriginalString",
+"nat_span": [
+722,
+739
+],
+"alt_span": [
+722,
+739
+]
+},
+{
+"k": 9,
+"nat": "compressString",
+"alt": "CompressString",
+"nat_span": [
+763,
+777
+],
+"alt_span": [
+763,
+777
+]
+},
+{
+"k": 10,
+"nat": "getOriginalString",
+"alt": "GetOriginalString",
+"nat_span": [
+822,
+839
+],
+"alt_span": [
+822,
+839
+]
+},
+{
+"k": 11,
+"nat": "buildCompressedString",
+"alt": "BuildCompressedString",
+"nat_span": [
+868,
+889
+],
+"alt_span": [
+868,
+889
+]
+},
+{
+"k": 12,
+"nat": "isCompressedSmaller",
+"alt": "IsCompressedSmaller",
+"nat_span": [
+903,
+922
+],
+"alt_span": [
+903,
+922
+]
+},
+{
+"k": 13,
+"nat": "getOriginalString",
+"alt": "GetOriginalString",
+"nat_span": [
+988,
+1005
+],
+"alt_span": [
+988,
+1005
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.964,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t041",
+"family": "js_func_pascal",
+"topic": "Validate Email Format",
+"angle": "code",
+"text_es": "Write a function `isValidEmail(email)` that checks if a string is a valid email address using a simple regular expression. Input is a string, output is a boolean. Example: `isValidEmail('test@example.com')` should return `true`, `isValidEmail('invalid-email')` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const hasValidFormat = (email) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\n\nconst isString = (input) => typeof input === 'string';\n\nconst isNotEmpty = (str) => str.length > 0;\n\nconst containsAtSymbol = (email) => email.includes('@');\n\nconst containsDotAfterAt = (email) => {\n  const atIndex = email.indexOf('@');\n  return atIndex > -1 && email.indexOf('.', atIndex) > atIndex;\n};\n\nconst hasNoLeadingOrTrailingSpaces = (email) => email.trim() === email;\n\nconst isValidEmail = (email) => {\n  if (!isString(email) || !isNotEmpty(email)) {\n    return false;\n  }\n  if (!hasNoLeadingOrTrailingSpaces(email)) {\n    return false;\n  }\n  if (!containsAtSymbol(email) || !containsDotAfterAt(email)) {\n    return false;\n  }\n  return hasValidFormat(email);\n};\n",
+"text_alt": "const HasValidFormat = (email) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);\n\nconst IsString = (input) => typeof input === 'string';\n\nconst IsNotEmpty = (str) => str.length > 0;\n\nconst ContainsAtSymbol = (email) => email.includes('@');\n\nconst ContainsDotAfterAt = (email) => {\n  const atIndex = email.indexOf('@');\n  return atIndex > -1 && email.indexOf('.', atIndex) > atIndex;\n};\n\nconst HasNoLeadingOrTrailingSpaces = (email) => email.trim() === email;\n\nconst IsValidEmail = (email) => {\n  if (!IsString(email) || !IsNotEmpty(email)) {\n    return false;\n  }\n  if (!HasNoLeadingOrTrailingSpaces(email)) {\n    return false;\n  }\n  if (!ContainsAtSymbol(email) || !ContainsDotAfterAt(email)) {\n    return false;\n  }\n  return HasValidFormat(email);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "hasValidFormat",
+"alt": "HasValidFormat",
+"nat_span": [
+6,
+20
+],
+"alt_span": [
+6,
+20
+]
+},
+{
+"k": 1,
+"nat": "isString",
+"alt": "IsString",
+"nat_span": [
+83,
+91
+],
+"alt_span": [
+83,
+91
+]
+},
+{
+"k": 2,
+"nat": "isNotEmpty",
+"alt": "IsNotEmpty",
+"nat_span": [
+139,
+149
+],
+"alt_span": [
+139,
+149
+]
+},
+{
+"k": 3,
+"nat": "containsAtSymbol",
+"alt": "ContainsAtSymbol",
+"nat_span": [
+184,
+200
+],
+"alt_span": [
+184,
+200
+]
+},
+{
+"k": 4,
+"nat": "containsDotAfterAt",
+"alt": "ContainsDotAfterAt",
+"nat_span": [
+242,
+260
+],
+"alt_span": [
+242,
+260
+]
+},
+{
+"k": 5,
+"nat": "hasNoLeadingOrTrailingSpaces",
+"alt": "HasNoLeadingOrTrailingSpaces",
+"nat_span": [
+388,
+416
+],
+"alt_span": [
+388,
+416
+]
+},
+{
+"k": 6,
+"nat": "isValidEmail",
+"alt": "IsValidEmail",
+"nat_span": [
+461,
+473
+],
+"alt_span": [
+461,
+473
+]
+},
+{
+"k": 7,
+"nat": "isString",
+"alt": "IsString",
+"nat_span": [
+496,
+504
+],
+"alt_span": [
+496,
+504
+]
+},
+{
+"k": 8,
+"nat": "isNotEmpty",
+"alt": "IsNotEmpty",
+"nat_span": [
+516,
+526
+],
+"alt_span": [
+516,
+526
+]
+},
+{
+"k": 9,
+"nat": "hasNoLeadingOrTrailingSpaces",
+"alt": "HasNoLeadingOrTrailingSpaces",
+"nat_span": [
+566,
+594
+],
+"alt_span": [
+566,
+594
+]
+},
+{
+"k": 10,
+"nat": "containsAtSymbol",
+"alt": "ContainsAtSymbol",
+"nat_span": [
+634,
+650
+],
+"alt_span": [
+634,
+650
+]
+},
+{
+"k": 11,
+"nat": "containsDotAfterAt",
+"alt": "ContainsDotAfterAt",
+"nat_span": [
+662,
+680
+],
+"alt_span": [
+662,
+680
+]
+},
+{
+"k": 12,
+"nat": "hasValidFormat",
+"alt": "HasValidFormat",
+"nat_span": [
+722,
+736
+],
+"alt_span": [
+722,
+736
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.958,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t042",
+"family": "js_func_pascal",
+"topic": "Sum of Digits",
+"angle": "code",
+"text_es": "Create a function `sumDigits(num)` that calculates the sum of the digits of a given non-negative integer. Input is an integer, output is an integer. Example: `sumDigits(123)` should return `6`, `sumDigits(905)` should return `14`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const convertNumberToString = (num) => String(num);\nconst splitStringIntoCharacters = (str) => str.split('');\nconst convertCharacterToNumber = (char) => parseInt(char, 10);\nconst checkIfNumberIsValid = (num) => Number.isInteger(num) && num >= 0;\nconst addTwoNumbers = (a, b) => a + b;\nconst getSumOfNumbers = (arr) => arr.reduce(addTwoNumbers, 0);\n\nconst sumDigits = (num) => {\n  if (!checkIfNumberIsValid(num)) {\n    throw new Error('Input must be a non-negative integer.');\n  }\n  const numString = convertNumberToString(num);\n  const digitChars = splitStringIntoCharacters(numString);\n  const digitNumbers = digitChars.map(convertCharacterToNumber);\n  return getSumOfNumbers(digitNumbers);\n};\n",
+"text_alt": "const ConvertNumberToString = (num) => String(num);\nconst SplitStringIntoCharacters = (str) => str.split('');\nconst ConvertCharacterToNumber = (char) => parseInt(char, 10);\nconst CheckIfNumberIsValid = (num) => Number.isInteger(num) && num >= 0;\nconst AddTwoNumbers = (a, b) => a + b;\nconst GetSumOfNumbers = (arr) => arr.reduce(AddTwoNumbers, 0);\n\nconst SumDigits = (num) => {\n  if (!CheckIfNumberIsValid(num)) {\n    throw new Error('Input must be a non-negative integer.');\n  }\n  const numString = ConvertNumberToString(num);\n  const digitChars = SplitStringIntoCharacters(numString);\n  const digitNumbers = digitChars.map(ConvertCharacterToNumber);\n  return GetSumOfNumbers(digitNumbers);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "convertNumberToString",
+"alt": "ConvertNumberToString",
+"nat_span": [
+6,
+27
+],
+"alt_span": [
+6,
+27
+]
+},
+{
+"k": 1,
+"nat": "splitStringIntoCharacters",
+"alt": "SplitStringIntoCharacters",
+"nat_span": [
+58,
+83
+],
+"alt_span": [
+58,
+83
+]
+},
+{
+"k": 2,
+"nat": "convertCharacterToNumber",
+"alt": "ConvertCharacterToNumber",
+"nat_span": [
+116,
+140
+],
+"alt_span": [
+116,
+140
+]
+},
+{
+"k": 3,
+"nat": "checkIfNumberIsValid",
+"alt": "CheckIfNumberIsValid",
+"nat_span": [
+179,
+199
+],
+"alt_span": [
+179,
+199
+]
+},
+{
+"k": 4,
+"nat": "addTwoNumbers",
+"alt": "AddTwoNumbers",
+"nat_span": [
+252,
+265
+],
+"alt_span": [
+252,
+265
+]
+},
+{
+"k": 5,
+"nat": "getSumOfNumbers",
+"alt": "GetSumOfNumbers",
+"nat_span": [
+291,
+306
+],
+"alt_span": [
+291,
+306
+]
+},
+{
+"k": 6,
+"nat": "addTwoNumbers",
+"alt": "AddTwoNumbers",
+"nat_span": [
+329,
+342
+],
+"alt_span": [
+329,
+342
+]
+},
+{
+"k": 7,
+"nat": "sumDigits",
+"alt": "SumDigits",
+"nat_span": [
+355,
+364
+],
+"alt_span": [
+355,
+364
+]
+},
+{
+"k": 8,
+"nat": "checkIfNumberIsValid",
+"alt": "CheckIfNumberIsValid",
+"nat_span": [
+385,
+405
+],
+"alt_span": [
+385,
+405
+]
+},
+{
+"k": 9,
+"nat": "convertNumberToString",
+"alt": "ConvertNumberToString",
+"nat_span": [
+500,
+521
+],
+"alt_span": [
+500,
+521
+]
+},
+{
+"k": 10,
+"nat": "splitStringIntoCharacters",
+"alt": "SplitStringIntoCharacters",
+"nat_span": [
+549,
+574
+],
+"alt_span": [
+549,
+574
+]
+},
+{
+"k": 11,
+"nat": "convertCharacterToNumber",
+"alt": "ConvertCharacterToNumber",
+"nat_span": [
+625,
+649
+],
+"alt_span": [
+625,
+649
+]
+},
+{
+"k": 12,
+"nat": "getSumOfNumbers",
+"alt": "GetSumOfNumbers",
+"nat_span": [
+661,
+676
+],
+"alt_span": [
+661,
+676
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.947,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t043",
+"family": "js_func_pascal",
+"topic": "Find Second Smallest Number",
+"angle": "code",
+"text_es": "Implement a function `findSecondSmallest(arr)` that finds the second smallest number in an array of numbers. Assume the array has at least two unique numbers. Input is an array of numbers, output is a number. Example: `findSecondSmallest([5, 1, 8, 2, 9])` should return `2`, `findSecondSmallest([10, 20, 3, 40])` should return `10`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getSmallestValue = (arr) => Math.min(...arr);\nconst removeFirstOccurrence = (arr, val) => {\n  const index = arr.indexOf(val);\n  if (index > -1) {\n    arr.splice(index, 1);\n  }\n  return arr;\n};\nconst getUniqueNumbers = (arr) => [...new Set(arr)];\nconst sortNumbersAscending = (arr) => [...arr].sort((a, b) => a - b);\nconst getFirstElement = (arr) => arr[0];\nconst getElementAtIndex = (arr, index) => arr[index];\n\nconst findSecondSmallest = (arr) => {\n  const uniqueNumbers = getUniqueNumbers(arr);\n  const sortedNumbers = sortNumbersAscending(uniqueNumbers);\n  return getElementAtIndex(sortedNumbers, 1);\n};\n",
+"text_alt": "const GetSmallestValue = (arr) => Math.min(...arr);\nconst RemoveFirstOccurrence = (arr, val) => {\n  const index = arr.indexOf(val);\n  if (index > -1) {\n    arr.splice(index, 1);\n  }\n  return arr;\n};\nconst GetUniqueNumbers = (arr) => [...new Set(arr)];\nconst SortNumbersAscending = (arr) => [...arr].sort((a, b) => a - b);\nconst GetFirstElement = (arr) => arr[0];\nconst GetElementAtIndex = (arr, index) => arr[index];\n\nconst FindSecondSmallest = (arr) => {\n  const uniqueNumbers = GetUniqueNumbers(arr);\n  const sortedNumbers = SortNumbersAscending(uniqueNumbers);\n  return GetElementAtIndex(sortedNumbers, 1);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getSmallestValue",
+"alt": "GetSmallestValue",
+"nat_span": [
+6,
+22
+],
+"alt_span": [
+6,
+22
+]
+},
+{
+"k": 1,
+"nat": "removeFirstOccurrence",
+"alt": "RemoveFirstOccurrence",
+"nat_span": [
+58,
+79
+],
+"alt_span": [
+58,
+79
+]
+},
+{
+"k": 2,
+"nat": "getUniqueNumbers",
+"alt": "GetUniqueNumbers",
+"nat_span": [
+205,
+221
+],
+"alt_span": [
+205,
+221
+]
+},
+{
+"k": 3,
+"nat": "sortNumbersAscending",
+"alt": "SortNumbersAscending",
+"nat_span": [
+258,
+278
+],
+"alt_span": [
+258,
+278
+]
+},
+{
+"k": 4,
+"nat": "getFirstElement",
+"alt": "GetFirstElement",
+"nat_span": [
+328,
+343
+],
+"alt_span": [
+328,
+343
+]
+},
+{
+"k": 5,
+"nat": "getElementAtIndex",
+"alt": "GetElementAtIndex",
+"nat_span": [
+369,
+386
+],
+"alt_span": [
+369,
+386
+]
+},
+{
+"k": 6,
+"nat": "findSecondSmallest",
+"alt": "FindSecondSmallest",
+"nat_span": [
+424,
+442
+],
+"alt_span": [
+424,
+442
+]
+},
+{
+"k": 7,
+"nat": "getUniqueNumbers",
+"alt": "GetUniqueNumbers",
+"nat_span": [
+480,
+496
+],
+"alt_span": [
+480,
+496
+]
+},
+{
+"k": 8,
+"nat": "sortNumbersAscending",
+"alt": "SortNumbersAscending",
+"nat_span": [
+527,
+547
+],
+"alt_span": [
+527,
+547
+]
+},
+{
+"k": 9,
+"nat": "getElementAtIndex",
+"alt": "GetElementAtIndex",
+"nat_span": [
+573,
+590
+],
+"alt_span": [
+573,
+590
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.96,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t044",
+"family": "js_func_pascal",
+"topic": "Currency Formatter",
+"angle": "code",
+"text_es": "Write a function `formatCurrency(amount, currencySymbol)` that formats a number as a currency string with two decimal places. Input is a number and a string, output is a string. Example: `formatCurrency(1234.567, '$')` should return `'$1,234.57'`, `formatCurrency(99, '€')` should return `'€99.00'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const formatCurrency = (amount, currencySymbol) => {\n  const ensureNumber = (value) => parseFloat(value);\n  const roundToTwoDecimals = (num) => Math.round(num * 100) / 100;\n  const padWithZero = (num) => num < 10 ? '0' + num : num.toString();\n  const formatNumberWithCommas = (num) => num.toLocaleString('en-US');\n  const getDecimalPart = (num) => {\n    const decimal = num % 1;\n    return padWithZero(roundToTwoDecimals(decimal) * 100);\n  };\n  const getIntegerPart = (num) => Math.floor(num);\n\n  const numericAmount = ensureNumber(amount);\n  const roundedAmount = roundToTwoDecimals(numericAmount);\n  const integerPart = getIntegerPart(roundedAmount);\n  const formattedInteger = formatNumberWithCommas(integerPart);\n  const decimalPart = getDecimalPart(roundedAmount);\n\n  return `${currencySymbol}${formattedInteger}.${decimalPart}`;\n};\n",
+"text_alt": "const FormatCurrency = (amount, currencySymbol) => {\n  const EnsureNumber = (value) => parseFloat(value);\n  const RoundToTwoDecimals = (num) => Math.round(num * 100) / 100;\n  const PadWithZero = (num) => num < 10 ? '0' + num : num.toString();\n  const FormatNumberWithCommas = (num) => num.toLocaleString('en-US');\n  const GetDecimalPart = (num) => {\n    const decimal = num % 1;\n    return PadWithZero(RoundToTwoDecimals(decimal) * 100);\n  };\n  const GetIntegerPart = (num) => Math.floor(num);\n\n  const numericAmount = EnsureNumber(amount);\n  const roundedAmount = RoundToTwoDecimals(numericAmount);\n  const integerPart = GetIntegerPart(roundedAmount);\n  const formattedInteger = FormatNumberWithCommas(integerPart);\n  const decimalPart = GetDecimalPart(roundedAmount);\n\n  return `${currencySymbol}${formattedInteger}.${decimalPart}`;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "formatCurrency",
+"alt": "FormatCurrency",
+"nat_span": [
+6,
+20
+],
+"alt_span": [
+6,
+20
+]
+},
+{
+"k": 1,
+"nat": "ensureNumber",
+"alt": "EnsureNumber",
+"nat_span": [
+61,
+73
+],
+"alt_span": [
+61,
+73
+]
+},
+{
+"k": 2,
+"nat": "roundToTwoDecimals",
+"alt": "RoundToTwoDecimals",
+"nat_span": [
+114,
+132
+],
+"alt_span": [
+114,
+132
+]
+},
+{
+"k": 3,
+"nat": "padWithZero",
+"alt": "PadWithZero",
+"nat_span": [
+181,
+192
+],
+"alt_span": [
+181,
+192
+]
+},
+{
+"k": 4,
+"nat": "formatNumberWithCommas",
+"alt": "FormatNumberWithCommas",
+"nat_span": [
+251,
+273
+],
+"alt_span": [
+251,
+273
+]
+},
+{
+"k": 5,
+"nat": "getDecimalPart",
+"alt": "GetDecimalPart",
+"nat_span": [
+322,
+336
+],
+"alt_span": [
+322,
+336
+]
+},
+{
+"k": 6,
+"nat": "padWithZero(roundToTwoDecimals",
+"alt": "PadWithZero(RoundToTwoDecimals",
+"nat_span": [
+390,
+420
+],
+"alt_span": [
+390,
+420
+]
+},
+{
+"k": 7,
+"nat": "getIntegerPart",
+"alt": "GetIntegerPart",
+"nat_span": [
+451,
+465
+],
+"alt_span": [
+451,
+465
+]
+},
+{
+"k": 8,
+"nat": "ensureNumber",
+"alt": "EnsureNumber",
+"nat_span": [
+519,
+531
+],
+"alt_span": [
+519,
+531
+]
+},
+{
+"k": 9,
+"nat": "roundToTwoDecimals",
+"alt": "RoundToTwoDecimals",
+"nat_span": [
+565,
+583
+],
+"alt_span": [
+565,
+583
+]
+},
+{
+"k": 10,
+"nat": "getIntegerPart",
+"alt": "GetIntegerPart",
+"nat_span": [
+622,
+636
+],
+"alt_span": [
+622,
+636
+]
+},
+{
+"k": 11,
+"nat": "formatNumberWithCommas",
+"alt": "FormatNumberWithCommas",
+"nat_span": [
+680,
+702
+],
+"alt_span": [
+680,
+702
+]
+},
+{
+"k": 12,
+"nat": "getDecimalPart",
+"alt": "GetDecimalPart",
+"nat_span": [
+739,
+753
+],
+"alt_span": [
+739,
+753
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.95,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t045",
+"family": "js_func_pascal",
+"topic": "Merge Two Objects",
+"angle": "code",
+"text_es": "Create a function `mergeObjects(obj1, obj2)` that merges two objects into a new object. If keys conflict, values from `obj2` should overwrite `obj1`. Input is two objects, output is a new object. Example: `mergeObjects({a: 1, b: 2}, {b: 3, c: 4})` should return `{a: 1, b: 3, c: 4}`, `mergeObjects({x: 1}, {})` should return `{x: 1}`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const createEmptyObject = () => ({});\nconst copyObjectProperties = (source, target) => Object.assign(target, source);\nconst getAllKeys = (obj) => Object.keys(obj);\nconst hasProperty = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);\nconst getPropertyValue = (obj, key) => obj[key];\nconst setPropertyValue = (obj, key, value) => (obj[key] = value);\n\nconst mergeObjects = (obj1, obj2) => {\n  const mergedResult = createEmptyObject();\n  copyObjectProperties(obj1, mergedResult);\n\n  const keysFromObj2 = getAllKeys(obj2);\n  for (const key of keysFromObj2) {\n    if (hasProperty(obj2, key)) {\n      const valueFromObj2 = getPropertyValue(obj2, key);\n      setPropertyValue(mergedResult, key, valueFromObj2);\n    }\n  }\n  return mergedResult;\n};\n",
+"text_alt": "const CreateEmptyObject = () => ({});\nconst CopyObjectProperties = (source, target) => Object.assign(target, source);\nconst GetAllKeys = (obj) => Object.keys(obj);\nconst HasProperty = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);\nconst GetPropertyValue = (obj, key) => obj[key];\nconst SetPropertyValue = (obj, key, value) => (obj[key] = value);\n\nconst MergeObjects = (obj1, obj2) => {\n  const mergedResult = CreateEmptyObject();\n  CopyObjectProperties(obj1, mergedResult);\n\n  const keysFromObj2 = GetAllKeys(obj2);\n  for (const key of keysFromObj2) {\n    if (HasProperty(obj2, key)) {\n      const valueFromObj2 = GetPropertyValue(obj2, key);\n      SetPropertyValue(mergedResult, key, valueFromObj2);\n    }\n  }\n  return mergedResult;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "createEmptyObject",
+"alt": "CreateEmptyObject",
+"nat_span": [
+6,
+23
+],
+"alt_span": [
+6,
+23
+]
+},
+{
+"k": 1,
+"nat": "copyObjectProperties",
+"alt": "CopyObjectProperties",
+"nat_span": [
+44,
+64
+],
+"alt_span": [
+44,
+64
+]
+},
+{
+"k": 2,
+"nat": "getAllKeys",
+"alt": "GetAllKeys",
+"nat_span": [
+124,
+134
+],
+"alt_span": [
+124,
+134
+]
+},
+{
+"k": 3,
+"nat": "hasProperty",
+"alt": "HasProperty",
+"nat_span": [
+170,
+181
+],
+"alt_span": [
+170,
+181
+]
+},
+{
+"k": 4,
+"nat": "getPropertyValue",
+"alt": "GetPropertyValue",
+"nat_span": [
+252,
+268
+],
+"alt_span": [
+252,
+268
+]
+},
+{
+"k": 5,
+"nat": "setPropertyValue",
+"alt": "SetPropertyValue",
+"nat_span": [
+301,
+317
+],
+"alt_span": [
+301,
+317
+]
+},
+{
+"k": 6,
+"nat": "mergeObjects",
+"alt": "MergeObjects",
+"nat_span": [
+368,
+380
+],
+"alt_span": [
+368,
+380
+]
+},
+{
+"k": 7,
+"nat": "createEmptyObject",
+"alt": "CreateEmptyObject",
+"nat_span": [
+424,
+441
+],
+"alt_span": [
+424,
+441
+]
+},
+{
+"k": 8,
+"nat": "copyObjectProperties",
+"alt": "CopyObjectProperties",
+"nat_span": [
+447,
+467
+],
+"alt_span": [
+447,
+467
+]
+},
+{
+"k": 9,
+"nat": "getAllKeys",
+"alt": "GetAllKeys",
+"nat_span": [
+513,
+523
+],
+"alt_span": [
+513,
+523
+]
+},
+{
+"k": 10,
+"nat": "hasProperty",
+"alt": "HasProperty",
+"nat_span": [
+575,
+586
+],
+"alt_span": [
+575,
+586
+]
+},
+{
+"k": 11,
+"nat": "getPropertyValue",
+"alt": "GetPropertyValue",
+"nat_span": [
+629,
+645
+],
+"alt_span": [
+629,
+645
+]
+},
+{
+"k": 12,
+"nat": "setPropertyValue",
+"alt": "SetPropertyValue",
+"nat_span": [
+664,
+680
+],
+"alt_span": [
+664,
+680
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.951,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t046",
+"family": "js_func_pascal",
+"topic": "Calculate Rectangle Area",
+"angle": "code",
+"text_es": "Implement a function `calculateRectangleArea(width, height)` that calculates the area of a rectangle. Input is two numbers, output is a number. Example: `calculateRectangleArea(5, 10)` should return `50`, `calculateRectangleArea(2.5, 4)` should return `10`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const isValidDimension = (dimension) => typeof dimension === 'number' && dimension >= 0;\nconst multiplyNumbers = (a, b) => a * b;\nconst roundToTwoDecimals = (num) => Math.round(num * 100) / 100;\nconst throwInvalidInputError = (message) => { throw new Error(message); };\nconst checkDimensionsValidity = (width, height) => {\n  if (!isValidDimension(width) || !isValidDimension(height)) {\n    throwInvalidInputError(\"Width and height must be non-negative numbers.\");\n  }\n};\nconst performAreaCalculation = (width, height) => multiplyNumbers(width, height);\n\nconst calculateRectangleArea = (width, height) => {\n  checkDimensionsValidity(width, height);\n  const rawArea = performAreaCalculation(width, height);\n  const finalArea = roundToTwoDecimals(rawArea);\n  return finalArea;\n};\n",
+"text_alt": "const IsValidDimension = (dimension) => typeof dimension === 'number' && dimension >= 0;\nconst MultiplyNumbers = (a, b) => a * b;\nconst RoundToTwoDecimals = (num) => Math.round(num * 100) / 100;\nconst ThrowInvalidInputError = (message) => { throw new Error(message); };\nconst CheckDimensionsValidity = (width, height) => {\n  if (!IsValidDimension(width) || !IsValidDimension(height)) {\n    ThrowInvalidInputError(\"Width and height must be non-negative numbers.\");\n  }\n};\nconst PerformAreaCalculation = (width, height) => MultiplyNumbers(width, height);\n\nconst CalculateRectangleArea = (width, height) => {\n  CheckDimensionsValidity(width, height);\n  const rawArea = PerformAreaCalculation(width, height);\n  const finalArea = RoundToTwoDecimals(rawArea);\n  return finalArea;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "isValidDimension",
+"alt": "IsValidDimension",
+"nat_span": [
+6,
+22
+],
+"alt_span": [
+6,
+22
+]
+},
+{
+"k": 1,
+"nat": "multiplyNumbers",
+"alt": "MultiplyNumbers",
+"nat_span": [
+95,
+110
+],
+"alt_span": [
+95,
+110
+]
+},
+{
+"k": 2,
+"nat": "roundToTwoDecimals",
+"alt": "RoundToTwoDecimals",
+"nat_span": [
+136,
+154
+],
+"alt_span": [
+136,
+154
+]
+},
+{
+"k": 3,
+"nat": "throwInvalidInputError",
+"alt": "ThrowInvalidInputError",
+"nat_span": [
+201,
+223
+],
+"alt_span": [
+201,
+223
+]
+},
+{
+"k": 4,
+"nat": "checkDimensionsValidity",
+"alt": "CheckDimensionsValidity",
+"nat_span": [
+276,
+299
+],
+"alt_span": [
+276,
+299
+]
+},
+{
+"k": 5,
+"nat": "isValidDimension",
+"alt": "IsValidDimension",
+"nat_span": [
+330,
+346
+],
+"alt_span": [
+330,
+346
+]
+},
+{
+"k": 6,
+"nat": "isValidDimension",
+"alt": "IsValidDimension",
+"nat_span": [
+358,
+374
+],
+"alt_span": [
+358,
+374
+]
+},
+{
+"k": 7,
+"nat": "throwInvalidInputError",
+"alt": "ThrowInvalidInputError",
+"nat_span": [
+390,
+412
+],
+"alt_span": [
+390,
+412
+]
+},
+{
+"k": 8,
+"nat": "performAreaCalculation",
+"alt": "PerformAreaCalculation",
+"nat_span": [
+477,
+499
+],
+"alt_span": [
+477,
+499
+]
+},
+{
+"k": 9,
+"nat": "multiplyNumbers",
+"alt": "MultiplyNumbers",
+"nat_span": [
+521,
+536
+],
+"alt_span": [
+521,
+536
+]
+},
+{
+"k": 10,
+"nat": "calculateRectangleArea",
+"alt": "CalculateRectangleArea",
+"nat_span": [
+560,
+582
+],
+"alt_span": [
+560,
+582
+]
+},
+{
+"k": 11,
+"nat": "checkDimensionsValidity",
+"alt": "CheckDimensionsValidity",
+"nat_span": [
+608,
+631
+],
+"alt_span": [
+608,
+631
+]
+},
+{
+"k": 12,
+"nat": "performAreaCalculation",
+"alt": "PerformAreaCalculation",
+"nat_span": [
+666,
+688
+],
+"alt_span": [
+666,
+688
+]
+},
+{
+"k": 13,
+"nat": "roundToTwoDecimals",
+"alt": "RoundToTwoDecimals",
+"nat_span": [
+725,
+743
+],
+"alt_span": [
+725,
+743
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.948,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t047",
+"family": "js_func_pascal",
+"topic": "Get File Extension",
+"angle": "code",
+"text_es": "Write a function `getFileExtension(filename)` that extracts the file extension from a filename string. Input is a string, output is a string. Example: `getFileExtension('document.pdf')` should return `'pdf'`, `getFileExtension('archive.tar.gz')` should return `'gz'`, `getFileExtension('nofileextension')` should return `''`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const getFileExtension = (filename) => {\n  const getIndexOfLastDot = (str) => str.lastIndexOf('.');\n  const hasNoDot = (str) => getIndexOfLastDot(str) === -1;\n  const isLastCharDot = (str) => getIndexOfLastDot(str) === str.length - 1;\n  const getSubstringValue = (str, startIndex) => str.substring(startIndex);\n  const addOneToNumber = (num) => num + 1;\n  const checkIfEmptyString = (str) => str === '';\n\n  if (hasNoDot(filename) || isLastCharDot(filename) || checkIfEmptyString(filename)) {\n    return '';\n  }\n\n  const lastDotIndex = getIndexOfLastDot(filename);\n  const extensionStartIndex = addOneToNumber(lastDotIndex);\n  const rawExtension = getSubstringValue(filename, extensionStartIndex);\n\n  const getSubstringValueAfterFirstDot = (str) => str.substring(addOneToNumber(getIndexOfLastDot(str)));\n  const getFinalExtension = (ext) => {\n    if (getIndexOfLastDot(ext) !== -1) {\n      return getSubstringValueAfterFirstDot(ext);\n    }\n    return ext;\n  };\n\n  return getFinalExtension(rawExtension);\n};\n",
+"text_alt": "const GetFileExtension = (filename) => {\n  const GetIndexOfLastDot = (str) => str.lastIndexOf('.');\n  const HasNoDot = (str) => GetIndexOfLastDot(str) === -1;\n  const IsLastCharDot = (str) => GetIndexOfLastDot(str) === str.length - 1;\n  const GetSubstringValue = (str, startIndex) => str.substring(startIndex);\n  const AddOneToNumber = (num) => num + 1;\n  const CheckIfEmptyString = (str) => str === '';\n\n  if (HasNoDot(filename) || IsLastCharDot(filename) || CheckIfEmptyString(filename)) {\n    return '';\n  }\n\n  const lastDotIndex = GetIndexOfLastDot(filename);\n  const extensionStartIndex = AddOneToNumber(lastDotIndex);\n  const rawExtension = GetSubstringValue(filename, extensionStartIndex);\n\n  const GetSubstringValueAfterFirstDot = (str) => str.substring(AddOneToNumber(GetIndexOfLastDot(str)));\n  const GetFinalExtension = (ext) => {\n    if (GetIndexOfLastDot(ext) !== -1) {\n      return GetSubstringValueAfterFirstDot(ext);\n    }\n    return ext;\n  };\n\n  return GetFinalExtension(rawExtension);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "getFileExtension",
+"alt": "GetFileExtension",
+"nat_span": [
+6,
+22
+],
+"alt_span": [
+6,
+22
+]
+},
+{
+"k": 1,
+"nat": "getIndexOfLastDot",
+"alt": "GetIndexOfLastDot",
+"nat_span": [
+49,
+66
+],
+"alt_span": [
+49,
+66
+]
+},
+{
+"k": 2,
+"nat": "hasNoDot",
+"alt": "HasNoDot",
+"nat_span": [
+108,
+116
+],
+"alt_span": [
+108,
+116
+]
+},
+{
+"k": 3,
+"nat": "getIndexOfLastDot",
+"alt": "GetIndexOfLastDot",
+"nat_span": [
+128,
+145
+],
+"alt_span": [
+128,
+145
+]
+},
+{
+"k": 4,
+"nat": "isLastCharDot",
+"alt": "IsLastCharDot",
+"nat_span": [
+167,
+180
+],
+"alt_span": [
+167,
+180
+]
+},
+{
+"k": 5,
+"nat": "getIndexOfLastDot",
+"alt": "GetIndexOfLastDot",
+"nat_span": [
+192,
+209
+],
+"alt_span": [
+192,
+209
+]
+},
+{
+"k": 6,
+"nat": "getSubstringValue",
+"alt": "GetSubstringValue",
+"nat_span": [
+243,
+260
+],
+"alt_span": [
+243,
+260
+]
+},
+{
+"k": 7,
+"nat": "addOneToNumber",
+"alt": "AddOneToNumber",
+"nat_span": [
+319,
+333
+],
+"alt_span": [
+319,
+333
+]
+},
+{
+"k": 8,
+"nat": "checkIfEmptyString",
+"alt": "CheckIfEmptyString",
+"nat_span": [
+362,
+380
+],
+"alt_span": [
+362,
+380
+]
+},
+{
+"k": 9,
+"nat": "hasNoDot",
+"alt": "HasNoDot",
+"nat_span": [
+411,
+419
+],
+"alt_span": [
+411,
+419
+]
+},
+{
+"k": 10,
+"nat": "isLastCharDot",
+"alt": "IsLastCharDot",
+"nat_span": [
+433,
+446
+],
+"alt_span": [
+433,
+446
+]
+},
+{
+"k": 11,
+"nat": "checkIfEmptyString",
+"alt": "CheckIfEmptyString",
+"nat_span": [
+460,
+478
+],
+"alt_span": [
+460,
+478
+]
+},
+{
+"k": 12,
+"nat": "getIndexOfLastDot",
+"alt": "GetIndexOfLastDot",
+"nat_span": [
+535,
+552
+],
+"alt_span": [
+535,
+552
+]
+},
+{
+"k": 13,
+"nat": "addOneToNumber",
+"alt": "AddOneToNumber",
+"nat_span": [
+594,
+608
+],
+"alt_span": [
+594,
+608
+]
+},
+{
+"k": 14,
+"nat": "getSubstringValue",
+"alt": "GetSubstringValue",
+"nat_span": [
+647,
+664
+],
+"alt_span": [
+647,
+664
+]
+},
+{
+"k": 15,
+"nat": "getSubstringValueAfterFirstDot",
+"alt": "GetSubstringValueAfterFirstDot",
+"nat_span": [
+706,
+736
+],
+"alt_span": [
+706,
+736
+]
+},
+{
+"k": 16,
+"nat": "addOneToNumber(getIndexOfLastDot",
+"alt": "AddOneToNumber(GetIndexOfLastDot",
+"nat_span": [
+762,
+794
+],
+"alt_span": [
+762,
+794
+]
+},
+{
+"k": 17,
+"nat": "getFinalExtension",
+"alt": "GetFinalExtension",
+"nat_span": [
+811,
+828
+],
+"alt_span": [
+811,
+828
+]
+},
+{
+"k": 18,
+"nat": "getIndexOfLastDot",
+"alt": "GetIndexOfLastDot",
+"nat_span": [
+850,
+867
+],
+"alt_span": [
+850,
+867
+]
+},
+{
+"k": 19,
+"nat": "getSubstringValueAfterFirstDot",
+"alt": "GetSubstringValueAfterFirstDot",
+"nat_span": [
+896,
+926
+],
+"alt_span": [
+896,
+926
+]
+},
+{
+"k": 20,
+"nat": "getFinalExtension",
+"alt": "GetFinalExtension",
+"nat_span": [
+970,
+987
+],
+"alt_span": [
+970,
+987
+]
+}
+],
+"k_en": 21,
+"shared_fraction": 0.932,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t048",
+"family": "js_func_pascal",
+"topic": "Check for Leap Year",
+"angle": "code",
+"text_es": "Create a function `isLeapYear(year)` that determines if a given year is a leap year. Input is an integer, output is a boolean. Example: `isLeapYear(2000)` should return `true`, `isLeapYear(2023)` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const isDivisibleByFour = year => year % 4 === 0;\nconst isDivisibleByHundred = year => year % 100 === 0;\nconst isDivisibleByFourHundred = year => year % 400 === 0;\n\nconst meetsFourYearRule = year => isDivisibleByFour(year);\nconst meetsCenturyExclusion = year => !isDivisibleByHundred(year);\nconst meetsFourHundredYearRule = year => isDivisibleByFourHundred(year);\n\nconst isLeapYear = year => {\n  const isRegularLeap = meetsFourYearRule(year) && meetsCenturyExclusion(year);\n  const isCenturyLeap = meetsFourHundredYearRule(year);\n  return isRegularLeap || isCenturyLeap;\n};\n",
+"text_alt": "const IsDivisibleByFour = year => year % 4 === 0;\nconst IsDivisibleByHundred = year => year % 100 === 0;\nconst IsDivisibleByFourHundred = year => year % 400 === 0;\n\nconst MeetsFourYearRule = year => IsDivisibleByFour(year);\nconst MeetsCenturyExclusion = year => !IsDivisibleByHundred(year);\nconst MeetsFourHundredYearRule = year => IsDivisibleByFourHundred(year);\n\nconst IsLeapYear = year => {\n  const isRegularLeap = MeetsFourYearRule(year) && MeetsCenturyExclusion(year);\n  const isCenturyLeap = MeetsFourHundredYearRule(year);\n  return isRegularLeap || isCenturyLeap;\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "isDivisibleByFour",
+"alt": "IsDivisibleByFour",
+"nat_span": [
+6,
+23
+],
+"alt_span": [
+6,
+23
+]
+},
+{
+"k": 1,
+"nat": "isDivisibleByHundred",
+"alt": "IsDivisibleByHundred",
+"nat_span": [
+56,
+76
+],
+"alt_span": [
+56,
+76
+]
+},
+{
+"k": 2,
+"nat": "isDivisibleByFourHundred",
+"alt": "IsDivisibleByFourHundred",
+"nat_span": [
+111,
+135
+],
+"alt_span": [
+111,
+135
+]
+},
+{
+"k": 3,
+"nat": "meetsFourYearRule",
+"alt": "MeetsFourYearRule",
+"nat_span": [
+171,
+188
+],
+"alt_span": [
+171,
+188
+]
+},
+{
+"k": 4,
+"nat": "isDivisibleByFour",
+"alt": "IsDivisibleByFour",
+"nat_span": [
+199,
+216
+],
+"alt_span": [
+199,
+216
+]
+},
+{
+"k": 5,
+"nat": "meetsCenturyExclusion",
+"alt": "MeetsCenturyExclusion",
+"nat_span": [
+230,
+251
+],
+"alt_span": [
+230,
+251
+]
+},
+{
+"k": 6,
+"nat": "isDivisibleByHundred",
+"alt": "IsDivisibleByHundred",
+"nat_span": [
+263,
+283
+],
+"alt_span": [
+263,
+283
+]
+},
+{
+"k": 7,
+"nat": "meetsFourHundredYearRule",
+"alt": "MeetsFourHundredYearRule",
+"nat_span": [
+297,
+321
+],
+"alt_span": [
+297,
+321
+]
+},
+{
+"k": 8,
+"nat": "isDivisibleByFourHundred",
+"alt": "IsDivisibleByFourHundred",
+"nat_span": [
+332,
+356
+],
+"alt_span": [
+332,
+356
+]
+},
+{
+"k": 9,
+"nat": "isLeapYear",
+"alt": "IsLeapYear",
+"nat_span": [
+371,
+381
+],
+"alt_span": [
+371,
+381
+]
+},
+{
+"k": 10,
+"nat": "meetsFourYearRule",
+"alt": "MeetsFourYearRule",
+"nat_span": [
+418,
+435
+],
+"alt_span": [
+418,
+435
+]
+},
+{
+"k": 11,
+"nat": "meetsCenturyExclusion",
+"alt": "MeetsCenturyExclusion",
+"nat_span": [
+445,
+466
+],
+"alt_span": [
+445,
+466
+]
+},
+{
+"k": 12,
+"nat": "meetsFourHundredYearRule",
+"alt": "MeetsFourHundredYearRule",
+"nat_span": [
+498,
+522
+],
+"alt_span": [
+498,
+522
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.929,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t049",
+"family": "js_func_pascal",
+"topic": "Simple Guessing Game",
+"angle": "code",
+"text_es": "Implement a function `guessNumber(target, guess)` that simulates a single guess in a number guessing game. Returns 'Too high', 'Too low', or 'Correct!'. Input is two numbers, output is a string. Example: `guessNumber(10, 5)` should return `'Too low'`, `guessNumber(7, 7)` should return `'Correct!'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const checkIfTooHigh = (target, guess) => guess > target;\nconst checkIfTooLow = (target, guess) => guess < target;\nconst checkIfCorrect = (target, guess) => guess === target;\n\nconst getTooHighMessage = () => 'Too high';\nconst getTooLowMessage = () => 'Too low';\nconst getCorrectMessage = () => 'Correct!';\n\nconst guessNumber = (target, guess) => {\n  if (checkIfTooHigh(target, guess)) {\n    return getTooHighMessage();\n  }\n  if (checkIfTooLow(target, guess)) {\n    return getTooLowMessage();\n  }\n  if (checkIfCorrect(target, guess)) {\n    return getCorrectMessage();\n  }\n};\n",
+"text_alt": "const CheckIfTooHigh = (target, guess) => guess > target;\nconst CheckIfTooLow = (target, guess) => guess < target;\nconst CheckIfCorrect = (target, guess) => guess === target;\n\nconst GetTooHighMessage = () => 'Too high';\nconst GetTooLowMessage = () => 'Too low';\nconst GetCorrectMessage = () => 'Correct!';\n\nconst GuessNumber = (target, guess) => {\n  if (CheckIfTooHigh(target, guess)) {\n    return GetTooHighMessage();\n  }\n  if (CheckIfTooLow(target, guess)) {\n    return GetTooLowMessage();\n  }\n  if (CheckIfCorrect(target, guess)) {\n    return GetCorrectMessage();\n  }\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "checkIfTooHigh",
+"alt": "CheckIfTooHigh",
+"nat_span": [
+6,
+20
+],
+"alt_span": [
+6,
+20
+]
+},
+{
+"k": 1,
+"nat": "checkIfTooLow",
+"alt": "CheckIfTooLow",
+"nat_span": [
+64,
+77
+],
+"alt_span": [
+64,
+77
+]
+},
+{
+"k": 2,
+"nat": "checkIfCorrect",
+"alt": "CheckIfCorrect",
+"nat_span": [
+121,
+135
+],
+"alt_span": [
+121,
+135
+]
+},
+{
+"k": 3,
+"nat": "getTooHighMessage",
+"alt": "GetTooHighMessage",
+"nat_span": [
+182,
+199
+],
+"alt_span": [
+182,
+199
+]
+},
+{
+"k": 4,
+"nat": "getTooLowMessage",
+"alt": "GetTooLowMessage",
+"nat_span": [
+226,
+242
+],
+"alt_span": [
+226,
+242
+]
+},
+{
+"k": 5,
+"nat": "getCorrectMessage",
+"alt": "GetCorrectMessage",
+"nat_span": [
+268,
+285
+],
+"alt_span": [
+268,
+285
+]
+},
+{
+"k": 6,
+"nat": "guessNumber",
+"alt": "GuessNumber",
+"nat_span": [
+313,
+324
+],
+"alt_span": [
+313,
+324
+]
+},
+{
+"k": 7,
+"nat": "checkIfTooHigh",
+"alt": "CheckIfTooHigh",
+"nat_span": [
+354,
+368
+],
+"alt_span": [
+354,
+368
+]
+},
+{
+"k": 8,
+"nat": "getTooHighMessage",
+"alt": "GetTooHighMessage",
+"nat_span": [
+398,
+415
+],
+"alt_span": [
+398,
+415
+]
+},
+{
+"k": 9,
+"nat": "checkIfTooLow",
+"alt": "CheckIfTooLow",
+"nat_span": [
+429,
+442
+],
+"alt_span": [
+429,
+442
+]
+},
+{
+"k": 10,
+"nat": "getTooLowMessage",
+"alt": "GetTooLowMessage",
+"nat_span": [
+472,
+488
+],
+"alt_span": [
+472,
+488
+]
+},
+{
+"k": 11,
+"nat": "checkIfCorrect",
+"alt": "CheckIfCorrect",
+"nat_span": [
+502,
+516
+],
+"alt_span": [
+502,
+516
+]
+},
+{
+"k": 12,
+"nat": "getCorrectMessage",
+"alt": "GetCorrectMessage",
+"nat_span": [
+546,
+563
+],
+"alt_span": [
+546,
+563
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.94,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_func_pascal__t050",
+"family": "js_func_pascal",
+"topic": "Calculate Body Mass Index (BMI)",
+"angle": "code",
+"text_es": "Write a function `calculateBMI(weightKg, heightM)` that calculates BMI given weight in kilograms and height in meters. Formula: weight / (height * height). Input is two numbers, output is a number. Example: `calculateBMI(70, 1.75)` should return approximately `22.86`, `calculateBMI(90, 1.80)` should return approximately `27.78`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const validatePositiveNumber = (num) => num > 0;\nconst multiplyNumbers = (a, b) => a * b;\nconst divideNumbers = (a, b) => a / b;\nconst roundToTwoDecimalPlaces = (num) => Math.round(num * 100) / 100;\nconst calculateHeightSquared = (height) => multiplyNumbers(height, height);\nconst performBMIDivision = (weight, heightSquared) => divideNumbers(weight, heightSquared);\n\nconst calculateBMI = (weightKg, heightM) => {\n  if (!validatePositiveNumber(weightKg) || !validatePositiveNumber(heightM)) {\n    throw new Error(\"Weight and height must be positive numbers.\");\n  }\n\n  const heightSquared = calculateHeightSquared(heightM);\n  const rawBMI = performBMIDivision(weightKg, heightSquared);\n  return roundToTwoDecimalPlaces(rawBMI);\n};\n",
+"text_alt": "const ValidatePositiveNumber = (num) => num > 0;\nconst MultiplyNumbers = (a, b) => a * b;\nconst DivideNumbers = (a, b) => a / b;\nconst RoundToTwoDecimalPlaces = (num) => Math.round(num * 100) / 100;\nconst CalculateHeightSquared = (height) => MultiplyNumbers(height, height);\nconst PerformBMIDivision = (weight, heightSquared) => DivideNumbers(weight, heightSquared);\n\nconst CalculateBMI = (weightKg, heightM) => {\n  if (!ValidatePositiveNumber(weightKg) || !ValidatePositiveNumber(heightM)) {\n    throw new Error(\"Weight and height must be positive numbers.\");\n  }\n\n  const heightSquared = CalculateHeightSquared(heightM);\n  const rawBMI = PerformBMIDivision(weightKg, heightSquared);\n  return RoundToTwoDecimalPlaces(rawBMI);\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "validatePositiveNumber",
+"alt": "ValidatePositiveNumber",
+"nat_span": [
+6,
+28
+],
+"alt_span": [
+6,
+28
+]
+},
+{
+"k": 1,
+"nat": "multiplyNumbers",
+"alt": "MultiplyNumbers",
+"nat_span": [
+55,
+70
+],
+"alt_span": [
+55,
+70
+]
+},
+{
+"k": 2,
+"nat": "divideNumbers",
+"alt": "DivideNumbers",
+"nat_span": [
+96,
+109
+],
+"alt_span": [
+96,
+109
+]
+},
+{
+"k": 3,
+"nat": "roundToTwoDecimalPlaces",
+"alt": "RoundToTwoDecimalPlaces",
+"nat_span": [
+135,
+158
+],
+"alt_span": [
+135,
+158
+]
+},
+{
+"k": 4,
+"nat": "calculateHeightSquared",
+"alt": "CalculateHeightSquared",
+"nat_span": [
+205,
+227
+],
+"alt_span": [
+205,
+227
+]
+},
+{
+"k": 5,
+"nat": "multiplyNumbers",
+"alt": "MultiplyNumbers",
+"nat_span": [
+242,
+257
+],
+"alt_span": [
+242,
+257
+]
+},
+{
+"k": 6,
+"nat": "performBMIDivision",
+"alt": "PerformBMIDivision",
+"nat_span": [
+281,
+299
+],
+"alt_span": [
+281,
+299
+]
+},
+{
+"k": 7,
+"nat": "divideNumbers",
+"alt": "DivideNumbers",
+"nat_span": [
+329,
+342
+],
+"alt_span": [
+329,
+342
+]
+},
+{
+"k": 8,
+"nat": "calculateBMI",
+"alt": "CalculateBMI",
+"nat_span": [
+374,
+386
+],
+"alt_span": [
+374,
+386
+]
+},
+{
+"k": 9,
+"nat": "validatePositiveNumber",
+"alt": "ValidatePositiveNumber",
+"nat_span": [
+421,
+443
+],
+"alt_span": [
+421,
+443
+]
+},
+{
+"k": 10,
+"nat": "validatePositiveNumber",
+"alt": "ValidatePositiveNumber",
+"nat_span": [
+458,
+480
+],
+"alt_span": [
+458,
+480
+]
+},
+{
+"k": 11,
+"nat": "calculateHeightSquared",
+"alt": "CalculateHeightSquared",
+"nat_span": [
+590,
+612
+],
+"alt_span": [
+590,
+612
+]
+},
+{
+"k": 12,
+"nat": "performBMIDivision",
+"alt": "PerformBMIDivision",
+"nat_span": [
+640,
+658
+],
+"alt_span": [
+640,
+658
+]
+},
+{
+"k": 13,
+"nat": "roundToTwoDecimalPlaces",
+"alt": "RoundToTwoDecimalPlaces",
+"nat_span": [
+694,
+717
+],
+"alt_span": [
+694,
+717
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.943,
+"pass": true,
+"verify": null
+}
+]
