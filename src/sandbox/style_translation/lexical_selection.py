@@ -47,23 +47,23 @@ fig, ax = plt.subplots(figsize=(max(14, 0.62 * len(items)), 7.0))
 x = np.arange(len(items)); w = 0.38
 for i, it in enumerate(items):
     if not it["accept"]:
-        ax.axvspan(i - 0.5, i + 0.5, color="#f3d6d6", alpha=0.6, zorder=0)
+        ax.axvspan(i - 0.5, i + 0.5, color="#f3d6d6", alpha=0.7, zorder=0)
 n_en = sum(it["group"] == "English" for it in items)
 ax.axvline(n_en - 0.5, color="k", lw=1)
 ax.bar(x - w / 2, [it["nat"] for it in items], w, color="#1f77b4", label="natural convention in context (k = 4)")
 ax.bar(x + w / 2, [it["alt"] for it in items], w, color="#d62728", label="alternative convention in context (k = 4)")
 ax.axhline(CUT, color="k", ls="--", lw=1.2, label=f"cutoff: both poles ≥ {CUT:.0%}")
-for i, it in enumerate(items):
-    ax.text(i, 1.01, "✓" if it["accept"] else "✗", ha="center", va="bottom", fontsize=13, color="#2a7d2a" if it["accept"] else "#b22222", fontweight="bold")
-    ax.text(i, -0.045, f"n={it['n']}", ha="center", va="top", fontsize=6.5, color="grey", transform=ax.get_xaxis_transform())
-ax.set_xticks(x); ax.set_xticklabels([f"{it['family']}\n({it['lang']})" if it["group"] != "English" else it["family"] for it in items], rotation=45, ha="right", fontsize=8.5)
+from matplotlib.patches import Patch
+ax.set_xticks(x); ax.set_xticklabels([f"{it['family']}\n({it['lang']})" if it["group"] != "English" else it["family"] for it in items], rotation=40, ha="right", fontsize=9)
 ax.set_ylim(0, 1.08); ax.set_ylabel("accuracy at k = 4  (uses the context's convention ∧ faithful)"); ax.grid(axis="y", alpha=0.3)
-ax.text((n_en - 1) / 2, 1.13, f"English target — {sum(it['accept'] for it in items if it['group']=='English')} of {n_en} accepted", ha="center", fontsize=10, fontweight="bold")
-ax.text(n_en + (len(items) - n_en - 1) / 2, 1.13, f"non-English target (cheap check, 45–60 texts) — {sum(it['accept'] for it in items if it['group']!='English')} of {len(items)-n_en} accepted", ha="center", fontsize=10, fontweight="bold")
-ax.set_ylim(0, 1.18)
-ax.legend(loc="upper center", fontsize=8.5, frameon=False, ncol=3, bbox_to_anchor=(0.5, -0.32))
+ax.text((n_en - 1) / 2, 1.04, f"English target (200 texts per family) — {sum(it['accept'] for it in items if it['group']=='English')} of {n_en} accepted", ha="center", fontsize=10.5, fontweight="bold")
+ax.text(n_en + (len(items) - n_en - 1) / 2, 1.04, f"non-English target (cheap check, 45–60 texts) — {sum(it['accept'] for it in items if it['group']!='English')} of {len(items)-n_en} accepted", ha="center", fontsize=10.5, fontweight="bold")
+ax.set_ylim(0, 1.10)
+h, l = ax.get_legend_handles_labels()
+h.append(Patch(facecolor="#f3d6d6", edgecolor="none")); l.append("rejected: at least one pole below the cutoff")
+ax.legend(h, l, loc="upper center", fontsize=9, frameon=False, ncol=4, bbox_to_anchor=(0.5, -0.30))
 fig.suptitle("Which lexically diverse conventions does Qwen2.5-7B (base) learn from 4 in-context examples? "
-             f"Accepted (✓) if BOTH poles reach {CUT:.0%}; red panels = rejected", fontsize=11.5, y=0.995)
+             f"accepted if BOTH poles reach {CUT:.0%} accuracy", fontsize=12, y=0.995)
 fig.tight_layout(rect=(0, 0.02, 1, 0.97)); fig.savefig(MP["results"] / "lexical_selection.png", dpi=150)
 print(f"{'family':14s} {'group':12s} {'nat':>5s} {'alt':>5s} {'n':>4s} verdict")
 for it in items:
