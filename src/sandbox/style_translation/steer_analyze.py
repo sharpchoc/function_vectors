@@ -54,7 +54,7 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     sfams = [f.name for f in list(FAMILIES) + list(ML_FAMILIES) if (SCREEN / f"{f.name}.json").exists()]          # screen: judge-free
     fams, pending = [], []
-    for f in FAMILIES:                                                                    # confirm: needs the judge
+    for f in list(FAMILIES) + list(ML_FAMILIES):                                          # confirm: needs the judge
         if not (CONFIRM / f"{f.name}.json").exists():
             continue
         recs = json.load(open(CONFIRM / f"{f.name}.json"))

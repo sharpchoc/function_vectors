@@ -54,7 +54,7 @@ source, or is incoherent / gibberish.
 {SRC} SOURCE:
 {es}
 
-{TGT} SO FAR (end): ...{ctx}
+{TGT} SO FAR (end): ...{ctx}{startnote}
 
 REFERENCE (one correct continuation): {ref}
 
@@ -81,6 +81,7 @@ def judge_one(key, model, r):
             "messages": [{"role": "user", "content": PROMPT.format(
                 capnote=CAPNOTE if r["capped"] else "", es=r["es_text"], ctx=r["context_tail"],
                 ref=json.dumps(r["ref_sentence"], ensure_ascii=False), tail=json.dumps(r["tail"], ensure_ascii=False),
+                startnote=("" if r["context_tail"].strip() else f"\n(NOTE: the {_langs(r)['tgt']} translation has not started yet — the completion is its BEGINNING and is expected to render the start of the source; do not treat that as repetition.)"),
                 **_langs(r))}]}
     for attempt in range(5):
         try:
