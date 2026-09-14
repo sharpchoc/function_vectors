@@ -18,7 +18,7 @@ MP = model_paths("qwen25_base"); CUT = 0.30
 rows = list(csv.DictReader(open(MP["results"] / "code_k4" / "k4_check.csv")))
 CAT = {}
 for i, spec in enumerate(CODE_SPECS):
-    CAT[spec[0]] = "naming" if i < 10 else "literals" if i < 18 else "syntax / dialect" if i < 41 else "formatting" if i < 48 else "comments / docs" if i < 53 else "other languages"
+    CAT[spec[0]] = "naming" if i < 10 else "literals" if i < 18 else "syntax / dialect" if i < 40 else "formatting" if i < 47 else "comments / docs" if i < 52 else "other languages"
 def get(f, s, key="accuracy"):
     r = [x for x in rows if x["family"] == f and x["style"] == s and int(float(x["k"])) == 4]
     return (float(r[0][key]), int(r[0]["n"])) if r else (np.nan, 0)
