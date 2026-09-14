@@ -42,7 +42,7 @@ for name, fr in cols:
     xs.append((x, fr * (W - 0.6))); x += fr * (W - 0.6)
 counts = {s: sum(1 for r in rows if r["status"] == s) for s in order}
 ax.text(W / 2, H - 0.12, "Writing-convention families considered for the read/write-feature study — every candidate and why it was kept or dropped", ha="center", va="top", fontsize=14, fontweight="bold")
-ax.text(W / 2, H - 0.42, f"{counts[KEPT]} kept in the pool · {counts[WEAK]} tested and too weak · {counts[DROP]} tested, then dropped on the full corpus · {counts[UNT]} not testable on this model · {counts[FIX]} lexically identical (ignored for this question) · {counts[PRUNE]} pruned before inference.   "
+ax.text(W / 2, H - 0.42, f"{counts[KEPT]} kept in the pool · {counts[WEAK]} tested and too weak · {counts[UNT]} not testable on this model · {counts[FIX]} lexically identical (ignored for this question) · {counts[PRUNE]} pruned before inference.   "
         "Cutoff: k = 4 accuracy ≥ .30 for BOTH conventions (accuracy = uses the context's convention ∧ faithful translation, 200 texts unless stated).", ha="center", va="top", fontsize=9.5)
 y = H - title_h
 for (xx, w), (name, _) in zip(xs, cols):
