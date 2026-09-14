@@ -70,7 +70,7 @@ def _langs(r):
     fam = r.get("family")
     if fam in ML_FAMILY:
         f = ML_FAMILY[fam]
-        return dict(src="English", tgt=f.tgt_lang, SRC="ENGLISH", TGT=f.tgt_lang.upper(), ignore_extra=f" (in particular: {f.judge_ignore})" if f.judge_ignore else "")
+        return dict(src=f.src_lang, tgt=f.tgt_lang, SRC=f.src_lang.upper(), TGT=f.tgt_lang.upper(), ignore_extra=f" (in particular: {f.judge_ignore})" if f.judge_ignore else "")
     return dict(src="Spanish", tgt="English", SRC="SPANISH", TGT="ENGLISH", ignore_extra="")
 
 

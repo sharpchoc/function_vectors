@@ -36,11 +36,12 @@ Natural, fluent prose a native speaker would write; no title, no notes, no markd
 English paragraph:
 {text}"""
 
-BACK = """Translate the following {lang} paragraph into natural, faithful English (American spelling, plain style). Translate every sentence;
+BACK = """Translate the following {lang} paragraph into natural, faithful {src} ({srcnote}). Translate every sentence;
 do not add or omit content; one paragraph; no notes or markdown. Return only the translation.
 
 {lang} paragraph:
 {text}"""
+SRCNOTE = {"English": "American spelling, plain style", "Spanish": "neutral standard Spanish, plain style"}
 
 
 def base_texts(n_per=20):
@@ -78,7 +79,7 @@ def translate_one(key, fam, doc_id, text):
             if best is None or k > best[1]:
                 best = (tgt, k)
             if k >= 5 or attempt >= 2:
-                src = _chat(key, BACK.format(lang=fam.tgt_lang, text=best[0]), 0.3)
+                src = _chat(key, BACK.format(lang=fam.tgt_lang, src=fam.src_lang, srcnote=SRCNOTE.get(fam.src_lang, "plain style"), text=best[0]), 0.3)
                 if len(src) < 40:
                     raise ValueError("back-translation too short")
                 return {"doc_id": f"{fam.name}__{doc_id}", "family": fam.name, "base_doc": doc_id, "text_es": src, "text_tgt_raw": best[0], "base_en": text}
@@ -141,7 +142,7 @@ def main():
             if len(opps) < args.min_opps:
                 continue
             pairs.append({"doc_id": r["doc_id"], "family": name, "topic": r["base_doc"], "angle": "ml", "text_es": r["text_es"],
-                          "langs": {"src": "English", "tgt": fam.tgt_lang}, "text_nat": text_nat, "text_alt": text_alt, "opps": opps,
+                          "langs": {"src": fam.src_lang, "tgt": fam.tgt_lang}, "text_nat": text_nat, "text_alt": text_alt, "opps": opps,
                           "k_en": len(opps), "pass": True, "verify": {"skipped": "cheap k=4 check"}})
         json.dump(pairs, open(PAIRS / f"{name}.json", "w"), ensure_ascii=False, indent=0)
         ks_sorted = sorted(ks)

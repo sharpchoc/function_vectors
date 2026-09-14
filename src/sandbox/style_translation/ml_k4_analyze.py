@@ -14,7 +14,10 @@ for p in (_BOOT, _BOOT / "src"):
 from src.sandbox.style_translation.models import paths as model_paths
 from src.sandbox.style_translation.ml_families import ML_FAMILIES
 
-MP = model_paths("qwen25_base"); OUT = MP["results"] / "multilingual_k4"; OUT.mkdir(parents=True, exist_ok=True)
+import argparse
+_ap = argparse.ArgumentParser(); _ap.add_argument("--families", nargs="*", default=None); _ap.add_argument("--tag", default="multilingual_k4"); _args = _ap.parse_args()
+MP = model_paths("qwen25_base"); OUT = MP["results"] / _args.tag; OUT.mkdir(parents=True, exist_ok=True)
+FAMS = [f for f in ML_FAMILIES if _args.families is None or f.name in _args.families]
 
 
 def wilson(p, n, z=1.96):
@@ -24,7 +27,7 @@ def wilson(p, n, z=1.96):
 
 
 rows = []
-for fam in ML_FAMILIES:
+for fam in FAMS:
     f = MP["rollouts"] / f"{fam.name}.json"
     if not f.exists(): continue
     recs = [r for r in json.load(open(f)) if r.get("judge")]
@@ -38,7 +41,7 @@ for fam in ML_FAMILIES:
                              ci_lo=wilson(acc, n)[0], ci_hi=wilson(acc, n)[1], label=fam.nat if style == "nat" else fam.alt))
 with open(OUT / "k4_check.csv", "w", newline="") as fh:
     w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
-fams = [f for f in ML_FAMILIES if any(r["family"] == f.name for r in rows)]
+fams = [f for f in FAMS if any(r["family"] == f.name for r in rows)]
 fig, ax = plt.subplots(figsize=(max(10, 1.6 * len(fams)), 5.2))
 x = np.arange(len(fams)); C = {"nat": "#1f77b4", "alt": "#d62728"}
 for j, style in enumerate(("nat", "alt")):
@@ -52,7 +55,7 @@ for j, style in enumerate(("nat", "alt")):
 ax.set_xticks(x); ax.set_xticklabels([f"{f.name}\n({f.tgt_lang})" for f in fams], fontsize=8); ax.set_ylim(0, 1.02); ax.set_ylabel("accuracy toward the context's convention")
 ax.grid(axis="y", alpha=0.3); ax.legend(fontsize=7.5, loc="upper left", bbox_to_anchor=(0, -0.18), ncol=2, frameon=False)
 n_txt = rows[0]["n"] if rows else 0
-fig.suptitle(f"Qwen2.5-7B base, English → target-language translation: does 4 in-context examples make the model follow the convention?\n"
+fig.suptitle(f"Qwen2.5-7B base, translation prompts (English→target, or Spanish→English for English targets): do 4 in-context examples make the model follow the convention?\n"
              f"cheap check: {n_txt} texts per bar, k = 4 only (k = 0 baseline as hollow circles), 95% CI", fontsize=10)
 fig.tight_layout(); fig.savefig(OUT / "k4_check.png", dpi=150)
 print(f"{'family':14s} {'lang':10s} {'nat k0→k4':>12s} {'alt k0→k4':>12s} {'style-only alt k4':>17s} {'judge OK k4':>11s} {'unscorable k4':>13s}")

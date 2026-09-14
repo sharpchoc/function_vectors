@@ -27,7 +27,7 @@ def cut_sentence(tail):
     A period that belongs to an abbreviation (Dr., Mr., St., e.g., i.e., vs., approx.) is not a sentence end."""
     t = tail
     stop = len(t); capped = True
-    m_nl = re.search(r"\n|\b(?:Spanish|English|Portuguese|French|German|Chinese|Japanese|Russian|Ukrainian):", t)
+    m_nl = re.search(r"\n|\b(?:Spanish|English|Portuguese|French|German|Chinese|Japanese|Russian|Ukrainian|Belarusian|Korean):", t)
     if m_nl:
         stop = m_nl.start(); capped = False
     for m in _SENT_END.finditer(t[:stop]):

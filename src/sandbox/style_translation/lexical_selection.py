@@ -21,6 +21,9 @@ from src.sandbox.style_translation.ml_families import ML_FAMILIES
 MP = model_paths("qwen25_base"); CUT = 0.30
 en = list(csv.DictReader(open(MP["results"] / "summary.csv")))
 ml = list(csv.DictReader(open(MP["results"] / "multilingual_k4" / "k4_check.csv")))
+_r3 = MP["results"] / "multilingual_k4_round3" / "k4_check.csv"
+if _r3.exists():
+    ml += list(csv.DictReader(open(_r3)))
 
 
 def get(rows, fam, style, key="accuracy"):
@@ -41,7 +44,7 @@ for fm in ML_FAMILIES:
     if np.isnan(a):
         (a, n), (b, _) = get(ml, fm.name, "nat"), get(ml, fm.name, "alt"); src = "cheap"
     if np.isnan(a): continue
-    items.append(dict(family=fm.name, group="non-English", lang=fm.tgt_lang, nat=a, alt=b, n=n, nat_label=fm.nat, alt_label=fm.alt, source=src))
+    items.append(dict(family=fm.name, group="English" if fm.tgt_lang == "English" else "non-English", lang=fm.tgt_lang, nat=a, alt=b, n=n, nat_label=fm.nat, alt_label=fm.alt, source=src))
 for it in items:
     it.setdefault("source", "full")
 for it in items:
@@ -61,9 +64,12 @@ ax.bar(x - w / 2, [it["nat"] for it in items], w, color="#1f77b4", label="natura
 ax.bar(x + w / 2, [it["alt"] for it in items], w, color="#d62728", label="alternative convention in context (k = 4)")
 ax.axhline(CUT, color="k", ls="--", lw=1.2, label=f"cutoff: both poles ≥ {CUT:.0%}")
 from matplotlib.patches import Patch
-ax.set_xticks(x); ax.set_xticklabels([f"{it['family']}\n({it['lang']})" if it["group"] != "English" else it["family"] for it in items], rotation=40, ha="right", fontsize=9)
+ax.set_xticks(x); ax.set_xticklabels([f"{it['family']}\n({it['lang']})" if it["group"] != "English" else (it["family"] + ("\n(cheap)" if it["source"] == "cheap" else "")) for it in items], rotation=40, ha="right", fontsize=9)
 ax.set_ylim(0, 1.08); ax.set_ylabel("accuracy at k = 4  (uses the context's convention ∧ faithful)"); ax.grid(axis="y", alpha=0.3)
-ax.text((n_en - 1) / 2, 1.04, f"English target (200 texts per family) — {sum(it['accept'] for it in items if it['group']=='English')} of {n_en} accepted", ha="center", fontsize=10.5, fontweight="bold")
+_en = [it for it in items if it["group"] == "English"]; _nc = sum(it["source"] == "cheap" for it in _en)
+ax.text((n_en - 1) / 2, 1.04, f"English target ({len(_en) - _nc} full corpus, {_nc} cheap check)" if _nc else "English target (200 texts per family)", ha="center", fontsize=10.5, fontweight="bold")
+ax.text((n_en - 1) / 2, 1.04, "", ha="center")
+ax.texts[-2].set_text(ax.texts[-2].get_text() + f" — {sum(it['accept'] for it in _en)} of {len(_en)} accepted")
 _ne = [it for it in items if it["group"] != "English"]
 _nf = sum(it["source"] == "full" for it in _ne)
 _lab = "full corpus" if _nf == len(_ne) else ("cheap check, 45–60 texts" if _nf == 0 else f"{_nf} full corpus, {len(_ne) - _nf} cheap check")
