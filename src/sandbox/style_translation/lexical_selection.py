@@ -43,7 +43,7 @@ items.sort(key=lambda it: (it["group"] != "English", -it["min"]))
 with open(MP["results"] / "lexical_selection.csv", "w", newline="") as fh:
     w = csv.DictWriter(fh, fieldnames=list(items[0])); w.writeheader(); w.writerows(items)
 
-fig, ax = plt.subplots(figsize=(max(14, 0.62 * len(items)), 6.2))
+fig, ax = plt.subplots(figsize=(max(14, 0.62 * len(items)), 7.0))
 x = np.arange(len(items)); w = 0.38
 for i, it in enumerate(items):
     if not it["accept"]:
@@ -58,12 +58,13 @@ for i, it in enumerate(items):
     ax.text(i, -0.045, f"n={it['n']}", ha="center", va="top", fontsize=6.5, color="grey", transform=ax.get_xaxis_transform())
 ax.set_xticks(x); ax.set_xticklabels([f"{it['family']}\n({it['lang']})" if it["group"] != "English" else it["family"] for it in items], rotation=45, ha="right", fontsize=8.5)
 ax.set_ylim(0, 1.08); ax.set_ylabel("accuracy at k = 4  (uses the context's convention ∧ faithful)"); ax.grid(axis="y", alpha=0.3)
-ax.text((n_en - 1) / 2, 1.06, f"English target — {sum(it['accept'] for it in items if it['group']=='English')} of {n_en} accepted", ha="center", fontsize=10, fontweight="bold")
-ax.text(n_en + (len(items) - n_en - 1) / 2, 1.06, f"non-English target (cheap check) — {sum(it['accept'] for it in items if it['group']!='English')} of {len(items)-n_en} accepted", ha="center", fontsize=10, fontweight="bold")
-ax.legend(loc="upper right", fontsize=8.5, frameon=False, bbox_to_anchor=(1, 0.98))
+ax.text((n_en - 1) / 2, 1.13, f"English target — {sum(it['accept'] for it in items if it['group']=='English')} of {n_en} accepted", ha="center", fontsize=10, fontweight="bold")
+ax.text(n_en + (len(items) - n_en - 1) / 2, 1.13, f"non-English target (cheap check, 45–60 texts) — {sum(it['accept'] for it in items if it['group']!='English')} of {len(items)-n_en} accepted", ha="center", fontsize=10, fontweight="bold")
+ax.set_ylim(0, 1.18)
+ax.legend(loc="upper center", fontsize=8.5, frameon=False, ncol=3, bbox_to_anchor=(0.5, -0.32))
 fig.suptitle("Which lexically diverse conventions does Qwen2.5-7B (base) learn from 4 in-context examples? "
              f"Accepted (✓) if BOTH poles reach {CUT:.0%}; red panels = rejected", fontsize=11.5, y=0.995)
-fig.tight_layout(rect=(0, 0, 1, 0.96)); fig.savefig(MP["results"] / "lexical_selection.png", dpi=150)
+fig.tight_layout(rect=(0, 0.02, 1, 0.97)); fig.savefig(MP["results"] / "lexical_selection.png", dpi=150)
 print(f"{'family':14s} {'group':12s} {'nat':>5s} {'alt':>5s} {'n':>4s} verdict")
 for it in items:
     print(f"{it['family']:14s} {it['group']:12s} {it['nat']:5.2f} {it['alt']:5.2f} {it['n']:4d} {'ACCEPT' if it['accept'] else 'reject'}")
