@@ -1,3 +1,22 @@
+# results/style_translation/qwen25_base — the style-translation study on Qwen2.5-7B (base)
+
+Index (2026-09-14). Sub-buckets mirror the GPT-J layout under `../`:
+
+| bucket | contents | status |
+|---|---|---|
+| `accuracy_by_k.png`, `summary.csv`, … | step 3, accuracy vs k for the 27 English families (Spanish→English) + the 7 full-corpus multilingual families (English→target) | done |
+| `multilingual_k4/` | cheap k ∈ {0,4} check of 12 non-English conventions (45–60 texts) | done |
+| `lexical_selection.{png,csv}` | every lexically diverse convention tried, k = 4 accuracy per pole, 30 % both-poles cutoff | done |
+| `pool.json` | the 16-family pool for the read/write-feature and read→write-map work (DECISIONS 2026-09-14) | done |
+| `read_write_map/coverage.*` | coverage diagnostics (span fractions, RSA) for the pool | done |
+| `read_features/` | evidence-token read features (step 6) | done |
+| `steering/` | cue-token write-feature steering (step 4: screen, confirm, controls) | running |
+| `read_steer/` | evidence-token read-feature steering (step 7) | running |
+| `pool_gated.json` | families passing the feature gate | pending |
+| `read_write_map/` | LOFO + fixed-split ridge from read to write features | pending |
+
+---
+
 # results/style_translation/qwen25_base — accuracy vs k on Qwen2.5-7B (base)
 
 User request 2026-09-11: repeat step 3 (in-context learning of the 27 writing conventions while translating
