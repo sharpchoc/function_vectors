@@ -1806,3 +1806,14 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 
 - `src/sandbox/style_translation/models.py` is the model registry; `--model <key>` on `cue_tokens.py`, `build_prompts.py`, `rollout.py`, `analyze.py`. The default (`gptj`) keeps every existing path; any other model gets `artifacts/style_translation/<key>/{cues,prompts,rollouts}` and `results/style_translation/<key>/`. Cue tokens are tokeniser-specific and are recomputed per model; the GPT-J cues in `dataset_files/style_translation/pairs/` stay the dataset's cues.
 - `qwen25_base` = `Qwen/Qwen2.5-7B` (base, not Instruct), bf16, left padding, no BOS. Step 3 only (accuracy vs k) — steering/read-feature steps were not requested for it.
+
+## 2026-09-14 — Qwen2.5-7B base convention pool for the read/write-feature and read→write-map study
+- Pool = lexically diverse families whose k = 4 accuracy (convention ∧ faithful) is ≥ .30 for BOTH poles on the full 200-text corpus:
+  16 families — us_uk, ise_ize, contractions, num_words, ordinal_words, uk_vocab, register, diacritics, unit_abbr, latin_plural, title_abbr,
+  zh_simp_trad, pt_acordo_eu, pt_br_eu, es_rae2010, ru_yo (`results/style_translation/qwen25_base/pool.json`). Fixed-marker families are
+  excluded from both train and test. de_1996 and zh_tw_hk passed the cheap 45–60-text check but fell below on the full corpus → dropped.
+- Feature gate before a family enters the map: steered accuracy's Wilson CI excludes the unsteered rate, in both directions.
+- Generalisation test: leave-one-family-out over the pool + one fixed 2/3–1/3 split stratified by axis (British, Portuguese, Chinese, digits);
+  within-axis vs cross-axis hold-outs reported separately. Coverage diagnostics are computed before steering.
+- Multilingual corpora: English base text → Gemini adaptation in the natural pole with anchors → Gemini back-translation = source;
+  Gemini verification (fluent, natural pole only, anchors, faithful); cap 200 per family.

@@ -29,7 +29,9 @@ def get(rows, fam, style, key="accuracy"):
 
 
 items = []
+ML_NAMES = {fm.name for fm in ML_FAMILIES}
 for f in LEXICAL:
+    if f in ML_NAMES: continue                    # multilingual families are handled below
     (a, n), (b, _) = get(en, f, "nat"), get(en, f, "alt")
     if np.isnan(a): continue
     items.append(dict(family=f, group="English", lang="English", nat=a, alt=b, n=n, nat_label=FAMILY[f].nat, alt_label=FAMILY[f].alt))
