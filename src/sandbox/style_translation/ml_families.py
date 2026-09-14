@@ -33,6 +33,7 @@ class MLFamily:
     judge_ignore: str = ""
     prop: object = None
     src_lang: str = "English"      # source language of the prompt (Spanish for English-target families)
+    domain: str = "text"           # "text" (writing conventions) or "code" (code_families.py)
 
     @property
     def nat_label(self): return self.nat

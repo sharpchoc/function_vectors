@@ -333,4 +333,4 @@ FAMILIES: List[Family] = [
        "- Titles and street words always in full: «doctor», «profesor», «señor», «monte», «san»/«santa», «calle», «avenida» (never «Dr.», «Sr.», «c/», «avda.»)."),
 ]
 FAMILY = {f.name: f for f in FAMILIES}
-assert len(FAMILIES) == 27 and set(FAMILY) == set(PROPS)
+assert len(FAMILIES) == 27 and set(FAMILY) <= set(PROPS)   # ml_families / code_families add more PROPS

@@ -74,15 +74,48 @@ def _langs(r):
     return dict(src="Spanish", tgt="English", SRC="SPANISH", TGT="ENGLISH", ignore_extra="")
 
 
+CODE_PROMPT = """A language model is writing a {tgt} solution to a programming task. It has produced the code up to a point and then generated
+a COMPLETION. Decide whether the completion is an acceptable continuation of the solution.
+
+Answer OK if the completion is syntactically plausible {tgt} that continues the program sensibly towards the task (the REFERENCE shows one
+correct continuation; a different but reasonable continuation is fine; the completion may be shorter than the reference and may stop mid-statement).
+IGNORE completely all STYLE choices: naming style, quote style, spacing, indentation, comments, literal formatting, version dialect, and in
+particular {ignore}.{capnote}
+
+Answer NOT OK if the completion is prose instead of code, restarts the program, switches language, is unrelated to the task, or is gibberish.
+
+TASK:
+{es}
+
+CODE SO FAR (end): ...{ctx}{startnote}
+
+REFERENCE (one correct continuation): {ref}
+
+COMPLETION: {tail}
+
+Reply with a single JSON object: {{"ok": true or false, "notes": "<one short sentence>"}}"""
+
+
 def judge_one(key, model, r):
     if not r["tail"].strip():
         return r["doc_id"], r["style"], r["k"], {"ok": False, "notes": "empty completion", "judge": model}
+    fam = ML_FAMILY.get(r.get("family"))
+    if fam is not None and getattr(fam, "domain", "text") == "code":
+        content = CODE_PROMPT.format(tgt=fam.tgt_lang, ignore=fam.judge_ignore, capnote=CAPNOTE if r["capped"] else "", es=r["es_text"], ctx=r["context_tail"],
+                                     ref=json.dumps(r["ref_sentence"], ensure_ascii=False), tail=json.dumps(r["tail"], ensure_ascii=False),
+                                     startnote="" if r["context_tail"].strip() else "\n(NOTE: the code has not started yet — the completion is its BEGINNING.)")
+        body = {"model": model, "temperature": 0.0, "max_tokens": 120, "messages": [{"role": "user", "content": content}]}
+        return _post(key, model, body, r)
     body = {"model": model, "temperature": 0.0, "max_tokens": 120,
             "messages": [{"role": "user", "content": PROMPT.format(
                 capnote=CAPNOTE if r["capped"] else "", es=r["es_text"], ctx=r["context_tail"],
                 ref=json.dumps(r["ref_sentence"], ensure_ascii=False), tail=json.dumps(r["tail"], ensure_ascii=False),
                 startnote=("" if r["context_tail"].strip() else f"\n(NOTE: the {_langs(r)['tgt']} translation has not started yet — the completion is its BEGINNING and is expected to render the start of the source; do not treat that as repetition.)"),
                 **_langs(r))}]}
+    return _post(key, model, body, r)
+
+
+def _post(key, model, body, r):
     for attempt in range(5):
         try:
             resp = requests.post(URL, json=body, timeout=90, headers={"Authorization": f"Bearer {key}"})

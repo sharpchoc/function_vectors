@@ -39,6 +39,7 @@ for f in LEXICAL:
     if np.isnan(a): continue
     items.append(dict(family=f, group="English", lang="English", nat=a, alt=b, n=n, nat_label=FAMILY[f].nat, alt_label=FAMILY[f].alt))
 for fm in ML_FAMILIES:
+    if getattr(fm, "domain", "text") == "code": continue
     (a, n), (b, _) = get(en, fm.name, "nat"), get(en, fm.name, "alt")          # full corpus (summary.csv) if step 3 has run
     src = "full"
     if np.isnan(a):

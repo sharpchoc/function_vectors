@@ -20,7 +20,8 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT
 from src.sandbox.style_translation.families import FAMILIES
-from src.sandbox.style_translation.scoring import cut_sentence, decide
+from src.sandbox.style_translation.scoring import cut_sentence, cut_code, decide
+from src.sandbox.style_translation.ml_families import ML_FAMILY
 from src.sandbox.ext_steerability.ablate_pc50_labeltokens import batches_by_len
 
 PROMPTS = ARTIFACTS_ROOT / "style_translation" / "prompts"
@@ -89,7 +90,7 @@ def main():
             for r, i in enumerate(b):
                 it = items[i]
                 raw = tok.decode(gen[r, L:], skip_special_tokens=True)
-                cut, capped = cut_sentence(raw)
+                cut, capped = cut_code(raw) if getattr(ML_FAMILY.get(fam), "domain", "text") == "code" else cut_sentence(raw)
                 dec = decide(fam, it["seg_prefix"], cut, it["next_nat"], it["next_alt"])
                 recs[i] = {k: it[k] for k in ("doc_id", "family", "style", "k", "cue_tok", "seg_prefix",
                                               "next_nat", "next_alt", "ref_sentence", "context_tail", "es_text")}

@@ -38,6 +38,12 @@ def cut_sentence(tail):
     return t[:stop].rstrip("\n"), capped
 
 
+def cut_code(tail):
+    """Code continuations: keep everything up to the first blank line or a new 'Task:' header (no sentence cutting)."""
+    m = re.search(r"\n\s*\n|\bTask:", tail)
+    return (tail[:m.start()].rstrip("\n"), False) if m else (tail, True)
+
+
 def decide(family, seg_prefix, tail, next_nat, next_alt):
     """Return 'nat', 'alt' or None (no decision made in the completion)."""
     prop = PROPS[family]
