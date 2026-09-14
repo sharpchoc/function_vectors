@@ -1817,3 +1817,7 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   within-axis vs cross-axis hold-outs reported separately. Coverage diagnostics are computed before steering.
 - Multilingual corpora: English base text → Gemini adaptation in the natural pole with anchors → Gemini back-translation = source;
   Gemini verification (fluent, natural pole only, anchors, faithful); cap 200 per family.
+- 2026-09-14 (later) — Feature gate variants: the strict gate (significant lift in BOTH directions) admits only 5 of 16 Qwen families because the
+  natural pole of 7 families is at ceiling unsteered (.72–.94); the headroom-aware variant (a direction with unsteered ≥ .70 is exempt) admits 12.
+  Both are reported; the 12-family pool is the main map result pending the user's ruling. Judge prompt: empty "so far" context (first opportunity
+  opens the text) is now described as the beginning of the translation; 1,852 verdicts re-judged (Qwen steering confirm + step-3 rollouts).

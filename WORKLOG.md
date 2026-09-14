@@ -9358,3 +9358,9 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
 - Phase 2 prepared: evidence tokens for all 18 done (qwen25_base/read_features/evidence); read_write_coverage.py (also run on GPT-J:
   results/style_translation/read_write_map/coverage.*); capture job logs/qwen_pairs_job.sh; read_write_ridge.py --pool mode (LOFO + fixed split).
 - Next: judge step 3 → analyze → lexical_selection (full corpus) → capture_prompt_pairs → coverage → steering (Phase 3) → read features (Phase 4) → map (Phase 5).
+- 2026-09-14 (cont.) Phases 1–6 DONE for the Qwen line: 7 multilingual corpora (200 texts, verified) → step 3 → cutoff re-check (pool 16; de_1996,
+  zh_tw_hk dropped) → evidence tokens + per-prompt capture + coverage (RSA .83, participation 13/16) → cue-token steering (write) and evidence-token
+  steering (read) for all 16 (both work as on GPT-J; weak: register, diacritics, latin_plural, ru_yo) → gate (strict 5 / headroom 12) → read→write
+  ridge: LOFO within-axis cos .55 vs cross-axis .21 (shuffled 0), prompt-level R² 0; fixed split cos .44. Buckets under results/style_translation/
+  qwen25_base/{steering,read_steer,read_features,read_write_map}, pool_gated.json. 6 pods used (~14 pod-h), all terminated. Read-L0 ridge variant
+  running (logs/qwen_ridge_headroom_L0.log) — append to read_write_map/README when done.

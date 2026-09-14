@@ -10,10 +10,10 @@ Index (2026-09-14). Sub-buckets mirror the GPT-J layout under `../`:
 | `pool.json` | the 16-family pool for the read/write-feature and read→write-map work (DECISIONS 2026-09-14) | done |
 | `read_write_map/coverage.*` | coverage diagnostics (span fractions, RSA) for the pool | done |
 | `read_features/` | evidence-token read features (step 6) | done |
-| `steering/` | cue-token write-feature steering (step 4: screen, confirm, controls) | running |
-| `read_steer/` | evidence-token read-feature steering (step 7) | running |
-| `pool_gated.json` | families passing the feature gate | pending |
-| `read_write_map/` | LOFO + fixed-split ridge from read to write features | pending |
+| `steering/` | cue-token write-feature steering (step 4: screen, confirm, controls) | done |
+| `read_steer/` | evidence-token read-feature steering (step 7) | done |
+| `pool_gated.json` | families passing the feature gate (strict 5 / headroom-aware 12) | done |
+| `read_write_map/` | coverage + LOFO / fixed-split ridge from read to write features | done |
 
 ---
 
