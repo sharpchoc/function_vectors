@@ -26,10 +26,18 @@ from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.rollout import load_model
 from src.sandbox.style_translation.scoring import decide
 from src.sandbox.style_translation.steer_hooks import CueSteer, unit_test
+from src.sandbox.style_translation.models import paths as model_paths, arch
 
 PROMPTS = ARTIFACTS_ROOT / "style_translation" / "prompts"
 VEC = ARTIFACTS_ROOT / "style_translation" / "steering" / "vectors"
 OUT = ARTIFACTS_ROOT / "style_translation" / "steering" / "screen"
+
+
+def configure(model="gptj"):
+    global PROMPTS, VEC, OUT
+    MP = model_paths(model); PROMPTS, VEC, OUT = MP["prompts"], MP["steering"] / "vectors", MP["steering"] / "screen"
+
+
 SCREEN_LAYERS = [2, 4, 6, 8, 10, 12, 16, 20, 24]
 ALPHAS = [0.5, 1.0, 2.0, 4.0]
 N_SCREEN = 50
@@ -71,10 +79,12 @@ def sample(model, tok, items, layer, vec, alpha, seed_tag, max_new):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--batch", type=int, default=25)
     args = ap.parse_args()
+    configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
-    model, tok = load_model()
+    model, tok = load_model(model=args.model)
     assert unit_test(model, tok, layer=6), "hook unit test failed"
     print("hook unit test passed", flush=True)
     for fam in args.families:
@@ -82,7 +92,7 @@ def main():
         if out_path.exists():
             print(f"{fam}: exists, skip", flush=True); continue
         items = k0_items(fam, N_SCREEN)
-        vecs = np.load(VEC / f"{fam}.npz")["v_nat"]        # [28, 4096], layer L -> vecs[L-1]
+        vecs = np.load(VEC / f"{fam}.npz")["v_nat"]        # [n_layers, hidden], layer L -> vecs[L-1]
         recs = []
         # alpha = 0 once
         for bi in range(0, len(items), args.batch):

@@ -27,12 +27,18 @@ from src.sandbox.style_translation.rollout import load_model
 from src.sandbox.style_translation.scoring import decide
 from src.sandbox.style_translation.steer_hooks import PositionSteer, unit_test_positions
 from src.sandbox.style_translation.steer_screen import SCREEN_LAYERS, ALPHAS
+from src.sandbox.style_translation.models import paths as model_paths, arch
 
 PROMPTS = ARTIFACTS_ROOT / "style_translation" / "prompts"
 EVID = ARTIFACTS_ROOT / "style_translation" / "read_features" / "evidence"
 RF = ARTIFACTS_ROOT / "style_translation" / "read_features"
 ROOT = ARTIFACTS_ROOT / "style_translation" / "read_steer"
 K_CTX = 3
+
+
+def configure(model="gptj"):
+    global PROMPTS, EVID, RF, ROOT
+    MP = model_paths(model); PROMPTS, EVID, RF, ROOT = MP["prompts"], MP["evidence"], MP["read_features"], MP["read_steer"]
 N_SCREEN, MAX_NEW = 50, 16
 DIRECTIONS = {"nat2alt": ("nat", "alt"), "alt2nat": ("alt", "nat")}   # context pole -> target pole
 
@@ -51,7 +57,7 @@ def k3_items(fam, pole, n=None):
 
 
 def read_vectors(fam):
-    """u_nat per layer, indexed by LAYER (0 = embedding output, 1..28 = block outputs): shape [29, D]."""
+    """u_nat per layer, indexed by LAYER (0 = embedding output, 1..n_layers = block outputs): shape [n_layers + 1, D]."""
     d = np.load(RF / f"{fam}.npz")
     u = d["mean_nat"] - d["mean_alt"]                                   # [28, D], index L-1
     u0 = (d["mean_nat_L0"] - d["mean_alt_L0"])[None] if "mean_nat_L0" in d else np.zeros((1, u.shape[1]), u.dtype)
@@ -94,13 +100,15 @@ def run_arm(model, tok, fam, items, layer, vec, alpha, tag, max_new, batch, extr
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--batch", type=int, default=25)
     ap.add_argument("--layers", nargs="*", type=int, default=SCREEN_LAYERS, help="injection layers (0 = embedding output)")
     ap.add_argument("--tag", default="screen", help="output subdir under read_steer/")
     args = ap.parse_args()
+    configure(args.model)
     layers = args.layers
     (ROOT / args.tag).mkdir(parents=True, exist_ok=True)
-    model, tok = load_model()
+    model, tok = load_model(model=args.model)
     assert unit_test_positions(model, tok, layer=6) and unit_test_positions(model, tok, layer=20) and unit_test_positions(model, tok, layer=0)
     print("position hook unit test passed", flush=True)
     for fam in args.families:

@@ -22,6 +22,8 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
 from src.sandbox.style_translation.families import FAMILIES
+from src.sandbox.style_translation.models import paths as model_paths
+from src.sandbox.style_translation.ml_families import ML_FAMILIES, ML_FAMILY
 from src.sandbox.style_translation.steer_analyze import wilson
 from src.sandbox.style_translation.steer_screen import ALPHAS
 from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order
@@ -36,7 +38,7 @@ def main():
     screen = {}
     for r in csv.DictReader(open(OUT / "screen.csv")):
         screen[(r["family"], r["target"], int(r["layer"]), float(r["alpha"]))] = float(r["target_rate"])
-    fams = [f.name for f in FAMILIES if (COMMON / f"{f.name}.json").exists()]
+    fams = [f.name for f in list(FAMILIES) + list(ML_FAMILIES) if (COMMON / f"{f.name}.json").exists()]
     rows, pick = [], {}
     L = None
     for fam in fams:

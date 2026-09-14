@@ -26,6 +26,7 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT
 from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.rollout import load_model
+from src.sandbox.style_translation.models import paths as model_paths, arch
 from src.sandbox.ext_steerability.ablate_pc50_labeltokens import batches_by_len
 
 PROMPTS = ARTIFACTS_ROOT / "style_translation" / "prompts"
@@ -34,15 +35,23 @@ OUT = ARTIFACTS_ROOT / "style_translation" / "read_features"
 NL, K = 28, 4
 
 
+def configure(model="gptj"):
+    global PROMPTS, EVID, OUT
+    MP = model_paths(model); PROMPTS, EVID, OUT = MP["prompts"], MP["evidence"], MP["read_features"]
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--token_budget", type=int, default=8000)
     ap.add_argument("--batch_cap", type=int, default=16)
     args = ap.parse_args()
+    configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
-    model, tok = load_model()
-    D = model.config.n_embd
+    model, tok = load_model(model=args.model)
+    global NL
+    A = arch(model); D, NL, trunk = A["hidden"], A["n_layers"], A["trunk"]
     for fam in args.families:
         if (OUT / f"{fam}.npz").exists():
             print(f"{fam}: exists, skip", flush=True); continue
@@ -66,7 +75,7 @@ def main():
             for r, i in enumerate(b):
                 ids[r, L - lens[r]:] = torch.tensor(items[i]["ids"]); att[r, L - lens[r]:] = 1
             with torch.no_grad():
-                out = model.transformer(input_ids=ids.cuda(), attention_mask=att.cuda(), output_hidden_states=True)
+                out = trunk(input_ids=ids.cuda(), attention_mask=att.cuda(), output_hidden_states=True)
             hs = torch.stack(out.hidden_states[1:NL + 1], 1)          # [B, 28, L, D] fp16 on GPU
             for r, i in enumerate(b):
                 it = items[i]; off = L - lens[r]

@@ -27,11 +27,19 @@ from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.rollout import load_model
 from src.sandbox.style_translation.scoring import decide, cut_sentence
 from src.sandbox.style_translation.steer_screen import k0_items, sample, SCREEN_LAYERS, ALPHAS
+import src.sandbox.style_translation.steer_screen as steer_screen
+from src.sandbox.style_translation.models import paths as model_paths, arch
 
 VEC = ARTIFACTS_ROOT / "style_translation" / "steering" / "vectors"
 SCREEN = ARTIFACTS_ROOT / "style_translation" / "steering" / "screen"
 OUT = ARTIFACTS_ROOT / "style_translation" / "steering" / "confirm"
 MAX_NEW = 48
+
+
+def configure(model="gptj"):
+    global VEC, SCREEN, OUT
+    steer_screen.configure(model)
+    MP = model_paths(model); VEC, SCREEN, OUT = MP["steering"] / "vectors", MP["steering"] / "screen", MP["steering"] / "confirm"
 
 
 def top_settings(fam, target, n=2):
@@ -49,11 +57,13 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES],
                     help="families of THIS shard; the counterfactual vector cycles within this list")
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--batch", type=int, default=16)
     args = ap.parse_args()
+    configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
     fams = args.families
-    model, tok = load_model()
+    model, tok = load_model(model=args.model)
     for fi, fam in enumerate(fams):
         out_path = OUT / f"{fam}.json"
         if out_path.exists():

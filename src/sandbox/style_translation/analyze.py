@@ -24,6 +24,8 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
 from src.sandbox.style_translation.families import FAMILIES, FAMILY
+from src.sandbox.style_translation.ml_families import ML_FAMILIES, ML_FAMILY
+ALL_FAMILIES = list(FAMILIES) + list(ML_FAMILIES); ALL_FAMILY = {**FAMILY, **ML_FAMILY}
 from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order
 
 ROLL = ARTIFACTS_ROOT / "style_translation" / "rollouts"
@@ -50,7 +52,7 @@ def main():
     ROLL, OUT, MODEL_LABEL = MP["rollouts"], MP["results"], MP["label"]
     OUT.mkdir(parents=True, exist_ok=True)
     rows, npz = [], {}
-    fams = [f.name for f in FAMILIES if (ROLL / f"{f.name}.json").exists()]
+    fams = [f.name for f in ALL_FAMILIES if (ROLL / f"{f.name}.json").exists()]
     data = {}
     for fam in fams:
         recs = json.load(open(ROLL / f"{fam}.json"))
@@ -89,7 +91,7 @@ def main():
     C = {"nat": "#1f77b4", "alt": "#d62728"}
     for metric, fname, ylabel, title in (
         (0, "accuracy_by_k.png", "accuracy",
-         f"Does {MODEL_LABEL} learn a writing convention from in-context examples while translating Spanish to English?\n"
+         f"Does {MODEL_LABEL} learn a writing convention from in-context examples while translating (Spanish→English; English→target for the multilingual families)?\n"
          "Accuracy = uses the convention shown in context AND translates faithfully (n = 200 per point, 95% CI)"),
         (4, "unscorable_by_k.png", "unscorable share",
          "Share of completions that use neither convention (counted as inaccurate in the accuracy plot)")):
@@ -101,7 +103,7 @@ def main():
                 if not pts:
                     continue
                 xs = [p[0] for p in pts]; ys = [p[1 + metric] if metric == 0 else p[5] for p in pts]
-                lab = f"{style}: {FAMILY[fam].nat if style == 'nat' else FAMILY[fam].alt}"
+                lab = f"{style}: {ALL_FAMILY[fam].nat if style == 'nat' else ALL_FAMILY[fam].alt}"
                 if metric == 0:
                     lo = [p[1] - p[2] for p in pts]; hi = [p[3] - p[1] for p in pts]
                     ax.errorbar(xs, ys, yerr=[lo, hi], color=C[style], marker="o", ms=5, capsize=3, lw=1.8, label=lab[:60])

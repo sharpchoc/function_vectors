@@ -26,12 +26,19 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
 from src.sandbox.style_translation.families import FAMILIES, FAMILY
 from src.sandbox.style_translation.steer_screen import SCREEN_LAYERS, ALPHAS
+from src.sandbox.style_translation.models import paths as model_paths
+from src.sandbox.style_translation.ml_families import ML_FAMILIES, ML_FAMILY
 from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order
 
 SCREEN = ARTIFACTS_ROOT / "style_translation" / "steering" / "screen"
 CONFIRM = ARTIFACTS_ROOT / "style_translation" / "steering" / "confirm"
 OUT = STYLE_TRANSLATION_RESULTS / "steering"
 STEP3 = STYLE_TRANSLATION_RESULTS / "summary.csv"
+
+
+def configure(model="gptj"):
+    global SCREEN, CONFIRM, OUT, STEP3
+    MP = model_paths(model); SCREEN, CONFIRM, OUT, STEP3 = MP["steering"] / "screen", MP["steering"] / "confirm", MP["results"] / "steering", MP["results"] / "summary.csv"
 
 
 def wilson(p, n, z=1.96):
@@ -41,8 +48,11 @@ def wilson(p, n, z=1.96):
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(); ap.add_argument("--model", default="gptj", help="models.MODELS key"); args = ap.parse_args()
+    configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
-    sfams = [f.name for f in FAMILIES if (SCREEN / f"{f.name}.json").exists()]          # screen: judge-free
+    sfams = [f.name for f in list(FAMILIES) + list(ML_FAMILIES) if (SCREEN / f"{f.name}.json").exists()]          # screen: judge-free
     fams, pending = [], []
     for f in FAMILIES:                                                                    # confirm: needs the judge
         if not (CONFIRM / f"{f.name}.json").exists():

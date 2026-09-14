@@ -18,7 +18,10 @@ from matplotlib.patches import FancyBboxPatch
 LEXICAL = ["us_uk", "ise_ize", "brit_t_past", "contractions", "num_words", "ordinal_words",
            # added 2026-09-11 (user-approved lexically diverse families)
            "uk_vocab", "register", "unit_abbr", "diacritics", "latin_abbr", "hyphen_compound",
-           "flat_adverb", "irreg_past", "latin_plural", "title_abbr"]
+           "flat_adverb", "irreg_past", "latin_plural", "title_abbr",
+           # multilingual (English source -> target-language twins, Qwen2.5-7B base line, 2026-09-13/14)
+           "zh_simp_trad", "pt_acordo_eu", "pt_br_eu", "es_rae2010", "de_1996", "ru_yo", "zh_tw_hk",
+           "ja_long_vowel", "de_swiss", "fr_1990", "pt_acordo_br", "uk_2019"]
 FIXED = ["whilst", "ampersand", "percent_sign", "em_dash", "ellipsis", "curly_quotes", "quote_punct",
          "double_space", "oxford_comma", "sentence_caps", "all_caps"]
 GROUPS = [

@@ -27,12 +27,18 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_DATA
 from src.sandbox.style_translation.families import FAMILIES
-from src.sandbox.style_translation.cue_tokens import HEADER, TOKENIZER, decision_points, variant, common_prefix_len
+from src.sandbox.style_translation.cue_tokens import HEADER, TOKENIZER, decision_points, variant, common_prefix_len, header_for
+from src.sandbox.style_translation.models import paths as model_paths, arch
 
 PAIRS = STYLE_TRANSLATION_DATA / "pairs"
 PROMPTS = ARTIFACTS_ROOT / "style_translation" / "prompts"
 OUT = ARTIFACTS_ROOT / "style_translation" / "read_features" / "evidence"
 K = 4
+
+
+def configure(model="gptj"):
+    global PROMPTS, OUT, TOKENIZER
+    MP = model_paths(model); PROMPTS, OUT, TOKENIZER = MP["prompts"], MP["evidence"], MP["tokenizer"]
 
 
 def span_tokens(offs, h, span, text, start, prompt_len):
@@ -45,7 +51,7 @@ def span_tokens(offs, h, span, text, start, prompt_len):
 
 
 def evidence_for(rec, tok, pol, prompt_ids):
-    header = HEADER.format(es=rec["text_es"]); text = rec[f"text_{pol}"]; full = header + text
+    header = header_for(rec); text = rec[f"text_{pol}"]; full = header + text
     enc = tok(full, return_offsets_mapping=True); ids, offs = enc.input_ids, enc.offset_mapping
     assert ids[:len(prompt_ids)] == list(prompt_ids), "stored prompt is not a prefix of the twin tokenisation"
     h = len(header); dps = decision_points(rec); out = []
@@ -76,12 +82,20 @@ def evidence_for(rec, tok, pol, prompt_ids):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     args = ap.parse_args()
+    configure(args.model)
     from transformers import AutoTokenizer
     tok = AutoTokenizer.from_pretrained(TOKENIZER)
+    MP = model_paths(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
     for fam in args.families:
         pairs = {p["doc_id"]: p for p in json.load(open(PAIRS / f"{fam}.json"))}
+        if MP["cues"] is not None:                     # tokeniser-specific cues live in artifacts for non-default models
+            cues = {c["doc_id"]: c["cues"] for c in json.load(open(MP["cues"] / f"{fam}.json"))}
+            for r in pairs.values():
+                if r["doc_id"] in cues:
+                    r["cues"] = cues[r["doc_id"]]
         prompts = [p for p in json.load(open(PROMPTS / f"{fam}.json")) if p["k"] == K]
         recs, per_inst, examples = [], collections.Counter(), collections.defaultdict(list)
         for p in prompts:

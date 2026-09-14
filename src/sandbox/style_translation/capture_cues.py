@@ -32,24 +32,31 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT
 from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.rollout import load_model
+from src.sandbox.style_translation.models import paths as model_paths, arch
 from src.sandbox.ext_steerability.ablate_pc50_labeltokens import batches_by_len
 
 ROLL = ARTIFACTS_ROOT / "style_translation" / "rollouts"
 PROMPTS = ARTIFACTS_ROOT / "style_translation" / "prompts"
 OUT = ARTIFACTS_ROOT / "style_translation" / "steering" / "vectors"
-NL = 28
+
+
+def configure(model="gptj"):
+    global ROLL, PROMPTS, OUT
+    MP = model_paths(model); ROLL, PROMPTS, OUT = MP["rollouts"], MP["prompts"], MP["steering"] / "vectors"
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--token_budget", type=int, default=8000)
     ap.add_argument("--batch_cap", type=int, default=16)
     ap.add_argument("--unpaired", action="store_true", help="old independent selection per pole (default: paired)")
     args = ap.parse_args()
+    configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
-    model, tok = load_model()
-    D = model.config.n_embd
+    model, tok = load_model(model=args.model)
+    A = arch(model); D, NL, trunk = A["hidden"], A["n_layers"], A["trunk"]
     for fam in args.families:
         if (OUT / f"{fam}.npz").exists():
             print(f"{fam}: exists, skip", flush=True); continue
@@ -72,7 +79,7 @@ def main():
                 ids[r, L - lens[r]:] = torch.tensor(items[i]["ids"]); att[r, L - lens[r]:] = 1
             with torch.no_grad():
                 # transformer trunk only: skips the fp32 vocab logits that OOM at this batch size
-                out = model.transformer(input_ids=ids.cuda(), attention_mask=att.cuda(), output_hidden_states=True)
+                out = trunk(input_ids=ids.cuda(), attention_mask=att.cuda(), output_hidden_states=True)
             hs = torch.stack([out.hidden_states[l][:, -1, :] for l in range(1, NL + 1)], 1).float().cpu().numpy()  # [B, 28, D]
             for r, i in enumerate(b):
                 key = (items[i]["style"], items[i]["half"])

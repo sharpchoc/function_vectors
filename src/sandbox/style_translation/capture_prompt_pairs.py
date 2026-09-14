@@ -3,7 +3,7 @@
 
 For every k = 4 prompt (200 texts × 2 poles per family) one forward pass collects
   read[L]  = mean residual activation over ALL evidence tokens of the 4 instances at layer L
-             (L = 0 is the embedding output = hidden_states[0]; GPT-J adds no positional vector)
+             (L = 0 is the embedding output = hidden_states[0]; no positional vector in the residual stream)
   write[L] = residual activation at the last position (the cue token) at layer L.
 Layer convention as everywhere in this study: L = hidden_states[L] = output of block h[L-1].
 
@@ -26,13 +26,22 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT
 from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.rollout import load_model
+from src.sandbox.style_translation.models import paths as model_paths, arch
 from src.sandbox.ext_steerability.ablate_pc50_labeltokens import batches_by_len
 
 PROMPTS = ARTIFACTS_ROOT / "style_translation" / "prompts"
 EVID = ARTIFACTS_ROOT / "style_translation" / "read_features" / "evidence"
 ROLL = ARTIFACTS_ROOT / "style_translation" / "rollouts"
 OUT = ARTIFACTS_ROOT / "style_translation" / "prompt_pairs"
-READ_LAYERS = (0, 2, 4, 8, 12, 24)
+VEC = ARTIFACTS_ROOT / "style_translation" / "steering" / "vectors"
+
+
+def configure(model="gptj"):
+    global PROMPTS, EVID, ROLL, OUT, VEC
+    MP = model_paths(model); PROMPTS, EVID, ROLL, OUT, VEC = MP["prompts"], MP["evidence"], MP["rollouts"], MP["prompt_pairs"], MP["steering"] / "vectors"
+
+
+READ_LAYERS = (0, 2, 4, 8, 12, 16, 24)
 WRITE_LAYERS = (12, 16, 20, 24)
 K = 4
 
@@ -40,12 +49,14 @@ K = 4
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--token_budget", type=int, default=8000)
     ap.add_argument("--batch_cap", type=int, default=16)
     args = ap.parse_args()
+    configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
-    model, tok = load_model()
-    D = model.config.n_embd
+    model, tok = load_model(model=args.model)
+    A = arch(model); D, trunk = A["hidden"], A["trunk"]
     for fam in args.families:
         if (OUT / f"{fam}.npz").exists():
             print(f"{fam}: exists, skip", flush=True); continue
@@ -73,7 +84,7 @@ def main():
             for j, r in enumerate(rows):                      # left padding, as in every capture of this study
                 n = len(r["ids"]); ids[j, T - n:] = torch.tensor(r["ids"]); att[j, T - n:] = 1
             with torch.no_grad():
-                out = model.transformer(input_ids=ids.cuda(), attention_mask=att.cuda(), output_hidden_states=True)
+                out = trunk(input_ids=ids.cuda(), attention_mask=att.cuda(), output_hidden_states=True)
             for j, (i, r) in enumerate(zip(bidx, rows)):
                 off = T - len(r["ids"])
                 pos = torch.tensor([off + q for q in r["pos"]], device="cuda")
@@ -87,11 +98,13 @@ def main():
                             n_evidence=np.array([len(it["pos"]) for it in items]),
                             **{f"read_L{L}": read[L] for L in READ_LAYERS}, **{f"write_L{L}": write[L] for L in WRITE_LAYERS})
         # sanity: paired mean difference at the cue (L24) vs the stored steering vector (pooled over k, paired) — same sign expected
-        sv = np.load(ARTIFACTS_ROOT / "style_translation" / "steering" / "vectors" / f"{fam}.npz")["v_nat"][23]
-        pole = np.array([it["pole"] for it in items]); w = write[24].astype(np.float32)
-        v = w[pole == "nat"].mean(0) - w[pole == "alt"].mean(0)
-        print(f"{fam}: N={N} evidence tokens/prompt={np.mean([len(it['pos']) for it in items]):.1f} "
-              f"cos(k4 cue diff, stored L24 steering vector)={float(v @ sv / np.linalg.norm(v) / np.linalg.norm(sv)):.2f}", flush=True)
+        msg = f"{fam}: N={N} evidence tokens/prompt={np.mean([len(it['pos']) for it in items]):.1f}"
+        if (VEC / f"{fam}.npz").exists():
+            sv = np.load(VEC / f"{fam}.npz")["v_nat"][23]
+            pole = np.array([it["pole"] for it in items]); w = write[24].astype(np.float32)
+            v = w[pole == "nat"].mean(0) - w[pole == "alt"].mean(0)
+            msg += f" cos(k4 cue diff, stored L24 steering vector)={float(v @ sv / np.linalg.norm(v) / np.linalg.norm(sv)):.2f}"
+        print(msg, flush=True)
 
 
 if __name__ == "__main__":

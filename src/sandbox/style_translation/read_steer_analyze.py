@@ -30,22 +30,34 @@ from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
 from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.steer_analyze import wilson
 from src.sandbox.style_translation.steer_screen import SCREEN_LAYERS, ALPHAS
+from src.sandbox.style_translation.models import paths as model_paths
+from src.sandbox.style_translation.ml_families import ML_FAMILIES, ML_FAMILY
 from src.sandbox.style_translation.read_steer_screen import DIRECTIONS
 from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order
 
 ROOT = ARTIFACTS_ROOT / "style_translation" / "read_steer"
 OUT = STYLE_TRANSLATION_RESULTS / "read_steer"
 STEP3 = STYLE_TRANSLATION_RESULTS / "summary.csv"
+
+
+def configure(model="gptj"):
+    global ROOT, OUT, STEP3
+    MP = model_paths(model); ROOT, OUT, STEP3 = MP["read_steer"], MP["results"] / "read_steer", MP["results"] / "summary.csv"
+
+
 C = {"nat2alt": "#d62728", "alt2nat": "#1f77b4"}      # colour = target pole (alt red, nat blue) as elsewhere
 K_CTX = 3
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(); ap.add_argument("--model", default="gptj", help="models.MODELS key"); args = ap.parse_args()
+    configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
     step3 = {(r["family"], r["style"], int(r["k"])): float(r["accuracy"]) for r in csv.DictReader(open(STEP3))}
-    sfams = [f.name for f in FAMILIES if (ROOT / "screen" / f"{f.name}.json").exists()]
+    sfams = [f.name for f in list(FAMILIES) + list(ML_FAMILIES) if (ROOT / "screen" / f"{f.name}.json").exists()]
     fams = []
-    for f in FAMILIES:
+    for f in list(FAMILIES) + list(ML_FAMILIES):
         p = ROOT / "confirm" / f"{f.name}.json"
         if p.exists():
             recs = json.load(open(p))

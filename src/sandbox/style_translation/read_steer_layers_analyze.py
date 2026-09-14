@@ -21,17 +21,29 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
 from src.sandbox.style_translation.families import FAMILIES
+from src.sandbox.style_translation.models import paths as model_paths
+from src.sandbox.style_translation.ml_families import ML_FAMILIES, ML_FAMILY
 from src.sandbox.style_translation.steer_screen import ALPHAS
 from src.sandbox.style_translation.read_steer_screen import DIRECTIONS
 from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order, GROUPS
 
 ROOT = ARTIFACTS_ROOT / "style_translation" / "read_steer"
 OUT = STYLE_TRANSLATION_RESULTS / "read_steer"
+
+
+def configure(model="gptj"):
+    global ROOT, OUT
+    MP = model_paths(model); ROOT, OUT = MP["read_steer"], MP["results"] / "read_steer"
+
+
 C = {"nat2alt": "#d62728", "alt2nat": "#1f77b4"}
 
 
 def main():
-    fams = [f.name for f in FAMILIES if (ROOT / "screen" / f"{f.name}.json").exists() and (ROOT / "screen_extra" / f"{f.name}.json").exists()]
+    import argparse
+    ap = argparse.ArgumentParser(); ap.add_argument("--model", default="gptj", help="models.MODELS key"); args = ap.parse_args()
+    configure(args.model)
+    fams = [f.name for f in list(FAMILIES) + list(ML_FAMILIES) if (ROOT / "screen" / f"{f.name}.json").exists() and (ROOT / "screen_extra" / f"{f.name}.json").exists()]
     grid, base = {}, {}
     for fam in fams:
         recs = json.load(open(ROOT / "screen" / f"{fam}.json")) + json.load(open(ROOT / "screen_extra" / f"{fam}.json"))
@@ -45,7 +57,7 @@ def main():
             for k, v in by.items():
                 grid[(fam, d) + k] = float(np.mean(v))
     layers = sorted({k[2] for k in grid})
-    assert layers == list(range(0, 28)), layers
+    assert layers == list(range(0, len(layers))), layers   # 0 = embedding output .. n_layers-1 (Qwen/GPT-J: 28 layers)
     with open(OUT / "screen_full.csv", "w", newline="") as fh:
         w = csv.writer(fh); w.writerow(["family", "direction", "layer", "alpha", "target_rate", "unsteered"])
         for (fam, d, L, a), v in sorted(grid.items()):

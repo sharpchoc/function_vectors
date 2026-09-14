@@ -25,6 +25,8 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
 from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.steer_screen import SCREEN_LAYERS
+from src.sandbox.style_translation.models import paths as model_paths
+from src.sandbox.style_translation.ml_families import ML_FAMILIES, ML_FAMILY
 from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order
 
 RF = ARTIFACTS_ROOT / "style_translation" / "read_features"
@@ -32,13 +34,21 @@ VEC = ARTIFACTS_ROOT / "style_translation" / "steering" / "vectors"
 OUT = STYLE_TRANSLATION_RESULTS / "read_features"
 
 
+def configure(model="gptj"):
+    global RF, VEC, OUT
+    MP = model_paths(model); RF, VEC, OUT = MP["read_features"], MP["steering"] / "vectors", MP["results"] / "read_features"
+
+
 def cos(a, b):
     return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-9))
 
 
 def main():
+    import argparse
+    ap = argparse.ArgumentParser(); ap.add_argument("--model", default="gptj", help="models.MODELS key"); args = ap.parse_args()
+    configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
-    fams = [f.name for f in FAMILIES if (RF / f"{f.name}.npz").exists()]
+    fams = [f.name for f in list(FAMILIES) + list(ML_FAMILIES) if (RF / f"{f.name}.npz").exists()]
     rows, S = [], {}
     for fam in fams:
         d = np.load(RF / f"{fam}.npz"); v = np.load(VEC / f"{fam}.npz")["v_nat"]
@@ -48,7 +58,7 @@ def main():
                              split_half_cos=round(float(d["split_half_cos"][L - 1]), 3), cos_read_write=round(cos(r[L - 1], v[L - 1]), 3),
                              n_nat=int(d["n_nat"]), n_alt=int(d["n_alt"]), tokens_per_prompt_nat=round(float(d["tokens_per_prompt_nat"][0]), 2),
                              tokens_per_prompt_alt=round(float(d["tokens_per_prompt_alt"][0]), 2)))
-        S[fam] = rows[-28:]
+        S[fam] = rows[-d["mean_nat"].shape[0]:]
     with open(OUT / "read_features.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
 

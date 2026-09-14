@@ -26,14 +26,16 @@ from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.rollout import load_model
 from src.sandbox.style_translation.scoring import decide, cut_sentence
 from src.sandbox.style_translation.steer_screen import SCREEN_LAYERS, ALPHAS
-from src.sandbox.style_translation.read_steer_screen import k3_items, read_vectors, sample_positions, DIRECTIONS, ROOT
+from src.sandbox.style_translation.read_steer_screen import k3_items, read_vectors, sample_positions, DIRECTIONS
+import src.sandbox.style_translation.read_steer_screen as rss
+from src.sandbox.style_translation.models import paths as model_paths, arch
 
 MAX_NEW = 48
 FIELDS = ("doc_id", "family", "k", "cue_tok", "seg_prefix", "next_nat", "next_alt", "ref_sentence", "context_tail", "es_text")
 
 
 def top_settings(fam, direction, n=2):
-    recs = json.load(open(ROOT / "screen" / f"{fam}.json"))
+    recs = json.load(open(rss.ROOT / "screen" / f"{fam}.json"))
     target = DIRECTIONS[direction][1]
     rates = []
     for layer in SCREEN_LAYERS:
@@ -47,13 +49,15 @@ def top_settings(fam, direction, n=2):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES], help="this shard's families; cf cycles within")
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--batch", type=int, default=16)
     args = ap.parse_args()
-    (ROOT / "confirm").mkdir(parents=True, exist_ok=True)
+    rss.configure(args.model)
+    (rss.ROOT / "confirm").mkdir(parents=True, exist_ok=True)
     fams = args.families
-    model, tok = load_model()
+    model, tok = load_model(model=args.model)
     for fi, fam in enumerate(fams):
-        out_path = ROOT / "confirm" / f"{fam}.json"
+        out_path = rss.ROOT / "confirm" / f"{fam}.json"
         if out_path.exists():
             print(f"{fam}: exists, skip", flush=True); continue
         u = read_vectors(fam); cf_fam = fams[(fi + 1) % len(fams)]; u_cf = read_vectors(cf_fam)

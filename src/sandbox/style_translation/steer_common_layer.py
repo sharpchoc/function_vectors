@@ -25,6 +25,8 @@ from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.rollout import load_model
 from src.sandbox.style_translation.scoring import decide, cut_sentence
 from src.sandbox.style_translation.steer_screen import k0_items, sample, ALPHAS
+import src.sandbox.style_translation.steer_screen as steer_screen
+from src.sandbox.style_translation.models import paths as model_paths, arch
 
 VEC = ARTIFACTS_ROOT / "style_translation" / "steering" / "vectors"
 CONFIRM = ARTIFACTS_ROOT / "style_translation" / "steering" / "confirm"
@@ -32,15 +34,23 @@ OUT = ARTIFACTS_ROOT / "style_translation" / "steering" / "common_layer"
 MAX_NEW = 48
 
 
+def configure(model="gptj"):
+    global VEC, CONFIRM, OUT
+    steer_screen.configure(model)
+    MP = model_paths(model); VEC, CONFIRM, OUT = MP["steering"] / "vectors", MP["steering"] / "confirm", MP["steering"] / "common_layer"
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
+    ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--layer", type=int, default=24)
     ap.add_argument("--batch", type=int, default=16)
     args = ap.parse_args()
+    configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
     L = args.layer
-    model, tok = load_model()
+    model, tok = load_model(model=args.model)
     for fam in args.families:
         out_path = OUT / f"{fam}.json"
         if out_path.exists():

@@ -1,4 +1,4 @@
-"""Cue-token steering hook for GPT-J (step 4).
+"""Cue-token steering hook (step 4); model-agnostic via models.arch (GPT-J, Qwen2.5).
 
 Layer convention: L in 1..28 = output of transformer block h[L-1] = `hidden_states[L]` from
 `output_hidden_states=True` (index 0 is the embedding output). NOTE hidden_states[28] has ln_f
@@ -10,11 +10,14 @@ is at index -1. Decode steps (sequence length 1) are untouched.
 """
 import torch
 
+from src.sandbox.style_translation.models import arch
+
 
 class CueSteer:
     def __init__(self, model, layer, vec, alpha):
-        self.block = model.transformer.h[layer - 1]
-        self.vec = torch.as_tensor(vec, dtype=torch.float16, device=next(model.parameters()).device)
+        A = arch(model)
+        self.block = A["blocks"][layer - 1]
+        self.vec = torch.as_tensor(vec, dtype=A["dtype"], device=next(model.parameters()).device)
         self.alpha = float(alpha)
         self.handle = None
         self.calls = 0
@@ -43,16 +46,17 @@ def unit_test(model, tok, layer=6):
               return_tensors="pt", padding=True).to(model.device)
     with torch.no_grad():
         base = model(**enc, output_hidden_states=True)
-        v = torch.randn(model.config.n_embd, device=model.device, generator=torch.Generator(device=model.device).manual_seed(0)) * 0.1
+        v = torch.randn(arch(model)["hidden"], device=model.device, generator=torch.Generator(device=model.device).manual_seed(0)) * 0.1
         with CueSteer(model, layer, v, 0.0):
             zero = model(**enc, output_hidden_states=True)
         with CueSteer(model, layer, v, 1.0) as s:
             one = model(**enc, output_hidden_states=True)
     assert torch.equal(base.logits, zero.logits), "alpha=0 must be an identity"
     d = (one.hidden_states[layer] - base.hidden_states[layer]).float()
-    # fp16-aware tolerance: hidden entries at late layers reach the hundreds, where the fp16 spacing is 0.25
+    # dtype-aware tolerance: hidden entries at late layers reach the hundreds; spacing = eps(dtype) * |h| (fp16 1e-3, bf16 8e-3)
+    rel = 1.5 * torch.finfo(arch(model)["dtype"]).eps
     h = base.hidden_states[layer][:, -1, :].float().abs()
-    assert ((d[:, -1, :] - v.float()).abs() <= 2e-2 + 1.5e-3 * h).all(), "last position must move by v"
+    assert ((d[:, -1, :] - v.float()).abs() <= 2e-2 + rel * h).all(), "last position must move by v"
     assert d[:, :-1, :].abs().max().item() == 0.0, "other positions must be unchanged"
     assert s.calls == 1
     return True
@@ -65,9 +69,10 @@ class PositionSteer:
     (caller offsets the prompt-relative indices by the padding). Decode steps (length 1) untouched.
     """
     def __init__(self, model, layer, vec, alpha, positions):
-        # layer 0 = the embedding output (GPT-J adds no positional vector to the residual stream), L >= 1 = output of block L
-        self.block = model.transformer.wte if layer == 0 else model.transformer.h[layer - 1]
-        self.vec = torch.as_tensor(vec, dtype=torch.float16, device=next(model.parameters()).device)
+        # layer 0 = the embedding output (no positional vector in the residual stream for GPT-J / Qwen2), L >= 1 = output of block L
+        A = arch(model)
+        self.block = A["embed"] if layer == 0 else A["blocks"][layer - 1]
+        self.vec = torch.as_tensor(vec, dtype=A["dtype"], device=next(model.parameters()).device)
         self.alpha = float(alpha)
         self.positions = positions
         self.handle = None
@@ -102,7 +107,7 @@ def unit_test_positions(model, tok, layer=6):
     positions = [[L - 3, L - 2], [L - 1]]                 # row 0: two evidence tokens before the cue; row 1: last token
     with torch.no_grad():
         base = model(**enc, output_hidden_states=True)
-        v = torch.randn(model.config.n_embd, device=model.device, generator=torch.Generator(device=model.device).manual_seed(1)) * 0.1
+        v = torch.randn(arch(model)["hidden"], device=model.device, generator=torch.Generator(device=model.device).manual_seed(1)) * 0.1
         with PositionSteer(model, layer, v, 0.0, positions):
             zero = model(**enc, output_hidden_states=True)
         with PositionSteer(model, layer, v, 1.0, positions) as s:
@@ -111,7 +116,8 @@ def unit_test_positions(model, tok, layer=6):
     d = (one.hidden_states[layer] - base.hidden_states[layer]).float()
     for r, pos in enumerate(positions):
         hmag = base.hidden_states[layer][r, pos, :].float().abs()
-        assert ((d[r, pos, :] - v.float()).abs() <= 2e-2 + 1.5e-3 * hmag).all(), "listed positions must move by v"
+        rel = 1.5 * torch.finfo(arch(model)["dtype"]).eps
+        assert ((d[r, pos, :] - v.float()).abs() <= 2e-2 + rel * hmag).all(), "listed positions must move by v"
         others = [j for j in range(L) if j not in pos]
         assert d[r, others, :].abs().max().item() == 0.0, "other positions must be unchanged"
     assert s.calls == 1
