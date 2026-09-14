@@ -49,8 +49,8 @@ def k3_items(fam, pole, n=None):
     items = sorted([p for p in json.load(open(PROMPTS / f"{fam}.json")) if p["style"] == pole and p["k"] == K_CTX], key=lambda p: p["doc_id"])
     for it in items:
         inst = ev[(it["doc_id"], pole)]["instances"][:K_CTX]
-        pos = sorted({j for e in inst for j in e["idx"]})
-        assert pos and max(pos) < len(it["prompt_ids"]), f"evidence outside the k=3 prompt {it['doc_id']}"
+        pos = sorted({j for e in inst for j in e["idx"] if j < len(it["prompt_ids"])})   # CJK: an instance merged into the next cue's token lies beyond the k=3 prompt -> dropped
+        assert pos, f"no evidence inside the k=3 prompt {it['doc_id']}"
         it["positions"] = pos
         it["cue_is_evidence"] = max(pos) == len(it["prompt_ids"]) - 1   # adjacent opportunities: the 3rd instance's last token is also the 4th decision's cue
     return items[:n] if n else items
