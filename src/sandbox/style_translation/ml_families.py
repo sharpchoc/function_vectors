@@ -672,6 +672,12 @@ ML_FAMILY = {f.name: f for f in ML_FAMILIES}
 ML_NAMES = [f.name for f in ML_FAMILIES]
 
 
+try:
+    from src.sandbox.style_translation import code_families as _code_families  # noqa: F401  (appends the code families to ML_FAMILIES / ML_FAMILY / PROPS)
+except Exception as _e:  # pragma: no cover
+    print("code_families not loaded:", _e)
+
+
 if __name__ == "__main__":
     for f in ML_FAMILIES:
         print(f"{f.name:14s} {f.tgt_lang:11s} pairs={len(f.pairs):3d}  nat={f.nat!r}  alt={f.alt!r}")
