@@ -65,7 +65,8 @@ ax.set_xticks(x); ax.set_xticklabels([f"{it['family']}\n({it['lang']})" if it["g
 ax.set_ylim(0, 1.08); ax.set_ylabel("accuracy at k = 4  (uses the context's convention ∧ faithful)"); ax.grid(axis="y", alpha=0.3)
 ax.text((n_en - 1) / 2, 1.04, f"English target (200 texts per family) — {sum(it['accept'] for it in items if it['group']=='English')} of {n_en} accepted", ha="center", fontsize=10.5, fontweight="bold")
 _ne = [it for it in items if it["group"] != "English"]
-_lab = "full corpus" if all(it["source"] == "full" for it in _ne) else ("cheap check, 45–60 texts" if all(it["source"] == "cheap" for it in _ne) else "full corpus where available, else cheap check")
+_nf = sum(it["source"] == "full" for it in _ne)
+_lab = "full corpus" if _nf == len(_ne) else ("cheap check, 45–60 texts" if _nf == 0 else f"{_nf} full corpus, {len(_ne) - _nf} cheap check")
 ax.text(n_en + (len(items) - n_en - 1) / 2, 1.04, f"non-English target ({_lab}) — {sum(it['accept'] for it in _ne)} of {len(_ne)} accepted", ha="center", fontsize=10.5, fontweight="bold")
 ax.set_ylim(0, 1.10)
 h, l = ax.get_legend_handles_labels()

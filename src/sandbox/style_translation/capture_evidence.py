@@ -65,6 +65,7 @@ def main():
             items.append({"ids": p["prompt_ids"], "pole": p["style"], "doc": p["doc_id"],
                           "inst": [e["idx"] for e in r["instances"]], "half": zlib.crc32(p["doc_id"].encode()) % 2})
         sums = {(s, h): np.zeros((NL, D), np.float64) for s in ("nat", "alt") for h in (0, 1)}
+        sums0 = {s: np.zeros(D, np.float64) for s in ("nat", "alt")}
         inst = {s: np.zeros((K, NL, D), np.float64) for s in ("nat", "alt")}
         cnt = {(s, h): 0 for s in ("nat", "alt") for h in (0, 1)}
         ntok = {s: [] for s in ("nat", "alt")}
@@ -76,13 +77,17 @@ def main():
                 ids[r, L - lens[r]:] = torch.tensor(items[i]["ids"]); att[r, L - lens[r]:] = 1
             with torch.no_grad():
                 out = trunk(input_ids=ids.cuda(), attention_mask=att.cuda(), output_hidden_states=True)
-            hs = torch.stack(out.hidden_states[1:NL + 1], 1)          # [B, 28, L, D] fp16 on GPU
+            hs = torch.stack(out.hidden_states[1:NL + 1], 1)          # [B, NL, L, D] on GPU
+            h0 = out.hidden_states[0]                                  # [B, L, D] embedding output (layer 0)
             for r, i in enumerate(b):
                 it = items[i]; off = L - lens[r]
-                per_inst = [hs[r][:, [off + j for j in idx], :].float().mean(1) for idx in it["inst"]]   # K x [28, D]
+                per_inst = [hs[r][:, [off + j for j in idx], :].float().mean(1) if idx else torch.zeros(hs.shape[1], hs.shape[3], device=hs.device) for idx in it["inst"]]   # K x [NL, D]; empty instance (evidence outside the prompt) contributes 0
                 all_idx = [off + j for idx in it["inst"] for j in idx]
-                v = hs[r][:, all_idx, :].float().mean(1).cpu().numpy()                                    # [28, D]
+                if not all_idx:
+                    continue
+                v = hs[r][:, all_idx, :].float().mean(1).cpu().numpy()                                    # [NL, D]
                 key = (it["pole"], it["half"]); sums[key] += v; cnt[key] += 1
+                sums0[it["pole"]] += h0[r][all_idx, :].float().mean(0).cpu().numpy()
                 inst[it["pole"]] += np.stack([x.cpu().numpy() for x in per_inst], 0)
                 ntok[it["pole"]].append(len(all_idx))
             if (bi + 1) % 20 == 0:
@@ -97,6 +102,7 @@ def main():
                             inst_nat=(inst["nat"] / max(n["nat"], 1)).astype(np.float32), inst_alt=(inst["alt"] / max(n["alt"], 1)).astype(np.float32),
                             n_nat=n["nat"], n_alt=n["alt"], tokens_per_prompt_nat=np.array([np.mean(ntok["nat"]), np.std(ntok["nat"])]),
                             tokens_per_prompt_alt=np.array([np.mean(ntok["alt"]), np.std(ntok["alt"])]),
+                            mean_nat_L0=(sums0["nat"] / max(n["nat"], 1)).astype(np.float32), mean_alt_L0=(sums0["alt"] / max(n["alt"], 1)).astype(np.float32),
                             split_half_cos=cos, norm_diff=np.linalg.norm(diff, axis=1), norm_mean=np.linalg.norm(mean["nat"], axis=1))
         print(f"{fam}: n_nat={n['nat']} n_alt={n['alt']} | tokens/prompt nat {np.mean(ntok['nat']):.1f} alt {np.mean(ntok['alt']):.1f} | "
               f"|diff|/|mean| L6,12,20: " + ", ".join(f"{np.linalg.norm(diff[l-1])/np.linalg.norm(mean['nat'][l-1]):.3f}" for l in (6, 12, 20))
