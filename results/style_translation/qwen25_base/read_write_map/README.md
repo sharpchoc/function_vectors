@@ -50,4 +50,21 @@ LOFO convention cos: num_words .68, ordinal_words .58 (digits axis mates), contr
   within-axis cosines say the relation is shared where sampled.
 
 Files: `coverage.{png,csv}`, `pool_summary_L12_L24.csv`, `pool_per_family_L12_L24.csv`, `fixed_split_headroom.json`, `fixed_split_strict.json`,
-`lofo_convention_cos.png`; read-L0 variant: `pool_summary_L0_L24.csv` (see the L0 line appended below when finished).
+`lofo_convention_cos.png`; read-L0 variant: `pool_summary_L0_L24.csv`, `pool_per_family_L0_L24.csv`.
+
+## Read-layer variant: embeddings instead of layer 12 (`pool_summary_L0_L24.csv`, 2026-09-14)
+
+Same 12-family pool and protocol with the read side taken at layer 0 (the embedding output) instead of L12:
+
+| | read L12 → write L24 | read L0 → write L24 |
+|---|---|---|
+| LOFO mean convention cos | **.44** | .24 |
+| within-axis hold-outs (8) | **.55** | .31 |
+| cross-axis hold-outs (4) | .21 | .08 |
+| fixed split convention cos | **.44** | .27 |
+| R² (train-mean), within-family R² | +.06, ~0 | +.03, ~0 |
+
+Per family the drop is uniform (us_uk .77→.44, ise_ize .69→.50, num_words .66→.43, pt_acordo_eu .63→.18, pt_br_eu .47→.07,
+contractions .20→−.00, es_rae2010 .16→−.03); only ordinal_words (.47) and zh_simp_trad (.24) are unchanged. Shuffled controls stay at 0.
+Same ordering as the GPT-J layer sweep (`../../read_write_map/README.md`, .21 at L0 → .38 at L12): the transferable part of the read
+feature is built in the residual stream, not present in the token embeddings, even though embedding-level *steering* works well.
