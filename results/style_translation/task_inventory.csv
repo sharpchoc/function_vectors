@@ -16,30 +16,30 @@ brit_t_past,English,learned → learnt,tested: too weak,0.72,0.27,200,Alternativ
 contractions,English,don't → do not,kept (in pool),0.82,0.68,200,Passes the cutoff; both features work.
 num_words,English,3 → three,kept (in pool),0.91,0.48,200,Passes the cutoff; both features work.
 ordinal_words,English,3rd → third,kept (in pool),0.96,0.89,200,Passes the cutoff; both features work.
-uk_vocab (#1),English,truck → lorry,kept (in pool),0.67,0.31,200,"Passes the cutoff (alt .31, borderline); features work."
-"register (#2, merged with #3 phrasal/#4 colloquial)",English,begin → commence,kept (in pool),0.70,0.33,200,#2–#4 overlapped by your ruling and were merged into one register lexicon; passes the cutoff (alt .33) but weakest write feature in the pool.
-unit_abbr (#5),English,5 km → 5 kilometers,kept (in pool),0.95,0.56,200,Passes the cutoff; features work.
--ward vs -wards (#6),English,toward → towards,pruned before inference,—,—,—,Your ruling: too trivial (a closed lexicon of about eight words).
-diacritics (#7),English,cafe → café,kept (in pool),0.40,0.45,200,"Passes the cutoff (.40/.45) but both features are weak (steering lift ≤ .13); admitted to the pool, fails the feature gate."
-latin_abbr (#8),English,for example → e.g.,tested: too weak,0.35,0.24,200,Alternative pole .24 at k = 4 (natural pole .35 too): the model rarely produces the abbreviations in running prose.
-sentence-initial connectors (#9),English,But → However,pruned before inference,—,—,—,Your ruling: too trivial / sentence-position marker rather than a lexical rule.
-generic you vs one (#10),English,you should → one should,pruned before inference,—,—,—,Your ruling: trivial; rendering also needs verb agreement changes.
-collective-noun agreement (#11),English,the team is → the team are,pruned before inference,—,—,—,Your ruling: trivial; too few opportunities per text.
-UK/US preposition idioms (#12),English,on the weekend → at the weekend,pruned before inference,—,—,—,Your ruling: trivial; low frequency.
-weekday/month abbreviations (#13),English,Monday → Mon.,pruned before inference,—,—,—,Your ruling: overlaps title/street abbreviations (#20); needs date-centred texts.
-hyphen_compound (#14),English,email → e-mail,tested: too weak,0.76,0.21,200,Alternative pole .21 at k = 4: hyphenated compounds are a weak prior the model does not adopt from four examples.
-compound-modifier hyphenation (#15),English,long-term → long term,pruned before inference,—,—,—,Your ruling: a copy of #14.
-have vs have got (#16),English,I have → I've got,pruned before inference,—,—,—,Your ruling: too trivial; needs a light parse to avoid auxiliary 'have'.
-flat_adverb (#17),English,drive slowly → drive slow,tested: too weak,0.74,0.09,200,Alternative pole .09 at k = 4: flat adverbs are essentially never produced; corpus also needed two generation rounds (generator ignored anchors).
-irreg_past (#18),English,dived → dove,tested: too weak,0.47,0.12,200,"Alternative pole .12 at k = 4; rare forms, same sparsity problem as brit_t_past; corpus needed regeneration."
-latin_plural (#19),English,indexes → indices,kept (in pool),0.57,0.35,200,"Passes the cutoff (alt .35) but write feature weak (.23→.28); admitted to the pool, fails the feature gate."
-title_abbr (#20),English,Doctor Smith → Dr. Smith,kept (in pool),0.67,0.57,200,Passes the cutoff; features work.
-Canadian / Oxford spelling,English,colour + -ize,pruned before inference,—,—,—,"Kept on the shortlist but not built: superseded by the non-English round; a composition of us_uk and ise_ize, still a candidate for axis density."
-Archaic house style,English,"to-day, connexion",pruned before inference,—,—,—,Your ruling: drop (rare alternative pole; would behave like the weak new families).
-Dating variants,English,e-mail / on-line,pruned before inference,—,—,—,Duplicate of hyphen_compound (#14).
-Exonyms and romanisation,English,"Kiev → Kyiv, Peking → Beijing",pruned before inference,—,—,—,Kept on the shortlist but not built (English-target round was set aside for the non-English round).
-Gender-inclusive English,English,chairman → chair,pruned before inference,—,—,—,Kept on the shortlist but not built (same reason).
-zh_simp_trad,Chinese,这个 → 這個 (Simplified → Traditional),kept (in pool),0.94,0.92,200,Added by me after the model switch; best-learned convention of all (.94/.92); both features work.
+uk_vocab,English,truck → lorry,kept (in pool),0.67,0.31,200,"Passes the cutoff (alt .31, borderline); both features work."
+register,English,begin → commence,kept (in pool),0.70,0.33,200,"Built as one lexicon that also absorbed two overlapping ideas, 'colloquial vs neutral nouns' (kids/children) and 'phrasal vs single-word verbs' (find out/discover). Passes the cutoff (alt .33) but has the weakest write feature in the pool."
+unit_abbr,English,5 km → 5 kilometers,kept (in pool),0.95,0.56,200,Passes the cutoff; both features work.
+-ward vs -wards adverbs,English,toward → towards,pruned before inference,—,—,—,Dropped by decision: too trivial (a closed lexicon of about eight words).
+diacritics,English,cafe → café,kept (in pool),0.40,0.45,200,"Passes the cutoff (.40/.45) but both features are weak (steering lift ≤ .13): in the pool, fails the feature gate."
+latin_abbr,English,for example → e.g.,tested: too weak,0.35,0.24,200,Alternative pole .24 at k = 4 (natural pole only .35): the model rarely produces the abbreviations in running prose.
+Sentence-initial connectors,English,But → However,pruned before inference,—,—,—,Dropped by decision: too trivial; a sentence-position marker rather than a lexical rule.
+Generic 'you' vs 'one',English,you should → one should,pruned before inference,—,—,—,"Dropped by decision: trivial, and rendering would also need verb-agreement changes."
+Collective-noun agreement,English,the team is → the team are,pruned before inference,—,—,—,Dropped by decision: trivial; too few opportunities per text.
+UK/US preposition idioms,English,on the weekend → at the weekend,pruned before inference,—,—,—,Dropped by decision: trivial; too rare in ordinary text.
+Weekday/month abbreviations,English,Monday → Mon.,pruned before inference,—,—,—,"Dropped by decision: overlaps title and street abbreviations (Dr., St.); would need texts built around dates."
+hyphen_compound,English,email → e-mail,tested: too weak,0.76,0.21,200,Alternative pole .21 at k = 4: hyphenated compounds are a weak prior the model does not adopt from four examples.
+Compound-modifier hyphenation,English,long-term → long term,pruned before inference,—,—,—,Dropped by decision: a duplicate of hyphenated compounds (email/e-mail).
+'have' vs 'have got',English,I have → I've got,pruned before inference,—,—,—,Dropped by decision: too trivial; needs a light parse to avoid the auxiliary 'have'.
+flat_adverb,English,drive slowly → drive slow,tested: too weak,0.74,0.09,200,Alternative pole .09 at k = 4: flat adverbs are essentially never produced; the corpus also needed two generation rounds.
+irreg_past,English,dived → dove,tested: too weak,0.47,0.12,200,"Alternative pole .12 at k = 4: rare forms, same sparsity problem as learnt/learned; the corpus needed regeneration."
+latin_plural,English,indexes → indices,kept (in pool),0.57,0.35,200,"Passes the cutoff (alt .35) but the write feature is weak (.23→.28): in the pool, fails the feature gate."
+title_abbr,English,Doctor Smith → Dr. Smith,kept (in pool),0.67,0.57,200,Passes the cutoff; both features work.
+Canadian / Oxford spelling,English,colour + -ize,pruned before inference,—,—,—,"Shortlisted but never built: set aside for the non-English round. Still a candidate (it combines colour and -ize, i.e. two existing axes)."
+Archaic house style,English,"to-day, connexion",pruned before inference,—,—,—,"Dropped by decision: the archaic forms are rare in pretraining, so it would behave like the weak families above."
+Dating variants,English,e-mail / on-line,pruned before inference,—,—,—,Duplicate of hyphenated compounds (email/e-mail).
+Exonyms and romanisation,English,"Kiev → Kyiv, Peking → Beijing",pruned before inference,—,—,—,Shortlisted but never built: the English-target round was set aside for the non-English round.
+Gender-inclusive English,English,chairman → chair,pruned before inference,—,—,—,Shortlisted but never built: same reason.
+zh_simp_trad,Chinese,这个 → 這個 (Simplified → Traditional),kept (in pool),0.94,0.92,200,Added after the switch to Qwen; the best-learned convention of all (.94/.92); both features work.
 zh_tw_hk,Chinese,裡/著 → 裏/着 (Taiwan → Hong Kong),"tested, then dropped",0.43,0.23,200,"Passed the cheap 46-text check (.41/.30) but fell to .43/.23 on the full 200-text corpus; differences too sparse, 45 % of completions unscorable."
 ja_long_vowel,Japanese,コンピューター → コンピュータ,tested: too weak,0.62,0.23,13,"Cheap check only: alternative .23, and only 13 usable texts (loanwords rare in the base topics)."
 ru_yo,Russian,ё → е,kept (in pool),0.57,0.56,198,"Passes the cutoff (.57/.56); the model's default is е, so the ё pole is the learned one; steering weak (write .07→.18) — in the pool, fails the gate."
@@ -51,16 +51,18 @@ pt_acordo_eu,Portuguese,acção → ação (post-1990 EP),kept (in pool),0.71,0.
 pt_acordo_br,Portuguese,idéia → ideia (post-1990 BR),tested: too weak,0.56,0.09,45,Cheap check: alternative (pre-1990) .09; the old trema/accent forms are gone from modern text.
 pt_br_eu,Portuguese,ônibus → autocarro (BR → EP),kept (in pool),0.83,0.45,200,Passes the cutoff (.83/.45); both features work.
 es_rae2010,Spanish,sólo → solo (2010 RAE accents),kept (in pool),0.61,0.30,200,"Passes the cutoff at exactly .30 on the alternative pole; read feature works, write feature weak on the alt pole."
-German/French gender-inclusive forms,German/French,"Student*innen, étudiant·e·s",pruned before inference,—,—,—,"Deferred: thin alternative pole in pretraining, and German/French writing is judge-limited on this model."
+German/French gender-inclusive forms,German/French,"Student*innen, étudiant·e·s",pruned before inference,—,—,—,"Deferred: the inclusive forms are thin in pretraining, and German/French writing is judge-limited on this model."
 French space before punctuation,French,France vs Quebec spacing,pruned before inference,—,—,—,"Deferred: a fixed-marker (lexically identical) convention, and French is judge-limited."
 Dutch 1995/2006 spelling,Dutch,pannekoek → pannenkoek,pruned before inference,—,—,—,Dropped: rare pole; Qwen's Dutch scored .00 faithful∧fluent in the pilot.
 Romanian 1993 reform,Romanian,cînd → când,pruned before inference,—,—,—,Dropped: Qwen's Romanian scored .00 in the pilot.
-Belarusian Taraškievica,Belarusian,(scattered word forms),pruned before inference,—,—,—,"Dropped: rare alternative pole, no reliable lexicon."
-Serbo-Croatian ekavian/ijekavian,Serbo-Croatian,mleko → mlijeko,pruned before inference,—,—,—,Deferred: untested language on Qwen; entangled with Serbian/Croatian vocabulary differences.
-Japanese shinjitai/kyūjitai,Japanese,学 → 學,pruned before inference,—,—,—,Deferred: the old-form pole is rare in modern text (expected weak-pole failure).
+Belarusian Taraškievica,Belarusian,(scattered word forms),pruned before inference,—,—,—,Dropped: rare alternative pole and no reliable lexicon.
+Serbo-Croatian ekavian/ijekavian,Serbo-Croatian,mleko → mlijeko,pruned before inference,—,—,—,Deferred: language untested on Qwen; entangled with Serbian/Croatian vocabulary differences.
+Japanese shinjitai/kyūjitai,Japanese,学 → 學,pruned before inference,—,—,—,Deferred: the old-character pole is rare in modern text (expected to fail like the other rare poles).
 Japanese historical kana,Japanese,いふ → いう,pruned before inference,—,—,—,Dropped: archaic.
-Korean North vs South,Korean,로동 → 노동 (initial ㄹ/ㄴ rule),pruned before inference,—,—,—,Dropped: North Korean text scarce in pretraining (weak pole).
-Arabic final ya,Arabic,ي → ى,pruned before inference,—,—,—,Your ruling: drop.
+Korean North vs South,Korean,로동 → 노동 (initial ㄹ/ㄴ rule),pruned before inference,—,—,—,Dropped: North Korean text is scarce in pretraining (rare pole).
+Arabic final ya,Arabic,ي → ى,pruned before inference,—,—,—,Dropped by decision.
 Hebrew plene vs defective,Hebrew,ktiv male / haser,pruned before inference,—,—,—,"Dropped: Qwen's Hebrew weak, orthography less standardised."
-Quote marks (typography),various,„…“ vs «…» vs 「」,pruned before inference,—,—,—,Dropped: lexically identical; English already has curly_quotes / quote_punct.
-Unicode normalisation / Romanian ş vs ș,encoding,NFC vs NFD,pruned before inference,—,—,—,"Your ruling: drop encoding rows — not writing style, invisible or garbled at the tokeniser."
+Quote marks (typography),various,„…“ vs «…» vs 「」,pruned before inference,—,—,—,Dropped: lexically identical; English already has curly_quotes and quote_punct.
+Unicode normalisation / Romanian ş vs ș,encoding,NFC vs NFD,pruned before inference,—,—,—,"Dropped by decision: encoding differences, not writing style; invisible or garbled at the tokeniser."
+Colloquial vs neutral nouns,English,"children → kids, many → a lot of",pruned before inference,—,—,—,"Merged into register (overlapping idea): one lexicon covers plain-vs-formal words, colloquial nouns and phrasal verbs."
+Phrasal vs single-word verbs,English,"discover → find out, postpone → put off",pruned before inference,—,—,—,Merged into register (overlapping idea).
