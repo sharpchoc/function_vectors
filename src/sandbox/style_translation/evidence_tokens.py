@@ -11,13 +11,21 @@ count ("'s" vs " is", "st" in "Among|st"). If the rendered span is entirely shar
 (nat "Among" vs alt "Among|st"), the evidence is the divergence token itself (" these" vs "st"),
 as for the absence poles generally. curly_quotes: opening mark + the paired closing mark.
 
+Code families (user decision 2026-09-15): the twin builder merges nearby edits into one opportunity span
+(`['rock', 'paper', 'scissors']` for py_quotes), so the evidence is restricted to the tokens of the span
+that actually DIFFER between the nat rendering and the flipped rendering (token-level difflib on the
+natural segmentation of both); shared content tokens inside the span are dropped (`n_shared_dropped`).
+Empty result -> the whole-span rule, then the divergence token, as for text.
+
 Input: pairs (opps + stored cues) and the step-3 k = 4 prompts. Output per family:
 artifacts/style_translation/read_features/evidence/<family>.json — one record per (doc, pole) with
 `prompt_len`, and per instance k = 0..3: `idx` (token positions in the prompt), `toks` (decoded).
 """
 import argparse
 import collections
+import difflib
 import json
+import statistics
 import sys
 from pathlib import Path
 
@@ -29,6 +37,7 @@ from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_DATA
 from src.sandbox.style_translation.families import FAMILIES
 from src.sandbox.style_translation.cue_tokens import HEADER, TOKENIZER, decision_points, variant, common_prefix_len, header_for
 from src.sandbox.style_translation.models import paths as model_paths, arch
+from src.sandbox.style_translation.ml_families import ML_FAMILY
 
 PAIRS = STYLE_TRANSLATION_DATA / "pairs"
 PROMPTS = ARTIFACTS_ROOT / "style_translation" / "prompts"
@@ -50,20 +59,42 @@ def span_tokens(offs, h, span, text, start, prompt_len):
     return idx
 
 
+def is_code(fam):
+    return getattr(ML_FAMILY.get(fam), "domain", "text") == "code"
+
+
+def diff_only(tok, ids, idx, ids_b, offs_b, h, s, other_piece, text_b, n):
+    """Code rule: keep only the nat-side span tokens that differ from the flipped rendering's span tokens."""
+    idx_b = span_tokens(offs_b, h, (s, s + len(other_piece)), text_b, n, len(ids_b))
+    a = [tok.decode([ids[j]]) for j in idx]; b = [tok.decode([ids_b[j]]) for j in idx_b]
+    keep = []
+    for tag, i1, i2, _, _ in difflib.SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
+        if tag != "equal":
+            keep += idx[i1:i2]
+    return keep
+
+
 def evidence_for(rec, tok, pol, prompt_ids):
     header = header_for(rec); text = rec[f"text_{pol}"]; full = header + text
     enc = tok(full, return_offsets_mapping=True); ids, offs = enc.input_ids, enc.offset_mapping
     assert ids[:len(prompt_ids)] == list(prompt_ids), "stored prompt is not a prefix of the twin tokenisation"
     h = len(header); dps = decision_points(rec); out = []
     stored = {c["k"]: c for c in rec["cues"][pol]}
+    code = is_code(rec["family"]); other = "alt" if pol == "nat" else "nat"
     for k in range(K):
         i = dps[k]
         flip = {i} | ({i + 1} if rec["family"] == "curly_quotes" else set())
-        ids_b = tok(header + variant(rec, pol, flip)).input_ids
+        text_b = variant(rec, pol, flip)
+        enc_b = tok(header + text_b, return_offsets_mapping=True); ids_b, offs_b = enc_b.input_ids, enc_b.offset_mapping
         n = common_prefix_len(ids, ids_b)
         assert n - 1 == stored[k]["cue_idx"], f"cue mismatch {rec['doc_id']} {pol} k={k}"
         assert n < len(ids) and (n >= len(ids_b) or ids[n] != ids_b[n]), "no divergence after the cue"
         idx = span_tokens(offs, h, rec["opps"][i][f"{pol}_span"], text, n, len(prompt_ids))
+        n_shared = 0
+        if code and idx:
+            keep = diff_only(tok, ids, idx, ids_b, offs_b, h, rec["opps"][i][f"{pol}_span"][0], rec["opps"][i][other], text_b, n)
+            if keep:
+                n_shared = len(idx) - len(keep); idx = keep
         if rec["family"] == "curly_quotes":                       # paired closing mark of the same quotation
             s2 = rec["opps"][i + 1][f"{pol}_span"]
             first = next((j for j in range(n, len(offs)) if offs[j][1] > h + s2[0]), None)
@@ -77,9 +108,10 @@ def evidence_for(rec, tok, pol, prompt_ids):
             else:        # adjacent opportunities merged into one token by the tokeniser (CJK): instance k's evidence lies beyond the k=4 cue
                 outside = True
         if idx:
-            assert min(idx) == n and max(idx) < len(prompt_ids), "evidence outside the prompt or not at the divergence"
+            assert (min(idx) == n or code) and max(idx) < len(prompt_ids), "evidence outside the prompt or not at the divergence"
             assert stored[k]["cue_idx"] not in idx
-        out.append({"k": k, "opp_index": i, "idx": idx, "toks": [tok.decode([ids[j]]) for j in idx], "outside_prompt": outside})
+        out.append({"k": k, "opp_index": i, "idx": idx, "toks": [tok.decode([ids[j]]) for j in idx], "outside_prompt": outside,
+                    "diff_only": code, "n_shared_dropped": n_shared})
     return out
 
 
@@ -111,8 +143,18 @@ def main():
                     examples[p["style"]].append("".join(e["toks"]))
         json.dump(recs, open(OUT / f"{fam}.json", "w"), ensure_ascii=False)
         dist = sorted(per_inst.items())
+        insts = [e for r in recs for e in r["instances"]]
+        med = statistics.median([len(e["idx"]) for e in insts]) if insts else 0
+        ws = _mean([bool(e["idx"]) and "".join(e["toks"]).strip() == "" for e in insts])
+        outside = _mean([e["outside_prompt"] for e in insts]); dropped = sum(e.get("n_shared_dropped", 0) for e in insts)
         print(f"{fam:14s} prompts {len(recs)} | tokens per instance: " + ", ".join(f"{n}:{c}" for n, c in dist[:6]) + (" ..." if len(dist) > 6 else "")
+              + f" | median {med:g} | whitespace-only {ws:.2f} | outside {outside:.3f} | shared tokens dropped {dropped}"
               + f" | nat e.g. {examples['nat']} | alt e.g. {examples['alt']}", flush=True)
+
+
+def _mean(xs):
+    xs = list(xs)
+    return sum(xs) / len(xs) if xs else 0.0
 
 
 if __name__ == "__main__":

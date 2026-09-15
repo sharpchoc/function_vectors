@@ -4,7 +4,8 @@
 For every k = 4 prompt (200 texts x 2 poles per family) a forward pass through the transformer trunk
 collects hidden_states[1..28] at the evidence token positions (evidence_tokens.py); per prompt the
 activations are averaged over ALL evidence tokens of the 4 instances (user decision), and also kept
-per instance index k = 0..3. Means over the 200 prompts per pole ->
+per instance index k = 0..3. The pool is PAIRED: only documents whose k = 4 prompt has evidence inside
+the prompt in both poles (2026-09-15). Means over the prompts per pole ->
 artifacts/style_translation/read_features/<family>.npz:
   mean_nat, mean_alt [28,4096] fp32; inst_nat, inst_alt [4,28,4096]; n_nat, n_alt;
   tokens_per_prompt_{nat,alt} (mean, std); split_half_cos[28] of (mean_nat - mean_alt) with halves by
@@ -56,9 +57,11 @@ def main():
         if (OUT / f"{fam}.npz").exists():
             print(f"{fam}: exists, skip", flush=True); continue
         ev = {(r["doc_id"], r["pole"]): r for r in json.load(open(EVID / f"{fam}.json"))}
+        has_ev = {s: {d for (d, pl), r in ev.items() if pl == s and any(e["idx"] for e in r["instances"])} for s in ("nat", "alt")}
+        paired = has_ev["nat"] & has_ev["alt"]              # paired pool: documents with evidence inside the prompt in BOTH poles
         items = []
         for p in json.load(open(PROMPTS / f"{fam}.json")):
-            if p["k"] != K:
+            if p["k"] != K or p["doc_id"] not in paired:
                 continue
             r = ev[(p["doc_id"], p["style"])]
             assert r["prompt_len"] == len(p["prompt_ids"])
@@ -104,7 +107,7 @@ def main():
                             tokens_per_prompt_alt=np.array([np.mean(ntok["alt"]), np.std(ntok["alt"])]),
                             mean_nat_L0=(sums0["nat"] / max(n["nat"], 1)).astype(np.float32), mean_alt_L0=(sums0["alt"] / max(n["alt"], 1)).astype(np.float32),
                             split_half_cos=cos, norm_diff=np.linalg.norm(diff, axis=1), norm_mean=np.linalg.norm(mean["nat"], axis=1))
-        print(f"{fam}: n_nat={n['nat']} n_alt={n['alt']} | tokens/prompt nat {np.mean(ntok['nat']):.1f} alt {np.mean(ntok['alt']):.1f} | "
+        print(f"{fam}: paired docs={len(paired)} n_nat={n['nat']} n_alt={n['alt']} | tokens/prompt nat {np.mean(ntok['nat']):.1f} alt {np.mean(ntok['alt']):.1f} | "
               f"|diff|/|mean| L6,12,20: " + ", ".join(f"{np.linalg.norm(diff[l-1])/np.linalg.norm(mean['nat'][l-1]):.3f}" for l in (6, 12, 20))
               + " | split-half cos L6,12,20: " + ", ".join(f"{cos[l-1]:.2f}" for l in (6, 12, 20)), flush=True)
     print("read capture done", flush=True)

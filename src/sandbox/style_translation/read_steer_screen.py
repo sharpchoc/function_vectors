@@ -1,12 +1,15 @@
 #!/usr/bin/env python
-"""Step 7a — screen: steer at the EVIDENCE tokens of a k = 3 prompt with the read-feature difference.
+"""Step 7a — screen: steer at the EVIDENCE tokens of a k-shot prompt with the read-feature difference.
 
 u_nat(L) = r_nat(L) - r_alt(L) (step-6 read features); u_alt = -u_nat. Directions per family:
-  nat2alt  nat-context k = 3 prompt, add alpha * u_alt at every evidence token of its 3 instances,
-           target = alt at the 4th decision
+  nat2alt  nat-context k-shot prompt (--k_ctx, default 3), add alpha * u_alt at every evidence token of
+           its k instances, target = alt at the (k+1)th decision
   alt2nat  alt-context prompt, alpha * u_nat, target = nat
-Sweep SCREEN_LAYERS x ALPHAS on the first 50 texts, one seeded T=1 sample, 16 new tokens, style only
-(scoring.decide); alpha = 0 sampled once per context pole. Records -> read_steer/screen/<family>.json.
+The cue position is never steered (2026-09-15): when the last instance's last evidence token is the cue
+(adjacent opportunities) that position is dropped; prompts left without evidence are skipped and counted.
+Sweep --layers x ALPHAS on the first 50 texts, one seeded T=1 sample, 16 new tokens, style only
+(scoring.decide); alpha = 0 sampled once per context pole. Records -> read_steer/<tag>/<family>.json
+(tag default: screen for k = 3, screen_k<k> otherwise).
 """
 import argparse
 import json
@@ -43,17 +46,29 @@ N_SCREEN, MAX_NEW = 50, 16
 DIRECTIONS = {"nat2alt": ("nat", "alt"), "alt2nat": ("alt", "nat")}   # context pole -> target pole
 
 
-def k3_items(fam, pole, n=None):
-    """k = 3 prompt records of one context pole with `positions` = evidence tokens of instances 0..2."""
+def k_items(fam, pole, k_ctx=K_CTX, n=None):
+    """k-shot prompt records of one context pole with `positions` = evidence tokens of instances 0..k-1 (cue excluded)."""
     ev = {(r["doc_id"], r["pole"]): r for r in json.load(open(EVID / f"{fam}.json"))}
-    items = sorted([p for p in json.load(open(PROMPTS / f"{fam}.json")) if p["style"] == pole and p["k"] == K_CTX], key=lambda p: p["doc_id"])
+    items = sorted([p for p in json.load(open(PROMPTS / f"{fam}.json")) if p["style"] == pole and p["k"] == k_ctx], key=lambda p: p["doc_id"])
+    kept, n_cue_dropped, n_empty = [], 0, 0
     for it in items:
-        inst = ev[(it["doc_id"], pole)]["instances"][:K_CTX]
-        pos = sorted({j for e in inst for j in e["idx"] if j < len(it["prompt_ids"])})   # CJK: an instance merged into the next cue's token lies beyond the k=3 prompt -> dropped
-        assert pos, f"no evidence inside the k=3 prompt {it['doc_id']}"
-        it["positions"] = pos
-        it["cue_is_evidence"] = max(pos) == len(it["prompt_ids"]) - 1   # adjacent opportunities: the 3rd instance's last token is also the 4th decision's cue
-    return items[:n] if n else items
+        inst = ev[(it["doc_id"], pole)]["instances"][:k_ctx]
+        cue = len(it["prompt_ids"]) - 1
+        raw = {j for e in inst for j in e["idx"] if j < len(it["prompt_ids"])}   # an instance merged into the next cue's token lies beyond this prompt -> dropped
+        it["cue_is_evidence"] = cue in raw                                        # adjacent opportunities: the last instance's last token is also the cue
+        n_cue_dropped += it["cue_is_evidence"]
+        pos = sorted(raw - {cue})                                                # the cue (write site) is never steered
+        if not pos:
+            n_empty += 1; continue
+        it["positions"] = pos; it["k_ctx"] = k_ctx
+        kept.append(it)
+    if n_cue_dropped or n_empty:
+        print(f"{fam} {pole} k={k_ctx}: cue position dropped in {n_cue_dropped}/{len(items)} prompts, {n_empty} prompts without evidence skipped", flush=True)
+    return kept[:n] if n else kept
+
+
+def k3_items(fam, pole, n=None):
+    return k_items(fam, pole, K_CTX, n)
 
 
 def read_vectors(fam):
@@ -92,7 +107,7 @@ def run_arm(model, tok, fam, items, layer, vec, alpha, tag, max_new, batch, extr
         tails = sample_positions(model, tok, chunk, layer, vec, alpha, f"{fam}|{tag}|{bi}", max_new)
         for it, raw in zip(chunk, tails):
             d = decide(fam, it["seg_prefix"], raw, it["next_nat"], it["next_alt"])
-            recs.append({"doc_id": it["doc_id"], "context": it["style"], "layer": layer, "alpha": alpha,
+            recs.append({"doc_id": it["doc_id"], "context": it["style"], "k_ctx": it["k_ctx"], "layer": layer, "alpha": alpha,
                          "n_positions": len(it["positions"]), "tail": raw, "decision": d} | extra)
     return recs
 
@@ -103,9 +118,12 @@ def main():
     ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--batch", type=int, default=25)
     ap.add_argument("--layers", nargs="*", type=int, default=SCREEN_LAYERS, help="injection layers (0 = embedding output)")
-    ap.add_argument("--tag", default="screen", help="output subdir under read_steer/")
+    ap.add_argument("--k_ctx", type=int, default=K_CTX, help="in-context instances in the steered prompt (prompt k)")
+    ap.add_argument("--tag", default=None, help="output subdir under read_steer/ (default: screen for k = 3, screen_k<k> otherwise)")
     args = ap.parse_args()
     configure(args.model)
+    if args.tag is None:
+        args.tag = "screen" if args.k_ctx == K_CTX else f"screen_k{args.k_ctx}"
     layers = args.layers
     (ROOT / args.tag).mkdir(parents=True, exist_ok=True)
     model, tok = load_model(model=args.model)
@@ -116,7 +134,7 @@ def main():
         if out_path.exists():
             print(f"{fam}: exists, skip", flush=True); continue
         u = read_vectors(fam); recs = []
-        items = {pole: k3_items(fam, pole, N_SCREEN) for pole in ("nat", "alt")}
+        items = {pole: k_items(fam, pole, args.k_ctx, N_SCREEN) for pole in ("nat", "alt")}
         for pole in ("nat", "alt"):
             recs += run_arm(model, tok, fam, items[pole], 0, None, 0.0, f"screen|base|{pole}", MAX_NEW, args.batch, {"direction": None, "target": None})
             sel = [r for r in recs if r["context"] == pole and r["alpha"] == 0.0]
