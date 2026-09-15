@@ -1847,6 +1847,7 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   write vector (same layer and L24); no linear probe.
 - `read_features_analyze.py`, `read_steer_analyze.py`, `read_steer_layers_analyze.py` take `--tag/--families` so code results live under
   `results/style_translation/qwen25_base/code/{read_features,read_steer,read_steer_k1}/`, never mixed into the text buckets.
-- 2026-09-15 (later) — Shared read layer for code = **L7** (user decision): the screen's mean curve peaks at L6–L8 (α = 4) and the per-family
-  bests scatter over L0–L9; L7 with the best α per family loses only ~.03 (k = 3) against each family's own best layer. Write layer stays L24.
-  The judged confirm arms were run at each family's top-2 screen cells, so a judged L7-only number needs a small extra confirm run.
+- 2026-09-15 (later) — Shared read layer for code = **L8** (user decision; write layer stays L24). Screen evidence: the mean curve over the 55
+  families peaks at L6–L8 with α = 4; at L8 with the best α per family the mean target rate is .62 vs .71 for each family's own best layer
+  at k = 3 (loss .085; .55 vs .65 at k = 1), and α = 4 is the best shared α at L8 (nat→alt .54, alt→nat .63 at k = 3). The judged confirm
+  arms were run at each family's top-2 screen cells, so a judged L8-only number needs a small extra confirm run.

@@ -22,7 +22,7 @@ Figures: `summary_bars.png` (three-bar summary), `steered_vs_unsteered.png` (one
 | alt context → nat | 0.10 | 0.57 | 0.66 | 0.87 | 50 / 55 | 53 / 55 | 34 | 21 |
 
 - Both directions pass the 50 % reach rule in **43 / 55** families; significant lift in both directions in 50 / 55.
-- Best injection layer is early: 79% of the confirmed best cells are at L0–L9 (screen mean over families: plateau L4–L12, collapse after
+- Best injection layer is early: 79% of the confirmed best cells are at L0–L9 (screen mean over families: plateau L4–L12, collapse after Shared read layer fixed at **L8** by user decision (2026-09-15).
   L22 — `read_steer_layer_mean.png`). The write feature of the same families sits at L24 (`../steering/`): the read site precedes the write site.
 - Families failing the both-direction rule: comment_language, js_hungarian, py_abbrev, py_comprehension, py_enumerate, py_join_concat, py_loop_vars, py_not_in, py_optional, py_ternary, py_with_open, rust_question.
 
