@@ -47,6 +47,20 @@ Mean-vector baseline cos = .11 at every layer; shuffled control −.01 … +.02.
   training family (quotes ↔ quotes, snake ↔ camel, spacing ↔ spacing) are predicted; isolated ones (rust_question, py_not_in, js_semicolons)
   are not.
 
+## Why the prompt-level R² is small (variance decomposition, all 55 families)
+
+| component of the activation | write L24 (cue token) | read L8 (evidence-token mean) |
+|---|---|---|
+| between families | .29 | .55 |
+| convention pole within a family (nat vs alt) | **.025** | .14 |
+| prompt-specific (task, code so far) | .68 | .30 |
+
+Two thirds of the cue-token activation is prompt content that a mean over 1–3 evidence tokens cannot carry, and the convention itself is 2.5 %
+of its variance. Ceilings: predicting every test prompt by its TRUE (family, pole) centroid gives R² .31 (family means only: .28). The
+held-out ridge reaches prompt-level R² .04, family-mean R² .11 and centroid R² .09 — about a third of the family-level structure of never-seen
+families; on a random prompt split WITHIN the same 55 families it reaches R² .34, i.e. the oracle ceiling. The convention-vector cosine is
+therefore the informative held-out number; the convention R² is negative mainly because predicted vectors are shorter than the true ones.
+
 ### By category (test families)
 
 | category | n test | ridge cos | baseline cos |
