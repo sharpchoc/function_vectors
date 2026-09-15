@@ -120,6 +120,29 @@ def main():
     fig.suptitle(f"Evidence-token steering of a {k}-shot prompt: mean target-style rate over families and directions\nvs injection layer (screen, 50 prompts per cell)", fontsize=11)
     fig.tight_layout(); fig.savefig(OUT / "read_steer_layer_mean.png", dpi=150); plt.close(fig)
 
+    # mean over families per DIRECTION, with the unsteered k-shot rate and the genuine k-shot reference (step-3 style rate at the same k)
+    step3 = {}
+    STEP3 = OUT.parent / "summary.csv"
+    if STEP3.exists():
+        step3 = {(r["family"], r["style"], int(r["k"])): float(r["style_ok"]) for r in csv.DictReader(open(STEP3))}
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.4), sharey=True)
+    for ax, d in zip(axes, DIRECTIONS):
+        ctx, target = DIRECTIONS[d]
+        for a in ALPHAS:
+            m = [np.mean([grid[(fam, d, L, a)] for fam in fams]) for L in layers]
+            ax.plot(layers, m, marker="o", ms=3, lw=1.6, color=acol[a], label=f"α = {a:g}")
+        ax.axhline(np.mean([base[(fam, d)] for fam in fams]), color="#9e9e9e", linestyle="dashed", lw=1.3, label=f"unsteered {k}-shot prompt ({ctx} context)")
+        ref = [step3[(fam, target, k)] for fam in fams if (fam, target, k) in step3]
+        if ref:
+            ax.axhline(np.mean(ref), color="black", linestyle="dashed", lw=1.3, label=f"genuine {k}-shot prompt ({target} context), step 3")
+        ax.set_title(f"{ctx} context → steered toward {target}  ({len(fams)} families)", fontsize=10, color=C[d])
+        ax.set_xticks(ticks); ax.set_xlabel("injection layer (0 = embeddings)"); ax.grid(alpha=0.3); ax.set_ylim(0, 1)
+        ax.legend(fontsize=8, loc="center left", frameon=False)
+    axes[0].set_ylabel("target-convention rate (style only, mean over families)", fontsize=9)
+    fig.suptitle(f"Evidence-token steering of a {k}-shot prompt, by direction: mean target-style rate vs injection layer (screen, 50 prompts per cell)\n"
+                 f"dashed grey = same prompt unsteered; dashed black = a real {k}-shot prompt whose context shows the target (style rate, step 3, same k)", fontsize=10.5)
+    fig.tight_layout(); fig.savefig(OUT / "read_steer_layer_mean_by_direction.png", dpi=150); plt.close(fig)
+
     print(f"{'family':18s} {'dir':8s} {'unst':>5s} {'L0':>5s} {'best9 (L,α)':>13s} {'bestAll (L,α)':>15s} {'gain':>5s}")
     for r in rows:
         print(f"{r['family']:18s} {r['direction']:8s} {r['unsteered']:5.2f} {r['rate_L0']:5.2f} {r['best_rate_9']:5.2f} (L{r['best_layer_9']:<2d},{r['best_alpha_9']:g}) {r['best_rate']:6.2f} (L{r['best_layer']:<2d},{r['best_alpha']:g}) {r['gain_full_vs_9']:+5.2f}")
