@@ -55,7 +55,8 @@ def main():
     ax.set_ylim(0, 1); ax.set_ylabel("accuracy (mean over families)", fontsize=10); ax.grid(axis="y", alpha=0.3)
     ax.legend(loc="upper left", fontsize=8.5, frameon=False)
     ax.set_title(f"Read-feature test on Qwen2.5-7B base — {len(fams)} coding-convention families, {k}-shot prompts\n"
-                 "the read vector (alt − nat evidence-token mean) is added at the in-context evidence tokens only; accuracy = target convention used AND correct solution\n"
+                 "read vector (alt − nat evidence-token mean) added at the in-context evidence tokens only\n"
+                 "accuracy = target convention used AND correct solution; "
                  "steered = best layer and α per family; error bars = 95% CI of the mean across families", fontsize=9.5)
     fig.tight_layout(); fig.savefig(R / "summary_bars.png", dpi=150); plt.close(fig)
 

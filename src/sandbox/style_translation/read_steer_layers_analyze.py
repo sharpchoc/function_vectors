@@ -117,7 +117,7 @@ def main():
         ax.axhline(np.mean([base[(fam, d)] for fam in g for d in DIRECTIONS]), color="#9e9e9e", linestyle="dashed", lw=1.2, label="unsteered")
         ax.set_title(f"{title.split(' — ')[0]} ({len(g)} families × 2 directions)", fontsize=10); ax.set_xticks(ticks); ax.set_xlabel("injection layer (0 = embeddings)"); ax.grid(alpha=0.3); ax.set_ylim(0, 1)
     axes[0].set_ylabel("mean target-style rate"); axes[-1].legend(fontsize=8, loc="upper right")
-    fig.suptitle(f"Evidence-token steering of a {k}-shot prompt: mean target-style rate over families and directions vs injection layer (screen, 50 prompts per cell)", fontsize=11)
+    fig.suptitle(f"Evidence-token steering of a {k}-shot prompt: mean target-style rate over families and directions\nvs injection layer (screen, 50 prompts per cell)", fontsize=11)
     fig.tight_layout(); fig.savefig(OUT / "read_steer_layer_mean.png", dpi=150); plt.close(fig)
 
     print(f"{'family':18s} {'dir':8s} {'unst':>5s} {'L0':>5s} {'best9 (L,α)':>13s} {'bestAll (L,α)':>15s} {'gain':>5s}")
