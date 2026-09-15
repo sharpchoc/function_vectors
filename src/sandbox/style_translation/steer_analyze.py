@@ -28,7 +28,7 @@ from src.sandbox.style_translation.families import FAMILIES, FAMILY
 from src.sandbox.style_translation.steer_screen import SCREEN_LAYERS, ALPHAS
 from src.sandbox.style_translation.models import paths as model_paths
 from src.sandbox.style_translation.ml_families import ML_FAMILIES, ML_FAMILY
-from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order
+from src.sandbox.style_translation.family_groups import CODE as CODE_NAMES, grouped_grid, grouped_order
 
 SCREEN = ARTIFACTS_ROOT / "style_translation" / "steering" / "screen"
 CONFIRM = ARTIFACTS_ROOT / "style_translation" / "steering" / "confirm"
@@ -36,9 +36,12 @@ OUT = STYLE_TRANSLATION_RESULTS / "steering"
 STEP3 = STYLE_TRANSLATION_RESULTS / "summary.csv"
 
 
-def configure(model="gptj"):
+def configure(model="gptj", tag=None):
+    """tag: sub-bucket (e.g. "code") — results and the step-3 reference then live under results/<model>/<tag>/."""
     global SCREEN, CONFIRM, OUT, STEP3
-    MP = model_paths(model); SCREEN, CONFIRM, OUT, STEP3 = MP["steering"] / "screen", MP["steering"] / "confirm", MP["results"] / "steering", MP["results"] / "summary.csv"
+    MP = model_paths(model); SCREEN, CONFIRM = MP["steering"] / "screen", MP["steering"] / "confirm"
+    R = MP["results"] / tag if tag else MP["results"]
+    OUT, STEP3 = R / "steering", R / "summary.csv"
 
 
 def wilson(p, n, z=1.96):
@@ -49,12 +52,16 @@ def wilson(p, n, z=1.96):
 
 def main():
     import argparse
-    ap = argparse.ArgumentParser(); ap.add_argument("--model", default="gptj", help="models.MODELS key"); args = ap.parse_args()
-    configure(args.model)
+    ap = argparse.ArgumentParser(); ap.add_argument("--model", default="gptj", help="models.MODELS key")
+    ap.add_argument("--tag", default=None, help="results sub-bucket (results/<model>/<tag>/steering); step-3 reference from the same bucket")
+    ap.add_argument("--families", nargs="*", default=None, help="restrict to these families (default: every family with artifacts)")
+    args = ap.parse_args()
+    configure(args.model, args.tag)
     OUT.mkdir(parents=True, exist_ok=True)
-    sfams = [f.name for f in list(FAMILIES) + list(ML_FAMILIES) if (SCREEN / f"{f.name}.json").exists()]          # screen: judge-free
+    universe = [f for f in list(FAMILIES) + list(ML_FAMILIES) if args.families is None or f.name in args.families]
+    sfams = [f.name for f in universe if (SCREEN / f"{f.name}.json").exists()]          # screen: judge-free
     fams, pending = [], []
-    for f in list(FAMILIES) + list(ML_FAMILIES):                                          # confirm: needs the judge
+    for f in universe:                                                                   # confirm: needs the judge
         if not (CONFIRM / f"{f.name}.json").exists():
             continue
         recs = json.load(open(CONFIRM / f"{f.name}.json"))
@@ -117,10 +124,12 @@ def main():
         w.writeheader()
         for (fam, target), b in sorted(best.items(), key=lambda kv: (fams.index(kv[0][0]), kv[0][1])):
             base = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == "base"][0]
-            cf = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == f"{target}_cf"][0]
+            cf = next((r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == f"{target}_cf"), None)
             w.writerow(dict(family=fam, target=target, layer=b["layer"], alpha=b["alpha"], accuracy=b["accuracy"], ci_lo=b["ci_lo"], ci_hi=b["ci_hi"],
                             style_only=b["style_only"], unscorable=b["unscorable"], judge_ok=b["judge_ok"], base_accuracy=base["accuracy"],
-                            cf_accuracy=cf["accuracy"], step3_k0=b["step3_k0"], step3_k4=b["step3_k4"]))
+                            cf_accuracy=cf["accuracy"] if cf else None, step3_k0=b["step3_k0"], step3_k4=b["step3_k4"]))
+    has_cf = any(r["arm"].endswith("_cf") for r in rows)
+    code_only = all(fam in CODE_NAMES for fam in fams)
     np.savez_compressed(OUT / "records.npz", **npz)
 
     # ---- summary figures: headline (no controls) + detailed (with the other-family control) ----
@@ -137,9 +146,9 @@ def main():
             for target in ("nat", "alt"):
                 base = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == "base"][0]
                 b = best[(fam, target)]
-                cf = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == f"{target}_cf"][0]
+                cf = next((r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == f"{target}_cf"), None)
                 bars = [(base, C["base"], "unsteered"), (b, C["steer"][target], f"L{b['layer']}, α = {b['alpha']:g}")]
-                if with_controls:
+                if with_controls and cf is not None:
                     bars.append((cf, C["cf"], f"{cf['cf_family']} vector"))
                 for j, (r, col, lab) in enumerate(bars):
                     ax.bar(x + j, r["accuracy"], color=col, edgecolor="black" if j == 1 else "none", linewidth=0.8,
@@ -162,13 +171,19 @@ def main():
         handles.append(Line2D([], [], color="black", linestyle="dashed",
                               label="4 in-context examples, no steering"))
         fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.935), ncol=len(handles), fontsize=9.5, frameon=False)
-        fig.suptitle("Steering a writing convention with a mean-difference vector at the cue token, no in-context examples\n"
+        fig.suptitle("Steering a coding convention with a mean-difference vector at the cue token, no in-context examples\n"
+                     "accuracy = target convention used AND the judge finds the code a correct solution; ≤ 200 tasks per bar, 95% CI"
+                     if code_only else
+                     "Steering a writing convention with a mean-difference vector at the cue token, no in-context examples\n"
                      "accuracy = target convention used AND faithful, coherent translation; 200 texts per bar, 95% CI",
                      fontsize=12, y=0.995)
         fig.savefig(path, dpi=150); plt.close(fig)
 
     summary_figure(OUT / "steering_summary.png", with_controls=False)
-    summary_figure(OUT / "steering_summary_controls.png", with_controls=True)
+    if has_cf:
+        summary_figure(OUT / "steering_summary_controls.png", with_controls=True)
+    elif (OUT / "steering_summary_controls.png").exists():
+        (OUT / "steering_summary_controls.png").unlink()
 
     # ---- screen line plots: target-style rate vs layer, one line per alpha ---------------------
     panels = [(fam, target) for fam in grouped_order(sfams) for target in ("nat", "alt")]
@@ -190,7 +205,7 @@ def main():
     h, l = next(iter(gax.values())).get_legend_handles_labels()
     fig.legend(h, l, loc="upper center", bbox_to_anchor=(0.5, 0.965), ncol=len(ALPHAS) + 1, fontsize=9, frameon=False)
     fig.suptitle("Screen: rate of the target convention at the cue vs injection layer, one line per α\n"
-                 "style only (no faithfulness judge), 50 texts per point, 16-token completions; dashed = unsteered rate on the same texts",
+                 "style only (no judge), 50 prompts per point, 16-token completions; dashed = unsteered rate on the same prompts",
                  fontsize=11, y=0.995)
     fig.savefig(OUT / "screen_layer_alpha.png", dpi=150); plt.close(fig)
     old_heat = OUT / "screen_heatmaps.png"
@@ -200,8 +215,8 @@ def main():
     print(f"{'family':14s} {'tgt':3s} {'L':>3s} {'α':>4s} {'base':>5s} {'steer':>5s} {'cf':>5s} {'k4 ref':>6s} {'style-only':>10s} {'unscor':>6s} {'judge':>5s}")
     for (fam, target), b in sorted(best.items(), key=lambda kv: (fams.index(kv[0][0]), kv[0][1])):
         base = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == "base"][0]
-        cf = [r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == f"{target}_cf"][0]
-        print(f"{fam:14s} {target:3s} {b['layer']:3d} {b['alpha']:4g} {base['accuracy']:5.2f} {b['accuracy']:5.2f} {cf['accuracy']:5.2f} "
+        cf = next((r for r in rows if r["family"] == fam and r["target"] == target and r["arm"] == f"{target}_cf"), None)
+        print(f"{fam:14s} {target:3s} {b['layer']:3d} {b['alpha']:4g} {base['accuracy']:5.2f} {b['accuracy']:5.2f} {(cf['accuracy'] if cf else float('nan')):5.2f} "
               f"{(b['step3_k4'] or float('nan')):6.2f} {b['style_only']:10.2f} {b['unscorable']:6.2f} {b['judge_ok']:5.2f}")
     print("->", OUT)
 
