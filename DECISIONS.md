@@ -1851,3 +1851,8 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   families peaks at L6–L8 with α = 4; at L8 with the best α per family the mean target rate is .62 vs .71 for each family's own best layer
   at k = 3 (loss .085; .55 vs .65 at k = 1), and α = 4 is the best shared α at L8 (nat→alt .54, alt→nat .63 at k = 3). The judged confirm
   arms were run at each family's top-2 screen cells, so a judged L8-only number needs a small extra confirm run.
+- 2026-09-15 (later) — Read→write map on the code pool (user decisions): all 55 families; ONE fixed random split 2/3–1/3 stratified by
+  convention category (seed 2026, `code/read_write_map/fixed_split.json`, committed before fitting), no LOFO; per-prompt ridge from the
+  evidence-token read activation (L8 main, sweep L5–L10) to the cue-token write activation (L24); judged by held-out geometry only
+  (convention-vector cosine vs the shuffled-pairing control and the mean-training-vector baseline, prompt-level R², coverage diagnostics).
+  Steering with predicted vectors is a separate task.

@@ -9406,3 +9406,12 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   43/55. Buckets `code/read_steer/`, `code/read_steer_k1/` (READMEs, best_config.csv with reach/pass_50/sig columns, summary_bars.png,
   steered_vs_unsteered.png). 8 pods (~12 pod-h), all terminated.
 - Next (not requested): read→write map on the code pool; control arm; user ruling on the read gate.
+
+## Stream: style_translation — read→write map on the 55 code families (2026-09-15)
+- Plan approved (decisions: all 55, one fixed 2/3–1/3 split stratified by category, read L5–L10 → write L24 with L8 main, geometry only).
+- `capture_prompt_pairs.py` (READ_LAYERS + L5–L10) on pod cpairs0 (55 npz, 21,800 pairs; sanity cos ≥ .86 for 50 families, bash_test .52);
+  `read_write_ridge.py` gained `--tag/--fixed_only/--strata code/--read_layers/--subsets`, the mean-vector baseline and a primal solver
+  (N > D; identical to the dual to 1e-13; text-pool regression exact); `read_write_coverage.py --tag`.
+- Result (`results/style_translation/qwen25_base/code/read_write_map/`, README): held-out convention cos .38 at L8 (baseline .11, shuffled .00),
+  13/19 test families > .3, 5 > .5; L5–L10 sweep .35–.39; both29 subset .43; prompt-level R² .04–.07; coverage RSA .78, participation 48/55,
+  cos vs span fraction corr .87 (write) / .90 (read). Pod terminated.
