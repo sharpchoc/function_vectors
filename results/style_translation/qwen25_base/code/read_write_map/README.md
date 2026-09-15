@@ -142,6 +142,22 @@ fractions (variance): js_camel_snake .91, py_fstring .84, py_bool_prefix .83, py
 the same ordering as the transfer. The raw similarity of the centroids (cos .72 write, .55 read) is the shared component, which the intercept
 absorbs and which carries no family or convention information. Working read layer for further map work = **L10** (user decision).
 
+### The same yardstick on the 69-task function-vector pool (GPT-J, 55 train / 14 held-out)
+
+| pool | raw pairwise cos | centred mean \|cos\| | centred participation ratio | held-out centred variance inside the training span | held-out map result |
+|---|---|---|---|---|---|
+| 69 tasks, write = FV (L13) | .39 | .21 | 39 / 69 | **.73** | R² .68, cos .90 (baseline .64) |
+| 69 tasks, read = label mean (L6) | .73 | .18 | 44 / 69 | .62 | |
+| 55 code families, write centroids (L24) | .72 | .10 | 63 / 110 | **.52** | R² .28–.34, cos .5–.6 |
+| 55 code families, read centroids (L10) | .55 | .10 | 76 / 110 | .47 | |
+
+Raw pairwise cosine measures the shared component (which the intercept absorbs) and is the wrong yardstick: the FVs look *less* similar
+than the code centroids (.39 vs .72) but, once centred, task directions are twice as correlated (.21 vs .10), more concentrated (39 of 69 vs
+63 of 110), and a held-out task lies .73 inside the span of 55 training tasks vs .52 for a held-out convention inside 44 training families.
+In both pools the map's held-out R² ≈ the in-span fraction (.68 vs .73; .28–.34 vs .52 — on the code pool the map explains .54 of the in-span
+part): the read→write map generalises exactly as far as the training span reaches. Tasks share factors (morphology, translation,
+classification); conventions are closer to one direction each.
+
 ## Comparison with the text pools
 
 | pool | protocol | held-out convention cos | baseline / shuffled |
