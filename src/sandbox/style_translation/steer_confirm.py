@@ -60,6 +60,7 @@ def main():
                     help="families of THIS shard; the counterfactual vector cycles within this list")
     ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--batch", type=int, default=16)
+    ap.add_argument("--no_control", action="store_true", help="skip the counterfactual (other family's vector) arms")
     args = ap.parse_args()
     configure(args.model)
     OUT.mkdir(parents=True, exist_ok=True)
@@ -80,14 +81,15 @@ def main():
             for rank, (layer, a, rate) in enumerate(tops, 1):
                 arms.append((f"{target}_top{rank}", target, layer, a, vecs[layer - 1] * sign))
             layer, a, _ = tops[0]
-            arms.append((f"{target}_cf", target, layer, a, cf_vecs[layer - 1] * sign))
+            if not args.no_control:
+                arms.append((f"{target}_cf", target, layer, a, cf_vecs[layer - 1] * sign))
         recs = []
         for arm, target, layer, alpha, v in arms:
             for bi in range(0, len(items), args.batch):
                 chunk = items[bi:bi + args.batch]
                 tails = sample(model, tok, chunk, layer, v, alpha, f"{fam}|confirm|{arm}|{bi}", MAX_NEW)
                 for it, raw in zip(chunk, tails):
-                    cut, capped = cut_code(raw) if getattr(ML_FAMILY.get(fam), 'domain', 'text') == 'code' else cut_sentence(raw)
+                    cut, capped = cut_code(raw, fam) if getattr(ML_FAMILY.get(fam), 'domain', 'text') == 'code' else cut_sentence(raw)
                     d = decide(fam, it["seg_prefix"], cut, it["next_nat"], it["next_alt"])
                     recs.append({k: it[k] for k in ("doc_id", "family", "k", "cue_tok", "seg_prefix", "next_nat",
                                                     "next_alt", "ref_sentence", "context_tail", "es_text")}

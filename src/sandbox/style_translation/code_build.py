@@ -54,20 +54,31 @@ def _chat(key, content, temperature, max_tokens=2000):
     return out.rstrip() + "\n"
 
 
-def tasks_for(key, lang, n=60):
+def tasks_for(key, lang, n=60, batch=60):
+    """Task pool of at least n tasks, grown in batches of `batch` (each batch told to avoid the existing titles); ids t001.. are stable."""
     f = RAW / f"tasks_{lang}.json"
-    if f.exists():
-        return json.load(open(f))
-    for attempt in range(4):
-        try:
-            raw = _chat(key, TASK_PROMPT.get(lang, TASK_PROMPT["default"]).format(n=n, lang=lang), 0.8, 12000)
-            js = json.loads(raw[raw.index("["): raw.rindex("]") + 1])
-            js = [t for t in js if isinstance(t, dict) and t.get("spec")][:n]
-            assert len(js) >= 40, len(js)
-            RAW.mkdir(parents=True, exist_ok=True); json.dump(js, open(f, "w"), indent=1); return js
-        except Exception as e:
-            print(f"tasks {lang} attempt {attempt} failed: {e}", flush=True); time.sleep(3)
-    raise RuntimeError(f"no task pool for {lang}")
+    pool = json.load(open(f)) if f.exists() else []
+    while len(pool) < n:
+        avoid = "; ".join(t["title"] for t in pool[-120:])
+        extra = f"\nDo NOT repeat or closely paraphrase any of these existing task titles: {avoid}" if pool else ""
+        for attempt in range(4):
+            try:
+                raw = _chat(key, TASK_PROMPT.get(lang, TASK_PROMPT["default"]).format(n=batch, lang=lang) + extra, 0.9, 12000)
+                js = json.loads(raw[raw.index("["): raw.rindex("]") + 1])
+                js = [t for t in js if isinstance(t, dict) and t.get("spec")]
+                assert len(js) >= 30, len(js)
+                seen = {t["title"].strip().lower() for t in pool}
+                for t in js:
+                    if t["title"].strip().lower() in seen:
+                        continue
+                    seen.add(t["title"].strip().lower()); t["id"] = f"t{len(pool) + 1:03d}"; pool.append(t)
+                RAW.mkdir(parents=True, exist_ok=True); json.dump(pool, open(f, "w"), indent=1); break
+            except Exception as e:
+                print(f"tasks {lang} batch attempt {attempt} failed: {e}", flush=True); time.sleep(3)
+        else:
+            raise RuntimeError(f"could not grow the task pool for {lang}")
+        print(f"task pool {lang}: {len(pool)}", flush=True)
+    return pool[:max(n, len(pool))]
 
 
 def align(nat, alt, merge_gap=2):
@@ -121,7 +132,7 @@ def main():
     ap.add_argument("--ks", default="0,4"); ap.add_argument("--skip_prompts", action="store_true")
     args = ap.parse_args()
     key = load_key(); RAW.mkdir(parents=True, exist_ok=True)
-    pools = {lang: tasks_for(key, lang) for lang in sorted({CODE_FAMILY[f].tgt_lang for f in args.families})}
+    pools = {lang: tasks_for(key, lang, n=args.n_tasks + 10) for lang in sorted({CODE_FAMILY[f].tgt_lang for f in args.families})}
     for lang, ts in pools.items():
         print(f"task pool {lang}: {len(ts)}", flush=True)
     for name in args.families:

@@ -90,7 +90,7 @@ def main():
             for r, i in enumerate(b):
                 it = items[i]
                 raw = tok.decode(gen[r, L:], skip_special_tokens=True)
-                cut, capped = cut_code(raw) if getattr(ML_FAMILY.get(fam), "domain", "text") == "code" else cut_sentence(raw)
+                cut, capped = cut_code(raw, fam) if getattr(ML_FAMILY.get(fam), "domain", "text") == "code" else cut_sentence(raw)
                 dec = decide(fam, it["seg_prefix"], cut, it["next_nat"], it["next_alt"])
                 recs[i] = {k: it[k] for k in ("doc_id", "family", "style", "k", "cue_tok", "seg_prefix",
                                               "next_nat", "next_alt", "ref_sentence", "context_tail", "es_text")}

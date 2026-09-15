@@ -75,7 +75,7 @@ def main():
                         chunk = items[bi:bi + args.batch]
                         tails = sample(model, tok, chunk, L, v, a, f"{fam}|common|{arm}|{bi}", MAX_NEW)
                         for it, raw in zip(chunk, tails):
-                            cut, capped = cut_code(raw) if getattr(ML_FAMILY.get(fam), 'domain', 'text') == 'code' else cut_sentence(raw)
+                            cut, capped = cut_code(raw, fam) if getattr(ML_FAMILY.get(fam), 'domain', 'text') == 'code' else cut_sentence(raw)
                             d = decide(fam, it["seg_prefix"], cut, it["next_nat"], it["next_alt"])
                             recs.append({k: it[k] for k in ("doc_id", "family", "k", "cue_tok", "seg_prefix", "next_nat",
                                                             "next_alt", "ref_sentence", "context_tail", "es_text")}

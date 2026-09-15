@@ -45,14 +45,15 @@ def wilson(p, n, z=1.96):
 def main():
     import argparse
     ap = argparse.ArgumentParser(); ap.add_argument("--model", default="gptj", help="models.MODELS key")
+    ap.add_argument("--families", nargs="*", default=None); ap.add_argument("--tag", default=None, help="results subfolder (e.g. code)")
     args = ap.parse_args()
     from src.sandbox.style_translation.models import paths as model_paths
     MP = model_paths(args.model)
     global ROLL, OUT, MODEL_LABEL
-    ROLL, OUT, MODEL_LABEL = MP["rollouts"], MP["results"], MP["label"]
+    ROLL, OUT, MODEL_LABEL = MP["rollouts"], MP["results"] / args.tag if args.tag else MP["results"], MP["label"]
     OUT.mkdir(parents=True, exist_ok=True)
     rows, npz = [], {}
-    fams = [f.name for f in ALL_FAMILIES if (ROLL / f"{f.name}.json").exists()]
+    fams = [f.name for f in ALL_FAMILIES if (ROLL / f"{f.name}.json").exists() and (args.families is None or f.name in args.families)]
     data = {}
     for fam in fams:
         recs = json.load(open(ROLL / f"{fam}.json"))

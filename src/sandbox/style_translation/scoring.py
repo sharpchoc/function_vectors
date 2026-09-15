@@ -38,9 +38,10 @@ def cut_sentence(tail):
     return t[:stop].rstrip("\n"), capped
 
 
-def cut_code(tail):
-    """Code continuations: keep everything up to the first blank line or a new 'Task:' header (no sentence cutting)."""
-    m = re.search(r"\n\s*\n|\bTask:", tail)
+def cut_code(tail, family=None):
+    """Code continuations: keep everything up to the first blank line or a new 'Task:' header (no sentence cutting).
+    blank_lines (the decision is the number of blank lines) is cut at the header only."""
+    m = re.search(r"\bTask:" if family == "blank_lines" else r"\n\s*\n|\bTask:", tail)
     return (tail[:m.start()].rstrip("\n"), False) if m else (tail, True)
 
 
