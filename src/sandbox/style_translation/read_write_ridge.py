@@ -42,9 +42,10 @@ PAIRS = ARTIFACTS_ROOT / "style_translation" / "prompt_pairs"
 OUT = RESULTS_ROOT / "style_translation" / "read_write_map"
 
 
-def configure(model="gptj"):
+def configure(model="gptj", tag=None):
     global PAIRS, OUT
-    MP = model_paths(model); PAIRS, OUT = MP["prompt_pairs"], MP["results"] / "read_write_map"
+    MP = model_paths(model); PAIRS = MP["prompt_pairs"]
+    OUT = (MP["results"] / tag if tag else MP["results"]) / "read_write_map"
 
 
 # axis clusters for the stratified split / within-axis reporting (plan 2026-09-14)
@@ -137,8 +138,13 @@ def main():
     ap.add_argument("--model", default="gptj")
     ap.add_argument("--pool", nargs="*", default=None, help="Phase-5 mode: families of the pool (LOFO + fixed stratified split) instead of identical→diverse")
     ap.add_argument("--fixed_split", default=None, help="JSON file {train:[...], test:[...]} for the fixed split (written on first use if absent)")
+    ap.add_argument("--tag", default=None, help="results sub-bucket (results/<model>/<tag>/read_write_map)")
+    ap.add_argument("--fixed_only", action="store_true", help="pool mode: skip LOFO, only the fixed split")
+    ap.add_argument("--strata", default="axes", choices=["axes", "code"], help="stratification of the fixed split: text AXES or code categories")
+    ap.add_argument("--read_layers", nargs="*", type=int, default=None, help="pool mode: repeat the fixed split for these read layers (sweep)")
+    ap.add_argument("--subsets", default=None, help="pool mode: JSON {name: [families]} — mean held-out metrics also over test families in each subset")
     args = ap.parse_args()
-    configure(args.model)
+    configure(args.model, args.tag)
     OUT.mkdir(parents=True, exist_ok=True)
     if args.pool:
         return pool_mode(args)
@@ -207,8 +213,17 @@ def main():
     plot(rows, per_rows, curve, lr, lw)
 
 
+def code_strata(pool):
+    """code category per family = the CODE_SPECS block (same boundaries as code_selection.py: 10/18/40/47/52)."""
+    from src.sandbox.style_translation.code_families import CODE_SPECS
+    cat = {spec[0]: ("naming" if i < 10 else "literals" if i < 18 else "syntax / dialect" if i < 40 else "formatting" if i < 47 else "comments / docs" if i < 52 else "other languages")
+           for i, spec in enumerate(CODE_SPECS)}
+    return {f: cat.get(f, "-") for f in pool}
+
+
 def pool_mode(args):
-    """LOFO over the pool + one fixed stratified split; λ by leave-one-family-out CV in the training set."""
+    """LOFO over the pool + one fixed stratified split; λ by leave-one-family-out CV in the training set.
+    --fixed_only / --strata code / --read_layers / --subsets: the code-pool variant (2026-09-15)."""
     import json as _json
     lr, lw = args.read_layer, args.write_layer
     pool = [f for f in args.pool if (PAIRS / f"{f}.npz").exists()]
@@ -217,7 +232,7 @@ def pool_mode(args):
     grid = LAMBDA_GRID[::2]
     rows, per_rows = [], []
     rng = np.random.default_rng(0)
-    for f in pool:
+    for f in ([] if args.fixed_only else pool):
         m = fa == f
         cv = group_cv(Xa[~m], Ya[~m], fa[~m], grid); lam = grid[int(np.argmax(cv))]
         R = DualRidge(Xa[~m], Ya[~m]).fit(lam)
@@ -234,6 +249,15 @@ def pool_mode(args):
     split_path = Path(args.fixed_split) if args.fixed_split else OUT / "fixed_split.json"
     if split_path.exists():
         sp = _json.load(open(split_path)); train, test = [f for f in sp["train"] if f in pool], [f for f in sp["test"] if f in pool]
+    elif args.strata == "code":                       # seeded 2/3–1/3 split, every code category represented on the test side
+        cat = code_strata(pool); srng = np.random.default_rng(2026); test = []
+        n_test = len(pool) // 3
+        for c in sorted(set(cat.values())):
+            fs = sorted(f for f in pool if cat[f] == c); k = max(1, round(len(fs) * n_test / len(pool)))
+            test += [str(x) for x in srng.choice(fs, size=min(k, len(fs)), replace=False)]
+        test = sorted(test); train = [f for f in pool if f not in test]
+        _json.dump({"train": train, "test": test, "note": "2/3-1/3, stratified by code category (code_selection.CAT), seed 2026, written before fitting",
+                    "category": {f: cat[f] for f in pool}}, open(split_path, "w"), indent=1)
     else:
         srng = np.random.default_rng(2026); test = []
         for a, fs in AXES.items():
@@ -244,30 +268,86 @@ def pool_mode(args):
         test = sorted(test + [str(x) for x in extra]); train = [f for f in pool if f not in test]
         _json.dump({"train": train, "test": test, "note": "stratified by AXES, seed 2026, written before fitting"}, open(split_path, "w"), indent=1)
     print(f"\nfixed split: train {train}\n             test  {test}")
-    mtr, mte = np.isin(fa, train), np.isin(fa, test)
-    cv = group_cv(Xa[mtr], Ya[mtr], fa[mtr], grid); lam = grid[int(np.argmax(cv))]
-    R = DualRidge(Xa[mtr], Ya[mtr]).fit(lam)
-    o, per = evaluate(R, Xa[mte], Ya[mte], fa[mte], pa[mte], "fixed")
-    Xsh = Xa[mtr][rng.permutation(mtr.sum())]
-    osh, _ = evaluate(DualRidge(Xsh, Ya[mtr]).fit(lam), Xa[mte], Ya[mte], fa[mte], pa[mte], "fixed-shuffled")
-    o.update(protocol="fixed", family="ALL", axis="-", axis_mates_in_train=-1, cv_r2=float(cv.max()), shuffled_cos_diff=osh["cos_diff_mean"],
-             shuffled_r2_trainmean=osh["r2_trainmean"], read_layer=lr, write_layer=lw); rows.append(o)
-    per_rows += [dict(protocol="fixed", **x) for x in per]
-    print(f"FIXED  λ={lam:8.3g} R²(train-mean) {o['r2_trainmean']:+.3f} R²(test-mean) {o['r2_testmean']:+.3f} within {o['r2_within']:+.3f} | "
-          f"convention cos {o['cos_diff_mean']:.2f} (shuffled {osh['cos_diff_mean']:.2f}) R² {o['r2_diff']:+.3f}")
-    for x in per:
-        f = x["family"]; axis = AXIS_OF.get(f); mates = [g for g in train if AXIS_OF.get(g) == axis] if axis else []
-        print(f"    {f:14s} axis={axis or '-':10s} mates in train={len(mates)} cos {x['cos_diff']:.2f} R² {x['r2_diff']:+.3f} |pred|/|true| {x['norm_ratio']:.2f}")
+    subsets = _json.load(open(args.subsets)) if args.subsets else {}
+    strata = code_strata(pool) if args.strata == "code" else {f: AXIS_OF.get(f, "-") for f in pool}
+    sweep = []
+    for lr_ in (args.read_layers or [lr]):
+        Xl, Yl, fl, pl = (Xa, Ya, fa, pa) if lr_ == lr else load(pool, lr_, lw)
+        mtr, mte = np.isin(fl, train), np.isin(fl, test)
+        cv = group_cv(Xl[mtr], Yl[mtr], fl[mtr], grid); lam = grid[int(np.argmax(cv))]
+        R = DualRidge(Xl[mtr], Yl[mtr]).fit(lam)
+        o, per = evaluate(R, Xl[mte], Yl[mte], fl[mte], pl[mte], "fixed")
+        Xsh = Xl[mtr][rng.permutation(mtr.sum())]
+        osh, persh = evaluate(DualRidge(Xsh, Yl[mtr]).fit(lam), Xl[mte], Yl[mte], fl[mte], pl[mte], "fixed-shuffled")
+        # baseline: the mean of the TRAIN families' true convention vectors (write side) — "predict the average convention direction"
+        dtr = np.array([Yl[(fl == g) & (pl == "nat")].mean(0) - Yl[(fl == g) & (pl == "alt")].mean(0) for g in train]); dbar = dtr.mean(0)
+        shuf = {x["family"]: x["cos_diff"] for x in persh}
+        for x in per:
+            g = x["family"]; dt = Yl[(fl == g) & (pl == "nat")].mean(0) - Yl[(fl == g) & (pl == "alt")].mean(0)
+            x.update(baseline_cos_diff=cos(dt, dbar), shuffled_cos_diff=shuf[g], stratum=strata.get(g, "-"), read_layer=lr_, write_layer=lw)
+        o.update(protocol="fixed", family="ALL", axis="-", axis_mates_in_train=-1, cv_r2=float(cv.max()), shuffled_cos_diff=osh["cos_diff_mean"],
+                 shuffled_r2_trainmean=osh["r2_trainmean"], baseline_cos_diff_mean=float(np.mean([x["baseline_cos_diff"] for x in per])),
+                 read_layer=lr_, write_layer=lw, n_train_families=len(train), n_test_families=len(test)); rows.append(o)
+        for name, members in subsets.items():
+            sel = [x for x in per if x["family"] in members]
+            if sel:
+                o[f"cos_diff_mean|{name}"] = float(np.mean([x["cos_diff"] for x in sel])); o[f"baseline_cos_diff_mean|{name}"] = float(np.mean([x["baseline_cos_diff"] for x in sel]))
+                o[f"n_test|{name}"] = len(sel)
+        per_rows += [dict(protocol="fixed", **x) for x in per]
+        sweep.append((lr_, o, per))
+        print(f"FIXED read L{lr_} → write L{lw}  λ={lam:8.3g} R²(train-mean) {o['r2_trainmean']:+.3f} R²(test-mean) {o['r2_testmean']:+.3f} within {o['r2_within']:+.3f} | "
+              f"convention cos {o['cos_diff_mean']:.2f} (shuffled {osh['cos_diff_mean']:.2f}, mean-vector baseline {o['baseline_cos_diff_mean']:.2f}) R² {o['r2_diff']:+.3f}"
+              + "".join(f" | {name}: cos {o[f'cos_diff_mean|{name}']:.2f} (baseline {o[f'baseline_cos_diff_mean|{name}']:.2f}, n={o[f'n_test|{name}']})" for name in subsets if f"cos_diff_mean|{name}" in o))
+        if lr_ == lr:
+            for x in per:
+                print(f"    {x['family']:18s} {x['stratum']:16s} cos {x['cos_diff']:.2f} (shuffled {x['shuffled_cos_diff']:+.2f}, baseline {x['baseline_cos_diff']:+.2f}) R² {x['r2_diff']:+.3f} |pred|/|true| {x['norm_ratio']:.2f} within-family R² {x['r2_within_fam']:+.3f}")
+    if args.read_layers and len(sweep) > 1:
+        plot_pool_fixed(sweep, lr, lw, strata, subsets)
+    if args.fixed_only:
+        lr = "sweep" if args.read_layers and len(args.read_layers) > 1 else lr
     with open(OUT / f"pool_summary_L{lr}_L{lw}.csv", "w", newline="") as fh:
         keys = sorted({k for r in rows for k in r}, key=lambda k: (k != "protocol", k != "family", k)); w = csv.DictWriter(fh, fieldnames=keys); w.writeheader(); w.writerows(rows)
     with open(OUT / f"pool_per_family_L{lr}_L{lw}.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(per_rows[0])); w.writeheader(); w.writerows(per_rows)
     lofo = [r for r in rows if r["protocol"] == "lofo"]
     wa = [r for r in lofo if r["axis_mates_in_train"] > 0]; xa = [r for r in lofo if r["axis_mates_in_train"] == 0]
-    print(f"\nLOFO mean: R²(train-mean) {np.mean([r['r2_trainmean'] for r in lofo]):+.3f} | convention cos {np.mean([r['cos_diff_mean'] for r in lofo]):.2f} "
+    if lofo:
+        print(f"\nLOFO mean: R²(train-mean) {np.mean([r['r2_trainmean'] for r in lofo]):+.3f} | convention cos {np.mean([r['cos_diff_mean'] for r in lofo]):.2f} "
           f"(shuffled {np.mean([r['shuffled_cos_diff'] for r in lofo]):.2f}) | within-axis hold-outs ({len(wa)}) cos {np.mean([r['cos_diff_mean'] for r in wa]) if wa else float('nan'):.2f} | "
           f"cross-axis hold-outs ({len(xa)}) cos {np.mean([r['cos_diff_mean'] for r in xa]) if xa else float('nan'):.2f}")
     print("->", OUT)
+
+
+def plot_pool_fixed(sweep, lr, lw, strata, subsets):
+    import matplotlib; matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    main = next(s for s in sweep if s[0] == lr)
+    per = sorted(main[2], key=lambda x: (x["stratum"], -x["cos_diff"]))
+    fams = [x["family"] for x in per]; x = np.arange(len(fams))
+    fig, ax = plt.subplots(1, 2, figsize=(17, 5.2), gridspec_kw={"width_ratios": [3, 1.2]})
+    ax[0].bar(x - .27, [r["cos_diff"] for r in per], .27, color="#1f6c80", label=f"ridge read L{lr} → write L{lw} (CV λ)")
+    ax[0].bar(x, [r["baseline_cos_diff"] for r in per], .27, color="#b8860b", label="baseline: mean of the training families' write vectors")
+    ax[0].bar(x + .27, [r["shuffled_cos_diff"] for r in per], .27, color="lightgrey", label="control: shuffled read–write pairing")
+    prev = None
+    for i, r in enumerate(per):
+        if r["stratum"] != prev:
+            ax[0].axvline(i - .5, color="#dddddd", lw=1); ax[0].text(i - .4, 1.0, r["stratum"], fontsize=7.5, va="top", color="#555555"); prev = r["stratum"]
+    ax[0].set_xticks(x); ax[0].set_xticklabels(fams, rotation=60, ha="right", fontsize=7.5); ax[0].set_ylim(-0.4, 1.05); ax[0].axhline(0, color="grey", lw=.5)
+    ax[0].set_ylabel("cos(predicted, true) convention vector (nat − alt), held-out family"); ax[0].set_title(f"Held-out families of the fixed split ({len(fams)} test / {main[1]['n_train_families']} train)")
+    ax[0].legend(fontsize=8, loc="lower left")
+    Ls = [s[0] for s in sweep]
+    ax[1].plot(Ls, [s[1]["cos_diff_mean"] for s in sweep], "-o", color="#1f6c80", label="ridge: mean cos (test families)")
+    ax[1].plot(Ls, [s[1]["baseline_cos_diff_mean"] for s in sweep], "--", color="#b8860b", label="mean-vector baseline")
+    ax[1].plot(Ls, [s[1]["shuffled_cos_diff"] for s in sweep], "--", color="grey", label="shuffled control")
+    ax[1].plot(Ls, [s[1]["r2_trainmean"] for s in sweep], "-s", color="#8e44ad", label="prompt-level R² (train-mean)")
+    for name in subsets:
+        if f"cos_diff_mean|{name}" in sweep[0][1]:
+            ax[1].plot(Ls, [s[1][f"cos_diff_mean|{name}"] for s in sweep], "-^", ms=4, label=f"ridge, test ∩ {name}")
+    ax[1].set_xticks(Ls); ax[1].set_xlabel("read layer"); ax[1].set_ylim(-0.4, 1.05); ax[1].axhline(0, color="grey", lw=.5); ax[1].grid(alpha=.3)
+    ax[1].set_title(f"Read-layer sweep → write L{lw}"); ax[1].legend(fontsize=7.5, loc="lower left")
+    fig.suptitle("Read→write ridge on the coding-convention pool: per-prompt evidence-token read activation → cue-token write activation, "
+                 "fit on the training families' k = 4 prompts, scored on held-out families", fontsize=10.5)
+    fig.tight_layout(); fig.savefig(OUT / "read_write_map_code.png", dpi=150); plt.close(fig)
 
 
 def plot(rows, per_rows, curve, lr, lw):

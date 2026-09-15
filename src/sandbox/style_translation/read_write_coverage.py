@@ -29,8 +29,9 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--model", default="qwen25_base"); ap.add_argument("--families", nargs="+", required=True)
     ap.add_argument("--read_layer", type=int, default=12); ap.add_argument("--write_layer", type=int, default=24)
+    ap.add_argument("--tag", default=None, help="results sub-bucket (results/<model>/<tag>/read_write_map)")
     args = ap.parse_args()
-    MP = model_paths(args.model); PP = MP["prompt_pairs"]; OUT = MP["results"] / "read_write_map"; OUT.mkdir(parents=True, exist_ok=True)
+    MP = model_paths(args.model); PP = MP["prompt_pairs"]; OUT = (MP["results"] / args.tag if args.tag else MP["results"]) / "read_write_map"; OUT.mkdir(parents=True, exist_ok=True)
     X, Y, F, P = [], [], [], []
     for f in args.families:
         d = np.load(PP / f"{f}.npz"); X.append(d[f"read_L{args.read_layer}"].astype(np.float64)); Y.append(d[f"write_L{args.write_layer}"].astype(np.float64))
@@ -58,7 +59,7 @@ def main():
     with open(OUT / "coverage.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
         fh.write(f"# rsa_corr={rsa:.3f} participation_read={pr_r:.1f}/{n} participation_write={pr_w:.1f}/{n} read_layer={args.read_layer} write_layer={args.write_layer}\n")
-    fig, ax = plt.subplots(1, 3, figsize=(18, 5.2))
+    fig, ax = plt.subplots(1, 3, figsize=(18 if n <= 20 else 30, 5.2 if n <= 20 else 9))
     x = np.arange(n); w = 0.38
     ax[0].bar(x - w / 2, [r["read_span"] for r in rows], w, label=f"read L{args.read_layer}"); ax[0].bar(x + w / 2, [r["write_span"] for r in rows], w, label=f"write L{args.write_layer}")
     ax[0].axhline((max(n - 1, 1) / X.shape[1]) ** .5, color="grey", ls="--", lw=1, label="chance (random direction)")

@@ -9,7 +9,7 @@ Layer convention as everywhere in this study: L = hidden_states[L] = output of b
 
 Saves artifacts/style_translation/prompt_pairs/<family>.npz:
   doc_id[N] str, pole[N] str, style_ok[N] bool, judge_ok[N] bool (from the step-3 k = 4 rollouts),
-  n_evidence[N], read_L{0,2,4,8,12,24}[N,4096] fp16, write_L{12,16,20,24}[N,4096] fp16.
+  n_evidence[N], read_L{0,2,4,5,6,7,8,9,10,12,16,24}[N,D] fp16 (L5–L10 added 2026-09-15 for the code read-layer sweep), write_L{12,16,20,24}[N,D] fp16.
 """
 import argparse
 import json
@@ -41,7 +41,7 @@ def configure(model="gptj"):
     MP = model_paths(model); PROMPTS, EVID, ROLL, OUT, VEC = MP["prompts"], MP["evidence"], MP["rollouts"], MP["prompt_pairs"], MP["steering"] / "vectors"
 
 
-READ_LAYERS = (0, 2, 4, 8, 12, 16, 24)
+READ_LAYERS = (0, 2, 4, 5, 6, 7, 8, 9, 10, 12, 16, 24)
 WRITE_LAYERS = (12, 16, 20, 24)
 K = 4
 
