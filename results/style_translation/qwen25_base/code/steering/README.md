@@ -10,7 +10,7 @@ Prompt seen by the model at k = 0: `Task:\n<task description>\n\n<Language>:\n<c
 Accuracy = target convention used (regex classifier over the completion) AND judge finds the code a correct solution; "unsteered" = the same k = 0
 prompt scored toward the same target; dashed line = k = 4 in-context accuracy from `../summary.csv`. Run: `steer_analyze.py --model qwen25_base --tag code --families <code_pool_full.json>`.
 
-Files: `steering_summary.png` (headline), `screen_layer_alpha.png` (screen grid), `best_config.csv`, `steering_summary.csv`, `screen.csv`, `records.npz`.
+Files: `steered_vs_unsteered.png` (one-row-per-family overview, both directions, with the 4-shot reference; `code_steering_overview.py`), `steering_summary.png` (per-family bar grid), `screen_layer_alpha.png` (screen grid), `best_config.csv`, `steering_summary.csv`, `screen.csv`, `records.npz`.
 
 ## Result (55 families, full corpus)
 
