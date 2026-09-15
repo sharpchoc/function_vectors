@@ -1821,3 +1821,12 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   natural pole of 7 families is at ceiling unsteered (.72–.94); the headroom-aware variant (a direction with unsteered ≥ .70 is exempt) admits 12.
   Both are reported; the 12-family pool is the main map result pending the user's ruling. Judge prompt: empty "so far" context (first opportunity
   opens the text) is now described as the beginning of the translation; 1,852 verdicts re-judged (Qwen steering confirm + step-3 rollouts).
+
+## 2026-09-15 — Style-translation: coding-convention families (user decisions)
+- Coding-language conventions are a third family group (`family_groups.CODE`, domain "code", src "Task"): the model writes code for a task
+  description and the convention applies across many identifiers / literals / statements. 60 specs; 55 pass the cheap k=4 both-poles ≥ .30
+  check on 50 tasks and again on the full 200-task corpus (`results/style_translation/qwen25_base/code_pool_full.json`).
+- Full corpora only for the 55 that passed at 50 tasks; steering confirm runs WITHOUT the counterfactual (other family's vector) control arm
+  for now (`steer_confirm.py --no_control`).
+- Cheap-corpus (50-task) rollouts and steering artefacts are kept aside under `artifacts/style_translation/qwen25_base/{rollouts_cheap_k4,steering_cheap}/`;
+  the canonical code results are the full-corpus ones under `results/style_translation/qwen25_base/{code,steering}/`.

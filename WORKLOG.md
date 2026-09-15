@@ -9364,3 +9364,20 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   ridge: LOFO within-axis cos .55 vs cross-axis .21 (shuffled 0), prompt-level R² 0; fixed split cos .44. Buckets under results/style_translation/
   qwen25_base/{steering,read_steer,read_features,read_write_map}, pool_gated.json. 6 pods used (~14 pod-h), all terminated. Read-L0 ridge variant
   running (logs/qwen_ridge_headroom_L0.log) — append to read_write_map/README when done.
+
+## Stream: style_translation — coding-convention families on Qwen2.5-7B base (2026-09-14/15)
+- Why: the read→write map needs many lexically diverse conventions; free-form text ideas ran dry (task_inventory.png), so the user asked for
+  40–50 coding-language style tasks. 60 specs in `code_families.py` (naming, literals, syntax/dialect, formatting, comments/docs, other languages),
+  twins = Gemini natural solution + rewrite aligned by token diff (`code_build.py`), prompt `Task:\n{spec}\n\n{Language}:\n{code cut at cue}`.
+- Cheap check (50 tasks, k∈{0,4}): 55/60 learnable (`results/style_translation/qwen25_base/code_selection.{png,csv}`, `code_k4/README.md`,
+  `code_pool.json`). Zero-shot cue-token steering on the cheap corpus lifted the alternative pole in 45/55 (mean .13→.43); flat families had
+  11–18 paired prompts (artefacts moved to `artifacts/style_translation/qwen25_base/steering_cheap/`, rollouts to `rollouts_cheap_k4/`).
+  Explainer: `results/style_translation/explainer/code_steering_examples.png`.
+- 2026-09-15 full corpora (user: expand to 200 tasks for the 55 that passed; no control arm for now): task pools grown to 211–238 per language
+  (`dataset_files/style_translation/code/tasks_<lang>.json`), `code_build.py --n_tasks 200 --ks all` → 100,590 prompts (9 families 107–146
+  twins after the alignment filter). Step 3 on 4 RTX PRO 4500 pods (`logs/code_step3_job.sh`, shards `logs/code_full_shard{1..4}.txt`),
+  judged (0 failures), `analyze.py --tag code` → `results/style_translation/qwen25_base/code/{accuracy_by_k.png,summary.csv,cutoff_recheck.csv}`.
+  Cutoff re-check: all 55 keep (min k=4 .42 nat / .315 alt; |full−cheap| .06 mean) → `code_pool_full.json`.
+- Write features: `capture_cues.py --model qwen25_base` on the full step-3 data (paired pools up to 596 per pole, split-half cos ≥ .88 at L20),
+  then `logs/code_steer_stage2_job.sh` (steer_screen --batch 12 → steer_confirm --batch 8 --no_control) on the 4 pods. Commits 969a87f1, ce6fec42.
+- Next: judge confirm → `steer_analyze.py --model qwen25_base` → README for the code steering bucket → terminate pods.
