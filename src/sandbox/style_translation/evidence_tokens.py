@@ -70,12 +70,16 @@ def evidence_for(rec, tok, pol, prompt_ids):
             if first is not None:
                 idx += span_tokens(offs, h, s2, text, first, len(prompt_ids))
         idx = sorted(set(idx))
+        outside = False
         if not idx:      # span fully shared with the other twin (e.g. "Among" vs "Among|st"): the divergence token reveals the choice
-            idx = [n]
-            assert n < len(prompt_ids), f"divergence token outside the prompt {rec['doc_id']} {pol} k={k}"
-        assert min(idx) == n and max(idx) < len(prompt_ids), "evidence outside the prompt or not at the divergence"
-        assert stored[k]["cue_idx"] not in idx
-        out.append({"k": k, "opp_index": i, "idx": idx, "toks": [tok.decode([ids[j]]) for j in idx]})
+            if n < len(prompt_ids):
+                idx = [n]
+            else:        # adjacent opportunities merged into one token by the tokeniser (CJK): instance k's evidence lies beyond the k=4 cue
+                outside = True
+        if idx:
+            assert min(idx) == n and max(idx) < len(prompt_ids), "evidence outside the prompt or not at the divergence"
+            assert stored[k]["cue_idx"] not in idx
+        out.append({"k": k, "opp_index": i, "idx": idx, "toks": [tok.decode([ids[j]]) for j in idx], "outside_prompt": outside})
     return out
 
 
@@ -102,7 +106,7 @@ def main():
             ev = evidence_for(pairs[p["doc_id"]], tok, p["style"], p["prompt_ids"])
             recs.append({"doc_id": p["doc_id"], "pole": p["style"], "prompt_len": len(p["prompt_ids"]), "instances": ev})
             for e in ev:
-                per_inst[len(e["idx"])] += 1
+                per_inst[len(e["idx"])] += 1   # 0 = evidence outside the prompt (merged adjacent opportunities)
                 if len(examples[p["style"]]) < 3:
                     examples[p["style"]].append("".join(e["toks"]))
         json.dump(recs, open(OUT / f"{fam}.json", "w"), ensure_ascii=False)

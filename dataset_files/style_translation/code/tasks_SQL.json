@@ -298,5 +298,760 @@
   "id": "t060",
   "title": "Content Management System Articles",
   "spec": "Schema: Authors (author_id INT, first_name VARCHAR, last_name VARCHAR, email VARCHAR), Articles (article_id INT, author_id INT, title VARCHAR, content TEXT, publish_date DATE, status VARCHAR), Tags (tag_id INT, tag_name VARCHAR), ArticleTags (article_id INT, tag_id INT).\n\nQueries:\n1. List all articles and their authors.\n2. Find all articles with a specific tag (e.g., 'Programming').\n3. Count the number of articles per author.\n4. Create a new article.\n5. Update an article's status to 'Published'."
+ },
+ {
+  "id": "t061",
+  "title": "Customer Order Processing",
+  "spec": "Schema: Customers(CustomerID INT, Name VARCHAR(50), Email VARCHAR(100)), Orders(OrderID INT, CustomerID INT, OrderDate DATE, TotalAmount DECIMAL(10,2)), OrderItems(OrderItemID INT, OrderID INT, Product VARCHAR(100), Quantity INT, PricePerUnit DECIMAL(10,2)).\nQueries:\n1. Select all customers who placed an order in the last month.\n2. Calculate the total revenue for each customer.\n3. Find the top 5 most ordered products.\n4. Insert a new customer and an associated order with two items.\n5. Update the total amount of a specific order after adding a new item."
+ },
+ {
+  "id": "t062",
+  "title": "Warehouse Inventory Control",
+  "spec": "Schema: Products(ProductID INT, ProductName VARCHAR(100), Category VARCHAR(50), CurrentStock INT, ReorderLevel INT), Suppliers(SupplierID INT, SupplierName VARCHAR(100), ContactEmail VARCHAR(100)), ProductSuppliers(ProductID INT, SupplierID INT).\nQueries:\n1. List all products with current stock below their reorder level.\n2. Find the total stock quantity for each product category.\n3. Identify suppliers who provide 'Electronics' products.\n4. Insert a new product and link it to an existing supplier.\n5. Update the stock quantity for a product after a new shipment."
+ },
+ {
+  "id": "t063",
+  "title": "Employee Performance Tracking",
+  "spec": "Schema: Employees(EmployeeID INT, FirstName VARCHAR(50), LastName VARCHAR(50), DepartmentID INT, Salary DECIMAL(10,2)), Departments(DepartmentID INT, DepartmentName VARCHAR(50), ManagerID INT), PerformanceReviews(ReviewID INT, EmployeeID INT, ReviewDate DATE, Score INT).\nQueries:\n1. Select employees with a salary greater than the average salary of their department.\n2. Find the average performance score for each department.\n3. List all employees managed by a specific manager.\n4. Insert a new employee into a department.\n5. Update an employee's salary after a performance review."
+ },
+ {
+  "id": "t064",
+  "title": "Student Academic Records",
+  "spec": "Schema: Students(StudentID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Major VARCHAR(50)), Courses(CourseID INT, CourseName VARCHAR(100), Credits INT), Enrollments(EnrollmentID INT, StudentID INT, CourseID INT, Grade VARCHAR(2)).\nQueries:\n1. List all students enrolled in 'Calculus I' who received an 'A'.\n2. Calculate the total credits each student is currently taking.\n3. Find the average grade for each course.\n4. Enroll a new student in two specific courses.\n5. Update a student's major and their grade in a course."
+ },
+ {
+  "id": "t065",
+  "title": "Library Book Lending",
+  "spec": "Schema: Books(BookID INT, Title VARCHAR(255), Author VARCHAR(100), ISBN VARCHAR(20), AvailableCopies INT), Borrowers(BorrowerID INT, Name VARCHAR(100), Email VARCHAR(100)), Loans(LoanID INT, BookID INT, BorrowerID INT, BorrowDate DATE, ReturnDate DATE).\nQueries:\n1. Find all books currently overdue (ReturnDate is NULL and BorrowDate is more than 30 days ago).\n2. List the number of books borrowed by each borrower.\n3. Identify books written by 'Jane Austen' that are currently available.\n4. Record a new book loan for an existing borrower.\n5. Update the return date for a specific book loan."
+ },
+ {
+  "id": "t066",
+  "title": "Event Attendee Management",
+  "spec": "Schema: Events(EventID INT, EventName VARCHAR(100), EventDate DATE, Location VARCHAR(100)), Attendees(AttendeeID INT, Name VARCHAR(100), Email VARCHAR(100)), Registrations(RegistrationID INT, EventID INT, AttendeeID INT, RegistrationDate DATE).\nQueries:\n1. List all attendees for the 'Annual Tech Conference'.\n2. Count the number of registrations for each event.\n3. Find attendees who registered for more than one event.\n4. Register a new attendee for a specific event.\n5. Update an attendee's email address and their registration date for an event."
+ },
+ {
+  "id": "t067",
+  "title": "Movie Rental Tracking",
+  "spec": "Schema: Movies(MovieID INT, Title VARCHAR(255), Genre VARCHAR(50), ReleaseYear INT, AvailableCopies INT), Customers(CustomerID INT, Name VARCHAR(100), Email VARCHAR(100)), Rentals(RentalID INT, MovieID INT, CustomerID INT, RentalDate DATE, ReturnDate DATE).\nQueries:\n1. Find all movies currently rented out (ReturnDate is NULL).\n2. List the top 5 most rented movie genres.\n3. Identify customers who have rented 'The Matrix'.\n4. Record a new movie rental for an existing customer.\n5. Update the return date for a specific movie rental."
+ },
+ {
+  "id": "t068",
+  "title": "Airline Flight Information",
+  "spec": "Schema: Flights(FlightID INT, FlightNumber VARCHAR(10), DepartureAirport VARCHAR(3), ArrivalAirport VARCHAR(3), DepartureTime DATETIME, ArrivalTime DATETIME), Aircrafts(AircraftID INT, Model VARCHAR(50), Capacity INT), FlightAircrafts(FlightID INT, AircraftID INT).\nQueries:\n1. Find all flights departing from 'JFK' to 'LAX' on a specific date.\n2. Calculate the average flight duration for each departure airport.\n3. List all aircraft models used for flights with more than 200 capacity.\n4. Insert a new flight record and assign an aircraft.\n5. Update the departure time of a specific flight."
+ },
+ {
+  "id": "t069",
+  "title": "Hospital Patient Management",
+  "spec": "Schema: Patients(PatientID INT, FirstName VARCHAR(50), LastName VARCHAR(50), DateOfBirth DATE, Gender VARCHAR(10)), Doctors(DoctorID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Specialty VARCHAR(50)), Appointments(AppointmentID INT, PatientID INT, DoctorID INT, AppointmentDate DATETIME, Reason VARCHAR(255)).\nQueries:\n1. Find all appointments scheduled for a specific doctor on a given date.\n2. Count the number of appointments for each patient.\n3. List all patients seen by 'Dr. Smith' who are 'Female'.\n4. Insert a new patient and schedule an appointment with a doctor.\n5. Update the reason for an existing appointment."
+ },
+ {
+  "id": "t070",
+  "title": "Restaurant Menu and Orders",
+  "spec": "Schema: Dishes(DishID INT, DishName VARCHAR(100), Category VARCHAR(50), Price DECIMAL(10,2)), Orders(OrderID INT, OrderDate DATETIME, TableNumber INT, TotalAmount DECIMAL(10,2)), OrderItems(OrderItemID INT, OrderID INT, DishID INT, Quantity INT, PriceAtOrder DECIMAL(10,2)).\nQueries:\n1. List all dishes in the 'Appetizers' category that cost less than $10.\n2. Calculate the total revenue generated by each dish.\n3. Find the top 3 most popular dishes (by quantity ordered).\n4. Create a new order with two specific dishes.\n5. Update the price of a dish on the menu and add an item to an existing order."
+ },
+ {
+  "id": "t071",
+  "title": "Software Development Bug Tracker",
+  "spec": "Schema: Bugs(BugID INT, Title VARCHAR(255), Description TEXT, Status VARCHAR(50), Priority VARCHAR(50), AssignedTo INT), Developers(DeveloperID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Email VARCHAR(100)), Projects(ProjectID INT, ProjectName VARCHAR(100)).\nQueries:\n1. List all 'High' priority bugs that are currently 'Open' and assigned to 'John Doe'.\n2. Count the number of bugs assigned to each developer.\n3. Find projects with more than 10 'Critical' bugs.\n4. Insert a new bug and assign it to a developer.\n5. Update the status of a bug to 'Resolved' and remove the assignment."
+ },
+ {
+  "id": "t072",
+  "title": "University Research Grant Tracking",
+  "spec": "Schema: Projects(ProjectID INT, ProjectName VARCHAR(255), StartDate DATE, EndDate DATE, Budget DECIMAL(12,2)), Researchers(ResearcherID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Department VARCHAR(100)), ProjectResearchers(ProjectID INT, ResearcherID INT, Role VARCHAR(50)).\nQueries:\n1. List all active projects (current date between StartDate and EndDate) with a budget over $100,000.\n2. Calculate the total budget allocated to each department.\n3. Find researchers who are involved in more than two projects.\n4. Insert a new research project and assign a lead researcher.\n5. Update the end date and budget for a specific project."
+ },
+ {
+  "id": "t073",
+  "title": "Online Forum Post Management",
+  "spec": "Schema: Users(UserID INT, Username VARCHAR(50), Email VARCHAR(100), RegistrationDate DATE), Posts(PostID INT, UserID INT, ThreadID INT, PostContent TEXT, PostDate DATETIME), Threads(ThreadID INT, ThreadTitle VARCHAR(255), UserID INT).\nQueries:\n1. Find all posts made by 'admin_user' in the last 24 hours.\n2. Count the number of posts made by each user.\n3. List the top 5 threads with the most posts.\n4. Insert a new post into an existing thread by a user.\n5. Update the content of a specific post."
+ },
+ {
+  "id": "t074",
+  "title": "Fitness Club Membership Tracking",
+  "spec": "Schema: Members(MemberID INT, FirstName VARCHAR(50), LastName VARCHAR(50), MembershipType VARCHAR(50), JoinDate DATE, ExpirationDate DATE), Classes(ClassID INT, ClassName VARCHAR(100), Instructor VARCHAR(100), ClassDate DATETIME), MemberClasses(MemberID INT, ClassID INT).\nQueries:\n1. List all members whose membership expires in the next 30 days.\n2. Count the number of members for each membership type.\n3. Find members who have attended 'Yoga' class more than 3 times.\n4. Add a new member with a 'Premium' membership.\n5. Enroll an existing member in a new class and update their membership expiration date."
+ },
+ {
+  "id": "t075",
+  "title": "Music Streaming Playlist Management",
+  "spec": "Schema: Users(UserID INT, Username VARCHAR(50), Email VARCHAR(100)), Songs(SongID INT, Title VARCHAR(255), Artist VARCHAR(100), Genre VARCHAR(50)), Playlists(PlaylistID INT, UserID INT, PlaylistName VARCHAR(100)), PlaylistSongs(PlaylistID INT, SongID INT).\nQueries:\n1. List all songs in 'JohnDoe''s 'Workout Jams' playlist.\n2. Count the number of songs by 'Artist A' across all playlists.\n3. Find users who have created playlists with more than 10 songs.\n4. Create a new playlist for a user and add two songs to it.\n5. Remove a specific song from a playlist."
+ },
+ {
+  "id": "t076",
+  "title": "Supply Chain Shipment Tracking",
+  "spec": "Schema: Shipments(ShipmentID INT, Origin VARCHAR(100), Destination VARCHAR(100), ShipmentDate DATE, DeliveryDate DATE, Status VARCHAR(50)), Products(ProductID INT, ProductName VARCHAR(100), Weight DECIMAL(8,2)), ShipmentProducts(ShipmentID INT, ProductID INT, Quantity INT).\nQueries:\n1. List all shipments currently 'In Transit' that originated from 'Warehouse A'.\n2. Calculate the total quantity of 'Product Z' shipped.\n3. Find shipments with more than 5 distinct products.\n4. Insert a new shipment and associate two products with it.\n5. Update the status of a shipment to 'Delivered' and set the delivery date."
+ },
+ {
+  "id": "t077",
+  "title": "Clinical Trial Participant Management",
+  "spec": "Schema: Trials(TrialID INT, TrialName VARCHAR(255), StartDate DATE, EndDate DATE), Participants(ParticipantID INT, FirstName VARCHAR(50), LastName VARCHAR(50), DateOfBirth DATE, Gender VARCHAR(10)), TrialParticipants(TrialID INT, ParticipantID INT, EnrollmentDate DATE, Status VARCHAR(50)).\nQueries:\n1. List all participants enrolled in 'Trial X' whose status is 'Active'.\n2. Count the number of participants for each trial.\n3. Find participants who are enrolled in multiple trials.\n4. Enroll a new participant in a specific trial.\n5. Update the status of a participant in a trial to 'Completed'."
+ },
+ {
+  "id": "t078",
+  "title": "Blog Post Content Management",
+  "spec": "Schema: Posts(PostID INT, Title VARCHAR(255), Content TEXT, AuthorID INT, PublishDate DATETIME), Authors(AuthorID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Email VARCHAR(100)), Categories(CategoryID INT, CategoryName VARCHAR(100)), PostCategories(PostID INT, CategoryID INT).\nQueries:\n1. Find all posts published by 'Jane Doe' in the 'Technology' category.\n2. Count the number of posts in each category.\n3. List authors who have published more than 10 posts.\n4. Create a new blog post and assign it to an author and two categories.\n5. Update the content of a specific post."
+ },
+ {
+  "id": "t079",
+  "title": "Vehicle Fleet Maintenance",
+  "spec": "Schema: Vehicles(VehicleID INT, Make VARCHAR(50), Model VARCHAR(50), Year INT, LicensePlate VARCHAR(20)), Drivers(DriverID INT, FirstName VARCHAR(50), LastName VARCHAR(50), LicenseNumber VARCHAR(50)), MaintenanceRecords(RecordID INT, VehicleID INT, ServiceDate DATE, Description TEXT, Cost DECIMAL(10,2)).\nQueries:\n1. List all vehicles that had maintenance in the last 6 months costing over $500.\n2. Calculate the total maintenance cost for each vehicle.\n3. Find vehicles that have not had any maintenance in the last year.\n4. Insert a new vehicle and a maintenance record for it.\n5. Update the description of a specific maintenance record."
+ },
+ {
+  "id": "t080",
+  "title": "Project Task Tracking",
+  "spec": "Schema: Projects(ProjectID INT, ProjectName VARCHAR(100), StartDate DATE, EndDate DATE), Tasks(TaskID INT, ProjectID INT, TaskName VARCHAR(100), Status VARCHAR(50), DueDate DATE, AssignedTo INT), Employees(EmployeeID INT, FirstName VARCHAR(50), LastName VARCHAR(50)).\nQueries:\n1. Find all 'In Progress' tasks for 'Project Alpha' due next week.\n2. Count the number of tasks assigned to each employee.\n3. List projects with no 'Completed' tasks.\n4. Add a new task to an existing project and assign it to an employee.\n5. Update the status of a task to 'Completed'."
+ },
+ {
+  "id": "t081",
+  "title": "Financial Transaction Logging",
+  "spec": "Schema: Accounts(AccountID INT, AccountName VARCHAR(100), AccountType VARCHAR(50), Balance DECIMAL(12,2)), Transactions(TransactionID INT, AccountID INT, TransactionDate DATETIME, Amount DECIMAL(12,2), Type VARCHAR(50), Description TEXT).\nQueries:\n1. List all 'Debit' transactions for 'Account 123' in the last 30 days.\n2. Calculate the total balance for each account type.\n3. Find accounts with more than 100 transactions.\n4. Insert a new 'Credit' transaction into an account and update its balance.\n5. Update the description of a specific transaction."
+ },
+ {
+  "id": "t082",
+  "title": "Sports League Standings",
+  "spec": "Schema: Teams(TeamID INT, TeamName VARCHAR(100), City VARCHAR(100), Coach VARCHAR(100)), Players(PlayerID INT, FirstName VARCHAR(50), LastName VARCHAR(50), TeamID INT, Position VARCHAR(50)), Games(GameID INT, HomeTeamID INT, AwayTeamID INT, GameDate DATE, HomeScore INT, AwayScore INT).\nQueries:\n1. List all players on the 'Lions' team who play 'Forward'.\n2. Calculate the total wins for each team.\n3. Find teams that have played more than 10 games.\n4. Add a new player to an existing team.\n5. Update the score of a specific game."
+ },
+ {
+  "id": "t083",
+  "title": "Art Gallery Exhibition Management",
+  "spec": "Schema: Artworks(ArtworkID INT, Title VARCHAR(255), Artist VARCHAR(100), Year INT, Medium VARCHAR(100)), Exhibitions(ExhibitionID INT, ExhibitionName VARCHAR(100), StartDate DATE, EndDate DATE, GalleryLocation VARCHAR(100)), ExhibitionArtworks(ExhibitionID INT, ArtworkID INT).\nQueries:\n1. Find all artworks by 'Vincent van Gogh' currently on display.\n2. Count the number of artworks in each exhibition.\n3. List exhibitions that feature more than 20 artworks.\n4. Insert a new artwork and add it to an upcoming exhibition.\n5. Update the end date of an existing exhibition."
+ },
+ {
+  "id": "t084",
+  "title": "Hotel Room Reservations",
+  "spec": "Schema: Rooms(RoomID INT, RoomNumber VARCHAR(10), RoomType VARCHAR(50), PricePerNight DECIMAL(8,2)), Guests(GuestID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Email VARCHAR(100)), Reservations(ReservationID INT, RoomID INT, GuestID INT, CheckInDate DATE, CheckOutDate DATE, TotalPrice DECIMAL(10,2)).\nQueries:\n1. List all available 'Suite' rooms for a specific date range.\n2. Calculate the total revenue generated by each room type.\n3. Find guests who have made more than 3 reservations.\n4. Make a new reservation for a guest in a specific room.\n5. Update the check-out date of an existing reservation and adjust the total price."
+ },
+ {
+  "id": "t085",
+  "title": "Job Application Tracking System",
+  "spec": "Schema: Jobs(JobID INT, Title VARCHAR(255), Department VARCHAR(100), SalaryRange VARCHAR(50)), Applicants(ApplicantID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Email VARCHAR(100)), Applications(ApplicationID INT, JobID INT, ApplicantID INT, ApplicationDate DATE, Status VARCHAR(50)).\nQueries:\n1. Find all 'Pending' applications for the 'Software Engineer' job.\n2. Count the number of applications for each job title.\n3. List applicants who have applied for more than one job.\n4. Create a new job posting and a new application for it.\n5. Update the status of an application to 'Interview Scheduled'."
+ },
+ {
+  "id": "t086",
+  "title": "E-commerce Shopping Cart Management",
+  "spec": "Schema: Customers(CustomerID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Email VARCHAR(100)), Products(ProductID INT, ProductName VARCHAR(100), Price DECIMAL(10,2), Stock INT), Carts(CartID INT, CustomerID INT, CreatedDate DATETIME), CartItems(CartItemID INT, CartID INT, ProductID INT, Quantity INT).\nQueries:\n1. Find all products in 'customer_A''s active shopping cart.\n2. Calculate the total value of each customer's shopping cart.\n3. List customers who have more than 5 items in their cart.\n4. Create a new shopping cart for a customer and add two products to it.\n5. Update the quantity of a specific product in a cart and remove another."
+ },
+ {
+  "id": "t087",
+  "title": "Company Asset Management",
+  "spec": "Schema: Assets(AssetID INT, AssetName VARCHAR(100), Category VARCHAR(50), PurchaseDate DATE, Value DECIMAL(10,2), EmployeeID INT), Employees(EmployeeID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Department VARCHAR(100)), Locations(LocationID INT, LocationName VARCHAR(100)).\nQueries:\n1. List all 'Laptop' assets purchased in the last year with a value over $1000.\n2. Calculate the total value of assets in each category.\n3. Find employees who are assigned more than 3 assets.\n4. Insert a new asset and assign it to an employee.\n5. Update the employee assigned to an asset and its current value."
+ },
+ {
+  "id": "t088",
+  "title": "Online Course Progress Tracker",
+  "spec": "Schema: Courses(CourseID INT, CourseName VARCHAR(100), Instructor VARCHAR(100)), Modules(ModuleID INT, CourseID INT, ModuleName VARCHAR(100), OrderInCourse INT), Enrollments(EnrollmentID INT, UserID INT, CourseID INT, StartDate DATE, CompletionDate DATE), Progress(ProgressID INT, EnrollmentID INT, ModuleID INT, CompletionStatus VARCHAR(20), CompletionDate DATETIME).\nQueries:\n1. List all 'In Progress' modules for 'User A' in 'Introduction to SQL'.\n2. Calculate the percentage of modules completed by each user in a specific course.\n3. Find courses where all enrolled students have completed at least 50% of the modules.\n4. Enroll a new user in a course and mark the first module as 'Completed'.\n5. Update the 'CompletionStatus' of a module for a user."
+ },
+ {
+  "id": "t089",
+  "title": "Social Media User Activity",
+  "spec": "Schema: Users(UserID INT, Username VARCHAR(50), Email VARCHAR(100), JoinDate DATE), Posts(PostID INT, UserID INT, PostContent TEXT, PostDate DATETIME), Likes(LikeID INT, PostID INT, UserID INT, LikeDate DATETIME).\nQueries:\n1. Find all posts made by 'user_X' that received more than 10 likes.\n2. Count the total likes received by each user's posts.\n3. List users who have posted more than 20 times.\n4. Create a new user, a new post by them, and a like on that post from another user.\n5. Delete a specific like from a post."
+ },
+ {
+  "id": "t090",
+  "title": "Automotive Service History",
+  "spec": "Schema: Vehicles(VehicleID INT, Make VARCHAR(50), Model VARCHAR(50), Year INT, VIN VARCHAR(17)), Owners(OwnerID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Email VARCHAR(100)), ServiceRecords(RecordID INT, VehicleID INT, ServiceDate DATE, ServiceType VARCHAR(100), Cost DECIMAL(10,2)).\nQueries:\n1. List all service records for 'Vehicle Y' (by VIN) in the last 2 years.\n2. Calculate the total service cost for each vehicle owner.\n3. Find vehicles that have had 'Oil Change' service more than 3 times.\n4. Insert a new service record for an existing vehicle.\n5. Update the 'ServiceType' of a specific service record."
+ },
+ {
+  "id": "t091",
+  "title": "Public Library Member Tracking",
+  "spec": "Schema: Members(MemberID INT, FirstName VARCHAR(50), LastName VARCHAR(50), MembershipStartDate DATE, MembershipEndDate DATE), Books(BookID INT, Title VARCHAR(255), Author VARCHAR(100), ISBN VARCHAR(20)), Loans(LoanID INT, MemberID INT, BookID INT, BorrowDate DATE, DueDate DATE, ReturnDate DATE).\nQueries:\n1. List all members whose membership is currently active.\n2. Count the number of books currently on loan by each member.\n3. Find books that are overdue (ReturnDate is NULL and DueDate is past).\n4. Register a new member and record a book loan for them.\n5. Update the 'ReturnDate' for a specific book loan."
+ },
+ {
+  "id": "t092",
+  "title": "Online Course Review System",
+  "spec": "Schema: Courses(CourseID INT, CourseName VARCHAR(100), Instructor VARCHAR(100)), Students(StudentID INT, FirstName VARCHAR(50), LastName VARCHAR(50)), Reviews(ReviewID INT, CourseID INT, StudentID INT, Rating INT, Comment TEXT, ReviewDate DATE).\nQueries:\n1. Find all reviews for 'Course Z' with a rating of 4 or 5 stars.\n2. Calculate the average rating for each course.\n3. List students who have reviewed more than 2 courses.\n4. Insert a new review for a course by a student.\n5. Update the 'Comment' for an existing review."
+ },
+ {
+  "id": "t093",
+  "title": "Customer Support Ticket System",
+  "spec": "Schema: Customers(CustomerID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Email VARCHAR(100)), Tickets(TicketID INT, CustomerID INT, Subject VARCHAR(255), Description TEXT, Status VARCHAR(50), Priority VARCHAR(50), CreatedDate DATETIME, AgentID INT), Agents(AgentID INT, AgentName VARCHAR(100)).\nQueries:\n1. List all 'High' priority tickets that are 'Open' and assigned to 'Agent Smith'.\n2. Count the number of tickets by 'Status' for each customer.\n3. Find agents who have resolved more than 50 tickets.\n4. Create a new support ticket for a customer and assign it to an agent.\n5. Update the 'Status' of a ticket to 'Resolved' and add a resolution note."
+ },
+ {
+  "id": "t094",
+  "title": "Restaurant Table Reservations",
+  "spec": "Schema: Restaurants(RestaurantID INT, RestaurantName VARCHAR(100), Cuisine VARCHAR(50)), Tables(TableID INT, RestaurantID INT, TableNumber INT, Capacity INT), Reservations(ReservationID INT, TableID INT, CustomerName VARCHAR(100), ReservationTime DATETIME, NumberOfGuests INT, Status VARCHAR(50)).\nQueries:\n1. Find all 'Confirmed' reservations for 'Restaurant Z' on a specific date for 4 guests.\n2. Count the number of reservations for each table in 'Restaurant A'.\n3. List restaurants that have more than 20 tables.\n4. Make a new reservation for a customer at a specific table.\n5. Update the 'Status' of a reservation to 'Completed'."
+ },
+ {
+  "id": "t095",
+  "title": "University Department Course Catalog",
+  "spec": "Schema: Departments(DepartmentID INT, DepartmentName VARCHAR(100), HeadOfDept VARCHAR(100)), Courses(CourseID INT, DepartmentID INT, CourseCode VARCHAR(10), CourseName VARCHAR(100), Credits INT), Prerequisites(PrereqID INT, CourseID INT, PrereqCourseID INT).\nQueries:\n1. List all courses offered by the 'Computer Science' department with 3 credits.\n2. Count the number of courses in each department.\n3. Find courses that have more than 2 prerequisites.\n4. Add a new course to a department and define a prerequisite.\n5. Update the 'Credits' for a specific course."
+ },
+ {
+  "id": "t096",
+  "title": "IT Helpdesk Ticket System",
+  "spec": "Schema: Users(UserID INT, Username VARCHAR(50), Department VARCHAR(100)), Tickets(TicketID INT, UserID INT, Subject VARCHAR(255), Description TEXT, Status VARCHAR(50), Priority VARCHAR(50), CreatedDate DATETIME, AssignedTo INT), Technicians(TechnicianID INT, FirstName VARCHAR(50), LastName VARCHAR(50), Specialty VARCHAR(100)).\nQueries:\n1. Find all 'Open' tickets with 'High' priority for users in the 'Finance' department.\n2. Count the number of tickets assigned to each technician.\n3. List technicians who have resolved more than 20 tickets this month.\n4. Create a new ticket for a user and assign it to a technician.\n5. Update the 'Status' of a ticket to 'Resolved' and add a resolution comment."
+ },
+ {
+  "id": "t097",
+  "title": "Document Version Control",
+  "spec": "Schema: Documents (doc_id, title, latest_version_id), Versions (version_id, doc_id, version_number, content, created_at, created_by). Queries: 1. Retrieve the latest content for a specific document. 2. Find all versions of a document, ordered by version number. 3. Insert a new version for an existing document, updating the latest_version_id in Documents. 4. Find all documents created by a specific user. 5. Get the count of versions for each document."
+ },
+ {
+  "id": "t098",
+  "title": "Forum Thread Moderation",
+  "spec": "Schema: Threads (thread_id, title, user_id, created_at, status), Posts (post_id, thread_id, user_id, content, posted_at, is_deleted). Queries: 1. Get all posts for a specific thread, excluding deleted ones. 2. Find threads started by a particular user. 3. Update the status of a thread (e.g., 'closed', 'open'). 4. Soft-delete a specific post. 5. Count the number of posts per thread."
+ },
+ {
+  "id": "t099",
+  "title": "Survey Question Responses",
+  "spec": "Schema: Surveys (survey_id, title, created_at), Questions (question_id, survey_id, question_text, question_type), Responses (response_id, question_id, participant_id, response_value, responded_at). Queries: 1. Retrieve all questions for a given survey. 2. Get all responses for a specific question. 3. Insert a new response for a question from a participant. 4. Find the total number of responses for each survey. 5. List all participants who answered a specific survey."
+ },
+ {
+  "id": "t100",
+  "title": "Meeting Room Bookings",
+  "spec": "Schema: Rooms (room_id, room_name, capacity), Bookings (booking_id, room_id, user_id, start_time, end_time, purpose). Queries: 1. Find all available rooms for a specific time slot. 2. List all bookings made by a particular user. 3. Insert a new meeting room booking. 4. Update the purpose of an existing booking. 5. Get the total number of bookings per room."
+ },
+ {
+  "id": "t101",
+  "title": "User Subscription Tiers",
+  "spec": "Schema: Users (user_id, username, email), Subscriptions (sub_id, user_id, tier_id, start_date, end_date, is_active), Tiers (tier_id, tier_name, price_monthly). Queries: 1. Find the current active subscription tier for a user. 2. List all users on a specific subscription tier. 3. Update a user's subscription to a new tier (end current, start new). 4. Get the count of active users per tier. 5. Find all users whose subscriptions are expiring in the next 30 days."
+ },
+ {
+  "id": "t102",
+  "title": "Digital Asset Management",
+  "spec": "Schema: Assets (asset_id, filename, file_type, upload_date, uploaded_by), Tags (tag_id, tag_name), AssetTags (asset_id, tag_id). Queries: 1. Find all assets with a specific tag. 2. List all tags associated with a particular asset. 3. Insert a new asset and associate it with a tag. 4. Remove a specific tag from an asset. 5. Count the number of assets per file type."
+ },
+ {
+  "id": "t103",
+  "title": "Customer Loyalty Points",
+  "spec": "Schema: Customers (customer_id, customer_name, email), Transactions (transaction_id, customer_id, amount, transaction_date), LoyaltyPoints (customer_id, points_balance, last_updated). Queries: 1. Get the current loyalty points for a customer. 2. Update a customer's loyalty points after a transaction (add points). 3. Find all customers with more than X points. 4. Get the total transaction amount for each customer. 5. List customers who haven't earned points in the last 90 days."
+ },
+ {
+  "id": "t104",
+  "title": "Course Lecture Tracking",
+  "spec": "Schema: Courses (course_id, course_title, instructor_id), Lectures (lecture_id, course_id, lecture_title, lecture_date, duration_minutes), Students (student_id, student_name). Queries: 1. List all lectures for a specific course. 2. Find all courses taught by a particular instructor. 3. Insert a new lecture for an existing course. 4. Update the duration of a lecture. 5. Get the total duration of lectures for each course."
+ },
+ {
+  "id": "t105",
+  "title": "Sales Region Performance",
+  "spec": "Schema: Regions (region_id, region_name, manager_id), Salespeople (salesperson_id, region_id, salesperson_name), Sales (sale_id, salesperson_id, sale_amount, sale_date). Queries: 1. Find the total sales for a specific region. 2. List all salespeople in a given region. 3. Insert a new sale record. 4. Get the top 5 salespeople by total sales. 5. Find regions with sales below a certain target."
+ },
+ {
+  "id": "t106",
+  "title": "Podcast Guest Appearances",
+  "spec": "Schema: Podcasts (podcast_id, podcast_title, host_name), Episodes (episode_id, podcast_id, episode_title, release_date), Guests (guest_id, guest_name), EpisodeGuests (episode_id, guest_id). Queries: 1. Find all guests who appeared on a specific episode. 2. List all episodes a particular guest has appeared on. 3. Insert a new guest appearance for an episode. 4. Find all episodes from a specific podcast. 5. Count the number of unique guests per podcast."
+ },
+ {
+  "id": "t107",
+  "title": "Product Feature Requests",
+  "spec": "Schema: Products (product_id, product_name), Features (feature_id, product_id, feature_name, description), Requests (request_id, feature_id, user_id, requested_at, status). Queries: 1. Get all features for a specific product. 2. Find all requests for a particular feature. 3. Insert a new feature request. 4. Update the status of a feature request. 5. Count the number of requests per feature, ordered by popularity."
+ },
+ {
+  "id": "t108",
+  "title": "Employee Skill Inventory",
+  "spec": "Schema: Employees (employee_id, employee_name, department_id), Skills (skill_id, skill_name, skill_category), EmployeeSkills (employee_id, skill_id, proficiency_level, acquired_date). Queries: 1. Find all skills possessed by a specific employee. 2. List all employees with a particular skill. 3. Insert a new skill record for an employee. 4. Update an employee's proficiency level for a skill. 5. Get the count of employees per skill category."
+ },
+ {
+  "id": "t109",
+  "title": "Recipe Ingredient Stock",
+  "spec": "Schema: Recipes (recipe_id, recipe_name, instructions), Ingredients (ingredient_id, ingredient_name, unit_of_measure), RecipeIngredients (recipe_id, ingredient_id, quantity_needed), Inventory (ingredient_id, quantity_on_hand, last_restocked). Queries: 1. List all ingredients for a specific recipe, with quantities. 2. Find recipes that can be made with current inventory (assuming enough of all ingredients). 3. Update the quantity on hand for an ingredient in inventory. 4. Get a list of ingredients that are low in stock (e.g., quantity_on_hand < 10). 5. Find recipes that use a particular ingredient."
+ },
+ {
+  "id": "t110",
+  "title": "Customer Feedback Ratings",
+  "spec": "Schema: Products (product_id, product_name), Customers (customer_id, customer_name), Feedback (feedback_id, product_id, customer_id, rating, comment, feedback_date). Queries: 1. Get the average rating for a specific product. 2. List all feedback comments for a product, ordered by date. 3. Insert new customer feedback for a product. 4. Find all feedback given by a particular customer. 5. Get the count of 5-star ratings for each product."
+ },
+ {
+  "id": "t111",
+  "title": "Website Page Views",
+  "spec": "Schema: Pages (page_id, page_url, page_title), Users (user_id, username), Views (view_id, page_id, user_id, view_timestamp). Queries: 1. Get the total number of views for a specific page. 2. List all pages viewed by a particular user. 3. Insert a new page view record. 4. Find the most viewed pages in the last 24 hours. 5. Count unique users who viewed each page."
+ },
+ {
+  "id": "t112",
+  "title": "Software License Management",
+  "spec": "Schema: Software (software_id, software_name, version), Licenses (license_id, software_id, user_id, purchase_date, expiry_date, license_key), Users (user_id, username). Queries: 1. Find all licenses held by a specific user. 2. List all users with a license for a particular software. 3. Insert a new software license for a user. 4. Find all licenses expiring in the next 30 days. 5. Count the number of active licenses per software."
+ },
+ {
+  "id": "t113",
+  "title": "Conference Speaker Bios",
+  "spec": "Schema: Conferences (conference_id, conference_name, start_date), Speakers (speaker_id, speaker_name, bio, company), Sessions (session_id, conference_id, speaker_id, session_title, start_time, end_time). Queries: 1. List all sessions at a specific conference. 2. Find all sessions presented by a particular speaker. 3. Insert a new session for a conference with a speaker. 4. Update a speaker's bio. 5. Get the count of sessions per speaker."
+ },
+ {
+  "id": "t114",
+  "title": "Charity Donation Tracking",
+  "spec": "Schema: Donors (donor_id, donor_name, email), Campaigns (campaign_id, campaign_name, target_amount, start_date, end_date), Donations (donation_id, donor_id, campaign_id, amount, donation_date). Queries: 1. Get the total donations for a specific campaign. 2. List all donations made by a particular donor. 3. Insert a new donation record. 4. Find campaigns that have reached their target amount. 5. Get the top 5 donors by total donation amount."
+ },
+ {
+  "id": "t115",
+  "title": "University Course Prerequisites",
+  "spec": "Schema: Courses (course_id, course_code, course_title, credits), Prerequisites (prereq_id, course_id, required_course_id). Queries: 1. Find all direct prerequisites for a specific course. 2. List all courses that have a specific course as a prerequisite. 3. Insert a new prerequisite relationship. 4. Get all courses with no prerequisites. 5. Find courses with more than 2 prerequisites."
+ },
+ {
+  "id": "t116",
+  "title": "Social Media Post Engagement",
+  "spec": "Schema: Users (user_id, username), Posts (post_id, user_id, content, posted_at), Likes (like_id, post_id, user_id, liked_at), Comments (comment_id, post_id, user_id, comment_text, commented_at). Queries: 1. Get the total number of likes for a specific post. 2. List all comments on a particular post. 3. Insert a new like for a post by a user. 4. Find posts with more than X comments. 5. Get the total engagement (likes + comments) for each post."
+ },
+ {
+  "id": "t117",
+  "title": "Fleet Vehicle Maintenance",
+  "spec": "Schema: Vehicles (vehicle_id, make, model, year, license_plate), MaintenanceRecords (record_id, vehicle_id, service_type, service_date, cost, mileage_at_service). Queries: 1. Get all maintenance records for a specific vehicle. 2. Find the total maintenance cost for each vehicle. 3. Insert a new maintenance record. 4. Find vehicles that haven't had a specific service type in over a year. 5. List vehicles due for service based on mileage (e.g., last service at 50k, due every 10k, current mileage 59k)."
+ },
+ {
+  "id": "t118",
+  "title": "Online Quiz Scores",
+  "spec": "Schema: Quizzes (quiz_id, quiz_title, creator_id), Questions (question_id, quiz_id, question_text, correct_answer), Attempts (attempt_id, quiz_id, user_id, score, attempt_date). Queries: 1. Get the highest score for a specific quiz by a user. 2. List all attempts for a quiz, ordered by score. 3. Insert a new quiz attempt with a score. 4. Find the average score for each quiz. 5. List users who have not attempted a specific quiz."
+ },
+ {
+  "id": "t119",
+  "title": "Recipe User Ratings",
+  "spec": "Schema: Recipes (recipe_id, recipe_name, creator_user_id), Users (user_id, username), Ratings (rating_id, recipe_id, user_id, rating_value, rating_date, comment). Queries: 1. Get the average rating for a specific recipe. 2. List all ratings and comments for a recipe. 3. Insert a new rating for a recipe by a user. 4. Find all recipes rated by a particular user. 5. Get the count of recipes with an average rating above 4 stars."
+ },
+ {
+  "id": "t120",
+  "title": "Software Bug Resolution",
+  "spec": "Schema: Bugs (bug_id, title, description, reporter_id, reported_date, status), Users (user_id, username), BugAssignments (assignment_id, bug_id, assigned_to_user_id, assigned_date, resolution_date). Queries: 1. Find all bugs assigned to a specific user. 2. List all open bugs. 3. Assign a bug to a user. 4. Update the status of a bug to 'resolved'. 5. Count bugs reported by each user."
+ },
+ {
+  "id": "t121",
+  "title": "Customer Communication Log",
+  "spec": "Schema: Customers (customer_id, customer_name, email), Communications (comm_id, customer_id, comm_type, comm_date, subject, notes). Queries: 1. List all communications with a specific customer. 2. Find all customers communicated with via 'email' in the last 30 days. 3. Insert a new communication log entry. 4. Update the notes of a specific communication. 5. Get the count of communications per type for each customer."
+ },
+ {
+  "id": "t122",
+  "title": "Product Pricing History",
+  "spec": "Schema: Products (product_id, product_name), Prices (price_id, product_id, effective_date, price_usd). Queries: 1. Get the current price for a specific product. 2. List the full pricing history for a product. 3. Insert a new price for a product (new effective date). 4. Find products whose price has increased in the last year. 5. Get the latest price for all products."
+ },
+ {
+  "id": "t123",
+  "title": "Department Budget Tracking",
+  "spec": "Schema: Departments (dept_id, dept_name, budget_total), Expenses (expense_id, dept_id, expense_date, amount, description). Queries: 1. Get the total expenses for a specific department. 2. List all expenses for a department in a given month. 3. Insert a new expense record. 4. Find departments that are over budget. 5. Get the remaining budget for each department."
+ },
+ {
+  "id": "t124",
+  "title": "Online Poll Results",
+  "spec": "Schema: Polls (poll_id, poll_question, created_by_user_id, created_at, is_active), Options (option_id, poll_id, option_text), Votes (vote_id, option_id, voter_user_id, voted_at). Queries: 1. Get the total votes for each option in a specific poll. 2. Find all polls created by a particular user. 3. Insert a new vote for an option. 4. List all active polls. 5. Get the total number of votes cast by each user."
+ },
+ {
+  "id": "t125",
+  "title": "Customer Service Agent Performance",
+  "spec": "Schema: Agents (agent_id, agent_name, department), Tickets (ticket_id, agent_id, customer_id, opened_at, closed_at, status, resolution_notes). Queries: 1. Get the number of tickets closed by a specific agent. 2. List all open tickets assigned to an agent. 3. Assign a ticket to an agent. 4. Close a ticket with resolution notes. 5. Find agents with an average resolution time longer than X hours."
+ },
+ {
+  "id": "t126",
+  "title": "Project Task Dependencies",
+  "spec": "Schema: Projects (project_id, project_name, start_date, end_date), Tasks (task_id, project_id, task_name, due_date, status), TaskDependencies (task_id, depends_on_task_id). Queries: 1. List all tasks for a specific project. 2. Find all tasks that a specific task depends on. 3. Insert a new task dependency. 4. Find tasks that are 'pending' but have all their dependencies 'completed'. 5. Get the count of dependencies for each task."
+ },
+ {
+  "id": "t127",
+  "title": "Online Course Modules",
+  "spec": "Schema: Courses (course_id, course_title), Modules (module_id, course_id, module_title, order_index), Lessons (lesson_id, module_id, lesson_title, lesson_type, duration_minutes). Queries: 1. List all modules for a specific course, ordered. 2. Find all lessons within a particular module. 3. Insert a new lesson into a module. 4. Update the order index of a module. 5. Get the total duration of lessons per module."
+ },
+ {
+  "id": "t128",
+  "title": "Event Attendee Badges",
+  "spec": "Schema: Events (event_id, event_name, event_date), Attendees (attendee_id, event_id, first_name, last_name, company, badge_printed). Queries: 1. List all attendees for a specific event. 2. Find all attendees from a particular company for an event. 3. Mark an attendee's badge as 'printed'. 4. Insert a new attendee for an event. 5. Get the count of attendees whose badges have not been printed."
+ },
+ {
+  "id": "t129",
+  "title": "User Notification Preferences",
+  "spec": "Schema: Users (user_id, username, email), NotificationTypes (type_id, type_name, description), UserPreferences (user_id, type_id, enabled). Queries: 1. Get all notification preferences for a specific user. 2. Find all users who have a specific notification type enabled. 3. Update a user's preference for a notification type. 4. Find all notification types that are enabled by default (i.e., not in UserPreferences with enabled=false). 5. Count users who have opted out of a specific notification type."
+ },
+ {
+  "id": "t130",
+  "title": "IT Asset Lifecycle",
+  "spec": "Schema: Assets (asset_id, asset_tag, asset_type, purchase_date, cost), Locations (location_id, location_name), AssetLocations (asset_id, location_id, assigned_date, released_date). Queries: 1. Get the current location of a specific asset. 2. List all assets at a particular location. 3. Assign an asset to a new location (end old assignment, start new). 4. Find assets purchased before a specific date. 5. Get the total cost of assets per asset type."
+ },
+ {
+  "id": "t131",
+  "title": "Online Forum Post Reactions",
+  "spec": "Schema: Posts (post_id, content, user_id, posted_at), Reactions (reaction_id, post_id, user_id, reaction_type, reacted_at). Queries: 1. Get the total count of a specific reaction type for a post. 2. List all users who reacted to a particular post. 3. Insert a new reaction to a post. 4. Find posts with more than 10 'like' reactions. 5. Get the total number of unique users who reacted to each post."
+ },
+ {
+  "id": "t132",
+  "title": "Student Grades and Assignments",
+  "spec": "Schema: Students (student_id, student_name), Courses (course_id, course_name), Assignments (assignment_id, course_id, assignment_name, max_score, due_date), Grades (grade_id, student_id, assignment_id, score, submission_date). Queries: 1. List all assignments for a specific course. 2. Get all grades for a student in a particular course. 3. Insert a new grade for a student on an assignment. 4. Find the average score for each assignment. 5. List students who have not submitted a specific assignment."
+ },
+ {
+  "id": "t133",
+  "title": "Retail Product Returns",
+  "spec": "Schema: Products (product_id, product_name, price), Customers (customer_id, customer_name), Returns (return_id, customer_id, product_id, return_date, reason, refund_amount). Queries: 1. List all returns made by a specific customer. 2. Find all returns for a particular product. 3. Insert a new product return record. 4. Get the total refund amount for each customer. 5. Find products with more than 10 returns in the last month."
+ },
+ {
+  "id": "t134",
+  "title": "Employee Performance Reviews",
+  "spec": "Schema: Employees (employee_id, employee_name, manager_id), Reviews (review_id, employee_id, reviewer_id, review_date, overall_rating, comments). Queries: 1. List all reviews for a specific employee. 2. Find all employees reviewed by a particular manager. 3. Insert a new performance review. 4. Get the average rating for each employee. 5. List employees who have not had a review in the last year."
+ },
+ {
+  "id": "t135",
+  "title": "Customer Segmentation Tags",
+  "spec": "Schema: Customers (customer_id, customer_name, email), Segments (segment_id, segment_name, description), CustomerSegments (customer_id, segment_id, assigned_date). Queries: 1. List all segments a specific customer belongs to. 2. Find all customers in a particular segment. 3. Assign a customer to a new segment. 4. Get the count of customers per segment. 5. Find customers who are not assigned to any segment."
+ },
+ {
+  "id": "t136",
+  "title": "Website Analytics Events",
+  "spec": "Schema: Users (user_id, username), Events (event_id, event_name, description), UserEvents (user_event_id, user_id, event_id, event_timestamp, event_data). Queries: 1. List all events performed by a specific user. 2. Find the total occurrences of a particular event. 3. Insert a new user event. 4. Get the top 5 most frequent events. 5. Count unique users who performed each event."
+ },
+ {
+  "id": "t137",
+  "title": "Inventory Batch Tracking",
+  "spec": "Schema: Products (product_id, product_name), Batches (batch_id, product_id, production_date, expiry_date, quantity), Locations (location_id, location_name), BatchLocations (batch_id, location_id, assigned_date). Queries: 1. Find all batches of a specific product. 2. List all batches at a particular location. 3. Insert a new batch into inventory. 4. Find expired batches. 5. Get the total quantity of each product across all batches."
+ },
+ {
+  "id": "t138",
+  "title": "University Department Staff",
+  "spec": "Schema: Departments (dept_id, dept_name), Staff (staff_id, staff_name, dept_id, role, hire_date). Queries: 1. List all staff in a specific department. 2. Find all staff with a particular role. 3. Insert a new staff member into a department. 4. Update a staff member's role. 5. Get the count of staff members per role in each department."
+ },
+ {
+  "id": "t139",
+  "title": "Project Budget Allocation",
+  "spec": "Schema: Projects (project_id, project_name, total_budget), Categories (category_id, category_name), BudgetAllocations (allocation_id, project_id, category_id, allocated_amount, spent_amount). Queries: 1. Get the total allocated amount for a specific project. 2. List all budget allocations for a project, by category. 3. Update the spent amount for a specific allocation. 4. Find projects that have exceeded their budget in any category. 5. Calculate remaining budget per project (total_budget - sum(spent_amount))."
+ },
+ {
+  "id": "t140",
+  "title": "Healthcare Provider Certifications",
+  "spec": "Schema: Providers (provider_id, provider_name, specialty), Certifications (cert_id, cert_name, issuing_body), ProviderCertifications (provider_id, cert_id, issue_date, expiry_date). Queries: 1. List all certifications held by a specific provider. 2. Find all providers with a particular certification. 3. Insert a new certification for a provider. 4. Find providers whose certifications are expiring in the next 90 days. 5. Get the count of providers per specialty."
+ },
+ {
+  "id": "t141",
+  "title": "Game Player Achievements",
+  "spec": "Schema: Players (player_id, player_name, join_date), Achievements (achievement_id, achievement_name, description, points_awarded), PlayerAchievements (player_id, achievement_id, date_achieved). Queries: 1. List all achievements earned by a specific player. 2. Find all players who have earned a particular achievement. 3. Record a new achievement for a player. 4. Get the total points awarded to each player. 5. Find achievements that have not been earned by any player."
+ },
+ {
+  "id": "t142",
+  "title": "E-commerce Wishlist Management",
+  "spec": "Schema: Users (user_id, username), Products (product_id, product_name, price), Wishlists (wishlist_id, user_id, product_id, added_date, quantity). Queries: 1. List all products in a specific user's wishlist. 2. Find all users who have a particular product in their wishlist. 3. Add a product to a user's wishlist. 4. Remove a product from a user's wishlist. 5. Get the total number of products in wishlists across all users."
+ },
+ {
+  "id": "t143",
+  "title": "Content Article Publishing",
+  "spec": "Schema: Authors (author_id, author_name), Categories (category_id, category_name), Articles (article_id, author_id, category_id, title, content, publish_date, status). Queries: 1. List all articles by a specific author. 2. Find all published articles in a particular category. 3. Insert a new article with an author and category. 4. Update the status of an article (e.g., 'published', 'draft'). 5. Get the count of articles per category."
+ },
+ {
+  "id": "t144",
+  "title": "Subscription Service Usage",
+  "spec": "Schema: Subscriptions (sub_id, user_id, plan_id, start_date, end_date), Plans (plan_id, plan_name, monthly_cost, data_limit_gb), UsageRecords (usage_id, sub_id, usage_date, data_used_gb). Queries: 1. Get the total data used by a specific subscription in a month. 2. List all subscriptions on a particular plan. 3. Record new data usage for a subscription. 4. Find subscriptions that have exceeded their data limit. 5. Calculate the remaining data limit for each active subscription."
+ },
+ {
+  "id": "t145",
+  "title": "Employee Time Off Requests",
+  "spec": "Schema: Employees (employee_id, employee_name, manager_id), TimeOffTypes (type_id, type_name), TimeOffRequests (request_id, employee_id, type_id, start_date, end_date, status, approved_by_manager_id). Queries: 1. List all pending time off requests for an employee. 2. Find all time off requests awaiting approval from a specific manager. 3. Submit a new time off request. 4. Approve a time off request. 5. Get the total number of days requested per time off type."
+ },
+ {
+  "id": "t146",
+  "title": "School Cafeteria Menu",
+  "spec": "Schema: MenuItems (item_id, item_name, description, price), Days (day_id, day_name), DailyMenu (daily_menu_id, day_id, item_id). Queries: 1. List all menu items for a specific day. 2. Find all days a particular menu item is served. 3. Add a menu item to a specific day's menu. 4. Update the price of a menu item. 5. Get the count of times each menu item appears on the menu."
+ },
+ {
+  "id": "t147",
+  "title": "Customer Support Knowledge Base",
+  "spec": "Schema: Articles (article_id, title, content, author_id, publish_date), Categories (category_id, category_name), ArticleCategories (article_id, category_id). Queries: 1. Find all articles in a specific category. 2. List all categories an article belongs to. 3. Insert a new article and assign it to a category. 4. Find articles containing a specific keyword in their title or content. 5. Get the count of articles per category."
+ },
+ {
+  "id": "t148",
+  "title": "Event Ticket Sales",
+  "spec": "Schema: Events (event_id, event_name, event_date, ticket_price), Tickets (ticket_id, event_id, customer_id, purchase_date, quantity). Queries: 1. Get the total revenue for a specific event. 2. List all tickets purchased by a specific customer. 3. Record new ticket sales for an event. 4. Find events that are sold out (assuming a fixed capacity, not in schema). 5. Get the total number of tickets sold per event."
+ },
+ {
+  "id": "t149",
+  "title": "Product Component BOM",
+  "spec": "Schema: Products (product_id, product_name), Components (component_id, component_name, unit_cost), ProductComponents (product_id, component_id, quantity_needed). Queries: 1. List all components and their quantities for a specific product. 2. Find all products that use a particular component. 3. Add a new component to a product's bill of materials. 4. Update the quantity of a component needed for a product. 5. Calculate the total component cost for each product."
+ },
+ {
+  "id": "t150",
+  "title": "University Alumni Donations",
+  "spec": "Schema: Alumni (alumnus_id, alumnus_name, graduation_year, email), Funds (fund_id, fund_name, description), Donations (donation_id, alumnus_id, fund_id, amount, donation_date). Queries: 1. Get the total donations to a specific fund. 2. List all donations made by a particular alumnus. 3. Record a new donation to a fund by an alumnus. 4. Find alumni from a specific graduation year who have donated. 5. Get the total donation amount from each alumnus."
+ },
+ {
+  "id": "t151",
+  "title": "Customer Order Shipments",
+  "spec": "Schema: Orders (order_id, customer_id, order_date, total_amount), Shipments (shipment_id, order_id, carrier_name, tracking_number, shipment_date, delivery_date, status). Queries: 1. Get the shipment status for a specific order. 2. List all shipments for a particular customer. 3. Record a new shipment for an order. 4. Find all 'in transit' shipments. 5. Get the average delivery time for each carrier."
+ },
+ {
+  "id": "t152",
+  "title": "Project Resource Allocation",
+  "spec": "Schema: Projects (project_id, project_name), Resources (resource_id, resource_name, resource_type, hourly_rate), Allocations (allocation_id, project_id, resource_id, start_date, end_date, hours_allocated). Queries: 1. List all resources allocated to a specific project. 2. Find all projects a particular resource is allocated to. 3. Allocate a resource to a project for a specific period. 4. Calculate the total estimated cost of resources for each project. 5. Find resources that are currently not allocated to any project."
+ },
+ {
+  "id": "t153",
+  "title": "E-commerce Product Variants",
+  "spec": "Schema: Products (product_id, product_name, base_price), Variants (variant_id, product_id, color, size, sku, stock_quantity, additional_cost). Queries: 1. List all variants for a specific product. 2. Find all products that have a variant with a specific color. 3. Update the stock quantity for a variant. 4. Get the full price (base_price + additional_cost) for each variant. 5. Find products with no variants currently in stock."
+ },
+ {
+  "id": "t154",
+  "title": "Health Metric Tracking",
+  "spec": "Schema: Users (user_id, username), Metrics (metric_id, metric_name, unit_of_measure), Readings (reading_id, user_id, metric_id, reading_value, reading_date). Queries: 1. Get the latest reading for a specific metric for a user. 2. List all readings for a metric for a user, ordered by date. 3. Insert a new metric reading. 4. Find users whose average reading for a metric is above a threshold. 5. Get the average reading for each metric across all users."
+ },
+ {
+  "id": "t155",
+  "title": "Blog Post Tags",
+  "spec": "Schema: Posts (post_id, title, content, publish_date), Tags (tag_id, tag_name), PostTags (post_id, tag_id). Queries: 1. Find all posts associated with a specific tag. 2. List all tags for a particular post. 3. Add a tag to a post. 4. Remove a tag from a post. 5. Get the count of posts for each tag."
+ },
+ {
+  "id": "t156",
+  "title": "Online Recipe Meal Planning",
+  "spec": "Schema: Users (user_id, username), Recipes (recipe_id, recipe_name, prep_time_minutes), MealPlans (plan_id, user_id, plan_date, meal_type), MealPlanRecipes (plan_id, recipe_id). Queries: 1. List all recipes for a specific user's meal plan on a given date. 2. Find all meal plans that include a particular recipe. 3. Add a recipe to a user's meal plan for a specific day and meal type. 4. Remove a recipe from a meal plan. 5. Get the total estimated prep time for each user's meal plan on a specific date."
+ },
+ {
+  "id": "t157",
+  "title": "Document Management System",
+  "spec": "Schema: Documents (doc_id INT, title VARCHAR, content TEXT, created_at DATETIME, author_id INT), Authors (author_id INT, name VARCHAR, email VARCHAR).\nQueries:\n1. Select all documents created by a specific author.\n2. Find the total number of documents for each author.\n3. Insert a new document.\n4. Update the content of an existing document.\n5. Select the 5 most recent documents."
+ },
+ {
+  "id": "t158",
+  "title": "Supply Chain Inventory Tracking",
+  "spec": "Schema: Products (product_id INT, name VARCHAR, description TEXT, price DECIMAL), Warehouses (warehouse_id INT, location VARCHAR, capacity INT), Inventory (product_id INT, warehouse_id INT, quantity INT, last_updated DATETIME).\nQueries:\n1. Find all products in a specific warehouse with quantity greater than 100.\n2. Calculate the total quantity of a given product across all warehouses.\n3. Add a new product to a warehouse's inventory.\n4. Decrease the quantity of a product in a warehouse.\n5. List all warehouses and the number of distinct products they store."
+ },
+ {
+  "id": "t159",
+  "title": "Online Bookstore Management",
+  "spec": "Schema: Books (book_id INT, title VARCHAR, author VARCHAR, genre VARCHAR, price DECIMAL, stock_quantity INT), Customers (customer_id INT, name VARCHAR, email VARCHAR), Orders (order_id INT, customer_id INT, order_date DATETIME, total_amount DECIMAL).\nQueries:\n1. Find all books by a specific author.\n2. List all orders made by a particular customer.\n3. Add a new book to the inventory.\n4. Update the price of a book.\n5. Calculate the total sales for each genre."
+ },
+ {
+  "id": "t160",
+  "title": "Event Planning and Ticketing",
+  "spec": "Schema: Events (event_id INT, name VARCHAR, date DATETIME, location VARCHAR, ticket_price DECIMAL), Attendees (attendee_id INT, name VARCHAR, email VARCHAR), Tickets (ticket_id INT, event_id INT, attendee_id INT, purchase_date DATETIME, price_paid DECIMAL).\nQueries:\n1. Select all attendees for a specific event.\n2. Find the total revenue generated by each event.\n3. Register a new attendee for an event.\n4. Update an event's location.\n5. List events with more than 50 tickets sold."
+ },
+ {
+  "id": "t161",
+  "title": "Vehicle Rental System",
+  "spec": "Schema: Vehicles (vehicle_id INT, make VARCHAR, model VARCHAR, year INT, daily_rate DECIMAL, status VARCHAR), Customers (customer_id INT, name VARCHAR, license_number VARCHAR), Rentals (rental_id INT, vehicle_id INT, customer_id INT, start_date DATETIME, end_date DATETIME, total_cost DECIMAL).\nQueries:\n1. Find all available vehicles of a specific model.\n2. List all rentals for a given customer.\n3. Record a new rental.\n4. Update a vehicle's status to 'unavailable'.\n5. Calculate the total revenue generated by each vehicle."
+ },
+ {
+  "id": "t162",
+  "title": "Employee Payroll System",
+  "spec": "Schema: Employees (employee_id INT, name VARCHAR, position VARCHAR, salary DECIMAL), Departments (department_id INT, name VARCHAR, location VARCHAR), Salaries (salary_id INT, employee_id INT, amount DECIMAL, pay_date DATETIME).\nQueries:\n1. Select all employees in a specific department.\n2. Find the average salary for each department.\n3. Record a new salary payment for an employee.\n4. Update an employee's position.\n5. List departments with a total monthly salary expenditure over $100,000."
+ },
+ {
+  "id": "t163",
+  "title": "Student Enrollment Management",
+  "spec": "Schema: Students (student_id INT, first_name VARCHAR, last_name VARCHAR, enrollment_date DATETIME), Courses (course_id INT, title VARCHAR, credits INT, department VARCHAR), Enrollments (enrollment_id INT, student_id INT, course_id INT, grade VARCHAR).\nQueries:\n1. Find all courses a specific student is enrolled in.\n2. List all students enrolled in a particular course.\n3. Enroll a student in a new course.\n4. Update a student's grade for a course.\n5. Count the number of students per department."
+ },
+ {
+  "id": "t164",
+  "title": "Medical Appointment Scheduling",
+  "spec": "Schema: Patients (patient_id INT, first_name VARCHAR, last_name VARCHAR, date_of_birth DATE), Doctors (doctor_id INT, first_name VARCHAR, last_name VARCHAR, specialization VARCHAR), Appointments (appointment_id INT, patient_id INT, doctor_id INT, appointment_date DATETIME, status VARCHAR).\nQueries:\n1. Find all appointments for a specific doctor on a given date.\n2. List all patients who have an appointment with a particular doctor.\n3. Schedule a new appointment.\n4. Update an appointment's status to 'completed'.\n5. Count the number of appointments per specialization."
+ },
+ {
+  "id": "t165",
+  "title": "Real Estate Listing Platform",
+  "spec": "Schema: Properties (property_id INT, address VARCHAR, city VARCHAR, price DECIMAL, bedrooms INT, bathrooms INT, status VARCHAR), Agents (agent_id INT, name VARCHAR, phone VARCHAR), Listings (listing_id INT, property_id INT, agent_id INT, list_date DATETIME).\nQueries:\n1. Find all properties in a specific city with more than 3 bedrooms.\n2. List all properties listed by a particular agent.\n3. Add a new property listing.\n4. Update a property's status to 'sold'.\n5. Calculate the average price of properties in each city."
+ },
+ {
+  "id": "t166",
+  "title": "Concert Ticket Sales",
+  "spec": "Schema: Concerts (concert_id INT, artist VARCHAR, venue VARCHAR, concert_date DATETIME, ticket_price DECIMAL), Customers (customer_id INT, name VARCHAR, email VARCHAR), Tickets (ticket_id INT, concert_id INT, customer_id INT, purchase_date DATETIME).\nQueries:\n1. Find all tickets purchased by a specific customer.\n2. List all customers who bought tickets for a particular concert.\n3. Record a new ticket purchase.\n4. Update a concert's venue.\n5. Count the total number of tickets sold for each artist."
+ },
+ {
+  "id": "t167",
+  "title": "Project Management Tasks",
+  "spec": "Schema: Projects (project_id INT, name VARCHAR, start_date DATE, end_date DATE, status VARCHAR), Tasks (task_id INT, project_id INT, description TEXT, due_date DATE, assigned_to VARCHAR, status VARCHAR).\nQueries:\n1. Select all tasks for a specific project that are not yet completed.\n2. Find all tasks assigned to a particular employee.\n3. Add a new task to a project.\n4. Update a task's status to 'completed'.\n5. Count the number of completed tasks per project."
+ },
+ {
+  "id": "t168",
+  "title": "Online Photo Gallery",
+  "spec": "Schema: Users (user_id INT, username VARCHAR, email VARCHAR), Albums (album_id INT, user_id INT, title VARCHAR, created_at DATETIME), Photos (photo_id INT, album_id INT, filename VARCHAR, upload_date DATETIME, description TEXT).\nQueries:\n1. Find all photos in a specific album.\n2. List all albums created by a particular user.\n3. Upload a new photo to an album.\n4. Update a photo's description.\n5. Count the number of photos in each album."
+ },
+ {
+  "id": "t169",
+  "title": "Recipe Management System",
+  "spec": "Schema: Recipes (recipe_id INT, name VARCHAR, instructions TEXT, cook_time_minutes INT), Ingredients (ingredient_id INT, name VARCHAR, unit VARCHAR), RecipeIngredients (recipe_id INT, ingredient_id INT, quantity DECIMAL).\nQueries:\n1. Find all ingredients for a specific recipe.\n2. List all recipes that use a particular ingredient.\n3. Add a new ingredient to a recipe.\n4. Update the cook time of a recipe.\n5. Count the number of ingredients per recipe."
+ },
+ {
+  "id": "t170",
+  "title": "Software Bug Tracking",
+  "spec": "Schema: Bugs (bug_id INT, title VARCHAR, description TEXT, status VARCHAR, priority VARCHAR, created_at DATETIME, assigned_to VARCHAR), Users (user_id INT, username VARCHAR, role VARCHAR).\nQueries:\n1. Find all bugs assigned to a specific user with 'High' priority.\n2. List all bugs with status 'Open' or 'Reopened'.\n3. Create a new bug report.\n4. Update a bug's status to 'Closed'.\n5. Count the number of bugs per status."
+ },
+ {
+  "id": "t171",
+  "title": "Fitness Class Schedule",
+  "spec": "Schema: Classes (class_id INT, name VARCHAR, description TEXT, schedule_time DATETIME, duration_minutes INT, instructor_id INT), Instructors (instructor_id INT, name VARCHAR, specialty VARCHAR), Enrollments (enrollment_id INT, class_id INT, member_id INT, enrollment_date DATETIME).\nQueries:\n1. Find all classes taught by a specific instructor.\n2. List all members enrolled in a particular class.\n3. Enroll a member in a new class.\n4. Update a class's schedule time.\n5. Count the number of enrollments for each class."
+ },
+ {
+  "id": "t172",
+  "title": "Library Book Management",
+  "spec": "Schema: Books (book_id INT, title VARCHAR, author VARCHAR, genre VARCHAR, total_copies INT, available_copies INT), Borrowers (borrower_id INT, name VARCHAR, email VARCHAR), Loans (loan_id INT, book_id INT, borrower_id INT, loan_date DATETIME, return_date DATETIME).\nQueries:\n1. Find all books currently on loan by a specific borrower.\n2. List all overdue loans.\n3. Record a new book loan.\n4. Mark a book as returned, increasing available copies.\n5. Count the number of loans per genre."
+ },
+ {
+  "id": "t173",
+  "title": "CRM Contact Management",
+  "spec": "Schema: Contacts (contact_id INT, first_name VARCHAR, last_name VARCHAR, email VARCHAR, phone VARCHAR, company VARCHAR), Interactions (interaction_id INT, contact_id INT, interaction_type VARCHAR, interaction_date DATETIME, notes TEXT).\nQueries:\n1. Find all interactions for a specific contact.\n2. List all contacts from a particular company.\n3. Add a new interaction for a contact.\n4. Update a contact's phone number.\n5. Count the number of interactions by type."
+ },
+ {
+  "id": "t174",
+  "title": "Online Forum Postings",
+  "spec": "Schema: Users (user_id INT, username VARCHAR, email VARCHAR, join_date DATETIME), Threads (thread_id INT, title VARCHAR, user_id INT, created_at DATETIME), Posts (post_id INT, thread_id INT, user_id INT, content TEXT, post_date DATETIME).\nQueries:\n1. Find all posts made by a specific user.\n2. List all posts within a particular thread.\n3. Create a new post in a thread.\n4. Update the content of an existing post.\n5. Count the number of posts per thread."
+ },
+ {
+  "id": "t175",
+  "title": "Hotel Room Inventory",
+  "spec": "Schema: Rooms (room_id INT, room_number VARCHAR, type VARCHAR, price_per_night DECIMAL, status VARCHAR), Guests (guest_id INT, first_name VARCHAR, last_name VARCHAR, email VARCHAR), Bookings (booking_id INT, room_id INT, guest_id INT, check_in_date DATE, check_out_date DATE, total_price DECIMAL).\nQueries:\n1. Find all available rooms for a given date range.\n2. List all bookings made by a specific guest.\n3. Create a new room booking.\n4. Update a room's status to 'occupied'.\n5. Calculate the total revenue from bookings per room type."
+ },
+ {
+  "id": "t176",
+  "title": "E-commerce Product Catalog",
+  "spec": "Schema: Products (product_id INT, name VARCHAR, description TEXT, price DECIMAL, stock_quantity INT), Categories (category_id INT, name VARCHAR), ProductCategories (product_id INT, category_id INT).\nQueries:\n1. Find all products in a specific category.\n2. List all categories associated with a particular product.\n3. Add a new product to the catalog.\n4. Update the stock quantity of a product.\n5. Count the number of products per category."
+ },
+ {
+  "id": "t177",
+  "title": "University Course Enrollment",
+  "spec": "Schema: Students (student_id INT, first_name VARCHAR, last_name VARCHAR, major VARCHAR), Courses (course_id INT, title VARCHAR, department VARCHAR, credits INT), Enrollments (enrollment_id INT, student_id INT, course_id INT, enrollment_date DATE, grade VARCHAR).\nQueries:\n1. Find all courses a specific student is enrolled in.\n2. List all students enrolled in a particular course.\n3. Enroll a student in a new course.\n4. Update a student's grade for a course.\n5. Count the total credits a student is enrolled in."
+ },
+ {
+  "id": "t178",
+  "title": "Movie Database System",
+  "spec": "Schema: Movies (movie_id INT, title VARCHAR, director VARCHAR, release_year INT, genre VARCHAR), Actors (actor_id INT, name VARCHAR, birth_date DATE), MovieActors (movie_id INT, actor_id INT).\nQueries:\n1. Find all movies directed by a specific director.\n2. List all actors in a particular movie.\n3. Add a new movie to the database.\n4. Update the genre of a movie.\n5. Count the number of movies per genre."
+ },
+ {
+  "id": "t179",
+  "title": "Job Application Tracker",
+  "spec": "Schema: Jobs (job_id INT, title VARCHAR, company VARCHAR, location VARCHAR, post_date DATE), Applicants (applicant_id INT, first_name VARCHAR, last_name VARCHAR, email VARCHAR), Applications (application_id INT, job_id INT, applicant_id INT, application_date DATE, status VARCHAR).\nQueries:\n1. Find all applications for a specific job.\n2. List all jobs applied to by a particular applicant.\n3. Submit a new job application.\n4. Update an application's status.\n5. Count the number of applications per job."
+ },
+ {
+  "id": "t180",
+  "title": "Blog Comment System",
+  "spec": "Schema: Posts (post_id INT, title VARCHAR, content TEXT, author_id INT, publish_date DATETIME), Authors (author_id INT, name VARCHAR, email VARCHAR), Comments (comment_id INT, post_id INT, author_id INT, content TEXT, comment_date DATETIME).\nQueries:\n1. Find all comments on a specific blog post.\n2. List all posts written by a particular author.\n3. Add a new comment to a post.\n4. Update the content of a comment.\n5. Count the number of comments per post."
+ },
+ {
+  "id": "t181",
+  "title": "Warehouse Logistics",
+  "spec": "Schema: Items (item_id INT, name VARCHAR, weight DECIMAL, dimensions VARCHAR), Locations (location_id INT, warehouse_name VARCHAR, aisle VARCHAR, rack VARCHAR), ItemLocations (item_id INT, location_id INT, quantity INT, last_moved DATETIME).\nQueries:\n1. Find all items stored in a specific aisle of a warehouse.\n2. List all locations where a particular item is stored.\n3. Add new stock of an item to a location.\n4. Move an item from one location to another.\n5. Count the total quantity of each item across all locations."
+ },
+ {
+  "id": "t182",
+  "title": "Customer Feedback System",
+  "spec": "Schema: Customers (customer_id INT, name VARCHAR, email VARCHAR), Products (product_id INT, name VARCHAR, description TEXT), Feedback (feedback_id INT, customer_id INT, product_id INT, rating INT, comments TEXT, feedback_date DATETIME).\nQueries:\n1. Find all feedback for a specific product with a rating below 3.\n2. List all feedback submitted by a particular customer.\n3. Submit new product feedback.\n4. Update the comments of an existing feedback entry.\n5. Calculate the average rating for each product."
+ },
+ {
+  "id": "t183",
+  "title": "Payment Transaction Log",
+  "spec": "Schema: Transactions (transaction_id INT, user_id INT, amount DECIMAL, currency VARCHAR, transaction_date DATETIME, status VARCHAR), Users (user_id INT, username VARCHAR, email VARCHAR).\nQueries:\n1. Find all transactions made by a specific user that are 'completed'.\n2. List all transactions with a 'failed' status.\n3. Record a new transaction.\n4. Update a transaction's status.\n5. Calculate the total amount of transactions per currency."
+ },
+ {
+  "id": "t184",
+  "title": "Sales Lead Management",
+  "spec": "Schema: Leads (lead_id INT, name VARCHAR, company VARCHAR, email VARCHAR, status VARCHAR, assigned_to VARCHAR, created_at DATETIME), Salespeople (salesperson_id INT, name VARCHAR, region VARCHAR).\nQueries:\n1. Find all leads assigned to a specific salesperson with 'New' status.\n2. List all leads from a particular company.\n3. Create a new sales lead.\n4. Update a lead's status to 'Qualified'.\n5. Count the number of leads per status."
+ },
+ {
+  "id": "t185",
+  "title": "Pet Adoption Platform",
+  "spec": "Schema: Pets (pet_id INT, name VARCHAR, species VARCHAR, breed VARCHAR, age INT, status VARCHAR), Adopters (adopter_id INT, first_name VARCHAR, last_name VARCHAR, email VARCHAR), Adoptions (adoption_id INT, pet_id INT, adopter_id INT, adoption_date DATE).\nQueries:\n1. Find all available pets of a specific species.\n2. List all pets adopted by a particular adopter.\n3. Record a new adoption.\n4. Update a pet's status to 'adopted'.\n5. Count the number of pets per species."
+ },
+ {
+  "id": "t186",
+  "title": "Healthcare Patient Records",
+  "spec": "Schema: Patients (patient_id INT, first_name VARCHAR, last_name VARCHAR, date_of_birth DATE, gender VARCHAR), Doctors (doctor_id INT, first_name VARCHAR, last_name VARCHAR, specialty VARCHAR), Visits (visit_id INT, patient_id INT, doctor_id INT, visit_date DATETIME, diagnosis TEXT).\nQueries:\n1. Find all visits for a specific patient.\n2. List all patients seen by a particular doctor.\n3. Record a new patient visit.\n4. Update a patient's diagnosis for a visit.\n5. Count the number of visits per doctor's specialty."
+ },
+ {
+  "id": "t187",
+  "title": "Online Survey Management",
+  "spec": "Schema: Surveys (survey_id INT, title VARCHAR, description TEXT, created_by_user_id INT, created_date DATETIME), Questions (question_id INT, survey_id INT, question_text TEXT, question_type VARCHAR), Responses (response_id INT, question_id INT, user_id INT, response_text TEXT, response_date DATETIME).\nQueries:\n1. Find all questions for a specific survey.\n2. List all responses given by a particular user for a survey.\n3. Add a new question to a survey.\n4. Record a new response to a question.\n5. Count the number of responses per question."
+ },
+ {
+  "id": "t188",
+  "title": "Podcast Episode Management",
+  "spec": "Schema: Podcasts (podcast_id INT, title VARCHAR, description TEXT, host VARCHAR), Episodes (episode_id INT, podcast_id INT, title VARCHAR, release_date DATE, duration_minutes INT), Guests (guest_id INT, name VARCHAR, bio TEXT), EpisodeGuests (episode_id INT, guest_id INT).\nQueries:\n1. Find all episodes for a specific podcast.\n2. List all episodes featuring a particular guest.\n3. Add a new episode to a podcast.\n4. Update the duration of an episode.\n5. Count the number of guests per episode."
+ },
+ {
+  "id": "t189",
+  "title": "Music Album Tracking",
+  "spec": "Schema: Artists (artist_id INT, name VARCHAR, genre VARCHAR), Albums (album_id INT, artist_id INT, title VARCHAR, release_year INT), Tracks (track_id INT, album_id INT, title VARCHAR, duration_seconds INT).\nQueries:\n1. Find all albums by a specific artist.\n2. List all tracks on a particular album.\n3. Add a new album.\n4. Update the release year of an album.\n5. Count the total duration of tracks per album."
+ },
+ {
+  "id": "t190",
+  "title": "Sporting Event Scores",
+  "spec": "Schema: Teams (team_id INT, name VARCHAR, city VARCHAR), Matches (match_id INT, home_team_id INT, away_team_id INT, match_date DATETIME, home_score INT, away_score INT), Players (player_id INT, team_id INT, name VARCHAR, position VARCHAR).\nQueries:\n1. Find all matches played by a specific team.\n2. List all players on a particular team.\n3. Record a new match score.\n4. Update a player's position.\n5. Calculate the total wins for each team."
+ },
+ {
+  "id": "t191",
+  "title": "Online Learning Platform",
+  "spec": "Schema: Courses (course_id INT, title VARCHAR, instructor VARCHAR, duration_hours INT), Students (student_id INT, name VARCHAR, email VARCHAR), Enrollments (enrollment_id INT, student_id INT, course_id INT, enrollment_date DATE, completion_status VARCHAR).\nQueries:\n1. Find all courses a specific student is enrolled in.\n2. List all students enrolled in a particular course.\n3. Enroll a student in a new course.\n4. Update a student's completion status for a course.\n5. Count the number of enrolled students per course."
+ },
+ {
+  "id": "t192",
+  "title": "Donation Tracking System",
+  "spec": "Schema: Donors (donor_id INT, name VARCHAR, email VARCHAR, address VARCHAR), Campaigns (campaign_id INT, name VARCHAR, target_amount DECIMAL, start_date DATE, end_date DATE), Donations (donation_id INT, donor_id INT, campaign_id INT, amount DECIMAL, donation_date DATETIME).\nQueries:\n1. Find all donations made by a specific donor.\n2. List all donations for a particular campaign.\n3. Record a new donation.\n4. Update a campaign's target amount.\n5. Calculate the total amount raised for each campaign."
+ },
+ {
+  "id": "t193",
+  "title": "Vehicle Service History",
+  "spec": "Schema: Vehicles (vehicle_id INT, make VARCHAR, model VARCHAR, year INT, license_plate VARCHAR), Services (service_id INT, vehicle_id INT, service_date DATE, description TEXT, cost DECIMAL), Mechanics (mechanic_id INT, name VARCHAR, specialization VARCHAR).\nQueries:\n1. Find all services performed on a specific vehicle.\n2. List all vehicles serviced by a particular mechanic.\n3. Record a new service for a vehicle.\n4. Update the cost of a service.\n5. Calculate the total service cost for each vehicle."
+ },
+ {
+  "id": "t194",
+  "title": "Retail Product Inventory",
+  "spec": "Schema: Products (product_id INT, name VARCHAR, category VARCHAR, price DECIMAL, supplier_id INT), Suppliers (supplier_id INT, name VARCHAR, contact_email VARCHAR), Stock (product_id INT, quantity INT, last_updated DATETIME).\nQueries:\n1. Find all products supplied by a specific supplier.\n2. List all products with stock quantity below 10.\n3. Add a new product to stock.\n4. Update the price of a product.\n5. Calculate the total value of stock for each category."
+ },
+ {
+  "id": "t195",
+  "title": "Customer Subscription Management",
+  "spec": "Schema: Customers (customer_id INT, name VARCHAR, email VARCHAR), Plans (plan_id INT, name VARCHAR, price DECIMAL, duration_months INT), Subscriptions (subscription_id INT, customer_id INT, plan_id INT, start_date DATE, end_date DATE, status VARCHAR).\nQueries:\n1. Find all active subscriptions for a specific customer.\n2. List all customers subscribed to a particular plan.\n3. Create a new subscription.\n4. Update a subscription's status to 'cancelled'.\n5. Count the number of active subscriptions per plan."
+ },
+ {
+  "id": "t196",
+  "title": "Project Team Management",
+  "spec": "Schema: Projects (project_id INT, name VARCHAR, manager_id INT, start_date DATE, end_date DATE), Employees (employee_id INT, name VARCHAR, position VARCHAR), ProjectAssignments (project_id INT, employee_id INT, role VARCHAR, start_date DATE, end_date DATE).\nQueries:\n1. Find all employees assigned to a specific project.\n2. List all projects managed by a particular employee.\n3. Assign an employee to a project.\n4. Update an employee's role on a project.\n5. Count the number of employees per project."
+ },
+ {
+  "id": "t197",
+  "title": "Website User Analytics",
+  "spec": "Schema: Users (user_id INT, username VARCHAR, registration_date DATETIME, last_login DATETIME), Pages (page_id INT, url VARCHAR, title VARCHAR), PageViews (view_id INT, user_id INT, page_id INT, view_date DATETIME).\nQueries:\n1. Find all pages viewed by a specific user.\n2. List the top 5 most viewed pages.\n3. Record a new page view.\n4. Update a user's last login date.\n5. Count the total page views for each user."
+ },
+ {
+  "id": "t198",
+  "title": "Hospital Equipment Tracking",
+  "spec": "Schema: Equipment (equipment_id INT, name VARCHAR, type VARCHAR, purchase_date DATE, status VARCHAR, department_id INT), Departments (department_id INT, name VARCHAR, location VARCHAR), Maintenance (maintenance_id INT, equipment_id INT, maintenance_date DATE, description TEXT, cost DECIMAL).\nQueries:\n1. Find all equipment in a specific department needing maintenance.\n2. List all maintenance records for a particular piece of equipment.\n3. Add a new piece of equipment.\n4. Update an equipment's status to 'in repair'.\n5. Calculate the total maintenance cost per equipment type."
+ },
+ {
+  "id": "t199",
+  "title": "Student Attendance System",
+  "spec": "Schema: Students (student_id INT, first_name VARCHAR, last_name VARCHAR, class_id INT), Classes (class_id INT, name VARCHAR, teacher_id INT), Attendance (attendance_id INT, student_id INT, class_id INT, attendance_date DATE, status VARCHAR).\nQueries:\n1. Find all attendance records for a specific student.\n2. List all students marked 'Absent' for a particular class on a given date.\n3. Record a student's attendance for a class.\n4. Update an attendance record's status.\n5. Count the total 'Present' records for each class."
+ },
+ {
+  "id": "t200",
+  "title": "Employee Training Management",
+  "spec": "Schema: Employees (employee_id INT, name VARCHAR, department VARCHAR), Courses (course_id INT, title VARCHAR, duration_hours INT), TrainingRecords (record_id INT, employee_id INT, course_id INT, completion_date DATE, score INT).\nQueries:\n1. Find all training courses completed by a specific employee.\n2. List all employees who completed a particular course with a score above 80.\n3. Record a new training completion for an employee.\n4. Update an employee's score for a completed course.\n5. Calculate the average score for each course."
+ },
+ {
+  "id": "t201",
+  "title": "Game Player Statistics",
+  "spec": "Schema: Players (player_id INT, username VARCHAR, registration_date DATETIME), Games (game_id INT, title VARCHAR, genre VARCHAR), Scores (score_id INT, player_id INT, game_id INT, score INT, play_date DATETIME).\nQueries:\n1. Find all scores for a specific player in a particular game.\n2. List the top 10 scores for a given game.\n3. Record a new game score.\n4. Update a player's username.\n5. Calculate the highest score for each game."
+ },
+ {
+  "id": "t202",
+  "title": "Online Code Repository",
+  "spec": "Schema: Users (user_id INT, username VARCHAR, email VARCHAR), Repositories (repo_id INT, name VARCHAR, owner_id INT, created_at DATETIME), Commits (commit_id INT, repo_id INT, user_id INT, commit_message TEXT, commit_date DATETIME).\nQueries:\n1. Find all commits made by a specific user in a repository.\n2. List all repositories owned by a particular user.\n3. Record a new commit to a repository.\n4. Update a repository's name.\n5. Count the number of commits per repository."
+ },
+ {
+  "id": "t203",
+  "title": "Manufacturing Production Tracking",
+  "spec": "Schema: Products (product_id INT, name VARCHAR, material VARCHAR), ProductionBatches (batch_id INT, product_id INT, quantity INT, start_date DATETIME, end_date DATETIME, status VARCHAR), Employees (employee_id INT, name VARCHAR, role VARCHAR).\nQueries:\n1. Find all production batches for a specific product with 'Completed' status.\n2. List all products produced in batches that started after a certain date.\n3. Record a new production batch.\n4. Update a batch's status to 'In Progress'.\n5. Calculate the total quantity produced for each product."
+ },
+ {
+  "id": "t204",
+  "title": "Customer Review Management",
+  "spec": "Schema: Customers (customer_id INT, name VARCHAR, email VARCHAR), Products (product_id INT, name VARCHAR, brand VARCHAR), Reviews (review_id INT, customer_id INT, product_id INT, rating INT, comment TEXT, review_date DATETIME).\nQueries:\n1. Find all reviews for a specific product with a rating of 5.\n2. List all reviews written by a particular customer.\n3. Submit a new product review.\n4. Update the comment of an existing review.\n5. Calculate the average rating for each brand."
+ },
+ {
+  "id": "t205",
+  "title": "Airline Pilot Flight Log",
+  "spec": "Schema: Pilots (pilot_id INT, name VARCHAR, license_number VARCHAR), Aircraft (aircraft_id INT, type VARCHAR, registration VARCHAR), Flights (flight_id INT, pilot_id INT, aircraft_id INT, flight_date DATETIME, duration_hours DECIMAL, origin VARCHAR, destination VARCHAR).\nQueries:\n1. Find all flights flown by a specific pilot.\n2. List all flights using a particular aircraft.\n3. Log a new flight.\n4. Update a flight's destination.\n5. Calculate the total flight hours for each pilot."
+ },
+ {
+  "id": "t206",
+  "title": "Public Transportation Routes",
+  "spec": "Schema: Routes (route_id INT, route_number VARCHAR, description TEXT), Stops (stop_id INT, name VARCHAR, latitude DECIMAL, longitude DECIMAL), RouteStops (route_id INT, stop_id INT, stop_order INT).\nQueries:\n1. Find all stops for a specific route.\n2. List all routes that pass through a particular stop.\n3. Add a new stop to a route.\n4. Update a stop's latitude and longitude.\n5. Count the number of stops per route."
+ },
+ {
+  "id": "t207",
+  "title": "Social Media Messaging",
+  "spec": "Schema: Users (user_id INT, username VARCHAR, email VARCHAR), Conversations (conversation_id INT, user1_id INT, user2_id INT, created_at DATETIME), Messages (message_id INT, conversation_id INT, sender_id INT, content TEXT, sent_at DATETIME).\nQueries:\n1. Find all messages in a specific conversation.\n2. List all conversations involving a particular user.\n3. Send a new message in a conversation.\n4. Update a user's email.\n5. Count the number of messages sent by each user."
+ },
+ {
+  "id": "t208",
+  "title": "Digital Content Licensing",
+  "spec": "Schema: Content (content_id INT, title VARCHAR, type VARCHAR, creator VARCHAR), Licenses (license_id INT, content_id INT, user_id INT, license_type VARCHAR, issue_date DATE, expiry_date DATE), Users (user_id INT, username VARCHAR, email VARCHAR).\nQueries:\n1. Find all licenses issued for a specific content item.\n2. List all content licensed by a particular user.\n3. Issue a new license for content to a user.\n4. Update a license's expiry date.\n5. Count the number of licenses per content type."
+ },
+ {
+  "id": "t209",
+  "title": "Personal Finance Tracker",
+  "spec": "Schema: Users (user_id INT, username VARCHAR, email VARCHAR), Accounts (account_id INT, user_id INT, account_name VARCHAR, balance DECIMAL), Transactions (transaction_id INT, account_id INT, type VARCHAR, amount DECIMAL, transaction_date DATETIME, description TEXT).\nQueries:\n1. Find all transactions for a specific account.\n2. List all accounts belonging to a particular user.\n3. Record a new transaction for an account.\n4. Update an account's balance (e.g., after a transaction).\n5. Calculate the total spending by transaction type for a user."
+ },
+ {
+  "id": "t210",
+  "title": "Government Permit Applications",
+  "spec": "Schema: Applicants (applicant_id INT, name VARCHAR, address VARCHAR, contact_email VARCHAR), Permits (permit_id INT, applicant_id INT, type VARCHAR, application_date DATE, status VARCHAR), Reviews (review_id INT, permit_id INT, reviewer_id INT, review_date DATETIME, comments TEXT), Reviewers (reviewer_id INT, name VARCHAR, department VARCHAR).\nQueries:\n1. Find all permits applied for by a specific applicant with 'Pending' status.\n2. List all reviews for a particular permit.\n3. Submit a new permit application.\n4. Update a permit's status to 'Approved'.\n5. Count the number of permits per type."
+ },
+ {
+  "id": "t211",
+  "title": "Online Gaming Achievements",
+  "spec": "Schema: Players (player_id INT, username VARCHAR, join_date DATETIME), Games (game_id INT, title VARCHAR, genre VARCHAR), Achievements (achievement_id INT, game_id INT, name VARCHAR, description TEXT), PlayerAchievements (player_id INT, achievement_id INT, unlock_date DATETIME).\nQueries:\n1. Find all achievements unlocked by a specific player in a game.\n2. List all players who unlocked a particular achievement.\n3. Record a player unlocking a new achievement.\n4. Update a player's username.\n5. Count the number of players who unlocked each achievement."
  }
 ]
