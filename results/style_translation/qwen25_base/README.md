@@ -118,3 +118,6 @@ A third family group: the model writes code for a task description and the conve
 - `code/` — full 200-task corpora for those 55: `accuracy_by_k.png`, `summary.csv`, `cutoff_recheck.csv` (all 55 keep) → `code_pool_full.json`.
 - `code/steering/` — cue-token (write-feature) steering on the full corpora, no control arm: → alt .14 → .42 (44/55 significant), → nat .39 → .56; README inside.
 - `../explainer/code_steering_examples.png` — what the model saw, wrote, and how it was scored.
+- `code/read_features/` — read feature (evidence-token means, diff-only evidence rule) for the 55 code families; cos with the L24 write vector rises only from L23.
+- `code/read_steer/` (k = 3) and `code/read_steer_k1/` (k = 1) — evidence-token steering with the read vector, layers 0–27, no control arm:
+  k = 3 pooled .05 → .57 (reference .70), 43/55 families pass the 50 % reach rule both ways, best layers L0–L9; k = 1 pooled .07 → .53 (reference .63).

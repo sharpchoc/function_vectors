@@ -9399,3 +9399,10 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   whitespace-only evidence 1.00 py_indent / .36 blank_lines / .18 js_semicolons / .19 early_return.
 - Phase 2 (running): capture on pod cread0 (`logs/code_read_stage1_job.sh`). Then 8 pods for `logs/code_read_stage2_job.sh <S> <k> <families>`
   (4 shards × k ∈ {3, 1}), judge `read_steer/confirm{,_k1}`, analyses with `--tag code`.
+- 2026-09-15 (cont.) Phases 2–4 DONE: capture (split-half cos ≥ .95), read–write geometry (`code/read_features/`: cos(read L, write L24)
+  median .20 only at L24–26, ≈ 0 before L20), evidence steering on 8 pods (screens 0–27 at k = 3 and k = 1, confirm without controls),
+  110 confirm sets judged (0 failures). k = 3: nat→alt .03 → .53 (ref .68), alt→nat .07 → .61 (ref .73), significant both ways 55/55,
+  reach ≥ .5 both ways 43/55, best layers L0–L9 (screen plateau L4–L12, collapse after L22). k = 1: .05 → .49 (ref .59) / .10 → .57 (ref .66),
+  43/55. Buckets `code/read_steer/`, `code/read_steer_k1/` (READMEs, best_config.csv with reach/pass_50/sig columns, summary_bars.png,
+  steered_vs_unsteered.png). 8 pods (~12 pod-h), all terminated.
+- Next (not requested): read→write map on the code pool; control arm; user ruling on the read gate.
