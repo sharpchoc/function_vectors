@@ -133,6 +133,15 @@ Shuffled controls: centroid cos −.05 … .10, centroid R² −.08 … −.21, 
   py_fstring .45 / .53, float_literals .43 / .49 — centroid map / per-prompt map), the isolated ones do not (rust_question .09 / .05,
   py_optional .14 / .17, py_with_open .15 / .20). Figure `centroid_map_80_20.png`.
 
+### Why the held-out R² tops out near .3: the training span (80/20 split, read L10)
+
+A ridge prediction is a combination of the training targets, so it cannot leave their span. Of the held-out families' centred write
+centroids, only **.52** of the variance lies inside the span of the 88 training centroids (read side: .47). The centroid map reaches R² .28 on
+the whole and **.54 on the in-span part** (oracle in-span projection .52): it explains what is reachable and nothing else. Per-family in-span
+fractions (variance): js_camel_snake .91, py_fstring .84, py_bool_prefix .83, py_paren_if .80 … docstring_style .29, rust_question .17 —
+the same ordering as the transfer. The raw similarity of the centroids (cos .72 write, .55 read) is the shared component, which the intercept
+absorbs and which carries no family or convention information. Working read layer for further map work = **L10** (user decision).
+
 ## Comparison with the text pools
 
 | pool | protocol | held-out convention cos | baseline / shuffled |

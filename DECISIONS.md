@@ -1856,3 +1856,6 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   evidence-token read activation (L8 main, sweep L5–L10) to the cue-token write activation (L24); judged by held-out geometry only
   (convention-vector cosine vs the shuffled-pairing control and the mean-training-vector baseline, prompt-level R², coverage diagnostics).
   Steering with predicted vectors is a separate task.
+- 2026-09-15 (later) — Working read layer for the code map = **L10** (user decision): per-prompt held-out centroid R² .340 at L10 vs .333 at L8
+  (80/20 split; spread over L5–L10 is .03). L10 is the working choice for improving the map; the other layers get re-optimised once an
+  improvement is found. L8 stays the reported read-steering layer.
