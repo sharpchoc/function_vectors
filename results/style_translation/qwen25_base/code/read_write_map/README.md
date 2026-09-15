@@ -108,6 +108,31 @@ but the convention vectors are a ~30 % perturbation on top of it (norm ≈ 52) a
 families can only reproduce a held-out direction that lies in the span of those 36; that is why the held-out cosine tracks the span fraction
 (.87 / .90) and why the axis-mates (quotes, snake/camel, spacing) transfer while isolated conventions do not.
 
+## Centroid-level map and the 80/20 split (user request 2026-09-15; `read_write_centroid_map.py`)
+
+Second split `fixed_split_80_20.json` (44 train / 11 test, stratified by category, seed 2026, written before fitting). Two maps on it:
+the per-prompt ridge (as above) and a **centroid map** fitted on the 88 (family, pole) MEAN activations of the training families (raw
+activations, not differences; λ by leave-one-family-out CV → 0.32). Held-out = the 22 centroids of the 11 test families.
+
+| read layer → L24 | centroid map: held-out centroid cos | centroid map: centroid R² (train-mean / test-mean) | centroid map: convention cos | per-prompt map: convention cos | per-prompt map: centroid cos | per-prompt map: centroid R² | per-prompt map: prompt-level R² |
+|---|---|---|---|---|---|---|---|
+| L5 | .52 | .28 / .21 | .30 | .35 | .58 | .31 | .10 |
+| L8 | .53 | .28 / .22 | .32 | .37 | .59 | .33 | .11 |
+| L10 | .53 | .28 / .22 | .32 | .38 | .60 | – | .11 |
+
+Shuffled controls: centroid cos −.05 … .10, centroid R² −.08 … −.21, convention cos ≈ 0; mean-vector baseline for the convention .14.
+
+- A held-out family's MEAN write state is predicted well once the shared cue-token component is removed (centroid cos .5–.6, centroid R² ≈ .3
+  — the family-identity share of the write variance is .29, so this is near its ceiling). This is the number the prompt-level R² (.04–.11)
+  hides: two thirds of the cue-token variance is prompt-specific and unreachable from the evidence tokens.
+- The convention offset between a family's two centroids is NOT better predicted at the centroid level (.32 vs .37 for the per-prompt map on the
+  same split): fitting on 88 clean means instead of 17,600 noisy prompts does not help, so the limit is coverage of the family-specific
+  directions, not noise. The per-prompt map is better on every measure (centroid R² .33 vs .28, centroid cos .59 vs .53, convention cos
+  .37 vs .32): the within-family prompt variation teaches the ridge which read directions are informative.
+- Per family at L8 (`centroid_map_80_20_per_family.csv`): the axis-mates transfer (js_camel_snake .66 / .73, comma_space .56 / .65,
+  py_fstring .45 / .53, float_literals .43 / .49 — centroid map / per-prompt map), the isolated ones do not (rust_question .09 / .05,
+  py_optional .14 / .17, py_with_open .15 / .20). Figure `centroid_map_80_20.png`.
+
 ## Comparison with the text pools
 
 | pool | protocol | held-out convention cos | baseline / shuffled |

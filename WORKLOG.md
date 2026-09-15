@@ -9415,3 +9415,8 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
 - Result (`results/style_translation/qwen25_base/code/read_write_map/`, README): held-out convention cos .38 at L8 (baseline .11, shuffled .00),
   13/19 test families > .3, 5 > .5; L5–L10 sweep .35–.39; both29 subset .43; prompt-level R² .04–.07; coverage RSA .78, participation 48/55,
   cos vs span fraction corr .87 (write) / .90 (read). Pod terminated.
+- 2026-09-15 (cont.) Centroid-level map + 80/20 split (`read_write_centroid_map.py`, `code/read_write_map/centroid_map_80_20.*`,
+  `fixed_split_80_20.json` 44/11): held-out centroid cos .53, centroid R² .28 (per-prompt map on the same split: .59 / .33; prompt-level
+  R² .11), convention cos .32 vs .37 per-prompt; L5–L10 flat. Variance decomposition of the write activation: family .29 / convention .025 /
+  prompt-specific .68; the 55 write and read convention vectors are nearly orthogonal (mean |cos| .06, participation 48–49/55) while the
+  110 raw (family, pole) means share one component (cos .72 write, .55 read; ≈ 0 across families after centring, .84 / .60 within a family).
