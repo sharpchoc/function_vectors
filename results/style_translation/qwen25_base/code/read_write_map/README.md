@@ -96,6 +96,18 @@ therefore the informative held-out number; the convention R² is negative mainly
 | js_semicolons | syntax / dialect | 0.15 | +0.19 | +0.08 | -1.39 | 1.34 | 0.56 | ✓ |
 | py_not_in | syntax / dialect | 0.06 | +0.17 | +0.03 | -1.65 | 1.34 | 0.47 |  |
 
+## Why a linear map cannot interpolate here: the 55 convention vectors are nearly orthogonal
+
+| | mean pairwise cos | mean \|cos\| | pairs with \|cos\| ≥ .5 (of 1,485) | participation ratio | top PC share |
+|---|---|---|---|---|---|
+| write vectors (L24 cue-token nat − alt, `../steering/vectors`) | +.02 | .06 | 10 | 48 / 55 | .08 |
+| read vectors (L8 evidence-token nat − alt) | +.01 | .06 | 8 | 49 / 55 | .07 |
+
+The raw cue-token centroids of different families ARE similar (mean pairwise cos .75; the shared "cue token inside code" state, norm ≈ 173),
+but the convention vectors are a ~30 % perturbation on top of it (norm ≈ 52) and point in ~48 independent directions. A ridge fitted on 36
+families can only reproduce a held-out direction that lies in the span of those 36; that is why the held-out cosine tracks the span fraction
+(.87 / .90) and why the axis-mates (quotes, snake/camel, spacing) transfer while isolated conventions do not.
+
 ## Comparison with the text pools
 
 | pool | protocol | held-out convention cos | baseline / shuffled |
