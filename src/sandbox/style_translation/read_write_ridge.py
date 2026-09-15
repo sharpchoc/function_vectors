@@ -93,12 +93,35 @@ class DualRidge:
         return self.ym + (X - self.xm) @ (self.Xc.T @ self.A)
 
 
+class PrimalRidge(DualRidge):
+    """Same estimator as DualRidge (identical solution by the Woodbury identity, same dimensionless λ) solved in feature space:
+    W = (Xc^T Xc + λ·s·I)^-1 Xc^T Yc — used when N > D (the 55-family code pool: N ≈ 15k prompts, D = 3584)."""
+
+    def __init__(self, Xtr, Ytr):
+        self.xm, self.ym = Xtr.mean(0), Ytr.mean(0)
+        Xc = Xtr - self.xm; Yc = Ytr - self.ym
+        self.G = Xc.T @ Xc; self.XtY = Xc.T @ Yc
+        self.scale = float(np.trace(self.G) / len(Xtr))          # = mean(diag K) of the dual kernel
+
+    def fit(self, lam):
+        self.W = np.linalg.solve(self.G + lam * self.scale * np.eye(len(self.G)), self.XtY)
+        self.lam = lam
+        return self
+
+    def predict(self, X):
+        return self.ym + (X - self.xm) @ self.W
+
+
+def make_ridge(Xtr, Ytr):
+    return PrimalRidge(Xtr, Ytr) if len(Xtr) > 1.5 * Xtr.shape[1] else DualRidge(Xtr, Ytr)
+
+
 def group_cv(Xtr, Ytr, gtr, grid):
     """leave-one-group-out CV: mean held-out R² (train-mean denominator) per λ."""
     scores = np.zeros(len(grid)); groups = np.unique(gtr)
     for g in groups:
         m = gtr == g
-        R = DualRidge(Xtr[~m], Ytr[~m])
+        R = make_ridge(Xtr[~m], Ytr[~m])
         for i, lam in enumerate(grid):
             scores[i] += r2(R.fit(lam).predict(Xtr[m]), Ytr[m], R.ym) / len(groups)
     return scores
@@ -275,10 +298,10 @@ def pool_mode(args):
         Xl, Yl, fl, pl = (Xa, Ya, fa, pa) if lr_ == lr else load(pool, lr_, lw)
         mtr, mte = np.isin(fl, train), np.isin(fl, test)
         cv = group_cv(Xl[mtr], Yl[mtr], fl[mtr], grid); lam = grid[int(np.argmax(cv))]
-        R = DualRidge(Xl[mtr], Yl[mtr]).fit(lam)
+        R = make_ridge(Xl[mtr], Yl[mtr]).fit(lam)
         o, per = evaluate(R, Xl[mte], Yl[mte], fl[mte], pl[mte], "fixed")
         Xsh = Xl[mtr][rng.permutation(mtr.sum())]
-        osh, persh = evaluate(DualRidge(Xsh, Yl[mtr]).fit(lam), Xl[mte], Yl[mte], fl[mte], pl[mte], "fixed-shuffled")
+        osh, persh = evaluate(make_ridge(Xsh, Yl[mtr]).fit(lam), Xl[mte], Yl[mte], fl[mte], pl[mte], "fixed-shuffled")
         # baseline: the mean of the TRAIN families' true convention vectors (write side) — "predict the average convention direction"
         dtr = np.array([Yl[(fl == g) & (pl == "nat")].mean(0) - Yl[(fl == g) & (pl == "alt")].mean(0) for g in train]); dbar = dtr.mean(0)
         shuf = {x["family"]: x["cos_diff"] for x in persh}
