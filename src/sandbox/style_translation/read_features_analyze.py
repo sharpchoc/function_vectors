@@ -126,7 +126,8 @@ def main():
         ax.plot(Lsub, med, color=col, lw=1.8, marker="o", ms=3, label=lab); ax.fill_between(Lsub, lo, hi, color=col, alpha=0.15)
     ax.set_xticks(ticks); ax.set_ylim(-0.2, 1.02); ax.grid(alpha=0.3); ax.set_xlabel("read layer (0 = embeddings)"); ax.set_ylabel("cosine (median over families, IQR band)")
     ax.legend(fontsize=8.5, loc="upper left", frameon=False)
-    ax.set_title(f"Read–write geometry, {len(fams)} {'coding-convention' if code_only else ''} families: where does the evidence-token difference align with the cue-token write vector?", fontsize=10)
+    ax.set_title(f"Read–write geometry, {len(fams)} {'coding-convention ' if code_only else ''}families\n"
+                 "where does the evidence-token difference (read) align with the cue-token write vector?", fontsize=10)
     fig.tight_layout(); fig.savefig(OUT / "read_write_cos_by_layer.png", dpi=150); plt.close(fig)
 
     print(f"{'family':18s} {'tok/prompt':>10s} {'rel|diff| L6/12/20/24':>22s} {'split-half L6/12/20/24':>22s} {'cos(read,write L24) L0/6/12/20/24':>34s}")
