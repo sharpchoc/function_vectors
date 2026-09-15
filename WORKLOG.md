@@ -9381,3 +9381,10 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
 - Write features: `capture_cues.py --model qwen25_base` on the full step-3 data (paired pools up to 596 per pole, split-half cos ≥ .88 at L20),
   then `logs/code_steer_stage2_job.sh` (steer_screen --batch 12 → steer_confirm --batch 8 --no_control) on the 4 pods. Commits 969a87f1, ce6fec42.
 - Next: judge confirm → `steer_analyze.py --model qwen25_base` → README for the code steering bucket → terminate pods.
+- 2026-09-15 (cont.) DONE: steering confirm judged (0 failures) → `steer_analyze.py --model qwen25_base --tag code --families <55>` →
+  `results/style_translation/qwen25_base/code/steering/` (README with per-family table). → alt: .14 → .42 mean, 44/55 significant lifts,
+  21 ≥ .5, 11 ≥ .7; → nat: .39 → .56, 31/55 significant (13 at ceiling); strict both-direction gate 24/55, headroom-aware 32/55; best layer
+  L24 for most families, α = 4. Full vs cheap steered accuracies correlate .87/.91 (mean |diff| .08). steer_analyze gained `--tag/--families`
+  and an optional control arm; the Qwen text steering bucket (`qwen25_base/steering/`) was regenerated for its 16 families only (the cheap-code
+  analysis had appended 55 code rows to it; numbers unchanged). 4 pods (~5 pod-h), all terminated.
+- Next (not requested yet): read features / evidence-token steering and the read→write map on the code pool; control arm if wanted.

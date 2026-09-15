@@ -109,3 +109,12 @@ not work in four shots for conventions that require choosing a different lexical
   (the twins' opportunities) are.
 - Same judge, same prompt; judge OK for ellipsis is .68 (bare `...` vs `…` reference artefact, see `../README.md`).
 - One sample per prompt at T = 1, as for GPT-J.
+
+## Coding-convention families (2026-09-15)
+
+A third family group: the model writes code for a task description and the convention applies across many identifiers / literals / statements
+(`src/sandbox/style_translation/code_families.py`, 60 specs). Buckets:
+- `code_selection.{png,csv}`, `code_k4/` — cheap check on 50 tasks (k ∈ {0,4}): 55/60 learnable → `code_pool.json`.
+- `code/` — full 200-task corpora for those 55: `accuracy_by_k.png`, `summary.csv`, `cutoff_recheck.csv` (all 55 keep) → `code_pool_full.json`.
+- `code/steering/` — cue-token (write-feature) steering on the full corpora, no control arm: → alt .14 → .42 (44/55 significant), → nat .39 → .56; README inside.
+- `../explainer/code_steering_examples.png` — what the model saw, wrote, and how it was scored.
