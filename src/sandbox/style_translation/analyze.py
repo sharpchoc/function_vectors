@@ -26,7 +26,7 @@ from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
 from src.sandbox.style_translation.families import FAMILIES, FAMILY
 from src.sandbox.style_translation.ml_families import ML_FAMILIES, ML_FAMILY
 ALL_FAMILIES = list(FAMILIES) + list(ML_FAMILIES); ALL_FAMILY = {**FAMILY, **ML_FAMILY}
-from src.sandbox.style_translation.family_groups import grouped_grid, grouped_order
+from src.sandbox.style_translation.family_groups import CODE as CODE_NAMES, grouped_grid, grouped_order
 
 ROLL = ARTIFACTS_ROOT / "style_translation" / "rollouts"
 OUT = STYLE_TRANSLATION_RESULTS
@@ -92,8 +92,11 @@ def main():
     C = {"nat": "#1f77b4", "alt": "#d62728"}
     for metric, fname, ylabel, title in (
         (0, "accuracy_by_k.png", "accuracy",
-         f"Does {MODEL_LABEL} learn a writing convention from in-context examples while translating (Spanish→English; English→target for the multilingual families)?\n"
-         "Accuracy = uses the convention shown in context AND translates faithfully (n = 200 per point, 95% CI)"),
+         (f"Does {MODEL_LABEL} learn a coding convention from in-context examples while writing code from a task description?\n"
+          "Accuracy = uses the convention shown in context AND the judge finds the code a correct solution (n ≤ 200 per point, 95% CI)")
+         if all(fam in CODE_NAMES for fam in fams) else
+         (f"Does {MODEL_LABEL} learn a writing convention from in-context examples while translating (Spanish→English; English→target for the multilingual families)?\n"
+          "Accuracy = uses the convention shown in context AND translates faithfully (n = 200 per point, 95% CI)")),
         (4, "unscorable_by_k.png", "unscorable share",
          "Share of completions that use neither convention (counted as inaccurate in the accuracy plot)")):
         fig, gax = grouped_grid(fams, panel_w=3.6, panel_h=2.9, top=0.89, sharex=True, sharey=True)
