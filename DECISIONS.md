@@ -1830,3 +1830,20 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   for now (`steer_confirm.py --no_control`).
 - Cheap-corpus (50-task) rollouts and steering artefacts are kept aside under `artifacts/style_translation/qwen25_base/{rollouts_cheap_k4,steering_cheap}/`;
   the canonical code results are the full-corpus ones under `results/style_translation/qwen25_base/{code,steering}/`.
+
+## 2026-09-15 — Style-translation: read feature for the coding-convention families (user decisions)
+- Evidence tokens for code = the tokens of each earlier in-context opportunity that actually DIFFER between the nat and alt renderings
+  (token-level difflib inside the opportunity span; shared content tokens inside merged spans such as `['rock', 'paper', …]` are dropped).
+  Whitespace-only evidence (indentation, blank lines, operator spaces) counts like any other token; no family excluded. Text families
+  keep the 2026-09-10 whole-span rule (`evidence_tokens.py`, `diff_only` / `n_shared_dropped` per instance).
+- The cue position is never steered in the read test: if the last evidence token of the last in-context instance is the cue (adjacent
+  opportunities, ~0–1 % of prompts), that position is dropped (`read_steer_screen.k_items`); prompts left without evidence are skipped and counted.
+- Read vector = paired mean difference of the evidence-token means over k = 4 prompts (documents with evidence in both poles); capture and
+  evidence-steering screen over ALL layers 0–27; evidence steering tested on k = 1 AND k = 3 prompts (`--k_ctx`; artifacts `screen_k1` /
+  `confirm_k1`, results `read_steer_k1/`); no control arm (as on the write side).
+- Gate for "the read feature works": steered accuracy toward the target ≥ 50 % of the flipped reference (step-3 accuracy at the same k of
+  prompts whose context genuinely shows the target) — reported as `reach` / `pass_50` in `best_config.csv` together with the Wilson-CI-vs-
+  unsteered flag; the user judges the final results and decides the gate. Read-out check = cosine per layer between the read vector and the
+  write vector (same layer and L24); no linear probe.
+- `read_features_analyze.py`, `read_steer_analyze.py`, `read_steer_layers_analyze.py` take `--tag/--families` so code results live under
+  `results/style_translation/qwen25_base/code/{read_features,read_steer,read_steer_k1}/`, never mixed into the text buckets.

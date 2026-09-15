@@ -9388,3 +9388,14 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   and an optional control arm; the Qwen text steering bucket (`qwen25_base/steering/`) was regenerated for its 16 families only (the cheap-code
   analysis had appended 55 code rows to it; numbers unchanged). 4 pods (~5 pod-h), all terminated.
 - Next (not requested yet): read features / evidence-token steering and the read→write map on the code pool; control arm if wanted.
+
+## Stream: style_translation — read feature for the 55 coding-convention families (2026-09-15)
+- Plan: /root/.claude/plans/okay-cool-can-you-velvet-thimble.md (user-approved; decisions in DECISIONS.md 2026-09-15 read-feature entry).
+- Phase 0 DONE (4678d992): diff-only evidence rule for code (`evidence_tokens.py`), paired capture pool (`capture_evidence.py`), `--k_ctx` +
+  cue exclusion + tags (`read_steer_screen.py`), `--k_ctx/--no_control/code cut/all screen cells` (`read_steer_confirm.py`), `--tag/--families`
+  + optional control + reach gate (`read_steer_analyze.py`), L0 rows + cos vs L24 + mean figure (`read_features_analyze.py`), all groups
+  (`read_steer_layers_analyze.py`), `code_read_overview.py`; regression check: Qwen text read buckets regenerated with identical numbers.
+- Phase 1 DONE: evidence tokens for 55 families (`logs/code_evidence_tokens.log`): median 1–3 tokens per instance, outside_prompt ≈ 0,
+  whitespace-only evidence 1.00 py_indent / .36 blank_lines / .18 js_semicolons / .19 early_return.
+- Phase 2 (running): capture on pod cread0 (`logs/code_read_stage1_job.sh`). Then 8 pods for `logs/code_read_stage2_job.sh <S> <k> <families>`
+  (4 shards × k ∈ {3, 1}), judge `read_steer/confirm{,_k1}`, analyses with `--tag code`.
