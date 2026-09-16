@@ -52,11 +52,35 @@ def free_opportunity(fam, rec, k):
     return True
 
 
+def harmonise_pinned(rec, fam):
+    """Identifier families: an identifier the task text pins down (backticks / call form) is not a choice, so it must read the same in both
+    twins. Rebuild text_alt from text_nat keeping the NAT rendering for every opportunity that touches a pinned identifier; recompute the
+    alt spans; opportunities whose two renderings become identical are dropped. Returns a new record (the input is not modified)."""
+    if fam not in IDENT_FAMILIES:
+        return rec
+    pinned = _task_code_idents(rec.get("text_es", ""))
+    nat = rec["text_nat"]; parts = []; opps = []; pos = 0; alt_pos = 0
+    for o in rec["opps"]:
+        s0, s1 = o["nat_span"]; parts.append(nat[pos:s0]); alt_pos += s0 - pos
+        touch = any(t in pinned for t in _ID.findall(o["nat"]) + _ID.findall(o["alt"]))
+        piece = o["nat"] if touch else o["alt"]
+        if piece != o["nat"]:
+            opps.append(dict(o, alt=piece, alt_span=[alt_pos, alt_pos + len(piece)]))
+        parts.append(piece); alt_pos += len(piece); pos = s1
+    parts.append(nat[pos:])
+    out = dict(rec); out["text_alt"] = "".join(parts); out["opps"] = [dict(o, k=i) for i, o in enumerate(opps)]; out["k_en"] = len(opps)
+    return out
+
+
 def filter_free(rec, fam, min_opps=MIN_OPPS):
+    """rec must carry the FULL opportunity list: in `opps_all` (a record already processed here) or in `opps` (fresh from align()).
+    Returns the record with text_alt harmonised, `opps_all` = full harmonised list, `opps` = the free ones only; None if too few."""
     if fam not in AFFECTED:
         return rec
-    keep = [o for k, o in enumerate(rec["opps"]) if free_opportunity(fam, rec, k)]
-    if len(keep) < min_opps or keep[min_opps - 1]["nat_span"][0] >= 0.75 * len(rec["text_nat"]):
+    full = dict(rec); full["opps"] = rec.get("opps_all") or rec["opps"]
+    full = harmonise_pinned(full, fam)
+    keep = [o for k, o in enumerate(full["opps"]) if free_opportunity(fam, full, k)]
+    if len(keep) < min_opps or keep[min_opps - 1]["nat_span"][0] >= 0.75 * len(full["text_nat"]):
         return None
-    out = dict(rec); out["opps"] = [dict(o, k=i) for i, o in enumerate(keep)]; out["k_en"] = len(keep); out["free_filter"] = True
+    out = dict(full); out["opps_all"] = full["opps"]; out["opps"] = [dict(o, k=i) for i, o in enumerate(keep)]; out["k_en"] = len(keep); out["free_filter"] = True
     return out

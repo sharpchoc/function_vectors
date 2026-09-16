@@ -136,7 +136,9 @@ def build_one(key, fam, task):
                    "langs": {"src": "Task", "tgt": fam.tgt_lang}, "text_nat": nat, "text_alt": alt, "opps": opps or [], "k_en": len(opps or []),
                    "shared_fraction": round(shared, 3), "pass": bool(ok), "verify": None}
             if ok and fam.name in AFFECTED:                       # free-opportunity rule: the pair must keep >= 5 genuine choice points
-                ok = filter_free(rec, fam.name) is not None; rec["pass"] = bool(ok)
+                fr = filter_free(rec, fam.name); ok = fr is not None; rec["pass"] = bool(ok)
+                if fr is not None:
+                    rec.update(text_alt=fr["text_alt"], opps=fr["opps"], opps_all=fr["opps_all"], k_en=fr["k_en"], free_filter=True)
             if ok or attempt == 2:
                 return rec
         except Exception as e:
@@ -162,10 +164,10 @@ def main():
         def apply_free():                                        # the free-opportunity rule, applied to every stored raw doc (old and new)
             if name in AFFECTED:
                 for r in raw.values():
-                    fr = filter_free(r, name) if r.get("opps") else None
+                    fr = filter_free(r, name) if (r.get("opps_all") or r.get("opps")) else None
                     r["pass"] = fr is not None
                     if fr is not None:
-                        r["opps"], r["k_en"], r["free_filter"] = fr["opps"], fr["k_en"], True
+                        r.update(text_alt=fr["text_alt"], opps=fr["opps"], opps_all=fr["opps_all"], k_en=fr["k_en"], free_filter=True)
         apply_free()
         todo = [t for t in pools[fam.tgt_lang][: args.n_tasks] if f"{name}__{t['id']}" not in raw]
         chunks = [todo[i:i + 60] for i in range(0, len(todo), 60)] if args.target else [todo]
