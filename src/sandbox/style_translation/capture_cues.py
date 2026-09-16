@@ -52,8 +52,13 @@ def main():
     ap.add_argument("--token_budget", type=int, default=8000)
     ap.add_argument("--batch_cap", type=int, default=16)
     ap.add_argument("--unpaired", action="store_true", help="old independent selection per pole (default: paired)")
+    ap.add_argument("--ks", nargs="*", type=int, default=None, help="pool only prompts with k in this set (default: every k present)")
+    ap.add_argument("--out_tag", default=None, help="write vectors to steering/vectors_<tag>/ instead of steering/vectors/ (e.g. k8)")
     args = ap.parse_args()
     configure(args.model)
+    global OUT
+    if args.out_tag:
+        OUT = OUT.parent / f"vectors_{args.out_tag}"
     OUT.mkdir(parents=True, exist_ok=True)
     model, tok = load_model(model=args.model)
     A = arch(model); D, NL, trunk = A["hidden"], A["n_layers"], A["trunk"]
@@ -62,7 +67,7 @@ def main():
             print(f"{fam}: exists, skip", flush=True); continue
         recs = json.load(open(ROLL / f"{fam}.json"))
         prompts = {(p["doc_id"], p["style"], p["k"]): p["prompt_ids"] for p in json.load(open(PROMPTS / f"{fam}.json"))}
-        correct = {(r["doc_id"], r["style"], r["k"]) for r in recs if r["style_ok"] and r.get("judge") and r["judge"]["ok"]}
+        correct = {(r["doc_id"], r["style"], r["k"]) for r in recs if r["style_ok"] and r.get("judge") and r["judge"]["ok"] and (args.ks is None or r["k"] in args.ks)}
         if args.unpaired:
             keep = correct
         else:   # paired: (doc, k) must be correct under BOTH contexts

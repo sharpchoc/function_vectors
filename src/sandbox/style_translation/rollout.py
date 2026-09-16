@@ -49,6 +49,8 @@ def main():
     ap.add_argument("--limit", type=int, default=None, help="items per family (dry runs)")
     ap.add_argument("--dry_run", action="store_true", help="decode 2 prompts per family, no model")
     ap.add_argument("--model", default="gptj", help="models.MODELS key (weights, prompts and rollouts folders)")
+    ap.add_argument("--ks", nargs="*", type=int, default=None, help="roll out only prompts with k in this set")
+    ap.add_argument("--append", action="store_true", help="merge into an existing rollouts file: skip (doc_id, style, k) already present, keep the rest")
     args = ap.parse_args()
     from src.sandbox.style_translation.models import paths as model_paths
     MP = model_paths(args.model)
@@ -69,9 +71,16 @@ def main():
     model, tok = load_model(args.model_dir, args.model)
     for fam in args.families:
         out_path = OUT / f"{fam}.json"
+        existing = []
         if out_path.exists():
-            print(f"{fam}: exists, skip", flush=True); continue
-        items = json.load(open(PROMPTS / f"{fam}.json"))[: args.limit]
+            if not args.append:
+                print(f"{fam}: exists, skip", flush=True); continue
+            existing = json.load(open(out_path))
+        done = {(r["doc_id"], r["style"], r["k"]) for r in existing}
+        items = [it for it in json.load(open(PROMPTS / f"{fam}.json"))
+                 if (args.ks is None or it["k"] in args.ks) and (it["doc_id"], it["style"], it["k"]) not in done][: args.limit]
+        if not items:
+            print(f"{fam}: nothing to roll out", flush=True); continue
         for it in items:
             it["ids"] = it["prompt_ids"]
         recs = [None] * len(items)
@@ -98,7 +107,7 @@ def main():
                                style_ok=(dec == it["style"]), seed=seed, judge=None)
             if (bi + 1) % 50 == 0:
                 print(f"{fam}: batch {bi + 1}", flush=True)
-        json.dump(recs, open(out_path, "w"), ensure_ascii=False)
+        json.dump(existing + recs, open(out_path, "w"), ensure_ascii=False)
         by = {}
         for r in recs:
             key = (r["style"], r["k"]); d = by.setdefault(key, [0, 0, 0, 0])

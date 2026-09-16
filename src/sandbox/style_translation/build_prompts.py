@@ -38,6 +38,8 @@ def main():
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
     ap.add_argument("--K", type=int, default=5)
     ap.add_argument("--model", default="gptj", help="models.MODELS key (tokeniser + artifact folder)")
+    ap.add_argument("--ks", nargs="*", type=int, default=None, help="emit only these k (default: all k < K)")
+    ap.add_argument("--append", action="store_true", help="merge into the existing prompts file: replace items with the same (doc_id, style, k), keep the rest")
     args = ap.parse_args()
     from transformers import AutoTokenizer
     from src.sandbox.style_translation.models import paths as model_paths
@@ -59,6 +61,8 @@ def main():
                 enc = tok(header + text, return_offsets_mapping=True)
                 ids, offs = enc.input_ids, enc.offset_mapping
                 for c in r["cues"][P][: args.K]:
+                    if args.ks is not None and c["k"] not in args.ks:
+                        continue
                     ci = c["cue_idx"]
                     assert ids[ci] == c["cue_tok_id"], (r["doc_id"], P, c["k"])
                     assert offs[ci][1] == h + c["cue_char_end"], (r["doc_id"], P, c["k"], offs[ci], c["cue_char_end"])
@@ -71,6 +75,10 @@ def main():
                         "context_tail": text[: c["cue_char_end"]][-500:],
                         "es_text": r["text_es"], "langs": r.get("langs"),
                     })
+        if args.append and (OUT / f"{fam}.json").exists():
+            new = {(it["doc_id"], it["style"], it["k"]) for it in items}
+            old = [it for it in json.load(open(OUT / f"{fam}.json")) if (it["doc_id"], it["style"], it["k"]) not in new]
+            items = old + items
         json.dump(items, open(OUT / f"{fam}.json", "w"))
         total += len(items)
         ks = {}

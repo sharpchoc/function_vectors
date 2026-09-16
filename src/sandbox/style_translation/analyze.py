@@ -30,7 +30,7 @@ from src.sandbox.style_translation.family_groups import CODE as CODE_NAMES, grou
 
 ROLL = ARTIFACTS_ROOT / "style_translation" / "rollouts"
 OUT = STYLE_TRANSLATION_RESULTS
-KS = [0, 1, 2, 3, 4]
+KS = [0, 1, 2, 3, 4]        # replaced at run time by the k values present in the rollouts (e.g. [0,1,2,3,4,8])
 
 
 def wilson(p, n, z=1.96):
@@ -55,6 +55,8 @@ def main():
     rows, npz = [], {}
     fams = [f.name for f in ALL_FAMILIES if (ROLL / f"{f.name}.json").exists() and (args.families is None or f.name in args.families)]
     data = {}
+    global KS
+    KS = sorted({r["k"] for fam in fams for r in json.load(open(ROLL / f"{fam}.json"))})
     for fam in fams:
         recs = json.load(open(ROLL / f"{fam}.json"))
         judged = [r for r in recs if r.get("judge")]
