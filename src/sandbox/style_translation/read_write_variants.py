@@ -33,7 +33,7 @@ def plot(d, OUT):
     y = np.arange(len(d))[::-1]; sd = d["r2_sd"].fillna(0) if "r2_sd" in d else pd.Series([0.0] * len(d))
     ax.barh(y, d.r2, color=[cols[p] for p in d.pool], xerr=sd, capsize=3, edgecolor="black", linewidth=0.5)
     for yi, (_, r), e in zip(y, d.iterrows(), sd):
-        txt = f"{r.r2:.2f}" + (f" ± {e:.2f}" if e > 0 else "") + (f"   (in-span ceiling {r.inspan:.2f})" if not pd.isna(r.inspan) else "")
+        txt = f"{r.r2:.2f}" + (f" ± {e:.2f}" if e > 0 else "")
         ax.text(max(r.r2, 0) + e + 0.012, yi, txt, va="center", fontsize=8)
     ax.set_yticks(y); ax.set_yticklabels(d.variant, fontsize=8.5); ax.set_xlim(-0.12, 0.8); ax.axvline(0, color="grey", lw=0.6); ax.grid(axis="x", alpha=0.3)
     ax.set_xlabel("held-out centroid R² (mean write activation of each held-out family and pole, around the training mean)")
