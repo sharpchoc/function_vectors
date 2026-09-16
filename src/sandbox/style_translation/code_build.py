@@ -159,12 +159,14 @@ def main():
     for name in args.families:
         fam = CODE_FAMILY[name]; raw_path = RAW / f"{name}.json"
         raw = {r["doc_id"]: r for r in json.load(open(raw_path))} if raw_path.exists() else {}
-        if name in AFFECTED:                                     # re-apply the free-opportunity rule to every stored raw doc (old docs included)
-            for r in raw.values():
-                fr = filter_free(r, name) if r.get("pass") or r.get("opps") else None
-                r["pass"] = fr is not None
-                if fr is not None:
-                    r["opps"], r["k_en"], r["free_filter"] = fr["opps"], fr["k_en"], True
+        def apply_free():                                        # the free-opportunity rule, applied to every stored raw doc (old and new)
+            if name in AFFECTED:
+                for r in raw.values():
+                    fr = filter_free(r, name) if r.get("opps") else None
+                    r["pass"] = fr is not None
+                    if fr is not None:
+                        r["opps"], r["k_en"], r["free_filter"] = fr["opps"], fr["k_en"], True
+        apply_free()
         todo = [t for t in pools[fam.tgt_lang][: args.n_tasks] if f"{name}__{t['id']}" not in raw]
         chunks = [todo[i:i + 60] for i in range(0, len(todo), 60)] if args.target else [todo]
         for chunk in chunks:
@@ -178,7 +180,9 @@ def main():
                     r = fu.result()
                     if r: raw[r["doc_id"]] = r
             json.dump(sorted(raw.values(), key=lambda r: r["doc_id"]), open(raw_path, "w"), ensure_ascii=False, indent=0)
+            apply_free()
             print(f"{name}: {sum(r['pass'] for r in raw.values())} passing after {len(raw)} docs", flush=True)
+        apply_free(); json.dump(sorted(raw.values(), key=lambda r: r["doc_id"]), open(raw_path, "w"), ensure_ascii=False, indent=0)
         pairs = [r for r in sorted(raw.values(), key=lambda r: r["doc_id"]) if r["pass"]][: args.target or None]
         json.dump(pairs, open(PAIRS / f"{name}.json", "w"), ensure_ascii=False, indent=0)
         ks = sorted(r["k_en"] for r in raw.values())
