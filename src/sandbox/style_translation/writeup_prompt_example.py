@@ -66,7 +66,7 @@ def main():
         pos = [j for e in ev[(args.doc, s)]["instances"][:4] for j in e["idx"]]
         panels.append((s, p, layout(tok, p["prompt_ids"], pos, len(p["prompt_ids"]) - 1)))
     nlines = max(len(l) for _, _, l in panels)
-    PW = int(cw * (WRAP + 2)) + 40; PH = int(ch * (nlines + 3)) + 90
+    PW = int(cw * (WRAP + 2)) + 40; PH = int(ch * (nlines + 3)) + 120
     img = Image.new("RGB", (2 * PW + 60, PH + 130), "white"); d = ImageDraw.Draw(img)
     d.text((20, 12), f"Family {fam}: the same document as a k = 4 prompt in each pole (Qwen2.5-7B base tokenisation)", font=FH, fill="black")
     d.text((20, 48), "shaded = evidence tokens of the 4 in-context opportunities (␣ = one space, ⏎ = newline inside the token)", font=FT, fill=(60, 60, 60))
@@ -87,7 +87,8 @@ def main():
             if cue_x is not None:                      # one box around the whole cue token
                 d.rectangle([cue_x, y - 2, cue_end, y + ch - 4], outline="black", width=2)
             y += ch
-        d.text((x0, y + 14), f"→ 5th opportunity: the {s} continuation would be {p[f'next_{s}']!r}", font=FT, fill=col)
+        d.text((x0, y + 14), f"→ 5th opportunity: scored by how the model renders it ({s} pole = {labels[s]}), not by matching the twin's text", font=FT, fill=col)
+        d.text((x0, y + 40), f"   (the twin document continued with {p[f'next_{s}']!r})", font=FT, fill=(90, 90, 90))
     out = MP["results"] / "writeup" / f"prompt_example_{fam}.png"; img.save(out); print("->", out, args.doc)
 
 
