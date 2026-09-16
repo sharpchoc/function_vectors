@@ -1879,3 +1879,6 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   documents that fall short are replaced by newly generated twins whose generation hint asks for many fresh choice points
   (`code_build.EXTRA_HINT`, `--target 200`). The old data for these families is archived under `dataset_files/style_translation/pairs_v1_forced/`
   and `artifacts/style_translation/qwen25_base/v1_forced/`; every downstream step (step 3, write and read features, map) is rerun for them.
+- 2026-09-16 (later) — After the free-opportunity rebuild the both-poles ≥ .30 cutoff drops **py_bool_prefix** (alt .12) and **py_indent**
+  (2-space .24); the code pool is now **53 families** (`code_pool_full.json`, old 55-list kept as `pool_v1_forced`). js_hungarian (nat .66 → .38)
+  and py_abbrev (nat .72 → .40) lost most but stay. The k = 8 numbers in `code/k8/` predate the rebuild for the 12 affected families.
