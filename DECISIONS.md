@@ -1859,3 +1859,7 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - 2026-09-15 (later) — Working read layer for the code map = **L10** (user decision): per-prompt held-out centroid R² .340 at L10 vs .333 at L8
   (80/20 split; spread over L5–L10 is .03). L10 is the working choice for improving the map; the other layers get re-optimised once an
   improvement is found. L8 stays the reported read-steering layer.
+- 2026-09-16 — k = 8 probe for code (user request): k = 8 only (no k = 5–7); k = 8 prompt = 8 in-context opportunities, decision at the 9th;
+  documents with ≥ 9 opportunities only; headline = PAIRED k = 4 vs k = 8 on the same documents. k = 8 items live in the same prompt and
+  rollout files (append mode) so write vectors can pool or select k = 8; the canonical write vectors remain the k = 0..4 ones
+  (`steering/vectors/`); any k = 8 vector goes to `steering/vectors_k8/` via `capture_cues.py --ks 8 --out_tag k8`.

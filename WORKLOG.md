@@ -9424,3 +9424,9 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   (71 selected, write feature), `steerability_read.png` (read feature, k = 3). Proposed stricter steerability gate (user, noted for later):
   steered 0-shot ≥ .30 AND steered ≥ unsteered + ½·(k4 − unsteered), both poles → 13/55 code + 8/16 text = 21 families (73 of 142 cells fail
   the halfway rule, mostly the natural pole at ceiling). k = 8 extension for code running (4 pods, `logs/code_k8_job.sh`).
+- 2026-09-16 k = 8 for the 55 code families (user: quick answer, k = 8 only): cue tokens for every opportunity were already on disk; added
+  `build_prompts.py --ks/--append`, `rollout.py --ks/--append`, `analyze.py` KS from data, `capture_cues.py --ks/--out_tag`. 16,098 k = 8
+  prompts (8,049 docs with ≥ 9 opportunities; max 2,024 tokens) appended to the prompt/rollout files (k ≤ 4 records verified unchanged,
+  backup in `rollouts_backup_k4/`), 4 pods ≈ 35 min, judged (0 failures). Paired result (`code/k8/`): nat .73 → .76 (+.03), alt .68 → .72
+  (+.04); significant gains 9 / 7, losses 6 / 1; capped .25–.28 at k = 8. Not a game changer. A k = 8 write vector is one command away
+  (`capture_cues.py --model qwen25_base --ks 8 --out_tag k8`). Pods terminated.
