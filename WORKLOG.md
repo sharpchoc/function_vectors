@@ -9430,3 +9430,7 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   backup in `rollouts_backup_k4/`), 4 pods ≈ 35 min, judged (0 failures). Paired result (`code/k8/`): nat .73 → .76 (+.03), alt .68 → .72
   (+.04); significant gains 9 / 7, losses 6 / 1; capped .25–.28 at k = 8. Not a game changer. A k = 8 write vector is one command away
   (`capture_cues.py --model qwen25_base --ks 8 --out_tag k8`). Pods terminated.
+- 2026-09-16 k = 8 write vector (user request): `capture_cues.py --ks 8 --out_tag k8` for the 50 families with ≥ 50 k = 8 docs, L24 α sweep +
+  judged confirm (no control) for the k = 8 vector AND the canonical k = 0..4 vector on the same prompts (`steer_screen/confirm/analyze`
+  gained `--vec_tag/--layers/--in_tag/--out_tag`). Result (`code/k8/steering/`): → alt .450 vs .427 (+.02, SE .014), → nat .558 vs .559;
+  α response identical. No gain. 4 pods (~3 pod-h), all terminated; 0 judge failures.
