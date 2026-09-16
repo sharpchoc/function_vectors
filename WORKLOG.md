@@ -9420,3 +9420,7 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   R² .11), convention cos .32 vs .37 per-prompt; L5–L10 flat. Variance decomposition of the write activation: family .29 / convention .025 /
   prompt-specific .68; the 55 write and read convention vectors are nearly orthogonal (mean |cos| .06, participation 48–49/55) while the
   110 raw (family, pole) means share one component (cos .72 write, .55 read; ≈ 0 across families after centring, .84 / .60 within a family).
+- 2026-09-16 write-up prep: figures `qwen25_base/writeup/task_accuracy_k4.png` (110 families tested, kept/dropped), `steerability_write.png`
+  (71 selected, write feature), `steerability_read.png` (read feature, k = 3). Proposed stricter steerability gate (user, noted for later):
+  steered 0-shot ≥ .30 AND steered ≥ unsteered + ½·(k4 − unsteered), both poles → 13/55 code + 8/16 text = 21 families (73 of 142 cells fail
+  the halfway rule, mostly the natural pole at ceiling). k = 8 extension for code running (4 pods, `logs/code_k8_job.sh`).
