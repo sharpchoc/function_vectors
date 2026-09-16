@@ -87,8 +87,8 @@ def main():
             if cue_x is not None:                      # one box around the whole cue token
                 d.rectangle([cue_x, y - 2, cue_end, y + ch - 4], outline="black", width=2)
             y += ch
-        d.text((x0, y + 14), f"→ 5th opportunity: scored by how the model renders it ({s} pole = {labels[s]}), not by matching the twin's text", font=FT, fill=col)
-        d.text((x0, y + 40), f"   (the twin document continued with {p[f'next_{s}']!r})", font=FT, fill=(90, 90, 90))
+        d.text((x0, y + 14), f"→ 5th opportunity: scored as '{s}' if rendered with {labels[s]}", font=FT, fill=col)
+        d.text((x0, y + 40), f"   (any correct code counts; the twin happened to continue with {p[f'next_{s}']!r})", font=FT, fill=(90, 90, 90))
     out = MP["results"] / "writeup" / f"prompt_example_{fam}.png"; img.save(out); print("->", out, args.doc)
 
 
