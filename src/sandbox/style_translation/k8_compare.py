@@ -49,8 +49,12 @@ def main():
         w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
     # figure
     fig, axes = plt.subplots(1, 2, figsize=(19, 7.5))
+    # same family order as writeup/steerability_write.png: steered 0-shot accuracy toward the alternative pole, highest at the top
+    bc = {r["family"]: float(r["accuracy"]) for r in csv.DictReader(open(R / "steering" / "best_config.csv")) if r["target"] == "alt"}
+    order = sorted(pool, key=lambda f: -bc.get(f, -1))
     for ax, s in zip(axes, ("nat", "alt")):
-        sub = sorted([r for r in rows if r["style"] == s and r["n_k8"] > 0], key=lambda r: -r["delta"])
+        byf = {r["family"]: r for r in rows if r["style"] == s and r["n_k8"] > 0}
+        sub = [byf[f] for f in order if f in byf][::-1]          # reversed so that the first family is drawn at the top
         y = np.arange(len(sub))
         for i, r in enumerate(sub):
             col = C[s] if r["n_k8"] >= 50 else "#aaaaaa"
@@ -66,7 +70,7 @@ def main():
                Line2D([], [], marker="o", color="#444444", ls="", ms=6, label="k = 8 accuracy (95% CI); grey = fewer than 50 documents")]
     fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.965), ncol=2, fontsize=9.5, frameon=False)
     fig.suptitle("Code conventions on Qwen2.5-7B base: 8 in-context examples vs 4, paired on the documents that have ≥ 9 opportunities\n"
-                 "row label = family; Δ = paired mean difference k8 − k4 (* = |Δ| > 1.96 SE); sorted by Δ", fontsize=11.5, y=0.995)
+                 "row label = family; Δ = paired mean difference k8 − k4 (* = |Δ| > 1.96 SE); families in the order of the steerability figure (steered 0-shot accuracy toward alt, highest first)", fontsize=11.5, y=0.995)
     fig.tight_layout(rect=(0, 0, 1, 0.94), w_pad=4); fig.savefig(OUT / "k8_vs_k4.png", dpi=150); plt.close(fig)
     for s in ("nat", "alt"):
         sub = [r for r in rows if r["style"] == s and r["n_k8"] >= 50]
