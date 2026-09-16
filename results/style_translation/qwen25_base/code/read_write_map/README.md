@@ -144,12 +144,12 @@ absorbs and which carries no family or convention information. Working read laye
 
 ### The same yardstick on the 69-task function-vector pool (GPT-J, 55 train / 14 held-out)
 
-| pool | raw pairwise cos | centred mean \|cos\| | centred participation ratio | held-out centred variance inside the training span | held-out map result |
-|---|---|---|---|---|---|
-| 69 tasks, write = FV (L13) | .39 | .21 | 39 / 69 | **.73** | R² .68, cos .90 (baseline .64) |
-| 69 tasks, read = label mean (L6) | .73 | .18 | 44 / 69 | .62 | |
-| 55 code families, write centroids (L24) | .72 | .10 | 63 / 110 | **.52** | R² .28–.34, cos .5–.6 |
-| 55 code families, read centroids (L10) | .55 | .10 | 76 / 110 | .47 | |
+| pool | what is compared | raw pairwise cosine | centred mean abs cosine | effective dimensions (participation ratio) | held-out variance inside the training span | held-out map result |
+|---|---|---|---|---|---|---|
+| 69 tasks, GPT-J (55 train / 14 test) | write: function vectors (L13) | .39 | .21 | 39 of 69 | **.73** | R² .68, cos .90 (baseline .64) |
+| 69 tasks, GPT-J | read: label means (L6) | .73 | .18 | 44 of 69 | .62 | |
+| 55 code families, Qwen (44 train / 11 test) | write: cue-token centroids (L24) | .72 | .10 | 63 of 110 | **.52** | R² .28–.34, cos .5–.6 |
+| 55 code families, Qwen | read: evidence-token centroids (L10) | .55 | .10 | 76 of 110 | .47 | |
 
 Raw pairwise cosine measures the shared component (which the intercept absorbs) and is the wrong yardstick: the FVs look *less* similar
 than the code centroids (.39 vs .72) but, once centred, task directions are twice as correlated (.21 vs .10), more concentrated (39 of 69 vs
