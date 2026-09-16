@@ -44,6 +44,23 @@ Return only the code, no markdown fences, no prose.
 
 {code}"""
 TOK = re.compile(r"\w+|\s+|[^\w\s]", re.UNICODE)
+from src.sandbox.style_translation.code_free import filter_free, AFFECTED
+# extra generation hints for the families whose decisions can be forced by earlier code (free-opportunity rebuild, 2026-09-16):
+# the NATURAL solution must contain many FRESH choice points (new names / new loops / new blocks), not re-mentions
+EXTRA_HINT = {
+    "py_snake_camel": "introduce at least 8 DIFFERENT multi-word variable, parameter and function names, each a new name (do not just re-use two or three names)",
+    "js_camel_snake": "introduce at least 8 DIFFERENT multi-word variable, parameter and function names, each a new name (do not just re-use two or three names)",
+    "py_const_naming": "define at least 6 DIFFERENT module-level constants, each with a distinct multi-word name",
+    "py_class_naming": "define at least 7 DIFFERENT small classes (each with a distinct multi-word name), spread through the whole solution",
+    "py_private": "assign at least 7 DIFFERENT private attributes in __init__ and other methods, each with a distinct multi-word name",
+    "py_bool_prefix": "introduce at least 7 DIFFERENT boolean variables / parameters, each with a distinct multi-word name",
+    "py_loop_vars": "write at least 7 DIFFERENT for-loops (nested or sequential) spread through the whole solution, each with its own loop variable",
+    "js_hungarian": "introduce at least 8 DIFFERENT variables and parameters, each with a distinct multi-word name",
+    "py_abbrev": "introduce at least 8 DIFFERENT variables and parameters, each a distinct name (do not re-use the same few names)",
+    "py_self_name": "define a class with at least 7 methods (each `def method(self, ...)`), spread through the whole solution",
+    "py_indent": "use at least 8 DIFFERENT indented blocks (if / for / while / def / try / with), several of them nested, spread through the whole solution",
+    "py_tabs": "use at least 8 DIFFERENT indented blocks (if / for / while / def / try / with), several of them nested, spread through the whole solution",
+}
 
 
 def _chat(key, content, temperature, max_tokens=2000):
@@ -108,7 +125,8 @@ def align(nat, alt, merge_gap=2):
 def build_one(key, fam, task):
     for attempt in range(3):
         try:
-            nat = _chat(key, GEN.format(lang=fam.tgt_lang, hint=fam.gen_hint, spec=task["spec"]), 0.9)
+            hint = fam.gen_hint + ("; ALSO: " + EXTRA_HINT[fam.name] if fam.name in EXTRA_HINT else "")
+            nat = _chat(key, GEN.format(lang=fam.tgt_lang, hint=hint, spec=task["spec"]), 0.9)
             if nat.count("\n") < 8:
                 raise ValueError("too short")
             alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2)
@@ -117,6 +135,8 @@ def build_one(key, fam, task):
             rec = {"doc_id": f"{fam.name}__{task['id']}", "family": fam.name, "topic": task["title"], "angle": "code", "text_es": task["spec"].strip(),
                    "langs": {"src": "Task", "tgt": fam.tgt_lang}, "text_nat": nat, "text_alt": alt, "opps": opps or [], "k_en": len(opps or []),
                    "shared_fraction": round(shared, 3), "pass": bool(ok), "verify": None}
+            if ok and fam.name in AFFECTED:                       # free-opportunity rule: the pair must keep >= 5 genuine choice points
+                ok = filter_free(rec, fam.name) is not None; rec["pass"] = bool(ok)
             if ok or attempt == 2:
                 return rec
         except Exception as e:
@@ -130,6 +150,7 @@ def main():
     ap.add_argument("--families", nargs="*", default=[f.name for f in CODE_FAMILIES])
     ap.add_argument("--n_tasks", type=int, default=50); ap.add_argument("--workers", type=int, default=40)
     ap.add_argument("--ks", default="0,4"); ap.add_argument("--skip_prompts", action="store_true")
+    ap.add_argument("--target", type=int, default=None, help="stop generating once this many passing pairs exist (chunks of 60 tasks); pairs file capped at --target")
     args = ap.parse_args()
     key = load_key(); RAW.mkdir(parents=True, exist_ok=True)
     pools = {lang: tasks_for(key, lang, n=args.n_tasks + 10) for lang in sorted({CODE_FAMILY[f].tgt_lang for f in args.families})}
@@ -138,14 +159,27 @@ def main():
     for name in args.families:
         fam = CODE_FAMILY[name]; raw_path = RAW / f"{name}.json"
         raw = {r["doc_id"]: r for r in json.load(open(raw_path))} if raw_path.exists() else {}
+        if name in AFFECTED:                                     # re-apply the free-opportunity rule to every stored raw doc (old docs included)
+            for r in raw.values():
+                fr = filter_free(r, name) if r.get("pass") or r.get("opps") else None
+                r["pass"] = fr is not None
+                if fr is not None:
+                    r["opps"], r["k_en"], r["free_filter"] = fr["opps"], fr["k_en"], True
         todo = [t for t in pools[fam.tgt_lang][: args.n_tasks] if f"{name}__{t['id']}" not in raw]
-        if todo:
+        chunks = [todo[i:i + 60] for i in range(0, len(todo), 60)] if args.target else [todo]
+        for chunk in chunks:
+            n_pass = sum(r["pass"] for r in raw.values())
+            if args.target and n_pass >= args.target:
+                break
+            if not chunk:
+                continue
             with ThreadPoolExecutor(args.workers) as ex:
-                for fu in as_completed([ex.submit(build_one, key, fam, t) for t in todo]):
+                for fu in as_completed([ex.submit(build_one, key, fam, t) for t in chunk]):
                     r = fu.result()
                     if r: raw[r["doc_id"]] = r
             json.dump(sorted(raw.values(), key=lambda r: r["doc_id"]), open(raw_path, "w"), ensure_ascii=False, indent=0)
-        pairs = [r for r in sorted(raw.values(), key=lambda r: r["doc_id"]) if r["pass"]]
+            print(f"{name}: {sum(r['pass'] for r in raw.values())} passing after {len(raw)} docs", flush=True)
+        pairs = [r for r in sorted(raw.values(), key=lambda r: r["doc_id"]) if r["pass"]][: args.target or None]
         json.dump(pairs, open(PAIRS / f"{name}.json", "w"), ensure_ascii=False, indent=0)
         ks = sorted(r["k_en"] for r in raw.values())
         print(f"{name:20s} built={len(raw):3d} opps median={ks[len(ks)//2] if ks else 0:3d} pass={len(pairs):3d} shared={sum(r['shared_fraction'] for r in raw.values())/max(len(raw),1):.2f}", flush=True)

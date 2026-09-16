@@ -1863,3 +1863,19 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   documents with ≥ 9 opportunities only; headline = PAIRED k = 4 vs k = 8 on the same documents. k = 8 items live in the same prompt and
   rollout files (append mode) so write vectors can pool or select k = 8; the canonical write vectors remain the k = 0..4 ones
   (`steering/vectors/`); any k = 8 vector goes to `steering/vectors_k8/` via `capture_cues.py --ks 8 --out_tag k8`.
+
+## 2026-09-16 — Code conventions: free-opportunity rule (user finding + decision)
+- Finding: in the identifier-naming families a large share of decisions were FORCED by the code rather than by the convention — once an
+  identifier is defined, later mentions must reuse its spelling for the code to work (`absolute_value` … `current_number = absolute|_value`);
+  `self` must match the parameter name; lines inside a block must keep its indentation; the task text can pin a function name. Forced share
+  of the k = 4 decision: py_self_name .99, py_loop_vars .63, py_snake_camel .59, js_camel_snake .56, py_abbrev .56, js_hungarian .41,
+  py_bool_prefix .39, py_class_naming .35 (py_private .04, py_const_naming .02). Forced decisions were far easier (e.g. py_class_naming k = 4
+  nat .26 free vs .82 forced), so k-shot accuracy and some steering numbers were inflated. Quotes, keywords, operators, literals and the
+  other formatting families are not affected (either rendering stays legal).
+- Decision: rebuild the 12 affected families (9 identifier families + py_self_name + py_indent + py_tabs) so that every opportunity is a
+  genuine choice (`code_free.py`): identifier families — no identifier of the span, in either rendering, may occur earlier in the code or be
+  pinned by the task text (backticks / call form); py_loop_vars — only the binding in a `for` header; py_self_name — only the `self`
+  parameter of a `def`; py_indent / py_tabs — only the first line of a new block. Pairs keep only free opportunities (≥ 5, 5th before 75 %);
+  documents that fall short are replaced by newly generated twins whose generation hint asks for many fresh choice points
+  (`code_build.EXTRA_HINT`, `--target 200`). The old data for these families is archived under `dataset_files/style_translation/pairs_v1_forced/`
+  and `artifacts/style_translation/qwen25_base/v1_forced/`; every downstream step (step 3, write and read features, map) is rerun for them.
