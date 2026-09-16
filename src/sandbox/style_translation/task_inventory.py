@@ -25,8 +25,9 @@ for lang in ("ja", "zh", "ko"):
 plt.rcParams["font.family"] = list(dict.fromkeys(fams))
 rows = list(csv.DictReader(open(CSV)))
 KEPT, WEAK, DROP, FIX, PRUNE, UNT = "kept (in pool)", "tested: too weak", "tested, then dropped", "lexically identical", "pruned before inference", "not testable on this model"
-order = [KEPT, WEAK, DROP, UNT, FIX, PRUNE]; rows.sort(key=lambda r: (order.index(r["status"]), r["lang"] != "English", r["name"].lower()))
-col = {KEPT: "#c7e9c0", WEAK: "#f6c6c9", DROP: "#fbd9b0", FIX: "#dcdcdc", PRUNE: "#fff0b3", UNT: "#cfe2f3"}
+LATE = "passed the late re-test; not in pool"
+order = [KEPT, LATE, WEAK, DROP, UNT, FIX, PRUNE]; rows.sort(key=lambda r: (order.index(r["status"]), r["lang"] != "English", r["name"].lower()))
+col = {KEPT: "#c7e9c0", LATE: "#e2f0d9", WEAK: "#f6c6c9", DROP: "#fbd9b0", FIX: "#dcdcdc", PRUNE: "#fff0b3", UNT: "#cfe2f3"}
 cols = [("convention", 0.19), ("target", 0.075), ("natural → alternative", 0.17), ("decision", 0.115), ("k=4 nat", 0.05), ("k=4 alt", 0.05), ("texts", 0.045), ("reason / evidence (Qwen2.5-7B base unless stated)", 0.34)]
 W = 24.0; wrap_chars = {0: 34, 2: 32, 7: 86}
 cells = []
@@ -42,7 +43,7 @@ for name, fr in cols:
     xs.append((x, fr * (W - 0.6))); x += fr * (W - 0.6)
 counts = {s: sum(1 for r in rows if r["status"] == s) for s in order}
 ax.text(W / 2, H - 0.12, "Writing-convention families considered for the read/write-feature study — every candidate and why it was kept or dropped", ha="center", va="top", fontsize=14, fontweight="bold")
-ax.text(W / 2, H - 0.42, f"{counts[KEPT]} kept in the pool · {counts[WEAK]} tested and too weak · {counts[UNT]} not testable on this model · {counts[FIX]} lexically identical (ignored for this question) · {counts[PRUNE]} pruned before inference.   "
+ax.text(W / 2, H - 0.42, f"{counts[KEPT]} kept in the pool · {counts[LATE]} passed the late re-test but not in the pool · {counts[WEAK]} tested and too weak · {counts[UNT]} not testable on this model · {counts[FIX]} lexically identical (ignored for this question) · {counts[PRUNE]} pruned before inference.   "
         "Cutoff: k = 4 accuracy ≥ .30 for BOTH conventions (accuracy = uses the context's convention ∧ faithful translation, 200 texts unless stated).", ha="center", va="top", fontsize=9.5)
 y = H - title_h
 for (xx, w), (name, _) in zip(xs, cols):
