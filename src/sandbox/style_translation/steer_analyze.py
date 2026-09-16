@@ -55,8 +55,12 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--model", default="gptj", help="models.MODELS key")
     ap.add_argument("--tag", default=None, help="results sub-bucket (results/<model>/<tag>/steering); step-3 reference from the same bucket")
     ap.add_argument("--families", nargs="*", default=None, help="restrict to these families (default: every family with artifacts)")
+    ap.add_argument("--in_tag", default=None, help="read steering/screen_<tag>/ and confirm_<tag>/, write results to <bucket>/steering_<tag>/")
     args = ap.parse_args()
     configure(args.model, args.tag)
+    global SCREEN, CONFIRM, OUT
+    if args.in_tag:
+        SCREEN, CONFIRM, OUT = SCREEN.parent / f"screen_{args.in_tag}", CONFIRM.parent / f"confirm_{args.in_tag}", OUT.parent / f"steering_{args.in_tag}"
     OUT.mkdir(parents=True, exist_ok=True)
     universe = [f for f in list(FAMILIES) + list(ML_FAMILIES) if args.families is None or f.name in args.families]
     sfams = [f.name for f in universe if (SCREEN / f"{f.name}.json").exists()]          # screen: judge-free
@@ -77,13 +81,14 @@ def main():
             step3.setdefault((r["family"], r["style"], int(float(r["k"]))), float(r["accuracy"]))
 
     # ---- screen grid csv ----------------------------------------------------------------------
-    screen_rows, grid = [], {}
+    screen_rows, grid, layers = [], {}, list(SCREEN_LAYERS)
     for fam in sfams:
         recs = json.load(open(SCREEN / f"{fam}.json"))
         base = [r for r in recs if r["alpha"] == 0.0]
+        layers = sorted({r["layer"] for r in recs if r["target"] is not None}) or layers
         for target in ("nat", "alt"):
             b = np.mean([r["decision"] == target for r in base])
-            for layer in SCREEN_LAYERS:
+            for layer in layers:
                 grid[(fam, target, layer, 0.0)] = b
                 screen_rows.append(dict(family=fam, target=target, layer=layer, alpha=0.0, target_rate=round(b, 3), unscorable=round(np.mean([r["decision"] is None for r in base]), 3)))
                 for a in ALPHAS:
@@ -191,13 +196,13 @@ def main():
     acol = dict(zip(ALPHAS, plt.cm.viridis(np.linspace(0.15, 0.9, len(ALPHAS)))))
     for (fam, target) in panels:
         ax = gax[(fam, 0 if target == "nat" else 1)]
-        b0 = grid[(fam, target, SCREEN_LAYERS[0], 0.0)]
+        b0 = grid[(fam, target, layers[0], 0.0)]
         ax.axhline(b0, color="#9e9e9e", linestyle="dashed", lw=1.2, label="α = 0 (unsteered)")
         for a in ALPHAS:
-            ax.plot(SCREEN_LAYERS, [grid[(fam, target, layer, a)] for layer in SCREEN_LAYERS], marker="o", ms=3, lw=1.3,
+            ax.plot(layers, [grid[(fam, target, layer, a)] for layer in layers], marker="o", ms=3, lw=1.3,
                     color=acol[a], label=f"α = {a:g}")
         ax.set_title(f"{fam} → {target}", fontsize=8.5, color={"nat": "#1f77b4", "alt": "#d62728"}[target])
-        ax.set_ylim(-0.03, 1.03); ax.set_xticks(SCREEN_LAYERS); ax.tick_params(labelsize=6.5); ax.grid(alpha=0.3)
+        ax.set_ylim(-0.03, 1.03); ax.set_xticks(layers); ax.tick_params(labelsize=6.5); ax.grid(alpha=0.3)
     for ax in fig.axes_meta["left"]:
         ax.set_ylabel("target-style rate", fontsize=8)
     for ax in fig.axes_meta["bottom"]:

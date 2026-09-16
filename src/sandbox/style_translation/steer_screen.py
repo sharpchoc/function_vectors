@@ -81,8 +81,17 @@ def main():
     ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
     ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--batch", type=int, default=25)
+    ap.add_argument("--vec_tag", default=None, help="use steering/vectors_<tag>/ instead of steering/vectors/ (e.g. k8)")
+    ap.add_argument("--layers", nargs="*", type=int, default=None, help="injection layers (default SCREEN_LAYERS)")
+    ap.add_argument("--out_tag", default=None, help="write to steering/screen_<tag>/ instead of steering/screen/")
     args = ap.parse_args()
     configure(args.model)
+    global VEC, OUT
+    if args.vec_tag:
+        VEC = VEC.parent / f"vectors_{args.vec_tag}"
+    if args.out_tag:
+        OUT = OUT.parent / f"screen_{args.out_tag}"
+    layers = args.layers or SCREEN_LAYERS
     OUT.mkdir(parents=True, exist_ok=True)
     model, tok = load_model(model=args.model)
     assert unit_test(model, tok, layer=6), "hook unit test failed"
@@ -102,7 +111,7 @@ def main():
                 d = decide(fam, it["seg_prefix"], t, it["next_nat"], it["next_alt"])
                 recs.append({"doc_id": it["doc_id"], "target": None, "layer": 0, "alpha": 0.0, "tail": t, "decision": d})
         for target in ("nat", "alt"):
-            for layer in SCREEN_LAYERS:
+            for layer in layers:
                 v = vecs[layer - 1] * (1 if target == "nat" else -1)
                 for alpha in ALPHAS:
                     for bi in range(0, len(items), args.batch):
@@ -119,7 +128,7 @@ def main():
         print(f"{fam}: unsteered nat={np.mean([r['decision']=='nat' for r in base]):.2f} alt={np.mean([r['decision']=='alt' for r in base]):.2f}", flush=True)
         for target in ("nat", "alt"):
             best = max(((layer, a, np.mean([r["decision"] == target for r in recs if r["target"] == target and r["layer"] == layer and r["alpha"] == a]))
-                        for layer in SCREEN_LAYERS for a in ALPHAS), key=lambda x: (x[2], -x[1], -x[0]))
+                        for layer in layers for a in ALPHAS), key=lambda x: (x[2], -x[1], -x[0]))
             print(f"{fam}: best {target}: L={best[0]} alpha={best[1]} rate={best[2]:.2f}", flush=True)
     print("screen done", flush=True)
 

@@ -46,8 +46,7 @@ def configure(model="gptj"):
 def top_settings(fam, target, n=2):
     recs = json.load(open(SCREEN / f"{fam}.json"))
     rates = []
-    for layer in SCREEN_LAYERS:
-        for a in ALPHAS:
+    for layer, a in sorted({(r["layer"], r["alpha"]) for r in recs if r["target"] == target}):
             sel = [r for r in recs if r["target"] == target and r["layer"] == layer and r["alpha"] == a]
             rates.append((np.mean([r["decision"] == target for r in sel]), -a, -layer, layer, a))
     rates.sort(reverse=True)
@@ -61,8 +60,18 @@ def main():
     ap.add_argument("--model", default="gptj", help="models.MODELS key (weights + artifact/results folders)")
     ap.add_argument("--batch", type=int, default=16)
     ap.add_argument("--no_control", action="store_true", help="skip the counterfactual (other family's vector) arms")
+    ap.add_argument("--vec_tag", default=None, help="use steering/vectors_<tag>/ (e.g. k8)")
+    ap.add_argument("--in_tag", default=None, help="read the screen from steering/screen_<tag>/")
+    ap.add_argument("--out_tag", default=None, help="write to steering/confirm_<tag>/")
     args = ap.parse_args()
     configure(args.model)
+    global VEC, SCREEN, OUT
+    if args.vec_tag:
+        VEC = VEC.parent / f"vectors_{args.vec_tag}"
+    if args.in_tag:
+        SCREEN = SCREEN.parent / f"screen_{args.in_tag}"
+    if args.out_tag:
+        OUT = OUT.parent / f"confirm_{args.out_tag}"
     OUT.mkdir(parents=True, exist_ok=True)
     fams = args.families
     model, tok = load_model(model=args.model)
