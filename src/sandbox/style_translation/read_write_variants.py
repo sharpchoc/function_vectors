@@ -31,7 +31,10 @@ def plot(d, OUT):
     fig, ax = plt.subplots(figsize=(13, 0.42 * len(d) + 1.6))
     cols = {"code": "#1f6c80", "text→code": "#b8860b", "text": "#8e44ad", "text (GPT-J)": "#9e9e9e"}
     y = np.arange(len(d))[::-1]; sd = d["r2_sd"].fillna(0) if "r2_sd" in d else pd.Series([0.0] * len(d))
-    ax.barh(y, d.r2, color=[cols[p] for p in d.pool], xerr=sd, capsize=3, edgecolor="black", linewidth=0.5)
+    ax.barh(y, d.r2, color=[cols[p] for p in d.pool], edgecolor="black", linewidth=0.5)
+    has = sd > 0
+    if has.any():
+        ax.errorbar(d.r2[has], y[has.values], xerr=sd[has], fmt="none", ecolor="black", capsize=3, lw=1)
     for yi, (_, r), e in zip(y, d.iterrows(), sd):
         txt = f"{r.r2:.2f}" + (f" ± {e:.2f}" if e > 0 else "")
         ax.text(max(r.r2, 0) + e + 0.012, yi, txt, va="center", fontsize=8)
