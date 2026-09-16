@@ -48,46 +48,40 @@ def main():
     if "--plot_only" in sys.argv:
         plot(pd.read_csv(OUT / "read_write_variants.csv"), OUT); print("->", OUT / "read_write_variants.png"); return
     pool = json.load(open(R / "code_pool_full.json"))["pool"]; text = json.load(open(R / "pool.json"))["pool"]; cat = code_strata(pool)
-    splits = {"36/19": json.load(open(RW / "fixed_split.json")), "44/11": json.load(open(RW / "fixed_split_80_20.json")), "44/11 v2": json.load(open(RW / "fixed_split_80_20_v2.json"))}
+    sp = json.load(open(RW / "fixed_split_80_20_v2.json")); train, test = sp["train"], sp["test"]   # the 80/20 split (45 train / 10 test; rust_question, the only Rust family, in train)
     rows = []
     data = {lr: load(pool, lr, 24) for lr in (5, 6, 7, 8, 9, 10)}
     X8, Y8, F8, P8 = data[8]
-    # 1. splits at L8
-    for name, sp in splits.items():
-        o = cent_r2(X8, Y8, F8, P8, sp["train"], sp["test"])
-        rows.append(dict(variant=f"per-prompt ridge, split {name}, read L8", pool="code", n_train=len(sp["train"]), n_test=len(sp["test"]), r2=o["centroid_r2"], inspan=o["inspan"]))
-    # 2. read-layer sweep on 44/11
-    sp = splits["44/11"]
-    for lr in (5, 6, 7, 9, 10):
-        X, Y, F, P = data[lr]; o = cent_r2(X, Y, F, P, sp["train"], sp["test"])
-        rows.append(dict(variant=f"per-prompt ridge, split 44/11, read L{lr}", pool="code", n_train=44, n_test=11, r2=o["centroid_r2"], inspan=o["inspan"]))
-    # 3. five random splits at L8
+    # 1. read-layer sweep on the 80/20 split
+    for lr in (5, 6, 7, 8, 9, 10):
+        X, Y, F, P = data[lr]; o = cent_r2(X, Y, F, P, train, test)
+        rows.append(dict(variant=f"per-prompt ridge, 80/20 split, read L{lr}", pool="code", n_train=len(train), n_test=len(test), r2=o["centroid_r2"], inspan=o["inspan"]))
+    # 2. five random 80/20 draws at L8 (10 test families, category-stratified, seeds 1-5)
     rs = []
     for seed in (1, 2, 3, 4, 5):
-        rng = np.random.default_rng(seed); test = []
+        rng = np.random.default_rng(seed); te_ = []
         for c in sorted(set(cat.values())):
-            fs = sorted(f for f in pool if cat[f] == c); k = max(1, round(len(fs) * 11 / len(pool))); test += [str(x) for x in rng.choice(fs, size=min(k, len(fs)), replace=False)]
-        test = sorted(test); train = [f for f in pool if f not in test]
-        rs.append(cent_r2(X8, Y8, F8, P8, train, test)["centroid_r2"])
-    rows.append(dict(variant="per-prompt ridge, five random 44/11 splits, read L8 (mean ± sd)", pool="code", n_train=44, n_test=11, r2=float(np.mean(rs)), r2_sd=float(np.std(rs, ddof=1)), inspan=np.nan))
-    # 4. centroid map on 44/11 at L8
-    lab = [(f, s) for f in pool for s in ("nat", "alt")]
-    Rc = np.array([X8[(F8 == f) & (P8 == s)].mean(0) for f, s in lab]); Wc = np.array([Y8[(F8 == f) & (P8 == s)].mean(0) for f, s in lab])
-    mtr = np.array([f in sp["train"] for f, _ in lab]); M = DualRidge(Rc[mtr], Wc[mtr]).fit(0.316); pc = M.predict(Rc[~mtr])
-    rows.append(dict(variant="centroid-level ridge (88 training means), split 44/11, read L8", pool="code", n_train=44, n_test=11, r2=r2(pc, Wc[~mtr], M.ym), inspan=np.nan))
-    # 5. augmented with text families
+            fs = sorted(f for f in pool if cat[f] == c); k = max(1, round(len(fs) * len(test) / len(pool))); te_ += [str(x) for x in rng.choice(fs, size=min(k, len(fs)), replace=False)]
+        te_ = sorted(te_); tr_ = [f for f in pool if f not in te_]
+        rs.append(cent_r2(X8, Y8, F8, P8, tr_, te_)["centroid_r2"])
+    rows.append(dict(variant="per-prompt ridge, five random 80/20 draws, read L8 (mean ± sd)", pool="code", n_train=len(pool) - len(test), n_test=len(test), r2=float(np.mean(rs)), r2_sd=float(np.std(rs, ddof=1)), inspan=np.nan))
+    # 3. centroid-level map on the 80/20 split at L8
+    lab = [(f, s_) for f in pool for s_ in ("nat", "alt")]
+    Rc = np.array([X8[(F8 == f) & (P8 == s_)].mean(0) for f, s_ in lab]); Wc = np.array([Y8[(F8 == f) & (P8 == s_)].mean(0) for f, s_ in lab])
+    mtr = np.array([f in train for f, _ in lab]); M = DualRidge(Rc[mtr], Wc[mtr]).fit(0.316); pc = M.predict(Rc[~mtr])
+    rows.append(dict(variant=f"centroid-level ridge ({int(mtr.sum())} training means), 80/20 split, read L8", pool="code", n_train=len(train), n_test=len(test), r2=r2(pc, Wc[~mtr], M.ym), inspan=np.nan))
+    # 4. training augmented with the 16 text families
     Xt, Yt, Ft, Pt = load(text, 8, 24)
-    for name, key in (("44/11", "44/11"), ("44/11 v2", "44/11 v2")):
-        sp_ = splits[key]; te = np.isin(F8, sp_["test"]); trm = np.isin(F8, sp_["train"])
-        Xa, Ya, Fa, Pa = np.vstack([X8[trm], Xt]), np.vstack([Y8[trm], Yt]), np.concatenate([F8[trm], Ft]), np.concatenate([P8[trm], Pt])
-        Rg = make_ridge(Xa, Ya).fit(10.0); pred = Rg.predict(X8[te])
-        cents = np.array([Ya[(Fa == f) & (Pa == s)].mean(0) for f in sorted(set(Fa)) for s in ("nat", "alt")])
-        o = centroid_scores(pred, Y8[te], F8[te], P8[te], sp_["test"], Rg.ym, cents)
-        rows.append(dict(variant=f"per-prompt ridge, split {name} + 16 text families in training, read L8", pool="code", n_train=len(sp_["train"]) + 16, n_test=len(sp_["test"]), r2=o["centroid_r2"], inspan=o["inspan"]))
-    Rg = make_ridge(Xt, Yt).fit(10.0); te = np.isin(F8, sp["test"]); pred = Rg.predict(X8[te])
-    cents = np.array([Yt[(Ft == f) & (Pt == s)].mean(0) for f in text for s in ("nat", "alt")])
-    o = centroid_scores(pred, Y8[te], F8[te], P8[te], sp["test"], Rg.ym, cents)
-    rows.append(dict(variant="per-prompt ridge trained on the 16 text families only, tested on the 11 code families, read L8", pool="text→code", n_train=16, n_test=11, r2=o["centroid_r2"], inspan=o["inspan"]))
+    te = np.isin(F8, test); trm = np.isin(F8, train)
+    Xa, Ya, Fa, Pa = np.vstack([X8[trm], Xt]), np.vstack([Y8[trm], Yt]), np.concatenate([F8[trm], Ft]), np.concatenate([P8[trm], Pt])
+    Rg = make_ridge(Xa, Ya).fit(10.0); pred = Rg.predict(X8[te])
+    cents = np.array([Ya[(Fa == f) & (Pa == s_)].mean(0) for f in sorted(set(Fa)) for s_ in ("nat", "alt")])
+    o = centroid_scores(pred, Y8[te], F8[te], P8[te], test, Rg.ym, cents)
+    rows.append(dict(variant="per-prompt ridge, 80/20 split + 16 text families in training, read L8", pool="code", n_train=len(train) + 16, n_test=len(test), r2=o["centroid_r2"], inspan=o["inspan"]))
+    Rg = make_ridge(Xt, Yt).fit(10.0); pred = Rg.predict(X8[te])
+    cents = np.array([Yt[(Ft == f) & (Pt == s_)].mean(0) for f in text for s_ in ("nat", "alt")])
+    o = centroid_scores(pred, Y8[te], F8[te], P8[te], test, Rg.ym, cents)
+    rows.append(dict(variant="per-prompt ridge trained on the 16 text families only, tested on the 10 code test families, read L8", pool="text→code", n_train=16, n_test=len(test), r2=o["centroid_r2"], inspan=o["inspan"]))
     # 6. stored text-pool and GPT-J numbers
     for f, lr in (("pool_summary_L12_L24.csv", 12), ("pool_summary_L0_L24.csv", 0)):
         d = pd.read_csv(R / "read_write_map" / f); fx = d[d.protocol == "fixed"].iloc[0]; lo = d[d.protocol == "lofo"]
