@@ -47,31 +47,29 @@ def main():
                              judge_ok_k8=round(float(np.mean([r["judge"]["ok"] for r in k8])), 3) if n8 else np.nan))
     with open(OUT / "k8_vs_k4.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
-    # figure
-    fig, axes = plt.subplots(1, 2, figsize=(19, 7.5))
-    # same family order as writeup/steerability_write.png: steered 0-shot accuracy toward the alternative pole, highest at the top
+    # figure: one dot per k, families with < 50 k = 8 documents excluded, same order as writeup/steerability_write.png
     bc = {r["family"]: float(r["accuracy"]) for r in csv.DictReader(open(R / "steering" / "best_config.csv")) if r["target"] == "alt"}
     order = sorted(pool, key=lambda f: -bc.get(f, -1))
+    small = sorted({r["family"] for r in rows if r["n_k8"] < 50})
+    fig, axes = plt.subplots(1, 2, figsize=(15, 8))
     for ax, s in zip(axes, ("nat", "alt")):
-        byf = {r["family"]: r for r in rows if r["style"] == s and r["n_k8"] > 0}
-        sub = [byf[f] for f in order if f in byf][::-1]          # reversed so that the first family is drawn at the top
+        byf = {r["family"]: r for r in rows if r["style"] == s and r["n_k8"] >= 50}
+        sub = [byf[f] for f in order if f in byf][::-1]
         y = np.arange(len(sub))
         for i, r in enumerate(sub):
-            col = C[s] if r["n_k8"] >= 50 else "#aaaaaa"
-            ax.plot([r["acc_k4_same_docs"], r["acc_k8"]], [i, i], color="#cccccc", lw=2, zorder=1)
+            ax.plot([r["acc_k4_same_docs"], r["acc_k8"]], [i, i], color="#cccccc", lw=1.5, zorder=1)
             ax.plot(r["acc_k4_same_docs"], i, "o", color="#9e9e9e", ms=6, zorder=2)
-            ax.errorbar(r["acc_k8"], i, xerr=[[r["acc_k8"] - r["ci_lo_k8"]], [r["ci_hi_k8"] - r["acc_k8"]]], fmt="o", color=col, ms=6, capsize=2, lw=1, zorder=3)
-            ax.text(1.02, i, f"n={r['n_k8']}  Δ={r['delta']:+.2f}{'*' if r['sig'] else ''}", va="center", fontsize=6.5, color="#555555")
-        ax.set_yticks(y); ax.set_yticklabels([r["family"] for r in sub], fontsize=7.5); ax.set_xlim(-0.02, 1.02); ax.set_ylim(-1, len(sub))
-        ax.set_xlabel("accuracy (convention used AND correct solution)"); ax.grid(axis="x", alpha=0.3); ax.axvline(0.5, color="#dddddd", lw=0.8)
-        m4 = np.mean([r["acc_k4_same_docs"] for r in sub if r["n_k8"] >= 50]); m8 = np.mean([r["acc_k8"] for r in sub if r["n_k8"] >= 50])
-        ax.set_title(f"{s} convention in context — mean over families with n ≥ 50: k = 4 {m4:.2f} → k = 8 {m8:.2f}", fontsize=10, color=C[s])
-    handles = [Line2D([], [], marker="o", color="#9e9e9e", ls="", ms=6, label="k = 4 accuracy on the same documents"),
-               Line2D([], [], marker="o", color="#444444", ls="", ms=6, label="k = 8 accuracy (95% CI); grey = fewer than 50 documents")]
-    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.965), ncol=2, fontsize=9.5, frameon=False)
-    fig.suptitle("Code conventions on Qwen2.5-7B base: 8 in-context examples vs 4, paired on the documents that have ≥ 9 opportunities\n"
-                 "row label = family; Δ = paired mean difference k8 − k4 (* = |Δ| > 1.96 SE); families in the order of the steerability figure (steered 0-shot accuracy toward alt, highest first)", fontsize=11.5, y=0.995)
-    fig.tight_layout(rect=(0, 0, 1, 0.94), w_pad=4); fig.savefig(OUT / "k8_vs_k4.png", dpi=150); plt.close(fig)
+            ax.plot(r["acc_k8"], i, "o", color=C[s], ms=6, zorder=3)
+        ax.set_yticks(y); ax.set_yticklabels([r["family"] for r in sub], fontsize=8); ax.set_xlim(0, 1.0); ax.set_ylim(-1, len(sub))
+        ax.set_xlabel("accuracy (convention used AND correct solution)"); ax.grid(axis="x", alpha=0.3)
+        m4 = np.mean([r["acc_k4_same_docs"] for r in sub]); m8 = np.mean([r["acc_k8"] for r in sub])
+        ax.set_title(f"{s} convention in context — mean: k = 4 {m4:.2f} → k = 8 {m8:.2f}", fontsize=10.5, color=C[s])
+    handles = [Line2D([], [], marker="o", color="#9e9e9e", ls="", ms=6, label="4 in-context examples (same documents)"),
+               Line2D([], [], marker="o", color="#444444", ls="", ms=6, label="8 in-context examples")]
+    fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 0.955), ncol=2, fontsize=10, frameon=False)
+    fig.suptitle(f"Code conventions on Qwen2.5-7B base: 8 vs 4 in-context examples, paired on the documents with ≥ 9 opportunities ({len(pool) - len(small)} families)\n"
+                 f"families in the order of the steerability figure; excluded for < 50 such documents: {', '.join(small)}", fontsize=11, y=0.995)
+    fig.tight_layout(rect=(0, 0, 1, 0.93)); fig.savefig(OUT / "k8_vs_k4.png", dpi=150); plt.close(fig)
     for s in ("nat", "alt"):
         sub = [r for r in rows if r["style"] == s and r["n_k8"] >= 50]
         print(f"{s}: families n≥50 {len(sub)} | k4 (all docs) {np.mean([r['acc_k4_all'] for r in sub]):.3f} | k4 (same docs) {np.mean([r['acc_k4_same_docs'] for r in sub]):.3f} → k8 {np.mean([r['acc_k8'] for r in sub]):.3f} | "
