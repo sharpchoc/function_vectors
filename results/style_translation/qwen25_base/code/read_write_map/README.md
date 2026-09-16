@@ -169,3 +169,15 @@ classification); conventions are closer to one direction each.
 
 Files: `read_write_map_code.png` (per test family + read-layer sweep), `coverage.{png,csv}`, `pool_summary_Lsweep_L24.csv`,
 `pool_per_family_Lsweep_L24.csv`, `fixed_split.json`, `subsets.json`.
+
+### Adding the 16 lexically diverse text families to the training set (read L8 → write L24, λ = 10, 80/20 code split; `read_write_augment.py`, `augment_text_L8.json`)
+
+| training set | held-out centroid cos | held-out centroid R² | convention cos | in-span fraction |
+|---|---|---|---|---|
+| 44 code families | .589 | .333 | .371 | .52 |
+| 44 code + 16 text families | .630 | .374 | .359 | .56 |
+| 16 text families only | .199 | .034 | .073 | .14 |
+
+The text families add a little generic coverage of the write space (+.04 in centroid cos and R²) and nothing for the convention direction
+(every held-out family moves by ≤ .04); on their own they predict almost nothing about code. (L8 because the text captures predate the
+L5–L10 layers.)
