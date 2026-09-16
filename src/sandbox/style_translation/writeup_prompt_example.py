@@ -76,14 +76,16 @@ def main():
         d.text((x0, y0), f"{s} context: {labels[s]}   (k = 4 prompt, {len(p['prompt_ids'])} tokens)", font=FT, fill=col)
         y = y0 + 40
         for ln in lines:
-            x = x0
+            x = x0; cue_x = None
             for c, kind in ln:
                 if kind == "ev":
                     d.rectangle([x, y - 2, x + cw, y + ch - 4], fill=tuple(int(255 - (255 - v) * 0.35) for v in col))
                 d.text((x, y), c, font=F, fill="black")
                 if kind == "cue":
-                    d.rectangle([x, y - 2, x + cw, y + ch - 4], outline="black", width=2)
+                    cue_x = x if cue_x is None else cue_x; cue_end = x + cw
                 x += cw
+            if cue_x is not None:                      # one box around the whole cue token
+                d.rectangle([cue_x, y - 2, cue_end, y + ch - 4], outline="black", width=2)
             y += ch
         d.text((x0, y + 14), f"→ 5th opportunity: the {s} continuation would be {p[f'next_{s}']!r}", font=FT, fill=col)
     out = MP["results"] / "writeup" / f"prompt_example_{fam}.png"; img.save(out); print("->", out, args.doc)
