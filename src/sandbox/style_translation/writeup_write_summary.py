@@ -30,7 +30,7 @@ def main():
     conds = [("0-shot prompt, unsteered", "base_accuracy", "#9e9e9e"), ("0-shot prompt, write vector at the cue token", "accuracy", "#d62728"),
              (f"{K_REF}-shot prompt, target convention in context, no steering", "k_ref", "#1f77b4")]
     fig, axes = plt.subplots(1, 2, figsize=(15, 5.2), sharey=True)
-    for ax, g in zip(axes, ["code (55 families)", "free-form text (16 lexically diverse families)"]):
+    for ax, g in zip(axes, [g_ for g_ in d.group.unique() if g_.startswith("code")] + ["free-form text (16 lexically diverse families)"]):
         sub = d[d.group == g]
         groups = [("→ alternative\nconvention", sub[sub.target == "alt"]), ("→ natural\nconvention", sub[sub.target == "nat"]), ("both poles\npooled", sub)]
         w = 0.26

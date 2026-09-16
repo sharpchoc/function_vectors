@@ -20,7 +20,7 @@ def main():
     R = model_paths("qwen25_base")["results"]; OUT = R / "writeup"
     d = pd.read_csv(OUT / "steerability_read.csv")
     k4 = {}
-    for tag, path in (("code (55 families)", R / "code" / "summary.csv"), ("free-form text (16 lexically diverse families)", R / "summary.csv")):
+    for tag, path in (("code", R / "code" / "summary.csv"), ("text", R / "summary.csv")):
         s = pd.read_csv(path); s = s[s.k == 4]
         for _, r in s.iterrows():
             k4[(r.family, r.style)] = r.accuracy
@@ -29,7 +29,7 @@ def main():
     conds = [("3-shot prompt, other convention in context, unsteered", "unsteered_accuracy", "#9e9e9e"),
              ("same prompt, read vector at the evidence tokens", "accuracy", "#8e44ad"),
              ("4-shot prompt, target convention in context, no steering", "k4", "#1f77b4")]
-    for ax, g in zip(axes, ["code (55 families)", "free-form text (16 lexically diverse families)"]):
+    for ax, g in zip(axes, [g_ for g_ in d.group.unique() if g_.startswith("code")] + ["free-form text (16 lexically diverse families)"]):
         sub = d[d.group == g]
         groups = [("nat context\n→ alternative", sub[sub.direction == "nat2alt"]), ("alt context\n→ natural", sub[sub.direction == "alt2nat"]), ("both directions\npooled", sub)]
         w = 0.26

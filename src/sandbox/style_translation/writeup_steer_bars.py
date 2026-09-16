@@ -25,11 +25,11 @@ def main():
     R = model_paths("qwen25_base")["results"]; OUT = R / "writeup"; OUT.mkdir(exist_ok=True)
     text = pd.read_csv(R / "steering" / "best_config.csv"); text["group"] = "free-form text (16 lexically diverse families)"
     text = text[text.family.isin(json.load(open(R / "pool.json"))["pool"])]
-    code = pd.read_csv(R / "code" / "steering" / "best_config.csv"); code["group"] = "code (55 families)"
+    code = pd.read_csv(R / "code" / "steering" / "best_config.csv"); code = code[code.family.isin(json.load(open(R / "code_pool_full.json"))["pool"])]; code["group"] = f"code ({code.family.nunique()} families)"
     d = pd.concat([code, text]); d["lift"] = d.accuracy - d.base_accuracy
     d.to_csv(OUT / "steerability_write.csv", index=False)
     fig, axes = plt.subplots(2, 1, figsize=(24, 11), gridspec_kw={"height_ratios": [1, 1]})
-    for ax, g in zip(axes, ["code (55 families)", "free-form text (16 lexically diverse families)"]):
+    for ax, g in zip(axes, [code.group.iloc[0], "free-form text (16 lexically diverse families)"]):
         sub = d[d.group == g]; order = sub[sub.target == "alt"].sort_values("accuracy", ascending=False).family.tolist()
         ticks, labels = [], []
         for i, f in enumerate(order):

@@ -24,10 +24,10 @@ C = {"nat2alt": "#d62728", "alt2nat": "#1f77b4"}
 def main():
     R = model_paths("qwen25_base")["results"]; OUT = R / "writeup"; OUT.mkdir(exist_ok=True)
     text = pd.read_csv(R / "read_steer" / "best_config.csv"); text = text[text.family.isin(json.load(open(R / "pool.json"))["pool"])]; text["group"] = "free-form text (16 lexically diverse families)"
-    code = pd.read_csv(R / "code" / "read_steer" / "best_config.csv"); code["group"] = "code (55 families)"
+    code = pd.read_csv(R / "code" / "read_steer" / "best_config.csv"); code = code[code.family.isin(json.load(open(R / "code_pool_full.json"))["pool"])]; code["group"] = f"code ({code.family.nunique()} families)"
     d = pd.concat([code, text]); d.to_csv(OUT / "steerability_read.csv", index=False)
     fig, axes = plt.subplots(2, 1, figsize=(24, 11))
-    for ax, g in zip(axes, ["code (55 families)", "free-form text (16 lexically diverse families)"]):
+    for ax, g in zip(axes, [code.group.iloc[0], "free-form text (16 lexically diverse families)"]):
         sub = d[d.group == g]; order = sub[sub.direction == "nat2alt"].sort_values("accuracy", ascending=False).family.tolist()
         ticks, labels = [], []
         for i, f in enumerate(order):
