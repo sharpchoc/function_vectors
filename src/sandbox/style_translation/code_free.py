@@ -35,13 +35,30 @@ def free_opportunity(fam, rec, k):
     if fam in IDENT_FAMILIES:
         pinned = _task_code_idents(task)
         for pole in ("nat", "alt"):
-            text = rec[f"text_{pole}"]; s0 = o[f"{pole}_span"][0]; before = text[:s0]
-            idents = _ID.findall(o[pole])
-            if not idents:
-                return False
-            if any(t in pinned or _seen_before(t, before) for t in idents):
+            if _seen(fam, rec, o, pole, pinned):
                 return False
         return True
+
+
+def _seen(fam, rec, o, pole, pinned):
+    """True if the opportunity's identifier(s) in this rendering are pinned by the task or already occur earlier in the code
+    (py_private: attributes are matched in their dotted form `._name`, so a same-named parameter does not count)."""
+    text = rec[f"text_{pole}"]; s0 = o[f"{pole}_span"][0]; before = text[:s0]
+    idents = _ID.findall(o[pole])
+    if not idents:
+        return True
+    if fam == "py_private":
+        return any(re.search(r"\." + re.escape(t) + r"(?![A-Za-z0-9_])", before) is not None for t in idents)
+    return any(t in pinned or _seen_before(t, before) for t in idents)
+
+
+def consistent_twins(fam, rec):
+    """Identifier families: the two renderings must agree on which opportunities are first mentions; a mismatch means the rewrite
+    changed a use but not its definition (or vice versa), i.e. the alt twin references an undefined name -> reject the document."""
+    if fam not in IDENT_FAMILIES:
+        return True
+    pinned = _task_code_idents(rec.get("text_es", ""))
+    return all(_seen(fam, rec, o, "nat", pinned) == _seen(fam, rec, o, "alt", pinned) for o in rec["opps"])
     if fam in SELF_FAMILIES:
         text = rec["text_nat"]; s0 = o["nat_span"][0]; line_start = text.rfind("\n", 0, s0) + 1
         return re.search(r"def\s+\w+\s*\(\s*$", text[line_start:s0]) is not None
@@ -72,13 +89,45 @@ def harmonise_pinned(rec, fam):
     return out
 
 
+def propagate_renames(rec, fam):
+    """Identifier families: the Gemini rewrite sometimes renames an identifier's uses but not its definition (or the reverse), leaving the
+    alt twin referencing undefined names. Derive the per-identifier renaming nat -> alt from the diff opportunities (one identifier on each
+    side, not task-pinned) and apply it to EVERY whole-word occurrence in the natural code; re-align to get the full opportunity list.
+    py_private renames attributes in their dotted form only. Returns a new record (text_alt, opps rebuilt) or the input if nothing to map."""
+    if fam not in IDENT_FAMILIES:
+        return rec
+    from src.sandbox.style_translation.code_build import align
+    pinned = _task_code_idents(rec.get("text_es", "")); mapping = {}
+    for o in (rec.get("opps_all") or rec["opps"]):
+        a, b = _ID.findall(o["nat"]), _ID.findall(o["alt"])
+        if len(a) == len(b):
+            for x, y in zip(a, b):
+                if x != y and x not in pinned and y not in pinned:
+                    mapping.setdefault(x, y)
+    if not mapping:
+        return rec
+    nat = rec["text_nat"]; alt = nat
+    for x in sorted(mapping, key=len, reverse=True):
+        pat = (r"\." + re.escape(x) + r"(?![A-Za-z0-9_])") if fam == "py_private" else (r"(?<![A-Za-z0-9_])" + re.escape(x) + r"(?![A-Za-z0-9_])")
+        rep = ("." + mapping[x]) if fam == "py_private" else mapping[x]
+        alt = re.sub(pat, rep, alt)
+    opps, shared = align(nat, alt)
+    if opps is None or not opps:
+        return rec
+    out = dict(rec); out["text_alt"] = alt; out["opps"] = opps; out.pop("opps_all", None); out["shared_fraction"] = round(shared, 3)
+    return out
+
+
 def filter_free(rec, fam, min_opps=MIN_OPPS):
     """rec must carry the FULL opportunity list: in `opps_all` (a record already processed here) or in `opps` (fresh from align()).
     Returns the record with text_alt harmonised, `opps_all` = full harmonised list, `opps` = the free ones only; None if too few."""
     if fam not in AFFECTED:
         return rec
     full = dict(rec); full["opps"] = rec.get("opps_all") or rec["opps"]
+    full = propagate_renames(full, fam)
     full = harmonise_pinned(full, fam)
+    if not consistent_twins(fam, full):
+        return None
     keep = [o for k, o in enumerate(full["opps"]) if free_opportunity(fam, full, k)]
     if len(keep) < min_opps or keep[min_opps - 1]["nat_span"][0] >= 0.75 * len(full["text_nat"]):
         return None
