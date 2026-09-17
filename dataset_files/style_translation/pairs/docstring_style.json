@@ -15565,90 +15565,168 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def _calculate_sum_products(values, weights):\n    \"\"\"Calculates the sum of products of values and their weights.\n\n    Args:\n        values (list of float): A list of numerical values.\n        weights (list of float): A list of numerical weights,\n                                 corresponding to the values.\n\n    Returns:\n        float: The sum of (value * weight) for all elements.\n    \"\"\"\n    return sum(v * w for v, w in zip(\n",
-"text_alt": "def _calculate_sum_products(values, weights):\n    \"\"\"Calculates the sum of products of values and their weights.\n\n    Parameters\n    ----------\n    values : list of float\n        A list of numerical values.\n    weights : list of float\n        A list of numerical weights,\n        corresponding to the values.\n\n    Returns\n    -------\n    float\n        The sum of (value * weight) for all elements.\n    \"\"\"\n    return sum(v * w for v, w in zip(\n",
+"text_nat": "def _calculate_weighted_sum(values, weights):\n    \"\"\"Calculates the sum of products of values and their weights.\n\n    Args:\n        values: A list of numerical values.\n        weights: A list of numerical weights, corresponding to `values`.\n\n    Returns:\n        The sum of (value * weight) for all elements.\n    \"\"\"\n    return sum(v * w for v, w in zip(values, weights))\n\ndef _calculate_total_weight(weights):\n    \"\"\"Calculates the sum of all weights.\n\n    Args:\n        weights: A list of numerical weights.\n\n    Returns:\n        The sum of all weights.\n    \"\"\"\n    return sum(weights)\n\ndef _validate_inputs(values, weights):\n    \"\"\"Validates the input lists for the weighted average calculation.\n\n    Ensures that both lists are non-empty and have the same length.\n\n    Args:\n        values: A list of numerical values.\n        weights: A list of numerical weights.\n\n    Raises:\n        ValueError: If lists are empty or have different lengths.\n    \"\"\"\n    if not values or not weights:\n        raise ValueError(\"Input lists cannot be empty.\")\n    if len(values) != len(weights):\n        raise ValueError(\"Values and weights lists must have the same length.\")\n\ndef weighted_average(values, weights):\n    \"\"\"Calculates the weighted average of a list of values.\n\n    Args:\n        values: A list of numerical values (float or int).\n        weights: A list of numerical weights (float or int), corresponding to `values`.\n\n    Returns:\n        The calculated weighted average as a float.\n\n    Raises:\n        ValueError: If input lists are empty, have different lengths, or if the total weight is zero.\n    \"\"\"\n    _validate_inputs(values, weights)\n\n    weighted_sum = _calculate_weighted_sum(values, weights)\n    total_weight = _calculate_total_weight(weights)\n\n    if total_weight == 0:\n        raise ValueError(\"Total weight cannot be zero to avoid division by zero.\")\n\n    return weighted_sum / total_weight\n",
+"text_alt": "def _calculate_weighted_sum(values, weights):\n    \"\"\"Calculates the sum of products of values and their weights.\n\n    Parameters\n    ----------\n    values : list\n        A list of numerical values.\n    weights : list\n        A list of numerical weights, corresponding to `values`.\n\n    Returns\n    -------\n    float\n        The sum of (value * weight) for all elements.\n    \"\"\"\n    return sum(v * w for v, w in zip(values, weights))\n\ndef _calculate_total_weight(weights):\n    \"\"\"Calculates the sum of all weights.\n\n    Parameters\n    ----------\n    weights : list\n        A list of numerical weights.\n\n    Returns\n    -------\n    float\n        The sum of all weights.\n    \"\"\"\n    return sum(weights)\n\ndef _validate_inputs(values, weights):\n    \"\"\"Validates the input lists for the weighted average calculation.\n\n    Ensures that both lists are non-empty and have the same length.\n\n    Parameters\n    ----------\n    values : list\n        A list of numerical values.\n    weights : list\n        A list of numerical weights.\n\n    Raises\n    ------\n    ValueError\n        If lists are empty or have different lengths.\n    \"\"\"\n    if not values or not weights:\n        raise ValueError(\"Input lists cannot be empty.\")\n    if len(values) != len(weights):\n        raise ValueError(\"Values and weights lists must have the same length.\")\n\ndef weighted_average(values, weights):\n    \"\"\"Calculates the weighted average of a list of values.\n\n    Parameters\n    ----------\n    values : list\n        A list of numerical values (float or int).\n    weights : list\n        A list of numerical weights (float or int), corresponding to `values`.\n\n    Returns\n    -------\n    float\n        The calculated weighted average as a float.\n\n    Raises\n    ------\n    ValueError\n        If input lists are empty, have different lengths, or if the total weight is zero.\n    \"\"\"\n    _validate_inputs(values, weights)\n\n    weighted_sum = _calculate_weighted_sum(values, weights)\n    total_weight = _calculate_total_weight(weights)\n\n    if total_weight == 0:\n        raise ValueError(\"Total weight cannot be zero to avoid division by zero.\")\n\n    return weighted_sum / total_weight\n",
 "opps": [
 {
 "k": 0,
-"nat": "Args:\n        values (",
-"alt": "Parameters\n    ----------\n    values : ",
+"nat": "Args:\n        values: ",
+"alt": "Parameters\n    ----------\n    values : list\n        ",
 "nat_span": [
 118,
 140
 ],
 "alt_span": [
 118,
-157
+170
 ]
 },
 {
 "k": 1,
-"nat": "): ",
-"alt": "\n        ",
+"nat": "\n        weights: ",
+"alt": "\n    weights : list\n        ",
 "nat_span": [
-153,
-156
+167,
+185
 ],
 "alt_span": [
-170,
-179
+197,
+225
 ]
 },
 {
 "k": 2,
-"nat": "\n        weights (",
-"alt": "\n    weights : ",
+"nat": ":",
+"alt": "\n    -------\n    float",
 "nat_span": [
-183,
-201
+253,
+254
 ],
 "alt_span": [
-206,
-221
+293,
+315
 ]
 },
 {
 "k": 3,
-"nat": "): ",
-"alt": "\n        ",
+"nat": "Args:\n        weights: ",
+"alt": "Parameters\n    ----------\n    weights : list\n        ",
 "nat_span": [
-214,
-217
+458,
+481
 ],
 "alt_span": [
-234,
-243
+519,
+572
 ]
 },
 {
 "k": 4,
-"nat": "\n                                 ",
-"alt": "\n        ",
+"nat": ":",
+"alt": "\n    -------\n    float",
 "nat_span": [
-245,
-279
+522,
+523
 ],
 "alt_span": [
-271,
-280
+613,
+635
 ]
 },
 {
 "k": 5,
-"nat": ":\n        float: ",
-"alt": "\n    -------\n    float\n        ",
+"nat": "Args:\n        values: ",
+"alt": "Parameters\n    ----------\n    values : list\n        ",
 "nat_span": [
-320,
-337
+773,
+795
 ],
 "alt_span": [
-321,
-352
+885,
+937
+]
+},
+{
+"k": 6,
+"nat": "\n        weights: ",
+"alt": "\n    weights : list\n        ",
+"nat_span": [
+822,
+840
+],
+"alt_span": [
+964,
+992
+]
+},
+{
+"k": 7,
+"nat": ":\n        ValueError: ",
+"alt": "\n    ------\n    ValueError\n        ",
+"nat_span": [
+880,
+902
+],
+"alt_span": [
+1032,
+1067
+]
+},
+{
+"k": 8,
+"nat": "Args:\n        values: ",
+"alt": "Parameters\n    ----------\n    values : list\n        ",
+"nat_span": [
+1268,
+1290
+],
+"alt_span": [
+1433,
+1485
+]
+},
+{
+"k": 9,
+"nat": "\n        weights: ",
+"alt": "\n    weights : list\n        ",
+"nat_span": [
+1332,
+1350
+],
+"alt_span": [
+1527,
+1555
+]
+},
+{
+"k": 10,
+"nat": ":",
+"alt": "\n    -------\n    float",
+"nat_span": [
+1433,
+1434
+],
+"alt_span": [
+1638,
+1660
+]
+},
+{
+"k": 11,
+"nat": ":\n        ValueError: ",
+"alt": "\n    ------\n    ValueError\n        ",
+"nat_span": [
+1498,
+1520
+],
+"alt_span": [
+1724,
+1759
 ]
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.882,
+"k_en": 12,
+"shared_fraction": 0.957,
 "pass": true,
 "verify": null
 },
@@ -19415,7 +19493,7 @@
 "tgt": "Python"
 },
 "text_nat": "def find_duplicate(numbers):\n    \"\"\"Finds the duplicated number in a list where one number appears twice.\n\n    Args:\n        numbers: A list of integers where exactly one number is duplicated.\n\n    Returns:\n        The duplicated number.\n    \"\"\"\n    seen = set()\n    for num in numbers:\n        if num in seen:\n            return num\n        seen.add(num)\n\n\ndef calculate_expected_sum(n):\n    \"\"\"Calculates the expected sum of numbers from 1 to N.\n\n    Args:\n        n: The largest number in the sequence (equivalent to the length of the list minus one).\n\n    Returns:\n        The sum of integers from 1 to N.\n    \"\"\"\n    return n * (n + 1) // 2\n\n\ndef find_duplicate_math_solution(numbers):\n    \"\"\"Finds the duplicated number using mathematical properties of sums.\n\n    This solution assumes the list contains numbers from 1 to N, with N being\n    the length of the list minus 1 (due to the duplicate).\n\n    Args:\n        numbers: A list of integers where exactly one number is duplicated.\n\n    Returns:\n        The duplicated number.\n    \"\"\"\n    n = len(numbers) - 1\n    actual_sum = sum(numbers)\n    expected_sum = calculate_expected_sum(n)\n    return actual_sum - expected_sum\n\n\ndef get_example_list_one():\n    \"\"\"Returns the first example list for testing.\n\n    Returns:\n        A list of integers for an example.\n    \"\"\"\n    return [1, 2, 3, 2]\n\n\ndef get_example_list_two():\n    \"\"\"Returns the second example list for testing.\n\n    Returns:\n        A list of integers for another example.\n    \"\"\"\n    return [5, 1, 3, 4, 2, 5]\n",
-"text_alt": "def find_duplicate(numbers):\n    \"\"\"Finds the duplicated number in a list where one number appears twice.\n\n    Parameters\n    ----------\n    numbers : list of int\n        A list of integers where exactly one number is duplicated.\n\n    Returns\n    -------\n    int\n        The duplicated number.\n    \"\"\"\n    seen = set()\n    for num in numbers:\n        if num in seen:\n            return num\n        seen.add(num)\n\n\ndef calculate_expected_sum(n):\n    \"\"\"Calculates the expected sum of numbers from 1 to N.\n\n    Parameters\n    ----------\n    n : int\n        The largest number in the sequence (equivalent to the length of the list minus one).\n\n    Returns\n    -------\n    int\n        The sum of integers from 1 to N.\n    \"\"\"\n    return n * (n + 1) // 2\n\n\ndef find_duplicate_math_solution(numbers):\n    \"\"\"Finds the duplicated number using mathematical properties of sums.\n\n    This solution assumes the list contains numbers from 1 to N, with N being\n    the length of the list minus 1 (due to the duplicate).\n\n    Parameters\n    ----------\n    numbers : list of int\n        A list of integers where exactly one number is duplicated.\n\n    Returns\n    -------\n    int\n        The duplicated number.\n    \"\"\"\n    n = len(numbers) - 1\n    actual_sum = sum(numbers)\n    expected_sum = calculate_expected_sum(n)\n    return actual_sum - expected_sum\n\n\ndef get_example_list_one():\n    \"\"\"Returns the first example list for testing.\n\n    Returns\n    -------\n    list of int\n        A list of integers for an example.\n    \"\"\"\n    return [1, 2, 3, 2]\n\n\ndef get_example_list_two():\n    \"\"\"Returns the second example list for testing.\n\n    Returns\n    -------\n    list of int\n        A list of integers for another example.\n    \"\"\"\n    return [5, 1, 3, 4, 2, 5}\n",
+"text_alt": "def find_duplicate(numbers):\n    \"\"\"Finds the duplicated number in a list where one number appears twice.\n\n    Parameters\n    ----------\n    numbers : list of int\n        A list of integers where exactly one number is duplicated.\n\n    Returns\n    -------\n    int\n        The duplicated number.\n    \"\"\"\n    seen = set()\n    for num in numbers:\n        if num in seen:\n            return num\n        seen.add(num)\n\n\ndef calculate_expected_sum(n):\n    \"\"\"Calculates the expected sum of numbers from 1 to N.\n\n    Parameters\n    ----------\n    n : int\n        The largest number in the sequence (equivalent to the length of the list minus one).\n\n    Returns\n    -------\n    int\n        The sum of integers from 1 to N.\n    \"\"\"\n    return n * (n + 1) // 2\n\n\ndef find_duplicate_math_solution(numbers):\n    \"\"\"Finds the duplicated number using mathematical properties of sums.\n\n    This solution assumes the list contains numbers from 1 to N, with N being\n    the length of the list minus 1 (due to the duplicate).\n\n    Parameters\n    ----------\n    numbers : list of int\n        A list of integers where exactly one number is duplicated.\n\n    Returns\n    -------\n    int\n        The duplicated number.\n    \"\"\"\n    n = len(numbers) - 1\n    actual_sum = sum(numbers)\n    expected_sum = calculate_expected_sum(n)\n    return actual_sum - expected_sum\n\n\ndef get_example_list_one():\n    \"\"\"Returns the first example list for testing.\n\n    Returns\n    -------\n    list of int\n        A list of integers for an example.\n    \"\"\"\n    return [1, 2, 3, 2]\n\n\ndef get_example_list_two():\n    \"\"\"Returns the second example list for testing.\n\n    Returns\n    -------\n    list of int\n        A list of integers for another example.\n    \"\"\"\n    return [5, 1, 3, 4, 2, 5]\n",
 "opps": [
 {
 "k": 0,
@@ -19520,23 +19598,10 @@
 1631,
 1659
 ]
-},
-{
-"k": 8,
-"nat": "]",
-"alt": "}",
-"nat_span": [
-1530,
-1531
-],
-"alt_span": [
-1744,
-1745
-]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.971,
+"k_en": 8,
+"shared_fraction": 0.973,
 "pass": true,
 "verify": null
 },

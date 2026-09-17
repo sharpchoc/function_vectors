@@ -68239,211 +68239,289 @@
 "tgt": "Python"
 },
 "text_nat": "import os\n\ndef append_to_file(filepath, content):\n    if not isinstance(filepath, str):\n        return False\n    if not filepath:\n        return False\n    if not isinstance(content, str):\n        return False\n    if not os.path.dirname(filepath) == '' and not os.path.exists(os.path.dirname(filepath)):\n        return False\n\n    try:\n        with open(filepath, 'a') as f:\n            f.write(content)\n        return True\n    except IOError:\n        return False\n\ndef _internal_helper_check(value):\n    if not isinstance(value, int):\n        return False\n    if value < 0:\n        return False\n    return True\n\ndef another_function_example(arg1, arg2):\n    if not isinstance(arg1, str):\n        return False\n    if not _internal_helper_check(arg2):\n        return False\n    # ... rest of the logic\n",
-"text_alt": "import os\n\ndef append_to_file(filepath, content):\n    if not isinstance(filepath, str):\n        return False\n    else:\n        if not filepath:\n            return False\n        else:\n            if not isinstance(content, str):\n                return False\n            else:\n                if not os.path.dirname(filepath) == '' and not os.path.exists(os.path.dirname(filepath)):\n                    return False\n                else:\n\n                    try:\n                        with open(filepath, 'a') as f:\n                            f.write(content)\n                        return True\n                    except IOError:\n                        return False\n\ndef _internal_helper_check(value):\n    if not isinstance(value, int):\n        return False\n    else:\n        if value < 0:\n            return False\n        else:\n            return True\n\ndef another_function_example(arg1, arg2):\n    if not isinstance(arg1, str):\n        return False\n    else:\n        if not _internal_helper_check(arg2):\n            return False\n        else:\n            # ... rest of the logic\n",
+"text_alt": "import os\n\ndef append_to_file(filepath, content):\n    if isinstance(filepath, str):\n        if filepath:\n            if isinstance(content, str):\n                if os.path.dirname(filepath) == '' or os.path.exists(os.path.dirname(filepath)):\n                    try:\n                        with open(filepath, 'a') as f:\n                            f.write(content)\n                        return True\n                    except IOError:\n                        return False\n                else:\n                    return False\n            else:\n                return False\n        else:\n            return False\n    else:\n        return False\n\ndef _internal_helper_check(value):\n    if isinstance(value, int):\n        if value >= 0:\n            return True\n        else:\n            return False\n    else:\n        return False\n\ndef another_function_example(arg1, arg2):\n    if isinstance(arg1, str):\n        if _internal_helper_check(arg2):\n            # ... rest of the logic\n            pass\n        else:\n            return False\n    else:\n        return False\n",
 "opps": [
 {
 "k": 0,
-"nat": "",
-"alt": "else:\n        ",
+"nat": "not ",
+"alt": "",
 "nat_span": [
-113,
-113
+57,
+61
 ],
 "alt_span": [
-113,
-127
+57,
+57
 ]
 },
 {
 "k": 1,
-"nat": "\n    ",
-"alt": "\n        else:\n            ",
+"nat": "return False\n    if not",
+"alt": "if",
 "nat_span": [
-150,
-155
+96,
+119
 ],
 "alt_span": [
-168,
-195
+92,
+94
 ]
 },
 {
 "k": 2,
-"nat": "\n    ",
-"alt": "\n            else:\n                ",
+"nat": "\n        return False\n    if not",
+"alt": "\n            if",
 "nat_span": [
-208,
-213
+129,
+161
 ],
 "alt_span": [
-256,
-291
+104,
+119
 ]
 },
 {
 "k": 3,
-"nat": "\n\n    try:\n        ",
-"alt": "\n                else:\n\n                    try:\n                        ",
+"nat": "\n        return False\n    if not",
+"alt": "\n                if",
 "nat_span": [
-323,
-342
+187,
+219
 ],
 "alt_span": [
-413,
-486
+145,
+164
 ]
 },
 {
 "k": 4,
-"nat": "",
-"alt": "else:\n        ",
+"nat": "and not",
+"alt": "or",
 "nat_span": [
-559,
-559
+252,
+259
 ],
 "alt_span": [
-767,
-781
+197,
+199
 ]
 },
 {
 "k": 5,
-"nat": "\n    ",
-"alt": "\n        else:\n            ",
+"nat": "\n        return False\n\n    try:\n        ",
+"alt": "\n                    try:\n                        ",
 "nat_span": [
-593,
-598
+302,
+342
 ],
 "alt_span": [
-819,
-846
+242,
+292
 ]
 },
 {
 "k": 6,
 "nat": "",
-"alt": "else:\n        ",
+"alt": ":\n                        return False\n                else:\n                    return False\n            else:\n                return False\n        else:\n            return False\n    else",
 "nat_span": [
-712,
-712
+440,
+440
 ],
 "alt_span": [
-960,
-974
+438,
+626
 ]
 },
 {
 "k": 7,
-"nat": "\n    ",
-"alt": "\n        else:\n            ",
+"nat": "not ",
+"alt": "",
 "nat_span": [
-769,
+506,
+510
+],
+"alt_span": [
+692,
+692
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if value >= 0:\n            return True\n        else:\n            ",
+"nat_span": [
+542,
+542
+],
+"alt_span": [
+724,
+789
+]
+},
+{
+"k": 9,
+"nat": "if value < 0",
+"alt": "else",
+"nat_span": [
+559,
+571
+],
+"alt_span": [
+806,
+810
+]
+},
+{
+"k": 10,
+"nat": "\n    return True",
+"alt": "",
+"nat_span": [
+593,
+609
+],
+"alt_span": [
+832,
+832
+]
+},
+{
+"k": 11,
+"nat": "not ",
+"alt": "",
+"nat_span": [
+660,
+664
+],
+"alt_span": [
+883,
+883
+]
+},
+{
+"k": 12,
+"nat": "return False\n    if not",
+"alt": "if",
+"nat_span": [
+695,
+718
+],
+"alt_span": [
+914,
+916
+]
+},
+{
+"k": 13,
+"nat": "\n        return False\n    ",
+"alt": "\n            ",
+"nat_span": [
+748,
 774
 ],
 "alt_span": [
-1035,
-1062
+946,
+959
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "\n            pass\n        else:\n            return False\n    else:\n        return False",
+"nat_span": [
+797,
+797
+],
+"alt_span": [
+982,
+1069
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.938,
+"k_en": 15,
+"shared_fraction": 0.752,
 "pass": true,
 "verify": null,
 "opps_all": [
 {
 "k": 0,
-"nat": "",
-"alt": "else:\n        ",
+"nat": "not ",
+"alt": "",
 "nat_span": [
-113,
-113
+57,
+61
 ],
 "alt_span": [
-113,
-127
+57,
+57
 ]
 },
 {
 "k": 1,
-"nat": "\n        ",
-"alt": "\n            ",
+"nat": "return False\n    if not",
+"alt": "if",
 "nat_span": [
-129,
-138
+96,
+119
 ],
 "alt_span": [
-143,
-156
+92,
+94
 ]
 },
 {
 "k": 2,
-"nat": "\n    ",
-"alt": "\n        else:\n            ",
+"nat": "\n        return False\n    if not",
+"alt": "\n            if",
 "nat_span": [
-150,
-155
+129,
+161
 ],
 "alt_span": [
-168,
-195
+104,
+119
 ]
 },
 {
 "k": 3,
-"nat": "\n        ",
-"alt": "\n                ",
+"nat": "\n        return False\n    if not",
+"alt": "\n                if",
 "nat_span": [
 187,
-196
+219
 ],
 "alt_span": [
-227,
-244
+145,
+164
 ]
 },
 {
 "k": 4,
-"nat": "\n    ",
-"alt": "\n            else:\n                ",
+"nat": "and not",
+"alt": "or",
 "nat_span": [
-208,
-213
+252,
+259
 ],
 "alt_span": [
-256,
-291
+197,
+199
 ]
 },
 {
 "k": 5,
-"nat": "\n        ",
-"alt": "\n                    ",
+"nat": "\n        return False\n\n    try:\n        ",
+"alt": "\n                    try:\n                        ",
 "nat_span": [
 302,
-311
+342
 ],
 "alt_span": [
-380,
-401
+242,
+292
 ]
 },
 {
 "k": 6,
-"nat": "\n\n    try:\n        ",
-"alt": "\n                else:\n\n                    try:\n                        ",
-"nat_span": [
-323,
-342
-],
-"alt_span": [
-413,
-486
-]
-},
-{
-"k": 7,
 "nat": "\n            ",
 "alt": "\n                            ",
 "nat_span": [
@@ -68451,12 +68529,12 @@
 385
 ],
 "alt_span": [
-516,
-545
+322,
+351
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": "\n        ",
 "alt": "\n                        ",
 "nat_span": [
@@ -68464,12 +68542,12 @@
 410
 ],
 "alt_span": [
-561,
-586
+367,
+392
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": "\n    ",
 "alt": "\n                    ",
 "nat_span": [
@@ -68477,99 +68555,125 @@
 426
 ],
 "alt_span": [
-597,
-618
+403,
+424
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ":\n                        return False\n                else:\n                    return False\n            else:\n                return False\n        else:\n            return False\n    else",
+"nat_span": [
+440,
+440
+],
+"alt_span": [
+438,
+626
 ]
 },
 {
 "k": 10,
-"nat": "\n        ",
-"alt": "\n                        ",
+"nat": "not ",
+"alt": "",
 "nat_span": [
-441,
-450
+506,
+510
 ],
 "alt_span": [
-633,
-658
+692,
+692
 ]
 },
 {
 "k": 11,
 "nat": "",
-"alt": "else:\n        ",
+"alt": "if value >= 0:\n            return True\n        else:\n            ",
 "nat_span": [
-559,
-559
+542,
+542
 ],
 "alt_span": [
-767,
-781
+724,
+789
 ]
 },
 {
 "k": 12,
-"nat": "\n        ",
-"alt": "\n            ",
+"nat": "if value < 0",
+"alt": "else",
 "nat_span": [
-572,
-581
+559,
+571
 ],
 "alt_span": [
-794,
-807
+806,
+810
 ]
 },
 {
 "k": 13,
-"nat": "\n    ",
-"alt": "\n        else:\n            ",
+"nat": "\n    return True",
+"alt": "",
 "nat_span": [
 593,
-598
+609
 ],
 "alt_span": [
-819,
-846
+832,
+832
 ]
 },
 {
 "k": 14,
-"nat": "",
-"alt": "else:\n        ",
+"nat": "not ",
+"alt": "",
 "nat_span": [
-712,
-712
+660,
+664
 ],
 "alt_span": [
-960,
-974
+883,
+883
 ]
 },
 {
 "k": 15,
-"nat": "\n        ",
-"alt": "\n            ",
+"nat": "return False\n    if not",
+"alt": "if",
 "nat_span": [
-748,
-757
+695,
+718
 ],
 "alt_span": [
-1010,
-1023
+914,
+916
 ]
 },
 {
 "k": 16,
-"nat": "\n    ",
-"alt": "\n        else:\n            ",
+"nat": "\n        return False\n    ",
+"alt": "\n            ",
 "nat_span": [
-769,
+748,
 774
 ],
 "alt_span": [
-1035,
-1062
+946,
+959
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": "\n            pass\n        else:\n            return False\n    else:\n        return False",
+"nat_span": [
+797,
+797
+],
+"alt_span": [
+982,
+1069
 ]
 }
 ],

@@ -65,6 +65,9 @@ EXTRA_HINT = {
     "py_tabs": "use at least 8 DIFFERENT indented blocks (if / for / while / def / try / with), several of them nested, spread through the whole solution",
     "early_return": "write at least 7 SEPARATE early-exit checks (if <bad case>: return ... / continue) in several functions and loops, spread through the whole solution",
     "py_ternary": "write at least 7 SEPARATE conditional-expression assignments spread through the whole solution",
+    "py_paren_if": "ONLY the if / elif / while conditions are written without parentheses; function calls, definitions, subscripts and every other parenthesis stay as normal valid Python",
+    "trailing_commas": "the trailing comma goes ONLY after the last element of a multi-line list / dict / tuple / call literal, never after a statement; the code must be valid Python",
+    "comment_case": "ONLY the comment text starts with a capital letter; Python keywords and identifiers keep their normal spelling",
 }
 
 

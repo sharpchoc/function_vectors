@@ -5104,8 +5104,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def rock_paper_scissors(player1_choice: str | None, player2_choice: str | None) -> str | None:\n    if player1_choice is None or player2_choice is None:\n        return \"Invalid input: choices cannot be None.\"\n\n    valid_choices: set[str | None] = {'rock', 'paper', 'scissors'}\n    if player1_choice not in valid_choices or player2_choice not in valid_choices:\n        return \"Invalid input: choices must be 'rock', 'paper', or 'scissors'.\"\n\n    if player1_choice == player2_choice:\n        return 'It's a tie!'\n\n    winning_pairs: dict[str | None, str | None] = {\n        'rock': 'scissors',\n        'paper': 'rock',\n        'scissors': 'paper'\n    }\n\n    if winning_pairs.get(player1_choice) == player2_choice:\n        return 'Player 1 wins!'\n    else:\n        return 'Player 2 wins!'\n\ndef get_round_winner(p1_score: int, p2_score: int, max_score: int | None = 3) -> str | None:\n    if max_score is None or max_score <= 0:\n        return \"Invalid max_score.\"\n    if p1_score >= max_score:\n        return \"Player 1 wins the series!\"\n    elif p2_score >= max_score:\n        return \"Player 2 wins the series!\"\n    else:\n        return None\n",
-"text_alt": "from typing import Optional\n\ndef rock_paper_scissors(player1_choice: Optional[str], player2_choice: Optional[str]) -> Optional[str]:\n    if player1_choice is None or player2_choice is None:\n        return \"Invalid input: choices cannot be None.\"\n\n    valid_choices: set[Optional[str]] = {'rock', 'paper', 'scissors'}\n    if player1_choice not in valid_choices or player2_choice not in valid_choices:\n        return \"Invalid input: choices must be 'rock', 'paper', or 'scissors'.\"\n\n    if player1_choice == player2_choice:\n        return 'It's a tie!'\n\n    winning_pairs: dict[Optional[str], Optional[str]] = {\n        'rock': 'scissors',\n        'paper': 'rock',\n        'scissors': 'paper'\n    }\n\n    if winning_pairs.get(player1_choice) == player2_choice:\n        return 'Player 1 wins!'\n    else:\n        return 'Player 2 wins!'\n\ndef get_round_winner(p1_score: int, p2_score: int, max_score: Optional[int] = 3) -> Optional[str]:\n    if max_score is None or max_score <= 0:\n        return \"Invalid max_score.\"\n    if p1_score >= max_score:\n        return \"Player 1 wins the series!\"\n    elif p2_score >= max_score:\n        return \"Player 2 wins the series!\"\n    else:\n        return None\n",
+"text_nat": "def rock_paper_scissors(player1_choice: str, player2_choice: str) -> str | None:\n    \"\"\"\n    Simulates one round of Rock, Paper, Scissors.\n\n    Args:\n        player1_choice: Player 1's choice ('rock', 'paper', or 'scissors').\n        player2_choice: Player 2's choice ('rock', 'paper', or 'scissors').\n\n    Returns:\n        'Player 1 wins!', 'Player 2 wins!', 'It's a tie!', or None if invalid input.\n    \"\"\"\n    valid_choices: list[str] | None = ['rock', 'paper', 'scissors']\n\n    if player1_choice not in valid_choices or player2_choice not in valid_choices:\n        return None\n\n    winning_combinations: dict[str, str | None] = {\n        'rock': 'scissors',\n        'paper': 'rock',\n        'scissors': 'paper'\n    }\n\n    if player1_choice == player2_choice:\n        return \"It's a tie!\"\n    elif winning_combinations.get(player1_choice) == player2_choice:\n        return 'Player 1 wins!'\n    else:\n        # This 'else' covers the case where player2_choice beats player1_choice\n        # and also implicitly handles cases where a choice is not a key in winning_combinations\n        # but that's already guarded by the initial `if player1_choice not in valid_choices`\n        # so it's guaranteed to be a valid choice here.\n        some_other_result: str | None = 'Player 2 wins!'\n        return some_other_result\n",
+"text_alt": "from typing import Optional\n\ndef rock_paper_scissors(player1_choice: str, player2_choice: str) -> Optional[str]:\n    \"\"\"\n    Simulates one round of Rock, Paper, Scissors.\n\n    Args:\n        player1_choice: Player 1's choice ('rock', 'paper', or 'scissors').\n        player2_choice: Player 2's choice ('rock', 'paper', or 'scissors').\n\n    Returns:\n        'Player 1 wins!', 'Player 2 wins!', 'It's a tie!', or None if invalid input.\n    \"\"\"\n    valid_choices: Optional[list[str]] = ['rock', 'paper', 'scissors']\n\n    if player1_choice not in valid_choices or player2_choice not in valid_choices:\n        return None\n\n    winning_combinations: dict[str, Optional[str]] = {\n        'rock': 'scissors',\n        'paper': 'rock',\n        'scissors': 'paper'\n    }\n\n    if player1_choice == player2_choice:\n        return \"It's a tie!\"\n    elif winning_combinations.get(player1_choice) == player2_choice:\n        return 'Player 1 wins!'\n    else:\n        # This 'else' covers the case where player2_choice beats player1_choice\n        # and also implicitly handles cases where a choice is not a key in winning_combinations\n        # but that's already guarded by the initial `if player1_choice not in valid_choices`\n        # so it's guaranteed to be a valid choice here.\n        some_other_result: Optional[str] = 'Player 2 wins!'\n        return some_other_result\n",
 "opps": [
 {
 "k": 0,
@@ -5125,38 +5125,38 @@
 "nat": "str | None",
 "alt": "Optional[str]",
 "nat_span": [
-40,
-50
+69,
+79
 ],
 "alt_span": [
-69,
-82
+98,
+111
 ]
 },
 {
 "k": 2,
-"nat": "str | None",
-"alt": "Optional[str]",
+"nat": "",
+"alt": "Optional[",
 "nat_span": [
-68,
-78
+428,
+428
 ],
 "alt_span": [
-100,
-113
+460,
+469
 ]
 },
 {
 "k": 3,
-"nat": "str | None",
-"alt": "Optional[str]",
+"nat": " | None",
+"alt": "]",
 "nat_span": [
-83,
-93
+437,
+444
 ],
 "alt_span": [
-118,
-131
+478,
+479
 ]
 },
 {
@@ -5164,56 +5164,30 @@
 "nat": "str | None",
 "alt": "Optional[str]",
 "nat_span": [
-232,
-242
+618,
+628
 ],
 "alt_span": [
-270,
-283
+653,
+666
 ]
 },
 {
 "k": 5,
-"nat": "str | None, str | None",
-"alt": "Optional[str], Optional[str]",
-"nat_span": [
-535,
-557
-],
-"alt_span": [
-576,
-604
-]
-},
-{
-"k": 6,
-"nat": "int | None",
-"alt": "Optional[int]",
-"nat_span": [
-848,
-858
-],
-"alt_span": [
-895,
-908
-]
-},
-{
-"k": 7,
 "nat": "str | None",
 "alt": "Optional[str]",
 "nat_span": [
-867,
-877
+1255,
+1265
 ],
 "alt_span": [
-917,
-930
+1293,
+1306
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.919,
+"k_en": 6,
+"shared_fraction": 0.964,
 "pass": true,
 "verify": null
 },

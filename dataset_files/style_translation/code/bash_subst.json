@@ -10,7 +10,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\nfilename=$(echo \"$1\")\n\nif [ -z \"$(echo \"$filename\")\" ]; then\n    echo \"Usage: $(basename \"$0\") <filename>\"\n    exit 1\nfi\n\nif [ ! -f \"$(echo \"$filename\")\" ]; then\n    echo \"Error: File '$(echo \"$filename\")' not found.\"\n    exit 1\nfi\n\nline_count=$(wc -l < \"$(echo \"$filename\")\")\necho \"$(echo \"$line_count\")\"\n",
-"text_alt": "#!/bin/bash\n\nfilename=`echo \"$1\"`\n\nif [ -z \"`echo \"$filename\"`\" ]; then\n    echo \"Usage: `basename \"$0\"` <filename>\"\n    exit 1\nfi\n\nif [ ! -f \"`echo \"$filename\"`\" ]; then\n    echo \"Error: File '`echo \"$filename\"`' not found.\"\n    exit 1\nfi\n\nline_count=`wc -l < \"`echo \"$filename\"`\"`\necho \"`echo \"$line_count\"`\"\n",
+"text_alt": "#!/bin/bash\n\nfilename=`echo \"$1\"`\n\nif [ -z \"`echo \"$filename\"`\" ]; then\n    echo \"Usage: `basename \"$0\"` <filename>\"\n    exit 1\nfi\n\nif [ ! -f \"`echo \"$filename\"`\" ]; then\n    echo \"Error: File '`echo \"$filename\"`' not found.\"\n    exit 1\nfi\n\nline_count=`wc -l < \"\\`echo \"$filename\"\\`\"`\necho \"`echo \"$line_count\"`\"\n",
 "opps": [
 {
 "k": 0,
@@ -158,27 +158,27 @@
 {
 "k": 11,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 268,
 270
 ],
 "alt_span": [
 262,
-263
+264
 ]
 },
 {
 "k": 12,
 "nat": ")\")",
-"alt": "`\"`",
+"alt": "\\`\"`",
 "nat_span": [
 286,
 289
 ],
 "alt_span": [
-279,
-282
+280,
+284
 ]
 },
 {
@@ -190,8 +190,8 @@
 298
 ],
 "alt_span": [
-289,
-290
+291,
+292
 ]
 },
 {
@@ -203,15 +203,16 @@
 317
 ],
 "alt_span": [
-308,
-309
+310,
+311
 ]
 }
 ],
 "k_en": 15,
 "shared_fraction": 0.855,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t002",
@@ -224,7 +225,7 @@
 "tgt": "Bash"
 },
 "text_nat": "if [ $(expr $# != 1) -ne 0 ]; then\n  echo \"Usage: $(basename $(readlink -f $0)) <filename>\"\n  exit 1\nfi\n\ninput_file=$(echo $1)\n\nif [ ! -f \"$input_file\" ]; then\n  echo \"Error: File '$(basename \"$input_file\")' not found.\"\n  exit 1\nfi\n\nif [ ! -r \"$input_file\" ]; then\n  echo \"Error: File '$(basename \"$input_file\")' is not readable.\"\n  exit 1\nfi\n\n# Get the number of lines in the file\nnum_lines=$(wc -l < \"$input_file\" | awk '{print $1}')\n\ncurrent_line_num=0\nwhile IFS= read -r line; do\n  current_line_num=$(expr $current_line_num + 1)\n  reversed_line=$(echo \"$line\" | rev)\n  echo \"$reversed_line\"\n  # Check if we're on the last line using command substitution\n  if [ $(expr $current_line_num == $num_lines) -ne 0 ] && [ $(tail -c 1 \"$input_file\" | wc -l) -eq 0 ]; then\n    # Handle files not ending with a newline, ensuring no extra newline is printed\n    if [ $(echo -n \"$line\" | wc -c) -gt 0 ]; then\n      : # Do nothing, 'echo' already handled the line\n    fi\n  fi\ndone < \"$input_file\"\n",
-"text_alt": "if [ `expr $# != 1` -ne 0 ]; then\n  echo \"Usage: `basename `readlink -f $0`` <filename>\"\n  exit 1\nfi\n\ninput_file=`echo $1`\n\nif [ ! -f \"$input_file\" ]; then\n  echo \"Error: File '`basename \"$input_file\"`' not found.\"\n  exit 1\nfi\n\nif [ ! -r \"$input_file\" ]; then\n  echo \"Error: File '`basename \"$input_file\"`' is not readable.\"\n  exit 1\nfi\n\n# Get the number of lines in the file\nnum_lines=`wc -l < \"$input_file\" | awk '{print $1}'`\n\ncurrent_line_num=0\nwhile IFS= read -r line; do\n  current_line_num=`expr $current_line_num + 1`\n  reversed_line=`echo \"$line\" | rev`\n  echo \"$reversed_line\"\n  # Check if we're on the last line using command substitution\n  if [ `expr $current_line_num == $num_lines` -ne 0 ] && [ `tail -c 1 \"$input_file\" | wc -l` -eq 0 ]; then\n    # Handle files not ending with a newline, ensuring no extra newline is printed\n    if [ `echo -n \"$line\" | wc -c` -gt 0 ]; then\n      : # Do nothing, 'echo' already handled the line\n    fi\n  fi\ndone < \"$input_file\"\n",
+"text_alt": "if [ `expr $# != 1` -ne 0 ]; then\n  echo \"Usage: `basename \\`readlink -f $0\\`` <filename>\"\n  exit 1\nfi\n\ninput_file=`echo $1`\n\nif [ ! -f \"$input_file\" ]; then\n  echo \"Error: File '`basename \"$input_file\"`' not found.\"\n  exit 1\nfi\n\nif [ ! -r \"$input_file\" ]; then\n  echo \"Error: File '`basename \"$input_file\"`' is not readable.\"\n  exit 1\nfi\n\n# Get the number of lines in the file\nnum_lines=`wc -l < \"$input_file\" | awk '{print $1}'`\n\ncurrent_line_num=0\nwhile IFS= read -r line; do\n  current_line_num=`expr $current_line_num + 1`\n  reversed_line=`echo \"$line\" | rev`\n  echo \"$reversed_line\"\n  # Check if we're on the last line using command substitution\n  if [ `expr $current_line_num == $num_lines` -ne 0 ] && [ `tail -c 1 \"$input_file\" | wc -l` -eq 0 ]; then\n    # Handle files not ending with a newline, ensuring no extra newline is printed\n    if [ `echo -n \"$line\" | wc -c` -gt 0 ]; then\n      : # Do nothing, 'echo' already handled the line\n    fi\n  fi\ndone < \"$input_file\"\n",
 "opps": [
 {
 "k": 0,
@@ -255,27 +256,27 @@
 {
 "k": 2,
 "nat": "$(basename $(",
-"alt": "`basename `",
+"alt": "`basename \\`",
 "nat_span": [
 50,
 63
 ],
 "alt_span": [
 49,
-60
+61
 ]
 },
 {
 "k": 3,
 "nat": "))",
-"alt": "``",
+"alt": "\\``",
 "nat_span": [
 77,
 79
 ],
 "alt_span": [
-74,
-76
+75,
+78
 ]
 },
 {
@@ -287,8 +288,8 @@
 118
 ],
 "alt_span": [
-113,
-114
+115,
+116
 ]
 },
 {
@@ -300,8 +301,8 @@
 126
 ],
 "alt_span": [
-121,
-122
+123,
+124
 ]
 },
 {
@@ -313,8 +314,8 @@
 183
 ],
 "alt_span": [
-177,
-178
+179,
+180
 ]
 },
 {
@@ -326,8 +327,8 @@
 206
 ],
 "alt_span": [
-200,
-201
+202,
+203
 ]
 },
 {
@@ -339,8 +340,8 @@
 288
 ],
 "alt_span": [
-281,
-282
+283,
+284
 ]
 },
 {
@@ -352,8 +353,8 @@
 311
 ],
 "alt_span": [
-304,
-305
+306,
+307
 ]
 },
 {
@@ -365,8 +366,8 @@
 394
 ],
 "alt_span": [
-386,
-387
+388,
+389
 ]
 },
 {
@@ -378,8 +379,8 @@
 435
 ],
 "alt_span": [
-427,
-428
+429,
+430
 ]
 },
 {
@@ -391,8 +392,8 @@
 505
 ],
 "alt_span": [
-496,
-497
+498,
+499
 ]
 },
 {
@@ -404,8 +405,8 @@
 532
 ],
 "alt_span": [
-523,
-524
+525,
+526
 ]
 },
 {
@@ -417,8 +418,8 @@
 551
 ],
 "alt_span": [
-541,
-542
+543,
+544
 ]
 },
 {
@@ -430,8 +431,8 @@
 570
 ],
 "alt_span": [
-560,
-561
+562,
+563
 ]
 },
 {
@@ -443,8 +444,8 @@
 667
 ],
 "alt_span": [
-656,
-657
+658,
+659
 ]
 },
 {
@@ -456,8 +457,8 @@
 704
 ],
 "alt_span": [
-693,
-694
+695,
+696
 ]
 },
 {
@@ -469,8 +470,8 @@
 720
 ],
 "alt_span": [
-708,
-709
+710,
+711
 ]
 },
 {
@@ -482,8 +483,8 @@
 752
 ],
 "alt_span": [
-740,
-741
+742,
+743
 ]
 },
 {
@@ -495,8 +496,8 @@
 861
 ],
 "alt_span": [
-848,
-849
+850,
+851
 ]
 },
 {
@@ -508,15 +509,16 @@
 885
 ],
 "alt_span": [
-872,
-873
+874,
+875
 ]
 }
 ],
 "k_en": 22,
 "shared_fraction": 0.922,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t003",
@@ -529,7 +531,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if a filename is provided\nif [ -z \"$(echo \"$1\")\" ]; then\n    echo \"Usage: $(basename \"$0\") <filename>\"\n    exit 1\nfi\n\nFILE_NAME=\"$(echo \"$1\")\"\n\n# Check if the file exists\nif [ ! -f \"$(echo \"$FILE_NAME\")\" ]; then\n    echo \"Error: File '$(basename \"$FILE_NAME\")' not found.\"\n    exit 1\nfi\n\n# Get the size of the file\nFILE_SIZE=$(wc -c < \"$(echo \"$FILE_NAME\")\")\n\n# Determine if the file is empty based on its size\nif [ \"$(echo \"$FILE_SIZE\")\" -eq 0 ]; then\n    echo \"File is empty.\"\nelse\n    echo \"File is not empty.\"\nfi\n",
-"text_alt": "#!/bin/bash\n\n# Check if a filename is provided\nif [ -z \"`echo \"$1\"`\" ]; then\n    echo \"Usage: `basename \"$0\"` <filename>\"\n    exit 1\nfi\n\nFILE_NAME=\"`echo \"$1\"`\"\n\n# Check if the file exists\nif [ ! -f \"`echo \"$FILE_NAME\"`\" ]; then\n    echo \"Error: File '`basename \"$FILE_NAME\"`' not found.\"\n    exit 1\nfi\n\n# Get the size of the file\nFILE_SIZE=`wc -c < \"`echo \"$FILE_NAME\"`\"`\n\n# Determine if the file is empty based on its size\nif [ \"`echo \"$FILE_SIZE\"`\" -eq 0 ]; then\n    echo \"File is empty.\"\nelse\n    echo \"File is not empty.\"\nfi\n",
+"text_alt": "#!/bin/bash\n\n# Check if a filename is provided\nif [ -z \"`echo \"$1\"`\" ]; then\n    echo \"Usage: `basename \"$0\"` <filename>\"\n    exit 1\nfi\n\nFILE_NAME=\"`echo \"$1\"`\"\n\n# Check if the file exists\nif [ ! -f \"`echo \"$FILE_NAME\"`\" ]; then\n    echo \"Error: File '`basename \"$FILE_NAME\"`' not found.\"\n    exit 1\nfi\n\n# Get the size of the file\nFILE_SIZE=`wc -c < \"\\`echo \"$FILE_NAME\"\\`\"`\n\n# Determine if the file is empty based on its size\nif [ \"`echo \"$FILE_SIZE\"`\" -eq 0 ]; then\n    echo \"File is empty.\"\nelse\n    echo \"File is not empty.\"\nfi\n",
 "opps": [
 {
 "k": 0,
@@ -677,27 +679,27 @@
 {
 "k": 11,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 357,
 359
 ],
 "alt_span": [
 351,
-352
+353
 ]
 },
 {
 "k": 12,
 "nat": ")\")",
-"alt": "`\"`",
+"alt": "\\`\"`",
 "nat_span": [
 376,
 379
 ],
 "alt_span": [
-369,
-372
+370,
+374
 ]
 },
 {
@@ -709,8 +711,8 @@
 440
 ],
 "alt_span": [
-431,
-432
+433,
+434
 ]
 },
 {
@@ -722,15 +724,16 @@
 458
 ],
 "alt_span": [
-449,
-450
+451,
+452
 ]
 }
 ],
 "k_en": 15,
 "shared_fraction": 0.911,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t004",
@@ -743,7 +746,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\nfilename=$(echo \"$1\")\nn=$(echo \"$2\")\n\nif [[ ! -f $(echo \"$filename\") ]]; then\n  echo \"Error: File '$(echo \"$filename\")' not found.\"\n  exit 1\nfi\n\nif ! [[ $(echo \"$n\") =~ ^[0-9]+$ ]]; then\n  echo \"Error: N must be a positive integer.\"\n  exit 1\nfi\n\ntotal_lines=$(wc -l < $(echo \"$filename\") | awk '{print $1}')\n\nif (( $(echo \"$n\") >= $(echo \"$total_lines\") )); then\n  cat $(echo \"$filename\")\nelse\n  head -n $(echo \"$n\") $(echo \"$filename\")\nfi\n",
-"text_alt": "#!/bin/bash\n\nfilename=`echo \"$1\"`\nn=`echo \"$2\"`\n\nif [[ ! -f `echo \"$filename\"` ]]; then\n  echo \"Error: File '`echo \"$filename\"`' not found.\"\n  exit 1\nfi\n\nif ! [[ `echo \"$n\"` =~ ^[0-9]+$ ]]; then\n  echo \"Error: N must be a positive integer.\"\n  exit 1\nfi\n\ntotal_lines=`wc -l < `echo \"$filename\"` | awk '{print $1}'`\n\nif (( `echo \"$n\"` >= `echo \"$total_lines\"` )); then\n  cat `echo \"$filename\"`\nelse\n  head -n `echo \"$n\"` `echo \"$filename\"`\nfi\n",
+"text_alt": "#!/bin/bash\n\nfilename=`echo \"$1\"`\nn=`echo \"$2\"`\n\nif [[ ! -f `echo \"$filename\"` ]]; then\n  echo \"Error: File '`echo \"$filename\"`' not found.\"\n  exit 1\nfi\n\nif ! [[ `echo \"$n\"` =~ ^[0-9]+$ ]]; then\n  echo \"Error: N must be a positive integer.\"\n  exit 1\nfi\n\ntotal_lines=`wc -l < \\`echo \"$filename\"\\` | awk '{print $1}'`\n\nif (( `echo \"$n\"` >= `echo \"$total_lines\"` )); then\n  cat `echo \"$filename\"`\nelse\n  head -n `echo \"$n\"` `echo \"$filename\"`\nfi\n",
 "opps": [
 {
 "k": 0,
@@ -891,27 +894,27 @@
 {
 "k": 11,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 281,
 283
 ],
 "alt_span": [
 275,
-276
+277
 ]
 },
 {
 "k": 12,
 "nat": ")",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 299,
 300
 ],
 "alt_span": [
-292,
-293
+293,
+295
 ]
 },
 {
@@ -923,8 +926,8 @@
 320
 ],
 "alt_span": [
-312,
-313
+314,
+315
 ]
 },
 {
@@ -936,8 +939,8 @@
 330
 ],
 "alt_span": [
-321,
-322
+323,
+324
 ]
 },
 {
@@ -949,8 +952,8 @@
 340
 ],
 "alt_span": [
-331,
-332
+333,
+334
 ]
 },
 {
@@ -962,8 +965,8 @@
 346
 ],
 "alt_span": [
-336,
-337
+338,
+339
 ]
 },
 {
@@ -975,8 +978,8 @@
 366
 ],
 "alt_span": [
-356,
-357
+358,
+359
 ]
 },
 {
@@ -988,8 +991,8 @@
 384
 ],
 "alt_span": [
-373,
-374
+375,
+376
 ]
 },
 {
@@ -1001,8 +1004,8 @@
 401
 ],
 "alt_span": [
-390,
-391
+392,
+393
 ]
 },
 {
@@ -1014,8 +1017,8 @@
 419
 ],
 "alt_span": [
-407,
-408
+409,
+410
 ]
 },
 {
@@ -1027,8 +1030,8 @@
 432
 ],
 "alt_span": [
-417,
-420
+419,
+422
 ]
 },
 {
@@ -1040,15 +1043,16 @@
 449
 ],
 "alt_span": [
-436,
-437
+438,
+439
 ]
 }
 ],
 "k_en": 23,
 "shared_fraction": 0.862,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t005",
@@ -1061,7 +1065,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if a filename is provided\nif [ -z \"$(echo \"$1\")\" ]; then\n  echo \"Usage: $(basename \"$0\") <filename>\"\n  exit 1\nfi\n\nFILE_TO_APPEND=\"$(echo \"$1\")\"\n\n# Get current date and time in YYYY-MM-DD HH:MM:SS format\nCURRENT_DATETIME=\"$(date +\"%Y-%m-%d %H:%M:%S\")\"\n\n# Check if the file exists. If not, create it.\nif [ ! -f \"$(echo \"$FILE_TO_APPEND\")\" ]; then\n  touch \"$(echo \"$FILE_TO_APPEND\")\"\n  if [ $? -ne 0 ]; then\n    echo \"Error: Could not create file $(echo \"$FILE_TO_APPEND\").\"\n    exit 1\n  fi\nfi\n\n# Append the date and time to the file\necho \"$(echo \"$CURRENT_DATETIME\")\" >> \"$(echo \"$FILE_TO_APPEND\")\"\n\n# Verify the append operation (optional, but good for debugging)\nif [ $? -ne 0 ]; then\n  echo \"Error: Could not append to file $(echo \"$FILE_TO_APPEND\").\"\n  exit 1\nfi\n\n# We can also check the last line for verification if needed\n# LAST_LINE=\"$(tail -n 1 \"$(echo \"$FILE_TO_APPEND\")\")\"\n# if [ \"$(echo \"$LAST_LINE\")\" != \"$(echo \"$CURRENT_DATETIME\")\" ]; then\n#   echo \"Warning: Appended content might not match.\"\n# fi\n",
-"text_alt": "#!/bin/bash\n\n# Check if a filename is provided\nif [ -z \"`echo \"$1\"`\" ]; then\n  echo \"Usage: `basename \"$0\"` <filename>\"\n  exit 1\nfi\n\nFILE_TO_APPEND=\"`echo \"$1\"`\"\n\n# Get current date and time in YYYY-MM-DD HH:MM:SS format\nCURRENT_DATETIME=\"`date +\"%Y-%m-%d %H:%M:%S\"`\"\n\n# Check if the file exists. If not, create it.\nif [ ! -f \"`echo \"$FILE_TO_APPEND\"`\" ]; then\n  touch \"`echo \"$FILE_TO_APPEND\"`\"\n  if [ $? -ne 0 ]; then\n    echo \"Error: Could not create file `echo \"$FILE_TO_APPEND\"`.\"\n    exit 1\n  fi\nfi\n\n# Append the date and time to the file\necho \"`echo \"$CURRENT_DATETIME\"`\" >> \"`echo \"$FILE_TO_APPEND\"`\"\n\n# Verify the append operation (optional, but good for debugging)\nif [ $? -ne 0 ]; then\n  echo \"Error: Could not append to file `echo \"$FILE_TO_APPEND\"`.\"\n  exit 1\nfi\n\n# We can also check the last line for verification if needed\n# LAST_LINE=\"`tail -n 1 \"`echo \"$FILE_TO_APPEND\"`\")\"\n# if [ \"`echo \"$LAST_LINE\"`\" != \"`echo \"$CURRENT_DATETIME\"`\" ]; then\n#   echo \"Warning: Appended content might not match.\"\n# fi\n",
+"text_alt": "#!/bin/bash\n\n# Check if a filename is provided\nif [ -z \"`echo \"$1\"`\" ]; then\n  echo \"Usage: `basename \"$0\"` <filename>\"\n  exit 1\nfi\n\nFILE_TO_APPEND=\"`echo \"$1\"`\"\n\n# Get current date and time in YYYY-MM-DD HH:MM:SS format\nCURRENT_DATETIME=\"`date +\"%Y-%m-%d %H:%M:%S\"`\"\n\n# Check if the file exists. If not, create it.\nif [ ! -f \"`echo \"$FILE_TO_APPEND\"`\" ]; then\n  touch \"`echo \"$FILE_TO_APPEND\"`\"\n  if [ $? -ne 0 ]; then\n    echo \"Error: Could not create file `echo \"$FILE_TO_APPEND\"`.\"\n    exit 1\n  fi\nfi\n\n# Append the date and time to the file\necho \"`echo \"$CURRENT_DATETIME\"`\" >> \"`echo \"$FILE_TO_APPEND\"`\"\n\n# Verify the append operation (optional, but good for debugging)\nif [ $? -ne 0 ]; then\n  echo \"Error: Could not append to file `echo \"$FILE_TO_APPEND\"`.\"\n  exit 1\nfi\n\n# We can also check the last line for verification if needed\n# LAST_LINE=\"$(tail -n 1 \"$(echo \"$FILE_TO_APPEND\")\")\"\n# if [ \"$(echo \"$LAST_LINE\")\" != \"$(echo \"$CURRENT_DATETIME\")\" ]; then\n#   echo \"Warning: Appended content might not match.\"\n# fi\n",
 "opps": [
 {
 "k": 0,
@@ -1322,103 +1326,13 @@
 760,
 761
 ]
-},
-{
-"k": 20,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-861,
-863
-],
-"alt_span": [
-851,
-852
-]
-},
-{
-"k": 21,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-874,
-876
-],
-"alt_span": [
-863,
-864
-]
-},
-{
-"k": 22,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-898,
-899
-],
-"alt_span": [
-886,
-887
-]
-},
-{
-"k": 23,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-911,
-913
-],
-"alt_span": [
-899,
-900
-]
-},
-{
-"k": 24,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-930,
-931
-],
-"alt_span": [
-917,
-918
-]
-},
-{
-"k": 25,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-937,
-939
-],
-"alt_span": [
-924,
-925
-]
-},
-{
-"k": 26,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-963,
-964
-],
-"alt_span": [
-949,
-950
-]
 }
 ],
-"k_en": 27,
-"shared_fraction": 0.917,
+"k_en": 20,
+"shared_fraction": 0.939,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t006",
@@ -1593,7 +1507,8 @@
 "k_en": 12,
 "shared_fraction": 0.922,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t007",
@@ -1606,7 +1521,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if correct number of arguments are provided\nif [ $(echo \"$#\" | wc -c) -ne 2 ]; then\n    echo \"Usage: $(basename $(readlink -f $0)) <directory_path> <file_extension>\"\n    exit 1\nfi\n\ndirectory_path=\"$(readlink -f \"$1\")\"\nfile_extension=\"$2\"\n\n# Check if the directory exists\nif [ ! -d \"$directory_path\" ]; then\n    echo \"Error: Directory '$(basename \"$directory_path\")' not found.\"\n    exit 1\nfi\n\n# Iterate through files in the specified directory\nfor file in \"$(find \"$directory_path\" -maxdepth 1 -type f -print0 | xargs -0)\"; do\n    filename=$(basename \"$file\")\n    current_extension=$(echo \"$filename\" | awk -F'.' '{if (NF>1) print $NF}')\n\n    if [ \"$(echo \"$current_extension\" | tr '[:upper:]' '[:lower:]')\" = \"$(echo \"$file_extension\" | tr '[:upper:]' '[:lower:]')\" ]; then\n        echo \"$filename\"\n    fi\ndone\n",
-"text_alt": "#!/bin/bash\n\n# Check if correct number of arguments are provided\nif [ `echo \"$#\" | wc -c` -ne 2 ]; then\n    echo \"Usage: `basename `readlink -f $0`` <directory_path> <file_extension>\"\n    exit 1\nfi\n\ndirectory_path=\"`readlink -f \"$1\"`\"\nfile_extension=\"$2\"\n\n# Check if the directory exists\nif [ ! -d \"$directory_path\" ]; then\n    echo \"Error: Directory '`basename \"$directory_path\"`' not found.\"\n    exit 1\nfi\n\n# Iterate through files in the specified directory\nfor file in \"`find \"$directory_path\" -maxdepth 1 -type f -print0 | xargs -0`\"; do\n    filename=`basename \"$file\"`\n    current_extension=`echo \"$filename\" | awk -F'.' '{if (NF>1) print $NF}'`\n\n    if [ \"`echo \"$current_extension\" | tr '[:upper:]' '[:lower:]'`\" = \"`echo \"$file_extension\" | tr '[:upper:]' '[:lower:]'`\" ]; then\n        echo \"$filename\"\n    fi\ndone\n",
+"text_alt": "#!/bin/bash\n\n# Check if correct number of arguments are provided\nif [ `echo \"$#\" | wc -c` -ne 2 ]; then\n    echo \"Usage: `basename \\`readlink -f $0\\`` <directory_path> <file_extension>\"\n    exit 1\nfi\n\ndirectory_path=\"`readlink -f \"$1\"`\"\nfile_extension=\"$2\"\n\n# Check if the directory exists\nif [ ! -d \"$directory_path\" ]; then\n    echo \"Error: Directory '`basename \"$directory_path\"`' not found.\"\n    exit 1\nfi\n\n# Iterate through files in the specified directory\nfor file in \"`find \"$directory_path\" -maxdepth 1 -type f -print0 | xargs -0`\"; do\n    filename=`basename \"$file\"`\n    current_extension=`echo \"$filename\" | awk -F'.' '{if (NF>1) print $NF}'`\n\n    if [ \"`echo \"$current_extension\" | tr '[:upper:]' '[:lower:]'`\" = \"`echo \"$file_extension\" | tr '[:upper:]' '[:lower:]'`\" ]; then\n        echo \"$filename\"\n    fi\ndone\n",
 "opps": [
 {
 "k": 0,
@@ -1637,27 +1552,27 @@
 {
 "k": 2,
 "nat": "$(basename $(",
-"alt": "`basename `",
+"alt": "`basename \\`",
 "nat_span": [
 122,
 135
 ],
 "alt_span": [
 121,
-132
+133
 ]
 },
 {
 "k": 3,
 "nat": "))",
-"alt": "``",
+"alt": "\\``",
 "nat_span": [
 149,
 151
 ],
 "alt_span": [
-146,
-148
+147,
+150
 ]
 },
 {
@@ -1669,8 +1584,8 @@
 220
 ],
 "alt_span": [
-215,
-216
+217,
+218
 ]
 },
 {
@@ -1682,8 +1597,8 @@
 237
 ],
 "alt_span": [
-232,
-233
+234,
+235
 ]
 },
 {
@@ -1695,8 +1610,8 @@
 358
 ],
 "alt_span": [
-352,
-353
+354,
+355
 ]
 },
 {
@@ -1708,8 +1623,8 @@
 385
 ],
 "alt_span": [
-379,
-380
+381,
+382
 ]
 },
 {
@@ -1721,8 +1636,8 @@
 480
 ],
 "alt_span": [
-473,
-474
+475,
+476
 ]
 },
 {
@@ -1734,8 +1649,8 @@
 542
 ],
 "alt_span": [
-535,
-536
+537,
+538
 ]
 },
 {
@@ -1747,8 +1662,8 @@
 563
 ],
 "alt_span": [
-555,
-556
+557,
+558
 ]
 },
 {
@@ -1760,8 +1675,8 @@
 580
 ],
 "alt_span": [
-572,
-573
+574,
+575
 ]
 },
 {
@@ -1773,8 +1688,8 @@
 605
 ],
 "alt_span": [
-596,
-597
+598,
+599
 ]
 },
 {
@@ -1786,8 +1701,8 @@
 658
 ],
 "alt_span": [
-649,
-650
+651,
+652
 ]
 },
 {
@@ -1799,8 +1714,8 @@
 672
 ],
 "alt_span": [
-662,
-663
+664,
+665
 ]
 },
 {
@@ -1812,8 +1727,8 @@
 727
 ],
 "alt_span": [
-717,
-718
+719,
+720
 ]
 },
 {
@@ -1825,8 +1740,8 @@
 734
 ],
 "alt_span": [
-723,
-724
+725,
+726
 ]
 },
 {
@@ -1838,15 +1753,16 @@
 786
 ],
 "alt_span": [
-775,
-776
+777,
+778
 ]
 }
 ],
 "k_en": 18,
 "shared_fraction": 0.92,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t008",
@@ -2151,7 +2067,8 @@
 "k_en": 22,
 "shared_fraction": 0.916,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t009",
@@ -2164,7 +2081,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\nfilename=$(basename \"$1\")\n\nif [ ! -f \"$filename\" ]; then\n    echo \"Error: File '$(echo \"$filename\")' not found.\"\n    exit 1\nfi\n\nbackup_filename=\"$(echo \"$filename\").bak\"\n\ncp \"$(echo \"$filename\")\" \"$(echo \"$backup_filename\")\"\n\necho \"Backup created: $(echo \"$(pwd)/$backup_filename\")\"\n\n# Verify content (optional, for demonstration)\n# echo \"Original file content:\"\n# cat \"$(echo \"$filename\")\"\n# echo \"Backup file content:\"\n# cat \"$(echo \"$backup_filename\")\"\n# echo \"Checksums:\"\n# md5sum \"$(echo \"$filename\")\" \"$(echo \"$backup_filename\")\"\n",
-"text_alt": "#!/bin/bash\n\nfilename=`basename \"$1\"`\n\nif [ ! -f \"$filename\" ]; then\n    echo \"Error: File '`echo \"$filename\"`' not found.\"\n    exit 1\nfi\n\nbackup_filename=\"`echo \"$filename\"`.bak\"\n\ncp \"`echo \"$filename\"`\" \"`echo \"$backup_filename\"`\"\n\necho \"Backup created: `echo \"`pwd`/$backup_filename\"`\"\n\n# Verify content (optional, for demonstration)\n# echo \"Original file content:\"\n# cat \"`echo \"$filename\"`\"\n# echo \"Backup file content:\"\n# cat \"`echo \"$backup_filename\"`\"\n# echo \"Checksums:\"\n# md5sum \"`echo \"$filename\"`\" \"`echo \"$backup_filename\"`\"\n",
+"text_alt": "#!/bin/bash\n\nfilename=`basename \"$1\"`\n\nif [ ! -f \"$filename\" ]; then\n    echo \"Error: File '`echo \"$filename\"`' not found.\"\n    exit 1\nfi\n\nbackup_filename=\"`echo \"$filename\"`.bak\"\n\ncp \"`echo \"$filename\"`\" \"`echo \"$backup_filename\"`\"\n\necho \"Backup created: `echo \"\\`pwd\\`/$backup_filename\"`\"\n\n# Verify content (optional, for demonstration)\n# echo \"Original file content:\"\n# cat \"$(echo \"$filename\")\"\n# echo \"Backup file content:\"\n# cat \"$(echo \"$backup_filename\")\"\n# echo \"Checksums:\"\n# md5sum \"$(echo \"$filename\")\" \"$(echo \"$backup_filename\")\"\n",
 "opps": [
 {
 "k": 0,
@@ -2312,14 +2229,14 @@
 {
 "k": 11,
 "nat": "$(pwd)",
-"alt": "`pwd`",
+"alt": "\\`pwd\\`",
 "nat_span": [
 269,
 275
 ],
 "alt_span": [
 263,
-268
+270
 ]
 },
 {
@@ -2331,119 +2248,16 @@
 294
 ],
 "alt_span": [
-286,
-287
-]
-},
-{
-"k": 13,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-383,
-385
-],
-"alt_span": [
-376,
-377
-]
-},
-{
-"k": 14,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-401,
-402
-],
-"alt_span": [
-393,
-394
-]
-},
-{
-"k": 15,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-441,
-443
-],
-"alt_span": [
-433,
-434
-]
-},
-{
-"k": 16,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-466,
-467
-],
-"alt_span": [
-457,
-458
-]
-},
-{
-"k": 17,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-499,
-501
-],
-"alt_span": [
-490,
-491
-]
-},
-{
-"k": 18,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-517,
-518
-],
-"alt_span": [
-507,
-508
-]
-},
-{
-"k": 19,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-521,
-523
-],
-"alt_span": [
-511,
-512
-]
-},
-{
-"k": 20,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-546,
-547
-],
-"alt_span": [
-535,
-536
+288,
+289
 ]
 }
 ],
-"k_en": 21,
-"shared_fraction": 0.866,
+"k_en": 13,
+"shared_fraction": 0.915,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t010",
@@ -2456,7 +2270,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\nTARGET_DIR=$(realpath \"$1\")\nPREFIX=\"$2\"\n\nif [ ! -d \"$TARGET_DIR\" ]; then\n    echo \"Error: Directory '$(basename \"$TARGET_DIR\")' not found.\"\n    exit 1\nfi\n\nfor file in $(find \"$TARGET_DIR\" -maxdepth 1 -type f -print); do\n    OLD_NAME=$(basename \"$file\")\n    NEW_NAME=\"${PREFIX}${OLD_NAME}\"\n    NEW_PATH=$(dirname \"$file\")/\"$NEW_NAME\"\n\n    if mv \"$file\" \"$NEW_PATH\"; then\n        echo \"Renamed: $(basename \"$file\") -> $(basename \"$NEW_PATH\")\"\n    else\n        echo \"Error renaming $(basename \"$file\")\"\n    fi\ndone\n",
-"text_alt": "#!/bin/bash\n\nTARGET_DIR=`realpath \"$1\"`\nPREFIX=\"$2\"\n\nif [ ! -d \"$TARGET_DIR\" ]; then\n    echo \"Error: Directory `basename \"$TARGET_DIR\"`' not found.\"\n    exit 1\nfi\n\nfor file in `find \"$TARGET_DIR\" -maxdepth 1 -type f -print`; do\n    OLD_NAME=`basename \"$file\"`\n    NEW_NAME=\"${PREFIX}${OLD_NAME}\"\n    NEW_PATH=`dirname \"$file\"`/\"$NEW_NAME\"\n\n    if mv \"$file\" \"$NEW_PATH\"; then\n        echo \"Renamed: `basename \"$file\"` -> `basename \"$NEW_PATH\"`\"\n    else\n        echo \"Error renaming `basename \"$file\"`\"\n    fi\ndone\n",
+"text_alt": "#!/bin/bash\n\nTARGET_DIR=`realpath \"$1\"`\nPREFIX=\"$2\"\n\nif [ ! -d \"$TARGET_DIR\" ]; then\n    echo \"Error: Directory '`basename \"$TARGET_DIR\"`' not found.\"\n    exit 1\nfi\n\nfor file in `find \"$TARGET_DIR\" -maxdepth 1 -type f -print`; do\n    OLD_NAME=`basename \"$file\"`\n    NEW_NAME=\"${PREFIX}${OLD_NAME}\"\n    NEW_PATH=`dirname \"$file\"`/\"$NEW_NAME\"\n\n    if mv \"$file\" \"$NEW_PATH\"; then\n        echo \"Renamed: `basename \"$file\"` -> `basename \"$NEW_PATH\"`\"\n    else\n        echo \"Error renaming `basename \"$file\"`\"\n    fi\ndone\n",
 "opps": [
 {
 "k": 0,
@@ -2486,15 +2300,15 @@
 },
 {
 "k": 2,
-"nat": "'$(",
+"nat": "$(",
 "alt": "`",
 "nat_span": [
-113,
+114,
 116
 ],
 "alt_span": [
-112,
-113
+113,
+114
 ]
 },
 {
@@ -2506,8 +2320,8 @@
 139
 ],
 "alt_span": [
-135,
-136
+136,
+137
 ]
 },
 {
@@ -2519,8 +2333,8 @@
 182
 ],
 "alt_span": [
-177,
-178
+178,
+179
 ]
 },
 {
@@ -2532,8 +2346,8 @@
 228
 ],
 "alt_span": [
-223,
-224
+224,
+225
 ]
 },
 {
@@ -2545,8 +2359,8 @@
 248
 ],
 "alt_span": [
-242,
-243
+243,
+244
 ]
 },
 {
@@ -2558,8 +2372,8 @@
 265
 ],
 "alt_span": [
-259,
-260
+260,
+261
 ]
 },
 {
@@ -2571,8 +2385,8 @@
 317
 ],
 "alt_span": [
-310,
-311
+311,
+312
 ]
 },
 {
@@ -2584,8 +2398,8 @@
 333
 ],
 "alt_span": [
-326,
-327
+327,
+328
 ]
 },
 {
@@ -2597,8 +2411,8 @@
 408
 ],
 "alt_span": [
-400,
-401
+401,
+402
 ]
 },
 {
@@ -2610,8 +2424,8 @@
 425
 ],
 "alt_span": [
-417,
-418
+418,
+419
 ]
 },
 {
@@ -2623,8 +2437,8 @@
 431
 ],
 "alt_span": [
-422,
-423
+423,
+424
 ]
 },
 {
@@ -2636,8 +2450,8 @@
 452
 ],
 "alt_span": [
-443,
-444
+444,
+445
 ]
 },
 {
@@ -2649,8 +2463,8 @@
 494
 ],
 "alt_span": [
-484,
-485
+485,
+486
 ]
 },
 {
@@ -2662,15 +2476,16 @@
 511
 ],
 "alt_span": [
-501,
-502
+502,
+503
 ]
 }
 ],
 "k_en": 16,
-"shared_fraction": 0.887,
+"shared_fraction": 0.892,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t011",
@@ -2683,7 +2498,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if an argument was provided\nif [ $(echo \"$#\" ) -ne $(echo \"1\" ) ]; then\n    echo \"Usage: $(basename $(echo \"$0\" ) ) \\\"<string>\\\"\"\n    exit $(echo \"1\" )\nfi\n\n# Get the input string\ninput_string=$(echo \"$1\")\n\n# Use a temporary file to count words\ntemp_file=$(mktemp)\n\n# Write the input string to the temporary file\necho \"$(echo \"$input_string\" )\" > \"$(echo \"$temp_file\" )\"\n\n# Count the words using 'wc -w'\nword_count=$(wc -w < \"$(echo \"$temp_file\" )\")\n\n# Print the word count\necho \"$(echo \"$word_count\" )\"\n\n# Clean up the temporary file\nrm \"$(echo \"$temp_file\" )\"\n",
-"text_alt": "#!/bin/bash\n\n# Check if an argument was provided\nif [ `echo \"$#\"` -ne `echo \"1\"` ]; then\n    echo \"Usage: `basename `echo \"$0```\" \\\"<string>\\\"\"\n    exit `echo \"1\"`\nfi\n\n# Get the input string\ninput_string=`echo \"$1\"`\n\n# Use a temporary file to count words\ntemp_file=`mktemp`\n\n# Write the input string to the temporary file\necho \"`echo \"$input_string\"`\" > \"`echo \"$temp_file\"`\"\n\n# Count the words using 'wc -w'\nword_count=`wc -w < \"`echo \"$temp_file\"`\"`\n\n# Print the word count\necho \"`echo \"$word_count\"`\"\n\n# Clean up the temporary file\nrm \"`echo \"$temp_file\"`\"\n",
+"text_alt": "#!/bin/bash\n\n# Check if an argument was provided\nif [ `echo \"$#\" ` -ne `echo \"1\" ` ]; then\n    echo \"Usage: `basename \\`echo \"$0\" \\` ` \\\"<string>\\\"\"\n    exit `echo \"1\" `\nfi\n\n# Get the input string\ninput_string=`echo \"$1\"`\n\n# Use a temporary file to count words\ntemp_file=`mktemp`\n\n# Write the input string to the temporary file\necho \"`echo \"$input_string\" `\" > \"`echo \"$temp_file\" `\"\n\n# Count the words using 'wc -w'\nword_count=`wc -w < \"\\`echo \"$temp_file\" \\`\"`\n\n# Print the word count\necho \"`echo \"$word_count\" `\"\n\n# Clean up the temporary file\nrm \"`echo \"$temp_file\" `\"",
 "opps": [
 {
 "k": 0,
@@ -2700,15 +2515,15 @@
 },
 {
 "k": 1,
-"nat": " )",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-65,
+66,
 67
 ],
 "alt_span": [
-64,
-65
+65,
+66
 ]
 },
 {
@@ -2720,47 +2535,47 @@
 74
 ],
 "alt_span": [
-70,
-71
+71,
+72
 ]
 },
 {
 "k": 3,
-"nat": " )",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-82,
+83,
 84
 ],
 "alt_span": [
-79,
-80
+81,
+82
 ]
 },
 {
 "k": 4,
 "nat": "$(basename $(",
-"alt": "`basename `",
+"alt": "`basename \\`",
 "nat_span": [
 110,
 123
 ],
 "alt_span": [
-106,
-117
+108,
+120
 ]
 },
 {
 "k": 5,
-"nat": "\" ) )",
-"alt": "```\"",
+"nat": ") )",
+"alt": "\\` `",
 "nat_span": [
-131,
+133,
 136
 ],
 "alt_span": [
-125,
-129
+130,
+134
 ]
 },
 {
@@ -2772,21 +2587,21 @@
 162
 ],
 "alt_span": [
-153,
-154
+158,
+159
 ]
 },
 {
 "k": 7,
-"nat": " )",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-170,
+171,
 172
 ],
 "alt_span": [
-162,
-163
+168,
+169
 ]
 },
 {
@@ -2798,8 +2613,8 @@
 215
 ],
 "alt_span": [
-204,
-205
+210,
+211
 ]
 },
 {
@@ -2811,8 +2626,8 @@
 225
 ],
 "alt_span": [
-214,
-215
+220,
+221
 ]
 },
 {
@@ -2824,8 +2639,8 @@
 284
 ],
 "alt_span": [
-265,
-273
+271,
+279
 ]
 },
 {
@@ -2837,21 +2652,21 @@
 341
 ],
 "alt_span": [
-328,
-329
+334,
+335
 ]
 },
 {
 "k": 12,
-"nat": " )",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-361,
+362,
 363
 ],
 "alt_span": [
-349,
-350
+356,
+357
 ]
 },
 {
@@ -2863,21 +2678,21 @@
 370
 ],
 "alt_span": [
-355,
-356
+362,
+363
 ]
 },
 {
 "k": 14,
-"nat": " )",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-387,
+388,
 389
 ],
 "alt_span": [
-373,
-374
+381,
+382
 ]
 },
 {
@@ -2889,34 +2704,34 @@
 437
 ],
 "alt_span": [
-420,
-421
+428,
+429
 ]
 },
 {
 "k": 16,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 446,
 448
 ],
 "alt_span": [
-430,
-431
+438,
+440
 ]
 },
 {
 "k": 17,
-"nat": " )\")",
-"alt": "`\"`",
+"nat": ")\")",
+"alt": "\\`\"`",
 "nat_span": [
-465,
+466,
 469
 ],
 "alt_span": [
-448,
-451
+458,
+462
 ]
 },
 {
@@ -2928,21 +2743,21 @@
 502
 ],
 "alt_span": [
-482,
-483
+493,
+494
 ]
 },
 {
 "k": 19,
-"nat": " )",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-520,
+521,
 522
 ],
 "alt_span": [
-501,
-502
+513,
+514
 ]
 },
 {
@@ -2954,28 +2769,29 @@
 561
 ],
 "alt_span": [
-539,
-540
+551,
+552
 ]
 },
 {
 "k": 21,
-"nat": " )",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-578,
+579,
 580
 ],
 "alt_span": [
-557,
-558
+570,
+571
 ]
 }
 ],
 "k_en": 22,
-"shared_fraction": 0.829,
+"shared_fraction": 0.864,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t012",
@@ -3176,7 +2992,8 @@
 "k_en": 14,
 "shared_fraction": 0.9,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t013",
@@ -3189,7 +3006,7 @@
 "tgt": "Bash"
 },
 "text_nat": "main_string=$(echo \"$1\")\nsubstring=$(echo \"$2\")\n\nif [ $(echo \"${main_string}\" | grep -q \"$(echo \"${substring}\")\"; echo $?) -eq 0 ]; then\n    echo \"Substring found.\"\nelse\n    echo \"Substring not found.\"\nfi\n\n# Another way to achieve the same with more command substitutions:\n# if [ $(expr index \"$(echo \"${main_string}\")\" \"$(echo \"${substring}\")\") -gt 0 ]; then\n#     echo \"Substring found.\"\n# else\n#     echo \"Substring not found.\"\n# fi\n\n# A third method, also using command substitution:\n# if [[ \"$(echo \"${main_string}\")\" == *\"$(echo \"${substring}\")\"* ]]; then\n#     echo \"Substring found.\"\n# else\n#     echo \"Substring not found.\"\n# fi\n",
-"text_alt": "main_string=`echo \"$1\"`\nsubstring=`echo \"$2\"`\n\nif [ `echo \"${main_string}\" | grep -q \"`echo \"${substring}\"`\"; echo $?` -eq 0 ]; then\n    echo \"Substring found.\"\nelse\n    echo \"Substring not found.\"\nfi\n\n# Another way to achieve the same with more command substitutions:\n# if [ `expr index \"`echo \"${main_string}\"`\" \"`echo \"${substring}\"`` -gt 0 ]; then\n#     echo \"Substring found.\"\n# else\n#     echo \"Substring not found.\"\n# fi\n\n# A third method, also using command substitution:\n# if [[ \"`echo \"${main_string}\"`\" == *\"`echo \"${substring}\"`\"* ]]; then\n#     echo \"Substring found.\"\n# else\n#     echo \"Substring not found.\"\n# fi\n",
+"text_alt": "main_string=`echo \"$1\"`\nsubstring=`echo \"$2\"`\n\nif [ `echo \"${main_string}\" | grep -q \"\\`echo \"${substring}\"\\`\"; echo $?` -eq 0 ]; then\n    echo \"Substring found.\"\nelse\n    echo \"Substring not found.\"\nfi\n\n# Another way to achieve the same with more command substitutions:\n# if [ $(expr index \"$(echo \"${main_string}\")\" \"$(echo \"${substring}\")\") -gt 0 ]; then\n#     echo \"Substring found.\"\n# else\n#     echo \"Substring not found.\"\n# fi\n\n# A third method, also using command substitution:\n# if [[ \"$(echo \"${main_string}\")\" == *\"$(echo \"${substring}\")\"* ]]; then\n#     echo \"Substring found.\"\n# else\n#     echo \"Substring not found.\"\n# fi\n",
 "opps": [
 {
 "k": 0,
@@ -3259,27 +3076,27 @@
 {
 "k": 5,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 89,
 91
 ],
 "alt_span": [
 86,
-87
+88
 ]
 },
 {
 "k": 6,
 "nat": ")",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 110,
 111
 ],
 "alt_span": [
-106,
-107
+107,
+109
 ]
 },
 {
@@ -3291,132 +3108,16 @@
 122
 ],
 "alt_span": [
-117,
-118
-]
-},
-{
-"k": 8,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-280,
-282
-],
-"alt_span": [
-276,
-277
-]
-},
-{
-"k": 9,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-294,
-296
-],
-"alt_span": [
-289,
-290
-]
-},
-{
-"k": 10,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-317,
-318
-],
-"alt_span": [
-311,
-312
-]
-},
-{
-"k": 11,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-321,
-323
-],
-"alt_span": [
-315,
-316
-]
-},
-{
-"k": 12,
-"nat": ")\")",
-"alt": "``",
-"nat_span": [
-342,
-345
-],
-"alt_span": [
-335,
-337
-]
-},
-{
-"k": 13,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-497,
-499
-],
-"alt_span": [
-489,
-490
-]
-},
-{
-"k": 14,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-520,
-521
-],
-"alt_span": [
-511,
-512
-]
-},
-{
-"k": 15,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-528,
-530
-],
-"alt_span": [
-519,
-520
-]
-},
-{
-"k": 16,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-549,
-550
-],
-"alt_span": [
-539,
-540
+119,
+120
 ]
 }
 ],
-"k_en": 17,
-"shared_fraction": 0.908,
+"k_en": 8,
+"shared_fraction": 0.96,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t014",
@@ -3429,7 +3130,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if the correct number of arguments is provided\nif [ $(echo $#) -ne $(echo 3) ]; then\n  echo \"Usage: $(basename $(readlink -f $0)) <main_string> <find_string> <replace_string>\"\n  exit $(echo 1)\nfi\n\nmain_string=\"$1\"\nfind_string=\"$2\"\nreplace_string=\"$3\"\n\n# Perform the replacement using Bash's parameter expansion\nmodified_string=$(echo \"${main_string//$(echo \"$find_string\")/$(echo \"$replace_string\")}\")\n\n# Print the modified string\necho \"$(echo \"$modified_string\")\"\n\n# Another way to achieve replacement, though the above is more direct for this problem\n# This demonstrates another command substitution, even if redundant for the task.\n# result_check=$(sed \"s/$(echo \"$find_string\")/$(echo \"$replace_string\")/g\" <<< \"$(echo \"$main_string\")\")\n# echo \"Sed check: $result_check\" # For debugging/showing off another substitution\n",
-"text_alt": "#!/bin/bash\n\n# Check if the correct number of arguments is provided\nif [ `echo $#` -ne `echo 3` ]; then\n  echo \"Usage: `basename `readlink -f $0`` <main_string> <find_string> <replace_string>\"\n  exit `echo 1`\nfi\n\nmain_string=\"$1\"\nfind_string=\"$2\"\nreplace_string=\"$3\"\n\n# Perform the replacement using Bash's parameter expansion\nmodified_string=`echo \"${main_string//`echo \"$find_string\"`/`echo \"$replace_string\"`}\"`\n\n# Print the modified string\necho \"`echo \"$modified_string\"`\"\n\n# Another way to achieve replacement, though the above is more direct for this problem\n# This demonstrates another command substitution, even if redundant for the task.\n# result_check=`sed \"s/`echo \"$find_string\"`/`echo \"$replace_string\"`/g\" <<< \"`echo \"$main_string\"`\"`\n# echo \"Sed check: $result_check\" # For debugging/showing off another substitution\n",
+"text_alt": "#!/bin/bash\n\n# Check if the correct number of arguments is provided\nif [ `echo $#` -ne `echo 3` ]; then\n  echo \"Usage: `basename \\`readlink -f $0\\`` <main_string> <find_string> <replace_string>\"\n  exit `echo 1`\nfi\n\nmain_string=\"$1\"\nfind_string=\"$2\"\nreplace_string=\"$3\"\n\n# Perform the replacement using Bash's parameter expansion\nmodified_string=`echo \"${main_string//\\`echo \"$find_string\"\\`/\\`echo \"$replace_string\"\\`}\"`\n\n# Print the modified string\necho \"`echo \"$modified_string\"`\"\n\n# Another way to achieve replacement, though the above is more direct for this problem\n# This demonstrates another command substitution, even if redundant for the task.\n# result_check=$(sed \"s/$(echo \"$find_string\")/$(echo \"$replace_string\")/g\" <<< \"$(echo \"$main_string\")\")\n# echo \"Sed check: $result_check\" # For debugging/showing off another substitution\n",
 "opps": [
 {
 "k": 0,
@@ -3486,27 +3187,27 @@
 {
 "k": 4,
 "nat": "$(basename $(",
-"alt": "`basename `",
+"alt": "`basename \\`",
 "nat_span": [
 121,
 134
 ],
 "alt_span": [
 119,
-130
+131
 ]
 },
 {
 "k": 5,
 "nat": "))",
-"alt": "``",
+"alt": "\\``",
 "nat_span": [
 148,
 150
 ],
 "alt_span": [
-144,
-146
+145,
+148
 ]
 },
 {
@@ -3518,8 +3219,8 @@
 206
 ],
 "alt_span": [
-200,
-201
+202,
+203
 ]
 },
 {
@@ -3531,8 +3232,8 @@
 213
 ],
 "alt_span": [
-207,
-208
+209,
+210
 ]
 },
 {
@@ -3544,47 +3245,47 @@
 350
 ],
 "alt_span": [
-343,
-344
+345,
+346
 ]
 },
 {
 "k": 9,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 371,
 373
 ],
 "alt_span": [
-365,
-366
+367,
+369
 ]
 },
 {
 "k": 10,
 "nat": ")/$(",
-"alt": "`/`",
+"alt": "\\`/\\`",
 "nat_span": [
 392,
 396
 ],
 "alt_span": [
-385,
-388
+388,
+393
 ]
 },
 {
 "k": 11,
 "nat": ")}\")",
-"alt": "`}\"`",
+"alt": "\\`}\"`",
 "nat_span": [
 418,
 422
 ],
 "alt_span": [
-410,
-414
+415,
+420
 ]
 },
 {
@@ -3596,8 +3297,8 @@
 460
 ],
 "alt_span": [
-450,
-451
+456,
+457
 ]
 },
 {
@@ -3609,93 +3310,16 @@
 484
 ],
 "alt_span": [
-474,
-475
-]
-},
-{
-"k": 14,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-671,
-673
-],
-"alt_span": [
-662,
-663
-]
-},
-{
-"k": 15,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-680,
-682
-],
-"alt_span": [
-670,
-671
-]
-},
-{
-"k": 16,
-"nat": ")/$(",
-"alt": "`/`",
-"nat_span": [
-701,
-705
-],
-"alt_span": [
-690,
-693
-]
-},
-{
-"k": 17,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-727,
-728
-],
-"alt_span": [
-715,
-716
-]
-},
-{
-"k": 18,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-737,
-739
-],
-"alt_span": [
-725,
-726
-]
-},
-{
-"k": 19,
-"nat": ")\")",
-"alt": "`\"`",
-"nat_span": [
-758,
-761
-],
-"alt_span": [
-745,
-748
+480,
+481
 ]
 }
 ],
-"k_en": 20,
-"shared_fraction": 0.883,
+"k_en": 14,
+"shared_fraction": 0.919,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t015",
@@ -3948,7 +3572,8 @@
 "k_en": 18,
 "shared_fraction": 0.89,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t016",
@@ -4071,7 +3696,8 @@
 "k_en": 8,
 "shared_fraction": 0.932,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t017",
@@ -4084,32 +3710,32 @@
 "tgt": "Bash"
 },
 "text_nat": "arg_string=\"$(echo \"$1\" | tr '[:upper:]' '[:lower:]')\"\n\nif [ -z \"$arg_string\" ]; then\n    echo \"Usage: $(basename \"$0\") <string>\"\n    exit 1\nfi\n\nreversed_string=\"$(echo \"$arg_string\" | rev)\"\n\nif [ \"$arg_string\" = \"$reversed_string\" ]; then\n    echo \"Palindrome\"\nelse\n    echo \"Not a palindrome\"\nfi\n\n# Additional command substitution to meet the style requirement\n# This part isn't strictly necessary for the core logic but demonstrates the style\ncurrent_user=\"$(whoami)\"\ncurrent_date=\"$(date +%Y-%m-%d)\"\nscript_name=\"$(basename \"$0\")\"\necho \"Script '$script_name' run by '$current_user' on $current_date.\"\n",
-"text_alt": "arg_string=`echo \"$1\" | tr '[:upper:]' '[:lower:]'`\n\nif [ -z \"$arg_string\" ]; then\n    echo \"Usage: `basename \"$0\"` <string>\"\n    exit 1\nfi\n\nreversed_string=`echo \"$arg_string\" | rev`\n\nif [ \"$arg_string\" = \"$reversed_string\" ]; then\n    echo \"Palindrome\"\nelse\n    echo \"Not a palindrome\"\nfi\n\n# Additional command substitution to meet the style requirement\n# This part isn't strictly necessary for the core logic but demonstrates the style\ncurrent_user=`whoami`\ncurrent_date=`date +%Y-%m-%d`\nscript_name=`basename \"$0\"`\necho \"Script '$script_name' run by '$current_user' on $current_date.\"\n",
+"text_alt": "arg_string=\"`echo \"$1\" | tr '[:upper:]' '[:lower:]'`\"\n\nif [ -z \"$arg_string\" ]; then\n    echo \"Usage: `basename \"$0\"` <string>\"\n    exit 1\nfi\n\nreversed_string=\"`echo \"$arg_string\" | rev`\"\n\nif [ \"$arg_string\" = \"$reversed_string\" ]; then\n    echo \"Palindrome\"\nelse\n    echo \"Not a palindrome\"\nfi\n\n# Additional command substitution to meet the style requirement\n# This part isn't strictly necessary for the core logic but demonstrates the style\ncurrent_user=\"`whoami`\"\ncurrent_date=\"`date +%Y-%m-%d`\"\nscript_name=\"`basename \"$0\"`\"\necho \"Script '$script_name' run by '$current_user' on $current_date.\"\n",
 "opps": [
 {
 "k": 0,
-"nat": "\"$(",
+"nat": "$(",
 "alt": "`",
 "nat_span": [
-11,
+12,
 14
 ],
 "alt_span": [
-11,
-12
+12,
+13
 ]
 },
 {
 "k": 1,
-"nat": ")\"",
+"nat": ")",
 "alt": "`",
 "nat_span": [
 52,
-54
+53
 ],
 "alt_span": [
-50,
-51
+51,
+52
 ]
 },
 {
@@ -4121,8 +3747,8 @@
 105
 ],
 "alt_span": [
-100,
-101
+102,
+103
 ]
 },
 {
@@ -4134,106 +3760,107 @@
 119
 ],
 "alt_span": [
-114,
-115
+116,
+117
 ]
 },
 {
 "k": 4,
-"nat": "\"$(",
+"nat": "$(",
 "alt": "`",
 "nat_span": [
-161,
+162,
 164
 ],
 "alt_span": [
-157,
-158
+160,
+161
 ]
 },
 {
 "k": 5,
-"nat": ")\"",
+"nat": ")",
 "alt": "`",
 "nat_span": [
 188,
-190
+189
 ],
 "alt_span": [
-182,
-183
+185,
+186
 ]
 },
 {
 "k": 6,
-"nat": "\"$(whoami)\"",
+"nat": "$(whoami)",
 "alt": "`whoami`",
 "nat_span": [
-459,
-470
+460,
+469
 ],
 "alt_span": [
-452,
-460
+457,
+465
 ]
 },
 {
 "k": 7,
-"nat": "\"$(",
+"nat": "$(",
 "alt": "`",
 "nat_span": [
-484,
+485,
 487
 ],
 "alt_span": [
-474,
-475
+481,
+482
 ]
 },
 {
 "k": 8,
-"nat": ")\"",
+"nat": ")",
 "alt": "`",
 "nat_span": [
 501,
-503
+502
 ],
 "alt_span": [
-489,
-490
+496,
+497
 ]
 },
 {
 "k": 9,
-"nat": "\"$(",
+"nat": "$(",
 "alt": "`",
 "nat_span": [
-516,
+517,
 519
 ],
 "alt_span": [
-503,
-504
+512,
+513
 ]
 },
 {
 "k": 10,
-"nat": ")\"",
+"nat": ")",
 "alt": "`",
 "nat_span": [
 532,
-534
+533
 ],
 "alt_span": [
-517,
-518
+526,
+527
 ]
 }
 ],
 "k_en": 11,
-"shared_fraction": 0.889,
+"shared_fraction": 0.929,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t018",
@@ -4246,7 +3873,7 @@
 "tgt": "Bash"
 },
 "text_nat": "IFS=$(echo \"$2\")\nparts=$(echo \"$1\")\ncount=$(echo \"$parts\" | wc -w)\ncurrent_part=1\n\nfor part in $(echo \"$parts\"); do\n  echo \"$part\"\n  if [ \"$(($current_part + 0))\" -lt \"$(($count + 0))\" ]; then\n    : # Do nothing, just to show another $(...)\n  fi\n  current_part=$(($current_part + 1))\ndone\n\nexit $(echo \"0\")\n",
-"text_alt": "IFS=`echo \"$2\"`\nparts=`echo \"$1\"`\ncount=`echo \"$parts\" | wc -w`\ncurrent_part=1\n\nfor part in `echo \"$parts\"`; do\n  echo \"$part\"\n  if [ \"`expr $current_part + 0`\" -lt \"`expr $count + 0`\" ]; then\n    : # Do nothing, just to show another $(...)\n  fi\n  current_part=`expr $current_part + 1`\ndone\n\nexit `echo \"0\"`\n",
+"text_alt": "IFS=`echo \"$2\"`\nparts=`echo \"$1\"`\ncount=`echo \"$parts\" | wc -w`\ncurrent_part=1\n\nfor part in `echo \"$parts\"`; do\n  echo \"$part\"\n  if [ \"$(($current_part + 0))\" -lt \"$(($count + 0))\" ]; then\n    : # Do nothing, just to show another $(...)\n  fi\n  current_part=$(($current_part + 1))\ndone\n\nexit `echo \"0\"`\n",
 "opps": [
 {
 "k": 0,
@@ -4354,84 +3981,6 @@
 },
 {
 "k": 8,
-"nat": "$((",
-"alt": "`expr ",
-"nat_span": [
-139,
-142
-],
-"alt_span": [
-135,
-141
-]
-},
-{
-"k": 9,
-"nat": "))",
-"alt": "`",
-"nat_span": [
-159,
-161
-],
-"alt_span": [
-158,
-159
-]
-},
-{
-"k": 10,
-"nat": "$((",
-"alt": "`expr ",
-"nat_span": [
-168,
-171
-],
-"alt_span": [
-166,
-172
-]
-},
-{
-"k": 11,
-"nat": "))",
-"alt": "`",
-"nat_span": [
-181,
-183
-],
-"alt_span": [
-182,
-183
-]
-},
-{
-"k": 12,
-"nat": "$((",
-"alt": "`expr ",
-"nat_span": [
-261,
-264
-],
-"alt_span": [
-261,
-267
-]
-},
-{
-"k": 13,
-"nat": "))",
-"alt": "`",
-"nat_span": [
-281,
-283
-],
-"alt_span": [
-284,
-285
-]
-},
-{
-"k": 14,
 "nat": "$(",
 "alt": "`",
 "nat_span": [
@@ -4439,12 +3988,12 @@
 297
 ],
 "alt_span": [
-297,
-298
+291,
+292
 ]
 },
 {
-"k": 15,
+"k": 9,
 "nat": ")",
 "alt": "`",
 "nat_span": [
@@ -4452,15 +4001,16 @@
 306
 ],
 "alt_span": [
-306,
-307
+300,
+301
 ]
 }
 ],
-"k_en": 16,
-"shared_fraction": 0.819,
+"k_en": 10,
+"shared_fraction": 0.91,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t019",
@@ -4836,7 +4386,8 @@
 "k_en": 16,
 "shared_fraction": 0.876,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t021",
@@ -4985,7 +4536,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if exactly one argument is provided\nif [ $(echo $#) -ne 1 ]; then\n    echo \"Usage: $(basename $(readlink -f $0)) <integer>\"\n    exit 1\nfi\n\ninput_arg=\"$(echo $1)\"\n\n# Check if the argument is a number\nif ! [[ \"$(echo \"$input_arg\")\" =~ ^[0-9]+$ ]]; then\n    echo \"Invalid input: Not a positive integer.\"\n    exit 0\nfi\n\n# Convert argument to an integer and check if it's positive\nint_value=$(expr $(echo \"$input_arg\") + 0) # Force arithmetic context\nif [ $(echo \"$int_value\") -gt 0 ]; then\n    echo \"Valid positive integer.\"\nelse\n    echo \"Invalid input: Not a positive integer.\"\nfi\n\n# Another example of command substitution, not directly related to logic\n# current_user=$(whoami)\n# echo \"Script executed by: $(echo \"$current_user\")\"\n",
-"text_alt": "#!/bin/bash\n\n# Check if exactly one argument is provided\nif [ `echo $#` -ne 1 ]; then\n    echo \"Usage: `basename `readlink -f $0`` <integer>\"\n    exit 1\nfi\n\ninput_arg=\"`echo $1`\"\n\n# Check if the argument is a number\nif ! [[ \"`echo \"$input_arg\"`\" =~ ^[0-9]+$ ]]; then\n    echo \"Invalid input: Not a positive integer.\"\n    exit 0\nfi\n\n# Convert argument to an integer and check if it's positive\nint_value=`expr `echo \"$input_arg\"` + 0` # Force arithmetic context\nif [ `echo \"$int_value\"` -gt 0 ]; then\n    echo \"Valid positive integer.\"\nelse\n    echo \"Invalid input: Not a positive integer.\"\nfi\n\n# Another example of command substitution, not directly related to logic\n# current_user=`whoami`\n# echo \"Script executed by: `echo \"$current_user\"`\"\n",
+"text_alt": "#!/bin/bash\n\n# Check if exactly one argument is provided\nif [ `echo $#` -ne 1 ]; then\n    echo \"Usage: `basename \\`readlink -f $0\\`` <integer>\"\n    exit 1\nfi\n\ninput_arg=\"`echo $1`\"\n\n# Check if the argument is a number\nif ! [[ \"`echo \"$input_arg\"`\" =~ ^[0-9]+$ ]]; then\n    echo \"Invalid input: Not a positive integer.\"\n    exit 0\nfi\n\n# Convert argument to an integer and check if it's positive\nint_value=`expr \\`echo \"$input_arg\"\\` + 0` # Force arithmetic context\nif [ `echo \"$int_value\"` -gt 0 ]; then\n    echo \"Valid positive integer.\"\nelse\n    echo \"Invalid input: Not a positive integer.\"\nfi\n\n# Another example of command substitution, not directly related to logic\n# current_user=$(whoami)\n# echo \"Script executed by: $(echo \"$current_user\")\"\n",
 "opps": [
 {
 "k": 0,
@@ -5016,27 +4567,27 @@
 {
 "k": 2,
 "nat": "$(basename $(",
-"alt": "`basename `",
+"alt": "`basename \\`",
 "nat_span": [
 104,
 117
 ],
 "alt_span": [
 103,
-114
+115
 ]
 },
 {
 "k": 3,
 "nat": "))",
-"alt": "``",
+"alt": "\\``",
 "nat_span": [
 131,
 133
 ],
 "alt_span": [
-128,
-130
+129,
+132
 ]
 },
 {
@@ -5048,8 +4599,8 @@
 173
 ],
 "alt_span": [
-168,
-169
+170,
+171
 ]
 },
 {
@@ -5061,8 +4612,8 @@
 181
 ],
 "alt_span": [
-176,
-177
+178,
+179
 ]
 },
 {
@@ -5074,8 +4625,8 @@
 231
 ],
 "alt_span": [
-225,
-226
+227,
+228
 ]
 },
 {
@@ -5087,34 +4638,34 @@
 249
 ],
 "alt_span": [
-243,
-244
+245,
+246
 ]
 },
 {
 "k": 8,
 "nat": "$(expr $(",
-"alt": "`expr `",
+"alt": "`expr \\`",
 "nat_span": [
 407,
 416
 ],
 "alt_span": [
-402,
-409
+404,
+412
 ]
 },
 {
 "k": 9,
 "nat": ")",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 433,
 434
 ],
 "alt_span": [
-426,
-427
+429,
+431
 ]
 },
 {
@@ -5126,8 +4677,8 @@
 439
 ],
 "alt_span": [
-431,
-432
+435,
+436
 ]
 },
 {
@@ -5139,8 +4690,8 @@
 474
 ],
 "alt_span": [
-465,
-466
+469,
+470
 ]
 },
 {
@@ -5152,54 +4703,16 @@
 492
 ],
 "alt_span": [
-483,
-484
-]
-},
-{
-"k": 13,
-"nat": "$(whoami)",
-"alt": "`whoami`",
-"nat_span": [
-689,
-698
-],
-"alt_span": [
-681,
-689
-]
-},
-{
-"k": 14,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-727,
-729
-],
-"alt_span": [
-718,
-719
-]
-},
-{
-"k": 15,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-749,
-750
-],
-"alt_span": [
-739,
-740
+487,
+488
 ]
 }
 ],
-"k_en": 16,
-"shared_fraction": 0.91,
+"k_en": 13,
+"shared_fraction": 0.928,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t023",
@@ -5478,7 +4991,8 @@
 "k_en": 20,
 "shared_fraction": 0.894,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t024",
@@ -5491,7 +5005,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if exactly one argument is provided\nif [ $(echo $#) -ne 1 ]; then\n  echo \"Usage: $(basename $(readlink -f $0)) <path>\"\n  exit 1\nfi\n\n# Store the argument in a variable\ntarget_path=$(echo \"$1\")\n\n# Check if the target path is an existing directory\nif [ -d \"$(echo \"$target_path\")\" ]; then\n  echo \"Is a directory.\"\nelse\n  # Use another command substitution for the \"does not exist\" part\n  echo \"$(echo \"Not a directory\") or $(echo \"does not exist.\")\"\nfi\n\n# A final command substitution for good measure, perhaps reporting script completion\necho \"Script finished at $(date +%H:%M:%S).\"\n\n# Yet another command substitution in an unused variable, just to meet the count.\n# This variable is purely for the style requirement.\nrandom_number=$(shuf -i 1-100 -n 1)\n",
-"text_alt": "#!/bin/bash\n\n# Check if exactly one argument is provided\nif [ `echo $#` -ne 1 ]; then\n  echo \"Usage: `basename `readlink -f $0`` <path>\"\n  exit 1\nfi\n\n# Store the argument in a variable\ntarget_path=`echo \"$1\"`\n\n# Check if the target path is an existing directory\nif [ -d \"`echo \"$target_path\"`\" ]; then\n  echo \"Is a directory.\"\nelse\n  # Use another command substitution for the \"does not exist\" part\n  echo \"`echo \"Not a directory\"` or `echo \"does not exist.\"`\"\nfi\n\n# A final command substitution for good measure, perhaps reporting script completion\necho \"Script finished at `date +%H:%M:%S`.\"\n\n# Yet another command substitution in an unused variable, just to meet the count.\n# This variable is purely for the style requirement.\nrandom_number=`shuf -i 1-100 -n 1`\n",
+"text_alt": "#!/bin/bash\n\n# Check if exactly one argument is provided\nif [ `echo $#` -ne 1 ]; then\n  echo \"Usage: `basename \\`readlink -f $0\\`` <path>\"\n  exit 1\nfi\n\n# Store the argument in a variable\ntarget_path=`echo \"$1\"`\n\n# Check if the target path is an existing directory\nif [ -d \"`echo \"$target_path\"`\" ]; then\n  echo \"Is a directory.\"\nelse\n  # Use another command substitution for the \"does not exist\" part\n  echo \"`echo \"Not a directory\"` or `echo \"does not exist.\"`\"\nfi\n\n# A final command substitution for good measure, perhaps reporting script completion\necho \"Script finished at `date +%H:%M:%S`.\"\n\n# Yet another command substitution in an unused variable, just to meet the count.\n# This variable is purely for the style requirement.\nrandom_number=`shuf -i 1-100 -n 1`\n",
 "opps": [
 {
 "k": 0,
@@ -5522,27 +5036,27 @@
 {
 "k": 2,
 "nat": "$(basename $(",
-"alt": "`basename `",
+"alt": "`basename \\`",
 "nat_span": [
 102,
 115
 ],
 "alt_span": [
 101,
-112
+113
 ]
 },
 {
 "k": 3,
 "nat": "))",
-"alt": "``",
+"alt": "\\``",
 "nat_span": [
 129,
 131
 ],
 "alt_span": [
-126,
-128
+127,
+130
 ]
 },
 {
@@ -5554,8 +5068,8 @@
 202
 ],
 "alt_span": [
-197,
-198
+199,
+200
 ]
 },
 {
@@ -5567,8 +5081,8 @@
 212
 ],
 "alt_span": [
-207,
-208
+209,
+210
 ]
 },
 {
@@ -5580,8 +5094,8 @@
 277
 ],
 "alt_span": [
-271,
-272
+273,
+274
 ]
 },
 {
@@ -5593,8 +5107,8 @@
 297
 ],
 "alt_span": [
-291,
-292
+293,
+294
 ]
 },
 {
@@ -5606,8 +5120,8 @@
 414
 ],
 "alt_span": [
-407,
-408
+409,
+410
 ]
 },
 {
@@ -5619,8 +5133,8 @@
 437
 ],
 "alt_span": [
-430,
-431
+432,
+433
 ]
 },
 {
@@ -5632,8 +5146,8 @@
 443
 ],
 "alt_span": [
-435,
-436
+437,
+438
 ]
 },
 {
@@ -5645,8 +5159,8 @@
 466
 ],
 "alt_span": [
-458,
-459
+460,
+461
 ]
 },
 {
@@ -5658,8 +5172,8 @@
 584
 ],
 "alt_span": [
-575,
-576
+577,
+578
 ]
 },
 {
@@ -5671,8 +5185,8 @@
 599
 ],
 "alt_span": [
-590,
-591
+592,
+593
 ]
 },
 {
@@ -5684,8 +5198,8 @@
 754
 ],
 "alt_span": [
-744,
-745
+746,
+747
 ]
 },
 {
@@ -5697,15 +5211,16 @@
 773
 ],
 "alt_span": [
-763,
-764
+765,
+766
 ]
 }
 ],
 "k_en": 16,
 "shared_fraction": 0.92,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t025",
@@ -5945,7 +5460,7 @@
 "tgt": "Bash"
 },
 "text_nat": "start_num=$(echo \"$1\")\nend_num=$(echo \"$2\")\n\nif [ -z \"$start_num\" ] || [ -z \"$end_num\" ]; then\n    echo \"Usage: $(basename \"$0\") START END\"\n    exit 1\nfi\n\nif ! [[ \"$start_num\" =~ ^[0-9]+$ ]] || ! [[ \"$end_num\" =~ ^[0-9]+$ ]]; then\n    echo \"Error: START and END must be positive integers.\"\n    exit 1\nfi\n\nif [ \"$(echo \"$start_num\")\" -gt \"$(echo \"$end_num\")\" ]; then\n    echo \"Error: START must be less than or equal to END.\"\n    exit 1\nfi\n\ncurrent_num=$(echo \"$start_num\")\n\nfor i in $(seq \"$(echo \"$current_num\")\" \"$(echo \"$end_num\")\"); do\n    echo \"$i\"\ndone\n\n# Ensure the last output uses command substitution too for consistency\n# This is a bit contrived for this simple task, but fits the style requirement.\necho \"$(echo \"Script finished.\")\" > /dev/null\n",
-"text_alt": "start_num=`echo \"$1\"`\nend_num=`echo \"$2\"`\n\nif [ -z \"$start_num\" ] || [ -z \"$end_num\" ]; then\n    echo \"Usage: `basename \"$0\"` START END\"\n    exit 1\nfi\n\nif ! [[ \"$start_num\" =~ ^[0-9]+$ ]] || ! [[ \"$end_num\" =~ ^[0-9]+$ ]]; then\n    echo \"Error: START and END must be positive integers.\"\n    exit 1\nfi\n\nif [ \"`echo \"$start_num\"`\" -gt \"`echo \"$end_num\"`\" ]; then\n    echo \"Error: START must be less than or equal to END.\"\n    exit 1\nfi\n\ncurrent_num=`echo \"$start_num\"`\n\nfor i in `seq \"`echo \"$current_num\"`\" \"`echo \"$end_num\"`\"`; do\n    echo \"$i\"\ndone\n\n# Ensure the last output uses command substitution too for consistency\n# This is a bit contrived for this simple task, but fits the style requirement.\necho \"`echo \"Script finished.\"`\" > /dev/null\n",
+"text_alt": "start_num=`echo \"$1\"`\nend_num=`echo \"$2\"`\n\nif [ -z \"$start_num\" ] || [ -z \"$end_num\" ]; then\n    echo \"Usage: `basename \"$0\"` START END\"\n    exit 1\nfi\n\nif ! [[ \"$start_num\" =~ ^[0-9]+$ ]] || ! [[ \"$end_num\" =~ ^[0-9]+$ ]]; then\n    echo \"Error: START and END must be positive integers.\"\n    exit 1\nfi\n\nif [ \"`echo \"$start_num\"`\" -gt \"`echo \"$end_num\"`\" ]; then\n    echo \"Error: START must be less than or equal to END.\"\n    exit 1\nfi\n\ncurrent_num=`echo \"$start_num\"`\n\nfor i in `seq \"\\`echo \"$current_num\"\\`\" \"\\`echo \"$end_num\"\\`\"`; do\n    echo \"$i\"\ndone\n\n# Ensure the last output uses command substitution too for consistency\n# This is a bit contrived for this simple task, but fits the style requirement.\necho \"`echo \"Script finished.\"`\" > /dev/null\n",
 "opps": [
 {
 "k": 0,
@@ -6119,53 +5634,53 @@
 {
 "k": 13,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 490,
 492
 ],
 "alt_span": [
 483,
-484
+485
 ]
 },
 {
 "k": 14,
 "nat": ")",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 511,
 512
 ],
 "alt_span": [
-503,
-504
+504,
+506
 ]
 },
 {
 "k": 15,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 515,
 517
 ],
 "alt_span": [
-507,
-508
+509,
+511
 ]
 },
 {
 "k": 16,
 "nat": ")\")",
-"alt": "`\"`",
+"alt": "\\`\"`",
 "nat_span": [
 532,
 535
 ],
 "alt_span": [
-523,
-526
+526,
+530
 ]
 },
 {
@@ -6177,8 +5692,8 @@
 719
 ],
 "alt_span": [
-708,
-709
+712,
+713
 ]
 },
 {
@@ -6190,15 +5705,16 @@
 743
 ],
 "alt_span": [
-732,
-733
+736,
+737
 ]
 }
 ],
 "k_en": 19,
 "shared_fraction": 0.92,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t027",
@@ -6477,7 +5993,8 @@
 "k_en": 20,
 "shared_fraction": 0.812,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t028",
@@ -6704,7 +6221,8 @@
 "k_en": 16,
 "shared_fraction": 0.862,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t029",
@@ -6853,7 +6371,8 @@
 "k_en": 10,
 "shared_fraction": 0.883,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t030",
@@ -6866,7 +6385,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\ntotal=0\nnum_args=$(echo \"$#\")\n\nif [ \"$(echo \"$num_args\")\" -eq 0 ]; then\n  echo \"Usage: $(basename \"$0\") <integer1> [integer2 ...]\"\n  exit 1\nfi\n\nfor arg in \"$@\"; do\n  current_num=$(echo \"$arg\")\n  if ! [[ \"$(echo \"$current_num\")\" =~ ^-?[0-9]+$ ]]; then\n    echo \"Error: '$(echo \"$current_num\")' is not a valid integer.\" >&2\n    exit 1\n  fi\n  total=$(( $(echo \"$total\") + $(echo \"$current_num\") ))\ndone\n\necho \"$(echo \"$total\")\"\n",
-"text_alt": "#!/bin/bash\n\ntotal=0\nnum_args=`echo \"$#\"`\n\nif [ \"`echo \"$num_args\"`\" -eq 0 ]; then\n  echo \"Usage: `basename \"$0\"` <integer1> [integer2 ...]\"\n  exit 1\nfi\n\nfor arg in \"$@\"; do\n  current_num=`echo \"$arg\"`\n  if ! [[ \"`echo \"$current_num\"`\" =~ ^-?[0-9]+$ ]]; then\n    echo \"Error: '`echo \"$current_num\"`' is not a valid integer.\" >&2\n    exit 1\n  fi\n  total=$(( `echo \"$total\"` + `echo \"$current_num\"` ))\ndone\n\necho \"`echo \"$total\"`\"\n",
+"text_alt": "#!/bin/bash\n\ntotal=0\nnum_args=`echo \"$#\"`\n\nif [ \"`echo \"$num_args\"`\" -eq 0 ]; then\n  echo \"Usage: `basename \"$0\"` <integer1> [integer2 ...]\"\n  exit 1\nfi\n\nfor arg in \"$@\"; do\n  current_num=`echo \"$arg\"`\n  if ! [[ \"`echo \"$current_num\"`\" =~ ^-?[0-9]+$ ]]; then\n    echo \"Error: '`echo \"$current_num\"`' is not a valid integer.\" >&2\n    exit 1\n  fi\n  total=$(( $(echo \"$total\") + $(echo \"$current_num\") ))\ndone\n\necho \"`echo \"$total\"`\"\n",
 "opps": [
 {
 "k": 0,
@@ -7029,12 +6548,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-363,
-365
+420,
+422
 ],
 "alt_span": [
-357,
-358
+414,
+415
 ]
 },
 {
@@ -7042,71 +6561,20 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-378,
-379
-],
-"alt_span": [
-371,
-372
-]
-},
-{
-"k": 14,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-382,
-384
-],
-"alt_span": [
-375,
-376
-]
-},
-{
-"k": 15,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-403,
-404
-],
-"alt_span": [
-395,
-396
-]
-},
-{
-"k": 16,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-420,
-422
-],
-"alt_span": [
-412,
-413
-]
-},
-{
-"k": 17,
-"nat": ")",
-"alt": "`",
-"nat_span": [
 435,
 436
 ],
 "alt_span": [
-426,
-427
+428,
+429
 ]
 }
 ],
-"k_en": 18,
-"shared_fraction": 0.886,
+"k_en": 14,
+"shared_fraction": 0.911,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t031",
@@ -7229,7 +6697,8 @@
 "k_en": 8,
 "shared_fraction": 0.855,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t032",
@@ -7242,7 +6711,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Initialize a counter for the 1-based index\nindex=1\n\n# Check if any arguments were provided\nif [ $(echo \"$#\") -eq 0 ]; then\n  echo \"Usage: $(basename $(readlink -f $0)) <arg1> [arg2] ...\"\n  exit 1\nfi\n\n# Loop through each argument provided to the script\nfor arg in \"$@\"; do\n  # Print the current 1-based index and the argument\n  echo \"$(echo \"$index\"): $(echo \"$arg\")\"\n\n  # Increment the index for the next argument\n  index=$(echo \"$(( $(echo \"$index\") + 1 ))\")\ndone\n\n# Demonstrate another command substitution\necho \"Total arguments processed: $(echo \"$(( $(echo \"$index\") - 1 ))\")\"\necho \"Script name: $(basename \"$0\")\"\n",
-"text_alt": "#!/bin/bash\n\n# Initialize a counter for the 1-based index\nindex=1\n\n# Check if any arguments were provided\nif [ `echo \"$#\"` -eq 0 ]; then\n  echo \"Usage: `basename `readlink -f $0``` <arg1> [arg2] ...\"\n  exit 1\nfi\n\n# Loop through each argument provided to the script\nfor arg in \"$@\"; do\n  # Print the current 1-based index and the argument\n  echo \"`echo \"$index\"`: `echo \"$arg\"`\"\n\n  # Increment the index for the next argument\n  index=`echo \"$(( `echo \"$index\"` + 1 ))\"`\ndone\n\n# Demonstrate another command substitution\necho \"Total arguments processed: `echo \"$(( `echo \"$index\"` - 1 ))\"`\"\necho \"Script name: `basename \"$0\"`\"\n",
+"text_alt": "#!/bin/bash\n\n# Initialize a counter for the 1-based index\nindex=1\n\n# Check if any arguments were provided\nif [ `echo \"$#\"` -eq 0 ]; then\n  echo \"Usage: `basename \\`readlink -f $0\\`` <arg1> [arg2] ...\"\n  exit 1\nfi\n\n# Loop through each argument provided to the script\nfor arg in \"$@\"; do\n  # Print the current 1-based index and the argument\n  echo \"`echo \"$index\"`: `echo \"$arg\"`\"\n\n  # Increment the index for the next argument\n  index=`echo \"$(( $(echo \"$index\") + 1 ))\"`\ndone\n\n# Demonstrate another command substitution\necho \"Total arguments processed: `echo \"$(( $(echo \"$index\") - 1 ))\"`\"\necho \"Script name: `basename \"$0\"`\"\n",
 "opps": [
 {
 "k": 0,
@@ -7273,27 +6742,27 @@
 {
 "k": 2,
 "nat": "$(basename $(",
-"alt": "`basename `",
+"alt": "`basename \\`",
 "nat_span": [
 153,
 166
 ],
 "alt_span": [
 152,
-163
+164
 ]
 },
 {
 "k": 3,
 "nat": "))",
-"alt": "```",
+"alt": "\\``",
 "nat_span": [
 180,
 182
 ],
 "alt_span": [
-177,
-180
+178,
+181
 ]
 },
 {
@@ -7305,8 +6774,8 @@
 350
 ],
 "alt_span": [
-346,
-347
+347,
+348
 ]
 },
 {
@@ -7318,8 +6787,8 @@
 368
 ],
 "alt_span": [
-360,
-364
+361,
+365
 ]
 },
 {
@@ -7331,8 +6800,8 @@
 380
 ],
 "alt_span": [
-375,
-376
+376,
+377
 ]
 },
 {
@@ -7344,38 +6813,12 @@
 439
 ],
 "alt_span": [
-433,
-434
+434,
+435
 ]
 },
 {
 "k": 8,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-449,
-451
-],
-"alt_span": [
-444,
-445
-]
-},
-{
-"k": 9,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-464,
-465
-],
-"alt_span": [
-458,
-459
-]
-},
-{
-"k": 10,
 "nat": ")",
 "alt": "`",
 "nat_span": [
@@ -7383,12 +6826,12 @@
 474
 ],
 "alt_span": [
-467,
-468
+469,
+470
 ]
 },
 {
-"k": 11,
+"k": 9,
 "nat": "$(",
 "alt": "`",
 "nat_span": [
@@ -7396,38 +6839,12 @@
 559
 ],
 "alt_span": [
-551,
-552
+553,
+554
 ]
 },
 {
-"k": 12,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-569,
-571
-],
-"alt_span": [
-562,
-563
-]
-},
-{
-"k": 13,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-584,
-585
-],
-"alt_span": [
-576,
-577
-]
-},
-{
-"k": 14,
+"k": 10,
 "nat": ")",
 "alt": "`",
 "nat_span": [
@@ -7435,12 +6852,12 @@
 594
 ],
 "alt_span": [
-585,
-586
+588,
+589
 ]
 },
 {
-"k": 15,
+"k": 11,
 "nat": "$(",
 "alt": "`",
 "nat_span": [
@@ -7448,12 +6865,12 @@
 617
 ],
 "alt_span": [
-607,
-608
+610,
+611
 ]
 },
 {
-"k": 16,
+"k": 12,
 "nat": ")",
 "alt": "`",
 "nat_span": [
@@ -7461,15 +6878,16 @@
 631
 ],
 "alt_span": [
-621,
-622
+624,
+625
 ]
 }
 ],
-"k_en": 17,
-"shared_fraction": 0.9,
+"k_en": 13,
+"shared_fraction": 0.92,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t033",
@@ -7482,7 +6900,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if an argument is provided\nif [ $(echo $#) -ne 1 ]; then\n    echo \"Usage: $(basename $0) <non-negative-integer>\"\n    exit 1\nfi\n\nN=$(echo $1 | sed 's/[^0-9]//g') # Sanitize input\n\n# Validate if N is a non-negative integer\nif ! [[ \"$N\" =~ ^[0-9]+$ ]]; then\n    echo \"Error: Input must be a non-negative integer.\"\n    exit 1\nfi\n\nfactorial=1\n\nif [ $(echo $N) -eq 0 ]; then\n    echo 1\n    exit 0\nfi\n\ncurrent_num=$(echo $N)\nwhile [ $(echo $current_num) -gt 0 ]; do\n    factorial=$(( $(echo $factorial) * $(echo $current_num) ))\n    current_num=$(( $(echo $current_num) - 1 ))\ndone\n\necho $(echo $factorial)\n",
-"text_alt": "#!/bin/bash\n\n# Check if an argument is provided\nif [ `echo $#` -ne 1 ]; then\n    echo \"Usage: `basename $0` <non-negative-integer>\"\n    exit 1\nfi\n\nN=`echo $1 | sed 's/[^0-9]//g'` # Sanitize input\n\n# Validate if N is a non-negative integer\nif ! [[ \"$N\" =~ ^[0-9]+$ ]]; then\n    echo \"Error: Input must be a non-negative integer.\"\n    exit 1\nfi\n\nfactorial=1\n\nif [ `echo $N` -eq 0 ]; then\n    echo 1\n    exit 0\nfi\n\ncurrent_num=`echo $N`\nwhile [ `echo $current_num` -gt 0 ]; do\n    factorial=$(( `echo $factorial` * `echo $current_num` ))\n    current_num=$(( `echo $current_num` - 1 ))\ndone\n\necho `echo $factorial`\n",
+"text_alt": "#!/bin/bash\n\n# Check if an argument is provided\nif [ `echo $#` -ne 1 ]; then\n    echo \"Usage: `basename $0` <non-negative-integer>\"\n    exit 1\nfi\n\nN=`echo $1 | sed 's/[^0-9]//g'` # Sanitize input\n\n# Validate if N is a non-negative integer\nif ! [[ \"$N\" =~ ^[0-9]+$ ]]; then\n    echo \"Error: Input must be a non-negative integer.\"\n    exit 1\nfi\n\nfactorial=1\n\nif [ `echo $N` -eq 0 ]; then\n    echo 1\n    exit 0\nfi\n\ncurrent_num=`echo $N`\nwhile [ `echo $current_num` -gt 0 ]; do\n    factorial=$(( $(echo $factorial) * $(echo $current_num) ))\n    current_num=$(( $(echo $current_num) - 1 ))\ndone\n\necho `echo $factorial`\n",
 "opps": [
 {
 "k": 0,
@@ -7645,12 +7063,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-498,
-500
+602,
+604
 ],
 "alt_span": [
-492,
-493
+596,
+597
 ]
 },
 {
@@ -7658,97 +7076,20 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-515,
-516
-],
-"alt_span": [
-508,
-509
-]
-},
-{
-"k": 14,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-519,
-521
-],
-"alt_span": [
-512,
-513
-]
-},
-{
-"k": 15,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-538,
-539
-],
-"alt_span": [
-530,
-531
-]
-},
-{
-"k": 16,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-563,
-565
-],
-"alt_span": [
-555,
-556
-]
-},
-{
-"k": 17,
-"nat": ")",
-"alt": "`",
-"nat_span": [
-582,
-583
-],
-"alt_span": [
-573,
-574
-]
-},
-{
-"k": 18,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-602,
-604
-],
-"alt_span": [
-593,
-594
-]
-},
-{
-"k": 19,
-"nat": ")",
-"alt": "`",
-"nat_span": [
 619,
 620
 ],
 "alt_span": [
-609,
-610
+612,
+613
 ]
 }
 ],
-"k_en": 20,
-"shared_fraction": 0.903,
+"k_en": 14,
+"shared_fraction": 0.932,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t034",
@@ -7975,7 +7316,8 @@
 "k_en": 16,
 "shared_fraction": 0.881,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t035",
@@ -7988,7 +7330,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if a filename was provided\nif [ $(echo $#) -ne $(echo 1) ]; then\n    echo \"Usage: $(basename $(readlink -f $(echo $0))) <filename>\"\n    exit $(echo 1)\nfi\n\nFILENAME=$(echo $1)\n\n# Check if the file exists and is readable\nif [ ! -f $(echo $FILENAME) ]; then\n    echo \"Error: File '$(echo $FILENAME)' not found.\"\n    exit $(echo 1)\nfi\n\nif [ ! -r $(echo $FILENAME) ]; then\n    echo \"Error: File '$(echo $FILENAME)' is not readable.\"\n    exit $(echo 1)\nfi\n\nLINE_NUM=0\n\n# Read the file line by line and print with line numbers\nwhile IFS= read -r LINE; do\n    LINE_NUM=$(expr $(echo $LINE_NUM) + $(echo 1))\n    echo \"$(echo $LINE_NUM): $(echo \"$LINE\")\"\ndone < \"$(echo $FILENAME)\"\n",
-"text_alt": "#!/bin/bash\n\n# Check if a filename was provided\nif [ `echo $#` -ne `echo 1` ]; then\n    echo \"Usage: `basename `readlink -f `echo $0``` <filename>\"\n    exit `echo 1`\nfi\n\nFILENAME=`echo $1`\n\n# Check if the file exists and is readable\nif [ ! -f `echo $FILENAME` ]; then\n    echo \"Error: File '`echo $FILENAME`' not found.\"\n    exit `echo 1`\nfi\n\nif [ ! -r `echo $FILENAME` ]; then\n    echo \"Error: File '`echo $FILENAME`' is not readable.\"\n    exit `echo 1`\nfi\n\nLINE_NUM=0\n\n# Read the file line by line and print with line numbers\nwhile IFS= read -r LINE; do\n    LINE_NUM=`expr `echo $LINE_NUM` + `echo 1``\n    echo \"`echo $LINE_NUM`: `echo \"$LINE\"`\"\ndone < \"`echo $FILENAME`\"\n",
+"text_alt": "#!/bin/bash\n\n# Check if a filename was provided\nif [ `echo $#` -ne `echo 1` ]; then\n    echo \"Usage: `basename \\`readlink -f \\\\\\`echo $0\\\\\\`\\`` <filename>\"\n    exit `echo 1`\nfi\n\nFILENAME=`echo $1`\n\n# Check if the file exists and is readable\nif [ ! -f `echo $FILENAME` ]; then\n    echo \"Error: File '`echo $FILENAME`' not found.\"\n    exit `echo 1`\nfi\n\nif [ ! -r `echo $FILENAME` ]; then\n    echo \"Error: File '`echo $FILENAME`' is not readable.\"\n    exit `echo 1`\nfi\n\nLINE_NUM=0\n\n# Read the file line by line and print with line numbers\nwhile IFS= read -r LINE; do\n    LINE_NUM=`expr \\`echo $LINE_NUM\\` + \\`echo 1\\``\n    echo \"`echo $LINE_NUM`: `echo \"$LINE\"`\"\ndone < \"`echo $FILENAME`\"",
 "opps": [
 {
 "k": 0,
@@ -8045,40 +7387,40 @@
 {
 "k": 4,
 "nat": "$(basename $(",
-"alt": "`basename `",
+"alt": "`basename \\`",
 "nat_span": [
 103,
 116
 ],
 "alt_span": [
 101,
-112
+113
 ]
 },
 {
 "k": 5,
 "nat": "$(",
-"alt": "`",
+"alt": "\\\\\\`",
 "nat_span": [
 128,
 130
 ],
 "alt_span": [
-124,
-125
+125,
+129
 ]
 },
 {
 "k": 6,
 "nat": ")))",
-"alt": "```",
+"alt": "\\\\\\`\\``",
 "nat_span": [
 137,
 140
 ],
 "alt_span": [
-132,
-135
+136,
+143
 ]
 },
 {
@@ -8090,8 +7432,8 @@
 164
 ],
 "alt_span": [
-157,
-158
+165,
+166
 ]
 },
 {
@@ -8103,8 +7445,8 @@
 171
 ],
 "alt_span": [
-164,
-165
+172,
+173
 ]
 },
 {
@@ -8116,8 +7458,8 @@
 187
 ],
 "alt_span": [
-179,
-180
+187,
+188
 ]
 },
 {
@@ -8129,8 +7471,8 @@
 195
 ],
 "alt_span": [
-187,
-188
+195,
+196
 ]
 },
 {
@@ -8142,8 +7484,8 @@
 252
 ],
 "alt_span": [
-243,
-244
+251,
+252
 ]
 },
 {
@@ -8155,8 +7497,8 @@
 267
 ],
 "alt_span": [
-258,
-259
+266,
+267
 ]
 },
 {
@@ -8168,8 +7510,8 @@
 301
 ],
 "alt_span": [
-291,
-292
+299,
+300
 ]
 },
 {
@@ -8181,8 +7523,8 @@
 316
 ],
 "alt_span": [
-306,
-307
+314,
+315
 ]
 },
 {
@@ -8194,8 +7536,8 @@
 341
 ],
 "alt_span": [
-330,
-331
+338,
+339
 ]
 },
 {
@@ -8207,8 +7549,8 @@
 348
 ],
 "alt_span": [
-337,
-338
+345,
+346
 ]
 },
 {
@@ -8220,8 +7562,8 @@
 365
 ],
 "alt_span": [
-353,
-354
+361,
+362
 ]
 },
 {
@@ -8233,8 +7575,8 @@
 380
 ],
 "alt_span": [
-368,
-369
+376,
+377
 ]
 },
 {
@@ -8246,8 +7588,8 @@
 414
 ],
 "alt_span": [
-401,
-402
+409,
+410
 ]
 },
 {
@@ -8259,8 +7601,8 @@
 429
 ],
 "alt_span": [
-416,
-417
+424,
+425
 ]
 },
 {
@@ -8272,8 +7614,8 @@
 460
 ],
 "alt_span": [
-446,
-447
+454,
+455
 ]
 },
 {
@@ -8285,60 +7627,60 @@
 467
 ],
 "alt_span": [
-453,
-454
+461,
+462
 ]
 },
 {
 "k": 23,
 "nat": "$(expr $(",
-"alt": "`expr `",
+"alt": "`expr \\`",
 "nat_span": [
 582,
 591
 ],
 "alt_span": [
-569,
-576
+577,
+585
 ]
 },
 {
 "k": 24,
 "nat": ")",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 605,
 606
 ],
 "alt_span": [
-590,
-591
+599,
+601
 ]
 },
 {
 "k": 25,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 609,
 611
 ],
 "alt_span": [
-594,
-595
+604,
+606
 ]
 },
 {
 "k": 26,
 "nat": "))",
-"alt": "``",
+"alt": "\\``",
 "nat_span": [
 617,
 619
 ],
 "alt_span": [
-601,
-603
+612,
+615
 ]
 },
 {
@@ -8350,8 +7692,8 @@
 632
 ],
 "alt_span": [
-614,
-615
+626,
+627
 ]
 },
 {
@@ -8363,8 +7705,8 @@
 651
 ],
 "alt_span": [
-629,
-633
+641,
+645
 ]
 },
 {
@@ -8376,8 +7718,8 @@
 664
 ],
 "alt_span": [
-645,
-646
+657,
+658
 ]
 },
 {
@@ -8389,8 +7731,8 @@
 676
 ],
 "alt_span": [
-656,
-657
+668,
+669
 ]
 },
 {
@@ -8402,15 +7744,16 @@
 691
 ],
 "alt_span": [
-671,
-672
+683,
+684
 ]
 }
 ],
 "k_en": 32,
-"shared_fraction": 0.832,
+"shared_fraction": 0.831,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t036",
@@ -8423,7 +7766,7 @@
 "tgt": "Bash"
 },
 "text_nat": "filename=$(echo \"$1\")\nkeyword=$(echo \"$2\")\n\nif [ ! -f \"$(echo \"$filename\")\" ]; then\n  echo \"Error: File '$(echo \"$filename\")' not found.\" >&2\n  exit 1\nfi\n\nline_count=$(grep -c \"\" \"$(echo \"$filename\")\")\ncurrent_line_num=1\n\nwhile IFS= read -r line; do\n  if echo \"$line\" | grep -q \"$(echo \"$keyword\")\"; then\n    echo \"$line\"\n  fi\n  current_line_num=$(( $(echo \"$current_line_num\") + 1 ))\n  if [ \"$(echo \"$current_line_num\")\" -gt \"$(echo \"$line_count\")\" ]; then\n    break\n  fi\ndone < \"$(echo \"$filename\")\"\n",
-"text_alt": "filename=`echo \"$1\"`\nkeyword=`echo \"$2\"`\n\nif [ ! -f \"`echo \"$filename\"`\" ]; then\n  echo \"Error: File '`echo \"$filename\"`' not found.\" >&2\n  exit 1\nfi\n\nline_count=`grep -c \"\" \"`echo \"$filename\"`\"`\ncurrent_line_num=1\n\nwhile IFS= read -r line; do\n  if echo \"$line\" | grep -q \"`echo \"$keyword\"`\"; then\n    echo \"$line\"\n  fi\n  current_line_num=$(( `echo \"$current_line_num\"` + 1 ))\n  if [ \"`echo \"$current_line_num\"`\" -gt \"`echo \"$line_count\"`\" ]; then\n    break\n  fi\ndone < \"`echo \"$filename\"`\"\n",
+"text_alt": "filename=`echo \"$1\"`\nkeyword=`echo \"$2\"`\n\nif [ ! -f \"`echo \"$filename\"`\" ]; then\n  echo \"Error: File '`echo \"$filename\"`' not found.\" >&2\n  exit 1\nfi\n\nline_count=`grep -c \"\" \"\\`echo \"$filename\"\\`\"`\ncurrent_line_num=1\n\nwhile IFS= read -r line; do\n  if echo \"$line\" | grep -q \"`echo \"$keyword\"`\"; then\n    echo \"$line\"\n  fi\n  current_line_num=$(( $(echo \"$current_line_num\") + 1 ))\n  if [ \"`echo \"$current_line_num\"`\" -gt \"`echo \"$line_count\"`\" ]; then\n    break\n  fi\ndone < \"`echo \"$filename\"`\"\n",
 "opps": [
 {
 "k": 0,
@@ -8545,27 +7888,27 @@
 {
 "k": 9,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 180,
 182
 ],
 "alt_span": [
 175,
-176
+177
 ]
 },
 {
 "k": 10,
 "nat": ")\")",
-"alt": "`\"`",
+"alt": "\\`\"`",
 "nat_span": [
 198,
 201
 ],
 "alt_span": [
-192,
-195
+193,
+197
 ]
 },
 {
@@ -8577,8 +7920,8 @@
 281
 ],
 "alt_span": [
-273,
-274
+275,
+276
 ]
 },
 {
@@ -8590,8 +7933,8 @@
 297
 ],
 "alt_span": [
-289,
-290
+291,
+292
 ]
 },
 {
@@ -8599,12 +7942,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-350,
-352
+393,
+395
 ],
 "alt_span": [
-343,
-344
+388,
+389
 ]
 },
 {
@@ -8612,12 +7955,12 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-376,
-377
+419,
+420
 ],
 "alt_span": [
-368,
-369
+413,
+414
 ]
 },
 {
@@ -8625,12 +7968,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-393,
-395
+427,
+429
 ],
 "alt_span": [
-385,
-386
+421,
+422
 ]
 },
 {
@@ -8638,12 +7981,12 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-419,
-420
+447,
+448
 ],
 "alt_span": [
-410,
-411
+440,
+441
 ]
 },
 {
@@ -8651,12 +7994,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-427,
-429
+481,
+483
 ],
 "alt_span": [
-418,
-419
+474,
+475
 ]
 },
 {
@@ -8664,45 +8007,20 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-447,
-448
-],
-"alt_span": [
-437,
-438
-]
-},
-{
-"k": 19,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-481,
-483
-],
-"alt_span": [
-471,
-472
-]
-},
-{
-"k": 20,
-"nat": ")",
-"alt": "`",
-"nat_span": [
 499,
 500
 ],
 "alt_span": [
-488,
-489
+491,
+492
 ]
 }
 ],
-"k_en": 21,
-"shared_fraction": 0.867,
+"k_en": 19,
+"shared_fraction": 0.88,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t037",
@@ -8715,7 +8033,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if a directory path is provided\nif [ $(test $# -ne 1; echo $?) -eq 0 ]; then\n    echo \"Usage: $(basename $0) <directory_path>\"\n    exit 1\nfi\n\nTARGET_DIR=\"$(realpath $1)\"\n\n# Check if the provided path is a directory\nif [ $(test -d \"$TARGET_DIR\"; echo $?) -ne 0 ]; then\n    echo \"Error: $(basename \"$TARGET_DIR\") is not a valid directory.\"\n    exit 1\nfi\n\n# Use find to list all regular files and then count them\n# The -print0 and xargs -0 are used for handling filenames with spaces or special characters\nFILE_COUNT=$(find \"$TARGET_DIR\" -type f -print0 | xargs -0 -r ls -l | wc -l)\n\n# Another way to get the count directly from find\n# FILE_COUNT=$(find \"$TARGET_DIR\" -type f -print | wc -l)\n\necho \"Total number of regular files in \\\"$(basename \"$TARGET_DIR\")\\\" and its subdirectories: $(echo $FILE_COUNT)\"\n\n# Verify the count using an alternative method for robustness\n# (This is just an example of spreading command substitution, not strictly necessary for the task)\nVERIFY_COUNT=$(find \"$TARGET_DIR\" -type f | wc -l)\nif [ $(test \"$FILE_COUNT\" -ne \"$VERIFY_COUNT\"; echo $?) -eq 0 ]; then\n    echo \"Warning: Count mismatch detected. Primary count: $FILE_COUNT, Verified count: $VERIFY_COUNT\"\nfi\n\nexit 0\n",
-"text_alt": "#!/bin/bash\n\n# Check if a directory path is provided\nif [ `test $# -ne 1; echo $?` -eq 0 ]; then\n    echo \"Usage: `basename $0` <directory_path>\"\n    exit 1\nfi\n\nTARGET_DIR=\"`realpath $1`\"\n\n# Check if the provided path is a directory\nif [ `test -d \"$TARGET_DIR\"; echo $?` -ne 0 ]; then\n    echo \"Error: `basename \"$TARGET_DIR\"` is not a valid directory.\"\n    exit 1\nfi\n\n# Use find to list all regular files and then count them\n# The -print0 and xargs -0 are used for handling filenames with spaces or special characters\nFILE_COUNT=`find \"$TARGET_DIR\" -type f -print0 | xargs -0 -r ls -l | wc -l`\n\n# Another way to get the count directly from find\n# FILE_COUNT=`find \"$TARGET_DIR\" -type f -print | wc -l`\n\necho \"Total number of regular files in \\\"`basename \"$TARGET_DIR\"`\\\" and its subdirectories: `echo $FILE_COUNT`\"\n\n# Verify the count using an alternative method for robustness\n# (This is just an example of spreading command substitution, not strictly necessary for the task)\nVERIFY_COUNT=`find \"$TARGET_DIR\" -type f | wc -l`\nif [ `test \"$FILE_COUNT\" -ne \"$VERIFY_COUNT\"; echo $?` -eq 0 ]; then\n    echo \"Warning: Count mismatch detected. Primary count: $FILE_COUNT, Verified count: $VERIFY_COUNT\"\nfi\n\nexit 0\n",
+"text_alt": "#!/bin/bash\n\n# Check if a directory path is provided\nif [ `test $# -ne 1; echo $?` -eq 0 ]; then\n    echo \"Usage: `basename $0` <directory_path>\"\n    exit 1\nfi\n\nTARGET_DIR=\"`realpath $1`\"\n\n# Check if the provided path is a directory\nif [ `test -d \"$TARGET_DIR\"; echo $?` -ne 0 ]; then\n    echo \"Error: `basename \"$TARGET_DIR\"` is not a valid directory.\"\n    exit 1\nfi\n\n# Use find to list all regular files and then count them\n# The -print0 and xargs -0 are used for handling filenames with spaces or special characters\nFILE_COUNT=`find \"$TARGET_DIR\" -type f -print0 | xargs -0 -r ls -l | wc -l`\n\n# Another way to get the count directly from find\n# FILE_COUNT=$(find \"$TARGET_DIR\" -type f -print | wc -l)\n\necho \"Total number of regular files in \\\"`basename \"$TARGET_DIR\"`\\\" and its subdirectories: `echo $FILE_COUNT`\"\n\n# Verify the count using an alternative method for robustness\n# (This is just an example of spreading command substitution, not strictly necessary for the task)\nVERIFY_COUNT=`find \"$TARGET_DIR\" -type f | wc -l`\nif [ `test \"$FILE_COUNT\" -ne \"$VERIFY_COUNT\"; echo $?` -eq 0 ]; then\n    echo \"Warning: Count mismatch detected. Primary count: $FILE_COUNT, Verified count: $VERIFY_COUNT\"\nfi\n\nexit 0\n",
 "opps": [
 {
 "k": 0,
@@ -8878,12 +8196,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-665,
-667
+752,
+754
 ],
 "alt_span": [
-659,
-660
+746,
+747
 ]
 },
 {
@@ -8891,12 +8209,12 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-708,
-709
+776,
+777
 ],
 "alt_span": [
-701,
-702
+769,
+770
 ]
 },
 {
@@ -8904,12 +8222,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-752,
-754
+804,
+806
 ],
 "alt_span": [
-745,
-746
+797,
+798
 ]
 },
 {
@@ -8917,12 +8235,12 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-776,
-777
+822,
+823
 ],
 "alt_span": [
-768,
-769
+814,
+815
 ]
 },
 {
@@ -8930,12 +8248,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-804,
-806
+1000,
+1002
 ],
 "alt_span": [
-796,
-797
+992,
+993
 ]
 },
 {
@@ -8943,12 +8261,12 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-822,
-823
+1036,
+1037
 ],
 "alt_span": [
-813,
-814
+1027,
+1028
 ]
 },
 {
@@ -8956,12 +8274,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-1000,
-1002
+1043,
+1045
 ],
 "alt_span": [
-991,
-992
+1034,
+1035
 ]
 },
 {
@@ -8969,45 +8287,20 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-1036,
-1037
-],
-"alt_span": [
-1026,
-1027
-]
-},
-{
-"k": 20,
-"nat": "$(",
-"alt": "`",
-"nat_span": [
-1043,
-1045
-],
-"alt_span": [
-1033,
-1034
-]
-},
-{
-"k": 21,
-"nat": ")",
-"alt": "`",
-"nat_span": [
 1092,
 1093
 ],
 "alt_span": [
-1081,
-1082
+1082,
+1083
 ]
 }
 ],
-"k_en": 22,
-"shared_fraction": 0.937,
+"k_en": 20,
+"shared_fraction": 0.943,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t038",
@@ -9260,7 +8553,8 @@
 "k_en": 18,
 "shared_fraction": 0.895,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t039",
@@ -9435,7 +8729,8 @@
 "k_en": 12,
 "shared_fraction": 0.943,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t040",
@@ -9448,7 +8743,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if the correct number of arguments is provided\nif [ $(echo $#) -ne 2 ]; then\n  echo \"Usage: $(basename $0) <filename> <prefix>\"\n  exit 1\nfi\n\nfilename=$(echo $1)\nprefix=$(echo $2)\n\n# Check if the file exists\nif [ ! -f \"$filename\" ]; then\n  echo \"Error: File '$(basename $filename)' not found.\"\n  exit 1\nfi\n\n# Read the file line by line and print matching lines\nwhile IFS= read -r line; do\n  if [[ \"$(echo \"$line\" | cut -c1-$(echo ${#prefix}))\" == \"$prefix\" ]]; then\n    echo \"$(echo \"$line\")\"\n  fi\ndone < \"$filename\"\n\n# Optional: Print a summary of matching lines found\nmatching_lines_count=$(grep -c \"^$prefix\" \"$filename\")\necho \"---\"\necho \"Found $(echo $matching_lines_count) lines starting with '$(echo $prefix)' in $(basename $filename).\"\n",
-"text_alt": "#!/bin/bash\n\n# Check if the correct number of arguments is provided\nif [ `echo $#` -ne 2 ]; then\n  echo \"Usage: `basename $0` <filename> <prefix>\"\n  exit 1\nfi\n\nfilename=`echo $1`\nprefix=`echo $2`\n\n# Check if the file exists\nif [ ! -f \"$filename\" ]; then\n  echo \"Error: File '`basename $filename`' not found.\"\n  exit 1\nfi\n\n# Read the file line by line and print matching lines\nwhile IFS= read -r line; do\n  if [[ \"`echo \"$line\" | cut -c1-`echo ${#prefix}``\" == \"$prefix\" ]]; then\n    echo \"`echo \"$line\"`\"\n  fi\ndone < \"$filename\"\n\n# Optional: Print a summary of matching lines found\nmatching_lines_count=`grep -c \"^$prefix\" \"$filename\"`\necho \"---\"\necho \"Found `echo $matching_lines_count` lines starting with '`echo $prefix`' in `basename $filename`.\"\n",
+"text_alt": "#!/bin/bash\n\n# Check if the correct number of arguments is provided\nif [ `echo $#` -ne 2 ]; then\n  echo \"Usage: `basename $0` <filename> <prefix>\"\n  exit 1\nfi\n\nfilename=`echo $1`\nprefix=`echo $2`\n\n# Check if the file exists\nif [ ! -f \"$filename\" ]; then\n  echo \"Error: File '`basename $filename`' not found.\"\n  exit 1\nfi\n\n# Read the file line by line and print matching lines\nwhile IFS= read -r line; do\n  if [[ \"`echo \"$line\" | cut -c1-\\`echo ${#prefix}\\``\" == \"$prefix\" ]]; then\n    echo \"`echo \"$line\"`\"\n  fi\ndone < \"$filename\"\n\n# Optional: Print a summary of matching lines found\nmatching_lines_count=`grep -c \"^$prefix\" \"$filename\"`\necho \"---\"\necho \"Found `echo $matching_lines_count` lines starting with '`echo $prefix`' in `basename $filename`.\"\n",
 "opps": [
 {
 "k": 0,
@@ -9596,27 +8891,27 @@
 {
 "k": 11,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 443,
 445
 ],
 "alt_span": [
 437,
-438
+439
 ]
 },
 {
 "k": 12,
 "nat": "))",
-"alt": "``",
+"alt": "\\``",
 "nat_span": [
 460,
 462
 ],
 "alt_span": [
-453,
-455
+454,
+457
 ]
 },
 {
@@ -9628,8 +8923,8 @@
 498
 ],
 "alt_span": [
-489,
-490
+491,
+492
 ]
 },
 {
@@ -9641,8 +8936,8 @@
 511
 ],
 "alt_span": [
-502,
-503
+504,
+505
 ]
 },
 {
@@ -9654,8 +8949,8 @@
 613
 ],
 "alt_span": [
-603,
-604
+605,
+606
 ]
 },
 {
@@ -9667,8 +8962,8 @@
 644
 ],
 "alt_span": [
-634,
-635
+636,
+637
 ]
 },
 {
@@ -9680,8 +8975,8 @@
 670
 ],
 "alt_span": [
-659,
-660
+661,
+662
 ]
 },
 {
@@ -9693,8 +8988,8 @@
 697
 ],
 "alt_span": [
-686,
-687
+688,
+689
 ]
 },
 {
@@ -9706,8 +9001,8 @@
 721
 ],
 "alt_span": [
-709,
-710
+711,
+712
 ]
 },
 {
@@ -9719,8 +9014,8 @@
 734
 ],
 "alt_span": [
-722,
-723
+724,
+725
 ]
 },
 {
@@ -9732,8 +9027,8 @@
 741
 ],
 "alt_span": [
-728,
-729
+730,
+731
 ]
 },
 {
@@ -9745,15 +9040,16 @@
 760
 ],
 "alt_span": [
-747,
-748
+749,
+750
 ]
 }
 ],
 "k_en": 23,
 "shared_fraction": 0.9,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t041",
@@ -9954,7 +9250,8 @@
 "k_en": 14,
 "shared_fraction": 0.912,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t042",
@@ -9967,7 +9264,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if a filename is provided as an argument\nif [ -z \"$(echo \"$1\")\" ]; then\n  echo \"Usage: $(basename \"$0\") <filename>\"\n  exit 1\nfi\n\n# Store the provided filename\ninput_file=\"$(echo \"$1\")\"\n\n# Check if the file exists and is readable\nif [ ! -f \"$(echo \"$input_file\")\" ]; then\n  echo \"Error: File '$(basename \"$input_file\")' not found.\"\n  exit 1\nfi\n\nif [ ! -r \"$(echo \"$input_file\")\" ]; then\n  echo \"Error: File '$(basename \"$input_file\")' is not readable.\"\n  exit 1\nfi\n\n# Initialize an empty string to hold the previous line\nprevious_line=\"\"\n\n# Read the file line by line\nwhile IFS= read -r current_line; do\n  # Check if the current line is different from the previous line\n  if [ \"$(echo \"$current_line\")\" != \"$(echo \"$previous_line\")\" ]; then\n    echo \"$(echo \"$current_line\")\"\n    previous_line=\"$(echo \"$current_line\")\"\n  fi\ndone < \"$(echo \"$input_file\")\"\n",
-"text_alt": "#!/bin/bash\n\n# Check if a filename is provided as an argument\nif [ -z \"`echo \"$1\"`\" ]; then\n  echo \"Usage: `basename \"$0\"` <filename>\"\n  exit 1\nfi\n\n# Store the provided filename\ninput_file=\"`echo \"$1\"`\"\n\n# Check if the file exists and is readable\nif [ ! -f \"`echo \"$input_file\"`\" ]; then\n  echo \"Error: File \"`basename \"$input_file\"`\" not found.\"\n  exit 1\nfi\n\nif [ ! -r \"`echo \"$input_file\"`\" ]; then\n  echo \"Error: File \"`basename \"$input_file\"`\" is not readable.\"\n  exit 1\nfi\n\n# Initialize an empty string to hold the previous line\nprevious_line=\"\"\n\n# Read the file line by line\nwhile IFS= read -r current_line; do\n  # Check if the current line is different from the previous line\n  if [ \"`echo \"$current_line\"`\" != \"`echo \"$previous_line\"`\" ]; then\n    echo \"`echo \"$current_line\"`\"\n    previous_line=\"`echo \"$current_line\"`\"\n  fi\ndone < \"`echo \"$input_file\"`\"\n",
+"text_alt": "#!/bin/bash\n\n# Check if a filename is provided as an argument\nif [ -z \"`echo \"$1\"`\" ]; then\n  echo \"Usage: `basename \"$0\"` <filename>\"\n  exit 1\nfi\n\n# Store the provided filename\ninput_file=\"`echo \"$1\"`\"\n\n# Check if the file exists and is readable\nif [ ! -f \"`echo \"$input_file\"`\" ]; then\n  echo \"Error: File '`basename \"$input_file\"`' not found.\"\n  exit 1\nfi\n\nif [ ! -r \"`echo \"$input_file\"`\" ]; then\n  echo \"Error: File '`basename \"$input_file\"`' is not readable.\"\n  exit 1\nfi\n\n# Initialize an empty string to hold the previous line\nprevious_line=\"\"\n\n# Read the file line by line\nwhile IFS= read -r current_line; do\n  # Check if the current line is different from the previous line\n  if [ \"`echo \"$current_line\"`\" != \"`echo \"$previous_line\"`\" ]; then\n    echo \"`echo \"$current_line\"`\"\n    previous_line=\"`echo \"$current_line\"`\"\n  fi\ndone < \"`echo \"$input_file\"`\"\n",
 "opps": [
 {
 "k": 0,
@@ -10075,28 +9372,28 @@
 },
 {
 "k": 8,
-"nat": "'$(",
-"alt": "\"`",
+"nat": "$(",
+"alt": "`",
 "nat_span": [
-312,
+313,
 315
 ],
 "alt_span": [
-308,
+309,
 310
 ]
 },
 {
 "k": 9,
-"nat": ")'",
-"alt": "`\"",
+"nat": ")",
+"alt": "`",
 "nat_span": [
 337,
-339
+338
 ],
 "alt_span": [
 332,
-334
+333
 ]
 },
 {
@@ -10127,28 +9424,28 @@
 },
 {
 "k": 12,
-"nat": "'$(",
-"alt": "\"`",
+"nat": "$(",
+"alt": "`",
 "nat_span": [
-427,
+428,
 430
 ],
 "alt_span": [
-421,
+422,
 423
 ]
 },
 {
 "k": 13,
-"nat": ")'",
-"alt": "`\"",
+"nat": ")",
+"alt": "`",
 "nat_span": [
 452,
-454
+453
 ],
 "alt_span": [
 445,
-447
+446
 ]
 },
 {
@@ -10283,9 +9580,10 @@
 }
 ],
 "k_en": 24,
-"shared_fraction": 0.899,
+"shared_fraction": 0.91,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t043",
@@ -10538,7 +9836,8 @@
 "k_en": 18,
 "shared_fraction": 0.896,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t044",
@@ -10791,7 +10090,8 @@
 "k_en": 18,
 "shared_fraction": 0.899,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t045",
@@ -10804,7 +10104,7 @@
 "tgt": "Bash"
 },
 "text_nat": "if [ $(echo \"$#\" ) -eq 0 ]; then\n    echo \"No numbers to average.\"\n    exit 0\nfi\n\nsum=0\ncount=0\n\nfor num in \"$@\"; do\n    if ! [ $(echo \"$num\" | grep -E '^[0-9]+(\\.[0-9]+)?$') ]; then\n        echo \"Error: $(echo \"$num\") is not a valid number.\" >&2\n        exit 1\n    fi\n    sum=$(echo \"$sum + $num\" | bc -l )\n    count=$(echo \"$count + 1\" | bc -l )\ndone\n\naverage=$(echo \"scale=10; $sum / $count\" | bc -l )\n\nprintf \"%.1f\\n\" $(echo \"$average\")\n",
-"text_alt": "if [ `echo \"$#\"` -eq 0 ]; then\n    echo \"No numbers to average.\"\n    exit 0\nfi\n\nsum=0\ncount=0\n\nfor num in \"$@\"; do\n    if ! [ `echo \"$num\" | grep -E '^[0-9]+(\\.[0-9]+)?$'` ]; then\n        echo \"Error: `echo \"$num\"` is not a valid number.\" >&2\n        exit 1\n    fi\n    sum=`echo \"$sum + $num\" | bc -l `\n    count=`echo \"$count + 1\" | bc -l `\ndone\n\naverage=`echo \"scale=10; $sum / $count\" | bc -l `\n\nprintf \"%.1f\\n\" `echo \"$average\"`\n",
+"text_alt": "if [ `echo \"$#\" ` -eq 0 ]; then\n    echo \"No numbers to average.\"\n    exit 0\nfi\n\nsum=0\ncount=0\n\nfor num in \"$@\"; do\n    if ! [ `echo \"$num\" | grep -E '^[0-9]+(\\.[0-9]+)?$'` ]; then\n        echo \"Error: `echo \"$num\"` is not a valid number.\" >&2\n        exit 1\n    fi\n    sum=`echo \"$sum + $num\" | bc -l `\n    count=`echo \"$count + 1\" | bc -l `\ndone\n\naverage=`echo \"scale=10; $sum / $count\" | bc -l `\n\nprintf \"%.1f\\n\" `echo \"$average\"`\n",
 "opps": [
 {
 "k": 0,
@@ -10821,15 +10121,15 @@
 },
 {
 "k": 1,
-"nat": " )",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-16,
+17,
 18
 ],
 "alt_span": [
-15,
-16
+16,
+17
 ]
 },
 {
@@ -10841,8 +10141,8 @@
 130
 ],
 "alt_span": [
-126,
-127
+127,
+128
 ]
 },
 {
@@ -10854,8 +10154,8 @@
 174
 ],
 "alt_span": [
-170,
-171
+171,
+172
 ]
 },
 {
@@ -10867,8 +10167,8 @@
 206
 ],
 "alt_span": [
-201,
-202
+202,
+203
 ]
 },
 {
@@ -10880,8 +10180,8 @@
 218
 ],
 "alt_span": [
-213,
-214
+214,
+215
 ]
 },
 {
@@ -10893,8 +10193,8 @@
 279
 ],
 "alt_span": [
-273,
-274
+274,
+275
 ]
 },
 {
@@ -10906,8 +10206,8 @@
 307
 ],
 "alt_span": [
-301,
-302
+302,
+303
 ]
 },
 {
@@ -10919,8 +10219,8 @@
 320
 ],
 "alt_span": [
-313,
-314
+314,
+315
 ]
 },
 {
@@ -10932,8 +10232,8 @@
 347
 ],
 "alt_span": [
-340,
-341
+341,
+342
 ]
 },
 {
@@ -10945,8 +10245,8 @@
 364
 ],
 "alt_span": [
-356,
-357
+357,
+358
 ]
 },
 {
@@ -10958,8 +10258,8 @@
 404
 ],
 "alt_span": [
-396,
-397
+397,
+398
 ]
 },
 {
@@ -10971,8 +10271,8 @@
 424
 ],
 "alt_span": [
-415,
-416
+416,
+417
 ]
 },
 {
@@ -10984,15 +10284,16 @@
 440
 ],
 "alt_span": [
-431,
-432
+432,
+433
 ]
 }
 ],
 "k_en": 14,
-"shared_fraction": 0.914,
+"shared_fraction": 0.918,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t046",
@@ -11005,7 +10306,7 @@
 "tgt": "Bash"
 },
 "text_nat": "if [ $(ls -1 \"$1\" | wc -l) -eq 0 ]; then\n    echo \"Directory '$(basename \"$1\")' is empty or does not exist.\"\n    exit 0\nfi\n\ntarget_dir=$(realpath \"$1\")\n\nfor file_path in \"$target_dir\"/*; do\n    if [ ! -f \"$file_path\" ]; then\n        continue\n    fi\n\n    filename=$(basename \"$file_path\")\n    lowercase_filename=$(echo \"$filename\" | tr '[:upper:]' '[:lower:]')\n\n    if [ \"$filename\" != \"$lowercase_filename\" ]; then\n        new_file_path=\"$target_dir/$lowercase_filename\"\n\n        if [ -e \"$new_file_path\" ]; then\n            echo \"Skipping '$(basename \"$filename\")': A file named '$(basename \"$lowercase_filename\")' already exists.\"\n            continue\n        fi\n\n        mv \"$file_path\" \"$new_file_path\"\n        echo \"Renamed: $(basename \"$filename\") -> $(basename \"$new_file_path\")\"\n    fi\ndone\n\nexit $(echo $?)\n",
-"text_alt": "if [ `ls -1 \"$1\" | wc -l` -eq 0 ]; then\n    echo \"Directory '`basename \"$1\"`' is empty or does not exist.\"\n    exit 0\nfi\n\ntarget_dir=`realpath \"$1\"`\n\nfor file_path in \"$target_dir\"/*; do\n    if [ ! -f \"$file_path\" ]; then\n        continue\n    fi\n\n    filename=`basename \"$file_path\"`\n    lowercase_filename=`echo \"$filename\" | tr '[:upper:]' '[:lower:'`\n\n    if [ \"$filename\" != \"$lowercase_filename\" ]; then\n        new_file_path=\"$target_dir/$lowercase_filename\"\n\n        if [ -e \"$new_file_path\" ]; then\n            echo \"Skipping '`basename \"$filename\"`': A file named '`basename \"$lowercase_filename\"`' already exists.\"\n            continue\n        fi\n\n        mv \"$file_path\" \"$new_file_path\"\n        echo \"Renamed: `basename \"$filename\"` -> `basename \"$new_file_path\"`\"\n    fi\ndone\n\nexit `echo $?`\n",
+"text_alt": "if [ `ls -1 \"$1\" | wc -l` -eq 0 ]; then\n    echo \"Directory '`basename \"$1\"`' is empty or does not exist.\"\n    exit 0\nfi\n\ntarget_dir=`realpath \"$1\"`\n\nfor file_path in \"$target_dir\"/*; do\n    if [ ! -f \"$file_path\" ]; then\n        continue\n    fi\n\n    filename=`basename \"$file_path\"`\n    lowercase_filename=`echo \"$filename\" | tr '[:upper:]' '[:lower:]'`\n\n    if [ \"$filename\" != \"$lowercase_filename\" ]; then\n        new_file_path=\"$target_dir/$lowercase_filename\"\n\n        if [ -e \"$new_file_path\" ]; then\n            echo \"Skipping '`basename \"$filename\"`': A file named '`basename \"$lowercase_filename\"`' already exists.\"\n            continue\n        fi\n\n        mv \"$file_path\" \"$new_file_path\"\n        echo \"Renamed: `basename \"$filename\"` -> `basename \"$new_file_path\"`\"\n    fi\ndone\n\nexit `echo $?`\n",
 "opps": [
 {
 "k": 0,
@@ -11126,15 +10427,15 @@
 },
 {
 "k": 9,
-"nat": "]')",
-"alt": "'`",
+"nat": ")",
+"alt": "`",
 "nat_span": [
-356,
+358,
 359
 ],
 "alt_span": [
-351,
-353
+353,
+354
 ]
 },
 {
@@ -11146,8 +10447,8 @@
 543
 ],
 "alt_span": [
-535,
-536
+536,
+537
 ]
 },
 {
@@ -11159,8 +10460,8 @@
 564
 ],
 "alt_span": [
-556,
-557
+557,
+558
 ]
 },
 {
@@ -11172,8 +10473,8 @@
 583
 ],
 "alt_span": [
-574,
-575
+575,
+576
 ]
 },
 {
@@ -11185,8 +10486,8 @@
 614
 ],
 "alt_span": [
-605,
-606
+606,
+607
 ]
 },
 {
@@ -11198,8 +10499,8 @@
 732
 ],
 "alt_span": [
-722,
-723
+723,
+724
 ]
 },
 {
@@ -11211,8 +10512,8 @@
 753
 ],
 "alt_span": [
-743,
-744
+744,
+745
 ]
 },
 {
@@ -11224,8 +10525,8 @@
 759
 ],
 "alt_span": [
-748,
-749
+749,
+750
 ]
 },
 {
@@ -11237,8 +10538,8 @@
 785
 ],
 "alt_span": [
-774,
-775
+775,
+776
 ]
 },
 {
@@ -11250,8 +10551,8 @@
 807
 ],
 "alt_span": [
-795,
-796
+796,
+797
 ]
 },
 {
@@ -11263,15 +10564,16 @@
 815
 ],
 "alt_span": [
-803,
-804
+804,
+805
 ]
 }
 ],
 "k_en": 20,
-"shared_fraction": 0.902,
+"shared_fraction": 0.905,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t047",
@@ -11498,7 +10800,8 @@
 "k_en": 16,
 "shared_fraction": 0.925,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t048",
@@ -11829,7 +11132,8 @@
 "k_en": 24,
 "shared_fraction": 0.913,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t049",
@@ -11842,7 +11146,7 @@
 "tgt": "Bash"
 },
 "text_nat": "N=$(echo \"$1\")\n\nif ! $(test $(echo \"$N\" | grep -E '^[0-9]+$') ); then\n  echo \"Usage: $(basename $(echo \"$0\")) <positive_integer>\"\n  exit 1\nfi\n\nif ! $(test $(echo \"$N\") -gt 0 ); then\n  echo \"Error: N must be a positive integer.\"\n  exit 1\nfi\n\necho \"Multiplication table for $(echo \"$N\"):\"\n\nfor i in $(seq 1 $(echo \"10\")); do\n  result=$(expr $(echo \"$N\") \\* $(echo \"$i\"))\n  echo \"$(echo \"$N\") x $(echo \"$i\") = $(echo \"$result\")\"\ndone\n",
-"text_alt": "N=`echo \"$1\"`\n\nif ! `test `echo \"$N\" | grep -E '^[0-9]+$```; then\n  echo \"Usage: `basename `echo \"$0```\" <positive_integer>\"\n  exit 1\nfi\n\nif ! `test `echo \"$N\"` -gt 0 `; then\n  echo \"Error: N must be a positive integer.\"\n  exit 1\nfi\n\necho \"Multiplication table for `echo \"$N\"`:\"\n\nfor i in `seq 1 `echo \"10\"``; do\n  result=`expr `echo \"$N\"` \\* `echo \"$i}``\n  echo \"`echo \"$N\"` x `echo \"$i\"` = `echo \"$result\"`\"\ndone\n",
+"text_alt": "N=`echo \"$1\"`\n\nif ! `test \\`echo \"$N\" | grep -E '^[0-9]+$'\\` `; then\n  echo \"Usage: `basename \\`echo \"$0\"\\`` <positive_integer>\"\n  exit 1\nfi\n\nif ! `test \\`echo \"$N\"\\` -gt 0 `; then\n  echo \"Error: N must be a positive integer.\"\n  exit 1\nfi\n\necho \"Multiplication table for `echo \"$N\"`:\"\n\nfor i in `seq 1 \\`echo \"10\"\\``; do\n  result=`expr \\`echo \"$N\"\\` \\* \\`echo \"$i\"\\``\n  echo \"`echo \"$N\"` x `echo \"$i\"` = `echo \"$result\"`\"\ndone\n",
 "opps": [
 {
 "k": 0,
@@ -11873,79 +11177,79 @@
 {
 "k": 2,
 "nat": "$(test $(",
-"alt": "`test `",
+"alt": "`test \\`",
 "nat_span": [
 21,
 30
 ],
 "alt_span": [
 20,
-27
+28
 ]
 },
 {
 "k": 3,
-"nat": "') )",
-"alt": "```",
+"nat": ") )",
+"alt": "\\` `",
 "nat_span": [
-59,
+60,
 63
 ],
 "alt_span": [
-56,
-59
+58,
+62
 ]
 },
 {
 "k": 4,
 "nat": "$(basename $(",
-"alt": "`basename `",
+"alt": "`basename \\`",
 "nat_span": [
 85,
 98
 ],
 "alt_span": [
-81,
-92
+84,
+96
 ]
 },
 {
 "k": 5,
-"nat": "\"))",
-"alt": "```\"",
+"nat": "))",
+"alt": "\\``",
 "nat_span": [
-106,
+107,
 109
 ],
 "alt_span": [
-100,
-104
+105,
+108
 ]
 },
 {
 "k": 6,
 "nat": "$(test $(",
-"alt": "`test `",
+"alt": "`test \\`",
 "nat_span": [
 148,
 157
 ],
 "alt_span": [
-143,
-150
+147,
+155
 ]
 },
 {
 "k": 7,
 "nat": ")",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 166,
 167
 ],
 "alt_span": [
-159,
-160
+164,
+166
 ]
 },
 {
@@ -11957,8 +11261,8 @@
 175
 ],
 "alt_span": [
-167,
-168
+173,
+174
 ]
 },
 {
@@ -11970,8 +11274,8 @@
 274
 ],
 "alt_span": [
-265,
-266
+271,
+272
 ]
 },
 {
@@ -11983,8 +11287,8 @@
 284
 ],
 "alt_span": [
-275,
-276
+281,
+282
 ]
 },
 {
@@ -11996,86 +11300,86 @@
 299
 ],
 "alt_span": [
-289,
-290
+295,
+296
 ]
 },
 {
 "k": 12,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 305,
 307
 ],
 "alt_span": [
-296,
-297
+302,
+304
 ]
 },
 {
 "k": 13,
 "nat": "))",
-"alt": "``",
+"alt": "\\``",
 "nat_span": [
 316,
 318
 ],
 "alt_span": [
-306,
-308
+313,
+316
 ]
 },
 {
 "k": 14,
 "nat": "$(expr $(",
-"alt": "`expr `",
+"alt": "`expr \\`",
 "nat_span": [
 332,
 341
 ],
 "alt_span": [
-322,
-329
+330,
+338
 ]
 },
 {
 "k": 15,
 "nat": ")",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 350,
 351
 ],
 "alt_span": [
-338,
-339
+347,
+349
 ]
 },
 {
 "k": 16,
 "nat": "$(",
-"alt": "`echo \"$i}``\n  echo \"`echo \"$N\"` x `",
+"alt": "\\`",
 "nat_span": [
 355,
 357
 ],
 "alt_span": [
-343,
-379
+353,
+355
 ]
 },
 {
 "k": 17,
-"nat": "))\n  echo \"$(echo \"$N\") x $(echo \"$i\")",
-"alt": "`",
+"nat": "))",
+"alt": "\\``",
 "nat_span": [
 366,
-404
+368
 ],
 "alt_span": [
-388,
-389
+364,
+367
 ]
 },
 {
@@ -12083,12 +11387,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-407,
-409
+377,
+379
 ],
 "alt_span": [
-392,
-393
+376,
+377
 ]
 },
 {
@@ -12096,19 +11400,72 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
+388,
+389
+],
+"alt_span": [
+386,
+387
+]
+},
+{
+"k": 20,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+392,
+394
+],
+"alt_span": [
+390,
+391
+]
+},
+{
+"k": 21,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+403,
+404
+],
+"alt_span": [
+400,
+401
+]
+},
+{
+"k": 22,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+407,
+409
+],
+"alt_span": [
+404,
+405
+]
+},
+{
+"k": 23,
+"nat": ")",
+"alt": "`",
+"nat_span": [
 423,
 424
 ],
 "alt_span": [
-407,
-408
+419,
+420
 ]
 }
 ],
-"k_en": 20,
-"shared_fraction": 0.733,
+"k_en": 24,
+"shared_fraction": 0.812,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t050",
@@ -12121,7 +11478,7 @@
 "tgt": "Bash"
 },
 "text_nat": "cmd_name=$(echo \"$1\")\n\nif [ -z \"$(echo \"$cmd_name\")\" ]; then\n    echo \"Usage: $(basename \"$0\") <command_name>\"\n    exit 1\nfi\n\nif type \"$(echo \"$cmd_name\")\" &>/dev/null; then\n    echo \"Command exists.\"\nelse\n    echo \"Command does not exist.\"\nfi\n\n# Additional checks to ensure command substitution is spread\n# This block is for demonstration and would typically be integrated\n# into a more complex script if needed.\nif [ -n \"$(which \"$(echo \"$cmd_name\")\" 2>/dev/null)\" ]; then\n    echo \"Found via which: $(which \"$(echo \"$cmd_name\")\")\"\nfi\n\n# Another example of spreading command substitution\nif [ \"$(command -v \"$(echo \"$cmd_name\")\" 2>/dev/null)\" ]; then\n    echo \"Found via command -v\"\nfi\n\n# Final check for an arbitrary condition using command substitution\ncurrent_user_id=$(id -u)\nif [ \"$(echo \"$current_user_id\")\" -gt 0 ]; then\n    echo \"User is not root.\"\nfi\n",
-"text_alt": "cmd_name=`echo \"$1\"`\n\nif [ -z \"`echo \"$cmd_name\"`\" ]; then\n    echo \"Usage: `basename \"$0\"` <command_name>\"\n    exit 1\nfi\n\nif type \"`echo \"$cmd_name\"`\" &>/dev/null; then\n    echo \"Command exists.\"\nelse\n    echo \"Command does not exist.\"\nfi\n\n# Additional checks to ensure command substitution is spread\n# This block is for demonstration and would typically be integrated\n# into a more complex script if needed.\nif [ -n \"`which \"`echo \"$cmd_name\"`\" 2>/dev/null`\" ]; then\n    echo \"Found via which: `which \"`echo \"$cmd_name\"`\"`\"\nfi\n\n# Another example of spreading command substitution\nif [ \"`command -v \"`echo \"$cmd_name\"`\" 2>/dev/null`\" ]; then\n    echo \"Found via command -v\"\nfi\n\n# Final check for an arbitrary condition using command substitution\ncurrent_user_id=`id -u`\nif [ \"`echo \"$current_user_id\"`\" -gt 0 ]; then\n    echo \"User is not root.\"\nfi\n",
+"text_alt": "cmd_name=`echo \"$1\"`\n\nif [ -z \"`echo \"$cmd_name\"`\" ]; then\n    echo \"Usage: `basename \"$0\"` <command_name>\"\n    exit 1\nfi\n\nif type \"`echo \"$cmd_name\"`\" &>/dev/null; then\n    echo \"Command exists.\"\nelse\n    echo \"Command does not exist.\"\nfi\n\n# Additional checks to ensure command substitution is spread\n# This block is for demonstration and would typically be integrated\n# into a more complex script if needed.\nif [ -n \"`which \"\\`echo \"$cmd_name\"\\`\" 2>/dev/null`\" ]; then\n    echo \"Found via which: `which \"\\`echo \"$cmd_name\"\\`\"`\"\nfi\n\n# Another example of spreading command substitution\nif [ \"`command -v \"\\`echo \"$cmd_name\"\\`\" 2>/dev/null`\" ]; then\n    echo \"Found via command -v\"\nfi\n\n# Final check for an arbitrary condition using command substitution\ncurrent_user_id=`id -u`\nif [ \"`echo \"$current_user_id\"`\" -gt 0 ]; then\n    echo \"User is not root.\"\nfi\n",
 "opps": [
 {
 "k": 0,
@@ -12243,27 +11600,27 @@
 {
 "k": 9,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 432,
 434
 ],
 "alt_span": [
 427,
-428
+429
 ]
 },
 {
 "k": 10,
 "nat": ")",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 450,
 451
 ],
 "alt_span": [
-444,
-445
+445,
+447
 ]
 },
 {
@@ -12275,8 +11632,8 @@
 465
 ],
 "alt_span": [
-458,
-459
+460,
+461
 ]
 },
 {
@@ -12288,34 +11645,34 @@
 504
 ],
 "alt_span": [
-496,
-497
+498,
+499
 ]
 },
 {
 "k": 13,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 511,
 513
 ],
 "alt_span": [
-504,
-505
+506,
+508
 ]
 },
 {
 "k": 14,
 "nat": ")\")",
-"alt": "`\"`",
+"alt": "\\`\"`",
 "nat_span": [
 529,
 532
 ],
 "alt_span": [
-521,
-524
+524,
+528
 ]
 },
 {
@@ -12327,34 +11684,34 @@
 598
 ],
 "alt_span": [
-588,
-589
+592,
+593
 ]
 },
 {
 "k": 16,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 610,
 612
 ],
 "alt_span": [
-601,
-602
+605,
+607
 ]
 },
 {
 "k": 17,
 "nat": ")",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
 628,
 629
 ],
 "alt_span": [
-618,
-619
+623,
+625
 ]
 },
 {
@@ -12366,8 +11723,8 @@
 643
 ],
 "alt_span": [
-632,
-633
+638,
+639
 ]
 },
 {
@@ -12379,8 +11736,8 @@
 775
 ],
 "alt_span": [
-763,
-764
+769,
+770
 ]
 },
 {
@@ -12392,8 +11749,8 @@
 781
 ],
 "alt_span": [
-769,
-770
+775,
+776
 ]
 },
 {
@@ -12405,8 +11762,8 @@
 790
 ],
 "alt_span": [
-777,
-778
+783,
+784
 ]
 },
 {
@@ -12418,14 +11775,15 @@
 814
 ],
 "alt_span": [
-801,
-802
+807,
+808
 ]
 }
 ],
 "k_en": 23,
 "shared_fraction": 0.905,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 }
 ]

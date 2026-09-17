@@ -45025,8 +45025,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def count_words_in_file(filepath):\n    total_words = 0\n    with open(filepath, 'r') as file:\n        for line in file:\n            stripped_line = line.strip()\n            is_empty_line = True if not stripped_line else False\n            words = stripped_line.split() if not is_empty_line else []\n            word_count_in_line = len(words)\n            total_words += word_count_in_line\n    return total_words\n\ndef create_test_file(filepath, content):\n    with open(filepath, 'w') as f:\n        f.write(content)\n\nif __name__ == \"__main__\":\n    test_filepath = 'test.txt'\n    test_content = 'hello world this is a test\\nanother line\\n  and one more '\n    create_test_file(test_filepath, test_content)\n\n    expected_count = 11 if 'another line' in test_content and 'and one more' in test_content else 6\n    actual_count = count_words_in_file(test_filepath)\n    is_correct = True if actual_count == expected_count else False\n\n    print(f\"File: {test_filepath}\")\n    print(f\"Content: '{test_content.replace('\\\\n', '\\\\\\\\n')}'\")\n    print(f\"Expected word count: {expected_count}\")\n    print(f\"Actual word count: {actual_count}\")\n    print(f\"Test passed: {is_correct}\")\n\n    test_filepath_empty = 'empty.txt'\n    create_test_file(test_filepath_empty, '')\n    actual_count_empty = count_words_in_file(test_filepath_empty)\n    expected_count_empty = 0\n    is_empty_correct = True if actual_count_empty == expected_count_empty else False\n    print(f\"\\nEmpty file test passed: {is_empty_correct}\")\n",
-"text_alt": "def count_words_in_file(filepath):\n    total_words = 0\n    with open(filepath, 'r') as file:\n        for line in file:\n            stripped_line = line.strip()\n            if not stripped_line:\n                is_empty_line = True\n            else:\n                is_empty_line = False\n            if not is_empty_line:\n                words = stripped_line.split()\n            else:\n                words = []\n            word_count_in_line = len(words)\n            total_words += word_count_in_line\n    return total_words\n\ndef create_test_file(filepath, content):\n    with open(filepath, 'w') as f:\n        f.write(content)\n\nif __name__ == \"__main__\":\n    test_filepath = 'test.txt'\n    test_content = 'hello world this is a test\\nanother line\\n  and one more '\n    create_test_file(test_filepath, test_content)\n\n    if 'another line' in test_content and 'and one more' in test_content:\n        expected_count = 11\n    else:\n        expected_count = 6\n    actual_count = count_words_in_file(test_filepath)\n    if actual_count == expected_count:\n        is_correct = True\n    else:\n        is_correct = False\n\n    print(f\"File: {test_filepath}\")\n    print(f\"Content: '{test_content.replace('\\\\n', '\\\\\\\\n')}'\")\n    print(f\"Expected word count: {expected_count}\")\n    print(f\"Actual word count: {actual_count}\")\n    print(f\"Test passed: {is_correct}\")\n\n    test_filepath_empty = 'empty.txt'\n    create_test_file(test_filepath_empty, '')\n    actual_count_empty = count_words_in_file(test_filepath_empty)\n    expected_count_empty = 0\n    if actual_count_empty == expected_count_empty:\n        is_empty_correct = True\n    else:\n        is_empty_correct = False\n    print(f\"\\nEmpty file test passed: {is_empty_correct}\")\n",
+"text_nat": "def count_words_in_file(filepath):\n    total_words = 0\n    with open(filepath, 'r') as file:\n        for line in file:\n            stripped_line = line.strip()\n            is_empty_line = True if not stripped_line else False\n            words = stripped_line.split()\n            word_count_in_line = len(words)\n            total_words += word_count_in_line\n\n            if is_empty_line:\n                pass\n            else:\n                pass # This is just to satisfy the condition, no functional change\n\n            some_flag = True if word_count_in_line > 0 else False\n            another_flag = False if not some_flag else True\n\n            if total_words > 100:\n                break\n            else:\n                pass # No change\n\n    final_result = total_words if total_words >= 0 else 0\n    return final_result\n",
+"text_alt": "def count_words_in_file(filepath):\n    total_words = 0\n    with open(filepath, 'r') as file:\n        for line in file:\n            stripped_line = line.strip()\n            if not stripped_line:\n                is_empty_line = True\n            else:\n                is_empty_line = False\n            words = stripped_line.split()\n            word_count_in_line = len(words)\n            total_words += word_count_in_line\n\n            if is_empty_line:\n                pass\n            else:\n                pass # This is just to satisfy the condition, no functional change\n\n            if word_count_in_line > 0:\n                some_flag = True\n            else:\n                some_flag = False\n            if not some_flag:\n                another_flag = False\n            else:\n                another_flag = True\n\n            if total_words > 100:\n                break\n            else:\n                pass # No change\n\n    if total_words >= 0:\n        final_result = total_words\n    else:\n        final_result = 0\n    return final_result\n",
 "opps": [
 {
 "k": 0,
@@ -45043,124 +45043,98 @@
 },
 {
 "k": 1,
-"nat": " ",
-"alt": "\n            else:\n                is_empty_line = False\n            ",
+"nat": " if not stripped_line else",
+"alt": "\n            else:\n                is_empty_line =",
 "nat_span": [
 192,
-193
+218
 ],
 "alt_span": [
 230,
-299
+280
 ]
 },
 {
 "k": 2,
-"nat": "stripped_line else False\n            ",
-"alt": "is_empty_line:\n                ",
+"nat": "some_flag = True ",
+"alt": "",
 "nat_span": [
-200,
-237
+523,
+540
 ],
 "alt_span": [
-306,
-337
+585,
+585
 ]
 },
 {
 "k": 3,
-"nat": " if not is_empty_line else",
-"alt": "\n            else:\n                words =",
+"nat": " else",
+"alt": ":\n                some_flag = True\n            else:\n                some_flag =",
 "nat_span": [
-266,
-292
+565,
+570
 ],
 "alt_span": [
-366,
-408
+610,
+690
 ]
 },
 {
 "k": 4,
-"nat": "expected_count = 11 ",
-"alt": "",
+"nat": "",
+"alt": "if not some_flag:\n                ",
 "nat_span": [
-704,
-724
+589,
+589
 ],
 "alt_span": [
-820,
-820
+709,
+743
 ]
 },
 {
 "k": 5,
-"nat": " else",
-"alt": ":\n        expected_count = 11\n    else:\n        expected_count =",
+"nat": " if not some_flag else",
+"alt": "\n            else:\n                another_flag =",
 "nat_span": [
-792,
-797
+609,
+631
 ],
 "alt_span": [
-888,
-952
+763,
+812
 ]
 },
 {
 "k": 6,
-"nat": "is_correct = True ",
+"nat": "final_result = total_words ",
 "alt": "",
 "nat_span": [
-858,
-876
+750,
+777
 ],
 "alt_span": [
-1013,
-1013
+931,
+931
 ]
 },
 {
 "k": 7,
 "nat": " else",
-"alt": ":\n        is_correct = True\n    else:\n        is_correct =",
+"alt": ":\n        final_result = total_words\n    else:\n        final_result =",
 "nat_span": [
-909,
-914
+796,
+801
 ],
 "alt_span": [
-1046,
-1104
-]
-},
-{
-"k": 8,
-"nat": "is_empty_correct = True ",
-"alt": "",
-"nat_span": [
-1346,
-1370
-],
-"alt_span": [
-1536,
-1536
-]
-},
-{
-"k": 9,
-"nat": " else",
-"alt": ":\n        is_empty_correct = True\n    else:\n        is_empty_correct =",
-"nat_span": [
-1415,
-1420
-],
-"alt_span": [
-1581,
-1651
+950,
+1019
 ]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.929,
+"k_en": 8,
+"shared_fraction": 0.874,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -45179,119 +45153,93 @@
 },
 {
 "k": 1,
-"nat": " ",
-"alt": "\n            else:\n                is_empty_line = False\n            ",
+"nat": " if not stripped_line else",
+"alt": "\n            else:\n                is_empty_line =",
 "nat_span": [
 192,
-193
+218
 ],
 "alt_span": [
 230,
-299
+280
 ]
 },
 {
 "k": 2,
-"nat": "stripped_line else False\n            ",
-"alt": "is_empty_line:\n                ",
+"nat": "some_flag = True ",
+"alt": "",
 "nat_span": [
-200,
-237
+523,
+540
 ],
 "alt_span": [
-306,
-337
+585,
+585
 ]
 },
 {
 "k": 3,
-"nat": " if not is_empty_line else",
-"alt": "\n            else:\n                words =",
+"nat": " else",
+"alt": ":\n                some_flag = True\n            else:\n                some_flag =",
 "nat_span": [
-266,
-292
+565,
+570
 ],
 "alt_span": [
-366,
-408
+610,
+690
 ]
 },
 {
 "k": 4,
-"nat": "expected_count = 11 ",
-"alt": "",
+"nat": "",
+"alt": "if not some_flag:\n                ",
 "nat_span": [
-704,
-724
+589,
+589
 ],
 "alt_span": [
-820,
-820
+709,
+743
 ]
 },
 {
 "k": 5,
-"nat": " else",
-"alt": ":\n        expected_count = 11\n    else:\n        expected_count =",
+"nat": " if not some_flag else",
+"alt": "\n            else:\n                another_flag =",
 "nat_span": [
-792,
-797
+609,
+631
 ],
 "alt_span": [
-888,
-952
+763,
+812
 ]
 },
 {
 "k": 6,
-"nat": "is_correct = True ",
+"nat": "final_result = total_words ",
 "alt": "",
 "nat_span": [
-858,
-876
+750,
+777
 ],
 "alt_span": [
-1013,
-1013
+931,
+931
 ]
 },
 {
 "k": 7,
 "nat": " else",
-"alt": ":\n        is_correct = True\n    else:\n        is_correct =",
+"alt": ":\n        final_result = total_words\n    else:\n        final_result =",
 "nat_span": [
-909,
-914
+796,
+801
 ],
 "alt_span": [
-1046,
-1104
-]
-},
-{
-"k": 8,
-"nat": "is_empty_correct = True ",
-"alt": "",
-"nat_span": [
-1346,
-1370
-],
-"alt_span": [
-1536,
-1536
-]
-},
-{
-"k": 9,
-"nat": " else",
-"alt": ":\n        is_empty_correct = True\n    else:\n        is_empty_correct =",
-"nat_span": [
-1415,
-1420
-],
-"alt_span": [
-1581,
-1651
+950,
+1019
 ]
 }
 ],

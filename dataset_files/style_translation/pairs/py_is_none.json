@@ -11586,7 +11586,7 @@
 "tgt": "Python"
 },
 "text_nat": "def levenshtein_distance(s1, s2):\n    if s1 is None or s2 is None:\n        raise ValueError(\"Input strings cannot be None.\")\n\n    m = len(s1)\n    n = len(s2)\n\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n\n    for i in range(m + 1):\n        dp[i][0] = i\n    for j in range(n + 1):\n        dp[0][j] = j\n\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            cost = 0 if s1[i - 1] == s2[j - 1] else 1\n            if cost is None: # This check is for illustrative purposes, cost will always be 0 or 1\n                pass # Should not happen\n\n            dp[i][j] = min(dp[i - 1][j] + 1,        # Deletion\n                           dp[i][j - 1] + 1,        # Insertion\n                           dp[i - 1][j - 1] + cost) # Substitution\n\n    if dp[m][n] is not None:\n        return dp[m][n]\n    else: # This branch should not be reachable in a correct implementation\n        return -1 # Indicate an error if the final result is unexpectedly None\n\n# Example usage (for testing, not part of the function itself)\nif __name__ == '__main__':\n    dist = levenshtein_distance('kitten', 'sitting')\n    if dist is not None:\n        assert dist == 3\n    else:\n        print(\"Distance calculation failed.\")\n\n    dist = levenshtein_distance('flaw', 'lawn')\n    if dist is not None:\n        assert dist == 2\n    else:\n        print(\"Distance calculation failed.\")\n\n    dist = levensenshtein_distance('', 'abc')\n    if dist is not None:\n        assert dist == 3\n    else:\n        print(\"Distance calculation failed.\")\n\n    try:\n        levenshtein_distance(None, 'test')\n    except ValueError as e:\n        assert str(e) == \"Input strings cannot be None.\"\n    else:\n        print(\"Error: None input was not caught.\")\n",
-"text_alt": "def levenshtein_distance(s1, s2):\n    if s1 == None or s2 == None:\n        raise ValueError(\"Input strings cannot be None.\")\n\n    m = len(s1)\n    n = len(s2)\n\n    dp = [[0]] * (n + 1) for _ in range(m + 1)]\n\n    for i in range(m + 1):\n        dp[i][0] = i\n    for j in range(n + 1):\n        dp[0][j] = j\n\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            cost = 0 if s1[i - 1] == s2[j - 1] else 1\n            if cost == None: # This check is for illustrative purposes, cost will always be 0 or 1\n                pass # Should not happen\n\n            dp[i][j] = min(dp[i - 1][j] + 1,        # Deletion\n                           dp[i][j - 1] + 1,        # Insertion\n                           dp[i - 1][j - 1] + cost) # Substitution\n\n    if dp[m][n] != None:\n        return dp[m][n]\n    else: # This branch should not be reachable in a correct implementation\n        return -1 # Indicate an error if the final result is unexpectedly None\n\n# Example usage (for testing, not part of the function itself)\nif __name__ == '__main__':\n    dist = levenshtein_distance('kitten', 'sitting')\n    if dist != None:\n        assert dist == 3\n    else:\n        print(\"Distance calculation failed.\")\n\n    dist = levenshtein_distance('flaw', 'lawn')\n    if dist != None:\n        assert dist == 2\n    else:\n        print(\"Distance calculation failed.\")\n\n    dist = levenshtein_distance('', 'abc')\n    if dist != None:\n        assert dist == 3\n    else:\n        print(\"Distance calculation failed.\")\n\n    try:\n        levenshtein_distance(None, 'test')\n    except ValueError as e:\n        assert str(e) == \"Input strings cannot be None.\"\n    else:\n        print(\"Error: None input was not caught.\")\n",
+"text_alt": "def levenshtein_distance(s1, s2):\n    if s1 == None or s2 == None:\n        raise ValueError(\"Input strings cannot be None.\")\n\n    m = len(s1)\n    n = len(s2)\n\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n\n    for i in range(m + 1):\n        dp[i][0] = i\n    for j in range(n + 1):\n        dp[0][j] = j\n\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            cost = 0 if s1[i - 1] == s2[j - 1] else 1\n            if cost == None: # This check is for illustrative purposes, cost will always be 0 or 1\n                pass # Should not happen\n\n            dp[i][j] = min(dp[i - 1][j] + 1,        # Deletion\n                           dp[i][j - 1] + 1,        # Insertion\n                           dp[i - 1][j - 1] + cost) # Substitution\n\n    if dp[m][n] != None:\n        return dp[m][n]\n    else: # This branch should not be reachable in a correct implementation\n        return -1 # Indicate an error if the final result is unexpectedly None\n\n# Example usage (for testing, not part of the function itself)\nif __name__ == '__main__':\n    dist = levenshtein_distance('kitten', 'sitting')\n    if dist != None:\n        assert dist == 3\n    else:\n        print(\"Distance calculation failed.\")\n\n    dist = levenshtein_distance('flaw', 'lawn')\n    if dist != None:\n        assert dist == 2\n    else:\n        print(\"Distance calculation failed.\")\n\n    dist = levenshtein_distance('', 'abc')\n    if dist != None:\n        assert dist == 3\n    else:\n        print(\"Distance calculation failed.\")\n\n    try:\n        levenshtein_distance(None, 'test')\n    except ValueError as e:\n        assert str(e) == \"Input strings cannot be None.\"\n    else:\n        print(\"Error: None input was not caught.\")\n",
 "opps": [
 {
 "k": 0,
@@ -11616,19 +11616,6 @@
 },
 {
 "k": 2,
-"nat": "",
-"alt": "]",
-"nat_span": [
-171,
-171
-],
-"alt_span": [
-171,
-172
-]
-},
-{
-"k": 3,
 "nat": "is",
 "alt": "==",
 "nat_span": [
@@ -11636,12 +11623,12 @@
 444
 ],
 "alt_span": [
-443,
-445
+442,
+444
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": "is not",
 "alt": "!=",
 "nat_span": [
@@ -11649,12 +11636,12 @@
 780
 ],
 "alt_span": [
-775,
-777
+774,
+776
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": "is not",
 "alt": "!=",
 "nat_span": [
@@ -11662,12 +11649,12 @@
 1128
 ],
 "alt_span": [
-1119,
-1121
+1118,
+1120
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": "is not",
 "alt": "!=",
 "nat_span": [
@@ -11675,12 +11662,12 @@
 1283
 ],
 "alt_span": [
-1270,
-1272
+1269,
+1271
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": "levensenshtein_distance",
 "alt": "levenshtein_distance",
 "nat_span": [
@@ -11688,12 +11675,12 @@
 1406
 ],
 "alt_span": [
-1372,
-1392
+1371,
+1391
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": "is not",
 "alt": "!=",
 "nat_span": [
@@ -11701,12 +11688,12 @@
 1436
 ],
 "alt_span": [
-1416,
-1418
+1415,
+1417
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.977,
 "pass": true,
 "verify": null

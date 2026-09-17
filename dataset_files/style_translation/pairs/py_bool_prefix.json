@@ -15025,7 +15025,7 @@
 "tgt": "Python"
 },
 "text_nat": "def parse_url_params(query_string: str) -> dict:\n    is_query_empty = not bool(query_string)\n    if is_query_empty:\n        return {}\n\n    parsed_params = {}\n    can_split_params = '&' in query_string\n    if can_split_params:\n        param_pairs = query_string.split('&')\n    else:\n        param_pairs = [query_string]\n\n    for pair in param_pairs:\n        has_equals_sign = '=' in pair\n        should_process_pair = has_equals_sign and bool(pair.strip())\n\n        if should_process_pair:\n            key_value = pair.split('=', 1)\n            is_valid_key_value = len(key_value) == 2\n            if is_valid_key_value:\n                key, value = key_value\n                is_key_non_empty = bool(key)\n                if is_key_non_empty:\n                    parsed_params[key] = value\n            else:\n                is_only_key_present = len(key_value) == 1\n                if is_only_key_present:\n                    key = key_value[0]\n                    is_valid_key = bool(key)\n                    if is_valid_key:\n                        parsed_params[key] = \"\"\n\n    return parsed_params\n",
-"text_alt": "def parse_url_params(query_string: str) -> dict:\n    query_empty = not bool(query_string)\n    if query_empty:\n        return {}\n\n    parsed_params = {}\n    split_params = '&' in query_string\n    if split_params:\n        param_pairs = query_string.split('&')\n    else:\n        param_pairs = [query_string]\n\n    for pair:\n        equals_sign = '=' in pair\n        process_pair = equals_sign and bool(pair.strip())\n\n        if process_pair:\n            key_value = pair.split('=', 1)\n            valid_key_value = len(key_value) == 2\n            if valid_key_value:\n                key, value = key_value\n                key_non_empty = bool(key)\n                if key_non_empty:\n                    parsed_params[key] = value\n            else:\n                only_key_present = len(key_value) == 1\n                if only_key_present:\n                    key = key_value[0]\n                    valid_key = bool(key)\n                    if valid_key:\n                        parsed_params[key] = \"\"\n\n    return parsed_params\n",
+"text_alt": "def parse_url_params(query_string: str) -> dict:\n    query_empty = not bool(query_string)\n    if query_empty:\n        return {}\n\n    parsed_params = {}\n    split_params = '&' in query_string\n    if split_params:\n        param_pairs = query_string.split('&')\n    else:\n        param_pairs = [query_string]\n\n    for pair in param_pairs:\n        equals_sign = '=' in pair\n        process_pair = equals_sign and bool(pair.strip())\n\n        if process_pair:\n            key_value = pair.split('=', 1)\n            valid_key_value = len(key_value) == 2\n            if valid_key_value:\n                key, value = key_value\n                key_non_empty = bool(key)\n                if key_non_empty:\n                    parsed_params[key] = value\n            else:\n                only_key_present = len(key_value) == 1\n                if only_key_present:\n                    key = key_value[0]\n                    valid_key = bool(key)\n                    if valid_key:\n                        parsed_params[key] = \"\"\n\n    return parsed_params\n",
 "opps": [
 {
 "k": 0,
@@ -15055,6 +15055,19 @@
 },
 {
 "k": 2,
+"nat": "has_equals_sign",
+"alt": "equals_sign",
+"nat_span": [
+357,
+372
+],
+"alt_span": [
+343,
+354
+]
+},
+{
+"k": 3,
 "nat": "should_process_pair",
 "alt": "process_pair",
 "nat_span": [
@@ -15062,12 +15075,12 @@
 414
 ],
 "alt_span": [
-362,
-374
+377,
+389
 ]
 },
 {
-"k": 3,
+"k": 4,
 "nat": "is_valid_key_value",
 "alt": "valid_key_value",
 "nat_span": [
@@ -15075,12 +15088,12 @@
 562
 ],
 "alt_span": [
-493,
-508
+508,
+523
 ]
 },
 {
-"k": 4,
+"k": 5,
 "nat": "is_key_non_empty",
 "alt": "key_non_empty",
 "nat_span": [
@@ -15088,12 +15101,12 @@
 691
 ],
 "alt_span": [
-618,
-631
+633,
+646
 ]
 },
 {
-"k": 5,
+"k": 6,
 "nat": "is_only_key_present",
 "alt": "only_key_present",
 "nat_span": [
@@ -15101,12 +15114,12 @@
 841
 ],
 "alt_span": [
-759,
-775
+774,
+790
 ]
 },
 {
-"k": 6,
+"k": 7,
 "nat": "is_valid_key",
 "alt": "valid_key",
 "nat_span": [
@@ -15114,15 +15127,225 @@
 975
 ],
 "alt_span": [
-894,
-903
+909,
+918
 ]
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.921,
+"k_en": 8,
+"shared_fraction": 0.937,
 "pass": true,
 "verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "is_query_empty",
+"alt": "query_empty",
+"nat_span": [
+53,
+67
+],
+"alt_span": [
+53,
+64
+]
+},
+{
+"k": 1,
+"nat": "is_query_empty",
+"alt": "query_empty",
+"nat_span": [
+100,
+114
+],
+"alt_span": [
+97,
+108
+]
+},
+{
+"k": 2,
+"nat": "can_split_params",
+"alt": "split_params",
+"nat_span": [
+162,
+178
+],
+"alt_span": [
+156,
+168
+]
+},
+{
+"k": 3,
+"nat": "can_split_params",
+"alt": "split_params",
+"nat_span": [
+208,
+224
+],
+"alt_span": [
+198,
+210
+]
+},
+{
+"k": 4,
+"nat": "has_equals_sign",
+"alt": "equals_sign",
+"nat_span": [
+357,
+372
+],
+"alt_span": [
+343,
+354
+]
+},
+{
+"k": 5,
+"nat": "should_process_pair",
+"alt": "process_pair",
+"nat_span": [
+395,
+414
+],
+"alt_span": [
+377,
+389
+]
+},
+{
+"k": 6,
+"nat": "has_equals_sign",
+"alt": "equals_sign",
+"nat_span": [
+417,
+432
+],
+"alt_span": [
+392,
+403
+]
+},
+{
+"k": 7,
+"nat": "should_process_pair",
+"alt": "process_pair",
+"nat_span": [
+468,
+487
+],
+"alt_span": [
+439,
+451
+]
+},
+{
+"k": 8,
+"nat": "is_valid_key_value",
+"alt": "valid_key_value",
+"nat_span": [
+544,
+562
+],
+"alt_span": [
+508,
+523
+]
+},
+{
+"k": 9,
+"nat": "is_valid_key_value",
+"alt": "valid_key_value",
+"nat_span": [
+600,
+618
+],
+"alt_span": [
+561,
+576
+]
+},
+{
+"k": 10,
+"nat": "is_key_non_empty",
+"alt": "key_non_empty",
+"nat_span": [
+675,
+691
+],
+"alt_span": [
+633,
+646
+]
+},
+{
+"k": 11,
+"nat": "is_key_non_empty",
+"alt": "key_non_empty",
+"nat_span": [
+723,
+739
+],
+"alt_span": [
+678,
+691
+]
+},
+{
+"k": 12,
+"nat": "is_only_key_present",
+"alt": "only_key_present",
+"nat_span": [
+822,
+841
+],
+"alt_span": [
+774,
+790
+]
+},
+{
+"k": 13,
+"nat": "is_only_key_present",
+"alt": "only_key_present",
+"nat_span": [
+883,
+902
+],
+"alt_span": [
+832,
+848
+]
+},
+{
+"k": 14,
+"nat": "is_valid_key",
+"alt": "valid_key",
+"nat_span": [
+963,
+975
+],
+"alt_span": [
+909,
+918
+]
+},
+{
+"k": 15,
+"nat": "is_valid_key",
+"alt": "valid_key",
+"nat_span": [
+1011,
+1023
+],
+"alt_span": [
+954,
+963
+]
+}
+],
 "free_filter": true
 },
 {

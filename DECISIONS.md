@@ -1899,3 +1899,9 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - A whitespace-only difference before the first real choice is a rewrite slip, not a convention: it takes the natural rendering
   (`code_free.harmonise_leading_ws`), so the k = 0 prompts of the two poles are byte-identical.
 - Generator guard: a Python twin that does not parse is rejected (`code_build.valid_python`; py2_print / py2_except alternatives exempt).
+
+## 2026-09-17 — Code pairs: validity guard (bug 6) and bash_subst alternative by rule (bug 7)
+- Every Python twin must parse (`code_build.valid_python`, py2_print / py2_except alternatives exempt); the generator rejects otherwise.
+  Style hints must say what stays untouched (py_paren_if, trailing_commas, comment_case EXTRA_HINTs) — Gemini over-applies a bare hint.
+- bash_subst: `text_alt = code_subst_alt.convert(text_nat)`; nested substitutions use Bash's escaping (\`…\` inner pairs, backslashes
+  before $ \\ ` doubled per level). Acceptance = independent parse-back to the same substitution tree + bash -n on both twins.

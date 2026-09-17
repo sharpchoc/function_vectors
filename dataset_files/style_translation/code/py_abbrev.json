@@ -23719,455 +23719,780 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def count_file_lines(fpath):\n    cnt = 0\n    try:\n        with open(fpath, 'r') as buf:\n            for curr in buf:\n                cnt += 1\n    except IOError as err:\n        msg = f\"Error reading file {fpath}: {err}\"\n        print(msg) # Or handle err differently based on ctx\n        return -1 # Indicate an error\n    return cnt\n\n# Example usage:\n# Create dummy files for testing\n# with open('test.txt', 'w') as f:\n#     f.write(\"Line 1\\nLine 2\\nLine 3\")\n# with open('empty.txt', 'w') as f:\n#     pass\n# with open('another_test.txt', 'w') as f:\n#     f.write(\"A\\nB\\nC\\nD\")\n\n# res_test = count_file_lines('test.txt')\n# res_empty = count_file_lines('empty.txt')\n# res_another = count_file_lines('another_test.txt')\n\n# print(f\"Lines in test.txt: {res_test}\")\n# print(f\"Lines in empty.txt: {res_empty}\")\n# print(f\"Lines in another_test.txt: {res_another}\")\n",
-"text_alt": "def count_file_lines(fpath):\n    count = 0\n    try:\n        with open(fpath, 'r') as buffer:\n            for current in buffer:\n                count += 1\n    except IOError as error:\n        message = file\"Error reading file {fpath}: {error}\"\n        print(message) # Or handle error differently based on context\n        return -1 # Indicate an error\n    return count\n\n# Example usage:\n# Create dummy files for testing\n# with open('test.txt', 'w') as file:\n#     file.write(\"Line 1\\nLine 2\\nLine 3\")\n# with open('empty.txt', 'w') as file:\n#     pass\n# with open('another_test.txt', 'w') as file:\n#     file.write(\"A\\nB\\nC\\nD\")\n\n# result_test = count_file_lines('test.txt')\n# result_empty = count_file_lines('empty.txt')\n# result_another = count_file_lines('another_test.txt')\n\n# print(file\"Lines in test.txt: {result_test}\")\n# print(file\"Lines in empty.txt: {result_empty}\")\n# print(file\"Lines in another_test.txt: {result_another}\")\n",
+"text_nat": "def count_file_lines(fpath):\n    \"\"\"Counts the total number of lines in a given text file.\"\"\"\n    cnt = 0\n    with open(fpath, 'r', encoding='utf-8') as src_file:\n        for curr_line in src_file:\n            cnt += 1\n    return cnt\n\ndef process_file_data(fpath_name, buffer_size=4096):\n    \"\"\"Processes file data and returns line count.\"\"\"\n    res = 0\n    with open(fpath_name, 'r', encoding='utf-8') as hdl:\n        while True:\n            tmp_chunk = hdl.read(buffer_size)\n            if not tmp_chunk:\n                break\n            res += tmp_chunk.count('\\n')\n            if not tmp_chunk.endswith('\\n') and len(tmp_chunk) == buffer_size:\n                # Handle cases where a chunk ends without a newline but isn't EOF\n                pass # This is simplified for typical text files where line-endings are consistent\n    return res\n\ndef analyze_text_data(file_location, block_len=1024):\n    \"\"\"Analyzes text data for line count using a different method.\"\"\"\n    total_lines = 0\n    with open(file_location, 'rb') as bin_file:\n        prev_byte = b'\\n'\n        while True:\n            buf = bin_file.read(block_len)\n            if not buf:\n                break\n            total_lines += buf.count(b'\\n')\n            if prev_byte != b'\\n' and buf.startswith(b'\\n'):\n                total_lines += 1 # Edge case: newline was split across buffers\n            prev_byte = buf[-1:]\n        if prev_byte != b'\\n' and total_lines > 0: # Ensure final line is counted if not ending with newline\n            total_lines += 1\n    return total_lines\n\ndef get_line_count(target_path):\n    \"\"\"Returns the line count of a file, ensuring robustness.\"\"\"\n    val = 0\n    try:\n        with open(target_path, 'r', encoding='utf-8') as ctx:\n            for elem in ctx:\n                val += 1\n    except IOError as err_io:\n        print(f\"Error accessing file: {err_io}\")\n        return -1 # Indicate an error\n    return val\n\ndef final_count_lines(cfg_file_path):\n    \"\"\"Provides a final, simple line count for a given path.\"\"\"\n    curr_count = 0\n    with open(cfg_file_path, 'r') as file_obj:\n        for _line_data in file_obj:\n            curr_count += 1\n    return curr_count\n",
+"text_alt": "def count_file_lines(file_path):\n    \"\"\"Counts the total number of lines in a given text file.\"\"\"\n    count = 0\n    with open(file_path, 'r', encoding='utf-8') as source_file:\n        for current_line in source_file:\n            count += 1\n    return count\n\ndef process_file_data(file_path_name, buffer_size=4096):\n    \"\"\"Processes file data and returns line count.\"\"\"\n    result = 0\n    with open(file_path_name, 'r', encoding='utf-8') as hdl:\n        while True:\n            temporary_chunk = hdl.read(buffer_size)\n            if not temporary_chunk:\n                break\n            result += temporary_chunk.count('\\n')\n            if not temporary_chunk.endswith('\\n') and len(temporary_chunk) == buffer_size:\n                # Handle cases where a chunk ends without a newline but isn't EOF\n                pass # This is simplified for typical text files where line-endings are consistent\n    return result\n\ndef analyze_text_data(file_location, block_length=1024):\n    \"\"\"Analyzes text data for line count using a different method.\"\"\"\n    total_lines = 0\n    with open(file_location, 'rb') as binary_file:\n        previous_byte = b'\\n'\n        while True:\n            buffer = binary_file.read(block_length)\n            if not buffer:\n                break\n            total_lines += buffer.count(b'\\n')\n            if previous_byte != b'\\n' and buffer.startswith(b'\\n'):\n                total_lines += 1 # Edge case: newline was split across buffers\n            previous_byte = buffer[-1:]\n        if previous_byte != b'\\n' and total_lines > 0: # Ensure final line is counted if not ending with newline\n            total_lines += 1\n    return total_lines\n\ndef get_line_count(target_path):\n    \"\"\"Returns the line count of a file, ensuring robustness.\"\"\"\n    value = 0\n    try:\n        with open(target_path, 'r', encoding='utf-8') as context:\n            for element in context:\n                value += 1\n    except IOError as error_io:\n        print(f\"Error accessing file: {error_io}\")\n        return -1 # Indicate an error\n    return value\n\ndef final_count_lines(configuration_file_path):\n    \"\"\"Provides a final, simple line count for a given path.\"\"\"\n    current_count = 0\n    with open(configuration_file_path, 'r') as file_object:\n        for _line_data in file_object:\n            current_count += 1\n    return current_count\n",
 "opps": [
 {
 "k": 0,
-"nat": "cnt",
-"alt": "count",
+"nat": "fpath",
+"alt": "file_path",
 "nat_span": [
-33,
-36
+21,
+26
 ],
 "alt_span": [
-33,
-38
+21,
+30
 ]
 },
 {
 "k": 1,
-"nat": "buf",
-"alt": "buffer",
+"nat": "cnt",
+"alt": "count",
 "nat_span": [
-83,
-86
+98,
+101
 ],
 "alt_span": [
-85,
-91
+102,
+107
 ]
 },
 {
 "k": 2,
-"nat": "curr",
-"alt": "current",
+"nat": "src_file",
+"alt": "source_file",
 "nat_span": [
-104,
-108
+153,
+161
 ],
 "alt_span": [
-109,
-116
+163,
+174
 ]
 },
 {
 "k": 3,
-"nat": "err:\n        msg",
-"alt": "error:\n        message",
+"nat": "curr_line",
+"alt": "current_line",
 "nat_span": [
-164,
-180
+175,
+184
 ],
 "alt_span": [
-177,
-199
+188,
+200
 ]
 },
 {
 "k": 4,
-"nat": "f",
-"alt": "file",
+"nat": "fpath_name",
+"alt": "file_path_name",
 "nat_span": [
-183,
-184
+257,
+267
 ],
 "alt_span": [
-202,
-206
+280,
+294
 ]
 },
 {
 "k": 5,
-"nat": "ctx",
-"alt": "context",
+"nat": "res",
+"alt": "result",
 "nat_span": [
-276,
-279
+346,
+349
 ],
 "alt_span": [
-306,
-313
+373,
+379
 ]
 },
 {
 "k": 6,
-"nat": "res_test",
-"alt": "result_test",
+"nat": "tmp_chunk",
+"alt": "temporary_chunk",
 "nat_span": [
-580,
-588
+443,
+452
 ],
 "alt_span": [
-631,
-642
+477,
+492
 ]
 },
 {
 "k": 7,
-"nat": "res_empty",
-"alt": "result_empty",
+"nat": "block_len",
+"alt": "block_length",
 "nat_span": [
-622,
-631
+883,
+892
 ],
 "alt_span": [
-676,
-688
+953,
+965
 ]
 },
 {
 "k": 8,
-"nat": "res_another",
-"alt": "result_another",
+"nat": "bin_file:\n        prev_byte",
+"alt": "binary_file:\n        previous_byte",
 "nat_span": [
-666,
-677
+1028,
+1055
 ],
 "alt_span": [
-723,
-737
+1101,
+1135
+]
+},
+{
+"k": 9,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+1096,
+1099
+],
+"alt_span": [
+1176,
+1182
+]
+},
+{
+"k": 10,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+1654,
+1657
+],
+"alt_span": [
+1767,
+1772
+]
+},
+{
+"k": 11,
+"nat": "ctx",
+"alt": "context",
+"nat_span": [
+1728,
+1731
+],
+"alt_span": [
+1843,
+1850
+]
+},
+{
+"k": 12,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+1749,
+1753
+],
+"alt_span": [
+1868,
+1875
+]
+},
+{
+"k": 13,
+"nat": "err_io",
+"alt": "error_io",
+"nat_span": [
+1809,
+1815
+],
+"alt_span": [
+1937,
+1945
+]
+},
+{
+"k": 14,
+"nat": "cfg_file_path",
+"alt": "configuration_file_path",
+"nat_span": [
+1942,
+1955
+],
+"alt_span": [
+2076,
+2099
+]
+},
+{
+"k": 15,
+"nat": "curr_count",
+"alt": "current_count",
+"nat_span": [
+2026,
+2036
+],
+"alt_span": [
+2170,
+2183
+]
+},
+{
+"k": 16,
+"nat": "file_obj",
+"alt": "file_object",
+"nat_span": [
+2078,
+2086
+],
+"alt_span": [
+2235,
+2246
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.924,
+"k_en": 17,
+"shared_fraction": 0.936,
 "pass": true,
 "verify": null,
 "opps_all": [
 {
 "k": 0,
-"nat": "cnt",
-"alt": "count",
+"nat": "fpath",
+"alt": "file_path",
 "nat_span": [
-33,
-36
+21,
+26
 ],
 "alt_span": [
-33,
-38
+21,
+30
 ]
 },
 {
 "k": 1,
-"nat": "buf",
-"alt": "buffer",
+"nat": "cnt",
+"alt": "count",
 "nat_span": [
-83,
-86
+98,
+101
 ],
 "alt_span": [
-85,
-91
+102,
+107
 ]
 },
 {
 "k": 2,
-"nat": "curr",
-"alt": "current",
+"nat": "fpath",
+"alt": "file_path",
 "nat_span": [
-104,
-108
+120,
+125
 ],
 "alt_span": [
-109,
-116
+126,
+135
 ]
 },
 {
 "k": 3,
-"nat": "buf:\n                cnt",
-"alt": "buffer:\n                count",
+"nat": "src_file",
+"alt": "source_file",
 "nat_span": [
-112,
-136
+153,
+161
 ],
 "alt_span": [
-120,
-149
+163,
+174
 ]
 },
 {
 "k": 4,
-"nat": "err:\n        msg",
-"alt": "error:\n        message",
+"nat": "curr_line",
+"alt": "current_line",
 "nat_span": [
-164,
-180
+175,
+184
 ],
 "alt_span": [
-177,
-199
+188,
+200
 ]
 },
 {
 "k": 5,
-"nat": "f",
-"alt": "file",
+"nat": "src_file:\n            cnt",
+"alt": "source_file:\n            count",
 "nat_span": [
-183,
-184
+188,
+213
 ],
 "alt_span": [
-202,
-206
+204,
+234
 ]
 },
 {
 "k": 6,
-"nat": "err",
-"alt": "error",
+"nat": "cnt",
+"alt": "count",
 "nat_span": [
-214,
-217
+230,
+233
 ],
 "alt_span": [
-236,
-241
+251,
+256
 ]
 },
 {
 "k": 7,
-"nat": "msg",
-"alt": "message",
+"nat": "fpath_name",
+"alt": "file_path_name",
 "nat_span": [
-234,
-237
+257,
+267
 ],
 "alt_span": [
-258,
-265
+280,
+294
 ]
 },
 {
 "k": 8,
-"nat": "err",
-"alt": "error",
+"nat": "res",
+"alt": "result",
 "nat_span": [
-251,
-254
+346,
+349
 ],
 "alt_span": [
-279,
-284
+373,
+379
 ]
 },
 {
 "k": 9,
-"nat": "ctx",
-"alt": "context",
+"nat": "fpath_name",
+"alt": "file_path_name",
 "nat_span": [
-276,
-279
+368,
+378
 ],
 "alt_span": [
-306,
-313
+398,
+412
 ]
 },
 {
 "k": 10,
-"nat": "cnt",
-"alt": "count",
+"nat": "tmp_chunk",
+"alt": "temporary_chunk",
 "nat_span": [
-329,
-332
+443,
+452
 ],
 "alt_span": [
-363,
-368
+477,
+492
 ]
 },
 {
 "k": 11,
-"nat": "f",
-"alt": "file",
+"nat": "tmp_chunk",
+"alt": "temporary_chunk",
 "nat_span": [
-416,
-417
+496,
+505
 ],
 "alt_span": [
-452,
-456
+536,
+551
 ]
 },
 {
 "k": 12,
-"nat": "f",
-"alt": "file",
+"nat": "res",
+"alt": "result",
 "nat_span": [
-425,
-426
+541,
+544
 ],
 "alt_span": [
-464,
-468
+587,
+593
 ]
 },
 {
 "k": 13,
-"nat": "f",
-"alt": "file",
+"nat": "tmp_chunk",
+"alt": "temporary_chunk",
 "nat_span": [
-492,
-493
+548,
+557
 ],
 "alt_span": [
-534,
-538
+597,
+612
 ]
 },
 {
 "k": 14,
-"nat": "f",
-"alt": "file",
+"nat": "tmp_chunk",
+"alt": "temporary_chunk",
 "nat_span": [
-546,
-547
+589,
+598
 ],
 "alt_span": [
-591,
-595
+644,
+659
 ]
 },
 {
 "k": 15,
-"nat": "f",
-"alt": "file",
-"nat_span": [
-555,
-556
-],
-"alt_span": [
-603,
-607
-]
-},
-{
-"k": 16,
-"nat": "res_test",
-"alt": "result_test",
-"nat_span": [
-580,
-588
-],
-"alt_span": [
-631,
-642
-]
-},
-{
-"k": 17,
-"nat": "res_empty",
-"alt": "result_empty",
+"nat": "tmp_chunk",
+"alt": "temporary_chunk",
 "nat_span": [
 622,
 631
 ],
 "alt_span": [
-676,
-688
+683,
+698
+]
+},
+{
+"k": 16,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+841,
+844
+],
+"alt_span": [
+908,
+914
+]
+},
+{
+"k": 17,
+"nat": "block_len",
+"alt": "block_length",
+"nat_span": [
+883,
+892
+],
+"alt_span": [
+953,
+965
 ]
 },
 {
 "k": 18,
-"nat": "res_another",
-"alt": "result_another",
+"nat": "bin_file:\n        prev_byte",
+"alt": "binary_file:\n        previous_byte",
 "nat_span": [
-666,
-677
+1028,
+1055
 ],
 "alt_span": [
-723,
-737
+1101,
+1135
 ]
 },
 {
 "k": 19,
-"nat": "f",
-"alt": "file",
+"nat": "buf",
+"alt": "buffer",
 "nat_span": [
-726,
-727
+1096,
+1099
 ],
 "alt_span": [
-786,
-790
+1176,
+1182
 ]
 },
 {
 "k": 20,
-"nat": "res_test",
-"alt": "result_test",
+"nat": "bin_file",
+"alt": "binary_file",
 "nat_span": [
-748,
-756
+1102,
+1110
 ],
 "alt_span": [
-811,
-822
+1185,
+1196
 ]
 },
 {
 "k": 21,
-"nat": "f",
-"alt": "file",
+"nat": "block_len",
+"alt": "block_length",
 "nat_span": [
-768,
-769
+1116,
+1125
 ],
 "alt_span": [
-834,
-838
+1202,
+1214
 ]
 },
 {
 "k": 22,
-"nat": "res_empty",
-"alt": "result_empty",
+"nat": "buf",
+"alt": "buffer",
 "nat_span": [
-791,
-800
+1146,
+1149
 ],
 "alt_span": [
-860,
-872
+1235,
+1241
 ]
 },
 {
 "k": 23,
-"nat": "f",
-"alt": "file",
+"nat": "buf",
+"alt": "buffer",
 "nat_span": [
-812,
-813
+1200,
+1203
 ],
 "alt_span": [
-884,
-888
+1292,
+1298
 ]
 },
 {
 "k": 24,
-"nat": "res_another",
-"alt": "result_another",
+"nat": "prev_byte",
+"alt": "previous_byte",
 "nat_span": [
-842,
-853
+1232,
+1241
 ],
 "alt_span": [
-917,
-931
+1327,
+1340
+]
+},
+{
+"k": 25,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+1255,
+1258
+],
+"alt_span": [
+1354,
+1360
+]
+},
+{
+"k": 26,
+"nat": "prev_byte",
+"alt": "previous_byte",
+"nat_span": [
+1369,
+1378
+],
+"alt_span": [
+1471,
+1484
+]
+},
+{
+"k": 27,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+1381,
+1384
+],
+"alt_span": [
+1487,
+1493
+]
+},
+{
+"k": 28,
+"nat": "prev_byte",
+"alt": "previous_byte",
+"nat_span": [
+1401,
+1410
+],
+"alt_span": [
+1510,
+1523
+]
+},
+{
+"k": 29,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+1654,
+1657
+],
+"alt_span": [
+1767,
+1772
+]
+},
+{
+"k": 30,
+"nat": "ctx",
+"alt": "context",
+"nat_span": [
+1728,
+1731
+],
+"alt_span": [
+1843,
+1850
+]
+},
+{
+"k": 31,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+1749,
+1753
+],
+"alt_span": [
+1868,
+1875
+]
+},
+{
+"k": 32,
+"nat": "ctx:\n                val",
+"alt": "context:\n                value",
+"nat_span": [
+1757,
+1781
+],
+"alt_span": [
+1879,
+1909
+]
+},
+{
+"k": 33,
+"nat": "err_io",
+"alt": "error_io",
+"nat_span": [
+1809,
+1815
+],
+"alt_span": [
+1937,
+1945
+]
+},
+{
+"k": 34,
+"nat": "err_io",
+"alt": "error_io",
+"nat_span": [
+1856,
+1862
+],
+"alt_span": [
+1986,
+1994
+]
+},
+{
+"k": 35,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+1915,
+1918
+],
+"alt_span": [
+2047,
+2052
+]
+},
+{
+"k": 36,
+"nat": "cfg_file_path",
+"alt": "configuration_file_path",
+"nat_span": [
+1942,
+1955
+],
+"alt_span": [
+2076,
+2099
+]
+},
+{
+"k": 37,
+"nat": "curr_count",
+"alt": "current_count",
+"nat_span": [
+2026,
+2036
+],
+"alt_span": [
+2170,
+2183
+]
+},
+{
+"k": 38,
+"nat": "cfg_file_path",
+"alt": "configuration_file_path",
+"nat_span": [
+2055,
+2068
+],
+"alt_span": [
+2202,
+2225
+]
+},
+{
+"k": 39,
+"nat": "file_obj",
+"alt": "file_object",
+"nat_span": [
+2078,
+2086
+],
+"alt_span": [
+2235,
+2246
+]
+},
+{
+"k": 40,
+"nat": "file_obj:\n            curr_count",
+"alt": "file_object:\n            current_count",
+"nat_span": [
+2114,
+2146
+],
+"alt_span": [
+2274,
+2312
+]
+},
+{
+"k": 41,
+"nat": "curr_count",
+"alt": "current_count",
+"nat_span": [
+2163,
+2173
+],
+"alt_span": [
+2329,
+2342
 ]
 }
 ],

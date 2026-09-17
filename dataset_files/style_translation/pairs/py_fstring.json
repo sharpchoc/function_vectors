@@ -52115,8 +52115,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def reverse_string(input_string: str) -> str:\n    \"\"\"\n    Reverses the order of characters in a given string.\n    \"\"\"\n    if not isinstance(input_string, str):\n        raise TypeError(f\"Expected a string for input_string, but got {type(input_string).__name__}.\")\n\n    original_length = len(input_string)\n    reversed_chars = []\n\n    for i in range(original_length - 1, -1, -1):\n        char_to_add = input_string[i]\n        reversed_chars.append(char_to_add)\n        # print(f\"Added character '{char_to_add}' at index {i}.\") # Debugging f-string example\n\n    result_string = \"\".join(reversed_chars)\n    # print(f\"Intermediate reversed characters: {reversed_chars}\") # Another debugging f-string example\n\n    if original_length > 0:\n        first_char_original = input_string[0]\n        last_char_reversed = result_string[-1]\n        # print(f\"First char of original: '{first_char_original}', Last char of reversed: '{last_char_reversed}'.\") # Final f-string check\n    else:\n        # print(f\"Input string was empty: '{input_string}'.\") # F-string for empty case\n\n    return f\"{result_string}\" # Using f-string for the return value itself\n\ndef test_reverse_string():\n    assert reverse_string('hello') == 'olleh', f\"Test failed for 'hello'. Expected 'olleh', got '{reverse_string('hello')}'.\"\n    assert reverse_string('Python') == 'nohtyP', f\"Test failed for 'Python'. Expected 'nohtyP', got '{reverse_string('Python')}'.\"\n    assert reverse_string('') == '', f\"Test failed for empty string. Expected '', got '{reverse_string('')}'.\"\n    assert reverse_string('a') == 'a', f\"Test failed for single character 'a'. Expected 'a', got '{reverse_string('a')}'.\"\n    print(\"All test cases passed!\")\n\nif __name__ == '__main__':\n    test_reverse_string()\n    my_string = \"f-strings rock\"\n    reversed_my_string = reverse_string(my_string)\n    print(f\"Original: '{my_string}', Reversed: '{reversed_my_string}'\")\n\n    another_string = \"level\"\n    reversed_another = reverse_string(another_string)\n    print(f\"Is '{another_string}' a palindrome? {another_string == reversed_another}\")\n",
-"text_alt": "def reverse_string(input_string: str) -> str:\n    \"\"\"\n    Reverses the order of characters in a given string.\n    \"\"\"\n    if not isinstance(input_string, str):\n        raise TypeError(\"Expected a string for input_string, but got {}.\".format(type(input_string).__name__))\n\n    original_length = len(input_string)\n    reversed_chars = []\n\n    for i in range(original_length - 1, -1, -1):\n        char_to_add = input_string[i]\n        reversed_chars.append(char_to_add)\n        # print(\"Added character '{}' at index {}.\".format(char_to_add, i)) # Debugging f-string example\n\n    result_string = \"\".join(reversed_chars)\n    # print(\"Intermediate reversed characters: {}\".format(reversed_chars)) # Another debugging f-string example\n\n    if original_length > 0:\n        first_char_original = input_string[0]\n        last_char_reversed = result_string[-1]\n        # print(\"First char of original: '{}', Last char of reversed: '{}'.\".format(first_char_original, last_char_reversed)) # Final f-string check\n    else:\n        # print(\"Input string was empty: '{}'.\".format(input_string)) # F-string for empty case\n\n    return \"{}\".format(result_string) # Using f-string for the return value itself\n\ndef test_reverse_string():\n    assert reverse_string('hello') == 'olleh', \"Test failed for 'hello'. Expected 'olleh', got '{}'.\".format(reverse_string('hello'))\n    assert reverse_string('Python') == 'nohtyP', \"Test failed for 'Python'. Expected 'nohtyP', got '{}'.\".format(reverse_string('Python'))\n    assert reverse_string('') == '', \"Test failed for empty string. Expected '', got '{}'.\".format(reverse_string(''))\n    assert reverse_string('a') == 'a', \"Test failed for single character 'a'. Expected 'a', got '{}'.\".format(reverse_string('a'))\n    print(\"All test cases passed!\")\n\nif __name__ == '__main__':\n    test_reverse_string()\n    my_string = \"f-strings rock\"\n    reversed_my_string = reverse_string(my_string)\n    print(\"Original: '{}', Reversed: '{}'\".format(my_string, reversed_my_string))\n\n    another_string = \"level\"\n    reversed_another = reverse_string(another_string)\n    print(\"Is '{}' a palindrome? {}\".format(another_string, another_string == reversed_another))\n",
+"text_nat": "def reverse_string(input_string: str) -> str:\n    \"\"\"\n    Reverses the order of characters in a given string.\n    \"\"\"\n    if not isinstance(input_string, str):\n        raise TypeError(f\"Expected a string, but got type {type(input_string).__name__}.\")\n\n    original_length = len(input_string)\n    reversed_chars = []\n\n    for i in range(original_length - 1, -1, -1):\n        char_to_append = input_string[i]\n        reversed_chars.append(char_to_append)\n        \n    result_string = \"\".join(reversed_chars)\n    \n    # Example of f-string usage after processing\n    # This f-string isn't returned, but demonstrates consistent application.\n    if original_length > 0:\n        first_char_original = input_string[0]\n        last_char_reversed = result_string[0]\n        # print(f\"Original first char: '{first_char_original}', Reversed first char: '{last_char_reversed}'\")\n    \n    return result_string\n\n# Test cases\ntest_str1 = \"hello\"\nreversed_str1 = reverse_string(test_str1)\n# print(f\"The string '{test_str1}' reversed is '{reversed_str1}'.\")\n\ntest_str2 = \"Python\"\nreversed_str2 = reverse_string(test_str2)\n# print(f\"The string '{test_str2}' reversed is '{reversed_str2}'.\")\n\ntest_str3 = \"\"\nreversed_str3 = reverse_string(test_str3)\n# print(f\"An empty string '{test_str3}' reversed is '{reversed_str3}'.\")\n\ntest_str4 = \"a\"\nreversed_str4 = reverse_string(test_str4)\n# print(f\"The single character string '{test_str4}' reversed is '{reversed_str4}'.\")\n\n# Example of f-string for validation\nassert reversed_str1 == 'olleh', f\"Test 1 failed: Expected 'olleh', got '{reversed_str1}'\"\nassert reversed_str2 == 'nohtyP', f\"Test 2 failed: Expected 'nohtyP', got '{reversed_str2}'\"\nassert reversed_str3 == '', f\"Test 3 failed: Expected '', got '{reversed_str3}'\"\nassert reversed_str4 == 'a', f\"Test 4 failed: Expected 'a', got '{reversed_str4}'\"\n\n# Another f-string for success message\n# print(f\"All {4} test cases passed successfully.\")\n",
+"text_alt": "def reverse_string(input_string: str) -> str:\n    \"\"\"\n    Reverses the order of characters in a given string.\n    \"\"\"\n    if not isinstance(input_string, str):\n        raise TypeError(\"Expected a string, but got type {}.\".format(type(input_string).__name__))\n\n    original_length = len(input_string)\n    reversed_chars = []\n\n    for i in range(original_length - 1, -1, -1):\n        char_to_append = input_string[i]\n        reversed_chars.append(char_to_append)\n        \n    result_string = \"\".join(reversed_chars)\n    \n    # Example of f-string usage after processing\n    # This f-string isn't returned, but demonstrates consistent application.\n    if original_length > 0:\n        first_char_original = input_string[0]\n        last_char_reversed = result_string[0]\n        # print(\"Original first char: '{}', Reversed first char: '{}'\".format(first_char_original, last_char_reversed))\n    \n    return result_string\n\n# Test cases\ntest_str1 = \"hello\"\nreversed_str1 = reverse_string(test_str1)\n# print(\"The string '{}' reversed is '{}'.\".format(test_str1, reversed_str1))\n\ntest_str2 = \"Python\"\nreversed_str2 = reverse_string(test_str2)\n# print(\"The string '{}' reversed is '{}'.\".format(test_str2, reversed_str2))\n\ntest_str3 = \"\"\nreversed_str3 = reverse_string(test_str3)\n# print(\"An empty string '{}' reversed is '{}'.\".format(test_str3, reversed_str3))\n\ntest_str4 = \"a\"\nreversed_str4 = reverse_string(test_str4)\n# print(\"The single character string '{}' reversed is '{}'.\".format(test_str4, reversed_str4))\n\n# Example of f-string for validation\nassert reversed_str1 == 'olleh', \"Test 1 failed: Expected 'olleh', got '{}'\".format(reversed_str1)\nassert reversed_str2 == 'nohtyP', \"Test 2 failed: Expected 'nohtyP', got '{}'\".format(reversed_str2)\nassert reversed_str3 == '', \"Test 3 failed: Expected '', got '{}'\".format(reversed_str3)\nassert reversed_str4 == 'a', \"Test 4 failed: Expected 'a', got '{}'\".format(reversed_str4)\n\n# Another f-string for success message\n# print(\"All {} test cases passed successfully.\".format(4))\n",
 "opps": [
 {
 "k": 0,
@@ -52136,12 +52136,12 @@
 "nat": "",
 "alt": "}.\".format(",
 "nat_span": [
-231,
-231
+219,
+219
 ],
 "alt_span": [
-230,
-241
+218,
+229
 ]
 },
 {
@@ -52149,12 +52149,12 @@
 "nat": "}.\"",
 "alt": ")",
 "nat_span": [
-258,
-261
+246,
+249
 ],
 "alt_span": [
-268,
-269
+256,
+257
 ]
 },
 {
@@ -52162,51 +52162,51 @@
 "nat": "f",
 "alt": "",
 "nat_span": [
-475,
-476
+773,
+774
 ],
 "alt_span": [
-483,
-483
+781,
+781
 ]
 },
 {
 "k": 4,
-"nat": "char_to_add",
+"nat": "first_char_original",
 "alt": "",
 "nat_span": [
-495,
-506
+798,
+817
 ],
 "alt_span": [
-502,
-502
+805,
+805
 ]
 },
 {
 "k": 5,
-"nat": "i",
+"nat": "last_char_reversed",
 "alt": "",
 "nat_span": [
-519,
-520
+844,
+862
 ],
 "alt_span": [
-515,
-515
+832,
+832
 ]
 },
 {
 "k": 6,
 "nat": "",
-"alt": ".format(char_to_add, i)",
+"alt": ".format(first_char_original, last_char_reversed)",
 "nat_span": [
-523,
-523
+865,
+865
 ],
 "alt_span": [
-518,
-541
+835,
+883
 ]
 },
 {
@@ -52214,207 +52214,207 @@
 "nat": "f",
 "alt": "",
 "nat_span": [
-611,
-612
+981,
+982
 ],
 "alt_span": [
-629,
-629
+999,
+999
 ]
 },
 {
 "k": 8,
-"nat": "reversed_chars}\"",
-"alt": "}\".format(reversed_chars)",
+"nat": "test_str1",
+"alt": "",
 "nat_span": [
-648,
-664
+996,
+1005
 ],
 "alt_span": [
-665,
-690
+1013,
+1013
 ]
 },
 {
 "k": 9,
-"nat": "f",
+"nat": "reversed_str1",
 "alt": "",
 "nat_span": [
-841,
-842
+1022,
+1035
 ],
 "alt_span": [
-867,
-867
+1030,
+1030
 ]
 },
 {
 "k": 10,
-"nat": "first_char_original",
-"alt": "",
+"nat": "",
+"alt": ".format(test_str1, reversed_str1)",
 "nat_span": [
-869,
-888
+1039,
+1039
 ],
 "alt_span": [
-894,
-894
+1034,
+1067
 ]
 },
 {
 "k": 11,
-"nat": "last_char_reversed",
+"nat": "f",
 "alt": "",
 "nat_span": [
-917,
-935
+1113,
+1114
 ],
 "alt_span": [
-923,
-923
+1141,
+1141
 ]
 },
 {
 "k": 12,
-"nat": "",
-"alt": ".format(first_char_original, last_char_reversed)",
+"nat": "test_str2",
+"alt": "",
 "nat_span": [
-939,
-939
+1128,
+1137
 ],
 "alt_span": [
-927,
-975
+1155,
+1155
 ]
 },
 {
 "k": 13,
-"nat": "f",
+"nat": "reversed_str2",
 "alt": "",
 "nat_span": [
-990,
-991
+1154,
+1167
 ],
 "alt_span": [
-1026,
-1026
+1172,
+1172
 ]
 },
 {
 "k": 14,
-"nat": "input_string",
-"alt": "",
+"nat": "",
+"alt": ".format(test_str2, reversed_str2)",
 "nat_span": [
-1018,
-1030
+1171,
+1171
 ],
 "alt_span": [
-1053,
-1053
+1176,
+1209
 ]
 },
 {
 "k": 15,
-"nat": "",
-"alt": ".format(input_string)",
+"nat": "f",
+"alt": "",
 "nat_span": [
-1034,
-1034
+1239,
+1240
 ],
 "alt_span": [
-1057,
-1078
+1277,
+1277
 ]
 },
 {
 "k": 16,
-"nat": "f\"{result_string}\"",
-"alt": "\"{}\".format(result_string)",
+"nat": "test_str3",
+"alt": "",
 "nat_span": [
-1074,
-1092
+1259,
+1268
 ],
 "alt_span": [
-1118,
-1144
+1296,
+1296
 ]
 },
 {
 "k": 17,
-"nat": "f",
+"nat": "reversed_str3",
 "alt": "",
 "nat_span": [
-1213,
-1214
+1285,
+1298
 ],
 "alt_span": [
-1265,
-1265
+1313,
+1313
 ]
 },
 {
 "k": 18,
 "nat": "",
-"alt": "}'.\".format(",
+"alt": ".format(test_str3, reversed_str3)",
 "nat_span": [
-1264,
-1264
+1302,
+1302
 ],
 "alt_span": [
-1315,
-1327
+1317,
+1350
 ]
 },
 {
 "k": 19,
-"nat": "}'.\"",
-"alt": ")",
+"nat": "f",
+"alt": "",
 "nat_span": [
-1287,
-1291
+1371,
+1372
 ],
 "alt_span": [
-1350,
-1351
+1419,
+1419
 ]
 },
 {
 "k": 20,
-"nat": "f",
+"nat": "test_str4",
 "alt": "",
 "nat_span": [
-1341,
-1342
+1403,
+1412
 ],
 "alt_span": [
-1401,
-1401
+1450,
+1450
 ]
 },
 {
 "k": 21,
-"nat": "",
-"alt": "}'.\".format(",
+"nat": "reversed_str4",
+"alt": "",
 "nat_span": [
-1394,
-1394
+1429,
+1442
 ],
 "alt_span": [
-1453,
-1465
+1467,
+1467
 ]
 },
 {
 "k": 22,
-"nat": "}'.\"",
-"alt": ")",
+"nat": "",
+"alt": ".format(test_str4, reversed_str4)",
 "nat_span": [
-1418,
-1422
+1446,
+1446
 ],
 "alt_span": [
-1489,
-1490
+1471,
+1504
 ]
 },
 {
@@ -52422,38 +52422,38 @@
 "nat": "f",
 "alt": "",
 "nat_span": [
-1460,
-1461
+1519,
+1520
 ],
 "alt_span": [
-1528,
-1528
+1577,
+1577
 ]
 },
 {
 "k": 24,
-"nat": "",
-"alt": "}'.\".format(",
+"nat": "reversed_str1",
+"alt": "",
 "nat_span": [
-1511,
-1511
+1560,
+1573
 ],
 "alt_span": [
-1578,
-1590
+1617,
+1617
 ]
 },
 {
 "k": 25,
-"nat": "}'.\"",
-"alt": ")",
+"nat": "",
+"alt": ".format(reversed_str1)",
 "nat_span": [
-1529,
-1533
+1576,
+1576
 ],
 "alt_span": [
-1608,
-1609
+1620,
+1642
 ]
 },
 {
@@ -52461,38 +52461,38 @@
 "nat": "f",
 "alt": "",
 "nat_span": [
-1573,
-1574
+1611,
+1612
 ],
 "alt_span": [
-1649,
-1649
+1677,
+1677
 ]
 },
 {
 "k": 27,
-"nat": "",
-"alt": "}'.\".format(",
+"nat": "reversed_str2",
+"alt": "",
 "nat_span": [
-1633,
-1633
+1653,
+1666
 ],
 "alt_span": [
-1708,
-1720
+1718,
+1718
 ]
 },
 {
 "k": 28,
-"nat": "}'.\"",
-"alt": ")",
+"nat": "",
+"alt": ".format(reversed_str2)",
 "nat_span": [
-1652,
-1656
+1669,
+1669
 ],
 "alt_span": [
-1739,
-1740
+1721,
+1743
 ]
 },
 {
@@ -52500,108 +52500,121 @@
 "nat": "f",
 "alt": "",
 "nat_span": [
-1841,
-1842
+1698,
+1699
 ],
 "alt_span": [
-1925,
-1925
+1772,
+1772
 ]
 },
 {
 "k": 30,
-"nat": "my_string",
+"nat": "reversed_str3",
 "alt": "",
 "nat_span": [
-1855,
-1864
+1734,
+1747
 ],
 "alt_span": [
-1938,
-1938
+1807,
+1807
 ]
 },
 {
 "k": 31,
-"nat": "reversed_my_string",
-"alt": "",
+"nat": "",
+"alt": ".format(reversed_str3)",
 "nat_span": [
-1880,
-1898
+1750,
+1750
 ],
 "alt_span": [
-1954,
-1954
+1810,
+1832
 ]
 },
 {
 "k": 32,
-"nat": "",
-"alt": ".format(my_string, reversed_my_string)",
+"nat": "f",
+"alt": "",
 "nat_span": [
-1901,
-1901
+1780,
+1781
 ],
 "alt_span": [
-1957,
-1995
+1862,
+1862
 ]
 },
 {
 "k": 33,
-"nat": "f",
+"nat": "reversed_str4",
 "alt": "",
 "nat_span": [
-1997,
-1998
+1817,
+1830
 ],
 "alt_span": [
-2091,
-2091
+1898,
+1898
 ]
 },
 {
 "k": 34,
-"nat": "another_string",
-"alt": "",
+"nat": "",
+"alt": ".format(reversed_str4)",
 "nat_span": [
-2004,
-2018
+1833,
+1833
 ],
 "alt_span": [
-2097,
-2097
+1901,
+1923
 ]
 },
 {
 "k": 35,
-"nat": "",
-"alt": "}\".format(another_string, ",
+"nat": "f",
+"alt": "",
 "nat_span": [
-2036,
-2036
+1882,
+1883
 ],
 "alt_span": [
-2115,
-2141
+1972,
+1972
 ]
 },
 {
 "k": 36,
-"nat": "}\"",
-"alt": ")",
+"nat": "4",
+"alt": "",
 "nat_span": [
-2070,
-2072
+1889,
+1890
 ],
 "alt_span": [
-2175,
-2176
+1978,
+1978
+]
+},
+{
+"k": 37,
+"nat": "",
+"alt": ".format(4)",
+"nat_span": [
+1924,
+1924
+],
+"alt_span": [
+2012,
+2022
 ]
 }
 ],
-"k_en": 37,
-"shared_fraction": 0.939,
+"k_en": 38,
+"shared_fraction": 0.956,
 "pass": true,
 "verify": null
 },

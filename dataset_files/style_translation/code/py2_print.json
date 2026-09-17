@@ -22383,8 +22383,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_valid_url(url):\n    print(\"Starting URL validation...\")\n    if not isinstance(url, str):\n        print(\"Input is not a string.\")\n        return False\n    \n    print(f\"Checking URL: {url}\")\n    \n    schemes = ('http://', 'https://')\n    is_scheme_valid = False\n    for scheme in schemes:\n        if url.startswith(scheme):\n            is_scheme_valid = True\n            break\n    \n    if not is_scheme_valid:\n        print(\"URL does not start with http:// or https://\")\n        return False\n    \n    print(\"Scheme is valid.\")\n    \n    # Check for at least one '.' after the scheme\n    scheme_end_index = url.find('://') + 3\n    remaining_url = url[scheme_end_index:]\n    \n    print(f\"Checking for dot in: {remaining_url}\")\n    if '.' not_in remaining_url:\n        print(\"No dot found after the scheme.\")\n        return False\n    \n    print(\"Dot found after scheme.\")\n    print(\"URL appears valid.\")\n    return True\n\nprint(is_valid_url('https://www.example.com'))\nprint(is_valid_url('ftp://invalid-url'))\nprint(is_valid_url('http://localhost'))\nprint(is_valid_url('not a url'))\n",
-"text_alt": "def is_valid_url(url):\n    print \"Starting URL validation...\"\n    if not isinstance(url, str):\n        print \"Input is not a string.\"\n        return False\n    \n    print \"Checking URL: %s\" % url\n    \n    schemes = ('http://', 'https://')\n    is_scheme_valid = False\n    for scheme in schemes:\n        if url.startswith(scheme):\n            is_scheme_valid = True\n            break\n    \n    if not is_scheme_valid:\n        print \"URL does not start with http:// or https://\"\n        return False\n    \n    print \"Scheme is valid.\"\n    \n    # Check for at least one '.' after the scheme\n    scheme_end_index = url.find('://') + 3\n    remaining_url = url[scheme_end_index:]\n    \n    print \"Checking for dot in: %s\" % remaining_url\n    if '.' not_in remaining_url:\n        print \"No dot found after the scheme.\"\n        return False\n    \n    print \"Dot found after scheme.\"\n    print \"URL appears valid.\"\n    return True\n\nprint is_valid_url('https://www.example.com')\nprint is_valid_url('ftp://invalid-url')\nprint is_valid_url('http://localhost')\nprint is_valid_url('not a url')\n",
+"text_nat": "def is_valid_url(url):\n    print(\"Starting URL validation.\")\n    if not isinstance(url, str):\n        print(\"Input is not a string.\")\n        return False\n    print(f\"Checking URL: {url}\")\n    \n    if url.startswith('http://'):\n        print(\"URL starts with http://\")\n        scheme_end = 7\n    elif url.startswith('https://'):\n        print(\"URL starts with https://\")\n        scheme_end = 8\n    else:\n        print(\"URL does not start with http:// or https://\")\n        return False\n\n    print(\"Scheme check passed.\")\n    remaining_url = url[scheme_end:]\n    print(f\"Remaining URL part: {remaining_url}\")\n\n    if '.' in remaining_url:\n        print(\"Dot found in the remaining URL part.\")\n        print(\"URL is considered valid.\")\n        return True\n    else:\n        print(\"No dot found after the scheme.\")\n        print(\"URL is considered invalid.\")\n        return False\n\nprint(is_valid_url('https://www.example.com'))\nprint(is_valid_url('ftp://invalid-url'))\nprint(is_valid_url('http://localhost'))\nprint(is_valid_url('https://test.co.uk/path'))\n",
+"text_alt": "def is_valid_url(url):\n    print \"Starting URL validation.\"\n    if not isinstance(url, str):\n        print \"Input is not a string.\"\n        return False\n    print \"Checking URL: %s\" % url\n    \n    if url.startswith('http://'):\n        print \"URL starts with http://\"\n        scheme_end = 7\n    elif url.startswith('https://'):\n        print \"URL starts with https://\"\n        scheme_end = 8\n    else:\n        print \"URL does not start with http:// or https://\"\n        return False\n\n    print \"Scheme check passed.\"\n    remaining_url = url[scheme_end:]\n    print \"Remaining URL part: %s\" % remaining_url\n\n    if '.' in remaining_url:\n        print \"Dot found in the remaining URL part.\"\n        print \"URL is considered valid.\"\n        return True\n    else:\n        print \"No dot found after the scheme.\"\n        print \"URL is considered invalid.\"\n        return False\n\nprint is_valid_url('https://www.example.com')\nprint is_valid_url('ftp://invalid-url')\nprint is_valid_url('http://localhost')\nprint is_valid_url('https://test.co.uk/path')\n",
 "opps": [
 {
 "k": 0,
@@ -22404,12 +22404,12 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-61,
-62
+59,
+60
 ],
 "alt_span": [
-61,
-61
+59,
+59
 ]
 },
 {
@@ -22417,12 +22417,12 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-109,
-110
+107,
+108
 ],
 "alt_span": [
-108,
-109
+106,
+107
 ]
 },
 {
@@ -22430,12 +22430,12 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-134,
-135
+132,
+133
 ],
 "alt_span": [
-133,
-133
+131,
+131
 ]
 },
 {
@@ -22443,12 +22443,12 @@
 "nat": "(f",
 "alt": " ",
 "nat_span": [
-171,
-173
+164,
+166
 ],
 "alt_span": [
-169,
-170
+162,
+163
 ]
 },
 {
@@ -22456,12 +22456,12 @@
 "nat": "{url}\")",
 "alt": "%s\" % url",
 "nat_span": [
-188,
-195
+181,
+188
 ],
 "alt_span": [
-185,
-194
+178,
+187
 ]
 },
 {
@@ -22469,12 +22469,12 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-428,
-429
+241,
+242
 ],
 "alt_span": [
-427,
-428
+240,
+241
 ]
 },
 {
@@ -22482,12 +22482,12 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-474,
-475
+267,
+268
 ],
 "alt_span": [
-473,
-473
+266,
+266
 ]
 },
 {
@@ -22495,12 +22495,12 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-511,
-512
+342,
+343
 ],
 "alt_span": [
-509,
-510
+340,
+341
 ]
 },
 {
@@ -22508,38 +22508,38 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-530,
-531
+369,
+370
 ],
 "alt_span": [
-528,
-528
+367,
+367
 ]
 },
 {
 "k": 10,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-687,
-689
+417,
+418
 ],
 "alt_span": [
-684,
-685
+414,
+415
 ]
 },
 {
 "k": 11,
-"nat": "{remaining_url}\")",
-"alt": "%s\" % remaining_url",
+"nat": ")",
+"alt": "",
 "nat_span": [
-711,
-728
+463,
+464
 ],
 "alt_span": [
-707,
-726
+460,
+460
 ]
 },
 {
@@ -22547,12 +22547,12 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-775,
-776
+496,
+497
 ],
 "alt_span": [
-773,
-774
+492,
+493
 ]
 },
 {
@@ -22560,103 +22560,103 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-808,
-809
+519,
+520
 ],
 "alt_span": [
-806,
-806
+515,
+515
 ]
 },
 {
 "k": 14,
-"nat": "(",
+"nat": "(f",
 "alt": " ",
 "nat_span": [
-845,
-846
+567,
+569
 ],
 "alt_span": [
-842,
-843
+562,
+563
 ]
 },
 {
 "k": 15,
-"nat": ")\n    print(",
-"alt": "\n    print ",
+"nat": "{remaining_url}\")",
+"alt": "%s\" % remaining_url",
 "nat_span": [
-871,
-883
+590,
+607
 ],
 "alt_span": [
-868,
-879
+584,
+603
 ]
 },
 {
 "k": 16,
-"nat": ")",
-"alt": "",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-903,
-904
+651,
+652
 ],
 "alt_span": [
-899,
-899
+647,
+648
 ]
 },
 {
 "k": 17,
-"nat": "(",
-"alt": " ",
+"nat": ")\n        print(",
+"alt": "\n        print ",
 "nat_span": [
-927,
-928
+690,
+706
 ],
 "alt_span": [
-922,
-923
+686,
+701
 ]
 },
 {
 "k": 18,
-"nat": ")\nprint(",
-"alt": "\nprint ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-967,
-975
+732,
+733
 ],
 "alt_span": [
-962,
-969
+727,
+727
 ]
 },
 {
 "k": 19,
-"nat": ")\nprint(",
-"alt": "\nprint ",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-1008,
-1016
+777,
+778
 ],
 "alt_span": [
-1002,
-1009
+771,
+772
 ]
 },
 {
 "k": 20,
-"nat": ")\nprint(",
-"alt": "\nprint ",
+"nat": ")\n        print(",
+"alt": "\n        print ",
 "nat_span": [
-1048,
-1056
+810,
+826
 ],
 "alt_span": [
-1041,
-1048
+804,
+819
 ]
 },
 {
@@ -22664,17 +22664,82 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-1081,
-1082
+854,
+855
 ],
 "alt_span": [
-1073,
-1073
+847,
+847
+]
+},
+{
+"k": 22,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+883,
+884
+],
+"alt_span": [
+875,
+876
+]
+},
+{
+"k": 23,
+"nat": ")\nprint(",
+"alt": "\nprint ",
+"nat_span": [
+923,
+931
+],
+"alt_span": [
+915,
+922
+]
+},
+{
+"k": 24,
+"nat": ")\nprint(",
+"alt": "\nprint ",
+"nat_span": [
+964,
+972
+],
+"alt_span": [
+955,
+962
+]
+},
+{
+"k": 25,
+"nat": ")\nprint(",
+"alt": "\nprint ",
+"nat_span": [
+1004,
+1012
+],
+"alt_span": [
+994,
+1001
+]
+},
+{
+"k": 26,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1051,
+1052
+],
+"alt_span": [
+1040,
+1040
 ]
 }
 ],
-"k_en": 22,
-"shared_fraction": 0.908,
+"k_en": 27,
+"shared_fraction": 0.892,
 "pass": true,
 "verify": null
 },

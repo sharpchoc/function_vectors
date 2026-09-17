@@ -5108,8 +5108,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def validate_email(email):\n    'Validates a basic email format.'\n    if not isinstance(email, str):\n        return False\n    \n    if '@' not in email:\n        return False\n\n    if '.' not in email:\n        return False\n\n    at_index = email.find('@')\n    dot_index = email.find('.')\n\n    if at_index == -1 or dot_index == -1:\n        return False\n\n    if at_index > dot_index:\n        return False\n\n    if at_index == 0:\n        return False\n\n    if dot_index == len(email) - 1:\n        return False\n    \n    if email.count('@') > 1:\n        return False\n\n    'All checks passed, it's a valid basic email.'\n    return True\n",
-"text_alt": "def validate_email(email):\n    \"Validates a basic email format.\"\n    if not isinstance(email, str):\n        return False\n    \n    if \"@\" not in email:\n        return False\n\n    if \".\" not in email:\n        return False\n\n    at_index = email.find(\"@\")\n    dot_index = email.find(\".\")\n\n    if at_index == -1 or dot_index == -1:\n        return False\n\n    if at_index > dot_index:\n        return False\n\n    if at_index == 0:\n        return False\n\n    if dot_index == len(email) - 1:\n        return False\n    \n    if email.count(\"@\") > 1:\n        return False\n\n    \"All checks passed, it's a valid basic email.\"\n    return True\n",
+"text_nat": "def validate_email(email):\n    'Validates a basic email format.'\n    if not isinstance(email, str):\n        return False\n\n    at_symbol_index = email.find('@')\n    dot_index = email.rfind('.')\n\n    if at_symbol_index == -1:\n        return False\n    if dot_index == -1:\n        return False\n\n    if at_symbol_index > dot_index:\n        return False\n\n    if at_symbol_index == 0:\n        return False\n    if dot_index == len(email) - 1:\n        return False\n\n    if '.' in email[at_symbol_index + 1 : dot_index]:\n        return False # No dots allowed between '@' and last '.'\n\n    if ' ' in email:\n        return False\n\n    return True\n",
+"text_alt": "def validate_email(email):\n    \"Validates a basic email format.\"\n    if not isinstance(email, str):\n        return False\n\n    at_symbol_index = email.find(\"@\")\n    dot_index = email.rfind(\".\")\n\n    if at_symbol_index == -1:\n        return False\n    if dot_index == -1:\n        return False\n\n    if at_symbol_index > dot_index:\n        return False\n\n    if at_symbol_index == 0:\n        return False\n    if dot_index == len(email) - 1:\n        return False\n\n    if \".\" in email[at_symbol_index + 1 : dot_index]:\n        return False # No dots allowed between '@' and last '.'\n\n    if \" \" in email:\n        return False\n\n    return True\n",
 "opps": [
 {
 "k": 0,
@@ -5142,12 +5142,12 @@
 "nat": "'@'",
 "alt": "\"@\"",
 "nat_span": [
-133,
-136
+155,
+158
 ],
 "alt_span": [
-133,
-136
+155,
+158
 ]
 },
 {
@@ -5155,82 +5155,43 @@
 "nat": "'.'",
 "alt": "\".\"",
 "nat_span": [
-180,
-183
+188,
+191
 ],
 "alt_span": [
-180,
-183
+188,
+191
 ]
 },
 {
 "k": 4,
-"nat": "'@'",
-"alt": "\"@\"",
+"nat": "'.'",
+"alt": "\".\"",
 "nat_span": [
-246,
-249
+464,
+467
 ],
 "alt_span": [
-246,
-249
+464,
+467
 ]
 },
 {
 "k": 5,
-"nat": "'.'",
-"alt": "\".\"",
+"nat": "' '",
+"alt": "\" \"",
 "nat_span": [
-278,
-281
+583,
+586
 ],
 "alt_span": [
-278,
-281
-]
-},
-{
-"k": 6,
-"nat": "'@'",
-"alt": "\"@\"",
-"nat_span": [
-524,
-527
-],
-"alt_span": [
-524,
-527
-]
-},
-{
-"k": 7,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-560,
-561
-],
-"alt_span": [
-560,
-561
-]
-},
-{
-"k": 8,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-605,
-606
-],
-"alt_span": [
-605,
-606
+583,
+586
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.935,
+"k_en": 6,
+"shared_fraction": 0.952,
 "pass": true,
 "verify": null
 },
@@ -8526,20 +8487,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def has_unique_chars(s: str) -> bool:\n    '''Checks if all characters in a string are unique.'''\n    if not isinstance(s, str):\n        raise TypeError('Input must be a string.')\n\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return False\n        seen_chars.add(char)\n    return True\n\nif __name__ == '__main__':\n    print(f\"'abc' has unique chars: {has_unique_chars('abc')}\")\n    print(f\"'abca' has unique chars: {has_unique_chars('abca')}\")\n    print(f\"'Python' has unique chars: {has_unique_chars('Python')}\")\n    print(f\"'hello' has unique chars: {has_unique_chars('hello')}\")\n    print(f\"'' has unique chars: {has_unique_chars('')}\")\n    print(f\"'a' has unique chars: {has_unique_chars('a')}\")\n    try:\n        has_unique_chars(123)\n    except TypeError as e:\n        print(f\"Caught expected error for non-string input: '{e}'\")\n",
-"text_alt": "def has_unique_chars(s: str) -> bool:\n    '''Checks if all characters in a string are unique.'''\n    if not isinstance(s, str):\n        raise TypeError(\"Input must be a string.\")\n\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return False\n        seen_chars.add(char)\n    return True\n\nif __name__ == '__main__':\n    print(f\"'abc' has unique chars: {has_unique_chars(\"abc\")}\")\n    print(f\"'abca' has unique chars: {has_unique_chars(\"abca\")}\")\n    print(f\"'Python' has unique chars: {has_unique_chars(\"Python\")}\")\n    print(f\"'hello' has unique chars: {has_unique_chars(\"hello\")}\")\n    print(f\"'' has unique chars: {has_unique_chars(\"\")}\")\n    print(f\"'a' has unique chars: {has_unique_chars(\"a\")}\")\n    try:\n        has_unique_chars(123)\n    except TypeError as e:\n        print(f\"Caught expected error for non-string input: '{e}'\")\n",
+"text_nat": "def has_unique_chars(s):\n    if not isinstance(s, str):\n        raise TypeError('Input must be a string')\n\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return False\n        seen_chars.add(char)\n    return True\n\ndef _test_has_unique_chars():\n    assert has_unique_chars('abc') is True, 'Test Case 1 Failed'\n    assert has_unique_chars('abca') is False, 'Test Case 2 Failed'\n    assert has_unique_chars('') is True, 'Test Case 3 Failed'\n    assert has_unique_chars('a') is True, 'Test Case 4 Failed'\n    assert has_unique_chars('aabbcc') is False, 'Test Case 5 Failed'\n    assert has_unique_chars('abcdefghijklmnopqrstuvwxyz') is True, 'Test Case 6 Failed'\n    assert has_unique_chars('programming') is False, 'Test Case 7 Failed'\n    assert has_unique_chars('12345') is True, 'Test Case 8 Failed'\n\nif __name__ == '__main__':\n    _test_has_unique_chars()\n    print('All tests passed for has_unique_chars.')\n",
+"text_alt": "def has_unique_chars(s):\n    if not isinstance(s, str):\n        raise TypeError(\"Input must be a string\")\n\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return False\n        seen_chars.add(char)\n    return True\n\ndef _test_has_unique_chars():\n    assert has_unique_chars(\"abc\") is True, \"Test Case 1 Failed\"\n    assert has_unique_chars(\"abca\") is False, \"Test Case 2 Failed\"\n    assert has_unique_chars(\"\") is True, \"Test Case 3 Failed\"\n    assert has_unique_chars(\"a\") is True, \"Test Case 4 Failed\"\n    assert has_unique_chars(\"aabbcc\") is False, \"Test Case 5 Failed\"\n    assert has_unique_chars(\"abcdefghijklmnopqrstuvwxyz\") is True, \"Test Case 6 Failed\"\n    assert has_unique_chars(\"programming\") is False, \"Test Case 7 Failed\"\n    assert has_unique_chars(\"12345\") is True, \"Test Case 8 Failed\"\n\nif __name__ == \"__main__\":\n    _test_has_unique_chars()\n    print(\"All tests passed for has_unique_chars.\")\n",
 "opps": [
 {
 "k": 0,
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-152,
-153
+80,
+81
 ],
 "alt_span": [
-152,
-153
+80,
+81
 ]
 },
 {
@@ -8547,12 +8508,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-176,
-177
+103,
+104
 ],
 "alt_span": [
-176,
-177
+103,
+104
 ]
 },
 {
@@ -8560,82 +8521,355 @@
 "nat": "'abc'",
 "alt": "\"abc\"",
 "nat_span": [
-405,
-410
+309,
+314
 ],
 "alt_span": [
-405,
-410
+309,
+314
 ]
 },
 {
 "k": 3,
-"nat": "'abca'",
-"alt": "\"abca\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-470,
-476
+325,
+326
 ],
 "alt_span": [
-470,
-476
+325,
+326
 ]
 },
 {
 "k": 4,
-"nat": "'Python'",
-"alt": "\"Python\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-538,
-546
+344,
+345
 ],
 "alt_span": [
-538,
-546
+344,
+345
 ]
 },
 {
 "k": 5,
-"nat": "'hello'",
-"alt": "\"hello\"",
+"nat": "'abca'",
+"alt": "\"abca\"",
 "nat_span": [
-607,
-614
+374,
+380
 ],
 "alt_span": [
-607,
-614
+374,
+380
 ]
 },
 {
 "k": 6,
-"nat": "''",
-"alt": "\"\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-670,
-672
+392,
+393
 ],
 "alt_span": [
-670,
-672
+392,
+393
 ]
 },
 {
 "k": 7,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+411,
+412
+],
+"alt_span": [
+411,
+412
+]
+},
+{
+"k": 8,
+"nat": "''",
+"alt": "\"\"",
+"nat_span": [
+441,
+443
+],
+"alt_span": [
+441,
+443
+]
+},
+{
+"k": 9,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+454,
+455
+],
+"alt_span": [
+454,
+455
+]
+},
+{
+"k": 10,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+473,
+474
+],
+"alt_span": [
+473,
+474
+]
+},
+{
+"k": 11,
 "nat": "'a'",
 "alt": "\"a\"",
 "nat_span": [
-729,
-732
+503,
+506
 ],
 "alt_span": [
-729,
-732
+503,
+506
+]
+},
+{
+"k": 12,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+517,
+518
+],
+"alt_span": [
+517,
+518
+]
+},
+{
+"k": 13,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+536,
+537
+],
+"alt_span": [
+536,
+537
+]
+},
+{
+"k": 14,
+"nat": "'aabbcc'",
+"alt": "\"aabbcc\"",
+"nat_span": [
+566,
+574
+],
+"alt_span": [
+566,
+574
+]
+},
+{
+"k": 15,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+586,
+587
+],
+"alt_span": [
+586,
+587
+]
+},
+{
+"k": 16,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+605,
+606
+],
+"alt_span": [
+605,
+606
+]
+},
+{
+"k": 17,
+"nat": "'abcdefghijklmnopqrstuvwxyz'",
+"alt": "\"abcdefghijklmnopqrstuvwxyz\"",
+"nat_span": [
+635,
+663
+],
+"alt_span": [
+635,
+663
+]
+},
+{
+"k": 18,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+674,
+675
+],
+"alt_span": [
+674,
+675
+]
+},
+{
+"k": 19,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+693,
+694
+],
+"alt_span": [
+693,
+694
+]
+},
+{
+"k": 20,
+"nat": "'programming'",
+"alt": "\"programming\"",
+"nat_span": [
+723,
+736
+],
+"alt_span": [
+723,
+736
+]
+},
+{
+"k": 21,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+748,
+749
+],
+"alt_span": [
+748,
+749
+]
+},
+{
+"k": 22,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+767,
+768
+],
+"alt_span": [
+767,
+768
+]
+},
+{
+"k": 23,
+"nat": "'12345'",
+"alt": "\"12345\"",
+"nat_span": [
+797,
+804
+],
+"alt_span": [
+797,
+804
+]
+},
+{
+"k": 24,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+815,
+816
+],
+"alt_span": [
+815,
+816
+]
+},
+{
+"k": 25,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+834,
+835
+],
+"alt_span": [
+834,
+835
+]
+},
+{
+"k": 26,
+"nat": "'__main__'",
+"alt": "\"__main__\"",
+"nat_span": [
+852,
+862
+],
+"alt_span": [
+852,
+862
+]
+},
+{
+"k": 27,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+903,
+904
+],
+"alt_span": [
+903,
+904
+]
+},
+{
+"k": 28,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+942,
+943
+],
+"alt_span": [
+942,
+943
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.957,
+"k_en": 29,
+"shared_fraction": 0.877,
 "pass": true,
 "verify": null
 },
@@ -13209,8 +13443,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def roman_to_int(roman_numeral):\n    roman_map = {\n        'I': 1, 'V': 5, 'X': 10, 'L': 50,\n        'C': 100, 'D': 500, 'M': 1000\n    }\n    integer_value = 0\n    prev_value = 0\n\n    for char in reversed(roman_numeral):\n        current_value = roman_map[char]\n        if current_value < prev_value:\n            integer_value -= current_value\n        else:\n            integer_value += current_value\n        prev_value = current_value\n\n    return integer_value\n\nif __name__ == '__main__':\n    test_cases = [\n        ('III', 3),\n        ('IV', 4),\n        ('IX', 9),\n        ('LVIII', 58),\n        ('MCMXCIV', 1994),\n        ('DCCVII', 707),\n        ('XLIX', 49)\n    ]\n    for roman, expected in test_cases:\n        result = roman_to_int(roman)\n        print(f'Converting {roman}: Expected {expected}, Got {result}. Status: {\"PASS\" if result == expected else \"FAIL\"}')\n    print('Testing complete.')\n",
-"text_alt": "def roman_to_int(roman_numeral):\n    roman_map = {\n        \"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50,\n        \"C\": 100, \"D\": 500, \"M\": 1000\n    }\n    integer_value = 0\n    prev_value = 0\n\n    for char in reversed(roman_numeral):\n        current_value = roman_map[char]\n        if current_value < prev_value:\n            integer_value -= current_value\n        else:\n            integer_value += current_value\n        prev_value = current_value\n\n    return integer_value\n\nif __name__ == \"__main__\":\n    test_cases = [\n        (\"III\", 3),\n        (\"IV\", 4),\n        (\"IX\", 9),\n        (\"LVIII\", 58),\n        (\"MCMXCIV\", 1994),\n        (\"DCCVII\", 707),\n        (\"XLIX\", 49)\n    ]\n    for roman, expected in test_cases:\n        result = roman_to_int(roman)\n        print(f\"Converting {roman}: Expected {expected}, Got {result}. Status: {\"PASS\" if result == expected else \"FAIL\"}\")\n    print(\"Testing complete.\")\n",
+"text_nat": "def roman_to_int(roman_numeral):\n    roman_map = {\n        'I': 1, 'V': 5, 'X': 10, 'L': 50,\n        'C': 100, 'D': 500, 'M': 1000\n    }\n    integer_value = 0\n    n = len(roman_numeral)\n    i = 0\n    while i < n:\n        if i + 1 < n and roman_map[roman_numeral[i]] < roman_map[roman_numeral[i+1]]:\n            integer_value += roman_map[roman_numeral[i+1]] - roman_map[roman_numeral[i]]\n            i += 2\n        else:\n            integer_value += roman_map[roman_numeral[i]]\n            i += 1\n    return integer_value\n",
+"text_alt": "def roman_to_int(roman_numeral):\n    roman_map = {\n        \"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50,\n        \"C\": 100, \"D\": 500, \"M\": 1000\n    }\n    integer_value = 0\n    n = len(roman_numeral)\n    i = 0\n    while i < n:\n        if i + 1 < n and roman_map[roman_numeral[i]] < roman_map[roman_numeral[i+1]]:\n            integer_value += roman_map[roman_numeral[i+1]] - roman_map[roman_numeral[i]]\n            i += 2\n        else:\n            integer_value += roman_map[roman_numeral[i]]\n            i += 1\n    return integer_value\n",
 "opps": [
 {
 "k": 0,
@@ -13302,166 +13536,10 @@
 121,
 124
 ]
-},
-{
-"k": 7,
-"nat": "'__main__'",
-"alt": "\"__main__\"",
-"nat_span": [
-476,
-486
-],
-"alt_span": [
-476,
-486
-]
-},
-{
-"k": 8,
-"nat": "'III'",
-"alt": "\"III\"",
-"nat_span": [
-516,
-521
-],
-"alt_span": [
-516,
-521
-]
-},
-{
-"k": 9,
-"nat": "'IV'",
-"alt": "\"IV\"",
-"nat_span": [
-536,
-540
-],
-"alt_span": [
-536,
-540
-]
-},
-{
-"k": 10,
-"nat": "'IX'",
-"alt": "\"IX\"",
-"nat_span": [
-555,
-559
-],
-"alt_span": [
-555,
-559
-]
-},
-{
-"k": 11,
-"nat": "'LVIII'",
-"alt": "\"LVIII\"",
-"nat_span": [
-574,
-581
-],
-"alt_span": [
-574,
-581
-]
-},
-{
-"k": 12,
-"nat": "'MCMXCIV'",
-"alt": "\"MCMXCIV\"",
-"nat_span": [
-597,
-606
-],
-"alt_span": [
-597,
-606
-]
-},
-{
-"k": 13,
-"nat": "'DCCVII'",
-"alt": "\"DCCVII\"",
-"nat_span": [
-624,
-632
-],
-"alt_span": [
-624,
-632
-]
-},
-{
-"k": 14,
-"nat": "'XLIX'",
-"alt": "\"XLIX\"",
-"nat_span": [
-649,
-655
-],
-"alt_span": [
-649,
-655
-]
-},
-{
-"k": 15,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-758,
-759
-],
-"alt_span": [
-758,
-759
-]
-},
-{
-"k": 16,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-864,
-865
-],
-"alt_span": [
-864,
-865
-]
-},
-{
-"k": 17,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-877,
-878
-],
-"alt_span": [
-877,
-878
-]
-},
-{
-"k": 18,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-895,
-896
-],
-"alt_span": [
-895,
-896
-]
 }
 ],
-"k_en": 19,
-"shared_fraction": 0.891,
+"k_en": 7,
+"shared_fraction": 0.928,
 "pass": true,
 "verify": null
 },
@@ -29104,20 +29182,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def to_grayscale(image_matrix):\n    'Converts an RGB image matrix to grayscale.'\n    grayscale_image = []\n    for row in image_matrix:\n        grayscale_row = []\n        for pixel in row:\n            if not isinstance(pixel, list) or len(pixel) != 3:\n                raise ValueError('Each pixel must be an RGB list of length 3.')\n            r, g, b = pixel\n            average_value = int(round((r + g + b) / 3.0))\n            grayscale_row.append(average_value)\n        grayscale_image.append(grayscale_row)\n    'Processing complete.'\n    return grayscale_image\n\nif __name__ == '__main__':\n    # Test cases\n    image1 = [[[255, 0, 0], [0, 255, 0], [0, 0, 255]]]\n    expected1 = [[85, 85, 85]]\n    result1 = to_grayscale(image1)\n    print(f'Test 1 Input: {image1}')\n    print(f'Test 1 Output: {result1}')\n    print(f'Test 1 Expected: {expected1}')\n    print(f'Test 1 {'PASS' if result1 == expected1 else 'FAIL'}')\n    print('-' * 20)\n\n    image2 = [[[10, 20, 30], [100, 150, 200]]]\n    expected2 = [[20, 150]]\n    result2 = to_grayscale(image2)\n    print(f'Test 2 Input: {image2}')\n    print(f'Test 2 Output: {result2}')\n    print(f'Test 2 Expected: {expected2}')\n    print(f'Test 2 {'PASS' if result2 == expected2 else 'FAIL'}')\n    print('-' * 20)\n\n    image3 = [[[0, 0, 0]], [[255, 255, 255]]]\n    expected3 = [[0], [255]]\n    result3 = to_grayscale(image3)\n    print(f'Test 3 Input: {image3}')\n    print(f'Test 3 Output: {result3}')\n    print(f'Test 3 Expected: {expected3}')\n    print(f'Test 3 {'PASS' if result3 == expected3 else 'FAIL'}')\n    print('All tests finished.')\n",
-"text_alt": "def to_grayscale(image_matrix):\n    \"Converts an RGB image matrix to grayscale.\"\n    grayscale_image = []\n    for row in image_matrix:\n        grayscale_row = []\n        for pixel in row:\n            if not isinstance(pixel, list) or len(pixel) != 3:\n                raise ValueError(\"Each pixel must be an RGB list of length 3.\")\n            r, g, b = pixel\n            average_value = int(round((r + g + b) / 3.0))\n            grayscale_row.append(average_value)\n        grayscale_image.append(grayscale_row)\n    \"Processing complete.\"\n    return grayscale_image\n\nif __name__ == \"__main__\":\n    # Test cases\n    image1 = [[[255, 0, 0], [0, 255, 0], [0, 0, 255]]]\n    expected1 = [[85, 85, 85]]\n    result1 = to_grayscale(image1)\n    print(f\"Test 1 Input: {image1}\")\n    print(f\"Test 1 Output: {result1}\")\n    print(f\"Test 1 Expected: {expected1}\")\n    print(f\"Test 1 {\"PASS\" if result1 == expected1 else \"FAIL\"}\")\n    print(\"-\" * 20)\n\n    image2 = [[[10, 20, 30], [100, 150, 200]]]\n    expected2 = [[20, 150]]\n    result2 = to_grayscale(image2)\n    print(f\"Test 2 Input: {image2}\")\n    print(f\"Test 2 Output: {result2}\")\n    print(f\"Test 2 Expected: {expected2}\")\n    print(f\"Test 2 {\"PASS\" if result2 == expected2 else \"FAIL\"}\")\n    print(\"-\" * 20)\n\n    image3 = [[[0, 0, 0]], [[255, 255, 255]]]\n    expected3 = [[0], [255]]\n    result3 = to_grayscale(image3)\n    print(f\"Test 3 Input: {image3}\")\n    print(f\"Test 3 Output: {result3}\")\n    print(f\"Test 3 Expected: {expected3}\")\n    print(f\"Test 3 {\"PASS\" if result3 == expected3 else \"FAIL\"}\")\n    print(\"All tests finished.\")\n",
+"text_nat": "def to_grayscale(image_matrix):\n    grayscale_image = []\n    for row in image_matrix:\n        grayscale_row = []\n        for pixel in row:\n            r, g, b = pixel[0], pixel[1], pixel[2]\n            average_value = round((r + g + b) / 3)\n            grayscale_row.append(average_value)\n        grayscale_image.append(grayscale_row)\n    return grayscale_image\n\nif __name__ == '__main__':\n    # Test cases for the to_grayscale function\n    test_image_1 = [[[255, 0, 0], [0, 255, 0]]]\n    expected_output_1 = [[85, 85]]\n    result_1 = to_grayscale(test_image_1)\n    print(f'Test 1 Input: {test_image_1}')\n    print(f'Test 1 Output: {result_1}')\n    print(f'Test 1 Expected: {expected_output_1}')\n    assert result_1 == expected_output_1, 'Test 1 Failed: Red and Green'\n\n    test_image_2 = [[[10, 20, 30]]]\n    expected_output_2 = [[20]]\n    result_2 = to_grayscale(test_image_2)\n    print(f'Test 2 Input: {test_image_2}')\n    print(f'Test 2 Output: {result_2}')\n    print(f'Test 2 Expected: {expected_output_2}')\n    assert result_2 == expected_output_2, 'Test 2 Failed: Single pixel'\n\n    test_image_3 = [[[255, 255, 255], [0, 0, 0]], [[100, 100, 100], [50, 50, 50]]]\n    expected_output_3 = [[255, 0], [100, 50]]\n    result_3 = to_grayscale(test_image_3)\n    print(f'Test 3 Input: {test_image_3}')\n    print(f'Test 3 Output: {result_3}')\n    print(f'Test 3 Expected: {expected_output_3}')\n    assert result_3 == expected_output_3, 'Test 3 Failed: Multiple rows and pixels'\n\n    print('All tests passed successfully!')\n",
+"text_alt": "def to_grayscale(image_matrix):\n    grayscale_image = []\n    for row in image_matrix:\n        grayscale_row = []\n        for pixel in row:\n            r, g, b = pixel[0], pixel[1], pixel[2]\n            average_value = round((r + g + b) / 3)\n            grayscale_row.append(average_value)\n        grayscale_image.append(grayscale_row)\n    return grayscale_image\n\nif __name__ == \"__main__\":\n    # Test cases for the to_grayscale function\n    test_image_1 = [[[255, 0, 0], [0, 255, 0]]]\n    expected_output_1 = [[85, 85]]\n    result_1 = to_grayscale(test_image_1)\n    print(f\"Test 1 Input: {test_image_1}\")\n    print(f\"Test 1 Output: {result_1}\")\n    print(f\"Test 1 Expected: {expected_output_1}\")\n    assert result_1 == expected_output_1, \"Test 1 Failed: Red and Green\"\n\n    test_image_2 = [[[10, 20, 30]]]\n    expected_output_2 = [[20]]\n    result_2 = to_grayscale(test_image_2)\n    print(f\"Test 2 Input: {test_image_2}\")\n    print(f\"Test 2 Output: {result_2}\")\n    print(f\"Test 2 Expected: {expected_output_2}\")\n    assert result_2 == expected_output_2, \"Test 2 Failed: Single pixel\"\n\n    test_image_3 = [[[255, 255, 255], [0, 0, 0]], [[100, 100, 100], [50, 50, 50]]]\n    expected_output_3 = [[255, 0], [100, 50]]\n    result_3 = to_grayscale(test_image_3)\n    print(f\"Test 3 Input: {test_image_3}\")\n    print(f\"Test 3 Output: {result_3}\")\n    print(f\"Test 3 Expected: {expected_output_3}\")\n    assert result_3 == expected_output_3, \"Test 3 Failed: Multiple rows and pixels\"\n\n    print(\"All tests passed successfully!\")\n",
 "opps": [
 {
 "k": 0,
-"nat": "'",
-"alt": "\"",
+"nat": "'__main__'",
+"alt": "\"__main__\"",
 "nat_span": [
-36,
-37
+378,
+388
 ],
 "alt_span": [
-36,
-37
+378,
+388
 ]
 },
 {
@@ -29125,12 +29203,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-79,
-80
+573,
+574
 ],
 "alt_span": [
-79,
-80
+573,
+574
 ]
 },
 {
@@ -29138,12 +29216,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-284,
-285
+602,
+603
 ],
 "alt_span": [
-284,
-285
+602,
+603
 ]
 },
 {
@@ -29151,12 +29229,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-328,
-329
+616,
+617
 ],
 "alt_span": [
-328,
-329
+616,
+617
 ]
 },
 {
@@ -29164,12 +29242,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-515,
-516
+642,
+643
 ],
 "alt_span": [
-515,
-516
+642,
+643
 ]
 },
 {
@@ -29177,25 +29255,25 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-536,
-537
+656,
+657
 ],
 "alt_span": [
-536,
-537
+656,
+657
 ]
 },
 {
 "k": 6,
-"nat": "'__main__'",
-"alt": "\"__main__\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-581,
-591
+693,
+694
 ],
 "alt_span": [
-581,
-591
+693,
+694
 ]
 },
 {
@@ -29203,12 +29281,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-742,
-743
+738,
+739
 ],
 "alt_span": [
-742,
-743
+738,
+739
 ]
 },
 {
@@ -29216,12 +29294,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-765,
-766
+767,
+768
 ],
 "alt_span": [
-765,
-766
+767,
+768
 ]
 },
 {
@@ -29229,12 +29307,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-779,
-780
+890,
+891
 ],
 "alt_span": [
-779,
-780
+890,
+891
 ]
 },
 {
@@ -29242,12 +29320,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-804,
-805
+919,
+920
 ],
 "alt_span": [
-804,
-805
+919,
+920
 ]
 },
 {
@@ -29255,12 +29333,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-818,
-819
+933,
+934
 ],
 "alt_span": [
-818,
-819
+933,
+934
 ]
 },
 {
@@ -29268,12 +29346,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-847,
-848
+959,
+960
 ],
 "alt_span": [
-847,
-848
+959,
+960
 ]
 },
 {
@@ -29281,51 +29359,51 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-861,
-862
+973,
+974
 ],
 "alt_span": [
-861,
-862
+973,
+974
 ]
 },
 {
 "k": 14,
-"nat": "'PASS'",
-"alt": "\"PASS\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-870,
-876
+1010,
+1011
 ],
 "alt_span": [
-870,
-876
+1010,
+1011
 ]
 },
 {
 "k": 15,
-"nat": "'FAIL'}'",
-"alt": "\"FAIL\"}\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-906,
-914
+1055,
+1056
 ],
 "alt_span": [
-906,
-914
+1055,
+1056
 ]
 },
 {
 "k": 16,
-"nat": "'-'",
-"alt": "\"-\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-926,
-929
+1083,
+1084
 ],
 "alt_span": [
-926,
-929
+1083,
+1084
 ]
 },
 {
@@ -29333,12 +29411,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-1058,
-1059
+1268,
+1269
 ],
 "alt_span": [
-1058,
-1059
+1268,
+1269
 ]
 },
 {
@@ -29346,12 +29424,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-1081,
-1082
+1297,
+1298
 ],
 "alt_span": [
-1081,
-1082
+1297,
+1298
 ]
 },
 {
@@ -29359,12 +29437,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-1095,
-1096
+1311,
+1312
 ],
 "alt_span": [
-1095,
-1096
+1311,
+1312
 ]
 },
 {
@@ -29372,12 +29450,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-1120,
-1121
+1337,
+1338
 ],
 "alt_span": [
-1120,
-1121
+1337,
+1338
 ]
 },
 {
@@ -29385,12 +29463,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-1134,
-1135
+1351,
+1352
 ],
 "alt_span": [
-1134,
-1135
+1351,
+1352
 ]
 },
 {
@@ -29398,12 +29476,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-1163,
-1164
+1388,
+1389
 ],
 "alt_span": [
-1163,
-1164
+1388,
+1389
 ]
 },
 {
@@ -29411,199 +29489,56 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-1177,
-1178
+1433,
+1434
 ],
 "alt_span": [
-1177,
-1178
+1433,
+1434
 ]
 },
 {
 "k": 24,
-"nat": "'PASS'",
-"alt": "\"PASS\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-1186,
-1192
+1473,
+1474
 ],
 "alt_span": [
-1186,
-1192
+1473,
+1474
 ]
 },
 {
 "k": 25,
-"nat": "'FAIL'}'",
-"alt": "\"FAIL\"}\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-1222,
-1230
+1486,
+1487
 ],
 "alt_span": [
-1222,
-1230
+1486,
+1487
 ]
 },
 {
 "k": 26,
-"nat": "'-'",
-"alt": "\"-\"",
-"nat_span": [
-1242,
-1245
-],
-"alt_span": [
-1242,
-1245
-]
-},
-{
-"k": 27,
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-1374,
-1375
+1517,
+1518
 ],
 "alt_span": [
-1374,
-1375
-]
-},
-{
-"k": 28,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-1397,
-1398
-],
-"alt_span": [
-1397,
-1398
-]
-},
-{
-"k": 29,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-1411,
-1412
-],
-"alt_span": [
-1411,
-1412
-]
-},
-{
-"k": 30,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-1436,
-1437
-],
-"alt_span": [
-1436,
-1437
-]
-},
-{
-"k": 31,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-1450,
-1451
-],
-"alt_span": [
-1450,
-1451
-]
-},
-{
-"k": 32,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-1479,
-1480
-],
-"alt_span": [
-1479,
-1480
-]
-},
-{
-"k": 33,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-1493,
-1494
-],
-"alt_span": [
-1493,
-1494
-]
-},
-{
-"k": 34,
-"nat": "'PASS'",
-"alt": "\"PASS\"",
-"nat_span": [
-1502,
-1508
-],
-"alt_span": [
-1502,
-1508
-]
-},
-{
-"k": 35,
-"nat": "'FAIL'}'",
-"alt": "\"FAIL\"}\"",
-"nat_span": [
-1538,
-1546
-],
-"alt_span": [
-1538,
-1546
-]
-},
-{
-"k": 36,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-1558,
-1559
-],
-"alt_span": [
-1558,
-1559
-]
-},
-{
-"k": 37,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-1578,
-1579
-],
-"alt_span": [
-1578,
-1579
+1517,
+1518
 ]
 }
 ],
-"k_en": 38,
-"shared_fraction": 0.922,
+"k_en": 27,
+"shared_fraction": 0.949,
 "pass": true,
 "verify": null
 },
@@ -31388,8 +31323,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "from datetime import datetime\n\ndef days_between_dates(start_date_str: str, end_date_str: str) -> int:\n    'Calculates the number of days between two dates.'\n    date_format = '%Y-%m-%d'\n    start_date = datetime.strptime(start_date_str, date_format)\n    end_date = datetime.strptime(end_date_str, date_format)\n    time_difference = end_date - start_date\n    return time_difference.days\n\nif __name__ == '__main__':\n    # Test cases\n    print(f'Test 1: {days_between_dates(\"2023-01-01\", \"2023-01-05\")}')\n    print(f'Test 2: {days_between_dates(\"2023-01-01\", \"2022-12-25\")}')\n    print(f'Test 3: {days_between_dates(\"2024-02-28\", \"2024-03-01\")}')\n    print(f'Test 4: {days_between_dates(\"2023-12-31\", \"2024-01-01\")}')\n    print(f'Test 5: {days_between_dates(\"2023-01-01\", \"2023-01-01\")}')\n    print('All tests completed.')\n",
-"text_alt": "from datetime import datetime\n\ndef days_between_dates(start_date_str: str, end_date_str: str) -> int:\n    \"Calculates the number of days between two dates.\"\n    date_format = \"%Y-%m-%d\"\n    start_date = datetime.strptime(start_date_str, date_format)\n    end_date = datetime.strptime(end_date_str, date_format)\n    time_difference = end_date - start_date\n    return time_difference.days\n\nif __name__ == \"__main__\":\n    # Test cases\n    print(f\"Test 1: {days_between_dates(\"2023-01-01\", \"2023-01-05\")}\")\n    print(f\"Test 2: {days_between_dates(\"2023-01-01\", \"2022-12-25\")}\")\n    print(f\"Test 3: {days_between_dates(\"2024-02-28\", \"2024-03-01\")}\")\n    print(f\"Test 4: {days_between_dates(\"2023-12-31\", \"2024-01-01\")}\")\n    print(f\"Test 5: {days_between_dates(\"2023-01-01\", \"2023-01-01\")}\")\n    print(\"All tests completed.\")\n",
+"text_nat": "from datetime import datetime\n\ndef days_between_dates(start_date_str: str, end_date_str: str) -> int:\n    'Calculates the number of days between two dates.'\n    date_format = '%Y-%m-%d'\n    try:\n        start_date = datetime.strptime(start_date_str, date_format)\n        end_date = datetime.strptime(end_date_str, date_format)\n    except ValueError as e:\n        raise ValueError(f'Invalid date format. Dates must be in {date_format} format: {e}') from e\n\n    time_difference = end_date - start_date\n    return time_difference.days\n\nif __name__ == '__main__':\n    # Test cases for the function\n    test_start_1 = '2023-01-01'\n    test_end_1 = '2023-01-05'\n    result_1 = days_between_dates(test_start_1, test_end_1)\n    print(f'Days between {test_start_1} and {test_end_1}: {result_1}') # Expected: 4\n\n    test_start_2 = '2023-01-01'\n    test_end_2 = '2022-12-25'\n    result_2 = days_between_dates(test_start_2, test_end_2)\n    print(f'Days between {test_start_2} and {test_end_2}: {result_2}') # Expected: -7\n\n    test_start_3 = '2024-02-28'\n    test_end_3 = '2024-03-01'\n    result_3 = days_between_dates(test_start_3, test_end_3)\n    print(f'Days between {test_start_3} and {test_end_3}: {result_3}') # Expected: 2\n\n    try:\n        days_between_dates('invalid-date', '2023-01-01')\n    except ValueError as e:\n        print(f'Error caught as expected: {e}')\n",
+"text_alt": "from datetime import datetime\n\ndef days_between_dates(start_date_str: str, end_date_str: str) -> int:\n    \"Calculates the number of days between two dates.\"\n    date_format = \"%Y-%m-%d\"\n    try:\n        start_date = datetime.strptime(start_date_str, date_format)\n        end_date = datetime.strptime(end_date_str, date_format)\n    except ValueError as e:\n        raise ValueError(f\"Invalid date format. Dates must be in {date_format} format: {e}\") from e\n\n    time_difference = end_date - start_date\n    return time_difference.days\n\nif __name__ == \"__main__\":\n    # Test cases for the function\n    test_start_1 = \"2023-01-01\"\n    test_end_1 = \"2023-01-05\"\n    result_1 = days_between_dates(test_start_1, test_end_1)\n    print(f\"Days between {test_start_1} and {test_end_1}: {result_1}\") # Expected: 4\n\n    test_start_2 = \"2023-01-01\"\n    test_end_2 = \"2022-12-25\"\n    result_2 = days_between_dates(test_start_2, test_end_2)\n    print(f\"Days between {test_start_2} and {test_end_2}: {result_2}\") # Expected: -7\n\n    test_start_3 = \"2024-02-28\"\n    test_end_3 = \"2024-03-01\"\n    result_3 = days_between_dates(test_start_3, test_end_3)\n    print(f\"Days between {test_start_3} and {test_end_3}: {result_3}\") # Expected: 2\n\n    try:\n        days_between_dates(\"invalid-date\", \"2023-01-01\")\n    except ValueError as e:\n        print(f\"Error caught as expected: {e}\")\n",
 "opps": [
 {
 "k": 0,
@@ -31445,15 +31380,15 @@
 },
 {
 "k": 4,
-"nat": "'__main__'",
-"alt": "\"__main__\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-402,
-412
+381,
+382
 ],
 "alt_span": [
-402,
-412
+381,
+382
 ]
 },
 {
@@ -31461,25 +31396,25 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-442,
-443
+445,
+446
 ],
 "alt_span": [
-442,
-443
+445,
+446
 ]
 },
 {
 "k": 6,
-"nat": "'",
-"alt": "\"",
+"nat": "'__main__'",
+"alt": "\"__main__\"",
 "nat_span": [
-499,
-500
+548,
+558
 ],
 "alt_span": [
-499,
-500
+548,
+558
 ]
 },
 {
@@ -31487,12 +31422,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-513,
-514
+613,
+614
 ],
 "alt_span": [
-513,
-514
+613,
+614
 ]
 },
 {
@@ -31500,12 +31435,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-570,
-571
+624,
+625
 ],
 "alt_span": [
-570,
-571
+624,
+625
 ]
 },
 {
@@ -31513,12 +31448,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-584,
-585
+643,
+644
 ],
 "alt_span": [
-584,
-585
+643,
+644
 ]
 },
 {
@@ -31526,12 +31461,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-641,
-642
+654,
+655
 ],
 "alt_span": [
-641,
-642
+654,
+655
 ]
 },
 {
@@ -31539,12 +31474,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-655,
-656
+727,
+728
 ],
 "alt_span": [
-655,
-656
+727,
+728
 ]
 },
 {
@@ -31552,12 +31487,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-712,
-713
+784,
+785
 ],
 "alt_span": [
-712,
-713
+784,
+785
 ]
 },
 {
@@ -31565,12 +31500,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-726,
-727
+821,
+822
 ],
 "alt_span": [
-726,
-727
+821,
+822
 ]
 },
 {
@@ -31578,12 +31513,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-783,
-784
+832,
+833
 ],
 "alt_span": [
-783,
-784
+832,
+833
 ]
 },
 {
@@ -31591,12 +31526,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-796,
-797
+851,
+852
 ],
 "alt_span": [
-796,
-797
+851,
+852
 ]
 },
 {
@@ -31604,17 +31539,186 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-817,
-818
+862,
+863
 ],
 "alt_span": [
-817,
-818
+862,
+863
+]
+},
+{
+"k": 17,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+935,
+936
+],
+"alt_span": [
+935,
+936
+]
+},
+{
+"k": 18,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+992,
+993
+],
+"alt_span": [
+992,
+993
+]
+},
+{
+"k": 19,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+1030,
+1031
+],
+"alt_span": [
+1030,
+1031
+]
+},
+{
+"k": 20,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+1041,
+1042
+],
+"alt_span": [
+1041,
+1042
+]
+},
+{
+"k": 21,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+1060,
+1061
+],
+"alt_span": [
+1060,
+1061
+]
+},
+{
+"k": 22,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+1071,
+1072
+],
+"alt_span": [
+1071,
+1072
+]
+},
+{
+"k": 23,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+1144,
+1145
+],
+"alt_span": [
+1144,
+1145
+]
+},
+{
+"k": 24,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+1201,
+1202
+],
+"alt_span": [
+1201,
+1202
+]
+},
+{
+"k": 25,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+1255,
+1256
+],
+"alt_span": [
+1255,
+1256
+]
+},
+{
+"k": 26,
+"nat": "', '",
+"alt": "\", \"",
+"nat_span": [
+1268,
+1272
+],
+"alt_span": [
+1268,
+1272
+]
+},
+{
+"k": 27,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+1282,
+1283
+],
+"alt_span": [
+1282,
+1283
+]
+},
+{
+"k": 28,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+1328,
+1329
+],
+"alt_span": [
+1328,
+1329
+]
+},
+{
+"k": 29,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+1358,
+1359
+],
+"alt_span": [
+1358,
+1359
 ]
 }
 ],
-"k_en": 17,
-"shared_fraction": 0.941,
+"k_en": 30,
+"shared_fraction": 0.927,
 "pass": true,
 "verify": null
 },
@@ -39627,124 +39731,124 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def roman_to_int(roman_numeral):\n    'Converts a Roman numeral string to an integer.'\n    roman_map = {\n        'I': 1, 'V': 5, 'X': 10, 'L': 50,\n        'C': 100, 'D': 500, 'M': 1000\n    }\n    integer_value = 0\n    previous_value = 0\n\n    for char in reversed(roman_numeral):\n        current_value = roman_map[char]\n        if current_value < previous_value:\n            integer_value -= current_value\n        else:\n            integer_value += current_value\n        previous_value = current_value\n    \n    'We've processed the entire numeral.'\n    return integer_value\n\n'Test cases:'\n'Example 1:'\nassert roman_to_int('III') == 3, 'Test case 1 failed'\n'Example 2:'\nassert roman_to_int('LVIII') == 58, 'Test case 2 failed'\nassert roman_to_int('MCMXCIV') == 1994, 'A complex numeral test'\nassert roman_to_int('IX') == 9, 'Subtractive test'\nassert roman_to_int('XL') == 40, 'Another subtractive test'\nassert roman_to_int('MDCCCIV') == 1804, 'Mixed numeral test'\n",
-"text_alt": "def roman_to_int(roman_numeral):\n    \"Converts a Roman numeral string to an integer.\"\n    roman_map = {\n        \"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50,\n        \"C\": 100, \"D\": 500, \"M\": 1000\n    }\n    integer_value = 0\n    previous_value = 0\n\n    for char in reversed(roman_numeral):\n        current_value = roman_map[char]\n        if current_value < previous_value:\n            integer_value -= current_value\n        else:\n            integer_value += current_value\n        previous_value = current_value\n    \n    \"We've processed the entire numeral.\"\n    return integer_value\n\n\"Test cases:\"\n\"Example 1:\"\nassert roman_to_int(\"III\") == 3, \"Test case 1 failed\"\n\"Example 2:\"\nassert roman_to_int(\"LVIII\") == 58, \"Test case 2 failed\"\nassert roman_to_int(\"MCMXCIV\") == 1994, \"A complex numeral test\"\nassert roman_to_int(\"IX\") == 9, \"Subtractive test\"\nassert roman_to_int(\"XL\") == 40, \"Another subtractive test\"\nassert roman_to_int(\"MDCCCIV\") == 1804, \"Mixed numeral test\"\n",
+"text_nat": "def roman_to_int(roman_numeral):\n    roman_map = {\n        'I': 1, 'V': 5, 'X': 10, 'L': 50,\n        'C': 100, 'D': 500, 'M': 1000\n    }\n    integer_value = 0\n    prev_value = 0\n\n    for char in reversed(roman_numeral):\n        current_value = roman_map[char]\n        if current_value < prev_value:\n            integer_value -= current_value\n        else:\n            integer_value += current_value\n        prev_value = current_value\n    \n    return integer_value\n\n# 'This is an example of a string literal.'\n# 'Another string literal for consistency.'\n# 'Even in comments, we adhere to the style.'\n",
+"text_alt": "def roman_to_int(roman_numeral):\n    roman_map = {\n        \"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50,\n        \"C\": 100, \"D\": 500, \"M\": 1000\n    }\n    integer_value = 0\n    prev_value = 0\n\n    for char in reversed(roman_numeral):\n        current_value = roman_map[char]\n        if current_value < prev_value:\n            integer_value -= current_value\n        else:\n            integer_value += current_value\n        prev_value = current_value\n    \n    return integer_value\n\n# \"This is an example of a string literal.\"\n# \"Another string literal for consistency.\"\n# \"Even in comments, we adhere to the style.\"\n",
 "opps": [
 {
 "k": 0,
-"nat": "'",
-"alt": "\"",
+"nat": "'I'",
+"alt": "\"I\"",
 "nat_span": [
-37,
-38
+59,
+62
 ],
 "alt_span": [
-37,
-38
+59,
+62
 ]
 },
 {
 "k": 1,
-"nat": "'",
-"alt": "\"",
+"nat": "'V'",
+"alt": "\"V\"",
 "nat_span": [
-84,
-85
+67,
+70
 ],
 "alt_span": [
-84,
-85
+67,
+70
 ]
 },
 {
 "k": 2,
-"nat": "'I'",
-"alt": "\"I\"",
+"nat": "'X'",
+"alt": "\"X\"",
 "nat_span": [
-112,
-115
+75,
+78
 ],
 "alt_span": [
-112,
-115
+75,
+78
 ]
 },
 {
 "k": 3,
-"nat": "'V'",
-"alt": "\"V\"",
+"nat": "'L'",
+"alt": "\"L\"",
 "nat_span": [
-120,
-123
+84,
+87
 ],
 "alt_span": [
-120,
-123
+84,
+87
 ]
 },
 {
 "k": 4,
-"nat": "'X'",
-"alt": "\"X\"",
+"nat": "'C'",
+"alt": "\"C\"",
 "nat_span": [
-128,
-131
+101,
+104
 ],
 "alt_span": [
-128,
-131
+101,
+104
 ]
 },
 {
 "k": 5,
-"nat": "'L'",
-"alt": "\"L\"",
+"nat": "'D'",
+"alt": "\"D\"",
 "nat_span": [
-137,
-140
+111,
+114
 ],
 "alt_span": [
-137,
-140
+111,
+114
 ]
 },
 {
 "k": 6,
-"nat": "'C'",
-"alt": "\"C\"",
+"nat": "'M'",
+"alt": "\"M\"",
 "nat_span": [
-154,
-157
+121,
+124
 ],
 "alt_span": [
-154,
-157
+121,
+124
 ]
 },
 {
 "k": 7,
-"nat": "'D'",
-"alt": "\"D\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-164,
-167
+467,
+468
 ],
 "alt_span": [
-164,
-167
+467,
+468
 ]
 },
 {
 "k": 8,
-"nat": "'M'",
-"alt": "\"M\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-174,
-177
+507,
+508
 ],
 "alt_span": [
-174,
-177
+507,
+508
 ]
 },
 {
@@ -39752,12 +39856,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-508,
-509
+511,
+512
 ],
 "alt_span": [
-508,
-509
+511,
+512
 ]
 },
 {
@@ -39765,12 +39869,12 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-544,
-545
+551,
+552
 ],
 "alt_span": [
-544,
-545
+551,
+552
 ]
 },
 {
@@ -39778,29 +39882,16 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-572,
-573
+555,
+556
 ],
 "alt_span": [
-572,
-573
+555,
+556
 ]
 },
 {
 "k": 12,
-"nat": "'\n'",
-"alt": "\"\n\"",
-"nat_span": [
-584,
-587
-],
-"alt_span": [
-584,
-587
-]
-},
-{
-"k": 13,
 "nat": "'",
 "alt": "\"",
 "nat_span": [
@@ -39810,258 +39901,11 @@
 "alt_span": [
 597,
 598
-]
-},
-{
-"k": 14,
-"nat": "'III'",
-"alt": "\"III\"",
-"nat_span": [
-619,
-624
-],
-"alt_span": [
-619,
-624
-]
-},
-{
-"k": 15,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-632,
-633
-],
-"alt_span": [
-632,
-633
-]
-},
-{
-"k": 16,
-"nat": "'\n'",
-"alt": "\"\n\"",
-"nat_span": [
-651,
-654
-],
-"alt_span": [
-651,
-654
-]
-},
-{
-"k": 17,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-664,
-665
-],
-"alt_span": [
-664,
-665
-]
-},
-{
-"k": 18,
-"nat": "'LVIII'",
-"alt": "\"LVIII\"",
-"nat_span": [
-686,
-693
-],
-"alt_span": [
-686,
-693
-]
-},
-{
-"k": 19,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-702,
-703
-],
-"alt_span": [
-702,
-703
-]
-},
-{
-"k": 20,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-721,
-722
-],
-"alt_span": [
-721,
-722
-]
-},
-{
-"k": 21,
-"nat": "'MCMXCIV'",
-"alt": "\"MCMXCIV\"",
-"nat_span": [
-743,
-752
-],
-"alt_span": [
-743,
-752
-]
-},
-{
-"k": 22,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-763,
-764
-],
-"alt_span": [
-763,
-764
-]
-},
-{
-"k": 23,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-786,
-787
-],
-"alt_span": [
-786,
-787
-]
-},
-{
-"k": 24,
-"nat": "'IX'",
-"alt": "\"IX\"",
-"nat_span": [
-808,
-812
-],
-"alt_span": [
-808,
-812
-]
-},
-{
-"k": 25,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-820,
-821
-],
-"alt_span": [
-820,
-821
-]
-},
-{
-"k": 26,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-837,
-838
-],
-"alt_span": [
-837,
-838
-]
-},
-{
-"k": 27,
-"nat": "'XL'",
-"alt": "\"XL\"",
-"nat_span": [
-859,
-863
-],
-"alt_span": [
-859,
-863
-]
-},
-{
-"k": 28,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-872,
-873
-],
-"alt_span": [
-872,
-873
-]
-},
-{
-"k": 29,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-897,
-898
-],
-"alt_span": [
-897,
-898
-]
-},
-{
-"k": 30,
-"nat": "'MDCCCIV'",
-"alt": "\"MDCCCIV\"",
-"nat_span": [
-919,
-928
-],
-"alt_span": [
-919,
-928
-]
-},
-{
-"k": 31,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-939,
-940
-],
-"alt_span": [
-939,
-940
-]
-},
-{
-"k": 32,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-958,
-959
-],
-"alt_span": [
-958,
-959
 ]
 }
 ],
-"k_en": 33,
-"shared_fraction": 0.858,
+"k_en": 13,
+"shared_fraction": 0.899,
 "pass": true,
 "verify": null
 },
@@ -40833,8 +40677,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def binary_to_decimal(binary_string):\n    decimal_value = 0\n    power = 0\n    for digit in reversed(binary_string):\n        if digit == '1':\n            decimal_value += 2 ** power\n        elif digit != '0':\n            raise ValueError('Invalid binary string: must contain only '1' or '0'')\n        power += 1\n    return decimal_value\n\nif __name__ == '__main__':\n    test_cases = [\n        ('101', 5),\n        ('1111', 15),\n        ('0', 0),\n        ('1', 1),\n        ('10000', 16),\n        ('0000', 0)\n    ]\n    for binary_str, expected in test_cases:\n        result = binary_to_decimal(binary_str)\n        assert result == expected, f'Input: {binary_str}, Expected: {expected}, Got: {result}'\n        print(f'Test passed for '{binary_str}' -> {result}')\n\n    try:\n        binary_to_decimal('102')\n    except ValueError as e:\n        print(f'Caught expected error: {e}')\n",
-"text_alt": "def binary_to_decimal(binary_string):\n    decimal_value = 0\n    power = 0\n    for digit in reversed(binary_string):\n        if digit == \"1\":\n            decimal_value += 2 ** power\n        elif digit != \"0\":\n            raise ValueError(\"Invalid binary string: must contain only \"1\" or \"0\"\")\n        power += 1\n    return decimal_value\n\nif __name__ == \"__main__\":\n    test_cases = [\n        (\"101\", 5),\n        (\"1111\", 15),\n        (\"0\", 0),\n        (\"1\", 1),\n        (\"10000\", 16),\n        (\"0000\", 0)\n    ]\n    for binary_str, expected in test_cases:\n        result = binary_to_decimal(binary_str)\n        assert result == expected, f\"Input: {binary_str}, Expected: {expected}, Got: {result}\"\n        print(f\"Test passed for \"{binary_str}\" -> {result}\")\n\n    try:\n        binary_to_decimal(\"102\")\n    except ValueError as e:\n        print(f\"Caught expected error: {e}\")\n",
+"text_nat": "def binary_to_decimal(binary_string):\n    decimal_value = 0\n    power = 0\n    for digit in reversed(binary_string):\n        if digit == '1':\n            decimal_value += 2 ** power\n        elif digit != '0':\n            raise ValueError('Invalid binary string: ' + binary_string + '. Contains non-binary digits.')\n        power += 1\n    return decimal_value\n\n# Example usage and testing\nif __name__ == '__main__':\n    print('Testing binary_to_decimal function:')\n    test_cases = [\n        ('101', 5),\n        ('1111', 15),\n        ('0', 0),\n        ('1', 1),\n        ('10000000', 128),\n        ('11111111', 255),\n    ]\n    for binary_str, expected_dec in test_cases:\n        result = binary_to_decimal(binary_str)\n        assert result == expected_dec, f'For \"{binary_str}\", expected {expected_dec}, got {result}'\n        print(f'\"{binary_str}\" -> {result} (Correct)')\n\n    try:\n        binary_to_decimal('102')\n    except ValueError as e:\n        print(f'Caught expected error: {e}')\n",
+"text_alt": "def binary_to_decimal(binary_string):\n    decimal_value = 0\n    power = 0\n    for digit in reversed(binary_string):\n        if digit == \"1\":\n            decimal_value += 2 ** power\n        elif digit != \"0\":\n            raise ValueError(\"Invalid binary string: \" + binary_string + \". Contains non-binary digits.\")\n        power += 1\n    return decimal_value\n\n# Example usage and testing\nif __name__ == \"__main__\":\n    print(\"Testing binary_to_decimal function:\")\n    test_cases = [\n        (\"101\", 5),\n        (\"1111\", 15),\n        (\"0\", 0),\n        (\"1\", 1),\n        (\"10000000\", 128),\n        (\"11111111\", 255),\n    ]\n    for binary_str, expected_dec in test_cases:\n        result = binary_to_decimal(binary_str)\n        assert result == expected_dec, f\"For \\\"{binary_str}\\\", expected {expected_dec}, got {result}\"\n        print(f\"\\\"{binary_str}\\\" -> {result} (Correct)\")\n\n    try:\n        binary_to_decimal(\"102\")\n    except ValueError as e:\n        print(f\"Caught expected error: {e}\")\n",
 "opps": [
 {
 "k": 0,
@@ -40877,184 +40721,184 @@
 },
 {
 "k": 3,
-"nat": "'1'",
-"alt": "\"1\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-279,
-282
+261,
+262
 ],
 "alt_span": [
-279,
-282
+261,
+262
 ]
 },
 {
 "k": 4,
-"nat": "'0''",
-"alt": "\"0\"\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-286,
-290
+281,
+282
 ],
 "alt_span": [
-286,
-290
+281,
+282
 ]
 },
 {
 "k": 5,
-"nat": "'__main__'",
-"alt": "\"__main__\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-352,
-362
+311,
+312
 ],
 "alt_span": [
-352,
-362
+311,
+312
 ]
 },
 {
 "k": 6,
-"nat": "'101'",
-"alt": "\"101\"",
+"nat": "'__main__'",
+"alt": "\"__main__\"",
 "nat_span": [
-392,
-397
+402,
+412
 ],
 "alt_span": [
-392,
-397
+402,
+412
 ]
 },
 {
 "k": 7,
-"nat": "'1111'",
-"alt": "\"1111\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-412,
-418
+424,
+425
 ],
 "alt_span": [
-412,
-418
+424,
+425
 ]
 },
 {
 "k": 8,
-"nat": "'0'",
-"alt": "\"0\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-434,
-437
+460,
+461
 ],
 "alt_span": [
-434,
-437
+460,
+461
 ]
 },
 {
 "k": 9,
-"nat": "'1'",
-"alt": "\"1\"",
+"nat": "'101'",
+"alt": "\"101\"",
 "nat_span": [
-452,
-455
+491,
+496
 ],
 "alt_span": [
-452,
-455
+491,
+496
 ]
 },
 {
 "k": 10,
-"nat": "'10000'",
-"alt": "\"10000\"",
+"nat": "'1111'",
+"alt": "\"1111\"",
 "nat_span": [
-470,
-477
+511,
+517
 ],
 "alt_span": [
-470,
-477
+511,
+517
 ]
 },
 {
 "k": 11,
-"nat": "'0000'",
-"alt": "\"0000\"",
+"nat": "'0'",
+"alt": "\"0\"",
 "nat_span": [
-493,
-499
+533,
+536
 ],
 "alt_span": [
-493,
-499
+533,
+536
 ]
 },
 {
 "k": 12,
-"nat": "'",
-"alt": "\"",
+"nat": "'1'",
+"alt": "\"1\"",
 "nat_span": [
-637,
-638
+551,
+554
 ],
 "alt_span": [
-637,
-638
+551,
+554
 ]
 },
 {
 "k": 13,
-"nat": "'",
-"alt": "\"",
+"nat": "'10000000'",
+"alt": "\"10000000\"",
 "nat_span": [
-694,
-695
+569,
+579
 ],
 "alt_span": [
-694,
-695
+569,
+579
 ]
 },
 {
 "k": 14,
-"nat": "'",
-"alt": "\"",
+"nat": "'11111111'",
+"alt": "\"11111111\"",
 "nat_span": [
-711,
-712
+596,
+606
 ],
 "alt_span": [
-711,
-712
+596,
+606
 ]
 },
 {
 "k": 15,
-"nat": "'",
-"alt": "\"",
+"nat": "'For ",
+"alt": "\"For \\",
 "nat_span": [
-728,
-729
+755,
+760
 ],
 "alt_span": [
-728,
-729
+755,
+761
 ]
 },
 {
 "k": 16,
-"nat": "'",
-"alt": "\"",
+"nat": "",
+"alt": "\\",
 "nat_span": [
-741,
-742
+773,
+773
 ],
 "alt_span": [
-741,
-742
+774,
+775
 ]
 },
 {
@@ -41062,38 +40906,38 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-754,
-755
+813,
+814
 ],
 "alt_span": [
-754,
-755
+815,
+816
 ]
 },
 {
 "k": 18,
-"nat": "'102'",
-"alt": "\"102\"",
+"nat": "'",
+"alt": "\"\\",
 "nat_span": [
-793,
-798
+830,
+831
 ],
 "alt_span": [
-793,
-798
+832,
+834
 ]
 },
 {
 "k": 19,
-"nat": "'",
-"alt": "\"",
+"nat": "",
+"alt": "\\",
 "nat_span": [
-843,
+844,
 844
 ],
 "alt_span": [
-843,
-844
+847,
+848
 ]
 },
 {
@@ -41101,17 +40945,56 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-870,
-871
+867,
+868
 ],
 "alt_span": [
-870,
-871
+871,
+872
+]
+},
+{
+"k": 21,
+"nat": "'102'",
+"alt": "\"102\"",
+"nat_span": [
+906,
+911
+],
+"alt_span": [
+910,
+915
+]
+},
+{
+"k": 22,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+956,
+957
+],
+"alt_span": [
+960,
+961
+]
+},
+{
+"k": 23,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+983,
+984
+],
+"alt_span": [
+987,
+988
 ]
 }
 ],
-"k_en": 21,
-"shared_fraction": 0.889,
+"k_en": 24,
+"shared_fraction": 0.903,
 "pass": true,
 "verify": null
 },
@@ -42124,20 +42007,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def has_all_unique_chars(s: str) -> bool:\n    if not isinstance(s, str):\n        raise TypeError('Input must be a string')\n    \n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return False\n        seen_chars.add(char)\n    return True\n\nif __name__ == '__main__':\n    print(f\"'abcde' has all unique chars: {has_all_unique_chars('abcde')}\")\n    print(f\"'hello' has all unique chars: {has_all_unique_chars('hello')}\")\n    print(f\"'' has all unique chars: {has_all_unique_chars('')}\")\n    print(f\"'a' has all unique chars: {has_all_unique_chars('a')}\")\n    print(f\"'aa' has all unique chars: {has_all_unique_chars('aa')}\")\n    print(f\"'python' has all unique chars: {has_all_unique_chars('python')}\")\n    print(f\"'apple' has all unique chars: {has_all_unique_chars('apple')}\")\n",
-"text_alt": "def has_all_unique_chars(s: str) -> bool:\n    if not isinstance(s, str):\n        raise TypeError(\"Input must be a string\")\n    \n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            return False\n        seen_chars.add(char)\n    return True\n\nif __name__ == \"__main__\":\n    print(f\"'abcde' has all unique chars: {has_all_unique_chars(\"abcde\")}\")\n    print(f\"'hello' has all unique chars: {has_all_unique_chars(\"hello\")}\")\n    print(f\"'' has all unique chars: {has_all_unique_chars(\"\")}\")\n    print(f\"'a' has all unique chars: {has_all_unique_chars(\"a\")}\")\n    print(f\"'aa' has all unique chars: {has_all_unique_chars(\"aa\")}\")\n    print(f\"'python' has all unique chars: {has_all_unique_chars(\"python\")}\")\n    print(f\"'apple' has all unique chars: {has_all_unique_chars(\"apple\")}\")\n",
+"text_nat": "def has_all_unique_chars(s: str) -> bool:\n    if not s:\n        return True\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            print(f'Found a duplicate: {char}')\n            return False\n        seen_chars.add(char)\n        print(f'Added {char} to set.')\n    print('All characters are unique.')\n    return True\n\nif __name__ == '__main__':\n    test_cases = [\n        ('abcde', True),\n        ('hello', False),\n        ('', True),\n        ('a', True),\n        ('aa', False),\n        ('abcdefghijklmnopqrstuvwxyz', True),\n        ('programming', False),\n        ('  ', False)\n    ]\n\n    for input_str, expected_output in test_cases:\n        actual_output = has_all_unique_chars(input_str)\n        assert actual_output == expected_output, \\\n            f'Input: \\'{input_str}\\', Expected: {expected_output}, Got: {actual_output}'\n        print(f'Test passed for \\'{input_str}\\'.')\n",
+"text_alt": "def has_all_unique_chars(s: str) -> bool:\n    if not s:\n        return True\n    seen_chars = set()\n    for char in s:\n        if char in seen_chars:\n            print(f\"Found a duplicate: {char}\")\n            return False\n        seen_chars.add(char)\n        print(f\"Added {char} to set.\")\n    print(\"All characters are unique.\")\n    return True\n\nif __name__ == \"__main__\":\n    test_cases = [\n        (\"abcde\", True),\n        (\"hello\", False),\n        (\"\", True),\n        (\"a\", True),\n        (\"aa\", False),\n        (\"abcdefghijklmnopqrstuvwxyz\", True),\n        (\"programming\", False),\n        (\"  \", False)\n    ]\n\n    for input_str, expected_output in test_cases:\n        actual_output = has_all_unique_chars(input_str)\n        assert actual_output == expected_output, \\\n            f\"Input: '{input_str}', Expected: {expected_output}, Got: {actual_output}\"\n        print(f\"Test passed for '{input_str}'.\")\n",
 "opps": [
 {
 "k": 0,
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-97,
-98
+168,
+169
 ],
 "alt_span": [
-97,
-98
+168,
+169
 ]
 },
 {
@@ -42145,121 +42028,277 @@
 "nat": "'",
 "alt": "\"",
 "nat_span": [
-120,
-121
+194,
+195
 ],
 "alt_span": [
-120,
-121
+194,
+195
 ]
 },
 {
 "k": 2,
-"nat": "'__main__'",
-"alt": "\"__main__\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-287,
-297
+266,
+267
 ],
 "alt_span": [
-287,
-297
+266,
+267
 ]
 },
 {
 "k": 3,
-"nat": "'abcde'",
-"alt": "\"abcde\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-363,
-370
+287,
+288
 ],
 "alt_span": [
-363,
-370
+287,
+288
 ]
 },
 {
 "k": 4,
-"nat": "'hello'",
-"alt": "\"hello\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-439,
-446
+300,
+301
 ],
 "alt_span": [
-439,
-446
+300,
+301
 ]
 },
 {
 "k": 5,
-"nat": "''",
-"alt": "\"\"",
+"nat": "'",
+"alt": "\"",
 "nat_span": [
-510,
-512
+327,
+328
 ],
 "alt_span": [
-510,
-512
+327,
+328
 ]
 },
 {
 "k": 6,
-"nat": "'a'",
-"alt": "\"a\"",
+"nat": "'__main__'",
+"alt": "\"__main__\"",
 "nat_span": [
-577,
-580
+362,
+372
 ],
 "alt_span": [
-577,
-580
+362,
+372
 ]
 },
 {
 "k": 7,
-"nat": "'aa'",
-"alt": "\"aa\"",
+"nat": "'abcde'",
+"alt": "\"abcde\"",
 "nat_span": [
-646,
-650
+402,
+409
 ],
 "alt_span": [
-646,
-650
+402,
+409
 ]
 },
 {
 "k": 8,
-"nat": "'python'",
-"alt": "\"python\"",
+"nat": "'hello'",
+"alt": "\"hello\"",
 "nat_span": [
-720,
-728
+427,
+434
 ],
 "alt_span": [
-720,
-728
+427,
+434
 ]
 },
 {
 "k": 9,
-"nat": "'apple'",
-"alt": "\"apple\"",
+"nat": "''",
+"alt": "\"\"",
 "nat_span": [
-797,
-804
+453,
+455
 ],
 "alt_span": [
-797,
-804
+453,
+455
+]
+},
+{
+"k": 10,
+"nat": "'a'",
+"alt": "\"a\"",
+"nat_span": [
+473,
+476
+],
+"alt_span": [
+473,
+476
+]
+},
+{
+"k": 11,
+"nat": "'aa'",
+"alt": "\"aa\"",
+"nat_span": [
+494,
+498
+],
+"alt_span": [
+494,
+498
+]
+},
+{
+"k": 12,
+"nat": "'abcdefghijklmnopqrstuvwxyz'",
+"alt": "\"abcdefghijklmnopqrstuvwxyz\"",
+"nat_span": [
+517,
+545
+],
+"alt_span": [
+517,
+545
+]
+},
+{
+"k": 13,
+"nat": "'programming'",
+"alt": "\"programming\"",
+"nat_span": [
+563,
+576
+],
+"alt_span": [
+563,
+576
+]
+},
+{
+"k": 14,
+"nat": "'  '",
+"alt": "\"  \"",
+"nat_span": [
+595,
+599
+],
+"alt_span": [
+595,
+599
+]
+},
+{
+"k": 15,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+785,
+786
+],
+"alt_span": [
+785,
+786
+]
+},
+{
+"k": 16,
+"nat": "\\",
+"alt": "",
+"nat_span": [
+793,
+794
+],
+"alt_span": [
+793,
+793
+]
+},
+{
+"k": 17,
+"nat": "\\",
+"alt": "",
+"nat_span": [
+806,
+807
+],
+"alt_span": [
+805,
+805
+]
+},
+{
+"k": 18,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+859,
+860
+],
+"alt_span": [
+857,
+858
+]
+},
+{
+"k": 19,
+"nat": "'",
+"alt": "\"",
+"nat_span": [
+876,
+877
+],
+"alt_span": [
+874,
+875
+]
+},
+{
+"k": 20,
+"nat": "\\",
+"alt": "",
+"nat_span": [
+893,
+894
+],
+"alt_span": [
+891,
+891
+]
+},
+{
+"k": 21,
+"nat": "\\'.'",
+"alt": "'.\"",
+"nat_span": [
+906,
+910
+],
+"alt_span": [
+903,
+906
 ]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.939,
+"k_en": 22,
+"shared_fraction": 0.893,
 "pass": true,
 "verify": null
 },

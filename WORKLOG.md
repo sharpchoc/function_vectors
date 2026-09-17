@@ -9472,3 +9472,19 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   (11 / 6), py_ternary 187 (10 / 5); k = 0 prefixes identical in all. Lesson: never strip `opps_all` before re-filtering — the full diff is
   the input, the filtered list the output (re-derived from the texts once after that mistake). Still invalid (bug 6 scope): early_return
   t172 alt, py_ternary t159 both twins. Explainer `results/code_styles/debug/05_*` kept until the user closes bug 5; artifact v8.
+- 2026-09-17 bug 6 (user-approved, applied): syntactically invalid twins. `ast.parse` over every Python twin (py2_print / py2_except alts
+  exempt) → 119 docs across 18 families (py_paren_if 57: parentheses stripped from calls/subscripts; trailing_commas 28: comma after
+  statements; comment_case 6: capitalised keywords; 28 scattered string/f-string/bracket slips). Fix: natural twin broken → whole document
+  regenerated from the same task (110), only the alt broken → rewrite redone (9); sharpened EXTRA_HINTs for the three big families;
+  acceptance = both twins parse + all bug 1–5 guards + a calibrated regex style gate (family's own regex must dominate in each twin, enforced
+  only for the 30 families where that test passes ≥ 90 % of the already-valid pairs). 119/119 done (py_abbrev t073 needed a 5th retry).
+  Final: 6,919 Python pairs, 0 invalid twins, all guards pass. Bash (bash -n) and C (gcc -fsyntax-only) families: clean apart from bug 7.
+  JS / Rust / PHP / SQL / CSS / R: no parser on this machine, unchecked.
+- 2026-09-17 bug 7 (user-approved, applied): bash_subst nested substitutions. 19 of 50 natural twins nest `$(...)`; the Gemini rewrite wrote
+  the inner pair as unescaped nested backticks (parses, but means something else; 3 fail bash -n). Fix = deterministic converter
+  `code_subst_alt.py` (`$(cmd)` → backticks, nested levels with Bash's escaping rule; quotes / comments / heredocs / $((…)) honoured),
+  validated by EXECUTING 14 synthetic side-effect-free scripts in both notations (identical output, depth 3, escaped $ and \\) and, per
+  document, by an independent backtick-rule parser recovering the identical substitution tree + surrounding text, bash -n on both twins,
+  full conversion, pass rule. 47/50 rule-derived (31 differ from the old rewrite); HELD t019/t021/t025 (1–3 substitutions only; the old
+  rewrite had invented 9–16 opportunities) — regenerate vs drop awaiting user. Lesson: `declare -f` keeps backticks verbatim, it is NOT a
+  normaliser. Artifact v9. Explainers `results/code_styles/debug/06_*`, `07_*` kept until the user closes each bug.
