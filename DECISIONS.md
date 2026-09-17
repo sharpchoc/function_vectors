@@ -1882,3 +1882,12 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - 2026-09-16 (later) — After the free-opportunity rebuild the both-poles ≥ .30 cutoff drops **py_bool_prefix** (alt .12) and **py_indent**
   (2-space .24); the code pool is now **53 families** (`code_pool_full.json`, old 55-list kept as `pool_v1_forced`). js_hungarian (nat .66 → .38)
   and py_abbrev (nat .72 → .40) lost most but stay. The k = 8 numbers in `code/k8/` predate the rebuild for the 12 affected families.
+
+## 2026-09-17 — Whitespace-only code families: alternative twin derived by rule, not by LLM rewrite
+- py_indent, py_tabs, blank_lines, operator_spaces, comma_space, line_wrap: `text_alt = code_whitespace_alt.transform(family, text_nat)`
+  (tokenizer-aware; strings, docstrings and comments are never edited; both twins must have the same AST). The Gemini rewrite had slipped
+  content edits into 11 of ~1,100 documents and had "applied" the convention inside prose (docstrings, commented-out code), which the rule
+  refuses — so an opportunity in these families is always a genuine code-formatting choice.
+- line_wrap: joining a wrapped call / def / literal also drops Black's trailing comma (a 1-tuple's or subscript's comma is kept) — the one
+  non-whitespace difference allowed in these families (user-reviewed as legitimate, bug-4 explainer t109).
+- Records carry `alt_rule: true`; `code_build.build_one` applies the rule for these families instead of the REWRITE prompt.

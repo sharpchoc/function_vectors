@@ -46,6 +46,7 @@ Return only the code, no markdown fences, no prose.
 
 {code}"""
 TOK = re.compile(r"\w+|\s+|[^\w\s]", re.UNICODE)
+from src.sandbox.style_translation.code_whitespace_alt import WS_FAMILIES, same_ast, transform as ws_transform
 from src.sandbox.style_translation.code_free import filter_free, AFFECTED
 # extra generation hints for the families whose decisions can be forced by earlier code (free-opportunity rebuild, 2026-09-16):
 # the NATURAL solution must contain many FRESH choice points (new names / new loops / new blocks), not re-mentions
@@ -144,14 +145,21 @@ def build_one(key, fam, task):
                 raise ValueError("too short")
             if degenerate(nat):
                 raise ValueError(degenerate(nat))
-            alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2)
-            if degenerate(alt):
-                raise ValueError("alt " + degenerate(alt))
+            if fam.name in WS_FAMILIES:                            # bug 4 (2026-09-17): whitespace-only families derive alt by rule
+                alt = ws_transform(fam.name, nat)
+                if alt is None or not same_ast(nat, alt):
+                    raise ValueError("whitespace rule failed")
+            else:
+                alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2)
+                if degenerate(alt):
+                    raise ValueError("alt " + degenerate(alt))
             opps, shared = align(nat, alt)
             ok = opps is not None and len(opps) >= 5 and shared >= 0.6 and opps[4]["nat_span"][0] < 0.75 * len(nat) and all(o["nat"] != o["alt"] for o in opps)
             rec = {"doc_id": f"{fam.name}__{task['id']}", "family": fam.name, "topic": task["title"], "angle": "code", "text_es": task["spec"].strip(),
                    "langs": {"src": "Task", "tgt": fam.tgt_lang}, "text_nat": nat, "text_alt": alt, "opps": opps or [], "k_en": len(opps or []),
                    "shared_fraction": round(shared, 3), "pass": bool(ok), "verify": None}
+            if fam.name in WS_FAMILIES:
+                rec["alt_rule"] = True
             if ok and fam.name in AFFECTED:                       # free-opportunity rule: the pair must keep >= 5 genuine choice points
                 fr = filter_free(rec, fam.name); ok = fr is not None; rec["pass"] = bool(ok)
                 if fr is not None:

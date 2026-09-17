@@ -38,6 +38,14 @@ def free_opportunity(fam, rec, k):
             if _seen(fam, rec, o, pole, pinned):
                 return False
         return True
+    if fam in SELF_FAMILIES:
+        text = rec["text_nat"]; s0 = o["nat_span"][0]; line_start = text.rfind("\n", 0, s0) + 1
+        return re.search(r"def\s+\w+\s*\(\s*$", text[line_start:s0]) is not None
+    if fam in INDENT_FAMILIES:
+        text = rec["text_nat"]; s0 = o["nat_span"][0]
+        prev = [l for l in text[:s0].split("\n") if l.strip()]
+        return bool(prev) and prev[-1].rstrip().endswith(":")
+    return True
 
 
 def _seen(fam, rec, o, pole, pinned):
@@ -59,14 +67,6 @@ def consistent_twins(fam, rec):
         return True
     pinned = _task_code_idents(rec.get("text_es", ""))
     return all(_seen(fam, rec, o, "nat", pinned) == _seen(fam, rec, o, "alt", pinned) for o in rec["opps"])
-    if fam in SELF_FAMILIES:
-        text = rec["text_nat"]; s0 = o["nat_span"][0]; line_start = text.rfind("\n", 0, s0) + 1
-        return re.search(r"def\s+\w+\s*\(\s*$", text[line_start:s0]) is not None
-    if fam in INDENT_FAMILIES:
-        text = rec["text_nat"]; s0 = o["nat_span"][0]
-        prev = [l for l in text[:s0].split("\n") if l.strip()]
-        return bool(prev) and prev[-1].rstrip().endswith(":")
-    return True
 
 
 def harmonise_pinned(rec, fam):

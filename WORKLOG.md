@@ -9447,3 +9447,16 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   read_steer/confirm{,_k1} records and prompt_pairs rows of the affected docs (12–100 % per family), and the k = 8 rollout records of those
   families (k8 analyses already committed). Committed results tables/figures predate the deletion and stand. Comparison bug fixed (k-scoped).
   Regeneration of the lost confirm sets needs ~4 pod-h + ~60k judge calls — awaiting user decision. No k ≤ 4 prompt text changed.
+- 2026-09-17 code-styles clean restart (`results/code_styles/`, model key `qwen25_code`; old code results archived under
+  `results/style_translation/qwen25_base/code_archive/`). Source of truth = `dataset_files/style_translation/pairs/<family>.json`, fixed one
+  bug at a time with user approval: (1) `<ctrl63>` artefacts stripped; (2) value-changing rewrites; (3a) 33 repeated-definition docs replaced
+  by fresh generations, (3b) fence + second-copy docs repaired; generator guard `code_build.degenerate()`. (4) the six whitespace-only
+  families (py_indent, py_tabs, blank_lines, operator_spaces, comma_space, line_wrap) now derive their alternative twin BY RULE from the
+  natural twin (`code_whitespace_alt.py`, tokenizer-aware: strings/comments untouched, same AST, whitespace-only diff; line_wrap also drops
+  the trailing comma). Applied to 1,102 of 1,121 stored pairs (+ raw docs, `alt_rule: true`); 19 documents HELD with their old Gemini alt
+  (natural twin invalid: comma_space t072/t121, line_wrap t005; < 5 code opportunities or 5th past 75 %: blank_lines 2, operator_spaces 3,
+  comma_space 11) — drop vs regenerate awaiting user decision (artifact https://claude.ai/artifact/99RPSUNEVWmdNdQvMs3FcF v5). Builder uses
+  the rule for these families from now on. REGRESSION FIXED: `code_free.free_opportunity` had its py_self_name / py_indent / py_tabs branches
+  stranded after a `return` since commit fdbfe9cd (dead code → every re-filter of those families rejected all docs); restored.
+  Next: bug 5 candidates (early_return whitespace-only opportunities, bash_subst nested backticks, re-verify the free rule on the final
+  pairs), then cues/prompts/step 3/features for `qwen25_code`.
