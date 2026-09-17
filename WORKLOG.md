@@ -9441,3 +9441,9 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   whole-word occurrence, dotted form for py_private) + `consistent_twins` guard. Final pairs: 200 each, py_loop_vars 102. Step 3 rerun for the
   8 identifier families (pods crb_1..4, shards `logs/rb2_shard*.txt`); py_self_name / py_tabs keep their first rebuild rollouts; py_bool_prefix
   and py_indent dropped by the cutoff (pool 53). Stage 2 (`logs/code_rebuild_stage2_job.sh`) follows per shard after judging.
+- 2026-09-17 INCIDENT: `purge_artefacts.py` (strip `<ctrl63>` from 42 docs, 21 families) compared rebuilt K = 5 prompts against stored files
+  that also held the appended k = 8 items and treated the missing k = 8 keys as changed prompts → removed all derived records of those docs in
+  18 families. Restored: k ≤ 4 rollouts (from `rollouts_backup_k4/`), k = 8 prompt items (rebuilt). LOST (no backup): steering/confirm,
+  read_steer/confirm{,_k1} records and prompt_pairs rows of the affected docs (12–100 % per family), and the k = 8 rollout records of those
+  families (k8 analyses already committed). Committed results tables/figures predate the deletion and stand. Comparison bug fixed (k-scoped).
+  Regeneration of the lost confirm sets needs ~4 pod-h + ~60k judge calls — awaiting user decision. No k ≤ 4 prompt text changed.

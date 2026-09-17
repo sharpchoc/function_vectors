@@ -8063,7 +8063,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_leap_year(year):\n    checks = [\n        (lambda y: y % 4 == 0, True),\n        (lambda y: y % 100 == 0, False),\n        (lambda y: y % 400 == 0, True)\n    ]\n    \n    results = []\n    for i, (condition, expected) in enumerate(checks):\n        results.append(condition(year) == expected)\n    \n    if results[0] and not results[1]:\n        return True\n    \n    if results[0] and results[1] and results[2]:\n        return True\n        \n    for idx, _ in enumerate(results):\n        if idx == len(results) - 1:\n            break\n        \n    return False\n\ndef _test_leap_years():\n    test_cases = {\n        2000: True, 1900: False, 2004: True, 2003: False, 1600: True, 2100: False\n    }\n    \n    for i, (year, expected) in enumerate(test_cases.items()):\n        actual = is_leap_year(year)\n        assert actual == expected, f\"Year {year}: Expected {expected}, Got {actual}\"\n        \n    more_cases = [(1996, True), (1997, False), (2400, True), (2300, False)]\n    for j, (year_val, expected_val) in enumerate(more_cases):\n        actual_val = is_leap_year(year_val)\n        assert actual_val == expected_val, f\"Year {year_val}: Expected {expected_val}, Got {actual_val}\"\n\n    # Another enumerate loop for good measure\n    for k, _ in enumerate(range(3)):\n        pass # Placeholder for consistent enumerate use\n\n_test_leap_years()<ctrl63>\n",
+"text_nat": "def is_leap_year(year):\n    checks = [\n        (lambda y: y % 4 == 0, True),\n        (lambda y: y % 100 == 0, False),\n        (lambda y: y % 400 == 0, True)\n    ]\n    \n    results = []\n    for i, (condition, expected) in enumerate(checks):\n        results.append(condition(year) == expected)\n    \n    if results[0] and not results[1]:\n        return True\n    \n    if results[0] and results[1] and results[2]:\n        return True\n        \n    for idx, _ in enumerate(results):\n        if idx == len(results) - 1:\n            break\n        \n    return False\n\ndef _test_leap_years():\n    test_cases = {\n        2000: True, 1900: False, 2004: True, 2003: False, 1600: True, 2100: False\n    }\n    \n    for i, (year, expected) in enumerate(test_cases.items()):\n        actual = is_leap_year(year)\n        assert actual == expected, f\"Year {year}: Expected {expected}, Got {actual}\"\n        \n    more_cases = [(1996, True), (1997, False), (2400, True), (2300, False)]\n    for j, (year_val, expected_val) in enumerate(more_cases):\n        actual_val = is_leap_year(year_val)\n        assert actual_val == expected_val, f\"Year {year_val}: Expected {expected_val}, Got {actual_val}\"\n\n    # Another enumerate loop for good measure\n    for k, _ in enumerate(range(3)):\n        pass # Placeholder for consistent enumerate use\n\n_test_leap_years()\n",
 "text_alt": "def is_leap_year(year):\n    checks = [\n        (lambda y: y % 4 == 0, True),\n        (lambda y: y % 100 == 0, False),\n        (lambda y: y % 400 == 0, True)\n    ]\n    \n    results = []\n    for i in range(len(checks)):\n        condition, expected = checks[i]\n        results.append(condition(year) == expected)\n    \n    if results[0] and not results[1]:\n        return True\n    \n    if results[0] and results[1] and results[2]:\n        return True\n        \n    for idx in range(len(results)):\n        _ = results[idx]\n        if idx == len(results) - 1:\n            break\n        \n    return False\n\ndef _test_leap_years():\n    test_cases = {\n        2000: True, 1900: False, 2004: True, 2003: False, 1600: True, 2100: False\n    }\n    \n    test_case_items = list(test_cases.items())\n    for i in range(len(test_case_items)):\n        year, expected = test_case_items[i]\n        actual = is_leap_year(year)\n        assert actual == expected, f\"Year {year}: Expected {expected}, Got {actual}\"\n        \n    more_cases = [(1996, True), (1997, False), (2400, True), (2300, False)]\n    for j in range(len(more_cases)):\n        year_val, expected_val = more_cases[j]\n        actual_val = is_leap_year(year_val)\n        assert actual_val == expected_val, f\"Year {year_val}: Expected {expected_val}, Got {actual_val}\"\n\n    # Another enumerate loop for good measure\n    for k in range(len(range(3))):\n        _ = range(3)[k]\n        pass # Placeholder for consistent enumerate use\n\n_test_leap_years()\n",
 "opps": [
 {
@@ -8221,23 +8221,10 @@
 1385,
 1411
 ]
-},
-{
-"k": 12,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-1331,
-1339
-],
-"alt_span": [
-1487,
-1487
-]
 }
 ],
-"k_en": 13,
-"shared_fraction": 0.92,
+"k_en": 12,
+"shared_fraction": 0.926,
 "pass": true,
 "verify": null
 },
@@ -35459,7 +35446,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def append_to_file(filepath, content):\n    try:\n        with open(filepath, 'a') as f:\n            for i, char_line in enumerate(content.splitlines()):\n                if i > 0:\n                    f.write('\\n')\n                for j, char_in_line in enumerate(char_line):\n                    f.write(char_in_line)\n            f.write('\\n')\n        return True\n    except IOError:\n        return False\n\ndef _test_function():\n    test_file = \"temp_test_append.txt\"\n    initial_content = \"Line 1\\nLine 2\"\n    with open(test_file, 'w') as f:\n        for k, line in enumerate(initial_content.splitlines()):\n            f.write(line)\n            if k < len(initial_content.splitlines()) - 1:\n                f.write('\\n')\n\n    assert append_to_file(test_file, \"Line 3\") == True\n    with open(test_file, 'r') as f:\n        read_content = f.read()\n    expected_content = \"Line 1\\nLine 2\\nLine 3\\n\"\n    for l, char_expected in enumerate(expected_content):\n        assert char_expected == read_content[l]\n\n    assert append_to_file(test_file, \"Line 4\\nLine 5\") == True\n    with open(test_file, 'r') as f:\n        read_content = f.read()\n    expected_content = \"Line 1\\nLine 2\\nLine 3\\nLine 4\\nLine 5\\n\"\n    for m, char_expected in enumerate(expected_content):\n        assert char_expected == read_content[m]\n\n    assert append_to_file(\"/nonexistent/path/file.txt\", \"Data\") == False\n\n    import os\n    os.remove(test_file)\n\n_test_function()<ctrl63>\n",
+"text_nat": "def append_to_file(filepath, content):\n    try:\n        with open(filepath, 'a') as f:\n            for i, char_line in enumerate(content.splitlines()):\n                if i > 0:\n                    f.write('\\n')\n                for j, char_in_line in enumerate(char_line):\n                    f.write(char_in_line)\n            f.write('\\n')\n        return True\n    except IOError:\n        return False\n\ndef _test_function():\n    test_file = \"temp_test_append.txt\"\n    initial_content = \"Line 1\\nLine 2\"\n    with open(test_file, 'w') as f:\n        for k, line in enumerate(initial_content.splitlines()):\n            f.write(line)\n            if k < len(initial_content.splitlines()) - 1:\n                f.write('\\n')\n\n    assert append_to_file(test_file, \"Line 3\") == True\n    with open(test_file, 'r') as f:\n        read_content = f.read()\n    expected_content = \"Line 1\\nLine 2\\nLine 3\\n\"\n    for l, char_expected in enumerate(expected_content):\n        assert char_expected == read_content[l]\n\n    assert append_to_file(test_file, \"Line 4\\nLine 5\") == True\n    with open(test_file, 'r') as f:\n        read_content = f.read()\n    expected_content = \"Line 1\\nLine 2\\nLine 3\\nLine 4\\nLine 5\\n\"\n    for m, char_expected in enumerate(expected_content):\n        assert char_expected == read_content[m]\n\n    assert append_to_file(\"/nonexistent/path/file.txt\", \"Data\") == False\n\n    import os\n    os.remove(test_file)\n\n_test_function()\n",
 "text_alt": "def append_to_file(filepath, content):\n    try:\n        with open(filepath, 'a') as f:\n            char_lines = content.splitlines()\n            for i in range(len(char_lines)):\n                char_line = char_lines[i]\n                if i > 0:\n                    f.write('\\n')\n                for j in range(len(char_line)):\n                    char_in_line = char_line[j]\n                    f.write(char_in_line)\n            f.write('\\n')\n        return True\n    except IOError:\n        return False\n\ndef _test_function():\n    test_file = \"temp_test_append.txt\"\n    initial_content = \"Line 1\\nLine 2\"\n    with open(test_file, 'w') as f:\n        lines = initial_content.splitlines()\n        for k in range(len(lines)):\n            line = lines[k]\n            f.write(line)\n            if k < len(initial_content.splitlines()) - 1:\n                f.write('\\n')\n\n    assert append_to_file(test_file, \"Line 3\") == True\n    with open(test_file, 'r') as f:\n        read_content = f.read()\n    expected_content = \"Line 1\\nLine 2\\nLine 3\\n\"\n    for l in range(len(expected_content)):\n        char_expected = expected_content[l]\n        assert char_expected == read_content[l]\n\n    assert append_to_file(test_file, \"Line 4\\nLine 5\") == True\n    with open(test_file, 'r') as f:\n        read_content = f.read()\n    expected_content = \"Line 1\\nLine 2\\nLine 3\\nLine 4\\nLine 5\\n\"\n    for m in range(len(expected_content)):\n        char_expected = expected_content[m]\n        assert char_expected == read_content[m]\n\n    assert append_to_file(\"/nonexistent/path/file.txt\", \"Data\") == False\n\n    import os\n    os.remove(test_file)\n\n_test_function()\n",
 "opps": [
 {
@@ -35630,23 +35617,10 @@
 1412,
 1458
 ]
-},
-{
-"k": 13,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-1430,
-1438
-],
-"alt_span": [
-1638,
-1638
-]
 }
 ],
-"k_en": 14,
-"shared_fraction": 0.928,
+"k_en": 13,
+"shared_fraction": 0.934,
 "pass": true,
 "verify": null
 },
@@ -36244,7 +36218,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "class BankAccount:\n    def __init__(self, initial_balance):\n        self.balance = initial_balance\n\n    def deposit(self, amount):\n        for i, _ in enumerate([0]):\n            if amount > 0:\n                self.balance += amount\n                return True\n            return False\n\n    def withdraw(self, amount):\n        for i, _ in enumerate([0]):\n            if amount > 0 and self.balance >= amount:\n                self.balance -= amount\n                return True\n            return False\n\n    def get_balance_details(self):\n        details = []\n        for i, char in enumerate(str(self.balance)):\n            details.append(f\"Digit {i}: {char}\")\n        return details\n\n    def process_transactions(self, transactions):\n        results = []\n        for i, (type, amount) in enumerate(transactions):\n            if type == \"deposit\":\n                success = self.deposit(amount)\n            elif type == \"withdraw\":\n                success = self.withdraw(amount)\n            else:\n                success = False\n            results.append((i, type, amount, success, self.balance))\n        return results\n\n    def _check_status(self):\n        status_parts = [\"Current balance:\"]\n        for i, _ in enumerate(status_parts):\n            status_parts.append(str(self.balance))\n        return \" \".join(status_parts)\n\n    def print_summary(self):\n        summary_lines = []\n        for i, detail in enumerate(self.get_balance_details()):\n            summary_lines.append(f\"Balance part {i}: {detail}\")\n        for i, line in enumerate(summary_lines):\n            print(f\"Summary line {i}: {line}\")\n        print(self._check_status())<ctrl63>\n",
+"text_nat": "class BankAccount:\n    def __init__(self, initial_balance):\n        self.balance = initial_balance\n\n    def deposit(self, amount):\n        for i, _ in enumerate([0]):\n            if amount > 0:\n                self.balance += amount\n                return True\n            return False\n\n    def withdraw(self, amount):\n        for i, _ in enumerate([0]):\n            if amount > 0 and self.balance >= amount:\n                self.balance -= amount\n                return True\n            return False\n\n    def get_balance_details(self):\n        details = []\n        for i, char in enumerate(str(self.balance)):\n            details.append(f\"Digit {i}: {char}\")\n        return details\n\n    def process_transactions(self, transactions):\n        results = []\n        for i, (type, amount) in enumerate(transactions):\n            if type == \"deposit\":\n                success = self.deposit(amount)\n            elif type == \"withdraw\":\n                success = self.withdraw(amount)\n            else:\n                success = False\n            results.append((i, type, amount, success, self.balance))\n        return results\n\n    def _check_status(self):\n        status_parts = [\"Current balance:\"]\n        for i, _ in enumerate(status_parts):\n            status_parts.append(str(self.balance))\n        return \" \".join(status_parts)\n\n    def print_summary(self):\n        summary_lines = []\n        for i, detail in enumerate(self.get_balance_details()):\n            summary_lines.append(f\"Balance part {i}: {detail}\")\n        for i, line in enumerate(summary_lines):\n            print(f\"Summary line {i}: {line}\")\n        print(self._check_status())\n",
 "text_alt": "class BankAccount:\n    def __init__(self, initial_balance):\n        self.balance = initial_balance\n\n    def deposit(self, amount):\n        for i in range(len([0])):\n            _ = [0][i]\n            if amount > 0:\n                self.balance += amount\n                return True\n            return False\n\n    def withdraw(self, amount):\n        for i in range(len([0])):\n            _ = [0][i]\n            if amount > 0 and self.balance >= amount:\n                self.balance -= amount\n                return True\n            return False\n\n    def get_balance_details(self):\n        details = []\n        for i in range(len(str(self.balance))):\n            char = str(self.balance)[i]\n            details.append(f\"Digit {i}: {char}\")\n        return details\n\n    def process_transactions(self, transactions):\n        results = []\n        for i in range(len(transactions)):\n            type, amount = transactions[i]\n            if type == \"deposit\":\n                success = self.deposit(amount)\n            elif type == \"withdraw\":\n                success = self.withdraw(amount)\n            else:\n                success = False\n            results.append((i, type, amount, success, self.balance))\n        return results\n\n    def _check_status(self):\n        status_parts = [\"Current balance:\"]\n        for i in range(len(status_parts)):\n            _ = status_parts[i]\n            status_parts.append(str(self.balance))\n        return \" \".join(status_parts)\n\n    def print_summary(self):\n        summary_lines = []\n        for i in range(len(self.get_balance_details())):\n            detail = self.get_balance_details()[i]\n            summary_lines.append(f\"Balance part {i}: {detail}\")\n        for i in range(len(summary_lines)):\n            line = summary_lines[i]\n            print(f\"Summary line {i}: {line}\")\n        print(self._check_status())\n",
 "opps": [
 {
@@ -36506,23 +36480,10 @@
 1734,
 1772
 ]
-},
-{
-"k": 20,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-1645,
-1653
-],
-"alt_span": [
-1855,
-1855
-]
 }
 ],
-"k_en": 21,
-"shared_fraction": 0.929,
+"k_en": 20,
+"shared_fraction": 0.935,
 "pass": true,
 "verify": null
 },
@@ -39447,7 +39408,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def convert_temperature(value, unit_from, unit_to):\n    conversions_to_c = {'C': lambda x: x, 'F': lambda x: (x - 32) * 5/9, 'K': lambda x: x - 273.15}\n    conversions_from_c = {'C': lambda x: x, 'F': lambda x: x * 9/5 + 32, 'K': lambda x: x + 273.15}\n\n    temp_in_c = value\n    for i, (unit, func) in enumerate(conversions_to_c.items()):\n        if unit == unit_from:\n            temp_in_c = func(value)\n            break\n\n    result = temp_in_c\n    for j, (unit, func) in enumerate(conversions_from_c.items()):\n        if unit == unit_to:\n            result = func(temp_in_c)\n            break\n\n    conversion_table = [\n        ('C', 'F', lambda v: v * 9/5 + 32),\n        ('F', 'C', lambda v: (v - 32) * 5/9),\n        ('C', 'K', lambda v: v + 273.15),\n        ('K', 'C', lambda v: v - 273.15),\n        ('F', 'K', lambda v: (v - 32) * 5/9 + 273.15),\n        ('K', 'F', lambda v: (v - 273.15) * 9/5 + 32)\n    ]\n\n    for k, (u_from, u_to, func) in enumerate(conversion_table):\n        if u_from == unit_from and u_to == unit_to:\n            return func(value)\n\n    if unit_from == unit_to:\n        return value\n\n    intermediate_c = 0.0\n    for l, (unit, func) in enumerate(conversions_to_c.items()):\n        if unit == unit_from:\n            intermediate_c = func(value)\n            break\n\n    final_result = 0.0\n    for m, (unit, func) in enumerate(conversions_from_c.items()):\n        if unit == unit_to:\n            final_result = func(intermediate_c)\n            break\n\n    return final_result<ctrl63>\n",
+"text_nat": "def convert_temperature(value, unit_from, unit_to):\n    conversions_to_c = {'C': lambda x: x, 'F': lambda x: (x - 32) * 5/9, 'K': lambda x: x - 273.15}\n    conversions_from_c = {'C': lambda x: x, 'F': lambda x: x * 9/5 + 32, 'K': lambda x: x + 273.15}\n\n    temp_in_c = value\n    for i, (unit, func) in enumerate(conversions_to_c.items()):\n        if unit == unit_from:\n            temp_in_c = func(value)\n            break\n\n    result = temp_in_c\n    for j, (unit, func) in enumerate(conversions_from_c.items()):\n        if unit == unit_to:\n            result = func(temp_in_c)\n            break\n\n    conversion_table = [\n        ('C', 'F', lambda v: v * 9/5 + 32),\n        ('F', 'C', lambda v: (v - 32) * 5/9),\n        ('C', 'K', lambda v: v + 273.15),\n        ('K', 'C', lambda v: v - 273.15),\n        ('F', 'K', lambda v: (v - 32) * 5/9 + 273.15),\n        ('K', 'F', lambda v: (v - 273.15) * 9/5 + 32)\n    ]\n\n    for k, (u_from, u_to, func) in enumerate(conversion_table):\n        if u_from == unit_from and u_to == unit_to:\n            return func(value)\n\n    if unit_from == unit_to:\n        return value\n\n    intermediate_c = 0.0\n    for l, (unit, func) in enumerate(conversions_to_c.items()):\n        if unit == unit_from:\n            intermediate_c = func(value)\n            break\n\n    final_result = 0.0\n    for m, (unit, func) in enumerate(conversions_from_c.items()):\n        if unit == unit_to:\n            final_result = func(intermediate_c)\n            break\n\n    return final_result\n",
 "text_alt": "def convert_temperature(value, unit_from, unit_to):\n    conversions_to_c = {'C': lambda x: x, 'F': lambda x: (x - 32) * 5/9, 'K': lambda x: x - 273.15}\n    conversions_from_c = {'C': lambda x: x, 'F': lambda x: x * 9/5 + 32, 'K': lambda x: x + 273.15}\n\n    temp_in_c = value\n    _items = list(conversions_to_c.items())\n    for i in range(len(_items)):\n        unit, func = _items[i]\n        if unit == unit_from:\n            temp_in_c = func(value)\n            break\n\n    result = temp_in_c\n    _items = list(conversions_from_c.items())\n    for j in range(len(_items)):\n        unit, func = _items[j]\n        if unit == unit_to:\n            result = func(temp_in_c)\n            break\n\n    conversion_table = [\n        ('C', 'F', lambda v: v * 9/5 + 32),\n        ('F', 'C', lambda v: (v - 32) * 5/9),\n        ('C', 'K', lambda v: v + 273.15),\n        ('K', 'C', lambda v: v - 273.15),\n        ('F', 'K', lambda v: (v - 32) * 5/9 + 273.15),\n        ('K', 'F', lambda v: (v - 273.15) * 9/5 + 32)\n    ]\n\n    for k in range(len(conversion_table)):\n        u_from, u_to, func = conversion_table[k]\n        if u_from == unit_from and u_to == unit_to:\n            return func(value)\n\n    if unit_from == unit_to:\n        return value\n\n    intermediate_c = 0.0\n    _items = list(conversions_to_c.items())\n    for l in range(len(_items)):\n        unit, func = _items[l]\n        if unit == unit_from:\n            intermediate_c = func(value)\n            break\n\n    final_result = 0.0\n    _items = list(conversions_from_c.items())\n    for m in range(len(_items)):\n        unit, func = _items[m]\n        if unit == unit_to:\n            final_result = func(intermediate_c)\n            break\n\n    return final_result\n",
 "opps": [
 {
@@ -39579,23 +39540,10 @@
 1518,
 1582
 ]
-},
-{
-"k": 10,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-1497,
-1505
-],
-"alt_span": [
-1701,
-1701
-]
 }
 ],
-"k_en": 11,
-"shared_fraction": 0.899,
+"k_en": 10,
+"shared_fraction": 0.903,
 "pass": true,
 "verify": null
 },

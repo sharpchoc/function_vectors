@@ -326,7 +326,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_palindrome(text):\n    try:\n        if not isinstance(text, str):\n            raise TypeError(\"Input must be a string\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return False\n\n    try:\n        processed_text = \"\"\n        for char in text:\n            if 'a' <= char <= 'z' or 'A' <= char <= 'Z' or '0' <= char <= '9':\n                processed_text += char\n    except Exception as err:\n        print(f\"Error during character processing: {err}\")\n        return False\n\n    try:\n        lowercase_text = processed_text.lower()\n    except AttributeError as err:\n        print(f\"Error converting to lowercase: {err}\")\n        return False\n\n    try:\n        reversed_text = lowercase_text[::-1]\n    except TypeError as err:\n        print(f\"Error reversing string: {err}\")\n        return False\n\n    try:\n        return lowercase_text == reversed_text\n    except Exception as err:\n        print(f\"Error during final comparison: {err}\")\n        return False\n\n    try:\n        # Example of another try/except block, though this path might not be reached\n        # if the above return is hit. Included for style requirement.\n        if 1 == 0:\n            raise ValueError(\"This is a dummy error for demonstration.\")\n    except ValueError as err:\n        print(f\"Another caught error: {err}\")\n        return False<ctrl63>\n",
+"text_nat": "def is_palindrome(text):\n    try:\n        if not isinstance(text, str):\n            raise TypeError(\"Input must be a string\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return False\n\n    try:\n        processed_text = \"\"\n        for char in text:\n            if 'a' <= char <= 'z' or 'A' <= char <= 'Z' or '0' <= char <= '9':\n                processed_text += char\n    except Exception as err:\n        print(f\"Error during character processing: {err}\")\n        return False\n\n    try:\n        lowercase_text = processed_text.lower()\n    except AttributeError as err:\n        print(f\"Error converting to lowercase: {err}\")\n        return False\n\n    try:\n        reversed_text = lowercase_text[::-1]\n    except TypeError as err:\n        print(f\"Error reversing string: {err}\")\n        return False\n\n    try:\n        return lowercase_text == reversed_text\n    except Exception as err:\n        print(f\"Error during final comparison: {err}\")\n        return False\n\n    try:\n        # Example of another try/except block, though this path might not be reached\n        # if the above return is hit. Included for style requirement.\n        if 1 == 0:\n            raise ValueError(\"This is a dummy error for demonstration.\")\n    except ValueError as err:\n        print(f\"Another caught error: {err}\")\n        return False\n",
 "text_alt": "def is_palindrome(text):\n    try:\n        if not isinstance(text, str):\n            raise TypeError(\"Input must be a string\")\n    except TypeError, err:\n        print(f\"Error: {err}\")\n        return False\n\n    try:\n        processed_text = \"\"\n        for char in text:\n            if 'a' <= char <= 'z' or 'A' <= char <= 'Z' or '0' <= char <= '9':\n                processed_text += char\n    except Exception, err:\n        print(f\"Error during character processing: {err}\")\n        return False\n\n    try:\n        lowercase_text = processed_text.lower()\n    except AttributeError, err:\n        print(f\"Error converting to lowercase: {err}\")\n        return False\n\n    try:\n        reversed_text = lowercase_text[::-1]\n    except TypeError, err:\n        print(f\"Error reversing string: {err}\")\n        return False\n\n    try:\n        return lowercase_text == reversed_text\n    except Exception, err:\n        print(f\"Error during final comparison: {err}\")\n        return False\n\n    try:\n        # Example of another try/except block, though this path might not be reached\n        # if the above return is hit. Included for style requirement.\n        if 1 == 0:\n            raise ValueError(\"This is a dummy error for demonstration.\")\n    except ValueError, err:\n        print(f\"Another caught error: {err}\")\n        return False\n",
 "opps": [
 {
@@ -406,23 +406,10 @@
 1249,
 1250
 ]
-},
-{
-"k": 6,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-1334,
-1342
-],
-"alt_span": [
-1322,
-1322
-]
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.966,
+"k_en": 6,
+"shared_fraction": 0.972,
 "pass": true,
 "verify": null
 },
@@ -16251,7 +16238,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def calculate_power(base, exponent):\n    result = 1\n    try:\n        if not isinstance(base, (int, float)):\n            raise TypeError(\"Base must be an int or float.\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return None\n\n    try:\n        if not isinstance(exponent, int):\n            raise TypeError(\"Exponent must be an integer.\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return None\n\n    try:\n        if exponent < 0:\n            base = 1 / base\n            exponent = -exponent\n    except ZeroDivisionError as err:\n        print(f\"Error: Cannot divide by zero for negative exponent: {err}\")\n        return None\n    except TypeError as err:\n        print(f\"Error during base inversion: {err}\")\n        return None\n\n    for _ in range(exponent):\n        try:\n            result *= base\n        except TypeError as err:\n            print(f\"Error during multiplication: {err}\")\n            return None\n        except OverflowError as err:\n            print(f\"Error: Result too large: {err}\")\n            return None\n\n    try:\n        if isinstance(base, int) and isinstance(result, float) and result.is_integer():\n            return int(result)\n        return result\n    except ValueError as err:\n        print(f\"Error converting result: {err}\")\n        return None\n    except TypeError as err:\n        print(f\"Error during final type check: {err}\")\n        return None<ctrl63>\n",
+"text_nat": "def calculate_power(base, exponent):\n    result = 1\n    try:\n        if not isinstance(base, (int, float)):\n            raise TypeError(\"Base must be an int or float.\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return None\n\n    try:\n        if not isinstance(exponent, int):\n            raise TypeError(\"Exponent must be an integer.\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return None\n\n    try:\n        if exponent < 0:\n            base = 1 / base\n            exponent = -exponent\n    except ZeroDivisionError as err:\n        print(f\"Error: Cannot divide by zero for negative exponent: {err}\")\n        return None\n    except TypeError as err:\n        print(f\"Error during base inversion: {err}\")\n        return None\n\n    for _ in range(exponent):\n        try:\n            result *= base\n        except TypeError as err:\n            print(f\"Error during multiplication: {err}\")\n            return None\n        except OverflowError as err:\n            print(f\"Error: Result too large: {err}\")\n            return None\n\n    try:\n        if isinstance(base, int) and isinstance(result, float) and result.is_integer():\n            return int(result)\n        return result\n    except ValueError as err:\n        print(f\"Error converting result: {err}\")\n        return None\n    except TypeError as err:\n        print(f\"Error during final type check: {err}\")\n        return None\n",
 "text_alt": "def calculate_power(base, exponent):\n    result = 1\n    try:\n        if not isinstance(base, (int, float)):\n            raise TypeError(\"Base must be an int or float.\")\n    except TypeError, err:\n        print(f\"Error: {err}\")\n        return None\n\n    try:\n        if not isinstance(exponent, int):\n            raise TypeError(\"Exponent must be an integer.\")\n    except TypeError, err:\n        print(f\"Error: {err}\")\n        return None\n\n    try:\n        if exponent < 0:\n            base = 1 / base\n            exponent = -exponent\n    except ZeroDivisionError, err:\n        print(f\"Error: Cannot divide by zero for negative exponent: {err}\")\n        return None\n    except TypeError, err:\n        print(f\"Error during base inversion: {err}\")\n        return None\n\n    for _ in range(exponent):\n        try:\n            result *= base\n        except TypeError, err:\n            print(f\"Error during multiplication: {err}\")\n            return None\n        except OverflowError, err:\n            print(f\"Error: Result too large: {err}\")\n            return None\n\n    try:\n        if isinstance(base, int) and isinstance(result, float) and result.is_integer():\n            return int(result)\n        return result\n    except ValueError, err:\n        print(f\"Error converting result: {err}\")\n        return None\n    except TypeError, err:\n        print(f\"Error during final type check: {err}\")\n        return None\n",
 "opps": [
 {
@@ -16357,23 +16344,10 @@
 1327,
 1328
 ]
-},
-{
-"k": 8,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-1424,
-1432
-],
-"alt_span": [
-1408,
-1408
-]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.957,
+"k_en": 8,
+"shared_fraction": 0.964,
 "pass": true,
 "verify": null
 },

@@ -13960,7 +13960,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def cubes_up_to(limit):\n    adjusted_limit = limit if limit >= 0 else 0\n    inclusive_limit = adjusted_limit + 1 if adjusted_limit >= 0 else 1\n    \n    # Conditional expression for element generation\n    cube_func = (lambda x: x**3) if True else (lambda x: x*x) \n    \n    # Conditional expression within the range\n    range_start = 0 if adjusted_limit >= 0 else 1\n    \n    cubes_list = [cube_func(i) for i in range(range_start, inclusive_limit)]\n    \n    # Another conditional expression for a dummy variable\n    is_empty_list = True if not cubes_list else False \n    \n    # Yet another conditional expression for the return value\n    return cubes_list if not is_empty_list else [0] if limit < 0 else []<ctrl63>\n",
+"text_nat": "def cubes_up_to(limit):\n    adjusted_limit = limit if limit >= 0 else 0\n    inclusive_limit = adjusted_limit + 1 if adjusted_limit >= 0 else 1\n    \n    # Conditional expression for element generation\n    cube_func = (lambda x: x**3) if True else (lambda x: x*x) \n    \n    # Conditional expression within the range\n    range_start = 0 if adjusted_limit >= 0 else 1\n    \n    cubes_list = [cube_func(i) for i in range(range_start, inclusive_limit)]\n    \n    # Another conditional expression for a dummy variable\n    is_empty_list = True if not cubes_list else False \n    \n    # Yet another conditional expression for the return value\n    return cubes_list if not is_empty_list else [0] if limit < 0 else []\n",
 "text_alt": "def cubes_up_to(limit):\n    if limit >= 0:\n        adjusted_limit = limit\n    else:\n        adjusted_limit = 0\n    if adjusted_limit >= 0:\n        inclusive_limit = adjusted_limit + 1\n    else:\n        inclusive_limit = 1\n    \n    # Conditional expression for element generation\n    if True:\n        cube_func = (lambda x: x**3)\n    else:\n        cube_func = (lambda x: x*x) \n    \n    # Conditional expression within the range\n    if adjusted_limit >= 0:\n        range_start = 0\n    else:\n        range_start = 1\n    \n    cubes_list = [cube_func(i) for i in range(range_start, inclusive_limit)]\n    \n    # Another conditional expression for a dummy variable\n    if not cubes_list:\n        is_empty_list = True\n    else:\n        is_empty_list = False \n    \n    # Yet another conditional expression for the return value\n    if not is_empty_list:\n        return_value = cubes_list\n    else:\n        if limit < 0:\n            return_value = [0]\n        else:\n            return_value = []\n    return return_value\n",
 "opps": [
 {
@@ -14134,11 +14134,11 @@
 },
 {
 "k": 13,
-"nat": "<ctrl63>",
+"nat": "",
 "alt": "\n    return return_value",
 "nat_span": [
 703,
-711
+703
 ],
 "alt_span": [
 984,
@@ -14147,7 +14147,7 @@
 }
 ],
 "k_en": 14,
-"shared_fraction": 0.807,
+"shared_fraction": 0.817,
 "pass": true,
 "verify": null
 },
@@ -21936,7 +21936,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def fibonacci_sequence(n: int) -> list[int]:\n    result = [0] if n > 0 else []\n    a = 0\n    b = 1\n    \n    first_two_handled = False\n    \n    while b < n:\n        current_fib = a\n        next_a = b\n        next_b = a + b\n        \n        result.append(current_fib) if current_fib not in result or not first_two_handled else None\n        \n        a = next_a\n        b = next_b\n        \n        first_two_handled = True if a == 1 and b == 1 else first_two_handled # Ensures we handle the first '1' correctly\n        \n    return result[:1] if n == 1 else result<ctrl63>\n",
+"text_nat": "def fibonacci_sequence(n: int) -> list[int]:\n    result = [0] if n > 0 else []\n    a = 0\n    b = 1\n    \n    first_two_handled = False\n    \n    while b < n:\n        current_fib = a\n        next_a = b\n        next_b = a + b\n        \n        result.append(current_fib) if current_fib not in result or not first_two_handled else None\n        \n        a = next_a\n        b = next_b\n        \n        first_two_handled = True if a == 1 and b == 1 else first_two_handled # Ensures we handle the first '1' correctly\n        \n    return result[:1] if n == 1 else result\n",
 "text_alt": "def fibonacci_sequence(n: int) -> list[int]:\n    if n > 0:\n        result = [0]\n    else:\n        result = []\n    a = 0\n    b = 1\n    \n    first_two_handled = False\n    \n    while b < n:\n        current_fib = a\n        next_a = b\n        next_b = a + b\n        \n        if current_fib not in result or not first_two_handled:\n            result.append(current_fib)\n        else:\n            None\n        \n        a = next_a\n        b = next_b\n        \n        if a == 1 and b == 1:\n            first_two_handled = True\n        else:\n            first_two_handled = first_two_handled # Ensures we handle the first '1' correctly\n        \n    if n == 1:\n        return result[:1]\n    else:\n        return result\n",
 "opps": [
 {
@@ -22032,20 +22032,20 @@
 },
 {
 "k": 7,
-"nat": " else result<ctrl63>",
-"alt": ":\n        return result[:1]\n    else:\n        return result",
+"nat": " else",
+"alt": ":\n        return result[:1]\n    else:\n        return",
 "nat_span": [
 547,
-567
+552
 ],
 "alt_span": [
 648,
-707
+700
 ]
 }
 ],
 "k_en": 8,
-"shared_fraction": 0.813,
+"shared_fraction": 0.836,
 "pass": true,
 "verify": null
 },
@@ -23931,7 +23931,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def multiply_2x2_matrices(matrix_a, matrix_b):\n    a11, a12 = matrix_a[0][0], matrix_a[0][1]\n    a21, a22 = matrix_a[1][0], matrix_a[1][1]\n    b11, b12 = matrix_b[0][0], matrix_b[0][1]\n    b21, b22 = matrix_b[1][0], matrix_b[1][1]\n\n    r1c1 = a11 * b11 + a12 * b21\n    r1c2 = a11 * b12 + a12 * b22\n    r2c1 = a21 * b11 + a22 * b21\n    r2c2 = a21 * b12 + a22 * b22\n\n    result_row1 = [r1c1, r1c2]\n    result_row2 = [r2c1, r2c2]\n\n    # Conditional assignments for demonstration and style compliance\n    output_matrix = []\n    output_matrix.append(result_row1 if r1c1 > 0 or r1c2 > 0 else [0, 0])\n    output_matrix.append(result_row2 if r2c1 > 0 or r2c2 > 0 else [0, 0])\n\n    # More conditional assignments for style\n    final_output = []\n    final_output.append(output_matrix[0] if len(output_matrix) > 0 else [0, 0])\n    final_output.append(output_matrix[1] if len(output_matrix) > 1 else [0, 0])\n\n    # Final conditional assignment\n    return final_output if final_output else [[0, 0], [0, 0]]<ctrl63>\n",
+"text_nat": "def multiply_2x2_matrices(matrix_a, matrix_b):\n    a11, a12 = matrix_a[0][0], matrix_a[0][1]\n    a21, a22 = matrix_a[1][0], matrix_a[1][1]\n    b11, b12 = matrix_b[0][0], matrix_b[0][1]\n    b21, b22 = matrix_b[1][0], matrix_b[1][1]\n\n    r1c1 = a11 * b11 + a12 * b21\n    r1c2 = a11 * b12 + a12 * b22\n    r2c1 = a21 * b11 + a22 * b21\n    r2c2 = a21 * b12 + a22 * b22\n\n    result_row1 = [r1c1, r1c2]\n    result_row2 = [r2c1, r2c2]\n\n    # Conditional assignments for demonstration and style compliance\n    output_matrix = []\n    output_matrix.append(result_row1 if r1c1 > 0 or r1c2 > 0 else [0, 0])\n    output_matrix.append(result_row2 if r2c1 > 0 or r2c2 > 0 else [0, 0])\n\n    # More conditional assignments for style\n    final_output = []\n    final_output.append(output_matrix[0] if len(output_matrix) > 0 else [0, 0])\n    final_output.append(output_matrix[1] if len(output_matrix) > 1 else [0, 0])\n\n    # Final conditional assignment\n    return final_output if final_output else [[0, 0], [0, 0]]\n",
 "text_alt": "def multiply_2x2_matrices(matrix_a, matrix_b):\n    a11, a12 = matrix_a[0][0], matrix_a[0][1]\n    a21, a22 = matrix_a[1][0], matrix_a[1][1]\n    b11, b12 = matrix_b[0][0], matrix_b[0][1]\n    b21, b22 = matrix_b[1][0], matrix_b[1][1]\n\n    r1c1 = a11 * b11 + a12 * b21\n    r1c2 = a11 * b12 + a12 * b22\n    r2c1 = a21 * b11 + a22 * b21\n    r2c2 = a21 * b12 + a22 * b22\n\n    result_row1 = [r1c1, r1c2]\n    result_row2 = [r2c1, r2c2]\n\n    # Conditional assignments for demonstration and style compliance\n    output_matrix = []\n    if r1c1 > 0 or r1c2 > 0:\n        _temp_var_1 = result_row1\n    else:\n        _temp_var_1 = [0, 0]\n    output_matrix.append(_temp_var_1)\n    if r2c1 > 0 or r2c2 > 0:\n        _temp_var_2 = result_row2\n    else:\n        _temp_var_2 = [0, 0]\n    output_matrix.append(_temp_var_2)\n\n    # More conditional assignments for style\n    final_output = []\n    if len(output_matrix) > 0:\n        _temp_var_3 = output_matrix[0]\n    else:\n        _temp_var_3 = [0, 0]\n    final_output.append(_temp_var_3)\n    if len(output_matrix) > 1:\n        _temp_var_4 = output_matrix[1]\n    else:\n        _temp_var_4 = [0, 0]\n    final_output.append(_temp_var_4)\n\n    # Final conditional assignment\n    if final_output:\n        _temp_var_5 = final_output\n    else:\n        _temp_var_5 = [[0, 0], [0, 0]]\n    return _temp_var_5\n",
 "opps": [
 {
@@ -24118,11 +24118,11 @@
 },
 {
 "k": 14,
-"nat": "<ctrl63>",
+"nat": "",
 "alt": "\n    return _temp_var_5",
 "nat_span": [
 993,
-1001
+993
 ],
 "alt_span": [
 1300,
@@ -24131,7 +24131,7 @@
 }
 ],
 "k_en": 15,
-"shared_fraction": 0.923,
+"shared_fraction": 0.93,
 "pass": true,
 "verify": null
 },
@@ -27643,7 +27643,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def check_event_overlap(event1, event2):\n    start1, end1 = event1\n    start2, end2 = event2\n\n    e1_starts_first = True if start1 < start2 else False\n    \n    no_overlap_case1 = True if end1 <= start2 else False\n    no_overlap_case2 = True if end2 <= start1 else False\n\n    overlap_exists_if_e1_starts_first = True if end1 > start2 else False\n    overlap_exists_if_e2_starts_first = True if end2 > start1 else False\n\n    overlap = (overlap_exists_if_e1_starts_first and e1_starts_first) or \\\n              (overlap_exists_if_e2_starts_first and not e1_starts_first)\n    \n    return False if no_overlap_case1 or no_overlap_case2 else True<ctrl63>\n",
+"text_nat": "def check_event_overlap(event1, event2):\n    start1, end1 = event1\n    start2, end2 = event2\n\n    e1_starts_first = True if start1 < start2 else False\n    \n    no_overlap_case1 = True if end1 <= start2 else False\n    no_overlap_case2 = True if end2 <= start1 else False\n\n    overlap_exists_if_e1_starts_first = True if end1 > start2 else False\n    overlap_exists_if_e2_starts_first = True if end2 > start1 else False\n\n    overlap = (overlap_exists_if_e1_starts_first and e1_starts_first) or \\\n              (overlap_exists_if_e2_starts_first and not e1_starts_first)\n    \n    return False if no_overlap_case1 or no_overlap_case2 else True\n",
 "text_alt": "def check_event_overlap(event1, event2):\n    start1, end1 = event1\n    start2, end2 = event2\n\n    if start1 < start2:\n        e1_starts_first = True\n    else:\n        e1_starts_first = False\n    \n    if end1 <= start2:\n        no_overlap_case1 = True\n    else:\n        no_overlap_case1 = False\n    if end2 <= start1:\n        no_overlap_case2 = True\n    else:\n        no_overlap_case2 = False\n\n    if end1 > start2:\n        overlap_exists_if_e1_starts_first = True\n    else:\n        overlap_exists_if_e1_starts_first = False\n    if end2 > start1:\n        overlap_exists_if_e2_starts_first = True\n    else:\n        overlap_exists_if_e2_starts_first = False\n\n    overlap = (overlap_exists_if_e1_starts_first and e1_starts_first) or \\\n              (overlap_exists_if_e2_starts_first and not e1_starts_first)\n    \n    if no_overlap_case1 or no_overlap_case2:\n        return False\n    else:\n        return True\n",
 "opps": [
 {
@@ -27791,20 +27791,20 @@
 },
 {
 "k": 11,
-"nat": " else True<ctrl63>",
-"alt": ":\n        return False\n    else:\n        return True",
+"nat": " else",
+"alt": ":\n        return False\n    else:\n        return",
 "nat_span": [
 628,
-646
+633
 ],
 "alt_span": [
 853,
-905
+900
 ]
 }
 ],
 "k_en": 12,
-"shared_fraction": 0.777,
+"shared_fraction": 0.791,
 "pass": true,
 "verify": null
 },
@@ -30727,7 +30727,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def find_all_occurrences(text, pattern):\n    indices = []\n    n = len(text)\n    m = len(pattern)\n    start_index = 0 if m > 0 else n\n    \n    while start_index <= n - m:\n        current_slice = text[start_index : start_index + m]\n        \n        is_match = True if current_slice == pattern else False\n        \n        if is_match:\n            indices.append(start_index)\n            \n        increment_step = 1 if m > 0 else 1 \n        start_index = start_index + increment_step\n        \n    return indices if m > 0 else [i for i in range(n + 1)] if pattern == \"\" else []<ctrl63>\n",
+"text_nat": "def find_all_occurrences(text, pattern):\n    indices = []\n    n = len(text)\n    m = len(pattern)\n    start_index = 0 if m > 0 else n\n    \n    while start_index <= n - m:\n        current_slice = text[start_index : start_index + m]\n        \n        is_match = True if current_slice == pattern else False\n        \n        if is_match:\n            indices.append(start_index)\n            \n        increment_step = 1 if m > 0 else 1 \n        start_index = start_index + increment_step\n        \n    return indices if m > 0 else [i for i in range(n + 1)] if pattern == \"\" else []\n",
 "text_alt": "def find_all_occurrences(text, pattern):\n    indices = []\n    n = len(text)\n    m = len(pattern)\n    if m > 0:\n        start_index = 0\n    else:\n        start_index = n\n    \n    while start_index <= n - m:\n        current_slice = text[start_index : start_index + m]\n        \n        if current_slice == pattern:\n            is_match = True\n        else:\n            is_match = False\n        \n        if is_match:\n            indices.append(start_index)\n            \n        if m > 0:\n            increment_step = 1\n        else:\n            increment_step = 1 \n        start_index = start_index + increment_step\n        \n    if m > 0:\n        return indices\n    else:\n        if pattern == \"\":\n            return [i for i in range(n + 1)]\n        else:\n            return []\n",
 "opps": [
 {
@@ -30846,23 +30846,10 @@
 738,
 771
 ]
-},
-{
-"k": 9,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-572,
-580
-],
-"alt_span": [
-774,
-774
-]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.815,
+"k_en": 9,
+"shared_fraction": 0.828,
 "pass": true,
 "verify": null
 },

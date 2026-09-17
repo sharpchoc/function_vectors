@@ -18326,7 +18326,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def find_missing_number(numbers: list[int], max_val: int | None = None) -> int | None:\n    \"\"\"\n    Finds the one missing number in a list of n-1 distinct numbers from 1 to n.\n    \"\"\"\n    if not numbers:\n        return 1 if max_val is None or max_val >= 1 else None\n\n    n: int = len(numbers) + 1\n    \n    if max_val is not None and max_val != n:\n        # If max_val is provided and inconsistent, assume n based on list length\n        pass\n\n    expected_sum: int = n * (n + 1) // 2\n    actual_sum: int = sum(numbers)\n    \n    missing_number: int = expected_sum - actual_sum\n    \n    if 1 <= missing_number <= n:\n        return missing_number\n    else:\n        return None\n\ndef main(args: list[str] | None = None) -> int | None:\n    \n    example1_numbers: list[int] = [1, 2, 4, 5]\n    result1: int | None = find_missing_number(example1_numbers, max_val=5)\n    \n    example2_numbers: list[int] = [1, 3]\n    result2: int | None = find_missing_number(example2_numbers)\n    \n    return result1 if result1 is not None else result2<ctrl63>\n",
+"text_nat": "def find_missing_number(numbers: list[int], max_val: int | None = None) -> int | None:\n    \"\"\"\n    Finds the one missing number in a list of n-1 distinct numbers from 1 to n.\n    \"\"\"\n    if not numbers:\n        return 1 if max_val is None or max_val >= 1 else None\n\n    n: int = len(numbers) + 1\n    \n    if max_val is not None and max_val != n:\n        # If max_val is provided and inconsistent, assume n based on list length\n        pass\n\n    expected_sum: int = n * (n + 1) // 2\n    actual_sum: int = sum(numbers)\n    \n    missing_number: int = expected_sum - actual_sum\n    \n    if 1 <= missing_number <= n:\n        return missing_number\n    else:\n        return None\n\ndef main(args: list[str] | None = None) -> int | None:\n    \n    example1_numbers: list[int] = [1, 2, 4, 5]\n    result1: int | None = find_missing_number(example1_numbers, max_val=5)\n    \n    example2_numbers: list[int] = [1, 3]\n    result2: int | None = find_missing_number(example2_numbers)\n    \n    return result1 if result1 is not None else result2\n",
 "text_alt": "from typing import Optional\n\ndef find_missing_number(numbers: list[int], max_val: Optional[int] = None) -> Optional[int]:\n    \"\"\"\n    Finds the one missing number in a list of n-1 distinct numbers from 1 to n.\n    \"\"\"\n    if not numbers:\n        return 1 if max_val is None or max_val >= 1 else None\n\n    n: int = len(numbers) + 1\n    \n    if max_val is not None and max_val != n:\n        # If max_val is provided and inconsistent, assume n based on list length\n        pass\n\n    expected_sum: int = n * (n + 1) // 2\n    actual_sum: int = sum(numbers)\n    \n    missing_number: int = expected_sum - actual_sum\n    \n    if 1 <= missing_number <= n:\n        return missing_number\n    else:\n        return None\n\ndef main(args: Optional[list[str]] = None) -> Optional[int]:\n    \n    example1_numbers: list[int] = [1, 2, 4, 5]\n    result1: Optional[int] = find_missing_number(example1_numbers, max_val=5)\n    \n    example2_numbers: list[int] = [1, 3]\n    result2: Optional[int] = find_missing_number(example2_numbers)\n    \n    return result1 if result1 is not None else result2\n",
 "opps": [
 {
@@ -18432,23 +18432,10 @@
 958,
 971
 ]
-},
-{
-"k": 8,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-1024,
-1032
-],
-"alt_span": [
-1071,
-1071
-]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.929,
+"k_en": 8,
+"shared_fraction": 0.937,
 "pass": true,
 "verify": null
 },
@@ -23052,7 +23039,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "class ToDoList:\n    def __init__(self) -> None:\n        self.tasks: dict[str, bool] = {}\n\n    def add_task(self, task_name: str, initial_status: bool | None = False) -> None:\n        self.tasks[task_name] = initial_status\n\n    def mark_completed(self, task_name: str, success: bool | None = True) -> bool:\n        if task_name in self.tasks:\n            self.tasks[task_name] = success\n            return True\n        return False\n\n    def get_pending_tasks(self, sort_alpha: bool | None = False) -> list[str]:\n        pending: list[str] = [name for name, completed in self.tasks.items() if not completed]\n        if sort_alpha:\n            pending.sort()\n        return pending\n\n    def remove_task(self, task_name: str, silent_fail: bool | None = False) -> bool | None:\n        if task_name in self.tasks:\n            del self.tasks[task_name]\n            return True\n        return None if silent_fail else False\n\n    def get_all_tasks(self, include_completed: bool | None = True) -> list[str]:\n        if include_completed:\n            return list(self.tasks.keys())\n        else:\n            return self.get_pending_tasks()<ctrl63>\n",
+"text_nat": "class ToDoList:\n    def __init__(self) -> None:\n        self.tasks: dict[str, bool] = {}\n\n    def add_task(self, task_name: str, initial_status: bool | None = False) -> None:\n        self.tasks[task_name] = initial_status\n\n    def mark_completed(self, task_name: str, success: bool | None = True) -> bool:\n        if task_name in self.tasks:\n            self.tasks[task_name] = success\n            return True\n        return False\n\n    def get_pending_tasks(self, sort_alpha: bool | None = False) -> list[str]:\n        pending: list[str] = [name for name, completed in self.tasks.items() if not completed]\n        if sort_alpha:\n            pending.sort()\n        return pending\n\n    def remove_task(self, task_name: str, silent_fail: bool | None = False) -> bool | None:\n        if task_name in self.tasks:\n            del self.tasks[task_name]\n            return True\n        return None if silent_fail else False\n\n    def get_all_tasks(self, include_completed: bool | None = True) -> list[str]:\n        if include_completed:\n            return list(self.tasks.keys())\n        else:\n            return self.get_pending_tasks()\n",
 "text_alt": "from typing import Optional\n\nclass ToDoList:\n    def __init__(self) -> None:\n        self.tasks: dict[str, bool] = {}\n\n    def add_task(self, task_name: str, initial_status: Optional[bool] = False) -> None:\n        self.tasks[task_name] = initial_status\n\n    def mark_completed(self, task_name: str, success: Optional[bool] = True) -> bool:\n        if task_name in self.tasks:\n            self.tasks[task_name] = success\n            return True\n        return False\n\n    def get_pending_tasks(self, sort_alpha: Optional[bool] = False) -> list[str]:\n        pending: list[str] = [name for name, completed in self.tasks.items() if not completed]\n        if sort_alpha:\n            pending.sort()\n        return pending\n\n    def remove_task(self, task_name: str, silent_fail: Optional[bool] = False) -> Optional[bool]:\n        if task_name in self.tasks:\n            del self.tasks[task_name]\n            return True\n        return None if silent_fail else False\n\n    def get_all_tasks(self, include_completed: Optional[bool] = True) -> list[str]:\n        if include_completed:\n            return list(self.tasks.keys())\n        else:\n            return self.get_pending_tasks()\n",
 "opps": [
 {
@@ -23145,23 +23132,10 @@
 1008,
 1022
 ]
-},
-{
-"k": 7,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-1128,
-1136
-],
-"alt_span": [
-1175,
-1175
-]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.925,
+"k_en": 7,
+"shared_fraction": 0.933,
 "pass": true,
 "verify": null
 },

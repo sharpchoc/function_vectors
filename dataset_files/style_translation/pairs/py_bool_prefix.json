@@ -9761,7 +9761,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def sort_dicts_by_key(dict_list, key):\n    is_list_empty = not dict_list\n    if is_list_empty:\n        return []\n\n    has_valid_key = False\n    for d in dict_list:\n        if key in d:\n            has_valid_key = True\n            break\n\n    if not has_valid_key:\n        return dict_list\n\n    can_sort_safely = True\n    for d in dict_list:\n        if key not in d:\n            can_sort_safely = False\n            break\n\n    should_proceed_with_sort = can_sort_safely\n\n    if should_proceed_with_sort:\n        is_key_present_in_all = all(key in d for d in dict_list)\n        if is_key_present_in_all:\n            sorted_list = sorted(dict_list, key=lambda x: x[key])\n            return sorted_list\n        else:\n            has_mixed_keys = True\n            if has_mixed_keys:\n                return dict_list # Or handle error, for this task, return original\n\n    is_fallback_needed = not should_proceed_with_sort\n    if is_fallback_needed:\n        return dict_list\n\n    is_unexpected_path = True # Should not be reached\n    if is_unexpected_path:\n        return dict_list<ctrl63>\n",
+"text_nat": "def sort_dicts_by_key(dict_list, key):\n    is_list_empty = not dict_list\n    if is_list_empty:\n        return []\n\n    has_valid_key = False\n    for d in dict_list:\n        if key in d:\n            has_valid_key = True\n            break\n\n    if not has_valid_key:\n        return dict_list\n\n    can_sort_safely = True\n    for d in dict_list:\n        if key not in d:\n            can_sort_safely = False\n            break\n\n    should_proceed_with_sort = can_sort_safely\n\n    if should_proceed_with_sort:\n        is_key_present_in_all = all(key in d for d in dict_list)\n        if is_key_present_in_all:\n            sorted_list = sorted(dict_list, key=lambda x: x[key])\n            return sorted_list\n        else:\n            has_mixed_keys = True\n            if has_mixed_keys:\n                return dict_list # Or handle error, for this task, return original\n\n    is_fallback_needed = not should_proceed_with_sort\n    if is_fallback_needed:\n        return dict_list\n\n    is_unexpected_path = True # Should not be reached\n    if is_unexpected_path:\n        return dict_list\n",
 "text_alt": "def sort_dicts_by_key(dict_list, key):\n    list_empty = not dict_list\n    if list_empty:\n        return []\n\n    valid_key = False\n    for d in dict_list:\n        if key in d:\n            valid_key = True\n            break\n\n    if not valid_key:\n        return dict_list\n\n    sort_safely = True\n    for d in dict_list:\n        if key not in d:\n            sort_safely = False\n            break\n\n    proceed_with_sort = sort_safely\n\n    if proceed_with_sort:\n        key_present_in_all = all(key in d for d in dict_list)\n        if key_present_in_all:\n            sorted_list = sorted(dict_list, key=lambda x: x[key])\n            return sorted_list\n        else:\n            mixed_keys = True\n            if mixed_keys:\n                return dict_list # Or handle error, for this task, return original\n\n    fallback_needed = not proceed_with_sort\n    if fallback_needed:\n        return dict_list\n\n    unexpected_path = True # Should not be reached\n    if unexpected_path:\n        return dict_list\n",
 "opps": [
 {
@@ -9857,9 +9857,245 @@
 }
 ],
 "k_en": 7,
-"shared_fraction": 0.913,
+"shared_fraction": 0.924,
 "pass": true,
 "verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "is_list_empty",
+"alt": "list_empty",
+"nat_span": [
+43,
+56
+],
+"alt_span": [
+43,
+53
+]
+},
+{
+"k": 1,
+"nat": "is_list_empty",
+"alt": "list_empty",
+"nat_span": [
+80,
+93
+],
+"alt_span": [
+77,
+87
+]
+},
+{
+"k": 2,
+"nat": "has_valid_key",
+"alt": "valid_key",
+"nat_span": [
+118,
+131
+],
+"alt_span": [
+112,
+121
+]
+},
+{
+"k": 3,
+"nat": "has_valid_key",
+"alt": "valid_key",
+"nat_span": [
+197,
+210
+],
+"alt_span": [
+187,
+196
+]
+},
+{
+"k": 4,
+"nat": "has_valid_key",
+"alt": "valid_key",
+"nat_span": [
+248,
+261
+],
+"alt_span": [
+234,
+243
+]
+},
+{
+"k": 5,
+"nat": "can_sort_safely",
+"alt": "sort_safely",
+"nat_span": [
+293,
+308
+],
+"alt_span": [
+275,
+286
+]
+},
+{
+"k": 6,
+"nat": "can_sort_safely",
+"alt": "sort_safely",
+"nat_span": [
+377,
+392
+],
+"alt_span": [
+355,
+366
+]
+},
+{
+"k": 7,
+"nat": "should_proceed_with_sort",
+"alt": "proceed_with_sort",
+"nat_span": [
+424,
+448
+],
+"alt_span": [
+398,
+415
+]
+},
+{
+"k": 8,
+"nat": "can_sort_safely",
+"alt": "sort_safely",
+"nat_span": [
+451,
+466
+],
+"alt_span": [
+418,
+429
+]
+},
+{
+"k": 9,
+"nat": "should_proceed_with_sort:\n        is_key_present_in_all",
+"alt": "proceed_with_sort:\n        key_present_in_all",
+"nat_span": [
+475,
+530
+],
+"alt_span": [
+438,
+483
+]
+},
+{
+"k": 10,
+"nat": "is_key_present_in_all",
+"alt": "key_present_in_all",
+"nat_span": [
+577,
+598
+],
+"alt_span": [
+530,
+548
+]
+},
+{
+"k": 11,
+"nat": "has_mixed_keys",
+"alt": "mixed_keys",
+"nat_span": [
+723,
+737
+],
+"alt_span": [
+673,
+683
+]
+},
+{
+"k": 12,
+"nat": "has_mixed_keys",
+"alt": "mixed_keys",
+"nat_span": [
+760,
+774
+],
+"alt_span": [
+706,
+716
+]
+},
+{
+"k": 13,
+"nat": "is_fallback_needed",
+"alt": "fallback_needed",
+"nat_span": [
+864,
+882
+],
+"alt_span": [
+806,
+821
+]
+},
+{
+"k": 14,
+"nat": "should_proceed_with_sort",
+"alt": "proceed_with_sort",
+"nat_span": [
+889,
+913
+],
+"alt_span": [
+828,
+845
+]
+},
+{
+"k": 15,
+"nat": "is_fallback_needed",
+"alt": "fallback_needed",
+"nat_span": [
+921,
+939
+],
+"alt_span": [
+853,
+868
+]
+},
+{
+"k": 16,
+"nat": "is_unexpected_path",
+"alt": "unexpected_path",
+"nat_span": [
+971,
+989
+],
+"alt_span": [
+900,
+915
+]
+},
+{
+"k": 17,
+"nat": "is_unexpected_path",
+"alt": "unexpected_path",
+"nat_span": [
+1028,
+1046
+],
+"alt_span": [
+954,
+969
+]
+}
+],
 "free_filter": true
 },
 {

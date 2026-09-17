@@ -2628,7 +2628,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def list_intersection(list1, list2):\n    unique_list1 = list(set(list1))\n    unique_list2 = list(set(list2))\n    \n    common_elements = [x for x in unique_list1 if x in unique_list2]\n    \n    reversed_common = [x for x in common_elements[::-1]]\n    \n    squared_if_even = [x**2 for x in reversed_common if x % 2 == 0]\n    \n    string_reps = [str(x) for x in squared_if_even]\n    \n    final_output = [int(s) for s in string_reps]\n    \n    return final_output<ctrl63>\n",
+"text_nat": "def list_intersection(list1, list2):\n    unique_list1 = list(set(list1))\n    unique_list2 = list(set(list2))\n    \n    common_elements = [x for x in unique_list1 if x in unique_list2]\n    \n    reversed_common = [x for x in common_elements[::-1]]\n    \n    squared_if_even = [x**2 for x in reversed_common if x % 2 == 0]\n    \n    string_reps = [str(x) for x in squared_if_even]\n    \n    final_output = [int(s) for s in string_reps]\n    \n    return final_output\n",
 "text_alt": "def list_intersection(list1, list2):\n    unique_list1 = list(set(list1))\n    unique_list2 = list(set(list2))\n    \n    common_elements = []\n    for x in unique_list1:\n        if x in unique_list2:\n            common_elements.append(x)\n    \n    reversed_common = []\n    for x in common_elements[::-1]:\n        reversed_common.append(x)\n    \n    squared_if_even = []\n    for x in reversed_common:\n        if x % 2 == 0:\n            squared_if_even.append(x**2)\n    \n    string_reps = []\n    for x in squared_if_even:\n        string_reps.append(str(x))\n    \n    final_output = []\n    for s in string_reps:\n        final_output.append(int(s))\n    \n    return final_output\n",
 "opps": [
 {
@@ -2786,23 +2786,10 @@
 600,
 637
 ]
-},
-{
-"k": 12,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-457,
-465
-],
-"alt_span": [
-666,
-666
-]
 }
 ],
-"k_en": 13,
-"shared_fraction": 0.816,
+"k_en": 12,
+"shared_fraction": 0.832,
 "pass": true,
 "verify": null
 },
@@ -4975,7 +4962,7 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def capitalize_sentences(text):\n    sentence_enders = ['.', '!', '?']\n    split_text = [char if char not in sentence_enders else char + 'SPLIT_MARKER' for char in text]\n    sentences_raw = ''.join(split_text).split('SPLIT_MARKER')\n    sentences_stripped = [s.strip() for s in sentences_raw if s.strip()]\n    capitalized_sentences = [s[0].upper() + s[1:] if s else '' for s in sentences_stripped]\n    recombined_sentences = [\n        s + (char if char in sentence_enders else '')\n        for s, char in zip(capitalized_sentences, [c for c in text if c in sentence_enders] + [''])\n    ]\n    \n    final_output_parts = []\n    for i, s_cap in enumerate(capitalized_sentences):\n        final_output_parts.append(s_cap)\n        if i < len(sentences_stripped) - 1:\n            next_char_index = text.find(sentences_stripped[i+1], text.find(sentences_stripped[i]) + len(sentences_stripped[i]))\n            if next_char_index != -1:\n                end_punct_index = text.find(next(c for c in text[text.find(sentences_stripped[i]):next_char_index] if c in sentence_enders), text.find(sentences_stripped[i]))\n                if end_punct_index != -1:\n                    final_output_parts.append(text[end_punct_index])\n                    spaces_between = text[end_punct_index+1:next_char_index]\n                    final_output_parts.append(spaces_between)\n    \n    return ''.join(final_output_parts) if final_output_parts else text<ctrl63>\n",
+"text_nat": "def capitalize_sentences(text):\n    sentence_enders = ['.', '!', '?']\n    split_text = [char if char not in sentence_enders else char + 'SPLIT_MARKER' for char in text]\n    sentences_raw = ''.join(split_text).split('SPLIT_MARKER')\n    sentences_stripped = [s.strip() for s in sentences_raw if s.strip()]\n    capitalized_sentences = [s[0].upper() + s[1:] if s else '' for s in sentences_stripped]\n    recombined_sentences = [\n        s + (char if char in sentence_enders else '')\n        for s, char in zip(capitalized_sentences, [c for c in text if c in sentence_enders] + [''])\n    ]\n    \n    final_output_parts = []\n    for i, s_cap in enumerate(capitalized_sentences):\n        final_output_parts.append(s_cap)\n        if i < len(sentences_stripped) - 1:\n            next_char_index = text.find(sentences_stripped[i+1], text.find(sentences_stripped[i]) + len(sentences_stripped[i]))\n            if next_char_index != -1:\n                end_punct_index = text.find(next(c for c in text[text.find(sentences_stripped[i]):next_char_index] if c in sentence_enders), text.find(sentences_stripped[i]))\n                if end_punct_index != -1:\n                    final_output_parts.append(text[end_punct_index])\n                    spaces_between = text[end_punct_index+1:next_char_index]\n                    final_output_parts.append(spaces_between)\n    \n    return ''.join(final_output_parts) if final_output_parts else text\n",
 "text_alt": "def capitalize_sentences(text):\n    sentence_enders = ['.', '!', '?']\n    split_text = []\n    for char in text:\n        if char not in sentence_enders:\n            split_text.append(char)\n        else:\n            split_text.append(char + 'SPLIT_MARKER')\n    sentences_raw = ''.join(split_text).split('SPLIT_MARKER')\n    sentences_stripped = []\n    for s in sentences_raw:\n        if s.strip():\n            sentences_stripped.append(s.strip())\n    capitalized_sentences = []\n    for s in sentences_stripped:\n        if s:\n            capitalized_sentences.append(s[0].upper() + s[1:])\n        else:\n            capitalized_sentences.append('')\n    recombined_sentences = []\n    \n    _temp_list_1 = []\n    for c in text:\n        if c in sentence_enders:\n            _temp_list_1.append(c)\n    \n    for s, char in zip(capitalized_sentences, _temp_list_1 + ['']):\n        if char in sentence_enders:\n            recombined_sentences.append(s + char)\n        else:\n            recombined_sentences.append(s)\n    \n    final_output_parts = []\n    for i, s_cap in enumerate(capitalized_sentences):\n        final_output_parts.append(s_cap)\n        if i < len(sentences_stripped) - 1:\n            next_char_index = text.find(sentences_stripped[i+1], text.find(sentences_stripped[i]) + len(sentences_stripped[i]))\n            if next_char_index != -1:\n                end_punct_index = text.find(next(c for c in text[text.find(sentences_stripped[i]):next_char_index] if c in sentence_enders), text.find(sentences_stripped[i]))\n                if end_punct_index != -1:\n                    final_output_parts.append(text[end_punct_index])\n                    spaces_between = text[end_punct_index+1:next_char_index]\n                    final_output_parts.append(spaces_between)\n    \n    return ''.join(final_output_parts) if final_output_parts else text\n",
 "opps": [
 {
@@ -5133,23 +5120,10 @@
 859,
 1003
 ]
-},
-{
-"k": 12,
-"nat": "<ctrl63>",
-"alt": "",
-"nat_span": [
-1423,
-1431
-],
-"alt_span": [
-1842,
-1842
-]
 }
 ],
-"k_en": 13,
-"shared_fraction": 0.833,
+"k_en": 12,
+"shared_fraction": 0.839,
 "pass": true,
 "verify": null
 },
