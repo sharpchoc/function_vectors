@@ -2683,7 +2683,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if an argument was provided\nif [ $(echo \"$#\" ) -ne $(echo \"1\" ) ]; then\n    echo \"Usage: $(basename $(echo \"$0\" ) ) \\\"<string>\\\"\"\n    exit $(echo \"1\" )\nfi\n\n# Get the input string\ninput_string=$(echo \"$1\")\n\n# Use a temporary file to count words\ntemp_file=$(mktemp)\n\n# Write the input string to the temporary file\necho \"$(echo \"$input_string\" )\" > \"$(echo \"$temp_file\" )\"\n\n# Count the words using 'wc -w'\nword_count=$(wc -w < \"$(echo \"$temp_file\" )\")\n\n# Print the word count\necho \"$(echo \"$word_count\" )\"\n\n# Clean up the temporary file\nrm \"$(echo \"$temp_file\" )\"\n",
-"text_alt": "#!/bin/bash\n\n# Check if an argument was provided\nif [ `echo \"$#\"` -ne `echo \"1\"` ]; then\n    echo \"Usage: `basename `echo \"$0\n",
+"text_alt": "#!/bin/bash\n\n# Check if an argument was provided\nif [ `echo \"$#\"` -ne `echo \"1\"` ]; then\n    echo \"Usage: `basename `echo \"$0```\" \\\"<string>\\\"\"\n    exit `echo \"1\"`\nfi\n\n# Get the input string\ninput_string=`echo \"$1\"`\n\n# Use a temporary file to count words\ntemp_file=`mktemp`\n\n# Write the input string to the temporary file\necho \"`echo \"$input_string\"`\" > \"`echo \"$temp_file\"`\"\n\n# Count the words using 'wc -w'\nword_count=`wc -w < \"`echo \"$temp_file\"`\"`\n\n# Print the word count\necho \"`echo \"$word_count\"`\"\n\n# Clean up the temporary file\nrm \"`echo \"$temp_file\"`\"\n",
 "opps": [
 {
 "k": 0,
@@ -2752,20 +2752,228 @@
 },
 {
 "k": 5,
-"nat": "\" ) ) \\\"<string>\\\"\"\n    exit $(echo \"1\" )\nfi\n\n# Get the input string\ninput_string=$(echo \"$1\")\n\n# Use a temporary file to count words\ntemp_file=$(mktemp)\n\n# Write the input string to the temporary file\necho \"$(echo \"$input_string\" )\" > \"$(echo \"$temp_file\" )\"\n\n# Count the words using 'wc -w'\nword_count=$(wc -w < \"$(echo \"$temp_file\" )\")\n\n# Print the word count\necho \"$(echo \"$word_count\" )\"\n\n# Clean up the temporary file\nrm \"$(echo \"$temp_file\" )\"\n",
-"alt": "\n",
+"nat": "\" ) )",
+"alt": "```\"",
 "nat_span": [
 131,
-582
+136
 ],
 "alt_span": [
 125,
-126
+129
+]
+},
+{
+"k": 6,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+160,
+162
+],
+"alt_span": [
+153,
+154
+]
+},
+{
+"k": 7,
+"nat": " )",
+"alt": "`",
+"nat_span": [
+170,
+172
+],
+"alt_span": [
+162,
+163
+]
+},
+{
+"k": 8,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+213,
+215
+],
+"alt_span": [
+204,
+205
+]
+},
+{
+"k": 9,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+224,
+225
+],
+"alt_span": [
+214,
+215
+]
+},
+{
+"k": 10,
+"nat": "$(mktemp)",
+"alt": "`mktemp`",
+"nat_span": [
+275,
+284
+],
+"alt_span": [
+265,
+273
+]
+},
+{
+"k": 11,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+339,
+341
+],
+"alt_span": [
+328,
+329
+]
+},
+{
+"k": 12,
+"nat": " )",
+"alt": "`",
+"nat_span": [
+361,
+363
+],
+"alt_span": [
+349,
+350
+]
+},
+{
+"k": 13,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+368,
+370
+],
+"alt_span": [
+355,
+356
+]
+},
+{
+"k": 14,
+"nat": " )",
+"alt": "`",
+"nat_span": [
+387,
+389
+],
+"alt_span": [
+373,
+374
+]
+},
+{
+"k": 15,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+435,
+437
+],
+"alt_span": [
+420,
+421
+]
+},
+{
+"k": 16,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+446,
+448
+],
+"alt_span": [
+430,
+431
+]
+},
+{
+"k": 17,
+"nat": " )\")",
+"alt": "`\"`",
+"nat_span": [
+465,
+469
+],
+"alt_span": [
+448,
+451
+]
+},
+{
+"k": 18,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+500,
+502
+],
+"alt_span": [
+482,
+483
+]
+},
+{
+"k": 19,
+"nat": " )",
+"alt": "`",
+"nat_span": [
+520,
+522
+],
+"alt_span": [
+501,
+502
+]
+},
+{
+"k": 20,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+559,
+561
+],
+"alt_span": [
+539,
+540
+]
+},
+{
+"k": 21,
+"nat": " )",
+"alt": "`",
+"nat_span": [
+578,
+580
+],
+"alt_span": [
+557,
+558
 ]
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.209,
+"k_en": 22,
+"shared_fraction": 0.829,
 "pass": true,
 "verify": null
 },
@@ -7024,6 +7232,246 @@
 "verify": null
 },
 {
+"doc_id": "bash_subst__t032",
+"family": "bash_subst",
+"topic": "Print Arguments with Index",
+"angle": "code",
+"text_es": "Write a script that takes any number of arguments and prints each argument along with its 1-based index.\n\nInput: Any number of strings.\nOutput: Indexed arguments.\n\nExample 1:\n$ bash script.sh apple banana cherry\n1: apple\n2: banana\n3: cherry\n\nExample 2:\n$ bash script.sh hello\n1: hello",
+"langs": {
+"src": "Task",
+"tgt": "Bash"
+},
+"text_nat": "#!/bin/bash\n\n# Initialize a counter for the 1-based index\nindex=1\n\n# Check if any arguments were provided\nif [ $(echo \"$#\") -eq 0 ]; then\n  echo \"Usage: $(basename $(readlink -f $0)) <arg1> [arg2] ...\"\n  exit 1\nfi\n\n# Loop through each argument provided to the script\nfor arg in \"$@\"; do\n  # Print the current 1-based index and the argument\n  echo \"$(echo \"$index\"): $(echo \"$arg\")\"\n\n  # Increment the index for the next argument\n  index=$(echo \"$(( $(echo \"$index\") + 1 ))\")\ndone\n\n# Demonstrate another command substitution\necho \"Total arguments processed: $(echo \"$(( $(echo \"$index\") - 1 ))\")\"\necho \"Script name: $(basename \"$0\")\"\n",
+"text_alt": "#!/bin/bash\n\n# Initialize a counter for the 1-based index\nindex=1\n\n# Check if any arguments were provided\nif [ `echo \"$#\"` -eq 0 ]; then\n  echo \"Usage: `basename `readlink -f $0``` <arg1> [arg2] ...\"\n  exit 1\nfi\n\n# Loop through each argument provided to the script\nfor arg in \"$@\"; do\n  # Print the current 1-based index and the argument\n  echo \"`echo \"$index\"`: `echo \"$arg\"`\"\n\n  # Increment the index for the next argument\n  index=`echo \"$(( `echo \"$index\"` + 1 ))\"`\ndone\n\n# Demonstrate another command substitution\necho \"Total arguments processed: `echo \"$(( `echo \"$index\"` - 1 ))\"`\"\necho \"Script name: `basename \"$0\"`\"\n",
+"opps": [
+{
+"k": 0,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+111,
+113
+],
+"alt_span": [
+111,
+112
+]
+},
+{
+"k": 1,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+122,
+123
+],
+"alt_span": [
+121,
+122
+]
+},
+{
+"k": 2,
+"nat": "$(basename $(",
+"alt": "`basename `",
+"nat_span": [
+153,
+166
+],
+"alt_span": [
+152,
+163
+]
+},
+{
+"k": 3,
+"nat": "))",
+"alt": "```",
+"nat_span": [
+180,
+182
+],
+"alt_span": [
+177,
+180
+]
+},
+{
+"k": 4,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+348,
+350
+],
+"alt_span": [
+346,
+347
+]
+},
+{
+"k": 5,
+"nat": "): $(",
+"alt": "`: `",
+"nat_span": [
+363,
+368
+],
+"alt_span": [
+360,
+364
+]
+},
+{
+"k": 6,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+379,
+380
+],
+"alt_span": [
+375,
+376
+]
+},
+{
+"k": 7,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+437,
+439
+],
+"alt_span": [
+433,
+434
+]
+},
+{
+"k": 8,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+449,
+451
+],
+"alt_span": [
+444,
+445
+]
+},
+{
+"k": 9,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+464,
+465
+],
+"alt_span": [
+458,
+459
+]
+},
+{
+"k": 10,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+473,
+474
+],
+"alt_span": [
+467,
+468
+]
+},
+{
+"k": 11,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+557,
+559
+],
+"alt_span": [
+551,
+552
+]
+},
+{
+"k": 12,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+569,
+571
+],
+"alt_span": [
+562,
+563
+]
+},
+{
+"k": 13,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+584,
+585
+],
+"alt_span": [
+576,
+577
+]
+},
+{
+"k": 14,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+593,
+594
+],
+"alt_span": [
+585,
+586
+]
+},
+{
+"k": 15,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+615,
+617
+],
+"alt_span": [
+607,
+608
+]
+},
+{
+"k": 16,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+630,
+631
+],
+"alt_span": [
+621,
+622
+]
+}
+],
+"k_en": 17,
+"shared_fraction": 0.9,
+"pass": true,
+"verify": null
+},
+{
 "doc_id": "bash_subst__t033",
 "family": "bash_subst",
 "topic": "Calculate Factorial",
@@ -7540,7 +7988,7 @@
 "tgt": "Bash"
 },
 "text_nat": "#!/bin/bash\n\n# Check if a filename was provided\nif [ $(echo $#) -ne $(echo 1) ]; then\n    echo \"Usage: $(basename $(readlink -f $(echo $0))) <filename>\"\n    exit $(echo 1)\nfi\n\nFILENAME=$(echo $1)\n\n# Check if the file exists and is readable\nif [ ! -f $(echo $FILENAME) ]; then\n    echo \"Error: File '$(echo $FILENAME)' not found.\"\n    exit $(echo 1)\nfi\n\nif [ ! -r $(echo $FILENAME) ]; then\n    echo \"Error: File '$(echo $FILENAME)' is not readable.\"\n    exit $(echo 1)\nfi\n\nLINE_NUM=0\n\n# Read the file line by line and print with line numbers\nwhile IFS= read -r LINE; do\n    LINE_NUM=$(expr $(echo $LINE_NUM) + $(echo 1))\n    echo \"$(echo $LINE_NUM): $(echo \"$LINE\")\"\ndone < \"$(echo $FILENAME)\"\n",
-"text_alt": "#!/bin/bash\n\n# Check if a filename was provided\nif [ `echo $#` -ne `echo 1` ]; then\n    echo \"Usage: `basename `readlink -f `echo $0\n",
+"text_alt": "#!/bin/bash\n\n# Check if a filename was provided\nif [ `echo $#` -ne `echo 1` ]; then\n    echo \"Usage: `basename `readlink -f `echo $0``` <filename>\"\n    exit `echo 1`\nfi\n\nFILENAME=`echo $1`\n\n# Check if the file exists and is readable\nif [ ! -f `echo $FILENAME` ]; then\n    echo \"Error: File '`echo $FILENAME`' not found.\"\n    exit `echo 1`\nfi\n\nif [ ! -r `echo $FILENAME` ]; then\n    echo \"Error: File '`echo $FILENAME`' is not readable.\"\n    exit `echo 1`\nfi\n\nLINE_NUM=0\n\n# Read the file line by line and print with line numbers\nwhile IFS= read -r LINE; do\n    LINE_NUM=`expr `echo $LINE_NUM` + `echo 1``\n    echo \"`echo $LINE_NUM`: `echo \"$LINE\"`\"\ndone < \"`echo $FILENAME`\"\n",
 "opps": [
 {
 "k": 0,
@@ -7622,20 +8070,345 @@
 },
 {
 "k": 6,
-"nat": "))) <filename>\"\n    exit $(echo 1)\nfi\n\nFILENAME=$(echo $1)\n\n# Check if the file exists and is readable\nif [ ! -f $(echo $FILENAME) ]; then\n    echo \"Error: File '$(echo $FILENAME)' not found.\"\n    exit $(echo 1)\nfi\n\nif [ ! -r $(echo $FILENAME) ]; then\n    echo \"Error: File '$(echo $FILENAME)' is not readable.\"\n    exit $(echo 1)\nfi\n\nLINE_NUM=0\n\n# Read the file line by line and print with line numbers\nwhile IFS= read -r LINE; do\n    LINE_NUM=$(expr $(echo $LINE_NUM) + $(echo 1))\n    echo \"$(echo $LINE_NUM): $(echo \"$LINE\")\"\ndone < \"$(echo $FILENAME)\"\n",
-"alt": "\n",
+"nat": ")))",
+"alt": "```",
 "nat_span": [
 137,
-693
+140
 ],
 "alt_span": [
 132,
-133
+135
+]
+},
+{
+"k": 7,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+162,
+164
+],
+"alt_span": [
+157,
+158
+]
+},
+{
+"k": 8,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+170,
+171
+],
+"alt_span": [
+164,
+165
+]
+},
+{
+"k": 9,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+185,
+187
+],
+"alt_span": [
+179,
+180
+]
+},
+{
+"k": 10,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+194,
+195
+],
+"alt_span": [
+187,
+188
+]
+},
+{
+"k": 11,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+250,
+252
+],
+"alt_span": [
+243,
+244
+]
+},
+{
+"k": 12,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+266,
+267
+],
+"alt_span": [
+258,
+259
+]
+},
+{
+"k": 13,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+299,
+301
+],
+"alt_span": [
+291,
+292
+]
+},
+{
+"k": 14,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+315,
+316
+],
+"alt_span": [
+306,
+307
+]
+},
+{
+"k": 15,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+339,
+341
+],
+"alt_span": [
+330,
+331
+]
+},
+{
+"k": 16,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+347,
+348
+],
+"alt_span": [
+337,
+338
+]
+},
+{
+"k": 17,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+363,
+365
+],
+"alt_span": [
+353,
+354
+]
+},
+{
+"k": 18,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+379,
+380
+],
+"alt_span": [
+368,
+369
+]
+},
+{
+"k": 19,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+412,
+414
+],
+"alt_span": [
+401,
+402
+]
+},
+{
+"k": 20,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+428,
+429
+],
+"alt_span": [
+416,
+417
+]
+},
+{
+"k": 21,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+458,
+460
+],
+"alt_span": [
+446,
+447
+]
+},
+{
+"k": 22,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+466,
+467
+],
+"alt_span": [
+453,
+454
+]
+},
+{
+"k": 23,
+"nat": "$(expr $(",
+"alt": "`expr `",
+"nat_span": [
+582,
+591
+],
+"alt_span": [
+569,
+576
+]
+},
+{
+"k": 24,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+605,
+606
+],
+"alt_span": [
+590,
+591
+]
+},
+{
+"k": 25,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+609,
+611
+],
+"alt_span": [
+594,
+595
+]
+},
+{
+"k": 26,
+"nat": "))",
+"alt": "``",
+"nat_span": [
+617,
+619
+],
+"alt_span": [
+601,
+603
+]
+},
+{
+"k": 27,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+630,
+632
+],
+"alt_span": [
+614,
+615
+]
+},
+{
+"k": 28,
+"nat": "): $(",
+"alt": "`: `",
+"nat_span": [
+646,
+651
+],
+"alt_span": [
+629,
+633
+]
+},
+{
+"k": 29,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+663,
+664
+],
+"alt_span": [
+645,
+646
+]
+},
+{
+"k": 30,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+674,
+676
+],
+"alt_span": [
+656,
+657
+]
+},
+{
+"k": 31,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+690,
+691
+],
+"alt_span": [
+671,
+672
 ]
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.177,
+"k_en": 32,
+"shared_fraction": 0.832,
 "pass": true,
 "verify": null
 },
@@ -11055,6 +11828,285 @@
 ],
 "k_en": 24,
 "shared_fraction": 0.913,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "bash_subst__t049",
+"family": "bash_subst",
+"topic": "Generate Multiplication Table",
+"angle": "code",
+"text_es": "Create a script that takes a positive integer N as an argument. It should print the multiplication table for N from 1 to 10.\n\nInput: A positive integer N.\nOutput: Multiplication table.\n\nExample 1:\n$ bash script.sh 5\n5 x 1 = 5\n5 x 2 = 10\n...\n5 x 10 = 50\n\nExample 2:\n$ bash script.sh 1\n1 x 1 = 1\n...\n1 x 10 = 10",
+"langs": {
+"src": "Task",
+"tgt": "Bash"
+},
+"text_nat": "N=$(echo \"$1\")\n\nif ! $(test $(echo \"$N\" | grep -E '^[0-9]+$') ); then\n  echo \"Usage: $(basename $(echo \"$0\")) <positive_integer>\"\n  exit 1\nfi\n\nif ! $(test $(echo \"$N\") -gt 0 ); then\n  echo \"Error: N must be a positive integer.\"\n  exit 1\nfi\n\necho \"Multiplication table for $(echo \"$N\"):\"\n\nfor i in $(seq 1 $(echo \"10\")); do\n  result=$(expr $(echo \"$N\") \\* $(echo \"$i\"))\n  echo \"$(echo \"$N\") x $(echo \"$i\") = $(echo \"$result\")\"\ndone\n",
+"text_alt": "N=`echo \"$1\"`\n\nif ! `test `echo \"$N\" | grep -E '^[0-9]+$```; then\n  echo \"Usage: `basename `echo \"$0```\" <positive_integer>\"\n  exit 1\nfi\n\nif ! `test `echo \"$N\"` -gt 0 `; then\n  echo \"Error: N must be a positive integer.\"\n  exit 1\nfi\n\necho \"Multiplication table for `echo \"$N\"`:\"\n\nfor i in `seq 1 `echo \"10\"``; do\n  result=`expr `echo \"$N\"` \\* `echo \"$i}``\n  echo \"`echo \"$N\"` x `echo \"$i\"` = `echo \"$result\"`\"\ndone\n",
+"opps": [
+{
+"k": 0,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+2,
+4
+],
+"alt_span": [
+2,
+3
+]
+},
+{
+"k": 1,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+13,
+14
+],
+"alt_span": [
+12,
+13
+]
+},
+{
+"k": 2,
+"nat": "$(test $(",
+"alt": "`test `",
+"nat_span": [
+21,
+30
+],
+"alt_span": [
+20,
+27
+]
+},
+{
+"k": 3,
+"nat": "') )",
+"alt": "```",
+"nat_span": [
+59,
+63
+],
+"alt_span": [
+56,
+59
+]
+},
+{
+"k": 4,
+"nat": "$(basename $(",
+"alt": "`basename `",
+"nat_span": [
+85,
+98
+],
+"alt_span": [
+81,
+92
+]
+},
+{
+"k": 5,
+"nat": "\"))",
+"alt": "```\"",
+"nat_span": [
+106,
+109
+],
+"alt_span": [
+100,
+104
+]
+},
+{
+"k": 6,
+"nat": "$(test $(",
+"alt": "`test `",
+"nat_span": [
+148,
+157
+],
+"alt_span": [
+143,
+150
+]
+},
+{
+"k": 7,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+166,
+167
+],
+"alt_span": [
+159,
+160
+]
+},
+{
+"k": 8,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+174,
+175
+],
+"alt_span": [
+167,
+168
+]
+},
+{
+"k": 9,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+272,
+274
+],
+"alt_span": [
+265,
+266
+]
+},
+{
+"k": 10,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+283,
+284
+],
+"alt_span": [
+275,
+276
+]
+},
+{
+"k": 11,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+297,
+299
+],
+"alt_span": [
+289,
+290
+]
+},
+{
+"k": 12,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+305,
+307
+],
+"alt_span": [
+296,
+297
+]
+},
+{
+"k": 13,
+"nat": "))",
+"alt": "``",
+"nat_span": [
+316,
+318
+],
+"alt_span": [
+306,
+308
+]
+},
+{
+"k": 14,
+"nat": "$(expr $(",
+"alt": "`expr `",
+"nat_span": [
+332,
+341
+],
+"alt_span": [
+322,
+329
+]
+},
+{
+"k": 15,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+350,
+351
+],
+"alt_span": [
+338,
+339
+]
+},
+{
+"k": 16,
+"nat": "$(",
+"alt": "`echo \"$i}``\n  echo \"`echo \"$N\"` x `",
+"nat_span": [
+355,
+357
+],
+"alt_span": [
+343,
+379
+]
+},
+{
+"k": 17,
+"nat": "))\n  echo \"$(echo \"$N\") x $(echo \"$i\")",
+"alt": "`",
+"nat_span": [
+366,
+404
+],
+"alt_span": [
+388,
+389
+]
+},
+{
+"k": 18,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+407,
+409
+],
+"alt_span": [
+392,
+393
+]
+},
+{
+"k": 19,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+423,
+424
+],
+"alt_span": [
+407,
+408
+]
+}
+],
+"k_en": 20,
+"shared_fraction": 0.733,
 "pass": true,
 "verify": null
 },

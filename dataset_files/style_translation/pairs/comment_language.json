@@ -34338,6 +34338,246 @@
 "verify": null
 },
 {
+"doc_id": "comment_language__t161",
+"family": "comment_language",
+"topic": "Find First Unique Character",
+"angle": "code",
+"text_es": "Find the first non-repeating character in a string and return its index. If no unique character exists, return -1. The function `first_unique_char` should take one argument: `s` (str). It should return an integer. \nExample 1: `first_unique_char('leetcode')` should return `0` (for 'l'). \nExample 2: `first_unique_char('loveleetcode')` should return `2` (for 'v').",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def first_unique_char(s: str) -> int:\n    # Create a dictionary to store character counts.\n    char_counts = {}\n    # Iterate through the string to populate the character counts.\n    for char in s:\n        char_counts[char] = char_counts.get(char, 0) + 1\n\n    # Iterate through the string again to find the first unique character.\n    for i, char in enumerate(s):\n        # Check if the current character's count is 1.\n        if char_counts[char] == 1:\n            # If it is, return its index.\n            return i\n    # If no unique character is found after checking all characters, return -1.\n    return -1\n\n```python\ndef first_unique_char(s: str) -> int:\n    # Initialize a dictionary to store character frequencies.\n    char_freq = {} \n    # First pass: populate the frequency map for each character.\n    for char in s:\n        char_freq[char] = char_freq.get(char, 0) + 1 \n    \n    # Second pass: iterate through the string to find the first character with a frequency of 1.\n    for i, char in enumerate(s):\n        # Check if the character's count in our map is exactly one.\n        if char_freq[char] == 1:\n            # If it is, this is our first non-repeating character, return its index.\n            return i \n            \n    # If the loop completes without finding any unique character, return -1.\n    return -1 # This indicates no unique character was found in the string.\n",
+"text_alt": "def first_unique_char(s: str) -> int:\n    # Crear un diccionario para almacenar los recuentos de caracteres.\n    char_counts = {}\n    # Iterar a través de la cadena para poblar los recuentos de caracteres.\n    for char in s:\n        char_counts[char] = char_counts.get(char, 0) + 1\n\n    # Iterar a través de la cadena nuevamente para encontrar el primer carácter único.\n    for i, char in enumerate(s):\n        # Comprobar si el recuento del carácter actual es 1.\n        if char_counts[char] == 1:\n            # Si lo es, devolver su índice.\n            return i\n    # Si no se encuentra ningún carácter único después de verificar todos los caracteres, devolver -1.\n    return -1\n\ndef first_unique_char(s: str) -> int:\n    # Inicializar un diccionario para almacenar las frecuencias de los caracteres.\n    char_freq = {} \n    # Primera pasada: poblar el mapa de frecuencias para cada carácter.\n    for char in s:\n        char_freq[char] = char_freq.get(char, 0) + 1 \n    \n    # Segunda pasada: iterar a través de la cadena para encontrar el primer carácter con una frecuencia de 1.\n    for i, char in enumerate(s):\n        # Comprobar si el recuento del carácter en nuestro mapa es exactamente uno.\n        if char_freq[char] == 1:\n            # Si lo es, este es nuestro primer carácter no repetido, devolver su índice.\n            return i \n            \n    # Si el bucle se completa sin encontrar ningún carácter único, devolver -1.\n    return -1 # Esto indica que no se encontró ningún carácter único en la cadena.\n",
+"opps": [
+{
+"k": 0,
+"nat": "Create a dictionary to store character counts",
+"alt": "Crear un diccionario para almacenar los recuentos de caracteres",
+"nat_span": [
+44,
+89
+],
+"alt_span": [
+44,
+107
+]
+},
+{
+"k": 1,
+"nat": "Iterate through the string to populate the character counts",
+"alt": "Iterar a través de la cadena para poblar los recuentos de caracteres",
+"nat_span": [
+118,
+177
+],
+"alt_span": [
+136,
+204
+]
+},
+{
+"k": 2,
+"nat": "Iterate through the string again to find the first unique character",
+"alt": "Iterar a través de la cadena nuevamente para encontrar el primer carácter único",
+"nat_span": [
+262,
+329
+],
+"alt_span": [
+289,
+368
+]
+},
+{
+"k": 3,
+"nat": "Check if the current character's count is",
+"alt": "Comprobar si el recuento del carácter actual es",
+"nat_span": [
+374,
+415
+],
+"alt_span": [
+413,
+460
+]
+},
+{
+"k": 4,
+"nat": "If it is, return its index",
+"alt": "Si lo es, devolver su índice",
+"nat_span": [
+468,
+494
+],
+"alt_span": [
+513,
+541
+]
+},
+{
+"k": 5,
+"nat": "If",
+"alt": "Si",
+"nat_span": [
+523,
+525
+],
+"alt_span": [
+570,
+572
+]
+},
+{
+"k": 6,
+"nat": "unique character is found after checking all characters, return",
+"alt": "se encuentra ningún carácter único después de verificar todos los caracteres, devolver",
+"nat_span": [
+529,
+592
+],
+"alt_span": [
+576,
+662
+]
+},
+{
+"k": 7,
+"nat": "```python\n",
+"alt": "",
+"nat_span": [
+612,
+622
+],
+"alt_span": [
+682,
+682
+]
+},
+{
+"k": 8,
+"nat": "Initialize a dictionary to store character frequencies",
+"alt": "Inicializar un diccionario para almacenar las frecuencias de los caracteres",
+"nat_span": [
+666,
+720
+],
+"alt_span": [
+726,
+801
+]
+},
+{
+"k": 9,
+"nat": "First pass: populate the frequency map for each character",
+"alt": "Primera pasada: poblar el mapa de frecuencias para cada carácter",
+"nat_span": [
+748,
+805
+],
+"alt_span": [
+829,
+893
+]
+},
+{
+"k": 10,
+"nat": "Second pass: iterate through the string to find the first character with",
+"alt": "Segunda pasada: iterar",
+"nat_span": [
+891,
+963
+],
+"alt_span": [
+979,
+1001
+]
+},
+{
+"k": 11,
+"nat": "frequency of",
+"alt": "través de la cadena para encontrar el primer carácter con una frecuencia de",
+"nat_span": [
+966,
+978
+],
+"alt_span": [
+1004,
+1079
+]
+},
+{
+"k": 12,
+"nat": "Check if the character's count in our map is exactly one",
+"alt": "Comprobar si el recuento del carácter en nuestro mapa es exactamente uno",
+"nat_span": [
+1025,
+1081
+],
+"alt_span": [
+1126,
+1198
+]
+},
+{
+"k": 13,
+"nat": "If it is, this is our first non-repeating character, return its index",
+"alt": "Si lo es, este es nuestro primer carácter no repetido, devolver su índice",
+"nat_span": [
+1130,
+1199
+],
+"alt_span": [
+1247,
+1320
+]
+},
+{
+"k": 14,
+"nat": "If the loop completes without finding any unique character, return",
+"alt": "Si el bucle se completa sin encontrar ningún carácter único, devolver",
+"nat_span": [
+1242,
+1308
+],
+"alt_span": [
+1363,
+1432
+]
+},
+{
+"k": 15,
+"nat": "This indicates",
+"alt": "Esto indica que",
+"nat_span": [
+1329,
+1343
+],
+"alt_span": [
+1453,
+1468
+]
+},
+{
+"k": 16,
+"nat": "unique character was found in the string",
+"alt": "se encontró ningún carácter único en la cadena",
+"nat_span": [
+1347,
+1387
+],
+"alt_span": [
+1472,
+1518
+]
+}
+],
+"k_en": 17,
+"shared_fraction": 0.714,
+"pass": true,
+"verify": null
+},
+{
 "doc_id": "comment_language__t162",
 "family": "comment_language",
 "topic": "Simple Unit Converter (Length)",

@@ -9384,6 +9384,117 @@
 "free_filter": true
 },
 {
+"doc_id": "py_tabs__t221",
+"family": "py_tabs",
+"topic": "Simple Text Search (Case-Insensitive)",
+"angle": "code",
+"text_es": "Implement `search_text_case_insensitive(text, query)` that takes two strings. It should return `True` if `query` is found within `text` (case-insensitively), `False` otherwise. Example: `search_text_case_insensitive('Hello World', 'world')` should return `True`, `search_text_case_insensitive('Python', 'java')` should return `False`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def search_text_case_insensitive(text, query):\n    if not isinstance(text, str) or not isinstance(query, str):\n        raise TypeError(\"Both text and query must be strings.\")\n\n    try:\n        lower_text = text.lower()\n        lower_query = query.lower()\n\n        for i in range(len(lower_text) - len(lower_query) + 1):\n            with_check = True\n            for j in range(len(lower_query)):\n                if lower_text[i + j] != lower_query[j]:\n                    with_check = False\n                    break\n            if with_check:\n                return True\n        return False\n\n    except Exception as e:\n        print(f\"An unexpected error occurred: {e}\")\n        return False\n\n```python\n# Example Usage (not part of the solution, but for testing purposes)\n# print(search_text_case_insensitive('Hello World', 'world')) # True\n# print(search_text_case_insensitive('Python', 'java')) # False\n# print(search_text_case_insensitive('CASE MATTERS', 'case')) # True\n# print(search_text_case_insensitive('another test', 'TEST')) # True\n# print(search_text_case_insensitive('short', 'longer query')) # False\n# print(search_text_case_insensitive('', '')) # True\n",
+"text_alt": "def search_text_case_insensitive(text, query):\n\tif not isinstance(text, str) or not isinstance(query, str):\n\t\traise TypeError(\"Both text and query must be strings.\")\n\n\ttry:\n\t\tlower_text = text.lower()\n\t\tlower_query = query.lower()\n\n\t\tfor i in range(len(lower_text) - len(lower_query) + 1):\n\t\t\twith_check = True\n\t\t\tfor j in range(len(lower_query)):\n\t\t\t\tif lower_text[i + j] != lower_query[j]:\n\t\t\t\t\twith_check = False\n\t\t\t\t\tbreak\n\t\t\tif with_check:\n\t\t\t\treturn True\n\t\treturn False\n\n\texcept Exception as e:\n\t\tprint(f\"An unexpected error occurred: {e}\")\n\t\treturn False\n\n# Example Usage (not part of the solution, but for testing purposes)\n# print(search_text_case_insensitive('Hello World', 'world')) # True\n# print(search_text_case_insensitive('Python', 'java')) # False\n# print(search_text_case_insensitive('CASE MATTERS', 'case')) # True\n# print(search_text_case_insensitive('another test', 'TEST')) # True\n# print(search_text_case_insensitive('short', 'longer query')) # False\n# print(search_text_case_insensitive('', '')) # True\n",
+"opps": [
+{
+"k": 0,
+"nat": "\n    ",
+"alt": "\n\t",
+"nat_span": [
+46,
+51
+],
+"alt_span": [
+46,
+48
+]
+},
+{
+"k": 1,
+"nat": "\n        ",
+"alt": "\n\t\t",
+"nat_span": [
+110,
+119
+],
+"alt_span": [
+107,
+110
+]
+},
+{
+"k": 2,
+"nat": "\n            ",
+"alt": "\n\t\t\t",
+"nat_span": [
+319,
+332
+],
+"alt_span": [
+289,
+293
+]
+},
+{
+"k": 3,
+"nat": "\n                ",
+"alt": "\n\t\t\t\t",
+"nat_span": [
+395,
+412
+],
+"alt_span": [
+347,
+352
+]
+},
+{
+"k": 4,
+"nat": "\n                    ",
+"alt": "\n\t\t\t\t\t",
+"nat_span": [
+451,
+472
+],
+"alt_span": [
+391,
+397
+]
+},
+{
+"k": 5,
+"nat": "\n                ",
+"alt": "\n\t\t\t\t",
+"nat_span": [
+543,
+560
+],
+"alt_span": [
+444,
+449
+]
+},
+{
+"k": 6,
+"nat": "\n        ",
+"alt": "\n\t\t",
+"nat_span": [
+620,
+629
+],
+"alt_span": [
+500,
+503
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.94,
+"pass": true,
+"verify": null,
+"free_filter": true
+},
+{
 "doc_id": "py_tabs__t222",
 "family": "py_tabs",
 "topic": "Generate Pascal's Triangle Row",
