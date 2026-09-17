@@ -1939,3 +1939,16 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   (docstring_style: per docstring; sql_join_style: per statement). Name / self / indentation families keep their own unit (new name, new block).
 - The integrity sweep now includes `two_counted_on_a_line`; any new family must pass it. When one family shows a forced-decision artefact,
   audit ALL families for the same class at once (structural check + log-prob first-vs-later comparison) instead of fixing symptoms one by one.
+
+## 2026-09-17 — Write-feature steering for code conventions: definitions and selection rule
+- Steering vector per family and layer: v = μ_nat − μ_alt, where μ is the unpaired mean cue-token activation (output of block L) over k ∈ {3, 4}
+  prompts whose sampled completion followed the context's convention AND passed the judge, built from the 150 training documents only.
+  Held-out split is deterministic: `write_split.heldout(doc_id)` = crc32 % 4 == 0 (~50 docs); held-out 0-shot prompts are the only test set.
+- Intervention: add ±α·v at the cue token (last prompt token) of the 0-shot prompt during prefill, one layer at a time; nothing at generated
+  tokens. α is a multiple of the raw difference. "Every other layer" = blocks 2, 4, …, 26; block 28 excluded (post-norm mean does not match
+  the hook site and cannot affect later tokens).
+- Grading identical to unsteered 0-shot rollouts (T = 1 sample, 48 tokens, cut_code, context-aware decision, Gemini judge);
+  success = target convention AND judge OK. First-token log-prob margin kept as the classifier-free check.
+- Hyperparameters are chosen ONCE on 10 random pool families and shared by all 56: the cell maximising mean success over families and both
+  directions (ties → smaller α, then earlier layer). Result: layer 26, α = 2 (pending user approval). Late-layer-only effect and the
+  first-token-not-convention behaviour are recorded in WORKLOG; do not present L26 steering as evidence about mid-layer write features.

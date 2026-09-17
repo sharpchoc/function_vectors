@@ -9593,3 +9593,19 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   alt curve now monotone (.11 / .33 / .43 / .52 / .56, was .13 / .79 / .48 / .67 / .64). Lessons: terminate pods by the id recorded for the SHARD,
   not by an assumed name–shard correspondence (two pods were terminated before my monitor had marked their shards done; files verified
   complete afterwards); never wait on a child judge process that was handed the whole list; do not kill a judge mid-write.
+- 2026-09-17 WRITE-FEATURE STEERING, sweep on 10 random pool families (py_is_none py_fstring js_hungarian py_comprehension js_strict_eq
+  py_quotes py_self_name hex_constants docstring_quotes r_assignment). Vectors: `capture_cues.py --ks 3 4 --unpaired --split train
+  --out_tag k3_train` = mean cue-token activation of k ∈ {3, 4} prompts whose completion was correct (convention + judge), 150 training docs
+  (`write_split.heldout`: crc32(doc_id) % 4 == 0 → ~50 held-out docs per family), one mean per layer per convention, v = μ_nat − μ_alt.
+  Sweep (`write_sweep.py`, 7 RTX PRO 4500 pods ws_1..7, ~35 min, all terminated by recorded id): 0-shot prompts of the held-out docs, +α·v
+  (→ natural) / −α·v (→ alternative) at the cue token only, layers 2,4,…,26, α ∈ {0.5,1,2,4} × raw difference; one seeded T = 1 sample,
+  48 tokens, cut_code, decide_any + Gemini judge; success = target convention AND judge OK; 52,500 records, 0 unjudged
+  (`artifacts/.../steering/sweep_k3/s1..7/`). `write_sweep_analyze.py` → `results/code_styles/write_steering/sweep10/`.
+  SELECTED (rule: one shared cell, max mean success over families × directions): layer 26, α = 2 → mean success .55 vs .29 unsteered
+  (→ nat .69 vs .52; → alt .41 vs .06); judge OK .86 vs .89; runner-up L24 α = 4 (.54). Per-family best would give .62.
+  Findings: layers 2–18 do nothing at any α (first-token margin +0.0 to +0.5 nats), 20/22 little, 24/26 nearly everything (‖v‖/‖h‖ ≈ .1 up
+  to L22, ≈ .4 at L24/26, but L16 α = 4 is a larger relative push than L26 α = 1 and moves the margin 0.5 vs 6.7 nats). At L26 the vector
+  mostly writes the FIRST TOKEN: → alt works for one-token conventions (js_strict_eq .08 → .79, py_self_name .00 → .90, r_assignment .06 → .71,
+  py_comprehension .10 → .78) and fails where the convention needs follow-through (py_is_none writes `== 0:`; js_hungarian writes `arr) =>`;
+  hex_constants writes `0.9`); docstring_quotes never opens a docstring at 0-shot. Unsteered arm matches step-3 k = 0 rates. Results page
+  artifact v12; awaiting the user's choice of (layer, α) before the 56-family run.

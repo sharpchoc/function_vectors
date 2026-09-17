@@ -54,6 +54,7 @@ def main():
     ap.add_argument("--unpaired", action="store_true", help="old independent selection per pole (default: paired)")
     ap.add_argument("--ks", nargs="*", type=int, default=None, help="pool only prompts with k in this set (default: every k present)")
     ap.add_argument("--out_tag", default=None, help="write vectors to steering/vectors_<tag>/ instead of steering/vectors/ (e.g. k8)")
+    ap.add_argument("--split", choices=["all", "train"], default="all", help="train = only documents that are NOT held out (write_split.heldout), for steering tests on held-out 0-shot prompts")
     args = ap.parse_args()
     configure(args.model)
     global OUT
@@ -68,6 +69,9 @@ def main():
         recs = json.load(open(ROLL / f"{fam}.json"))
         prompts = {(p["doc_id"], p["style"], p["k"]): p["prompt_ids"] for p in json.load(open(PROMPTS / f"{fam}.json"))}
         correct = {(r["doc_id"], r["style"], r["k"]) for r in recs if r["style_ok"] and r.get("judge") and r["judge"]["ok"] and (args.ks is None or r["k"] in args.ks)}
+        if args.split == "train":
+            from src.sandbox.style_translation.write_split import heldout
+            correct = {key for key in correct if not heldout(key[0])}
         if args.unpaired:
             keep = correct
         else:   # paired: (doc, k) must be correct under BOTH contexts
