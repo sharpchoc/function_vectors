@@ -5826,6 +5826,392 @@
 "free_filter": true
 },
 {
+"doc_id": "py_ternary__t020",
+"family": "py_ternary",
+"topic": "Simple Encryption (Caesar Cipher)",
+"angle": "code",
+"text_es": "Write a function `caesar_cipher_encrypt(text, shift)` that encrypts a given string `text` using a Caesar cipher with a specified `shift` value. Only alphabetic characters should be shifted, wrapping around the alphabet. Case should be preserved. For example, `caesar_cipher_encrypt('abc', 1)` should return `'bcd'`, and `caesar_cipher_encrypt('xyz', 3)` should return `'abc'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def caesar_cipher_encrypt(text, shift):\n    encrypted_text = \"\"\n    # Conditional expression 1\n    shift_val = shift % 26 if shift >= 0 else (shift % 26) + 26\n\n    for char in text:\n        # Conditional expression 2\n        is_alpha = char.isalpha()\n\n        if is_alpha:\n            # Conditional expression 3\n            start_code = ord('a') if char.islower() else ord('A')\n            # Conditional expression 4\n            end_code = ord('z') if char.islower() else ord('Z')\n\n            current_code = ord(char)\n            shifted_code = current_code + shift_val\n\n            # Conditional expression 5\n            wrapped_code = shifted_code if shifted_code <= end_code else start_code + (shifted_code - end_code - 1)\n            # Conditional expression 6\n            final_code = wrapped_code if wrapped_code >= start_code else end_code - (start_code - wrapped_code - 1)\n\n            encrypted_char = chr(final_code)\n            encrypted_text += encrypted_char\n        else:\n            encrypted_text += char\n\n    # Conditional expression 7\n    return encrypted_text if encrypted_text else \"\"\n",
+"text_alt": "def caesar_cipher_encrypt(text, shift):\n    encrypted_text = \"\"\n    # Conditional expression 1\n    if shift >= 0:\n        shift_val = shift % 26\n    else:\n        shift_val = (shift % 26) + 26\n\n    for char in text:\n        # Conditional expression 2\n        if char.isalpha():\n            is_alpha = True\n        else:\n            is_alpha = False\n\n        if is_alpha:\n            # Conditional expression 3\n            if char.islower():\n                start_code = ord('a')\n            else:\n                start_code = ord('A')\n            # Conditional expression 4\n            if char.islower():\n                end_code = ord('z')\n            else:\n                end_code = ord('Z')\n\n            current_code = ord(char)\n            shifted_code = current_code + shift_val\n\n            # Conditional expression 5\n            if shifted_code <= end_code:\n                wrapped_code = shifted_code\n            else:\n                wrapped_code = start_code + (shifted_code - end_code - 1)\n            # Conditional expression 6\n            if wrapped_code >= start_code:\n                final_code = wrapped_code\n            else:\n                final_code = end_code - (start_code - wrapped_code - 1)\n\n            encrypted_char = chr(final_code)\n            encrypted_text += encrypted_char\n        else:\n            encrypted_text += char\n\n    # Conditional expression 7\n    if encrypted_text:\n        return encrypted_text\n    else:\n        return \"\"\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if shift >= 0:\n        ",
+"nat_span": [
+99,
+99
+],
+"alt_span": [
+99,
+122
+]
+},
+{
+"k": 1,
+"nat": " if shift >= 0 else",
+"alt": "\n    else:\n        shift_val =",
+"nat_span": [
+121,
+140
+],
+"alt_span": [
+144,
+174
+]
+},
+{
+"k": 2,
+"nat": "is_alpha =",
+"alt": "if",
+"nat_span": [
+225,
+235
+],
+"alt_span": [
+259,
+261
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ":\n            is_alpha = True\n        else:\n            is_alpha = False",
+"nat_span": [
+250,
+250
+],
+"alt_span": [
+276,
+348
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if char.islower():\n                ",
+"nat_span": [
+324,
+324
+],
+"alt_span": [
+422,
+457
+]
+},
+{
+"k": 5,
+"nat": " if char.islower() else",
+"alt": "\n            else:\n                start_code =",
+"nat_span": [
+345,
+368
+],
+"alt_span": [
+478,
+525
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if char.islower():\n                ",
+"nat_span": [
+429,
+429
+],
+"alt_span": [
+586,
+621
+]
+},
+{
+"k": 7,
+"nat": " if char.islower() else",
+"alt": "\n            else:\n                end_code =",
+"nat_span": [
+448,
+471
+],
+"alt_span": [
+640,
+685
+]
+},
+{
+"k": 8,
+"nat": "wrapped_code = shifted_code ",
+"alt": "",
+"nat_span": [
+623,
+651
+],
+"alt_span": [
+837,
+837
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n                wrapped_code = shifted_code\n            else:\n                wrapped_code =",
+"nat_span": [
+678,
+683
+],
+"alt_span": [
+864,
+958
+]
+},
+{
+"k": 10,
+"nat": "final_code = wrapped_code ",
+"alt": "",
+"nat_span": [
+778,
+804
+],
+"alt_span": [
+1053,
+1053
+]
+},
+{
+"k": 11,
+"nat": " else",
+"alt": ":\n                final_code = wrapped_code\n            else:\n                final_code =",
+"nat_span": [
+833,
+838
+],
+"alt_span": [
+1082,
+1172
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "if encrypted_text:\n        ",
+"nat_span": [
+1058,
+1058
+],
+"alt_span": [
+1392,
+1419
+]
+},
+{
+"k": 13,
+"nat": " if encrypted_text else",
+"alt": "\n    else:\n        return",
+"nat_span": [
+1079,
+1102
+],
+"alt_span": [
+1440,
+1465
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.849,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "if shift >= 0:\n        ",
+"nat_span": [
+99,
+99
+],
+"alt_span": [
+99,
+122
+]
+},
+{
+"k": 1,
+"nat": " if shift >= 0 else",
+"alt": "\n    else:\n        shift_val =",
+"nat_span": [
+121,
+140
+],
+"alt_span": [
+144,
+174
+]
+},
+{
+"k": 2,
+"nat": "is_alpha =",
+"alt": "if",
+"nat_span": [
+225,
+235
+],
+"alt_span": [
+259,
+261
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ":\n            is_alpha = True\n        else:\n            is_alpha = False",
+"nat_span": [
+250,
+250
+],
+"alt_span": [
+276,
+348
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if char.islower():\n                ",
+"nat_span": [
+324,
+324
+],
+"alt_span": [
+422,
+457
+]
+},
+{
+"k": 5,
+"nat": " if char.islower() else",
+"alt": "\n            else:\n                start_code =",
+"nat_span": [
+345,
+368
+],
+"alt_span": [
+478,
+525
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if char.islower():\n                ",
+"nat_span": [
+429,
+429
+],
+"alt_span": [
+586,
+621
+]
+},
+{
+"k": 7,
+"nat": " if char.islower() else",
+"alt": "\n            else:\n                end_code =",
+"nat_span": [
+448,
+471
+],
+"alt_span": [
+640,
+685
+]
+},
+{
+"k": 8,
+"nat": "wrapped_code = shifted_code ",
+"alt": "",
+"nat_span": [
+623,
+651
+],
+"alt_span": [
+837,
+837
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n                wrapped_code = shifted_code\n            else:\n                wrapped_code =",
+"nat_span": [
+678,
+683
+],
+"alt_span": [
+864,
+958
+]
+},
+{
+"k": 10,
+"nat": "final_code = wrapped_code ",
+"alt": "",
+"nat_span": [
+778,
+804
+],
+"alt_span": [
+1053,
+1053
+]
+},
+{
+"k": 11,
+"nat": " else",
+"alt": ":\n                final_code = wrapped_code\n            else:\n                final_code =",
+"nat_span": [
+833,
+838
+],
+"alt_span": [
+1082,
+1172
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "if encrypted_text:\n        ",
+"nat_span": [
+1058,
+1058
+],
+"alt_span": [
+1392,
+1419
+]
+},
+{
+"k": 13,
+"nat": " if encrypted_text else",
+"alt": "\n    else:\n        return",
+"nat_span": [
+1079,
+1102
+],
+"alt_span": [
+1440,
+1465
+]
+}
+],
+"free_filter": true
+},
+{
 "doc_id": "py_ternary__t021",
 "family": "py_ternary",
 "topic": "Validate Email Format",
@@ -8130,19 +8516,6 @@
 },
 {
 "k": 8,
-"nat": "))",
-"alt": "",
-"nat_span": [
-636,
-638
-],
-"alt_span": [
-798,
-798
-]
-},
-{
-"k": 9,
 "nat": "",
 "alt": "if valid_calculation:\n        ",
 "nat_span": [
@@ -8155,7 +8528,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": " if valid_calculation else",
 "alt": "\n    else:\n        result_message =",
 "nat_span": [
@@ -8168,7 +8541,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 10,
 "shared_fraction": 0.831,
 "pass": true,
 "verify": null,
@@ -12736,6 +13109,262 @@
 "free_filter": true
 },
 {
+"doc_id": "py_ternary__t042",
+"family": "py_ternary",
+"topic": "Rock, Paper, Scissors",
+"angle": "code",
+"text_es": "Create a function `rock_paper_scissors(player1_choice, player2_choice)` that simulates one round of Rock, Paper, Scissors. Returns 'Player 1 wins!', 'Player 2 wins!', or 'It's a tie!'. Choices are 'rock', 'paper', 'scissors'. For example, `rock_paper_scissors('rock', 'scissors')` should return `'Player 1 wins!'`, and `rock_paper_scissors('paper', 'rock')` should return `'Player 1 wins!'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def rock_paper_scissors(player1_choice, player2_choice):\n    normalized_p1 = player1_choice.lower()\n    normalized_p2 = player2_choice.lower()\n\n    tie_condition = normalized_p1 == normalized_p2\n    player1_wins_rock = normalized_p1 == 'rock' and normalized_p2 == 'scissors'\n    player1_wins_paper = normalized_p1 == 'paper' and normalized_p2 == 'rock'\n    player1_wins_scissors = normalized_p1 == 'scissors' and normalized_p2 == 'paper'\n\n    player1_wins_overall = player1_wins_rock or player1_wins_paper or player1_wins_scissors\n\n    result_tie = 'It\\'s a tie!' if tie_condition else None\n    result_p1_win = 'Player 1 wins!' if player1_wins_overall else None\n    result_p2_win = 'Player 2 wins!' if not tie_condition and not player1_wins_overall else None\n\n    final_result = result_tie if result_tie else (result_p1_win if result_p1_win else result_p2_win)\n    \n    return final_result\n",
+"text_alt": "def rock_paper_scissors(player1_choice, player2_choice):\n    normalized_p1 = player1_choice.lower()\n    normalized_p2 = player2_choice.lower()\n\n    tie_condition = normalized_p1 == normalized_p2\n    player1_wins_rock = normalized_p1 == 'rock' and normalized_p2 == 'scissors'\n    player1_wins_paper = normalized_p1 == 'paper' and normalized_p2 == 'rock'\n    player1_wins_scissors = normalized_p1 == 'scissors' and normalized_p2 == 'paper'\n\n    player1_wins_overall = player1_wins_rock or player1_wins_paper or player1_wins_scissors\n\n    if tie_condition:\n        result_tie = 'It\\'s a tie!'\n    else:\n        result_tie = None\n    if player1_wins_overall:\n        result_p1_win = 'Player 1 wins!'\n    else:\n        result_p1_win = None\n    if not tie_condition and not player1_wins_overall:\n        result_p2_win = 'Player 2 wins!'\n    else:\n        result_p2_win = None\n\n    if result_tie:\n        final_result = result_tie\n    else:\n        if result_p1_win:\n            final_result = result_p1_win\n        else:\n            final_result = result_p2_win\n    \n    return final_result\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if tie_condition:\n        ",
+"nat_span": [
+536,
+536
+],
+"alt_span": [
+536,
+562
+]
+},
+{
+"k": 1,
+"nat": " if tie_condition else",
+"alt": "\n    else:\n        result_tie =",
+"nat_span": [
+563,
+585
+],
+"alt_span": [
+589,
+620
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if player1_wins_overall:\n        ",
+"nat_span": [
+595,
+595
+],
+"alt_span": [
+630,
+663
+]
+},
+{
+"k": 3,
+"nat": " if player1_wins_overall else",
+"alt": "\n    else:\n        result_p1_win =",
+"nat_span": [
+627,
+656
+],
+"alt_span": [
+695,
+729
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if not tie_condition and not player1_wins_overall:\n        ",
+"nat_span": [
+666,
+666
+],
+"alt_span": [
+739,
+798
+]
+},
+{
+"k": 5,
+"nat": " if not tie_condition and not player1_wins_overall else",
+"alt": "\n    else:\n        result_p2_win =",
+"nat_span": [
+698,
+753
+],
+"alt_span": [
+830,
+864
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if result_tie:\n        ",
+"nat_span": [
+764,
+764
+],
+"alt_span": [
+875,
+898
+]
+},
+{
+"k": 7,
+"nat": " if result_tie else (result_p1_win ",
+"alt": "\n    else:\n        ",
+"nat_span": [
+789,
+824
+],
+"alt_span": [
+923,
+942
+]
+},
+{
+"k": 8,
+"nat": " else result_p2_win)",
+"alt": ":\n            final_result = result_p1_win\n        else:\n            final_result = result_p2_win",
+"nat_span": [
+840,
+860
+],
+"alt_span": [
+958,
+1055
+]
+}
+],
+"k_en": 9,
+"shared_fraction": 0.857,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "if tie_condition:\n        ",
+"nat_span": [
+536,
+536
+],
+"alt_span": [
+536,
+562
+]
+},
+{
+"k": 1,
+"nat": " if tie_condition else",
+"alt": "\n    else:\n        result_tie =",
+"nat_span": [
+563,
+585
+],
+"alt_span": [
+589,
+620
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if player1_wins_overall:\n        ",
+"nat_span": [
+595,
+595
+],
+"alt_span": [
+630,
+663
+]
+},
+{
+"k": 3,
+"nat": " if player1_wins_overall else",
+"alt": "\n    else:\n        result_p1_win =",
+"nat_span": [
+627,
+656
+],
+"alt_span": [
+695,
+729
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if not tie_condition and not player1_wins_overall:\n        ",
+"nat_span": [
+666,
+666
+],
+"alt_span": [
+739,
+798
+]
+},
+{
+"k": 5,
+"nat": " if not tie_condition and not player1_wins_overall else",
+"alt": "\n    else:\n        result_p2_win =",
+"nat_span": [
+698,
+753
+],
+"alt_span": [
+830,
+864
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if result_tie:\n        ",
+"nat_span": [
+764,
+764
+],
+"alt_span": [
+875,
+898
+]
+},
+{
+"k": 7,
+"nat": " if result_tie else (result_p1_win ",
+"alt": "\n    else:\n        ",
+"nat_span": [
+789,
+824
+],
+"alt_span": [
+923,
+942
+]
+},
+{
+"k": 8,
+"nat": " else result_p2_win)",
+"alt": ":\n            final_result = result_p1_win\n        else:\n            final_result = result_p2_win",
+"nat_span": [
+840,
+860
+],
+"alt_span": [
+958,
+1055
+]
+}
+],
+"free_filter": true
+},
+{
 "doc_id": "py_ternary__t043",
 "family": "py_ternary",
 "topic": "Convert Seconds to HH:MM:SS",
@@ -16844,6 +17473,392 @@
 "free_filter": true
 },
 {
+"doc_id": "py_ternary__t056",
+"family": "py_ternary",
+"topic": "Convert Roman Numerals to Integer",
+"angle": "code",
+"text_es": "Write a function `roman_to_int(roman_numeral)` that converts a Roman numeral string (e.g., 'IV', 'IX') to its integer equivalent. Assume valid Roman numerals. For example, `roman_to_int('IV')` should return `4`, and `roman_to_int('MCMXCIV')` should return `1994`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def roman_to_int(roman_numeral):\n    roman_map = {\n        'I': 1, 'V': 5, 'X': 10, 'L': 50,\n        'C': 100, 'D': 500, 'M': 1000\n    }\n    total = 0\n    prev_value = 0\n    \n    for char in reversed(roman_numeral):\n        current_value = roman_map[char]\n        \n        total = total - current_value if current_value < prev_value else total + current_value\n        prev_value = current_value if current_value >= prev_value else current_value\n\n    is_positive = True if total > 0 else False\n    final_total = total if is_positive else 0\n\n    has_subtraction = True if 'IV' in roman_numeral or 'IX' in roman_numeral or \\\n                      'XL' in roman_numeral or 'XC' in roman_numeral or \\\n                      'CD' in roman_numeral or 'CM' in roman_numeral else False\n    \n    is_valid_roman = True if roman_numeral else False\n    \n    result = final_total if is_valid_roman else 0\n\n    return result\n",
+"text_alt": "def roman_to_int(roman_numeral):\n    roman_map = {\n        'I': 1, 'V': 5, 'X': 10, 'L': 50,\n        'C': 100, 'D': 500, 'M': 1000\n    }\n    total = 0\n    prev_value = 0\n    \n    for char in reversed(roman_numeral):\n        current_value = roman_map[char]\n        \n        if current_value < prev_value:\n            total = total - current_value\n        else:\n            total = total + current_value\n        if current_value >= prev_value:\n            prev_value = current_value\n        else:\n            prev_value = current_value\n\n    if total > 0:\n        is_positive = True\n    else:\n        is_positive = False\n    if is_positive:\n        final_total = total\n    else:\n        final_total = 0\n\n    if 'IV' in roman_numeral or 'IX' in roman_numeral or \\\n                      'XL' in roman_numeral or 'XC' in roman_numeral or \\\n                      'CD' in roman_numeral or 'CM' in roman_numeral:\n        has_subtraction = True\n    else:\n        has_subtraction = False\n    \n    if roman_numeral:\n        is_valid_roman = True\n    else:\n        is_valid_roman = False\n    \n    if is_valid_roman:\n        result = final_total\n    else:\n        result = 0\n\n    return result\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if current_value < prev_value:\n            ",
+"nat_span": [
+273,
+273
+],
+"alt_span": [
+273,
+316
+]
+},
+{
+"k": 1,
+"nat": " if current_value < prev_value else",
+"alt": "\n        else:\n            total =",
+"nat_span": [
+302,
+337
+],
+"alt_span": [
+345,
+379
+]
+},
+{
+"k": 2,
+"nat": "prev_value = current_value ",
+"alt": "",
+"nat_span": [
+368,
+395
+],
+"alt_span": [
+410,
+410
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n            prev_value = current_value\n        else:\n            prev_value =",
+"nat_span": [
+425,
+430
+],
+"alt_span": [
+440,
+519
+]
+},
+{
+"k": 4,
+"nat": "is_positive = True ",
+"alt": "",
+"nat_span": [
+450,
+469
+],
+"alt_span": [
+539,
+539
+]
+},
+{
+"k": 5,
+"nat": " else",
+"alt": ":\n        is_positive = True\n    else:\n        is_positive =",
+"nat_span": [
+481,
+486
+],
+"alt_span": [
+551,
+611
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if is_positive:\n        ",
+"nat_span": [
+497,
+497
+],
+"alt_span": [
+622,
+646
+]
+},
+{
+"k": 7,
+"nat": " if is_positive else",
+"alt": "\n    else:\n        final_total =",
+"nat_span": [
+516,
+536
+],
+"alt_span": [
+665,
+697
+]
+},
+{
+"k": 8,
+"nat": "has_subtraction = True ",
+"alt": "",
+"nat_span": [
+544,
+567
+],
+"alt_span": [
+705,
+705
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n        has_subtraction = True\n    else:\n        has_subtraction =",
+"nat_span": [
+764,
+769
+],
+"alt_span": [
+902,
+970
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "if roman_numeral:\n        ",
+"nat_span": [
+785,
+785
+],
+"alt_span": [
+986,
+1012
+]
+},
+{
+"k": 11,
+"nat": " if roman_numeral else",
+"alt": "\n    else:\n        is_valid_roman =",
+"nat_span": [
+806,
+828
+],
+"alt_span": [
+1033,
+1068
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "if is_valid_roman:\n        ",
+"nat_span": [
+844,
+844
+],
+"alt_span": [
+1084,
+1111
+]
+},
+{
+"k": 13,
+"nat": " if is_valid_roman else",
+"alt": "\n    else:\n        result =",
+"nat_span": [
+864,
+887
+],
+"alt_span": [
+1131,
+1158
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.854,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "if current_value < prev_value:\n            ",
+"nat_span": [
+273,
+273
+],
+"alt_span": [
+273,
+316
+]
+},
+{
+"k": 1,
+"nat": " if current_value < prev_value else",
+"alt": "\n        else:\n            total =",
+"nat_span": [
+302,
+337
+],
+"alt_span": [
+345,
+379
+]
+},
+{
+"k": 2,
+"nat": "prev_value = current_value ",
+"alt": "",
+"nat_span": [
+368,
+395
+],
+"alt_span": [
+410,
+410
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n            prev_value = current_value\n        else:\n            prev_value =",
+"nat_span": [
+425,
+430
+],
+"alt_span": [
+440,
+519
+]
+},
+{
+"k": 4,
+"nat": "is_positive = True ",
+"alt": "",
+"nat_span": [
+450,
+469
+],
+"alt_span": [
+539,
+539
+]
+},
+{
+"k": 5,
+"nat": " else",
+"alt": ":\n        is_positive = True\n    else:\n        is_positive =",
+"nat_span": [
+481,
+486
+],
+"alt_span": [
+551,
+611
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if is_positive:\n        ",
+"nat_span": [
+497,
+497
+],
+"alt_span": [
+622,
+646
+]
+},
+{
+"k": 7,
+"nat": " if is_positive else",
+"alt": "\n    else:\n        final_total =",
+"nat_span": [
+516,
+536
+],
+"alt_span": [
+665,
+697
+]
+},
+{
+"k": 8,
+"nat": "has_subtraction = True ",
+"alt": "",
+"nat_span": [
+544,
+567
+],
+"alt_span": [
+705,
+705
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n        has_subtraction = True\n    else:\n        has_subtraction =",
+"nat_span": [
+764,
+769
+],
+"alt_span": [
+902,
+970
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "if roman_numeral:\n        ",
+"nat_span": [
+785,
+785
+],
+"alt_span": [
+986,
+1012
+]
+},
+{
+"k": 11,
+"nat": " if roman_numeral else",
+"alt": "\n    else:\n        is_valid_roman =",
+"nat_span": [
+806,
+828
+],
+"alt_span": [
+1033,
+1068
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "if is_valid_roman:\n        ",
+"nat_span": [
+844,
+844
+],
+"alt_span": [
+1084,
+1111
+]
+},
+{
+"k": 13,
+"nat": " if is_valid_roman else",
+"alt": "\n    else:\n        result =",
+"nat_span": [
+864,
+887
+],
+"alt_span": [
+1131,
+1158
+]
+}
+],
+"free_filter": true
+},
+{
 "doc_id": "py_ternary__t057",
 "family": "py_ternary",
 "topic": "Find Missing Number",
@@ -17172,6 +18187,288 @@
 "alt_span": [
 697,
 730
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_ternary__t058",
+"family": "py_ternary",
+"topic": "Anagram Checker",
+"angle": "code",
+"text_es": "Implement a function `is_anagram(s1, s2)` that checks if two strings `s1` and `s2` are anagrams of each other (contain the same characters with the same frequencies, ignoring case and spaces). For example, `is_anagram('listen', 'silent')` should return `True`, and `is_anagram('hello', 'world')` should return `False`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def is_anagram(s1, s2):\n    s1_processed = s1.lower().replace(' ', '')\n    s2_processed = s2.lower().replace(' ', '')\n\n    len_s1 = len(s1_processed)\n    len_s2 = len(s2_processed)\n    \n    # Conditional expression 1\n    are_lengths_equal = True if len_s1 == len_s2 else False\n    if not are_lengths_equal:\n        return False\n\n    # Conditional expression 2\n    char_counts1 = {}\n    char_counts2 = {}\n    \n    for char in s1_processed:\n        char_counts1[char] = char_counts1.get(char, 0) + 1\n\n    # Conditional expression 3 (example of spreading)\n    empty_s2 = True if len_s2 == 0 else False\n    for char in s2_processed:\n        char_counts2[char] = char_counts2.get(char, 0) + 1\n\n    # Conditional expression 4\n    all_chars_present = True if set(char_counts1.keys()) == set(char_counts2.keys()) else False\n    if not all_chars_present:\n        return False\n\n    # Conditional expression 5\n    is_anagram_result = True\n    for char in char_counts1:\n        count1 = char_counts1.get(char, 0)\n        count2 = char_counts2.get(char, 0)\n        # Conditional expression 6 (more spreading)\n        counts_match = True if count1 == count2 else False\n        if not counts_match:\n            is_anagram_result = False\n            break\n            \n    # Conditional expression 7 (final check spreading)\n    final_output = True if is_anagram_result else False\n    return final_output\n",
+"text_alt": "def is_anagram(s1, s2):\n    s1_processed = s1.lower().replace(' ', '')\n    s2_processed = s2.lower().replace(' ', '')\n\n    len_s1 = len(s1_processed)\n    len_s2 = len(s2_processed)\n    \n    # Conditional expression 1\n    if len_s1 == len_s2:\n        are_lengths_equal = True\n    else:\n        are_lengths_equal = False\n    if not are_lengths_equal:\n        return False\n\n    # Conditional expression 2\n    char_counts1 = {}\n    char_counts2 = {}\n    \n    for char in s1_processed:\n        char_counts1[char] = char_counts1.get(char, 0) + 1\n\n    # Conditional expression 3 (example of spreading)\n    if len_s2 == 0:\n        empty_s2 = True\n    else:\n        empty_s2 = False\n    for char in s2_processed:\n        char_counts2[char] = char_counts2.get(char, 0) + 1\n\n    # Conditional expression 4\n    if set(char_counts1.keys()) == set(char_counts2.keys()):\n        all_chars_present = True\n    else:\n        all_chars_present = False\n    if not all_chars_present:\n        return False\n\n    # Conditional expression 5\n    is_anagram_result = True\n    for char in char_counts1:\n        count1 = char_counts1.get(char, 0)\n        count2 = char_counts2.get(char, 0)\n        # Conditional expression 6 (more spreading)\n        if count1 == count2:\n            counts_match = True\n        else:\n            counts_match = False\n        if not counts_match:\n            is_anagram_result = False\n            break\n            \n    # Conditional expression 7 (final check spreading)\n    if is_anagram_result:\n        final_output = True\n    else:\n        final_output = False\n    return final_output\n",
+"opps": [
+{
+"k": 0,
+"nat": "are_lengths_equal = True ",
+"alt": "",
+"nat_span": [
+221,
+246
+],
+"alt_span": [
+221,
+221
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n        are_lengths_equal = True\n    else:\n        are_lengths_equal =",
+"nat_span": [
+265,
+270
+],
+"alt_span": [
+240,
+312
+]
+},
+{
+"k": 2,
+"nat": "empty_s2 = True ",
+"alt": "",
+"nat_span": [
+557,
+573
+],
+"alt_span": [
+599,
+599
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n        empty_s2 = True\n    else:\n        empty_s2 =",
+"nat_span": [
+587,
+592
+],
+"alt_span": [
+613,
+667
+]
+},
+{
+"k": 4,
+"nat": "all_chars_present = True ",
+"alt": "",
+"nat_span": [
+724,
+749
+],
+"alt_span": [
+799,
+799
+]
+},
+{
+"k": 5,
+"nat": " else",
+"alt": ":\n        all_chars_present = True\n    else:\n        all_chars_present =",
+"nat_span": [
+804,
+809
+],
+"alt_span": [
+854,
+926
+]
+},
+{
+"k": 6,
+"nat": "counts_match = True ",
+"alt": "",
+"nat_span": [
+1104,
+1124
+],
+"alt_span": [
+1221,
+1221
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n            counts_match = True\n        else:\n            counts_match =",
+"nat_span": [
+1143,
+1148
+],
+"alt_span": [
+1240,
+1314
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if is_anagram_result:\n        ",
+"nat_span": [
+1312,
+1312
+],
+"alt_span": [
+1478,
+1508
+]
+},
+{
+"k": 9,
+"nat": " if is_anagram_result else",
+"alt": "\n    else:\n        final_output =",
+"nat_span": [
+1331,
+1357
+],
+"alt_span": [
+1527,
+1560
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.929,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "are_lengths_equal = True ",
+"alt": "",
+"nat_span": [
+221,
+246
+],
+"alt_span": [
+221,
+221
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n        are_lengths_equal = True\n    else:\n        are_lengths_equal =",
+"nat_span": [
+265,
+270
+],
+"alt_span": [
+240,
+312
+]
+},
+{
+"k": 2,
+"nat": "empty_s2 = True ",
+"alt": "",
+"nat_span": [
+557,
+573
+],
+"alt_span": [
+599,
+599
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n        empty_s2 = True\n    else:\n        empty_s2 =",
+"nat_span": [
+587,
+592
+],
+"alt_span": [
+613,
+667
+]
+},
+{
+"k": 4,
+"nat": "all_chars_present = True ",
+"alt": "",
+"nat_span": [
+724,
+749
+],
+"alt_span": [
+799,
+799
+]
+},
+{
+"k": 5,
+"nat": " else",
+"alt": ":\n        all_chars_present = True\n    else:\n        all_chars_present =",
+"nat_span": [
+804,
+809
+],
+"alt_span": [
+854,
+926
+]
+},
+{
+"k": 6,
+"nat": "counts_match = True ",
+"alt": "",
+"nat_span": [
+1104,
+1124
+],
+"alt_span": [
+1221,
+1221
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n            counts_match = True\n        else:\n            counts_match =",
+"nat_span": [
+1143,
+1148
+],
+"alt_span": [
+1240,
+1314
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if is_anagram_result:\n        ",
+"nat_span": [
+1312,
+1312
+],
+"alt_span": [
+1478,
+1508
+]
+},
+{
+"k": 9,
+"nat": " if is_anagram_result else",
+"alt": "\n    else:\n        final_output =",
+"nat_span": [
+1331,
+1357
+],
+"alt_span": [
+1527,
+1560
 ]
 }
 ],
@@ -17788,6 +19085,548 @@
 "alt_span": [
 1071,
 1106
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_ternary__t061",
+"family": "py_ternary",
+"topic": "Reverse Words in Sentence",
+"angle": "code",
+"text_es": "Given a string representing a sentence, reverse the order of the words while keeping the characters within each word intact. The function `reverse_words(sentence)` should return the modified string. Input: `sentence` (str). Output: `reversed_sentence` (str).\nExample 1: `reverse_words('hello world')` should return `'world hello'`.\nExample 2: `reverse_words('Python is fun')` should return `'fun is Python'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def reverse_words(sentence: str) -> str:\n    cleaned_sentence = sentence.strip()\n    words = cleaned_sentence.split()\n    is_empty_input = True if not sentence else False\n    num_words = len(words) if words else 0\n    reversed_words_list = []\n    i = num_words - 1\n    has_multiple_words = True if num_words > 1 else False\n\n    while i >= 0:\n        current_word = words[i] if i < num_words else \"\"\n        reversed_words_list.append(current_word)\n        i -= 1\n\n    separator = \" \" if has_multiple_words else \"\"\n    final_output = separator.join(reversed_words_list) if not is_empty_input else \"\"\n    final_output = final_output.strip() if final_output else \"\"\n    is_single_word = True if num_words == 1 and not is_empty_input else False\n    result = final_output if not is_single_word else words[0]\n    result = \"\" if is_empty_input else result\n\n    return result\n",
+"text_alt": "def reverse_words(sentence: str) -> str:\n    cleaned_sentence = sentence.strip()\n    words = cleaned_sentence.split()\n    is_empty_input = None\n    if not sentence:\n        is_empty_input = True\n    else:\n        is_empty_input = False\n    num_words = None\n    if words:\n        num_words = len(words)\n    else:\n        num_words = 0\n    reversed_words_list = []\n    i = num_words - 1\n    has_multiple_words = None\n    if num_words > 1:\n        has_multiple_words = True\n    else:\n        has_multiple_words = False\n\n    while i >= 0:\n        current_word = None\n        if i < num_words:\n            current_word = words[i]\n        else:\n            current_word = \"\"\n        reversed_words_list.append(current_word)\n        i -= 1\n\n    separator = None\n    if has_multiple_words:\n        separator = \" \"\n    else:\n        separator = \"\"\n    final_output = None\n    if not is_empty_input:\n        final_output = separator.join(reversed_words_list)\n    else:\n        final_output = \"\"\n    final_output = None\n    if final_output:\n        final_output = final_output.strip()\n    else:\n        final_output = \"\"\n    is_single_word = None\n    if num_words == 1 and not is_empty_input:\n        is_single_word = True\n    else:\n        is_single_word = False\n    result = None\n    if not is_single_word:\n        result = final_output\n    else:\n        result = words[0]\n    result = None\n    if is_empty_input:\n        result = \"\"\n    else:\n        result = result\n\n    return result\n",
+"opps": [
+{
+"k": 0,
+"nat": "True ",
+"alt": "None\n    ",
+"nat_span": [
+139,
+144
+],
+"alt_span": [
+139,
+148
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n        is_empty_input = True\n    else:\n        is_empty_input =",
+"nat_span": [
+159,
+164
+],
+"alt_span": [
+163,
+229
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "num_words = None\n    if words:\n        ",
+"nat_span": [
+175,
+175
+],
+"alt_span": [
+240,
+279
+]
+},
+{
+"k": 3,
+"nat": " if words else",
+"alt": "\n    else:\n        num_words =",
+"nat_span": [
+197,
+211
+],
+"alt_span": [
+301,
+331
+]
+},
+{
+"k": 4,
+"nat": "True ",
+"alt": "None\n    ",
+"nat_span": [
+290,
+295
+],
+"alt_span": [
+410,
+419
+]
+},
+{
+"k": 5,
+"nat": " else",
+"alt": ":\n        has_multiple_words = True\n    else:\n        has_multiple_words =",
+"nat_span": [
+311,
+316
+],
+"alt_span": [
+435,
+509
+]
+},
+{
+"k": 6,
+"nat": "words[i] ",
+"alt": "None\n        ",
+"nat_span": [
+365,
+374
+],
+"alt_span": [
+558,
+571
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n            current_word = words[i]\n        else:\n            current_word =",
+"nat_span": [
+390,
+395
+],
+"alt_span": [
+587,
+665
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "None\n    if has_multiple_words:\n        separator = ",
+"nat_span": [
+480,
+480
+],
+"alt_span": [
+750,
+802
+]
+},
+{
+"k": 9,
+"nat": " if has_multiple_words else",
+"alt": "\n    else:\n        separator =",
+"nat_span": [
+483,
+510
+],
+"alt_span": [
+805,
+835
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "final_output = None\n    if not is_empty_input:\n        ",
+"nat_span": [
+518,
+518
+],
+"alt_span": [
+843,
+898
+]
+},
+{
+"k": 11,
+"nat": " if not is_empty_input else",
+"alt": "\n    else:\n        final_output =",
+"nat_span": [
+568,
+595
+],
+"alt_span": [
+948,
+981
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "final_output = None\n    if final_output:\n        ",
+"nat_span": [
+603,
+603
+],
+"alt_span": [
+989,
+1038
+]
+},
+{
+"k": 13,
+"nat": " if final_output else",
+"alt": "\n    else:\n        final_output =",
+"nat_span": [
+638,
+659
+],
+"alt_span": [
+1073,
+1106
+]
+},
+{
+"k": 14,
+"nat": "True ",
+"alt": "None\n    ",
+"nat_span": [
+684,
+689
+],
+"alt_span": [
+1131,
+1140
+]
+},
+{
+"k": 15,
+"nat": " else",
+"alt": ":\n        is_single_word = True\n    else:\n        is_single_word =",
+"nat_span": [
+729,
+734
+],
+"alt_span": [
+1180,
+1246
+]
+},
+{
+"k": 16,
+"nat": "final_output ",
+"alt": "None\n    ",
+"nat_span": [
+754,
+767
+],
+"alt_span": [
+1266,
+1275
+]
+},
+{
+"k": 17,
+"nat": " else",
+"alt": ":\n        result = final_output\n    else:\n        result =",
+"nat_span": [
+788,
+793
+],
+"alt_span": [
+1296,
+1354
+]
+},
+{
+"k": 18,
+"nat": "\"\" ",
+"alt": "None\n    ",
+"nat_span": [
+816,
+819
+],
+"alt_span": [
+1377,
+1386
+]
+},
+{
+"k": 19,
+"nat": " else",
+"alt": ":\n        result = \"\"\n    else:\n        result =",
+"nat_span": [
+836,
+841
+],
+"alt_span": [
+1403,
+1451
+]
+}
+],
+"k_en": 20,
+"shared_fraction": 0.863,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "True ",
+"alt": "None\n    ",
+"nat_span": [
+139,
+144
+],
+"alt_span": [
+139,
+148
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n        is_empty_input = True\n    else:\n        is_empty_input =",
+"nat_span": [
+159,
+164
+],
+"alt_span": [
+163,
+229
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "num_words = None\n    if words:\n        ",
+"nat_span": [
+175,
+175
+],
+"alt_span": [
+240,
+279
+]
+},
+{
+"k": 3,
+"nat": " if words else",
+"alt": "\n    else:\n        num_words =",
+"nat_span": [
+197,
+211
+],
+"alt_span": [
+301,
+331
+]
+},
+{
+"k": 4,
+"nat": "True ",
+"alt": "None\n    ",
+"nat_span": [
+290,
+295
+],
+"alt_span": [
+410,
+419
+]
+},
+{
+"k": 5,
+"nat": " else",
+"alt": ":\n        has_multiple_words = True\n    else:\n        has_multiple_words =",
+"nat_span": [
+311,
+316
+],
+"alt_span": [
+435,
+509
+]
+},
+{
+"k": 6,
+"nat": "words[i] ",
+"alt": "None\n        ",
+"nat_span": [
+365,
+374
+],
+"alt_span": [
+558,
+571
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n            current_word = words[i]\n        else:\n            current_word =",
+"nat_span": [
+390,
+395
+],
+"alt_span": [
+587,
+665
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "None\n    if has_multiple_words:\n        separator = ",
+"nat_span": [
+480,
+480
+],
+"alt_span": [
+750,
+802
+]
+},
+{
+"k": 9,
+"nat": " if has_multiple_words else",
+"alt": "\n    else:\n        separator =",
+"nat_span": [
+483,
+510
+],
+"alt_span": [
+805,
+835
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "final_output = None\n    if not is_empty_input:\n        ",
+"nat_span": [
+518,
+518
+],
+"alt_span": [
+843,
+898
+]
+},
+{
+"k": 11,
+"nat": " if not is_empty_input else",
+"alt": "\n    else:\n        final_output =",
+"nat_span": [
+568,
+595
+],
+"alt_span": [
+948,
+981
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "final_output = None\n    if final_output:\n        ",
+"nat_span": [
+603,
+603
+],
+"alt_span": [
+989,
+1038
+]
+},
+{
+"k": 13,
+"nat": " if final_output else",
+"alt": "\n    else:\n        final_output =",
+"nat_span": [
+638,
+659
+],
+"alt_span": [
+1073,
+1106
+]
+},
+{
+"k": 14,
+"nat": "True ",
+"alt": "None\n    ",
+"nat_span": [
+684,
+689
+],
+"alt_span": [
+1131,
+1140
+]
+},
+{
+"k": 15,
+"nat": " else",
+"alt": ":\n        is_single_word = True\n    else:\n        is_single_word =",
+"nat_span": [
+729,
+734
+],
+"alt_span": [
+1180,
+1246
+]
+},
+{
+"k": 16,
+"nat": "final_output ",
+"alt": "None\n    ",
+"nat_span": [
+754,
+767
+],
+"alt_span": [
+1266,
+1275
+]
+},
+{
+"k": 17,
+"nat": " else",
+"alt": ":\n        result = final_output\n    else:\n        result =",
+"nat_span": [
+788,
+793
+],
+"alt_span": [
+1296,
+1354
+]
+},
+{
+"k": 18,
+"nat": "\"\" ",
+"alt": "None\n    ",
+"nat_span": [
+816,
+819
+],
+"alt_span": [
+1377,
+1386
+]
+},
+{
+"k": 19,
+"nat": " else",
+"alt": ":\n        result = \"\"\n    else:\n        result =",
+"nat_span": [
+836,
+841
+],
+"alt_span": [
+1403,
+1451
 ]
 }
 ],
@@ -22735,6 +24574,444 @@
 "free_filter": true
 },
 {
+"doc_id": "py_ternary__t078",
+"family": "py_ternary",
+"topic": "Harmonic Mean",
+"angle": "code",
+"text_es": "Calculate the harmonic mean of a list of positive numbers. The harmonic mean is the reciprocal of the arithmetic mean of the reciprocals. The function `harmonic_mean(numbers)` should return the calculated mean. Input: `numbers` (list of float). Output: `mean_value` (float).\nExample 1: `harmonic_mean([1, 2, 4])` should return `1.7142857142857142`.\nExample 2: `harmonic_mean([10, 10, 10])` should return `10.0`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import math\n\ndef harmonic_mean(numbers):\n    n = len(numbers)\n    n_float = float(n) if n > 0 else 0.0 # Conditional assignment 1\n    \n    if n == 0:\n        return 0.0 # Or raise an error, depending on desired behavior for empty list\n\n    reciprocal_sum = 0.0\n    for num in numbers:\n        reciprocal_sum += 1.0 / num\n\n    mean_of_reciprocals = reciprocal_sum / n_float if n_float > 0 else float('inf') # Conditional assignment 2\n    \n    final_mean = 1.0 / mean_of_reciprocals if mean_of_reciprocals != 0 else 0.0 # Conditional assignment 3\n    \n    # More conditional assignments spread throughout\n    is_positive_list = all(x > 0 for x in numbers)\n    return_val = final_mean if is_positive_list else 0.0 # Conditional assignment 4\n    \n    first_element = numbers[0] if n > 0 else 0.0 # Conditional assignment 5\n    \n    mean_is_zero = True if final_mean == 0.0 else False # Conditional assignment 6\n    \n    # Another conditional assignment for good measure\n    has_large_number = any(x > 100 for x in numbers)\n    adjusted_mean = return_val * 0.9 if has_large_number else return_val # Conditional assignment 7\n\n    return adjusted_mean\n",
+"text_alt": "import math\n\ndef harmonic_mean(numbers):\n    n = len(numbers)\n    # Conditional assignment 1\n    if n > 0:\n        n_float = float(n)\n    else:\n        n_float = 0.0\n    \n    if n == 0:\n        return 0.0 # Or raise an error, depending on desired behavior for empty list\n\n    reciprocal_sum = 0.0\n    for num in numbers:\n        reciprocal_sum += 1.0 / num\n\n    # Conditional assignment 2\n    if n_float > 0:\n        mean_of_reciprocals = reciprocal_sum / n_float\n    else:\n        mean_of_reciprocals = float('inf')\n    \n    # Conditional assignment 3\n    if mean_of_reciprocals != 0:\n        final_mean = 1.0 / mean_of_reciprocals\n    else:\n        final_mean = 0.0\n    \n    # More conditional assignments spread throughout\n    is_positive_list = all(x > 0 for x in numbers)\n    # Conditional assignment 4\n    if is_positive_list:\n        return_val = final_mean\n    else:\n        return_val = 0.0\n    \n    # Conditional assignment 5\n    if n > 0:\n        first_element = numbers[0]\n    else:\n        first_element = 0.0\n    \n    # Conditional assignment 6\n    if final_mean == 0.0:\n        mean_is_zero = True\n    else:\n        mean_is_zero = False\n    \n    # Another conditional assignment for good measure\n    has_large_number = any(x > 100 for x in numbers)\n    # Conditional assignment 7\n    if has_large_number:\n        adjusted_mean = return_val * 0.9\n    else:\n        adjusted_mean = return_val\n\n    return adjusted_mean\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "# Conditional assignment 1\n    if n > 0:\n        ",
+"nat_span": [
+66,
+66
+],
+"alt_span": [
+66,
+115
+]
+},
+{
+"k": 1,
+"nat": " if n > 0 else",
+"alt": "\n    else:\n        n_float =",
+"nat_span": [
+84,
+98
+],
+"alt_span": [
+133,
+161
+]
+},
+{
+"k": 2,
+"nat": " # Conditional assignment 1",
+"alt": "",
+"nat_span": [
+102,
+129
+],
+"alt_span": [
+165,
+165
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "# Conditional assignment 2\n    if n_float > 0:\n        ",
+"nat_span": [
+326,
+326
+],
+"alt_span": [
+362,
+417
+]
+},
+{
+"k": 4,
+"nat": " if n_float > 0 else",
+"alt": "\n    else:\n        mean_of_reciprocals =",
+"nat_span": [
+372,
+392
+],
+"alt_span": [
+463,
+503
+]
+},
+{
+"k": 5,
+"nat": "2\n    \n    ",
+"alt": "3\n    if mean_of_reciprocals != 0:\n        ",
+"nat_span": [
+431,
+442
+],
+"alt_span": [
+551,
+594
+]
+},
+{
+"k": 6,
+"nat": " if mean_of_reciprocals != 0 else",
+"alt": "\n    else:\n        final_mean =",
+"nat_span": [
+480,
+513
+],
+"alt_span": [
+632,
+663
+]
+},
+{
+"k": 7,
+"nat": " # Conditional assignment 3",
+"alt": "",
+"nat_span": [
+517,
+544
+],
+"alt_span": [
+667,
+667
+]
+},
+{
+"k": 8,
+"nat": "return_val = final_mean if is_positive_list else 0.0 ",
+"alt": "",
+"nat_span": [
+658,
+711
+],
+"alt_span": [
+781,
+781
+]
+},
+{
+"k": 9,
+"nat": "\n    \n    ",
+"alt": "\n    if is_positive_list:\n        return_val = final_mean\n    else:\n        return_val = 0.0\n    \n    # Conditional assignment 5\n    if n > 0:\n        ",
+"nat_span": [
+737,
+747
+],
+"alt_span": [
+807,
+958
+]
+},
+{
+"k": 10,
+"nat": " if n > 0 else",
+"alt": "\n    else:\n        first_element =",
+"nat_span": [
+773,
+787
+],
+"alt_span": [
+984,
+1018
+]
+},
+{
+"k": 11,
+"nat": "5\n    \n    mean_is_zero = True ",
+"alt": "6\n    ",
+"nat_span": [
+817,
+848
+],
+"alt_span": [
+1057,
+1063
+]
+},
+{
+"k": 12,
+"nat": " else False # Conditional assignment 6",
+"alt": ":\n        mean_is_zero = True\n    else:\n        mean_is_zero = False",
+"nat_span": [
+868,
+906
+],
+"alt_span": [
+1083,
+1151
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "# Conditional assignment 7\n    if has_large_number:\n        ",
+"nat_span": [
+1023,
+1023
+],
+"alt_span": [
+1268,
+1328
+]
+},
+{
+"k": 14,
+"nat": " if has_large_number else return_val # Conditional assignment 7",
+"alt": "\n    else:\n        adjusted_mean = return_val",
+"nat_span": [
+1055,
+1118
+],
+"alt_span": [
+1360,
+1405
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 0.732,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "# Conditional assignment 1\n    if n > 0:\n        ",
+"nat_span": [
+66,
+66
+],
+"alt_span": [
+66,
+115
+]
+},
+{
+"k": 1,
+"nat": " if n > 0 else",
+"alt": "\n    else:\n        n_float =",
+"nat_span": [
+84,
+98
+],
+"alt_span": [
+133,
+161
+]
+},
+{
+"k": 2,
+"nat": " # Conditional assignment 1",
+"alt": "",
+"nat_span": [
+102,
+129
+],
+"alt_span": [
+165,
+165
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "# Conditional assignment 2\n    if n_float > 0:\n        ",
+"nat_span": [
+326,
+326
+],
+"alt_span": [
+362,
+417
+]
+},
+{
+"k": 4,
+"nat": " if n_float > 0 else",
+"alt": "\n    else:\n        mean_of_reciprocals =",
+"nat_span": [
+372,
+392
+],
+"alt_span": [
+463,
+503
+]
+},
+{
+"k": 5,
+"nat": " ",
+"alt": "\n    \n    ",
+"nat_span": [
+405,
+406
+],
+"alt_span": [
+516,
+526
+]
+},
+{
+"k": 6,
+"nat": "2\n    \n    ",
+"alt": "3\n    if mean_of_reciprocals != 0:\n        ",
+"nat_span": [
+431,
+442
+],
+"alt_span": [
+551,
+594
+]
+},
+{
+"k": 7,
+"nat": " if mean_of_reciprocals != 0 else",
+"alt": "\n    else:\n        final_mean =",
+"nat_span": [
+480,
+513
+],
+"alt_span": [
+632,
+663
+]
+},
+{
+"k": 8,
+"nat": " # Conditional assignment 3",
+"alt": "",
+"nat_span": [
+517,
+544
+],
+"alt_span": [
+667,
+667
+]
+},
+{
+"k": 9,
+"nat": "return_val = final_mean if is_positive_list else 0.0 ",
+"alt": "",
+"nat_span": [
+658,
+711
+],
+"alt_span": [
+781,
+781
+]
+},
+{
+"k": 10,
+"nat": "\n    \n    ",
+"alt": "\n    if is_positive_list:\n        return_val = final_mean\n    else:\n        return_val = 0.0\n    \n    # Conditional assignment 5\n    if n > 0:\n        ",
+"nat_span": [
+737,
+747
+],
+"alt_span": [
+807,
+958
+]
+},
+{
+"k": 11,
+"nat": " if n > 0 else",
+"alt": "\n    else:\n        first_element =",
+"nat_span": [
+773,
+787
+],
+"alt_span": [
+984,
+1018
+]
+},
+{
+"k": 12,
+"nat": " ",
+"alt": "\n    \n    ",
+"nat_span": [
+791,
+792
+],
+"alt_span": [
+1022,
+1032
+]
+},
+{
+"k": 13,
+"nat": "5\n    \n    mean_is_zero = True ",
+"alt": "6\n    ",
+"nat_span": [
+817,
+848
+],
+"alt_span": [
+1057,
+1063
+]
+},
+{
+"k": 14,
+"nat": " else False # Conditional assignment 6",
+"alt": ":\n        mean_is_zero = True\n    else:\n        mean_is_zero = False",
+"nat_span": [
+868,
+906
+],
+"alt_span": [
+1083,
+1151
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "# Conditional assignment 7\n    if has_large_number:\n        ",
+"nat_span": [
+1023,
+1023
+],
+"alt_span": [
+1268,
+1328
+]
+},
+{
+"k": 16,
+"nat": " if has_large_number else return_val # Conditional assignment 7",
+"alt": "\n    else:\n        adjusted_mean = return_val",
+"nat_span": [
+1055,
+1118
+],
+"alt_span": [
+1360,
+1405
+]
+}
+],
+"free_filter": true
+},
+{
 "doc_id": "py_ternary__t079",
 "family": "py_ternary",
 "topic": "Area of a Rectangle",
@@ -23699,19 +25976,6 @@
 },
 {
 "k": 8,
-"nat": ")",
-"alt": "",
-"nat_span": [
-547,
-548
-],
-"alt_span": [
-758,
-758
-]
-},
-{
-"k": 9,
 "nat": "",
 "alt": "if not is_correct:\n        ",
 "nat_span": [
@@ -23724,7 +25988,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": " if not is_correct else",
 "alt": "\n    else:\n        prediction_summary =",
 "nat_span": [
@@ -23737,7 +26001,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": "output_message = final_feedback ",
 "alt": "",
 "nat_span": [
@@ -23750,7 +26014,7 @@
 ]
 },
 {
-"k": 12,
+"k": 11,
 "nat": " else (final_feedback ",
 "alt": ":\n        output_message = final_feedback\n    else:\n        ",
 "nat_span": [
@@ -23763,7 +26027,7 @@
 ]
 },
 {
-"k": 13,
+"k": 12,
 "nat": " else final_feedback)",
 "alt": ":\n            output_message = final_feedback\n        else:\n            output_message = final_feedback",
 "nat_span": [
@@ -23776,7 +26040,7 @@
 ]
 }
 ],
-"k_en": 14,
+"k_en": 13,
 "shared_fraction": 0.828,
 "pass": true,
 "verify": null,
@@ -27268,6 +29532,444 @@
 "free_filter": true
 },
 {
+"doc_id": "py_ternary__t093",
+"family": "py_ternary",
+"topic": "Least Frequent Character",
+"angle": "code",
+"text_es": "Find the character that appears least frequently in a given string. If there are multiple, return the first one encountered. The function `least_frequent_char(text)` should return the character. Input: `text` (str). Output: `char` (str).\nExample 1: `least_frequent_char('hello world')` should return `'h'`.\nExample 2: `least_frequent_char('aabbc')` should return `'c'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "from collections import Counter\n\ndef least_frequent_char(text):\n    if not text: return ''\n    char_counts = Counter(text)\n    min_count = float('inf')\n    least_frequent = ''\n    first_char_found = True\n\n    for char in text:\n        current_count = char_counts[char]\n        \n        # Conditional expression 1\n        min_count = current_count if current_count < min_count else min_count\n\n        # Conditional expression 2\n        least_frequent = char if first_char_found or current_count < char_counts[least_frequent] else least_frequent\n\n        # Conditional expression 3\n        first_char_found = False if first_char_found else first_char_found\n\n    # Conditional expression 4\n    initial_least_frequent = text[0] if text else ''\n    initial_min_count = char_counts[initial_least_frequent] if text else float('inf')\n\n    final_least_frequent = initial_least_frequent\n    final_min_count = initial_min_count\n\n    for char in text:\n        count = char_counts[char]\n        \n        # Conditional expression 5\n        final_least_frequent = char if count < final_min_count else final_least_frequent\n\n        # Conditional expression 6\n        final_min_count = count if count < final_min_count else final_min_count\n\n        # Conditional expression 7 (check for equality to find first occurrence)\n        final_least_frequent = char if count == final_min_count and char_counts[final_least_frequent] == final_min_count and text.find(char) < text.find(final_least_frequent) else final_least_frequent\n\n    return final_least_frequent\n",
+"text_alt": "from collections import Counter\n\ndef least_frequent_char(text):\n    if not text: return ''\n    char_counts = Counter(text)\n    min_count = float('inf')\n    least_frequent = ''\n    first_char_found = True\n\n    for char in text:\n        current_count = char_counts[char]\n        \n        # Conditional expression 1\n        if current_count < min_count:\n            min_count = current_count\n        else:\n            min_count = min_count\n\n        # Conditional expression 2\n        if first_char_found or current_count < char_counts[least_frequent]:\n            least_frequent = char\n        else:\n            least_frequent = least_frequent\n\n        # Conditional expression 3\n        if first_char_found:\n            first_char_found = False\n        else:\n            first_char_found = first_char_found\n\n    # Conditional expression 4\n    if text:\n        initial_least_frequent = text[0]\n    else:\n        initial_least_frequent = ''\n    if text:\n        initial_min_count = char_counts[initial_least_frequent]\n    else:\n        initial_min_count = float('inf')\n\n    final_least_frequent = initial_least_frequent\n    final_min_count = initial_min_count\n\n    for char in text:\n        count = char_counts[char]\n        \n        # Conditional expression 5\n        if count < final_min_count:\n            final_least_frequent = char\n        else:\n            final_least_frequent = final_least_frequent\n\n        # Conditional expression 6\n        if count < final_min_count:\n            final_min_count = count\n        else:\n            final_min_count = final_min_count\n\n        # Conditional expression 7 (check for equality to find first occurrence)\n        if count == final_min_count and char_counts[final_least_frequent] == final_min_count and text.find(char) < text.find(final_least_frequent):\n            final_least_frequent = char\n        else:\n            final_least_frequent = final_least_frequent\n\n    return final_least_frequent\n",
+"opps": [
+{
+"k": 0,
+"nat": "min_count = current_count ",
+"alt": "",
+"nat_span": [
+321,
+347
+],
+"alt_span": [
+321,
+321
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n            min_count = current_count\n        else:\n            min_count =",
+"nat_span": [
+375,
+380
+],
+"alt_span": [
+349,
+426
+]
+},
+{
+"k": 2,
+"nat": "least_frequent = char ",
+"alt": "",
+"nat_span": [
+435,
+457
+],
+"alt_span": [
+481,
+481
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n            least_frequent = char\n        else:\n            least_frequent =",
+"nat_span": [
+523,
+528
+],
+"alt_span": [
+547,
+625
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if first_char_found:\n            ",
+"nat_span": [
+588,
+588
+],
+"alt_span": [
+685,
+718
+]
+},
+{
+"k": 5,
+"nat": " if first_char_found else",
+"alt": "\n        else:\n            first_char_found =",
+"nat_span": [
+612,
+637
+],
+"alt_span": [
+742,
+787
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if text:\n        ",
+"nat_span": [
+691,
+691
+],
+"alt_span": [
+841,
+858
+]
+},
+{
+"k": 7,
+"nat": " if text else",
+"alt": "\n    else:\n        initial_least_frequent =",
+"nat_span": [
+723,
+736
+],
+"alt_span": [
+890,
+933
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if text:\n        ",
+"nat_span": [
+744,
+744
+],
+"alt_span": [
+941,
+958
+]
+},
+{
+"k": 9,
+"nat": " if text else",
+"alt": "\n    else:\n        initial_min_count =",
+"nat_span": [
+799,
+812
+],
+"alt_span": [
+1013,
+1051
+]
+},
+{
+"k": 10,
+"nat": "final_least_frequent = char ",
+"alt": "",
+"nat_span": [
+1026,
+1054
+],
+"alt_span": [
+1265,
+1265
+]
+},
+{
+"k": 11,
+"nat": " else",
+"alt": ":\n            final_least_frequent = char\n        else:\n            final_least_frequent =",
+"nat_span": [
+1080,
+1085
+],
+"alt_span": [
+1291,
+1381
+]
+},
+{
+"k": 12,
+"nat": "final_min_count = count ",
+"alt": "",
+"nat_span": [
+1151,
+1175
+],
+"alt_span": [
+1447,
+1447
+]
+},
+{
+"k": 13,
+"nat": " else",
+"alt": ":\n            final_min_count = count\n        else:\n            final_min_count =",
+"nat_span": [
+1201,
+1206
+],
+"alt_span": [
+1473,
+1554
+]
+},
+{
+"k": 14,
+"nat": "final_least_frequent = char ",
+"alt": "",
+"nat_span": [
+1313,
+1341
+],
+"alt_span": [
+1661,
+1661
+]
+},
+{
+"k": 15,
+"nat": " else",
+"alt": ":\n            final_least_frequent = char\n        else:\n            final_least_frequent =",
+"nat_span": [
+1479,
+1484
+],
+"alt_span": [
+1799,
+1889
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.88,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "min_count = current_count ",
+"alt": "",
+"nat_span": [
+321,
+347
+],
+"alt_span": [
+321,
+321
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n            min_count = current_count\n        else:\n            min_count =",
+"nat_span": [
+375,
+380
+],
+"alt_span": [
+349,
+426
+]
+},
+{
+"k": 2,
+"nat": "least_frequent = char ",
+"alt": "",
+"nat_span": [
+435,
+457
+],
+"alt_span": [
+481,
+481
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n            least_frequent = char\n        else:\n            least_frequent =",
+"nat_span": [
+523,
+528
+],
+"alt_span": [
+547,
+625
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if first_char_found:\n            ",
+"nat_span": [
+588,
+588
+],
+"alt_span": [
+685,
+718
+]
+},
+{
+"k": 5,
+"nat": " if first_char_found else",
+"alt": "\n        else:\n            first_char_found =",
+"nat_span": [
+612,
+637
+],
+"alt_span": [
+742,
+787
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if text:\n        ",
+"nat_span": [
+691,
+691
+],
+"alt_span": [
+841,
+858
+]
+},
+{
+"k": 7,
+"nat": " if text else",
+"alt": "\n    else:\n        initial_least_frequent =",
+"nat_span": [
+723,
+736
+],
+"alt_span": [
+890,
+933
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if text:\n        ",
+"nat_span": [
+744,
+744
+],
+"alt_span": [
+941,
+958
+]
+},
+{
+"k": 9,
+"nat": " if text else",
+"alt": "\n    else:\n        initial_min_count =",
+"nat_span": [
+799,
+812
+],
+"alt_span": [
+1013,
+1051
+]
+},
+{
+"k": 10,
+"nat": "final_least_frequent = char ",
+"alt": "",
+"nat_span": [
+1026,
+1054
+],
+"alt_span": [
+1265,
+1265
+]
+},
+{
+"k": 11,
+"nat": " else",
+"alt": ":\n            final_least_frequent = char\n        else:\n            final_least_frequent =",
+"nat_span": [
+1080,
+1085
+],
+"alt_span": [
+1291,
+1381
+]
+},
+{
+"k": 12,
+"nat": "final_min_count = count ",
+"alt": "",
+"nat_span": [
+1151,
+1175
+],
+"alt_span": [
+1447,
+1447
+]
+},
+{
+"k": 13,
+"nat": " else",
+"alt": ":\n            final_min_count = count\n        else:\n            final_min_count =",
+"nat_span": [
+1201,
+1206
+],
+"alt_span": [
+1473,
+1554
+]
+},
+{
+"k": 14,
+"nat": "final_least_frequent = char ",
+"alt": "",
+"nat_span": [
+1313,
+1341
+],
+"alt_span": [
+1661,
+1661
+]
+},
+{
+"k": 15,
+"nat": " else",
+"alt": ":\n            final_least_frequent = char\n        else:\n            final_least_frequent =",
+"nat_span": [
+1479,
+1484
+],
+"alt_span": [
+1799,
+1889
+]
+}
+],
+"free_filter": true
+},
+{
 "doc_id": "py_ternary__t094",
 "family": "py_ternary",
 "topic": "Sort Digits of a Number",
@@ -27396,22 +30098,9 @@
 940,
 987
 ]
-},
-{
-"k": 9,
-"nat": ")",
-"alt": "",
-"nat_span": [
-672,
-673
-],
-"alt_span": [
-991,
-991
-]
 }
 ],
-"k_en": 10,
+"k_en": 9,
 "shared_fraction": 0.888,
 "pass": true,
 "verify": null,
@@ -29564,19 +32253,6 @@
 },
 {
 "k": 4,
-"nat": ")",
-"alt": "",
-"nat_span": [
-479,
-480
-],
-"alt_span": [
-610,
-610
-]
-},
-{
-"k": 5,
 "nat": "True ",
 "alt": "False\n    ",
 "nat_span": [
@@ -29589,7 +32265,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": " else",
 "alt": ":\n        is_empty_sentence = True\n    else:\n        is_empty_sentence =",
 "nat_span": [
@@ -29602,7 +32278,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": " else",
 "alt": ":\n        processed_result = \"\"\n    else:\n        processed_result =",
 "nat_span": [
@@ -29615,7 +32291,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": "(processed_result[-1] ",
 "alt": "''\n    ",
 "nat_span": [
@@ -29628,7 +32304,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": " else",
 "alt": ":\n        last_char_check = processed_result[-1]\n    else:\n        last_char_check =",
 "nat_span": [
@@ -29639,22 +32315,9 @@
 941,
 1025
 ]
-},
-{
-"k": 10,
-"nat": ")",
-"alt": "",
-"nat_span": [
-696,
-697
-],
-"alt_span": [
-1029,
-1029
-]
 }
 ],
-"k_en": 11,
+"k_en": 9,
 "shared_fraction": 0.896,
 "pass": true,
 "verify": null,
@@ -30672,6 +33335,509 @@
 "alt_span": [
 592,
 631
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_ternary__t106",
+"family": "py_ternary",
+"topic": "Decimal to Hexadecimal Conversion",
+"angle": "code",
+"text_es": "Convert a decimal integer to its hexadecimal string representation. The function `decimal_to_hex(decimal_num)` should return the hexadecimal string. Input: `decimal_num` (int). Output: `hex_string` (str).\nExample 1: `decimal_to_hex(255)` should return `'FF'`.\nExample 2: `decimal_to_hex(10)` should return `'A'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def decimal_to_hex(decimal_num):\n    if decimal_num == 0:\n        return '0'\n\n    hex_chars = \"0123456789ABCDEF\"\n    hex_string = \"\"\n    is_negative = decimal_num < 0\n    abs_decimal_num = -decimal_num if is_negative else decimal_num\n\n    temp_num = abs_decimal_num\n    while temp_num > 0:\n        remainder = temp_num % 16\n        hex_digit = hex_chars[remainder]\n        hex_string = hex_digit + hex_string\n        temp_num //= 16\n\n    prefix = '-' if is_negative else ''\n    final_hex_string = prefix + hex_string\n    return final_hex_string\n\n    is_single_digit = len(hex_string) == 1\n    padded_hex_string = '0' + hex_string if is_single_digit and abs_decimal_num < 16 else hex_string\n\n    result = prefix + padded_hex_string\n    return result\n\n    empty_str = ''\n    non_empty_str = 'X'\n    test_str = empty_str if True else non_empty_str\n    test_int = 1 if False else 2\n\n    test_bool = True if 5 > 3 else False\n    test_bool_two = False if 10 < 5 else True\n    test_val = 100 if decimal_num > 1000 else 50 if decimal_num > 100 else 10\n    final_result = result if len(result) > 0 else 'EMPTY'\n\n    return final_result\n",
+"text_alt": "def decimal_to_hex(decimal_num):\n    if decimal_num == 0:\n        return '0'\n\n    hex_chars = \"0123456789ABCDEF\"\n    hex_string = \"\"\n    is_negative = decimal_num < 0\n    if is_negative:\n        abs_decimal_num = -decimal_num\n    else:\n        abs_decimal_num = decimal_num\n\n    temp_num = abs_decimal_num\n    while temp_num > 0:\n        remainder = temp_num % 16\n        hex_digit = hex_chars[remainder]\n        hex_string = hex_digit + hex_string\n        temp_num //= 16\n\n    if is_negative:\n        prefix = '-'\n    else:\n        prefix = ''\n    final_hex_string = prefix + hex_string\n    return final_hex_string\n\n    is_single_digit = len(hex_string) == 1\n    if is_single_digit and abs_decimal_num < 16:\n        padded_hex_string = '0' + hex_string\n    else:\n        padded_hex_string = hex_string\n\n    result = prefix + padded_hex_string\n    return result\n\n    empty_str = ''\n    non_empty_str = 'X'\n    if True:\n        test_str = empty_str\n    else:\n        test_str = non_empty_str\n    if False:\n        test_int = 1\n    else:\n        test_int = 2\n\n    if 5 > 3:\n        test_bool = True\n    else:\n        test_bool = False\n    if 10 < 5:\n        test_bool_two = False\n    else:\n        test_bool_two = True\n    if decimal_num > 1000:\n        test_val = 100\n    else:\n        if decimal_num > 100:\n            test_val = 50\n        else:\n            test_val = 10\n    if len(result) > 0:\n        final_result = result\n    else:\n        final_result = 'EMPTY'\n\n    return final_result\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if is_negative:\n        ",
+"nat_span": [
+171,
+171
+],
+"alt_span": [
+171,
+195
+]
+},
+{
+"k": 1,
+"nat": " if is_negative else",
+"alt": "\n    else:\n        abs_decimal_num =",
+"nat_span": [
+201,
+221
+],
+"alt_span": [
+225,
+261
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if is_negative:\n        ",
+"nat_span": [
+438,
+438
+],
+"alt_span": [
+478,
+502
+]
+},
+{
+"k": 3,
+"nat": " if is_negative else",
+"alt": "\n    else:\n        prefix =",
+"nat_span": [
+450,
+470
+],
+"alt_span": [
+514,
+541
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if is_single_digit and abs_decimal_num < 16:\n        ",
+"nat_span": [
+593,
+593
+],
+"alt_span": [
+664,
+717
+]
+},
+{
+"k": 5,
+"nat": " if is_single_digit and abs_decimal_num < 16 else",
+"alt": "\n    else:\n        padded_hex_string =",
+"nat_span": [
+629,
+678
+],
+"alt_span": [
+753,
+791
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if True:\n        ",
+"nat_span": [
+797,
+797
+],
+"alt_span": [
+910,
+927
+]
+},
+{
+"k": 7,
+"nat": " if True else",
+"alt": "\n    else:\n        test_str =",
+"nat_span": [
+817,
+830
+],
+"alt_span": [
+947,
+976
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if False:\n        ",
+"nat_span": [
+849,
+849
+],
+"alt_span": [
+995,
+1013
+]
+},
+{
+"k": 9,
+"nat": " if False else",
+"alt": "\n    else:\n        test_int =",
+"nat_span": [
+861,
+875
+],
+"alt_span": [
+1025,
+1054
+]
+},
+{
+"k": 10,
+"nat": "test_bool = True ",
+"alt": "",
+"nat_span": [
+883,
+900
+],
+"alt_span": [
+1062,
+1062
+]
+},
+{
+"k": 11,
+"nat": " else False\n    test_bool_two",
+"alt": ":\n        test_bool = True\n    else:\n        test_bool",
+"nat_span": [
+908,
+937
+],
+"alt_span": [
+1070,
+1124
+]
+},
+{
+"k": 12,
+"nat": " else",
+"alt": ":\n        test_bool_two = False\n    else:\n        test_bool_two =",
+"nat_span": [
+955,
+960
+],
+"alt_span": [
+1146,
+1211
+]
+},
+{
+"k": 13,
+"nat": "test_val = 100 ",
+"alt": "",
+"nat_span": [
+970,
+985
+],
+"alt_span": [
+1221,
+1221
+]
+},
+{
+"k": 14,
+"nat": " else 50 ",
+"alt": ":\n        test_val = 100\n    else:\n        ",
+"nat_span": [
+1006,
+1015
+],
+"alt_span": [
+1242,
+1285
+]
+},
+{
+"k": 15,
+"nat": " else",
+"alt": ":\n            test_val = 50\n        else:\n            test_val =",
+"nat_span": [
+1035,
+1040
+],
+"alt_span": [
+1305,
+1369
+]
+},
+{
+"k": 16,
+"nat": "final_result = result ",
+"alt": "",
+"nat_span": [
+1048,
+1070
+],
+"alt_span": [
+1377,
+1377
+]
+},
+{
+"k": 17,
+"nat": " else",
+"alt": ":\n        final_result = result\n    else:\n        final_result =",
+"nat_span": [
+1088,
+1093
+],
+"alt_span": [
+1395,
+1459
+]
+}
+],
+"k_en": 18,
+"shared_fraction": 0.826,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "if is_negative:\n        ",
+"nat_span": [
+171,
+171
+],
+"alt_span": [
+171,
+195
+]
+},
+{
+"k": 1,
+"nat": " if is_negative else",
+"alt": "\n    else:\n        abs_decimal_num =",
+"nat_span": [
+201,
+221
+],
+"alt_span": [
+225,
+261
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if is_negative:\n        ",
+"nat_span": [
+438,
+438
+],
+"alt_span": [
+478,
+502
+]
+},
+{
+"k": 3,
+"nat": " if is_negative else",
+"alt": "\n    else:\n        prefix =",
+"nat_span": [
+450,
+470
+],
+"alt_span": [
+514,
+541
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if is_single_digit and abs_decimal_num < 16:\n        ",
+"nat_span": [
+593,
+593
+],
+"alt_span": [
+664,
+717
+]
+},
+{
+"k": 5,
+"nat": " if is_single_digit and abs_decimal_num < 16 else",
+"alt": "\n    else:\n        padded_hex_string =",
+"nat_span": [
+629,
+678
+],
+"alt_span": [
+753,
+791
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if True:\n        ",
+"nat_span": [
+797,
+797
+],
+"alt_span": [
+910,
+927
+]
+},
+{
+"k": 7,
+"nat": " if True else",
+"alt": "\n    else:\n        test_str =",
+"nat_span": [
+817,
+830
+],
+"alt_span": [
+947,
+976
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if False:\n        ",
+"nat_span": [
+849,
+849
+],
+"alt_span": [
+995,
+1013
+]
+},
+{
+"k": 9,
+"nat": " if False else",
+"alt": "\n    else:\n        test_int =",
+"nat_span": [
+861,
+875
+],
+"alt_span": [
+1025,
+1054
+]
+},
+{
+"k": 10,
+"nat": "test_bool = True ",
+"alt": "",
+"nat_span": [
+883,
+900
+],
+"alt_span": [
+1062,
+1062
+]
+},
+{
+"k": 11,
+"nat": " else False\n    test_bool_two",
+"alt": ":\n        test_bool = True\n    else:\n        test_bool",
+"nat_span": [
+908,
+937
+],
+"alt_span": [
+1070,
+1124
+]
+},
+{
+"k": 12,
+"nat": " ",
+"alt": "\n    ",
+"nat_span": [
+945,
+946
+],
+"alt_span": [
+1132,
+1137
+]
+},
+{
+"k": 13,
+"nat": " else",
+"alt": ":\n        test_bool_two = False\n    else:\n        test_bool_two =",
+"nat_span": [
+955,
+960
+],
+"alt_span": [
+1146,
+1211
+]
+},
+{
+"k": 14,
+"nat": "test_val = 100 ",
+"alt": "",
+"nat_span": [
+970,
+985
+],
+"alt_span": [
+1221,
+1221
+]
+},
+{
+"k": 15,
+"nat": " else 50 ",
+"alt": ":\n        test_val = 100\n    else:\n        ",
+"nat_span": [
+1006,
+1015
+],
+"alt_span": [
+1242,
+1285
+]
+},
+{
+"k": 16,
+"nat": " else",
+"alt": ":\n            test_val = 50\n        else:\n            test_val =",
+"nat_span": [
+1035,
+1040
+],
+"alt_span": [
+1305,
+1369
+]
+},
+{
+"k": 17,
+"nat": "final_result = result ",
+"alt": "",
+"nat_span": [
+1048,
+1070
+],
+"alt_span": [
+1377,
+1377
+]
+},
+{
+"k": 18,
+"nat": " else",
+"alt": ":\n        final_result = result\n    else:\n        final_result =",
+"nat_span": [
+1088,
+1093
+],
+"alt_span": [
+1395,
+1459
 ]
 }
 ],
@@ -34977,6 +38143,392 @@
 "free_filter": true
 },
 {
+"doc_id": "py_ternary__t121",
+"family": "py_ternary",
+"topic": "Reverse Words in a Sentence",
+"angle": "code",
+"text_es": "Given a string representing a sentence, reverse the order of the words while keeping the characters within each word intact. The input will always be a string, and the output should be a string. Implement a function named `reverse_sentence_words` that takes one argument: `sentence` (str). \nExample 1: `reverse_sentence_words('hello world')` should return `'world hello'`. \nExample 2: `reverse_sentence_words('python is fun')` should return `'fun is python'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def reverse_sentence_words(sentence: str) -> str:\n    words = sentence.split()\n    word_count = len(words)\n    reversed_words = []\n    \n    for i in range(word_count):\n        current_word_index = word_count - 1 - i\n        word_to_append = words[current_word_index] if word_count > 0 else \"\"\n        reversed_words.append(word_to_append)\n\n    reversed_sentence_str = \" \".join(reversed_words)\n    is_empty_input = True if not sentence else False\n    final_output = \"\" if is_empty_input else reversed_sentence_str\n    \n    has_multiple_words = True if len(words) > 1 else False\n    prefix = \"Reversed: \" if has_multiple_words else \"Single word: \"\n    \n    include_prefix = False if is_empty_input else True\n    \n    return_value = prefix + final_output if include_prefix else final_output\n\n    return return_value\n",
+"text_alt": "def reverse_sentence_words(sentence: str) -> str:\n    words = sentence.split()\n    word_count = len(words)\n    reversed_words = []\n    \n    for i in range(word_count):\n        current_word_index = word_count - 1 - i\n        if word_count > 0:\n            word_to_append = words[current_word_index]\n        else:\n            word_to_append = \"\"\n        reversed_words.append(word_to_append)\n\n    reversed_sentence_str = \" \".join(reversed_words)\n    if not sentence:\n        is_empty_input = True\n    else:\n        is_empty_input = False\n    if is_empty_input:\n        final_output = \"\"\n    else:\n        final_output = reversed_sentence_str\n    \n    if len(words) > 1:\n        has_multiple_words = True\n    else:\n        has_multiple_words = False\n    if has_multiple_words:\n        prefix = \"Reversed: \"\n    else:\n        prefix = \"Single word: \"\n    \n    if is_empty_input:\n        include_prefix = False\n    else:\n        include_prefix = True\n    \n    if include_prefix:\n        return_value = prefix + final_output\n    else:\n        return_value = final_output\n\n    return return_value\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if word_count > 0:\n            ",
+"nat_span": [
+224,
+224
+],
+"alt_span": [
+224,
+255
+]
+},
+{
+"k": 1,
+"nat": " if word_count > 0 else",
+"alt": "\n        else:\n            word_to_append =",
+"nat_span": [
+266,
+289
+],
+"alt_span": [
+297,
+340
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if not sentence:\n        ",
+"nat_span": [
+397,
+397
+],
+"alt_span": [
+448,
+473
+]
+},
+{
+"k": 3,
+"nat": " if not sentence else",
+"alt": "\n    else:\n        is_empty_input =",
+"nat_span": [
+418,
+439
+],
+"alt_span": [
+494,
+529
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if is_empty_input:\n        ",
+"nat_span": [
+450,
+450
+],
+"alt_span": [
+540,
+567
+]
+},
+{
+"k": 5,
+"nat": " if is_empty_input else",
+"alt": "\n    else:\n        final_output =",
+"nat_span": [
+467,
+490
+],
+"alt_span": [
+584,
+617
+]
+},
+{
+"k": 6,
+"nat": "has_multiple_words = True ",
+"alt": "",
+"nat_span": [
+522,
+548
+],
+"alt_span": [
+649,
+649
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n        has_multiple_words = True\n    else:\n        has_multiple_words =",
+"nat_span": [
+565,
+570
+],
+"alt_span": [
+666,
+740
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if has_multiple_words:\n        ",
+"nat_span": [
+581,
+581
+],
+"alt_span": [
+751,
+782
+]
+},
+{
+"k": 9,
+"nat": " if has_multiple_words else",
+"alt": "\n    else:\n        prefix =",
+"nat_span": [
+602,
+629
+],
+"alt_span": [
+803,
+830
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "if is_empty_input:\n        ",
+"nat_span": [
+655,
+655
+],
+"alt_span": [
+856,
+883
+]
+},
+{
+"k": 11,
+"nat": " if is_empty_input else",
+"alt": "\n    else:\n        include_prefix =",
+"nat_span": [
+677,
+700
+],
+"alt_span": [
+905,
+940
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "if include_prefix:\n        ",
+"nat_span": [
+715,
+715
+],
+"alt_span": [
+955,
+982
+]
+},
+{
+"k": 13,
+"nat": " if include_prefix else",
+"alt": "\n    else:\n        return_value =",
+"nat_span": [
+751,
+774
+],
+"alt_span": [
+1018,
+1051
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.811,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "if word_count > 0:\n            ",
+"nat_span": [
+224,
+224
+],
+"alt_span": [
+224,
+255
+]
+},
+{
+"k": 1,
+"nat": " if word_count > 0 else",
+"alt": "\n        else:\n            word_to_append =",
+"nat_span": [
+266,
+289
+],
+"alt_span": [
+297,
+340
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if not sentence:\n        ",
+"nat_span": [
+397,
+397
+],
+"alt_span": [
+448,
+473
+]
+},
+{
+"k": 3,
+"nat": " if not sentence else",
+"alt": "\n    else:\n        is_empty_input =",
+"nat_span": [
+418,
+439
+],
+"alt_span": [
+494,
+529
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if is_empty_input:\n        ",
+"nat_span": [
+450,
+450
+],
+"alt_span": [
+540,
+567
+]
+},
+{
+"k": 5,
+"nat": " if is_empty_input else",
+"alt": "\n    else:\n        final_output =",
+"nat_span": [
+467,
+490
+],
+"alt_span": [
+584,
+617
+]
+},
+{
+"k": 6,
+"nat": "has_multiple_words = True ",
+"alt": "",
+"nat_span": [
+522,
+548
+],
+"alt_span": [
+649,
+649
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n        has_multiple_words = True\n    else:\n        has_multiple_words =",
+"nat_span": [
+565,
+570
+],
+"alt_span": [
+666,
+740
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if has_multiple_words:\n        ",
+"nat_span": [
+581,
+581
+],
+"alt_span": [
+751,
+782
+]
+},
+{
+"k": 9,
+"nat": " if has_multiple_words else",
+"alt": "\n    else:\n        prefix =",
+"nat_span": [
+602,
+629
+],
+"alt_span": [
+803,
+830
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "if is_empty_input:\n        ",
+"nat_span": [
+655,
+655
+],
+"alt_span": [
+856,
+883
+]
+},
+{
+"k": 11,
+"nat": " if is_empty_input else",
+"alt": "\n    else:\n        include_prefix =",
+"nat_span": [
+677,
+700
+],
+"alt_span": [
+905,
+940
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "if include_prefix:\n        ",
+"nat_span": [
+715,
+715
+],
+"alt_span": [
+955,
+982
+]
+},
+{
+"k": 13,
+"nat": " if include_prefix else",
+"alt": "\n    else:\n        return_value =",
+"nat_span": [
+751,
+774
+],
+"alt_span": [
+1018,
+1051
+]
+}
+],
+"free_filter": true
+},
+{
 "doc_id": "py_ternary__t122",
 "family": "py_ternary",
 "topic": "Count Character Occurrences",
@@ -35305,6 +38857,327 @@
 "alt_span": [
 774,
 831
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_ternary__t123",
+"family": "py_ternary",
+"topic": "Simple Dictionary Merge",
+"angle": "code",
+"text_es": "Implement a function that merges two dictionaries. If a key exists in both dictionaries, the value from the second dictionary should overwrite the value from the first. The function `merge_dicts` should take two arguments: `dict1` (dict) and `dict2` (dict). It should return a new dictionary. \nExample 1: `merge_dicts({'a': 1, 'b': 2}, {'b': 3, 'c': 4})` should return `{'a': 1, 'b': 3, 'c': 4}`. \nExample 2: `merge_dicts({'x': 10}, {'y': 20})` should return `{'x': 10, 'y': 20}`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def merge_dicts(dict1, dict2):\n    merged_dict = {}\n    \n    # Process keys from dict1\n    for key1, value1 in dict1.items():\n        merged_dict[key1] = value1 if key1 not in dict2 else None # Placeholder, will be overwritten if in dict2\n\n    # Process keys from dict2, overwriting if necessary\n    for key2, value2 in dict2.items():\n        is_new_key = key2 not in dict1\n        merged_dict[key2] = value2 if is_new_key or True else None # Always take from dict2\n\n    final_merged_dict = {}\n    for k, v in merged_dict.items():\n        original_value1 = dict1.get(k)\n        original_value2 = dict2.get(k)\n        \n        value_from_dict2 = original_value2 if k in dict2 else original_value1\n        value_from_dict1 = original_value1 if k in dict1 else original_value2 # This is redundant, but for conditional expression count\n        \n        final_value = value_from_dict2 if k in dict2 else original_value1\n        final_merged_dict[k] = final_value if k in dict2 or k in dict1 else None # Ensure all keys are covered\n\n    return final_merged_dict\n",
+"text_alt": "def merge_dicts(dict1, dict2):\n    merged_dict = {}\n    \n    # Process keys from dict1\n    for key1, value1 in dict1.items():\n        if key1 not in dict2:\n            merged_dict[key1] = value1\n        else:\n            merged_dict[key1] = None # Placeholder, will be overwritten if in dict2\n\n    # Process keys from dict2, overwriting if necessary\n    for key2, value2 in dict2.items():\n        is_new_key = key2 not in dict1\n        if is_new_key or True:\n            merged_dict[key2] = value2\n        else:\n            merged_dict[key2] = None # Always take from dict2\n\n    final_merged_dict = {}\n    for k, v in merged_dict.items():\n        original_value1 = dict1.get(k)\n        original_value2 = dict2.get(k)\n        \n        if k in dict2:\n            value_from_dict2 = original_value2\n        else:\n            value_from_dict2 = original_value1\n        if k in dict1:\n            value_from_dict1 = original_value1\n        else:\n            value_from_dict1 = original_value2 # This is redundant, but for conditional expression count\n        \n        if k in dict2:\n            final_value = value_from_dict2\n        else:\n            final_value = original_value1\n        if k in dict2 or k in dict1:\n            final_merged_dict[k] = final_value\n        else:\n            final_merged_dict[k] = None # Ensure all keys are covered\n\n    return final_merged_dict\n",
+"opps": [
+{
+"k": 0,
+"nat": "merged_dict[key1] = value1 ",
+"alt": "",
+"nat_span": [
+134,
+161
+],
+"alt_span": [
+134,
+134
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n            merged_dict[key1] = value1\n        else:\n            merged_dict[key1] =",
+"nat_span": [
+181,
+186
+],
+"alt_span": [
+154,
+240
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if is_new_key or True:\n            ",
+"nat_span": [
+382,
+382
+],
+"alt_span": [
+436,
+471
+]
+},
+{
+"k": 3,
+"nat": " if is_new_key or True else",
+"alt": "\n        else:\n            merged_dict[key2] =",
+"nat_span": [
+408,
+435
+],
+"alt_span": [
+497,
+543
+]
+},
+{
+"k": 4,
+"nat": "value_from_dict2 = original_value2 ",
+"alt": "",
+"nat_span": [
+626,
+661
+],
+"alt_span": [
+734,
+734
+]
+},
+{
+"k": 5,
+"nat": " else original_value1\n        value_from_dict1",
+"alt": ":\n            value_from_dict2 = original_value2\n        else:\n            value_from_dict2",
+"nat_span": [
+674,
+720
+],
+"alt_span": [
+747,
+838
+]
+},
+{
+"k": 6,
+"nat": " else",
+"alt": ":\n            value_from_dict1 = original_value1\n        else:\n            value_from_dict1 =",
+"nat_span": [
+752,
+757
+],
+"alt_span": [
+878,
+971
+]
+},
+{
+"k": 7,
+"nat": "final_value = value_from_dict2 ",
+"alt": "",
+"nat_span": [
+849,
+880
+],
+"alt_span": [
+1063,
+1063
+]
+},
+{
+"k": 8,
+"nat": " else",
+"alt": ":\n            final_value = value_from_dict2\n        else:\n            final_value =",
+"nat_span": [
+893,
+898
+],
+"alt_span": [
+1076,
+1160
+]
+},
+{
+"k": 9,
+"nat": "final_merged_dict[k] = final_value ",
+"alt": "",
+"nat_span": [
+923,
+958
+],
+"alt_span": [
+1185,
+1185
+]
+},
+{
+"k": 10,
+"nat": " else",
+"alt": ":\n            final_merged_dict[k] = final_value\n        else:\n            final_merged_dict[k] =",
+"nat_span": [
+985,
+990
+],
+"alt_span": [
+1212,
+1309
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.864,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "merged_dict[key1] = value1 ",
+"alt": "",
+"nat_span": [
+134,
+161
+],
+"alt_span": [
+134,
+134
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n            merged_dict[key1] = value1\n        else:\n            merged_dict[key1] =",
+"nat_span": [
+181,
+186
+],
+"alt_span": [
+154,
+240
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if is_new_key or True:\n            ",
+"nat_span": [
+382,
+382
+],
+"alt_span": [
+436,
+471
+]
+},
+{
+"k": 3,
+"nat": " if is_new_key or True else",
+"alt": "\n        else:\n            merged_dict[key2] =",
+"nat_span": [
+408,
+435
+],
+"alt_span": [
+497,
+543
+]
+},
+{
+"k": 4,
+"nat": "value_from_dict2 = original_value2 ",
+"alt": "",
+"nat_span": [
+626,
+661
+],
+"alt_span": [
+734,
+734
+]
+},
+{
+"k": 5,
+"nat": " else original_value1\n        value_from_dict1",
+"alt": ":\n            value_from_dict2 = original_value2\n        else:\n            value_from_dict2",
+"nat_span": [
+674,
+720
+],
+"alt_span": [
+747,
+838
+]
+},
+{
+"k": 6,
+"nat": " ",
+"alt": "\n        ",
+"nat_span": [
+738,
+739
+],
+"alt_span": [
+856,
+865
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n            value_from_dict1 = original_value1\n        else:\n            value_from_dict1 =",
+"nat_span": [
+752,
+757
+],
+"alt_span": [
+878,
+971
+]
+},
+{
+"k": 8,
+"nat": "final_value = value_from_dict2 ",
+"alt": "",
+"nat_span": [
+849,
+880
+],
+"alt_span": [
+1063,
+1063
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n            final_value = value_from_dict2\n        else:\n            final_value =",
+"nat_span": [
+893,
+898
+],
+"alt_span": [
+1076,
+1160
+]
+},
+{
+"k": 10,
+"nat": "final_merged_dict[k] = final_value ",
+"alt": "",
+"nat_span": [
+923,
+958
+],
+"alt_span": [
+1185,
+1185
+]
+},
+{
+"k": 11,
+"nat": " else",
+"alt": ":\n            final_merged_dict[k] = final_value\n        else:\n            final_merged_dict[k] =",
+"nat_span": [
+985,
+990
+],
+"alt_span": [
+1212,
+1309
 ]
 }
 ],
@@ -37634,22 +41507,9 @@
 633,
 693
 ]
-},
-{
-"k": 9,
-"nat": ")",
-"alt": "",
-"nat_span": [
-503,
-504
-],
-"alt_span": [
-698,
-698
-]
 }
 ],
-"k_en": 10,
+"k_en": 9,
 "shared_fraction": 0.82,
 "pass": true,
 "verify": null,
@@ -40346,6 +44206,236 @@
 "alt_span": [
 1210,
 1237
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_ternary__t141",
+"family": "py_ternary",
+"topic": "Check for Palindromic Number",
+"angle": "code",
+"text_es": "Determine if an integer is a palindromic number (reads the same forwards and backwards). The function `is_palindromic_number` should take one argument: `number` (int). It should return a boolean. \nExample 1: `is_palindromic_number(121)` should return `True`. \nExample 2: `is_palindromic_number(123)` should return `False`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def is_palindromic_number(number: int) -> bool:\n    if number < 0:\n        return False\n\n    s_number = str(number)\n    n_digits = len(s_number)\n    is_single_digit = True if n_digits == 1 else False\n    if is_single_digit:\n        return True\n\n    mid_point = n_digits // 2\n    first_half_str = s_number[:mid_point]\n    is_even_length = True if n_digits % 2 == 0 else False\n    second_half_start = mid_point if is_even_length else mid_point + 1\n    second_half_str = s_number[second_half_start:]\n\n    reversed_second_half = second_half_str[::-1]\n    is_palindrome = True if first_half_str == reversed_second_half else False\n\n    return is_palindrome\n",
+"text_alt": "def is_palindromic_number(number: int) -> bool:\n    if number < 0:\n        return False\n\n    s_number = str(number)\n    n_digits = len(s_number)\n    if n_digits == 1:\n        is_single_digit = True\n    else:\n        is_single_digit = False\n    if is_single_digit:\n        return True\n\n    mid_point = n_digits // 2\n    first_half_str = s_number[:mid_point]\n    if n_digits % 2 == 0:\n        is_even_length = True\n    else:\n        is_even_length = False\n    if is_even_length:\n        second_half_start = mid_point\n    else:\n        second_half_start = mid_point + 1\n    second_half_str = s_number[second_half_start:]\n\n    reversed_second_half = second_half_str[::-1]\n    if first_half_str == reversed_second_half:\n        is_palindrome = True\n    else:\n        is_palindrome = False\n\n    return is_palindrome\n",
+"opps": [
+{
+"k": 0,
+"nat": "is_single_digit = True ",
+"alt": "",
+"nat_span": [
+149,
+172
+],
+"alt_span": [
+149,
+149
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n        is_single_digit = True\n    else:\n        is_single_digit =",
+"nat_span": [
+188,
+193
+],
+"alt_span": [
+165,
+233
+]
+},
+{
+"k": 2,
+"nat": "is_even_length = True ",
+"alt": "",
+"nat_span": [
+321,
+343
+],
+"alt_span": [
+361,
+361
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n        is_even_length = True\n    else:\n        is_even_length =",
+"nat_span": [
+363,
+368
+],
+"alt_span": [
+381,
+447
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if is_even_length:\n        ",
+"nat_span": [
+379,
+379
+],
+"alt_span": [
+458,
+485
+]
+},
+{
+"k": 5,
+"nat": " if is_even_length else",
+"alt": "\n    else:\n        second_half_start =",
+"nat_span": [
+408,
+431
+],
+"alt_span": [
+514,
+552
+]
+},
+{
+"k": 6,
+"nat": "is_palindrome = True ",
+"alt": "",
+"nat_span": [
+551,
+572
+],
+"alt_span": [
+672,
+672
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n        is_palindrome = True\n    else:\n        is_palindrome =",
+"nat_span": [
+613,
+618
+],
+"alt_span": [
+713,
+777
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.874,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "is_single_digit = True ",
+"alt": "",
+"nat_span": [
+149,
+172
+],
+"alt_span": [
+149,
+149
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n        is_single_digit = True\n    else:\n        is_single_digit =",
+"nat_span": [
+188,
+193
+],
+"alt_span": [
+165,
+233
+]
+},
+{
+"k": 2,
+"nat": "is_even_length = True ",
+"alt": "",
+"nat_span": [
+321,
+343
+],
+"alt_span": [
+361,
+361
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n        is_even_length = True\n    else:\n        is_even_length =",
+"nat_span": [
+363,
+368
+],
+"alt_span": [
+381,
+447
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if is_even_length:\n        ",
+"nat_span": [
+379,
+379
+],
+"alt_span": [
+458,
+485
+]
+},
+{
+"k": 5,
+"nat": " if is_even_length else",
+"alt": "\n    else:\n        second_half_start =",
+"nat_span": [
+408,
+431
+],
+"alt_span": [
+514,
+552
+]
+},
+{
+"k": 6,
+"nat": "is_palindrome = True ",
+"alt": "",
+"nat_span": [
+551,
+572
+],
+"alt_span": [
+672,
+672
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n        is_palindrome = True\n    else:\n        is_palindrome =",
+"nat_span": [
+613,
+618
+],
+"alt_span": [
+713,
+777
 ]
 }
 ],
@@ -43442,19 +47532,6 @@
 },
 {
 "k": 2,
-"nat": ")",
-"alt": "",
-"nat_span": [
-592,
-593
-],
-"alt_span": [
-621,
-621
-]
-},
-{
-"k": 3,
 "nat": "result_row2 ",
 "alt": "_temp_var_1)\n    ",
 "nat_span": [
@@ -43467,7 +47544,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": " else",
 "alt": ":\n        _temp_var_2 = result_row2\n    else:\n        _temp_var_2 =",
 "nat_span": [
@@ -43480,7 +47557,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": "",
 "alt": "\n    output_matrix.append(_temp_var_2",
 "nat_span": [
@@ -43493,7 +47570,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": "final_output.append(output_matrix[0] ",
 "alt": "",
 "nat_span": [
@@ -43506,7 +47583,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": " else",
 "alt": ":\n        _temp_var_3 = output_matrix[0]\n    else:\n        _temp_var_3 =",
 "nat_span": [
@@ -43519,20 +47596,7 @@
 ]
 },
 {
-"k": 8,
-"nat": ")",
-"alt": "",
-"nat_span": [
-814,
-815
-],
-"alt_span": [
-976,
-976
-]
-},
-{
-"k": 9,
+"k": 7,
 "nat": "output_matrix[1] ",
 "alt": "_temp_var_3)\n    ",
 "nat_span": [
@@ -43545,7 +47609,7 @@
 ]
 },
 {
-"k": 10,
+"k": 8,
 "nat": " else",
 "alt": ":\n        _temp_var_4 = output_matrix[1]\n    else:\n        _temp_var_4 =",
 "nat_span": [
@@ -43558,7 +47622,7 @@
 ]
 },
 {
-"k": 11,
+"k": 9,
 "nat": "",
 "alt": "\n    final_output.append(_temp_var_4",
 "nat_span": [
@@ -43571,7 +47635,7 @@
 ]
 },
 {
-"k": 12,
+"k": 10,
 "nat": "return final_output ",
 "alt": "",
 "nat_span": [
@@ -43584,7 +47648,7 @@
 ]
 },
 {
-"k": 13,
+"k": 11,
 "nat": " else",
 "alt": ":\n        _temp_var_5 = final_output\n    else:\n        _temp_var_5 =",
 "nat_span": [
@@ -43597,7 +47661,7 @@
 ]
 },
 {
-"k": 14,
+"k": 12,
 "nat": "",
 "alt": "\n    return _temp_var_5",
 "nat_span": [
@@ -43610,7 +47674,7 @@
 ]
 }
 ],
-"k_en": 15,
+"k_en": 13,
 "shared_fraction": 0.93,
 "pass": true,
 "verify": null,
@@ -45476,6 +49540,288 @@
 "free_filter": true
 },
 {
+"doc_id": "py_ternary__t161",
+"family": "py_ternary",
+"topic": "Find First Unique Character",
+"angle": "code",
+"text_es": "Find the first non-repeating character in a string and return its index. If no unique character exists, return -1. The function `first_unique_char` should take one argument: `s` (str). It should return an integer. \nExample 1: `first_unique_char('leetcode')` should return `0` (for 'l'). \nExample 2: `first_unique_char('loveleetcode')` should return `2` (for 'v').",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def first_unique_char(s: str) -> int:\n    char_counts = {}\n    for char_code in range(ord('a'), ord('z') + 1):\n        char = chr(char_code)\n        char_counts[char] = 0\n\n    has_char = False\n    for char_s in s:\n        char_counts[char_s] = char_counts[char_s] + 1 if char_s in char_counts else 1\n        has_char = True if char_s in char_counts else False\n\n    first_unique_index = -1\n    index = 0\n    for char_s in s:\n        is_unique = True if char_counts[char_s] == 1 else False\n        if is_unique:\n            first_unique_index = index if first_unique_index == -1 else first_unique_index\n            break\n        index += 1\n\n    final_result = first_unique_index if first_unique_index != -1 else -1\n    return final_result\n",
+"text_alt": "def first_unique_char(s: str) -> int:\n    char_counts = {}\n    for char_code in range(ord('a'), ord('z') + 1):\n        char = chr(char_code)\n        char_counts[char] = 0\n\n    has_char = False\n    for char_s in s:\n        if char_s in char_counts:\n            char_counts[char_s] = char_counts[char_s] + 1\n        else:\n            char_counts[char_s] = 1\n        if char_s in char_counts:\n            has_char = True\n        else:\n            has_char = False\n\n    first_unique_index = -1\n    index = 0\n    for char_s in s:\n        if char_counts[char_s] == 1:\n            is_unique = True\n        else:\n            is_unique = False\n        if is_unique:\n            if first_unique_index == -1:\n                first_unique_index = index\n            else:\n                first_unique_index = first_unique_index\n            break\n        index += 1\n\n    if first_unique_index != -1:\n        final_result = first_unique_index\n    else:\n        final_result = -1\n    return final_result\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if char_s in char_counts:\n            ",
+"nat_span": [
+222,
+222
+],
+"alt_span": [
+222,
+260
+]
+},
+{
+"k": 1,
+"nat": " ",
+"alt": "\n        else:\n            char_counts[char_s] = 1\n        ",
+"nat_span": [
+267,
+268
+],
+"alt_span": [
+305,
+364
+]
+},
+{
+"k": 2,
+"nat": " else 1\n        ",
+"alt": ":\n            ",
+"nat_span": [
+292,
+308
+],
+"alt_span": [
+388,
+402
+]
+},
+{
+"k": 3,
+"nat": " if char_s in char_counts else",
+"alt": "\n        else:\n            has_char =",
+"nat_span": [
+323,
+353
+],
+"alt_span": [
+417,
+454
+]
+},
+{
+"k": 4,
+"nat": "is_unique = True ",
+"alt": "",
+"nat_span": [
+432,
+449
+],
+"alt_span": [
+533,
+533
+]
+},
+{
+"k": 5,
+"nat": " else",
+"alt": ":\n            is_unique = True\n        else:\n            is_unique =",
+"nat_span": [
+476,
+481
+],
+"alt_span": [
+560,
+628
+]
+},
+{
+"k": 6,
+"nat": "first_unique_index = index ",
+"alt": "",
+"nat_span": [
+522,
+549
+],
+"alt_span": [
+669,
+669
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n                first_unique_index = index\n            else:\n                first_unique_index =",
+"nat_span": [
+576,
+581
+],
+"alt_span": [
+696,
+795
+]
+},
+{
+"k": 8,
+"nat": "final_result = first_unique_index ",
+"alt": "",
+"nat_span": [
+643,
+677
+],
+"alt_span": [
+857,
+857
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n        final_result = first_unique_index\n    else:\n        final_result =",
+"nat_span": [
+704,
+709
+],
+"alt_span": [
+884,
+960
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.863,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "if char_s in char_counts:\n            ",
+"nat_span": [
+222,
+222
+],
+"alt_span": [
+222,
+260
+]
+},
+{
+"k": 1,
+"nat": " ",
+"alt": "\n        else:\n            char_counts[char_s] = 1\n        ",
+"nat_span": [
+267,
+268
+],
+"alt_span": [
+305,
+364
+]
+},
+{
+"k": 2,
+"nat": " else 1\n        ",
+"alt": ":\n            ",
+"nat_span": [
+292,
+308
+],
+"alt_span": [
+388,
+402
+]
+},
+{
+"k": 3,
+"nat": " if char_s in char_counts else",
+"alt": "\n        else:\n            has_char =",
+"nat_span": [
+323,
+353
+],
+"alt_span": [
+417,
+454
+]
+},
+{
+"k": 4,
+"nat": "is_unique = True ",
+"alt": "",
+"nat_span": [
+432,
+449
+],
+"alt_span": [
+533,
+533
+]
+},
+{
+"k": 5,
+"nat": " else",
+"alt": ":\n            is_unique = True\n        else:\n            is_unique =",
+"nat_span": [
+476,
+481
+],
+"alt_span": [
+560,
+628
+]
+},
+{
+"k": 6,
+"nat": "first_unique_index = index ",
+"alt": "",
+"nat_span": [
+522,
+549
+],
+"alt_span": [
+669,
+669
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n                first_unique_index = index\n            else:\n                first_unique_index =",
+"nat_span": [
+576,
+581
+],
+"alt_span": [
+696,
+795
+]
+},
+{
+"k": 8,
+"nat": "final_result = first_unique_index ",
+"alt": "",
+"nat_span": [
+643,
+677
+],
+"alt_span": [
+857,
+857
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n        final_result = first_unique_index\n    else:\n        final_result =",
+"nat_span": [
+704,
+709
+],
+"alt_span": [
+884,
+960
+]
+}
+],
+"free_filter": true
+},
+{
 "doc_id": "py_ternary__t162",
 "family": "py_ternary",
 "topic": "Simple Unit Converter (Length)",
@@ -47121,19 +51467,6 @@
 },
 {
 "k": 5,
-"nat": ")\n    ",
-"alt": "\n\n    ",
-"nat_span": [
-212,
-218
-],
-"alt_span": [
-366,
-372
-]
-},
-{
-"k": 6,
 "nat": "float(base) ",
 "alt": "0.0\n    ",
 "nat_span": [
@@ -47146,7 +51479,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": " else",
 "alt": ":\n        current_base = float(base)\n    else:\n        current_base =",
 "nat_span": [
@@ -47159,7 +51492,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": "",
 "alt": "0.0\n    if is_negative_exponent:\n        final_result = ",
 "nat_span": [
@@ -47172,7 +51505,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": " if is_negative_exponent else result\n    return int(final_result) ",
 "alt": "\n    else:\n        final_result = result\n\n    ",
 "nat_span": [
@@ -47185,7 +51518,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": " else",
 "alt": ":\n        return int(final_result)\n    else:\n        return",
 "nat_span": [
@@ -47198,7 +51531,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 10,
 "shared_fraction": 0.8,
 "pass": true,
 "verify": null,
@@ -50582,6 +54915,392 @@
 "free_filter": true
 },
 {
+"doc_id": "py_ternary__t179",
+"family": "py_ternary",
+"topic": "Calculate Mean Absolute Deviation",
+"angle": "code",
+"text_es": "Write a function `mean_absolute_deviation(numbers)` that takes a list of numbers (floats or integers). It should return the mean absolute deviation of these numbers. Return `0.0` for an empty list. Example: `mean_absolute_deviation([1, 2, 3, 4])` should return `1.0`, `mean_absolute_deviation([10, 20, 30])` should return `6.666...`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def mean_absolute_deviation(numbers):\n    n = len(numbers)\n    if n == 0:\n        return 0.0\n\n    total_sum = sum(numbers)\n    mean = total_sum / n if n > 0 else 0.0\n\n    deviations = [abs(x - mean) for x in numbers]\n    sum_deviations = sum(deviations)\n\n    mad = sum_deviations / n if n > 0 else 0.0\n    \n    return mad\n\ndef calculate_mad(data):\n    count = len(data)\n    \n    mean_val = sum(data) / count if count > 0 else 0.0\n    \n    abs_deviations = [abs(x - mean_val) for x in data]\n    \n    mad_result = sum(abs_deviations) / count if count > 0 else 0.0\n    \n    return mad_result\n\ndef process_numbers_for_mad(nums):\n    num_elements = len(nums)\n    \n    is_empty = True if num_elements == 0 else False\n    \n    if is_empty:\n        return 0.0\n        \n    current_sum = sum(nums)\n    \n    avg_val = current_sum / num_elements if num_elements > 0 else 0.0\n    \n    deviations_list = [abs(num - avg_val) for num in nums]\n    \n    total_deviation_sum = sum(deviations_list)\n    \n    final_mad = total_deviation_sum / num_elements if num_elements > 0 else 0.0\n    \n    return final_mad\n",
+"text_alt": "def mean_absolute_deviation(numbers):\n    n = len(numbers)\n    if n == 0:\n        return 0.0\n\n    total_sum = sum(numbers)\n    if n > 0:\n        mean = total_sum / n\n    else:\n        mean = 0.0\n\n    deviations = [abs(x - mean) for x in numbers]\n    sum_deviations = sum(deviations)\n\n    if n > 0:\n        mad = sum_deviations / n\n    else:\n        mad = 0.0\n    \n    return mad\n\ndef calculate_mad(data):\n    count = len(data)\n    \n    if count > 0:\n        mean_val = sum(data) / count\n    else:\n        mean_val = 0.0\n    \n    abs_deviations = [abs(x - mean_val) for x in data]\n    \n    if count > 0:\n        mad_result = sum(abs_deviations) / count\n    else:\n        mad_result = 0.0\n    \n    return mad_result\n\ndef process_numbers_for_mad(nums):\n    num_elements = len(nums)\n    \n    if num_elements == 0:\n        is_empty = True\n    else:\n        is_empty = False\n    \n    if is_empty:\n        return 0.0\n        \n    current_sum = sum(nums)\n    \n    if num_elements > 0:\n        avg_val = current_sum / num_elements\n    else:\n        avg_val = 0.0\n    \n    deviations_list = [abs(num - avg_val) for num in nums]\n    \n    total_deviation_sum = sum(deviations_list)\n    \n    if num_elements > 0:\n        final_mad = total_deviation_sum / num_elements\n    else:\n        final_mad = 0.0\n    \n    return final_mad\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if n > 0:\n        ",
+"nat_span": [
+127,
+127
+],
+"alt_span": [
+127,
+145
+]
+},
+{
+"k": 1,
+"nat": " if n > 0 else",
+"alt": "\n    else:\n        mean =",
+"nat_span": [
+147,
+161
+],
+"alt_span": [
+165,
+190
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if n > 0:\n        ",
+"nat_span": [
+259,
+259
+],
+"alt_span": [
+288,
+306
+]
+},
+{
+"k": 3,
+"nat": " if n > 0 else",
+"alt": "\n    else:\n        mad =",
+"nat_span": [
+283,
+297
+],
+"alt_span": [
+330,
+354
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if count > 0:\n        ",
+"nat_span": [
+379,
+379
+],
+"alt_span": [
+436,
+458
+]
+},
+{
+"k": 5,
+"nat": " if count > 0 else",
+"alt": "\n    else:\n        mean_val =",
+"nat_span": [
+407,
+425
+],
+"alt_span": [
+486,
+515
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if count > 0:\n        ",
+"nat_span": [
+499,
+499
+],
+"alt_span": [
+589,
+611
+]
+},
+{
+"k": 7,
+"nat": " if count > 0 else",
+"alt": "\n    else:\n        mad_result =",
+"nat_span": [
+539,
+557
+],
+"alt_span": [
+651,
+682
+]
+},
+{
+"k": 8,
+"nat": "is_empty = True ",
+"alt": "",
+"nat_span": [
+663,
+679
+],
+"alt_span": [
+788,
+788
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n        is_empty = True\n    else:\n        is_empty =",
+"nat_span": [
+699,
+704
+],
+"alt_span": [
+808,
+862
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "if num_elements > 0:\n        ",
+"nat_span": [
+798,
+798
+],
+"alt_span": [
+956,
+985
+]
+},
+{
+"k": 11,
+"nat": " if num_elements > 0 else",
+"alt": "\n    else:\n        avg_val =",
+"nat_span": [
+834,
+859
+],
+"alt_span": [
+1021,
+1049
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "if num_elements > 0:\n        ",
+"nat_span": [
+989,
+989
+],
+"alt_span": [
+1179,
+1208
+]
+},
+{
+"k": 13,
+"nat": " if num_elements > 0 else",
+"alt": "\n    else:\n        final_mad =",
+"nat_span": [
+1035,
+1060
+],
+"alt_span": [
+1254,
+1284
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.835,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "if n > 0:\n        ",
+"nat_span": [
+127,
+127
+],
+"alt_span": [
+127,
+145
+]
+},
+{
+"k": 1,
+"nat": " if n > 0 else",
+"alt": "\n    else:\n        mean =",
+"nat_span": [
+147,
+161
+],
+"alt_span": [
+165,
+190
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if n > 0:\n        ",
+"nat_span": [
+259,
+259
+],
+"alt_span": [
+288,
+306
+]
+},
+{
+"k": 3,
+"nat": " if n > 0 else",
+"alt": "\n    else:\n        mad =",
+"nat_span": [
+283,
+297
+],
+"alt_span": [
+330,
+354
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if count > 0:\n        ",
+"nat_span": [
+379,
+379
+],
+"alt_span": [
+436,
+458
+]
+},
+{
+"k": 5,
+"nat": " if count > 0 else",
+"alt": "\n    else:\n        mean_val =",
+"nat_span": [
+407,
+425
+],
+"alt_span": [
+486,
+515
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if count > 0:\n        ",
+"nat_span": [
+499,
+499
+],
+"alt_span": [
+589,
+611
+]
+},
+{
+"k": 7,
+"nat": " if count > 0 else",
+"alt": "\n    else:\n        mad_result =",
+"nat_span": [
+539,
+557
+],
+"alt_span": [
+651,
+682
+]
+},
+{
+"k": 8,
+"nat": "is_empty = True ",
+"alt": "",
+"nat_span": [
+663,
+679
+],
+"alt_span": [
+788,
+788
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n        is_empty = True\n    else:\n        is_empty =",
+"nat_span": [
+699,
+704
+],
+"alt_span": [
+808,
+862
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "if num_elements > 0:\n        ",
+"nat_span": [
+798,
+798
+],
+"alt_span": [
+956,
+985
+]
+},
+{
+"k": 11,
+"nat": " if num_elements > 0 else",
+"alt": "\n    else:\n        avg_val =",
+"nat_span": [
+834,
+859
+],
+"alt_span": [
+1021,
+1049
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "if num_elements > 0:\n        ",
+"nat_span": [
+989,
+989
+],
+"alt_span": [
+1179,
+1208
+]
+},
+{
+"k": 13,
+"nat": " if num_elements > 0 else",
+"alt": "\n    else:\n        final_mad =",
+"nat_span": [
+1035,
+1060
+],
+"alt_span": [
+1254,
+1284
+]
+}
+],
+"free_filter": true
+},
+{
 "doc_id": "py_ternary__t180",
 "family": "py_ternary",
 "topic": "Simple Guessing Game",
@@ -52064,6 +56783,778 @@
 "alt_span": [
 811,
 895
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_ternary__t186",
+"family": "py_ternary",
+"topic": "Convert Base-10 to Base-N",
+"angle": "code",
+"text_es": "Implement `convert_base(number, base)` that takes an integer `number` (base-10) and an integer `base` (between 2 and 16). It should return a string representation of `number` in the given `base`. Use '0-9A-F' for digits. Example: `convert_base(10, 2)` should return `'1010'`, `convert_base(255, 16)` should return `'FF'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def convert_base(number, base):\n    digits = \"0123456789ABCDEF\"\n    result = \"\"\n    is_negative = number < 0\n    abs_number = -number if is_negative else number\n    \n    # First conditional expression\n    if abs_number == 0:\n        return \"0\"\n\n    temp_number = abs_number\n    \n    while temp_number > 0:\n        remainder = temp_number % base\n        # Second conditional expression\n        digit_char = digits[remainder]\n        result = digit_char + result\n        temp_number //= base\n        \n    # Third conditional expression\n    final_result = \"-\" + result if is_negative else result\n    \n    # Fourth conditional expression\n    padding_needed = 4 - len(final_result) if len(final_result) < 4 else 0\n    \n    # Fifth conditional expression\n    padded_result = \"0\" * padding_needed + final_result if padding_needed > 0 else final_result\n    \n    # Sixth conditional expression (can be applied to result directly if it makes sense for the use case)\n    # This one is a bit contrived for base conversion but demonstrates the style\n    upper_case_result = padded_result.upper() if base > 9 else padded_result.lower() # example, not strictly needed for base conversion\n    \n    # Seventh conditional expression (another contrived one for demonstration)\n    # Imagine a requirement to add a prefix for certain bases\n    prefixed_result = \"0x\" + upper_case_result if base == 16 else upper_case_result\n    \n    return prefixed_result\n",
+"text_alt": "def convert_base(number, base):\n    digits = \"0123456789ABCDEF\"\n    result = \"\"\n    is_negative = number < 0\n    if is_negative:\n        abs_number = -number\n    else:\n        abs_number = number\n    \n    # First conditional expression\n    if abs_number == 0:\n        return \"0\"\n\n    temp_number = abs_number\n    \n    while temp_number > 0:\n        remainder = temp_number % base\n        # Second conditional expression\n        digit_char = digits[remainder]\n        result = digit_char + result\n        temp_number //= base\n        \n    # Third conditional expression\n    if is_negative:\n        final_result = \"-\" + result\n    else:\n        final_result = result\n    \n    # Fourth conditional expression\n    if len(final_result) < 4:\n        padding_needed = 4 - len(final_result)\n    else:\n        padding_needed = 0\n    \n    # Fifth conditional expression\n    if padding_needed > 0:\n        padded_result = \"0\" * padding_needed + final_result\n    else:\n        padded_result = final_result\n    \n    # Sixth conditional expression (can be applied to result directly if it makes sense for the use case)\n    # This one is a bit contrived for base conversion but demonstrates the style\n    if base > 9:\n        upper_case_result = padded_result.upper()\n    else:\n        upper_case_result = padded_result.lower() # example, not strictly needed for base conversion\n    \n    # Seventh conditional expression (another contrived one for demonstration)\n    # Imagine a requirement to add a prefix for certain bases\n    if base == 16:\n        prefixed_result = \"0x\" + upper_case_result\n    else:\n        prefixed_result = upper_case_result\n    \n    return prefixed_result\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if is_negative:\n        ",
+"nat_span": [
+113,
+113
+],
+"alt_span": [
+113,
+137
+]
+},
+{
+"k": 1,
+"nat": " if is_negative else",
+"alt": "\n    else:\n        abs_number =",
+"nat_span": [
+133,
+153
+],
+"alt_span": [
+157,
+188
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if is_negative:\n        ",
+"nat_span": [
+538,
+538
+],
+"alt_span": [
+573,
+597
+]
+},
+{
+"k": 3,
+"nat": " if is_negative else",
+"alt": "\n    else:\n        final_result =",
+"nat_span": [
+565,
+585
+],
+"alt_span": [
+624,
+657
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if len(final_result) < 4:\n        ",
+"nat_span": [
+638,
+638
+],
+"alt_span": [
+710,
+744
+]
+},
+{
+"k": 5,
+"nat": " if len(final_result) < 4 else",
+"alt": "\n    else:\n        padding_needed =",
+"nat_span": [
+676,
+706
+],
+"alt_span": [
+782,
+817
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if padding_needed > 0:\n        ",
+"nat_span": [
+753,
+753
+],
+"alt_span": [
+864,
+895
+]
+},
+{
+"k": 7,
+"nat": " if padding_needed > 0 else",
+"alt": "\n    else:\n        padded_result =",
+"nat_span": [
+804,
+831
+],
+"alt_span": [
+946,
+980
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if base > 9:\n        ",
+"nat_span": [
+1041,
+1041
+],
+"alt_span": [
+1190,
+1211
+]
+},
+{
+"k": 9,
+"nat": " if base > 9 else",
+"alt": "\n    else:\n        upper_case_result =",
+"nat_span": [
+1082,
+1099
+],
+"alt_span": [
+1252,
+1290
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "if base == 16:\n        ",
+"nat_span": [
+1323,
+1323
+],
+"alt_span": [
+1514,
+1537
+]
+},
+{
+"k": 11,
+"nat": " if base == 16 else",
+"alt": "\n    else:\n        prefixed_result =",
+"nat_span": [
+1365,
+1384
+],
+"alt_span": [
+1579,
+1615
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.882,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "if is_negative:\n        ",
+"nat_span": [
+113,
+113
+],
+"alt_span": [
+113,
+137
+]
+},
+{
+"k": 1,
+"nat": " if is_negative else",
+"alt": "\n    else:\n        abs_number =",
+"nat_span": [
+133,
+153
+],
+"alt_span": [
+157,
+188
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if is_negative:\n        ",
+"nat_span": [
+538,
+538
+],
+"alt_span": [
+573,
+597
+]
+},
+{
+"k": 3,
+"nat": " if is_negative else",
+"alt": "\n    else:\n        final_result =",
+"nat_span": [
+565,
+585
+],
+"alt_span": [
+624,
+657
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if len(final_result) < 4:\n        ",
+"nat_span": [
+638,
+638
+],
+"alt_span": [
+710,
+744
+]
+},
+{
+"k": 5,
+"nat": " if len(final_result) < 4 else",
+"alt": "\n    else:\n        padding_needed =",
+"nat_span": [
+676,
+706
+],
+"alt_span": [
+782,
+817
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if padding_needed > 0:\n        ",
+"nat_span": [
+753,
+753
+],
+"alt_span": [
+864,
+895
+]
+},
+{
+"k": 7,
+"nat": " if padding_needed > 0 else",
+"alt": "\n    else:\n        padded_result =",
+"nat_span": [
+804,
+831
+],
+"alt_span": [
+946,
+980
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if base > 9:\n        ",
+"nat_span": [
+1041,
+1041
+],
+"alt_span": [
+1190,
+1211
+]
+},
+{
+"k": 9,
+"nat": " if base > 9 else",
+"alt": "\n    else:\n        upper_case_result =",
+"nat_span": [
+1082,
+1099
+],
+"alt_span": [
+1252,
+1290
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "if base == 16:\n        ",
+"nat_span": [
+1323,
+1323
+],
+"alt_span": [
+1514,
+1537
+]
+},
+{
+"k": 11,
+"nat": " if base == 16 else",
+"alt": "\n    else:\n        prefixed_result =",
+"nat_span": [
+1365,
+1384
+],
+"alt_span": [
+1579,
+1615
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_ternary__t187",
+"family": "py_ternary",
+"topic": "Frequency of Words in a List",
+"angle": "code",
+"text_es": "Create a function `word_frequency(words)` that takes a list of strings `words`. It should return a dictionary where keys are the unique words and values are their frequencies. Case-insensitive. Example: `word_frequency(['Apple', 'banana', 'apple', 'Orange'])` should return `{'apple': 2, 'banana': 1, 'orange': 1}`, `word_frequency([])` should return `{}`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def word_frequency(words):\n    freq_map = {}\n    is_empty_list = True if not words else False\n    if is_empty_list:\n        return {}\n\n    for word in words:\n        lower_word = word.lower()\n        is_new_word = True if lower_word not in freq_map else False\n        current_count = 0 if is_new_word else freq_map[lower_word]\n        freq_map[lower_word] = current_count + 1\n\n    return freq_map\n\n# Test cases\nresult1 = word_frequency(['Apple', 'banana', 'apple', 'Orange'])\nexpected1 = {'apple': 2, 'banana': 1, 'orange': 1}\ntest1_passed = True if result1 == expected1 else False\n\nresult2 = word_frequency([])\nexpected2 = {}\ntest2_passed = True if result2 == expected2 else False\n\nresult3 = word_frequency(['TEST', 'test', 'Test'])\nexpected3 = {'test': 3}\ntest3_passed = True if result3 == expected3 else False\n\nresult4 = word_frequency(['one', 'two', 'three'])\nexpected4 = {'one': 1, 'two': 1, 'three': 1}\ntest4_passed = True if result4 == expected4 else False\n\noverall_success = True if test1_passed and test2_passed and test3_passed and test4_passed else False\n\nprint(f\"Test 1 passed: {test1_passed}\")\nprint(f\"Test 2 passed: {test2_passed}\")\nprint(f\"Test 3 passed: {test3_passed}\")\nprint(f\"Test 4 passed: {test4_passed}\")\nprint(f\"Overall success: {overall_success}\")\n",
+"text_alt": "def word_frequency(words):\n    freq_map = {}\n    if not words:\n        is_empty_list = True\n    else:\n        is_empty_list = False\n    if is_empty_list:\n        return {}\n\n    for word in words:\n        lower_word = word.lower()\n        if lower_word not in freq_map:\n            is_new_word = True\n        else:\n            is_new_word = False\n        if is_new_word:\n            current_count = 0\n        else:\n            current_count = freq_map[lower_word]\n        freq_map[lower_word] = current_count + 1\n\n    return freq_map\n\n# Test cases\nresult1 = word_frequency(['Apple', 'banana', 'apple', 'Orange'])\nexpected1 = {'apple': 2, 'banana': 1, 'orange': 1}\nif result1 == expected1:\n    test1_passed = True\nelse:\n    test1_passed = False\n\nresult2 = word_frequency([])\nexpected2 = {}\nif result2 == expected2:\n    test2_passed = True\nelse:\n    test2_passed = False\n\nresult3 = word_frequency(['TEST', 'test', 'Test'])\nexpected3 = {'test': 3}\nif result3 == expected3:\n    test3_passed = True\nelse:\n    test3_passed = False\n\nresult4 = word_frequency(['one', 'two', 'three'])\nexpected4 = {'one': 1, 'two': 1, 'three': 1}\nif result4 == expected4:\n    test4_passed = True\nelse:\n    test4_passed = False\n\nif test1_passed and test2_passed and test3_passed and test4_passed:\n    overall_success = True\nelse:\n    overall_success = False\n\nprint(f\"Test 1 passed: {test1_passed}\")\nprint(f\"Test 2 passed: {test2_passed}\")\nprint(f\"Test 3 passed: {test3_passed}\")\nprint(f\"Test 4 passed: {test4_passed}\")\nprint(f\"Overall success: {overall_success}\")\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if not words:\n        ",
+"nat_span": [
+49,
+49
+],
+"alt_span": [
+49,
+71
+]
+},
+{
+"k": 1,
+"nat": " if not words else",
+"alt": "\n    else:\n        is_empty_list =",
+"nat_span": [
+69,
+87
+],
+"alt_span": [
+91,
+125
+]
+},
+{
+"k": 2,
+"nat": "is_new_word = True ",
+"alt": "",
+"nat_span": [
+200,
+219
+],
+"alt_span": [
+238,
+238
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n            is_new_word = True\n        else:\n            is_new_word =",
+"nat_span": [
+248,
+253
+],
+"alt_span": [
+267,
+339
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if is_new_word:\n            ",
+"nat_span": [
+268,
+268
+],
+"alt_span": [
+354,
+382
+]
+},
+{
+"k": 5,
+"nat": " if is_new_word else",
+"alt": "\n        else:\n            current_count =",
+"nat_span": [
+285,
+305
+],
+"alt_span": [
+399,
+441
+]
+},
+{
+"k": 6,
+"nat": "test1_passed = True ",
+"alt": "",
+"nat_span": [
+527,
+547
+],
+"alt_span": [
+663,
+663
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n    test1_passed = True\nelse:\n    test1_passed =",
+"nat_span": [
+570,
+575
+],
+"alt_span": [
+686,
+736
+]
+},
+{
+"k": 8,
+"nat": "test2_passed = True ",
+"alt": "",
+"nat_span": [
+627,
+647
+],
+"alt_span": [
+788,
+788
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n    test2_passed = True\nelse:\n    test2_passed =",
+"nat_span": [
+670,
+675
+],
+"alt_span": [
+811,
+861
+]
+},
+{
+"k": 10,
+"nat": "test3_passed = True ",
+"alt": "",
+"nat_span": [
+758,
+778
+],
+"alt_span": [
+944,
+944
+]
+},
+{
+"k": 11,
+"nat": " else",
+"alt": ":\n    test3_passed = True\nelse:\n    test3_passed =",
+"nat_span": [
+801,
+806
+],
+"alt_span": [
+967,
+1017
+]
+},
+{
+"k": 12,
+"nat": "test4_passed = True ",
+"alt": "",
+"nat_span": [
+909,
+929
+],
+"alt_span": [
+1120,
+1120
+]
+},
+{
+"k": 13,
+"nat": " else False\n\noverall_success",
+"alt": ":\n    test4_passed",
+"nat_span": [
+952,
+980
+],
+"alt_span": [
+1143,
+1161
+]
+},
+{
+"k": 14,
+"nat": " ",
+"alt": "\nelse:\n    test4_passed = False\n\n",
+"nat_span": [
+987,
+988
+],
+"alt_span": [
+1168,
+1201
+]
+},
+{
+"k": 15,
+"nat": " else",
+"alt": ":\n    overall_success = True\nelse:\n    overall_success =",
+"nat_span": [
+1054,
+1059
+],
+"alt_span": [
+1267,
+1323
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.897,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "if not words:\n        ",
+"nat_span": [
+49,
+49
+],
+"alt_span": [
+49,
+71
+]
+},
+{
+"k": 1,
+"nat": " if not words else",
+"alt": "\n    else:\n        is_empty_list =",
+"nat_span": [
+69,
+87
+],
+"alt_span": [
+91,
+125
+]
+},
+{
+"k": 2,
+"nat": "is_new_word = True ",
+"alt": "",
+"nat_span": [
+200,
+219
+],
+"alt_span": [
+238,
+238
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n            is_new_word = True\n        else:\n            is_new_word =",
+"nat_span": [
+248,
+253
+],
+"alt_span": [
+267,
+339
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if is_new_word:\n            ",
+"nat_span": [
+268,
+268
+],
+"alt_span": [
+354,
+382
+]
+},
+{
+"k": 5,
+"nat": " if is_new_word else",
+"alt": "\n        else:\n            current_count =",
+"nat_span": [
+285,
+305
+],
+"alt_span": [
+399,
+441
+]
+},
+{
+"k": 6,
+"nat": "test1_passed = True ",
+"alt": "",
+"nat_span": [
+527,
+547
+],
+"alt_span": [
+663,
+663
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n    test1_passed = True\nelse:\n    test1_passed =",
+"nat_span": [
+570,
+575
+],
+"alt_span": [
+686,
+736
+]
+},
+{
+"k": 8,
+"nat": "test2_passed = True ",
+"alt": "",
+"nat_span": [
+627,
+647
+],
+"alt_span": [
+788,
+788
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n    test2_passed = True\nelse:\n    test2_passed =",
+"nat_span": [
+670,
+675
+],
+"alt_span": [
+811,
+861
+]
+},
+{
+"k": 10,
+"nat": "test3_passed = True ",
+"alt": "",
+"nat_span": [
+758,
+778
+],
+"alt_span": [
+944,
+944
+]
+},
+{
+"k": 11,
+"nat": " else",
+"alt": ":\n    test3_passed = True\nelse:\n    test3_passed =",
+"nat_span": [
+801,
+806
+],
+"alt_span": [
+967,
+1017
+]
+},
+{
+"k": 12,
+"nat": "test4_passed = True ",
+"alt": "",
+"nat_span": [
+909,
+929
+],
+"alt_span": [
+1120,
+1120
+]
+},
+{
+"k": 13,
+"nat": " else False\n\noverall_success",
+"alt": ":\n    test4_passed",
+"nat_span": [
+952,
+980
+],
+"alt_span": [
+1143,
+1161
+]
+},
+{
+"k": 14,
+"nat": " ",
+"alt": "\nelse:\n    test4_passed = False\n\n",
+"nat_span": [
+987,
+988
+],
+"alt_span": [
+1168,
+1201
+]
+},
+{
+"k": 15,
+"nat": " else",
+"alt": ":\n    overall_success = True\nelse:\n    overall_success =",
+"nat_span": [
+1054,
+1059
+],
+"alt_span": [
+1267,
+1323
 ]
 }
 ],
@@ -54623,22 +60114,9 @@
 1038,
 1073
 ]
-},
-{
-"k": 19,
-"nat": ")",
-"alt": "",
-"nat_span": [
-719,
-720
-],
-"alt_span": [
-1080,
-1080
-]
 }
 ],
-"k_en": 20,
+"k_en": 19,
 "shared_fraction": 0.774,
 "pass": true,
 "verify": null,
@@ -56337,544 +61815,6 @@
 "alt_span": [
 792,
 822
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_ternary__t205",
-"family": "py_ternary",
-"topic": "Check for Perfect Square",
-"angle": "code",
-"text_es": "Implement `is_perfect_square(n)` that takes a non-negative integer `n`. It should return `True` if `n` is a perfect square, `False` otherwise. Example: `is_perfect_square(9)` should return `True`, `is_perfect_square(10)` should return `False`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def is_perfect_square(n):\n    is_non_negative = True if n >= 0 else False\n    if not is_non_negative:\n        return False\n\n    if n == 0:\n        return True\n\n    low = 1\n    high = n // 2 if n > 1 else n\n    is_high_one = True if high == 1 else False\n    is_low_high_equal = True if low == high else False\n    \n    while low <= high:\n        mid = (low + high) // 2\n        square = mid * mid\n        is_square_n = True if square == n else False\n        is_square_greater = True if square > n else False\n\n        if is_square_n:\n            return True\n        elif is_square_greater:\n            high = mid - 1\n        else:\n            low = mid + 1\n            \n    return False\n",
-"text_alt": "def is_perfect_square(n):\n    if n >= 0:\n        is_non_negative = True\n    else:\n        is_non_negative = False\n    if not is_non_negative:\n        return False\n\n    if n == 0:\n        return True\n\n    low = 1\n    if n > 1:\n        high = n // 2\n    else:\n        high = n\n    if high == 1:\n        is_high_one = True\n    else:\n        is_high_one = False\n    if low == high:\n        is_low_high_equal = True\n    else:\n        is_low_high_equal = False\n    \n    while low <= high:\n        mid = (low + high) // 2\n        square = mid * mid\n        if square == n:\n            is_square_n = True\n        else:\n            is_square_n = False\n        if square > n:\n            is_square_greater = True\n        else:\n            is_square_greater = False\n\n        if is_square_n:\n            return True\n        elif is_square_greater:\n            high = mid - 1\n        else:\n            low = mid + 1\n            \n    return False\n",
-"opps": [
-{
-"k": 0,
-"nat": "is_non_negative = True ",
-"alt": "",
-"nat_span": [
-30,
-53
-],
-"alt_span": [
-30,
-30
-]
-},
-{
-"k": 1,
-"nat": " else",
-"alt": ":\n        is_non_negative = True\n    else:\n        is_non_negative =",
-"nat_span": [
-62,
-67
-],
-"alt_span": [
-39,
-107
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "if n > 1:\n        ",
-"nat_span": [
-176,
-176
-],
-"alt_span": [
-216,
-234
-]
-},
-{
-"k": 3,
-"nat": " if n > 1 else",
-"alt": "\n    else:\n        high =",
-"nat_span": [
-189,
-203
-],
-"alt_span": [
-247,
-272
-]
-},
-{
-"k": 4,
-"nat": "is_high_one = True ",
-"alt": "",
-"nat_span": [
-210,
-229
-],
-"alt_span": [
-279,
-279
-]
-},
-{
-"k": 5,
-"nat": " else False\n    is_low_high_equal",
-"alt": ":\n        is_high_one",
-"nat_span": [
-241,
-274
-],
-"alt_span": [
-291,
-312
-]
-},
-{
-"k": 6,
-"nat": " ",
-"alt": "\n    else:\n        is_high_one = False\n    ",
-"nat_span": [
-281,
-282
-],
-"alt_span": [
-319,
-362
-]
-},
-{
-"k": 7,
-"nat": " else",
-"alt": ":\n        is_low_high_equal = True\n    else:\n        is_low_high_equal =",
-"nat_span": [
-296,
-301
-],
-"alt_span": [
-376,
-448
-]
-},
-{
-"k": 8,
-"nat": "is_square_n = True ",
-"alt": "",
-"nat_span": [
-403,
-422
-],
-"alt_span": [
-550,
-550
-]
-},
-{
-"k": 9,
-"nat": " else False\n        is_square_greater",
-"alt": ":\n            is_square_n",
-"nat_span": [
-436,
-473
-],
-"alt_span": [
-564,
-589
-]
-},
-{
-"k": 10,
-"nat": " ",
-"alt": "\n        else:\n            is_square_n = False\n        ",
-"nat_span": [
-480,
-481
-],
-"alt_span": [
-596,
-651
-]
-},
-{
-"k": 11,
-"nat": " else",
-"alt": ":\n            is_square_greater = True\n        else:\n            is_square_greater =",
-"nat_span": [
-494,
-499
-],
-"alt_span": [
-664,
-748
-]
-}
-],
-"k_en": 12,
-"shared_fraction": 0.833,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "is_non_negative = True ",
-"alt": "",
-"nat_span": [
-30,
-53
-],
-"alt_span": [
-30,
-30
-]
-},
-{
-"k": 1,
-"nat": " else",
-"alt": ":\n        is_non_negative = True\n    else:\n        is_non_negative =",
-"nat_span": [
-62,
-67
-],
-"alt_span": [
-39,
-107
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "if n > 1:\n        ",
-"nat_span": [
-176,
-176
-],
-"alt_span": [
-216,
-234
-]
-},
-{
-"k": 3,
-"nat": " if n > 1 else",
-"alt": "\n    else:\n        high =",
-"nat_span": [
-189,
-203
-],
-"alt_span": [
-247,
-272
-]
-},
-{
-"k": 4,
-"nat": "is_high_one = True ",
-"alt": "",
-"nat_span": [
-210,
-229
-],
-"alt_span": [
-279,
-279
-]
-},
-{
-"k": 5,
-"nat": " else False\n    is_low_high_equal",
-"alt": ":\n        is_high_one",
-"nat_span": [
-241,
-274
-],
-"alt_span": [
-291,
-312
-]
-},
-{
-"k": 6,
-"nat": " ",
-"alt": "\n    else:\n        is_high_one = False\n    ",
-"nat_span": [
-281,
-282
-],
-"alt_span": [
-319,
-362
-]
-},
-{
-"k": 7,
-"nat": " else",
-"alt": ":\n        is_low_high_equal = True\n    else:\n        is_low_high_equal =",
-"nat_span": [
-296,
-301
-],
-"alt_span": [
-376,
-448
-]
-},
-{
-"k": 8,
-"nat": "is_square_n = True ",
-"alt": "",
-"nat_span": [
-403,
-422
-],
-"alt_span": [
-550,
-550
-]
-},
-{
-"k": 9,
-"nat": " else False\n        is_square_greater",
-"alt": ":\n            is_square_n",
-"nat_span": [
-436,
-473
-],
-"alt_span": [
-564,
-589
-]
-},
-{
-"k": 10,
-"nat": " ",
-"alt": "\n        else:\n            is_square_n = False\n        ",
-"nat_span": [
-480,
-481
-],
-"alt_span": [
-596,
-651
-]
-},
-{
-"k": 11,
-"nat": " else",
-"alt": ":\n            is_square_greater = True\n        else:\n            is_square_greater =",
-"nat_span": [
-494,
-499
-],
-"alt_span": [
-664,
-748
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_ternary__t206",
-"family": "py_ternary",
-"topic": "Group List Elements by Type",
-"angle": "code",
-"text_es": "Create a function `group_by_type(items)` that takes a list `items` of mixed types. It should return a dictionary where keys are type names (as strings, e.g., 'int', 'str') and values are lists of items of that type. Example: `group_by_type([1, 'a', 2.5, 'b', 3])` should return `{'int': [1, 3], 'str': ['a', 'b'], 'float': [2.5]}`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def group_by_type(items):\n    grouped_items = {}\n    \n    for item in items:\n        item_type = type(item)\n        type_name = 'int' if item_type is int else ('str' if item_type is str else ('float' if item_type is float else item_type.__name__))\n        \n        # Check if type_name already exists in grouped_items\n        # If it does, use the existing list; otherwise, create a new empty list\n        current_list = grouped_items[type_name] if type_name in grouped_items else []\n        current_list.append(item)\n        grouped_items[type_name] = current_list # Update the dictionary\n\n    return grouped_items\n",
-"text_alt": "def group_by_type(items):\n    grouped_items = {}\n    \n    for item in items:\n        item_type = type(item)\n        if item_type is int:\n            type_name = 'int'\n        else:\n            if item_type is str:\n                type_name = 'str'\n            else:\n                if item_type is float:\n                    type_name = 'float'\n                else:\n                    type_name = item_type.__name__\n        \n        # Check if type_name already exists in grouped_items\n        # If it does, use the existing list; otherwise, create a new empty list\n        if type_name in grouped_items:\n            current_list = grouped_items[type_name]\n        else:\n            current_list = []\n        current_list.append(item)\n        grouped_items[type_name] = current_list # Update the dictionary\n\n    return grouped_items\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "if item_type is int:\n            ",
-"nat_span": [
-116,
-116
-],
-"alt_span": [
-116,
-149
-]
-},
-{
-"k": 1,
-"nat": " if item_type is int else ('str' ",
-"alt": "\n        else:\n            ",
-"nat_span": [
-133,
-166
-],
-"alt_span": [
-166,
-193
-]
-},
-{
-"k": 2,
-"nat": " else ('float' ",
-"alt": ":\n                type_name = 'str'\n            else:\n                ",
-"nat_span": [
-185,
-200
-],
-"alt_span": [
-212,
-282
-]
-},
-{
-"k": 3,
-"nat": " else",
-"alt": ":\n                    type_name = 'float'\n                else:\n                    type_name =",
-"nat_span": [
-221,
-226
-],
-"alt_span": [
-303,
-398
-]
-},
-{
-"k": 4,
-"nat": "))",
-"alt": "",
-"nat_span": [
-245,
-247
-],
-"alt_span": [
-417,
-417
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "if type_name in grouped_items:\n            ",
-"nat_span": [
-406,
-406
-],
-"alt_span": [
-576,
-619
-]
-},
-{
-"k": 6,
-"nat": " if type_name in grouped_items else",
-"alt": "\n        else:\n            current_list =",
-"nat_span": [
-445,
-480
-],
-"alt_span": [
-658,
-699
-]
-}
-],
-"k_en": 7,
-"shared_fraction": 0.826,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "if item_type is int:\n            ",
-"nat_span": [
-116,
-116
-],
-"alt_span": [
-116,
-149
-]
-},
-{
-"k": 1,
-"nat": " if item_type is int else ('str' ",
-"alt": "\n        else:\n            ",
-"nat_span": [
-133,
-166
-],
-"alt_span": [
-166,
-193
-]
-},
-{
-"k": 2,
-"nat": " else ('float' ",
-"alt": ":\n                type_name = 'str'\n            else:\n                ",
-"nat_span": [
-185,
-200
-],
-"alt_span": [
-212,
-282
-]
-},
-{
-"k": 3,
-"nat": " else",
-"alt": ":\n                    type_name = 'float'\n                else:\n                    type_name =",
-"nat_span": [
-221,
-226
-],
-"alt_span": [
-303,
-398
-]
-},
-{
-"k": 4,
-"nat": "))",
-"alt": "",
-"nat_span": [
-245,
-247
-],
-"alt_span": [
-417,
-417
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "if type_name in grouped_items:\n            ",
-"nat_span": [
-406,
-406
-],
-"alt_span": [
-576,
-619
-]
-},
-{
-"k": 6,
-"nat": " if type_name in grouped_items else",
-"alt": "\n        else:\n            current_list =",
-"nat_span": [
-445,
-480
-],
-"alt_span": [
-658,
-699
 ]
 }
 ],

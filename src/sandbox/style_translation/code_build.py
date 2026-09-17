@@ -66,12 +66,22 @@ EXTRA_HINT = {
     "py_tabs": "use at least 8 DIFFERENT indented blocks (if / for / while / def / try / with), several of them nested, spread through the whole solution",
     "early_return": "write at least 7 SEPARATE early-exit checks (if <bad case>: return ... / continue) in several functions and loops, spread through the whole solution",
     "py_ternary": "write at least 7 SEPARATE conditional-expression assignments spread through the whole solution",
-    "py_paren_if": "ONLY the if / elif / while conditions are written without parentheses; function calls, definitions, subscripts and every other parenthesis stay as normal valid Python",
     "trailing_commas": "the trailing comma goes ONLY after the last element of a multi-line list / dict / tuple / call literal, never after a statement; the code must be valid Python",
     "comment_case": "ONLY the comment text starts with a capital letter; Python keywords and identifiers keep their normal spelling",
     "bash_subst": "use at least 7 SEPARATE $(...) command substitutions spread through the whole script",
     "py_class_naming": "no variable, parameter or attribute may be the snake_case form of a class name (e.g. a class ResultContainer must not coexist with a name result_container)",
     "py_bool_prefix": "the boolean names must stay distinct from every other name once the is_/has_/should_ prefix is dropped (has_numbers next to a parameter numbers is NOT allowed)",
+    # bug 10 (2026-09-17): only the OPENING symbol of a pair is a decision, so paired-symbol families need more, and earlier, occurrences
+    "py_paren_if": "ONLY the if / elif / while conditions are written without parentheses; function calls, definitions, subscripts and every other parenthesis stay as normal valid Python; write at least 10 such conditions, several of them in the first half of the solution",
+    "docstring_quotes": "write at least 8 docstrings (module, classes, methods, functions), several of them in the first half of the file",
+    "py_quotes": "write at least 12 string literals spread through the whole solution, several of them in the first half",
+    "js_quotes": "write at least 12 string literals spread through the whole solution, several of them in the first half",
+    "js_template": "write at least 10 template literals spread through the whole solution, several of them in the first half",
+    "php_array": "write at least 10 array literals spread through the whole solution, several of them in the first half",
+    "bash_test": "write at least 10 test expressions spread through the whole script, several of them in the first half",
+    "py_join_concat": "write at least 10 such string constructions spread through the whole solution, several of them in the first half",
+    "py_not_in": "write at least 8 such membership tests spread through the whole solution, several of them in the first half",
+    "css_shorthand": "EVERY hex colour must be of the shortenable kind, made of three repeated digit pairs (#ffffff, #336699, #aabbcc, #000000), never #2a7f62-like; write at least 8 such colours AND at least 6 zero lengths with units (0px, 0em), spread through the whole stylesheet with several in the first half",
 }
 
 
@@ -233,7 +243,9 @@ def main():
     ap.add_argument("--target", type=int, default=None, help="stop generating once this many passing pairs exist (chunks of 60 tasks); pairs file capped at --target")
     args = ap.parse_args()
     key = load_key(); RAW.mkdir(parents=True, exist_ok=True)
-    pools = {lang: tasks_for(key, lang, n=args.n_tasks + 10) for lang in sorted({CODE_FAMILY[f].tgt_lang for f in args.families})}
+    langs = sorted({CODE_FAMILY[f].tgt_lang for f in args.families})
+    with ThreadPoolExecutor(len(langs)) as ex:                   # pools grow independently per language (each batch depends on the previous one)
+        pools = dict(zip(langs, ex.map(lambda lang: tasks_for(key, lang, n=args.n_tasks + 10), langs)))
     for lang, ts in pools.items():
         print(f"task pool {lang}: {len(ts)}", flush=True)
     for name in args.families:
@@ -243,7 +255,7 @@ def main():
             if name in AFFECTED:
                 for r in raw.values():
                     fr = filter_free(r, name) if (r.get("opps_all") or r.get("opps")) else None
-                    r["pass"] = fr is not None
+                    r["pass"] = bool(r.get("pass")) and fr is not None      # the free rule can only REMOVE a pass, never grant one
                     if fr is not None:
                         r.update(text_alt=fr["text_alt"], opps=fr["opps"], opps_all=fr["opps_all"], k_en=fr["k_en"], free_filter=True)
         apply_free()

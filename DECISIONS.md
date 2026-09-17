@@ -1910,3 +1910,8 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - A rename x → y in the alternative twin is invalid when y already exists as a standalone name in the natural code (`code_free.rename_collisions`,
   token-aware); such pairs are rejected by `consistent_twins` and regenerated. Generation hints for py_class_naming / py_bool_prefix forbid the
   collision up front. `opps_all` (the full diff) is mandatory on every free-filtered record — never re-filter from the filtered list.
+
+## 2026-09-17 — Paired symbols (bug 10) and the 200-per-family corpus
+- A closing bracket or closing quote is never an opportunity (`code_free.closing_symbol`); the free-opportunity machinery (`opps_all` full diff,
+  `opps` counted) now applies to every code family. Every family has exactly 200 documents (css_shorthand pending its follow-up run).
+- The builder's re-filter (`apply_free`) may only remove a pass; generation-time guards (parsers, degenerate, shared fraction) are final.

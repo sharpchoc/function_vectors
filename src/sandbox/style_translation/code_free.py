@@ -10,7 +10,22 @@ IDENT_FAMILIES = {"py_snake_camel", "js_camel_snake", "py_const_naming", "py_cla
 SELF_FAMILIES = {"py_self_name"}
 INDENT_FAMILIES = {"py_indent", "py_tabs"}
 CONTENT_FAMILIES = {"early_return", "py_with_open", "py_ternary"}   # bug 5 (2026-09-17): a block choice forces the indentation of every later line
-AFFECTED = IDENT_FAMILIES | SELF_FAMILIES | INDENT_FAMILIES | CONTENT_FAMILIES
+_SPECIAL = IDENT_FAMILIES | SELF_FAMILIES | INDENT_FAMILIES | CONTENT_FAMILIES
+
+
+def _all_code_families():
+    from src.sandbox.style_translation.code_families import CODE_FAMILIES
+    return {f.name for f in CODE_FAMILIES}
+
+
+class _All(set):                                                 # bug 10 (2026-09-17): the paired-symbol clause applies to EVERY code family
+    def __contains__(self, x):
+        return x in _all_code_families()
+    def __iter__(self):
+        return iter(_all_code_families())
+
+
+AFFECTED = _All()
 MIN_OPPS = 5
 _ID = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 
@@ -28,8 +43,49 @@ def _task_code_idents(task):
     return out
 
 
+_CLOSING = re.compile(r"^[\s\)\]\}]*$")
+_QUOTES = re.compile(r"^[\s'\"`]*$")
+_STR_RX = re.compile(r'"""(?:\\.|[^\\])*?"""|\'\'\'(?:\\.|[^\\])*?\'\'\'|"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])*\'|`(?:\\.|[^`\\])*`', re.S)
+
+
+def _string_bounds(text, lang):
+    """(starts, ends) character offsets of the string literals of the natural text: Python via tokenize, otherwise a literal regex."""
+    if lang == "Python":
+        import io, tokenize
+        try:
+            toks = list(tokenize.generate_tokens(io.StringIO(text).readline))
+        except (tokenize.TokenError, IndentationError, SyntaxError):
+            toks = None
+        if toks is not None:
+            starts = [0]
+            for ln in text.splitlines(keepends=True):
+                starts.append(starts[-1] + len(ln))
+            off = lambda p: starts[p[0] - 1] + p[1]
+            return {off(t.start) for t in toks if t.type == tokenize.STRING}, {off(t.end) for t in toks if t.type == tokenize.STRING}
+    ms = list(_STR_RX.finditer(text))
+    return {m.start() for m in ms}, {m.end() for m in ms}
+
+
+def closing_symbol(rec, o, lang):
+    """Bug 10: an opportunity made only of CLOSING brackets, or of the closing quote(s) of a string literal, is forced by its opening
+    counterpart (once the opening symbol is written, the closing one must match) and is not a decision."""
+    both = o["nat"] + o["alt"]
+    if not both.strip():
+        return False
+    if _CLOSING.match(o["nat"]) and _CLOSING.match(o["alt"]):
+        return True
+    if _QUOTES.match(o["nat"]) and _QUOTES.match(o["alt"]):
+        starts, ends = rec.setdefault("_str_bounds", _string_bounds(rec["text_nat"], lang))
+        s0, s1 = o["nat_span"]
+        return s1 in ends and s0 not in starts
+    return False
+
+
 def free_opportunity(fam, rec, k):
     o = rec["opps"][k]; task = rec.get("text_es", "")
+    from src.sandbox.style_translation.code_families import CODE_FAMILY
+    if closing_symbol(rec, o, CODE_FAMILY[fam].tgt_lang):
+        return False
     if fam == "py_loop_vars":                      # a new `for` statement is a fresh binding; uses inside the body are forced
         text = rec["text_nat"]; s0 = o["nat_span"][0]; line_start = text.rfind("\n", 0, s0) + 1
         return re.search(r"\bfor\s+(?:[A-Za-z_][A-Za-z0-9_]*\s*,\s*)*$", text[line_start:s0]) is not None
@@ -196,5 +252,5 @@ def filter_free(rec, fam, min_opps=MIN_OPPS):
     keep = [o for k, o in enumerate(full["opps"]) if free_opportunity(fam, full, k)]
     if len(keep) < min_opps or keep[min_opps - 1]["nat_span"][0] >= 0.75 * len(full["text_nat"]):
         return None
-    out = dict(full); out["opps_all"] = full["opps"]; out["opps"] = [dict(o, k=i) for i, o in enumerate(keep)]; out["k_en"] = len(keep); out["free_filter"] = True
+    out = dict(full); out.pop("_str_bounds", None); out["opps_all"] = full["opps"]; out["opps"] = [dict(o, k=i) for i, o in enumerate(keep)]; out["k_en"] = len(keep); out["free_filter"] = True
     return out
