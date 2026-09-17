@@ -9551,3 +9551,10 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   own line and longer solutions (`code_build.LENGTH`, 30–50 lines); py_ternary REWRITE tightened (four-line if/else block, no pre-declaration).
   Sweep clean, counted median 8–9. bash_subst / py_with_open stay on OPENER_ONLY (switching them to the line rule would merge two openers on
   one line and need another re-sample). Cues + prompts rebuilt, old responses deleted, re-sampling on pod cs3_b12.
+- 2026-09-17 bug 12 re-sample done: rust_question / c_comment_style / py_ternary / py_enumerate re-rolled (8,000 prompts) + first-token log-probs
+  on pod cs3_b12 (terminated), re-judged (0 failures); analyze / code_cutoff / logprob_analyze rerun → pool unchanged 54 / 60 (dropped:
+  css_shorthand, py_literal_ctor, early_return, py_indent, c_braces, py_bool_prefix). Zig-zag gone: rust_question alt .05 → .48 → .53 → .67 → .72
+  (was .02 / .77 / .55 / .84 / .62), c_comment_style alt .01 / .70 / .82 / .83 / .80, py_enumerate alt .47 / .67 / .67 / .79 / .79, py_ternary
+  flat ≈ .45 / .52 with ≈ .38 unscorable (genuine: the model often writes a plain statement). Pooled means unchanged (k4 .69 / .64, unscorable .22).
+  Results page refreshed (follow-up sections removed, before/after note for the six families); `results/code_styles/debug/` emptied.
+  Session pods all terminated (cs3_1..4, cs3_b11, cs3_b12).
