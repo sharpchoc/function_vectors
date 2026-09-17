@@ -68,6 +68,8 @@ def main():
                       f"\n   cue={it['cue_tok']!r} ref={it['ref_sentence'][:60]!r}")
         return
 
+    from src.sandbox.style_translation.code_scoring import decide_any
+    lex_p = MP["prompts"].parent / "scoring_lexicon.json"; LEXICON = json.load(open(lex_p))["lexicon"] if lex_p.exists() else {}
     model, tok = load_model(args.model_dir, args.model)
     for fam in args.families:
         out_path = OUT / f"{fam}.json"
@@ -100,7 +102,7 @@ def main():
                 it = items[i]
                 raw = tok.decode(gen[r, L:], skip_special_tokens=True)
                 cut, capped = cut_code(raw, fam) if getattr(ML_FAMILY.get(fam), "domain", "text") == "code" else cut_sentence(raw)
-                dec = decide(fam, it["seg_prefix"], cut, it["next_nat"], it["next_alt"])
+                dec = decide_any(fam, tok.decode(it["prompt_ids"]), it["seg_prefix"], cut, it["next_nat"], it["next_alt"], LEXICON)   # context-aware for code_scoring.CTX_FAMILIES
                 recs[i] = {k: it[k] for k in ("doc_id", "family", "style", "k", "cue_tok", "seg_prefix",
                                               "next_nat", "next_alt", "ref_sentence", "context_tail", "es_text")}
                 recs[i].update(tail_raw=raw, tail=cut, capped=capped, decision=dec,

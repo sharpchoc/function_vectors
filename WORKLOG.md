@@ -9558,3 +9558,16 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   flat ≈ .45 / .52 with ≈ .38 unscorable (genuine: the model often writes a plain statement). Pooled means unchanged (k4 .69 / .64, unscorable .22).
   Results page refreshed (follow-up sections removed, before/after note for the six families); `results/code_styles/debug/` emptied.
   Session pods all terminated (cs3_1..4, cs3_b11, cs3_b12).
+- 2026-09-17 SCORING FIX (user-approved, offline): context-aware decisions for nine families (`code_scoring.py`, `rescore_rollouts.py`; old
+  decision kept as `decision_v1`, `scorer: context_v2`). Found from the user's spot check: hex_constants' natural regex was a list of nine
+  numbers (42 → unscorable), and identifier regexes scanned 160 chars and fired on names ALREADY in the prompt (forced reuse): 70 % of scored
+  py_abbrev decisions, 50 % py_bool_prefix, 47 % py_loop_vars, 10–21 % of the other naming families — almost all marked correct, inflating
+  accuracy. New rule: only names the completion INTRODUCES decide (known = identifiers of the code so far + identifiers the task pins in
+  backticks / call form, NOT the English words of the task); a name straddling the cue is the one being introduced; every new `for` is a
+  fresh binding; hex_constants = first integer literal (decimal vs 0x); py_abbrev / py_bool_prefix use a lexicon of every new identifier
+  labelled by Claude Sonnet 5 via OpenRouter (`artifacts/.../qwen25_code/scoring_lexicon.json`, copy in results/code_styles/). Validation
+  against independent Sonnet 5 labels on 518 random completions: agreement .67 (old) → .90 (new); per family ≥ .79. k = 4 effects: hex_constants
+  nat .52 → .89, js_hungarian nat .44 → .90, py_class_naming .35/.47 → .94/.78, py_loop_vars .56/.34 → .84/.60, py_bool_prefix .58/.12 → .31/.20
+  (honest failure), snake/camel families −.06 to −.10 (forced reuses no longer credited). Pool unchanged 54 / 60. `rollout.py` now scores with
+  `code_scoring.decide_any` (new identifiers missing from the lexicon stay unscorable until it is extended). Bugs fixed while building it:
+  `dir(__builtins__)` is a dict inside a module (use `builtins`); the cue fragment (seg_prefix) was glued on twice in the loop/class rules.

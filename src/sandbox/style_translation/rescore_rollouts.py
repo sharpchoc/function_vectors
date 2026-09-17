@@ -1,38 +1,48 @@
 #!/usr/bin/env python
-"""Re-apply scoring (sentence cut + style decision) to stored rollout records from `tail_raw`.
-Records whose cut tail changes get their judge verdict reset (the judge saw the old tail) so
-`judge_rollouts.py` re-judges just those. usage: rescore_rollouts.py [--dir D] [--families ...] [--dry]"""
-import argparse, json, sys
+"""Re-decide the convention of stored rollouts with the context-aware scorer (code_scoring.decide_code) — no sampling, no judging.
+Families in code_scoring.CTX_FAMILIES only; the previous decision is kept once as `decision_v1`. If the context-aware rule finds nothing,
+the exact next-token fallback of scoring.decide still applies (the completion starts with the twin's own rendering)."""
+import argparse
+import json
+import sys
 from pathlib import Path
+
 _BOOT = Path(__file__).resolve().parents[3]
 for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
-from src.utils.paths import ARTIFACTS_ROOT
-from src.sandbox.style_translation.families import FAMILIES
-from src.sandbox.style_translation.scoring import cut_sentence, decide
+from src.utils.paths import STYLE_TRANSLATION_DATA
+from src.sandbox.style_translation.code_scoring import CTX_FAMILIES, decide_code
+from src.sandbox.style_translation.cue_tokens import header_for
+from src.sandbox.style_translation.models import paths as model_paths
 
-ap = argparse.ArgumentParser(description=__doc__)
-ap.add_argument("--dir", type=Path, default=ARTIFACTS_ROOT / "style_translation" / "rollouts")
-ap.add_argument("--families", nargs="*", default=[f.name for f in FAMILIES])
-ap.add_argument("--dry", action="store_true")
-a = ap.parse_args()
-for fam in a.families:
-    f = a.dir / f"{fam}.json"
-    if not f.exists():
-        continue
-    recs = json.load(open(f)); n_tail = n_dec = 0
-    for r in recs:
-        cut, capped = cut_sentence(r["tail_raw"])
-        dec = decide(r["family"], r["seg_prefix"], cut, r["next_nat"], r["next_alt"])
-        if cut != r["tail"]:
-            n_tail += 1
-            if not a.dry:
-                r["tail"], r["capped"], r["judge"] = cut, capped, None
-        if dec != r.get("decision"):
-            n_dec += 1
-        if not a.dry:
-            r["decision"], r["style_ok"] = dec, (dec == r["style"])
-    if not a.dry:
-        json.dump(recs, open(f, "w"), ensure_ascii=False)
-    print(f"{fam:16s} records {len(recs):5d} | tail changed {n_tail:4d} | decision changed {n_dec:4d}{'  (dry)' if a.dry else ''}")
+
+def fallback(tail, next_nat, next_alt):
+    for label, nxt in sorted((("nat", next_nat), ("alt", next_alt)), key=lambda kv: -len(kv[1])):
+        if nxt and tail.startswith(nxt[: max(1, min(len(nxt), 6))]):
+            return label
+    return None
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__); ap.add_argument("--model", default="qwen25_code"); ap.add_argument("--families", nargs="*", default=sorted(CTX_FAMILIES))
+    args = ap.parse_args(); MP = model_paths(args.model)
+    lex_p = MP["prompts"].parent / "scoring_lexicon.json"; lexicon = json.load(open(lex_p))["lexicon"] if lex_p.exists() else {}
+    for fam in args.families:
+        pairs = {r["doc_id"]: r for r in json.load(open(STYLE_TRANSLATION_DATA / "pairs" / f"{fam}.json"))}
+        cues = {c["doc_id"]: c for c in json.load(open(MP["cues"] / f"{fam}.json"))}
+        path = MP["rollouts"] / f"{fam}.json"; recs = json.load(open(path)); changed = 0
+        for r in recs:
+            p = pairs[r["doc_id"]]; prompt = header_for(p) + p[f"text_{r['style']}"][: cues[r["doc_id"]]["cues"][r["style"]][r["k"]]["cue_char_end"]]
+            d = decide_code(fam, prompt, r["seg_prefix"], r["tail"], r["next_nat"], r["next_alt"], lexicon)
+            if d is None:
+                d = fallback(r["tail"], r["next_nat"], r["next_alt"])
+            r.setdefault("decision_v1", r["decision"]); changed += d != r["decision_v1"]
+            r["decision"] = d; r["style_ok"] = (d == r["style"]); r["scorer"] = "context_v2"
+        json.dump(recs, open(path, "w"), ensure_ascii=False)
+        n = len(recs); u1 = sum(r["decision_v1"] is None for r in recs) / n; u2 = sum(r["decision"] is None for r in recs) / n
+        print(f"{fam:16s} decisions changed {changed:5d} / {n} | unscorable {u1:.2f} -> {u2:.2f}", flush=True)
+
+
+if __name__ == "__main__":
+    main()

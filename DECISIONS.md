@@ -1926,3 +1926,10 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   counted span on that line; later spans on the line follow from it (`code_free.one_per_line`). `code_free.counted(fam, rec)` is the single
   definition of the counted list (per-span free rule, then the line rule); sweeps must use it.
 - Solution length guidance is per family (`code_build.LENGTH`), so families that need ≥ 8 line-level constructs get 30–50 lines.
+
+## 2026-09-17 — Rollout scoring: only what the completion introduces may decide
+- For first-mention (identifier) families a completion's convention is read from the first NEW name it introduces; names already in the code so
+  far or pinned by the task are forced reuses and never decide (`code_scoring.decide_code`). Same principle as the free-opportunity rule, applied
+  to scoring. hex_constants: first integer literal. py_abbrev / py_bool_prefix: LLM-labelled lexicon of new identifiers (Claude Sonnet 5).
+- Any change to a scorer must be validated against independent LLM labels on a random sample (`validate_scoring.py` pattern) and reported as
+  agreement before / after; the log-prob margin at the cue is the reference measure that no classifier can bias.
