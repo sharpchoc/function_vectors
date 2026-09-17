@@ -9529,3 +9529,11 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   4-space indent as natural at depth ≥ 2 of a 2-space file (needs a depth-relative rule); (c) narrow regexes (hex_constants nat = a fixed
   number list, py_bool_prefix alt = a word list); (d) DATA: py_with_open's counted opportunities are mostly fragments of the with/open
   construct (only 954 of 2,459 carry the open choice; 295 are forced `.close()` insertions) — a bug-5-type issue.
+- 2026-09-17 bug 11 (user decision): opener-only counting for two-part constructs. The step-3 curves of bash_subst and py_with_open zig-zagged
+  with the parity of k because odd indices were the forced second half of the construct (bash_subst closer `)` vs backtick — a mixed-class
+  closer that bug 10's same-class rule missed; py_with_open `as f:` clause / `.close()` insertion). `code_free.OPENER_ONLY`: bash_subst counts
+  a span only if its natural rendering starts with `$(`, py_with_open only if it contains `with`. Re-filtered from the texts: 26 + 156 docs
+  short → all regenerated from their own tasks (hints: ≥ 9 substitutions / ≥ 8 with-blocks, several in the first half), 0 dropped, sweep clean
+  (counted median 10 / 8). Cues + prompts rebuilt for the two families, their old rollouts / log-prob records deleted, re-sampled on pod
+  cs3_b11. Other scoring issues (keyword-in-context regexes, py_indent depth, narrow regexes, blank_lines def/class-only) left as they are by
+  user decision (benign for now).

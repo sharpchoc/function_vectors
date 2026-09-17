@@ -81,10 +81,19 @@ def closing_symbol(rec, o, lang):
     return False
 
 
+# Bug 11 (2026-09-17, user decision): in a two-part construct only the OPENER is a decision; the second half is guaranteed by the first.
+#   bash_subst   - the closer is `)` in one convention and a backtick in the other, so closing_symbol() (same-class closers) missed it
+#   py_with_open - `as f:` clauses, `.close()` insertions and re-indentation are fragments of the with/open choice made at the head
+OPENER_ONLY = {"bash_subst": lambda o: o["nat"].lstrip().startswith("$("),
+               "py_with_open": lambda o: re.search(r"\bwith\b", o["nat"]) is not None}
+
+
 def free_opportunity(fam, rec, k):
     o = rec["opps"][k]; task = rec.get("text_es", "")
     from src.sandbox.style_translation.code_families import CODE_FAMILY
     if closing_symbol(rec, o, CODE_FAMILY[fam].tgt_lang):
+        return False
+    if fam in OPENER_ONLY and not OPENER_ONLY[fam](o):
         return False
     if fam == "py_loop_vars":                      # a new `for` statement is a fresh binding; uses inside the body are forced
         text = rec["text_nat"]; s0 = o["nat_span"][0]; line_start = text.rfind("\n", 0, s0) + 1

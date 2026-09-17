@@ -1915,3 +1915,8 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - A closing bracket or closing quote is never an opportunity (`code_free.closing_symbol`); the free-opportunity machinery (`opps_all` full diff,
   `opps` counted) now applies to every code family. Every family has exactly 200 documents (css_shorthand pending its follow-up run).
 - The builder's re-filter (`apply_free`) may only remove a pass; generation-time guards (parsers, degenerate, shared fraction) are final.
+
+## 2026-09-17 — Two-part constructs: only the opener is an opportunity (bug 11)
+- bash_subst (`$(` … `)` vs backticks) and py_with_open (`with open(…) as f:` vs `f = open(…)` … `f.close()`): the second half is guaranteed by
+  the first, so only the opener is counted (`code_free.OPENER_ONLY`). Diagnostic to remember: an accuracy / unscorable curve that alternates
+  with the parity of k means the opportunity list interleaves free and forced decisions.
