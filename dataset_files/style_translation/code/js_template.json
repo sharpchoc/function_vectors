@@ -4398,155 +4398,6 @@
 "verify": null
 },
 {
-"doc_id": "js_template__t019",
-"family": "js_template",
-"topic": "FizzBuzz",
-"angle": "code",
-"text_es": "Implement a function `fizzBuzz(n)` that returns an array from 1 to `n`. For multiples of 3, replace with 'Fizz'. For multiples of 5, replace with 'Buzz'. For multiples of both, replace with 'FizzBuzz'. Input is an integer `n`, output is an array of strings/numbers. Example: `fizzBuzz(5)` should return `[1, 2, 'Fizz', 4, 'Buzz']`, `fizzBuzz(3)` should return `[1, 2, 'Fizz']`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "const fizzBuzz = (n) => {\n  const result = [];\n  for (let i = 1; i <= n; i++) {\n    let output = '';\n    const isMultipleOf3 = i % 3 === 0;\n    const isMultipleOf5 = i % 5 === 0;\n\n    if (isMultipleOf3 && isMultipleOf5) {\n      output = `FizzBuzz`;\n    } else if (isMultipleOf3) {\n      output = `Fizz`;\n    } else if (isMultipleOf5) {\n      output = `Buzz`;\n    } else {\n      output = `${i}`;\n    }\n    result.push(output);\n  }\n  const finalMessage = `Processed ${n} items.`;\n  console.log(`${finalMessage} The array has ${result.length} elements.`);\n  return result;\n};\n",
-"text_alt": "const fizzBuzz = (n) => {\n  const result = [];\n  for (let i = 1; i <= n; i++) {\n    let output = '';\n    const isMultipleOf3 = i % 3 === 0;\n    const isMultipleOf5 = i % 5 === 0;\n\n    if (isMultipleOf3 && isMultipleOf5) {\n      output = \"FizzBuzz\";\n    } else if (isMultipleOf3) {\n      output = \"Fizz\";\n    } else if (isMultipleOf5) {\n      output = \"Buzz\";\n    } else {\n      output = \"\" + i;\n    }\n    result.push(output);\n  }\n  const finalMessage = \"Processed \" + n + \" items.\";\n  console.log(finalMessage + \" The array has \" + result.length + \" elements.\");\n  return result;\n};\n",
-"opps": [
-{
-"k": 0,
-"nat": "`FizzBuzz`",
-"alt": "\"FizzBuzz\"",
-"nat_span": [
-237,
-247
-],
-"alt_span": [
-237,
-247
-]
-},
-{
-"k": 1,
-"nat": "`Fizz`",
-"alt": "\"Fizz\"",
-"nat_span": [
-296,
-302
-],
-"alt_span": [
-296,
-302
-]
-},
-{
-"k": 2,
-"nat": "`Buzz`",
-"alt": "\"Buzz\"",
-"nat_span": [
-351,
-357
-],
-"alt_span": [
-351,
-357
-]
-},
-{
-"k": 3,
-"nat": "`${i}`",
-"alt": "\"\" + i",
-"nat_span": [
-387,
-393
-],
-"alt_span": [
-387,
-393
-]
-},
-{
-"k": 4,
-"nat": "`Processed ${n}",
-"alt": "\"Processed \" + n + \"",
-"nat_span": [
-453,
-468
-],
-"alt_span": [
-453,
-473
-]
-},
-{
-"k": 5,
-"nat": "`",
-"alt": "\"",
-"nat_span": [
-475,
-476
-],
-"alt_span": [
-480,
-481
-]
-},
-{
-"k": 6,
-"nat": "`${finalMessage}",
-"alt": "finalMessage + \"",
-"nat_span": [
-492,
-508
-],
-"alt_span": [
-497,
-513
-]
-},
-{
-"k": 7,
-"nat": "${",
-"alt": "\" + ",
-"nat_span": [
-523,
-525
-],
-"alt_span": [
-528,
-532
-]
-},
-{
-"k": 8,
-"nat": "}",
-"alt": " + \"",
-"nat_span": [
-538,
-539
-],
-"alt_span": [
-545,
-549
-]
-},
-{
-"k": 9,
-"nat": "`",
-"alt": "\"",
-"nat_span": [
-549,
-550
-],
-"alt_span": [
-559,
-560
-]
-}
-],
-"k_en": 10,
-"shared_fraction": 0.904,
-"pass": false,
-"verify": null
-},
-{
 "doc_id": "js_template__t020",
 "family": "js_template",
 "topic": "Check Anagrams",
@@ -34557,297 +34408,258 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const areAnagrams = (str1, str2) => {\n  const normalize = (str) => {\n    return str.toLowerCase().replace(/[^a-z]/g, '').split('').sort().join('');\n  };\n\n  const normalizedStr1 = normalize(str1);\n  const normalizedStr2 = normalize(str2);\n\n  const resultMessage = `Comparing normalized strings: \"${normalizedStr1}\" and \"${normalizedStr2}\".`;\n  console.log(resultMessage);\n\n  if (normalizedStr1 === normalizedStr2) {\n    console.log(`\"${str1}\" and \"${str2}\" are anagrams.`);\n    return true;\n  } else {\n    const debugInfo = `Lengths are ${normalizedStr1.length} and ${normalizedStr2.length}.`;\n    console.log(`\"${str1}\" and \"${str2}\" are not anagrams. ${debugInfo}`);\n    return false;\n  }\n};\n\nconst test1Result = areAnagrams('listen', 'silent');\nconsole.log(`Test 1: 'listen' and 'silent' -> ${test1Result}`);\nconst test2Result = areAnagrams('Hello!', 'olleh');\nconsole.log(`Test 2: 'Hello!' and 'olleh' -> ${test2Result}`);\nconst test3Result = areAnagrams('A decimal point', 'I'm a dot in place');\nconsole.log(`Test 3: 'A decimal point' and 'I'm a dot in place' -> ${test3Result}`);\n",
-"text_alt": "const areAnagrams = (str1, str2) => {\n  const normalize = (str) => {\n    return str.toLowerCase().replace(/[^a-z]/g, '').split('').sort().join('');\n  };\n\n  const normalizedStr1 = normalize(str1);\n  const normalizedStr2 = normalize(str2);\n\n  const resultMessage = \"Comparing normalized strings: \\\"\" + normalizedStr1 + \"\\\" and \\\"\" + normalizedStr2 + \"\\\".\";\n  console.log(resultMessage);\n\n  if (normalizedStr1 === normalizedStr2) {\n    console.log(\"\\\"\" + str1 + \"\\\" and \\\"\" + str2 + \"\\\" are anagrams.\");\n    return true;\n  } else {\n    const debugInfo = \"Lengths are \" + normalizedStr1.length + \" and \" + normalizedStr2.length + \".\";\n    console.log(\"\\\"\" + str1 + \"\\\" and \\\"\" + str2 + \"\\\" are not anagrams. \" + debugInfo);\n    return false;\n  }\n};\n\nconst test1Result = areAnagrams('listen', 'silent');\nconsole.log(\"Test 1: 'listen' and 'silent' -> \" + test1Result);\nconst test2Result = areAnagrams('Hello!', 'olleh');\nconsole.log(\"Test 2: 'Hello!' and 'olleh' -> \" + test2Result);\nconst test3Result = areAnagrams('A decimal point', \"I'm a dot in place\");\nconsole.log(\"Test 3: 'A decimal point' and 'I'm a dot in place' -> \" + test3Result);\n",
+"text_nat": "function areAnagrams(str1, str2) {\n  const cleanAndSort = (str) => {\n    const cleanedStr = str.toLowerCase().replace(/[^a-z0-9]/g, '');\n    const sortedChars = cleanedStr.split('').sort().join('');\n    return sortedChars;\n  };\n\n  const cleanedStr1 = cleanAndSort(str1);\n  const cleanedStr2 = cleanAndSort(str2);\n\n  if (cleanedStr1 === cleanedStr2) {\n    console.log(`\"${str1}\" and \"${str2}\" are anagrams.`);\n    return true;\n  } else {\n    console.log(`\"${str1}\" and \"${str2}\" are not anagrams. Their sorted versions are \"${cleanedStr1}\" and \"${cleanedStr2}\".`);\n    return false;\n  }\n}\n\nconst test1_str1 = 'listen';\nconst test1_str2 = 'silent';\nconst result1 = areAnagrams(test1_str1, test1_str2);\nconsole.log(`Test 1: Are \"${test1_str1}\" and \"${test1_str2}\" anagrams? Result: ${result1}`);\n\nconst test2_str1 = 'Hello!';\nconst test2_str2 = 'World';\nconst result2 = areAnagrams(test2_str1, test2_str2);\nconsole.log(`Test 2: Are \"${test2_str1}\" and \"${test2_str2}\" anagrams? Result: ${result2}`);\n\nconst test3_str1 = 'A gentleman';\nconst test3_str2 = 'Elegant man';\nconst result3 = areAnagrams(test3_str1, test3_str2);\nconsole.log(`Test 3: Are \"${test3_str1}\" and \"${test3_str2}\" anagrams? Result: ${result3}`);\n",
+"text_alt": "function areAnagrams(str1, str2) {\n  const cleanAndSort = (str) => {\n    const cleanedStr = str.toLowerCase().replace(/[^a-z0-9]/g, '');\n    const sortedChars = cleanedStr.split('').sort().join('');\n    return sortedChars;\n  };\n\n  const cleanedStr1 = cleanAndSort(str1);\n  const cleanedStr2 = cleanAndSort(str2);\n\n  if (cleanedStr1 === cleanedStr2) {\n    console.log('\"' + str1 + '\" and \"' + str2 + '\" are anagrams.');\n    return true;\n  } else {\n    console.log('\"' + str1 + '\" and \"' + str2 + '\" are not anagrams. Their sorted versions are \"' + cleanedStr1 + '\" and \"' + cleanedStr2 + '\".');\n    return false;\n  }\n}\n\nconst test1_str1 = 'listen';\nconst test1_str2 = 'silent';\nconst result1 = areAnagrams(test1_str1, test1_str2);\nconsole.log('Test 1: Are \"' + test1_str1 + '\" and \"' + test1_str2 + '\" anagrams? Result: ' + result1);\n\nconst test2_str1 = 'Hello!';\nconst test2_str2 = 'World';\nconst result2 = areAnagrams(test2_str1, test2_str2);\nconsole.log('Test 2: Are \"' + test2_str1 + '\" and \"' + test2_str2 + '\" anagrams? Result: ' + result2);\n\nconst test3_str1 = 'A gentleman';\nconst test3_str2 = 'Elegant man';\nconst result3 = areAnagrams(test3_str1, test3_str2);\nconsole.log('Test 3: Are \"' + test3_str1 + '\" and \"' + test3_str2 + '\" anagrams? Result: ' + result3);\n",
 "opps": [
 {
 "k": 0,
-"nat": "`",
-"alt": "\"",
+"nat": "`\"${str1}",
+"alt": "'\"' + str1 + '",
 "nat_span": [
-263,
-264
+367,
+376
 ],
 "alt_span": [
-263,
-264
+367,
+381
 ]
 },
 {
 "k": 1,
-"nat": "\"${normalizedStr1}",
-"alt": "\\\"\" + normalizedStr1 + \"\\",
+"nat": "${str2}",
+"alt": "' + str2 + '",
 "nat_span": [
-294,
-312
+383,
+390
 ],
 "alt_span": [
-294,
-319
+388,
+400
 ]
 },
 {
 "k": 2,
-"nat": "\"${normalizedStr2}\".`",
-"alt": "\\\"\" + normalizedStr2 + \"\\\".\"",
+"nat": "`",
+"alt": "'",
 "nat_span": [
-318,
-339
+405,
+406
 ],
 "alt_span": [
-325,
-353
+415,
+416
 ]
 },
 {
 "k": 3,
 "nat": "`\"${str1}",
-"alt": "\"\\\"\" + str1 + \"\\",
+"alt": "'\"' + str1 + '",
 "nat_span": [
-431,
-440
+453,
+462
 ],
 "alt_span": [
-445,
-461
+463,
+477
 ]
 },
 {
 "k": 4,
-"nat": "\"${str2}",
-"alt": "\\\"\" + str2 + \"\\",
+"nat": "${str2}",
+"alt": "' + str2 + '",
 "nat_span": [
-446,
-454
+469,
+476
 ],
 "alt_span": [
-467,
-482
+484,
+496
 ]
 },
 {
 "k": 5,
-"nat": "`",
-"alt": "\"",
+"nat": "${cleanedStr1}",
+"alt": "' + cleanedStr1 + '",
 "nat_span": [
-469,
-470
+523,
+537
 ],
 "alt_span": [
-497,
-498
+543,
+562
 ]
 },
 {
 "k": 6,
-"nat": "`",
-"alt": "\"",
+"nat": "${cleanedStr2}\".`",
+"alt": "' + cleanedStr2 + '\".'",
 "nat_span": [
-523,
-524
+544,
+561
 ],
 "alt_span": [
-551,
-552
+569,
+591
 ]
 },
 {
 "k": 7,
-"nat": "${",
-"alt": "\" + ",
+"nat": "`",
+"alt": "'",
 "nat_span": [
-536,
-538
+712,
+713
 ],
 "alt_span": [
-564,
-568
+742,
+743
 ]
 },
 {
 "k": 8,
-"nat": "}",
-"alt": " + \"",
+"nat": "${test1_str1}",
+"alt": "' + test1_str1 + '",
 "nat_span": [
-559,
-560
+726,
+739
 ],
 "alt_span": [
-589,
-593
+756,
+774
 ]
 },
 {
 "k": 9,
-"nat": "${",
-"alt": "\" + ",
+"nat": "${test1_str2}",
+"alt": "' + test1_str2 + '",
 "nat_span": [
-565,
-567
+746,
+759
 ],
 "alt_span": [
-598,
-602
+781,
+799
 ]
 },
 {
 "k": 10,
-"nat": "}.`",
-"alt": " + \".\"",
+"nat": "${result1}`",
+"alt": "' + result1",
 "nat_span": [
-588,
-591
+779,
+790
 ],
 "alt_span": [
-623,
-629
+819,
+830
 ]
 },
 {
 "k": 11,
-"nat": "`\"${str1}",
-"alt": "\"\\\"\" + str1 + \"\\",
+"nat": "`",
+"alt": "'",
 "nat_span": [
-609,
-618
+916,
+917
 ],
 "alt_span": [
-647,
-663
+956,
+957
 ]
 },
 {
 "k": 12,
-"nat": "\"${str2}",
-"alt": "\\\"\" + str2 + \"\\",
+"nat": "${test2_str1}",
+"alt": "' + test2_str1 + '",
 "nat_span": [
-624,
-632
+930,
+943
 ],
 "alt_span": [
-669,
-684
+970,
+988
 ]
 },
 {
 "k": 13,
-"nat": "${debugInfo}`",
-"alt": "\" + debugInfo",
+"nat": "${test2_str2}",
+"alt": "' + test2_str2 + '",
 "nat_span": [
-652,
-665
+950,
+963
 ],
 "alt_span": [
-704,
-717
+995,
+1013
 ]
 },
 {
 "k": 14,
-"nat": "`",
-"alt": "\"",
+"nat": "${result2}`",
+"alt": "' + result2",
 "nat_span": [
-759,
-760
+983,
+994
 ],
 "alt_span": [
-811,
-812
+1033,
+1044
 ]
 },
 {
 "k": 15,
-"nat": "${test1Result}`",
-"alt": "\" + test1Result",
+"nat": "`",
+"alt": "'",
 "nat_span": [
-793,
-808
+1131,
+1132
 ],
 "alt_span": [
-845,
-860
+1181,
+1182
 ]
 },
 {
 "k": 16,
-"nat": "`",
-"alt": "\"",
+"nat": "${test3_str1}",
+"alt": "' + test3_str1 + '",
 "nat_span": [
-875,
-876
+1145,
+1158
 ],
 "alt_span": [
-927,
-928
+1195,
+1213
 ]
 },
 {
 "k": 17,
-"nat": "${test2Result}`",
-"alt": "\" + test2Result",
+"nat": "${test3_str2}",
+"alt": "' + test3_str2 + '",
 "nat_span": [
-908,
-923
+1165,
+1178
 ],
 "alt_span": [
-960,
-975
+1220,
+1238
 ]
 },
 {
 "k": 18,
-"nat": "'",
-"alt": "\"",
+"nat": "${result3}`",
+"alt": "' + result3",
 "nat_span": [
-977,
-978
+1198,
+1209
 ],
 "alt_span": [
-1029,
-1030
-]
-},
-{
-"k": 19,
-"nat": "'",
-"alt": "\"",
-"nat_span": [
-996,
-997
-],
-"alt_span": [
-1048,
-1049
-]
-},
-{
-"k": 20,
-"nat": "`",
-"alt": "\"",
-"nat_span": [
-1012,
-1013
-],
-"alt_span": [
-1064,
-1065
-]
-},
-{
-"k": 21,
-"nat": "${test3Result}`",
-"alt": "\" + test3Result",
-"nat_span": [
-1067,
-1082
-],
-"alt_span": [
-1119,
-1134
+1258,
+1269
 ]
 }
 ],
-"k_en": 22,
+"k_en": 19,
 "shared_fraction": 0.885,
 "pass": true,
 "verify": null
@@ -37483,142 +37295,6 @@
 "k_en": 10,
 "shared_fraction": 0.913,
 "pass": true,
-"verify": null
-},
-{
-"doc_id": "js_template__t156",
-"family": "js_template",
-"topic": "Convert Seconds to HH:MM:SS",
-"angle": "code",
-"text_es": "Create a function that converts a total number of seconds into a formatted 'HH:MM:SS' string. Ensure hours, minutes, and seconds are zero-padded. \nFunction signature: `formatSecondsToHMS(totalSeconds)`.\nExample 1: `formatSecondsToHMS(3665)` should return `'01:01:05'`.\nExample 2: `formatSecondsToHMS(60)` should return `'00:01:00'`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "const formatSecondsToHMS = (totalSeconds) => {\n  const hours = Math.floor(totalSeconds / 3600);\n  const remainingAfterHours = totalSeconds % 3600;\n  const minutes = Math.floor(remainingAfterHours / 60);\n  const seconds = remainingAfterHours % 60;\n\n  const pad = (num) => String(num).padStart(2, '0');\n\n  const formattedHours = pad(hours);\n  const formattedMinutes = pad(minutes);\n  const formattedSeconds = pad(seconds);\n\n  if (totalSeconds < 0) {\n    return `Invalid input: ${totalSeconds} is negative.`;\n  }\n\n  const result = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;\n  const displayMessage = `The time is ${result}.`;\n\n  if (hours > 23) {\n    console.warn(`Warning: ${hours} hours exceeds 23, consider larger units.`);\n  }\n\n  return result;\n};\n",
-"text_alt": "const formatSecondsToHMS = (totalSeconds) => {\n  const hours = Math.floor(totalSeconds / 3600);\n  const remainingAfterHours = totalSeconds % 3600;\n  const minutes = Math.floor(remainingAfterHours / 60);\n  const seconds = remainingAfterHours % 60;\n\n  const pad = (num) => String(num).padStart(2, '0');\n\n  const formattedHours = pad(hours);\n  const formattedMinutes = pad(minutes);\n  const formattedSeconds = pad(seconds);\n\n  if (totalSeconds < 0) {\n    return \"Invalid input: \" + totalSeconds + \" is negative.\";\n  }\n\n  const result = formattedHours + \":\" + formattedMinutes + \":\" + formattedSeconds;\n  const displayMessage = \"The time is \" + result + \".\";\n\n  if (hours > 23) {\n    console.warn(\"Warning: \" + hours + \" hours exceeds 23, consider larger units.\");\n  }\n\n  return result;\n};\n",
-"opps": [
-{
-"k": 0,
-"nat": "`",
-"alt": "\"",
-"nat_span": [
-459,
-460
-],
-"alt_span": [
-459,
-460
-]
-},
-{
-"k": 1,
-"nat": "${totalSeconds}",
-"alt": "\" + totalSeconds + \"",
-"nat_span": [
-475,
-490
-],
-"alt_span": [
-475,
-495
-]
-},
-{
-"k": 2,
-"nat": "`",
-"alt": "\"",
-"nat_span": [
-503,
-504
-],
-"alt_span": [
-508,
-509
-]
-},
-{
-"k": 3,
-"nat": "`${formattedHours}:${formattedMinutes}:${formattedSeconds}`",
-"alt": "formattedHours + \":\" + formattedMinutes + \":\" + formattedSeconds",
-"nat_span": [
-528,
-587
-],
-"alt_span": [
-533,
-597
-]
-},
-{
-"k": 4,
-"nat": "`",
-"alt": "\"",
-"nat_span": [
-614,
-615
-],
-"alt_span": [
-624,
-625
-]
-},
-{
-"k": 5,
-"nat": "${result}.`",
-"alt": "\" + result + \".\"",
-"nat_span": [
-627,
-638
-],
-"alt_span": [
-637,
-653
-]
-},
-{
-"k": 6,
-"nat": "`",
-"alt": "\"",
-"nat_span": [
-678,
-679
-],
-"alt_span": [
-693,
-694
-]
-},
-{
-"k": 7,
-"nat": "${hours}",
-"alt": "\" + hours + \"",
-"nat_span": [
-688,
-696
-],
-"alt_span": [
-703,
-716
-]
-},
-{
-"k": 8,
-"nat": "`",
-"alt": "\"",
-"nat_span": [
-737,
-738
-],
-"alt_span": [
-757,
-758
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 0.905,
-"pass": false,
 "verify": null
 },
 {
