@@ -9512,7 +9512,7 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
 - 2026-09-17 top-up to 200 docs per family (user-approved): `code_build.py --target 200` over the 37 short families (1,834 docs), pools grown in
   PARALLEL per language (main() patched; each language's batches stay sequential because every batch lists the existing titles), pool target
   510. 36 families reached 200; css_shorthand stalled at 99 (only 3-repeated-pair hex colours are shortenable → most candidates < 5 opps) →
-  sharper EXTRA_HINT + follow-up run over an 874-task CSS pool (pool growth stalls ~800 as Gemini repeats titles). BUILDER BUG FIXED:
+  sharper EXTRA_HINT + follow-up run over an 874-task CSS pool (pool growth stalls ~800 as Gemini repeats titles) → 200 docs (54 of 60 accepted per chunk), sweep clean. ALL 60 FAMILIES AT 200 DOCS (12,000 pairs). Cues + K = 5 prompts built for qwen25_code (120,000 items). BUILDER BUG FIXED:
   `apply_free` reset `pass` from the free rule alone, letting 2 builder-rejected docs (fence / shared < .6) into pairs — now it can only
   remove a pass; both docs replaced. Sweep of the 59 finished families: 11,800 docs, 0 issues. Lessons: `pkill -f <pattern>` kills the
   calling shell when the pattern is in its own command line — kill by pid; don't set the pool target far above what is needed.
