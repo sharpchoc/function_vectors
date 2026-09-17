@@ -3964,20 +3964,20 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const addLeadingZero = num => (num < 10 ? '0' : '') + num;\n\nconst getYear = date => date.getFullYear();\n\nconst getMonth = date => date.getMonth() + 1;\n\nconst getDay = date => date.getDate();\n\nconst getDateComponents = date => ({\n  year: getYear(date),\n  month: getMonth(date),\n  day: getDay(date)\n});\n\nconst formatComponents = ({ year, month, day }) =>\n  `${year}-${addLeadingZero(month)}-${addLeadingZero(day)}`;\n\nconst getCurrentDateFormatted = () => {\n  const currentDate = new Date();\n  const components = getDateComponents(currentDate);\n  return formatComponents(components);\n};\n\n// Example usage (not part of the solution's required output)\n// console.log(getCurrentDateFormatted());\n",
-"text_alt": "const addLeadingZero = function(num) { return (num < 10 ? '0' : '') + num; };\n\nconst getYear = function(date) { return date.getFullYear(); };\n\nconst getMonth = function(date) { return date.getMonth() + 1; };\n\nconst getDay = function(date) { return date.getDate(); };\n\nconst getDateComponents = function(date) { return ({\n  year: getYear(date),\n  month: getMonth(date),\n  day: getDay(date)\n}); };\n\nconst formatComponents = function({ year, month, day }) { return \\\n  `${year}-${addLeadingZero(month)}-${addLeadingZero(day)}`; };\n\nconst getCurrentDateFormatted = function() {\n  const currentDate = new Date();\n  const components = getDateComponents(currentDate);\n  return formatComponents(components);\n};\n\n// Example usage (not part of the solution's required output)\n// console.log(getCurrentDateFormatted());\n",
+"text_nat": "const padZero = num => num < 10 ? `0${num}` : `${num}`;\n\nconst getFullYear = date => date.getFullYear();\n\nconst getMonth = date => date.getMonth() + 1;\n\nconst getDate = date => date.getDate();\n\nconst createDateParts = date => [\n  getFullYear(date),\n  getMonth(date),\n  getDate(date)\n];\n\nconst formatParts = parts => parts.map(padZero).join('-');\n\nconst getCurrentDateFormatted = () => {\n  const now = new Date();\n  const dateParts = createDateParts(now);\n  return formatParts(dateParts);\n};\n",
+"text_alt": "const padZero = function(num) { return num < 10 ? `0${num}` : `${num}`; };\n\nconst getFullYear = function(date) { return date.getFullYear(); };\n\nconst getMonth = function(date) { return date.getMonth() + 1; };\n\nconst getDate = function(date) { return date.getDate(); };\n\nconst createDateParts = function(date) { return [\n  getFullYear(date),\n  getMonth(date),\n  getDate(date)\n]; };\n\nconst formatParts = function(parts) { return parts.map(padZero).join('-'); };\n\nconst getCurrentDateFormatted = function() {\n  const now = new Date();\n  const dateParts = createDateParts(now);\n  return formatParts(dateParts);\n};\n",
 "opps": [
 {
 "k": 0,
 "nat": "num =>",
 "alt": "function(num) { return",
 "nat_span": [
-23,
-29
+16,
+22
 ],
 "alt_span": [
-23,
-45
+16,
+38
 ]
 },
 {
@@ -3985,12 +3985,12 @@
 "nat": "",
 "alt": " };",
 "nat_span": [
-58,
-58
+55,
+55
 ],
 "alt_span": [
-74,
-77
+71,
+74
 ]
 },
 {
@@ -3998,12 +3998,12 @@
 "nat": "date =>",
 "alt": "function(date) { return",
 "nat_span": [
-76,
-83
+77,
+84
 ],
 "alt_span": [
-95,
-118
+96,
+119
 ]
 },
 {
@@ -4011,12 +4011,12 @@
 "nat": "",
 "alt": "; }",
 "nat_span": [
-102,
-102
+103,
+103
 ],
 "alt_span": [
-137,
-140
+138,
+141
 ]
 },
 {
@@ -4024,12 +4024,12 @@
 "nat": "date =>",
 "alt": "function(date) { return",
 "nat_span": [
-122,
-129
+123,
+130
 ],
 "alt_span": [
-160,
-183
+161,
+184
 ]
 },
 {
@@ -4037,12 +4037,12 @@
 "nat": "",
 "alt": " };",
 "nat_span": [
-150,
-150
+151,
+151
 ],
 "alt_span": [
-204,
-207
+205,
+208
 ]
 },
 {
@@ -4050,12 +4050,12 @@
 "nat": "date =>",
 "alt": "function(date) { return",
 "nat_span": [
-167,
-174
+169,
+176
 ],
 "alt_span": [
-224,
-247
+226,
+249
 ]
 },
 {
@@ -4063,12 +4063,12 @@
 "nat": "",
 "alt": "; }",
 "nat_span": [
-189,
-189
+191,
+191
 ],
 "alt_span": [
-262,
-265
+264,
+267
 ]
 },
 {
@@ -4089,69 +4089,56 @@
 "nat": "",
 "alt": " };",
 "nat_span": [
-300,
-300
+285,
+285
 ],
 "alt_span": [
-392,
-395
+377,
+380
 ]
 },
 {
 "k": 10,
-"nat": "",
-"alt": "function",
+"nat": "parts =>",
+"alt": "function(parts) { return",
 "nat_span": [
-327,
-327
+307,
+315
 ],
 "alt_span": [
-422,
-430
+402,
+426
 ]
 },
 {
 "k": 11,
-"nat": "=>",
-"alt": "{ return \\",
+"nat": "",
+"alt": " };",
 "nat_span": [
-350,
-352
+345,
+345
 ],
 "alt_span": [
-453,
-463
+456,
+459
 ]
 },
 {
 "k": 12,
-"nat": "",
-"alt": " };",
-"nat_span": [
-413,
-413
-],
-"alt_span": [
-524,
-527
-]
-},
-{
-"k": 13,
 "nat": "() =>",
 "alt": "function()",
 "nat_span": [
-447,
-452
+379,
+384
 ],
 "alt_span": [
-561,
-571
+493,
+503
 ]
 }
 ],
-"k_en": 14,
-"shared_fraction": 0.945,
+"k_en": 13,
+"shared_fraction": 0.926,
 "pass": true,
 "verify": null
 },
@@ -33824,142 +33811,233 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const isTie = (c1, c2) => c1 === c2;\n\nconst getWinner = (p1, p2) => {\n    const rules = {\n        'rock': 'scissors',\n        'paper': 'rock',\n        'scissors': 'paper'\n    };\n    return rules[p1] === p2 ? 'Player 1 Wins' : 'Player 2 Wins';\n};\n\nconst playRPSRound = (player1Choice, player2Choice) => {\n    const normalizeChoice = choice => choice.toLowerCase();\n\n    const normalizedP1 = normalizeChoice(player1Choice);\n    const normalizedP2 = normalizeChoice(player2Choice);\n\n    return isTie(normalizedP1, normalizedP2) ? 'It's a Tie!' : getWinner(normalizedP1, normalizedP2);\n};\n",
-"text_alt": "const isTie = function(c1, c2) { return c1 === c2; };\n\nconst getWinner = function(p1, p2) {\n    const rules = {\n        'rock': 'scissors',\n        'paper': 'rock',\n        'scissors': 'paper'\n    };\n    return rules[p1] === p2 ? 'Player 1 Wins' : 'Player 2 Wins';\n};\n\nconst playRPSRound = function(player1Choice, player2Choice) {\n    const normalizeChoice = function(choice) { return choice.toLowerCase(); };\n\n    const normalizedP1 = normalizeChoice(player1Choice);\n    const normalizedP2 = normalizeChoice(player2Choice);\n\n    return isTie(normalizedP1, normalizedP2) ? 'It\\'s a Tie!' : getWinner(normalizedP1, normalizedP2);\n};\n",
+"text_nat": "const playRPSRound = (p1, p2) => {\n  const getWinner = (c1, c2) => {\n    if (c1 === c2) return 'It\\'s a Tie!';\n    const rules = {\n      rock: 'scissors',\n      paper: 'rock',\n      scissors: 'paper',\n    };\n    const player1Wins = rules[c1] === c2;\n    return player1Wins ? 'Player 1 Wins' : 'Player 2 Wins';\n  };\n  const normalizeChoice = choice => choice.toLowerCase();\n  const normalizedP1 = normalizeChoice(p1);\n  const normalizedP2 = normalizeChoice(p2);\n  const isValidChoice = choice => ['rock', 'paper', 'scissors'].includes(choice);\n\n  if (!isValidChoice(normalizedP1) || !isValidChoice(normalizedP2)) {\n    throw new Error('Invalid choice provided. Please choose rock, paper, or scissors.');\n  }\n\n  return getWinner(normalizedP1, normalizedP2);\n};\n\nconst test1 = () => playRPSRound('rock', 'scissors');\nconst test2 = () => playRPSRound('paper', 'paper');\nconst test3 = () => playRPSRound('scissors', 'rock');\n\n// Example usage and results (not part of the solution, just for demonstration):\n// console.log(test1()); // Player 1 Wins\n// console.log(test2()); // It's a Tie!\n// console.log(test3()); // Player 2 Wins\n",
+"text_alt": "const playRPSRound = function(p1, p2) {\n  const getWinner = function(c1, c2) {\n    if (c1 === c2) return 'It\\'s a Tie!';\n    const rules = {\n      rock: 'scissors',\n      paper: 'rock',\n      scissors: 'paper',\n    };\n    const player1Wins = rules[c1] === c2;\n    return player1Wins ? 'Player 1 Wins' : 'Player 2 Wins';\n  };\n  const normalizeChoice = function(choice) { return choice.toLowerCase(); };\n  const normalizedP1 = normalizeChoice(p1);\n  const normalizedP2 = normalizeChoice(p2);\n  const isValidChoice = function(choice) { return ['rock', 'paper', 'scissors'].includes(choice); };\n\n  if (!isValidChoice(normalizedP1) || !isValidChoice(normalizedP2)) {\n    throw new Error('Invalid choice provided. Please choose rock, paper, or scissors.');\n  }\n\n  return getWinner(normalizedP1, normalizedP2);\n};\n\nconst test1 = function() { return playRPSRound('rock', 'scissors'); };\nconst test2 = function() { return playRPSRound('paper', 'paper'); };\nconst test3 = function() { return playRPSRound('scissors', 'rock'); };\n\n// Example usage and results (not part of the solution, just for demonstration):\n// console.log(test1()); // Player 1 Wins\n// console.log(test2()); // It's a Tie!\n// console.log(test3()); // Player 2 Wins\n",
 "opps": [
 {
 "k": 0,
 "nat": "",
 "alt": "function",
 "nat_span": [
-14,
-14
+21,
+21
 ],
 "alt_span": [
-14,
-22
+21,
+29
 ]
 },
 {
 "k": 1,
-"nat": "=>",
-"alt": "{ return",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-23,
-25
+29,
+32
 ],
 "alt_span": [
-31,
-39
+37,
+37
 ]
 },
 {
 "k": 2,
 "nat": "",
-"alt": " };",
+"alt": "function",
 "nat_span": [
-36,
-36
+55,
+55
 ],
 "alt_span": [
-50,
-53
+60,
+68
 ]
 },
 {
 "k": 3,
-"nat": "",
-"alt": "function",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-56,
-56
+63,
+66
 ],
 "alt_span": [
-73,
-81
+76,
+76
 ]
 },
 {
 "k": 4,
-"nat": " =>",
-"alt": "",
+"nat": "choice =>",
+"alt": "function(choice) { return",
 "nat_span": [
-64,
-67
+341,
+350
 ],
 "alt_span": [
-89,
-89
+351,
+376
 ]
 },
 {
 "k": 5,
 "nat": "",
-"alt": "function",
+"alt": "; }",
 "nat_span": [
-268,
-268
+371,
+371
 ],
 "alt_span": [
-290,
-298
+397,
+400
 ]
 },
 {
 "k": 6,
-"nat": " =>",
-"alt": "",
+"nat": "choice =>",
+"alt": "function(choice) { return",
 "nat_span": [
-298,
-301
+485,
+494
 ],
 "alt_span": [
-328,
-328
+514,
+539
 ]
 },
 {
 "k": 7,
-"nat": "choice =>",
-"alt": "function(choice) { return",
+"nat": "",
+"alt": "; }",
 "nat_span": [
-332,
-341
+541,
+541
 ],
 "alt_span": [
-359,
-384
+586,
+589
 ]
 },
 {
 "k": 8,
 "nat": "",
-"alt": "; }",
+"alt": "function",
 "nat_span": [
-362,
-362
+774,
+774
 ],
 "alt_span": [
-405,
-408
+822,
+830
 ]
 },
 {
 "k": 9,
-"nat": "",
-"alt": "\\",
+"nat": "=>",
+"alt": "{ return",
 "nat_span": [
-530,
-530
+777,
+779
 ],
 "alt_span": [
-576,
-577
+833,
+841
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": " };",
+"nat_span": [
+813,
+813
+],
+"alt_span": [
+875,
+878
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "function",
+"nat_span": [
+828,
+828
+],
+"alt_span": [
+893,
+901
+]
+},
+{
+"k": 12,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+831,
+833
+],
+"alt_span": [
+904,
+912
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": " };",
+"nat_span": [
+865,
+865
+],
+"alt_span": [
+944,
+947
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "function",
+"nat_span": [
+880,
+880
+],
+"alt_span": [
+962,
+970
+]
+},
+{
+"k": 15,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+883,
+885
+],
+"alt_span": [
+973,
+981
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+918,
+918
+],
+"alt_span": [
+1014,
+1017
 ]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.954,
+"k_en": 17,
+"shared_fraction": 0.965,
 "pass": true,
 "verify": null
 },

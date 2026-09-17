@@ -13801,6 +13801,155 @@
 "verify": null
 },
 {
+"doc_id": "php_array__t063",
+"family": "php_array",
+"topic": "String Anagram Check",
+"angle": "code",
+"text_es": "Create a function `areAnagrams` that determines if two given strings are anagrams of each other. Case-insensitivity and ignoring non-alphabetic characters should be handled. The function should return a boolean.\n\nExample 1: `areAnagrams('listen', 'silent')` should return `true`.\nExample 2: `areAnagrams('hello', 'world')` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "PHP"
+},
+"text_nat": "<?php\n\nfunction areAnagrams(string $str1, string $str2): bool\n{\n    $chars1 = [];\n    $chars2 = [];\n    $cleanedStr1 = preg_replace('/[^a-zA-Z]/', '', strtolower($str1));\n    $cleanedStr2 = preg_replace('/[^a-zA-Z]/', '', strtolower($str2));\n\n    if (strlen($cleanedStr1) !== strlen($cleanedStr2)) {\n        return false;\n    }\n\n    foreach (str_split($cleanedStr1) as $char) {\n        $chars1[$char] = ($chars1[$char] ?? 0) + 1;\n    }\n    \n    $commonChars = ['a', 'e', 'i', 'o', 'u'];\n    $vowelCounts = [];\n\n    foreach (str_split($cleanedStr2) as $char) {\n        $chars2[$char] = ($chars2[$char] ?? 0) + 1;\n        if (in_array($char, $commonChars)) {\n            $vowelCounts[$char] = ($vowelCounts[$char] ?? 0) + 1;\n        }\n    }\n\n    $uniqueCharsStr1 = array_keys($chars1);\n    $uniqueCharsStr2 = array_keys($chars2);\n\n    $diff1 = array_diff($uniqueCharsStr1, $uniqueCharsStr2);\n    $diff2 = array_diff($uniqueCharsStr2, $uniqueCharsStr1);\n    \n    $emptyArray = [];\n\n    if (!empty($diff1) || !empty($diff2)) {\n        return false;\n    }\n\n    $result = true;\n    foreach ($chars1 as $char => $count) {\n        $checkArray = []; // Another array\n        if (($chars2[$char] ?? 0) !== $count) {\n            $result = false;\n            break;\n        }\n    }\n\n    $test = []; // One more array\n    $numericKeys = [0, 1, 2];\n    \n    return $result;\n}\n",
+"text_alt": "<?php\n\nfunction areAnagrams(string $str1, string $str2): bool\n{\n    $chars1 = array();\n    $chars2 = array();\n    $cleanedStr1 = preg_replace('/[^a-zA-Z]/', '', strtolower($str1));\n    $cleanedStr2 = preg_replace('/[^a-zA-Z]/', '', strtolower($str2));\n\n    if (strlen($cleanedStr1) !== strlen($cleanedStr2)) {\n        return false;\n    }\n\n    foreach (str_split($cleanedStr1) as $char) {\n        $chars1[$char] = ($chars1[$char] ?? 0) + 1;\n    }\n    \n    $commonChars = array('a', 'e', 'i', 'o', 'u');\n    $vowelCounts = array();\n\n    foreach (str_split($cleanedStr2) as $char) {\n        $chars2[$char] = ($chars2[$char] ?? 0) + 1;\n        if (in_array($char, $commonChars)) {\n            $vowelCounts[$char] = ($vowelCounts[$char] ?? 0) + 1;\n        }\n    }\n\n    $uniqueCharsStr1 = array_keys($chars1);\n    $uniqueCharsStr2 = array_keys($chars2);\n\n    $diff1 = array_diff($uniqueCharsStr1, $uniqueCharsStr2);\n    $diff2 = array_diff($uniqueCharsStr2, $uniqueCharsStr1);\n    \n    $emptyArray = array();\n\n    if (!empty($diff1) || !empty($diff2)) {\n        return false;\n    }\n\n    $result = true;\n    foreach ($chars1 as $char => $count) {\n        $checkArray = array(); // Another array\n        if (($chars2[$char] ?? 0) !== $count) {\n            $result = false;\n            break;\n        }\n    }\n\n    $test = array(); // One more array\n    $numericKeys = array(0, 1, 2);\n    \n    return $result;\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "[]",
+"alt": "array()",
+"nat_span": [
+78,
+80
+],
+"alt_span": [
+78,
+85
+]
+},
+{
+"k": 1,
+"nat": "[]",
+"alt": "array()",
+"nat_span": [
+96,
+98
+],
+"alt_span": [
+101,
+108
+]
+},
+{
+"k": 2,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+460,
+461
+],
+"alt_span": [
+470,
+476
+]
+},
+{
+"k": 3,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+484,
+485
+],
+"alt_span": [
+499,
+500
+]
+},
+{
+"k": 4,
+"nat": "[]",
+"alt": "array()",
+"nat_span": [
+506,
+508
+],
+"alt_span": [
+521,
+528
+]
+},
+{
+"k": 5,
+"nat": "[]",
+"alt": "array()",
+"nat_span": [
+974,
+976
+],
+"alt_span": [
+994,
+1001
+]
+},
+{
+"k": 6,
+"nat": "[]",
+"alt": "array()",
+"nat_span": [
+1137,
+1139
+],
+"alt_span": [
+1162,
+1169
+]
+},
+{
+"k": 7,
+"nat": "[]",
+"alt": "array()",
+"nat_span": [
+1283,
+1285
+],
+"alt_span": [
+1313,
+1320
+]
+},
+{
+"k": 8,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+1324,
+1325
+],
+"alt_span": [
+1359,
+1365
+]
+},
+{
+"k": 9,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+1332,
+1333
+],
+"alt_span": [
+1372,
+1373
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.97,
+"pass": true,
+"verify": null
+},
+{
 "doc_id": "php_array__t064",
 "family": "php_array",
 "topic": "ISBN-10 Validation (Basic)",
@@ -15898,246 +16047,6 @@
 ],
 "k_en": 21,
 "shared_fraction": 0.936,
-"pass": true,
-"verify": null
-},
-{
-"doc_id": "php_array__t074",
-"family": "php_array",
-"topic": "Simple Text Word Wrap",
-"angle": "code",
-"text_es": "Implement a function `wordWrap` that takes a string and a line length, and returns the string wrapped to that length. Words should not be broken. Use newline characters for wrapping. The function should return a string.\n\nExample 1: `wordWrap('This is a test string', 10)` should return `'This is a\ntest\nstring'`.\nExample 2: `wordWrap('Hello world', 5)` should return `'Hello\nworld'`.",
-"langs": {
-"src": "Task",
-"tgt": "PHP"
-},
-"text_nat": "<?php\n\nfunction wordWrap(string $text, int $lineLength): string {\n    $words = explode(' ', $text);\n    $lines = [];\n    $currentLine = '';\n\n    foreach ($words as $word) {\n        if (strlen($currentLine) + strlen($word) + (empty($currentLine) ? 0 : 1) > $lineLength) {\n            if (!empty($currentLine)) {\n                $lines[] = $currentLine;\n            }\n            $currentLine = $word;\n        } else {\n            $currentLine .= (empty($currentLine) ? '' : ' ') . $word;\n        }\n    }\n\n    if (!empty($currentLine)) {\n        $lines[] = $currentLine;\n    }\n\n    $separators = [\"\\n\"];\n    $glue = $separators[0];\n    return implode($glue, $lines);\n}\n\n// Example usage and tests\n$testCases = [\n    ['text' => 'This is a test string', 'length' => 10, 'expected' => 'This is a\ntest\nstring'],\n    ['text' => 'Hello world', 'length' => 5, 'expected' => 'Hello\nworld'],\n    ['text' => 'Short', 'length' => 10, 'expected' => 'Short'],\n    ['text' => 'Longword', 'length' => 3, 'expected' => 'Longword'],\n    ['text' => 'One Two Three Four', 'length' => 7, 'expected' => 'One Two\nThree\nFour'],\n];\n\nforeach ($testCases as $case) {\n    $result = wordWrap($case['text'], $case['length']);\n    $status = ($result === $case['expected']) ? 'PASSED' : 'FAILED';\n    $details = [\n        'Input' => $case['text'],\n        'Length' => $case['length'],\n        'Expected' => $case['expected'],\n        'Actual' => $result,\n        'Status' => $status,\n    ];\n    // This array is intentionally not using short syntax for variation.\n    print_r($details);\n}\n\n$anotherExample = wordWrap('This is a longer sentence to test array usage consistency.', 15);\n$additionalInfo = ['Final Result' => $anotherExample, 'Length' => strlen($anotherExample)];\nprint_r($additionalInfo);\n\n$emptyStringTest = wordWrap('', 10);\n$emptyResult = ['Empty Test' => $emptyStringTest];\nprint_r($emptyResult);\n\n$singleWordTest = wordWrap('Word', 2);\n$singleResult = ['Single Word Test' => $singleWordTest];\nprint_r($singleResult);\n\n?>\n",
-"text_alt": "<?php\n\nfunction wordWrap(string $text, int $lineLength): string {\n    $words = explode(' ', $text);\n    $lines = array();\n    $currentLine = '';\n\n    foreach ($words as $word) {\n        if (strlen($currentLine) + strlen($word) + (empty($currentLine) ? 0 : 1) > $lineLength) {\n            if (!empty($currentLine)) {\n                $lines[] = $currentLine;\n            }\n            $currentLine = $word;\n        } else {\n            $currentLine .= (empty($currentLine) ? '' : ' ') . $word;\n        }\n    }\n\n    if (!empty($currentLine)) {\n        $lines[] = $currentLine;\n    }\n\n    $separators = array(\"\\n\");\n    $glue = $separators[0];\n    return implode($glue, $lines);\n}\n\n// Example usage and tests\n$testCases = array(\n    array('text' => 'This is a test string', 'length' => 10, 'expected' => 'This is a\ntest\nstring'),\n    array('text' => 'Hello world', 'length' => 5, 'expected' => 'Hello\nworld'),\n    array('text' => 'Short', 'length' => 10, 'expected' => 'Short'),\n    array('text' => 'Longword', 'length' => 3, 'expected' => 'Longword'),\n    array('text' => 'One Two Three Four', 'length' => 7, 'expected' => 'One Two\nThree\nFour'),\n);\n\nforeach ($testCases as $case) {\n    $result = wordWrap($case['text'], $case['length']);\n    $status = ($result === $case['expected']) ? 'PASSED' : 'FAILED';\n    $details = array(\n        'Input' => $case['text'],\n        'Length' => $case['length'],\n        'Expected' => $case['expected'],\n        'Actual' => $result,\n        'Status' => $status,\n    );\n    // This array is intentionally not using short syntax for variation.\n    print_r($details);\n}\n\n$anotherExample = wordWrap('This is a longer sentence to test array usage consistency.', 15);\n$additionalInfo = array('Final Result' => $anotherExample, 'Length' => strlen($anotherExample));\nprint_r($additionalInfo);\n\n$emptyStringTest = wordWrap('', 10);\n$emptyResult = array('Empty Test' => $emptyStringTest);\nprint_r($emptyResult);\n\n$singleWordTest = wordWrap('Word', 2);\n$singleResult = array('Single Word Test' => $singleWordTest);\nprint_r($singleResult);\n\n?>\n",
-"opps": [
-{
-"k": 0,
-"nat": "[]",
-"alt": "array()",
-"nat_span": [
-113,
-115
-],
-"alt_span": [
-113,
-120
-]
-},
-{
-"k": 1,
-"nat": "[",
-"alt": "array(",
-"nat_span": [
-594,
-595
-],
-"alt_span": [
-599,
-605
-]
-},
-{
-"k": 2,
-"nat": "]",
-"alt": ")",
-"nat_span": [
-599,
-600
-],
-"alt_span": [
-609,
-610
-]
-},
-{
-"k": 3,
-"nat": "[\n    [",
-"alt": "array(\n    array(",
-"nat_span": [
-708,
-715
-],
-"alt_span": [
-718,
-735
-]
-},
-{
-"k": 4,
-"nat": "],\n    [",
-"alt": "),\n    array(",
-"nat_span": [
-803,
-811
-],
-"alt_span": [
-823,
-836
-]
-},
-{
-"k": 5,
-"nat": "],\n    [",
-"alt": "),\n    array(",
-"nat_span": [
-878,
-886
-],
-"alt_span": [
-903,
-916
-]
-},
-{
-"k": 6,
-"nat": "],\n    [",
-"alt": "),\n    array(",
-"nat_span": [
-942,
-950
-],
-"alt_span": [
-972,
-985
-]
-},
-{
-"k": 7,
-"nat": "],\n    [",
-"alt": "),\n    array(",
-"nat_span": [
-1011,
-1019
-],
-"alt_span": [
-1046,
-1059
-]
-},
-{
-"k": 8,
-"nat": "],\n]",
-"alt": "),\n)",
-"nat_span": [
-1100,
-1104
-],
-"alt_span": [
-1140,
-1144
-]
-},
-{
-"k": 9,
-"nat": "[",
-"alt": "array(",
-"nat_span": [
-1279,
-1280
-],
-"alt_span": [
-1319,
-1325
-]
-},
-{
-"k": 10,
-"nat": "]",
-"alt": ")",
-"nat_span": [
-1455,
-1456
-],
-"alt_span": [
-1500,
-1501
-]
-},
-{
-"k": 11,
-"nat": "[",
-"alt": "array(",
-"nat_span": [
-1669,
-1670
-],
-"alt_span": [
-1714,
-1720
-]
-},
-{
-"k": 12,
-"nat": "]",
-"alt": ")",
-"nat_span": [
-1740,
-1741
-],
-"alt_span": [
-1790,
-1791
-]
-},
-{
-"k": 13,
-"nat": "[",
-"alt": "array(",
-"nat_span": [
-1822,
-1823
-],
-"alt_span": [
-1872,
-1878
-]
-},
-{
-"k": 14,
-"nat": "]",
-"alt": ")",
-"nat_span": [
-1855,
-1856
-],
-"alt_span": [
-1910,
-1911
-]
-},
-{
-"k": 15,
-"nat": "[",
-"alt": "array(",
-"nat_span": [
-1937,
-1938
-],
-"alt_span": [
-1992,
-1998
-]
-},
-{
-"k": 16,
-"nat": "]",
-"alt": ")",
-"nat_span": [
-1975,
-1976
-],
-"alt_span": [
-2035,
-2036
-]
-}
-],
-"k_en": 17,
-"shared_fraction": 0.972,
 "pass": true,
 "verify": null
 },

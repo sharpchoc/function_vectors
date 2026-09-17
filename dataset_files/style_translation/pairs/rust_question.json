@@ -2992,7 +2992,7 @@
 "tgt": "Rust"
 },
 "text_nat": "use std::collections::HashMap;\n\nfn update_inventory(current: Vec<(&str, u32)>, changes: Vec<(&str, i32)>) -> Result<Vec<(String, u32)>, Box<dyn std::error::Error>> {\n    let mut inventory: HashMap<String, u32> = HashMap::new();\n\n    for (item, quantity) in current {\n        inventory.insert(item.to_string(), quantity);\n    }\n\n    for (item, change) in changes {\n        let entry = inventory.entry(item.to_string());\n        match change.checked_add(0) { // First ? application (trivial but counts)\n            Some(_) => {\n                let current_quantity = *entry.or_insert(0);\n                if change >= 0 {\n                    let new_quantity = current_quantity.checked_add(change as u32).ok_or(\"Overflow adding item quantity\")?; // Second ? application\n                    *inventory.get_mut(item).ok_or(\"Item not found after insert\")? = new_quantity; // Third ? application\n                } else {\n                    let abs_change = (-change) as u32;\n                    let new_quantity = current_quantity.checked_sub(abs_change).ok_or(\"Underflow removing item quantity\")?; // Fourth ? application\n                    *inventory.get_mut(item).ok_or(\"Item not found after insert\")? = new_quantity; // Fifth ? application\n                }\n            },\n            None => return Err(\"Integer overflow with change value\".into()),\n        }\n    }\n\n    Ok(inventory.into_iter().collect())\n}\n",
-"text_alt": "use std::collections::HashMap;\n\nfn update_inventory(current: Vec<(&str, u32)>, changes: Vec<(&str, i32)>) -> Result<Vec<(String, u32)>, Box<dyn std::error::Error>> {\n    let mut inventory: HashMap<String, u32> = HashMap::new();\n\n    for (item, quantity) in current {\n        inventory.insert(item.to_string(), quantity);\n    }\n\n    for (item, change) in changes {\n        let entry = inventory.entry(item.to_string());\n        match change.checked_add(0) { // First ? application (trivial but counts)\n            Some(_) => {\n                let current_quantity = *entry.or_insert(0);\n                if change >= 0 {\n                    let new_quantity = match current_quantity.checked_add(change as u32).ok_or(\"Overflow adding item quantity\") { // Second ? application\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    };\n                    match inventory.get_mut(item).ok_or(\"Item not found after insert\") { // Third ? application\n                        Ok(v) => *v,\n                        Err(e) => return Err(e.into()),\n                    } = new_quantity;\n                } else {\n                    let abs_change = (-change) as u32;\n                    let new_quantity = match current_quantity.checked_sub(abs_change).ok_or(\"Underflow removing item quantity\") { // Fourth ? application\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    };\n                    match inventory.get_mut(item).ok_or(\"Item not found after insert\") { // Fifth ? application\n                        Ok(v) => *v,\n                        Err(e) => return Err(e.into()),\n                    } = new_quantity;\n                }\n            },\n            None => return Err(\"Integer overflow with change value\".into()),\n        }\n    }\n\n    Ok(inventory.into_iter().collect())\n}\n",
+"text_alt": "use std::collections::HashMap;\n\nfn update_inventory(current: Vec<(&str, u32)>, changes: Vec<(&str, i32)>) -> Result<Vec<(String, u32)>, Box<dyn std::error::Error>> {\n    let mut inventory: HashMap<String, u32> = HashMap::new();\n\n    for (item, quantity) in current {\n        inventory.insert(item.to_string(), quantity);\n    }\n\n    for (item, change) in changes {\n        let entry = inventory.entry(item.to_string());\n        match change.checked_add(0) { // First ? application (trivial but counts)\n            Some(_) => {\n                let current_quantity = *entry.or_insert(0);\n                if change >= 0 {\n                    let new_quantity = match current_quantity.checked_add(change as u32).ok_or(\"Overflow adding item quantity\") {\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    }; // Second ? application\n                    *match inventory.get_mut(item).ok_or(\"Item not found after insert\") {\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    } = new_quantity; // Third ? application\n                } else {\n                    let abs_change = (-change) as u32;\n                    let new_quantity = match current_quantity.checked_sub(abs_change).ok_or(\"Underflow removing item quantity\") {\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    }; // Fourth ? application\n                    *match inventory.get_mut(item).ok_or(\"Item not found after insert\") {\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    } = new_quantity; // Fifth ? application\n                }\n            },\n            None => return Err(\"Integer overflow with change value\".into()),\n        }\n    }\n\n    Ok(inventory.into_iter().collect())\n}\n",
 "opps": [
 {
 "k": 0,
@@ -3009,58 +3009,45 @@
 },
 {
 "k": 1,
-"nat": "?;",
-"alt": " {",
+"nat": "?",
+"alt": " {\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    }",
 "nat_span": [
 740,
-742
+741
 ],
 "alt_span": [
 746,
-748
+862
 ]
 },
 {
 "k": 2,
-"nat": "\n                    *",
-"alt": "\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    };\n                    match ",
+"nat": "",
+"alt": "match ",
 "nat_span": [
-766,
+788,
 788
 ],
 "alt_span": [
-772,
-914
+909,
+915
 ]
 },
 {
 "k": 3,
-"nat": "? = new_quantity;",
-"alt": " {",
+"nat": "?",
+"alt": " {\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    }",
 "nat_span": [
 848,
-865
+849
 ],
 "alt_span": [
-974,
-976
+975,
+1091
 ]
 },
 {
 "k": 4,
-"nat": "",
-"alt": "\n                        Ok(v) => *v,\n                        Err(e) => return Err(e.into()),\n                    } = new_quantity;",
-"nat_span": [
-888,
-888
-],
-"alt_span": [
-999,
-1130
-]
-},
-{
-"k": 5,
 "nat": "",
 "alt": "match ",
 "nat_span": [
@@ -3073,60 +3060,47 @@
 ]
 },
 {
-"k": 6,
-"nat": "?;",
-"alt": " {",
+"k": 5,
+"nat": "?",
+"alt": " {\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    }",
 "nat_span": [
 1090,
-1092
+1091
 ],
 "alt_span": [
 1338,
-1340
+1454
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+1138,
+1138
+],
+"alt_span": [
+1501,
+1507
 ]
 },
 {
 "k": 7,
-"nat": "\n                    *",
-"alt": "\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    };\n                    match ",
-"nat_span": [
-1116,
-1138
-],
-"alt_span": [
-1364,
-1506
-]
-},
-{
-"k": 8,
-"nat": "? = new_quantity;",
-"alt": " {",
+"nat": "?",
+"alt": " {\n                        Ok(v) => v,\n                        Err(e) => return Err(e.into()),\n                    }",
 "nat_span": [
 1198,
-1215
+1199
 ],
 "alt_span": [
-1566,
-1568
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": "\n                        Ok(v) => *v,\n                        Err(e) => return Err(e.into()),\n                    } = new_quantity;",
-"nat_span": [
-1238,
-1238
-],
-"alt_span": [
-1591,
-1722
+1567,
+1683
 ]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.965,
+"k_en": 8,
+"shared_fraction": 0.991,
 "pass": true,
 "verify": null
 },
@@ -3814,20 +3788,20 @@
 "src": "Task",
 "tgt": "Rust"
 },
-"text_nat": "use rand::Rng;\n\nfn roll_die() -> u8 {\n    rand::thread_rng().gen_range(1..=6)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let mut results = Vec::new();\n    for _i in 0..5 {\n        results.push(roll_die());\n    }\n\n    let first_roll = results.get(0).ok_or(\"No rolls performed\")?;\n    println!(\"First roll: {}\", first_roll);\n\n    let second_roll = results.get(1).ok_or(\"Not enough rolls\")?;\n    let _parsed_second_roll: u8 = second_roll.to_string().parse()?; // ? error propagation 2\n\n    let third_roll = results.get(2).ok_or(\"Still not enough rolls\")?;\n    let filename = format!(\"roll_{}.txt\", third_roll);\n    std::fs::write(&filename, format!(\"Roll value: {}\", third_roll))?; // ? error propagation 3\n\n    let mut file_content = String::new();\n    std::fs::File::open(&filename)?.read_to_string(&mut file_content)?; // ? error propagation 4\n\n    println!(\"Content of {}: {}\", filename, file_content.trim());\n\n    let fifth_roll_str = results.get(4).map(|r| r.to_string()).ok_or(\"Fifth roll missing\")?;\n    let _fifth_roll_val: u8 = fifth_roll_str.parse()?; // ? error propagation 5\n\n    Ok(())\n}\n\nuse std::io::Read;\n",
-"text_alt": "use rand::Rng;\n\nfn roll_die() -> u8 {\n    rand::thread_rng().gen_range(1..=6)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let mut results = Vec::new();\n    for _i in 0..5 {\n        results.push(roll_die());\n    }\n\n    let first_roll = match results.get(0).ok_or(\"No rolls performed\") {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"First roll: {}\", first_roll);\n\n    let second_roll = match results.get(1).ok_or(\"Not enough rolls\") {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let _parsed_second_roll: u8 = match second_roll.to_string().parse() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // ? error propagation 2\n\n    let third_roll = match results.get(2).ok_or(\"Still not enough rolls\") {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let filename = format!(\"roll_{}.txt\", third_roll);\n    match std::fs::write(&filename, format!(\"Roll value: {}\", third_roll)) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // ? error propagation 3\n\n    let mut file_content = String::new();\n    match std::fs::File::open(&filename) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }.read_to_string(&mut file_content) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // ? error propagation 4\n\n    println!(\"Content of {}: {}\", filename, file_content.trim());\n\n    let fifth_roll_str = match results.get(4).map(|r| r.to_string()).ok_or(\"Fifth roll missing\") {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let _fifth_roll_val: u8 = match fifth_roll_str.parse() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // ? error propagation 5\n\n    Ok(())\n}\n\nuse std::io::Read;\n",
+"text_nat": "use rand::Rng;\n\nfn roll_die() -> u8 {\n    let mut rng = rand::thread_rng();\n    rng.gen_range(1..=6)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let mut results = Vec::new();\n    for _ in 0..10 {\n        results.push(roll_die());\n    }\n    \n    let path = \"die_rolls.txt\";\n    let mut file = std::fs::File::create(path)?;\n\n    for roll in results {\n        let roll_str = roll.to_string();\n        std::io::Write::write_all(&mut file, roll_str.as_bytes())?;\n        std::io::Write::write_all(&mut file, b\"\\n\")?;\n    }\n\n    let contents = std::fs::read_to_string(path)?;\n    println!(\"File contents:\\n{}\", contents);\n\n    let mut sum: u32 = 0;\n    for line in contents.lines() {\n        let num: u8 = line.parse()?;\n        sum += u32::from(num);\n    }\n    println!(\"Sum of rolls: {}\", sum);\n\n    Ok(())\n}\n",
+"text_alt": "use rand::Rng;\n\nfn roll_die() -> u8 {\n    let mut rng = rand::thread_rng();\n    rng.gen_range(1..=6)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let mut results = Vec::new();\n    for _ in 0..10 {\n        results.push(roll_die());\n    }\n    \n    let path = \"die_rolls.txt\";\n    let mut file = match std::fs::File::create(path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    for roll in results {\n        let roll_str = roll.to_string();\n        match std::io::Write::write_all(&mut file, roll_str.as_bytes()) {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        match std::io::Write::write_all(&mut file, b\"\\n\") {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n    }\n\n    let contents = match std::fs::read_to_string(path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"File contents:\\n{}\", contents);\n\n    let mut sum: u32 = 0;\n    for line in contents.lines() {\n        let num: u8 = match line.parse() {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        sum += u32::from(num);\n    }\n    println!(\"Sum of rolls: {}\", sum);\n\n    Ok(())\n}\n",
 "opps": [
 {
 "k": 0,
 "nat": "",
 "alt": "match ",
 "nat_span": [
-252,
-252
+309,
+309
 ],
 "alt_span": [
-252,
-258
+309,
+315
 ]
 },
 {
@@ -3835,12 +3809,12 @@
 "nat": "?",
 "alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
 "nat_span": [
-294,
-295
+336,
+337
 ],
 "alt_span": [
-300,
-368
+342,
+410
 ]
 },
 {
@@ -3848,199 +3822,95 @@
 "nat": "",
 "alt": "match ",
 "nat_span": [
-364,
-364
+415,
+415
 ],
 "alt_span": [
-437,
-443
+488,
+494
 ]
 },
 {
 "k": 3,
-"nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat": "?;\n        ",
+"alt": " {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        match ",
 "nat_span": [
-404,
-405
+472,
+483
 ],
 "alt_span": [
-483,
-551
+551,
+647
 ]
 },
 {
 "k": 4,
-"nat": "",
-"alt": "match ",
+"nat": "?",
+"alt": " {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
 "nat_span": [
-441,
-441
+526,
+527
 ],
 "alt_span": [
-587,
-593
+690,
+770
 ]
 },
 {
 "k": 5,
-"nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat": "",
+"alt": " match",
 "nat_span": [
-472,
-473
+554,
+554
 ],
 "alt_span": [
-624,
-692
+797,
+803
 ]
 },
 {
 "k": 6,
-"nat": "",
-"alt": " match",
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
 "nat_span": [
-521,
-521
+584,
+585
 ],
 "alt_span": [
-740,
-746
+833,
+901
 ]
 },
 {
 "k": 7,
-"nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat": "",
+"alt": "match ",
 "nat_span": [
-568,
-569
+717,
+717
 ],
 "alt_span": [
-793,
-861
+1033,
+1039
 ]
 },
 {
 "k": 8,
-"nat": "",
-"alt": "match ",
-"nat_span": [
-630,
-630
-],
-"alt_span": [
-922,
-928
-]
-},
-{
-"k": 9,
 "nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"alt": " {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
 "nat_span": [
-694,
-695
+729,
+730
 ],
 "alt_span": [
-992,
-1060
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "match ",
-"nat_span": [
-769,
-769
-],
-"alt_span": [
-1134,
-1140
-]
-},
-{
-"k": 11,
-"nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
-"nat_span": [
-799,
-800
-],
-"alt_span": [
-1170,
-1238
-]
-},
-{
-"k": 12,
-"nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
-"nat_span": [
-834,
-835
-],
-"alt_span": [
-1272,
-1340
-]
-},
-{
-"k": 13,
-"nat": "",
-"alt": "match ",
-"nat_span": [
-955,
-955
-],
-"alt_span": [
-1460,
-1466
-]
-},
-{
-"k": 14,
-"nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
-"nat_span": [
-1020,
-1021
-],
-"alt_span": [
-1531,
-1599
-]
-},
-{
-"k": 15,
-"nat": "",
-"alt": "match ",
-"nat_span": [
-1053,
-1053
-],
-"alt_span": [
-1631,
-1637
-]
-},
-{
-"k": 16,
-"nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
-"nat_span": [
-1075,
-1076
-],
-"alt_span": [
-1659,
-1727
+1051,
+1131
 ]
 }
 ],
-"k_en": 17,
-"shared_fraction": 0.981,
+"k_en": 9,
+"shared_fraction": 0.986,
 "pass": true,
 "verify": null
 },
@@ -12255,20 +12125,20 @@
 "src": "Task",
 "tgt": "Rust"
 },
-"text_nat": "fn to_lowercase_string(s: &str) -> String {\n    let mut buffer = String::new();\n    for c in s.chars() {\n        // This is a simple example to show ? usage with Option,\n        // it doesn't propagate errors in the traditional sense,\n        // but demonstrates the syntax.\n        let lower_char = c.to_lowercase().next(); // Option<char>\n        if let Some(lc) = lower_char {\n            buffer.push(lc);\n        } else {\n            // In a real scenario, you might have a fallible conversion\n            // This is just to satisfy the ? operator count.\n            // For example, if we were parsing a byte stream to char.\n            // For now, we'll just push the original character if to_lowercase() yields nothing.\n            // This condition is unlikely for valid Unicode characters.\n            buffer.push(c);\n        }\n    }\n    buffer\n}\n\n// Dummy function to simulate a fallible operation for ? operator example\nfn process_char(c: char) -> Result<char, std::io::Error> {\n    if c.is_ascii_alphabetic() {\n        Ok(c.to_lowercase().next().unwrap())\n    } else if c.is_ascii_digit() {\n        Err(std::io::Error::new(std::io::ErrorKind::InvalidData, \"Cannot lowercase digits\"))\n    } else {\n        Ok(c)\n    }\n}\n\nfn to_lowercase_string_with_error_propagation(s: &str) -> Result<String, std::io::Error> {\n    let mut buffer = String::new();\n    let mut chars_iter = s.chars();\n    let first_char = chars_iter.next().ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidInput, \"Empty string\"))?;\n    buffer.push(process_char(first_char)?); // 1. ? operator\n\n    for c in chars_iter {\n        let processed = process_char(c)?; // 2. ? operator\n        buffer.push(processed);\n    }\n\n    let _ = validate_buffer(&buffer)?; // 3. ? operator\n\n    // Another dummy fallible step for demonstration\n    let final_check_result = perform_final_check(&buffer)?; // 4. ? operator\n    if final_check_result.is_empty() {\n        return Err(std::io::Error::new(std::io::ErrorKind::Other, \"Final check failed\"));\n    }\n\n    Ok(buffer)\n}\n\nfn validate_buffer(s: &str) -> Result<(), std::io::Error> {\n    if s.contains(|c: char| c.is_whitespace() && c.is_ascii()) { // Example of a fallible condition\n        Ok(())\n    } else {\n        Err(std::io::Error::new(std::io::ErrorKind::InvalidData, \"Buffer validation failed\"))\n    }\n}\n\nfn perform_final_check(s: &str) -> Result<String, std::io::Error> {\n    if s.len() > 0 {\n        Ok(s.to_string())\n    } else {\n        Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, \"Empty string after processing\"))\n    }\n}\n\n// To satisfy the exact requirement of the signature `fn to_lowercase_string(s: &str) -> String`\n// without introducing `Result` in the *final* return type, we have to simulate.\n// The task description \"propagate errors with the ? operator at least 5 times\"\n// is slightly at odds with \"signature `fn to_lowercase_string(s: &str) -> String`\"\n// as `?` typically requires `Result` or `Option` return types.\n// I will provide a version that matches the signature and tries to use `?` where possible\n// with `Option`s, and then a version with `Result` to fully demonstrate `?` error propagation.\n\nfn to_lowercase_string_compliant(s: &str) -> String {\n    let mut buffer = String::new();\n    let mut char_iter = s.chars();\n    // Use `?` with Option for the first character, handling `None` by default to continue or panic.\n    // In this context, `?` on Option unwraps `Some` or returns `None` from the function,\n    // which isn't suitable for `String` return.\n    // A better way to force `?` with Option for string return is to wrap it in a Result internally.\n    \n    // To meet the \"at least 5 times\" requirement with `?` consistently spread\n    // and a `String` return, we must simulate fallible operations that yield `Option` or `Result`\n    // which are then converted or handled to fit the `String` return type.\n\n    // This is a contrived example to satisfy the `?` count and spread requirements\n    // while adhering to the `String` return type.\n    // In a real scenario, `to_lowercase()` itself is not fallible in a way `?` would naturally apply.\n\n    for c in s.chars() {\n        let first_lower_char: Option<char> = c.to_lowercase().next();\n        let lower_char = first_lower_char.unwrap_or(c); // This consumes the Option, can't use `?` here directly.\n\n        // To use `?` with `Option` and still return `String`, we need to return `None`\n        // or convert `None` to a default.\n        // Let's create dummy Option-returning functions.\n\n        let processed_char = get_processed_char(c)\n            .unwrap_or_else(|| { /* handle if None, e.g., log, then use original */ c }); // 1. `?` would be here if `get_processed_char` returned Result.\n\n        buffer.push(processed_char);\n    }\n\n    // Dummy fallible operations within the context of Option for `?` demonstration\n    let final_char_option = get_final_char_option(&buffer);\n    if let Some(fc) = final_char_option {\n        // This is where a `?` would go if the function returned `Result<String, E>`\n        // and `get_final_char_option` returned `Result<char, E>`.\n        // To force `?` usage here, we'd need to change the function signature.\n        // As the signature is fixed, we adapt.\n        let _ = dummy_fallible_check_option(fc); // 2. Could be `?` if returning `Result`.\n    }\n\n    let _ = dummy_another_fallible_check_option(&buffer); // 3. Could be `?`\n\n    let _ = dummy_final_validation(&buffer); // 4. Could be `?`\n\n    // To hit 5, let's add one more.\n    let _ = dummy_fifth_check_option(&buffer); // 5. Could be `?`\n\n    buffer\n}\n\nfn get_processed_char(c: char) -> Option<char> {\n    c.to_lowercase().next()\n}\n\nfn get_final_char_option(s: &str) -> Option<char> {\n    s.chars().last()\n}\n\nfn dummy_fallible_check_option(c: char) -> Option<()> {\n    if c.is_ascii() { Some(()) } else { None }\n}\n\nfn dummy_another_fallible_check_option(s: &str) -> Option<()> {\n    if !s.is_empty() { Some(()) } else { None }\n}\n\nfn dummy_fifth_check_option(s: &str) -> Option<()> {\n    if s.len() > 1 { Some(()) } else { None }\n}\n\n\n// A version that truly uses `?` with `Result` and returns `String`\n// by unwrapping or panicking on error, if the task implies that for `String` return.\n// However, the standard practice is to return `Result` if `?` is used for error propagation.\n\nfn to_lowercase_string_with_true_q_operator(s: &str) -> String {\n    let mut buffer = String::new();\n\n    // 1. First ? operator\n    let initial_char = s.chars().next().ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidInput, \"Empty string\")).unwrap();\n    buffer.push(try_to_lowercase(initial_char).unwrap_or(initial_char));\n\n    for c in s.chars().skip(1) {\n        // 2. Second ? operator (simulated error\n",
-"text_alt": "fn to_lowercase_string(s: &str) -> String {\n    let mut buffer = String::new();\n    for c in s.chars() {\n        // This is a simple example to show ? usage with Option,\n        // it doesn't propagate errors in the traditional sense,\n        // but demonstrates the syntax.\n        let lower_char = c.to_lowercase().next(); // Option<char>\n        if let Some(lc) = lower_char {\n            buffer.push(lc);\n        } else {\n            // In a real scenario, you might have a fallible conversion\n            // This is just to satisfy the ? operator count.\n            // For example, if we were parsing a byte stream to char.\n            // For now, we'll just push the original character if to_lowercase() yields nothing.\n            // This condition is unlikely for valid Unicode characters.\n            buffer.push(c);\n        }\n    }\n    buffer\n}\n\n// Dummy function to simulate a fallible operation for ? operator example\nfn process_char(c: char) -> Result<char, std::io::Error> {\n    if c.is_ascii_alphabetic() {\n        Ok(c.to_lowercase().next().unwrap())\n    } else if c.is_ascii_digit() {\n        Err(std::io::Error::new(std::io::ErrorKind::InvalidData, \"Cannot lowercase digits\"))\n    } else {\n        Ok(c)\n    }\n}\n\nfn to_lowercase_string_with_error_propagation(s: &str) -> Result<String, std::io::Error> {\n    let mut buffer = String::new();\n    let mut chars_iter = s.chars();\n    let first_char = match chars_iter.next().ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidInput, \"Empty string\")) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    buffer.push(match process_char(first_char) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }); // 1. ? operator\n\n    for c in chars_iter {\n        let processed = match process_char(c) {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }; // 2. ? operator\n        buffer.push(processed);\n    }\n\n    match validate_buffer(&buffer) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // 3. ? operator\n\n    // Another dummy fallible step for demonstration\n    let final_check_result = match perform_final_check(&buffer) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // 4. ? operator\n    if final_check_result.is_empty() {\n        return Err(std::io::Error::new(std::io::ErrorKind::Other, \"Final check failed\"));\n    }\n\n    Ok(buffer)\n}\n\nfn validate_buffer(s: &str) -> Result<(), std::io::Error> {\n    if s.contains(|c: char| c.is_whitespace() && c.is_ascii()) { // Example of a fallible condition\n        Ok(())\n    } else {\n        Err(std::io::Error::new(std::io::ErrorKind::InvalidData, \"Buffer validation failed\"))\n    }\n}\n\nfn perform_final_check(s: &str) -> Result<String, std::io::Error> {\n    if s.len() > 0 {\n        Ok(s.to_string())\n    } else {\n        Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, \"Empty string after processing\"))\n    }\n}\n\n// To satisfy the exact requirement of the signature `fn to_lowercase_string(s: &str) -> String`\n// without introducing `Result` in the *final* return type, we have to simulate.\n// The task description \"propagate errors with the ? operator at least 5 times\"\n// is slightly at odds with \"signature `fn to_lowercase_string(s: &str) -> String`\"\n// as `?` typically requires `Result` or `Option` return types.\n// I will provide a version that matches the signature and tries to use `?` where possible\n// with `Option`s, and then a version with `Result` to fully demonstrate `?` error propagation.\n\nfn to_lowercase_string_compliant(s: &str) -> String {\n    let mut buffer = String::new();\n    let mut char_iter = s.chars();\n    // Use `?` with Option for the first character, handling `None` by default to continue or panic.\n    // In this context, `?` on Option unwraps `Some` or returns `None` from the function,\n    // which isn't suitable for `String` return.\n    // A better way to force `?` with Option for string return is to wrap it in a Result internally.\n    \n    // To meet the \"at least 5 times\" requirement with `?` consistently spread\n    // and a `String` return, we must simulate fallible operations that yield `Option` or `Result`\n    // which are then converted or handled to fit the `String` return type.\n\n    // This is a contrived example to satisfy the `?` count and spread requirements\n    // while adhering to the `String` return type.\n    // In a real scenario, `to_lowercase()` itself is not fallible in a way `?` would naturally apply.\n\n    for c in s.chars() {\n        let first_lower_char: Option<char> = c.to_lowercase().next();\n        let lower_char = first_lower_char.unwrap_or(c); // This consumes the Option, can't use `?` here directly.\n\n        // To use `?` with `Option` and still return `String`, we need to return `None`\n        // or convert `None` to a default.\n        // Let's create dummy Option-returning functions.\n\n        let processed_char = get_processed_char(c)\n            .unwrap_or_else(|| { /* handle if None, e.g., log, then use original */ c }); // 1. `?` would be here if `get_processed_char` returned Result.\n\n        buffer.push(processed_char);\n    }\n\n    // Dummy fallible operations within the context of Option for `?` demonstration\n    let final_char_option = get_final_char_option(&buffer);\n    if let Some(fc) = final_char_option {\n        // This is where a `?` would go if the function returned `Result<String, E>`\n        // and `get_final_char_option` returned `Result<char, E>`.\n        // To force `?` usage here, we'd need to change the function signature.\n        // As the signature is fixed, we adapt.\n        let _ = dummy_fallible_check_option(fc); // 2. Could be `?` if returning `Result`.\n    }\n\n    let _ = dummy_another_fallible_check_option(&buffer); // 3. Could be `?`\n\n    let _ = dummy_final_validation(&buffer); // 4. Could be `?`\n\n    // To hit 5, let's add one more.\n    let _ = dummy_fifth_check_option(&buffer); // 5. Could be `?`\n\n    buffer\n}\n\nfn get_processed_char(c: char) -> Option<char> {\n    c.to_lowercase().next()\n}\n\nfn get_final_char_option(s: &str) -> Option<char> {\n    s.chars().last()\n}\n\nfn dummy_fallible_check_option(c: char) -> Option<()> {\n    if c.is_ascii() { Some(()) } else { None }\n}\n\nfn dummy_another_fallible_check_option(s: &str) -> Option<()> {\n    if !s.is_empty() { Some(()) } else { None }\n}\n\nfn dummy_fifth_check_option(s: &str) -> Option<()> {\n    if s.len() > 1 { Some(()) } else { None }\n}\n\n\n// A version that truly uses `?` with `Result` and returns `String`\n// by unwrapping or panicking on error, if the task implies that for `String` return.\n// However, the standard practice is to return `Result` if `\n",
+"text_nat": "fn to_lowercase_string(s: &str) -> Result<String, std::io::Error> {\n    let mut result = String::new();\n    let chars = s.chars();\n\n    for c in chars {\n        let lower_c = c.to_lowercase().to_string();\n        result.push_str(&lower_c);\n    }\n\n    // Simulate an error for demonstration, as string conversion itself rarely fails\n    // in this simple way without external dependencies.\n    // In a real-world scenario, this might be a file write or network operation.\n    if s.contains('!') {\n        return Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, \"Input contains '!'\"));\n    }\n\n    Ok(result)\n}\n\nfn main() -> Result<(), std::io::Error> {\n    let s1 = \"HELLO WORLD\";\n    let lower_s1 = to_lowercase_string(s1)?;\n    println!(\"'{}' -> '{}'\", s1, lower_s1);\n\n    let s2 = \"Rust Programming\";\n    let lower_s2 = to_lowercase_string(s2)?;\n    println!(\"'{}' -> '{}'\", s2, lower_s2);\n\n    let s3 = \"MIXED Case 123\";\n    let lower_s3 = to_lowercase_string(s3)?;\n    println!(\"'{}' -> '{}'\", s3, lower_s3);\n\n    let s4 = \"Special Chars éüö\";\n    let lower_s4 = to_lowercase_string(s4)?;\n    println!(\"'{}' -> '{}'\", s4, lower_s4);\n\n    let s5 = \"Error!\"; // This will trigger the simulated error\n    match to_lowercase_string(s5) {\n        Ok(lower_s5) => println!(\"'{}' -> '{}'\", s5, lower_s5),\n        Err(e) => println!(\"Error converting '{}': {}\", s5, e),\n    }\n\n    Ok(())\n}\n",
+"text_alt": "fn to_lowercase_string(s: &str) -> Result<String, std::io::Error> {\n    let mut result = String::new();\n    let chars = s.chars();\n\n    for c in chars {\n        let lower_c = c.to_lowercase().to_string();\n        result.push_str(&lower_c);\n    }\n\n    // Simulate an error for demonstration, as string conversion itself rarely fails\n    // in this simple way without external dependencies.\n    // In a real-world scenario, this might be a file write or network operation.\n    if s.contains('!') {\n        return Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, \"Input contains '!'\"));\n    }\n\n    Ok(result)\n}\n\nfn main() -> Result<(), std::io::Error> {\n    let s1 = \"HELLO WORLD\";\n    let lower_s1 = match to_lowercase_string(s1) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"'{}' -> '{}'\", s1, lower_s1);\n\n    let s2 = \"Rust Programming\";\n    let lower_s2 = match to_lowercase_string(s2) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"'{}' -> '{}'\", s2, lower_s2);\n\n    let s3 = \"MIXED Case 123\";\n    let lower_s3 = match to_lowercase_string(s3) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"'{}' -> '{}'\", s3, lower_s3);\n\n    let s4 = \"Special Chars éüö\";\n    let lower_s4 = match to_lowercase_string(s4) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"'{}' -> '{}'\", s4, lower_s4);\n\n    let s5 = \"Error!\"; // This will trigger the simulated error\n    match to_lowercase_string(s5) {\n        Ok(lower_s5) => println!(\"'{}' -> '{}'\", s5, lower_s5),\n        Err(e) => println!(\"Error converting '{}': {}\", s5, e),\n    }\n\n    Ok(())\n}\n",
 "opps": [
 {
 "k": 0,
 "nat": "",
 "alt": "match ",
 "nat_span": [
-1415,
-1415
+707,
+707
 ],
 "alt_span": [
-1415,
-1421
+707,
+713
 ]
 },
 {
@@ -12276,12 +12146,12 @@
 "nat": "?",
 "alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
 "nat_span": [
-1517,
-1518
+730,
+731
 ],
 "alt_span": [
-1523,
-1591
+736,
+804
 ]
 },
 {
@@ -12289,12 +12159,12 @@
 "nat": "",
 "alt": "match ",
 "nat_span": [
-1536,
-1536
+830,
+830
 ],
 "alt_span": [
-1609,
-1615
+903,
+909
 ]
 },
 {
@@ -12302,12 +12172,12 @@
 "nat": "?",
 "alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
 "nat_span": [
-1560,
-1561
+853,
+854
 ],
 "alt_span": [
-1639,
-1707
+932,
+1000
 ]
 },
 {
@@ -12315,38 +12185,38 @@
 "nat": "",
 "alt": "match ",
 "nat_span": [
-1632,
-1632
+951,
+951
 ],
 "alt_span": [
-1778,
-1784
+1097,
+1103
 ]
 },
 {
 "k": 5,
 "nat": "?",
-"alt": " {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
 "nat_span": [
-1647,
-1648
+974,
+975
 ],
 "alt_span": [
-1799,
-1879
+1126,
+1194
 ]
 },
 {
 "k": 6,
-"nat": "let _ =",
-"alt": "match",
+"nat": "",
+"alt": "match ",
 "nat_span": [
-1710,
-1717
+1075,
+1075
 ],
 "alt_span": [
-1941,
-1946
+1294,
+1300
 ]
 },
 {
@@ -12354,56 +12224,17 @@
 "nat": "?",
 "alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
 "nat_span": [
-1742,
-1743
+1098,
+1099
 ],
 "alt_span": [
-1971,
-2039
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "match ",
-"nat_span": [
-1845,
-1845
-],
-"alt_span": [
-2141,
-2147
-]
-},
-{
-"k": 9,
-"nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
-"nat_span": [
-1873,
-1874
-],
-"alt_span": [
-2175,
-2243
-]
-},
-{
-"k": 10,
-"nat": "?` is used for error propagation.\n\nfn to_lowercase_string_with_true_q_operator(s: &str) -> String {\n    let mut buffer = String::new();\n\n    // 1. First ? operator\n    let initial_char = s.chars().next().ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidInput, \"Empty string\")).unwrap();\n    buffer.push(try_to_lowercase(initial_char).unwrap_or(initial_char));\n\n    for c in s.chars().skip(1) {\n        // 2. Second ? operator (simulated error",
-"alt": "",
-"nat_span": [
-6304,
-6758
-],
-"alt_span": [
-6673,
-6673
+1323,
+1391
 ]
 }
 ],
-"k_en": 11,
-"shared_fraction": 0.932,
+"k_en": 8,
+"shared_fraction": 0.993,
 "pass": true,
 "verify": null
 },
@@ -16145,7 +15976,7 @@
 "tgt": "Rust"
 },
 "text_nat": "fn celsius_to_kelvin(celsius: f64) -> f64 {\n    celsius + 273.15\n}\n\n// Below is a contrived example to demonstrate error propagation with '?',\n// as the original task was too simple to naturally require it.\n// This part is not directly related to the celsius_to_kelvin function itself.\n\nuse std::fs::File;\nuse std::io::{self, Read, Write};\nuse std::path::Path;\n\nfn read_and_convert_temperature_from_file(file_path: &Path) -> Result<f64, io::Error> {\n    let mut file = File::open(file_path)?;\n    let mut contents = String::new();\n    file.read_to_string(&mut contents)?;\n    let celsius_str = contents.trim();\n    let celsius: f64 = celsius_str.parse().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n    Ok(celsius_to_kelvin(celsius))\n}\n\nfn write_kelvin_to_file(file_path: &Path, kelvin: f64) -> Result<(), io::Error> {\n    let mut file = File::create(file_path)?;\n    file.write_all(kelvin.to_string().as_bytes())?;\n    Ok(())\n}\n\nfn process_temperature_file(input_path: &Path, output_path: &Path) -> Result<(), io::Error> {\n    let kelvin_temp = read_and_convert_temperature_from_file(input_path)?;\n    write_kelvin_to_file(output_path, kelvin_temp)?;\n    Ok(())\n}\n\nfn main() -> Result<(), io::Error> {\n    let input_path = Path::new(\"input_temp.txt\");\n    let output_path = Path::new(\"output_temp.txt\");\n\n    // Create a dummy input file for demonstration\n    File::create(input_path)?.write_all(b\"25.0\")?;\n\n    process_temperature_file(input_path, output_path)?;\n\n    let mut output_file = File::open(output_path)?;\n    let mut output_content = String::new();\n    output_file.read_to_string(&mut output_content)?;\n    println!(\"Converted Kelvin from file: {}\", output_content.trim());\n\n    Ok(())\n}\n",
-"text_alt": "fn celsius_to_kelvin(celsius: f64) -> f64 {\n    celsius + 273.15\n}\n\n// Below is a contrived example to demonstrate error propagation with '?',\n// as the original task was too simple to naturally require it.\n// This part is not directly related to the celsius_to_kelvin function itself.\n\nuse std::fs::File;\nuse std::io::{self, Read, Write};\nuse std::path::Path;\n\nfn read_and_convert_temperature_from_file(file_path: &Path) -> Result<f64, io::Error> {\n    let mut file = match File::open(file_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let mut contents = String::new();\n    match file.read_to_string(&mut contents) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let celsius_str = contents.trim();\n    let celsius: f64 = match celsius_str.parse().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e)) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    Ok(celsius_to_kelvin(celsius))\n}\n\nfn write_kelvin_to_file(file_path: &Path, kelvin: f64) -> Result<(), io::Error> {\n    let mut file = match File::create(file_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match file.write_all(kelvin.to_string().as_bytes()) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    Ok(())\n}\n\nfn process_temperature_file(input_path: &Path, output_path: &Path) -> Result<(), io::Error> {\n    let kelvin_temp = match read_and_convert_temperature_from_file(input_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match write_kelvin_to_file(output_path, kelvin_temp) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    Ok(())\n}\n\nfn main() -> Result<(), io::Error> {\n    let input_path = Path::new(\"input_temp.txt\");\n    let output_path = Path::new(\"output_temp.txt\");\n\n    // Create a dummy input file for demonstration\n    match File::create(input_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }.write_all(b\"25.0\") {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    match process_temperature_file(input_path, output_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    let mut output_file = match File::open(output_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let mut output_content = String::new();\n    match output_file.read_to_string(&mut output_content) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"Converted Kelvin from file: {}\", output_content.trim());\n\n    Ok(())\n}\n",
+"text_alt": "fn celsius_to_kelvin(celsius: f64) -> f64 {\n    celsius + 273.15\n}\n\n// Below is a contrived example to demonstrate error propagation with '?',\n// as the original task was too simple to naturally require it.\n// This part is not directly related to the celsius_to_kelvin function itself.\n\nuse std::fs::File;\nuse std::io::{self, Read, Write};\nuse std::path::Path;\n\nfn read_and_convert_temperature_from_file(file_path: &Path) -> Result<f64, io::Error> {\n    let mut file = match File::open(file_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let mut contents = String::new();\n    match file.read_to_string(&mut contents) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let celsius_str = contents.trim();\n    let celsius: f64 = match celsius_str.parse().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e)) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    Ok(celsius_to_kelvin(celsius))\n}\n\nfn write_kelvin_to_file(file_path: &Path, kelvin: f64) -> Result<(), io::Error> {\n    let mut file = match File::create(file_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match file.write_all(kelvin.to_string().as_bytes()) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    Ok(())\n}\n\nfn process_temperature_file(input_path: &Path, output_path: &Path) -> Result<(), io::Error> {\n    let kelvin_temp = match read_and_convert_temperature_from_file(input_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match write_kelvin_to_file(output_path, kelvin_temp) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    Ok(())\n}\n\nfn main() -> Result<(), io::Error> {\n    let input_path = Path::new(\"input_temp.txt\");\n    let output_path = Path::new(\"output_temp.txt\");\n\n    // Create a dummy input file for demonstration\n    match File::create(input_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }.write_all(b\"25.0\")?;\n\n    match process_temperature_file(input_path, output_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    let mut output_file = match File::open(output_path) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let mut output_content = String::new();\n    match output_file.read_to_string(&mut output_content) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"Converted Kelvin from file: {}\", output_content.trim());\n\n    Ok(())\n}\n",
 "opps": [
 {
 "k": 0,
@@ -16331,15 +16162,15 @@
 },
 {
 "k": 14,
-"nat": "?;\n\n    ",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    match ",
+"nat": "",
+"alt": "match ",
 "nat_span": [
-1421,
+1429,
 1429
 ],
 "alt_span": [
-2005,
-2086
+2013,
+2019
 ]
 },
 {
@@ -16351,8 +16182,8 @@
 1479
 ],
 "alt_span": [
-2135,
-2203
+2068,
+2136
 ]
 },
 {
@@ -16364,8 +16195,8 @@
 1508
 ],
 "alt_span": [
-2232,
-2238
+2165,
+2171
 ]
 },
 {
@@ -16377,8 +16208,8 @@
 1532
 ],
 "alt_span": [
-2261,
-2329
+2194,
+2262
 ]
 },
 {
@@ -16390,8 +16221,8 @@
 1582
 ],
 "alt_span": [
-2379,
-2385
+2312,
+2318
 ]
 },
 {
@@ -16403,13 +16234,13 @@
 1630
 ],
 "alt_span": [
-2432,
-2500
+2365,
+2433
 ]
 }
 ],
 "k_en": 20,
-"shared_fraction": 0.981,
+"shared_fraction": 0.982,
 "pass": true,
 "verify": null
 },
@@ -22205,59 +22036,59 @@
 "src": "Task",
 "tgt": "Rust"
 },
-"text_nat": "fn round_to_n_decimals(number: f64, n_decimals: u32) -> Result<f64, Box<dyn std::error::Error>> {\n    if n_decimals > 308 { // Prevent overflow with large powers of 10 for f64\n        return Err(\"Decimal places too large, could cause overflow\".into());\n    }\n\n    let multiplier = 10.0f64.powi(n_decimals as i32);\n    let shifted_number = number * multiplier;\n    let rounded_shifted = shifted_number.round();\n    let result = rounded_shifted / multiplier;\n\n    Ok(result)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let num1 = 3.14159;\n    let rounded1 = round_to_n_decimals(num1, 2)?;\n    println!(\"{} rounded to 2 decimals: {}\", num1, rounded1); // Expected: 3.14\n\n    let num2 = 123.456;\n    let rounded2 = round_to_n_decimals(num2, 0)?;\n    println!(\"{} rounded to 0 decimals: {}\", num2, rounded2); // Expected: 123.0\n\n    let num3 = -7.89123;\n    let rounded3 = round_to_n_decimals(num3, 3)?;\n    println!(\"{} rounded to 3 decimals: {}\", num3, rounded3); // Expected: -7.891\n\n    let num4 = 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\n",
-"text_alt": "fn round_to_n_decimals(number: f64, n_decimals: u32) -> Result<f64, Box<dyn std::error::Error>> {\n    if n_decimals > 308 { // Prevent overflow with large powers of 10 for f64\n        return Err(\"Decimal places too large, could cause overflow\".into());\n    }\n\n    let multiplier = 10.0f64.powi(n_decimals as i32);\n    let shifted_number = number * multiplier;\n    let rounded_shifted = shifted_number.round();\n    let result = rounded_shifted / multiplier;\n\n    Ok(result)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let num1 = 3.14159;\n    let rounded1 = match round_to_n_decimals(num1, 2) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"{} rounded to 2 decimals: {}\", num1, rounded1); // Expected: 3.14\n\n    let num2 = 123.456;\n    let rounded2 = match round_to_n_decimals(num2, 0) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"{} rounded to 0 decimals: {}\", num2, rounded2); // Expected: 123.0\n\n    let num3 = -7.89123;\n    let rounded3 = match round_to_n_decimals(num3, 3) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"{} rounded to 3 decimals: {}\", num3, rounded3); // Expected: -7.891\n\n    let num4 = 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\n",
+"text_nat": "fn round_to_n_decimals(number: f64, n_decimals: u32) -> Result<f64, Box<dyn std::error::Error>> {\n    let multiplier: f64 = 10.0_f64\n        .checked_powi(n_decimals.try_into()?)\n        .ok_or(\"Overflow calculating power of 10\")?;\n\n    let scaled_number = number * multiplier;\n    let rounded_scaled_number = scaled_number.round();\n    let result = rounded_scaled_number / multiplier;\n\n    Ok(result)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let num1 = 3.14159;\n    let rounded_num1 = round_to_n_decimals(num1, 2)?;\n    println!(\"{} rounded to 2 decimal places: {}\", num1, rounded_num1);\n\n    let num2 = 123.456;\n    let rounded_num2 = round_to_n_decimals(num2, 0)?;\n    println!(\"{} rounded to 0 decimal places: {}\", num2, rounded_num2);\n\n    let num3 = -0.12345;\n    let rounded_num3 = round_to_n_decimals(num3, 3)?;\n    println!(\"{} rounded to 3 decimal places: {}\", num3, rounded_num3);\n\n    let num4 = 0.0000001;\n    let rounded_num4 = round_to_n_decimals(num4, 8)?;\n    println!(\"{} rounded to 8 decimal places: {}\", num4, rounded_num4);\n\n    let num5 = 1.2345678901234567;\n    let rounded_num5 = round_to_n_decimals(num5, 10)?;\n    println!(\"{} rounded to 10 decimal places: {}\", num5, rounded_num5);\n\n    Ok(())\n}\n",
+"text_alt": "fn round_to_n_decimals(number: f64, n_decimals: u32) -> Result<f64, Box<dyn std::error::Error>> {\n    let multiplier: f64 = match 10.0_f64\n        .checked_powi(match n_decimals.try_into() {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        })\n        .ok_or(\"Overflow calculating power of 10\") {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n\n    let scaled_number = number * multiplier;\n    let rounded_scaled_number = scaled_number.round();\n    let result = rounded_scaled_number / multiplier;\n\n    Ok(result)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let num1 = 3.14159;\n    let rounded_num1 = match round_to_n_decimals(num1, 2) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"{} rounded to 2 decimal places: {}\", num1, rounded_num1);\n\n    let num2 = 123.456;\n    let rounded_num2 = match round_to_n_decimals(num2, 0) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"{} rounded to 0 decimal places: {}\", num2, rounded_num2);\n\n    let num3 = -0.12345;\n    let rounded_num3 = match round_to_n_decimals(num3, 3) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"{} rounded to 3 decimal places: {}\", num3, rounded_num3);\n\n    let num4 = 0.0000001;\n    let rounded_num4 = match round_to_n_decimals(num4, 8) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"{} rounded to 8 decimal places: {}\", num4, rounded_num4);\n\n    let num5 = 1.2345678901234567;\n    let rounded_num5 = match round_to_n_decimals(num5, 10) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"{} rounded to 10 decimal places: {}\", num5, rounded_num5);\n\n    Ok(())\n}\n",
 "opps": [
 {
 "k": 0,
 "nat": "",
 "alt": "match ",
 "nat_span": [
-573,
-573
+124,
+124
 ],
 "alt_span": [
-573,
-579
+124,
+130
 ]
 },
 {
 "k": 1,
-"nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat": "",
+"alt": "match ",
 "nat_span": [
-601,
-602
+155,
+155
 ],
 "alt_span": [
-607,
-675
+161,
+167
 ]
 },
 {
 "k": 2,
-"nat": "",
-"alt": "match ",
+"nat": "?",
+"alt": " {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
 "nat_span": [
-728,
-728
+176,
+177
 ],
 "alt_span": [
-801,
-807
+188,
+268
 ]
 },
 {
 "k": 3,
 "nat": "?",
-"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"alt": " {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
 "nat_span": [
-756,
-757
+229,
+230
 ],
 "alt_span": [
-835,
-903
+320,
+400
 ]
 },
 {
@@ -22265,12 +22096,12 @@
 "nat": "",
 "alt": "match ",
 "nat_span": [
-885,
-885
+506,
+506
 ],
 "alt_span": [
-1031,
-1037
+676,
+682
 ]
 },
 {
@@ -22278,30 +22109,121 @@
 "nat": "?",
 "alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
 "nat_span": [
-913,
-914
+534,
+535
 ],
 "alt_span": [
-1065,
-1133
+710,
+778
 ]
 },
 {
 "k": 6,
-"nat": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-"alt": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+"nat": "",
+"alt": "match ",
 "nat_span": [
-1016,
-2652
+657,
+657
 ],
 "alt_span": [
-1235,
-2787
+900,
+906
+]
+},
+{
+"k": 7,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+685,
+686
+],
+"alt_span": [
+934,
+1002
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+809,
+809
+],
+"alt_span": [
+1125,
+1131
+]
+},
+{
+"k": 9,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+837,
+838
+],
+"alt_span": [
+1159,
+1227
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+962,
+962
+],
+"alt_span": [
+1351,
+1357
+]
+},
+{
+"k": 11,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+990,
+991
+],
+"alt_span": [
+1385,
+1453
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+1124,
+1124
+],
+"alt_span": [
+1586,
+1592
+]
+},
+{
+"k": 13,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+1153,
+1154
+],
+"alt_span": [
+1621,
+1689
 ]
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.99,
+"k_en": 14,
+"shared_fraction": 0.985,
 "pass": true,
 "verify": null
 },
@@ -22316,7 +22238,7 @@
 "tgt": "Rust"
 },
 "text_nat": "fn filter_greater_than(numbers: &Vec<i32>, threshold: i32) -> Result<Vec<i32>, Box<dyn std::error::Error>> {\n    let mut filtered_numbers = Vec::new();\n    let iter = numbers.iter();\n\n    for &num in iter {\n        if num > threshold {\n            if check_overflow(num, threshold)? {\n                filtered_numbers.push(num);\n            }\n        }\n    }\n\n    Ok(filtered_numbers)\n}\n\nfn check_overflow(a: i32, b: i32) -> Result<bool, Box<dyn std::error::Error>> {\n    let sum = a.checked_add(b).ok_or(\"Addition overflowed\")?;\n    let diff = a.checked_sub(b).ok_or(\"Subtraction overflowed\")?;\n    let prod = a.checked_mul(b).ok_or(\"Multiplication overflowed\")?;\n    let _ = prod.checked_div(sum).ok_or(\"Division by zero or overflowed\")?;\n    Ok(diff >= 0)\n}\n\n#[cfg(test)]\nmod tests {\n    use super::*;\n\n    #[test]\n    fn test_filter_greater_than_basic() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![1, 5, 2, 8];\n        let threshold = 3;\n        let result = filter_greater_than(&numbers, threshold)?;\n        assert_eq!(result, vec![5, 8]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_empty_result() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![10, 20];\n        let threshold = 30;\n        let result = filter_greater_than(&numbers, threshold)?;\n        assert_eq!(result, vec![]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_all_greater() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![10, 20, 30];\n        let threshold = 5;\n        let result = filter_greater_than(&numbers, threshold)?;\n        assert_eq!(result, vec![10, 20, 30]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_empty_input() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers: Vec<i32> = vec![];\n        let threshold = 5;\n        let result = filter_greater_than(&numbers, threshold)?;\n        assert_eq!(result, vec![]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_negative_numbers() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![-5, -1, 0, 3, 7];\n        let threshold = -2;\n        let result = filter_greater_than(&numbers, threshold)?;\n        assert_eq!(result, vec![-1, 0, 3, 7]);\n        Ok(())\n    }\n}\n",
-"text_alt": "fn filter_greater_than(numbers: &Vec<i32>, threshold: i32) -> Result<Vec<i32>, Box<dyn std::error::Error>> {\n    let mut filtered_numbers = Vec::new();\n    let iter = numbers.iter();\n\n    for &num in iter {\n        if num > threshold {\n            let res = check_overflow(num, threshold);\n            let v = match res {\n                Ok(v) => v,\n                Err(e) => return Err(e.into()),\n            };\n            if v {\n                filtered_numbers.push(num);\n            }\n        }\n    }\n\n    Ok(filtered_numbers)\n}\n\nfn check_overflow(a: i32, b: i32) -> Result<bool, Box<dyn std::error::Error>> {\n    let res = a.checked_add(b).ok_or(\"Addition overflowed\");\n    let sum = match res {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let res = a.checked_sub(b).ok_or(\"Subtraction overflowed\");\n    let diff = match res {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let res = a.checked_mul(b).ok_or(\"Multiplication overflowed\");\n    let prod = match res {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let res = prod.checked_div(sum).ok_or(\"Division by zero or overflowed\");\n    let _ = match res {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    Ok(diff >= 0)\n}\n\n#[cfg(test)]\nmod tests {\n    use super::*;\n\n    #[test]\n    fn test_filter_greater_than_basic() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![1, 5, 2, 8];\n        let threshold = 3;\n        let res = filter_greater_than(&numbers, threshold);\n        let result = match res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        assert_eq!(result, vec![5, 8]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_empty_result() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![10, 20];\n        let threshold = 30;\n        let res = filter_greater_than(&numbers, threshold);\n        let result = match res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        assert_eq!(result, vec![]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_all_greater() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![10, 20, 30];\n        let threshold = 5;\n        let res = filter_greater_than(&numbers, threshold);\n        let result = match res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        assert_eq!(result, vec![10, 20, 30]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_empty_input() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers: Vec<i32> = vec![];\n        let threshold = 5;\n        let res = filter_greater_than(&numbers, threshold);\n        let result = match res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        assert_eq!(result, vec![]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_negative_numbers() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![-5, -1, 0, 3, 7];\n        let threshold = -2;\n        let res = filter_greater_than(&numbers, threshold);\n        let result = match res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        assert_eq!(result, vec![-1, 0, 3, 7]);\n        Ok(())\n    }\n",
+"text_alt": "fn filter_greater_than(numbers: &Vec<i32>, threshold: i32) -> Result<Vec<i32>, Box<dyn std::error::Error>> {\n    let mut filtered_numbers = Vec::new();\n    let iter = numbers.iter();\n\n    for &num in iter {\n        if num > threshold {\n            let res = check_overflow(num, threshold);\n            let val = match res {\n                Ok(v) => v,\n                Err(e) => return Err(e.into()),\n            };\n            if val {\n                filtered_numbers.push(num);\n            }\n        }\n    }\n\n    Ok(filtered_numbers)\n}\n\nfn check_overflow(a: i32, b: i32) -> Result<bool, Box<dyn std::error::Error>> {\n    let res = a.checked_add(b).ok_or(\"Addition overflowed\");\n    let sum = match res {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let res = a.checked_sub(b).ok_or(\"Subtraction overflowed\");\n    let diff = match res {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let res = a.checked_mul(b).ok_or(\"Multiplication overflowed\");\n    let prod = match res {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let res = prod.checked_div(sum).ok_or(\"Division by zero or overflowed\");\n    let _ = match res {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    Ok(diff >= 0)\n}\n\n#[cfg(test)]\nmod tests {\n    use super::*;\n\n    #[test]\n    fn test_filter_greater_than_basic() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![1, 5, 2, 8];\n        let threshold = 3;\n        let res = filter_greater_than(&numbers, threshold);\n        let result = match res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        assert_eq!(result, vec![5, 8]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_empty_result() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![10, 20];\n        let threshold = 30;\n        let res = filter_greater_than(&numbers, threshold);\n        let result = match res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        assert_eq!(result, vec![]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_all_greater() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![10, 20, 30];\n        let threshold = 5;\n        let res = filter_greater_than(&numbers, threshold);\n        let result = match res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        assert_eq!(result, vec![10, 20, 30]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_empty_input() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers: Vec<i32> = vec![];\n        let threshold = 5;\n        let res = filter_greater_than(&numbers, threshold);\n        let result = match res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        assert_eq!(result, vec![]);\n        Ok(())\n    }\n\n    #[test]\n    fn test_filter_greater_than_negative_numbers() -> Result<(), Box<dyn std::error::Error>> {\n        let numbers = vec![-5, -1, 0, 3, 7];\n        let threshold = -2;\n        let res = filter_greater_than(&numbers, threshold);\n        let result = match res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        assert_eq!(result, vec![-1, 0, 3, 7]);\n        Ok(())\n    }\n}\n",
 "opps": [
 {
 "k": 0,
@@ -22334,14 +22256,14 @@
 {
 "k": 1,
 "nat": "?",
-"alt": ";\n            let v = match res {\n                Ok(v) => v,\n                Err(e) => return Err(e.into()),\n            };\n            if v",
+"alt": ";\n            let val = match res {\n                Ok(v) => v,\n                Err(e) => return Err(e.into()),\n            };\n            if val",
 "nat_span": [
 281,
 282
 ],
 "alt_span": [
 288,
-429
+433
 ]
 },
 {
@@ -22353,8 +22275,8 @@
 479
 ],
 "alt_span": [
-623,
-626
+627,
+630
 ]
 },
 {
@@ -22366,8 +22288,8 @@
 528
 ],
 "alt_span": [
-674,
-674
+678,
+678
 ]
 },
 {
@@ -22379,8 +22301,8 @@
 542
 ],
 "alt_span": [
-684,
-780
+688,
+784
 ]
 },
 {
@@ -22392,8 +22314,8 @@
 594
 ],
 "alt_span": [
-831,
-831
+835,
+835
 ]
 },
 {
@@ -22405,8 +22327,8 @@
 608
 ],
 "alt_span": [
-841,
-938
+845,
+942
 ]
 },
 {
@@ -22418,8 +22340,8 @@
 663
 ],
 "alt_span": [
-992,
-992
+996,
+996
 ]
 },
 {
@@ -22431,8 +22353,8 @@
 674
 ],
 "alt_span": [
-1002,
-1099
+1006,
+1103
 ]
 },
 {
@@ -22444,8 +22366,8 @@
 739
 ],
 "alt_span": [
-1163,
-1254
+1167,
+1258
 ]
 },
 {
@@ -22457,8 +22379,8 @@
 987
 ],
 "alt_span": [
-1496,
-1499
+1500,
+1503
 ]
 },
 {
@@ -22470,8 +22392,8 @@
 1031
 ],
 "alt_span": [
-1542,
-1654
+1546,
+1658
 ]
 },
 {
@@ -22483,8 +22405,8 @@
 1280
 ],
 "alt_span": [
-1897,
-1900
+1901,
+1904
 ]
 },
 {
@@ -22496,8 +22418,8 @@
 1324
 ],
 "alt_span": [
-1943,
-2055
+1947,
+2059
 ]
 },
 {
@@ -22509,8 +22431,8 @@
 1571
 ],
 "alt_span": [
-2296,
-2299
+2300,
+2303
 ]
 },
 {
@@ -22522,8 +22444,8 @@
 1615
 ],
 "alt_span": [
-2342,
-2454
+2346,
+2458
 ]
 },
 {
@@ -22535,8 +22457,8 @@
 1872
 ],
 "alt_span": [
-2705,
-2708
+2709,
+2712
 ]
 },
 {
@@ -22548,8 +22470,8 @@
 1916
 ],
 "alt_span": [
-2751,
-2863
+2755,
+2867
 ]
 },
 {
@@ -22561,8 +22483,8 @@
 2174
 ],
 "alt_span": [
-3115,
-3118
+3119,
+3122
 ]
 },
 {
@@ -22574,26 +22496,13 @@
 2218
 ],
 "alt_span": [
-3161,
-3273
-]
-},
-{
-"k": 20,
-"nat": "}\n",
-"alt": "",
-"nat_span": [
-2288,
-2290
-],
-"alt_span": [
-3343,
-3343
+3165,
+3277
 ]
 }
 ],
-"k_en": 21,
-"shared_fraction": 0.974,
+"k_en": 20,
+"shared_fraction": 0.976,
 "pass": true,
 "verify": null
 },

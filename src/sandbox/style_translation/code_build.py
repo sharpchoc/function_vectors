@@ -142,6 +142,27 @@ def bash_ok(text):
     return r.returncode == 0
 
 
+PARSERS = Path("/workspace/micromamba/envs/parsers/bin")                     # node / rustfmt / php (bug 9, 2026-09-17)
+
+
+def valid_source(lang, text):
+    """Syntax check with a real parser: Python (ast), JavaScript (node --check), Rust (rustfmt, parse only), PHP (php -l), Bash (bash -n).
+    Languages without a parser here (SQL, CSS, R) return True."""
+    import os, tempfile
+    if lang == "Python":
+        return valid_python(text)
+    if lang == "Bash":
+        return bash_ok(text)
+    suf, cmd = {"JavaScript": (".js", [str(PARSERS / "node"), "--check"]), "Rust": (".rs", [str(PARSERS / "rustfmt"), "--check", "--edition", "2021"]),
+                "PHP": (".php", [str(PARSERS / "php"), "-l"])}.get(lang, (None, None))
+    if suf is None or not (PARSERS / cmd[0].split("/")[-1]).exists():
+        return True
+    with tempfile.NamedTemporaryFile("w", suffix=suf, delete=False) as fh:
+        fh.write(text); p = fh.name
+    r = subprocess.run(cmd + [p], capture_output=True, text=True, timeout=120); os.unlink(p)
+    return ("error" not in r.stderr) if lang == "Rust" else r.returncode == 0
+
+
 def valid_python(text):
     try:
         ast.parse(text); return True
@@ -169,7 +190,7 @@ def build_one(key, fam, task):
                 raise ValueError("too short")
             if degenerate(nat):
                 raise ValueError(degenerate(nat))
-            if fam.tgt_lang == "Python" and not valid_python(nat):
+            if not valid_source(fam.tgt_lang, nat):
                 raise ValueError("natural twin does not parse")
             if fam.name in WS_FAMILIES:                            # bug 4 (2026-09-17): whitespace-only families derive alt by rule
                 alt = ws_transform(fam.name, nat)
@@ -183,7 +204,7 @@ def build_one(key, fam, task):
                 alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2)
                 if degenerate(alt):
                     raise ValueError("alt " + degenerate(alt))
-            if fam.tgt_lang == "Python" and fam.name not in ("py2_print", "py2_except") and not valid_python(alt):
+            if fam.name not in ("py2_print", "py2_except") and not valid_source(fam.tgt_lang, alt):
                 raise ValueError("alt twin does not parse")
             opps, shared = align(nat, alt)
             ok = opps is not None and len(opps) >= 5 and shared >= 0.6 and opps[4]["nat_span"][0] < 0.75 * len(nat) and all(o["nat"] != o["alt"] for o in opps)

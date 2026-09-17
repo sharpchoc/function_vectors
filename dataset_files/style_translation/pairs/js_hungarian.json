@@ -20693,312 +20693,559 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const findSecondSmallest = (inputArray) => {\n  let smallestValue = Infinity;\n  let secondSmallestValue = Infinity;\n  const arrayLength = inputArray.length;\n  let hasProcessedFirstElement = false;\n\n  for (let currentIndex = 0; currentIndex < arrayLength; currentIndex++) {\n    const currentNumber = inputArray[currentIndex];\n    if (currentNumber < smallestValue) {\n      secondSmallestValue = smallestValue;\n      smallestValue = currentNumber;\n",
-"text_alt": "const findSecondSmallest = (arrInputArray) => {\n  let nSmallestValue = Infinity;\n  let nSecondSmallestValue = Infinity;\n  const nArrayLength = arrInputArray.length;\n  let bHasProcessedFirstElement = false;\n\n  for (let nCurrentIndex = 0; nCurrentIndex < nArrayLength; nCurrentIndex++) {\n    const nCurrentNumber = arrInputArray[nCurrentIndex];\n    if (nCurrentNumber < nSmallestValue) {\n      nSecondSmallestValue = nSmallestValue;\n      nSmallestValue = nCurrentNumber;\n",
+"text_nat": "function findSecondSmallest(numberArrayInput) {\n  if (numberArrayInput.length < 2) {\n    throw new Error(\"Input array must contain at least two numbers.\");\n  }\n\n  let uniqueNumbers = [...new Set(numberArrayInput)];\n  let sortedUniqueList = uniqueNumbers.sort((a, b) => a - b);\n\n  if (sortedUniqueList.length < 2) {\n    throw new Error(\"Input array must contain at least two unique numbers.\");\n  }\n\n  let smallestValue = sortedUniqueList[0];\n  let secondSmallestValueFound = sortedUniqueList[1];\n  let currentListSize = sortedUniqueList.length;\n\n  for (let indexPosition = 2; indexPosition < currentListSize; indexPosition++) {\n    let currentNumberBeingChecked = sortedUniqueList[indexPosition];\n    if (currentNumberBeingChecked < smallestValue) {\n      secondSmallestValueFound = smallestValue;\n      smallestValue = currentNumberBeingChecked;\n    } else if (currentNumberBeingChecked < secondSmallestValueFound && currentNumberBeingChecked !== smallestValue) {\n      secondSmallestValueFound = currentNumberBeingChecked;\n    }\n  }\n\n  return secondSmallestValueFound;\n}\n",
+"text_alt": "function findSecondSmallest(arrNumberArrayInput) {\n  if (arrNumberArrayInput.length < 2) {\n    throw new Error(\"Input array must contain at least two numbers.\");\n  }\n\n  let arrUniqueNumbers = [...new Set(arrNumberArrayInput)];\n  let arrSortedUniqueList = arrUniqueNumbers.sort((nA, nB) => nA - nB);\n\n  if (arrSortedUniqueList.length < 2) {\n    throw new Error(\"Input array must contain at least two unique numbers.\");\n  }\n\n  let nSmallestValue = arrSortedUniqueList[0];\n  let nSecondSmallestValueFound = arrSortedUniqueList[1];\n  let nCurrentListSize = arrSortedUniqueList.length;\n\n  for (let nIndexPosition = 2; nIndexPosition < nCurrentListSize; nIndexPosition++) {\n    let nCurrentNumberBeingChecked = arrSortedUniqueList[nIndexPosition];\n    if (nCurrentNumberBeingChecked < nSmallestValue) {\n      nSecondSmallestValueFound = nSmallestValue;\n      nSmallestValue = nCurrentNumberBeingChecked;\n    } else if (nCurrentNumberBeingChecked < nSecondSmallestValueFound && nCurrentNumberBeingChecked !== nSmallestValue) {\n      nSecondSmallestValueFound = nCurrentNumberBeingChecked;\n    }\n  }\n\n  return nSecondSmallestValueFound;\n}\n",
 "opps": [
 {
 "k": 0,
-"nat": "inputArray",
-"alt": "arrInputArray",
+"nat": "numberArrayInput",
+"alt": "arrNumberArrayInput",
 "nat_span": [
 28,
-38
+44
 ],
 "alt_span": [
 28,
-41
+47
 ]
 },
 {
 "k": 1,
-"nat": "smallestValue",
-"alt": "nSmallestValue",
+"nat": "uniqueNumbers",
+"alt": "arrUniqueNumbers",
 "nat_span": [
-51,
-64
+167,
+180
 ],
 "alt_span": [
-54,
-68
+173,
+189
 ]
 },
 {
 "k": 2,
-"nat": "secondSmallestValue",
-"alt": "nSecondSmallestValue",
+"nat": "sortedUniqueList",
+"alt": "arrSortedUniqueList",
 "nat_span": [
-83,
-102
+221,
+237
 ],
 "alt_span": [
-87,
-107
+233,
+252
 ]
 },
 {
 "k": 3,
-"nat": "arrayLength",
-"alt": "nArrayLength",
+"nat": "a, b",
+"alt": "nA, nB",
 "nat_span": [
-123,
-134
+260,
+264
 ],
 "alt_span": [
-128,
-140
+278,
+284
 ]
 },
 {
 "k": 4,
-"nat": "hasProcessedFirstElement",
-"alt": "bHasProcessedFirstElement",
+"nat": "smallestValue",
+"alt": "nSmallestValue",
 "nat_span": [
-162,
-186
+404,
+417
 ],
 "alt_span": [
-171,
-196
+429,
+443
 ]
 },
 {
 "k": 5,
-"nat": "currentIndex",
-"alt": "nCurrentIndex",
+"nat": "secondSmallestValueFound",
+"alt": "nSecondSmallestValueFound",
 "nat_span": [
-208,
-220
+447,
+471
 ],
 "alt_span": [
-218,
-231
+476,
+501
 ]
 },
 {
 "k": 6,
-"nat": "currentNumber",
-"alt": "nCurrentNumber",
+"nat": "currentListSize",
+"alt": "nCurrentListSize",
 "nat_span": [
-282,
-295
+501,
+516
 ],
 "alt_span": [
-296,
-310
+534,
+550
+]
+},
+{
+"k": 7,
+"nat": "indexPosition",
+"alt": "nIndexPosition",
+"nat_span": [
+556,
+569
+],
+"alt_span": [
+593,
+607
+]
+},
+{
+"k": 8,
+"nat": "currentNumberBeingChecked",
+"alt": "nCurrentNumberBeingChecked",
+"nat_span": [
+635,
+660
+],
+"alt_span": [
+676,
+702
 ]
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.838,
+"k_en": 9,
+"shared_fraction": 0.872,
 "pass": true,
 "verify": null,
 "opps_all": [
 {
 "k": 0,
-"nat": "inputArray",
-"alt": "arrInputArray",
+"nat": "numberArrayInput",
+"alt": "arrNumberArrayInput",
 "nat_span": [
 28,
-38
+44
 ],
 "alt_span": [
 28,
-41
+47
 ]
 },
 {
 "k": 1,
-"nat": "smallestValue",
-"alt": "nSmallestValue",
+"nat": "numberArrayInput",
+"alt": "arrNumberArrayInput",
 "nat_span": [
-51,
-64
+54,
+70
 ],
 "alt_span": [
-54,
-68
+57,
+76
 ]
 },
 {
 "k": 2,
-"nat": "secondSmallestValue",
-"alt": "nSecondSmallestValue",
+"nat": "uniqueNumbers",
+"alt": "arrUniqueNumbers",
 "nat_span": [
-83,
-102
+167,
+180
 ],
 "alt_span": [
-87,
-107
+173,
+189
 ]
 },
 {
 "k": 3,
-"nat": "arrayLength",
-"alt": "nArrayLength",
+"nat": "numberArrayInput",
+"alt": "arrNumberArrayInput",
 "nat_span": [
-123,
-134
+195,
+211
 ],
 "alt_span": [
-128,
-140
+204,
+223
 ]
 },
 {
 "k": 4,
-"nat": "inputArray",
-"alt": "arrInputArray",
+"nat": "sortedUniqueList",
+"alt": "arrSortedUniqueList",
 "nat_span": [
-137,
-147
+221,
+237
 ],
 "alt_span": [
-143,
-156
+233,
+252
 ]
 },
 {
 "k": 5,
-"nat": "hasProcessedFirstElement",
-"alt": "bHasProcessedFirstElement",
+"nat": "uniqueNumbers",
+"alt": "arrUniqueNumbers",
 "nat_span": [
-162,
-186
+240,
+253
 ],
 "alt_span": [
-171,
-196
+255,
+271
 ]
 },
 {
 "k": 6,
-"nat": "currentIndex",
-"alt": "nCurrentIndex",
+"nat": "a, b",
+"alt": "nA, nB",
 "nat_span": [
-208,
-220
+260,
+264
 ],
 "alt_span": [
-218,
-231
+278,
+284
 ]
 },
 {
 "k": 7,
-"nat": "currentIndex",
-"alt": "nCurrentIndex",
+"nat": "a",
+"alt": "nA",
 "nat_span": [
-226,
-238
+269,
+270
 ],
 "alt_span": [
-237,
-250
+289,
+291
 ]
 },
 {
 "k": 8,
-"nat": "arrayLength; currentIndex",
-"alt": "nArrayLength; nCurrentIndex",
+"nat": "b",
+"alt": "nB",
 "nat_span": [
-241,
-266
+273,
+274
 ],
 "alt_span": [
-253,
-280
+294,
+296
 ]
 },
 {
 "k": 9,
-"nat": "currentNumber",
-"alt": "nCurrentNumber",
+"nat": "sortedUniqueList",
+"alt": "arrSortedUniqueList",
 "nat_span": [
-282,
-295
+284,
+300
 ],
 "alt_span": [
-296,
-310
+306,
+325
 ]
 },
 {
 "k": 10,
-"nat": "inputArray[currentIndex",
-"alt": "arrInputArray[nCurrentIndex",
+"nat": "smallestValue",
+"alt": "nSmallestValue",
 "nat_span": [
-298,
-321
+404,
+417
 ],
 "alt_span": [
-313,
-340
+429,
+443
 ]
 },
 {
 "k": 11,
-"nat": "currentNumber",
-"alt": "nCurrentNumber",
+"nat": "sortedUniqueList",
+"alt": "arrSortedUniqueList",
 "nat_span": [
-332,
-345
+420,
+436
 ],
 "alt_span": [
-351,
-365
+446,
+465
 ]
 },
 {
 "k": 12,
-"nat": "smallestValue",
-"alt": "nSmallestValue",
+"nat": "secondSmallestValueFound",
+"alt": "nSecondSmallestValueFound",
 "nat_span": [
-348,
-361
+447,
+471
 ],
 "alt_span": [
-368,
-382
+476,
+501
 ]
 },
 {
 "k": 13,
-"nat": "secondSmallestValue",
-"alt": "nSecondSmallestValue",
+"nat": "sortedUniqueList",
+"alt": "arrSortedUniqueList",
 "nat_span": [
-371,
-390
+474,
+490
 ],
 "alt_span": [
-392,
-412
+504,
+523
 ]
 },
 {
 "k": 14,
-"nat": "smallestValue;\n      smallestValue",
-"alt": "nSmallestValue;\n      nSmallestValue",
+"nat": "currentListSize",
+"alt": "nCurrentListSize",
 "nat_span": [
-393,
-427
+501,
+516
 ],
 "alt_span": [
-415,
-451
+534,
+550
 ]
 },
 {
 "k": 15,
-"nat": "currentNumber",
-"alt": "nCurrentNumber",
+"nat": "sortedUniqueList",
+"alt": "arrSortedUniqueList",
 "nat_span": [
-430,
-443
+519,
+535
 ],
 "alt_span": [
-454,
-468
+553,
+572
+]
+},
+{
+"k": 16,
+"nat": "indexPosition",
+"alt": "nIndexPosition",
+"nat_span": [
+556,
+569
+],
+"alt_span": [
+593,
+607
+]
+},
+{
+"k": 17,
+"nat": "indexPosition",
+"alt": "nIndexPosition",
+"nat_span": [
+575,
+588
+],
+"alt_span": [
+613,
+627
+]
+},
+{
+"k": 18,
+"nat": "currentListSize; indexPosition",
+"alt": "nCurrentListSize; nIndexPosition",
+"nat_span": [
+591,
+621
+],
+"alt_span": [
+630,
+662
+]
+},
+{
+"k": 19,
+"nat": "currentNumberBeingChecked",
+"alt": "nCurrentNumberBeingChecked",
+"nat_span": [
+635,
+660
+],
+"alt_span": [
+676,
+702
+]
+},
+{
+"k": 20,
+"nat": "sortedUniqueList[indexPosition",
+"alt": "arrSortedUniqueList[nIndexPosition",
+"nat_span": [
+663,
+693
+],
+"alt_span": [
+705,
+739
+]
+},
+{
+"k": 21,
+"nat": "currentNumberBeingChecked",
+"alt": "nCurrentNumberBeingChecked",
+"nat_span": [
+704,
+729
+],
+"alt_span": [
+750,
+776
+]
+},
+{
+"k": 22,
+"nat": "smallestValue",
+"alt": "nSmallestValue",
+"nat_span": [
+732,
+745
+],
+"alt_span": [
+779,
+793
+]
+},
+{
+"k": 23,
+"nat": "secondSmallestValueFound",
+"alt": "nSecondSmallestValueFound",
+"nat_span": [
+755,
+779
+],
+"alt_span": [
+803,
+828
+]
+},
+{
+"k": 24,
+"nat": "smallestValue;\n      smallestValue",
+"alt": "nSmallestValue;\n      nSmallestValue",
+"nat_span": [
+782,
+816
+],
+"alt_span": [
+831,
+867
+]
+},
+{
+"k": 25,
+"nat": "currentNumberBeingChecked",
+"alt": "nCurrentNumberBeingChecked",
+"nat_span": [
+819,
+844
+],
+"alt_span": [
+870,
+896
+]
+},
+{
+"k": 26,
+"nat": "currentNumberBeingChecked",
+"alt": "nCurrentNumberBeingChecked",
+"nat_span": [
+861,
+886
+],
+"alt_span": [
+913,
+939
+]
+},
+{
+"k": 27,
+"nat": "secondSmallestValueFound",
+"alt": "nSecondSmallestValueFound",
+"nat_span": [
+889,
+913
+],
+"alt_span": [
+942,
+967
+]
+},
+{
+"k": 28,
+"nat": "currentNumberBeingChecked",
+"alt": "nCurrentNumberBeingChecked",
+"nat_span": [
+917,
+942
+],
+"alt_span": [
+971,
+997
+]
+},
+{
+"k": 29,
+"nat": "smallestValue",
+"alt": "nSmallestValue",
+"nat_span": [
+947,
+960
+],
+"alt_span": [
+1002,
+1016
+]
+},
+{
+"k": 30,
+"nat": "secondSmallestValueFound",
+"alt": "nSecondSmallestValueFound",
+"nat_span": [
+970,
+994
+],
+"alt_span": [
+1026,
+1051
+]
+},
+{
+"k": 31,
+"nat": "currentNumberBeingChecked",
+"alt": "nCurrentNumberBeingChecked",
+"nat_span": [
+997,
+1022
+],
+"alt_span": [
+1054,
+1080
+]
+},
+{
+"k": 32,
+"nat": "secondSmallestValueFound",
+"alt": "nSecondSmallestValueFound",
+"nat_span": [
+1044,
+1068
+],
+"alt_span": [
+1102,
+1127
 ]
 }
 ],

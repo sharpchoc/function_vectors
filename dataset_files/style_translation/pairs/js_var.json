@@ -20075,8 +20075,8 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const areAnagrams = (str1, str2) => {\n  const cleanString = (str) => {\n    let lowerStr = str.toLowerCase();\n    const alphabeticChars = lowerStr.replace(/[^a-z]/g, '');\n    return alphabeticChars.split('').sort().join('');\n  };\n\n  const cleanedStr1 = cleanString(str1);\n  const cleanedStr2 = cleanString(str2);\n\n  let result = cleanedStr1 === cleanedStr2;\n  return result;\n};\n\nlet test1 = 'listen';\nlet test2 = 'silent';\nlet areTheyAnagrams1 = areAnagrams(test1, test2);\n\nlet test3 = 'hello';\nlet test4 = 'world';\nconst areTheyAnagrams2 = areAnagrams(test3, test4);\n\nconst test5 = 'A decimal point';\nconst test6 = 'I'm a dot in place';\nlet areTheyAnagrams3 = areAnagrams(test5, test6);\n",
-"text_alt": "var areAnagrams = (str1, str2) => {\n  var cleanString = (str) => {\n    var lowerStr = str.toLowerCase();\n    var alphabeticChars = lowerStr.replace(/[^a-z]/g, '');\n    return alphabeticChars.split('').sort().join('');\n  };\n\n  var cleanedStr1 = cleanString(str1);\n  var cleanedStr2 = cleanString(str2);\n\n  var result = cleanedStr1 === cleanedStr2;\n  return result;\n};\n\nvar test1 = 'listen';\nvar test2 = 'silent';\nvar areTheyAnagrams1 = areAnagrams(test1, test2);\n\nvar test3 = 'hello';\nvar test4 = 'world';\nvar areTheyAnagrams2 = areAnagrams(test3, test4);\n\nvar test5 = 'A decimal point';\nvar test6 = 'I\\'m a dot in place';\nvar areTheyAnagrams3 = areAnagrams(test5, test6);\n",
+"text_nat": "const areAnagrams = (str1, str2) => {\n  let cleanedStr1 = str1.toLowerCase().replace(/[^a-z]/g, '');\n  let cleanedStr2 = str2.toLowerCase().replace(/[^a-z]/g, '');\n\n  if (cleanedStr1.length !== cleanedStr2.length) {\n    return false;\n  }\n\n  const charCount1 = {};\n  const charCount2 = {};\n  let i = 0;\n\n  while (i < cleanedStr1.length) {\n    let char = cleanedStr1[i];\n    charCount1[char] = (charCount1[char] || 0) + 1;\n    i++;\n  }\n\n  let j = 0;\n  while (j < cleanedStr2.length) {\n    let char = cleanedStr2[j];\n    charCount2[char] = (charCount2[char] || 0) + 1;\n    j++;\n  }\n\n  for (const char in charCount1) {\n    if (charCount1[char] !== charCount2[char]) {\n      return false;\n    }\n  }\n\n  return true;\n};\n",
+"text_alt": "var areAnagrams = (str1, str2) => {\n  var cleanedStr1 = str1.toLowerCase().replace(/[^a-z]/g, '');\n  var cleanedStr2 = str2.toLowerCase().replace(/[^a-z]/g, '');\n\n  if (cleanedStr1.length !== cleanedStr2.length) {\n    return false;\n  }\n\n  var charCount1 = {};\n  var charCount2 = {};\n  var i = 0;\n\n  while (i < cleanedStr1.length) {\n    var char = cleanedStr1[i];\n    charCount1[char] = (charCount1[char] || 0) + 1;\n    i++;\n  }\n\n  var j = 0;\n  while (j < cleanedStr2.length) {\n    var char = cleanedStr2[j];\n    charCount2[char] = (charCount2[char] || 0) + 1;\n    j++;\n  }\n\n  for (var char in charCount1) {\n    if (charCount1[char] !== charCount2[char]) {\n      return false;\n    }\n  }\n\n  return true;\n};\n",
 "opps": [
 {
 "k": 0,
@@ -20093,11 +20093,11 @@
 },
 {
 "k": 1,
-"nat": "const",
+"nat": "let",
 "alt": "var",
 "nat_span": [
 40,
-45
+43
 ],
 "alt_span": [
 38,
@@ -20109,12 +20109,12 @@
 "nat": "let",
 "alt": "var",
 "nat_span": [
-75,
-78
+103,
+106
 ],
 "alt_span": [
-71,
-74
+101,
+104
 ]
 },
 {
@@ -20122,12 +20122,12 @@
 "nat": "const",
 "alt": "var",
 "nat_span": [
-113,
-118
+241,
+246
 ],
 "alt_span": [
-109,
-112
+239,
+242
 ]
 },
 {
@@ -20135,25 +20135,25 @@
 "nat": "const",
 "alt": "var",
 "nat_span": [
-232,
-237
+266,
+271
 ],
 "alt_span": [
-226,
-229
+262,
+265
 ]
 },
 {
 "k": 5,
-"nat": "const",
+"nat": "let",
 "alt": "var",
 "nat_span": [
-273,
-278
+291,
+294
 ],
 "alt_span": [
-265,
-268
+285,
+288
 ]
 },
 {
@@ -20161,12 +20161,12 @@
 "nat": "let",
 "alt": "var",
 "nat_span": [
-315,
-318
+342,
+345
 ],
 "alt_span": [
-305,
-308
+336,
+339
 ]
 },
 {
@@ -20174,12 +20174,12 @@
 "nat": "let",
 "alt": "var",
 "nat_span": [
-378,
-381
+437,
+440
 ],
 "alt_span": [
-368,
-371
+431,
+434
 ]
 },
 {
@@ -20187,121 +20187,30 @@
 "nat": "let",
 "alt": "var",
 "nat_span": [
-400,
-403
+487,
+490
 ],
 "alt_span": [
-390,
-393
+481,
+484
 ]
 },
 {
 "k": 9,
-"nat": "let",
-"alt": "var",
-"nat_span": [
-422,
-425
-],
-"alt_span": [
-412,
-415
-]
-},
-{
-"k": 10,
-"nat": "let",
-"alt": "var",
-"nat_span": [
-473,
-476
-],
-"alt_span": [
-463,
-466
-]
-},
-{
-"k": 11,
-"nat": "let",
-"alt": "var",
-"nat_span": [
-494,
-497
-],
-"alt_span": [
-484,
-487
-]
-},
-{
-"k": 12,
 "nat": "const",
 "alt": "var",
 "nat_span": [
-515,
-520
-],
-"alt_span": [
-505,
-508
-]
-},
-{
-"k": 13,
-"nat": "const",
-"alt": "var",
-"nat_span": [
-568,
-573
-],
-"alt_span": [
-556,
-559
-]
-},
-{
-"k": 14,
-"nat": "const",
-"alt": "var",
-"nat_span": [
-601,
-606
-],
-"alt_span": [
 587,
-590
-]
-},
-{
-"k": 15,
-"nat": "",
-"alt": "\\",
-"nat_span": [
-617,
-617
+592
 ],
 "alt_span": [
-601,
-602
-]
-},
-{
-"k": 16,
-"nat": "let",
-"alt": "var",
-"nat_span": [
-637,
-640
-],
-"alt_span": [
-622,
-625
+581,
+584
 ]
 }
 ],
-"k_en": 17,
-"shared_fraction": 0.94,
+"k_en": 10,
+"shared_fraction": 0.967,
 "pass": true,
 "verify": null
 },

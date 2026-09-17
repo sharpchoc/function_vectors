@@ -9496,3 +9496,11 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   prefixes identical again); 57 rejected docs regenerated under every guard (57/57). Integrity sweep over all 10,166 pairs: 0 issues
   (spans, k0 prefix, guards, parse, free bookkeeping, twin consistency, collisions, shared fraction). Parsers env
   `/workspace/micromamba/envs/parsers` (node, rustc, php) installed for the non-Python syntax check (bug 9 sizing). Artifact v11.
+- 2026-09-17 bug 9 (user-approved, applied): invalid non-Python twins. Parsers env `/workspace/micromamba/envs/parsers` (node --check,
+  rustfmt --check = parse only, php -l; rustc --emit=metadata is NOT a parse check, it type-checks). 14 docs: JS 7 (js_hungarian 1, js_quotes 2,
+  js_template 1, js_var 1, js_arrow 2), rust_question 6, php_array 1. `code_build.valid_source(lang, text)` guards every generation (Python /
+  JS / Rust / PHP / Bash; SQL / CSS / R still unchecked). Repaired: 9 whole-document regenerations, 4 rewrite-only, and php_array t074 REPLACED
+  by php_array t063 (the task demanded a function `wordWrap`, which redeclares PHP's built-in `wordwrap` — case-insensitive — so no solution
+  can parse). Sweep: 10,166 pairs, 9,390 parsed by a real parser, 0 issues. Prompt-inspection page (k = 0..3 for py_paren_if / py_private /
+  line_wrap / py_indent, per-family counts, judging description) published as artifact v12; bug-9 page v13. Generator cache pruned to the
+  cleaned documents (b673e40e). Leftover for the user: 5 k = 8 steering folders under qwen25_base (sibling's study, old data) — untouched.
