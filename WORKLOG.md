@@ -9434,3 +9434,10 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   judged confirm (no control) for the k = 8 vector AND the canonical k = 0..4 vector on the same prompts (`steer_screen/confirm/analyze`
   gained `--vec_tag/--layers/--in_tag/--out_tag`). Result (`code/k8/steering/`): → alt .450 vs .427 (+.02, SE .014), → nat .558 vs .559;
   α response identical. No gain. 4 pods (~3 pod-h), all terminated; 0 judge failures.
+- 2026-09-16/17 rebuild under the free-opportunity rule (DECISIONS 2026-09-16): 12 families regenerated (`code_build --target 200`, EXTRA_HINT);
+  two data defects found and fixed on the way — (a) identifiers pinned by the task text were rendered in the alt convention (k = 0 prompts
+  differed between poles) → `harmonise_pinned`; (b) the Gemini rewrite often renamed a parameter's uses but not its `def` (alt twin referencing
+  an undefined name; ~190/260 py_snake_camel docs, present in the v1 data too) → `propagate_renames` (per-identifier mapping applied to every
+  whole-word occurrence, dotted form for py_private) + `consistent_twins` guard. Final pairs: 200 each, py_loop_vars 102. Step 3 rerun for the
+  8 identifier families (pods crb_1..4, shards `logs/rb2_shard*.txt`); py_self_name / py_tabs keep their first rebuild rollouts; py_bool_prefix
+  and py_indent dropped by the cutoff (pool 53). Stage 2 (`logs/code_rebuild_stage2_job.sh`) follows per shard after judging.
