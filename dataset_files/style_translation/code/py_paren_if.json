@@ -40419,5 +40419,925 @@
 "shared_fraction": 1.0,
 "pass": true,
 "verify": null
+},
+{
+"doc_id": "py_paren_if__t201",
+"family": "py_paren_if",
+"topic": "Merge Two Sorted Lists",
+"angle": "code",
+"text_es": "Write a function `merge_sorted_lists(list1, list2)` that takes two already sorted lists of numbers. It should return a new sorted list containing all elements from both input lists. Example: `merge_sorted_lists([1, 3, 5], [2, 4, 6])` should return `[1, 2, 3, 4, 5, 6]`, `merge_sorted_lists([10], [])` should return `[10]`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def merge_sorted_lists(list1, list2):\n    merged = []\n    i = 0\n    j = 0\n    \n    while i < len(list1) and j < len(list2):\n        if list1[i] <= list2[j]:\n            merged.append(list1[i])\n            i += 1\n        else:\n            merged.append(list2[j])\n            j += 1\n            \n    if i < len(list1):\n        merged.extend(list1[i:])\n    elif j < len(list2):\n        merged.extend(list2[j:])\n        \n    return merged\n",
+"text_alt": "def merge_sorted_lists(list1, list2):\n    merged = []\n    i = 0\n    j = 0\n    \n    while (i < len(list1) and j < len(list2)):\n        if (list1[i] <= list2[j]):\n            merged.append(list1[i])\n            i += 1\n        else:\n            merged.append(list2[j])\n            j += 1\n            \n    if (i < len(list1)):\n        merged.extend(list1[i:])\n    elif (j < len(list2)):\n        merged.extend(list2[j:])\n        \n    return merged\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+89,
+89
+],
+"alt_span": [
+89,
+90
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+122,
+122
+],
+"alt_span": [
+123,
+124
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+135,
+135
+],
+"alt_span": [
+137,
+138
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+155,
+155
+],
+"alt_span": [
+158,
+159
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+301,
+301
+],
+"alt_span": [
+305,
+306
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+314,
+314
+],
+"alt_span": [
+319,
+320
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+359,
+359
+],
+"alt_span": [
+365,
+366
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+372,
+372
+],
+"alt_span": [
+379,
+380
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_paren_if__t202",
+"family": "py_paren_if",
+"topic": "Word Reversal (Preserve Punctuation)",
+"angle": "code",
+"text_es": "Implement `reverse_words_with_punctuation(sentence)` that takes a string `sentence`. It should reverse the order of words but keep punctuation attached to its word. Example: `reverse_words_with_punctuation('Hello, world!')` should return `'world!, Hello,'`, `reverse_words_with_punctuation('One. Two. Three.')` should return `'Three. Two. One.'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def reverse_words_with_punctuation(sentence)\n  if not sentence: return \"\"\n\n  words = []\n  current_word = \"\"\n  for char in sentence:\n    if char.isalnum():\n      current_word += char\n    else:\n      if current_word: words.append(current_word)\n      current_word = \"\"\n      words[-1] += char if words else char # attach punctuation if word exists\n\n  if current_word: words.append(current_word)\n  if not words: return \"\" # handle cases like \"!!!\"\n\n  left = 0\n  right = len(words) - 1\n\n  while left < right:\n    temp = words[left]\n    words[left] = words[right]\n    words[right] = temp\n    left += 1\n    right -= 1\n\n  return \" \".join(words)\n",
+"text_alt": "def reverse_words_with_punctuation(sentence):\n  if (not sentence): return \"\"\n\n  words = []\n  current_word = \"\"\n  for char in sentence:\n    if (char.isalnum()):\n      current_word += char\n    else:\n      if (current_word): words.append(current_word)\n      current_word = \"\"\n      words[-1] += char if (words) else char # attach punctuation if word exists\n\n  if (current_word): words.append(current_word)\n  if (not words): return \"\" # handle cases like \"!!!\"\n\n  left = 0\n  right = len(words) - 1\n\n  while (left < right):\n    temp = words[left]\n    words[left] = words[right]\n    words[right] = temp\n    left += 1\n    right -= 1\n\n  return \" \".join(words)\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": ":",
+"nat_span": [
+44,
+44
+],
+"alt_span": [
+44,
+45
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "(",
+"nat_span": [
+50,
+50
+],
+"alt_span": [
+51,
+52
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": ")",
+"nat_span": [
+62,
+62
+],
+"alt_span": [
+64,
+65
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "(",
+"nat_span": [
+139,
+139
+],
+"alt_span": [
+142,
+143
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": ")",
+"nat_span": [
+152,
+152
+],
+"alt_span": [
+156,
+157
+]
+},
+{
+"k": 5,
+"nat": "current_word",
+"alt": "(current_word)",
+"nat_span": [
+201,
+213
+],
+"alt_span": [
+206,
+220
+]
+},
+{
+"k": 6,
+"nat": "words",
+"alt": "(words)",
+"nat_span": [
+293,
+298
+],
+"alt_span": [
+300,
+307
+]
+},
+{
+"k": 7,
+"nat": "current_word",
+"alt": "(current_word)",
+"nat_span": [
+351,
+363
+],
+"alt_span": [
+360,
+374
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+397,
+397
+],
+"alt_span": [
+408,
+409
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+406,
+406
+],
+"alt_span": [
+418,
+419
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+490,
+490
+],
+"alt_span": [
+503,
+504
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+502,
+502
+],
+"alt_span": [
+516,
+517
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_paren_if__t203",
+"family": "py_paren_if",
+"topic": "Find Longest Word in File (Dummy)",
+"angle": "code",
+"text_es": "Create a function `find_longest_word_in_file(filepath)` that takes a `filepath`. Simulate reading a file and finding the longest word (alphanumeric sequences). Return the longest word as a string. If the file is empty or not found, return an empty string. Example: `find_longest_word_in_file('dummy_file.txt')` (containing 'apple banana a') should return `'banana'`, `find_longest_word_in_file('empty.txt')` should return `''`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def find_longest_word_in_file(filepath):\n    longest_word = \"\"\n    try:\n        with open(filepath, 'r') as file:\n            for line in file:\n                current_word = \"\"\n                i = 0\n                while i < len(line):\n                    char = line[i]\n                    if char.isalnum():\n                        current_word += char\n                    else:\n                        if len(current_word) > len(longest_word):\n                            longest_word = current_word\n                        current_word = \"\"\n                    i += 1\n                if len(current_word) > len(longest_word):\n                    longest_word = current_word\n    except FileNotFoundError:\n        return \"\"\n    if len(longest_word) == 0:\n        return \"\"\n    return longest_word\n",
+"text_alt": "def find_longest_word_in_file(filepath):\n    longest_word = \"\"\n    try:\n        with open(filepath, 'r') as file:\n            for line in file:\n                current_word = \"\"\n                i = 0\n                while (i < len(line)):\n                    char = line[i]\n                    if (char.isalnum()):\n                        current_word += char\n                    else:\n                        if (len(current_word) > len(longest_word)):\n                            longest_word = current_word\n                        current_word = \"\"\n                    i += 1\n                if (len(current_word) > len(longest_word)):\n                    longest_word = current_word\n    except FileNotFoundError:\n        return \"\"\n    if (len(longest_word) == 0):\n        return \"\"\n    return longest_word\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+222,
+222
+],
+"alt_span": [
+222,
+223
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+234,
+234
+],
+"alt_span": [
+235,
+236
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+295,
+295
+],
+"alt_span": [
+297,
+298
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+308,
+308
+],
+"alt_span": [
+311,
+312
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+409,
+409
+],
+"alt_span": [
+413,
+414
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+445,
+445
+],
+"alt_span": [
+450,
+451
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+592,
+592
+],
+"alt_span": [
+598,
+599
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+628,
+628
+],
+"alt_span": [
+635,
+636
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+734,
+734
+],
+"alt_span": [
+742,
+743
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+756,
+756
+],
+"alt_span": [
+765,
+766
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_paren_if__t204",
+"family": "py_paren_if",
+"topic": "Calculate Factorial",
+"angle": "code",
+"text_es": "Write a function `calculate_factorial(n)` that takes a non-negative integer `n`. It should return the factorial of `n`. Use recursion or iteration. Example: `calculate_factorial(5)` should return `120`, `calculate_factorial(0)` should return `1`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def calculate_factorial(n):\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer\")\n\n    if n == 0: return 1\n\n    result = 1\n    current_number = n\n\n    while current_number > 0:\n        result *= current_number\n        current_number -= 1\n        if current_number == 0:\n            return result\n        elif current_number > 1:\n            pass\n        else:\n            return result\n    return result\n",
+"text_alt": "def calculate_factorial(n):\n    if (n < 0):\n        raise ValueError(\"Input must be a non-negative integer\")\n\n    if (n == 0): return 1\n\n    result = 1\n    current_number = n\n\n    while (current_number > 0):\n        result *= current_number\n        current_number -= 1\n        if (current_number == 0):\n            return result\n        elif (current_number > 1):\n            pass\n        else:\n            return result\n    return result\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+35,
+35
+],
+"alt_span": [
+35,
+36
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+40,
+40
+],
+"alt_span": [
+41,
+42
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+115,
+115
+],
+"alt_span": [
+117,
+118
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+121,
+121
+],
+"alt_span": [
+124,
+125
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+182,
+182
+],
+"alt_span": [
+186,
+187
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+200,
+200
+],
+"alt_span": [
+205,
+206
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+274,
+274
+],
+"alt_span": [
+280,
+281
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+293,
+293
+],
+"alt_span": [
+300,
+301
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+334,
+334
+],
+"alt_span": [
+342,
+343
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+352,
+352
+],
+"alt_span": [
+361,
+362
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_paren_if__t205",
+"family": "py_paren_if",
+"topic": "Check for Perfect Square",
+"angle": "code",
+"text_es": "Implement `is_perfect_square(n)` that takes a non-negative integer `n`. It should return `True` if `n` is a perfect square, `False` otherwise. Example: `is_perfect_square(9)` should return `True`, `is_perfect_square(10)` should return `False`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def is_perfect_square(n):\n    if n < 0 :\n        return False\n    if n == 0 :\n        return True\n    \n    low = 1\n    high = n\n    \n    while low <= high :\n        mid = low + (high - low) // 2\n        \n        square = mid * mid\n        \n        if square == n :\n            return True\n        elif square < n :\n            low = mid + 1\n        elif square > n :\n            high = mid - 1\n            \n    return False\n",
+"text_alt": "def is_perfect_square(n):\n    if (n < 0) :\n        return False\n    if (n == 0) :\n        return True\n    \n    low = 1\n    high = n\n    \n    while (low <= high) :\n        mid = low + (high - low) // 2\n        \n        square = mid * mid\n        \n        if (square == n) :\n            return True\n        elif (square < n) :\n            low = mid + 1\n        elif (square > n) :\n            high = mid - 1\n            \n    return False\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+33,
+33
+],
+"alt_span": [
+33,
+34
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+38,
+38
+],
+"alt_span": [
+39,
+40
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+69,
+69
+],
+"alt_span": [
+71,
+72
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+75,
+75
+],
+"alt_span": [
+78,
+79
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+143,
+143
+],
+"alt_span": [
+147,
+148
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": ")",
+"nat_span": [
+154,
+154
+],
+"alt_span": [
+159,
+160
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+251,
+251
+],
+"alt_span": [
+257,
+258
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": ")",
+"nat_span": [
+262,
+262
+],
+"alt_span": [
+269,
+270
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(",
+"nat_span": [
+302,
+302
+],
+"alt_span": [
+310,
+311
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+312,
+312
+],
+"alt_span": [
+321,
+322
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "(",
+"nat_span": [
+354,
+354
+],
+"alt_span": [
+364,
+365
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": ")",
+"nat_span": [
+364,
+364
+],
+"alt_span": [
+375,
+376
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 1.0,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_paren_if__t206",
+"family": "py_paren_if",
+"topic": "Group List Elements by Type",
+"angle": "code",
+"text_es": "Create a function `group_by_type(items)` that takes a list `items` of mixed types. It should return a dictionary where keys are type names (as strings, e.g., 'int', 'str') and values are lists of items of that type. Example: `group_by_type([1, 'a', 2.5, 'b', 3])` should return `{'int': [1, 3], 'str': ['a', 'b'], 'float': [2.5]}`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def group_by_type(items):\n    grouped_data = {}\n    i = 0\n    while i < len(items) :\n        item = items[i]\n        item_type = type(item).__name__\n        if item_type not in grouped_data :\n            grouped_data[item_type] = []\n        if isinstance(item, int) or isinstance(item, float) :\n            grouped_data[item_type].append(item)\n        elif isinstance(item, str) :\n            grouped_data[item_type].append(item)\n        elif isinstance(item, list) :\n            grouped_data[item_type].append(item)\n        elif isinstance(item, dict) :\n            grouped_data[item_type].append(item)\n        else :\n            grouped_data[item_type].append(item)\n        i += 1\n    return grouped_data\n",
+"text_alt": "def group_by_type(items):\n    grouped_data = {}\n    i = 0\n    while (i < len(items)) :\n        item = items[i]\n        item_type = type(item).__name__\n        if (item_type not in grouped_data) :\n            grouped_data[item_type] = []\n        if (isinstance(item, int) or isinstance(item, float)) :\n            grouped_data[item_type].append(item)\n        elif (isinstance(item, str)) :\n            grouped_data[item_type].append(item)\n        elif (isinstance(item, list)) :\n            grouped_data[item_type].append(item)\n        elif (isinstance(item, dict)) :\n            grouped_data[item_type].append(item)\n        else :\n            grouped_data[item_type].append(item)\n        i += 1\n    return grouped_data\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "(",
+"nat_span": [
+68,
+68
+],
+"alt_span": [
+68,
+69
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": ")",
+"nat_span": [
+81,
+81
+],
+"alt_span": [
+82,
+83
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "(",
+"nat_span": [
+160,
+160
+],
+"alt_span": [
+162,
+163
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": ")",
+"nat_span": [
+189,
+189
+],
+"alt_span": [
+192,
+193
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "(",
+"nat_span": [
+244,
+244
+],
+"alt_span": [
+248,
+249
+]
+},
+{
+"k": 5,
+"nat": " :\n            grouped_data[item_type].append(item)\n        elif isinstance(item, str",
+"alt": "",
+"nat_span": [
+292,
+377
+],
+"alt_span": [
+297,
+297
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "(",
+"nat_span": [
+443,
+443
+],
+"alt_span": [
+363,
+364
+]
+},
+{
+"k": 7,
+"nat": "list",
+"alt": "str)",
+"nat_span": [
+460,
+464
+],
+"alt_span": [
+381,
+385
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "(isinstance(item, list)) :\n            grouped_data[item_type].append(item)\n        elif (",
+"nat_span": [
+530,
+530
+],
+"alt_span": [
+451,
+541
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": ")",
+"nat_span": [
+551,
+551
+],
+"alt_span": [
+562,
+563
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.889,
+"pass": true,
+"verify": null
 }
 ]

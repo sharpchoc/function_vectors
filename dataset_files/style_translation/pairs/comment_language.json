@@ -34338,246 +34338,6 @@
 "verify": null
 },
 {
-"doc_id": "comment_language__t161",
-"family": "comment_language",
-"topic": "Find First Unique Character",
-"angle": "code",
-"text_es": "Find the first non-repeating character in a string and return its index. If no unique character exists, return -1. The function `first_unique_char` should take one argument: `s` (str). It should return an integer. \nExample 1: `first_unique_char('leetcode')` should return `0` (for 'l'). \nExample 2: `first_unique_char('loveleetcode')` should return `2` (for 'v').",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def first_unique_char(s: str) -> int:\n    # Create a dictionary to store character counts.\n    char_counts = {}\n    # Iterate through the string to populate the character counts.\n    for char in s:\n        char_counts[char] = char_counts.get(char, 0) + 1\n\n    # Iterate through the string again to find the first unique character.\n    for i, char in enumerate(s):\n        # Check if the current character's count is 1.\n        if char_counts[char] == 1:\n            # If it is, return its index.\n            return i\n    # If no unique character is found after checking all characters, return -1.\n    return -1\n\n```python\ndef first_unique_char(s: str) -> int:\n    # Initialize a dictionary to store character frequencies.\n    char_freq = {} \n    # First pass: populate the frequency map for each character.\n    for char in s:\n        char_freq[char] = char_freq.get(char, 0) + 1 \n    \n    # Second pass: iterate through the string to find the first character with a frequency of 1.\n    for i, char in enumerate(s):\n        # Check if the character's count in our map is exactly one.\n        if char_freq[char] == 1:\n            # If it is, this is our first non-repeating character, return its index.\n            return i \n            \n    # If the loop completes without finding any unique character, return -1.\n    return -1 # This indicates no unique character was found in the string.\n",
-"text_alt": "def first_unique_char(s: str) -> int:\n    # Crear un diccionario para almacenar los recuentos de caracteres.\n    char_counts = {}\n    # Iterar a través de la cadena para poblar los recuentos de caracteres.\n    for char in s:\n        char_counts[char] = char_counts.get(char, 0) + 1\n\n    # Iterar a través de la cadena nuevamente para encontrar el primer carácter único.\n    for i, char in enumerate(s):\n        # Comprobar si el recuento del carácter actual es 1.\n        if char_counts[char] == 1:\n            # Si lo es, devolver su índice.\n            return i\n    # Si no se encuentra ningún carácter único después de verificar todos los caracteres, devolver -1.\n    return -1\n\ndef first_unique_char(s: str) -> int:\n    # Inicializar un diccionario para almacenar las frecuencias de los caracteres.\n    char_freq = {} \n    # Primera pasada: poblar el mapa de frecuencias para cada carácter.\n    for char in s:\n        char_freq[char] = char_freq.get(char, 0) + 1 \n    \n    # Segunda pasada: iterar a través de la cadena para encontrar el primer carácter con una frecuencia de 1.\n    for i, char in enumerate(s):\n        # Comprobar si el recuento del carácter en nuestro mapa es exactamente uno.\n        if char_freq[char] == 1:\n            # Si lo es, este es nuestro primer carácter no repetido, devolver su índice.\n            return i \n            \n    # Si el bucle se completa sin encontrar ningún carácter único, devolver -1.\n    return -1 # Esto indica que no se encontró ningún carácter único en la cadena.\n",
-"opps": [
-{
-"k": 0,
-"nat": "Create a dictionary to store character counts",
-"alt": "Crear un diccionario para almacenar los recuentos de caracteres",
-"nat_span": [
-44,
-89
-],
-"alt_span": [
-44,
-107
-]
-},
-{
-"k": 1,
-"nat": "Iterate through the string to populate the character counts",
-"alt": "Iterar a través de la cadena para poblar los recuentos de caracteres",
-"nat_span": [
-118,
-177
-],
-"alt_span": [
-136,
-204
-]
-},
-{
-"k": 2,
-"nat": "Iterate through the string again to find the first unique character",
-"alt": "Iterar a través de la cadena nuevamente para encontrar el primer carácter único",
-"nat_span": [
-262,
-329
-],
-"alt_span": [
-289,
-368
-]
-},
-{
-"k": 3,
-"nat": "Check if the current character's count is",
-"alt": "Comprobar si el recuento del carácter actual es",
-"nat_span": [
-374,
-415
-],
-"alt_span": [
-413,
-460
-]
-},
-{
-"k": 4,
-"nat": "If it is, return its index",
-"alt": "Si lo es, devolver su índice",
-"nat_span": [
-468,
-494
-],
-"alt_span": [
-513,
-541
-]
-},
-{
-"k": 5,
-"nat": "If",
-"alt": "Si",
-"nat_span": [
-523,
-525
-],
-"alt_span": [
-570,
-572
-]
-},
-{
-"k": 6,
-"nat": "unique character is found after checking all characters, return",
-"alt": "se encuentra ningún carácter único después de verificar todos los caracteres, devolver",
-"nat_span": [
-529,
-592
-],
-"alt_span": [
-576,
-662
-]
-},
-{
-"k": 7,
-"nat": "```python\n",
-"alt": "",
-"nat_span": [
-612,
-622
-],
-"alt_span": [
-682,
-682
-]
-},
-{
-"k": 8,
-"nat": "Initialize a dictionary to store character frequencies",
-"alt": "Inicializar un diccionario para almacenar las frecuencias de los caracteres",
-"nat_span": [
-666,
-720
-],
-"alt_span": [
-726,
-801
-]
-},
-{
-"k": 9,
-"nat": "First pass: populate the frequency map for each character",
-"alt": "Primera pasada: poblar el mapa de frecuencias para cada carácter",
-"nat_span": [
-748,
-805
-],
-"alt_span": [
-829,
-893
-]
-},
-{
-"k": 10,
-"nat": "Second pass: iterate through the string to find the first character with",
-"alt": "Segunda pasada: iterar",
-"nat_span": [
-891,
-963
-],
-"alt_span": [
-979,
-1001
-]
-},
-{
-"k": 11,
-"nat": "frequency of",
-"alt": "través de la cadena para encontrar el primer carácter con una frecuencia de",
-"nat_span": [
-966,
-978
-],
-"alt_span": [
-1004,
-1079
-]
-},
-{
-"k": 12,
-"nat": "Check if the character's count in our map is exactly one",
-"alt": "Comprobar si el recuento del carácter en nuestro mapa es exactamente uno",
-"nat_span": [
-1025,
-1081
-],
-"alt_span": [
-1126,
-1198
-]
-},
-{
-"k": 13,
-"nat": "If it is, this is our first non-repeating character, return its index",
-"alt": "Si lo es, este es nuestro primer carácter no repetido, devolver su índice",
-"nat_span": [
-1130,
-1199
-],
-"alt_span": [
-1247,
-1320
-]
-},
-{
-"k": 14,
-"nat": "If the loop completes without finding any unique character, return",
-"alt": "Si el bucle se completa sin encontrar ningún carácter único, devolver",
-"nat_span": [
-1242,
-1308
-],
-"alt_span": [
-1363,
-1432
-]
-},
-{
-"k": 15,
-"nat": "This indicates",
-"alt": "Esto indica que",
-"nat_span": [
-1329,
-1343
-],
-"alt_span": [
-1453,
-1468
-]
-},
-{
-"k": 16,
-"nat": "unique character was found in the string",
-"alt": "se encontró ningún carácter único en la cadena",
-"nat_span": [
-1347,
-1387
-],
-"alt_span": [
-1472,
-1518
-]
-}
-],
-"k_en": 17,
-"shared_fraction": 0.714,
-"pass": true,
-"verify": null
-},
-{
 "doc_id": "comment_language__t162",
 "family": "comment_language",
 "topic": "Simple Unit Converter (Length)",
@@ -43726,6 +43486,246 @@
 ],
 "k_en": 18,
 "shared_fraction": 0.707,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "comment_language__t201",
+"family": "comment_language",
+"topic": "Merge Two Sorted Lists",
+"angle": "code",
+"text_es": "Write a function `merge_sorted_lists(list1, list2)` that takes two already sorted lists of numbers. It should return a new sorted list containing all elements from both input lists. Example: `merge_sorted_lists([1, 3, 5], [2, 4, 6])` should return `[1, 2, 3, 4, 5, 6]`, `merge_sorted_lists([10], [])` should return `[10]`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def merge_sorted_lists(list1, list2):\n    merged_list = []  # Initialize an empty list to store the merged results\n    i, j = 0, 0  # Initialize pointers for both input lists\n\n    # Iterate while both pointers are within their respective list bounds\n    while i < len(list1) and j < len(list2):\n        if list1[i] < list2[j]:  # Compare elements from both lists\n            merged_list.append(list1[i])  # Add the smaller element to the merged list\n            i += 1  # Move the pointer for list1 forward\n        else:\n            merged_list.append(list2[j])  # Add the smaller element from list2\n            j += 1  # Move the pointer for list2 forward\n\n    # Add any remaining elements from list1 (if list2 was exhausted first)\n    while i < len(list1):\n        merged_list.append(list1[i])\n        i += 1\n\n    # Add any remaining elements from list2 (if list1 was exhausted first)\n    while j < len(list2):\n        merged_list.append(list2[j])\n        j += 1\n\n    return merged_list  # Return the fully merged and sorted list\n",
+"text_alt": "def merge_sorted_lists(list1, list2):\n    merged_list = []  # Inicializa una lista vacía para almacenar los resultados fusionados\n    i, j = 0, 0  # Inicializa punteros para ambas listas de entrada\n\n    # Itera mientras ambos punteros estén dentro de los límites de sus respectivas listas\n    while i < len(list1) and j < len(list2):\n        if list1[i] < list2[j]:  # Compara elementos de ambas listas\n            merged_list.append(list1[i])  # Agrega el elemento más pequeño a la lista fusionada\n            i += 1  # Mueve el puntero de list1 hacia adelante\n        else:\n            merged_list.append(list2[j])  # Agrega el elemento más pequeño de list2\n            j += 1  # Mueve el puntero de list2 hacia adelante\n\n    # Agrega cualquier elemento restante de list1 (si list2 se agotó primero)\n    while i < len(list1):\n        merged_list.append(list1[i])\n        i += 1\n\n    # Agrega cualquier elemento restante de list2 (si list1 se agotó primero)\n    while j < len(list2):\n        merged_list.append(list2[j])\n        j += 1\n\n    return merged_list  # Devuelve la lista completamente fusionada y ordenada\n",
+"opps": [
+{
+"k": 0,
+"nat": "Initialize an empty list to store the merged results",
+"alt": "Inicializa una lista vacía para almacenar los resultados fusionados",
+"nat_span": [
+62,
+114
+],
+"alt_span": [
+62,
+129
+]
+},
+{
+"k": 1,
+"nat": "Initialize pointers for both input lists",
+"alt": "Inicializa punteros para ambas listas de entrada",
+"nat_span": [
+134,
+174
+],
+"alt_span": [
+149,
+197
+]
+},
+{
+"k": 2,
+"nat": "Iterate while both pointers are within their respective list bounds",
+"alt": "Itera mientras ambos punteros estén dentro de los límites de sus respectivas listas",
+"nat_span": [
+182,
+249
+],
+"alt_span": [
+205,
+288
+]
+},
+{
+"k": 3,
+"nat": "Compare elements from both lists",
+"alt": "Compara elementos de ambas listas",
+"nat_span": [
+330,
+362
+],
+"alt_span": [
+369,
+402
+]
+},
+{
+"k": 4,
+"nat": "Add the smaller element to the merged list",
+"alt": "Agrega el elemento más pequeño a la lista fusionada",
+"nat_span": [
+407,
+449
+],
+"alt_span": [
+447,
+498
+]
+},
+{
+"k": 5,
+"nat": "Move the pointer for",
+"alt": "Mueve el puntero de",
+"nat_span": [
+472,
+492
+],
+"alt_span": [
+521,
+540
+]
+},
+{
+"k": 6,
+"nat": "forward",
+"alt": "hacia adelante",
+"nat_span": [
+499,
+506
+],
+"alt_span": [
+547,
+561
+]
+},
+{
+"k": 7,
+"nat": "Add the smaller element from",
+"alt": "Agrega el elemento más pequeño de",
+"nat_span": [
+565,
+593
+],
+"alt_span": [
+620,
+653
+]
+},
+{
+"k": 8,
+"nat": "Move the pointer for",
+"alt": "Mueve el puntero de",
+"nat_span": [
+622,
+642
+],
+"alt_span": [
+682,
+701
+]
+},
+{
+"k": 9,
+"nat": "forward",
+"alt": "hacia adelante",
+"nat_span": [
+649,
+656
+],
+"alt_span": [
+708,
+722
+]
+},
+{
+"k": 10,
+"nat": "Add any remaining elements from",
+"alt": "Agrega cualquier elemento restante de",
+"nat_span": [
+664,
+695
+],
+"alt_span": [
+730,
+767
+]
+},
+{
+"k": 11,
+"nat": "if",
+"alt": "si",
+"nat_span": [
+703,
+705
+],
+"alt_span": [
+775,
+777
+]
+},
+{
+"k": 12,
+"nat": "was exhausted first",
+"alt": "se agotó primero",
+"nat_span": [
+712,
+731
+],
+"alt_span": [
+784,
+800
+]
+},
+{
+"k": 13,
+"nat": "Add any remaining elements from",
+"alt": "Agrega cualquier elemento restante de",
+"nat_span": [
+818,
+849
+],
+"alt_span": [
+887,
+924
+]
+},
+{
+"k": 14,
+"nat": "if",
+"alt": "si",
+"nat_span": [
+857,
+859
+],
+"alt_span": [
+932,
+934
+]
+},
+{
+"k": 15,
+"nat": "was exhausted first",
+"alt": "se agotó primero",
+"nat_span": [
+866,
+885
+],
+"alt_span": [
+941,
+957
+]
+},
+{
+"k": 16,
+"nat": "Return the fully merged and sorted list",
+"alt": "Devuelve la lista completamente fusionada y ordenada",
+"nat_span": [
+992,
+1031
+],
+"alt_span": [
+1064,
+1116
+]
+}
+],
+"k_en": 17,
+"shared_fraction": 0.785,
 "pass": true,
 "verify": null
 }

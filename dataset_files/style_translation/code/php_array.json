@@ -41601,5 +41601,530 @@
 "shared_fraction": 0.962,
 "pass": true,
 "verify": null
+},
+{
+"doc_id": "php_array__t201",
+"family": "php_array",
+"topic": "Sum of Digits (Recursive)",
+"angle": "code",
+"text_es": "Write a recursive function to calculate the sum of the digits of a non-negative integer. For example, sum of digits for 123 is 1 + 2 + 3 = 6. Return an integer.\n\nFunction signature: `function sumDigitsRecursive(int $number): int`.\nExample 1: `sumDigitsRecursive(123)` should return `6`.\nExample 2: `sumDigitsRecursive(0)` should return `0`.",
+"langs": {
+"src": "Task",
+"tgt": "PHP"
+},
+"text_nat": "<?php\n\nfunction sumDigitsRecursive(int $number): int {\n    if ($number < 10) {\n        $singleDigitArray = [$number];\n        return $singleDigitArray[0];\n    }\n\n    $lastDigit = $number % 10;\n    $remainingNumber = (int)($number / 10);\n\n    $intermediateSums = [];\n    $intermediateSums[] = $lastDigit;\n    $intermediateSums[] = sumDigitsRecursive($remainingNumber);\n\n    $results = [];\n    $results[] = array_sum($intermediateSums);\n\n    $sumComponents = [$lastDigit, sumDigitsRecursive($remainingNumber)];\n    $finalCalculation = array_sum($sumComponents);\n\n    $values = [$lastDigit, $remainingNumber, $finalCalculation];\n    $metadata = ['type' => 'recursive', 'input' => $number];\n\n    $sumArray = [$finalCalculation];\n    return $sumArray[0];\n}\n\n?>\n",
+"text_alt": "<?php\n\nfunction sumDigitsRecursive(int $number): int {\n    if ($number < 10) {\n        $singleDigitArray = array($number);\n        return $singleDigitArray[0];\n    }\n\n    $lastDigit = $number % 10;\n    $remainingNumber = (int)($number / 10);\n\n    $intermediateSums = array();\n    $intermediateSums[] = $lastDigit;\n    $intermediateSums[] = sumDigitsRecursive($remainingNumber);\n\n    $results = array();\n    $results[] = array_sum($intermediateSums);\n\n    $sumComponents = array($lastDigit, sumDigitsRecursive($remainingNumber));\n    $finalCalculation = array_sum($sumComponents);\n\n    $values = array($lastDigit, $remainingNumber, $finalCalculation);\n    $metadata = array('type' => 'recursive', 'input' => $number);\n\n    $sumArray = array($finalCalculation);\n    return $sumArray[0];\n}\n\n?>\n",
+"opps": [
+{
+"k": 0,
+"nat": "[$number]",
+"alt": "array($number)",
+"nat_span": [
+107,
+116
+],
+"alt_span": [
+107,
+121
+]
+},
+{
+"k": 1,
+"nat": "[]",
+"alt": "array()",
+"nat_span": [
+262,
+264
+],
+"alt_span": [
+267,
+274
+]
+},
+{
+"k": 2,
+"nat": "[]",
+"alt": "array()",
+"nat_span": [
+384,
+386
+],
+"alt_span": [
+394,
+401
+]
+},
+{
+"k": 3,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+457,
+458
+],
+"alt_span": [
+472,
+478
+]
+},
+{
+"k": 4,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+506,
+507
+],
+"alt_span": [
+526,
+527
+]
+},
+{
+"k": 5,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+575,
+576
+],
+"alt_span": [
+595,
+601
+]
+},
+{
+"k": 6,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+623,
+624
+],
+"alt_span": [
+648,
+649
+]
+},
+{
+"k": 7,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+642,
+643
+],
+"alt_span": [
+667,
+673
+]
+},
+{
+"k": 8,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+684,
+685
+],
+"alt_span": [
+714,
+715
+]
+},
+{
+"k": 9,
+"nat": "[$finalCalculation]",
+"alt": "array($finalCalculation)",
+"nat_span": [
+704,
+723
+],
+"alt_span": [
+734,
+758
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.943,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "php_array__t202",
+"family": "php_array",
+"topic": "Calculate Days in Month",
+"angle": "code",
+"text_es": "Create a function that returns the number of days in a given month and year. The month should be an integer (1-12) and the year an integer. Consider leap years for February.\n\nFunction signature: `function getDaysInMonth(int $month, int $year): int`.\nExample 1: `getDaysInMonth(2, 2024)` should return `29`.\nExample 2: `getDaysInMonth(1, 2023)` should return `31`.",
+"langs": {
+"src": "Task",
+"tgt": "PHP"
+},
+"text_nat": "<?php\n\nfunction getDaysInMonth(int $month, int $year): int {\n    if ($month < 1 || $month > 12) {\n        return 0; // Invalid month\n    }\n\n    $daysInMonths = [\n        0, // Placeholder for index 0\n        31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31\n    ];\n\n    if ($month === 2) {\n        $isLeapYear = ($year % 4 === 0 && $year % 100 !== 0) || ($year % 400 === 0);\n        return $isLeapYear ? 29 : 28;\n    }\n\n    $validMonths = [1, 3, 5, 7, 8, 10, 12];\n    if (in_array($month, $validMonths)) {\n        return 31;\n    }\n\n    $otherMonths = [4, 6, 9, 11];\n    if (in_array($month, $otherMonths)) {\n        return 30;\n    }\n\n    $allMonths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];\n    $monthMapping = [\n        1 => 31, 2 => 28, 3 => 31, 4 => 30, 5 => 31, 6 => 30,\n        7 => 31, 8 => 31, 9 => 30, 10 => 31, 11 => 30, 12 => 31\n    ];\n\n    $specialMonths = [2];\n    if (in_array($month, $specialMonths)) {\n        $leapDivisors = [4, 100, 400];\n        $isLeap = ($year % $leapDivisors[0] === 0 && $year % $leapDivisors[1] !== 0) || ($year % $leapDivisors[2] === 0);\n        return $isLeap ? 29 : $monthMapping[$month];\n    }\n\n    return $monthMapping[$month];\n}\n",
+"text_alt": "<?php\n\nfunction getDaysInMonth(int $month, int $year): int {\n    if ($month < 1 || $month > 12) {\n        return 0; // Invalid month\n    }\n\n    $daysInMonths = array(\n        0, // Placeholder for index 0\n        31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31\n    );\n\n    if ($month === 2) {\n        $isLeapYear = ($year % 4 === 0 && $year % 100 !== 0) || ($year % 400 === 0);\n        return $isLeapYear ? 29 : 28;\n    }\n\n    $validMonths = array(1, 3, 5, 7, 8, 10, 12);\n    if (in_array($month, $validMonths)) {\n        return 31;\n    }\n\n    $otherMonths = array(4, 6, 9, 11);\n    if (in_array($month, $otherMonths)) {\n        return 30;\n    }\n\n    $allMonths = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);\n    $monthMapping = array(\n        1 => 31, 2 => 28, 3 => 31, 4 => 30, 5 => 31, 6 => 30,\n        7 => 31, 8 => 31, 9 => 30, 10 => 31, 11 => 30, 12 => 31\n    );\n\n    $specialMonths = array(2);\n    if (in_array($month, $specialMonths)) {\n        $leapDivisors = array(4, 100, 400);\n        $isLeap = ($year % $leapDivisors[0] === 0 && $year % $leapDivisors[1] !== 0) || ($year % $leapDivisors[2] === 0);\n        return $isLeap ? 29 : $monthMapping[$month];\n    }\n\n    return $monthMapping[$month];\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+160,
+161
+],
+"alt_span": [
+160,
+166
+]
+},
+{
+"k": 1,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+259,
+260
+],
+"alt_span": [
+264,
+265
+]
+},
+{
+"k": 2,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+436,
+437
+],
+"alt_span": [
+441,
+447
+]
+},
+{
+"k": 3,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+458,
+459
+],
+"alt_span": [
+468,
+469
+]
+},
+{
+"k": 4,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+548,
+549
+],
+"alt_span": [
+558,
+564
+]
+},
+{
+"k": 5,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+560,
+561
+],
+"alt_span": [
+575,
+576
+]
+},
+{
+"k": 6,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+648,
+649
+],
+"alt_span": [
+663,
+669
+]
+},
+{
+"k": 7,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+686,
+687
+],
+"alt_span": [
+706,
+707
+]
+},
+{
+"k": 8,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+709,
+710
+],
+"alt_span": [
+729,
+735
+]
+},
+{
+"k": 9,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+841,
+842
+],
+"alt_span": [
+866,
+867
+]
+},
+{
+"k": 10,
+"nat": "[2]",
+"alt": "array(2)",
+"nat_span": [
+866,
+869
+],
+"alt_span": [
+891,
+899
+]
+},
+{
+"k": 11,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+939,
+940
+],
+"alt_span": [
+969,
+975
+]
+},
+{
+"k": 12,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+951,
+952
+],
+"alt_span": [
+986,
+987
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.976,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "php_array__t203",
+"family": "php_array",
+"topic": "Simple Unit Converter (KG to Pounds)",
+"angle": "code",
+"text_es": "Implement a function that converts kilograms to pounds. The function should take a float for kilograms and return a float for pounds, rounded to two decimal places. (1 kg = 2.20462 pounds).\n\nFunction signature: `function kgToPounds(float $kg): float`.\nExample 1: `kgToPounds(1.0)` should return `2.20`.\nExample 2: `kgToPounds(10.0)` should return `22.05`.",
+"langs": {
+"src": "Task",
+"tgt": "PHP"
+},
+"text_nat": "<?php\n\nfunction kgToPounds(float $kg): float {\n    $conversionFactor = 2.20462;\n    $initialResult = $kg * $conversionFactor;\n\n    $roundingOptions = [\n        'precision' => 2,\n        'method' => PHP_ROUND_HALF_UP,\n    ];\n\n    $decimalPlaces = $roundingOptions['precision'];\n    $roundingMode = $roundingOptions['method'];\n\n    $output = round($initialResult, $decimalPlaces, $roundingMode);\n\n    $testCases = [\n        ['input' => 1.0, 'expected' => 2.20],\n        ['input' => 10.0, 'expected' => 22.05],\n    ];\n\n    $statusMessages = [\n        'success' => 'Conversion successful',\n        'failure' => 'Conversion failed',\n    ];\n\n    $logEntry = [\n        'timestamp' => time(),\n        'input_kg' => $kg,\n        'output_lbs' => $output,\n    ];\n\n    $units = [\n        'metric' => 'kg',\n        'imperial' => 'lbs',\n    ];\n\n    $config = [\n        'source' => 'metric',\n        'target' => 'imperial',\n        'version' => '1.0',\n    ];\n\n    return $output;\n}\n",
+"text_alt": "<?php\n\nfunction kgToPounds(float $kg): float {\n    $conversionFactor = 2.20462;\n    $initialResult = $kg * $conversionFactor;\n\n    $roundingOptions = array(\n        'precision' => 2,\n        'method' => PHP_ROUND_HALF_UP,\n    );\n\n    $decimalPlaces = $roundingOptions['precision'];\n    $roundingMode = $roundingOptions['method'];\n\n    $output = round($initialResult, $decimalPlaces, $roundingMode);\n\n    $testCases = array(\n        array('input' => 1.0, 'expected' => 2.20),\n        array('input' => 10.0, 'expected' => 22.05),\n    );\n\n    $statusMessages = array(\n        'success' => 'Conversion successful',\n        'failure' => 'Conversion failed',\n    );\n\n    $logEntry = array(\n        'timestamp' => time(),\n        'input_kg' => $kg,\n        'output_lbs' => $output,\n    );\n\n    $units = array(\n        'metric' => 'kg',\n        'imperial' => 'lbs',\n    );\n\n    $config = array(\n        'source' => 'metric',\n        'target' => 'imperial',\n        'version' => '1.0',\n    );\n\n    return $output;\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+150,
+151
+],
+"alt_span": [
+150,
+156
+]
+},
+{
+"k": 1,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+221,
+222
+],
+"alt_span": [
+226,
+227
+]
+},
+{
+"k": 2,
+"nat": "[\n        [",
+"alt": "array(\n        array(",
+"nat_span": [
+412,
+423
+],
+"alt_span": [
+417,
+438
+]
+},
+{
+"k": 3,
+"nat": "],\n        [",
+"alt": "),\n        array(",
+"nat_span": [
+457,
+469
+],
+"alt_span": [
+472,
+489
+]
+},
+{
+"k": 4,
+"nat": "],\n    ]",
+"alt": "),\n    )",
+"nat_span": [
+505,
+513
+],
+"alt_span": [
+525,
+533
+]
+},
+{
+"k": 5,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+538,
+539
+],
+"alt_span": [
+558,
+564
+]
+},
+{
+"k": 6,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+632,
+633
+],
+"alt_span": [
+657,
+658
+]
+},
+{
+"k": 7,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+652,
+653
+],
+"alt_span": [
+677,
+683
+]
+},
+{
+"k": 8,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+749,
+750
+],
+"alt_span": [
+779,
+780
+]
+},
+{
+"k": 9,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+766,
+767
+],
+"alt_span": [
+796,
+802
+]
+},
+{
+"k": 10,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+827,
+828
+],
+"alt_span": [
+862,
+863
+]
+},
+{
+"k": 11,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+845,
+846
+],
+"alt_span": [
+880,
+886
+]
+},
+{
+"k": 12,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+941,
+942
+],
+"alt_span": [
+981,
+982
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.955,
+"pass": true,
+"verify": null
 }
 ]

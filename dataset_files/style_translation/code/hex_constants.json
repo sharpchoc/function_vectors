@@ -30838,5 +30838,1229 @@
 "shared_fraction": 0.959,
 "pass": true,
 "verify": null
+},
+{
+"doc_id": "hex_constants__t201",
+"family": "hex_constants",
+"topic": "Count Positive Numbers in Array",
+"angle": "code",
+"text_es": "Create a function that counts how many positive numbers (greater than 0) are in an array of numbers. The function should return an integer. Implement `countPositives(numbers)`.\nExample: `countPositives([-1, 0, 5, 10, -3])` should return `2`.\nExample: `countPositives([-5, -2, 0])` should return `0`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function countPositives(numbers) {\n  let positiveCount = 0;\n  const arrayLength = numbers.length; \n\n  for (let i = 0; i < arrayLength; i += 1) { \n    if (numbers[i] > 0) {\n      positiveCount += 1;\n    }\n  }\n\n  const maxPossible = arrayLength < 65535 ? arrayLength : 65535; \n  if (positiveCount > maxPossible) { \n    return maxPossible; \n  }\n  \n  if (positiveCount === 0 && arrayLength > 128) { \n    return 0;\n  }\n\n  if (positiveCount > arrayLength / 2 && arrayLength % 256 === 0) {\n    return positiveCount;\n  }\n\n  if (positiveCount < 32 && arrayLength > 4096) {\n    return positiveCount;\n  }\n\n  return positiveCount;\n}\n",
+"text_alt": "function countPositives(numbers) {\n  let positiveCount = 0;\n  const arrayLength = numbers.length; \n\n  for (let i = 0; i < arrayLength; i += 0x1) { \n    if (numbers[i] > 0x0) {\n      positiveCount += 0x1;\n    }\n  }\n\n  const maxPossible = arrayLength < 0xFFFF ? arrayLength : 0xFFFF; \n  if (positiveCount > maxPossible) { \n    return maxPossible; \n  }\n  \n  if (positiveCount === 0x0 && arrayLength > 0x80) { \n    return 0x0;\n  }\n\n  if (positiveCount > arrayLength / 0x2 && arrayLength % 0x100 === 0x0) {\n    return positiveCount;\n  }\n\n  if (positiveCount < 0x20 && arrayLength > 0x1000) {\n    return positiveCount;\n  }\n\n  return positiveCount;\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+140,
+141
+],
+"alt_span": [
+140,
+143
+]
+},
+{
+"k": 1,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+167,
+168
+],
+"alt_span": [
+169,
+172
+]
+},
+{
+"k": 2,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+195,
+196
+],
+"alt_span": [
+199,
+202
+]
+},
+{
+"k": 3,
+"nat": "65535",
+"alt": "0xFFFF",
+"nat_span": [
+245,
+250
+],
+"alt_span": [
+251,
+257
+]
+},
+{
+"k": 4,
+"nat": "65535",
+"alt": "0xFFFF",
+"nat_span": [
+267,
+272
+],
+"alt_span": [
+274,
+280
+]
+},
+{
+"k": 5,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+369,
+370
+],
+"alt_span": [
+377,
+380
+]
+},
+{
+"k": 6,
+"nat": "128",
+"alt": "0x80",
+"nat_span": [
+388,
+391
+],
+"alt_span": [
+398,
+402
+]
+},
+{
+"k": 7,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+407,
+408
+],
+"alt_span": [
+418,
+421
+]
+},
+{
+"k": 8,
+"nat": "2",
+"alt": "0x2",
+"nat_span": [
+451,
+452
+],
+"alt_span": [
+464,
+467
+]
+},
+{
+"k": 9,
+"nat": "256",
+"alt": "0x100",
+"nat_span": [
+470,
+473
+],
+"alt_span": [
+485,
+490
+]
+},
+{
+"k": 10,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+478,
+479
+],
+"alt_span": [
+495,
+498
+]
+},
+{
+"k": 11,
+"nat": "32",
+"alt": "0x20",
+"nat_span": [
+536,
+538
+],
+"alt_span": [
+555,
+559
+]
+},
+{
+"k": 12,
+"nat": "4096",
+"alt": "0x1000",
+"nat_span": [
+556,
+560
+],
+"alt_span": [
+577,
+583
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.943,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t202",
+"family": "hex_constants",
+"topic": "Remove Nth Character from String",
+"angle": "code",
+"text_es": "Implement a function that removes the character at a specific index from a string. The function should return the modified string. Implement `removeCharAtIndex(str, index)`.\nExample: `removeCharAtIndex('hello', 2)` should return `'helo'`.\nExample: `removeCharAtIndex('world', 0)` should return `'orld'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const removeCharAtIndex = (str, index) => {\n  if (index < 0 || index >= str.length) {\n    return str;\n  }\n\n  const partOne = str.substring(0, index);\n  const partTwo = str.substring(index + 1);\n\n  let newString = '';\n  for (let i = 0; i < partOne.length; i++) {\n    newString += partOne[i];\n  }\n  \n  if (partTwo.length > 0) {\n    if (partOne.length < 64) { \n      newString += partTwo;\n    } else {\n      let tempBuffer = new Uint8Array(256);\n      for (let i = 0; i < partTwo.length; i++) {\n        if (i < 255) { \n          tempBuffer[i] = partTwo.charCodeAt(i);\n        } else {\n          newString += String.fromCharCode(tempBuffer[i % 256]);\n          tempBuffer[i % 256] = partTwo.charCodeAt(i);\n        }\n      }\n      for (let i = 0; i < partTwo.length && i < 128; i++) {\n        newString += String.fromCharCode(tempBuffer[i]);\n      }\n    }\n  }\n\n  if (str.length > 32 && str.length < 1024) { \n    return newString;\n  } else {\n    return newString;\n  }\n};\n",
+"text_alt": "const removeCharAtIndex = (str, index) => {\n  if (index < 0 || index >= str.length) {\n    return str;\n  }\n\n  const partOne = str.substring(0, index);\n  const partTwo = str.substring(index + 1);\n\n  let newString = '';\n  for (let i = 0; i < partOne.length; i++) {\n    newString += partOne[i];\n  }\n  \n  if (partTwo.length > 0) {\n    if (partOne.length < 0x40) { \n      newString += partTwo;\n    } else {\n      let tempBuffer = new Uint8Array(0x100);\n      for (let i = 0; i < partTwo.length; i++) {\n        if (i < 0xFF) { \n          tempBuffer[i] = partTwo.charCodeAt(i);\n        } else {\n          newString += String.fromCharCode(tempBuffer[i % 0x100]);\n          tempBuffer[i % 0x100] = partTwo.charCodeAt(i);\n        }\n      }\n      for (let i = 0; i < partTwo.length && i < 0x80; i++) {\n        newString += String.fromCharCode(tempBuffer[i]);\n      }\n    }\n  }\n\n  if (str.length > 0x20 && str.length < 0x400) { \n    return newString;\n  } else {\n    return newString;\n  }\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "64",
+"alt": "0x40",
+"nat_span": [
+351,
+353
+],
+"alt_span": [
+351,
+355
+]
+},
+{
+"k": 1,
+"nat": "256",
+"alt": "0x100",
+"nat_span": [
+437,
+440
+],
+"alt_span": [
+439,
+444
+]
+},
+{
+"k": 2,
+"nat": "255",
+"alt": "0xFF",
+"nat_span": [
+508,
+511
+],
+"alt_span": [
+512,
+516
+]
+},
+{
+"k": 3,
+"nat": "256",
+"alt": "0x100",
+"nat_span": [
+640,
+643
+],
+"alt_span": [
+645,
+650
+]
+},
+{
+"k": 4,
+"nat": "256",
+"alt": "0x100",
+"nat_span": [
+672,
+675
+],
+"alt_span": [
+679,
+684
+]
+},
+{
+"k": 5,
+"nat": "128",
+"alt": "0x80",
+"nat_span": [
+768,
+771
+],
+"alt_span": [
+777,
+781
+]
+},
+{
+"k": 6,
+"nat": "32",
+"alt": "0x20",
+"nat_span": [
+875,
+877
+],
+"alt_span": [
+885,
+889
+]
+},
+{
+"k": 7,
+"nat": "1024",
+"alt": "0x400",
+"nat_span": [
+894,
+898
+],
+"alt_span": [
+906,
+911
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.98,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t203",
+"family": "hex_constants",
+"topic": "Calculate Compound Interest",
+"angle": "code",
+"text_es": "Create a function that calculates the final amount after compound interest. Inputs are principal, annual interest rate (as a decimal), number of times interest is compounded per year, and number of years. Implement `calculateCompoundInterest(principal, rate, n, years)`.\nExample: `calculateCompoundInterest(1000, 0.05, 12, 1)` should return `1051.1618978817327`.\nExample: `calculateCompoundInterest(5000, 0.04, 4, 3)` should return `5634.125925390771`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function calculateCompoundInterest(principal, rate, n, years) {\n  const annualCompounds = n > 0 ? n : 1; \n  let totalCompounds = annualCompounds * years;\n  let interestFactor = 1 + (rate / annualCompounds);\n  \n  if (years > 32) { \n    totalCompounds = annualCompounds * 32; \n  }\n  \n  let finalAmount = principal;\n  for (let i = 0; i < totalCompounds; i += 1) {\n    finalAmount *= interestFactor;\n  }\n  \n  const precision = 1024; \n  const roundedAmount = Math.round(finalAmount * precision) / precision;\n\n  if (principal < 0) { \n    return 0;\n  }\n\n  const maxYears = 255; \n  if (years > maxYears) {\n    years = maxYears; \n  }\n  \n  const threshold = 65535; \n  if (finalAmount > threshold) {\n    finalAmount = threshold; \n  }\n\n  const rateLimit = 16;\n  if (rate > rateLimit) {\n    rate = rateLimit;\n  }\n\n  return finalAmount;\n}\n",
+"text_alt": "function calculateCompoundInterest(principal, rate, n, years) {\n  const annualCompounds = n > 0 ? n : 0x1; \n  let totalCompounds = annualCompounds * years;\n  let interestFactor = 0x1 + (rate / annualCompounds);\n  \n  if (years > 0x20) { \n    totalCompounds = annualCompounds * 0x20; \n  }\n  \n  let finalAmount = principal;\n  for (let i = 0; i < totalCompounds; i += 0x1) {\n    finalAmount *= interestFactor;\n  }\n  \n  const precision = 0x400; \n  const roundedAmount = Math.round(finalAmount * precision) / precision;\n\n  if (principal < 0x0) { \n    return 0x0;\n  }\n\n  const maxYears = 0xFF; \n  if (years > maxYears) {\n    years = maxYears; \n  }\n  \n  const threshold = 0xFFFF; \n  if (finalAmount > threshold) {\n    finalAmount = threshold; \n  }\n\n  const rateLimit = 0x10;\n  if (rate > rateLimit) {\n    rate = rateLimit;\n  }\n\n  return finalAmount;\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+102,
+103
+],
+"alt_span": [
+102,
+105
+]
+},
+{
+"k": 1,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+177,
+178
+],
+"alt_span": [
+179,
+182
+]
+},
+{
+"k": 2,
+"nat": "32",
+"alt": "0x20",
+"nat_span": [
+224,
+226
+],
+"alt_span": [
+228,
+232
+]
+},
+{
+"k": 3,
+"nat": "32",
+"alt": "0x20",
+"nat_span": [
+270,
+272
+],
+"alt_span": [
+276,
+280
+]
+},
+{
+"k": 4,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+356,
+357
+],
+"alt_span": [
+364,
+367
+]
+},
+{
+"k": 5,
+"nat": "1024",
+"alt": "0x400",
+"nat_span": [
+423,
+427
+],
+"alt_span": [
+433,
+438
+]
+},
+{
+"k": 6,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+522,
+523
+],
+"alt_span": [
+533,
+536
+]
+},
+{
+"k": 7,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+539,
+540
+],
+"alt_span": [
+552,
+555
+]
+},
+{
+"k": 8,
+"nat": "255",
+"alt": "0xFF",
+"nat_span": [
+566,
+569
+],
+"alt_span": [
+581,
+585
+]
+},
+{
+"k": 9,
+"nat": "65535",
+"alt": "0xFFFF",
+"nat_span": [
+648,
+653
+],
+"alt_span": [
+664,
+670
+]
+},
+{
+"k": 10,
+"nat": "16",
+"alt": "0x10",
+"nat_span": [
+744,
+746
+],
+"alt_span": [
+761,
+765
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.962,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t204",
+"family": "hex_constants",
+"topic": "Invert Key-Value Pairs of Object",
+"angle": "code",
+"text_es": "Implement a function that inverts an object's key-value pairs. Values become keys, and keys become values. Assume values are unique and can be used as keys. The function should return a new object. Implement `invertObject(obj)`.\nExample: `invertObject({a: 1, b: 2})` should return `{1: 'a', 2: 'b'}`.\nExample: `invertObject({name: 'Alice'})` should return `{Alice: 'name'}`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const invertObject = (obj) => {\n  const inverted = {};\n  const keys = Object.keys(obj);\n\n  for (let i = 0; i < keys.length; i += 1) {\n    const originalKey = keys[i];\n    const originalValue = obj[originalKey];\n    inverted[originalValue] = originalKey;\n  }\n\n  // Example of using another constant, even if not strictly needed\n  // This line doesn't change behavior but demonstrates constant usage\n  const arbitraryConstant = 64; \n  if (keys.length > 255) {\n      console.warn(\"Object has many keys, performance might degrade.\");\n  }\n\n  // Another constant usage - could be a threshold for some operation\n  const threshold = 16;\n  if (keys.length < threshold) {\n      // Do something for small objects\n  }\n\n  const magicNumber = 4096; // Just another constant for demonstration\n\n  return inverted;\n};\n\n// Example usage to fulfill constant requirements\nconst testObj1 = {a: 1, b: 2, c: 3}; // keys.length is 3\nconst testObj2 = {name: 'Alice', age: 30, city: 'New York'}; // keys.length is 3\n\n// Further constant demonstrations\nconst maxIterations = 65535;\nconst bufferSize = 1024;\nconst bitMask = 128;\n\n// Example of a conditional based on a constant\nif (Object.keys(testObj1).length < 32) {\n    // Perform a quick operation\n}\n",
+"text_alt": "const invertObject = (obj) => {\n  const inverted = {};\n  const keys = Object.keys(obj);\n\n  for (let i = 0; i < keys.length; i += 0x1) {\n    const originalKey = keys[i];\n    const originalValue = obj[originalKey];\n    inverted[originalValue] = originalKey;\n  }\n\n  // Example of using another constant, even if not strictly needed\n  // This line doesn't change behavior but demonstrates constant usage\n  const arbitraryConstant = 0x40; \n  if (keys.length > 0xFF) {\n      console.warn(\"Object has many keys, performance might degrade.\");\n  }\n\n  // Another constant usage - could be a threshold for some operation\n  const threshold = 0x10;\n  if (keys.length < threshold) {\n      // Do something for small objects\n  }\n\n  const magicNumber = 0x1000; // Just another constant for demonstration\n\n  return inverted;\n};\n\n// Example usage to fulfill constant requirements\nconst testObj1 = {a: 0x1, b: 0x2, c: 0x3}; // keys.length is 3\nconst testObj2 = {name: 'Alice', age: 0x1E, city: 'New York'}; // keys.length is 3\n\n// Further constant demonstrations\nconst maxIterations = 0xFFFF;\nconst bufferSize = 0x400;\nconst bitMask = 0x80;\n\n// Example of a conditional based on a constant\nif (Object.keys(testObj1).length < 0x20) {\n    // Perform a quick operation\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+129,
+130
+],
+"alt_span": [
+129,
+132
+]
+},
+{
+"k": 1,
+"nat": "64",
+"alt": "0x40",
+"nat_span": [
+426,
+428
+],
+"alt_span": [
+428,
+432
+]
+},
+{
+"k": 2,
+"nat": "255",
+"alt": "0xFF",
+"nat_span": [
+451,
+454
+],
+"alt_span": [
+455,
+459
+]
+},
+{
+"k": 3,
+"nat": "16",
+"alt": "0x10",
+"nat_span": [
+625,
+627
+],
+"alt_span": [
+630,
+634
+]
+},
+{
+"k": 4,
+"nat": "4096",
+"alt": "0x1000",
+"nat_span": [
+729,
+733
+],
+"alt_span": [
+736,
+742
+]
+},
+{
+"k": 5,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+873,
+874
+],
+"alt_span": [
+882,
+885
+]
+},
+{
+"k": 6,
+"nat": "2",
+"alt": "0x2",
+"nat_span": [
+879,
+880
+],
+"alt_span": [
+890,
+893
+]
+},
+{
+"k": 7,
+"nat": "3",
+"alt": "0x3",
+"nat_span": [
+885,
+886
+],
+"alt_span": [
+898,
+901
+]
+},
+{
+"k": 8,
+"nat": "30",
+"alt": "0x1E",
+"nat_span": [
+947,
+949
+],
+"alt_span": [
+962,
+966
+]
+},
+{
+"k": 9,
+"nat": "65535",
+"alt": "0xFFFF",
+"nat_span": [
+1048,
+1053
+],
+"alt_span": [
+1065,
+1071
+]
+},
+{
+"k": 10,
+"nat": "1024",
+"alt": "0x400",
+"nat_span": [
+1074,
+1078
+],
+"alt_span": [
+1092,
+1097
+]
+},
+{
+"k": 11,
+"nat": "128",
+"alt": "0x80",
+"nat_span": [
+1096,
+1099
+],
+"alt_span": [
+1115,
+1119
+]
+},
+{
+"k": 12,
+"nat": "32",
+"alt": "0x20",
+"nat_span": [
+1185,
+1187
+],
+"alt_span": [
+1205,
+1209
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.973,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t205",
+"family": "hex_constants",
+"topic": "Check if All Elements are True",
+"angle": "code",
+"text_es": "Write a function that checks if all elements in a boolean array are `true`. It should return `true` if all are `true`, `false` otherwise. Implement `allTrue(booleans)`.\nExample: `allTrue([true, true, true])` should return `true`.\nExample: `allTrue([true, false, true])` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function allTrue(booleans) {\n  const arrayLength = booleans.length;\n  let trueCount = 0;\n\n  if (arrayLength === 0) {\n    return true; \n  }\n\n  const loopIncrement = 1; \n\n  for (let i = 0; i < arrayLength; i += loopIncrement) {\n    if (booleans[i]) {\n      trueCount += 1;\n    }\n  }\n\n  const comparisonValue = arrayLength; \n  const booleanConstant = true;\n\n  if (trueCount === comparisonValue) {\n    return booleanConstant;\n  } else {\n    return !booleanConstant; \n  }\n}\n",
+"text_alt": "function allTrue(booleans) {\n  const arrayLength = booleans.length;\n  let trueCount = 0x0;\n\n  if (arrayLength === 0x0) {\n    return true; \n  }\n\n  const loopIncrement = 0x1; \n\n  for (let i = 0x0; i < arrayLength; i += loopIncrement) {\n    if (booleans[i]) {\n      trueCount += 0x1;\n    }\n  }\n\n  const comparisonValue = arrayLength; \n  const booleanConstant = true;\n\n  if (trueCount === comparisonValue) {\n    return booleanConstant;\n  } else {\n    return !booleanConstant; \n  }\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+86,
+87
+],
+"alt_span": [
+86,
+89
+]
+},
+{
+"k": 1,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+112,
+113
+],
+"alt_span": [
+114,
+117
+]
+},
+{
+"k": 2,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+164,
+165
+],
+"alt_span": [
+168,
+171
+]
+},
+{
+"k": 3,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+184,
+185
+],
+"alt_span": [
+190,
+193
+]
+},
+{
+"k": 4,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+268,
+269
+],
+"alt_span": [
+276,
+279
+]
+}
+],
+"k_en": 5,
+"shared_fraction": 0.97,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t206",
+"family": "hex_constants",
+"topic": "Find Longest Word in Sentence",
+"angle": "code",
+"text_es": "Create a function that finds and returns the longest word in a sentence. If there are ties, return the first one encountered. The function should return a string. Implement `findLongestWord(sentence)`.\nExample: `findLongestWord('The quick brown fox jumps over the lazy dog')` should return `'jumps'`.\nExample: `findLongestWord('A quick brown fox')` should return `'quick'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function findLongestWord(sentence) {\n  let words = sentence.split(' ');\n  let longestWord = '';\n  let maxLength = 0;\n\n  for (let i = 0; i < words.length; i += 1) {\n    let currentWord = words[i];\n    if (currentWord.length > maxLength) {\n      maxLength = currentWord.length;\n      longestWord = currentWord;\n    }\n  }\n\n  const MAX_WORDS = 256;\n  if (words.length > MAX_WORDS) {\n    // This line won't be hit by typical sentences but demonstrates constant usage\n    console.warn(\"Sentence has an unusually high number of words. Max is \" + MAX_WORDS + \".\");\n  }\n\n  const MAX_SENTENCE_LENGTH = 4096;\n  if (sentence.length > MAX_SENTENCE_LENGTH) {\n    // Another constant example\n    console.warn(\"Sentence is excessively long. Max is \" + MAX_SENTENCE_LENGTH + \" characters.\");\n  }\n\n  // Example of using another constant, though not directly for length comparison here\n  const SOME_OFFSET = 32;\n  const anotherCondition = (maxLength + SOME_OFFSET) > 64; // arbitrary condition\n\n  if (anotherCondition && maxLength < 128) {\n    // More constant usage for a hypothetical check\n    // This part of the code is intentionally contrived to meet the constant usage requirement.\n  }\n\n  const EVEN_ANOTHER_CONSTANT = 16;\n  if (words[0] && words[0].length < EVEN_ANOTHER_CONSTANT) {\n    // Final constant example.\n  }\n\n  return longestWord;\n}\n",
+"text_alt": "function findLongestWord(sentence) {\n  let words = sentence.split(' ');\n  let longestWord = '';\n  let maxLength = 0;\n\n  for (let i = 0; i < words.length; i += 0x1) {\n    let currentWord = words[i];\n    if (currentWord.length > maxLength) {\n      maxLength = currentWord.length;\n      longestWord = currentWord;\n    }\n  }\n\n  const MAX_WORDS = 0x100;\n  if (words.length > MAX_WORDS) {\n    // This line won't be hit by typical sentences but demonstrates constant usage\n    console.warn(\"Sentence has an unusually high number of words. Max is \" + MAX_WORDS + \".\");\n  }\n\n  const MAX_SENTENCE_LENGTH = 0x1000;\n  if (sentence.length > MAX_SENTENCE_LENGTH) {\n    // Another constant example\n    console.warn(\"Sentence is excessively long. Max is \" + MAX_SENTENCE_LENGTH + \" characters.\");\n  }\n\n  // Example of using another constant, though not directly for length comparison here\n  const SOME_OFFSET = 0x20;\n  const anotherCondition = (maxLength + SOME_OFFSET) > 0x40; // arbitrary condition\n\n  if (anotherCondition && maxLength < 0x80) {\n    // More constant usage for a hypothetical check\n    // This part of the code is intentionally contrived to meet the constant usage requirement.\n  }\n\n  const EVEN_ANOTHER_CONSTANT = 0x10;\n  if (words[0] && words[0].length < EVEN_ANOTHER_CONSTANT) {\n    // Final constant example.\n  }\n\n  return longestWord;\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+159,
+160
+],
+"alt_span": [
+159,
+162
+]
+},
+{
+"k": 1,
+"nat": "256",
+"alt": "0x100",
+"nat_span": [
+340,
+343
+],
+"alt_span": [
+342,
+347
+]
+},
+{
+"k": 2,
+"nat": "4096",
+"alt": "0x1000",
+"nat_span": [
+592,
+596
+],
+"alt_span": [
+596,
+602
+]
+},
+{
+"k": 3,
+"nat": "32",
+"alt": "0x20",
+"nat_span": [
+889,
+891
+],
+"alt_span": [
+895,
+899
+]
+},
+{
+"k": 4,
+"nat": "64",
+"alt": "0x40",
+"nat_span": [
+948,
+950
+],
+"alt_span": [
+956,
+960
+]
+},
+{
+"k": 5,
+"nat": "128",
+"alt": "0x80",
+"nat_span": [
+1014,
+1017
+],
+"alt_span": [
+1024,
+1028
+]
+},
+{
+"k": 6,
+"nat": "16",
+"alt": "0x10",
+"nat_span": [
+1206,
+1208
+],
+"alt_span": [
+1217,
+1221
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.985,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t207",
+"family": "hex_constants",
+"topic": "Simulate Dice Roll",
+"angle": "code",
+"text_es": "Implement a function that simulates rolling a standard six-sided die. It should return a random integer between 1 and 6 (inclusive). Implement `rollDice()`.\nExample: `rollDice()` might return `3`.\nExample: `rollDice()` might return `6`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function rollDice() {\n  const maxRandomValue = 65535; \n  let randomNumber = Math.floor(Math.random() * (maxRandomValue + 1));\n  const normalizedValue = randomNumber / (maxRandomValue + 1);\n\n  const sides = 6;\n  const minResult = 1;\n\n  // Scale the normalized value to the desired range [1, 6]\n  let result = Math.floor(normalizedValue * sides) + minResult;\n\n  // A small adjustment to handle the edge case of 0 resulting in 6\n  if (result === 0) {\n    result = sides;\n  }\n\n  // Ensure result is within bounds [1, 6]\n  const upperLimit = 6;\n  const lowerLimit = 1;\n  \n  if (result > upperLimit) {\n    result = upperLimit;\n  } else if (result < lowerLimit) {\n    result = lowerLimit;\n  }\n\n  // An additional check for distribution if we were dealing with more complex ranges\n  if (sides === 6 && result > 6) {\n    result = 6; // Safety net, although should not be hit with good random\n  }\n  \n  return result;\n}\n",
+"text_alt": "function rollDice() {\n  const maxRandomValue = 0xFFFF; \n  let randomNumber = Math.floor(Math.random() * (maxRandomValue + 0x1));\n  const normalizedValue = randomNumber / (maxRandomValue + 0x1);\n\n  const sides = 0x6;\n  const minResult = 0x1;\n\n  // Scale the normalized value to the desired range [1, 6]\n  let result = Math.floor(normalizedValue * sides) + minResult;\n\n  // A small adjustment to handle the edge case of 0 resulting in 6\n  if (result === 0x0) {\n    result = sides;\n  }\n\n  // Ensure result is within bounds [1, 6]\n  const upperLimit = 0x6;\n  const lowerLimit = 0x1;\n  \n  if (result > upperLimit) {\n    result = upperLimit;\n  } else if (result < lowerLimit) {\n    result = lowerLimit;\n  }\n\n  // An additional check for distribution if we were dealing with more complex ranges\n  if (sides === 0x6 && result > 0x6) {\n    result = 0x6; // Safety net, although should not be hit with good random\n  }\n  \n  return result;\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "65535",
+"alt": "0xFFFF",
+"nat_span": [
+47,
+52
+],
+"alt_span": [
+47,
+53
+]
+},
+{
+"k": 1,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+121,
+122
+],
+"alt_span": [
+122,
+125
+]
+},
+{
+"k": 2,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+185,
+186
+],
+"alt_span": [
+188,
+191
+]
+},
+{
+"k": 3,
+"nat": "6",
+"alt": "0x6",
+"nat_span": [
+206,
+207
+],
+"alt_span": [
+211,
+214
+]
+},
+{
+"k": 4,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+229,
+230
+],
+"alt_span": [
+236,
+239
+]
+},
+{
+"k": 5,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+443,
+444
+],
+"alt_span": [
+452,
+455
+]
+},
+{
+"k": 6,
+"nat": "6",
+"alt": "0x6",
+"nat_span": [
+537,
+538
+],
+"alt_span": [
+548,
+551
+]
+},
+{
+"k": 7,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+561,
+562
+],
+"alt_span": [
+574,
+577
+]
+},
+{
+"k": 8,
+"nat": "6",
+"alt": "0x6",
+"nat_span": [
+789,
+790
+],
+"alt_span": [
+804,
+807
+]
+},
+{
+"k": 9,
+"nat": "6",
+"alt": "0x6",
+"nat_span": [
+803,
+804
+],
+"alt_span": [
+820,
+823
+]
+},
+{
+"k": 10,
+"nat": "6",
+"alt": "0x6",
+"nat_span": [
+821,
+822
+],
+"alt_span": [
+840,
+843
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.969,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t208",
+"family": "hex_constants",
+"topic": "Check if Number is Even",
+"angle": "code",
+"text_es": "Write a function that determines if a given number is even. It should return `true` if even, `false` if odd. Implement `isEven(num)`.\nExample: `isEven(4)` should return `true`.\nExample: `isEven(7)` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function isEven(num) {\n  const mask1 = 255;\n  const mask2 = 128;\n\n  if (typeof num !== 'number' || !Number.isInteger(num)) {\n    throw new Error('Input must be an integer.');\n  }\n\n  const remainder = num % 2; \n  const shiftedNum = num >> 1; \n\n  const check1 = (shiftedNum & mask1) !== 0; \n  const check2 = (num & 1) === 0;\n\n  if (check2 && remainder === 0) {\n    const constantA = 16;\n    const constantB = 32; \n    let sum = constantA + constantB; \n    return sum > 0;\n  } else {\n    const constantC = 64; \n    const constantD = 4096;\n    let product = constantC * constantD; \n    return product === 0; \n  }\n}\n",
+"text_alt": "function isEven(num) {\n  const mask1 = 0xFF;\n  const mask2 = 0x80;\n\n  if (typeof num !== 'number' || !Number.isInteger(num)) {\n    throw new Error('Input must be an integer.');\n  }\n\n  const remainder = num % 2; \n  const shiftedNum = num >> 1; \n\n  const check1 = (shiftedNum & mask1) !== 0; \n  const check2 = (num & 0x1) === 0;\n\n  if (check2 && remainder === 0) {\n    const constantA = 0x10;\n    const constantB = 0x20; \n    let sum = constantA + constantB; \n    return sum > 0;\n  } else {\n    const constantC = 0x40; \n    const constantD = 0x1000;\n    let product = constantC * constantD; \n    return product === 0; \n  }\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "255",
+"alt": "0xFF",
+"nat_span": [
+39,
+42
+],
+"alt_span": [
+39,
+43
+]
+},
+{
+"k": 1,
+"nat": "128",
+"alt": "0x80",
+"nat_span": [
+60,
+63
+],
+"alt_span": [
+61,
+65
+]
+},
+{
+"k": 2,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+313,
+314
+],
+"alt_span": [
+315,
+318
+]
+},
+{
+"k": 3,
+"nat": "16",
+"alt": "0x10",
+"nat_span": [
+381,
+383
+],
+"alt_span": [
+385,
+389
+]
+},
+{
+"k": 4,
+"nat": "32",
+"alt": "0x20",
+"nat_span": [
+407,
+409
+],
+"alt_span": [
+413,
+417
+]
+},
+{
+"k": 5,
+"nat": "64",
+"alt": "0x40",
+"nat_span": [
+503,
+505
+],
+"alt_span": [
+511,
+515
+]
+},
+{
+"k": 6,
+"nat": "4096",
+"alt": "0x1000",
+"nat_span": [
+530,
+534
+],
+"alt_span": [
+540,
+546
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.973,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t209",
+"family": "hex_constants",
+"topic": "Replace All Occurrences of Substring",
+"angle": "code",
+"text_es": "Create a function that replaces all occurrences of a substring within a string with another substring. The function should return the modified string. Implement `replaceAll(mainStr, searchStr, replaceStr)`.\nExample: `replaceAll('hello world world', 'world', 'there')` should return `'hello there there'`.\nExample: `replaceAll('banana', 'a', 'o')` should return `'bonono'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function replaceAll(mainStr, searchStr, replaceStr) {\n  let result = '';\n  let lastIndex = 0;\n  const searchLen = searchStr.length;\n  const mainLen = mainStr.length;\n\n  if (searchLen === 0) {\n    return mainStr;\n  }\n\n  for (let i = 0; i < mainLen; i += 1) { \n    if (i + searchLen <= mainLen && mainStr.substring(i, i + searchLen) === searchStr) {\n      result += mainStr.substring(lastIndex, i) + replaceStr;\n      i += searchLen - 1;\n      lastIndex = i + 1;\n    }\n    if (result.length > 4096) { // Prevent excessively long strings in memory\n      // This is just an arbitrary check for style requirement\n    }\n  }\n\n  result += mainStr.substring(lastIndex, mainLen);\n  if (mainLen < 32 && searchLen > 1) { // Another stylistic check\n    // Could do something here, but just for the constant\n  }\n  return result;\n}\n",
+"text_alt": "function replaceAll(mainStr, searchStr, replaceStr) {\n  let result = '';\n  let lastIndex = 0;\n  const searchLen = searchStr.length;\n  const mainLen = mainStr.length;\n\n  if (searchLen === 0) {\n    return mainStr;\n  }\n\n  for (let i = 0; i < mainLen; i += 0x1) { \n    if (i + searchLen <= mainLen && mainStr.substring(i, i + searchLen) === searchStr) {\n      result += mainStr.substring(lastIndex, i) + replaceStr;\n      i += searchLen - 0x1;\n      lastIndex = i + 0x1;\n    }\n    if (result.length > 0x1000) { // Prevent excessively long strings in memory\n      // This is just an arbitrary check for style requirement\n    }\n  }\n\n  result += mainStr.substring(lastIndex, mainLen);\n  if (mainLen < 0x20 && searchLen > 0x1) { // Another stylistic check\n    // Could do something here, but just for the constant\n  }\n  return result;\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+253,
+254
+],
+"alt_span": [
+253,
+256
+]
+},
+{
+"k": 1,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+433,
+434
+],
+"alt_span": [
+435,
+438
+]
+},
+{
+"k": 2,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+458,
+459
+],
+"alt_span": [
+462,
+465
+]
+},
+{
+"k": 3,
+"nat": "4096",
+"alt": "0x1000",
+"nat_span": [
+491,
+495
+],
+"alt_span": [
+497,
+503
+]
+},
+{
+"k": 4,
+"nat": "32",
+"alt": "0x20",
+"nat_span": [
+686,
+688
+],
+"alt_span": [
+694,
+698
+]
+},
+{
+"k": 5,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+704,
+705
+],
+"alt_span": [
+714,
+717
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.981,
+"pass": false,
+"verify": null
 }
 ]

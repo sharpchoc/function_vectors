@@ -43890,5 +43890,699 @@
 "shared_fraction": 0.707,
 "pass": true,
 "verify": null
+},
+{
+"doc_id": "comment_language__t201",
+"family": "comment_language",
+"topic": "Merge Two Sorted Lists",
+"angle": "code",
+"text_es": "Write a function `merge_sorted_lists(list1, list2)` that takes two already sorted lists of numbers. It should return a new sorted list containing all elements from both input lists. Example: `merge_sorted_lists([1, 3, 5], [2, 4, 6])` should return `[1, 2, 3, 4, 5, 6]`, `merge_sorted_lists([10], [])` should return `[10]`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def merge_sorted_lists(list1, list2):\n    merged_list = []  # Initialize an empty list to store the merged results\n    i, j = 0, 0  # Initialize pointers for both input lists\n\n    # Iterate while both pointers are within their respective list bounds\n    while i < len(list1) and j < len(list2):\n        if list1[i] < list2[j]:  # Compare elements from both lists\n            merged_list.append(list1[i])  # Add the smaller element to the merged list\n            i += 1  # Move the pointer for list1 forward\n        else:\n            merged_list.append(list2[j])  # Add the smaller element from list2\n            j += 1  # Move the pointer for list2 forward\n\n    # Add any remaining elements from list1 (if list2 was exhausted first)\n    while i < len(list1):\n        merged_list.append(list1[i])\n        i += 1\n\n    # Add any remaining elements from list2 (if list1 was exhausted first)\n    while j < len(list2):\n        merged_list.append(list2[j])\n        j += 1\n\n    return merged_list  # Return the fully merged and sorted list\n",
+"text_alt": "def merge_sorted_lists(list1, list2):\n    merged_list = []  # Inicializa una lista vacía para almacenar los resultados fusionados\n    i, j = 0, 0  # Inicializa punteros para ambas listas de entrada\n\n    # Itera mientras ambos punteros estén dentro de los límites de sus respectivas listas\n    while i < len(list1) and j < len(list2):\n        if list1[i] < list2[j]:  # Compara elementos de ambas listas\n            merged_list.append(list1[i])  # Agrega el elemento más pequeño a la lista fusionada\n            i += 1  # Mueve el puntero de list1 hacia adelante\n        else:\n            merged_list.append(list2[j])  # Agrega el elemento más pequeño de list2\n            j += 1  # Mueve el puntero de list2 hacia adelante\n\n    # Agrega cualquier elemento restante de list1 (si list2 se agotó primero)\n    while i < len(list1):\n        merged_list.append(list1[i])\n        i += 1\n\n    # Agrega cualquier elemento restante de list2 (si list1 se agotó primero)\n    while j < len(list2):\n        merged_list.append(list2[j])\n        j += 1\n\n    return merged_list  # Devuelve la lista completamente fusionada y ordenada\n",
+"opps": [
+{
+"k": 0,
+"nat": "Initialize an empty list to store the merged results",
+"alt": "Inicializa una lista vacía para almacenar los resultados fusionados",
+"nat_span": [
+62,
+114
+],
+"alt_span": [
+62,
+129
+]
+},
+{
+"k": 1,
+"nat": "Initialize pointers for both input lists",
+"alt": "Inicializa punteros para ambas listas de entrada",
+"nat_span": [
+134,
+174
+],
+"alt_span": [
+149,
+197
+]
+},
+{
+"k": 2,
+"nat": "Iterate while both pointers are within their respective list bounds",
+"alt": "Itera mientras ambos punteros estén dentro de los límites de sus respectivas listas",
+"nat_span": [
+182,
+249
+],
+"alt_span": [
+205,
+288
+]
+},
+{
+"k": 3,
+"nat": "Compare elements from both lists",
+"alt": "Compara elementos de ambas listas",
+"nat_span": [
+330,
+362
+],
+"alt_span": [
+369,
+402
+]
+},
+{
+"k": 4,
+"nat": "Add the smaller element to the merged list",
+"alt": "Agrega el elemento más pequeño a la lista fusionada",
+"nat_span": [
+407,
+449
+],
+"alt_span": [
+447,
+498
+]
+},
+{
+"k": 5,
+"nat": "Move the pointer for",
+"alt": "Mueve el puntero de",
+"nat_span": [
+472,
+492
+],
+"alt_span": [
+521,
+540
+]
+},
+{
+"k": 6,
+"nat": "forward",
+"alt": "hacia adelante",
+"nat_span": [
+499,
+506
+],
+"alt_span": [
+547,
+561
+]
+},
+{
+"k": 7,
+"nat": "Add the smaller element from",
+"alt": "Agrega el elemento más pequeño de",
+"nat_span": [
+565,
+593
+],
+"alt_span": [
+620,
+653
+]
+},
+{
+"k": 8,
+"nat": "Move the pointer for",
+"alt": "Mueve el puntero de",
+"nat_span": [
+622,
+642
+],
+"alt_span": [
+682,
+701
+]
+},
+{
+"k": 9,
+"nat": "forward",
+"alt": "hacia adelante",
+"nat_span": [
+649,
+656
+],
+"alt_span": [
+708,
+722
+]
+},
+{
+"k": 10,
+"nat": "Add any remaining elements from",
+"alt": "Agrega cualquier elemento restante de",
+"nat_span": [
+664,
+695
+],
+"alt_span": [
+730,
+767
+]
+},
+{
+"k": 11,
+"nat": "if",
+"alt": "si",
+"nat_span": [
+703,
+705
+],
+"alt_span": [
+775,
+777
+]
+},
+{
+"k": 12,
+"nat": "was exhausted first",
+"alt": "se agotó primero",
+"nat_span": [
+712,
+731
+],
+"alt_span": [
+784,
+800
+]
+},
+{
+"k": 13,
+"nat": "Add any remaining elements from",
+"alt": "Agrega cualquier elemento restante de",
+"nat_span": [
+818,
+849
+],
+"alt_span": [
+887,
+924
+]
+},
+{
+"k": 14,
+"nat": "if",
+"alt": "si",
+"nat_span": [
+857,
+859
+],
+"alt_span": [
+932,
+934
+]
+},
+{
+"k": 15,
+"nat": "was exhausted first",
+"alt": "se agotó primero",
+"nat_span": [
+866,
+885
+],
+"alt_span": [
+941,
+957
+]
+},
+{
+"k": 16,
+"nat": "Return the fully merged and sorted list",
+"alt": "Devuelve la lista completamente fusionada y ordenada",
+"nat_span": [
+992,
+1031
+],
+"alt_span": [
+1064,
+1116
+]
+}
+],
+"k_en": 17,
+"shared_fraction": 0.785,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "comment_language__t202",
+"family": "comment_language",
+"topic": "Word Reversal (Preserve Punctuation)",
+"angle": "code",
+"text_es": "Implement `reverse_words_with_punctuation(sentence)` that takes a string `sentence`. It should reverse the order of words but keep punctuation attached to its word. Example: `reverse_words_with_punctuation('Hello, world!')` should return `'world!, Hello,'`, `reverse_words_with_punctuation('One. Two. Three.')` should return `'Three. Two. One.'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import re\n\ndef reverse_words_with_punctuation(sentence):\n    # This regular expression splits the sentence into words and punctuation\n    # It captures sequences of word characters or non-word characters (punctuation)\n    parts = re.findall(r\"(\\w+|[^\\w\\s]+|\\s+)\", sentence)\n    \n    words_with_punct = [] # Initialize a list to hold words with their attached punctuation\n    current_word = \"\" # Buffer to build a word and its trailing punctuation\n\n    # Iterate through the parts to combine words and their trailing punctuation\n    for i, part in enumerate(parts):\n        if part.strip() == \"\": # If the part is just whitespace, skip it for now\n            continue\n        # Check if the part is a word or a series of word characters\n        if re.match(r\"\\w+\", part):\n            if current_word: # If there's a buffered word, add it to the list\n                words_with_punct.append(current_word)\n            current_word = part # Start a new word buffer\n        else: # The part is punctuation or whitespace\n            current_word += part # Append punctuation to the current word buffer\n\n    # Add the last buffered word if any exists\n    if current_word:\n        words_with_punct.append(current_word)\n\n    # Reverse the order of the identified words with their punctuation\n    reversed_words = words_with_punct[::-1]\n\n    # Join the reversed words to form the final sentence\n    return \"\".join(reversed_words)\n",
+"text_alt": "import re\n\ndef reverse_words_with_punctuation(sentence):\n    # Esta expresión regular divide la oración en palabras y puntuación\n    # Captura secuencias de caracteres de palabras o caracteres que no son de palabras (puntuación)\n    parts = re.findall(r\"(\\w+|[^\\w\\s]+|\\s+)\", sentence)\n    \n    words_with_punct = [] # Inicializa una lista para guardar palabras con su puntuación adjunta\n    current_word = \"\" # Buffer para construir una palabra y su puntuación final\n\n    # Itera a través de las partes para combinar palabras y su puntuación final\n    for i, part in enumerate(parts):\n        if part.strip() == \"\": # Si la parte es solo espacio en blanco, sáltala por ahora\n            continue\n        # Comprueba si la parte es una palabra o una serie de caracteres de palabras\n        if re.match(r\"\\w+\", part):\n            if current_word: # Si hay una palabra en el buffer, añádela a la lista\n                words_with_punct.append(current_word)\n            current_word = part # Inicia un nuevo buffer de palabras\n        else: # La parte es puntuación o espacio en blanco\n            current_word += part # Añade la puntuación al buffer de la palabra actual\n\n    # Añade la última palabra en el buffer si existe\n    if current_word:\n        words_with_punct.append(current_word)\n\n    # Invierte el orden de las palabras identificadas con su puntuación\n    reversed_words = words_with_punct[::-1]\n\n    # Une las palabras invertidas para formar la oración final\n    return \"\".join(reversed_words)\n",
+"opps": [
+{
+"k": 0,
+"nat": "This",
+"alt": "Esta expresión",
+"nat_span": [
+63,
+67
+],
+"alt_span": [
+63,
+77
+]
+},
+{
+"k": 1,
+"nat": "expression splits the sentence into words and punctuation",
+"alt": "divide la oración en palabras y puntuación",
+"nat_span": [
+76,
+133
+],
+"alt_span": [
+86,
+128
+]
+},
+{
+"k": 2,
+"nat": "It captures sequences of word characters or non-word characters (punctuation",
+"alt": "Captura secuencias de caracteres de palabras o caracteres que no son de palabras (puntuación",
+"nat_span": [
+140,
+216
+],
+"alt_span": [
+135,
+227
+]
+},
+{
+"k": 3,
+"nat": "Initialize a list to hold words with their attached punctuation",
+"alt": "Inicializa una lista para guardar palabras con su puntuación adjunta",
+"nat_span": [
+307,
+370
+],
+"alt_span": [
+318,
+386
+]
+},
+{
+"k": 4,
+"nat": "to build",
+"alt": "para construir una palabra y su puntuación final\n\n    # Itera",
+"nat_span": [
+402,
+410
+],
+"alt_span": [
+418,
+479
+]
+},
+{
+"k": 5,
+"nat": "word and its trailing punctuation\n\n    # Iterate through the parts to combine words and their trailing punctuation",
+"alt": "través de las partes para combinar palabras y su puntuación final",
+"nat_span": [
+413,
+527
+],
+"alt_span": [
+482,
+547
+]
+},
+{
+"k": 6,
+"nat": "If the part is just whitespace, skip it for now",
+"alt": "Si la parte es solo espacio en blanco, sáltala por ahora",
+"nat_span": [
+598,
+645
+],
+"alt_span": [
+618,
+674
+]
+},
+{
+"k": 7,
+"nat": "Check if the part is a word or a series of word characters",
+"alt": "Comprueba si la parte es una palabra o una serie de caracteres de palabras",
+"nat_span": [
+677,
+735
+],
+"alt_span": [
+706,
+780
+]
+},
+{
+"k": 8,
+"nat": "If there's",
+"alt": "Si hay una palabra en el buffer, añádela",
+"nat_span": [
+802,
+812
+],
+"alt_span": [
+847,
+887
+]
+},
+{
+"k": 9,
+"nat": "buffered word, add it to the list",
+"alt": "la lista",
+"nat_span": [
+815,
+848
+],
+"alt_span": [
+890,
+898
+]
+},
+{
+"k": 10,
+"nat": "Start a new word buffer",
+"alt": "Inicia un nuevo buffer de palabras",
+"nat_span": [
+937,
+960
+],
+"alt_span": [
+987,
+1021
+]
+},
+{
+"k": 11,
+"nat": "The part is punctuation or whitespace",
+"alt": "La parte es puntuación o espacio en blanco",
+"nat_span": [
+977,
+1014
+],
+"alt_span": [
+1038,
+1080
+]
+},
+{
+"k": 12,
+"nat": "Append punctuation to the current word buffer",
+"alt": "Añade la puntuación al buffer de la palabra actual",
+"nat_span": [
+1050,
+1095
+],
+"alt_span": [
+1116,
+1166
+]
+},
+{
+"k": 13,
+"nat": "Add the last buffered word if any exists",
+"alt": "Añade la última palabra en el buffer si existe",
+"nat_span": [
+1103,
+1143
+],
+"alt_span": [
+1174,
+1220
+]
+},
+{
+"k": 14,
+"nat": "Reverse the order of the identified words with their punctuation",
+"alt": "Invierte el orden de las palabras identificadas con su puntuación",
+"nat_span": [
+1218,
+1282
+],
+"alt_span": [
+1295,
+1360
+]
+},
+{
+"k": 15,
+"nat": "Join the reversed words to form the final sentence",
+"alt": "Une las palabras invertidas para formar la oración final",
+"nat_span": [
+1334,
+1384
+],
+"alt_span": [
+1412,
+1468
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.69,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "comment_language__t203",
+"family": "comment_language",
+"topic": "Find Longest Word in File (Dummy)",
+"angle": "code",
+"text_es": "Create a function `find_longest_word_in_file(filepath)` that takes a `filepath`. Simulate reading a file and finding the longest word (alphanumeric sequences). Return the longest word as a string. If the file is empty or not found, return an empty string. Example: `find_longest_word_in_file('dummy_file.txt')` (containing 'apple banana a') should return `'banana'`, `find_longest_word_in_file('empty.txt')` should return `''`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import re\n\ndef find_longest_word_in_file(filepath):\n    # Initialize longest_word to an empty string to handle empty files\n    longest_word = \"\" \n    try:\n        # Open the specified file for reading\n        with open(filepath, 'r') as file:\n            # Read the entire content of the file\n            content = file.read() \n            # Use regex to find all alphanumeric sequences (words)\n            words = re.findall(r'\\b[a-zA-Z0-9]+\\b', content) \n            # Iterate through each identified word\n            for word in words:\n                # Compare the current word's length with the longest found so far\n                if len(word) > len(longest_word): \n                    # Update longest_word if a longer word is found\n                    longest_word = word \n    except FileNotFoundError:\n        # Handle the case where the file does not exist\n        return \"\" \n    # Return the longest word found, or an empty string if none were found\n    return longest_word \n\n# Example usage (for testing purposes, not part of the function itself)\n# Create a dummy file for testing\n# with open('dummy_file.txt', 'w') as f:\n#     f.write(\"apple banana a and longerword here\")\n# result = find_longest_word_in_file('dummy_file.txt')\n# print(result) # Expected: longerword\n# with open('empty.txt', 'w') as f:\n#     f.write(\"\")\n# result_empty = find_longest_word_in_file('empty.txt')\n# print(result_empty) # Expected: \n# result_not_found = find_longest_word_in_file('nonexistent.txt')\n# print(result_not_found) # Expected:\n",
+"text_alt": "import re\n\ndef find_longest_word_in_file(filepath):\n    # Inicializa longest_word a una cadena vacía para manejar archivos vacíos\n    longest_word = \"\" \n    try:\n        # Abre el archivo especificado para lectura\n        with open(filepath, 'r') as file:\n            # Lee todo el contenido del archivo\n            content = file.read() \n            # Usa expresiones regulares para encontrar todas las secuencias alfanuméricas (palabras)\n            words = re.findall(r'\\b[a-zA-Z0-9]+\\b', content) \n            # Itera a través de cada palabra identificada\n            for word in words:\n                # Compara la longitud de la palabra actual con la más larga encontrada hasta ahora\n                if len(word) > len(longest_word): \n                    # Actualiza longest_word si se encuentra una palabra más larga\n                    longest_word = word \n    except FileNotFoundError:\n        # Maneja el caso en que el archivo no existe\n        return \"\" \n    # Devuelve la palabra más larga encontrada, o una cadena vacía si no se encontró ninguna\n    return longest_word \n\n# Ejemplo de uso (para propósitos de prueba, no forma parte de la función en sí)\n# Crea un archivo ficticio para pruebas\n# with open('dummy_file.txt', 'w') as f:\n#     f.write(\"apple banana a and longerword here\")\n# result = find_longest_word_in_file('dummy_file.txt')\n# print(result) # Esperado: longerword\n# with open('empty.txt', 'w') as f:\n#     f.write(\"\")\n# result_empty = find_longest_word_in_file('empty.txt')\n# print(result_empty) # Esperado: \n# result_not_found = find_longest_word_in_file('nonexistent.txt')\n# print(result_not_found) # Esperado:\n",
+"opps": [
+{
+"k": 0,
+"nat": "Initialize",
+"alt": "Inicializa",
+"nat_span": [
+58,
+68
+],
+"alt_span": [
+58,
+68
+]
+},
+{
+"k": 1,
+"nat": "to an empty string to handle empty files",
+"alt": "a una cadena vacía para manejar archivos vacíos",
+"nat_span": [
+82,
+122
+],
+"alt_span": [
+82,
+129
+]
+},
+{
+"k": 2,
+"nat": "Open the specified file for reading",
+"alt": "Abre el archivo especificado para lectura",
+"nat_span": [
+165,
+200
+],
+"alt_span": [
+172,
+213
+]
+},
+{
+"k": 3,
+"nat": "Read the entire content of the file",
+"alt": "Lee todo el contenido del archivo",
+"nat_span": [
+257,
+292
+],
+"alt_span": [
+270,
+303
+]
+},
+{
+"k": 4,
+"nat": "Use regex to find all alphanumeric sequences (words",
+"alt": "Usa expresiones regulares para encontrar todas las secuencias alfanuméricas (palabras",
+"nat_span": [
+342,
+393
+],
+"alt_span": [
+353,
+438
+]
+},
+{
+"k": 5,
+"nat": "Iterate through each identified word",
+"alt": "Itera a través de cada palabra identificada",
+"nat_span": [
+471,
+507
+],
+"alt_span": [
+516,
+559
+]
+},
+{
+"k": 6,
+"nat": "Compare the current word's length with the longest found so far",
+"alt": "Compara la longitud de la palabra actual con la más larga encontrada hasta ahora",
+"nat_span": [
+557,
+620
+],
+"alt_span": [
+609,
+689
+]
+},
+{
+"k": 7,
+"nat": "Update",
+"alt": "Actualiza",
+"nat_span": [
+694,
+700
+],
+"alt_span": [
+763,
+772
+]
+},
+{
+"k": 8,
+"nat": "if a longer word is found",
+"alt": "si se encuentra una palabra más larga",
+"nat_span": [
+714,
+739
+],
+"alt_span": [
+786,
+823
+]
+},
+{
+"k": 9,
+"nat": "Handle the case where the file does not exist",
+"alt": "Maneja el caso en que el archivo no existe",
+"nat_span": [
+821,
+866
+],
+"alt_span": [
+905,
+947
+]
+},
+{
+"k": 10,
+"nat": "Return the longest word found, or an empty string if none were found",
+"alt": "Devuelve la palabra más larga encontrada, o una cadena vacía si no se encontró ninguna",
+"nat_span": [
+892,
+960
+],
+"alt_span": [
+973,
+1059
+]
+},
+{
+"k": 11,
+"nat": "Example usage (for testing purposes, not part of the function itself",
+"alt": "Ejemplo de uso (para propósitos de prueba, no forma parte de la función en sí",
+"nat_span": [
+989,
+1057
+],
+"alt_span": [
+1088,
+1165
+]
+},
+{
+"k": 12,
+"nat": "Create a dummy file for testing",
+"alt": "Crea un archivo ficticio para pruebas",
+"nat_span": [
+1061,
+1092
+],
+"alt_span": [
+1169,
+1206
+]
+},
+{
+"k": 13,
+"nat": "Expected",
+"alt": "Esperado",
+"nat_span": [
+1259,
+1267
+],
+"alt_span": [
+1373,
+1381
+]
+},
+{
+"k": 14,
+"nat": "Expected",
+"alt": "Esperado",
+"nat_span": [
+1414,
+1422
+],
+"alt_span": [
+1528,
+1536
+]
+},
+{
+"k": 15,
+"nat": "Expected",
+"alt": "Esperado",
+"nat_span": [
+1519,
+1527
+],
+"alt_span": [
+1633,
+1641
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.804,
+"pass": true,
+"verify": null
 }
 ]

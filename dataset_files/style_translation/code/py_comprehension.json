@@ -13293,6 +13293,129 @@
 "verify": null
 },
 {
+"doc_id": "py_comprehension__t076",
+"family": "py_comprehension",
+"topic": "Simple Decryption (Caesar Cipher)",
+"angle": "code",
+"text_es": "Decrypt a message that was encrypted using a Caesar cipher with a given shift key. The function `decrypt_caesar(text, shift)` should return the decrypted string. Assume only lowercase English letters. Input: `text` (str), `shift` (int). Output: `decrypted_text` (str).\nExample 1: `decrypt_caesar('khoor', 3)` should return `'hello'`.\nExample 2: `decrypt_caesar('wkhuh', 3)` should return `'there'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def decrypt_caesar(text, shift):\n    alphabet_size = 26\n    normalized_shift = shift % alphabet_size\n    shifted_ascii_values = [ord(char) - normalized_shift for char in text]\n    wrapped_ascii_values = [\n        val if ord('a') <= val <= ord('z') else\n        val + alphabet_size if val < ord('a') else\n        val - alphabet_size\n        for val in shifted_ascii_values\n    ]\n    decrypted_chars = [chr(val) for val in wrapped_ascii_values]\n    decrypted_text = \"\".join(decrypted_chars)\n    return decrypted_text\n",
+"text_alt": "def decrypt_caesar(text, shift):\n    alphabet_size = 26\n    normalized_shift = shift % alphabet_size\n    shifted_ascii_values = []\n    for char in text:\n        shifted_ascii_values.append(ord(char) - normalized_shift)\n    wrapped_ascii_values = []\n    for val in shifted_ascii_values:\n        if ord('a') <= val <= ord('z'):\n            wrapped_ascii_values.append(val)\n        elif val < ord('a'):\n            wrapped_ascii_values.append(val + alphabet_size)\n        else:\n            wrapped_ascii_values.append(val - alphabet_size)\n    decrypted_chars = []\n    for val in wrapped_ascii_values:\n        decrypted_chars.append(chr(val))\n    decrypted_text = \"\".join(decrypted_chars)\n    return decrypted_text\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "]\n    for char in text:\n        shifted_ascii_values.append(",
+"nat_span": [
+129,
+129
+],
+"alt_span": [
+129,
+189
+]
+},
+{
+"k": 1,
+"nat": " for char in text]",
+"alt": ")",
+"nat_span": [
+157,
+175
+],
+"alt_span": [
+217,
+218
+]
+},
+{
+"k": 2,
+"nat": "\n        val ",
+"alt": "]\n    for val in shifted_ascii_values:\n        ",
+"nat_span": [
+204,
+217
+],
+"alt_span": [
+247,
+294
+]
+},
+{
+"k": 3,
+"nat": " else\n        val + alphabet_size if",
+"alt": ":\n            wrapped_ascii_values.append(val)\n        elif",
+"nat_span": [
+247,
+283
+],
+"alt_span": [
+324,
+383
+]
+},
+{
+"k": 4,
+"nat": " else\n        ",
+"alt": ":\n            wrapped_ascii_values.append(val + alphabet_size)\n        else:\n            wrapped_ascii_values.append(",
+"nat_span": [
+298,
+312
+],
+"alt_span": [
+398,
+515
+]
+},
+{
+"k": 5,
+"nat": "\n        for val in shifted_ascii_values\n    ]",
+"alt": ")",
+"nat_span": [
+331,
+377
+],
+"alt_span": [
+534,
+535
+]
+},
+{
+"k": 6,
+"nat": "chr(val) ",
+"alt": "]\n    ",
+"nat_span": [
+401,
+410
+],
+"alt_span": [
+559,
+565
+]
+},
+{
+"k": 7,
+"nat": "]",
+"alt": ":\n        decrypted_chars.append(chr(val))",
+"nat_span": [
+441,
+442
+],
+"alt_span": [
+596,
+638
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.769,
+"pass": true,
+"verify": null
+},
+{
 "doc_id": "py_comprehension__t077",
 "family": "py_comprehension",
 "topic": "Validate URL Format",
@@ -19844,6 +19967,181 @@
 "verify": null
 },
 {
+"doc_id": "py_comprehension__t118",
+"family": "py_comprehension",
+"topic": "Extract Numbers from String",
+"angle": "code",
+"text_es": "Extract all numerical digits from a given string and concatenate them into a single string. The function `extract_numbers(text)` should return the string of digits. Input: `text` (str). Output: `digits_string` (str).\nExample 1: `extract_numbers('abc123def45')` should return `'12345'`.\nExample 2: `extract_numbers('No numbers here.')` should return `''`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def extract_numbers(text):\n    digit_chars = [char for char in text if char.isdigit()]\n    digit_string = \"\".join(digit_chars)\n\n    even_digits_filtered = [d for d in digit_string if int(d) % 2 == 0]\n    odd_digits_filtered = [d for d in digit_string if int(d) % 2 != 0]\n\n    all_digits_sorted = sorted([d for d in digit_string])\n\n    unique_digits = sorted(list(set([d for d in digit_string])))\n\n    return \"\".join(digit_chars)\n",
+"text_alt": "def extract_numbers(text):\n    digit_chars = []\n    for char in text:\n        if char.isdigit():\n            digit_chars.append(char)\n    digit_string = \"\".join(digit_chars)\n\n    even_digits_filtered = []\n    for d in digit_string:\n        if int(d) % 2 == 0:\n            even_digits_filtered.append(d)\n    odd_digits_filtered = []\n    for d in digit_string:\n        if int(d) % 2 != 0:\n            odd_digits_filtered.append(d)\n\n    all_digits_sorted_temp = []\n    for d in digit_string:\n        all_digits_sorted_temp.append(d)\n    all_digits_sorted = sorted(all_digits_sorted_temp)\n\n    unique_digits_temp = []\n    for d in digit_string:\n        unique_digits_temp.append(d)\n    unique_digits = sorted(list(set(unique_digits_temp)))\n\n    return \"\".join(digit_chars)\n",
+"opps": [
+{
+"k": 0,
+"nat": "char ",
+"alt": "]\n    ",
+"nat_span": [
+46,
+51
+],
+"alt_span": [
+46,
+52
+]
+},
+{
+"k": 1,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+67,
+68
+],
+"alt_span": [
+68,
+78
+]
+},
+{
+"k": 2,
+"nat": "]",
+"alt": ":\n            digit_chars.append(char)",
+"nat_span": [
+85,
+86
+],
+"alt_span": [
+95,
+133
+]
+},
+{
+"k": 3,
+"nat": "d ",
+"alt": "]\n    ",
+"nat_span": [
+156,
+158
+],
+"alt_span": [
+203,
+209
+]
+},
+{
+"k": 4,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+179,
+180
+],
+"alt_span": [
+230,
+240
+]
+},
+{
+"k": 5,
+"nat": "]",
+"alt": ":\n            even_digits_filtered.append(d)",
+"nat_span": [
+198,
+199
+],
+"alt_span": [
+258,
+302
+]
+},
+{
+"k": 6,
+"nat": "d ",
+"alt": "]\n    ",
+"nat_span": [
+227,
+229
+],
+"alt_span": [
+330,
+336
+]
+},
+{
+"k": 7,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+250,
+251
+],
+"alt_span": [
+357,
+367
+]
+},
+{
+"k": 8,
+"nat": "]\n\n    all_digits_sorted",
+"alt": ":\n            odd_digits_filtered.append(d)\n\n    all_digits_sorted_temp",
+"nat_span": [
+269,
+293
+],
+"alt_span": [
+385,
+456
+]
+},
+{
+"k": 9,
+"nat": "sorted([d ",
+"alt": "[]\n    ",
+"nat_span": [
+296,
+306
+],
+"alt_span": [
+459,
+466
+]
+},
+{
+"k": 10,
+"nat": "])\n\n    ",
+"alt": ":\n        all_digits_sorted_temp.append(d)\n    all_digits_sorted = sorted(all_digits_sorted_temp)\n\n    unique_digits_temp = []\n    for d in digit_string:\n        unique_digits_temp.append(d)\n    ",
+"nat_span": [
+327,
+335
+],
+"alt_span": [
+487,
+682
+]
+},
+{
+"k": 11,
+"nat": "[d for d in digit_string]",
+"alt": "unique_digits_temp",
+"nat_span": [
+367,
+392
+],
+"alt_span": [
+714,
+732
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.821,
+"pass": true,
+"verify": null
+},
+{
 "doc_id": "py_comprehension__t119",
 "family": "py_comprehension",
 "topic": "Check if List is Sorted",
@@ -20566,6 +20864,272 @@
 ],
 "k_en": 10,
 "shared_fraction": 0.9,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_comprehension__t123",
+"family": "py_comprehension",
+"topic": "Simple Dictionary Merge",
+"angle": "code",
+"text_es": "Implement a function that merges two dictionaries. If a key exists in both dictionaries, the value from the second dictionary should overwrite the value from the first. The function `merge_dicts` should take two arguments: `dict1` (dict) and `dict2` (dict). It should return a new dictionary. \nExample 1: `merge_dicts({'a': 1, 'b': 2}, {'b': 3, 'c': 4})` should return `{'a': 1, 'b': 3, 'c': 4}`. \nExample 2: `merge_dicts({'x': 10}, {'y': 20})` should return `{'x': 10, 'y': 20}`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def merge_dicts(dict1, dict2):\n    keys1 = [k for k in dict1]\n    keys2 = [k for k in dict2]\n    common_keys = [k for k in keys1 if k in keys2]\n    unique_keys_dict1 = [k for k in keys1 if k not in common_keys]\n    unique_keys_dict2 = [k for k in keys2 if k not in common_keys]\n\n    merged_items = [(k, dict1[k]) for k in unique_keys_dict1]\n    merged_items.extend([(k, dict2[k]) for k in unique_keys_dict2])\n    merged_items.extend([(k, dict2[k]) for k in common_keys])\n\n    return {k: v for k, v in merged_items}\n",
+"text_alt": "def merge_dicts(dict1, dict2):\n    keys1 = []\n    for k in dict1:\n        keys1.append(k)\n    keys2 = []\n    for k in dict2:\n        keys2.append(k)\n    common_keys = []\n    for k in keys1:\n        if k in keys2:\n            common_keys.append(k)\n    unique_keys_dict1 = []\n    for k in keys1:\n        if k not in common_keys:\n            unique_keys_dict1.append(k)\n    unique_keys_dict2 = []\n    for k in keys2:\n        if k not in common_keys:\n            unique_keys_dict2.append(k)\n\n    merged_items = []\n    for k in unique_keys_dict1:\n        merged_items.append((k, dict1[k]))\n    merged_items.extend([])\n    for k in unique_keys_dict2:\n        merged_items.extend([(k, dict2[k])])\n    merged_items.extend([])\n    for k in common_keys:\n        merged_items.extend([(k, dict2[k])])\n\n    return {k: v for k, v in merged_items}\n",
+"opps": [
+{
+"k": 0,
+"nat": "k ",
+"alt": "]\n    ",
+"nat_span": [
+44,
+46
+],
+"alt_span": [
+44,
+50
+]
+},
+{
+"k": 1,
+"nat": "]",
+"alt": ":\n        keys1.append(k)",
+"nat_span": [
+60,
+61
+],
+"alt_span": [
+64,
+89
+]
+},
+{
+"k": 2,
+"nat": "k ",
+"alt": "]\n    ",
+"nat_span": [
+75,
+77
+],
+"alt_span": [
+103,
+109
+]
+},
+{
+"k": 3,
+"nat": "]",
+"alt": ":\n        keys2.append(k)",
+"nat_span": [
+91,
+92
+],
+"alt_span": [
+123,
+148
+]
+},
+{
+"k": 4,
+"nat": "k ",
+"alt": "]\n    ",
+"nat_span": [
+112,
+114
+],
+"alt_span": [
+168,
+174
+]
+},
+{
+"k": 5,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+128,
+129
+],
+"alt_span": [
+188,
+198
+]
+},
+{
+"k": 6,
+"nat": "]",
+"alt": ":\n            common_keys.append(k)",
+"nat_span": [
+142,
+143
+],
+"alt_span": [
+211,
+246
+]
+},
+{
+"k": 7,
+"nat": "k ",
+"alt": "]\n    ",
+"nat_span": [
+169,
+171
+],
+"alt_span": [
+272,
+278
+]
+},
+{
+"k": 8,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+185,
+186
+],
+"alt_span": [
+292,
+302
+]
+},
+{
+"k": 9,
+"nat": "]",
+"alt": ":\n            unique_keys_dict1.append(k)",
+"nat_span": [
+209,
+210
+],
+"alt_span": [
+325,
+366
+]
+},
+{
+"k": 10,
+"nat": "k ",
+"alt": "]\n    ",
+"nat_span": [
+236,
+238
+],
+"alt_span": [
+392,
+398
+]
+},
+{
+"k": 11,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+252,
+253
+],
+"alt_span": [
+412,
+422
+]
+},
+{
+"k": 12,
+"nat": "]",
+"alt": ":\n            unique_keys_dict2.append(k)",
+"nat_span": [
+276,
+277
+],
+"alt_span": [
+445,
+486
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "]\n    for k in unique_keys_dict1:\n        merged_items.append(",
+"nat_span": [
+299,
+299
+],
+"alt_span": [
+508,
+570
+]
+},
+{
+"k": 14,
+"nat": " ",
+"alt": ")\n    merged_items.extend([])\n    ",
+"nat_span": [
+312,
+313
+],
+"alt_span": [
+583,
+617
+]
+},
+{
+"k": 15,
+"nat": "unique_keys_dict1]\n    ",
+"alt": "unique_keys_dict2:\n        ",
+"nat_span": [
+322,
+345
+],
+"alt_span": [
+626,
+653
+]
+},
+{
+"k": 16,
+"nat": " ",
+"alt": "])\n    merged_items.extend([])\n    ",
+"nat_span": [
+379,
+380
+],
+"alt_span": [
+687,
+722
+]
+},
+{
+"k": 17,
+"nat": "unique_keys_dict2])\n    ",
+"alt": "common_keys:\n        ",
+"nat_span": [
+389,
+413
+],
+"alt_span": [
+731,
+752
+]
+},
+{
+"k": 18,
+"nat": " for k in common_keys",
+"alt": "",
+"nat_span": [
+447,
+468
+],
+"alt_span": [
+786,
+786
+]
+}
+],
+"k_en": 19,
+"shared_fraction": 0.836,
 "pass": true,
 "verify": null
 },
@@ -33248,6 +33812,427 @@
 ],
 "k_en": 12,
 "shared_fraction": 0.791,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_comprehension__t201",
+"family": "py_comprehension",
+"topic": "Merge Two Sorted Lists",
+"angle": "code",
+"text_es": "Write a function `merge_sorted_lists(list1, list2)` that takes two already sorted lists of numbers. It should return a new sorted list containing all elements from both input lists. Example: `merge_sorted_lists([1, 3, 5], [2, 4, 6])` should return `[1, 2, 3, 4, 5, 6]`, `merge_sorted_lists([10], [])` should return `[10]`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def merge_sorted_lists(list1, list2):\n    merged = []\n    i, j = 0, 0\n    len1, len2 = len(list1), len(list2)\n\n    while i < len1 and j < len2:\n        merged.append(list1[i] if list1[i] <= list2[j] else list2[j])\n        i += 1 if list1[i] <= list2[j] else 0\n        j += 1 if list1[i-1] > list2[j] else 0 # Careful with index in case of same values\n\n    remaining_list1 = [x for x in list1[i:]]\n    remaining_list2 = [x for x in list2[j:]]\n\n    final_merged = merged + remaining_list1 + remaining_list2\n    \n    # Example of another comprehension on the final result for demonstration\n    # (Could be useful for filtering/transforming if the task allowed)\n    processed_final = [x * 1 for x in final_merged] # No actual change, just for comprehension example\n\n    # Another list comprehension example, if we wanted to find all even numbers\n    # even_numbers = [x for x in processed_final if x % 2 == 0]\n\n    # One more list comprehension example, creating a list of booleans based on value\n    # value_flags = [x > 5 for x in processed_final]\n    \n    # And finally, a list comprehension to create a list of strings\n    # string_versions = [str(x) for x in processed_final]\n\n    return processed_final\n",
+"text_alt": "def merge_sorted_lists(list1, list2):\n    merged = []\n    i, j = 0, 0\n    len1, len2 = len(list1), len(list2)\n\n    while i < len1 and j < len2:\n        merged.append(list1[i] if list1[i] <= list2[j] else list2[j])\n        i += 1 if list1[i] <= list2[j] else 0\n        j += 1 if list1[i-1] > list2[j] else 0 # Careful with index in case of same values\n\n    remaining_list1 = []\n    for x in list1[i:]:\n        remaining_list1.append(x)\n    remaining_list2 = []\n    for x in list2[j:]:\n        remaining_list2.append(x)\n\n    final_merged = merged + remaining_list1 + remaining_list2\n    \n    # Example of another comprehension on the final result for demonstration\n    # (Could be useful for filtering/transforming if the task allowed)\n    processed_final = []\n    for x in final_merged:\n        processed_final.append(x * 1) # No actual change, just for comprehension example\n\n    # Another list comprehension example, if we wanted to find all even numbers\n    # even_numbers = []\n    # for x in processed_final:\n    #     if x % 2 == 0:\n    #         even_numbers.append(x)\n\n    # One more list comprehension example, creating a list of booleans based on value\n    # value_flags = []\n    # for x in processed_final:\n    #     value_flags.append(x > 5)\n    \n    # And finally, a list comprehension to create a list of strings\n    # string_versions = []\n    # for x in processed_final:\n    #     string_versions.append(str(x))\n\n    return processed_final\n",
+"opps": [
+{
+"k": 0,
+"nat": "x ",
+"alt": "]\n    ",
+"nat_span": [
+375,
+377
+],
+"alt_span": [
+375,
+381
+]
+},
+{
+"k": 1,
+"nat": "]",
+"alt": ":\n        remaining_list1.append(x)",
+"nat_span": [
+395,
+396
+],
+"alt_span": [
+399,
+434
+]
+},
+{
+"k": 2,
+"nat": "x ",
+"alt": "]\n    ",
+"nat_span": [
+420,
+422
+],
+"alt_span": [
+458,
+464
+]
+},
+{
+"k": 3,
+"nat": "]",
+"alt": ":\n        remaining_list2.append(x)",
+"nat_span": [
+440,
+441
+],
+"alt_span": [
+482,
+517
+]
+},
+{
+"k": 4,
+"nat": "x * 1 ",
+"alt": "]\n    ",
+"nat_span": [
+681,
+687
+],
+"alt_span": [
+757,
+763
+]
+},
+{
+"k": 5,
+"nat": "]",
+"alt": ":\n        processed_final.append(x * 1)",
+"nat_span": [
+708,
+709
+],
+"alt_span": [
+784,
+823
+]
+},
+{
+"k": 6,
+"nat": "x",
+"alt": "]\n    #",
+"nat_span": [
+864,
+865
+],
+"alt_span": [
+978,
+985
+]
+},
+{
+"k": 7,
+"nat": " ",
+"alt": ":\n    #     ",
+"nat_span": [
+890,
+891
+],
+"alt_span": [
+1010,
+1022
+]
+},
+{
+"k": 8,
+"nat": "]",
+"alt": ":\n    #         even_numbers.append(x)",
+"nat_span": [
+904,
+905
+],
+"alt_span": [
+1035,
+1073
+]
+},
+{
+"k": 9,
+"nat": "x > 5",
+"alt": "]\n    #",
+"nat_span": [
+1014,
+1019
+],
+"alt_span": [
+1182,
+1189
+]
+},
+{
+"k": 10,
+"nat": "]",
+"alt": ":\n    #     value_flags.append(x > 5)",
+"nat_span": [
+1044,
+1045
+],
+"alt_span": [
+1214,
+1251
+]
+},
+{
+"k": 11,
+"nat": "str(x)",
+"alt": "]\n    #",
+"nat_span": [
+1144,
+1150
+],
+"alt_span": [
+1350,
+1357
+]
+},
+{
+"k": 12,
+"nat": "]",
+"alt": ":\n    #     string_versions.append(str(x))",
+"nat_span": [
+1175,
+1176
+],
+"alt_span": [
+1382,
+1424
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.942,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_comprehension__t202",
+"family": "py_comprehension",
+"topic": "Word Reversal (Preserve Punctuation)",
+"angle": "code",
+"text_es": "Implement `reverse_words_with_punctuation(sentence)` that takes a string `sentence`. It should reverse the order of words but keep punctuation attached to its word. Example: `reverse_words_with_punctuation('Hello, world!')` should return `'world!, Hello,'`, `reverse_words_with_punctuation('One. Two. Three.')` should return `'Three. Two. One.'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import re\n\ndef reverse_words_with_punctuation(sentence):\n    words_and_punctuation = re.findall(r\"\\w[\\w']*(?:[.,!?;:]+)?|\\S\", sentence)\n    reversed_words = [word for word in reversed(words_and_punctuation) if word.strip()]\n    cleaned_reversed_words = [word.strip() for word in reversed_words]\n\n    reversed_sentence_parts = []\n    for i, word in enumerate(cleaned_reversed_words):\n        if i > 0 and not (word[0].isalnum() or word[0] in \"'\\\"\") and not (reversed_sentence_parts[-1][-1].isalnum() or reversed_sentence_parts[-1][-1] in \"'\\\"\"):\n            reversed_sentence_parts.append(word)\n        else:\n            reversed_sentence_parts.append(word)\n\n    final_sentence = []\n    for i, part in enumerate(reversed_sentence_parts):\n        if i > 0 and (part[0].isalnum() or part[0] in \"'\\\"\") and (reversed_sentence_parts[i-1][-1].isalnum() or reversed_sentence_parts[i-1][-1] in \"'\\\"\"):\n            final_sentence.append(' ' + part)\n        else:\n            final_sentence.append(part)\n\n    return ''.join(final_sentence).strip()\n",
+"text_alt": "import re\n\ndef reverse_words_with_punctuation(sentence):\n    words_and_punctuation = re.findall(r\"\\w[\\w']*(?:[.,!?;:]+)?|\\S\", sentence)\n    reversed_words = []\n    for word in reversed(words_and_punctuation):\n        if word.strip():\n            reversed_words.append(word)\n    cleaned_reversed_words = []\n    for word in reversed_words:\n        cleaned_reversed_words.append(word.strip())\n\n    reversed_sentence_parts = []\n    for i, word in enumerate(cleaned_reversed_words):\n        if i > 0 and not (word[0].isalnum() or word[0] in \"'\\\"\") and not (reversed_sentence_parts[-1][-1].isalnum() or reversed_sentence_parts[-1][-1] in \"'\\\"\"):\n            reversed_sentence_parts.append(word)\n        else:\n            reversed_sentence_parts.append(word)\n\n    final_sentence = []\n    for i, part in enumerate(reversed_sentence_parts):\n        if i > 0 and (part[0].isalnum() or part[0] in \"'\\\"\") and (reversed_sentence_parts[i-1][-1].isalnum() or reversed_sentence_parts[i-1][-1] in \"'\\\"\"):\n            final_sentence.append(' ' + part)\n        else:\n            final_sentence.append(part)\n\n    return ''.join(final_sentence).strip()\n",
+"opps": [
+{
+"k": 0,
+"nat": "word ",
+"alt": "]\n    ",
+"nat_span": [
+158,
+163
+],
+"alt_span": [
+158,
+164
+]
+},
+{
+"k": 1,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+206,
+207
+],
+"alt_span": [
+207,
+217
+]
+},
+{
+"k": 2,
+"nat": "]",
+"alt": ":\n            reversed_words.append(word)",
+"nat_span": [
+222,
+223
+],
+"alt_span": [
+232,
+273
+]
+},
+{
+"k": 3,
+"nat": "word.strip() ",
+"alt": "]\n    ",
+"nat_span": [
+254,
+267
+],
+"alt_span": [
+304,
+310
+]
+},
+{
+"k": 4,
+"nat": "]",
+"alt": ":\n        cleaned_reversed_words.append(word.strip())",
+"nat_span": [
+293,
+294
+],
+"alt_span": [
+336,
+389
+]
+}
+],
+"k_en": 5,
+"shared_fraction": 0.969,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_comprehension__t203",
+"family": "py_comprehension",
+"topic": "Find Longest Word in File (Dummy)",
+"angle": "code",
+"text_es": "Create a function `find_longest_word_in_file(filepath)` that takes a `filepath`. Simulate reading a file and finding the longest word (alphanumeric sequences). Return the longest word as a string. If the file is empty or not found, return an empty string. Example: `find_longest_word_in_file('dummy_file.txt')` (containing 'apple banana a') should return `'banana'`, `find_longest_word_in_file('empty.txt')` should return `''`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import re\n\ndef find_longest_word_in_file(filepath):\n    try:\n        with open(filepath, 'r') as file:\n            content = file.read()\n    except FileNotFoundError:\n        return \"\"\n\n    if not content:\n        return \"\"\n\n    words_raw = re.findall(r'\\b\\w+\\b', content.lower())\n    words_filtered = [word for word in words_raw if word.isalpha()]\n    \n    if not words_filtered:\n        return \"\"\n    \n    word_lengths = [(word, len(word)) for word in words_filtered]\n    \n    max_length = max([length for _, length in word_lengths])\n    \n    longest_words = [word for word, length in word_lengths if length == max_length]\n    \n    return longest_words[0] if longest_words else \"\"\n",
+"text_alt": "import re\n\ndef find_longest_word_in_file(filepath):\n    try:\n        with open(filepath, 'r') as file:\n            content = file.read()\n    except FileNotFoundError:\n        return \"\"\n\n    if not content:\n        return \"\"\n\n    words_raw = re.findall(r'\\b\\w+\\b', content.lower())\n    words_filtered = []\n    for word in words_raw:\n        if word.isalpha():\n            words_filtered.append(word)\n    \n    if not words_filtered:\n        return \"\"\n    \n    word_lengths = []\n    for word in words_filtered:\n        word_lengths.append((word, len(word)))\n    \n    max_length_list = []\n    for _, length in word_lengths:\n        max_length_list.append(length)\n    max_length = max(max_length_list)\n    \n    longest_words = []\n    for word, length in word_lengths:\n        if length == max_length:\n            longest_words.append(word)\n    \n    return longest_words[0] if longest_words else \"\"\n",
+"opps": [
+{
+"k": 0,
+"nat": "word ",
+"alt": "]\n    ",
+"nat_span": [
+303,
+308
+],
+"alt_span": [
+303,
+309
+]
+},
+{
+"k": 1,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+329,
+330
+],
+"alt_span": [
+330,
+340
+]
+},
+{
+"k": 2,
+"nat": "]",
+"alt": ":\n            words_filtered.append(word)",
+"nat_span": [
+347,
+348
+],
+"alt_span": [
+357,
+398
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "]\n    for word in words_filtered:\n        word_lengths.append(",
+"nat_span": [
+424,
+424
+],
+"alt_span": [
+474,
+536
+]
+},
+{
+"k": 4,
+"nat": " for word in words_filtered]\n    \n    max_length",
+"alt": ")\n    \n    max_length_list",
+"nat_span": [
+441,
+489
+],
+"alt_span": [
+553,
+579
+]
+},
+{
+"k": 5,
+"nat": "max([length ",
+"alt": "[]\n    ",
+"nat_span": [
+492,
+504
+],
+"alt_span": [
+582,
+589
+]
+},
+{
+"k": 6,
+"nat": "]",
+"alt": ":\n        max_length_list.append(length)\n    max_length = max(max_length_list",
+"nat_span": [
+533,
+534
+],
+"alt_span": [
+618,
+695
+]
+},
+{
+"k": 7,
+"nat": "word ",
+"alt": "]\n    ",
+"nat_span": [
+562,
+567
+],
+"alt_span": [
+723,
+729
+]
+},
+{
+"k": 8,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+599,
+600
+],
+"alt_span": [
+761,
+771
+]
+},
+{
+"k": 9,
+"nat": "]",
+"alt": ":\n            longest_words.append(word)",
+"nat_span": [
+623,
+624
+],
+"alt_span": [
+794,
+834
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.894,
 "pass": true,
 "verify": null
 }

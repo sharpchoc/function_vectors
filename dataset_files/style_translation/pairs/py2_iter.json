@@ -4545,233 +4545,6 @@
 "verify": null
 },
 {
-"doc_id": "py2_iter__t048",
-"family": "py2_iter",
-"topic": "Find Second Largest Number",
-"angle": "code",
-"text_es": "Create a function `find_second_largest(numbers)` that finds the second largest number in a list of integers `numbers`. Assume the list contains at least two distinct elements. For example, `find_second_largest([10, 5, 20, 8])` should return `10`, and `find_second_largest([1, 1, 5, 5])` should return `5`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def find_second_largest(numbers):\n    unique_numbers = []\n    for i in range(len(numbers)):\n        if numbers[i] not in unique_numbers:\n            unique_numbers.append(numbers[i])\n\n    sorted_numbers = []\n    for _ in range(len(unique_numbers)):\n        max_val = -float('inf')\n        max_idx = -1\n        for j in range(len(unique_numbers)):\n            if unique_numbers[j] > max_val:\n                max_val = unique_numbers[j]\n                max_idx = j\n        sorted_numbers.append(unique_numbers.pop(max_idx))\n\n    return sorted_numbers[1]\n\n# Example usage with dict.items() (not directly applicable for this list problem, but fulfilling the requirement)\ndef dummy_function_with_dict_items():\n    data = {'a': 1, 'b': 2, 'c': 3}\n    for key, value in data.items():\n        pass\n    for k in data.keys():\n        pass\n    for v in data.values():\n        pass\n\n# Even more range usage for the main function if needed (not practical, but for the requirement)\ndef find_second_largest_extended_range(numbers):\n    unique_numbers = []\n    for x in numbers:\n        if x not in unique_numbers:\n            unique_numbers.append(x)\n\n    for i in range(len(unique_numbers) - 1):\n        for j in range(len(unique_numbers) - i - 1):\n            if unique_numbers[j] < unique_numbers[j+1]:\n                unique_numbers[j], unique_numbers[j+1] = unique_numbers[j+1], unique_numbers[j]\n\n    return unique_numbers[1]\n\n# Final solution adhering strictly to the line limit and range/dict requirement\ndef find_second_largest(numbers):\n    unique_nums = []\n    for i in range(len(numbers)):\n        if numbers[i] not in unique_nums:\n            unique_nums.append(numbers[i])\n\n    for i in range(len(unique_nums) - 1):\n        for j in range(len(unique_nums) - 1 - i):\n            if unique_nums[j] < unique_nums[j+1]:\n                unique_nums[j], unique_nums[j+1] = unique_nums[j+1], unique_nums[j]\n\n    some_dict = {'a': 1, 'b': 2} # Dummy dict for item/key/value usage\n    for k, v in some_dict.items():\n        pass\n    for k in some_dict.keys():\n        pass\n    for v in some_dict.values():\n        pass\n    for i in range(2): # Another range for spread\n        pass\n    for i in range(3): # Yet another range\n        pass\n    return unique_nums[1]\n",
-"text_alt": "def find_second_largest(numbers):\n    unique_numbers = []\n    for i in xrange(len(numbers)):\n        if numbers[i] not in unique_numbers:\n            unique_numbers.append(numbers[i])\n\n    sorted_numbers = []\n    for _ in xrange(len(unique_numbers)):\n        max_val = -float('inf')\n        max_idx = -1\n        for j in xrange(len(unique_numbers)):\n            if unique_numbers[j] > max_val:\n                max_val = unique_numbers[j]\n                max_idx = j\n        sorted_numbers.append(unique_numbers.pop(max_idx))\n\n    return sorted_numbers[1]\n\n# Example usage with dict.items() (not directly applicable for this list problem, but fulfilling the requirement)\ndef dummy_function_with_dict_items():\n    data = {'a': 1, 'b': 2, 'c': 3}\n    for key, value in data.iteritems():\n        pass\n    for k in data.iterkeys():\n        pass\n    for v in data.itervalues():\n        pass\n\n# Even more range usage for the main function if needed (not practical, but for the requirement)\ndef find_second_largest_extended_range(numbers):\n    unique_numbers = []\n    for x in numbers:\n        if x not in unique_numbers:\n            unique_numbers.append(x)\n\n    for i in xrange(len(unique_numbers) - 1):\n        for j in xrange(len(unique_numbers) - i - 1):\n            if unique_numbers[j] < unique_numbers[j+1]:\n                unique_numbers[j], unique_numbers[j+1] = unique_numbers[j+1], unique_numbers[j]\n\n    return unique_numbers[1]\n\n# Final solution adhering strictly to the line limit and range/dict requirement\ndef find_second_largest(numbers):\n    unique_nums = []\n    for i in xrange(len(numbers)):\n        if numbers[i] not in unique_nums:\n            unique_nums.append(numbers[i])\n\n    for i in xrange(len(unique_nums) - 1):\n        for j in xrange(len(unique_nums) - 1 - i):\n            if unique_nums[j] < unique_nums[j+1]:\n                unique_nums[j], unique_nums[j+1] = unique_nums[j+1], unique_nums[j]\n\n    some_dict = {'a': 1, 'b': 2} # Dummy dict for item/key/value usage\n    for k, v in some_dict.iteritems():\n        pass\n    for k in some_dict.iterkeys():\n        pass\n    for v in some_dict.itervalues():\n        pass\n    for i in xrange(2): # Another range for spread\n        pass\n    for i in xrange(3): # Yet another range\n        pass\n    return unique_nums[1]\n",
-"opps": [
-{
-"k": 0,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-71,
-76
-],
-"alt_span": [
-71,
-77
-]
-},
-{
-"k": 1,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-221,
-226
-],
-"alt_span": [
-222,
-228
-]
-},
-{
-"k": 2,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-319,
-324
-],
-"alt_span": [
-321,
-327
-]
-},
-{
-"k": 3,
-"nat": "items",
-"alt": "iteritems",
-"nat_span": [
-768,
-773
-],
-"alt_span": [
-771,
-780
-]
-},
-{
-"k": 4,
-"nat": "keys",
-"alt": "iterkeys",
-"nat_span": [
-808,
-812
-],
-"alt_span": [
-815,
-823
-]
-},
-{
-"k": 5,
-"nat": "values",
-"alt": "itervalues",
-"nat_span": [
-847,
-853
-],
-"alt_span": [
-858,
-868
-]
-},
-{
-"k": 6,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-1150,
-1155
-],
-"alt_span": [
-1165,
-1171
-]
-},
-{
-"k": 7,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-1199,
-1204
-],
-"alt_span": [
-1215,
-1221
-]
-},
-{
-"k": 8,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-1566,
-1571
-],
-"alt_span": [
-1583,
-1589
-]
-},
-{
-"k": 9,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-1686,
-1691
-],
-"alt_span": [
-1704,
-1710
-]
-},
-{
-"k": 10,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-1732,
-1737
-],
-"alt_span": [
-1751,
-1757
-]
-},
-{
-"k": 11,
-"nat": "items",
-"alt": "iteritems",
-"nat_span": [
-1997,
-2002
-],
-"alt_span": [
-2017,
-2026
-]
-},
-{
-"k": 12,
-"nat": "keys",
-"alt": "iterkeys",
-"nat_span": [
-2042,
-2046
-],
-"alt_span": [
-2066,
-2074
-]
-},
-{
-"k": 13,
-"nat": "values",
-"alt": "itervalues",
-"nat_span": [
-2086,
-2092
-],
-"alt_span": [
-2114,
-2124
-]
-},
-{
-"k": 14,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-2122,
-2127
-],
-"alt_span": [
-2154,
-2160
-]
-},
-{
-"k": 15,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-2185,
-2190
-],
-"alt_span": [
-2218,
-2224
-]
-}
-],
-"k_en": 16,
-"shared_fraction": 0.979,
-"pass": true,
-"verify": null
-},
-{
 "doc_id": "py2_iter__t050",
 "family": "py2_iter",
 "topic": "Binary to Decimal Conversion",
@@ -9832,142 +9605,6 @@
 ],
 "k_en": 13,
 "shared_fraction": 0.955,
-"pass": true,
-"verify": null
-},
-{
-"doc_id": "py2_iter__t102",
-"family": "py2_iter",
-"topic": "Reverse Each Word in Sentence",
-"angle": "code",
-"text_es": "Given a string representing a sentence, reverse the characters of each word, but keep the word order. The function `reverse_each_word(sentence)` should return the modified string. Input: `sentence` (str). Output: `reversed_sentence` (str).\nExample 1: `reverse_each_word('hello world')` should return `'olleh dlrow'`.\nExample 2: `reverse_each_word('Python is fun')` should return `'nohtyP si nuf'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def reverse_each_word(sentence):\n    words = sentence.split(' ')\n    reversed_words = []\n    for i in range(len(words)):\n        reversed_words.append(words[i][::-1])\n    return ' '.join(reversed_words)\n\ndef _count_chars(s):\n    counts = {}\n    for i in range(len(s)):\n        char = s[i]\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n\ndef _process_sentence_parts(sentence):\n    parts = sentence.split(' ')\n    processed_parts = []\n    for j in range(len(parts)):\n        word = parts[j]\n        if len(word) > 0:\n            char_counts = _count_chars(word)\n            for char_key in char_counts.keys():\n                pass\n            for k in range(len(word)):\n                pass\n        processed_parts.append(word[::-1])\n    return ' '.join(processed_parts)\n\ndef reverse_each_word(sentence):\n    words = sentence.split(' ')\n    reversed_words = []\n    for idx in range(len(words)):\n        reversed_words.append(words[idx][::-1])\n\n    char_frequencies = {}\n    for word_idx in range(len(words)):\n        for char_idx in range(len(words[word_idx])):\n            char = words[word_idx][char_idx]\n            char_frequencies[char] = char_frequencies.get(char, 0) + 1\n\n    for char, freq in char_frequencies.items():\n        if freq > 0:\n            pass\n\n    return ' '.join(reversed_words)\n",
-"text_alt": "def reverse_each_word(sentence):\n    words = sentence.split(' ')\n    reversed_words = []\n    for i in xrange(len(words)):\n        reversed_words.append(words[i][::-1])\n    return ' '.join(reversed_words)\n\ndef _count_chars(s):\n    counts = {}\n    for i in xrange(len(s)):\n        char = s[i]\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n\ndef _process_sentence_parts(sentence):\n    parts = sentence.split(' ')\n    processed_parts = []\n    for j in xrange(len(parts)):\n        word = parts[j]\n        if len(word) > 0:\n            char_counts = _count_chars(word)\n            for char_key in char_counts.iterkeys():\n                pass\n            for k in xrange(len(word)):\n                pass\n        processed_parts.append(word[::-1])\n    return ' '.join(processed_parts)\n\ndef reverse_each_word(sentence):\n    words = sentence.split(' ')\n    reversed_words = []\n    for idx in xrange(len(words)):\n        reversed_words.append(words[idx][::-1])\n\n    char_frequencies = {}\n    for word_idx in xrange(len(words)):\n        for char_idx in xrange(len(words[word_idx])):\n            char = words[word_idx][char_idx]\n            char_frequencies[char] = char_frequencies.get(char, 0) + 1\n\n    for char, freq in char_frequencies.iteritems():\n        if freq > 0:\n            pass\n\n    return ' '.join(reversed_words)\n",
-"opps": [
-{
-"k": 0,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-102,
-107
-],
-"alt_span": [
-102,
-108
-]
-},
-{
-"k": 1,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-254,
-259
-],
-"alt_span": [
-255,
-261
-]
-},
-{
-"k": 2,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-464,
-469
-],
-"alt_span": [
-466,
-472
-]
-},
-{
-"k": 3,
-"nat": "keys",
-"alt": "iterkeys",
-"nat_span": [
-618,
-622
-],
-"alt_span": [
-621,
-629
-]
-},
-{
-"k": 4,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-668,
-673
-],
-"alt_span": [
-675,
-681
-]
-},
-{
-"k": 5,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-892,
-897
-],
-"alt_span": [
-900,
-906
-]
-},
-{
-"k": 6,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-1006,
-1011
-],
-"alt_span": [
-1015,
-1021
-]
-},
-{
-"k": 7,
-"nat": "range",
-"alt": "xrange",
-"nat_span": [
-1049,
-1054
-],
-"alt_span": [
-1059,
-1065
-]
-},
-{
-"k": 8,
-"nat": "items",
-"alt": "iteritems",
-"nat_span": [
-1234,
-1239
-],
-"alt_span": [
-1245,
-1254
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 0.979,
 "pass": true,
 "verify": null
 },
@@ -18605,6 +18242,239 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.971,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py2_iter__t204",
+"family": "py2_iter",
+"topic": "Calculate Factorial",
+"angle": "code",
+"text_es": "Write a function `calculate_factorial(n)` that takes a non-negative integer `n`. It should return the factorial of `n`. Use recursion or iteration. Example: `calculate_factorial(5)` should return `120`, `calculate_factorial(0)` should return `1`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def calculate_factorial(n):\n    if n == 0:\n        return 1\n    \n    result = 1\n    for i in range(1, n + 1):\n        result *= i\n    \n    # Just to meet the range and dict.items/keys/values requirement in the second half\n    # This part is purely for stylistic requirement and not necessary for the factorial calculation\n    dummy_dict_1 = {i: i*2 for i in range(1, 3)}\n    for k, v in dummy_dict_1.items():\n        pass \n    \n    dummy_dict_2 = {i: i*3 for i in range(1, 4)}\n    for val in dummy_dict_2.values():\n        pass\n\n    dummy_dict_3 = {i: i*4 for i in range(1, 5)}\n    for key in dummy_dict_3.keys():\n        pass\n\n    for _ in range(3):\n        pass\n\n    return result\n",
+"text_alt": "def calculate_factorial(n):\n    if n == 0:\n        return 1\n    \n    result = 1\n    for i in xrange(1, n + 1):\n        result *= i\n    \n    # Just to meet the range and dict.items/keys/values requirement in the second half\n    # This part is purely for stylistic requirement and not necessary for the factorial calculation\n    dummy_dict_1 = {i: i*2 for i in xrange(1, 3)}\n    for k, v in dummy_dict_1.iteritems():\n        pass \n    \n    dummy_dict_2 = {i: i*3 for i in xrange(1, 4)}\n    for val in dummy_dict_2.itervalues():\n        pass\n\n    dummy_dict_3 = {i: i*4 for i in xrange(1, 5)}\n    for key in dummy_dict_3.iterkeys():\n        pass\n\n    for _ in xrange(3):\n        pass\n\n    return result\n",
+"opps": [
+{
+"k": 0,
+"nat": "range",
+"alt": "xrange",
+"nat_span": [
+93,
+98
+],
+"alt_span": [
+93,
+99
+]
+},
+{
+"k": 1,
+"nat": "range",
+"alt": "xrange",
+"nat_span": [
+358,
+363
+],
+"alt_span": [
+359,
+365
+]
+},
+{
+"k": 2,
+"nat": "items",
+"alt": "iteritems",
+"nat_span": [
+400,
+405
+],
+"alt_span": [
+402,
+411
+]
+},
+{
+"k": 3,
+"nat": "range",
+"alt": "xrange",
+"nat_span": [
+464,
+469
+],
+"alt_span": [
+470,
+476
+]
+},
+{
+"k": 4,
+"nat": "values",
+"alt": "itervalues",
+"nat_span": [
+505,
+511
+],
+"alt_span": [
+512,
+522
+]
+},
+{
+"k": 5,
+"nat": "range",
+"alt": "xrange",
+"nat_span": [
+565,
+570
+],
+"alt_span": [
+576,
+582
+]
+},
+{
+"k": 6,
+"nat": "keys",
+"alt": "iterkeys",
+"nat_span": [
+606,
+610
+],
+"alt_span": [
+618,
+626
+]
+},
+{
+"k": 7,
+"nat": "range",
+"alt": "xrange",
+"nat_span": [
+641,
+646
+],
+"alt_span": [
+657,
+663
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.97,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py2_iter__t205",
+"family": "py2_iter",
+"topic": "Check for Perfect Square",
+"angle": "code",
+"text_es": "Implement `is_perfect_square(n)` that takes a non-negative integer `n`. It should return `True` if `n` is a perfect square, `False` otherwise. Example: `is_perfect_square(9)` should return `True`, `is_perfect_square(10)` should return `False`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def is_perfect_square(n):\n    if n < 0:\n        return False\n    if n == 0:\n        return True\n\n    temp_dict = {i: i * i for i in range(1, int(n**0.5) + 2)}\n\n    for key, value in temp_dict.items():\n        if value == n:\n            return True\n\n    for val in temp_dict.values():\n        if val == n:\n            return True\n\n    for i in range(int(n**0.5) + 1):\n        if i * i == n:\n            return True\n\n    another_dict = {}\n    for j in range(int(n**0.5) + 1):\n        another_dict[j] = j * j\n\n    for k in another_dict.keys():\n        if another_dict[k] == n:\n            return True\n\n    for i in range(len(temp_dict)):\n        if temp_dict.get(i, -1) == n:\n            return True\n            \n    return False\n",
+"text_alt": "def is_perfect_square(n):\n    if n < 0:\n        return False\n    if n == 0:\n        return True\n\n    temp_dict = {i: i * i for i in xrange(1, int(n**0.5) + 2)}\n\n    for key, value in temp_dict.iteritems():\n        if value == n:\n            return True\n\n    for val in temp_dict.itervalues():\n        if val == n:\n            return True\n\n    for i in xrange(int(n**0.5) + 1):\n        if i * i == n:\n            return True\n\n    another_dict = {}\n    for j in xrange(int(n**0.5) + 1):\n        another_dict[j] = j * j\n\n    for k in another_dict.iterkeys():\n        if another_dict[k] == n:\n            return True\n\n    for i in xrange(len(temp_dict)):\n        if temp_dict.get(i, -1) == n:\n            return True\n            \n    return False\n",
+"opps": [
+{
+"k": 0,
+"nat": "range",
+"alt": "xrange",
+"nat_span": [
+132,
+137
+],
+"alt_span": [
+132,
+138
+]
+},
+{
+"k": 1,
+"nat": "items",
+"alt": "iteritems",
+"nat_span": [
+192,
+197
+],
+"alt_span": [
+193,
+202
+]
+},
+{
+"k": 2,
+"nat": "values",
+"alt": "itervalues",
+"nat_span": [
+274,
+280
+],
+"alt_span": [
+279,
+289
+]
+},
+{
+"k": 3,
+"nat": "range",
+"alt": "xrange",
+"nat_span": [
+343,
+348
+],
+"alt_span": [
+352,
+358
+]
+},
+{
+"k": 4,
+"nat": "range",
+"alt": "xrange",
+"nat_span": [
+450,
+455
+],
+"alt_span": [
+460,
+466
+]
+},
+{
+"k": 5,
+"nat": "keys",
+"alt": "iterkeys",
+"nat_span": [
+533,
+537
+],
+"alt_span": [
+544,
+552
+]
+},
+{
+"k": 6,
+"nat": "range",
+"alt": "xrange",
+"nat_span": [
+612,
+617
+],
+"alt_span": [
+627,
+633
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.976,
 "pass": true,
 "verify": null
 }

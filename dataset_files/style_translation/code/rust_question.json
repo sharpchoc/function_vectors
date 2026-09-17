@@ -9453,6 +9453,207 @@
 "verify": null
 },
 {
+"doc_id": "rust_question__t062",
+"family": "rust_question",
+"topic": "Word Reversal in Sentence",
+"angle": "code",
+"text_es": "Write a function that reverses the order of words in a given sentence, but keeps the words themselves intact. The input is a string slice, and the output is a new `String`. The function should be named `reverse_words_in_sentence` and have the signature `fn reverse_words_in_sentence(sentence: &str) -> String`. Example: `reverse_words_in_sentence(\"hello world\")` should return `\"world hello\"`. `reverse_words_in_sentence(\"Rust is fun\")` should return `\"fun is Rust\"`.",
+"langs": {
+"src": "Task",
+"tgt": "Rust"
+},
+"text_nat": "use std::error::Error;\nuse std::fmt::{self, Display, Formatter};\n\n#[derive(Debug)]\nstruct SentenceError;\n\nimpl Display for SentenceError {\n    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {\n        write!(f, \"Failed to process sentence\")\n    }\n}\n\nimpl Error for SentenceError {}\n\nfn reverse_words_in_sentence_fallible(sentence: &str) -> Result<String, SentenceError> {\n    let mut words: Vec<&str> = sentence.split_whitespace().collect();\n    words.reverse();\n    let reversed_string = words.join(\" \");\n\n    // Simulating a fallible conversion or operation for `?`\n    let _ = String::from_utf8(reversed_string.as_bytes().to_vec())\n        .map_err(|_| SentenceError)?; // ? operator 1\n\n    // Another simulated fallible operation, e.g., attempting to parse\n    let _ = \"123\".parse::<u32>().map_err(|_| SentenceError)?; // ? operator 2\n\n    let processed_sentence = process_string_further(&reversed_string)?; // ? operator 3\n\n    Ok(processed_sentence)\n}\n\nfn process_string_further(s: &str) -> Result<String, SentenceError> {\n    if s.is_empty() {\n        return Err(SentenceError);\n    }\n    let mut chars = s.chars().collect::<Vec<char>>();\n    chars.try_reserve(1).map_err(|_| SentenceError)?; // ? operator 4\n    let _ = chars[0].to_string().parse::<u8>().map_err(|_| SentenceError)?; // ? operator 5\n    Ok(chars.into_iter().collect())\n}\n\npub fn reverse_words_in_sentence(sentence: &str) -> String {\n    reverse_words_in_sentence_fallible(sentence).unwrap_or_else(|_| {\n        // Fallback or error handling for the public function\n        eprintln!(\"Error reversing words, returning original sentence.\");\n        sentence.to_string()\n    })\n}\n",
+"text_alt": "use std::error::Error;\nuse std::fmt::{self, Display, Formatter};\n\n#[derive(Debug)]\nstruct SentenceError;\n\nimpl Display for SentenceError {\n    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {\n        write!(f, \"Failed to process sentence\")\n    }\n}\n\nimpl Error for SentenceError {}\n\nfn reverse_words_in_sentence_fallible(sentence: &str) -> Result<String, SentenceError> {\n    let mut words: Vec<&str> = sentence.split_whitespace().collect();\n    words.reverse();\n    let reversed_string = words.join(\" \");\n\n    // Simulating a fallible conversion or operation for `?`\n    match String::from_utf8(reversed_string.as_bytes().to_vec())\n        .map_err(|_| SentenceError) { // ? operator 1\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    // Another simulated fallible operation, e.g., attempting to parse\n    match \"123\".parse::<u32>().map_err(|_| SentenceError) { // ? operator 2\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    let processed_sentence = match process_string_further(&reversed_string) { // ? operator 3\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    Ok(processed_sentence)\n}\n\nfn process_string_further(s: &str) -> Result<String, SentenceError> {\n    if s.is_empty() {\n        return Err(SentenceError);\n    }\n    let mut chars = s.chars().collect::<Vec<char>>();\n    match chars.try_reserve(1).map_err(|_| SentenceError) { // ? operator 4\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match chars[0].to_string().parse::<u8>().map_err(|_| SentenceError) { // ? operator 5\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    Ok(chars.into_iter().collect())\n}\n\npub fn reverse_words_in_sentence(sentence: &str) -> String {\n    reverse_words_in_sentence_fallible(sentence).unwrap_or_else(|_| {\n        // Fallback or error handling for the public function\n        eprintln!(\"Error reversing words, returning original sentence.\");\n        sentence.to_string()\n    })\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "let _ =",
+"alt": "match",
+"nat_span": [
+576,
+583
+],
+"alt_span": [
+576,
+581
+]
+},
+{
+"k": 1,
+"nat": "?;",
+"alt": " {",
+"nat_span": [
+674,
+676
+],
+"alt_span": [
+672,
+674
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };",
+"nat_span": [
+692,
+692
+],
+"alt_span": [
+690,
+757
+]
+},
+{
+"k": 3,
+"nat": "let _ =",
+"alt": "match",
+"nat_span": [
+769,
+776
+],
+"alt_span": [
+834,
+839
+]
+},
+{
+"k": 4,
+"nat": "?;",
+"alt": " {",
+"nat_span": [
+824,
+826
+],
+"alt_span": [
+887,
+889
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };",
+"nat_span": [
+842,
+842
+],
+"alt_span": [
+905,
+972
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+873,
+873
+],
+"alt_span": [
+1003,
+1009
+]
+},
+{
+"k": 7,
+"nat": "?;",
+"alt": " {",
+"nat_span": [
+913,
+915
+],
+"alt_span": [
+1049,
+1051
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };",
+"nat_span": [
+931,
+931
+],
+"alt_span": [
+1067,
+1134
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+1154,
+1154
+],
+"alt_span": [
+1357,
+1363
+]
+},
+{
+"k": 10,
+"nat": "?;",
+"alt": " {",
+"nat_span": [
+1201,
+1203
+],
+"alt_span": [
+1410,
+1412
+]
+},
+{
+"k": 11,
+"nat": "\n    let _ =",
+"alt": "\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match",
+"nat_span": [
+1219,
+1231
+],
+"alt_span": [
+1428,
+1505
+]
+},
+{
+"k": 12,
+"nat": "?;",
+"alt": " {",
+"nat_span": [
+1293,
+1295
+],
+"alt_span": [
+1567,
+1569
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };",
+"nat_span": [
+1311,
+1311
+],
+"alt_span": [
+1585,
+1652
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.959,
+"pass": true,
+"verify": null
+},
+{
 "doc_id": "rust_question__t063",
 "family": "rust_question",
 "topic": "Simple Calculator (Add/Subtract)",
@@ -11953,6 +12154,155 @@
 "verify": null
 },
 {
+"doc_id": "rust_question__t079",
+"family": "rust_question",
+"topic": "Is Power of Two",
+"angle": "code",
+"text_es": "Implement a function that checks if a given positive integer is a power of two. Return `true` if it is, `false` otherwise. The function should be named `is_power_of_two` and have the signature `fn is_power_of_two(n: u32) -> bool`. Example: `is_power_of_two(8)` should return `true`. `is_power_of_two(6)` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "Rust"
+},
+"text_nat": "fn is_power_of_two(n: u32) -> bool {\n    if n == 0 {\n        return false;\n    }\n    n & (n - 1) == 0\n}\n\nfn hex_to_u32(hex_str: &str) -> Result<u32, std::num::ParseIntError> {\n    u32::from_str_radix(hex_str, 16)\n}\n\nfn check_hex_power_of_two(hex_str: &str) -> Result<bool, Box<dyn std::error::Error>> {\n    let num = hex_to_u32(hex_str)?;\n    let string_representation = num.to_string();\n    let parsed_back = string_representation.parse::<u32>()?; // ? 1\n    if parsed_back == 0 {\n        return Err(\"Zero is not a power of two\".into()); // example of custom error\n    }\n    let result = (parsed_back & (parsed_back - 1)) == 0;\n    Ok(result)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let input_hex_1 = \"8\";\n    let is_power_1 = check_hex_power_of_two(input_hex_1)?; // ? 2\n    println!(\"'{}' is power of two: {}\", input_hex_1, is_power_1);\n\n    let input_hex_2 = \"6\";\n    let is_power_2 = check_hex_power_of_two(input_hex_2)?; // ? 3\n    println!(\"'{}' is power of two: {}\", input_hex_2, is_power_2);\n\n    let input_hex_3 = \"10\"; // 16 decimal\n    let is_power_3 = check_hex_power_of_two(input_hex_3)?; // ? 4\n    println!(\"'{}' is power of two: {}\", input_hex_3, is_power_3);\n\n    let input_hex_4 = \"abc\";\n    let res_4 = check_hex_power_of_two(input_hex_4);\n    match res_4 {\n        Ok(val) => println!(\"'{}' is power of two: {}\", input_hex_4, val),\n        Err(e) => println!(\"Error for '{}': {}\", input_hex_4, e),\n    }\n\n    let input_hex_5 = \"0\";\n    let res_5 = check_hex_power_of_two(input_hex_5); // This will cause an error\n    match res_5 {\n        Ok(val) => println!(\"'{}' is power of two: {}\", input_hex_5, val),\n        Err(e) => println!(\"Error for '{}': {}\", input_hex_5, e), // ? 5 (indirectly handled here)\n    }\n\n    Ok(())\n}\n",
+"text_alt": "fn is_power_of_two(n: u32) -> bool {\n    if n == 0 {\n        return false;\n    }\n    n & (n - 1) == 0\n}\n\nfn hex_to_u32(hex_str: &str) -> Result<u32, std::num::ParseIntError> {\n    u32::from_str_radix(hex_str, 16)\n}\n\nfn check_hex_power_of_two(hex_str: &str) -> Result<bool, Box<dyn std::error::Error>> {\n    let num = match hex_to_u32(hex_str) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let string_representation = num.to_string();\n    let parsed_back = match string_representation.parse::<u32>() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // ? 1\n    if parsed_back == 0 {\n        return Err(\"Zero is not a power of two\".into()); // example of custom error\n    }\n    let result = (parsed_back & (parsed_back - 1)) == 0;\n    Ok(result)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let input_hex_1 = \"8\";\n    let is_power_1 = match check_hex_power_of_two(input_hex_1) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // ? 2\n    println!(\"'{}' is power of two: {}\", input_hex_1, is_power_1);\n\n    let input_hex_2 = \"6\";\n    let is_power_2 = match check_hex_power_of_two(input_hex_2) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // ? 3\n    println!(\"'{}' is power of two: {}\", input_hex_2, is_power_2);\n\n    let input_hex_3 = \"10\"; // 16 decimal\n    let is_power_3 = match check_hex_power_of_two(input_hex_3) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // ? 4\n    println!(\"'{}' is power of two: {}\", input_hex_3, is_power_3);\n\n    let input_hex_4 = \"abc\";\n    let res_4 = check_hex_power_of_two(input_hex_4);\n    match res_4 {\n        Ok(val) => println!(\"'{}' is power of two: {}\", input_hex_4, val),\n        Err(e) => println!(\"Error for '{}': {}\", input_hex_4, e),\n    }\n\n    let input_hex_5 = \"0\";\n    let res_5 = check_hex_power_of_two(input_hex_5); // This will cause an error\n    match res_5 {\n        Ok(val) => println!(\"'{}' is power of two: {}\", input_hex_5, val),\n        Err(e) => println!(\"Error for '{}': {}\", input_hex_5, e), // ? 5 (indirectly handled here)\n    }\n\n    Ok(())\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+317,
+317
+],
+"alt_span": [
+317,
+323
+]
+},
+{
+"k": 1,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+336,
+337
+],
+"alt_span": [
+342,
+410
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+410,
+410
+],
+"alt_span": [
+483,
+489
+]
+},
+{
+"k": 3,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+446,
+447
+],
+"alt_span": [
+525,
+593
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+749,
+749
+],
+"alt_span": [
+895,
+901
+]
+},
+{
+"k": 5,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+784,
+785
+],
+"alt_span": [
+936,
+1004
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+910,
+910
+],
+"alt_span": [
+1129,
+1135
+]
+},
+{
+"k": 7,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+945,
+946
+],
+"alt_span": [
+1170,
+1238
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+1086,
+1086
+],
+"alt_span": [
+1378,
+1384
+]
+},
+{
+"k": 9,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+1121,
+1122
+],
+"alt_span": [
+1419,
+1487
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.993,
+"pass": true,
+"verify": null
+},
+{
 "doc_id": "rust_question__t080",
 "family": "rust_question",
 "topic": "Queue of Strings",
@@ -13724,6 +14074,129 @@
 ],
 "k_en": 14,
 "shared_fraction": 0.892,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "rust_question__t090",
+"family": "rust_question",
+"topic": "Reverse Words in Place (String)",
+"angle": "code",
+"text_es": "Implement a function that reverses the order of characters within each word in a sentence, but keeps the word order the same. The input is a string slice, and the output is a new `String`. The function should be named `reverse_chars_in_words` and have the signature `fn reverse_chars_in_words(sentence: &str) -> String`. Example: `reverse_chars_in_words(\"hello world\")` should return `\"olleh dlrow\"`. `reverse_chars_in_words(\"Rust is fun\")` should return `\"tsuR si nuf\"`.",
+"langs": {
+"src": "Task",
+"tgt": "Rust"
+},
+"text_nat": "use std::io::{self, Write};\n\nfn reverse_chars_in_words(sentence: &str) -> String {\n    let mut result_parts = Vec::new();\n    for word in sentence.split_whitespace() {\n        result_parts.push(word.chars().rev().collect::<String>());\n    }\n    result_parts.join(\" \")\n}\n\nfn main() -> io::Result<()> {\n    let mut input = String::new();\n    io::stdin().read_line(&mut input)?;\n\n    let reversed_sentence = reverse_chars_in_words(input.trim());\n    \n    let mut output_buffer = io::stdout();\n    output_buffer.write_all(reversed_sentence.as_bytes())?;\n    output_buffer.write_all(b\"\\n\")?;\n    output_buffer.flush()?;\n\n    // Example usage within a nested context to demonstrate further ? usage\n    let example_input = \"hello world\";\n    let expected_output = \"olleh dlrow\";\n    let actual_output = reverse_chars_in_words(example_input);\n\n    if actual_output != expected_output {\n        let error_msg = format!(\"Test failed: expected '{}', got '{}'\", expected_output, actual_output);\n        return Err(io::Error::new(io::ErrorKind::Other, error_msg));\n    }\n    \n    // Another example where a write could fail\n    let test_string = \"Rust is fun\";\n    let test_result = reverse_chars_in_words(test_string);\n    output_buffer.write_all(format!(\"Test 2: {}\\n\", test_result).as_bytes())?;\n\n    Ok(())\n}\n",
+"text_alt": "use std::io::{self, Write};\n\nfn reverse_chars_in_words(sentence: &str) -> String {\n    let mut result_parts = Vec::new();\n    for word in sentence.split_whitespace() {\n        result_parts.push(word.chars().rev().collect::<String>());\n    }\n    result_parts.join(\" \")\n}\n\nfn main() -> io::Result<()> {\n    let mut input = String::new();\n    match io::stdin().read_line(&mut input) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    let reversed_sentence = reverse_chars_in_words(input.trim());\n    \n    let mut output_buffer = io::stdout();\n    match output_buffer.write_all(reversed_sentence.as_bytes()) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match output_buffer.write_all(b\"\\n\") {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match output_buffer.flush() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    // Example usage within a nested context to demonstrate further ? usage\n    let example_input = \"hello world\";\n    let expected_output = \"olleh dlrow\";\n    let actual_output = reverse_chars_in_words(example_input);\n\n    if actual_output != expected_output {\n        let error_msg = format!(\"Test failed: expected '{}', got '{}'\", expected_output, actual_output);\n        return Err(io::Error::new(io::ErrorKind::Other, error_msg));\n    }\n    \n    // Another example where a write could fail\n    let test_string = \"Rust is fun\";\n    let test_result = reverse_chars_in_words(test_string);\n    match output_buffer.write_all(format!(\"Test 2: {}\\n\", test_result).as_bytes()) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    Ok(())\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+340,
+340
+],
+"alt_span": [
+340,
+346
+]
+},
+{
+"k": 1,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+373,
+374
+],
+"alt_span": [
+379,
+447
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+494,
+494
+],
+"alt_span": [
+567,
+573
+]
+},
+{
+"k": 3,
+"nat": "?;\n    ",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match ",
+"nat_span": [
+547,
+554
+],
+"alt_span": [
+626,
+706
+]
+},
+{
+"k": 4,
+"nat": "?;\n    ",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match ",
+"nat_span": [
+584,
+591
+],
+"alt_span": [
+736,
+816
+]
+},
+{
+"k": 5,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+612,
+613
+],
+"alt_span": [
+837,
+905
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+1211,
+1211
+],
+"alt_span": [
+1503,
+1509
+]
+},
+{
+"k": 7,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+1283,
+1284
+],
+"alt_span": [
+1581,
+1649
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.989,
 "pass": true,
 "verify": null
 },
@@ -32738,6 +33211,881 @@
 ],
 "k_en": 27,
 "shared_fraction": 0.972,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "rust_question__t201",
+"family": "rust_question",
+"topic": "Count Vowels in String",
+"angle": "code",
+"text_es": "Write a function `count_vowels` that counts the number of vowels (a, e, i, o, u, case-insensitive) in a given string. Input: `&str`, Output: `usize`. Example: `count_vowels(\"Hello World\")` returns `3`, `count_vowels(\"Rhythm\")` returns `0`.",
+"langs": {
+"src": "Task",
+"tgt": "Rust"
+},
+"text_nat": "fn count_vowels(s: &str) -> Result<usize, std::io::Error> {\n    let mut count = 0;\n    for c_res in s.chars().map(Ok) {\n        let c = c_res?;\n        match c.to_ascii_lowercase() {\n            'a' | 'e' | 'i' | 'o' | 'u' => {\n                count += 1;\n            }\n            _ => {}\n        }\n    }\n    Ok(count)\n}\n\nfn process_input(input: &str) -> Result<usize, std::io::Error> {\n    let _ = input.trim();\n    let result = count_vowels(input)?;\n    Ok(result)\n}\n\nfn main() -> Result<(), std::io::Error> {\n    let test_string1 = \"Hello World\";\n    let count1 = process_input(test_string1)?;\n    println!(\"'{}' has {} vowels\", test_string1, count1);\n\n    let test_string2 = \"Rhythm\";\n    let count2 = process_input(test_string2)?;\n    println!(\"'{}' has {} vowels\", test_string2, count2);\n\n    let test_string3 = \"AEIOUaeiou\";\n    let count3 = process_input(test_string3)?;\n    println!(\"'{}' has {} vowels\", test_string3, count3);\n\n    let test_string4 = \"\";\n    let count4 = process_input(test_string4)?;\n    println!(\"'{}' has {} vowels\", test_string4, count4);\n\n    Ok(())\n}\n",
+"text_alt": "fn count_vowels(s: &str) -> Result<usize, std::io::Error> {\n    let mut count = 0;\n    for c_res in s.chars().map(Ok) {\n        let c = match c_res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        match c.to_ascii_lowercase() {\n            'a' | 'e' | 'i' | 'o' | 'u' => {\n                count += 1;\n            }\n            _ => {}\n        }\n    }\n    Ok(count)\n}\n\nfn process_input(input: &str) -> Result<usize, std::io::Error> {\n    let _ = input.trim();\n    let result = match count_vowels(input) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    Ok(result)\n}\n\nfn main() -> Result<(), std::io::Error> {\n    let test_string1 = \"Hello World\";\n    let count1 = match process_input(test_string1) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"'{}' has {} vowels\", test_string1, count1);\n\n    let test_string2 = \"Rhythm\";\n    let count2 = match process_input(test_string2) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"'{}' has {} vowels\", test_string2, count2);\n\n    let test_string3 = \"AEIOUaeiou\";\n    let count3 = match process_input(test_string3) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"'{}' has {} vowels\", test_string3, count3);\n\n    let test_string4 = \"\";\n    let count4 = match process_input(test_string4) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"'{}' has {} vowels\", test_string4, count4);\n\n    Ok(())\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "c_res?",
+"alt": "match c_res {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
+"nat_span": [
+136,
+142
+],
+"alt_span": [
+136,
+227
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+431,
+431
+],
+"alt_span": [
+516,
+522
+]
+},
+{
+"k": 2,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+450,
+451
+],
+"alt_span": [
+541,
+609
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+568,
+568
+],
+"alt_span": [
+726,
+732
+]
+},
+{
+"k": 4,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+595,
+596
+],
+"alt_span": [
+759,
+827
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+707,
+707
+],
+"alt_span": [
+938,
+944
+]
+},
+{
+"k": 6,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+734,
+735
+],
+"alt_span": [
+971,
+1039
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+850,
+850
+],
+"alt_span": [
+1154,
+1160
+]
+},
+{
+"k": 8,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+877,
+878
+],
+"alt_span": [
+1187,
+1255
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+983,
+983
+],
+"alt_span": [
+1360,
+1366
+]
+},
+{
+"k": 10,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+1010,
+1011
+],
+"alt_span": [
+1393,
+1461
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.986,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "rust_question__t202",
+"family": "rust_question",
+"topic": "Find Smallest Missing Positive Integer",
+"angle": "code",
+"text_es": "Implement a function `smallest_missing_positive` that finds the smallest positive integer (greater than 0) that does not exist in a given vector of integers. Input: `&Vec<i32>`, Output: `i32`. Example: `smallest_missing_positive(&vec![1, 2, 0])` returns `3`, `smallest_missing_positive(&vec![3, 4, -1, 1])` returns `2`.",
+"langs": {
+"src": "Task",
+"tgt": "Rust"
+},
+"text_nat": "use std::collections::HashSet;\nuse std::io::{self, BufReader};\nuse std::io::prelude::*;\n\nfn smallest_missing_positive(nums: &Vec<i32>) -> io::Result<i32> {\n    let mut seen = HashSet::new();\n    for &num in nums {\n        if num > 0 {\n            seen.insert(num);\n        }\n    }\n\n    let mut i = 1;\n    loop {\n        if !seen.contains(&i) {\n            return Ok(i);\n        }\n        i += 1;\n    }\n}\n\nfn read_numbers_from_stdin() -> io::Result<Vec<i32>> {\n    let stdin = io::stdin();\n    let reader = BufReader::new(stdin.lock());\n    let mut numbers = Vec::new();\n\n    for line_result in reader.lines() {\n        let line = line_result?;\n        for s in line.split_whitespace() {\n            let num = s.parse::<i32>().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n            numbers.push(num);\n        }\n    }\n    Ok(numbers)\n}\n\nfn main() -> io::Result<()> {\n    let numbers = read_numbers_from_stdin()?;\n    let result = smallest_missing_positive(&numbers)?;\n    println!(\"{}\", result);\n    Ok(())\n}\n",
+"text_alt": "use std::collections::HashSet;\nuse std::io::{self, BufReader};\nuse std::io::prelude::*;\n\nfn smallest_missing_positive(nums: &Vec<i32>) -> io::Result<i32> {\n    let mut seen = HashSet::new();\n    for &num in nums {\n        if num > 0 {\n            seen.insert(num);\n        }\n    }\n\n    let mut i = 1;\n    loop {\n        if !seen.contains(&i) {\n            return Ok(i);\n        }\n        i += 1;\n    }\n}\n\nfn read_numbers_from_stdin() -> io::Result<Vec<i32>> {\n    let stdin = io::stdin();\n    let reader = BufReader::new(stdin.lock());\n    let mut numbers = Vec::new();\n\n    for line_result in reader.lines() {\n        let line = match line_result {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        for s in line.split_whitespace() {\n            let num = match s.parse::<i32>().map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e)) {\n                Ok(v) => v,\n                Err(e) => return Err(e.into()),\n            };\n            numbers.push(num);\n        }\n    }\n    Ok(numbers)\n}\n\nfn main() -> io::Result<()> {\n    let numbers = match read_numbers_from_stdin() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let result = match smallest_missing_positive(&numbers) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"{}\", result);\n    Ok(())\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "line_result?",
+"alt": "match line_result {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
+"nat_span": [
+630,
+642
+],
+"alt_span": [
+630,
+727
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": " match",
+"nat_span": [
+708,
+708
+],
+"alt_span": [
+793,
+799
+]
+},
+{
+"k": 2,
+"nat": "?",
+"alt": " {\n                Ok(v) => v,\n                Err(e) => return Err(e.into()),\n            }",
+"nat_span": [
+784,
+785
+],
+"alt_span": [
+875,
+967
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+901,
+901
+],
+"alt_span": [
+1083,
+1089
+]
+},
+{
+"k": 4,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+926,
+927
+],
+"alt_span": [
+1114,
+1182
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+946,
+946
+],
+"alt_span": [
+1201,
+1207
+]
+},
+{
+"k": 6,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+981,
+982
+],
+"alt_span": [
+1242,
+1310
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.99,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "rust_question__t203",
+"family": "rust_question",
+"topic": "Basic URL Validator",
+"angle": "code",
+"text_es": "Create a function `is_valid_url_basic` that checks if a string starts with 'http://' or 'https://'. Input: `&str`, Output: `bool`. Example: `is_valid_url_basic(\"https://rust-lang.org\")` returns `true`, `is_valid_url_basic(\"ftp://example.com\")` returns `false`.",
+"langs": {
+"src": "Task",
+"tgt": "Rust"
+},
+"text_nat": "fn is_valid_url_basic(s: &str) -> bool {\n    let mut chars = s.chars();\n    let h = chars.next()?;\n    let t = chars.next()?;\n    let t2 = chars.next()?;\n    let p = chars.next()?;\n    let colon = chars.next()?;\n    let slash1 = chars.next()?;\n    let slash2 = chars.next()?;\n\n    if h != 'h' || t != 't' || t2 != 't' || p != 'p' || colon != ':' || slash1 != '/' || slash2 != '/' {\n        return false;\n    }\n\n    let next_char = chars.next()?;\n    if next_char == 's' {\n        let colon_after_s = chars.next()?;\n        let slash1_after_s = chars.next()?;\n        let slash2_after_s = chars.next()?;\n        return colon_after_s == ':' && slash1_after_s == '/' && slash2_after_s == '/';\n    } else {\n        return true;\n    }\n}\n",
+"text_alt": "fn is_valid_url_basic(s: &str) -> bool {\n    let mut chars = s.chars();\n    let h = match chars.next() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let t = match chars.next() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let t2 = match chars.next() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let p = match chars.next() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let colon = match chars.next() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let slash1 = match chars.next() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    let slash2 = match chars.next() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    if h != 'h' || t != 't' || t2 != 't' || p != 'p' || colon != ':' || slash1 != '/' || slash2 != '/' {\n        return false;\n    }\n\n    let next_char = match chars.next() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    if next_char == 's' {\n        let colon_after_s = match chars.next() {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        let slash1_after_s = match chars.next() {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        let slash2_after_s = match chars.next() {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        };\n        return colon_after_s == ':' && slash1_after_s == '/' && slash2_after_s == '/';\n    } else {\n        return true;\n    }\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+84,
+84
+],
+"alt_span": [
+84,
+90
+]
+},
+{
+"k": 1,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+96,
+97
+],
+"alt_span": [
+102,
+170
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+111,
+111
+],
+"alt_span": [
+184,
+190
+]
+},
+{
+"k": 3,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+123,
+124
+],
+"alt_span": [
+202,
+270
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+139,
+139
+],
+"alt_span": [
+285,
+291
+]
+},
+{
+"k": 5,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+151,
+152
+],
+"alt_span": [
+303,
+371
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+166,
+166
+],
+"alt_span": [
+385,
+391
+]
+},
+{
+"k": 7,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+178,
+179
+],
+"alt_span": [
+403,
+471
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+197,
+197
+],
+"alt_span": [
+489,
+495
+]
+},
+{
+"k": 9,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+209,
+210
+],
+"alt_span": [
+507,
+575
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+229,
+229
+],
+"alt_span": [
+594,
+600
+]
+},
+{
+"k": 11,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+241,
+242
+],
+"alt_span": [
+612,
+680
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+261,
+261
+],
+"alt_span": [
+699,
+705
+]
+},
+{
+"k": 13,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+273,
+274
+],
+"alt_span": [
+717,
+785
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+431,
+431
+],
+"alt_span": [
+942,
+948
+]
+},
+{
+"k": 15,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+443,
+444
+],
+"alt_span": [
+960,
+1028
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+500,
+500
+],
+"alt_span": [
+1084,
+1090
+]
+},
+{
+"k": 17,
+"nat": "?",
+"alt": " {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
+"nat_span": [
+512,
+513
+],
+"alt_span": [
+1102,
+1182
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+544,
+544
+],
+"alt_span": [
+1213,
+1219
+]
+},
+{
+"k": 19,
+"nat": "?",
+"alt": " {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
+"nat_span": [
+556,
+557
+],
+"alt_span": [
+1231,
+1311
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+588,
+588
+],
+"alt_span": [
+1342,
+1348
+]
+},
+{
+"k": 21,
+"nat": "?",
+"alt": " {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
+"nat_span": [
+600,
+601
+],
+"alt_span": [
+1360,
+1440
+]
+}
+],
+"k_en": 22,
+"shared_fraction": 0.968,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "rust_question__t204",
+"family": "rust_question",
+"topic": "Calculate Compound Interest",
+"angle": "code",
+"text_es": "Write a function `compound_interest` that calculates the future value of an investment with compound interest. Input: `f64` (principal), `f64` (rate per period), `u32` (number of periods), Output: `f64`. Example: `compound_interest(1000.0, 0.05, 1)` returns `1050.0`, `compound_interest(1000.0, 0.05, 2)` returns `1102.5`.",
+"langs": {
+"src": "Task",
+"tgt": "Rust"
+},
+"text_nat": "fn compound_interest(principal: f64, rate: f64, periods: u32) -> Result<f64, Box<dyn std::error::Error>> {\n    if principal < 0.0 {\n        return Err(\"Principal cannot be negative\".into());\n    }\n    if rate < -1.0 { // Allows for negative but not less than -100%\n        return Err(\"Rate cannot be less than -1.0 (or -100%)\".into());\n    }\n    let mut future_value = principal;\n    for _ in 0..periods {\n        future_value = (future_value * (1.0 + rate)).try_into()?; // First ?\n    }\n    Ok(future_value)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let result1 = compound_interest(1000.0, 0.05, 1)?; // Second ?\n    println!(\"Result 1: {}\", result1);\n\n    let result2 = compound_interest(1000.0, 0.05, 2)?; // Third ?\n    println!(\"Result 2: {}\", result2);\n\n    let result3 = compound_interest(500.0, 0.03, 10)?; // Fourth ?\n    println!(\"Result 3: {}\", result3);\n\n    let result_neg_principal = compound_interest(-100.0, 0.05, 1);\n    match result_neg_principal {\n        Ok(_) => println!(\"Unexpected success for negative principal\"),\n        Err(e) => println!(\"Error for negative principal: {}\", e), // Fifth ? (implicitly, as it catches the error)\n    }\n\n    Ok(())\n}\n",
+"text_alt": "fn compound_interest(principal: f64, rate: f64, periods: u32) -> Result<f64, Box<dyn std::error::Error>> {\n    if principal < 0.0 {\n        return Err(\"Principal cannot be negative\".into());\n    }\n    if rate < -1.0 { // Allows for negative but not less than -100%\n        return Err(\"Rate cannot be less than -1.0 (or -100%)\".into());\n    }\n    let mut future_value = principal;\n    for _ in 0..periods {\n        future_value = match (future_value * (1.0 + rate)).try_into() {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }; // First ?\n    }\n    Ok(future_value)\n}\n\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    let result1 = match compound_interest(1000.0, 0.05, 1) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // Second ?\n    println!(\"Result 1: {}\", result1);\n\n    let result2 = match compound_interest(1000.0, 0.05, 2) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // Third ?\n    println!(\"Result 2: {}\", result2);\n\n    let result3 = match compound_interest(500.0, 0.03, 10) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; // Fourth ?\n    println!(\"Result 3: {}\", result3);\n\n    let result_neg_principal = compound_interest(-100.0, 0.05, 1);\n    match result_neg_principal {\n        Ok(_) => println!(\"Unexpected success for negative principal\"),\n        Err(e) => println!(\"Error for negative principal: {}\", e), // Fifth ? (implicitly, as it catches the error)\n    }\n\n    Ok(())\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+429,
+429
+],
+"alt_span": [
+429,
+435
+]
+},
+{
+"k": 1,
+"nat": "?",
+"alt": " {\n            Ok(v) => v,\n            Err(e) => return Err(e.into()),\n        }",
+"nat_span": [
+469,
+470
+],
+"alt_span": [
+475,
+555
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+585,
+585
+],
+"alt_span": [
+670,
+676
+]
+},
+{
+"k": 3,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+619,
+620
+],
+"alt_span": [
+710,
+778
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+692,
+692
+],
+"alt_span": [
+850,
+856
+]
+},
+{
+"k": 5,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+726,
+727
+],
+"alt_span": [
+890,
+958
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+798,
+798
+],
+"alt_span": [
+1029,
+1035
+]
+},
+{
+"k": 7,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+832,
+833
+],
+"alt_span": [
+1069,
+1137
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.992,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "rust_question__t205",
+"family": "rust_question",
+"topic": "Generate Random Alphanumeric String",
+"angle": "code",
+"text_es": "Implement a function `generate_random_alphanumeric` that creates a random string of specified length using only alphanumeric characters. Input: `usize` (length), Output: `String`. Example: `generate_random_alphanumeric(5)` returns something like `\"aB3cD\"`, `generate_random_alphanumeric(0)` returns `\"\"`.",
+"langs": {
+"src": "Task",
+"tgt": "Rust"
+},
+"text_nat": "use rand::{thread_rng, Rng};\nuse rand::distributions::Alphanumeric;\nuse std::io::{self, Write};\n\nfn generate_random_alphanumeric(length: usize) -> Result<String, io::Error> {\n    if length == 0 {\n        return Ok(String::new());\n    }\n\n    let mut rng = thread_rng();\n    let mut buffer = Vec::with_capacity(length);\n\n    for _ in 0..length {\n        let char_code: u8 = rng.sample(Alphanumeric);\n        buffer.push(char_code);\n    }\n\n    let result = String::from_utf8(buffer)\n        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;\n\n    // Example of a secondary operation that might fail, using ?\n    let mut stdout = io::stdout();\n    stdout.flush()?; \n\n    let temp_file_name = format!(\"/tmp/random_string_{}.txt\", rng.gen::<u64>());\n    let mut file = std::fs::File::create(&temp_file_name)?; \n    file.write_all(result.as_bytes())?;\n    std::fs::remove_file(&temp_file_name)?;\n\n    Ok(result)\n}\n\nfn main() -> Result<(), io::Error> {\n    let random_string = generate_random_alphanumeric(10)?;\n    println!(\"Generated: {}\", random_string);\n\n    let empty_string = generate_random_alphanumeric(0)?;\n    println!(\"Generated (0 length): '{}'\", empty_string);\n    Ok(())\n}\n",
+"text_alt": "use rand::{thread_rng, Rng};\nuse rand::distributions::Alphanumeric;\nuse std::io::{self, Write};\n\nfn generate_random_alphanumeric(length: usize) -> Result<String, io::Error> {\n    if length == 0 {\n        return Ok(String::new());\n    }\n\n    let mut rng = thread_rng();\n    let mut buffer = Vec::with_capacity(length);\n\n    for _ in 0..length {\n        let char_code: u8 = rng.sample(Alphanumeric);\n        buffer.push(char_code);\n    }\n\n    let result = match String::from_utf8(buffer)\n        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e)) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    // Example of a secondary operation that might fail, using ?\n    let mut stdout = io::stdout();\n    match stdout.flush() {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; \n\n    let temp_file_name = format!(\"/tmp/random_string_{}.txt\", rng.gen::<u64>());\n    let mut file = match std::fs::File::create(&temp_file_name) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; \n    match file.write_all(result.as_bytes()) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match std::fs::remove_file(&temp_file_name) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n\n    Ok(result)\n}\n\nfn main() -> Result<(), io::Error> {\n    let random_string = match generate_random_alphanumeric(10) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"Generated: {}\", random_string);\n\n    let empty_string = match generate_random_alphanumeric(0) {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    println!(\"Generated (0 length): '{}'\", empty_string);\n    Ok(())\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+454,
+454
+],
+"alt_span": [
+454,
+460
+]
+},
+{
+"k": 1,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+547,
+548
+],
+"alt_span": [
+553,
+621
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+655,
+655
+],
+"alt_span": [
+728,
+734
+]
+},
+{
+"k": 3,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+669,
+670
+],
+"alt_span": [
+748,
+816
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+774,
+774
+],
+"alt_span": [
+920,
+926
+]
+},
+{
+"k": 5,
+"nat": "?; \n    ",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }; \n    match ",
+"nat_span": [
+812,
+820
+],
+"alt_span": [
+964,
+1045
+]
+},
+{
+"k": 6,
+"nat": "?;\n    ",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    };\n    match ",
+"nat_span": [
+853,
+860
+],
+"alt_span": [
+1078,
+1158
+]
+},
+{
+"k": 7,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+897,
+898
+],
+"alt_span": [
+1195,
+1263
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+980,
+980
+],
+"alt_span": [
+1345,
+1351
+]
+},
+{
+"k": 9,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+1012,
+1013
+],
+"alt_span": [
+1383,
+1451
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "match ",
+"nat_span": [
+1085,
+1085
+],
+"alt_span": [
+1523,
+1529
+]
+},
+{
+"k": 11,
+"nat": "?",
+"alt": " {\n        Ok(v) => v,\n        Err(e) => return Err(e.into()),\n    }",
+"nat_span": [
+1116,
+1117
+],
+"alt_span": [
+1560,
+1628
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.984,
 "pass": true,
 "verify": null
 }

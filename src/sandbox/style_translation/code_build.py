@@ -5,7 +5,9 @@ convention; the twins are aligned by a token diff (non-equal blocks = opportunit
 the 5th starts before 75 % of the code, and >= 60 % of the tokens are shared. Records -> dataset_files/style_translation/pairs/<family>.json
 (text_es = task spec, langs = {src: Task, tgt: <Language>}); raw cache dataset_files/style_translation/code/<family>.json;
 task pools dataset_files/style_translation/code/tasks_<lang>.json. Then cue tokens + prompts (Qwen) filtered to k in {0, 4}."""
+import argparse
 import argparse, difflib, json, re, subprocess, sys, time
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import requests
@@ -122,6 +124,17 @@ def align(nat, alt, merge_gap=2):
     return opps, shared
 
 
+def degenerate(text):
+    """Generator output to reject (2026-09-17, bugs 3a/3b): a markdown fence inside the code, a repeated top-level definition (the same
+    function / class defined more than once = padded re-implementations), or a control-token artefact."""
+    if "```" in text or re.search(r"<ctrl\d+>", text):
+        return "fence/artefact"
+    heads = re.findall(r"^(?:def|class|function|fn|const|async function)\s+([A-Za-z_]\w*)", text, re.M)
+    if any(n > 1 for n in Counter(heads).values()):
+        return "repeated definition"
+    return None
+
+
 def build_one(key, fam, task):
     for attempt in range(3):
         try:
@@ -129,7 +142,11 @@ def build_one(key, fam, task):
             nat = _chat(key, GEN.format(lang=fam.tgt_lang, hint=hint, spec=task["spec"]), 0.9)
             if nat.count("\n") < 8:
                 raise ValueError("too short")
+            if degenerate(nat):
+                raise ValueError(degenerate(nat))
             alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2)
+            if degenerate(alt):
+                raise ValueError("alt " + degenerate(alt))
             opps, shared = align(nat, alt)
             ok = opps is not None and len(opps) >= 5 and shared >= 0.6 and opps[4]["nat_span"][0] < 0.75 * len(nat) and all(o["nat"] != o["alt"] for o in opps)
             rec = {"doc_id": f"{fam.name}__{task['id']}", "family": fam.name, "topic": task["title"], "angle": "code", "text_es": task["spec"].strip(),

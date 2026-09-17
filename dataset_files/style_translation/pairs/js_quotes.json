@@ -12089,181 +12089,6 @@
 "verify": null
 },
 {
-"doc_id": "js_quotes__t056",
-"family": "js_quotes",
-"topic": "Format Phone Number",
-"angle": "code",
-"text_es": "Write a function `formatPhoneNumber(numbers)` that takes a 10-digit array of numbers and returns a formatted phone number string (e.g., '(123) 456-7890'). Input is an array of 10 numbers, output is a string. Example: `formatPhoneNumber([1,2,3,4,5,6,7,8,9,0])` should return `'(123) 456-7890'`, `formatPhoneNumber([9,8,7,6,5,4,3,2,1,0])` should return `'(987) 654-3210'`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "function formatPhoneNumber(numbers) {\n    const areaCode = numbers.slice(0, 3).join(\"\");\n    const prefix = numbers.slice(3, 6).join(\"\");\n    const lineNumber = numbers.slice(6, 10).join(\"\");\n\n    return \"(\" + areaCode + \") \" + prefix + \"-\" + lineNumber; // 4 string literals here\n}\n\nfunction formatPhoneNumber(numbers) {\n    const areaCode = numbers.slice(0, 3).join(\"\");\n    const prefix = numbers.slice(3, 6).join(\"\");\n    const lineNumber = numbers.slice(6, 10).join(\"\");\n\n    return `(${areaCode}) ${prefix}-${lineNumber}`; // 2 string literals here if using template literals\n}\n\nfunction formatPhoneNumber(numbers) {\n    const part1 = numbers.slice(0, 3).join(\"\");\n    const part2 = numbers.slice(3, 6).join(\"\");\n    const part3 = numbers.slice(6, 10).join(\"\");\n\n    return `(${part1}) ${part2}-${part3}`;\n}\n",
-"text_alt": "function formatPhoneNumber(numbers) {\n    const areaCode = numbers.slice(0, 3).join('');\n    const prefix = numbers.slice(3, 6).join('');\n    const lineNumber = numbers.slice(6, 10).join('');\n\n    return '(' + areaCode + ') ' + prefix + '-' + lineNumber; // 4 string literals here\n}\n\nfunction formatPhoneNumber(numbers) {\n    const areaCode = numbers.slice(0, 3).join('');\n    const prefix = numbers.slice(3, 6).join('');\n    const lineNumber = numbers.slice(6, 10).join('');\n\n    return `(${areaCode}) ${prefix}-${lineNumber}`; // 2 string literals here if using template literals\n}\n\nfunction formatPhoneNumber(numbers) {\n    const part1 = numbers.slice(0, 3).join('');\n    const part2 = numbers.slice(3, 6).join('');\n    const part3 = numbers.slice(6, 10).join('');\n\n    return `(${part1}) ${part2}-${part3}`;\n}\n",
-"opps": [
-{
-"k": 0,
-"nat": "\"\"",
-"alt": "''",
-"nat_span": [
-84,
-86
-],
-"alt_span": [
-84,
-86
-]
-},
-{
-"k": 1,
-"nat": "\"\"",
-"alt": "''",
-"nat_span": [
-133,
-135
-],
-"alt_span": [
-133,
-135
-]
-},
-{
-"k": 2,
-"nat": "\"\"",
-"alt": "''",
-"nat_span": [
-187,
-189
-],
-"alt_span": [
-187,
-189
-]
-},
-{
-"k": 3,
-"nat": "\"(\"",
-"alt": "'('",
-"nat_span": [
-204,
-207
-],
-"alt_span": [
-204,
-207
-]
-},
-{
-"k": 4,
-"nat": "\") \"",
-"alt": "') '",
-"nat_span": [
-221,
-225
-],
-"alt_span": [
-221,
-225
-]
-},
-{
-"k": 5,
-"nat": "\"-\"",
-"alt": "'-'",
-"nat_span": [
-237,
-240
-],
-"alt_span": [
-237,
-240
-]
-},
-{
-"k": 6,
-"nat": "\"\"",
-"alt": "''",
-"nat_span": [
-368,
-370
-],
-"alt_span": [
-368,
-370
-]
-},
-{
-"k": 7,
-"nat": "\"\"",
-"alt": "''",
-"nat_span": [
-417,
-419
-],
-"alt_span": [
-417,
-419
-]
-},
-{
-"k": 8,
-"nat": "\"\"",
-"alt": "''",
-"nat_span": [
-471,
-473
-],
-"alt_span": [
-471,
-473
-]
-},
-{
-"k": 9,
-"nat": "\"\"",
-"alt": "''",
-"nat_span": [
-666,
-668
-],
-"alt_span": [
-666,
-668
-]
-},
-{
-"k": 10,
-"nat": "\"\"",
-"alt": "''",
-"nat_span": [
-714,
-716
-],
-"alt_span": [
-714,
-716
-]
-},
-{
-"k": 11,
-"nat": "\"\"",
-"alt": "''",
-"nat_span": [
-763,
-765
-],
-"alt_span": [
-763,
-765
-]
-}
-],
-"k_en": 12,
-"shared_fraction": 0.931,
-"pass": true,
-"verify": null
-},
-{
 "doc_id": "js_quotes__t057",
 "family": "js_quotes",
 "topic": "Simple Traffic Light Simulation",
@@ -41456,6 +41281,311 @@
 ],
 "k_en": 17,
 "shared_fraction": 0.929,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "js_quotes__t202",
+"family": "js_quotes",
+"topic": "Remove Nth Character from String",
+"angle": "code",
+"text_es": "Implement a function that removes the character at a specific index from a string. The function should return the modified string. Implement `removeCharAtIndex(str, index)`.\nExample: `removeCharAtIndex('hello', 2)` should return `'helo'`.\nExample: `removeCharAtIndex('world', 0)` should return `'orld'`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function removeCharAtIndex(str, index) {\n  if (index < 0 || index >= str.length) {\n    console.log(\"Index out of bounds for string manipulation.\");\n    return \"Invalid index provided.\";\n  }\n\n  let part1 = str.substring(0, index);\n  let part2 = str.substring(index + 1);\n\n  let result = part1 + part2;\n  console.log(\"Character removed successfully.\");\n  console.log(\"Original string: \" + str + \", Modified string: \" + result);\n  return result;\n}\n\n// Example usage:\nlet testString1 = \"javascript\";\nlet modifiedString1 = removeCharAtIndex(testString1, 4);\nconsole.log(\"Result 1: \" + modifiedString1);\n\nlet testString2 = \"programming\";\nlet modifiedString2 = removeCharAtIndex(testString2, 0);\nconsole.log(\"Result 2: \" + modifiedString2);\n\nlet testString3 = \"example\";\nlet modifiedString3 = removeCharAtIndex(testString3, 6);\nconsole.log(\"Result 3: \" + modifiedString3);\n\nlet testString4 = \"test\";\nlet modifiedString4 = removeCharAtIndex(testString4, 10);\nconsole.log(\"Result 4: \" + modifiedString4);\n",
+"text_alt": "function removeCharAtIndex(str, index) {\n  if (index < 0 || index >= str.length) {\n    console.log('Index out of bounds for string manipulation.');\n    return 'Invalid index provided.';\n  }\n\n  let part1 = str.substring(0, index);\n  let part2 = str.substring(index + 1);\n\n  let result = part1 + part2;\n  console.log('Character removed successfully.');\n  console.log('Original string: ' + str + ', Modified string: ' + result);\n  return result;\n}\n\n// Example usage:\nlet testString1 = 'javascript';\nlet modifiedString1 = removeCharAtIndex(testString1, 4);\nconsole.log('Result 1: ' + modifiedString1);\n\nlet testString2 = 'programming';\nlet modifiedString2 = removeCharAtIndex(testString2, 0);\nconsole.log('Result 2: ' + modifiedString2);\n\nlet testString3 = 'example';\nlet modifiedString3 = removeCharAtIndex(testString3, 6);\nconsole.log('Result 3: ' + modifiedString3);\n\nlet testString4 = 'test';\nlet modifiedString4 = removeCharAtIndex(testString4, 10);\nconsole.log('Result 4: ' + modifiedString4);\n",
+"opps": [
+{
+"k": 0,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+99,
+100
+],
+"alt_span": [
+99,
+100
+]
+},
+{
+"k": 1,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+144,
+145
+],
+"alt_span": [
+144,
+145
+]
+},
+{
+"k": 2,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+159,
+160
+],
+"alt_span": [
+159,
+160
+]
+},
+{
+"k": 3,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+183,
+184
+],
+"alt_span": [
+183,
+184
+]
+},
+{
+"k": 4,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+315,
+316
+],
+"alt_span": [
+315,
+316
+]
+},
+{
+"k": 5,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+347,
+348
+],
+"alt_span": [
+347,
+348
+]
+},
+{
+"k": 6,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+365,
+366
+],
+"alt_span": [
+365,
+366
+]
+},
+{
+"k": 7,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+383,
+384
+],
+"alt_span": [
+383,
+384
+]
+},
+{
+"k": 8,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+393,
+394
+],
+"alt_span": [
+393,
+394
+]
+},
+{
+"k": 9,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+413,
+414
+],
+"alt_span": [
+413,
+414
+]
+},
+{
+"k": 10,
+"nat": "\"javascript\"",
+"alt": "'javascript'",
+"nat_span": [
+482,
+494
+],
+"alt_span": [
+482,
+494
+]
+},
+{
+"k": 11,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+565,
+566
+],
+"alt_span": [
+565,
+566
+]
+},
+{
+"k": 12,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+576,
+577
+],
+"alt_span": [
+576,
+577
+]
+},
+{
+"k": 13,
+"nat": "\"programming\"",
+"alt": "'programming'",
+"nat_span": [
+617,
+630
+],
+"alt_span": [
+617,
+630
+]
+},
+{
+"k": 14,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+701,
+702
+],
+"alt_span": [
+701,
+702
+]
+},
+{
+"k": 15,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+712,
+713
+],
+"alt_span": [
+712,
+713
+]
+},
+{
+"k": 16,
+"nat": "\"example\"",
+"alt": "'example'",
+"nat_span": [
+753,
+762
+],
+"alt_span": [
+753,
+762
+]
+},
+{
+"k": 17,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+833,
+834
+],
+"alt_span": [
+833,
+834
+]
+},
+{
+"k": 18,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+844,
+845
+],
+"alt_span": [
+844,
+845
+]
+},
+{
+"k": 19,
+"nat": "\"test\"",
+"alt": "'test'",
+"nat_span": [
+885,
+891
+],
+"alt_span": [
+885,
+891
+]
+},
+{
+"k": 20,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+963,
+964
+],
+"alt_span": [
+963,
+964
+]
+},
+{
+"k": 21,
+"nat": "\"",
+"alt": "'",
+"nat_span": [
+974,
+975
+],
+"alt_span": [
+974,
+975
+]
+}
+],
+"k_en": 22,
+"shared_fraction": 0.928,
 "pass": true,
 "verify": null
 }

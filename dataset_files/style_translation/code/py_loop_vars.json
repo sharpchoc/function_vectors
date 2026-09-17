@@ -89264,5 +89264,3935 @@
 "shared_fraction": 0.95,
 "pass": false,
 "verify": null
+},
+{
+"doc_id": "py_loop_vars__t521",
+"family": "py_loop_vars",
+"topic": "Calculate Trapped Rain Water (1D)",
+"angle": "code",
+"text_es": "Create a function `trapped_rain_water(heights: list[int]) -> int` that calculates how much rainwater can be trapped in a 1D elevation map represented by `heights`. \nExample: trapped_rain_water([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]) == 6, trapped_rain_water([4, 2, 0, 3, 2, 5]) == 9.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def trapped_rain_water(heights: list[int]) -> int:\n    if not heights:\n        return 0\n\n    n = len(heights)\n    left_max = [0] * n\n    right_max = [0] * n\n    total_water = 0\n\n    for i in range(n):\n        left_max[i] = heights[i]\n        if i > 0:\n            left_max[i] = max(left_max[i], left_max[i-1])\n\n    for j in range(n - 1, -1, -1):\n        right_max[j] = heights[j]\n        if j < n - 1:\n            right_max[j] = max(right_max[j], right_max[j+1])\n\n    for k in range(n):\n        water_at_k = min(left_max[k], right_max[k]) - heights[k]\n        if water_at_k > 0:\n            total_water += water_at_k\n\n    return total_water\n",
+"text_alt": "def trapped_rain_water(heights: list[int]) -> int:\n    if not heights:\n        return 0\n\n    n = len(heights)\n    left_max = [0] * n\n    right_max = [0] * n\n    total_water = 0\n\n    for index in range(n):\n        left_max[index] = heights[index]\n        if index > 0:\n            left_max[index] = max(left_max[index], left_max[index-1])\n\n    for column in range(n - 1, -1, -1):\n        right_max[column] = heights[column]\n        if column < n - 1:\n            right_max[column] = max(right_max[column], right_max[column+1])\n\n    for key in range(n):\n        water_at_k = min(left_max[key], right_max[key]) - heights[key]\n        if water_at_k > 0:\n            total_water += water_at_k\n\n    return total_water\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+186,
+187
+],
+"alt_span": [
+186,
+191
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+218,
+219
+],
+"alt_span": [
+222,
+227
+]
+},
+{
+"k": 2,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+231,
+232
+],
+"alt_span": [
+239,
+244
+]
+},
+{
+"k": 3,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+245,
+246
+],
+"alt_span": [
+257,
+262
+]
+},
+{
+"k": 4,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+273,
+274
+],
+"alt_span": [
+289,
+294
+]
+},
+{
+"k": 5,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+291,
+292
+],
+"alt_span": [
+311,
+316
+]
+},
+{
+"k": 6,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+304,
+305
+],
+"alt_span": [
+328,
+333
+]
+},
+{
+"k": 7,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+319,
+320
+],
+"alt_span": [
+347,
+353
+]
+},
+{
+"k": 8,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+364,
+365
+],
+"alt_span": [
+397,
+403
+]
+},
+{
+"k": 9,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+377,
+378
+],
+"alt_span": [
+415,
+421
+]
+},
+{
+"k": 10,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+391,
+392
+],
+"alt_span": [
+434,
+440
+]
+},
+{
+"k": 11,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+424,
+425
+],
+"alt_span": [
+472,
+478
+]
+},
+{
+"k": 12,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+443,
+444
+],
+"alt_span": [
+496,
+502
+]
+},
+{
+"k": 13,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+457,
+458
+],
+"alt_span": [
+515,
+521
+]
+},
+{
+"k": 14,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+472,
+473
+],
+"alt_span": [
+535,
+538
+]
+},
+{
+"k": 15,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+521,
+522
+],
+"alt_span": [
+586,
+589
+]
+},
+{
+"k": 16,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+535,
+536
+],
+"alt_span": [
+602,
+605
+]
+},
+{
+"k": 17,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+549,
+550
+],
+"alt_span": [
+618,
+621
+]
+}
+],
+"k_en": 18,
+"shared_fraction": 0.929,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t522",
+"family": "py_loop_vars",
+"topic": "Find Common Dictionary Keys",
+"angle": "code",
+"text_es": "Implement a function `common_dict_keys(d1: dict, d2: dict) -> set[any]` that returns a set of keys that are present in both dictionaries `d1` and `d2`. \nExample: common_dict_keys({'a': 1, 'b': 2}, {'b': 3, 'c': 4}) == {'b'}, common_dict_keys({'x': 1}, {'y': 2}) == set().",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def common_dict_keys(d1: dict, d2: dict) -> set[any]:\n    s1 = set()\n    for i in d1:\n        s1.add(i)\n\n    s2 = set()\n    for j in d2:\n        s2.add(j)\n\n    common_keys = set()\n    for k in s1:\n        if k in s2:\n            common_keys.add(k)\n            \n    a = list(d1.keys())\n    b = list(d2.keys())\n    \n    for n in a:\n        if n in b:\n            pass # just another loop\n\n    for x in d1.values():\n        pass # more loops for the requirement\n\n    for y in d2.items():\n        pass # even more loops\n\n    for z in range(5):\n        pass # just to make sure we have enough loops\n            \n    return common_keys\n",
+"text_alt": "def common_dict_keys(d1: dict, d2: dict) -> set[any]:\n    s1 = set()\n    for index in d1:\n        s1.add(index)\n\n    s2 = set()\n    for column in d2:\n        s2.add(column)\n\n    common_keys = set()\n    for key in s1:\n        if key in s2:\n            common_keys.add(key)\n            \n    a = list(d1.keys())\n    b = list(d2.keys())\n    \n    for n_key in a:\n        if n_key in b:\n            pass # just another loop\n\n    for x_value in d1.values():\n        pass # more loops for the requirement\n\n    for y_item in d2.items():\n        pass # even more loops\n\n    for z_range_val in range(5):\n        pass # just to make sure we have enough loops\n            \n    return common_keys\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+77,
+78
+],
+"alt_span": [
+77,
+82
+]
+},
+{
+"k": 1,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+128,
+129
+],
+"alt_span": [
+136,
+142
+]
+},
+{
+"k": 2,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+188,
+189
+],
+"alt_span": [
+206,
+209
+]
+},
+{
+"k": 3,
+"nat": "n",
+"alt": "n_key",
+"nat_span": [
+322,
+323
+],
+"alt_span": [
+346,
+351
+]
+},
+{
+"k": 4,
+"nat": "x",
+"alt": "x_value",
+"nat_span": [
+395,
+396
+],
+"alt_span": [
+427,
+434
+]
+},
+{
+"k": 5,
+"nat": "y",
+"alt": "y_item",
+"nat_span": [
+468,
+469
+],
+"alt_span": [
+506,
+512
+]
+},
+{
+"k": 6,
+"nat": "z",
+"alt": "z_range_val",
+"nat_span": [
+525,
+526
+],
+"alt_span": [
+568,
+579
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.951,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+77,
+78
+],
+"alt_span": [
+77,
+82
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+101,
+102
+],
+"alt_span": [
+105,
+110
+]
+},
+{
+"k": 2,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+128,
+129
+],
+"alt_span": [
+136,
+142
+]
+},
+{
+"k": 3,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+152,
+153
+],
+"alt_span": [
+165,
+171
+]
+},
+{
+"k": 4,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+188,
+189
+],
+"alt_span": [
+206,
+209
+]
+},
+{
+"k": 5,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+208,
+209
+],
+"alt_span": [
+228,
+231
+]
+},
+{
+"k": 6,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+245,
+246
+],
+"alt_span": [
+267,
+270
+]
+},
+{
+"k": 7,
+"nat": "n",
+"alt": "n_key",
+"nat_span": [
+322,
+323
+],
+"alt_span": [
+346,
+351
+]
+},
+{
+"k": 8,
+"nat": "n",
+"alt": "n_key",
+"nat_span": [
+341,
+342
+],
+"alt_span": [
+369,
+374
+]
+},
+{
+"k": 9,
+"nat": "x",
+"alt": "x_value",
+"nat_span": [
+395,
+396
+],
+"alt_span": [
+427,
+434
+]
+},
+{
+"k": 10,
+"nat": "y",
+"alt": "y_item",
+"nat_span": [
+468,
+469
+],
+"alt_span": [
+506,
+512
+]
+},
+{
+"k": 11,
+"nat": "z",
+"alt": "z_range_val",
+"nat_span": [
+525,
+526
+],
+"alt_span": [
+568,
+579
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_loop_vars__t523",
+"family": "py_loop_vars",
+"topic": "Generate Next Lexicographical Permutation",
+"angle": "code",
+"text_es": "Write a function `next_permutation(nums: list[int]) -> list[int]` that finds the next lexicographically greater permutation of numbers in a list `nums`. If no such permutation exists, it should rearrange it to the lowest possible order (sorted in ascending order). \nExample: next_permutation([1, 2, 3]) == [1, 3, 2], next_permutation([3, 2, 1]) == [1, 2, 3], next_permutation([1, 1, 5]) == [1, 5, 1].",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def next_permutation(nums: list[int]) -> list[int]:\n    n = len(nums)\n    i = n - 2\n    while i >= 0 and nums[i] >= nums[i + 1]:\n        i -= 1\n\n    if i >= 0:\n        j = n - 1\n        while j >= 0 and nums[j] <= nums[i]:\n            j -= 1\n        nums[i], nums[j] = nums[j], nums[i]\n\n    l = i + 1\n    r = n - 1\n    while l < r:\n        nums[l], nums[r] = nums[r], nums[l]\n        l += 1\n        r -= 1\n\n    for x in range(5):\n        pass\n    \n    for y in range(3):\n        for z in range(2):\n            pass\n\n    return nums\n",
+"text_alt": "def next_permutation(nums: list[int]) -> list[int]:\n    n = len(nums)\n    index = n - 2\n    while index >= 0 and nums[index] >= nums[index + 1]:\n        index -= 1\n\n    if index >= 0:\n        column = n - 1\n        while column >= 0 and nums[column] <= nums[index]:\n            column -= 1\n        nums[index], nums[column] = nums[column], nums[index]\n\n    l = index + 1\n    r = n - 1\n    while l < r:\n        nums[l], nums[r] = nums[r], nums[l]\n        l += 1\n        r -= 1\n\n    for x in range(5):\n        pass\n    \n    for y in range(3):\n        for z in range(2):\n            pass\n\n    return nums\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+74,
+75
+],
+"alt_span": [
+74,
+79
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+94,
+95
+],
+"alt_span": [
+98,
+103
+]
+},
+{
+"k": 2,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+110,
+111
+],
+"alt_span": [
+118,
+123
+]
+},
+{
+"k": 3,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+121,
+122
+],
+"alt_span": [
+133,
+138
+]
+},
+{
+"k": 4,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+137,
+138
+],
+"alt_span": [
+153,
+158
+]
+},
+{
+"k": 5,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+152,
+153
+],
+"alt_span": [
+172,
+177
+]
+},
+{
+"k": 6,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+168,
+169
+],
+"alt_span": [
+192,
+198
+]
+},
+{
+"k": 7,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+192,
+193
+],
+"alt_span": [
+221,
+227
+]
+},
+{
+"k": 8,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+208,
+209
+],
+"alt_span": [
+242,
+248
+]
+},
+{
+"k": 9,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+219,
+220
+],
+"alt_span": [
+258,
+263
+]
+},
+{
+"k": 10,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+235,
+236
+],
+"alt_span": [
+278,
+284
+]
+},
+{
+"k": 11,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+255,
+256
+],
+"alt_span": [
+303,
+308
+]
+},
+{
+"k": 12,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+264,
+265
+],
+"alt_span": [
+316,
+322
+]
+},
+{
+"k": 13,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+274,
+275
+],
+"alt_span": [
+331,
+337
+]
+},
+{
+"k": 14,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+283,
+284
+],
+"alt_span": [
+345,
+350
+]
+},
+{
+"k": 15,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+295,
+296
+],
+"alt_span": [
+361,
+366
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.939,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t524",
+"family": "py_loop_vars",
+"topic": "Check if Binary Tree is Symmetric (Mock)",
+"angle": "code",
+"text_es": "Create a function `is_symmetric_tree(tree_repr: list[int | None]) -> bool` that checks if a binary tree is symmetric. The tree is represented as a list, where `None` indicates a null node. The root is `tree_repr[0]`, its children are `tree_repr[1]` and `tree_repr[2]`, and so on. \nExample: is_symmetric_tree([1, 2, 2, 3, 4, 4, 3]) == True, is_symmetric_tree([1, 2, 2, None, 3, None, 3]) == False.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def is_symmetric_tree(tree_repr: list[int | None]) -> bool:\n    if not tree_repr:\n        return True\n\n    q = [(0, 0)]\n    for _ in range(len(tree_repr)):\n        pass\n\n    for k in range(len(tree_repr)):\n        pass\n\n    while q:\n        l, r = q.pop(0)\n\n        if l == r:\n            if tree_repr[l] is None:\n                continue\n            left_val = tree_repr[2 * l + 1] if 2 * l + 1 < len(tree_repr) else None\n            right_val = tree_repr[2 * r + 2] if 2 * r + 2 < len(tree_repr) else None\n            if left_val != right_val:\n                return False\n            if left_val is not None:\n                q.append((2 * l + 1, 2 * r + 2))\n                q.append((2 * l + 2, 2 * r + 1))\n            continue\n\n        left_node = tree_repr[l] if l < len(tree_repr) else None\n        right_node = tree_repr[r] if r < len(tree_repr) else None\n\n        if left_node != right_node:\n            for n in range(5):\n                pass\n            return False\n\n        if left_node is not None:\n            left_child_left_idx = 2 * l + 1\n            left_child_right_idx = 2 * l + 2\n            right_child_left_idx = 2 * r + 1\n            right_child_right_idx = 2 * r + 2\n\n            for i in range(2):\n                pass\n\n            if left_child_left_idx < len(tree_repr) and right_child_right_idx < len(tree_repr):\n                q.append((left_child_left_idx, right_child_right_idx))\n            elif left_child_left_idx < len(tree_repr) or right_child_right_idx < len(tree_repr):\n                for j in range(3):\n                    pass\n                return False\n\n            if left_child_right_idx < len(tree_repr) and right_child_left_idx < len(tree_repr):\n                q.append((left_child_right_idx, right_child_left_idx))\n            elif left_child_right_idx < len(tree_repr) or right_child_left_idx < len(tree_repr):\n                for p in range(4):\n                    pass\n                return False\n    for x in range(10):\n        for y in range(2):\n            pass\n    return True\n\n    for z in range(3):\n        pass\n",
+"text_alt": "def is_symmetric_tree(tree_repr: list[int | None]) -> bool:\n    if not tree_repr:\n        return True\n\n    q = [(0, 0)]\n    for _ in range(len(tree_repr)):\n        pass\n\n    for key in range(len(tree_repr)):\n        pass\n\n    while q:\n        left_idx, right_idx = q.pop(0)\n\n        if left_idx == right_idx:\n            if tree_repr[left_idx] is None:\n                continue\n            left_val = tree_repr[2 * left_idx + 1] if 2 * left_idx + 1 < len(tree_repr) else None\n            right_val = tree_repr[2 * right_idx + 2] if 2 * right_idx + 2 < len(tree_repr) else None\n            if left_val != right_val:\n                return False\n            if left_val is not None:\n                q.append((2 * left_idx + 1, 2 * right_idx + 2))\n                q.append((2 * left_idx + 2, 2 * right_idx + 1))\n            continue\n\n        left_node = tree_repr[left_idx] if left_idx < len(tree_repr) else None\n        right_node = tree_repr[right_idx] if right_idx < len(tree_repr) else None\n\n        if left_node != right_node:\n            for n in range(5):\n                pass\n            return False\n\n        if left_node is not None:\n            left_child_left_idx = 2 * left_idx + 1\n            left_child_right_idx = 2 * left_idx + 2\n            right_child_left_idx = 2 * right_idx + 1\n            right_child_right_idx = 2 * right_idx + 2\n\n            for index in range(2):\n                pass\n\n            if left_child_left_idx < len(tree_repr) and right_child_right_idx < len(tree_repr):\n                q.append((left_child_left_idx, right_child_right_idx))\n            elif left_child_left_idx < len(tree_repr) or right_child_right_idx < len(tree_repr):\n                for column in range(3):\n                    pass\n                return False\n\n            if left_child_right_idx < len(tree_repr) and right_child_left_idx < len(tree_repr):\n                q.append((left_child_right_idx, right_child_left_idx))\n            elif left_child_right_idx < len(tree_repr) or right_child_left_idx < len(tree_repr):\n                for p in range(4):\n                    pass\n                return False\n    for x in range(10):\n        for y in range(2):\n            pass\n    return True\n\n    for z in range(3):\n        pass\n",
+"opps": [
+{
+"k": 0,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+178,
+179
+],
+"alt_span": [
+178,
+181
+]
+},
+{
+"k": 1,
+"nat": "l, r",
+"alt": "left_idx, right_idx",
+"nat_span": [
+241,
+245
+],
+"alt_span": [
+243,
+262
+]
+},
+{
+"k": 2,
+"nat": "l",
+"alt": "left_idx",
+"nat_span": [
+269,
+270
+],
+"alt_span": [
+286,
+294
+]
+},
+{
+"k": 3,
+"nat": "r",
+"alt": "right_idx",
+"nat_span": [
+274,
+275
+],
+"alt_span": [
+298,
+307
+]
+},
+{
+"k": 4,
+"nat": "l",
+"alt": "left_idx",
+"nat_span": [
+302,
+303
+],
+"alt_span": [
+334,
+342
+]
+},
+{
+"k": 5,
+"nat": "l",
+"alt": "left_idx",
+"nat_span": [
+376,
+377
+],
+"alt_span": [
+415,
+423
+]
+},
+{
+"k": 6,
+"nat": "l",
+"alt": "left_idx",
+"nat_span": [
+390,
+391
+],
+"alt_span": [
+436,
+444
+]
+},
+{
+"k": 7,
+"nat": "r",
+"alt": "right_idx",
+"nat_span": [
+461,
+462
+],
+"alt_span": [
+514,
+523
+]
+},
+{
+"k": 8,
+"nat": "r",
+"alt": "right_idx",
+"nat_span": [
+475,
+476
+],
+"alt_span": [
+536,
+545
+]
+},
+{
+"k": 9,
+"nat": "l",
+"alt": "left_idx",
+"nat_span": [
+642,
+643
+],
+"alt_span": [
+711,
+719
+]
+},
+{
+"k": 10,
+"nat": "r",
+"alt": "right_idx",
+"nat_span": [
+653,
+654
+],
+"alt_span": [
+729,
+738
+]
+},
+{
+"k": 11,
+"nat": "l",
+"alt": "left_idx",
+"nat_span": [
+691,
+692
+],
+"alt_span": [
+775,
+783
+]
+},
+{
+"k": 12,
+"nat": "r",
+"alt": "right_idx",
+"nat_span": [
+702,
+703
+],
+"alt_span": [
+793,
+802
+]
+},
+{
+"k": 13,
+"nat": "l",
+"alt": "left_idx",
+"nat_span": [
+762,
+763
+],
+"alt_span": [
+861,
+869
+]
+},
+{
+"k": 14,
+"nat": "l",
+"alt": "left_idx",
+"nat_span": [
+768,
+769
+],
+"alt_span": [
+874,
+882
+]
+},
+{
+"k": 15,
+"nat": "r",
+"alt": "right_idx",
+"nat_span": [
+828,
+829
+],
+"alt_span": [
+941,
+950
+]
+},
+{
+"k": 16,
+"nat": "r",
+"alt": "right_idx",
+"nat_span": [
+834,
+835
+],
+"alt_span": [
+955,
+964
+]
+},
+{
+"k": 17,
+"nat": "l",
+"alt": "left_idx",
+"nat_span": [
+1050,
+1051
+],
+"alt_span": [
+1179,
+1187
+]
+},
+{
+"k": 18,
+"nat": "l",
+"alt": "left_idx",
+"nat_span": [
+1095,
+1096
+],
+"alt_span": [
+1231,
+1239
+]
+},
+{
+"k": 19,
+"nat": "r",
+"alt": "right_idx",
+"nat_span": [
+1140,
+1141
+],
+"alt_span": [
+1283,
+1292
+]
+},
+{
+"k": 20,
+"nat": "r",
+"alt": "right_idx",
+"nat_span": [
+1186,
+1187
+],
+"alt_span": [
+1337,
+1346
+]
+},
+{
+"k": 21,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+1209,
+1210
+],
+"alt_span": [
+1368,
+1373
+]
+},
+{
+"k": 22,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+1530,
+1531
+],
+"alt_span": [
+1693,
+1699
+]
+}
+],
+"k_en": 23,
+"shared_fraction": 0.963,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t525",
+"family": "py_loop_vars",
+"topic": "Calculate Subarray Sum Equals K",
+"angle": "code",
+"text_es": "Implement a function `subarray_sum_equals_k(nums: list[int], k: int) -> int` that returns the total number of continuous subarrays whose sum equals `k`. \nExample: subarray_sum_equals_k([1, 1, 1], 2) == 2, subarray_sum_equals_k([1, 2, 3], 3) == 2.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def subarray_sum_equals_k(nums: list[int], k: int) -> int:\n    count = 0\n    n = len(nums)\n\n    for i in range(n):\n        current_sum = 0\n        for j in range(i, n):\n            current_sum += nums[j]\n            if current_sum == k:\n                count += 1\n    \n    prefix_sum = {0: 1}\n    current_sum = 0\n    res = 0\n\n    for m in range(n):\n        current_sum += nums[m]\n        if current_sum - k in prefix_sum:\n            res += prefix_sum[current_sum - k]\n        prefix_sum[current_sum] = prefix_sum.get(current_sum, 0) + 1\n\n    total_count = 0\n    for a in range(n):\n        for b in range(a, n):\n            temp_sum = 0\n            for c in range(a, b + 1):\n                temp_sum += nums[c]\n            if temp_sum == k:\n                total_count += 1\n\n    final_count = 0\n    for x in range(n):\n        s = 0\n        for y in range(x, n):\n            s += nums[y]\n            if s == k:\n                final_count += 1\n\n    return final_count\n",
+"text_alt": "def subarray_sum_equals_k(nums: list[int], k: int) -> int:\n    count = 0\n    n = len(nums)\n\n    for index in range(n):\n        current_sum = 0\n        for column in range(index, n):\n            current_sum += nums[column]\n            if current_sum == k:\n                count += 1\n    \n    prefix_sum = {0: 1}\n    current_sum = 0\n    res = 0\n\n    for m in range(n):\n        current_sum += nums[m]\n        if current_sum - k in prefix_sum:\n            res += prefix_sum[current_sum - k]\n        prefix_sum[current_sum] = prefix_sum.get(current_sum, 0) + 1\n\n    total_count = 0\n    for a in range(n):\n        for b in range(a, n):\n            temp_sum = 0\n            for c in range(a, b + 1):\n                temp_sum += nums[c]\n            if temp_sum == k:\n                total_count += 1\n\n    final_count = 0\n    for x in range(n):\n        s = 0\n        for y in range(x, n):\n            s += nums[y]\n            if s == k:\n                final_count += 1\n\n    return final_count\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+100,
+101
+],
+"alt_span": [
+100,
+105
+]
+},
+{
+"k": 1,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+151,
+152
+],
+"alt_span": [
+155,
+161
+]
+},
+{
+"k": 2,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+162,
+163
+],
+"alt_span": [
+171,
+176
+]
+},
+{
+"k": 3,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+201,
+202
+],
+"alt_span": [
+214,
+220
+]
+}
+],
+"k_en": 4,
+"shared_fraction": 0.989,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t526",
+"family": "py_loop_vars",
+"topic": "Sanitize JSON String",
+"angle": "code",
+"text_es": "Write a function `sanitize_json_string(json_str: str) -> str` that removes comments (lines starting with `//` or `/* ... */`) and trailing commas from a JSON-like string, making it valid JSON. \nExample: sanitize_json_string('{\n  \"key\": \"value\", // comment\n  \"key2\": 123, \n}') == '{\n  \"key\": \"value\",\n  \"key2\": 123\n}', sanitize_json_string('{\n  \"a\": 1, /* multiline\n  comment */\n  \"b\": 2,\n}') == '{\n  \"a\": 1,\n  \"b\": 2\n}'.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def sanitize_json_string(json_str: str) -> str:\n    lines = json_str.split('\\n')\n    cleaned_lines = []\n    in_multiline_comment = False\n\n    for l in lines:\n        s = l.strip()\n        if not s:\n            continue\n        if in_multiline_comment:\n            if '*/' in s:\n                s = s[s.find('*/') + 2:]\n                in_multiline_comment = False\n            else:\n                continue\n\n        if s.startswith('//'):\n            continue\n        if s.startswith('/*'):\n            if '*/' in s:\n                s = s[s.find('*/') + 2:]\n            else:\n                in_multiline_comment = True\n                continue\n        \n        if '//' in s and not in_multiline_comment:\n            s = s[:s.find('//')]\n        if '/*' in s and not in_multiline_comment:\n            if '*/' in s:\n                s = s[:s.find('/*')] + s[s.find('*/') + 2:]\n            else:\n                s = s[:s.find('/*')]\n                in_multiline_comment = True\n\n        cleaned_lines.append(s.strip())\n\n    result = \"\\n\".join(cleaned_lines)\n    final_chars = []\n    \n    for i in range(len(result)):\n        final_chars.append(result[i])\n\n    k = len(final_chars) - 1\n    while k >= 0:\n        if final_chars[k] == ',' and k + 1 < len(final_chars):\n            found_non_whitespace = False\n            for n in range(k + 1, len(final_chars)):\n                if final_chars[n].strip():\n                    if final_chars[n] == '}' or final_chars[n] == ']':\n                        final_chars[k] = '' \n                    found_non_whitespace = True\n                    break\n            if not found_non_whitespace:\n                final_chars[k] = '' \n        k -= 1\n\n    for j in range(len(final_chars) - 2, -1, -1):\n        if final_chars[j] == ',' and final_chars[j+1].strip() == '':\n            m = j + 1\n            while m < len(final_chars) and final_chars[m].strip() == '':\n                m += 1\n            if m < len(final_chars) and (final_chars[m] == '}' or final_chars[m] == ']'):\n                final_chars[j] = ''\n    \n    for p in range(len(final_chars) - 1, -1, -1):\n        if final_chars[p] == ',' and p + 1 < len(final_chars):\n            q = p + 1\n            is_valid_char_after = False\n            while q < len(final_chars) and final_chars[q].isspace():\n                q += 1\n            if q < len(final_chars) and final_chars[q] in ['}', ']']:\n                final_chars[p] = ''\n            \n    for t in range(len(final_chars)):\n        if final_chars[t] == ',':\n            u = t + 1\n            has_next_element = False\n            while u < len(final_chars):\n                if final_chars[u].strip() and final_chars[u] not in ['}', ']']:\n                    has_next_element = True\n                    break\n                u += 1\n            if not has_next_element:\n                final_chars[t] = ''\n\n    return \"\".join(final_chars)\n",
+"text_alt": "def sanitize_json_string(json_str: str) -> str:\n    lines = json_str.split('\\n')\n    cleaned_lines = []\n    in_multiline_comment = False\n\n    for l in lines:\n        s = l.strip()\n        if not s:\n            continue\n        if in_multiline_comment:\n            if '*/' in s:\n                s = s[s.find('*/') + 2:]\n                in_multiline_comment = False\n            else:\n                continue\n\n        if s.startswith('//'):\n            continue\n        if s.startswith('/*'):\n            if '*/' in s:\n                s = s[s.find('*/') + 2:]\n            else:\n                in_multiline_comment = True\n                continue\n        \n        if '//' in s and not in_multiline_comment:\n            s = s[:s.find('//')]\n        if '/*' in s and not in_multiline_comment:\n            if '*/' in s:\n                s = s[:s.find('/*')] + s[s.find('*/') + 2:]\n            else:\n                s = s[:s.find('/*')]\n                in_multiline_comment = True\n\n        cleaned_lines.append(s.strip())\n\n    result = \"\\n\".join(cleaned_lines)\n    final_chars = []\n    \n    for index in range(len(result)):\n        final_chars.append(result[index])\n\n    key = len(final_chars) - 1\n    while key >= 0:\n        if final_chars[key] == ',' and key + 1 < len(final_chars):\n            found_non_whitespace = False\n            for n in range(key + 1, len(final_chars)):\n                if final_chars[n].strip():\n                    if final_chars[n] == '}' or final_chars[n] == ']':\n                        final_chars[key] = '' \n                    found_non_whitespace = True\n                    break\n            if not found_non_whitespace:\n                final_chars[key] = '' \n        key -= 1\n\n    for column in range(len(final_chars) - 2, -1, -1):\n        if final_chars[column] == ',' and final_chars[column+1].strip() == '':\n            m = column + 1\n            while m < len(final_chars) and final_chars[m].strip() == '':\n                m += 1\n            if m < len(final_chars) and (final_chars[m] == '}' or final_chars[m] == ']'):\n                final_chars[column] = ''\n    \n    for p in range(len(final_chars) - 1, -1, -1):\n        if final_chars[p] == ',' and p + 1 < len(final_chars):\n            q = p + 1\n            is_valid_char_after = False\n            while q < len(final_chars) and final_chars[q].isspace():\n                q += 1\n            if q < len(final_chars) and final_chars[q] in ['}', ']']:\n                final_chars[p] = ''\n            \n    for t in range(len(final_chars)):\n        if final_chars[t] == ',':\n            u = t + 1\n            has_next_element = False\n            while u < len(final_chars):\n                if final_chars[u].strip() and final_chars[u] not in ['}', ']']:\n                    has_next_element = True\n                    break\n                u += 1\n            if not has_next_element:\n                final_chars[t] = ''\n\n    return \"\".join(final_chars)\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+1088,
+1089
+],
+"alt_span": [
+1088,
+1093
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+1147,
+1148
+],
+"alt_span": [
+1151,
+1156
+]
+},
+{
+"k": 2,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+1156,
+1157
+],
+"alt_span": [
+1164,
+1167
+]
+},
+{
+"k": 3,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+1191,
+1192
+],
+"alt_span": [
+1201,
+1204
+]
+},
+{
+"k": 4,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+1222,
+1223
+],
+"alt_span": [
+1234,
+1237
+]
+},
+{
+"k": 5,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+1236,
+1237
+],
+"alt_span": [
+1250,
+1253
+]
+},
+{
+"k": 6,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+1330,
+1331
+],
+"alt_span": [
+1346,
+1349
+]
+},
+{
+"k": 7,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+1506,
+1507
+],
+"alt_span": [
+1524,
+1527
+]
+},
+{
+"k": 8,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+1658,
+1659
+],
+"alt_span": [
+1678,
+1681
+]
+},
+{
+"k": 9,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+1675,
+1676
+],
+"alt_span": [
+1697,
+1700
+]
+},
+{
+"k": 10,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+1691,
+1692
+],
+"alt_span": [
+1715,
+1721
+]
+},
+{
+"k": 11,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+1756,
+1757
+],
+"alt_span": [
+1785,
+1791
+]
+},
+{
+"k": 12,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+1782,
+1783
+],
+"alt_span": [
+1816,
+1822
+]
+},
+{
+"k": 13,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+1818,
+1819
+],
+"alt_span": [
+1857,
+1863
+]
+},
+{
+"k": 14,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+2038,
+2039
+],
+"alt_span": [
+2082,
+2088
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 0.985,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t527",
+"family": "py_loop_vars",
+"topic": "Find Max Consecutive Ones",
+"angle": "code",
+"text_es": "Create a function `max_consecutive_ones(nums: list[int]) -> int` that returns the maximum number of consecutive `1`s in a binary array `nums`. \nExample: max_consecutive_ones([1, 1, 0, 1, 1, 1]) == 3, max_consecutive_ones([1, 0, 1, 1, 0, 1]) == 2.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def max_consecutive_ones(nums: list[int]) -> int:\n    max_ones = 0\n    current_ones = 0\n    for i in nums:\n        if i == 1:\n            current_ones += 1\n        else:\n            if current_ones > max_ones:\n                max_ones = current_ones\n            current_ones = 0\n    if current_ones > max_ones:\n        max_ones = current_ones\n\n    count = 0\n    for j in range(len(nums)):\n        if nums[j] == 1:\n            count += 1\n        else:\n            count = 0\n    \n    _max_val = 0\n    temp_val = 0\n    for k in nums:\n        if k == 1:\n            temp_val += 1\n        else:\n            if temp_val > _max_val:\n                _max_val = temp_val\n            temp_val = 0\n    if temp_val > _max_val:\n        _max_val = temp_val\n\n    test_max = 0\n    test_current = 0\n    for n in nums:\n        if n == 1:\n            test_current += 1\n        else:\n            test_current = 0\n        if test_current > test_max:\n            test_max = test_current\n\n    result = 0\n    current = 0\n    for x in nums:\n        if x == 1:\n            current += 1\n        else:\n            current = 0\n        if current > result:\n            result = current\n\n    final_max = 0\n    curr_max = 0\n    for y in nums:\n        if y == 1:\n            curr_max += 1\n        else:\n            curr_max = 0\n        if curr_max > final_max:\n            final_max = curr_max\n\n    ultimate_max = 0\n    ultimate_current = 0\n    for z in nums:\n        if z == 1:\n            ultimate_current += 1\n        else:\n            ultimate_current = 0\n        if ultimate_current > ultimate_max:\n            ultimate_max = ultimate_current\n\n    return max(max_ones, _max_val, test_max, result, final_max, ultimate_max)\n",
+"text_alt": "def max_consecutive_ones(nums: list[int]) -> int:\n    max_ones = 0\n    current_ones = 0\n    for index in nums:\n        if index == 1:\n            current_ones += 1\n        else:\n            if current_ones > max_ones:\n                max_ones = current_ones\n            current_ones = 0\n    if current_ones > max_ones:\n        max_ones = current_ones\n\n    count = 0\n    for column in range(len(nums)):\n        if nums[column] == 1:\n            count += 1\n        else:\n            count = 0\n    \n    _max_val = 0\n    temp_val = 0\n    for key in nums:\n        if key == 1:\n            temp_val += 1\n        else:\n            if temp_val > _max_val:\n                _max_val = temp_val\n            temp_val = 0\n    if temp_val > _max_val:\n        _max_val = temp_val\n\n    test_max = 0\n    test_current = 0\n    for n_val in nums:\n        if n_val == 1:\n            test_current += 1\n        else:\n            test_current = 0\n        if test_current > test_max:\n            test_max = test_current\n\n    result = 0\n    current = 0\n    for x_val in nums:\n        if x_val == 1:\n            current += 1\n        else:\n            current = 0\n        if current > result:\n            result = current\n\n    final_max = 0\n    curr_max = 0\n    for y_val in nums:\n        if y_val == 1:\n            curr_max += 1\n        else:\n            curr_max = 0\n        if curr_max > final_max:\n            final_max = curr_max\n\n    ultimate_max = 0\n    ultimate_current = 0\n    for z_val in nums:\n        if z_val == 1:\n            ultimate_current += 1\n        else:\n            ultimate_current = 0\n        if ultimate_current > ultimate_max:\n            ultimate_max = ultimate_current\n\n    return max(max_ones, _max_val, test_max, result, final_max, ultimate_max)\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+96,
+97
+],
+"alt_span": [
+96,
+101
+]
+},
+{
+"k": 1,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+366,
+367
+],
+"alt_span": [
+374,
+380
+]
+},
+{
+"k": 2,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+520,
+521
+],
+"alt_span": [
+538,
+541
+]
+},
+{
+"k": 3,
+"nat": "n",
+"alt": "n_val",
+"nat_span": [
+790,
+791
+],
+"alt_span": [
+812,
+817
+]
+},
+{
+"k": 4,
+"nat": "x",
+"alt": "x_val",
+"nat_span": [
+1005,
+1006
+],
+"alt_span": [
+1035,
+1040
+]
+},
+{
+"k": 5,
+"nat": "y",
+"alt": "y_val",
+"nat_span": [
+1200,
+1201
+],
+"alt_span": [
+1238,
+1243
+]
+},
+{
+"k": 6,
+"nat": "z",
+"alt": "z_val",
+"nat_span": [
+1416,
+1417
+],
+"alt_span": [
+1462,
+1467
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.972,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+96,
+97
+],
+"alt_span": [
+96,
+101
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+118,
+119
+],
+"alt_span": [
+122,
+127
+]
+},
+{
+"k": 2,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+366,
+367
+],
+"alt_span": [
+374,
+380
+]
+},
+{
+"k": 3,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+405,
+406
+],
+"alt_span": [
+418,
+424
+]
+},
+{
+"k": 4,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+520,
+521
+],
+"alt_span": [
+538,
+541
+]
+},
+{
+"k": 5,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+542,
+543
+],
+"alt_span": [
+562,
+565
+]
+},
+{
+"k": 6,
+"nat": "n",
+"alt": "n_val",
+"nat_span": [
+790,
+791
+],
+"alt_span": [
+812,
+817
+]
+},
+{
+"k": 7,
+"nat": "n",
+"alt": "n_val",
+"nat_span": [
+812,
+813
+],
+"alt_span": [
+838,
+843
+]
+},
+{
+"k": 8,
+"nat": "x",
+"alt": "x_val",
+"nat_span": [
+1005,
+1006
+],
+"alt_span": [
+1035,
+1040
+]
+},
+{
+"k": 9,
+"nat": "x",
+"alt": "x_val",
+"nat_span": [
+1027,
+1028
+],
+"alt_span": [
+1061,
+1066
+]
+},
+{
+"k": 10,
+"nat": "y",
+"alt": "y_val",
+"nat_span": [
+1200,
+1201
+],
+"alt_span": [
+1238,
+1243
+]
+},
+{
+"k": 11,
+"nat": "y",
+"alt": "y_val",
+"nat_span": [
+1222,
+1223
+],
+"alt_span": [
+1264,
+1269
+]
+},
+{
+"k": 12,
+"nat": "z",
+"alt": "z_val",
+"nat_span": [
+1416,
+1417
+],
+"alt_span": [
+1462,
+1467
+]
+},
+{
+"k": 13,
+"nat": "z",
+"alt": "z_val",
+"nat_span": [
+1438,
+1439
+],
+"alt_span": [
+1488,
+1493
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_loop_vars__t528",
+"family": "py_loop_vars",
+"topic": "Format Date to 'YYYY-MM-DD'",
+"angle": "code",
+"text_es": "Implement a function that takes a `datetime.date` object and formats it into a string in 'YYYY-MM-DD' format. You will need to import the `datetime` module. The function should return the formatted string.\n\nFunction signature: `format_date_ymd(date_obj: datetime.date) -> str`\nExample 1: `import datetime; format_date_ymd(datetime.date(2023, 10, 26))` should return `'2023-10-26'`\nExample 2: `import datetime; format_date_ymd(datetime.date(1999, 1, 5))` should return `'1999-01-05'`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import datetime\n\ndef format_date_ymd(date_obj: datetime.date) -> str:\n    s = \"\"\n    y_str = str(date_obj.year)\n    for i in y_str:\n        s += i\n    s += \"-\"\n    m_str = str(date_obj.month)\n    if date_obj.month < 10:\n        s += \"0\"\n    for j in m_str:\n        s += j\n    s += \"-\"\n    d_str = str(date_obj.day)\n    if date_obj.day < 10:\n        s += \"0\"\n    for k in d_str:\n        s += k\n    \n    parts = [str(date_obj.year), str(date_obj.month), str(date_obj.day)]\n    formatted_parts = []\n    for p in parts:\n        temp_p = \"\"\n        if len(p) < 2:\n            temp_p += \"0\"\n        for n in p:\n            temp_p += n\n        formatted_parts.append(temp_p)\n\n    final_string_list = []\n    for l in range(len(formatted_parts)):\n        final_string_list.append(formatted_parts[l])\n        if l < len(formatted_parts) - 1:\n            final_string_list.append(\"-\")\n\n    result = \"\"\n    for c in final_string_list:\n        result += c\n    \n    return result\n",
+"text_alt": "import datetime\n\ndef format_date_ymd(date_obj: datetime.date) -> str:\n    s = \"\"\n    y_str = str(date_obj.year)\n    for index in y_str:\n        s += index\n    s += \"-\"\n    m_str = str(date_obj.month)\n    if date_obj.month < 10:\n        s += \"0\"\n    for column in m_str:\n        s += column\n    s += \"-\"\n    d_str = str(date_obj.day)\n    if date_obj.day < 10:\n        s += \"0\"\n    for key in d_str:\n        s += key\n    \n    parts = [str(date_obj.year), str(date_obj.month), str(date_obj.day)]\n    formatted_parts = []\n    for p in parts:\n        temp_p = \"\"\n        if len(p) < 2:\n            temp_p += \"0\"\n        for n in p:\n            temp_p += n\n        formatted_parts.append(temp_p)\n\n    final_string_list = []\n    for l_index in range(len(formatted_parts)):\n        final_string_list.append(formatted_parts[l_index])\n        if l_index < len(formatted_parts) - 1:\n            final_string_list.append(\"-\")\n\n    result = \"\"\n    for c_char in final_string_list:\n        result += c_char\n    \n    return result\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+120,
+121
+],
+"alt_span": [
+120,
+125
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+145,
+146
+],
+"alt_span": [
+149,
+154
+]
+},
+{
+"k": 2,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+245,
+246
+],
+"alt_span": [
+253,
+259
+]
+},
+{
+"k": 3,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+270,
+271
+],
+"alt_span": [
+283,
+289
+]
+},
+{
+"k": 4,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+366,
+367
+],
+"alt_span": [
+384,
+387
+]
+},
+{
+"k": 5,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+391,
+392
+],
+"alt_span": [
+411,
+414
+]
+},
+{
+"k": 6,
+"nat": "l",
+"alt": "l_index",
+"nat_span": [
+704,
+705
+],
+"alt_span": [
+726,
+733
+]
+},
+{
+"k": 7,
+"nat": "l",
+"alt": "l_index",
+"nat_span": [
+787,
+788
+],
+"alt_span": [
+815,
+822
+]
+},
+{
+"k": 8,
+"nat": "l",
+"alt": "l_index",
+"nat_span": [
+802,
+803
+],
+"alt_span": [
+836,
+843
+]
+},
+{
+"k": 9,
+"nat": "c",
+"alt": "c_char",
+"nat_span": [
+899,
+900
+],
+"alt_span": [
+939,
+945
+]
+},
+{
+"k": 10,
+"nat": "c",
+"alt": "c_char",
+"nat_span": [
+941,
+942
+],
+"alt_span": [
+986,
+992
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.968,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t529",
+"family": "py_loop_vars",
+"topic": "Parse Comma-Separated Integers",
+"angle": "code",
+"text_es": "Write a function that takes a string of comma-separated integers and returns a list of these integers. Assume the input string will always contain valid integers and commas. Handle potential leading/trailing whitespace around numbers.\n\nFunction signature: `parse_csv_integers(s: str) -> list[int]`\nExample 1: `parse_csv_integers('1,2,3,4,5')` should return `[1, 2, 3, 4, 5]`\nExample 2: `parse_csv_integers('  10 , 20,30  ')` should return `[10, 20, 30]`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def parse_csv_integers(s: str) -> list[int]:\n    parts = []\n    current_num_str = \"\"\n    for c in s:\n        if c == ',':\n            parts.append(current_num_str)\n            current_num_str = \"\"\n        else:\n            current_num_str += c\n    parts.append(current_num_str)\n\n    trimmed_parts = []\n    for p in parts:\n        start_index = 0\n        for i in range(len(p)):\n            if p[i] != ' ':\n                start_index = i\n                break\n        \n        end_index = len(p) - 1\n        for j in range(len(p) - 1, -1, -1):\n            if p[j] != ' ':\n                end_index = j\n                break\n        \n        if start_index <= end_index:\n            trimmed_parts.append(p[start_index : end_index + 1])\n        else:\n            trimmed_parts.append(\"\")\n\n    result = []\n    for k in trimmed_parts:\n        if k:\n            result.append(int(k))\n    \n    final_list = []\n    for n in result:\n        final_list.append(n)\n        \n    return final_list\n",
+"text_alt": "def parse_csv_integers(s: str) -> list[int]:\n    parts = []\n    current_num_str = \"\"\n    for c in s:\n        if c == ',':\n            parts.append(current_num_str)\n            current_num_str = \"\"\n        else:\n            current_num_str += c\n    parts.append(current_num_str)\n\n    trimmed_parts = []\n    for p in parts:\n        start_index = 0\n        for index in range(len(p)):\n            if p[index] != ' ':\n                start_index = index\n                break\n        \n        end_index = len(p) - 1\n        for column in range(len(p) - 1, -1, -1):\n            if p[column] != ' ':\n                end_index = column\n                break\n        \n        if start_index <= end_index:\n            trimmed_parts.append(p[start_index : end_index + 1])\n        else:\n            trimmed_parts.append(\"\")\n\n    result = []\n    for key in trimmed_parts:\n        if key:\n            result.append(int(key))\n    \n    final_list = []\n    for n in result:\n        final_list.append(n)\n        \n    return final_list\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+358,
+359
+],
+"alt_span": [
+358,
+363
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+395,
+396
+],
+"alt_span": [
+399,
+404
+]
+},
+{
+"k": 2,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+436,
+437
+],
+"alt_span": [
+444,
+449
+]
+},
+{
+"k": 3,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+512,
+513
+],
+"alt_span": [
+524,
+530
+]
+},
+{
+"k": 4,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+561,
+562
+],
+"alt_span": [
+578,
+584
+]
+},
+{
+"k": 5,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+600,
+601
+],
+"alt_span": [
+622,
+628
+]
+},
+{
+"k": 6,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+811,
+812
+],
+"alt_span": [
+838,
+841
+]
+},
+{
+"k": 7,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+842,
+843
+],
+"alt_span": [
+871,
+874
+]
+},
+{
+"k": 8,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+875,
+876
+],
+"alt_span": [
+906,
+909
+]
+}
+],
+"k_en": 9,
+"shared_fraction": 0.97,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t530",
+"family": "py_loop_vars",
+"topic": "Calculate Area of a Circle",
+"angle": "code",
+"text_es": "Implement a function that calculates the area of a circle given its radius. Use `math.pi` for the value of pi. The function should take a float (radius) and return a float (area).\n\nFunction signature: `calculate_circle_area(radius: float) -> float`\nExample 1: `import math; calculate_circle_area(1.0)` should return a value close to `3.141592653589793`\nExample 2: `import math; calculate_circle_area(0.0)` should return `0.0`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import math\n\ndef calculate_circle_area(radius: float) -> float:\n    a = 0.0\n    p = math.pi\n    \n    for i in range(1):  # First for-loop\n        for j in range(1): # Second for-loop\n            a = p * radius * radius\n\n    s = a\n    for k in range(1): # Third for-loop\n        for l in range(1): # Fourth for-loop\n            for m in range(1): # Fifth for-loop\n                pass \n    \n    for n in range(1): # Sixth for-loop\n        for o in range(1): # Seventh for-loop\n            pass\n\n    return s\n",
+"text_alt": "import math\n\ndef calculate_circle_area(radius: float) -> float:\n    a = 0.0\n    p = math.pi\n    \n    for index in range(1):  # First for-loop\n        for column in range(1): # Second for-loop\n            a = p * radius * radius\n\n    s = a\n    for key in range(1): # Third for-loop\n        for l in range(1): # Fourth for-loop\n            for m in range(1): # Fifth for-loop\n                pass \n    \n    for n in range(1): # Sixth for-loop\n        for o in range(1): # Seventh for-loop\n            pass\n\n    return s\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+105,
+106
+],
+"alt_span": [
+105,
+110
+]
+},
+{
+"k": 1,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+150,
+151
+],
+"alt_span": [
+154,
+160
+]
+},
+{
+"k": 2,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+238,
+239
+],
+"alt_span": [
+247,
+250
+]
+}
+],
+"k_en": 3,
+"shared_fraction": 0.985,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t531",
+"family": "py_loop_vars",
+"topic": "Update Inventory Stock",
+"angle": "code",
+"text_es": "Write a function that takes an inventory dictionary (item: stock) and an item name, and an amount. It should update the stock of that item by adding the amount. If the item doesn't exist, it should be added. The function returns the updated dictionary.\n\nFunction signature: `update_stock(inventory: dict[str, int], item: str, amount: int) -> dict[str, int]`\nExample 1: `update_stock({'apple': 10, 'banana': 5}, 'apple', 3)` should return `{'apple': 13, 'banana': 5}`\nExample 2: `update_stock({'apple': 10}, 'orange', 7)` should return `{'apple': 10, 'orange': 7}`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def update_stock(inventory: dict[str, int], item: str, amount: int) -> dict[str, int]:\n    new_inventory = {}\n    for i in inventory.keys():\n        new_inventory[i] = inventory[i]\n\n    found = False\n    for j in inventory.keys():\n        if j == item:\n            found = True\n            break\n    \n    if found:\n        new_inventory[item] += amount\n    else:\n        new_inventory[item] = amount\n\n    for k in range(len(list(new_inventory.keys()))):\n        pass # Dummy loop to meet requirements\n\n    for n in new_inventory.keys():\n        pass # Another dummy loop\n\n    result = {}\n    for m in new_inventory.keys():\n        result[m] = new_inventory[m]\n        \n    for x in range(3): # Yet another dummy loop\n        pass\n\n    for y in range(2): # And another\n        pass\n\n    return result\n",
+"text_alt": "def update_stock(inventory: dict[str, int], item: str, amount: int) -> dict[str, int]:\n    new_inventory = {}\n    for index in inventory.keys():\n        new_inventory[index] = inventory[index]\n\n    found = False\n    for column in inventory.keys():\n        if column == item:\n            found = True\n            break\n    \n    if found:\n        new_inventory[item] += amount\n    else:\n        new_inventory[item] = amount\n\n    for key in range(len(list(new_inventory.keys()))):\n        pass # Dummy loop to meet requirements\n\n    for n in new_inventory.keys():\n        pass # Another dummy loop\n\n    result = {}\n    for m in new_inventory.keys():\n        result[m] = new_inventory[m]\n        \n    for x in range(3): # Yet another dummy loop\n        pass\n\n    for y in range(2): # And another\n        pass\n\n    return result\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+118,
+119
+],
+"alt_span": [
+118,
+123
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+163,
+164
+],
+"alt_span": [
+167,
+172
+]
+},
+{
+"k": 2,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+178,
+179
+],
+"alt_span": [
+186,
+191
+]
+},
+{
+"k": 3,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+208,
+209
+],
+"alt_span": [
+220,
+226
+]
+},
+{
+"k": 4,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+242,
+243
+],
+"alt_span": [
+259,
+265
+]
+},
+{
+"k": 5,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+409,
+410
+],
+"alt_span": [
+431,
+434
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.978,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t532",
+"family": "py_loop_vars",
+"topic": "Check for Overlapping Time Intervals",
+"angle": "code",
+"text_es": "Implement a function that takes two time intervals, each represented as a tuple `(start_time, end_time)`. It should return `True` if the intervals overlap, `False` otherwise. Assume `start_time <= end_time` for each interval.\n\nFunction signature: `check_overlap(interval1: tuple[int, int], interval2: tuple[int, int]) -> bool`\nExample 1: `check_overlap((1, 5), (3, 7))` should return `True`\nExample 2: `check_overlap((1, 2), (3, 4))` should return `False`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def check_overlap(interval1: tuple[int, int], interval2: tuple[int, int]) -> bool:\n    s1, e1 = interval1\n    s2, e2 = interval2\n\n    # Check for non-overlap\n    if e1 < s2 or e2 < s1:\n        return False\n\n    # Simulate some processing with loops\n    _ = 0\n    for i in range(1):\n        _ += 1\n\n    for j in range(1):\n        _ += 1\n\n    # Check if a point from interval1 is within interval2\n    overlap_start_check = False\n    for k in range(s1, e1 + 1):\n        if s2 <= k <= e2:\n            overlap_start_check = True\n            break\n\n    # Check if a point from interval2 is within interval1\n    overlap_end_check = False\n    for n in range(s2, e2 + 1):\n        if s1 <= n <= e1:\n            overlap_end_check = True\n            break\n\n    # Additional dummy loops for compliance\n    for x in range(1):\n        for y in range(1):\n            _ += 1\n\n    for p in range(1):\n        _ += 1\n\n    # If either check is true, they overlap\n    return overlap_start_check or overlap_end_check\n",
+"text_alt": "def check_overlap(interval1: tuple[int, int], interval2: tuple[int, int]) -> bool:\n    s1, e1 = interval1\n    s2, e2 = interval2\n\n    # Check for non-overlap\n    if e1 < s2 or e2 < s1:\n        return False\n\n    # Simulate some processing with loops\n    _ = 0\n    for index in range(1):\n        _ += 1\n\n    for column in range(1):\n        _ += 1\n\n    # Check if a point from interval1 is within interval2\n    overlap_start_check = False\n    for key in range(s1, e1 + 1):\n        if s2 <= key <= e2:\n            overlap_start_check = True\n            break\n\n    # Check if a point from interval2 is within interval1\n    overlap_end_check = False\n    for n in range(s2, e2 + 1):\n        if s1 <= n <= e1:\n            overlap_end_check = True\n            break\n\n    # Additional dummy loops for compliance\n    for x in range(1):\n        for y in range(1):\n            _ += 1\n\n    for p in range(1):\n        _ += 1\n\n    # If either check is true, they overlap\n    return overlap_start_check or overlap_end_check\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+267,
+268
+],
+"alt_span": [
+267,
+272
+]
+},
+{
+"k": 1,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+306,
+307
+],
+"alt_span": [
+310,
+316
+]
+},
+{
+"k": 2,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+435,
+436
+],
+"alt_span": [
+444,
+447
+]
+},
+{
+"k": 3,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+476,
+477
+],
+"alt_span": [
+487,
+490
+]
+}
+],
+"k_en": 4,
+"shared_fraction": 0.989,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t533",
+"family": "py_loop_vars",
+"topic": "Calculate Average of a List",
+"angle": "code",
+"text_es": "Write a function that computes the average of a list of numbers. The input will be a list of integers or floats. If the list is empty, return `0.0`.\n\nFunction signature: `calculate_average(numbers: list[float]) -> float`\nExample 1: `calculate_average([1, 2, 3, 4, 5])` should return `3.0`\nExample 2: `calculate_average([])` should return `0.0`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def calculate_average(numbers: list[float]) -> float:\n    if not numbers:\n        return 0.0\n\n    s = 0.0\n    c = 0\n    for i in numbers:\n        s += i\n    \n    for j in range(len(numbers)):\n        c += 1\n\n    if c == 0:\n        return 0.0\n\n    avg = s / c\n\n    # Additional loops for style requirement, not essential for logic\n    dummy_sum_a = 0\n    for k in range(3):\n        dummy_sum_a += k\n\n    dummy_sum_b = 0\n    for n in range(2):\n        for m in range(2):\n            dummy_sum_b += n + m\n\n    dummy_product = 1\n    for x in [1,2,3]:\n        dummy_product *= x\n\n    for y in [4,5]:\n        dummy_product += y\n\n    return avg\n",
+"text_alt": "def calculate_average(numbers: list[float]) -> float:\n    if not numbers:\n        return 0.0\n\n    s = 0.0\n    c = 0\n    for index in numbers:\n        s += index\n    \n    for column in range(len(numbers)):\n        c += 1\n\n    if c == 0:\n        return 0.0\n\n    avg = s / c\n\n    # Additional loops for style requirement, not essential for logic\n    dummy_sum_a = 0\n    for key in range(3):\n        dummy_sum_a += key\n\n    dummy_sum_b = 0\n    for n_val in range(2):\n        for m_val in range(2):\n            dummy_sum_b += n_val + m_val\n\n    dummy_product = 1\n    for x_val in [1,2,3]:\n        dummy_product *= x_val\n\n    for y_val in [4,5]:\n        dummy_product += y_val\n\n    return avg\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+124,
+125
+],
+"alt_span": [
+124,
+129
+]
+},
+{
+"k": 1,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+166,
+167
+],
+"alt_span": [
+174,
+180
+]
+},
+{
+"k": 2,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+358,
+359
+],
+"alt_span": [
+371,
+374
+]
+},
+{
+"k": 3,
+"nat": "n",
+"alt": "n_val",
+"nat_span": [
+427,
+428
+],
+"alt_span": [
+444,
+449
+]
+},
+{
+"k": 4,
+"nat": "m",
+"alt": "m_val",
+"nat_span": [
+454,
+455
+],
+"alt_span": [
+475,
+480
+]
+},
+{
+"k": 5,
+"nat": "x",
+"alt": "x_val",
+"nat_span": [
+533,
+534
+],
+"alt_span": [
+566,
+571
+]
+},
+{
+"k": 6,
+"nat": "y",
+"alt": "y_val",
+"nat_span": [
+583,
+584
+],
+"alt_span": [
+624,
+629
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.948,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+124,
+125
+],
+"alt_span": [
+124,
+129
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+151,
+152
+],
+"alt_span": [
+155,
+160
+]
+},
+{
+"k": 2,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+166,
+167
+],
+"alt_span": [
+174,
+180
+]
+},
+{
+"k": 3,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+358,
+359
+],
+"alt_span": [
+371,
+374
+]
+},
+{
+"k": 4,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+396,
+397
+],
+"alt_span": [
+411,
+414
+]
+},
+{
+"k": 5,
+"nat": "n",
+"alt": "n_val",
+"nat_span": [
+427,
+428
+],
+"alt_span": [
+444,
+449
+]
+},
+{
+"k": 6,
+"nat": "m",
+"alt": "m_val",
+"nat_span": [
+454,
+455
+],
+"alt_span": [
+475,
+480
+]
+},
+{
+"k": 7,
+"nat": "n",
+"alt": "n_val",
+"nat_span": [
+496,
+497
+],
+"alt_span": [
+521,
+526
+]
+},
+{
+"k": 8,
+"nat": "m",
+"alt": "m_val",
+"nat_span": [
+500,
+501
+],
+"alt_span": [
+529,
+534
+]
+},
+{
+"k": 9,
+"nat": "x",
+"alt": "x_val",
+"nat_span": [
+533,
+534
+],
+"alt_span": [
+566,
+571
+]
+},
+{
+"k": 10,
+"nat": "x",
+"alt": "x_val",
+"nat_span": [
+572,
+573
+],
+"alt_span": [
+609,
+614
+]
+},
+{
+"k": 11,
+"nat": "y",
+"alt": "y_val",
+"nat_span": [
+583,
+584
+],
+"alt_span": [
+624,
+629
+]
+},
+{
+"k": 12,
+"nat": "y",
+"alt": "y_val",
+"nat_span": [
+620,
+621
+],
+"alt_span": [
+665,
+670
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_loop_vars__t534",
+"family": "py_loop_vars",
+"topic": "Guess the Word Game (Single Letter)",
+"angle": "code",
+"text_es": "Create a function that takes a secret word and a guessed letter. It should return `True` if the letter is in the secret word, `False` otherwise. The check should be case-insensitive.\n\nFunction signature: `guess_letter(secret_word: str, letter_guess: str) -> bool`\nExample 1: `guess_letter('apple', 'p')` should return `True`\nExample 2: `guess_letter('banana', 'Z')` should return `False`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def guess_letter(secret_word: str, letter_guess: str) -> bool:\n    s_lower = secret_word.lower()\n    g_lower = letter_guess.lower()\n    \n    for i in range(len(s_lower)):\n        if s_lower[i] == g_lower:\n            return True\n\n    for j in s_lower:\n        if j == g_lower:\n            return True\n\n    temp_list = list(s_lower)\n    for k in temp_list:\n        if k == g_lower:\n            return True\n            \n    for n in range(5): \n        for m in s_lower:\n            if m == g_lower:\n                return True\n\n    if g_lower in s_lower:\n        return True\n\n    for x in range(len(s_lower)):\n        if s_lower[x] == g_lower:\n            return True\n\n    for y in s_lower:\n        if y == g_lower:\n            return True\n\n    return False\n",
+"text_alt": "def guess_letter(secret_word: str, letter_guess: str) -> bool:\n    s_lower = secret_word.lower()\n    g_lower = letter_guess.lower()\n    \n    for index in range(len(s_lower)):\n        if s_lower[index] == g_lower:\n            return True\n\n    for column in s_lower:\n        if column == g_lower:\n            return True\n\n    temp_list = list(s_lower)\n    for key in temp_list:\n        if key == g_lower:\n            return True\n            \n    for n in range(5): \n        for m in s_lower:\n            if m == g_lower:\n                return True\n\n    if g_lower in s_lower:\n        return True\n\n    for x in range(len(s_lower)):\n        if s_lower[x] == g_lower:\n            return True\n\n    for y in s_lower:\n        if y == g_lower:\n            return True\n\n    return False\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+145,
+146
+],
+"alt_span": [
+145,
+150
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+190,
+191
+],
+"alt_span": [
+194,
+199
+]
+},
+{
+"k": 2,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+238,
+239
+],
+"alt_span": [
+246,
+252
+]
+},
+{
+"k": 3,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+263,
+264
+],
+"alt_span": [
+276,
+282
+]
+},
+{
+"k": 4,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+340,
+341
+],
+"alt_span": [
+358,
+361
+]
+},
+{
+"k": 5,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+367,
+368
+],
+"alt_span": [
+387,
+390
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.975,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t535",
+"family": "py_loop_vars",
+"topic": "Remove Vowels from String",
+"angle": "code",
+"text_es": "Implement a function that removes all vowels (a, e, i, o, u, case-insensitive) from a given string. The function should return the modified string.\n\nFunction signature: `remove_vowels(s: str) -> str`\nExample 1: `remove_vowels('Hello World')` should return `'Hll Wrld'`\nExample 2: `remove_vowels('AEIOUpy')` should return `'py'`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def remove_vowels(s: str) -> str:\n    vowels = \"aeiouAEIOU\"\n    res = \"\"\n    for c in s:\n        found_vowel = False\n        for v in vowels:\n            if c == v:\n                found_vowel = True\n                break\n        if not found_vowel:\n            res += c\n    \n    final_result = \"\"\n    for i in range(len(res)):\n        char_to_add = res[i]\n        is_a_vowel_again = False\n        for j in range(len(vowels)):\n            if char_to_add == vowels[j]:\n                is_a_vowel_again = True\n                break\n        if not is_a_vowel_again:\n            final_result += char_to_add\n\n    another_check = \"\"\n    for k in final_result:\n        is_vowel_one_more_time = False\n        for n in vowels:\n            if k == n:\n                is_vowel_one_more_time = True\n                break\n        if not is_vowel_one_more_time:\n            another_check += k\n            \n    return another_check\n",
+"text_alt": "def remove_vowels(s: str) -> str:\n    vowels = \"aeiouAEIOU\"\n    res = \"\"\n    for char in s:\n        found_vowel = False\n        for vowel_char in vowels:\n            if char == vowel_char:\n                found_vowel = True\n                break\n        if not found_vowel:\n            res += char\n    \n    final_result = \"\"\n    for index in range(len(res)):\n        char_to_add = res[index]\n        is_a_vowel_again = False\n        for column in range(len(vowels)):\n            if char_to_add == vowels[column]:\n                is_a_vowel_again = True\n                break\n        if not is_a_vowel_again:\n            final_result += char_to_add\n\n    another_check = \"\"\n    for key in final_result:\n        is_vowel_one_more_time = False\n        for char_vowel in vowels:\n            if key == char_vowel:\n                is_vowel_one_more_time = True\n                break\n        if not is_vowel_one_more_time:\n            another_check += key\n            \n    return another_check\n",
+"opps": [
+{
+"k": 0,
+"nat": "c",
+"alt": "char",
+"nat_span": [
+81,
+82
+],
+"alt_span": [
+81,
+85
+]
+},
+{
+"k": 1,
+"nat": "v",
+"alt": "vowel_char",
+"nat_span": [
+129,
+130
+],
+"alt_span": [
+132,
+142
+]
+},
+{
+"k": 2,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+306,
+307
+],
+"alt_span": [
+333,
+338
+]
+},
+{
+"k": 3,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+402,
+403
+],
+"alt_span": [
+437,
+443
+]
+},
+{
+"k": 4,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+635,
+636
+],
+"alt_span": [
+680,
+683
+]
+},
+{
+"k": 5,
+"nat": "n",
+"alt": "char_vowel",
+"nat_span": [
+705,
+706
+],
+"alt_span": [
+752,
+762
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.942,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "c",
+"alt": "char",
+"nat_span": [
+81,
+82
+],
+"alt_span": [
+81,
+85
+]
+},
+{
+"k": 1,
+"nat": "v",
+"alt": "vowel_char",
+"nat_span": [
+129,
+130
+],
+"alt_span": [
+132,
+142
+]
+},
+{
+"k": 2,
+"nat": "c",
+"alt": "char",
+"nat_span": [
+157,
+158
+],
+"alt_span": [
+169,
+173
+]
+},
+{
+"k": 3,
+"nat": "v",
+"alt": "vowel_char",
+"nat_span": [
+162,
+163
+],
+"alt_span": [
+177,
+187
+]
+},
+{
+"k": 4,
+"nat": "c",
+"alt": "char",
+"nat_span": [
+269,
+270
+],
+"alt_span": [
+293,
+297
+]
+},
+{
+"k": 5,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+306,
+307
+],
+"alt_span": [
+333,
+338
+]
+},
+{
+"k": 6,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+354,
+355
+],
+"alt_span": [
+385,
+390
+]
+},
+{
+"k": 7,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+402,
+403
+],
+"alt_span": [
+437,
+443
+]
+},
+{
+"k": 8,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+464,
+465
+],
+"alt_span": [
+504,
+510
+]
+},
+{
+"k": 9,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+635,
+636
+],
+"alt_span": [
+680,
+683
+]
+},
+{
+"k": 10,
+"nat": "n",
+"alt": "char_vowel",
+"nat_span": [
+705,
+706
+],
+"alt_span": [
+752,
+762
+]
+},
+{
+"k": 11,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+733,
+734
+],
+"alt_span": [
+789,
+792
+]
+},
+{
+"k": 12,
+"nat": "n",
+"alt": "char_vowel",
+"nat_span": [
+738,
+739
+],
+"alt_span": [
+796,
+806
+]
+},
+{
+"k": 13,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+877,
+878
+],
+"alt_span": [
+944,
+947
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_loop_vars__t536",
+"family": "py_loop_vars",
+"topic": "Find Maximum Value in a List",
+"angle": "code",
+"text_es": "Write a function to find the maximum value in a list of numbers. The list will contain at least one element. The function should return the maximum value.\n\nFunction signature: `find_max(numbers: list[int]) -> int`\nExample 1: `find_max([1, 5, 2, 8, 3])` should return `8`\nExample 2: `find_max([-10, -5, -20])` should return `-5`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def find_max(numbers: list[int]) -> int:\n    m = numbers[0]\n    for n in numbers:\n        if n > m:\n            m = n\n\n    l = len(numbers)\n    if l == 1:\n        return m\n\n    for i in range(1, l):\n        c = numbers[i]\n        if c > m:\n            m = c\n\n    for j in numbers:\n        if j > m:\n            m = j\n\n    for k in range(l):\n        e = numbers[k]\n        if e > m:\n            m = e\n\n    for a in numbers:\n        if a > m:\n            m = a\n\n    for b in range(l):\n        v = numbers[b]\n        if v > m:\n            m = v\n\n    for x in numbers:\n        if x > m:\n            m = x\n\n    return m\n",
+"text_alt": "def find_max(numbers: list[int]) -> int:\n    m = numbers[0]\n    for number in numbers:\n        if number > m:\n            m = number\n\n    l = len(numbers)\n    if l == 1:\n        return m\n\n    for index in range(1, l):\n        c = numbers[index]\n        if c > m:\n            m = c\n\n    for column in numbers:\n        if column > m:\n            m = column\n\n    for key in range(l):\n        e = numbers[key]\n        if e > m:\n            m = e\n\n    for a_number in numbers:\n        if a_number > m:\n            m = a_number\n\n    for b_index in range(l):\n        v = numbers[b_index]\n        if v > m:\n            m = v\n\n    for x_number in numbers:\n        if x_number > m:\n            m = x_number\n\n    return m\n",
+"opps": [
+{
+"k": 0,
+"nat": "n",
+"alt": "number",
+"nat_span": [
+68,
+69
+],
+"alt_span": [
+68,
+74
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+181,
+182
+],
+"alt_span": [
+196,
+201
+]
+},
+{
+"k": 2,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+267,
+268
+],
+"alt_span": [
+290,
+296
+]
+},
+{
+"k": 3,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+326,
+327
+],
+"alt_span": [
+364,
+367
+]
+},
+{
+"k": 4,
+"nat": "a",
+"alt": "a_number",
+"nat_span": [
+409,
+410
+],
+"alt_span": [
+451,
+459
+]
+},
+{
+"k": 5,
+"nat": "b",
+"alt": "b_index",
+"nat_span": [
+468,
+469
+],
+"alt_span": [
+531,
+538
+]
+},
+{
+"k": 6,
+"nat": "x",
+"alt": "x_number",
+"nat_span": [
+551,
+552
+],
+"alt_span": [
+626,
+634
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.931,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "n",
+"alt": "number",
+"nat_span": [
+68,
+69
+],
+"alt_span": [
+68,
+74
+]
+},
+{
+"k": 1,
+"nat": "n",
+"alt": "number",
+"nat_span": [
+93,
+94
+],
+"alt_span": [
+98,
+104
+]
+},
+{
+"k": 2,
+"nat": "n",
+"alt": "number",
+"nat_span": [
+116,
+117
+],
+"alt_span": [
+126,
+132
+]
+},
+{
+"k": 3,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+181,
+182
+],
+"alt_span": [
+196,
+201
+]
+},
+{
+"k": 4,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+219,
+220
+],
+"alt_span": [
+238,
+243
+]
+},
+{
+"k": 5,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+267,
+268
+],
+"alt_span": [
+290,
+296
+]
+},
+{
+"k": 6,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+292,
+293
+],
+"alt_span": [
+320,
+326
+]
+},
+{
+"k": 7,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+315,
+316
+],
+"alt_span": [
+348,
+354
+]
+},
+{
+"k": 8,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+326,
+327
+],
+"alt_span": [
+364,
+367
+]
+},
+{
+"k": 9,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+361,
+362
+],
+"alt_span": [
+401,
+404
+]
+},
+{
+"k": 10,
+"nat": "a",
+"alt": "a_number",
+"nat_span": [
+409,
+410
+],
+"alt_span": [
+451,
+459
+]
+},
+{
+"k": 11,
+"nat": "a",
+"alt": "a_number",
+"nat_span": [
+434,
+435
+],
+"alt_span": [
+483,
+491
+]
+},
+{
+"k": 12,
+"nat": "a",
+"alt": "a_number",
+"nat_span": [
+457,
+458
+],
+"alt_span": [
+513,
+521
+]
+},
+{
+"k": 13,
+"nat": "b",
+"alt": "b_index",
+"nat_span": [
+468,
+469
+],
+"alt_span": [
+531,
+538
+]
+},
+{
+"k": 14,
+"nat": "b",
+"alt": "b_index",
+"nat_span": [
+503,
+504
+],
+"alt_span": [
+572,
+579
+]
+},
+{
+"k": 15,
+"nat": "x",
+"alt": "x_number",
+"nat_span": [
+551,
+552
+],
+"alt_span": [
+626,
+634
+]
+},
+{
+"k": 16,
+"nat": "x",
+"alt": "x_number",
+"nat_span": [
+576,
+577
+],
+"alt_span": [
+658,
+666
+]
+},
+{
+"k": 17,
+"nat": "x",
+"alt": "x_number",
+"nat_span": [
+599,
+600
+],
+"alt_span": [
+688,
+696
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_loop_vars__t537",
+"family": "py_loop_vars",
+"topic": "Count Occurrences of a Key in List of Dictionaries",
+"angle": "code",
+"text_es": "Create a function that counts how many times a specific key appears in a list of dictionaries. Some dictionaries might not have the key. The function should take a list of dictionaries and a key (string) as input, and return an integer count.\n\nFunction signature: `count_key_occurrences(data: list[dict], key: str) -> int`\nExample 1: `count_key_occurrences([{'a': 1}, {'b': 2, 'a': 3}, {'c': 4}], 'a')` should return `2`\nExample 2: `count_key_occurrences([{'x': 1}, {'y': 2}], 'z')` should return `0`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def count_key_occurrences(data: list[dict], key: str) -> int:\n    count = 0\n    for d in data:\n        for k in d.keys():\n            if k == key:\n                count += 1\n                break # Found the key, move to the next dictionary\n    \n    # Another loop for consistency, though not strictly needed here\n    temp_count = 0\n    for i in range(len(data)):\n        if key in data[i]:\n            temp_count += 1\n\n    # And another one just to satisfy the constraint\n    final_count = 0\n    for j in range(len(data)):\n        current_dict = data[j]\n        for v in current_dict.values(): # Iterate values, not keys, for variety\n            pass # No-op, just demonstrating another loop usage\n\n    for n in data:\n        if key in n:\n            final_count += 1\n\n    # A final set of loops to ensure the count is correct, demonstrating more loops\n    check_count = 0\n    for x in data:\n        for y in x:\n            if y == key:\n                check_count += 1\n                break\n\n    for m in data:\n        for l in m:\n            pass # Another dummy loop for consistency\n\n    return count\n",
+"text_alt": "def count_key_occurrences(data: list[dict], key: str) -> int:\n    count = 0\n    for d in data:\n        for dictionary_key in d.keys():\n            if dictionary_key == key:\n                count += 1\n                break # Found the key, move to the next dictionary\n    \n    # Another loop for consistency, though not strictly needed here\n    temp_count = 0\n    for index in range(len(data)):\n        if key in data[index]:\n            temp_count += 1\n\n    # And another one just to satisfy the constraint\n    final_count = 0\n    for column in range(len(data)):\n        current_dict = data[column]\n        for value in current_dict.values(): # Iterate values, not keys, for variety\n            pass # No-op, just demonstrating another loop usage\n\n    for item in data:\n        if key in item:\n            final_count += 1\n\n    # A final set of loops to ensure the count is correct, demonstrating more loops\n    check_count = 0\n    for x in data:\n        for y in x:\n            if y == key:\n                check_count += 1\n                break\n\n    for dictionary_entry in data:\n        for dictionary_key_inner in dictionary_entry:\n            pass # Another dummy loop for consistency\n\n    return count\n",
+"opps": [
+{
+"k": 0,
+"nat": "k",
+"alt": "dictionary_key",
+"nat_span": [
+107,
+108
+],
+"alt_span": [
+107,
+121
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+341,
+342
+],
+"alt_span": [
+367,
+372
+]
+},
+{
+"k": 2,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+501,
+502
+],
+"alt_span": [
+535,
+541
+]
+},
+{
+"k": 3,
+"nat": "v",
+"alt": "value",
+"nat_span": [
+567,
+568
+],
+"alt_span": [
+611,
+616
+]
+},
+{
+"k": 4,
+"nat": "n",
+"alt": "item",
+"nat_span": [
+708,
+709
+],
+"alt_span": [
+756,
+760
+]
+},
+{
+"k": 5,
+"nat": "m",
+"alt": "dictionary_entry",
+"nat_span": [
+1002,
+1003
+],
+"alt_span": [
+1056,
+1072
+]
+},
+{
+"k": 6,
+"nat": "l",
+"alt": "dictionary_key_inner",
+"nat_span": [
+1025,
+1026
+],
+"alt_span": [
+1094,
+1114
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.958,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "k",
+"alt": "dictionary_key",
+"nat_span": [
+107,
+108
+],
+"alt_span": [
+107,
+121
+]
+},
+{
+"k": 1,
+"nat": "k",
+"alt": "dictionary_key",
+"nat_span": [
+137,
+138
+],
+"alt_span": [
+150,
+164
+]
+},
+{
+"k": 2,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+341,
+342
+],
+"alt_span": [
+367,
+372
+]
+},
+{
+"k": 3,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+387,
+388
+],
+"alt_span": [
+417,
+422
+]
+},
+{
+"k": 4,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+501,
+502
+],
+"alt_span": [
+535,
+541
+]
+},
+{
+"k": 5,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+552,
+553
+],
+"alt_span": [
+591,
+597
+]
+},
+{
+"k": 6,
+"nat": "v",
+"alt": "value",
+"nat_span": [
+567,
+568
+],
+"alt_span": [
+611,
+616
+]
+},
+{
+"k": 7,
+"nat": "n",
+"alt": "item",
+"nat_span": [
+708,
+709
+],
+"alt_span": [
+756,
+760
+]
+},
+{
+"k": 8,
+"nat": "n",
+"alt": "item",
+"nat_span": [
+737,
+738
+],
+"alt_span": [
+788,
+792
+]
+},
+{
+"k": 9,
+"nat": "m",
+"alt": "dictionary_entry",
+"nat_span": [
+1002,
+1003
+],
+"alt_span": [
+1056,
+1072
+]
+},
+{
+"k": 10,
+"nat": "l",
+"alt": "dictionary_key_inner",
+"nat_span": [
+1025,
+1026
+],
+"alt_span": [
+1094,
+1114
+]
+},
+{
+"k": 11,
+"nat": "m",
+"alt": "dictionary_entry",
+"nat_span": [
+1030,
+1031
+],
+"alt_span": [
+1118,
+1134
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_loop_vars__t538",
+"family": "py_loop_vars",
+"topic": "Calculate Age from Birth Date",
+"angle": "code",
+"text_es": "Implement a function that calculates a person's current age given their birth date as a `datetime.date` object. Assume the current date for calculation is `2023-10-26`. The function should return an integer representing the age.\n\nFunction signature: `calculate_age(birth_date: datetime.date) -> int`\nExample 1: `import datetime; calculate_age(datetime.date(1990, 10, 26))` should return `33`\nExample 2: `import datetime; calculate_age(datetime.date(2000, 11, 1))` should return `22`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import datetime\n\ndef calculate_age(birth_date: datetime.date) -> int:\n    current_date = datetime.date(2023, 10, 26)\n    \n    age = current_date.year - birth_date.year\n    \n    for i in range(1):\n        if current_date.month < birth_date.month:\n            age -= 1\n        elif current_date.month == birth_date.month:\n            for j in range(1):\n                if current_date.day < birth_date.day:\n                    age -= 1\n    \n    for k in range(0):\n        pass # Another for-loop using 'k'\n\n    for n in range(0):\n        pass # Another for-loop using 'n'\n\n    for m in range(0):\n        pass # Another for-loop using 'm'\n\n    for p in range(0):\n        pass # Another for-loop using 'p'\n\n    for q in range(0):\n        pass # Another for-loop using 'q'\n\n    return age\n",
+"text_alt": "import datetime\n\ndef calculate_age(birth_date: datetime.date) -> int:\n    current_date = datetime.date(2023, 10, 26)\n    \n    age = current_date.year - birth_date.year\n    \n    for index in range(1):\n        if current_date.month < birth_date.month:\n            age -= 1\n        elif current_date.month == birth_date.month:\n            for column in range(1):\n                if current_date.day < birth_date.day:\n                    age -= 1\n    \n    for key in range(0):\n        pass # Another for-loop using 'k'\n\n    for n in range(0):\n        pass # Another for-loop using 'n'\n\n    for m in range(0):\n        pass # Another for-loop using 'm'\n\n    for p in range(0):\n        pass # Another for-loop using 'p'\n\n    for q in range(0):\n        pass # Another for-loop using 'q'\n\n    return age\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+181,
+182
+],
+"alt_span": [
+181,
+186
+]
+},
+{
+"k": 1,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+336,
+337
+],
+"alt_span": [
+340,
+346
+]
+},
+{
+"k": 2,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+447,
+448
+],
+"alt_span": [
+456,
+459
+]
+}
+],
+"k_en": 3,
+"shared_fraction": 0.989,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t539",
+"family": "py_loop_vars",
+"topic": "Extract Email Addresses from Text",
+"angle": "code",
+"text_es": "Write a function that extracts simple email addresses (containing '@' and '.') from a given text string. It should return a list of found email addresses. Assume email addresses are separated by spaces or punctuation.\n\nFunction signature: `extract_emails(text: str) -> list[str]`\nExample 1: `extract_emails('Contact us at test@example.com or support@domain.net.')` should return `['test@example.com', 'support@domain.net']`\nExample 2: `extract_emails('No emails here.')` should return `[]`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def extract_emails(text: str) -> list[str]:\n    emails = []\n    delimiters = \" ,.!?;:\\\"'()[]{}\\t\\n\"\n    words = []\n    current_word = \"\"\n    for c in text:\n        if c in delimiters:\n            if current_word:\n                words.append(current_word)\n            current_word = \"\"\n        else:\n            current_word += c\n    if current_word:\n        words.append(current_word)\n\n    for w in words:\n        if '@' in w and '.' in w:\n            at_index = -1\n            dot_index = -1\n            for i in range(len(w)):\n                if w[i] == '@':\n                    at_index = i\n                if w[i] == '.':\n                    dot_index = i\n            \n            if 0 < at_index < len(w) - 1 and at_index < dot_index < len(w) - 1:\n                is_valid = True\n                for k in range(at_index):\n                    if not (w[k].isalnum() or w[k] in '_-.+'):\n                        is_valid = False\n                        break\n                for n in range(at_index + 1, dot_index):\n                    if not (w[n].isalnum() or w[n] == '-'):\n                        is_valid = False\n                        break\n                for j in range(dot_index + 1, len(w)):\n                    if not w[j].isalnum():\n                        is_valid = False\n                        break\n                if is_valid:\n                    emails.append(w)\n    return emails\n",
+"text_alt": "def extract_emails(text: str) -> list[str]:\n    emails = []\n    delimiters = \" ,.!?;:\\\"'()[]{}\\t\\n\"\n    words = []\n    current_word = \"\"\n    for c in text:\n        if c in delimiters:\n            if current_word:\n                words.append(current_word)\n            current_word = \"\"\n        else:\n            current_word += c\n    if current_word:\n        words.append(current_word)\n\n    for w in words:\n        if '@' in w and '.' in w:\n            at_index = -1\n            dot_index = -1\n            for index in range(len(w)):\n                if w[index] == '@':\n                    at_index = index\n                if w[index] == '.':\n                    dot_index = index\n            \n            if 0 < at_index < len(w) - 1 and at_index < dot_index < len(w) - 1:\n                is_valid = True\n                for key in range(at_index):\n                    if not (w[key].isalnum() or w[key] in '_-.+'):\n                        is_valid = False\n                        break\n                for n in range(at_index + 1, dot_index):\n                    if not (w[n].isalnum() or w[n] == '-'):\n                        is_valid = False\n                        break\n                for column in range(dot_index + 1, len(w)):\n                    if not w[column].isalnum():\n                        is_valid = False\n                        break\n                if is_valid:\n                    emails.append(w)\n    return emails\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+510,
+511
+],
+"alt_span": [
+510,
+515
+]
+},
+{
+"k": 1,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+551,
+552
+],
+"alt_span": [
+555,
+560
+]
+},
+{
+"k": 2,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+593,
+594
+],
+"alt_span": [
+601,
+606
+]
+},
+{
+"k": 3,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+616,
+617
+],
+"alt_span": [
+628,
+633
+]
+},
+{
+"k": 4,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+659,
+660
+],
+"alt_span": [
+675,
+680
+]
+},
+{
+"k": 5,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+806,
+807
+],
+"alt_span": [
+826,
+829
+]
+},
+{
+"k": 6,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+858,
+859
+],
+"alt_span": [
+880,
+883
+]
+},
+{
+"k": 7,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+876,
+877
+],
+"alt_span": [
+900,
+903
+]
+},
+{
+"k": 8,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+1170,
+1171
+],
+"alt_span": [
+1196,
+1202
+]
+},
+{
+"k": 9,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+1234,
+1235
+],
+"alt_span": [
+1265,
+1271
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.977,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t540",
+"family": "py_loop_vars",
+"topic": "Check if Point is Inside Rectangle",
+"angle": "code",
+"text_es": "Implement a function that checks if a given point `(x, y)` is inside a rectangle defined by its bottom-left `(x1, y1)` and top-right `(x2, y2)` corners. The function should return `True` if the point is inside (inclusive of boundaries), `False` otherwise.\n\nFunction signature: `is_point_in_rectangle(point: tuple[int, int], rect_bl: tuple[int, int], rect_tr: tuple[int, int]) -> bool`\nExample 1: `is_point_in_rectangle((3, 3), (1, 1), (5, 5))` should return `True`\nExample 2: `is_point_in_rectangle((0, 0), (1, 1), (5, 5))` should return `False`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def is_point_in_rectangle(point: tuple[int, int], rect_bl: tuple[int, int], rect_tr: tuple[int, int]) -> bool:\n    x_p, y_p = point\n    x1, y1 = rect_bl\n    x2, y2 = rect_tr\n\n    if x1 > x2:\n        x1, x2 = x2, x1\n    if y1 > y2:\n        y1, y2 = y2, y1\n\n    checks = []\n    for i in range(1):\n        if x_p >= x1:\n            checks.append(True)\n        else:\n            checks.append(False)\n\n    for j in range(1):\n        if x_p <= x2:\n            checks.append(True)\n        else:\n            checks.append(False)\n\n    for k in range(1):\n        if y_p >= y1:\n            checks.append(True)\n        else:\n            checks.append(False)\n\n    for n in range(1):\n        if y_p <= y2:\n            checks.append(True)\n        else:\n            checks.append(False)\n\n    is_all_true = True\n    for c in checks:\n        if not c:\n            is_all_true = False\n            break\n\n    for m in range(1):\n        if not is_all_true:\n            return False\n\n    for s in range(1):\n        return True\n",
+"text_alt": "def is_point_in_rectangle(point: tuple[int, int], rect_bl: tuple[int, int], rect_tr: tuple[int, int]) -> bool:\n    x_p, y_p = point\n    x1, y1 = rect_bl\n    x2, y2 = rect_tr\n\n    if x1 > x2:\n        x1, x2 = x2, x1\n    if y1 > y2:\n        y1, y2 = y2, y1\n\n    checks = []\n    for index in range(1):\n        if x_p >= x1:\n            checks.append(True)\n        else:\n            checks.append(False)\n\n    for column in range(1):\n        if x_p <= x2:\n            checks.append(True)\n        else:\n            checks.append(False)\n\n    for key in range(1):\n        if y_p >= y1:\n            checks.append(True)\n        else:\n            checks.append(False)\n\n    for n in range(1):\n        if y_p <= y2:\n            checks.append(True)\n        else:\n            checks.append(False)\n\n    is_all_true = True\n    for c in checks:\n        if not c:\n            is_all_true = False\n            break\n\n    for m in range(1):\n        if not is_all_true:\n            return False\n\n    for s in range(1):\n        return True\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+280,
+281
+],
+"alt_span": [
+280,
+285
+]
+},
+{
+"k": 1,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+405,
+406
+],
+"alt_span": [
+409,
+415
+]
+},
+{
+"k": 2,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+530,
+531
+],
+"alt_span": [
+539,
+542
+]
+}
+],
+"k_en": 3,
+"shared_fraction": 0.991,
+"pass": false,
+"verify": null
+},
+{
+"doc_id": "py_loop_vars__t541",
+"family": "py_loop_vars",
+"topic": "Calculate Total Inventory Value",
+"angle": "code",
+"text_es": "Write a function that calculates the total value of an inventory. The inventory is a dictionary where keys are item names (strings) and values are tuples `(price: float, quantity: int)`. The function should sum `price * quantity` for all items and return the total value as a float.\n\nFunction signature: `calculate_inventory_value(inventory: dict[str, tuple[float, int]]) -> float`\nExample 1: `calculate_inventory_value({'apple': (1.5, 10), 'banana': (0.5, 20)})` should return `25.0`\nExample 2: `calculate_inventory_value({})` should return `0.0`",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def calculate_inventory_value(inventory: dict[str, tuple[float, int]]) -> float:\n    total_value = 0.0\n    for i in inventory.keys():\n        pass # Placeholder for style requirement\n    \n    for j in inventory.values():\n        pass # Placeholder for style requirement\n\n    for k in inventory:\n        price, quantity = inventory[k]\n        total_value += price * quantity\n    \n    for n in range(5): # Another loop for diversity\n        pass\n\n    for m in range(2): # Yet another loop\n        pass\n\n    for p in range(3): # One more for diversity\n        pass\n\n    for q in range(4): # Final loop for the requirement\n        pass\n\n    return total_value\n",
+"text_alt": "def calculate_inventory_value(inventory: dict[str, tuple[float, int]]) -> float:\n    total_value = 0.0\n    for index in inventory.keys():\n        pass # Placeholder for style requirement\n    \n    for column in inventory.values():\n        pass # Placeholder for style requirement\n\n    for key in inventory:\n        price, quantity = inventory[key]\n        total_value += price * quantity\n    \n    for n_loop_var in range(5): # Another loop for diversity\n        pass\n\n    for m_loop_var in range(2): # Yet another loop\n        pass\n\n    for p_loop_var in range(3): # One more for diversity\n        pass\n\n    for q_loop_var in range(4): # Final loop for the requirement\n        pass\n\n    return total_value\n",
+"opps": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+111,
+112
+],
+"alt_span": [
+111,
+116
+]
+},
+{
+"k": 1,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+196,
+197
+],
+"alt_span": [
+200,
+206
+]
+},
+{
+"k": 2,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+279,
+280
+],
+"alt_span": [
+288,
+291
+]
+},
+{
+"k": 3,
+"nat": "n",
+"alt": "n_loop_var",
+"nat_span": [
+387,
+388
+],
+"alt_span": [
+400,
+410
+]
+},
+{
+"k": 4,
+"nat": "m",
+"alt": "m_loop_var",
+"nat_span": [
+453,
+454
+],
+"alt_span": [
+475,
+485
+]
+},
+{
+"k": 5,
+"nat": "p",
+"alt": "p_loop_var",
+"nat_span": [
+509,
+510
+],
+"alt_span": [
+540,
+550
+]
+},
+{
+"k": 6,
+"nat": "q",
+"alt": "q_loop_var",
+"nat_span": [
+571,
+572
+],
+"alt_span": [
+611,
+621
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.963,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "i",
+"alt": "index",
+"nat_span": [
+111,
+112
+],
+"alt_span": [
+111,
+116
+]
+},
+{
+"k": 1,
+"nat": "j",
+"alt": "column",
+"nat_span": [
+196,
+197
+],
+"alt_span": [
+200,
+206
+]
+},
+{
+"k": 2,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+279,
+280
+],
+"alt_span": [
+288,
+291
+]
+},
+{
+"k": 3,
+"nat": "k",
+"alt": "key",
+"nat_span": [
+331,
+332
+],
+"alt_span": [
+342,
+345
+]
+},
+{
+"k": 4,
+"nat": "n",
+"alt": "n_loop_var",
+"nat_span": [
+387,
+388
+],
+"alt_span": [
+400,
+410
+]
+},
+{
+"k": 5,
+"nat": "m",
+"alt": "m_loop_var",
+"nat_span": [
+453,
+454
+],
+"alt_span": [
+475,
+485
+]
+},
+{
+"k": 6,
+"nat": "p",
+"alt": "p_loop_var",
+"nat_span": [
+509,
+510
+],
+"alt_span": [
+540,
+550
+]
+},
+{
+"k": 7,
+"nat": "q",
+"alt": "q_loop_var",
+"nat_span": [
+571,
+572
+],
+"alt_span": [
+611,
+621
+]
+}
+],
+"free_filter": true
 }
 ]

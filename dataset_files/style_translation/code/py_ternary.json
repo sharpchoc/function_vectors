@@ -31150,5 +31150,1242 @@
 "shared_fraction": 0.817,
 "pass": true,
 "verify": null
+},
+{
+"doc_id": "py_ternary__t201",
+"family": "py_ternary",
+"topic": "Merge Two Sorted Lists",
+"angle": "code",
+"text_es": "Write a function `merge_sorted_lists(list1, list2)` that takes two already sorted lists of numbers. It should return a new sorted list containing all elements from both input lists. Example: `merge_sorted_lists([1, 3, 5], [2, 4, 6])` should return `[1, 2, 3, 4, 5, 6]`, `merge_sorted_lists([10], [])` should return `[10]`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def merge_sorted_lists(list1, list2):\n    merged = []\n    i = 0\n    j = 0\n    len1 = len(list1)\n    len2 = len(list2)\n\n    while i < len1 or j < len2:\n        elem1_exists = i < len1\n        elem2_exists = j < len2\n\n        current_elem1 = list1[i] if elem1_exists else float('inf')\n        current_elem2 = list2[j] if elem2_exists else float('inf')\n\n        take_from_list1 = current_elem1 <= current_elem2\n        next_val = current_elem1 if take_from_list1 else current_elem2\n        merged.append(next_val)\n\n        i = i + 1 if take_from_list1 else i\n        j = j + 1 if not take_from_list1 else j\n\n    return merged\n",
+"text_alt": "def merge_sorted_lists(list1, list2):\n    merged = []\n    i = 0\n    j = 0\n    len1 = len(list1)\n    len2 = len(list2)\n\n    while i < len1 or j < len2:\n        elem1_exists = i < len1\n        elem2_exists = j < len2\n\n        if elem1_exists:\n            current_elem1 = list1[i]\n        else:\n            current_elem1 = float('inf')\n        if elem2_exists:\n            current_elem2 = list2[j]\n        else:\n            current_elem2 = float('inf')\n\n        take_from_list1 = current_elem1 <= current_elem2\n        if take_from_list1:\n            next_val = current_elem1\n        else:\n            next_val = current_elem2\n        merged.append(next_val)\n\n        if take_from_list1:\n            i = i + 1\n        else:\n            i = i\n        if not take_from_list1:\n            j = j + 1\n        else:\n            j = j\n\n    return merged\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if elem1_exists:\n            ",
+"nat_span": [
+224,
+224
+],
+"alt_span": [
+224,
+253
+]
+},
+{
+"k": 1,
+"nat": " if elem1_exists else",
+"alt": "\n        else:\n            current_elem1 =",
+"nat_span": [
+248,
+269
+],
+"alt_span": [
+277,
+319
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if elem2_exists:\n            ",
+"nat_span": [
+291,
+291
+],
+"alt_span": [
+341,
+370
+]
+},
+{
+"k": 3,
+"nat": " if elem2_exists else",
+"alt": "\n        else:\n            current_elem2 =",
+"nat_span": [
+315,
+336
+],
+"alt_span": [
+394,
+436
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if take_from_list1:\n            ",
+"nat_span": [
+416,
+416
+],
+"alt_span": [
+516,
+548
+]
+},
+{
+"k": 5,
+"nat": " if take_from_list1 else",
+"alt": "\n        else:\n            next_val =",
+"nat_span": [
+440,
+464
+],
+"alt_span": [
+572,
+609
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if take_from_list1:\n            ",
+"nat_span": [
+520,
+520
+],
+"alt_span": [
+665,
+697
+]
+},
+{
+"k": 7,
+"nat": " if take_from_list1 else",
+"alt": "\n        else:\n            i =",
+"nat_span": [
+529,
+553
+],
+"alt_span": [
+706,
+736
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if not take_from_list1:\n            ",
+"nat_span": [
+564,
+564
+],
+"alt_span": [
+747,
+783
+]
+},
+{
+"k": 9,
+"nat": " if not take_from_list1 else",
+"alt": "\n        else:\n            j =",
+"nat_span": [
+573,
+601
+],
+"alt_span": [
+792,
+822
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.867,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_ternary__t202",
+"family": "py_ternary",
+"topic": "Word Reversal (Preserve Punctuation)",
+"angle": "code",
+"text_es": "Implement `reverse_words_with_punctuation(sentence)` that takes a string `sentence`. It should reverse the order of words but keep punctuation attached to its word. Example: `reverse_words_with_punctuation('Hello, world!')` should return `'world!, Hello,'`, `reverse_words_with_punctuation('One. Two. Three.')` should return `'Three. Two. One.'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def reverse_words_with_punctuation(sentence):\n    words = sentence.split(' ')\n    reversed_words = words[::-1]\n    \n    adjusted_words = []\n    for i, word in enumerate(reversed_words):\n        next_word = reversed_words[i+1] if i + 1 < len(reversed_words) else ''\n        last_char_current = word[-1] if word else ''\n        last_char_next = next_word[-1] if next_word else ''\n        \n        is_punctuation = lambda char: not char.isalnum()\n        \n        current_word_ends_punct = is_punctuation(last_char_current)\n        next_word_ends_punct = is_punctuation(last_char_next)\n        \n        \n        \n        word_to_append = word\n        if i > 0 and current_word_ends_punct and last_char_next.isalnum():\n            word_to_append = adjusted_words[-1].rstrip(last_char_current) + last_char_current\n            adjusted_words[-1] = adjusted_words[-1].rstrip(last_char_current)\n            word_to_append = word\n        elif i == len(reversed_words) - 1 and current_word_ends_punct and not next_word_ends_punct:\n            pass # No change needed for the last word if it ends with punctuation\n        elif i < len(reversed_words) - 1 and current_word_ends_punct and not next_word_ends_punct:\n            word_to_append = word\n            \n        adjusted_words.append(word_to_append)\n\n    return ' '.join(reversed_words)\n",
+"text_alt": "def reverse_words_with_punctuation(sentence):\n    words = sentence.split(' ')\n    reversed_words = words[::-1]\n    \n    adjusted_words = []\n    for i, word in enumerate(reversed_words):\n        next_word = ''\n        if i + 1 < len(reversed_words):\n            next_word = reversed_words[i+1]\n        else:\n            next_word = ''\n        last_char_current = ''\n        if word:\n            last_char_current = word[-1]\n        else:\n            last_char_current = ''\n        last_char_next = ''\n        if next_word:\n            last_char_next = next_word[-1]\n        else:\n            last_char_next = ''\n        \n        is_punctuation = lambda char: not char.isalnum()\n        \n        current_word_ends_punct = is_punctuation(last_char_current)\n        next_word_ends_punct = is_punctuation(last_char_next)\n        \n        \n        \n        word_to_append = word\n        if i > 0 and current_word_ends_punct and last_char_next.isalnum():\n            word_to_append = adjusted_words[-1].rstrip(last_char_current) + last_char_current\n            adjusted_words[-1] = adjusted_words[-1].rstrip(last_char_current)\n            word_to_append = word\n        elif i == len(reversed_words) - 1 and current_word_ends_punct and not next_word_ends_punct:\n            pass # No change needed for the last word if it ends with punctuation\n        elif i < len(reversed_words) - 1 and current_word_ends_punct and not next_word_ends_punct:\n            word_to_append = word\n            \n        adjusted_words.append(word_to_append)\n\n    return ' '.join(reversed_words)\n",
+"opps": [
+{
+"k": 0,
+"nat": "reversed_words[i+1] ",
+"alt": "''\n        ",
+"nat_span": [
+206,
+226
+],
+"alt_span": [
+206,
+217
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n            next_word = reversed_words[i+1]\n        else:\n            next_word =",
+"nat_span": [
+256,
+261
+],
+"alt_span": [
+247,
+330
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "last_char_current = ''\n        if word:\n            ",
+"nat_span": [
+273,
+273
+],
+"alt_span": [
+342,
+394
+]
+},
+{
+"k": 3,
+"nat": " if word else",
+"alt": "\n        else:\n            last_char_current =",
+"nat_span": [
+301,
+314
+],
+"alt_span": [
+422,
+468
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "last_char_next = ''\n        if next_word:\n            ",
+"nat_span": [
+326,
+326
+],
+"alt_span": [
+480,
+534
+]
+},
+{
+"k": 5,
+"nat": " if next_word else",
+"alt": "\n        else:\n            last_char_next =",
+"nat_span": [
+356,
+374
+],
+"alt_span": [
+564,
+607
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.949,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_ternary__t203",
+"family": "py_ternary",
+"topic": "Find Longest Word in File (Dummy)",
+"angle": "code",
+"text_es": "Create a function `find_longest_word_in_file(filepath)` that takes a `filepath`. Simulate reading a file and finding the longest word (alphanumeric sequences). Return the longest word as a string. If the file is empty or not found, return an empty string. Example: `find_longest_word_in_file('dummy_file.txt')` (containing 'apple banana a') should return `'banana'`, `find_longest_word_in_file('empty.txt')` should return `''`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import os\n\ndef find_longest_word_in_file(filepath):\n    content = \"\"\n    try:\n        with open(filepath, 'r') as f:\n            content = f.read()\n    except FileNotFoundError:\n        return \"\"\n\n    words = content.split()\n    longest_word = \"\"\n\n    if not words:\n        return \"\"\n\n    for word in words:\n        cleaned_word = ''.join(char for char in word if char.isalnum())\n        longest_word = cleaned_word if len(cleaned_word) > len(longest_word) else longest_word\n\n    has_words = True if len(words) > 0 else False\n    final_result = longest_word if has_words else \"\"\n    \n    is_empty_file = True if not content.strip() else False\n    effective_result = \"\" if is_empty_file else final_result\n    \n    return effective_result\n",
+"text_alt": "import os\n\ndef find_longest_word_in_file(filepath):\n    content = \"\"\n    try:\n        with open(filepath, 'r') as f:\n            content = f.read()\n    except FileNotFoundError:\n        return \"\"\n\n    words = content.split()\n    longest_word = \"\"\n\n    if not words:\n        return \"\"\n\n    for word in words:\n        cleaned_word = ''.join(char for char in word if char.isalnum())\n        if len(cleaned_word) > len(longest_word):\n            longest_word = cleaned_word\n        else:\n            longest_word = longest_word\n\n    if len(words) > 0:\n        has_words = True\n    else:\n        has_words = False\n    if has_words:\n        final_result = longest_word\n    else:\n        final_result = \"\"\n    \n    if not content.strip():\n        is_empty_file = True\n    else:\n        is_empty_file = False\n    if is_empty_file:\n        effective_result = \"\"\n    else:\n        effective_result = final_result\n    \n    return effective_result\n",
+"opps": [
+{
+"k": 0,
+"nat": "longest_word = cleaned_word ",
+"alt": "",
+"nat_span": [
+388,
+416
+],
+"alt_span": [
+388,
+388
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n            longest_word = cleaned_word\n        else:\n            longest_word =",
+"nat_span": [
+456,
+461
+],
+"alt_span": [
+428,
+510
+]
+},
+{
+"k": 2,
+"nat": "has_words = True ",
+"alt": "",
+"nat_span": [
+480,
+497
+],
+"alt_span": [
+529,
+529
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n        has_words = True\n    else:\n        has_words =",
+"nat_span": [
+514,
+519
+],
+"alt_span": [
+546,
+602
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if has_words:\n        ",
+"nat_span": [
+530,
+530
+],
+"alt_span": [
+613,
+635
+]
+},
+{
+"k": 5,
+"nat": " if has_words else",
+"alt": "\n    else:\n        final_result =",
+"nat_span": [
+557,
+575
+],
+"alt_span": [
+662,
+695
+]
+},
+{
+"k": 6,
+"nat": "is_empty_file = True ",
+"alt": "",
+"nat_span": [
+588,
+609
+],
+"alt_span": [
+708,
+708
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n        is_empty_file = True\n    else:\n        is_empty_file =",
+"nat_span": [
+631,
+636
+],
+"alt_span": [
+730,
+794
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if is_empty_file:\n        ",
+"nat_span": [
+647,
+647
+],
+"alt_span": [
+805,
+831
+]
+},
+{
+"k": 9,
+"nat": " if is_empty_file else",
+"alt": "\n    else:\n        effective_result =",
+"nat_span": [
+668,
+690
+],
+"alt_span": [
+852,
+889
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.875,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_ternary__t204",
+"family": "py_ternary",
+"topic": "Calculate Factorial",
+"angle": "code",
+"text_es": "Write a function `calculate_factorial(n)` that takes a non-negative integer `n`. It should return the factorial of `n`. Use recursion or iteration. Example: `calculate_factorial(5)` should return `120`, `calculate_factorial(0)` should return `1`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def calculate_factorial(n):\n    is_zero = True if n == 0 else False\n    \n    initial_result = 1 if is_zero else n\n    \n    current_value = 1 if is_zero else n - 1\n    \n    final_result = initial_result\n\n    while current_value > 0:\n        is_even = True if current_value % 2 == 0 else False\n        \n        factor = current_value\n        final_result *= factor\n        current_value -= 1\n        \n    return final_result\n",
+"text_alt": "def calculate_factorial(n):\n    if n == 0:\n        is_zero = True\n    else:\n        is_zero = False\n    \n    if is_zero:\n        initial_result = 1\n    else:\n        initial_result = n\n    \n    if is_zero:\n        current_value = 1\n    else:\n        current_value = n - 1\n    \n    final_result = initial_result\n\n    while current_value > 0:\n        if current_value % 2 == 0:\n            is_even = True\n        else:\n            is_even = False\n        \n        factor = current_value\n        final_result *= factor\n        current_value -= 1\n        \n    return final_result\n",
+"opps": [
+{
+"k": 0,
+"nat": "is_zero = True ",
+"alt": "",
+"nat_span": [
+32,
+47
+],
+"alt_span": [
+32,
+32
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n        is_zero = True\n    else:\n        is_zero =",
+"nat_span": [
+56,
+61
+],
+"alt_span": [
+41,
+93
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if is_zero:\n        ",
+"nat_span": [
+77,
+77
+],
+"alt_span": [
+109,
+129
+]
+},
+{
+"k": 3,
+"nat": " ",
+"alt": "\n    else:\n        initial_result = n\n    \n    ",
+"nat_span": [
+95,
+96
+],
+"alt_span": [
+147,
+194
+]
+},
+{
+"k": 4,
+"nat": " else n\n    \n    ",
+"alt": ":\n        ",
+"nat_span": [
+106,
+123
+],
+"alt_span": [
+204,
+214
+]
+},
+{
+"k": 5,
+"nat": " if is_zero else",
+"alt": "\n    else:\n        current_value =",
+"nat_span": [
+140,
+156
+],
+"alt_span": [
+231,
+265
+]
+},
+{
+"k": 6,
+"nat": "is_even = True ",
+"alt": "",
+"nat_span": [
+240,
+255
+],
+"alt_span": [
+349,
+349
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n            is_even = True\n        else:\n            is_even =",
+"nat_span": [
+280,
+285
+],
+"alt_span": [
+374,
+438
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.818,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_ternary__t205",
+"family": "py_ternary",
+"topic": "Check for Perfect Square",
+"angle": "code",
+"text_es": "Implement `is_perfect_square(n)` that takes a non-negative integer `n`. It should return `True` if `n` is a perfect square, `False` otherwise. Example: `is_perfect_square(9)` should return `True`, `is_perfect_square(10)` should return `False`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def is_perfect_square(n):\n    is_non_negative = True if n >= 0 else False\n    if not is_non_negative:\n        return False\n\n    if n == 0:\n        return True\n\n    low = 1\n    high = n // 2 if n > 1 else n\n    is_high_one = True if high == 1 else False\n    is_low_high_equal = True if low == high else False\n    \n    while low <= high:\n        mid = (low + high) // 2\n        square = mid * mid\n        is_square_n = True if square == n else False\n        is_square_greater = True if square > n else False\n\n        if is_square_n:\n            return True\n        elif is_square_greater:\n            high = mid - 1\n        else:\n            low = mid + 1\n            \n    return False\n",
+"text_alt": "def is_perfect_square(n):\n    if n >= 0:\n        is_non_negative = True\n    else:\n        is_non_negative = False\n    if not is_non_negative:\n        return False\n\n    if n == 0:\n        return True\n\n    low = 1\n    if n > 1:\n        high = n // 2\n    else:\n        high = n\n    if high == 1:\n        is_high_one = True\n    else:\n        is_high_one = False\n    if low == high:\n        is_low_high_equal = True\n    else:\n        is_low_high_equal = False\n    \n    while low <= high:\n        mid = (low + high) // 2\n        square = mid * mid\n        if square == n:\n            is_square_n = True\n        else:\n            is_square_n = False\n        if square > n:\n            is_square_greater = True\n        else:\n            is_square_greater = False\n\n        if is_square_n:\n            return True\n        elif is_square_greater:\n            high = mid - 1\n        else:\n            low = mid + 1\n            \n    return False\n",
+"opps": [
+{
+"k": 0,
+"nat": "is_non_negative = True ",
+"alt": "",
+"nat_span": [
+30,
+53
+],
+"alt_span": [
+30,
+30
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n        is_non_negative = True\n    else:\n        is_non_negative =",
+"nat_span": [
+62,
+67
+],
+"alt_span": [
+39,
+107
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if n > 1:\n        ",
+"nat_span": [
+176,
+176
+],
+"alt_span": [
+216,
+234
+]
+},
+{
+"k": 3,
+"nat": " if n > 1 else",
+"alt": "\n    else:\n        high =",
+"nat_span": [
+189,
+203
+],
+"alt_span": [
+247,
+272
+]
+},
+{
+"k": 4,
+"nat": "is_high_one = True ",
+"alt": "",
+"nat_span": [
+210,
+229
+],
+"alt_span": [
+279,
+279
+]
+},
+{
+"k": 5,
+"nat": " else False\n    is_low_high_equal",
+"alt": ":\n        is_high_one",
+"nat_span": [
+241,
+274
+],
+"alt_span": [
+291,
+312
+]
+},
+{
+"k": 6,
+"nat": " ",
+"alt": "\n    else:\n        is_high_one = False\n    ",
+"nat_span": [
+281,
+282
+],
+"alt_span": [
+319,
+362
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n        is_low_high_equal = True\n    else:\n        is_low_high_equal =",
+"nat_span": [
+296,
+301
+],
+"alt_span": [
+376,
+448
+]
+},
+{
+"k": 8,
+"nat": "is_square_n = True ",
+"alt": "",
+"nat_span": [
+403,
+422
+],
+"alt_span": [
+550,
+550
+]
+},
+{
+"k": 9,
+"nat": " else False\n        is_square_greater",
+"alt": ":\n            is_square_n",
+"nat_span": [
+436,
+473
+],
+"alt_span": [
+564,
+589
+]
+},
+{
+"k": 10,
+"nat": " ",
+"alt": "\n        else:\n            is_square_n = False\n        ",
+"nat_span": [
+480,
+481
+],
+"alt_span": [
+596,
+651
+]
+},
+{
+"k": 11,
+"nat": " else",
+"alt": ":\n            is_square_greater = True\n        else:\n            is_square_greater =",
+"nat_span": [
+494,
+499
+],
+"alt_span": [
+664,
+748
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.833,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_ternary__t206",
+"family": "py_ternary",
+"topic": "Group List Elements by Type",
+"angle": "code",
+"text_es": "Create a function `group_by_type(items)` that takes a list `items` of mixed types. It should return a dictionary where keys are type names (as strings, e.g., 'int', 'str') and values are lists of items of that type. Example: `group_by_type([1, 'a', 2.5, 'b', 3])` should return `{'int': [1, 3], 'str': ['a', 'b'], 'float': [2.5]}`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def group_by_type(items):\n    grouped_items = {}\n    \n    for item in items:\n        item_type = type(item)\n        type_name = 'int' if item_type is int else ('str' if item_type is str else ('float' if item_type is float else item_type.__name__))\n        \n        # Check if type_name already exists in grouped_items\n        # If it does, use the existing list; otherwise, create a new empty list\n        current_list = grouped_items[type_name] if type_name in grouped_items else []\n        current_list.append(item)\n        grouped_items[type_name] = current_list # Update the dictionary\n\n    return grouped_items\n",
+"text_alt": "def group_by_type(items):\n    grouped_items = {}\n    \n    for item in items:\n        item_type = type(item)\n        if item_type is int:\n            type_name = 'int'\n        else:\n            if item_type is str:\n                type_name = 'str'\n            else:\n                if item_type is float:\n                    type_name = 'float'\n                else:\n                    type_name = item_type.__name__\n        \n        # Check if type_name already exists in grouped_items\n        # If it does, use the existing list; otherwise, create a new empty list\n        if type_name in grouped_items:\n            current_list = grouped_items[type_name]\n        else:\n            current_list = []\n        current_list.append(item)\n        grouped_items[type_name] = current_list # Update the dictionary\n\n    return grouped_items\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if item_type is int:\n            ",
+"nat_span": [
+116,
+116
+],
+"alt_span": [
+116,
+149
+]
+},
+{
+"k": 1,
+"nat": " if item_type is int else ('str' ",
+"alt": "\n        else:\n            ",
+"nat_span": [
+133,
+166
+],
+"alt_span": [
+166,
+193
+]
+},
+{
+"k": 2,
+"nat": " else ('float' ",
+"alt": ":\n                type_name = 'str'\n            else:\n                ",
+"nat_span": [
+185,
+200
+],
+"alt_span": [
+212,
+282
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n                    type_name = 'float'\n                else:\n                    type_name =",
+"nat_span": [
+221,
+226
+],
+"alt_span": [
+303,
+398
+]
+},
+{
+"k": 4,
+"nat": "))",
+"alt": "",
+"nat_span": [
+245,
+247
+],
+"alt_span": [
+417,
+417
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "if type_name in grouped_items:\n            ",
+"nat_span": [
+406,
+406
+],
+"alt_span": [
+576,
+619
+]
+},
+{
+"k": 6,
+"nat": " if type_name in grouped_items else",
+"alt": "\n        else:\n            current_list =",
+"nat_span": [
+445,
+480
+],
+"alt_span": [
+658,
+699
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.826,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_ternary__t207",
+"family": "py_ternary",
+"topic": "Find All Divisors",
+"angle": "code",
+"text_es": "Implement `find_divisors(n)` that takes a positive integer `n`. It should return a list of all positive divisors of `n`, in ascending order. Example: `find_divisors(12)` should return `[1, 2, 3, 4, 6, 12]`, `find_divisors(7)` should return `[1, 7]`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def find_divisors(n):\n    divs = []\n    limit = int(n**0.5)\n    \n    current_divisor = 1\n    \n    while current_divisor <= limit:\n        is_divisor = True if n % current_divisor == 0 else False\n        divs.append(current_divisor) if is_divisor else None\n        current_divisor += 1\n\n    upper_divs = []\n    remaining_divisors = n // current_divisor if current_divisor > limit and n % current_divisor != 0 else n // (current_divisor - 1)\n    \n    for d in reversed(divs):\n        quotient = n // d\n        should_add = True if quotient != d else False\n        upper_divs.append(quotient) if should_add else None\n        \n    final_list = divs + upper_divs\n    \n    return sorted(final_list)\n",
+"text_alt": "def find_divisors(n):\n    divs = []\n    limit = int(n**0.5)\n    \n    current_divisor = 1\n    \n    while current_divisor <= limit:\n        is_divisor = None\n        if n % current_divisor == 0:\n            is_divisor = True\n        else:\n            is_divisor = False\n        if is_divisor:\n            divs.append(current_divisor)\n        else:\n            None\n        current_divisor += 1\n\n    upper_divs = []\n    remaining_divisors = None\n    if current_divisor > limit and n % current_divisor != 0:\n        remaining_divisors = n // current_divisor\n    else:\n        remaining_divisors = n // (current_divisor - 1)\n    \n    for d in reversed(divs):\n        quotient = n // d\n        should_add = None\n        if quotient != d:\n            should_add = True\n        else:\n            should_add = False\n        if should_add:\n            upper_divs.append(quotient)\n        else:\n            None\n        \n    final_list = divs + upper_divs\n    \n    return sorted(final_list)\n",
+"opps": [
+{
+"k": 0,
+"nat": "True ",
+"alt": "None\n        ",
+"nat_span": [
+151,
+156
+],
+"alt_span": [
+151,
+164
+]
+},
+{
+"k": 1,
+"nat": " else",
+"alt": ":\n            is_divisor = True\n        else:\n            is_divisor =",
+"nat_span": [
+183,
+188
+],
+"alt_span": [
+191,
+261
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if is_divisor:\n            ",
+"nat_span": [
+203,
+203
+],
+"alt_span": [
+276,
+303
+]
+},
+{
+"k": 3,
+"nat": " if is_divisor else ",
+"alt": "\n        else:\n            ",
+"nat_span": [
+231,
+251
+],
+"alt_span": [
+331,
+358
+]
+},
+{
+"k": 4,
+"nat": "n // current_divisor ",
+"alt": "None\n    ",
+"nat_span": [
+331,
+352
+],
+"alt_span": [
+438,
+447
+]
+},
+{
+"k": 5,
+"nat": " else",
+"alt": ":\n        remaining_divisors = n // current_divisor\n    else:\n        remaining_divisors =",
+"nat_span": [
+407,
+412
+],
+"alt_span": [
+502,
+592
+]
+},
+{
+"k": 6,
+"nat": "True ",
+"alt": "None\n        ",
+"nat_span": [
+521,
+526
+],
+"alt_span": [
+701,
+714
+]
+},
+{
+"k": 7,
+"nat": " else",
+"alt": ":\n            should_add = True\n        else:\n            should_add =",
+"nat_span": [
+542,
+547
+],
+"alt_span": [
+730,
+800
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "if should_add:\n            ",
+"nat_span": [
+562,
+562
+],
+"alt_span": [
+815,
+842
+]
+},
+{
+"k": 9,
+"nat": " if should_add else ",
+"alt": "\n        else:\n            ",
+"nat_span": [
+589,
+609
+],
+"alt_span": [
+869,
+896
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.894,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_ternary__t208",
+"family": "py_ternary",
+"topic": "Remove Duplicates from List (Preserve Order)",
+"angle": "code",
+"text_es": "Create a function `remove_duplicates_preserve_order(lst)` that takes a list `lst`. It should return a new list with all duplicate elements removed, maintaining the original order of the first appearance. Example: `remove_duplicates_preserve_order([1, 2, 2, 3, 1, 4])` should return `[1, 2, 3, 4]`, `remove_duplicates_preserve_order(['a', 'b', 'a'])` should return `['a', 'b']`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def remove_duplicates_preserve_order(lst):\n    seen = set()\n    result = []\n    \n    for item in lst:\n        is_seen = item in seen\n        add_to_result = not is_seen\n        \n        if add_to_result:\n            result.append(item)\n            seen_after_add = seen.add(item) \n            # This is just to use a conditional expression for 'seen_after_add'\n            # The return value of set.add() is None, so seen_after_add will always be None.\n            # This demonstrates the requirement of using the conditional expression.\n            # A more practical use would be if we were assigning a boolean based on add success.\n            seen_after_add = True if seen_after_add is None else False \n        \n        # Another conditional expression, even if its effect isn't strictly necessary here\n        # It's here to fulfill the requirement of spread conditional expressions\n        dummy_var = 'processed' if is_seen else 'new'\n\n    is_empty_list = True if not lst else False\n    final_result = []\n    \n    # Conditional expression for iterating based on list emptiness\n    # Although a simple if-else would be more natural, this fulfills the constraint.\n    for x in result if not is_empty_list else []:\n        final_result.append(x)\n        \n    # One more conditional expression\n    return final_result if not is_empty_list else []\n",
+"text_alt": "def remove_duplicates_preserve_order(lst):\n    seen = set()\n    result = []\n    \n    for item in lst:\n        is_seen = item in seen\n        add_to_result = not is_seen\n        \n        if add_to_result:\n            result.append(item)\n            seen_after_add = seen.add(item) \n            # This is just to use a conditional expression for 'seen_after_add'\n            # The return value of set.add() is None, so seen_after_add will always be None.\n            # This demonstrates the requirement of using the conditional expression.\n            # A more practical use would be if we were assigning a boolean based on add success.\n            if seen_after_add is None:\n                seen_after_add = True\n            else:\n                seen_after_add = False\n        \n        # Another conditional expression, even if its effect isn't strictly necessary here\n        # It's here to fulfill the requirement of spread conditional expressions\n        if is_seen:\n            dummy_var = 'processed'\n        else:\n            dummy_var = 'new'\n\n    if not lst:\n        is_empty_list = True\n    else:\n        is_empty_list = False\n    final_result = []\n    \n    # Conditional expression for iterating based on list emptiness\n    # Although a simple if-else would be more natural, this fulfills the constraint.\n    if not is_empty_list:\n        _iterable = result\n    else:\n        _iterable = []\n    for x in _iterable:\n        final_result.append(x)\n        \n    # One more conditional expression\n    if not is_empty_list:\n        _return_value = final_result\n    else:\n        _return_value = []\n    return _return_value\n",
+"opps": [
+{
+"k": 0,
+"nat": "seen_after_add = True ",
+"alt": "",
+"nat_span": [
+647,
+669
+],
+"alt_span": [
+647,
+647
+]
+},
+{
+"k": 1,
+"nat": " else False \n        \n        ",
+"alt": ":\n                seen_after_add = True\n            else:\n                seen_after_add = False\n        \n        ",
+"nat_span": [
+694,
+724
+],
+"alt_span": [
+672,
+786
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "if is_seen:\n            ",
+"nat_span": [
+896,
+896
+],
+"alt_span": [
+958,
+982
+]
+},
+{
+"k": 3,
+"nat": " if is_seen else",
+"alt": "\n        else:\n            dummy_var =",
+"nat_span": [
+919,
+935
+],
+"alt_span": [
+1005,
+1043
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "if not lst:\n        ",
+"nat_span": [
+947,
+947
+],
+"alt_span": [
+1055,
+1075
+]
+},
+{
+"k": 5,
+"nat": " if not lst else",
+"alt": "\n    else:\n        is_empty_list =",
+"nat_span": [
+967,
+983
+],
+"alt_span": [
+1095,
+1129
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if not is_empty_list:\n        _iterable = result\n    else:\n        _iterable = []\n    ",
+"nat_span": [
+1173,
+1173
+],
+"alt_span": [
+1319,
+1405
+]
+},
+{
+"k": 7,
+"nat": "result if not is_empty_list else []",
+"alt": "_iterable",
+"nat_span": [
+1182,
+1217
+],
+"alt_span": [
+1414,
+1423
+]
+},
+{
+"k": 8,
+"nat": "return final_result ",
+"alt": "",
+"nat_span": [
+1301,
+1321
+],
+"alt_span": [
+1507,
+1507
+]
+},
+{
+"k": 9,
+"nat": " else",
+"alt": ":\n        _return_value = final_result\n    else:\n        _return_value =",
+"nat_span": [
+1341,
+1346
+],
+"alt_span": [
+1527,
+1599
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "\n    return _return_value",
+"nat_span": [
+1349,
+1349
+],
+"alt_span": [
+1602,
+1627
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.912,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_ternary__t209",
+"family": "py_ternary",
+"topic": "Validate IPv4 Address (Simple Regex)",
+"angle": "code",
+"text_es": "Write a function `is_valid_ipv4(ip_address)` that takes a string `ip_address`. It should return `True` if it's a valid IPv4 address (four octets, each 0-255, separated by dots), `False` otherwise. Use regular expressions. Example: `is_valid_ipv4('192.168.1.1')` should return `True`, `is_valid_ipv4('256.0.0.1')` should return `False`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import re\n\ndef is_valid_ipv4(ip_address):\n    ipv4_pattern = re.compile(r\"^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$\")\n    match = ipv4_pattern.match(ip_address)\n    is_matched = True if match else False\n\n    if not is_matched:\n        return False\n\n    octets_str = match.groups()\n    is_length_valid = True if len(octets_str) == 4 else False\n\n    if not is_length_valid:\n        return False\n\n    all_octets_valid = True\n    for octet_str in octets_str:\n        try:\n            octet = int(octet_str)\n            is_range_valid = True if 0 <= octet <= 255 else False\n            all_octets_valid = all_octets_valid and is_range_valid\n        except ValueError:\n            all_octets_valid = False\n            break\n\n    is_overall_valid = True if all_octets_valid else False\n    return is_overall_valid\n",
+"text_alt": "import re\n\ndef is_valid_ipv4(ip_address):\n    ipv4_pattern = re.compile(r\"^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$\")\n    match = ipv4_pattern.match(ip_address)\n    if match:\n        is_matched = True\n    else:\n        is_matched = False\n\n    if not is_matched:\n        return False\n\n    octets_str = match.groups()\n    if len(octets_str) == 4:\n        is_length_valid = True\n    else:\n        is_length_valid = False\n\n    if not is_length_valid:\n        return False\n\n    all_octets_valid = True\n    for octet_str in octets_str:\n        try:\n            octet = int(octet_str)\n            if 0 <= octet <= 255:\n                is_range_valid = True\n            else:\n                is_range_valid = False\n            all_octets_valid = all_octets_valid and is_range_valid\n        except ValueError:\n            all_octets_valid = False\n            break\n\n    if all_octets_valid:\n        is_overall_valid = True\n    else:\n        is_overall_valid = False\n    return is_overall_valid\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "if match:\n        ",
+"nat_span": [
+168,
+168
+],
+"alt_span": [
+168,
+186
+]
+},
+{
+"k": 1,
+"nat": " if match else",
+"alt": "\n    else:\n        is_matched =",
+"nat_span": [
+185,
+199
+],
+"alt_span": [
+203,
+234
+]
+},
+{
+"k": 2,
+"nat": "is_length_valid = True ",
+"alt": "",
+"nat_span": [
+288,
+311
+],
+"alt_span": [
+323,
+323
+]
+},
+{
+"k": 3,
+"nat": " else",
+"alt": ":\n        is_length_valid = True\n    else:\n        is_length_valid =",
+"nat_span": [
+334,
+339
+],
+"alt_span": [
+346,
+414
+]
+},
+{
+"k": 4,
+"nat": "is_range_valid = True ",
+"alt": "",
+"nat_span": [
+518,
+540
+],
+"alt_span": [
+593,
+593
+]
+},
+{
+"k": 5,
+"nat": " else",
+"alt": ":\n                is_range_valid = True\n            else:\n                is_range_valid =",
+"nat_span": [
+560,
+565
+],
+"alt_span": [
+613,
+703
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "if all_octets_valid:\n        ",
+"nat_span": [
+726,
+726
+],
+"alt_span": [
+864,
+893
+]
+},
+{
+"k": 7,
+"nat": " if all_octets_valid else",
+"alt": "\n    else:\n        is_overall_valid =",
+"nat_span": [
+749,
+774
+],
+"alt_span": [
+916,
+953
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.908,
+"pass": true,
+"verify": null
 }
 ]

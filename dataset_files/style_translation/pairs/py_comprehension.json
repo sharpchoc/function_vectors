@@ -3131,246 +3131,6 @@
 "verify": null
 },
 {
-"doc_id": "py_comprehension__t018",
-"family": "py_comprehension",
-"topic": "Merge Dictionaries",
-"angle": "code",
-"text_es": "Create a function `merge_dictionaries(dict1, dict2)` that takes two dictionaries and returns a new dictionary containing all key-value pairs from both. If keys overlap, values from `dict2` should override `dict1`. For example, `merge_dictionaries({'a': 1, 'b': 2}, {'b': 3, 'c': 4})` should return `{'a': 1, 'b': 3, 'c': 4}`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def merge_dictionaries(dict1, dict2):\n    all_keys = list(set([k for k in dict1] + [k for k in dict2]))\n    merged_items = []\n    for key in all_keys:\n        if key in dict2:\n            merged_items.append((key, dict2[key]))\n        else:\n            merged_items.append((key, dict1[key]))\n    \n    merged_dict = {key: value for key, value in merged_items}\n    return merged_dict\n\ndef merge_dictionaries(dict1, dict2):\n    keys1 = [k for k in dict1.keys()]\n    keys2 = [k for k in dict2.keys()]\n    unique_keys = list(set(keys1 + keys2))\n    \n    common_keys = [k for k in keys1 if k in keys2]\n    \n    dict1_only_items = [(k, dict1[k]) for k in keys1 if k not in common_keys]\n    dict2_items = [(k, dict2[k]) for k in keys2]\n    \n    merged_list = dict1_only_items + dict2_items\n    \n    final_dict = {k: v for k, v in merged_list}\n    return final_dict\n",
-"text_alt": "def merge_dictionaries(dict1, dict2):\n    all_keys_temp = []\n    for k in dict1:\n        all_keys_temp.append(k)\n    for k in dict2:\n        all_keys_temp.append(k)\n    all_keys = list(set(all_keys_temp))\n    merged_items = []\n    for key in all_keys:\n        if key in dict2:\n            merged_items.append((key, dict2[key]))\n        else:\n            merged_items.append((key, dict1[key]))\n    \n    merged_dict = {}\n    for key, value in merged_items:\n        merged_dict[key] = value\n    return merged_dict\n\ndef merge_dictionaries(dict1, dict2):\n    keys1 = []\n    for k in dict1.keys():\n        keys1.append(k)\n    keys2 = []\n    for k in dict2.keys():\n        keys2.append(k)\n    unique_keys = list(set(keys1 + keys2))\n    \n    common_keys = []\n    for k in keys1:\n        if k in keys2:\n            common_keys.append(k)\n    \n    dict1_only_items = []\n    for k in keys1:\n        if k not in common_keys:\n            dict1_only_items.append((k, dict1[k]))\n    dict2_items = []\n    for k in keys2:\n        dict2_items.append((k, dict2[k]))\n    \n    merged_list = dict1_only_items + dict2_items\n    \n    final_dict = {}\n    for k, v in merged_list:\n        final_dict[k] = v\n    return final_dict\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "all_keys_temp = []\n    for k in dict1:\n        all_keys_temp.append(k)\n    for k in dict2:\n        all_keys_temp.append(k)\n    ",
-"nat_span": [
-42,
-42
-],
-"alt_span": [
-42,
-169
-]
-},
-{
-"k": 1,
-"nat": "[k for k in dict1] + [k for k in dict2]",
-"alt": "all_keys_temp",
-"nat_span": [
-62,
-101
-],
-"alt_span": [
-189,
-202
-]
-},
-{
-"k": 2,
-"nat": "key: value ",
-"alt": "}\n    ",
-"nat_span": [
-316,
-327
-],
-"alt_span": [
-417,
-423
-]
-},
-{
-"k": 3,
-"nat": "}",
-"alt": ":\n        merged_dict[key] = value",
-"nat_span": [
-357,
-358
-],
-"alt_span": [
-453,
-487
-]
-},
-{
-"k": 4,
-"nat": "k ",
-"alt": "]\n    ",
-"nat_span": [
-434,
-436
-],
-"alt_span": [
-563,
-569
-]
-},
-{
-"k": 5,
-"nat": "]",
-"alt": ":\n        keys1.append(k)",
-"nat_span": [
-457,
-458
-],
-"alt_span": [
-590,
-615
-]
-},
-{
-"k": 6,
-"nat": "k ",
-"alt": "]\n    ",
-"nat_span": [
-472,
-474
-],
-"alt_span": [
-629,
-635
-]
-},
-{
-"k": 7,
-"nat": "]",
-"alt": ":\n        keys2.append(k)",
-"nat_span": [
-495,
-496
-],
-"alt_span": [
-656,
-681
-]
-},
-{
-"k": 8,
-"nat": "k ",
-"alt": "]\n    ",
-"nat_span": [
-564,
-566
-],
-"alt_span": [
-749,
-755
-]
-},
-{
-"k": 9,
-"nat": " ",
-"alt": ":\n        ",
-"nat_span": [
-580,
-581
-],
-"alt_span": [
-769,
-779
-]
-},
-{
-"k": 10,
-"nat": "]",
-"alt": ":\n            common_keys.append(k)",
-"nat_span": [
-594,
-595
-],
-"alt_span": [
-792,
-827
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": "]\n    for k in keys1:\n        if k not in common_keys:\n            dict1_only_items.append(",
-"nat_span": [
-625,
-625
-],
-"alt_span": [
-857,
-948
-]
-},
-{
-"k": 12,
-"nat": " ",
-"alt": ")\n    dict2_items = []\n    ",
-"nat_span": [
-638,
-639
-],
-"alt_span": [
-961,
-988
-]
-},
-{
-"k": 13,
-"nat": "keys1 if k not in common_keys]\n    dict2_items = [",
-"alt": "keys2:\n        dict2_items.append(",
-"nat_span": [
-648,
-698
-],
-"alt_span": [
-997,
-1031
-]
-},
-{
-"k": 14,
-"nat": " for k in keys2]",
-"alt": ")",
-"nat_span": [
-711,
-727
-],
-"alt_span": [
-1044,
-1045
-]
-},
-{
-"k": 15,
-"nat": "k: v ",
-"alt": "}\n    ",
-"nat_span": [
-805,
-810
-],
-"alt_span": [
-1123,
-1129
-]
-},
-{
-"k": 16,
-"nat": "}",
-"alt": ":\n        final_dict[k] = v",
-"nat_span": [
-833,
-834
-],
-"alt_span": [
-1152,
-1179
-]
-}
-],
-"k_en": 17,
-"shared_fraction": 0.769,
-"pass": true,
-"verify": null
-},
-{
 "doc_id": "py_comprehension__t019",
 "family": "py_comprehension",
 "topic": "Calculate Age",
@@ -13178,6 +12938,129 @@
 "verify": null
 },
 {
+"doc_id": "py_comprehension__t076",
+"family": "py_comprehension",
+"topic": "Simple Decryption (Caesar Cipher)",
+"angle": "code",
+"text_es": "Decrypt a message that was encrypted using a Caesar cipher with a given shift key. The function `decrypt_caesar(text, shift)` should return the decrypted string. Assume only lowercase English letters. Input: `text` (str), `shift` (int). Output: `decrypted_text` (str).\nExample 1: `decrypt_caesar('khoor', 3)` should return `'hello'`.\nExample 2: `decrypt_caesar('wkhuh', 3)` should return `'there'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def decrypt_caesar(text, shift):\n    alphabet_size = 26\n    normalized_shift = shift % alphabet_size\n    shifted_ascii_values = [ord(char) - normalized_shift for char in text]\n    wrapped_ascii_values = [\n        val if ord('a') <= val <= ord('z') else\n        val + alphabet_size if val < ord('a') else\n        val - alphabet_size\n        for val in shifted_ascii_values\n    ]\n    decrypted_chars = [chr(val) for val in wrapped_ascii_values]\n    decrypted_text = \"\".join(decrypted_chars)\n    return decrypted_text\n",
+"text_alt": "def decrypt_caesar(text, shift):\n    alphabet_size = 26\n    normalized_shift = shift % alphabet_size\n    shifted_ascii_values = []\n    for char in text:\n        shifted_ascii_values.append(ord(char) - normalized_shift)\n    wrapped_ascii_values = []\n    for val in shifted_ascii_values:\n        if ord('a') <= val <= ord('z'):\n            wrapped_ascii_values.append(val)\n        elif val < ord('a'):\n            wrapped_ascii_values.append(val + alphabet_size)\n        else:\n            wrapped_ascii_values.append(val - alphabet_size)\n    decrypted_chars = []\n    for val in wrapped_ascii_values:\n        decrypted_chars.append(chr(val))\n    decrypted_text = \"\".join(decrypted_chars)\n    return decrypted_text\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "]\n    for char in text:\n        shifted_ascii_values.append(",
+"nat_span": [
+129,
+129
+],
+"alt_span": [
+129,
+189
+]
+},
+{
+"k": 1,
+"nat": " for char in text]",
+"alt": ")",
+"nat_span": [
+157,
+175
+],
+"alt_span": [
+217,
+218
+]
+},
+{
+"k": 2,
+"nat": "\n        val ",
+"alt": "]\n    for val in shifted_ascii_values:\n        ",
+"nat_span": [
+204,
+217
+],
+"alt_span": [
+247,
+294
+]
+},
+{
+"k": 3,
+"nat": " else\n        val + alphabet_size if",
+"alt": ":\n            wrapped_ascii_values.append(val)\n        elif",
+"nat_span": [
+247,
+283
+],
+"alt_span": [
+324,
+383
+]
+},
+{
+"k": 4,
+"nat": " else\n        ",
+"alt": ":\n            wrapped_ascii_values.append(val + alphabet_size)\n        else:\n            wrapped_ascii_values.append(",
+"nat_span": [
+298,
+312
+],
+"alt_span": [
+398,
+515
+]
+},
+{
+"k": 5,
+"nat": "\n        for val in shifted_ascii_values\n    ]",
+"alt": ")",
+"nat_span": [
+331,
+377
+],
+"alt_span": [
+534,
+535
+]
+},
+{
+"k": 6,
+"nat": "chr(val) ",
+"alt": "]\n    ",
+"nat_span": [
+401,
+410
+],
+"alt_span": [
+559,
+565
+]
+},
+{
+"k": 7,
+"nat": "]",
+"alt": ":\n        decrypted_chars.append(chr(val))",
+"nat_span": [
+441,
+442
+],
+"alt_span": [
+596,
+638
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.769,
+"pass": true,
+"verify": null
+},
+{
 "doc_id": "py_comprehension__t077",
 "family": "py_comprehension",
 "topic": "Validate URL Format",
@@ -15643,207 +15526,6 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.798,
-"pass": true,
-"verify": null
-},
-{
-"doc_id": "py_comprehension__t092",
-"family": "py_comprehension",
-"topic": "Check All Characters Unique",
-"angle": "code",
-"text_es": "Determine if all characters in a given string are unique (case-sensitive). The function `has_unique_chars(text)` should return a boolean. Input: `text` (str). Output: `is_unique` (bool).\nExample 1: `has_unique_chars('abcde')` should return `True`.\nExample 2: `has_unique_chars('hello')` should return `False`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def has_unique_chars(text):\n    if not text:\n        return True\n\n    seen_chars = []\n    \n    unique_check = [c for c in text if c not in seen_chars and not seen_chars.append(c)]\n\n    return len(unique_check) == len(text)\n\ndef has_unique_chars(text):\n    if not text:\n        return True\n    \n    char_counts = {char: text.count(char) for char in set(text)}\n    \n    has_duplicates = [count for count in char_counts.values() if count > 1]\n    \n    return not has_duplicates\n\ndef has_unique_chars(text):\n    if not text:\n        return True\n    \n    sorted_chars = sorted(text)\n    \n    duplicate_pairs = [sorted_chars[i] for i in range(len(sorted_chars) - 1) if sorted_chars[i] == sorted_chars[i+1]]\n    \n    return not duplicate_pairs\n\ndef has_unique_chars(text):\n    if not text:\n        return True\n    \n    unique_chars = []\n    \n    _ = [unique_chars.append(char) for char in text if char not in unique_chars]\n    \n    return len(unique_chars) == len(text)\n\ndef has_unique_chars(text):\n    if not text:\n        return True\n    \n    char_list = list(text)\n    \n    unique_char_set = set()\n    \n    _ = [unique_char_set.add(char) for char in char_list]\n    \n    return len(unique_char_set) == len(char_list)\n",
-"text_alt": "def has_unique_chars(text):\n    if not text:\n        return True\n\n    seen_chars = []\n    \n    unique_check = []\n    for c in text:\n        if c not in seen_chars and not seen_chars.append(c):\n            unique_check.append(c)\n\n    return len(unique_check) == len(text)\n\ndef has_unique_chars(text):\n    if not text:\n        return True\n    \n    char_counts = {char: text.count(char) for char in set(text)}\n    \n    has_duplicates = []\n    for count in char_counts.values():\n        if count > 1:\n            has_duplicates.append(count)\n    \n    return not has_duplicates\n\ndef has_unique_chars(text):\n    if not text:\n        return True\n    \n    sorted_chars = sorted(text)\n    \n    duplicate_pairs = []\n    for i in range(len(sorted_chars) - 1):\n        if sorted_chars[i] == sorted_chars[i+1]:\n            duplicate_pairs.append(sorted_chars[i])\n    \n    return not duplicate_pairs\n\ndef has_unique_chars(text):\n    if not text:\n        return True\n    \n    unique_chars = []\n    \n    _ = []\n    for char in text:\n        if char not in unique_chars:\n            _.append(unique_chars.append(char))\n    \n    return len(unique_chars) == len(text)\n\ndef has_unique_chars(text):\n    if not text:\n        return True\n    \n    char_list = list(text)\n    \n    unique_char_set = set()\n    \n    _ = []\n    for char in char_list:\n        _.append(unique_char_set.add(char))\n    \n    return len(unique_char_set) == len(char_list)\n",
-"opps": [
-{
-"k": 0,
-"nat": "c ",
-"alt": "]\n    ",
-"nat_span": [
-111,
-113
-],
-"alt_span": [
-111,
-117
-]
-},
-{
-"k": 1,
-"nat": " ",
-"alt": ":\n        ",
-"nat_span": [
-126,
-127
-],
-"alt_span": [
-130,
-140
-]
-},
-{
-"k": 2,
-"nat": "]",
-"alt": ":\n            unique_check.append(c)",
-"nat_span": [
-178,
-179
-],
-"alt_span": [
-191,
-227
-]
-},
-{
-"k": 3,
-"nat": "count ",
-"alt": "]\n    ",
-"nat_span": [
-386,
-392
-],
-"alt_span": [
-434,
-440
-]
-},
-{
-"k": 4,
-"nat": " ",
-"alt": ":\n        ",
-"nat_span": [
-425,
-426
-],
-"alt_span": [
-473,
-483
-]
-},
-{
-"k": 5,
-"nat": "]",
-"alt": ":\n            has_duplicates.append(count)",
-"nat_span": [
-438,
-439
-],
-"alt_span": [
-495,
-537
-]
-},
-{
-"k": 6,
-"nat": "sorted_chars[i] ",
-"alt": "]\n    ",
-"nat_span": [
-606,
-622
-],
-"alt_span": [
-704,
-710
-]
-},
-{
-"k": 7,
-"nat": " ",
-"alt": ":\n        ",
-"nat_span": [
-659,
-660
-],
-"alt_span": [
-747,
-757
-]
-},
-{
-"k": 8,
-"nat": "]",
-"alt": ":\n            duplicate_pairs.append(sorted_chars[i])",
-"nat_span": [
-699,
-700
-],
-"alt_span": [
-796,
-849
-]
-},
-{
-"k": 9,
-"nat": "unique_chars.append(char) ",
-"alt": "]\n    ",
-"nat_span": [
-844,
-870
-],
-"alt_span": [
-993,
-999
-]
-},
-{
-"k": 10,
-"nat": " ",
-"alt": ":\n        ",
-"nat_span": [
-886,
-887
-],
-"alt_span": [
-1015,
-1025
-]
-},
-{
-"k": 11,
-"nat": "]",
-"alt": ":\n            _.append(unique_chars.append(char))",
-"nat_span": [
-914,
-915
-],
-"alt_span": [
-1052,
-1101
-]
-},
-{
-"k": 12,
-"nat": "unique_char_set.add(char) ",
-"alt": "]\n    ",
-"nat_span": [
-1108,
-1134
-],
-"alt_span": [
-1294,
-1300
-]
-},
-{
-"k": 13,
-"nat": "]",
-"alt": ":\n        _.append(unique_char_set.add(char))",
-"nat_span": [
-1155,
-1156
-],
-"alt_span": [
-1321,
-1366
-]
-}
-],
-"k_en": 14,
-"shared_fraction": 0.921,
 "pass": true,
 "verify": null
 },
@@ -33088,6 +32770,155 @@
 ],
 "k_en": 12,
 "shared_fraction": 0.791,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_comprehension__t203",
+"family": "py_comprehension",
+"topic": "Find Longest Word in File (Dummy)",
+"angle": "code",
+"text_es": "Create a function `find_longest_word_in_file(filepath)` that takes a `filepath`. Simulate reading a file and finding the longest word (alphanumeric sequences). Return the longest word as a string. If the file is empty or not found, return an empty string. Example: `find_longest_word_in_file('dummy_file.txt')` (containing 'apple banana a') should return `'banana'`, `find_longest_word_in_file('empty.txt')` should return `''`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import re\n\ndef find_longest_word_in_file(filepath):\n    try:\n        with open(filepath, 'r') as file:\n            content = file.read()\n    except FileNotFoundError:\n        return \"\"\n\n    if not content:\n        return \"\"\n\n    words_raw = re.findall(r'\\b\\w+\\b', content.lower())\n    words_filtered = [word for word in words_raw if word.isalpha()]\n    \n    if not words_filtered:\n        return \"\"\n    \n    word_lengths = [(word, len(word)) for word in words_filtered]\n    \n    max_length = max([length for _, length in word_lengths])\n    \n    longest_words = [word for word, length in word_lengths if length == max_length]\n    \n    return longest_words[0] if longest_words else \"\"\n",
+"text_alt": "import re\n\ndef find_longest_word_in_file(filepath):\n    try:\n        with open(filepath, 'r') as file:\n            content = file.read()\n    except FileNotFoundError:\n        return \"\"\n\n    if not content:\n        return \"\"\n\n    words_raw = re.findall(r'\\b\\w+\\b', content.lower())\n    words_filtered = []\n    for word in words_raw:\n        if word.isalpha():\n            words_filtered.append(word)\n    \n    if not words_filtered:\n        return \"\"\n    \n    word_lengths = []\n    for word in words_filtered:\n        word_lengths.append((word, len(word)))\n    \n    max_length_list = []\n    for _, length in word_lengths:\n        max_length_list.append(length)\n    max_length = max(max_length_list)\n    \n    longest_words = []\n    for word, length in word_lengths:\n        if length == max_length:\n            longest_words.append(word)\n    \n    return longest_words[0] if longest_words else \"\"\n",
+"opps": [
+{
+"k": 0,
+"nat": "word ",
+"alt": "]\n    ",
+"nat_span": [
+303,
+308
+],
+"alt_span": [
+303,
+309
+]
+},
+{
+"k": 1,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+329,
+330
+],
+"alt_span": [
+330,
+340
+]
+},
+{
+"k": 2,
+"nat": "]",
+"alt": ":\n            words_filtered.append(word)",
+"nat_span": [
+347,
+348
+],
+"alt_span": [
+357,
+398
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "]\n    for word in words_filtered:\n        word_lengths.append(",
+"nat_span": [
+424,
+424
+],
+"alt_span": [
+474,
+536
+]
+},
+{
+"k": 4,
+"nat": " for word in words_filtered]\n    \n    max_length",
+"alt": ")\n    \n    max_length_list",
+"nat_span": [
+441,
+489
+],
+"alt_span": [
+553,
+579
+]
+},
+{
+"k": 5,
+"nat": "max([length ",
+"alt": "[]\n    ",
+"nat_span": [
+492,
+504
+],
+"alt_span": [
+582,
+589
+]
+},
+{
+"k": 6,
+"nat": "]",
+"alt": ":\n        max_length_list.append(length)\n    max_length = max(max_length_list",
+"nat_span": [
+533,
+534
+],
+"alt_span": [
+618,
+695
+]
+},
+{
+"k": 7,
+"nat": "word ",
+"alt": "]\n    ",
+"nat_span": [
+562,
+567
+],
+"alt_span": [
+723,
+729
+]
+},
+{
+"k": 8,
+"nat": " ",
+"alt": ":\n        ",
+"nat_span": [
+599,
+600
+],
+"alt_span": [
+761,
+771
+]
+},
+{
+"k": 9,
+"nat": "]",
+"alt": ":\n            longest_words.append(word)",
+"nat_span": [
+623,
+624
+],
+"alt_span": [
+794,
+834
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.894,
 "pass": true,
 "verify": null
 }

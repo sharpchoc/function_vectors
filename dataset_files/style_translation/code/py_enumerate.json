@@ -41069,5 +41069,504 @@
 "shared_fraction": 0.891,
 "pass": true,
 "verify": null
+},
+{
+"doc_id": "py_enumerate__t201",
+"family": "py_enumerate",
+"topic": "Merge Two Sorted Lists",
+"angle": "code",
+"text_es": "Write a function `merge_sorted_lists(list1, list2)` that takes two already sorted lists of numbers. It should return a new sorted list containing all elements from both input lists. Example: `merge_sorted_lists([1, 3, 5], [2, 4, 6])` should return `[1, 2, 3, 4, 5, 6]`, `merge_sorted_lists([10], [])` should return `[10]`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def merge_sorted_lists(list1, list2):\n    merged_list = []\n    i, j = 0, 0\n\n    while i < len(list1) and j < len(list2):\n        if list1[i] < list2[j]:\n            merged_list.append(list1[i])\n            i += 1\n        else:\n            merged_list.append(list2[j])\n            j += 1\n\n    for idx1, val1 in enumerate(list1[i:]):\n        merged_list.append(val1)\n\n    for idx2, val2 in enumerate(list2[j:]):\n        merged_list.append(val2)\n\n    temp_list = []\n    for idx_m, item_m in enumerate(merged_list):\n        temp_list.append(item_m)\n\n    final_list = []\n    for idx_f, item_f in enumerate(temp_list):\n        final_list.append(item_f)\n\n    return final_list\n",
+"text_alt": "def merge_sorted_lists(list1, list2):\n    merged_list = []\n    i, j = 0, 0\n\n    while i < len(list1) and j < len(list2):\n        if list1[i] < list2[j]:\n            merged_list.append(list1[i])\n            i += 1\n        else:\n            merged_list.append(list2[j])\n            j += 1\n\n    _list1_suffix = list1[i:]\n    for idx1 in range(len(_list1_suffix)):\n        val1 = _list1_suffix[idx1]\n        merged_list.append(val1)\n\n    _list2_suffix = list2[j:]\n    for idx2 in range(len(_list2_suffix)):\n        val2 = _list2_suffix[idx2]\n        merged_list.append(val2)\n\n    temp_list = []\n    for idx_m in range(len(merged_list)):\n        item_m = merged_list[idx_m]\n        temp_list.append(item_m)\n\n    final_list = []\n    for idx_f in range(len(temp_list)):\n        item_f = temp_list[idx_f]\n        final_list.append(item_f)\n\n    return final_list\n",
+"opps": [
+{
+"k": 0,
+"nat": "for idx1, val1 in enumerate(",
+"alt": "_list1_suffix = ",
+"nat_span": [
+292,
+320
+],
+"alt_span": [
+292,
+308
+]
+},
+{
+"k": 1,
+"nat": "):",
+"alt": "\n    for idx1 in range(len(_list1_suffix)):\n        val1 = _list1_suffix[idx1]",
+"nat_span": [
+329,
+331
+],
+"alt_span": [
+317,
+395
+]
+},
+{
+"k": 2,
+"nat": "for idx2, val2 in enumerate(",
+"alt": "_list2_suffix = ",
+"nat_span": [
+370,
+398
+],
+"alt_span": [
+434,
+450
+]
+},
+{
+"k": 3,
+"nat": "):",
+"alt": "\n    for idx2 in range(len(_list2_suffix)):\n        val2 = _list2_suffix[idx2]",
+"nat_span": [
+407,
+409
+],
+"alt_span": [
+459,
+537
+]
+},
+{
+"k": 4,
+"nat": ", item_m",
+"alt": "",
+"nat_span": [
+476,
+484
+],
+"alt_span": [
+604,
+604
+]
+},
+{
+"k": 5,
+"nat": "enumerate",
+"alt": "range(len",
+"nat_span": [
+488,
+497
+],
+"alt_span": [
+608,
+617
+]
+},
+{
+"k": 6,
+"nat": ":",
+"alt": "):\n        item_m = merged_list[idx_m]",
+"nat_span": [
+510,
+511
+],
+"alt_span": [
+630,
+668
+]
+},
+{
+"k": 7,
+"nat": ", item_f",
+"alt": "",
+"nat_span": [
+579,
+587
+],
+"alt_span": [
+736,
+736
+]
+},
+{
+"k": 8,
+"nat": "enumerate",
+"alt": "range(len",
+"nat_span": [
+591,
+600
+],
+"alt_span": [
+740,
+749
+]
+},
+{
+"k": 9,
+"nat": ":",
+"alt": "):\n        item_f = temp_list[idx_f]",
+"nat_span": [
+611,
+612
+],
+"alt_span": [
+760,
+796
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.881,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_enumerate__t202",
+"family": "py_enumerate",
+"topic": "Word Reversal (Preserve Punctuation)",
+"angle": "code",
+"text_es": "Implement `reverse_words_with_punctuation(sentence)` that takes a string `sentence`. It should reverse the order of words but keep punctuation attached to its word. Example: `reverse_words_with_punctuation('Hello, world!')` should return `'world!, Hello,'`, `reverse_words_with_punctuation('One. Two. Three.')` should return `'Three. Two. One.'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def reverse_words_with_punctuation(sentence):\n    words = []\n    current_word = []\n    for i, char in enumerate(sentence):\n        if char.isalnum():\n            current_word.append(char)\n        else:\n            if current_word:\n                words.append(\"\".join(current_word))\n                current_word = []\n            words.append(char)\n    if current_word:\n        words.append(\"\".join(current_word))\n\n    processed_words = []\n    temp_word = []\n    for j, part in enumerate(words):\n        if part.isalnum():\n            if temp_word:\n                processed_words.append(\"\".join(temp_word))\n                temp_word = []\n            temp_word.append(part)\n        else:\n            if temp_word:\n                temp_word.append(part)\n            else:\n                processed_words.append(part)\n    if temp_word:\n        processed_words.append(\"\".join(temp_word))\n\n    word_chunks = []\n    current_chunk = []\n    for k, item in enumerate(processed_words):\n        if item.isalnum() or (item and not item[0].isalnum()):\n            current_chunk.append(item)\n        else:\n            if current_chunk:\n                word_chunks.append(\"\".join(current_chunk))\n                current_chunk = []\n            word_chunks.append(item)\n    if current_chunk:\n        word_chunks.append(\"\".join(current_chunk))\n\n    result_chunks = []\n    temp_chunk_word = \"\"\n    for l, chunk in enumerate(word_chunks):\n        if chunk.isalnum() or (chunk and chunk[0].isalnum() and chunk[-1].isalnum()):\n            if temp_chunk_word:\n                result_chunks.append(temp_chunk_word)\n                temp_chunk_word = \"\"\n            result_chunks.append(chunk)\n        else:\n            temp_chunk_word = chunk\n\n    final_words = []\n    current_word_item = \"\"\n    for m, item in enumerate(result_chunks):\n        if item.isalnum():\n            if current_word_item:\n                final_words.append(current_word_item)\n                current_word_item = \"\"\n            final_words.append(item)\n        else:\n            current_word_item = item\n    if current_word_item:\n        final_words.append(current_word_item)\n\n    reversed_final_words = final_words[::-1]\n    reversed_sentence_parts = []\n    for n, word_or_punct in enumerate(reversed_final_words):\n        reversed_sentence_parts.append(word_or_punct)\n    return \" \".join(reversed_sentence_parts)\n",
+"text_alt": "def reverse_words_with_punctuation(sentence):\n    words = []\n    current_word = []\n    for i in range(len(sentence)):\n        char = sentence[i]\n        if char.isalnum():\n            current_word.append(char)\n        else:\n            if current_word:\n                words.append(\"\".join(current_word))\n                current_word = []\n            words.append(char)\n    if current_word:\n        words.append(\"\".join(current_word))\n\n    processed_words = []\n    temp_word = []\n    for j in range(len(words)):\n        part = words[j]\n        if part.isalnum():\n            if temp_word:\n                processed_words.append(\"\".join(temp_word))\n                temp_word = []\n            temp_word.append(part)\n        else:\n            if temp_word:\n                temp_word.append(part)\n            else:\n                processed_words.append(part)\n    if temp_word:\n        processed_words.append(\"\".join(temp_word))\n\n    word_chunks = []\n    current_chunk = []\n    for k in range(len(processed_words)):\n        item = processed_words[k]\n        if item.isalnum() or (item and not item[0].isalnum()):\n            current_chunk.append(item)\n        else:\n            if current_chunk:\n                word_chunks.append(\"\".join(current_chunk))\n                current_chunk = []\n            word_chunks.append(item)\n    if current_chunk:\n        word_chunks.append(\"\".join(current_chunk))\n\n    result_chunks = []\n    temp_chunk_word = \"\"\n    for l in range(len(word_chunks)):\n        chunk = word_chunks[l]\n        if chunk.isalnum() or (chunk and chunk[0].isalnum() and chunk[-1].isalnum()):\n            if temp_chunk_word:\n                result_chunks.append(temp_chunk_word)\n                temp_chunk_word = \"\"\n            result_chunks.append(chunk)\n        else:\n            temp_chunk_word = chunk\n\n    final_words = []\n    current_word_item = \"\"\n    for m in range(len(result_chunks)):\n        item = result_chunks[m]\n        if item.isalnum():\n            if current_word_item:\n                final_words.append(current_word_item)\n                current_word_item = \"\"\n            final_words.append(item)\n        else:\n            current_word_item = item\n    if current_word_item:\n        final_words.append(current_word_item)\n\n    reversed_final_words = final_words[::-1]\n    reversed_sentence_parts = []\n    for n in range(len(reversed_final_words)):\n        word_or_punct = reversed_final_words[n]\n        reversed_sentence_parts.append(word_or_punct)\n    return \" \".join(reversed_sentence_parts)\n",
+"opps": [
+{
+"k": 0,
+"nat": ", char",
+"alt": "",
+"nat_span": [
+92,
+98
+],
+"alt_span": [
+92,
+92
+]
+},
+{
+"k": 1,
+"nat": "enumerate",
+"alt": "range(len",
+"nat_span": [
+102,
+111
+],
+"alt_span": [
+96,
+105
+]
+},
+{
+"k": 2,
+"nat": ":",
+"alt": "):\n        char = sentence[i]",
+"nat_span": [
+121,
+122
+],
+"alt_span": [
+115,
+144
+]
+},
+{
+"k": 3,
+"nat": ", part",
+"alt": "",
+"nat_span": [
+467,
+473
+],
+"alt_span": [
+489,
+489
+]
+},
+{
+"k": 4,
+"nat": "enumerate",
+"alt": "range(len",
+"nat_span": [
+477,
+486
+],
+"alt_span": [
+493,
+502
+]
+},
+{
+"k": 5,
+"nat": ":",
+"alt": "):\n        part = words[j]",
+"nat_span": [
+493,
+494
+],
+"alt_span": [
+509,
+535
+]
+},
+{
+"k": 6,
+"nat": ", item",
+"alt": "",
+"nat_span": [
+938,
+944
+],
+"alt_span": [
+979,
+979
+]
+},
+{
+"k": 7,
+"nat": "enumerate",
+"alt": "range(len",
+"nat_span": [
+948,
+957
+],
+"alt_span": [
+983,
+992
+]
+},
+{
+"k": 8,
+"nat": ":",
+"alt": "):\n        item = processed_words[k]",
+"nat_span": [
+974,
+975
+],
+"alt_span": [
+1009,
+1045
+]
+},
+{
+"k": 9,
+"nat": ", chunk",
+"alt": "",
+"nat_span": [
+1384,
+1391
+],
+"alt_span": [
+1454,
+1454
+]
+},
+{
+"k": 10,
+"nat": "enumerate",
+"alt": "range(len",
+"nat_span": [
+1395,
+1404
+],
+"alt_span": [
+1458,
+1467
+]
+},
+{
+"k": 11,
+"nat": ":",
+"alt": "):\n        chunk = word_chunks[l]",
+"nat_span": [
+1417,
+1418
+],
+"alt_span": [
+1480,
+1513
+]
+},
+{
+"k": 12,
+"nat": ", item",
+"alt": "",
+"nat_span": [
+1776,
+1782
+],
+"alt_span": [
+1871,
+1871
+]
+},
+{
+"k": 13,
+"nat": "enumerate",
+"alt": "range(len",
+"nat_span": [
+1786,
+1795
+],
+"alt_span": [
+1875,
+1884
+]
+},
+{
+"k": 14,
+"nat": ":",
+"alt": "):\n        item = result_chunks[m]",
+"nat_span": [
+1810,
+1811
+],
+"alt_span": [
+1899,
+1933
+]
+},
+{
+"k": 15,
+"nat": ", word_or_punct",
+"alt": "",
+"nat_span": [
+2214,
+2229
+],
+"alt_span": [
+2336,
+2336
+]
+},
+{
+"k": 16,
+"nat": "enumerate",
+"alt": "range(len",
+"nat_span": [
+2233,
+2242
+],
+"alt_span": [
+2340,
+2349
+]
+},
+{
+"k": 17,
+"nat": ":",
+"alt": "):\n        word_or_punct = reversed_final_words[n]",
+"nat_span": [
+2264,
+2265
+],
+"alt_span": [
+2371,
+2421
+]
+}
+],
+"k_en": 18,
+"shared_fraction": 0.958,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "py_enumerate__t203",
+"family": "py_enumerate",
+"topic": "Find Longest Word in File (Dummy)",
+"angle": "code",
+"text_es": "Create a function `find_longest_word_in_file(filepath)` that takes a `filepath`. Simulate reading a file and finding the longest word (alphanumeric sequences). Return the longest word as a string. If the file is empty or not found, return an empty string. Example: `find_longest_word_in_file('dummy_file.txt')` (containing 'apple banana a') should return `'banana'`, `find_longest_word_in_file('empty.txt')` should return `''`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import re\n\ndef find_longest_word_in_file(filepath):\n    longest_word = \"\"\n    try:\n        with open(filepath, 'r') as file:\n            lines = file.readlines()\n            for i, line in enumerate(lines):\n                words = re.findall(r'\\b\\w+\\b', line.lower())\n                for j, word in enumerate(words):\n                    if len(word) > len(longest_word):\n                        longest_word = word\n            if not lines:\n                pass\n            else:\n                pass\n    except FileNotFoundError:\n        pass\n    finally:\n        pass\n    return longest_word\n",
+"text_alt": "import re\n\ndef find_longest_word_in_file(filepath):\n    longest_word = \"\"\n    try:\n        with open(filepath, 'r') as file:\n            lines = file.readlines()\n            for i in range(len(lines)):\n                line = lines[i]\n                words = re.findall(r'\\b\\w+\\b', line.lower())\n                for j in range(len(words)):\n                    word = words[j]\n                    if len(word) > len(longest_word):\n                        longest_word = word\n            if not lines:\n                pass\n            else:\n                pass\n    except FileNotFoundError:\n        pass\n    finally:\n        pass\n    return longest_word\n",
+"opps": [
+{
+"k": 0,
+"nat": ", line",
+"alt": "",
+"nat_span": [
+179,
+185
+],
+"alt_span": [
+179,
+179
+]
+},
+{
+"k": 1,
+"nat": "enumerate",
+"alt": "range(len",
+"nat_span": [
+189,
+198
+],
+"alt_span": [
+183,
+192
+]
+},
+{
+"k": 2,
+"nat": ":",
+"alt": "):\n                line = lines[i]",
+"nat_span": [
+205,
+206
+],
+"alt_span": [
+199,
+233
+]
+},
+{
+"k": 3,
+"nat": ", word",
+"alt": "",
+"nat_span": [
+289,
+295
+],
+"alt_span": [
+316,
+316
+]
+},
+{
+"k": 4,
+"nat": "enumerate",
+"alt": "range(len",
+"nat_span": [
+299,
+308
+],
+"alt_span": [
+320,
+329
+]
+},
+{
+"k": 5,
+"nat": ":",
+"alt": "):\n                    word = words[j]",
+"nat_span": [
+315,
+316
+],
+"alt_span": [
+336,
+374
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.949,
+"pass": true,
+"verify": null
 }
 ]

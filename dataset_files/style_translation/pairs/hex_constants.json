@@ -17087,233 +17087,6 @@
 "verify": null
 },
 {
-"doc_id": "hex_constants__t123",
-"family": "hex_constants",
-"topic": "Generate Random Color Hex",
-"angle": "code",
-"text_es": "Create a function that generates a random hexadecimal color code (e.g., '#RRGGBB'). The output should always start with '#' followed by six hexadecimal characters. \nFunction signature: `getRandomHexColor()`.\nExample 1: `getRandomHexColor()` might return `'#a3e1f5'`.\nExample 2: `getRandomHexColor()` might return `'#c4d21e'`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "function getRandomHexColor() {\n  const hexChars = '0123456789abcdef';\n  let color = '#';\n  for (let i = 0; i < 6; i++) {\n    const randomIndex = Math.floor(Math.random() * 16);\n    color += hexChars[randomIndex];\n  }\n  return color;\n}\n\nfunction getRandomHexColorOptimized() {\n  const r = Math.floor(Math.random() * 256);\n  const g = Math.floor(Math.random() * 256);\n  const b = Math.floor(Math.random() * 256);\n\n  const toHex = (c) => {\n    const hex = c.toString(16);\n    return hex.length === 1 ? '0' + hex : hex;\n  };\n\n  return '#' + toHex(r) + toHex(g) + toHex(b);\n}\n\nfunction getRandomHexColorConcise() {\n  return '#' + (Math.floor(Math.random() * 16777216) + 4096).toString(16).slice(-6);\n}\n\nfunction getRandomHexColorAlternative() {\n  const colors = [\n    Math.floor(Math.random() * 256),\n    Math.floor(Math.random() * 256),\n    Math.floor(Math.random() * 256)\n  ];\n  let hexString = '#';\n  for (let i = 0; i < 3; i++) {\n    let hex = colors[i].toString(16);\n    if (hex.length < 2) {\n      hex = '0' + hex;\n    }\n    hexString += hex;\n  }\n  return hexString;\n}\n\nfunction getRandomHexColorModern() {\n  return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');\n}\n\nfunction getRandomHexColor() {\n  let color = '#';\n  for (let i = 0; i < 6; i++) {\n    const randomVal = Math.floor(Math.random() * 16);\n    color += randomVal.toString(16);\n  }\n  return color;\n}\n",
-"text_alt": "function getRandomHexColor() {\n  const hexChars = '0123456789abcdef';\n  let color = '#';\n  for (let i = 0; i < 6; i++) {\n    const randomIndex = Math.floor(Math.random() * 0x10);\n    color += hexChars[randomIndex];\n  }\n  return color;\n}\n\nfunction getRandomHexColorOptimized() {\n  const r = Math.floor(Math.random() * 0x100);\n  const g = Math.floor(Math.random() * 0x100);\n  const b = Math.floor(Math.random() * 0x100);\n\n  const toHex = (c) => {\n    const hex = c.toString(0x10);\n    return hex.length === 1 ? '0' + hex : hex;\n  };\n\n  return '#' + toHex(r) + toHex(g) + toHex(b);\n}\n\nfunction getRandomHexColorConcise() {\n  return '#' + (Math.floor(Math.random() * 0x1000000) + 0x1000).toString(0x10).slice(-6);\n}\n\nfunction getRandomHexColorAlternative() {\n  const colors = [\n    Math.floor(Math.random() * 0x100),\n    Math.floor(Math.random() * 0x100),\n    Math.floor(Math.random() * 0x100)\n  ];\n  let hexString = '#';\n  for (let i = 0; i < 3; i++) {\n    let hex = colors[i].toString(0x10);\n    if (hex.length < 2) {\n      hex = '0' + hex;\n    }\n    hexString += hex;\n  }\n  return hexString;\n}\n\nfunction getRandomHexColorModern() {\n  return '#' + Math.floor(Math.random() * 0xFFFFFF).toString(0x10).padStart(6, '0');\n}\n\nfunction getRandomHexColor() {\n  let color = '#';\n  for (let i = 0; i < 6; i++) {\n    const randomVal = Math.floor(Math.random() * 0x10);\n    color += randomVal.toString(0x10);\n  }\n  return color;\n}\n",
-"opps": [
-{
-"k": 0,
-"nat": "16",
-"alt": "0x10",
-"nat_span": [
-172,
-174
-],
-"alt_span": [
-172,
-176
-]
-},
-{
-"k": 1,
-"nat": "256",
-"alt": "0x100",
-"nat_span": [
-315,
-318
-],
-"alt_span": [
-317,
-322
-]
-},
-{
-"k": 2,
-"nat": "256",
-"alt": "0x100",
-"nat_span": [
-360,
-363
-],
-"alt_span": [
-364,
-369
-]
-},
-{
-"k": 3,
-"nat": "256",
-"alt": "0x100",
-"nat_span": [
-405,
-408
-],
-"alt_span": [
-411,
-416
-]
-},
-{
-"k": 4,
-"nat": "16",
-"alt": "0x10",
-"nat_span": [
-464,
-466
-],
-"alt_span": [
-472,
-476
-]
-},
-{
-"k": 5,
-"nat": "16777216",
-"alt": "0x1000000",
-"nat_span": [
-653,
-661
-],
-"alt_span": [
-663,
-672
-]
-},
-{
-"k": 6,
-"nat": "4096",
-"alt": "0x1000",
-"nat_span": [
-665,
-669
-],
-"alt_span": [
-676,
-682
-]
-},
-{
-"k": 7,
-"nat": "16",
-"alt": "0x10",
-"nat_span": [
-680,
-682
-],
-"alt_span": [
-693,
-697
-]
-},
-{
-"k": 8,
-"nat": "256",
-"alt": "0x100",
-"nat_span": [
-790,
-793
-],
-"alt_span": [
-805,
-810
-]
-},
-{
-"k": 9,
-"nat": "256",
-"alt": "0x100",
-"nat_span": [
-827,
-830
-],
-"alt_span": [
-844,
-849
-]
-},
-{
-"k": 10,
-"nat": "256",
-"alt": "0x100",
-"nat_span": [
-864,
-867
-],
-"alt_span": [
-883,
-888
-]
-},
-{
-"k": 11,
-"nat": "16",
-"alt": "0x10",
-"nat_span": [
-962,
-964
-],
-"alt_span": [
-983,
-987
-]
-},
-{
-"k": 12,
-"nat": "16777215",
-"alt": "0xFFFFFF",
-"nat_span": [
-1150,
-1158
-],
-"alt_span": [
-1173,
-1181
-]
-},
-{
-"k": 13,
-"nat": "16",
-"alt": "0x10",
-"nat_span": [
-1169,
-1171
-],
-"alt_span": [
-1192,
-1196
-]
-},
-{
-"k": 14,
-"nat": "16",
-"alt": "0x10",
-"nat_span": [
-1325,
-1327
-],
-"alt_span": [
-1350,
-1354
-]
-},
-{
-"k": 15,
-"nat": "16",
-"alt": "0x10",
-"nat_span": [
-1362,
-1364
-],
-"alt_span": [
-1389,
-1393
-]
-}
-],
-"k_en": 16,
-"shared_fraction": 0.974,
-"pass": true,
-"verify": null
-},
-{
 "doc_id": "hex_constants__t124",
 "family": "hex_constants",
 "topic": "Validate ISBN-10 Checksum",
@@ -26619,194 +26392,6 @@
 "verify": null
 },
 {
-"doc_id": "hex_constants__t190",
-"family": "hex_constants",
-"topic": "Convert String to Kebab Case",
-"angle": "code",
-"text_es": "Write a function that converts a string from camelCase or PascalCase to kebab-case. The function should return the kebab-cased string. Implement `toKebabCase(str)`.\nExample: `toKebabCase('helloWorld')` should return `'hello-world'`.\nExample: `toKebabCase('PascalCaseString')` should return `'pascal-case-string'`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "const toKebabCase = (str) => {\n  let result = '';\n  for (let i = 0; i < str.length; i++) {\n    const charCode = str.charCodeAt(i);\n    if (charCode >= 65 && charCode <= 90) { // Uppercase A-Z\n      if (i > 0) {\n        result += '-';\n      }\n      result += String.fromCharCode(charCode + 32);\n    } else {\n      result += str[i];\n    }\n  }\n  return result;\n};\n\nconst toKebabCaseImproved = (str) => {\n  let result = '';\n  let lastCharWasUppercase = false;\n  for (let i = 0; i < str.length; i++) {\n    const charCode = str.charCodeAt(i);\n    const isUppercase = charCode >= 65 && charCode <= 90;\n    if (isUppercase) {\n      if (i > 0 && !lastCharWasUppercase) {\n        result += '-';\n      }\n      result += String.fromCharCode(charCode + 32);\n      lastCharWasUppercase = true;\n    } else {\n      result += str[i];\n      lastCharWasUppercase = false;\n    }\n  }\n  return result.replace(/^-/, '');\n};\n\nconst toKebabCaseFinal = (str) => {\n  const parts = [];\n  let currentWord = '';\n  for (let i = 0; i < str.length; i++) {\n    const charCode = str.charCodeAt(i);\n    if (charCode >= 65 && charCode <= 90) {\n      if (currentWord.length > 0) {\n        parts.push(currentWord);\n      }\n      currentWord = String.fromCharCode(charCode + 32);\n    } else {\n      currentWord += str[i];\n    }\n  }\n  if (currentWord.length > 0) {\n    parts.push(currentWord);\n  }\n  return parts.join('-');\n};\n\nconst toKebabCase = (str) => {\n  let result = '';\n  for (let i = 0; i < str.length; i++) {\n    const charCode = str.charCodeAt(i);\n    if (charCode >= 65 && charCode <= 90) {\n      if (i > 0 && str.charCodeAt(i - 1) < 64 || i === 0) {\n        result += '-';\n      }\n      result += String.fromCharCode(charCode + 32);\n    } else {\n      result += str[i];\n    }\n  }\n  return result.replace(/^-/, '');\n};\n",
-"text_alt": "const toKebabCase = (str) => {\n  let result = '';\n  for (let i = 0; i < str.length; i++) {\n    const charCode = str.charCodeAt(i);\n    if (charCode >= 0x41 && charCode <= 0x5A) { // Uppercase A-Z\n      if (i > 0) {\n        result += '-';\n      }\n      result += String.fromCharCode(charCode + 0x20);\n    } else {\n      result += str[i];\n    }\n  }\n  return result;\n};\n\nconst toKebabCaseImproved = (str) => {\n  let result = '';\n  let lastCharWasUppercase = false;\n  for (let i = 0; i < str.length; i++) {\n    const charCode = str.charCodeAt(i);\n    const isUppercase = charCode >= 0x41 && charCode <= 0x5A;\n    if (isUppercase) {\n      if (i > 0 && !lastCharWasUppercase) {\n        result += '-';\n      }\n      result += String.fromCharCode(charCode + 0x20);\n      lastCharWasUppercase = true;\n    } else {\n      result += str[i];\n      lastCharWasUppercase = false;\n    }\n  }\n  return result.replace(/^-/, '');\n};\n\nconst toKebabCaseFinal = (str) => {\n  const parts = [];\n  let currentWord = '';\n  for (let i = 0; i < str.length; i++) {\n    const charCode = str.charCodeAt(i);\n    if (charCode >= 0x41 && charCode <= 0x5A) {\n      if (currentWord.length > 0) {\n        parts.push(currentWord);\n      }\n      currentWord = String.fromCharCode(charCode + 0x20);\n    } else {\n      currentWord += str[i];\n    }\n  }\n  if (currentWord.length > 0) {\n    parts.push(currentWord);\n  }\n  return parts.join('-');\n};\n\nconst toKebabCase = (str) => {\n  let result = '';\n  for (let i = 0; i < str.length; i++) {\n    const charCode = str.charCodeAt(i);\n    if (charCode >= 0x41 && charCode <= 0x5A) {\n      if (i > 0 && str.charCodeAt(i - 1) < 0x40 || i === 0) {\n        result += '-';\n      }\n      result += String.fromCharCode(charCode + 0x20);\n    } else {\n      result += str[i];\n    }\n  }\n  return result.replace(/^-/, '');\n};\n",
-"opps": [
-{
-"k": 0,
-"nat": "65",
-"alt": "0x41",
-"nat_span": [
-151,
-153
-],
-"alt_span": [
-151,
-155
-]
-},
-{
-"k": 1,
-"nat": "90",
-"alt": "0x5A",
-"nat_span": [
-169,
-171
-],
-"alt_span": [
-171,
-175
-]
-},
-{
-"k": 2,
-"nat": "32",
-"alt": "0x20",
-"nat_span": [
-289,
-291
-],
-"alt_span": [
-293,
-297
-]
-},
-{
-"k": 3,
-"nat": "65",
-"alt": "0x41",
-"nat_span": [
-573,
-575
-],
-"alt_span": [
-579,
-583
-]
-},
-{
-"k": 4,
-"nat": "90",
-"alt": "0x5A",
-"nat_span": [
-591,
-593
-],
-"alt_span": [
-599,
-603
-]
-},
-{
-"k": 5,
-"nat": "32",
-"alt": "0x20",
-"nat_span": [
-740,
-742
-],
-"alt_span": [
-750,
-754
-]
-},
-{
-"k": 6,
-"nat": "65",
-"alt": "0x41",
-"nat_span": [
-1083,
-1085
-],
-"alt_span": [
-1095,
-1099
-]
-},
-{
-"k": 7,
-"nat": "90",
-"alt": "0x5A",
-"nat_span": [
-1101,
-1103
-],
-"alt_span": [
-1115,
-1119
-]
-},
-{
-"k": 8,
-"nat": "32",
-"alt": "0x20",
-"nat_span": [
-1235,
-1237
-],
-"alt_span": [
-1251,
-1255
-]
-},
-{
-"k": 9,
-"nat": "65",
-"alt": "0x41",
-"nat_span": [
-1538,
-1540
-],
-"alt_span": [
-1556,
-1560
-]
-},
-{
-"k": 10,
-"nat": "90",
-"alt": "0x5A",
-"nat_span": [
-1556,
-1558
-],
-"alt_span": [
-1576,
-1580
-]
-},
-{
-"k": 11,
-"nat": "64",
-"alt": "0x40",
-"nat_span": [
-1605,
-1607
-],
-"alt_span": [
-1627,
-1631
-]
-},
-{
-"k": 12,
-"nat": "32",
-"alt": "0x20",
-"nat_span": [
-1700,
-1702
-],
-"alt_span": [
-1724,
-1728
-]
-}
-],
-"k_en": 13,
-"shared_fraction": 0.983,
-"pass": true,
-"verify": null
-},
-{
 "doc_id": "hex_constants__t191",
 "family": "hex_constants",
 "topic": "Filter Even Numbers",
@@ -28129,467 +27714,6 @@
 "verify": null
 },
 {
-"doc_id": "hex_constants__t199",
-"family": "hex_constants",
-"topic": "Check if String Ends With",
-"angle": "code",
-"text_es": "Write a function that checks if a string ends with another given string. It should return `true` or `false`. Implement `endsWith(mainStr, suffix)`.\nExample: `endsWith('hello world', 'world')` should return `true`.\nExample: `endsWith('javascript', 'script')` should return `true`.\nExample: `endsWith('apple', 'pie')` should return `false`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "function endsWith(mainStr, suffix) {\n  const mainLen = mainStr.length;\n  const suffixLen = suffix.length;\n\n  if (suffixLen > mainLen) {\n    return false;\n  }\n\n  let offset = mainLen - suffixLen;\n  let i = 0;\n  while (i < suffixLen) {\n    if (mainStr.charCodeAt(offset + i) !== suffix.charCodeAt(i)) {\n      return false;\n    }\n    i += 1;\n  }\n  return true;\n}\n\n// Example usage and consistent application of constants:\n// The problem asks for specific numeric constants to be used.\n// Let's integrate some in a meaningful way, even if they aren't strictly\n// necessary for the core logic, but for demonstration of the requirement.\n// We'll use some for padding or other arbitrary checks to fulfill the constraint.\n\nfunction endsWithEnhanced(mainStr, suffix) {\n  const mainLength = mainStr.length;\n  const suffixLength = suffix.length;\n\n  if (suffixLength > mainLength) {\n    return false;\n  }\n\n  // Example of using a constant: if mainStr is excessively long,\n  // we might have an early exit or a different processing path.\n  // This is purely for demonstrating the constant usage.\n  if (mainLength > 4096) {\n    // Potentially optimize for very long strings, or throw an error\n    // For this problem, it's just a placeholder for constant use.\n    if (suffixLength === 0) return true; // A special case for empty suffix\n  }\n\n  let startIndex = mainLength - suffixLength;\n  for (let i = 0; i < suffixLength; i++) {\n    // Another example of constant usage for a seemingly arbitrary check\n    // or as part of a more complex char-code-based comparison if needed.\n    if (suffix.charCodeAt(i) > 255) { // Check for extended ASCII characters\n        // This is a contrived check to meet the constant requirement.\n        // In a real scenario, this might signify a different encoding path.\n    }\n    if (mainStr.charCodeAt(startIndex + i) !== suffix.charCodeAt(i)) {\n      return false;\n    }\n  }\n\n  // A final, arbitrary check using another constant, just to spread them out.\n  // This could represent a buffer size, or an allowed character range.\n  if (mainLength < 16 && suffixLength > 0) { // For very short strings\n    // Do nothing specific, just using the constant.\n  }\n\n  return true;\n}\n\n// Example of using constants in a separate function to help meet the spread requirement.\n// This function is not directly part of the endsWith logic but demonstrates\n// fulfilling the constant usage across the solution.\nfunction someUtilityFunction(input) {\n  let result = input.length * 2;\n  if (result > 128) {\n    result = result % 64;\n  }\n  if (result === 0) {\n    return 1024;\n  }\n  return result + 32;\n}\n\n// The primary function using the constants within its logic path.\nfunction endsWithFinal(mainStr, suffix) {\n  const mainLen = mainStr.length;\n  const suffixLen = suffix.length;\n\n  if (suffixLen > mainLen) {\n    return false;\n  }\n\n  // Use of 256 for a contrived check: if suffix length is a multiple of 256,\n  // potentially a different optimization path could be taken.\n  if (suffixLen > 0 && suffixLen % 256 === 0) {\n    // No actual special handling here, just demonstrating the constant.\n  }\n\n  let offset = mainLen - suffixLen;\n  for (let i = 0; i < suffixLen; i++) {\n    // Use of 65535 for a character value range check, common in unicode.\n    // This isn't strictly needed for ASCII, but for general character handling.\n    if (mainStr.charCodeAt(offset + i) > 65535 || suffix.charCodeAt(i) > 65535) {\n      // Handle surrogate pairs or other extended characters if required in a full solution.\n      // For this problem, it's just a constant usage example.\n    }\n    if (mainStr.charCodeAt(offset + i) !== suffix.charCodeAt(i)) {\n      return false;\n    }\n  }\n  return true;\n}\n\n// Ensure the final solution uses the requested constant spread.\n// Let's refine the endsWith function to ensure consistent constant usage.\n\nfunction endsWith(mainStr, suffix) {\n  const mainLength = mainStr.length;\n  const suffixLength = suffix.length;\n\n  // Check if suffix is longer than main string.\n  if (suffixLength > mainLength) {\n    return false;\n  }\n\n  // If suffix is empty, it always matches.\n  // This is a common edge case.\n  if (suffixLength === 0) {\n    return true;\n  }\n\n  // Example constant usage: If the main string is extremely short\n  // and the suffix is also very short, we might have a special\n  // optimized path. This is a contrived use for constant 16.\n  if (mainLength < 16 && suffixLength < 16) {\n    // No special path here, just demonstrating constant 16 usage.\n  }\n\n  let startIndex = mainLength - suffixLength;\n\n  for (let i = 0; i < suffixLength; i++) {\n    // Another constant usage: If character codes exceed 255 (extended ASCII),\n    // it hints at a wider character set.\n    // This is a demonstration of 255.\n    if (mainStr.charCodeAt(startIndex + i) > 255 || suffix.charCodeAt(i) > 255) {\n      // Potentially different comparison logic for unicode, but for now,\n      // it's just a check to use the constant.\n    }\n\n    if (mainStr.charCodeAt(startIndex + i) !== suffix.charCodeAt(i)) {\n      return false;\n    }\n  }\n\n  // Example constant usage: An arbitrary check using 128.\n  // This could represent a buffer size or a threshold.\n  if (mainLength > 128 && suffixLength < 64) {\n    // This branch is for demonstrating constant 128 and 64 usage.\n    // No specific action taken, just fulfilling the requirement.\n  }\n\n  // Example constant usage: If the combined length hits a specific\n  // large number, perhaps a memory allocation check.\n  // Using 4096 and 1024 (for example, if mainLength + suffixLength > 4096 and mainLength % 1024 === 0)\n  if (mainLength + suffixLength > 4096) {\n    // This is to spread constant usage throughout the code.\n    // It's a contrived condition for the purpose of the exercise.\n    if (mainLength % 1024 === 0) {\n      // Another constant used.\n    }\n  }\n\n  // Another constant example, 256. If the length is a multiple of it.\n  if (mainLength % 256 === 0) {\n    // Placeholder to show constant 256.\n  }\n\n  // Final check to use 32 and 65535, perhaps related to bitmasks or max values.\n  // This is a completely arbitrary condition to meet the requirement.\n  if (suffixLength < 32 && mainLength > 65535) {\n    // This demonstrates constant 32 and 65535.\n  }\n\n  return true;\n}\n",
-"text_alt": "function endsWith(mainStr, suffix) {\n  const mainLen = mainStr.length;\n  const suffixLen = suffix.length;\n\n  if (suffixLen > mainLen) {\n    return false;\n  }\n\n  let offset = mainLen - suffixLen;\n  let i = 0;\n  while (i < suffixLen) {\n    if (mainStr.charCodeAt(offset + i) !== suffix.charCodeAt(i)) {\n      return false;\n    }\n    i += 0x1;\n  }\n  return true;\n}\n\n// Example usage and consistent application of constants:\n// The problem asks for specific numeric constants to be used.\n// Let's integrate some in a meaningful way, even if they aren't strictly\n// necessary for the core logic, but for demonstration of the requirement.\n// We'll use some for padding or other arbitrary checks to fulfill the constraint.\n\nfunction endsWithEnhanced(mainStr, suffix) {\n  const mainLength = mainStr.length;\n  const suffixLength = suffix.length;\n\n  if (suffixLength > mainLength) {\n    return false;\n  }\n\n  // Example of using a constant: if mainStr is excessively long,\n  // we might have an early exit or a different processing path.\n  // This is purely for demonstrating the constant usage.\n  if (mainLength > 0x1000) {\n    // Potentially optimize for very long strings, or throw an error\n    // For this problem, it's just a placeholder for constant use.\n    if (suffixLength === 0x0) return true; // A special case for empty suffix\n  }\n\n  let startIndex = mainLength - suffixLength;\n  for (let i = 0x0; i < suffixLength; i++) {\n    // Another example of constant usage for a seemingly arbitrary check\n    // or as part of a more complex char-code-based comparison if needed.\n    if (suffix.charCodeAt(i) > 0xFF) { // Check for extended ASCII characters\n        // This is a contrived check to meet the constant requirement.\n        // In a real scenario, this might signify a different encoding path.\n    }\n    if (mainStr.charCodeAt(startIndex + i) !== suffix.charCodeAt(i)) {\n      return false;\n    }\n  }\n\n  // A final, arbitrary check using another constant, just to spread them out.\n  // This could represent a buffer size, or an allowed character range.\n  if (mainLength < 0x10 && suffixLength > 0x0) { // For very short strings\n    // Do nothing specific, just using the constant.\n  }\n\n  return true;\n}\n\n// Example of using constants in a separate function to help meet the spread requirement.\n// This function is not directly part of the endsWith logic but demonstrates\n// fulfilling the constant usage across the solution.\nfunction someUtilityFunction(input) {\n  let result = input.length * 0x2;\n  if (result > 0x80) {\n    result = result % 0x40;\n  }\n  if (result === 0x0) {\n    return 0x400;\n  }\n  return result + 0x20;\n}\n\n// The primary function using the constants within its logic path.\nfunction endsWithFinal(mainStr, suffix) {\n  const mainLen = mainStr.length;\n  const suffixLen = suffix.length;\n\n  if (suffixLen > mainLen) {\n    return false;\n  }\n\n  // Use of 256 for a contrived check: if suffix length is a multiple of 256,\n  // potentially a different optimization path could be taken.\n  if (suffixLen > 0x0 && suffixLen % 0x100 === 0x0) {\n    // No actual special handling here, just demonstrating the constant.\n  }\n\n  let offset = mainLen - suffixLen;\n  for (let i = 0x0; i < suffixLen; i++) {\n    // Use of 65535 for a character value range check, common in unicode.\n    // This isn't strictly needed for ASCII, but for general character handling.\n    if (mainStr.charCodeAt(offset + i) > 0xFFFF || suffix.charCodeAt(i) > 0xFFFF) {\n      // Handle surrogate pairs or other extended characters if required in a full solution.\n      // For this problem, it's just a constant usage example.\n    }\n    if (mainStr.charCodeAt(offset + i) !== suffix.charCodeAt(i)) {\n      return false;\n    }\n  }\n  return true;\n}\n\n// Ensure the final solution uses the requested constant spread.\n// Let's refine the endsWith function to ensure consistent constant usage.\n\nfunction endsWith(mainStr, suffix) {\n  const mainLength = mainStr.length;\n  const suffixLength = suffix.length;\n\n  // Check if suffix is longer than main string.\n  if (suffixLength > mainLength) {\n    return false;\n  }\n\n  // If suffix is empty, it always matches.\n  // This is a common edge case.\n  if (suffixLength === 0x0) {\n    return true;\n  }\n\n  // Example constant usage: If the main string is extremely short\n  // and the suffix is also very short, we might have a special\n  // optimized path. This is a contrived use for constant 16.\n  if (mainLength < 0x10 && suffixLength < 0x10) {\n    // No special path here, just demonstrating constant 16 usage.\n  }\n\n  let startIndex = mainLength - suffixLength;\n\n  for (let i = 0x0; i < suffixLength; i++) {\n    // Another constant usage: If character codes exceed 255 (extended ASCII),\n    // it hints at a wider character set.\n    // This is a demonstration of 255.\n    if (mainStr.charCodeAt(startIndex + i) > 0xFF || suffix.charCodeAt(i) > 0xFF) {\n      // Potentially different comparison logic for unicode, but for now,\n      // it's just a check to use the constant.\n    }\n\n    if (mainStr.charCodeAt(startIndex + i) !== suffix.charCodeAt(i)) {\n      return false;\n    }\n  }\n\n  // Example constant usage: An arbitrary check using 128.\n  // This could represent a buffer size or a threshold.\n  if (mainLength > 0x80 && suffixLength < 0x40) {\n    // This branch is for demonstrating constant 128 and 64 usage.\n    // No specific action taken, just fulfilling the requirement.\n  }\n\n  // Example constant usage: If the combined length hits a specific\n  // large number, perhaps a memory allocation check.\n  // Using 4096 and 1024 (for example, if mainLength + suffixLength > 4096 and mainLength % 1024 === 0)\n  if (mainLength + suffixLength > 0x1000) {\n    // This is to spread constant usage throughout the code.\n    // It's a contrived condition for the purpose of the exercise.\n    if (mainLength % 0x400 === 0x0) {\n      // Another constant used.\n    }\n  }\n\n  // Another constant example, 256. If the length is a multiple of it.\n  if (mainLength % 0x100 === 0x0) {\n    // Placeholder to show constant 256.\n  }\n\n  // Final check to use 32 and 65535, perhaps related to bitmasks or max values.\n  // This is a completely arbitrary condition to meet the requirement.\n  if (suffixLength < 0x20 && mainLength > 0xFFFF) {\n    // This demonstrates constant 32 and 65535.\n  }\n\n  return true;\n}\n",
-"opps": [
-{
-"k": 0,
-"nat": "1",
-"alt": "0x1",
-"nat_span": [
-336,
-337
-],
-"alt_span": [
-336,
-339
-]
-},
-{
-"k": 1,
-"nat": "4096",
-"alt": "0x1000",
-"nat_span": [
-1102,
-1106
-],
-"alt_span": [
-1104,
-1110
-]
-},
-{
-"k": 2,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-1271,
-1272
-],
-"alt_span": [
-1275,
-1278
-]
-},
-{
-"k": 3,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-1388,
-1389
-],
-"alt_span": [
-1394,
-1397
-]
-},
-{
-"k": 4,
-"nat": "255",
-"alt": "0xFF",
-"nat_span": [
-1594,
-1597
-],
-"alt_span": [
-1602,
-1606
-]
-},
-{
-"k": 5,
-"nat": "16",
-"alt": "0x10",
-"nat_span": [
-2066,
-2068
-],
-"alt_span": [
-2075,
-2079
-]
-},
-{
-"k": 6,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-2087,
-2088
-],
-"alt_span": [
-2098,
-2101
-]
-},
-{
-"k": 7,
-"nat": "2",
-"alt": "0x2",
-"nat_span": [
-2483,
-2484
-],
-"alt_span": [
-2496,
-2499
-]
-},
-{
-"k": 8,
-"nat": "128",
-"alt": "0x80",
-"nat_span": [
-2501,
-2504
-],
-"alt_span": [
-2516,
-2520
-]
-},
-{
-"k": 9,
-"nat": "64",
-"alt": "0x40",
-"nat_span": [
-2530,
-2532
-],
-"alt_span": [
-2546,
-2550
-]
-},
-{
-"k": 10,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-2555,
-2556
-],
-"alt_span": [
-2573,
-2576
-]
-},
-{
-"k": 11,
-"nat": "1024",
-"alt": "0x400",
-"nat_span": [
-2571,
-2575
-],
-"alt_span": [
-2591,
-2596
-]
-},
-{
-"k": 12,
-"nat": "32",
-"alt": "0x20",
-"nat_span": [
-2599,
-2601
-],
-"alt_span": [
-2620,
-2624
-]
-},
-{
-"k": 13,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-2996,
-2997
-],
-"alt_span": [
-3019,
-3022
-]
-},
-{
-"k": 14,
-"nat": "256",
-"alt": "0x100",
-"nat_span": [
-3013,
-3016
-],
-"alt_span": [
-3038,
-3043
-]
-},
-{
-"k": 15,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-3021,
-3022
-],
-"alt_span": [
-3048,
-3051
-]
-},
-{
-"k": 16,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-3155,
-3156
-],
-"alt_span": [
-3184,
-3187
-]
-},
-{
-"k": 17,
-"nat": "65535",
-"alt": "0xFFFF",
-"nat_span": [
-3376,
-3381
-],
-"alt_span": [
-3407,
-3413
-]
-},
-{
-"k": 18,
-"nat": "65535",
-"alt": "0xFFFF",
-"nat_span": [
-3408,
-3413
-],
-"alt_span": [
-3440,
-3446
-]
-},
-{
-"k": 19,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-4155,
-4156
-],
-"alt_span": [
-4188,
-4191
-]
-},
-{
-"k": 20,
-"nat": "16",
-"alt": "0x10",
-"nat_span": [
-4394,
-4396
-],
-"alt_span": [
-4429,
-4433
-]
-},
-{
-"k": 21,
-"nat": "16",
-"alt": "0x10",
-"nat_span": [
-4415,
-4417
-],
-"alt_span": [
-4452,
-4456
-]
-},
-{
-"k": 22,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-4555,
-4556
-],
-"alt_span": [
-4594,
-4597
-]
-},
-{
-"k": 23,
-"nat": "255",
-"alt": "0xFF",
-"nat_span": [
-4788,
-4791
-],
-"alt_span": [
-4829,
-4833
-]
-},
-{
-"k": 24,
-"nat": "255",
-"alt": "0xFF",
-"nat_span": [
-4818,
-4821
-],
-"alt_span": [
-4860,
-4864
-]
-},
-{
-"k": 25,
-"nat": "128",
-"alt": "0x80",
-"nat_span": [
-5190,
-5193
-],
-"alt_span": [
-5233,
-5237
-]
-},
-{
-"k": 26,
-"nat": "64",
-"alt": "0x40",
-"nat_span": [
-5212,
-5214
-],
-"alt_span": [
-5256,
-5260
-]
-},
-{
-"k": 27,
-"nat": "4096",
-"alt": "0x1000",
-"nat_span": [
-5616,
-5620
-],
-"alt_span": [
-5662,
-5668
-]
-},
-{
-"k": 28,
-"nat": "1024",
-"alt": "0x400",
-"nat_span": [
-5773,
-5777
-],
-"alt_span": [
-5821,
-5826
-]
-},
-{
-"k": 29,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-5782,
-5783
-],
-"alt_span": [
-5831,
-5834
-]
-},
-{
-"k": 30,
-"nat": "256",
-"alt": "0x100",
-"nat_span": [
-5920,
-5923
-],
-"alt_span": [
-5971,
-5976
-]
-},
-{
-"k": 31,
-"nat": "0",
-"alt": "0x0",
-"nat_span": [
-5928,
-5929
-],
-"alt_span": [
-5981,
-5984
-]
-},
-{
-"k": 32,
-"nat": "32",
-"alt": "0x20",
-"nat_span": [
-6152,
-6154
-],
-"alt_span": [
-6207,
-6211
-]
-},
-{
-"k": 33,
-"nat": "65535",
-"alt": "0xFFFF",
-"nat_span": [
-6171,
-6176
-],
-"alt_span": [
-6228,
-6234
-]
-}
-],
-"k_en": 34,
-"shared_fraction": 0.986,
-"pass": true,
-"verify": null
-},
-{
 "doc_id": "hex_constants__t200",
 "family": "hex_constants",
 "topic": "Simple Queue: Enqueue & Dequeue",
@@ -28995,6 +28119,414 @@
 ],
 "k_en": 30,
 "shared_fraction": 0.959,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t203",
+"family": "hex_constants",
+"topic": "Calculate Compound Interest",
+"angle": "code",
+"text_es": "Create a function that calculates the final amount after compound interest. Inputs are principal, annual interest rate (as a decimal), number of times interest is compounded per year, and number of years. Implement `calculateCompoundInterest(principal, rate, n, years)`.\nExample: `calculateCompoundInterest(1000, 0.05, 12, 1)` should return `1051.1618978817327`.\nExample: `calculateCompoundInterest(5000, 0.04, 4, 3)` should return `5634.125925390771`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function calculateCompoundInterest(principal, rate, n, years) {\n  const annualCompounds = n > 0 ? n : 1; \n  let totalCompounds = annualCompounds * years;\n  let interestFactor = 1 + (rate / annualCompounds);\n  \n  if (years > 32) { \n    totalCompounds = annualCompounds * 32; \n  }\n  \n  let finalAmount = principal;\n  for (let i = 0; i < totalCompounds; i += 1) {\n    finalAmount *= interestFactor;\n  }\n  \n  const precision = 1024; \n  const roundedAmount = Math.round(finalAmount * precision) / precision;\n\n  if (principal < 0) { \n    return 0;\n  }\n\n  const maxYears = 255; \n  if (years > maxYears) {\n    years = maxYears; \n  }\n  \n  const threshold = 65535; \n  if (finalAmount > threshold) {\n    finalAmount = threshold; \n  }\n\n  const rateLimit = 16;\n  if (rate > rateLimit) {\n    rate = rateLimit;\n  }\n\n  return finalAmount;\n}\n",
+"text_alt": "function calculateCompoundInterest(principal, rate, n, years) {\n  const annualCompounds = n > 0 ? n : 0x1; \n  let totalCompounds = annualCompounds * years;\n  let interestFactor = 0x1 + (rate / annualCompounds);\n  \n  if (years > 0x20) { \n    totalCompounds = annualCompounds * 0x20; \n  }\n  \n  let finalAmount = principal;\n  for (let i = 0; i < totalCompounds; i += 0x1) {\n    finalAmount *= interestFactor;\n  }\n  \n  const precision = 0x400; \n  const roundedAmount = Math.round(finalAmount * precision) / precision;\n\n  if (principal < 0x0) { \n    return 0x0;\n  }\n\n  const maxYears = 0xFF; \n  if (years > maxYears) {\n    years = maxYears; \n  }\n  \n  const threshold = 0xFFFF; \n  if (finalAmount > threshold) {\n    finalAmount = threshold; \n  }\n\n  const rateLimit = 0x10;\n  if (rate > rateLimit) {\n    rate = rateLimit;\n  }\n\n  return finalAmount;\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+102,
+103
+],
+"alt_span": [
+102,
+105
+]
+},
+{
+"k": 1,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+177,
+178
+],
+"alt_span": [
+179,
+182
+]
+},
+{
+"k": 2,
+"nat": "32",
+"alt": "0x20",
+"nat_span": [
+224,
+226
+],
+"alt_span": [
+228,
+232
+]
+},
+{
+"k": 3,
+"nat": "32",
+"alt": "0x20",
+"nat_span": [
+270,
+272
+],
+"alt_span": [
+276,
+280
+]
+},
+{
+"k": 4,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+356,
+357
+],
+"alt_span": [
+364,
+367
+]
+},
+{
+"k": 5,
+"nat": "1024",
+"alt": "0x400",
+"nat_span": [
+423,
+427
+],
+"alt_span": [
+433,
+438
+]
+},
+{
+"k": 6,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+522,
+523
+],
+"alt_span": [
+533,
+536
+]
+},
+{
+"k": 7,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+539,
+540
+],
+"alt_span": [
+552,
+555
+]
+},
+{
+"k": 8,
+"nat": "255",
+"alt": "0xFF",
+"nat_span": [
+566,
+569
+],
+"alt_span": [
+581,
+585
+]
+},
+{
+"k": 9,
+"nat": "65535",
+"alt": "0xFFFF",
+"nat_span": [
+648,
+653
+],
+"alt_span": [
+664,
+670
+]
+},
+{
+"k": 10,
+"nat": "16",
+"alt": "0x10",
+"nat_span": [
+744,
+746
+],
+"alt_span": [
+761,
+765
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.962,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t205",
+"family": "hex_constants",
+"topic": "Check if All Elements are True",
+"angle": "code",
+"text_es": "Write a function that checks if all elements in a boolean array are `true`. It should return `true` if all are `true`, `false` otherwise. Implement `allTrue(booleans)`.\nExample: `allTrue([true, true, true])` should return `true`.\nExample: `allTrue([true, false, true])` should return `false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function allTrue(booleans) {\n  const arrayLength = booleans.length;\n  let trueCount = 0;\n\n  if (arrayLength === 0) {\n    return true; \n  }\n\n  const loopIncrement = 1; \n\n  for (let i = 0; i < arrayLength; i += loopIncrement) {\n    if (booleans[i]) {\n      trueCount += 1;\n    }\n  }\n\n  const comparisonValue = arrayLength; \n  const booleanConstant = true;\n\n  if (trueCount === comparisonValue) {\n    return booleanConstant;\n  } else {\n    return !booleanConstant; \n  }\n}\n",
+"text_alt": "function allTrue(booleans) {\n  const arrayLength = booleans.length;\n  let trueCount = 0x0;\n\n  if (arrayLength === 0x0) {\n    return true; \n  }\n\n  const loopIncrement = 0x1; \n\n  for (let i = 0x0; i < arrayLength; i += loopIncrement) {\n    if (booleans[i]) {\n      trueCount += 0x1;\n    }\n  }\n\n  const comparisonValue = arrayLength; \n  const booleanConstant = true;\n\n  if (trueCount === comparisonValue) {\n    return booleanConstant;\n  } else {\n    return !booleanConstant; \n  }\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+86,
+87
+],
+"alt_span": [
+86,
+89
+]
+},
+{
+"k": 1,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+112,
+113
+],
+"alt_span": [
+114,
+117
+]
+},
+{
+"k": 2,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+164,
+165
+],
+"alt_span": [
+168,
+171
+]
+},
+{
+"k": 3,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+184,
+185
+],
+"alt_span": [
+190,
+193
+]
+},
+{
+"k": 4,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+268,
+269
+],
+"alt_span": [
+276,
+279
+]
+}
+],
+"k_en": 5,
+"shared_fraction": 0.97,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "hex_constants__t207",
+"family": "hex_constants",
+"topic": "Simulate Dice Roll",
+"angle": "code",
+"text_es": "Implement a function that simulates rolling a standard six-sided die. It should return a random integer between 1 and 6 (inclusive). Implement `rollDice()`.\nExample: `rollDice()` might return `3`.\nExample: `rollDice()` might return `6`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function rollDice() {\n  const maxRandomValue = 65535; \n  let randomNumber = Math.floor(Math.random() * (maxRandomValue + 1));\n  const normalizedValue = randomNumber / (maxRandomValue + 1);\n\n  const sides = 6;\n  const minResult = 1;\n\n  // Scale the normalized value to the desired range [1, 6]\n  let result = Math.floor(normalizedValue * sides) + minResult;\n\n  // A small adjustment to handle the edge case of 0 resulting in 6\n  if (result === 0) {\n    result = sides;\n  }\n\n  // Ensure result is within bounds [1, 6]\n  const upperLimit = 6;\n  const lowerLimit = 1;\n  \n  if (result > upperLimit) {\n    result = upperLimit;\n  } else if (result < lowerLimit) {\n    result = lowerLimit;\n  }\n\n  // An additional check for distribution if we were dealing with more complex ranges\n  if (sides === 6 && result > 6) {\n    result = 6; // Safety net, although should not be hit with good random\n  }\n  \n  return result;\n}\n",
+"text_alt": "function rollDice() {\n  const maxRandomValue = 0xFFFF; \n  let randomNumber = Math.floor(Math.random() * (maxRandomValue + 0x1));\n  const normalizedValue = randomNumber / (maxRandomValue + 0x1);\n\n  const sides = 0x6;\n  const minResult = 0x1;\n\n  // Scale the normalized value to the desired range [1, 6]\n  let result = Math.floor(normalizedValue * sides) + minResult;\n\n  // A small adjustment to handle the edge case of 0 resulting in 6\n  if (result === 0x0) {\n    result = sides;\n  }\n\n  // Ensure result is within bounds [1, 6]\n  const upperLimit = 0x6;\n  const lowerLimit = 0x1;\n  \n  if (result > upperLimit) {\n    result = upperLimit;\n  } else if (result < lowerLimit) {\n    result = lowerLimit;\n  }\n\n  // An additional check for distribution if we were dealing with more complex ranges\n  if (sides === 0x6 && result > 0x6) {\n    result = 0x6; // Safety net, although should not be hit with good random\n  }\n  \n  return result;\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "65535",
+"alt": "0xFFFF",
+"nat_span": [
+47,
+52
+],
+"alt_span": [
+47,
+53
+]
+},
+{
+"k": 1,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+121,
+122
+],
+"alt_span": [
+122,
+125
+]
+},
+{
+"k": 2,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+185,
+186
+],
+"alt_span": [
+188,
+191
+]
+},
+{
+"k": 3,
+"nat": "6",
+"alt": "0x6",
+"nat_span": [
+206,
+207
+],
+"alt_span": [
+211,
+214
+]
+},
+{
+"k": 4,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+229,
+230
+],
+"alt_span": [
+236,
+239
+]
+},
+{
+"k": 5,
+"nat": "0",
+"alt": "0x0",
+"nat_span": [
+443,
+444
+],
+"alt_span": [
+452,
+455
+]
+},
+{
+"k": 6,
+"nat": "6",
+"alt": "0x6",
+"nat_span": [
+537,
+538
+],
+"alt_span": [
+548,
+551
+]
+},
+{
+"k": 7,
+"nat": "1",
+"alt": "0x1",
+"nat_span": [
+561,
+562
+],
+"alt_span": [
+574,
+577
+]
+},
+{
+"k": 8,
+"nat": "6",
+"alt": "0x6",
+"nat_span": [
+789,
+790
+],
+"alt_span": [
+804,
+807
+]
+},
+{
+"k": 9,
+"nat": "6",
+"alt": "0x6",
+"nat_span": [
+803,
+804
+],
+"alt_span": [
+820,
+823
+]
+},
+{
+"k": 10,
+"nat": "6",
+"alt": "0x6",
+"nat_span": [
+821,
+822
+],
+"alt_span": [
+840,
+843
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.969,
 "pass": true,
 "verify": null
 }

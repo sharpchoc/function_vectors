@@ -23774,103 +23774,6 @@
 "verify": null
 },
 {
-"doc_id": "php_array__t118",
-"family": "php_array",
-"topic": "Convert CSV String to Array of Arrays",
-"angle": "code",
-"text_es": "Implement a function `csvToArray` that converts a multi-line CSV string into a 2D array, where each inner array represents a row. Assume comma as delimiter and no escaped commas within fields for simplicity. The function should return a 2D array.\n\nExample 1: `csvToArray('name,age\\nAlice,30\\nBob,25')` should return `[['name', 'age'], ['Alice', '30'], ['Bob', '25']]`.\nExample 2: `csvToArray('product,price\\napple,1.00')` should return `[['product', 'price'], ['apple', '1.00']]`.",
-"langs": {
-"src": "Task",
-"tgt": "PHP"
-},
-"text_nat": "<?php\n\nfunction csvToArray(string $csvString): array {\n    $rows = explode(\"\\n\", $csvString);\n    $result = [];\n\n    foreach ($rows as $row) {\n        if (trim($row) === '') {\n            continue;\n        }\n        $fields = explode(\",\", $row);\n        $result[] = $fields;\n    }\n\n    return $result;\n}\n\n?>\n\n<?php\n\nfunction csvToArray(string $csvString): array {\n    $lines = explode(\"\\n\", $csvString);\n    $output = [];\n    $headerRow = [];\n\n    if (!empty($lines)) {\n        $firstLine = array_shift($lines);\n        $headerRow = explode(\",\", $firstLine);\n        $output[] = $headerRow;\n    }\n\n    foreach ($lines as $line) {\n        if (trim($line) === '') {\n            continue;\n        }\n        $dataRow = explode(\",\", $line);\n        $output[] = $dataRow;\n    }\n\n    return $output;\n}\n\n?>\n\n<?php\n\nfunction csvToArray(string $csvString): array {\n    $lines = explode(\"\\n\", $csvString);\n    $data = [];\n    $processedLines = [];\n\n    foreach ($lines as $line) {\n        if (trim($line) === '') {\n            continue;\n        }\n        $processedLines[] = $line;\n    }\n\n    foreach ($processedLines as $processedLine) {\n        $cells = explode(\",\", $processedLine);\n        $data[] = $cells;\n    }\n\n    return $data;\n}\n\n?>\n\n<?php\n\nfunction csvToArray(string $csvString): array {\n    $rows = explode(\"\\n\", $csvString);\n    $arrayResult = [];\n\n    foreach ($rows as $rowLine) {\n        if (trim($rowLine) === '') {\n            continue;\n        }\n        $columns = explode(\",\", $rowLine);\n        $arrayResult[] = $columns;\n    }\n\n    return $arrayResult;\n}\n\n?>\n",
-"text_alt": "<?php\n\nfunction csvToArray(string $csvString): array {\n    $rows = explode(\"\\n\", $csvString);\n    $result = array();\n\n    foreach ($rows as $row) {\n        if (trim($row) === '') {\n            continue;\n        }\n        $fields = explode(\",\", $row);\n        $result[] = $fields;\n    }\n\n    return $result;\n}\n\n?>\n\n<?php\n\nfunction csvToArray(string $csvString): array {\n    $lines = explode(\"\\n\", $csvString);\n    $output = array();\n    $headerRow = array();\n\n    if (!empty($lines)) {\n        $firstLine = array_shift($lines);\n        $headerRow = explode(\",\", $firstLine);\n        $output[] = $headerRow;\n    }\n\n    foreach ($lines as $line) {\n        if (trim($line) === '') {\n            continue;\n        }\n        $dataRow = explode(\",\", $line);\n        $output[] = $dataRow;\n    }\n\n    return $output;\n}\n\n?>\n\n<?php\n\nfunction csvToArray(string $csvString): array {\n    $lines = explode(\"\\n\", $csvString);\n    $data = array();\n    $processedLines = array();\n\n    foreach ($lines as $line) {\n        if (trim($line) === '') {\n            continue;\n        }\n        $processedLines[] = $line;\n    }\n\n    foreach ($processedLines as $processedLine) {\n        $cells = explode(\",\", $processedLine);\n        $data[] = $cells;\n    }\n\n    return $data;\n}\n\n?>\n\n<?php\n\nfunction csvToArray(string $csvString): array {\n    $rows = explode(\"\\n\", $csvString);\n    $arrayResult = array();\n\n    foreach ($rows as $rowLine) {\n        if (trim($rowLine) === '') {\n            continue;\n        }\n        $columns = explode(\",\", $rowLine);\n        $arrayResult[] = $columns;\n    }\n\n    return $arrayResult;\n}\n\n?>\n",
-"opps": [
-{
-"k": 0,
-"nat": "[]",
-"alt": "array()",
-"nat_span": [
-108,
-110
-],
-"alt_span": [
-108,
-115
-]
-},
-{
-"k": 1,
-"nat": "[]",
-"alt": "array()",
-"nat_span": [
-418,
-420
-],
-"alt_span": [
-423,
-430
-]
-},
-{
-"k": 2,
-"nat": "[]",
-"alt": "array()",
-"nat_span": [
-439,
-441
-],
-"alt_span": [
-449,
-456
-]
-},
-{
-"k": 3,
-"nat": "[]",
-"alt": "array()",
-"nat_span": [
-907,
-909
-],
-"alt_span": [
-922,
-929
-]
-},
-{
-"k": 4,
-"nat": "[]",
-"alt": "array()",
-"nat_span": [
-933,
-935
-],
-"alt_span": [
-953,
-960
-]
-},
-{
-"k": 5,
-"nat": "[]",
-"alt": "array()",
-"nat_span": [
-1346,
-1348
-],
-"alt_span": [
-1371,
-1378
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 0.98,
-"pass": true,
-"verify": null
-},
-{
 "doc_id": "php_array__t119",
 "family": "php_array",
 "topic": "Find Missing Number in Sequence",
@@ -41103,6 +41006,155 @@
 ],
 "k_en": 12,
 "shared_fraction": 0.962,
+"pass": true,
+"verify": null
+},
+{
+"doc_id": "php_array__t201",
+"family": "php_array",
+"topic": "Sum of Digits (Recursive)",
+"angle": "code",
+"text_es": "Write a recursive function to calculate the sum of the digits of a non-negative integer. For example, sum of digits for 123 is 1 + 2 + 3 = 6. Return an integer.\n\nFunction signature: `function sumDigitsRecursive(int $number): int`.\nExample 1: `sumDigitsRecursive(123)` should return `6`.\nExample 2: `sumDigitsRecursive(0)` should return `0`.",
+"langs": {
+"src": "Task",
+"tgt": "PHP"
+},
+"text_nat": "<?php\n\nfunction sumDigitsRecursive(int $number): int {\n    if ($number < 10) {\n        $singleDigitArray = [$number];\n        return $singleDigitArray[0];\n    }\n\n    $lastDigit = $number % 10;\n    $remainingNumber = (int)($number / 10);\n\n    $intermediateSums = [];\n    $intermediateSums[] = $lastDigit;\n    $intermediateSums[] = sumDigitsRecursive($remainingNumber);\n\n    $results = [];\n    $results[] = array_sum($intermediateSums);\n\n    $sumComponents = [$lastDigit, sumDigitsRecursive($remainingNumber)];\n    $finalCalculation = array_sum($sumComponents);\n\n    $values = [$lastDigit, $remainingNumber, $finalCalculation];\n    $metadata = ['type' => 'recursive', 'input' => $number];\n\n    $sumArray = [$finalCalculation];\n    return $sumArray[0];\n}\n\n?>\n",
+"text_alt": "<?php\n\nfunction sumDigitsRecursive(int $number): int {\n    if ($number < 10) {\n        $singleDigitArray = array($number);\n        return $singleDigitArray[0];\n    }\n\n    $lastDigit = $number % 10;\n    $remainingNumber = (int)($number / 10);\n\n    $intermediateSums = array();\n    $intermediateSums[] = $lastDigit;\n    $intermediateSums[] = sumDigitsRecursive($remainingNumber);\n\n    $results = array();\n    $results[] = array_sum($intermediateSums);\n\n    $sumComponents = array($lastDigit, sumDigitsRecursive($remainingNumber));\n    $finalCalculation = array_sum($sumComponents);\n\n    $values = array($lastDigit, $remainingNumber, $finalCalculation);\n    $metadata = array('type' => 'recursive', 'input' => $number);\n\n    $sumArray = array($finalCalculation);\n    return $sumArray[0];\n}\n\n?>\n",
+"opps": [
+{
+"k": 0,
+"nat": "[$number]",
+"alt": "array($number)",
+"nat_span": [
+107,
+116
+],
+"alt_span": [
+107,
+121
+]
+},
+{
+"k": 1,
+"nat": "[]",
+"alt": "array()",
+"nat_span": [
+262,
+264
+],
+"alt_span": [
+267,
+274
+]
+},
+{
+"k": 2,
+"nat": "[]",
+"alt": "array()",
+"nat_span": [
+384,
+386
+],
+"alt_span": [
+394,
+401
+]
+},
+{
+"k": 3,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+457,
+458
+],
+"alt_span": [
+472,
+478
+]
+},
+{
+"k": 4,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+506,
+507
+],
+"alt_span": [
+526,
+527
+]
+},
+{
+"k": 5,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+575,
+576
+],
+"alt_span": [
+595,
+601
+]
+},
+{
+"k": 6,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+623,
+624
+],
+"alt_span": [
+648,
+649
+]
+},
+{
+"k": 7,
+"nat": "[",
+"alt": "array(",
+"nat_span": [
+642,
+643
+],
+"alt_span": [
+667,
+673
+]
+},
+{
+"k": 8,
+"nat": "]",
+"alt": ")",
+"nat_span": [
+684,
+685
+],
+"alt_span": [
+714,
+715
+]
+},
+{
+"k": 9,
+"nat": "[$finalCalculation]",
+"alt": "array($finalCalculation)",
+"nat_span": [
+704,
+723
+],
+"alt_span": [
+734,
+758
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.943,
 "pass": true,
 "verify": null
 }
