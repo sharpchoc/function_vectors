@@ -9516,3 +9516,16 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   `apply_free` reset `pass` from the free rule alone, letting 2 builder-rejected docs (fence / shared < .6) into pairs — now it can only
   remove a pass; both docs replaced. Sweep of the 59 finished families: 11,800 docs, 0 issues. Lessons: `pkill -f <pattern>` kills the
   calling shell when the pattern is in its own command line — kill by pid; don't set the pool target far above what is needed.
+- 2026-09-17 STEP 3 on the clean corpus (qwen25_code): 4 RTX PRO 4500 pods (cs3_1..4, `logs/code_styles_step3_job.sh`, shards
+  `logs/code_styles_shard{1..4}.txt`), 120,000 rollouts (k = 0..4 × 2 poles × 200 docs × 60 families) + first-token log-prob margins
+  (`logprob_margin.py`), judged with 0 failures (judge driver on the CPU box, `--dir artifacts/style_translation/qwen25_code/rollouts`).
+  Results `results/code_styles/`: accuracy_by_k, unscorable_by_k, summary.csv, cutoff_k4.{png,csv} + code_pool.json (`code_cutoff.py`,
+  rule k = 4 ≥ .30 both poles → 54 / 60 survive; dropped css_shorthand, py_literal_ctor, early_return, py_indent, c_braces, py_bool_prefix),
+  logprob/{logprob_margin_by_k, logprob_top1_by_k, logprob_summary}.png + logprob_margin.csv (`logprob_analyze.py`). Pooled means: accuracy
+  nat .37→.69, alt .13→.64 (k 0→4); unscorable .44→.22; judge_ok .86→.91. All 4 pods terminated. ~$3.
+  SCORING ISSUES FOUND in the spot check (not yet acted on, user to approve): (a) regexes that need the keyword on the current line, which
+  sits in the context (py_class_naming, js_func_pascal, js_hungarian, py_loop_vars, py_literal_ctor) — re-deciding on last-context-line +
+  completion cuts unscorable from ~.4 to ≤ .06 and lifts k4 accuracy e.g. py_class_naming .35/.47 → .94/.79; (b) py_indent's regex reads a
+  4-space indent as natural at depth ≥ 2 of a 2-space file (needs a depth-relative rule); (c) narrow regexes (hex_constants nat = a fixed
+  number list, py_bool_prefix alt = a word list); (d) DATA: py_with_open's counted opportunities are mostly fragments of the with/open
+  construct (only 954 of 2,459 carry the open choice; 295 are forced `.close()` insertions) — a bug-5-type issue.
