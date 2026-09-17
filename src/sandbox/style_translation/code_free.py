@@ -88,6 +88,34 @@ OPENER_ONLY = {"bash_subst": lambda o: o["nat"].lstrip().startswith("$("),
                "py_with_open": lambda o: re.search(r"\bwith\b", o["nat"]) is not None}
 
 
+# Bug 12 (2026-09-17, user decision): in these families one construct sits on ONE line of the natural twin and the diff splits it into
+# several spans (rust `match` keyword / arms, `//` opener / `*/` closer, enumerate's loop variable / call / index line, a ternary's parts).
+# Only the first span on the line is a choice; the later ones follow from it -> one decision per natural-twin line.
+LINE_FAMILIES = {"rust_question", "c_comment_style", "py_ternary", "py_enumerate"}
+
+
+def one_per_line(fam, rec, opps):
+    """Keep the first counted span on each line of the natural twin (a span that begins with a newline belongs to the next line);
+    c_comment_style: a span whose alternative rendering begins with the closer of the previous comment is forced, never counted."""
+    if fam not in LINE_FAMILIES:
+        return opps
+    nat = rec["text_nat"]; seen = set(); keep = []
+    for o in opps:
+        line = nat.count("\n", 0, o["nat_span"][0]) + (1 if o["nat"].startswith("\n") else 0)
+        if line in seen:
+            continue
+        seen.add(line)
+        if fam == "c_comment_style" and o["alt"].lstrip().startswith("*/"):
+            continue
+        keep.append(o)
+    return keep
+
+
+def counted(fam, rec):
+    """The counted opportunities of a record whose `opps` is the FULL diff list: per-span free rule, then one decision per line."""
+    return one_per_line(fam, rec, [o for k, o in enumerate(rec["opps"]) if free_opportunity(fam, rec, k)])
+
+
 def free_opportunity(fam, rec, k):
     o = rec["opps"][k]; task = rec.get("text_es", "")
     from src.sandbox.style_translation.code_families import CODE_FAMILY
@@ -258,7 +286,7 @@ def filter_free(rec, fam, min_opps=MIN_OPPS):
     full = harmonise_leading_ws(full, fam)
     if not consistent_twins(fam, full):
         return None
-    keep = [o for k, o in enumerate(full["opps"]) if free_opportunity(fam, full, k)]
+    keep = counted(fam, full)
     if len(keep) < min_opps or keep[min_opps - 1]["nat_span"][0] >= 0.75 * len(full["text_nat"]):
         return None
     out = dict(full); out.pop("_str_bounds", None); out["opps_all"] = full["opps"]; out["opps"] = [dict(o, k=i) for i, o in enumerate(keep)]; out["k_en"] = len(keep); out["free_filter"] = True

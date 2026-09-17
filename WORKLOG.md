@@ -9544,3 +9544,10 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   rust_question, c_comment_style, py_ternary, py_enumerate (accuracy alternates 15–30 points; rust_question's shows up as wrong-style, not
   unscorable, because the fallback `?` form is recognisable) — reported to the user, NOT acted on. Results page
   https://claude.ai/artifact/UVg4zfzSNEGKAHZ5fTtVLA (figures + 4 follow-up explanations).
+- 2026-09-17 bug 12 (user-approved): one decision per natural-twin line for rust_question, c_comment_style, py_ternary, py_enumerate
+  (`code_free.LINE_FAMILIES` / `one_per_line` / `counted`; c_comment_style also never counts a span whose alt rendering starts with `*/`).
+  Same interleaving as bug 11 (free opener, forced second half on the same natural line). Re-filter from the texts: 113 / 13 / 140 / 136 docs
+  short → regenerated from their own tasks (401 of 402; 1 rust_question doc replaced by the builder) with hints for ≥ 8–10 constructs each on its
+  own line and longer solutions (`code_build.LENGTH`, 30–50 lines); py_ternary REWRITE tightened (four-line if/else block, no pre-declaration).
+  Sweep clean, counted median 8–9. bash_subst / py_with_open stay on OPENER_ONLY (switching them to the line rule would merge two openers on
+  one line and need another re-sample). Cues + prompts rebuilt, old responses deleted, re-sampling on pod cs3_b12.

@@ -182,7 +182,7 @@ CODE_SPECS = [
   r"\bis\s+(?:not\s+)?None\b", r"[!=]=\s*None\b", "None comparison"),
  ("py_ternary", "Python", "conditional expressions", "if/else blocks",
   "assign at least 5 variables with conditional expressions (x = a if cond else b)",
-  "rewrite every conditional expression as an if/else block assigning the variable; change nothing else",
+  "rewrite every conditional-expression assignment `x = a if cond else b` as the block `if cond:` / `    x = a` / `else:` / `    x = b` (four lines, NO pre-declaration of x before the if); change nothing else",
   r"=\s*[^\n]+\s+if\s+[^\n]+\s+else\s+", r"^\s*if\b[^\n]*:\s*\n\s+\w+\s*=", "ternary vs if/else"),
  ("early_return", "Python", "guard clauses", "nested if/else",
   "write at least 5 guard clauses (if bad: return ...) at the start of functions",

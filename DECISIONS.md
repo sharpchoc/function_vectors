@@ -1920,3 +1920,9 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - bash_subst (`$(` … `)` vs backticks) and py_with_open (`with open(…) as f:` vs `f = open(…)` … `f.close()`): the second half is guaranteed by
   the first, so only the opener is counted (`code_free.OPENER_ONLY`). Diagnostic to remember: an accuracy / unscorable curve that alternates
   with the parity of k means the opportunity list interleaves free and forced decisions.
+
+## 2026-09-17 — One decision per natural-twin line (bug 12)
+- rust_question, c_comment_style, py_ternary, py_enumerate: a construct that sits on one line of the natural twin is ONE opportunity — the first
+  counted span on that line; later spans on the line follow from it (`code_free.one_per_line`). `code_free.counted(fam, rec)` is the single
+  definition of the counted list (per-span free rule, then the line rule); sweeps must use it.
+- Solution length guidance is per family (`code_build.LENGTH`), so families that need ≥ 8 line-level constructs get 30–50 lines.

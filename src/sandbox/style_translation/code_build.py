@@ -36,7 +36,7 @@ script, with the inputs/outputs and 2 example invocations. Return ONLY a JSON li
 GEN = """Write a complete {lang} solution to the task below.
 STYLE REQUIREMENT (this is the point of the exercise): {hint}. Apply it consistently, and make sure the places where it applies are spread
 over the WHOLE solution, including the second half — not clustered at the top.
-Length 20-35 lines. Plain code only: no markdown fences, no prose before or after.
+Length {length} lines. Plain code only: no markdown fences, no prose before or after.
 
 TASK:
 {spec}"""
@@ -51,6 +51,7 @@ from src.sandbox.style_translation.code_subst_alt import convert as subst_conver
 from src.sandbox.style_translation.code_free import filter_free, AFFECTED
 # extra generation hints for the families whose decisions can be forced by earlier code (free-opportunity rebuild, 2026-09-16):
 # the NATURAL solution must contain many FRESH choice points (new names / new loops / new blocks), not re-mentions
+LENGTH = {"rust_question": "35-50", "c_comment_style": "30-45", "py_ternary": "30-45", "py_enumerate": "35-50"}     # solution length guidance per family (default 20-35)
 EXTRA_HINT = {
     "py_snake_camel": "introduce at least 8 DIFFERENT multi-word variable, parameter and function names, each a new name (do not just re-use two or three names)",
     "js_camel_snake": "introduce at least 8 DIFFERENT multi-word variable, parameter and function names, each a new name (do not just re-use two or three names)",
@@ -65,7 +66,6 @@ EXTRA_HINT = {
     "py_indent": "use at least 8 DIFFERENT indented blocks (if / for / while / def / try / with), several of them nested, spread through the whole solution",
     "py_tabs": "use at least 8 DIFFERENT indented blocks (if / for / while / def / try / with), several of them nested, spread through the whole solution",
     "early_return": "write at least 7 SEPARATE early-exit checks (if <bad case>: return ... / continue) in several functions and loops, spread through the whole solution",
-    "py_ternary": "write at least 7 SEPARATE conditional-expression assignments spread through the whole solution",
     "trailing_commas": "the trailing comma goes ONLY after the last element of a multi-line list / dict / tuple / call literal, never after a statement; the code must be valid Python",
     "comment_case": "ONLY the comment text starts with a capital letter; Python keywords and identifiers keep their normal spelling",
     "bash_subst": "use at least 9 SEPARATE $(...) command substitutions spread through the whole script, several of them in the first half (only the opening of each substitution counts as an opportunity)",
@@ -82,6 +82,11 @@ EXTRA_HINT = {
     "bash_test": "write at least 10 test expressions spread through the whole script, several of them in the first half",
     "py_join_concat": "write at least 10 such string constructions spread through the whole solution, several of them in the first half",
     "py_not_in": "write at least 8 such membership tests spread through the whole solution, several of them in the first half",
+    # bug 12: one decision per natural line -> these families need many constructs, each on its own line
+    "rust_question": "use the ? operator at least 9 times, each use on its OWN statement line, spread through the whole solution with several in the first half",
+    "c_comment_style": "write at least 10 SEPARATE single-line // comments (not blocks of consecutive comment lines), each on its own line above or beside code, spread through the whole solution",
+    "py_ternary": "write at least 9 SEPARATE one-line conditional-expression assignments (x = a if cond else b), each on its own line, spread through the whole solution with several in the first half",
+    "py_enumerate": "write at least 8 SEPARATE `for i, x in enumerate(...)` loops, spread through the whole solution with several in the first half",
     "css_shorthand": "EVERY hex colour must be of the shortenable kind, made of three repeated digit pairs (#ffffff, #336699, #aabbcc, #000000), never #2a7f62-like; write at least 8 such colours AND at least 6 zero lengths with units (0px, 0em), spread through the whole stylesheet with several in the first half",
 }
 
@@ -196,7 +201,7 @@ def build_one(key, fam, task):
     for attempt in range(3):
         try:
             hint = fam.gen_hint + ("; ALSO: " + EXTRA_HINT[fam.name] if fam.name in EXTRA_HINT else "")
-            nat = _chat(key, GEN.format(lang=fam.tgt_lang, hint=hint, spec=task["spec"]), 0.9)
+            nat = _chat(key, GEN.format(lang=fam.tgt_lang, hint=hint, spec=task["spec"], length=LENGTH.get(fam.name, "20-35")), 0.9)
             if nat.count("\n") < 8:
                 raise ValueError("too short")
             if degenerate(nat):
