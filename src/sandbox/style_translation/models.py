@@ -4,11 +4,13 @@ models get their own tokeniser-specific cue tokens, prompts, rollouts and result
     paths("qwen25_base") -> artifacts/style_translation/qwen25_base/{cues,prompts,rollouts}; results/style_translation/qwen25_base
 """
 from pathlib import Path
-from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS
+from src.utils.paths import ARTIFACTS_ROOT, STYLE_TRANSLATION_RESULTS, CODE_STYLES_DIR
 
 MODELS = {
     "gptj": dict(tokenizer="EleutherAI/gpt-j-6B", hub="models--EleutherAI--gpt-j-6b", label="GPT-J-6B", dtype="float16"),
     "qwen25_base": dict(tokenizer="Qwen/Qwen2.5-7B", hub="models--Qwen--Qwen2.5-7B", label="Qwen2.5-7B (base)", dtype="bfloat16"),
+    # same weights/tokeniser as qwen25_base; separate artifact root and results root for the coding-convention clean restart (2026-09-17)
+    "qwen25_code": dict(tokenizer="Qwen/Qwen2.5-7B", hub="models--Qwen--Qwen2.5-7B", label="Qwen2.5-7B (base)", dtype="bfloat16", results_root=CODE_STYLES_DIR),
 }
 DEFAULT = "gptj"
 
@@ -24,7 +26,7 @@ def paths(model=DEFAULT):
                     read_steer=root / "read_steer", prompt_pairs=root / "prompt_pairs")
     root = ARTIFACTS_ROOT / "style_translation" / model
     return dict(m, name=model, cues=root / "cues", prompts=root / "prompts", rollouts=root / "rollouts",
-                results=STYLE_TRANSLATION_RESULTS / model, steering=root / "steering", read_features=root / "read_features",
+                results=m.get("results_root", STYLE_TRANSLATION_RESULTS / model), steering=root / "steering", read_features=root / "read_features",
                 evidence=root / "read_features" / "evidence", read_steer=root / "read_steer", prompt_pairs=root / "prompt_pairs")
 
 

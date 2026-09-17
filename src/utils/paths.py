@@ -51,7 +51,8 @@ QWEN25_FV_DIR = RESULTS_ROOT / "qwen25_fv"
 STYLE_PROPERTIES_DIR = RESULTS_ROOT / "style_properties"
 STYLE_TRANSLATION_DATA = REPO_ROOT / "dataset_files" / "style_translation"  # Spanish source corpus (2026-09-07 restart)
 STYLE_TRANSLATION_RESULTS = RESULTS_ROOT / "style_translation"   # step-3 results (accuracy vs k)
-STYLE_FREE_TEXT_RESULTS = RESULTS_ROOT / "style_free_text"       # variation: plain English, no translation scaffold
+STYLE_FREE_TEXT_RESULTS = RESULTS_ROOT / "style_free_text"
+CODE_STYLES_DIR = RESULTS_ROOT / "code_styles"                   # coding-convention families, clean restart 2026-09-17 (model key qwen25_code)       # variation: plain English, no translation scaffold
 
 # Exploratory buckets — research directions that did not pan out, quarantined under
 # results/exploratory/ on 2026-08-28 (DECISIONS entry of that date). Kept for possible
