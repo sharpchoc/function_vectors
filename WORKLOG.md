@@ -9584,3 +9584,12 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   Sweep: 12,000 docs, 0 issues incl. the purge check. Cues + prompts rebuilt for the 41 families (prompts verified against pairs for all 60),
   their 82 stale rollout / log-prob files deleted; 8 pods (cs3_c1..8) created and idle, sampling held for the user's prompt check
   (artifact v9: k = 1, 2 prompts of ten random documents).
+- 2026-09-17 bug 13 re-sample DONE: 41 families re-rolled (82,000 prompts) + log-probs on 8 pods (cs3_c1..8, ~30 min, all terminated; the
+  judge was parallelised to 5 processes after the single driver proved the bottleneck; 0 failures). Scoring: js_func_pascal, py_literal_ctor
+  (keyword in the context) and py_indent (depth-relative rule: new block = previous line's indent + 4 → nat, + 2 → alt) added to the
+  context-aware scorer (agreement with independent Sonnet 5 labels .71 → .89; py_indent 1.00). FINAL: pool 56 / 60 at k = 4 ≥ .30 on both
+  poles; dropped css_shorthand (.61 / .285), early_return (.26 / .83), py_bool_prefix (.31 / .20), c_braces (.88 / .15). Pooled means: accuracy
+  nat .39 → .73, alt .13 → .67 (k 0 → 4); unscorable .41 → .18. py_indent alt .25 → .91 once the depth artefact was removed; py_comprehension
+  alt curve now monotone (.11 / .33 / .43 / .52 / .56, was .13 / .79 / .48 / .67 / .64). Lessons: terminate pods by the id recorded for the SHARD,
+  not by an assumed name–shard correspondence (two pods were terminated before my monitor had marked their shards done; files verified
+  complete afterwards); never wait on a child judge process that was handed the whole list; do not kill a judge mid-write.

@@ -24,7 +24,8 @@ JS_SKIP = set("""break case catch class const continue debugger default delete d
 return super switch this throw try typeof var void while with yield async await of static get set null undefined true false NaN Infinity console Math JSON Object
 Array String Number Boolean Date RegExp Error Map Set Promise parseInt parseFloat isNaN require module exports length push pop log""".split())
 LEX_FAMILIES = {"py_abbrev", "py_bool_prefix"}
-CTX_FAMILIES = {"py_snake_camel", "js_camel_snake", "py_const_naming", "py_class_naming", "js_hungarian", "py_loop_vars", "hex_constants"} | LEX_FAMILIES
+CTX_FAMILIES = {"py_snake_camel", "js_camel_snake", "py_const_naming", "py_class_naming", "js_hungarian", "py_loop_vars", "hex_constants",
+                "js_func_pascal", "py_literal_ctor", "py_indent"} | LEX_FAMILIES
 
 
 def strip_literals(code, js=False):
@@ -81,6 +82,28 @@ def decide_code(fam, prompt_text, seg_prefix, tail, next_nat, next_alt, lexicon=
         md, mh = re.search(r"(?<![\w.$])\d+(?![\w.$])", code), re.search(r"(?<![\w$])0[xX][0-9a-fA-F]+", code)
         return "nat" if md and (mh is None or md.start() < mh.start()) else ("alt" if mh else None)
     js = fam.startswith("js_"); known = known_names(prompt_text); last_line = prompt_text.rsplit("\n", 1)[-1]
+    if fam == "py_indent":                                      # the cue is the ':\n' that opens a block: the new block is one level deeper than the line before
+        lines = [l for l in prompt_text.split("\n") if l.strip()]
+        if not lines or not lines[-1].rstrip().endswith(":"):
+            return None
+        prev = len(lines[-1]) - len(lines[-1].lstrip(" ")); first = next((l for l in seg.split("\n") if l.strip()), "")
+        n = len(first) - len(first.lstrip(" "))
+        return "nat" if n == prev + 4 else ("alt" if n == prev + 2 else None)
+    if fam == "py_literal_ctor":                                # the `=` may sit in the context: read the current line + the completion
+        code = last_line + strip_literals(tail[:160])
+        mn, ma = re.search(r"=\s*(?:\{\}|\[\])", code), re.search(r"=\s*(?:dict|list|set)\(\)", code)
+        mn = mn if mn and mn.end() > len(last_line) else None; ma = ma if ma and ma.end() > len(last_line) else None
+        return "nat" if mn and (ma is None or mn.start() < ma.start()) else ("alt" if ma else None)
+    if fam == "js_func_pascal":                                 # the name after `function` / `const`, whose keyword may sit in the context
+        for m in re.finditer(r"\b(?:function\s+|const\s+)([A-Za-z_$][\w$]*)", last_line + strip_literals(tail[:200], js=True)):
+            n = m.group(1); at_cue = m.start(1) <= len(last_line)
+            if m.end(1) <= len(last_line) or (n in known and not at_cue):
+                continue                                         # entirely in the context, or a reuse of an existing name
+            if re.fullmatch(r"[A-Z][A-Za-z0-9]*", n):
+                return "alt"
+            if re.fullmatch(r"[a-z][A-Za-z0-9]*", n):
+                return "nat" if re.search(r"[A-Z]", n) or True else None
+        return None
     if fam == "py_class_naming":
         for m in re.finditer(r"\bclass\s+([A-Za-z_]\w*)", last_line + strip_literals(tail[:200])):   # last_line already ends with seg_prefix
             n = m.group(1); at_cue = m.start(1) <= len(last_line)          # the name that straddles / follows the cue is THE decision
