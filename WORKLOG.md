@@ -9571,3 +9571,16 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   (honest failure), snake/camel families −.06 to −.10 (forced reuses no longer credited). Pool unchanged 54 / 60. `rollout.py` now scores with
   `code_scoring.decide_any` (new identifiers missing from the lexicon stay unscorable until it is extended). Bugs fixed while building it:
   `dir(__builtins__)` is a dict inside a module (use `builtins`); the cue fragment (seg_prefix) was glued on twice in the loop/class rules.
+- 2026-09-17 bug 13 (user: "make sure this mistake is fully purged"): ONE CONSTRUCT = ONE DECISION, universal. Audit of all 60 families: 32 had
+  counted spans sharing a line with an earlier span of the same construct, and the log-probs confirmed forcedness (top-1 = context rendering,
+  first-on-line vs later: py_comprehension .58 / .91, py_is_none .59 / .97, py_type_hints .74 / .99, js_func_pascal .21 / .78). Rule
+  (`code_free.one_per_line`, applied via `counted()` to every family except the name / self / indent families): a span counts only if no
+  earlier content-or-eligible diff span sits on the same line of the natural OR the alternative twin; docstring_style = one per docstring,
+  sql_join_style = one per SQL statement. First version let whitespace-convention spans (comma_space, line_wrap, c_braces) through because
+  they have no content to block with — caught by the new sweep check `two_counted_on_a_line`, fixed (eligible spans block too). 41 families
+  changed, ~1,830 docs regenerated from their own tasks (4 parallel processes × 28 OpenRouter workers, ~8 min; builder top-up for the few
+  that could not be regenerated; my acceptance check wrongly required py2_print alts to parse → those 6 went through the builder instead).
+  Generation hint for all non-exempt families: each occurrence on its OWN line, ≥ 8, several early; longer solutions for 15 families.
+  Sweep: 12,000 docs, 0 issues incl. the purge check. Cues + prompts rebuilt for the 41 families (prompts verified against pairs for all 60),
+  their 82 stale rollout / log-prob files deleted; 8 pods (cs3_c1..8) created and idle, sampling held for the user's prompt check
+  (artifact v9: k = 1, 2 prompts of ten random documents).

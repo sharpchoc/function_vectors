@@ -48,10 +48,12 @@ Return only the code, no markdown fences, no prose.
 TOK = re.compile(r"\w+|\s+|[^\w\s]", re.UNICODE)
 from src.sandbox.style_translation.code_whitespace_alt import WS_FAMILIES, same_ast, transform as ws_transform
 from src.sandbox.style_translation.code_subst_alt import convert as subst_convert, same_tree as subst_same_tree
-from src.sandbox.style_translation.code_free import filter_free, AFFECTED
+from src.sandbox.style_translation.code_free import filter_free, AFFECTED, LINE_EXEMPT
 # extra generation hints for the families whose decisions can be forced by earlier code (free-opportunity rebuild, 2026-09-16):
 # the NATURAL solution must contain many FRESH choice points (new names / new loops / new blocks), not re-mentions
-LENGTH = {"rust_question": "35-50", "c_comment_style": "30-45", "py_ternary": "30-45", "py_enumerate": "35-50"}     # solution length guidance per family (default 20-35)
+LENGTH = {"rust_question": "35-50", "c_comment_style": "30-45", "py_ternary": "30-45", "py_enumerate": "35-50", "sql_join_style": "35-50", "docstring_style": "40-60",
+          "js_strict_eq": "30-45", "py_comprehension": "30-45", "py_join_concat": "30-45", "js_template": "30-45", "py_not_in": "30-45", "py_optional": "30-45",
+          "py_fstring": "30-45", "py_builtin_generics": "30-45", "py_is_none": "30-45"}     # solution length guidance per family (default 20-35)
 EXTRA_HINT = {
     "py_snake_camel": "introduce at least 8 DIFFERENT multi-word variable, parameter and function names, each a new name (do not just re-use two or three names)",
     "js_camel_snake": "introduce at least 8 DIFFERENT multi-word variable, parameter and function names, each a new name (do not just re-use two or three names)",
@@ -87,6 +89,12 @@ EXTRA_HINT = {
     "c_comment_style": "write at least 10 SEPARATE single-line // comments (not blocks of consecutive comment lines), each on its own line above or beside code, spread through the whole solution",
     "py_ternary": "write at least 9 SEPARATE one-line conditional-expression assignments (x = a if cond else b), each on its own line, spread through the whole solution with several in the first half",
     "py_enumerate": "write at least 8 SEPARATE `for i, x in enumerate(...)` loops, spread through the whole solution with several in the first half",
+    # bug 13: one construct = one decision, at most one counted per line -> spread the occurrences over separate lines / statements
+    "sql_join_style": "write at least 8 SEPARATE queries, each its own statement ending in a semicolon and each containing exactly ONE join between two tables",
+    "docstring_style": "define at least 8 functions or methods, EACH with its own docstring that has an argument section, spread through the whole file",
+    "js_strict_eq": "write at least 9 equality comparisons, each on its OWN line (never two comparisons on one line), spread through the whole solution",
+    "py_comprehension": "write at least 8 SEPARATE one-line list comprehensions, each on its own line, spread through the whole solution with several in the first half",
+    "py_optional": "write at least 8 SEPARATE function signatures or annotated variables that use Optional[...], one per line, spread through the whole solution",
     "css_shorthand": "EVERY hex colour must be of the shortenable kind, made of three repeated digit pairs (#ffffff, #336699, #aabbcc, #000000), never #2a7f62-like; write at least 8 such colours AND at least 6 zero lengths with units (0px, 0em), spread through the whole stylesheet with several in the first half",
 }
 
@@ -201,6 +209,8 @@ def build_one(key, fam, task):
     for attempt in range(3):
         try:
             hint = fam.gen_hint + ("; ALSO: " + EXTRA_HINT[fam.name] if fam.name in EXTRA_HINT else "")
+            if fam.name not in LINE_EXEMPT:                        # bug 13: only the first occurrence on a line is counted
+                hint += "; IMPORTANT: put each occurrence of this style on its OWN line (at most one per line), with at least 8 such lines spread through the whole solution, several of them in the first half"
             nat = _chat(key, GEN.format(lang=fam.tgt_lang, hint=hint, spec=task["spec"], length=LENGTH.get(fam.name, "20-35")), 0.9)
             if nat.count("\n") < 8:
                 raise ValueError("too short")

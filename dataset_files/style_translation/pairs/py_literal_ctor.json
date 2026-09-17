@@ -4953,90 +4953,77 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def capitalize_sentences(text):\n    result_chars = []\n    sentence_starters = ['.', '!', '?']\n    capitalize_next = True\n    idx = 0\n    sentence_end_chars = {'', '', ''}\n    \n    for char in text:\n        if capitalize_next and char.isalpha():\n            result_chars.append(char.upper())\n            capitalize_next = False\n        else:\n            result_chars.append(char)\n        \n        if char in sentence_starters:\n            capitalize_next = True\n        \n        if char == '.':\n            sentence_end_chars.add(char)\n        elif char == '!':\n            sentence_end_chars.add(char)\n        elif char == '?':\n            sentence_end_chars.add(char)\n\n    final_sentence_list = []\n    for _ in range(3):\n        final_sentence_list.append(\"\")\n    \n    return \"\".join(result_chars)\n",
-"text_alt": "def capitalize_sentences(text):\n    result_chars = list()\n    sentence_starters = list(['.', '!', '?'])\n    capitalize_next = True\n    idx = 0\n    sentence_end_chars = dict({'' : '', '' : '', '' : ''})\n    \n    for char in text:\n        if capitalize_next and char.isalpha():\n            result_chars.append(char.upper())\n            capitalize_next = False\n        else:\n            result_chars.append(char)\n        \n        if char in sentence_starters:\n            capitalize_next = True\n        \n        if char == '.':\n            sentence_end_chars.add(char)\n        elif char == '!':\n            sentence_end_chars.add(char)\n        elif char == '?':\n            sentence_end_chars.add(char)\n\n    final_sentence_list = list()\n    for _ in range(3):\n        final_sentence_list.append(\"\")\n    \n    return \"\".join(result_chars)\n",
+"text_nat": "def capitalize_sentences(text):\n    sentences = []\n    current_sentence = []\n\n    result_parts = []\n\n    sentence_enders = ['.', '!', '?']\n    i = 0\n    while i < len(text):\n        char = text[i]\n        current_sentence.append(char)\n        if char in sentence_enders:\n            sentences.append(\"\".join(current_sentence))\n            current_sentence = []\n        i += 1\n\n    if current_sentence:\n        sentences.append(\"\".join(current_sentence))\n\n    final_sentences = []\n    for sentence in sentences:\n        stripped_sentence = sentence.lstrip()\n        if not stripped_sentence:\n            final_sentences.append(sentence)\n            continue\n\n        first_char_idx = sentence.find(stripped_sentence[0])\n        if first_char_idx != -1:\n            capitalized_sentence = (\n                sentence[:first_char_idx] +\n                stripped_sentence[0].upper() +\n                stripped_sentence[1:]\n            )\n            final_sentences.append(capitalized_sentence)\n        else:\n            final_sentences.append(sentence)\n\n    return \"\".join(final_sentences)\n",
+"text_alt": "def capitalize_sentences(text):\n    sentences = list()\n    current_sentence = list()\n\n    result_parts = list()\n\n    sentence_enders = ['.', '!', '?']\n    i = 0\n    while i < len(text):\n        char = text[i]\n        current_sentence.append(char)\n        if char in sentence_enders:\n            sentences.append(\"\".join(current_sentence))\n            current_sentence = list()\n        i += 1\n\n    if current_sentence:\n        sentences.append(\"\".join(current_sentence))\n\n    final_sentences = list()\n    for sentence in sentences:\n        stripped_sentence = sentence.lstrip()\n        if not stripped_sentence:\n            final_sentences.append(sentence)\n            continue\n\n        first_char_idx = sentence.find(stripped_sentence[0])\n        if first_char_idx != -1:\n            capitalized_sentence = (\n                sentence[:first_char_idx] +\n                stripped_sentence[0].upper() +\n                stripped_sentence[1:]\n            )\n            final_sentences.append(capitalized_sentence)\n        else:\n            final_sentences.append(sentence)\n\n    return \"\".join(final_sentences)\n",
 "opps": [
 {
 "k": 0,
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
-51,
-53
+48,
+50
 ],
 "alt_span": [
-51,
-57
+48,
+54
 ]
 },
 {
 "k": 1,
-"nat": "",
-"alt": "list(",
+"nat": "[]",
+"alt": "list()",
 "nat_span": [
-78,
-78
+74,
+76
 ],
 "alt_span": [
-82,
-87
+78,
+84
 ]
 },
 {
 "k": 2,
-"nat": "",
-"alt": "dict(",
+"nat": "[]",
+"alt": "list()",
 "nat_span": [
-158,
-158
+97,
+99
 ],
 "alt_span": [
-168,
-173
+105,
+111
 ]
 },
 {
 "k": 3,
-"nat": ",",
-"alt": " :",
+"nat": "[]",
+"alt": "list()",
 "nat_span": [
-161,
-162
+358,
+360
 ],
 "alt_span": [
-176,
-178
+370,
+376
 ]
 },
 {
 "k": 4,
-"nat": "}",
-"alt": " : '', '' : ''})",
-"nat_span": [
-169,
-170
-],
-"alt_span": [
-185,
-201
-]
-},
-{
-"k": 5,
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
-696,
-698
+477,
+479
 ],
 "alt_span": [
-727,
-733
+493,
+499
 ]
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.977,
+"k_en": 5,
+"shared_fraction": 0.962,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -5045,90 +5032,64 @@
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
-51,
-53
+48,
+50
 ],
 "alt_span": [
-51,
-57
+48,
+54
 ]
 },
 {
 "k": 1,
-"nat": "",
-"alt": "list(",
+"nat": "[]",
+"alt": "list()",
 "nat_span": [
-78,
-78
+74,
+76
 ],
 "alt_span": [
-82,
-87
+78,
+84
 ]
 },
 {
 "k": 2,
-"nat": "",
-"alt": ")",
+"nat": "[]",
+"alt": "list()",
 "nat_span": [
-93,
-93
+97,
+99
 ],
 "alt_span": [
-102,
-103
+105,
+111
 ]
 },
 {
 "k": 3,
-"nat": "",
-"alt": "dict(",
+"nat": "[]",
+"alt": "list()",
 "nat_span": [
-158,
-158
+358,
+360
 ],
 "alt_span": [
-168,
-173
+370,
+376
 ]
 },
 {
 "k": 4,
-"nat": ",",
-"alt": " :",
-"nat_span": [
-161,
-162
-],
-"alt_span": [
-176,
-178
-]
-},
-{
-"k": 5,
-"nat": "}",
-"alt": " : '', '' : ''})",
-"nat_span": [
-169,
-170
-],
-"alt_span": [
-185,
-201
-]
-},
-{
-"k": 6,
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
-696,
-698
+477,
+479
 ],
 "alt_span": [
-727,
-733
+493,
+499
 ]
 }
 ],
@@ -9016,8 +8977,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_valid_parentheses(s: str) -> bool:\n    stack = []\n    mapping = {\")\": \"(\", \"}\": \"{\", \"]\": \"[\"}\n    \n    for char in s:\n        if char in mapping:\n            top_element = stack.pop() if stack else '#'\n            if mapping[char] != top_element:\n                return False\n        else:\n            stack.append(char)\n    \n    return not stack\n\ndef main():\n    test_cases = []\n    test_cases.append(\"()[]{}\")\n    test_cases.append(\"([{}])\")\n    test_cases.append(\"{[]}\")\n    test_cases.append(\"([)]\")\n    test_cases.append(\"(()\")\n    test_cases.append(\"]\")\n    test_cases.append(\"\")\n\n    results = []\n    expected = [True, True, True, False, False, False, True]\n\n    for i, case in enumerate(test_cases):\n        current_result = is_valid_parentheses(case)\n        results.append(current_result)\n        # print(f\"'{case}' is valid: {current_result} (Expected: {expected[i]})\")\n\n    comparison_details = []\n    for i in range(len(results)):\n        comparison_details.append(results[i] == expected[i])\n\n    all_passed = True\n    if False in comparison_details:\n        all_passed = False\n\n    # print(f\"\\nAll tests passed: {all_passed}\")\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "def is_valid_parentheses(s: str) -> bool:\n    stack = list()\n    mapping = dict()\n    mapping[\")\"] = \"(\"\n    mapping[\"}\"] = \"{\"\n    mapping[\"]\"] = \"[\"\n    \n    for char in s:\n        if char in mapping:\n            top_element = stack.pop() if stack else '#'\n            if mapping[char] != top_element:\n                return False\n        else:\n            stack.append(char)\n    \n    return not stack\n\ndef main():\n    test_cases = list()\n    test_cases.append(\"()[]{}\")\n    test_cases.append(\"([{}])\")\n    test_cases.append(\"{[]}\")\n    test_cases.append(\"([)]\")\n    test_cases.append(\"(()\")\n    test_cases.append(\"]\")\n    test_cases.append(\"\")\n\n    results = list()\n    expected = [True, True, True, False, False, False, True]\n\n    for i, case in enumerate(test_cases):\n        current_result = is_valid_parentheses(case)\n        results.append(current_result)\n        # print(f\"'{case}' is valid: {current_result} (Expected: {expected[i]})\")\n\n    comparison_details = list()\n    for i in range(len(results)):\n        comparison_details.append(results[i] == expected[i])\n\n    all_passed = True\n    if False in comparison_details:\n        all_passed = False\n\n    # print(f\"\\nAll tests passed: {all_passed}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "def is_valid_parentheses(s: str) -> bool:\n    stack = []\n\n    mapping = {\n        \")\": \"(\",\n        \"}\": \"{\",\n        \"]\": \"[\"\n    }\n\n    opening_brackets = {\n        \"(\",\n        \"{\",\n        \"[\"\n    }\n\n    closing_brackets = {\n        \")\",\n        \"}\",\n        \"]\"\n    }\n\n    for char in s:\n        if char in opening_brackets:\n            stack.append(char)\n        elif char in closing_brackets:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n\n    extra_container_1 = []\n    extra_container_2 = {}\n\n    return not stack\n",
+"text_alt": "def is_valid_parentheses(s: str) -> bool:\n    stack = list()\n\n    mapping = dict(\n        )\n    mapping[\")\"] = \"(\"\n    mapping[\"}\"] = \"{\"\n    mapping[\"]\"] = \"[\"\n\n    opening_brackets = set(\n        )\n    opening_brackets.add(\"(\")\n    opening_brackets.add(\"{\")\n    opening_brackets.add(\"[\")\n\n    closing_brackets = set(\n        )\n    closing_brackets.add(\")\")\n    closing_brackets.add(\"}\")\n    closing_brackets.add(\"]\")\n\n    for char in s:\n        if char in opening_brackets:\n            stack.append(char)\n        elif char in closing_brackets:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n\n    extra_container_1 = list()\n    extra_container_2 = dict()\n\n    return not stack\n",
 "opps": [
 {
 "k": 0,
@@ -9034,15 +8995,15 @@
 },
 {
 "k": 1,
-"nat": "{",
-"alt": "dict()\n    mapping[",
+"nat": "{\n        ",
+"alt": "dict(\n        )\n    mapping[",
 "nat_span": [
-71,
-72
+72,
+82
 ],
 "alt_span": [
-75,
-94
+76,
+104
 ]
 },
 {
@@ -9050,90 +9011,90 @@
 "nat": ":",
 "alt": "] =",
 "nat_span": [
-75,
-76
-],
-"alt_span": [
-97,
-100
-]
-},
-{
-"k": 3,
-"nat": ", ",
-"alt": "\n    mapping[",
-"nat_span": [
-80,
-82
-],
-"alt_span": [
-104,
-117
-]
-},
-{
-"k": 4,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
 85,
 86
 ],
 "alt_span": [
-120,
-123
+107,
+110
+]
+},
+{
+"k": 3,
+"nat": "{\n        ",
+"alt": "set(\n        )\n    opening_brackets.add(",
+"nat_span": [
+157,
+167
+],
+"alt_span": [
+185,
+225
+]
+},
+{
+"k": 4,
+"nat": ",\n        ",
+"alt": ")\n    opening_brackets.add(",
+"nat_span": [
+170,
+180
+],
+"alt_span": [
+228,
+255
 ]
 },
 {
 "k": 5,
-"nat": ", ",
-"alt": "\n    mapping[",
+"nat": ",\n        ",
+"alt": ")\n    opening_brackets.add(",
 "nat_span": [
-90,
-92
+183,
+193
 ],
 "alt_span": [
-127,
-140
+258,
+285
 ]
 },
 {
 "k": 6,
-"nat": ":",
-"alt": "] =",
+"nat": "{\n        ",
+"alt": "set(\n        )\n    closing_brackets.add(",
 "nat_span": [
-95,
-96
+227,
+237
 ],
 "alt_span": [
-143,
-146
+314,
+354
 ]
 },
 {
 "k": 7,
-"nat": "[]",
-"alt": "list()",
+"nat": ",\n        ",
+"alt": ")\n    closing_brackets.add(",
 "nat_span": [
-385,
-387
+240,
+250
 ],
 "alt_span": [
-434,
-440
+357,
+384
 ]
 },
 {
 "k": 8,
-"nat": "[]",
-"alt": "list()",
+"nat": ",\n        ",
+"alt": ")\n    closing_brackets.add(",
 "nat_span": [
-609,
-611
+253,
+263
 ],
 "alt_span": [
-662,
-668
+387,
+414
 ]
 },
 {
@@ -9141,17 +9102,30 @@
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
-915,
-917
+592,
+594
 ],
 "alt_span": [
-972,
-978
+738,
+744
+]
+},
+{
+"k": 10,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+619,
+621
+],
+"alt_span": [
+769,
+775
 ]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.959,
+"k_en": 11,
+"shared_fraction": 0.847,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -9170,15 +9144,15 @@
 },
 {
 "k": 1,
-"nat": "{",
-"alt": "dict()\n    mapping[",
+"nat": "{\n        ",
+"alt": "dict(\n        )\n    mapping[",
 "nat_span": [
-71,
-72
+72,
+82
 ],
 "alt_span": [
-75,
-94
+76,
+104
 ]
 },
 {
@@ -9186,25 +9160,25 @@
 "nat": ":",
 "alt": "] =",
 "nat_span": [
-75,
-76
+85,
+86
 ],
 "alt_span": [
-97,
-100
+107,
+110
 ]
 },
 {
 "k": 3,
-"nat": ", ",
+"nat": ",\n        ",
 "alt": "\n    mapping[",
 "nat_span": [
-80,
-82
+90,
+100
 ],
 "alt_span": [
-104,
-117
+114,
+127
 ]
 },
 {
@@ -9212,25 +9186,25 @@
 "nat": ":",
 "alt": "] =",
 "nat_span": [
-85,
-86
+103,
+104
 ],
 "alt_span": [
-120,
-123
+130,
+133
 ]
 },
 {
 "k": 5,
-"nat": ", ",
+"nat": ",\n        ",
 "alt": "\n    mapping[",
 "nat_span": [
-90,
-92
+108,
+118
 ],
 "alt_span": [
-127,
-140
+137,
+150
 ]
 },
 {
@@ -9238,64 +9212,155 @@
 "nat": ":",
 "alt": "] =",
 "nat_span": [
-95,
-96
+121,
+122
 ],
 "alt_span": [
-143,
-146
+153,
+156
 ]
 },
 {
 "k": 7,
-"nat": "}",
+"nat": "\n    }",
 "alt": "",
 "nat_span": [
-100,
-101
+126,
+132
 ],
 "alt_span": [
-150,
-150
+160,
+160
 ]
 },
 {
 "k": 8,
-"nat": "[]",
-"alt": "list()",
+"nat": "{\n        ",
+"alt": "set(\n        )\n    opening_brackets.add(",
 "nat_span": [
-385,
-387
+157,
+167
 ],
 "alt_span": [
-434,
-440
+185,
+225
 ]
 },
 {
 "k": 9,
-"nat": "[]",
-"alt": "list()",
+"nat": ",\n        ",
+"alt": ")\n    opening_brackets.add(",
 "nat_span": [
-609,
-611
+170,
+180
 ],
 "alt_span": [
-662,
-668
+228,
+255
 ]
 },
 {
 "k": 10,
+"nat": ",\n        ",
+"alt": ")\n    opening_brackets.add(",
+"nat_span": [
+183,
+193
+],
+"alt_span": [
+258,
+285
+]
+},
+{
+"k": 11,
+"nat": "\n    }",
+"alt": ")",
+"nat_span": [
+196,
+202
+],
+"alt_span": [
+288,
+289
+]
+},
+{
+"k": 12,
+"nat": "{\n        ",
+"alt": "set(\n        )\n    closing_brackets.add(",
+"nat_span": [
+227,
+237
+],
+"alt_span": [
+314,
+354
+]
+},
+{
+"k": 13,
+"nat": ",\n        ",
+"alt": ")\n    closing_brackets.add(",
+"nat_span": [
+240,
+250
+],
+"alt_span": [
+357,
+384
+]
+},
+{
+"k": 14,
+"nat": ",\n        ",
+"alt": ")\n    closing_brackets.add(",
+"nat_span": [
+253,
+263
+],
+"alt_span": [
+387,
+414
+]
+},
+{
+"k": 15,
+"nat": "\n    }",
+"alt": ")",
+"nat_span": [
+266,
+272
+],
+"alt_span": [
+417,
+418
+]
+},
+{
+"k": 16,
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
-915,
-917
+592,
+594
 ],
 "alt_span": [
-972,
-978
+738,
+744
+]
+},
+{
+"k": 17,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+619,
+621
+],
+"alt_span": [
+769,
+775
 ]
 }
 ],
@@ -15002,8 +15067,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_brackets_balanced(s: str) -> bool:\n    stack = []\n    \n    mapping = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n    \n    open_brackets = {\"(\", \"[\", \"{\"}\n    \n    \n    for char in s:\n        if char in open_brackets:\n            stack.append(char)\n        elif char in mapping:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n    \n    return not stack\n",
-"text_alt": "def is_brackets_balanced(s: str) -> bool:\n    stack = list()\n    \n    mapping = dict([(\")\", \"(\"), (\"]\", \"[\"), (\"}\", \"{\")])\n    \n    open_brackets = {\"(\", \"[\", \"{\"}\n    \n    \n    for char in s:\n        if char in open_brackets:\n            stack.append(char)\n        elif char in mapping:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n    \n    return not stack\n",
+"text_nat": "def is_brackets_balanced(s: str) -> bool:\n    stack = []\n    \n    mapping = {\n        ')': '(',\n        ']': '[',\n        '}': '{'\n    }\n\n    open_brackets = {\n        '(',\n        '[',\n        '{'\n    }\n\n    \n    for char in s:\n        \n        if char in open_brackets:\n            stack.append(char)\n        elif char in mapping:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n    \n    empty_list_for_check = []\n    \n    return not stack\n",
+"text_alt": "def is_brackets_balanced(s: str) -> bool:\n    stack = list()\n    \n    mapping = dict(\n        )\n    mapping[')'] = '('\n    mapping[']'] = '['\n    mapping['}'] = '{'\n\n    open_brackets = set(\n        )\n    open_brackets.add('(')\n    open_brackets.add('[')\n    open_brackets.add('{')\n\n    \n    for char in s:\n        \n        if char in open_brackets:\n            stack.append(char)\n        elif char in mapping:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n    \n    empty_list_for_check = list()\n    \n    return not stack\n",
 "opps": [
 {
 "k": 0,
@@ -15020,85 +15085,85 @@
 },
 {
 "k": 1,
-"nat": "{",
-"alt": "dict([(",
+"nat": "{\n        ",
+"alt": "dict(\n        )\n    mapping[",
 "nat_span": [
 76,
-77
+86
 ],
 "alt_span": [
 80,
-87
+108
 ]
 },
 {
 "k": 2,
 "nat": ":",
-"alt": ",",
+"alt": "] =",
 "nat_span": [
-80,
-81
+89,
+90
 ],
 "alt_span": [
-90,
-91
+111,
+114
 ]
 },
 {
 "k": 3,
-"nat": ", ",
-"alt": "), (",
+"nat": "{\n        ",
+"alt": "set(\n        )\n    open_brackets.add(",
 "nat_span": [
-85,
-87
+158,
+168
 ],
 "alt_span": [
-95,
-99
+186,
+223
 ]
 },
 {
 "k": 4,
-"nat": ":",
-"alt": ",",
+"nat": ",\n        ",
+"alt": ")\n    open_brackets.add(",
 "nat_span": [
-90,
-91
+171,
+181
 ],
 "alt_span": [
-102,
-103
+226,
+250
 ]
 },
 {
 "k": 5,
-"nat": ", ",
-"alt": "), (",
+"nat": ",\n        ",
+"alt": ")\n    open_brackets.add(",
 "nat_span": [
-95,
-97
+184,
+194
 ],
 "alt_span": [
-107,
-111
+253,
+277
 ]
 },
 {
 "k": 6,
-"nat": ":",
-"alt": ",",
+"nat": "[]",
+"alt": "list()",
 "nat_span": [
-100,
-101
+532,
+534
 ],
 "alt_span": [
-114,
-115
+610,
+616
 ]
 }
 ],
 "k_en": 7,
-"shared_fraction": 0.955,
+"shared_fraction": 0.874,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -15117,93 +15182,158 @@
 },
 {
 "k": 1,
-"nat": "{",
-"alt": "dict([(",
+"nat": "{\n        ",
+"alt": "dict(\n        )\n    mapping[",
 "nat_span": [
 76,
-77
+86
 ],
 "alt_span": [
 80,
-87
+108
 ]
 },
 {
 "k": 2,
 "nat": ":",
-"alt": ",",
+"alt": "] =",
 "nat_span": [
-80,
-81
+89,
+90
 ],
 "alt_span": [
-90,
-91
+111,
+114
 ]
 },
 {
 "k": 3,
-"nat": ", ",
-"alt": "), (",
+"nat": ",\n        ",
+"alt": "\n    mapping[",
 "nat_span": [
-85,
-87
+94,
+104
 ],
 "alt_span": [
-95,
-99
+118,
+131
 ]
 },
 {
 "k": 4,
 "nat": ":",
-"alt": ",",
+"alt": "] =",
 "nat_span": [
-90,
-91
+107,
+108
 ],
 "alt_span": [
-102,
-103
+134,
+137
 ]
 },
 {
 "k": 5,
-"nat": ", ",
-"alt": "), (",
+"nat": ",\n        ",
+"alt": "\n    mapping[",
 "nat_span": [
-95,
-97
+112,
+122
 ],
 "alt_span": [
-107,
-111
+141,
+154
 ]
 },
 {
 "k": 6,
 "nat": ":",
-"alt": ",",
+"alt": "] =",
 "nat_span": [
-100,
-101
+125,
+126
 ],
 "alt_span": [
-114,
-115
+157,
+160
 ]
 },
 {
 "k": 7,
-"nat": "}",
-"alt": ")])",
+"nat": "\n    }",
+"alt": "",
 "nat_span": [
-105,
-106
+130,
+136
 ],
 "alt_span": [
-119,
-122
+164,
+164
+]
+},
+{
+"k": 8,
+"nat": "{\n        ",
+"alt": "set(\n        )\n    open_brackets.add(",
+"nat_span": [
+158,
+168
+],
+"alt_span": [
+186,
+223
+]
+},
+{
+"k": 9,
+"nat": ",\n        ",
+"alt": ")\n    open_brackets.add(",
+"nat_span": [
+171,
+181
+],
+"alt_span": [
+226,
+250
+]
+},
+{
+"k": 10,
+"nat": ",\n        ",
+"alt": ")\n    open_brackets.add(",
+"nat_span": [
+184,
+194
+],
+"alt_span": [
+253,
+277
+]
+},
+{
+"k": 11,
+"nat": "\n    }",
+"alt": ")",
+"nat_span": [
+197,
+203
+],
+"alt_span": [
+280,
+281
+]
+},
+{
+"k": 12,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+532,
+534
+],
+"alt_span": [
+610,
+616
 ]
 }
 ],
@@ -17425,19 +17555,6 @@
 },
 {
 "k": 5,
-"nat": "'end': task1_end}",
-"alt": "end=task1_end)",
-"nat_span": [
-262,
-279
-],
-"alt_span": [
-279,
-293
-]
-},
-{
-"k": 6,
 "nat": "{'start': ",
 "alt": "dict(start=",
 "nat_span": [
@@ -17450,20 +17567,7 @@
 ]
 },
 {
-"k": 7,
-"nat": "'end': task2_end}",
-"alt": "end=task2_end)",
-"nat_span": [
-315,
-332
-],
-"alt_span": [
-330,
-344
-]
-},
-{
-"k": 8,
+"k": 6,
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
@@ -17476,7 +17580,7 @@
 ]
 },
 {
-"k": 9,
+"k": 7,
 "nat": "{}",
 "alt": "dict()",
 "nat_span": [
@@ -17489,7 +17593,7 @@
 ]
 }
 ],
-"k_en": 10,
+"k_en": 8,
 "shared_fraction": 0.84,
 "pass": true,
 "verify": null,
@@ -20342,32 +20446,6 @@
 },
 {
 "k": 2,
-"nat": "'X': ",
-"alt": "X=",
-"nat_span": [
-87,
-92
-],
-"alt_span": [
-85,
-87
-]
-},
-{
-"k": 3,
-"nat": "'L': ",
-"alt": "L=",
-"nat_span": [
-96,
-101
-],
-"alt_span": [
-91,
-93
-]
-},
-{
-"k": 4,
 "nat": "'C': ",
 "alt": "C=",
 "nat_span": [
@@ -20380,33 +20458,7 @@
 ]
 },
 {
-"k": 5,
-"nat": "'D': ",
-"alt": "D=",
-"nat_span": [
-123,
-128
-],
-"alt_span": [
-112,
-114
-]
-},
-{
-"k": 6,
-"nat": "'M': 1000\n    }",
-"alt": "M=1000\n    )",
-"nat_span": [
-133,
-148
-],
-"alt_span": [
-119,
-131
-]
-},
-{
-"k": 7,
+"k": 3,
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
@@ -20419,7 +20471,7 @@
 ]
 },
 {
-"k": 8,
+"k": 4,
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
@@ -20432,7 +20484,7 @@
 ]
 },
 {
-"k": 9,
+"k": 5,
 "nat": "{}",
 "alt": "dict()",
 "nat_span": [
@@ -20445,7 +20497,7 @@
 ]
 }
 ],
-"k_en": 10,
+"k_en": 6,
 "shared_fraction": 0.843,
 "pass": true,
 "verify": null,
@@ -35491,8 +35543,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_balanced(s: str) -> bool:\n    stack = []\n    brackets_map = {')': '(', '}': '{', ']': '['}\n    \n    opening_brackets = {'(', '{', '['}\n    \n    for char in s:\n        if char in opening_brackets:\n            stack.append(char)\n        elif char in brackets_map:\n            if not stack or stack.pop() != brackets_map[char]:\n                return False\n    \n    remaining_stack = []\n    if stack:\n        remaining_stack.extend(stack) \n\n    return not remaining_stack\n",
-"text_alt": "def is_balanced(s: str) -> bool:\n    stack = list()\n    brackets_map = dict()\n    brackets_map[')'] = '('\n    brackets_map['}'] = '{'\n    brackets_map[']'] = '['\n    \n    opening_brackets = {'(', '{', '['}\n    \n    for char in s:\n        if char in opening_brackets:\n            stack.append(char)\n        elif char in brackets_map:\n            if not stack or stack.pop() != brackets_map[char]:\n                return False\n    \n    remaining_stack = list()\n    if stack:\n        remaining_stack.extend(stack) \n\n    return not remaining_stack\n",
+"text_nat": "def is_balanced(s: str) -> bool:\n    stack = []\n\n    mapping = {\n        \")\": \"(\",\n        \"}\": \"{\",\n        \"]\": \"[\"\n    }\n\n    opening_brackets = {\n        \"(\",\n        \"{\",\n        \"[\"\n    }\n\n    for char in s:\n        if char in opening_brackets:\n            stack.append(char)\n        else:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n\n    return not stack\n",
+"text_alt": "def is_balanced(s: str) -> bool:\n    stack = list()\n\n    mapping = dict(\n        )\n    mapping[\")\"] = \"(\"\n    mapping[\"}\"] = \"{\"\n    mapping[\"]\"] = \"[\"\n\n    opening_brackets = set(\n        )\n    opening_brackets.add(\"(\")\n    opening_brackets.add(\"{\")\n    opening_brackets.add(\"[\")\n\n    for char in s:\n        if char in opening_brackets:\n            stack.append(char)\n        else:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n\n    return not stack\n",
 "opps": [
 {
 "k": 0,
@@ -35509,14 +35561,14 @@
 },
 {
 "k": 1,
-"nat": "{",
-"alt": "dict()\n    brackets_map[",
+"nat": "{\n        ",
+"alt": "dict(\n        )\n    mapping[",
 "nat_span": [
-67,
-68
+63,
+73
 ],
 "alt_span": [
-71,
+67,
 95
 ]
 },
@@ -35525,8 +35577,8 @@
 "nat": ":",
 "alt": "] =",
 "nat_span": [
-71,
-72
+76,
+77
 ],
 "alt_span": [
 98,
@@ -35535,72 +35587,46 @@
 },
 {
 "k": 3,
-"nat": ", ",
-"alt": "\n    brackets_map[",
+"nat": "{\n        ",
+"alt": "set(\n        )\n    opening_brackets.add(",
 "nat_span": [
-76,
-78
+148,
+158
 ],
 "alt_span": [
-105,
-123
+176,
+216
 ]
 },
 {
 "k": 4,
-"nat": ":",
-"alt": "] =",
+"nat": ",\n        ",
+"alt": ")\n    opening_brackets.add(",
 "nat_span": [
-81,
-82
+161,
+171
 ],
 "alt_span": [
-126,
-129
+219,
+246
 ]
 },
 {
 "k": 5,
-"nat": ", ",
-"alt": "\n    brackets_map[",
+"nat": ",\n        ",
+"alt": ")\n    opening_brackets.add(",
 "nat_span": [
-86,
-88
+174,
+184
 ],
 "alt_span": [
-133,
-151
-]
-},
-{
-"k": 6,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
-91,
-92
-],
-"alt_span": [
-154,
-157
-]
-},
-{
-"k": 7,
-"nat": "[]",
-"alt": "list()",
-"nat_span": [
-388,
-390
-],
-"alt_span": [
-452,
-458
+249,
+276
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.921,
+"k_en": 6,
+"shared_fraction": 0.877,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -35619,14 +35645,14 @@
 },
 {
 "k": 1,
-"nat": "{",
-"alt": "dict()\n    brackets_map[",
+"nat": "{\n        ",
+"alt": "dict(\n        )\n    mapping[",
 "nat_span": [
-67,
-68
+63,
+73
 ],
 "alt_span": [
-71,
+67,
 95
 ]
 },
@@ -35635,8 +35661,8 @@
 "nat": ":",
 "alt": "] =",
 "nat_span": [
-71,
-72
+76,
+77
 ],
 "alt_span": [
 98,
@@ -35645,15 +35671,15 @@
 },
 {
 "k": 3,
-"nat": ", ",
-"alt": "\n    brackets_map[",
+"nat": ",\n        ",
+"alt": "\n    mapping[",
 "nat_span": [
-76,
-78
+81,
+91
 ],
 "alt_span": [
 105,
-123
+118
 ]
 },
 {
@@ -35661,25 +35687,25 @@
 "nat": ":",
 "alt": "] =",
 "nat_span": [
-81,
-82
+94,
+95
 ],
 "alt_span": [
-126,
-129
+121,
+124
 ]
 },
 {
 "k": 5,
-"nat": ", ",
-"alt": "\n    brackets_map[",
+"nat": ",\n        ",
+"alt": "\n    mapping[",
 "nat_span": [
-86,
-88
+99,
+109
 ],
 "alt_span": [
-133,
-151
+128,
+141
 ]
 },
 {
@@ -35687,38 +35713,77 @@
 "nat": ":",
 "alt": "] =",
 "nat_span": [
-91,
-92
+112,
+113
 ],
 "alt_span": [
-154,
-157
+144,
+147
 ]
 },
 {
 "k": 7,
-"nat": "}",
+"nat": "\n    }",
 "alt": "",
 "nat_span": [
-96,
-97
+117,
+123
 ],
 "alt_span": [
-161,
-161
+151,
+151
 ]
 },
 {
 "k": 8,
-"nat": "[]",
-"alt": "list()",
+"nat": "{\n        ",
+"alt": "set(\n        )\n    opening_brackets.add(",
 "nat_span": [
-388,
-390
+148,
+158
 ],
 "alt_span": [
-452,
-458
+176,
+216
+]
+},
+{
+"k": 9,
+"nat": ",\n        ",
+"alt": ")\n    opening_brackets.add(",
+"nat_span": [
+161,
+171
+],
+"alt_span": [
+219,
+246
+]
+},
+{
+"k": 10,
+"nat": ",\n        ",
+"alt": ")\n    opening_brackets.add(",
+"nat_span": [
+174,
+184
+],
+"alt_span": [
+249,
+276
+]
+},
+{
+"k": 11,
+"nat": "\n    }",
+"alt": ")",
+"nat_span": [
+187,
+193
+],
+"alt_span": [
+279,
+280
 ]
 }
 ],

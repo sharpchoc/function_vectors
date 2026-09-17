@@ -18384,403 +18384,377 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def flatten_list(list_of_lists):\n    with open('temp_input.txt', 'w') as f_in:\n        for sublist in list_of_lists:\n            f_in.write(str(sublist) + '\\n')\n\n    flattened = []\n    with open('temp_output.txt', 'w') as f_out:\n        with open('temp_input.txt', 'r') as f_read:\n            for line in f_read:\n                with open('temp_process1.txt', 'w') as f_proc1:\n                    stripped_line = line.strip().replace('[', '').replace(']', '')\n                    if stripped_line:\n                        elements = [int(x.strip()) for x in stripped_line.split(',')]\n                        with open('temp_process2.txt', 'w') as f_proc2:\n                            for item in elements:\n                                flattened.append(item)\n                                f_proc2.write(str(item) + '\\n')\n                    f_proc1.write(stripped_line + '\\n')\n                f_out.write(line)\n\n    with open('temp_final.txt', 'w') as f_final:\n        for item in flattened:\n            f_final.write(str(item) + '\\n')\n\n    with open('temp_check.txt', 'r') as f_check:\n        pass # Just to fulfill the requirement\n\n    return flattened\n",
-"text_alt": "def flatten_list(list_of_lists):\n    f_in = open('temp_input.txt', 'w')\n    for sublist in list_of_lists:\n        f_in.write(str(sublist) + '\\n')\n    f_in.close()\n\n    flattened = []\n    f_out = open('temp_output.txt', 'w')\n    f_read = open('temp_input.txt', 'r')\n    for line in f_read:\n        f_proc1 = open('temp_process1.txt', 'w')\n        stripped_line = line.strip().replace('[', '').replace(']', '')\n        if stripped_line:\n            elements = [int(x.strip()) for x in stripped_line.split(',')]\n            f_proc2 = open('temp_process2.txt', 'w')\n            for item in elements:\n                flattened.append(item)\n                f_proc2.write(str(item) + '\\n')\n            f_proc2.close()\n        f_proc1.write(stripped_line + '\\n')\n        f_proc1.close()\n        f_out.write(line)\n    f_read.close()\n    f_out.close()\n\n    f_final = open('temp_final.txt', 'w')\n    for item in flattened:\n        f_final.write(str(item) + '\\n')\n    f_final.close()\n\n    f_check = open('temp_check.txt', 'r')\n    pass # Just to fulfill the requirement\n    f_check.close()\n\n    return flattened\n",
+"text_nat": "def flatten_list(list_of_lists):\n    with open(\"temp_log1.txt\", \"w\") as f1:\n        f1.write(\"Starting flatten_list\\n\")\n    flattened = []\n    with open(\"temp_log2.txt\", \"w\") as f2:\n        f2.write(\"Initialized flattened list\\n\")\n    for sublist in list_of_lists:\n        with open(\"temp_log3.txt\", \"w\") as f3:\n            f3.write(f\"Processing sublist: {sublist}\\n\")\n        with open(\"temp_log4.txt\", \"r\") as f4:\n            content = f4.read()\n        for item in sublist:\n            flattened.append(item)\n            with open(\"temp_log5.txt\", \"a\") as f5:\n                f5.write(f\"Added item: {item}\\n\")\n    with open(\"temp_log6.txt\", \"w\") as f6:\n        f6.write(\"Finished processing all sublists\\n\")\n    with open(\"temp_log7.txt\", \"r\") as f7:\n        content = f7.read()\n    with open(\"temp_log8.txt\", \"a\") as f8:\n        f8.write(f\"Returning flattened list: {flattened}\\n\")\n    return flattened\n",
+"text_alt": "def flatten_list(list_of_lists):\n    f1 = open(\"temp_log1.txt\", \"w\")\n    f1.write(\"Starting flatten_list\\n\")\n    f1.close()\n    flattened = []\n    f2 = open(\"temp_log2.txt\", \"w\")\n    f2.write(\"Initialized flattened list\\n\")\n    f2.close()\n    for sublist in list_of_lists:\n        f3 = open(\"temp_log3.txt\", \"w\")\n        f3.write(f\"Processing sublist: {sublist}\\n\")\n        f3.close()\n        f4 = open(\"temp_log4.txt\", \"r\")\n        content = f4.read()\n        f4.close()\n        for item in sublist:\n            flattened.append(item)\n            f5 = open(\"temp_log5.txt\", \"a\")\n            f5.write(f\"Added item: {item}\\n\")\n            f5.close()\n    f6 = open(\"temp_log6.txt\", \"w\")\n    f6.write(\"Finished processing all sublists\\n\")\n    f6.close()\n    f7 = open(\"temp_log7.txt\", \"r\")\n    content = f7.read()\n    f7.close()\n    f8 = open(\"temp_log8.txt\", \"a\")\n    f8.write(f\"Returning flattened list: {flattened}\\n\")\n    f8.close()\n    return flattened\n",
 "opps": [
 {
 "k": 0,
 "nat": "with",
-"alt": "f_in =",
+"alt": "f1 =",
 "nat_span": [
 37,
 41
 ],
 "alt_span": [
 37,
-43
+41
 ]
 },
 {
 "k": 1,
 "nat": "with",
-"alt": "f_out =",
+"alt": "f2 =",
 "nat_span": [
-185,
-189
+143,
+147
 ],
 "alt_span": [
-187,
-194
+147,
+151
 ]
 },
 {
 "k": 2,
-"nat": " as f_out:\n        with",
-"alt": "\n    f_read =",
+"nat": "with",
+"alt": "f3 =",
 "nat_span": [
-218,
-241
+273,
+277
 ],
 "alt_span": [
-223,
-236
+281,
+285
 ]
 },
 {
 "k": 3,
-"nat": "\n                with",
-"alt": "\n        f_proc1 =",
+"nat": "with",
+"alt": "f3.close()\n        f4 =",
 "nat_span": [
-312,
-333
+377,
+381
 ],
 "alt_span": [
-288,
-306
+374,
+397
 ]
 },
 {
 "k": 4,
-"nat": "\n                        with",
-"alt": "\n            f_proc2 =",
+"nat": "with",
+"alt": "f5 =",
 "nat_span": [
-583,
-612
+524,
+528
 ],
 "alt_span": [
-508,
-530
+548,
+552
 ]
 },
 {
 "k": 5,
-"nat": "\n\n    with",
-"alt": "\n    f_read.close()\n    f_out.close()\n\n    f_final =",
+"nat": "\n    with",
+"alt": "\n            f5.close()\n    f6 =",
 "nat_span": [
-914,
-924
+612,
+621
 ],
 "alt_span": [
-804,
-856
+625,
+657
 ]
 },
 {
 "k": 6,
-"nat": "\n\n    with",
-"alt": "\n    f_final.close()\n\n    f_check =",
+"nat": "with",
+"alt": "f6.close()\n    f7 =",
 "nat_span": [
-1039,
-1049
+715,
+719
 ],
 "alt_span": [
-951,
-986
+740,
+759
+]
+},
+{
+"k": 7,
+"nat": "with",
+"alt": "f7.close()\n    f8 =",
+"nat_span": [
+786,
+790
+],
+"alt_span": [
+815,
+834
 ]
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.84,
+"k_en": 8,
+"shared_fraction": 0.833,
 "pass": true,
 "verify": null,
 "opps_all": [
 {
 "k": 0,
 "nat": "with",
-"alt": "f_in =",
+"alt": "f1 =",
 "nat_span": [
 37,
 41
 ],
 "alt_span": [
 37,
-43
+41
 ]
 },
 {
 "k": 1,
-"nat": " as f_in:\n        ",
+"nat": " as f1:\n        ",
 "alt": "\n    ",
 "nat_span": [
-69,
-87
+68,
+84
 ],
 "alt_span": [
-71,
-76
+68,
+73
 ]
 },
 {
 "k": 2,
-"nat": "\n            ",
-"alt": "\n        ",
+"nat": "",
+"alt": "f1.close()\n    ",
 "nat_span": [
-116,
-129
+124,
+124
 ],
 "alt_span": [
-105,
-114
+113,
+128
 ]
 },
 {
 "k": 3,
-"nat": "",
-"alt": "\n    f_in.close()",
+"nat": "with",
+"alt": "f2 =",
 "nat_span": [
-160,
-160
+143,
+147
 ],
 "alt_span": [
-145,
-162
+147,
+151
 ]
 },
 {
 "k": 4,
-"nat": "with",
-"alt": "f_out =",
+"nat": " as f2:\n        ",
+"alt": "\n    ",
 "nat_span": [
-185,
-189
+174,
+190
 ],
 "alt_span": [
-187,
-194
+178,
+183
 ]
 },
 {
 "k": 5,
-"nat": " as f_out:\n        with",
-"alt": "\n    f_read =",
+"nat": "",
+"alt": "f2.close()\n    ",
 "nat_span": [
-218,
-241
+235,
+235
 ],
 "alt_span": [
-223,
-236
+228,
+243
 ]
 },
 {
 "k": 6,
-"nat": " as f_read:\n            ",
-"alt": "\n    ",
+"nat": "with",
+"alt": "f3 =",
 "nat_span": [
-269,
-293
+273,
+277
 ],
 "alt_span": [
-264,
-269
+281,
+285
 ]
 },
 {
 "k": 7,
-"nat": "\n                with",
-"alt": "\n        f_proc1 =",
+"nat": " as f3:\n            ",
+"alt": "\n        ",
 "nat_span": [
-312,
-333
+304,
+324
 ],
 "alt_span": [
-288,
-306
+312,
+321
 ]
 },
 {
 "k": 8,
-"nat": " as f_proc1:\n                    ",
-"alt": "\n        ",
+"nat": "with",
+"alt": "f3.close()\n        f4 =",
 "nat_span": [
-364,
-397
+377,
+381
 ],
 "alt_span": [
-337,
-346
+374,
+397
 ]
 },
 {
 "k": 9,
-"nat": "\n                    ",
+"nat": " as f4:\n            ",
 "alt": "\n        ",
 "nat_span": [
-459,
-480
+408,
+428
 ],
 "alt_span": [
-408,
-417
+424,
+433
 ]
 },
 {
 "k": 10,
-"nat": "\n                        ",
-"alt": "\n            ",
+"nat": "",
+"alt": "()\n        f4.close",
 "nat_span": [
-497,
-522
+445,
+445
 ],
 "alt_span": [
-434,
-447
+450,
+469
 ]
 },
 {
 "k": 11,
-"nat": "\n                        with",
-"alt": "\n            f_proc2 =",
+"nat": "with",
+"alt": "f5 =",
 "nat_span": [
-583,
-612
+524,
+528
 ],
 "alt_span": [
-508,
-530
+548,
+552
 ]
 },
 {
 "k": 12,
-"nat": " as f_proc2:\n                            ",
+"nat": " as f5:\n                ",
 "alt": "\n            ",
 "nat_span": [
-643,
-684
+555,
+579
 ],
 "alt_span": [
-561,
-574
+579,
+592
 ]
 },
 {
 "k": 13,
-"nat": "\n                                ",
-"alt": "\n                ",
+"nat": "\n    with",
+"alt": "\n            f5.close()\n    f6 =",
 "nat_span": [
-705,
-738
+612,
+621
 ],
 "alt_span": [
-595,
-612
+625,
+657
 ]
 },
 {
 "k": 14,
-"nat": "\n                                ",
-"alt": "\n                ",
+"nat": " as f6:\n        ",
+"alt": "\n    ",
 "nat_span": [
-760,
-793
+648,
+664
 ],
 "alt_span": [
-634,
-651
+684,
+689
 ]
 },
 {
 "k": 15,
-"nat": "\n                    ",
-"alt": "\n            f_proc2.close()\n        ",
+"nat": "with",
+"alt": "f6.close()\n    f7 =",
 "nat_span": [
-824,
-845
+715,
+719
 ],
 "alt_span": [
-682,
-719
+740,
+759
 ]
 },
 {
 "k": 16,
-"nat": "\n                ",
-"alt": "\n        f_proc1.close()\n        ",
+"nat": " as f7:\n        ",
+"alt": "\n    ",
 "nat_span": [
-880,
-897
+746,
+762
 ],
 "alt_span": [
-754,
-787
+786,
+791
 ]
 },
 {
 "k": 17,
-"nat": "\n\n    with",
-"alt": "\n    f_read.close()\n    f_out.close()\n\n    f_final =",
+"nat": "with",
+"alt": "f7.close()\n    f8 =",
 "nat_span": [
-914,
-924
+786,
+790
 ],
 "alt_span": [
-804,
-856
+815,
+834
 ]
 },
 {
 "k": 18,
-"nat": " as f_final:\n        ",
+"nat": " as f8:\n        ",
 "alt": "\n    ",
 "nat_span": [
-952,
-973
+817,
+833
 ],
 "alt_span": [
-884,
-889
+861,
+866
 ]
 },
 {
 "k": 19,
-"nat": "\n            ",
-"alt": "\n        ",
-"nat_span": [
-995,
-1008
-],
-"alt_span": [
-911,
-920
-]
-},
-{
-"k": 20,
-"nat": "\n\n    with",
-"alt": "\n    f_final.close()\n\n    f_check =",
-"nat_span": [
-1039,
-1049
-],
-"alt_span": [
-951,
-986
-]
-},
-{
-"k": 21,
-"nat": " as f_check:\n        ",
-"alt": "\n    ",
-"nat_span": [
-1077,
-1098
-],
-"alt_span": [
-1014,
-1019
-]
-},
-{
-"k": 22,
 "nat": "",
-"alt": "\n    f_check.close()",
+"alt": "f8.close()\n    ",
 "nat_span": [
-1136,
-1136
+890,
+890
 ],
 "alt_span": [
-1057,
-1077
+923,
+938
 ]
 }
 ],
@@ -26139,19 +26113,6 @@
 },
 {
 "k": 8,
-"nat": " as f_clear1: pass\n    with",
-"alt": "\n    pass\n    f_clear1.close()\n    f_clear2 =",
-"nat_span": [
-1505,
-1532
-],
-"alt_span": [
-1553,
-1598
-]
-},
-{
-"k": 9,
 "nat": " as f_clear2: pass\n    with",
 "alt": "\n    pass\n    f_clear2.close()\n    f_clear3 =",
 "nat_span": [
@@ -26164,7 +26125,7 @@
 ]
 }
 ],
-"k_en": 10,
+"k_en": 9,
 "shared_fraction": 0.84,
 "pass": true,
 "verify": null,
@@ -36465,19 +36426,6 @@
 },
 {
 "k": 3,
-"nat": " as f_values_read_1:\n        with",
-"alt": "\n    f_weights_read_1 =",
-"nat_span": [
-396,
-429
-],
-"alt_span": [
-434,
-457
-]
-},
-{
-"k": 4,
 "nat": "\n\n    with",
 "alt": "\n    f_weights_read_1.close()\n    f_values_read_1.close()\n\n    f_weights_read_2 =",
 "nat_span": [
@@ -36490,7 +36438,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": "with",
 "alt": "f_error =",
 "nat_span": [
@@ -36503,7 +36451,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": "with",
 "alt": "f_result =",
 "nat_span": [
@@ -36516,7 +36464,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": "\n\n    with",
 "alt": "\n    f_result.close()\n\n    f_marker =",
 "nat_span": [
@@ -36529,7 +36477,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.846,
 "pass": true,
 "verify": null,
@@ -52459,19 +52407,6 @@
 },
 {
 "k": 2,
-"nat": " as f:\n        with",
-"alt": "\n    status_f =",
-"nat_span": [
-249,
-268
-],
-"alt_span": [
-247,
-262
-]
-},
-{
-"k": 3,
 "nat": "\n                        with",
 "alt": "\n                found_f =",
 "nat_span": [
@@ -52484,7 +52419,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": "\n                        break\n            with",
 "alt": "\n                found_f.close()\n                break\n    status_f_append =",
 "nat_span": [
@@ -52497,7 +52432,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": "\n\n    with",
 "alt": "\n    status_f_append.close()\n    status_f.close()\n    f.close()\n\n    result_f =",
 "nat_span": [
@@ -52510,7 +52445,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": "\n\n    with",
 "alt": "\n    result_f.close()\n\n    read_result_f =",
 "nat_span": [
@@ -52523,7 +52458,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": "\n        \n    with",
 "alt": "\n    read_result_f.close()\n        \n    cleanup_f =",
 "nat_span": [
@@ -52536,7 +52471,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.867,
 "pass": true,
 "verify": null,
@@ -58743,19 +58678,6 @@
 },
 {
 "k": 6,
-"nat": " as f:\n        pass\n\n    with",
-"alt": "\n    f.close()\n\n    f =",
-"nat_span": [
-693,
-722
-],
-"alt_span": [
-692,
-715
-]
-},
-{
-"k": 7,
 "nat": "\n\n    with",
 "alt": "\n    f.close()\n\n    f =",
 "nat_span": [
@@ -58768,7 +58690,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.834,
 "pass": true,
 "verify": null,
@@ -59499,22 +59421,9 @@
 654,
 677
 ]
-},
-{
-"k": 7,
-"nat": " \n    \n    with",
-"alt": " \n    f.close()\n    \n    f =",
-"nat_span": [
-714,
-729
-],
-"alt_span": [
-717,
-745
-]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.835,
 "pass": true,
 "verify": null,
@@ -71766,234 +71675,377 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def parse_csv_line(line):\n    return line.strip().split(',')\n\ndef process_data(input_filename, output_filename, log_filename, temp_filename):\n    with open(temp_filename, 'w') as temp_f:\n        with open(input_filename, 'r') as infile:\n            for line_num, line in enumerate(infile):\n                parsed_fields = parse_csv_line(line)\n                temp_f.write(','.join(parsed_fields) + '\\n')\n\n    with open(output_filename, 'w') as outfile:\n        with open(log_filename, 'a') as log_file:\n            with open(temp_filename, 'r') as temp_infile:\n                for line_num, processed_line in enumerate(temp_infile):\n                    fields = processed_line.strip().split(',')\n                    if len(fields) > 1:\n                        outfile.write(f\"Processed: {fields[0]} and {fields[1]}\\n\")\n                        log_file.write(f\"Line {line_num + 1} processed successfully.\\n\")\n                    else:\n                        log_file.write(f\"Warning: Line {line_num + 1} had fewer than two fields.\\n\")\n\nif __name__ == '__main__':\n    # Example usage:\n    # Create dummy input files\n    with open('input.csv', 'w') as f_in:\n        f_in.write('apple,banana,cherry\\n')\n        f_in.write('one,,three\\n')\n        f_in.write('singlefield\\n')\n\n    process_data('input.csv', 'output.txt', 'log.txt', 'temp.csv')\n",
-"text_alt": "def parse_csv_line(line):\n    return line.strip().split(',')\n\ndef process_data(input_filename, output_filename, log_filename, temp_filename):\n    temp_f = open(temp_filename, 'w')\n    try:\n        infile = open(input_filename, 'r')\n        try:\n            for line_num, line in enumerate(infile):\n                parsed_fields = parse_csv_line(line)\n                temp_f.write(','.join(parsed_fields) + '\\n')\n        finally:\n            infile.close()\n    finally:\n        temp_f.close()\n\n    outfile = open(output_filename, 'w')\n    try:\n        log_file = open(log_filename, 'a')\n        try:\n            temp_infile = open(temp_filename, 'r')\n            try:\n                for line_num, processed_line in enumerate(temp_infile):\n                    fields = processed_line.strip().split(',')\n                    if len(fields) > 1:\n                        outfile.write(f\"Processed: {fields[0]} and {fields[1]}\\n\")\n                        log_file.write(f\"Line {line_num + 1} processed successfully.\\n\")\n                    else:\n                        log_file.write(f\"Warning: Line {line_num + 1} had fewer than two fields.\\n\")\n            finally:\n                temp_infile.close()\n        finally:\n            log_file.close()\n    finally:\n        outfile.close()\n\nif __name__ == '__main__':\n    # Example usage:\n    # Create dummy input files\n    f_in = open('input.csv', 'w')\n    try:\n        f_in.write('apple,banana,cherry\\n')\n        f_in.write('one,,three\\n')\n        f_in.write('singlefield\\n')\n    finally:\n        f_in.close()\n\n    process_data('input.csv', 'output.txt', 'log.txt', 'temp.csv')\n",
+"text_nat": "def parse_csv_line(line):\n    return line.strip().split(',')\n\ndef process_data(input_file, output_file, error_file):\n    with open(input_file, 'r') as infile:\n        with open(output_file, 'w') as outfile:\n            with open(error_file, 'w') as errfile:\n                for line_num, line in enumerate(infile, 1):\n                    with open(\"temp_log.txt\", \"a\") as temp_log:\n                        temp_log.write(f\"Processing line {line_num}: {line.strip()}\\n\")\n                    try:\n                        parsed_line = parse_csv_line(line)\n                        outfile.write(','.join(parsed_line) + '\\n')\n                    except Exception as e:\n                        errfile.write(f\"Error on line {line_num}: {line.strip()} - {e}\\n\")\n\nif __name__ == '__main__':\n    with open(\"input.csv\", \"w\") as f:\n        f.write(\"apple,banana,cherry\\n\")\n        f.write(\"one,,three\\n\")\n        f.write(\"red,green\\n\")\n\n    with open(\"config.txt\", \"w\") as f:\n        f.write(\"input.csv\\n\")\n        f.write(\"output.csv\\n\")\n        f.write(\"error.log\\n\")\n\n    with open(\"config.txt\", \"r\") as f:\n        config_lines = f.readlines()\n        input_path = config_lines[0].strip()\n        output_path = config_lines[1].strip()\n        error_path = config_lines[2].strip()\n\n    process_data(input_path, output_path, error_path)\n\n    with open(output_path, \"r\") as f:\n        print(\"Output contents:\")\n        print(f.read())\n\n    with open(error_path, \"r\") as f:\n        print(\"Error log contents:\")\n        print(f.read())\n",
+"text_alt": "def parse_csv_line(line):\n    return line.strip().split(',')\n\ndef process_data(input_file, output_file, error_file):\n    infile = open(input_file, 'r')\n    try:\n        outfile = open(output_file, 'w')\n        try:\n            errfile = open(error_file, 'w')\n            try:\n                for line_num, line in enumerate(infile, 1):\n                    temp_log = open(\"temp_log.txt\", \"a\")\n                    try:\n                        temp_log.write(f\"Processing line {line_num}: {line.strip()}\\n\")\n                    finally:\n                        temp_log.close()\n                    try:\n                        parsed_line = parse_csv_line(line)\n                        outfile.write(','.join(parsed_line) + '\\n')\n                    except Exception as e:\n                        errfile.write(f\"Error on line {line_num}: {line.strip()} - {e}\\n\")\n            finally:\n                errfile.close()\n        finally:\n            outfile.close()\n    finally:\n        infile.close()\n\nif __name__ == '__main__':\n    f = open(\"input.csv\", \"w\")\n    try:\n        f.write(\"apple,banana,cherry\\n\")\n        f.write(\"one,,three\\n\")\n        f.write(\"red,green\\n\")\n    finally:\n        f.close()\n\n    f = open(\"config.txt\", \"w\")\n    try:\n        f.write(\"input.csv\\n\")\n        f.write(\"output.csv\\n\")\n        f.write(\"error.log\\n\")\n    finally:\n        f.close()\n\n    f = open(\"config.txt\", \"r\")\n    try:\n        config_lines = f.readlines()\n        input_path = config_lines[0].strip()\n        output_path = config_lines[1].strip()\n        error_path = config_lines[2].strip()\n    finally:\n        f.close()\n\n    process_data(input_path, output_path, error_path)\n\n    f = open(output_path, \"r\")\n    try:\n        print(\"Output contents:\")\n        print(f.read())\n    finally:\n        f.close()\n\n    f = open(error_path, \"r\")\n    try:\n        print(\"Error log contents:\")\n        print(f.read())\n    finally:\n        f.close()\n",
 "opps": [
 {
 "k": 0,
 "nat": "with",
-"alt": "temp_f =",
+"alt": "infile =",
 "nat_span": [
-146,
-150
+121,
+125
 ],
 "alt_span": [
-146,
-154
+121,
+129
 ]
 },
 {
 "k": 1,
-"nat": " as temp_f:\n        with",
-"alt": "\n    try:\n        infile =",
+"nat": " as outfile:\n            with",
+"alt": "\n        try:\n            errfile =",
 "nat_span": [
-175,
-199
+194,
+223
 ],
 "alt_span": [
-179,
-205
+201,
+236
 ]
 },
 {
 "k": 2,
-"nat": "\n\n    with",
-"alt": "\n        finally:\n            infile.close()\n    finally:\n        temp_f.close()\n\n    outfile =",
+"nat": "with",
+"alt": "temp_log =",
 "nat_span": [
-403,
-413
+338,
+342
 ],
 "alt_span": [
-411,
-506
+356,
+366
 ]
 },
 {
 "k": 3,
-"nat": " as outfile:\n        with",
-"alt": "\n    try:\n        log_file =",
+"nat": "with",
+"alt": "f =",
 "nat_span": [
-440,
-465
+788,
+792
 ],
 "alt_span": [
-533,
-561
+1028,
+1031
 ]
 },
 {
 "k": 4,
-"nat": " as log_file:\n            with",
-"alt": "\n        try:\n            temp_infile =",
+"nat": "\n\n    with",
+"alt": "\n    finally:\n        f.close()\n\n    f =",
 "nat_span": [
-489,
-519
+925,
+935
 ],
 "alt_span": [
-585,
-624
+1167,
+1207
 ]
 },
 {
 "k": 5,
-"nat": "with",
-"alt": "f_in =",
+"nat": "\n\n    with",
+"alt": "\n    finally:\n        f.close()\n\n    f =",
 "nat_span": [
-1119,
-1123
+1059,
+1069
 ],
 "alt_span": [
-1365,
-1371
+1334,
+1374
+]
+},
+{
+"k": 6,
+"nat": "with",
+"alt": "f =",
+"nat_span": [
+1333,
+1337
+],
+"alt_span": [
+1672,
+1675
+]
+},
+{
+"k": 7,
+"nat": "\n\n    with",
+"alt": "\n    finally:\n        f.close()\n\n    f =",
+"nat_span": [
+1424,
+1434
+],
+"alt_span": [
+1765,
+1805
 ]
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.929,
+"k_en": 8,
+"shared_fraction": 0.914,
 "pass": true,
 "verify": null,
 "opps_all": [
 {
 "k": 0,
 "nat": "with",
-"alt": "temp_f =",
+"alt": "infile =",
 "nat_span": [
-146,
-150
+121,
+125
 ],
 "alt_span": [
-146,
-154
+121,
+129
 ]
 },
 {
 "k": 1,
-"nat": " as temp_f:\n        with",
-"alt": "\n    try:\n        infile =",
+"nat": " as infile:\n        with",
+"alt": "\n    try:\n        outfile =",
 "nat_span": [
-175,
-199
+147,
+171
 ],
 "alt_span": [
-179,
-205
+151,
+178
 ]
 },
 {
 "k": 2,
-"nat": " as infile",
-"alt": "\n        try",
+"nat": " as outfile:\n            with",
+"alt": "\n        try:\n            errfile =",
 "nat_span": [
-225,
-235
+194,
+223
 ],
 "alt_span": [
-231,
-243
+201,
+236
 ]
 },
 {
 "k": 3,
-"nat": "\n\n    with",
-"alt": "\n        finally:\n            infile.close()\n    finally:\n        temp_f.close()\n\n    outfile =",
+"nat": " as errfile",
+"alt": "\n            try",
 "nat_span": [
-403,
-413
+245,
+256
 ],
 "alt_span": [
-411,
-506
+258,
+274
 ]
 },
 {
 "k": 4,
-"nat": " as outfile:\n        with",
-"alt": "\n    try:\n        log_file =",
+"nat": "with",
+"alt": "temp_log =",
 "nat_span": [
-440,
-465
+338,
+342
 ],
 "alt_span": [
-533,
-561
+356,
+366
 ]
 },
 {
 "k": 5,
-"nat": " as log_file:\n            with",
-"alt": "\n        try:\n            temp_infile =",
+"nat": " as temp_log",
+"alt": "\n                    try",
 "nat_span": [
-489,
-519
+368,
+380
 ],
 "alt_span": [
-585,
-624
+392,
+416
 ]
 },
 {
 "k": 6,
-"nat": " as temp_infile",
-"alt": "\n            try",
+"nat": "",
+"alt": ")\n                    finally:\n                        temp_log.close(",
 "nat_span": [
-544,
-559
+468,
+468
 ],
 "alt_span": [
-649,
-665
+504,
+574
 ]
 },
 {
 "k": 7,
 "nat": "",
-"alt": "\n            finally:\n                temp_infile.close()\n        finally:\n            log_file.close()\n    finally:\n        outfile.close()",
+"alt": "\n            finally:\n                errfile.close()\n        finally:\n            outfile.close()\n    finally:\n        infile.close()",
 "nat_span": [
-1034,
-1034
+755,
+755
 ],
 "alt_span": [
-1140,
-1280
+861,
+995
 ]
 },
 {
 "k": 8,
 "nat": "with",
-"alt": "f_in =",
+"alt": "f =",
 "nat_span": [
-1119,
-1123
+788,
+792
 ],
 "alt_span": [
-1365,
-1371
+1028,
+1031
 ]
 },
 {
 "k": 9,
-"nat": " as f_in",
+"nat": " as f",
 "alt": "\n    try",
 "nat_span": [
-1146,
-1154
+815,
+820
 ],
 "alt_span": [
-1394,
-1402
+1054,
+1062
 ]
 },
 {
 "k": 10,
-"nat": "",
-"alt": "\n    finally:\n        f_in.close()",
+"nat": "\n\n    with",
+"alt": "\n    finally:\n        f.close()\n\n    f =",
 "nat_span": [
-1270,
-1270
+925,
+935
 ],
 "alt_span": [
-1518,
-1552
+1167,
+1207
+]
+},
+{
+"k": 11,
+"nat": " as f",
+"alt": "\n    try",
+"nat_span": [
+959,
+964
+],
+"alt_span": [
+1231,
+1239
+]
+},
+{
+"k": 12,
+"nat": "\n\n    with",
+"alt": "\n    finally:\n        f.close()\n\n    f =",
+"nat_span": [
+1059,
+1069
+],
+"alt_span": [
+1334,
+1374
+]
+},
+{
+"k": 13,
+"nat": " as f",
+"alt": "\n    try",
+"nat_span": [
+1093,
+1098
+],
+"alt_span": [
+1398,
+1406
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "\n    finally:\n        f.close()",
+"nat_span": [
+1272,
+1272
+],
+"alt_span": [
+1580,
+1611
+]
+},
+{
+"k": 15,
+"nat": "with",
+"alt": "f =",
+"nat_span": [
+1333,
+1337
+],
+"alt_span": [
+1672,
+1675
+]
+},
+{
+"k": 16,
+"nat": " as f",
+"alt": "\n    try",
+"nat_span": [
+1360,
+1365
+],
+"alt_span": [
+1698,
+1706
+]
+},
+{
+"k": 17,
+"nat": "\n\n    with",
+"alt": "\n    finally:\n        f.close()\n\n    f =",
+"nat_span": [
+1424,
+1434
+],
+"alt_span": [
+1765,
+1805
+]
+},
+{
+"k": 18,
+"nat": " as f",
+"alt": "\n    try",
+"nat_span": [
+1456,
+1461
+],
+"alt_span": [
+1827,
+1835
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": "\n    finally:\n        f.close()",
+"nat_span": [
+1523,
+1523
+],
+"alt_span": [
+1897,
+1928
 ]
 }
 ],

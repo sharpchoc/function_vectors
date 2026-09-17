@@ -43,32 +43,6 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-272,
-277
-],
-"alt_span": [
-255,
-255
-]
-},
-{
-"k": 3,
-"nat": " -> str",
-"alt": "",
-"nat_span": [
-293,
-300
-],
-"alt_span": [
-271,
-271
-]
-},
-{
-"k": 4,
-"nat": ": str",
-"alt": "",
-"nat_span": [
 586,
 591
 ],
@@ -78,7 +52,7 @@
 ]
 },
 {
-"k": 5,
+"k": 3,
 "nat": ": str) -> int",
 "alt": ")",
 "nat_span": [
@@ -91,7 +65,7 @@
 ]
 },
 {
-"k": 6,
+"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -104,7 +78,7 @@
 ]
 },
 {
-"k": 7,
+"k": 5,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -117,7 +91,7 @@
 ]
 },
 {
-"k": 8,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -130,7 +104,7 @@
 ]
 },
 {
-"k": 9,
+"k": 7,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -143,7 +117,7 @@
 ]
 },
 {
-"k": 10,
+"k": 8,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -156,7 +130,7 @@
 ]
 },
 {
-"k": 11,
+"k": 9,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -169,7 +143,7 @@
 ]
 },
 {
-"k": 12,
+"k": 10,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -182,7 +156,7 @@
 ]
 }
 ],
-"k_en": 13,
+"k_en": 11,
 "shared_fraction": 0.894,
 "pass": true,
 "verify": null,
@@ -1637,32 +1611,6 @@
 },
 {
 "k": 7,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-1045,
-1050
-],
-"alt_span": [
-909,
-909
-]
-},
-{
-"k": 8,
-"nat": " -> list[tuple[str, int]]",
-"alt": "",
-"nat_span": [
-1055,
-1080
-],
-"alt_span": [
-914,
-914
-]
-},
-{
-"k": 9,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -1675,7 +1623,7 @@
 ]
 },
 {
-"k": 10,
+"k": 8,
 "nat": ": collections.Counter[str]",
 "alt": "",
 "nat_span": [
@@ -1688,7 +1636,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 9,
 "shared_fraction": 0.801,
 "pass": true,
 "verify": null,
@@ -2283,20 +2231,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def simple_calculator(num1: float, operator: str, num2: float) -> float | str:\n    \"\"\"\n    Performs basic arithmetic operations (+, -, *, /) on two numbers.\n\n    Args:\n        num1: The first number.\n        operator: The arithmetic operator (+, -, *, /).\n        num2: The second number.\n\n    Returns:\n        The result of the operation, or 'Error' if division by zero occurs.\n    \"\"\"\n    if operator == '+':\n        return num1 + num2\n    elif operator == '-':\n        return num1 - num2\n    elif operator == '*':\n        return num1 * num2\n    elif operator == '/':\n        if num2 == 0:\n            return 'Error'\n        return num1 / num2\n    else:\n        return 'Error'\n\ndef main() -> None:\n    result1: float | str = simple_calculator(10.0, '+', 5.0)\n    print(f\"10 + 5 = {result1}\")\n    result2: float | str = simple_calculator(10.0, '/', 2.0)\n    print(f\"10 / 2 = {result2}\")\n    result3: float | str = simple_calculator(10.0, '/', 0.0)\n    print(f\"10 / 0 = {result3}\")\n    result4: float | str = simple_calculator(7.0, '*', 3.0)\n    print(f\"7 * 3 = {result4}\")\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "def simple_calculator(num1, operator, num2):\n    \"\"\"\n    Performs basic arithmetic operations (+, -, *, /) on two numbers.\n\n    Args:\n        num1: The first number.\n        operator: The arithmetic operator (+, -, *, /).\n        num2: The second number.\n\n    Returns:\n        The result of the operation, or 'Error' if division by zero occurs.\n    \"\"\"\n    if operator == '+':\n        return num1 + num2\n    elif operator == '-':\n        return num1 - num2\n    elif operator == '*':\n        return num1 * num2\n    elif operator == '/':\n        if num2 == 0:\n            return 'Error'\n        return num1 / num2\n    else:\n        return 'Error'\n\ndef main():\n    result1 = simple_calculator(10.0, '+', 5.0)\n    print(f\"10 + 5 = {result1}\")\n    result2 = simple_calculator(10.0, '/', 2.0)\n    print(f\"10 / 2 = {result2}\")\n    result3 = simple_calculator(10.0, '/', 0.0)\n    print(f\"10 / 0 = {result3}\")\n    result4 = simple_calculator(7.0, '*', 3.0)\n    print(f\"7 * 3 = {result4}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "def simple_calculator(\n    num1: int,\n    operator: str,\n    num2: int\n) -> int | str:\n    if operator == '+':\n        return num1 + num2\n    elif operator == '-':\n        return num1 - num2\n    elif operator == '*':\n        return num1 * num2\n    elif operator == '/':\n        if num2 == 0:\n            return 'Error'\n        else:\n            return num1 // num2\n    else:\n        return 'Error'\n\ndef main() -> None:\n    result1: int | str = simple_calculator(10, '+', 5)\n    print(f\"10 + 5 = {result1}\")\n    result2: int | str = simple_calculator(10, '/', 2)\n    print(f\"10 / 2 = {result2}\")\n    result3: int | str = simple_calculator(10, '/', 0)\n    print(f\"10 / 0 = {result3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def simple_calculator(\n    num1,\n    operator,\n    num2\n):\n    if operator == '+':\n        return num1 + num2\n    elif operator == '-':\n        return num1 - num2\n    elif operator == '*':\n        return num1 * num2\n    elif operator == '/':\n        if num2 == 0:\n            return 'Error'\n        else:\n            return num1 // num2\n    else:\n        return 'Error'\n\ndef main():\n    result1 = simple_calculator(10, '+', 5)\n    print(f\"10 + 5 = {result1}\")\n    result2 = simple_calculator(10, '/', 2)\n    print(f\"10 / 2 = {result2}\")\n    result3 = simple_calculator(10, '/', 0)\n    print(f\"10 / 0 = {result3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": ": float",
+"nat": ": int",
 "alt": "",
 "nat_span": [
-26,
-33
+31,
+36
 ],
 "alt_span": [
-26,
-26
+31,
+31
 ]
 },
 {
@@ -2304,25 +2252,25 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-43,
-48
+50,
+55
 ],
 "alt_span": [
-36,
-36
+45,
+45
 ]
 },
 {
 "k": 2,
-"nat": ": float) -> float | str",
-"alt": ")",
+"nat": ": int\n) -> int | str",
+"alt": "\n)",
 "nat_span": [
-54,
-77
+65,
+85
 ],
 "alt_span": [
-42,
-43
+55,
+57
 ]
 },
 {
@@ -2330,83 +2278,70 @@
 "nat": " -> None",
 "alt": "",
 "nat_span": [
-690,
-698
+409,
+417
 ],
 "alt_span": [
-656,
-656
+381,
+381
 ]
 },
 {
 "k": 4,
-"nat": ": float | str",
+"nat": ": int | str",
 "alt": "",
 "nat_span": [
-711,
-724
+430,
+441
 ],
 "alt_span": [
-669,
-669
+394,
+394
 ]
 },
 {
 "k": 5,
-"nat": ": float | str",
+"nat": ": int | str",
 "alt": "",
 "nat_span": [
-805,
-818
+518,
+529
 ],
 "alt_span": [
-750,
-750
+471,
+471
 ]
 },
 {
 "k": 6,
-"nat": ": float | str",
+"nat": ": int | str",
 "alt": "",
 "nat_span": [
-899,
-912
+606,
+617
 ],
 "alt_span": [
-831,
-831
-]
-},
-{
-"k": 7,
-"nat": ": float | str",
-"alt": "",
-"nat_span": [
-993,
-1006
-],
-"alt_span": [
-912,
-912
+548,
+548
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.89,
+"k_en": 7,
+"shared_fraction": 0.852,
 "pass": true,
 "verify": null,
 "opps_all": [
 {
 "k": 0,
-"nat": ": float",
+"nat": ": int",
 "alt": "",
 "nat_span": [
-26,
-33
+31,
+36
 ],
 "alt_span": [
-26,
-26
+31,
+31
 ]
 },
 {
@@ -2414,25 +2349,25 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-43,
-48
+50,
+55
 ],
 "alt_span": [
-36,
-36
+45,
+45
 ]
 },
 {
 "k": 2,
-"nat": ": float) -> float | str",
-"alt": ")",
+"nat": ": int\n) -> int | str",
+"alt": "\n)",
 "nat_span": [
-54,
-77
+65,
+85
 ],
 "alt_span": [
-42,
-43
+55,
+57
 ]
 },
 {
@@ -2440,64 +2375,51 @@
 "nat": " -> None",
 "alt": "",
 "nat_span": [
-690,
-698
+409,
+417
 ],
 "alt_span": [
-656,
-656
+381,
+381
 ]
 },
 {
 "k": 4,
-"nat": ": float | str",
+"nat": ": int | str",
 "alt": "",
 "nat_span": [
-711,
-724
+430,
+441
 ],
 "alt_span": [
-669,
-669
+394,
+394
 ]
 },
 {
 "k": 5,
-"nat": ": float | str",
+"nat": ": int | str",
 "alt": "",
 "nat_span": [
-805,
-818
+518,
+529
 ],
 "alt_span": [
-750,
-750
+471,
+471
 ]
 },
 {
 "k": 6,
-"nat": ": float | str",
+"nat": ": int | str",
 "alt": "",
 "nat_span": [
-899,
-912
+606,
+617
 ],
 "alt_span": [
-831,
-831
-]
-},
-{
-"k": 7,
-"nat": ": float | str",
-"alt": "",
-"nat_span": [
-993,
-1006
-],
-"alt_span": [
-912,
-912
+548,
+548
 ]
 }
 ],
@@ -2557,19 +2479,6 @@
 },
 {
 "k": 3,
-"nat": ": int) -> list[int]",
-"alt": ")",
-"nat_span": [
-435,
-454
-],
-"alt_span": [
-412,
-413
-]
-},
-{
-"k": 4,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -2582,7 +2491,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": list[int]) -> int",
 "alt": ")",
 "nat_span": [
@@ -2595,7 +2504,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -2608,7 +2517,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": int) -> int",
 "alt": ")",
 "nat_span": [
@@ -2621,7 +2530,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -2634,7 +2543,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.891,
 "pass": true,
 "verify": null,
@@ -3273,19 +3182,6 @@
 },
 {
 "k": 1,
-"nat": ": list[int]) -> list[int]",
-"alt": ")",
-"nat_span": [
-45,
-70
-],
-"alt_span": [
-34,
-35
-]
-},
-{
-"k": 2,
 "nat": ": set[int]",
 "alt": "",
 "nat_span": [
@@ -3298,7 +3194,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": set[int]",
 "alt": "",
 "nat_span": [
@@ -3311,7 +3207,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": set[int]",
 "alt": "",
 "nat_span": [
@@ -3324,7 +3220,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -3337,7 +3233,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -3350,7 +3246,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -3363,7 +3259,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -3376,7 +3272,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.858,
 "pass": true,
 "verify": null,
@@ -3733,19 +3629,6 @@
 },
 {
 "k": 3,
-"nat": ": str) -> None",
-"alt": ")",
-"nat_span": [
-391,
-405
-],
-"alt_span": [
-369,
-370
-]
-},
-{
-"k": 4,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -3758,7 +3641,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -3771,7 +3654,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -3784,7 +3667,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -3797,7 +3680,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.889,
 "pass": true,
 "verify": null,
@@ -3937,19 +3820,6 @@
 },
 {
 "k": 1,
-"nat": ": dict) -> dict",
-"alt": ")",
-"nat_span": [
-41,
-56
-],
-"alt_span": [
-35,
-36
-]
-},
-{
-"k": 2,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -3962,7 +3832,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -3975,7 +3845,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -3988,7 +3858,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -4001,7 +3871,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -4014,7 +3884,7 @@
 ]
 }
 ],
-"k_en": 7,
+"k_en": 6,
 "shared_fraction": 0.828,
 "pass": true,
 "verify": null,
@@ -4123,33 +3993,33 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def calculate_age(birth_year: int, current_year: int) -> int:\n    \"\"\"\n    Calculates the age given a birth year and the current year.\n\n    Args:\n        birth_year (int): The year of birth.\n        current_year (int): The current year.\n\n    Returns:\n        int: The calculated age.\n    \"\"\"\n    return current_year - birth_year\n\ndef display_age_info(birth_year: int, current_year: int) -> None:\n    \"\"\"\n    Calculates and prints the age information.\n\n    Args:\n        birth_year (int): The year of birth.\n        current_year (int): The current year.\n    \"\"\"\n    age: int = calculate_age(birth_year, current_year)\n    print(f\"Born in {birth_year}, in {current_year} the person is {age} years old.\")\n\nif __name__ == \"__main__\":\n    year_born: int = 1990\n    current_yr: int = 2023\n    age_result: int = calculate_age(year_born, current_yr)\n    print(f\"Age: {age_result}\")\n\n    display_age_info(2000, 2000)\n    display_age_info(1985, 2024)\n",
-"text_alt": "def calculate_age(birth_year, current_year):\n    \"\"\"\n    Calculates the age given a birth year and the current year.\n\n    Args:\n        birth_year (int): The year of birth.\n        current_year (int): The current year.\n\n    Returns:\n        int: The calculated age.\n    \"\"\"\n    return current_year - birth_year\n\ndef display_age_info(birth_year, current_year):\n    \"\"\"\n    Calculates and prints the age information.\n\n    Args:\n        birth_year (int): The year of birth.\n        current_year (int): The current year.\n    \"\"\"\n    age = calculate_age(birth_year, current_year)\n    print(f\"Born in {birth_year}, in {current_year} the person is {age} years old.\")\n\nif __name__ == \"__main__\":\n    year_born = 1990\n    current_yr = 2023\n    age_result = calculate_age(year_born, current_yr)\n    print(f\"Age: {age_result}\")\n\n    display_age_info(2000, 2000)\n    display_age_info(1985, 2024)\n",
+"text_nat": "def calculate_age(\n    birth_year: int,\n    current_year: int\n) -> int:\n    \"\"\"\n    Calculates the age given a birth year and the current year.\n\n    Args:\n        birth_year (int): The year of birth.\n        current_year (int): The current year.\n\n    Returns:\n        int: The calculated age.\n    \"\"\"\n    age: int = current_year - birth_year\n    return age\n\ndef get_year_difference(\n    year1: int,\n    year2: int\n) -> int:\n    \"\"\"\n    Calculates the absolute difference between two years.\n    This is a helper function to demonstrate more type hints.\n    \"\"\"\n    difference: int = abs(year1 - year2)\n    return difference\n\ndef is_valid_year(\n    year: int\n) -> bool:\n    \"\"\"\n    Checks if a year is a positive integer.\n    \"\"\"\n    validation_result: bool = year > 0\n    return validation_result\n\n# Example usage (not part of the function itself, but for testing)\nif __name__ == \"__main__\":\n    age1: int = calculate_age(1990, 2023)\n    print(f\"Age: {age1}\")\n\n    age2: int = calculate_age(2000, 2000)\n    print(f\"Age: {age2}\")\n\n    age3: int = calculate_age(1985, 2024)\n    print(f\"Age: {age3}\")\n\n    diff: int = get_year_difference(2000, 1990)\n    print(f\"Year difference: {diff}\")\n\n    valid: bool = is_valid_year(2023)\n    print(f\"Is 2023 a valid year? {valid}\")\n\n    invalid: bool = is_valid_year(-100)\n    print(f\"Is -100 a valid year? {invalid}\")\n",
+"text_alt": "def calculate_age(\n    birth_year,\n    current_year\n):\n    \"\"\"\n    Calculates the age given a birth year and the current year.\n\n    Args:\n        birth_year (int): The year of birth.\n        current_year (int): The current year.\n\n    Returns:\n        int: The calculated age.\n    \"\"\"\n    age = current_year - birth_year\n    return age\n\ndef get_year_difference(\n    year1,\n    year2\n):\n    \"\"\"\n    Calculates the absolute difference between two years.\n    This is a helper function to demonstrate more type hints.\n    \"\"\"\n    difference = abs(year1 - year2)\n    return difference\n\ndef is_valid_year(\n    year\n):\n    \"\"\"\n    Checks if a year is a positive integer.\n    \"\"\"\n    validation_result = year > 0\n    return validation_result\n\n# Example usage (not part of the function itself, but for testing)\nif __name__ == \"__main__\":\n    age1 = calculate_age(1990, 2023)\n    print(f\"Age: {age1}\")\n\n    age2 = calculate_age(2000, 2000)\n    print(f\"Age: {age2}\")\n\n    age3 = calculate_age(1985, 2024)\n    print(f\"Age: {age3}\")\n\n    diff = get_year_difference(2000, 1990)\n    print(f\"Year difference: {diff}\")\n\n    valid = is_valid_year(2023)\n    print(f\"Is 2023 a valid year? {valid}\")\n\n    invalid = is_valid_year(-100)\n    print(f\"Is -100 a valid year? {invalid}\")\n",
 "opps": [
 {
 "k": 0,
 "nat": ": int",
 "alt": "",
 "nat_span": [
-28,
-33
+33,
+38
 ],
 "alt_span": [
-28,
-28
+33,
+33
 ]
 },
 {
 "k": 1,
-"nat": ": int) -> int",
-"alt": ")",
+"nat": ": int\n) -> int",
+"alt": "\n)",
 "nat_span": [
-47,
-60
+56,
+70
 ],
 "alt_span": [
-42,
-43
+51,
+53
 ]
 },
 {
@@ -4157,38 +4027,38 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-360,
-365
+308,
+313
 ],
 "alt_span": [
-343,
-343
+291,
+291
 ]
 },
 {
 "k": 3,
-"nat": ": int) -> None",
-"alt": ")",
+"nat": ": int",
+"alt": "",
 "nat_span": [
-379,
-393
+392,
+397
 ],
 "alt_span": [
-357,
-358
+370,
+370
 ]
 },
 {
 "k": 4,
-"nat": ": int",
-"alt": "",
+"nat": ": int\n) -> int",
+"alt": "\n)",
 "nat_span": [
-567,
-572
+408,
+422
 ],
 "alt_span": [
-532,
-532
+381,
+383
 ]
 },
 {
@@ -4196,43 +4066,121 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-741,
-746
+574,
+579
 ],
 "alt_span": [
-701,
-701
+535,
+535
 ]
 },
 {
 "k": 6,
-"nat": ": int",
-"alt": "",
+"nat": ": int\n) -> bool",
+"alt": "\n)",
 "nat_span": [
-768,
-773
+651,
+666
 ],
 "alt_span": [
-723,
-723
+607,
+609
 ]
 },
 {
 "k": 7,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+749,
+755
+],
+"alt_span": [
+692,
+692
+]
+},
+{
+"k": 8,
 "nat": ": int",
 "alt": "",
 "nat_span": [
-795,
-800
+899,
+904
 ],
 "alt_span": [
-745,
-745
+836,
+836
+]
+},
+{
+"k": 9,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+968,
+973
+],
+"alt_span": [
+900,
+900
+]
+},
+{
+"k": 10,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1037,
+1042
+],
+"alt_span": [
+964,
+964
+]
+},
+{
+"k": 11,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1106,
+1111
+],
+"alt_span": [
+1028,
+1028
+]
+},
+{
+"k": 12,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+1194,
+1200
+],
+"alt_span": [
+1111,
+1111
+]
+},
+{
+"k": 13,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+1279,
+1285
+],
+"alt_span": [
+1190,
+1190
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.89,
+"k_en": 14,
+"shared_fraction": 0.883,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -4241,25 +4189,25 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-28,
-33
+33,
+38
 ],
 "alt_span": [
-28,
-28
+33,
+33
 ]
 },
 {
 "k": 1,
-"nat": ": int) -> int",
-"alt": ")",
+"nat": ": int\n) -> int",
+"alt": "\n)",
 "nat_span": [
-47,
-60
+56,
+70
 ],
 "alt_span": [
-42,
-43
+51,
+53
 ]
 },
 {
@@ -4267,38 +4215,38 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-360,
-365
+308,
+313
 ],
 "alt_span": [
-343,
-343
+291,
+291
 ]
 },
 {
 "k": 3,
-"nat": ": int) -> None",
-"alt": ")",
+"nat": ": int",
+"alt": "",
 "nat_span": [
-379,
-393
+392,
+397
 ],
 "alt_span": [
-357,
-358
+370,
+370
 ]
 },
 {
 "k": 4,
-"nat": ": int",
-"alt": "",
+"nat": ": int\n) -> int",
+"alt": "\n)",
 "nat_span": [
-567,
-572
+408,
+422
 ],
 "alt_span": [
-532,
-532
+381,
+383
 ]
 },
 {
@@ -4306,38 +4254,116 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-741,
-746
+574,
+579
 ],
 "alt_span": [
-701,
-701
+535,
+535
 ]
 },
 {
 "k": 6,
-"nat": ": int",
-"alt": "",
+"nat": ": int\n) -> bool",
+"alt": "\n)",
 "nat_span": [
-768,
-773
+651,
+666
 ],
 "alt_span": [
-723,
-723
+607,
+609
 ]
 },
 {
 "k": 7,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+749,
+755
+],
+"alt_span": [
+692,
+692
+]
+},
+{
+"k": 8,
 "nat": ": int",
 "alt": "",
 "nat_span": [
-795,
-800
+899,
+904
 ],
 "alt_span": [
-745,
-745
+836,
+836
+]
+},
+{
+"k": 9,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+968,
+973
+],
+"alt_span": [
+900,
+900
+]
+},
+{
+"k": 10,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1037,
+1042
+],
+"alt_span": [
+964,
+964
+]
+},
+{
+"k": 11,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1106,
+1111
+],
+"alt_span": [
+1028,
+1028
+]
+},
+{
+"k": 12,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+1194,
+1200
+],
+"alt_span": [
+1111,
+1111
+]
+},
+{
+"k": 13,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+1279,
+1285
+],
+"alt_span": [
+1190,
+1190
 ]
 }
 ],
@@ -4371,19 +4397,6 @@
 },
 {
 "k": 1,
-"nat": ": int) -> str",
-"alt": ")",
-"nat_span": [
-42,
-55
-],
-"alt_span": [
-37,
-38
-]
-},
-{
-"k": 2,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -4396,7 +4409,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -4409,7 +4422,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -4422,7 +4435,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -4435,7 +4448,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": dict[tuple[str, int], str]",
 "alt": "",
 "nat_span": [
@@ -4448,7 +4461,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -4461,7 +4474,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.903,
 "pass": true,
 "verify": null,
@@ -4854,22 +4867,9 @@
 971,
 971
 ]
-},
-{
-"k": 7,
-"nat": ": int) -> float",
-"alt": ")",
-"nat_span": [
-1059,
-1074
-],
-"alt_span": [
-974,
-975
-]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.878,
 "pass": true,
 "verify": null,
@@ -5187,32 +5187,6 @@
 },
 {
 "k": 1,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-32,
-37
-],
-"alt_span": [
-27,
-27
-]
-},
-{
-"k": 2,
-"nat": ": int) -> str",
-"alt": ")",
-"nat_span": [
-42,
-55
-],
-"alt_span": [
-32,
-33
-]
-},
-{
-"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -5225,7 +5199,7 @@
 ]
 },
 {
-"k": 4,
+"k": 2,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -5238,7 +5212,7 @@
 ]
 },
 {
-"k": 5,
+"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -5251,7 +5225,7 @@
 ]
 },
 {
-"k": 6,
+"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -5264,7 +5238,7 @@
 ]
 },
 {
-"k": 7,
+"k": 5,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -5277,7 +5251,7 @@
 ]
 },
 {
-"k": 8,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -5290,7 +5264,7 @@
 ]
 },
 {
-"k": 9,
+"k": 7,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -5303,7 +5277,7 @@
 ]
 },
 {
-"k": 10,
+"k": 8,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -5316,7 +5290,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 9,
 "shared_fraction": 0.886,
 "pass": true,
 "verify": null,
@@ -5495,32 +5469,6 @@
 },
 {
 "k": 1,
-"nat": ": str",
-"alt": "",
-"nat_span": [
-57,
-62
-],
-"alt_span": [
-41,
-41
-]
-},
-{
-"k": 2,
-"nat": ": int) -> dict[str, int]",
-"alt": ")",
-"nat_span": [
-72,
-96
-],
-"alt_span": [
-51,
-52
-]
-},
-{
-"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -5533,7 +5481,7 @@
 ]
 },
 {
-"k": 4,
+"k": 2,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -5546,7 +5494,7 @@
 ]
 },
 {
-"k": 5,
+"k": 3,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -5559,7 +5507,7 @@
 ]
 },
 {
-"k": 6,
+"k": 4,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -5572,7 +5520,7 @@
 ]
 },
 {
-"k": 7,
+"k": 5,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -5585,7 +5533,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 6,
 "shared_fraction": 0.853,
 "pass": true,
 "verify": null,
@@ -5725,19 +5673,6 @@
 },
 {
 "k": 1,
-"nat": ": int) -> str",
-"alt": ")",
-"nat_span": [
-42,
-55
-],
-"alt_span": [
-37,
-38
-]
-},
-{
-"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -5750,7 +5685,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -5763,7 +5698,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -5776,7 +5711,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -5789,7 +5724,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -5802,7 +5737,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -5815,7 +5750,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -5828,7 +5763,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -5841,7 +5776,7 @@
 ]
 }
 ],
-"k_en": 10,
+"k_en": 9,
 "shared_fraction": 0.905,
 "pass": true,
 "verify": null,
@@ -6007,19 +5942,6 @@
 },
 {
 "k": 1,
-"nat": ": float) -> float",
-"alt": ")",
-"nat_span": [
-44,
-61
-],
-"alt_span": [
-37,
-38
-]
-},
-{
-"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -6032,7 +5954,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": float) -> str",
 "alt": ")",
 "nat_span": [
@@ -6045,7 +5967,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -6058,7 +5980,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -6071,7 +5993,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -6084,7 +6006,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -6097,7 +6019,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -6110,7 +6032,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -6123,7 +6045,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -6136,7 +6058,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -6149,7 +6071,7 @@
 ]
 },
 {
-"k": 12,
+"k": 11,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -6162,7 +6084,7 @@
 ]
 }
 ],
-"k_en": 13,
+"k_en": 12,
 "shared_fraction": 0.921,
 "pass": true,
 "verify": null,
@@ -7091,20 +7013,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import math\n\ndef distance_2d(x1: float, y1: float, x2: float, y2: float) -> float:\n    \"\"\"\n    Calculates the Euclidean distance between two points (x1, y1) and (x2, y2) in a 2D plane.\n\n    Args:\n        x1 (float): The x-coordinate of the first point.\n        y1 (float): The y-coordinate of the first point.\n        x2 (float): The x-coordinate of the second point.\n        y2 (float): The y-coordinate of the second point.\n\n    Returns:\n        float: The Euclidean distance between the two points.\n    \"\"\"\n    dx: float = x2 - x1\n    dy: float = y2 - y1\n    distance_squared: float = dx**2 + dy**2\n    return math.sqrt(distance_squared)\n\ndef main() -> None:\n    \"\"\"\n    Main function to demonstrate the usage of distance_2d.\n    \"\"\"\n    result1: float = distance_2d(0.0, 0.0, 3.0, 4.0)\n    print(f\"Distance between (0, 0) and (3, 4): {result1}\")\n\n    result2: float = distance_2d(1.0, 1.0, 1.0, 1.0)\n    print(f\"Distance between (1, 1) and (1, 1): {result2}\")\n\n    result3: float = distance_2d(-1.0, -2.0, 2.0, 2.0)\n    print(f\"Distance between (-1, -2) and (2, 2): {result3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "import math\n\ndef distance_2d(x1, y1, x2, y2):\n    \"\"\"\n    Calculates the Euclidean distance between two points (x1, y1) and (x2, y2) in a 2D plane.\n\n    Args:\n        x1 (float): The x-coordinate of the first point.\n        y1 (float): The y-coordinate of the first point.\n        x2 (float): The x-coordinate of the second point.\n        y2 (float): The y-coordinate of the second point.\n\n    Returns:\n        float: The Euclidean distance between the two points.\n    \"\"\"\n    dx: float = x2 - x1\n    dy: float = y2 - y1\n    distance_squared: float = dx**2 + dy**2\n    return math.sqrt(distance_squared)\n\ndef main():\n    \"\"\"\n    Main function to demonstrate the usage of distance_2d.\n    \"\"\"\n    result1: float = distance_2d(0.0, 0.0, 3.0, 4.0)\n    print(f\"Distance between (0, 0) and (3, 4): {result1}\")\n\n    result2: float = distance_2d(1.0, 1.0, 1.0, 1.0)\n    print(f\"Distance between (1, 1) and (1, 1): {result2}\")\n\n    result3: float = distance_2d(-1.0, -2.0, 2.0, 2.0)\n    print(f\"Distance between (-1, -2) and (2, 2): {result3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "import math\n\ndef distance_2d(\n    x1: float,\n    y1: float,\n    x2: float,\n    y2: float\n) -> float:\n    \"\"\"\n    Calculates the Euclidean distance between two points (x1, y1) and (x2, y2) in a 2D plane.\n    \"\"\"\n    delta_x: float = x2 - x1\n    delta_y: float = y2 - y1\n    sum_of_squares: float = delta_x**2 + delta_y**2\n    distance: float = math.sqrt(sum_of_squares)\n    return distance\n",
+"text_alt": "import math\n\ndef distance_2d(\n    x1,\n    y1,\n    x2,\n    y2\n):\n    \"\"\"\n    Calculates the Euclidean distance between two points (x1, y1) and (x2, y2) in a 2D plane.\n    \"\"\"\n    delta_x = x2 - x1\n    delta_y = y2 - y1\n    sum_of_squares = delta_x**2 + delta_y**2\n    distance = math.sqrt(sum_of_squares)\n    return distance\n",
 "opps": [
 {
 "k": 0,
 "nat": ": float",
 "alt": "",
 "nat_span": [
-31,
-38
+36,
+43
 ],
 "alt_span": [
-31,
-31
+36,
+36
 ]
 },
 {
@@ -7112,12 +7034,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-42,
-49
+51,
+58
 ],
 "alt_span": [
-35,
-35
+44,
+44
 ]
 },
 {
@@ -7125,43 +7047,82 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-53,
-60
+66,
+73
 ],
 "alt_span": [
-39,
-39
+52,
+52
 ]
 },
 {
 "k": 3,
-"nat": ": float) -> float",
-"alt": ")",
+"nat": ": float\n) -> float",
+"alt": "\n)",
 "nat_span": [
-64,
-81
+81,
+99
 ],
 "alt_span": [
-43,
-44
+60,
+62
 ]
 },
 {
 "k": 4,
-"nat": " -> None",
+"nat": ": float",
 "alt": "",
 "nat_span": [
-652,
-660
+222,
+229
 ],
 "alt_span": [
-615,
-615
+185,
+185
+]
+},
+{
+"k": 5,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+251,
+258
+],
+"alt_span": [
+207,
+207
+]
+},
+{
+"k": 6,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+287,
+294
+],
+"alt_span": [
+236,
+236
+]
+},
+{
+"k": 7,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+333,
+340
+],
+"alt_span": [
+275,
+275
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.955,
+"k_en": 8,
+"shared_fraction": 0.807,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -7170,12 +7131,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-31,
-38
+36,
+43
 ],
 "alt_span": [
-31,
-31
+36,
+36
 ]
 },
 {
@@ -7183,12 +7144,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-42,
-49
+51,
+58
 ],
 "alt_span": [
-35,
-35
+44,
+44
 ]
 },
 {
@@ -7196,38 +7157,77 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-53,
-60
+66,
+73
 ],
 "alt_span": [
-39,
-39
+52,
+52
 ]
 },
 {
 "k": 3,
-"nat": ": float) -> float",
-"alt": ")",
+"nat": ": float\n) -> float",
+"alt": "\n)",
 "nat_span": [
-64,
-81
+81,
+99
 ],
 "alt_span": [
-43,
-44
+60,
+62
 ]
 },
 {
 "k": 4,
-"nat": " -> None",
+"nat": ": float",
 "alt": "",
 "nat_span": [
-652,
-660
+222,
+229
 ],
 "alt_span": [
-615,
-615
+185,
+185
+]
+},
+{
+"k": 5,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+251,
+258
+],
+"alt_span": [
+207,
+207
+]
+},
+{
+"k": 6,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+287,
+294
+],
+"alt_span": [
+236,
+236
+]
+},
+{
+"k": 7,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+333,
+340
+],
+"alt_span": [
+275,
+275
 ]
 }
 ],
@@ -7734,19 +7734,6 @@
 },
 {
 "k": 6,
-"nat": ": int) -> list[str]",
-"alt": ")",
-"nat_span": [
-726,
-745
-],
-"alt_span": [
-634,
-635
-]
-},
-{
-"k": 7,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -7759,7 +7746,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.792,
 "pass": true,
 "verify": null,
@@ -9283,8 +9270,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def rock_paper_scissors(player1_choice: str, player2_choice: str) -> str:\n    \"\"\"\n    Simulates one round of Rock, Paper, Scissors.\n\n    Args:\n        player1_choice (str): The choice of player 1 ('rock', 'paper', or 'scissors').\n        player2_choice (str): The choice of player 2 ('rock', 'paper', or 'scissors').\n\n    Returns:\n        str: The result of the round ('Player 1 wins!', 'Player 2 wins!', or 'It's a tie!').\n    \"\"\"\n    if player1_choice == player2_choice:\n        return \"It's a tie!\"\n\n    winning_conditions: dict[str, str] = {\n        'rock': 'scissors',\n        'paper': 'rock',\n        'scissors': 'paper'\n    }\n\n    if winning_conditions[player1_choice] == player2_choice:\n        return \"Player 1 wins!\"\n    else:\n        return \"Player 2 wins!\"\n\ndef get_example_output(choice1: str, choice2: str) -> str:\n    \"\"\"\n    Helper function to demonstrate the rock_paper_scissors function.\n    \"\"\"\n    return rock_paper_scissors(choice1, choice2)\n\n# Example usage (not part of the solution but for testing)\n# print(rock_paper_scissors('rock', 'scissors'))\n# print(rock_paper_scissors('paper', 'rock'))\n# print(get_example_output('rock', 'rock'))\n",
-"text_alt": "def rock_paper_scissors(player1_choice, player2_choice):\n    \"\"\"\n    Simulates one round of Rock, Paper, Scissors.\n\n    Args:\n        player1_choice (str): The choice of player 1 ('rock', 'paper', or 'scissors').\n        player2_choice (str): The choice of player 2 ('rock', 'paper', or 'scissors').\n\n    Returns:\n        str: The result of the round ('Player 1 wins!', 'Player 2 wins!', or 'It's a tie!').\n    \"\"\"\n    if player1_choice == player2_choice:\n        return \"It's a tie!\"\n\n    winning_conditions = {\n        'rock': 'scissors',\n        'paper': 'rock',\n        'scissors': 'paper'\n    }\n\n    if winning_conditions[player1_choice] == player2_choice:\n        return \"Player 1 wins!\"\n    else:\n        return \"Player 2 wins!\"\n\ndef get_example_output(choice1, choice2):\n    \"\"\"\n    Helper function to demonstrate the rock_paper_scissors function.\n    \"\"\"\n    return rock_paper_scissors(choice1, choice2)\n\n# Example usage (not part of the solution but for testing)\n# print(rock_paper_scissors('rock', 'scissors'))\n# print(rock_paper_scissors('paper', 'rock'))\n# print(get_example_output('rock', 'rock'))\n",
+"text_nat": "def rock_paper_scissors(player1_choice: str,\n                        player2_choice: str) -> str:\n    \"\"\"\n    Simulates one round of Rock, Paper, Scissors.\n    \"\"\"\n    rules: dict[str, dict[str, str]] = {\n        'rock': {'scissors': 'wins', 'paper': 'loses'},\n        'paper': {'rock': 'wins', 'scissors': 'loses'},\n        'scissors': {'paper': 'wins', 'rock': 'loses'}\n    }\n\n    if player1_choice == player2_choice:\n        return \"It's a tie!\"\n\n    result: str = rules[player1_choice][player2_choice]\n\n    if result == 'wins':\n        return \"Player 1 wins!\"\n    else:  # result == 'loses'\n        return \"Player 2 wins!\"\n\ndef main() -> None:\n    # Example usage:\n    print(rock_paper_scissors('rock', 'scissors'))\n    print(rock_paper_scissors('paper', 'rock'))\n    print(rock_paper_scissors('scissors', 'paper'))\n    print(rock_paper_scissors('rock', 'rock'))\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def rock_paper_scissors(player1_choice,\n                        player2_choice):\n    \"\"\"\n    Simulates one round of Rock, Paper, Scissors.\n    \"\"\"\n    rules = {\n        'rock': {'scissors': 'wins', 'paper': 'loses'},\n        'paper': {'rock': 'wins', 'scissors': 'loses'},\n        'scissors': {'paper': 'wins', 'rock': 'loses'}\n    }\n\n    if player1_choice == player2_choice:\n        return \"It's a tie!\"\n\n    result = rules[player1_choice][player2_choice]\n\n    if result == 'wins':\n        return \"Player 1 wins!\"\n    else:  # result == 'loses'\n        return \"Player 2 wins!\"\n\ndef main():\n    # Example usage:\n    print(rock_paper_scissors('rock', 'scissors'))\n    print(rock_paper_scissors('paper', 'rock'))\n    print(rock_paper_scissors('scissors', 'paper'))\n    print(rock_paper_scissors('rock', 'rock'))\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
@@ -9304,25 +9291,25 @@
 "nat": ": str) -> str",
 "alt": ")",
 "nat_span": [
-59,
-72
+83,
+96
 ],
 "alt_span": [
-54,
-55
+78,
+79
 ]
 },
 {
 "k": 2,
-"nat": ": dict[str, str]",
+"nat": ": dict[str, dict[str, str]]",
 "alt": "",
 "nat_span": [
-525,
-541
+173,
+200
 ],
 "alt_span": [
-508,
-508
+156,
+156
 ]
 },
 {
@@ -9330,30 +9317,30 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-800,
-805
+460,
+465
 ],
 "alt_span": [
-767,
-767
+416,
+416
 ]
 },
 {
 "k": 4,
-"nat": ": str) -> str",
-"alt": ")",
+"nat": " -> None",
+"alt": "",
 "nat_span": [
-814,
-827
+638,
+646
 ],
 "alt_span": [
-776,
-777
+589,
+589
 ]
 }
 ],
 "k_en": 5,
-"shared_fraction": 0.925,
+"shared_fraction": 0.897,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -9375,25 +9362,25 @@
 "nat": ": str) -> str",
 "alt": ")",
 "nat_span": [
-59,
-72
+83,
+96
 ],
 "alt_span": [
-54,
-55
+78,
+79
 ]
 },
 {
 "k": 2,
-"nat": ": dict[str, str]",
+"nat": ": dict[str, dict[str, str]]",
 "alt": "",
 "nat_span": [
-525,
-541
+173,
+200
 ],
 "alt_span": [
-508,
-508
+156,
+156
 ]
 },
 {
@@ -9401,25 +9388,25 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-800,
-805
+460,
+465
 ],
 "alt_span": [
-767,
-767
+416,
+416
 ]
 },
 {
 "k": 4,
-"nat": ": str) -> str",
-"alt": ")",
+"nat": " -> None",
+"alt": "",
 "nat_span": [
-814,
-827
+638,
+646
 ],
 "alt_span": [
-776,
-777
+589,
+589
 ]
 }
 ],
@@ -9709,19 +9696,6 @@
 },
 {
 "k": 1,
-"nat": ": list[list[int]]) -> list[list[int]]",
-"alt": ")",
-"nat_span": [
-48,
-85
-],
-"alt_span": [
-31,
-32
-]
-},
-{
-"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -9734,7 +9708,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -9747,7 +9721,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -9760,7 +9734,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -9773,7 +9747,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -9786,7 +9760,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -9799,7 +9773,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -9812,7 +9786,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -9825,7 +9799,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -9838,7 +9812,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 10,
 "shared_fraction": 0.771,
 "pass": true,
 "verify": null,
@@ -10555,19 +10529,6 @@
 },
 {
 "k": 1,
-"nat": ": dict[str, float]) -> float",
-"alt": ")",
-"nat_span": [
-50,
-78
-],
-"alt_span": [
-34,
-35
-]
-},
-{
-"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -10580,7 +10541,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -10593,7 +10554,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -10606,7 +10567,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -10619,7 +10580,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": dict[str, float]",
 "alt": "",
 "nat_span": [
@@ -10632,7 +10593,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -10645,7 +10606,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -10658,7 +10619,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": dict[str, float]",
 "alt": "",
 "nat_span": [
@@ -10671,7 +10632,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -10684,7 +10645,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 10,
 "shared_fraction": 0.833,
 "pass": true,
 "verify": null,
@@ -11696,19 +11657,6 @@
 },
 {
 "k": 4,
-"nat": ": str) -> None",
-"alt": ")",
-"nat_span": [
-369,
-383
-],
-"alt_span": [
-342,
-343
-]
-},
-{
-"k": 5,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -11721,7 +11669,7 @@
 ]
 }
 ],
-"k_en": 6,
+"k_en": 5,
 "shared_fraction": 0.89,
 "pass": true,
 "verify": null,
@@ -12707,19 +12655,6 @@
 },
 {
 "k": 1,
-"nat": ": int) -> list[int]",
-"alt": ")",
-"nat_span": [
-49,
-68
-],
-"alt_span": [
-44,
-45
-]
-},
-{
-"k": 2,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -12732,7 +12667,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -12745,7 +12680,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": list[int]) -> int",
 "alt": ")",
 "nat_span": [
@@ -12758,7 +12693,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -12771,7 +12706,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -12784,20 +12719,7 @@
 ]
 },
 {
-"k": 7,
-"nat": ": int) -> bool",
-"alt": ")",
-"nat_span": [
-958,
-972
-],
-"alt_span": [
-891,
-892
-]
-},
-{
-"k": 8,
+"k": 6,
 "nat": ": list[int]) -> float",
 "alt": ")",
 "nat_span": [
@@ -12810,7 +12732,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 7,
 "shared_fraction": 0.897,
 "pass": true,
 "verify": null,
@@ -13410,19 +13332,6 @@
 },
 {
 "k": 2,
-"nat": ": str) -> bool",
-"alt": ")",
-"nat_span": [
-170,
-184
-],
-"alt_span": [
-153,
-154
-]
-},
-{
-"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -13435,7 +13344,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -13448,7 +13357,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -13461,7 +13370,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -13474,7 +13383,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": str) -> dict[str, int]",
 "alt": ")",
 "nat_span": [
@@ -13487,7 +13396,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -13500,7 +13409,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.781,
 "pass": true,
 "verify": null,
@@ -13635,20 +13544,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def has_conflict(schedule: list[tuple[int, int]], new_event_start: int, new_event_end: int) -> bool:\n    \"\"\"\n    Checks if a new event conflicts with any existing events in a schedule.\n\n    Args:\n        schedule: A list of (start, end) tuples representing existing events.\n        new_event_start: The start time of the new event.\n        new_event_end: The end time of the new event.\n\n    Returns:\n        True if there is a conflict, False otherwise.\n    \"\"\"\n    for event_start, event_end in schedule:\n        if _intervals_overlap(event_start, event_end, new_event_start, new_event_end):\n            return True\n    return False\n\ndef _intervals_overlap(start1: int, end1: int, start2: int, end2: int) -> bool:\n    \"\"\"\n    Checks if two time intervals overlap.\n\n    Args:\n        start1: The start time of the first interval.\n        end1: The end time of the first interval.\n        start2: The start time of the second interval.\n        end2: The end time of the second interval.\n\n    Returns:\n        True if the intervals overlap, False otherwise.\n    \"\"\"\n    return max(start1, start2) < min(end1, end2)\n",
-"text_alt": "def has_conflict(schedule, new_event_start, new_event_end):\n    \"\"\"\n    Checks if a new event conflicts with any existing events in a schedule.\n\n    Args:\n        schedule: A list of (start, end) tuples representing existing events.\n        new_event_start: The start time of the new event.\n        new_event_end: The end time of the new event.\n\n    Returns:\n        True if there is a conflict, False otherwise.\n    \"\"\"\n    for event_start, event_end in schedule:\n        if _intervals_overlap(event_start, event_end, new_event_start, new_event_end):\n            return True\n    return False\n\ndef _intervals_overlap(start1, end1, start2, end2):\n    \"\"\"\n    Checks if two time intervals overlap.\n\n    Args:\n        start1: The start time of the first interval.\n        end1: The end time of the first interval.\n        start2: The start time of the second interval.\n        end2: The end time of the second interval.\n\n    Returns:\n        True if the intervals overlap, False otherwise.\n    \"\"\"\n    return max(start1, start2) < min(end1, end2)\n",
+"text_nat": "def has_conflict(\n    schedule: list[tuple[int, int]],\n    new_event_start: int,\n    new_event_end: int\n) -> bool:\n    \"\"\"\n    Checks if a new event conflicts with any existing events in a schedule.\n    \"\"\"\n    for event_start, event_end in schedule:\n        event_start: int\n        event_end: int\n        if (new_event_start < event_end and new_event_end > event_start):\n            return True\n    return False\n\ndef main() -> None:\n    schedule1: list[tuple[int, int]] = [(1, 5), (10, 15)]\n    new_event1_start: int = 3\n    new_event1_end: int = 7\n    result1: bool = has_conflict(schedule1, new_event1_start, new_event1_end)\n    print(f\"Conflict for (3,7) in [(1,5), (10,15)]: {result1}\")\n\n    schedule2: list[tuple[int, int]] = [(1, 5)]\n    new_event2_start: int = 6\n    new_event2_end: int = 8\n    result2: bool = has_conflict(schedule2, new_event2_start, new_event2_end)\n    print(f\"Conflict for (6,8) in [(1,5)]: {result2}\")\n\n    schedule3: list[tuple[int, int]] = []\n    new_event3_start: int = 1\n    new_event3_end: int = 2\n    result3: bool = has_conflict(schedule3, new_event3_start, new_event3_end)\n    print(f\"Conflict for (1,2) in []: {result3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def has_conflict(\n    schedule,\n    new_event_start,\n    new_event_end\n):\n    \"\"\"\n    Checks if a new event conflicts with any existing events in a schedule.\n    \"\"\"\n    for event_start, event_end in schedule:\n        event_start: int\n        event_end: int\n        if (new_event_start < event_end and new_event_end > event_start):\n            return True\n    return False\n\ndef main():\n    schedule1 = [(1, 5), (10, 15)]\n    new_event1_start = 3\n    new_event1_end = 7\n    result1 = has_conflict(schedule1, new_event1_start, new_event1_end)\n    print(f\"Conflict for (3,7) in [(1,5), (10,15)]: {result1}\")\n\n    schedule2 = [(1, 5)]\n    new_event2_start = 6\n    new_event2_end = 8\n    result2 = has_conflict(schedule2, new_event2_start, new_event2_end)\n    print(f\"Conflict for (6,8) in [(1,5)]: {result2}\")\n\n    schedule3 = []\n    new_event3_start = 1\n    new_event3_end = 2\n    result3 = has_conflict(schedule3, new_event3_start, new_event3_end)\n    print(f\"Conflict for (1,2) in []: {result3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": ": list[tuple[int, int]]",
 "alt": "",
 "nat_span": [
-25,
-48
+30,
+53
 ],
 "alt_span": [
-25,
-25
+30,
+30
 ]
 },
 {
@@ -13656,51 +13565,51 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-65,
-70
+74,
+79
 ],
 "alt_span": [
-42,
-42
+51,
+51
 ]
 },
 {
 "k": 2,
-"nat": ": int) -> bool",
-"alt": ")",
+"nat": ": int\n) -> bool",
+"alt": "\n)",
 "nat_span": [
-85,
-99
+98,
+113
 ],
 "alt_span": [
-57,
-58
+70,
+72
 ]
 },
 {
 "k": 3,
-"nat": ": int",
+"nat": " -> None",
 "alt": "",
 "nat_span": [
-664,
-669
+425,
+433
 ],
 "alt_span": [
-623,
-623
+384,
+384
 ]
 },
 {
 "k": 4,
-"nat": ": int",
+"nat": ": list[tuple[int, int]]",
 "alt": "",
 "nat_span": [
-675,
-680
+448,
+471
 ],
 "alt_span": [
-629,
-629
+399,
+399
 ]
 },
 {
@@ -13708,30 +13617,147 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-688,
-693
+513,
+518
 ],
 "alt_span": [
-637,
-637
+441,
+441
 ]
 },
 {
 "k": 6,
-"nat": ": int) -> bool",
-"alt": ")",
+"nat": ": int",
+"alt": "",
 "nat_span": [
-699,
-713
+541,
+546
 ],
 "alt_span": [
-643,
-644
+464,
+464
+]
+},
+{
+"k": 7,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+562,
+568
+],
+"alt_span": [
+480,
+480
+]
+},
+{
+"k": 8,
+"nat": ": list[tuple[int, int]]",
+"alt": "",
+"nat_span": [
+707,
+730
+],
+"alt_span": [
+619,
+619
+]
+},
+{
+"k": 9,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+762,
+767
+],
+"alt_span": [
+651,
+651
+]
+},
+{
+"k": 10,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+790,
+795
+],
+"alt_span": [
+674,
+674
+]
+},
+{
+"k": 11,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+811,
+817
+],
+"alt_span": [
+690,
+690
+]
+},
+{
+"k": 12,
+"nat": ": list[tuple[int, int]]",
+"alt": "",
+"nat_span": [
+947,
+970
+],
+"alt_span": [
+820,
+820
+]
+},
+{
+"k": 13,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+996,
+1001
+],
+"alt_span": [
+846,
+846
+]
+},
+{
+"k": 14,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1024,
+1029
+],
+"alt_span": [
+869,
+869
+]
+},
+{
+"k": 15,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+1045,
+1051
+],
+"alt_span": [
+885,
+885
 ]
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.89,
+"k_en": 16,
+"shared_fraction": 0.789,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -13740,12 +13766,12 @@
 "nat": ": list[tuple[int, int]]",
 "alt": "",
 "nat_span": [
-25,
-48
+30,
+53
 ],
 "alt_span": [
-25,
-25
+30,
+30
 ]
 },
 {
@@ -13753,51 +13779,51 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-65,
-70
+74,
+79
 ],
 "alt_span": [
-42,
-42
+51,
+51
 ]
 },
 {
 "k": 2,
-"nat": ": int) -> bool",
-"alt": ")",
+"nat": ": int\n) -> bool",
+"alt": "\n)",
 "nat_span": [
-85,
-99
+98,
+113
 ],
 "alt_span": [
-57,
-58
+70,
+72
 ]
 },
 {
 "k": 3,
-"nat": ": int",
+"nat": " -> None",
 "alt": "",
 "nat_span": [
-664,
-669
+425,
+433
 ],
 "alt_span": [
-623,
-623
+384,
+384
 ]
 },
 {
 "k": 4,
-"nat": ": int",
+"nat": ": list[tuple[int, int]]",
 "alt": "",
 "nat_span": [
-675,
-680
+448,
+471
 ],
 "alt_span": [
-629,
-629
+399,
+399
 ]
 },
 {
@@ -13805,25 +13831,142 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-688,
-693
+513,
+518
 ],
 "alt_span": [
-637,
-637
+441,
+441
 ]
 },
 {
 "k": 6,
-"nat": ": int) -> bool",
-"alt": ")",
+"nat": ": int",
+"alt": "",
 "nat_span": [
-699,
-713
+541,
+546
 ],
 "alt_span": [
-643,
-644
+464,
+464
+]
+},
+{
+"k": 7,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+562,
+568
+],
+"alt_span": [
+480,
+480
+]
+},
+{
+"k": 8,
+"nat": ": list[tuple[int, int]]",
+"alt": "",
+"nat_span": [
+707,
+730
+],
+"alt_span": [
+619,
+619
+]
+},
+{
+"k": 9,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+762,
+767
+],
+"alt_span": [
+651,
+651
+]
+},
+{
+"k": 10,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+790,
+795
+],
+"alt_span": [
+674,
+674
+]
+},
+{
+"k": 11,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+811,
+817
+],
+"alt_span": [
+690,
+690
+]
+},
+{
+"k": 12,
+"nat": ": list[tuple[int, int]]",
+"alt": "",
+"nat_span": [
+947,
+970
+],
+"alt_span": [
+820,
+820
+]
+},
+{
+"k": 13,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+996,
+1001
+],
+"alt_span": [
+846,
+846
+]
+},
+{
+"k": 14,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1024,
+1029
+],
+"alt_span": [
+869,
+869
+]
+},
+{
+"k": 15,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+1045,
+1051
+],
+"alt_span": [
+885,
+885
 ]
 }
 ],
@@ -13857,32 +14000,6 @@
 },
 {
 "k": 1,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-49,
-54
-],
-"alt_span": [
-44,
-44
-]
-},
-{
-"k": 2,
-"nat": ": int) -> str",
-"alt": ")",
-"nat_span": [
-66,
-79
-],
-"alt_span": [
-56,
-57
-]
-},
-{
-"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -13895,7 +14012,7 @@
 ]
 },
 {
-"k": 4,
+"k": 2,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -13908,7 +14025,7 @@
 ]
 },
 {
-"k": 5,
+"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -13921,7 +14038,7 @@
 ]
 },
 {
-"k": 6,
+"k": 4,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -13934,7 +14051,7 @@
 ]
 },
 {
-"k": 7,
+"k": 5,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -13947,7 +14064,7 @@
 ]
 },
 {
-"k": 8,
+"k": 6,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -13960,7 +14077,7 @@
 ]
 },
 {
-"k": 9,
+"k": 7,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -13973,7 +14090,7 @@
 ]
 },
 {
-"k": 10,
+"k": 8,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -13986,7 +14103,7 @@
 ]
 },
 {
-"k": 11,
+"k": 9,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -13999,7 +14116,7 @@
 ]
 },
 {
-"k": 12,
+"k": 10,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -14012,7 +14129,7 @@
 ]
 },
 {
-"k": 13,
+"k": 11,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -14025,7 +14142,7 @@
 ]
 },
 {
-"k": 14,
+"k": 12,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -14038,7 +14155,7 @@
 ]
 }
 ],
-"k_en": 15,
+"k_en": 13,
 "shared_fraction": 0.843,
 "pass": true,
 "verify": null,
@@ -15180,19 +15297,6 @@
 },
 {
 "k": 4,
-"nat": ": float) -> None",
-"alt": ")",
-"nat_span": [
-700,
-716
-],
-"alt_span": [
-638,
-639
-]
-},
-{
-"k": 5,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -15205,7 +15309,7 @@
 ]
 }
 ],
-"k_en": 6,
+"k_en": 5,
 "shared_fraction": 0.891,
 "pass": true,
 "verify": null,
@@ -16113,19 +16217,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> str",
-"alt": ")",
-"nat_span": [
-45,
-58
-],
-"alt_span": [
-34,
-35
-]
-},
-{
-"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -16138,7 +16229,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -16151,7 +16242,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -16164,7 +16255,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -16177,7 +16268,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -16190,7 +16281,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -16203,7 +16294,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.931,
 "pass": true,
 "verify": null,
@@ -16985,19 +17076,6 @@
 },
 {
 "k": 1,
-"nat": ": list) -> list",
-"alt": ")",
-"nat_span": [
-38,
-53
-],
-"alt_span": [
-32,
-33
-]
-},
-{
-"k": 2,
 "nat": ": set",
 "alt": "",
 "nat_span": [
@@ -17010,7 +17088,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -17023,7 +17101,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -17036,7 +17114,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -17049,7 +17127,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -17062,7 +17140,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -17075,7 +17153,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -17088,7 +17166,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.875,
 "pass": true,
 "verify": null,
@@ -17419,19 +17497,6 @@
 },
 {
 "k": 3,
-"nat": ": str) -> None",
-"alt": ")",
-"nat_span": [
-324,
-338
-],
-"alt_span": [
-302,
-303
-]
-},
-{
-"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -17444,7 +17509,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -17457,7 +17522,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -17470,7 +17535,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -17483,7 +17548,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -17496,7 +17561,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -17509,7 +17574,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -17522,7 +17587,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -17535,7 +17600,7 @@
 ]
 },
 {
-"k": 12,
+"k": 11,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -17548,7 +17613,7 @@
 ]
 }
 ],
-"k_en": 13,
+"k_en": 12,
 "shared_fraction": 0.884,
 "pass": true,
 "verify": null,
@@ -17753,19 +17818,6 @@
 },
 {
 "k": 1,
-"nat": ": dict) -> dict",
-"alt": ")",
-"nat_span": [
-34,
-49
-],
-"alt_span": [
-28,
-29
-]
-},
-{
-"k": 2,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -17778,7 +17830,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -17791,7 +17843,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -17804,7 +17856,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -17817,7 +17869,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -17830,7 +17882,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -17843,7 +17895,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -17856,7 +17908,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -17869,7 +17921,7 @@
 ]
 }
 ],
-"k_en": 10,
+"k_en": 9,
 "shared_fraction": 0.879,
 "pass": true,
 "verify": null,
@@ -18035,19 +18087,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> int",
-"alt": ")",
-"nat_span": [
-83,
-96
-],
-"alt_span": [
-78,
-79
-]
-},
-{
-"k": 2,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -18060,7 +18099,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": datetime",
 "alt": "",
 "nat_span": [
@@ -18073,7 +18112,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": datetime",
 "alt": "",
 "nat_span": [
@@ -18086,7 +18125,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": datetime.timedelta",
 "alt": "",
 "nat_span": [
@@ -18099,7 +18138,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -18112,7 +18151,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -18125,7 +18164,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.909,
 "pass": true,
 "verify": null,
@@ -18265,19 +18304,6 @@
 },
 {
 "k": 1,
-"nat": ": int) -> str",
-"alt": ")",
-"nat_span": [
-35,
-48
-],
-"alt_span": [
-30,
-31
-]
-},
-{
-"k": 2,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -18290,7 +18316,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -18303,7 +18329,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -18316,7 +18342,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -18329,7 +18355,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -18342,7 +18368,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -18355,7 +18381,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -18368,7 +18394,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -18381,7 +18407,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -18394,7 +18420,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 10,
 "shared_fraction": 0.881,
 "pass": true,
 "verify": null,
@@ -18929,19 +18955,6 @@
 },
 {
 "k": 1,
-"nat": ": float) -> float",
-"alt": ")",
-"nat_span": [
-39,
-56
-],
-"alt_span": [
-32,
-33
-]
-},
-{
-"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -18954,7 +18967,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -18967,7 +18980,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -18980,7 +18993,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -18993,7 +19006,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -19006,7 +19019,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -19019,7 +19032,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -19032,7 +19045,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.886,
 "pass": true,
 "verify": null,
@@ -19415,19 +19428,6 @@
 },
 {
 "k": 1,
-"nat": ": list[str]) -> dict[str, int]",
-"alt": ")",
-"nat_span": [
-57,
-87
-],
-"alt_span": [
-41,
-42
-]
-},
-{
-"k": 2,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -19440,7 +19440,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -19453,7 +19453,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -19466,7 +19466,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -19479,7 +19479,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -19492,7 +19492,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -19505,7 +19505,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -19518,7 +19518,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -19531,7 +19531,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -19544,7 +19544,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 10,
 "shared_fraction": 0.794,
 "pass": true,
 "verify": null,
@@ -19705,59 +19705,59 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def simulate_guess(target: int, guess: int) -> str:\n    \"\"\"\n    Simulates a single round of a number guessing game.\n\n    Args:\n        target: The secret number to be guessed.\n        guess: The player's guess.\n\n    Returns:\n        A string indicating if the guess was 'Too high', 'Too low', or 'Correct!'.\n    \"\"\"\n    if guess < target:\n        return 'Too low'\n    elif guess > target:\n        return 'Too high'\n    else:\n        return 'Correct!'\n\ndef main() -> None:\n    test_cases: list[tuple[int, int, str]] = [\n        (7, 5, 'Too low'),\n        (7, 7, 'Correct!'),\n        (10, 12, 'Too high'),\n        (1, 0, 'Too low')\n    ]\n\n    for target_val, guess_val, expected_output in test_cases:\n        result: str = simulate_guess(target_val, guess_val)\n        print(f\"Target: {target_val}, Guess: {guess_val} -> Result: '{result}', Expected: '{expected_output}'\")\n        assert result == expected_output, f\"Test failed for target {target_val}, guess {guess_val}\"\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "def simulate_guess(target, guess):\n    \"\"\"\n    Simulates a single round of a number guessing game.\n\n    Args:\n        target: The secret number to be guessed.\n        guess: The player's guess.\n\n    Returns:\n        A string indicating if the guess was 'Too high', 'Too low', or 'Correct!'.\n    \"\"\"\n    if guess < target:\n        return 'Too low'\n    elif guess > target:\n        return 'Too high'\n    else:\n        return 'Correct!'\n\ndef main():\n    test_cases = [\n        (7, 5, 'Too low'),\n        (7, 7, 'Correct!'),\n        (10, 12, 'Too high'),\n        (1, 0, 'Too low')\n    ]\n\n    for target_val, guess_val, expected_output in test_cases:\n        result = simulate_guess(target_val, guess_val)\n        print(f\"Target: {target_val}, Guess: {guess_val} -> Result: '{result}', Expected: '{expected_output}'\")\n        assert result == expected_output, f\"Test failed for target {target_val}, guess {guess_val}\"\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "def simulate_guess(\n    target: int,\n    guess: int\n) -> str:\n    \"\"\"\n    Simulates a single round of a number guessing game.\n\n    Args:\n        target (int): The secret number to be guessed.\n        guess (int): The player's guess.\n\n    Returns:\n        str: Feedback on the guess: 'Too high', 'Too low', or 'Correct!'.\n    \"\"\"\n    if guess < target:\n        result: str = 'Too low'\n        return result\n    elif guess > target:\n        feedback_message: str = 'Too high'\n        return feedback_message\n    else:\n        final_feedback: str = 'Correct!'\n        return final_feedback\n\ndef main() -> None:\n    example1_target: int = 7\n    example1_guess: int = 5\n    result1: str = simulate_guess(example1_target, example1_guess)\n    print(f\"Target: {example1_target}, Guess: {example1_guess} -> {result1}\")\n\n    example2_target: int = 7\n    example2_guess: int = 7\n    result2: str = simulate_guess(example2_target, example2_guess)\n    print(f\"Target: {example2_target}, Guess: {example2_guess} -> {result2}\")\n\n    example3_target: int = 10\n    example3_guess: int = 12\n    result3: str = simulate_guess(example3_target, example3_guess)\n    print(f\"Target: {example3_target}, Guess: {example3_guess} -> {result3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def simulate_guess(\n    target,\n    guess\n):\n    \"\"\"\n    Simulates a single round of a number guessing game.\n\n    Args:\n        target (int): The secret number to be guessed.\n        guess (int): The player's guess.\n\n    Returns:\n        str: Feedback on the guess: 'Too high', 'Too low', or 'Correct!'.\n    \"\"\"\n    if guess < target:\n        result = 'Too low'\n        return result\n    elif guess > target:\n        feedback_message = 'Too high'\n        return feedback_message\n    else:\n        final_feedback = 'Correct!'\n        return final_feedback\n\ndef main():\n    example1_target = 7\n    example1_guess = 5\n    result1 = simulate_guess(example1_target, example1_guess)\n    print(f\"Target: {example1_target}, Guess: {example1_guess} -> {result1}\")\n\n    example2_target = 7\n    example2_guess = 7\n    result2 = simulate_guess(example2_target, example2_guess)\n    print(f\"Target: {example2_target}, Guess: {example2_guess} -> {result2}\")\n\n    example3_target = 10\n    example3_guess = 12\n    result3 = simulate_guess(example3_target, example3_guess)\n    print(f\"Target: {example3_target}, Guess: {example3_guess} -> {result3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": ": int",
 "alt": "",
 "nat_span": [
-25,
-30
+30,
+35
 ],
 "alt_span": [
-25,
-25
+30,
+30
 ]
 },
 {
 "k": 1,
-"nat": ": int) -> str",
-"alt": ")",
+"nat": ": int\n) -> str",
+"alt": "\n)",
 "nat_span": [
-37,
-50
+46,
+60
 ],
 "alt_span": [
-32,
-33
+41,
+43
 ]
 },
 {
 "k": 2,
-"nat": " -> None",
+"nat": ": str",
 "alt": "",
 "nat_span": [
-462,
-470
+366,
+371
 ],
 "alt_span": [
-445,
-445
+349,
+349
 ]
 },
 {
 "k": 3,
-"nat": ": list[tuple[int, int, str]]",
+"nat": ": str",
 "alt": "",
 "nat_span": [
-486,
-514
+455,
+460
 ],
 "alt_span": [
-461,
-461
+433,
+433
 ]
 },
 {
@@ -19765,17 +19765,147 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-713,
-718
+538,
+543
 ],
 "alt_span": [
-660,
+511,
+511
+]
+},
+{
+"k": 5,
+"nat": " -> None",
+"alt": "",
+"nat_span": [
+598,
+606
+],
+"alt_span": [
+566,
+566
+]
+},
+{
+"k": 6,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+627,
+632
+],
+"alt_span": [
+587,
+587
+]
+},
+{
+"k": 7,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+655,
 660
+],
+"alt_span": [
+610,
+610
+]
+},
+{
+"k": 8,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+676,
+681
+],
+"alt_span": [
+626,
+626
+]
+},
+{
+"k": 9,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+830,
+835
+],
+"alt_span": [
+775,
+775
+]
+},
+{
+"k": 10,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+858,
+863
+],
+"alt_span": [
+798,
+798
+]
+},
+{
+"k": 11,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+879,
+884
+],
+"alt_span": [
+814,
+814
+]
+},
+{
+"k": 12,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1033,
+1038
+],
+"alt_span": [
+963,
+963
+]
+},
+{
+"k": 13,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1062,
+1067
+],
+"alt_span": [
+987,
+987
+]
+},
+{
+"k": 14,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+1084,
+1089
+],
+"alt_span": [
+1004,
+1004
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.91,
+"k_en": 15,
+"shared_fraction": 0.873,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -19784,51 +19914,51 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-25,
-30
+30,
+35
 ],
 "alt_span": [
-25,
-25
+30,
+30
 ]
 },
 {
 "k": 1,
-"nat": ": int) -> str",
-"alt": ")",
+"nat": ": int\n) -> str",
+"alt": "\n)",
 "nat_span": [
-37,
-50
+46,
+60
 ],
 "alt_span": [
-32,
-33
+41,
+43
 ]
 },
 {
 "k": 2,
-"nat": " -> None",
+"nat": ": str",
 "alt": "",
 "nat_span": [
-462,
-470
+366,
+371
 ],
 "alt_span": [
-445,
-445
+349,
+349
 ]
 },
 {
 "k": 3,
-"nat": ": list[tuple[int, int, str]]",
+"nat": ": str",
 "alt": "",
 "nat_span": [
-486,
-514
+455,
+460
 ],
 "alt_span": [
-461,
-461
+433,
+433
 ]
 },
 {
@@ -19836,12 +19966,142 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-713,
-718
+538,
+543
 ],
 "alt_span": [
-660,
+511,
+511
+]
+},
+{
+"k": 5,
+"nat": " -> None",
+"alt": "",
+"nat_span": [
+598,
+606
+],
+"alt_span": [
+566,
+566
+]
+},
+{
+"k": 6,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+627,
+632
+],
+"alt_span": [
+587,
+587
+]
+},
+{
+"k": 7,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+655,
 660
+],
+"alt_span": [
+610,
+610
+]
+},
+{
+"k": 8,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+676,
+681
+],
+"alt_span": [
+626,
+626
+]
+},
+{
+"k": 9,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+830,
+835
+],
+"alt_span": [
+775,
+775
+]
+},
+{
+"k": 10,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+858,
+863
+],
+"alt_span": [
+798,
+798
+]
+},
+{
+"k": 11,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+879,
+884
+],
+"alt_span": [
+814,
+814
+]
+},
+{
+"k": 12,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1033,
+1038
+],
+"alt_span": [
+963,
+963
+]
+},
+{
+"k": 13,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1062,
+1067
+],
+"alt_span": [
+987,
+987
+]
+},
+{
+"k": 14,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+1084,
+1089
+],
+"alt_span": [
+1004,
+1004
 ]
 }
 ],
@@ -19857,20 +20117,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def calculate_bmr(gender: str, weight_kg: float, height_cm: float, age_years: int) -> float:\n    \"\"\"\n    Calculates Basal Metabolic Rate (BMR) using the Mifflin-St Jeor equation.\n\n    Args:\n        gender: The biological gender, 'male' or 'female'.\n        weight_kg: Weight in kilograms.\n        height_cm: Height in centimeters.\n        age_years: Age in years.\n\n    Returns:\n        The calculated Basal Metabolic Rate (BMR) as a float.\n    \"\"\"\n    if gender.lower() == 'male':\n        bmr: float = (10 * weight_kg) + (6.25 * height_cm) - (5 * age_years) + 5\n    elif gender.lower() == 'female':\n        bmr = (10 * weight_kg) + (6.25 * height_cm) - (5 * age_years) - 161\n    else:\n        raise ValueError(\"Gender must be 'male' or 'female'\")\n    return bmr\n\ndef main() -> None:\n    male_bmr: float = calculate_bmr('male', 70.0, 175.0, 30)\n    print(f\"Male BMR: {male_bmr}\")\n\n    female_bmr: float = calculate_bmr('female', 60.0, 160.0, 25)\n    print(f\"Female BMR: {female_bmr}\")\n\nif __name__ == '__main__':\n    main()\n",
-"text_alt": "def calculate_bmr(gender, weight_kg, height_cm, age_years):\n    \"\"\"\n    Calculates Basal Metabolic Rate (BMR) using the Mifflin-St Jeor equation.\n\n    Args:\n        gender: The biological gender, 'male' or 'female'.\n        weight_kg: Weight in kilograms.\n        height_cm: Height in centimeters.\n        age_years: Age in years.\n\n    Returns:\n        The calculated Basal Metabolic Rate (BMR) as a float.\n    \"\"\"\n    if gender.lower() == 'male':\n        bmr = (10 * weight_kg) + (6.25 * height_cm) - (5 * age_years) + 5\n    elif gender.lower() == 'female':\n        bmr = (10 * weight_kg) + (6.25 * height_cm) - (5 * age_years) - 161\n    else:\n        raise ValueError(\"Gender must be 'male' or 'female'\")\n    return bmr\n\ndef main():\n    male_bmr = calculate_bmr('male', 70.0, 175.0, 30)\n    print(f\"Male BMR: {male_bmr}\")\n\n    female_bmr = calculate_bmr('female', 60.0, 160.0, 25)\n    print(f\"Female BMR: {female_bmr}\")\n\nif __name__ == '__main__':\n    main()\n",
+"text_nat": "def calculate_bmr(\n    gender: str,\n    weight_kg: float,\n    height_cm: float,\n    age_years: int\n) -> float:\n    if gender == 'male':\n        bmr: float = (10 * weight_kg) + (6.25 * height_cm) - (5 * age_years) + 5\n    elif gender == 'female':\n        bmr: float = (10 * weight_kg) + (6.25 * height_cm) - (5 * age_years) - 161\n    else:\n        raise ValueError(\"Gender must be 'male' or 'female'\")\n    return bmr\n",
+"text_alt": "def calculate_bmr(\n    gender,\n    weight_kg,\n    height_cm,\n    age_years\n):\n    if gender == 'male':\n        bmr = (10 * weight_kg) + (6.25 * height_cm) - (5 * age_years) + 5\n    elif gender == 'female':\n        bmr = (10 * weight_kg) + (6.25 * height_cm) - (5 * age_years) - 161\n    else:\n        raise ValueError(\"Gender must be 'male' or 'female'\")\n    return bmr\n",
 "opps": [
 {
 "k": 0,
 "nat": ": str",
 "alt": "",
 "nat_span": [
-24,
-29
+29,
+34
 ],
 "alt_span": [
-24,
-24
+29,
+29
 ]
 },
 {
@@ -19878,12 +20138,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-40,
-47
+49,
+56
 ],
 "alt_span": [
-35,
-35
+44,
+44
 ]
 },
 {
@@ -19891,25 +20151,25 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-58,
-65
+71,
+78
 ],
 "alt_span": [
-46,
-46
+59,
+59
 ]
 },
 {
 "k": 3,
-"nat": ": int) -> float",
-"alt": ")",
+"nat": ": int\n) -> float",
+"alt": "\n)",
 "nat_span": [
-76,
-91
+93,
+109
 ],
 "alt_span": [
-57,
-58
+74,
+76
 ]
 },
 {
@@ -19917,56 +20177,30 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-492,
-499
+147,
+154
 ],
 "alt_span": [
-459,
-459
+114,
+114
 ]
 },
 {
 "k": 5,
-"nat": " -> None",
-"alt": "",
-"nat_span": [
-773,
-781
-],
-"alt_span": [
-733,
-733
-]
-},
-{
-"k": 6,
 "nat": ": float",
 "alt": "",
 "nat_span": [
-795,
-802
+257,
+264
 ],
 "alt_span": [
-747,
-747
-]
-},
-{
-"k": 7,
-"nat": ": float",
-"alt": "",
-"nat_span": [
-894,
-901
-],
-"alt_span": [
-839,
-839
+217,
+217
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.922,
+"k_en": 6,
+"shared_fraction": 0.866,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -19975,12 +20209,12 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-24,
-29
+29,
+34
 ],
 "alt_span": [
-24,
-24
+29,
+29
 ]
 },
 {
@@ -19988,12 +20222,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-40,
-47
+49,
+56
 ],
 "alt_span": [
-35,
-35
+44,
+44
 ]
 },
 {
@@ -20001,25 +20235,25 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-58,
-65
+71,
+78
 ],
 "alt_span": [
-46,
-46
+59,
+59
 ]
 },
 {
 "k": 3,
-"nat": ": int) -> float",
-"alt": ")",
+"nat": ": int\n) -> float",
+"alt": "\n)",
 "nat_span": [
-76,
-91
+93,
+109
 ],
 "alt_span": [
-57,
-58
+74,
+76
 ]
 },
 {
@@ -20027,51 +20261,25 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-492,
-499
+147,
+154
 ],
 "alt_span": [
-459,
-459
+114,
+114
 ]
 },
 {
 "k": 5,
-"nat": " -> None",
-"alt": "",
-"nat_span": [
-773,
-781
-],
-"alt_span": [
-733,
-733
-]
-},
-{
-"k": 6,
 "nat": ": float",
 "alt": "",
 "nat_span": [
-795,
-802
+257,
+264
 ],
 "alt_span": [
-747,
-747
-]
-},
-{
-"k": 7,
-"nat": ": float",
-"alt": "",
-"nat_span": [
-894,
-901
-],
-"alt_span": [
-839,
-839
+217,
+217
 ]
 }
 ],
@@ -20369,20 +20577,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def simulate_stack(stack: list, operation: str, item: any = None) -> any:\n    \"\"\"\n    Simulates a basic stack operation (push or pop).\n    \"\"\"\n    if operation == 'push':\n        stack.append(item)\n        return stack\n    elif operation == 'pop':\n        if not stack:\n            return None\n        return stack.pop()\n    else:\n        raise ValueError(\"Invalid operation: \" + operation)\n\ndef _is_empty(stack_list: list) -> bool:\n    \"\"\"\n    Helper function to check if a stack is empty.\n    \"\"\"\n    return len(stack_list) == 0\n\ndef _get_stack_size(current_stack: list) -> int:\n    \"\"\"\n    Helper function to get the current size of the stack.\n    \"\"\"\n    return len(current_stack)\n\ndef _peek_stack(a_stack: list) -> any:\n    \"\"\"\n    Helper function to peek at the top element of the stack without removing it.\n    \"\"\"\n    if not a_stack:\n        return None\n    return a_stack[-1]\n\ndef _clear_stack(target_stack: list) -> list:\n    \"\"\"\n    Helper function to clear all elements from the stack.\n    \"\"\"\n    target_stack.clear()\n    return target_stack\n",
-"text_alt": "def simulate_stack(stack, operation, item = None):\n    \"\"\"\n    Simulates a basic stack operation (push or pop).\n    \"\"\"\n    if operation == 'push':\n        stack.append(item)\n        return stack\n    elif operation == 'pop':\n        if not stack:\n            return None\n        return stack.pop()\n    else:\n        raise ValueError(\"Invalid operation: \" + operation)\n\ndef _is_empty(stack_list):\n    \"\"\"\n    Helper function to check if a stack is empty.\n    \"\"\"\n    return len(stack_list) == 0\n\ndef _get_stack_size(current_stack):\n    \"\"\"\n    Helper function to get the current size of the stack.\n    \"\"\"\n    return len(current_stack)\n\ndef _peek_stack(a_stack):\n    \"\"\"\n    Helper function to peek at the top element of the stack without removing it.\n    \"\"\"\n    if not a_stack:\n        return None\n    return a_stack[-1]\n\ndef _clear_stack(target_stack):\n    \"\"\"\n    Helper function to clear all elements from the stack.\n    \"\"\"\n    target_stack.clear()\n    return target_stack\n",
+"text_nat": "def simulate_stack(\n    stack: list,\n    operation: str,\n    item: any = None\n) -> any:\n    \"\"\"\n    Simulates basic stack operations: 'push' and 'pop'.\n\n    Args:\n        stack (list): The current state of the stack.\n        operation (str): The operation to perform ('push' or 'pop').\n        item (any, optional): The item to push onto the stack. Defaults to None.\n\n    Returns:\n        any: For 'pop', returns the popped item or None if the stack is empty.\n             For 'push', returns the modified stack.\n    \"\"\"\n    if operation == 'push':\n        stack.append(item)\n        return stack\n    elif operation == 'pop':\n        if not stack:\n            return None\n        return stack.pop()\n    else:\n        raise ValueError(\"Invalid operation. Must be 'push' or 'pop'.\")\n\ndef example_usage() -> None:\n    my_stack: list = [1, 2]\n    print(f\"Initial stack: {my_stack}\")\n\n    # Example 1: Push operation\n    new_stack: list = simulate_stack(my_stack, 'push', 3)\n    print(f\"After push 3: {new_stack}\") # Should be [1, 2, 3]\n\n    # Example 2: Pop operation\n    popped_item: any = simulate_stack(my_stack, 'pop')\n    print(f\"Popped item: {popped_item}\") # Should be 3\n    print(f\"Stack after pop: {my_stack}\") # Should be [1, 2]\n\n    # Example 3: Pop from an empty stack\n    empty_stack: list = []\n    nothing_popped: any = simulate_stack(empty_stack, 'pop')\n    print(f\"Popped from empty: {nothing_popped}\") # Should be None\n\nif __name__ == \"__main__\":\n    example_usage()\n",
+"text_alt": "def simulate_stack(\n    stack,\n    operation,\n    item = None\n):\n    \"\"\"\n    Simulates basic stack operations: 'push' and 'pop'.\n\n    Args:\n        stack (list): The current state of the stack.\n        operation (str): The operation to perform ('push' or 'pop').\n        item (any, optional): The item to push onto the stack. Defaults to None.\n\n    Returns:\n        any: For 'pop', returns the popped item or None if the stack is empty.\n             For 'push', returns the modified stack.\n    \"\"\"\n    if operation == 'push':\n        stack.append(item)\n        return stack\n    elif operation == 'pop':\n        if not stack:\n            return None\n        return stack.pop()\n    else:\n        raise ValueError(\"Invalid operation. Must be 'push' or 'pop'.\")\n\ndef example_usage():\n    my_stack = [1, 2]\n    print(f\"Initial stack: {my_stack}\")\n\n    # Example 1: Push operation\n    new_stack = simulate_stack(my_stack, 'push', 3)\n    print(f\"After push 3: {new_stack}\") # Should be [1, 2, 3]\n\n    # Example 2: Pop operation\n    popped_item = simulate_stack(my_stack, 'pop')\n    print(f\"Popped item: {popped_item}\") # Should be 3\n    print(f\"Stack after pop: {my_stack}\") # Should be [1, 2]\n\n    # Example 3: Pop from an empty stack\n    empty_stack = []\n    nothing_popped = simulate_stack(empty_stack, 'pop')\n    print(f\"Popped from empty: {nothing_popped}\") # Should be None\n\nif __name__ == \"__main__\":\n    example_usage()\n",
 "opps": [
 {
 "k": 0,
 "nat": ": list",
 "alt": "",
 "nat_span": [
-24,
-30
+29,
+35
 ],
 "alt_span": [
-24,
-24
+29,
+29
 ]
 },
 {
@@ -20390,12 +20598,12 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-41,
-46
+50,
+55
 ],
 "alt_span": [
-35,
-35
+44,
+44
 ]
 },
 {
@@ -20403,12 +20611,12 @@
 "nat": ": any",
 "alt": "",
 "nat_span": [
-52,
-57
+65,
+70
 ],
 "alt_span": [
-41,
-41
+54,
+54
 ]
 },
 {
@@ -20416,69 +20624,95 @@
 "nat": " -> any",
 "alt": "",
 "nat_span": [
-65,
-72
+79,
+86
 ],
 "alt_span": [
-49,
-49
+63,
+63
 ]
 },
 {
 "k": 4,
-"nat": ": list) -> bool",
-"alt": ")",
+"nat": " -> None",
+"alt": "",
 "nat_span": [
-416,
-431
+801,
+809
 ],
 "alt_span": [
-393,
-394
+778,
+778
 ]
 },
 {
 "k": 5,
-"nat": ": list) -> int",
-"alt": ")",
+"nat": ": list",
+"alt": "",
 "nat_span": [
-565,
-579
+823,
+829
 ],
 "alt_span": [
-528,
-529
+792,
+792
 ]
 },
 {
 "k": 6,
-"nat": ": list) -> any",
-"alt": ")",
+"nat": ": list",
+"alt": "",
 "nat_span": [
-709,
-723
+925,
+931
 ],
 "alt_span": [
-659,
-660
+888,
+888
 ]
 },
 {
 "k": 7,
-"nat": ": list) -> list",
-"alt": ")",
+"nat": ": any",
+"alt": "",
 "nat_span": [
-915,
-930
+1079,
+1084
 ],
 "alt_span": [
-852,
-853
+1036,
+1036
+]
+},
+{
+"k": 8,
+"nat": ": list",
+"alt": "",
+"nat_span": [
+1292,
+1298
+],
+"alt_span": [
+1244,
+1244
+]
+},
+{
+"k": 9,
+"nat": ": any",
+"alt": "",
+"nat_span": [
+1322,
+1327
+],
+"alt_span": [
+1268,
+1268
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.874,
+"k_en": 10,
+"shared_fraction": 0.938,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -20487,12 +20721,12 @@
 "nat": ": list",
 "alt": "",
 "nat_span": [
-24,
-30
+29,
+35
 ],
 "alt_span": [
-24,
-24
+29,
+29
 ]
 },
 {
@@ -20500,12 +20734,12 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-41,
-46
+50,
+55
 ],
 "alt_span": [
-35,
-35
+44,
+44
 ]
 },
 {
@@ -20513,12 +20747,12 @@
 "nat": ": any",
 "alt": "",
 "nat_span": [
-52,
-57
+65,
+70
 ],
 "alt_span": [
-41,
-41
+54,
+54
 ]
 },
 {
@@ -20526,64 +20760,90 @@
 "nat": " -> any",
 "alt": "",
 "nat_span": [
-65,
-72
+79,
+86
 ],
 "alt_span": [
-49,
-49
+63,
+63
 ]
 },
 {
 "k": 4,
-"nat": ": list) -> bool",
-"alt": ")",
+"nat": " -> None",
+"alt": "",
 "nat_span": [
-416,
-431
+801,
+809
 ],
 "alt_span": [
-393,
-394
+778,
+778
 ]
 },
 {
 "k": 5,
-"nat": ": list) -> int",
-"alt": ")",
+"nat": ": list",
+"alt": "",
 "nat_span": [
-565,
-579
+823,
+829
 ],
 "alt_span": [
-528,
-529
+792,
+792
 ]
 },
 {
 "k": 6,
-"nat": ": list) -> any",
-"alt": ")",
+"nat": ": list",
+"alt": "",
 "nat_span": [
-709,
-723
+925,
+931
 ],
 "alt_span": [
-659,
-660
+888,
+888
 ]
 },
 {
 "k": 7,
-"nat": ": list) -> list",
-"alt": ")",
+"nat": ": any",
+"alt": "",
 "nat_span": [
-915,
-930
+1079,
+1084
 ],
 "alt_span": [
-852,
-853
+1036,
+1036
+]
+},
+{
+"k": 8,
+"nat": ": list",
+"alt": "",
+"nat_span": [
+1292,
+1298
+],
+"alt_span": [
+1244,
+1244
+]
+},
+{
+"k": 9,
+"nat": ": any",
+"alt": "",
+"nat_span": [
+1322,
+1327
+],
+"alt_span": [
+1268,
+1268
 ]
 }
 ],
@@ -20951,19 +21211,6 @@
 },
 {
 "k": 1,
-"nat": ": tuple[float, float]) -> float",
-"alt": ")",
-"nat_span": [
-63,
-94
-],
-"alt_span": [
-42,
-43
-]
-},
-{
-"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -20976,7 +21223,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -20989,7 +21236,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -21002,7 +21249,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -21015,7 +21262,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -21028,7 +21275,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -21041,7 +21288,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.913,
 "pass": true,
 "verify": null,
@@ -21489,19 +21736,6 @@
 },
 {
 "k": 1,
-"nat": ": list[float]) -> float",
-"alt": ")",
-"nat_span": [
-49,
-72
-],
-"alt_span": [
-36,
-37
-]
-},
-{
-"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -21514,7 +21748,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -21527,7 +21761,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -21540,7 +21774,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -21553,7 +21787,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": list[float]",
 "alt": "",
 "nat_span": [
@@ -21566,7 +21800,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": list[float]",
 "alt": "",
 "nat_span": [
@@ -21579,7 +21813,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -21592,7 +21826,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": list[float]",
 "alt": "",
 "nat_span": [
@@ -21605,7 +21839,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": list[float]",
 "alt": "",
 "nat_span": [
@@ -21618,7 +21852,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -21631,7 +21865,7 @@
 ]
 }
 ],
-"k_en": 12,
+"k_en": 11,
 "shared_fraction": 0.856,
 "pass": true,
 "verify": null,
@@ -23593,19 +23827,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> list[dict]",
-"alt": ")",
-"nat_span": [
-48,
-68
-],
-"alt_span": [
-36,
-37
-]
-},
-{
-"k": 2,
 "nat": ": dict) -> any",
 "alt": ")",
 "nat_span": [
@@ -23618,7 +23839,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": list[dict]",
 "alt": "",
 "nat_span": [
@@ -23631,7 +23852,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -23644,7 +23865,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": list[dict]",
 "alt": "",
 "nat_span": [
@@ -23657,7 +23878,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": list[dict]",
 "alt": "",
 "nat_span": [
@@ -23670,7 +23891,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": list[dict]",
 "alt": "",
 "nat_span": [
@@ -23683,7 +23904,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": list[dict]",
 "alt": "",
 "nat_span": [
@@ -23696,7 +23917,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.831,
 "pass": true,
 "verify": null,
@@ -23849,19 +24070,6 @@
 },
 {
 "k": 1,
-"nat": ": int) -> list[str]",
-"alt": ")",
-"nat_span": [
-43,
-62
-],
-"alt_span": [
-38,
-39
-]
-},
-{
-"k": 2,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -23874,7 +24082,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -23887,7 +24095,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -23900,7 +24108,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -23913,7 +24121,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -23926,7 +24134,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -23939,7 +24147,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -23952,7 +24160,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -23965,7 +24173,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -23978,7 +24186,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -23991,7 +24199,7 @@
 ]
 }
 ],
-"k_en": 12,
+"k_en": 11,
 "shared_fraction": 0.797,
 "pass": true,
 "verify": null,
@@ -24721,19 +24929,6 @@
 },
 {
 "k": 1,
-"nat": ": list[list[float]]) -> list[list[float]]",
-"alt": ")",
-"nat_span": [
-55,
-96
-],
-"alt_span": [
-36,
-37
-]
-},
-{
-"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -24746,7 +24941,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -24759,7 +24954,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": list[list[float]]",
 "alt": "",
 "nat_span": [
@@ -24772,7 +24967,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": list[float]",
 "alt": "",
 "nat_span": [
@@ -24785,7 +24980,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -24798,7 +24993,7 @@
 ]
 }
 ],
-"k_en": 7,
+"k_en": 6,
 "shared_fraction": 0.795,
 "pass": true,
 "verify": null,
@@ -24907,33 +25102,33 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def flatten_dict(nested_dict: dict, separator: str) -> dict:\n    \"\"\"\n    Flattens a simple nested dictionary (one level of nesting) into a single-level dictionary.\n\n    Args:\n        nested_dict (dict): The dictionary to flatten.\n        separator (str): The string to use for concatenating keys.\n\n    Returns:\n        dict: The flattened dictionary.\n    \"\"\"\n    flattened_dict: dict = {}\n    for key, value in nested_dict.items():\n        if isinstance(value, dict):\n            _flatten_nested_level(flattened_dict, key, value, separator)\n        else:\n            flattened_dict[key] = value\n    return flattened_dict\n\ndef _flatten_nested_level(result_dict: dict, parent_key: str, nested_value: dict, sep: str) -> None:\n    \"\"\"\n    Helper function to process a single nested level.\n\n    Args:\n        result_dict (dict): The dictionary accumulating the flattened key-value pairs.\n        parent_key (str): The key from the outer dictionary.\n        nested_value (dict): The inner dictionary to flatten.\n        sep (str): The separator string.\n    \"\"\"\n    for inner_key, inner_value in nested_value.items():\n        new_key: str = f\"{parent_key}{sep}{inner_key}\"\n        result_dict[new_key] = inner_value\n",
-"text_alt": "def flatten_dict(nested_dict, separator):\n    \"\"\"\n    Flattens a simple nested dictionary (one level of nesting) into a single-level dictionary.\n\n    Args:\n        nested_dict (dict): The dictionary to flatten.\n        separator (str): The string to use for concatenating keys.\n\n    Returns:\n        dict: The flattened dictionary.\n    \"\"\"\n    flattened_dict = {}\n    for key, value in nested_dict.items():\n        if isinstance(value, dict):\n            _flatten_nested_level(flattened_dict, key, value, separator)\n        else:\n            flattened_dict[key] = value\n    return flattened_dict\n\ndef _flatten_nested_level(result_dict, parent_key, nested_value, sep):\n    \"\"\"\n    Helper function to process a single nested level.\n\n    Args:\n        result_dict (dict): The dictionary accumulating the flattened key-value pairs.\n        parent_key (str): The key from the outer dictionary.\n        nested_value (dict): The inner dictionary to flatten.\n        sep (str): The separator string.\n    \"\"\"\n    for inner_key, inner_value in nested_value.items():\n        new_key = f\"{parent_key}{sep}{inner_key}\"\n        result_dict[new_key] = inner_value\n",
+"text_nat": "def flatten_dict(\n    nested_dict: dict,\n    separator: str\n) -> dict:\n    \"\"\"\n    Flattens a simple nested dictionary into a single-level dictionary.\n\n    Args:\n        nested_dict (dict): The dictionary to flatten.\n        separator (str): The string to use for concatenating keys.\n\n    Returns:\n        dict: The flattened dictionary.\n    \"\"\"\n    flattened_dict: dict = {}\n    key: str\n    value: object\n    for key, value in nested_dict.items():\n        if isinstance(value, dict):\n            inner_key: str\n            inner_value: object\n            for inner_key, inner_value in value.items():\n                new_key: str = f\"{key}{separator}{inner_key}\"\n                flattened_dict[new_key] = inner_value\n        else:\n            flattened_dict[key] = value\n    return flattened_dict\n",
+"text_alt": "def flatten_dict(\n    nested_dict,\n    separator\n):\n    \"\"\"\n    Flattens a simple nested dictionary into a single-level dictionary.\n\n    Args:\n        nested_dict (dict): The dictionary to flatten.\n        separator (str): The string to use for concatenating keys.\n\n    Returns:\n        dict: The flattened dictionary.\n    \"\"\"\n    flattened_dict = {}\n    key\n    value\n    for key, value in nested_dict.items():\n        if isinstance(value, dict):\n            inner_key\n            inner_value\n            for inner_key, inner_value in value.items():\n                new_key = f\"{key}{separator}{inner_key}\"\n                flattened_dict[new_key] = inner_value\n        else:\n            flattened_dict[key] = value\n    return flattened_dict\n",
 "opps": [
 {
 "k": 0,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
-28,
-34
+33,
+39
 ],
 "alt_span": [
-28,
-28
+33,
+33
 ]
 },
 {
 "k": 1,
-"nat": ": str) -> dict",
-"alt": ")",
+"nat": ": str\n) -> dict",
+"alt": "\n)",
 "nat_span": [
-45,
-59
+54,
+69
 ],
 "alt_span": [
-39,
-40
+48,
+50
 ]
 },
 {
@@ -24941,82 +25136,56 @@
 "nat": ": dict",
 "alt": "",
 "nat_span": [
-377,
-383
+364,
+370
 ],
 "alt_span": [
-358,
-358
+345,
+345
 ]
 },
 {
 "k": 3,
-"nat": ": dict",
-"alt": "",
+"nat": ": str\n    value: object",
+"alt": "\n    value",
 "nat_span": [
-659,
-665
+383,
+406
 ],
 "alt_span": [
-634,
-634
+358,
+368
 ]
 },
 {
 "k": 4,
-"nat": ": str",
-"alt": "",
+"nat": ": str\n            inner_value: object",
+"alt": "\n            inner_value",
 "nat_span": [
-677,
-682
+507,
+544
 ],
 "alt_span": [
-646,
-646
+469,
+493
 ]
 },
 {
 "k": 5,
-"nat": ": dict",
-"alt": "",
-"nat_span": [
-696,
-702
-],
-"alt_span": [
-660,
-660
-]
-},
-{
-"k": 6,
-"nat": ": str) -> None",
-"alt": ")",
-"nat_span": [
-707,
-721
-],
-"alt_span": [
-665,
-666
-]
-},
-{
-"k": 7,
 "nat": ": str",
 "alt": "",
 "nat_span": [
-1126,
-1131
+625,
+630
 ],
 "alt_span": [
-1071,
-1071
+574,
+574
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.907,
+"k_en": 6,
+"shared_fraction": 0.871,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -25025,25 +25194,25 @@
 "nat": ": dict",
 "alt": "",
 "nat_span": [
-28,
-34
+33,
+39
 ],
 "alt_span": [
-28,
-28
+33,
+33
 ]
 },
 {
 "k": 1,
-"nat": ": str) -> dict",
-"alt": ")",
+"nat": ": str\n) -> dict",
+"alt": "\n)",
 "nat_span": [
-45,
-59
+54,
+69
 ],
 "alt_span": [
-39,
-40
+48,
+50
 ]
 },
 {
@@ -25051,77 +25220,51 @@
 "nat": ": dict",
 "alt": "",
 "nat_span": [
-377,
-383
+364,
+370
 ],
 "alt_span": [
-358,
-358
+345,
+345
 ]
 },
 {
 "k": 3,
-"nat": ": dict",
-"alt": "",
+"nat": ": str\n    value: object",
+"alt": "\n    value",
 "nat_span": [
-659,
-665
+383,
+406
 ],
 "alt_span": [
-634,
-634
+358,
+368
 ]
 },
 {
 "k": 4,
-"nat": ": str",
-"alt": "",
+"nat": ": str\n            inner_value: object",
+"alt": "\n            inner_value",
 "nat_span": [
-677,
-682
+507,
+544
 ],
 "alt_span": [
-646,
-646
+469,
+493
 ]
 },
 {
 "k": 5,
-"nat": ": dict",
-"alt": "",
-"nat_span": [
-696,
-702
-],
-"alt_span": [
-660,
-660
-]
-},
-{
-"k": 6,
-"nat": ": str) -> None",
-"alt": ")",
-"nat_span": [
-707,
-721
-],
-"alt_span": [
-665,
-666
-]
-},
-{
-"k": 7,
 "nat": ": str",
 "alt": "",
 "nat_span": [
-1126,
-1131
+625,
+630
 ],
 "alt_span": [
-1071,
-1071
+574,
+574
 ]
 }
 ],
@@ -25492,32 +25635,6 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-55,
-62
-],
-"alt_span": [
-48,
-48
-]
-},
-{
-"k": 2,
-"nat": ": int) -> float",
-"alt": ")",
-"nat_span": [
-72,
-87
-],
-"alt_span": [
-58,
-59
-]
-},
-{
-"k": 3,
-"nat": ": float",
-"alt": "",
-"nat_span": [
 471,
 478
 ],
@@ -25527,7 +25644,7 @@
 ]
 },
 {
-"k": 4,
+"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -25540,7 +25657,7 @@
 ]
 },
 {
-"k": 5,
+"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -25553,7 +25670,7 @@
 ]
 },
 {
-"k": 6,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -25566,7 +25683,7 @@
 ]
 },
 {
-"k": 7,
+"k": 5,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -25579,7 +25696,7 @@
 ]
 },
 {
-"k": 8,
+"k": 6,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -25592,7 +25709,7 @@
 ]
 },
 {
-"k": 9,
+"k": 7,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -25605,7 +25722,7 @@
 ]
 },
 {
-"k": 10,
+"k": 8,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -25618,7 +25735,7 @@
 ]
 },
 {
-"k": 11,
+"k": 9,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -25631,7 +25748,7 @@
 ]
 },
 {
-"k": 12,
+"k": 10,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -25644,7 +25761,7 @@
 ]
 },
 {
-"k": 13,
+"k": 11,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -25657,7 +25774,7 @@
 ]
 }
 ],
-"k_en": 14,
+"k_en": 12,
 "shared_fraction": 0.857,
 "pass": true,
 "verify": null,
@@ -27806,19 +27923,6 @@
 },
 {
 "k": 4,
-"nat": ": str) -> None",
-"alt": ")",
-"nat_span": [
-588,
-602
-],
-"alt_span": [
-537,
-538
-]
-},
-{
-"k": 5,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -27831,7 +27935,7 @@
 ]
 }
 ],
-"k_en": 6,
+"k_en": 5,
 "shared_fraction": 0.897,
 "pass": true,
 "verify": null,
@@ -28483,19 +28587,6 @@
 },
 {
 "k": 1,
-"nat": ": tuple[int, int]) -> bool",
-"alt": ")",
-"nat_span": [
-51,
-77
-],
-"alt_span": [
-34,
-35
-]
-},
-{
-"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -28508,7 +28599,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -28521,7 +28612,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -28534,7 +28625,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -28547,7 +28638,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -28560,7 +28651,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -28573,7 +28664,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -28586,7 +28677,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -28599,7 +28690,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -28612,7 +28703,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -28625,7 +28716,7 @@
 ]
 },
 {
-"k": 12,
+"k": 11,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -28638,7 +28729,7 @@
 ]
 },
 {
-"k": 13,
+"k": 12,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -28651,7 +28742,7 @@
 ]
 },
 {
-"k": 14,
+"k": 13,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -28664,7 +28755,7 @@
 ]
 },
 {
-"k": 15,
+"k": 14,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -28677,7 +28768,7 @@
 ]
 },
 {
-"k": 16,
+"k": 15,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -28690,7 +28781,7 @@
 ]
 },
 {
-"k": 17,
+"k": 16,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -28703,7 +28794,7 @@
 ]
 },
 {
-"k": 18,
+"k": 17,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -28716,7 +28807,7 @@
 ]
 },
 {
-"k": 19,
+"k": 18,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -28729,7 +28820,7 @@
 ]
 }
 ],
-"k_en": 20,
+"k_en": 19,
 "shared_fraction": 0.808,
 "pass": true,
 "verify": null,
@@ -29307,19 +29398,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> int",
-"alt": ")",
-"nat_span": [
-48,
-61
-],
-"alt_span": [
-43,
-44
-]
-},
-{
-"k": 2,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -29332,7 +29410,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -29345,7 +29423,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -29358,7 +29436,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -29371,7 +29449,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -29384,7 +29462,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -29397,7 +29475,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -29410,7 +29488,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -29423,7 +29501,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -29436,7 +29514,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -29449,7 +29527,7 @@
 ]
 },
 {
-"k": 12,
+"k": 11,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -29462,7 +29540,7 @@
 ]
 },
 {
-"k": 13,
+"k": 12,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -29475,7 +29553,7 @@
 ]
 },
 {
-"k": 14,
+"k": 13,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -29488,7 +29566,7 @@
 ]
 }
 ],
-"k_en": 15,
+"k_en": 14,
 "shared_fraction": 0.877,
 "pass": true,
 "verify": null,
@@ -30899,19 +30977,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> int",
-"alt": ")",
-"nat_span": [
-39,
-52
-],
-"alt_span": [
-34,
-35
-]
-},
-{
-"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -30924,7 +30989,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -30937,7 +31002,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -30950,7 +31015,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -30963,7 +31028,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -30976,7 +31041,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -30989,7 +31054,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -31002,7 +31067,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -31015,7 +31080,7 @@
 ]
 }
 ],
-"k_en": 10,
+"k_en": 9,
 "shared_fraction": 0.879,
 "pass": true,
 "verify": null,
@@ -31181,19 +31246,6 @@
 },
 {
 "k": 1,
-"nat": ": dict) -> dict",
-"alt": ")",
-"nat_span": [
-34,
-49
-],
-"alt_span": [
-28,
-29
-]
-},
-{
-"k": 2,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -31206,7 +31258,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -31219,7 +31271,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -31232,7 +31284,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -31245,7 +31297,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -31258,7 +31310,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -31271,7 +31323,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -31284,7 +31336,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": dict",
 "alt": "",
 "nat_span": [
@@ -31297,7 +31349,7 @@
 ]
 }
 ],
-"k_en": 10,
+"k_en": 9,
 "shared_fraction": 0.888,
 "pass": true,
 "verify": null,
@@ -31463,19 +31515,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> int",
-"alt": ")",
-"nat_span": [
-87,
-100
-],
-"alt_span": [
-82,
-83
-]
-},
-{
-"k": 2,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -31488,7 +31527,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": datetime",
 "alt": "",
 "nat_span": [
@@ -31501,7 +31540,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": datetime",
 "alt": "",
 "nat_span": [
@@ -31514,7 +31553,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": datetime.timedelta",
 "alt": "",
 "nat_span": [
@@ -31527,7 +31566,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -31540,7 +31579,7 @@
 ]
 }
 ],
-"k_en": 7,
+"k_en": 6,
 "shared_fraction": 0.926,
 "pass": true,
 "verify": null,
@@ -31680,19 +31719,6 @@
 },
 {
 "k": 2,
-"nat": ": int) -> list[int]",
-"alt": ")",
-"nat_span": [
-471,
-490
-],
-"alt_span": [
-454,
-455
-]
-},
-{
-"k": 3,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -31705,7 +31731,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -31718,7 +31744,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -31731,7 +31757,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -31744,7 +31770,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -31757,7 +31783,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -31770,7 +31796,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.906,
 "pass": true,
 "verify": null,
@@ -31923,71 +31949,6 @@
 },
 {
 "k": 1,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-37,
-42
-],
-"alt_span": [
-32,
-32
-]
-},
-{
-"k": 2,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-46,
-51
-],
-"alt_span": [
-36,
-36
-]
-},
-{
-"k": 3,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-55,
-60
-],
-"alt_span": [
-40,
-40
-]
-},
-{
-"k": 4,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-64,
-69
-],
-"alt_span": [
-44,
-44
-]
-},
-{
-"k": 5,
-"nat": ": int) -> bool",
-"alt": ")",
-"nat_span": [
-73,
-87
-],
-"alt_span": [
-48,
-49
-]
-},
-{
-"k": 6,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -32000,7 +31961,7 @@
 ]
 },
 {
-"k": 7,
+"k": 2,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -32013,7 +31974,7 @@
 ]
 },
 {
-"k": 8,
+"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -32026,7 +31987,7 @@
 ]
 },
 {
-"k": 9,
+"k": 4,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -32039,7 +32000,7 @@
 ]
 },
 {
-"k": 10,
+"k": 5,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -32052,7 +32013,7 @@
 ]
 },
 {
-"k": 11,
+"k": 6,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -32065,7 +32026,7 @@
 ]
 },
 {
-"k": 12,
+"k": 7,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -32078,7 +32039,7 @@
 ]
 }
 ],
-"k_en": 13,
+"k_en": 8,
 "shared_fraction": 0.924,
 "pass": true,
 "verify": null,
@@ -32283,19 +32244,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> int",
-"alt": ")",
-"nat_span": [
-58,
-71
-],
-"alt_span": [
-42,
-43
-]
-},
-{
-"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -32308,7 +32256,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -32321,7 +32269,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -32334,7 +32282,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -32347,7 +32295,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -32360,7 +32308,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -32373,7 +32321,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -32386,7 +32334,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.86,
 "pass": true,
 "verify": null,
@@ -32521,20 +32469,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def has_overlap(task1_start: int, task1_end: int, task2_start: int, task2_end: int) -> bool:\n    \"\"\"\n    Detects if two tasks, each with a start and end time, overlap.\n\n    Args:\n        task1_start: The start time of the first task.\n        task1_end: The end time of the first task.\n        task2_start: The start time of the second task.\n        task2_end: The end time of the second task.\n\n    Returns:\n        True if the tasks overlap, False otherwise.\n    \"\"\"\n    # An overlap occurs if the start of one task is before the end of the other,\n    # AND the start of the other task is before the end of the first.\n    # Exclude boundary cases where tasks just touch but don't overlap.\n    def is_overlapping(s1: int, e1: int, s2: int, e2: int) -> bool:\n        return s1 < e2 and s2 < e1\n\n    return is_overlapping(task1_start, task1_end, task2_start, task2_end)\n\ndef main() -> None:\n    print(f\"Example 1: {has_overlap(9, 12, 11, 14)}\")\n    print(f\"Example 2: {has_overlap(9, 10, 10, 12)}\")\n    print(f\"No overlap: {has_overlap(1, 2, 3, 4)}\")\n    print(f\"Full overlap: {has_overlap(1, 5, 2, 4)}\")\n    print(f\"Task 2 before Task 1: {has_overlap(5, 7, 1, 3)}\")\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "def has_overlap(task1_start, task1_end, task2_start, task2_end):\n    \"\"\"\n    Detects if two tasks, each with a start and end time, overlap.\n\n    Args:\n        task1_start: The start time of the first task.\n        task1_end: The end time of the first task.\n        task2_start: The start time of the second task.\n        task2_end: The end time of the second task.\n\n    Returns:\n        True if the tasks overlap, False otherwise.\n    \"\"\"\n    # An overlap occurs if the start of one task is before the end of the other,\n    # AND the start of the other task is before the end of the first.\n    # Exclude boundary cases where tasks just touch but don't overlap.\n    def is_overlapping(s1, e1, s2, e2):\n        return s1 < e2 and s2 < e1\n\n    return is_overlapping(task1_start, task1_end, task2_start, task2_end)\n\ndef main():\n    print(f\"Example 1: {has_overlap(9, 12, 11, 14)}\")\n    print(f\"Example 2: {has_overlap(9, 10, 10, 12)}\")\n    print(f\"No overlap: {has_overlap(1, 2, 3, 4)}\")\n    print(f\"Full overlap: {has_overlap(1, 5, 2, 4)}\")\n    print(f\"Task 2 before Task 1: {has_overlap(5, 7, 1, 3)}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "def has_overlap(\n    task1_start: int,\n    task1_end: int,\n    task2_start: int,\n    task2_end: int\n) -> bool:\n    \"\"\"\n    Detects if two tasks, each with a start and end time, overlap.\n    Times are integers representing hours in a 24-hour format.\n    No overlap at the exact boundary.\n    \"\"\"\n    if task1_start >= task1_end or task2_start >= task2_end:\n        # Handle invalid time ranges gracefully, though problem implies valid ranges.\n        return False\n\n    # Check for no overlap condition.\n    # Task 1 ends before Task 2 starts (or at the same time).\n    no_overlap_before: bool = task1_end <= task2_start\n    # Task 2 ends before Task 1 starts (or at the same time).\n    no_overlap_after: bool = task2_end <= task1_start\n\n    # If either of these conditions is true, there is no overlap.\n    result: bool = not (no_overlap_before or no_overlap_after)\n    return result\n",
+"text_alt": "def has_overlap(\n    task1_start,\n    task1_end,\n    task2_start,\n    task2_end\n):\n    \"\"\"\n    Detects if two tasks, each with a start and end time, overlap.\n    Times are integers representing hours in a 24-hour format.\n    No overlap at the exact boundary.\n    \"\"\"\n    if task1_start >= task1_end or task2_start >= task2_end:\n        # Handle invalid time ranges gracefully, though problem implies valid ranges.\n        return False\n\n    # Check for no overlap condition.\n    # Task 1 ends before Task 2 starts (or at the same time).\n    no_overlap_before = task1_end <= task2_start\n    # Task 2 ends before Task 1 starts (or at the same time).\n    no_overlap_after = task2_end <= task1_start\n\n    # If either of these conditions is true, there is no overlap.\n    result = not (no_overlap_before or no_overlap_after)\n    return result\n",
 "opps": [
 {
 "k": 0,
 "nat": ": int",
 "alt": "",
 "nat_span": [
-27,
-32
+32,
+37
 ],
 "alt_span": [
-27,
-27
+32,
+32
 ]
 },
 {
@@ -32542,12 +32490,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-43,
-48
+52,
+57
 ],
 "alt_span": [
-38,
-38
+47,
+47
 ]
 },
 {
@@ -32555,95 +32503,69 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-61,
-66
+74,
+79
 ],
 "alt_span": [
-51,
-51
+64,
+64
 ]
 },
 {
 "k": 3,
-"nat": ": int) -> bool",
-"alt": ")",
+"nat": ": int\n) -> bool",
+"alt": "\n)",
 "nat_span": [
-77,
-91
+94,
+109
 ],
 "alt_span": [
-62,
-63
+79,
+81
 ]
 },
 {
 "k": 4,
-"nat": ": int",
+"nat": ": bool",
 "alt": "",
 "nat_span": [
-714,
-719
+585,
+591
 ],
 "alt_span": [
-686,
-686
+557,
+557
 ]
 },
 {
 "k": 5,
-"nat": ": int",
+"nat": ": bool",
 "alt": "",
 "nat_span": [
-723,
-728
+701,
+707
 ],
 "alt_span": [
-690,
-690
+667,
+667
 ]
 },
 {
 "k": 6,
-"nat": ": int",
+"nat": ": bool",
 "alt": "",
 "nat_span": [
-732,
-737
+812,
+818
 ],
 "alt_span": [
-694,
-694
-]
-},
-{
-"k": 7,
-"nat": ": int) -> bool",
-"alt": ")",
-"nat_span": [
-741,
-755
-],
-"alt_span": [
-698,
-699
-]
-},
-{
-"k": 8,
-"nat": " -> None",
-"alt": "",
-"nat_span": [
-878,
-886
-],
-"alt_span": [
-822,
-822
+772,
+772
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.92,
+"k_en": 7,
+"shared_fraction": 0.913,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -32652,12 +32574,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-27,
-32
+32,
+37
 ],
 "alt_span": [
-27,
-27
+32,
+32
 ]
 },
 {
@@ -32665,12 +32587,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-43,
-48
+52,
+57
 ],
 "alt_span": [
-38,
-38
+47,
+47
 ]
 },
 {
@@ -32678,90 +32600,64 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-61,
-66
+74,
+79
 ],
 "alt_span": [
-51,
-51
+64,
+64
 ]
 },
 {
 "k": 3,
-"nat": ": int) -> bool",
-"alt": ")",
+"nat": ": int\n) -> bool",
+"alt": "\n)",
 "nat_span": [
-77,
-91
+94,
+109
 ],
 "alt_span": [
-62,
-63
+79,
+81
 ]
 },
 {
 "k": 4,
-"nat": ": int",
+"nat": ": bool",
 "alt": "",
 "nat_span": [
-714,
-719
+585,
+591
 ],
 "alt_span": [
-686,
-686
+557,
+557
 ]
 },
 {
 "k": 5,
-"nat": ": int",
+"nat": ": bool",
 "alt": "",
 "nat_span": [
-723,
-728
+701,
+707
 ],
 "alt_span": [
-690,
-690
+667,
+667
 ]
 },
 {
 "k": 6,
-"nat": ": int",
+"nat": ": bool",
 "alt": "",
 "nat_span": [
-732,
-737
+812,
+818
 ],
 "alt_span": [
-694,
-694
-]
-},
-{
-"k": 7,
-"nat": ": int) -> bool",
-"alt": ")",
-"nat_span": [
-741,
-755
-],
-"alt_span": [
-698,
-699
-]
-},
-{
-"k": 8,
-"nat": " -> None",
-"alt": "",
-"nat_span": [
-878,
-886
-],
-"alt_span": [
-822,
-822
+772,
+772
 ]
 }
 ],
@@ -33367,8 +33263,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def parse_csv_line(csv_line: str) -> list[str]:\n    \"\"\"\n    Parses a single line of CSV data into a list of strings.\n\n    Args:\n        csv_line (str): The CSV string to parse.\n\n    Returns:\n        list[str]: A list of strings representing the parsed values.\n    \"\"\"\n    return split_string_by_delimiter(csv_line, ',')\n\ndef split_string_by_delimiter(text: str, delimiter: str) -> list[str]:\n    \"\"\"\n    Splits a string by a given delimiter.\n\n    Args:\n        text (str): The input string to split.\n        delimiter (str): The delimiter to split the string by.\n\n    Returns:\n        list[str]: A list of substrings.\n    \"\"\"\n    return text.split(delimiter)\n\ndef get_example_1_input() -> str:\n    return 'apple,banana,orange'\n\ndef get_example_2_input() -> str:\n    return '10,20,30'\n\nif __name__ == '__main__':\n    example1_input: str = get_example_1_input()\n    result1: list[str] = parse_csv_line(example1_input)\n    print(f\"Input: '{example1_input}', Output: {result1}\")\n\n    example2_input: str = get_example_2_input()\n    result2: list[str] = parse_csv_line(example2_input)\n    print(f\"Input: '{example2_input}', Output: {result2}\")\n",
-"text_alt": "def parse_csv_line(csv_line):\n    \"\"\"\n    Parses a single line of CSV data into a list of strings.\n\n    Args:\n        csv_line (str): The CSV string to parse.\n\n    Returns:\n        list[str]: A list of strings representing the parsed values.\n    \"\"\"\n    return split_string_by_delimiter(csv_line, ',')\n\ndef split_string_by_delimiter(text, delimiter):\n    \"\"\"\n    Splits a string by a given delimiter.\n\n    Args:\n        text (str): The input string to split.\n        delimiter (str): The delimiter to split the string by.\n\n    Returns:\n        list[str]: A list of substrings.\n    \"\"\"\n    return text.split(delimiter)\n\ndef get_example_1_input():\n    return 'apple,banana,orange'\n\ndef get_example_2_input():\n    return '10,20,30'\n\nif __name__ == '__main__':\n    example1_input: str = get_example_1_input()\n    result1: list[str] = parse_csv_line(example1_input)\n    print(f\"Input: '{example1_input}', Output: {result1}\")\n\n    example2_input: str = get_example_2_input()\n    result2: list[str] = parse_csv_line(example2_input)\n    print(f\"Input: '{example2_input}', Output: {result2}\")\n",
+"text_nat": "def parse_csv_line(csv_line: str) -> list[str]:\n    \"\"\"\n    Parses a single line of CSV data into a list of strings.\n    Assumes comma-separated values with no quoted fields.\n    \"\"\"\n    parts: list[str] = csv_line.split(',')\n    result: list[str] = []\n    for part in parts:\n        stripped_part: str = part.strip()\n        result.append(stripped_part)\n    return result\n\ndef main() -> None:\n    line1: str = 'apple,banana,orange'\n    parsed_line1: list[str] = parse_csv_line(line1)\n    print(f\"'{line1}' -> {parsed_line1}\")\n\n    line2: str = '10,20,30'\n    parsed_line2: list[str] = parse_csv_line(line2)\n    print(f\"'{line2}' -> {parsed_line2}\")\n\n    line3: str = '  value1 , value2  ,value3 '\n    parsed_line3: list[str] = parse_csv_line(line3)\n    print(f\"'{line3}' -> {parsed_line3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def parse_csv_line(csv_line):\n    \"\"\"\n    Parses a single line of CSV data into a list of strings.\n    Assumes comma-separated values with no quoted fields.\n    \"\"\"\n    parts = csv_line.split(',')\n    result = []\n    for part in parts:\n        stripped_part = part.strip()\n        result.append(stripped_part)\n    return result\n\ndef main():\n    line1 = 'apple,banana,orange'\n    parsed_line1 = parse_csv_line(line1)\n    print(f\"'{line1}' -> {parsed_line1}\")\n\n    line2 = '10,20,30'\n    parsed_line2 = parse_csv_line(line2)\n    print(f\"'{line2}' -> {parsed_line2}\")\n\n    line3 = '  value1 , value2  ,value3 '\n    parsed_line3 = parse_csv_line(line3)\n    print(f\"'{line3}' -> {parsed_line3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
@@ -33385,59 +33281,137 @@
 },
 {
 "k": 1,
-"nat": ": str",
+"nat": ": list[str]",
 "alt": "",
 "nat_span": [
-355,
-360
+192,
+203
 ],
 "alt_span": [
-337,
-337
+174,
+174
 ]
 },
 {
 "k": 2,
-"nat": ": str) -> list[str]",
-"alt": ")",
+"nat": ": list[str]",
+"alt": "",
 "nat_span": [
-371,
-390
+236,
+247
 ],
 "alt_span": [
-348,
-349
+207,
+207
 ]
 },
 {
 "k": 3,
-"nat": " -> str",
+"nat": ": str",
 "alt": "",
 "nat_span": [
-685,
-692
+297,
+302
 ],
 "alt_span": [
-644,
-644
+257,
+257
 ]
 },
 {
 "k": 4,
-"nat": " -> str",
+"nat": " -> None",
 "alt": "",
 "nat_span": [
-753,
-760
+384,
+392
 ],
 "alt_span": [
-705,
-705
+339,
+339
+]
+},
+{
+"k": 5,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+403,
+408
+],
+"alt_span": [
+350,
+350
+]
+},
+{
+"k": 6,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+449,
+460
+],
+"alt_span": [
+391,
+391
+]
+},
+{
+"k": 7,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+537,
+542
+],
+"alt_span": [
+468,
+468
+]
+},
+{
+"k": 8,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+572,
+583
+],
+"alt_span": [
+498,
+498
+]
+},
+{
+"k": 9,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+660,
+665
+],
+"alt_span": [
+575,
+575
+]
+},
+{
+"k": 10,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+714,
+725
+],
+"alt_span": [
+624,
+624
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.909,
+"k_en": 11,
+"shared_fraction": 0.815,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -33456,54 +33430,132 @@
 },
 {
 "k": 1,
-"nat": ": str",
+"nat": ": list[str]",
 "alt": "",
 "nat_span": [
-355,
-360
+192,
+203
 ],
 "alt_span": [
-337,
-337
+174,
+174
 ]
 },
 {
 "k": 2,
-"nat": ": str) -> list[str]",
-"alt": ")",
+"nat": ": list[str]",
+"alt": "",
 "nat_span": [
-371,
-390
+236,
+247
 ],
 "alt_span": [
-348,
-349
+207,
+207
 ]
 },
 {
 "k": 3,
-"nat": " -> str",
+"nat": ": str",
 "alt": "",
 "nat_span": [
-685,
-692
+297,
+302
 ],
 "alt_span": [
-644,
-644
+257,
+257
 ]
 },
 {
 "k": 4,
-"nat": " -> str",
+"nat": " -> None",
 "alt": "",
 "nat_span": [
-753,
-760
+384,
+392
 ],
 "alt_span": [
-705,
-705
+339,
+339
+]
+},
+{
+"k": 5,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+403,
+408
+],
+"alt_span": [
+350,
+350
+]
+},
+{
+"k": 6,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+449,
+460
+],
+"alt_span": [
+391,
+391
+]
+},
+{
+"k": 7,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+537,
+542
+],
+"alt_span": [
+468,
+468
+]
+},
+{
+"k": 8,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+572,
+583
+],
+"alt_span": [
+498,
+498
+]
+},
+{
+"k": 9,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+660,
+665
+],
+"alt_span": [
+575,
+575
+]
+},
+{
+"k": 10,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+714,
+725
+],
+"alt_span": [
+624,
+624
 ]
 }
 ],
@@ -33540,32 +33592,6 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-52,
-59
-],
-"alt_span": [
-45,
-45
-]
-},
-{
-"k": 2,
-"nat": ": int) -> float",
-"alt": ")",
-"nat_span": [
-65,
-80
-],
-"alt_span": [
-51,
-52
-]
-},
-{
-"k": 3,
-"nat": ": float",
-"alt": "",
-"nat_span": [
 467,
 474
 ],
@@ -33575,7 +33601,7 @@
 ]
 },
 {
-"k": 4,
+"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -33588,7 +33614,7 @@
 ]
 },
 {
-"k": 5,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -33601,33 +33627,7 @@
 ]
 },
 {
-"k": 6,
-"nat": ": float",
-"alt": "",
-"nat_span": [
-608,
-615
-],
-"alt_span": [
-559,
-559
-]
-},
-{
-"k": 7,
-"nat": ": int) -> None",
-"alt": ")",
-"nat_span": [
-621,
-635
-],
-"alt_span": [
-565,
-566
-]
-},
-{
-"k": 8,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -33640,7 +33640,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 5,
 "shared_fraction": 0.904,
 "pass": true,
 "verify": null,
@@ -33775,46 +33775,46 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def are_anagrams(str1: str, str2: str) -> bool:\n    \"\"\"\n    Checks if two strings are anagrams of each other, ignoring case and spaces.\n    \"\"\"\n\n    def _normalize_string(input_str: str) -> str:\n        \"\"\"\n        Normalizes a string by converting to lowercase and removing spaces.\n        \"\"\"\n        return input_str.lower().replace(' ', '')\n\n    normalized_str1: str = _normalize_string(str1)\n    normalized_str2: str = _normalize_string(str2)\n\n    return sorted(normalized_str1) == sorted(normalized_str2)\n\n# Example usage (not part of the solution, just for testing)\n# print(are_anagrams('listen', 'silent'))\n# print(are_anagrams('Hello', 'World'))\n# print(are_anagrams('A gentleman', 'Elegant man'))\n# print(are_anagrams('Dormitory', 'Dirty room'))\n",
-"text_alt": "def are_anagrams(str1, str2):\n    \"\"\"\n    Checks if two strings are anagrams of each other, ignoring case and spaces.\n    \"\"\"\n\n    def _normalize_string(input_str):\n        \"\"\"\n        Normalizes a string by converting to lowercase and removing spaces.\n        \"\"\"\n        return input_str.lower().replace(' ', '')\n\n    normalized_str1 = _normalize_string(str1)\n    normalized_str2 = _normalize_string(str2)\n\n    return sorted(normalized_str1) == sorted(normalized_str2)\n\n# Example usage (not part of the solution, just for testing)\n# print(are_anagrams('listen', 'silent'))\n# print(are_anagrams('Hello', 'World'))\n# print(are_anagrams('A gentleman', 'Elegant man'))\n# print(are_anagrams('Dormitory', 'Dirty room'))\n",
+"text_nat": "def are_anagrams(\n    str1: str,\n    str2: str\n) -> bool:\n    \"\"\"\n    Checks if two strings are anagrams of each other, ignoring case and spaces.\n    \"\"\"\n    def _normalize_string(\n        s: str\n    ) -> str:\n        \"\"\"\n        Normalizes a string by converting to lowercase and removing spaces.\n        \"\"\"\n        normalized_s: str = s.lower().replace(\" \", \"\")\n        return normalized_s\n\n    normalized_str1: str = _normalize_string(str1)\n    normalized_str2: str = _normalize_string(str2)\n\n    if len(normalized_str1) != len(normalized_str2):\n        return False\n\n    # Using sorted strings for comparison\n    sorted_str1: list[str] = sorted(normalized_str1)\n    sorted_str2: list[str] = sorted(normalized_str2)\n\n    result: bool = sorted_str1 == sorted_str2\n    return result\n",
+"text_alt": "def are_anagrams(\n    str1,\n    str2\n):\n    \"\"\"\n    Checks if two strings are anagrams of each other, ignoring case and spaces.\n    \"\"\"\n    def _normalize_string(\n        s\n    ):\n        \"\"\"\n        Normalizes a string by converting to lowercase and removing spaces.\n        \"\"\"\n        normalized_s = s.lower().replace(\" \", \"\")\n        return normalized_s\n\n    normalized_str1 = _normalize_string(str1)\n    normalized_str2 = _normalize_string(str2)\n\n    if len(normalized_str1) != len(normalized_str2):\n        return False\n\n    # Using sorted strings for comparison\n    sorted_str1 = sorted(normalized_str1)\n    sorted_str2 = sorted(normalized_str2)\n\n    result = sorted_str1 == sorted_str2\n    return result\n",
 "opps": [
 {
 "k": 0,
 "nat": ": str",
 "alt": "",
 "nat_span": [
-21,
-26
+26,
+31
 ],
 "alt_span": [
-21,
-21
+26,
+26
 ]
 },
 {
 "k": 1,
-"nat": ": str) -> bool",
-"alt": ")",
+"nat": ": str\n) -> bool",
+"alt": "\n)",
 "nat_span": [
-32,
-46
+41,
+56
 ],
 "alt_span": [
-27,
-28
+36,
+38
 ]
 },
 {
 "k": 2,
-"nat": ": str) -> str",
-"alt": ")",
+"nat": ": str\n    ) -> str",
+"alt": "\n    )",
 "nat_span": [
-180,
-193
+190,
+208
 ],
 "alt_span": [
-162,
-163
+172,
+178
 ]
 },
 {
@@ -33822,12 +33822,12 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-365,
-370
+330,
+335
 ],
 "alt_span": [
-335,
-335
+300,
+300
 ]
 },
 {
@@ -33835,17 +33835,69 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-416,
-421
+413,
+418
 ],
 "alt_span": [
-381,
-381
+378,
+378
+]
+},
+{
+"k": 5,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+464,
+469
+],
+"alt_span": [
+424,
+424
+]
+},
+{
+"k": 6,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+629,
+640
+],
+"alt_span": [
+584,
+584
+]
+},
+{
+"k": 7,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+682,
+693
+],
+"alt_span": [
+626,
+626
+]
+},
+{
+"k": 8,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+731,
+737
+],
+"alt_span": [
+664,
+664
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.904,
+"k_en": 9,
+"shared_fraction": 0.82,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -33854,38 +33906,38 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-21,
-26
+26,
+31
 ],
 "alt_span": [
-21,
-21
+26,
+26
 ]
 },
 {
 "k": 1,
-"nat": ": str) -> bool",
-"alt": ")",
+"nat": ": str\n) -> bool",
+"alt": "\n)",
 "nat_span": [
-32,
-46
+41,
+56
 ],
 "alt_span": [
-27,
-28
+36,
+38
 ]
 },
 {
 "k": 2,
-"nat": ": str) -> str",
-"alt": ")",
+"nat": ": str\n    ) -> str",
+"alt": "\n    )",
 "nat_span": [
-180,
-193
+190,
+208
 ],
 "alt_span": [
-162,
-163
+172,
+178
 ]
 },
 {
@@ -33893,12 +33945,12 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-365,
-370
+330,
+335
 ],
 "alt_span": [
-335,
-335
+300,
+300
 ]
 },
 {
@@ -33906,12 +33958,64 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-416,
-421
+413,
+418
 ],
 "alt_span": [
-381,
-381
+378,
+378
+]
+},
+{
+"k": 5,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+464,
+469
+],
+"alt_span": [
+424,
+424
+]
+},
+{
+"k": 6,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+629,
+640
+],
+"alt_span": [
+584,
+584
+]
+},
+{
+"k": 7,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+682,
+693
+],
+"alt_span": [
+626,
+626
+]
+},
+{
+"k": 8,
+"nat": ": bool",
+"alt": "",
+"nat_span": [
+731,
+737
+],
+"alt_span": [
+664,
+664
 ]
 }
 ],
@@ -33945,19 +34049,6 @@
 },
 {
 "k": 1,
-"nat": ": list) -> list",
-"alt": ")",
-"nat_span": [
-43,
-58
-],
-"alt_span": [
-37,
-38
-]
-},
-{
-"k": 2,
 "nat": ": set",
 "alt": "",
 "nat_span": [
@@ -33970,7 +34061,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": set",
 "alt": "",
 "nat_span": [
@@ -33983,7 +34074,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": set",
 "alt": "",
 "nat_span": [
@@ -33996,7 +34087,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -34009,7 +34100,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -34022,7 +34113,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -34035,7 +34126,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -34048,7 +34139,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -34061,7 +34152,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -34074,7 +34165,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -34087,7 +34178,7 @@
 ]
 },
 {
-"k": 12,
+"k": 11,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -34100,7 +34191,7 @@
 ]
 }
 ],
-"k_en": 13,
+"k_en": 12,
 "shared_fraction": 0.848,
 "pass": true,
 "verify": null,
@@ -35076,45 +35167,6 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-52,
-59
-],
-"alt_span": [
-45,
-45
-]
-},
-{
-"k": 2,
-"nat": ": float",
-"alt": "",
-"nat_span": [
-63,
-70
-],
-"alt_span": [
-49,
-49
-]
-},
-{
-"k": 3,
-"nat": ": float) -> float",
-"alt": ")",
-"nat_span": [
-74,
-91
-],
-"alt_span": [
-53,
-54
-]
-},
-{
-"k": 4,
-"nat": ": float",
-"alt": "",
-"nat_span": [
 192,
 199
 ],
@@ -35124,7 +35176,7 @@
 ]
 },
 {
-"k": 5,
+"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -35137,7 +35189,7 @@
 ]
 },
 {
-"k": 6,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -35150,7 +35202,7 @@
 ]
 },
 {
-"k": 7,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -35163,7 +35215,7 @@
 ]
 },
 {
-"k": 8,
+"k": 5,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -35176,7 +35228,7 @@
 ]
 },
 {
-"k": 9,
+"k": 6,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -35189,7 +35241,7 @@
 ]
 },
 {
-"k": 10,
+"k": 7,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -35202,7 +35254,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 8,
 "shared_fraction": 0.839,
 "pass": true,
 "verify": null,
@@ -35915,19 +35967,6 @@
 },
 {
 "k": 1,
-"nat": ": int | float) -> dict[str, int | float]",
-"alt": ")",
-"nat_span": [
-70,
-110
-],
-"alt_span": [
-46,
-47
-]
-},
-{
-"k": 2,
 "nat": ": dict[str, int | float]",
 "alt": "",
 "nat_span": [
@@ -35940,7 +35979,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -35953,7 +35992,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -35966,7 +36005,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -35979,7 +36018,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -35992,7 +36031,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -36005,7 +36044,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -36018,7 +36057,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -36031,7 +36070,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": dict[str, float]",
 "alt": "",
 "nat_span": [
@@ -36044,7 +36083,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -36057,7 +36096,7 @@
 ]
 },
 {
-"k": 12,
+"k": 11,
 "nat": ": dict[str, float]",
 "alt": "",
 "nat_span": [
@@ -36070,7 +36109,7 @@
 ]
 }
 ],
-"k_en": 13,
+"k_en": 12,
 "shared_fraction": 0.752,
 "pass": true,
 "verify": null,
@@ -36340,19 +36379,6 @@
 },
 {
 "k": 6,
-"nat": ": float) -> None",
-"alt": ")",
-"nat_span": [
-732,
-748
-],
-"alt_span": [
-681,
-682
-]
-},
-{
-"k": 7,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -36365,7 +36391,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -36378,7 +36404,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.885,
 "pass": true,
 "verify": null,
@@ -36813,19 +36839,6 @@
 },
 {
 "k": 1,
-"nat": ": float) -> float",
-"alt": ")",
-"nat_span": [
-44,
-61
-],
-"alt_span": [
-37,
-38
-]
-},
-{
-"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -36838,7 +36851,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -36851,7 +36864,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -36864,7 +36877,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -36877,7 +36890,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -36890,7 +36903,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -36903,7 +36916,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -36916,7 +36929,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -36929,7 +36942,7 @@
 ]
 }
 ],
-"k_en": 10,
+"k_en": 9,
 "shared_fraction": 0.892,
 "pass": true,
 "verify": null,
@@ -37589,33 +37602,33 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def encrypt_shift(text: str, shift: int) -> str:\n    \"\"\"\n    Encrypts a string using a simple shift cipher.\n    \"\"\"\n    result: list[str] = []\n    for char in text:\n        if 'a' <= char <= 'z':\n            shifted_char: str = chr(((ord(char) - ord('a') + shift) % 26) + ord('a'))\n            result.append(shifted_char)\n        elif 'A' <= char <= 'Z':\n            shifted_char: str = chr(((ord(char) - ord('A') + shift) % 26) + ord('A'))\n            result.append(shifted_char)\n        else:\n            result.append(char)\n    return \"\".join(result)\n",
-"text_alt": "def encrypt_shift(text, shift):\n    \"\"\"\n    Encrypts a string using a simple shift cipher.\n    \"\"\"\n    result = []\n    for char in text:\n        if 'a' <= char <= 'z':\n            shifted_char = chr(((ord(char) - ord('a') + shift) % 26) + ord('a'))\n            result.append(shifted_char)\n        elif 'A' <= char <= 'Z':\n            shifted_char = chr(((ord(char) - ord('A') + shift) % 26) + ord('A'))\n            result.append(shifted_char)\n        else:\n            result.append(char)\n    return \"\".join(result)\n",
+"text_nat": "def encrypt_shift(\n    text: str,\n    shift: int\n) -> str:\n    encrypted_text: list[str] = []\n    \n    for char in text:\n        if 'a' <= char <= 'z':\n            start: int = ord('a')\n            shifted_char_code: int = (ord(char) - start + shift) % 26 + start\n            encrypted_text.append(chr(shifted_char_code))\n        elif 'A' <= char <= 'Z':\n            start: int = ord('A')\n            shifted_char_code: int = (ord(char) - start + shift) % 26 + start\n            encrypted_text.append(chr(shifted_char_code))\n        else:\n            encrypted_text.append(char)\n            \n    return \"\".join(encrypted_text)\n",
+"text_alt": "def encrypt_shift(\n    text,\n    shift\n):\n    encrypted_text = []\n    \n    for char in text:\n        if 'a' <= char <= 'z':\n            start = ord('a')\n            shifted_char_code = (ord(char) - start + shift) % 26 + start\n            encrypted_text.append(chr(shifted_char_code))\n        elif 'A' <= char <= 'Z':\n            start = ord('A')\n            shifted_char_code = (ord(char) - start + shift) % 26 + start\n            encrypted_text.append(chr(shifted_char_code))\n        else:\n            encrypted_text.append(char)\n            \n    return \"\".join(encrypted_text)\n",
 "opps": [
 {
 "k": 0,
 "nat": ": str",
 "alt": "",
 "nat_span": [
-22,
-27
+27,
+32
 ],
 "alt_span": [
-22,
-22
+27,
+27
 ]
 },
 {
 "k": 1,
-"nat": ": int) -> str",
-"alt": ")",
+"nat": ": int\n) -> str",
+"alt": "\n)",
 "nat_span": [
-34,
-47
+43,
+57
 ],
 "alt_span": [
-29,
-30
+38,
+40
 ]
 },
 {
@@ -37623,43 +37636,69 @@
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
-126,
-137
+77,
+88
 ],
 "alt_span": [
-109,
-109
+60,
+60
 ]
 },
 {
 "k": 3,
-"nat": ": str",
+"nat": ": int",
 "alt": "",
 "nat_span": [
-220,
-225
+169,
+174
 ],
 "alt_span": [
-192,
-192
+141,
+141
 ]
 },
 {
 "k": 4,
-"nat": ": str",
+"nat": ": int",
 "alt": "",
 "nat_span": [
-379,
-384
+215,
+220
 ],
 "alt_span": [
-346,
-346
+182,
+182
+]
+},
+{
+"k": 5,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+372,
+377
+],
+"alt_span": [
+334,
+334
+]
+},
+{
+"k": 6,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+418,
+423
+],
+"alt_span": [
+375,
+375
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.9,
+"k_en": 7,
+"shared_fraction": 0.863,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -37668,25 +37707,25 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-22,
-27
+27,
+32
 ],
 "alt_span": [
-22,
-22
+27,
+27
 ]
 },
 {
 "k": 1,
-"nat": ": int) -> str",
-"alt": ")",
+"nat": ": int\n) -> str",
+"alt": "\n)",
 "nat_span": [
-34,
-47
+43,
+57
 ],
 "alt_span": [
-29,
-30
+38,
+40
 ]
 },
 {
@@ -37694,38 +37733,64 @@
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
-126,
-137
+77,
+88
 ],
 "alt_span": [
-109,
-109
+60,
+60
 ]
 },
 {
 "k": 3,
-"nat": ": str",
+"nat": ": int",
 "alt": "",
 "nat_span": [
-220,
-225
+169,
+174
 ],
 "alt_span": [
-192,
-192
+141,
+141
 ]
 },
 {
 "k": 4,
-"nat": ": str",
+"nat": ": int",
 "alt": "",
 "nat_span": [
-379,
-384
+215,
+220
 ],
 "alt_span": [
-346,
-346
+182,
+182
+]
+},
+{
+"k": 5,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+372,
+377
+],
+"alt_span": [
+334,
+334
+]
+},
+{
+"k": 6,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+418,
+423
+],
+"alt_span": [
+375,
+375
 ]
 }
 ],
@@ -37741,20 +37806,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def calculate_compound_interest(principal: float, rate: float, compounding_frequency: int, time_years: int) -> float:\n    \"\"\"\n    Calculates the compound interest for a given principal amount.\n\n    Args:\n        principal (float): The initial amount of money.\n        rate (float): The annual interest rate (as a decimal).\n        compounding_frequency (int): The number of times interest is compounded per year.\n        time_years (int): The number of years the money is invested or borrowed for.\n\n    Returns:\n        float: The total amount after compound interest.\n    \"\"\"\n    total_amount: float = principal * (1 + rate / compounding_frequency)**(compounding_frequency * time_years)\n    return total_amount\n\ndef main() -> None:\n    # Example 1\n    result1: float = calculate_compound_interest(1000.0, 0.05, 1, 1)\n    print(f\"{result1=}\")\n\n    # Example 2\n    result2: float = calculate_compound_interest(1000.0, 0.05, 4, 1)\n    print(f\"{result2=}\")\n\n    # Example 3 with different types\n    p: float = 5000.0\n    r: float = 0.03\n    n: int = 12\n    t: int = 5\n    result3: float = calculate_compound_interest(p, r, n, t)\n    print(f\"{result3=}\")\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "def calculate_compound_interest(principal, rate, compounding_frequency, time_years):\n    \"\"\"\n    Calculates the compound interest for a given principal amount.\n\n    Args:\n        principal (float): The initial amount of money.\n        rate (float): The annual interest rate (as a decimal).\n        compounding_frequency (int): The number of times interest is compounded per year.\n        time_years (int): The number of years the money is invested or borrowed for.\n\n    Returns:\n        float: The total amount after compound interest.\n    \"\"\"\n    total_amount: float = principal * (1 + rate / compounding_frequency)**(compounding_frequency * time_years)\n    return total_amount\n\ndef main():\n    # Example 1\n    result1: float = calculate_compound_interest(1000.0, 0.05, 1, 1)\n    print(f\"{result1=}\")\n\n    # Example 2\n    result2: float = calculate_compound_interest(1000.0, 0.05, 4, 1)\n    print(f\"{result2=}\")\n\n    # Example 3 with different types\n    p: float = 5000.0\n    r: float = 0.03\n    n: int = 12\n    t: int = 5\n    result3: float = calculate_compound_interest(p, r, n, t)\n    print(f\"{result3=}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "def calculate_compound_interest(\n    principal: float,\n    rate: float,\n    compounding_frequency: int,\n    time_years: int\n) -> float:\n    \"\"\"\n    Calculates the compound interest for a given principal amount.\n\n    Args:\n        principal (float): The initial amount of money.\n        rate (float): The annual interest rate (as a decimal).\n        compounding_frequency (int): The number of times interest is compounded per year.\n        time_years (int): The number of years the money is invested or borrowed for.\n\n    Returns:\n        float: The total amount after compound interest.\n    \"\"\"\n    n: int = compounding_frequency\n    t: int = time_years\n    r: float = rate\n    p: float = principal\n\n    amount: float = p * (1 + r / n) ** (n * t)\n    return amount\n\ndef main() -> None:\n    # Example 1\n    principal1: float = 1000.0\n    rate1: float = 0.05\n    compounding_frequency1: int = 1\n    time_years1: int = 1\n    result1: float = calculate_compound_interest(principal1, rate1, compounding_frequency1, time_years1)\n    print(f\"Example 1: {result1}\")\n\n    # Example 2\n    principal2: float = 1000.0\n    rate2: float = 0.05\n    compounding_frequency2: int = 4\n    time_years2: int = 1\n    result2: float = calculate_compound_interest(principal2, rate2, compounding_frequency2, time_years2)\n    print(f\"Example 2: {result2}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def calculate_compound_interest(\n    principal,\n    rate,\n    compounding_frequency,\n    time_years\n):\n    \"\"\"\n    Calculates the compound interest for a given principal amount.\n\n    Args:\n        principal (float): The initial amount of money.\n        rate (float): The annual interest rate (as a decimal).\n        compounding_frequency (int): The number of times interest is compounded per year.\n        time_years (int): The number of years the money is invested or borrowed for.\n\n    Returns:\n        float: The total amount after compound interest.\n    \"\"\"\n    n = compounding_frequency\n    t = time_years\n    r = rate\n    p = principal\n\n    amount = p * (1 + r / n) ** (n * t)\n    return amount\n\ndef main():\n    # Example 1\n    principal1 = 1000.0\n    rate1 = 0.05\n    compounding_frequency1 = 1\n    time_years1 = 1\n    result1 = calculate_compound_interest(principal1, rate1, compounding_frequency1, time_years1)\n    print(f\"Example 1: {result1}\")\n\n    # Example 2\n    principal2 = 1000.0\n    rate2 = 0.05\n    compounding_frequency2 = 4\n    time_years2 = 1\n    result2 = calculate_compound_interest(principal2, rate2, compounding_frequency2, time_years2)\n    print(f\"Example 2: {result2}\")\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": ": float",
 "alt": "",
 "nat_span": [
-41,
-48
+46,
+53
 ],
 "alt_span": [
-41,
-41
+46,
+46
 ]
 },
 {
@@ -37762,12 +37827,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-54,
-61
+63,
+70
 ],
 "alt_span": [
-47,
-47
+56,
+56
 ]
 },
 {
@@ -37775,43 +37840,238 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-84,
-89
+97,
+102
 ],
 "alt_span": [
-70,
-70
-]
-},
-{
-"k": 3,
-"nat": ": int) -> float",
-"alt": ")",
-"nat_span": [
-101,
-116
-],
-"alt_span": [
-82,
+83,
 83
 ]
 },
 {
+"k": 3,
+"nat": ": int\n) -> float",
+"alt": "\n)",
+"nat_span": [
+118,
+134
+],
+"alt_span": [
+99,
+101
+]
+},
+{
 "k": 4,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+600,
+605
+],
+"alt_span": [
+567,
+567
+]
+},
+{
+"k": 5,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+635,
+640
+],
+"alt_span": [
+597,
+597
+]
+},
+{
+"k": 6,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+659,
+666
+],
+"alt_span": [
+616,
+616
+]
+},
+{
+"k": 7,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+679,
+686
+],
+"alt_span": [
+629,
+629
+]
+},
+{
+"k": 8,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+710,
+717
+],
+"alt_span": [
+653,
+653
+]
+},
+{
+"k": 9,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
-723,
-731
+776,
+784
 ],
 "alt_span": [
-690,
-690
+712,
+712
+]
+},
+{
+"k": 10,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+816,
+823
+],
+"alt_span": [
+744,
+744
+]
+},
+{
+"k": 11,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+842,
+849
+],
+"alt_span": [
+763,
+763
+]
+},
+{
+"k": 12,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+883,
+888
+],
+"alt_span": [
+797,
+797
+]
+},
+{
+"k": 13,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+908,
+913
+],
+"alt_span": [
+817,
+817
+]
+},
+{
+"k": 14,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+929,
+936
+],
+"alt_span": [
+833,
+833
+]
+},
+{
+"k": 15,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+1089,
+1096
+],
+"alt_span": [
+986,
+986
+]
+},
+{
+"k": 16,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+1115,
+1122
+],
+"alt_span": [
+1005,
+1005
+]
+},
+{
+"k": 17,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1156,
+1161
+],
+"alt_span": [
+1039,
+1039
+]
+},
+{
+"k": 18,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1181,
+1186
+],
+"alt_span": [
+1059,
+1059
+]
+},
+{
+"k": 19,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+1202,
+1209
+],
+"alt_span": [
+1075,
+1075
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.947,
+"k_en": 20,
+"shared_fraction": 0.851,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -37820,12 +38080,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-41,
-48
+46,
+53
 ],
 "alt_span": [
-41,
-41
+46,
+46
 ]
 },
 {
@@ -37833,12 +38093,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-54,
-61
+63,
+70
 ],
 "alt_span": [
-47,
-47
+56,
+56
 ]
 },
 {
@@ -37846,38 +38106,233 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-84,
-89
+97,
+102
 ],
 "alt_span": [
-70,
-70
-]
-},
-{
-"k": 3,
-"nat": ": int) -> float",
-"alt": ")",
-"nat_span": [
-101,
-116
-],
-"alt_span": [
-82,
+83,
 83
 ]
 },
 {
+"k": 3,
+"nat": ": int\n) -> float",
+"alt": "\n)",
+"nat_span": [
+118,
+134
+],
+"alt_span": [
+99,
+101
+]
+},
+{
 "k": 4,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+600,
+605
+],
+"alt_span": [
+567,
+567
+]
+},
+{
+"k": 5,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+635,
+640
+],
+"alt_span": [
+597,
+597
+]
+},
+{
+"k": 6,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+659,
+666
+],
+"alt_span": [
+616,
+616
+]
+},
+{
+"k": 7,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+679,
+686
+],
+"alt_span": [
+629,
+629
+]
+},
+{
+"k": 8,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+710,
+717
+],
+"alt_span": [
+653,
+653
+]
+},
+{
+"k": 9,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
-723,
-731
+776,
+784
 ],
 "alt_span": [
-690,
-690
+712,
+712
+]
+},
+{
+"k": 10,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+816,
+823
+],
+"alt_span": [
+744,
+744
+]
+},
+{
+"k": 11,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+842,
+849
+],
+"alt_span": [
+763,
+763
+]
+},
+{
+"k": 12,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+883,
+888
+],
+"alt_span": [
+797,
+797
+]
+},
+{
+"k": 13,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+908,
+913
+],
+"alt_span": [
+817,
+817
+]
+},
+{
+"k": 14,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+929,
+936
+],
+"alt_span": [
+833,
+833
+]
+},
+{
+"k": 15,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+1089,
+1096
+],
+"alt_span": [
+986,
+986
+]
+},
+{
+"k": 16,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+1115,
+1122
+],
+"alt_span": [
+1005,
+1005
+]
+},
+{
+"k": 17,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1156,
+1161
+],
+"alt_span": [
+1039,
+1039
+]
+},
+{
+"k": 18,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1181,
+1186
+],
+"alt_span": [
+1059,
+1059
+]
+},
+{
+"k": 19,
+"nat": ": float",
+"alt": "",
+"nat_span": [
+1202,
+1209
+],
+"alt_span": [
+1075,
+1075
 ]
 }
 ],
@@ -38627,19 +39082,6 @@
 },
 {
 "k": 1,
-"nat": ": list[list[int]]) -> list[list[int]]",
-"alt": ")",
-"nat_span": [
-61,
-98
-],
-"alt_span": [
-44,
-45
-]
-},
-{
-"k": 2,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -38652,7 +39094,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -38665,7 +39107,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -38678,7 +39120,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -38691,7 +39133,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -38704,7 +39146,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -38717,7 +39159,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -38730,7 +39172,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -38743,7 +39185,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -38756,7 +39198,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 10,
 "shared_fraction": 0.762,
 "pass": true,
 "verify": null,
@@ -39087,19 +39529,6 @@
 },
 {
 "k": 1,
-"nat": ": int) -> list[float]",
-"alt": ")",
-"nat_span": [
-48,
-69
-],
-"alt_span": [
-35,
-36
-]
-},
-{
-"k": 2,
 "nat": ": list[float]",
 "alt": "",
 "nat_span": [
@@ -39112,7 +39541,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": list[float]",
 "alt": "",
 "nat_span": [
@@ -39125,7 +39554,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -39138,7 +39567,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -39151,7 +39580,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": float) -> float",
 "alt": ")",
 "nat_span": [
@@ -39164,7 +39593,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": int) -> tuple[list[float], int]",
 "alt": ")",
 "nat_span": [
@@ -39177,7 +39606,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.864,
 "pass": true,
 "verify": null,
@@ -39829,19 +40258,6 @@
 },
 {
 "k": 5,
-"nat": ": str) -> None",
-"alt": ")",
-"nat_span": [
-334,
-348
-],
-"alt_span": [
-296,
-297
-]
-},
-{
-"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -39854,7 +40270,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -39867,7 +40283,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -39880,7 +40296,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.866,
 "pass": true,
 "verify": null,
@@ -40649,32 +41065,6 @@
 },
 {
 "k": 1,
-"nat": ": str",
-"alt": "",
-"nat_span": [
-42,
-47
-],
-"alt_span": [
-35,
-35
-]
-},
-{
-"k": 2,
-"nat": ": str) -> float",
-"alt": ")",
-"nat_span": [
-56,
-71
-],
-"alt_span": [
-44,
-45
-]
-},
-{
-"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -40687,7 +41077,7 @@
 ]
 },
 {
-"k": 4,
+"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -40700,7 +41090,7 @@
 ]
 },
 {
-"k": 5,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -40713,7 +41103,7 @@
 ]
 },
 {
-"k": 6,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -40726,7 +41116,7 @@
 ]
 },
 {
-"k": 7,
+"k": 5,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -40739,7 +41129,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 6,
 "shared_fraction": 0.912,
 "pass": true,
 "verify": null,
@@ -40879,19 +41269,6 @@
 },
 {
 "k": 1,
-"nat": ": float) -> float",
-"alt": ")",
-"nat_span": [
-71,
-88
-],
-"alt_span": [
-64,
-65
-]
-},
-{
-"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -40904,7 +41281,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -40917,7 +41294,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -40930,33 +41307,7 @@
 ]
 },
 {
-"k": 5,
-"nat": ": float",
-"alt": "",
-"nat_span": [
-614,
-621
-],
-"alt_span": [
-570,
-570
-]
-},
-{
-"k": 6,
-"nat": ": float) -> None",
-"alt": ")",
-"nat_span": [
-631,
-647
-],
-"alt_span": [
-580,
-581
-]
-},
-{
-"k": 7,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -40969,7 +41320,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 5,
 "shared_fraction": 0.906,
 "pass": true,
 "verify": null,
@@ -41963,33 +42314,33 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def calculate_power(base: float, exponent: int) -> float:\n    \"\"\"\n    Calculates the result of a base number raised to an exponent.\n\n    Args:\n        base: The base number (can be an integer or a float).\n        exponent: The exponent (must be an integer).\n\n    Returns:\n        The result of base raised to the power of exponent (int or float).\n    \"\"\"\n    if not isinstance(exponent, int):\n        raise TypeError(\"Exponent must be an integer.\")\n\n    result: float = 1.0\n    abs_exponent: int = abs(exponent)\n\n    for _ in range(abs_exponent):\n        result *= base\n\n    if exponent < 0:\n        if base == 0:\n            raise ZeroDivisionError(\"Cannot raise zero to a negative power.\")\n        return 1.0 / result\n    return result\n\ndef main() -> None:\n    \"\"\"\n    Main function to demonstrate calculate_power.\n    \"\"\"\n    print(f\"2 to the power of 3 is: {calculate_power(2, 3)}\")\n    print(f\"5 to the power of 0 is: {calculate_power(5.0, 0)}\")\n    print(f\"2.5 to the power of 2 is: {calculate_power(2.5, 2)}\")\n    print(f\"3 to the power of -2 is: {calculate_power(3, -2)}\")\n    print(f\"10 to the power of 1 is: {calculate_power(10, 1)}\")\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "def calculate_power(base, exponent):\n    \"\"\"\n    Calculates the result of a base number raised to an exponent.\n\n    Args:\n        base: The base number (can be an integer or a float).\n        exponent: The exponent (must be an integer).\n\n    Returns:\n        The result of base raised to the power of exponent (int or float).\n    \"\"\"\n    if not isinstance(exponent, int):\n        raise TypeError(\"Exponent must be an integer.\")\n\n    result = 1.0\n    abs_exponent = abs(exponent)\n\n    for _ in range(abs_exponent):\n        result *= base\n\n    if exponent < 0:\n        if base == 0:\n            raise ZeroDivisionError(\"Cannot raise zero to a negative power.\")\n        return 1.0 / result\n    return result\n\ndef main():\n    \"\"\"\n    Main function to demonstrate calculate_power.\n    \"\"\"\n    print(f\"2 to the power of 3 is: {calculate_power(2, 3)}\")\n    print(f\"5 to the power of 0 is: {calculate_power(5.0, 0)}\")\n    print(f\"2.5 to the power of 2 is: {calculate_power(2.5, 2)}\")\n    print(f\"3 to the power of -2 is: {calculate_power(3, -2)}\")\n    print(f\"10 to the power of 1 is: {calculate_power(10, 1)}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "def calculate_power(\n    base: float,\n    exponent: int\n) -> float:\n    if exponent < 0:\n        base = 1 / base\n        exponent = -exponent\n\n    result: float = 1.0\n    current_base: float = float(base)\n    current_exponent: int = exponent\n\n    while current_exponent > 0:\n        if current_exponent % 2 == 1:\n            result = result * current_base\n        current_base = current_base * current_base\n        current_exponent = current_exponent // 2\n    return result\n",
+"text_alt": "def calculate_power(\n    base,\n    exponent\n):\n    if exponent < 0:\n        base = 1 / base\n        exponent = -exponent\n\n    result = 1.0\n    current_base = float(base)\n    current_exponent = exponent\n\n    while current_exponent > 0:\n        if current_exponent % 2 == 1:\n            result = result * current_base\n        current_base = current_base * current_base\n        current_exponent = current_exponent // 2\n    return result\n",
 "opps": [
 {
 "k": 0,
 "nat": ": float",
 "alt": "",
 "nat_span": [
-24,
-31
+29,
+36
 ],
 "alt_span": [
-24,
-24
+29,
+29
 ]
 },
 {
 "k": 1,
-"nat": ": int) -> float",
-"alt": ")",
+"nat": ": int\n) -> float",
+"alt": "\n)",
 "nat_span": [
-41,
-56
+50,
+66
 ],
 "alt_span": [
-34,
-35
+43,
+45
 ]
 },
 {
@@ -41997,43 +42348,43 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-460,
-467
+153,
+160
 ],
 "alt_span": [
-439,
-439
+132,
+132
 ]
 },
 {
 "k": 3,
-"nat": ": int",
+"nat": ": float",
 "alt": "",
 "nat_span": [
-490,
-495
+183,
+190
 ],
 "alt_span": [
-462,
-462
+155,
+155
 ]
 },
 {
 "k": 4,
-"nat": " -> None",
+"nat": ": int",
 "alt": "",
 "nat_span": [
-749,
-757
+225,
+230
 ],
 "alt_span": [
-716,
-716
+190,
+190
 ]
 }
 ],
 "k_en": 5,
-"shared_fraction": 0.953,
+"shared_fraction": 0.857,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -42042,25 +42393,25 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-24,
-31
+29,
+36
 ],
 "alt_span": [
-24,
-24
+29,
+29
 ]
 },
 {
 "k": 1,
-"nat": ": int) -> float",
-"alt": ")",
+"nat": ": int\n) -> float",
+"alt": "\n)",
 "nat_span": [
-41,
-56
+50,
+66
 ],
 "alt_span": [
-34,
-35
+43,
+45
 ]
 },
 {
@@ -42068,38 +42419,38 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-460,
-467
+153,
+160
 ],
 "alt_span": [
-439,
-439
+132,
+132
 ]
 },
 {
 "k": 3,
-"nat": ": int",
+"nat": ": float",
 "alt": "",
 "nat_span": [
-490,
-495
+183,
+190
 ],
 "alt_span": [
-462,
-462
+155,
+155
 ]
 },
 {
 "k": 4,
-"nat": " -> None",
+"nat": ": int",
 "alt": "",
 "nat_span": [
-749,
-757
+225,
+230
 ],
 "alt_span": [
-716,
-716
+190,
+190
 ]
 }
 ],
@@ -42133,19 +42484,6 @@
 },
 {
 "k": 1,
-"nat": ": int) -> list[str]",
-"alt": ")",
-"nat_span": [
-55,
-74
-],
-"alt_span": [
-44,
-45
-]
-},
-{
-"k": 2,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -42158,7 +42496,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -42171,7 +42509,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -42184,7 +42522,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -42197,7 +42535,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -42210,7 +42548,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -42223,7 +42561,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -42236,7 +42574,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -42249,7 +42587,7 @@
 ]
 }
 ],
-"k_en": 10,
+"k_en": 9,
 "shared_fraction": 0.822,
 "pass": true,
 "verify": null,
@@ -42441,19 +42779,6 @@
 },
 {
 "k": 3,
-"nat": ": str) -> None",
-"alt": ")",
-"nat_span": [
-688,
-702
-],
-"alt_span": [
-658,
-659
-]
-},
-{
-"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -42466,7 +42791,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -42479,7 +42804,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -42492,7 +42817,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -42505,7 +42830,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -42518,7 +42843,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -42531,7 +42856,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -42544,7 +42869,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 10,
 "shared_fraction": 0.905,
 "pass": true,
 "verify": null,
@@ -43131,19 +43456,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> bool",
-"alt": ")",
-"nat_span": [
-52,
-66
-],
-"alt_span": [
-47,
-48
-]
-},
-{
-"k": 2,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -43156,20 +43468,7 @@
 ]
 },
 {
-"k": 3,
-"nat": ": str) -> bool",
-"alt": ")",
-"nat_span": [
-510,
-524
-],
-"alt_span": [
-487,
-488
-]
-},
-{
-"k": 4,
+"k": 2,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -43182,7 +43481,7 @@
 ]
 },
 {
-"k": 5,
+"k": 3,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -43195,7 +43494,7 @@
 ]
 },
 {
-"k": 6,
+"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -43208,7 +43507,7 @@
 ]
 },
 {
-"k": 7,
+"k": 5,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -43221,7 +43520,7 @@
 ]
 },
 {
-"k": 8,
+"k": 6,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -43234,7 +43533,7 @@
 ]
 },
 {
-"k": 9,
+"k": 7,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -43247,7 +43546,7 @@
 ]
 },
 {
-"k": 10,
+"k": 8,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -43260,7 +43559,7 @@
 ]
 },
 {
-"k": 11,
+"k": 9,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -43273,7 +43572,7 @@
 ]
 }
 ],
-"k_en": 12,
+"k_en": 10,
 "shared_fraction": 0.92,
 "pass": true,
 "verify": null,
@@ -43465,32 +43764,6 @@
 },
 {
 "k": 1,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-48,
-53
-],
-"alt_span": [
-43,
-43
-]
-},
-{
-"k": 2,
-"nat": ": int) -> int",
-"alt": ")",
-"nat_span": [
-58,
-71
-],
-"alt_span": [
-48,
-49
-]
-},
-{
-"k": 3,
 "nat": ": datetime.date",
 "alt": "",
 "nat_span": [
@@ -43503,7 +43776,7 @@
 ]
 },
 {
-"k": 4,
+"k": 2,
 "nat": ": datetime.date",
 "alt": "",
 "nat_span": [
@@ -43516,7 +43789,7 @@
 ]
 },
 {
-"k": 5,
+"k": 3,
 "nat": ": datetime.timedelta",
 "alt": "",
 "nat_span": [
@@ -43529,7 +43802,7 @@
 ]
 },
 {
-"k": 6,
+"k": 4,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -43542,7 +43815,7 @@
 ]
 }
 ],
-"k_en": 7,
+"k_en": 5,
 "shared_fraction": 0.89,
 "pass": true,
 "verify": null,
@@ -44051,19 +44324,6 @@
 },
 {
 "k": 1,
-"nat": ": tuple[float, float, float]) -> float",
-"alt": ")",
-"nat_span": [
-63,
-101
-],
-"alt_span": [
-35,
-36
-]
-},
-{
-"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44076,7 +44336,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44089,7 +44349,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44102,7 +44362,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44115,7 +44375,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44128,7 +44388,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44141,7 +44401,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44154,7 +44414,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44167,7 +44427,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44180,7 +44440,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44193,7 +44453,7 @@
 ]
 },
 {
-"k": 12,
+"k": 11,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -44206,7 +44466,7 @@
 ]
 }
 ],
-"k_en": 13,
+"k_en": 12,
 "shared_fraction": 0.794,
 "pass": true,
 "verify": null,
@@ -44393,20 +44653,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def update_inventory(inventory: dict[str, int], item_name: str, quantity_change: int) -> dict[str, int]:\n    \"\"\"\n    Updates the quantity of an item in the inventory.\n\n    Args:\n        inventory: A dictionary where keys are item names (str) and values are quantities (int).\n        item_name: The name of the item to update (str).\n        quantity_change: The amount by which to change the item's quantity (int).\n\n    Returns:\n        The updated inventory dictionary (dict[str, int]).\n    \"\"\"\n    current_quantity: int = inventory.get(item_name, 0)\n    new_quantity: int = current_quantity + quantity_change\n\n    if new_quantity < 0:\n        inventory[item_name] = 0\n    else:\n        inventory[item_name] = new_quantity\n    return inventory\n\ndef get_item_quantity(inventory: dict[str, int], item_name: str) -> int:\n    \"\"\"Retrieves the quantity of a specific item from the inventory.\"\"\"\n    return inventory.get(item_name, 0)\n\ndef add_new_item(inventory: dict[str, int], item_name: str, initial_quantity: int) -> dict[str, int]:\n    \"\"\"Adds a new item to the inventory with an initial quantity.\"\"\"\n    if item_name not in inventory:\n        inventory[item_name] = max(0, initial_quantity)\n    return inventory\n",
-"text_alt": "def update_inventory(inventory, item_name, quantity_change):\n    \"\"\"\n    Updates the quantity of an item in the inventory.\n\n    Args:\n        inventory: A dictionary where keys are item names (str) and values are quantities (int).\n        item_name: The name of the item to update (str).\n        quantity_change: The amount by which to change the item's quantity (int).\n\n    Returns:\n        The updated inventory dictionary (dict[str, int]).\n    \"\"\"\n    current_quantity = inventory.get(item_name, 0)\n    new_quantity = current_quantity + quantity_change\n\n    if new_quantity < 0:\n        inventory[item_name] = 0\n    else:\n        inventory[item_name] = new_quantity\n    return inventory\n\ndef get_item_quantity(inventory, item_name):\n    \"\"\"Retrieves the quantity of a specific item from the inventory.\"\"\"\n    return inventory.get(item_name, 0)\n\ndef add_new_item(inventory, item_name, initial_quantity):\n    \"\"\"Adds a new item to the inventory with an initial quantity.\"\"\"\n    if item_name not in inventory:\n        inventory[item_name] = max(0, initial_quantity)\n    return inventory\n",
+"text_nat": "def update_inventory(\n    inventory: dict[str, int],\n    item_name: str,\n    quantity_change: int\n) -> dict[str, int]:\n    \"\"\"\n    Updates the quantity of an item in the inventory.\n\n    If the quantity change results in a negative quantity,\n    the quantity is set to 0.\n    \"\"\"\n    current_quantity: int = inventory.get(item_name, 0)\n    new_quantity: int = current_quantity + quantity_change\n\n    if new_quantity < 0:\n        inventory[item_name] = 0\n    else:\n        inventory[item_name] = new_quantity\n    \n    return inventory\n\ndef main() -> None:\n    initial_inventory: dict[str, int] = {'apple': 10, 'banana': 5}\n    \n    updated_1: dict[str, int] = update_inventory(initial_inventory.copy(), 'apple', 5)\n    print(f\"Updated inventory 1: {updated_1}\")\n\n    updated_2: dict[str, int] = update_inventory(initial_inventory.copy(), 'banana', -10)\n    print(f\"Updated inventory 2: {updated_2}\")\n\n    updated_3: dict[str, int] = update_inventory(initial_inventory.copy(), 'orange', 3)\n    print(f\"Updated inventory 3: {updated_3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def update_inventory(\n    inventory,\n    item_name,\n    quantity_change\n):\n    \"\"\"\n    Updates the quantity of an item in the inventory.\n\n    If the quantity change results in a negative quantity,\n    the quantity is set to 0.\n    \"\"\"\n    current_quantity = inventory.get(item_name, 0)\n    new_quantity = current_quantity + quantity_change\n\n    if new_quantity < 0:\n        inventory[item_name] = 0\n    else:\n        inventory[item_name] = new_quantity\n    \n    return inventory\n\ndef main():\n    initial_inventory = {'apple': 10, 'banana': 5}\n    \n    updated_1 = update_inventory(initial_inventory.copy(), 'apple', 5)\n    print(f\"Updated inventory 1: {updated_1}\")\n\n    updated_2 = update_inventory(initial_inventory.copy(), 'banana', -10)\n    print(f\"Updated inventory 2: {updated_2}\")\n\n    updated_3 = update_inventory(initial_inventory.copy(), 'orange', 3)\n    print(f\"Updated inventory 3: {updated_3}\")\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
-30,
-46
+35,
+51
 ],
 "alt_span": [
-30,
-30
+35,
+35
 ]
 },
 {
@@ -44414,25 +44674,25 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-57,
-62
+66,
+71
 ],
 "alt_span": [
-41,
-41
+50,
+50
 ]
 },
 {
 "k": 2,
-"nat": ": int) -> dict[str, int]",
-"alt": ")",
+"nat": ": int\n) -> dict[str, int]",
+"alt": "\n)",
 "nat_span": [
-79,
-103
+92,
+117
 ],
 "alt_span": [
-58,
-59
+71,
+73
 ]
 },
 {
@@ -44440,12 +44700,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-515,
-520
+299,
+304
 ],
 "alt_span": [
-471,
-471
+255,
+255
 ]
 },
 {
@@ -44453,38 +44713,38 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-567,
-572
+351,
+356
 ],
 "alt_span": [
-518,
-518
+302,
+302
 ]
 },
 {
 "k": 5,
-"nat": ": dict[str, int]",
+"nat": " -> None",
 "alt": "",
 "nat_span": [
-776,
-792
+544,
+552
 ],
 "alt_span": [
-722,
-722
+490,
+490
 ]
 },
 {
 "k": 6,
-"nat": ": str) -> int",
-"alt": ")",
+"nat": ": dict[str, int]",
+"alt": "",
 "nat_span": [
-803,
-816
+575,
+591
 ],
 "alt_span": [
-733,
-734
+513,
+513
 ]
 },
 {
@@ -44492,43 +44752,43 @@
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
-956,
-972
+639,
+655
 ],
 "alt_span": [
-874,
-874
+561,
+561
 ]
 },
 {
 "k": 8,
-"nat": ": str",
+"nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
-983,
-988
+774,
+790
 ],
 "alt_span": [
-885,
-885
+680,
+680
 ]
 },
 {
 "k": 9,
-"nat": ": int) -> dict[str, int]",
-"alt": ")",
+"nat": ": dict[str, int]",
+"alt": "",
 "nat_span": [
-1006,
-1030
+912,
+928
 ],
 "alt_span": [
-903,
-904
+802,
+802
 ]
 }
 ],
 "k_en": 10,
-"shared_fraction": 0.815,
+"shared_fraction": 0.8,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -44537,12 +44797,12 @@
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
-30,
-46
+35,
+51
 ],
 "alt_span": [
-30,
-30
+35,
+35
 ]
 },
 {
@@ -44550,25 +44810,25 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-57,
-62
+66,
+71
 ],
 "alt_span": [
-41,
-41
+50,
+50
 ]
 },
 {
 "k": 2,
-"nat": ": int) -> dict[str, int]",
-"alt": ")",
+"nat": ": int\n) -> dict[str, int]",
+"alt": "\n)",
 "nat_span": [
-79,
-103
+92,
+117
 ],
 "alt_span": [
-58,
-59
+71,
+73
 ]
 },
 {
@@ -44576,12 +44836,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-515,
-520
+299,
+304
 ],
 "alt_span": [
-471,
-471
+255,
+255
 ]
 },
 {
@@ -44589,38 +44849,38 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-567,
-572
+351,
+356
 ],
 "alt_span": [
-518,
-518
+302,
+302
 ]
 },
 {
 "k": 5,
-"nat": ": dict[str, int]",
+"nat": " -> None",
 "alt": "",
 "nat_span": [
-776,
-792
+544,
+552
 ],
 "alt_span": [
-722,
-722
+490,
+490
 ]
 },
 {
 "k": 6,
-"nat": ": str) -> int",
-"alt": ")",
+"nat": ": dict[str, int]",
+"alt": "",
 "nat_span": [
-803,
-816
+575,
+591
 ],
 "alt_span": [
-733,
-734
+513,
+513
 ]
 },
 {
@@ -44628,38 +44888,38 @@
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
-956,
-972
+639,
+655
 ],
 "alt_span": [
-874,
-874
+561,
+561
 ]
 },
 {
 "k": 8,
-"nat": ": str",
+"nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
-983,
-988
+774,
+790
 ],
 "alt_span": [
-885,
-885
+680,
+680
 ]
 },
 {
 "k": 9,
-"nat": ": int) -> dict[str, int]",
-"alt": ")",
+"nat": ": dict[str, int]",
+"alt": "",
 "nat_span": [
-1006,
-1030
+912,
+928
 ],
 "alt_span": [
-903,
-904
+802,
+802
 ]
 }
 ],
@@ -44693,19 +44953,6 @@
 },
 {
 "k": 1,
-"nat": ": tuple[int, int]) -> bool",
-"alt": ")",
-"nat_span": [
-55,
-81
-],
-"alt_span": [
-38,
-39
-]
-},
-{
-"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -44718,7 +44965,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -44731,7 +44978,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -44744,7 +44991,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -44757,7 +45004,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -44770,7 +45017,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -44783,7 +45030,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -44796,7 +45043,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -44809,7 +45056,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -44822,7 +45069,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": tuple[int, int]",
 "alt": "",
 "nat_span": [
@@ -44835,7 +45082,7 @@
 ]
 }
 ],
-"k_en": 12,
+"k_en": 11,
 "shared_fraction": 0.854,
 "pass": true,
 "verify": null,
@@ -45092,19 +45339,6 @@
 },
 {
 "k": 6,
-"nat": ": float) -> list[float]",
-"alt": ")",
-"nat_span": [
-479,
-502
-],
-"alt_span": [
-377,
-378
-]
-},
-{
-"k": 7,
 "nat": ": list[float]) -> float",
 "alt": ")",
 "nat_span": [
@@ -45117,7 +45351,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 7,
 "shared_fraction": 0.674,
 "pass": true,
 "verify": null,
@@ -45239,8 +45473,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import random\n\ndef play_guessing_game(target: int, max_guesses: int) -> int:\n    \"\"\"\n    Simulates a guessing game to find a target number.\n\n    Args:\n        target (int): The integer target number to be guessed.\n        max_guesses (int): The maximum number of guesses allowed.\n\n    Returns:\n        int: The number of guesses taken if the target is found within max_guesses,\n             otherwise -1.\n    \"\"\"\n    current_guess_count: int = 0\n    while current_guess_count < max_guesses:\n        current_guess: int = random.randint(1, 100)\n        current_guess_count += 1\n        if current_guess == target:\n            return current_guess_count\n    return -1\n\nif __name__ == '__main__':\n    # Example usage (for demonstration, not part of the required function)\n    result1: int = play_guessing_game(50, 10)\n    print(f\"Target 50, Max Guesses 10: {result1}\")\n\n    result2: int = play_guessing_game(99, 1)\n    print(f\"Target 99, Max Guesses 1: {result2}\")\n\n    result3: int = play_guessing_game(7, 5)\n    print(f\"Target 7, Max Guesses 5: {result3}\")\n\n    result4: int = play_guessing_game(25, 100)\n    print(f\"Target 25, Max Guesses 100: {result4}\")\n",
-"text_alt": "import random\n\ndef play_guessing_game(target, max_guesses):\n    \"\"\"\n    Simulates a guessing game to find a target number.\n\n    Args:\n        target (int): The integer target number to be guessed.\n        max_guesses (int): The maximum number of guesses allowed.\n\n    Returns:\n        int: The number of guesses taken if the target is found within max_guesses,\n             otherwise -1.\n    \"\"\"\n    current_guess_count = 0\n    while current_guess_count < max_guesses:\n        current_guess = random.randint(1, 100)\n        current_guess_count += 1\n        if current_guess == target:\n            return current_guess_count\n    return -1\n\nif __name__ == '__main__':\n    # Example usage (for demonstration, not part of the required function)\n    result1 = play_guessing_game(50, 10)\n    print(f\"Target 50, Max Guesses 10: {result1}\")\n\n    result2 = play_guessing_game(99, 1)\n    print(f\"Target 99, Max Guesses 1: {result2}\")\n\n    result3 = play_guessing_game(7, 5)\n    print(f\"Target 7, Max Guesses 5: {result3}\")\n\n    result4 = play_guessing_game(25, 100)\n    print(f\"Target 25, Max Guesses 100: {result4}\")\n",
+"text_nat": "import random\n\ndef play_guessing_game(target: int,\n                       max_guesses: int) -> int:\n    \"\"\"\n    Simulates a guessing game to find a target number.\n\n    Args:\n        target: The integer number to be guessed.\n        max_guesses: The maximum number of guesses allowed.\n\n    Returns:\n        The number of guesses taken if the target is found within max_guesses,\n        otherwise -1.\n    \"\"\"\n    guesses_taken: int = 0\n    min_guess_value: int = 1\n    max_guess_value: int = 100\n\n    for _ in range(max_guesses):\n        guesses_taken += 1\n        current_guess: int = random.randint(min_guess_value, max_guess_value)\n        if current_guess == target:\n            return guesses_taken\n\n    return -1\n",
+"text_alt": "import random\n\ndef play_guessing_game(target,\n                       max_guesses):\n    \"\"\"\n    Simulates a guessing game to find a target number.\n\n    Args:\n        target: The integer number to be guessed.\n        max_guesses: The maximum number of guesses allowed.\n\n    Returns:\n        The number of guesses taken if the target is found within max_guesses,\n        otherwise -1.\n    \"\"\"\n    guesses_taken = 0\n    min_guess_value = 1\n    max_guess_value = 100\n\n    for _ in range(max_guesses):\n        guesses_taken += 1\n        current_guess = random.randint(min_guess_value, max_guess_value)\n        if current_guess == target:\n            return guesses_taken\n\n    return -1\n",
 "opps": [
 {
 "k": 0,
@@ -45260,12 +45494,12 @@
 "nat": ": int) -> int",
 "alt": ")",
 "nat_span": [
-62,
-75
+85,
+98
 ],
 "alt_span": [
-57,
-58
+80,
+81
 ]
 },
 {
@@ -45273,12 +45507,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-436,
-441
+424,
+429
 ],
 "alt_span": [
-419,
-419
+407,
+407
 ]
 },
 {
@@ -45286,12 +45520,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-512,
-517
+453,
+458
 ],
 "alt_span": [
-490,
-490
+431,
+431
 ]
 },
 {
@@ -45299,12 +45533,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-779,
-784
+482,
+487
 ],
 "alt_span": [
-752,
-752
+455,
+455
 ]
 },
 {
@@ -45312,43 +45546,17 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-877,
-882
+576,
+581
 ],
 "alt_span": [
-845,
-845
-]
-},
-{
-"k": 6,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-973,
-978
-],
-"alt_span": [
-936,
-936
-]
-},
-{
-"k": 7,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-1067,
-1072
-],
-"alt_span": [
-1025,
-1025
+544,
+544
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.924,
+"k_en": 6,
+"shared_fraction": 0.887,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -45370,12 +45578,12 @@
 "nat": ": int) -> int",
 "alt": ")",
 "nat_span": [
-62,
-75
+85,
+98
 ],
 "alt_span": [
-57,
-58
+80,
+81
 ]
 },
 {
@@ -45383,12 +45591,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-436,
-441
+424,
+429
 ],
 "alt_span": [
-419,
-419
+407,
+407
 ]
 },
 {
@@ -45396,12 +45604,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-512,
-517
+453,
+458
 ],
 "alt_span": [
-490,
-490
+431,
+431
 ]
 },
 {
@@ -45409,12 +45617,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-779,
-784
+482,
+487
 ],
 "alt_span": [
-752,
-752
+455,
+455
 ]
 },
 {
@@ -45422,38 +45630,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-877,
-882
+576,
+581
 ],
 "alt_span": [
-845,
-845
-]
-},
-{
-"k": 6,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-973,
-978
-],
-"alt_span": [
-936,
-936
-]
-},
-{
-"k": 7,
-"nat": ": int",
-"alt": "",
-"nat_span": [
-1067,
-1072
-],
-"alt_span": [
-1025,
-1025
+544,
+544
 ]
 }
 ],
@@ -45469,20 +45651,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import math\n\ndef triangle_area(a: float, b: float, c: float) -> float:\n    \"\"\"\n    Calculates the area of a triangle using Heron's formula.\n\n    Args:\n        a: The length of the first side.\n        b: The length of the second side.\n        c: The length of the third side.\n\n    Returns:\n        The area of the triangle as a float, or 0.0 if the sides cannot form a triangle.\n    \"\"\"\n    if not (a + b > c and a + c > b and b + c > a):\n        return 0.0\n\n    s: float = (a + b + c) / 2\n    area_squared: float = s * (s - a) * (s - b) * (s - c)\n    if area_squared < 0:  # Handle potential floating point inaccuracies for degenerate triangles\n        return 0.0\n    return math.sqrt(area_squared)\n\ndef main() -> None:\n    \"\"\"\n    Example usage of the triangle_area function.\n    \"\"\"\n    print(f\"Area of (3, 4, 5): {triangle_area(3.0, 4.0, 5.0)}\")\n    print(f\"Area of (1, 1, 10): {triangle_area(1.0, 1.0, 10.0)}\")\n    print(f\"Area of (5, 12, 13): {triangle_area(5.0, 12.0, 13.0)}\")\n    print(f\"Area of (2, 2, 2): {triangle_area(2.0, 2.0, 2.0)}\")\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "import math\n\ndef triangle_area(a, b, c):\n    \"\"\"\n    Calculates the area of a triangle using Heron's formula.\n\n    Args:\n        a: The length of the first side.\n        b: The length of the second side.\n        c: The length of the third side.\n\n    Returns:\n        The area of the triangle as a float, or 0.0 if the sides cannot form a triangle.\n    \"\"\"\n    if not (a + b > c and a + c > b and b + c > a):\n        return 0.0\n\n    s = (a + b + c) / 2\n    area_squared = s * (s - a) * (s - b) * (s - c)\n    if area_squared < 0:  # Handle potential floating point inaccuracies for degenerate triangles\n        return 0.0\n    return math.sqrt(area_squared)\n\ndef main():\n    \"\"\"\n    Example usage of the triangle_area function.\n    \"\"\"\n    print(f\"Area of (3, 4, 5): {triangle_area(3.0, 4.0, 5.0)}\")\n    print(f\"Area of (1, 1, 10): {triangle_area(1.0, 1.0, 10.0)}\")\n    print(f\"Area of (5, 12, 13): {triangle_area(5.0, 12.0, 13.0)}\")\n    print(f\"Area of (2, 2, 2): {triangle_area(2.0, 2.0, 2.0)}\")\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "import math\n\ndef triangle_area(\n    a: float,\n    b: float,\n    c: float\n) -> float:\n    if not (a + b > c and a + c > b and b + c > a):\n        return 0.0\n\n    s: float = (a + b + c) / 2\n    area: float = math.sqrt(s * (s - a) * (s - b) * (s - c))\n    return area\n",
+"text_alt": "import math\n\ndef triangle_area(\n    a,\n    b,\n    c\n):\n    if not (a + b > c and a + c > b and b + c > a):\n        return 0.0\n\n    s = (a + b + c) / 2\n    area = math.sqrt(s * (s - a) * (s - b) * (s - c))\n    return area\n",
 "opps": [
 {
 "k": 0,
 "nat": ": float",
 "alt": "",
 "nat_span": [
-32,
-39
+37,
+44
 ],
 "alt_span": [
-32,
-32
+37,
+37
 ]
 },
 {
@@ -45490,25 +45672,25 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-42,
-49
+51,
+58
 ],
 "alt_span": [
-35,
-35
+44,
+44
 ]
 },
 {
 "k": 2,
-"nat": ": float) -> float",
-"alt": ")",
+"nat": ": float\n) -> float",
+"alt": "\n)",
 "nat_span": [
-52,
-69
+65,
+83
 ],
 "alt_span": [
-38,
-39
+51,
+53
 ]
 },
 {
@@ -45516,12 +45698,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-463,
-470
+162,
+169
 ],
 "alt_span": [
-433,
-433
+132,
+132
 ]
 },
 {
@@ -45529,30 +45711,17 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-505,
-512
+196,
+203
 ],
 "alt_span": [
-468,
-468
-]
-},
-{
-"k": 5,
-"nat": " -> None",
-"alt": "",
-"nat_span": [
-710,
-718
-],
-"alt_span": [
-666,
-666
+159,
+159
 ]
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.951,
+"k_en": 5,
+"shared_fraction": 0.868,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -45561,12 +45730,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-32,
-39
+37,
+44
 ],
 "alt_span": [
-32,
-32
+37,
+37
 ]
 },
 {
@@ -45574,25 +45743,25 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-42,
-49
+51,
+58
 ],
 "alt_span": [
-35,
-35
+44,
+44
 ]
 },
 {
 "k": 2,
-"nat": ": float) -> float",
-"alt": ")",
+"nat": ": float\n) -> float",
+"alt": "\n)",
 "nat_span": [
-52,
-69
+65,
+83
 ],
 "alt_span": [
-38,
-39
+51,
+53
 ]
 },
 {
@@ -45600,12 +45769,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-463,
-470
+162,
+169
 ],
 "alt_span": [
-433,
-433
+132,
+132
 ]
 },
 {
@@ -45613,25 +45782,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-505,
-512
+196,
+203
 ],
 "alt_span": [
-468,
-468
-]
-},
-{
-"k": 5,
-"nat": " -> None",
-"alt": "",
-"nat_span": [
-710,
-718
-],
-"alt_span": [
-666,
-666
+159,
+159
 ]
 }
 ],
@@ -45960,19 +46116,6 @@
 },
 {
 "k": 4,
-"nat": ": float) -> float",
-"alt": ")",
-"nat_span": [
-609,
-626
-],
-"alt_span": [
-560,
-561
-]
-},
-{
-"k": 5,
 "nat": ": list[float | int]) -> bool",
 "alt": ")",
 "nat_span": [
@@ -45985,7 +46128,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": list[float | int]) -> float",
 "alt": ")",
 "nat_span": [
@@ -45998,7 +46141,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": float",
 "alt": "",
 "nat_span": [
@@ -46011,7 +46154,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": list[float | int]) -> int",
 "alt": ")",
 "nat_span": [
@@ -46024,7 +46167,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.791,
 "pass": true,
 "verify": null,
@@ -46329,19 +46472,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> int",
-"alt": ")",
-"nat_span": [
-36,
-49
-],
-"alt_span": [
-31,
-32
-]
-},
-{
-"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -46354,7 +46484,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -46367,7 +46497,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": list[list[int]]",
 "alt": "",
 "nat_span": [
@@ -46380,7 +46510,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -46393,7 +46523,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -46406,7 +46536,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -46419,7 +46549,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -46432,7 +46562,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 8,
 "shared_fraction": 0.909,
 "pass": true,
 "verify": null,
@@ -46585,19 +46715,6 @@
 },
 {
 "k": 1,
-"nat": ": int) -> str",
-"alt": ")",
-"nat_span": [
-34,
-47
-],
-"alt_span": [
-29,
-30
-]
-},
-{
-"k": 2,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -46610,7 +46727,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -46623,7 +46740,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": bool",
 "alt": "",
 "nat_span": [
@@ -46636,7 +46753,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -46649,7 +46766,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -46662,7 +46779,7 @@
 ]
 }
 ],
-"k_en": 7,
+"k_en": 6,
 "shared_fraction": 0.92,
 "pass": true,
 "verify": null,
@@ -46967,19 +47084,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> str",
-"alt": ")",
-"nat_span": [
-34,
-47
-],
-"alt_span": [
-29,
-30
-]
-},
-{
-"k": 2,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -46992,7 +47096,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -47005,7 +47109,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -47018,7 +47122,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -47031,20 +47135,7 @@
 ]
 },
 {
-"k": 6,
-"nat": ": str) -> None",
-"alt": ")",
-"nat_span": [
-726,
-740
-],
-"alt_span": [
-683,
-684
-]
-},
-{
-"k": 7,
+"k": 5,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -47057,7 +47148,7 @@
 ]
 },
 {
-"k": 8,
+"k": 6,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -47070,7 +47161,7 @@
 ]
 }
 ],
-"k_en": 9,
+"k_en": 7,
 "shared_fraction": 0.912,
 "pass": true,
 "verify": null,
@@ -47453,19 +47544,6 @@
 },
 {
 "k": 1,
-"nat": ": List[Any]) -> List[Tuple[Any, Any]]",
-"alt": ")",
-"nat_span": [
-82,
-119
-],
-"alt_span": [
-71,
-72
-]
-},
-{
-"k": 2,
 "nat": ": List[Tuple[Any, Any]]",
 "alt": "",
 "nat_span": [
@@ -47478,7 +47556,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": List[int]",
 "alt": "",
 "nat_span": [
@@ -47491,7 +47569,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": List[str]",
 "alt": "",
 "nat_span": [
@@ -47504,7 +47582,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": List[Tuple[int, str]]",
 "alt": "",
 "nat_span": [
@@ -47517,7 +47595,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": List[int]",
 "alt": "",
 "nat_span": [
@@ -47530,7 +47608,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": List[Any]",
 "alt": "",
 "nat_span": [
@@ -47543,7 +47621,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": List[Tuple[int, Any]]",
 "alt": "",
 "nat_span": [
@@ -47556,7 +47634,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": List[str]",
 "alt": "",
 "nat_span": [
@@ -47569,7 +47647,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": List[float]",
 "alt": "",
 "nat_span": [
@@ -47582,7 +47660,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": List[Tuple[str, float]]",
 "alt": "",
 "nat_span": [
@@ -47595,7 +47673,7 @@
 ]
 }
 ],
-"k_en": 12,
+"k_en": 11,
 "shared_fraction": 0.773,
 "pass": true,
 "verify": null,
@@ -47769,20 +47847,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def convert_temperature(value: float, unit_from: str, unit_to: str) -> float:\n    \"\"\"Converts temperature between Celsius, Fahrenheit, and Kelvin.\"\"\"\n\n    if unit_from == unit_to:\n        return value\n\n    # Convert to Kelvin first\n    if unit_from == 'C':\n        kelvin_value: float = value + 273.15\n    elif unit_from == 'F':\n        kelvin_value = (value - 32) * 5/9 + 273.15\n    else:  # unit_from == 'K'\n        kelvin_value = value\n\n    # Convert from Kelvin to target unit\n    if unit_to == 'C':\n        result: float = kelvin_value - 273.15\n    elif unit_to == 'F':\n        result = (kelvin_value - 273.15) * 9/5 + 32\n    else:  # unit_to == 'K'\n        result = kelvin_value\n\n    return result\n",
-"text_alt": "def convert_temperature(value, unit_from, unit_to):\n    \"\"\"Converts temperature between Celsius, Fahrenheit, and Kelvin.\"\"\"\n\n    if unit_from == unit_to:\n        return value\n\n    # Convert to Kelvin first\n    if unit_from == 'C':\n        kelvin_value = value + 273.15\n    elif unit_from == 'F':\n        kelvin_value = (value - 32) * 5/9 + 273.15\n    else:  # unit_from == 'K'\n        kelvin_value = value\n\n    # Convert from Kelvin to target unit\n    if unit_to == 'C':\n        result = kelvin_value - 273.15\n    elif unit_to == 'F':\n        result = (kelvin_value - 273.15) * 9/5 + 32\n    else:  # unit_to == 'K'\n        result = kelvin_value\n\n    return result\n",
+"text_nat": "def convert_temperature(\n    value: float,\n    unit_from: str,\n    unit_to: str\n) -> float:\n    \"\"\"Converts a temperature value from one unit to another.\"\"\"\n\n    # Convert to Celsius first\n    if unit_from == 'F':\n        celsius_value: float = (value - 32) * 5/9\n    elif unit_from == 'K':\n        celsius_value = value - 273.15\n    else:  # unit_from == 'C'\n        celsius_value = value\n\n    # Convert from Celsius to the target unit\n    if unit_to == 'F':\n        result: float = (celsius_value * 9/5) + 32\n    elif unit_to == 'K':\n        result = celsius_value + 273.15\n    else:  # unit_to == 'C'\n        result = celsius_value\n\n    return result\n",
+"text_alt": "def convert_temperature(\n    value,\n    unit_from,\n    unit_to\n):\n    \"\"\"Converts a temperature value from one unit to another.\"\"\"\n\n    # Convert to Celsius first\n    if unit_from == 'F':\n        celsius_value = (value - 32) * 5/9\n    elif unit_from == 'K':\n        celsius_value = value - 273.15\n    else:  # unit_from == 'C'\n        celsius_value = value\n\n    # Convert from Celsius to the target unit\n    if unit_to == 'F':\n        result = (celsius_value * 9/5) + 32\n    elif unit_to == 'K':\n        result = celsius_value + 273.15\n    else:  # unit_to == 'C'\n        result = celsius_value\n\n    return result\n",
 "opps": [
 {
 "k": 0,
 "nat": ": float",
 "alt": "",
 "nat_span": [
-29,
-36
+34,
+41
 ],
 "alt_span": [
-29,
-29
+34,
+34
 ]
 },
 {
@@ -47790,25 +47868,25 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-47,
-52
+56,
+61
 ],
 "alt_span": [
-40,
-40
+49,
+49
 ]
 },
 {
 "k": 2,
-"nat": ": str) -> float",
-"alt": ")",
+"nat": ": str\n) -> float",
+"alt": "\n)",
 "nat_span": [
-61,
-76
+74,
+90
 ],
 "alt_span": [
-49,
-50
+62,
+64
 ]
 },
 {
@@ -47816,12 +47894,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-277,
-284
+235,
+242
 ],
 "alt_span": [
-251,
-251
+209,
+209
 ]
 },
 {
@@ -47829,17 +47907,17 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-518,
-525
+474,
+481
 ],
 "alt_span": [
-485,
-485
+441,
+441
 ]
 }
 ],
 "k_en": 5,
-"shared_fraction": 0.923,
+"shared_fraction": 0.916,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -47848,12 +47926,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-29,
-36
+34,
+41
 ],
 "alt_span": [
-29,
-29
+34,
+34
 ]
 },
 {
@@ -47861,25 +47939,25 @@
 "nat": ": str",
 "alt": "",
 "nat_span": [
-47,
-52
+56,
+61
 ],
 "alt_span": [
-40,
-40
+49,
+49
 ]
 },
 {
 "k": 2,
-"nat": ": str) -> float",
-"alt": ")",
+"nat": ": str\n) -> float",
+"alt": "\n)",
 "nat_span": [
-61,
-76
+74,
+90
 ],
 "alt_span": [
-49,
-50
+62,
+64
 ]
 },
 {
@@ -47887,12 +47965,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-277,
-284
+235,
+242
 ],
 "alt_span": [
-251,
-251
+209,
+209
 ]
 },
 {
@@ -47900,12 +47978,12 @@
 "nat": ": float",
 "alt": "",
 "nat_span": [
-518,
-525
+474,
+481
 ],
 "alt_span": [
-485,
-485
+441,
+441
 ]
 }
 ],
@@ -48117,19 +48195,6 @@
 },
 {
 "k": 1,
-"nat": ": int) -> list",
-"alt": ")",
-"nat_span": [
-28,
-42
-],
-"alt_span": [
-22,
-23
-]
-},
-{
-"k": 2,
 "nat": ": int",
 "alt": "",
 "nat_span": [
@@ -48142,7 +48207,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -48155,7 +48220,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -48168,7 +48233,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -48181,7 +48246,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -48194,7 +48259,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -48207,7 +48272,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -48220,7 +48285,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -48233,7 +48298,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -48246,7 +48311,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": list[str]",
 "alt": "",
 "nat_span": [
@@ -48259,7 +48324,7 @@
 ]
 },
 {
-"k": 12,
+"k": 11,
 "nat": ": list[float]",
 "alt": "",
 "nat_span": [
@@ -48272,7 +48337,7 @@
 ]
 },
 {
-"k": 13,
+"k": 12,
 "nat": ": list[float]",
 "alt": "",
 "nat_span": [
@@ -48285,7 +48350,7 @@
 ]
 },
 {
-"k": 14,
+"k": 13,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -48298,7 +48363,7 @@
 ]
 },
 {
-"k": 15,
+"k": 14,
 "nat": ": list",
 "alt": "",
 "nat_span": [
@@ -48311,7 +48376,7 @@
 ]
 }
 ],
-"k_en": 16,
+"k_en": 15,
 "shared_fraction": 0.85,
 "pass": true,
 "verify": null,
@@ -48555,19 +48620,6 @@
 },
 {
 "k": 1,
-"nat": ": dict) -> set",
-"alt": ")",
-"nat_span": [
-34,
-48
-],
-"alt_span": [
-28,
-29
-]
-},
-{
-"k": 2,
 "nat": ": set",
 "alt": "",
 "nat_span": [
@@ -48580,7 +48632,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": set",
 "alt": "",
 "nat_span": [
@@ -48593,7 +48645,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -48606,7 +48658,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -48619,7 +48671,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -48632,7 +48684,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": set[str]",
 "alt": "",
 "nat_span": [
@@ -48645,7 +48697,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -48658,7 +48710,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -48671,7 +48723,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": set[str]",
 "alt": "",
 "nat_span": [
@@ -48684,7 +48736,7 @@
 ]
 },
 {
-"k": 11,
+"k": 10,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -48697,7 +48749,7 @@
 ]
 },
 {
-"k": 12,
+"k": 11,
 "nat": ": dict[str, int]",
 "alt": "",
 "nat_span": [
@@ -48710,7 +48762,7 @@
 ]
 },
 {
-"k": 13,
+"k": 12,
 "nat": ": set[str]",
 "alt": "",
 "nat_span": [
@@ -48723,7 +48775,7 @@
 ]
 }
 ],
-"k_en": 14,
+"k_en": 13,
 "shared_fraction": 0.795,
 "pass": true,
 "verify": null,
@@ -49527,19 +49579,6 @@
 },
 {
 "k": 1,
-"nat": ": str) -> list[int]",
-"alt": ")",
-"nat_span": [
-54,
-73
-],
-"alt_span": [
-49,
-50
-]
-},
-{
-"k": 2,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -49552,7 +49591,7 @@
 ]
 },
 {
-"k": 3,
+"k": 2,
 "nat": ": str) -> bool",
 "alt": ")",
 "nat_span": [
@@ -49565,7 +49604,7 @@
 ]
 },
 {
-"k": 4,
+"k": 3,
 "nat": " -> None",
 "alt": "",
 "nat_span": [
@@ -49578,7 +49617,7 @@
 ]
 },
 {
-"k": 5,
+"k": 4,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -49591,7 +49630,7 @@
 ]
 },
 {
-"k": 6,
+"k": 5,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -49604,7 +49643,7 @@
 ]
 },
 {
-"k": 7,
+"k": 6,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -49617,7 +49656,7 @@
 ]
 },
 {
-"k": 8,
+"k": 7,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -49630,7 +49669,7 @@
 ]
 },
 {
-"k": 9,
+"k": 8,
 "nat": ": str",
 "alt": "",
 "nat_span": [
@@ -49643,7 +49682,7 @@
 ]
 },
 {
-"k": 10,
+"k": 9,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
@@ -49656,7 +49695,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 10,
 "shared_fraction": 0.873,
 "pass": true,
 "verify": null,
@@ -50225,33 +50264,33 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def merge_sorted_lists(list1: list[int], list2: list[int]) -> list[int]:\n    merged_list: list[int] = []\n    i: int = 0\n    j: int = 0\n\n    while i < len(list1) and j < len(list2):\n        if list1[i] < list2[j]:\n            merged_list.append(list1[i])\n            i += 1\n        else:\n            merged_list.append(list2[j])\n            j += 1\n\n    while i < len(list1):\n        merged_list.append(list1[i])\n        i += 1\n\n    while j < len(list2):\n        merged_list.append(list2[j])\n        j += 1\n\n    return merged_list\n",
-"text_alt": "def merge_sorted_lists(list1, list2):\n    merged_list = []\n    i = 0\n    j = 0\n\n    while i < len(list1) and j < len(list2):\n        if list1[i] < list2[j]:\n            merged_list.append(list1[i])\n            i += 1\n        else:\n            merged_list.append(list2[j])\n            j += 1\n\n    while i < len(list1):\n        merged_list.append(list1[i])\n        i += 1\n\n    while j < len(list2):\n        merged_list.append(list2[j])\n        j += 1\n\n    return merged_list\n",
+"text_nat": "def merge_sorted_lists(\n    list1: list[int],\n    list2: list[int]\n) -> list[int]:\n    merged_list: list[int] = []\n    i: int = 0\n    j: int = 0\n\n    while i < len(list1) and j < len(list2):\n        if list1[i] < list2[j]:\n            merged_list.append(list1[i])\n            i += 1\n        else:\n            merged_list.append(list2[j])\n            j += 1\n\n    while i < len(list1):\n        merged_list.append(list1[i])\n        i += 1\n\n    while j < len(list2):\n        merged_list.append(list2[j])\n        j += 1\n\n    return merged_list\n",
+"text_alt": "def merge_sorted_lists(\n    list1,\n    list2\n):\n    merged_list = []\n    i = 0\n    j = 0\n\n    while i < len(list1) and j < len(list2):\n        if list1[i] < list2[j]:\n            merged_list.append(list1[i])\n            i += 1\n        else:\n            merged_list.append(list2[j])\n            j += 1\n\n    while i < len(list1):\n        merged_list.append(list1[i])\n        i += 1\n\n    while j < len(list2):\n        merged_list.append(list2[j])\n        j += 1\n\n    return merged_list\n",
 "opps": [
 {
 "k": 0,
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
-28,
-39
+33,
+44
 ],
 "alt_span": [
-28,
-28
+33,
+33
 ]
 },
 {
 "k": 1,
-"nat": ": list[int]) -> list[int]",
-"alt": ")",
+"nat": ": list[int]\n) -> list[int]",
+"alt": "\n)",
 "nat_span": [
-46,
-71
+55,
+81
 ],
 "alt_span": [
-35,
-36
+44,
+46
 ]
 },
 {
@@ -50259,12 +50298,12 @@
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
-88,
-99
+98,
+109
 ],
 "alt_span": [
-53,
-53
+63,
+63
 ]
 },
 {
@@ -50272,12 +50311,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-110,
-115
+120,
+125
 ],
 "alt_span": [
-64,
-64
+74,
+74
 ]
 },
 {
@@ -50285,17 +50324,17 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-125,
-130
+135,
+140
 ],
 "alt_span": [
-74,
-74
+84,
+84
 ]
 }
 ],
 "k_en": 5,
-"shared_fraction": 0.839,
+"shared_fraction": 0.841,
 "pass": true,
 "verify": null,
 "opps_all": [
@@ -50304,25 +50343,25 @@
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
-28,
-39
+33,
+44
 ],
 "alt_span": [
-28,
-28
+33,
+33
 ]
 },
 {
 "k": 1,
-"nat": ": list[int]) -> list[int]",
-"alt": ")",
+"nat": ": list[int]\n) -> list[int]",
+"alt": "\n)",
 "nat_span": [
-46,
-71
+55,
+81
 ],
 "alt_span": [
-35,
-36
+44,
+46
 ]
 },
 {
@@ -50330,12 +50369,12 @@
 "nat": ": list[int]",
 "alt": "",
 "nat_span": [
-88,
-99
+98,
+109
 ],
 "alt_span": [
-53,
-53
+63,
+63
 ]
 },
 {
@@ -50343,12 +50382,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-110,
-115
+120,
+125
 ],
 "alt_span": [
-64,
-64
+74,
+74
 ]
 },
 {
@@ -50356,12 +50395,12 @@
 "nat": ": int",
 "alt": "",
 "nat_span": [
-125,
-130
+135,
+140
 ],
 "alt_span": [
-74,
-74
+84,
+84
 ]
 }
 ],

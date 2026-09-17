@@ -88,26 +88,45 @@ OPENER_ONLY = {"bash_subst": lambda o: o["nat"].lstrip().startswith("$("),
                "py_with_open": lambda o: re.search(r"\bwith\b", o["nat"]) is not None}
 
 
-# Bug 12 (2026-09-17, user decision): in these families one construct sits on ONE line of the natural twin and the diff splits it into
-# several spans (rust `match` keyword / arms, `//` opener / `*/` closer, enumerate's loop variable / call / index line, a ternary's parts).
-# Only the first span on the line is a choice; the later ones follow from it -> one decision per natural-twin line.
-LINE_FAMILIES = {"rust_question", "c_comment_style", "py_ternary", "py_enumerate"}
+# Bug 12 / 13 (2026-09-17, user decisions): ONE CONSTRUCT = ONE DECISION, for every family. A construct that the diff splits into several
+# spans (comprehension brackets, f-string prefix / braces / .format, `match` keyword / arms, `//` opener / `*/` closer, a wrapped call's line
+# breaks, Optional[ ... ], a docstring's header / argument lines, a JOIN and its ON clause ...) is decided at its FIRST span; every later span
+# follows from it. Operational rule: a span is counted only if no earlier CONTENT diff span (counted or not) sits on the same line of the
+# natural twin or of the alternative twin, nor in the same block for families whose construct spans several lines in both twins
+# (docstring_style: the docstring; sql_join_style: the SQL statement). The name / self / indentation families are exempt: there the unit of
+# decision is the new name or the new block, which their own rules already isolate.
+LINE_EXEMPT = IDENT_FAMILIES | SELF_FAMILIES | INDENT_FAMILIES
+LINE_FAMILIES = None                                             # kept for import compatibility; the rule is universal now
+
+
+def _line(text, pos, span_text):
+    return text.count("\n", 0, pos) + (1 if span_text.startswith("\n") else 0)
+
+
+def _block(fam, rec, o):
+    t = rec["text_nat"]; p = o["nat_span"][0]
+    if fam == "docstring_style":
+        q = len(re.findall(r'"""|\'\'\'', t[:p]))
+        return ("doc", q // 2) if q % 2 else None                # inside a docstring: odd number of triple quotes before the span
+    if fam == "sql_join_style":
+        return ("stmt", t.count(";", 0, p))
+    return None
 
 
 def one_per_line(fam, rec, opps):
-    """Keep the first counted span on each line of the natural twin (a span that begins with a newline belongs to the next line);
-    c_comment_style: a span whose alternative rendering begins with the closer of the previous comment is forced, never counted."""
-    if fam not in LINE_FAMILIES:
+    """`opps` = spans that passed the per-span free rule; rec["opps"] = the FULL diff (blockers come from it)."""
+    if fam in LINE_EXEMPT:
         return opps
-    nat = rec["text_nat"]; seen = set(); keep = []
-    for o in opps:
-        line = nat.count("\n", 0, o["nat_span"][0]) + (1 if o["nat"].startswith("\n") else 0)
-        if line in seen:
-            continue
-        seen.add(line)
-        if fam == "c_comment_style" and o["alt"].lstrip().startswith("*/"):
-            continue
-        keep.append(o)
+    ok = {tuple(o["nat_span"]) for o in opps}; seen_n, seen_a, seen_b = set(), set(), set(); keep = []
+    for o in rec["opps"]:
+        ln, la, bk = _line(rec["text_nat"], o["nat_span"][0], o["nat"]), _line(rec["text_alt"], o["alt_span"][0], o["alt"]), _block(fam, rec, o)
+        first = ln not in seen_n and la not in seen_a and (bk is None or bk not in seen_b)
+        if tuple(o["nat_span"]) in ok and first and not (fam == "c_comment_style" and o["alt"].lstrip().startswith("*/")):
+            keep.append(o)
+        if o["nat"].strip() or o["alt"].strip() or tuple(o["nat_span"]) in ok:   # content spans and eligible spans block (pure re-indentation does not)
+            seen_n.add(ln); seen_a.add(la)
+            if bk is not None:
+                seen_b.add(bk)
     return keep
 
 

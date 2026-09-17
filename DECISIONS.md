@@ -1933,3 +1933,9 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   to scoring. hex_constants: first integer literal. py_abbrev / py_bool_prefix: LLM-labelled lexicon of new identifiers (Claude Sonnet 5).
 - Any change to a scorer must be validated against independent LLM labels on a random sample (`validate_scoring.py` pattern) and reported as
   agreement before / after; the log-prob margin at the cue is the reference measure that no classifier can bias.
+
+## 2026-09-17 — One construct = one decision, for every family (bug 13)
+- A counted opportunity must be the FIRST diff span of its construct: no earlier content-or-eligible span on the same line of either twin
+  (docstring_style: per docstring; sql_join_style: per statement). Name / self / indentation families keep their own unit (new name, new block).
+- The integrity sweep now includes `two_counted_on_a_line`; any new family must pass it. When one family shows a forced-decision artefact,
+  audit ALL families for the same class at once (structural check + log-prob first-vs-later comparison) instead of fixing symptoms one by one.
