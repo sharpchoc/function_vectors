@@ -9461,3 +9461,14 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   stranded after a `return` since commit fdbfe9cd (dead code → every re-filter of those families rejected all docs); restored.
   Next: bug 5 candidates (early_return whitespace-only opportunities, bash_subst nested backticks, re-verify the free rule on the final
   pairs), then cues/prompts/step 3/features for `qwen25_code`.
+- 2026-09-17 bug 5 (user-approved, applied): forced indentation opportunities in early_return / py_with_open / py_ternary — after a block
+  choice (`else:` / `with` / if-else block) every later line's indentation is forced, yet the diff counted each as an opportunity (early_return
+  55 % of opps, 476 of the first 1,000 counted). Fix: `code_free.CONTENT_FAMILIES` — an opportunity counts only if its renderings differ
+  beyond whitespace (full diff kept in `opps_all`); `harmonise_leading_ws` gives whitespace-only slips BEFORE the first real choice the
+  natural rendering (the rewrite had spread one-line guards `if bad: return x` over two lines in 138 docs → k = 0 prompts differed between
+  poles; AST unchanged). Re-filtered + regenerated the shortfall (early_return 109, py_ternary 3; py_with_open 0) with EXTRA_HINTs, each
+  accepted only after every guard (both twins parse, no artefact/fence/repeat, ≥ 5 counted inside 75 %). Builder now also rejects Python
+  twins that do not parse (bug-6 guard for new generations). Final: early_return 200 docs (counted median 9, min 5), py_with_open 200
+  (11 / 6), py_ternary 187 (10 / 5); k = 0 prefixes identical in all. Lesson: never strip `opps_all` before re-filtering — the full diff is
+  the input, the filtered list the output (re-derived from the texts once after that mistake). Still invalid (bug 6 scope): early_return
+  t172 alt, py_ternary t159 both twins. Explainer `results/code_styles/debug/05_*` kept until the user closes bug 5; artifact v8.

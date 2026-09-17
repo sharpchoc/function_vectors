@@ -9,7 +9,8 @@ import re
 IDENT_FAMILIES = {"py_snake_camel", "js_camel_snake", "py_const_naming", "py_class_naming", "py_private", "py_bool_prefix", "py_loop_vars", "js_hungarian", "py_abbrev"}
 SELF_FAMILIES = {"py_self_name"}
 INDENT_FAMILIES = {"py_indent", "py_tabs"}
-AFFECTED = IDENT_FAMILIES | SELF_FAMILIES | INDENT_FAMILIES
+CONTENT_FAMILIES = {"early_return", "py_with_open", "py_ternary"}   # bug 5 (2026-09-17): a block choice forces the indentation of every later line
+AFFECTED = IDENT_FAMILIES | SELF_FAMILIES | INDENT_FAMILIES | CONTENT_FAMILIES
 MIN_OPPS = 5
 _ID = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 
@@ -45,6 +46,8 @@ def free_opportunity(fam, rec, k):
         text = rec["text_nat"]; s0 = o["nat_span"][0]
         prev = [l for l in text[:s0].split("\n") if l.strip()]
         return bool(prev) and prev[-1].rstrip().endswith(":")
+    if fam in CONTENT_FAMILIES:                    # only a span that differs beyond whitespace is a choice (else:/with/ternary); indentation is forced
+        return bool(o["nat"].strip()) or bool(o["alt"].strip())
     return True
 
 
@@ -89,6 +92,28 @@ def harmonise_pinned(rec, fam):
     return out
 
 
+def harmonise_leading_ws(rec, fam):
+    """Content families (bug 5b): a whitespace-only difference BEFORE the first real choice cannot be forced by anything — it is a formatting
+    slip of the rewrite (e.g. a one-line guard `if bad: return 0` spread over two lines). Such spans take the natural rendering so the k = 0
+    prompts of the two poles are identical; the alt text is rebuilt and re-aligned. Returns a new record (or the input if nothing to fix)."""
+    if fam not in CONTENT_FAMILIES:
+        return rec
+    first = next((i for i, o in enumerate(rec["opps"]) if o["nat"].strip() or o["alt"].strip()), None)
+    slips = [o for o in rec["opps"][:first] if not (o["nat"].strip() or o["alt"].strip())] if first is not None else []
+    if not slips:
+        return rec
+    from src.sandbox.style_translation.code_build import align
+    nat, alt = rec["text_nat"], rec["text_alt"]; parts = []; pos = 0
+    for o in rec["opps"]:
+        a0, a1 = o["alt_span"]; parts.append(alt[pos:a0]); parts.append(o["nat"] if o in slips else o["alt"]); pos = a1
+    parts.append(alt[pos:]); new_alt = "".join(parts)
+    opps, shared = align(nat, new_alt)
+    if opps is None or not opps:
+        return rec
+    out = dict(rec); out["text_alt"] = new_alt; out["opps"] = opps; out.pop("opps_all", None); out["shared_fraction"] = round(shared, 3)
+    return out
+
+
 def propagate_renames(rec, fam):
     """Identifier families: the Gemini rewrite sometimes renames an identifier's uses but not its definition (or the reverse), leaving the
     alt twin referencing undefined names. Derive the per-identifier renaming nat -> alt from the diff opportunities (one identifier on each
@@ -126,6 +151,7 @@ def filter_free(rec, fam, min_opps=MIN_OPPS):
     full = dict(rec); full["opps"] = rec.get("opps_all") or rec["opps"]
     full = propagate_renames(full, fam)
     full = harmonise_pinned(full, fam)
+    full = harmonise_leading_ws(full, fam)
     if not consistent_twins(fam, full):
         return None
     keep = [o for k, o in enumerate(full["opps"]) if free_opportunity(fam, full, k)]

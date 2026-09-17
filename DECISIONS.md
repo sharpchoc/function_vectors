@@ -1891,3 +1891,11 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - line_wrap: joining a wrapped call / def / literal also drops Black's trailing comma (a 1-tuple's or subscript's comma is kept) — the one
   non-whitespace difference allowed in these families (user-reviewed as legitimate, bug-4 explainer t109).
 - Records carry `alt_rule: true`; `code_build.build_one` applies the rule for these families instead of the REWRITE prompt.
+
+## 2026-09-17 — Free-opportunity rule, content families (bug 5)
+- early_return, py_with_open, py_ternary: an opportunity counts only if its two renderings differ beyond whitespace. A block choice
+  (`else:`, `with`, an if/else block for a ternary) forces the indentation of every following line; those diff spans are kept in
+  `opps_all` but never counted, never cued, never used for prompts or features.
+- A whitespace-only difference before the first real choice is a rewrite slip, not a convention: it takes the natural rendering
+  (`code_free.harmonise_leading_ws`), so the k = 0 prompts of the two poles are byte-identical.
+- Generator guard: a Python twin that does not parse is rejected (`code_build.valid_python`; py2_print / py2_except alternatives exempt).

@@ -6,7 +6,7 @@ the 5th starts before 75 % of the code, and >= 60 % of the tokens are shared. Re
 (text_es = task spec, langs = {src: Task, tgt: <Language>}); raw cache dataset_files/style_translation/code/<family>.json;
 task pools dataset_files/style_translation/code/tasks_<lang>.json. Then cue tokens + prompts (Qwen) filtered to k in {0, 4}."""
 import argparse
-import argparse, difflib, json, re, subprocess, sys, time
+import argparse, ast, difflib, json, re, subprocess, sys, time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -63,6 +63,8 @@ EXTRA_HINT = {
     "py_self_name": "define a class with at least 7 methods (each `def method(self, ...)`), spread through the whole solution",
     "py_indent": "use at least 8 DIFFERENT indented blocks (if / for / while / def / try / with), several of them nested, spread through the whole solution",
     "py_tabs": "use at least 8 DIFFERENT indented blocks (if / for / while / def / try / with), several of them nested, spread through the whole solution",
+    "early_return": "write at least 7 SEPARATE early-exit checks (if <bad case>: return ... / continue) in several functions and loops, spread through the whole solution",
+    "py_ternary": "write at least 7 SEPARATE conditional-expression assignments spread through the whole solution",
 }
 
 
@@ -125,6 +127,13 @@ def align(nat, alt, merge_gap=2):
     return opps, shared
 
 
+def valid_python(text):
+    try:
+        ast.parse(text); return True
+    except SyntaxError:
+        return False
+
+
 def degenerate(text):
     """Generator output to reject (2026-09-17, bugs 3a/3b): a markdown fence inside the code, a repeated top-level definition (the same
     function / class defined more than once = padded re-implementations), or a control-token artefact."""
@@ -145,6 +154,8 @@ def build_one(key, fam, task):
                 raise ValueError("too short")
             if degenerate(nat):
                 raise ValueError(degenerate(nat))
+            if fam.tgt_lang == "Python" and not valid_python(nat):
+                raise ValueError("natural twin does not parse")
             if fam.name in WS_FAMILIES:                            # bug 4 (2026-09-17): whitespace-only families derive alt by rule
                 alt = ws_transform(fam.name, nat)
                 if alt is None or not same_ast(nat, alt):
@@ -153,6 +164,8 @@ def build_one(key, fam, task):
                 alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2)
                 if degenerate(alt):
                     raise ValueError("alt " + degenerate(alt))
+            if fam.tgt_lang == "Python" and fam.name not in ("py2_print", "py2_except") and not valid_python(alt):
+                raise ValueError("alt twin does not parse")
             opps, shared = align(nat, alt)
             ok = opps is not None and len(opps) >= 5 and shared >= 0.6 and opps[4]["nat_span"][0] < 0.75 * len(nat) and all(o["nat"] != o["alt"] for o in opps)
             rec = {"doc_id": f"{fam.name}__{task['id']}", "family": fam.name, "topic": task["title"], "angle": "code", "text_es": task["spec"].strip(),
