@@ -4022,20 +4022,20 @@
 "src": "Task",
 "tgt": "Bash"
 },
-"text_nat": "N=$1\nRANDOM_CHARS=$(head /dev/urandom | tr -dc 'a-z0-9' | head -c \"$N\")\necho \"$RANDOM_CHARS\"\n\n# Further command substitution examples (to meet the style requirement)\n# These are illustrative and might be redundant for the task, but show usage spread.\n\n# Example 1: Getting the current working directory\n# CURRENT_DIR=$(pwd)\n# echo \"Current directory: $CURRENT_DIR\"\n\n# Example 2: Counting files in current directory\n# FILE_COUNT=$(ls -1 | wc -l)\n# echo \"Number of files: $FILE_COUNT\"\n\n# Example 3: Getting the current user\n# CURRENT_USER=$(whoami)\n# echo \"Current user: $CURRENT_USER\"\n\n# Example 4: Getting the kernel version\n# KERNEL_VERSION=$(uname -r)\n# echo \"Kernel version: $KERNEL_VERSION\"\n\n# Example 5: Creating a unique filename with a timestamp\n# TIMESTAMP=$(date +%Y%m%d%H%M%S)\n# UNIQUE_FILE=\"log_$TIMESTAMP.txt\"\n# echo \"Unique log file: $UNIQUE_FILE\"\n",
-"text_alt": "N=$1\nRANDOM_CHARS=`head /dev/urandom | tr -dc 'a-z0-9' | head -c \"$N\"`\necho \"$RANDOM_CHARS\"\n\n# Further command substitution examples (to meet the style requirement)\n# These are illustrative and might be redundant for the task, but show usage spread.\n\n# Example 1: Getting the current working directory\n# CURRENT_DIR=`pwd`\n# echo \"Current directory: $CURRENT_DIR\"\n\n# Example 2: Counting files in current directory\n# FILE_COUNT=`ls -1 | wc -l`\n# echo \"Number of files: $FILE_COUNT\"\n\n# Example 3: Getting the current user\n# CURRENT_USER=`whoami`\n# echo \"Current user: $CURRENT_USER\"\n\n# Example 4: Getting the kernel version\n# KERNEL_VERSION=`uname -r`\n# echo \"Kernel version: $KERNEL_VERSION\"\n\n# Example 5: Creating a unique filename with a timestamp\n# TIMESTAMP=`date +%Y%m%d%H%M%S`\n# UNIQUE_FILE=\"log_$TIMESTAMP.txt\"\n# echo \"Unique log file: $UNIQUE_FILE\"\n",
+"text_nat": "N=$(echo $1)\nif ! [[ \"$N\" =~ ^[0-9]+$ ]]; then\n  echo \"Error: Argument must be an integer.\"\n  exit 1\nfi\n\nalphabet=$(echo {a..z} {0..9})\nalphabet_len=$(echo ${#alphabet})\n\nrandom_string=\"\"\nfor i in $(seq 1 $N); do\n  random_index=$(($RANDOM % $alphabet_len))\n  random_char=$(echo \"$alphabet\" | cut -d' ' -f$(($random_index + 1)))\n  random_string=\"${random_string}${random_char}\"\ndone\n\necho \"$(echo $random_string)\"\n",
+"text_alt": "N=`echo $1`\nif ! [[ \"$N\" =~ ^[0-9]+$ ]]; then\n  echo \"Error: Argument must be an integer.\"\n  exit 1\nfi\n\nalphabet=`echo {a..z} {0..9}`\nalphabet_len=`echo ${#alphabet}`\n\nrandom_string=\"\"\nfor i in `seq 1 $N`; do\n  random_index=$(($RANDOM % $alphabet_len))\n  random_char=`echo \"$alphabet\" | cut -d' ' -f$(($random_index + 1))`\n  random_string=\"${random_string}${random_char}\"\ndone\n\necho \"`echo $random_string`\"\n",
 "opps": [
 {
 "k": 0,
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-18,
-20
+2,
+4
 ],
 "alt_span": [
-18,
-19
+2,
+3
 ]
 },
 {
@@ -4043,64 +4043,64 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-70,
-71
+11,
+12
 ],
 "alt_span": [
-69,
-70
+10,
+11
 ]
 },
 {
 "k": 2,
-"nat": "$(pwd)",
-"alt": "`pwd`",
+"nat": "$(",
+"alt": "`",
 "nat_span": [
-317,
-323
+114,
+116
 ],
 "alt_span": [
-316,
-321
+113,
+114
 ]
 },
 {
 "k": 3,
-"nat": "$(",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-428,
-430
+134,
+135
 ],
 "alt_span": [
-426,
-427
+132,
+133
 ]
 },
 {
 "k": 4,
-"nat": ")",
+"nat": "$(",
 "alt": "`",
 "nat_span": [
-443,
-444
+149,
+151
 ],
 "alt_span": [
-440,
-441
+147,
+148
 ]
 },
 {
 "k": 5,
-"nat": "$(whoami)",
-"alt": "`whoami`",
+"nat": ")",
+"alt": "`",
 "nat_span": [
-537,
-546
+168,
+169
 ],
 "alt_span": [
-534,
-542
+165,
+166
 ]
 },
 {
@@ -4108,12 +4108,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-642,
-644
+197,
+199
 ],
 "alt_span": [
-638,
-639
+194,
+195
 ]
 },
 {
@@ -4121,12 +4121,12 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-652,
-653
+207,
+208
 ],
 "alt_span": [
-647,
-648
+203,
+204
 ]
 },
 {
@@ -4134,12 +4134,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-765,
-767
+271,
+273
 ],
 "alt_span": [
-760,
-761
+267,
+268
 ]
 },
 {
@@ -4147,19 +4147,46 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-785,
-786
+326,
+327
 ],
 "alt_span": [
-779,
-780
+321,
+322
+]
+},
+{
+"k": 10,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+389,
+391
+],
+"alt_span": [
+384,
+385
+]
+},
+{
+"k": 11,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+410,
+411
+],
+"alt_span": [
+404,
+405
 ]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.948,
+"k_en": 12,
+"shared_fraction": 0.91,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t020",
@@ -4399,20 +4426,20 @@
 "src": "Task",
 "tgt": "Bash"
 },
-"text_nat": "#!/bin/bash\n\n# Check if the number of arguments is exactly two\nnum_args=$(echo $(($#)))\n\nif [ $(($num_args)) -ne 2 ]; then\n  echo \"Error: Incorrect number of arguments.\" >$(tty)\n  exit $(($(echo 1)))\nelse\n  echo \"Correct number of arguments.\"\n  exit $(($(echo 0)))\nfi\n\n# This is a placeholder for demonstrating command substitution spread.\n# It doesn't affect the script's logic.\n# current_user=$(whoami)\n# current_date=$(date +\"%Y-%m-%d\")\n# echo \"Script executed by $(echo $current_user) on $(echo $current_date).\"\n",
-"text_alt": "#!/bin/bash\n\n# Check if the number of arguments is exactly two\nnum_args=`echo $(($#))`\n\nif [ `$(($num_args))` -ne 2 ]; then\n  echo \"Error: Incorrect number of arguments.\" >`tty`\n  exit `$(($(echo 1)))`\nelse\n  echo \"Correct number of arguments.\"\n  exit `$(($(echo 0)))`\nfi\n\n# This is a placeholder for demonstrating command substitution spread.\n# It doesn't affect the script's logic.\n# current_user=$(whoami)\n# current_date=$(date +\"%Y-%m-%d\")\n# echo \"Script executed by $(echo $current_user) on $(echo $current_date).\"\n",
+"text_nat": "#!/bin/bash\n\ncurrent_args=$(echo \"$#\")\n\nif [ \"$(echo \"$current_args\")\" -ne \"$(echo \"2\")\" ]; then\n    echo \"Error: Incorrect number of arguments.\" >&2\n    exit \"$(echo \"1\")\"\nfi\n\nfirst_arg_length=$(echo -n \"$1\" | wc -c)\nsecond_arg_length=$(echo -n \"$2\" | wc -c)\n\ntotal_length=$(( $(echo \"$first_arg_length\") + $(echo \"$second_arg_length\") ))\n\nif [ \"$(echo \"$total_length\")\" -gt \"$(echo \"0\")\" ]; then\n    echo \"Correct number of arguments.\"\nfi\n\n# This is an example of another command substitution to fulfill the requirement.\n# It doesn't affect the script's logic for the task but demonstrates usage.\ncurrent_date_time=$(date +\"%Y-%m-%d %H:%M:%S\")\n# echo \"Script finished at: $current_date_time\" # Commented out to match exact output requirements.\n",
+"text_alt": "#!/bin/bash\n\ncurrent_args=`echo \"$#\"`\n\nif [ \"`echo \"$current_args\"`\" -ne \"`echo \"2\"`\" ]; then\n    echo \"Error: Incorrect number of arguments.\" >&2\n    exit \"`echo \"1\"`\"\nfi\n\nfirst_arg_length=`echo -n \"$1\" | wc -c`\nsecond_arg_length=`echo -n \"$2\" | wc -c`\n\ntotal_length=$(( $(echo \"$first_arg_length\") + $(echo \"$second_arg_length\") ))\n\nif [ \"`echo \"$total_length\"`\" -gt \"`echo \"0\"`\" ]; then\n    echo \"Correct number of arguments.\"\nfi\n\n# This is an example of another command substitution to fulfill the requirement.\n# It doesn't affect the script's logic for the task but demonstrates usage.\ncurrent_date_time=`date +\"%Y-%m-%d %H:%M:%S\"`\n# echo \"Script finished at: $current_date_time\" # Commented out to match exact output requirements.\n",
 "opps": [
 {
 "k": 0,
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-72,
-74
+26,
+28
 ],
 "alt_span": [
-72,
-73
+26,
+27
 ]
 },
 {
@@ -4420,86 +4447,138 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-86,
-87
+37,
+38
 ],
 "alt_span": [
-85,
-86
+36,
+37
 ]
 },
 {
 "k": 2,
-"nat": "",
+"nat": "$(",
 "alt": "`",
 "nat_span": [
-94,
-94
+46,
+48
 ],
 "alt_span": [
-93,
-94
+45,
+46
 ]
 },
 {
 "k": 3,
-"nat": "",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-108,
-108
+68,
+69
 ],
 "alt_span": [
-108,
-109
+66,
+67
 ]
 },
 {
 "k": 4,
-"nat": "$(tty)",
-"alt": "`tty`",
+"nat": "$(",
+"alt": "`",
 "nat_span": [
-171,
-177
+76,
+78
 ],
 "alt_span": [
-172,
-177
+74,
+75
 ]
 },
 {
 "k": 5,
-"nat": "",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-185,
-185
+86,
+87
 ],
 "alt_span": [
-185,
-186
+83,
+84
 ]
 },
 {
 "k": 6,
-"nat": "",
+"nat": "$(",
 "alt": "`",
 "nat_span": [
-199,
-199
+160,
+162
 ],
 "alt_span": [
-200,
-201
+157,
+158
 ]
 },
 {
 "k": 7,
-"nat": "",
+"nat": ")",
 "alt": "`",
 "nat_span": [
-250,
-250
+170,
+171
+],
+"alt_span": [
+166,
+167
+]
+},
+{
+"k": 8,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+194,
+196
+],
+"alt_span": [
+190,
+191
+]
+},
+{
+"k": 9,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+216,
+217
+],
+"alt_span": [
+211,
+212
+]
+},
+{
+"k": 10,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+236,
+238
+],
+"alt_span": [
+231,
+232
+]
+},
+{
+"k": 11,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+258,
+259
 ],
 "alt_span": [
 252,
@@ -4507,23 +4586,89 @@
 ]
 },
 {
-"k": 8,
-"nat": "",
+"k": 12,
+"nat": "$(",
 "alt": "`",
 "nat_span": [
-264,
-264
+347,
+349
 ],
 "alt_span": [
-267,
-268
+341,
+342
+]
+},
+{
+"k": 13,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+369,
+370
+],
+"alt_span": [
+362,
+363
+]
+},
+{
+"k": 14,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+377,
+379
+],
+"alt_span": [
+370,
+371
+]
+},
+{
+"k": 15,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+387,
+388
+],
+"alt_span": [
+379,
+380
+]
+},
+{
+"k": 16,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+617,
+619
+],
+"alt_span": [
+609,
+610
+]
+},
+{
+"k": 17,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+644,
+645
+],
+"alt_span": [
+635,
+636
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.974,
+"k_en": 18,
+"shared_fraction": 0.919,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t022",
@@ -5232,8 +5377,8 @@
 "src": "Task",
 "tgt": "Bash"
 },
-"text_nat": "#!/bin/bash\n\n# Check if at least one argument is provided\nif [ $(echo \"$#\" -eq 0) -ne 0 ]; then\n    echo \"Error: No arguments provided.\"\n    exit $(echo \"1\")\nfi\n\n# Print a message indicating arguments were provided\necho \"Arguments provided:\"\n\n# Optional: You can iterate through and print the arguments if needed,\n# demonstrating further use of command substitution.\n# for arg in $(echo \"$@\"); do\n#     echo \"  - $(echo \"$arg\")\"\n# done\n\n# Another command substitution for fun, perhaps getting the current date\n# echo \"Current date: $(date +%F)\"\n\n# And one more, counting the number of characters in the first argument\n# if [ $(echo \"$#\" -gt 0) -ne 0 ]; then\n#     echo \"Length of first argument: $(echo ${#1})\"\n# fi\n\n# Final command substitution for the exit status\nexit $(echo \"0\")\n",
-"text_alt": "#!/bin/bash\n\n# Check if at least one argument is provided\nif [ `echo \"$#\" -eq 0` -ne 0 ]; then\n    echo \"Error: No arguments provided.\"\n    exit `echo \"1\"`\nfi\n\n# Print a message indicating arguments were provided\necho \"Arguments provided:\"\n\n# Optional: You can iterate through and print the arguments if needed,\n# demonstrating further use of command substitution.\n# for arg in `echo \"$@\"`; do\n#     echo \"  - `echo \"$arg\"`\"\n# done\n\n# Another command substitution for fun, perhaps getting the current date\n# echo \"Current date: `date +%F`\"\n\n# And one more, counting the number of characters in the first argument\n# if [ `echo \"$#\" -gt 0` -ne 0 ]; then\n#     echo \"Length of first argument: `echo ${#1}`\"\n# fi\n\n# Final command substitution for the exit status\nexit `echo \"0\"`\n",
+"text_nat": "#!/bin/bash\n\n# Check if at least one argument is provided\nif [ $(echo \"$#\" | wc -c) -le $(echo \"2\" | wc -c) ]; then\n    echo \"Error: No arguments provided.\"\n    exit $(expr $(echo \"1\") + $(echo \"0\"))\nfi\n\n# Print a message indicating arguments were provided\necho \"Arguments provided:\"\n\n# Example of more command substitutions for style requirement, not strictly necessary for logic\n# but demonstrating usage.\nFIRST_ARG_LEN=$(echo \"${1}\" | wc -m)\nif [ $(echo \"${FIRST_ARG_LEN}\" -gt $(echo \"0\")) ]; then\n    # Do nothing, just demonstrating usage\n    :\nfi\n\nLAST_ARG=$(eval echo \"\\$$#\")\nLAST_ARG_UPPER=$(echo \"${LAST_ARG}\" | tr '[:lower:]' '[:upper:]')\nif [ $(echo \"${LAST_ARG_UPPER}\" | wc -l) -eq $(echo \"1\") ]; then\n    # Another example of usage\n    :\nfi\n\n# Final status to confirm script ran successfully if arguments were present\nexit $(echo \"0\")\n",
+"text_alt": "#!/bin/bash\n\n# Check if at least one argument is provided\nif [ `echo \"$#\" | wc -c` -le `echo \"2\" | wc -c` ]; then\n    echo \"Error: No arguments provided.\"\n    exit `expr \\`echo \"1\"\\` + \\`echo \"0\"\\``\nfi\n\n# Print a message indicating arguments were provided\necho \"Arguments provided:\"\n\n# Example of more command substitutions for style requirement, not strictly necessary for logic\n# but demonstrating usage.\nFIRST_ARG_LEN=`echo \"${1}\" | wc -m`\nif [ `echo \"${FIRST_ARG_LEN}\" -gt \\`echo \"0\"\\`` ]; then\n    # Do nothing, just demonstrating usage\n    :\nfi\n\nLAST_ARG=`eval echo \"\\\\$$#\"`\nLAST_ARG_UPPER=`echo \"${LAST_ARG}\" | tr '[:lower:]' '[:upper:]'`\nif [ `echo \"${LAST_ARG_UPPER}\" | wc -l` -eq `echo \"1\"` ]; then\n    # Another example of usage\n    :\nfi\n\n# Final status to confirm script ran successfully if arguments were present\nexit `echo \"0\"`\n",
 "opps": [
 {
 "k": 0,
@@ -5253,12 +5398,12 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-80,
-81
+82,
+83
 ],
 "alt_span": [
-79,
-80
+81,
+82
 ]
 },
 {
@@ -5266,12 +5411,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-146,
-148
+88,
+90
 ],
 "alt_span": [
-145,
-146
+87,
+88
 ]
 },
 {
@@ -5279,64 +5424,64 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-156,
-157
+106,
+107
 ],
 "alt_span": [
-154,
-155
+104,
+105
 ]
 },
 {
 "k": 4,
-"nat": "$(",
-"alt": "`",
+"nat": "$(expr $(",
+"alt": "`expr \\`",
 "nat_span": [
-380,
-382
+166,
+175
 ],
 "alt_span": [
-378,
-379
+164,
+172
 ]
 },
 {
 "k": 5,
 "nat": ")",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
-391,
-392
+183,
+184
 ],
 "alt_span": [
-388,
-389
+180,
+182
 ]
 },
 {
 "k": 6,
 "nat": "$(",
-"alt": "`",
+"alt": "\\`",
 "nat_span": [
-413,
-415
+187,
+189
 ],
 "alt_span": [
-410,
-411
+185,
+187
 ]
 },
 {
 "k": 7,
-"nat": ")",
-"alt": "`",
+"nat": "))",
+"alt": "\\``",
 "nat_span": [
-426,
-427
+197,
+199
 ],
 "alt_span": [
-422,
-423
+195,
+198
 ]
 },
 {
@@ -5344,12 +5489,12 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-532,
-534
+422,
+424
 ],
 "alt_span": [
-528,
-529
+421,
+422
 ]
 },
 {
@@ -5357,12 +5502,12 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-542,
-543
+443,
+444
 ],
 "alt_span": [
-537,
-538
+441,
+442
 ]
 },
 {
@@ -5370,64 +5515,64 @@
 "nat": "$(",
 "alt": "`",
 "nat_span": [
-625,
-627
+450,
+452
 ],
 "alt_span": [
-620,
-621
+448,
+449
 ]
 },
 {
 "k": 11,
-"nat": ")",
-"alt": "`",
+"nat": "$(",
+"alt": "\\`",
 "nat_span": [
-642,
-643
+480,
+482
 ],
 "alt_span": [
-636,
-637
+477,
+479
 ]
 },
 {
 "k": 12,
-"nat": "$(",
-"alt": "`",
+"nat": "))",
+"alt": "\\``",
 "nat_span": [
-696,
-698
+490,
+492
 ],
 "alt_span": [
-690,
-691
+487,
+490
 ]
 },
 {
 "k": 13,
-"nat": ")",
+"nat": "$(",
 "alt": "`",
 "nat_span": [
-708,
-709
+563,
+565
 ],
 "alt_span": [
-701,
-702
+561,
+562
 ]
 },
 {
 "k": 14,
-"nat": "$(",
-"alt": "`",
+"nat": "",
+"alt": "\\",
 "nat_span": [
-771,
-773
+577,
+577
 ],
 "alt_span": [
-764,
-765
+574,
+575
 ]
 },
 {
@@ -5435,19 +5580,124 @@
 "nat": ")",
 "alt": "`",
 "nat_span": [
-781,
-782
+581,
+582
 ],
 "alt_span": [
-773,
-774
+579,
+580
+]
+},
+{
+"k": 16,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+598,
+600
+],
+"alt_span": [
+596,
+597
+]
+},
+{
+"k": 17,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+647,
+648
+],
+"alt_span": [
+644,
+645
+]
+},
+{
+"k": 18,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+654,
+656
+],
+"alt_span": [
+651,
+652
+]
+},
+{
+"k": 19,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+688,
+689
+],
+"alt_span": [
+684,
+685
+]
+},
+{
+"k": 20,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+694,
+696
+],
+"alt_span": [
+690,
+691
+]
+},
+{
+"k": 21,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+704,
+705
+],
+"alt_span": [
+699,
+700
+]
+},
+{
+"k": 22,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+836,
+838
+],
+"alt_span": [
+831,
+832
+]
+},
+{
+"k": 23,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+846,
+847
+],
+"alt_span": [
+840,
+841
 ]
 }
 ],
-"k_en": 16,
-"shared_fraction": 0.931,
+"k_en": 24,
+"shared_fraction": 0.899,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "bash_subst__t026",

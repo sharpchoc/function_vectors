@@ -47,6 +47,7 @@ Return only the code, no markdown fences, no prose.
 {code}"""
 TOK = re.compile(r"\w+|\s+|[^\w\s]", re.UNICODE)
 from src.sandbox.style_translation.code_whitespace_alt import WS_FAMILIES, same_ast, transform as ws_transform
+from src.sandbox.style_translation.code_subst_alt import convert as subst_convert, same_tree as subst_same_tree
 from src.sandbox.style_translation.code_free import filter_free, AFFECTED
 # extra generation hints for the families whose decisions can be forced by earlier code (free-opportunity rebuild, 2026-09-16):
 # the NATURAL solution must contain many FRESH choice points (new names / new loops / new blocks), not re-mentions
@@ -68,6 +69,7 @@ EXTRA_HINT = {
     "py_paren_if": "ONLY the if / elif / while conditions are written without parentheses; function calls, definitions, subscripts and every other parenthesis stay as normal valid Python",
     "trailing_commas": "the trailing comma goes ONLY after the last element of a multi-line list / dict / tuple / call literal, never after a statement; the code must be valid Python",
     "comment_case": "ONLY the comment text starts with a capital letter; Python keywords and identifiers keep their normal spelling",
+    "bash_subst": "use at least 7 SEPARATE $(...) command substitutions spread through the whole script",
 }
 
 
@@ -130,6 +132,14 @@ def align(nat, alt, merge_gap=2):
     return opps, shared
 
 
+def bash_ok(text):
+    import os, tempfile
+    with tempfile.NamedTemporaryFile("w", suffix=".sh", delete=False) as fh:
+        fh.write(text); p = fh.name
+    r = subprocess.run(["bash", "-n", p], capture_output=True, text=True); os.unlink(p)
+    return r.returncode == 0
+
+
 def valid_python(text):
     try:
         ast.parse(text); return True
@@ -163,6 +173,10 @@ def build_one(key, fam, task):
                 alt = ws_transform(fam.name, nat)
                 if alt is None or not same_ast(nat, alt):
                     raise ValueError("whitespace rule failed")
+            elif fam.name == "bash_subst":                         # bug 7 (2026-09-17): $(...) -> backticks by rule, verified by parse-back
+                alt = subst_convert(nat)
+                if not subst_same_tree(nat, alt) or not bash_ok(nat) or not bash_ok(alt):
+                    raise ValueError("substitution rule failed")
             else:
                 alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2)
                 if degenerate(alt):
@@ -174,7 +188,7 @@ def build_one(key, fam, task):
             rec = {"doc_id": f"{fam.name}__{task['id']}", "family": fam.name, "topic": task["title"], "angle": "code", "text_es": task["spec"].strip(),
                    "langs": {"src": "Task", "tgt": fam.tgt_lang}, "text_nat": nat, "text_alt": alt, "opps": opps or [], "k_en": len(opps or []),
                    "shared_fraction": round(shared, 3), "pass": bool(ok), "verify": None}
-            if fam.name in WS_FAMILIES:
+            if fam.name in WS_FAMILIES or fam.name == "bash_subst":
                 rec["alt_rule"] = True
             if ok and fam.name in AFFECTED:                       # free-opportunity rule: the pair must keep >= 5 genuine choice points
                 fr = filter_free(rec, fam.name); ok = fr is not None; rec["pass"] = bool(ok)
