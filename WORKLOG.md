@@ -9488,3 +9488,11 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   full conversion, pass rule. 47/50 rule-derived (31 differ from the old rewrite); HELD t019/t021/t025 (1–3 substitutions only; the old
   rewrite had invented 9–16 opportunities) — regenerate vs drop awaiting user. Lesson: `declare -f` keeps backticks verbatim, it is NOT a
   normaliser. Artifact v9. Explainers `results/code_styles/debug/06_*`, `07_*` kept until the user closes each bug.
+- 2026-09-17 bug 8 (user-approved, applied): identifier renames colliding with an existing name (py_class_naming 45: class → snake_case
+  name already used by a parameter/variable; py_bool_prefix 14: has_x → x = the parameter; py_abbrev 2, py_loop_vars 1). Fix:
+  `code_free.rename_collisions` (token-aware bound names; attributes after '.', strings, comments excluded) makes `consistent_twins`
+  reject the pair; hints for py_class_naming / py_bool_prefix forbid the collision. All 9 identifier families + py_self_name re-aligned from
+  their texts and re-filtered (recovers the missing `opps_all` of py_bool_prefix / py_self_name; 16 py_bool_prefix alts harmonised, k = 0
+  prefixes identical again); 57 rejected docs regenerated under every guard (57/57). Integrity sweep over all 10,166 pairs: 0 issues
+  (spans, k0 prefix, guards, parse, free bookkeeping, twin consistency, collisions, shared fraction). Parsers env
+  `/workspace/micromamba/envs/parsers` (node, rustc, php) installed for the non-Python syntax check (bug 9 sizing). Artifact v11.

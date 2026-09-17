@@ -668,598 +668,234 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def filter_even(numbers):\n    res = []\n    for num in numbers:\n        if num % 2 == 0:\n            res.append(num)\n    return res\n\ndef process_data(data_lst):\n    ctx = []\n    for elem in data_lst:\n        tmp = filter_even(elem['vals'])\n        if tmp:\n            ctx.extend(tmp)\n    return sorted(list(set(ctx)))\n\ndef analyze_input(input_data):\n    cfg = {'threshold': 10, 'offset': 2}\n    cnt = 0\n    res = []\n    for idx, val in enumerate(input_data):\n        if val > cfg['threshold'] + cfg['offset']:\n            cnt += 1\n            res.append(val)\n    return res, cnt\n\ndef format_output(even_nums, count):\n    msg = f\"Found {count} even numbers: {even_nums}\"\n    return msg\n\ndef main_flow():\n    test_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]\n    even_list = filter_even(test_nums)\n    valid_elements, total_valid = analyze_input(even_list)\n    final_msg = format_output(valid_elements, total_valid)\n    return final_msg\n",
-"text_alt": "def filter_even(numbers):\n    result = []\n    for number in numbers:\n        if number % 2 == 0:\n            result.append(number)\n    return result\n\ndef process_data(data_list):\n    context = []\n    for element in data_list:\n        temporary = filter_even(element['values'])\n        if temporary:\n            context.extend(temporary)\n    return sorted(list(set(context)))\n\ndef analyze_input(input_data):\n    configuration = {'threshold': 10, 'offset': 2}\n    count = 0\n    result = []\n    for index, value in enumerate(input_data):\n        if value > configuration['threshold'] + configuration['offset']:\n            count += 1\n            result.append(value)\n    return result, count\n\ndef format_output(even_numbers, count):\n    message = f\"Found {count} even numbers: {even_numbers}\"\n    return message\n\ndef main_flow():\n    test_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]\n    even_list = filter_even(test_numbers)\n    valid_elements, total_valid = analyze_input(even_list)\n    final_message = format_output(valid_elements, total_valid)\n    return final_message\n",
+"text_nat": "def filter_even(inp_list):\n    res = []\n    list_len = len(inp_list)\n    for idx in range(list_len):\n        curr_num = inp_list[idx]\n        if curr_num % 2 == 0:\n            res.append(curr_num)\n    return res\n",
+"text_alt": "def filter_even(input_list):\n    result = []\n    list_length = len(input_list)\n    for index in range(list_length):\n        current_number = input_list[index]\n        if current_number % 2 == 0:\n            result.append(current_number)\n    return result\n",
 "opps": [
 {
 "k": 0,
-"nat": "res",
-"alt": "result",
+"nat": "inp_list",
+"alt": "input_list",
 "nat_span": [
-30,
-33
+16,
+24
 ],
 "alt_span": [
-30,
-36
+16,
+26
 ]
 },
 {
 "k": 1,
-"nat": "num",
-"alt": "number",
+"nat": "res",
+"alt": "result",
 "nat_span": [
-47,
-50
+31,
+34
 ],
 "alt_span": [
-50,
-56
+33,
+39
 ]
 },
 {
 "k": 2,
-"nat": "data_lst",
-"alt": "data_list",
+"nat": "list_len",
+"alt": "list_length",
 "nat_span": [
-149,
-157
+44,
+52
 ],
 "alt_span": [
-167,
-176
+49,
+60
 ]
 },
 {
 "k": 3,
-"nat": "ctx",
-"alt": "context",
+"nat": "idx",
+"alt": "index",
 "nat_span": [
-164,
-167
+77,
+80
 ],
 "alt_span": [
-183,
-190
+87,
+92
 ]
 },
 {
 "k": 4,
-"nat": "elem",
-"alt": "element",
+"nat": "curr_num",
+"alt": "current_number",
 "nat_span": [
-181,
-185
+109,
+117
 ],
 "alt_span": [
-204,
-211
-]
-},
-{
-"k": 5,
-"nat": "cfg",
-"alt": "configuration",
-"nat_span": [
-353,
-356
-],
-"alt_span": [
-411,
-424
-]
-},
-{
-"k": 6,
-"nat": "cnt",
-"alt": "count",
-"nat_span": [
-394,
-397
-],
-"alt_span": [
-462,
-467
-]
-},
-{
-"k": 7,
-"nat": "idx, val",
-"alt": "index, value",
-"nat_span": [
-423,
-431
-],
-"alt_span": [
-496,
-508
-]
-},
-{
-"k": 8,
-"nat": "even_nums",
-"alt": "even_numbers",
-"nat_span": [
-597,
-606
-],
-"alt_span": [
-708,
-720
-]
-},
-{
-"k": 9,
-"nat": "msg",
-"alt": "message",
-"nat_span": [
-620,
-623
-],
-"alt_span": [
-734,
-741
-]
-},
-{
-"k": 10,
-"nat": "test_nums",
-"alt": "test_numbers",
-"nat_span": [
-706,
-715
-],
-"alt_span": [
-831,
-843
-]
-},
-{
-"k": 11,
-"nat": "final_msg",
-"alt": "final_message",
-"nat_span": [
-860,
-869
-],
-"alt_span": [
-991,
-1004
+124,
+138
 ]
 }
 ],
-"k_en": 12,
-"shared_fraction": 0.887,
+"k_en": 5,
+"shared_fraction": 0.814,
 "pass": true,
 "verify": null,
 "opps_all": [
 {
 "k": 0,
-"nat": "res",
-"alt": "result",
+"nat": "inp_list",
+"alt": "input_list",
 "nat_span": [
-30,
-33
+16,
+24
 ],
 "alt_span": [
-30,
-36
+16,
+26
 ]
 },
 {
 "k": 1,
-"nat": "num",
-"alt": "number",
+"nat": "res",
+"alt": "result",
 "nat_span": [
-47,
-50
+31,
+34
 ],
 "alt_span": [
-50,
-56
+33,
+39
 ]
 },
 {
 "k": 2,
-"nat": "num",
-"alt": "number",
+"nat": "list_len",
+"alt": "list_length",
 "nat_span": [
-74,
-77
+44,
+52
 ],
 "alt_span": [
-80,
-86
+49,
+60
 ]
 },
 {
 "k": 3,
-"nat": "res",
-"alt": "result",
+"nat": "inp_list",
+"alt": "input_list",
 "nat_span": [
-100,
-103
+59,
+67
 ],
 "alt_span": [
-109,
-115
+67,
+77
 ]
 },
 {
 "k": 4,
-"nat": "num",
-"alt": "number",
+"nat": "idx",
+"alt": "index",
 "nat_span": [
-111,
-114
+77,
+80
 ],
 "alt_span": [
-123,
-129
+87,
+92
 ]
 },
 {
 "k": 5,
-"nat": "res",
-"alt": "result",
+"nat": "list_len",
+"alt": "list_length",
 "nat_span": [
-127,
-130
+90,
+98
 ],
 "alt_span": [
-142,
-148
+102,
+113
 ]
 },
 {
 "k": 6,
-"nat": "data_lst",
-"alt": "data_list",
+"nat": "curr_num",
+"alt": "current_number",
 "nat_span": [
-149,
-157
+109,
+117
 ],
 "alt_span": [
-167,
-176
+124,
+138
 ]
 },
 {
 "k": 7,
-"nat": "ctx",
-"alt": "context",
+"nat": "inp_list[idx",
+"alt": "input_list[index",
 "nat_span": [
-164,
-167
+120,
+132
 ],
 "alt_span": [
-183,
-190
+141,
+157
 ]
 },
 {
 "k": 8,
-"nat": "elem",
-"alt": "element",
+"nat": "curr_num",
+"alt": "current_number",
 "nat_span": [
-181,
-185
+145,
+153
 ],
 "alt_span": [
-204,
-211
+170,
+184
 ]
 },
 {
 "k": 9,
-"nat": "data_lst:\n        tmp",
-"alt": "data_list:\n        temporary",
+"nat": "res",
+"alt": "result",
 "nat_span": [
-189,
-210
+176,
+179
 ],
 "alt_span": [
-215,
-243
+207,
+213
 ]
 },
 {
 "k": 10,
-"nat": "elem['vals",
-"alt": "element['values",
+"nat": "curr_num",
+"alt": "current_number",
 "nat_span": [
-225,
-235
+187,
+195
 ],
 "alt_span": [
-258,
-273
+221,
+235
 ]
 },
 {
 "k": 11,
-"nat": "tmp:\n            ctx",
-"alt": "temporary:\n            context",
-"nat_span": [
-250,
-270
-],
-"alt_span": [
-288,
-318
-]
-},
-{
-"k": 12,
-"nat": "tmp",
-"alt": "temporary",
-"nat_span": [
-278,
-281
-],
-"alt_span": [
-326,
-335
-]
-},
-{
-"k": 13,
-"nat": "ctx",
-"alt": "context",
-"nat_span": [
-310,
-313
-],
-"alt_span": [
-364,
-371
-]
-},
-{
-"k": 14,
-"nat": "cfg",
-"alt": "configuration",
-"nat_span": [
-353,
-356
-],
-"alt_span": [
-411,
-424
-]
-},
-{
-"k": 15,
-"nat": "cnt",
-"alt": "count",
-"nat_span": [
-394,
-397
-],
-"alt_span": [
-462,
-467
-]
-},
-{
-"k": 16,
 "nat": "res",
 "alt": "result",
 "nat_span": [
-406,
-409
+208,
+211
 ],
 "alt_span": [
-476,
-482
-]
-},
-{
-"k": 17,
-"nat": "idx, val",
-"alt": "index, value",
-"nat_span": [
-423,
-431
-],
-"alt_span": [
-496,
-508
-]
-},
-{
-"k": 18,
-"nat": "val",
-"alt": "value",
-"nat_span": [
-469,
-472
-],
-"alt_span": [
-546,
-551
-]
-},
-{
-"k": 19,
-"nat": "cfg",
-"alt": "configuration",
-"nat_span": [
-475,
-478
-],
-"alt_span": [
-554,
-567
-]
-},
-{
-"k": 20,
-"nat": "cfg",
-"alt": "configuration",
-"nat_span": [
-494,
-497
-],
-"alt_span": [
-583,
-596
-]
-},
-{
-"k": 21,
-"nat": "cnt",
-"alt": "count",
-"nat_span": [
-521,
-524
-],
-"alt_span": [
-620,
-625
-]
-},
-{
-"k": 22,
-"nat": "res",
-"alt": "result",
-"nat_span": [
-542,
-545
-],
-"alt_span": [
-643,
-649
-]
-},
-{
-"k": 23,
-"nat": "val",
-"alt": "value",
-"nat_span": [
-553,
-556
-],
-"alt_span": [
-657,
-662
-]
-},
-{
-"k": 24,
-"nat": "res, cnt",
-"alt": "result, count",
-"nat_span": [
-569,
-577
-],
-"alt_span": [
-675,
-688
-]
-},
-{
-"k": 25,
-"nat": "even_nums",
-"alt": "even_numbers",
-"nat_span": [
-597,
-606
-],
-"alt_span": [
-708,
-720
-]
-},
-{
-"k": 26,
-"nat": "msg",
-"alt": "message",
-"nat_span": [
-620,
-623
-],
-"alt_span": [
-734,
-741
-]
-},
-{
-"k": 27,
-"nat": "even_nums",
-"alt": "even_numbers",
-"nat_span": [
-657,
-666
-],
-"alt_span": [
-775,
-787
-]
-},
-{
-"k": 28,
-"nat": "msg",
-"alt": "message",
-"nat_span": [
-680,
-683
-],
-"alt_span": [
-801,
-808
-]
-},
-{
-"k": 29,
-"nat": "test_nums",
-"alt": "test_numbers",
-"nat_span": [
-706,
-715
-],
-"alt_span": [
-831,
-843
-]
-},
-{
-"k": 30,
-"nat": "test_nums",
-"alt": "test_numbers",
-"nat_span": [
-786,
-795
-],
-"alt_span": [
-914,
-926
-]
-},
-{
-"k": 31,
-"nat": "final_msg",
-"alt": "final_message",
-"nat_span": [
-860,
-869
-],
-"alt_span": [
-991,
-1004
-]
-},
-{
-"k": 32,
-"nat": "final_msg",
-"alt": "final_message",
-"nat_span": [
-926,
-935
-],
-"alt_span": [
-1061,
-1074
+248,
+254
 ]
 }
 ],
@@ -79591,754 +79227,611 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def multiplication_row(base_val: int, lim_num: int) -> list[int]:\n    \"\"\"Generates a multiplication table row.\"\"\"\n    res_list = []\n    curr_multiplier = 1\n    while curr_multiplier <= lim_num:\n        calc_prod = base_val * curr_multiplier\n        res_list.append(calc_prod)\n        curr_multiplier += 1\n    return res_list\n\ndef generate_multiplication_row(num_factor: int, max_iter: int) -> list[int]:\n    \"\"\"Another approach to generating a multiplication table row.\"\"\"\n    buf = []\n    for idx in range(1, max_iter + 1):\n        prod_elem = num_factor * idx\n        buf.append(prod_elem)\n    return buf\n\ndef create_row_multiples(base: int, max_val: int) -> list[int]:\n    \"\"\"Creates a list of multiples for a given base.\"\"\"\n    final_res = []\n    tmp_curr = 1\n    while tmp_curr <= max_val:\n        multiplied_val = base * tmp_curr\n        final_res.append(multiplied_val)\n        tmp_curr += 1\n    return final_res\n\ndef construct_product_list(in_num: int, upper_bound: int) -> list[int]:\n    \"\"\"Constructs a list of products.\"\"\"\n    out_list = []\n    for cnt in range(1, upper_bound + 1):\n        elem_val = in_num * cnt\n        out_list.append(elem_val)\n    return out_list\n\ndef build_multiples_array(initial_num: int, iteration_limit: int) -> list[int]:\n    \"\"\"Builds an array of multiples.\"\"\"\n    data_arr = []\n    current_idx = 1\n    while current_idx <= iteration_limit:\n        product_item = initial_num * current_idx\n        data_arr.append(product_item)\n        current_idx += 1\n    return data_arr\n\ndef form_multiplication_series(operand: int, count_limit: int) -> list[int]:\n    \"\"\"Forms a multiplication series.\"\"\"\n    series_res = []\n    pos = 1\n    while pos <= count_limit:\n        computed_val = operand * pos\n        series_res.append(computed_val)\n        pos += 1\n    return series_res\n\ndef get_multiplication_elements(primary_number: int, limit_count: int) -> list[int]:\n    \"\"\"Retrieves multiplication elements.\"\"\"\n    elements_list = []\n    multiplier_val = 1\n    while multiplier_val <= limit_count:\n        result_item = primary_number * multiplier_val\n        elements_list.append(result_item)\n        multiplier_val += 1\n    return elements_list\n\ndef collect_multiples(base_param: int, range_end: int) -> list[int]:\n    \"\"\"Collects multiples of a base number.\"\"\"\n    collected_values = []\n    curr_step = 1\n    while curr_step <= range_end:\n        calculated_product = base_param * curr_step\n        collected_values.append(calculated_product)\n        curr_step += 1\n    return collected_values\n\ndef produce_multiplication_row(base_val: int, lim: int) -> list[int]:\n    \"\"\"Generates a list representing a row of a multiplication table.\"\"\"\n    res = []\n    for idx in range(1, lim + 1):\n        tmp = base_val * idx\n        res.append(tmp)\n    return res\n",
-"text_alt": "def multiplication_row(base_value: int, limit_number: int) -> list[int]:\n    \"\"\"Generates a multiplication table row.\"\"\"\n    result_list = []\n    current_multiplier = 1\n    while current_multiplier <= limit_number:\n        calculated_product = base_value * current_multiplier\n        result_list.append(calculated_product)\n        current_multiplier += 1\n    return result_list\n\ndef generate_multiplication_row(number_factor: int, maximum_iteration: int) -> list[int]:\n    \"\"\"Another approach to generating a multiplication table row.\"\"\"\n    buffer = []\n    for index in range(1, maximum_iteration + 1):\n        product_element = number_factor * index\n        buffer.append(product_element)\n    return buffer\n\ndef create_row_multiples(base: int, maximum_value: int) -> list[int]:\n    \"\"\"Creates a list of multiples for a given base.\"\"\"\n    final_result = []\n    temporary_current = 1\n    while temporary_current <= maximum_value:\n        multiplied_value = base * temporary_current\n        final_result.append(multiplied_value)\n        temporary_current += 1\n    return final_result\n\ndef construct_product_list(input_number: int, upper_bound: int) -> list[int]:\n    \"\"\"Constructs a list of products.\"\"\"\n    output_list = []\n    for count in range(1, upper_bound + 1):\n        element_value = input_number * count\n        output_list.append(element_value)\n    return output_list\n\ndef build_multiples_array(initial_number: int, iteration_limit: int) -> list[int]:\n    \"\"\"Builds an array of multiples.\"\"\"\n    data_array = []\n    current_index = 1\n    while current_index <= iteration_limit:\n        product_item = initial_number * current_index\n        data_array.append(product_item)\n        current_index += 1\n    return data_array\n\ndef form_multiplication_series(operand: int, count_limit: int) -> list[int]:\n    \"\"\"Forms a multiplication series.\"\"\"\n    series_result = []\n    position = 1\n    while position <= count_limit:\n        computed_value = operand * position\n        series_result.append(computed_value)\n        position += 1\n    return series_result\n\ndef get_multiplication_elements(primary_number: int, limit_count: int) -> list[int]:\n    \"\"\"Retrieves multiplication elements.\"\"\"\n    elements_list = []\n    multiplier_value = 1\n    while multiplier_value <= limit_count:\n        result_item = primary_number * multiplier_value\n        elements_list.append(result_item)\n        multiplier_value += 1\n    return elements_list\n\ndef collect_multiples(base_parameter: int, range_end: int) -> list[int]:\n    \"\"\"Collects multiples of a base number.\"\"\"\n    collected_values = []\n    current_step = 1\n    while current_step <= range_end:\n        calculated_product = base_parameter * current_step\n        collected_values.append(calculated_product)\n        current_step += 1\n    return collected_values\n\ndef produce_multiplication_row(base_value: int, lim: int) -> list[int]:\n    \"\"\"Generates a list representing a row of a multiplication table.\"\"\"\n    result = []\n    for index in range(1, lim + 1):\n        temporary = base_value * index\n        result.append(temporary)\n    return result\n",
+"text_nat": "def multiplication_row(num: int, limit: int) -> list[int]:\n    res = []\n    idx = 1\n    max_val = limit + 1\n    while idx < max_val:\n        curr_prod = num * idx\n        res.append(curr_prod)\n        idx += 1\n    return res\n\ndef process_table_config(cfg: dict, ctx: dict) -> list[list[int]]:\n    all_rows = []\n    base_num = cfg['base']\n    upper_bound = cfg['max_multiplier']\n    curr_limit = ctx.get('current_limit', upper_bound)\n    for elem_idx in range(1, curr_limit + 1):\n        prev_num = base_num * elem_idx\n        row_res = []\n        for jdx in range(1, upper_bound + 1):\n            val = prev_num * jdx\n            row_res.append(val)\n        all_rows.append(row_res)\n    return all_rows\n\ndef get_row_summary(param_num: int, max_iter: int) -> str:\n    row_buf = multiplication_row(param_num, max_iter)\n    cnt = len(row_buf)\n    if cnt == 0:\n        return \"Empty row.\"\n    first_val = row_buf[0]\n    last_val = row_buf[-1]\n    msg = f\"Row for {param_num} has {cnt} elems, from {first_val} to {last_val}.\"\n    return msg\n",
+"text_alt": "def multiplication_row(num: int, limit: int) -> list[int]:\n    result = []\n    index = 1\n    max_value = limit + 1\n    while index < max_value:\n        current_product = num * index\n        result.append(current_product)\n        index += 1\n    return result\n\ndef process_table_configuration(configuration: dict, context: dict) -> list[list[int]]:\n    all_rows = []\n    base_number = configuration['base']\n    upper_bound = configuration['max_multiplier']\n    current_limit = context.get('current_limit', upper_bound)\n    for element_index in range(1, current_limit + 1):\n        previous_number = base_number * element_index\n        row_result = []\n        for jdx in range(1, upper_bound + 1):\n            value = previous_number * jdx\n            row_result.append(value)\n        all_rows.append(row_result)\n    return all_rows\n\ndef get_row_summary(parameter_number: int, max_iteration: int) -> str:\n    row_buffer = multiplication_row(parameter_number, max_iteration)\n    count = len(row_buffer)\n    if count == 0:\n        return \"Empty row.\"\n    first_value = row_buffer[0]\n    last_value = row_buffer[-1]\n    message = f\"Row for {parameter_number} has {count} elements, from {first_value} to {last_value}.\"\n    return message\n",
 "opps": [
 {
 "k": 0,
-"nat": "base_val",
-"alt": "base_value",
+"nat": "res",
+"alt": "result",
 "nat_span": [
-23,
-31
+63,
+66
 ],
 "alt_span": [
-23,
-33
+63,
+69
 ]
 },
 {
 "k": 1,
-"nat": "lim_num",
-"alt": "limit_number",
+"nat": "idx",
+"alt": "index",
 "nat_span": [
-38,
-45
+76,
+79
 ],
 "alt_span": [
-40,
-52
+79,
+84
 ]
 },
 {
 "k": 2,
-"nat": "res_list",
-"alt": "result_list",
+"nat": "max_val",
+"alt": "max_value",
 "nat_span": [
-118,
-126
+88,
+95
 ],
 "alt_span": [
-125,
-136
+93,
+102
 ]
 },
 {
 "k": 3,
-"nat": "curr_multiplier",
-"alt": "current_multiplier",
+"nat": "process_table_config(cfg",
+"alt": "process_table_configuration(configuration",
 "nat_span": [
-136,
-151
+230,
+254
 ],
 "alt_span": [
-146,
-164
+263,
+304
 ]
 },
 {
 "k": 4,
-"nat": "num_factor",
-"alt": "number_factor",
+"nat": "ctx",
+"alt": "context",
 "nat_span": [
-358,
-368
+262,
+265
 ],
 "alt_span": [
-411,
-424
+312,
+319
 ]
 },
 {
 "k": 5,
-"nat": "max_iter",
-"alt": "maximum_iteration",
+"nat": "base_num",
+"alt": "base_number",
 "nat_span": [
-375,
-383
+315,
+323
 ],
 "alt_span": [
-431,
-448
+369,
+380
 ]
 },
 {
 "k": 6,
-"nat": "buf",
-"alt": "buffer",
+"nat": "curr_limit",
+"alt": "current_limit",
 "nat_span": [
-477,
-480
+382,
+392
 ],
 "alt_span": [
-542,
-548
+459,
+472
 ]
 },
 {
 "k": 7,
-"nat": "idx",
-"alt": "index",
+"nat": "elem_idx",
+"alt": "element_index",
 "nat_span": [
-494,
-497
+441,
+449
 ],
 "alt_span": [
-562,
-567
+525,
+538
 ]
 },
 {
 "k": 8,
-"nat": "prod_elem",
-"alt": "product_element",
+"nat": "prev_num",
+"alt": "previous_number",
 "nat_span": [
-533,
-542
+487,
+495
 ],
 "alt_span": [
-612,
-627
+579,
+594
 ]
 },
 {
 "k": 9,
-"nat": "max_val",
-"alt": "maximum_value",
+"nat": "val",
+"alt": "value",
 "nat_span": [
-644,
-651
+597,
+600
 ],
 "alt_span": [
-746,
-759
+707,
+712
 ]
 },
 {
 "k": 10,
-"nat": "final_res",
-"alt": "final_result",
+"nat": "param_num",
+"alt": "parameter_number",
 "nat_span": [
-732,
-741
+724,
+733
 ],
 "alt_span": [
-840,
-852
+851,
+867
 ]
 },
 {
 "k": 11,
-"nat": "tmp_curr",
-"alt": "temporary_current",
+"nat": "max_iter",
+"alt": "max_iteration",
 "nat_span": [
-751,
-759
+740,
+748
 ],
 "alt_span": [
-862,
-879
+874,
+887
 ]
 },
 {
 "k": 12,
-"nat": "in_num",
-"alt": "input_number",
+"nat": "row_buf",
+"alt": "row_buffer",
 "nat_span": [
-948,
-954
+767,
+774
 ],
 "alt_span": [
-1111,
-1123
+906,
+916
 ]
 },
 {
 "k": 13,
-"nat": "out_list",
-"alt": "output_list",
+"nat": "first_val",
+"alt": "first_value",
 "nat_span": [
-1038,
-1046
+889,
+898
 ],
 "alt_span": [
-1207,
-1218
+1050,
+1061
 ]
 },
 {
 "k": 14,
-"nat": "cnt",
-"alt": "count",
+"nat": "last_val",
+"alt": "last_value",
 "nat_span": [
-1060,
-1063
+916,
+924
 ],
 "alt_span": [
-1232,
-1237
+1082,
+1092
 ]
 },
 {
 "k": 15,
-"nat": "elem_val",
-"alt": "element_value",
+"nat": "msg",
+"alt": "message",
 "nat_span": [
-1102,
-1110
+943,
+946
 ],
 "alt_span": [
-1276,
-1289
-]
-},
-{
-"k": 16,
-"nat": "initial_num",
-"alt": "initial_number",
-"nat_span": [
-1207,
-1218
-],
-"alt_span": [
-1405,
-1419
-]
-},
-{
-"k": 17,
-"nat": "data_arr",
-"alt": "data_array",
-"nat_span": [
-1305,
-1313
-],
-"alt_span": [
-1506,
-1516
-]
-},
-{
-"k": 18,
-"nat": "current_idx",
-"alt": "current_index",
-"nat_span": [
-1323,
-1334
-],
-"alt_span": [
-1526,
-1539
-]
-},
-{
-"k": 19,
-"nat": "series_res",
-"alt": "series_result",
-"nat_span": [
-1636,
-1646
-],
-"alt_span": [
-1854,
-1867
-]
-},
-{
-"k": 20,
-"nat": "pos",
-"alt": "position",
-"nat_span": [
-1656,
-1659
-],
-"alt_span": [
-1877,
-1885
-]
-},
-{
-"k": 21,
-"nat": "computed_val",
-"alt": "computed_value",
-"nat_span": [
-1702,
-1714
-],
-"alt_span": [
-1933,
-1947
-]
-},
-{
-"k": 22,
-"nat": "multiplier_val",
-"alt": "multiplier_value",
-"nat_span": [
-1968,
-1982
-],
-"alt_span": [
-2219,
-2235
-]
-},
-{
-"k": 23,
-"nat": "base_param",
-"alt": "base_parameter",
-"nat_span": [
-2200,
-2210
-],
-"alt_span": [
-2459,
-2473
-]
-},
-{
-"k": 24,
-"nat": "curr_step",
-"alt": "current_step",
-"nat_span": [
-2324,
-2333
-],
-"alt_span": [
-2587,
-2599
-]
-},
-{
-"k": 25,
-"nat": "res",
-"alt": "result",
-"nat_span": [
-2675,
-2678
-],
-"alt_span": [
-2956,
-2962
-]
-},
-{
-"k": 26,
-"nat": "tmp",
-"alt": "temporary",
-"nat_span": [
-2726,
-2729
-],
-"alt_span": [
-3012,
-3021
+1114,
+1121
 ]
 }
 ],
-"k_en": 27,
-"shared_fraction": 0.904,
+"k_en": 16,
+"shared_fraction": 0.86,
 "pass": true,
 "verify": null,
 "opps_all": [
 {
 "k": 0,
-"nat": "base_val",
-"alt": "base_value",
+"nat": "res",
+"alt": "result",
 "nat_span": [
-23,
-31
+63,
+66
 ],
 "alt_span": [
-23,
-33
+63,
+69
 ]
 },
 {
 "k": 1,
-"nat": "lim_num",
-"alt": "limit_number",
+"nat": "idx",
+"alt": "index",
 "nat_span": [
-38,
-45
+76,
+79
 ],
 "alt_span": [
-40,
-52
+79,
+84
 ]
 },
 {
 "k": 2,
-"nat": "res_list",
-"alt": "result_list",
+"nat": "max_val",
+"alt": "max_value",
 "nat_span": [
-118,
-126
+88,
+95
 ],
 "alt_span": [
-125,
-136
+93,
+102
 ]
 },
 {
 "k": 3,
-"nat": "curr_multiplier",
-"alt": "current_multiplier",
+"nat": "idx",
+"alt": "index",
 "nat_span": [
-136,
-151
+118,
+121
 ],
 "alt_span": [
-146,
-164
+125,
+130
 ]
 },
 {
 "k": 4,
-"nat": "curr_multiplier",
-"alt": "current_multiplier",
+"nat": "max_val:\n        curr_prod",
+"alt": "max_value:\n        current_product",
 "nat_span": [
-166,
-181
+124,
+150
 ],
 "alt_span": [
-179,
-197
+133,
+167
 ]
 },
 {
 "k": 5,
-"nat": "lim_num:\n        calc_prod",
-"alt": "limit_number:\n        calculated_product",
+"nat": "idx\n        res",
+"alt": "index\n        result",
 "nat_span": [
-185,
-211
+159,
+174
 ],
 "alt_span": [
-201,
-241
+176,
+196
 ]
 },
 {
 "k": 6,
-"nat": "base_val",
-"alt": "base_value",
+"nat": "curr_prod)\n        idx",
+"alt": "current_product)\n        index",
 "nat_span": [
-214,
-222
+182,
+204
 ],
 "alt_span": [
-244,
-254
+204,
+234
 ]
 },
 {
 "k": 7,
-"nat": "curr_multiplier\n        res_list",
-"alt": "current_multiplier\n        result_list",
+"nat": "res",
+"alt": "result",
 "nat_span": [
-225,
-257
+221,
+224
 ],
 "alt_span": [
-257,
-295
+251,
+257
 ]
 },
 {
 "k": 8,
-"nat": "calc_prod)\n        curr_multiplier",
-"alt": "calculated_product)\n        current_multiplier",
+"nat": "process_table_config(cfg",
+"alt": "process_table_configuration(configuration",
 "nat_span": [
-265,
-299
+230,
+254
 ],
 "alt_span": [
-303,
-349
+263,
+304
 ]
 },
 {
 "k": 9,
-"nat": "res_list",
-"alt": "result_list",
+"nat": "ctx",
+"alt": "context",
 "nat_span": [
-316,
-324
+262,
+265
 ],
 "alt_span": [
-366,
-377
+312,
+319
 ]
 },
 {
 "k": 10,
-"nat": "num_factor",
-"alt": "number_factor",
+"nat": "base_num",
+"alt": "base_number",
 "nat_span": [
-358,
-368
+315,
+323
 ],
 "alt_span": [
-411,
-424
+369,
+380
 ]
 },
 {
 "k": 11,
-"nat": "max_iter",
-"alt": "maximum_iteration",
+"nat": "cfg",
+"alt": "configuration",
 "nat_span": [
-375,
-383
+326,
+329
 ],
 "alt_span": [
-431,
-448
+383,
+396
 ]
 },
 {
 "k": 12,
-"nat": "buf",
-"alt": "buffer",
+"nat": "cfg",
+"alt": "configuration",
 "nat_span": [
-477,
-480
+356,
+359
 ],
 "alt_span": [
-542,
-548
+423,
+436
 ]
 },
 {
 "k": 13,
-"nat": "idx",
-"alt": "index",
+"nat": "curr_limit",
+"alt": "current_limit",
 "nat_span": [
-494,
-497
+382,
+392
 ],
 "alt_span": [
-562,
-567
+459,
+472
 ]
 },
 {
 "k": 14,
-"nat": "max_iter",
-"alt": "maximum_iteration",
+"nat": "ctx",
+"alt": "context",
 "nat_span": [
-510,
-518
+395,
+398
 ],
 "alt_span": [
-580,
-597
+475,
+482
 ]
 },
 {
 "k": 15,
-"nat": "prod_elem",
-"alt": "product_element",
+"nat": "elem_idx",
+"alt": "element_index",
 "nat_span": [
-533,
-542
+441,
+449
 ],
 "alt_span": [
-612,
-627
+525,
+538
 ]
 },
 {
 "k": 16,
-"nat": "num_factor",
-"alt": "number_factor",
+"nat": "curr_limit",
+"alt": "current_limit",
 "nat_span": [
-545,
-555
+462,
+472
 ],
 "alt_span": [
-630,
-643
+551,
+564
 ]
 },
 {
 "k": 17,
-"nat": "idx\n        buf",
-"alt": "index\n        buffer",
+"nat": "prev_num",
+"alt": "previous_number",
 "nat_span": [
-558,
-573
+487,
+495
 ],
 "alt_span": [
-646,
-666
+579,
+594
 ]
 },
 {
 "k": 18,
-"nat": "prod_elem",
-"alt": "product_element",
+"nat": "base_num",
+"alt": "base_number",
 "nat_span": [
-581,
-590
+498,
+506
 ],
 "alt_span": [
-674,
-689
+597,
+608
 ]
 },
 {
 "k": 19,
-"nat": "buf",
-"alt": "buffer",
+"nat": "elem_idx\n        row_res",
+"alt": "element_index\n        row_result",
 "nat_span": [
-603,
-606
+509,
+533
 ],
 "alt_span": [
-702,
-708
+611,
+643
 ]
 },
 {
 "k": 20,
-"nat": "max_val",
-"alt": "maximum_value",
+"nat": "val",
+"alt": "value",
 "nat_span": [
-644,
-651
+597,
+600
 ],
 "alt_span": [
-746,
-759
+707,
+712
 ]
 },
 {
 "k": 21,
-"nat": "final_res",
-"alt": "final_result",
+"nat": "prev_num",
+"alt": "previous_number",
 "nat_span": [
-732,
-741
+603,
+611
 ],
 "alt_span": [
-840,
-852
+715,
+730
 ]
 },
 {
 "k": 22,
-"nat": "tmp_curr",
-"alt": "temporary_current",
+"nat": "row_res",
+"alt": "row_result",
 "nat_span": [
-751,
-759
+630,
+637
 ],
 "alt_span": [
-862,
-879
+749,
+759
 ]
 },
 {
 "k": 23,
-"nat": "tmp_curr",
-"alt": "temporary_current",
+"nat": "val",
+"alt": "value",
 "nat_span": [
-774,
-782
+645,
+648
 ],
 "alt_span": [
-894,
-911
+767,
+772
 ]
 },
 {
 "k": 24,
-"nat": "max_val:\n        multiplied_val",
-"alt": "maximum_value:\n        multiplied_value",
+"nat": "row_res",
+"alt": "row_result",
 "nat_span": [
-786,
-817
+674,
+681
 ],
 "alt_span": [
-915,
-954
+798,
+808
 ]
 },
 {
 "k": 25,
-"nat": "tmp_curr\n        final_res",
-"alt": "temporary_current\n        final_result",
+"nat": "param_num",
+"alt": "parameter_number",
 "nat_span": [
-827,
-853
+724,
+733
 ],
 "alt_span": [
-964,
-1002
+851,
+867
 ]
 },
 {
 "k": 26,
-"nat": "multiplied_val)\n        tmp_curr",
-"alt": "multiplied_value)\n        temporary_current",
+"nat": "max_iter",
+"alt": "max_iteration",
 "nat_span": [
-861,
-893
+740,
+748
 ],
 "alt_span": [
-1010,
-1053
+874,
+887
 ]
 },
 {
 "k": 27,
-"nat": "final_res",
-"alt": "final_result",
+"nat": "row_buf",
+"alt": "row_buffer",
 "nat_span": [
-910,
-919
+767,
+774
 ],
 "alt_span": [
-1070,
-1082
+906,
+916
 ]
 },
 {
 "k": 28,
-"nat": "in_num",
-"alt": "input_number",
+"nat": "param_num, max_iter)\n    cnt",
+"alt": "parameter_number, max_iteration)\n    count",
 "nat_span": [
-948,
-954
+796,
+824
 ],
 "alt_span": [
-1111,
-1123
+938,
+980
 ]
 },
 {
 "k": 29,
-"nat": "out_list",
-"alt": "output_list",
+"nat": "row_buf",
+"alt": "row_buffer",
 "nat_span": [
-1038,
-1046
+831,
+838
 ],
 "alt_span": [
-1207,
-1218
+987,
+997
 ]
 },
 {
@@ -80346,506 +79839,142 @@
 "nat": "cnt",
 "alt": "count",
 "nat_span": [
-1060,
-1063
+847,
+850
 ],
 "alt_span": [
-1232,
-1237
+1006,
+1011
 ]
 },
 {
 "k": 31,
-"nat": "elem_val",
-"alt": "element_value",
+"nat": "first_val",
+"alt": "first_value",
 "nat_span": [
-1102,
-1110
+889,
+898
 ],
 "alt_span": [
-1276,
-1289
+1050,
+1061
 ]
 },
 {
 "k": 32,
-"nat": "in_num",
-"alt": "input_number",
+"nat": "row_buf",
+"alt": "row_buffer",
 "nat_span": [
-1113,
-1119
+901,
+908
 ],
 "alt_span": [
-1292,
-1304
+1064,
+1074
 ]
 },
 {
 "k": 33,
-"nat": "cnt\n        out_list",
-"alt": "count\n        output_list",
+"nat": "last_val",
+"alt": "last_value",
 "nat_span": [
-1122,
-1142
+916,
+924
 ],
 "alt_span": [
-1307,
-1332
+1082,
+1092
 ]
 },
 {
 "k": 34,
-"nat": "elem_val",
-"alt": "element_value",
+"nat": "row_buf",
+"alt": "row_buffer",
 "nat_span": [
-1150,
-1158
+927,
+934
 ],
 "alt_span": [
-1340,
-1353
+1095,
+1105
 ]
 },
 {
 "k": 35,
-"nat": "out_list",
-"alt": "output_list",
+"nat": "msg",
+"alt": "message",
 "nat_span": [
-1171,
-1179
+943,
+946
 ],
 "alt_span": [
-1366,
-1377
+1114,
+1121
 ]
 },
 {
 "k": 36,
-"nat": "initial_num",
-"alt": "initial_number",
+"nat": "param_num",
+"alt": "parameter_number",
 "nat_span": [
-1207,
-1218
+960,
+969
 ],
 "alt_span": [
-1405,
-1419
+1135,
+1151
 ]
 },
 {
 "k": 37,
-"nat": "data_arr",
-"alt": "data_array",
+"nat": "cnt} elems",
+"alt": "count} elements",
 "nat_span": [
-1305,
-1313
+976,
+986
 ],
 "alt_span": [
-1506,
-1516
+1158,
+1173
 ]
 },
 {
 "k": 38,
-"nat": "current_idx",
-"alt": "current_index",
+"nat": "first_val",
+"alt": "first_value",
 "nat_span": [
-1323,
-1334
+994,
+1003
 ],
 "alt_span": [
-1526,
-1539
+1181,
+1192
 ]
 },
 {
 "k": 39,
-"nat": "current_idx",
-"alt": "current_index",
+"nat": "last_val",
+"alt": "last_value",
 "nat_span": [
-1349,
-1360
+1009,
+1017
 ],
 "alt_span": [
-1554,
-1567
+1198,
+1208
 ]
 },
 {
 "k": 40,
-"nat": "initial_num",
-"alt": "initial_number",
+"nat": "msg",
+"alt": "message",
 "nat_span": [
-1404,
-1415
+1032,
+1035
 ],
 "alt_span": [
-1611,
-1625
-]
-},
-{
-"k": 41,
-"nat": "current_idx\n        data_arr",
-"alt": "current_index\n        data_array",
-"nat_span": [
-1418,
-1446
-],
-"alt_span": [
-1628,
-1660
-]
-},
-{
-"k": 42,
-"nat": "current_idx",
-"alt": "current_index",
-"nat_span": [
-1476,
-1487
-],
-"alt_span": [
-1690,
-1703
-]
-},
-{
-"k": 43,
-"nat": "data_arr",
-"alt": "data_array",
-"nat_span": [
-1504,
-1512
-],
-"alt_span": [
-1720,
-1730
-]
-},
-{
-"k": 44,
-"nat": "series_res",
-"alt": "series_result",
-"nat_span": [
-1636,
-1646
-],
-"alt_span": [
-1854,
-1867
-]
-},
-{
-"k": 45,
-"nat": "pos",
-"alt": "position",
-"nat_span": [
-1656,
-1659
-],
-"alt_span": [
-1877,
-1885
-]
-},
-{
-"k": 46,
-"nat": "pos",
-"alt": "position",
-"nat_span": [
-1674,
-1677
-],
-"alt_span": [
-1900,
-1908
-]
-},
-{
-"k": 47,
-"nat": "computed_val",
-"alt": "computed_value",
-"nat_span": [
-1702,
-1714
-],
-"alt_span": [
-1933,
-1947
-]
-},
-{
-"k": 48,
-"nat": "pos\n        series_res",
-"alt": "position\n        series_result",
-"nat_span": [
-1727,
-1749
-],
-"alt_span": [
-1960,
-1990
-]
-},
-{
-"k": 49,
-"nat": "computed_val)\n        pos",
-"alt": "computed_value)\n        position",
-"nat_span": [
-1757,
-1782
-],
-"alt_span": [
-1998,
-2030
-]
-},
-{
-"k": 50,
-"nat": "series_res",
-"alt": "series_result",
-"nat_span": [
-1799,
-1809
-],
-"alt_span": [
-2047,
-2060
-]
-},
-{
-"k": 51,
-"nat": "multiplier_val",
-"alt": "multiplier_value",
-"nat_span": [
-1968,
-1982
-],
-"alt_span": [
-2219,
-2235
-]
-},
-{
-"k": 52,
-"nat": "multiplier_val",
-"alt": "multiplier_value",
-"nat_span": [
-1997,
-2011
-],
-"alt_span": [
-2250,
-2266
-]
-},
-{
-"k": 53,
-"nat": "multiplier_val",
-"alt": "multiplier_value",
-"nat_span": [
-2067,
-2081
-],
-"alt_span": [
-2322,
-2338
-]
-},
-{
-"k": 54,
-"nat": "multiplier_val",
-"alt": "multiplier_value",
-"nat_span": [
-2132,
-2146
-],
-"alt_span": [
-2389,
-2405
-]
-},
-{
-"k": 55,
-"nat": "base_param",
-"alt": "base_parameter",
-"nat_span": [
-2200,
-2210
-],
-"alt_span": [
-2459,
-2473
-]
-},
-{
-"k": 56,
-"nat": "curr_step",
-"alt": "current_step",
-"nat_span": [
-2324,
-2333
-],
-"alt_span": [
-2587,
-2599
-]
-},
-{
-"k": 57,
-"nat": "curr_step",
-"alt": "current_step",
-"nat_span": [
-2348,
-2357
-],
-"alt_span": [
-2614,
-2626
-]
-},
-{
-"k": 58,
-"nat": "base_param",
-"alt": "base_parameter",
-"nat_span": [
-2401,
-2411
-],
-"alt_span": [
-2670,
-2684
-]
-},
-{
-"k": 59,
-"nat": "curr_step",
-"alt": "current_step",
-"nat_span": [
-2414,
-2423
-],
-"alt_span": [
-2687,
-2699
-]
-},
-{
-"k": 60,
-"nat": "curr_step",
-"alt": "current_step",
-"nat_span": [
-2484,
-2493
-],
-"alt_span": [
-2760,
-2772
-]
-},
-{
-"k": 61,
-"nat": "base_val",
-"alt": "base_value",
-"nat_span": [
-2559,
-2567
-],
-"alt_span": [
-2838,
-2848
-]
-},
-{
-"k": 62,
-"nat": "res",
-"alt": "result",
-"nat_span": [
-2675,
-2678
-],
-"alt_span": [
-2956,
-2962
-]
-},
-{
-"k": 63,
-"nat": "idx",
-"alt": "index",
-"nat_span": [
-2692,
-2695
-],
-"alt_span": [
-2976,
-2981
-]
-},
-{
-"k": 64,
-"nat": "tmp",
-"alt": "temporary",
-"nat_span": [
-2726,
-2729
-],
-"alt_span": [
-3012,
-3021
-]
-},
-{
-"k": 65,
-"nat": "base_val",
-"alt": "base_value",
-"nat_span": [
-2732,
-2740
-],
-"alt_span": [
-3024,
-3034
-]
-},
-{
-"k": 66,
-"nat": "idx\n        res",
-"alt": "index\n        result",
-"nat_span": [
-2743,
-2758
-],
-"alt_span": [
-3037,
-3057
-]
-},
-{
-"k": 67,
-"nat": "tmp",
-"alt": "temporary",
-"nat_span": [
-2766,
-2769
-],
-"alt_span": [
-3065,
-3074
-]
-},
-{
-"k": 68,
-"nat": "res",
-"alt": "result",
-"nat_span": [
-2782,
-2785
-],
-"alt_span": [
-3087,
-3093
+1223,
+1230
 ]
 }
 ],

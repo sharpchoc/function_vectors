@@ -70,6 +70,8 @@ EXTRA_HINT = {
     "trailing_commas": "the trailing comma goes ONLY after the last element of a multi-line list / dict / tuple / call literal, never after a statement; the code must be valid Python",
     "comment_case": "ONLY the comment text starts with a capital letter; Python keywords and identifiers keep their normal spelling",
     "bash_subst": "use at least 7 SEPARATE $(...) command substitutions spread through the whole script",
+    "py_class_naming": "no variable, parameter or attribute may be the snake_case form of a class name (e.g. a class ResultContainer must not coexist with a name result_container)",
+    "py_bool_prefix": "the boolean names must stay distinct from every other name once the is_/has_/should_ prefix is dropped (has_numbers next to a parameter numbers is NOT allowed)",
 }
 
 

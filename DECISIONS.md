@@ -1905,3 +1905,8 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   Style hints must say what stays untouched (py_paren_if, trailing_commas, comment_case EXTRA_HINTs) — Gemini over-applies a bare hint.
 - bash_subst: `text_alt = code_subst_alt.convert(text_nat)`; nested substitutions use Bash's escaping (\`…\` inner pairs, backslashes
   before $ \\ ` doubled per level). Acceptance = independent parse-back to the same substitution tree + bash -n on both twins.
+
+## 2026-09-17 — Identifier families: rename-collision guard (bug 8)
+- A rename x → y in the alternative twin is invalid when y already exists as a standalone name in the natural code (`code_free.rename_collisions`,
+  token-aware); such pairs are rejected by `consistent_twins` and regenerated. Generation hints for py_class_naming / py_bool_prefix forbid the
+  collision up front. `opps_all` (the full diff) is mandatory on every free-filtered record — never re-filter from the filtered list.

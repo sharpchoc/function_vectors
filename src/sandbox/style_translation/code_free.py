@@ -63,11 +63,50 @@ def _seen(fam, rec, o, pole, pinned):
     return any(t in pinned or _seen_before(t, before) for t in idents)
 
 
+def bound_names(src, lang):
+    """Standalone names of the code (not attributes after '.', not inside strings / comments). Python via tokenize, otherwise a regex on
+    the code with comments and string literals stripped. None if Python code does not tokenize."""
+    if lang == "Python":
+        import io, keyword, tokenize
+        try:
+            toks = list(tokenize.generate_tokens(io.StringIO(src).readline))
+        except (tokenize.TokenError, IndentationError, SyntaxError):
+            return None
+        out = set(); prev = None
+        for t in toks:
+            if t.type == tokenize.NAME and not keyword.iskeyword(t.string) and not (prev is not None and prev.type == tokenize.OP and prev.string == "."):
+                out.add(t.string)
+            if t.type not in (tokenize.NL, tokenize.NEWLINE, tokenize.INDENT, tokenize.DEDENT, tokenize.COMMENT):
+                prev = t
+        return out
+    s = re.sub(r"//[^\n]*|/\*.*?\*/", "", src, flags=re.S)
+    s = re.sub(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|`(?:\\.|[^`\\])*`', '""', s)
+    return {m.group(1) for m in re.finditer(r"(?<![.\w$])([A-Za-z_$][\w$]*)", s)}
+
+
+def rename_collisions(fam, rec):
+    """Bug 8 (2026-09-17): renames x -> y of the alt twin whose target y already exists as a standalone name in the NATURAL code
+    (a parameter, a variable, another class): the alt twin then shadows or overwrites that name and no longer computes the same thing."""
+    from src.sandbox.style_translation.code_families import CODE_FAMILY
+    bound = bound_names(rec["text_nat"], CODE_FAMILY[fam].tgt_lang)
+    if bound is None:
+        return set()
+    hits = set()
+    for o in rec["opps"]:
+        a, b = _ID.findall(o["nat"]), _ID.findall(o["alt"])
+        if len(a) == len(b):
+            hits.update((x, y) for x, y in zip(a, b) if x != y and y in bound)
+    return hits
+
+
 def consistent_twins(fam, rec):
     """Identifier families: the two renderings must agree on which opportunities are first mentions; a mismatch means the rewrite
-    changed a use but not its definition (or vice versa), i.e. the alt twin references an undefined name -> reject the document."""
+    changed a use but not its definition (or vice versa), i.e. the alt twin references an undefined name -> reject the document.
+    Also rejected: a rename whose target collides with an existing name (`rename_collisions`)."""
     if fam not in IDENT_FAMILIES:
         return True
+    if rename_collisions(fam, rec):
+        return False
     pinned = _task_code_idents(rec.get("text_es", ""))
     return all(_seen(fam, rec, o, "nat", pinned) == _seen(fam, rec, o, "alt", pinned) for o in rec["opps"])
 
