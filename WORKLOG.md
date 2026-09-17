@@ -9537,3 +9537,10 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   (counted median 10 / 8). Cues + prompts rebuilt for the two families, their old rollouts / log-prob records deleted, re-sampled on pod
   cs3_b11. Other scoring issues (keyword-in-context regexes, py_indent depth, narrow regexes, blank_lines def/class-only) left as they are by
   user decision (benign for now).
+- 2026-09-17 bug 11 re-sample done: bash_subst / py_with_open re-rolled (4,000 prompts) + first-token log-probs on pod cs3_b11 (terminated),
+  re-judged (0 failures); analyze / code_cutoff / logprob_analyze rerun → pool still 54 / 60, both families pass. The odd/even zig-zag is
+  gone: bash_subst alt accuracy .01 → .25 → .31 → .33 → .43 (was .03 / .75 / .33 / .88 / .31), py_with_open alt .01 / .64 / .65 / .85 / .69;
+  bash_subst stays ~.5 unscorable at every k ≥ 1 (at a real opener the model often writes a different statement). SAME INTERLEAVING found in
+  rust_question, c_comment_style, py_ternary, py_enumerate (accuracy alternates 15–30 points; rust_question's shows up as wrong-style, not
+  unscorable, because the fallback `?` form is recognisable) — reported to the user, NOT acted on. Results page
+  https://claude.ai/artifact/UVg4zfzSNEGKAHZ5fTtVLA (figures + 4 follow-up explanations).
