@@ -9599,7 +9599,7 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   (`write_split.heldout`: crc32(doc_id) % 4 == 0 → ~50 held-out docs per family), one mean per layer per convention, v = μ_nat − μ_alt.
   Sweep (`write_sweep.py`, 7 RTX PRO 4500 pods ws_1..7, ~35 min, all terminated by recorded id): 0-shot prompts of the held-out docs, +α·v
   (→ natural) / −α·v (→ alternative) at the cue token only, layers 2,4,…,26, α ∈ {0.5,1,2,4} × raw difference; one seeded T = 1 sample,
-  48 tokens, cut_code, decide_any + Gemini judge; success = target convention AND judge OK; 52,500 records, 0 unjudged
+  48 tokens, cut_code, decide_any + Gemini judge; success = target convention AND judge OK; 52,290 records, 0 unjudged
   (`artifacts/.../steering/sweep_k3/s1..7/`). `write_sweep_analyze.py` → `results/code_styles/write_steering/sweep10/`.
   SELECTED (rule: one shared cell, max mean success over families × directions): layer 26, α = 2 → mean success .55 vs .29 unsteered
   (→ nat .69 vs .52; → alt .41 vs .06); judge OK .86 vs .89; runner-up L24 α = 4 (.54). Per-family best would give .62.
