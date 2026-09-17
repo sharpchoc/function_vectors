@@ -938,59 +938,59 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import math\n\n\ndef is_prime(n):\n    if n <= 1:\n        return False\n\n    if n <= 3:\n        return True\n\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n\n    return _check_divisors(n)\n\n\ndef _check_divisors(n):\n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n    return True\n\n\ndef _get_input():\n    while True:\n        try:\n            num = int(input(\"Enter a positive integer: \"))\n            if num > 0:\n                return num\n            else:\n                print(\"Please enter a positive integer.\")\n        except ValueError:\n            print(\"Invalid input. Please enter an integer.\")\n\n\ndef _print_result(number, prime_status):\n    if prime_status:\n        print(f\"{number} is a prime number.\")\n    else:\n        print(f\"{number} is not a prime number.\")\n\n\ndef main():\n    number_to_check = _get_input()\n    prime_status = is_prime(number_to_check)\n    _print_result(number_to_check, prime_status)\n\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "import math\n\ndef is_prime(n):\n    if n <= 1:\n        return False\n    if n <= 3:\n        return True\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n    return _check_divisors(n)\n\ndef _check_divisors(n):\n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n    return True\n\ndef _get_input():\n    while True:\n        try:\n            num = int(input(\"Enter a positive integer: \"))\n            if num > 0:\n                return num\n            else:\n                print(\"Please enter a positive integer.\")\n        except ValueError:\n            print(\"Invalid input. Please enter an integer.\")\n\ndef _print_result(number, prime_status):\n    if prime_status:\n        print(f\"{number} is a prime number.\")\n    else:\n        print(f\"{number} is not a prime number.\")\n\ndef main():\n    number_to_check = _get_input()\n    prime_status = is_prime(number_to_check)\n    _print_result(number_to_check, prime_status)\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "def is_prime(n):\n    if not is_valid_input(n):\n        return False\n    return not has_divisors_in_range(n, 2, int(n**0.5) + 1)\n\n\ndef is_valid_input(n):\n    return isinstance(n, int) and n > 1\n\n\ndef has_divisors_in_range(n, start, end):\n    for i in range(start, end):\n        if is_divisor(n, i):\n            return True\n    return False\n\n\ndef is_divisor(n, i):\n    return n % i == 0\n\n\ndef test_primes():\n    assert is_prime(7) is True\n    assert is_prime(2) is True\n    assert is_prime(13) is True\n\n\ndef test_non_primes():\n    assert is_prime(1) is False\n    assert is_prime(10) is False\n    assert is_prime(9) is False\n    assert is_prime(-5) is False\n    assert is_prime(0) is False\n    assert is_prime(4.5) is False\n",
+"text_alt": "def is_prime(n):\n    if not is_valid_input(n):\n        return False\n    return not has_divisors_in_range(n, 2, int(n**0.5) + 1)\n\ndef is_valid_input(n):\n    return isinstance(n, int) and n > 1\n\ndef has_divisors_in_range(n, start, end):\n    for i in range(start, end):\n        if is_divisor(n, i):\n            return True\n    return False\n\ndef is_divisor(n, i):\n    return n % i == 0\n\ndef test_primes():\n    assert is_prime(7) is True\n    assert is_prime(2) is True\n    assert is_prime(13) is True\n\ndef test_non_primes():\n    assert is_prime(1) is False\n    assert is_prime(10) is False\n    assert is_prime(9) is False\n    assert is_prime(-5) is False\n    assert is_prime(0) is False\n    assert is_prime(4.5) is False\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-11,
-14
+127,
+130
 ],
 "alt_span": [
-11,
-13
+127,
+129
 ]
 },
 {
 "k": 1,
-"nat": "\n\n    ",
-"alt": "\n    ",
+"nat": "\n\n\n",
+"alt": "\n\n",
 "nat_span": [
-66,
-72
+192,
+195
 ],
 "alt_span": [
-65,
-70
+191,
+193
 ]
 },
 {
 "k": 2,
-"nat": "\n\n    ",
-"alt": "\n    ",
+"nat": "\n\n\n",
+"alt": "\n\n",
 "nat_span": [
-102,
-108
+338,
+341
 ],
 "alt_span": [
-100,
-105
+336,
+338
 ]
 },
 {
 "k": 3,
-"nat": "\n\n    ",
-"alt": "\n    ",
+"nat": "\n\n\n",
+"alt": "\n\n",
 "nat_span": [
-157,
-163
+384,
+387
 ],
 "alt_span": [
-154,
-159
+381,
+383
 ]
 },
 {
@@ -998,71 +998,20 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-188,
-191
+499,
+502
 ],
 "alt_span": [
-184,
-186
-]
-},
-{
-"k": 5,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-345,
-348
-],
-"alt_span": [
-340,
-342
-]
-},
-{
-"k": 6,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-668,
-671
-],
-"alt_span": [
-662,
-664
-]
-},
-{
-"k": 7,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-838,
-841
-],
-"alt_span": [
-831,
-833
-]
-},
-{
-"k": 8,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-981,
-984
-],
-"alt_span": [
-973,
-975
+495,
+497
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.975,
+"k_en": 5,
+"shared_fraction": 0.981,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "blank_lines__t013",
@@ -3771,20 +3720,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def flatten_list(list_of_lists):\n    \"\"\"Flattens a list of lists into a single list.\"\"\"\n    flattened = []\n    for sublist in list_of_lists:\n        extend_with_sublist(flattened, sublist)\n    return flattened\n\n\ndef extend_with_sublist(main_list, sublist_to_add):\n    \"\"\"Extends the main_list with elements from sublist_to_add.\"\"\"\n    for item in sublist_to_add:\n        append_item(main_list, item)\n\n\ndef append_item(target_list, item_to_append):\n    \"\"\"Appends a single item to the target_list.\"\"\"\n    target_list.append(item_to_append)\n\n\ndef create_empty_list():\n    \"\"\"Returns an empty list.\"\"\"\n    return []\n\n\ndef process_empty_input(input_list):\n    \"\"\"Handles the case of an empty input list.\"\"\"\n    if not input_list:\n        return create_empty_list()\n    return None\n\n\ndef get_first_element(input_list):\n    \"\"\"Returns the first element of a list, if available.\"\"\"\n    if input_list:\n        return input_list[0]\n    return None\n",
-"text_alt": "def flatten_list(list_of_lists):\n    \"\"\"Flatten a list of lists into a single list.\"\"\"\n    flattened = []\n    for sublist in list_of_lists:\n        extend_with_sublist(flattened, sublist)\n    return flattened\n\ndef extend_with_sublist(main_list, sublist_to_add):\n    \"\"\"Extends the main_list with elements from sublist_to_add.\"\"\"\n    for item in sublist_to_add:\n        append_item(main_list, item)\n\ndef append_item(target_list, item_to_append):\n    \"\"\"Appends a single item to the target_list.\"\"\"\n    target_list.append(item_to_append)\n\ndef create_empty_list():\n    \"\"\"Returns an empty list.\"\"\"\n    return []\n\ndef process_empty_input(input_list):\n    \"\"\"Handles the case of an empty input list.\"\"\"\n    if not input_list:\n        return create_empty_list()\n    return None\n\ndef get_first_element(input_list):\n    \"\"\"Returns the first element of a list, if available.\"\"\"\n    if input_list:\n        return input_list[0]\n    return None\n",
+"text_nat": "def _initialize_result():\n    return []\n\n\ndef _process_sublist(sublist, result_list):\n    for item in sublist:\n        result_list.append(item)\n\n\ndef _iterate_lists(list_of_lists, result_list):\n    for sublist in list_of_lists:\n        _process_sublist(sublist, result_list)\n\n\ndef _finalize_flattened_list(result_list):\n    return result_list\n\n\ndef flatten_list(list_of_lists):\n    result = _initialize_result()\n    _iterate_lists(list_of_lists, result)\n    return _finalize_flattened_list(result)\n\n\ndef _get_example_input():\n    return [[1, 2], [3, 4, 5]]\n\n\ndef _main():\n    example_input = _get_example_input()\n    flattened = flatten_list(example_input)\n    print(flattened)\n\nif __name__ == '__main__':\n    _main()\n",
+"text_alt": "def _initialize_result():\n    return []\n\ndef _process_sublist(sublist, result_list):\n    for item in sublist:\n        result_list.append(item)\n\ndef _iterate_lists(list_of_lists, result_list):\n    for sublist in list_of_lists:\n        _process_sublist(sublist, result_list)\n\ndef _finalize_flattened_list(result_list):\n    return result_list\n\ndef flatten_list(list_of_lists):\n    result = _initialize_result()\n    _iterate_lists(list_of_lists, result)\n    return _finalize_flattened_list(result)\n\ndef _get_example_input():\n    return [[1, 2], [3, 4, 5]]\n\ndef _main():\n    example_input = _get_example_input()\n    flattened = flatten_list(example_input)\n    print(flattened)\n\nif __name__ == '__main__':\n    _main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "Flattens",
-"alt": "Flatten",
+"nat": "\n\n\n",
+"alt": "\n\n",
 "nat_span": [
-40,
-48
+39,
+42
 ],
 "alt_span": [
-40,
-47
+39,
+41
 ]
 },
 {
@@ -3792,12 +3741,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-209,
-212
+143,
+146
 ],
 "alt_span": [
-208,
-210
+142,
+144
 ]
 },
 {
@@ -3805,12 +3754,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-399,
-402
+274,
+277
 ],
 "alt_span": [
-397,
-399
+272,
+274
 ]
 },
 {
@@ -3818,12 +3767,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-538,
-541
+342,
+345
 ],
 "alt_span": [
-535,
-537
+339,
+341
 ]
 },
 {
@@ -3831,12 +3780,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-612,
-615
+497,
+500
 ],
 "alt_span": [
-608,
-610
+493,
+495
 ]
 },
 {
@@ -3844,19 +3793,20 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-776,
-779
+556,
+559
 ],
 "alt_span": [
-771,
-773
+551,
+553
 ]
 }
 ],
 "k_en": 6,
-"shared_fraction": 0.978,
+"shared_fraction": 0.967,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "blank_lines__t046",

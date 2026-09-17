@@ -2294,124 +2294,124 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import collections, re\n\ndef word_frequency(\n    text: str,\n    ignore_case: bool = True,\n    remove_punctuation: bool = True,\n    min_word_length: int = 1,\n    exclude_words: tuple = ('',),\n    return_type: type = dict,\n    sort_by_frequency: bool = False,\n    sort_descending: bool = True,\n    top_n: int = None,\n    default_value: int = 0\n) -> dict:\n    if remove_punctuation:\n        text = re.sub(r'[^\\w\\s]', ' ', text)\n    if ignore_case:\n        text = text.lower()\n\n    words = text.split()\n    \n    filtered_words = [\n        word for word in words\n        if len(word) >= min_word_length and word not in exclude_words\n    ]\n\n    frequencies = collections.defaultdict(lambda: default_value)\n    for word_token in filtered_words:\n        frequencies[word_token] += 1\n\n    if sort_by_frequency:\n        sorted_items = sorted(\n            frequencies.items(),\n            key=lambda item: (item[1], item[0]),\n            reverse=sort_descending\n        )\n        if top_n is not None:\n            sorted_items = sorted_items[:top_n]\n        if return_type is dict:\n            return dict(sorted_items)\n        elif return_type is list:\n            return sorted_items\n        else:\n            return return_type(sorted_items)\n    \n    if return_type is dict:\n        return dict(frequencies)\n    elif return_type is collections.Counter:\n        return collections.Counter(filtered_words)\n    else:\n        return return_type(frequencies)\n",
-"text_alt": "import collections, re\n\ndef word_frequency(\n    text: str,\n    ignore_case: bool=True,\n    remove_punctuation: bool=True,\n    min_word_length: int=1,\n    exclude_words: tuple=('',),\n    return_type: type=dict,\n    sort_by_frequency: bool=False,\n    sort_descending: bool=True,\n    top_n: int=None,\n    default_value: int=0\n) -> dict:\n    if remove_punctuation:\n        text = re.sub(r'[^\\w\\s]', ' ', text)\n    if ignore_case:\n        text = text.lower()\n\n    words = text.split()\n    \n    filtered_words = [\n        word for word in words\n        if len(word) >= min_word_length and word not in exclude_words\n    ]\n\n    frequencies = collections.defaultdict(lambda: default_value)\n    for word_token in filtered_words:\n        frequencies[word_token] += 1\n\n    if sort_by_frequency:\n        sorted_items = sorted(\n            frequencies.items(),\n            key=lambda item: (item[1],item[0]),\n            reverse=sort_descending\n        )\n        if top_n is not None:\n            sorted_items = sorted_items[:top_n]\n        if return_type is dict:\n            return dict(sorted_items)\n        elif return_type is list:\n            return sorted_items\n        else:\n            return return_type(sorted_items)\n    \n    if return_type is dict:\n        return dict(frequencies)\n    elif return_type is collections.Counter:\n        return collections.Counter(filtered_words)\n    else:\n        return return_type(frequencies)\n",
+"text_nat": "def word_frequency(text):\n    import re\n    words = re.findall(r'\\b\\w+\\b', text.lower())\n    \n    frequencies = dict()\n    \n    for word in words:\n        frequencies[word] = frequencies.get(word, 0) + 1\n        \n    return frequencies\n\ntest_cases, additional_tests = [], []\n\ntest_cases.append(('Hello world, hello Python!', {'hello': 2, 'world': 1, 'python': 1}))\ntest_cases.append(('Python is great, Python is fun!', {'python': 2, 'is': 2, 'great': 1, 'fun': 1}))\ntest_cases.append(('one two three two one', {'one': 2, 'two': 2, 'three': 1}))\ntest_cases.append(('', {}))\ntest_cases.append(('A, B, C. D!', {'a': 1, 'b': 1, 'c': 1, 'd': 1}))\n\nadditional_tests.append((' apple, banana, apple, orange ', {'apple': 2, 'banana': 1, 'orange': 1}))\nadditional_tests.append(('This, is, a, test.', {'this': 1, 'is': 1, 'a': 1, 'test': 1}))\nadditional_tests.append(('CASE insensitive test', {'case': 1, 'insensitive': 1, 'test': 1}))\nadditional_tests.append((' Numbers, 123, should, be, ignored ', {'numbers': 1, 'should': 1, 'be': 1, 'ignored': 1, '123': 1}))\nadditional_tests.append(('single', {'single': 1}))\n\nfor input_text, expected_output in test_cases:\n    actual_output = word_frequency(input_text)\n    assert actual_output == expected_output, f\"Input: '{input_text}', Expected: {expected_output}, Got: {actual_output}\"\n\nfor input_text, expected_output in additional_tests:\n    actual_output = word_frequency(input_text)\n    assert actual_output == expected_output, f\"Input: '{input_text}', Expected: {expected_output}, Got: {actual_output}\"\n",
+"text_alt": "def word_frequency(text):\n    import re\n    words = re.findall(r'\\b\\w+\\b',text.lower())\n    \n    frequencies = dict()\n    \n    for word in words:\n        frequencies[word] = frequencies.get(word,0) + 1\n        \n    return frequencies\n\ntest_cases,additional_tests = [],[]\n\ntest_cases.append(('Hello world, hello Python!',{'hello': 2,'world': 1,'python': 1}))\ntest_cases.append(('Python is great, Python is fun!',{'python': 2,'is': 2,'great': 1,'fun': 1}))\ntest_cases.append(('one two three two one',{'one': 2,'two': 2,'three': 1}))\ntest_cases.append(('',{}))\ntest_cases.append(('A, B, C. D!',{'a': 1,'b': 1,'c': 1,'d': 1}))\n\nadditional_tests.append((' apple, banana, apple, orange ',{'apple': 2,'banana': 1,'orange': 1}))\nadditional_tests.append(('This, is, a, test.',{'this': 1,'is': 1,'a': 1,'test': 1}))\nadditional_tests.append(('CASE insensitive test',{'case': 1,'insensitive': 1,'test': 1}))\nadditional_tests.append((' Numbers, 123, should, be, ignored ',{'numbers': 1,'should': 1,'be': 1,'ignored': 1,'123': 1}))\nadditional_tests.append(('single',{'single': 1}))\n\nfor input_text,expected_output in test_cases:\n    actual_output = word_frequency(input_text)\n    assert actual_output == expected_output,f\"Input: '{input_text}', Expected: {expected_output}, Got: {actual_output}\"\n\nfor input_text,expected_output in additional_tests:\n    actual_output = word_frequency(input_text)\n    assert actual_output == expected_output,f\"Input: '{input_text}', Expected: {expected_output}, Got: {actual_output}\"\n",
 "opps": [
 {
 "k": 0,
-"nat": " = ",
-"alt": "=",
+"nat": " ",
+"alt": "",
 "nat_span": [
-80,
-83
+74,
+75
 ],
 "alt_span": [
-80,
-81
+74,
+74
 ]
 },
 {
 "k": 1,
-"nat": " = ",
-"alt": "=",
+"nat": " ",
+"alt": "",
 "nat_span": [
-117,
-120
+196,
+197
 ],
 "alt_span": [
-115,
-116
+195,
+195
 ]
 },
 {
 "k": 2,
-"nat": " = ",
-"alt": "=",
+"nat": " ",
+"alt": "",
 "nat_span": [
-150,
-153
+248,
+249
 ],
 "alt_span": [
-146,
-147
+246,
+246
 ]
 },
 {
 "k": 3,
-"nat": " = ",
-"alt": "=",
+"nat": " ",
+"alt": "",
 "nat_span": [
-180,
-183
+271,
+272
 ],
 "alt_span": [
-174,
-175
+268,
+268
 ]
 },
 {
 "k": 4,
-"nat": " = ",
-"alt": "=",
+"nat": " ",
+"alt": "",
 "nat_span": [
-211,
-214
+324,
+325
 ],
 "alt_span": [
-203,
-204
+320,
+320
 ]
 },
 {
 "k": 5,
-"nat": " = ",
-"alt": "=",
+"nat": " ",
+"alt": "",
 "nat_span": [
-247,
-250
+337,
+338
 ],
 "alt_span": [
-237,
-238
+332,
+332
 ]
 },
 {
 "k": 6,
-"nat": " = ",
-"alt": "=",
+"nat": " ",
+"alt": "",
 "nat_span": [
-282,
-285
+349,
+350
 ],
 "alt_span": [
-270,
-271
+343,
+343
 ]
 },
 {
 "k": 7,
-"nat": " = ",
-"alt": "=",
+"nat": " ",
+"alt": "",
 "nat_span": [
-305,
-308
+418,
+419
 ],
 "alt_span": [
-291,
-292
+411,
+411
 ]
 },
 {
 "k": 8,
-"nat": " = ",
-"alt": "=",
+"nat": " ",
+"alt": "",
 "nat_span": [
-336,
-339
+432,
+433
 ],
 "alt_span": [
-320,
-321
+424,
+424
 ]
 },
 {
@@ -2419,19 +2419,397 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-903,
-904
+441,
+442
 ],
 "alt_span": [
-885,
-885
+432,
+432
+]
+},
+{
+"k": 10,
+"nat": " ",
+"alt": "",
+"nat_span": [
+453,
+454
+],
+"alt_span": [
+443,
+443
+]
+},
+{
+"k": 11,
+"nat": " ",
+"alt": "",
+"nat_span": [
+509,
+510
+],
+"alt_span": [
+498,
+498
+]
+},
+{
+"k": 12,
+"nat": " ",
+"alt": "",
+"nat_span": [
+520,
+521
+],
+"alt_span": [
+508,
+508
+]
+},
+{
+"k": 13,
+"nat": " ",
+"alt": "",
+"nat_span": [
+530,
+531
+],
+"alt_span": [
+517,
+517
+]
+},
+{
+"k": 14,
+"nat": " ",
+"alt": "",
+"nat_span": [
+567,
+568
+],
+"alt_span": [
+553,
+553
+]
+},
+{
+"k": 15,
+"nat": " ",
+"alt": "",
+"nat_span": [
+606,
+607
+],
+"alt_span": [
+591,
+591
+]
+},
+{
+"k": 16,
+"nat": " ",
+"alt": "",
+"nat_span": [
+615,
+616
+],
+"alt_span": [
+599,
+599
+]
+},
+{
+"k": 17,
+"nat": " ",
+"alt": "",
+"nat_span": [
+623,
+624
+],
+"alt_span": [
+606,
+606
+]
+},
+{
+"k": 18,
+"nat": " ",
+"alt": "",
+"nat_span": [
+631,
+632
+],
+"alt_span": [
+613,
+613
+]
+},
+{
+"k": 19,
+"nat": " ",
+"alt": "",
+"nat_span": [
+701,
+702
+],
+"alt_span": [
+682,
+682
+]
+},
+{
+"k": 20,
+"nat": " ",
+"alt": "",
+"nat_span": [
+714,
+715
+],
+"alt_span": [
+694,
+694
+]
+},
+{
+"k": 21,
+"nat": " ",
+"alt": "",
+"nat_span": [
+727,
+728
+],
+"alt_span": [
+706,
+706
+]
+},
+{
+"k": 22,
+"nat": " ",
+"alt": "",
+"nat_span": [
+789,
+790
+],
+"alt_span": [
+767,
+767
+]
+},
+{
+"k": 23,
+"nat": " ",
+"alt": "",
+"nat_span": [
+801,
+802
+],
+"alt_span": [
+778,
+778
+]
+},
+{
+"k": 24,
+"nat": " ",
+"alt": "",
+"nat_span": [
+810,
+811
+],
+"alt_span": [
+786,
+786
+]
+},
+{
+"k": 25,
+"nat": " ",
+"alt": "",
+"nat_span": [
+818,
+819
+],
+"alt_span": [
+793,
+793
+]
+},
+{
+"k": 26,
+"nat": " ",
+"alt": "",
+"nat_span": [
+881,
+882
+],
+"alt_span": [
+855,
+855
+]
+},
+{
+"k": 27,
+"nat": " ",
+"alt": "",
+"nat_span": [
+893,
+894
+],
+"alt_span": [
+866,
+866
+]
+},
+{
+"k": 28,
+"nat": " ",
+"alt": "",
+"nat_span": [
+911,
+912
+],
+"alt_span": [
+883,
+883
+]
+},
+{
+"k": 29,
+"nat": " ",
+"alt": "",
+"nat_span": [
+988,
+989
+],
+"alt_span": [
+959,
+959
+]
+},
+{
+"k": 30,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1003,
+1004
+],
+"alt_span": [
+973,
+973
+]
+},
+{
+"k": 31,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1016,
+1017
+],
+"alt_span": [
+985,
+985
+]
+},
+{
+"k": 32,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1025,
+1026
+],
+"alt_span": [
+993,
+993
+]
+},
+{
+"k": 33,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1039,
+1040
+],
+"alt_span": [
+1006,
+1006
+]
+},
+{
+"k": 34,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1086,
+1087
+],
+"alt_span": [
+1052,
+1052
+]
+},
+{
+"k": 35,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1119,
+1120
+],
+"alt_span": [
+1084,
+1084
+]
+},
+{
+"k": 36,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1242,
+1243
+],
+"alt_span": [
+1206,
+1206
+]
+},
+{
+"k": 37,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1335,
+1336
+],
+"alt_span": [
+1298,
+1298
+]
+},
+{
+"k": 38,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1464,
+1465
+],
+"alt_span": [
+1426,
+1426
 ]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.953,
+"k_en": 39,
+"shared_fraction": 0.941,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t009",
@@ -12482,20 +12860,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def has_unique_chars(s: str) -> bool:\n    \"\"\"\n    Checks if all characters in a string `s` are unique.\n\n    Args:\n        s: The input string, e.g., 'abc', 'hello', 'python'.\n\n    Returns:\n        True if all characters are unique, False otherwise, for example,\n        False for 'abca', 'banana', 'programming'.\n    \"\"\"\n    if not isinstance(s, str):\n        raise TypeError(\"Input must be a string, like 'test', 'example', 'unique'.\")\n\n    seen_chars = set()\n    for char_val in s:\n        if char_val in seen_chars:\n            return False\n        seen_chars.add(char_val)\n    return True\n\n# Example Usage:\nresult1 = has_unique_chars('abcdefg')\nresult2 = has_unique_chars('hello world')\nresult3 = has_unique_chars('python')\nresult4 = has_unique_chars('aab')\nresult5 = has_unique_chars('12345')\nresult6 = has_unique_chars('')\nresult7 = has_unique_chars('  ')\nresult8 = has_unique_chars('racecar')\nresult9 = has_unique_chars('sphinx of black quartz, judge my vow')\nresult10 = has_unique_chars('the quick brown fox jumps over the lazy dog')\n\n# More tests for varied input:\nassert has_unique_chars('abcde') == True, \"Test 1 failed, e.g., 'abcde', 'xyz', '12345'.\"\nassert has_unique_chars('aabc') == False, \"Test 2 failed, e.g., 'aabc', 'banana', 'apple'.\"\nassert has_unique_chars('') == True, \"Test 3 failed, e.g., '', 'single'.\"\nassert has_unique_chars('a') == True, \"Test 4 failed, e.g., 'a', 'z', '5'.\"\nassert has_unique_chars('  ') == False, \"Test 5 failed, e.g., '  ', '!!', '$$'.\"\nassert has_unique_chars('Abc') == True, \"Test 6 failed, e.g., 'Abc', 'Xyz', 'Pqr'.\"\nassert has_unique_chars('AbcA') == False, \"Test 7 failed, e.g., 'AbcA', 'FooBar', 'TestTest'.\"\n",
-"text_alt": "def has_unique_chars(s:str)->bool:\n    \"\"\"\n    Checks if all characters in a string `s` are unique.\n\n    Args:\n        s: The input string, e.g., 'abc', 'hello', 'python'.\n\n    Returns:\n        True if all characters are unique, False otherwise, for example,\n        False for 'abca', 'banana', 'programming'.\n    \"\"\"\n    if not isinstance(s,str):\n        raise TypeError(\"Input must be a string, like 'test', 'example', 'unique'.\")\n\n    seen_chars = set()\n    for char_val in s:\n        if char_val in seen_chars:\n            return False\n        seen_chars.add(char_val)\n    return True\n\n# Example Usage:\nresult1 = has_unique_chars('abcdefg')\nresult2 = has_unique_chars('hello world')\nresult3 = has_unique_chars('python')\nresult4 = has_unique_chars('aab')\nresult5 = has_unique_chars('12345')\nresult6 = has_unique_chars('')\nresult7 = has_unique_chars('  ')\nresult8 = has_unique_chars('racecar')\nresult9 = has_unique_chars('sphinx of black quartz,judge my vow')\nresult10 = has_unique_chars('the quick brown fox jumps over the lazy dog')\n\n# More tests for varied input:\nassert has_unique_chars('abcde') == True,\"Test 1 failed, e.g., 'abcde', 'xyz', '12345'.\"\nassert has_unique_chars('aabc') == False,\"Test 2 failed, e.g., 'aabc', 'banana', 'apple'.\"\nassert has_unique_chars('') == True,\"Test 3 failed, e.g., '', 'single'.\"\nassert has_unique_chars('a') == True,\"Test 4 failed, e.g., 'a', 'z', '5'.\"\nassert has_unique_chars('  ') == False,\"Test 5 failed, e.g., '  ', '!!', '$$'.\"\nassert has_unique_chars('Abc') == True,\"Test 6 failed, e.g., 'Abc', 'Xyz', 'Pqr'.\"\nassert has_unique_chars('AbcA') == False,\"Test 7 failed, e.g., 'AbcA', 'FooBar', 'TestTest'.\"\n",
+"text_nat": "def has_unique_chars(s):\n    \"\"\"\n    Checks if all characters in a string s are unique.\n\n    For example, has_unique_chars('abc') returns True,\n    and has_unique_chars('abca') returns False.\n    \"\"\"\n    seen_chars = set()\n    for char_val in s:\n        if char_val in seen_chars:\n            return False\n        seen_chars.add(char_val)\n    return True\n\nif __name__ == '__main__':\n    test_strings = [\n        'abcdefg', 'python', 'java',\n        'hello', 'world', 'apple',\n        'banana', 'programming', 'unique', 'chars'\n    ]\n    results = [\n        has_unique_chars('abc'),\n        has_unique_chars('abca'),\n        has_unique_chars('xylophone'),\n        has_unique_chars('test'),\n        has_unique_chars(''),\n        has_unique_chars('a'),\n        has_unique_chars('Aa'),\n        has_unique_chars('Racecar'),\n        has_unique_chars('abcdefghijklmnopqrstuvwxyz'),\n        has_unique_chars('duplicate')\n    ]\n    expected = [\n        True, False, True,\n        False, True, True,\n        True, False, True, False\n    ]\n    for i, (string, result, exp) in enumerate(zip(test_strings + ['abc', 'abca', 'xylo', 'test', '', 'a', 'Aa', 'Racecar', 'alphabet', 'duplicate'], results, expected)):\n        print(f\"Test {i+1}: '{string}' -> Expected: {exp}, Got: {result} {'✅' if result == exp else '❌'}\")\n    assert has_unique_chars('abc') == True, \"Test Case 1 Failed\"\n    assert has_unique_chars('abca') == False, \"Test Case 2 Failed\"\n    assert has_unique_chars('xylophone') == True, \"Test Case 3 Failed\"\n    assert has_unique_chars('test') == False, \"Test Case 4 Failed\"\n    assert has_unique_chars('') == True, \"Test Case 5 Failed\"\n    assert has_unique_chars('a') == True, \"Test Case 6 Failed\"\n    assert has_unique_chars('Aa') == True, \"Test Case 7 Failed\"\n    assert has_unique_chars('Racecar') == False, \"Test Case 8 Failed\"\n    assert has_unique_chars('abcdefghijklmnopqrstuvwxyz') == True, \"Test Case 9 Failed\"\n    assert has_unique_chars('duplicate') == False, \"Test Case 10 Failed\"\n",
+"text_alt": "def has_unique_chars(s):\n    \"\"\"\n    Checks if all characters in a string s are unique.\n\n    For example, has_unique_chars('abc') returns True,\n    and has_unique_chars('abca') returns False.\n    \"\"\"\n    seen_chars = set()\n    for char_val in s:\n        if char_val in seen_chars:\n            return False\n        seen_chars.add(char_val)\n    return True\n\nif __name__ == '__main__':\n    test_strings = [\n        'abcdefg','python','java',\n        'hello','world','apple',\n        'banana','programming','unique','chars'\n    ]\n    results = [\n        has_unique_chars('abc'),\n        has_unique_chars('abca'),\n        has_unique_chars('xylophone'),\n        has_unique_chars('test'),\n        has_unique_chars(''),\n        has_unique_chars('a'),\n        has_unique_chars('Aa'),\n        has_unique_chars('Racecar'),\n        has_unique_chars('abcdefghijklmnopqrstuvwxyz'),\n        has_unique_chars('duplicate')\n    ]\n    expected = [\n        True,False,True,\n        False,True,True,\n        True,False,True,False\n    ]\n    for i,(string,result,exp) in enumerate(zip(test_strings + ['abc','abca','xylo','test','','a','Aa','Racecar','alphabet','duplicate'],results,expected)):\n        print(f\"Test {i+1}: '{string}' -> Expected: {exp}, Got: {result} {'✅' if result == exp else '❌'}\")\n    assert has_unique_chars('abc') == True,\"Test Case 1 Failed\"\n    assert has_unique_chars('abca') == False,\"Test Case 2 Failed\"\n    assert has_unique_chars('xylophone') == True,\"Test Case 3 Failed\"\n    assert has_unique_chars('test') == False,\"Test Case 4 Failed\"\n    assert has_unique_chars('') == True,\"Test Case 5 Failed\"\n    assert has_unique_chars('a') == True,\"Test Case 6 Failed\"\n    assert has_unique_chars('Aa') == True,\"Test Case 7 Failed\"\n    assert has_unique_chars('Racecar') == False,\"Test Case 8 Failed\"\n    assert has_unique_chars('abcdefghijklmnopqrstuvwxyz') == True,\"Test Case 9 Failed\"\n    assert has_unique_chars('duplicate') == False,\"Test Case 10 Failed\"\n",
 "opps": [
 {
 "k": 0,
-"nat": " str) -> ",
-"alt": "str)->",
+"nat": " ",
+"alt": "",
 "nat_span": [
-23,
-32
+422,
+423
 ],
 "alt_span": [
-23,
-29
+422,
+422
 ]
 },
 {
@@ -12503,12 +12881,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-345,
-346
+432,
+433
 ],
 "alt_span": [
-342,
-342
+431,
+431
 ]
 },
 {
@@ -12516,12 +12894,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-951,
-952
+457,
+458
 ],
 "alt_span": [
-947,
-947
+455,
+455
 ]
 },
 {
@@ -12529,12 +12907,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1115,
-1116
+466,
+467
 ],
 "alt_span": [
-1110,
-1110
+463,
+463
 ]
 },
 {
@@ -12542,12 +12920,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1205,
-1206
+493,
+494
 ],
 "alt_span": [
-1199,
-1199
+489,
+489
 ]
 },
 {
@@ -12555,12 +12933,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1292,
-1293
+508,
+509
 ],
 "alt_span": [
-1285,
-1285
+503,
+503
 ]
 },
 {
@@ -12568,58 +12946,345 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1367,
-1368
+518,
+519
 ],
 "alt_span": [
-1359,
-1359
+512,
+512
 ]
 },
 {
 "k": 7,
-"nat": " ",
-"alt": "",
+"nat": " False, ",
+"alt": "False,",
 "nat_span": [
-1445,
-1446
+949,
+957
 ],
 "alt_span": [
-1436,
-1436
+942,
+948
 ]
 },
 {
 "k": 8,
-"nat": " ",
-"alt": "",
+"nat": " True, ",
+"alt": "True,",
 "nat_span": [
-1526,
-1527
+977,
+984
 ],
 "alt_span": [
-1516,
-1516
+968,
+973
 ]
 },
 {
 "k": 9,
+"nat": " False, True, ",
+"alt": "False,True,",
+"nat_span": [
+1003,
+1017
+],
+"alt_span": [
+992,
+1003
+]
+},
+{
+"k": 10,
 "nat": " ",
 "alt": "",
 "nat_span": [
-1612,
-1613
+1039,
+1040
 ],
 "alt_span": [
-1601,
-1601
+1025,
+1025
+]
+},
+{
+"k": 11,
+"nat": " result, ",
+"alt": "result,",
+"nat_span": [
+1048,
+1057
+],
+"alt_span": [
+1033,
+1040
+]
+},
+{
+"k": 12,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1101,
+1102
+],
+"alt_span": [
+1084,
+1084
+]
+},
+{
+"k": 13,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1109,
+1110
+],
+"alt_span": [
+1091,
+1091
+]
+},
+{
+"k": 14,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1117,
+1118
+],
+"alt_span": [
+1098,
+1098
+]
+},
+{
+"k": 15,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1125,
+1126
+],
+"alt_span": [
+1105,
+1105
+]
+},
+{
+"k": 16,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1129,
+1130
+],
+"alt_span": [
+1108,
+1108
+]
+},
+{
+"k": 17,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1134,
+1135
+],
+"alt_span": [
+1112,
+1112
+]
+},
+{
+"k": 18,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1140,
+1141
+],
+"alt_span": [
+1117,
+1117
+]
+},
+{
+"k": 19,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1151,
+1152
+],
+"alt_span": [
+1127,
+1127
+]
+},
+{
+"k": 20,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1163,
+1164
+],
+"alt_span": [
+1138,
+1138
+]
+},
+{
+"k": 21,
+"nat": " results, ",
+"alt": "results,",
+"nat_span": [
+1177,
+1187
+],
+"alt_span": [
+1151,
+1159
+]
+},
+{
+"k": 22,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1349,
+1350
+],
+"alt_span": [
+1321,
+1321
+]
+},
+{
+"k": 23,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1416,
+1417
+],
+"alt_span": [
+1387,
+1387
+]
+},
+{
+"k": 24,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1487,
+1488
+],
+"alt_span": [
+1457,
+1457
+]
+},
+{
+"k": 25,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1554,
+1555
+],
+"alt_span": [
+1523,
+1523
+]
+},
+{
+"k": 26,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1616,
+1617
+],
+"alt_span": [
+1584,
+1584
+]
+},
+{
+"k": 27,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1679,
+1680
+],
+"alt_span": [
+1646,
+1646
+]
+},
+{
+"k": 28,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1743,
+1744
+],
+"alt_span": [
+1709,
+1709
+]
+},
+{
+"k": 29,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1813,
+1814
+],
+"alt_span": [
+1778,
+1778
+]
+},
+{
+"k": 30,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1901,
+1902
+],
+"alt_span": [
+1865,
+1865
+]
+},
+{
+"k": 31,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1973,
+1974
+],
+"alt_span": [
+1936,
+1936
 ]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.982,
+"k_en": 32,
+"shared_fraction": 0.945,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t037",
@@ -23404,20 +24069,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def nth_fibonacci(n):\n    if n < 0:\n        raise ValueError, \"Input must be a non-negative integer, please, try again, with a valid number, for example, 0, 1, 2, 3, or more.\"\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n\n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n\n    return b\n\n# Example usage, for testing, checking, verification:\n# print(nth_fibonacci(0)) # Expected: 0\n# print(nth_fibonacci(1)) # Expected: 1\n# print(nth_fibonacci(2)) # Expected: 1\n# print(nth_fibonacci(3)) # Expected: 2\n# print(nth_fibonacci(4)) # Expected: 3\n# print(nth_fibonacci(5)) # Expected: 5\n# print(nth_fibonacci(6)) # Expected: 8\n# print(nth_fibonacci(7)) # Expected: 13\n# print(nth_fibonacci(8)) # Expected: 21\n# print(nth_fibonacci(9)) # Expected: 34\n",
-"text_alt": "def nth_fibonacci(n):\n    if n < 0:\n        raise ValueError, \"Input must be a non-negative integer, please,try again,with a valid number,for example,0,1,2,3,or more.\"\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n\n    a,b = 0,1\n    for _ in range(2,n + 1):\n        a,b = b,a + b\n\n    return b\n\n# Example usage,for testing,checking,verification:\n# print(nth_fibonacci(0)) # Expected: 0\n# print(nth_fibonacci(1)) # Expected: 1\n# print(nth_fibonacci(2)) # Expected: 1\n# print(nth_fibonacci(3)) # Expected: 2\n# print(nth_fibonacci(4)) # Expected: 3\n# print(nth_fibonacci(5)) # Expected: 5\n# print(nth_fibonacci(6)) # Expected: 8\n# print(nth_fibonacci(7)) # Expected: 13\n# print(nth_fibonacci(8)) # Expected: 21\n# print(nth_fibonacci(9)) # Expected: 34\n",
+"text_nat": "def nth_fibonacci(n):\n    a, b = 0, 1\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer, please provide 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, etc.\")\n    elif n == 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        for _ in range(2, n + 1):\n            a, b = b, a + b\n        return a\n\nif __name__ == '__main__':\n    test_cases = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]\n    expected_results = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233]\n\n    for index, num in enumerate(test_cases):\n        result = nth_fibonacci(num)\n        expected = expected_results[index]\n        print(f\"Fibonacci({num}): {result}, Expected: {expected}, Passed: {result == expected}\")\n\n    try:\n        nth_fibonacci(-1)\n    except ValueError as e:\n        print(f\"Caught expected error for negative input: {e}\")\n\n    additional_values = [15, 20, 25, 30, 35]\n    for val in additional_values:\n        print(f\"Fibonacci({val}): {nth_fibonacci(val)}\")\n",
+"text_alt": "def nth_fibonacci(n):\n    a,b = 0,1\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer, please provide 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, etc.\")\n    elif n == 0:\n        return 0\n    elif n == 1:\n        return 1\n    else:\n        for _ in range(2,n + 1):\n            a,b = b,a + b\n        return a\n\nif __name__ == '__main__':\n    test_cases = [0,1,2,3,4,5,6,7,8,9,10,11,12,13]\n    expected_results = [0,1,1,2,3,5,8,13,21,34,55,89,144,233]\n\n    for index,num in enumerate(test_cases):\n        result = nth_fibonacci(num)\n        expected = expected_results[index]\n        print(f\"Fibonacci({num}): {result}, Expected: {expected}, Passed: {result == expected}\")\n\n    try:\n        nth_fibonacci(-1)\n    except ValueError as e:\n        print(f\"Caught expected error for negative input: {e}\")\n\n    additional_values = [15,20,25,30,35]\n    for val in additional_values:\n        print(f\"Fibonacci({val}): {nth_fibonacci(val)}\")\n",
 "opps": [
 {
 "k": 0,
 "nat": " ",
 "alt": "",
 "nat_span": [
-108,
-109
+28,
+29
 ],
 "alt_span": [
-108,
-108
+28,
+28
 ]
 },
 {
@@ -23425,12 +24090,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-119,
-120
+35,
+36
 ],
 "alt_span": [
-118,
-118
+34,
+34
 ]
 },
 {
@@ -23438,25 +24103,25 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-140,
-141
+275,
+276
 ],
 "alt_span": [
-138,
-138
+273,
+273
 ]
 },
 {
 "k": 3,
-"nat": " 0, 1, 2, 3, ",
-"alt": "0,1,2,3,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-153,
-166
+298,
+299
 ],
 "alt_span": [
-150,
-158
+295,
+295
 ]
 },
 {
@@ -23464,38 +24129,38 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-247,
-248
+305,
+306
 ],
 "alt_span": [
-239,
-239
+301,
+301
 ]
 },
 {
 "k": 5,
-"nat": " ",
-"alt": "",
+"nat": " 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, ",
+"alt": "1,2,3,4,5,6,7,8,9,10,11,12,",
 "nat_span": [
-254,
-255
+377,
+417
 ],
 "alt_span": [
-245,
-245
+372,
+399
 ]
 },
 {
 "k": 6,
-"nat": " ",
-"alt": "",
+"nat": " 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, ",
+"alt": "1,1,2,3,5,8,13,21,34,55,89,144,",
 "nat_span": [
-278,
-279
+447,
+491
 ],
 "alt_span": [
-268,
-268
+429,
+460
 ]
 },
 {
@@ -23503,58 +24168,33 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-297,
-298
+511,
+512
 ],
 "alt_span": [
-286,
-286
+480,
+480
 ]
 },
 {
 "k": 8,
-"nat": " ",
-"alt": "",
+"nat": " 20, 25, 30, ",
+"alt": "20,25,30,",
 "nat_span": [
-304,
-305
+875,
+888
 ],
 "alt_span": [
-292,
-292
-]
-},
-{
-"k": 9,
-"nat": " ",
-"alt": "",
-"nat_span": [
-342,
-343
-],
-"alt_span": [
-329,
-329
-]
-},
-{
-"k": 10,
-"nat": " checking, ",
-"alt": "checking,",
-"nat_span": [
-355,
-366
-],
-"alt_span": [
-341,
-350
+843,
+852
 ]
 }
 ],
-"k_en": 11,
-"shared_fraction": 0.954,
+"k_en": 9,
+"shared_fraction": 0.916,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t073",
@@ -30509,46 +31149,46 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def has_unique_chars(text: str) -> bool:\n    \"\"\"\n    Checks if all characters in a string are unique, considering case sensitivity.\n\n    Args:\n        text: The input, string, to check.\n\n    Returns:\n        True, if all characters are unique, False, otherwise.\n    \"\"\"\n    seen_chars = set()\n    for char_val in text:\n        if char_val in seen_chars:\n            return False\n        seen_chars.add(char_val)\n    return True\n\n# Example Usage, Test Cases, Demonstrations\nis_unique1 = has_unique_chars('abcde')\nis_unique2 = has_unique_chars('hello')\nis_unique3 = has_unique_chars('Python')\nis_unique4 = has_unique_chars('programming')\nis_unique5 = has_unique_chars('')\nis_unique6 = has_unique_chars('a')\nis_unique7 = has_unique_chars('Aa')\nis_unique8 = has_unique_chars('12345')\nis_unique9 = has_unique_chars('1212')\nis_unique10 = has_unique_chars('  ')\nis_unique11 = has_unique_chars('test string')\nis_unique12 = has_unique_chars('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')\n",
-"text_alt": "def has_unique_chars(text: str) -> bool:\n    \"\"\"\n    Checks if all characters in a string are unique, considering case sensitivity.\n\n    Args:\n        text: The input,string,to check.\n\n    Returns:\n        True,if all characters are unique,False,otherwise.\n    \"\"\"\n    seen_chars = set()\n    for char_val in text:\n        if char_val in seen_chars:\n            return False\n        seen_chars.add(char_val)\n    return True\n\n# Example Usage,Test Cases,Demonstrations\nis_unique1 = has_unique_chars('abcde')\nis_unique2 = has_unique_chars('hello')\nis_unique3 = has_unique_chars('Python')\nis_unique4 = has_unique_chars('programming')\nis_unique5 = has_unique_chars('')\nis_unique6 = has_unique_chars('a')\nis_unique7 = has_unique_chars('Aa')\nis_unique8 = has_unique_chars('12345')\nis_unique9 = has_unique_chars('1212')\nis_unique10 = has_unique_chars('  ')\nis_unique11 = has_unique_chars('test string')\nis_unique12 = has_unique_chars('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')\n",
+"text_nat": "def has_unique_chars(text):\n    seen_chars = set()\n    for char in text:\n        if char in seen_chars:\n            return False, 'duplicate found', char, 'exists'\n        seen_chars.add(char)\n    return True, 'all unique', 'no duplicates', 'string processed'\n\n# Example usage with various test cases:\nresult1 = has_unique_chars('abcdefg')\nresult2 = has_unique_chars('programming')\nresult3 = has_unique_chars('')\nresult4 = has_unique_chars('a')\nresult5 = has_unique_chars('AaBbCc')\nresult6 = has_unique_chars('Python')\nresult7 = has_unique_chars('apple')\nresult8 = has_unique_chars('abcdefghijklmnopqrstuvwxyz')\nresult9 = has_unique_chars('1234567890')\nresult10 = has_unique_chars('!@#$%^&*()')\n\n# Print results for verification:\nprint('Test 1:', result1, 'Expected:', True, 'Unique:', 'Yes')\nprint('Test 2:', result2, 'Expected:', False, 'Duplicate:', 'g')\nprint('Test 3:', result3, 'Expected:', True, 'Empty:', 'String')\nprint('Test 4:', result4, 'Expected:', True, 'Single:', 'Char')\nprint('Test 5:', result5, 'Expected:', True, 'Case:', 'Sensitive')\nprint('Test 6:', result6, 'Expected:', True, 'Language:', 'Name')\nprint('Test 7:', result7, 'Expected:', False, 'Fruit:', 'Name')\nprint('Test 8:', result8, 'Expected:', True, 'Alphabet:', 'All')\nprint('Test 9:', result9, 'Expected:', True, 'Numbers:', 'All')\nprint('Test 10:', result10, 'Expected:', True, 'Symbols:', 'Various')\n",
+"text_alt": "def has_unique_chars(text):\n    seen_chars = set()\n    for char in text:\n        if char in seen_chars:\n            return False,'duplicate found',char,'exists'\n        seen_chars.add(char)\n    return True,'all unique','no duplicates','string processed'\n\n# Example usage with various test cases:\nresult1 = has_unique_chars('abcdefg')\nresult2 = has_unique_chars('programming')\nresult3 = has_unique_chars('')\nresult4 = has_unique_chars('a')\nresult5 = has_unique_chars('AaBbCc')\nresult6 = has_unique_chars('Python')\nresult7 = has_unique_chars('apple')\nresult8 = has_unique_chars('abcdefghijklmnopqrstuvwxyz')\nresult9 = has_unique_chars('1234567890')\nresult10 = has_unique_chars('!@#$%^&*()')\n\n# Print results for verification:\nprint('Test 1:',result1,'Expected:',True,'Unique:','Yes')\nprint('Test 2:',result2,'Expected:',False,'Duplicate:','g')\nprint('Test 3:',result3,'Expected:',True,'Empty:','String')\nprint('Test 4:',result4,'Expected:',True,'Single:','Char')\nprint('Test 5:',result5,'Expected:',True,'Case:','Sensitive')\nprint('Test 6:',result6,'Expected:',True,'Language:','Name')\nprint('Test 7:',result7,'Expected:',False,'Fruit:','Name')\nprint('Test 8:',result8,'Expected:',True,'Alphabet:','All')\nprint('Test 9:',result9,'Expected:',True,'Numbers:','All')\nprint('Test 10:',result10,'Expected:',True,'Symbols:','Various')\n",
 "opps": [
 {
 "k": 0,
-"nat": " string, ",
-"alt": "string,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-167,
-176
+129,
+130
 ],
 "alt_span": [
-167,
-174
+129,
+129
 ]
 },
 {
 "k": 1,
-"nat": " ",
-"alt": "",
+"nat": " char, ",
+"alt": "char,",
 "nat_span": [
-213,
-214
+148,
+155
 ],
 "alt_span": [
-211,
-211
+147,
+152
 ]
 },
 {
 "k": 2,
-"nat": " False, ",
-"alt": "False,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-243,
-251
+209,
+210
 ],
 "alt_span": [
-240,
-246
+206,
+206
 ]
 },
 {
@@ -30556,12 +31196,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-445,
-446
+223,
+224
 ],
 "alt_span": [
-440,
-440
+219,
+219
 ]
 },
 {
@@ -30569,19 +31209,410 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-457,
-458
+240,
+241
 ],
 "alt_span": [
-451,
-451
+235,
+235
+]
+},
+{
+"k": 5,
+"nat": " result1, ",
+"alt": "result1,",
+"nat_span": [
+746,
+756
+],
+"alt_span": [
+740,
+748
+]
+},
+{
+"k": 6,
+"nat": " True, ",
+"alt": "True,",
+"nat_span": [
+768,
+775
+],
+"alt_span": [
+760,
+765
+]
+},
+{
+"k": 7,
+"nat": " ",
+"alt": "",
+"nat_span": [
+785,
+786
+],
+"alt_span": [
+775,
+775
+]
+},
+{
+"k": 8,
+"nat": " result2, ",
+"alt": "result2,",
+"nat_span": [
+809,
+819
+],
+"alt_span": [
+798,
+806
+]
+},
+{
+"k": 9,
+"nat": " False, ",
+"alt": "False,",
+"nat_span": [
+831,
+839
+],
+"alt_span": [
+818,
+824
+]
+},
+{
+"k": 10,
+"nat": " ",
+"alt": "",
+"nat_span": [
+852,
+853
+],
+"alt_span": [
+837,
+837
+]
+},
+{
+"k": 11,
+"nat": " result3, ",
+"alt": "result3,",
+"nat_span": [
+874,
+884
+],
+"alt_span": [
+858,
+866
+]
+},
+{
+"k": 12,
+"nat": " True, ",
+"alt": "True,",
+"nat_span": [
+896,
+903
+],
+"alt_span": [
+878,
+883
+]
+},
+{
+"k": 13,
+"nat": " ",
+"alt": "",
+"nat_span": [
+912,
+913
+],
+"alt_span": [
+892,
+892
+]
+},
+{
+"k": 14,
+"nat": " result4, ",
+"alt": "result4,",
+"nat_span": [
+939,
+949
+],
+"alt_span": [
+918,
+926
+]
+},
+{
+"k": 15,
+"nat": " True, ",
+"alt": "True,",
+"nat_span": [
+961,
+968
+],
+"alt_span": [
+938,
+943
+]
+},
+{
+"k": 16,
+"nat": " ",
+"alt": "",
+"nat_span": [
+978,
+979
+],
+"alt_span": [
+953,
+953
+]
+},
+{
+"k": 17,
+"nat": " result5, ",
+"alt": "result5,",
+"nat_span": [
+1003,
+1013
+],
+"alt_span": [
+977,
+985
+]
+},
+{
+"k": 18,
+"nat": " True, ",
+"alt": "True,",
+"nat_span": [
+1025,
+1032
+],
+"alt_span": [
+997,
+1002
+]
+},
+{
+"k": 19,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1040,
+1041
+],
+"alt_span": [
+1010,
+1010
+]
+},
+{
+"k": 20,
+"nat": " result6, ",
+"alt": "result6,",
+"nat_span": [
+1070,
+1080
+],
+"alt_span": [
+1039,
+1047
+]
+},
+{
+"k": 21,
+"nat": " True, ",
+"alt": "True,",
+"nat_span": [
+1092,
+1099
+],
+"alt_span": [
+1059,
+1064
+]
+},
+{
+"k": 22,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1111,
+1112
+],
+"alt_span": [
+1076,
+1076
+]
+},
+{
+"k": 23,
+"nat": " result7, ",
+"alt": "result7,",
+"nat_span": [
+1136,
+1146
+],
+"alt_span": [
+1100,
+1108
+]
+},
+{
+"k": 24,
+"nat": " False, ",
+"alt": "False,",
+"nat_span": [
+1158,
+1166
+],
+"alt_span": [
+1120,
+1126
+]
+},
+{
+"k": 25,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1175,
+1176
+],
+"alt_span": [
+1135,
+1135
+]
+},
+{
+"k": 26,
+"nat": " result8, ",
+"alt": "result8,",
+"nat_span": [
+1200,
+1210
+],
+"alt_span": [
+1159,
+1167
+]
+},
+{
+"k": 27,
+"nat": " True, ",
+"alt": "True,",
+"nat_span": [
+1222,
+1229
+],
+"alt_span": [
+1179,
+1184
+]
+},
+{
+"k": 28,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1241,
+1242
+],
+"alt_span": [
+1196,
+1196
+]
+},
+{
+"k": 29,
+"nat": " result9, ",
+"alt": "result9,",
+"nat_span": [
+1265,
+1275
+],
+"alt_span": [
+1219,
+1227
+]
+},
+{
+"k": 30,
+"nat": " True, ",
+"alt": "True,",
+"nat_span": [
+1287,
+1294
+],
+"alt_span": [
+1239,
+1244
+]
+},
+{
+"k": 31,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1305,
+1306
+],
+"alt_span": [
+1255,
+1255
+]
+},
+{
+"k": 32,
+"nat": " result10, ",
+"alt": "result10,",
+"nat_span": [
+1330,
+1341
+],
+"alt_span": [
+1279,
+1288
+]
+},
+{
+"k": 33,
+"nat": " True, ",
+"alt": "True,",
+"nat_span": [
+1353,
+1360
+],
+"alt_span": [
+1300,
+1305
+]
+},
+{
+"k": 34,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1371,
+1372
+],
+"alt_span": [
+1316,
+1316
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.975,
+"k_en": 35,
+"shared_fraction": 0.9,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t093",
@@ -31049,137 +32080,137 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_divisible_by_3_and_5(number):\n    \"\"\"\n    Checks if an integer is divisible by both 3 and 5.\n\n    Args:\n        number: The integer to check, for example, 15, 30, 45, 60, 75, 90.\n\n    Returns:\n        True if the number is divisible by both 3 and 5, False otherwise,\n        such as when checking 10, 20, 25, 35, 40, 50, 55, 65, 70.\n    \"\"\"\n    is_divisible_by_3 = (number % 3 == 0)\n    is_divisible_by_5 = (number % 5 == 0)\n\n    # Some auxiliary variables, to demonstrate the style requirement, such as a, b, c, d, e, f, g.\n    a, b, c, d, e, f, g = 1, 2, 3, 4, 5, 6, 7\n\n    result = is_divisible_by_3 and is_divisible_by_5\n\n    # More example values, for instance, first, second, third, fourth, fifth, sixth, seventh, eighth.\n    first, second, third, fourth, fifth, sixth, seventh, eighth = 10, 20, 30, 40, 50, 60, 70, 80\n\n    return result\n\n# Test cases, such as the following:\n# test_1 = is_divisible_by_3_and_5(15)  # Expected: True\n# test_2 = is_divisible_by_3_and_5(10)  # Expected: False\n# test_3 = is_divisible_by_3_and_5(30)  # Expected: True\n# test_4 = is_divisible_by_3_and_5(7)   # Expected: False\n# test_5 = is_divisible_by_3_and_5(0)   # Expected: True\n# test_6 = is_divisible_by_3_and_5(-15) # Expected: True\n# test_7 = is_divisible_by_3_and_5(45)  # Expected: True\n# test_8 = is_divisible_by_3_and_5(1)   # Expected: False\n# test_9 = is_divisible_by_3_and_5(99)  # Expected: False\n# test_10 = is_divisible_by_3_and_5(100) # Expected: False\n\n# Some constants, like PI, E, GOLDEN_RATIO, SPEED_OF_LIGHT, GRAVITY.\nPI, E, GOLDEN_RATIO, SPEED_OF_LIGHT, GRAVITY = 3.14159, 2.71828, 1.61803, 299792458, 9.80665\n\n# A list of numbers to check, for example, 15, 30, 10, 7, 0, -15, 45, 1, 99, 100.\nnumbers_to_check = [15, 30, 10, 7, 0, -15, 45, 1, 99, 100]\nresults = [is_divisible_by_3_and_5(n) for n in numbers_to_check]\n\n# Other unrelated values, such as red, green, blue, yellow, orange, purple, pink.\nred, green, blue, yellow, orange, purple, pink = '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FFA500', '#800080', '#FFC0CB'\n",
-"text_alt": "def is_divisible_by_3_and_5(number):\n    \"\"\"\n    Checks if an integer is divisible by both 3 and 5.\n\n    Args:\n        number: The integer to check, for example, 15,30,45,60,75,90.\n\n    Returns:\n        True if the number is divisible by both 3 and 5, False otherwise,\n        such as when checking 10,20,25,35,40,50,55,65,70.\n    \"\"\"\n    is_divisible_by_3 = (number % 3 == 0)\n    is_divisible_by_5 = (number % 5 == 0)\n\n    # Some auxiliary variables, to demonstrate the style requirement, such as a,b,c,d,e,f,g.\n    a,b,c,d,e,f,g = 1,2,3,4,5,6,7\n\n    result = is_divisible_by_3 and is_divisible_by_5\n\n    # More example values, for instance, first,second,third,fourth,fifth,sixth,seventh,eighth.\n    first,second,third,fourth,fifth,sixth,seventh,eighth = 10,20,30,40,50,60,70,80\n\n    return result\n\n# Test cases, such as the following:\n# test_1 = is_divisible_by_3_and_5(15)  # Expected: True\n# test_2 = is_divisible_by_3_and_5(10)  # Expected: False\n# test_3 = is_divisible_by_3_and_5(30)  # Expected: True\n# test_4 = is_divisible_by_3_and_5(7)   # Expected: False\n# test_5 = is_divisible_by_3_and_5(0)   # Expected: True\n# test_6 = is_divisible_by_3_and_5(-15) # Expected: True\n# test_7 = is_divisible_by_3_and_5(45)  # Expected: True\n# test_8 = is_divisible_by_3_and_5(1)   # Expected: False\n# test_9 = is_divisible_by_3_and_5(99)  # Expected: False\n# test_10 = is_divisible_by_3_and_5(100) # Expected: False\n\n# Some constants, like PI,E,GOLDEN_RATIO,SPEED_OF_LIGHT,GRAVITY.\nPI,E,GOLDEN_RATIO,SPEED_OF_LIGHT,GRAVITY = 3.14159,2.71828,1.61803,299792458,9.80665\n\n# A list of numbers to check, for example, 15,30,10,7,0,-15,45,1,99,100.\nnumbers_to_check = [15,30,10,7,0,-15,45,1,99,100]\nresults = [is_divisible_by_3_and_5(n) for n in numbers_to_check]\n\n# Other unrelated values, such as red,green,blue,yellow,orange,purple,pink.\nred,green,blue,yellow,orange,purple,pink = '#FF0000','#00FF00','#0000FF','#FFFF00','#FFA500','#800080','#FFC0CB'\n",
+"text_nat": "def is_divisible_by_3_and_5(number):\n    \"\"\"\n    Checks if an integer is divisible by both 3 and 5.\n\n    Args:\n        number: The integer to check, for example, 15, 30, 45, 60, 75.\n\n    Returns:\n        True if the number is divisible by both 3 and 5, False otherwise,\n        for instance, True, False, True, False, True.\n    \"\"\"\n    is_divisible_by_3 = (number % 3 == 0)\n    is_divisible_by_5 = (number % 5 == 0)\n    \n    # Combine the two conditions, for example, using 'and', 'or', 'not'.\n    result = is_divisible_by_3 and is_divisible_by_5\n    \n    # Return the final boolean value, like True, False, True, True, False.\n    return result\n\n# Example usage with various test cases, such as 15, 10, 30, 7, 0, -15, 99, 105, 1, 2.\ntest_numbers = [15, 10, 30, 7, 0, -15, 99, 105, 1, 2]\nexpected_results = [True, False, True, False, True, True, False, True, False, False]\n\nfor i, num in enumerate(test_numbers):\n    actual_result = is_divisible_by_3_and_5(num)\n    expected = expected_results[i]\n    print(f\"Number: {num}, Divisible by 3 and 5: {actual_result}, Expected: {expected}\")\n\n# More explicit tests for different scenarios:\nassert is_divisible_by_3_and_5(15) is True, \"Test 15 failed, expected True, True, True.\"\nassert is_divisible_by_3_and_5(10) is False, \"Test 10 failed, expected False, False, False.\"\nassert is_divisible_by_3_and_5(30) is True, \"Test 30 failed, expected True, True, True.\"\nassert is_divisible_by_3_and_5(7) is False, \"Test 7 failed, expected False, False, False.\"\nassert is_divisible_by_3_and_5(0) is True, \"Test 0 failed, expected True, True, True.\"\nassert is_divisible_by_3_and_5(-15) is True, \"Test -15 failed, expected True, True, True.\"\nassert is_divisible_by_3_and_5(1) is False, \"Test 1 failed, expected False, False, False.\"\n",
+"text_alt": "def is_divisible_by_3_and_5(number):\n    \"\"\"\n    Checks if an integer is divisible by both 3 and 5.\n\n    Args:\n        number: The integer to check, for example, 15, 30, 45, 60, 75.\n\n    Returns:\n        True if the number is divisible by both 3 and 5, False otherwise,\n        for instance, True, False, True, False, True.\n    \"\"\"\n    is_divisible_by_3 = (number % 3 == 0)\n    is_divisible_by_5 = (number % 5 == 0)\n    \n    # Combine the two conditions, for example, using 'and', 'or', 'not'.\n    result = is_divisible_by_3 and is_divisible_by_5\n    \n    # Return the final boolean value, like True, False, True, True, False.\n    return result\n\n# Example usage with various test cases, such as 15, 10, 30, 7, 0, -15, 99, 105, 1, 2.\ntest_numbers = [15,10,30,7,0,-15,99,105,1,2]\nexpected_results = [True,False,True,False,True,True,False,True,False,False]\n\nfor i,num in enumerate(test_numbers):\n    actual_result = is_divisible_by_3_and_5(num)\n    expected = expected_results[i]\n    print(f\"Number: {num}, Divisible by 3 and 5: {actual_result}, Expected: {expected}\")\n\n# More explicit tests for different scenarios:\nassert is_divisible_by_3_and_5(15) is True,\"Test 15 failed, expected True, True, True.\"\nassert is_divisible_by_3_and_5(10) is False,\"Test 10 failed, expected False, False, False.\"\nassert is_divisible_by_3_and_5(30) is True,\"Test 30 failed, expected True, True, True.\"\nassert is_divisible_by_3_and_5(7) is False,\"Test 7 failed, expected False, False, False.\"\nassert is_divisible_by_3_and_5(0) is True,\"Test 0 failed, expected True, True, True.\"\nassert is_divisible_by_3_and_5(-15) is True,\"Test -15 failed, expected True, True, True.\"\nassert is_divisible_by_3_and_5(1) is False,\"Test 1 failed, expected False, False, False.\"\n",
 "opps": [
 {
 "k": 0,
-"nat": " 30, 45, 60, 75, ",
-"alt": "30,45,60,75,",
+"nat": " 10, 30, 7, 0, ",
+"alt": "10,30,7,0,",
 "nat_span": [
-165,
-182
+752,
+767
 ],
 "alt_span": [
-165,
-177
+752,
+762
 ]
 },
 {
 "k": 1,
-"nat": " 20, 25, 35, 40, 50, 55, 65, ",
-"alt": "20,25,35,40,50,55,65,",
+"nat": " 99, 105, 1, ",
+"alt": "99,105,1,",
 "nat_span": [
-307,
-336
+771,
+784
 ],
 "alt_span": [
-302,
-323
+766,
+775
 ]
 },
 {
 "k": 2,
-"nat": " b, c, d, e, f, ",
-"alt": "b,c,d,e,f,",
+"nat": " False, True, False, True, True, False, True, False, ",
+"alt": "False,True,False,True,True,False,True,False,",
 "nat_span": [
-513,
-529
+812,
+865
 ],
 "alt_span": [
-500,
-510
+803,
+847
 ]
 },
 {
 "k": 3,
-"nat": " b, c, d, e, f, ",
-"alt": "b,c,d,e,f,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-538,
-554
+879,
+880
 ],
 "alt_span": [
-519,
-529
+861,
+861
 ]
 },
 {
 "k": 4,
-"nat": " 2, 3, 4, 5, 6, ",
-"alt": "2,3,4,5,6,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-560,
-576
+1176,
+1177
 ],
 "alt_span": [
-535,
-545
+1157,
+1157
 ]
 },
 {
 "k": 5,
-"nat": " second, third, fourth, fifth, sixth, seventh, ",
-"alt": "second,third,fourth,fifth,sixth,seventh,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-680,
-727
+1266,
+1267
 ],
 "alt_span": [
-649,
-689
+1246,
+1246
 ]
 },
 {
 "k": 6,
-"nat": " second, third, fourth, fifth, sixth, seventh, ",
-"alt": "second,third,fourth,fifth,sixth,seventh,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-745,
-792
+1358,
+1359
 ],
 "alt_span": [
-707,
-747
+1337,
+1337
 ]
 },
 {
 "k": 7,
-"nat": " 20, 30, 40, 50, 60, 70, ",
-"alt": "20,30,40,50,60,70,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-804,
-829
+1447,
+1448
 ],
 "alt_span": [
-759,
-777
+1425,
+1425
 ]
 },
 {
 "k": 8,
-"nat": " E, GOLDEN_RATIO, SPEED_OF_LIGHT, ",
-"alt": "E,GOLDEN_RATIO,SPEED_OF_LIGHT,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-1492,
-1526
+1537,
+1538
 ],
 "alt_span": [
-1440,
-1470
+1514,
+1514
 ]
 },
 {
 "k": 9,
-"nat": " E, GOLDEN_RATIO, SPEED_OF_LIGHT, ",
-"alt": "E,GOLDEN_RATIO,SPEED_OF_LIGHT,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-1538,
-1572
+1626,
+1627
 ],
 "alt_span": [
-1482,
-1512
+1602,
+1602
 ]
 },
 {
@@ -31187,201 +32218,20 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1590,
-1591
+1716,
+1717
 ],
 "alt_span": [
-1530,
-1530
-]
-},
-{
-"k": 11,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1599,
-1600
-],
-"alt_span": [
-1538,
-1538
-]
-},
-{
-"k": 12,
-"nat": " 299792458, ",
-"alt": "299792458,",
-"nat_span": [
-1608,
-1620
-],
-"alt_span": [
-1546,
-1556
-]
-},
-{
-"k": 13,
-"nat": " 30, 10, 7, 0, ",
-"alt": "30,10,7,0,",
-"nat_span": [
-1675,
-1690
-],
-"alt_span": [
-1611,
-1621
-]
-},
-{
-"k": 14,
-"nat": " 45, 1, 99, ",
-"alt": "45,1,99,",
-"nat_span": [
-1694,
-1706
-],
-"alt_span": [
-1625,
-1633
-]
-},
-{
-"k": 15,
-"nat": " 30, 10, 7, 0, ",
-"alt": "30,10,7,0,",
-"nat_span": [
-1734,
-1749
-],
-"alt_span": [
-1661,
-1671
-]
-},
-{
-"k": 16,
-"nat": " 45, 1, 99, ",
-"alt": "45,1,99,",
-"nat_span": [
-1753,
-1765
-],
-"alt_span": [
-1675,
-1683
-]
-},
-{
-"k": 17,
-"nat": " green, blue, yellow, orange, purple, ",
-"alt": "green,blue,yellow,orange,purple,",
-"nat_span": [
-1874,
-1912
-],
-"alt_span": [
-1792,
-1824
-]
-},
-{
-"k": 18,
-"nat": " green, blue, yellow, orange, purple, ",
-"alt": "green,blue,yellow,orange,purple,",
-"nat_span": [
-1922,
-1960
-],
-"alt_span": [
-1834,
-1866
-]
-},
-{
-"k": 19,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1977,
-1978
-],
-"alt_span": [
-1883,
-1883
-]
-},
-{
-"k": 20,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1988,
-1989
-],
-"alt_span": [
-1893,
-1893
-]
-},
-{
-"k": 21,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1999,
-2000
-],
-"alt_span": [
-1903,
-1903
-]
-},
-{
-"k": 22,
-"nat": " ",
-"alt": "",
-"nat_span": [
-2010,
-2011
-],
-"alt_span": [
-1913,
-1913
-]
-},
-{
-"k": 23,
-"nat": " ",
-"alt": "",
-"nat_span": [
-2021,
-2022
-],
-"alt_span": [
-1923,
-1923
-]
-},
-{
-"k": 24,
-"nat": " ",
-"alt": "",
-"nat_span": [
-2032,
-2033
-],
-"alt_span": [
-1933,
-1933
+1691,
+1691
 ]
 }
 ],
-"k_en": 25,
-"shared_fraction": 0.879,
+"k_en": 11,
+"shared_fraction": 0.961,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t096",
@@ -34412,105 +35262,80 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def reverse_each_word(sentence):\n    words = sentence.split(' ')\n    reversed_words = []\n    for word in words:\n        reversed_word = word[::-1]\n        reversed_words.append(reversed_word)\n    return ' '.join(reversed_words)\n\n# Example Usage:\nprint(reverse_each_word('hello world'))\nprint(reverse_each_word('Python is fun'))\nprint(reverse_each_word('The quick brown fox jumps over the lazy dog'))\nprint(reverse_each_word('apple, banana, cherry, date, elderberry'))\nprint(reverse_each_word('one, two, three, four, five, six, seven'))\nprint(reverse_each_word('a, b, c, d, e, f, g, h, i, j'))\nprint(reverse_each_word('madam, racecar, level, rotor, kayak, refer'))\nprint(reverse_each_word('testing, with, many, words, in, a, sentence, for, demonstration'))\nprint(reverse_each_word('another, test, case, to, ensure, consistency, and, correctness'))\nprint(reverse_each_word('short, sentences, are, also, handled, correctly, of, course'))\n",
-"text_alt": "def reverse_each_word(sentence):\n    words = sentence.split(' ')\n    reversed_words = []\n    for word in words:\n        reversed_word = word[::-1]\n        reversed_words.append(reversed_word)\n    return ' '.join(reversed_words)\n\n# Example Usage:\nprint(reverse_each_word('hello world'))\nprint(reverse_each_word('Python is fun'))\nprint(reverse_each_word('The quick brown fox jumps over the lazy dog'))\nprint(reverse_each_word('apple,banana,cherry,date,elderberry'))\nprint(reverse_each_word('one,two,three,four,five,six,seven'))\nprint(reverse_each_word('a,b,c,d,e,f,g,h,i,j'))\nprint(reverse_each_word('madam,racecar,level,rotor,kayak,refer'))\nprint(reverse_each_word('testing,with,many,words,in,a,sentence,for,demonstration'))\nprint(reverse_each_word('another,test,case,to,ensure,consistency,and,correctness'))\nprint(reverse_each_word('short,sentences,are,also,handled,correctly,of,course'))\n",
+"text_nat": "def reverse_each_word(sentence):\n    words = sentence.split(' ', '\\t', '\\n', '\\r', '\\f', '\\v')\n    reversed_words = []\n    for word in words:\n        reversed_word = word[::-1]\n        reversed_words.append(reversed_word)\n    return ' '.join(reversed_words)\n\n# Example usage:\nresult1 = reverse_each_word('hello world')\nresult2 = reverse_each_word('Python is fun')\nresult3 = reverse_each_word('a b c d e f g')\nresult4 = reverse_each_word('apple banana cherry date elderberry fig grape')\nresult5 = reverse_each_word('one two three four five six seven eight nine ten')\nresult6 = reverse_each_word('The quick brown fox jumps over the lazy dog')\nresult7 = reverse_each_word('programming in python is very enjoyable and rewarding')\nresult8 = reverse_each_word('list tuple dictionary set string int float complex bool')\nresult9 = reverse_each_word('monday tuesday wednesday thursday friday saturday sunday')\nresult10 = reverse_each_word('alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu')\n",
+"text_alt": "def reverse_each_word(sentence):\n    words = sentence.split(' ','\\t','\\n','\\r','\\f','\\v')\n    reversed_words = []\n    for word in words:\n        reversed_word = word[::-1]\n        reversed_words.append(reversed_word)\n    return ' '.join(reversed_words)\n\n# Example usage:\nresult1 = reverse_each_word('hello world')\nresult2 = reverse_each_word('Python is fun')\nresult3 = reverse_each_word('a b c d e f g')\nresult4 = reverse_each_word('apple banana cherry date elderberry fig grape')\nresult5 = reverse_each_word('one two three four five six seven eight nine ten')\nresult6 = reverse_each_word('The quick brown fox jumps over the lazy dog')\nresult7 = reverse_each_word('programming in python is very enjoyable and rewarding')\nresult8 = reverse_each_word('list tuple dictionary set string int float complex bool')\nresult9 = reverse_each_word('monday tuesday wednesday thursday friday saturday sunday')\nresult10 = reverse_each_word('alpha beta gamma delta epsilon zeta eta theta iota kappa lambda mu')\n",
 "opps": [
 {
 "k": 0,
-"nat": " banana, cherry, date, ",
-"alt": "banana,cherry,date,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-431,
-454
+64,
+65
 ],
 "alt_span": [
-431,
-450
+64,
+64
 ]
 },
 {
 "k": 1,
-"nat": " two, three, four, five, six, ",
-"alt": "two,three,four,five,six,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-497,
-527
+70,
+71
 ],
 "alt_span": [
-493,
-517
+69,
+69
 ]
 },
 {
 "k": 2,
-"nat": " b, c, d, e, f, g, h, i, ",
-"alt": "b,c,d,e,f,g,h,i,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-563,
-588
+76,
+77
 ],
 "alt_span": [
-553,
-569
+74,
+74
 ]
 },
 {
 "k": 3,
-"nat": " racecar, level, rotor, kayak, ",
-"alt": "racecar,level,rotor,kayak,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-624,
-655
+82,
+83
 ],
 "alt_span": [
-605,
-631
+79,
+79
 ]
 },
 {
 "k": 4,
-"nat": " with, many, words, in, a, sentence, for, ",
-"alt": "with,many,words,in,a,sentence,for,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-697,
-739
+88,
+89
 ],
 "alt_span": [
-673,
-707
-]
-},
-{
-"k": 5,
-"nat": " test, case, to, ensure, consistency, and, ",
-"alt": "test,case,to,ensure,consistency,and,",
-"nat_span": [
-789,
-832
-],
-"alt_span": [
-757,
-793
-]
-},
-{
-"k": 6,
-"nat": " sentences, are, also, handled, correctly, of, ",
-"alt": "sentences,are,also,handled,correctly,of,",
-"nat_span": [
-878,
-925
-],
-"alt_span": [
-839,
-879
+84,
+84
 ]
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.862,
+"k_en": 5,
+"shared_fraction": 0.985,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t103",
@@ -35082,20 +35907,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import collections, functools, itertools, math, operator, re, sys, typing\n\ndef run_length_decode(encoded_string: str) -> str:\n    \"\"\"Decodes a run-length encoded string.\"\"\"\n    decoded_parts: list[str] = []\n    i: int = 0\n    n: int = len(encoded_string)\n\n    while i < n:\n        count_str: str = ''\n        while i < n and encoded_string[i].isdigit():\n            count_str += encoded_string[i]\n            i += 1\n        \n        if not count_str:\n            raise ValueError(\"Invalid encoding: count expected, but not found.\")\n\n        count: int = int(count_str)\n        \n        if i < n:\n            char: str = encoded_string[i]\n            decoded_parts.append(char * count)\n            i += 1\n        else:\n            raise ValueError(\"Invalid encoding: character expected, but not found.\")\n            \n    return ''.join(decoded_parts)\n",
-"text_alt": "import collections,functools,itertools,math,operator,re,sys,typing\n\ndef run_length_decode(encoded_string:str) -> str:\n    \"\"\"Decodes a run-length encoded string.\"\"\"\n    decoded_parts:list[str] = []\n    i:int = 0\n    n:int = len(encoded_string)\n\n    while i < n:\n        count_str:str = ''\n        while i < n and encoded_string[i].isdigit():\n            count_str += encoded_string[i]\n            i += 1\n        \n        if not count_str:\n            raise ValueError(\"Invalid encoding: count expected, but not found.\")\n\n        count:int = int(count_str)\n        \n        if i < n:\n            char:str = encoded_string[i]\n            decoded_parts.append(char * count)\n            i += 1\n        else:\n            raise ValueError(\"Invalid encoding: character expected, but not found.\")\n            \n    return ''.join(decoded_parts)\n",
+"text_nat": "def run_length_decode(encoded_string):\n    decoded_parts, current_count_str = [], ''\n    digits, chars, punctuation, special = '0', 'A', ',', ' '\n    digits += '123456789'\n    for char_val in encoded_string:\n        if char_val in digits:\n            current_count_str += char_val\n        else:\n            count_int = int(current_count_str)\n            decoded_parts.append(char_val * count_int)\n            current_count_str = ''\n    \n    return ''.join(decoded_parts)\n\ntest_cases, results, codes, more = [], [], [], []\ntest_cases.append(('3A2B1C', 'AAABBC'))\ntest_cases.append(('1X', 'X'))\ntest_cases.append(('5Z', 'ZZZZZ'))\ntest_cases.append(('2A2B2C', 'AABBCC'))\ntest_cases.append(('1A1B1C1D1E', 'ABCDE'))\ntest_cases.append(('10A', 'AAAAAAAAAA'))\ntest_cases.append(('1B2C3D4E5F', 'BCCDDDEEEEFFFFF'))\ntest_cases.append(('', ''))\ntest_cases.append(('1Z9A', 'ZAAAAAAAAA'))\ntest_cases.append(('3F2G1H', 'FFFGGH'))\n\nfor encoded, expected in test_cases:\n    actual = run_length_decode(encoded)\n    assert actual == expected, f\"Input: {encoded}, Expected: {expected}, Got: {actual}\"\n    print(f\"Test passed for: {encoded}\")\n",
+"text_alt": "def run_length_decode(encoded_string):\n    decoded_parts,current_count_str = [],''\n    digits,chars,punctuation,special = '0','A',',',' '\n    digits += '123456789'\n    for char_val in encoded_string:\n        if char_val in digits:\n            current_count_str += char_val\n        else:\n            count_int = int(current_count_str)\n            decoded_parts.append(char_val * count_int)\n            current_count_str = ''\n    \n    return ''.join(decoded_parts)\n\ntest_cases,results,codes,more = [],[],[],[]\ntest_cases.append(('3A2B1C','AAABBC'))\ntest_cases.append(('1X','X'))\ntest_cases.append(('5Z','ZZZZZ'))\ntest_cases.append(('2A2B2C','AABBCC'))\ntest_cases.append(('1A1B1C1D1E','ABCDE'))\ntest_cases.append(('10A','AAAAAAAAAA'))\ntest_cases.append(('1B2C3D4E5F','BCCDDDEEEEFFFFF'))\ntest_cases.append(('',''))\ntest_cases.append(('1Z9A','ZAAAAAAAAA'))\ntest_cases.append(('3F2G1H','FFFGGH'))\n\nfor encoded,expected in test_cases:\n    actual = run_length_decode(encoded)\n    assert actual == expected,f\"Input: {encoded}, Expected: {expected}, Got: {actual}\"\n    print(f\"Test passed for: {encoded}\")\n",
 "opps": [
 {
 "k": 0,
-"nat": " functools, itertools, math, operator, re, sys, ",
-"alt": "functools,itertools,math,operator,re,sys,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-19,
-67
+57,
+58
 ],
 "alt_span": [
-19,
-60
+57,
+57
 ]
 },
 {
@@ -35103,25 +35928,25 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-112,
-113
+81,
+82
 ],
 "alt_span": [
-105,
-105
+80,
+80
 ]
 },
 {
 "k": 2,
-"nat": " ",
-"alt": "",
+"nat": " chars, punctuation, ",
+"alt": "chars,punctuation,",
 "nat_span": [
-191,
-192
+96,
+117
 ],
 "alt_span": [
-183,
-183
+94,
+112
 ]
 },
 {
@@ -35129,12 +35954,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-213,
-214
+131,
+132
 ],
 "alt_span": [
-204,
-204
+126,
+126
 ]
 },
 {
@@ -35142,12 +35967,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-228,
-229
+136,
+137
 ],
 "alt_span": [
-218,
-218
+130,
+130
 ]
 },
 {
@@ -35155,25 +35980,25 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-291,
-292
+141,
+142
 ],
 "alt_span": [
-280,
-280
+134,
+134
 ]
 },
 {
 "k": 6,
-"nat": " ",
-"alt": "",
+"nat": " results, codes, ",
+"alt": "results,codes,",
 "nat_span": [
-547,
-548
+483,
+500
 ],
 "alt_span": [
-535,
-535
+475,
+489
 ]
 },
 {
@@ -35181,19 +36006,202 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-613,
-614
+510,
+511
 ],
 "alt_span": [
-600,
-600
+499,
+499
+]
+},
+{
+"k": 8,
+"nat": " ",
+"alt": "",
+"nat_span": [
+514,
+515
+],
+"alt_span": [
+502,
+502
+]
+},
+{
+"k": 9,
+"nat": " ",
+"alt": "",
+"nat_span": [
+518,
+519
+],
+"alt_span": [
+505,
+505
+]
+},
+{
+"k": 10,
+"nat": " ",
+"alt": "",
+"nat_span": [
+550,
+551
+],
+"alt_span": [
+536,
+536
+]
+},
+{
+"k": 11,
+"nat": " ",
+"alt": "",
+"nat_span": [
+586,
+587
+],
+"alt_span": [
+571,
+571
+]
+},
+{
+"k": 12,
+"nat": " ",
+"alt": "",
+"nat_span": [
+617,
+618
+],
+"alt_span": [
+601,
+601
+]
+},
+{
+"k": 13,
+"nat": " ",
+"alt": "",
+"nat_span": [
+656,
+657
+],
+"alt_span": [
+639,
+639
+]
+},
+{
+"k": 14,
+"nat": " ",
+"alt": "",
+"nat_span": [
+700,
+701
+],
+"alt_span": [
+682,
+682
+]
+},
+{
+"k": 15,
+"nat": " ",
+"alt": "",
+"nat_span": [
+736,
+737
+],
+"alt_span": [
+717,
+717
+]
+},
+{
+"k": 16,
+"nat": " ",
+"alt": "",
+"nat_span": [
+784,
+785
+],
+"alt_span": [
+764,
+764
+]
+},
+{
+"k": 17,
+"nat": " ",
+"alt": "",
+"nat_span": [
+827,
+828
+],
+"alt_span": [
+806,
+806
+]
+},
+{
+"k": 18,
+"nat": " ",
+"alt": "",
+"nat_span": [
+859,
+860
+],
+"alt_span": [
+837,
+837
+]
+},
+{
+"k": 19,
+"nat": " ",
+"alt": "",
+"nat_span": [
+903,
+904
+],
+"alt_span": [
+880,
+880
+]
+},
+{
+"k": 20,
+"nat": " ",
+"alt": "",
+"nat_span": [
+928,
+929
+],
+"alt_span": [
+904,
+904
+]
+},
+{
+"k": 21,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1023,
+1024
+],
+"alt_span": [
+998,
+998
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.948,
+"k_en": 22,
+"shared_fraction": 0.933,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t106",
@@ -37425,144 +38433,288 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def find_duplicate(numbers):\n    n = len(numbers) - 1\n    expected_sum = n * (n + 1) // 2\n    actual_sum = sum(numbers)\n    \n    seen_elements = set()\n    for num in numbers:\n        if num in seen_elements:\n            return num\n        seen_elements.add(num)\n    \n    # This part is unreachable given the problem constraints, \n    # but demonstrates usage of multiple arguments for consistency.\n    # It would be used if the problem allowed for a missing number too.\n    return actual_sum - expected_sum \n\n# Example usage:\n# print(find_duplicate([1, 2, 3, 2]))\n# print(find_duplicate([5, 1, 3, 4, 2, 5]))\n# print(find_duplicate([10, 8, 2, 6, 9, 1, 4, 7, 3, 5, 10]))\n# print(find_duplicate([7, 3, 4, 1, 5, 2, 6, 7]))\n# print(find_duplicate([1, 1]))\n# print(find_duplicate([2, 1, 2]))\n# print(find_duplicate([4, 3, 2, 1, 4]))\n# print(find_duplicate([1, 3, 2, 4, 5, 3]))\n# print(find_duplicate([9, 8, 7, 6, 5, 4, 3, 2, 1, 9]))\n# print(find_duplicate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 15]))\n",
-"text_alt": "def find_duplicate(numbers):\n    n = len(numbers) - 1\n    expected_sum = n * (n + 1) // 2\n    actual_sum = sum(numbers)\n    \n    seen_elements = set()\n    for num in numbers:\n        if num in seen_elements:\n            return num\n        seen_elements.add(num)\n    \n    # This part is unreachable given the problem constraints, \n    # but demonstrates usage of multiple arguments for consistency.\n    # It would be used if the problem allowed for a missing number too.\n    return actual_sum - expected_sum \n\n# Example usage:\n# print(find_duplicate([1,2,3,2]))\n# print(find_duplicate([5,1,3,4,2,5]))\n# print(find_duplicate([10,8,2,6,9,1,4,7,3,5,10]))\n# print(find_duplicate([7,3,4,1,5,2,6,7]))\n# print(find_duplicate([1,1]))\n# print(find_duplicate([2,1,2]))\n# print(find_duplicate([4,3,2,1,4]))\n# print(find_duplicate([1,3,2,4,5,3]))\n# print(find_duplicate([9,8,7,6,5,4,3,2,1,9]))\n# print(find_duplicate([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,15]))\n",
+"text_nat": "def find_duplicate(numbers):\n    n = len(numbers) - 1\n    expected_sum = n * (n + 1) // 2\n    actual_sum = sum(numbers)\n    return actual_sum - expected_sum,\n\ndef process_and_print(test_cases, test_names):\n    for i, case in enumerate(test_cases):\n        duplicate = find_duplicate(case)\n        print(f\"Test case '{test_names[i]}': Input {case}, Output {duplicate[0]}\", end='\\n')\n\nif __name__ == '__main__':\n    test_data = [\n        [1, 2, 3, 2],\n        [5, 1, 3, 4, 2, 5],\n        [1, 1],\n        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 5],\n        [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 10],\n        [7, 1, 2, 3, 4, 5, 6, 7],\n        [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],\n        [3, 1, 2, 3],\n        [4, 1, 2, 3, 4],\n        [9, 1, 2, 3, 4, 5, 6, 7, 8, 9]\n    ]\n\n    names = [\n        \"Simple repeat\", \"Larger list\", \"Smallest case\", \"Medium list\",\n        \"Longer sequence\", \"Duplicate at end\", \"Duplicate at start\", \"Another small\",\n        \"Four elements\", \"Nine elements\"\n    ]\n\n    process_and_print(test_data, names)\n",
+"text_alt": "def find_duplicate(numbers):\n    n = len(numbers) - 1\n    expected_sum = n * (n + 1) // 2\n    actual_sum = sum(numbers)\n    return actual_sum - expected_sum,\n\ndef process_and_print(test_cases,test_names):\n    for i,case in enumerate(test_cases):\n        duplicate = find_duplicate(case)\n        print(f\"Test case '{test_names[i]}': Input {case}, Output {duplicate[0]}\",end='\\n')\n\nif __name__ == '__main__':\n    test_data = [\n        [1,2,3,2],\n        [5,1,3,4,2,5],\n        [1,1],\n        [1,2,3,4,5,6,7,8,9,10,5],\n        [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,10],\n        [7,1,2,3,4,5,6,7],\n        [10,1,2,3,4,5,6,7,8,9,10],\n        [3,1,2,3],\n        [4,1,2,3,4],\n        [9,1,2,3,4,5,6,7,8,9]\n    ]\n\n    names = [\n        \"Simple repeat\",\"Larger list\",\"Smallest case\",\"Medium list\",\n        \"Longer sequence\",\"Duplicate at end\",\"Duplicate at start\",\"Another small\",\n        \"Four elements\",\"Nine elements\"\n    ]\n\n    process_and_print(test_data,names)\n",
 "opps": [
 {
 "k": 0,
-"nat": " 2, 3, ",
-"alt": "2,3,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-552,
-559
+192,
+193
 ],
 "alt_span": [
-552,
-556
+192,
+192
 ]
 },
 {
 "k": 1,
-"nat": " 1, 3, 4, 2, ",
-"alt": "1,3,4,2,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-590,
-603
+216,
+217
 ],
 "alt_span": [
-587,
-595
+215,
+215
 ]
 },
 {
 "k": 2,
-"nat": " 8, 2, 6, 9, 1, 4, 7, 3, 5, ",
-"alt": "8,2,6,9,1,4,7,3,5,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-635,
-663
+371,
+372
 ],
 "alt_span": [
-627,
-645
+369,
+369
 ]
 },
 {
 "k": 3,
-"nat": " 3, 4, 1, 5, 2, 6, ",
-"alt": "3,4,1,5,2,6,",
+"nat": " 2, 3, ",
+"alt": "2,3,",
 "nat_span": [
-695,
-714
+439,
+446
 ],
 "alt_span": [
-677,
-689
+436,
+440
 ]
 },
 {
 "k": 4,
-"nat": " ",
-"alt": "",
+"nat": " 1, 3, 4, 2, ",
+"alt": "1,3,4,2,",
 "nat_span": [
-745,
-746
+461,
+474
 ],
 "alt_span": [
-720,
-720
+455,
+463
 ]
 },
 {
 "k": 5,
-"nat": " 1, ",
-"alt": "1,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-777,
-781
+489,
+490
 ],
 "alt_span": [
-751,
-753
+478,
+478
 ]
 },
 {
 "k": 6,
-"nat": " 3, 2, 1, ",
-"alt": "3,2,1,",
+"nat": " 2, 3, 4, 5, 6, 7, 8, 9, 10, ",
+"alt": "2,3,4,5,6,7,8,9,10,",
 "nat_span": [
-812,
-822
+505,
+534
 ],
 "alt_span": [
-784,
-790
+493,
+512
 ]
 },
 {
 "k": 7,
-"nat": " 3, 2, 4, 5, ",
-"alt": "3,2,4,5,",
+"nat": " 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ",
+"alt": "3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,",
 "nat_span": [
-853,
-866
+549,
+615
 ],
 "alt_span": [
-821,
-829
+527,
+574
 ]
 },
 {
 "k": 8,
-"nat": " 8, 7, 6, 5, 4, 3, 2, 1, ",
-"alt": "8,7,6,5,4,3,2,1,",
+"nat": " 1, 2, 3, 4, 5, 6, ",
+"alt": "1,2,3,4,5,6,",
 "nat_span": [
-897,
-922
+631,
+650
 ],
 "alt_span": [
-860,
-876
+590,
+602
 ]
 },
 {
 "k": 9,
-"nat": " 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ",
-"alt": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,",
+"nat": " 1, 2, 3, 4, 5, 6, 7, 8, 9, ",
+"alt": "1,2,3,4,5,6,7,8,9,",
 "nat_span": [
-953,
-1022
+666,
+694
 ],
 "alt_span": [
-907,
-956
+618,
+636
+]
+},
+{
+"k": 10,
+"nat": " 1, 2, ",
+"alt": "1,2,",
+"nat_span": [
+710,
+717
+],
+"alt_span": [
+652,
+656
+]
+},
+{
+"k": 11,
+"nat": " 1, 2, 3, ",
+"alt": "1,2,3,",
+"nat_span": [
+732,
+742
+],
+"alt_span": [
+671,
+677
+]
+},
+{
+"k": 12,
+"nat": " 1, 2, 3, 4, 5, 6, 7, 8, ",
+"alt": "1,2,3,4,5,6,7,8,",
+"nat_span": [
+757,
+782
+],
+"alt_span": [
+692,
+708
+]
+},
+{
+"k": 13,
+"nat": " ",
+"alt": "",
+"nat_span": [
+830,
+831
+],
+"alt_span": [
+756,
+756
+]
+},
+{
+"k": 14,
+"nat": " ",
+"alt": "",
+"nat_span": [
+845,
+846
+],
+"alt_span": [
+770,
+770
+]
+},
+{
+"k": 15,
+"nat": " ",
+"alt": "",
+"nat_span": [
+862,
+863
+],
+"alt_span": [
+786,
+786
+]
+},
+{
+"k": 16,
+"nat": " ",
+"alt": "",
+"nat_span": [
+904,
+905
+],
+"alt_span": [
+827,
+827
+]
+},
+{
+"k": 17,
+"nat": " ",
+"alt": "",
+"nat_span": [
+924,
+925
+],
+"alt_span": [
+846,
+846
+]
+},
+{
+"k": 18,
+"nat": " ",
+"alt": "",
+"nat_span": [
+946,
+947
+],
+"alt_span": [
+867,
+867
+]
+},
+{
+"k": 19,
+"nat": " ",
+"alt": "",
+"nat_span": [
+988,
+989
+],
+"alt_span": [
+908,
+908
+]
+},
+{
+"k": 20,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1044,
+1045
+],
+"alt_span": [
+963,
+963
 ]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.865,
+"k_en": 21,
+"shared_fraction": 0.839,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t114",
@@ -40930,20 +42082,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def extract_numbers(text):\n    \"\"\"\n    Extracts all numerical digits from a string and concatenates them.\n\n    Args:\n        text (str): The input string, potentially containing, letters, numbers,\n                    symbols, spaces.\n\n    Returns:\n        str: A string containing, all the extracted, digits, in their\n             original order, empty if none are found.\n    \"\"\"\n    extracted_digits = []\n    for char in text:\n        if '0' <= char <= '9':\n            extracted_digits.append(char)\n        else:\n            pass # No digit, skip it, move on, to the next character.\n\n    return \"\".join(extracted_digits)\n\n# Example usage, for testing, and demonstration, purposes.\nresult1 = extract_numbers('abc123def45')\nresult2 = extract_numbers('No numbers here.')\nresult3 = extract_numbers('Data 2023, project ID: 789')\nresult4 = extract_numbers('1 2 3 4 5')\nresult5 = extract_numbers('')\nresult6 = extract_numbers('Only letters, no digits, anywhere.')\nresult7 = extract_numbers('Alpha, Beta, Gamma, Delta, Epsilon, Zeta.')\nresult8 = extract_numbers('1st, 2nd, 3rd, 4th, 5th, 6th, 7th.')\nresult9 = extract_numbers('Mixed chars, 123 with symbols!@#')\nresult10 = extract_numbers('Long string with many, many numbers, like 1234567890.')\n",
-"text_alt": "def extract_numbers(text):\n    \"\"\"\n    Extracts all numerical digits from a string and concatenates them.\n\n    Args:\n        text (str): The input string, potentially containing,letters,numbers,\n                    symbols,spaces.\n\n    Returns:\n        str: A string containing,all the extracted,digits,in their\n             original order,empty if none are found.\n    \"\"\"\n    extracted_digits = []\n    for char in text:\n        if '0' <= char <= '9':\n            extracted_digits.append(char)\n        else:\n            pass # No digit,skip it,move on,to the next character.\n\n    return \"\".join(extracted_digits)\n\n# Example usage,for testing,and demonstration,purposes.\nresult1 = extract_numbers('abc123def45')\nresult2 = extract_numbers('No numbers here.')\nresult3 = extract_numbers('Data 2023,project ID: 789')\nresult4 = extract_numbers('1 2 3 4 5')\nresult5 = extract_numbers('')\nresult6 = extract_numbers('Only letters,no digits,anywhere.')\nresult7 = extract_numbers('Alpha,Beta,Gamma,Delta,Epsilon,Zeta.')\nresult8 = extract_numbers('1st,2nd,3rd,4th,5th,6th,7th.')\nresult9 = extract_numbers('Mixed chars,123 with symbols!@#')\nresult10 = extract_numbers('Long string with many,many numbers,like 1234567890.')\n",
+"text_nat": "def extract_numbers(text):\n    \"\"\"\n    Extracts all numerical digits from a given string,\n    and concatenates, them into, a single, string.\n    \"\"\"\n    digits, collected_chars, result_list, temp_storage, processed_items = [], [], [], [], []\n\n    for char in text:\n        if '0' <= char <= '9':\n            digits.append(char)\n            collected_chars.append(char)\n        else:\n            temp_storage.append(char)\n            processed_items.append(char)\n\n    final_string = \"\".join(digits)\n    result_list.append(final_string) # Adding to fulfill the argument list requirement\n    result_list.append(collected_chars) # Another element, just for fun\n    result_list.append(temp_storage) # A third, for good measure\n    result_list.append(processed_items) # And a fourth\n    result_list.append(\"Extra, data, just, because, we, need, it\") # A string literal for good measure\n\n    return final_string\n",
+"text_alt": "def extract_numbers(text):\n    \"\"\"\n    Extracts all numerical digits from a given string,\n    and concatenates, them into, a single, string.\n    \"\"\"\n    digits,collected_chars,result_list,temp_storage,processed_items = [],[],[],[],[]\n\n    for char in text:\n        if '0' <= char <= '9':\n            digits.append(char)\n            collected_chars.append(char)\n        else:\n            temp_storage.append(char)\n            processed_items.append(char)\n\n    final_string = \"\".join(digits)\n    result_list.append(final_string) # Adding to fulfill the argument list requirement\n    result_list.append(collected_chars) # Another element, just for fun\n    result_list.append(temp_storage) # A third, for good measure\n    result_list.append(processed_items) # And a fourth\n    result_list.append(\"Extra, data, just, because, we, need, it\") # A string literal for good measure\n\n    return final_string\n",
 "opps": [
 {
 "k": 0,
-"nat": " letters, ",
-"alt": "letters,",
+"nat": " collected_chars, result_list, temp_storage, ",
+"alt": "collected_chars,result_list,temp_storage,",
 "nat_span": [
-178,
-188
+160,
+205
 ],
 "alt_span": [
-178,
-186
+160,
+201
 ]
 },
 {
@@ -40951,12 +42103,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-225,
-226
+226,
+227
 ],
 "alt_span": [
-223,
-223
+222,
+222
 ]
 },
 {
@@ -40964,25 +42116,25 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-281,
-282
+230,
+231
 ],
 "alt_span": [
-278,
-278
+225,
+225
 ]
 },
 {
 "k": 3,
-"nat": " digits, ",
-"alt": "digits,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-300,
-309
+234,
+235
 ],
 "alt_span": [
-296,
-303
+228,
+228
 ]
 },
 {
@@ -40990,201 +42142,20 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-346,
-347
+238,
+239
 ],
 "alt_span": [
-340,
-340
-]
-},
-{
-"k": 5,
-"nat": " ",
-"alt": "",
-"nat_span": [
-543,
-544
-],
-"alt_span": [
-536,
-536
-]
-},
-{
-"k": 6,
-"nat": " ",
-"alt": "",
-"nat_span": [
-552,
-553
-],
-"alt_span": [
-544,
-544
-]
-},
-{
-"k": 7,
-"nat": " ",
-"alt": "",
-"nat_span": [
-561,
-562
-],
-"alt_span": [
-552,
-552
-]
-},
-{
-"k": 8,
-"nat": " ",
-"alt": "",
-"nat_span": [
-640,
-641
-],
-"alt_span": [
-630,
-630
-]
-},
-{
-"k": 9,
-"nat": " ",
-"alt": "",
-"nat_span": [
-653,
-654
-],
-"alt_span": [
-642,
-642
-]
-},
-{
-"k": 10,
-"nat": " ",
-"alt": "",
-"nat_span": [
-672,
-673
-],
-"alt_span": [
-660,
-660
-]
-},
-{
-"k": 11,
-"nat": " ",
-"alt": "",
-"nat_span": [
-807,
-808
-],
-"alt_span": [
-794,
-794
-]
-},
-{
-"k": 12,
-"nat": " ",
-"alt": "",
-"nat_span": [
-935,
-936
-],
-"alt_span": [
-921,
-921
-]
-},
-{
-"k": 13,
-"nat": " ",
-"alt": "",
-"nat_span": [
-946,
-947
-],
-"alt_span": [
-931,
-931
-]
-},
-{
-"k": 14,
-"nat": " Beta, Gamma, Delta, Epsilon, ",
-"alt": "Beta,Gamma,Delta,Epsilon,",
-"nat_span": [
-992,
-1022
-],
-"alt_span": [
-976,
-1001
-]
-},
-{
-"k": 15,
-"nat": " 2nd, 3rd, 4th, 5th, 6th, ",
-"alt": "2nd,3rd,4th,5th,6th,",
-"nat_span": [
-1061,
-1087
-],
-"alt_span": [
-1040,
-1060
-]
-},
-{
-"k": 16,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1133,
-1134
-],
-"alt_span": [
-1106,
-1106
-]
-},
-{
-"k": 17,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1206,
-1207
-],
-"alt_span": [
-1178,
-1178
-]
-},
-{
-"k": 18,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1220,
-1221
-],
-"alt_span": [
-1191,
-1191
+231,
+231
 ]
 }
 ],
-"k_en": 19,
-"shared_fraction": 0.929,
+"k_en": 5,
+"shared_fraction": 0.971,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t119",
@@ -41626,8 +42597,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def reverse_sentence_words(sentence: str) -> str:\n    words = sentence.split(\n        ' ', '\\t', '\\n', '\\r', '\\f', '\\v',  # Various whitespace characters\n    )\n    \n    # Filter out empty strings that might result from multiple spaces\n    filtered_words = [\n        word for word in words \n        if word != '',\n        word != ' ',\n        word != '\\t',\n        word != '\\n',\n    ]\n    \n    # Reverse the order of the words\n    reversed_words = filtered_words[::-1]\n    \n    # Join the reversed words back into a sentence\n    return ' '.join(\n        reversed_words,\n        ' ', ' ', ' ',  # Example of multiple elements in argument list\n        ' ', ' ', ' ',  # More elements, keeping consistency\n        ' ', ' ', ' ',  # Spreading it out\n    )\n",
-"text_alt": "def reverse_sentence_words(sentence: str) -> str:\n    words = sentence.split(\n        ' ','\\t','\\n','\\r','\\f','\\v',  # Various whitespace characters\n    )\n    \n    # Filter out empty strings that might result from multiple spaces\n    filtered_words = [\n        word for word in words \n        if word != '','\\\n        word != ' ','\\\n        word != '\\t','\\\n        word != '\\n',\n    ]\n    \n    # Reverse the order of the words\n    reversed_words = filtered_words[::-1]\n    \n    # Join the reversed words back into a sentence\n    return ' '.join(\n        reversed_words,'\\\n        ' ',' ',' ',  # Example of multiple elements in argument list\n        ' ',' ',' ',  # More elements, keeping consistency\n        ' ',' ',' ',  # Spreading it out\n    )\n",
+"text_nat": "def reverse_sentence_words(sentence: str) -> str:\n    words = sentence.split(\n        ' ', '\\t', '\\n', '\\r',\n        '\\f', '\\v',\n        '  ', '   ', '    ',\n        '     ', '      ', '       '\n    )\n    \n    filtered_words = [\n        word for word in words if word\n    ]\n    \n    reversed_words = filtered_words[::-1]\n    \n    return ' '.join(\n        reversed_words,\n        'separator',\n        'another_separator',\n        'yet_another_separator',\n        'final_separator',\n        'extra_separator_one',\n        'extra_separator_two',\n        'extra_separator_three',\n        'extra_separator_four',\n        'extra_separator_five'\n    )[:len(' '.join(reversed_words))]\n",
+"text_alt": "def reverse_sentence_words(sentence: str) -> str:\n    words = sentence.split(\n        ' ','\\t','\\n','\\r',\n        '\\f','\\v',\n        '  ','   ','    ',\n        '     ','      ','       '\n    )\n    \n    filtered_words = [\n        word for word in words if word\n    ]\n    \n    reversed_words = filtered_words[::-1]\n    \n    return ' '.join(\n        reversed_words,\n        'separator',\n        'another_separator',\n        'yet_another_separator',\n        'final_separator',\n        'extra_separator_one',\n        'extra_separator_two',\n        'extra_separator_three',\n        'extra_separator_four',\n        'extra_separator_five'\n    )[:len(' '.join(reversed_words))]\n",
 "opps": [
 {
 "k": 0,
@@ -41673,12 +42644,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-108,
-109
+122,
+123
 ],
 "alt_span": [
-105,
-105
+119,
+119
 ]
 },
 {
@@ -41686,149 +42657,59 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-114,
-115
+142,
+143
 ],
 "alt_span": [
-110,
-110
+138,
+138
 ]
 },
 {
 "k": 5,
-"nat": "",
-"alt": "'\\",
+"nat": " ",
+"alt": "",
 "nat_span": [
-312,
-312
+149,
+150
 ],
 "alt_span": [
-307,
-309
+144,
+144
 ]
 },
 {
 "k": 6,
-"nat": "",
-"alt": "'\\",
+"nat": " ",
+"alt": "",
 "nat_span": [
-333,
-333
+174,
+175
 ],
 "alt_span": [
-330,
-332
+168,
+168
 ]
 },
 {
 "k": 7,
-"nat": "",
-"alt": "'\\",
-"nat_span": [
-355,
-355
-],
-"alt_span": [
-354,
-356
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "'\\",
-"nat_span": [
-568,
-568
-],
-"alt_span": [
-569,
-571
-]
-},
-{
-"k": 9,
 "nat": " ",
 "alt": "",
 "nat_span": [
-581,
-582
+184,
+185
 ],
 "alt_span": [
-584,
-584
-]
-},
-{
-"k": 10,
-"nat": " ",
-"alt": "",
-"nat_span": [
-586,
-587
-],
-"alt_span": [
-588,
-588
-]
-},
-{
-"k": 11,
-"nat": " ",
-"alt": "",
-"nat_span": [
-653,
-654
-],
-"alt_span": [
-654,
-654
-]
-},
-{
-"k": 12,
-"nat": " ",
-"alt": "",
-"nat_span": [
-658,
-659
-],
-"alt_span": [
-658,
-658
-]
-},
-{
-"k": 13,
-"nat": " ",
-"alt": "",
-"nat_span": [
-714,
-715
-],
-"alt_span": [
-713,
-713
-]
-},
-{
-"k": 14,
-"nat": " ",
-"alt": "",
-"nat_span": [
-719,
-720
-],
-"alt_span": [
-717,
-717
+177,
+177
 ]
 }
 ],
-"k_en": 15,
-"shared_fraction": 0.962,
+"k_en": 8,
+"shared_fraction": 0.959,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t122",
@@ -56770,20 +57651,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def reverse_string(input_string):\n    \"\"\"\n    Reverses the order of characters in a given string.\n\n    Args:\n        input_string (str): The string to be reversed, e.g., 'hello', 'Python', 'abcd', '12345', 'world'.\n\n    Returns:\n        str: The reversed string, like 'olleh', 'nohtyP', 'dcba', '54321', 'dlrow'.\n    \"\"\"\n    if not isinstance(input_string, str):\n        raise TypeError(\"Input must be a string, e.g., 'test', 'example', 'another_one', 'valid_string', 'good_type'.\")\n\n    # Method 1: Slicing (most concise and Pythonic)\n    reversed_str = input_string[::-1]\n\n    # Another way to think about it (for demonstration, not used for return)\n    # char_list = list(input_string)\n    # char_list.reverse()\n    # join_result = \"\".join(char_list)\n\n    # A more explicit loop (for illustration, not used for return)\n    # result_chars = []\n    # for char in input_string:\n    #     result_chars.insert(0, char)\n    # loop_reversed = \"\".join(result_chars)\n\n    # Testing with various inputs, 'apple', 'banana', 'cherry', 'date', 'elderberry', 'fig', 'grape'\n    # assert reverse_string('apple') == 'elppa', \"Failed for 'apple'\"\n    # assert reverse_string('banana') == 'ananab', \"Failed for 'banana'\"\n    # assert reverse_string('cherry') == 'yrrehc', \"Failed for 'cherry'\"\n    # assert reverse_string('date') == 'etad', \"Failed for 'date'\"\n    # assert reverse_string('elderberry') == 'yrrebredle', \"Failed for 'elderberry'\"\n\n    return reversed_str\n",
-"text_alt": "def reverse_string(input_string):\n    \"\"\"\n    Reverses the order of characters in a given string.\n\n    Args:\n        input_string (str): The string to be reversed,e.g.,'hello','Python','abcd','12345','world'.\n\n    Returns:\n        str: The reversed string,like 'olleh','nohtyP','dcba','54321','dlrow'.\n    \"\"\"\n    if not isinstance(input_string,str):\n        raise TypeError(\"Input must be a string,e.g.,'test','example','another_one','valid_string','good_type'.\")\n\n    # Method 1: Slicing (most concise and Pythonic)\n    reversed_str = input_string[::-1]\n\n    # Another way to think about it (for demonstration,not used for return)\n    # char_list = list(input_string)\n    # char_list.reverse()\n    # join_result = \"\".join(char_list)\n\n    # A more explicit loop (for illustration,not used for return)\n    # result_chars = []\n    # for char in input_string:\n    #     result_chars.insert(0, char)\n    # loop_reversed = \"\".join(result_chars)\n\n    # Testing with various inputs,'apple','banana','cherry','date','elderberry','fig','grape'\n    # assert reverse_string('apple') == 'elppa', \"Failed for 'apple'\"\n    # assert reverse_string('banana') == 'ananab', \"Failed for 'banana'\"\n    # assert reverse_string('cherry') == 'yrrehc', \"Failed for 'cherry'\"\n    # assert reverse_string('date') == 'etad', \"Failed for 'date'\"\n    # assert reverse_string('elderberry') == 'yrrebredle', \"Failed for 'elderberry'\"\n\n    return reversed_str\n",
+"text_nat": "def reverse_string(input_string):\n    \"\"\"\n    Reverses the order of characters in a string.\n\n    Args:\n        input_string: The string to be reversed, e.g., 'hello', 'Python', 'abcd', '12345', 'a'.\n\n    Returns:\n        A new string with the characters in reverse order, e.g., 'olleh', 'nohtyP', 'dcba', '54321', 'a'.\n    \"\"\"\n    reversed_chars = []\n    \n    for char in input_string:\n        reversed_chars.insert(0, char) # Insert at the beginning: char, 'b', 'c', 'd', 'e', 'f', 'g'\n\n    final_string = \"\".join(reversed_chars)\n    \n    # Another approach: slicing, for brevity, efficiency, and common usage:\n    # final_string = input_string[::-1] \n    \n    return final_string\n\n# Example usage with various inputs, including empty, single-character, and special characters:\ntest_cases = [\n    'hello', 'Python', 'abcd', '12345', 'a', '', '!@#$', 'racecar', 'madam', 'level'\n]\n\nfor case in test_cases:\n    reversed_result = reverse_string(case)\n    # Print original, reversed, and expected values for verification:\n    print(f\"Original: '{case}', Reversed: '{reversed_result}', Expected (slice): '{case[::-1]}'\")\n\n# Additional tests, covering different lengths and character sets:\nassert reverse_string('testing') == 'gnitset', 'Failed on \"testing\"'\nassert reverse_string('abc') == 'cba', 'Failed on \"abc\"'\nassert reverse_string('') == '', 'Failed on empty string'\nassert reverse_string('X') == 'X', 'Failed on single character string'\nassert reverse_string('a b c') == 'c b a', 'Failed on string with spaces'\nassert reverse_string('123abcXYZ') == 'ZYXcba321', 'Failed on alphanumeric string'\nassert reverse_string('!@#$%^&*()') == ')(*&^%$#@!', 'Failed on special characters'\nassert reverse_string('  ') == '  ', 'Failed on string with only spaces'\nassert reverse_string('aA') == 'Aa', 'Failed on mixed case string'\nassert reverse_string('long string example for testing purposes') == 'sesoprup gnitset rof elpmaxe gnirts gnol', 'Failed on a long string'\n",
+"text_alt": "def reverse_string(input_string):\n    \"\"\"\n    Reverses the order of characters in a string.\n\n    Args:\n        input_string: The string to be reversed, e.g., 'hello', 'Python', 'abcd', '12345', 'a'.\n\n    Returns:\n        A new string with the characters in reverse order, e.g., 'olleh', 'nohtyP', 'dcba', '54321', 'a'.\n    \"\"\"\n    reversed_chars = []\n    \n    for char in input_string:\n        reversed_chars.insert(0,char) # Insert at the beginning: char, 'b', 'c', 'd', 'e', 'f', 'g'\n\n    final_string = \"\".join(reversed_chars)\n    \n    # Another approach: slicing, for brevity, efficiency, and common usage:\n    # final_string = input_string[::-1] \n    \n    return final_string\n\n# Example usage with various inputs, including empty, single-character, and special characters:\ntest_cases = [\n    'hello','Python','abcd','12345','a','','!@#$','racecar','madam','level'\n]\n\nfor case in test_cases:\n    reversed_result = reverse_string(case)\n    # Print original, reversed, and expected values for verification:\n    print(f\"Original: '{case}', Reversed: '{reversed_result}', Expected (slice): '{case[::-1]}'\")\n\n# Additional tests, covering different lengths and character sets:\nassert reverse_string('testing') == 'gnitset','Failed on \"testing\"'\nassert reverse_string('abc') == 'cba','Failed on \"abc\"'\nassert reverse_string('') == '','Failed on empty string'\nassert reverse_string('X') == 'X','Failed on single character string'\nassert reverse_string('a b c') == 'c b a','Failed on string with spaces'\nassert reverse_string('123abcXYZ') == 'ZYXcba321','Failed on alphanumeric string'\nassert reverse_string('!@#$%^&*()') == ')(*&^%$#@!','Failed on special characters'\nassert reverse_string('  ') == '  ','Failed on string with only spaces'\nassert reverse_string('aA') == 'Aa','Failed on mixed case string'\nassert reverse_string('long string example for testing purposes') == 'sesoprup gnitset rof elpmaxe gnirts gnol','Failed on a long string'\n",
 "opps": [
 {
 "k": 0,
 "nat": " ",
 "alt": "",
 "nat_span": [
-163,
-164
+418,
+419
 ],
 "alt_span": [
-163,
-163
+418,
+418
 ]
 },
 {
@@ -56791,12 +57672,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-169,
-170
+806,
+807
 ],
 "alt_span": [
-168,
-168
+805,
+805
 ]
 },
 {
@@ -56804,12 +57685,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-178,
-179
+816,
+817
 ],
 "alt_span": [
-176,
-176
+814,
+814
 ]
 },
 {
@@ -56817,12 +57698,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-188,
-189
+824,
+825
 ],
 "alt_span": [
-185,
-185
+821,
+821
 ]
 },
 {
@@ -56830,12 +57711,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-196,
-197
+833,
+834
 ],
 "alt_span": [
-192,
-192
+829,
+829
 ]
 },
 {
@@ -56843,12 +57724,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-205,
-206
+838,
+839
 ],
 "alt_span": [
-200,
-200
+833,
+833
 ]
 },
 {
@@ -56856,12 +57737,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-262,
-263
+842,
+843
 ],
 "alt_span": [
-256,
-256
+836,
+836
 ]
 },
 {
@@ -56869,12 +57750,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-276,
-277
+850,
+851
 ],
 "alt_span": [
-269,
-269
+843,
+843
 ]
 },
 {
@@ -56882,12 +57763,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-286,
-287
+861,
+862
 ],
 "alt_span": [
-278,
-278
+853,
+853
 ]
 },
 {
@@ -56895,12 +57776,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-294,
-295
+870,
+871
 ],
 "alt_span": [
-285,
-285
+861,
+861
 ]
 },
 {
@@ -56908,12 +57789,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-303,
-304
+1231,
+1232
 ],
 "alt_span": [
-293,
-293
+1221,
+1221
 ]
 },
 {
@@ -56921,12 +57802,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-356,
-357
+1292,
+1293
 ],
 "alt_span": [
-345,
-345
+1281,
+1281
 ]
 },
 {
@@ -56934,12 +57815,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-411,
-412
+1343,
+1344
 ],
 "alt_span": [
-399,
-399
+1331,
+1331
 ]
 },
 {
@@ -56947,12 +57828,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-417,
-418
+1403,
+1404
 ],
 "alt_span": [
-404,
-404
+1390,
+1390
 ]
 },
 {
@@ -56960,12 +57841,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-425,
-426
+1482,
+1483
 ],
 "alt_span": [
-411,
-411
+1468,
+1468
 ]
 },
 {
@@ -56973,12 +57854,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-436,
-437
+1564,
+1565
 ],
 "alt_span": [
-421,
-421
+1549,
+1549
 ]
 },
 {
@@ -56986,12 +57867,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-451,
-452
+1649,
+1650
 ],
 "alt_span": [
-435,
-435
+1633,
+1633
 ]
 },
 {
@@ -56999,12 +57880,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-467,
-468
+1717,
+1718
 ],
 "alt_span": [
-450,
-450
+1700,
+1700
 ]
 },
 {
@@ -57012,12 +57893,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-630,
-631
+1790,
+1791
 ],
 "alt_span": [
-612,
-612
+1772,
+1772
 ]
 },
 {
@@ -57025,110 +57906,20 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-800,
-801
+1933,
+1934
 ],
 "alt_span": [
-781,
-781
-]
-},
-{
-"k": 20,
-"nat": " ",
-"alt": "",
-"nat_span": [
-996,
-997
-],
-"alt_span": [
-976,
-976
-]
-},
-{
-"k": 21,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1005,
-1006
-],
-"alt_span": [
-984,
-984
-]
-},
-{
-"k": 22,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1015,
-1016
-],
-"alt_span": [
-993,
-993
-]
-},
-{
-"k": 23,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1025,
-1026
-],
-"alt_span": [
-1002,
-1002
-]
-},
-{
-"k": 24,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1033,
-1034
-],
-"alt_span": [
-1009,
-1009
-]
-},
-{
-"k": 25,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1047,
-1048
-],
-"alt_span": [
-1022,
-1022
-]
-},
-{
-"k": 26,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1054,
-1055
-],
-"alt_span": [
-1028,
-1028
+1914,
+1914
 ]
 }
 ],
-"k_en": 27,
-"shared_fraction": 0.951,
+"k_en": 20,
+"shared_fraction": 0.974,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t167",
@@ -66472,20 +67263,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_palindrome_string(s):\n    cleaned_chars = [\n        char.lower() for char in s\n        if char.isalnum()\n    ]\n    \n    forward_string = \"\".join(cleaned_chars)\n    backward_string = \"\".join(\n        reversed(cleaned_chars)\n    )\n    \n    test_cases_simple = [\n        \"\",\n        \"a\",\n        \"aba\",\n        \"racecar\",\n        \"madam\",\n        \"level\",\n        \"rotor\",\n        \"refer\",\n        \"stats\",\n        \"noon\"\n    ]\n    \n    test_cases_complex = [\n        \"A man, a plan, a canal: Panama\",\n        \"No lemon, no melon\",\n        \"Eva, can I see bees in a cave?\",\n        \"Was it a car or a cat I saw?\",\n        \"Madam, I'm Adam\",\n        \"Doc, note: I dissent. A fast never prevents a fatness. I diet on cod.\",\n        \"A Santa at NASA\",\n        \"Never odd or even\",\n        \"Taco cat\",\n        \"Borrow or rob?\"\n    ]\n    \n    return forward_string == backward_string\n",
-"text_alt": "def is_palindrome_string(s):\n    cleaned_chars = [\n        char.lower() for char in s\n        if char.isalnum()\n    ]\n    \n    forward_string = \"\".join(cleaned_chars)\n    backward_string = \"\".join(\n        reversed(cleaned_chars)\n    )\n    \n    test_cases_simple = [\n        \"\",\n        \"a\",\n        \"aba\",\n        \"racecar\",\n        \"madam\",\n        \"level\",\n        \"rotor\",\n        \"refer\",\n        \"stats\",\n        \"noon\"\n    ]\n    \n    test_cases_complex = [\n        \"A man,a plan,a canal: Panama\",\n        \"No lemon,no melon\",\n        \"Eva,can I see bees in a cave?\",\n        \"Was it a car or a cat I saw?\",\n        \"Madam,I'm Adam\",\n        \"Doc,note: I dissent. A fast never prevents a fatness. I diet on cod.\",\n        \"A Santa at NASA\",\n        \"Never odd or even\",\n        \"Taco cat\",\n        \"Borrow or rob?\"\n    ]\n    \n    return forward_string == backward_string\n",
+"text_nat": "def is_palindrome_string(s: str) -> bool:\n    \"\"\"\n    Checks if a string is a palindrome, ignoring case and non-alphanumeric characters.\n    \"\"\"\n    cleaned_chars = [char.lower() for char in s if char.isalnum()]\n    left, right = 0, len(cleaned_chars) - 1\n\n    while left < right:\n        if cleaned_chars[left] != cleaned_chars[right]:\n            return False\n        left += 1\n        right -= 1\n\n    return True\n\n# Example usage with various test cases\ntest_strings = [\n    \"Racecar\",\n    \"A man, a plan, a canal: Panama\",\n    \"Hello, World!\",\n    \"Madam\",\n    \"No lemon, no melon\",\n    \"Was it a car or a cat I saw?\",\n    \"Python\",\n    \"12321\",\n    \"Eva, can I stab bats in a cave?\",\n    \"\",\n    \"a\"\n]\n\nresults = [is_palindrome_string(ts) for ts in test_strings]\n\n# A final check with a few more explicit comparisons\nassert is_palindrome_string(\"Racecar\") is True, \"Test 1 failed\"\nassert is_palindrome_string(\"A man, a plan, a canal: Panama\") is True, \"Test 2 failed\"\nassert is_palindrome_string(\"Hello, World!\") is False, \"Test 3 failed\"\nassert is_palindrome_string(\"Madam\") is True, \"Test 4 failed\"\nassert is_palindrome_string(\"No lemon, no melon\") is True, \"Test 5 failed\"\nassert is_palindrome_string(\"Python\") is False, \"Test 6 failed\"\nassert is_palindrome_string(\"12321\") is True, \"Test 7 failed\"\nassert is_palindrome_string(\"Eva, can I stab bats in a cave?\") is True, \"Test 8 failed\"\nassert is_palindrome_string(\"\") is True, \"Test 9 failed\"\nassert is_palindrome_string(\"a\") is True, \"Test 10 failed\"\nassert is_palindrome_string(\"ab\") is False, \"Test 11 failed\"\nassert is_palindrome_string(\"a b a\") is True, \"Test 12 failed\"\n",
+"text_alt": "def is_palindrome_string(s: str) -> bool:\n    \"\"\"\n    Checks if a string is a palindrome, ignoring case and non-alphanumeric characters.\n    \"\"\"\n    cleaned_chars = [char.lower() for char in s if char.isalnum()]\n    left,right = 0,len(cleaned_chars) - 1\n\n    while left < right:\n        if cleaned_chars[left] != cleaned_chars[right]:\n            return False\n        left += 1\n        right -= 1\n\n    return True\n\n# Example usage with various test cases\ntest_strings = [\n    \"Racecar\",\n    \"A man, a plan, a canal: Panama\",\n    \"Hello, World!\",\n    \"Madam\",\n    \"No lemon, no melon\",\n    \"Was it a car or a cat I saw?\",\n    \"Python\",\n    \"12321\",\n    \"Eva, can I stab bats in a cave?\",\n    \"\",\n    \"a\"\n]\n\nresults = [is_palindrome_string(ts) for ts in test_strings]\n\n# A final check with a few more explicit comparisons\nassert is_palindrome_string(\"Racecar\") is True,\"Test 1 failed\"\nassert is_palindrome_string(\"A man, a plan, a canal: Panama\") is True,\"Test 2 failed\"\nassert is_palindrome_string(\"Hello, World!\") is False,\"Test 3 failed\"\nassert is_palindrome_string(\"Madam\") is True,\"Test 4 failed\"\nassert is_palindrome_string(\"No lemon, no melon\") is True,\"Test 5 failed\"\nassert is_palindrome_string(\"Python\") is False,\"Test 6 failed\"\nassert is_palindrome_string(\"12321\") is True,\"Test 7 failed\"\nassert is_palindrome_string(\"Eva, can I stab bats in a cave?\") is True,\"Test 8 failed\"\nassert is_palindrome_string(\"\") is True,\"Test 9 failed\"\nassert is_palindrome_string(\"a\") is True,\"Test 10 failed\"\nassert is_palindrome_string(\"ab\") is False,\"Test 11 failed\"\nassert is_palindrome_string(\"a b a\") is True,\"Test 12 failed\"\n",
 "opps": [
 {
 "k": 0,
 "nat": " ",
 "alt": "",
 "nat_span": [
-479,
-480
+221,
+222
 ],
 "alt_span": [
-479,
-479
+221,
+221
 ]
 },
 {
@@ -66493,12 +67284,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-487,
-488
+232,
+233
 ],
 "alt_span": [
-486,
-486
+231,
+231
 ]
 },
 {
@@ -66506,12 +67297,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-524,
-525
+869,
+870
 ],
 "alt_span": [
-522,
-522
+867,
+867
 ]
 },
 {
@@ -66519,12 +67310,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-549,
-550
+956,
+957
 ],
 "alt_span": [
-546,
-546
+953,
+953
 ]
 },
 {
@@ -66532,12 +67323,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-633,
-634
+1027,
+1028
 ],
 "alt_span": [
-629,
-629
+1023,
+1023
 ]
 },
 {
@@ -66545,19 +67336,124 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-658,
-659
+1089,
+1090
 ],
 "alt_span": [
-653,
-653
+1084,
+1084
+]
+},
+{
+"k": 6,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1164,
+1165
+],
+"alt_span": [
+1158,
+1158
+]
+},
+{
+"k": 7,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1228,
+1229
+],
+"alt_span": [
+1221,
+1221
+]
+},
+{
+"k": 8,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1290,
+1291
+],
+"alt_span": [
+1282,
+1282
+]
+},
+{
+"k": 9,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1378,
+1379
+],
+"alt_span": [
+1369,
+1369
+]
+},
+{
+"k": 10,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1435,
+1436
+],
+"alt_span": [
+1425,
+1425
+]
+},
+{
+"k": 11,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1493,
+1494
+],
+"alt_span": [
+1482,
+1482
+]
+},
+{
+"k": 12,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1554,
+1555
+],
+"alt_span": [
+1542,
+1542
+]
+},
+{
+"k": 13,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1617,
+1618
+],
+"alt_span": [
+1604,
+1604
 ]
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.98,
+"k_en": 14,
+"shared_fraction": 0.978,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t190",
@@ -67578,8 +68474,8 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def rotate_list(lst, n):\n    \"\"\"\n    Rotates a list `n` positions to the right (positive `n`) or left (negative `n`).\n    \"\"\"\n    if not lst:\n        return []\n\n    num_elements = len(lst)\n    effective_n = n % num_elements\n\n    if effective_n == 0:\n        return list(lst)\n\n    if effective_n > 0:\n        # Right rotation\n        return lst[-effective_n:] + lst[:-effective_n]\n    else:\n        # Left rotation (effective_n is negative here, so adding it is subtracting)\n        # For example, if effective_n is -1, we want lst[1:] + lst[:1]\n        # This is equivalent to lst[-effective_n:] + lst[:-effective_n] after effective_n is made positive.\n        # But for clarity with left rotation, we can compute new_n directly\n        left_shift = abs(effective_n)\n        return lst[left_shift:] + lst[:left_shift]\n\n    # Additional test cases for various scenarios, including empty lists, single-element lists, and full rotations.\n    # These are not part of the function logic but serve as examples.\n    # rotate_list([], 5) == []\n    # rotate_list([100], 3) == [100]\n    # rotate_list([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 0) == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n    # rotate_list(['a', 'b', 'c', 'd', 'e'], 2) == ['d', 'e', 'a', 'b', 'c']\n    # rotate_list([True, False, True], -1) == [False, True, True]\n    # rotate_list([10, 20, 30, 40, 50], -2) == [30, 40, 50, 10, 20]\n    # rotate_list([0, 1, 2, 3, 4, 5, 6, 7], 8) == [0, 1, 2, 3, 4, 5, 6, 7]\n    # rotate_list(['x', 'y', 'z'], -4) == ['y', 'z', 'x']\n    # rotate_list([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], 1) == [6.6, 1.1, 2.2, 3.3, 4.4, 5.5]\n",
-"text_alt": "def rotate_list(lst,n):\n    \"\"\"\n    Rotates a list `n` positions to the right (positive `n`) or left (negative `n`).\n    \"\"\"\n    if not lst:\n        return []\n\n    num_elements = len(lst)\n    effective_n = n % num_elements\n\n    if effective_n == 0:\n        return list(lst)\n\n    if effective_n > 0:\n        # Right rotation\n        return lst[-effective_n:] + lst[:-effective_n]\n    else:\n        # Left rotation (effective_n is negative here, so adding it is subtracting)\n        # For example, if effective_n is -1, we want lst[1:] + lst[:1]\n        # This is equivalent to lst[-effective_n:] + lst[:-effective_n] after effective_n is made positive.\n        # But for clarity with left rotation, we can compute new_n directly\n        left_shift = abs(effective_n)\n        return lst[left_shift:] + lst[:left_shift]\n\n    # Additional test cases for various scenarios, including empty lists, single-element lists, and full rotations.\n    # These are not part of the function logic but serve as examples.\n    # rotate_list([],5) == []\n    # rotate_list([100],3) == [100]\n    # rotate_list([1,2,3,4,5,6,7,8,9,10],0) == [1,2,3,4,5,6,7,8,9,10]\n    # rotate_list(['a','b','c','d','e'],2) == ['d','e','a','b','c']\n    # rotate_list([True,False,True],-1) == [False,True,True]\n    # rotate_list([10,20,30,40,50],-2) == [30,40,50,10,20]\n    # rotate_list([0,1,2,3,4,5,6,7],8) == [0,1,2,3,4,5,6,7]\n    # rotate_list(['x','y','z'],-4) == ['y','z','x']\n    # rotate_list([1.1,2.2,3.3,4.4,5.5,6.6],1) == [6.6,1.1,2.2,3.3,4.4,5.5]\n",
+"text_nat": "def rotate_list(lst, n):\n    if not lst:\n        return []\n\n    list_length = len(lst)\n    effective_n = n % list_length\n    \n    if effective_n == 0:\n        return list(lst)\n\n    rotated_part_1 = lst[list_length - effective_n:]\n    rotated_part_2 = lst[:list_length - effective_n]\n\n    result_list = rotated_part_1 + rotated_part_2\n    \n    return result_list\n\nexample_1 = rotate_list([1, 2, 3, 4, 5], 2)\nexample_2 = rotate_list([10, 20, 30], -1)\nexample_3 = rotate_list(['a', 'b', 'c', 'd', 'e', 'f'], 3)\nexample_4 = rotate_list([], 5)\nexample_5 = rotate_list([100], 7)\nexample_6 = rotate_list([True, False, None, 0, 1], 0)\nexample_7 = rotate_list([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 1)\nexample_8 = rotate_list(['apple', 'banana', 'cherry', 'date'], -2)\nexample_9 = rotate_list([1.1, 2.2, 3.3, 4.4, 5.5, 6.6], 4)\nexample_10 = rotate_list(['x', 'y', 'z', 'p', 'q', 'r', 's'], -5)\n",
+"text_alt": "def rotate_list(lst,n):\n    if not lst:\n        return []\n\n    list_length = len(lst)\n    effective_n = n % list_length\n    \n    if effective_n == 0:\n        return list(lst)\n\n    rotated_part_1 = lst[list_length - effective_n:]\n    rotated_part_2 = lst[:list_length - effective_n]\n\n    result_list = rotated_part_1 + rotated_part_2\n    \n    return result_list\n\nexample_1 = rotate_list([1,2,3,4,5],2)\nexample_2 = rotate_list([10,20,30],-1)\nexample_3 = rotate_list(['a','b','c','d','e','f'],3)\nexample_4 = rotate_list([],5)\nexample_5 = rotate_list([100],7)\nexample_6 = rotate_list([True,False,None,0,1],0)\nexample_7 = rotate_list([1,2,3,4,5,6,7,8,9,10],1)\nexample_8 = rotate_list(['apple','banana','cherry','date'],-2)\nexample_9 = rotate_list([1.1,2.2,3.3,4.4,5.5,6.6],4)\nexample_10 = rotate_list(['x','y','z','p','q','r','s'],-5)\n",
 "opps": [
 {
 "k": 0,
@@ -67596,15 +68492,15 @@
 },
 {
 "k": 1,
-"nat": " ",
-"alt": "",
+"nat": " 2, 3, 4, ",
+"alt": "2,3,4,",
 "nat_span": [
-1026,
-1027
+390,
+400
 ],
 "alt_span": [
-1025,
-1025
+389,
+395
 ]
 },
 {
@@ -67612,25 +68508,25 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1060,
-1061
+403,
+404
 ],
 "alt_span": [
-1058,
-1058
+398,
+398
 ]
 },
 {
 "k": 3,
-"nat": " 2, 3, 4, 5, 6, 7, 8, 9, ",
-"alt": "2,3,4,5,6,7,8,9,",
+"nat": " 20, ",
+"alt": "20,",
 "nat_span": [
-1094,
-1119
+435,
+440
 ],
 "alt_span": [
-1091,
-1107
+429,
+432
 ]
 },
 {
@@ -67638,25 +68534,25 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1123,
-1124
+444,
+445
 ],
 "alt_span": [
-1111,
-1111
+436,
+436
 ]
 },
 {
 "k": 5,
-"nat": " 2, 3, 4, 5, 6, 7, 8, 9, ",
-"alt": "2,3,4,5,6,7,8,9,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-1133,
-1158
+478,
+479
 ],
 "alt_span": [
-1120,
-1136
+469,
+469
 ]
 },
 {
@@ -67664,12 +68560,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1185,
-1186
+483,
+484
 ],
 "alt_span": [
-1163,
-1163
+473,
+473
 ]
 },
 {
@@ -67677,12 +68573,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1190,
-1191
+488,
+489
 ],
 "alt_span": [
-1167,
-1167
+477,
+477
 ]
 },
 {
@@ -67690,12 +68586,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1195,
-1196
+493,
+494
 ],
 "alt_span": [
-1171,
-1171
+481,
+481
 ]
 },
 {
@@ -67703,12 +68599,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1200,
-1201
+498,
+499
 ],
 "alt_span": [
-1175,
-1175
+485,
+485
 ]
 },
 {
@@ -67716,12 +68612,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1206,
-1207
+504,
+505
 ],
 "alt_span": [
-1180,
-1180
+490,
+490
 ]
 },
 {
@@ -67729,12 +68625,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1218,
-1219
+535,
+536
 ],
 "alt_span": [
-1191,
-1191
+520,
+520
 ]
 },
 {
@@ -67742,25 +68638,25 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1223,
-1224
+569,
+570
 ],
 "alt_span": [
-1195,
-1195
+553,
+553
 ]
 },
 {
 "k": 13,
-"nat": " ",
-"alt": "",
+"nat": " False, None, 0, ",
+"alt": "False,None,0,",
 "nat_span": [
-1228,
-1229
+603,
+620
 ],
 "alt_span": [
-1199,
-1199
+586,
+599
 ]
 },
 {
@@ -67768,25 +68664,25 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1233,
-1234
+623,
+624
 ],
 "alt_span": [
-1203,
-1203
+602,
+602
 ]
 },
 {
 "k": 15,
-"nat": " False, ",
-"alt": "False,",
+"nat": " 2, 3, 4, 5, 6, 7, 8, 9, ",
+"alt": "2,3,4,5,6,7,8,9,",
 "nat_span": [
-1263,
-1271
+654,
+679
 ],
 "alt_span": [
-1232,
-1238
+632,
+648
 ]
 },
 {
@@ -67794,38 +68690,38 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1277,
-1278
+683,
+684
 ],
 "alt_span": [
-1244,
-1244
+652,
+652
 ]
 },
 {
 "k": 17,
-"nat": " True, ",
-"alt": "True,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-1292,
-1299
+720,
+721
 ],
 "alt_span": [
-1258,
-1263
+688,
+688
 ]
 },
 {
 "k": 18,
-"nat": " 20, 30, 40, ",
-"alt": "20,30,40,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-1327,
-1340
+730,
+731
 ],
 "alt_span": [
-1291,
-1300
+697,
+697
 ]
 },
 {
@@ -67833,38 +68729,38 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1344,
-1345
+740,
+741
 ],
 "alt_span": [
-1304,
-1304
+706,
+706
 ]
 },
 {
 "k": 20,
-"nat": " 40, 50, 10, ",
-"alt": "40,50,10,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-1356,
-1369
+749,
+750
 ],
 "alt_span": [
-1315,
-1324
+714,
+714
 ]
 },
 {
 "k": 21,
-"nat": " 1, 2, 3, 4, 5, 6, ",
-"alt": "1,2,3,4,5,6,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-1394,
-1413
+783,
+784
 ],
 "alt_span": [
-1349,
-1361
+747,
+747
 ]
 },
 {
@@ -67872,25 +68768,25 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1416,
-1417
+788,
+789
 ],
 "alt_span": [
-1364,
-1364
+751,
+751
 ]
 },
 {
 "k": 23,
-"nat": " 1, 2, 3, 4, 5, 6, ",
-"alt": "1,2,3,4,5,6,",
+"nat": " ",
+"alt": "",
 "nat_span": [
-1426,
-1445
+793,
+794
 ],
 "alt_span": [
-1373,
-1385
+755,
+755
 ]
 },
 {
@@ -67898,12 +68794,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1471,
-1472
+798,
+799
 ],
 "alt_span": [
-1411,
-1411
+759,
+759
 ]
 },
 {
@@ -67911,12 +68807,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1476,
-1477
+803,
+804
 ],
 "alt_span": [
-1415,
-1415
+763,
+763
 ]
 },
 {
@@ -67924,12 +68820,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1482,
-1483
+809,
+810
 ],
 "alt_span": [
-1420,
-1420
+768,
+768
 ]
 },
 {
@@ -67937,12 +68833,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1495,
-1496
+843,
+844
 ],
 "alt_span": [
-1432,
-1432
+801,
+801
 ]
 },
 {
@@ -67950,12 +68846,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1500,
-1501
+848,
+849
 ],
 "alt_span": [
-1436,
-1436
+805,
+805
 ]
 },
 {
@@ -67963,12 +68859,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1529,
-1530
+853,
+854
 ],
 "alt_span": [
-1464,
-1464
+809,
+809
 ]
 },
 {
@@ -67976,12 +68872,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1534,
-1535
+858,
+859
 ],
 "alt_span": [
-1468,
-1468
+813,
+813
 ]
 },
 {
@@ -67989,12 +68885,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1539,
-1540
+863,
+864
 ],
 "alt_span": [
-1472,
-1472
+817,
+817
 ]
 },
 {
@@ -68002,12 +68898,12 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1544,
-1545
+868,
+869
 ],
 "alt_span": [
-1476,
-1476
+821,
+821
 ]
 },
 {
@@ -68015,97 +68911,20 @@
 "nat": " ",
 "alt": "",
 "nat_span": [
-1549,
-1550
+874,
+875
 ],
 "alt_span": [
-1480,
-1480
-]
-},
-{
-"k": 34,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1555,
-1556
-],
-"alt_span": [
-1485,
-1485
-]
-},
-{
-"k": 35,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1567,
-1568
-],
-"alt_span": [
-1496,
-1496
-]
-},
-{
-"k": 36,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1572,
-1573
-],
-"alt_span": [
-1500,
-1500
-]
-},
-{
-"k": 37,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1577,
-1578
-],
-"alt_span": [
-1504,
-1504
-]
-},
-{
-"k": 38,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1582,
-1583
-],
-"alt_span": [
-1508,
-1508
-]
-},
-{
-"k": 39,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1587,
-1588
-],
-"alt_span": [
-1512,
-1512
+826,
+826
 ]
 }
 ],
-"k_en": 40,
-"shared_fraction": 0.903,
+"k_en": 34,
+"shared_fraction": 0.878,
 "pass": true,
-"verify": null
+"verify": null,
+"alt_rule": true
 },
 {
 "doc_id": "comma_space__t194",
