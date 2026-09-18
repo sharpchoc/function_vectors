@@ -11,4 +11,5 @@ evidence tokens, write = L24 cue-token residual, flags style_ok / judge_ok / cor
 - `v3_pairdiff_ridge_all_prompts_L8_to_L24/` — ridge on per-prompt nat−alt DIFFERENCES (paired by document and k), all prompts,
   same split; LOFO R² .015 (λ 1e5), train-fit .34; test evaluation pending.
 - `v5_pairdiff_ridge_all_prompts_80_20/` — v3 with the 2026-09-15 80/20 split (10 test / 46 train); centroid-diff R² 0.02 / 0.12, cos 0.37.
+- `v4_pairdiff_procrustes_all_prompts_L8_to_L24/` — scaled Procrustes (orthogonal W, one global scale) on the v3 data; centroid-diff R² -0.59 / -0.47, cos 0.31.
 Nothing in here is a settled result yet.
