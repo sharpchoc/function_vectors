@@ -9740,3 +9740,10 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   rust_question → alt .02, block families weak. Read gain > write gain (L24 α2 full56) in 85/112 family-directions. The 10 sweep
   families were re-run at 40 docs for uniformity (user asked; not strictly needed). Results artifact (new URL after the sign-out):
   https://claude.ai/artifact/XjowZYrkNCPSWZHaxpd676.
+- 2026-09-18 PER-PROMPT FEATURES + READ→WRITE MAP: `capture_prompt_pairs_code.py` (4 pods pp_1..4, ~10 min) → `prompt_pairs/<fam>.npz`
+  (31,835 prompts; read = L8 evidence mean, write = L24 cue; fp16; train counts = write-feature counts). `read_write_map_code.py`
+  (LOFO CV on 1 GPU pod map_1, ~4 min; final fits on CPU with --skip_cv) → `results/code_styles/read_write_map/`: family split
+  45/11 (seed 43); map A prompt→centroid held-out R² .121 (λ 1e5), map B centroid→centroid .111 (λ 1e2); controls −.131 / −.309;
+  cos(pred, true nat−alt write dir) mean .26/.27 (comma_space .57, py2_except .53, py_loop_vars .52; rust_question .05). Lessons:
+  per-family R² is degenerate for a 2-value target; 4-core CPU box → LOFO with one eigh per fold on a GPU pod (numpy solve per
+  λ was hours). Results artifact v6.
