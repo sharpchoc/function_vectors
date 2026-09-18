@@ -9619,3 +9619,4 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   .72 → .17, py_snake_camel → alt .80 → .03 at L26α4; py_self_name → nat 1.00 → .23 at L24α4). Non-responders in both directions:
   py_const_naming, docstring_quotes, py_builtin_generics, comment_language (the 0-shot model never produces the construct; steering
   the first token does not create it). Unsteered arm vs step-3 k = 0: mean diff .003, max .17. Results page artifact v15.
+- 2026-09-18 USER DECISION: write feature for code conventions = L24, α = 2 (DECISIONS entry; README of write_steering updated).

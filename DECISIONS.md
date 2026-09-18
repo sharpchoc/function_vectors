@@ -1960,3 +1960,10 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - Sweep lesson carried over: only layers 24/26 respond and the effect is largely a first-token push; families whose convention needs
   follow-through, or whose construct the 0-shot model never writes, do not respond. Do not read these numbers as evidence about
   mid-layer write features.
+
+## 2026-09-18 — Write feature for code conventions = layer 24, α = 2 (USER DECISION)
+- The write feature of a code-convention family is the cue-token mean-difference vector at the output of block 24,
+  `v = μ_nat − μ_alt` (μ from k ∈ {3, 4} correct completions on the 150 training documents), applied as ±2·v at the cue token of
+  a 0-shot prompt. This is the go-to definition for all further code-convention work (read→write maps, comparisons, write-ups);
+  the other three cells in `full56/` stay as reported context. Headline numbers at this setting over 56 families: → natural .56
+  (unsteered .40), → alternative .43 (unsteered .13), judge OK .84; k = 4 in context .74 / .69.
