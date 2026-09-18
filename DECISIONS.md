@@ -2011,3 +2011,12 @@ always count; (5) cue tokens (demonstration and query) and the task header are n
 region are matched as equal by the alignment and are not evidence (an earlier claim to the contrary was a measurement error).
 Evidence sets range from 3 tokens (js_strict_eq, r_assignment) to ~150 (docstring_style) per k = 3 prompt; the read feature is the
 mean over them, so per-family results must be read with that in mind.
+
+## 2026-09-18 — Read feature and read steering (definitions; USER answers)
+- Read feature of a family, pole and layer = mean over prompts of the per-prompt mean activation over the prompt's evidence tokens
+  (`code_evidence.py` rule), at the output of block L (1..28, layer 0 stored too); prompts = exactly the write feature's set
+  (k ∈ {3, 4}, training documents, completion correct, unpaired). Read vector r_L = mean_nat − mean_alt.
+- Read steering test = held-out k = 3 prompts whose demonstrations are in the WRONG style, ±α·r_L added at EVERY evidence token of
+  the prompt at layer L (prefill only, nothing at the query cue or generated tokens); success = target convention AND judge OK;
+  baseline = the same prompts unsteered; ceiling = the right-style k = 3 accuracy. Sweep families = the 10 write-sweep families.
+  Selection rule as for the write sweep (one shared cell, max mean success). Result: L8, α = 4 (pending approval; α not saturated).

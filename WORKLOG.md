@@ -9700,3 +9700,35 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   artifacts moved to `/root/.claude/jobs/1f45be64/tmp/stale_bug15/`. Pool unchanged 56/60. k = 4 moves: py_with_open nat .42→.58 /
   alt .74→.54 (forced close() no longer a success), py_ternary .44/.57→.38/.46, rust_question .82/.70→.85/.78, py_comprehension nat
   .66→.72, others within noise. full56 means unchanged (L24α2: → nat .56, → alt .44); py_ternary → alt .25→.53. Results page v29.
+- 2026-09-18 EVIDENCE TOKENS for the 56 code families (subagent, CPU, tokenisation only): `src/sandbox/style_translation/code_evidence.py`
+  implements the 2026-09-18 rule — scope = header_len <= j < query cue; A = `evidence_tokens.evidence_for` with K = k (token after each
+  demonstration cue, code diff-only); B = every scoped token inside a non-equal difflib opcode of the prompt's token strings vs the other
+  pole's twin tokenisation, minus demonstration cues + query cue; leading-space filter (word whose stripped text equals a token of the
+  aligned other-pole region with different raw text is dropped; whitespace tokens never; OFF for comma_space, operator_spaces, line_wrap,
+  py_tabs); SECTION rule for comment_language / comment_case / docstring_style via `code_free.comment_units` (one unit per `#` comment,
+  each docstring merged opener→closer, unit must end at or before the query cue's char start; char→token by cumulative decoded lengths);
+  evidence = A | B | SECTION minus all cue indices, asserted in scope. API `evidence_positions(fam, rec, pole, prompt_ids, k, tok)` ->
+  {idx, toks, n_A, n_B (=|B\A|), n_section (=|SEC\(A|B)|), n_dropped, a_error, sec_error}; CLI `-m ...code_evidence --model qwen25_code
+  --ks 1 2 3 4 [--workers N --force --stats-csv]` writes `artifacts/style_translation/qwen25_code/read_features/evidence/<fam>.json`
+  (resumable per family). VERIFIED against the approved prototype (`tmp/final_evidence_page.py` render sets + `issues_page2.classify`
+  region filter + the four-family exception, `tmp/verify_code_evidence.py`, `tmp/verify_sections_wide.py`): 210/210 random k = 3 prompts
+  of 7 families identical once the prototype's SECTION set has the demonstration cues removed (the prototype's `B -= cues` was never
+  applied to SEC, so its comment_language / comment_case / docstring_style pages coloured the 3 demonstration cues purple — rule (5)
+  says cues are never evidence, the module follows the rule); all other families identical as is. One module bug found and fixed
+  during verification: `comment_units` lists an opener-only `"""` line and the first text line both as kind 'doc', the first merge split
+  them and counted the query's just-opened docstring opener as a section (6/210 prompts) — docstrings are now merged until the closer.
+  RUN: 56 families x k = 1..4, 89,576 prompts, 0 zero-evidence prompts, 0 A-failures, 0 section failures (`tmp/code_evidence_run.log`,
+  `tmp/code_evidence_run_sections.log`). k = 3 mean evidence tokens: 3.0 (js_var, r_assignment, py2_except) ... 43.3 comment_language,
+  151.5 docstring_style (A 17.7 + B 19.6 + section 114.3); leading-space drops are rare (k = 3 mean per prompt: js_template 3.3,
+  py2_print 2.1, docstring_style 1.8, c_comment_style 1.5, py_paren_if 1.4, float_literals 1.0, all others < 1). Tables:
+  `tmp/evidence_stats.csv` (family x k: n, mean/min/max, zero, A-failures, mean A/B/section/dropped), examples `tmp/evidence_examples.json`
+  (3 random k = 3 prompts x 12 families, decoded prompt + idx/toks). Nothing committed.
+- 2026-09-18 READ FEATURES + READ STEERING SWEEP: `code_evidence.py` (agreed rule) → evidence positions for all 56 families, k = 1..4
+  (89,576 prompts, 0 empty); `capture_read.py` on 4 pods (rd_1..4, 14 families each) → `read_features/vectors_k3_train/` (prompt counts
+  identical to the write feature; split-half cos .98 mean; ‖diff‖/‖mean‖ .56 at L8, .34 at L24; cos(read diff, write v) .13).
+  `read_sweep.py` on 7 pods (rd_1..7, layer pairs; all terminated by id, completion = "JOB DONE" in the shared log): 10 sweep families,
+  ~49 held-out k = 3 prompts per context style, L 2..26 × α .5..4 × 2 directions + baseline, 52,000 records judged.
+  `read_sweep_analyze.py` → `results/code_styles/read_steering/sweep10/`. SELECTED L8 α4: mean success .65 (→ nat .73, → alt .56) vs
+  unsteered .05, ceiling .77, judge OK .87; top-5 = L8–L18 at α4 (tie); per-family best .75. Read steering works at L2–22, fails at
+  L24/26; success monotone in α up to 4 (grid stops before the peak). Weak: js_hungarian → alt .10, py_comprehension → alt .16.
+  Read vs write: read ≥ write in 17/20 family-directions. Results page v34; awaiting approval of (L8, α4) or a wider α range.
