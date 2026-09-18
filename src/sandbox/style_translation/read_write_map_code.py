@@ -42,6 +42,7 @@ def main():
     ap.add_argument("--lams", nargs="*", type=float, default=[1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])
     ap.add_argument("--split_file", default=None, help="JSON with 'train' and 'test' family lists (overrides the seeded 80/20 split)")
     ap.add_argument("--tag", default=None, help="write results to read_write_map/sandbox/<tag>/ and the model to ridge_L8_to_L24_<tag>.npz")
+    ap.add_argument("--method", choices=["ridge", "procrustes"], default="ridge", help="procrustes = orthogonal W (SVD of Xc^T Yc) with ONE global scale, train-mean centring; no lambda")
     ap.add_argument("--pair_diff", action="store_true", help="rows = (document, k) pairs: X = read_nat - read_alt, Y = write_nat - write_alt (both prompts must pass --select)")
     ap.add_argument("--select", choices=["correct", "all"], default="correct", help="prompt_pairs rows to use: correct = convention followed AND judge OK (the fitted map), all = every k = 3, 4 prompt")
     args = ap.parse_args()
@@ -66,25 +67,38 @@ def main():
             X.append(z["read"][m].astype(np.float32)); Y.append(z["write"][m].astype(np.float32)); F += [f] * int(m.sum())
     X, Y, F = np.concatenate(X), np.concatenate(Y), np.array(F)
     dev = "cuda" if torch.cuda.is_available() else "cpu"; Xt = torch.as_tensor(X, dtype=torch.float64, device=dev); Yt = torch.as_tensor(Y, dtype=torch.float64, device=dev)
-    # leave-one-family-out: one eigendecomposition per fold, every lambda a cheap product
-    preds = {lam: np.zeros_like(Y) for lam in args.lams}
-    for f in train:
-        m = torch.as_tensor(F != f, device=dev); Xi, Yi = Xt[m], Yt[m]; mx, my = Xi.mean(0), Yi.mean(0); Xc = Xi - mx
-        s_, V = torch.linalg.eigh(Xc.T @ Xc); C = V.T @ (Xc.T @ (Yi - my)); Xo = (Xt[~m] - mx) @ V
-        for lam in args.lams:
-            preds[lam][F == f] = ((Xo / (s_ + lam)) @ C + my).cpu().numpy()
-        print(f"fold {f} done", flush=True)
-    cv = [dict(lam=lam, lofo_r2=r2(Y, preds[lam])[0], lofo_r2_per_dim=r2(Y, preds[lam])[1]) for lam in args.lams]
+    def procrustes(Xi, Yi):
+        """orthogonal W with one global scale s: minimise ||s (Xi-mx) W - (Yi-my)||_F; W = U V^T from SVD(Xc^T Yc), s = trace(S) / ||Xc||_F^2"""
+        mx, my = Xi.mean(0), Yi.mean(0); Xc, Yc = Xi - mx, Yi - my
+        U, S, Vh = torch.linalg.svd(Xc.T @ Yc); W = U @ Vh; sc = S.sum() / (Xc ** 2).sum()
+        return sc * W, mx, my
+    if args.method == "procrustes":
+        pred = np.zeros_like(Y)
+        for f in train:
+            m = torch.as_tensor(F != f, device=dev); W_, mx, my = procrustes(Xt[m], Yt[m]); pred[F == f] = ((Xt[~m] - mx) @ W_ + my).cpu().numpy(); print(f"fold {f} done", flush=True)
+        cv = [dict(lam=float("nan"), lofo_r2=r2(Y, pred)[0], lofo_r2_per_dim=r2(Y, pred)[1])]; lam = float("nan")
+        W, mx, my = procrustes(Xt, Yt); fit_r2 = r2(Y, ((Xt - mx) @ W + my).cpu().numpy()); best = cv[0]
+        np.savez_compressed(MODEL_FILE, W=W.cpu().numpy().astype(np.float32), x_mean=mx.cpu().numpy().astype(np.float32), y_mean=my.cpu().numpy().astype(np.float32), lam=lam,
+                            train_families=np.array(train), read_layer=8, write_layer=24, method="procrustes_scaled", scale=float((W.T @ W).diagonal().mean().sqrt()))
+    else:
+        # leave-one-family-out: one eigendecomposition per fold, every lambda a cheap product
+        preds = {lam: np.zeros_like(Y) for lam in args.lams}
+        for f in train:
+            m = torch.as_tensor(F != f, device=dev); Xi, Yi = Xt[m], Yt[m]; mx, my = Xi.mean(0), Yi.mean(0); Xc = Xi - mx
+            s_, V = torch.linalg.eigh(Xc.T @ Xc); C = V.T @ (Xc.T @ (Yi - my)); Xo = (Xt[~m] - mx) @ V
+            for lam in args.lams:
+                preds[lam][F == f] = ((Xo / (s_ + lam)) @ C + my).cpu().numpy()
+            print(f"fold {f} done", flush=True)
+        cv = [dict(lam=lam, lofo_r2=r2(Y, preds[lam])[0], lofo_r2_per_dim=r2(Y, preds[lam])[1]) for lam in args.lams]
+        best = max(cv, key=lambda c: c["lofo_r2"]); lam = best["lam"]
+        mx, my = Xt.mean(0), Yt.mean(0); Xc, Yc = Xt - mx, Yt - my
+        W = torch.linalg.solve(Xc.T @ Xc + lam * torch.eye(Xc.shape[1], dtype=Xc.dtype, device=dev), Xc.T @ Yc)
+        fit_r2 = r2(Y, ((Xc @ W) + my).cpu().numpy())
+        np.savez_compressed(MODEL_FILE, W=W.cpu().numpy().astype(np.float32), x_mean=mx.cpu().numpy().astype(np.float32), y_mean=my.cpu().numpy().astype(np.float32),
+                            lam=lam, train_families=np.array(train), read_layer=8, write_layer=24, method="ridge")
     with open(OUT / "cv.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(cv[0])); w.writeheader(); w.writerows(cv)
-    best = max(cv, key=lambda c: c["lofo_r2"]); lam = best["lam"]
-    # refit on all train families
-    mx, my = Xt.mean(0), Yt.mean(0); Xc, Yc = Xt - mx, Yt - my
-    W = torch.linalg.solve(Xc.T @ Xc + lam * torch.eye(Xc.shape[1], dtype=Xc.dtype, device=dev), Xc.T @ Yc)
-    fit_r2 = r2(Y, ((Xc @ W) + my).cpu().numpy())
-    np.savez_compressed(MODEL_FILE, W=W.cpu().numpy().astype(np.float32), x_mean=mx.cpu().numpy().astype(np.float32), y_mean=my.cpu().numpy().astype(np.float32),
-                        lam=lam, train_families=np.array(train), read_layer=8, write_layer=24)
-    json.dump(dict(seed=args.seed, train_families=train, test_families=test, n_train_prompts=int(len(X)), dim=int(X.shape[1]), lambda_grid=args.lams, lambda_selected=lam,
+    json.dump(dict(seed=args.seed, method=args.method, train_families=train, test_families=test, n_train_prompts=int(len(X)), dim=int(X.shape[1]), lambda_grid=args.lams, lambda_selected=lam,
                    lofo_r2_at_selected=best["lofo_r2"], lofo_r2_per_dim_at_selected=best["lofo_r2_per_dim"], train_fit_r2=fit_r2[0], cv=cv,
                    model_file=str(MODEL_FILE), select=args.select, pair_diff=args.pair_diff), open(OUT / "fit.json", "w"), indent=1)
     fig, ax = plt.subplots(figsize=(7, 4.5)); ax.semilogx([c["lam"] for c in cv], [c["lofo_r2"] for c in cv], "o-"); ax.axvline(lam, color="r", ls="--", label=f"selected λ = {lam:g}")
