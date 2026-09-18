@@ -2023,7 +2023,3 @@ mean over them, so per-family results must be read with that in mind.
 - 2026-09-18 USER DECISION: read-steering setting = layer 8, α = 4 (top-5 cells L8–L18 at α4 tied within 1.6 points; layer choice
   within 6–18 is arbitrary, α still rising at 4 — a wider α range was offered and declined for now). Full-pool run done at that
   setting; results in `results/code_styles/read_steering/full56/`.
-- 2026-09-18 Read→write map definitions (user request): per-prompt read feature = L8 residual mean over the evidence tokens, write
-  feature = L24 residual at the final cue token, k ∈ {3,4} correct prompts; FAMILY-level 80/20 split (seed 43), ridge with intercept,
-  λ by leave-one-family-out CV with pooled predictions; map A prompt → family-pole write centroid, map B centroid → centroid;
-  R² variance-weighted over dimensions on the test families (per-dimension mean also reported); per-family R² not reported (degenerate).
