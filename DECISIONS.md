@@ -1998,3 +1998,16 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   poles (accepted comment_language residuals) instead of asserting; js_arrow generation hint now asks for ≥ 10 arrow functions
   (30–45 lines) because the line-level rule counts ONE opportunity per arrow; 41 documents whose 5th opportunity sits past 75 % of
   the document are accepted as a residual (user decision); the pool stays 56/60 after the re-sample.
+
+## 2026-09-18 — Evidence tokens for the code-convention families (USER DECISION, complete)
+Evidence tokens of a k-shot prompt = (1) every token before the query cue is in scope (demonstrations, free occurrences between them,
+and anything after the last demonstration); (2) the token right after each demonstration's cue, plus every other token that differs
+between the two poles' renderings (token-level alignment of the twins; absence poles get their closing position, e.g. `:` vs `):`;
+free repeated uses such as later `self`/`this` count); (3) SECTION RULE for comment_language, comment_case, docstring_style: every
+token of each comment / docstring before the query cue, opener to closer, shared tokens included (the query's own, just-opened section
+excluded); (4) a word that differs only by the whitespace in front of it (an inserted symbol took its space: `(idx` vs ` idx`) is NOT
+evidence, EXCEPT in comma_space, operator_spaces, line_wrap and py_tabs where that whitespace is the convention; pure whitespace tokens
+always count; (5) cue tokens (demonstration and query) and the task header are never evidence. Identical words inside a rewritten
+region are matched as equal by the alignment and are not evidence (an earlier claim to the contrary was a measurement error).
+Evidence sets range from 3 tokens (js_strict_eq, r_assignment) to ~150 (docstring_style) per k = 3 prompt; the read feature is the
+mean over them, so per-family results must be read with that in mind.
