@@ -42,6 +42,7 @@ def main():
     ap.add_argument("--lams", nargs="*", type=float, default=[1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])
     ap.add_argument("--split_file", default=None, help="JSON with 'train' and 'test' family lists (overrides the seeded 80/20 split)")
     ap.add_argument("--tag", default=None, help="write results to read_write_map/sandbox/<tag>/ and the model to ridge_L8_to_L24_<tag>.npz")
+    ap.add_argument("--pair_diff", action="store_true", help="rows = (document, k) pairs: X = read_nat - read_alt, Y = write_nat - write_alt (both prompts must pass --select)")
     ap.add_argument("--select", choices=["correct", "all"], default="correct", help="prompt_pairs rows to use: correct = convention followed AND judge OK (the fitted map), all = every k = 3, 4 prompt")
     args = ap.parse_args()
     MP = model_paths(args.model); R = MP["results"]; OUT = R / "read_write_map" / ("sandbox/" + args.tag if args.tag else ""); OUT.mkdir(parents=True, exist_ok=True)
@@ -56,7 +57,13 @@ def main():
     X, Y, F = [], [], []
     for f in train:
         z = np.load(MP["prompt_pairs"] / f"{f}.npz"); m = z["correct"] if args.select == "correct" else np.ones(len(z["k"]), bool)
-        X.append(z["read"][m].astype(np.float32)); Y.append(z["write"][m].astype(np.float32)); F += [f] * int(m.sum())
+        if args.pair_diff:
+            idx = {(d, p, int(k)): i for i, (d, p, k) in enumerate(zip(z["doc_id"], z["pole"], z["k"])) if m[i]}
+            keys = sorted({(d, k) for (d, p, k) in idx if (d, "nat", k) in idx and (d, "alt", k) in idx})
+            a = np.array([idx[(d, "nat", k)] for d, k in keys]); b = np.array([idx[(d, "alt", k)] for d, k in keys])
+            X.append((z["read"][a].astype(np.float32) - z["read"][b].astype(np.float32))); Y.append((z["write"][a].astype(np.float32) - z["write"][b].astype(np.float32))); F += [f] * len(keys)
+        else:
+            X.append(z["read"][m].astype(np.float32)); Y.append(z["write"][m].astype(np.float32)); F += [f] * int(m.sum())
     X, Y, F = np.concatenate(X), np.concatenate(Y), np.array(F)
     dev = "cuda" if torch.cuda.is_available() else "cpu"; Xt = torch.as_tensor(X, dtype=torch.float64, device=dev); Yt = torch.as_tensor(Y, dtype=torch.float64, device=dev)
     # leave-one-family-out: one eigendecomposition per fold, every lambda a cheap product
@@ -79,7 +86,7 @@ def main():
                         lam=lam, train_families=np.array(train), read_layer=8, write_layer=24)
     json.dump(dict(seed=args.seed, train_families=train, test_families=test, n_train_prompts=int(len(X)), dim=int(X.shape[1]), lambda_grid=args.lams, lambda_selected=lam,
                    lofo_r2_at_selected=best["lofo_r2"], lofo_r2_per_dim_at_selected=best["lofo_r2_per_dim"], train_fit_r2=fit_r2[0], cv=cv,
-                   model_file=str(MODEL_FILE), select=args.select), open(OUT / "fit.json", "w"), indent=1)
+                   model_file=str(MODEL_FILE), select=args.select, pair_diff=args.pair_diff), open(OUT / "fit.json", "w"), indent=1)
     fig, ax = plt.subplots(figsize=(7, 4.5)); ax.semilogx([c["lam"] for c in cv], [c["lofo_r2"] for c in cv], "o-"); ax.axvline(lam, color="r", ls="--", label=f"selected λ = {lam:g}")
     ax.set_xlabel("ridge λ"); ax.set_ylabel("leave-one-family-out R² (per-prompt write features, pooled)"); ax.grid(alpha=.3); ax.legend(); ax.set_title("λ selection on the 45 train families")
     fig.tight_layout(); fig.savefig(OUT / "cv_curve.png", dpi=130); plt.close(fig)

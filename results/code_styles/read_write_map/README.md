@@ -8,4 +8,6 @@ evidence tokens, write = L24 cue-token residual, flags style_ok / judge_ok / cor
   45/11, LOFO λ; held-out style-centroid R² .14 (train in-sample .96).
 - `v2_prompt_ridge_all_prompts_L8_to_L24/` — same map, every k = 3/4 prompt (no correctness filter), split = the 2026-09-15 test set
   (19 test / 37 train, `split_2026-09-15_test19.json`); LOFO R² .118; test evaluation pending.
+- `v3_pairdiff_ridge_all_prompts_L8_to_L24/` — ridge on per-prompt nat−alt DIFFERENCES (paired by document and k), all prompts,
+  same split; LOFO R² .015 (λ 1e5), train-fit .34; test evaluation pending.
 Nothing in here is a settled result yet.
