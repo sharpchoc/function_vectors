@@ -43,6 +43,7 @@ def main():
     ap.add_argument("--split_file", default=None, help="JSON with 'train' and 'test' family lists (overrides the seeded 80/20 split)")
     ap.add_argument("--tag", default=None, help="write results to read_write_map/sandbox/<tag>/ and the model to ridge_L8_to_L24_<tag>.npz")
     ap.add_argument("--method", choices=["ridge", "procrustes"], default="ridge", help="procrustes = orthogonal W (SVD of Xc^T Yc) with ONE global scale, train-mean centring; no lambda")
+    ap.add_argument("--unit_norm", action="store_true", help="scale every prompt's read vector and write vector to unit L2 norm before fitting")
     ap.add_argument("--pair_diff", action="store_true", help="rows = (document, k) pairs: X = read_nat - read_alt, Y = write_nat - write_alt (both prompts must pass --select)")
     ap.add_argument("--select", choices=["correct", "all"], default="correct", help="prompt_pairs rows to use: correct = convention followed AND judge OK (the fitted map), all = every k = 3, 4 prompt")
     args = ap.parse_args()
@@ -66,6 +67,10 @@ def main():
         else:
             X.append(z["read"][m].astype(np.float32)); Y.append(z["write"][m].astype(np.float32)); F += [f] * int(m.sum())
     X, Y, F = np.concatenate(X), np.concatenate(Y), np.array(F)
+    if args.unit_norm:
+        X = X / np.linalg.norm(X, axis=1, keepdims=True); Y = Y / np.linalg.norm(Y, axis=1, keepdims=True)
+    if args.unit_norm and args.lams == [1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7]:
+        args.lams = [1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2, 1e3]
     dev = "cuda" if torch.cuda.is_available() else "cpu"; Xt = torch.as_tensor(X, dtype=torch.float64, device=dev); Yt = torch.as_tensor(Y, dtype=torch.float64, device=dev)
     def procrustes(Xi, Yi):
         """orthogonal W with one global scale s: minimise ||s (Xi-mx) W - (Yi-my)||_F; W = U V^T from SVD(Xc^T Yc), s = trace(S) / ||Xc||_F^2"""
@@ -100,7 +105,7 @@ def main():
         w = csv.DictWriter(fh, fieldnames=list(cv[0])); w.writeheader(); w.writerows(cv)
     json.dump(dict(seed=args.seed, method=args.method, train_families=train, test_families=test, n_train_prompts=int(len(X)), dim=int(X.shape[1]), lambda_grid=args.lams, lambda_selected=lam,
                    lofo_r2_at_selected=best["lofo_r2"], lofo_r2_per_dim_at_selected=best["lofo_r2_per_dim"], train_fit_r2=fit_r2[0], cv=cv,
-                   model_file=str(MODEL_FILE), select=args.select, pair_diff=args.pair_diff), open(OUT / "fit.json", "w"), indent=1)
+                   model_file=str(MODEL_FILE), select=args.select, pair_diff=args.pair_diff, unit_norm=args.unit_norm), open(OUT / "fit.json", "w"), indent=1)
     fig, ax = plt.subplots(figsize=(7, 4.5)); ax.semilogx([c["lam"] for c in cv], [c["lofo_r2"] for c in cv], "o-"); ax.axvline(lam, color="r", ls="--", label=f"selected λ = {lam:g}")
     ax.set_xlabel("ridge λ"); ax.set_ylabel("leave-one-family-out R² (per-prompt write features, pooled)"); ax.grid(alpha=.3); ax.legend(); ax.set_title("λ selection on the 45 train families")
     fig.tight_layout(); fig.savefig(OUT / "cv_curve.png", dpi=130); plt.close(fig)
