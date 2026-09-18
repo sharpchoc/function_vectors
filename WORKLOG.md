@@ -9609,3 +9609,13 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   py_comprehension .10 → .78) and fails where the convention needs follow-through (py_is_none writes `== 0:`; js_hungarian writes `arr) =>`;
   hex_constants writes `0.9`); docstring_quotes never opens a docstring at 0-shot. Unsteered arm matches step-3 k = 0 rates. Results page
   artifact v12; awaiting the user's choice of (layer, α) before the 56-family run.
+- 2026-09-18 WRITE STEERING, FULL POOL (user decision: L24/L26 × α 2/4, 40 held-out prompts per family, reuse the 10 sweep families,
+  report all four cells, no selection). Capture of the 46 missing vector files + sweep on 4 pods (wf_1..4, ~25 min, all terminated
+  by recorded id); 16,560 new records + the 10 sweep families cut to α ∈ {2,4}, L ∈ {24,26} and their first 40 held-out docs; 0
+  unjudged. `write_full_analyze.py` → `results/code_styles/write_steering/full56/`. Means over 56 families: → natural unsteered .40,
+  L24α2 .56, L24α4 .54, L26α2 .55, L26α4 .48, k = 4 .74; → alternative unsteered .13, L24α2 .43, L24α4 .46, L26α2 .44, L26α4 .39,
+  k = 4 .69; judge OK .84 / .81 / .82 / .75 (unsteered .89). ≥ +20-point gain in 28–36 of 56 families → alternative, 15–19 → natural
+  (many natural poles are already near ceiling). α = 4 at L26 overshoots on several families (py_indent .72 → .03, py_class_naming
+  .72 → .17, py_snake_camel → alt .80 → .03 at L26α4; py_self_name → nat 1.00 → .23 at L24α4). Non-responders in both directions:
+  py_const_naming, docstring_quotes, py_builtin_generics, comment_language (the 0-shot model never produces the construct; steering
+  the first token does not create it). Unsteered arm vs step-3 k = 0: mean diff .003, max .17. Results page artifact v15.

@@ -1952,3 +1952,11 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
 - Hyperparameters are chosen ONCE on 10 random pool families and shared by all 56: the cell maximising mean success over families and both
   directions (ties → smaller α, then earlier layer). Result: layer 26, α = 2 (pending user approval). Late-layer-only effect and the
   first-token-not-convention behaviour are recorded in WORKLOG; do not present L26 steering as evidence about mid-layer write features.
+
+## 2026-09-18 — Write steering, full pool: four cells reported, none selected
+- All 56 pool families are steered at (L24, L26) × (α 2, 4) on the first 40 held-out documents (sorted doc_id; `write_sweep.py --limit 40`),
+  each towards natural and towards alternative; the 10 sweep families are reused and cut to the same 40 documents. No single cell is
+  selected; `full56/by_cell.csv` reports the four means side by side with the unsteered baseline and the k = 4 in-context accuracy.
+- Sweep lesson carried over: only layers 24/26 respond and the effect is largely a first-token push; families whose convention needs
+  follow-through, or whose construct the 0-shot model never writes, do not respond. Do not read these numbers as evidence about
+  mid-layer write features.
