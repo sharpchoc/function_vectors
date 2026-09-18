@@ -9759,3 +9759,8 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   `artifacts/style_translation/qwen25_code/prompt_pairs/<fam>.npz` now holds EVERY k = 3/4 prompt (44,788; 22,394 per k; correct 31,835
   = 71.1%) with read (L8 evidence mean), write (L24 cue), doc_id, pole, k, heldout, n_evidence, style_ok, judge_ok, correct. 522 MB.
   `read_write_map_code.py --select correct|all` (default correct = the fitted map unchanged).
+- 2026-09-18 PER-PROMPT READ FEATURES AT L6..L18 (every other layer; user request for a layer sweep of the read→write map):
+  `capture_prompt_read_layers.py` (4 pods rl_1..4, ~20 min incl. one restart: the first alignment check compared bf16 reruns by
+  absolute difference and failed; replaced by a per-row cosine check, min .9999) → `artifacts/.../qwen25_code/prompt_pairs_layers/<fam>.npz`
+  with read_L6, read_L8, read_L10, read_L12, read_L14, read_L16, read_L18 [N, 3584] fp16 in the SAME row order as prompt_pairs
+  (doc_id/pole/k asserted). 44,788 prompts, 1.9 GB. Standby pod for regressions (map_5) still up by user request.
