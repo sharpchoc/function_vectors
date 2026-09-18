@@ -9008,19 +9008,6 @@
 },
 {
 "k": 2,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
-85,
-86
-],
-"alt_span": [
-107,
-110
-]
-},
-{
-"k": 3,
 "nat": "{\n        ",
 "alt": "set(\n        )\n    opening_brackets.add(",
 "nat_span": [
@@ -9033,33 +9020,7 @@
 ]
 },
 {
-"k": 4,
-"nat": ",\n        ",
-"alt": ")\n    opening_brackets.add(",
-"nat_span": [
-170,
-180
-],
-"alt_span": [
-228,
-255
-]
-},
-{
-"k": 5,
-"nat": ",\n        ",
-"alt": ")\n    opening_brackets.add(",
-"nat_span": [
-183,
-193
-],
-"alt_span": [
-258,
-285
-]
-},
-{
-"k": 6,
+"k": 3,
 "nat": "{\n        ",
 "alt": "set(\n        )\n    closing_brackets.add(",
 "nat_span": [
@@ -9072,33 +9033,7 @@
 ]
 },
 {
-"k": 7,
-"nat": ",\n        ",
-"alt": ")\n    closing_brackets.add(",
-"nat_span": [
-240,
-250
-],
-"alt_span": [
-357,
-384
-]
-},
-{
-"k": 8,
-"nat": ",\n        ",
-"alt": ")\n    closing_brackets.add(",
-"nat_span": [
-253,
-263
-],
-"alt_span": [
-387,
-414
-]
-},
-{
-"k": 9,
+"k": 4,
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
@@ -9111,7 +9046,7 @@
 ]
 },
 {
-"k": 10,
+"k": 5,
 "nat": "{}",
 "alt": "dict()",
 "nat_span": [
@@ -9124,7 +9059,7 @@
 ]
 }
 ],
-"k_en": 11,
+"k_en": 6,
 "shared_fraction": 0.847,
 "pass": true,
 "verify": null,
@@ -15058,288 +14993,6 @@
 "free_filter": true
 },
 {
-"doc_id": "py_literal_ctor__t109",
-"family": "py_literal_ctor",
-"topic": "Validate Brackets",
-"angle": "code",
-"text_es": "Check if a string containing only parentheses '()', square brackets '[]', and curly braces '{}' has balanced and correctly nested brackets. The function `is_brackets_balanced(s)` should return a boolean. Input: `s` (str). Output: `is_balanced` (bool).\nExample 1: `is_brackets_balanced('()[]{}')` should return `True`.\nExample 2: `is_brackets_balanced('([{}])')` should return `True`.\nExample 3: `is_brackets_balanced('({[})')` should return `False`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def is_brackets_balanced(s: str) -> bool:\n    stack = []\n    \n    mapping = {\n        ')': '(',\n        ']': '[',\n        '}': '{'\n    }\n\n    open_brackets = {\n        '(',\n        '[',\n        '{'\n    }\n\n    \n    for char in s:\n        \n        if char in open_brackets:\n            stack.append(char)\n        elif char in mapping:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n    \n    empty_list_for_check = []\n    \n    return not stack\n",
-"text_alt": "def is_brackets_balanced(s: str) -> bool:\n    stack = list()\n    \n    mapping = dict(\n        )\n    mapping[')'] = '('\n    mapping[']'] = '['\n    mapping['}'] = '{'\n\n    open_brackets = set(\n        )\n    open_brackets.add('(')\n    open_brackets.add('[')\n    open_brackets.add('{')\n\n    \n    for char in s:\n        \n        if char in open_brackets:\n            stack.append(char)\n        elif char in mapping:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n    \n    empty_list_for_check = list()\n    \n    return not stack\n",
-"opps": [
-{
-"k": 0,
-"nat": "[]",
-"alt": "list()",
-"nat_span": [
-54,
-56
-],
-"alt_span": [
-54,
-60
-]
-},
-{
-"k": 1,
-"nat": "{\n        ",
-"alt": "dict(\n        )\n    mapping[",
-"nat_span": [
-76,
-86
-],
-"alt_span": [
-80,
-108
-]
-},
-{
-"k": 2,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
-89,
-90
-],
-"alt_span": [
-111,
-114
-]
-},
-{
-"k": 3,
-"nat": "{\n        ",
-"alt": "set(\n        )\n    open_brackets.add(",
-"nat_span": [
-158,
-168
-],
-"alt_span": [
-186,
-223
-]
-},
-{
-"k": 4,
-"nat": ",\n        ",
-"alt": ")\n    open_brackets.add(",
-"nat_span": [
-171,
-181
-],
-"alt_span": [
-226,
-250
-]
-},
-{
-"k": 5,
-"nat": ",\n        ",
-"alt": ")\n    open_brackets.add(",
-"nat_span": [
-184,
-194
-],
-"alt_span": [
-253,
-277
-]
-},
-{
-"k": 6,
-"nat": "[]",
-"alt": "list()",
-"nat_span": [
-532,
-534
-],
-"alt_span": [
-610,
-616
-]
-}
-],
-"k_en": 7,
-"shared_fraction": 0.874,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "[]",
-"alt": "list()",
-"nat_span": [
-54,
-56
-],
-"alt_span": [
-54,
-60
-]
-},
-{
-"k": 1,
-"nat": "{\n        ",
-"alt": "dict(\n        )\n    mapping[",
-"nat_span": [
-76,
-86
-],
-"alt_span": [
-80,
-108
-]
-},
-{
-"k": 2,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
-89,
-90
-],
-"alt_span": [
-111,
-114
-]
-},
-{
-"k": 3,
-"nat": ",\n        ",
-"alt": "\n    mapping[",
-"nat_span": [
-94,
-104
-],
-"alt_span": [
-118,
-131
-]
-},
-{
-"k": 4,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
-107,
-108
-],
-"alt_span": [
-134,
-137
-]
-},
-{
-"k": 5,
-"nat": ",\n        ",
-"alt": "\n    mapping[",
-"nat_span": [
-112,
-122
-],
-"alt_span": [
-141,
-154
-]
-},
-{
-"k": 6,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
-125,
-126
-],
-"alt_span": [
-157,
-160
-]
-},
-{
-"k": 7,
-"nat": "\n    }",
-"alt": "",
-"nat_span": [
-130,
-136
-],
-"alt_span": [
-164,
-164
-]
-},
-{
-"k": 8,
-"nat": "{\n        ",
-"alt": "set(\n        )\n    open_brackets.add(",
-"nat_span": [
-158,
-168
-],
-"alt_span": [
-186,
-223
-]
-},
-{
-"k": 9,
-"nat": ",\n        ",
-"alt": ")\n    open_brackets.add(",
-"nat_span": [
-171,
-181
-],
-"alt_span": [
-226,
-250
-]
-},
-{
-"k": 10,
-"nat": ",\n        ",
-"alt": ")\n    open_brackets.add(",
-"nat_span": [
-184,
-194
-],
-"alt_span": [
-253,
-277
-]
-},
-{
-"k": 11,
-"nat": "\n    }",
-"alt": ")",
-"nat_span": [
-197,
-203
-],
-"alt_span": [
-280,
-281
-]
-},
-{
-"k": 12,
-"nat": "[]",
-"alt": "list()",
-"nat_span": [
-532,
-534
-],
-"alt_span": [
-610,
-616
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py_literal_ctor__t111",
 "family": "py_literal_ctor",
 "topic": "Dice Roll Sum Simulation",
@@ -20419,30 +20072,30 @@
 "text_alt": "def roman_to_int(roman_numeral: str) -> int:\n    roman_map = dict(\n        I=1, V=5, X=10, L=50,\n        C=100, D=500, M=1000\n    )\n    result = 0\n    i = 0\n    temp_list = list()\n    \n    while i < len(roman_numeral):\n        s_list = list()\n        if i + 1 < len(roman_numeral) and roman_map[roman_numeral[i]] < roman_map[roman_numeral[i+1]]:\n            result += roman_map[roman_numeral[i+1]] - roman_map[roman_numeral[i]]\n            i += 2\n        else:\n            result += roman_map[roman_numeral[i]]\n            i += 1\n            \n    final_dict = dict()\n    extra_set = set()\n    return result\n",
 "opps": [
 {
-"k": 0,
-"nat": "{\n        'I': ",
-"alt": "dict(\n        I=",
+"nat": "{",
+"alt": "dict(",
 "nat_span": [
 61,
+62
+],
+"alt_span": [
+61,
+66
+],
+"k": 0
+},
+{
+"nat": "'I': ",
+"alt": "I=",
+"nat_span": [
+71,
 76
 ],
 "alt_span": [
-61,
+75,
 77
-]
-},
-{
-"k": 1,
-"nat": "'V': ",
-"alt": "V=",
-"nat_span": [
-79,
-84
 ],
-"alt_span": [
-80,
-82
-]
+"k": 1
 },
 {
 "k": 2,
@@ -24301,45 +23954,6 @@
 },
 {
 "k": 1,
-"nat": ": {},\n        ",
-"alt": "] = dict()\n    conversions[",
-"nat_span": [
-83,
-97
-],
-"alt_span": [
-101,
-128
-]
-},
-{
-"k": 2,
-"nat": ": {},\n        ",
-"alt": "] = dict()\n    conversions[",
-"nat_span": [
-100,
-114
-],
-"alt_span": [
-131,
-158
-]
-},
-{
-"k": 3,
-"nat": ": {}\n    }",
-"alt": "] = dict()",
-"nat_span": [
-117,
-127
-],
-"alt_span": [
-161,
-171
-]
-},
-{
-"k": 4,
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
@@ -24352,7 +23966,7 @@
 ]
 },
 {
-"k": 5,
+"k": 2,
 "nat": "{}",
 "alt": "dict()",
 "nat_span": [
@@ -24365,7 +23979,7 @@
 ]
 },
 {
-"k": 6,
+"k": 3,
 "nat": "[]",
 "alt": "list()",
 "nat_span": [
@@ -24378,7 +23992,7 @@
 ]
 },
 {
-"k": 7,
+"k": 4,
 "nat": "{}",
 "alt": "dict()",
 "nat_span": [
@@ -24391,7 +24005,7 @@
 ]
 }
 ],
-"k_en": 8,
+"k_en": 5,
 "shared_fraction": 0.95,
 "pass": true,
 "verify": null,
@@ -35534,262 +35148,6 @@
 "free_filter": true
 },
 {
-"doc_id": "py_literal_ctor__t285",
-"family": "py_literal_ctor",
-"topic": "Validate Parentheses Balance",
-"angle": "code",
-"text_es": "Write a function to check if a string containing only '(', ')', '{', '}', '[' and ']' is balanced. Use `is_balanced(s)`.\nExample 1: `is_balanced('({[]})')` returns `True`\nExample 2: `is_balanced('([)]')` returns `False`",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def is_balanced(s: str) -> bool:\n    stack = []\n\n    mapping = {\n        \")\": \"(\",\n        \"}\": \"{\",\n        \"]\": \"[\"\n    }\n\n    opening_brackets = {\n        \"(\",\n        \"{\",\n        \"[\"\n    }\n\n    for char in s:\n        if char in opening_brackets:\n            stack.append(char)\n        else:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n\n    return not stack\n",
-"text_alt": "def is_balanced(s: str) -> bool:\n    stack = list()\n\n    mapping = dict(\n        )\n    mapping[\")\"] = \"(\"\n    mapping[\"}\"] = \"{\"\n    mapping[\"]\"] = \"[\"\n\n    opening_brackets = set(\n        )\n    opening_brackets.add(\"(\")\n    opening_brackets.add(\"{\")\n    opening_brackets.add(\"[\")\n\n    for char in s:\n        if char in opening_brackets:\n            stack.append(char)\n        else:\n            if not stack:\n                return False\n            top_element = stack.pop()\n            if mapping[char] != top_element:\n                return False\n\n    return not stack\n",
-"opps": [
-{
-"k": 0,
-"nat": "[]",
-"alt": "list()",
-"nat_span": [
-45,
-47
-],
-"alt_span": [
-45,
-51
-]
-},
-{
-"k": 1,
-"nat": "{\n        ",
-"alt": "dict(\n        )\n    mapping[",
-"nat_span": [
-63,
-73
-],
-"alt_span": [
-67,
-95
-]
-},
-{
-"k": 2,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
-76,
-77
-],
-"alt_span": [
-98,
-101
-]
-},
-{
-"k": 3,
-"nat": "{\n        ",
-"alt": "set(\n        )\n    opening_brackets.add(",
-"nat_span": [
-148,
-158
-],
-"alt_span": [
-176,
-216
-]
-},
-{
-"k": 4,
-"nat": ",\n        ",
-"alt": ")\n    opening_brackets.add(",
-"nat_span": [
-161,
-171
-],
-"alt_span": [
-219,
-246
-]
-},
-{
-"k": 5,
-"nat": ",\n        ",
-"alt": ")\n    opening_brackets.add(",
-"nat_span": [
-174,
-184
-],
-"alt_span": [
-249,
-276
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 0.877,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "[]",
-"alt": "list()",
-"nat_span": [
-45,
-47
-],
-"alt_span": [
-45,
-51
-]
-},
-{
-"k": 1,
-"nat": "{\n        ",
-"alt": "dict(\n        )\n    mapping[",
-"nat_span": [
-63,
-73
-],
-"alt_span": [
-67,
-95
-]
-},
-{
-"k": 2,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
-76,
-77
-],
-"alt_span": [
-98,
-101
-]
-},
-{
-"k": 3,
-"nat": ",\n        ",
-"alt": "\n    mapping[",
-"nat_span": [
-81,
-91
-],
-"alt_span": [
-105,
-118
-]
-},
-{
-"k": 4,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
-94,
-95
-],
-"alt_span": [
-121,
-124
-]
-},
-{
-"k": 5,
-"nat": ",\n        ",
-"alt": "\n    mapping[",
-"nat_span": [
-99,
-109
-],
-"alt_span": [
-128,
-141
-]
-},
-{
-"k": 6,
-"nat": ":",
-"alt": "] =",
-"nat_span": [
-112,
-113
-],
-"alt_span": [
-144,
-147
-]
-},
-{
-"k": 7,
-"nat": "\n    }",
-"alt": "",
-"nat_span": [
-117,
-123
-],
-"alt_span": [
-151,
-151
-]
-},
-{
-"k": 8,
-"nat": "{\n        ",
-"alt": "set(\n        )\n    opening_brackets.add(",
-"nat_span": [
-148,
-158
-],
-"alt_span": [
-176,
-216
-]
-},
-{
-"k": 9,
-"nat": ",\n        ",
-"alt": ")\n    opening_brackets.add(",
-"nat_span": [
-161,
-171
-],
-"alt_span": [
-219,
-246
-]
-},
-{
-"k": 10,
-"nat": ",\n        ",
-"alt": ")\n    opening_brackets.add(",
-"nat_span": [
-174,
-184
-],
-"alt_span": [
-249,
-276
-]
-},
-{
-"k": 11,
-"nat": "\n    }",
-"alt": ")",
-"nat_span": [
-187,
-193
-],
-"alt_span": [
-279,
-280
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py_literal_ctor__t286",
 "family": "py_literal_ctor",
 "topic": "Generate Fibonacci Sequence",
@@ -38727,6 +38085,414 @@
 "alt_span": [
 513,
 519
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_literal_ctor__t336",
+"family": "py_literal_ctor",
+"topic": "Check if All Elements are Unique",
+"angle": "code",
+"text_es": "Create a function that checks if all elements in a given list are unique. It should return True if all elements are distinct, False otherwise.\nFunction: `are_all_unique(items: list) -> bool`\nExample 1: `are_all_unique([1, 2, 3, 4])` should return `True`.\nExample 2: `are_all_unique([1, 2, 3, 1])` should return `False`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def are_all_unique(items: list) -> bool:\n    seen = set()\n\n    for item in items:\n        if item in seen:\n            return False\n        seen.add(item)\n    return True\n\nanother_list = []\n\nyet_another = {}\n\na_final_one = set()\n\ntest_results = []\n\ntemp_storage = []\n\nlookup_table = {}\n\ndef example_usage():\n    result1 = are_all_unique([1, 2, 3, 4])\n    print(f\"Example 1: {result1}\")\n\n    result2 = are_all_unique([1, 2, 3, 1])\n    print(f\"Example 2: {result2}\")\n\nif __name__ == \"__main__\":\n    example_usage()\n\nsome_other_data = []\n\nhistorical_data = {}\n\nprocessing_queue = []\n",
+"text_alt": "def are_all_unique(items: list) -> bool:\n    seen = set()\n\n    for item in items:\n        if item in seen:\n            return False\n        seen.add(item)\n    return True\n\nanother_list = list()\n\nyet_another = dict()\n\na_final_one = set()\n\ntest_results = list()\n\ntemp_storage = list()\n\nlookup_table = dict()\n\ndef example_usage():\n    result1 = are_all_unique([1, 2, 3, 4])\n    print(f\"Example 1: {result1}\")\n\n    result2 = are_all_unique([1, 2, 3, 1])\n    print(f\"Example 2: {result2}\")\n\nif __name__ == \"__main__\":\n    example_usage()\n\nsome_other_data = list()\n\nhistorical_data = dict()\n\nprocessing_queue = list()\n",
+"opps": [
+{
+"k": 0,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+187,
+189
+],
+"alt_span": [
+187,
+193
+]
+},
+{
+"k": 1,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+205,
+207
+],
+"alt_span": [
+209,
+215
+]
+},
+{
+"k": 2,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+245,
+247
+],
+"alt_span": [
+253,
+259
+]
+},
+{
+"k": 3,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+264,
+266
+],
+"alt_span": [
+276,
+282
+]
+},
+{
+"k": 4,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+283,
+285
+],
+"alt_span": [
+299,
+305
+]
+},
+{
+"k": 5,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+532,
+534
+],
+"alt_span": [
+552,
+558
+]
+},
+{
+"k": 6,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+554,
+556
+],
+"alt_span": [
+578,
+584
+]
+},
+{
+"k": 7,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+577,
+579
+],
+"alt_span": [
+605,
+611
+]
+}
+],
+"k_en": 8,
+"shared_fraction": 0.925,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+187,
+189
+],
+"alt_span": [
+187,
+193
+]
+},
+{
+"k": 1,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+205,
+207
+],
+"alt_span": [
+209,
+215
+]
+},
+{
+"k": 2,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+245,
+247
+],
+"alt_span": [
+253,
+259
+]
+},
+{
+"k": 3,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+264,
+266
+],
+"alt_span": [
+276,
+282
+]
+},
+{
+"k": 4,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+283,
+285
+],
+"alt_span": [
+299,
+305
+]
+},
+{
+"k": 5,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+532,
+534
+],
+"alt_span": [
+552,
+558
+]
+},
+{
+"k": 6,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+554,
+556
+],
+"alt_span": [
+578,
+584
+]
+},
+{
+"k": 7,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+577,
+579
+],
+"alt_span": [
+605,
+611
+]
+}
+],
+"free_filter": true
+},
+{
+"doc_id": "py_literal_ctor__t337",
+"family": "py_literal_ctor",
+"topic": "Generate Random Integer within Range",
+"angle": "code",
+"text_es": "Create a function that generates a random integer within a specified inclusive range [min_val, max_val].\nFunction: `generate_random_int(min_val: int, max_val: int) -> int`\nExample 1: `generate_random_int(1, 5)` could return `3` (or any integer from 1 to 5).\nExample 2: `generate_random_int(10, 10)` should return `10`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import random\n\ndef generate_random_int(min_val: int, max_val: int) -> int:\n    my_list = []\n    my_set = set()\n    another_list = []\n    yet_another_list = []\n\n    if min_val > max_val:\n        temp_dict = {}\n        min_val, max_val = max_val, min_val\n\n    results_storage = {}\n    \n    empty_tuple = ()\n\n    random_value = random.randint(min_val, max_val)\n\n    final_collection = []\n\n    return random_value\n",
+"text_alt": "import random\n\ndef generate_random_int(min_val: int, max_val: int) -> int:\n    my_list = list()\n    my_set = set()\n    another_list = list()\n    yet_another_list = list()\n\n    if min_val > max_val:\n        temp_dict = dict()\n        min_val, max_val = max_val, min_val\n\n    results_storage = dict()\n    \n    empty_tuple = ()\n\n    random_value = random.randint(min_val, max_val)\n\n    final_collection = list()\n\n    return random_value\n",
+"opps": [
+{
+"k": 0,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+89,
+91
+],
+"alt_span": [
+89,
+95
+]
+},
+{
+"k": 1,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+130,
+132
+],
+"alt_span": [
+134,
+140
+]
+},
+{
+"k": 2,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+156,
+158
+],
+"alt_span": [
+164,
+170
+]
+},
+{
+"k": 3,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+206,
+208
+],
+"alt_span": [
+218,
+224
+]
+},
+{
+"k": 4,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+276,
+278
+],
+"alt_span": [
+292,
+298
+]
+},
+{
+"k": 5,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+382,
+384
+],
+"alt_span": [
+402,
+408
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.902,
+"pass": true,
+"verify": null,
+"opps_all": [
+{
+"k": 0,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+89,
+91
+],
+"alt_span": [
+89,
+95
+]
+},
+{
+"k": 1,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+130,
+132
+],
+"alt_span": [
+134,
+140
+]
+},
+{
+"k": 2,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+156,
+158
+],
+"alt_span": [
+164,
+170
+]
+},
+{
+"k": 3,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+206,
+208
+],
+"alt_span": [
+218,
+224
+]
+},
+{
+"k": 4,
+"nat": "{}",
+"alt": "dict()",
+"nat_span": [
+276,
+278
+],
+"alt_span": [
+292,
+298
+]
+},
+{
+"k": 5,
+"nat": "[]",
+"alt": "list()",
+"nat_span": [
+382,
+384
+],
+"alt_span": [
+402,
+408
 ]
 }
 ],

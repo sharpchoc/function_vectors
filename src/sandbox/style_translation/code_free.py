@@ -44,6 +44,7 @@ def _task_code_idents(task):
 
 
 _CLOSING = re.compile(r"^[\s\)\]\}]*$")
+_CLOSING_PUNCT = re.compile(r"^\s*[\)\]\}][\s\)\]\}]*[,;]?\s*$")     # bug 15 / fix 3 (2026-09-18): closer(s) + a trailing `,` or `;` (`],` `);` `},`)
 _QUOTES = re.compile(r"^[\s'\"`]*$")
 _STR_RX = re.compile(r'"""(?:\\.|[^\\])*?"""|\'\'\'(?:\\.|[^\\])*?\'\'\'|"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])*\'|`(?:\\.|[^`\\])*`', re.S)
 
@@ -74,6 +75,8 @@ def closing_symbol(rec, o, lang):
         return False
     if _CLOSING.match(o["nat"]) and _CLOSING.match(o["alt"]):
         return True
+    if _CLOSING_PUNCT.match(o["nat"]) and _CLOSING_PUNCT.match(o["alt"]):   # fix 3: `],` vs `),` / `]),` vs `)` — the punctuation follows the closer
+        return True
     if _QUOTES.match(o["nat"]) and _QUOTES.match(o["alt"]):
         starts, ends = rec.setdefault("_str_bounds", _string_bounds(rec["text_nat"], lang))
         s0, s1 = o["nat_span"]
@@ -103,35 +106,246 @@ def _line(text, pos, span_text):
     return text.count("\n", 0, pos) + (1 if span_text.startswith("\n") else 0)
 
 
+# Bug 15 / fix 2 (2026-09-18, user decision): the token diff merges the closer of one construct with the opener of the next across a shared
+# line break, so a raw span can run over several lines of either twin. In the families of COVER_FAMILIES such a span blocks EVERY line on
+# which it has content (from the line of its first to the line of its last non-whitespace character), not only the line where it starts;
+# the same for the per-docstring / per-statement units. Where the swallowed opener of the next construct would otherwise be lost, the raw
+# spans of these families are first cut at line breaks that both renderings share (`_split_line_breaks`), so the opener is recovered as its
+# own opportunity with the last shared token before it as cue. Fix 1 (splitting every family) is NOT adopted, and the coverage rule is not
+# applied outside COVER_FAMILIES: applied everywhere it would also delete the closer + opener spans of py2_print, py_quotes, js_quotes,
+# py_fstring, bash_test and line_wrap (their cue sits before a forced closer, but the opener would be lost without the split) and the
+# multi-line spans of early_return / the fix-4 families — deferred by the user; see WORKLOG 2026-09-18.
+# py_join_concat gets the coverage rule but no split: its cross-line spans are the separators / closers of multi-line join calls, which the
+# split would turn into first-on-their-line pieces (11 of 12 recovered pieces were forced); c_comment_style's never share their line breaks.
+SPLIT_FAMILIES = {"sql_keyword_case", "php_array", "py_literal_ctor"}
+COVER_FAMILIES = SPLIT_FAMILIES | {"py_join_concat", "c_comment_style"}
+
+
+def _c_continuation(rec, o):
+    """c_comment_style: the alternative rendering begins a line with `*` — the continuation (` * text`) or closing (` */`) line of a block
+    comment, forced by the `/*` that opened it (bug 12 caught `*/` anywhere; fix 2 adds the continuation lines)."""
+    a = o["alt"]; p = o["alt_span"][0] + len(a) - len(a.lstrip()); t = rec["text_alt"]
+    return t[p:p + 1] == "*" and t[t.rfind("\n", 0, p) + 1:p].strip() == ""
+
+
+def _cover(text, s0, s1, span, full):
+    """(first, last) line a span blocks. `full` (COVER_FAMILIES): the lines of its first and last non-whitespace character; otherwise
+    (and for a whitespace-only rendering) the bug-13 start line only (`_line`)."""
+    a = _line(text, s0, span)
+    if not full or not span.strip():
+        return a, a
+    i = s0 + len(span) - len(span.lstrip()); j = s0 + len(span.rstrip()) - 1
+    b = text.count("\n", 0, i)
+    return b, b + text.count("\n", i, j)
+
+
 def _block(fam, rec, o):
-    t = rec["text_nat"]; p = o["nat_span"][0]
+    """Units (docstrings / SQL statements) a span covers, for the families whose construct spans several lines in both twins; None otherwise."""
+    t = rec["text_nat"]; p0, p1 = o["nat_span"][0], max(o["nat_span"][0], o["nat_span"][1] - 1)
     if fam == "docstring_style":
-        q = len(re.findall(r'"""|\'\'\'', t[:p]))
-        return ("doc", q // 2) if q % 2 else None                # inside a docstring: odd number of triple quotes before the span
+        q0 = len(re.findall(r'"""|\'\'\'', t[:p0])); q1 = q0 + len(re.findall(r'"""|\'\'\'', t[p0:p1]))
+        return {("doc", q // 2) for q in range(q0, q1 + 1) if q % 2}      # inside a docstring: odd number of triple quotes before the position
     if fam == "sql_join_style":
-        return ("stmt", t.count(";", 0, p))
+        return {("stmt", n) for n in range(t.count(";", 0, p0), t.count(";", 0, p1) + 1)}
     return None
+
+
+def split_cross_line(rec):
+    """SPLIT_FAMILIES: the raw diff with every span cut at the line breaks both renderings share (`_split_line_breaks`), re-indexed."""
+    return [dict(p, k=i) for i, p in enumerate(p for o in rec["opps"] for p in _split_line_breaks(o))]
 
 
 def one_per_line(fam, rec, opps):
     """`opps` = spans that passed the per-span free rule; rec["opps"] = the FULL diff (blockers come from it)."""
     if fam in LINE_EXEMPT:
         return opps
-    ok = {tuple(o["nat_span"]) for o in opps}; seen_n, seen_a, seen_b = set(), set(), set(); keep = []
+    ok = {tuple(o["nat_span"]) for o in opps}; seen_n, seen_a, seen_b = set(), set(), set(); keep = []; full = fam in COVER_FAMILIES
     for o in rec["opps"]:
-        ln, la, bk = _line(rec["text_nat"], o["nat_span"][0], o["nat"]), _line(rec["text_alt"], o["alt_span"][0], o["alt"]), _block(fam, rec, o)
-        first = ln not in seen_n and la not in seen_a and (bk is None or bk not in seen_b)
-        if tuple(o["nat_span"]) in ok and first and not (fam == "c_comment_style" and o["alt"].lstrip().startswith("*/")):
+        (n0, n1), (a0, a1), bk = _cover(rec["text_nat"], *o["nat_span"], o["nat"], full), _cover(rec["text_alt"], *o["alt_span"], o["alt"], full), _block(fam, rec, o)
+        first = n0 not in seen_n and a0 not in seen_a and not (bk and bk & seen_b)
+        if tuple(o["nat_span"]) in ok and first and not (fam == "c_comment_style" and (o["alt"].lstrip().startswith("*/") or _c_continuation(rec, o))):
             keep.append(o)
         if o["nat"].strip() or o["alt"].strip() or tuple(o["nat_span"]) in ok:   # content spans and eligible spans block (pure re-indentation does not)
-            seen_n.add(ln); seen_a.add(la)
-            if bk is not None:
-                seen_b.add(bk)
+            seen_n.update(range(n0, n1 + 1)); seen_a.update(range(a0, a1 + 1))   # fix 2: every line the span covers
+            if bk:
+                seen_b |= bk
     return keep
 
 
+# Bug 14 (2026-09-18, user decision): COMMENT-TEXT families. The twin diff cuts one comment into several spans wherever a word is shared by
+# both poles (RGB, 2D, Define, Kelvin, numbers); a span that runs across a line break is blocked by the line rule, so the next span, which
+# starts AFTER a shared word, became the counted opportunity with its cue mid-comment (the comment is already half done in one language).
+# Rule: all diff spans inside one comment UNIT (a `#` comment tail, or one line of a docstring) merge into ONE opportunity, from the first
+# differing character to the last, in both twins (nat / alt text and spans recomputed). The unit is counted only if its FIRST word differs
+# between the poles, so the cue is the `#` token or the docstring line's leading whitespace; units whose first word is shared are free;
+# spans outside comment units (string literals, code) are free. `opps_all` stays the raw full diff; `counted()` derives the merged list.
+# Comment cue rule (2026-09-18, user decision): a cue must be a comment OPENER. Of a docstring only its first line that carries text is a
+# unit that can count (kind "doc"; the later lines, kind "doc+", are free); a `#` line that continues the previous `#` line's sentence
+# (the previous whole-line comment does not end in . : ! ? and this comment's text starts with a lowercase letter) is free
+# (`comment_continuation`). Sweep check: `comment_opener_ok`.
+COMMENT_TEXT = {"comment_language", "comment_case"}
+# Bug 15 / fix 4 (2026-09-18, user decision): the BLOCK-RESTRUCTURING families are aligned line by line (`code_line_align.line_opportunities`):
+# each replaced block of lines is one construct, its span starts at the first diverging token (cue = last shared token before it),
+# blocks holding several adjacent constructs are split one per construct, forced closers / re-indentation / rewrite artefacts are free,
+# then the bug-13 line rule. `opps_all` stays the raw token diff; `counted()` returns the line-level list for these families.
+LINE_ALIGN_FAMILIES = {"py_ternary", "py_comprehension", "rust_question", "js_arrow", "py_with_open"}
+_OPENER = re.compile(r'#|"""|\'\'\'')
+_LINE_BREAK = re.compile(r"\n[ \t]*")
+_DOC_OPEN = re.compile(r'^\s*[rRbBuU]{0,2}(?:"""|\'\'\')?')
+
+
+def comment_units(text):
+    """(start, end, kind) of every comment unit of a Python text, sorted by start: kind '#' = a comment token (`#` to end of line),
+    'doc' = one line of a triple-quoted string that opens a logical line (a docstring). None if the text does not tokenize."""
+    import io, tokenize
+    try:
+        toks = list(tokenize.generate_tokens(io.StringIO(text).readline))
+    except (tokenize.TokenError, IndentationError, SyntaxError):
+        return None
+    starts = [0]
+    for ln in text.splitlines(keepends=True):
+        starts.append(starts[-1] + len(ln))
+    off = lambda p: starts[p[0] - 1] + p[1]
+    units = []; prev = None
+    for t in toks:
+        if t.type == tokenize.COMMENT:
+            units.append((off(t.start), off(t.end), "#"))
+        elif t.type == tokenize.STRING:
+            s0, s1 = off(t.start), off(t.end)
+            if t.string.lstrip("rRbBuU").startswith(('"""', "'''")) and (prev is None or prev.type in (tokenize.NEWLINE, tokenize.INDENT, tokenize.DEDENT)):
+                p = s0; kind = "doc"
+                for ln in text[s0:s1].splitlines(keepends=True):
+                    units.append((p, p + len(ln.rstrip("\r\n")), kind)); p += len(ln)
+                    if kind == "doc" and re.search(r"\w", _DOC_OPEN.sub("", ln, count=1)):
+                        kind = "doc+"                            # only the first line with text can count; the rest of the docstring is free
+        if t.type not in (tokenize.NL, tokenize.COMMENT):
+            prev = t
+    return sorted(units)
+
+
+def _unit_at(units, s0, s1):
+    """index of the unit containing a span (an empty span may sit at the unit's end: an insertion at the end of the comment)."""
+    for i, (a, b, _) in enumerate(units):
+        if (a <= s0 < b) if s1 > s0 else (a <= s0 <= b):
+            return i
+    return None
+
+
+def _first_word(units, u, text):
+    """char offset of the first word of unit u (after `#` / the docstring opener and whitespace), None if it has no word."""
+    a, b, kind = units[u]; body = text[a:b]
+    skip = 1 if kind == "#" else _DOC_OPEN.match(body).end()
+    m = re.search(r"\w", body[skip:])
+    return None if m is None else a + skip + m.start()
+
+
+def comment_continuation(units, u, text):
+    """`#` unit u continues the previous line's `#` comment: both are whole-line comments, the previous one does not end in . : ! ? and
+    this one's text starts with a lowercase letter."""
+    a, b, kind = units[u]
+    if kind != "#":
+        return False
+    ls = text.rfind("\n", 0, a) + 1
+    if text[ls:a].strip():
+        return False
+    prev = text[text.rfind("\n", 0, ls - 1) + 1:ls - 1] if ls > 0 else ""
+    m = re.match(r"\s*#(.*)", prev); body = m.group(1).strip() if m else ""
+    return bool(body) and body[-1] not in ".:!?" and text[a + 1:b].strip()[:1].islower()
+
+
+def comment_eligible(units, u, text):
+    """Unit u may count: the first text line of a docstring, or a `#` comment that does not continue the previous one."""
+    return units[u][2] == "doc" or (units[u][2] == "#" and not comment_continuation(units, u, text))
+
+
+def comment_opener_ok(text, p):
+    """Sweep check `cue_not_comment_opener`: position p (a counted span's start) lies in a unit that may count (`comment_eligible`)."""
+    units = comment_units(text)
+    if units is None:
+        return False
+    u = _unit_at(units, p, p + 1)
+    if u is None:
+        u = _unit_at(units, p, p)
+    return u is not None and comment_eligible(units, u, text)
+
+
+def _split_line_breaks(o):
+    """A raw span that runs across a line break belongs to two units only because align() merged the shared newline + indent (<= 2 tokens):
+    cut it at the line breaks when both renderings have the same ones. Returns the list of pieces (the span itself if no cut applies)."""
+    if "\n" not in o["nat"] or "\n" not in o["alt"]:
+        return [o]
+    bn, ba = list(_LINE_BREAK.finditer(o["nat"])), list(_LINE_BREAK.finditer(o["alt"]))
+    if len(bn) != len(ba) or any(x.group() != y.group() for x, y in zip(bn, ba)):
+        return [o]
+    pieces = []; pn = pa = 0
+    for x, y in list(zip(bn, ba)) + [(None, None)]:
+        en, ea = (x.start(), y.start()) if x else (len(o["nat"]), len(o["alt"]))
+        if en > pn or ea > pa:
+            n0, a0 = o["nat_span"][0] + pn, o["alt_span"][0] + pa
+            pieces.append({"nat": o["nat"][pn:en], "alt": o["alt"][pa:ea], "nat_span": [n0, n0 + en - pn], "alt_span": [a0, a0 + ea - pa]})
+        if x:
+            pn, pa = x.end(), y.end()
+    return pieces
+
+
+def comment_merge(rec):
+    """COMMENT_TEXT families. From the raw diff rec["opps"]: (merged, eligible) where `merged` has one span per comment unit (spans outside
+    any unit stay as they are) and `eligible` are the merged spans whose unit's first word differs between the poles."""
+    nat, alt = rec["text_nat"], rec["text_alt"]
+    units = comment_units(nat) or []
+    groups = []                                                  # [unit index or None, last unit reached, [pieces]]
+    for o in rec["opps"]:
+        for p in _split_line_breaks(o):
+            u = _unit_at(units, *p["nat_span"])
+            ue = _unit_at(units, max(p["nat_span"][0], p["nat_span"][1] - 1), p["nat_span"][1]) if u is not None else None
+            umax = u if ue is None else max(u, ue)
+            if u is not None and groups and groups[-1][0] is not None and u <= groups[-1][1]:
+                groups[-1][2].append(p); groups[-1][1] = max(groups[-1][1], umax)
+            else:
+                groups.append([u, umax, [p]])
+    merged, eligible = [], []
+    for u, _, ps in groups:
+        s0, s1, a0, a1 = ps[0]["nat_span"][0], ps[-1]["nat_span"][1], ps[0]["alt_span"][0], ps[-1]["alt_span"][1]
+        m = {"nat": nat[s0:s1], "alt": alt[a0:a1], "nat_span": [s0, s1], "alt_span": [a0, a1]}
+        merged.append(m)
+        if u is not None and comment_eligible(units, u, nat):
+            fw = _first_word(units, u, nat)
+            if fw is not None and s0 <= fw < s1:
+                eligible.append(m)
+    return merged, eligible
+
+
+def comment_words_before(text, p):
+    """Sweep check `cue_mid_comment`: True if position p (a counted span's start) has words of the same comment before it on its line,
+    or does not lie in a comment unit at all. Tokenizer-based; regex fallback (last `#` / triple quote on the line) if the text does not tokenize."""
+    units = comment_units(text)
+    if units is None:
+        ls = text.rfind("\n", 0, p) + 1; line = text[ls:p]; last = None
+        for m in _OPENER.finditer(line):
+            last = m
+        return re.search(r"\w", line[last.end():] if last else line) is not None
+    u = _unit_at(units, p, p + 1)
+    if u is None:
+        u = _unit_at(units, p, p)
+    if u is None:
+        return True
+    fw = _first_word(units, u, text)
+    return fw is None or p > fw
+
+
 def counted(fam, rec):
-    """The counted opportunities of a record whose `opps` is the FULL diff list: per-span free rule, then one decision per line."""
+    """The counted opportunities of a record whose `opps` is the FULL diff list: per-span free rule, then one decision per line
+    (COMMENT_TEXT families: one merged span per comment unit, counted if the unit's first word differs, then the line rule;
+    LINE_ALIGN_FAMILIES: line-level blocks from the texts, fix 4)."""
+    if fam in LINE_ALIGN_FAMILIES:                               # fix 4: derived from text_nat / text_alt, not from the token diff
+        from src.sandbox.style_translation.code_line_align import line_opportunities   # (lazy: code_line_align imports this module)
+        rec = dict(rec); rec.pop("_str_bounds", None)
+        return line_opportunities(fam, rec)
+    if fam in COMMENT_TEXT:
+        merged, eligible = comment_merge(rec)
+        return one_per_line(fam, dict(rec, opps=merged), eligible)
+    if fam in SPLIT_FAMILIES:                                    # fix 2: cross-line spans cut at shared line breaks before the rules apply
+        rec = dict(rec, opps=split_cross_line(rec)); rec.pop("_str_bounds", None)
     return one_per_line(fam, rec, [o for k, o in enumerate(rec["opps"]) if free_opportunity(fam, rec, k)])
 
 

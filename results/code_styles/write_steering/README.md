@@ -11,6 +11,9 @@ Grading identical to step-3 rollouts. See DECISIONS.md 2026-09-17 / 2026-09-18.
 **Canonical write feature (USER DECISION 2026-09-18): layer 24, α = 2.** Headline over 56 families: → natural .56 (unsteered .40),
 → alternative .43 (unsteered .13), judge OK .84; k = 4 in context .74 / .69. The other cells are context only.
 
+- NOTE 2026-09-18 (bugs 14/15): py_comprehension's rows in `sweep10/` come from the OLD opportunity lists (its cues moved); the
+  sweep was not re-run because it only served the layer/strength choice. `full56/` is current: the 12 changed families were re-sampled.
+
 - `full56/` — all 56 pool families at (L24, L26) × (α 2, 4), first 40 held-out documents per family, both directions
   (`write_full_analyze.py`). No cell selected (user decision): `by_cell.csv` gives the four means; `full.csv` per family/cell;
   `success_grid.png` (families × cells with unsteered and k = 4 references), `gain_by_family.png`, `steer_vs_k4.png`.

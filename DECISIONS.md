@@ -1967,3 +1967,34 @@ by 1 − baseline (~0.1–0.2 on near-identical paired prompts) and conflates al
   a 0-shot prompt. This is the go-to definition for all further code-convention work (read→write maps, comparisons, write-ups);
   the other three cells in `full56/` stay as reported context. Headline numbers at this setting over 56 families: → natural .56
   (unsteered .40), → alternative .43 (unsteered .13), judge OK .84; k = 4 in context .74 / .69.
+
+## 2026-09-18 — Bugs 14/15: cues must sit where the convention is decided (USER DECISIONS)
+- **Comment families (comment_language, comment_case), bug 14:** one opportunity per comment unit. A `#` comment is a unit; of a
+  docstring only its FIRST line with text is a unit (later lines are free); a `#` line that continues the previous `#` comment's
+  sentence (previous line without terminal punctuation, this comment starting lowercase) is free. A unit counts only if its first word
+  differs between the poles, so the cue is the comment opener (`#` or the docstring line's indentation). String literals are never
+  units. First words that differ only by a suffix (`Increment|ar`) stay counted. Residuals accepted as they are: 18 docs (3 below 5
+  opportunities, 15 whose leading unit is free so their k = 0 prompts differ). comment_case keeps its docstring units (few, 51).
+- **Audit of the other families:** the token diff merges the closer of one construct with the opener of the next across a shared
+  line break, so cues land before a forced closer or inside a construct that already showed its style. Four fixes were proposed:
+  1 split raw spans at shared line breaks — NOT adopted in general (in k-shot prompts a closer still tests whether the convention
+  is continued sensibly); flagged for a possible revisit; applied only inside the families that fixes 2–4 touch, where needed.
+  2 a content span blocks every line it covers (gated to sql_keyword_case, php_array, py_literal_ctor [with the split],
+  py_join_concat, c_comment_style) — ADOPTED. 3 closers followed by `,`/`;` are forced closers — ADOPTED, universal.
+  4 line-level alignment for the block-restructuring families py_ternary, py_comprehension, rust_question, js_arrow, py_with_open
+  (`code_line_align.line_opportunities`: each replaced block of lines = one construct, cue at the first divergence; blocks with
+  several adjacent constructs are split one per construct; forced closers/rewrite artefacts free) — ADOPTED with the split.
+  Families that only show the fix-1 pattern (py2_print, py_quotes, js_quotes, py_fstring, bash_test, line_wrap) are left as they are.
+- **sql_keyword_case:** the LLM-written alternative twin lower-cased identifiers, string literals and comments too; the alternative
+  twin is rebuilt BY RULE from the natural one (`code_sql_alt.py`), lower-casing only SQL keywords, as for the whitespace families.
+- Documents that fall below 5 opportunities, whose alternative rewrite violates the family rule, or whose k = 0 prompts differ are
+  regenerated from their own tasks under all guards; nothing else is regenerated. Changed families are re-sampled for step 3 and
+  for write steering (L24, α = 2 plus the other three cells for the full56 table).
+- Evidence-token definition agreed so far: the token right after each demonstration's cue, plus every other demonstration token that
+  differs between the two poles' renderings (opening AND closing quotation marks; all comment words; the closing position of an
+  absence pole such as `:` vs `):`). Scope of the alignment (whole prompt vs demonstrations only) and the treatment of tokens that
+  differ only by a leading space after an inserted symbol: still open.
+- 2026-09-18 additions after the bug 14/15 re-sample: `write_sweep.py` skips held-out documents whose k = 0 prompts differ between
+  poles (accepted comment_language residuals) instead of asserting; js_arrow generation hint now asks for ≥ 10 arrow functions
+  (30–45 lines) because the line-level rule counts ONE opportunity per arrow; 41 documents whose 5th opportunity sits past 75 % of
+  the document are accepted as a residual (user decision); the pool stays 56/60 after the re-sample.

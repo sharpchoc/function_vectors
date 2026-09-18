@@ -48,12 +48,13 @@ Return only the code, no markdown fences, no prose.
 TOK = re.compile(r"\w+|\s+|[^\w\s]", re.UNICODE)
 from src.sandbox.style_translation.code_whitespace_alt import WS_FAMILIES, same_ast, transform as ws_transform
 from src.sandbox.style_translation.code_subst_alt import convert as subst_convert, same_tree as subst_same_tree
+from src.sandbox.style_translation.code_sql_alt import transform as sql_transform, sql_ok
 from src.sandbox.style_translation.code_free import filter_free, AFFECTED, LINE_EXEMPT
 # extra generation hints for the families whose decisions can be forced by earlier code (free-opportunity rebuild, 2026-09-16):
 # the NATURAL solution must contain many FRESH choice points (new names / new loops / new blocks), not re-mentions
 LENGTH = {"rust_question": "35-50", "c_comment_style": "30-45", "py_ternary": "30-45", "py_enumerate": "35-50", "sql_join_style": "35-50", "docstring_style": "40-60",
           "js_strict_eq": "30-45", "py_comprehension": "30-45", "py_join_concat": "30-45", "js_template": "30-45", "py_not_in": "30-45", "py_optional": "30-45",
-          "py_fstring": "30-45", "py_builtin_generics": "30-45", "py_is_none": "30-45"}     # solution length guidance per family (default 20-35)
+          "py_fstring": "30-45", "py_builtin_generics": "30-45", "py_is_none": "30-45", "js_arrow": "30-45"}     # solution length guidance per family (default 20-35)
 EXTRA_HINT = {
     "py_snake_camel": "introduce at least 8 DIFFERENT multi-word variable, parameter and function names, each a new name (do not just re-use two or three names)",
     "js_camel_snake": "introduce at least 8 DIFFERENT multi-word variable, parameter and function names, each a new name (do not just re-use two or three names)",
@@ -95,6 +96,8 @@ EXTRA_HINT = {
     "js_strict_eq": "write at least 9 equality comparisons, each on its OWN line (never two comparisons on one line), spread through the whole solution",
     "py_comprehension": "write at least 8 SEPARATE one-line list comprehensions, each on its own line, spread through the whole solution with several in the first half",
     "py_optional": "write at least 8 SEPARATE function signatures or annotated variables that use Optional[...], one per line, spread through the whole solution",
+    # bug 15 / fix 4 (2026-09-18): line-level counting = one opportunity per arrow function, so the solution needs many of them
+    "js_arrow": "define at least 10 arrow functions (const f = (a, b) => {...} assignments AND inline callbacks such as arr.map(x => x * 2)), each on its own line, spread through the whole solution with several in the first half",
     "css_shorthand": "EVERY hex colour must be of the shortenable kind, made of three repeated digit pairs (#ffffff, #336699, #aabbcc, #000000), never #2a7f62-like; write at least 8 such colours AND at least 6 zero lengths with units (0px, 0em), spread through the whole stylesheet with several in the first half",
 }
 
@@ -226,6 +229,10 @@ def build_one(key, fam, task):
                 alt = subst_convert(nat)
                 if not subst_same_tree(nat, alt) or not bash_ok(nat) or not bash_ok(alt):
                     raise ValueError("substitution rule failed")
+            elif fam.name == "sql_keyword_case":                   # bug 15 (2026-09-18): only SQL keywords are lower-cased, by rule (round-trip verified)
+                alt = sql_transform(nat)
+                if not sql_ok(nat, alt):
+                    raise ValueError("sql keyword rule failed (mixed keyword case or no keyword)")
             else:
                 alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2)
                 if degenerate(alt):
@@ -237,7 +244,7 @@ def build_one(key, fam, task):
             rec = {"doc_id": f"{fam.name}__{task['id']}", "family": fam.name, "topic": task["title"], "angle": "code", "text_es": task["spec"].strip(),
                    "langs": {"src": "Task", "tgt": fam.tgt_lang}, "text_nat": nat, "text_alt": alt, "opps": opps or [], "k_en": len(opps or []),
                    "shared_fraction": round(shared, 3), "pass": bool(ok), "verify": None}
-            if fam.name in WS_FAMILIES or fam.name == "bash_subst":
+            if fam.name in WS_FAMILIES or fam.name in ("bash_subst", "sql_keyword_case"):
                 rec["alt_rule"] = True
             if ok and fam.name in AFFECTED:                       # free-opportunity rule: the pair must keep >= 5 genuine choice points
                 fr = filter_free(rec, fam.name); ok = fr is not None; rec["pass"] = bool(ok)

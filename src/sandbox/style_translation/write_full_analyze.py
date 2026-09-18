@@ -32,8 +32,11 @@ def load(MP, pool):
     recs = []
     for f in sorted((MP["steering"] / "full_k3").glob("*/*.json")):
         recs += json.load(open(f))
+    have = {r["family"] for r in recs}                 # families re-sampled under full_k3 take precedence over their sweep records
     for s in ("s1", "s7"):                       # the 10 sweep families: base + L26 from s1, L24 from s7
         for f in sorted((MP["steering"] / "sweep_k3" / s).glob("*.json")):
+            if f.stem in have:
+                continue
             recs += [r for r in json.load(open(f)) if r["arm"] == "base" or (r["layer"] in LAYERS and r["alpha"] in ALPHAS)]
     recs = [r for r in recs if r["family"] in pool]
     docs = defaultdict(set)

@@ -35,12 +35,15 @@ def held_out_items(prompts_dir, fam):
     ps = json.load(open(prompts_dir / f"{fam}.json"))
     nat = {p["doc_id"]: p for p in ps if p["style"] == "nat" and p["k"] == 0}
     alt = {p["doc_id"]: p for p in ps if p["style"] == "alt" and p["k"] == 0}
-    items = []
+    items = []; skipped = []
     for d in sorted(nat):
         if not heldout(d):
             continue
-        assert nat[d]["prompt_ids"] == alt[d]["prompt_ids"], f"k=0 prompts differ between conventions for {d}"
+        if nat[d]["prompt_ids"] != alt[d]["prompt_ids"]:      # accepted residual docs (e.g. comment_language k0): no shared 0-shot prompt to steer
+            skipped.append(d); continue
         it = dict(nat[d]); it["ref_nat"], it["ref_alt"] = nat[d]["ref_sentence"], alt[d]["ref_sentence"]; items.append(it)
+    if skipped:
+        print(f"{fam}: {len(skipped)} held-out docs skipped, k=0 prompts differ between conventions: {skipped}", flush=True)
     return items
 
 

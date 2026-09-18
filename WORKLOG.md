@@ -9620,3 +9620,83 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   py_const_naming, docstring_quotes, py_builtin_generics, comment_language (the 0-shot model never produces the construct; steering
   the first token does not create it). Unsteered arm vs step-3 k = 0: mean diff .003, max .17. Results page artifact v15.
 - 2026-09-18 USER DECISION: write feature for code conventions = L24, α = 2 (DECISIONS entry; README of write_steering updated).
+- 2026-09-18 bug 15 (user-approved fixes 2 + 3 + comment cue rule; subagent, offline): the token diff merges the closer of one construct with
+  the opener of the next across a shared line break, so cues landed before a forced closer or on a later piece of a multi-line construct
+  (audit `tmp/audit_flags.json`: counted span on a line an earlier raw span starts on or straddles). `code_free.py`: FIX 2 — in
+  `COVER_FAMILIES` = {sql_keyword_case, php_array, py_literal_ctor, py_join_concat, c_comment_style} a content span blocks every line on which
+  it has content (first..last non-whitespace char, `_cover`), likewise the docstring / SQL-statement units (`_block` returns the covered set);
+  `SPLIT_FAMILIES` = {sql_keyword_case, php_array, py_literal_ctor} first cut every raw span at line breaks both renderings share
+  (`split_cross_line`) so the swallowed opener of the next construct is its own opportunity (cue = last shared token before it). NOT universal:
+  applied everywhere the same rule deletes exactly the audit-flagged closer+opener spans of py2_print 165 / py_quotes 71 / js_quotes 13 /
+  bash_test 7 / py_fstring 2 / line_wrap 1 (user: leave alone, fix-1 pattern), 875 spans of early_return (112 docs < 5) and the fix-4 families'
+  — numbers in `tmp/fix23_measure_universal.json`. py_join_concat gets coverage without the split (11 of 12 split-recovered pieces were
+  separators / closers of multi-line join calls). c_comment_style: alt rendering beginning a line with `*` (block-comment continuation) never
+  counts (`_c_continuation`). FIX 3 — `closing_symbol` also treats closer(s) + trailing `,` / `;` as forced (`_CLOSING_PUNCT`; both renderings
+  need a closer, so js_semicolons / trailing_commas unaffected, verified). COMMENT CUE RULE — of a docstring only the first line with text is a
+  unit that can count (`comment_units` kind "doc"; later lines "doc+"), a `#` line continuing the previous whole-line `#` comment (previous not
+  ending in . : ! ? and this text starting lowercase) is free (`comment_continuation`, `comment_eligible`, `comment_opener_ok`); new sweep
+  check `cue_not_comment_opener` in `code_pairs_check.py`. Applied (align → counted, texts unchanged, raw files same bookkeeping; backups in
+  `tmp/backup_pairs2/`): sql_keyword_case 4,727 → 5,714 counted (141 docs; 1,221 mid-line pieces gone, 2,208 per-line keyword openers
+  recovered; 405 → 655 counted spans without any keyword = the known lower-cased-identifier side issue, now per line), php_array 1,832 → 1,842
+  (23 docs), py_join_concat 1,766 → 1,759 (5), py_literal_ctor 1,302 → 1,288 (5; t109 = 4, t285 = 3 opps, t053 5th > 75 %), c_comment_style
+  1,665 → 1,662 (3), comment_language 2,099 → 2,074 (22 docs: 13 docstring lines + 12 `#` continuations), comment_case 2,092 → 2,070 (12: 22
+  docstring lines). Sweep: 60 families, issues only py_literal_ctor (<5 ×2, 5th>75 % t053), py_join_concat (5th>75 % t135) and the accepted
+  comment residuals (t077 / t080 / 15 k0; comment_case t004 / t189). Cues + K = 5 prompts rebuilt for the 7 families (qwen25_code) and
+  verified. Re-audit (`tmp/reaudit_flags.json`, raw = derivation base): touched families 0 flags except py_join_concat 3 spans / 2 docs
+  (t109: separators inside ONE multi-line join call — a bracket-aware construct rule would be needed; t066 = false positive of the audit's
+  whitespace-tail criterion); untouched families unchanged. Examples `tmp/fix23_examples.json`. Old rollouts of the 7 families are stale
+  (cue positions moved) — not deleted, not re-sampled. Fix 4 (py_ternary, py_comprehension, rust_question, js_arrow, py_with_open) is the
+  parallel agent's; their data untouched and their counted lists unchanged by fixes 2 / 3. DECISIONS entry pending.
+- 2026-09-18 bug 15 fix 4 + SQL rule twin + regeneration (user-approved; subagent, offline, no GPU). BACKUPS of every changed file in
+  `tmp/backup_pairs3/` (pairs / raw / cues / prompts of the 7 families, code_free.py, code_build.py, code_line_align.py, WORKLOG.md).
+  FIX 4 HOOKED: `code_free.counted()` returns `code_line_align.line_opportunities(fam, rec)` for `LINE_ALIGN_FAMILIES` = {py_ternary,
+  py_comprehension, rust_question, js_arrow, py_with_open} (set now defined in code_free, imported by code_line_align; lazy import in
+  counted() because code_line_align imports code_free; split_adjacent + require_marker on), so filter_free / the builder / the sweep use it;
+  `opps_all` stays the raw token diff. Applied to pairs + raw (align -> counted, texts unchanged, `tmp/fix4_apply.py`), identical to the
+  dry run: counted js_arrow 1,405 -> 1,286, py_comprehension 1,601 -> 1,451, py_ternary 1,838 -> 1,791, py_with_open 1,608 -> 1,609,
+  rust_question 1,740 -> 1,606 (every doc's spans changed: a span now ends at the end of its block); 34 docs < 5, 44 docs 5th > 75 %.
+  SQL RULE TWIN: `code_sql_alt.py` (`transform`, `changes`, `mixed_case`, `alias_collisions`, `sql_ok`, `census`, `--apply [--write]`):
+  a scanner skips '...' strings ('' / \' escapes), "..." / `...` / [...] identifiers and -- / /* */ comments; every UPPER-CASE word in
+  KEYWORDS = RESERVED (statement / clause words) | FUNCTIONS (built-ins, types, interval units) is lower-cased, everything else copied.
+  Census of the natural twins: 71 distinct upper-case keyword words lowered (AS 1,224 ... KEY 1); kept = table aliases / names in
+  capitals (P, C, A, PC, MP, UP, AT, INV, RES, APP, TD, T_HOME, ALBUMS ...). `Returns` in t133 is a table name -> RETURN / RETURNS moved
+  out of RESERVED (so no mixed-case natural twin: 0 of 200); `CAST(x AS DATE)` is the type keyword, the alias heuristic now skips `AS X)`
+  (0 collisions). 200 / 200 pass `sql_ok` (alt == transform(nat), round trip restores nat, same token sequence apart from the lowered
+  words). Applied (`--apply --write`): the alt twin changed in 120 of 200 docs vs the LLM rewrite (which had lower-cased table names /
+  aliases, or kept CURDATE() etc.); counted 5,714 -> 5,113 (median 28 -> 25, min 10), 0 counted pieces without a keyword, 0 docs < 5,
+  alt_rule = True everywhere. Builder: `build_one` derives sql_keyword_case's alt by `sql_transform` and requires `sql_ok` (a natural twin
+  with lower / mixed-case reserved keywords is rejected), like the whitespace families / bash_subst.
+  REGENERATION (`tmp/regen3.py`, own tasks, 24 OpenRouter workers, acceptance = every guard + >= 5 counted + 5th < 75 % + identical k = 0
+  prefixes + no check_a fail class; 3 builder rounds, then up to 3 unused tasks x 3 rounds): 62 docs = py_literal_ctor t109 t285;
+  js_arrow t073 t076 t113 t126 t131 t148 t159 t167 t173; py_comprehension t028 t042 t060 t080 t087 t107 t124 t126 t171 t176 t177 t180
+  t189 t191 t193 t206; py_ternary t028 t045 t050 t061 t065 t067 t077 t108 t120 t133 t158 t164 t183 t188 t195; py_with_open t183;
+  rust_question t008 t014 t015 t021 t026 t037 t038 t046 t067 t076 t133 t138 t157 t161 t162 t165 t181 t182 t189 (no sql doc fell short).
+  61 / 62 in the first pass, 15 needed > 1 round, 8 REPLACED by an unused task: py_comprehension t028 -> t255, rust_question t008 -> t114
+  (t062 tried, too short), t014 -> t097, t021 -> t090, t046 -> t226 (t079 tried), js_arrow t167 -> t259 (t032 tried), py_literal_ctor
+  t109 -> t336, t285 -> t337. js_arrow t173 failed its own task x 3 and t257 / t258 / t260 x 3: diagnosis (`tmp` probe of 7 tasks) =
+  Gemini writes 1-5 arrow functions in <= 20 lines and the line rule counts ONE opportunity per arrow (the token diff used to split each
+  into ~2 spans) -> `code_build.EXTRA_HINT["js_arrow"]` (>= 10 arrows, each on its own line, several early) + `LENGTH["js_arrow"] = 30-45`
+  -> t173 regenerated from its own task in round 1 (10 opps). Logs `tmp/regen3.log`, `regen3_log.json`, `regen3b_log.json`.
+  FINAL counted (before -> after, median): py_ternary 1,838 -> 1,840 (9), py_comprehension 1,601 -> 1,522 (8 -> 7), rust_question
+  1,740 -> 1,649 (8), js_arrow 1,405 -> 1,314 (7 -> 6), py_with_open 1,608 -> 1,613 (8), sql_keyword_case 5,714 -> 5,113 (28 -> 25),
+  py_literal_ctor 1,288 -> 1,295 (6); min 5 everywhere; `validate_family` on the five fix-4 families: a_fail 0, b_fail 0, k0 mismatch 0.
+  SWEEP (60 families, 12,000 docs): the only issues are the accepted comment residuals (comment_language k0 x 15, < 5 t077, 5th > 75 %
+  t080; comment_case < 5 t004 / t189) and 41 docs `5th>75%` that were NOT on the regeneration list and were left alone as instructed:
+  js_arrow 11 (t015 t065 t074 t081 t110 t129 t134 t137 t149 t157 t177), py_comprehension 12 (t010 t011 t033 t047 t059 t082 t083 t086
+  t103 t120 t173 t198), py_ternary 3 (t024 t069 t105), py_with_open 3 (t044 t050 t165), rust_question 10 (t011 t059 t074 t132 t144 t147
+  t151 t156 t186 t225), py_literal_ctor t053, py_join_concat t135 -> OPEN QUESTION for the user (regenerate, or accept as residual).
+  CUES + K = 5 PROMPTS rebuilt (qwen25_code) for the 7 families (14,000 items) and verified (`tmp/verify_prompts3.py`: prompt_ids = prefix
+  of the twin tokenisation, last token = cue, next_nat != next_alt for every item, k = 0 prompts identical for both poles, 2 x min(5, n) x
+  200 items per family; sql cues 3 % "in header" = the k = 0 cue is `SQL:\n` when the script opens with a keyword). Prompt check for the
+  user: `tmp/prompt_check3.json` (10 random docs, k = 1 / 2, both poles, decoded prompts). STALE, not deleted: for all 7 families
+  `artifacts/style_translation/qwen25_code/{rollouts,logprob}/<fam>.json`, `steering/vectors_k3_train/<fam>.npz`,
+  `steering/full_k3/f*/<fam>.json` (py_comprehension also `steering/sweep_k3/s*/py_comprehension.json`), and their rows in
+  `results/code_styles/{summary.csv,accuracy_by_k,cutoff_k4,logprob/*,write_steering/sweep10 + full56}` -> re-sample step 3 + write
+  steering (L24 / L26 x alpha 2 / 4) for these 7 families. Nothing committed; DECISIONS entry not written (subagent scope).
+- 2026-09-18 BUG 14/15 RE-SAMPLE DONE: 12 families (py_ternary py_comprehension rust_question js_arrow py_with_open sql_keyword_case
+  py_literal_ctor php_array py_join_concat c_comment_style comment_language comment_case) re-rolled for step 3 (k = 0..4 + log-prob
+  margins) and write steering (train-split vectors + L24/L26 × α 2/4, 40 held-out docs) on 4 pods rf_1..4 (`logs/code_styles_refix_job.sh`,
+  ~35 min, all terminated by id; lesson: the .done markers live on the POD's /root, watch the shared logs/files instead). Stale
+  artifacts moved to `/root/.claude/jobs/1f45be64/tmp/stale_bug15/`. Pool unchanged 56/60. k = 4 moves: py_with_open nat .42→.58 /
+  alt .74→.54 (forced close() no longer a success), py_ternary .44/.57→.38/.46, rust_question .82/.70→.85/.78, py_comprehension nat
+  .66→.72, others within noise. full56 means unchanged (L24α2: → nat .56, → alt .44); py_ternary → alt .25→.53. Results page v29.
