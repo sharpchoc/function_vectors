@@ -14,4 +14,6 @@ evidence tokens, write = L24 cue-token residual, flags style_ok / judge_ok / cor
 - `v4_pairdiff_procrustes_all_prompts_L8_to_L24/` — scaled Procrustes (orthogonal W, one global scale) on the v3 data; centroid-diff R² -0.59 / -0.47, cos 0.31.
 - `v6_prompt_ridge_correct_only_unitnorm/` — v1 with unit-normalised per-prompt read and write vectors; λ 10, LOFO R² .124; unit-normalised style-centroid R² .18 / .26 (v1: .14 / .23), difference cos .32.
 - `v7_pairdiff_ridge_all_prompts_unitnorm/` — v3 with unit-normalised pair-difference vectors; λ 10, LOFO R² .086 (v3: .015); unit-normalised centroid-difference R² .17 / .24, direction cos .44 (v3: .03 / .11, .29).
+- `v8_pairdiff_unitnorm_split{66,80}_s{1..5}/` (+ `v8_README.md`, `v8_summary.csv`) — v7 on 10 random splits: held-out centroid-diff R²
+  (train-mean denominator) .24 ± .03 for 66/34, .23 ± .08 for 80/20; direction cos .45 / .44.
 Nothing in here is a settled result yet.
