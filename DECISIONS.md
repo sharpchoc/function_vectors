@@ -2020,3 +2020,6 @@ mean over them, so per-family results must be read with that in mind.
   the prompt at layer L (prefill only, nothing at the query cue or generated tokens); success = target convention AND judge OK;
   baseline = the same prompts unsteered; ceiling = the right-style k = 3 accuracy. Sweep families = the 10 write-sweep families.
   Selection rule as for the write sweep (one shared cell, max mean success). Result: L8, α = 4 (pending approval; α not saturated).
+- 2026-09-18 USER DECISION: read-steering setting = layer 8, α = 4 (top-5 cells L8–L18 at α4 tied within 1.6 points; layer choice
+  within 6–18 is arbitrary, α still rising at 4 — a wider α range was offered and declined for now). Full-pool run done at that
+  setting; results in `results/code_styles/read_steering/full56/`.

@@ -9732,3 +9732,11 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   unsteered .05, ceiling .77, judge OK .87; top-5 = L8–L18 at α4 (tie); per-family best .75. Read steering works at L2–22, fails at
   L24/26; success monotone in α up to 4 (grid stops before the peak). Weak: js_hungarian → alt .10, py_comprehension → alt .16.
   Read vs write: read ≥ write in 17/20 family-directions. Results page v34; awaiting approval of (L8, α4) or a wider α range.
+- 2026-09-18 READ STEERING FULL POOL (user: L8 α4): 4 pods rfull_1..4 (14 families each, ~12 min, terminated by id; completion =
+  "JOB DONE" in logs/read_full_g*.log), 8,960 records judged. `read_full_analyze.py` → `results/code_styles/read_steering/full56/`.
+  Means over 56: → nat .09 → .63 (ceiling .74), → alt .03 → .48 (ceiling .67), both .06 → .56 (.70); target rate without judge
+  .72 / .56; judge OK .85 / .83 (unsteered .90 / .92); ≥ +20 pts in 52/47 families (53 both); at ceiling (−.05) in 25/13; 9 families
+  at ceiling both directions. Failures: docstring_style .05/.00 (150-token evidence sets of shared text), py_class_naming → alt .00,
+  rust_question → alt .02, block families weak. Read gain > write gain (L24 α2 full56) in 85/112 family-directions. The 10 sweep
+  families were re-run at 40 docs for uniformity (user asked; not strictly needed). Results artifact (new URL after the sign-out):
+  https://claude.ai/artifact/XjowZYrkNCPSWZHaxpd676.
