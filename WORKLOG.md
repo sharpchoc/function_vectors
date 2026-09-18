@@ -9744,3 +9744,9 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   31,835 prompts; read = L8 evidence mean, write = L24 cue; fp16; train counts = write-feature counts). A first read→write analysis
   (two maps, prompt→centroid and centroid→centroid) was RETRACTED at the user's request and its results deleted; redone as ONE map,
   per-prompt read → per-prompt write (see the next entry).
+- 2026-09-18 READ→WRITE MAP (one map, user spec): `read_write_map_code.py` fits ridge X = per-prompt read (L8 evidence mean) →
+  Y = per-prompt write (L24 cue) on the 45 train families (25,930 prompts; family split seed 43, test = comma_space float_literals
+  js_strict_eq py2_except py_indent py_loop_vars py_optional py_private py_ternary py_with_open rust_question); λ by leave-one-family-out
+  CV (pooled per-prompt predictions): λ = 1e4, LOFO R² .112 (variance-weighted; per-dim mean .069); train-fit R² .474. Model saved to
+  `artifacts/.../qwen25_code/read_write_map/ridge_L8_to_L24.npz` (W, x_mean, y_mean, λ). Evaluation on the test families = next step.
+  1 GPU pod (map_2, ~4 min, terminated).
