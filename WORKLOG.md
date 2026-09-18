@@ -9750,3 +9750,7 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   CV (pooled per-prompt predictions): λ = 1e4, LOFO R² .112 (variance-weighted; per-dim mean .069); train-fit R² .474. Model saved to
   `artifacts/.../qwen25_code/read_write_map/ridge_L8_to_L24.npz` (W, x_mean, y_mean, λ). Evaluation on the test families = next step.
   1 GPU pod (map_2, ~4 min, terminated).
+- 2026-09-18 style-centroid evaluation of the one read→write map (user request): map(mean read of a style) vs mean write of the style.
+  TRAIN styles (90, in-sample): R² .962 (per-dim .958), nearest-centroid identification .989, cos(pred, true nat−alt) .936.
+  TEST styles (22, unseen families): R² .136 (per-dim −.008; constant −.118), identification .50, cos .32.
+  `results/code_styles/read_write_map/style_centroid_eval.json`.
