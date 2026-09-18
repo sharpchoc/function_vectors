@@ -16,4 +16,5 @@ evidence tokens, write = L24 cue-token residual, flags style_ok / judge_ok / cor
 - `v7_pairdiff_ridge_all_prompts_unitnorm/` — v3 with unit-normalised pair-difference vectors; λ 10, LOFO R² .086 (v3: .015); unit-normalised centroid-difference R² .17 / .24, direction cos .44 (v3: .03 / .11, .29).
 - `v8_pairdiff_unitnorm_split{66,80}_s{1..5}/` (+ `v8_README.md`, `v8_summary.csv`) — v7 on 10 random splits: held-out centroid-diff R²
   (train-mean denominator) .24 ± .03 for 66/34, .23 ± .08 for 80/20; direction cos .45 / .44.
+- `v9_pairdiff_unitnorm_layers/L{6,10,12,14,16,18}/` — the v7 recipe per read layer (see its README and summary.csv); test evaluation pending.
 Nothing in here is a settled result yet.

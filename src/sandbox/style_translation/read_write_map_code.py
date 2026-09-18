@@ -43,12 +43,13 @@ def main():
     ap.add_argument("--split_file", default=None, help="JSON with 'train' and 'test' family lists (overrides the seeded 80/20 split)")
     ap.add_argument("--tag", default=None, help="write results to read_write_map/sandbox/<tag>/ and the model to ridge_L8_to_L24_<tag>.npz")
     ap.add_argument("--method", choices=["ridge", "procrustes"], default="ridge", help="procrustes = orthogonal W (SVD of Xc^T Yc) with ONE global scale, train-mean centring; no lambda")
+    ap.add_argument("--read_layer", type=int, default=8, help="read feature layer; != 8 loads read_L<layer> from prompt_pairs_layers/ (same row order as prompt_pairs)")
     ap.add_argument("--unit_norm", action="store_true", help="scale every prompt's read vector and write vector to unit L2 norm before fitting")
     ap.add_argument("--pair_diff", action="store_true", help="rows = (document, k) pairs: X = read_nat - read_alt, Y = write_nat - write_alt (both prompts must pass --select)")
     ap.add_argument("--select", choices=["correct", "all"], default="correct", help="prompt_pairs rows to use: correct = convention followed AND judge OK (the fitted map), all = every k = 3, 4 prompt")
     args = ap.parse_args()
     MP = model_paths(args.model); R = MP["results"]; OUT = R / "read_write_map" / ("sandbox/" + args.tag if args.tag else ""); OUT.mkdir(parents=True, exist_ok=True)
-    MOD = MP["prompt_pairs"].parent / "read_write_map"; MOD.mkdir(parents=True, exist_ok=True); MODEL_FILE = MOD / (f"ridge_L8_to_L24_{args.tag}.npz" if args.tag else "ridge_L8_to_L24.npz")
+    MOD = MP["prompt_pairs"].parent / "read_write_map"; MOD.mkdir(parents=True, exist_ok=True); MODEL_FILE = MOD / (f"ridge_L{args.read_layer}_to_L24_{args.tag.replace('/', '_')}.npz" if args.tag else "ridge_L8_to_L24.npz")
     pool = json.load(open(R / "code_pool.json"))["pool"]; rng = np.random.default_rng(args.seed)
     if args.split_file:
         sf = json.load(open(args.split_file)); train, test = sorted(sf["train"]), sorted(sf["test"]); assert set(train) | set(test) == set(pool) and not set(train) & set(test)
@@ -58,7 +59,9 @@ def main():
         json.dump(dict(seed=args.seed, train=train, test=test), open(OUT / "split.json", "w"), indent=1)
     X, Y, F = [], [], []
     for f in train:
-        z = np.load(MP["prompt_pairs"] / f"{f}.npz"); m = z["correct"] if args.select == "correct" else np.ones(len(z["k"]), bool)
+        z = dict(np.load(MP["prompt_pairs"] / f"{f}.npz")); m = z["correct"] if args.select == "correct" else np.ones(len(z["k"]), bool)
+        if args.read_layer != 8:
+            zl = np.load(MP["prompt_pairs"].parent / "prompt_pairs_layers" / f"{f}.npz"); assert np.array_equal(zl["doc_id"], z["doc_id"]) and np.array_equal(zl["k"], z["k"]); z["read"] = zl[f"read_L{args.read_layer}"]
         if args.pair_diff:
             idx = {(d, p, int(k)): i for i, (d, p, k) in enumerate(zip(z["doc_id"], z["pole"], z["k"])) if m[i]}
             keys = sorted({(d, k) for (d, p, k) in idx if (d, "nat", k) in idx and (d, "alt", k) in idx})
@@ -84,7 +87,7 @@ def main():
         cv = [dict(lam=float("nan"), lofo_r2=r2(Y, pred)[0], lofo_r2_per_dim=r2(Y, pred)[1])]; lam = float("nan")
         W, mx, my = procrustes(Xt, Yt); fit_r2 = r2(Y, ((Xt - mx) @ W + my).cpu().numpy()); best = cv[0]
         np.savez_compressed(MODEL_FILE, W=W.cpu().numpy().astype(np.float32), x_mean=mx.cpu().numpy().astype(np.float32), y_mean=my.cpu().numpy().astype(np.float32), lam=lam,
-                            train_families=np.array(train), read_layer=8, write_layer=24, method="procrustes_scaled", scale=float((W.T @ W).diagonal().mean().sqrt()))
+                            train_families=np.array(train), read_layer=args.read_layer, write_layer=24, method="procrustes_scaled", scale=float((W.T @ W).diagonal().mean().sqrt()))
     else:
         # leave-one-family-out: one eigendecomposition per fold, every lambda a cheap product
         preds = {lam: np.zeros_like(Y) for lam in args.lams}
@@ -100,12 +103,12 @@ def main():
         W = torch.linalg.solve(Xc.T @ Xc + lam * torch.eye(Xc.shape[1], dtype=Xc.dtype, device=dev), Xc.T @ Yc)
         fit_r2 = r2(Y, ((Xc @ W) + my).cpu().numpy())
         np.savez_compressed(MODEL_FILE, W=W.cpu().numpy().astype(np.float32), x_mean=mx.cpu().numpy().astype(np.float32), y_mean=my.cpu().numpy().astype(np.float32),
-                            lam=lam, train_families=np.array(train), read_layer=8, write_layer=24, method="ridge")
+                            lam=lam, train_families=np.array(train), read_layer=args.read_layer, write_layer=24, method="ridge")
     with open(OUT / "cv.csv", "w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=list(cv[0])); w.writeheader(); w.writerows(cv)
     json.dump(dict(seed=args.seed, method=args.method, train_families=train, test_families=test, n_train_prompts=int(len(X)), dim=int(X.shape[1]), lambda_grid=args.lams, lambda_selected=lam,
                    lofo_r2_at_selected=best["lofo_r2"], lofo_r2_per_dim_at_selected=best["lofo_r2_per_dim"], train_fit_r2=fit_r2[0], cv=cv,
-                   model_file=str(MODEL_FILE), select=args.select, pair_diff=args.pair_diff, unit_norm=args.unit_norm), open(OUT / "fit.json", "w"), indent=1)
+                   model_file=str(MODEL_FILE), select=args.select, pair_diff=args.pair_diff, unit_norm=args.unit_norm, read_layer=args.read_layer), open(OUT / "fit.json", "w"), indent=1)
     fig, ax = plt.subplots(figsize=(7, 4.5)); ax.semilogx([c["lam"] for c in cv], [c["lofo_r2"] for c in cv], "o-"); ax.axvline(lam, color="r", ls="--", label=f"selected λ = {lam:g}")
     ax.set_xlabel("ridge λ"); ax.set_ylabel("leave-one-family-out R² (per-prompt write features, pooled)"); ax.grid(alpha=.3); ax.legend(); ax.set_title("λ selection on the 45 train families")
     fig.tight_layout(); fig.savefig(OUT / "cv_curve.png", dpi=130); plt.close(fig)
