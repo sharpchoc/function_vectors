@@ -2,7 +2,8 @@
 """Read -> write map for the code-convention families: ONE linear map from per-prompt read features to per-prompt write features.
 
 Data: prompt_pairs/<family>.npz (capture_prompt_pairs_code.py): per prompt read = L8 residual mean over the evidence tokens,
-write = L24 residual at the final cue token; k in {3, 4}, correct completions, both poles, all documents.
+write = L24 residual at the final cue token; k in {3, 4}, both poles, all documents; rows carry style_ok / judge_ok / correct flags
+(--select correct uses the correct ones, the default).
 Split: families 80/20 by seed (45 train / 11 test). Fit: ridge regression with intercept (train-mean centring), X = read, Y = write,
 on all prompts of the train families; lambda chosen by leave-one-family-out CV on the train families (held-out predictions of all folds
 pooled, R^2 variance-weighted over dimensions). The chosen map is refit on all train families and saved; evaluation on the test
@@ -39,6 +40,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--model", default="qwen25_code"); ap.add_argument("--seed", type=int, default=43); ap.add_argument("--test_frac", type=float, default=0.2)
     ap.add_argument("--lams", nargs="*", type=float, default=[1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7])
+    ap.add_argument("--select", choices=["correct", "all"], default="correct", help="prompt_pairs rows to use: correct = convention followed AND judge OK (the fitted map), all = every k = 3, 4 prompt")
     args = ap.parse_args()
     MP = model_paths(args.model); R = MP["results"]; OUT = R / "read_write_map"; OUT.mkdir(parents=True, exist_ok=True)
     MOD = MP["prompt_pairs"].parent / "read_write_map"; MOD.mkdir(parents=True, exist_ok=True)
@@ -47,7 +49,8 @@ def main():
     json.dump(dict(seed=args.seed, train=train, test=test), open(OUT / "split.json", "w"), indent=1)
     X, Y, F = [], [], []
     for f in train:
-        z = np.load(MP["prompt_pairs"] / f"{f}.npz"); X.append(z["read"].astype(np.float32)); Y.append(z["write"].astype(np.float32)); F += [f] * len(z["read"])
+        z = np.load(MP["prompt_pairs"] / f"{f}.npz"); m = z["correct"] if args.select == "correct" else np.ones(len(z["k"]), bool)
+        X.append(z["read"][m].astype(np.float32)); Y.append(z["write"][m].astype(np.float32)); F += [f] * int(m.sum())
     X, Y, F = np.concatenate(X), np.concatenate(Y), np.array(F)
     dev = "cuda" if torch.cuda.is_available() else "cpu"; Xt = torch.as_tensor(X, dtype=torch.float64, device=dev); Yt = torch.as_tensor(Y, dtype=torch.float64, device=dev)
     # leave-one-family-out: one eigendecomposition per fold, every lambda a cheap product

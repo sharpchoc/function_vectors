@@ -9754,3 +9754,8 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   TRAIN styles (90, in-sample): R² .962 (per-dim .958), nearest-centroid identification .989, cos(pred, true nat−alt) .936.
   TEST styles (22, unseen families): R² .136 (per-dim −.008; constant −.118), identification .50, cos .32.
   `results/code_styles/read_write_map/style_centroid_eval.json`.
+- 2026-09-18 PROMPT-LEVEL ACTIVATIONS, SINGLE SOURCE (user request): captured the 12,953 k = 3/4 prompts the correctness filter had
+  excluded (`capture_prompt_pairs_code.py --select incorrect`, 4 pods pr_1..4, ~8 min, terminated) and merged with the correct ones →
+  `artifacts/style_translation/qwen25_code/prompt_pairs/<fam>.npz` now holds EVERY k = 3/4 prompt (44,788; 22,394 per k; correct 31,835
+  = 71.1%) with read (L8 evidence mean), write (L24 cue), doc_id, pole, k, heldout, n_evidence, style_ok, judge_ok, correct. 522 MB.
+  `read_write_map_code.py --select correct|all` (default correct = the fitted map unchanged).
