@@ -9764,3 +9764,78 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   absolute difference and failed; replaced by a per-row cosine check, min .9999) → `artifacts/.../qwen25_code/prompt_pairs_layers/<fam>.npz`
   with read_L6, read_L8, read_L10, read_L12, read_L14, read_L16, read_L18 [N, 3584] fp16 in the SAME row order as prompt_pairs
   (doc_id/pole/k asserted). 44,788 prompts, 1.9 GB. Standby pod for regressions (map_5) still up by user request.
+- 2026-09-18 PADDING REGENERATION (user finding: the >= 8-occurrence hint made Gemini manufacture occurrences; subagent, offline) — HARD STOP
+  BEFORE THE BULK RUN, awaiting a user decision. Done: `code_build.py` gained `GEN_MODEL` / `--gen_model` / `build_one(..., gen_model)` (Anthropic
+  models: reasoning medium for GEN, off for REWRITE, 16k max tokens), a universal NO-PADDING paragraph in `GEN`, the guard `padding_lines()` over
+  the module constant `PADDING_PATTERNS` (stacked negation `not…not` / `!!` on the code part of a line, filler wording, `# Example|Test case|Demo`,
+  discarded results `_ = …` / `let _ = …`, `elif True` / `range(1)`, comments naming the style) applied to every natural twin in `build_one`,
+  plus `USAGE` (per-model tokens + OpenRouter cost) and `REJECTS` tallies; `code_pairs_check.py` gained the permanent `padding_line` check
+  (same function). Driver `tmp/regen4.py` (Sonnet 5 generator, Opus 5 independent 14-item reviewer with strict JSON verdicts, 3 own-task
+  rounds then 3 unused tasks, verdict log `regen4_review.jsonl`) is ready; only `--test` dry runs were executed, NOTHING was written to pairs / raw
+  (backups anyway in `tmp/backup_pairs4/`). Probes: sonnet-5 ≈ $2/$10 per M tokens, opus-5 ≈ $5/$25; gpt-5 and gemini-2.5-pro also answer.
+  FINDINGS: (1) the union of the user's 448-doc list and the guard's hits in the four families is 513 docs (py_not_in 166, rust_question 90,
+  py_is_none 152, float_literals 105); the user's stacked-negation regex also flags ordinary `if not a or not b:` lines. (2) The sweep's new
+  check trips in ALL 60 families: 4,087 / 12,000 docs (filler wording 3,238, `# Example…` 672, stacked negation 535, style comments 227,
+  discarded results 169, trivial branches 139); 1,102 of them ONLY because of a trailing `# Example usage` block. Other sweep issues unchanged
+  (accepted residuals). (3) Reviewer calibration on EXISTING docs: 4 padded docs rejected (correct) but also 4 / 4 regex-clean docs rejected
+  (never-firing checks, unused helpers). (4) Fresh Sonnet-5 docs: 0 / 8 accepted under the literal checklist, 1 / 8 under a variant that lets the
+  reviewer accept the extensions the generation hint permits (`--ext_ok`); 12 / 13 rejections cite item 6 (padding: dead checks, unused
+  variables, `x * 1.0`, uncalled helpers), 3 item 4 (Sonnet's rewrite left a `not in` unconverted), 3 item 11 (extra optional parameter).
+  Diagnosis: the kept ">= 8 occurrences on separate lines" hint cannot be met by the trivial task specs (count vowels, binary -> decimal)
+  without material the strict reviewer classifies as padding — a conflict between two user texts, not a pipeline bug; the projected bulk run
+  (~12 attempts x $0.09 per doc, ~$350-450) would replace most docs by unused tasks with a ~10 % per-attempt yield. Options handed to the user.
+- 2026-09-18 PADDING REGENERATION, BULK RUN STOPPED after 14 / 510 docs (user decisions applied first: occurrence hint >= 6 for the four
+  families via `code_build.OCC_HINT` — the >= 8 line hint stays for every other family; `PADDING_PATTERNS`: `example usage` dropped from the
+  filler list, `# Example usage` exempted from the example-comment pattern, stacked negation = genuine double negation of one operand only
+  (`not X not in`, `not (not`, `!!`, `!(!`), so `if not a or not b:` no longer trips; reviewer = `--ext_ok` variant, the run default).
+  Regeneration set with the trimmed patterns: user list ∪ guard hits = 510 (py_not_in 164, rust_question 91, py_is_none 151, float_literals 104).
+  RESULT of the first 14 py_not_in docs (20 workers, ~8 min, ~$17 est.: 209 Opus reviews ≈ $6, Sonnet ≈ $10): 3 accepted (1 own task round 2,
+  2 replaced by unused tasks), 11 FAILED after all 12 attempts (3 own rounds + 3 unused tasks x 3); 209 reviews, 3 ok (1.4 % per attempt).
+  Rejections: item 6 padding in 194 / 206 rejected verdicts (676 quoted lines), item 11 wrong task 30 (extra parameters / helper signatures),
+  item 5 fake decision 25, item 4 inconsistent convention 11 (Sonnet's rewrite leaves a `not in` unconverted), others <= 2. Spot check of 8
+  near-miss verdicts: the quoted lines ARE padding (a `seen` set that is written but never read, membership tests that cannot fire, an
+  inverted `not in ... continue` instead of `if in: return`, helpers never called) — Sonnet 5 pads more subtly rather than not at all;
+  the reviewer is right. Conclusion (fact, not speculation): a 30-45-line solution of these task specs does not contain 6 honest `not in`
+  tests; the honest count is typically 1-3. Killed the run (pairs / raw untouched, verified byte-identical to `tmp/backup_pairs4/`);
+  logs `tmp/regen4.log`, verdicts `tmp/regen4_review.jsonl`. Steps 4-6 not executed; waiting for the user.
+- 2026-09-19 PADDING REGENERATION DONE (user decision OPTION A strengthened + feedback-repair loop; subagent, offline, no GPU). Code:
+  `code_build.py` — `FREE_OCC_HINT` / `FREE_OCC_TEXT` for py_not_in / rust_question / py_is_none / float_literals (construct description +
+  "use it wherever the task's logic genuinely calls for it … never add code … whose only purpose is to create an occurrence"; NO numeric
+  occurrence requirement, EXTRA_HINT not applied, one-per-line + several-early kept), `LENGTH` 40-80 for the four, `gen_hint(fam)` builds the
+  STYLE REQUIREMENT for every family (>= 8 line hint unchanged elsewhere; `OCC_HINT` = {} kept as the override hook), `build_one` split into
+  `generate_nat` + `finish_pair` (guards -> alt twin -> align -> free filter; used by the revision loop), `_chat` omits `temperature` when None
+  (OpenAI reasoning models), `GEN_MODEL` / `--gen_model`, universal NO-PADDING paragraph, `PADDING_PATTERNS` + `padding_lines()` guard (trimmed
+  per user: no `example usage`, `# Example usage` exempt, stacked negation = double negation of ONE operand), `USAGE` / `REJECTS` tallies.
+  `code_free.py` — `FIFTH_FRAC` (default .75; .85 for the four families) via `fifth_frac(fam)`, used by `filter_free`, the builder and the sweep
+  (the sweep flag keeps its name `5th>75%`). `code_pairs_check.py` — permanent `padding_line` check. Driver `tmp/regen5.py`: generator
+  anthropic/claude-opus-5 (effort medium, 16k tokens; rewrite Opus 5, reasoning off), two INDEPENDENT reviewers per attempt (anthropic/claude-opus-5
+  and openai/gpt-5, same 14-item checklist + ext_ok note, strict JSON, quoted lines), round 1 fresh generation, rounds 2-4 REVISION of the previous
+  natural twin with the accumulated reviewer + guard feedback (REVISE prompt), then up to 4 unused tasks x 3 rounds (fresh, revise, revise);
+  acceptance = guards + counted >= 5 + 5th < 85 % + identical k = 0 prefixes + (rust) check_a + BOTH reviewers ok; accepted records appended to
+  `tmp/regen5_accepted.jsonl` at once, pairs / raw written for accepted docs only. The earlier Sonnet-5 attempt (>= 6 hint, one reviewer, fresh-only)
+  was stopped after 14 docs at 1.4 % yield (`tmp/regen4.log`, `tmp/regen4_review_sonnet_run.jsonl`); the Opus run started fresh for all 510 docs.
+  RUN (24 workers, 59 min, `tmp/regen5.log`, `regen5_log.json`, verdicts `regen4_review.jsonl` with reviewer/kind fields, summary
+  `regen5_summary.txt`): 510 / 510 accepted (py_not_in 164, rust_question 91, py_is_none 151, float_literals 104), 448 from the OWN task
+  (rounds 1/2/3/4 = 136/181/102/29), 62 REPLACED by an unused task (16/10/23/13; rounds 1/2/3 = 26/21/15), 0 failed, 0 timeouts. 1,314 attempts:
+  fresh 583 -> 162 accepted (27.8 %), revise 731 -> 348 accepted (47.6 %) = the feedback loop roughly doubles the per-attempt yield; overall 38.8 %.
+  Non-accepted attempts: builder_reject 392 (mostly < 5 counted honest occurrences), padding guard 43, alt does not parse 30, nat does not parse 6,
+  fences 6; reviewer verdicts: Opus 835 reviews / 293 rejections, GPT-5 835 / 208, 0 unparseable; agreement on the 835 doubly-reviewed attempts:
+  both ok 510, both reject 176, only Opus rejects 117, only GPT-5 rejects 32. Items cited (Opus / GPT-5): 6 padding 147 / 31, 5 fake decision
+  105 / 94, 4 inconsistent convention 39 / 22, 3 invalid 34 / 37, 11 wrong task 23 / 28, 1 meaning change 19 / 14, 9 family rule 11 / 6,
+  14 line correspondence 6 / 6, 2 extra change 2 / 4, 12 too few 2 / 2; items 7, 8, 10, 13 never. COST: Opus 3,418 calls, 6.75 M prompt +
+  4.63 M completion tokens = $149.46; GPT-5 835 calls, 2.12 M + 3.17 M = $34.12; run total $183.58 (+ ~$20 for the stopped Sonnet run and dry runs).
+  COUNTED before -> after (total, mean, median, min): py_not_in 1,535 -> 1,166 (7.67 -> 5.83, 8 -> 5, 5 -> 5), rust_question 1,649 -> 1,792
+  (8.24 -> 8.96, 8 -> 9, 5 -> 5), py_is_none 1,362 -> 1,317 (6.81 -> 6.58, 7 -> 6, 5 -> 5), float_literals 1,636 -> 1,671 (8.18 -> 8.36, 7 -> 8,
+  5 -> 5; max 57 -> 22); natural twins are longer (mean lines 38 -> 84, 55 -> 72, 41 -> 72, 32 -> 60). SWEEP (60 families, 12,000 docs): the four
+  families 0 issues (padding_line 0, no 5th > 85 %); 55 other families trip `padding_line` with the trimmed patterns (top: py2_iter 146,
+  num_separators 136, py_enumerate 129, py_loop_vars 126, docstring_quotes 97, hex_constants 85; lowest sql_keyword_case 1, js_template /
+  sql_join_style 2, py_self_name 3) — NOT regenerated (user decides); other issues = the accepted residuals (41 `5th>75%`, comment_* k0 / < 5).
+  CUES + K = 5 PROMPTS rebuilt (qwen25_code) for the four families, 8,000 items, verified (`tmp/verify_prompts4.py`: prompt_ids prefix of the
+  twin tokenisation, last token = cue, next_nat != next_alt, k = 0 identical, 2 x 5 x 200 per family; max prompt 1,057 tokens); user check
+  `tmp/prompt_check4.json` (10 random REGENERATED docs, k = 1 / 2, both poles, decoded). OPEN: the 290 untouched docs of the four families
+  (36 / 109 / 49 / 96) were never reviewed; a rough scan finds comments naming the construct in 2 / <= 18 / 9 / 21 of them (e.g. float_literals
+  t008 `elif .5 < 1.: # A float literal for conditional logic`) = regex-missed padding. STALE for the four families (not deleted): rollouts,
+  logprob, steering/vectors_k3_train + full_k3 (+ sweep_k3 s1-7 for py_is_none), read_features/evidence + vectors_k3_train, read_steer/full_k3
+  (+ sweep_k3 c1-7 for py_is_none), prompt_pairs, prompt_pairs_layers, and their rows in results/code_styles (summary, cutoff_k4, unscorable,
+  logprob_margin, read_vectors, write_steering/full56, read_steering/full56, read_write_map — float_literals and rust_question are TEST families).
+  Nothing committed; DECISIONS entry not written (subagent scope).

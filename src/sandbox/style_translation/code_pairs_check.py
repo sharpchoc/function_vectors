@@ -11,7 +11,9 @@ rename collisions, `two_counted_on_a_line` (bug 13: never two counted spans on o
 `cue_mid_comment` (bug 14: in the COMMENT_TEXT families no counted opportunity has words of its comment before it on its line, in either twin,
 and every counted opportunity lies in a comment unit), `cue_not_comment_opener` (comment cue rule, 2026-09-18: every counted opportunity of a
 COMMENT_TEXT family lies in a unit that may count — the first text line of a docstring or a `#` comment that does not continue the previous
-`#` line's sentence — judged on the natural twin, which defines the units).
+`#` line's sentence — judged on the natural twin, which defines the units), `padding_line` (2026-09-18 padding guard: no line of the natural
+twin matches `code_build.PADDING_PATTERNS` — stacked negations, filler / placeholder / dummy / demonstration wording, `# Example` comments,
+discarded results `_ = ...`, trivial branches, comments naming the style; same function as the builder's guard, `code_build.padding_lines`).
 
     python src/sandbox/style_translation/code_pairs_check.py [--families f1 f2 ...] [--list]   (--list prints the offending doc_ids)
 """
@@ -28,8 +30,8 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.sandbox.style_translation.code_families import CODE_FAMILIES
-from src.sandbox.style_translation.code_build import degenerate, valid_source, PAIRS
-from src.sandbox.style_translation.code_free import counted, IDENT_FAMILIES, consistent_twins, rename_collisions, LINE_EXEMPT, COMMENT_TEXT, _line, comment_words_before, comment_opener_ok
+from src.sandbox.style_translation.code_build import degenerate, valid_source, padding_lines, PAIRS
+from src.sandbox.style_translation.code_free import counted, fifth_frac, IDENT_FAMILIES, consistent_twins, rename_collisions, LINE_EXEMPT, COMMENT_TEXT, _line, comment_words_before, comment_opener_ok
 
 
 def check_family(F, recs, listing=None):
@@ -47,11 +49,12 @@ def check_family(F, recs, listing=None):
     for r in recs:
         nat, alt = r["text_nat"], r["text_alt"]; o = r["opps"]; flags = {}
         flags["<5"] = len(o) < 5
-        flags["5th>75%"] = len(o) >= 5 and o[4]["nat_span"][0] >= .75 * len(nat)
+        flags["5th>75%"] = len(o) >= 5 and o[4]["nat_span"][0] >= fifth_frac(fam) * len(nat)      # threshold per family (code_free.fifth_frac; 85 % for the four 2026-09-18 families)
         flags["k0"] = bool(o) and nat[:o[0]["nat_span"][0]] != alt[:o[0]["alt_span"][0]]
         flags["span"] = any(nat[slice(*x["nat_span"])] != x["nat"] or alt[slice(*x["alt_span"])] != x["alt"] for x in o)
         flags["guard"] = bool(degenerate(nat) or degenerate(alt))
         flags["artefact"] = bool(re.search(r"<ctrl\d+>", nat + alt))
+        flags["padding_line"] = bool(padding_lines(nat, F.tgt_lang))          # the padding guard, on the natural twin
         flags["bookkeeping"] = not (r.get("free_filter") and "opps_all" in r)
         flags["shared<.6"] = r["shared_fraction"] < 0.6
         full = dict(r); full["opps"] = r.get("opps_all") or r["opps"]
@@ -81,7 +84,7 @@ def main():
     tot = 0; issues = {}
     for name in args.families:
         F = fams[name]; recs = json.load(open(PAIRS / f"{name}.json")); tot += len(recs)
-        listing = Counter() if False else {k: [] for k in ("invalid_twin", "<5", "5th>75%", "k0", "span", "guard", "artefact", "bookkeeping", "shared<.6", "stale_counted_list", "inconsistent", "collision", "two_counted_on_a_line", "cue_mid_comment", "cue_not_comment_opener")}
+        listing = Counter() if False else {k: [] for k in ("invalid_twin", "<5", "5th>75%", "k0", "span", "guard", "artefact", "bookkeeping", "shared<.6", "stale_counted_list", "inconsistent", "collision", "two_counted_on_a_line", "cue_mid_comment", "cue_not_comment_opener", "padding_line")}
         c = check_family(F, recs, listing if args.list else None)
         if c:
             issues[name] = c

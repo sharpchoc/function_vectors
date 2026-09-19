@@ -6,7 +6,7 @@ the 5th starts before 75 % of the code, and >= 60 % of the tokens are shared. Re
 (text_es = task spec, langs = {src: Task, tgt: <Language>}); raw cache dataset_files/style_translation/code/<family>.json;
 task pools dataset_files/style_translation/code/tasks_<lang>.json. Then cue tokens + prompts (Qwen) filtered to k in {0, 4}."""
 import argparse
-import argparse, ast, difflib, json, re, subprocess, sys, time
+import argparse, ast, difflib, json, re, subprocess, sys, threading, time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -36,6 +36,14 @@ script, with the inputs/outputs and 2 example invocations. Return ONLY a JSON li
 GEN = """Write a complete {lang} solution to the task below.
 STYLE REQUIREMENT (this is the point of the exercise): {hint}. Apply it consistently, and make sure the places where it applies are spread
 over the WHOLE solution, including the second half — not clustered at the top.
+NO PADDING (2026-09-18): every occurrence of the required construct must arise from the task's own logic; an independent strict reviewer
+rejects the solution if ANY line exists only to raise the occurrence count. Forbidden: filler, placeholder, dummy or illustrative lines;
+checks that can never fire or whose body is only `pass`; unused variables; helper functions that are never called or not needed for the
+task; self-test / example-usage blocks; discarded results (`_ = ...`, `let _ = ...`); comments that announce examples, count occurrences or
+name the style; stacked negations (`not x not in y`, `!!x`); `elif True`, `for _ in range(1)`, repeated boilerplate. If the task alone cannot
+produce enough occurrences, extend the solution with genuinely useful, actually-used logic (validation the task's inputs really need, a
+parsing / formatting / reporting step, a caller that the task's examples exercise) — the result must still solve the stated task with the
+stated name and signature.
 Length {length} lines. Plain code only: no markdown fences, no prose before or after.
 
 TASK:
@@ -49,12 +57,26 @@ TOK = re.compile(r"\w+|\s+|[^\w\s]", re.UNICODE)
 from src.sandbox.style_translation.code_whitespace_alt import WS_FAMILIES, same_ast, transform as ws_transform
 from src.sandbox.style_translation.code_subst_alt import convert as subst_convert, same_tree as subst_same_tree
 from src.sandbox.style_translation.code_sql_alt import transform as sql_transform, sql_ok
-from src.sandbox.style_translation.code_free import filter_free, AFFECTED, LINE_EXEMPT
+from src.sandbox.style_translation.code_free import filter_free, AFFECTED, LINE_EXEMPT, fifth_frac
 # extra generation hints for the families whose decisions can be forced by earlier code (free-opportunity rebuild, 2026-09-16):
 # the NATURAL solution must contain many FRESH choice points (new names / new loops / new blocks), not re-mentions
-LENGTH = {"rust_question": "35-50", "c_comment_style": "30-45", "py_ternary": "30-45", "py_enumerate": "35-50", "sql_join_style": "35-50", "docstring_style": "40-60",
+LENGTH = {"rust_question": "40-80", "c_comment_style": "30-45", "py_ternary": "30-45", "py_enumerate": "35-50", "sql_join_style": "35-50", "docstring_style": "40-60",
           "js_strict_eq": "30-45", "py_comprehension": "30-45", "py_join_concat": "30-45", "js_template": "30-45", "py_not_in": "30-45", "py_optional": "30-45",
-          "py_fstring": "30-45", "py_builtin_generics": "30-45", "py_is_none": "30-45", "js_arrow": "30-45"}     # solution length guidance per family (default 20-35)
+          "py_fstring": "30-45", "py_builtin_generics": "30-45", "py_is_none": "40-80", "js_arrow": "30-45",
+          "py_not_in": "40-80", "float_literals": "40-80"}     # solution length guidance per family (default 20-35); 40-80 = FREE_OCC_HINT families (2026-09-18)
+# occurrence count asked of the generator in the bug-13 line hint (default 8); per-family overrides (none at present)
+OCC_HINT = {}
+# user decision 2026-09-18 (OPTION A, strengthened): these families get NO numeric occurrence requirement — the construct is described and the
+# generator writes a realistic, longer solution in which occurrences arise naturally (LENGTH 40-80); EXTRA_HINT / OCC_HINT are not applied
+FREE_OCC_HINT = {
+    "py_not_in": "negated membership tests written as `x not in y`",
+    "rust_question": "error propagation with the `?` operator in functions that return Result / Option",
+    "py_is_none": "comparisons with None written as `is None` / `is not None`",
+    "float_literals": "float literals with digits on both sides of the point (0.5, 1.0, 2.25, 0.75)",
+}
+FREE_OCC_TEXT = ("use the construct wherever the task's logic genuinely calls for it; write a realistic, complete solution — it may be a small "
+                 "module with several related functions and a short driver/main that actually uses them — so that occurrences arise naturally; "
+                 "never add code, branches, checks, variables or comments whose only purpose is to create an occurrence")
 EXTRA_HINT = {
     "py_snake_camel": "introduce at least 8 DIFFERENT multi-word variable, parameter and function names, each a new name (do not just re-use two or three names)",
     "js_camel_snake": "introduce at least 8 DIFFERENT multi-word variable, parameter and function names, each a new name (do not just re-use two or three names)",
@@ -102,10 +124,29 @@ EXTRA_HINT = {
 }
 
 
-def _chat(key, content, temperature, max_tokens=2000):
-    body = {"model": "google/gemini-2.5-flash", "temperature": temperature, "max_tokens": max_tokens, "messages": [{"role": "user", "content": content}]}
-    r = requests.post(URL, json=body, timeout=150, headers={"Authorization": f"Bearer {key}"}); r.raise_for_status()
-    out = r.json()["choices"][0]["message"]["content"]
+GEN_MODEL = "google/gemini-2.5-flash"          # default generator / rewriter; override per run with --gen_model or build_one(gen_model=...)
+REJECTS = Counter()                             # guard rejections inside build_one, by reason
+USAGE = Counter(); _USAGE_LOCK = threading.Lock()  # per-model prompt / completion tokens and OpenRouter cost (USD) of every _chat call in this process
+
+
+def _chat(key, content, temperature, max_tokens=2000, model=None, reasoning=None, timeout=150):
+    """One OpenRouter chat call; returns the stripped text (markdown fence removed). `model` defaults to GEN_MODEL; `reasoning` (e.g.
+    {"enabled": False} or {"effort": "low"}) is passed through for reasoning models. Usage is accumulated in USAGE (per model)."""
+    model = model or GEN_MODEL
+    body = {"model": model, "max_tokens": max_tokens, "messages": [{"role": "user", "content": content}], "usage": {"include": True}}
+    if temperature is not None:                                    # None = omit (OpenAI reasoning models reject the parameter)
+        body["temperature"] = temperature
+    if reasoning is not None:
+        body["reasoning"] = reasoning
+    r = requests.post(URL, json=body, timeout=timeout, headers={"Authorization": f"Bearer {key}"}); r.raise_for_status()
+    js = r.json()
+    if "choices" not in js:
+        raise RuntimeError(f"openrouter: {js.get('error')}")
+    u = js.get("usage") or {}
+    with _USAGE_LOCK:
+        USAGE[(model, "prompt_tokens")] += u.get("prompt_tokens", 0); USAGE[(model, "completion_tokens")] += u.get("completion_tokens", 0)
+        USAGE[(model, "cost")] += u.get("cost", 0.0); USAGE[(model, "calls")] += 1
+    out = js["choices"][0]["message"]["content"] or ""
     out = re.sub(r"^\s*```[a-zA-Z0-9+#-]*\s*\n", "", out.strip()); out = re.sub(r"\n\s*```\s*$", "", out)
     return out.rstrip() + "\n"
 
@@ -197,6 +238,32 @@ def valid_python(text):
         return False
 
 
+# padding guard (2026-09-18, user finding): the >= 8-occurrence hint made the generator manufacture occurrences. A NATURAL twin is rejected
+# if any line matches one of these. "code" patterns are matched on the code part of the line (trailing # / // comment removed), "line"
+# patterns on the whole line. The sweep (code_pairs_check.padding_line) reuses the same constant.
+PADDING_PATTERNS = [
+    # genuine double negation of ONE operand only (`not x not in y`, `not (not x)`, `!!x`, `!(!x)`); `not a or not b` is ordinary code (user decision 2026-09-18)
+    ("stacked_negation", re.compile(r"\bnot\b(?:(?!\b(?:and|or|if|else)\b)[^#\n])*?\bnot\s+in\b|\bnot\s*\(\s*not\b|!\s*!|!\s*\(\s*!"), "code"),
+    ("filler_wording", re.compile(r"dummy|placeholder|demonstrat|showcase|to show|for illustration|just to|just for|another example|yet another|meet .* count", re.I), "line"),
+    ("example_comment", re.compile(r"#\s*(Example(?!\s+usage)|Test case|Demo)\b"), "line"),        # `# Example usage` = a normal trailing usage block (user decision)
+    ("discarded_result", re.compile(r"^\s*(let\s+_\s*=|_\s*=|const\s+_\w*\s*=|var\s+_\w*\s*=)"), "line"),
+    ("trivial_branch", re.compile(r"\belif\s+True\b|\bif\s+True\s*:|\bfor\s+\w+\s+in\s+range\(1\)\s*:"), "code"),
+    ("style_meta_comment", re.compile(r"(?:#|//).*(?:style requirement|(?:the|this) (?:style|convention)\b|for (?:the )?style\b|opportunit|as (?:required|requested) by the (?:style|exercise))", re.I), "line"),
+]
+_COMMENT_MARK = {"Python": "#", "Bash": "#", "R": "#", "SQL": "--"}
+
+
+def padding_lines(text, lang="Python"):
+    """[(line_no, pattern_name, line)] for every line of `text` that matches a PADDING_PATTERNS entry (empty list = clean)."""
+    mark = _COMMENT_MARK.get(lang, "//"); out = []
+    for i, line in enumerate(text.split("\n"), 1):
+        code = line.split(mark, 1)[0]
+        for name, rx, where in PADDING_PATTERNS:
+            if rx.search(code if where == "code" else line):
+                out.append((i, name, line)); break
+    return out
+
+
 def degenerate(text):
     """Generator output to reject (2026-09-17, bugs 3a/3b): a markdown fence inside the code, a repeated top-level definition (the same
     function / class defined more than once = padded re-implementations), or a control-token artefact."""
@@ -208,51 +275,86 @@ def degenerate(text):
     return None
 
 
-def build_one(key, fam, task):
+def gen_hint(fam):
+    """The STYLE REQUIREMENT text of GEN for a family: gen_hint + EXTRA_HINT + the bug-13 one-per-line sentence (>= OCC_HINT.get(name, 8)
+    lines), or for FREE_OCC_HINT families the construct description + FREE_OCC_TEXT + one-per-line / several-early without a number."""
+    if fam.name in FREE_OCC_HINT:
+        h = FREE_OCC_HINT[fam.name] + ": " + FREE_OCC_TEXT
+        if fam.name not in LINE_EXEMPT:
+            h += "; IMPORTANT: at most one occurrence of the construct per line, and let several occurrences appear early in the file rather than all at the end"
+        return h
+    n_occ = OCC_HINT.get(fam.name, 8)
+    extra = re.sub(r"at least \d+", f"at least {n_occ}", EXTRA_HINT[fam.name]) if fam.name in OCC_HINT and fam.name in EXTRA_HINT else EXTRA_HINT.get(fam.name)
+    h = re.sub(r"at least \d+", f"at least {n_occ}", fam.gen_hint) if fam.name in OCC_HINT else fam.gen_hint
+    h += ("; ALSO: " + extra) if extra else ""
+    if fam.name not in LINE_EXEMPT:                                # bug 13: only the first occurrence on a line is counted
+        h += f"; IMPORTANT: put each occurrence of this style on its OWN line (at most one per line), with at least {n_occ} such lines spread through the whole solution, several of them in the first half"
+    return h
+
+
+def finish_pair(key, fam, task, nat, gen_model=None):
+    """Everything after the natural twin exists: guards (length, degenerate, padding, parser), the alternative twin (rule or LLM rewrite with
+    `gen_model`), alignment, the free filter. Raises ValueError on a guard failure; returns the record (pass may be False when the
+    alignment / counted rules fail). Used by build_one and by the feedback-repair loop (revised natural twins)."""
+    rew_r = {"enabled": False} if (gen_model or GEN_MODEL).startswith("anthropic/") else None
+    if nat.count("\n") < 8:
+        raise ValueError("too short")
+    if degenerate(nat):
+        raise ValueError(degenerate(nat))
+    pad = padding_lines(nat, fam.tgt_lang)
+    if pad:                                                        # padding guard (2026-09-18): manufactured occurrences
+        raise ValueError("padding: " + "; ".join(f"L{i} {n}: {l.strip()[:60]}" for i, n, l in pad[:3]))
+    if not valid_source(fam.tgt_lang, nat):
+        raise ValueError("natural twin does not parse")
+    if fam.name in WS_FAMILIES:                                    # bug 4 (2026-09-17): whitespace-only families derive alt by rule
+        alt = ws_transform(fam.name, nat)
+        if alt is None or not same_ast(nat, alt):
+            raise ValueError("whitespace rule failed")
+    elif fam.name == "bash_subst":                                 # bug 7 (2026-09-17): $(...) -> backticks by rule, verified by parse-back
+        alt = subst_convert(nat)
+        if not subst_same_tree(nat, alt) or not bash_ok(nat) or not bash_ok(alt):
+            raise ValueError("substitution rule failed")
+    elif fam.name == "sql_keyword_case":                           # bug 15 (2026-09-18): only SQL keywords are lower-cased, by rule (round-trip verified)
+        alt = sql_transform(nat)
+        if not sql_ok(nat, alt):
+            raise ValueError("sql keyword rule failed (mixed keyword case or no keyword)")
+    else:
+        alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2, max_tokens=16000, model=gen_model, reasoning=rew_r)
+        if degenerate(alt):
+            raise ValueError("alt " + degenerate(alt))
+    if fam.name not in ("py2_print", "py2_except") and not valid_source(fam.tgt_lang, alt):
+        raise ValueError("alt twin does not parse")
+    opps, shared = align(nat, alt)
+    ok = opps is not None and len(opps) >= 5 and shared >= 0.6 and opps[4]["nat_span"][0] < fifth_frac(fam.name) * len(nat) and all(o["nat"] != o["alt"] for o in opps)
+    rec = {"doc_id": f"{fam.name}__{task['id']}", "family": fam.name, "topic": task["title"], "angle": "code", "text_es": task["spec"].strip(),
+           "langs": {"src": "Task", "tgt": fam.tgt_lang}, "text_nat": nat, "text_alt": alt, "opps": opps or [], "k_en": len(opps or []),
+           "shared_fraction": round(shared, 3), "pass": bool(ok), "verify": None}
+    if fam.name in WS_FAMILIES or fam.name in ("bash_subst", "sql_keyword_case"):
+        rec["alt_rule"] = True
+    if ok and fam.name in AFFECTED:                               # free-opportunity rule: the pair must keep >= 5 genuine choice points
+        fr = filter_free(rec, fam.name); ok = fr is not None; rec["pass"] = bool(ok)
+        if fr is not None:
+            rec.update(text_alt=fr["text_alt"], opps=fr["opps"], opps_all=fr["opps_all"], k_en=fr["k_en"], free_filter=True)
+    return rec
+
+
+def generate_nat(key, fam, task, gen_model=None):
+    """A fresh natural twin from the task (GEN prompt; Anthropic models: reasoning effort medium)."""
+    gen_r = {"effort": "medium"} if (gen_model or GEN_MODEL).startswith("anthropic/") else None
+    return _chat(key, GEN.format(lang=fam.tgt_lang, hint=gen_hint(fam), spec=task["spec"], length=LENGTH.get(fam.name, "20-35")), 0.9, max_tokens=16000, model=gen_model, reasoning=gen_r)
+
+
+def build_one(key, fam, task, gen_model=None):
+    """Natural twin from the task (GEN, all guards), alternative twin by rule or by LLM rewrite (same model), align + free filter;
+    up to 3 attempts. `gen_model` overrides GEN_MODEL for both calls."""
     for attempt in range(3):
         try:
-            hint = fam.gen_hint + ("; ALSO: " + EXTRA_HINT[fam.name] if fam.name in EXTRA_HINT else "")
-            if fam.name not in LINE_EXEMPT:                        # bug 13: only the first occurrence on a line is counted
-                hint += "; IMPORTANT: put each occurrence of this style on its OWN line (at most one per line), with at least 8 such lines spread through the whole solution, several of them in the first half"
-            nat = _chat(key, GEN.format(lang=fam.tgt_lang, hint=hint, spec=task["spec"], length=LENGTH.get(fam.name, "20-35")), 0.9)
-            if nat.count("\n") < 8:
-                raise ValueError("too short")
-            if degenerate(nat):
-                raise ValueError(degenerate(nat))
-            if not valid_source(fam.tgt_lang, nat):
-                raise ValueError("natural twin does not parse")
-            if fam.name in WS_FAMILIES:                            # bug 4 (2026-09-17): whitespace-only families derive alt by rule
-                alt = ws_transform(fam.name, nat)
-                if alt is None or not same_ast(nat, alt):
-                    raise ValueError("whitespace rule failed")
-            elif fam.name == "bash_subst":                         # bug 7 (2026-09-17): $(...) -> backticks by rule, verified by parse-back
-                alt = subst_convert(nat)
-                if not subst_same_tree(nat, alt) or not bash_ok(nat) or not bash_ok(alt):
-                    raise ValueError("substitution rule failed")
-            elif fam.name == "sql_keyword_case":                   # bug 15 (2026-09-18): only SQL keywords are lower-cased, by rule (round-trip verified)
-                alt = sql_transform(nat)
-                if not sql_ok(nat, alt):
-                    raise ValueError("sql keyword rule failed (mixed keyword case or no keyword)")
-            else:
-                alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2)
-                if degenerate(alt):
-                    raise ValueError("alt " + degenerate(alt))
-            if fam.name not in ("py2_print", "py2_except") and not valid_source(fam.tgt_lang, alt):
-                raise ValueError("alt twin does not parse")
-            opps, shared = align(nat, alt)
-            ok = opps is not None and len(opps) >= 5 and shared >= 0.6 and opps[4]["nat_span"][0] < 0.75 * len(nat) and all(o["nat"] != o["alt"] for o in opps)
-            rec = {"doc_id": f"{fam.name}__{task['id']}", "family": fam.name, "topic": task["title"], "angle": "code", "text_es": task["spec"].strip(),
-                   "langs": {"src": "Task", "tgt": fam.tgt_lang}, "text_nat": nat, "text_alt": alt, "opps": opps or [], "k_en": len(opps or []),
-                   "shared_fraction": round(shared, 3), "pass": bool(ok), "verify": None}
-            if fam.name in WS_FAMILIES or fam.name in ("bash_subst", "sql_keyword_case"):
-                rec["alt_rule"] = True
-            if ok and fam.name in AFFECTED:                       # free-opportunity rule: the pair must keep >= 5 genuine choice points
-                fr = filter_free(rec, fam.name); ok = fr is not None; rec["pass"] = bool(ok)
-                if fr is not None:
-                    rec.update(text_alt=fr["text_alt"], opps=fr["opps"], opps_all=fr["opps_all"], k_en=fr["k_en"], free_filter=True)
-            if ok or attempt == 2:
+            rec = finish_pair(key, fam, task, generate_nat(key, fam, task, gen_model), gen_model)
+            if rec["pass"] or attempt == 2:
                 return rec
         except Exception as e:
+            with _USAGE_LOCK:                                      # guard-rejection tally (reason up to the first colon), for run reports
+                REJECTS[str(e).split(":")[0][:60]] += 1
             if attempt == 2:
                 print(f"{fam.name}/{task['id']} FAILED: {e}", flush=True); return None
             time.sleep(2)
@@ -264,6 +366,7 @@ def main():
     ap.add_argument("--n_tasks", type=int, default=50); ap.add_argument("--workers", type=int, default=40)
     ap.add_argument("--ks", default="0,4"); ap.add_argument("--skip_prompts", action="store_true")
     ap.add_argument("--target", type=int, default=None, help="stop generating once this many passing pairs exist (chunks of 60 tasks); pairs file capped at --target")
+    ap.add_argument("--gen_model", default=GEN_MODEL, help="OpenRouter model for the natural twin and the LLM rewrite (default GEN_MODEL)")
     args = ap.parse_args()
     key = load_key(); RAW.mkdir(parents=True, exist_ok=True)
     langs = sorted({CODE_FAMILY[f].tgt_lang for f in args.families})
@@ -291,7 +394,7 @@ def main():
             if not chunk:
                 continue
             with ThreadPoolExecutor(args.workers) as ex:
-                for fu in as_completed([ex.submit(build_one, key, fam, t) for t in chunk]):
+                for fu in as_completed([ex.submit(build_one, key, fam, t, args.gen_model) for t in chunk]):
                     r = fu.result()
                     if r: raw[r["doc_id"]] = r
             json.dump(sorted(raw.values(), key=lambda r: r["doc_id"]), open(raw_path, "w"), ensure_ascii=False, indent=0)
@@ -302,6 +405,7 @@ def main():
         json.dump(pairs, open(PAIRS / f"{name}.json", "w"), ensure_ascii=False, indent=0)
         ks = sorted(r["k_en"] for r in raw.values())
         print(f"{name:20s} built={len(raw):3d} opps median={ks[len(ks)//2] if ks else 0:3d} pass={len(pairs):3d} shared={sum(r['shared_fraction'] for r in raw.values())/max(len(raw),1):.2f}", flush=True)
+    print("openrouter usage:", {f"{m}/{k}": (round(v, 4) if k == "cost" else v) for (m, k), v in sorted(USAGE.items())}, flush=True)
     if args.skip_prompts:
         return
     fams = [f for f in args.families if (PAIRS / f"{f}.json").exists() and json.load(open(PAIRS / f"{f}.json"))]
