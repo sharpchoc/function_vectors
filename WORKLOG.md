@@ -9839,3 +9839,18 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   (+ sweep_k3 c1-7 for py_is_none), prompt_pairs, prompt_pairs_layers, and their rows in results/code_styles (summary, cutoff_k4, unscorable,
   logprob_margin, read_vectors, write_steering/full56, read_steering/full56, read_write_map — float_literals and rust_question are TEST families).
   Nothing committed; DECISIONS entry not written (subagent scope).
+- 2026-09-19 PADDING REGENERATION, PART 2 (user decision: the 290 never-reviewed docs of the four families too; same pipeline, `tmp/regen5.py
+  --untouched --suffix b`, backups of the intermediate state in `tmp/backup_pairs4b/`). RUN (24 workers, 39 min, `tmp/regen5b.log`,
+  `regen5b_log.json`, verdicts `regen5b_review.jsonl`, summary `regen5b_summary.txt`): 290 / 290 accepted (py_not_in 36, rust_question 109,
+  py_is_none 49, float_literals 96), 255 from the OWN task (rounds 1/2/3/4 = 83/115/40/17), 35 REPLACED by an unused task (2/17/3/13; rounds
+  1/2/3 = 19/10/6), 0 failed. 716 attempts: fresh 331 -> 102 accepted (30.8 %), revise 385 -> 188 (48.8 %), overall 40.5 %. Non-accepted:
+  builder_reject 144, alt does not parse 31, padding guard 23, fences 3; reviewers Opus 515 / 198 rejections, GPT-5 515 / 184, 0 unparseable;
+  agreement both ok 290, both reject 157, only Opus 41, only GPT-5 27. Items (Opus / GPT-5): 5 fake decision 88 / 87, 4 inconsistent
+  convention 55 / 38, 6 padding 46 / 15, 3 invalid 30 / 40, 1 meaning change 20 / 5, 9 family rule 15 / 10, 11 wrong task 9 / 10,
+  14 line correspondence 4 / 3, 2 extra change 0 / 3, 12 too few 0 / 1, 13 artefact 1 / 0. COST: Opus 1,926 calls (4.08 M + 2.65 M tokens)
+  $86.63, GPT-5 515 calls (1.35 M + 2.41 M) $25.55 = $112.19 (both parts together $295.77 + ~$20 preliminaries). ALL 800 docs of the four
+  families are now Opus-5-generated and doubly reviewed (`gen_model` / `reviewed_by` fields on every record; 97 docs replaced by unused tasks in
+  total). FINAL counted (total, mean, median, min, max): py_not_in 1,092 (5.46, 5, 5, 8), rust_question 2,016 (10.08, 10, 5, 19), py_is_none 1,317
+  (6.58, 6, 5, 11), float_literals 1,783 (8.91, 9, 5, 22); natural twins mean 94 / 90 / 85 / 89 lines. SWEEP four families: 0 issues. CUES + K = 5
+  PROMPTS rebuilt (qwen25_code; 8,000 items; max prompt 1,141 tokens) and verified (`tmp/verify_prompts4.py`, all OK). No prompt-check page
+  (user approved). Stale-artifact list unchanged from the previous entry; nothing committed.

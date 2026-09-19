@@ -65,7 +65,7 @@ def main():
                 print(f"{fam}: batch {bi + 1}", flush=True)
         np.savez_compressed(OUT / f"{fam}.npz", read=R, write=W, doc_id=np.array([it["doc"] for it in items]), pole=np.array([it["pole"] for it in items]),
                             k=np.array([it["k"] for it in items]), heldout=np.array([heldout(it["doc"]) for it in items]), n_evidence=np.array([len(it["idx"]) for it in items]),
-                            style_ok=np.array([it["so"] for it in items]), judge_ok=np.array([it["jo"] for it in items]),
+                            style_ok=np.array([it["so"] for it in items]), judge_ok=np.array([it["jo"] for it in items]), correct=np.array([it["so"] and it["jo"] for it in items]),
                             read_layer=args.read_layer, write_layer=args.write_layer, ks=np.array(args.ks), select=args.select)
         n_nat = sum(it["pole"] == "nat" for it in items); n_ho = sum(heldout(it["doc"]) for it in items)
         print(f"{fam}: {len(items)} prompts (nat {n_nat}, alt {len(items) - n_nat}; held-out {n_ho}) -> read L{args.read_layer}, write L{args.write_layer}", flush=True)
