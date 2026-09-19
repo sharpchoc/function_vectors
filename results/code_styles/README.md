@@ -24,3 +24,6 @@ judge OK (`analyze.py`, Wilson 95 % CI).
 
 Run: `logs/code_styles_step3_job.sh <tag> <families>` per pod (rollout + log-prob margin), `judge_rollouts.py --dir artifacts/style_translation/qwen25_code/rollouts`,
 then `analyze.py --model qwen25_code`, `code_cutoff.py --model qwen25_code`, `logprob_analyze.py --model qwen25_code`.
+
+- 2026-09-19: py_not_in, rust_question, py_is_none, float_literals regenerated without padding (Opus 5 + dual review); all their
+  downstream artefacts and the results here were rebuilt; `explainer/` lists every family; `read_write_map/sandbox` is not yet refit.

@@ -2023,3 +2023,16 @@ mean over them, so per-family results must be read with that in mind.
 - 2026-09-18 USER DECISION: read-steering setting = layer 8, α = 4 (top-5 cells L8–L18 at α4 tied within 1.6 points; layer choice
   within 6–18 is arbitrary, α still rising at 4 — a wider α range was offered and declined for now). Full-pool run done at that
   setting; results in `results/code_styles/read_steering/full56/`.
+
+## 2026-09-19 — Padding in generated documents (USER DECISIONS)
+- Generated code must not contain padding: filler / placeholder / dummy / illustrative lines, discarded results, comments announcing
+  examples or counting occurrences, stacked negations, meta-comments naming the convention. `code_build.PADDING_PATTERNS` +
+  `padding_lines()` is a builder guard and the sweep check `padding_line` (`code_pairs_check.py`); `# Example usage` blocks and
+  `not a or not b` are NOT padding.
+- For py_not_in, rust_question, py_is_none, float_literals the numeric occurrence hint is REMOVED ("use the construct wherever the
+  logic calls for it"; a realistic module with a driver is allowed; LENGTH 40–80; 5th opportunity < 85 %); all 800 documents were
+  regenerated with Claude Opus 5 and accepted only if TWO independent reviewers (Opus 5, GPT-5; 14-item checklist; strict JSON with
+  quoted lines) both pass, with a feedback-repair loop (reviewer issues fed back to the generator; ~1.6× the per-attempt yield).
+  The ≥ 8 hint stays for the other families. The other 52 pool families still trip `padding_line` in 2,281 documents — open.
+- Task pools whose specs do not naturally need the construct cannot yield honest documents with many occurrences; the honest count
+  of `not in` is ~5 per document. Prefer tasks that inherently need the construct when new families are built.

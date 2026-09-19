@@ -9854,3 +9854,14 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   (6.58, 6, 5, 11), float_literals 1,783 (8.91, 9, 5, 22); natural twins mean 94 / 90 / 85 / 89 lines. SWEEP four families: 0 issues. CUES + K = 5
   PROMPTS rebuilt (qwen25_code; 8,000 items; max prompt 1,141 tokens) and verified (`tmp/verify_prompts4.py`, all OK). No prompt-check page
   (user approved). Stale-artifact list unchanged from the previous entry; nothing committed.
+- 2026-09-19 PADDING REGENERATION, DOWNSTREAM REBUILT: py_not_in, rust_question, py_is_none, float_literals (all 800 docs Opus-5
+  generated, Opus-5 + GPT-5 reviewed; see the two regen5 entries above). Stale artifacts of the four families moved to
+  `/root/.claude/jobs/1f45be64/tmp/stale_regen/`; evidence recomputed (`code_evidence`, 0 empty); 4 pods rg_<fam> ran
+  `logs/code_styles_regen_job.sh` (rollouts + log-probs → wait for the CPU judge marker `<fam>.judged` → write vectors + full56 cells →
+  read vectors → read steering L8 α4 → prompt_pairs with flags), ~25 min, terminated by id; judge driver `tmp/regen_judge_driver.py`.
+  Analyses rerun: analyze / logprob_analyze / code_cutoff (pool unchanged 56/60), read_features_summary, write_full_analyze,
+  read_full_analyze, explainer figure. k = 4: py_not_in .56/.43 → .74/.38, rust_question .85/.78 → .84/.60, py_is_none .76/.66 →
+  .81/.76, float_literals .53/.44 → .68/.55. Read steering L8 α4 → nat: py_is_none .55 → .85, float_literals .35 → .60. Means over
+  56 unchanged (write L24α2 both .50; read .56 vs .06 unsteered, ceiling .71). prompt_pairs single source: 44,788 prompts, 31,992
+  correct (four families' rows recaptured with flags). read_write_map sandbox NOT refit (user: later). Lesson: pandas `df.style`
+  is the Styler accessor — use df['style'].
