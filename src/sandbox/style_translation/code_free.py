@@ -31,7 +31,13 @@ FIFTH_FRAC_DEFAULT = 0.75                                   # the 5th counted op
 FIFTH_FRAC = {"py_not_in": 0.85, "rust_question": 0.85, "py_is_none": 0.85, "float_literals": 0.85}   # user decision 2026-09-18 (padding regeneration)
 
 
-def fifth_frac(fam):
+FIFTH_FRAC_FREE_OCC = 0.85                                  # documents generated with the no-count hint (rec["free_occ"], 2026-09-21) in any family
+
+
+def fifth_frac(fam, rec=None):
+    """Threshold for the 5th counted opportunity: per family, or 85 % for a record generated with the no-count hint (`free_occ`)."""
+    if rec is not None and rec.get("free_occ"):
+        return FIFTH_FRAC_FREE_OCC
     return FIFTH_FRAC.get(fam, FIFTH_FRAC_DEFAULT)
 _ID = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 
@@ -526,7 +532,7 @@ def filter_free(rec, fam, min_opps=MIN_OPPS):
     if not consistent_twins(fam, full):
         return None
     keep = counted(fam, full)
-    if len(keep) < min_opps or keep[min_opps - 1]["nat_span"][0] >= fifth_frac(fam) * len(full["text_nat"]):
+    if len(keep) < min_opps or keep[min_opps - 1]["nat_span"][0] >= fifth_frac(fam, rec) * len(full["text_nat"]):
         return None
     out = dict(full); out.pop("_str_bounds", None); out["opps_all"] = full["opps"]; out["opps"] = [dict(o, k=i) for i, o in enumerate(keep)]; out["k_en"] = len(keep); out["free_filter"] = True
     return out

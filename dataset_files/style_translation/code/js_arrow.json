@@ -6976,381 +6976,764 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;\n\nconst createDiceRoller = (sides) => () => getRandomInt(1, sides);\n\nconst rollDice = (sides) => createDiceRoller(sides)();\n\nconst multiply = (a, b) => a * b;\n\nconst addOne = (num) => num + 1;\n\nconst getResult = (sides) => {\n  const baseRoll = Math.random();\n  const scaledRoll = multiply(baseRoll, sides);\n  const floorRoll = Math.floor(scaledRoll);\n  return addOne(floorRoll);\n};\n\nconst alternativeRollDice = (sides) => getResult(sides);\n\n// Example usage and verification\nconst sixSidedDieRoll = rollDice(6);\nconst twentySidedDieRoll = alternativeRollDice(20);\n\n// Just to show they work, not part of the core function.\n// console.log(`Rolled a 6-sided die: ${sixSidedDieRoll}`);\n// console.log(`Rolled a 20-sided die: ${twentySidedDieRoll}`);\n",
-"text_alt": "const getRandomInt = function(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; };\n\nconst createDiceRoller = function(sides) { return function() { return getRandomInt(1, sides); }; };\n\nconst rollDice = function(sides) { return createDiceRoller(sides)(); };\n\nconst multiply = function(a, b) { return a * b; };\n\nconst addOne = function(num) { return num + 1; };\n\nconst getResult = function(sides) {\n  const baseRoll = Math.random();\n  const scaledRoll = multiply(baseRoll, sides);\n  const floorRoll = Math.floor(scaledRoll);\n  return addOne(floorRoll);\n};\n\nconst alternativeRollDice = function(sides) { return getResult(sides); };\n\n// Example usage and verification\nconst sixSidedDieRoll = rollDice(6);\nconst twentySidedDieRoll = alternativeRollDice(20);\n\n// Just to show they work, not part of the core function.\n// console.log(`Rolled a 6-sided die: ${sixSidedDieRoll}`);\n// console.log(`Rolled a 20-sided die: ${twentySidedDieRoll}`);\n",
+"text_nat": "const validateSides = (sides) => {\n  if (!Number.isInteger(sides)) {\n    throw new TypeError(`sides must be an integer, got ${typeof sides}: ${sides}`);\n  }\n  if (sides < 2) {\n    throw new RangeError(`a dice needs at least 2 sides, got ${sides}`);\n  }\n  return sides;\n};\n\nconst rollDice = (sides) => {\n  validateSides(sides);\n  return Math.floor(Math.random() * sides) + 1;\n};\n\nconst rollMany = (sides, times) => {\n  validateSides(sides);\n  if (!Number.isInteger(times) || times < 1) {\n    throw new RangeError(`times must be a positive integer, got ${times}`);\n  }\n  return Array.from({ length: times }, () => rollDice(sides));\n};\n\nconst tally = (rolls) => {\n  const counts = new Map();\n  rolls.forEach((face) => counts.set(face, (counts.get(face) || 0) + 1));\n  return counts;\n};\n\nconst sum = (rolls) => rolls.reduce(\n  (total, face) => total + face,\n  0,\n);\n\nconst mean = (rolls) => sum(rolls) / rolls.length;\n\nconst rollAndSum = (sides, dice) => sum(rollMany(sides, dice));\n\nconst formatHistogram = (sides, rolls) => {\n  const counts = tally(rolls);\n  const faces = Array.from({ length: sides }, (_, i) => i + 1);\n  const widest = Math.max(...faces.map((face) => String(face).length));\n  const scale = (count) => Math.round((count / rolls.length) * 50);\n  const lines = faces.map((face) => {\n    const count = counts.get(face) || 0;\n    const label = String(face).padStart(widest, ' ');\n    const bar = '#'.repeat(scale(count));\n    return `${label} | ${bar} ${count}`;\n  });\n  return lines.join('\\n');\n};\n\nconst describe = (sides, times) => {\n  const rolls = rollMany(sides, times);\n  const expected = (sides + 1) / 2;\n  return [\n    `d${sides} rolled ${times} times`,\n    formatHistogram(sides, rolls),\n    `observed mean ${mean(rolls).toFixed(3)} (expected ${expected.toFixed(3)})`,\n  ].join('\\n');\n};\n\nconst main = () => {\n  console.log(`single d6: ${rollDice(6)}`);\n  console.log(`single d20: ${rollDice(20)}`);\n  console.log(`3d6 total: ${rollAndSum(6, 3)}`);\n  console.log(describe(6, 600));\n  console.log(describe(20, 2000));\n  try {\n    rollDice(1.5);\n  } catch (err) {\n    console.log(`rejected: ${err.message}`);\n  }\n};\n\nmain();\n\nmodule.exports = { rollDice, rollMany, rollAndSum, tally, sum, mean, formatHistogram, describe };\n",
+"text_alt": "const validateSides = function (sides) {\n  if (!Number.isInteger(sides)) {\n    throw new TypeError(`sides must be an integer, got ${typeof sides}: ${sides}`);\n  }\n  if (sides < 2) {\n    throw new RangeError(`a dice needs at least 2 sides, got ${sides}`);\n  }\n  return sides;\n};\n\nconst rollDice = function (sides) {\n  validateSides(sides);\n  return Math.floor(Math.random() * sides) + 1;\n};\n\nconst rollMany = function (sides, times) {\n  validateSides(sides);\n  if (!Number.isInteger(times) || times < 1) {\n    throw new RangeError(`times must be a positive integer, got ${times}`);\n  }\n  return Array.from({ length: times }, function () { return rollDice(sides); });\n};\n\nconst tally = function (rolls) {\n  const counts = new Map();\n  rolls.forEach(function (face) { return counts.set(face, (counts.get(face) || 0) + 1); });\n  return counts;\n};\n\nconst sum = function (rolls) {\n  return rolls.reduce(\n    function (total, face) { return total + face; },\n    0,\n  );\n};\n\nconst mean = function (rolls) { return sum(rolls) / rolls.length; };\n\nconst rollAndSum = function (sides, dice) { return sum(rollMany(sides, dice)); };\n\nconst formatHistogram = function (sides, rolls) {\n  const counts = tally(rolls);\n  const faces = Array.from({ length: sides }, function (_, i) { return i + 1; });\n  const widest = Math.max(...faces.map(function (face) { return String(face).length; }));\n  const scale = function (count) { return Math.round((count / rolls.length) * 50); };\n  const lines = faces.map(function (face) {\n    const count = counts.get(face) || 0;\n    const label = String(face).padStart(widest, ' ');\n    const bar = '#'.repeat(scale(count));\n    return `${label} | ${bar} ${count}`;\n  });\n  return lines.join('\\n');\n};\n\nconst describe = function (sides, times) {\n  const rolls = rollMany(sides, times);\n  const expected = (sides + 1) / 2;\n  return [\n    `d${sides} rolled ${times} times`,\n    formatHistogram(sides, rolls),\n    `observed mean ${mean(rolls).toFixed(3)} (expected ${expected.toFixed(3)})`,\n  ].join('\\n');\n};\n\nconst main = function () {\n  console.log(`single d6: ${rollDice(6)}`);\n  console.log(`single d20: ${rollDice(20)}`);\n  console.log(`3d6 total: ${rollAndSum(6, 3)}`);\n  console.log(describe(6, 600));\n  console.log(describe(20, 2000));\n  try {\n    rollDice(1.5);\n  } catch (err) {\n    console.log(`rejected: ${err.message}`);\n  }\n};\n\nmain();\n\nmodule.exports = { rollDice, rollMany, rollAndSum, tally, sum, mean, formatHistogram, describe };\n",
 "opps": [
 {
-"nat": "(min, max) => Math.floor(Math.random() * (max - min + 1)) + min;",
-"alt": "function(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; };",
+"nat": "(sides) => {",
+"alt": "function (sides) {",
 "nat_span": [
-21,
-85
+22,
+34
 ],
 "alt_span": [
-21,
-102
+22,
+40
 ],
 "k": 0
 },
 {
-"nat": "(sides) => () => getRandomInt(1, sides);",
-"alt": "function(sides) { return function() { return getRandomInt(1, sides); }; };",
+"nat": "(sides) => {",
+"alt": "function (sides) {",
 "nat_span": [
-112,
-152
+290,
+302
 ],
 "alt_span": [
-129,
-203
+296,
+314
 ],
 "k": 1
 },
 {
-"nat": "(sides) => createDiceRoller(sides)();",
-"alt": "function(sides) { return createDiceRoller(sides)(); };",
+"nat": "(sides, times) => {",
+"alt": "function (sides, times) {",
 "nat_span": [
-171,
-208
+396,
+415
 ],
 "alt_span": [
-222,
-276
+408,
+433
 ],
 "k": 2
 },
 {
-"nat": "(a, b) => a * b;",
-"alt": "function(a, b) { return a * b; };",
+"nat": "() => rollDice(sides));",
+"alt": "function () { return rollDice(sides); });",
 "nat_span": [
-227,
-243
+606,
+629
 ],
 "alt_span": [
-295,
-328
+624,
+665
 ],
 "k": 3
 },
 {
-"nat": "(num) => num + 1;",
-"alt": "function(num) { return num + 1; };",
+"nat": "(rolls) => {",
+"alt": "function (rolls) {",
 "nat_span": [
-260,
-277
+648,
+660
 ],
 "alt_span": [
-345,
-379
+684,
+702
 ],
 "k": 4
 },
 {
-"nat": "(sides) => {",
-"alt": "function(sides) {",
+"nat": "(face) => counts.set(face, (counts.get(face) || 0) + 1));",
+"alt": "function (face) { return counts.set(face, (counts.get(face) || 0) + 1); });",
 "nat_span": [
-297,
-309
+705,
+762
 ],
 "alt_span": [
-399,
-416
+747,
+822
 ],
 "k": 5
 },
 {
-"nat": "(sides) => getResult(sides);",
-"alt": "function(sides) { return getResult(sides); };",
+"nat": "(rolls) => rolls.reduce(\n  (total, face) => total + face,\n  0,\n);",
+"alt": "function (rolls) {\n  return rolls.reduce(\n    function (total, face) { return total + face; },\n    0,\n  );\n};",
 "nat_span": [
-496,
-524
+796,
+861
 ],
 "alt_span": [
-603,
-648
+856,
+965
 ],
 "k": 6
+},
+{
+"nat": "(rolls) => sum(rolls) / rolls.length;",
+"alt": "function (rolls) { return sum(rolls) / rolls.length; };",
+"nat_span": [
+876,
+913
+],
+"alt_span": [
+980,
+1035
+],
+"k": 7
+},
+{
+"nat": "(sides, dice) => sum(rollMany(sides, dice));",
+"alt": "function (sides, dice) { return sum(rollMany(sides, dice)); };",
+"nat_span": [
+934,
+978
+],
+"alt_span": [
+1056,
+1118
+],
+"k": 8
+},
+{
+"nat": "(sides, rolls) => {",
+"alt": "function (sides, rolls) {",
+"nat_span": [
+1004,
+1023
+],
+"alt_span": [
+1144,
+1169
+],
+"k": 9
+},
+{
+"nat": "(_, i) => i + 1);",
+"alt": "function (_, i) { return i + 1; });",
+"nat_span": [
+1101,
+1118
+],
+"alt_span": [
+1247,
+1282
+],
+"k": 10
+},
+{
+"nat": "(face) => String(face).length));",
+"alt": "function (face) { return String(face).length; }));",
+"nat_span": [
+1158,
+1190
+],
+"alt_span": [
+1322,
+1372
+],
+"k": 11
+},
+{
+"nat": "(count) => Math.round((count / rolls.length) * 50);",
+"alt": "function (count) { return Math.round((count / rolls.length) * 50); };",
+"nat_span": [
+1207,
+1258
+],
+"alt_span": [
+1389,
+1458
+],
+"k": 12
+},
+{
+"nat": "(face) => {",
+"alt": "function (face) {",
+"nat_span": [
+1285,
+1296
+],
+"alt_span": [
+1485,
+1502
+],
+"k": 13
+},
+{
+"nat": "(sides, times) => {",
+"alt": "function (sides, times) {",
+"nat_span": [
+1529,
+1548
+],
+"alt_span": [
+1735,
+1760
+],
+"k": 14
+},
+{
+"nat": "() => {",
+"alt": "function () {",
+"nat_span": [
+1824,
+1831
+],
+"alt_span": [
+2036,
+2049
+],
+"k": 15
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.95,
+"k_en": 16,
+"shared_fraction": 0.955,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": "",
-"alt": "function",
+"alt": "function ",
 "nat_span": [
-21,
-21
+22,
+22
 ],
 "alt_span": [
-21,
-29
+22,
+31
 ]
 },
 {
 "k": 1,
-"nat": "=>",
-"alt": "{ return",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-32,
-34
+29,
+32
 ],
 "alt_span": [
-40,
-48
+38,
+38
 ]
 },
 {
 "k": 2,
 "nat": "",
-"alt": " };",
+"alt": "function ",
 "nat_span": [
-85,
-85
+290,
+290
 ],
 "alt_span": [
-99,
-102
+296,
+305
 ]
 },
 {
 "k": 3,
-"nat": "",
-"alt": "function",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-112,
-112
+297,
+300
 ],
 "alt_span": [
-129,
-137
+312,
+312
 ]
 },
 {
 "k": 4,
-"nat": "=> ",
-"alt": "{ return function",
+"nat": "",
+"alt": "function ",
 "nat_span": [
-120,
-123
+396,
+396
 ],
 "alt_span": [
-145,
-162
+408,
+417
 ]
 },
 {
 "k": 5,
-"nat": "=>",
-"alt": "{ return",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-126,
-128
+410,
+413
 ],
 "alt_span": [
-165,
-173
+431,
+431
 ]
 },
 {
 "k": 6,
 "nat": "",
-"alt": " }; };",
+"alt": "function ",
 "nat_span": [
-152,
-152
+606,
+606
 ],
 "alt_span": [
-197,
-203
+624,
+633
 ]
 },
 {
 "k": 7,
-"nat": "",
-"alt": "function",
+"nat": "=>",
+"alt": "{ return",
 "nat_span": [
-171,
-171
+609,
+611
 ],
 "alt_span": [
-222,
-230
+636,
+644
 ]
 },
 {
 "k": 8,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": "; }",
 "nat_span": [
-179,
-181
+627,
+627
 ],
 "alt_span": [
-238,
-246
+660,
+663
 ]
 },
 {
 "k": 9,
 "nat": "",
-"alt": " };",
+"alt": "function ",
 "nat_span": [
-208,
-208
+648,
+648
 ],
 "alt_span": [
-273,
-276
+684,
+693
 ]
 },
 {
 "k": 10,
-"nat": "",
-"alt": "function",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-227,
-227
+655,
+658
 ],
 "alt_span": [
-295,
-303
+700,
+700
 ]
 },
 {
 "k": 11,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": "function ",
 "nat_span": [
-234,
-236
+705,
+705
 ],
 "alt_span": [
-310,
-318
+747,
+756
 ]
 },
 {
 "k": 12,
-"nat": "",
-"alt": "; }",
+"nat": "=>",
+"alt": "{ return",
 "nat_span": [
-242,
-242
+712,
+714
 ],
 "alt_span": [
-324,
-327
+763,
+771
 ]
 },
 {
 "k": 13,
 "nat": "",
-"alt": "function",
+"alt": "; }",
 "nat_span": [
-260,
-260
+760,
+760
 ],
 "alt_span": [
-345,
-353
+817,
+820
 ]
 },
 {
 "k": 14,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": "function ",
 "nat_span": [
-266,
-268
+796,
+796
 ],
 "alt_span": [
-359,
-367
+856,
+865
 ]
 },
 {
 "k": 15,
-"nat": "",
-"alt": "; }",
+"nat": "=>",
+"alt": "{\n  return",
 "nat_span": [
-276,
-276
+804,
+806
 ],
 "alt_span": [
-375,
-378
+873,
+883
 ]
 },
 {
 "k": 16,
-"nat": "",
-"alt": "function",
+"nat": "\n  ",
+"alt": "\n    function ",
 "nat_span": [
-297,
-297
+820,
+823
 ],
 "alt_span": [
-399,
-407
+897,
+911
 ]
 },
 {
 "k": 17,
-"nat": " =>",
-"alt": "",
+"nat": "=>",
+"alt": "{ return",
 "nat_span": [
-304,
-307
+837,
+839
 ],
 "alt_span": [
-414,
-414
+925,
+933
 ]
 },
 {
 "k": 18,
-"nat": "",
-"alt": "function",
+"nat": ",\n  0,\n)",
+"alt": "; },\n    0,\n  );\n}",
 "nat_span": [
-496,
-496
+852,
+860
 ],
 "alt_span": [
-603,
-611
+946,
+964
 ]
 },
 {
 "k": 19,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": "function ",
 "nat_span": [
-504,
-506
+876,
+876
 ],
 "alt_span": [
-619,
-627
+980,
+989
 ]
 },
 {
 "k": 20,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+884,
+886
+],
+"alt_span": [
+997,
+1005
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": " };",
+"nat_span": [
+913,
+913
+],
+"alt_span": [
+1032,
+1035
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": " function",
+"nat_span": [
+933,
+933
+],
+"alt_span": [
+1055,
+1064
+]
+},
+{
+"k": 23,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+948,
+950
+],
+"alt_span": [
+1079,
+1087
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": " };",
+"nat_span": [
+978,
+978
+],
+"alt_span": [
+1115,
+1118
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1004,
+1004
+],
+"alt_span": [
+1144,
+1153
+]
+},
+{
+"k": 26,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1018,
+1021
+],
+"alt_span": [
+1167,
+1167
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1101,
+1101
+],
+"alt_span": [
+1247,
+1256
+]
+},
+{
+"k": 28,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1108,
+1110
+],
+"alt_span": [
+1263,
+1271
+]
+},
+{
+"k": 29,
 "nat": "",
 "alt": "; }",
 "nat_span": [
-523,
-523
+1116,
+1116
 ],
 "alt_span": [
-644,
-647
+1277,
+1280
+]
+},
+{
+"k": 30,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1158,
+1158
+],
+"alt_span": [
+1322,
+1331
+]
+},
+{
+"k": 31,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1165,
+1167
+],
+"alt_span": [
+1338,
+1346
+]
+},
+{
+"k": 32,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1187,
+1187
+],
+"alt_span": [
+1366,
+1369
+]
+},
+{
+"k": 33,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1207,
+1207
+],
+"alt_span": [
+1389,
+1398
+]
+},
+{
+"k": 34,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1215,
+1217
+],
+"alt_span": [
+1406,
+1414
+]
+},
+{
+"k": 35,
+"nat": "",
+"alt": " };",
+"nat_span": [
+1258,
+1258
+],
+"alt_span": [
+1455,
+1458
+]
+},
+{
+"k": 36,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1285,
+1285
+],
+"alt_span": [
+1485,
+1494
+]
+},
+{
+"k": 37,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1291,
+1294
+],
+"alt_span": [
+1500,
+1500
+]
+},
+{
+"k": 38,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1529,
+1529
+],
+"alt_span": [
+1735,
+1744
+]
+},
+{
+"k": 39,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1543,
+1546
+],
+"alt_span": [
+1758,
+1758
+]
+},
+{
+"k": 40,
+"nat": "() =>",
+"alt": "function ()",
+"nat_span": [
+1824,
+1829
+],
+"alt_span": [
+2036,
+2047
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_arrow__t025",
@@ -23273,303 +23656,478 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const longestCommonPrefix = (strs) => {\n  if (strs.length === 0) return \"\";\n\n  const getMinLength = (arr) => Math.min(...arr.map(s => s.length));\n  const minLen = getMinLength(strs);\n\n  let prefix = \"\";\n  for (let i = 0; i < minLen; i++) {\n    const char = strs[0][i];\n    const allMatch = strs.every(str => str[i] === char);\n    if (allMatch) {\n      prefix += char;\n    } else {\n      break;\n    }\n  }\n\n  const identity = x => x;\n  const processResult = (result) => result.split('').filter(identity).join('');\n  \n  return processResult(prefix);\n};\n\nconst test1 = ['flower', 'flow', 'flight'];\nconst test2 = ['dog', 'racecar', 'car'];\nconst test3 = ['apple', 'apricot', 'april'];\nconst test4 = [''];\nconst test5 = ['a'];\n\nconst runTest = (input, expected, func) => {\n    const actual = func(input);\n    const isEqual = actual === expected;\n    console.log(`Input: [${input.map(s => `'${s}'`).join(', ')}], Expected: '${expected}', Actual: '${actual}', Pass: ${isEqual}`);\n};\n\n// No, I won't use console.log, because it isn't required.\n// Callbacks used in map, every, filter. Arrow functions for main function, getMinLength, identity, processResult, runTest.\n\n// runTest(test1, 'fl', longestCommonPrefix);\n// runTest(test2, '', longestCommonPrefix);\n// runTest(test3, 'ap', longestCommonPrefix);\n// runTest(test4, '', longestCommonPrefix);\n// runTest(test5, 'a', longestCommonPrefix);\n",
-"text_alt": "const longestCommonPrefix = function(strs) {\n  if (strs.length === 0) return \"\";\n\n  const getMinLength = function(arr) { return Math.min(...arr.map(function(s) { return s.length; })); };\n  const minLen = getMinLength(strs);\n\n  let prefix = \"\";\n  for (let i = 0; i < minLen; i++) {\n    const char = strs[0][i];\n    const allMatch = strs.every(function(str) { return str[i] === char; });\n    if (allMatch) {\n      prefix += char;\n    } else {\n      break;\n    }\n  }\n\n  const identity = function(x) { return x; };\n  const processResult = function(result) { return result.split('').filter(identity).join(''); };\n  \n  return processResult(prefix);\n};\n\nconst test1 = ['flower', 'flow', 'flight'];\nconst test2 = ['dog', 'racecar', 'car'];\nconst test3 = ['apple', 'apricot', 'april'];\nconst test4 = [''];\nconst test5 = ['a'];\n\nconst runTest = function(input, expected, func) {\n    const actual = func(input);\n    const isEqual = actual === expected;\n    console.log(`Input: [${input.map(function(s) { return `'${s}'`; }).join(', ')}], Expected: '${expected}', Actual: '${actual}', Pass: ${isEqual}`);\n};\n\n// No, I won't use console.log, because it isn't required.\n// Callbacks used in map, every, filter. Arrow functions for main function, getMinLength, identity, processResult, runTest.\n\n// runTest(test1, 'fl', longestCommonPrefix);\n// runTest(test2, '', longestCommonPrefix);\n// runTest(test3, 'ap', longestCommonPrefix);\n// runTest(test4, '', longestCommonPrefix);\n// runTest(test5, 'a', longestCommonPrefix);\n",
+"text_nat": "const isString = value => typeof value === 'string';\n\nconst validateInput = strs => {\n  if (!Array.isArray(strs)) {\n    throw new TypeError('longestCommonPrefix expects an array of strings');\n  }\n  const bad = strs.findIndex(item => !isString(item));\n  if (bad !== -1) {\n    throw new TypeError(`element at index ${bad} is not a string`);\n  }\n  return strs;\n};\n\nconst commonPrefixOfPair = (a, b) => {\n  const limit = Math.min(a.length, b.length);\n  let i = 0;\n  while (i < limit && a[i] === b[i]) {\n    i += 1;\n  }\n  return a.slice(0, i);\n};\n\nconst longestCommonPrefix = strs => {\n  validateInput(strs);\n  if (strs.length === 0) {\n    return '';\n  }\n  return strs.reduce((prefix, word) => {\n    if (prefix === '') {\n      return '';\n    }\n    return commonPrefixOfPair(prefix, word);\n  });\n};\n\nconst groupByPrefix = words => {\n  const buckets = new Map();\n  words.forEach(word => {\n    const key = word.charAt(0);\n    const bucket = buckets.get(key);\n    if (bucket) {\n      bucket.push(word);\n    } else {\n      buckets.set(key, [word]);\n    }\n  });\n  return buckets;\n};\n\nconst describe = words => {\n  const prefix = longestCommonPrefix(words);\n  const shown = words.map(word => `\"${word}\"`).join(', ');\n  const label = prefix === '' ? 'no common prefix' : `prefix \"${prefix}\"`;\n  return `[${shown}] -> ${label}`;\n};\n\nconst report = groups => {\n  const lines = [];\n  groups.forEach((words, key) => {\n    lines.push(`group '${key}': ${describe(words)}`);\n  });\n  return lines.join('\\n');\n};\n\nconst main = () => {\n  const samples = [\n    ['flower', 'flow', 'flight'],\n    ['dog', 'racecar', 'car'],\n    ['interspecies', 'interstellar', 'interstate'],\n    []\n  ];\n  samples.forEach(sample => console.log(describe(sample)));\n  const mixed = ['prefix', 'preference', 'president', 'shell', 'shelf', 'ship'];\n  console.log(report(groupByPrefix(mixed)));\n};\n\nmain();\n\nmodule.exports = { longestCommonPrefix, commonPrefixOfPair, groupByPrefix, describe };\n",
+"text_alt": "const isString = function(value) { return typeof value === 'string'; };\n\nconst validateInput = function(strs) {\n  if (!Array.isArray(strs)) {\n    throw new TypeError('longestCommonPrefix expects an array of strings');\n  }\n  const bad = strs.findIndex(function(item) { return !isString(item); });\n  if (bad !== -1) {\n    throw new TypeError(`element at index ${bad} is not a string`);\n  }\n  return strs;\n};\n\nconst commonPrefixOfPair = function(a, b) {\n  const limit = Math.min(a.length, b.length);\n  let i = 0;\n  while (i < limit && a[i] === b[i]) {\n    i += 1;\n  }\n  return a.slice(0, i);\n};\n\nconst longestCommonPrefix = function(strs) {\n  validateInput(strs);\n  if (strs.length === 0) {\n    return '';\n  }\n  return strs.reduce(function(prefix, word) {\n    if (prefix === '') {\n      return '';\n    }\n    return commonPrefixOfPair(prefix, word);\n  });\n};\n\nconst groupByPrefix = function(words) {\n  const buckets = new Map();\n  words.forEach(function(word) {\n    const key = word.charAt(0);\n    const bucket = buckets.get(key);\n    if (bucket) {\n      bucket.push(word);\n    } else {\n      buckets.set(key, [word]);\n    }\n  });\n  return buckets;\n};\n\nconst describe = function(words) {\n  const prefix = longestCommonPrefix(words);\n  const shown = words.map(function(word) { return `\"${word}\"`; }).join(', ');\n  const label = prefix === '' ? 'no common prefix' : `prefix \"${prefix}\"`;\n  return `[${shown}] -> ${label}`;\n};\n\nconst report = function(groups) {\n  const lines = [];\n  groups.forEach(function(words, key) {\n    lines.push(`group '${key}': ${describe(words)}`);\n  });\n  return lines.join('\\n');\n};\n\nconst main = function() {\n  const samples = [\n    ['flower', 'flow', 'flight'],\n    ['dog', 'racecar', 'car'],\n    ['interspecies', 'interstellar', 'interstate'],\n    []\n  ];\n  samples.forEach(function(sample) { return console.log(describe(sample)); });\n  const mixed = ['prefix', 'preference', 'president', 'shell', 'shelf', 'ship'];\n  console.log(report(groupByPrefix(mixed)));\n};\n\nmain();\n\nmodule.exports = { longestCommonPrefix, commonPrefixOfPair, groupByPrefix, describe };\n",
 "opps": [
 {
-"nat": "(strs) => {",
-"alt": "function(strs) {",
+"nat": "value => typeof value === 'string';",
+"alt": "function(value) { return typeof value === 'string'; };",
 "nat_span": [
-28,
-39
+17,
+52
 ],
 "alt_span": [
-28,
-44
+17,
+71
 ],
 "k": 0
 },
 {
-"nat": "(arr) => Math.min(...arr.map(s => s.length));",
-"alt": "function(arr) { return Math.min(...arr.map(function(s) { return s.length; })); };",
+"nat": "strs => {",
+"alt": "function(strs) {",
 "nat_span": [
-100,
-145
+76,
+85
 ],
 "alt_span": [
-105,
-186
+95,
+111
 ],
 "k": 1
 },
 {
-"nat": "str => str[i] === char);",
-"alt": "function(str) { return str[i] === char; });",
+"nat": "item => !isString(item));",
+"alt": "function(item) { return !isString(item); });",
 "nat_span": [
-301,
-325
+225,
+250
 ],
 "alt_span": [
-342,
-385
+251,
+295
 ],
 "k": 2
 },
 {
-"nat": "x => x;",
-"alt": "function(x) { return x; };",
+"nat": "(a, b) => {",
+"alt": "function(a, b) {",
 "nat_span": [
-424,
-431
+389,
+400
 ],
 "alt_span": [
-484,
-510
+434,
+450
 ],
 "k": 3
 },
 {
-"nat": "(result) => result.split('').filter(identity).join('');",
-"alt": "function(result) { return result.split('').filter(identity).join(''); };",
+"nat": "strs => {",
+"alt": "function(strs) {",
 "nat_span": [
-456,
-511
+571,
+580
 ],
 "alt_span": [
-535,
-607
+621,
+637
 ],
 "k": 4
 },
 {
-"nat": "(input, expected, func) => {",
-"alt": "function(input, expected, func) {",
+"nat": "(prefix, word) => {",
+"alt": "function(prefix, word) {",
 "nat_span": [
-739,
-767
+671,
+690
 ],
 "alt_span": [
-835,
-868
+728,
+752
 ],
 "k": 5
+},
+{
+"nat": "words => {",
+"alt": "function(words) {",
+"nat_span": [
+816,
+826
+],
+"alt_span": [
+878,
+895
+],
+"k": 6
+},
+{
+"nat": "word => {",
+"alt": "function(word) {",
+"nat_span": [
+872,
+881
+],
+"alt_span": [
+941,
+957
+],
+"k": 7
+},
+{
+"nat": "words => {",
+"alt": "function(words) {",
+"nat_span": [
+1090,
+1100
+],
+"alt_span": [
+1166,
+1183
+],
+"k": 8
+},
+{
+"nat": "word => `\"${word}\"`).join(', ');",
+"alt": "function(word) { return `\"${word}\"`; }).join(', ');",
+"nat_span": [
+1172,
+1204
+],
+"alt_span": [
+1255,
+1306
+],
+"k": 9
+},
+{
+"nat": "groups => {",
+"alt": "function(groups) {",
+"nat_span": [
+1334,
+1345
+],
+"alt_span": [
+1436,
+1454
+],
+"k": 10
+},
+{
+"nat": "(words, key) => {",
+"alt": "function(words, key) {",
+"nat_span": [
+1383,
+1400
+],
+"alt_span": [
+1492,
+1514
+],
+"k": 11
+},
+{
+"nat": "() => {",
+"alt": "function() {",
+"nat_span": [
+1505,
+1512
+],
+"alt_span": [
+1619,
+1631
+],
+"k": 12
+},
+{
+"nat": "sample => console.log(describe(sample)));",
+"alt": "function(sample) { return console.log(describe(sample)); });",
+"nat_span": [
+1680,
+1721
+],
+"alt_span": [
+1799,
+1859
+],
+"k": 13
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.971,
+"k_en": 14,
+"shared_fraction": 0.956,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "",
-"alt": "function",
+"nat": "value =>",
+"alt": "function(value) { return",
 "nat_span": [
-28,
-28
+17,
+25
 ],
 "alt_span": [
-28,
-36
+17,
+41
 ]
 },
 {
 "k": 1,
-"nat": " =>",
-"alt": "",
+"nat": "",
+"alt": " };",
 "nat_span": [
-34,
-37
+52,
+52
 ],
 "alt_span": [
-42,
-42
+68,
+71
 ]
 },
 {
 "k": 2,
-"nat": "",
-"alt": "function",
+"nat": "strs =>",
+"alt": "function(strs)",
 "nat_span": [
-100,
-100
+76,
+83
 ],
 "alt_span": [
-105,
-113
+95,
+109
 ]
 },
 {
 "k": 3,
-"nat": "=>",
-"alt": "{ return",
+"nat": "item =>",
+"alt": "function(item) { return",
 "nat_span": [
-106,
-108
+225,
+232
 ],
 "alt_span": [
-119,
-127
+251,
+274
 ]
 },
 {
 "k": 4,
-"nat": "s =>",
-"alt": "function(s) { return",
+"nat": "",
+"alt": "; }",
 "nat_span": [
-129,
-133
+248,
+248
 ],
 "alt_span": [
-148,
-168
+290,
+293
 ]
 },
 {
 "k": 5,
-"nat": "))",
-"alt": "; })); }",
+"nat": "",
+"alt": "function",
 "nat_span": [
-142,
-144
+389,
+389
 ],
 "alt_span": [
-177,
-185
+434,
+442
 ]
 },
 {
 "k": 6,
-"nat": "str =>",
-"alt": "function(str) { return",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-301,
-307
+395,
+398
 ],
 "alt_span": [
-342,
-364
+448,
+448
 ]
 },
 {
 "k": 7,
-"nat": "",
-"alt": "; }",
+"nat": "strs =>",
+"alt": "function(strs)",
 "nat_span": [
-323,
-323
+571,
+578
 ],
 "alt_span": [
-380,
-383
+621,
+635
 ]
 },
 {
 "k": 8,
-"nat": "x => x",
-"alt": "function(x) { return x; }",
+"nat": "",
+"alt": "function",
 "nat_span": [
-424,
-430
+671,
+671
 ],
 "alt_span": [
-484,
-509
+728,
+736
 ]
 },
 {
 "k": 9,
-"nat": "",
-"alt": "function",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-456,
-456
+685,
+688
 ],
 "alt_span": [
-535,
-543
+750,
+750
 ]
 },
 {
 "k": 10,
-"nat": "=>",
-"alt": "{ return",
+"nat": "words =>",
+"alt": "function(words)",
 "nat_span": [
-465,
-467
+816,
+824
 ],
 "alt_span": [
-552,
-560
+878,
+893
 ]
 },
 {
 "k": 11,
-"nat": "",
-"alt": "; }",
+"nat": "word =>",
+"alt": "function(word)",
 "nat_span": [
-510,
-510
+872,
+879
 ],
 "alt_span": [
-603,
-606
+941,
+955
 ]
 },
 {
 "k": 12,
-"nat": "",
-"alt": "function",
+"nat": "words =>",
+"alt": "function(words)",
 "nat_span": [
-739,
-739
+1090,
+1098
 ],
 "alt_span": [
-835,
-843
+1166,
+1181
 ]
 },
 {
 "k": 13,
-"nat": " =>",
-"alt": "",
+"nat": "word =>",
+"alt": "function(word) { return",
 "nat_span": [
-762,
-765
+1172,
+1179
 ],
 "alt_span": [
-866,
-866
+1255,
+1278
 ]
 },
 {
 "k": 14,
-"nat": "s =>",
-"alt": "function(s) { return",
+"nat": "",
+"alt": "; }",
 "nat_span": [
-878,
-882
+1191,
+1191
 ],
 "alt_span": [
-979,
-999
+1290,
+1293
 ]
 },
 {
 "k": 15,
+"nat": "groups =>",
+"alt": "function(groups)",
+"nat_span": [
+1334,
+1343
+],
+"alt_span": [
+1436,
+1452
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1383,
+1383
+],
+"alt_span": [
+1492,
+1500
+]
+},
+{
+"k": 17,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1395,
+1398
+],
+"alt_span": [
+1512,
+1512
+]
+},
+{
+"k": 18,
+"nat": "() =>",
+"alt": "function()",
+"nat_span": [
+1505,
+1510
+],
+"alt_span": [
+1619,
+1629
+]
+},
+{
+"k": 19,
+"nat": "sample =>",
+"alt": "function(sample) { return",
+"nat_span": [
+1680,
+1689
+],
+"alt_span": [
+1799,
+1824
+]
+},
+{
+"k": 20,
 "nat": "",
 "alt": "; }",
 "nat_span": [
-891,
-891
+1719,
+1719
 ],
 "alt_span": [
-1008,
-1011
+1854,
+1857
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_arrow__t076",
@@ -26852,290 +27410,322 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const Queue = class {\n  constructor() {\n    this.elements = [];\n    this.head = 0;\n    this.tail = 0;\n  }\n\n  enqueue = item => {\n    this.elements[this.tail] = item;\n    this.tail++;\n  };\n\n  dequeue = () => {\n    if (this.head === this.tail) {\n      return null;\n    }\n    const item = this.elements[this.head];\n    delete this.elements[this.head];\n    this.head++;\n    const resetQueue = () => {\n      this.elements = this.elements.slice(this.head).filter(x => x !== undefined);\n      this.tail = this.elements.length;\n      this.head = 0;\n    };\n    if (this.head > this.tail / 2) resetQueue();\n    return item;\n  };\n\n  size = () => this.tail - this.head;\n\n  isEmpty = () => this.head === this.tail;\n};\n\n// Example usage:\nlet q = new Queue();\nq.enqueue(1);\nq.enqueue(2);\nconst firstDequeued = q.dequeue(); // returns 1\nconst secondDequeued = q.dequeue(); // returns 2\nconst thirdDequeued = q.dequeue(); // returns null\n\n// Additional example using array map for demonstration purposes (not part of core queue logic)\nconst processItems = items => items.map(x => x * 2);\n",
-"text_alt": "const Queue = class {\n  constructor() {\n    this.elements = [];\n    this.head = 0;\n    this.tail = 0;\n  }\n\n  enqueue = function(item) {\n    this.elements[this.tail] = item;\n    this.tail++;\n  };\n\n  dequeue = function() {\n    if (this.head === this.tail) {\n      return null;\n    }\n    const item = this.elements[this.head];\n    delete this.elements[this.head];\n    this.head++;\n    const resetQueue = function() {\n      this.elements = this.elements.slice(this.head).filter(function(x) { return x !== undefined; });\n      this.tail = this.elements.length;\n      this.head = 0;\n    };\n    if (this.head > this.tail / 2) resetQueue();\n    return item;\n  };\n\n  size = function() { return this.tail - this.head; };\n\n  isEmpty = function() { return this.head === this.tail; };\n};\n\n// Example usage:\nlet q = new Queue();\nq.enqueue(1);\nq.enqueue(2);\nconst firstDequeued = q.dequeue(); // returns 1\nconst secondDequeued = q.dequeue(); // returns 2\nconst thirdDequeued = q.dequeue(); // returns null\n\n// Additional example using array map for demonstration purposes (not part of core queue logic)\nconst processItems = function(items) { return items.map(function(x) { return x * 2; }); };\n",
+"text_nat": "class Queue {\n  #items = [];\n  #head = 0;\n\n  enqueue(value) {\n    this.#items.push(value);\n    return this;\n  }\n\n  dequeue() {\n    if (this.#head >= this.#items.length) return null;\n    const value = this.#items[this.#head];\n    this.#items[this.#head] = undefined;\n    this.#head += 1;\n    if (this.#head > 32 && this.#head * 2 >= this.#items.length) {\n      this.#items = this.#items.slice(this.#head);\n      this.#head = 0;\n    }\n    return value;\n  }\n\n  peek() {\n    return this.#head < this.#items.length ? this.#items[this.#head] : null;\n  }\n\n  get size() {\n    return this.#items.length - this.#head;\n  }\n\n  toArray() {\n    return this.#items.slice(this.#head);\n  }\n}\n\nconst parseCommand = line => {\n  const text = line.trim();\n  if (text === '') return null;\n  const [name, rawArg] = text.split(/\\s+/);\n  const numeric = Number(rawArg);\n  const arg = rawArg === undefined || Number.isNaN(numeric) ? rawArg : numeric;\n  return { name: name.toLowerCase(), arg };\n};\n\nconst applyCommand = (queue, { name, arg }) => {\n  if (name === 'enqueue') {\n    queue.enqueue(arg);\n    return `enqueue ${arg} -> size ${queue.size}`;\n  }\n  if (name === 'dequeue') return `dequeue -> ${queue.dequeue()}`;\n  if (name === 'peek') return `peek -> ${queue.peek()}`;\n  throw new Error(`unknown command: ${name}`);\n};\n\nconst runScript = (queue, lines) =>\n  lines\n    .map(parseCommand)\n    .filter(command => command !== null)\n    .map(command => applyCommand(queue, command));\n\nconst formatSnapshot = queue => `front -> [${queue.toArray().join(', ')}] <- back`;\n\nconst countDequeues = log =>\n  log.filter(entry => entry.startsWith('dequeue')).length;\n\nconst script = [\n  'enqueue 1',\n  'enqueue 2',\n  'peek',\n  'dequeue',\n  'enqueue ticket-42',\n  'dequeue',\n  'dequeue',\n  '',\n  'dequeue'\n];\n\nconst queue = new Queue();\nconst log = runScript(queue, script);\nlog.forEach(entry => console.log(entry));\nconsole.log(formatSnapshot(queue));\nconsole.log(`removed ${countDequeues(log)} items, ${queue.size} remaining`);\n",
+"text_alt": "class Queue {\n  #items = [];\n  #head = 0;\n\n  enqueue(value) {\n    this.#items.push(value);\n    return this;\n  }\n\n  dequeue() {\n    if (this.#head >= this.#items.length) return null;\n    const value = this.#items[this.#head];\n    this.#items[this.#head] = undefined;\n    this.#head += 1;\n    if (this.#head > 32 && this.#head * 2 >= this.#items.length) {\n      this.#items = this.#items.slice(this.#head);\n      this.#head = 0;\n    }\n    return value;\n  }\n\n  peek() {\n    return this.#head < this.#items.length ? this.#items[this.#head] : null;\n  }\n\n  get size() {\n    return this.#items.length - this.#head;\n  }\n\n  toArray() {\n    return this.#items.slice(this.#head);\n  }\n}\n\nconst parseCommand = function(line) {\n  const text = line.trim();\n  if (text === '') return null;\n  const [name, rawArg] = text.split(/\\s+/);\n  const numeric = Number(rawArg);\n  const arg = rawArg === undefined || Number.isNaN(numeric) ? rawArg : numeric;\n  return { name: name.toLowerCase(), arg };\n};\n\nconst applyCommand = function(queue, { name, arg }) {\n  if (name === 'enqueue') {\n    queue.enqueue(arg);\n    return `enqueue ${arg} -> size ${queue.size}`;\n  }\n  if (name === 'dequeue') return `dequeue -> ${queue.dequeue()}`;\n  if (name === 'peek') return `peek -> ${queue.peek()}`;\n  throw new Error(`unknown command: ${name}`);\n};\n\nconst runScript = function(queue, lines) {\n  return lines\n    .map(parseCommand)\n    .filter(function(command) { return command !== null; })\n    .map(function(command) { return applyCommand(queue, command); });\n};\n\nconst formatSnapshot = function(queue) { return `front -> [${queue.toArray().join(', ')}] <- back`; };\n\nconst countDequeues = function(log) {\n  return log.filter(function(entry) { return entry.startsWith('dequeue'); }).length;\n};\n\nconst script = [\n  'enqueue 1',\n  'enqueue 2',\n  'peek',\n  'dequeue',\n  'enqueue ticket-42',\n  'dequeue',\n  'dequeue',\n  '',\n  'dequeue'\n];\n\nconst queue = new Queue();\nconst log = runScript(queue, script);\nlog.forEach(function(entry) { console.log(entry); });\nconsole.log(formatSnapshot(queue));\nconsole.log(`removed ${countDequeues(log)} items, ${queue.size} remaining`);\n",
 "opps": [
 {
-"nat": "item => {",
-"alt": "function(item) {",
+"nat": "line => {",
+"alt": "function(line) {",
 "nat_span": [
-119,
-128
+697,
+706
 ],
 "alt_span": [
-119,
-135
+697,
+713
 ],
 "k": 0
 },
 {
-"nat": "() => {",
-"alt": "function() {",
+"nat": "(queue, { name, arg }) => {",
+"alt": "function(queue, { name, arg }) {",
 "nat_span": [
-201,
-208
+994,
+1021
 ],
 "alt_span": [
-208,
-220
+1001,
+1033
 ],
 "k": 1
 },
 {
-"nat": "() => {",
-"alt": "function() {",
+"nat": "(queue, lines) =>\n  lines\n    .map(parseCommand)\n    .filter(command => command !== null)\n    .map(command => applyCommand(queue, command));",
+"alt": "function(queue, lines) {\n  return lines\n    .map(parseCommand)\n    .filter(function(command) { return command !== null; })\n    .map(function(command) { return applyCommand(queue, command); });\n};",
 "nat_span": [
-389,
-396
+1321,
+1461
 ],
 "alt_span": [
-401,
-413
+1333,
+1528
 ],
 "k": 2
 },
 {
-"nat": "x => x !== undefined);",
-"alt": "function(x) { return x !== undefined; });",
+"nat": "queue => `front -> [${queue.toArray().join(', ')}] <- back`;",
+"alt": "function(queue) { return `front -> [${queue.toArray().join(', ')}] <- back`; };",
 "nat_span": [
-457,
-479
+1486,
+1546
 ],
 "alt_span": [
-474,
-515
+1553,
+1632
 ],
 "k": 3
 },
 {
-"nat": "() => this.tail - this.head;",
-"alt": "function() { return this.tail - this.head; };",
+"nat": "log =>\n  log.filter(entry => entry.startsWith('dequeue')).length;",
+"alt": "function(log) {\n  return log.filter(function(entry) { return entry.startsWith('dequeue'); }).length;\n};",
 "nat_span": [
-629,
-657
+1570,
+1635
 ],
 "alt_span": [
-665,
-710
+1656,
+1759
 ],
 "k": 4
 },
 {
-"nat": "() => this.head === this.tail;",
-"alt": "function() { return this.head === this.tail; };",
+"nat": "entry => console.log(entry));",
+"alt": "function(entry) { console.log(entry); });",
 "nat_span": [
-671,
-701
+1855,
+1884
 ],
 "alt_span": [
-724,
-771
+1979,
+2020
 ],
 "k": 5
-},
-{
-"nat": "items => items.map(x => x * 2);",
-"alt": "function(items) { return items.map(function(x) { return x * 2; }); };",
-"nat_span": [
-1039,
-1070
-],
-"alt_span": [
-1109,
-1178
-],
-"k": 6
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.959,
+"k_en": 6,
+"shared_fraction": 0.977,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "item =>",
-"alt": "function(item)",
+"nat": "line =>",
+"alt": "function(line)",
 "nat_span": [
-119,
-126
+697,
+704
 ],
 "alt_span": [
-119,
-133
+697,
+711
 ]
 },
 {
 "k": 1,
-"nat": "() =>",
-"alt": "function()",
+"nat": "",
+"alt": "function",
 "nat_span": [
-201,
-206
+994,
+994
 ],
 "alt_span": [
-208,
-218
+1001,
+1009
 ]
 },
 {
 "k": 2,
-"nat": "() =>",
-"alt": "function()",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-389,
-394
+1016,
+1019
 ],
 "alt_span": [
-401,
-411
+1031,
+1031
 ]
 },
 {
 "k": 3,
-"nat": "x =>",
-"alt": "function(x) { return",
+"nat": "",
+"alt": "function",
 "nat_span": [
-457,
-461
+1321,
+1321
 ],
 "alt_span": [
-474,
-494
+1333,
+1341
 ]
 },
 {
 "k": 4,
-"nat": "",
-"alt": "; }",
+"nat": "=>\n  ",
+"alt": "{\n  return ",
 "nat_span": [
-477,
-477
+1336,
+1341
 ],
 "alt_span": [
-510,
-513
+1356,
+1367
 ]
 },
 {
 "k": 5,
-"nat": "",
-"alt": "function",
+"nat": "command =>",
+"alt": "function(command) { return",
 "nat_span": [
-629,
-629
+1382,
+1392
 ],
 "alt_span": [
-665,
-673
+1408,
+1434
 ]
 },
 {
 "k": 6,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": "; }",
 "nat_span": [
-632,
-634
+1409,
+1409
 ],
 "alt_span": [
-676,
-684
+1451,
+1454
 ]
 },
 {
 "k": 7,
-"nat": "",
-"alt": " };",
+"nat": "command =>",
+"alt": "function(command) { return",
 "nat_span": [
-657,
-657
+1420,
+1430
 ],
 "alt_span": [
-707,
-710
+1465,
+1491
 ]
 },
 {
 "k": 8,
-"nat": "",
-"alt": "function",
+"nat": ")",
+"alt": "; });\n}",
 "nat_span": [
-671,
-671
+1459,
+1460
 ],
 "alt_span": [
-724,
-732
+1520,
+1527
 ]
 },
 {
 "k": 9,
-"nat": "=>",
-"alt": "{ return",
+"nat": "queue =>",
+"alt": "function(queue) { return",
 "nat_span": [
-674,
-676
+1486,
+1494
 ],
 "alt_span": [
-735,
-743
+1553,
+1577
 ]
 },
 {
 "k": 10,
 "nat": "",
-"alt": "; }",
+"alt": " };",
 "nat_span": [
-700,
-700
+1546,
+1546
 ],
 "alt_span": [
-767,
-770
+1629,
+1632
 ]
 },
 {
 "k": 11,
-"nat": "items =>",
-"alt": "function(items) { return",
+"nat": "log =>\n  ",
+"alt": "function(log) {\n  return ",
 "nat_span": [
-1039,
-1047
+1570,
+1579
 ],
 "alt_span": [
-1109,
-1133
+1656,
+1681
 ]
 },
 {
 "k": 12,
-"nat": "x =>",
-"alt": "function(x) { return",
+"nat": "entry =>",
+"alt": "function(entry) { return",
 "nat_span": [
-1058,
-1062
+1590,
+1598
 ],
 "alt_span": [
-1144,
-1164
+1692,
+1716
 ]
 },
 {
 "k": 13,
-"nat": ");",
-"alt": "; }); };",
+"nat": "",
+"alt": "; }",
 "nat_span": [
-1068,
-1070
+1626,
+1626
 ],
 "alt_span": [
-1170,
-1178
+1744,
+1747
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": ";\n}",
+"nat_span": [
+1634,
+1634
+],
+"alt_span": [
+1755,
+1758
+]
+},
+{
+"k": 15,
+"nat": "entry =>",
+"alt": "function(entry) {",
+"nat_span": [
+1855,
+1863
+],
+"alt_span": [
+1979,
+1996
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1882,
+1882
+],
+"alt_span": [
+2015,
+2018
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_arrow__t088",
@@ -31880,117 +32470,274 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const KILOMETERS_TO_MILES_FACTOR = 0.621371;\n\nconst multiply = (a, b) => a * b;\n\nconst isNonNegativeNumber = num => typeof num === 'number' && num >= 0;\n\nconst applyConversion = (km, factor) => multiply(km, factor);\n\nconst roundToDecimalPlaces = (num, places) => parseFloat(num.toFixed(places));\n\nconst kmToMiles = km => {\n  if (!isNonNegativeNumber(km)) {\n    throw new Error('Input must be a non-negative number.');\n  }\n\n  const miles = applyConversion(km, KILOMETERS_TO_MILES_FACTOR);\n  const getRoundedMiles = val => roundToDecimalPlaces(val, 5); // Example: round to 5 decimal places for consistency\n  return getRoundedMiles(miles);\n};\n\nconst testConversion = (inputKm, expectedMiles) => {\n  const actualMiles = kmToMiles(inputKm);\n  const areEqual = Math.abs(actualMiles - expectedMiles) < 0.00001; // Using a small epsilon for float comparison\n  console.log(`Input: ${inputKm} km, Expected: ${expectedMiles} miles, Actual: ${actualMiles} miles, Match: ${areEqual}`);\n};\n\n// Example usage and tests\ntestConversion(10, 6.21371);\ntestConversion(0, 0);\ntestConversion(1, 0.62137);\ntestConversion(50, 31.06855);\n",
-"text_alt": "const KILOMETERS_TO_MILES_FACTOR = 0.621371;\n\nconst multiply = function(a, b) { return a * b; };\n\nconst isNonNegativeNumber = function(num) { return typeof num === 'number' && num >= 0; };\n\nconst applyConversion = function(km, factor) { return multiply(km, factor); };\n\nconst roundToDecimalPlaces = function(num, places) { return parseFloat(num.toFixed(places)); };\n\nconst kmToMiles = function(km) {\n  if (!isNonNegativeNumber(km)) {\n    throw new Error('Input must be a non-negative number.');\n  }\n\n  const miles = applyConversion(km, KILOMETERS_TO_MILES_FACTOR);\n  const getRoundedMiles = function(val) { return roundToDecimalPlaces(val, 5); }; // Example: round to 5 decimal places for consistency\n  return getRoundedMiles(miles);\n};\n\nconst testConversion = function(inputKm, expectedMiles) {\n  const actualMiles = kmToMiles(inputKm);\n  const areEqual = Math.abs(actualMiles - expectedMiles) < 0.00001; // Using a small epsilon for float comparison\n  console.log(`Input: ${inputKm} km, Expected: ${expectedMiles} miles, Actual: ${actualMiles} miles, Match: ${areEqual}`);\n};\n\n// Example usage and tests\ntestConversion(10, 6.21371);\ntestConversion(0, 0);\ntestConversion(1, 0.62137);\ntestConversion(50, 31.06855);\n",
+"text_nat": "const KM_TO_MILES = 0.621371;\n\nconst kmToMiles = (km) => km * KM_TO_MILES;\n\nconst isValidDistance = (value) => typeof value === 'number' && Number.isFinite(value) && value >= 0;\n\nconst parseDistance = (raw) => {\n  if (typeof raw === 'number') return raw;\n  const trimmed = String(raw).trim().replace(/\\s*km$/i, '');\n  return trimmed === '' ? NaN : Number(trimmed);\n};\n\nconst roundTo = (value, digits) => {\n  const factor = 10 ** digits;\n  return Math.round(value * factor) / factor;\n};\n\nconst formatRow = (km, miles) => `${roundTo(km, 3).toString().padStart(10)} km = ${roundTo(miles, 5).toString().padStart(12)} mi`;\n\nconst convertOne = (raw) => {\n  const km = parseDistance(raw);\n  if (!isValidDistance(km)) {\n    return { input: raw, error: 'not a non-negative finite number' };\n  }\n  return { input: raw, km, miles: kmToMiles(km) };\n};\n\nconst convertAll = (inputs) => inputs.map(convertOne);\n\nconst buildReport = (results) => {\n  const ok = results.filter((r) => r.error === undefined);\n  const bad = results.filter((r) => r.error !== undefined);\n  const lines = ok.map((r) => formatRow(r.km, r.miles));\n  bad.forEach((r) => {\n    lines.push(`${String(r.input).padStart(10)}    -> skipped (${r.error})`);\n  });\n  return lines;\n};\n\nconst summarize = (results) => {\n  const converted = results.filter((r) => r.miles !== undefined);\n  const miles = converted.map((r) => r.miles);\n  const total = miles.reduce((sum, m) => sum + m, 0);\n  const longest = miles.reduce((best, m) => (m > best ? m : best), 0);\n  return {\n    converted: miles.length,\n    skipped: results.length - miles.length,\n    totalMiles: roundTo(total, 5),\n    longestMiles: roundTo(longest, 5),\n    averageMiles: miles.length === 0 ? 0 : roundTo(total / miles.length, 5),\n  };\n};\n\nconst main = () => {\n  const inputs = [10, 0, '42.195', '5 km', 1.609344, -3, 'abc', 100];\n  const results = convertAll(inputs);\n\n  buildReport(results).forEach((line) => console.log(line));\n\n  const stats = summarize(results);\n  console.log('---');\n  console.log(`converted: ${stats.converted}, skipped: ${stats.skipped}`);\n  console.log(`total: ${stats.totalMiles} mi, average: ${stats.averageMiles} mi, longest: ${stats.longestMiles} mi`);\n};\n\nmain();\n\nmodule.exports = { kmToMiles, parseDistance, convertOne, convertAll, buildReport, summarize };\n",
+"text_alt": "const KM_TO_MILES = 0.621371;\n\nconst kmToMiles = function (km) { return km * KM_TO_MILES; };\n\nconst isValidDistance = function (value) { return typeof value === 'number' && Number.isFinite(value) && value >= 0; };\n\nconst parseDistance = function (raw) {\n  if (typeof raw === 'number') return raw;\n  const trimmed = String(raw).trim().replace(/\\s*km$/i, '');\n  return trimmed === '' ? NaN : Number(trimmed);\n};\n\nconst roundTo = function (value, digits) {\n  const factor = 10 ** digits;\n  return Math.round(value * factor) / factor;\n};\n\nconst formatRow = function (km, miles) { return `${roundTo(km, 3).toString().padStart(10)} km = ${roundTo(miles, 5).toString().padStart(12)} mi`; };\n\nconst convertOne = function (raw) {\n  const km = parseDistance(raw);\n  if (!isValidDistance(km)) {\n    return { input: raw, error: 'not a non-negative finite number' };\n  }\n  return { input: raw, km, miles: kmToMiles(km) };\n};\n\nconst convertAll = function (inputs) { return inputs.map(convertOne); };\n\nconst buildReport = function (results) {\n  const ok = results.filter(function (r) { return r.error === undefined; });\n  const bad = results.filter(function (r) { return r.error !== undefined; });\n  const lines = ok.map(function (r) { return formatRow(r.km, r.miles); });\n  bad.forEach(function (r) {\n    lines.push(`${String(r.input).padStart(10)}    -> skipped (${r.error})`);\n  });\n  return lines;\n};\n\nconst summarize = function (results) {\n  const converted = results.filter(function (r) { return r.miles !== undefined; });\n  const miles = converted.map(function (r) { return r.miles; });\n  const total = miles.reduce(function (sum, m) { return sum + m; }, 0);\n  const longest = miles.reduce(function (best, m) { return (m > best ? m : best); }, 0);\n  return {\n    converted: miles.length,\n    skipped: results.length - miles.length,\n    totalMiles: roundTo(total, 5),\n    longestMiles: roundTo(longest, 5),\n    averageMiles: miles.length === 0 ? 0 : roundTo(total / miles.length, 5),\n  };\n};\n\nconst main = function () {\n  const inputs = [10, 0, '42.195', '5 km', 1.609344, -3, 'abc', 100];\n  const results = convertAll(inputs);\n\n  buildReport(results).forEach(function (line) { return console.log(line); });\n\n  const stats = summarize(results);\n  console.log('---');\n  console.log(`converted: ${stats.converted}, skipped: ${stats.skipped}`);\n  console.log(`total: ${stats.totalMiles} mi, average: ${stats.averageMiles} mi, longest: ${stats.longestMiles} mi`);\n};\n\nmain();\n\nmodule.exports = { kmToMiles, parseDistance, convertOne, convertAll, buildReport, summarize };\n",
 "opps": [
 {
-"nat": "(a, b) => a * b;",
-"alt": "function(a, b) { return a * b; };",
+"nat": "(km) => km * KM_TO_MILES;",
+"alt": "function (km) { return km * KM_TO_MILES; };",
 "nat_span": [
-63,
-79
+49,
+74
 ],
 "alt_span": [
-63,
-96
+49,
+92
 ],
 "k": 0
 },
 {
-"nat": "num => typeof num === 'number' && num >= 0;",
-"alt": "function(num) { return typeof num === 'number' && num >= 0; };",
+"nat": "(value) => typeof value === 'number' && Number.isFinite(value) && value >= 0;",
+"alt": "function (value) { return typeof value === 'number' && Number.isFinite(value) && value >= 0; };",
 "nat_span": [
-109,
-152
+100,
+177
 ],
 "alt_span": [
-126,
-188
+118,
+213
 ],
 "k": 1
 },
 {
-"nat": "(km, factor) => multiply(km, factor);",
-"alt": "function(km, factor) { return multiply(km, factor); };",
+"nat": "(raw) => {",
+"alt": "function (raw) {",
 "nat_span": [
-178,
-215
+201,
+211
 ],
 "alt_span": [
-214,
-268
+237,
+253
 ],
 "k": 2
 },
 {
-"nat": "(num, places) => parseFloat(num.toFixed(places));",
-"alt": "function(num, places) { return parseFloat(num.toFixed(places)); };",
+"nat": "(value, digits) => {",
+"alt": "function (value, digits) {",
 "nat_span": [
-246,
-295
+385,
+405
 ],
 "alt_span": [
-299,
-365
+427,
+453
 ],
 "k": 3
 },
 {
-"nat": "km => {",
-"alt": "function(km) {",
+"nat": "(km, miles) => `${roundTo(km, 3).toString().padStart(10)} km = ${roundTo(miles, 5).toString().padStart(12)} mi`;",
+"alt": "function (km, miles) { return `${roundTo(km, 3).toString().padStart(10)} km = ${roundTo(miles, 5).toString().padStart(12)} mi`; };",
 "nat_span": [
-315,
-322
+505,
+617
 ],
 "alt_span": [
-385,
-399
+553,
+683
 ],
 "k": 4
 },
 {
-"nat": "val => roundToDecimalPlaces(val, 5); // Example: round to 5 decimal places for consistency",
-"alt": "function(val) { return roundToDecimalPlaces(val, 5); }; // Example: round to 5 decimal places for consistency",
+"nat": "(raw) => {",
+"alt": "function (raw) {",
 "nat_span": [
-514,
-604
+638,
+648
 ],
 "alt_span": [
-591,
-700
+704,
+720
 ],
 "k": 5
 },
 {
-"nat": "(inputKm, expectedMiles) => {",
-"alt": "function(inputKm, expectedMiles) {",
+"nat": "(inputs) => inputs.map(convertOne);",
+"alt": "function (inputs) { return inputs.map(convertOne); };",
 "nat_span": [
-665,
-694
+860,
+895
 ],
 "alt_span": [
-761,
-795
+932,
+985
 ],
 "k": 6
+},
+{
+"nat": "(results) => {",
+"alt": "function (results) {",
+"nat_span": [
+917,
+931
+],
+"alt_span": [
+1007,
+1027
+],
+"k": 7
+},
+{
+"nat": "(r) => r.error === undefined);",
+"alt": "function (r) { return r.error === undefined; });",
+"nat_span": [
+960,
+990
+],
+"alt_span": [
+1056,
+1104
+],
+"k": 8
+},
+{
+"nat": "(r) => r.error !== undefined);",
+"alt": "function (r) { return r.error !== undefined; });",
+"nat_span": [
+1020,
+1050
+],
+"alt_span": [
+1134,
+1182
+],
+"k": 9
+},
+{
+"nat": "(r) => formatRow(r.km, r.miles));",
+"alt": "function (r) { return formatRow(r.km, r.miles); });",
+"nat_span": [
+1074,
+1107
+],
+"alt_span": [
+1206,
+1257
+],
+"k": 10
+},
+{
+"nat": "(r) => {",
+"alt": "function (r) {",
+"nat_span": [
+1122,
+1130
+],
+"alt_span": [
+1272,
+1286
+],
+"k": 11
+},
+{
+"nat": "(results) => {",
+"alt": "function (results) {",
+"nat_span": [
+1253,
+1267
+],
+"alt_span": [
+1409,
+1429
+],
+"k": 12
+},
+{
+"nat": "(r) => r.miles !== undefined);",
+"alt": "function (r) { return r.miles !== undefined; });",
+"nat_span": [
+1303,
+1333
+],
+"alt_span": [
+1465,
+1513
+],
+"k": 13
+},
+{
+"nat": "(r) => r.miles);",
+"alt": "function (r) { return r.miles; });",
+"nat_span": [
+1364,
+1380
+],
+"alt_span": [
+1544,
+1578
+],
+"k": 14
+},
+{
+"nat": "(sum, m) => sum + m, 0);",
+"alt": "function (sum, m) { return sum + m; }, 0);",
+"nat_span": [
+1410,
+1434
+],
+"alt_span": [
+1608,
+1650
+],
+"k": 15
+},
+{
+"nat": "(best, m) => (m > best ? m : best), 0);",
+"alt": "function (best, m) { return (m > best ? m : best); }, 0);",
+"nat_span": [
+1466,
+1505
+],
+"alt_span": [
+1682,
+1739
+],
+"k": 16
+},
+{
+"nat": "() => {",
+"alt": "function () {",
+"nat_span": [
+1763,
+1770
+],
+"alt_span": [
+1997,
+2010
+],
+"k": 17
+},
+{
+"nat": "(line) => console.log(line));",
+"alt": "function (line) { return console.log(line); });",
+"nat_span": [
+1911,
+1940
+],
+"alt_span": [
+2151,
+2198
+],
+"k": 18
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.961,
+"k_en": 19,
+"shared_fraction": 0.956,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": "",
-"alt": "function",
+"alt": "function ",
 "nat_span": [
-63,
-63
+49,
+49
 ],
 "alt_span": [
-63,
-71
+49,
+58
 ]
 },
 {
@@ -31998,12 +32745,12 @@
 "nat": "=>",
 "alt": "{ return",
 "nat_span": [
-70,
-72
+54,
+56
 ],
 "alt_span": [
-78,
-86
+63,
+71
 ]
 },
 {
@@ -32011,185 +32758,619 @@
 "nat": "",
 "alt": "; }",
 "nat_span": [
-78,
-78
+73,
+73
 ],
 "alt_span": [
-92,
-95
+88,
+91
 ]
 },
 {
 "k": 3,
-"nat": "num =>",
-"alt": "function(num) { return",
+"nat": "",
+"alt": "function ",
 "nat_span": [
-109,
-115
+100,
+100
 ],
 "alt_span": [
-126,
-148
+118,
+127
 ]
 },
 {
 "k": 4,
-"nat": "",
-"alt": " };",
+"nat": "=>",
+"alt": "{ return",
 "nat_span": [
-152,
-152
+108,
+110
 ],
 "alt_span": [
-185,
-188
+135,
+143
 ]
 },
 {
 "k": 5,
 "nat": "",
-"alt": "function",
+"alt": " };",
 "nat_span": [
-178,
-178
+177,
+177
 ],
 "alt_span": [
-214,
-222
+210,
+213
 ]
 },
 {
 "k": 6,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": "function ",
 "nat_span": [
-191,
-193
+201,
+201
 ],
 "alt_span": [
-235,
-243
+237,
+246
 ]
 },
 {
 "k": 7,
-"nat": "",
-"alt": " };",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-215,
-215
+206,
+209
 ],
 "alt_span": [
-265,
-268
+251,
+251
 ]
 },
 {
 "k": 8,
 "nat": "",
-"alt": "function",
+"alt": "function ",
 "nat_span": [
-246,
-246
+385,
+385
 ],
 "alt_span": [
-299,
-307
+427,
+436
 ]
 },
 {
 "k": 9,
-"nat": "=>",
-"alt": "{ return",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-260,
-262
+400,
+403
 ],
 "alt_span": [
-321,
-329
+451,
+451
 ]
 },
 {
 "k": 10,
 "nat": "",
-"alt": " };",
+"alt": "function ",
 "nat_span": [
-295,
-295
+505,
+505
 ],
 "alt_span": [
-362,
-365
+553,
+562
 ]
 },
 {
 "k": 11,
-"nat": "km =>",
-"alt": "function(km)",
+"nat": "=>",
+"alt": "{ return",
 "nat_span": [
-315,
-320
+517,
+519
 ],
 "alt_span": [
-385,
-397
+574,
+582
 ]
 },
 {
 "k": 12,
-"nat": "val =>",
-"alt": "function(val) { return",
+"nat": "",
+"alt": " };",
 "nat_span": [
-514,
-520
+617,
+617
 ],
 "alt_span": [
-591,
-613
+680,
+683
 ]
 },
 {
 "k": 13,
 "nat": "",
-"alt": "; }",
+"alt": "function ",
 "nat_span": [
-549,
-549
+638,
+638
 ],
 "alt_span": [
-642,
-645
+704,
+713
 ]
 },
 {
 "k": 14,
-"nat": "",
-"alt": "function",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-665,
-665
+643,
+646
 ],
 "alt_span": [
-761,
-769
+718,
+718
 ]
 },
 {
 "k": 15,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+860,
+860
+],
+"alt_span": [
+932,
+941
+]
+},
+{
+"k": 16,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+869,
+871
+],
+"alt_span": [
+950,
+958
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": " };",
+"nat_span": [
+895,
+895
+],
+"alt_span": [
+982,
+985
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+917,
+917
+],
+"alt_span": [
+1007,
+1016
+]
+},
+{
+"k": 19,
 "nat": " =>",
 "alt": "",
 "nat_span": [
-689,
-692
+926,
+929
 ],
 "alt_span": [
-793,
-793
+1025,
+1025
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+960,
+960
+],
+"alt_span": [
+1056,
+1065
+]
+},
+{
+"k": 21,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+964,
+966
+],
+"alt_span": [
+1069,
+1077
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+988,
+988
+],
+"alt_span": [
+1099,
+1102
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1020,
+1020
+],
+"alt_span": [
+1134,
+1143
+]
+},
+{
+"k": 24,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1024,
+1026
+],
+"alt_span": [
+1147,
+1155
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1048,
+1048
+],
+"alt_span": [
+1177,
+1180
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1074,
+1074
+],
+"alt_span": [
+1206,
+1215
+]
+},
+{
+"k": 27,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1078,
+1080
+],
+"alt_span": [
+1219,
+1227
+]
+},
+{
+"k": 28,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1105,
+1105
+],
+"alt_span": [
+1252,
+1255
+]
+},
+{
+"k": 29,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1122,
+1122
+],
+"alt_span": [
+1272,
+1281
+]
+},
+{
+"k": 30,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1125,
+1128
+],
+"alt_span": [
+1284,
+1284
+]
+},
+{
+"k": 31,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1253,
+1253
+],
+"alt_span": [
+1409,
+1418
+]
+},
+{
+"k": 32,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1262,
+1265
+],
+"alt_span": [
+1427,
+1427
+]
+},
+{
+"k": 33,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1303,
+1303
+],
+"alt_span": [
+1465,
+1474
+]
+},
+{
+"k": 34,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1307,
+1309
+],
+"alt_span": [
+1478,
+1486
+]
+},
+{
+"k": 35,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1331,
+1331
+],
+"alt_span": [
+1508,
+1511
+]
+},
+{
+"k": 36,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1364,
+1364
+],
+"alt_span": [
+1544,
+1553
+]
+},
+{
+"k": 37,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1368,
+1370
+],
+"alt_span": [
+1557,
+1565
+]
+},
+{
+"k": 38,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1378,
+1378
+],
+"alt_span": [
+1573,
+1576
+]
+},
+{
+"k": 39,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1410,
+1410
+],
+"alt_span": [
+1608,
+1617
+]
+},
+{
+"k": 40,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1419,
+1421
+],
+"alt_span": [
+1626,
+1634
+]
+},
+{
+"k": 41,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1429,
+1429
+],
+"alt_span": [
+1642,
+1645
+]
+},
+{
+"k": 42,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1466,
+1466
+],
+"alt_span": [
+1682,
+1691
+]
+},
+{
+"k": 43,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1476,
+1478
+],
+"alt_span": [
+1701,
+1709
+]
+},
+{
+"k": 44,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1500,
+1500
+],
+"alt_span": [
+1731,
+1734
+]
+},
+{
+"k": 45,
+"nat": "() =>",
+"alt": "function ()",
+"nat_span": [
+1763,
+1768
+],
+"alt_span": [
+1997,
+2008
+]
+},
+{
+"k": 46,
+"nat": "",
+"alt": "function ",
+"nat_span": [
+1911,
+1911
+],
+"alt_span": [
+2151,
+2160
+]
+},
+{
+"k": 47,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1918,
+1920
+],
+"alt_span": [
+2167,
+2175
+]
+},
+{
+"k": 48,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1938,
+1938
+],
+"alt_span": [
+2193,
+2196
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_arrow__t105",
@@ -40974,225 +42155,530 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const simulateQueue = (initialQueue, operations) => {\n  let queue = [...initialQueue];\n\n  const enqueue = (element, q) => [...q, element];\n  const dequeue = q => q.slice(1);\n  const processOperation = (currentQueue, op) =>\n    op.type === 'enqueue' ? enqueue(op.value, currentQueue) : dequeue(currentQueue);\n\n  const finalQueue = operations.reduce(processOperation, queue);\n  const mapFn = x => x; // Example of another arrow function\n\n  return finalQueue.map(mapFn);\n};\n",
-"text_alt": "const simulateQueue = function(initialQueue, operations) {\n  let queue = [...initialQueue];\n\n  const enqueue = function(element, q) { return [...q, element]; };\n  const dequeue = function(q) { return q.slice(1); };\n  const processOperation = function(currentQueue, op) {\n    return op.type === 'enqueue' ? enqueue(op.value, currentQueue) : dequeue(currentQueue);\n  };\n\n  const finalQueue = operations.reduce(processOperation, queue);\n  const mapFn = function(x) { return x; }; // Example of another arrow function\n\n  return finalQueue.map(mapFn);\n};\n",
+"text_nat": "const isPlainOperation = op => op !== null && typeof op === 'object' && !Array.isArray(op);\n\nconst normalizeType = raw => (typeof raw === 'string' ? raw.trim().toLowerCase() : '');\n\nconst validateOperation = (op, index) => {\n  if (!isPlainOperation(op)) {\n    throw new TypeError(`Operation at index ${index} must be an object`);\n  }\n  const type = normalizeType(op.type);\n  if (type !== 'enqueue' && type !== 'dequeue') {\n    throw new TypeError(`Operation at index ${index} has unknown type \"${op.type}\"`);\n  }\n  if (type === 'enqueue' && !('value' in op)) {\n    throw new TypeError(`Enqueue at index ${index} is missing a value`);\n  }\n  return type;\n};\n\nconst applyOperation = (queue, op, index) => {\n  const type = validateOperation(op, index);\n  if (type === 'enqueue') {\n    queue.push(op.value);\n    return { type, value: op.value, removed: undefined };\n  }\n  const removed = queue.shift();\n  return { type, value: undefined, removed };\n};\n\nconst simulateQueue = (initialQueue, operations) => {\n  if (!Array.isArray(initialQueue)) {\n    throw new TypeError('initialQueue must be an array');\n  }\n  if (!Array.isArray(operations)) {\n    throw new TypeError('operations must be an array');\n  }\n  const queue = initialQueue.slice();\n  operations.forEach((op, index) => applyOperation(queue, op, index));\n  return queue;\n};\n\nconst traceQueue = (initialQueue, operations) => {\n  const queue = initialQueue.slice();\n  return operations.map((op, index) => {\n    const result = applyOperation(queue, op, index);\n    return { ...result, snapshot: queue.slice() };\n  });\n};\n\nconst formatValue = value => (value === undefined ? '-' : JSON.stringify(value));\n\nconst describeStep = (step, index) => {\n  const label = step.type === 'enqueue'\n    ? `enqueue ${formatValue(step.value)}`\n    : `dequeue ${formatValue(step.removed)}`;\n  return `${index + 1}. ${label.padEnd(16)} => [${step.snapshot.map(formatValue).join(', ')}]`;\n};\n\nconst report = (initialQueue, operations) => {\n  const lines = traceQueue(initialQueue, operations).map(describeStep);\n  const header = `start: [${initialQueue.map(formatValue).join(', ')}]`;\n  return [header, ...lines].join('\\n');\n};\n\nconst main = () => {\n  const cases = [\n    { queue: [1, 2], ops: [{ type: 'enqueue', value: 3 }, { type: 'dequeue' }] },\n    { queue: [], ops: [{ type: 'enqueue', value: 'A' }] },\n  ];\n  cases.forEach(({ queue, ops }) => {\n    console.log(report(queue, ops));\n    console.log(`final: [${simulateQueue(queue, ops).map(formatValue).join(', ')}]\\n`);\n  });\n};\n\nmain();\n\nmodule.exports = { simulateQueue, traceQueue, report };\n",
+"text_alt": "const isPlainOperation = function(op) { return op !== null && typeof op === 'object' && !Array.isArray(op); };\n\nconst normalizeType = function(raw) { return (typeof raw === 'string' ? raw.trim().toLowerCase() : ''); };\n\nconst validateOperation = function(op, index) {\n  if (!isPlainOperation(op)) {\n    throw new TypeError(`Operation at index ${index} must be an object`);\n  }\n  const type = normalizeType(op.type);\n  if (type !== 'enqueue' && type !== 'dequeue') {\n    throw new TypeError(`Operation at index ${index} has unknown type \"${op.type}\"`);\n  }\n  if (type === 'enqueue' && !('value' in op)) {\n    throw new TypeError(`Enqueue at index ${index} is missing a value`);\n  }\n  return type;\n};\n\nconst applyOperation = function(queue, op, index) {\n  const type = validateOperation(op, index);\n  if (type === 'enqueue') {\n    queue.push(op.value);\n    return { type, value: op.value, removed: undefined };\n  }\n  const removed = queue.shift();\n  return { type, value: undefined, removed };\n};\n\nconst simulateQueue = function(initialQueue, operations) {\n  if (!Array.isArray(initialQueue)) {\n    throw new TypeError('initialQueue must be an array');\n  }\n  if (!Array.isArray(operations)) {\n    throw new TypeError('operations must be an array');\n  }\n  const queue = initialQueue.slice();\n  operations.forEach(function(op, index) { return applyOperation(queue, op, index); });\n  return queue;\n};\n\nconst traceQueue = function(initialQueue, operations) {\n  const queue = initialQueue.slice();\n  return operations.map(function(op, index) {\n    const result = applyOperation(queue, op, index);\n    return { ...result, snapshot: queue.slice() };\n  });\n};\n\nconst formatValue = function(value) { return (value === undefined ? '-' : JSON.stringify(value)); };\n\nconst describeStep = function(step, index) {\n  const label = step.type === 'enqueue'\n    ? `enqueue ${formatValue(step.value)}`\n    : `dequeue ${formatValue(step.removed)}`;\n  return `${index + 1}. ${label.padEnd(16)} => [${step.snapshot.map(formatValue).join(', ')}]`;\n};\n\nconst report = function(initialQueue, operations) {\n  const lines = traceQueue(initialQueue, operations).map(describeStep);\n  const header = `start: [${initialQueue.map(formatValue).join(', ')}]`;\n  return [header, ...lines].join('\\n');\n};\n\nconst main = function() {\n  const cases = [\n    { queue: [1, 2], ops: [{ type: 'enqueue', value: 3 }, { type: 'dequeue' }] },\n    { queue: [], ops: [{ type: 'enqueue', value: 'A' }] },\n  ];\n  cases.forEach(function({ queue, ops }) {\n    console.log(report(queue, ops));\n    console.log(`final: [${simulateQueue(queue, ops).map(formatValue).join(', ')}]\\n`);\n  });\n};\n\nmain();\n\nmodule.exports = { simulateQueue, traceQueue, report };\n",
 "opps": [
 {
-"nat": "(initialQueue, operations) => {",
-"alt": "function(initialQueue, operations) {",
+"nat": "op => op !== null && typeof op === 'object' && !Array.isArray(op);",
+"alt": "function(op) { return op !== null && typeof op === 'object' && !Array.isArray(op); };",
 "nat_span": [
-22,
-53
+25,
+91
 ],
 "alt_span": [
-22,
-58
+25,
+110
 ],
 "k": 0
 },
 {
-"nat": "(element, q) => [...q, element];",
-"alt": "function(element, q) { return [...q, element]; };",
+"nat": "raw => (typeof raw === 'string' ? raw.trim().toLowerCase() : '');",
+"alt": "function(raw) { return (typeof raw === 'string' ? raw.trim().toLowerCase() : ''); };",
 "nat_span": [
-106,
-138
+115,
+180
 ],
 "alt_span": [
-111,
-160
+134,
+218
 ],
 "k": 1
 },
 {
-"nat": "q => q.slice(1);",
-"alt": "function(q) { return q.slice(1); };",
+"nat": "(op, index) => {",
+"alt": "function(op, index) {",
 "nat_span": [
-157,
-173
+208,
+224
 ],
 "alt_span": [
-179,
-214
+246,
+267
 ],
 "k": 2
 },
 {
-"nat": "(currentQueue, op) =>\n    op.type === 'enqueue' ? enqueue(op.value, currentQueue) : dequeue(currentQueue);",
-"alt": "function(currentQueue, op) {\n    return op.type === 'enqueue' ? enqueue(op.value, currentQueue) : dequeue(currentQueue);\n  };",
+"nat": "(queue, op, index) => {",
+"alt": "function(queue, op, index) {",
 "nat_span": [
-201,
-307
+680,
+703
 ],
 "alt_span": [
-242,
-367
+723,
+751
 ],
 "k": 3
 },
 {
-"nat": "x => x; // Example of another arrow function",
-"alt": "function(x) { return x; }; // Example of another arrow function",
+"nat": "(initialQueue, operations) => {",
+"alt": "function(initialQueue, operations) {",
 "nat_span": [
-390,
-434
+970,
+1001
 ],
 "alt_span": [
-450,
-513
+1018,
+1054
 ],
 "k": 4
+},
+{
+"nat": "(op, index) => applyOperation(queue, op, index));",
+"alt": "function(op, index) { return applyOperation(queue, op, index); });",
+"nat_span": [
+1257,
+1306
+],
+"alt_span": [
+1310,
+1376
+],
+"k": 5
+},
+{
+"nat": "(initialQueue, operations) => {",
+"alt": "function(initialQueue, operations) {",
+"nat_span": [
+1346,
+1377
+],
+"alt_span": [
+1416,
+1452
+],
+"k": 6
+},
+{
+"nat": "(op, index) => {",
+"alt": "function(op, index) {",
+"nat_span": [
+1440,
+1456
+],
+"alt_span": [
+1515,
+1536
+],
+"k": 7
+},
+{
+"nat": "value => (value === undefined ? '-' : JSON.stringify(value));",
+"alt": "function(value) { return (value === undefined ? '-' : JSON.stringify(value)); };",
+"nat_span": [
+1591,
+1652
+],
+"alt_span": [
+1671,
+1751
+],
+"k": 8
+},
+{
+"nat": "(step, index) => {",
+"alt": "function(step, index) {",
+"nat_span": [
+1675,
+1693
+],
+"alt_span": [
+1774,
+1797
+],
+"k": 9
+},
+{
+"nat": "(initialQueue, operations) => {",
+"alt": "function(initialQueue, operations) {",
+"nat_span": [
+1938,
+1969
+],
+"alt_span": [
+2042,
+2078
+],
+"k": 10
+},
+{
+"nat": "() => {",
+"alt": "function() {",
+"nat_span": [
+2172,
+2179
+],
+"alt_span": [
+2281,
+2293
+],
+"k": 11
+},
+{
+"nat": "({ queue, ops }) => {",
+"alt": "function({ queue, ops }) {",
+"nat_span": [
+2360,
+2381
+],
+"alt_span": [
+2474,
+2500
+],
+"k": 12
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.94,
+"k_en": 13,
+"shared_fraction": 0.969,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "",
-"alt": "function",
+"nat": "op =>",
+"alt": "function(op) { return",
 "nat_span": [
-22,
-22
+25,
+30
 ],
 "alt_span": [
-22,
-30
+25,
+46
 ]
 },
 {
 "k": 1,
-"nat": " =>",
-"alt": "",
+"nat": "",
+"alt": " };",
 "nat_span": [
-48,
-51
+91,
+91
 ],
 "alt_span": [
-56,
-56
+107,
+110
 ]
 },
 {
 "k": 2,
-"nat": "",
-"alt": "function",
+"nat": "raw =>",
+"alt": "function(raw) { return",
 "nat_span": [
-106,
-106
+115,
+121
 ],
 "alt_span": [
-111,
-119
+134,
+156
 ]
 },
 {
 "k": 3,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": " };",
 "nat_span": [
-119,
-121
+180,
+180
 ],
 "alt_span": [
-132,
-140
+215,
+218
 ]
 },
 {
 "k": 4,
 "nat": "",
-"alt": " };",
+"alt": "function",
 "nat_span": [
-138,
-138
+208,
+208
 ],
 "alt_span": [
-157,
-160
+246,
+254
 ]
 },
 {
 "k": 5,
-"nat": "q =>",
-"alt": "function(q) { return",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-157,
-161
+219,
+222
 ],
 "alt_span": [
-179,
-199
+265,
+265
 ]
 },
 {
 "k": 6,
 "nat": "",
-"alt": " };",
+"alt": "function",
 "nat_span": [
-173,
-173
+680,
+680
 ],
 "alt_span": [
-211,
-214
+723,
+731
 ]
 },
 {
 "k": 7,
-"nat": "",
-"alt": "function",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-201,
-201
+698,
+701
 ],
 "alt_span": [
-242,
-250
+749,
+749
 ]
 },
 {
 "k": 8,
-"nat": "=>\n    ",
-"alt": "{\n    return ",
+"nat": "",
+"alt": "function",
 "nat_span": [
-220,
-227
+970,
+970
 ],
 "alt_span": [
-269,
-282
+1018,
+1026
 ]
 },
 {
 "k": 9,
-"nat": "",
-"alt": "\n  };",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-307,
-307
+996,
+999
 ],
 "alt_span": [
-362,
-367
+1052,
+1052
 ]
 },
 {
 "k": 10,
-"nat": "x => x",
-"alt": "function(x) { return x; }",
+"nat": "",
+"alt": "function",
 "nat_span": [
-390,
-396
+1257,
+1257
 ],
 "alt_span": [
-450,
-475
+1310,
+1318
+]
+},
+{
+"k": 11,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1269,
+1271
+],
+"alt_span": [
+1330,
+1338
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1304,
+1304
+],
+"alt_span": [
+1371,
+1374
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1346,
+1346
+],
+"alt_span": [
+1416,
+1424
+]
+},
+{
+"k": 14,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1372,
+1375
+],
+"alt_span": [
+1450,
+1450
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1440,
+1440
+],
+"alt_span": [
+1515,
+1523
+]
+},
+{
+"k": 16,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1451,
+1454
+],
+"alt_span": [
+1534,
+1534
+]
+},
+{
+"k": 17,
+"nat": "value =>",
+"alt": "function(value) { return",
+"nat_span": [
+1591,
+1599
+],
+"alt_span": [
+1671,
+1695
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": " };",
+"nat_span": [
+1652,
+1652
+],
+"alt_span": [
+1748,
+1751
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1675,
+1675
+],
+"alt_span": [
+1774,
+1782
+]
+},
+{
+"k": 20,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1688,
+1691
+],
+"alt_span": [
+1795,
+1795
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1938,
+1938
+],
+"alt_span": [
+2042,
+2050
+]
+},
+{
+"k": 22,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1964,
+1967
+],
+"alt_span": [
+2076,
+2076
+]
+},
+{
+"k": 23,
+"nat": "() =>",
+"alt": "function()",
+"nat_span": [
+2172,
+2177
+],
+"alt_span": [
+2281,
+2291
+]
+},
+{
+"k": 24,
+"nat": "",
+"alt": "function",
+"nat_span": [
+2360,
+2360
+],
+"alt_span": [
+2474,
+2482
+]
+},
+{
+"k": 25,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+2376,
+2379
+],
+"alt_span": [
+2498,
+2498
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_arrow__t135",
@@ -51208,286 +52694,339 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const playRPSRound = (p1, p2) => {\n  const getWinner = (c1, c2) => {\n    if (c1 === c2) return 'It\\'s a Tie!';\n    const rules = {\n      rock: 'scissors',\n      paper: 'rock',\n      scissors: 'paper',\n    };\n    const player1Wins = rules[c1] === c2;\n    return player1Wins ? 'Player 1 Wins' : 'Player 2 Wins';\n  };\n  const normalizeChoice = choice => choice.toLowerCase();\n  const normalizedP1 = normalizeChoice(p1);\n  const normalizedP2 = normalizeChoice(p2);\n  const isValidChoice = choice => ['rock', 'paper', 'scissors'].includes(choice);\n\n  if (!isValidChoice(normalizedP1) || !isValidChoice(normalizedP2)) {\n    throw new Error('Invalid choice provided. Please choose rock, paper, or scissors.');\n  }\n\n  return getWinner(normalizedP1, normalizedP2);\n};\n\nconst test1 = () => playRPSRound('rock', 'scissors');\nconst test2 = () => playRPSRound('paper', 'paper');\nconst test3 = () => playRPSRound('scissors', 'rock');\n\n// Example usage and results (not part of the solution, just for demonstration):\n// console.log(test1()); // Player 1 Wins\n// console.log(test2()); // It's a Tie!\n// console.log(test3()); // Player 2 Wins\n",
-"text_alt": "const playRPSRound = function(p1, p2) {\n  const getWinner = function(c1, c2) {\n    if (c1 === c2) return 'It\\'s a Tie!';\n    const rules = {\n      rock: 'scissors',\n      paper: 'rock',\n      scissors: 'paper',\n    };\n    const player1Wins = rules[c1] === c2;\n    return player1Wins ? 'Player 1 Wins' : 'Player 2 Wins';\n  };\n  const normalizeChoice = function(choice) { return choice.toLowerCase(); };\n  const normalizedP1 = normalizeChoice(p1);\n  const normalizedP2 = normalizeChoice(p2);\n  const isValidChoice = function(choice) { return ['rock', 'paper', 'scissors'].includes(choice); };\n\n  if (!isValidChoice(normalizedP1) || !isValidChoice(normalizedP2)) {\n    throw new Error('Invalid choice provided. Please choose rock, paper, or scissors.');\n  }\n\n  return getWinner(normalizedP1, normalizedP2);\n};\n\nconst test1 = function() { return playRPSRound('rock', 'scissors'); };\nconst test2 = function() { return playRPSRound('paper', 'paper'); };\nconst test3 = function() { return playRPSRound('scissors', 'rock'); };\n\n// Example usage and results (not part of the solution, just for demonstration):\n// console.log(test1()); // Player 1 Wins\n// console.log(test2()); // It's a Tie!\n// console.log(test3()); // Player 2 Wins\n",
+"text_nat": "const MOVES = ['rock', 'paper', 'scissors'];\n\nconst BEATS = {\n  rock: 'scissors',\n  paper: 'rock',\n  scissors: 'paper'\n};\n\nconst normalize = choice => String(choice).trim().toLowerCase();\n\nconst isValidMove = choice => MOVES.includes(normalize(choice));\n\nconst playRPSRound = (player1Choice, player2Choice) => {\n  const p1 = normalize(player1Choice);\n  const p2 = normalize(player2Choice);\n\n  if (!isValidMove(p1) || !isValidMove(p2)) {\n    throw new Error(`Invalid move: choices must be one of ${MOVES.join(', ')}`);\n  }\n\n  if (p1 === p2) {\n    return \"It's a Tie!\";\n  }\n\n  return BEATS[p1] === p2 ? 'Player 1 Wins' : 'Player 2 Wins';\n};\n\nconst scoreRound = ([a, b]) => ({\n  player1: normalize(a),\n  player2: normalize(b),\n  result: playRPSRound(a, b)\n});\n\nconst playMatch = (rounds) => rounds.map(scoreRound);\n\nconst addRound = (totals, round) => {\n  if (round.result === 'Player 1 Wins') totals.player1 += 1;\n  else if (round.result === 'Player 2 Wins') totals.player2 += 1;\n  else totals.ties += 1;\n  return totals;\n};\n\nconst tallyMatch = (results) =>\n  results.reduce(addRound, { player1: 0, player2: 0, ties: 0 });\n\nconst formatRound = (round, index) =>\n  `Round ${index + 1}: ${round.player1} vs ${round.player2} -> ${round.result}`;\n\nconst describeTally = ({ player1, player2, ties }) => {\n  const leader = player1 === player2\n    ? 'Match drawn'\n    : `Match winner: Player ${player1 > player2 ? 1 : 2}`;\n  return `Score — P1: ${player1}, P2: ${player2}, Ties: ${ties}. ${leader}`;\n};\n\nconst report = (rounds) => {\n  const results = playMatch(rounds);\n  const lines = results.map(formatRound);\n  lines.push(describeTally(tallyMatch(results)));\n  return lines.join('\\n');\n};\n\nconst main = () => {\n  const rounds = [\n    ['rock', 'scissors'],\n    ['paper', 'paper'],\n    ['Scissors', ' rock '],\n    ['paper', 'scissors'],\n    ['rock', 'paper']\n  ];\n\n  console.log(report(rounds));\n\n  try {\n    playRPSRound('rock', 'lizard');\n  } catch (err) {\n    console.log(`Rejected: ${err.message}`);\n  }\n};\n\nmain();\n\nmodule.exports = { playRPSRound, playMatch, tallyMatch, report };\n",
+"text_alt": "const MOVES = ['rock', 'paper', 'scissors'];\n\nconst BEATS = {\n  rock: 'scissors',\n  paper: 'rock',\n  scissors: 'paper'\n};\n\nconst normalize = function(choice) { return String(choice).trim().toLowerCase(); };\n\nconst isValidMove = function(choice) { return MOVES.includes(normalize(choice)); };\n\nconst playRPSRound = function(player1Choice, player2Choice) {\n  const p1 = normalize(player1Choice);\n  const p2 = normalize(player2Choice);\n\n  if (!isValidMove(p1) || !isValidMove(p2)) {\n    throw new Error(`Invalid move: choices must be one of ${MOVES.join(', ')}`);\n  }\n\n  if (p1 === p2) {\n    return \"It's a Tie!\";\n  }\n\n  return BEATS[p1] === p2 ? 'Player 1 Wins' : 'Player 2 Wins';\n};\n\nconst scoreRound = function([a, b]) {\n  return {\n  player1: normalize(a),\n  player2: normalize(b),\n  result: playRPSRound(a, b)\n};\n};\n\nconst playMatch = function(rounds) { return rounds.map(scoreRound); };\n\nconst addRound = function(totals, round) {\n  if (round.result === 'Player 1 Wins') totals.player1 += 1;\n  else if (round.result === 'Player 2 Wins') totals.player2 += 1;\n  else totals.ties += 1;\n  return totals;\n};\n\nconst tallyMatch = function(results) {\n  return results.reduce(addRound, { player1: 0, player2: 0, ties: 0 });\n};\n\nconst formatRound = function(round, index) {\n  return `Round ${index + 1}: ${round.player1} vs ${round.player2} -> ${round.result}`;\n};\n\nconst describeTally = function({ player1, player2, ties }) {\n  const leader = player1 === player2\n    ? 'Match drawn'\n    : `Match winner: Player ${player1 > player2 ? 1 : 2}`;\n  return `Score — P1: ${player1}, P2: ${player2}, Ties: ${ties}. ${leader}`;\n};\n\nconst report = function(rounds) {\n  const results = playMatch(rounds);\n  const lines = results.map(formatRound);\n  lines.push(describeTally(tallyMatch(results)));\n  return lines.join('\\n');\n};\n\nconst main = function() {\n  const rounds = [\n    ['rock', 'scissors'],\n    ['paper', 'paper'],\n    ['Scissors', ' rock '],\n    ['paper', 'scissors'],\n    ['rock', 'paper']\n  ];\n\n  console.log(report(rounds));\n\n  try {\n    playRPSRound('rock', 'lizard');\n  } catch (err) {\n    console.log(`Rejected: ${err.message}`);\n  }\n};\n\nmain();\n\nmodule.exports = { playRPSRound, playMatch, tallyMatch, report };\n",
 "opps": [
 {
-"nat": "(p1, p2) => {",
-"alt": "function(p1, p2) {",
+"nat": "choice => String(choice).trim().toLowerCase();",
+"alt": "function(choice) { return String(choice).trim().toLowerCase(); };",
 "nat_span": [
-21,
-34
+141,
+187
 ],
 "alt_span": [
-21,
-39
+141,
+206
 ],
 "k": 0
 },
 {
-"nat": "(c1, c2) => {",
-"alt": "function(c1, c2) {",
+"nat": "choice => MOVES.includes(normalize(choice));",
+"alt": "function(choice) { return MOVES.includes(normalize(choice)); };",
 "nat_span": [
-55,
-68
+209,
+253
 ],
 "alt_span": [
-60,
-78
+228,
+291
 ],
 "k": 1
 },
 {
-"nat": "choice => choice.toLowerCase();",
-"alt": "function(choice) { return choice.toLowerCase(); };",
+"nat": "(player1Choice, player2Choice) => {",
+"alt": "function(player1Choice, player2Choice) {",
 "nat_span": [
-341,
-372
+276,
+311
 ],
 "alt_span": [
-351,
-401
+314,
+354
 ],
 "k": 2
 },
 {
-"nat": "choice => ['rock', 'paper', 'scissors'].includes(choice);",
-"alt": "function(choice) { return ['rock', 'paper', 'scissors'].includes(choice); };",
+"nat": "([a, b]) => ({\n  player1: normalize(a),\n  player2: normalize(b),\n  result: playRPSRound(a, b)\n});",
+"alt": "function([a, b]) {\n  return {\n  player1: normalize(a),\n  player2: normalize(b),\n  result: playRPSRound(a, b)\n};\n};",
 "nat_span": [
-485,
-542
+659,
+756
 ],
 "alt_span": [
-514,
-590
+702,
+816
 ],
 "k": 3
 },
 {
-"nat": "() => playRPSRound('rock', 'scissors');",
-"alt": "function() { return playRPSRound('rock', 'scissors'); };",
+"nat": "(rounds) => rounds.map(scoreRound);",
+"alt": "function(rounds) { return rounds.map(scoreRound); };",
 "nat_span": [
-774,
-813
+776,
+811
 ],
 "alt_span": [
-822,
-878
+836,
+888
 ],
 "k": 4
 },
 {
-"nat": "() => playRPSRound('paper', 'paper');",
-"alt": "function() { return playRPSRound('paper', 'paper'); };",
+"nat": "(totals, round) => {",
+"alt": "function(totals, round) {",
 "nat_span": [
-828,
-865
+830,
+850
 ],
 "alt_span": [
-893,
-947
+907,
+932
 ],
 "k": 5
 },
 {
-"nat": "() => playRPSRound('scissors', 'rock');",
-"alt": "function() { return playRPSRound('scissors', 'rock'); };",
+"nat": "(results) =>\n  results.reduce(addRound, { player1: 0, player2: 0, ties: 0 });",
+"alt": "function(results) {\n  return results.reduce(addRound, { player1: 0, player2: 0, ties: 0 });\n};",
 "nat_span": [
-880,
-919
+1043,
+1120
 ],
 "alt_span": [
-962,
-1018
+1125,
+1219
 ],
 "k": 6
+},
+{
+"nat": "(round, index) =>\n  `Round ${index + 1}: ${round.player1} vs ${round.player2} -> ${round.result}`;",
+"alt": "function(round, index) {\n  return `Round ${index + 1}: ${round.player1} vs ${round.player2} -> ${round.result}`;\n};",
+"nat_span": [
+1142,
+1240
+],
+"alt_span": [
+1241,
+1356
+],
+"k": 7
+},
+{
+"nat": "({ player1, player2, ties }) => {",
+"alt": "function({ player1, player2, ties }) {",
+"nat_span": [
+1264,
+1297
+],
+"alt_span": [
+1380,
+1418
+],
+"k": 8
+},
+{
+"nat": "(rounds) => {",
+"alt": "function(rounds) {",
+"nat_span": [
+1510,
+1523
+],
+"alt_span": [
+1631,
+1649
+],
+"k": 9
+},
+{
+"nat": "() => {",
+"alt": "function() {",
+"nat_span": [
+1697,
+1704
+],
+"alt_span": [
+1823,
+1835
+],
+"k": 10
 }
 ],
-"k_en": 7,
-"shared_fraction": 0.965,
+"k_en": 11,
+"shared_fraction": 0.968,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "",
-"alt": "function",
+"nat": "choice =>",
+"alt": "function(choice) { return",
 "nat_span": [
-21,
-21
+141,
+150
 ],
 "alt_span": [
-21,
-29
+141,
+166
 ]
 },
 {
 "k": 1,
-"nat": " =>",
-"alt": "",
+"nat": "",
+"alt": " };",
 "nat_span": [
-29,
-32
+187,
+187
 ],
 "alt_span": [
-37,
-37
+203,
+206
 ]
 },
 {
 "k": 2,
-"nat": "",
-"alt": "function",
+"nat": "choice =>",
+"alt": "function(choice) { return",
 "nat_span": [
-55,
-55
+209,
+218
 ],
 "alt_span": [
-60,
-68
+228,
+253
 ]
 },
 {
 "k": 3,
-"nat": " =>",
-"alt": "",
+"nat": "",
+"alt": " };",
 "nat_span": [
-63,
-66
+253,
+253
 ],
 "alt_span": [
-76,
-76
+288,
+291
 ]
 },
 {
 "k": 4,
-"nat": "choice =>",
-"alt": "function(choice) { return",
+"nat": "",
+"alt": "function",
 "nat_span": [
-341,
-350
+276,
+276
 ],
 "alt_span": [
-351,
-376
+314,
+322
 ]
 },
 {
 "k": 5,
-"nat": "",
-"alt": "; }",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-371,
-371
+306,
+309
 ],
 "alt_span": [
-397,
-400
+352,
+352
 ]
 },
 {
 "k": 6,
-"nat": "choice =>",
-"alt": "function(choice) { return",
+"nat": "",
+"alt": "function",
 "nat_span": [
-485,
-494
+659,
+659
 ],
 "alt_span": [
-514,
-539
+702,
+710
 ]
 },
 {
 "k": 7,
-"nat": "",
-"alt": "; }",
+"nat": "=> (",
+"alt": "{\n  return ",
 "nat_span": [
-541,
-541
+668,
+672
 ],
 "alt_span": [
-586,
-589
+719,
+730
 ]
 },
 {
 "k": 8,
-"nat": "",
-"alt": "function",
+"nat": ")",
+"alt": ";\n}",
 "nat_span": [
-774,
-774
+754,
+755
 ],
 "alt_span": [
-822,
-830
+812,
+815
 ]
 },
 {
 "k": 9,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": "function",
 "nat_span": [
-777,
-779
+776,
+776
 ],
 "alt_span": [
-833,
-841
+836,
+844
 ]
 },
 {
 "k": 10,
-"nat": "",
-"alt": " };",
+"nat": "=>",
+"alt": "{ return",
 "nat_span": [
-813,
-813
+785,
+787
 ],
 "alt_span": [
-875,
-878
+853,
+861
 ]
 },
 {
 "k": 11,
 "nat": "",
-"alt": "function",
+"alt": " };",
 "nat_span": [
-828,
-828
+811,
+811
 ],
 "alt_span": [
-893,
-901
+885,
+888
 ]
 },
 {
 "k": 12,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": "function",
 "nat_span": [
-831,
-833
+830,
+830
 ],
 "alt_span": [
-904,
-912
+907,
+915
 ]
 },
 {
 "k": 13,
-"nat": "",
-"alt": " };",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-865,
-865
+845,
+848
 ],
 "alt_span": [
-944,
-947
+930,
+930
 ]
 },
 {
@@ -51495,42 +53034,151 @@
 "nat": "",
 "alt": "function",
 "nat_span": [
-880,
-880
+1043,
+1043
 ],
 "alt_span": [
-962,
-970
+1125,
+1133
 ]
 },
 {
 "k": 15,
-"nat": "=>",
-"alt": "{ return",
+"nat": "=>\n  ",
+"alt": "{\n  return ",
 "nat_span": [
-883,
-885
+1053,
+1058
 ],
 "alt_span": [
-973,
-981
+1143,
+1154
 ]
 },
 {
 "k": 16,
 "nat": "",
-"alt": "; }",
+"alt": "\n};",
 "nat_span": [
-918,
-918
+1120,
+1120
 ],
 "alt_span": [
-1014,
-1017
+1216,
+1219
+]
+},
+{
+"k": 17,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1142,
+1142
+],
+"alt_span": [
+1241,
+1249
+]
+},
+{
+"k": 18,
+"nat": "=>\n  ",
+"alt": "{\n  return ",
+"nat_span": [
+1157,
+1162
+],
+"alt_span": [
+1264,
+1275
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": "\n};",
+"nat_span": [
+1240,
+1240
+],
+"alt_span": [
+1353,
+1356
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1264,
+1264
+],
+"alt_span": [
+1380,
+1388
+]
+},
+{
+"k": 21,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1292,
+1295
+],
+"alt_span": [
+1416,
+1416
+]
+},
+{
+"k": 22,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1510,
+1510
+],
+"alt_span": [
+1631,
+1639
+]
+},
+{
+"k": 23,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1518,
+1521
+],
+"alt_span": [
+1647,
+1647
+]
+},
+{
+"k": 24,
+"nat": "() =>",
+"alt": "function()",
+"nat_span": [
+1697,
+1702
+],
+"alt_span": [
+1823,
+1833
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_arrow__t170",
@@ -55719,208 +57367,313 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const findMax = (numbers) => {\n  if (numbers.length === 0) {\n    return undefined;\n  }\n\n  let max = numbers[0];\n\n  const compareAndSetMax = (currentNumber) => {\n    if (currentNumber > max) {\n      max = currentNumber;\n    }\n  };\n\n  numbers.forEach(compareAndSetMax);\n\n  const finalCheck = () => max;\n\n  return finalCheck();\n};\n\nconst getMaxFromArray = (arr) => findMax(arr);\n\nconst processNumbers = (data) => {\n  const result = getMaxFromArray(data);\n  return result;\n};\n\nconst getExampleMax = (example) => processNumbers(example);\n\n// Example usage is outside the function definition but uses arrow functions\nconst example1 = [1, 5, 2, 8, 3];\nconst result1 = getExampleMax(example1);\n\nconst example2 = [-10, -2, -5];\nconst result2 = getExampleMax(example2);\n",
-"text_alt": "const findMax = function(numbers) {\n  if (numbers.length === 0) {\n    return undefined;\n  }\n\n  let max = numbers[0];\n\n  const compareAndSetMax = function(currentNumber) {\n    if (currentNumber > max) {\n      max = currentNumber;\n    }\n  };\n\n  numbers.forEach(compareAndSetMax);\n\n  const finalCheck = function() { return max; };\n\n  return finalCheck();\n};\n\nconst getMaxFromArray = function(arr) { return findMax(arr); };\n\nconst processNumbers = function(data) {\n  const result = getMaxFromArray(data);\n  return result;\n};\n\nconst getExampleMax = function(example) { return processNumbers(example); };\n\n// Example usage is outside the function definition but uses arrow functions\nconst example1 = [1, 5, 2, 8, 3];\nconst result1 = getExampleMax(example1);\n\nconst example2 = [-10, -2, -5];\nconst result2 = getExampleMax(example2);\n",
+"text_nat": "const isFiniteNumber = (value) => typeof value === 'number' && Number.isFinite(value);\n\nconst validate = (numbers) => {\n  if (!Array.isArray(numbers)) {\n    throw new TypeError('findMax expects an array of numbers');\n  }\n  if (numbers.length === 0) {\n    throw new RangeError('findMax expects a non-empty array');\n  }\n  const bad = numbers.findIndex(n => !isFiniteNumber(n));\n  if (bad !== -1) {\n    throw new TypeError(`element at index ${bad} is not a finite number: ${String(numbers[bad])}`);\n  }\n};\n\nconst findMax = (numbers) => {\n  validate(numbers);\n  return numbers.reduce((best, current) => (current > best ? current : best), numbers[0]);\n};\n\nconst findMaxIndex = (numbers) => {\n  const max = findMax(numbers);\n  return numbers.indexOf(max);\n};\n\nconst parseList = (text) => {\n  const parts = text\n    .split(',')\n    .map(part => part.trim())\n    .filter(part => part.length > 0);\n  return parts.map(part => {\n    const value = Number(part);\n    if (!isFiniteNumber(value)) {\n      throw new TypeError(`cannot parse \"${part}\" as a number`);\n    }\n    return value;\n  });\n};\n\nconst describe = (numbers) => {\n  const max = findMax(numbers);\n  const at = findMaxIndex(numbers);\n  return `[${numbers.join(', ')}] -> max ${max} at index ${at}`;\n};\n\nconst describeInput = (input) => {\n  try {\n    const numbers = typeof input === 'string' ? parseList(input) : input;\n    return describe(numbers);\n  } catch (err) {\n    return `${JSON.stringify(input)} -> error: ${err.message}`;\n  }\n};\n\nconst report = (inputs) => inputs.map(describeInput);\n\nconst main = () => {\n  const samples = [\n    [1, 5, 2, 8, 3],\n    [-10, -2, -5],\n    [42],\n    '3, 1.5, -7, 9.25',\n    [],\n    [1, 'two', 3],\n  ];\n  report(samples).forEach(line => console.log(line));\n};\n\nif (require.main === module) {\n  main();\n}\n\nmodule.exports = { findMax, findMaxIndex, parseList, describe, describeInput, report };\n",
+"text_alt": "const isFiniteNumber = function(value) { return typeof value === 'number' && Number.isFinite(value); };\n\nconst validate = function(numbers) {\n  if (!Array.isArray(numbers)) {\n    throw new TypeError('findMax expects an array of numbers');\n  }\n  if (numbers.length === 0) {\n    throw new RangeError('findMax expects a non-empty array');\n  }\n  const bad = numbers.findIndex(function(n) { return !isFiniteNumber(n); });\n  if (bad !== -1) {\n    throw new TypeError(`element at index ${bad} is not a finite number: ${String(numbers[bad])}`);\n  }\n};\n\nconst findMax = function(numbers) {\n  validate(numbers);\n  return numbers.reduce(function(best, current) { return (current > best ? current : best); }, numbers[0]);\n};\n\nconst findMaxIndex = function(numbers) {\n  const max = findMax(numbers);\n  return numbers.indexOf(max);\n};\n\nconst parseList = function(text) {\n  const parts = text\n    .split(',')\n    .map(function(part) { return part.trim(); })\n    .filter(function(part) { return part.length > 0; });\n  return parts.map(function(part) {\n    const value = Number(part);\n    if (!isFiniteNumber(value)) {\n      throw new TypeError(`cannot parse \"${part}\" as a number`);\n    }\n    return value;\n  });\n};\n\nconst describe = function(numbers) {\n  const max = findMax(numbers);\n  const at = findMaxIndex(numbers);\n  return `[${numbers.join(', ')}] -> max ${max} at index ${at}`;\n};\n\nconst describeInput = function(input) {\n  try {\n    const numbers = typeof input === 'string' ? parseList(input) : input;\n    return describe(numbers);\n  } catch (err) {\n    return `${JSON.stringify(input)} -> error: ${err.message}`;\n  }\n};\n\nconst report = function(inputs) { return inputs.map(describeInput); };\n\nconst main = function() {\n  const samples = [\n    [1, 5, 2, 8, 3],\n    [-10, -2, -5],\n    [42],\n    '3, 1.5, -7, 9.25',\n    [],\n    [1, 'two', 3],\n  ];\n  report(samples).forEach(function(line) { console.log(line); });\n};\n\nif (require.main === module) {\n  main();\n}\n\nmodule.exports = { findMax, findMaxIndex, parseList, describe, describeInput, report };\n",
 "opps": [
 {
-"nat": "(numbers) => {",
-"alt": "function(numbers) {",
+"nat": "(value) => typeof value === 'number' && Number.isFinite(value);",
+"alt": "function(value) { return typeof value === 'number' && Number.isFinite(value); };",
 "nat_span": [
-16,
-30
+23,
+86
 ],
 "alt_span": [
-16,
-35
+23,
+103
 ],
 "k": 0
 },
 {
-"nat": "(currentNumber) => {",
-"alt": "function(currentNumber) {",
+"nat": "(numbers) => {",
+"alt": "function(numbers) {",
 "nat_span": [
-140,
-160
+105,
+119
 ],
 "alt_span": [
-145,
-170
+122,
+141
 ],
 "k": 1
 },
 {
-"nat": "() => max;",
-"alt": "function() { return max; };",
+"nat": "n => !isFiniteNumber(n));",
+"alt": "function(n) { return !isFiniteNumber(n); });",
 "nat_span": [
-290,
-300
+350,
+375
 ],
 "alt_span": [
-300,
-327
+372,
+416
 ],
 "k": 2
 },
 {
-"nat": "(arr) => findMax(arr);",
-"alt": "function(arr) { return findMax(arr); };",
+"nat": "(numbers) => {",
+"alt": "function(numbers) {",
 "nat_span": [
-353,
-375
+520,
+534
 ],
 "alt_span": [
-380,
-419
+561,
+580
 ],
 "k": 3
 },
 {
-"nat": "(data) => {",
-"alt": "function(data) {",
+"nat": "(best, current) => (current > best ? current : best), numbers[0]);",
+"alt": "function(best, current) { return (current > best ? current : best); }, numbers[0]);",
 "nat_span": [
-400,
-411
+580,
+646
 ],
 "alt_span": [
-444,
-460
+626,
+709
 ],
 "k": 4
 },
 {
-"nat": "(example) => processNumbers(example);",
-"alt": "function(example) { return processNumbers(example); };",
+"nat": "(numbers) => {",
+"alt": "function(numbers) {",
 "nat_span": [
-495,
-532
+672,
+686
 ],
 "alt_span": [
-544,
-598
+735,
+754
 ],
 "k": 5
+},
+{
+"nat": "(text) => {",
+"alt": "function(text) {",
+"nat_span": [
+772,
+783
+],
+"alt_span": [
+840,
+856
+],
+"k": 6
+},
+{
+"nat": "part => part.trim())\n    .filter(part => part.length > 0);",
+"alt": "function(part) { return part.trim(); })\n    .filter(function(part) { return part.length > 0; });",
+"nat_span": [
+830,
+888
+],
+"alt_span": [
+903,
+999
+],
+"k": 7
+},
+{
+"nat": "part => {",
+"alt": "function(part) {",
+"nat_span": [
+908,
+917
+],
+"alt_span": [
+1019,
+1035
+],
+"k": 8
+},
+{
+"nat": "(numbers) => {",
+"alt": "function(numbers) {",
+"nat_span": [
+1100,
+1114
+],
+"alt_span": [
+1218,
+1237
+],
+"k": 9
+},
+{
+"nat": "(input) => {",
+"alt": "function(input) {",
+"nat_span": [
+1274,
+1286
+],
+"alt_span": [
+1397,
+1414
+],
+"k": 10
+},
+{
+"nat": "(inputs) => inputs.map(describeInput);",
+"alt": "function(inputs) { return inputs.map(describeInput); };",
+"nat_span": [
+1504,
+1542
+],
+"alt_span": [
+1632,
+1687
+],
+"k": 11
+},
+{
+"nat": "() => {",
+"alt": "function() {",
+"nat_span": [
+1557,
+1564
+],
+"alt_span": [
+1702,
+1714
+],
+"k": 12
+},
+{
+"nat": "line => console.log(line));",
+"alt": "function(line) { console.log(line); });",
+"nat_span": [
+1717,
+1744
+],
+"alt_span": [
+1867,
+1906
+],
+"k": 13
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.948,
+"k_en": 14,
+"shared_fraction": 0.954,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": "",
 "alt": "function",
 "nat_span": [
-16,
-16
+23,
+23
 ],
 "alt_span": [
-16,
-24
+23,
+31
 ]
 },
 {
 "k": 1,
-"nat": " =>",
-"alt": "",
+"nat": "=>",
+"alt": "{ return",
 "nat_span": [
-25,
-28
+31,
+33
 ],
 "alt_span": [
-33,
-33
+39,
+47
 ]
 },
 {
 "k": 2,
 "nat": "",
-"alt": "function",
+"alt": " };",
 "nat_span": [
-140,
-140
+86,
+86
 ],
 "alt_span": [
-145,
-153
+100,
+103
 ]
 },
 {
 "k": 3,
-"nat": " =>",
-"alt": "",
+"nat": "",
+"alt": "function",
 "nat_span": [
-155,
-158
+105,
+105
 ],
 "alt_span": [
-168,
-168
+122,
+130
 ]
 },
 {
 "k": 4,
-"nat": "",
-"alt": "function",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-290,
-290
+114,
+117
 ],
 "alt_span": [
-300,
-308
+139,
+139
 ]
 },
 {
 "k": 5,
-"nat": "=> max",
-"alt": "{ return max; }",
+"nat": "n =>",
+"alt": "function(n) { return",
 "nat_span": [
-293,
-299
+350,
+354
 ],
 "alt_span": [
-311,
-326
+372,
+392
 ]
 },
 {
 "k": 6,
 "nat": "",
-"alt": "function",
+"alt": "; }",
 "nat_span": [
-353,
-353
+373,
+373
 ],
 "alt_span": [
-380,
-388
+411,
+414
 ]
 },
 {
 "k": 7,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": "function",
 "nat_span": [
-359,
-361
+520,
+520
 ],
 "alt_span": [
-394,
-402
+561,
+569
 ]
 },
 {
 "k": 8,
-"nat": "",
-"alt": "; }",
+"nat": " =>",
+"alt": "",
 "nat_span": [
-374,
-374
+529,
+532
 ],
 "alt_span": [
-415,
-418
+578,
+578
 ]
 },
 {
@@ -55928,68 +57681,294 @@
 "nat": "",
 "alt": "function",
 "nat_span": [
-400,
-400
+580,
+580
 ],
 "alt_span": [
-444,
-452
+626,
+634
 ]
 },
 {
 "k": 10,
-"nat": " =>",
-"alt": "",
+"nat": "=>",
+"alt": "{ return",
 "nat_span": [
-406,
-409
+596,
+598
 ],
 "alt_span": [
-458,
-458
+650,
+658
 ]
 },
 {
 "k": 11,
 "nat": "",
-"alt": "function",
+"alt": "; }",
 "nat_span": [
-495,
-495
+632,
+632
 ],
 "alt_span": [
-544,
-552
+692,
+695
 ]
 },
 {
 "k": 12,
-"nat": "=>",
-"alt": "{ return",
+"nat": "",
+"alt": "function",
 "nat_span": [
-505,
-507
+672,
+672
 ],
 "alt_span": [
-562,
-570
+735,
+743
 ]
 },
 {
 "k": 13,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+681,
+684
+],
+"alt_span": [
+752,
+752
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "function",
+"nat_span": [
+772,
+772
+],
+"alt_span": [
+840,
+848
+]
+},
+{
+"k": 15,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+778,
+781
+],
+"alt_span": [
+854,
+854
+]
+},
+{
+"k": 16,
+"nat": "part =>",
+"alt": "function(part) { return",
+"nat_span": [
+830,
+837
+],
+"alt_span": [
+903,
+926
+]
+},
+{
+"k": 17,
 "nat": "",
 "alt": "; }",
 "nat_span": [
-531,
-531
+849,
+849
 ],
 "alt_span": [
-594,
-597
+938,
+941
+]
+},
+{
+"k": 18,
+"nat": "part =>",
+"alt": "function(part) { return",
+"nat_span": [
+863,
+870
+],
+"alt_span": [
+955,
+978
+]
+},
+{
+"k": 19,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+886,
+886
+],
+"alt_span": [
+994,
+997
+]
+},
+{
+"k": 20,
+"nat": "part =>",
+"alt": "function(part)",
+"nat_span": [
+908,
+915
+],
+"alt_span": [
+1019,
+1033
+]
+},
+{
+"k": 21,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1100,
+1100
+],
+"alt_span": [
+1218,
+1226
+]
+},
+{
+"k": 22,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1109,
+1112
+],
+"alt_span": [
+1235,
+1235
+]
+},
+{
+"k": 23,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1274,
+1274
+],
+"alt_span": [
+1397,
+1405
+]
+},
+{
+"k": 24,
+"nat": " =>",
+"alt": "",
+"nat_span": [
+1281,
+1284
+],
+"alt_span": [
+1412,
+1412
+]
+},
+{
+"k": 25,
+"nat": "",
+"alt": "function",
+"nat_span": [
+1504,
+1504
+],
+"alt_span": [
+1632,
+1640
+]
+},
+{
+"k": 26,
+"nat": "=>",
+"alt": "{ return",
+"nat_span": [
+1513,
+1515
+],
+"alt_span": [
+1649,
+1657
+]
+},
+{
+"k": 27,
+"nat": "",
+"alt": " };",
+"nat_span": [
+1542,
+1542
+],
+"alt_span": [
+1684,
+1687
+]
+},
+{
+"k": 28,
+"nat": "() =>",
+"alt": "function()",
+"nat_span": [
+1557,
+1562
+],
+"alt_span": [
+1702,
+1712
+]
+},
+{
+"k": 29,
+"nat": "line =>",
+"alt": "function(line) {",
+"nat_span": [
+1717,
+1724
+],
+"alt_span": [
+1867,
+1883
+]
+},
+{
+"k": 30,
+"nat": "",
+"alt": "; }",
+"nat_span": [
+1742,
+1742
+],
+"alt_span": [
+1901,
+1904
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_arrow__t183",

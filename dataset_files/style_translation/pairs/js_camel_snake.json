@@ -17979,6 +17979,1061 @@
 "free_filter": true
 },
 {
+"doc_id": "js_camel_snake__t043",
+"family": "js_camel_snake",
+"topic": "Find Second Smallest Number",
+"angle": "code",
+"text_es": "Implement a function `findSecondSmallest(arr)` that finds the second smallest number in an array of numbers. Assume the array has at least two unique numbers. Input is an array of numbers, output is a number. Example: `findSecondSmallest([5, 1, 8, 2, 9])` should return `2`, `findSecondSmallest([10, 20, 3, 40])` should return `10`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function validateNumericArray(inputArray) {\n  if (!Array.isArray(inputArray)) {\n    throw new TypeError('expected an array of numbers');\n  }\n  const invalidEntry = inputArray.find((candidateValue) => typeof candidateValue !== 'number' || Number.isNaN(candidateValue));\n  if (invalidEntry !== undefined) {\n    throw new TypeError(`array contains a non-numeric entry: ${String(invalidEntry)}`);\n  }\n  const uniqueValues = new Set(inputArray);\n  if (uniqueValues.size < 2) {\n    throw new RangeError('array must contain at least two unique numbers');\n  }\n  return inputArray;\n}\n\nfunction findSecondSmallest(arr) {\n  validateNumericArray(arr);\n  let smallestSoFar = Infinity;\n  let secondSmallestSoFar = Infinity;\n  for (const currentValue of arr) {\n    if (currentValue < smallestSoFar) {\n      secondSmallestSoFar = smallestSoFar;\n      smallestSoFar = currentValue;\n    } else if (currentValue > smallestSoFar && currentValue < secondSmallestSoFar) {\n      secondSmallestSoFar = currentValue;\n    }\n  }\n  return secondSmallestSoFar;\n}\n\nfunction findSmallestAndSecondSmallest(arr) {\n  const secondSmallestValue = findSecondSmallest(arr);\n  const smallestValue = Math.min(...arr);\n  return { smallestValue, secondSmallestValue };\n}\n\nfunction describeRanking(arr) {\n  const { smallestValue, secondSmallestValue } = findSmallestAndSecondSmallest(arr);\n  const rankingGap = secondSmallestValue - smallestValue;\n  const sourceDescription = `[${arr.join(', ')}]`;\n  return `${sourceDescription} -> smallest ${smallestValue}, second smallest ${secondSmallestValue} (gap ${rankingGap})`;\n}\n\nfunction buildRankingReport(arrayCollection) {\n  const reportLines = [];\n  for (const candidateArray of arrayCollection) {\n    try {\n      reportLines.push(describeRanking(candidateArray));\n    } catch (thrownError) {\n      reportLines.push(`[${candidateArray}] -> skipped: ${thrownError.message}`);\n    }\n  }\n  return reportLines.join('\\n');\n}\n\nfunction runMain() {\n  const sampleArrays = [\n    [5, 1, 8, 2, 9],\n    [10, 20, 3, 40],\n    [7, 7, 7, 4],\n    [-2.5, -9, 0, -9],\n    [42, 42],\n  ];\n  console.log(buildRankingReport(sampleArrays));\n}\n\nrunMain();\n\nmodule.exports = {\n  findSecondSmallest,\n  findSmallestAndSecondSmallest,\n  describeRanking,\n  buildRankingReport,\n};\n",
+"text_alt": "function validate_numeric_array(input_array) {\n  if (!Array.isArray(input_array)) {\n    throw new TypeError('expected an array of numbers');\n  }\n  const invalid_entry = input_array.find((candidate_value) => typeof candidate_value !== 'number' || Number.isNaN(candidate_value));\n  if (invalid_entry !== undefined) {\n    throw new TypeError(`array contains a non-numeric entry: ${String(invalid_entry)}`);\n  }\n  const unique_values = new Set(input_array);\n  if (unique_values.size < 2) {\n    throw new RangeError('array must contain at least two unique numbers');\n  }\n  return input_array;\n}\n\nfunction findSecondSmallest(arr) {\n  validate_numeric_array(arr);\n  let smallest_so_far = Infinity;\n  let second_smallest_so_far = Infinity;\n  for (const current_value of arr) {\n    if (current_value < smallest_so_far) {\n      second_smallest_so_far = smallest_so_far;\n      smallest_so_far = current_value;\n    } else if (current_value > smallest_so_far && current_value < second_smallest_so_far) {\n      second_smallest_so_far = current_value;\n    }\n  }\n  return second_smallest_so_far;\n}\n\nfunction find_smallest_and_second_smallest(arr) {\n  const second_smallest_value = findSecondSmallest(arr);\n  const smallest_value = Math.min(...arr);\n  return { smallest_value, second_smallest_value };\n}\n\nfunction describe_ranking(arr) {\n  const { smallest_value, second_smallest_value } = find_smallest_and_second_smallest(arr);\n  const ranking_gap = second_smallest_value - smallest_value;\n  const source_description = `[${arr.join(', ')}]`;\n  return `${source_description} -> smallest ${smallest_value}, second smallest ${second_smallest_value} (gap ${ranking_gap})`;\n}\n\nfunction build_ranking_report(array_collection) {\n  const report_lines = [];\n  for (const candidate_array of array_collection) {\n    try {\n      report_lines.push(describe_ranking(candidate_array));\n    } catch (thrown_error) {\n      report_lines.push(`[${candidate_array}] -> skipped: ${thrown_error.message}`);\n    }\n  }\n  return report_lines.join('\\n');\n}\n\nfunction run_main() {\n  const sample_arrays = [\n    [5, 1, 8, 2, 9],\n    [10, 20, 3, 40],\n    [7, 7, 7, 4],\n    [-2.5, -9, 0, -9],\n    [42, 42],\n  ];\n  console.log(build_ranking_report(sample_arrays));\n}\n\nrun_main();\n\nmodule.exports = {\n  findSecondSmallest,\n  find_smallest_and_second_smallest,\n  describe_ranking,\n  build_ranking_report,\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "validateNumericArray(inputArray",
+"alt": "validate_numeric_array(input_array",
+"nat_span": [
+9,
+40
+],
+"alt_span": [
+9,
+43
+]
+},
+{
+"k": 1,
+"nat": "invalidEntry",
+"alt": "invalid_entry",
+"nat_span": [
+149,
+161
+],
+"alt_span": [
+153,
+166
+]
+},
+{
+"k": 2,
+"nat": "candidateValue",
+"alt": "candidate_value",
+"nat_span": [
+181,
+195
+],
+"alt_span": [
+187,
+202
+]
+},
+{
+"k": 3,
+"nat": "uniqueValues",
+"alt": "unique_values",
+"nat_span": [
+405,
+417
+],
+"alt_span": [
+416,
+429
+]
+},
+{
+"k": 4,
+"nat": "smallestSoFar",
+"alt": "smallest_so_far",
+"nat_span": [
+646,
+659
+],
+"alt_span": [
+663,
+678
+]
+},
+{
+"k": 5,
+"nat": "secondSmallestSoFar",
+"alt": "second_smallest_so_far",
+"nat_span": [
+678,
+697
+],
+"alt_span": [
+697,
+719
+]
+},
+{
+"k": 6,
+"nat": "currentValue",
+"alt": "current_value",
+"nat_span": [
+723,
+735
+],
+"alt_span": [
+745,
+758
+]
+},
+{
+"k": 7,
+"nat": "findSmallestAndSecondSmallest",
+"alt": "find_smallest_and_second_smallest",
+"nat_span": [
+1044,
+1073
+],
+"alt_span": [
+1092,
+1125
+]
+},
+{
+"k": 8,
+"nat": "secondSmallestValue",
+"alt": "second_smallest_value",
+"nat_span": [
+1089,
+1108
+],
+"alt_span": [
+1141,
+1162
+]
+},
+{
+"k": 9,
+"nat": "smallestValue",
+"alt": "smallest_value",
+"nat_span": [
+1144,
+1157
+],
+"alt_span": [
+1198,
+1212
+]
+},
+{
+"k": 10,
+"nat": "describeRanking",
+"alt": "describe_ranking",
+"nat_span": [
+1239,
+1254
+],
+"alt_span": [
+1297,
+1313
+]
+},
+{
+"k": 11,
+"nat": "rankingGap",
+"alt": "ranking_gap",
+"nat_span": [
+1355,
+1365
+],
+"alt_span": [
+1421,
+1432
+]
+},
+{
+"k": 12,
+"nat": "sourceDescription",
+"alt": "source_description",
+"nat_span": [
+1413,
+1430
+],
+"alt_span": [
+1483,
+1501
+]
+},
+{
+"k": 13,
+"nat": "buildRankingReport(arrayCollection",
+"alt": "build_ranking_report(array_collection",
+"nat_span": [
+1590,
+1624
+],
+"alt_span": [
+1666,
+1703
+]
+},
+{
+"k": 14,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1636,
+1647
+],
+"alt_span": [
+1715,
+1727
+]
+},
+{
+"k": 15,
+"nat": "candidateArray",
+"alt": "candidate_array",
+"nat_span": [
+1667,
+1681
+],
+"alt_span": [
+1747,
+1762
+]
+},
+{
+"k": 16,
+"nat": "thrownError",
+"alt": "thrown_error",
+"nat_span": [
+1784,
+1795
+],
+"alt_span": [
+1869,
+1881
+]
+},
+{
+"k": 17,
+"nat": "runMain",
+"alt": "run_main",
+"nat_span": [
+1936,
+1943
+],
+"alt_span": [
+2026,
+2034
+]
+},
+{
+"k": 18,
+"nat": "sampleArrays",
+"alt": "sample_arrays",
+"nat_span": [
+1956,
+1968
+],
+"alt_span": [
+2047,
+2060
+]
+}
+],
+"k_en": 19,
+"shared_fraction": 0.898,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "validateNumericArray(inputArray",
+"alt": "validate_numeric_array(input_array",
+"nat_span": [
+9,
+40
+],
+"alt_span": [
+9,
+43
+]
+},
+{
+"k": 1,
+"nat": "inputArray",
+"alt": "input_array",
+"nat_span": [
+65,
+75
+],
+"alt_span": [
+68,
+79
+]
+},
+{
+"k": 2,
+"nat": "invalidEntry",
+"alt": "invalid_entry",
+"nat_span": [
+149,
+161
+],
+"alt_span": [
+153,
+166
+]
+},
+{
+"k": 3,
+"nat": "inputArray",
+"alt": "input_array",
+"nat_span": [
+164,
+174
+],
+"alt_span": [
+169,
+180
+]
+},
+{
+"k": 4,
+"nat": "candidateValue",
+"alt": "candidate_value",
+"nat_span": [
+181,
+195
+],
+"alt_span": [
+187,
+202
+]
+},
+{
+"k": 5,
+"nat": "candidateValue",
+"alt": "candidate_value",
+"nat_span": [
+207,
+221
+],
+"alt_span": [
+214,
+229
+]
+},
+{
+"k": 6,
+"nat": "candidateValue",
+"alt": "candidate_value",
+"nat_span": [
+251,
+265
+],
+"alt_span": [
+259,
+274
+]
+},
+{
+"k": 7,
+"nat": "invalidEntry",
+"alt": "invalid_entry",
+"nat_span": [
+275,
+287
+],
+"alt_span": [
+284,
+297
+]
+},
+{
+"k": 8,
+"nat": "invalidEntry",
+"alt": "invalid_entry",
+"nat_span": [
+375,
+387
+],
+"alt_span": [
+385,
+398
+]
+},
+{
+"k": 9,
+"nat": "uniqueValues",
+"alt": "unique_values",
+"nat_span": [
+405,
+417
+],
+"alt_span": [
+416,
+429
+]
+},
+{
+"k": 10,
+"nat": "inputArray",
+"alt": "input_array",
+"nat_span": [
+428,
+438
+],
+"alt_span": [
+440,
+451
+]
+},
+{
+"k": 11,
+"nat": "uniqueValues",
+"alt": "unique_values",
+"nat_span": [
+447,
+459
+],
+"alt_span": [
+460,
+473
+]
+},
+{
+"k": 12,
+"nat": "inputArray",
+"alt": "input_array",
+"nat_span": [
+561,
+571
+],
+"alt_span": [
+575,
+586
+]
+},
+{
+"k": 13,
+"nat": "validateNumericArray",
+"alt": "validate_numeric_array",
+"nat_span": [
+613,
+633
+],
+"alt_span": [
+628,
+650
+]
+},
+{
+"k": 14,
+"nat": "smallestSoFar",
+"alt": "smallest_so_far",
+"nat_span": [
+646,
+659
+],
+"alt_span": [
+663,
+678
+]
+},
+{
+"k": 15,
+"nat": "secondSmallestSoFar",
+"alt": "second_smallest_so_far",
+"nat_span": [
+678,
+697
+],
+"alt_span": [
+697,
+719
+]
+},
+{
+"k": 16,
+"nat": "currentValue",
+"alt": "current_value",
+"nat_span": [
+723,
+735
+],
+"alt_span": [
+745,
+758
+]
+},
+{
+"k": 17,
+"nat": "currentValue",
+"alt": "current_value",
+"nat_span": [
+754,
+766
+],
+"alt_span": [
+777,
+790
+]
+},
+{
+"k": 18,
+"nat": "smallestSoFar",
+"alt": "smallest_so_far",
+"nat_span": [
+769,
+782
+],
+"alt_span": [
+793,
+808
+]
+},
+{
+"k": 19,
+"nat": "secondSmallestSoFar",
+"alt": "second_smallest_so_far",
+"nat_span": [
+792,
+811
+],
+"alt_span": [
+818,
+840
+]
+},
+{
+"k": 20,
+"nat": "smallestSoFar;\n      smallestSoFar",
+"alt": "smallest_so_far;\n      smallest_so_far",
+"nat_span": [
+814,
+848
+],
+"alt_span": [
+843,
+881
+]
+},
+{
+"k": 21,
+"nat": "currentValue",
+"alt": "current_value",
+"nat_span": [
+851,
+863
+],
+"alt_span": [
+884,
+897
+]
+},
+{
+"k": 22,
+"nat": "currentValue",
+"alt": "current_value",
+"nat_span": [
+880,
+892
+],
+"alt_span": [
+914,
+927
+]
+},
+{
+"k": 23,
+"nat": "smallestSoFar",
+"alt": "smallest_so_far",
+"nat_span": [
+895,
+908
+],
+"alt_span": [
+930,
+945
+]
+},
+{
+"k": 24,
+"nat": "currentValue",
+"alt": "current_value",
+"nat_span": [
+912,
+924
+],
+"alt_span": [
+949,
+962
+]
+},
+{
+"k": 25,
+"nat": "secondSmallestSoFar",
+"alt": "second_smallest_so_far",
+"nat_span": [
+927,
+946
+],
+"alt_span": [
+965,
+987
+]
+},
+{
+"k": 26,
+"nat": "secondSmallestSoFar",
+"alt": "second_smallest_so_far",
+"nat_span": [
+956,
+975
+],
+"alt_span": [
+997,
+1019
+]
+},
+{
+"k": 27,
+"nat": "currentValue",
+"alt": "current_value",
+"nat_span": [
+978,
+990
+],
+"alt_span": [
+1022,
+1035
+]
+},
+{
+"k": 28,
+"nat": "secondSmallestSoFar",
+"alt": "second_smallest_so_far",
+"nat_span": [
+1011,
+1030
+],
+"alt_span": [
+1056,
+1078
+]
+},
+{
+"k": 29,
+"nat": "findSmallestAndSecondSmallest",
+"alt": "find_smallest_and_second_smallest",
+"nat_span": [
+1044,
+1073
+],
+"alt_span": [
+1092,
+1125
+]
+},
+{
+"k": 30,
+"nat": "secondSmallestValue",
+"alt": "second_smallest_value",
+"nat_span": [
+1089,
+1108
+],
+"alt_span": [
+1141,
+1162
+]
+},
+{
+"k": 31,
+"nat": "smallestValue",
+"alt": "smallest_value",
+"nat_span": [
+1144,
+1157
+],
+"alt_span": [
+1198,
+1212
+]
+},
+{
+"k": 32,
+"nat": "smallestValue, secondSmallestValue",
+"alt": "smallest_value, second_smallest_value",
+"nat_span": [
+1189,
+1223
+],
+"alt_span": [
+1244,
+1281
+]
+},
+{
+"k": 33,
+"nat": "describeRanking",
+"alt": "describe_ranking",
+"nat_span": [
+1239,
+1254
+],
+"alt_span": [
+1297,
+1313
+]
+},
+{
+"k": 34,
+"nat": "smallestValue, secondSmallestValue",
+"alt": "smallest_value, second_smallest_value",
+"nat_span": [
+1272,
+1306
+],
+"alt_span": [
+1331,
+1368
+]
+},
+{
+"k": 35,
+"nat": "findSmallestAndSecondSmallest",
+"alt": "find_smallest_and_second_smallest",
+"nat_span": [
+1311,
+1340
+],
+"alt_span": [
+1373,
+1406
+]
+},
+{
+"k": 36,
+"nat": "rankingGap",
+"alt": "ranking_gap",
+"nat_span": [
+1355,
+1365
+],
+"alt_span": [
+1421,
+1432
+]
+},
+{
+"k": 37,
+"nat": "secondSmallestValue",
+"alt": "second_smallest_value",
+"nat_span": [
+1368,
+1387
+],
+"alt_span": [
+1435,
+1456
+]
+},
+{
+"k": 38,
+"nat": "smallestValue",
+"alt": "smallest_value",
+"nat_span": [
+1390,
+1403
+],
+"alt_span": [
+1459,
+1473
+]
+},
+{
+"k": 39,
+"nat": "sourceDescription",
+"alt": "source_description",
+"nat_span": [
+1413,
+1430
+],
+"alt_span": [
+1483,
+1501
+]
+},
+{
+"k": 40,
+"nat": "sourceDescription",
+"alt": "source_description",
+"nat_span": [
+1468,
+1485
+],
+"alt_span": [
+1539,
+1557
+]
+},
+{
+"k": 41,
+"nat": "smallestValue",
+"alt": "smallest_value",
+"nat_span": [
+1501,
+1514
+],
+"alt_span": [
+1573,
+1587
+]
+},
+{
+"k": 42,
+"nat": "secondSmallestValue",
+"alt": "second_smallest_value",
+"nat_span": [
+1535,
+1554
+],
+"alt_span": [
+1608,
+1629
+]
+},
+{
+"k": 43,
+"nat": "rankingGap",
+"alt": "ranking_gap",
+"nat_span": [
+1563,
+1573
+],
+"alt_span": [
+1638,
+1649
+]
+},
+{
+"k": 44,
+"nat": "buildRankingReport(arrayCollection",
+"alt": "build_ranking_report(array_collection",
+"nat_span": [
+1590,
+1624
+],
+"alt_span": [
+1666,
+1703
+]
+},
+{
+"k": 45,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1636,
+1647
+],
+"alt_span": [
+1715,
+1727
+]
+},
+{
+"k": 46,
+"nat": "candidateArray",
+"alt": "candidate_array",
+"nat_span": [
+1667,
+1681
+],
+"alt_span": [
+1747,
+1762
+]
+},
+{
+"k": 47,
+"nat": "arrayCollection",
+"alt": "array_collection",
+"nat_span": [
+1685,
+1700
+],
+"alt_span": [
+1766,
+1782
+]
+},
+{
+"k": 48,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1720,
+1731
+],
+"alt_span": [
+1802,
+1814
+]
+},
+{
+"k": 49,
+"nat": "describeRanking(candidateArray",
+"alt": "describe_ranking(candidate_array",
+"nat_span": [
+1737,
+1767
+],
+"alt_span": [
+1820,
+1852
+]
+},
+{
+"k": 50,
+"nat": "thrownError",
+"alt": "thrown_error",
+"nat_span": [
+1784,
+1795
+],
+"alt_span": [
+1869,
+1881
+]
+},
+{
+"k": 51,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1805,
+1816
+],
+"alt_span": [
+1891,
+1903
+]
+},
+{
+"k": 52,
+"nat": "candidateArray",
+"alt": "candidate_array",
+"nat_span": [
+1826,
+1840
+],
+"alt_span": [
+1913,
+1928
+]
+},
+{
+"k": 53,
+"nat": "thrownError",
+"alt": "thrown_error",
+"nat_span": [
+1857,
+1868
+],
+"alt_span": [
+1945,
+1957
+]
+},
+{
+"k": 54,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1900,
+1911
+],
+"alt_span": [
+1989,
+2001
+]
+},
+{
+"k": 55,
+"nat": "runMain",
+"alt": "run_main",
+"nat_span": [
+1936,
+1943
+],
+"alt_span": [
+2026,
+2034
+]
+},
+{
+"k": 56,
+"nat": "sampleArrays",
+"alt": "sample_arrays",
+"nat_span": [
+1956,
+1968
+],
+"alt_span": [
+2047,
+2060
+]
+},
+{
+"k": 57,
+"nat": "buildRankingReport(sampleArrays",
+"alt": "build_ranking_report(sample_arrays",
+"nat_span": [
+2089,
+2120
+],
+"alt_span": [
+2181,
+2215
+]
+},
+{
+"k": 58,
+"nat": "runMain",
+"alt": "run_main",
+"nat_span": [
+2127,
+2134
+],
+"alt_span": [
+2222,
+2230
+]
+},
+{
+"k": 59,
+"nat": "findSmallestAndSecondSmallest,\n  describeRanking,\n  buildRankingReport",
+"alt": "find_smallest_and_second_smallest,\n  describe_ranking,\n  build_ranking_report",
+"nat_span": [
+2182,
+2252
+],
+"alt_span": [
+2278,
+2355
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
 "doc_id": "js_camel_snake__t044",
 "family": "js_camel_snake",
 "topic": "Currency Formatter",
@@ -18272,6 +19327,931 @@
 }
 ],
 "free_filter": true
+},
+{
+"doc_id": "js_camel_snake__t045",
+"family": "js_camel_snake",
+"topic": "Merge Two Objects",
+"angle": "code",
+"text_es": "Create a function `mergeObjects(obj1, obj2)` that merges two objects into a new object. If keys conflict, values from `obj2` should overwrite `obj1`. Input is two objects, output is a new object. Example: `mergeObjects({a: 1, b: 2}, {b: 3, c: 4})` should return `{a: 1, b: 3, c: 4}`, `mergeObjects({x: 1}, {})` should return `{x: 1}`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function isPlainObject(candidateValue) {\n  return typeof candidateValue === 'object'\n    && candidateValue !== null\n    && !Array.isArray(candidateValue);\n}\n\nfunction assertMergeable(objectLabel, objectValue) {\n  if (!isPlainObject(objectValue)) {\n    throw new TypeError(`${objectLabel} must be a plain object`);\n  }\n}\n\nfunction mergeObjects(obj1, obj2) {\n  assertMergeable('obj1', obj1);\n  assertMergeable('obj2', obj2);\n  const mergedResult = {};\n  for (const baseKey of Object.keys(obj1)) {\n    mergedResult[baseKey] = obj1[baseKey];\n  }\n  for (const overrideKey of Object.keys(obj2)) {\n    mergedResult[overrideKey] = obj2[overrideKey];\n  }\n  return mergedResult;\n}\n\nfunction mergeObjectList(objectList) {\n  return objectList.reduce(\n    (accumulatedObject, currentObject) => mergeObjects(accumulatedObject, currentObject),\n    {}\n  );\n}\n\nfunction findOverwrittenKeys(obj1, obj2) {\n  return Object.keys(obj1).filter(\n    (sharedKey) => Object.prototype.hasOwnProperty.call(obj2, sharedKey)\n  );\n}\n\nfunction describeMerge(obj1, obj2) {\n  const mergedObject = mergeObjects(obj1, obj2);\n  const overwrittenKeys = findOverwrittenKeys(obj1, obj2);\n  const keySummary = Object.keys(mergedObject)\n    .map((resultKey) => `${resultKey}=${JSON.stringify(mergedObject[resultKey])}`)\n    .join(', ');\n  const conflictSummary = overwrittenKeys.length\n    ? `overwritten: ${overwrittenKeys.join('/')}`\n    : 'no conflicts';\n  return `{ ${keySummary} } (${conflictSummary})`;\n}\n\nfunction buildEffectiveSettings(defaultSettings, userSettings, commandLineSettings) {\n  return mergeObjectList([defaultSettings, userSettings, commandLineSettings]);\n}\n\nfunction runMergeReport() {\n  console.log(describeMerge({ a: 1, b: 2 }, { b: 3, c: 4 }));\n  console.log(describeMerge({ x: 1 }, {}));\n\n  const defaultSettings = { retries: 2, host: 'localhost', port: 80 };\n  const userSettings = { port: 8080, verbose: true };\n  const commandLineSettings = { retries: 5 };\n  const effectiveSettings = buildEffectiveSettings(defaultSettings, userSettings, commandLineSettings);\n  console.log('effective settings:', JSON.stringify(effectiveSettings));\n}\n\nrunMergeReport();\n\nmodule.exports = {\n  mergeObjects,\n  mergeObjectList,\n  findOverwrittenKeys,\n  describeMerge,\n  buildEffectiveSettings\n};\n",
+"text_alt": "function is_plain_object(candidate_value) {\n  return typeof candidate_value === 'object'\n    && candidate_value !== null\n    && !Array.isArray(candidate_value);\n}\n\nfunction assert_mergeable(object_label, object_value) {\n  if (!is_plain_object(object_value)) {\n    throw new TypeError(`${object_label} must be a plain object`);\n  }\n}\n\nfunction mergeObjects(obj1, obj2) {\n  assert_mergeable('obj1', obj1);\n  assert_mergeable('obj2', obj2);\n  const merged_result = {};\n  for (const base_key of Object.keys(obj1)) {\n    merged_result[base_key] = obj1[base_key];\n  }\n  for (const override_key of Object.keys(obj2)) {\n    merged_result[override_key] = obj2[override_key];\n  }\n  return merged_result;\n}\n\nfunction merge_object_list(object_list) {\n  return object_list.reduce(\n    (accumulated_object, current_object) => mergeObjects(accumulated_object, current_object),\n    {}\n  );\n}\n\nfunction find_overwritten_keys(obj1, obj2) {\n  return Object.keys(obj1).filter(\n    (shared_key) => Object.prototype.hasOwnProperty.call(obj2, shared_key)\n  );\n}\n\nfunction describe_merge(obj1, obj2) {\n  const merged_object = mergeObjects(obj1, obj2);\n  const overwritten_keys = find_overwritten_keys(obj1, obj2);\n  const key_summary = Object.keys(merged_object)\n    .map((result_key) => `${result_key}=${JSON.stringify(merged_object[result_key])}`)\n    .join(', ');\n  const conflict_summary = overwritten_keys.length\n    ? `overwritten: ${overwritten_keys.join('/')}`\n    : 'no conflicts';\n  return `{ ${key_summary} } (${conflict_summary})`;\n}\n\nfunction build_effective_settings(default_settings, user_settings, command_line_settings) {\n  return merge_object_list([default_settings, user_settings, command_line_settings]);\n}\n\nfunction run_merge_report() {\n  console.log(describe_merge({ a: 1, b: 2 }, { b: 3, c: 4 }));\n  console.log(describe_merge({ x: 1 }, {}));\n\n  const default_settings = { retries: 2, host: 'localhost', port: 80 };\n  const user_settings = { port: 8080, verbose: true };\n  const command_line_settings = { retries: 5 };\n  const effective_settings = build_effective_settings(default_settings, user_settings, command_line_settings);\n  console.log('effective settings:', JSON.stringify(effective_settings));\n}\n\nrun_merge_report();\n\nmodule.exports = {\n  mergeObjects,\n  merge_object_list,\n  find_overwritten_keys,\n  describe_merge,\n  build_effective_settings\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "isPlainObject(candidateValue",
+"alt": "is_plain_object(candidate_value",
+"nat_span": [
+9,
+37
+],
+"alt_span": [
+9,
+40
+]
+},
+{
+"k": 1,
+"nat": "assertMergeable(objectLabel, objectValue",
+"alt": "assert_mergeable(object_label, object_value",
+"nat_span": [
+167,
+207
+],
+"alt_span": [
+173,
+216
+]
+},
+{
+"k": 2,
+"nat": "mergedResult",
+"alt": "merged_result",
+"nat_span": [
+431,
+443
+],
+"alt_span": [
+446,
+459
+]
+},
+{
+"k": 3,
+"nat": "baseKey",
+"alt": "base_key",
+"nat_span": [
+463,
+470
+],
+"alt_span": [
+479,
+487
+]
+},
+{
+"k": 4,
+"nat": "overrideKey",
+"alt": "override_key",
+"nat_span": [
+555,
+566
+],
+"alt_span": [
+575,
+587
+]
+},
+{
+"k": 5,
+"nat": "mergeObjectList(objectList",
+"alt": "merge_object_list(object_list",
+"nat_span": [
+681,
+707
+],
+"alt_span": [
+706,
+735
+]
+},
+{
+"k": 6,
+"nat": "accumulatedObject, currentObject",
+"alt": "accumulated_object, current_object",
+"nat_span": [
+744,
+776
+],
+"alt_span": [
+773,
+807
+]
+},
+{
+"k": 7,
+"nat": "findOverwrittenKeys",
+"alt": "find_overwritten_keys",
+"nat_span": [
+853,
+872
+],
+"alt_span": [
+886,
+907
+]
+},
+{
+"k": 8,
+"nat": "sharedKey",
+"alt": "shared_key",
+"nat_span": [
+927,
+936
+],
+"alt_span": [
+962,
+972
+]
+},
+{
+"k": 9,
+"nat": "describeMerge",
+"alt": "describe_merge",
+"nat_span": [
+1012,
+1025
+],
+"alt_span": [
+1049,
+1063
+]
+},
+{
+"k": 10,
+"nat": "mergedObject",
+"alt": "merged_object",
+"nat_span": [
+1048,
+1060
+],
+"alt_span": [
+1086,
+1099
+]
+},
+{
+"k": 11,
+"nat": "overwrittenKeys",
+"alt": "overwritten_keys",
+"nat_span": [
+1097,
+1112
+],
+"alt_span": [
+1136,
+1152
+]
+},
+{
+"k": 12,
+"nat": "keySummary",
+"alt": "key_summary",
+"nat_span": [
+1156,
+1166
+],
+"alt_span": [
+1198,
+1209
+]
+},
+{
+"k": 13,
+"nat": "resultKey",
+"alt": "result_key",
+"nat_span": [
+1205,
+1214
+],
+"alt_span": [
+1249,
+1259
+]
+},
+{
+"k": 14,
+"nat": "conflictSummary",
+"alt": "conflict_summary",
+"nat_span": [
+1303,
+1318
+],
+"alt_span": [
+1351,
+1367
+]
+},
+{
+"k": 15,
+"nat": "buildEffectiveSettings(defaultSettings, userSettings, commandLineSettings",
+"alt": "build_effective_settings(default_settings, user_settings, command_line_settings",
+"nat_span": [
+1479,
+1552
+],
+"alt_span": [
+1532,
+1611
+]
+},
+{
+"k": 16,
+"nat": "runMergeReport",
+"alt": "run_merge_report",
+"nat_span": [
+1648,
+1662
+],
+"alt_span": [
+1713,
+1729
+]
+},
+{
+"k": 17,
+"nat": "effectiveSettings",
+"alt": "effective_settings",
+"nat_span": [
+1953,
+1970
+],
+"alt_span": [
+2026,
+2044
+]
+}
+],
+"k_en": 18,
+"shared_fraction": 0.892,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "isPlainObject(candidateValue",
+"alt": "is_plain_object(candidate_value",
+"nat_span": [
+9,
+37
+],
+"alt_span": [
+9,
+40
+]
+},
+{
+"k": 1,
+"nat": "candidateValue",
+"alt": "candidate_value",
+"nat_span": [
+57,
+71
+],
+"alt_span": [
+60,
+75
+]
+},
+{
+"k": 2,
+"nat": "candidateValue",
+"alt": "candidate_value",
+"nat_span": [
+92,
+106
+],
+"alt_span": [
+96,
+111
+]
+},
+{
+"k": 3,
+"nat": "candidateValue",
+"alt": "candidate_value",
+"nat_span": [
+138,
+152
+],
+"alt_span": [
+143,
+158
+]
+},
+{
+"k": 4,
+"nat": "assertMergeable(objectLabel, objectValue",
+"alt": "assert_mergeable(object_label, object_value",
+"nat_span": [
+167,
+207
+],
+"alt_span": [
+173,
+216
+]
+},
+{
+"k": 5,
+"nat": "isPlainObject(objectValue",
+"alt": "is_plain_object(object_value",
+"nat_span": [
+218,
+243
+],
+"alt_span": [
+227,
+255
+]
+},
+{
+"k": 6,
+"nat": "objectLabel",
+"alt": "object_label",
+"nat_span": [
+275,
+286
+],
+"alt_span": [
+287,
+299
+]
+},
+{
+"k": 7,
+"nat": "assertMergeable",
+"alt": "assert_mergeable",
+"nat_span": [
+359,
+374
+],
+"alt_span": [
+372,
+388
+]
+},
+{
+"k": 8,
+"nat": "assertMergeable",
+"alt": "assert_mergeable",
+"nat_span": [
+392,
+407
+],
+"alt_span": [
+406,
+422
+]
+},
+{
+"k": 9,
+"nat": "mergedResult",
+"alt": "merged_result",
+"nat_span": [
+431,
+443
+],
+"alt_span": [
+446,
+459
+]
+},
+{
+"k": 10,
+"nat": "baseKey",
+"alt": "base_key",
+"nat_span": [
+463,
+470
+],
+"alt_span": [
+479,
+487
+]
+},
+{
+"k": 11,
+"nat": "mergedResult[baseKey",
+"alt": "merged_result[base_key",
+"nat_span": [
+499,
+519
+],
+"alt_span": [
+516,
+538
+]
+},
+{
+"k": 12,
+"nat": "baseKey",
+"alt": "base_key",
+"nat_span": [
+528,
+535
+],
+"alt_span": [
+547,
+555
+]
+},
+{
+"k": 13,
+"nat": "overrideKey",
+"alt": "override_key",
+"nat_span": [
+555,
+566
+],
+"alt_span": [
+575,
+587
+]
+},
+{
+"k": 14,
+"nat": "mergedResult[overrideKey",
+"alt": "merged_result[override_key",
+"nat_span": [
+595,
+619
+],
+"alt_span": [
+616,
+642
+]
+},
+{
+"k": 15,
+"nat": "overrideKey",
+"alt": "override_key",
+"nat_span": [
+628,
+639
+],
+"alt_span": [
+651,
+663
+]
+},
+{
+"k": 16,
+"nat": "mergedResult",
+"alt": "merged_result",
+"nat_span": [
+655,
+667
+],
+"alt_span": [
+679,
+692
+]
+},
+{
+"k": 17,
+"nat": "mergeObjectList(objectList",
+"alt": "merge_object_list(object_list",
+"nat_span": [
+681,
+707
+],
+"alt_span": [
+706,
+735
+]
+},
+{
+"k": 18,
+"nat": "objectList",
+"alt": "object_list",
+"nat_span": [
+720,
+730
+],
+"alt_span": [
+748,
+759
+]
+},
+{
+"k": 19,
+"nat": "accumulatedObject, currentObject",
+"alt": "accumulated_object, current_object",
+"nat_span": [
+744,
+776
+],
+"alt_span": [
+773,
+807
+]
+},
+{
+"k": 20,
+"nat": "accumulatedObject, currentObject",
+"alt": "accumulated_object, current_object",
+"nat_span": [
+794,
+826
+],
+"alt_span": [
+825,
+859
+]
+},
+{
+"k": 21,
+"nat": "findOverwrittenKeys",
+"alt": "find_overwritten_keys",
+"nat_span": [
+853,
+872
+],
+"alt_span": [
+886,
+907
+]
+},
+{
+"k": 22,
+"nat": "sharedKey",
+"alt": "shared_key",
+"nat_span": [
+927,
+936
+],
+"alt_span": [
+962,
+972
+]
+},
+{
+"k": 23,
+"nat": "sharedKey",
+"alt": "shared_key",
+"nat_span": [
+984,
+993
+],
+"alt_span": [
+1020,
+1030
+]
+},
+{
+"k": 24,
+"nat": "describeMerge",
+"alt": "describe_merge",
+"nat_span": [
+1012,
+1025
+],
+"alt_span": [
+1049,
+1063
+]
+},
+{
+"k": 25,
+"nat": "mergedObject",
+"alt": "merged_object",
+"nat_span": [
+1048,
+1060
+],
+"alt_span": [
+1086,
+1099
+]
+},
+{
+"k": 26,
+"nat": "overwrittenKeys",
+"alt": "overwritten_keys",
+"nat_span": [
+1097,
+1112
+],
+"alt_span": [
+1136,
+1152
+]
+},
+{
+"k": 27,
+"nat": "findOverwrittenKeys",
+"alt": "find_overwritten_keys",
+"nat_span": [
+1115,
+1134
+],
+"alt_span": [
+1155,
+1176
+]
+},
+{
+"k": 28,
+"nat": "keySummary",
+"alt": "key_summary",
+"nat_span": [
+1156,
+1166
+],
+"alt_span": [
+1198,
+1209
+]
+},
+{
+"k": 29,
+"nat": "mergedObject",
+"alt": "merged_object",
+"nat_span": [
+1181,
+1193
+],
+"alt_span": [
+1224,
+1237
+]
+},
+{
+"k": 30,
+"nat": "resultKey",
+"alt": "result_key",
+"nat_span": [
+1205,
+1214
+],
+"alt_span": [
+1249,
+1259
+]
+},
+{
+"k": 31,
+"nat": "resultKey",
+"alt": "result_key",
+"nat_span": [
+1222,
+1231
+],
+"alt_span": [
+1267,
+1277
+]
+},
+{
+"k": 32,
+"nat": "mergedObject[resultKey",
+"alt": "merged_object[result_key",
+"nat_span": [
+1250,
+1272
+],
+"alt_span": [
+1296,
+1320
+]
+},
+{
+"k": 33,
+"nat": "conflictSummary",
+"alt": "conflict_summary",
+"nat_span": [
+1303,
+1318
+],
+"alt_span": [
+1351,
+1367
+]
+},
+{
+"k": 34,
+"nat": "overwrittenKeys",
+"alt": "overwritten_keys",
+"nat_span": [
+1321,
+1336
+],
+"alt_span": [
+1370,
+1386
+]
+},
+{
+"k": 35,
+"nat": "overwrittenKeys",
+"alt": "overwritten_keys",
+"nat_span": [
+1366,
+1381
+],
+"alt_span": [
+1416,
+1432
+]
+},
+{
+"k": 36,
+"nat": "keySummary",
+"alt": "key_summary",
+"nat_span": [
+1430,
+1440
+],
+"alt_span": [
+1481,
+1492
+]
+},
+{
+"k": 37,
+"nat": "conflictSummary",
+"alt": "conflict_summary",
+"nat_span": [
+1447,
+1462
+],
+"alt_span": [
+1499,
+1515
+]
+},
+{
+"k": 38,
+"nat": "buildEffectiveSettings(defaultSettings, userSettings, commandLineSettings",
+"alt": "build_effective_settings(default_settings, user_settings, command_line_settings",
+"nat_span": [
+1479,
+1552
+],
+"alt_span": [
+1532,
+1611
+]
+},
+{
+"k": 39,
+"nat": "mergeObjectList([defaultSettings, userSettings, commandLineSettings",
+"alt": "merge_object_list([default_settings, user_settings, command_line_settings",
+"nat_span": [
+1565,
+1632
+],
+"alt_span": [
+1624,
+1697
+]
+},
+{
+"k": 40,
+"nat": "runMergeReport",
+"alt": "run_merge_report",
+"nat_span": [
+1648,
+1662
+],
+"alt_span": [
+1713,
+1729
+]
+},
+{
+"k": 41,
+"nat": "describeMerge",
+"alt": "describe_merge",
+"nat_span": [
+1681,
+1694
+],
+"alt_span": [
+1748,
+1762
+]
+},
+{
+"k": 42,
+"nat": "describeMerge",
+"alt": "describe_merge",
+"nat_span": [
+1743,
+1756
+],
+"alt_span": [
+1811,
+1825
+]
+},
+{
+"k": 43,
+"nat": "defaultSettings",
+"alt": "default_settings",
+"nat_span": [
+1782,
+1797
+],
+"alt_span": [
+1851,
+1867
+]
+},
+{
+"k": 44,
+"nat": "userSettings",
+"alt": "user_settings",
+"nat_span": [
+1853,
+1865
+],
+"alt_span": [
+1923,
+1936
+]
+},
+{
+"k": 45,
+"nat": "commandLineSettings",
+"alt": "command_line_settings",
+"nat_span": [
+1907,
+1926
+],
+"alt_span": [
+1978,
+1999
+]
+},
+{
+"k": 46,
+"nat": "effectiveSettings",
+"alt": "effective_settings",
+"nat_span": [
+1953,
+1970
+],
+"alt_span": [
+2026,
+2044
+]
+},
+{
+"k": 47,
+"nat": "buildEffectiveSettings(defaultSettings, userSettings, commandLineSettings",
+"alt": "build_effective_settings(default_settings, user_settings, command_line_settings",
+"nat_span": [
+1973,
+2046
+],
+"alt_span": [
+2047,
+2126
+]
+},
+{
+"k": 48,
+"nat": "effectiveSettings",
+"alt": "effective_settings",
+"nat_span": [
+2101,
+2118
+],
+"alt_span": [
+2181,
+2199
+]
+},
+{
+"k": 49,
+"nat": "runMergeReport",
+"alt": "run_merge_report",
+"nat_span": [
+2125,
+2139
+],
+"alt_span": [
+2206,
+2222
+]
+},
+{
+"k": 50,
+"nat": "mergeObjectList,\n  findOverwrittenKeys,\n  describeMerge,\n  buildEffectiveSettings",
+"alt": "merge_object_list,\n  find_overwritten_keys,\n  describe_merge,\n  build_effective_settings",
+"nat_span": [
+2181,
+2262
+],
+"alt_span": [
+2264,
+2352
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_camel_snake__t046",
@@ -62091,444 +64071,6 @@
 "free_filter": true
 },
 {
-"doc_id": "js_camel_snake__t164",
-"family": "js_camel_snake",
-"topic": "Remove Vowels from String",
-"angle": "code",
-"text_es": "Write a function that removes all vowels (a, e, i, o, u, case-insensitive) from a given string. \nFunction signature: `removeVowels(text)`.\nExample 1: `removeVowels('Hello World')` should return `'Hll Wrld'`.\nExample 2: `removeVowels('JavaScript')` should return `'JvScrpt'`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "const removeVowels = (inputText) => {\n  const allVowels = /[aeiouAEIOU]/g;\n  const stringWithoutVowels = inputText.replace(allVowels, '');\n  return stringWithoutVowels;\n};\n\nconst processUserInput = (inputString) => {\n  const resultString = removeVowels(inputString);\n  return resultString;\n};\n\nconst demonstrateFunctionality = (firstExample, secondExample) => {\n  const firstResult = processUserInput(firstExample);\n  const secondResult = processUserInput(secondExample);\n  console.log(`Original: '${firstExample}', Modified: '${firstResult}'`);\n  console.log(`Original: '${secondExample}', Modified: '${secondResult}'`);\n};\n\n// Example usage and demonstration\ndemonstrateFunctionality('Hello World', 'JavaScript');\n",
-"text_alt": "const removeVowels = (input_text) => {\n  const all_vowels = /[aeiouAEIOU]/g;\n  const string_without_vowels = input_text.replace(all_vowels, '');\n  return string_without_vowels;\n};\n\nconst process_user_input = (input_string) => {\n  const result_string = removeVowels(input_string);\n  return result_string;\n};\n\nconst demonstrate_functionality = (first_example, second_example) => {\n  const first_result = process_user_input(first_example);\n  const second_result = process_user_input(second_example);\n  console.log(`Original: '${first_example}', Modified: '${first_result}'`);\n  console.log(`Original: '${second_example}', Modified: '${second_result}'`);\n};\n\n// Example usage and demonstration\ndemonstrate_functionality('Hello World', 'JavaScript');\n",
-"opps": [
-{
-"k": 0,
-"nat": "inputText",
-"alt": "input_text",
-"nat_span": [
-22,
-31
-],
-"alt_span": [
-22,
-32
-]
-},
-{
-"k": 1,
-"nat": "allVowels",
-"alt": "all_vowels",
-"nat_span": [
-46,
-55
-],
-"alt_span": [
-47,
-57
-]
-},
-{
-"k": 2,
-"nat": "stringWithoutVowels",
-"alt": "string_without_vowels",
-"nat_span": [
-83,
-102
-],
-"alt_span": [
-85,
-106
-]
-},
-{
-"k": 3,
-"nat": "processUserInput",
-"alt": "process_user_input",
-"nat_span": [
-179,
-195
-],
-"alt_span": [
-187,
-205
-]
-},
-{
-"k": 4,
-"nat": "inputString",
-"alt": "input_string",
-"nat_span": [
-199,
-210
-],
-"alt_span": [
-209,
-221
-]
-},
-{
-"k": 5,
-"nat": "resultString",
-"alt": "result_string",
-"nat_span": [
-225,
-237
-],
-"alt_span": [
-236,
-249
-]
-},
-{
-"k": 6,
-"nat": "demonstrateFunctionality",
-"alt": "demonstrate_functionality",
-"nat_span": [
-300,
-324
-],
-"alt_span": [
-314,
-339
-]
-},
-{
-"k": 7,
-"nat": "firstExample, secondExample",
-"alt": "first_example, second_example",
-"nat_span": [
-328,
-355
-],
-"alt_span": [
-343,
-372
-]
-},
-{
-"k": 8,
-"nat": "firstResult",
-"alt": "first_result",
-"nat_span": [
-370,
-381
-],
-"alt_span": [
-387,
-399
-]
-},
-{
-"k": 9,
-"nat": "secondResult",
-"alt": "second_result",
-"nat_span": [
-424,
-436
-],
-"alt_span": [
-445,
-458
-]
-}
-],
-"k_en": 10,
-"shared_fraction": 0.886,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "inputText",
-"alt": "input_text",
-"nat_span": [
-22,
-31
-],
-"alt_span": [
-22,
-32
-]
-},
-{
-"k": 1,
-"nat": "allVowels",
-"alt": "all_vowels",
-"nat_span": [
-46,
-55
-],
-"alt_span": [
-47,
-57
-]
-},
-{
-"k": 2,
-"nat": "stringWithoutVowels",
-"alt": "string_without_vowels",
-"nat_span": [
-83,
-102
-],
-"alt_span": [
-85,
-106
-]
-},
-{
-"k": 3,
-"nat": "inputText",
-"alt": "input_text",
-"nat_span": [
-105,
-114
-],
-"alt_span": [
-109,
-119
-]
-},
-{
-"k": 4,
-"nat": "allVowels",
-"alt": "all_vowels",
-"nat_span": [
-123,
-132
-],
-"alt_span": [
-128,
-138
-]
-},
-{
-"k": 5,
-"nat": "stringWithoutVowels",
-"alt": "string_without_vowels",
-"nat_span": [
-148,
-167
-],
-"alt_span": [
-154,
-175
-]
-},
-{
-"k": 6,
-"nat": "processUserInput",
-"alt": "process_user_input",
-"nat_span": [
-179,
-195
-],
-"alt_span": [
-187,
-205
-]
-},
-{
-"k": 7,
-"nat": "inputString",
-"alt": "input_string",
-"nat_span": [
-199,
-210
-],
-"alt_span": [
-209,
-221
-]
-},
-{
-"k": 8,
-"nat": "resultString",
-"alt": "result_string",
-"nat_span": [
-225,
-237
-],
-"alt_span": [
-236,
-249
-]
-},
-{
-"k": 9,
-"nat": "inputString",
-"alt": "input_string",
-"nat_span": [
-253,
-264
-],
-"alt_span": [
-265,
-277
-]
-},
-{
-"k": 10,
-"nat": "resultString",
-"alt": "result_string",
-"nat_span": [
-276,
-288
-],
-"alt_span": [
-289,
-302
-]
-},
-{
-"k": 11,
-"nat": "demonstrateFunctionality",
-"alt": "demonstrate_functionality",
-"nat_span": [
-300,
-324
-],
-"alt_span": [
-314,
-339
-]
-},
-{
-"k": 12,
-"nat": "firstExample, secondExample",
-"alt": "first_example, second_example",
-"nat_span": [
-328,
-355
-],
-"alt_span": [
-343,
-372
-]
-},
-{
-"k": 13,
-"nat": "firstResult",
-"alt": "first_result",
-"nat_span": [
-370,
-381
-],
-"alt_span": [
-387,
-399
-]
-},
-{
-"k": 14,
-"nat": "processUserInput(firstExample",
-"alt": "process_user_input(first_example",
-"nat_span": [
-384,
-413
-],
-"alt_span": [
-402,
-434
-]
-},
-{
-"k": 15,
-"nat": "secondResult",
-"alt": "second_result",
-"nat_span": [
-424,
-436
-],
-"alt_span": [
-445,
-458
-]
-},
-{
-"k": 16,
-"nat": "processUserInput(secondExample",
-"alt": "process_user_input(second_example",
-"nat_span": [
-439,
-469
-],
-"alt_span": [
-461,
-494
-]
-},
-{
-"k": 17,
-"nat": "firstExample",
-"alt": "first_example",
-"nat_span": [
-500,
-512
-],
-"alt_span": [
-525,
-538
-]
-},
-{
-"k": 18,
-"nat": "firstResult",
-"alt": "first_result",
-"nat_span": [
-529,
-540
-],
-"alt_span": [
-555,
-567
-]
-},
-{
-"k": 19,
-"nat": "secondExample",
-"alt": "second_example",
-"nat_span": [
-574,
-587
-],
-"alt_span": [
-601,
-615
-]
-},
-{
-"k": 20,
-"nat": "secondResult",
-"alt": "second_result",
-"nat_span": [
-604,
-616
-],
-"alt_span": [
-632,
-645
-]
-},
-{
-"k": 21,
-"nat": "demonstrateFunctionality",
-"alt": "demonstrate_functionality",
-"nat_span": [
-661,
-685
-],
-"alt_span": [
-690,
-715
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "js_camel_snake__t165",
 "family": "js_camel_snake",
 "topic": "Find the Mode of an Array",
@@ -75527,303 +77069,829 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const myQueue = [];\n\nfunction addNewItemToQueue(queueItem) {\n  myQueue.push(queueItem);\n}\n\nfunction removeFirstItemFromQueue() {\n  if (myQueue.length === 0) {\n    return null;\n  }\n  const frontMostElement = myQueue[0];\n  myQueue.splice(0, 1);\n  return frontMostElement;\n}\n\n// Example usage demonstrating functionality\naddNewItemToQueue(10);\naddNewItemToQueue(20);\nconst firstRemovedValue = removeFirstItemFromQueue();\nconst secondRemovedValue = removeFirstItemFromQueue();\nconst thirdRemovedValueWhenEmpty = removeFirstItemFromQueue();\n\nconsole.log(firstRemovedValue); // Expected: 10\nconsole.log(secondRemovedValue); // Expected: 20\nconsole.log(thirdRemovedValueWhenEmpty); // Expected: null\n",
-"text_alt": "const myQueue = [];\n\nfunction add_new_item_to_queue(queue_item) {\n  myQueue.push(queue_item);\n}\n\nfunction remove_first_item_from_queue() {\n  if (myQueue.length === 0) {\n    return null;\n  }\n  const front_most_element = myQueue[0];\n  myQueue.splice(0, 1);\n  return front_most_element;\n}\n\n// Example usage demonstrating functionality\nadd_new_item_to_queue(10);\nadd_new_item_to_queue(20);\nconst first_removed_value = remove_first_item_from_queue();\nconst second_removed_value = remove_first_item_from_queue();\nconst third_removed_value_when_empty = remove_first_item_from_queue();\n\nconsole.log(first_removed_value); // Expected: 10\nconsole.log(second_removed_value); // Expected: 20\nconsole.log(third_removed_value_when_empty); // Expected: null\n",
+"text_nat": "const queue = [];\n\nfunction enqueue(item) {\n  queue.push(item);\n  return queue.length;\n}\n\nfunction dequeue() {\n  if (queue.length === 0) {\n    return null;\n  }\n  return queue.shift();\n}\n\nfunction peekFrontItem() {\n  return queue.length === 0 ? null : queue[0];\n}\n\nfunction currentQueueSize() {\n  return queue.length;\n}\n\nfunction formatQueueState() {\n  if (queue.length === 0) {\n    return '(empty)';\n  }\n  return queue.map(String).join(' <- ');\n}\n\nfunction enqueueAll(itemList) {\n  let itemsAccepted = 0;\n  for (const nextItem of itemList) {\n    if (nextItem === undefined) {\n      continue;\n    }\n    enqueue(nextItem);\n    itemsAccepted += 1;\n  }\n  return itemsAccepted;\n}\n\nfunction drainQueue(maximumItems) {\n  const drainedItems = [];\n  let remainingBudget = maximumItems === undefined ? Infinity : maximumItems;\n  while (remainingBudget > 0) {\n    const frontItem = dequeue();\n    if (frontItem === null) {\n      break;\n    }\n    drainedItems.push(frontItem);\n    remainingBudget -= 1;\n  }\n  return drainedItems;\n}\n\nfunction runQueueDemo(initialItems) {\n  const reportLines = [];\n  const acceptedCount = enqueueAll(initialItems);\n  reportLines.push(`enqueued ${acceptedCount} item(s): ${formatQueueState()}`);\n  reportLines.push(`front item is ${peekFrontItem()}`);\n\n  const firstTwoItems = drainQueue(2);\n  reportLines.push(`dequeued [${firstTwoItems.join(', ')}], size now ${currentQueueSize()}`);\n\n  const remainingItems = drainQueue();\n  reportLines.push(`drained remainder [${remainingItems.join(', ')}]`);\n  reportLines.push(`dequeue on empty queue gives ${dequeue()}`);\n  return reportLines;\n}\n\nfor (const reportLine of runQueueDemo([1, 2, 'three', undefined, 4])) {\n  console.log(reportLine);\n}\n",
+"text_alt": "const queue = [];\n\nfunction enqueue(item) {\n  queue.push(item);\n  return queue.length;\n}\n\nfunction dequeue() {\n  if (queue.length === 0) {\n    return null;\n  }\n  return queue.shift();\n}\n\nfunction peek_front_item() {\n  return queue.length === 0 ? null : queue[0];\n}\n\nfunction current_queue_size() {\n  return queue.length;\n}\n\nfunction format_queue_state() {\n  if (queue.length === 0) {\n    return '(empty)';\n  }\n  return queue.map(String).join(' <- ');\n}\n\nfunction enqueue_all(item_list) {\n  let items_accepted = 0;\n  for (const next_item of item_list) {\n    if (next_item === undefined) {\n      continue;\n    }\n    enqueue(next_item);\n    items_accepted += 1;\n  }\n  return items_accepted;\n}\n\nfunction drain_queue(maximum_items) {\n  const drained_items = [];\n  let remaining_budget = maximum_items === undefined ? Infinity : maximum_items;\n  while (remaining_budget > 0) {\n    const front_item = dequeue();\n    if (front_item === null) {\n      break;\n    }\n    drained_items.push(front_item);\n    remaining_budget -= 1;\n  }\n  return drained_items;\n}\n\nfunction run_queue_demo(initial_items) {\n  const report_lines = [];\n  const accepted_count = enqueue_all(initial_items);\n  report_lines.push(`enqueued ${accepted_count} item(s): ${format_queue_state()}`);\n  report_lines.push(`front item is ${peek_front_item()}`);\n\n  const first_two_items = drain_queue(2);\n  report_lines.push(`dequeued [${first_two_items.join(', ')}], size now ${current_queue_size()}`);\n\n  const remaining_items = drain_queue();\n  report_lines.push(`drained remainder [${remaining_items.join(', ')}]`);\n  report_lines.push(`dequeue on empty queue gives ${dequeue()}`);\n  return report_lines;\n}\n\nfor (const report_line of run_queue_demo([1, 2, 'three', undefined, 4])) {\n  console.log(report_line);\n}\n",
 "opps": [
 {
 "k": 0,
-"nat": "addNewItemToQueue(queueItem",
-"alt": "add_new_item_to_queue(queue_item",
+"nat": "peekFrontItem",
+"alt": "peek_front_item",
 "nat_span": [
-30,
-57
+196,
+209
 ],
 "alt_span": [
-30,
-62
+196,
+211
 ]
 },
 {
 "k": 1,
-"nat": "removeFirstItemFromQueue",
-"alt": "remove_first_item_from_queue",
+"nat": "currentQueueSize",
+"alt": "current_queue_size",
 "nat_span": [
-100,
-124
+273,
+289
 ],
 "alt_span": [
-106,
-134
+275,
+293
 ]
 },
 {
 "k": 2,
-"nat": "frontMostElement",
-"alt": "front_most_element",
+"nat": "formatQueueState",
+"alt": "format_queue_state",
 "nat_span": [
-188,
-204
+329,
+345
 ],
 "alt_span": [
-198,
-216
+333,
+351
 ]
 },
 {
 "k": 3,
-"nat": "firstRemovedValue",
-"alt": "first_removed_value",
+"nat": "enqueueAll(itemList",
+"alt": "enqueue_all(item_list",
 "nat_span": [
-370,
-387
+457,
+476
 ],
 "alt_span": [
-392,
-411
+463,
+484
 ]
 },
 {
 "k": 4,
-"nat": "secondRemovedValue",
-"alt": "second_removed_value",
+"nat": "itemsAccepted",
+"alt": "items_accepted",
 "nat_span": [
-424,
-442
+486,
+499
 ],
 "alt_span": [
-452,
-472
+494,
+508
 ]
 },
 {
 "k": 5,
-"nat": "thirdRemovedValueWhenEmpty",
-"alt": "third_removed_value_when_empty",
+"nat": "nextItem",
+"alt": "next_item",
 "nat_span": [
-479,
-505
+518,
+526
 ],
 "alt_span": [
-513,
-543
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 0.912,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "addNewItemToQueue(queueItem",
-"alt": "add_new_item_to_queue(queue_item",
-"nat_span": [
-30,
-57
-],
-"alt_span": [
-30,
-62
-]
-},
-{
-"k": 1,
-"nat": "queueItem",
-"alt": "queue_item",
-"nat_span": [
-76,
-85
-],
-"alt_span": [
-81,
-91
-]
-},
-{
-"k": 2,
-"nat": "removeFirstItemFromQueue",
-"alt": "remove_first_item_from_queue",
-"nat_span": [
-100,
-124
-],
-"alt_span": [
-106,
-134
-]
-},
-{
-"k": 3,
-"nat": "frontMostElement",
-"alt": "front_most_element",
-"nat_span": [
-188,
-204
-],
-"alt_span": [
-198,
-216
-]
-},
-{
-"k": 4,
-"nat": "frontMostElement",
-"alt": "front_most_element",
-"nat_span": [
-252,
-268
-],
-"alt_span": [
-264,
-282
-]
-},
-{
-"k": 5,
-"nat": "addNewItemToQueue",
-"alt": "add_new_item_to_queue",
-"nat_span": [
-318,
-335
-],
-"alt_span": [
-332,
-353
+527,
+536
 ]
 },
 {
 "k": 6,
-"nat": "addNewItemToQueue",
-"alt": "add_new_item_to_queue",
+"nat": "drainQueue(maximumItems",
+"alt": "drain_queue(maximum_items",
 "nat_span": [
-341,
-358
+685,
+708
 ],
 "alt_span": [
-359,
-380
+700,
+725
 ]
 },
 {
 "k": 7,
-"nat": "firstRemovedValue",
-"alt": "first_removed_value",
+"nat": "drainedItems",
+"alt": "drained_items",
 "nat_span": [
-370,
-387
+720,
+732
 ],
 "alt_span": [
-392,
-411
+737,
+750
 ]
 },
 {
 "k": 8,
-"nat": "removeFirstItemFromQueue",
-"alt": "remove_first_item_from_queue",
+"nat": "remainingBudget",
+"alt": "remaining_budget",
 "nat_span": [
-390,
-414
+745,
+760
 ],
 "alt_span": [
-414,
-442
+763,
+779
 ]
 },
 {
 "k": 9,
-"nat": "secondRemovedValue",
-"alt": "second_removed_value",
+"nat": "frontItem",
+"alt": "front_item",
 "nat_span": [
-424,
-442
+859,
+868
 ],
 "alt_span": [
-452,
-472
+881,
+891
 ]
 },
 {
 "k": 10,
-"nat": "removeFirstItemFromQueue",
-"alt": "remove_first_item_from_queue",
+"nat": "runQueueDemo(initialItems",
+"alt": "run_queue_demo(initial_items",
 "nat_span": [
-445,
-469
+1030,
+1055
 ],
 "alt_span": [
-475,
-503
+1058,
+1086
 ]
 },
 {
 "k": 11,
-"nat": "thirdRemovedValueWhenEmpty",
-"alt": "third_removed_value_when_empty",
+"nat": "reportLines",
+"alt": "report_lines",
 "nat_span": [
-479,
-505
+1067,
+1078
 ],
 "alt_span": [
-513,
-543
+1098,
+1110
 ]
 },
 {
 "k": 12,
-"nat": "removeFirstItemFromQueue",
-"alt": "remove_first_item_from_queue",
+"nat": "acceptedCount",
+"alt": "accepted_count",
 "nat_span": [
-508,
-532
+1093,
+1106
 ],
 "alt_span": [
-546,
-574
+1125,
+1139
 ]
 },
 {
 "k": 13,
-"nat": "firstRemovedValue",
-"alt": "first_removed_value",
+"nat": "firstTwoItems",
+"alt": "first_two_items",
 "nat_span": [
-549,
-566
+1280,
+1293
 ],
 "alt_span": [
-591,
-610
+1322,
+1337
 ]
 },
 {
 "k": 14,
-"nat": "secondRemovedValue",
-"alt": "second_removed_value",
+"nat": "remainingItems",
+"alt": "remaining_items",
 "nat_span": [
-597,
-615
+1414,
+1428
 ],
 "alt_span": [
-641,
-661
+1464,
+1479
 ]
 },
 {
 "k": 15,
-"nat": "thirdRemovedValueWhenEmpty",
-"alt": "third_removed_value_when_empty",
+"nat": "reportLine",
+"alt": "report_line",
 "nat_span": [
-646,
-672
+1618,
+1628
 ],
 "alt_span": [
-692,
-722
+1674,
+1685
 ]
 }
 ],
-"free_filter": true
+"k_en": 16,
+"shared_fraction": 0.918,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "peekFrontItem",
+"alt": "peek_front_item",
+"nat_span": [
+196,
+209
+],
+"alt_span": [
+196,
+211
+]
+},
+{
+"k": 1,
+"nat": "currentQueueSize",
+"alt": "current_queue_size",
+"nat_span": [
+273,
+289
+],
+"alt_span": [
+275,
+293
+]
+},
+{
+"k": 2,
+"nat": "formatQueueState",
+"alt": "format_queue_state",
+"nat_span": [
+329,
+345
+],
+"alt_span": [
+333,
+351
+]
+},
+{
+"k": 3,
+"nat": "enqueueAll(itemList",
+"alt": "enqueue_all(item_list",
+"nat_span": [
+457,
+476
+],
+"alt_span": [
+463,
+484
+]
+},
+{
+"k": 4,
+"nat": "itemsAccepted",
+"alt": "items_accepted",
+"nat_span": [
+486,
+499
+],
+"alt_span": [
+494,
+508
+]
+},
+{
+"k": 5,
+"nat": "nextItem",
+"alt": "next_item",
+"nat_span": [
+518,
+526
+],
+"alt_span": [
+527,
+536
+]
+},
+{
+"k": 6,
+"nat": "itemList",
+"alt": "item_list",
+"nat_span": [
+530,
+538
+],
+"alt_span": [
+540,
+549
+]
+},
+{
+"k": 7,
+"nat": "nextItem",
+"alt": "next_item",
+"nat_span": [
+550,
+558
+],
+"alt_span": [
+561,
+570
+]
+},
+{
+"k": 8,
+"nat": "nextItem",
+"alt": "next_item",
+"nat_span": [
+610,
+618
+],
+"alt_span": [
+622,
+631
+]
+},
+{
+"k": 9,
+"nat": "itemsAccepted",
+"alt": "items_accepted",
+"nat_span": [
+625,
+638
+],
+"alt_span": [
+638,
+652
+]
+},
+{
+"k": 10,
+"nat": "itemsAccepted",
+"alt": "items_accepted",
+"nat_span": [
+658,
+671
+],
+"alt_span": [
+672,
+686
+]
+},
+{
+"k": 11,
+"nat": "drainQueue(maximumItems",
+"alt": "drain_queue(maximum_items",
+"nat_span": [
+685,
+708
+],
+"alt_span": [
+700,
+725
+]
+},
+{
+"k": 12,
+"nat": "drainedItems",
+"alt": "drained_items",
+"nat_span": [
+720,
+732
+],
+"alt_span": [
+737,
+750
+]
+},
+{
+"k": 13,
+"nat": "remainingBudget",
+"alt": "remaining_budget",
+"nat_span": [
+745,
+760
+],
+"alt_span": [
+763,
+779
+]
+},
+{
+"k": 14,
+"nat": "maximumItems",
+"alt": "maximum_items",
+"nat_span": [
+763,
+775
+],
+"alt_span": [
+782,
+795
+]
+},
+{
+"k": 15,
+"nat": "maximumItems",
+"alt": "maximum_items",
+"nat_span": [
+803,
+815
+],
+"alt_span": [
+823,
+836
+]
+},
+{
+"k": 16,
+"nat": "remainingBudget",
+"alt": "remaining_budget",
+"nat_span": [
+826,
+841
+],
+"alt_span": [
+847,
+863
+]
+},
+{
+"k": 17,
+"nat": "frontItem",
+"alt": "front_item",
+"nat_span": [
+859,
+868
+],
+"alt_span": [
+881,
+891
+]
+},
+{
+"k": 18,
+"nat": "frontItem",
+"alt": "front_item",
+"nat_span": [
+890,
+899
+],
+"alt_span": [
+913,
+923
+]
+},
+{
+"k": 19,
+"nat": "drainedItems",
+"alt": "drained_items",
+"nat_span": [
+935,
+947
+],
+"alt_span": [
+959,
+972
+]
+},
+{
+"k": 20,
+"nat": "frontItem",
+"alt": "front_item",
+"nat_span": [
+953,
+962
+],
+"alt_span": [
+978,
+988
+]
+},
+{
+"k": 21,
+"nat": "remainingBudget",
+"alt": "remaining_budget",
+"nat_span": [
+969,
+984
+],
+"alt_span": [
+995,
+1011
+]
+},
+{
+"k": 22,
+"nat": "drainedItems",
+"alt": "drained_items",
+"nat_span": [
+1004,
+1016
+],
+"alt_span": [
+1031,
+1044
+]
+},
+{
+"k": 23,
+"nat": "runQueueDemo(initialItems",
+"alt": "run_queue_demo(initial_items",
+"nat_span": [
+1030,
+1055
+],
+"alt_span": [
+1058,
+1086
+]
+},
+{
+"k": 24,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1067,
+1078
+],
+"alt_span": [
+1098,
+1110
+]
+},
+{
+"k": 25,
+"nat": "acceptedCount",
+"alt": "accepted_count",
+"nat_span": [
+1093,
+1106
+],
+"alt_span": [
+1125,
+1139
+]
+},
+{
+"k": 26,
+"nat": "enqueueAll(initialItems",
+"alt": "enqueue_all(initial_items",
+"nat_span": [
+1109,
+1132
+],
+"alt_span": [
+1142,
+1167
+]
+},
+{
+"k": 27,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1137,
+1148
+],
+"alt_span": [
+1172,
+1184
+]
+},
+{
+"k": 28,
+"nat": "acceptedCount",
+"alt": "accepted_count",
+"nat_span": [
+1166,
+1179
+],
+"alt_span": [
+1202,
+1216
+]
+},
+{
+"k": 29,
+"nat": "formatQueueState",
+"alt": "format_queue_state",
+"nat_span": [
+1192,
+1208
+],
+"alt_span": [
+1229,
+1247
+]
+},
+{
+"k": 30,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1217,
+1228
+],
+"alt_span": [
+1256,
+1268
+]
+},
+{
+"k": 31,
+"nat": "peekFrontItem",
+"alt": "peek_front_item",
+"nat_span": [
+1251,
+1264
+],
+"alt_span": [
+1291,
+1306
+]
+},
+{
+"k": 32,
+"nat": "firstTwoItems",
+"alt": "first_two_items",
+"nat_span": [
+1280,
+1293
+],
+"alt_span": [
+1322,
+1337
+]
+},
+{
+"k": 33,
+"nat": "drainQueue",
+"alt": "drain_queue",
+"nat_span": [
+1296,
+1306
+],
+"alt_span": [
+1340,
+1351
+]
+},
+{
+"k": 34,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1313,
+1324
+],
+"alt_span": [
+1358,
+1370
+]
+},
+{
+"k": 35,
+"nat": "firstTwoItems",
+"alt": "first_two_items",
+"nat_span": [
+1343,
+1356
+],
+"alt_span": [
+1389,
+1404
+]
+},
+{
+"k": 36,
+"nat": "currentQueueSize",
+"alt": "current_queue_size",
+"nat_span": [
+1382,
+1398
+],
+"alt_span": [
+1430,
+1448
+]
+},
+{
+"k": 37,
+"nat": "remainingItems",
+"alt": "remaining_items",
+"nat_span": [
+1414,
+1428
+],
+"alt_span": [
+1464,
+1479
+]
+},
+{
+"k": 38,
+"nat": "drainQueue",
+"alt": "drain_queue",
+"nat_span": [
+1431,
+1441
+],
+"alt_span": [
+1482,
+1493
+]
+},
+{
+"k": 39,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1447,
+1458
+],
+"alt_span": [
+1499,
+1511
+]
+},
+{
+"k": 40,
+"nat": "remainingItems",
+"alt": "remaining_items",
+"nat_span": [
+1486,
+1500
+],
+"alt_span": [
+1539,
+1554
+]
+},
+{
+"k": 41,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1519,
+1530
+],
+"alt_span": [
+1573,
+1585
+]
+},
+{
+"k": 42,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1591,
+1602
+],
+"alt_span": [
+1646,
+1658
+]
+},
+{
+"k": 43,
+"nat": "reportLine",
+"alt": "report_line",
+"nat_span": [
+1618,
+1628
+],
+"alt_span": [
+1674,
+1685
+]
+},
+{
+"k": 44,
+"nat": "runQueueDemo",
+"alt": "run_queue_demo",
+"nat_span": [
+1632,
+1644
+],
+"alt_span": [
+1689,
+1703
+]
+},
+{
+"k": 45,
+"nat": "reportLine",
+"alt": "report_line",
+"nat_span": [
+1693,
+1703
+],
+"alt_span": [
+1752,
+1763
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_camel_snake__t201",
@@ -78964,821 +81032,6 @@
 "alt_span": [
 1151,
 1171
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "js_camel_snake__t209",
-"family": "js_camel_snake",
-"topic": "Replace All Occurrences of Substring",
-"angle": "code",
-"text_es": "Create a function that replaces all occurrences of a substring within a string with another substring. The function should return the modified string. Implement `replaceAll(mainStr, searchStr, replaceStr)`.\nExample: `replaceAll('hello world world', 'world', 'there')` should return `'hello there there'`.\nExample: `replaceAll('banana', 'a', 'o')` should return `'bonono'`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "function performGlobalStringReplacement(originalText, targetSubstring, replacementSubstring) {\n  let modifiedStringResult = '';\n  let lastAppendedIndex = 0;\n  let currentIndexPosition = originalText.indexOf(targetSubstring, 0);\n\n  while (currentIndexPosition !== -1) {\n    modifiedStringResult += originalText.substring(lastAppendedIndex, currentIndexPosition);\n    modifiedStringResult += replacementSubstring;\n    lastAppendedIndex = currentIndexPosition + targetSubstring.length;\n    currentIndexPosition = originalText.indexOf(targetSubstring, lastAppendedIndex);\n  }\n\n  modifiedStringResult += originalText.substring(lastAppendedIndex);\n  return modifiedStringResult;\n}\n\nfunction processStringModification(mainInputString, substringToFind, newSubstringContent) {\n  return mainInputString.split(substringToFind).join(newSubstringContent);\n}\n\nfunction applyStringManipulation(inputString, lookupSubstring, substitutionContent) {\n  let stringAfterAllReplacements = '';\n  let lastInsertionPoint = 0;\n  let currentMatchLocation = inputString.indexOf(lookupSubstring, 0);\n\n  while (currentMatchLocation !== -1) {\n    stringAfterAllReplacements += inputString.substring(lastInsertionPoint, currentMatchLocation);\n    stringAfterAllReplacements += substitutionContent;\n    lastInsertionPoint = currentMatchLocation + lookupSubstring.length;\n    currentMatchLocation = inputString.indexOf(lookupSubstring, lastInsertionPoint);\n  }\n\n  stringAfterAllReplacements += inputString.substring(lastInsertionPoint);\n  return stringAfterAllReplacements;\n}\n\nfunction replaceAll(mainStr, searchStr, replaceStr) {\n  // Using the native String.prototype.replace with a global regex for modern JS environments\n  // This is often the most concise and performant approach.\n  if (typeof mainStr.replaceAll === 'function') {\n    return mainStr.replaceAll(searchStr, replaceStr);\n  }\n\n  // Fallback for older environments or demonstrating custom logic\n  // This approach is more explicit and aligns with the custom implementation requirement.\n  const escapedSearchString = searchStr.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&'); // Escape special characters\n  const globalRegexPattern = new RegExp(escapedSearchString, 'g');\n  return mainStr.replace(globalRegexPattern, replaceStr);\n}\n",
-"text_alt": "function perform_global_string_replacement(original_text, target_substring, replacement_substring) {\n  let modified_string_result = '';\n  let last_appended_index = 0;\n  let current_index_position = original_text.indexOf(target_substring, 0);\n\n  while (current_index_position !== -1) {\n    modified_string_result += original_text.substring(last_appended_index, current_index_position);\n    modified_string_result += replacement_substring;\n    last_appended_index = current_index_position + target_substring.length;\n    current_index_position = original_text.indexOf(target_substring, last_appended_index);\n  }\n\n  modified_string_result += original_text.substring(last_appended_index);\n  return modified_string_result;\n}\n\nfunction process_string_modification(main_input_string, substring_to_find, new_substring_content) {\n  return main_input_string.split(substring_to_find).join(new_substring_content);\n}\n\nfunction apply_string_manipulation(input_string, lookup_substring, substitution_content) {\n  let string_after_all_replacements = '';\n  let last_insertion_point = 0;\n  let current_match_location = input_string.indexOf(lookup_substring, 0);\n\n  while (current_match_location !== -1) {\n    string_after_all_replacements += input_string.substring(last_insertion_point, current_match_location);\n    string_after_all_replacements += substitution_content;\n    last_insertion_point = current_match_location + lookup_substring.length;\n    current_match_location = input_string.indexOf(lookup_substring, last_insertion_point);\n  }\n\n  string_after_all_replacements += input_string.substring(last_insertion_point);\n  return string_after_all_replacements;\n}\n\nfunction replaceAll(mainStr, searchStr, replaceStr) {\n  // Using the native String.prototype.replace with a global regex for modern JS environments\n  // This is often the most concise and performant approach.\n  if (typeof mainStr.replaceAll === 'function') {\n    return mainStr.replaceAll(searchStr, replaceStr);\n  }\n\n  // Fallback for older environments or demonstrating custom logic\n  // This approach is more explicit and aligns with the custom implementation requirement.\n  const escaped_search_string = searchStr.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&'); // Escape special characters\n  const global_regex_pattern = new RegExp(escaped_search_string, 'g');\n  return mainStr.replace(global_regex_pattern, replaceStr);\n}\n",
-"opps": [
-{
-"k": 0,
-"nat": "performGlobalStringReplacement(originalText, targetSubstring, replacementSubstring",
-"alt": "perform_global_string_replacement(original_text, target_substring, replacement_substring",
-"nat_span": [
-9,
-91
-],
-"alt_span": [
-9,
-97
-]
-},
-{
-"k": 1,
-"nat": "modifiedStringResult",
-"alt": "modified_string_result",
-"nat_span": [
-101,
-121
-],
-"alt_span": [
-107,
-129
-]
-},
-{
-"k": 2,
-"nat": "lastAppendedIndex",
-"alt": "last_appended_index",
-"nat_span": [
-134,
-151
-],
-"alt_span": [
-142,
-161
-]
-},
-{
-"k": 3,
-"nat": "currentIndexPosition",
-"alt": "current_index_position",
-"nat_span": [
-163,
-183
-],
-"alt_span": [
-173,
-195
-]
-},
-{
-"k": 4,
-"nat": "processStringModification(mainInputString, substringToFind, newSubstringContent",
-"alt": "process_string_modification(main_input_string, substring_to_find, new_substring_content",
-"nat_span": [
-685,
-764
-],
-"alt_span": [
-729,
-816
-]
-},
-{
-"k": 5,
-"nat": "applyStringManipulation(inputString, lookupSubstring, substitutionContent",
-"alt": "apply_string_manipulation(input_string, lookup_substring, substitution_content",
-"nat_span": [
-855,
-928
-],
-"alt_span": [
-913,
-991
-]
-},
-{
-"k": 6,
-"nat": "stringAfterAllReplacements",
-"alt": "string_after_all_replacements",
-"nat_span": [
-938,
-964
-],
-"alt_span": [
-1001,
-1030
-]
-},
-{
-"k": 7,
-"nat": "lastInsertionPoint",
-"alt": "last_insertion_point",
-"nat_span": [
-977,
-995
-],
-"alt_span": [
-1043,
-1063
-]
-},
-{
-"k": 8,
-"nat": "currentMatchLocation",
-"alt": "current_match_location",
-"nat_span": [
-1007,
-1027
-],
-"alt_span": [
-1075,
-1097
-]
-},
-{
-"k": 9,
-"nat": "escapedSearchString",
-"alt": "escaped_search_string",
-"nat_span": [
-2027,
-2046
-],
-"alt_span": [
-2133,
-2154
-]
-},
-{
-"k": 10,
-"nat": "globalRegexPattern",
-"alt": "global_regex_pattern",
-"nat_span": [
-2136,
-2154
-],
-"alt_span": [
-2244,
-2264
-]
-}
-],
-"k_en": 11,
-"shared_fraction": 0.881,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "performGlobalStringReplacement(originalText, targetSubstring, replacementSubstring",
-"alt": "perform_global_string_replacement(original_text, target_substring, replacement_substring",
-"nat_span": [
-9,
-91
-],
-"alt_span": [
-9,
-97
-]
-},
-{
-"k": 1,
-"nat": "modifiedStringResult",
-"alt": "modified_string_result",
-"nat_span": [
-101,
-121
-],
-"alt_span": [
-107,
-129
-]
-},
-{
-"k": 2,
-"nat": "lastAppendedIndex",
-"alt": "last_appended_index",
-"nat_span": [
-134,
-151
-],
-"alt_span": [
-142,
-161
-]
-},
-{
-"k": 3,
-"nat": "currentIndexPosition",
-"alt": "current_index_position",
-"nat_span": [
-163,
-183
-],
-"alt_span": [
-173,
-195
-]
-},
-{
-"k": 4,
-"nat": "originalText",
-"alt": "original_text",
-"nat_span": [
-186,
-198
-],
-"alt_span": [
-198,
-211
-]
-},
-{
-"k": 5,
-"nat": "targetSubstring",
-"alt": "target_substring",
-"nat_span": [
-207,
-222
-],
-"alt_span": [
-220,
-236
-]
-},
-{
-"k": 6,
-"nat": "currentIndexPosition",
-"alt": "current_index_position",
-"nat_span": [
-238,
-258
-],
-"alt_span": [
-252,
-274
-]
-},
-{
-"k": 7,
-"nat": "modifiedStringResult",
-"alt": "modified_string_result",
-"nat_span": [
-273,
-293
-],
-"alt_span": [
-289,
-311
-]
-},
-{
-"k": 8,
-"nat": "originalText",
-"alt": "original_text",
-"nat_span": [
-297,
-309
-],
-"alt_span": [
-315,
-328
-]
-},
-{
-"k": 9,
-"nat": "lastAppendedIndex, currentIndexPosition",
-"alt": "last_appended_index, current_index_position",
-"nat_span": [
-320,
-359
-],
-"alt_span": [
-339,
-382
-]
-},
-{
-"k": 10,
-"nat": "modifiedStringResult",
-"alt": "modified_string_result",
-"nat_span": [
-366,
-386
-],
-"alt_span": [
-389,
-411
-]
-},
-{
-"k": 11,
-"nat": "replacementSubstring;\n    lastAppendedIndex",
-"alt": "replacement_substring;\n    last_appended_index",
-"nat_span": [
-390,
-433
-],
-"alt_span": [
-415,
-461
-]
-},
-{
-"k": 12,
-"nat": "currentIndexPosition",
-"alt": "current_index_position",
-"nat_span": [
-436,
-456
-],
-"alt_span": [
-464,
-486
-]
-},
-{
-"k": 13,
-"nat": "targetSubstring",
-"alt": "target_substring",
-"nat_span": [
-459,
-474
-],
-"alt_span": [
-489,
-505
-]
-},
-{
-"k": 14,
-"nat": "currentIndexPosition",
-"alt": "current_index_position",
-"nat_span": [
-487,
-507
-],
-"alt_span": [
-518,
-540
-]
-},
-{
-"k": 15,
-"nat": "originalText",
-"alt": "original_text",
-"nat_span": [
-510,
-522
-],
-"alt_span": [
-543,
-556
-]
-},
-{
-"k": 16,
-"nat": "targetSubstring, lastAppendedIndex",
-"alt": "target_substring, last_appended_index",
-"nat_span": [
-531,
-565
-],
-"alt_span": [
-565,
-602
-]
-},
-{
-"k": 17,
-"nat": "modifiedStringResult",
-"alt": "modified_string_result",
-"nat_span": [
-575,
-595
-],
-"alt_span": [
-612,
-634
-]
-},
-{
-"k": 18,
-"nat": "originalText",
-"alt": "original_text",
-"nat_span": [
-599,
-611
-],
-"alt_span": [
-638,
-651
-]
-},
-{
-"k": 19,
-"nat": "lastAppendedIndex",
-"alt": "last_appended_index",
-"nat_span": [
-622,
-639
-],
-"alt_span": [
-662,
-681
-]
-},
-{
-"k": 20,
-"nat": "modifiedStringResult",
-"alt": "modified_string_result",
-"nat_span": [
-651,
-671
-],
-"alt_span": [
-693,
-715
-]
-},
-{
-"k": 21,
-"nat": "processStringModification(mainInputString, substringToFind, newSubstringContent",
-"alt": "process_string_modification(main_input_string, substring_to_find, new_substring_content",
-"nat_span": [
-685,
-764
-],
-"alt_span": [
-729,
-816
-]
-},
-{
-"k": 22,
-"nat": "mainInputString",
-"alt": "main_input_string",
-"nat_span": [
-777,
-792
-],
-"alt_span": [
-829,
-846
-]
-},
-{
-"k": 23,
-"nat": "substringToFind",
-"alt": "substring_to_find",
-"nat_span": [
-799,
-814
-],
-"alt_span": [
-853,
-870
-]
-},
-{
-"k": 24,
-"nat": "newSubstringContent",
-"alt": "new_substring_content",
-"nat_span": [
-821,
-840
-],
-"alt_span": [
-877,
-898
-]
-},
-{
-"k": 25,
-"nat": "applyStringManipulation(inputString, lookupSubstring, substitutionContent",
-"alt": "apply_string_manipulation(input_string, lookup_substring, substitution_content",
-"nat_span": [
-855,
-928
-],
-"alt_span": [
-913,
-991
-]
-},
-{
-"k": 26,
-"nat": "stringAfterAllReplacements",
-"alt": "string_after_all_replacements",
-"nat_span": [
-938,
-964
-],
-"alt_span": [
-1001,
-1030
-]
-},
-{
-"k": 27,
-"nat": "lastInsertionPoint",
-"alt": "last_insertion_point",
-"nat_span": [
-977,
-995
-],
-"alt_span": [
-1043,
-1063
-]
-},
-{
-"k": 28,
-"nat": "currentMatchLocation",
-"alt": "current_match_location",
-"nat_span": [
-1007,
-1027
-],
-"alt_span": [
-1075,
-1097
-]
-},
-{
-"k": 29,
-"nat": "inputString",
-"alt": "input_string",
-"nat_span": [
-1030,
-1041
-],
-"alt_span": [
-1100,
-1112
-]
-},
-{
-"k": 30,
-"nat": "lookupSubstring",
-"alt": "lookup_substring",
-"nat_span": [
-1050,
-1065
-],
-"alt_span": [
-1121,
-1137
-]
-},
-{
-"k": 31,
-"nat": "currentMatchLocation",
-"alt": "current_match_location",
-"nat_span": [
-1081,
-1101
-],
-"alt_span": [
-1153,
-1175
-]
-},
-{
-"k": 32,
-"nat": "stringAfterAllReplacements",
-"alt": "string_after_all_replacements",
-"nat_span": [
-1116,
-1142
-],
-"alt_span": [
-1190,
-1219
-]
-},
-{
-"k": 33,
-"nat": "inputString",
-"alt": "input_string",
-"nat_span": [
-1146,
-1157
-],
-"alt_span": [
-1223,
-1235
-]
-},
-{
-"k": 34,
-"nat": "lastInsertionPoint, currentMatchLocation",
-"alt": "last_insertion_point, current_match_location",
-"nat_span": [
-1168,
-1208
-],
-"alt_span": [
-1246,
-1290
-]
-},
-{
-"k": 35,
-"nat": "stringAfterAllReplacements",
-"alt": "string_after_all_replacements",
-"nat_span": [
-1215,
-1241
-],
-"alt_span": [
-1297,
-1326
-]
-},
-{
-"k": 36,
-"nat": "substitutionContent;\n    lastInsertionPoint",
-"alt": "substitution_content;\n    last_insertion_point",
-"nat_span": [
-1245,
-1288
-],
-"alt_span": [
-1330,
-1376
-]
-},
-{
-"k": 37,
-"nat": "currentMatchLocation",
-"alt": "current_match_location",
-"nat_span": [
-1291,
-1311
-],
-"alt_span": [
-1379,
-1401
-]
-},
-{
-"k": 38,
-"nat": "lookupSubstring",
-"alt": "lookup_substring",
-"nat_span": [
-1314,
-1329
-],
-"alt_span": [
-1404,
-1420
-]
-},
-{
-"k": 39,
-"nat": "currentMatchLocation",
-"alt": "current_match_location",
-"nat_span": [
-1342,
-1362
-],
-"alt_span": [
-1433,
-1455
-]
-},
-{
-"k": 40,
-"nat": "inputString",
-"alt": "input_string",
-"nat_span": [
-1365,
-1376
-],
-"alt_span": [
-1458,
-1470
-]
-},
-{
-"k": 41,
-"nat": "lookupSubstring, lastInsertionPoint",
-"alt": "lookup_substring, last_insertion_point",
-"nat_span": [
-1385,
-1420
-],
-"alt_span": [
-1479,
-1517
-]
-},
-{
-"k": 42,
-"nat": "stringAfterAllReplacements",
-"alt": "string_after_all_replacements",
-"nat_span": [
-1430,
-1456
-],
-"alt_span": [
-1527,
-1556
-]
-},
-{
-"k": 43,
-"nat": "inputString",
-"alt": "input_string",
-"nat_span": [
-1460,
-1471
-],
-"alt_span": [
-1560,
-1572
-]
-},
-{
-"k": 44,
-"nat": "lastInsertionPoint",
-"alt": "last_insertion_point",
-"nat_span": [
-1482,
-1500
-],
-"alt_span": [
-1583,
-1603
-]
-},
-{
-"k": 45,
-"nat": "stringAfterAllReplacements",
-"alt": "string_after_all_replacements",
-"nat_span": [
-1512,
-1538
-],
-"alt_span": [
-1615,
-1644
-]
-},
-{
-"k": 46,
-"nat": "escapedSearchString",
-"alt": "escaped_search_string",
-"nat_span": [
-2027,
-2046
-],
-"alt_span": [
-2133,
-2154
-]
-},
-{
-"k": 47,
-"nat": "globalRegexPattern",
-"alt": "global_regex_pattern",
-"nat_span": [
-2136,
-2154
-],
-"alt_span": [
-2244,
-2264
-]
-},
-{
-"k": 48,
-"nat": "escapedSearchString",
-"alt": "escaped_search_string",
-"nat_span": [
-2168,
-2187
-],
-"alt_span": [
-2278,
-2299
-]
-},
-{
-"k": 49,
-"nat": "globalRegexPattern",
-"alt": "global_regex_pattern",
-"nat_span": [
-2220,
-2238
-],
-"alt_span": [
-2332,
-2352
 ]
 }
 ],

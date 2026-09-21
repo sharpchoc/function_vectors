@@ -15429,7 +15429,7 @@
 ],
 "k_en": 6,
 "shared_fraction": 0.96,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -15640,342 +15640,1479 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import math\n\ndef calculate_euclidean_distance(first_x_coordinate, first_y_coordinate, second_x_coordinate, second_y_coordinate):\n    \"\"\"\n    Calculates the Euclidean distance between two points (x1, y1) and (x2, y2) in a 2D plane.\n\n    Args:\n        first_x_coordinate (float or int): The x-coordinate of the first point.\n        first_y_coordinate (float or int): The y-coordinate of the first point.\n        second_x_coordinate (float or int): The x-coordinate of the second point.\n        second_y_coordinate (float or int): The y-coordinate of the second point.\n\n    Returns:\n        float: The Euclidean distance between the two points.\n    \"\"\"\n    x_difference = second_x_coordinate - first_x_coordinate\n    y_difference = second_y_coordinate - first_y_coordinate\n    squared_x_difference = x_difference ** 2\n    squared_y_difference = y_difference ** 2\n    sum_of_squared_differences = squared_x_difference + squared_y_difference\n    final_calculated_distance = math.sqrt(sum_of_squared_differences)\n    return final_calculated_distance\n\ndef distance_2d(first_point_x, first_point_y, second_point_x, second_point_y):\n    \"\"\"\n    Calculates the Euclidean distance between two points (x1, y1) and (x2, y2) in a 2D plane.\n    This is a wrapper function for consistency with the task's naming convention.\n    \"\"\"\n    return calculate_euclidean_distance(first_point_x, first_point_y, second_point_x, second_point_y)\n",
-"text_alt": "import math\n\ndef calculateEuclideanDistance(firstXCoordinate, firstYCoordinate, secondXCoordinate, secondYCoordinate):\n    \"\"\"\n    Calculates the Euclidean distance between two points (x1, y1) and (x2, y2) in a 2D plane.\n\n    Args:\n        firstXCoordinate (float or int): The x-coordinate of the first point.\n        firstYCoordinate (float or int): The y-coordinate of the first point.\n        secondXCoordinate (float or int): The x-coordinate of the second point.\n        secondYCoordinate (float or int): The y-coordinate of the second point.\n\n    Returns:\n        float: The Euclidean distance between the two points.\n    \"\"\"\n    xDifference = secondXCoordinate - firstXCoordinate\n    yDifference = secondYCoordinate - firstYCoordinate\n    squaredXDifference = xDifference ** 2\n    squaredYDifference = yDifference ** 2\n    sumOfSquaredDifferences = squaredXDifference + squaredYDifference\n    finalCalculatedDistance = math.sqrt(sumOfSquaredDifferences)\n    return finalCalculatedDistance\n\ndef distance_2d(firstPointX, firstPointY, secondPointX, secondPointY):\n    \"\"\"\n    Calculates the Euclidean distance between two points (x1, y1) and (x2, y2) in a 2D plane.\n    This is a wrapper function for consistency with the task's naming convention.\n    \"\"\"\n    return calculateEuclideanDistance(firstPointX, firstPointY, secondPointX, secondPointY)\n",
+"text_nat": "import math\n\n\ndef distance_2d(x1, y1, x2, y2):\n    delta_x = x2 - x1\n    delta_y = y2 - y1\n    return math.sqrt(delta_x * delta_x + delta_y * delta_y)\n\n\ndef parse_point(point_text):\n    coordinate_parts = point_text.replace(\"(\", \"\").replace(\")\", \"\").split(\",\")\n    if len(coordinate_parts) != 2:\n        raise ValueError(\"a point needs exactly two coordinates: \" + point_text)\n    x_value = float(coordinate_parts[0].strip())\n    y_value = float(coordinate_parts[1].strip())\n    return x_value, y_value\n\n\ndef parse_point_list(point_texts):\n    parsed_points = []\n    for single_text in point_texts:\n        parsed_points.append(parse_point(single_text))\n    return parsed_points\n\n\ndef path_length(point_list):\n    total_length = 0.0\n    for segment_index in range(1, len(point_list)):\n        previous_x, previous_y = point_list[segment_index - 1]\n        current_x, current_y = point_list[segment_index]\n        total_length += distance_2d(previous_x, previous_y, current_x, current_y)\n    return total_length\n\n\ndef longest_segment(point_list):\n    max_distance = 0.0\n    max_index = 0\n    for segment_index in range(1, len(point_list)):\n        start_x, start_y = point_list[segment_index - 1]\n        end_x, end_y = point_list[segment_index]\n        segment_distance = distance_2d(start_x, start_y, end_x, end_y)\n        if segment_distance > max_distance:\n            max_distance = segment_distance\n            max_index = segment_index - 1\n    return max_index, max_distance\n\n\ndef nearest_pair(point_list):\n    best_pair = (0, 0)\n    best_distance = float(\"inf\")\n    total_count = len(point_list)\n    for first_index in range(total_count):\n        for second_index in range(first_index + 1, total_count):\n            first_x, first_y = point_list[first_index]\n            second_x, second_y = point_list[second_index]\n            pair_distance = distance_2d(first_x, first_y, second_x, second_y)\n            if pair_distance < best_distance:\n                best_distance = pair_distance\n                best_pair = (first_index, second_index)\n    return best_pair, best_distance\n\n\ndef format_report(point_list):\n    report_lines = [\"points: \" + str(len(point_list))]\n    report_lines.append(\"path length: {0:.4f}\".format(path_length(point_list)))\n    longest_index, longest_distance = longest_segment(point_list)\n    report_lines.append(\n        \"longest segment: {0} -> {1} ({2:.4f})\".format(\n            longest_index, longest_index + 1, longest_distance\n        )\n    )\n    (left_index, right_index), closest_distance = nearest_pair(point_list)\n    report_lines.append(\n        \"closest pair: {0} and {1} ({2:.4f})\".format(\n            left_index, right_index, closest_distance\n        )\n    )\n    return \"\\n\".join(report_lines)\n\n\ndef main():\n    raw_points = [\"(0, 0)\", \"(3, 4)\", \"(3, 4)\", \"(-1, 6.5)\", \"(10, 0)\"]\n    walked_points = parse_point_list(raw_points)\n    print(distance_2d(0, 0, 3, 4))\n    print(distance_2d(1, 1, 1, 1))\n    print(format_report(walked_points))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import math\n\n\ndef distance_2d(x1, y1, x2, y2):\n    deltaX = x2 - x1\n    deltaY = y2 - y1\n    return math.sqrt(deltaX * deltaX + deltaY * deltaY)\n\n\ndef parsePoint(pointText):\n    coordinateParts = pointText.replace(\"(\", \"\").replace(\")\", \"\").split(\",\")\n    if len(coordinateParts) != 2:\n        raise ValueError(\"a point needs exactly two coordinates: \" + pointText)\n    xValue = float(coordinateParts[0].strip())\n    yValue = float(coordinateParts[1].strip())\n    return xValue, yValue\n\n\ndef parsePointList(pointTexts):\n    parsedPoints = []\n    for singleText in pointTexts:\n        parsedPoints.append(parsePoint(singleText))\n    return parsedPoints\n\n\ndef pathLength(pointList):\n    totalLength = 0.0\n    for segmentIndex in range(1, len(pointList)):\n        previousX, previousY = pointList[segmentIndex - 1]\n        currentX, currentY = pointList[segmentIndex]\n        totalLength += distance_2d(previousX, previousY, currentX, currentY)\n    return totalLength\n\n\ndef longestSegment(pointList):\n    maxDistance = 0.0\n    maxIndex = 0\n    for segmentIndex in range(1, len(pointList)):\n        startX, startY = pointList[segmentIndex - 1]\n        endX, endY = pointList[segmentIndex]\n        segmentDistance = distance_2d(startX, startY, endX, endY)\n        if segmentDistance > maxDistance:\n            maxDistance = segmentDistance\n            maxIndex = segmentIndex - 1\n    return maxIndex, maxDistance\n\n\ndef nearestPair(pointList):\n    bestPair = (0, 0)\n    bestDistance = float(\"inf\")\n    totalCount = len(pointList)\n    for firstIndex in range(totalCount):\n        for secondIndex in range(firstIndex + 1, totalCount):\n            firstX, firstY = pointList[firstIndex]\n            secondX, secondY = pointList[secondIndex]\n            pairDistance = distance_2d(firstX, firstY, secondX, secondY)\n            if pairDistance < bestDistance:\n                bestDistance = pairDistance\n                bestPair = (firstIndex, secondIndex)\n    return bestPair, bestDistance\n\n\ndef formatReport(pointList):\n    reportLines = [\"points: \" + str(len(pointList))]\n    reportLines.append(\"path length: {0:.4f}\".format(pathLength(pointList)))\n    longestIndex, longestDistance = longestSegment(pointList)\n    reportLines.append(\n        \"longest segment: {0} -> {1} ({2:.4f})\".format(\n            longestIndex, longestIndex + 1, longestDistance\n        )\n    )\n    (leftIndex, rightIndex), closestDistance = nearestPair(pointList)\n    reportLines.append(\n        \"closest pair: {0} and {1} ({2:.4f})\".format(\n            leftIndex, rightIndex, closestDistance\n        )\n    )\n    return \"\\n\".join(reportLines)\n\n\ndef main():\n    rawPoints = [\"(0, 0)\", \"(3, 4)\", \"(3, 4)\", \"(-1, 6.5)\", \"(10, 0)\"]\n    walkedPoints = parsePointList(rawPoints)\n    print(distance_2d(0, 0, 3, 4))\n    print(distance_2d(1, 1, 1, 1))\n    print(formatReport(walkedPoints))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "calculate_euclidean_distance(first_x_coordinate, first_y_coordinate, second_x_coordinate, second_y_coordinate",
-"alt": "calculateEuclideanDistance(firstXCoordinate, firstYCoordinate, secondXCoordinate, secondYCoordinate",
+"nat": "delta_x",
+"alt": "deltaX",
 "nat_span": [
-17,
-126
+51,
+58
 ],
 "alt_span": [
-17,
-116
+51,
+57
 ]
 },
 {
 "k": 1,
-"nat": "x_difference",
-"alt": "xDifference",
+"nat": "delta_y",
+"alt": "deltaY",
 "nat_span": [
-654,
-666
+73,
+80
 ],
 "alt_span": [
-636,
-647
+72,
+78
 ]
 },
 {
 "k": 2,
-"nat": "squared_y_difference",
-"alt": "squaredYDifference",
+"nat": "parse_point(point_text",
+"alt": "parsePoint(pointText",
 "nat_span": [
-819,
-839
+157,
+179
 ],
 "alt_span": [
-788,
-806
+151,
+171
 ]
 },
 {
 "k": 3,
-"nat": "sum_of_squared_differences",
-"alt": "sumOfSquaredDifferences",
+"nat": "coordinate_parts",
+"alt": "coordinateParts",
 "nat_span": [
-864,
-890
+186,
+202
 ],
 "alt_span": [
-830,
-853
+178,
+193
 ]
 },
 {
 "k": 4,
-"nat": "first_point_x, first_point_y, second_point_x, second_point_y",
-"alt": "firstPointX, firstPointY, secondPointX, secondPointY",
+"nat": "y_value",
+"alt": "yValue",
 "nat_span": [
-1061,
-1121
+430,
+437
 ],
 "alt_span": [
-1013,
-1065
-]
-}
-],
-"k_en": 5,
-"shared_fraction": 0.908,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "calculate_euclidean_distance(first_x_coordinate, first_y_coordinate, second_x_coordinate, second_y_coordinate",
-"alt": "calculateEuclideanDistance(firstXCoordinate, firstYCoordinate, secondXCoordinate, secondYCoordinate",
-"nat_span": [
-17,
-126
-],
-"alt_span": [
-17,
-116
-]
-},
-{
-"k": 1,
-"nat": "first_x_coordinate",
-"alt": "firstXCoordinate",
-"nat_span": [
-250,
-268
-],
-"alt_span": [
-240,
-256
-]
-},
-{
-"k": 2,
-"nat": "first_y_coordinate",
-"alt": "firstYCoordinate",
-"nat_span": [
-330,
-348
-],
-"alt_span": [
-318,
-334
-]
-},
-{
-"k": 3,
-"nat": "second_x_coordinate",
-"alt": "secondXCoordinate",
-"nat_span": [
-410,
-429
-],
-"alt_span": [
-396,
-413
-]
-},
-{
-"k": 4,
-"nat": "second_y_coordinate",
-"alt": "secondYCoordinate",
-"nat_span": [
-492,
-511
-],
-"alt_span": [
-476,
-493
+416,
+422
 ]
 },
 {
 "k": 5,
-"nat": "x_difference",
-"alt": "xDifference",
+"nat": "parse_point_list(point_texts",
+"alt": "parsePointList(pointTexts",
 "nat_span": [
-654,
-666
+509,
+537
 ],
 "alt_span": [
-636,
-647
+491,
+516
 ]
 },
 {
 "k": 6,
-"nat": "second_x_coordinate",
-"alt": "secondXCoordinate",
+"nat": "parsed_points",
+"alt": "parsedPoints",
 "nat_span": [
-669,
-688
+544,
+557
 ],
 "alt_span": [
-650,
-667
+523,
+535
 ]
 },
 {
 "k": 7,
-"nat": "first_x_coordinate\n    y_difference",
-"alt": "firstXCoordinate\n    yDifference",
+"nat": "single_text",
+"alt": "singleText",
 "nat_span": [
-691,
-726
+571,
+582
 ],
 "alt_span": [
-670,
-702
+549,
+559
 ]
 },
 {
 "k": 8,
-"nat": "second_y_coordinate",
-"alt": "secondYCoordinate",
+"nat": "path_length(point_list",
+"alt": "pathLength(pointList",
 "nat_span": [
-729,
-748
+685,
+707
 ],
 "alt_span": [
-705,
-722
+657,
+677
 ]
 },
 {
 "k": 9,
-"nat": "first_y_coordinate\n    squared_x_difference",
-"alt": "firstYCoordinate\n    squaredXDifference",
+"nat": "total_length",
+"alt": "totalLength",
 "nat_span": [
-751,
-794
+714,
+726
 ],
 "alt_span": [
-725,
-764
+684,
+695
 ]
 },
 {
 "k": 10,
-"nat": "x_difference",
-"alt": "xDifference",
+"nat": "segment_index",
+"alt": "segmentIndex",
 "nat_span": [
-797,
-809
+741,
+754
 ],
 "alt_span": [
-767,
-778
+710,
+722
 ]
 },
 {
 "k": 11,
-"nat": "squared_y_difference",
-"alt": "squaredYDifference",
+"nat": "previous_x, previous_y",
+"alt": "previousX, previousY",
 "nat_span": [
-819,
-839
+793,
+815
 ],
 "alt_span": [
-788,
-806
+760,
+780
 ]
 },
 {
 "k": 12,
-"nat": "y_difference",
-"alt": "yDifference",
+"nat": "current_x, current_y",
+"alt": "currentX, currentY",
 "nat_span": [
-842,
-854
+856,
+876
 ],
 "alt_span": [
-809,
-820
+819,
+837
 ]
 },
 {
 "k": 13,
-"nat": "sum_of_squared_differences",
-"alt": "sumOfSquaredDifferences",
+"nat": "max_distance",
+"alt": "maxDistance",
 "nat_span": [
-864,
-890
+1050,
+1062
 ],
 "alt_span": [
-830,
-853
+1001,
+1012
 ]
 },
 {
 "k": 14,
-"nat": "squared_x_difference",
-"alt": "squaredXDifference",
+"nat": "max_index",
+"alt": "maxIndex",
 "nat_span": [
-893,
-913
+1073,
+1082
 ],
 "alt_span": [
-856,
-874
+1023,
+1031
 ]
 },
 {
 "k": 15,
-"nat": "squared_y_difference\n    final_calculated_distance",
-"alt": "squaredYDifference\n    finalCalculatedDistance",
+"nat": "start_x, start_y",
+"alt": "startX, startY",
 "nat_span": [
-916,
-966
+1147,
+1163
 ],
 "alt_span": [
-877,
-923
+1094,
+1108
 ]
 },
 {
 "k": 16,
-"nat": "sum_of_squared_differences",
-"alt": "sumOfSquaredDifferences",
+"nat": "end_x, end_y",
+"alt": "endX, endY",
 "nat_span": [
-979,
-1005
+1204,
+1216
 ],
 "alt_span": [
-936,
-959
+1147,
+1157
 ]
 },
 {
 "k": 17,
-"nat": "final_calculated_distance",
-"alt": "finalCalculatedDistance",
+"nat": "best_pair",
+"alt": "bestPair",
 "nat_span": [
-1018,
-1043
+1517,
+1526
 ],
 "alt_span": [
-972,
-995
+1441,
+1449
 ]
 },
 {
 "k": 18,
-"nat": "first_point_x, first_point_y, second_point_x, second_point_y",
-"alt": "firstPointX, firstPointY, secondPointX, secondPointY",
+"nat": "best_distance",
+"alt": "bestDistance",
 "nat_span": [
-1061,
-1121
+1540,
+1553
 ],
 "alt_span": [
-1013,
-1065
+1463,
+1475
 ]
 },
 {
 "k": 19,
-"nat": "calculate_euclidean_distance(first_point_x, first_point_y, second_point_x, second_point_y",
-"alt": "calculateEuclideanDistance(firstPointX, firstPointY, secondPointX, secondPointY",
+"nat": "total_count",
+"alt": "totalCount",
 "nat_span": [
-1327,
-1416
+1573,
+1584
 ],
 "alt_span": [
-1271,
-1350
+1495,
+1505
+]
+},
+{
+"k": 20,
+"nat": "first_index",
+"alt": "firstIndex",
+"nat_span": [
+1611,
+1622
+],
+"alt_span": [
+1531,
+1541
+]
+},
+{
+"k": 21,
+"nat": "second_index",
+"alt": "secondIndex",
+"nat_span": [
+1658,
+1670
+],
+"alt_span": [
+1576,
+1587
+]
+},
+{
+"k": 22,
+"nat": "first_x, first_y",
+"alt": "firstX, firstY",
+"nat_span": [
+1723,
+1739
+],
+"alt_span": [
+1638,
+1652
+]
+},
+{
+"k": 23,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+2123,
+2135
+],
+"alt_span": [
+2014,
+2025
+]
+},
+{
+"k": 24,
+"nat": "longest_index, longest_distance",
+"alt": "longestIndex, longestDistance",
+"nat_span": [
+2258,
+2289
+],
+"alt_span": [
+2144,
+2173
+]
+},
+{
+"k": 25,
+"nat": "left_index, right_index",
+"alt": "leftIndex, rightIndex",
+"nat_span": [
+2485,
+2508
+],
+"alt_span": [
+2363,
+2384
+]
+},
+{
+"k": 26,
+"nat": "closest_distance",
+"alt": "closestDistance",
+"nat_span": [
+2511,
+2527
+],
+"alt_span": [
+2387,
+2402
+]
+},
+{
+"k": 27,
+"nat": "raw_points",
+"alt": "rawPoints",
+"nat_span": [
+2757,
+2767
+],
+"alt_span": [
+2625,
+2634
+]
+},
+{
+"k": 28,
+"nat": "walked_points",
+"alt": "walkedPoints",
+"nat_span": [
+2829,
+2842
+],
+"alt_span": [
+2696,
+2708
 ]
 }
 ],
-"free_filter": true
+"k_en": 29,
+"shared_fraction": 0.84,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "delta_x",
+"alt": "deltaX",
+"nat_span": [
+51,
+58
+],
+"alt_span": [
+51,
+57
+]
+},
+{
+"k": 1,
+"nat": "delta_y",
+"alt": "deltaY",
+"nat_span": [
+73,
+80
+],
+"alt_span": [
+72,
+78
+]
+},
+{
+"k": 2,
+"nat": "delta_x",
+"alt": "deltaX",
+"nat_span": [
+112,
+119
+],
+"alt_span": [
+110,
+116
+]
+},
+{
+"k": 3,
+"nat": "delta_x",
+"alt": "deltaX",
+"nat_span": [
+122,
+129
+],
+"alt_span": [
+119,
+125
+]
+},
+{
+"k": 4,
+"nat": "delta_y",
+"alt": "deltaY",
+"nat_span": [
+132,
+139
+],
+"alt_span": [
+128,
+134
+]
+},
+{
+"k": 5,
+"nat": "delta_y",
+"alt": "deltaY",
+"nat_span": [
+142,
+149
+],
+"alt_span": [
+137,
+143
+]
+},
+{
+"k": 6,
+"nat": "parse_point(point_text",
+"alt": "parsePoint(pointText",
+"nat_span": [
+157,
+179
+],
+"alt_span": [
+151,
+171
+]
+},
+{
+"k": 7,
+"nat": "coordinate_parts",
+"alt": "coordinateParts",
+"nat_span": [
+186,
+202
+],
+"alt_span": [
+178,
+193
+]
+},
+{
+"k": 8,
+"nat": "point_text",
+"alt": "pointText",
+"nat_span": [
+205,
+215
+],
+"alt_span": [
+196,
+205
+]
+},
+{
+"k": 9,
+"nat": "coordinate_parts",
+"alt": "coordinateParts",
+"nat_span": [
+272,
+288
+],
+"alt_span": [
+262,
+277
+]
+},
+{
+"k": 10,
+"nat": "point_text)\n    x_value",
+"alt": "pointText)\n    xValue",
+"nat_span": [
+365,
+388
+],
+"alt_span": [
+354,
+375
+]
+},
+{
+"k": 11,
+"nat": "coordinate_parts",
+"alt": "coordinateParts",
+"nat_span": [
+397,
+413
+],
+"alt_span": [
+384,
+399
+]
+},
+{
+"k": 12,
+"nat": "y_value",
+"alt": "yValue",
+"nat_span": [
+430,
+437
+],
+"alt_span": [
+416,
+422
+]
+},
+{
+"k": 13,
+"nat": "coordinate_parts",
+"alt": "coordinateParts",
+"nat_span": [
+446,
+462
+],
+"alt_span": [
+431,
+446
+]
+},
+{
+"k": 14,
+"nat": "x_value, y_value",
+"alt": "xValue, yValue",
+"nat_span": [
+486,
+502
+],
+"alt_span": [
+470,
+484
+]
+},
+{
+"k": 15,
+"nat": "parse_point_list(point_texts",
+"alt": "parsePointList(pointTexts",
+"nat_span": [
+509,
+537
+],
+"alt_span": [
+491,
+516
+]
+},
+{
+"k": 16,
+"nat": "parsed_points",
+"alt": "parsedPoints",
+"nat_span": [
+544,
+557
+],
+"alt_span": [
+523,
+535
+]
+},
+{
+"k": 17,
+"nat": "single_text",
+"alt": "singleText",
+"nat_span": [
+571,
+582
+],
+"alt_span": [
+549,
+559
+]
+},
+{
+"k": 18,
+"nat": "point_texts:\n        parsed_points",
+"alt": "pointTexts:\n        parsedPoints",
+"nat_span": [
+586,
+620
+],
+"alt_span": [
+563,
+595
+]
+},
+{
+"k": 19,
+"nat": "parse_point(single_text",
+"alt": "parsePoint(singleText",
+"nat_span": [
+628,
+651
+],
+"alt_span": [
+603,
+624
+]
+},
+{
+"k": 20,
+"nat": "parsed_points",
+"alt": "parsedPoints",
+"nat_span": [
+665,
+678
+],
+"alt_span": [
+638,
+650
+]
+},
+{
+"k": 21,
+"nat": "path_length(point_list",
+"alt": "pathLength(pointList",
+"nat_span": [
+685,
+707
+],
+"alt_span": [
+657,
+677
+]
+},
+{
+"k": 22,
+"nat": "total_length",
+"alt": "totalLength",
+"nat_span": [
+714,
+726
+],
+"alt_span": [
+684,
+695
+]
+},
+{
+"k": 23,
+"nat": "segment_index",
+"alt": "segmentIndex",
+"nat_span": [
+741,
+754
+],
+"alt_span": [
+710,
+722
+]
+},
+{
+"k": 24,
+"nat": "point_list",
+"alt": "pointList",
+"nat_span": [
+771,
+781
+],
+"alt_span": [
+739,
+748
+]
+},
+{
+"k": 25,
+"nat": "previous_x, previous_y",
+"alt": "previousX, previousY",
+"nat_span": [
+793,
+815
+],
+"alt_span": [
+760,
+780
+]
+},
+{
+"k": 26,
+"nat": "point_list[segment_index",
+"alt": "pointList[segmentIndex",
+"nat_span": [
+818,
+842
+],
+"alt_span": [
+783,
+805
+]
+},
+{
+"k": 27,
+"nat": "current_x, current_y",
+"alt": "currentX, currentY",
+"nat_span": [
+856,
+876
+],
+"alt_span": [
+819,
+837
+]
+},
+{
+"k": 28,
+"nat": "point_list[segment_index]\n        total_length",
+"alt": "pointList[segmentIndex]\n        totalLength",
+"nat_span": [
+879,
+925
+],
+"alt_span": [
+840,
+883
+]
+},
+{
+"k": 29,
+"nat": "previous_x, previous_y, current_x, current_y",
+"alt": "previousX, previousY, currentX, currentY",
+"nat_span": [
+941,
+985
+],
+"alt_span": [
+899,
+939
+]
+},
+{
+"k": 30,
+"nat": "total_length",
+"alt": "totalLength",
+"nat_span": [
+998,
+1010
+],
+"alt_span": [
+952,
+963
+]
+},
+{
+"k": 31,
+"nat": "longest_segment(point_list",
+"alt": "longestSegment(pointList",
+"nat_span": [
+1017,
+1043
+],
+"alt_span": [
+970,
+994
+]
+},
+{
+"k": 32,
+"nat": "max_distance",
+"alt": "maxDistance",
+"nat_span": [
+1050,
+1062
+],
+"alt_span": [
+1001,
+1012
+]
+},
+{
+"k": 33,
+"nat": "max_index",
+"alt": "maxIndex",
+"nat_span": [
+1073,
+1082
+],
+"alt_span": [
+1023,
+1031
+]
+},
+{
+"k": 34,
+"nat": "segment_index",
+"alt": "segmentIndex",
+"nat_span": [
+1095,
+1108
+],
+"alt_span": [
+1044,
+1056
+]
+},
+{
+"k": 35,
+"nat": "point_list",
+"alt": "pointList",
+"nat_span": [
+1125,
+1135
+],
+"alt_span": [
+1073,
+1082
+]
+},
+{
+"k": 36,
+"nat": "start_x, start_y",
+"alt": "startX, startY",
+"nat_span": [
+1147,
+1163
+],
+"alt_span": [
+1094,
+1108
+]
+},
+{
+"k": 37,
+"nat": "point_list[segment_index",
+"alt": "pointList[segmentIndex",
+"nat_span": [
+1166,
+1190
+],
+"alt_span": [
+1111,
+1133
+]
+},
+{
+"k": 38,
+"nat": "end_x, end_y",
+"alt": "endX, endY",
+"nat_span": [
+1204,
+1216
+],
+"alt_span": [
+1147,
+1157
+]
+},
+{
+"k": 39,
+"nat": "point_list[segment_index]\n        segment_distance",
+"alt": "pointList[segmentIndex]\n        segmentDistance",
+"nat_span": [
+1219,
+1269
+],
+"alt_span": [
+1160,
+1207
+]
+},
+{
+"k": 40,
+"nat": "start_x, start_y, end_x, end_y",
+"alt": "startX, startY, endX, endY",
+"nat_span": [
+1284,
+1314
+],
+"alt_span": [
+1222,
+1248
+]
+},
+{
+"k": 41,
+"nat": "segment_distance",
+"alt": "segmentDistance",
+"nat_span": [
+1327,
+1343
+],
+"alt_span": [
+1261,
+1276
+]
+},
+{
+"k": 42,
+"nat": "max_distance:\n            max_distance",
+"alt": "maxDistance:\n            maxDistance",
+"nat_span": [
+1346,
+1384
+],
+"alt_span": [
+1279,
+1315
+]
+},
+{
+"k": 43,
+"nat": "segment_distance\n            max_index",
+"alt": "segmentDistance\n            maxIndex",
+"nat_span": [
+1387,
+1425
+],
+"alt_span": [
+1318,
+1354
+]
+},
+{
+"k": 44,
+"nat": "segment_index",
+"alt": "segmentIndex",
+"nat_span": [
+1428,
+1441
+],
+"alt_span": [
+1357,
+1369
+]
+},
+{
+"k": 45,
+"nat": "max_index, max_distance",
+"alt": "maxIndex, maxDistance",
+"nat_span": [
+1457,
+1480
+],
+"alt_span": [
+1385,
+1406
+]
+},
+{
+"k": 46,
+"nat": "nearest_pair(point_list",
+"alt": "nearestPair(pointList",
+"nat_span": [
+1487,
+1510
+],
+"alt_span": [
+1413,
+1434
+]
+},
+{
+"k": 47,
+"nat": "best_pair",
+"alt": "bestPair",
+"nat_span": [
+1517,
+1526
+],
+"alt_span": [
+1441,
+1449
+]
+},
+{
+"k": 48,
+"nat": "best_distance",
+"alt": "bestDistance",
+"nat_span": [
+1540,
+1553
+],
+"alt_span": [
+1463,
+1475
+]
+},
+{
+"k": 49,
+"nat": "total_count",
+"alt": "totalCount",
+"nat_span": [
+1573,
+1584
+],
+"alt_span": [
+1495,
+1505
+]
+},
+{
+"k": 50,
+"nat": "point_list",
+"alt": "pointList",
+"nat_span": [
+1591,
+1601
+],
+"alt_span": [
+1512,
+1521
+]
+},
+{
+"k": 51,
+"nat": "first_index",
+"alt": "firstIndex",
+"nat_span": [
+1611,
+1622
+],
+"alt_span": [
+1531,
+1541
+]
+},
+{
+"k": 52,
+"nat": "total_count",
+"alt": "totalCount",
+"nat_span": [
+1632,
+1643
+],
+"alt_span": [
+1551,
+1561
+]
+},
+{
+"k": 53,
+"nat": "second_index",
+"alt": "secondIndex",
+"nat_span": [
+1658,
+1670
+],
+"alt_span": [
+1576,
+1587
+]
+},
+{
+"k": 54,
+"nat": "first_index",
+"alt": "firstIndex",
+"nat_span": [
+1680,
+1691
+],
+"alt_span": [
+1597,
+1607
+]
+},
+{
+"k": 55,
+"nat": "total_count",
+"alt": "totalCount",
+"nat_span": [
+1697,
+1708
+],
+"alt_span": [
+1613,
+1623
+]
+},
+{
+"k": 56,
+"nat": "first_x, first_y",
+"alt": "firstX, firstY",
+"nat_span": [
+1723,
+1739
+],
+"alt_span": [
+1638,
+1652
+]
+},
+{
+"k": 57,
+"nat": "point_list[first_index]\n            second_x, second_y",
+"alt": "pointList[firstIndex]\n            secondX, secondY",
+"nat_span": [
+1742,
+1796
+],
+"alt_span": [
+1655,
+1705
+]
+},
+{
+"k": 58,
+"nat": "point_list[second_index]\n            pair_distance",
+"alt": "pointList[secondIndex]\n            pairDistance",
+"nat_span": [
+1799,
+1849
+],
+"alt_span": [
+1708,
+1755
+]
+},
+{
+"k": 59,
+"nat": "first_x, first_y, second_x, second_y",
+"alt": "firstX, firstY, secondX, secondY",
+"nat_span": [
+1864,
+1900
+],
+"alt_span": [
+1770,
+1802
+]
+},
+{
+"k": 60,
+"nat": "pair_distance",
+"alt": "pairDistance",
+"nat_span": [
+1917,
+1930
+],
+"alt_span": [
+1819,
+1831
+]
+},
+{
+"k": 61,
+"nat": "best_distance:\n                best_distance",
+"alt": "bestDistance:\n                bestDistance",
+"nat_span": [
+1933,
+1977
+],
+"alt_span": [
+1834,
+1876
+]
+},
+{
+"k": 62,
+"nat": "pair_distance\n                best_pair",
+"alt": "pairDistance\n                bestPair",
+"nat_span": [
+1980,
+2019
+],
+"alt_span": [
+1879,
+1916
+]
+},
+{
+"k": 63,
+"nat": "first_index, second_index",
+"alt": "firstIndex, secondIndex",
+"nat_span": [
+2023,
+2048
+],
+"alt_span": [
+1920,
+1943
+]
+},
+{
+"k": 64,
+"nat": "best_pair, best_distance",
+"alt": "bestPair, bestDistance",
+"nat_span": [
+2061,
+2085
+],
+"alt_span": [
+1956,
+1978
+]
+},
+{
+"k": 65,
+"nat": "format_report(point_list",
+"alt": "formatReport(pointList",
+"nat_span": [
+2092,
+2116
+],
+"alt_span": [
+1985,
+2007
+]
+},
+{
+"k": 66,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+2123,
+2135
+],
+"alt_span": [
+2014,
+2025
+]
+},
+{
+"k": 67,
+"nat": "point_list",
+"alt": "pointList",
+"nat_span": [
+2160,
+2170
+],
+"alt_span": [
+2050,
+2059
+]
+},
+{
+"k": 68,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+2178,
+2190
+],
+"alt_span": [
+2067,
+2078
+]
+},
+{
+"k": 69,
+"nat": "path_length(point_list",
+"alt": "pathLength(pointList",
+"nat_span": [
+2228,
+2250
+],
+"alt_span": [
+2116,
+2136
+]
+},
+{
+"k": 70,
+"nat": "longest_index, longest_distance",
+"alt": "longestIndex, longestDistance",
+"nat_span": [
+2258,
+2289
+],
+"alt_span": [
+2144,
+2173
+]
+},
+{
+"k": 71,
+"nat": "longest_segment(point_list)\n    report_lines",
+"alt": "longestSegment(pointList)\n    reportLines",
+"nat_span": [
+2292,
+2336
+],
+"alt_span": [
+2176,
+2217
+]
+},
+{
+"k": 72,
+"nat": "longest_index, longest_index",
+"alt": "longestIndex, longestIndex",
+"nat_span": [
+2413,
+2441
+],
+"alt_span": [
+2294,
+2320
+]
+},
+{
+"k": 73,
+"nat": "longest_distance",
+"alt": "longestDistance",
+"nat_span": [
+2447,
+2463
+],
+"alt_span": [
+2326,
+2341
+]
+},
+{
+"k": 74,
+"nat": "left_index, right_index",
+"alt": "leftIndex, rightIndex",
+"nat_span": [
+2485,
+2508
+],
+"alt_span": [
+2363,
+2384
+]
+},
+{
+"k": 75,
+"nat": "closest_distance",
+"alt": "closestDistance",
+"nat_span": [
+2511,
+2527
+],
+"alt_span": [
+2387,
+2402
+]
+},
+{
+"k": 76,
+"nat": "nearest_pair(point_list)\n    report_lines",
+"alt": "nearestPair(pointList)\n    reportLines",
+"nat_span": [
+2530,
+2571
+],
+"alt_span": [
+2405,
+2443
+]
+},
+{
+"k": 77,
+"nat": "left_index, right_index, closest_distance",
+"alt": "leftIndex, rightIndex, closestDistance",
+"nat_span": [
+2646,
+2687
+],
+"alt_span": [
+2518,
+2556
+]
+},
+{
+"k": 78,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+2725,
+2737
+],
+"alt_span": [
+2594,
+2605
+]
+},
+{
+"k": 79,
+"nat": "raw_points",
+"alt": "rawPoints",
+"nat_span": [
+2757,
+2767
+],
+"alt_span": [
+2625,
+2634
+]
+},
+{
+"k": 80,
+"nat": "walked_points",
+"alt": "walkedPoints",
+"nat_span": [
+2829,
+2842
+],
+"alt_span": [
+2696,
+2708
+]
+},
+{
+"k": 81,
+"nat": "parse_point_list(raw_points",
+"alt": "parsePointList(rawPoints",
+"nat_span": [
+2845,
+2872
+],
+"alt_span": [
+2711,
+2735
+]
+},
+{
+"k": 82,
+"nat": "format_report(walked_points",
+"alt": "formatReport(walkedPoints",
+"nat_span": [
+2954,
+2981
+],
+"alt_span": [
+2817,
+2842
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py_snake_camel__t033",
@@ -18502,537 +19639,972 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def calculate_digit_sum(input_number):\n    absolute_value = abs(input_number)\n    running_total = 0\n    current_number = absolute_value\n    while current_number > 0:\n        last_digit = current_number % 10\n        running_total += last_digit\n        current_number //= 10\n    return running_total\n\ndef main_execution_function():\n    test_value_one = 123\n    test_value_two = 9\n    test_value_three = 0\n    test_value_four = 987654321\n    \n    first_result = calculate_digit_sum(test_value_one)\n    second_result = calculate_digit_sum(test_value_two)\n    third_result = calculate_digit_sum(test_value_three)\n    fourth_result = calculate_digit_sum(test_value_four)\n    \n    # In a real scenario, these print statements would be part of a larger application flow\n    # For this exercise, they serve to demonstrate the function's output\n    # print(f\"Sum of digits for {test_value_one}: {first_result}\")\n    # print(f\"Sum of digits for {test_value_two}: {second_result}\")\n    # print(f\"Sum of digits for {test_value_three}: {third_result}\")\n    # print(f\"Sum of digits for {test_value_four}: {fourth_result}\")\n\nif __name__ == \"__main__\":\n    main_execution_function()\n",
-"text_alt": "def calculateDigitSum(inputNumber):\n    absoluteValue = abs(inputNumber)\n    runningTotal = 0\n    currentNumber = absoluteValue\n    while currentNumber > 0:\n        lastDigit = currentNumber % 10\n        runningTotal += lastDigit\n        currentNumber //= 10\n    return runningTotal\n\ndef mainExecutionFunction():\n    testValueOne = 123\n    testValueTwo = 9\n    testValueThree = 0\n    testValueFour = 987654321\n    \n    firstResult = calculateDigitSum(testValueOne)\n    secondResult = calculateDigitSum(testValueTwo)\n    thirdResult = calculateDigitSum(testValueThree)\n    fourthResult = calculateDigitSum(testValueFour)\n    \n    # In a real scenario, these print statements would be part of a larger application flow\n    # For this exercise, they serve to demonstrate the function's output\n    # print(f\"Sum of digits for {testValueOne}: {firstResult}\")\n    # print(f\"Sum of digits for {testValueTwo}: {secondResult}\")\n    # print(f\"Sum of digits for {testValueThree}: {thirdResult}\")\n    # print(f\"Sum of digits for {testValueFour}: {fourthResult}\")\n\nif __name__ == \"__main__\":\n    mainExecutionFunction()\n",
+"text_nat": "def sum_digits(n):\n    if not isinstance(n, int) or isinstance(n, bool):\n        raise TypeError(\"sum_digits expects an integer\")\n    if n < 0:\n        raise ValueError(\"sum_digits expects a non-negative integer\")\n    running_total = 0\n    remaining_value = n\n    while remaining_value > 0:\n        remaining_value, current_digit = divmod(remaining_value, 10)\n        running_total += current_digit\n    return running_total\n\n\ndef digital_root(n):\n    collapsed_value = sum_digits(n)\n    while collapsed_value >= 10:\n        collapsed_value = sum_digits(collapsed_value)\n    return collapsed_value\n\n\ndef parse_number_tokens(raw_text):\n    parsed_numbers = []\n    for raw_token in raw_text.split():\n        cleaned_token = raw_token.strip(\",;\")\n        if not cleaned_token.isdigit():\n            raise ValueError(\"not a non-negative integer: \" + raw_token)\n        parsed_numbers.append(int(cleaned_token))\n    return parsed_numbers\n\n\ndef build_digit_report(input_list):\n    report_rows = []\n    for source_number in input_list:\n        report_rows.append((source_number, sum_digits(source_number), digital_root(source_number)))\n    return report_rows\n\n\ndef format_report(report_rows):\n    number_width = max((len(str(row[0])) for row in report_rows), default=1)\n    formatted_lines = []\n    for source_number, digit_sum, root_value in report_rows:\n        formatted_lines.append(\n            \"{:>{width}} -> sum {:>3}, digital root {}\".format(\n                source_number, digit_sum, root_value, width=number_width\n            )\n        )\n    return \"\\n\".join(formatted_lines)\n\n\ndef summarize_report(report_rows):\n    total_sum = sum(row[1] for row in report_rows)\n    max_value = max(row[1] for row in report_rows)\n    busiest_number = next(row[0] for row in report_rows if row[1] == max_value)\n    return total_sum, max_value, busiest_number\n\n\ndef main():\n    sample_text = \"123 9 0 4096, 999999; 10203040\"\n    number_list = parse_number_tokens(sample_text)\n    digit_report = build_digit_report(number_list)\n    print(format_report(digit_report))\n    total_sum, max_value, busiest_number = summarize_report(digit_report)\n    print(\"combined digit sum: {}\".format(total_sum))\n    print(\"largest digit sum: {} (from {})\".format(max_value, busiest_number))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def sum_digits(n):\n    if not isinstance(n, int) or isinstance(n, bool):\n        raise TypeError(\"sum_digits expects an integer\")\n    if n < 0:\n        raise ValueError(\"sum_digits expects a non-negative integer\")\n    runningTotal = 0\n    remainingValue = n\n    while remainingValue > 0:\n        remainingValue, currentDigit = divmod(remainingValue, 10)\n        runningTotal += currentDigit\n    return runningTotal\n\n\ndef digitalRoot(n):\n    collapsedValue = sum_digits(n)\n    while collapsedValue >= 10:\n        collapsedValue = sum_digits(collapsedValue)\n    return collapsedValue\n\n\ndef parseNumberTokens(rawText):\n    parsedNumbers = []\n    for rawToken in rawText.split():\n        cleanedToken = rawToken.strip(\",;\")\n        if not cleanedToken.isdigit():\n            raise ValueError(\"not a non-negative integer: \" + rawToken)\n        parsedNumbers.append(int(cleanedToken))\n    return parsedNumbers\n\n\ndef buildDigitReport(inputList):\n    reportRows = []\n    for sourceNumber in inputList:\n        reportRows.append((sourceNumber, sum_digits(sourceNumber), digitalRoot(sourceNumber)))\n    return reportRows\n\n\ndef formatReport(reportRows):\n    numberWidth = max((len(str(row[0])) for row in reportRows), default=1)\n    formattedLines = []\n    for sourceNumber, digitSum, rootValue in reportRows:\n        formattedLines.append(\n            \"{:>{width}} -> sum {:>3}, digital root {}\".format(\n                sourceNumber, digitSum, rootValue, width=numberWidth\n            )\n        )\n    return \"\\n\".join(formattedLines)\n\n\ndef summarizeReport(reportRows):\n    totalSum = sum(row[1] for row in reportRows)\n    maxValue = max(row[1] for row in reportRows)\n    busiestNumber = next(row[0] for row in reportRows if row[1] == maxValue)\n    return totalSum, maxValue, busiestNumber\n\n\ndef main():\n    sampleText = \"123 9 0 4096, 999999; 10203040\"\n    numberList = parseNumberTokens(sampleText)\n    digitReport = buildDigitReport(numberList)\n    print(formatReport(digitReport))\n    totalSum, maxValue, busiestNumber = summarizeReport(digitReport)\n    print(\"combined digit sum: {}\".format(totalSum))\n    print(\"largest digit sum: {} (from {})\".format(maxValue, busiestNumber))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "calculate_digit_sum(input_number",
-"alt": "calculateDigitSum(inputNumber",
-"nat_span": [
-4,
-36
-],
-"alt_span": [
-4,
-33
-]
-},
-{
-"k": 1,
-"nat": "absolute_value",
-"alt": "absoluteValue",
-"nat_span": [
-43,
-57
-],
-"alt_span": [
-40,
-53
-]
-},
-{
-"k": 2,
-"nat": "current_number",
-"alt": "currentNumber",
-"nat_span": [
-104,
-118
-],
-"alt_span": [
-98,
-111
-]
-},
-{
-"k": 3,
-"nat": "last_digit",
-"alt": "lastDigit",
-"nat_span": [
-174,
-184
-],
-"alt_span": [
-165,
-174
-]
-},
-{
-"k": 4,
-"nat": "main_execution_function",
-"alt": "mainExecutionFunction",
-"nat_span": [
-303,
-326
-],
-"alt_span": [
-288,
-309
-]
-},
-{
-"k": 5,
-"nat": "test_value_one",
-"alt": "testValueOne",
-"nat_span": [
-334,
-348
-],
-"alt_span": [
-317,
-329
-]
-},
-{
-"k": 6,
-"nat": "test_value_two",
-"alt": "testValueTwo",
-"nat_span": [
-359,
-373
-],
-"alt_span": [
-340,
-352
-]
-},
-{
-"k": 7,
-"nat": "test_value_three",
-"alt": "testValueThree",
-"nat_span": [
-382,
-398
-],
-"alt_span": [
-361,
-375
-]
-},
-{
-"k": 8,
-"nat": "test_value_four",
-"alt": "testValueFour",
-"nat_span": [
-407,
-422
-],
-"alt_span": [
-384,
-397
-]
-},
-{
-"k": 9,
-"nat": "first_result",
-"alt": "firstResult",
-"nat_span": [
-444,
-456
-],
-"alt_span": [
-419,
-430
-]
-}
-],
-"k_en": 10,
-"shared_fraction": 0.87,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "calculate_digit_sum(input_number",
-"alt": "calculateDigitSum(inputNumber",
-"nat_span": [
-4,
-36
-],
-"alt_span": [
-4,
-33
-]
-},
-{
-"k": 1,
-"nat": "absolute_value",
-"alt": "absoluteValue",
-"nat_span": [
-43,
-57
-],
-"alt_span": [
-40,
-53
-]
-},
-{
-"k": 2,
-"nat": "input_number)\n    running_total",
-"alt": "inputNumber)\n    runningTotal",
-"nat_span": [
-64,
-95
-],
-"alt_span": [
-60,
-89
-]
-},
-{
-"k": 3,
-"nat": "current_number",
-"alt": "currentNumber",
-"nat_span": [
-104,
-118
-],
-"alt_span": [
-98,
-111
-]
-},
-{
-"k": 4,
-"nat": "absolute_value",
-"alt": "absoluteValue",
-"nat_span": [
-121,
-135
-],
-"alt_span": [
-114,
-127
-]
-},
-{
-"k": 5,
-"nat": "current_number",
-"alt": "currentNumber",
-"nat_span": [
-146,
-160
-],
-"alt_span": [
-138,
-151
-]
-},
-{
-"k": 6,
-"nat": "last_digit",
-"alt": "lastDigit",
-"nat_span": [
-174,
-184
-],
-"alt_span": [
-165,
-174
-]
-},
-{
-"k": 7,
-"nat": "current_number",
-"alt": "currentNumber",
-"nat_span": [
-187,
-201
-],
-"alt_span": [
-177,
-190
-]
-},
-{
-"k": 8,
 "nat": "running_total",
 "alt": "runningTotal",
 "nat_span": [
-215,
-228
+218,
+231
 ],
 "alt_span": [
-204,
-216
+218,
+230
+]
+},
+{
+"k": 1,
+"nat": "remaining_value",
+"alt": "remainingValue",
+"nat_span": [
+240,
+255
+],
+"alt_span": [
+239,
+253
+]
+},
+{
+"k": 2,
+"nat": "digital_root",
+"alt": "digitalRoot",
+"nat_span": [
+430,
+442
+],
+"alt_span": [
+421,
+432
+]
+},
+{
+"k": 3,
+"nat": "collapsed_value",
+"alt": "collapsedValue",
+"nat_span": [
+451,
+466
+],
+"alt_span": [
+441,
+455
+]
+},
+{
+"k": 4,
+"nat": "parse_number_tokens(raw_text",
+"alt": "parseNumberTokens(rawText",
+"nat_span": [
+603,
+631
+],
+"alt_span": [
+588,
+613
+]
+},
+{
+"k": 5,
+"nat": "parsed_numbers",
+"alt": "parsedNumbers",
+"nat_span": [
+638,
+652
+],
+"alt_span": [
+620,
+633
+]
+},
+{
+"k": 6,
+"nat": "raw_token",
+"alt": "rawToken",
+"nat_span": [
+666,
+675
+],
+"alt_span": [
+647,
+655
+]
+},
+{
+"k": 7,
+"nat": "cleaned_token",
+"alt": "cleanedToken",
+"nat_span": [
+705,
+718
+],
+"alt_span": [
+684,
+696
+]
+},
+{
+"k": 8,
+"nat": "build_digit_report(input_list",
+"alt": "buildDigitReport(inputList",
+"nat_span": [
+938,
+967
+],
+"alt_span": [
+910,
+936
 ]
 },
 {
 "k": 9,
-"nat": "last_digit\n        current_number",
-"alt": "lastDigit\n        currentNumber",
+"nat": "report_rows",
+"alt": "reportRows",
 "nat_span": [
-232,
-265
+974,
+985
 ],
 "alt_span": [
-220,
-251
+943,
+953
 ]
 },
 {
 "k": 10,
-"nat": "running_total",
-"alt": "runningTotal",
+"nat": "source_number",
+"alt": "sourceNumber",
 "nat_span": [
-284,
-297
+999,
+1012
 ],
 "alt_span": [
-270,
-282
+967,
+979
 ]
 },
 {
 "k": 11,
-"nat": "main_execution_function",
-"alt": "mainExecutionFunction",
+"nat": "number_width",
+"alt": "numberWidth",
 "nat_span": [
-303,
-326
+1189,
+1201
 ],
 "alt_span": [
-288,
-309
+1147,
+1158
 ]
 },
 {
 "k": 12,
-"nat": "test_value_one",
-"alt": "testValueOne",
+"nat": "formatted_lines",
+"alt": "formattedLines",
 "nat_span": [
-334,
-348
+1266,
+1281
 ],
 "alt_span": [
-317,
-329
+1222,
+1236
 ]
 },
 {
 "k": 13,
-"nat": "test_value_two",
-"alt": "testValueTwo",
+"nat": "total_sum",
+"alt": "totalSum",
 "nat_span": [
-359,
-373
+1620,
+1629
 ],
 "alt_span": [
-340,
-352
+1563,
+1571
 ]
 },
 {
 "k": 14,
-"nat": "test_value_three",
-"alt": "testValueThree",
+"nat": "sample_text",
+"alt": "sampleText",
 "nat_span": [
-382,
-398
+1864,
+1875
 ],
 "alt_span": [
-361,
-375
+1797,
+1807
 ]
 },
 {
 "k": 15,
-"nat": "test_value_four",
-"alt": "testValueFour",
+"nat": "number_list",
+"alt": "numberList",
 "nat_span": [
-407,
-422
+1915,
+1926
 ],
 "alt_span": [
-384,
-397
+1847,
+1857
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.868,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+218,
+231
+],
+"alt_span": [
+218,
+230
+]
+},
+{
+"k": 1,
+"nat": "remaining_value",
+"alt": "remainingValue",
+"nat_span": [
+240,
+255
+],
+"alt_span": [
+239,
+253
+]
+},
+{
+"k": 2,
+"nat": "remaining_value",
+"alt": "remainingValue",
+"nat_span": [
+270,
+285
+],
+"alt_span": [
+268,
+282
+]
+},
+{
+"k": 3,
+"nat": "remaining_value, current_digit",
+"alt": "remainingValue, currentDigit",
+"nat_span": [
+299,
+329
+],
+"alt_span": [
+296,
+324
+]
+},
+{
+"k": 4,
+"nat": "remaining_value",
+"alt": "remainingValue",
+"nat_span": [
+339,
+354
+],
+"alt_span": [
+334,
+348
+]
+},
+{
+"k": 5,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+368,
+381
+],
+"alt_span": [
+362,
+374
+]
+},
+{
+"k": 6,
+"nat": "current_digit",
+"alt": "currentDigit",
+"nat_span": [
+385,
+398
+],
+"alt_span": [
+378,
+390
+]
+},
+{
+"k": 7,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+410,
+423
+],
+"alt_span": [
+402,
+414
+]
+},
+{
+"k": 8,
+"nat": "digital_root",
+"alt": "digitalRoot",
+"nat_span": [
+430,
+442
+],
+"alt_span": [
+421,
+432
+]
+},
+{
+"k": 9,
+"nat": "collapsed_value",
+"alt": "collapsedValue",
+"nat_span": [
+451,
+466
+],
+"alt_span": [
+441,
+455
+]
+},
+{
+"k": 10,
+"nat": "collapsed_value",
+"alt": "collapsedValue",
+"nat_span": [
+493,
+508
+],
+"alt_span": [
+482,
+496
+]
+},
+{
+"k": 11,
+"nat": "collapsed_value",
+"alt": "collapsedValue",
+"nat_span": [
+524,
+539
+],
+"alt_span": [
+512,
+526
+]
+},
+{
+"k": 12,
+"nat": "collapsed_value",
+"alt": "collapsedValue",
+"nat_span": [
+553,
+568
+],
+"alt_span": [
+540,
+554
+]
+},
+{
+"k": 13,
+"nat": "collapsed_value",
+"alt": "collapsedValue",
+"nat_span": [
+581,
+596
+],
+"alt_span": [
+567,
+581
+]
+},
+{
+"k": 14,
+"nat": "parse_number_tokens(raw_text",
+"alt": "parseNumberTokens(rawText",
+"nat_span": [
+603,
+631
+],
+"alt_span": [
+588,
+613
+]
+},
+{
+"k": 15,
+"nat": "parsed_numbers",
+"alt": "parsedNumbers",
+"nat_span": [
+638,
+652
+],
+"alt_span": [
+620,
+633
 ]
 },
 {
 "k": 16,
-"nat": "first_result",
-"alt": "firstResult",
+"nat": "raw_token",
+"alt": "rawToken",
 "nat_span": [
-444,
-456
+666,
+675
 ],
 "alt_span": [
-419,
-430
+647,
+655
 ]
 },
 {
 "k": 17,
-"nat": "calculate_digit_sum(test_value_one)\n    second_result",
-"alt": "calculateDigitSum(testValueOne)\n    secondResult",
+"nat": "raw_text",
+"alt": "rawText",
 "nat_span": [
-459,
-512
+679,
+687
 ],
 "alt_span": [
-433,
-481
+659,
+666
 ]
 },
 {
 "k": 18,
-"nat": "calculate_digit_sum(test_value_two)\n    third_result",
-"alt": "calculateDigitSum(testValueTwo)\n    thirdResult",
+"nat": "cleaned_token",
+"alt": "cleanedToken",
 "nat_span": [
-515,
-567
+705,
+718
 ],
 "alt_span": [
-484,
-531
+684,
+696
 ]
 },
 {
 "k": 19,
-"nat": "calculate_digit_sum(test_value_three)\n    fourth_result",
-"alt": "calculateDigitSum(testValueThree)\n    fourthResult",
+"nat": "raw_token",
+"alt": "rawToken",
 "nat_span": [
-570,
-625
+721,
+730
 ],
 "alt_span": [
-534,
-584
+699,
+707
 ]
 },
 {
 "k": 20,
-"nat": "calculate_digit_sum(test_value_four",
-"alt": "calculateDigitSum(testValueFour",
+"nat": "cleaned_token",
+"alt": "cleanedToken",
 "nat_span": [
-628,
-663
+758,
+771
 ],
 "alt_span": [
-587,
-618
+735,
+747
 ]
 },
 {
 "k": 21,
-"nat": "test_value_one",
-"alt": "testValueOne",
+"nat": "raw_token)\n        parsed_numbers",
+"alt": "rawToken)\n        parsedNumbers",
 "nat_span": [
-868,
-882
+845,
+878
 ],
 "alt_span": [
-823,
-835
+821,
+852
 ]
 },
 {
 "k": 22,
-"nat": "first_result",
-"alt": "firstResult",
+"nat": "cleaned_token",
+"alt": "cleanedToken",
 "nat_span": [
-886,
-898
+890,
+903
 ],
 "alt_span": [
-839,
-850
+864,
+876
 ]
 },
 {
 "k": 23,
-"nat": "test_value_two",
-"alt": "testValueTwo",
+"nat": "parsed_numbers",
+"alt": "parsedNumbers",
 "nat_span": [
-935,
-949
+917,
+931
 ],
 "alt_span": [
-887,
-899
+890,
+903
 ]
 },
 {
 "k": 24,
-"nat": "second_result",
-"alt": "secondResult",
+"nat": "build_digit_report(input_list",
+"alt": "buildDigitReport(inputList",
 "nat_span": [
-953,
-966
+938,
+967
 ],
 "alt_span": [
-903,
-915
+910,
+936
 ]
 },
 {
 "k": 25,
-"nat": "test_value_three",
-"alt": "testValueThree",
+"nat": "report_rows",
+"alt": "reportRows",
 "nat_span": [
-1003,
-1019
+974,
+985
 ],
 "alt_span": [
-952,
-966
+943,
+953
 ]
 },
 {
 "k": 26,
-"nat": "third_result",
-"alt": "thirdResult",
+"nat": "source_number",
+"alt": "sourceNumber",
 "nat_span": [
-1023,
-1035
+999,
+1012
 ],
 "alt_span": [
-970,
-981
+967,
+979
 ]
 },
 {
 "k": 27,
-"nat": "test_value_four",
-"alt": "testValueFour",
+"nat": "input_list:\n        report_rows",
+"alt": "inputList:\n        reportRows",
 "nat_span": [
-1072,
-1087
+1016,
+1047
 ],
 "alt_span": [
-1018,
-1031
+983,
+1012
 ]
 },
 {
 "k": 28,
-"nat": "fourth_result",
-"alt": "fourthResult",
+"nat": "source_number",
+"alt": "sourceNumber",
 "nat_span": [
-1091,
-1104
+1056,
+1069
 ],
 "alt_span": [
-1035,
-1047
+1021,
+1033
 ]
 },
 {
 "k": 29,
-"nat": "main_execution_function",
-"alt": "mainExecutionFunction",
+"nat": "source_number",
+"alt": "sourceNumber",
 "nat_span": [
-1140,
-1163
+1082,
+1095
 ],
 "alt_span": [
-1083,
-1104
+1046,
+1058
+]
+},
+{
+"k": 30,
+"nat": "digital_root(source_number",
+"alt": "digitalRoot(sourceNumber",
+"nat_span": [
+1098,
+1124
+],
+"alt_span": [
+1061,
+1085
+]
+},
+{
+"k": 31,
+"nat": "report_rows",
+"alt": "reportRows",
+"nat_span": [
+1139,
+1150
+],
+"alt_span": [
+1100,
+1110
+]
+},
+{
+"k": 32,
+"nat": "format_report(report_rows",
+"alt": "formatReport(reportRows",
+"nat_span": [
+1157,
+1182
+],
+"alt_span": [
+1117,
+1140
+]
+},
+{
+"k": 33,
+"nat": "number_width",
+"alt": "numberWidth",
+"nat_span": [
+1189,
+1201
+],
+"alt_span": [
+1147,
+1158
+]
+},
+{
+"k": 34,
+"nat": "report_rows",
+"alt": "reportRows",
+"nat_span": [
+1237,
+1248
+],
+"alt_span": [
+1194,
+1204
+]
+},
+{
+"k": 35,
+"nat": "formatted_lines",
+"alt": "formattedLines",
+"nat_span": [
+1266,
+1281
+],
+"alt_span": [
+1222,
+1236
+]
+},
+{
+"k": 36,
+"nat": "source_number, digit_sum, root_value",
+"alt": "sourceNumber, digitSum, rootValue",
+"nat_span": [
+1295,
+1331
+],
+"alt_span": [
+1250,
+1283
+]
+},
+{
+"k": 37,
+"nat": "report_rows:\n        formatted_lines",
+"alt": "reportRows:\n        formattedLines",
+"nat_span": [
+1335,
+1371
+],
+"alt_span": [
+1287,
+1321
+]
+},
+{
+"k": 38,
+"nat": "source_number, digit_sum, root_value",
+"alt": "sourceNumber, digitSum, rootValue",
+"nat_span": [
+1460,
+1496
+],
+"alt_span": [
+1410,
+1443
+]
+},
+{
+"k": 39,
+"nat": "number_width",
+"alt": "numberWidth",
+"nat_span": [
+1504,
+1516
+],
+"alt_span": [
+1451,
+1462
+]
+},
+{
+"k": 40,
+"nat": "formatted_lines",
+"alt": "formattedLines",
+"nat_span": [
+1562,
+1577
+],
+"alt_span": [
+1508,
+1522
+]
+},
+{
+"k": 41,
+"nat": "summarize_report(report_rows",
+"alt": "summarizeReport(reportRows",
+"nat_span": [
+1585,
+1613
+],
+"alt_span": [
+1530,
+1556
+]
+},
+{
+"k": 42,
+"nat": "total_sum",
+"alt": "totalSum",
+"nat_span": [
+1620,
+1629
+],
+"alt_span": [
+1563,
+1571
+]
+},
+{
+"k": 43,
+"nat": "report_rows)\n    max_value",
+"alt": "reportRows)\n    maxValue",
+"nat_span": [
+1654,
+1680
+],
+"alt_span": [
+1596,
+1620
+]
+},
+{
+"k": 44,
+"nat": "report_rows)\n    busiest_number",
+"alt": "reportRows)\n    busiestNumber",
+"nat_span": [
+1705,
+1736
+],
+"alt_span": [
+1645,
+1674
+]
+},
+{
+"k": 45,
+"nat": "report_rows",
+"alt": "reportRows",
+"nat_span": [
+1762,
+1773
+],
+"alt_span": [
+1700,
+1710
+]
+},
+{
+"k": 46,
+"nat": "max_value",
+"alt": "maxValue",
+"nat_span": [
+1787,
+1796
+],
+"alt_span": [
+1724,
+1732
+]
+},
+{
+"k": 47,
+"nat": "total_sum, max_value, busiest_number",
+"alt": "totalSum, maxValue, busiestNumber",
+"nat_span": [
+1809,
+1845
+],
+"alt_span": [
+1745,
+1778
+]
+},
+{
+"k": 48,
+"nat": "sample_text",
+"alt": "sampleText",
+"nat_span": [
+1864,
+1875
+],
+"alt_span": [
+1797,
+1807
+]
+},
+{
+"k": 49,
+"nat": "number_list",
+"alt": "numberList",
+"nat_span": [
+1915,
+1926
+],
+"alt_span": [
+1847,
+1857
+]
+},
+{
+"k": 50,
+"nat": "parse_number_tokens(sample_text)\n    digit_report",
+"alt": "parseNumberTokens(sampleText)\n    digitReport",
+"nat_span": [
+1929,
+1978
+],
+"alt_span": [
+1860,
+1905
+]
+},
+{
+"k": 51,
+"nat": "build_digit_report(number_list",
+"alt": "buildDigitReport(numberList",
+"nat_span": [
+1981,
+2011
+],
+"alt_span": [
+1908,
+1935
+]
+},
+{
+"k": 52,
+"nat": "format_report(digit_report",
+"alt": "formatReport(digitReport",
+"nat_span": [
+2023,
+2049
+],
+"alt_span": [
+1947,
+1971
+]
+},
+{
+"k": 53,
+"nat": "total_sum, max_value, busiest_number",
+"alt": "totalSum, maxValue, busiestNumber",
+"nat_span": [
+2056,
+2092
+],
+"alt_span": [
+1978,
+2011
+]
+},
+{
+"k": 54,
+"nat": "summarize_report(digit_report",
+"alt": "summarizeReport(digitReport",
+"nat_span": [
+2095,
+2124
+],
+"alt_span": [
+2014,
+2041
+]
+},
+{
+"k": 55,
+"nat": "total_sum",
+"alt": "totalSum",
+"nat_span": [
+2168,
+2177
+],
+"alt_span": [
+2085,
+2093
+]
+},
+{
+"k": 56,
+"nat": "max_value, busiest_number",
+"alt": "maxValue, busiestNumber",
+"nat_span": [
+2231,
+2256
+],
+"alt_span": [
+2147,
+2170
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py_snake_camel__t039",
@@ -34062,7 +35634,7 @@
 ],
 "k_en": 12,
 "shared_fraction": 0.919,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -35814,7 +37386,7 @@
 ],
 "k_en": 11,
 "shared_fraction": 0.898,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -56596,6 +58168,1113 @@
 "free_filter": true
 },
 {
+"doc_id": "py_snake_camel__t131",
+"family": "py_snake_camel",
+"topic": "Simple CSV Parser",
+"angle": "code",
+"text_es": "Parse a single line of CSV data into a list of strings. Assume comma-separated values, no quoted fields. The function `parse_csv_line` should take one argument: `csv_line` (str). It should return a list of strings. \nExample 1: `parse_csv_line('apple,banana,orange')` should return `['apple', 'banana', 'orange']`. \nExample 2: `parse_csv_line('10,20,30')` should return `['10', '20', '30']`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def parse_csv_line(csv_line):\n    if not isinstance(csv_line, str):\n        raise TypeError(\"csv_line must be a string\")\n    stripped_line = csv_line.rstrip(\"\\r\\n\")\n    if stripped_line == \"\":\n        return []\n    return [single_field.strip() for single_field in stripped_line.split(\",\")]\n\n\ndef parse_csv_table(line_list):\n    parsed_rows = []\n    for raw_line in line_list:\n        parsed_rows.append(parse_csv_line(raw_line))\n    return parsed_rows\n\n\ndef find_column_widths(row_list):\n    width_list = []\n    for current_row in row_list:\n        for column_index, cell_value in enumerate(current_row):\n            cell_width = len(cell_value)\n            if column_index >= len(width_list):\n                width_list.append(cell_width)\n            elif cell_width > width_list[column_index]:\n                width_list[column_index] = cell_width\n    return width_list\n\n\ndef format_table(row_list):\n    column_widths = find_column_widths(row_list)\n    formatted_lines = []\n    for current_row in row_list:\n        padded_cells = []\n        for column_index, cell_value in enumerate(current_row):\n            padded_cells.append(cell_value.ljust(column_widths[column_index]))\n        formatted_lines.append(\" | \".join(padded_cells).rstrip())\n    return formatted_lines\n\n\ndef parse_number(text_value):\n    try:\n        return float(text_value)\n    except ValueError:\n        return None\n\n\ndef column_total(row_list, column_index):\n    running_total = 0.0\n    for current_row in row_list:\n        numeric_value = parse_number(current_row[column_index])\n        if numeric_value is not None:\n            running_total += numeric_value\n    return running_total\n\n\ndef main():\n    input_lines = [\n        \"name,quantity,price\",\n        \"apple, 10 ,1.25\",\n        \"banana,20,0.75\",\n        \"orange,30,2.00\",\n    ]\n    parsed_rows = parse_csv_table(input_lines)\n    header_row = parsed_rows[0]\n    data_rows = parsed_rows[1:]\n    for output_line in format_table(parsed_rows):\n        print(output_line)\n    for column_name in (\"quantity\", \"price\"):\n        column_index = header_row.index(column_name)\n        print(\"total {0}: {1:.2f}\".format(column_name, column_total(data_rows, column_index)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def parse_csv_line(csv_line):\n    if not isinstance(csv_line, str):\n        raise TypeError(\"csv_line must be a string\")\n    strippedLine = csv_line.rstrip(\"\\r\\n\")\n    if strippedLine == \"\":\n        return []\n    return [singleField.strip() for singleField in strippedLine.split(\",\")]\n\n\ndef parseCsvTable(lineList):\n    parsedRows = []\n    for rawLine in lineList:\n        parsedRows.append(parse_csv_line(rawLine))\n    return parsedRows\n\n\ndef findColumnWidths(rowList):\n    widthList = []\n    for currentRow in rowList:\n        for columnIndex, cellValue in enumerate(currentRow):\n            cellWidth = len(cellValue)\n            if columnIndex >= len(widthList):\n                widthList.append(cellWidth)\n            elif cellWidth > widthList[columnIndex]:\n                widthList[columnIndex] = cellWidth\n    return widthList\n\n\ndef formatTable(rowList):\n    columnWidths = findColumnWidths(rowList)\n    formattedLines = []\n    for currentRow in rowList:\n        paddedCells = []\n        for columnIndex, cellValue in enumerate(currentRow):\n            paddedCells.append(cellValue.ljust(columnWidths[columnIndex]))\n        formattedLines.append(\" | \".join(paddedCells).rstrip())\n    return formattedLines\n\n\ndef parseNumber(textValue):\n    try:\n        return float(textValue)\n    except ValueError:\n        return None\n\n\ndef columnTotal(rowList, columnIndex):\n    runningTotal = 0.0\n    for currentRow in rowList:\n        numericValue = parseNumber(currentRow[columnIndex])\n        if numericValue is not None:\n            runningTotal += numericValue\n    return runningTotal\n\n\ndef main():\n    inputLines = [\n        \"name,quantity,price\",\n        \"apple, 10 ,1.25\",\n        \"banana,20,0.75\",\n        \"orange,30,2.00\",\n    ]\n    parsedRows = parseCsvTable(inputLines)\n    headerRow = parsedRows[0]\n    dataRows = parsedRows[1:]\n    for outputLine in formatTable(parsedRows):\n        print(outputLine)\n    for columnName in (\"quantity\", \"price\"):\n        columnIndex = headerRow.index(columnName)\n        print(\"total {0}: {1:.2f}\".format(columnName, columnTotal(dataRows, columnIndex)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "stripped_line",
+"alt": "strippedLine",
+"nat_span": [
+125,
+138
+],
+"alt_span": [
+125,
+137
+]
+},
+{
+"k": 1,
+"nat": "single_field",
+"alt": "singleField",
+"nat_span": [
+223,
+235
+],
+"alt_span": [
+221,
+232
+]
+},
+{
+"k": 2,
+"nat": "parse_csv_table(line_list",
+"alt": "parseCsvTable(lineList",
+"nat_span": [
+296,
+321
+],
+"alt_span": [
+291,
+313
+]
+},
+{
+"k": 3,
+"nat": "parsed_rows",
+"alt": "parsedRows",
+"nat_span": [
+328,
+339
+],
+"alt_span": [
+320,
+330
+]
+},
+{
+"k": 4,
+"nat": "raw_line",
+"alt": "rawLine",
+"nat_span": [
+353,
+361
+],
+"alt_span": [
+344,
+351
+]
+},
+{
+"k": 5,
+"nat": "find_column_widths(row_list",
+"alt": "findColumnWidths(rowList",
+"nat_span": [
+458,
+485
+],
+"alt_span": [
+444,
+468
+]
+},
+{
+"k": 6,
+"nat": "width_list",
+"alt": "widthList",
+"nat_span": [
+492,
+502
+],
+"alt_span": [
+475,
+484
+]
+},
+{
+"k": 7,
+"nat": "current_row",
+"alt": "currentRow",
+"nat_span": [
+516,
+527
+],
+"alt_span": [
+498,
+508
+]
+},
+{
+"k": 8,
+"nat": "column_index, cell_value",
+"alt": "columnIndex, cellValue",
+"nat_span": [
+553,
+577
+],
+"alt_span": [
+533,
+555
+]
+},
+{
+"k": 9,
+"nat": "cell_width",
+"alt": "cellWidth",
+"nat_span": [
+617,
+627
+],
+"alt_span": [
+594,
+603
+]
+},
+{
+"k": 10,
+"nat": "column_widths",
+"alt": "columnWidths",
+"nat_span": [
+906,
+919
+],
+"alt_span": [
+868,
+880
+]
+},
+{
+"k": 11,
+"nat": "parse_number(text_value",
+"alt": "parseNumber(textValue",
+"nat_span": [
+1277,
+1300
+],
+"alt_span": [
+1221,
+1242
+]
+},
+{
+"k": 12,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+1436,
+1449
+],
+"alt_span": [
+1374,
+1386
+]
+},
+{
+"k": 13,
+"nat": "input_lines",
+"alt": "inputLines",
+"nat_span": [
+1677,
+1688
+],
+"alt_span": [
+1604,
+1614
+]
+},
+{
+"k": 14,
+"nat": "data_rows",
+"alt": "dataRows",
+"nat_span": [
+1892,
+1901
+],
+"alt_span": [
+1812,
+1820
+]
+},
+{
+"k": 15,
+"nat": "output_line",
+"alt": "outputLine",
+"nat_span": [
+1928,
+1939
+],
+"alt_span": [
+1846,
+1856
+]
+},
+{
+"k": 16,
+"nat": "column_name",
+"alt": "columnName",
+"nat_span": [
+2005,
+2016
+],
+"alt_span": [
+1919,
+1929
+]
+}
+],
+"k_en": 17,
+"shared_fraction": 0.839,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "stripped_line",
+"alt": "strippedLine",
+"nat_span": [
+125,
+138
+],
+"alt_span": [
+125,
+137
+]
+},
+{
+"k": 1,
+"nat": "stripped_line",
+"alt": "strippedLine",
+"nat_span": [
+172,
+185
+],
+"alt_span": [
+171,
+183
+]
+},
+{
+"k": 2,
+"nat": "single_field",
+"alt": "singleField",
+"nat_span": [
+223,
+235
+],
+"alt_span": [
+221,
+232
+]
+},
+{
+"k": 3,
+"nat": "single_field",
+"alt": "singleField",
+"nat_span": [
+248,
+260
+],
+"alt_span": [
+245,
+256
+]
+},
+{
+"k": 4,
+"nat": "stripped_line",
+"alt": "strippedLine",
+"nat_span": [
+264,
+277
+],
+"alt_span": [
+260,
+272
+]
+},
+{
+"k": 5,
+"nat": "parse_csv_table(line_list",
+"alt": "parseCsvTable(lineList",
+"nat_span": [
+296,
+321
+],
+"alt_span": [
+291,
+313
+]
+},
+{
+"k": 6,
+"nat": "parsed_rows",
+"alt": "parsedRows",
+"nat_span": [
+328,
+339
+],
+"alt_span": [
+320,
+330
+]
+},
+{
+"k": 7,
+"nat": "raw_line",
+"alt": "rawLine",
+"nat_span": [
+353,
+361
+],
+"alt_span": [
+344,
+351
+]
+},
+{
+"k": 8,
+"nat": "line_list:\n        parsed_rows",
+"alt": "lineList:\n        parsedRows",
+"nat_span": [
+365,
+395
+],
+"alt_span": [
+355,
+383
+]
+},
+{
+"k": 9,
+"nat": "raw_line",
+"alt": "rawLine",
+"nat_span": [
+418,
+426
+],
+"alt_span": [
+406,
+413
+]
+},
+{
+"k": 10,
+"nat": "parsed_rows",
+"alt": "parsedRows",
+"nat_span": [
+440,
+451
+],
+"alt_span": [
+427,
+437
+]
+},
+{
+"k": 11,
+"nat": "find_column_widths(row_list",
+"alt": "findColumnWidths(rowList",
+"nat_span": [
+458,
+485
+],
+"alt_span": [
+444,
+468
+]
+},
+{
+"k": 12,
+"nat": "width_list",
+"alt": "widthList",
+"nat_span": [
+492,
+502
+],
+"alt_span": [
+475,
+484
+]
+},
+{
+"k": 13,
+"nat": "current_row",
+"alt": "currentRow",
+"nat_span": [
+516,
+527
+],
+"alt_span": [
+498,
+508
+]
+},
+{
+"k": 14,
+"nat": "row_list",
+"alt": "rowList",
+"nat_span": [
+531,
+539
+],
+"alt_span": [
+512,
+519
+]
+},
+{
+"k": 15,
+"nat": "column_index, cell_value",
+"alt": "columnIndex, cellValue",
+"nat_span": [
+553,
+577
+],
+"alt_span": [
+533,
+555
+]
+},
+{
+"k": 16,
+"nat": "current_row",
+"alt": "currentRow",
+"nat_span": [
+591,
+602
+],
+"alt_span": [
+569,
+579
+]
+},
+{
+"k": 17,
+"nat": "cell_width",
+"alt": "cellWidth",
+"nat_span": [
+617,
+627
+],
+"alt_span": [
+594,
+603
+]
+},
+{
+"k": 18,
+"nat": "cell_value",
+"alt": "cellValue",
+"nat_span": [
+634,
+644
+],
+"alt_span": [
+610,
+619
+]
+},
+{
+"k": 19,
+"nat": "column_index",
+"alt": "columnIndex",
+"nat_span": [
+661,
+673
+],
+"alt_span": [
+636,
+647
+]
+},
+{
+"k": 20,
+"nat": "width_list",
+"alt": "widthList",
+"nat_span": [
+681,
+691
+],
+"alt_span": [
+655,
+664
+]
+},
+{
+"k": 21,
+"nat": "width_list",
+"alt": "widthList",
+"nat_span": [
+710,
+720
+],
+"alt_span": [
+683,
+692
+]
+},
+{
+"k": 22,
+"nat": "cell_width",
+"alt": "cellWidth",
+"nat_span": [
+728,
+738
+],
+"alt_span": [
+700,
+709
+]
+},
+{
+"k": 23,
+"nat": "cell_width",
+"alt": "cellWidth",
+"nat_span": [
+757,
+767
+],
+"alt_span": [
+728,
+737
+]
+},
+{
+"k": 24,
+"nat": "width_list[column_index",
+"alt": "widthList[columnIndex",
+"nat_span": [
+770,
+793
+],
+"alt_span": [
+740,
+761
+]
+},
+{
+"k": 25,
+"nat": "width_list[column_index",
+"alt": "widthList[columnIndex",
+"nat_span": [
+812,
+835
+],
+"alt_span": [
+780,
+801
+]
+},
+{
+"k": 26,
+"nat": "cell_width",
+"alt": "cellWidth",
+"nat_span": [
+839,
+849
+],
+"alt_span": [
+805,
+814
+]
+},
+{
+"k": 27,
+"nat": "width_list",
+"alt": "widthList",
+"nat_span": [
+861,
+871
+],
+"alt_span": [
+826,
+835
+]
+},
+{
+"k": 28,
+"nat": "format_table(row_list",
+"alt": "formatTable(rowList",
+"nat_span": [
+878,
+899
+],
+"alt_span": [
+842,
+861
+]
+},
+{
+"k": 29,
+"nat": "column_widths",
+"alt": "columnWidths",
+"nat_span": [
+906,
+919
+],
+"alt_span": [
+868,
+880
+]
+},
+{
+"k": 30,
+"nat": "find_column_widths(row_list)\n    formatted_lines",
+"alt": "findColumnWidths(rowList)\n    formattedLines",
+"nat_span": [
+922,
+970
+],
+"alt_span": [
+883,
+927
+]
+},
+{
+"k": 31,
+"nat": "current_row",
+"alt": "currentRow",
+"nat_span": [
+984,
+995
+],
+"alt_span": [
+941,
+951
+]
+},
+{
+"k": 32,
+"nat": "row_list:\n        padded_cells",
+"alt": "rowList:\n        paddedCells",
+"nat_span": [
+999,
+1029
+],
+"alt_span": [
+955,
+983
+]
+},
+{
+"k": 33,
+"nat": "column_index, cell_value",
+"alt": "columnIndex, cellValue",
+"nat_span": [
+1047,
+1071
+],
+"alt_span": [
+1001,
+1023
+]
+},
+{
+"k": 34,
+"nat": "current_row",
+"alt": "currentRow",
+"nat_span": [
+1085,
+1096
+],
+"alt_span": [
+1037,
+1047
+]
+},
+{
+"k": 35,
+"nat": "padded_cells",
+"alt": "paddedCells",
+"nat_span": [
+1111,
+1123
+],
+"alt_span": [
+1062,
+1073
+]
+},
+{
+"k": 36,
+"nat": "cell_value",
+"alt": "cellValue",
+"nat_span": [
+1131,
+1141
+],
+"alt_span": [
+1081,
+1090
+]
+},
+{
+"k": 37,
+"nat": "column_widths[column_index",
+"alt": "columnWidths[columnIndex",
+"nat_span": [
+1148,
+1174
+],
+"alt_span": [
+1097,
+1121
+]
+},
+{
+"k": 38,
+"nat": "formatted_lines",
+"alt": "formattedLines",
+"nat_span": [
+1186,
+1201
+],
+"alt_span": [
+1133,
+1147
+]
+},
+{
+"k": 39,
+"nat": "padded_cells",
+"alt": "paddedCells",
+"nat_span": [
+1220,
+1232
+],
+"alt_span": [
+1166,
+1177
+]
+},
+{
+"k": 40,
+"nat": "formatted_lines",
+"alt": "formattedLines",
+"nat_span": [
+1255,
+1270
+],
+"alt_span": [
+1200,
+1214
+]
+},
+{
+"k": 41,
+"nat": "parse_number(text_value",
+"alt": "parseNumber(textValue",
+"nat_span": [
+1277,
+1300
+],
+"alt_span": [
+1221,
+1242
+]
+},
+{
+"k": 42,
+"nat": "text_value",
+"alt": "textValue",
+"nat_span": [
+1333,
+1343
+],
+"alt_span": [
+1275,
+1284
+]
+},
+{
+"k": 43,
+"nat": "column_total(row_list, column_index",
+"alt": "columnTotal(rowList, columnIndex",
+"nat_span": [
+1394,
+1429
+],
+"alt_span": [
+1335,
+1367
+]
+},
+{
+"k": 44,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+1436,
+1449
+],
+"alt_span": [
+1374,
+1386
+]
+},
+{
+"k": 45,
+"nat": "current_row",
+"alt": "currentRow",
+"nat_span": [
+1464,
+1475
+],
+"alt_span": [
+1401,
+1411
+]
+},
+{
+"k": 46,
+"nat": "row_list:\n        numeric_value",
+"alt": "rowList:\n        numericValue",
+"nat_span": [
+1479,
+1510
+],
+"alt_span": [
+1415,
+1444
+]
+},
+{
+"k": 47,
+"nat": "parse_number(current_row[column_index",
+"alt": "parseNumber(currentRow[columnIndex",
+"nat_span": [
+1513,
+1550
+],
+"alt_span": [
+1447,
+1481
+]
+},
+{
+"k": 48,
+"nat": "numeric_value",
+"alt": "numericValue",
+"nat_span": [
+1564,
+1577
+],
+"alt_span": [
+1495,
+1507
+]
+},
+{
+"k": 49,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+1603,
+1616
+],
+"alt_span": [
+1533,
+1545
+]
+},
+{
+"k": 50,
+"nat": "numeric_value",
+"alt": "numericValue",
+"nat_span": [
+1620,
+1633
+],
+"alt_span": [
+1549,
+1561
+]
+},
+{
+"k": 51,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+1645,
+1658
+],
+"alt_span": [
+1573,
+1585
+]
+},
+{
+"k": 52,
+"nat": "input_lines",
+"alt": "inputLines",
+"nat_span": [
+1677,
+1688
+],
+"alt_span": [
+1604,
+1614
+]
+},
+{
+"k": 53,
+"nat": "parsed_rows",
+"alt": "parsedRows",
+"nat_span": [
+1813,
+1824
+],
+"alt_span": [
+1739,
+1749
+]
+},
+{
+"k": 54,
+"nat": "parse_csv_table(input_lines)\n    header_row",
+"alt": "parseCsvTable(inputLines)\n    headerRow",
+"nat_span": [
+1827,
+1870
+],
+"alt_span": [
+1752,
+1791
+]
+},
+{
+"k": 55,
+"nat": "parsed_rows",
+"alt": "parsedRows",
+"nat_span": [
+1873,
+1884
+],
+"alt_span": [
+1794,
+1804
+]
+},
+{
+"k": 56,
+"nat": "data_rows",
+"alt": "dataRows",
+"nat_span": [
+1892,
+1901
+],
+"alt_span": [
+1812,
+1820
+]
+},
+{
+"k": 57,
+"nat": "parsed_rows",
+"alt": "parsedRows",
+"nat_span": [
+1904,
+1915
+],
+"alt_span": [
+1823,
+1833
+]
+},
+{
+"k": 58,
+"nat": "output_line",
+"alt": "outputLine",
+"nat_span": [
+1928,
+1939
+],
+"alt_span": [
+1846,
+1856
+]
+},
+{
+"k": 59,
+"nat": "format_table(parsed_rows",
+"alt": "formatTable(parsedRows",
+"nat_span": [
+1943,
+1967
+],
+"alt_span": [
+1860,
+1882
+]
+},
+{
+"k": 60,
+"nat": "output_line",
+"alt": "outputLine",
+"nat_span": [
+1984,
+1995
+],
+"alt_span": [
+1899,
+1909
+]
+},
+{
+"k": 61,
+"nat": "column_name",
+"alt": "columnName",
+"nat_span": [
+2005,
+2016
+],
+"alt_span": [
+1919,
+1929
+]
+},
+{
+"k": 62,
+"nat": "column_index",
+"alt": "columnIndex",
+"nat_span": [
+2051,
+2063
+],
+"alt_span": [
+1964,
+1975
+]
+},
+{
+"k": 63,
+"nat": "header_row",
+"alt": "headerRow",
+"nat_span": [
+2066,
+2076
+],
+"alt_span": [
+1978,
+1987
+]
+},
+{
+"k": 64,
+"nat": "column_name",
+"alt": "columnName",
+"nat_span": [
+2083,
+2094
+],
+"alt_span": [
+1994,
+2004
+]
+},
+{
+"k": 65,
+"nat": "column_name, column_total(data_rows, column_index",
+"alt": "columnName, columnTotal(dataRows, columnIndex",
+"nat_span": [
+2138,
+2187
+],
+"alt_span": [
+2048,
+2093
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
 "doc_id": "py_snake_camel__t132",
 "family": "py_snake_camel",
 "topic": "Calculate Simple Interest",
@@ -61871,7 +64550,7 @@
 ],
 "k_en": 12,
 "shared_fraction": 0.912,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -71947,394 +74626,816 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_even(input_number):\n    \"\"\"\n    Checks if a given integer is an even number.\n\n    Args:\n        input_number: The integer to check.\n\n    Returns:\n        True if the number is even, False otherwise.\n    \"\"\"\n    remainder_value = input_number % 2\n    is_zero_remainder = (remainder_value == 0)\n    return is_zero_remainder\n\ndef check_number_parity(test_integer):\n    \"\"\"\n    A helper function to demonstrate the usage of is_even and print results.\n    \"\"\"\n    current_check_result = is_even(test_integer)\n    if current_check_result:\n        print(f\"The number {test_integer} is an even number.\")\n    else:\n        print(f\"The number {test_integer} is an odd number.\")\n\n# Example usage with different numbers\nfirst_example_number = 4\nsecond_example_number = 7\nthird_example_number = 0\nfourth_example_number = -2\nfifth_example_number = -3\n\ncheck_number_parity(first_example_number)\ncheck_number_parity(second_example_number)\ncheck_number_parity(third_example_number)\ncheck_number_parity(fourth_example_number)\ncheck_number_parity(fifth_example_number)\n",
-"text_alt": "def is_even(inputNumber):\n    \"\"\"\n    Checks if a given integer is an even number.\n\n    Args:\n        inputNumber: The integer to check.\n\n    Returns:\n        True if the number is even, False otherwise.\n    \"\"\"\n    remainderValue = inputNumber % 2\n    isZeroRemainder = (remainderValue == 0)\n    return isZeroRemainder\n\ndef checkNumberParity(testInteger):\n    \"\"\"\n    A helper function to demonstrate the usage of is_even and print results.\n    \"\"\"\n    currentCheckResult = is_even(testInteger)\n    if currentCheckResult:\n        print(f\"The number {testInteger} is an even number.\")\n    else:\n        print(f\"The number {testInteger} is an odd number.\")\n\n# Example usage with different numbers\nfirstExampleNumber = 4\nsecondExampleNumber = 7\nthirdExampleNumber = 0\nfourthExampleNumber = -2\nfifthExampleNumber = -3\n\ncheckNumberParity(firstExampleNumber)\ncheckNumberParity(secondExampleNumber)\ncheckNumberParity(thirdExampleNumber)\ncheckNumberParity(fourthExampleNumber)\ncheckNumberParity(fifthExampleNumber)\n",
+"text_nat": "def is_even(number):\n    \"\"\"Return True when the given integer is even.\"\"\"\n    if not isinstance(number, int) or isinstance(number, bool):\n        raise TypeError(\"is_even expects a plain int\")\n    return number % 2 == 0\n\n\ndef parse_number_list(raw_text):\n    \"\"\"Turn a whitespace or comma separated string into a list of ints.\"\"\"\n    cleaned_text = raw_text.replace(\",\", \" \")\n    parsed_numbers = []\n    for raw_token in cleaned_text.split():\n        parsed_numbers.append(int(raw_token))\n    return parsed_numbers\n\n\ndef split_by_parity(input_list):\n    \"\"\"Split the numbers into an even group and an odd group.\"\"\"\n    even_numbers = []\n    odd_numbers = []\n    for current_number in input_list:\n        if is_even(current_number):\n            even_numbers.append(current_number)\n        else:\n            odd_numbers.append(current_number)\n    return even_numbers, odd_numbers\n\n\ndef format_parity_line(number):\n    \"\"\"Describe a single number as even or odd.\"\"\"\n    parity_label = \"even\" if is_even(number) else \"odd\"\n    return \"{0:>6} is {1}\".format(number, parity_label)\n\n\ndef build_report(input_list):\n    \"\"\"Build a multi-line report about the parity of every number.\"\"\"\n    report_lines = []\n    for current_number in input_list:\n        report_lines.append(format_parity_line(current_number))\n    even_numbers, odd_numbers = split_by_parity(input_list)\n    report_lines.append(\n        \"even: {0} / odd: {1}\".format(len(even_numbers), len(odd_numbers))\n    )\n    if even_numbers:\n        largest_even = max(even_numbers)\n        report_lines.append(\"largest even value: {0}\".format(largest_even))\n    if odd_numbers:\n        smallest_odd = min(odd_numbers)\n        report_lines.append(\"smallest odd value: {0}\".format(smallest_odd))\n    even_share = len(even_numbers) / len(input_list)\n    report_lines.append(\"even share: {0:.0%}\".format(even_share))\n    return \"\\n\".join(report_lines)\n\n\ndef main():\n    raw_input_text = \"4, 7, 0, -12, 33, 100, -5\"\n    number_list = parse_number_list(raw_input_text)\n    print(build_report(number_list))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def is_even(number):\n    \"\"\"Return True when the given integer is even.\"\"\"\n    if not isinstance(number, int) or isinstance(number, bool):\n        raise TypeError(\"is_even expects a plain int\")\n    return number % 2 == 0\n\n\ndef parseNumberList(rawText):\n    \"\"\"Turn a whitespace or comma separated string into a list of ints.\"\"\"\n    cleanedText = rawText.replace(\",\", \" \")\n    parsedNumbers = []\n    for rawToken in cleanedText.split():\n        parsedNumbers.append(int(rawToken))\n    return parsedNumbers\n\n\ndef splitByParity(inputList):\n    \"\"\"Split the numbers into an even group and an odd group.\"\"\"\n    evenNumbers = []\n    oddNumbers = []\n    for currentNumber in inputList:\n        if is_even(currentNumber):\n            evenNumbers.append(currentNumber)\n        else:\n            oddNumbers.append(currentNumber)\n    return evenNumbers, oddNumbers\n\n\ndef formatParityLine(number):\n    \"\"\"Describe a single number as even or odd.\"\"\"\n    parityLabel = \"even\" if is_even(number) else \"odd\"\n    return \"{0:>6} is {1}\".format(number, parityLabel)\n\n\ndef buildReport(inputList):\n    \"\"\"Build a multi-line report about the parity of every number.\"\"\"\n    reportLines = []\n    for currentNumber in inputList:\n        reportLines.append(formatParityLine(currentNumber))\n    evenNumbers, oddNumbers = splitByParity(inputList)\n    reportLines.append(\n        \"even: {0} / odd: {1}\".format(len(evenNumbers), len(oddNumbers))\n    )\n    if evenNumbers:\n        largestEven = max(evenNumbers)\n        reportLines.append(\"largest even value: {0}\".format(largestEven))\n    if oddNumbers:\n        smallestOdd = min(oddNumbers)\n        reportLines.append(\"smallest odd value: {0}\".format(smallestOdd))\n    evenShare = len(evenNumbers) / len(inputList)\n    reportLines.append(\"even share: {0:.0%}\".format(evenShare))\n    return \"\\n\".join(reportLines)\n\n\ndef main():\n    rawInputText = \"4, 7, 0, -12, 33, 100, -5\"\n    numberList = parseNumberList(rawInputText)\n    print(buildReport(numberList))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "input_number",
-"alt": "inputNumber",
+"nat": "parse_number_list(raw_text",
+"alt": "parseNumberList(rawText",
 "nat_span": [
-12,
-24
+227,
+253
 ],
 "alt_span": [
-12,
-23
+227,
+250
 ]
 },
 {
 "k": 1,
-"nat": "remainder_value",
-"alt": "remainderValue",
+"nat": "cleaned_text",
+"alt": "cleanedText",
 "nat_span": [
-218,
-233
+335,
+347
 ],
 "alt_span": [
-216,
-230
+332,
+343
 ]
 },
 {
 "k": 2,
-"nat": "is_zero_remainder",
-"alt": "isZeroRemainder",
+"nat": "parsed_numbers",
+"alt": "parsedNumbers",
 "nat_span": [
-257,
-274
+381,
+395
 ],
 "alt_span": [
-253,
-268
+376,
+389
 ]
 },
 {
 "k": 3,
-"nat": "check_number_parity(test_integer",
-"alt": "checkNumberParity(testInteger",
+"nat": "raw_token",
+"alt": "rawToken",
 "nat_span": [
-334,
-366
+409,
+418
 ],
 "alt_span": [
-325,
-354
+403,
+411
 ]
 },
 {
 "k": 4,
-"nat": "current_check_result",
-"alt": "currentCheckResult",
+"nat": "split_by_parity(input_list",
+"alt": "splitByParity(inputList",
 "nat_span": [
-466,
-486
+522,
+548
 ],
 "alt_span": [
-454,
-472
+511,
+534
 ]
 },
 {
 "k": 5,
-"nat": "first_example_number",
-"alt": "firstExampleNumber",
+"nat": "even_numbers",
+"alt": "evenNumbers",
 "nat_span": [
-715,
-735
+620,
+632
 ],
 "alt_span": [
-696,
-714
+606,
+617
 ]
 },
 {
 "k": 6,
-"nat": "second_example_number",
-"alt": "secondExampleNumber",
+"nat": "odd_numbers",
+"alt": "oddNumbers",
 "nat_span": [
-740,
-761
+642,
+653
 ],
 "alt_span": [
-719,
-738
+627,
+637
 ]
 },
 {
 "k": 7,
-"nat": "third_example_number",
-"alt": "thirdExampleNumber",
+"nat": "current_number",
+"alt": "currentNumber",
 "nat_span": [
-766,
-786
+667,
+681
 ],
 "alt_span": [
-743,
-761
+651,
+664
 ]
 },
 {
 "k": 8,
-"nat": "fourth_example_number",
-"alt": "fourthExampleNumber",
+"nat": "format_parity_line",
+"alt": "formatParityLine",
 "nat_span": [
-791,
-812
+885,
+903
 ],
 "alt_span": [
-766,
-785
+860,
+876
 ]
 },
 {
 "k": 9,
-"nat": "fifth_example_number",
-"alt": "fifthExampleNumber",
+"nat": "parity_label",
+"alt": "parityLabel",
 "nat_span": [
-818,
-838
+968,
+980
 ],
 "alt_span": [
-791,
-809
-]
-}
-],
-"k_en": 10,
-"shared_fraction": 0.893,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "input_number",
-"alt": "inputNumber",
-"nat_span": [
-12,
-24
-],
-"alt_span": [
-12,
-23
-]
-},
-{
-"k": 1,
-"nat": "input_number",
-"alt": "inputNumber",
-"nat_span": [
-103,
-115
-],
-"alt_span": [
-102,
-113
-]
-},
-{
-"k": 2,
-"nat": "remainder_value",
-"alt": "remainderValue",
-"nat_span": [
-218,
-233
-],
-"alt_span": [
-216,
-230
-]
-},
-{
-"k": 3,
-"nat": "input_number",
-"alt": "inputNumber",
-"nat_span": [
-236,
-248
-],
-"alt_span": [
-233,
-244
-]
-},
-{
-"k": 4,
-"nat": "is_zero_remainder",
-"alt": "isZeroRemainder",
-"nat_span": [
-257,
-274
-],
-"alt_span": [
-253,
-268
-]
-},
-{
-"k": 5,
-"nat": "remainder_value",
-"alt": "remainderValue",
-"nat_span": [
-278,
-293
-],
-"alt_span": [
-272,
-286
-]
-},
-{
-"k": 6,
-"nat": "is_zero_remainder",
-"alt": "isZeroRemainder",
-"nat_span": [
-311,
-328
-],
-"alt_span": [
-304,
-319
-]
-},
-{
-"k": 7,
-"nat": "check_number_parity(test_integer",
-"alt": "checkNumberParity(testInteger",
-"nat_span": [
-334,
-366
-],
-"alt_span": [
-325,
-354
-]
-},
-{
-"k": 8,
-"nat": "current_check_result",
-"alt": "currentCheckResult",
-"nat_span": [
-466,
-486
-],
-"alt_span": [
-454,
-472
-]
-},
-{
-"k": 9,
-"nat": "test_integer",
-"alt": "testInteger",
-"nat_span": [
-497,
-509
-],
-"alt_span": [
-483,
-494
+941,
+952
 ]
 },
 {
 "k": 10,
-"nat": "current_check_result",
-"alt": "currentCheckResult",
+"nat": "report_lines",
+"alt": "reportLines",
 "nat_span": [
-518,
-538
+1182,
+1194
 ],
 "alt_span": [
-503,
-521
+1151,
+1162
 ]
 },
 {
 "k": 11,
-"nat": "test_integer",
-"alt": "testInteger",
+"nat": "even_share",
+"alt": "evenShare",
 "nat_span": [
-568,
-580
+1746,
+1756
 ],
 "alt_span": [
-551,
-562
+1690,
+1699
 ]
 },
 {
 "k": 12,
-"nat": "test_integer",
-"alt": "testInteger",
+"nat": "raw_input_text",
+"alt": "rawInputText",
 "nat_span": [
-641,
-653
+1914,
+1928
 ],
 "alt_span": [
-623,
-634
+1852,
+1864
 ]
 },
 {
 "k": 13,
-"nat": "first_example_number",
-"alt": "firstExampleNumber",
+"nat": "number_list",
+"alt": "numberList",
 "nat_span": [
-715,
-735
+1963,
+1974
 ],
 "alt_span": [
-696,
-714
+1899,
+1909
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.899,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "parse_number_list(raw_text",
+"alt": "parseNumberList(rawText",
+"nat_span": [
+227,
+253
+],
+"alt_span": [
+227,
+250
+]
+},
+{
+"k": 1,
+"nat": "cleaned_text",
+"alt": "cleanedText",
+"nat_span": [
+335,
+347
+],
+"alt_span": [
+332,
+343
+]
+},
+{
+"k": 2,
+"nat": "raw_text",
+"alt": "rawText",
+"nat_span": [
+350,
+358
+],
+"alt_span": [
+346,
+353
+]
+},
+{
+"k": 3,
+"nat": "parsed_numbers",
+"alt": "parsedNumbers",
+"nat_span": [
+381,
+395
+],
+"alt_span": [
+376,
+389
+]
+},
+{
+"k": 4,
+"nat": "raw_token",
+"alt": "rawToken",
+"nat_span": [
+409,
+418
+],
+"alt_span": [
+403,
+411
+]
+},
+{
+"k": 5,
+"nat": "cleaned_text",
+"alt": "cleanedText",
+"nat_span": [
+422,
+434
+],
+"alt_span": [
+415,
+426
+]
+},
+{
+"k": 6,
+"nat": "parsed_numbers",
+"alt": "parsedNumbers",
+"nat_span": [
+452,
+466
+],
+"alt_span": [
+444,
+457
+]
+},
+{
+"k": 7,
+"nat": "raw_token",
+"alt": "rawToken",
+"nat_span": [
+478,
+487
+],
+"alt_span": [
+469,
+477
+]
+},
+{
+"k": 8,
+"nat": "parsed_numbers",
+"alt": "parsedNumbers",
+"nat_span": [
+501,
+515
+],
+"alt_span": [
+491,
+504
+]
+},
+{
+"k": 9,
+"nat": "split_by_parity(input_list",
+"alt": "splitByParity(inputList",
+"nat_span": [
+522,
+548
+],
+"alt_span": [
+511,
+534
+]
+},
+{
+"k": 10,
+"nat": "even_numbers",
+"alt": "evenNumbers",
+"nat_span": [
+620,
+632
+],
+"alt_span": [
+606,
+617
+]
+},
+{
+"k": 11,
+"nat": "odd_numbers",
+"alt": "oddNumbers",
+"nat_span": [
+642,
+653
+],
+"alt_span": [
+627,
+637
+]
+},
+{
+"k": 12,
+"nat": "current_number",
+"alt": "currentNumber",
+"nat_span": [
+667,
+681
+],
+"alt_span": [
+651,
+664
+]
+},
+{
+"k": 13,
+"nat": "input_list",
+"alt": "inputList",
+"nat_span": [
+685,
+695
+],
+"alt_span": [
+668,
+677
 ]
 },
 {
 "k": 14,
-"nat": "second_example_number",
-"alt": "secondExampleNumber",
+"nat": "current_number",
+"alt": "currentNumber",
 "nat_span": [
-740,
-761
+716,
+730
 ],
 "alt_span": [
-719,
-738
+698,
+711
 ]
 },
 {
 "k": 15,
-"nat": "third_example_number",
-"alt": "thirdExampleNumber",
+"nat": "even_numbers",
+"alt": "evenNumbers",
 "nat_span": [
-766,
-786
+745,
+757
 ],
 "alt_span": [
-743,
-761
+726,
+737
 ]
 },
 {
 "k": 16,
-"nat": "fourth_example_number",
-"alt": "fourthExampleNumber",
+"nat": "current_number",
+"alt": "currentNumber",
 "nat_span": [
-791,
-812
+765,
+779
 ],
 "alt_span": [
-766,
-785
+745,
+758
 ]
 },
 {
 "k": 17,
-"nat": "fifth_example_number",
-"alt": "fifthExampleNumber",
+"nat": "odd_numbers",
+"alt": "oddNumbers",
 "nat_span": [
-818,
-838
+807,
+818
 ],
 "alt_span": [
-791,
-809
+786,
+796
 ]
 },
 {
 "k": 18,
-"nat": "check_number_parity(first_example_number)\ncheck_number_parity(second_example_number)\ncheck_number_parity(third_example_number)\ncheck_number_parity(fourth_example_number)\ncheck_number_parity(fifth_example_number",
-"alt": "checkNumberParity(firstExampleNumber)\ncheckNumberParity(secondExampleNumber)\ncheckNumberParity(thirdExampleNumber)\ncheckNumberParity(fourthExampleNumber)\ncheckNumberParity(fifthExampleNumber",
+"nat": "current_number",
+"alt": "currentNumber",
 "nat_span": [
-845,
-1055
+826,
+840
 ],
 "alt_span": [
-816,
-1006
+804,
+817
+]
+},
+{
+"k": 19,
+"nat": "even_numbers, odd_numbers",
+"alt": "evenNumbers, oddNumbers",
+"nat_span": [
+853,
+878
+],
+"alt_span": [
+830,
+853
+]
+},
+{
+"k": 20,
+"nat": "format_parity_line",
+"alt": "formatParityLine",
+"nat_span": [
+885,
+903
+],
+"alt_span": [
+860,
+876
+]
+},
+{
+"k": 21,
+"nat": "parity_label",
+"alt": "parityLabel",
+"nat_span": [
+968,
+980
+],
+"alt_span": [
+941,
+952
+]
+},
+{
+"k": 22,
+"nat": "parity_label",
+"alt": "parityLabel",
+"nat_span": [
+1062,
+1074
+],
+"alt_span": [
+1034,
+1045
+]
+},
+{
+"k": 23,
+"nat": "build_report(input_list",
+"alt": "buildReport(inputList",
+"nat_span": [
+1082,
+1105
+],
+"alt_span": [
+1053,
+1074
+]
+},
+{
+"k": 24,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1182,
+1194
+],
+"alt_span": [
+1151,
+1162
+]
+},
+{
+"k": 25,
+"nat": "current_number",
+"alt": "currentNumber",
+"nat_span": [
+1208,
+1222
+],
+"alt_span": [
+1176,
+1189
+]
+},
+{
+"k": 26,
+"nat": "input_list:\n        report_lines",
+"alt": "inputList:\n        reportLines",
+"nat_span": [
+1226,
+1258
+],
+"alt_span": [
+1193,
+1223
+]
+},
+{
+"k": 27,
+"nat": "format_parity_line(current_number",
+"alt": "formatParityLine(currentNumber",
+"nat_span": [
+1266,
+1299
+],
+"alt_span": [
+1231,
+1261
+]
+},
+{
+"k": 28,
+"nat": "even_numbers, odd_numbers",
+"alt": "evenNumbers, oddNumbers",
+"nat_span": [
+1306,
+1331
+],
+"alt_span": [
+1268,
+1291
+]
+},
+{
+"k": 29,
+"nat": "split_by_parity(input_list)\n    report_lines",
+"alt": "splitByParity(inputList)\n    reportLines",
+"nat_span": [
+1334,
+1378
+],
+"alt_span": [
+1294,
+1334
+]
+},
+{
+"k": 30,
+"nat": "even_numbers",
+"alt": "evenNumbers",
+"nat_span": [
+1429,
+1441
+],
+"alt_span": [
+1385,
+1396
+]
+},
+{
+"k": 31,
+"nat": "odd_numbers",
+"alt": "oddNumbers",
+"nat_span": [
+1448,
+1459
+],
+"alt_span": [
+1403,
+1413
+]
+},
+{
+"k": 32,
+"nat": "even_numbers:\n        largest_even",
+"alt": "evenNumbers:\n        largestEven",
+"nat_span": [
+1475,
+1509
+],
+"alt_span": [
+1429,
+1461
+]
+},
+{
+"k": 33,
+"nat": "even_numbers)\n        report_lines",
+"alt": "evenNumbers)\n        reportLines",
+"nat_span": [
+1516,
+1550
+],
+"alt_span": [
+1468,
+1500
+]
+},
+{
+"k": 34,
+"nat": "largest_even",
+"alt": "largestEven",
+"nat_span": [
+1591,
+1603
+],
+"alt_span": [
+1541,
+1552
+]
+},
+{
+"k": 35,
+"nat": "odd_numbers:\n        smallest_odd",
+"alt": "oddNumbers:\n        smallestOdd",
+"nat_span": [
+1613,
+1646
+],
+"alt_span": [
+1562,
+1593
+]
+},
+{
+"k": 36,
+"nat": "odd_numbers)\n        report_lines",
+"alt": "oddNumbers)\n        reportLines",
+"nat_span": [
+1653,
+1686
+],
+"alt_span": [
+1600,
+1631
+]
+},
+{
+"k": 37,
+"nat": "smallest_odd",
+"alt": "smallestOdd",
+"nat_span": [
+1727,
+1739
+],
+"alt_span": [
+1672,
+1683
+]
+},
+{
+"k": 38,
+"nat": "even_share",
+"alt": "evenShare",
+"nat_span": [
+1746,
+1756
+],
+"alt_span": [
+1690,
+1699
+]
+},
+{
+"k": 39,
+"nat": "even_numbers",
+"alt": "evenNumbers",
+"nat_span": [
+1763,
+1775
+],
+"alt_span": [
+1706,
+1717
+]
+},
+{
+"k": 40,
+"nat": "input_list)\n    report_lines",
+"alt": "inputList)\n    reportLines",
+"nat_span": [
+1783,
+1811
+],
+"alt_span": [
+1725,
+1751
+]
+},
+{
+"k": 41,
+"nat": "even_share",
+"alt": "evenShare",
+"nat_span": [
+1848,
+1858
+],
+"alt_span": [
+1788,
+1797
+]
+},
+{
+"k": 42,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1882,
+1894
+],
+"alt_span": [
+1821,
+1832
+]
+},
+{
+"k": 43,
+"nat": "raw_input_text",
+"alt": "rawInputText",
+"nat_span": [
+1914,
+1928
+],
+"alt_span": [
+1852,
+1864
+]
+},
+{
+"k": 44,
+"nat": "number_list",
+"alt": "numberList",
+"nat_span": [
+1963,
+1974
+],
+"alt_span": [
+1899,
+1909
+]
+},
+{
+"k": 45,
+"nat": "parse_number_list(raw_input_text",
+"alt": "parseNumberList(rawInputText",
+"nat_span": [
+1977,
+2009
+],
+"alt_span": [
+1912,
+1940
+]
+},
+{
+"k": 46,
+"nat": "build_report(number_list",
+"alt": "buildReport(numberList",
+"nat_span": [
+2021,
+2045
+],
+"alt_span": [
+1952,
+1974
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py_snake_camel__t170",
@@ -75704,6 +78805,1542 @@
 }
 ],
 "free_filter": true
+},
+{
+"doc_id": "py_snake_camel__t176",
+"family": "py_snake_camel",
+"topic": "Distance Between Two Points (3D)",
+"angle": "code",
+"text_es": "Write a function `distance_3d(p1, p2)` that takes two tuples `p1` and `p2`, each representing a 3D point `(x, y, z)`. It should return the Euclidean distance between these two points as a float. Example: `distance_3d((0,0,0), (1,1,1))` should return `1.73205...`, `distance_3d((1,2,3), (1,2,4))` should return `1.0`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import math\n\n\ndef validate_point(candidate_point, point_label):\n    if not isinstance(candidate_point, (tuple, list)):\n        raise TypeError(f\"{point_label} must be a tuple of three numbers\")\n    if len(candidate_point) != 3:\n        raise ValueError(f\"{point_label} must contain exactly three coordinates\")\n    for axis_name, axis_value in zip(\"xyz\", candidate_point):\n        if isinstance(axis_value, bool) or not isinstance(axis_value, (int, float)):\n            raise TypeError(f\"{point_label}.{axis_name} must be a number\")\n    return tuple(float(axis_value) for axis_value in candidate_point)\n\n\ndef distance_3d(p1, p2):\n    start_point = validate_point(p1, \"p1\")\n    end_point = validate_point(p2, \"p2\")\n    squared_sum = 0.0\n    for start_coord, end_coord in zip(start_point, end_point):\n        axis_delta = end_coord - start_coord\n        squared_sum += axis_delta * axis_delta\n    return math.sqrt(squared_sum)\n\n\ndef total_path_length(point_list):\n    running_total = 0.0\n    for segment_index in range(1, len(point_list)):\n        running_total += distance_3d(point_list[segment_index - 1], point_list[segment_index])\n    return running_total\n\n\ndef farthest_pair(point_list):\n    best_pair = None\n    max_distance = 0.0\n    for first_index in range(len(point_list)):\n        for second_index in range(first_index + 1, len(point_list)):\n            current_distance = distance_3d(point_list[first_index], point_list[second_index])\n            if best_pair is None or current_distance > max_distance:\n                max_distance = current_distance\n                best_pair = (point_list[first_index], point_list[second_index])\n    return best_pair, max_distance\n\n\ndef format_point(point_tuple):\n    coordinate_texts = [f\"{axis_value:g}\" for axis_value in point_tuple]\n    return \"(\" + \", \".join(coordinate_texts) + \")\"\n\n\ndef build_report(point_list):\n    report_lines = []\n    for segment_index in range(1, len(point_list)):\n        previous_point = point_list[segment_index - 1]\n        current_point = point_list[segment_index]\n        segment_distance = distance_3d(previous_point, current_point)\n        report_lines.append(\n            f\"{format_point(previous_point)} -> {format_point(current_point)}: {segment_distance:.5f}\"\n        )\n    path_length = total_path_length(point_list)\n    report_lines.append(f\"total path length: {path_length:.5f}\")\n    (left_point, right_point), max_distance = farthest_pair(point_list)\n    report_lines.append(\n        f\"farthest pair: {format_point(left_point)} and {format_point(right_point)}\"\n        f\" at {max_distance:.5f}\"\n    )\n    return \"\\n\".join(report_lines)\n\n\ndef main():\n    sample_points = [(0, 0, 0), (1, 1, 1), (1, 2, 3), (1, 2, 4), (-2, 5, 0.5)]\n    print(build_report(sample_points))\n    origin_point = (0, 0, 0)\n    unit_point = (1, 1, 1)\n    unit_distance = distance_3d(origin_point, unit_point)\n    print(f\"distance_3d({format_point(origin_point)}, {format_point(unit_point)}) =\"\n          f\" {unit_distance}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import math\n\n\ndef validatePoint(candidatePoint, pointLabel):\n    if not isinstance(candidatePoint, (tuple, list)):\n        raise TypeError(f\"{pointLabel} must be a tuple of three numbers\")\n    if len(candidatePoint) != 3:\n        raise ValueError(f\"{pointLabel} must contain exactly three coordinates\")\n    for axisName, axisValue in zip(\"xyz\", candidatePoint):\n        if isinstance(axisValue, bool) or not isinstance(axisValue, (int, float)):\n            raise TypeError(f\"{pointLabel}.{axisName} must be a number\")\n    return tuple(float(axisValue) for axisValue in candidatePoint)\n\n\ndef distance_3d(p1, p2):\n    startPoint = validatePoint(p1, \"p1\")\n    endPoint = validatePoint(p2, \"p2\")\n    squaredSum = 0.0\n    for startCoord, endCoord in zip(startPoint, endPoint):\n        axisDelta = endCoord - startCoord\n        squaredSum += axisDelta * axisDelta\n    return math.sqrt(squaredSum)\n\n\ndef totalPathLength(pointList):\n    runningTotal = 0.0\n    for segmentIndex in range(1, len(pointList)):\n        runningTotal += distance_3d(pointList[segmentIndex - 1], pointList[segmentIndex])\n    return runningTotal\n\n\ndef farthestPair(pointList):\n    bestPair = None\n    maxDistance = 0.0\n    for firstIndex in range(len(pointList)):\n        for secondIndex in range(firstIndex + 1, len(pointList)):\n            currentDistance = distance_3d(pointList[firstIndex], pointList[secondIndex])\n            if bestPair is None or currentDistance > maxDistance:\n                maxDistance = currentDistance\n                bestPair = (pointList[firstIndex], pointList[secondIndex])\n    return bestPair, maxDistance\n\n\ndef formatPoint(pointTuple):\n    coordinateTexts = [f\"{axisValue:g}\" for axisValue in pointTuple]\n    return \"(\" + \", \".join(coordinateTexts) + \")\"\n\n\ndef buildReport(pointList):\n    reportLines = []\n    for segmentIndex in range(1, len(pointList)):\n        previousPoint = pointList[segmentIndex - 1]\n        currentPoint = pointList[segmentIndex]\n        segmentDistance = distance_3d(previousPoint, currentPoint)\n        reportLines.append(\n            f\"{formatPoint(previousPoint)} -> {formatPoint(currentPoint)}: {segmentDistance:.5f}\"\n        )\n    pathLength = totalPathLength(pointList)\n    reportLines.append(f\"total path length: {pathLength:.5f}\")\n    (leftPoint, rightPoint), maxDistance = farthestPair(pointList)\n    reportLines.append(\n        f\"farthest pair: {formatPoint(leftPoint)} and {formatPoint(rightPoint)}\"\n        f\" at {maxDistance:.5f}\"\n    )\n    return \"\\n\".join(reportLines)\n\n\ndef main():\n    samplePoints = [(0, 0, 0), (1, 1, 1), (1, 2, 3), (1, 2, 4), (-2, 5, 0.5)]\n    print(buildReport(samplePoints))\n    originPoint = (0, 0, 0)\n    unitPoint = (1, 1, 1)\n    unitDistance = distance_3d(originPoint, unitPoint)\n    print(f\"distance_3d({formatPoint(originPoint)}, {formatPoint(unitPoint)}) =\"\n          f\" {unitDistance}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "validate_point(candidate_point, point_label",
+"alt": "validatePoint(candidatePoint, pointLabel",
+"nat_span": [
+18,
+61
+],
+"alt_span": [
+18,
+58
+]
+},
+{
+"k": 1,
+"nat": "axis_name, axis_value",
+"alt": "axisName, axisValue",
+"nat_span": [
+318,
+339
+],
+"alt_span": [
+311,
+330
+]
+},
+{
+"k": 2,
+"nat": "start_point",
+"alt": "startPoint",
+"nat_span": [
+633,
+644
+],
+"alt_span": [
+616,
+626
+]
+},
+{
+"k": 3,
+"nat": "end_point",
+"alt": "endPoint",
+"nat_span": [
+676,
+685
+],
+"alt_span": [
+657,
+665
+]
+},
+{
+"k": 4,
+"nat": "squared_sum",
+"alt": "squaredSum",
+"nat_span": [
+717,
+728
+],
+"alt_span": [
+696,
+706
+]
+},
+{
+"k": 5,
+"nat": "start_coord, end_coord",
+"alt": "startCoord, endCoord",
+"nat_span": [
+743,
+765
+],
+"alt_span": [
+721,
+741
+]
+},
+{
+"k": 6,
+"nat": "axis_delta",
+"alt": "axisDelta",
+"nat_span": [
+806,
+816
+],
+"alt_span": [
+780,
+789
+]
+},
+{
+"k": 7,
+"nat": "total_path_length(point_list",
+"alt": "totalPathLength(pointList",
+"nat_span": [
+930,
+958
+],
+"alt_span": [
+897,
+922
+]
+},
+{
+"k": 8,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+965,
+978
+],
+"alt_span": [
+929,
+941
+]
+},
+{
+"k": 9,
+"nat": "segment_index",
+"alt": "segmentIndex",
+"nat_span": [
+993,
+1006
+],
+"alt_span": [
+956,
+968
+]
+},
+{
+"k": 10,
+"nat": "best_pair",
+"alt": "bestPair",
+"nat_span": [
+1194,
+1203
+],
+"alt_span": [
+1147,
+1155
+]
+},
+{
+"k": 11,
+"nat": "max_distance",
+"alt": "maxDistance",
+"nat_span": [
+1215,
+1227
+],
+"alt_span": [
+1167,
+1178
+]
+},
+{
+"k": 12,
+"nat": "first_index",
+"alt": "firstIndex",
+"nat_span": [
+1242,
+1253
+],
+"alt_span": [
+1193,
+1203
+]
+},
+{
+"k": 13,
+"nat": "second_index",
+"alt": "secondIndex",
+"nat_span": [
+1293,
+1305
+],
+"alt_span": [
+1242,
+1253
+]
+},
+{
+"k": 14,
+"nat": "current_distance",
+"alt": "currentDistance",
+"nat_span": [
+1362,
+1378
+],
+"alt_span": [
+1308,
+1323
+]
+},
+{
+"k": 15,
+"nat": "format_point(point_tuple",
+"alt": "formatPoint(pointTuple",
+"nat_span": [
+1682,
+1706
+],
+"alt_span": [
+1611,
+1633
+]
+},
+{
+"k": 16,
+"nat": "coordinate_texts",
+"alt": "coordinateTexts",
+"nat_span": [
+1713,
+1729
+],
+"alt_span": [
+1640,
+1655
+]
+},
+{
+"k": 17,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1869,
+1881
+],
+"alt_span": [
+1789,
+1800
+]
+},
+{
+"k": 18,
+"nat": "previous_point",
+"alt": "previousPoint",
+"nat_span": [
+1947,
+1961
+],
+"alt_span": [
+1864,
+1877
+]
+},
+{
+"k": 19,
+"nat": "current_point",
+"alt": "currentPoint",
+"nat_span": [
+2002,
+2015
+],
+"alt_span": [
+1916,
+1928
+]
+},
+{
+"k": 20,
+"nat": "path_length",
+"alt": "pathLength",
+"nat_span": [
+2260,
+2271
+],
+"alt_span": [
+2162,
+2172
+]
+},
+{
+"k": 21,
+"nat": "left_point, right_point",
+"alt": "leftPoint, rightPoint",
+"nat_span": [
+2374,
+2397
+],
+"alt_span": [
+2270,
+2291
+]
+},
+{
+"k": 22,
+"nat": "sample_points",
+"alt": "samplePoints",
+"nat_span": [
+2644,
+2657
+],
+"alt_span": [
+2528,
+2540
+]
+},
+{
+"k": 23,
+"nat": "origin_point",
+"alt": "originPoint",
+"nat_span": [
+2762,
+2774
+],
+"alt_span": [
+2643,
+2654
+]
+},
+{
+"k": 24,
+"nat": "unit_point",
+"alt": "unitPoint",
+"nat_span": [
+2791,
+2801
+],
+"alt_span": [
+2671,
+2680
+]
+},
+{
+"k": 25,
+"nat": "unit_distance",
+"alt": "unitDistance",
+"nat_span": [
+2818,
+2831
+],
+"alt_span": [
+2697,
+2709
+]
+}
+],
+"k_en": 26,
+"shared_fraction": 0.852,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "validate_point(candidate_point, point_label",
+"alt": "validatePoint(candidatePoint, pointLabel",
+"nat_span": [
+18,
+61
+],
+"alt_span": [
+18,
+58
+]
+},
+{
+"k": 1,
+"nat": "candidate_point",
+"alt": "candidatePoint",
+"nat_span": [
+86,
+101
+],
+"alt_span": [
+83,
+97
+]
+},
+{
+"k": 2,
+"nat": "point_label",
+"alt": "pointLabel",
+"nat_span": [
+146,
+157
+],
+"alt_span": [
+142,
+152
+]
+},
+{
+"k": 3,
+"nat": "candidate_point",
+"alt": "candidatePoint",
+"nat_span": [
+205,
+220
+],
+"alt_span": [
+200,
+214
+]
+},
+{
+"k": 4,
+"nat": "point_label",
+"alt": "pointLabel",
+"nat_span": [
+256,
+267
+],
+"alt_span": [
+250,
+260
+]
+},
+{
+"k": 5,
+"nat": "axis_name, axis_value",
+"alt": "axisName, axisValue",
+"nat_span": [
+318,
+339
+],
+"alt_span": [
+311,
+330
+]
+},
+{
+"k": 6,
+"nat": "candidate_point",
+"alt": "candidatePoint",
+"nat_span": [
+354,
+369
+],
+"alt_span": [
+345,
+359
+]
+},
+{
+"k": 7,
+"nat": "axis_value",
+"alt": "axisValue",
+"nat_span": [
+394,
+404
+],
+"alt_span": [
+384,
+393
+]
+},
+{
+"k": 8,
+"nat": "axis_value",
+"alt": "axisValue",
+"nat_span": [
+430,
+440
+],
+"alt_span": [
+419,
+428
+]
+},
+{
+"k": 9,
+"nat": "point_label",
+"alt": "pointLabel",
+"nat_span": [
+488,
+499
+],
+"alt_span": [
+476,
+486
+]
+},
+{
+"k": 10,
+"nat": "axis_name",
+"alt": "axisName",
+"nat_span": [
+502,
+511
+],
+"alt_span": [
+489,
+497
+]
+},
+{
+"k": 11,
+"nat": "axis_value",
+"alt": "axisValue",
+"nat_span": [
+555,
+565
+],
+"alt_span": [
+541,
+550
+]
+},
+{
+"k": 12,
+"nat": "axis_value",
+"alt": "axisValue",
+"nat_span": [
+571,
+581
+],
+"alt_span": [
+556,
+565
+]
+},
+{
+"k": 13,
+"nat": "candidate_point",
+"alt": "candidatePoint",
+"nat_span": [
+585,
+600
+],
+"alt_span": [
+569,
+583
+]
+},
+{
+"k": 14,
+"nat": "start_point",
+"alt": "startPoint",
+"nat_span": [
+633,
+644
+],
+"alt_span": [
+616,
+626
+]
+},
+{
+"k": 15,
+"nat": "validate_point",
+"alt": "validatePoint",
+"nat_span": [
+647,
+661
+],
+"alt_span": [
+629,
+642
+]
+},
+{
+"k": 16,
+"nat": "end_point",
+"alt": "endPoint",
+"nat_span": [
+676,
+685
+],
+"alt_span": [
+657,
+665
+]
+},
+{
+"k": 17,
+"nat": "validate_point",
+"alt": "validatePoint",
+"nat_span": [
+688,
+702
+],
+"alt_span": [
+668,
+681
+]
+},
+{
+"k": 18,
+"nat": "squared_sum",
+"alt": "squaredSum",
+"nat_span": [
+717,
+728
+],
+"alt_span": [
+696,
+706
+]
+},
+{
+"k": 19,
+"nat": "start_coord, end_coord",
+"alt": "startCoord, endCoord",
+"nat_span": [
+743,
+765
+],
+"alt_span": [
+721,
+741
+]
+},
+{
+"k": 20,
+"nat": "start_point, end_point",
+"alt": "startPoint, endPoint",
+"nat_span": [
+773,
+795
+],
+"alt_span": [
+749,
+769
+]
+},
+{
+"k": 21,
+"nat": "axis_delta",
+"alt": "axisDelta",
+"nat_span": [
+806,
+816
+],
+"alt_span": [
+780,
+789
+]
+},
+{
+"k": 22,
+"nat": "end_coord",
+"alt": "endCoord",
+"nat_span": [
+819,
+828
+],
+"alt_span": [
+792,
+800
+]
+},
+{
+"k": 23,
+"nat": "start_coord\n        squared_sum",
+"alt": "startCoord\n        squaredSum",
+"nat_span": [
+831,
+862
+],
+"alt_span": [
+803,
+832
+]
+},
+{
+"k": 24,
+"nat": "axis_delta",
+"alt": "axisDelta",
+"nat_span": [
+866,
+876
+],
+"alt_span": [
+836,
+845
+]
+},
+{
+"k": 25,
+"nat": "axis_delta",
+"alt": "axisDelta",
+"nat_span": [
+879,
+889
+],
+"alt_span": [
+848,
+857
+]
+},
+{
+"k": 26,
+"nat": "squared_sum",
+"alt": "squaredSum",
+"nat_span": [
+911,
+922
+],
+"alt_span": [
+879,
+889
+]
+},
+{
+"k": 27,
+"nat": "total_path_length(point_list",
+"alt": "totalPathLength(pointList",
+"nat_span": [
+930,
+958
+],
+"alt_span": [
+897,
+922
+]
+},
+{
+"k": 28,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+965,
+978
+],
+"alt_span": [
+929,
+941
+]
+},
+{
+"k": 29,
+"nat": "segment_index",
+"alt": "segmentIndex",
+"nat_span": [
+993,
+1006
+],
+"alt_span": [
+956,
+968
+]
+},
+{
+"k": 30,
+"nat": "point_list",
+"alt": "pointList",
+"nat_span": [
+1023,
+1033
+],
+"alt_span": [
+985,
+994
+]
+},
+{
+"k": 31,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+1045,
+1058
+],
+"alt_span": [
+1006,
+1018
+]
+},
+{
+"k": 32,
+"nat": "point_list[segment_index",
+"alt": "pointList[segmentIndex",
+"nat_span": [
+1074,
+1098
+],
+"alt_span": [
+1034,
+1056
+]
+},
+{
+"k": 33,
+"nat": "point_list[segment_index",
+"alt": "pointList[segmentIndex",
+"nat_span": [
+1105,
+1129
+],
+"alt_span": [
+1063,
+1085
+]
+},
+{
+"k": 34,
+"nat": "running_total",
+"alt": "runningTotal",
+"nat_span": [
+1143,
+1156
+],
+"alt_span": [
+1099,
+1111
+]
+},
+{
+"k": 35,
+"nat": "farthest_pair(point_list",
+"alt": "farthestPair(pointList",
+"nat_span": [
+1163,
+1187
+],
+"alt_span": [
+1118,
+1140
+]
+},
+{
+"k": 36,
+"nat": "best_pair",
+"alt": "bestPair",
+"nat_span": [
+1194,
+1203
+],
+"alt_span": [
+1147,
+1155
+]
+},
+{
+"k": 37,
+"nat": "max_distance",
+"alt": "maxDistance",
+"nat_span": [
+1215,
+1227
+],
+"alt_span": [
+1167,
+1178
+]
+},
+{
+"k": 38,
+"nat": "first_index",
+"alt": "firstIndex",
+"nat_span": [
+1242,
+1253
+],
+"alt_span": [
+1193,
+1203
+]
+},
+{
+"k": 39,
+"nat": "point_list",
+"alt": "pointList",
+"nat_span": [
+1267,
+1277
+],
+"alt_span": [
+1217,
+1226
+]
+},
+{
+"k": 40,
+"nat": "second_index",
+"alt": "secondIndex",
+"nat_span": [
+1293,
+1305
+],
+"alt_span": [
+1242,
+1253
+]
+},
+{
+"k": 41,
+"nat": "first_index",
+"alt": "firstIndex",
+"nat_span": [
+1315,
+1326
+],
+"alt_span": [
+1263,
+1273
+]
+},
+{
+"k": 42,
+"nat": "point_list",
+"alt": "pointList",
+"nat_span": [
+1336,
+1346
+],
+"alt_span": [
+1283,
+1292
+]
+},
+{
+"k": 43,
+"nat": "current_distance",
+"alt": "currentDistance",
+"nat_span": [
+1362,
+1378
+],
+"alt_span": [
+1308,
+1323
+]
+},
+{
+"k": 44,
+"nat": "point_list[first_index",
+"alt": "pointList[firstIndex",
+"nat_span": [
+1393,
+1415
+],
+"alt_span": [
+1338,
+1358
+]
+},
+{
+"k": 45,
+"nat": "point_list[second_index",
+"alt": "pointList[secondIndex",
+"nat_span": [
+1418,
+1441
+],
+"alt_span": [
+1361,
+1382
+]
+},
+{
+"k": 46,
+"nat": "best_pair",
+"alt": "bestPair",
+"nat_span": [
+1459,
+1468
+],
+"alt_span": [
+1400,
+1408
+]
+},
+{
+"k": 47,
+"nat": "current_distance",
+"alt": "currentDistance",
+"nat_span": [
+1480,
+1496
+],
+"alt_span": [
+1420,
+1435
+]
+},
+{
+"k": 48,
+"nat": "max_distance:\n                max_distance",
+"alt": "maxDistance:\n                maxDistance",
+"nat_span": [
+1499,
+1541
+],
+"alt_span": [
+1438,
+1478
+]
+},
+{
+"k": 49,
+"nat": "current_distance\n                best_pair",
+"alt": "currentDistance\n                bestPair",
+"nat_span": [
+1544,
+1586
+],
+"alt_span": [
+1481,
+1521
+]
+},
+{
+"k": 50,
+"nat": "point_list[first_index",
+"alt": "pointList[firstIndex",
+"nat_span": [
+1590,
+1612
+],
+"alt_span": [
+1525,
+1545
+]
+},
+{
+"k": 51,
+"nat": "point_list[second_index",
+"alt": "pointList[secondIndex",
+"nat_span": [
+1615,
+1638
+],
+"alt_span": [
+1548,
+1569
+]
+},
+{
+"k": 52,
+"nat": "best_pair, max_distance",
+"alt": "bestPair, maxDistance",
+"nat_span": [
+1652,
+1675
+],
+"alt_span": [
+1583,
+1604
+]
+},
+{
+"k": 53,
+"nat": "format_point(point_tuple",
+"alt": "formatPoint(pointTuple",
+"nat_span": [
+1682,
+1706
+],
+"alt_span": [
+1611,
+1633
+]
+},
+{
+"k": 54,
+"nat": "coordinate_texts",
+"alt": "coordinateTexts",
+"nat_span": [
+1713,
+1729
+],
+"alt_span": [
+1640,
+1655
+]
+},
+{
+"k": 55,
+"nat": "axis_value",
+"alt": "axisValue",
+"nat_span": [
+1736,
+1746
+],
+"alt_span": [
+1662,
+1671
+]
+},
+{
+"k": 56,
+"nat": "axis_value",
+"alt": "axisValue",
+"nat_span": [
+1755,
+1765
+],
+"alt_span": [
+1680,
+1689
+]
+},
+{
+"k": 57,
+"nat": "point_tuple",
+"alt": "pointTuple",
+"nat_span": [
+1769,
+1780
+],
+"alt_span": [
+1693,
+1703
+]
+},
+{
+"k": 58,
+"nat": "coordinate_texts",
+"alt": "coordinateTexts",
+"nat_span": [
+1809,
+1825
+],
+"alt_span": [
+1732,
+1747
+]
+},
+{
+"k": 59,
+"nat": "build_report(point_list",
+"alt": "buildReport(pointList",
+"nat_span": [
+1839,
+1862
+],
+"alt_span": [
+1761,
+1782
+]
+},
+{
+"k": 60,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1869,
+1881
+],
+"alt_span": [
+1789,
+1800
+]
+},
+{
+"k": 61,
+"nat": "segment_index",
+"alt": "segmentIndex",
+"nat_span": [
+1895,
+1908
+],
+"alt_span": [
+1814,
+1826
+]
+},
+{
+"k": 62,
+"nat": "point_list",
+"alt": "pointList",
+"nat_span": [
+1925,
+1935
+],
+"alt_span": [
+1843,
+1852
+]
+},
+{
+"k": 63,
+"nat": "previous_point",
+"alt": "previousPoint",
+"nat_span": [
+1947,
+1961
+],
+"alt_span": [
+1864,
+1877
+]
+},
+{
+"k": 64,
+"nat": "point_list[segment_index",
+"alt": "pointList[segmentIndex",
+"nat_span": [
+1964,
+1988
+],
+"alt_span": [
+1880,
+1902
+]
+},
+{
+"k": 65,
+"nat": "current_point",
+"alt": "currentPoint",
+"nat_span": [
+2002,
+2015
+],
+"alt_span": [
+1916,
+1928
+]
+},
+{
+"k": 66,
+"nat": "point_list[segment_index]\n        segment_distance",
+"alt": "pointList[segmentIndex]\n        segmentDistance",
+"nat_span": [
+2018,
+2068
+],
+"alt_span": [
+1931,
+1978
+]
+},
+{
+"k": 67,
+"nat": "previous_point, current_point)\n        report_lines",
+"alt": "previousPoint, currentPoint)\n        reportLines",
+"nat_span": [
+2083,
+2134
+],
+"alt_span": [
+1993,
+2041
+]
+},
+{
+"k": 68,
+"nat": "format_point(previous_point",
+"alt": "formatPoint(previousPoint",
+"nat_span": [
+2158,
+2185
+],
+"alt_span": [
+2065,
+2090
+]
+},
+{
+"k": 69,
+"nat": "format_point(current_point",
+"alt": "formatPoint(currentPoint",
+"nat_span": [
+2192,
+2218
+],
+"alt_span": [
+2097,
+2121
+]
+},
+{
+"k": 70,
+"nat": "segment_distance",
+"alt": "segmentDistance",
+"nat_span": [
+2223,
+2239
+],
+"alt_span": [
+2126,
+2141
+]
+},
+{
+"k": 71,
+"nat": "path_length",
+"alt": "pathLength",
+"nat_span": [
+2260,
+2271
+],
+"alt_span": [
+2162,
+2172
+]
+},
+{
+"k": 72,
+"nat": "total_path_length(point_list)\n    report_lines",
+"alt": "totalPathLength(pointList)\n    reportLines",
+"nat_span": [
+2274,
+2320
+],
+"alt_span": [
+2175,
+2217
+]
+},
+{
+"k": 73,
+"nat": "path_length",
+"alt": "pathLength",
+"nat_span": [
+2350,
+2361
+],
+"alt_span": [
+2247,
+2257
+]
+},
+{
+"k": 74,
+"nat": "left_point, right_point",
+"alt": "leftPoint, rightPoint",
+"nat_span": [
+2374,
+2397
+],
+"alt_span": [
+2270,
+2291
+]
+},
+{
+"k": 75,
+"nat": "max_distance",
+"alt": "maxDistance",
+"nat_span": [
+2400,
+2412
+],
+"alt_span": [
+2294,
+2305
+]
+},
+{
+"k": 76,
+"nat": "farthest_pair(point_list)\n    report_lines",
+"alt": "farthestPair(pointList)\n    reportLines",
+"nat_span": [
+2415,
+2457
+],
+"alt_span": [
+2308,
+2347
+]
+},
+{
+"k": 77,
+"nat": "format_point(left_point",
+"alt": "formatPoint(leftPoint",
+"nat_span": [
+2492,
+2515
+],
+"alt_span": [
+2382,
+2403
+]
+},
+{
+"k": 78,
+"nat": "format_point(right_point",
+"alt": "formatPoint(rightPoint",
+"nat_span": [
+2523,
+2547
+],
+"alt_span": [
+2411,
+2433
+]
+},
+{
+"k": 79,
+"nat": "max_distance",
+"alt": "maxDistance",
+"nat_span": [
+2566,
+2578
+],
+"alt_span": [
+2452,
+2463
+]
+},
+{
+"k": 80,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+2612,
+2624
+],
+"alt_span": [
+2497,
+2508
+]
+},
+{
+"k": 81,
+"nat": "sample_points",
+"alt": "samplePoints",
+"nat_span": [
+2644,
+2657
+],
+"alt_span": [
+2528,
+2540
+]
+},
+{
+"k": 82,
+"nat": "build_report(sample_points",
+"alt": "buildReport(samplePoints",
+"nat_span": [
+2729,
+2755
+],
+"alt_span": [
+2612,
+2636
+]
+},
+{
+"k": 83,
+"nat": "origin_point",
+"alt": "originPoint",
+"nat_span": [
+2762,
+2774
+],
+"alt_span": [
+2643,
+2654
+]
+},
+{
+"k": 84,
+"nat": "unit_point",
+"alt": "unitPoint",
+"nat_span": [
+2791,
+2801
+],
+"alt_span": [
+2671,
+2680
+]
+},
+{
+"k": 85,
+"nat": "unit_distance",
+"alt": "unitDistance",
+"nat_span": [
+2818,
+2831
+],
+"alt_span": [
+2697,
+2709
+]
+},
+{
+"k": 86,
+"nat": "origin_point, unit_point",
+"alt": "originPoint, unitPoint",
+"nat_span": [
+2846,
+2870
+],
+"alt_span": [
+2724,
+2746
+]
+},
+{
+"k": 87,
+"nat": "format_point(origin_point",
+"alt": "formatPoint(originPoint",
+"nat_span": [
+2897,
+2922
+],
+"alt_span": [
+2773,
+2796
+]
+},
+{
+"k": 88,
+"nat": "format_point(unit_point",
+"alt": "formatPoint(unitPoint",
+"nat_span": [
+2927,
+2950
+],
+"alt_span": [
+2801,
+2822
+]
+},
+{
+"k": 89,
+"nat": "unit_distance",
+"alt": "unitDistance",
+"nat_span": [
+2971,
+2984
+],
+"alt_span": [
+2843,
+2855
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py_snake_camel__t178",
@@ -104134,5 +108771,2271 @@
 }
 ],
 "free_filter": true
+},
+{
+"doc_id": "py_snake_camel__t238",
+"family": "py_snake_camel",
+"topic": "Find Shortest Word in Sentence",
+"angle": "code",
+"text_es": "Implement a function that finds the shortest word in a given sentence. The function `find_shortest_word` takes a string (sentence). Punctuation should be ignored, and words are case-insensitive. If the sentence is empty or contains no words, return an empty string. If multiple words have the same shortest length, return the first one encountered.\nExample 1: `find_shortest_word('Hello world, this is a test.')` returns `'a'`.\nExample 2: `find_shortest_word('Programming is fun.')` returns `'is'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import string\nimport sys\n\nPUNCTUATION_AND_SPACE = string.punctuation + string.whitespace\n\n\ndef clean_word(raw_word):\n    return raw_word.strip(PUNCTUATION_AND_SPACE).lower()\n\n\ndef extract_words(sentence_text):\n    if not isinstance(sentence_text, str):\n        raise TypeError(\"sentence must be a string\")\n    word_list = []\n    for raw_token in sentence_text.split():\n        cleaned_word = clean_word(raw_token)\n        if cleaned_word:\n            word_list.append(cleaned_word)\n    return word_list\n\n\ndef find_shortest_word(sentence):\n    word_list = extract_words(sentence)\n    shortest_word = \"\"\n    min_length = None\n    for current_word in word_list:\n        current_length = len(current_word)\n        if min_length is None or current_length < min_length:\n            min_length = current_length\n            shortest_word = current_word\n    return shortest_word\n\n\ndef find_longest_word(sentence):\n    word_list = extract_words(sentence)\n    longest_word = \"\"\n    max_length = 0\n    for current_word in word_list:\n        current_length = len(current_word)\n        if current_length > max_length:\n            max_length = current_length\n            longest_word = current_word\n    return longest_word\n\n\ndef average_word_length(sentence):\n    word_list = extract_words(sentence)\n    total_count = len(word_list)\n    if total_count == 0:\n        return 0.0\n    total_length = sum(len(current_word) for current_word in word_list)\n    return total_length / total_count\n\n\ndef build_report(sentence):\n    word_list = extract_words(sentence)\n    report_lines = [\"sentence: {!r}\".format(sentence),\n                    \"word count: {}\".format(len(word_list))]\n    if word_list:\n        report_lines.append(\"shortest word: {!r}\".format(find_shortest_word(sentence)))\n        report_lines.append(\"longest word: {!r}\".format(find_longest_word(sentence)))\n        report_lines.append(\"average length: {:.2f}\".format(average_word_length(sentence)))\n    else:\n        report_lines.append(\"no words found\")\n    return \"\\n\".join(report_lines)\n\n\ndef main():\n    for input_line in sys.stdin:\n        print(build_report(input_line.rstrip(\"\\n\")))\n        print(\"-\" * 40)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import string\nimport sys\n\nPUNCTUATION_AND_SPACE = string.punctuation + string.whitespace\n\n\ndef cleanWord(rawWord):\n    return rawWord.strip(PUNCTUATION_AND_SPACE).lower()\n\n\ndef extractWords(sentenceText):\n    if not isinstance(sentenceText, str):\n        raise TypeError(\"sentence must be a string\")\n    wordList = []\n    for rawToken in sentenceText.split():\n        cleanedWord = cleanWord(rawToken)\n        if cleanedWord:\n            wordList.append(cleanedWord)\n    return wordList\n\n\ndef find_shortest_word(sentence):\n    wordList = extractWords(sentence)\n    shortestWord = \"\"\n    minLength = None\n    for currentWord in wordList:\n        currentLength = len(currentWord)\n        if minLength is None or currentLength < minLength:\n            minLength = currentLength\n            shortestWord = currentWord\n    return shortestWord\n\n\ndef findLongestWord(sentence):\n    wordList = extractWords(sentence)\n    longestWord = \"\"\n    maxLength = 0\n    for currentWord in wordList:\n        currentLength = len(currentWord)\n        if currentLength > maxLength:\n            maxLength = currentLength\n            longestWord = currentWord\n    return longestWord\n\n\ndef averageWordLength(sentence):\n    wordList = extractWords(sentence)\n    totalCount = len(wordList)\n    if totalCount == 0:\n        return 0.0\n    totalLength = sum(len(currentWord) for currentWord in wordList)\n    return totalLength / totalCount\n\n\ndef buildReport(sentence):\n    wordList = extractWords(sentence)\n    reportLines = [\"sentence: {!r}\".format(sentence),\n                    \"word count: {}\".format(len(wordList))]\n    if wordList:\n        reportLines.append(\"shortest word: {!r}\".format(find_shortest_word(sentence)))\n        reportLines.append(\"longest word: {!r}\".format(findLongestWord(sentence)))\n        reportLines.append(\"average length: {:.2f}\".format(averageWordLength(sentence)))\n    else:\n        reportLines.append(\"no words found\")\n    return \"\\n\".join(reportLines)\n\n\ndef main():\n    for inputLine in sys.stdin:\n        print(buildReport(inputLine.rstrip(\"\\n\")))\n        print(\"-\" * 40)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "clean_word(raw_word",
+"alt": "cleanWord(rawWord",
+"nat_span": [
+95,
+114
+],
+"alt_span": [
+95,
+112
+]
+},
+{
+"k": 1,
+"nat": "extract_words(sentence_text",
+"alt": "extractWords(sentenceText",
+"nat_span": [
+180,
+207
+],
+"alt_span": [
+177,
+202
+]
+},
+{
+"k": 2,
+"nat": "word_list",
+"alt": "wordList",
+"nat_span": [
+310,
+319
+],
+"alt_span": [
+304,
+312
+]
+},
+{
+"k": 3,
+"nat": "raw_token",
+"alt": "rawToken",
+"nat_span": [
+333,
+342
+],
+"alt_span": [
+326,
+334
+]
+},
+{
+"k": 4,
+"nat": "cleaned_word",
+"alt": "cleanedWord",
+"nat_span": [
+377,
+389
+],
+"alt_span": [
+368,
+379
+]
+},
+{
+"k": 5,
+"nat": "shortest_word",
+"alt": "shortestWord",
+"nat_span": [
+583,
+596
+],
+"alt_span": [
+565,
+577
+]
+},
+{
+"k": 6,
+"nat": "min_length",
+"alt": "minLength",
+"nat_span": [
+606,
+616
+],
+"alt_span": [
+587,
+596
+]
+},
+{
+"k": 7,
+"nat": "current_word",
+"alt": "currentWord",
+"nat_span": [
+632,
+644
+],
+"alt_span": [
+612,
+623
+]
+},
+{
+"k": 8,
+"nat": "find_longest_word",
+"alt": "findLongestWord",
+"nat_span": [
+876,
+893
+],
+"alt_span": [
+844,
+859
+]
+},
+{
+"k": 9,
+"nat": "longest_word",
+"alt": "longestWord",
+"nat_span": [
+949,
+961
+],
+"alt_span": [
+913,
+924
+]
+},
+{
+"k": 10,
+"nat": "max_length",
+"alt": "maxLength",
+"nat_span": [
+971,
+981
+],
+"alt_span": [
+934,
+943
+]
+},
+{
+"k": 11,
+"nat": "average_word_length",
+"alt": "averageWordLength",
+"nat_span": [
+1214,
+1233
+],
+"alt_span": [
+1165,
+1182
+]
+},
+{
+"k": 12,
+"nat": "total_count",
+"alt": "totalCount",
+"nat_span": [
+1289,
+1300
+],
+"alt_span": [
+1236,
+1246
+]
+},
+{
+"k": 13,
+"nat": "total_length",
+"alt": "totalLength",
+"nat_span": [
+1366,
+1378
+],
+"alt_span": [
+1310,
+1321
+]
+},
+{
+"k": 14,
+"nat": "build_report",
+"alt": "buildReport",
+"nat_span": [
+1478,
+1490
+],
+"alt_span": [
+1416,
+1427
+]
+},
+{
+"k": 15,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1546,
+1558
+],
+"alt_span": [
+1481,
+1492
+]
+},
+{
+"k": 16,
+"nat": "input_line",
+"alt": "inputLine",
+"nat_span": [
+2055,
+2065
+],
+"alt_span": [
+1978,
+1987
+]
+}
+],
+"k_en": 17,
+"shared_fraction": 0.865,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "clean_word(raw_word",
+"alt": "cleanWord(rawWord",
+"nat_span": [
+95,
+114
+],
+"alt_span": [
+95,
+112
+]
+},
+{
+"k": 1,
+"nat": "raw_word",
+"alt": "rawWord",
+"nat_span": [
+128,
+136
+],
+"alt_span": [
+126,
+133
+]
+},
+{
+"k": 2,
+"nat": "extract_words(sentence_text",
+"alt": "extractWords(sentenceText",
+"nat_span": [
+180,
+207
+],
+"alt_span": [
+177,
+202
+]
+},
+{
+"k": 3,
+"nat": "sentence_text",
+"alt": "sentenceText",
+"nat_span": [
+232,
+245
+],
+"alt_span": [
+227,
+239
+]
+},
+{
+"k": 4,
+"nat": "word_list",
+"alt": "wordList",
+"nat_span": [
+310,
+319
+],
+"alt_span": [
+304,
+312
+]
+},
+{
+"k": 5,
+"nat": "raw_token",
+"alt": "rawToken",
+"nat_span": [
+333,
+342
+],
+"alt_span": [
+326,
+334
+]
+},
+{
+"k": 6,
+"nat": "sentence_text",
+"alt": "sentenceText",
+"nat_span": [
+346,
+359
+],
+"alt_span": [
+338,
+350
+]
+},
+{
+"k": 7,
+"nat": "cleaned_word",
+"alt": "cleanedWord",
+"nat_span": [
+377,
+389
+],
+"alt_span": [
+368,
+379
+]
+},
+{
+"k": 8,
+"nat": "clean_word(raw_token",
+"alt": "cleanWord(rawToken",
+"nat_span": [
+392,
+412
+],
+"alt_span": [
+382,
+400
+]
+},
+{
+"k": 9,
+"nat": "cleaned_word:\n            word_list",
+"alt": "cleanedWord:\n            wordList",
+"nat_span": [
+425,
+460
+],
+"alt_span": [
+413,
+446
+]
+},
+{
+"k": 10,
+"nat": "cleaned_word",
+"alt": "cleanedWord",
+"nat_span": [
+468,
+480
+],
+"alt_span": [
+454,
+465
+]
+},
+{
+"k": 11,
+"nat": "word_list",
+"alt": "wordList",
+"nat_span": [
+493,
+502
+],
+"alt_span": [
+478,
+486
+]
+},
+{
+"k": 12,
+"nat": "word_list",
+"alt": "wordList",
+"nat_span": [
+543,
+552
+],
+"alt_span": [
+527,
+535
+]
+},
+{
+"k": 13,
+"nat": "extract_words",
+"alt": "extractWords",
+"nat_span": [
+555,
+568
+],
+"alt_span": [
+538,
+550
+]
+},
+{
+"k": 14,
+"nat": "shortest_word",
+"alt": "shortestWord",
+"nat_span": [
+583,
+596
+],
+"alt_span": [
+565,
+577
+]
+},
+{
+"k": 15,
+"nat": "min_length",
+"alt": "minLength",
+"nat_span": [
+606,
+616
+],
+"alt_span": [
+587,
+596
+]
+},
+{
+"k": 16,
+"nat": "current_word",
+"alt": "currentWord",
+"nat_span": [
+632,
+644
+],
+"alt_span": [
+612,
+623
+]
+},
+{
+"k": 17,
+"nat": "word_list:\n        current_length",
+"alt": "wordList:\n        currentLength",
+"nat_span": [
+648,
+681
+],
+"alt_span": [
+627,
+658
+]
+},
+{
+"k": 18,
+"nat": "current_word",
+"alt": "currentWord",
+"nat_span": [
+688,
+700
+],
+"alt_span": [
+665,
+676
+]
+},
+{
+"k": 19,
+"nat": "min_length",
+"alt": "minLength",
+"nat_span": [
+713,
+723
+],
+"alt_span": [
+689,
+698
+]
+},
+{
+"k": 20,
+"nat": "current_length",
+"alt": "currentLength",
+"nat_span": [
+735,
+749
+],
+"alt_span": [
+710,
+723
+]
+},
+{
+"k": 21,
+"nat": "min_length:\n            min_length",
+"alt": "minLength:\n            minLength",
+"nat_span": [
+752,
+786
+],
+"alt_span": [
+726,
+758
+]
+},
+{
+"k": 22,
+"nat": "current_length\n            shortest_word",
+"alt": "currentLength\n            shortestWord",
+"nat_span": [
+789,
+829
+],
+"alt_span": [
+761,
+799
+]
+},
+{
+"k": 23,
+"nat": "current_word",
+"alt": "currentWord",
+"nat_span": [
+832,
+844
+],
+"alt_span": [
+802,
+813
+]
+},
+{
+"k": 24,
+"nat": "shortest_word",
+"alt": "shortestWord",
+"nat_span": [
+856,
+869
+],
+"alt_span": [
+825,
+837
+]
+},
+{
+"k": 25,
+"nat": "find_longest_word",
+"alt": "findLongestWord",
+"nat_span": [
+876,
+893
+],
+"alt_span": [
+844,
+859
+]
+},
+{
+"k": 26,
+"nat": "word_list",
+"alt": "wordList",
+"nat_span": [
+909,
+918
+],
+"alt_span": [
+875,
+883
+]
+},
+{
+"k": 27,
+"nat": "extract_words",
+"alt": "extractWords",
+"nat_span": [
+921,
+934
+],
+"alt_span": [
+886,
+898
+]
+},
+{
+"k": 28,
+"nat": "longest_word",
+"alt": "longestWord",
+"nat_span": [
+949,
+961
+],
+"alt_span": [
+913,
+924
+]
+},
+{
+"k": 29,
+"nat": "max_length",
+"alt": "maxLength",
+"nat_span": [
+971,
+981
+],
+"alt_span": [
+934,
+943
+]
+},
+{
+"k": 30,
+"nat": "current_word",
+"alt": "currentWord",
+"nat_span": [
+994,
+1006
+],
+"alt_span": [
+956,
+967
+]
+},
+{
+"k": 31,
+"nat": "word_list:\n        current_length",
+"alt": "wordList:\n        currentLength",
+"nat_span": [
+1010,
+1043
+],
+"alt_span": [
+971,
+1002
+]
+},
+{
+"k": 32,
+"nat": "current_word",
+"alt": "currentWord",
+"nat_span": [
+1050,
+1062
+],
+"alt_span": [
+1009,
+1020
+]
+},
+{
+"k": 33,
+"nat": "current_length",
+"alt": "currentLength",
+"nat_span": [
+1075,
+1089
+],
+"alt_span": [
+1033,
+1046
+]
+},
+{
+"k": 34,
+"nat": "max_length:\n            max_length",
+"alt": "maxLength:\n            maxLength",
+"nat_span": [
+1092,
+1126
+],
+"alt_span": [
+1049,
+1081
+]
+},
+{
+"k": 35,
+"nat": "current_length\n            longest_word",
+"alt": "currentLength\n            longestWord",
+"nat_span": [
+1129,
+1168
+],
+"alt_span": [
+1084,
+1121
+]
+},
+{
+"k": 36,
+"nat": "current_word",
+"alt": "currentWord",
+"nat_span": [
+1171,
+1183
+],
+"alt_span": [
+1124,
+1135
+]
+},
+{
+"k": 37,
+"nat": "longest_word",
+"alt": "longestWord",
+"nat_span": [
+1195,
+1207
+],
+"alt_span": [
+1147,
+1158
+]
+},
+{
+"k": 38,
+"nat": "average_word_length",
+"alt": "averageWordLength",
+"nat_span": [
+1214,
+1233
+],
+"alt_span": [
+1165,
+1182
+]
+},
+{
+"k": 39,
+"nat": "word_list",
+"alt": "wordList",
+"nat_span": [
+1249,
+1258
+],
+"alt_span": [
+1198,
+1206
+]
+},
+{
+"k": 40,
+"nat": "extract_words",
+"alt": "extractWords",
+"nat_span": [
+1261,
+1274
+],
+"alt_span": [
+1209,
+1221
+]
+},
+{
+"k": 41,
+"nat": "total_count",
+"alt": "totalCount",
+"nat_span": [
+1289,
+1300
+],
+"alt_span": [
+1236,
+1246
+]
+},
+{
+"k": 42,
+"nat": "word_list",
+"alt": "wordList",
+"nat_span": [
+1307,
+1316
+],
+"alt_span": [
+1253,
+1261
+]
+},
+{
+"k": 43,
+"nat": "total_count",
+"alt": "totalCount",
+"nat_span": [
+1325,
+1336
+],
+"alt_span": [
+1270,
+1280
+]
+},
+{
+"k": 44,
+"nat": "total_length",
+"alt": "totalLength",
+"nat_span": [
+1366,
+1378
+],
+"alt_span": [
+1310,
+1321
+]
+},
+{
+"k": 45,
+"nat": "current_word",
+"alt": "currentWord",
+"nat_span": [
+1389,
+1401
+],
+"alt_span": [
+1332,
+1343
+]
+},
+{
+"k": 46,
+"nat": "current_word",
+"alt": "currentWord",
+"nat_span": [
+1407,
+1419
+],
+"alt_span": [
+1349,
+1360
+]
+},
+{
+"k": 47,
+"nat": "word_list",
+"alt": "wordList",
+"nat_span": [
+1423,
+1432
+],
+"alt_span": [
+1364,
+1372
+]
+},
+{
+"k": 48,
+"nat": "total_length",
+"alt": "totalLength",
+"nat_span": [
+1445,
+1457
+],
+"alt_span": [
+1385,
+1396
+]
+},
+{
+"k": 49,
+"nat": "total_count",
+"alt": "totalCount",
+"nat_span": [
+1460,
+1471
+],
+"alt_span": [
+1399,
+1409
+]
+},
+{
+"k": 50,
+"nat": "build_report",
+"alt": "buildReport",
+"nat_span": [
+1478,
+1490
+],
+"alt_span": [
+1416,
+1427
+]
+},
+{
+"k": 51,
+"nat": "word_list",
+"alt": "wordList",
+"nat_span": [
+1506,
+1515
+],
+"alt_span": [
+1443,
+1451
+]
+},
+{
+"k": 52,
+"nat": "extract_words",
+"alt": "extractWords",
+"nat_span": [
+1518,
+1531
+],
+"alt_span": [
+1454,
+1466
+]
+},
+{
+"k": 53,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1546,
+1558
+],
+"alt_span": [
+1481,
+1492
+]
+},
+{
+"k": 54,
+"nat": "word_list",
+"alt": "wordList",
+"nat_span": [
+1645,
+1654
+],
+"alt_span": [
+1579,
+1587
+]
+},
+{
+"k": 55,
+"nat": "word_list:\n        report_lines",
+"alt": "wordList:\n        reportLines",
+"nat_span": [
+1665,
+1696
+],
+"alt_span": [
+1598,
+1627
+]
+},
+{
+"k": 56,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1772,
+1784
+],
+"alt_span": [
+1703,
+1714
+]
+},
+{
+"k": 57,
+"nat": "find_longest_word",
+"alt": "findLongestWord",
+"nat_span": [
+1820,
+1837
+],
+"alt_span": [
+1750,
+1765
+]
+},
+{
+"k": 58,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1858,
+1870
+],
+"alt_span": [
+1786,
+1797
+]
+},
+{
+"k": 59,
+"nat": "average_word_length",
+"alt": "averageWordLength",
+"nat_span": [
+1910,
+1929
+],
+"alt_span": [
+1837,
+1854
+]
+},
+{
+"k": 60,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1960,
+1972
+],
+"alt_span": [
+1885,
+1896
+]
+},
+{
+"k": 61,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+2019,
+2031
+],
+"alt_span": [
+1943,
+1954
+]
+},
+{
+"k": 62,
+"nat": "input_line",
+"alt": "inputLine",
+"nat_span": [
+2055,
+2065
+],
+"alt_span": [
+1978,
+1987
+]
+},
+{
+"k": 63,
+"nat": "build_report(input_line",
+"alt": "buildReport(inputLine",
+"nat_span": [
+2094,
+2117
+],
+"alt_span": [
+2016,
+2037
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
+"doc_id": "py_snake_camel__t244",
+"family": "py_snake_camel",
+"topic": "Count Business Days in Month",
+"angle": "code",
+"text_es": "Count the number of business days (Monday-Friday) in a given month and year. The function `count_business_days` takes `year` (int) and `month` (int). Return the total count of business days. Use the `datetime` module.\nExample 1: `count_business_days(2023, 10)` returns `22`.\nExample 2: `count_business_days(2023, 11)` returns `22`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import calendar\nimport datetime\n\n\ndef validate_month_input(year, month):\n    if not isinstance(year, int) or not isinstance(month, int):\n        raise TypeError(\"year and month must be integers\")\n    if month < 1 or month > 12:\n        raise ValueError(\"month must be between 1 and 12\")\n    if year < datetime.MINYEAR or year > datetime.MAXYEAR:\n        raise ValueError(\"year is outside the supported range\")\n\n\ndef count_business_days(year, month):\n    validate_month_input(year, month)\n    days_in_month = calendar.monthrange(year, month)[1]\n    business_day_count = 0\n    for day_number in range(1, days_in_month + 1):\n        current_date = datetime.date(year, month, day_number)\n        if current_date.weekday() < 5:\n            business_day_count += 1\n    return business_day_count\n\n\ndef list_business_days(year, month):\n    validate_month_input(year, month)\n    days_in_month = calendar.monthrange(year, month)[1]\n    business_date_list = []\n    for day_number in range(1, days_in_month + 1):\n        current_date = datetime.date(year, month, day_number)\n        if current_date.weekday() < 5:\n            business_date_list.append(current_date)\n    return business_date_list\n\n\ndef count_business_days_in_year(year):\n    monthly_counts = {}\n    for month_number in range(1, 13):\n        monthly_counts[month_number] = count_business_days(year, month_number)\n    return monthly_counts\n\n\ndef format_month_report(year, month):\n    business_dates = list_business_days(year, month)\n    month_label = calendar.month_name[month]\n    total_days = calendar.monthrange(year, month)[1]\n    weekend_count = total_days - len(business_dates)\n    first_business_day = business_dates[0]\n    last_business_day = business_dates[-1]\n    report_lines = [\n        \"{} {}\".format(month_label, year),\n        \"  total days:     {}\".format(total_days),\n        \"  business days:  {}\".format(len(business_dates)),\n        \"  weekend days:   {}\".format(weekend_count),\n        \"  first workday:  {}\".format(first_business_day.isoformat()),\n        \"  last workday:   {}\".format(last_business_day.isoformat()),\n    ]\n    return \"\\n\".join(report_lines)\n\n\ndef format_year_summary(year):\n    monthly_counts = count_business_days_in_year(year)\n    yearly_total = sum(monthly_counts.values())\n    summary_lines = [\"Business days per month in {}\".format(year)]\n    for month_number, month_total in monthly_counts.items():\n        short_label = calendar.month_abbr[month_number]\n        summary_lines.append(\"  {:<4} {:>3}\".format(short_label, month_total))\n    summary_lines.append(\"  {:<4} {:>3}\".format(\"all\", yearly_total))\n    return \"\\n\".join(summary_lines)\n\n\ndef main():\n    target_year = 2023\n    for target_month in (10, 11):\n        print(format_month_report(target_year, target_month))\n        print()\n    print(format_year_summary(target_year))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import calendar\nimport datetime\n\n\ndef validateMonthInput(year, month):\n    if not isinstance(year, int) or not isinstance(month, int):\n        raise TypeError(\"year and month must be integers\")\n    if month < 1 or month > 12:\n        raise ValueError(\"month must be between 1 and 12\")\n    if year < datetime.MINYEAR or year > datetime.MAXYEAR:\n        raise ValueError(\"year is outside the supported range\")\n\n\ndef count_business_days(year, month):\n    validateMonthInput(year, month)\n    daysInMonth = calendar.monthrange(year, month)[1]\n    businessDayCount = 0\n    for dayNumber in range(1, daysInMonth + 1):\n        currentDate = datetime.date(year, month, dayNumber)\n        if currentDate.weekday() < 5:\n            businessDayCount += 1\n    return businessDayCount\n\n\ndef listBusinessDays(year, month):\n    validateMonthInput(year, month)\n    daysInMonth = calendar.monthrange(year, month)[1]\n    businessDateList = []\n    for dayNumber in range(1, daysInMonth + 1):\n        currentDate = datetime.date(year, month, dayNumber)\n        if currentDate.weekday() < 5:\n            businessDateList.append(currentDate)\n    return businessDateList\n\n\ndef countBusinessDaysInYear(year):\n    monthlyCounts = {}\n    for monthNumber in range(1, 13):\n        monthlyCounts[monthNumber] = count_business_days(year, monthNumber)\n    return monthlyCounts\n\n\ndef formatMonthReport(year, month):\n    businessDates = listBusinessDays(year, month)\n    monthLabel = calendar.month_name[month]\n    totalDays = calendar.monthrange(year, month)[1]\n    weekendCount = totalDays - len(businessDates)\n    firstBusinessDay = businessDates[0]\n    lastBusinessDay = businessDates[-1]\n    reportLines = [\n        \"{} {}\".format(monthLabel, year),\n        \"  total days:     {}\".format(totalDays),\n        \"  business days:  {}\".format(len(businessDates)),\n        \"  weekend days:   {}\".format(weekendCount),\n        \"  first workday:  {}\".format(firstBusinessDay.isoformat()),\n        \"  last workday:   {}\".format(lastBusinessDay.isoformat()),\n    ]\n    return \"\\n\".join(reportLines)\n\n\ndef formatYearSummary(year):\n    monthlyCounts = countBusinessDaysInYear(year)\n    yearlyTotal = sum(monthlyCounts.values())\n    summaryLines = [\"Business days per month in {}\".format(year)]\n    for monthNumber, monthTotal in monthlyCounts.items():\n        shortLabel = calendar.month_abbr[monthNumber]\n        summaryLines.append(\"  {:<4} {:>3}\".format(shortLabel, monthTotal))\n    summaryLines.append(\"  {:<4} {:>3}\".format(\"all\", yearlyTotal))\n    return \"\\n\".join(summaryLines)\n\n\ndef main():\n    targetYear = 2023\n    for targetMonth in (10, 11):\n        print(formatMonthReport(targetYear, targetMonth))\n        print()\n    print(formatYearSummary(targetYear))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "validate_month_input",
+"alt": "validateMonthInput",
+"nat_span": [
+38,
+58
+],
+"alt_span": [
+38,
+56
+]
+},
+{
+"k": 1,
+"nat": "days_in_month",
+"alt": "daysInMonth",
+"nat_span": [
+492,
+505
+],
+"alt_span": [
+488,
+499
+]
+},
+{
+"k": 2,
+"nat": "business_day_count",
+"alt": "businessDayCount",
+"nat_span": [
+548,
+566
+],
+"alt_span": [
+542,
+558
+]
+},
+{
+"k": 3,
+"nat": "day_number",
+"alt": "dayNumber",
+"nat_span": [
+579,
+589
+],
+"alt_span": [
+571,
+580
+]
+},
+{
+"k": 4,
+"nat": "current_date",
+"alt": "currentDate",
+"nat_span": [
+630,
+642
+],
+"alt_span": [
+619,
+630
+]
+},
+{
+"k": 5,
+"nat": "list_business_days",
+"alt": "listBusinessDays",
+"nat_span": [
+795,
+813
+],
+"alt_span": [
+777,
+793
+]
+},
+{
+"k": 6,
+"nat": "business_date_list",
+"alt": "businessDateList",
+"nat_span": [
+926,
+944
+],
+"alt_span": [
+902,
+918
+]
+},
+{
+"k": 7,
+"nat": "count_business_days_in_year",
+"alt": "countBusinessDaysInYear",
+"nat_span": [
+1190,
+1217
+],
+"alt_span": [
+1153,
+1176
+]
+},
+{
+"k": 8,
+"nat": "monthly_counts",
+"alt": "monthlyCounts",
+"nat_span": [
+1229,
+1243
+],
+"alt_span": [
+1188,
+1201
+]
+},
+{
+"k": 9,
+"nat": "month_number",
+"alt": "monthNumber",
+"nat_span": [
+1257,
+1269
+],
+"alt_span": [
+1215,
+1226
+]
+},
+{
+"k": 10,
+"nat": "format_month_report",
+"alt": "formatMonthReport",
+"nat_span": [
+1398,
+1417
+],
+"alt_span": [
+1351,
+1368
+]
+},
+{
+"k": 11,
+"nat": "business_dates",
+"alt": "businessDates",
+"nat_span": [
+1436,
+1450
+],
+"alt_span": [
+1387,
+1400
+]
+},
+{
+"k": 12,
+"nat": "month_label",
+"alt": "monthLabel",
+"nat_span": [
+1489,
+1500
+],
+"alt_span": [
+1437,
+1447
+]
+},
+{
+"k": 13,
+"nat": "total_days",
+"alt": "totalDays",
+"nat_span": [
+1534,
+1544
+],
+"alt_span": [
+1481,
+1490
+]
+},
+{
+"k": 14,
+"nat": "weekend_count",
+"alt": "weekendCount",
+"nat_span": [
+1587,
+1600
+],
+"alt_span": [
+1533,
+1545
+]
+},
+{
+"k": 15,
+"nat": "last_business_day",
+"alt": "lastBusinessDay",
+"nat_span": [
+1683,
+1700
+],
+"alt_span": [
+1623,
+1638
+]
+},
+{
+"k": 16,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1726,
+1738
+],
+"alt_span": [
+1663,
+1674
+]
+},
+{
+"k": 17,
+"nat": "format_year_summary",
+"alt": "formatYearSummary",
+"nat_span": [
+2139,
+2158
+],
+"alt_span": [
+2066,
+2083
+]
+},
+{
+"k": 18,
+"nat": "yearly_total",
+"alt": "yearlyTotal",
+"nat_span": [
+2225,
+2237
+],
+"alt_span": [
+2145,
+2156
+]
+},
+{
+"k": 19,
+"nat": "summary_lines",
+"alt": "summaryLines",
+"nat_span": [
+2273,
+2286
+],
+"alt_span": [
+2191,
+2203
+]
+},
+{
+"k": 20,
+"nat": "short_label",
+"alt": "shortLabel",
+"nat_span": [
+2405,
+2416
+],
+"alt_span": [
+2319,
+2329
+]
+},
+{
+"k": 21,
+"nat": "target_year",
+"alt": "targetYear",
+"nat_span": [
+2656,
+2667
+],
+"alt_span": [
+2562,
+2572
+]
+},
+{
+"k": 22,
+"nat": "target_month",
+"alt": "targetMonth",
+"nat_span": [
+2683,
+2695
+],
+"alt_span": [
+2588,
+2599
+]
+}
+],
+"k_en": 23,
+"shared_fraction": 0.908,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "validate_month_input",
+"alt": "validateMonthInput",
+"nat_span": [
+38,
+58
+],
+"alt_span": [
+38,
+56
+]
+},
+{
+"k": 1,
+"nat": "validate_month_input",
+"alt": "validateMonthInput",
+"nat_span": [
+454,
+474
+],
+"alt_span": [
+452,
+470
+]
+},
+{
+"k": 2,
+"nat": "days_in_month",
+"alt": "daysInMonth",
+"nat_span": [
+492,
+505
+],
+"alt_span": [
+488,
+499
+]
+},
+{
+"k": 3,
+"nat": "business_day_count",
+"alt": "businessDayCount",
+"nat_span": [
+548,
+566
+],
+"alt_span": [
+542,
+558
+]
+},
+{
+"k": 4,
+"nat": "day_number",
+"alt": "dayNumber",
+"nat_span": [
+579,
+589
+],
+"alt_span": [
+571,
+580
+]
+},
+{
+"k": 5,
+"nat": "days_in_month",
+"alt": "daysInMonth",
+"nat_span": [
+602,
+615
+],
+"alt_span": [
+593,
+604
+]
+},
+{
+"k": 6,
+"nat": "current_date",
+"alt": "currentDate",
+"nat_span": [
+630,
+642
+],
+"alt_span": [
+619,
+630
+]
+},
+{
+"k": 7,
+"nat": "day_number",
+"alt": "dayNumber",
+"nat_span": [
+672,
+682
+],
+"alt_span": [
+660,
+669
+]
+},
+{
+"k": 8,
+"nat": "current_date",
+"alt": "currentDate",
+"nat_span": [
+695,
+707
+],
+"alt_span": [
+682,
+693
+]
+},
+{
+"k": 9,
+"nat": "business_day_count",
+"alt": "businessDayCount",
+"nat_span": [
+735,
+753
+],
+"alt_span": [
+721,
+737
+]
+},
+{
+"k": 10,
+"nat": "business_day_count",
+"alt": "businessDayCount",
+"nat_span": [
+770,
+788
+],
+"alt_span": [
+754,
+770
+]
+},
+{
+"k": 11,
+"nat": "list_business_days",
+"alt": "listBusinessDays",
+"nat_span": [
+795,
+813
+],
+"alt_span": [
+777,
+793
+]
+},
+{
+"k": 12,
+"nat": "validate_month_input",
+"alt": "validateMonthInput",
+"nat_span": [
+832,
+852
+],
+"alt_span": [
+812,
+830
+]
+},
+{
+"k": 13,
+"nat": "days_in_month",
+"alt": "daysInMonth",
+"nat_span": [
+870,
+883
+],
+"alt_span": [
+848,
+859
+]
+},
+{
+"k": 14,
+"nat": "business_date_list",
+"alt": "businessDateList",
+"nat_span": [
+926,
+944
+],
+"alt_span": [
+902,
+918
+]
+},
+{
+"k": 15,
+"nat": "day_number",
+"alt": "dayNumber",
+"nat_span": [
+958,
+968
+],
+"alt_span": [
+932,
+941
+]
+},
+{
+"k": 16,
+"nat": "days_in_month",
+"alt": "daysInMonth",
+"nat_span": [
+981,
+994
+],
+"alt_span": [
+954,
+965
+]
+},
+{
+"k": 17,
+"nat": "current_date",
+"alt": "currentDate",
+"nat_span": [
+1009,
+1021
+],
+"alt_span": [
+980,
+991
+]
+},
+{
+"k": 18,
+"nat": "day_number",
+"alt": "dayNumber",
+"nat_span": [
+1051,
+1061
+],
+"alt_span": [
+1021,
+1030
+]
+},
+{
+"k": 19,
+"nat": "current_date",
+"alt": "currentDate",
+"nat_span": [
+1074,
+1086
+],
+"alt_span": [
+1043,
+1054
+]
+},
+{
+"k": 20,
+"nat": "business_date_list",
+"alt": "businessDateList",
+"nat_span": [
+1114,
+1132
+],
+"alt_span": [
+1082,
+1098
+]
+},
+{
+"k": 21,
+"nat": "current_date",
+"alt": "currentDate",
+"nat_span": [
+1140,
+1152
+],
+"alt_span": [
+1106,
+1117
+]
+},
+{
+"k": 22,
+"nat": "business_date_list",
+"alt": "businessDateList",
+"nat_span": [
+1165,
+1183
+],
+"alt_span": [
+1130,
+1146
+]
+},
+{
+"k": 23,
+"nat": "count_business_days_in_year",
+"alt": "countBusinessDaysInYear",
+"nat_span": [
+1190,
+1217
+],
+"alt_span": [
+1153,
+1176
+]
+},
+{
+"k": 24,
+"nat": "monthly_counts",
+"alt": "monthlyCounts",
+"nat_span": [
+1229,
+1243
+],
+"alt_span": [
+1188,
+1201
+]
+},
+{
+"k": 25,
+"nat": "month_number",
+"alt": "monthNumber",
+"nat_span": [
+1257,
+1269
+],
+"alt_span": [
+1215,
+1226
+]
+},
+{
+"k": 26,
+"nat": "monthly_counts[month_number",
+"alt": "monthlyCounts[monthNumber",
+"nat_span": [
+1295,
+1322
+],
+"alt_span": [
+1252,
+1277
+]
+},
+{
+"k": 27,
+"nat": "month_number",
+"alt": "monthNumber",
+"nat_span": [
+1352,
+1364
+],
+"alt_span": [
+1307,
+1318
+]
+},
+{
+"k": 28,
+"nat": "monthly_counts",
+"alt": "monthlyCounts",
+"nat_span": [
+1377,
+1391
+],
+"alt_span": [
+1331,
+1344
+]
+},
+{
+"k": 29,
+"nat": "format_month_report",
+"alt": "formatMonthReport",
+"nat_span": [
+1398,
+1417
+],
+"alt_span": [
+1351,
+1368
+]
+},
+{
+"k": 30,
+"nat": "business_dates",
+"alt": "businessDates",
+"nat_span": [
+1436,
+1450
+],
+"alt_span": [
+1387,
+1400
+]
+},
+{
+"k": 31,
+"nat": "list_business_days",
+"alt": "listBusinessDays",
+"nat_span": [
+1453,
+1471
+],
+"alt_span": [
+1403,
+1419
+]
+},
+{
+"k": 32,
+"nat": "month_label",
+"alt": "monthLabel",
+"nat_span": [
+1489,
+1500
+],
+"alt_span": [
+1437,
+1447
+]
+},
+{
+"k": 33,
+"nat": "total_days",
+"alt": "totalDays",
+"nat_span": [
+1534,
+1544
+],
+"alt_span": [
+1481,
+1490
+]
+},
+{
+"k": 34,
+"nat": "weekend_count",
+"alt": "weekendCount",
+"nat_span": [
+1587,
+1600
+],
+"alt_span": [
+1533,
+1545
+]
+},
+{
+"k": 35,
+"nat": "total_days",
+"alt": "totalDays",
+"nat_span": [
+1603,
+1613
+],
+"alt_span": [
+1548,
+1557
+]
+},
+{
+"k": 36,
+"nat": "business_dates)\n    first_business_day",
+"alt": "businessDates)\n    firstBusinessDay",
+"nat_span": [
+1620,
+1658
+],
+"alt_span": [
+1564,
+1599
+]
+},
+{
+"k": 37,
+"nat": "business_dates",
+"alt": "businessDates",
+"nat_span": [
+1661,
+1675
+],
+"alt_span": [
+1602,
+1615
+]
+},
+{
+"k": 38,
+"nat": "last_business_day",
+"alt": "lastBusinessDay",
+"nat_span": [
+1683,
+1700
+],
+"alt_span": [
+1623,
+1638
+]
+},
+{
+"k": 39,
+"nat": "business_dates",
+"alt": "businessDates",
+"nat_span": [
+1703,
+1717
+],
+"alt_span": [
+1641,
+1654
+]
+},
+{
+"k": 40,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+1726,
+1738
+],
+"alt_span": [
+1663,
+1674
+]
+},
+{
+"k": 41,
+"nat": "month_label",
+"alt": "monthLabel",
+"nat_span": [
+1766,
+1777
+],
+"alt_span": [
+1702,
+1712
+]
+},
+{
+"k": 42,
+"nat": "total_days",
+"alt": "totalDays",
+"nat_span": [
+1824,
+1834
+],
+"alt_span": [
+1759,
+1768
+]
+},
+{
+"k": 43,
+"nat": "business_dates",
+"alt": "businessDates",
+"nat_span": [
+1879,
+1893
+],
+"alt_span": [
+1813,
+1826
+]
+},
+{
+"k": 44,
+"nat": "weekend_count",
+"alt": "weekendCount",
+"nat_span": [
+1935,
+1948
+],
+"alt_span": [
+1868,
+1880
+]
+},
+{
+"k": 45,
+"nat": "first_business_day",
+"alt": "firstBusinessDay",
+"nat_span": [
+1989,
+2007
+],
+"alt_span": [
+1921,
+1937
+]
+},
+{
+"k": 46,
+"nat": "last_business_day",
+"alt": "lastBusinessDay",
+"nat_span": [
+2060,
+2077
+],
+"alt_span": [
+1990,
+2005
+]
+},
+{
+"k": 47,
+"nat": "report_lines",
+"alt": "reportLines",
+"nat_span": [
+2119,
+2131
+],
+"alt_span": [
+2047,
+2058
+]
+},
+{
+"k": 48,
+"nat": "format_year_summary",
+"alt": "formatYearSummary",
+"nat_span": [
+2139,
+2158
+],
+"alt_span": [
+2066,
+2083
+]
+},
+{
+"k": 49,
+"nat": "monthly_counts",
+"alt": "monthlyCounts",
+"nat_span": [
+2170,
+2184
+],
+"alt_span": [
+2095,
+2108
+]
+},
+{
+"k": 50,
+"nat": "count_business_days_in_year",
+"alt": "countBusinessDaysInYear",
+"nat_span": [
+2187,
+2214
+],
+"alt_span": [
+2111,
+2134
+]
+},
+{
+"k": 51,
+"nat": "yearly_total",
+"alt": "yearlyTotal",
+"nat_span": [
+2225,
+2237
+],
+"alt_span": [
+2145,
+2156
+]
+},
+{
+"k": 52,
+"nat": "monthly_counts",
+"alt": "monthlyCounts",
+"nat_span": [
+2244,
+2258
+],
+"alt_span": [
+2163,
+2176
+]
+},
+{
+"k": 53,
+"nat": "summary_lines",
+"alt": "summaryLines",
+"nat_span": [
+2273,
+2286
+],
+"alt_span": [
+2191,
+2203
+]
+},
+{
+"k": 54,
+"nat": "month_number, month_total",
+"alt": "monthNumber, monthTotal",
+"nat_span": [
+2344,
+2369
+],
+"alt_span": [
+2261,
+2284
+]
+},
+{
+"k": 55,
+"nat": "monthly_counts",
+"alt": "monthlyCounts",
+"nat_span": [
+2373,
+2387
+],
+"alt_span": [
+2288,
+2301
+]
+},
+{
+"k": 56,
+"nat": "short_label",
+"alt": "shortLabel",
+"nat_span": [
+2405,
+2416
+],
+"alt_span": [
+2319,
+2329
+]
+},
+{
+"k": 57,
+"nat": "month_number]\n        summary_lines",
+"alt": "monthNumber]\n        summaryLines",
+"nat_span": [
+2439,
+2474
+],
+"alt_span": [
+2352,
+2385
+]
+},
+{
+"k": 58,
+"nat": "short_label, month_total",
+"alt": "shortLabel, monthTotal",
+"nat_span": [
+2505,
+2529
+],
+"alt_span": [
+2416,
+2438
+]
+},
+{
+"k": 59,
+"nat": "summary_lines",
+"alt": "summaryLines",
+"nat_span": [
+2536,
+2549
+],
+"alt_span": [
+2445,
+2457
+]
+},
+{
+"k": 60,
+"nat": "yearly_total",
+"alt": "yearlyTotal",
+"nat_span": [
+2587,
+2599
+],
+"alt_span": [
+2495,
+2506
+]
+},
+{
+"k": 61,
+"nat": "summary_lines",
+"alt": "summaryLines",
+"nat_span": [
+2623,
+2636
+],
+"alt_span": [
+2530,
+2542
+]
+},
+{
+"k": 62,
+"nat": "target_year",
+"alt": "targetYear",
+"nat_span": [
+2656,
+2667
+],
+"alt_span": [
+2562,
+2572
+]
+},
+{
+"k": 63,
+"nat": "target_month",
+"alt": "targetMonth",
+"nat_span": [
+2683,
+2695
+],
+"alt_span": [
+2588,
+2599
+]
+},
+{
+"k": 64,
+"nat": "format_month_report(target_year, target_month",
+"alt": "formatMonthReport(targetYear, targetMonth",
+"nat_span": [
+2723,
+2768
+],
+"alt_span": [
+2627,
+2668
+]
+},
+{
+"k": 65,
+"nat": "format_year_summary(target_year",
+"alt": "formatYearSummary(targetYear",
+"nat_span": [
+2797,
+2828
+],
+"alt_span": [
+2697,
+2725
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 }
 ]

@@ -253,14 +253,156 @@ PADDING_PATTERNS = [
 _COMMENT_MARK = {"Python": "#", "Bash": "#", "R": "#", "SQL": "--"}
 
 
+# style-leak guard (2026-09-21, padding audit category 1): a COMMENT or docstring that talks about the style / the exercise, or names the
+# family's own convention words (nat_label / alt_label minus generic words). Matched on comment text only (`comment_texts`).
+LEAK_PATTERNS = [
+    # "style" only in a code-style sense: stylistic, or style next to a signal word (code / naming / this / the same / required ... style,
+    # style requirement / guide / rule / convention); "output styles", "'x' style flags", "clock-style" are task content and do not match
+    ("style_vocab", re.compile(r"\bstylistic\b|\b(?:code|coding|naming|this|that|the|same|consistent|required|requested|python|pep\s*8|our|preferred|"
+                               r"correct|proper|new|old|alternative|chosen|desired|target|intended|specified|mandated)\s+styl(?:e|es|ing)\b|"
+                               r"\bstyl(?:e|es|ing)\s+(?:requirement|guide|guideline|rule|constraint|preference|consistency|convention|of the exercise|"
+                               r"as required|as requested|demand|check|compliance|point|purpose|reason)s?\b|"
+                               r"\bconventions?\b|\brequirements?\b|\bconsisten(?:cy|t|tly)\b|\bidiom(?:s|atic)?\b|\bPEP\s*-?\s*8\b|\bfor the exercise\b|"
+                               r"\bas (?:required|requested)\b|\bto (?:satisfy|meet|fulfil)", re.I)),
+]
+_GENERIC_LABEL_WORDS = {"identifiers", "identifier", "names", "name", "function", "functions", "constants", "constant", "class", "private", "attributes",
+                        "boolean", "loop", "variables", "variable", "strings", "string", "literals", "literal", "numeric", "plain", "full", "this",
+                        "self", "if", "x", "none", "statement", "blocks", "block", "explicit", "implicit", "comments", "comment", "tests", "test",
+                        "arrays", "array", "substitution", "assignment", "operator", "join", "on", "with", "open", "and", "no", "long", "lines",
+                        "calls", "between", "defs", "one", "two", "blank", "digit", "single-letter", "descriptive", "wrapped", "int", "e", "as",
+                        "print", "print()", "docstrings", "spelled-out", "abbreviated", "bare", "keywords", "match", "arrow", "expressions", "clauses",
+                        "guard", "nested", "hex", "list", "builtins", "typing.list", "list[int]", "dict()", "list()", "{}", "[]", "/", "in", "y",
+                        "not", "is", "==", "===", "!==", "!=", "<-", "=", "?", "[[", "]]", "[", "]", "$(...)", "backtick", "//", "/*", "*/",
+                        "except", "range/items/keys", "xrange/iteritems/iterkeys", "0px", "0", "//", "range(len())", "enumerate", "str.join", "+",
+                        "concatenation", "str.format", "f-strings", "conditional", "if/else", "spaces", "space", "around", "after", "comma",
+                        "operators", "uppercase", "lowercase", "true/false", "capitalised", "english", "spanish", "4-space", "2-space", "indentation",
+                        "tabs", "k&r", "allman", "braces", "google", "numpy", "triple", "double", "single", "quotes", "single-quoted", "double-quoted",
+                        "semicolons", "trailing", "commas", "type", "hints", "optional[x]", "x | none", "|", "template", "hungarian", "notation",
+                        "underscore", "separators", "decimal", "hexadecimal", "float", "abbreviated", "x:", "(x):", "is_/has_", "pascalcase",
+                        "camelcase", "snake_case", "upper_snake", "const/let", "var", "?"}
+
+
+def family_words(fam):
+    """Words of the family's two labels that name its convention (used by the leak check). Generic words are dropped; words with an
+    underscore / mixed case (snake_case, camelCase, PascalCase, UPPER_SNAKE, is_/has_, Hungarian) are the informative ones."""
+    F = CODE_FAMILY[fam]; words = set()
+    for lab in (F.nat_label, F.alt_label):
+        for w in re.split(r"[\s/]+", lab):
+            w = w.strip("()").strip()
+            if len(w) >= 3 and w.lower() not in _GENERIC_LABEL_WORDS:
+                words.add(w)
+    return words | set(FAMILY_LEAK_WORDS.get(fam, ()))
+
+
+# explicit convention words per family for the leak check (matched case-insensitively as whole words in comments / docstrings)
+FAMILY_LEAK_WORDS = {
+    "py_snake_camel": ("snake_case", "camelCase", "snake case", "camel case"), "js_camel_snake": ("snake_case", "camelCase", "snake case", "camel case"),
+    "js_func_pascal": ("camelCase", "PascalCase", "camel case", "pascal case"), "py_const_naming": ("UPPER_SNAKE", "camelCase", "upper snake", "screaming"),
+    "py_class_naming": ("PascalCase", "snake_case", "pascal case", "snake case", "CapWords"), "py_private": ("single underscore", "double underscore", "name mangling"),
+    "py_bool_prefix": ("is_/has_", "boolean prefix", "is_ prefix", "has_ prefix"), "py_loop_vars": ("single-letter", "single letter", "descriptive loop", "loop variable"),
+    "js_hungarian": ("Hungarian",), "py_abbrev": ("abbreviated", "abbreviation", "spelled-out", "spelled out"),
+    "py_quotes": ("single-quoted", "double-quoted", "single quotes", "double quotes"), "js_quotes": ("single-quoted", "double-quoted", "single quotes", "double quotes"),
+    "py_fstring": ("f-string", "f-strings", "str.format", ".format("), "js_template": ("template literal", "template literals", "concatenation"),
+    "num_separators": ("digit separator", "underscore separator", "numeric separator", "separators"), "hex_constants": ("hexadecimal", "hex constant", "hex literal", "decimal literal"),
+    "float_literals": ("float literal",), "sql_bool_case": ("uppercase", "lowercase"), "py2_print": ("print statement", "print function", "Python 2", "Python 3"),
+    "py2_iter": ("xrange", "iteritems", "iterkeys", "Python 2", "Python 3"), "py2_except": ("Python 2", "Python 3", "except syntax"),
+    "js_var": ("const/let", "var keyword", "let/const", "block-scoped", "block scoped"), "js_arrow": ("arrow function", "arrow functions", "function expression"),
+    "js_semicolons": ("semicolon", "semicolons"), "js_strict_eq": ("strict equality", "strict comparison", "loose equality", "===", "!=="),
+    "trailing_commas": ("trailing comma", "trailing commas"), "py_paren_if": ("parenthes",), "py_type_hints": ("type hint", "type hints", "annotation", "annotations"),
+    "py_optional": ("Optional[", "X | None", "union syntax"), "py_builtin_generics": ("typing.List", "builtin generic", "built-in generic", "PEP 585"),
+    "py_literal_ctor": ("literal syntax", "dict()", "list()", "constructor"), "py_comprehension": ("comprehension", "comprehensions"),
+    "py_not_in": ("membership test",), "py_is_none": ("None comparison", "None check"), "py_ternary": ("ternary", "conditional expression"),
+    "early_return": ("early return", "early-return", "guard clause", "guard clauses"), "py_join_concat": ("str.join", ".join(", "concatenation"),
+    "py_with_open": ("context manager", "with statement", "with open"), "py_enumerate": ("range(len",), "py_self_name": ("self keyword", "this keyword"),
+    "py_indent": ("indentation", "4-space", "four-space", "2-space"), "py_tabs": ("tabs", "spaces for indentation", "indentation"),
+    "c_braces": ("K&R", "Allman", "brace style", "braces"), "operator_spaces": ("spaces around", "operator spacing", "whitespace"),
+    "comma_space": ("space after comma", "comma spacing", "whitespace"), "line_wrap": ("line wrap", "wrapped", "line length", "long line"),
+    "blank_lines": ("blank line", "blank lines"), "docstring_style": ("Google style", "NumPy style", "Google-style", "NumPy-style", "docstring format"),
+    "docstring_quotes": ("triple double", "triple single", "triple quotes", "triple-quoted"), "comment_case": ("capitalised", "capitalized", "lowercase comment"),
+    "comment_language": ("English", "Spanish"), "c_comment_style": ("line comment", "block comment", "// comment", "/* comment"),
+    "sql_keyword_case": ("uppercase", "lowercase", "keyword case"), "sql_join_style": ("explicit join", "implicit join", "comma join", "JOIN ... ON"),
+    "r_assignment": ("<- assignment", "assignment operator", "arrow assignment"), "rust_question": ("? operator", "question mark", "error propagation"),
+    "bash_test": ("double bracket", "single bracket", "[[ ]]", "POSIX test"), "bash_subst": ("command substitution", "backtick", "backticks", "$(...)"),
+    "css_shorthand": ("shorthand", "short hex", "long hex"), "php_array": ("short array", "array()", "array syntax", "short syntax"),
+}
+_COMMENT_SYNTAX = {"Python": ("#", None, True), "Bash": ("#", None, False), "R": ("#", None, False), "SQL": ("--", ("/*", "*/"), False),
+                   "JavaScript": ("//", ("/*", "*/"), False), "C": ("//", ("/*", "*/"), False), "Rust": ("//", ("/*", "*/"), False),
+                   "PHP": ("//", ("/*", "*/"), False), "CSS": (None, ("/*", "*/"), False)}
+
+
+def comment_texts(text, lang="Python"):
+    """{line_no (1-based): comment text on that line} — the part after a line-comment marker outside string literals, the content of a
+    block comment (/* */) or, for Python, of a triple-quoted string (docstring); lines without comment text are absent."""
+    line_mark, block, triple = _COMMENT_SYNTAX.get(lang, ("#", None, False)); out = {}; i = 0; n = len(text); ln = 1
+    cur = []                                                       # comment chars of the current line
+    def flush():
+        nonlocal cur
+        t = "".join(cur).strip()
+        if t:
+            out[ln] = out.get(ln, "") + t
+        cur = []
+    while i < n:
+        c = text[i]
+        if c == "\n":
+            flush(); ln += 1; i += 1; continue
+        if triple and text.startswith(('"""', "\'\'\'"), i):
+            q = text[i:i + 3]; j = text.find(q, i + 3); j = n if j < 0 else j + 3
+            seg = text[i:j]
+            for ch in seg:
+                if ch == "\n":
+                    flush(); ln += 1
+                else:
+                    cur.append(ch)
+            i = j; continue
+        if block and text.startswith(block[0], i):
+            j = text.find(block[1], i + 2); j = n if j < 0 else j + 2
+            for ch in text[i:j]:
+                if ch == "\n":
+                    flush(); ln += 1
+                else:
+                    cur.append(ch)
+            i = j; continue
+        if line_mark and text.startswith(line_mark, i):
+            j = text.find("\n", i); j = n if j < 0 else j
+            cur.extend(text[i:j]); i = j; continue
+        if c in "\"'`":                                            # skip a string literal (same-line; unterminated -> rest of line)
+            j = i + 1
+            while j < n and text[j] != c and text[j] != "\n":
+                j += 2 if text[j] == "\\" else 1
+            i = min(j + 1, n); continue
+        i += 1
+    flush()
+    return out
+
+
+def leak_lines(text, lang="Python", fam=None):
+    """[(line_no, pattern_name, line)] for every line whose COMMENT / docstring text matches LEAK_PATTERNS or (with `fam`) names the
+    family's convention words (FAMILY_LEAK_WORDS); empty list = clean."""
+    lines = text.split("\n"); out = []; fw = FAMILY_LEAK_WORDS.get(fam, ()) if fam else ()
+    fw_rx = re.compile("|".join(r"(?<![\w])" + re.escape(w) + r"(?![\w])" for w in fw), re.I) if fw else None
+    for ln, ctext in sorted(comment_texts(text, lang).items()):
+        hit = next((name for name, rx in LEAK_PATTERNS if rx.search(ctext)), None)
+        if hit is None and fw_rx is not None and fw_rx.search(ctext):
+            hit = "family_word"
+        if hit:
+            out.append((ln, hit, lines[ln - 1]))
+    return out
+
+
+_PAD_STR_RX = re.compile(r'"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])*\'|`(?:\\.|[^`\\\n])*`')
+
+
 def padding_lines(text, lang="Python"):
-    """[(line_no, pattern_name, line)] for every line of `text` that matches a PADDING_PATTERNS entry (empty list = clean)."""
+    """[(line_no, pattern_name, line)] for every (line, pattern) of `text` that matches a PADDING_PATTERNS entry (empty list = clean).
+    String-literal contents are masked before matching (test data such as "Another example!!" is not padding); "code" patterns are matched on
+    the code part of the line (trailing comment removed), "line" patterns on the whole masked line. A line can appear with several patterns."""
     mark = _COMMENT_MARK.get(lang, "//"); out = []
     for i, line in enumerate(text.split("\n"), 1):
-        code = line.split(mark, 1)[0]
+        masked = _PAD_STR_RX.sub(lambda m: m.group()[0] + "s" * (len(m.group()) - 2) + m.group()[-1] if len(m.group()) >= 2 else m.group(), line)
+        code = masked.split(mark, 1)[0]
         for name, rx, where in PADDING_PATTERNS:
-            if rx.search(code if where == "code" else line):
-                out.append((i, name, line)); break
+            if rx.search(code if where == "code" else masked):
+                out.append((i, name, line))
     return out
 
 
@@ -275,11 +417,26 @@ def degenerate(text):
     return None
 
 
-def gen_hint(fam):
-    """The STYLE REQUIREMENT text of GEN for a family: gen_hint + EXTRA_HINT + the bug-13 one-per-line sentence (>= OCC_HINT.get(name, 8)
-    lines), or for FREE_OCC_HINT families the construct description + FREE_OCC_TEXT + one-per-line / several-early without a number."""
+FREE_OCC_LENGTH = "40-80"
+
+
+def free_occ_description(fam):
+    """The construct description used with the no-count hint: the explicit FREE_OCC_HINT text or, for any other family, its own gen_hint
+    with the numeric requirement removed ("use at least 6 float literals" -> "use float literals")."""
     if fam.name in FREE_OCC_HINT:
-        h = FREE_OCC_HINT[fam.name] + ": " + FREE_OCC_TEXT
+        return FREE_OCC_HINT[fam.name]
+    h = re.sub(r"\s*\((?:with )?at least \d+[^)]*\)", "", fam.gen_hint)          # "(at least 12 statements)" -> dropped
+    h = re.sub(r"\bat least \d+ (?:times|such [a-z]+)\b", "several times", h)
+    h = re.sub(r"\bat least \d+\b", "several", h)
+    return re.sub(r"\s{2,}", " ", h).strip(" ;,")
+
+
+def gen_hint(fam, free_occ=False):
+    """The STYLE REQUIREMENT text of GEN for a family: gen_hint + EXTRA_HINT + the bug-13 one-per-line sentence (>= OCC_HINT.get(name, 8)
+    lines), or — for FREE_OCC_HINT families, or for any family when `free_occ` is set (regenerated documents, 2026-09-21) — the construct
+    description + FREE_OCC_TEXT + one-per-line / several-early without a number."""
+    if fam.name in FREE_OCC_HINT or free_occ:
+        h = free_occ_description(fam) + ": " + FREE_OCC_TEXT
         if fam.name not in LINE_EXEMPT:
             h += "; IMPORTANT: at most one occurrence of the construct per line, and let several occurrences appear early in the file rather than all at the end"
         return h
@@ -292,7 +449,7 @@ def gen_hint(fam):
     return h
 
 
-def finish_pair(key, fam, task, nat, gen_model=None):
+def finish_pair(key, fam, task, nat, gen_model=None, free_occ=False):
     """Everything after the natural twin exists: guards (length, degenerate, padding, parser), the alternative twin (rule or LLM rewrite with
     `gen_model`), alignment, the free filter. Raises ValueError on a guard failure; returns the record (pass may be False when the
     alignment / counted rules fail). Used by build_one and by the feedback-repair loop (revised natural twins)."""
@@ -304,6 +461,9 @@ def finish_pair(key, fam, task, nat, gen_model=None):
     pad = padding_lines(nat, fam.tgt_lang)
     if pad:                                                        # padding guard (2026-09-18): manufactured occurrences
         raise ValueError("padding: " + "; ".join(f"L{i} {n}: {l.strip()[:60]}" for i, n, l in pad[:3]))
+    leak = leak_lines(nat, fam.tgt_lang, fam.name)
+    if leak:                                                       # style-leak guard (2026-09-21): comments naming the style / convention
+        raise ValueError("style leak: " + "; ".join(f"L{i} {n}: {l.strip()[:60]}" for i, n, l in leak[:3]))
     if not valid_source(fam.tgt_lang, nat):
         raise ValueError("natural twin does not parse")
     if fam.name in WS_FAMILIES:                                    # bug 4 (2026-09-17): whitespace-only families derive alt by rule
@@ -325,10 +485,13 @@ def finish_pair(key, fam, task, nat, gen_model=None):
     if fam.name not in ("py2_print", "py2_except") and not valid_source(fam.tgt_lang, alt):
         raise ValueError("alt twin does not parse")
     opps, shared = align(nat, alt)
-    ok = opps is not None and len(opps) >= 5 and shared >= 0.6 and opps[4]["nat_span"][0] < fifth_frac(fam.name) * len(nat) and all(o["nat"] != o["alt"] for o in opps)
     rec = {"doc_id": f"{fam.name}__{task['id']}", "family": fam.name, "topic": task["title"], "angle": "code", "text_es": task["spec"].strip(),
            "langs": {"src": "Task", "tgt": fam.tgt_lang}, "text_nat": nat, "text_alt": alt, "opps": opps or [], "k_en": len(opps or []),
-           "shared_fraction": round(shared, 3), "pass": bool(ok), "verify": None}
+           "shared_fraction": round(shared, 3), "pass": False, "verify": None}
+    if free_occ:
+        rec["free_occ"] = True                                     # no-count hint: 5th opportunity threshold 85 % (code_free.fifth_frac)
+    ok = opps is not None and len(opps) >= 5 and shared >= 0.6 and opps[4]["nat_span"][0] < fifth_frac(fam.name, rec) * len(nat) and all(o["nat"] != o["alt"] for o in opps)
+    rec["pass"] = bool(ok)
     if fam.name in WS_FAMILIES or fam.name in ("bash_subst", "sql_keyword_case"):
         rec["alt_rule"] = True
     if ok and fam.name in AFFECTED:                               # free-opportunity rule: the pair must keep >= 5 genuine choice points
@@ -338,18 +501,22 @@ def finish_pair(key, fam, task, nat, gen_model=None):
     return rec
 
 
-def generate_nat(key, fam, task, gen_model=None):
-    """A fresh natural twin from the task (GEN prompt; Anthropic models: reasoning effort medium)."""
+def gen_length(fam, free_occ=False):
+    return FREE_OCC_LENGTH if (free_occ or fam.name in FREE_OCC_HINT) else LENGTH.get(fam.name, "20-35")
+
+
+def generate_nat(key, fam, task, gen_model=None, free_occ=False):
+    """A fresh natural twin from the task (GEN prompt; Anthropic models: reasoning effort medium). `free_occ`: no-count hint + 40-80 lines."""
     gen_r = {"effort": "medium"} if (gen_model or GEN_MODEL).startswith("anthropic/") else None
-    return _chat(key, GEN.format(lang=fam.tgt_lang, hint=gen_hint(fam), spec=task["spec"], length=LENGTH.get(fam.name, "20-35")), 0.9, max_tokens=16000, model=gen_model, reasoning=gen_r)
+    return _chat(key, GEN.format(lang=fam.tgt_lang, hint=gen_hint(fam, free_occ), spec=task["spec"], length=gen_length(fam, free_occ)), 0.9, max_tokens=16000, model=gen_model, reasoning=gen_r)
 
 
-def build_one(key, fam, task, gen_model=None):
+def build_one(key, fam, task, gen_model=None, free_occ=False):
     """Natural twin from the task (GEN, all guards), alternative twin by rule or by LLM rewrite (same model), align + free filter;
-    up to 3 attempts. `gen_model` overrides GEN_MODEL for both calls."""
+    up to 3 attempts. `gen_model` overrides GEN_MODEL for both calls; `free_occ` = the per-document no-count hint (regenerated docs)."""
     for attempt in range(3):
         try:
-            rec = finish_pair(key, fam, task, generate_nat(key, fam, task, gen_model), gen_model)
+            rec = finish_pair(key, fam, task, generate_nat(key, fam, task, gen_model, free_occ), gen_model, free_occ)
             if rec["pass"] or attempt == 2:
                 return rec
         except Exception as e:

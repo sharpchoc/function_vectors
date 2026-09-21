@@ -568,6 +568,619 @@
 "free_filter": true
 },
 {
+"doc_id": "py_self_name__t002",
+"family": "py_self_name",
+"topic": "Count Vowels",
+"angle": "code",
+"text_es": "Write a function `count_vowels(text)` that accepts a string `text` and returns the total count of vowels (a, e, i, o, u, case-insensitive) present in it. For example, `count_vowels('Hello World')` should return `3`, and `count_vowels('Python')` should return `1`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "VOWELS = frozenset(\"aeiou\")\n\n\nclass VowelCounter:\n    \"\"\"Counts vowel occurrences in text, keeping per-vowel tallies.\"\"\"\n\n    def __init__(self, vowels=VOWELS):\n        self.vowels = frozenset(v.lower() for v in vowels)\n        self.tally = {v: 0 for v in sorted(self.vowels)}\n        self.letters = 0\n\n    def feed(self, text):\n        for char in text:\n            lowered = char.lower()\n            if lowered.isalpha():\n                self.letters += 1\n            if lowered in self.vowels:\n                self.tally[lowered] += 1\n        return self\n\n    def total(self):\n        return sum(self.tally.values())\n\n    def most_common(self):\n        if not self.total():\n            return None\n        return max(self.tally, key=lambda v: (self.tally[v], -ord(v)))\n\n    def density(self):\n        if not self.letters:\n            return 0.0\n        return self.total() / self.letters\n\n    def breakdown(self):\n        return {v: n for v, n in self.tally.items() if n}\n\n\nclass VowelReport:\n    \"\"\"Formats the findings of a VowelCounter for a given sample.\"\"\"\n\n    def __init__(self, sample):\n        self.sample = sample\n        self.counter = VowelCounter().feed(sample)\n\n    def headline(self):\n        return \"{!r}: {} vowel(s)\".format(self.sample, self.counter.total())\n\n    def detail_line(self):\n        parts = [\"{}={}\".format(v, n) for v, n in self.counter.breakdown().items()]\n        if not parts:\n            return \"  no vowels found\"\n        top = self.counter.most_common()\n        return \"  {} | top={} | density={:.2f}\".format(\n            \", \".join(parts), top, self.counter.density()\n        )\n\n    def render(self):\n        return \"\\n\".join([self.headline(), self.detail_line()])\n\n\ndef count_vowels(text):\n    if not isinstance(text, str):\n        raise TypeError(\"text must be a string\")\n    return VowelCounter().feed(text).total()\n\n\ndef main():\n    samples = [\"Hello World\", \"Python\", \"AEIOU aeiou\", \"rhythm\"]\n    for sample in samples:\n        print(VowelReport(sample).render())\n    grand = sum(count_vowels(s) for s in samples)\n    print(\"Grand total: {}\".format(grand))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "VOWELS = frozenset(\"aeiou\")\n\n\nclass VowelCounter:\n    \"\"\"Counts vowel occurrences in text, keeping per-vowel tallies.\"\"\"\n\n    def __init__(this, vowels=VOWELS):\n        this.vowels = frozenset(v.lower() for v in vowels)\n        this.tally = {v: 0 for v in sorted(this.vowels)}\n        this.letters = 0\n\n    def feed(this, text):\n        for char in text:\n            lowered = char.lower()\n            if lowered.isalpha():\n                this.letters += 1\n            if lowered in this.vowels:\n                this.tally[lowered] += 1\n        return this\n\n    def total(this):\n        return sum(this.tally.values())\n\n    def most_common(this):\n        if not this.total():\n            return None\n        return max(this.tally, key=lambda v: (this.tally[v], -ord(v)))\n\n    def density(this):\n        if not this.letters:\n            return 0.0\n        return this.total() / this.letters\n\n    def breakdown(this):\n        return {v: n for v, n in this.tally.items() if n}\n\n\nclass VowelReport:\n    \"\"\"Formats the findings of a VowelCounter for a given sample.\"\"\"\n\n    def __init__(this, sample):\n        this.sample = sample\n        this.counter = VowelCounter().feed(sample)\n\n    def headline(this):\n        return \"{!r}: {} vowel(s)\".format(this.sample, this.counter.total())\n\n    def detail_line(this):\n        parts = [\"{}={}\".format(v, n) for v, n in this.counter.breakdown().items()]\n        if not parts:\n            return \"  no vowels found\"\n        top = this.counter.most_common()\n        return \"  {} | top={} | density={:.2f}\".format(\n            \", \".join(parts), top, this.counter.density()\n        )\n\n    def render(this):\n        return \"\\n\".join([this.headline(), this.detail_line()])\n\n\ndef count_vowels(text):\n    if not isinstance(text, str):\n        raise TypeError(\"text must be a string\")\n    return VowelCounter().feed(text).total()\n\n\ndef main():\n    samples = [\"Hello World\", \"Python\", \"AEIOU aeiou\", \"rhythm\"]\n    for sample in samples:\n        print(VowelReport(sample).render())\n    grand = sum(count_vowels(s) for s in samples)\n    print(\"Grand total: {}\".format(grand))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+139,
+143
+],
+"alt_span": [
+139,
+143
+]
+},
+{
+"k": 1,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+316,
+320
+],
+"alt_span": [
+316,
+320
+]
+},
+{
+"k": 2,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+573,
+577
+],
+"alt_span": [
+573,
+577
+]
+},
+{
+"k": 3,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+641,
+645
+],
+"alt_span": [
+641,
+645
+]
+},
+{
+"k": 4,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+789,
+793
+],
+"alt_span": [
+789,
+793
+]
+},
+{
+"k": 5,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+910,
+914
+],
+"alt_span": [
+910,
+914
+]
+},
+{
+"k": 6,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1083,
+1087
+],
+"alt_span": [
+1083,
+1087
+]
+},
+{
+"k": 7,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1196,
+1200
+],
+"alt_span": [
+1196,
+1200
+]
+},
+{
+"k": 8,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1301,
+1305
+],
+"alt_span": [
+1301,
+1305
+]
+},
+{
+"k": 9,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1634,
+1638
+],
+"alt_span": [
+1634,
+1638
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.955,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+139,
+143
+],
+"alt_span": [
+139,
+143
+]
+},
+{
+"k": 1,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+169,
+173
+],
+"alt_span": [
+169,
+173
+]
+},
+{
+"k": 2,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+228,
+232
+],
+"alt_span": [
+228,
+232
+]
+},
+{
+"k": 3,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+263,
+267
+],
+"alt_span": [
+263,
+267
+]
+},
+{
+"k": 4,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+285,
+289
+],
+"alt_span": [
+285,
+289
+]
+},
+{
+"k": 5,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+316,
+320
+],
+"alt_span": [
+316,
+320
+]
+},
+{
+"k": 6,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+440,
+444
+],
+"alt_span": [
+440,
+444
+]
+},
+{
+"k": 7,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+484,
+488
+],
+"alt_span": [
+484,
+488
+]
+},
+{
+"k": 8,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+513,
+517
+],
+"alt_span": [
+513,
+517
+]
+},
+{
+"k": 9,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+553,
+557
+],
+"alt_span": [
+553,
+557
+]
+},
+{
+"k": 10,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+573,
+577
+],
+"alt_span": [
+573,
+577
+]
+},
+{
+"k": 11,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+599,
+603
+],
+"alt_span": [
+599,
+603
+]
+},
+{
+"k": 12,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+641,
+645
+],
+"alt_span": [
+641,
+645
+]
+},
+{
+"k": 13,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+663,
+667
+],
+"alt_span": [
+663,
+667
+]
+},
+{
+"k": 14,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+720,
+724
+],
+"alt_span": [
+720,
+724
+]
+},
+{
+"k": 15,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+747,
+751
+],
+"alt_span": [
+747,
+751
+]
+},
+{
+"k": 16,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+789,
+793
+],
+"alt_span": [
+789,
+793
+]
+},
+{
+"k": 17,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+811,
+815
+],
+"alt_span": [
+811,
+815
+]
+},
+{
+"k": 18,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+863,
+867
+],
+"alt_span": [
+863,
+867
+]
+},
+{
+"k": 19,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+878,
+882
+],
+"alt_span": [
+878,
+882
+]
+},
+{
+"k": 20,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+910,
+914
+],
+"alt_span": [
+910,
+914
+]
+},
+{
+"k": 21,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+950,
+954
+],
+"alt_span": [
+950,
+954
+]
+},
+{
+"k": 22,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1083,
+1087
+],
+"alt_span": [
+1083,
+1087
+]
+},
+{
+"k": 23,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1106,
+1110
+],
+"alt_span": [
+1106,
+1110
+]
+},
+{
+"k": 24,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1135,
+1139
+],
+"alt_span": [
+1135,
+1139
+]
+},
+{
+"k": 25,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1196,
+1200
+],
+"alt_span": [
+1196,
+1200
+]
+},
+{
+"k": 26,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1245,
+1249
+],
+"alt_span": [
+1245,
+1249
+]
+},
+{
+"k": 27,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1258,
+1262
+],
+"alt_span": [
+1258,
+1262
+]
+},
+{
+"k": 28,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1301,
+1305
+],
+"alt_span": [
+1301,
+1305
+]
+},
+{
+"k": 29,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1358,
+1362
+],
+"alt_span": [
+1358,
+1362
+]
+},
+{
+"k": 30,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1467,
+1471
+],
+"alt_span": [
+1467,
+1471
+]
+},
+{
+"k": 31,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1585,
+1589
+],
+"alt_span": [
+1585,
+1589
+]
+},
+{
+"k": 32,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1634,
+1638
+],
+"alt_span": [
+1634,
+1638
+]
+},
+{
+"k": 33,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1667,
+1671
+],
+"alt_span": [
+1667,
+1671
+]
+},
+{
+"k": 34,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1684,
+1688
+],
+"alt_span": [
+1684,
+1688
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
 "doc_id": "py_self_name__t003",
 "family": "py_self_name",
 "topic": "Factorial Calculation",
@@ -10304,20 +10917,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "class InventoryManager:\n    def __init__(self, initial_inventory):\n        self.inventory = initial_inventory\n        self.history = []\n\n    def get_inventory(self):\n        return self.inventory\n\n    def record_transaction(self, item, quantity, new_total):\n        self.history.append({'item': item, 'quantity_change': quantity, 'new_total': new_total})\n\nclass ItemUpdater:\n    def __init__(self, manager):\n        self.manager = manager\n\n    def update_item_quantity(self, item_name, quantity):\n        if item_name in self.manager.inventory:\n            self.manager.inventory[item_name] += quantity\n        else:\n            self.manager.inventory[item_name] = quantity\n        self.manager.record_transaction(item_name, quantity, self.manager.inventory[item_name])\n        return self.manager.inventory\n\nclass InventoryReporter:\n    def __init__(self, manager):\n        self.manager = manager\n\n    def generate_report(self):\n        report = \"Current Inventory:\\n\"\n        for item, count in self.manager.inventory.items():\n            report += f\"- {item}: {count}\\n\"\n        return report\n\ndef update_inventory(inventory, item_name, quantity):\n    manager = InventoryManager(inventory)\n    updater = ItemUpdater(manager)\n    updated_inventory = updater.update_item_quantity(item_name, quantity)\n    reporter = InventoryReporter(manager)\n    _ = reporter.generate_report()\n    return updated_inventory\n",
-"text_alt": "class InventoryManager:\n    def __init__(this, initial_inventory):\n        this.inventory = initial_inventory\n        this.history = []\n\n    def get_inventory(this):\n        return this.inventory\n\n    def record_transaction(this, item, quantity, new_total):\n        this.history.append({'item': item, 'quantity_change': quantity, 'new_total': new_total})\n\nclass ItemUpdater:\n    def __init__(this, manager):\n        this.manager = manager\n\n    def update_item_quantity(this, item_name, quantity):\n        if item_name in this.manager.inventory:\n            this.manager.inventory[item_name] += quantity\n        else:\n            this.manager.inventory[item_name] = quantity\n        this.manager.record_transaction(item_name, quantity, this.manager.inventory[item_name])\n        return this.manager.inventory\n\nclass InventoryReporter:\n    def __init__(this, manager):\n        this.manager = manager\n\n    def generate_report(this):\n        report = \"Current Inventory:\\n\"\n        for item, count in this.manager.inventory.items():\n            report += f\"- {item}: {count}\\n\"\n        return report\n\ndef update_inventory(inventory, item_name, quantity):\n    manager = InventoryManager(inventory)\n    updater = ItemUpdater(manager)\n    updated_inventory = updater.update_item_quantity(item_name, quantity)\n    reporter = InventoryReporter(manager)\n    _ = reporter.generate_report()\n    return updated_inventory\n",
+"text_nat": "def update_inventory(inventory, item_name, quantity):\n    if item_name in inventory:\n        inventory[item_name] += quantity\n    else:\n        inventory[item_name] = quantity\n    return inventory\n\n\nclass TransactionLog:\n    def __init__(self):\n        self.entries = []\n\n    def record(self, item_name, quantity, resulting_total):\n        self.entries.append((item_name, quantity, resulting_total))\n        return self.entries[-1]\n\n    def net_change(self, item_name):\n        return sum(q for name, q, _ in self.entries if name == item_name)\n\n    def lines(self):\n        for item_name, quantity, total in self.entries:\n            sign = \"+\" if quantity >= 0 else \"-\"\n            yield \"%-10s %s%-4d -> %d\" % (item_name, sign, abs(quantity), total)\n\n\nclass Inventory:\n    def __init__(self, initial=None):\n        self.items = dict(initial or {})\n        self.log = TransactionLog()\n\n    def add(self, item_name, quantity):\n        if not isinstance(item_name, str) or not item_name.strip():\n            raise ValueError(\"item name must be a non-empty string\")\n        if not isinstance(quantity, int):\n            raise TypeError(\"quantity must be an integer\")\n        key = item_name.strip().lower()\n        update_inventory(self.items, key, quantity)\n        total = self.items[key]\n        if total < 0:\n            self.items[key] = total - quantity\n            raise ValueError(\"stock for %r cannot go negative\" % key)\n        self.log.record(key, quantity, total)\n        return total\n\n    def remove(self, item_name, quantity):\n        return self.add(item_name, -quantity)\n\n    def stock_of(self, item_name):\n        return self.items.get(item_name.strip().lower(), 0)\n\n    def total_units(self):\n        return sum(self.items.values())\n\n    def report(self):\n        rows = [\"%-10s %d\" % pair for pair in sorted(self.items.items())]\n        footer = \"%-10s %d\" % (\"TOTAL\", self.total_units())\n        header = \"%-10s %s\" % (\"ITEM\", \"QTY\")\n        return \"\\n\".join([header] + rows + [footer])\n\n    def history(self):\n        return \"\\n\".join(self.log.lines())\n\n\ndef main():\n    store = Inventory({'apple': 10})\n    store.add('apple', 5)\n    store.add('banana', 3)\n    store.add('Cherry', 12)\n    store.remove('cherry', 4)\n    try:\n        store.remove('banana', 99)\n    except ValueError as exc:\n        print(\"rejected:\", exc)\n    print(store.report())\n    print(\"--- history ---\")\n    print(store.history())\n    print(\"net apple change:\", store.log.net_change('apple'))\n    print(\"bananas on hand:\", store.stock_of(' Banana '))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def update_inventory(inventory, item_name, quantity):\n    if item_name in inventory:\n        inventory[item_name] += quantity\n    else:\n        inventory[item_name] = quantity\n    return inventory\n\n\nclass TransactionLog:\n    def __init__(this):\n        this.entries = []\n\n    def record(this, item_name, quantity, resulting_total):\n        this.entries.append((item_name, quantity, resulting_total))\n        return this.entries[-1]\n\n    def net_change(this, item_name):\n        return sum(q for name, q, _ in this.entries if name == item_name)\n\n    def lines(this):\n        for item_name, quantity, total in this.entries:\n            sign = \"+\" if quantity >= 0 else \"-\"\n            yield \"%-10s %s%-4d -> %d\" % (item_name, sign, abs(quantity), total)\n\n\nclass Inventory:\n    def __init__(this, initial=None):\n        this.items = dict(initial or {})\n        this.log = TransactionLog()\n\n    def add(this, item_name, quantity):\n        if not isinstance(item_name, str) or not item_name.strip():\n            raise ValueError(\"item name must be a non-empty string\")\n        if not isinstance(quantity, int):\n            raise TypeError(\"quantity must be an integer\")\n        key = item_name.strip().lower()\n        update_inventory(this.items, key, quantity)\n        total = this.items[key]\n        if total < 0:\n            this.items[key] = total - quantity\n            raise ValueError(\"stock for %r cannot go negative\" % key)\n        this.log.record(key, quantity, total)\n        return total\n\n    def remove(this, item_name, quantity):\n        return this.add(item_name, -quantity)\n\n    def stock_of(this, item_name):\n        return this.items.get(item_name.strip().lower(), 0)\n\n    def total_units(this):\n        return sum(this.items.values())\n\n    def report(this):\n        rows = [\"%-10s %d\" % pair for pair in sorted(this.items.items())]\n        footer = \"%-10s %d\" % (\"TOTAL\", this.total_units())\n        header = \"%-10s %s\" % (\"ITEM\", \"QTY\")\n        return \"\\n\".join([header] + rows + [footer])\n\n    def history(this):\n        return \"\\n\".join(this.log.lines())\n\n\ndef main():\n    store = Inventory({'apple': 10})\n    store.add('apple', 5)\n    store.add('banana', 3)\n    store.add('Cherry', 12)\n    store.remove('cherry', 4)\n    try:\n        store.remove('banana', 99)\n    except ValueError as exc:\n        print(\"rejected:\", exc)\n    print(store.report())\n    print(\"--- history ---\")\n    print(store.history())\n    print(\"net apple change:\", store.log.net_change('apple'))\n    print(\"bananas on hand:\", store.stock_of(' Banana '))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "self",
 "alt": "this",
 "nat_span": [
-41,
-45
+238,
+242
 ],
 "alt_span": [
-41,
-45
+238,
+242
 ]
 },
 {
@@ -10325,12 +10938,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-159,
-163
+287,
+291
 ],
 "alt_span": [
-159,
-163
+287,
+291
 ]
 },
 {
@@ -10338,12 +10951,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-224,
-228
+452,
+456
 ],
 "alt_span": [
-224,
-228
+452,
+456
 ]
 },
 {
@@ -10351,12 +10964,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-392,
-396
+559,
+563
 ],
 "alt_span": [
-392,
-396
+559,
+563
 ]
 },
 {
@@ -10364,12 +10977,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-469,
-473
+788,
+792
 ],
 "alt_span": [
-469,
-473
+788,
+792
 ]
 },
 {
@@ -10377,12 +10990,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-851,
-855
+899,
+903
 ],
 "alt_span": [
-851,
-855
+899,
+903
 ]
 },
 {
@@ -10390,109 +11003,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-923,
-927
+1511,
+1515
 ],
 "alt_span": [
-923,
-927
-]
-}
-],
-"k_en": 7,
-"shared_fraction": 0.945,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-41,
-45
-],
-"alt_span": [
-41,
-45
-]
-},
-{
-"k": 1,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-75,
-79
-],
-"alt_span": [
-75,
-79
-]
-},
-{
-"k": 2,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-118,
-122
-],
-"alt_span": [
-118,
-122
-]
-},
-{
-"k": 3,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-159,
-163
-],
-"alt_span": [
-159,
-163
-]
-},
-{
-"k": 4,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-181,
-185
-],
-"alt_span": [
-181,
-185
-]
-},
-{
-"k": 5,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-224,
-228
-],
-"alt_span": [
-224,
-228
-]
-},
-{
-"k": 6,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-266,
-270
-],
-"alt_span": [
-266,
-270
+1511,
+1515
 ]
 },
 {
@@ -10500,12 +11016,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-392,
-396
+1603,
+1607
 ],
 "alt_span": [
-392,
-396
+1603,
+1607
 ]
 },
 {
@@ -10513,12 +11029,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-416,
-420
+1702,
+1706
 ],
 "alt_span": [
-416,
-420
+1702,
+1706
 ]
 },
 {
@@ -10526,12 +11042,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-469,
-473
+1765,
+1769
 ],
 "alt_span": [
-469,
-473
+1765,
+1769
 ]
 },
 {
@@ -10539,12 +11055,162 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-521,
-525
+2022,
+2026
 ],
 "alt_span": [
-521,
-525
+2022,
+2026
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.969,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+238,
+242
+],
+"alt_span": [
+238,
+242
+]
+},
+{
+"k": 1,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+253,
+257
+],
+"alt_span": [
+253,
+257
+]
+},
+{
+"k": 2,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+287,
+291
+],
+"alt_span": [
+287,
+291
+]
+},
+{
+"k": 3,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+340,
+344
+],
+"alt_span": [
+340,
+344
+]
+},
+{
+"k": 4,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+415,
+419
+],
+"alt_span": [
+415,
+419
+]
+},
+{
+"k": 5,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+452,
+456
+],
+"alt_span": [
+452,
+456
+]
+},
+{
+"k": 6,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+509,
+513
+],
+"alt_span": [
+509,
+513
+]
+},
+{
+"k": 7,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+559,
+563
+],
+"alt_span": [
+559,
+563
+]
+},
+{
+"k": 8,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+608,
+612
+],
+"alt_span": [
+608,
+612
+]
+},
+{
+"k": 9,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+788,
+792
+],
+"alt_span": [
+788,
+792
+]
+},
+{
+"k": 10,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+817,
+821
+],
+"alt_span": [
+817,
+821
 ]
 },
 {
@@ -10552,12 +11218,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-557,
-561
+858,
+862
 ],
 "alt_span": [
-557,
-561
+858,
+862
 ]
 },
 {
@@ -10565,12 +11231,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-629,
-633
+899,
+903
 ],
 "alt_span": [
-629,
-633
+899,
+903
 ]
 },
 {
@@ -10578,12 +11244,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-682,
-686
+1230,
+1234
 ],
 "alt_span": [
-682,
-686
+1230,
+1234
 ]
 },
 {
@@ -10591,12 +11257,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-735,
-739
+1273,
+1277
 ],
 "alt_span": [
-735,
-739
+1273,
+1277
 ]
 },
 {
@@ -10604,12 +11270,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-785,
-789
+1323,
+1327
 ],
 "alt_span": [
-785,
-789
+1323,
+1327
 ]
 },
 {
@@ -10617,12 +11283,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-851,
-855
+1436,
+1440
 ],
 "alt_span": [
-851,
-855
+1436,
+1440
 ]
 },
 {
@@ -10630,12 +11296,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-875,
-879
+1511,
+1515
 ],
 "alt_span": [
-875,
-879
+1511,
+1515
 ]
 },
 {
@@ -10643,12 +11309,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-923,
-927
+1554,
+1558
 ],
 "alt_span": [
-923,
-927
+1554,
+1558
 ]
 },
 {
@@ -10656,16 +11322,125 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-997,
-1001
+1603,
+1607
 ],
 "alt_span": [
-997,
-1001
+1603,
+1607
+]
+},
+{
+"k": 20,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1636,
+1640
+],
+"alt_span": [
+1636,
+1640
+]
+},
+{
+"k": 21,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1702,
+1706
+],
+"alt_span": [
+1702,
+1706
+]
+},
+{
+"k": 22,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1728,
+1732
+],
+"alt_span": [
+1728,
+1732
+]
+},
+{
+"k": 23,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1765,
+1769
+],
+"alt_span": [
+1765,
+1769
+]
+},
+{
+"k": 24,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1825,
+1829
+],
+"alt_span": [
+1825,
+1829
+]
+},
+{
+"k": 25,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1886,
+1890
+],
+"alt_span": [
+1886,
+1890
+]
+},
+{
+"k": 26,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+2022,
+2026
+],
+"alt_span": [
+2022,
+2026
+]
+},
+{
+"k": 27,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+2054,
+2058
+],
+"alt_span": [
+2054,
+2058
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py_self_name__t026",
@@ -24925,418 +25700,6 @@
 "alt_span": [
 961,
 965
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_self_name__t060",
-"family": "py_self_name",
-"topic": "Image Resizer (Dummy)",
-"angle": "code",
-"text_es": "Create a function `dummy_resize_image(image_data, new_width, new_height)` that simulates image resizing. It takes `image_data` (a string representing image content) and `new_width`, `new_height` (integers) and returns a new string like 'Resized image to WxH: [original_data]'. For example, `dummy_resize_image('img1.png', 100, 200)` should return `'Resized image to 100x200: img1.png'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "class ImageProcessor:\n    def __init__(self, data):\n        self.original_data = data\n        self.processed_data = None\n\n    def process(self, width, height):\n        self.processed_data = f\"Resized image to {width}x{height}: {self.original_data}\"\n        return self.processed_data\n\nclass Resizer:\n    def __init__(self):\n        self.last_width = 0\n        self.last_height = 0\n\n    def apply_resize(self, processor, new_w, new_h):\n        self.last_width = new_w\n        self.last_height = new_h\n        return processor.process(self.last_width, self.last_height)\n\nclass ImageHandler:\n    def __init__(self, initial_image_data):\n        self.image_processor = ImageProcessor(initial_image_data)\n        self.image_resizer = Resizer()\n        self.current_output = None\n\n    def resize_image(self, width, height):\n        self.current_output = self.image_resizer.apply_resize(self.image_processor, width, height)\n        return self.current_output\n\ndef dummy_resize_image(image_data, new_width, new_height):\n    handler = ImageHandler(image_data)\n    return handler.resize_image(new_width, new_height)\n",
-"text_alt": "class ImageProcessor:\n    def __init__(this, data):\n        this.original_data = data\n        this.processed_data = None\n\n    def process(this, width, height):\n        this.processed_data = f\"Resized image to {width}x{height}: {this.original_data}\"\n        return this.processed_data\n\nclass Resizer:\n    def __init__(this):\n        this.last_width = 0\n        this.last_height = 0\n\n    def apply_resize(this, processor, new_w, new_h):\n        this.last_width = new_w\n        this.last_height = new_h\n        return processor.process(this.last_width, this.last_height)\n\nclass ImageHandler:\n    def __init__(this, initial_image_data):\n        this.image_processor = ImageProcessor(initial_image_data)\n        this.image_resizer = Resizer()\n        this.current_output = None\n\n    def resize_image(this, width, height):\n        this.current_output = this.image_resizer.apply_resize(this.image_processor, width, height)\n        return this.current_output\n\ndef dummy_resize_image(image_data, new_width, new_height):\n    handler = ImageHandler(image_data)\n    return handler.resize_image(new_width, new_height)\n",
-"opps": [
-{
-"k": 0,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-39,
-43
-],
-"alt_span": [
-39,
-43
-]
-},
-{
-"k": 1,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-138,
-142
-],
-"alt_span": [
-138,
-142
-]
-},
-{
-"k": 2,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-317,
-321
-],
-"alt_span": [
-317,
-321
-]
-},
-{
-"k": 3,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-403,
-407
-],
-"alt_span": [
-403,
-407
-]
-},
-{
-"k": 4,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-606,
-610
-],
-"alt_span": [
-606,
-610
-]
-},
-{
-"k": 5,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-795,
-799
-],
-"alt_span": [
-795,
-799
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 0.915,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-39,
-43
-],
-"alt_span": [
-39,
-43
-]
-},
-{
-"k": 1,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-60,
-64
-],
-"alt_span": [
-60,
-64
-]
-},
-{
-"k": 2,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-94,
-98
-],
-"alt_span": [
-94,
-98
-]
-},
-{
-"k": 3,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-138,
-142
-],
-"alt_span": [
-138,
-142
-]
-},
-{
-"k": 4,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-168,
-172
-],
-"alt_span": [
-168,
-172
-]
-},
-{
-"k": 5,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-228,
-232
-],
-"alt_span": [
-228,
-232
-]
-},
-{
-"k": 6,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-264,
-268
-],
-"alt_span": [
-264,
-268
-]
-},
-{
-"k": 7,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-317,
-321
-],
-"alt_span": [
-317,
-321
-]
-},
-{
-"k": 8,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-332,
-336
-],
-"alt_span": [
-332,
-336
-]
-},
-{
-"k": 9,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-360,
-364
-],
-"alt_span": [
-360,
-364
-]
-},
-{
-"k": 10,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-403,
-407
-],
-"alt_span": [
-403,
-407
-]
-},
-{
-"k": 11,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-443,
-447
-],
-"alt_span": [
-443,
-447
-]
-},
-{
-"k": 12,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-475,
-479
-],
-"alt_span": [
-475,
-479
-]
-},
-{
-"k": 13,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-533,
-537
-],
-"alt_span": [
-533,
-537
-]
-},
-{
-"k": 14,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-550,
-554
-],
-"alt_span": [
-550,
-554
-]
-},
-{
-"k": 15,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-606,
-610
-],
-"alt_span": [
-606,
-610
-]
-},
-{
-"k": 16,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-641,
-645
-],
-"alt_span": [
-641,
-645
-]
-},
-{
-"k": 17,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-707,
-711
-],
-"alt_span": [
-707,
-711
-]
-},
-{
-"k": 18,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-746,
-750
-],
-"alt_span": [
-746,
-750
-]
-},
-{
-"k": 19,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-795,
-799
-],
-"alt_span": [
-795,
-799
-]
-},
-{
-"k": 20,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-825,
-829
-],
-"alt_span": [
-825,
-829
-]
-},
-{
-"k": 21,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-847,
-851
-],
-"alt_span": [
-847,
-851
-]
-},
-{
-"k": 22,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-879,
-883
-],
-"alt_span": [
-879,
-883
-]
-},
-{
-"k": 23,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-931,
-935
-],
-"alt_span": [
-931,
-935
 ]
 }
 ],
@@ -46460,20 +46823,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "class Interval:\n    def __init__(self, start, end):\n        self.start = start\n        self.end = end\n\n    def get_start(self):\n        return self.start\n\n    def get_end(self):\n        return self.end\n\nclass Meeting:\n    def __init__(self, interval_tuple):\n        self.interval = Interval(interval_tuple[0], interval_tuple[1])\n\n    def get_interval(self):\n        return self.interval\n\n    def starts_before(self, other_meeting_interval):\n        return self.interval.get_start() < other_meeting_interval.get_end()\n\n    def ends_after(self, other_meeting_interval):\n        return self.interval.get_end() > other_meeting_interval.get_start()\n\nclass MeetingScheduler:\n    def __init__(self):\n        self.dummy = True\n\n    def check_overlap(self, meeting1, meeting2):\n        m1_interval = meeting1.get_interval()\n        m2_interval = meeting2.get_interval()\n        self_starts_before_other_ends = m1_interval.get_start() < m2_interval.get_end()\n        self_ends_after_other_starts = m1_interval.get_end() > m2_interval.get_start()\n        return self_starts_before_other_ends and self_ends_after_other_starts\n\ndef has_overlap(meeting1_tuple, meeting2_tuple):\n    meeting1 = Meeting(meeting1_tuple)\n    meeting2 = Meeting(meeting2_tuple)\n    scheduler = MeetingScheduler()\n    return scheduler.check_overlap(meeting1, meeting2)\n",
-"text_alt": "class Interval:\n    def __init__(this, start, end):\n        this.start = start\n        this.end = end\n\n    def get_start(this):\n        return this.start\n\n    def get_end(this):\n        return this.end\n\nclass Meeting:\n    def __init__(this, interval_tuple):\n        this.interval = Interval(interval_tuple[0], interval_tuple[1])\n\n    def get_interval(this):\n        return this.interval\n\n    def starts_before(this, other_meeting_interval):\n        return this.interval.get_start() < other_meeting_interval.get_end()\n\n    def ends_after(this, other_meeting_interval):\n        return this.interval.get_end() > other_meeting_interval.get_start()\n\nclass MeetingScheduler:\n    def __init__(this):\n        this.dummy = True\n\n    def check_overlap(this, meeting1, meeting2):\n        m1_interval = meeting1.get_interval()\n        m2_interval = meeting2.get_interval()\n        self_starts_before_other_ends = m1_interval.get_start() < m2_interval.get_end()\n        self_ends_after_other_starts = m1_interval.get_end() > m2_interval.get_start()\n        return self_starts_before_other_ends and self_ends_after_other_starts\n\ndef has_overlap(meeting1_tuple, meeting2_tuple):\n    meeting1 = Meeting(meeting1_tuple)\n    meeting2 = Meeting(meeting2_tuple)\n    scheduler = MeetingScheduler()\n    return scheduler.check_overlap(meeting1, meeting2)\n",
+"text_nat": "class Meeting:\n    def __init__(self, start, end, label=None):\n        if start > end:\n            raise ValueError(\"meeting start must not exceed its end\")\n        self.start = start\n        self.end = end\n        self.label = label or \"meeting\"\n\n    @classmethod\n    def from_tuple(cls, interval, label=None):\n        start, end = interval\n        return cls(int(start), int(end), label)\n\n    def overlaps(self, other):\n        return self.start < other.end and other.start < self.end\n\n    def overlap_minutes(self, other):\n        if not self.overlaps(other):\n            return 0\n        return min(self.end, other.end) - max(self.start, other.start)\n\n    def duration(self):\n        return self.end - self.start\n\n    def __str__(self):\n        return \"{} [{}, {})\".format(self.label, self.start, self.end)\n\n\nclass Schedule:\n    def __init__(self, owner):\n        self.owner = owner\n        self.meetings = []\n\n    def add(self, interval, label=None):\n        meeting = Meeting.from_tuple(interval, label)\n        self.meetings.append(meeting)\n        return meeting\n\n    def conflicts(self):\n        ordered = sorted(self.meetings, key=lambda m: (m.start, m.end))\n        found = []\n        for index, current in enumerate(ordered):\n            for later in ordered[index + 1:]:\n                if later.start >= current.end:\n                    break\n                found.append((current, later, current.overlap_minutes(later)))\n        return found\n\n    def busy_minutes(self):\n        return sum(meeting.duration() for meeting in self.meetings)\n\n    def report(self):\n        lines = [\"Schedule for {} ({} meetings, {} busy minutes)\".format(\n            self.owner, len(self.meetings), self.busy_minutes())]\n        for meeting in sorted(self.meetings, key=lambda m: m.start):\n            lines.append(\"  \" + str(meeting))\n        problems = self.conflicts()\n        if not problems:\n            lines.append(\"  no conflicts\")\n        for first, second, shared in problems:\n            lines.append(\"  conflict: {} vs {} ({} min)\".format(\n                first.label, second.label, shared))\n        return \"\\n\".join(lines)\n\n\ndef has_overlap(meeting1, meeting2):\n    first = Meeting.from_tuple(meeting1)\n    second = Meeting.from_tuple(meeting2)\n    return first.overlaps(second)\n\n\ndef main():\n    print(has_overlap((1, 5), (3, 7)))\n    print(has_overlap((1, 2), (3, 4)))\n\n    day = Schedule(\"Ada\")\n    day.add((9, 10), \"standup\")\n    day.add((9, 11), \"design review\")\n    day.add((13, 14), \"1:1\")\n    print(day.report())\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "class Meeting:\n    def __init__(this, start, end, label=None):\n        if start > end:\n            raise ValueError(\"meeting start must not exceed its end\")\n        this.start = start\n        this.end = end\n        this.label = label or \"meeting\"\n\n    @classmethod\n    def from_tuple(cls, interval, label=None):\n        start, end = interval\n        return cls(int(start), int(end), label)\n\n    def overlaps(this, other):\n        return this.start < other.end and other.start < this.end\n\n    def overlap_minutes(this, other):\n        if not this.overlaps(other):\n            return 0\n        return min(this.end, other.end) - max(this.start, other.start)\n\n    def duration(this):\n        return this.end - this.start\n\n    def __str__(this):\n        return \"{} [{}, {})\".format(this.label, this.start, this.end)\n\n\nclass Schedule:\n    def __init__(this, owner):\n        this.owner = owner\n        this.meetings = []\n\n    def add(this, interval, label=None):\n        meeting = Meeting.from_tuple(interval, label)\n        this.meetings.append(meeting)\n        return meeting\n\n    def conflicts(this):\n        ordered = sorted(this.meetings, key=lambda m: (m.start, m.end))\n        found = []\n        for index, current in enumerate(ordered):\n            for later in ordered[index + 1:]:\n                if later.start >= current.end:\n                    break\n                found.append((current, later, current.overlap_minutes(later)))\n        return found\n\n    def busy_minutes(this):\n        return sum(meeting.duration() for meeting in this.meetings)\n\n    def report(this):\n        lines = [\"Schedule for {} ({} meetings, {} busy minutes)\".format(\n            this.owner, len(this.meetings), this.busy_minutes())]\n        for meeting in sorted(this.meetings, key=lambda m: m.start):\n            lines.append(\"  \" + str(meeting))\n        problems = this.conflicts()\n        if not problems:\n            lines.append(\"  no conflicts\")\n        for first, second, shared in problems:\n            lines.append(\"  conflict: {} vs {} ({} min)\".format(\n                first.label, second.label, shared))\n        return \"\\n\".join(lines)\n\n\ndef has_overlap(meeting1, meeting2):\n    first = Meeting.from_tuple(meeting1)\n    second = Meeting.from_tuple(meeting2)\n    return first.overlaps(second)\n\n\ndef main():\n    print(has_overlap((1, 5), (3, 7)))\n    print(has_overlap((1, 2), (3, 4)))\n\n    day = Schedule(\"Ada\")\n    day.add((9, 10), \"standup\")\n    day.add((9, 11), \"design review\")\n    day.add((13, 14), \"1:1\")\n    print(day.report())\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "self",
 "alt": "this",
 "nat_span": [
-33,
-37
+32,
+36
 ],
 "alt_span": [
-33,
-37
+32,
+36
 ]
 },
 {
@@ -46481,12 +46844,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-121,
-125
+408,
+412
 ],
 "alt_span": [
-121,
-125
+408,
+412
 ]
 },
 {
@@ -46494,12 +46857,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-171,
-175
+512,
+516
 ],
 "alt_span": [
-171,
-175
+512,
+516
 ]
 },
 {
@@ -46507,12 +46870,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-235,
-239
+673,
+677
 ],
 "alt_span": [
-235,
-239
+673,
+677
 ]
 },
 {
@@ -46520,12 +46883,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-351,
-355
+734,
+738
 ],
 "alt_span": [
-351,
-355
+734,
+738
 ]
 },
 {
@@ -46533,12 +46896,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-410,
-414
+846,
+850
 ],
 "alt_span": [
-410,
-414
+846,
+850
 ]
 },
 {
@@ -46546,12 +46909,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-537,
-541
+927,
+931
 ],
 "alt_span": [
-537,
-541
+927,
+931
 ]
 },
 {
@@ -46559,12 +46922,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-686,
-690
+1090,
+1094
 ],
 "alt_span": [
-686,
-690
+1090,
+1094
 ]
 },
 {
@@ -46572,135 +46935,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-742,
-746
+1479,
+1483
 ],
 "alt_span": [
-742,
-746
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 0.944,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-33,
-37
-],
-"alt_span": [
-33,
-37
-]
-},
-{
-"k": 1,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-60,
-64
-],
-"alt_span": [
-60,
-64
-]
-},
-{
-"k": 2,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-87,
-91
-],
-"alt_span": [
-87,
-91
-]
-},
-{
-"k": 3,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-121,
-125
-],
-"alt_span": [
-121,
-125
-]
-},
-{
-"k": 4,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-143,
-147
-],
-"alt_span": [
-143,
-147
-]
-},
-{
-"k": 5,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-171,
-175
-],
-"alt_span": [
-171,
-175
-]
-},
-{
-"k": 6,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-193,
-197
-],
-"alt_span": [
-193,
-197
-]
-},
-{
-"k": 7,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-235,
-239
-],
-"alt_span": [
-235,
-239
-]
-},
-{
-"k": 8,
-"nat": "self",
-"alt": "this",
-"nat_span": [
-266,
-270
-],
-"alt_span": [
-266,
-270
+1479,
+1483
 ]
 },
 {
@@ -46708,12 +46948,149 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-351,
-355
+1570,
+1574
 ],
 "alt_span": [
-351,
-355
+1570,
+1574
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.963,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+32,
+36
+],
+"alt_span": [
+32,
+36
+]
+},
+{
+"k": 1,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+165,
+169
+],
+"alt_span": [
+165,
+169
+]
+},
+{
+"k": 2,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+192,
+196
+],
+"alt_span": [
+192,
+196
+]
+},
+{
+"k": 3,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+215,
+219
+],
+"alt_span": [
+215,
+219
+]
+},
+{
+"k": 4,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+408,
+412
+],
+"alt_span": [
+408,
+412
+]
+},
+{
+"k": 5,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+437,
+441
+],
+"alt_span": [
+437,
+441
+]
+},
+{
+"k": 6,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+478,
+482
+],
+"alt_span": [
+478,
+482
+]
+},
+{
+"k": 7,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+512,
+516
+],
+"alt_span": [
+512,
+516
+]
+},
+{
+"k": 8,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+541,
+545
+],
+"alt_span": [
+541,
+545
+]
+},
+{
+"k": 9,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+603,
+607
+],
+"alt_span": [
+603,
+607
 ]
 },
 {
@@ -46721,12 +47098,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-373,
-377
+630,
+634
 ],
 "alt_span": [
-373,
-377
+630,
+634
 ]
 },
 {
@@ -46734,12 +47111,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-410,
-414
+673,
+677
 ],
 "alt_span": [
-410,
-414
+673,
+677
 ]
 },
 {
@@ -46747,12 +47124,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-456,
-460
+695,
+699
 ],
 "alt_span": [
-456,
-460
+695,
+699
 ]
 },
 {
@@ -46760,12 +47137,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-537,
-541
+706,
+710
 ],
 "alt_span": [
-537,
-541
+706,
+710
 ]
 },
 {
@@ -46773,12 +47150,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-583,
-587
+734,
+738
 ],
 "alt_span": [
-583,
-587
+734,
+738
 ]
 },
 {
@@ -46786,12 +47163,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-686,
-690
+777,
+781
 ],
 "alt_span": [
-686,
-690
+777,
+781
 ]
 },
 {
@@ -46799,12 +47176,12 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-701,
-705
+789,
+793
 ],
 "alt_span": [
-701,
-705
+789,
+793
 ]
 },
 {
@@ -46812,16 +47189,216 @@
 "nat": "self",
 "alt": "this",
 "nat_span": [
-742,
-746
+801,
+805
 ],
 "alt_span": [
-742,
-746
+801,
+805
+]
+},
+{
+"k": 18,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+846,
+850
+],
+"alt_span": [
+846,
+850
+]
+},
+{
+"k": 19,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+868,
+872
+],
+"alt_span": [
+868,
+872
+]
+},
+{
+"k": 20,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+895,
+899
+],
+"alt_span": [
+895,
+899
+]
+},
+{
+"k": 21,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+927,
+931
+],
+"alt_span": [
+927,
+931
+]
+},
+{
+"k": 22,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1018,
+1022
+],
+"alt_span": [
+1018,
+1022
+]
+},
+{
+"k": 23,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1090,
+1094
+],
+"alt_span": [
+1090,
+1094
+]
+},
+{
+"k": 24,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1122,
+1126
+],
+"alt_span": [
+1122,
+1126
+]
+},
+{
+"k": 25,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1479,
+1483
+],
+"alt_span": [
+1479,
+1483
+]
+},
+{
+"k": 26,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1539,
+1543
+],
+"alt_span": [
+1539,
+1543
+]
+},
+{
+"k": 27,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1570,
+1574
+],
+"alt_span": [
+1570,
+1574
+]
+},
+{
+"k": 28,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1663,
+1667
+],
+"alt_span": [
+1663,
+1667
+]
+},
+{
+"k": 29,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1679,
+1683
+],
+"alt_span": [
+1679,
+1683
+]
+},
+{
+"k": 30,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1695,
+1699
+],
+"alt_span": [
+1695,
+1699
+]
+},
+{
+"k": 31,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1747,
+1751
+],
+"alt_span": [
+1747,
+1751
+]
+},
+{
+"k": 32,
+"nat": "self",
+"alt": "this",
+"nat_span": [
+1851,
+1855
+],
+"alt_span": [
+1851,
+1855
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py_self_name__t116",

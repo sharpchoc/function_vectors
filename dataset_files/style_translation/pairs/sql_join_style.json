@@ -8287,143 +8287,131 @@
 "src": "Task",
 "tgt": "SQL"
 },
-"text_nat": "-- 1. List all players and their teams.\nSELECT\n    P.first_name,\n    P.last_name,\n    T.team_name\nFROM\n    Players AS P\nJOIN Teams AS T ON P.team_id = T.team_id;\n\n-- 2. Find all players on a specific team ('Lakers').\nSELECT\n    P.first_name,\n    P.last_name,\n    T.team_name\nFROM\n    Players AS P\nJOIN Teams AS T ON P.team_id = T.team_id\nWHERE\n    T.team_name = 'Lakers';\n\n-- 3. Count the number of players per position.\nSELECT\n    position,\n    COUNT(player_id) AS player_count\nFROM\n    Players\nGROUP BY\n    position;\n\n-- 4. Add a new player to a team.\nINSERT INTO Players (player_id, first_name, last_name, team_id, position, jersey_number)\nSELECT\n    101,\n    'LeBron',\n    'James',\n    T.team_id,\n    'Forward',\n    6\nFROM\n    Teams AS T\nJOIN Teams AS T2 ON T.team_name = 'Lakers' AND T.team_id = T2.team_id;\n\n-- 5. Update a player's position.\nUPDATE Players\nSET\n    position = 'Center'\nWHERE\n    first_name = 'LeBron' AND last_name = 'James';\n\n-- Additional queries with explicit JOIN ... ON clauses\n-- Get all players and their team's city\nSELECT\n    P.first_name,\n    P.last_name,\n    T.city\nFROM\n    Players AS P\nJOIN Teams AS T ON P.team_id = T.team_id;\n\n-- Get team name and the number of players on that team\nSELECT\n    T.team_name,\n    COUNT(P.player_id) AS total_players\nFROM\n    Teams AS T\nLEFT JOIN Players AS P ON T.team_id = P.team_id\nGROUP BY\n    T.team_name;\n\n-- Get players with jersey number greater than 10 and their team name\nSELECT\n    P.first_name,\n    P.last_name,\n    P.jersey_number,\n    T.team_name\nFROM\n    Players AS P\nJOIN Teams AS T ON P.team_id = T.team_id\nWHERE\n    P.jersey_number > 10;\n\n-- List all teams and players, including teams with no players\nSELECT\n    T.team_name,\n    P.first_name,\n    P.last_name\nFROM\n    Teams AS T\nLEFT JOIN Players AS P ON T.team_id = P.team_id;\n\n-- All players from teams in 'Los Angeles'\nSELECT\n    P.first_name,\n    P.last_name,\n    T.team_name\nFROM\n    Players AS P\nJOIN Teams AS T ON P.team_id = T.team_id\nWHERE\n    T.city = 'Los Angeles';\n\n-- Get team details for a specific player\nSELECT\n    T.team_name,\n    T.city\nFROM\n    Players AS P\nJOIN Teams AS T ON P.team_id = T.team_id\nWHERE\n    P.first_name = 'LeBron' AND P.last_name = 'James';\n\n-- Count players by team and position\nSELECT\n    T.team_name,\n    P.position,\n    COUNT(P.player_id) AS player_count\nFROM\n    Teams AS T\nJOIN Players AS P ON T.team_id = P.team_id\nGROUP BY\n    T.team_name, P.position;\n\n-- Find players who are guards from teams in New York\nSELECT\n    P.first_name,\n    P.last_name,\n    T.team_name\nFROM\n    Players AS P\nJOIN Teams AS T ON P.team_id = T.team_id\nWHERE\n    P.position = 'Guard' AND T.city = 'New York';\n",
-"text_alt": "-- 1. List all players and their teams.\nSELECT\n    P.first_name,\n    P.last_name,\n    T.team_name\nFROM\n    Players AS P, Teams AS T\nWHERE P.team_id = T.team_id;\n\n-- 2. Find all players on a specific team ('Lakers').\nSELECT\n    P.first_name,\n    P.last_name,\n    T.team_name\nFROM\n    Players AS P, Teams AS T\nWHERE P.team_id = T.team_id\nAND\n    T.team_name = 'Lakers';\n\n-- 3. Count the number of players per position.\nSELECT\n    position,\n    COUNT(player_id) AS player_count\nFROM\n    Players\nGROUP BY\n    position;\n\n-- 4. Add a new player to a team.\nINSERT INTO Players (player_id, first_name, last_name, team_id, position, jersey_number)\nSELECT\n    101,\n    'LeBron',\n    'James',\n    T.team_id,\n    'Forward',\n    6\nFROM\n    Teams AS T, Teams AS T2\nWHERE T.team_name = 'Lakers' AND T.team_id = T2.team_id;\n\n-- 5. Update a player's position.\nUPDATE Players\nSET\n    position = 'Center'\nWHERE\n    first_name = 'LeBron' AND last_name = 'James';\n\n-- Additional queries with explicit JOIN ... ON clauses\n-- Get all players and their team's city\nSELECT\n    P.first_name,\n    P.last_name,\n    T.city\nFROM\n    Players AS P, Teams AS T\nWHERE P.team_id = T.team_id;\n\n-- Get team name and the number of players on that team\nSELECT\n    T.team_name,\n    COUNT(P.player_id) AS total_players\nFROM\n    Teams AS T\nLEFT JOIN Players AS P ON T.team_id = P.team_id\nGROUP BY\n    T.team_name;\n\n-- Get players with jersey number greater than 10 and their team name\nSELECT\n    P.first_name,\n    P.last_name,\n    P.jersey_number,\n    T.team_name\nFROM\n    Players AS P, Teams AS T\nWHERE P.team_id = T.team_id\nAND\n    P.jersey_number > 10;\n\n-- List all teams and players, including teams with no players\nSELECT\n    T.team_name,\n    P.first_name,\n    P.last_name\nFROM\n    Teams AS T\nLEFT JOIN Players AS P ON T.team_id = P.team_id;\n\n-- All players from teams in 'Los Angeles'\nSELECT\n    P.first_name,\n    P.last_name,\n    T.team_name\nFROM\n    Players AS P, Teams AS T\nWHERE P.team_id = T.team_id\nAND\n    T.city = 'Los Angeles';\n\n-- Get team details for a specific player\nSELECT\n    T.team_name,\n    T.city\nFROM\n    Players AS P, Teams AS T\nWHERE P.team_id = T.team_id\nAND\n    P.first_name = 'LeBron' AND P.last_name = 'James';\n\n-- Count players by team and position\nSELECT\n    T.team_name,\n    P.position,\n    COUNT(P.player_id) AS player_count\nFROM\n    Teams AS T, Players AS P\nWHERE T.team_id = P.team_id\nGROUP BY\n    T.team_name, P.position;\n\n-- Find players who are guards from teams in New York\nSELECT\n    P.first_name,\n    P.last_name,\n    T.team_name\nFROM\n    Players AS P, Teams AS T\nWHERE P.team_id = T.team_id\nAND\n    P.position = 'Guard' AND T.city = 'New York';\n",
+"text_nat": "CREATE TABLE Teams (\n    team_id   INT PRIMARY KEY,\n    team_name VARCHAR(50) NOT NULL,\n    city      VARCHAR(50) NOT NULL\n);\n\nCREATE TABLE Players (\n    player_id     INT PRIMARY KEY,\n    first_name    VARCHAR(50) NOT NULL,\n    last_name     VARCHAR(50) NOT NULL,\n    team_id       INT REFERENCES Teams(team_id),\n    position      VARCHAR(20),\n    jersey_number INT\n);\n\nINSERT INTO Teams (team_id, team_name, city) VALUES\n    (1, 'Lakers', 'Los Angeles'),\n    (2, 'Celtics', 'Boston'),\n    (3, 'Bulls', 'Chicago');\n\nINSERT INTO Players (player_id, first_name, last_name, team_id, position, jersey_number) VALUES\n    (10, 'Alan', 'Reyes', 1, 'Guard', 3),\n    (11, 'Bruno', 'Kessler', 1, 'Center', 14),\n    (12, 'Caleb', 'Ortiz', 1, 'Forward', 23),\n    (13, 'Dmitri', 'Volkov', 2, 'Guard', 7),\n    (14, 'Elias', 'Park', 2, 'Forward', 21),\n    (15, 'Farid', 'Nasser', 3, 'Center', 33);\n\n-- 1. All players with the team and city they play for.\nCREATE VIEW v_player_roster AS\nSELECT p.player_id, p.first_name || ' ' || p.last_name AS player_name,\n       p.position, p.jersey_number, t.team_name, t.city\nFROM Players p\nINNER JOIN Teams t ON t.team_id = p.team_id;\n\nSELECT player_name, position, jersey_number, team_name, city\nFROM v_player_roster ORDER BY team_name, jersey_number;\n\n-- 2. Players on a specific team, selected by team name.\nSELECT p.jersey_number, p.first_name, p.last_name, p.position\nFROM Players p\nINNER JOIN Teams t ON t.team_id = p.team_id\nWHERE t.team_name = 'Lakers' ORDER BY p.jersey_number;\n\n-- 3. Number of players per position, then the same breakdown per team.\nSELECT position, COUNT(*) AS player_count\nFROM Players GROUP BY position ORDER BY player_count DESC, position;\n\nSELECT t.team_name, p.position, COUNT(*) AS player_count\nFROM Teams t\nINNER JOIN Players p ON p.team_id = t.team_id\nGROUP BY t.team_name, p.position ORDER BY t.team_name, p.position;\n\n-- Teammates of a given player.\nSELECT mate.jersey_number, mate.first_name, mate.last_name, mate.position\nFROM Players me\nINNER JOIN Players mate ON mate.team_id = me.team_id AND mate.player_id <> me.player_id\nWHERE me.last_name = 'Reyes' ORDER BY mate.jersey_number;\n\n-- 4. Add a new player, resolving the team by name instead of hard-coding the id.\nINSERT INTO Players (player_id, first_name, last_name, team_id, position, jersey_number)\nSELECT 17, 'Hugo', 'Mercier', t.team_id, 'Forward', 11\nFROM Teams t WHERE t.team_name = 'Celtics';\n\nSELECT p.first_name, p.last_name, p.position, t.team_name\nFROM Players p\nINNER JOIN Teams t ON t.team_id = p.team_id\nWHERE p.player_id = 17;\n\n-- 5. Update a player's position and read the result back.\nUPDATE Players SET position = 'Point Guard' WHERE player_id = 10;\n\nSELECT p.first_name, p.last_name, p.position, t.team_name\nFROM Players p\nINNER JOIN Teams t ON t.team_id = p.team_id\nWHERE p.player_id = 10;\n\n-- Jersey numbers must be unique inside a team; list any collisions.\nSELECT t.team_name, a.jersey_number, a.last_name AS player_a, b.last_name AS player_b\nFROM Players a\nINNER JOIN Players b ON b.team_id = a.team_id AND b.jersey_number = a.jersey_number\nINNER JOIN Teams t ON t.team_id = a.team_id\nWHERE a.player_id < b.player_id ORDER BY t.team_name, a.jersey_number;\n\n-- Squad report: roster size and captain (lowest jersey number) per team.\nSELECT t.city || ' ' || t.team_name AS squad, COUNT(p.player_id) AS squad_size,\n       MIN(p.jersey_number) AS captain_number\nFROM Teams t\nINNER JOIN Players p ON p.team_id = t.team_id\nGROUP BY t.city, t.team_name ORDER BY squad_size DESC, squad;\n",
+"text_alt": "CREATE TABLE Teams (\n    team_id   INT PRIMARY KEY,\n    team_name VARCHAR(50) NOT NULL,\n    city      VARCHAR(50) NOT NULL\n);\n\nCREATE TABLE Players (\n    player_id     INT PRIMARY KEY,\n    first_name    VARCHAR(50) NOT NULL,\n    last_name     VARCHAR(50) NOT NULL,\n    team_id       INT REFERENCES Teams(team_id),\n    position      VARCHAR(20),\n    jersey_number INT\n);\n\nINSERT INTO Teams (team_id, team_name, city) VALUES\n    (1, 'Lakers', 'Los Angeles'),\n    (2, 'Celtics', 'Boston'),\n    (3, 'Bulls', 'Chicago');\n\nINSERT INTO Players (player_id, first_name, last_name, team_id, position, jersey_number) VALUES\n    (10, 'Alan', 'Reyes', 1, 'Guard', 3),\n    (11, 'Bruno', 'Kessler', 1, 'Center', 14),\n    (12, 'Caleb', 'Ortiz', 1, 'Forward', 23),\n    (13, 'Dmitri', 'Volkov', 2, 'Guard', 7),\n    (14, 'Elias', 'Park', 2, 'Forward', 21),\n    (15, 'Farid', 'Nasser', 3, 'Center', 33);\n\n-- 1. All players with the team and city they play for.\nCREATE VIEW v_player_roster AS\nSELECT p.player_id, p.first_name || ' ' || p.last_name AS player_name,\n       p.position, p.jersey_number, t.team_name, t.city\nFROM Players p, Teams t\nWHERE t.team_id = p.team_id;\n\nSELECT player_name, position, jersey_number, team_name, city\nFROM v_player_roster ORDER BY team_name, jersey_number;\n\n-- 2. Players on a specific team, selected by team name.\nSELECT p.jersey_number, p.first_name, p.last_name, p.position\nFROM Players p, Teams t\nWHERE t.team_id = p.team_id\nAND t.team_name = 'Lakers' ORDER BY p.jersey_number;\n\n-- 3. Number of players per position, then the same breakdown per team.\nSELECT position, COUNT(*) AS player_count\nFROM Players GROUP BY position ORDER BY player_count DESC, position;\n\nSELECT t.team_name, p.position, COUNT(*) AS player_count\nFROM Teams t, Players p\nWHERE p.team_id = t.team_id\nGROUP BY t.team_name, p.position ORDER BY t.team_name, p.position;\n\n-- Teammates of a given player.\nSELECT mate.jersey_number, mate.first_name, mate.last_name, mate.position\nFROM Players me, Players mate\nWHERE mate.team_id = me.team_id AND mate.player_id <> me.player_id\nAND me.last_name = 'Reyes' ORDER BY mate.jersey_number;\n\n-- 4. Add a new player, resolving the team by name instead of hard-coding the id.\nINSERT INTO Players (player_id, first_name, last_name, team_id, position, jersey_number)\nSELECT 17, 'Hugo', 'Mercier', t.team_id, 'Forward', 11\nFROM Teams t WHERE t.team_name = 'Celtics';\n\nSELECT p.first_name, p.last_name, p.position, t.team_name\nFROM Players p, Teams t\nWHERE t.team_id = p.team_id\nAND p.player_id = 17;\n\n-- 5. Update a player's position and read the result back.\nUPDATE Players SET position = 'Point Guard' WHERE player_id = 10;\n\nSELECT p.first_name, p.last_name, p.position, t.team_name\nFROM Players p, Teams t\nWHERE t.team_id = p.team_id\nAND p.player_id = 10;\n\n-- Jersey numbers must be unique inside a team; list any collisions.\nSELECT t.team_name, a.jersey_number, a.last_name AS player_a, b.last_name AS player_b\nFROM Players a, Players b, Teams t\nWHERE b.team_id = a.team_id AND b.jersey_number = a.jersey_number\nAND t.team_id = a.team_id\nAND a.player_id < b.player_id ORDER BY t.team_name, a.jersey_number;\n\n-- Squad report: roster size and captain (lowest jersey number) per team.\nSELECT t.city || ' ' || t.team_name AS squad, COUNT(p.player_id) AS squad_size,\n       MIN(p.jersey_number) AS captain_number\nFROM Teams t, Players p\nWHERE p.team_id = t.team_id\nGROUP BY t.city, t.team_name ORDER BY squad_size DESC, squad;\n",
 "opps": [
 {
 "k": 0,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-119,
-124
+1113,
+1124
 ],
 "alt_span": [
-119,
-120
+1113,
+1114
 ]
 },
 {
 "k": 1,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-296,
-301
+1411,
+1422
 ],
 "alt_span": [
-295,
-296
+1404,
+1405
 ]
 },
 {
 "k": 2,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-741,
-746
+1765,
+1776
 ],
 "alt_span": [
-737,
-738
+1749,
+1750
 ]
 },
 {
 "k": 3,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-1120,
-1125
+2001,
+2012
 ],
 "alt_span": [
-1115,
-1116
+1978,
+1979
 ]
 },
 {
 "k": 4,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-1549,
-1554
+2492,
+2503
 ],
 "alt_span": [
-1543,
-1544
+2460,
+2461
 ]
 },
 {
 "k": 5,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-1937,
-1942
+2760,
+2771
 ],
 "alt_span": [
-1928,
-1929
+2719,
+2720
 ]
 },
 {
 "k": 6,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-2112,
-2117
+2999,
+3010
 ],
 "alt_span": [
-2100,
-2101
+2949,
+2950
 ]
 },
 {
 "k": 7,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-2352,
-2357
+3412,
+3423
 ],
 "alt_span": [
-2337,
-2338
-]
-},
-{
-"k": 8,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2568,
-2573
-],
-"alt_span": [
-2552,
-2553
+3344,
+3345
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.96,
+"k_en": 8,
+"shared_fraction": 0.956,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-119,
-124
+1113,
+1124
 ],
 "alt_span": [
-119,
-120
+1113,
+1114
 ]
 },
 {
@@ -8431,25 +8419,25 @@
 "nat": " ON",
 "alt": "\nWHERE",
 "nat_span": [
-135,
-138
+1132,
+1135
 ],
 "alt_span": [
-131,
-137
+1122,
+1128
 ]
 },
 {
 "k": 2,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-296,
-301
+1411,
+1422
 ],
 "alt_span": [
-295,
-296
+1404,
+1405
 ]
 },
 {
@@ -8457,12 +8445,12 @@
 "nat": " ON",
 "alt": "\nWHERE",
 "nat_span": [
-312,
-315
+1430,
+1433
 ],
 "alt_span": [
-307,
-313
+1413,
+1419
 ]
 },
 {
@@ -8470,25 +8458,25 @@
 "nat": "WHERE",
 "alt": "AND",
 "nat_span": [
-338,
-343
+1456,
+1461
 ],
 "alt_span": [
-336,
-339
+1442,
+1445
 ]
 },
 {
 "k": 5,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-741,
-746
+1765,
+1776
 ],
 "alt_span": [
-737,
-738
+1749,
+1750
 ]
 },
 {
@@ -8496,25 +8484,25 @@
 "nat": " ON",
 "alt": "\nWHERE",
 "nat_span": [
-758,
-761
+1786,
+1789
 ],
 "alt_span": [
-750,
-756
+1760,
+1766
 ]
 },
 {
 "k": 7,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-1120,
-1125
+2001,
+2012
 ],
 "alt_span": [
-1115,
-1116
+1978,
+1979
 ]
 },
 {
@@ -8522,168 +8510,168 @@
 "nat": " ON",
 "alt": "\nWHERE",
 "nat_span": [
-1136,
-1139
+2025,
+2028
 ],
 "alt_span": [
-1127,
-1133
+1992,
+1998
 ]
 },
 {
 "k": 9,
-"nat": "\nJOIN",
-"alt": ",",
+"nat": "WHERE",
+"alt": "AND",
 "nat_span": [
-1549,
-1554
+2090,
+2095
 ],
 "alt_span": [
-1543,
-1544
+2060,
+2063
 ]
 },
 {
 "k": 10,
-"nat": " ON",
-"alt": "\nWHERE",
+"nat": "\nINNER JOIN",
+"alt": ",",
 "nat_span": [
-1565,
-1568
+2492,
+2503
 ],
 "alt_span": [
-1555,
-1561
+2460,
+2461
 ]
 },
 {
 "k": 11,
-"nat": "WHERE",
-"alt": "AND",
+"nat": " ON",
+"alt": "\nWHERE",
 "nat_span": [
-1591,
-1596
+2511,
+2514
 ],
 "alt_span": [
-1584,
-1587
+2469,
+2475
 ]
 },
 {
 "k": 12,
-"nat": "\nJOIN",
-"alt": ",",
+"nat": "WHERE",
+"alt": "AND",
 "nat_span": [
-1937,
-1942
+2537,
+2542
 ],
 "alt_span": [
-1928,
-1929
+2498,
+2501
 ]
 },
 {
 "k": 13,
-"nat": " ON",
-"alt": "\nWHERE",
+"nat": "\nINNER JOIN",
+"alt": ",",
 "nat_span": [
-1953,
-1956
+2760,
+2771
 ],
 "alt_span": [
-1940,
-1946
+2719,
+2720
 ]
 },
 {
 "k": 14,
-"nat": "WHERE",
-"alt": "AND",
+"nat": " ON",
+"alt": "\nWHERE",
 "nat_span": [
-1979,
-1984
+2779,
+2782
 ],
 "alt_span": [
-1969,
-1972
+2728,
+2734
 ]
 },
 {
 "k": 15,
-"nat": "\nJOIN",
-"alt": ",",
+"nat": "WHERE",
+"alt": "AND",
 "nat_span": [
-2112,
-2117
+2805,
+2810
 ],
 "alt_span": [
-2100,
-2101
+2757,
+2760
 ]
 },
 {
 "k": 16,
-"nat": " ON",
-"alt": "\nWHERE",
+"nat": "\nINNER JOIN",
+"alt": ",",
 "nat_span": [
-2128,
-2131
+2999,
+3010
 ],
 "alt_span": [
-2112,
-2118
+2949,
+2950
 ]
 },
 {
 "k": 17,
-"nat": "WHERE",
-"alt": "AND",
+"nat": " ON",
+"alt": ", Teams t\nWHERE",
 "nat_span": [
-2154,
-2159
+3020,
+3023
 ],
 "alt_span": [
-2141,
-2144
+2960,
+2975
 ]
 },
 {
 "k": 18,
-"nat": "\nJOIN",
-"alt": ",",
+"nat": "INNER JOIN Teams t ON",
+"alt": "AND",
 "nat_span": [
-2352,
-2357
+3084,
+3105
 ],
 "alt_span": [
-2337,
-2338
+3036,
+3039
 ]
 },
 {
 "k": 19,
-"nat": " ON",
-"alt": "\nWHERE",
+"nat": "WHERE",
+"alt": "AND",
 "nat_span": [
-2370,
-2373
+3128,
+3133
 ],
 "alt_span": [
-2351,
-2357
+3062,
+3065
 ]
 },
 {
 "k": 20,
-"nat": "\nJOIN",
+"nat": "\nINNER JOIN",
 "alt": ",",
 "nat_span": [
-2568,
-2573
+3412,
+3423
 ],
 "alt_span": [
-2552,
-2553
+3344,
+3345
 ]
 },
 {
@@ -8691,29 +8679,21 @@
 "nat": " ON",
 "alt": "\nWHERE",
 "nat_span": [
-2584,
-2587
+3433,
+3436
 ],
 "alt_span": [
-2564,
-2570
-]
-},
-{
-"k": 22,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2610,
-2615
-],
-"alt_span": [
-2593,
-2596
+3355,
+3361
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "sql_join_style__t025",
@@ -14594,431 +14574,6 @@
 "alt_span": [
 1764,
 1768
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "sql_join_style__t036",
-"family": "sql_join_style",
-"topic": "Vendor Contact Management",
-"angle": "code",
-"text_es": "Schema: Vendors (vendor_id INT, vendor_name VARCHAR, industry VARCHAR, phone VARCHAR), Contacts (contact_id INT, vendor_id INT, first_name VARCHAR, last_name VARCHAR, email VARCHAR, role VARCHAR).\n\nQueries:\n1. List all vendors and their primary contacts.\n2. Find all contacts for a specific vendor (e.g., vendor_name = 'ABC Supplies').\n3. Count the number of contacts per industry.\n4. Add a new vendor.\n5. Update a contact's email address.",
-"langs": {
-"src": "Task",
-"tgt": "SQL"
-},
-"text_nat": "INSERT INTO Vendors (vendor_id, vendor_name, industry, phone) VALUES (1, 'ABC Supplies', 'Electronics', '555-1234');\nINSERT INTO Vendors (vendor_id, vendor_name, industry, phone) VALUES (2, 'XYZ Services', 'Software', '555-5678');\nINSERT INTO Vendors (vendor_id, vendor_name, industry, phone) VALUES (3, 'Green Goods', 'Retail', '555-9012');\nINSERT INTO Vendors (vendor_id, vendor_name, industry, phone) VALUES (4, 'Tech Innovators', 'Electronics', '555-3456');\n\nINSERT INTO Contacts (contact_id, vendor_id, first_name, last_name, email, role) VALUES (101, 1, 'John', 'Doe', 'john.doe@abc.com', 'Sales Manager');\nINSERT INTO Contacts (contact_id, vendor_id, first_name, last_name, email, role) VALUES (102, 1, 'Jane', 'Smith', 'jane.smith@abc.com', 'Support Engineer');\nINSERT INTO Contacts (contact_id, vendor_id, first_name, last_name, email, role) VALUES (103, 2, 'Peter', 'Jones', 'peter.jones@xyz.com', 'CEO');\nINSERT INTO Contacts (contact_id, vendor_id, first_name, last_name, email, role) VALUES (104, 3, 'Alice', 'Brown', 'alice.brown@green.com', 'Marketing Lead');\nINSERT INTO Contacts (contact_id, vendor_id, first_name, last_name, email, role) VALUES (105, 4, 'Robert', 'White', 'robert.white@tech.com', 'CTO');\n\n-- 1. List all vendors and their primary contacts.\nSELECT V.vendor_name, C.first_name, C.last_name\nFROM Vendors AS V\nJOIN Contacts AS C ON V.vendor_id = C.vendor_id\nWHERE C.role = 'Sales Manager' OR C.role = 'CEO' OR C.role = 'CTO';\n\n-- 2. Find all contacts for a specific vendor (e.g., vendor_name = 'ABC Supplies').\nSELECT C.first_name, C.last_name, C.email\nFROM Contacts AS C\nJOIN Vendors AS V ON C.vendor_id = V.vendor_id\nWHERE V.vendor_name = 'ABC Supplies';\n\n-- 3. Count the number of contacts per industry.\nSELECT V.industry, COUNT(C.contact_id) AS NumberOfContacts\nFROM Vendors AS V\nJOIN Contacts AS C ON V.vendor_id = C.vendor_id\nGROUP BY V.industry;\n\n-- 4. Add a new vendor.\nINSERT INTO Vendors (vendor_id, vendor_name, industry, phone) VALUES (5, 'New Solutions', 'Consulting', '555-7890');\n\n-- 5. Update a contact's email address.\nUPDATE Contacts SET email = 'john.doe.new@abc.com' WHERE contact_id = 101;\n\n-- Additional queries to meet join style requirement\nSELECT V.vendor_name, C.first_name\nFROM Vendors AS V\nJOIN Contacts AS C ON V.vendor_id = C.vendor_id;\n\nSELECT C.first_name, V.vendor_name\nFROM Contacts AS C\nJOIN Vendors AS V ON C.vendor_id = V.vendor_id;\n\nSELECT V.industry, V.vendor_name\nFROM Vendors AS V\nLEFT JOIN Contacts AS C ON V.vendor_id = C.vendor_id;\n\nSELECT C.first_name, C.email\nFROM Contacts AS C\nINNER JOIN Vendors AS V ON C.vendor_id = V.vendor_id\nWHERE V.industry = 'Electronics';\n\nSELECT V.vendor_name, COUNT(C.contact_id)\nFROM Vendors AS V\nJOIN Contacts AS C ON V.vendor_id = C.vendor_id\nGROUP BY V.vendor_name;\n\nSELECT C.last_name, V.phone\nFROM Contacts AS C\nJOIN Vendors AS V ON C.vendor_id = V.vendor_id\nWHERE C.role = 'Marketing Lead';\n\nSELECT V.vendor_id, V.vendor_name\nFROM Vendors AS V\nLEFT JOIN Contacts AS C ON V.vendor_id = C.vendor_id\nWHERE C.contact_id IS NULL;\n\nSELECT C.first_name, C.last_name\nFROM Contacts AS C\nRIGHT JOIN Vendors AS V ON C.vendor_id = V.vendor_id\nWHERE V.vendor_name = 'XYZ Services';\n",
-"text_alt": "INSERT INTO Vendors (vendor_id, vendor_name, industry, phone) VALUES (1, 'ABC Supplies', 'Electronics', '555-1234');\nINSERT INTO Vendors (vendor_id, vendor_name, industry, phone) VALUES (2, 'XYZ Services', 'Software', '555-5678');\nINSERT INTO Vendors (vendor_id, vendor_name, industry, phone) VALUES (3, 'Green Goods', 'Retail', '555-9012');\nINSERT INTO Vendors (vendor_id, vendor_name, industry, phone) VALUES (4, 'Tech Innovators', 'Electronics', '555-3456');\n\nINSERT INTO Contacts (contact_id, vendor_id, first_name, last_name, email, role) VALUES (101, 1, 'John', 'Doe', 'john.doe@abc.com', 'Sales Manager');\nINSERT INTO Contacts (contact_id, vendor_id, first_name, last_name, email, role) VALUES (102, 1, 'Jane', 'Smith', 'jane.smith@abc.com', 'Support Engineer');\nINSERT INTO Contacts (contact_id, vendor_id, first_name, last_name, email, role) VALUES (103, 2, 'Peter', 'Jones', 'peter.jones@xyz.com', 'CEO');\nINSERT INTO Contacts (contact_id, vendor_id, first_name, last_name, email, role) VALUES (104, 3, 'Alice', 'Brown', 'alice.brown@green.com', 'Marketing Lead');\nINSERT INTO Contacts (contact_id, vendor_id, first_name, last_name, email, role) VALUES (105, 4, 'Robert', 'White', 'robert.white@tech.com', 'CTO');\n\n-- 1. List all vendors and their primary contacts.\nSELECT V.vendor_name, C.first_name, C.last_name\nFROM Vendors AS V, Contacts AS C\nWHERE V.vendor_id = C.vendor_id\nAND (C.role = 'Sales Manager' OR C.role = 'CEO' OR C.role = 'CTO');\n\n-- 2. Find all contacts for a specific vendor (e.g., vendor_name = 'ABC Supplies').\nSELECT C.first_name, C.last_name, C.email\nFROM Contacts AS C, Vendors AS V\nWHERE C.vendor_id = V.vendor_id\nAND V.vendor_name = 'ABC Supplies';\n\n-- 3. Count the number of contacts per industry.\nSELECT V.industry, COUNT(C.contact_id) AS NumberOfContacts\nFROM Vendors AS V, Contacts AS C\nWHERE V.vendor_id = C.vendor_id\nGROUP BY V.industry;\n\n-- 4. Add a new vendor.\nINSERT INTO Vendors (vendor_id, vendor_name, industry, phone) VALUES (5, 'New Solutions', 'Consulting', '555-7890');\n\n-- 5. Update a contact's email address.\nUPDATE Contacts SET email = 'john.doe.new@abc.com' WHERE contact_id = 101;\n\n-- Additional queries to meet join style requirement\nSELECT V.vendor_name, C.first_name\nFROM Vendors AS V, Contacts AS C\nWHERE V.vendor_id = C.vendor_id;\n\nSELECT C.first_name, V.vendor_name\nFROM Contacts AS C, Vendors AS V\nWHERE C.vendor_id = V.vendor_id;\n\nSELECT V.industry, V.vendor_name\nFROM Vendors AS V LEFT JOIN Contacts AS C ON V.vendor_id = C.vendor_id;\n\nSELECT C.first_name, C.email\nFROM Contacts AS C, Vendors AS V\nWHERE C.vendor_id = V.vendor_id\nAND V.industry = 'Electronics';\n\nSELECT V.vendor_name, COUNT(C.contact_id)\nFROM Vendors AS V, Contacts AS C\nWHERE V.vendor_id = C.vendor_id\nGROUP BY V.vendor_name;\n\nSELECT C.last_name, V.phone\nFROM Contacts AS C, Vendors AS V\nWHERE C.vendor_id = V.vendor_id\nAND C.role = 'Marketing Lead';\n\nSELECT V.vendor_id, V.vendor_name\nFROM Vendors AS V\nLEFT JOIN Contacts AS C ON V.vendor_id = C.vendor_id\nWHERE C.contact_id IS NULL;\n\nSELECT C.first_name, C.last_name\nFROM Contacts AS C\nRIGHT JOIN Vendors AS V ON C.vendor_id = V.vendor_id\nWHERE V.vendor_name = 'XYZ Services';\n",
-"opps": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1341,
-1346
-],
-"alt_span": [
-1341,
-1342
-]
-},
-{
-"k": 1,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1603,
-1608
-],
-"alt_span": [
-1602,
-1603
-]
-},
-{
-"k": 2,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1815,
-1820
-],
-"alt_span": [
-1811,
-1812
-]
-},
-{
-"k": 3,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2249,
-2254
-],
-"alt_span": [
-2244,
-2245
-]
-},
-{
-"k": 4,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2353,
-2358
-],
-"alt_span": [
-2347,
-2348
-]
-},
-{
-"k": 5,
-"nat": "\n",
-"alt": " ",
-"nat_span": [
-2453,
-2454
-],
-"alt_span": [
-2446,
-2447
-]
-},
-{
-"k": 6,
-"nat": "\nINNER JOIN",
-"alt": ",",
-"nat_span": [
-2556,
-2567
-],
-"alt_span": [
-2549,
-2550
-]
-},
-{
-"k": 7,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2704,
-2709
-],
-"alt_span": [
-2688,
-2689
-]
-},
-{
-"k": 8,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2824,
-2829
-],
-"alt_span": [
-2807,
-2808
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 0.97,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1341,
-1346
-],
-"alt_span": [
-1341,
-1342
-]
-},
-{
-"k": 1,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1360,
-1363
-],
-"alt_span": [
-1356,
-1362
-]
-},
-{
-"k": 2,
-"nat": "WHERE ",
-"alt": "AND (",
-"nat_span": [
-1390,
-1396
-],
-"alt_span": [
-1389,
-1394
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": ")",
-"nat_span": [
-1456,
-1456
-],
-"alt_span": [
-1454,
-1455
-]
-},
-{
-"k": 4,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1603,
-1608
-],
-"alt_span": [
-1602,
-1603
-]
-},
-{
-"k": 5,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1621,
-1624
-],
-"alt_span": [
-1616,
-1622
-]
-},
-{
-"k": 6,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-1651,
-1656
-],
-"alt_span": [
-1649,
-1652
-]
-},
-{
-"k": 7,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1815,
-1820
-],
-"alt_span": [
-1811,
-1812
-]
-},
-{
-"k": 8,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1834,
-1837
-],
-"alt_span": [
-1826,
-1832
-]
-},
-{
-"k": 9,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2249,
-2254
-],
-"alt_span": [
-2244,
-2245
-]
-},
-{
-"k": 10,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2268,
-2271
-],
-"alt_span": [
-2259,
-2265
-]
-},
-{
-"k": 11,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2353,
-2358
-],
-"alt_span": [
-2347,
-2348
-]
-},
-{
-"k": 12,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2371,
-2374
-],
-"alt_span": [
-2361,
-2367
-]
-},
-{
-"k": 13,
-"nat": "\n",
-"alt": " ",
-"nat_span": [
-2453,
-2454
-],
-"alt_span": [
-2446,
-2447
-]
-},
-{
-"k": 14,
-"nat": "\nINNER JOIN",
-"alt": ",",
-"nat_span": [
-2556,
-2567
-],
-"alt_span": [
-2549,
-2550
-]
-},
-{
-"k": 15,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2580,
-2583
-],
-"alt_span": [
-2563,
-2569
-]
-},
-{
-"k": 16,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2610,
-2615
-],
-"alt_span": [
-2596,
-2599
-]
-},
-{
-"k": 17,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2704,
-2709
-],
-"alt_span": [
-2688,
-2689
-]
-},
-{
-"k": 18,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2723,
-2726
-],
-"alt_span": [
-2703,
-2709
-]
-},
-{
-"k": 19,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2824,
-2829
-],
-"alt_span": [
-2807,
-2808
-]
-},
-{
-"k": 20,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2842,
-2845
-],
-"alt_span": [
-2821,
-2827
-]
-},
-{
-"k": 21,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2872,
-2877
-],
-"alt_span": [
-2854,
-2857
 ]
 }
 ],
@@ -79606,548 +79161,6 @@
 "free_filter": true
 },
 {
-"doc_id": "sql_join_style__t163",
-"family": "sql_join_style",
-"topic": "Student Enrollment Management",
-"angle": "code",
-"text_es": "Schema: Students (student_id INT, first_name VARCHAR, last_name VARCHAR, enrollment_date DATETIME), Courses (course_id INT, title VARCHAR, credits INT, department VARCHAR), Enrollments (enrollment_id INT, student_id INT, course_id INT, grade VARCHAR).\nQueries:\n1. Find all courses a specific student is enrolled in.\n2. List all students enrolled in a particular course.\n3. Enroll a student in a new course.\n4. Update a student's grade for a course.\n5. Count the number of students per department.",
-"langs": {
-"src": "Task",
-"tgt": "SQL"
-},
-"text_nat": "INSERT INTO Students (student_id, first_name, last_name, enrollment_date) VALUES\n(1, 'Alice', 'Smith', '2023-09-01'),\n(2, 'Bob', 'Johnson', '2023-09-01'),\n(3, 'Charlie', 'Brown', '2023-10-15');\n\nINSERT INTO Courses (course_id, title, credits, department) VALUES\n(101, 'History I', 3, 'Humanities'),\n(102, 'Math I', 4, 'Science'),\n(103, 'Computer Science I', 3, 'Science');\n\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, grade) VALUES\n(1, 1, 101, 'A'),\n(2, 1, 102, 'B'),\n(3, 2, 101, 'C');\n\n-- 1. Find all courses a specific student is enrolled in (e.g., student_id = 1)\nSELECT C.title, C.department\nFROM Courses AS C\nJOIN Enrollments AS E ON C.course_id = E.course_id\nWHERE E.student_id = 1;\n\n-- 2. List all students enrolled in a particular course (e.g., course_id = 101)\nSELECT S.first_name, S.last_name\nFROM Students AS S\nJOIN Enrollments AS E ON S.student_id = E.student_id\nWHERE E.course_id = 101;\n\n-- 3. Enroll a student in a new course (e.g., student_id = 3 in course_id = 103)\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, grade)\nVALUES (4, 3, 103, NULL);\n\n-- 4. Update a student's grade for a course (e.g., student_id = 2, course_id = 101, grade = 'B+')\nUPDATE Enrollments\nSET grade = 'B+'\nWHERE student_id = 2 AND course_id = 101;\n\n-- 5. Count the number of students per department.\nSELECT C.department, COUNT(DISTINCT E.student_id) AS number_of_students\nFROM Courses AS C\nJOIN Enrollments AS E ON C.course_id = E.course_id\nGROUP BY C.department;\n\n-- Additional explicit JOINs for style requirement\n\nSELECT S.first_name, S.last_name, En.grade\nFROM Students AS S\nJOIN Enrollments AS En ON S.student_id = En.student_id;\n\nSELECT C.title, E.enrollment_id\nFROM Courses AS C\nJOIN Enrollments AS E ON C.course_id = E.course_id;\n\nSELECT S.first_name, S.last_name, C.title, E.grade\nFROM Students AS S\nJOIN Enrollments AS E ON S.student_id = E.student_id\nJOIN Courses AS C ON E.course_id = C.course_id;\n\nSELECT S.first_name, En.grade\nFROM Students AS S\nJOIN Enrollments AS En ON S.student_id = En.student_id\nWHERE En.grade = 'A';\n\nSELECT C.title, S.first_name, S.last_name\nFROM Courses AS C\nJOIN Enrollments AS E ON C.course_id = E.course_id\nJOIN Students AS S ON E.student_id = S.student_id\nWHERE C.department = 'Science';\n\nSELECT S.first_name, S.last_name, C.title\nFROM Students AS S\nJOIN Enrollments AS E ON S.student_id = E.student_id\nJOIN Courses AS C ON E.course_id = C.course_id\nORDER BY S.last_name, C.title;\n\nSELECT E.enrollment_id, S.first_name\nFROM Enrollments AS E\nJOIN Students AS S ON E.student_id = S.student_id;\n\nSELECT E.enrollment_id, C.title\nFROM Enrollments AS E\nJOIN Courses AS C ON E.course_id = C.course_id;\n",
-"text_alt": "INSERT INTO Students (student_id, first_name, last_name, enrollment_date) VALUES\n(1, 'Alice', 'Smith', '2023-09-01'),\n(2, 'Bob', 'Johnson', '2023-09-01'),\n(3, 'Charlie', 'Brown', '2023-10-15');\n\nINSERT INTO Courses (course_id, title, credits, department) VALUES\n(101, 'History I', 3, 'Humanities'),\n(102, 'Math I', 4, 'Science'),\n(103, 'Computer Science I', 3, 'Science');\n\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, grade) VALUES\n(1, 1, 101, 'A'),\n(2, 1, 102, 'B'),\n(3, 2, 101, 'C');\n\n-- 1. Find all courses a specific student is enrolled in (e.g., student_id = 1)\nSELECT C.title, C.department\nFROM Courses AS C, Enrollments AS E\nWHERE C.course_id = E.course_id\nAND E.student_id = 1;\n\n-- 2. List all students enrolled in a particular course (e.g., course_id = 101)\nSELECT S.first_name, S.last_name\nFROM Students AS S, Enrollments AS E\nWHERE S.student_id = E.student_id\nAND E.course_id = 101;\n\n-- 3. Enroll a student in a new course (e.g., student_id = 3 in course_id = 103)\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, grade)\nVALUES (4, 3, 103, NULL);\n\n-- 4. Update a student's grade for a course (e.g., student_id = 2, course_id = 101, grade = 'B+')\nUPDATE Enrollments\nSET grade = 'B+'\nWHERE student_id = 2 AND course_id = 101;\n\n-- 5. Count the number of students per department.\nSELECT C.department, COUNT(DISTINCT E.student_id) AS number_of_students\nFROM Courses AS C, Enrollments AS E\nWHERE C.course_id = E.course_id\nGROUP BY C.department;\n\n-- Additional explicit JOINs for style requirement\n\nSELECT S.first_name, S.last_name, En.grade\nFROM Students AS S, Enrollments AS En\nWHERE S.student_id = En.student_id;\n\nSELECT C.title, E.enrollment_id\nFROM Courses AS C, Enrollments AS E\nWHERE C.course_id = E.course_id;\n\nSELECT S.first_name, S.last_name, C.title, E.grade\nFROM Students AS S, Enrollments AS E, Courses AS C\nWHERE S.student_id = E.student_id\nAND E.course_id = C.course_id;\n\nSELECT S.first_name, En.grade\nFROM Students AS S, Enrollments AS En\nWHERE S.student_id = En.student_id\nAND En.grade = 'A';\n\nSELECT C.title, S.first_name, S.last_name\nFROM Courses AS C, Enrollments AS E, Students AS S\nWHERE C.course_id = E.course_id\nAND E.student_id = S.student_id\nAND C.department = 'Science';\n\nSELECT S.first_name, S.last_name, C.title\nFROM Students AS S, Enrollments AS E, Courses AS C\nWHERE S.student_id = E.student_id\nAND E.course_id = C.course_id\nORDER BY S.last_name, C.title;\n\nSELECT E.enrollment_id, S.first_name\nFROM Enrollments AS E, Students AS S\nWHERE E.student_id = S.student_id;\n\nSELECT E.enrollment_id, C.title\nFROM Enrollments AS E, Courses AS C\nWHERE E.course_id = C.course_id;\n",
-"opps": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-632,
-637
-],
-"alt_span": [
-632,
-633
-]
-},
-{
-"k": 1,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-840,
-845
-],
-"alt_span": [
-837,
-838
-]
-},
-{
-"k": 2,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1415,
-1420
-],
-"alt_span": [
-1409,
-1410
-]
-},
-{
-"k": 3,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1604,
-1609
-],
-"alt_span": [
-1597,
-1598
-]
-},
-{
-"k": 4,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1711,
-1716
-],
-"alt_span": [
-1703,
-1704
-]
-},
-{
-"k": 5,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1834,
-1839
-],
-"alt_span": [
-1825,
-1826
-]
-},
-{
-"k": 6,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1985,
-1990
-],
-"alt_span": [
-1972,
-1973
-]
-},
-{
-"k": 7,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2123,
-2128
-],
-"alt_span": [
-2107,
-2108
-]
-},
-{
-"k": 8,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2318,
-2323
-],
-"alt_span": [
-2296,
-2297
-]
-},
-{
-"k": 9,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2509,
-2514
-],
-"alt_span": [
-2483,
-2484
-]
-},
-{
-"k": 10,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2615,
-2620
-],
-"alt_span": [
-2588,
-2589
-]
-}
-],
-"k_en": 11,
-"shared_fraction": 0.935,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-632,
-637
-],
-"alt_span": [
-632,
-633
-]
-},
-{
-"k": 1,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-654,
-657
-],
-"alt_span": [
-650,
-656
-]
-},
-{
-"k": 2,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-684,
-689
-],
-"alt_span": [
-683,
-686
-]
-},
-{
-"k": 3,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-840,
-845
-],
-"alt_span": [
-837,
-838
-]
-},
-{
-"k": 4,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-862,
-865
-],
-"alt_span": [
-855,
-861
-]
-},
-{
-"k": 5,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-894,
-899
-],
-"alt_span": [
-890,
-893
-]
-},
-{
-"k": 6,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1415,
-1420
-],
-"alt_span": [
-1409,
-1410
-]
-},
-{
-"k": 7,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1437,
-1440
-],
-"alt_span": [
-1427,
-1433
-]
-},
-{
-"k": 8,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1604,
-1609
-],
-"alt_span": [
-1597,
-1598
-]
-},
-{
-"k": 9,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1627,
-1630
-],
-"alt_span": [
-1616,
-1622
-]
-},
-{
-"k": 10,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1711,
-1716
-],
-"alt_span": [
-1703,
-1704
-]
-},
-{
-"k": 11,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1733,
-1736
-],
-"alt_span": [
-1721,
-1727
-]
-},
-{
-"k": 12,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1834,
-1839
-],
-"alt_span": [
-1825,
-1826
-]
-},
-{
-"k": 13,
-"nat": " ON",
-"alt": ", Courses AS C\nWHERE",
-"nat_span": [
-1856,
-1859
-],
-"alt_span": [
-1843,
-1863
-]
-},
-{
-"k": 14,
-"nat": "JOIN Courses AS C ON",
-"alt": "AND",
-"nat_span": [
-1888,
-1908
-],
-"alt_span": [
-1892,
-1895
-]
-},
-{
-"k": 15,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1985,
-1990
-],
-"alt_span": [
-1972,
-1973
-]
-},
-{
-"k": 16,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2008,
-2011
-],
-"alt_span": [
-1991,
-1997
-]
-},
-{
-"k": 17,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2041,
-2046
-],
-"alt_span": [
-2027,
-2030
-]
-},
-{
-"k": 18,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2123,
-2128
-],
-"alt_span": [
-2107,
-2108
-]
-},
-{
-"k": 19,
-"nat": " ON",
-"alt": ", Students AS S\nWHERE",
-"nat_span": [
-2145,
-2148
-],
-"alt_span": [
-2125,
-2146
-]
-},
-{
-"k": 20,
-"nat": "JOIN Students AS S ON",
-"alt": "AND",
-"nat_span": [
-2175,
-2196
-],
-"alt_span": [
-2173,
-2176
-]
-},
-{
-"k": 21,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2225,
-2230
-],
-"alt_span": [
-2205,
-2208
-]
-},
-{
-"k": 22,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2318,
-2323
-],
-"alt_span": [
-2296,
-2297
-]
-},
-{
-"k": 23,
-"nat": " ON",
-"alt": ", Courses AS C\nWHERE",
-"nat_span": [
-2340,
-2343
-],
-"alt_span": [
-2314,
-2334
-]
-},
-{
-"k": 24,
-"nat": "JOIN Courses AS C ON",
-"alt": "AND",
-"nat_span": [
-2372,
-2392
-],
-"alt_span": [
-2363,
-2366
-]
-},
-{
-"k": 25,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2509,
-2514
-],
-"alt_span": [
-2483,
-2484
-]
-},
-{
-"k": 26,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2528,
-2531
-],
-"alt_span": [
-2498,
-2504
-]
-},
-{
-"k": 27,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2615,
-2620
-],
-"alt_span": [
-2588,
-2589
-]
-},
-{
-"k": 28,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2633,
-2636
-],
-"alt_span": [
-2602,
-2608
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "sql_join_style__t164",
 "family": "sql_join_style",
 "topic": "Medical Appointment Scheduling",
@@ -105487,483 +104500,6 @@
 "free_filter": true
 },
 {
-"doc_id": "sql_join_style__t212",
-"family": "sql_join_style",
-"topic": "Book Publishing Workflow",
-"angle": "code",
-"text_es": "Schema: \n`Books` (book_id PK, title, author_id, genre, publication_date, status)\n`Authors` (author_id PK, first_name, last_name, email)\n`Editors` (editor_id PK, first_name, last_name, specialty)\n\nQueries:\n1. Get all books published by a specific author, ordered by publication date.\n2. Count the number of books in each genre.\n3. Find books currently in 'Editing' status and their authors.\n4. Insert a new book and its author.\n5. Update the status of a book from 'Draft' to 'Submitted for Review'.",
-"langs": {
-"src": "Task",
-"tgt": "SQL"
-},
-"text_nat": "-- Query 1: Get all books published by a specific author, ordered by publication date.\nSELECT\n    B.title,\n    B.publication_date\nFROM\n    Books AS B\nJOIN\n    Authors AS A\nON\n    B.author_id = A.author_id\nWHERE\n    A.first_name = 'Jane' AND A.last_name = 'Doe'\nORDER BY\n    B.publication_date;\n\n-- Query 2: Count the number of books in each genre.\nSELECT\n    genre,\n    COUNT(book_id) AS number_of_books\nFROM\n    Books\nGROUP BY\n    genre;\n\n-- Query 3: Find books currently in 'Editing' status and their authors.\nSELECT\n    B.title,\n    A.first_name,\n    A.last_name\nFROM\n    Books AS B\nJOIN Authors AS A\nON B.author_id = A.author_id\nWHERE\n    B.status = 'Editing';\n\n-- Query 4: Insert a new book and its author.\nINSERT INTO Authors (author_id, first_name, last_name, email)\nVALUES (4, 'New', 'Author', 'new.author@example.com');\n\nINSERT INTO Books (book_id, title, author_id, genre, publication_date, status)\nVALUES (6, 'The New Adventure', 4, 'Adventure', '2023-10-26', 'Draft');\n\n-- Query 5: Update the status of a book from 'Draft' to 'Submitted for Review'.\nUPDATE\n    Books\nSET\n    status = 'Submitted for Review'\nWHERE\n    book_id = 1 AND status = 'Draft';\n\n-- Additional queries with single JOINs\n\n-- Get all books by authors whose last name starts with 'S'\nSELECT\n    B.title,\n    A.first_name,\n    A.last_name\nFROM\n    Books AS B\nJOIN Authors AS A\nON B.author_id = A.author_id\nWHERE\n    A.last_name LIKE 'S%';\n\n-- Get all authors and the titles of their books\nSELECT\n    A.first_name,\n    A.last_name,\n    B.title\nFROM\n    Authors AS A\nJOIN Books AS B\nON A.author_id = B.author_id;\n\n-- Find books published after 2020 and their author's email\nSELECT\n    B.title,\n    A.email\nFROM\n    Books AS B\nJOIN Authors AS A\nON B.author_id = A.author_id\nWHERE\n    B.publication_date > '2020-01-01';\n\n-- List all authors and books, even if an author has no books (LEFT JOIN)\nSELECT\n    A.first_name,\n    A.last_name,\n    B.title\nFROM\n    Authors AS A\nLEFT JOIN Books AS B\nON A.author_id = B.author_id;\n\n-- Find books with 'Fantasy' genre and their authors' full names\nSELECT\n    B.title,\n    A.first_name || ' ' || A.last_name AS author_full_name\nFROM\n    Books AS B\nJOIN Authors AS A\nON B.author_id = A.author_id\nWHERE\n    B.genre = 'Fantasy';\n\n-- Get the title of books and the specialty of editors (no direct link, so this is just an example of a join with a condition)\n-- This specific query would only make sense if there was a link between Books and Editors, but for the sake of the exercise...\nSELECT\n    B.title,\n    E.specialty\nFROM\n    Books AS B\nJOIN Editors AS E\nON B.book_id = E.editor_id  -- Assuming a hypothetical link or for illustration\nWHERE\n    E.specialty = 'Fiction';\n\n-- Find authors who have published books with 'Mystery' genre\nSELECT DISTINCT\n    A.first_name,\n    A.last_name\nFROM\n    Authors AS A\nJOIN Books AS B\nON A.author_id = B.author_id\nWHERE\n    B.genre = 'Mystery';\n\n-- List books that are 'Published' and their author's last name\nSELECT\n    B.title,\n    A.last_name\nFROM\n    Books AS B\nJOIN Authors AS A\nON B.author_id = A.author_id\nWHERE\n    B.status = 'Published';\n",
-"text_alt": "-- Query 1: Get all books published by a specific author, ordered by publication date.\nSELECT\n    B.title,\n    B.publication_date\nFROM\n    Books AS B,\n    Authors AS A\nWHERE\n    B.author_id = A.author_id AND A.first_name = 'Jane' AND A.last_name = 'Doe'\nORDER BY\n    B.publication_date;\n\n-- Query 2: Count the number of books in each genre.\nSELECT\n    genre,\n    COUNT(book_id) AS number_of_books\nFROM\n    Books\nGROUP BY\n    genre;\n\n-- Query 3: Find books currently in 'Editing' status and their authors.\nSELECT\n    B.title,\n    A.first_name,\n    A.last_name\nFROM\n    Books AS B, Authors AS A\nWHERE\n    B.author_id = A.author_id AND B.status = 'Editing';\n\n-- Query 4: Insert a new book and its author.\nINSERT INTO Authors (author_id, first_name, last_name, email)\nVALUES (4, 'New', 'Author', 'new.author@example.com');\n\nINSERT INTO Books (book_id, title, author_id, genre, publication_date, status)\nVALUES (6, 'The New Adventure', 4, 'Adventure', '2023-10-26', 'Draft');\n\n-- Query 5: Update the status of a book from 'Draft' to 'Submitted for Review'.\nUPDATE\n    Books\nSET\n    status = 'Submitted for Review'\nWHERE\n    book_id = 1 AND status = 'Draft';\n\n-- Additional queries with single JOINs\n\n-- Get all books by authors whose last name starts with 'S'\nSELECT\n    B.title,\n    A.first_name,\n    A.last_name\nFROM\n    Books AS B, Authors AS A\nWHERE\n    B.author_id = A.author_id AND A.last_name LIKE 'S%';\n\n-- Get all authors and the titles of their books\nSELECT\n    A.first_name,\n    A.last_name,\n    B.title\nFROM\n    Authors AS A, Books AS B\nWHERE\n    A.author_id = B.author_id;\n\n-- Find books published after 2020 and their author's email\nSELECT\n    B.title,\n    A.email\nFROM\n    Books AS B, Authors AS A\nWHERE\n    B.author_id = A.author_id AND B.publication_date > '2020-01-01';\n\n-- List all authors and books, even if an author has no books (LEFT JOIN)\nSELECT\n    A.first_name,\n    A.last_name,\n    B.title\nFROM\n    Authors AS A\nLEFT JOIN Books AS B\nON A.author_id = B.author_id;\n\n-- Find books with 'Fantasy' genre and their authors' full names\nSELECT\n    B.title,\n    A.first_name || ' ' || A.last_name AS author_full_name\nFROM\n    Books AS B, Authors AS A\nWHERE\n    B.author_id = A.author_id AND B.genre = 'Fantasy';\n\n-- Get the title of books and the specialty of editors (no direct link, so this is just an example of a join with a condition)\n-- This specific query would only make sense if there was a link between Books and Editors, but for the sake of the exercise...\nSELECT\n    B.title,\n    E.specialty\nFROM\n    Books AS B, Editors AS E\nWHERE\n    B.book_id = E.editor_id AND E.specialty = 'Fiction';\n\n-- Find authors who have published books with 'Mystery' genre\nSELECT DISTINCT\n    A.first_name,\n    A.last_name\nFROM\n    Authors AS A, Books AS B\nWHERE\n    A.author_id = B.author_id AND B.genre = 'Mystery';\n\n-- List books that are 'Published' and their author's last name\nSELECT\n    B.title,\n    A.last_name\nFROM\n    Books AS B, Authors AS A\nWHERE\n    B.author_id = A.author_id AND B.status = 'Published';\n",
-"opps": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-149,
-154
-],
-"alt_span": [
-149,
-150
-]
-},
-{
-"k": 1,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-585,
-590
-],
-"alt_span": [
-578,
-579
-]
-},
-{
-"k": 2,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1338,
-1343
-],
-"alt_span": [
-1328,
-1329
-]
-},
-{
-"k": 3,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1544,
-1549
-],
-"alt_span": [
-1531,
-1532
-]
-},
-{
-"k": 4,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1703,
-1708
-],
-"alt_span": [
-1693,
-1694
-]
-},
-{
-"k": 5,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2162,
-2167
-],
-"alt_span": [
-2149,
-2150
-]
-},
-{
-"k": 6,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2552,
-2557
-],
-"alt_span": [
-2536,
-2537
-]
-},
-{
-"k": 7,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2820,
-2825
-],
-"alt_span": [
-2748,
-2749
-]
-},
-{
-"k": 8,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-3017,
-3022
-],
-"alt_span": [
-2942,
-2943
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 0.938,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-149,
-154
-],
-"alt_span": [
-149,
-150
-]
-},
-{
-"k": 1,
-"nat": "ON",
-"alt": "WHERE",
-"nat_span": [
-172,
-174
-],
-"alt_span": [
-168,
-173
-]
-},
-{
-"k": 2,
-"nat": "\nWHERE\n    ",
-"alt": " AND ",
-"nat_span": [
-204,
-215
-],
-"alt_span": [
-203,
-208
-]
-},
-{
-"k": 3,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-585,
-590
-],
-"alt_span": [
-578,
-579
-]
-},
-{
-"k": 4,
-"nat": "ON ",
-"alt": "WHERE\n    ",
-"nat_span": [
-604,
-607
-],
-"alt_span": [
-593,
-603
-]
-},
-{
-"k": 5,
-"nat": "\nWHERE\n    ",
-"alt": " AND ",
-"nat_span": [
-632,
-643
-],
-"alt_span": [
-628,
-633
-]
-},
-{
-"k": 6,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1338,
-1343
-],
-"alt_span": [
-1328,
-1329
-]
-},
-{
-"k": 7,
-"nat": "ON ",
-"alt": "WHERE\n    ",
-"nat_span": [
-1357,
-1360
-],
-"alt_span": [
-1343,
-1353
-]
-},
-{
-"k": 8,
-"nat": "\nWHERE\n    ",
-"alt": " AND ",
-"nat_span": [
-1385,
-1396
-],
-"alt_span": [
-1378,
-1383
-]
-},
-{
-"k": 9,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1544,
-1549
-],
-"alt_span": [
-1531,
-1532
-]
-},
-{
-"k": 10,
-"nat": "ON ",
-"alt": "WHERE\n    ",
-"nat_span": [
-1561,
-1564
-],
-"alt_span": [
-1544,
-1554
-]
-},
-{
-"k": 11,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1703,
-1708
-],
-"alt_span": [
-1693,
-1694
-]
-},
-{
-"k": 12,
-"nat": "ON ",
-"alt": "WHERE\n    ",
-"nat_span": [
-1722,
-1725
-],
-"alt_span": [
-1708,
-1718
-]
-},
-{
-"k": 13,
-"nat": "\nWHERE\n    ",
-"alt": " AND ",
-"nat_span": [
-1750,
-1761
-],
-"alt_span": [
-1743,
-1748
-]
-},
-{
-"k": 14,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2162,
-2167
-],
-"alt_span": [
-2149,
-2150
-]
-},
-{
-"k": 15,
-"nat": "ON ",
-"alt": "WHERE\n    ",
-"nat_span": [
-2181,
-2184
-],
-"alt_span": [
-2164,
-2174
-]
-},
-{
-"k": 16,
-"nat": "\nWHERE\n    ",
-"alt": " AND ",
-"nat_span": [
-2209,
-2220
-],
-"alt_span": [
-2199,
-2204
-]
-},
-{
-"k": 17,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2552,
-2557
-],
-"alt_span": [
-2536,
-2537
-]
-},
-{
-"k": 18,
-"nat": "ON ",
-"alt": "WHERE\n    ",
-"nat_span": [
-2571,
-2574
-],
-"alt_span": [
-2551,
-2561
-]
-},
-{
-"k": 19,
-"nat": "  -- Assuming a hypothetical link or for illustration\nWHERE\n    ",
-"alt": " AND ",
-"nat_span": [
-2597,
-2661
-],
-"alt_span": [
-2584,
-2589
-]
-},
-{
-"k": 20,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2820,
-2825
-],
-"alt_span": [
-2748,
-2749
-]
-},
-{
-"k": 21,
-"nat": "ON ",
-"alt": "WHERE\n    ",
-"nat_span": [
-2837,
-2840
-],
-"alt_span": [
-2761,
-2771
-]
-},
-{
-"k": 22,
-"nat": "\nWHERE\n    ",
-"alt": " AND ",
-"nat_span": [
-2865,
-2876
-],
-"alt_span": [
-2796,
-2801
-]
-},
-{
-"k": 23,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-3017,
-3022
-],
-"alt_span": [
-2942,
-2943
-]
-},
-{
-"k": 24,
-"nat": "ON ",
-"alt": "WHERE\n    ",
-"nat_span": [
-3036,
-3039
-],
-"alt_span": [
-2957,
-2967
-]
-},
-{
-"k": 25,
-"nat": "\nWHERE\n    ",
-"alt": " AND ",
-"nat_span": [
-3064,
-3075
-],
-"alt_span": [
-2992,
-2997
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "sql_join_style__t213",
 "family": "sql_join_style",
 "topic": "Coffee Shop Order System",
@@ -107176,5 +105712,1090 @@
 }
 ],
 "free_filter": true
+},
+{
+"doc_id": "sql_join_style__t245",
+"family": "sql_join_style",
+"topic": "Customer Loyalty Program",
+"angle": "code",
+"text_es": "Schema: \n`Customers` (customer_id PK, first_name, last_name, email, join_date)\n`Tiers` (tier_id PK, tier_name, min_points, max_points, benefits)\n`LoyaltyPoints` (point_id PK, customer_id FK, points_earned, transaction_date, description)\n\nQueries:\n1. Get the current loyalty points for a specific customer.\n2. Find all customers in a particular loyalty tier.\n3. Calculate the total points earned by each customer.\n4. Award loyalty points to a customer for a transaction.\n5. Update a customer's loyalty tier based on their points.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "CREATE TABLE CustomerTiers (\n    customer_id INT PRIMARY KEY,\n    tier_id     INT NOT NULL,\n    updated_at  DATETIME NOT NULL,\n    CONSTRAINT fk_ct_customer FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),\n    CONSTRAINT fk_ct_tier     FOREIGN KEY (tier_id)     REFERENCES Tiers(tier_id)\n);\n\nCREATE VIEW CustomerPointTotals AS\nSELECT c.customer_id,\n       c.email,\n       SUM(lp.points_earned) AS total_points,\n       COUNT(lp.point_id)    AS transaction_count,\n       MAX(lp.transaction_date) AS last_transaction\nFROM Customers c\nJOIN LoyaltyPoints lp ON lp.customer_id = c.customer_id\nGROUP BY c.customer_id, c.email;\n\nDELIMITER $$\n\nCREATE PROCEDURE GetCustomerPoints(IN p_customer_id INT)\nBEGIN\n    SELECT p.customer_id,\n           CONCAT(c.first_name, ' ', c.last_name) AS customer_name,\n           p.total_points,\n           t.tier_name,\n           t.benefits\n    FROM CustomerPointTotals p\n    JOIN Customers c ON c.customer_id = p.customer_id\n    JOIN CustomerTiers ct ON ct.customer_id = p.customer_id\n    JOIN Tiers t ON t.tier_id = ct.tier_id\n    WHERE p.customer_id = p_customer_id;\nEND$$\n\nCREATE PROCEDURE GetCustomersInTier(IN p_tier_name VARCHAR(50))\nBEGIN\n    SELECT c.customer_id,\n           c.first_name,\n           c.last_name,\n           c.email,\n           c.join_date,\n           ct.updated_at AS tier_assigned_on\n    FROM Tiers t\n    JOIN CustomerTiers ct ON ct.tier_id = t.tier_id\n    JOIN Customers c ON c.customer_id = ct.customer_id\n    WHERE t.tier_name = p_tier_name\n    ORDER BY c.last_name, c.first_name;\nEND$$\n\nCREATE PROCEDURE GetTotalPointsByCustomer()\nBEGIN\n    SELECT c.customer_id,\n           c.email,\n           SUM(lp.points_earned) AS total_points,\n           COUNT(lp.point_id) AS transaction_count,\n           MAX(lp.transaction_date) AS last_transaction\n    FROM Customers c\n    JOIN LoyaltyPoints lp ON lp.customer_id = c.customer_id\n    GROUP BY c.customer_id, c.email\n    ORDER BY total_points DESC;\nEND$$\n\nCREATE PROCEDURE GetTierSummary()\nBEGIN\n    SELECT t.tier_name,\n           t.min_points,\n           COUNT(ct.customer_id) AS member_count,\n           ROUND(AVG(p.total_points), 1) AS avg_points\n    FROM Tiers t\n    JOIN CustomerTiers ct ON ct.tier_id = t.tier_id\n    JOIN CustomerPointTotals p ON p.customer_id = ct.customer_id\n    GROUP BY t.tier_id, t.tier_name, t.min_points\n    ORDER BY t.min_points;\nEND$$\n\nCREATE PROCEDURE UpdateCustomerTier(IN p_customer_id INT)\nBEGIN\n    INSERT INTO CustomerTiers (customer_id, tier_id, updated_at)\n    SELECT p.customer_id, t.tier_id, NOW()\n    FROM CustomerPointTotals p\n    JOIN Tiers t ON p.total_points BETWEEN t.min_points AND COALESCE(t.max_points, 2147483647)\n    WHERE p.customer_id = p_customer_id\n    ON DUPLICATE KEY UPDATE tier_id = VALUES(tier_id), updated_at = NOW();\nEND$$\n\nCREATE PROCEDURE AwardPoints(IN p_customer_id INT, IN p_points INT, IN p_description VARCHAR(255))\nBEGIN\n    IF NOT EXISTS (SELECT 1 FROM Customers WHERE customer_id = p_customer_id) THEN\n        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Unknown customer_id';\n    END IF;\n    INSERT INTO LoyaltyPoints (customer_id, points_earned, transaction_date, description)\n    VALUES (p_customer_id, p_points, NOW(), p_description);\n    CALL UpdateCustomerTier(p_customer_id);\nEND$$\n\nDELIMITER ;\n\nCALL AwardPoints(101, 250, 'Order #5521 - electronics');\nCALL AwardPoints(102, 40, 'Order #5522 - groceries');\nCALL GetCustomerPoints(101);\nCALL GetCustomersInTier('Gold');\nCALL GetTotalPointsByCustomer();\nCALL GetTierSummary();\n",
+"text_alt": "CREATE TABLE CustomerTiers (\n    customer_id INT PRIMARY KEY,\n    tier_id     INT NOT NULL,\n    updated_at  DATETIME NOT NULL,\n    CONSTRAINT fk_ct_customer FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),\n    CONSTRAINT fk_ct_tier     FOREIGN KEY (tier_id)     REFERENCES Tiers(tier_id)\n);\n\nCREATE VIEW CustomerPointTotals AS\nSELECT c.customer_id,\n       c.email,\n       SUM(lp.points_earned) AS total_points,\n       COUNT(lp.point_id)    AS transaction_count,\n       MAX(lp.transaction_date) AS last_transaction\nFROM Customers c, LoyaltyPoints lp\nWHERE lp.customer_id = c.customer_id\nGROUP BY c.customer_id, c.email;\n\nDELIMITER $$\n\nCREATE PROCEDURE GetCustomerPoints(IN p_customer_id INT)\nBEGIN\n    SELECT p.customer_id,\n           CONCAT(c.first_name, ' ', c.last_name) AS customer_name,\n           p.total_points,\n           t.tier_name,\n           t.benefits\n    FROM CustomerPointTotals p, Customers c, CustomerTiers ct, Tiers t\n    WHERE c.customer_id = p.customer_id\n      AND ct.customer_id = p.customer_id\n      AND t.tier_id = ct.tier_id\n      AND p.customer_id = p_customer_id;\nEND$$\n\nCREATE PROCEDURE GetCustomersInTier(IN p_tier_name VARCHAR(50))\nBEGIN\n    SELECT c.customer_id,\n           c.first_name,\n           c.last_name,\n           c.email,\n           c.join_date,\n           ct.updated_at AS tier_assigned_on\n    FROM Tiers t, CustomerTiers ct, Customers c\n    WHERE ct.tier_id = t.tier_id\n      AND c.customer_id = ct.customer_id\n      AND t.tier_name = p_tier_name\n    ORDER BY c.last_name, c.first_name;\nEND$$\n\nCREATE PROCEDURE GetTotalPointsByCustomer()\nBEGIN\n    SELECT c.customer_id,\n           c.email,\n           SUM(lp.points_earned) AS total_points,\n           COUNT(lp.point_id) AS transaction_count,\n           MAX(lp.transaction_date) AS last_transaction\n    FROM Customers c, LoyaltyPoints lp\n    WHERE lp.customer_id = c.customer_id\n    GROUP BY c.customer_id, c.email\n    ORDER BY total_points DESC;\nEND$$\n\nCREATE PROCEDURE GetTierSummary()\nBEGIN\n    SELECT t.tier_name,\n           t.min_points,\n           COUNT(ct.customer_id) AS member_count,\n           ROUND(AVG(p.total_points), 1) AS avg_points\n    FROM Tiers t, CustomerTiers ct, CustomerPointTotals p\n    WHERE ct.tier_id = t.tier_id\n      AND p.customer_id = ct.customer_id\n    GROUP BY t.tier_id, t.tier_name, t.min_points\n    ORDER BY t.min_points;\nEND$$\n\nCREATE PROCEDURE UpdateCustomerTier(IN p_customer_id INT)\nBEGIN\n    INSERT INTO CustomerTiers (customer_id, tier_id, updated_at)\n    SELECT p.customer_id, t.tier_id, NOW()\n    FROM CustomerPointTotals p, Tiers t\n    WHERE p.total_points BETWEEN t.min_points AND COALESCE(t.max_points, 2147483647)\n      AND p.customer_id = p_customer_id\n    ON DUPLICATE KEY UPDATE tier_id = VALUES(tier_id), updated_at = NOW();\nEND$$\n\nCREATE PROCEDURE AwardPoints(IN p_customer_id INT, IN p_points INT, IN p_description VARCHAR(255))\nBEGIN\n    IF NOT EXISTS (SELECT 1 FROM Customers WHERE customer_id = p_customer_id) THEN\n        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Unknown customer_id';\n    END IF;\n    INSERT INTO LoyaltyPoints (customer_id, points_earned, transaction_date, description)\n    VALUES (p_customer_id, p_points, NOW(), p_description);\n    CALL UpdateCustomerTier(p_customer_id);\nEND$$\n\nDELIMITER ;\n\nCALL AwardPoints(101, 250, 'Order #5521 - electronics');\nCALL AwardPoints(102, 40, 'Order #5522 - groceries');\nCALL GetCustomerPoints(101);\nCALL GetCustomersInTier('Gold');\nCALL GetTotalPointsByCustomer();\nCALL GetTierSummary();\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+542,
+547
+],
+"alt_span": [
+542,
+543
+]
+},
+{
+"k": 1,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+907,
+916
+],
+"alt_span": [
+906,
+907
+]
+},
+{
+"k": 2,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+1363,
+1372
+],
+"alt_span": [
+1359,
+1360
+]
+},
+{
+"k": 3,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+1828,
+1837
+],
+"alt_span": [
+1822,
+1823
+]
+},
+{
+"k": 4,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+2174,
+2183
+],
+"alt_span": [
+2167,
+2168
+]
+},
+{
+"k": 5,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+2578,
+2587
+],
+"alt_span": [
+2569,
+2570
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.941,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+542,
+547
+],
+"alt_span": [
+542,
+543
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+564,
+567
+],
+"alt_span": [
+560,
+566
+]
+},
+{
+"k": 2,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+907,
+916
+],
+"alt_span": [
+906,
+907
+]
+},
+{
+"k": 3,
+"nat": " ON",
+"alt": ", CustomerTiers ct, Tiers t\n    WHERE",
+"nat_span": [
+928,
+931
+],
+"alt_span": [
+919,
+956
+]
+},
+{
+"k": 4,
+"nat": "\n    JOIN CustomerTiers ct ON",
+"alt": "\n      AND",
+"nat_span": [
+961,
+990
+],
+"alt_span": [
+986,
+996
+]
+},
+{
+"k": 5,
+"nat": "\n    JOIN Tiers t ON",
+"alt": "\n      AND",
+"nat_span": [
+1021,
+1041
+],
+"alt_span": [
+1027,
+1037
+]
+},
+{
+"k": 6,
+"nat": "\n    WHERE",
+"alt": "\n      AND",
+"nat_span": [
+1064,
+1074
+],
+"alt_span": [
+1060,
+1070
+]
+},
+{
+"k": 7,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+1363,
+1372
+],
+"alt_span": [
+1359,
+1360
+]
+},
+{
+"k": 8,
+"nat": " ON",
+"alt": ", Customers c\n    WHERE",
+"nat_span": [
+1389,
+1392
+],
+"alt_span": [
+1377,
+1400
+]
+},
+{
+"k": 9,
+"nat": "\n    JOIN Customers c ON",
+"alt": "\n      AND",
+"nat_span": [
+1415,
+1439
+],
+"alt_span": [
+1423,
+1433
+]
+},
+{
+"k": 10,
+"nat": "\n    WHERE",
+"alt": "\n      AND",
+"nat_span": [
+1470,
+1480
+],
+"alt_span": [
+1464,
+1474
+]
+},
+{
+"k": 11,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+1828,
+1837
+],
+"alt_span": [
+1822,
+1823
+]
+},
+{
+"k": 12,
+"nat": " ON",
+"alt": "\n    WHERE",
+"nat_span": [
+1854,
+1857
+],
+"alt_span": [
+1840,
+1850
+]
+},
+{
+"k": 13,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+2174,
+2183
+],
+"alt_span": [
+2167,
+2168
+]
+},
+{
+"k": 14,
+"nat": " ON",
+"alt": ", CustomerPointTotals p\n    WHERE",
+"nat_span": [
+2200,
+2203
+],
+"alt_span": [
+2185,
+2218
+]
+},
+{
+"k": 15,
+"nat": "\n    JOIN CustomerPointTotals p ON",
+"alt": "\n      AND",
+"nat_span": [
+2226,
+2260
+],
+"alt_span": [
+2241,
+2251
+]
+},
+{
+"k": 16,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+2578,
+2587
+],
+"alt_span": [
+2569,
+2570
+]
+},
+{
+"k": 17,
+"nat": " ON",
+"alt": "\n    WHERE",
+"nat_span": [
+2595,
+2598
+],
+"alt_span": [
+2578,
+2588
+]
+},
+{
+"k": 18,
+"nat": "\n    WHERE",
+"alt": "\n      AND",
+"nat_span": [
+2673,
+2683
+],
+"alt_span": [
+2663,
+2673
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
+"doc_id": "sql_join_style__t246",
+"family": "sql_join_style",
+"topic": "Government Grant Applications",
+"angle": "code",
+"text_es": "Schema: \n`Organizations` (organization_id PK, org_name, contact_person, type)\n`Grants` (grant_id PK, grant_name, description, available_funds, deadline)\n`Applications` (application_id PK, organization_id FK, grant_id FK, submission_date, requested_amount, status)\n\nQueries:\n1. List all applications for a specific grant, including organization details.\n2. Find all grants with a deadline in the next month.\n3. Count the number of applications by status for each grant.\n4. Submit a new grant application for an organization.\n5. Update the status of an application to 'Approved'.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "-- Grant management module: reporting views, lookup procedures and write operations.\n\nCREATE OR REPLACE VIEW v_application_detail AS\nSELECT a.application_id,\n       a.grant_id,\n       g.grant_name,\n       g.deadline,\n       o.organization_id,\n       o.org_name,\n       o.contact_person,\n       o.type AS org_type,\n       a.submission_date,\n       a.requested_amount,\n       a.status\nFROM Applications a\nJOIN Grants g ON g.grant_id = a.grant_id\nJOIN Organizations o ON o.organization_id = a.organization_id;\n\nCREATE OR REPLACE VIEW v_application_counts_by_status AS\nSELECT g.grant_id, g.grant_name, a.status, COUNT(a.application_id) AS application_count\nFROM Grants g\nJOIN Applications a ON a.grant_id = g.grant_id\nGROUP BY g.grant_id, g.grant_name, a.status;\n\nCREATE OR REPLACE VIEW v_grants_due_next_month AS\nSELECT g.grant_id, g.grant_name, g.available_funds, g.deadline\nFROM Grants g\nWHERE g.deadline >= DATE_FORMAT(CURDATE() + INTERVAL 1 MONTH, '%Y-%m-01')\n  AND g.deadline <  DATE_FORMAT(CURDATE() + INTERVAL 2 MONTH, '%Y-%m-01');\n\nDELIMITER //\n\nCREATE PROCEDURE list_applications_for_grant(IN p_grant_id INT)\nBEGIN\n    SELECT a.application_id, o.org_name, o.contact_person, o.type AS org_type,\n           a.submission_date, a.requested_amount, a.status\n    FROM Applications a\n    JOIN Organizations o ON o.organization_id = a.organization_id\n    WHERE a.grant_id = p_grant_id\n    ORDER BY a.submission_date, a.application_id;\nEND //\n\nCREATE PROCEDURE organization_history(IN p_organization_id INT)\nBEGIN\n    SELECT a.application_id, g.grant_name, g.deadline,\n           a.submission_date, a.requested_amount, a.status\n    FROM Applications a\n    JOIN Grants g ON g.grant_id = a.grant_id\n    WHERE a.organization_id = p_organization_id\n    ORDER BY a.submission_date DESC;\nEND //\n\nCREATE PROCEDURE submit_application(IN p_organization_id INT,\n                                    IN p_grant_id INT,\n                                    IN p_requested_amount DECIMAL(12,2))\nBEGIN\n    INSERT INTO Applications (organization_id, grant_id, submission_date, requested_amount, status)\n    SELECT o.organization_id, g.grant_id, CURDATE(), p_requested_amount, 'Submitted'\n    FROM Grants g\n    JOIN Organizations o ON o.organization_id = p_organization_id\n    WHERE g.grant_id = p_grant_id\n      AND g.deadline >= CURDATE()\n      AND g.available_funds >= p_requested_amount;\n\n    IF ROW_COUNT() = 0 THEN\n        SIGNAL SQLSTATE '45000'\n            SET MESSAGE_TEXT = 'Application rejected: unknown organization/grant, past deadline or insufficient funds';\n    END IF;\nEND //\n\nCREATE PROCEDURE approve_application(IN p_application_id INT)\nBEGIN\n    UPDATE Applications a\n    JOIN Grants g ON g.grant_id = a.grant_id\n    SET a.status = 'Approved',\n        g.available_funds = g.available_funds - a.requested_amount\n    WHERE a.application_id = p_application_id\n      AND a.status <> 'Approved'\n      AND g.available_funds >= a.requested_amount;\n\n    IF ROW_COUNT() = 0 THEN\n        SIGNAL SQLSTATE '45000'\n            SET MESSAGE_TEXT = 'Approval failed: application already approved, missing or funds exhausted';\n    END IF;\nEND //\n\nDELIMITER ;\n\nCALL submit_application(3, 7, 25000.00);\nCALL approve_application(LAST_INSERT_ID());\nCALL list_applications_for_grant(7);\nCALL organization_history(3);\nSELECT * FROM v_grants_due_next_month;\nSELECT * FROM v_application_counts_by_status WHERE grant_id = 7;\nSELECT * FROM v_application_detail WHERE organization_id = 3;\n",
+"text_alt": "-- Grant management module: reporting views, lookup procedures and write operations.\n\nCREATE OR REPLACE VIEW v_application_detail AS\nSELECT a.application_id,\n       a.grant_id,\n       g.grant_name,\n       g.deadline,\n       o.organization_id,\n       o.org_name,\n       o.contact_person,\n       o.type AS org_type,\n       a.submission_date,\n       a.requested_amount,\n       a.status\nFROM Applications a, Grants g, Organizations o\nWHERE g.grant_id = a.grant_id AND o.organization_id = a.organization_id;\n\nCREATE OR REPLACE VIEW v_application_counts_by_status AS\nSELECT g.grant_id, g.grant_name, a.status, COUNT(a.application_id) AS application_count\nFROM Grants g, Applications a\nWHERE a.grant_id = g.grant_id\nGROUP BY g.grant_id, g.grant_name, a.status;\n\nCREATE OR REPLACE VIEW v_grants_due_next_month AS\nSELECT g.grant_id, g.grant_name, g.available_funds, g.deadline\nFROM Grants g\nWHERE g.deadline >= DATE_FORMAT(CURDATE() + INTERVAL 1 MONTH, '%Y-%m-01')\n  AND g.deadline <  DATE_FORMAT(CURDATE() + INTERVAL 2 MONTH, '%Y-%m-01');\n\nDELIMITER //\n\nCREATE PROCEDURE list_applications_for_grant(IN p_grant_id INT)\nBEGIN\n    SELECT a.application_id, o.org_name, o.contact_person, o.type AS org_type,\n           a.submission_date, a.requested_amount, a.status\n    FROM Applications a, Organizations o\n    WHERE o.organization_id = a.organization_id\n      AND a.grant_id = p_grant_id\n    ORDER BY a.submission_date, a.application_id;\nEND //\n\nCREATE PROCEDURE organization_history(IN p_organization_id INT)\nBEGIN\n    SELECT a.application_id, g.grant_name, g.deadline,\n           a.submission_date, a.requested_amount, a.status\n    FROM Applications a, Grants g\n    WHERE g.grant_id = a.grant_id\n      AND a.organization_id = p_organization_id\n    ORDER BY a.submission_date DESC;\nEND //\n\nCREATE PROCEDURE submit_application(IN p_organization_id INT,\n                                    IN p_grant_id INT,\n                                    IN p_requested_amount DECIMAL(12,2))\nBEGIN\n    INSERT INTO Applications (organization_id, grant_id, submission_date, requested_amount, status)\n    SELECT o.organization_id, g.grant_id, CURDATE(), p_requested_amount, 'Submitted'\n    FROM Grants g, Organizations o\n    WHERE o.organization_id = p_organization_id\n      AND g.grant_id = p_grant_id\n      AND g.deadline >= CURDATE()\n      AND g.available_funds >= p_requested_amount;\n\n    IF ROW_COUNT() = 0 THEN\n        SIGNAL SQLSTATE '45000'\n            SET MESSAGE_TEXT = 'Application rejected: unknown organization/grant, past deadline or insufficient funds';\n    END IF;\nEND //\n\nCREATE PROCEDURE approve_application(IN p_application_id INT)\nBEGIN\n    UPDATE Applications a, Grants g\n    SET a.status = 'Approved',\n        g.available_funds = g.available_funds - a.requested_amount\n    WHERE g.grant_id = a.grant_id\n      AND a.application_id = p_application_id\n      AND a.status <> 'Approved'\n      AND g.available_funds >= a.requested_amount;\n\n    IF ROW_COUNT() = 0 THEN\n        SIGNAL SQLSTATE '45000'\n            SET MESSAGE_TEXT = 'Approval failed: application already approved, missing or funds exhausted';\n    END IF;\nEND //\n\nDELIMITER ;\n\nCALL submit_application(3, 7, 25000.00);\nCALL approve_application(LAST_INSERT_ID());\nCALL list_applications_for_grant(7);\nCALL organization_history(3);\nSELECT * FROM v_grants_due_next_month;\nSELECT * FROM v_application_counts_by_status WHERE grant_id = 7;\nSELECT * FROM v_application_detail WHERE organization_id = 3;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+402,
+407
+],
+"alt_span": [
+402,
+403
+]
+},
+{
+"k": 1,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+666,
+671
+],
+"alt_span": [
+662,
+663
+]
+},
+{
+"k": 2,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+1282,
+1291
+],
+"alt_span": [
+1277,
+1278
+]
+},
+{
+"k": 3,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+1648,
+1657
+],
+"alt_span": [
+1642,
+1643
+]
+},
+{
+"k": 4,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+2185,
+2194
+],
+"alt_span": [
+2178,
+2179
+]
+},
+{
+"k": 5,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+2665,
+2674
+],
+"alt_span": [
+2657,
+2658
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.954,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+402,
+407
+],
+"alt_span": [
+402,
+403
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", Organizations o\nWHERE",
+"nat_span": [
+416,
+419
+],
+"alt_span": [
+412,
+435
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Organizations o ON",
+"alt": " AND",
+"nat_span": [
+443,
+467
+],
+"alt_span": [
+459,
+463
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+666,
+671
+],
+"alt_span": [
+662,
+663
+]
+},
+{
+"k": 4,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+686,
+689
+],
+"alt_span": [
+678,
+684
+]
+},
+{
+"k": 5,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+1282,
+1291
+],
+"alt_span": [
+1277,
+1278
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": "\n    WHERE",
+"nat_span": [
+1307,
+1310
+],
+"alt_span": [
+1294,
+1304
+]
+},
+{
+"k": 7,
+"nat": "\n    WHERE",
+"alt": "\n      AND",
+"nat_span": [
+1348,
+1358
+],
+"alt_span": [
+1342,
+1352
+]
+},
+{
+"k": 8,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+1648,
+1657
+],
+"alt_span": [
+1642,
+1643
+]
+},
+{
+"k": 9,
+"nat": " ON",
+"alt": "\n    WHERE",
+"nat_span": [
+1666,
+1669
+],
+"alt_span": [
+1652,
+1662
+]
+},
+{
+"k": 10,
+"nat": "\n    WHERE",
+"alt": "\n      AND",
+"nat_span": [
+1693,
+1703
+],
+"alt_span": [
+1686,
+1696
+]
+},
+{
+"k": 11,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+2185,
+2194
+],
+"alt_span": [
+2178,
+2179
+]
+},
+{
+"k": 12,
+"nat": " ON",
+"alt": "\n    WHERE",
+"nat_span": [
+2210,
+2213
+],
+"alt_span": [
+2195,
+2205
+]
+},
+{
+"k": 13,
+"nat": "\n    WHERE",
+"alt": "\n      AND",
+"nat_span": [
+2251,
+2261
+],
+"alt_span": [
+2243,
+2253
+]
+},
+{
+"k": 14,
+"nat": "\n    JOIN",
+"alt": ",",
+"nat_span": [
+2665,
+2674
+],
+"alt_span": [
+2657,
+2658
+]
+},
+{
+"k": 15,
+"nat": " ON g.grant_id = a.grant_id",
+"alt": "",
+"nat_span": [
+2683,
+2710
+],
+"alt_span": [
+2667,
+2667
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": " g.grant_id = a.grant_id\n      AND",
+"nat_span": [
+2818,
+2818
+],
+"alt_span": [
+2775,
+2809
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
+"doc_id": "sql_join_style__t248",
+"family": "sql_join_style",
+"topic": "Digital Game High Scores",
+"angle": "code",
+"text_es": "Schema: \n`Games` (game_id PK, game_name, genre, release_year)\n`Players` (player_id PK, username, join_date)\n`HighScores` (score_id PK, game_id FK, player_id FK, score, achieve_date)\n\nQueries:\n1. Get the top 10 high scores for a specific game, including player usernames.\n2. Find all high scores achieved by a specific player.\n3. Count the number of scores submitted for each game.\n4. Record a new high score for a player in a game.\n5. Update a player's high score for a specific game if the new score is higher.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "-- Arcade high-score module: leaderboard views and the five required operations.\n\n-- Leaderboard view: every score with its game and player details, ranked per game.\nCREATE OR REPLACE VIEW v_game_leaderboard AS\nSELECT g.game_id,\n       g.game_name,\n       g.genre,\n       p.player_id,\n       p.username,\n       h.score,\n       h.achieve_date,\n       RANK() OVER (PARTITION BY g.game_id\n                    ORDER BY h.score DESC, h.achieve_date ASC) AS rank_in_game\nFROM HighScores h\nJOIN Games g ON g.game_id = h.game_id\nJOIN Players p ON p.player_id = h.player_id;\n\n-- Per-game score volume; subqueries keep games that have never been played.\nCREATE OR REPLACE VIEW v_game_score_counts AS\nSELECT g.game_id,\n       g.game_name,\n       (SELECT COUNT(*) FROM HighScores h WHERE h.game_id = g.game_id) AS score_count,\n       (SELECT COALESCE(MAX(h.score), 0) FROM HighScores h WHERE h.game_id = g.game_id) AS best_score\nFROM Games g;\n\n-- 1. Top 10 high scores for a specific game, with player usernames.\nSELECT p.username, h.score, h.achieve_date\nFROM HighScores h\nJOIN Games g ON g.game_id = h.game_id\nJOIN Players p ON p.player_id = h.player_id\nWHERE g.game_id = 3\nORDER BY h.score DESC, h.achieve_date ASC\nLIMIT 10;\n\n-- 2. All high scores achieved by a specific player.\nSELECT p.username, g.game_name, g.genre, g.release_year, h.score, h.achieve_date\nFROM HighScores h\nJOIN Games g ON g.game_id = h.game_id\nJOIN Players p ON p.player_id = h.player_id\nWHERE h.player_id = 17\nORDER BY h.achieve_date DESC, h.score DESC;\n\n-- 3. Number of scores submitted for each game.\nSELECT game_id, game_name, score_count, best_score\nFROM v_game_score_counts\nORDER BY score_count DESC, game_name;\n\n-- 4. Record a new high score; the join rejects unknown ids and pre-join dates.\nINSERT INTO HighScores (game_id, player_id, score, achieve_date)\nSELECT g.game_id, p.player_id, 48200, DATE '2024-05-02'\nFROM Games g\nJOIN Players p ON p.join_date <= DATE '2024-05-02'\nWHERE g.game_id = 3 AND p.player_id = 17;\n\n-- 5. Raise a player's score for a game (identified by name) only if the run is better.\nUPDATE HighScores h\nJOIN Games g ON g.game_id = h.game_id\nSET h.score = 51750,\n    h.achieve_date = DATE '2024-06-11'\nWHERE h.player_id = 17\n  AND g.game_name = 'Nebula Rally'\n  AND h.score < 51750;\n\n-- Report: current leader of every game next to that game's score volume.\nSELECT c.game_name, c.score_count, l.username AS leader, l.score AS leading_score\nFROM v_game_score_counts c\nJOIN v_game_leaderboard l ON l.game_id = c.game_id AND l.rank_in_game = 1\nORDER BY l.score DESC;\n\n-- Report: genre totals built from the ranked leaderboard rows.\nSELECT l.genre,\n       COUNT(DISTINCT l.game_id) AS games_played,\n       COUNT(DISTINCT l.player_id) AS players,\n       MAX(l.score) AS genre_record\nFROM v_game_leaderboard l\nJOIN Players p ON p.player_id = l.player_id\nWHERE p.join_date >= DATE '2023-01-01'\nGROUP BY l.genre\nORDER BY genre_record DESC;\n",
+"text_alt": "-- Arcade high-score module: leaderboard views and the five required operations.\n\n-- Leaderboard view: every score with its game and player details, ranked per game.\nCREATE OR REPLACE VIEW v_game_leaderboard AS\nSELECT g.game_id,\n       g.game_name,\n       g.genre,\n       p.player_id,\n       p.username,\n       h.score,\n       h.achieve_date,\n       RANK() OVER (PARTITION BY g.game_id\n                    ORDER BY h.score DESC, h.achieve_date ASC) AS rank_in_game\nFROM HighScores h, Games g, Players p\nWHERE g.game_id = h.game_id AND p.player_id = h.player_id;\n\n-- Per-game score volume; subqueries keep games that have never been played.\nCREATE OR REPLACE VIEW v_game_score_counts AS\nSELECT g.game_id,\n       g.game_name,\n       (SELECT COUNT(*) FROM HighScores h WHERE h.game_id = g.game_id) AS score_count,\n       (SELECT COALESCE(MAX(h.score), 0) FROM HighScores h WHERE h.game_id = g.game_id) AS best_score\nFROM Games g;\n\n-- 1. Top 10 high scores for a specific game, with player usernames.\nSELECT p.username, h.score, h.achieve_date\nFROM HighScores h, Games g, Players p\nWHERE g.game_id = h.game_id\n  AND p.player_id = h.player_id\n  AND g.game_id = 3\nORDER BY h.score DESC, h.achieve_date ASC\nLIMIT 10;\n\n-- 2. All high scores achieved by a specific player.\nSELECT p.username, g.game_name, g.genre, g.release_year, h.score, h.achieve_date\nFROM HighScores h, Games g, Players p\nWHERE g.game_id = h.game_id\n  AND p.player_id = h.player_id\n  AND h.player_id = 17\nORDER BY h.achieve_date DESC, h.score DESC;\n\n-- 3. Number of scores submitted for each game.\nSELECT game_id, game_name, score_count, best_score\nFROM v_game_score_counts\nORDER BY score_count DESC, game_name;\n\n-- 4. Record a new high score; the join rejects unknown ids and pre-join dates.\nINSERT INTO HighScores (game_id, player_id, score, achieve_date)\nSELECT g.game_id, p.player_id, 48200, DATE '2024-05-02'\nFROM Games g, Players p\nWHERE p.join_date <= DATE '2024-05-02'\n  AND g.game_id = 3 AND p.player_id = 17;\n\n-- 5. Raise a player's score for a game (identified by name) only if the run is better.\nUPDATE HighScores h, Games g\nSET h.score = 51750,\n    h.achieve_date = DATE '2024-06-11'\nWHERE g.game_id = h.game_id\n  AND h.player_id = 17\n  AND g.game_name = 'Nebula Rally'\n  AND h.score < 51750;\n\n-- Report: current leader of every game next to that game's score volume.\nSELECT c.game_name, c.score_count, l.username AS leader, l.score AS leading_score\nFROM v_game_score_counts c, v_game_leaderboard l\nWHERE l.game_id = c.game_id AND l.rank_in_game = 1\nORDER BY l.score DESC;\n\n-- Report: genre totals built from the ranked leaderboard rows.\nSELECT l.genre,\n       COUNT(DISTINCT l.game_id) AS games_played,\n       COUNT(DISTINCT l.player_id) AS players,\n       MAX(l.score) AS genre_record\nFROM v_game_leaderboard l, Players p\nWHERE p.player_id = l.player_id\n  AND p.join_date >= DATE '2023-01-01'\nGROUP BY l.genre\nORDER BY genre_record DESC;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+482,
+487
+],
+"alt_span": [
+482,
+483
+]
+},
+{
+"k": 1,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1061,
+1066
+],
+"alt_span": [
+1057,
+1058
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1368,
+1373
+],
+"alt_span": [
+1362,
+1363
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1895,
+1900
+],
+"alt_span": [
+1887,
+1888
+]
+},
+{
+"k": 4,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2097,
+2102
+],
+"alt_span": [
+2088,
+2089
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2460,
+2465
+],
+"alt_span": [
+2450,
+2451
+]
+},
+{
+"k": 6,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2797,
+2802
+],
+"alt_span": [
+2786,
+2787
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.94,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+482,
+487
+],
+"alt_span": [
+482,
+483
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", Players p\nWHERE",
+"nat_span": [
+495,
+498
+],
+"alt_span": [
+491,
+508
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN Players p ON",
+"alt": " AND",
+"nat_span": [
+520,
+538
+],
+"alt_span": [
+530,
+534
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1061,
+1066
+],
+"alt_span": [
+1057,
+1058
+]
+},
+{
+"k": 4,
+"nat": " ON",
+"alt": ", Players p\nWHERE",
+"nat_span": [
+1074,
+1077
+],
+"alt_span": [
+1066,
+1083
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN Players p ON",
+"alt": "\n  AND",
+"nat_span": [
+1099,
+1117
+],
+"alt_span": [
+1105,
+1111
+]
+},
+{
+"k": 6,
+"nat": "\nWHERE",
+"alt": "\n  AND",
+"nat_span": [
+1143,
+1149
+],
+"alt_span": [
+1137,
+1143
+]
+},
+{
+"k": 7,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1368,
+1373
+],
+"alt_span": [
+1362,
+1363
+]
+},
+{
+"k": 8,
+"nat": " ON",
+"alt": ", Players p\nWHERE",
+"nat_span": [
+1381,
+1384
+],
+"alt_span": [
+1371,
+1388
+]
+},
+{
+"k": 9,
+"nat": "\nJOIN Players p ON",
+"alt": "\n  AND",
+"nat_span": [
+1406,
+1424
+],
+"alt_span": [
+1410,
+1416
+]
+},
+{
+"k": 10,
+"nat": "\nWHERE",
+"alt": "\n  AND",
+"nat_span": [
+1450,
+1456
+],
+"alt_span": [
+1442,
+1448
+]
+},
+{
+"k": 11,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1895,
+1900
+],
+"alt_span": [
+1887,
+1888
+]
+},
+{
+"k": 12,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+1910,
+1913
+],
+"alt_span": [
+1898,
+1904
+]
+},
+{
+"k": 13,
+"nat": "\nWHERE",
+"alt": "\n  AND",
+"nat_span": [
+1946,
+1952
+],
+"alt_span": [
+1937,
+1943
+]
+},
+{
+"k": 14,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2097,
+2102
+],
+"alt_span": [
+2088,
+2089
+]
+},
+{
+"k": 15,
+"nat": " ON g.game_id = h.game_id",
+"alt": "",
+"nat_span": [
+2110,
+2135
+],
+"alt_span": [
+2097,
+2097
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": " g.game_id = h.game_id\n  AND",
+"nat_span": [
+2201,
+2201
+],
+"alt_span": [
+2163,
+2191
+]
+},
+{
+"k": 17,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2460,
+2465
+],
+"alt_span": [
+2450,
+2451
+]
+},
+{
+"k": 18,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+2486,
+2489
+],
+"alt_span": [
+2472,
+2478
+]
+},
+{
+"k": 19,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2797,
+2802
+],
+"alt_span": [
+2786,
+2787
+]
+},
+{
+"k": 20,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+2812,
+2815
+],
+"alt_span": [
+2797,
+2803
+]
+},
+{
+"k": 21,
+"nat": "\nWHERE",
+"alt": "\n  AND",
+"nat_span": [
+2841,
+2847
+],
+"alt_span": [
+2829,
+2835
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 }
 ]

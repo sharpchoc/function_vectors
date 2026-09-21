@@ -595,20 +595,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_palindrome(text):\n    try:\n        if not isinstance(text, str):\n            raise TypeError(\"Input must be a string\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return False\n\n    try:\n        processed_text = \"\"\n        for char in text:\n            if 'a' <= char <= 'z' or 'A' <= char <= 'Z' or '0' <= char <= '9':\n                processed_text += char\n    except Exception as err:\n        print(f\"Error during character processing: {err}\")\n        return False\n\n    try:\n        lowercase_text = processed_text.lower()\n    except AttributeError as err:\n        print(f\"Error converting to lowercase: {err}\")\n        return False\n\n    try:\n        reversed_text = lowercase_text[::-1]\n    except TypeError as err:\n        print(f\"Error reversing string: {err}\")\n        return False\n\n    try:\n        return lowercase_text == reversed_text\n    except Exception as err:\n        print(f\"Error during final comparison: {err}\")\n        return False\n\n    try:\n        # Example of another try/except block, though this path might not be reached\n        # if the above return is hit. Included for style requirement.\n        if 1 == 0:\n            raise ValueError(\"This is a dummy error for demonstration.\")\n    except ValueError as err:\n        print(f\"Another caught error: {err}\")\n        return False\n",
-"text_alt": "def is_palindrome(text):\n    try:\n        if not isinstance(text, str):\n            raise TypeError(\"Input must be a string\")\n    except TypeError, err:\n        print(f\"Error: {err}\")\n        return False\n\n    try:\n        processed_text = \"\"\n        for char in text:\n            if 'a' <= char <= 'z' or 'A' <= char <= 'Z' or '0' <= char <= '9':\n                processed_text += char\n    except Exception, err:\n        print(f\"Error during character processing: {err}\")\n        return False\n\n    try:\n        lowercase_text = processed_text.lower()\n    except AttributeError, err:\n        print(f\"Error converting to lowercase: {err}\")\n        return False\n\n    try:\n        reversed_text = lowercase_text[::-1]\n    except TypeError, err:\n        print(f\"Error reversing string: {err}\")\n        return False\n\n    try:\n        return lowercase_text == reversed_text\n    except Exception, err:\n        print(f\"Error during final comparison: {err}\")\n        return False\n\n    try:\n        # Example of another try/except block, though this path might not be reached\n        # if the above return is hit. Included for style requirement.\n        if 1 == 0:\n            raise ValueError(\"This is a dummy error for demonstration.\")\n    except ValueError, err:\n        print(f\"Another caught error: {err}\")\n        return False\n",
+"text_nat": "from __future__ import print_function\n\nimport io\nimport sys\n\nDEFAULT_SAMPLES = [\n    \"Racecar|yes\",\n    \"Hello World|no\",\n    \"A man, a plan, a canal: Panama|yes\",\n    \"12321\",\n    \"Was it a car or a cat I saw?|yes\",\n]\n\n\ndef normalize(text):\n    try:\n        lowered = text.lower()\n    except AttributeError as err:\n        raise TypeError(\"text must be a string (%s)\" % err)\n    return \"\".join(ch for ch in lowered if ch.isalnum())\n\n\ndef is_palindrome(text):\n    cleaned = normalize(text)\n    return cleaned == cleaned[::-1]\n\n\ndef parse_min_length(spec):\n    try:\n        value = int(spec)\n    except ValueError as err:\n        raise ValueError(\"minimum length must be an integer (%s)\" % err)\n    if value < 0:\n        raise ValueError(\"minimum length must not be negative: %d\" % value)\n    return value\n\n\ndef parse_expected(raw):\n    flag = raw.strip().lower()\n    if flag in (\"yes\", \"true\", \"1\"):\n        return True\n    if flag in (\"no\", \"false\", \"0\"):\n        return False\n    raise ValueError(\"unrecognised expectation: %r\" % raw)\n\n\ndef split_record(line):\n    fields = line.split(\"|\")\n    if len(fields) == 1:\n        return line.strip(), None\n    try:\n        text, raw = fields\n    except ValueError as err:\n        raise ValueError(\"at most one '|' allowed in %r (%s)\" % (line, err))\n    try:\n        expected = parse_expected(raw)\n    except ValueError as err:\n        raise ValueError(\"bad record %r: %s\" % (line, err))\n    return text.strip(), expected\n\n\ndef load_lines(path):\n    with io.open(path, encoding=\"utf-8\") as handle:\n        return [line.rstrip(\"\\n\") for line in handle if line.strip()]\n\n\ndef report(records, min_length):\n    checked = 0\n    mismatches = 0\n    for text, expected in records:\n        if len(normalize(text)) < min_length:\n            print(\"%-32s skipped (shorter than %d characters)\" % (repr(text), min_length))\n            continue\n        verdict = is_palindrome(text)\n        checked += 1\n        note = \"\"\n        if expected is not None and expected != verdict:\n            note = \" <- expected %s\" % expected\n            mismatches += 1\n        print(\"%-32s %s%s\" % (repr(text), verdict, note))\n    try:\n        rate = 100.0 * (checked - mismatches) / checked\n    except ZeroDivisionError as err:\n        print(\"no candidates were checked (%s)\" % err)\n        return 1\n    print(\"%d checked, %d mismatched (%.1f%% agreement)\" % (checked, mismatches, rate))\n    return 1 if mismatches else 0\n\n\ndef main(argv):\n    args = list(argv[1:])\n    min_length = 0\n    if \"--min\" in args:\n        index = args.index(\"--min\")\n        spec = args.pop(index + 1) if index + 1 < len(args) else \"\"\n        args.pop(index)\n        try:\n            min_length = parse_min_length(spec)\n        except ValueError as err:\n            print(\"bad --min option: %s\" % err, file=sys.stderr)\n            return 2\n    if args:\n        try:\n            lines = load_lines(args[0])\n        except (IOError, OSError) as err:\n            print(\"cannot read candidates: %s\" % err, file=sys.stderr)\n            return 2\n    else:\n        lines = DEFAULT_SAMPLES\n    records = []\n    for line in lines:\n        try:\n            records.append(split_record(line))\n        except ValueError as err:\n            print(\"ignoring line: %s\" % err, file=sys.stderr)\n    return report(records, min_length)\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n",
+"text_alt": "from __future__ import print_function\n\nimport io\nimport sys\n\nDEFAULT_SAMPLES = [\n    \"Racecar|yes\",\n    \"Hello World|no\",\n    \"A man, a plan, a canal: Panama|yes\",\n    \"12321\",\n    \"Was it a car or a cat I saw?|yes\",\n]\n\n\ndef normalize(text):\n    try:\n        lowered = text.lower()\n    except AttributeError, err:\n        raise TypeError(\"text must be a string (%s)\" % err)\n    return \"\".join(ch for ch in lowered if ch.isalnum())\n\n\ndef is_palindrome(text):\n    cleaned = normalize(text)\n    return cleaned == cleaned[::-1]\n\n\ndef parse_min_length(spec):\n    try:\n        value = int(spec)\n    except ValueError, err:\n        raise ValueError(\"minimum length must be an integer (%s)\" % err)\n    if value < 0:\n        raise ValueError(\"minimum length must not be negative: %d\" % value)\n    return value\n\n\ndef parse_expected(raw):\n    flag = raw.strip().lower()\n    if flag in (\"yes\", \"true\", \"1\"):\n        return True\n    if flag in (\"no\", \"false\", \"0\"):\n        return False\n    raise ValueError(\"unrecognised expectation: %r\" % raw)\n\n\ndef split_record(line):\n    fields = line.split(\"|\")\n    if len(fields) == 1:\n        return line.strip(), None\n    try:\n        text, raw = fields\n    except ValueError, err:\n        raise ValueError(\"at most one '|' allowed in %r (%s)\" % (line, err))\n    try:\n        expected = parse_expected(raw)\n    except ValueError, err:\n        raise ValueError(\"bad record %r: %s\" % (line, err))\n    return text.strip(), expected\n\n\ndef load_lines(path):\n    with io.open(path, encoding=\"utf-8\") as handle:\n        return [line.rstrip(\"\\n\") for line in handle if line.strip()]\n\n\ndef report(records, min_length):\n    checked = 0\n    mismatches = 0\n    for text, expected in records:\n        if len(normalize(text)) < min_length:\n            print(\"%-32s skipped (shorter than %d characters)\" % (repr(text), min_length))\n            continue\n        verdict = is_palindrome(text)\n        checked += 1\n        note = \"\"\n        if expected is not None and expected != verdict:\n            note = \" <- expected %s\" % expected\n            mismatches += 1\n        print(\"%-32s %s%s\" % (repr(text), verdict, note))\n    try:\n        rate = 100.0 * (checked - mismatches) / checked\n    except ZeroDivisionError, err:\n        print(\"no candidates were checked (%s)\" % err)\n        return 1\n    print(\"%d checked, %d mismatched (%.1f%% agreement)\" % (checked, mismatches, rate))\n    return 1 if mismatches else 0\n\n\ndef main(argv):\n    args = list(argv[1:])\n    min_length = 0\n    if \"--min\" in args:\n        index = args.index(\"--min\")\n        spec = args.pop(index + 1) if index + 1 < len(args) else \"\"\n        args.pop(index)\n        try:\n            min_length = parse_min_length(spec)\n        except ValueError, err:\n            print(\"bad --min option: %s\" % err, file=sys.stderr)\n            return 2\n    if args:\n        try:\n            lines = load_lines(args[0])\n        except (IOError, OSError), err:\n            print(\"cannot read candidates: %s\" % err, file=sys.stderr)\n            return 2\n    else:\n        lines = DEFAULT_SAMPLES\n    records = []\n    for line in lines:\n        try:\n            records.append(split_record(line))\n        except ValueError, err:\n            print(\"ignoring line: %s\" % err, file=sys.stderr)\n    return report(records, min_length)\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n",
 "opps": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-146,
-149
+307,
+310
 ],
 "alt_span": [
-146,
-147
+307,
+308
 ]
 },
 {
@@ -616,12 +616,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-409,
-412
+612,
+615
 ],
 "alt_span": [
-407,
-408
+610,
+611
 ]
 },
 {
@@ -629,12 +629,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-581,
-584
+1208,
+1211
 ],
 "alt_span": [
-577,
-578
+1204,
+1205
 ]
 },
 {
@@ -642,12 +642,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-741,
-744
+1363,
+1366
 ],
 "alt_span": [
-735,
-736
+1357,
+1358
 ]
 },
 {
@@ -655,12 +655,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-896,
-899
+2236,
+2239
 ],
 "alt_span": [
-888,
-889
+2228,
+2229
 ]
 },
 {
@@ -668,31 +668,58 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1259,
-1262
+2740,
+2743
 ],
 "alt_span": [
-1249,
-1250
+2730,
+2731
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2934,
+2937
+],
+"alt_span": [
+2922,
+2923
+]
+},
+{
+"k": 7,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+3202,
+3205
+],
+"alt_span": [
+3188,
+3189
 ]
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.972,
+"k_en": 8,
+"shared_fraction": 0.987,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-146,
-149
+307,
+310
 ],
 "alt_span": [
-146,
-147
+307,
+308
 ]
 },
 {
@@ -700,12 +727,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-409,
-412
+612,
+615
 ],
 "alt_span": [
-407,
-408
+610,
+611
 ]
 },
 {
@@ -713,12 +740,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-581,
-584
+1208,
+1211
 ],
 "alt_span": [
-577,
-578
+1204,
+1205
 ]
 },
 {
@@ -726,12 +753,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-741,
-744
+1363,
+1366
 ],
 "alt_span": [
-735,
-736
+1357,
+1358
 ]
 },
 {
@@ -739,12 +766,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-896,
-899
+2236,
+2239
 ],
 "alt_span": [
-888,
-889
+2228,
+2229
 ]
 },
 {
@@ -752,16 +779,47 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1259,
-1262
+2740,
+2743
 ],
 "alt_span": [
-1249,
-1250
+2730,
+2731
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2934,
+2937
+],
+"alt_span": [
+2922,
+2923
+]
+},
+{
+"k": 7,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+3202,
+3205
+],
+"alt_span": [
+3188,
+3189
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_except__t005",
@@ -5135,20 +5193,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def guess_number(secret_number, guess):\n    try:\n        secret_num_int = int(secret_number)\n    except ValueError as err:\n        return f\"Error: Secret number must be an integer. {err}\"\n    \n    try:\n        guess_int = int(guess)\n    except ValueError as err:\n        return f\"Error: Guess must be an integer. {err}\"\n\n    if guess_int < secret_num_int:\n        try:\n            result = \"Too low\"\n        except Exception as err: # Example of a generic catch\n            return f\"Unexpected error during comparison: {err}\"\n        return result\n    elif guess_int > secret_num_int:\n        try:\n            result = \"Too high\"\n        except TypeError as err: # Example of another specific catch\n            return f\"Type error during result assignment: {err}\"\n        return result\n    else:\n        try:\n            result = \"Correct!\"\n        except NameError as err: # Example of yet another specific catch\n            return f\"Name error during result assignment: {err}\"\n        return result\n\n    try:\n        # This block will not be reached but serves as an example for spreading try/except\n        some_value = 1 / 0\n    except ZeroDivisionError as err:\n        return f\"Unexpected division by zero: {err}\"\n",
-"text_alt": "def guess_number(secret_number, guess):\n    try:\n        secret_num_int = int(secret_number)\n    except ValueError, err:\n        return f\"Error: Secret number must be an integer. {err}\"\n    \n    try:\n        guess_int = int(guess)\n    except ValueError, err:\n        return f\"Error: Guess must be an integer. {err}\"\n\n    if guess_int < secret_num_int:\n        try:\n            result = \"Too low\"\n        except Exception, err: # Example of a generic catch\n            return f\"Unexpected error during comparison: {err}\"\n        return result\n    elif guess_int > secret_num_int:\n        try:\n            result = \"Too high\"\n        except TypeError, err: # Example of another specific catch\n            return f\"Type error during result assignment: {err}\"\n        return result\n    else:\n        try:\n            result = \"Correct!\"\n        except NameError, err: # Example of yet another specific catch\n            return f\"Name error during result assignment: {err}\"\n        return result\n\n    try:\n        # This block will not be reached but serves as an example for spreading try/except\n        some_value = 1 / 0\n    except ZeroDivisionError, err:\n        return f\"Unexpected division by zero: {err}\"\n",
+"text_nat": "import sys\n\n\ndef parse_number(text):\n    \"\"\"Convert a piece of player input into an integer.\"\"\"\n    try:\n        return int(str(text).strip())\n    except ValueError as err:\n        raise ValueError(\"not a whole number: {!r} ({})\".format(text, err))\n\n\ndef guess_number(secret_number, guess):\n    \"\"\"Compare a guess against the secret number.\"\"\"\n    try:\n        secret = parse_number(secret_number)\n        attempt = parse_number(guess)\n    except ValueError as err:\n        raise ValueError(\"guess_number needs integers: {}\".format(err))\n    if attempt > secret:\n        return 'Too high'\n    if attempt < secret:\n        return 'Too low'\n    return 'Correct!'\n\n\ndef play_round(secret, raw_guesses):\n    outcomes = []\n    for raw in raw_guesses:\n        try:\n            guess = parse_number(raw)\n        except ValueError as err:\n            outcomes.append((raw, \"ignored ({})\".format(err)))\n            continue\n        verdict = guess_number(secret, guess)\n        outcomes.append((guess, verdict))\n        if verdict == 'Correct!':\n            break\n    return outcomes\n\n\ndef parse_game(line):\n    \"\"\"Read one \"secret: guess guess ...\" transcript line.\"\"\"\n    head, sep, tail = line.partition(':')\n    if not sep:\n        raise ValueError(\"missing ':' in {!r}\".format(line.strip()))\n    try:\n        secret = parse_number(head)\n    except ValueError as err:\n        raise ValueError(\"bad secret: {}\".format(err))\n    return secret, tail.split()\n\n\ndef format_report(secret, raw_guesses):\n    \"\"\"Build a human readable transcript for one game.\"\"\"\n    lines = [\"secret is {}\".format(secret)]\n    outcomes = play_round(secret, raw_guesses)\n    for value, verdict in outcomes:\n        lines.append(\"  {} -> {}\".format(value, verdict))\n    winner = next((n for n, (_, v) in enumerate(outcomes, 1) if v == 'Correct!'), 0)\n    if winner:\n        lines.append(\"  solved on attempt {}\".format(winner))\n    else:\n        lines.append(\"  out of guesses\")\n    return \"\\n\".join(lines)\n\n\ndef main(argv):\n    if len(argv) > 1:\n        try:\n            secret = parse_number(argv[1])\n        except ValueError as err:\n            print(\"usage: {} SECRET [GUESS ...] ({})\".format(argv[0], err))\n            return 2\n        print(format_report(secret, argv[2:]))\n        return 0\n    for line in sys.stdin:\n        try:\n            secret, guesses = parse_game(line)\n        except ValueError as err:\n            print(\"skipping line: {}\".format(err))\n            continue\n        print(format_report(secret, guesses))\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n",
+"text_alt": "import sys\n\n\ndef parse_number(text):\n    \"\"\"Convert a piece of player input into an integer.\"\"\"\n    try:\n        return int(str(text).strip())\n    except ValueError, err:\n        raise ValueError(\"not a whole number: {!r} ({})\".format(text, err))\n\n\ndef guess_number(secret_number, guess):\n    \"\"\"Compare a guess against the secret number.\"\"\"\n    try:\n        secret = parse_number(secret_number)\n        attempt = parse_number(guess)\n    except ValueError, err:\n        raise ValueError(\"guess_number needs integers: {}\".format(err))\n    if attempt > secret:\n        return 'Too high'\n    if attempt < secret:\n        return 'Too low'\n    return 'Correct!'\n\n\ndef play_round(secret, raw_guesses):\n    outcomes = []\n    for raw in raw_guesses:\n        try:\n            guess = parse_number(raw)\n        except ValueError, err:\n            outcomes.append((raw, \"ignored ({})\".format(err)))\n            continue\n        verdict = guess_number(secret, guess)\n        outcomes.append((guess, verdict))\n        if verdict == 'Correct!':\n            break\n    return outcomes\n\n\ndef parse_game(line):\n    \"\"\"Read one \"secret: guess guess ...\" transcript line.\"\"\"\n    head, sep, tail = line.partition(':')\n    if not sep:\n        raise ValueError(\"missing ':' in {!r}\".format(line.strip()))\n    try:\n        secret = parse_number(head)\n    except ValueError, err:\n        raise ValueError(\"bad secret: {}\".format(err))\n    return secret, tail.split()\n\n\ndef format_report(secret, raw_guesses):\n    \"\"\"Build a human readable transcript for one game.\"\"\"\n    lines = [\"secret is {}\".format(secret)]\n    outcomes = play_round(secret, raw_guesses)\n    for value, verdict in outcomes:\n        lines.append(\"  {} -> {}\".format(value, verdict))\n    winner = next((n for n, (_, v) in enumerate(outcomes, 1) if v == 'Correct!'), 0)\n    if winner:\n        lines.append(\"  solved on attempt {}\".format(winner))\n    else:\n        lines.append(\"  out of guesses\")\n    return \"\\n\".join(lines)\n\n\ndef main(argv):\n    if len(argv) > 1:\n        try:\n            secret = parse_number(argv[1])\n        except ValueError, err:\n            print(\"usage: {} SECRET [GUESS ...] ({})\".format(argv[0], err))\n            return 2\n        print(format_report(secret, argv[2:]))\n        return 0\n    for line in sys.stdin:\n        try:\n            secret, guesses = parse_game(line)\n        except ValueError, err:\n            print(\"skipping line: {}\".format(err))\n            continue\n        print(format_report(secret, guesses))\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n",
 "opps": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-114,
-117
+164,
+167
 ],
 "alt_span": [
-114,
-115
+164,
+165
 ]
 },
 {
@@ -5156,12 +5214,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-254,
-257
+457,
+460
 ],
 "alt_span": [
-252,
-253
+455,
+456
 ]
 },
 {
@@ -5169,12 +5227,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-424,
-427
+822,
+825
 ],
 "alt_span": [
-420,
-421
+818,
+819
 ]
 },
 {
@@ -5182,12 +5240,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-654,
-657
+1354,
+1357
 ],
 "alt_span": [
-648,
-649
+1348,
+1349
 ]
 },
 {
@@ -5195,12 +5253,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-865,
-868
+2097,
+2100
 ],
 "alt_span": [
-857,
-858
+2089,
+2090
 ]
 },
 {
@@ -5208,31 +5266,32 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1157,
-1160
+2379,
+2382
 ],
 "alt_span": [
-1147,
-1148
+2369,
+2370
 ]
 }
 ],
 "k_en": 6,
-"shared_fraction": 0.967,
+"shared_fraction": 0.986,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-114,
-117
+164,
+167
 ],
 "alt_span": [
-114,
-115
+164,
+165
 ]
 },
 {
@@ -5240,12 +5299,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-254,
-257
+457,
+460
 ],
 "alt_span": [
-252,
-253
+455,
+456
 ]
 },
 {
@@ -5253,12 +5312,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-424,
-427
+822,
+825
 ],
 "alt_span": [
-420,
-421
+818,
+819
 ]
 },
 {
@@ -5266,12 +5325,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-654,
-657
+1354,
+1357
 ],
 "alt_span": [
-648,
-649
+1348,
+1349
 ]
 },
 {
@@ -5279,12 +5338,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-865,
-868
+2097,
+2100
 ],
 "alt_span": [
-857,
-858
+2089,
+2090
 ]
 },
 {
@@ -5292,16 +5351,21 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1157,
-1160
+2379,
+2382
 ],
 "alt_span": [
-1147,
-1148
+2369,
+2370
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_except__t027",
@@ -10287,20 +10351,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def decimal_to_binary(decimal_int):\n    try:\n        if not isinstance(decimal_int, int):\n            raise TypeError(\"Input must be an integer.\")\n    except TypeError as err:\n        return f\"Error: {err}\"\n\n    try:\n        if decimal_int < 0:\n            raise ValueError(\"Input must be a non-negative integer.\")\n    except ValueError as err:\n        return f\"Error: {err}\"\n\n    if decimal_int == 0:\n        return \"0\"\n\n    binary_string = \"\"\n    try:\n        while decimal_int > 0:\n            remainder = decimal_int % 2\n            try:\n                binary_string = str(remainder) + binary_string\n            except TypeError as err: # unlikely but possible with complex types\n                return f\"Error converting remainder to string: {err}\"\n            try:\n                decimal_int //= 2\n            except ZeroDivisionError as err: # for demonstration, not really applicable here\n                return f\"Error during integer division: {err}\"\n    except Exception as err:\n        return f\"An unexpected error occurred during conversion: {err}\"\n\n    try:\n        if not all(char in '01' for char in binary_string):\n            raise ValueError(\"Generated string contains non-binary characters.\")\n    except ValueError as err:\n        return f\"Post-validation error: {err}\"\n\n    return binary_string\n",
-"text_alt": "def decimal_to_binary(decimal_int):\n    try:\n        if not isinstance(decimal_int, int):\n            raise TypeError(\"Input must be an integer.\")\n    except TypeError, err:\n        return f\"Error: {err}\"\n\n    try:\n        if decimal_int < 0:\n            raise ValueError(\"Input must be a non-negative integer.\")\n    except ValueError, err:\n        return f\"Error: {err}\"\n\n    if decimal_int == 0:\n        return \"0\"\n\n    binary_string = \"\"\n    try:\n        while decimal_int > 0:\n            remainder = decimal_int % 2\n            try:\n                binary_string = str(remainder) + binary_string\n            except TypeError, err: # unlikely but possible with complex types\n                return f\"Error converting remainder to string: {err}\"\n            try:\n                decimal_int //= 2\n            except ZeroDivisionError, err: # for demonstration, not really applicable here\n                return f\"Error during integer division: {err}\"\n    except Exception, err:\n        return f\"An unexpected error occurred during conversion: {err}\"\n\n    try:\n        if not all(char in '01' for char in binary_string):\n            raise ValueError(\"Generated string contains non-binary characters.\")\n    except ValueError, err:\n        return f\"Post-validation error: {err}\"\n\n    return binary_string\n",
+"text_nat": "import sys\n\n\ndef decimal_to_binary(decimal_int):\n    \"\"\"Return the binary string representation of a non-negative integer.\"\"\"\n    try:\n        value = int(decimal_int)\n    except (TypeError, ValueError) as err:\n        raise ValueError(\"not an integer: {0!r} ({1})\".format(decimal_int, err))\n    if value < 0:\n        raise ValueError(\"negative input not supported: {0}\".format(value))\n    digits = []\n    while value > 0:\n        digits.append(str(value & 1))\n        value >>= 1\n    if not digits:\n        return \"0\"\n    return \"\".join(reversed(digits))\n\n\ndef binary_to_decimal(bits):\n    \"\"\"Inverse of decimal_to_binary: read a binary string back as an integer.\"\"\"\n    try:\n        return int(bits, 2)\n    except ValueError as err:\n        raise ValueError(\"not a binary string: {0!r} ({1})\".format(bits, err))\n\n\ndef parse_token(token):\n    \"\"\"Accept either a decimal literal or a '0b...' binary literal.\"\"\"\n    text = token.strip()\n    try:\n        return int(text)\n    except ValueError as err:\n        if not text.lower().startswith(\"0b\"):\n            raise ValueError(\"unrecognised number {0!r} ({1})\".format(token, err))\n    try:\n        return binary_to_decimal(text[2:])\n    except ValueError as err:\n        raise ValueError(\"bad binary literal {0!r}: {1}\".format(token, err))\n\n\ndef group_bits(bits, size):\n    if size <= 0:\n        return bits\n    padded = bits.rjust((len(bits) + size - 1) // size * size, \"0\")\n    return \" \".join(padded[i:i + size] for i in range(0, len(padded), size))\n\n\ndef format_row(token, width, group):\n    try:\n        value = parse_token(token)\n    except ValueError as err:\n        return \"{0:>12} -> error: {1}\".format(token, err)\n    bits = decimal_to_binary(value).rjust(width, \"0\")\n    return \"{0:>12} -> {1}\".format(token, group_bits(bits, group))\n\n\ndef parse_option_int(raw, name):\n    try:\n        return int(raw)\n    except ValueError as err:\n        raise ValueError(\"option --{0} needs an integer, got {1!r} ({2})\".format(name, raw, err))\n\n\ndef main(argv=None):\n    args = list(sys.argv[1:] if argv is None else argv)\n    width, group = 0, 0\n    while args and args[0].startswith(\"--\"):\n        option = args.pop(0)[2:]\n        if \"=\" not in option:\n            sys.stderr.write(\"option --{0} needs a value\\n\".format(option))\n            return 2\n        name, raw = option.split(\"=\", 1)\n        try:\n            size = parse_option_int(raw, name)\n        except ValueError as err:\n            sys.stderr.write(\"{0}\\n\".format(err))\n            return 2\n        if name == \"width\":\n            width = size\n        elif name == \"group\":\n            group = size\n        else:\n            sys.stderr.write(\"unknown option --{0}\\n\".format(name))\n            return 2\n    for token in args or [\"0\", \"11\", \"255\", \"0b1011\", \"twelve\"]:\n        print(format_row(token, width, group))\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main())\n",
+"text_alt": "import sys\n\n\ndef decimal_to_binary(decimal_int):\n    \"\"\"Return the binary string representation of a non-negative integer.\"\"\"\n    try:\n        value = int(decimal_int)\n    except (TypeError, ValueError), err:\n        raise ValueError(\"not an integer: {0!r} ({1})\".format(decimal_int, err))\n    if value < 0:\n        raise ValueError(\"negative input not supported: {0}\".format(value))\n    digits = []\n    while value > 0:\n        digits.append(str(value & 1))\n        value >>= 1\n    if not digits:\n        return \"0\"\n    return \"\".join(reversed(digits))\n\n\ndef binary_to_decimal(bits):\n    \"\"\"Inverse of decimal_to_binary: read a binary string back as an integer.\"\"\"\n    try:\n        return int(bits, 2)\n    except ValueError, err:\n        raise ValueError(\"not a binary string: {0!r} ({1})\".format(bits, err))\n\n\ndef parse_token(token):\n    \"\"\"Accept either a decimal literal or a '0b...' binary literal.\"\"\"\n    text = token.strip()\n    try:\n        return int(text)\n    except ValueError, err:\n        if not text.lower().startswith(\"0b\"):\n            raise ValueError(\"unrecognised number {0!r} ({1})\".format(token, err))\n    try:\n        return binary_to_decimal(text[2:])\n    except ValueError, err:\n        raise ValueError(\"bad binary literal {0!r}: {1}\".format(token, err))\n\n\ndef group_bits(bits, size):\n    if size <= 0:\n        return bits\n    padded = bits.rjust((len(bits) + size - 1) // size * size, \"0\")\n    return \" \".join(padded[i:i + size] for i in range(0, len(padded), size))\n\n\ndef format_row(token, width, group):\n    try:\n        value = parse_token(token)\n    except ValueError, err:\n        return \"{0:>12} -> error: {1}\".format(token, err)\n    bits = decimal_to_binary(value).rjust(width, \"0\")\n    return \"{0:>12} -> {1}\".format(token, group_bits(bits, group))\n\n\ndef parse_option_int(raw, name):\n    try:\n        return int(raw)\n    except ValueError, err:\n        raise ValueError(\"option --{0} needs an integer, got {1!r} ({2})\".format(name, raw, err))\n\n\ndef main(argv=None):\n    args = list(sys.argv[1:] if argv is None else argv)\n    width, group = 0, 0\n    while args and args[0].startswith(\"--\"):\n        option = args.pop(0)[2:]\n        if \"=\" not in option:\n            sys.stderr.write(\"option --{0} needs a value\\n\".format(option))\n            return 2\n        name, raw = option.split(\"=\", 1)\n        try:\n            size = parse_option_int(raw, name)\n        except ValueError, err:\n            sys.stderr.write(\"{0}\\n\".format(err))\n            return 2\n        if name == \"width\":\n            width = size\n        elif name == \"group\":\n            group = size\n        else:\n            sys.stderr.write(\"unknown option --{0}\\n\".format(name))\n            return 2\n    for token in args or [\"0\", \"11\", \"255\", \"0b1011\", \"twelve\"]:\n        print(format_row(token, width, group))\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main())\n",
 "opps": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-167,
-170
+202,
+205
 ],
 "alt_span": [
-167,
-168
+202,
+203
 ]
 },
 {
@@ -10308,12 +10372,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-336,
-339
+726,
+729
 ],
 "alt_span": [
-334,
-335
+724,
+725
 ]
 },
 {
@@ -10321,12 +10385,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-633,
-636
+991,
+994
 ],
 "alt_span": [
-629,
-630
+987,
+988
 ]
 },
 {
@@ -10334,12 +10398,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-842,
-845
+1202,
+1205
 ],
 "alt_span": [
-836,
-837
+1196,
+1197
 ]
 },
 {
@@ -10347,12 +10411,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-982,
-985
+1605,
+1608
 ],
 "alt_span": [
-974,
-975
+1597,
+1598
 ]
 },
 {
@@ -10360,31 +10424,45 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1235,
-1238
+1882,
+1885
 ],
 "alt_span": [
-1225,
-1226
+1872,
+1873
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2423,
+2426
+],
+"alt_span": [
+2411,
+2412
 ]
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.969,
+"k_en": 7,
+"shared_fraction": 0.987,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-167,
-170
+202,
+205
 ],
 "alt_span": [
-167,
-168
+202,
+203
 ]
 },
 {
@@ -10392,12 +10470,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-336,
-339
+726,
+729
 ],
 "alt_span": [
-334,
-335
+724,
+725
 ]
 },
 {
@@ -10405,12 +10483,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-633,
-636
+991,
+994
 ],
 "alt_span": [
-629,
-630
+987,
+988
 ]
 },
 {
@@ -10418,12 +10496,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-842,
-845
+1202,
+1205
 ],
 "alt_span": [
-836,
-837
+1196,
+1197
 ]
 },
 {
@@ -10431,12 +10509,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-982,
-985
+1605,
+1608
 ],
 "alt_span": [
-974,
-975
+1597,
+1598
 ]
 },
 {
@@ -10444,16 +10522,34 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1235,
-1238
+1882,
+1885
 ],
 "alt_span": [
-1225,
-1226
+1872,
+1873
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2423,
+2426
+],
+"alt_span": [
+2411,
+2412
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_except__t052",
@@ -12290,210 +12386,6 @@
 "alt_span": [
 1434,
 1435
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py2_except__t060",
-"family": "py2_except",
-"topic": "Image Resizer (Dummy)",
-"angle": "code",
-"text_es": "Create a function `dummy_resize_image(image_data, new_width, new_height)` that simulates image resizing. It takes `image_data` (a string representing image content) and `new_width`, `new_height` (integers) and returns a new string like 'Resized image to WxH: [original_data]'. For example, `dummy_resize_image('img1.png', 100, 200)` should return `'Resized image to 100x200: img1.png'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def dummy_resize_image(image_data, new_width, new_height):\n    try:\n        if not isinstance(image_data, str):\n            raise TypeError(\"Image data must be a string.\")\n    except TypeError as err:\n        return f\"Error: {err}\"\n\n    try:\n        width_str = str(new_width)\n    except ValueError as err:\n        return f\"Error converting width: {err}\"\n\n    try:\n        height_str = str(new_height)\n    except ValueError as err:\n        return f\"Error converting height: {err}\"\n\n    try:\n        if not isinstance(new_width, int) or new_width <= 0:\n            raise ValueError(\"New width must be a positive integer.\")\n    except ValueError as err:\n        return f\"Error: {err}\"\n\n    try:\n        if not isinstance(new_height, int) or new_height <= 0:\n            raise ValueError(\"New height must be a positive integer.\")\n    except ValueError as err:\n        return f\"Error: {err}\"\n\n    try:\n        if not image_data.strip():\n            raise ValueError(\"Image data cannot be empty.\")\n    except ValueError as err:\n        return f\"Error: {err}\"\n\n    try:\n        result = f\"Resized image to {width_str}x{height_str}: {image_data}\"\n    except Exception as err:\n        return f\"Error creating result string: {err}\"\n\n    return result\n",
-"text_alt": "def dummy_resize_image(image_data, new_width, new_height):\n    try:\n        if not isinstance(image_data, str):\n            raise TypeError(\"Image data must be a string.\")\n    except TypeError, err:\n        return f\"Error: {err}\"\n\n    try:\n        width_str = str(new_width)\n    except ValueError, err:\n        return f\"Error converting width: {err}\"\n\n    try:\n        height_str = str(new_height)\n    except ValueError, err:\n        return f\"Error converting height: {err}\"\n\n    try:\n        if not isinstance(new_width, int) or new_width <= 0:\n            raise ValueError(\"New width must be a positive integer.\")\n    except ValueError, err:\n        return f\"Error: {err}\"\n\n    try:\n        if not isinstance(new_height, int) or new_height <= 0:\n            raise ValueError(\"New height must be a positive integer.\")\n    except ValueError, err:\n        return f\"Error: {err}\"\n\n    try:\n        if not image_data.strip():\n            raise ValueError(\"Image data cannot be empty.\")\n    except ValueError, err:\n        return f\"Error: {err}\"\n\n    try:\n        result = f\"Resized image to {width_str}x{height_str}: {image_data}\"\n    except Exception, err:\n        return f\"Error creating result string: {err}\"\n\n    return result\n",
-"opps": [
-{
-"k": 0,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-192,
-195
-],
-"alt_span": [
-192,
-193
-]
-},
-{
-"k": 1,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-298,
-301
-],
-"alt_span": [
-296,
-297
-]
-},
-{
-"k": 2,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-423,
-426
-],
-"alt_span": [
-419,
-420
-]
-},
-{
-"k": 3,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-643,
-646
-],
-"alt_span": [
-637,
-638
-]
-},
-{
-"k": 4,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-848,
-851
-],
-"alt_span": [
-840,
-841
-]
-},
-{
-"k": 5,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1014,
-1017
-],
-"alt_span": [
-1004,
-1005
-]
-},
-{
-"k": 6,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1160,
-1163
-],
-"alt_span": [
-1148,
-1149
-]
-}
-],
-"k_en": 7,
-"shared_fraction": 0.964,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-192,
-195
-],
-"alt_span": [
-192,
-193
-]
-},
-{
-"k": 1,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-298,
-301
-],
-"alt_span": [
-296,
-297
-]
-},
-{
-"k": 2,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-423,
-426
-],
-"alt_span": [
-419,
-420
-]
-},
-{
-"k": 3,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-643,
-646
-],
-"alt_span": [
-637,
-638
-]
-},
-{
-"k": 4,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-848,
-851
-],
-"alt_span": [
-840,
-841
-]
-},
-{
-"k": 5,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1014,
-1017
-],
-"alt_span": [
-1004,
-1005
-]
-},
-{
-"k": 6,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1160,
-1163
-],
-"alt_span": [
-1148,
-1149
 ]
 }
 ],
@@ -15020,236 +14912,6 @@
 "alt_span": [
 931,
 932
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py2_except__t073",
-"family": "py2_except",
-"topic": "Count Lines in Text File",
-"angle": "code",
-"text_es": "Count the total number of lines in a given text file. The function `count_file_lines(filepath)` should return the line count. Assume the file exists and is readable. Input: `filepath` (str). Output: `line_count` (int).\nExample (assuming 'test.txt' has 3 lines): `count_file_lines('test.txt')` should return `3`.\nExample (assuming 'empty.txt' has 0 lines): `count_file_lines('empty.txt')` should return `0`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "import os\n\ndef count_file_lines(filepath):\n    line_count = 0\n    file_handle = None\n    try:\n        if not os.path.exists(filepath):\n            raise FileNotFoundError(f\"File not found: {filepath}\")\n    except FileNotFoundError as err:\n        print(f\"Error: {err}\")\n        return -1\n    except TypeError as err:\n        print(f\"Error: Invalid filepath type: {err}\")\n        return -1\n\n    try:\n        file_handle = open(filepath, 'r')\n    except IOError as err:\n        print(f\"Error opening file: {err}\")\n        return -1\n    except FileNotFoundError as err:  # Redundant but demonstrates another try/except\n        print(f\"Error: File not found during open: {err}\")\n        return -1\n\n    try:\n        for _ in file_handle:\n            line_count += 1\n    except ValueError as err:\n        print(f\"Error reading line: {err}\")\n        return -1\n    except OSError as err:\n        print(f\"Error during file read operation: {err}\")\n        return -1\n\n    try:\n        if file_handle:\n            file_handle.close()\n    except IOError as err:\n        print(f\"Error closing file: {err}\")\n        return -1\n    except AttributeError as err:\n        print(f\"Error: File handle not properly initialized: {err}\")\n        return -1\n\n    return line_count\n",
-"text_alt": "import os\n\ndef count_file_lines(filepath):\n    line_count = 0\n    file_handle = None\n    try:\n        if not os.path.exists(filepath):\n            raise FileNotFoundError(f\"File not found: {filepath}\")\n    except FileNotFoundError, err:\n        print(f\"Error: {err}\")\n        return -1\n    except TypeError, err:\n        print(f\"Error: Invalid filepath type: {err}\")\n        return -1\n\n    try:\n        file_handle = open(filepath, 'r')\n    except IOError, err:\n        print(f\"Error opening file: {err}\")\n        return -1\n    except FileNotFoundError, err:  # Redundant but demonstrates another try/except\n        print(f\"Error: File not found during open: {err}\")\n        return -1\n\n    try:\n        for _ in file_handle:\n            line_count += 1\n    except ValueError, err:\n        print(f\"Error reading line: {err}\")\n        return -1\n    except OSError, err:\n        print(f\"Error during file read operation: {err}\")\n        return -1\n\n    try:\n        if file_handle:\n            file_handle.close()\n    except IOError, err:\n        print(f\"Error closing file: {err}\")\n        return -1\n    except AttributeError, err:\n        print(f\"Error: File handle not properly initialized: {err}\")\n        return -1\n\n    return line_count\n",
-"opps": [
-{
-"k": 0,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-230,
-233
-],
-"alt_span": [
-230,
-231
-]
-},
-{
-"k": 1,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-308,
-311
-],
-"alt_span": [
-306,
-307
-]
-},
-{
-"k": 2,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-459,
-462
-],
-"alt_span": [
-455,
-456
-]
-},
-{
-"k": 3,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-558,
-561
-],
-"alt_span": [
-552,
-553
-]
-},
-{
-"k": 4,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-782,
-785
-],
-"alt_span": [
-774,
-775
-]
-},
-{
-"k": 5,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-871,
-874
-],
-"alt_span": [
-861,
-862
-]
-},
-{
-"k": 6,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1040,
-1043
-],
-"alt_span": [
-1028,
-1029
-]
-},
-{
-"k": 7,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1136,
-1139
-],
-"alt_span": [
-1122,
-1123
-]
-}
-],
-"k_en": 8,
-"shared_fraction": 0.959,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-230,
-233
-],
-"alt_span": [
-230,
-231
-]
-},
-{
-"k": 1,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-308,
-311
-],
-"alt_span": [
-306,
-307
-]
-},
-{
-"k": 2,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-459,
-462
-],
-"alt_span": [
-455,
-456
-]
-},
-{
-"k": 3,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-558,
-561
-],
-"alt_span": [
-552,
-553
-]
-},
-{
-"k": 4,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-782,
-785
-],
-"alt_span": [
-774,
-775
-]
-},
-{
-"k": 5,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-871,
-874
-],
-"alt_span": [
-861,
-862
-]
-},
-{
-"k": 6,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1040,
-1043
-],
-"alt_span": [
-1028,
-1029
-]
-},
-{
-"k": 7,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1136,
-1139
-],
-"alt_span": [
-1122,
-1123
 ]
 }
 ],
@@ -31246,6 +30908,190 @@
 "free_filter": true
 },
 {
+"doc_id": "py2_except__t152",
+"family": "py2_except",
+"topic": "Validate IP Address (Simple)",
+"angle": "code",
+"text_es": "Perform a simple validation check for an IPv4 address. It should consist of four octets separated by dots, where each octet is a number between 0 and 255. The function `is_valid_ipv4` should take one argument: `ip_address` (str). It should return a boolean. \nExample 1: `is_valid_ipv4('192.168.1.1')` should return `True`. \nExample 2: `is_valid_ipv4('256.0.0.1')` should return `False`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def parse_octet(text):\n    \"\"\"Convert a single octet string to an int, raising ValueError on bad input.\"\"\"\n    if not text or len(text) > 3:\n        raise ValueError(\"octet %r must have 1 to 3 digits\" % text)\n    try:\n        value = int(text)\n    except ValueError as err:\n        raise ValueError(\"octet %r is not a decimal number (%s)\" % (text, err))\n    if str(value) != text:\n        raise ValueError(\"octet %r is not in canonical decimal form\" % text)\n    if not 0 <= value <= 255:\n        raise ValueError(\"octet %r is outside the range 0-255\" % text)\n    return value\n\n\ndef split_octets(ip_address):\n    \"\"\"Return the four integer octets of ip_address, or raise ValueError.\"\"\"\n    if not isinstance(ip_address, str):\n        raise ValueError(\"address must be a string, got %s\" % type(ip_address).__name__)\n    parts = ip_address.split('.')\n    if len(parts) != 4:\n        raise ValueError(\"expected 4 octets, found %d\" % len(parts))\n    return [parse_octet(part) for part in parts]\n\n\ndef validation_error(ip_address):\n    \"\"\"Return the reason ip_address is not a valid IPv4 address, or None.\"\"\"\n    try:\n        split_octets(ip_address)\n    except ValueError as err:\n        return str(err)\n    return None\n\n\ndef is_valid_ipv4(ip_address):\n    \"\"\"Simple validation check for an IPv4 address.\"\"\"\n    return validation_error(ip_address) is None\n\n\ndef describe(ip_address):\n    \"\"\"Return the category of a valid address such as 'private' or 'multicast'.\"\"\"\n    octets = split_octets(ip_address)\n    first = octets[0]\n    if first == 127:\n        return \"loopback\"\n    if first == 10 or (first == 192 and octets[1] == 168) or (first == 172 and 16 <= octets[1] <= 31):\n        return \"private\"\n    if 224 <= first <= 239:\n        return \"multicast\"\n    return \"public\"\n\n\ndef address_to_int(address):\n    \"\"\"Pack a dotted address into a single 32 bit integer.\"\"\"\n    octets = split_octets(address)\n    return (octets[0] << 24) | (octets[1] << 16) | (octets[2] << 8) | octets[3]\n\n\ndef parse_address_list(text):\n    \"\"\"Parse a comma separated list, returning (packed, address) pairs and failures.\"\"\"\n    packed, failures = [], []\n    for item in text.split(','):\n        item = item.strip()\n        try:\n            packed.append((address_to_int(item), item))\n        except ValueError as err:\n            failures.append((item, str(err)))\n    return packed, failures\n\n\ndef parse_cidr(spec):\n    \"\"\"Split 'address/prefix' into (packed address, prefix length).\"\"\"\n    address, sep, prefix = spec.partition('/')\n    if not sep:\n        raise ValueError(\"missing '/' in %r\" % spec)\n    try:\n        length = int(prefix)\n    except ValueError as err:\n        raise ValueError(\"bad prefix length in %r (%s)\" % (spec, err))\n    if not 0 <= length <= 32:\n        raise ValueError(\"prefix length %d out of range\" % length)\n    try:\n        packed = address_to_int(address)\n    except ValueError as err:\n        raise ValueError(\"%r is not a valid IPv4 address: %s\" % (address, err))\n    return packed, length\n\n\ndef network_address(spec):\n    \"\"\"Return the network address of a CIDR block such as '192.168.1.37/24'.\"\"\"\n    packed, length = parse_cidr(spec)\n    mask = ((1 << length) - 1) << (32 - length) if length else 0\n    masked = packed & mask\n    return '.'.join(str((masked >> shift) & 255) for shift in (24, 16, 8, 0))\n\n\ndef main():\n    text = '192.168.1.1, 256.0.0.1, 127.0.0.1, 1.2.3, 10.0.0.05, 239.1.2.3'\n    for candidate in [item.strip() for item in text.split(',')]:\n        reason = validation_error(candidate)\n        if reason is None:\n            print(\"%-15s valid   %s\" % (candidate, describe(candidate)))\n        else:\n            print(\"%-15s invalid %s\" % (candidate, reason))\n    packed, failures = parse_address_list(text)\n    print(\"sorted: %s\" % ', '.join(pair[1] for pair in sorted(packed)))\n    for item, reason in failures:\n        print(\"not sortable: %s (%s)\" % (item, reason))\n    for spec in ['192.168.1.37/24', '10.1.2.3/8', '8.8.8.8/33', '1.2.3.4/abc']:\n        try:\n            print(\"%-16s network %s\" % (spec, network_address(spec)))\n        except ValueError as err:\n            print(\"%-16s error: %s\" % (spec, err))\n\n\nif __name__ == '__main__':\n    main()\n",
+"text_alt": "def parse_octet(text):\n    \"\"\"Convert a single octet string to an int, raising ValueError on bad input.\"\"\"\n    if not text or len(text) > 3:\n        raise ValueError(\"octet %r must have 1 to 3 digits\" % text)\n    try:\n        value = int(text)\n    except ValueError, err:\n        raise ValueError(\"octet %r is not a decimal number (%s)\" % (text, err))\n    if str(value) != text:\n        raise ValueError(\"octet %r is not in canonical decimal form\" % text)\n    if not 0 <= value <= 255:\n        raise ValueError(\"octet %r is outside the range 0-255\" % text)\n    return value\n\n\ndef split_octets(ip_address):\n    \"\"\"Return the four integer octets of ip_address, or raise ValueError.\"\"\"\n    if not isinstance(ip_address, str):\n        raise ValueError(\"address must be a string, got %s\" % type(ip_address).__name__)\n    parts = ip_address.split('.')\n    if len(parts) != 4:\n        raise ValueError(\"expected 4 octets, found %d\" % len(parts))\n    return [parse_octet(part) for part in parts]\n\n\ndef validation_error(ip_address):\n    \"\"\"Return the reason ip_address is not a valid IPv4 address, or None.\"\"\"\n    try:\n        split_octets(ip_address)\n    except ValueError, err:\n        return str(err)\n    return None\n\n\ndef is_valid_ipv4(ip_address):\n    \"\"\"Simple validation check for an IPv4 address.\"\"\"\n    return validation_error(ip_address) is None\n\n\ndef describe(ip_address):\n    \"\"\"Return the category of a valid address such as 'private' or 'multicast'.\"\"\"\n    octets = split_octets(ip_address)\n    first = octets[0]\n    if first == 127:\n        return \"loopback\"\n    if first == 10 or (first == 192 and octets[1] == 168) or (first == 172 and 16 <= octets[1] <= 31):\n        return \"private\"\n    if 224 <= first <= 239:\n        return \"multicast\"\n    return \"public\"\n\n\ndef address_to_int(address):\n    \"\"\"Pack a dotted address into a single 32 bit integer.\"\"\"\n    octets = split_octets(address)\n    return (octets[0] << 24) | (octets[1] << 16) | (octets[2] << 8) | octets[3]\n\n\ndef parse_address_list(text):\n    \"\"\"Parse a comma separated list, returning (packed, address) pairs and failures.\"\"\"\n    packed, failures = [], []\n    for item in text.split(','):\n        item = item.strip()\n        try:\n            packed.append((address_to_int(item), item))\n        except ValueError, err:\n            failures.append((item, str(err)))\n    return packed, failures\n\n\ndef parse_cidr(spec):\n    \"\"\"Split 'address/prefix' into (packed address, prefix length).\"\"\"\n    address, sep, prefix = spec.partition('/')\n    if not sep:\n        raise ValueError(\"missing '/' in %r\" % spec)\n    try:\n        length = int(prefix)\n    except ValueError, err:\n        raise ValueError(\"bad prefix length in %r (%s)\" % (spec, err))\n    if not 0 <= length <= 32:\n        raise ValueError(\"prefix length %d out of range\" % length)\n    try:\n        packed = address_to_int(address)\n    except ValueError, err:\n        raise ValueError(\"%r is not a valid IPv4 address: %s\" % (address, err))\n    return packed, length\n\n\ndef network_address(spec):\n    \"\"\"Return the network address of a CIDR block such as '192.168.1.37/24'.\"\"\"\n    packed, length = parse_cidr(spec)\n    mask = ((1 << length) - 1) << (32 - length) if length else 0\n    masked = packed & mask\n    return '.'.join(str((masked >> shift) & 255) for shift in (24, 16, 8, 0))\n\n\ndef main():\n    text = '192.168.1.1, 256.0.0.1, 127.0.0.1, 1.2.3, 10.0.0.05, 239.1.2.3'\n    for candidate in [item.strip() for item in text.split(',')]:\n        reason = validation_error(candidate)\n        if reason is None:\n            print(\"%-15s valid   %s\" % (candidate, describe(candidate)))\n        else:\n            print(\"%-15s invalid %s\" % (candidate, reason))\n    packed, failures = parse_address_list(text)\n    print(\"sorted: %s\" % ', '.join(pair[1] for pair in sorted(packed)))\n    for item, reason in failures:\n        print(\"not sortable: %s (%s)\" % (item, reason))\n    for spec in ['192.168.1.37/24', '10.1.2.3/8', '8.8.8.8/33', '1.2.3.4/abc']:\n        try:\n            print(\"%-16s network %s\" % (spec, network_address(spec)))\n        except ValueError, err:\n            print(\"%-16s error: %s\" % (spec, err))\n\n\nif __name__ == '__main__':\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+265,
+268
+],
+"alt_span": [
+265,
+266
+]
+},
+{
+"k": 1,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1166,
+1169
+],
+"alt_span": [
+1164,
+1165
+]
+},
+{
+"k": 2,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2285,
+2288
+],
+"alt_span": [
+2281,
+2282
+]
+},
+{
+"k": 3,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2638,
+2641
+],
+"alt_span": [
+2632,
+2633
+]
+},
+{
+"k": 4,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2886,
+2889
+],
+"alt_span": [
+2878,
+2879
+]
+},
+{
+"k": 5,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+4090,
+4093
+],
+"alt_span": [
+4080,
+4081
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.993,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+265,
+268
+],
+"alt_span": [
+265,
+266
+]
+},
+{
+"k": 1,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1166,
+1169
+],
+"alt_span": [
+1164,
+1165
+]
+},
+{
+"k": 2,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2285,
+2288
+],
+"alt_span": [
+2281,
+2282
+]
+},
+{
+"k": 3,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2638,
+2641
+],
+"alt_span": [
+2632,
+2633
+]
+},
+{
+"k": 4,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2886,
+2889
+],
+"alt_span": [
+2878,
+2879
+]
+},
+{
+"k": 5,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+4090,
+4093
+],
+"alt_span": [
+4080,
+4081
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
 "doc_id": "py2_except__t153",
 "family": "py2_except",
 "topic": "Basic Matrix Multiplication",
@@ -33269,20 +33115,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def calculate_discount_price(original_price, discount_percentage):\n    try:\n        original_price = float(original_price)\n    except ValueError as err:\n        raise ValueError(f\"Invalid original_price: {original_price}. Must be a number. Error: {err}\")\n\n    try:\n        discount_percentage = float(discount_percentage)\n    except ValueError as err:\n        raise ValueError(f\"Invalid discount_percentage: {discount_percentage}. Must be a number. Error: {err}\")\n\n    try:\n        if original_price < 0:\n            raise ValueError(\"Original price cannot be negative.\")\n    except ValueError as err:\n        raise ValueError(f\"Price error: {err}\")\n\n    try:\n        if not (0 <= discount_percentage <= 100):\n            raise ValueError(\"Discount percentage must be between 0 and 100.\")\n    except ValueError as err:\n        raise ValueError(f\"Discount error: {err}\")\n\n    try:\n        discount_factor = discount_percentage / 100.0\n    except ZeroDivisionError as err:\n        # This specific ZeroDivisionError won't happen here as 100.0 is not zero,\n        # but included for demonstration of widespread try/except.\n        raise ValueError(f\"Unexpected division error in discount calculation: {err}\")\n\n    try:\n        final_price = original_price * (1 - discount_factor)\n    except TypeError as err:\n        raise TypeError(f\"Type error during final price calculation. Check inputs. Error: {err}\")\n\n    return final_price\n",
-"text_alt": "def calculate_discount_price(original_price, discount_percentage):\n    try:\n        original_price = float(original_price)\n    except ValueError, err:\n        raise ValueError(f\"Invalid original_price: {original_price}. Must be a number. Error: {err}\")\n\n    try:\n        discount_percentage = float(discount_percentage)\n    except ValueError, err:\n        raise ValueError(f\"Invalid discount_percentage: {discount_percentage}. Must be a number. Error: {err}\")\n\n    try:\n        if original_price < 0:\n            raise ValueError(\"Original price cannot be negative.\")\n    except ValueError, err:\n        raise ValueError(f\"Price error: {err}\")\n\n    try:\n        if not (0 <= discount_percentage <= 100):\n            raise ValueError(\"Discount percentage must be between 0 and 100.\")\n    except ValueError, err:\n        raise ValueError(f\"Discount error: {err}\")\n\n    try:\n        discount_factor = discount_percentage / 100.0\n    except ZeroDivisionError, err:\n        # This specific ZeroDivisionError won't happen here as 100.0 is not zero,\n        # but included for demonstration of widespread try/except.\n        raise ValueError(f\"Unexpected division error in discount calculation: {err}\")\n\n    try:\n        final_price = original_price * (1 - discount_factor)\n    except TypeError, err:\n        raise TypeError(f\"Type error during final price calculation. Check inputs. Error: {err}\")\n\n    return final_price\n",
+"text_nat": "def parse_price(text):\n    \"\"\"Convert a textual price into a non-negative float.\"\"\"\n    try:\n        price = float(text)\n    except ValueError as err:\n        raise ValueError(\"price %r is not a number (%s)\" % (text, err))\n    if price < 0:\n        raise ValueError(\"price %.2f may not be negative\" % price)\n    return price\n\n\ndef parse_percentage(text):\n    \"\"\"Convert a textual discount into a float between 0 and 100.\"\"\"\n    stripped = str(text).strip().rstrip(\"%\")\n    try:\n        percentage = float(stripped)\n    except ValueError as err:\n        raise ValueError(\"discount %r is not a number (%s)\" % (text, err))\n    if not 0.0 <= percentage <= 100.0:\n        raise ValueError(\"discount %.2f is outside 0..100\" % percentage)\n    return percentage\n\n\ndef calculate_discount_price(original_price, discount_percentage):\n    \"\"\"Return the price left after applying discount_percentage.\"\"\"\n    try:\n        price = parse_price(original_price)\n        percentage = parse_percentage(discount_percentage)\n    except ValueError as err:\n        raise ValueError(\"cannot compute discounted price: %s\" % err)\n    return round(price * (100.0 - percentage) / 100.0, 2)\n\n\ndef parse_item_line(line):\n    \"\"\"Split 'name,price,discount' into a (name, price, discount) tuple.\"\"\"\n    fields = [field.strip() for field in line.split(\",\")]\n    if len(fields) != 3:\n        raise ValueError(\"expected 3 comma separated fields, got %d\" % len(fields))\n    name = fields[0]\n    if not name:\n        raise ValueError(\"item name must not be empty\")\n    try:\n        price = parse_price(fields[1])\n    except ValueError as err:\n        raise ValueError(\"bad price column: %s\" % err)\n    try:\n        discount = parse_percentage(fields[2])\n    except ValueError as err:\n        raise ValueError(\"bad discount column: %s\" % err)\n    return name, price, discount\n\n\ndef receipt_row(line):\n    \"\"\"Turn one input line into a (text, final_price) pair.\"\"\"\n    name, price, discount = parse_item_line(line)\n    final = calculate_discount_price(price, discount)\n    saved = round(price - final, 2)\n    text = \"%-14s %8.2f %7.1f%% %9.2f %9.2f\" % (name, price, discount, final, saved)\n    return text, final\n\n\ndef main():\n    import sys\n\n    total = 0.0\n    print(\"%-14s %8s %8s %9s %9s\" % (\"ITEM\", \"PRICE\", \"OFF\", \"FINAL\", \"SAVED\"))\n    for number, line in enumerate(sys.stdin, start=1):\n        if not line.strip():\n            continue\n        try:\n            text, final = receipt_row(line)\n        except ValueError as err:\n            sys.stderr.write(\"line %d skipped: %s\\n\" % (number, err))\n            continue\n        print(text)\n        total += final\n    print(\"%-14s %36.2f\" % (\"TOTAL\", round(total, 2)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def parse_price(text):\n    \"\"\"Convert a textual price into a non-negative float.\"\"\"\n    try:\n        price = float(text)\n    except ValueError, err:\n        raise ValueError(\"price %r is not a number (%s)\" % (text, err))\n    if price < 0:\n        raise ValueError(\"price %.2f may not be negative\" % price)\n    return price\n\n\ndef parse_percentage(text):\n    \"\"\"Convert a textual discount into a float between 0 and 100.\"\"\"\n    stripped = str(text).strip().rstrip(\"%\")\n    try:\n        percentage = float(stripped)\n    except ValueError, err:\n        raise ValueError(\"discount %r is not a number (%s)\" % (text, err))\n    if not 0.0 <= percentage <= 100.0:\n        raise ValueError(\"discount %.2f is outside 0..100\" % percentage)\n    return percentage\n\n\ndef calculate_discount_price(original_price, discount_percentage):\n    \"\"\"Return the price left after applying discount_percentage.\"\"\"\n    try:\n        price = parse_price(original_price)\n        percentage = parse_percentage(discount_percentage)\n    except ValueError, err:\n        raise ValueError(\"cannot compute discounted price: %s\" % err)\n    return round(price * (100.0 - percentage) / 100.0, 2)\n\n\ndef parse_item_line(line):\n    \"\"\"Split 'name,price,discount' into a (name, price, discount) tuple.\"\"\"\n    fields = [field.strip() for field in line.split(\",\")]\n    if len(fields) != 3:\n        raise ValueError(\"expected 3 comma separated fields, got %d\" % len(fields))\n    name = fields[0]\n    if not name:\n        raise ValueError(\"item name must not be empty\")\n    try:\n        price = parse_price(fields[1])\n    except ValueError, err:\n        raise ValueError(\"bad price column: %s\" % err)\n    try:\n        discount = parse_percentage(fields[2])\n    except ValueError, err:\n        raise ValueError(\"bad discount column: %s\" % err)\n    return name, price, discount\n\n\ndef receipt_row(line):\n    \"\"\"Turn one input line into a (text, final_price) pair.\"\"\"\n    name, price, discount = parse_item_line(line)\n    final = calculate_discount_price(price, discount)\n    saved = round(price - final, 2)\n    text = \"%-14s %8.2f %7.1f%% %9.2f %9.2f\" % (name, price, discount, final, saved)\n    return text, final\n\n\ndef main():\n    import sys\n\n    total = 0.0\n    print(\"%-14s %8s %8s %9s %9s\" % (\"ITEM\", \"PRICE\", \"OFF\", \"FINAL\", \"SAVED\"))\n    for number, line in enumerate(sys.stdin, start=1):\n        if not line.strip():\n            continue\n        try:\n            text, final = receipt_row(line)\n        except ValueError, err:\n            sys.stderr.write(\"line %d skipped: %s\\n\" % (number, err))\n            continue\n        print(text)\n        total += final\n    print(\"%-14s %36.2f\" % (\"TOTAL\", round(total, 2)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-144,
-147
+142,
+145
 ],
 "alt_span": [
-144,
-145
+142,
+143
 ]
 },
 {
@@ -33290,12 +33136,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-343,
-346
+536,
+539
 ],
 "alt_span": [
-341,
-342
+534,
+535
 ]
 },
 {
@@ -33303,12 +33149,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-593,
-596
+1024,
+1027
 ],
 "alt_span": [
-589,
-590
+1020,
+1021
 ]
 },
 {
@@ -33316,12 +33162,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-810,
-813
+1596,
+1599
 ],
 "alt_span": [
-804,
-805
+1590,
+1591
 ]
 },
 {
@@ -33329,12 +33175,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-962,
-965
+1737,
+1740
 ],
 "alt_span": [
-954,
-955
+1729,
+1730
 ]
 },
 {
@@ -33342,31 +33188,32 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1297,
-1300
+2486,
+2489
 ],
 "alt_span": [
-1287,
-1288
+2476,
+2477
 ]
 }
 ],
 "k_en": 6,
-"shared_fraction": 0.971,
+"shared_fraction": 0.988,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-144,
-147
+142,
+145
 ],
 "alt_span": [
-144,
-145
+142,
+143
 ]
 },
 {
@@ -33374,12 +33221,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-343,
-346
+536,
+539
 ],
 "alt_span": [
-341,
-342
+534,
+535
 ]
 },
 {
@@ -33387,12 +33234,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-593,
-596
+1024,
+1027
 ],
 "alt_span": [
-589,
-590
+1020,
+1021
 ]
 },
 {
@@ -33400,12 +33247,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-810,
-813
+1596,
+1599
 ],
 "alt_span": [
-804,
-805
+1590,
+1591
 ]
 },
 {
@@ -33413,12 +33260,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-962,
-965
+1737,
+1740
 ],
 "alt_span": [
-954,
-955
+1729,
+1730
 ]
 },
 {
@@ -33426,16 +33273,21 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1297,
-1300
+2486,
+2489
 ],
 "alt_span": [
-1287,
-1288
+2476,
+2477
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_except__t164",
@@ -39171,20 +39023,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def cartesian_product(list1, list2):\n    result = []\n    try:\n        if not isinstance(list1, list) or not isinstance(list2, list):\n            raise TypeError(\"Both inputs must be lists.\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return []\n\n    for item1 in list1:\n        for item2 in list2:\n            try:\n                pair = (item1, item2)\n                result.append(pair)\n            except Exception as err:\n                print(f\"Error creating pair: {err}\")\n                continue\n\n    try:\n        if not all(isinstance(t, tuple) and len(t) == 2 for t in result):\n            raise ValueError(\"Some elements in the result are not valid pairs.\")\n    except ValueError as err:\n        print(f\"Validation Error: {err}\")\n        return []\n\n    try:\n        # Example of another try/except block for a specific operation\n        # This one is a bit contrived for the length requirement but demonstrates the point\n        if len(list1) > 0 and len(list2) > 0 and len(result) != len(list1) * len(list2):\n            raise ValueError(\"Result list length does not match expected cartesian product size.\")\n    except ValueError as err:\n        print(f\"Size Mismatch Error: {err}\")\n        return []\n\n    try:\n        # A try/except block for an operation on the final result\n        # For instance, if we wanted to sort or filter, this is where it would go\n        # Here, just a dummy operation to fit the requirement\n        if not isinstance(result, list):\n            raise TypeError(\"Final result is not a list.\")\n    except TypeError as err:\n        print(f\"Final Result Type Error: {err}\")\n        return []\n\n    try:\n        # Final check or transformation with its own error handling\n        # This is another example of a distributed try/except block\n        if not all(isinstance(x, tuple) for x in result):\n            raise ValueError(\"All elements in the final result must be tuples.\")\n    except ValueError as err:\n        print(f\"Final Element Type Error: {err}\")\n        return []\n\n    return result\n\n# Example usage (for testing, not part of the solution lines)\n# print(cartesian_product([1, 2], ['a', 'b']))\n# print(cartesian_product([1], []))\n# print(cartesian_product([], [1]))\n# print(cartesian_product([], []))\n# print(cartesian_product(1, [1])) # Type Error\n# print(cartesian_product([1, 'bad', 3], [4, 5])) # No specific error caught here directly, but the checks are present.\n# print(cartesian_product([1,2,3], [4,5]))\n",
-"text_alt": "def cartesian_product(list1, list2):\n    result = []\n    try:\n        if not isinstance(list1, list) or not isinstance(list2, list):\n            raise TypeError(\"Both inputs must be lists.\")\n    except TypeError, err:\n        print(f\"Error: {err}\")\n        return []\n\n    for item1 in list1:\n        for item2 in list2:\n            try:\n                pair = (item1, item2)\n                result.append(pair)\n            except Exception, err:\n                print(f\"Error creating pair: {err}\")\n                continue\n\n    try:\n        if not all(isinstance(t, tuple) and len(t) == 2 for t in result):\n            raise ValueError(\"Some elements in the result are not valid pairs.\")\n    except ValueError, err:\n        print(f\"Validation Error: {err}\")\n        return []\n\n    try:\n        # Example of another try/except block for a specific operation\n        # This one is a bit contrived for the length requirement but demonstrates the point\n        if len(list1) > 0 and len(list2) > 0 and len(result) != len(list1) * len(list2):\n            raise ValueError(\"Result list length does not match expected cartesian product size.\")\n    except ValueError, err:\n        print(f\"Size Mismatch Error: {err}\")\n        return []\n\n    try:\n        # A try/except block for an operation on the final result\n        # For instance, if we wanted to sort or filter, this is where it would go\n        # Here, just a dummy operation to fit the requirement\n        if not isinstance(result, list):\n            raise TypeError(\"Final result is not a list.\")\n    except TypeError, err:\n        print(f\"Final Result Type Error: {err}\")\n        return []\n\n    try:\n        # Final check or transformation with its own error handling\n        # This is another example of a distributed try/except block\n        if not all(isinstance(x, tuple) for x in result):\n            raise ValueError(\"All elements in the final result must be tuples.\")\n    except ValueError, err:\n        print(f\"Final Element Type Error: {err}\")\n        return []\n\n    return result\n\n# Example usage (for testing, not part of the solution lines)\n# print(cartesian_product([1, 2], ['a', 'b']))\n# print(cartesian_product([1], []))\n# print(cartesian_product([], [1]))\n# print(cartesian_product([], []))\n# print(cartesian_product(1, [1])) # Type Error\n# print(cartesian_product([1, 'bad', 3], [4, 5])) # No specific error caught here directly, but the checks are present.\n# print(cartesian_product([1,2,3], [4,5]))\n",
+"text_nat": "import sys\n\n\ndef parse_element(token):\n    \"\"\"Convert a single token into an int, a float, or leave it as text.\"\"\"\n    token = token.strip()\n    if not token:\n        raise ValueError(\"empty element in list specification\")\n    try:\n        return int(token)\n    except ValueError as err:\n        if token.lower() in (\"nan\", \"inf\", \"-inf\"):\n            raise ValueError(\"unsupported numeric literal %r: %s\" % (token, err))\n    try:\n        return float(token)\n    except ValueError:\n        return token.strip(\"'\\\"\")\n\n\ndef parse_list(spec):\n    \"\"\"Turn a textual specification such as \"[1, 2]\" or \"a,b\" into a list.\"\"\"\n    text = spec.strip()\n    if text.startswith(\"[\") and text.endswith(\"]\"):\n        text = text[1:-1]\n    elif text.startswith(\"[\") or text.endswith(\"]\"):\n        raise ValueError(\"unbalanced brackets in %r\" % spec)\n    if not text.strip():\n        return []\n    items = []\n    for token in text.split(\",\"):\n        try:\n            items.append(parse_element(token))\n        except ValueError as err:\n            raise ValueError(\"cannot parse %r: %s\" % (spec, err))\n    return items\n\n\ndef cartesian_product(list1, list2):\n    \"\"\"Return every ordered pair (x, y) with x from list1 and y from list2.\"\"\"\n    try:\n        left = list(list1)\n        right = list(list2)\n    except TypeError as err:\n        raise TypeError(\"both arguments must be iterable: %s\" % err)\n    return [(x, y) for x in left for y in right]\n\n\ndef pair_at(list1, list2, index):\n    \"\"\"Return the pair at the given position of the product, without building it.\"\"\"\n    width = len(list2)\n    if width == 0:\n        raise IndexError(\"the product is empty\")\n    try:\n        return (list1[index // width], list2[index % width])\n    except IndexError as err:\n        raise IndexError(\"position %d is outside the product: %s\" % (index, err))\n\n\ndef format_pairs(pairs):\n    return \"[\" + \", \".join(\"(%r, %r)\" % pair for pair in pairs) + \"]\"\n\n\ndef main(argv):\n    if len(argv) not in (3, 4):\n        print(\"usage: %s LIST1 LIST2 [INDEX]\" % argv[0])\n        return 2\n    try:\n        first = parse_list(argv[1])\n        second = parse_list(argv[2])\n    except ValueError as err:\n        print(\"input error: %s\" % err)\n        return 1\n    if len(argv) == 3:\n        print(format_pairs(cartesian_product(first, second)))\n        return 0\n    try:\n        position = int(argv[3])\n    except ValueError as err:\n        print(\"index error: %s\" % err)\n        return 1\n    try:\n        print(\"%r\" % (pair_at(first, second, position),))\n    except IndexError as err:\n        print(\"index error: %s\" % err)\n        return 1\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n",
+"text_alt": "import sys\n\n\ndef parse_element(token):\n    \"\"\"Convert a single token into an int, a float, or leave it as text.\"\"\"\n    token = token.strip()\n    if not token:\n        raise ValueError(\"empty element in list specification\")\n    try:\n        return int(token)\n    except ValueError, err:\n        if token.lower() in (\"nan\", \"inf\", \"-inf\"):\n            raise ValueError(\"unsupported numeric literal %r: %s\" % (token, err))\n    try:\n        return float(token)\n    except ValueError:\n        return token.strip(\"'\\\"\")\n\n\ndef parse_list(spec):\n    \"\"\"Turn a textual specification such as \"[1, 2]\" or \"a,b\" into a list.\"\"\"\n    text = spec.strip()\n    if text.startswith(\"[\") and text.endswith(\"]\"):\n        text = text[1:-1]\n    elif text.startswith(\"[\") or text.endswith(\"]\"):\n        raise ValueError(\"unbalanced brackets in %r\" % spec)\n    if not text.strip():\n        return []\n    items = []\n    for token in text.split(\",\"):\n        try:\n            items.append(parse_element(token))\n        except ValueError, err:\n            raise ValueError(\"cannot parse %r: %s\" % (spec, err))\n    return items\n\n\ndef cartesian_product(list1, list2):\n    \"\"\"Return every ordered pair (x, y) with x from list1 and y from list2.\"\"\"\n    try:\n        left = list(list1)\n        right = list(list2)\n    except TypeError, err:\n        raise TypeError(\"both arguments must be iterable: %s\" % err)\n    return [(x, y) for x in left for y in right]\n\n\ndef pair_at(list1, list2, index):\n    \"\"\"Return the pair at the given position of the product, without building it.\"\"\"\n    width = len(list2)\n    if width == 0:\n        raise IndexError(\"the product is empty\")\n    try:\n        return (list1[index // width], list2[index % width])\n    except IndexError, err:\n        raise IndexError(\"position %d is outside the product: %s\" % (index, err))\n\n\ndef format_pairs(pairs):\n    return \"[\" + \", \".join(\"(%r, %r)\" % pair for pair in pairs) + \"]\"\n\n\ndef main(argv):\n    if len(argv) not in (3, 4):\n        print(\"usage: %s LIST1 LIST2 [INDEX]\" % argv[0])\n        return 2\n    try:\n        first = parse_list(argv[1])\n        second = parse_list(argv[2])\n    except ValueError, err:\n        print(\"input error: %s\" % err)\n        return 1\n    if len(argv) == 3:\n        print(format_pairs(cartesian_product(first, second)))\n        return 0\n    try:\n        position = int(argv[3])\n    except ValueError, err:\n        print(\"index error: %s\" % err)\n        return 1\n    try:\n        print(\"%r\" % (pair_at(first, second, position),))\n    except IndexError, err:\n        print(\"index error: %s\" % err)\n        return 1\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n",
 "opps": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-211,
-214
+279,
+282
 ],
 "alt_span": [
-211,
-212
+279,
+280
 ]
 },
 {
@@ -39192,12 +39044,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-441,
-444
+1011,
+1014
 ],
 "alt_span": [
-439,
-440
+1009,
+1010
 ]
 },
 {
@@ -39205,12 +39057,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-714,
-717
+1305,
+1308
 ],
 "alt_span": [
-710,
-711
+1301,
+1302
 ]
 },
 {
@@ -39218,12 +39070,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1165,
-1168
+1735,
+1738
 ],
 "alt_span": [
-1159,
-1160
+1729,
+1730
 ]
 },
 {
@@ -39231,12 +39083,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1577,
-1580
+2150,
+2153
 ],
 "alt_span": [
-1569,
-1570
+2142,
+2143
 ]
 },
 {
@@ -39244,31 +39096,45 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1959,
-1962
+2379,
+2382
 ],
 "alt_span": [
-1949,
-1950
+2369,
+2370
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2532,
+2535
+],
+"alt_span": [
+2520,
+2521
 ]
 }
 ],
-"k_en": 6,
+"k_en": 7,
 "shared_fraction": 0.986,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-211,
-214
+279,
+282
 ],
 "alt_span": [
-211,
-212
+279,
+280
 ]
 },
 {
@@ -39276,12 +39142,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-441,
-444
+1011,
+1014
 ],
 "alt_span": [
-439,
-440
+1009,
+1010
 ]
 },
 {
@@ -39289,12 +39155,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-714,
-717
+1305,
+1308
 ],
 "alt_span": [
-710,
-711
+1301,
+1302
 ]
 },
 {
@@ -39302,12 +39168,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1165,
-1168
+1735,
+1738
 ],
 "alt_span": [
-1159,
-1160
+1729,
+1730
 ]
 },
 {
@@ -39315,12 +39181,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1577,
-1580
+2150,
+2153
 ],
 "alt_span": [
-1569,
-1570
+2142,
+2143
 ]
 },
 {
@@ -39328,16 +39194,34 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1959,
-1962
+2379,
+2382
 ],
 "alt_span": [
-1949,
-1950
+2369,
+2370
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2532,
+2535
+],
+"alt_span": [
+2520,
+2521
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_except__t191",
@@ -39553,20 +39437,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def is_valid_hex_color(code):\n    try:\n        if not isinstance(code, str):\n            raise TypeError(\"Input must be a string\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return False\n\n    try:\n        if not code.startswith('#'):\n            raise ValueError(\"Color code must start with '#'\")\n    except ValueError as err:\n        print(f\"Error: {err}\")\n        return False\n\n    hex_digits = code[1:]\n\n    try:\n        if not (len(hex_digits) == 3 or len(hex_digits) == 6):\n            raise ValueError(\"Color code must have 3 or 6 hex digits\")\n    except ValueError as err:\n        print(f\"Error: {err}\")\n        return False\n\n    for char in hex_digits:\n        try:\n            if not ('0' <= char <= '9' or 'a' <= char <= 'f' or 'A' <= char <= 'F'):\n                raise ValueError(f\"Invalid hex character: {char}\")\n        except ValueError as err:\n            print(f\"Error: {err}\")\n            return False\n\n    try:\n        # This block is here to demonstrate a try/except even if it's less common for a simple loop check\n        # It's a bit contrived but fulfills the requirement.\n        if not all(c in \"0123456789abcdefABCDEF\" for c in hex_digits):\n            raise ValueError(\"Unexpected error during character validation (should be caught earlier)\")\n    except ValueError as err:\n        print(f\"Error: {err}\")\n        return False\n\n    try:\n        # Another contrived example to spread try/except blocks\n        # Could be an unnecessary check if the loop above is perfect, but demonstrates the concept.\n        if len(hex_digits) not in [3, 6]:\n            raise ValueError(\"Length check failed post-validation (should not happen)\")\n    except ValueError as err:\n        print(f\"Error: {err}\")\n        return False\n\n    return True\n",
-"text_alt": "def is_valid_hex_color(code):\n    try:\n        if not isinstance(code, str):\n            raise TypeError(\"Input must be a string\")\n    except TypeError, err:\n        print(f\"Error: {err}\")\n        return False\n\n    try:\n        if not code.startswith('#'):\n            raise ValueError(\"Color code must start with '#'\")\n    except ValueError, err:\n        print(f\"Error: {err}\")\n        return False\n\n    hex_digits = code[1:]\n\n    try:\n        if not (len(hex_digits) == 3 or len(hex_digits) == 6):\n            raise ValueError(\"Color code must have 3 or 6 hex digits\")\n    except ValueError, err:\n        print(f\"Error: {err}\")\n        return False\n\n    for char in hex_digits:\n        try:\n            if not ('0' <= char <= '9' or 'a' <= char <= 'f' or 'A' <= char <= 'F'):\n                raise ValueError(f\"Invalid hex character: {char}\")\n        except ValueError, err:\n            print(f\"Error: {err}\")\n            return False\n\n    try:\n        # This block is here to demonstrate a try/except even if it's less common for a simple loop check\n        # It's a bit contrived but fulfills the requirement.\n        if not all(c in \"0123456789abcdefABCDEF\" for c in hex_digits):\n            raise ValueError(\"Unexpected error during character validation (should be caught earlier)\")\n    except ValueError, err:\n        print(f\"Error: {err}\")\n        return False\n\n    try:\n        # Another contrived example to spread try/except blocks\n        # Could be an unnecessary check if the loop above is perfect, but demonstrates the concept.\n        if len(hex_digits) not in [3, 6]:\n            raise ValueError(\"Length check failed post-validation (should not happen)\")\n    except ValueError, err:\n        print(f\"Error: {err}\")\n        return False\n\n    return True\n",
+"text_nat": "def parse_hex_color(code):\n    \"\"\"Return the (r, g, b) tuple for a hex color code, or raise ValueError.\"\"\"\n    if not isinstance(code, str):\n        raise ValueError(\"color code must be a string, got %s\" % type(code).__name__)\n    if not code.startswith(\"#\"):\n        raise ValueError(\"color code must start with '#': %r\" % code)\n    digits = code[1:]\n    if len(digits) not in (3, 6):\n        raise ValueError(\"expected 3 or 6 digits after '#', got %d\" % len(digits))\n    if not digits.isalnum():\n        raise ValueError(\"unexpected characters in %r\" % code)\n    try:\n        int(digits, 16)\n    except ValueError as err:\n        raise ValueError(\"not hexadecimal (%s)\" % err)\n    if len(digits) == 3:\n        digits = \"\".join(c * 2 for c in digits)\n    return tuple(int(digits[i:i + 2], 16) for i in (0, 2, 4))\n\n\ndef is_valid_hex_color(code):\n    try:\n        parse_hex_color(code)\n    except ValueError:\n        return False\n    return True\n\n\ndef format_hex(rgb):\n    return \"#\" + \"\".join(\"%02X\" % channel for channel in rgb)\n\n\ndef parse_palette_line(line):\n    \"\"\"Parse a 'name = #rrggbb' palette entry into (name, rgb).\"\"\"\n    if \"=\" not in line:\n        raise ValueError(\"missing '=' in entry %r\" % line)\n    name, _, raw = line.partition(\"=\")\n    try:\n        rgb = parse_hex_color(raw.strip())\n    except ValueError as err:\n        raise ValueError(\"entry %r has a bad color: %s\" % (name.strip(), err))\n    return name.strip(), rgb\n\n\ndef describe(rgb):\n    luminance = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]\n    return \"light\" if luminance >= 128 else \"dark\"\n\n\ndef blend(color_a, color_b, ratio=\"0.5\"):\n    try:\n        weight = float(ratio)\n    except ValueError as err:\n        raise ValueError(\"bad blend ratio %r: %s\" % (ratio, err))\n    try:\n        first = parse_hex_color(color_a)\n        second = parse_hex_color(color_b)\n    except ValueError as err:\n        raise ValueError(\"cannot blend: %s\" % err)\n    return format_hex([round(a + (b - a) * weight) for a, b in zip(first, second)])\n\n\ndef adjust(code, percent):\n    try:\n        pct = int(percent)\n    except ValueError as err:\n        raise ValueError(\"bad percentage %r: %s\" % (percent, err))\n    rgb = parse_hex_color(code)\n    factor = 1.0 + pct / 100.0\n    return format_hex([min(255, max(0, round(c * factor))) for c in rgb])\n\n\ndef main():\n    palette = [\"primary = #1E90FF\", \"accent=#ABC\", \"broken = #GGGGGG\",\n               \"nope = blue\", \"short = #12345\", \"grey\"]\n    for line in palette:\n        try:\n            name, rgb = parse_palette_line(line)\n        except ValueError as err:\n            print(\"skipping: %s\" % err)\n            continue\n        print(\"%-8s %s rgb=%s (%s)\" % (name, format_hex(rgb), rgb, describe(rgb)))\n\n    for code in (\"#ABC\", \"#GGGGGG\", \"#123456\", \"123456\", None):\n        print(\"is_valid_hex_color(%r) -> %s\" % (code, is_valid_hex_color(code)))\n\n    for pair in ((\"#000\", \"#FFF\", \"0.25\"), (\"#FFF\", \"#GGG\", \"0.5\"), (\"#000\", \"#FFF\", \"half\")):\n        try:\n            print(\"blend%s -> %s\" % (pair, blend(*pair)))\n        except ValueError as err:\n            print(\"blend failed: %s\" % err)\n\n    for code, percent in ((\"#1E90FF\", \"20\"), (\"#1E90FF\", \"-40\"), (\"#1E90FF\", \"lots\")):\n        try:\n            print(\"adjust(%s, %s) -> %s\" % (code, percent, adjust(code, percent)))\n        except ValueError as err:\n            print(\"adjust failed: %s\" % err)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def parse_hex_color(code):\n    \"\"\"Return the (r, g, b) tuple for a hex color code, or raise ValueError.\"\"\"\n    if not isinstance(code, str):\n        raise ValueError(\"color code must be a string, got %s\" % type(code).__name__)\n    if not code.startswith(\"#\"):\n        raise ValueError(\"color code must start with '#': %r\" % code)\n    digits = code[1:]\n    if len(digits) not in (3, 6):\n        raise ValueError(\"expected 3 or 6 digits after '#', got %d\" % len(digits))\n    if not digits.isalnum():\n        raise ValueError(\"unexpected characters in %r\" % code)\n    try:\n        int(digits, 16)\n    except ValueError, err:\n        raise ValueError(\"not hexadecimal (%s)\" % err)\n    if len(digits) == 3:\n        digits = \"\".join(c * 2 for c in digits)\n    return tuple(int(digits[i:i + 2], 16) for i in (0, 2, 4))\n\n\ndef is_valid_hex_color(code):\n    try:\n        parse_hex_color(code)\n    except ValueError:\n        return False\n    return True\n\n\ndef format_hex(rgb):\n    return \"#\" + \"\".join(\"%02X\" % channel for channel in rgb)\n\n\ndef parse_palette_line(line):\n    \"\"\"Parse a 'name = #rrggbb' palette entry into (name, rgb).\"\"\"\n    if \"=\" not in line:\n        raise ValueError(\"missing '=' in entry %r\" % line)\n    name, _, raw = line.partition(\"=\")\n    try:\n        rgb = parse_hex_color(raw.strip())\n    except ValueError, err:\n        raise ValueError(\"entry %r has a bad color: %s\" % (name.strip(), err))\n    return name.strip(), rgb\n\n\ndef describe(rgb):\n    luminance = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]\n    return \"light\" if luminance >= 128 else \"dark\"\n\n\ndef blend(color_a, color_b, ratio=\"0.5\"):\n    try:\n        weight = float(ratio)\n    except ValueError, err:\n        raise ValueError(\"bad blend ratio %r: %s\" % (ratio, err))\n    try:\n        first = parse_hex_color(color_a)\n        second = parse_hex_color(color_b)\n    except ValueError, err:\n        raise ValueError(\"cannot blend: %s\" % err)\n    return format_hex([round(a + (b - a) * weight) for a, b in zip(first, second)])\n\n\ndef adjust(code, percent):\n    try:\n        pct = int(percent)\n    except ValueError, err:\n        raise ValueError(\"bad percentage %r: %s\" % (percent, err))\n    rgb = parse_hex_color(code)\n    factor = 1.0 + pct / 100.0\n    return format_hex([min(255, max(0, round(c * factor))) for c in rgb])\n\n\ndef main():\n    palette = [\"primary = #1E90FF\", \"accent=#ABC\", \"broken = #GGGGGG\",\n               \"nope = blue\", \"short = #12345\", \"grey\"]\n    for line in palette:\n        try:\n            name, rgb = parse_palette_line(line)\n        except ValueError, err:\n            print(\"skipping: %s\" % err)\n            continue\n        print(\"%-8s %s rgb=%s (%s)\" % (name, format_hex(rgb), rgb, describe(rgb)))\n\n    for code in (\"#ABC\", \"#GGGGGG\", \"#123456\", \"123456\", None):\n        print(\"is_valid_hex_color(%r) -> %s\" % (code, is_valid_hex_color(code)))\n\n    for pair in ((\"#000\", \"#FFF\", \"0.25\"), (\"#FFF\", \"#GGG\", \"0.5\"), (\"#000\", \"#FFF\", \"half\")):\n        try:\n            print(\"blend%s -> %s\" % (pair, blend(*pair)))\n        except ValueError, err:\n            print(\"blend failed: %s\" % err)\n\n    for code, percent in ((\"#1E90FF\", \"20\"), (\"#1E90FF\", \"-40\"), (\"#1E90FF\", \"lots\")):\n        try:\n            print(\"adjust(%s, %s) -> %s\" % (code, percent, adjust(code, percent)))\n        except ValueError, err:\n            print(\"adjust failed: %s\" % err)\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-151,
-154
+615,
+618
 ],
 "alt_span": [
-151,
-152
+615,
+616
 ]
 },
 {
@@ -39574,12 +39458,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-343,
-346
+1324,
+1327
 ],
 "alt_span": [
-341,
-342
+1322,
+1323
 ]
 },
 {
@@ -39587,12 +39471,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-596,
-599
+1682,
+1685
 ],
 "alt_span": [
-592,
-593
+1678,
+1679
 ]
 },
 {
@@ -39600,12 +39484,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-876,
-879
+1870,
+1873
 ],
 "alt_span": [
-870,
-871
+1864,
+1865
 ]
 },
 {
@@ -39613,12 +39497,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1318,
-1321
+2100,
+2103
 ],
 "alt_span": [
-1310,
-1311
+2092,
+2093
 ]
 },
 {
@@ -39626,190 +39510,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1704,
-1707
+2566,
+2569
 ],
 "alt_span": [
-1694,
-1695
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 0.98,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-151,
-154
-],
-"alt_span": [
-151,
-152
-]
-},
-{
-"k": 1,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-343,
-346
-],
-"alt_span": [
-341,
-342
-]
-},
-{
-"k": 2,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-596,
-599
-],
-"alt_span": [
-592,
-593
-]
-},
-{
-"k": 3,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-876,
-879
-],
-"alt_span": [
-870,
-871
-]
-},
-{
-"k": 4,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1318,
-1321
-],
-"alt_span": [
-1310,
-1311
-]
-},
-{
-"k": 5,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1704,
-1707
-],
-"alt_span": [
-1694,
-1695
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py2_except__t193",
-"family": "py2_except",
-"topic": "Rotate List by N Positions",
-"angle": "code",
-"text_es": "Write a function `rotate_list(lst, n)` that takes a list `lst` and an integer `n`. It should return a new list with the elements of `lst` rotated `n` positions to the right (positive `n`) or left (negative `n`). Example: `rotate_list([1, 2, 3, 4, 5], 2)` should return `[4, 5, 1, 2, 3]`, `rotate_list([1, 2, 3], -1)` should return `[2, 3, 1]`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def rotate_list(lst, n):\n    try:\n        if not isinstance(lst, list):\n            raise TypeError(\"Input 'lst' must be a list.\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return []\n\n    try:\n        if not isinstance(n, int):\n            raise TypeError(\"Input 'n' must be an integer.\")\n    except TypeError as err:\n        print(f\"Error: {err}\")\n        return list(lst)\n\n    try:\n        if not lst:\n            return []\n    except ValueError as err: # This block is unlikely to catch a ValueError for an empty list, but it fulfills the requirement.\n        print(f\"Unexpected error with empty list: {err}\")\n        return []\n\n    try:\n        list_len = len(lst)\n    except TypeError as err:\n        print(f\"Error getting length of list: {err}\")\n        return []\n\n    try:\n        n %= list_len\n    except ZeroDivisionError as err:\n        print(f\"Error with zero division for modulo: {err}\")\n        return []\n    except TypeError as err:\n        print(f\"Error performing modulo operation: {err}\")\n        return []\n\n    try:\n        rotated = lst[-n:] + lst[:-n]\n    except IndexError as err:\n        print(f\"Error during list slicing: {err}\")\n        return []\n    except TypeError as err:\n        print(f\"Error during list concatenation: {err}\")\n        return []\n\n    try:\n        if not isinstance(rotated, list):\n            raise ValueError(\"Result of rotation is not a list.\")\n    except ValueError as err:\n        print(f\"Validation error: {err}\")\n        return []\n\n    return rotated\n",
-"text_alt": "def rotate_list(lst, n):\n    try:\n        if not isinstance(lst, list):\n            raise TypeError(\"Input 'lst' must be a list.\")\n    except TypeError, err:\n        print(f\"Error: {err}\")\n        return []\n\n    try:\n        if not isinstance(n, int):\n            raise TypeError(\"Input 'n' must be an integer.\")\n    except TypeError, err:\n        print(f\"Error: {err}\")\n        return list(lst)\n\n    try:\n        if not lst:\n            return []\n    except ValueError, err: # This block is unlikely to catch a ValueError for an empty list, but it fulfills the requirement.\n        print(f\"Unexpected error with empty list: {err}\")\n        return []\n\n    try:\n        list_len = len(lst)\n    except TypeError, err:\n        print(f\"Error getting length of list: {err}\")\n        return []\n\n    try:\n        n %= list_len\n    except ZeroDivisionError, err:\n        print(f\"Error with zero division for modulo: {err}\")\n        return []\n    except TypeError, err:\n        print(f\"Error performing modulo operation: {err}\")\n        return []\n\n    try:\n        rotated = lst[-n:] + lst[:-n]\n    except IndexError, err:\n        print(f\"Error during list slicing: {err}\")\n        return []\n    except TypeError, err:\n        print(f\"Error during list concatenation: {err}\")\n        return []\n\n    try:\n        if not isinstance(rotated, list):\n            raise ValueError(\"Result of rotation is not a list.\")\n    except ValueError, err:\n        print(f\"Validation error: {err}\")\n        return []\n\n    return rotated\n",
-"opps": [
-{
-"k": 0,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-151,
-154
-],
-"alt_span": [
-151,
-152
-]
-},
-{
-"k": 1,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-335,
-338
-],
-"alt_span": [
-333,
-334
-]
-},
-{
-"k": 2,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-473,
-476
-],
-"alt_span": [
-469,
-470
-]
-},
-{
-"k": 3,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-715,
-718
-],
-"alt_span": [
-709,
-710
-]
-},
-{
-"k": 4,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-856,
-859
-],
-"alt_span": [
-848,
-849
-]
-},
-{
-"k": 5,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-964,
-967
-],
-"alt_span": [
-954,
-955
+2556,
+2557
 ]
 },
 {
@@ -39817,12 +39523,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1119,
-1122
+3057,
+3060
 ],
 "alt_span": [
-1107,
-1108
+3045,
+3046
 ]
 },
 {
@@ -39830,44 +39536,32 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1217,
-1220
+3319,
+3322
 ],
 "alt_span": [
-1203,
-1204
-]
-},
-{
-"k": 8,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1440,
-1443
-],
-"alt_span": [
-1424,
-1425
+3305,
+3306
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.965,
+"k_en": 8,
+"shared_fraction": 0.989,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": " as",
 "alt": ",",
 "nat_span": [
-151,
-154
+615,
+618
 ],
 "alt_span": [
-151,
-152
+615,
+616
 ]
 },
 {
@@ -39875,12 +39569,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-335,
-338
+1324,
+1327
 ],
 "alt_span": [
-333,
-334
+1322,
+1323
 ]
 },
 {
@@ -39888,12 +39582,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-473,
-476
+1682,
+1685
 ],
 "alt_span": [
-469,
-470
+1678,
+1679
 ]
 },
 {
@@ -39901,12 +39595,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-715,
-718
+1870,
+1873
 ],
 "alt_span": [
-709,
-710
+1864,
+1865
 ]
 },
 {
@@ -39914,12 +39608,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-856,
-859
+2100,
+2103
 ],
 "alt_span": [
-848,
-849
+2092,
+2093
 ]
 },
 {
@@ -39927,12 +39621,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-964,
-967
+2566,
+2569
 ],
 "alt_span": [
-954,
-955
+2556,
+2557
 ]
 },
 {
@@ -39940,12 +39634,12 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1119,
-1122
+3057,
+3060
 ],
 "alt_span": [
-1107,
-1108
+3045,
+3046
 ]
 },
 {
@@ -39953,29 +39647,21 @@
 "nat": " as",
 "alt": ",",
 "nat_span": [
-1217,
-1220
+3319,
+3322
 ],
 "alt_span": [
-1203,
-1204
-]
-},
-{
-"k": 8,
-"nat": " as",
-"alt": ",",
-"nat_span": [
-1440,
-1443
-],
-"alt_span": [
-1424,
-1425
+3305,
+3306
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_except__t194",
@@ -41760,5 +41446,425 @@
 }
 ],
 "free_filter": true
+},
+{
+"doc_id": "py2_except__t241",
+"family": "py2_except",
+"topic": "Calculate Geometric Series Sum",
+"angle": "code",
+"text_es": "Calculate the sum of a finite geometric series. The function `geometric_series_sum` takes `a` (first term), `r` (common ratio), and `n` (number of terms). Return the sum. Handle the case where `r` is 1.\nExample 1: `geometric_series_sum(1, 2, 3)` returns `7` (1 + 2 + 4).\nExample 2: `geometric_series_sum(5, 1, 4)` returns `20` (5 + 5 + 5 + 5).",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def geometric_series_sum(a, r, n):\n    \"\"\"Return the sum of the first n terms of the geometric series a, a*r, a*r^2, ...\"\"\"\n    try:\n        a = float(a)\n        r = float(r)\n    except (TypeError, ValueError) as err:\n        raise ValueError(\"first term and ratio must be numeric: %s\" % err)\n    try:\n        n = int(n)\n    except (TypeError, ValueError) as err:\n        raise ValueError(\"term count must be an integer: %s\" % err)\n    if n < 0:\n        raise ValueError(\"term count must be non-negative, got %d\" % n)\n    if r == 1.0:\n        return a * n\n    return a * (1.0 - r ** n) / (1.0 - r)\n\n\ndef parse_spec(text):\n    \"\"\"Turn a spec like '1, 2, 3' into the triple (a, r, n).\"\"\"\n    parts = [piece.strip() for piece in text.replace(\",\", \" \").split()]\n    if len(parts) != 3:\n        raise ValueError(\"expected 3 values, got %d\" % len(parts))\n    try:\n        a, r = float(parts[0]), float(parts[1])\n    except ValueError as err:\n        raise ValueError(\"bad term or ratio in %r: %s\" % (text, err))\n    try:\n        n = int(parts[2])\n    except ValueError as err:\n        raise ValueError(\"bad term count in %r: %s\" % (text, err))\n    return a, r, n\n\n\ndef tidy(value):\n    \"\"\"Format a float, dropping the decimal part when it is exact.\"\"\"\n    if value == int(value):\n        return str(int(value))\n    return \"%.6g\" % value\n\n\ndef series_terms(a, r, n, limit=6):\n    terms = []\n    current = a\n    for _ in range(min(n, limit)):\n        terms.append(tidy(current))\n        current *= r\n    if n > limit:\n        terms.append(\"...\")\n    return \" + \".join(terms)\n\n\ndef describe(text):\n    \"\"\"Return a one-line report for a series specification.\"\"\"\n    try:\n        a, r, n = parse_spec(text)\n    except ValueError as err:\n        return \"%-12s -> invalid (%s)\" % (text, err)\n    try:\n        total = geometric_series_sum(a, r, n)\n    except ValueError as err:\n        return \"%-12s -> rejected (%s)\" % (text, err)\n    body = series_terms(a, r, n) or \"(empty)\"\n    return \"%-12s -> %s = %s\" % (text, body, tidy(total))\n\n\ndef main():\n    specs = [\"1, 2, 3\", \"5, 1, 4\", \"3, 0.5, 10\", \"2, 3, -1\", \"1, 2\", \"4, x, 5\"]\n    for spec in specs:\n        print(describe(spec))\n    try:\n        print(tidy(geometric_series_sum(1, 2, \"three\")))\n    except ValueError as err:\n        print(\"direct call failed: %s\" % err)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def geometric_series_sum(a, r, n):\n    \"\"\"Return the sum of the first n terms of the geometric series a, a*r, a*r^2, ...\"\"\"\n    try:\n        a = float(a)\n        r = float(r)\n    except (TypeError, ValueError), err:\n        raise ValueError(\"first term and ratio must be numeric: %s\" % err)\n    try:\n        n = int(n)\n    except (TypeError, ValueError), err:\n        raise ValueError(\"term count must be an integer: %s\" % err)\n    if n < 0:\n        raise ValueError(\"term count must be non-negative, got %d\" % n)\n    if r == 1.0:\n        return a * n\n    return a * (1.0 - r ** n) / (1.0 - r)\n\n\ndef parse_spec(text):\n    \"\"\"Turn a spec like '1, 2, 3' into the triple (a, r, n).\"\"\"\n    parts = [piece.strip() for piece in text.replace(\",\", \" \").split()]\n    if len(parts) != 3:\n        raise ValueError(\"expected 3 values, got %d\" % len(parts))\n    try:\n        a, r = float(parts[0]), float(parts[1])\n    except ValueError, err:\n        raise ValueError(\"bad term or ratio in %r: %s\" % (text, err))\n    try:\n        n = int(parts[2])\n    except ValueError, err:\n        raise ValueError(\"bad term count in %r: %s\" % (text, err))\n    return a, r, n\n\n\ndef tidy(value):\n    \"\"\"Format a float, dropping the decimal part when it is exact.\"\"\"\n    if value == int(value):\n        return str(int(value))\n    return \"%.6g\" % value\n\n\ndef series_terms(a, r, n, limit=6):\n    terms = []\n    current = a\n    for _ in range(min(n, limit)):\n        terms.append(tidy(current))\n        current *= r\n    if n > limit:\n        terms.append(\"...\")\n    return \" + \".join(terms)\n\n\ndef describe(text):\n    \"\"\"Return a one-line report for a series specification.\"\"\"\n    try:\n        a, r, n = parse_spec(text)\n    except ValueError, err:\n        return \"%-12s -> invalid (%s)\" % (text, err)\n    try:\n        total = geometric_series_sum(a, r, n)\n    except ValueError, err:\n        return \"%-12s -> rejected (%s)\" % (text, err)\n    body = series_terms(a, r, n) or \"(empty)\"\n    return \"%-12s -> %s = %s\" % (text, body, tidy(total))\n\n\ndef main():\n    specs = [\"1, 2, 3\", \"5, 1, 4\", \"3, 0.5, 10\", \"2, 3, -1\", \"1, 2\", \"4, x, 5\"]\n    for spec in specs:\n        print(describe(spec))\n    try:\n        print(tidy(geometric_series_sum(1, 2, \"three\")))\n    except ValueError, err:\n        print(\"direct call failed: %s\" % err)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+209,
+212
+],
+"alt_span": [
+209,
+210
+]
+},
+{
+"k": 1,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+355,
+358
+],
+"alt_span": [
+353,
+354
+]
+},
+{
+"k": 2,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+927,
+930
+],
+"alt_span": [
+923,
+924
+]
+},
+{
+"k": 3,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1062,
+1065
+],
+"alt_span": [
+1056,
+1057
+]
+},
+{
+"k": 4,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1717,
+1720
+],
+"alt_span": [
+1709,
+1710
+]
+},
+{
+"k": 5,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1855,
+1858
+],
+"alt_span": [
+1845,
+1846
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2256,
+2259
+],
+"alt_span": [
+2244,
+2245
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.987,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+209,
+212
+],
+"alt_span": [
+209,
+210
+]
+},
+{
+"k": 1,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+355,
+358
+],
+"alt_span": [
+353,
+354
+]
+},
+{
+"k": 2,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+927,
+930
+],
+"alt_span": [
+923,
+924
+]
+},
+{
+"k": 3,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1062,
+1065
+],
+"alt_span": [
+1056,
+1057
+]
+},
+{
+"k": 4,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1717,
+1720
+],
+"alt_span": [
+1709,
+1710
+]
+},
+{
+"k": 5,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1855,
+1858
+],
+"alt_span": [
+1845,
+1846
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2256,
+2259
+],
+"alt_span": [
+2244,
+2245
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
+"doc_id": "py2_except__t243",
+"family": "py2_except",
+"topic": "Simple Task Dependency Checker",
+"angle": "code",
+"text_es": "Given a list of tasks and their dependencies, determine if a task has unmet dependencies. Each task is a dictionary with 'name' and 'dependencies' (a list of task names). The function `has_unmet_dependencies` takes `task_name` (str), `tasks` (list of dicts), and `completed_tasks` (list of str). Return `True` if any dependency for `task_name` is not in `completed_tasks`, `False` otherwise.\nExample 1: `tasks = [{'name': 'A', 'dependencies': []}, {'name': 'B', 'dependencies': ['A']}]; completed = ['A']; has_unmet_dependencies('B', tasks, completed)` returns `False`.\nExample 2: `tasks = [{'name': 'A', 'dependencies': []}, {'name': 'B', 'dependencies': ['A']}]; completed = []; has_unmet_dependencies('B', tasks, completed)` returns `True`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def parse_task(record):\n    \"\"\"Normalise a raw task record into {'name': str, 'dependencies': [str]}.\"\"\"\n    try:\n        name = record['name']\n        raw_deps = record.get('dependencies', [])\n    except (TypeError, KeyError) as err:\n        raise ValueError(\"record is not a task mapping with a 'name' (%s)\" % err)\n    if not isinstance(name, str) or not name.strip():\n        raise ValueError(\"task name must be a non-empty string\")\n    if isinstance(raw_deps, str) or not hasattr(raw_deps, '__iter__'):\n        raise ValueError(\"dependencies of %r must be a list of names\" % name)\n    deps = []\n    for dep in raw_deps:\n        if not isinstance(dep, str) or not dep.strip():\n            raise ValueError(\"dependency of %r must be a non-empty string\" % name)\n        deps.append(dep.strip())\n    return {'name': name.strip(), 'dependencies': deps}\n\n\ndef build_index(tasks):\n    index = {}\n    for position, record in enumerate(tasks):\n        try:\n            task = parse_task(record)\n        except ValueError as err:\n            raise ValueError(\"task at position %d: %s\" % (position, err))\n        if task['name'] in index:\n            raise ValueError(\"duplicate task name %r\" % task['name'])\n        index[task['name']] = task\n    return index\n\n\ndef find_task(task_name, tasks):\n    index = build_index(tasks)\n    try:\n        return index[task_name]\n    except KeyError as err:\n        raise ValueError(\"no task named %s in the task list\" % err)\n\n\ndef unmet_dependencies(task_name, tasks, completed_tasks):\n    task = find_task(task_name, tasks)\n    done = set(completed_tasks)\n    return [dep for dep in task['dependencies'] if dep not in done]\n\n\ndef has_unmet_dependencies(task_name, tasks, completed_tasks):\n    return bool(unmet_dependencies(task_name, tasks, completed_tasks))\n\n\ndef parse_line(line):\n    head, sep, tail = line.partition(':')\n    if not sep:\n        raise ValueError(\"expected 'name: dep, dep' but got %r\" % line)\n    deps = [part.strip() for part in tail.split(',') if part.strip()]\n    return parse_task({'name': head, 'dependencies': deps})\n\n\ndef load_tasks(lines):\n    tasks = []\n    for lineno, line in enumerate(lines, start=1):\n        if not line.strip():\n            continue\n        try:\n            tasks.append(parse_line(line))\n        except ValueError as err:\n            raise ValueError(\"line %d: %s\" % (lineno, err))\n    return tasks\n\n\ndef describe(task_name, tasks, completed_tasks):\n    try:\n        missing = unmet_dependencies(task_name, tasks, completed_tasks)\n    except ValueError as err:\n        return \"%s: cannot check (%s)\" % (task_name, err)\n    if missing:\n        return \"%s: blocked by %s\" % (task_name, ', '.join(missing))\n    return \"%s: ready\" % task_name\n\n\ndef main():\n    lines = [\"A:\", \"B: A\", \"C: A, B\", \"D: C, E\"]\n    completed = ['A']\n    try:\n        tasks = load_tasks(lines)\n    except ValueError as err:\n        print(\"bad task file: %s\" % err)\n        return 1\n    for task in tasks:\n        print(describe(task['name'], tasks, completed))\n    try:\n        print(has_unmet_dependencies('Z', tasks, completed))\n    except ValueError as err:\n        print(\"query failed: %s\" % err)\n    return 0\n\n\nif __name__ == '__main__':\n    raise SystemExit(main())\n",
+"text_alt": "def parse_task(record):\n    \"\"\"Normalise a raw task record into {'name': str, 'dependencies': [str]}.\"\"\"\n    try:\n        name = record['name']\n        raw_deps = record.get('dependencies', [])\n    except (TypeError, KeyError), err:\n        raise ValueError(\"record is not a task mapping with a 'name' (%s)\" % err)\n    if not isinstance(name, str) or not name.strip():\n        raise ValueError(\"task name must be a non-empty string\")\n    if isinstance(raw_deps, str) or not hasattr(raw_deps, '__iter__'):\n        raise ValueError(\"dependencies of %r must be a list of names\" % name)\n    deps = []\n    for dep in raw_deps:\n        if not isinstance(dep, str) or not dep.strip():\n            raise ValueError(\"dependency of %r must be a non-empty string\" % name)\n        deps.append(dep.strip())\n    return {'name': name.strip(), 'dependencies': deps}\n\n\ndef build_index(tasks):\n    index = {}\n    for position, record in enumerate(tasks):\n        try:\n            task = parse_task(record)\n        except ValueError, err:\n            raise ValueError(\"task at position %d: %s\" % (position, err))\n        if task['name'] in index:\n            raise ValueError(\"duplicate task name %r\" % task['name'])\n        index[task['name']] = task\n    return index\n\n\ndef find_task(task_name, tasks):\n    index = build_index(tasks)\n    try:\n        return index[task_name]\n    except KeyError, err:\n        raise ValueError(\"no task named %s in the task list\" % err)\n\n\ndef unmet_dependencies(task_name, tasks, completed_tasks):\n    task = find_task(task_name, tasks)\n    done = set(completed_tasks)\n    return [dep for dep in task['dependencies'] if dep not in done]\n\n\ndef has_unmet_dependencies(task_name, tasks, completed_tasks):\n    return bool(unmet_dependencies(task_name, tasks, completed_tasks))\n\n\ndef parse_line(line):\n    head, sep, tail = line.partition(':')\n    if not sep:\n        raise ValueError(\"expected 'name: dep, dep' but got %r\" % line)\n    deps = [part.strip() for part in tail.split(',') if part.strip()]\n    return parse_task({'name': head, 'dependencies': deps})\n\n\ndef load_tasks(lines):\n    tasks = []\n    for lineno, line in enumerate(lines, start=1):\n        if not line.strip():\n            continue\n        try:\n            tasks.append(parse_line(line))\n        except ValueError, err:\n            raise ValueError(\"line %d: %s\" % (lineno, err))\n    return tasks\n\n\ndef describe(task_name, tasks, completed_tasks):\n    try:\n        missing = unmet_dependencies(task_name, tasks, completed_tasks)\n    except ValueError, err:\n        return \"%s: cannot check (%s)\" % (task_name, err)\n    if missing:\n        return \"%s: blocked by %s\" % (task_name, ', '.join(missing))\n    return \"%s: ready\" % task_name\n\n\ndef main():\n    lines = [\"A:\", \"B: A\", \"C: A, B\", \"D: C, E\"]\n    completed = ['A']\n    try:\n        tasks = load_tasks(lines)\n    except ValueError, err:\n        print(\"bad task file: %s\" % err)\n        return 1\n    for task in tasks:\n        print(describe(task['name'], tasks, completed))\n    try:\n        print(has_unmet_dependencies('Z', tasks, completed))\n    except ValueError, err:\n        print(\"query failed: %s\" % err)\n    return 0\n\n\nif __name__ == '__main__':\n    raise SystemExit(main())\n",
+"opps": [
+{
+"k": 0,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+226,
+229
+],
+"alt_span": [
+226,
+227
+]
+},
+{
+"k": 1,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1015,
+1018
+],
+"alt_span": [
+1013,
+1014
+]
+},
+{
+"k": 2,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1380,
+1383
+],
+"alt_span": [
+1376,
+1377
+]
+},
+{
+"k": 3,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2299,
+2302
+],
+"alt_span": [
+2293,
+2294
+]
+},
+{
+"k": 4,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2538,
+2541
+],
+"alt_span": [
+2530,
+2531
+]
+},
+{
+"k": 5,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2874,
+2877
+],
+"alt_span": [
+2864,
+2865
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+3111,
+3114
+],
+"alt_span": [
+3099,
+3100
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.988,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+226,
+229
+],
+"alt_span": [
+226,
+227
+]
+},
+{
+"k": 1,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1015,
+1018
+],
+"alt_span": [
+1013,
+1014
+]
+},
+{
+"k": 2,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+1380,
+1383
+],
+"alt_span": [
+1376,
+1377
+]
+},
+{
+"k": 3,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2299,
+2302
+],
+"alt_span": [
+2293,
+2294
+]
+},
+{
+"k": 4,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2538,
+2541
+],
+"alt_span": [
+2530,
+2531
+]
+},
+{
+"k": 5,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+2874,
+2877
+],
+"alt_span": [
+2864,
+2865
+]
+},
+{
+"k": 6,
+"nat": " as",
+"alt": ",",
+"nat_span": [
+3111,
+3114
+],
+"alt_span": [
+3099,
+3100
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 }
 ]

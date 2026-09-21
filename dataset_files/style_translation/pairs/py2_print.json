@@ -19910,46 +19910,46 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "print(\"Starting the second largest number finder script.\")\n\ndef find_second_largest(numbers):\n    print(\"Function 'find_second_largest' called.\")\n    print(f\"Input numbers: {numbers}\")\n\n    unique_numbers = sorted(list(set(numbers)))\n    print(f\"Unique and sorted numbers: {unique_numbers}\")\n\n    if len(unique_numbers) < 2:\n        print(\"Error: Not enough distinct elements to find a second largest.\")\n        return None  # Or raise an error as per specific requirements\n\n    second_largest = unique_numbers[-2]\n    print(f\"The second largest unique number is: {second_largest}\")\n    print(\"Function 'find_second_largest' finished.\")\n    return second_largest\n\nprint(\"Testing with example 1: [10, 5, 20, 8]\")\nresult1 = find_second_largest([10, 5, 20, 8])\nprint(f\"Result for example 1: {result1}\")\nprint(\"Testing with example 2: [1, 1, 5, 5]\")\nresult2 = find_second_largest([1, 1, 5, 5])\nprint(f\"Result for example 2: {result2}\")\nprint(\"Script execution complete.\")\n",
-"text_alt": "print \"Starting the second largest number finder script.\"\n\ndef find_second_largest(numbers):\n    print \"Function 'find_second_largest' called.\"\n    print \"Input numbers: %s\" % numbers\n\n    unique_numbers = sorted(list(set(numbers)))\n    print \"Unique and sorted numbers: %s\" % unique_numbers\n\n    if len(unique_numbers) < 2:\n        print \"Error: Not enough distinct elements to find a second largest.\"\n        return None  # Or raise an error as per specific requirements\n\n    second_largest = unique_numbers[-2]\n    print \"The second largest unique number is: %s\" % second_largest\n    print \"Function 'find_second_largest' finished.\"\n    return second_largest\n\nprint \"Testing with example 1: [10, 5, 20, 8]\"\nresult1 = find_second_largest([10, 5, 20, 8])\nprint \"Result for example 1: %s\" % result1\nprint \"Testing with example 2: [1, 1, 5, 5]\"\nresult2 = find_second_largest([1, 1, 5, 5])\nprint \"Result for example 2: %s\" % result2\nprint \"Script execution complete.\"\n",
+"text_nat": "def validate(numbers):\n    \"\"\"Check that the input is a list of at least two integers.\"\"\"\n    if not isinstance(numbers, list):\n        raise TypeError(\"numbers must be a list\")\n    if len(numbers) < 2:\n        raise ValueError(\"numbers must contain at least two elements\")\n    for value in numbers:\n        if isinstance(value, bool) or not isinstance(value, int):\n            raise TypeError(\"all elements must be integers: %r\" % (value,))\n    return numbers\n\n\ndef find_second_largest(numbers):\n    \"\"\"Return the second largest value, counting repeated values separately.\"\"\"\n    validate(numbers)\n    largest = second = None\n    for value in numbers:\n        if largest is None or value > largest:\n            largest, second = value, largest\n        elif second is None or value > second:\n            second = value\n    return second\n\n\ndef print_report(numbers):\n    \"\"\"Print the ranking details of one list of integers.\"\"\"\n    print(\"input: \" + \", \".join(str(n) for n in numbers))\n    print(\"maximum: %d\" % max(numbers))\n    print(\"second largest: %d\" % find_second_largest(numbers))\n    distinct = sorted(set(numbers), reverse=True)\n    if len(distinct) > 1:\n        print(\"second largest distinct value: %d\" % distinct[1])\n    else:\n        print(\"all values are identical\")\n\n\ndef main():\n    samples = [\n        [10, 5, 20, 8],\n        [1, 1, 5, 5],\n        [-7, -3],\n        [4, 4, 4, 4],\n        [100, 99, 98, 97, 96],\n    ]\n    print(\"Second largest report for %d samples\" % len(samples))\n    for sample in samples:\n        print_report(sample)\n    runners_up = [find_second_largest(sample) for sample in samples]\n    print(\"collected results: %s\" % runners_up)\n    print(\"largest of the runners-up: %d\" % max(runners_up))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def validate(numbers):\n    \"\"\"Check that the input is a list of at least two integers.\"\"\"\n    if not isinstance(numbers, list):\n        raise TypeError(\"numbers must be a list\")\n    if len(numbers) < 2:\n        raise ValueError(\"numbers must contain at least two elements\")\n    for value in numbers:\n        if isinstance(value, bool) or not isinstance(value, int):\n            raise TypeError(\"all elements must be integers: %r\" % (value,))\n    return numbers\n\n\ndef find_second_largest(numbers):\n    \"\"\"Return the second largest value, counting repeated values separately.\"\"\"\n    validate(numbers)\n    largest = second = None\n    for value in numbers:\n        if largest is None or value > largest:\n            largest, second = value, largest\n        elif second is None or value > second:\n            second = value\n    return second\n\n\ndef print_report(numbers):\n    \"\"\"Print the ranking details of one list of integers.\"\"\"\n    print \"input: \" + \", \".join(str(n) for n in numbers)\n    print \"maximum: %d\" % max(numbers)\n    print \"second largest: %d\" % find_second_largest(numbers)\n    distinct = sorted(set(numbers), reverse=True)\n    if len(distinct) > 1:\n        print \"second largest distinct value: %d\" % distinct[1]\n    else:\n        print \"all values are identical\"\n\n\ndef main():\n    samples = [\n        [10, 5, 20, 8],\n        [1, 1, 5, 5],\n        [-7, -3],\n        [4, 4, 4, 4],\n        [100, 99, 98, 97, 96],\n    ]\n    print \"Second largest report for %d samples\" % len(samples)\n    for sample in samples:\n        print_report(sample)\n    runners_up = [find_second_largest(sample) for sample in samples]\n    print \"collected results: %s\" % runners_up\n    print \"largest of the runners-up: %d\" % max(runners_up)\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-5,
-6
+936,
+937
 ],
 "alt_span": [
-5,
-6
+936,
+937
 ]
 },
 {
 "k": 1,
-"nat": "(",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-103,
-104
+1023,
+1035
 ],
 "alt_span": [
-102,
-103
+1022,
+1033
 ]
 },
 {
 "k": 2,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-243,
-245
+1177,
+1178
 ],
 "alt_span": [
-242,
-243
+1174,
+1175
 ]
 },
 {
@@ -19957,25 +19957,25 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-338,
-339
+1252,
+1253
 ],
 "alt_span": [
-338,
-339
+1248,
+1249
 ]
 },
 {
 "k": 4,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-524,
-526
+1443,
+1444
 ],
 "alt_span": [
-523,
-524
+1438,
+1439
 ]
 },
 {
@@ -19983,308 +19983,197 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-669,
-670
+1633,
+1634
 ],
 "alt_span": [
-668,
-669
-]
-},
-{
-"k": 6,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-763,
-765
-],
-"alt_span": [
-761,
-762
-]
-},
-{
-"k": 7,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-895,
-897
-],
-"alt_span": [
-893,
-894
+1627,
+1628
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.873,
+"k_en": 6,
+"shared_fraction": 0.975,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-5,
-6
+936,
+937
 ],
 "alt_span": [
-5,
-6
-]
-},
-{
-"k": 1,
-"nat": ")",
-"alt": "",
-"nat_span": [
-57,
-58
-],
-"alt_span": [
-57,
-57
-]
-},
-{
-"k": 2,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-103,
-104
-],
-"alt_span": [
-102,
-103
-]
-},
-{
-"k": 3,
-"nat": ")\n    print(f",
-"alt": "\n    print ",
-"nat_span": [
-144,
-157
-],
-"alt_span": [
-143,
-154
-]
-},
-{
-"k": 4,
-"nat": "{numbers}\")",
-"alt": "%s\" % numbers",
-"nat_span": [
-173,
-184
-],
-"alt_span": [
-170,
-183
-]
-},
-{
-"k": 5,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-243,
-245
-],
-"alt_span": [
-242,
-243
-]
-},
-{
-"k": 6,
-"nat": "{unique_numbers}\")",
-"alt": "%s\" % unique_numbers",
-"nat_span": [
-273,
-291
-],
-"alt_span": [
-271,
-291
-]
-},
-{
-"k": 7,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-338,
-339
-],
-"alt_span": [
-338,
-339
-]
-},
-{
-"k": 8,
-"nat": ")",
-"alt": "",
-"nat_span": [
-402,
-403
-],
-"alt_span": [
-402,
-402
-]
-},
-{
-"k": 9,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-524,
-526
-],
-"alt_span": [
-523,
-524
-]
-},
-{
-"k": 10,
-"nat": "{second_largest}\")\n    print(",
-"alt": "%s\" % second_largest\n    print ",
-"nat_span": [
-564,
-593
-],
-"alt_span": [
-562,
-593
-]
-},
-{
-"k": 11,
-"nat": ")",
-"alt": "",
-"nat_span": [
-635,
-636
-],
-"alt_span": [
-635,
-635
-]
-},
-{
-"k": 12,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-669,
-670
-],
-"alt_span": [
-668,
-669
-]
-},
-{
-"k": 13,
-"nat": ")",
-"alt": "",
-"nat_span": [
-710,
-711
-],
-"alt_span": [
-709,
-709
-]
-},
-{
-"k": 14,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-763,
-765
-],
-"alt_span": [
-761,
-762
-]
-},
-{
-"k": 15,
-"nat": "{result1}\")\nprint(",
-"alt": "%s\" % result1\nprint ",
-"nat_span": [
-788,
-806
-],
-"alt_span": [
-785,
-805
-]
-},
-{
-"k": 16,
-"nat": ")",
-"alt": "",
-"nat_span": [
-844,
-845
-],
-"alt_span": [
-843,
-843
-]
-},
-{
-"k": 17,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-895,
-897
-],
-"alt_span": [
-893,
-894
-]
-},
-{
-"k": 18,
-"nat": "{result2}\")\nprint(",
-"alt": "%s\" % result2\nprint ",
-"nat_span": [
-920,
-938
-],
-"alt_span": [
-917,
+936,
 937
 ]
 },
 {
-"k": 19,
+"k": 1,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+983,
+995
+],
+"alt_span": [
+983,
+994
+]
+},
+{
+"k": 2,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+1023,
+1035
+],
+"alt_span": [
+1022,
+1033
+]
+},
+{
+"k": 3,
 "nat": ")",
 "alt": "",
 "nat_span": [
-966,
-967
+1085,
+1086
 ],
 "alt_span": [
-965,
-965
+1083,
+1083
+]
+},
+{
+"k": 4,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1177,
+1178
+],
+"alt_span": [
+1174,
+1175
+]
+},
+{
+"k": 5,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1227,
+1228
+],
+"alt_span": [
+1224,
+1224
+]
+},
+{
+"k": 6,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1252,
+1253
+],
+"alt_span": [
+1248,
+1249
+]
+},
+{
+"k": 7,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1279,
+1280
+],
+"alt_span": [
+1275,
+1275
+]
+},
+{
+"k": 8,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1443,
+1444
+],
+"alt_span": [
+1438,
+1439
+]
+},
+{
+"k": 9,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1496,
+1497
+],
+"alt_span": [
+1491,
+1491
+]
+},
+{
+"k": 10,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1633,
+1634
+],
+"alt_span": [
+1627,
+1628
+]
+},
+{
+"k": 11,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+1670,
+1682
+],
+"alt_span": [
+1664,
+1675
+]
+},
+{
+"k": 12,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1731,
+1732
+],
+"alt_span": [
+1724,
+1724
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_print__t049",
@@ -24962,340 +24851,6 @@
 "free_filter": true
 },
 {
-"doc_id": "py2_print__t060",
-"family": "py2_print",
-"topic": "Image Resizer (Dummy)",
-"angle": "code",
-"text_es": "Create a function `dummy_resize_image(image_data, new_width, new_height)` that simulates image resizing. It takes `image_data` (a string representing image content) and `new_width`, `new_height` (integers) and returns a new string like 'Resized image to WxH: [original_data]'. For example, `dummy_resize_image('img1.png', 100, 200)` should return `'Resized image to 100x200: img1.png'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def dummy_resize_image(image_data, new_width, new_height):\n    print(\"Starting image resize simulation.\")\n    print(f\"Original image data: '{image_data}'\")\n    print(f\"Requested new width: {new_width}\")\n    print(f\"Requested new height: {new_height}\")\n\n    if not isinstance(image_data, str):\n        print(\"Error: image_data must be a string.\")\n        return \"Error: Invalid image data type.\"\n\n    if not isinstance(new_width, int) or not isinstance(new_height, int):\n        print(\"Error: new_width and new_height must be integers.\")\n        return \"Error: Invalid dimensions.\"\n\n    print(\"Parameters validated.\")\n    resized_string = f\"Resized image to {new_width}x{new_height}: {image_data}\"\n    print(\"Constructing the result string.\")\n    print(f\"Generated string: '{resized_string}'\")\n    print(\"Image resize simulation complete.\")\n    return resized_string\n",
-"text_alt": "def dummy_resize_image(image_data, new_width, new_height):\n    print \"Starting image resize simulation.\"\n    print \"Original image data: '%s'\" % image_data\n    print \"Requested new width: %s\" % new_width\n    print \"Requested new height: %s\" % new_height\n\n    if not isinstance(image_data, str):\n        print \"Error: image_data must be a string.\"\n        return \"Error: Invalid image data type.\"\n\n    if not isinstance(new_width, int) or not isinstance(new_height, int):\n        print \"Error: new_width and new_height must be integers.\"\n        return \"Error: Invalid dimensions.\"\n\n    print \"Parameters validated.\"\n    resized_string = \"Resized image to %sx%s: %s\" % (new_width, new_height, image_data)\n    print \"Constructing the result string.\"\n    print \"Generated string: '%s'\" % resized_string\n    print \"Image resize simulation complete.\"\n    return resized_string\n",
-"opps": [
-{
-"k": 0,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-68,
-69
-],
-"alt_span": [
-68,
-69
-]
-},
-{
-"k": 1,
-"nat": "{new_width}\")\n    print(f",
-"alt": "%s\" % new_width\n    print ",
-"nat_span": [
-189,
-214
-],
-"alt_span": [
-188,
-214
-]
-},
-{
-"k": 2,
-"nat": "{new_height}\")",
-"alt": "%s\" % new_height",
-"nat_span": [
-237,
-251
-],
-"alt_span": [
-237,
-253
-]
-},
-{
-"k": 3,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-306,
-307
-],
-"alt_span": [
-308,
-309
-]
-},
-{
-"k": 4,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-483,
-484
-],
-"alt_span": [
-484,
-485
-]
-},
-{
-"k": 5,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-591,
-592
-],
-"alt_span": [
-591,
-592
-]
-},
-{
-"k": 6,
-"nat": "f",
-"alt": "",
-"nat_span": [
-638,
-639
-],
-"alt_span": [
-637,
-637
-]
-},
-{
-"k": 7,
-"nat": ")\n    print(f",
-"alt": "\n    print ",
-"nat_span": [
-740,
-753
-],
-"alt_span": [
-747,
-758
-]
-}
-],
-"k_en": 8,
-"shared_fraction": 0.827,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-68,
-69
-],
-"alt_span": [
-68,
-69
-]
-},
-{
-"k": 1,
-"nat": ")\n    print(f",
-"alt": "\n    print ",
-"nat_span": [
-104,
-117
-],
-"alt_span": [
-104,
-115
-]
-},
-{
-"k": 2,
-"nat": "{image_data}'\")\n    print(f",
-"alt": "%s'\" % image_data\n    print ",
-"nat_span": [
-140,
-167
-],
-"alt_span": [
-138,
-166
-]
-},
-{
-"k": 3,
-"nat": "{new_width}\")\n    print(f",
-"alt": "%s\" % new_width\n    print ",
-"nat_span": [
-189,
-214
-],
-"alt_span": [
-188,
-214
-]
-},
-{
-"k": 4,
-"nat": "{new_height}\")",
-"alt": "%s\" % new_height",
-"nat_span": [
-237,
-251
-],
-"alt_span": [
-237,
-253
-]
-},
-{
-"k": 5,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-306,
-307
-],
-"alt_span": [
-308,
-309
-]
-},
-{
-"k": 6,
-"nat": ")",
-"alt": "",
-"nat_span": [
-344,
-345
-],
-"alt_span": [
-346,
-346
-]
-},
-{
-"k": 7,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-483,
-484
-],
-"alt_span": [
-484,
-485
-]
-},
-{
-"k": 8,
-"nat": ")",
-"alt": "",
-"nat_span": [
-535,
-536
-],
-"alt_span": [
-536,
-536
-]
-},
-{
-"k": 9,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-591,
-592
-],
-"alt_span": [
-591,
-592
-]
-},
-{
-"k": 10,
-"nat": ")",
-"alt": "",
-"nat_span": [
-615,
-616
-],
-"alt_span": [
-615,
-615
-]
-},
-{
-"k": 11,
-"nat": "f",
-"alt": "",
-"nat_span": [
-638,
-639
-],
-"alt_span": [
-637,
-637
-]
-},
-{
-"k": 12,
-"nat": "{new_width}x{new_height}: {image_data}\"\n    print(",
-"alt": "%sx%s: %s\" % (new_width, new_height, image_data)\n    print ",
-"nat_span": [
-657,
-707
-],
-"alt_span": [
-655,
-714
-]
-},
-{
-"k": 13,
-"nat": ")\n    print(f",
-"alt": "\n    print ",
-"nat_span": [
-740,
-753
-],
-"alt_span": [
-747,
-758
-]
-},
-{
-"k": 14,
-"nat": "{resized_string}'\")\n    print(",
-"alt": "%s'\" % resized_string\n    print ",
-"nat_span": [
-773,
-803
-],
-"alt_span": [
-778,
-810
-]
-},
-{
-"k": 15,
-"nat": ")",
-"alt": "",
-"nat_span": [
-838,
-839
-],
-"alt_span": [
-845,
-845
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py2_print__t061",
 "family": "py2_print",
 "topic": "Reverse Words in Sentence",
@@ -28857,85 +28412,85 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def list_difference(list1, list2):\n    print(\"Starting list_difference function.\")\n    set1 = set(list1)\n    print(f\"Converted list1 to set: {set1}\")\n    set2 = set(list2)\n    print(f\"Converted list2 to set: {set2}\")\n    \n    difference_set = set1 - set2\n    print(f\"Calculated difference set: {difference_set}\")\n    \n    difference_list = list(difference_set)\n    print(f\"Converted difference set to list: {difference_list}\")\n    print(\"Sorting the result for consistent output if order doesn't matter.\")\n    difference_list.sort() # Added for consistent output across runs if order isn't strict\n    print(f\"Sorted difference list: {difference_list}\")\n    print(\"list_difference function completed.\")\n    return difference_list\n\nprint(\"--- Test Case 1 ---\")\nresult1 = list_difference([1, 2, 3, 4], [3, 4, 5, 6])\nprint(f\"Final result for test 1: {result1}\")\n\nprint(\"--- Test Case 2 ---\")\nresult2 = list_difference(['a', 'b'], ['c', 'd'])\nprint(f\"Final result for test 2: {result2}\")\n",
-"text_alt": "def list_difference(list1, list2):\n    print \"Starting list_difference function.\"\n    set1 = set(list1)\n    print \"Converted list1 to set: %s\" % set1\n    set2 = set(list2)\n    print \"Converted list2 to set: %s\" % set2\n    \n    difference_set = set1 - set2\n    print \"Calculated difference set: %s\" % difference_set\n    \n    difference_list = list(difference_set)\n    print \"Converted difference set to list: %s\" % difference_list\n    print \"Sorting the result for consistent output if order doesn't matter.\"\n    difference_list.sort() # Added for consistent output across runs if order isn't strict\n    print \"Sorted difference list: %s\" % difference_list\n    print \"list_difference function completed.\"\n    return difference_list\n\nprint \"--- Test Case 1 ---\"\nresult1 = list_difference([1, 2, 3, 4], [3, 4, 5, 6])\nprint \"Final result for test 1: %s\" % result1\n\nprint \"--- Test Case 2 ---\"\nresult2 = list_difference(['a', 'b'], ['c', 'd'])\nprint \"Final result for test 2: %s\" % result2\n",
+"text_nat": "def validate_lists(list1, list2):\n    \"\"\"Raise TypeError unless both arguments are lists.\"\"\"\n    if not isinstance(list1, list):\n        raise TypeError(\"list1 must be a list, got %s\" % type(list1).__name__)\n    if not isinstance(list2, list):\n        raise TypeError(\"list2 must be a list, got %s\" % type(list2).__name__)\n\n\ndef list_difference(list1, list2):\n    \"\"\"Return the elements of list1 that do not appear in list2.\"\"\"\n    validate_lists(list1, list2)\n    try:\n        lookup = set(list2)\n    except TypeError:\n        lookup = list2\n    difference_list = [item for item in list1 if item not in lookup]\n    return difference_list\n\n\ndef symmetric_difference(list1, list2):\n    \"\"\"Return elements that belong to exactly one of the two lists.\"\"\"\n    return list_difference(list1, list2) + list_difference(list2, list1)\n\n\ndef describe_difference(list1, list2):\n    \"\"\"Print a short report about the two lists and return the difference.\"\"\"\n    difference_list = list_difference(list1, list2)\n    print(\"first list :\", list1)\n    print(\"second list:\", list2)\n    print(\"only in first :\", difference_list)\n    print(\"only in second:\", list_difference(list2, list1))\n    if not difference_list:\n        print(\"note: every element of the first list also occurs in the second\")\n    return difference_list\n\n\ndef summarize(pairs):\n    \"\"\"Print a summary table for several list pairs and return the totals.\"\"\"\n    totals = []\n    for index, pair in enumerate(pairs):\n        list1, list2 = pair\n        difference_list = list_difference(list1, list2)\n        both_ways = symmetric_difference(list1, list2)\n        print(\"case %d: %d removed, %d unique overall\"\n              % (index + 1, len(difference_list), len(both_ways)))\n        totals.append(len(difference_list))\n    return totals\n\n\ndef main():\n    cases = [\n        ([1, 2, 3, 4], [3, 4, 5, 6]),\n        (['a', 'b'], ['c', 'd']),\n        ([1, 1, 2, 2, 3], [2]),\n        ([], [7, 8]),\n        ([5, 6], []),\n    ]\n\n    for list1, list2 in cases:\n        describe_difference(list1, list2)\n        print(\"-\" * 40)\n\n    totals = summarize(cases)\n    print(\"removed counts per case:\", totals)\n    print(\"total elements removed:\", sum(totals))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def validate_lists(list1, list2):\n    \"\"\"Raise TypeError unless both arguments are lists.\"\"\"\n    if not isinstance(list1, list):\n        raise TypeError(\"list1 must be a list, got %s\" % type(list1).__name__)\n    if not isinstance(list2, list):\n        raise TypeError(\"list2 must be a list, got %s\" % type(list2).__name__)\n\n\ndef list_difference(list1, list2):\n    \"\"\"Return the elements of list1 that do not appear in list2.\"\"\"\n    validate_lists(list1, list2)\n    try:\n        lookup = set(list2)\n    except TypeError:\n        lookup = list2\n    difference_list = [item for item in list1 if item not in lookup]\n    return difference_list\n\n\ndef symmetric_difference(list1, list2):\n    \"\"\"Return elements that belong to exactly one of the two lists.\"\"\"\n    return list_difference(list1, list2) + list_difference(list2, list1)\n\n\ndef describe_difference(list1, list2):\n    \"\"\"Print a short report about the two lists and return the difference.\"\"\"\n    difference_list = list_difference(list1, list2)\n    print \"first list :\", list1\n    print \"second list:\", list2\n    print \"only in first :\", difference_list\n    print \"only in second:\", list_difference(list2, list1)\n    if not difference_list:\n        print \"note: every element of the first list also occurs in the second\"\n    return difference_list\n\n\ndef summarize(pairs):\n    \"\"\"Print a summary table for several list pairs and return the totals.\"\"\"\n    totals = []\n    for index, pair in enumerate(pairs):\n        list1, list2 = pair\n        difference_list = list_difference(list1, list2)\n        both_ways = symmetric_difference(list1, list2)\n        print \"case %d: %d removed, %d unique overall\" \\\n              % (index + 1, len(difference_list), len(both_ways))\n        totals.append(len(difference_list))\n    return totals\n\n\ndef main():\n    cases = [\n        ([1, 2, 3, 4], [3, 4, 5, 6]),\n        (['a', 'b'], ['c', 'd']),\n        ([1, 1, 2, 2, 3], [2]),\n        ([], [7, 8]),\n        ([5, 6], []),\n    ]\n\n    for list1, list2 in cases:\n        describe_difference(list1, list2)\n        print \"-\" * 40\n\n    totals = summarize(cases)\n    print \"removed counts per case:\", totals\n    print \"total elements removed:\", sum(totals)\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-44,
-45
+1005,
+1006
 ],
 "alt_span": [
-44,
-45
+1005,
+1006
 ]
 },
 {
 "k": 1,
-"nat": "(f",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-114,
-116
+1060,
+1072
 ],
 "alt_span": [
-113,
-114
+1059,
+1070
 ]
 },
 {
 "k": 2,
-"nat": "(f",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-181,
-183
+1106,
+1118
 ],
 "alt_span": [
-181,
-182
+1104,
+1115
 ]
 },
 {
 "k": 3,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-264,
-266
+1209,
+1210
 ],
 "alt_span": [
-265,
-266
+1205,
+1206
 ]
 },
 {
 "k": 4,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-370,
-372
+1615,
+1616
 ],
 "alt_span": [
-372,
-373
+1610,
+1611
 ]
 },
 {
 "k": 5,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-606,
-608
+2055,
+2056
 ],
 "alt_span": [
-608,
-609
+2051,
+2052
 ]
 },
 {
@@ -28943,321 +28498,223 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-735,
-736
+2106,
+2107
 ],
 "alt_span": [
-737,
-738
-]
-},
-{
-"k": 7,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-818,
-820
-],
-"alt_span": [
-819,
-820
-]
-},
-{
-"k": 8,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-943,
-945
-],
-"alt_span": [
-944,
-945
+2101,
+2102
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.86,
+"k_en": 7,
+"shared_fraction": 0.978,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-44,
-45
+1005,
+1006
 ],
 "alt_span": [
-44,
-45
+1005,
+1006
 ]
 },
 {
 "k": 1,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-81,
-82
+1027,
+1039
 ],
 "alt_span": [
-81,
-81
+1027,
+1038
 ]
 },
 {
 "k": 2,
-"nat": "(f",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-114,
-116
+1060,
+1072
 ],
 "alt_span": [
-113,
-114
+1059,
+1070
 ]
 },
 {
 "k": 3,
-"nat": "{set1}\")",
-"alt": "%s\" % set1",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-141,
-149
+1106,
+1118
 ],
 "alt_span": [
-139,
-149
+1104,
+1115
 ]
 },
 {
 "k": 4,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-181,
-183
+1166,
+1167
 ],
 "alt_span": [
-181,
-182
+1163,
+1163
 ]
 },
 {
 "k": 5,
-"nat": "{set2}\")",
-"alt": "%s\" % set2",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-208,
-216
+1209,
+1210
 ],
 "alt_span": [
-207,
-217
+1205,
+1206
 ]
 },
 {
 "k": 6,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-264,
-266
+1275,
+1276
 ],
 "alt_span": [
-265,
-266
+1271,
+1271
 ]
 },
 {
 "k": 7,
-"nat": "{difference_set}\")",
-"alt": "%s\" % difference_set",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-294,
-312
+1615,
+1616
 ],
 "alt_span": [
-294,
-314
+1610,
+1611
 ]
 },
 {
 "k": 8,
-"nat": "(f",
-"alt": " ",
+"nat": "",
+"alt": " \\",
 "nat_span": [
-370,
-372
+1656,
+1656
 ],
 "alt_span": [
-372,
-373
+1651,
+1653
 ]
 },
 {
 "k": 9,
-"nat": "{difference_list}\")\n    print(",
-"alt": "%s\" % difference_list\n    print ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-407,
-437
+1720,
+1721
 ],
 "alt_span": [
-408,
-440
+1717,
+1717
 ]
 },
 {
 "k": 10,
-"nat": ")",
-"alt": "",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-504,
-505
+2055,
+2056
 ],
 "alt_span": [
-507,
-507
+2051,
+2052
 ]
 },
 {
 "k": 11,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-606,
-608
+2064,
+2065
 ],
 "alt_span": [
-608,
-609
+2060,
+2060
 ]
 },
 {
 "k": 12,
-"nat": "{difference_list}\")\n    print(",
-"alt": "%s\" % difference_list\n    print ",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-633,
-663
+2106,
+2107
 ],
 "alt_span": [
-634,
-666
+2101,
+2102
 ]
 },
 {
 "k": 13,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-700,
-701
+2141,
+2153
 ],
 "alt_span": [
-703,
-703
+2136,
+2147
 ]
 },
 {
 "k": 14,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-735,
-736
-],
-"alt_span": [
-737,
-738
-]
-},
-{
-"k": 15,
 "nat": ")",
 "alt": "",
 "nat_span": [
-757,
-758
+2190,
+2191
 ],
 "alt_span": [
-759,
-759
-]
-},
-{
-"k": 16,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-818,
-820
-],
-"alt_span": [
-819,
-820
-]
-},
-{
-"k": 17,
-"nat": "{result1}\")\n\nprint(",
-"alt": "%s\" % result1\n\nprint ",
-"nat_span": [
-846,
-865
-],
-"alt_span": [
-846,
-867
-]
-},
-{
-"k": 18,
-"nat": ")",
-"alt": "",
-"nat_span": [
-886,
-887
-],
-"alt_span": [
-888,
-888
-]
-},
-{
-"k": 19,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-943,
-945
-],
-"alt_span": [
-944,
-945
-]
-},
-{
-"k": 20,
-"nat": "{result2}\")",
-"alt": "%s\" % result2",
-"nat_span": [
-971,
-982
-],
-"alt_span": [
-971,
-984
+2184,
+2184
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_print__t072",
@@ -42193,46 +41650,46 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def find_third_largest(numbers):\n    print(\"Starting find_third_largest function.\")\n    unique_numbers = sorted(list(set(numbers)), reverse=True)\n    print(f\"Original numbers: {numbers}\")\n    print(f\"Unique sorted numbers (descending): {unique_numbers}\")\n\n    if len(unique_numbers) < 3:\n        print(\"Fewer than three distinct numbers found.\")\n        if not unique_numbers:\n            print(\"List is empty, returning None.\")\n            return None # Or raise an error, based on specific requirements for empty list\n        largest = unique_numbers[0]\n        print(f\"Returning the largest number: {largest}\")\n        return largest\n    else:\n        print(\"Three or more distinct numbers found.\")\n        third_largest = unique_numbers[2]\n        print(f\"The third largest distinct number is: {third_largest}\")\n        print(\"Function completed successfully.\")\n        return third_largest\n\nprint(\"Testing with example 1:\")\nresult1 = find_third_largest([3, 2, 1, 5, 4])\nprint(f\"Result for example 1: {result1}\")\n\nprint(\"Testing with example 2:\")\nresult2 = find_third_largest([1, 1, 2])\nprint(f\"Result for example 2: {result2}\")\n\nprint(\"Testing with example 3 (fewer than 3 distinct):\")\nresult3 = find_third_largest([7, 7])\nprint(f\"Result for example 3: {result3}\")\n\nprint(\"Testing with example 4 (empty list):\")\nresult4 = find_third_largest([])\nprint(f\"Result for example 4: {result4}\")\n",
-"text_alt": "def find_third_largest(numbers):\n    print \"Starting find_third_largest function.\"\n    unique_numbers = sorted(list(set(numbers)), reverse=True)\n    print \"Original numbers: %s\" % numbers\n    print \"Unique sorted numbers (descending): %s\" % unique_numbers\n\n    if len(unique_numbers) < 3:\n        print \"Fewer than three distinct numbers found.\"\n        if not unique_numbers:\n            print \"List is empty, returning None.\"\n            return None # Or raise an error, based on specific requirements for empty list\n        largest = unique_numbers[0]\n        print \"Returning the largest number: %s\" % largest\n        return largest\n    else:\n        print \"Three or more distinct numbers found.\"\n        third_largest = unique_numbers[2]\n        print \"The third largest distinct number is: %s\" % third_largest\n        print \"Function completed successfully.\"\n        return third_largest\n\nprint \"Testing with example 1:\"\nresult1 = find_third_largest([3, 2, 1, 5, 4])\nprint \"Result for example 1: %s\" % result1\n\nprint \"Testing with example 2:\"\nresult2 = find_third_largest([1, 1, 2])\nprint \"Result for example 2: %s\" % result2\n\nprint \"Testing with example 3 (fewer than 3 distinct):\"\nresult3 = find_third_largest([7, 7])\nprint \"Result for example 3: %s\" % result3\n\nprint \"Testing with example 4 (empty list):\"\nresult4 = find_third_largest([])\nprint \"Result for example 4: %s\" % result4\n",
+"text_nat": "def validate(numbers):\n    if not isinstance(numbers, list):\n        raise TypeError(\"numbers must be a list of integers\")\n    if not numbers:\n        raise ValueError(\"numbers must contain at least one integer\")\n    for item in numbers:\n        if isinstance(item, bool) or not isinstance(item, int):\n            raise TypeError(\"all elements must be integers, got %r\" % (item,))\n    return numbers\n\n\ndef find_third_largest(numbers):\n    validate(numbers)\n    distinct = sorted(set(numbers), reverse=True)\n    if len(distinct) < 3:\n        return distinct[0]\n    return distinct[2]\n\n\ndef parse_line(line):\n    tokens = line.replace(\",\", \" \").split()\n    return [int(token) for token in tokens]\n\n\ndef describe(numbers):\n    distinct = sorted(set(numbers), reverse=True)\n    result = find_third_largest(numbers)\n    print(\"input     :\", numbers)\n    print(\"distinct  :\", distinct)\n    if len(distinct) < 3:\n        print(\"note      : fewer than three distinct values, using the largest\")\n    else:\n        print(\"top three :\", distinct[:3])\n    print(\"answer    :\", result)\n    return result\n\n\ndef report(datasets):\n    answers = []\n    for index, numbers in enumerate(datasets, start=1):\n        print(\"--- dataset %d ---\" % index)\n        answers.append(describe(numbers))\n    return answers\n\n\ndef main():\n    datasets = [\n        [3, 2, 1, 5, 4],\n        [1, 1, 2],\n        [7],\n        [10, 10, 9, 9, 8, 8, 7],\n        [-1, -5, -3, -3, -2],\n    ]\n    answers = report(datasets)\n    print(\"=== summary ===\")\n    print(\"answers   :\", answers)\n    print(\"maximum   :\", max(answers))\n    print(\"minimum   :\", min(answers))\n\n    raw = \"42, 17, 17, 99, 8\"\n    parsed = parse_line(raw)\n    print(\"=== parsed line ===\")\n    print(\"raw text  :\", raw)\n    describe(parsed)\n\n    try:\n        find_third_largest([1, \"two\", 3])\n    except TypeError as error:\n        print(\"rejected  :\", error)\n\n    try:\n        find_third_largest([])\n    except ValueError as error:\n        print(\"rejected  :\", error)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def validate(numbers):\n    if not isinstance(numbers, list):\n        raise TypeError(\"numbers must be a list of integers\")\n    if not numbers:\n        raise ValueError(\"numbers must contain at least one integer\")\n    for item in numbers:\n        if isinstance(item, bool) or not isinstance(item, int):\n            raise TypeError(\"all elements must be integers, got %r\" % (item,))\n    return numbers\n\n\ndef find_third_largest(numbers):\n    validate(numbers)\n    distinct = sorted(set(numbers), reverse=True)\n    if len(distinct) < 3:\n        return distinct[0]\n    return distinct[2]\n\n\ndef parse_line(line):\n    tokens = line.replace(\",\", \" \").split()\n    return [int(token) for token in tokens]\n\n\ndef describe(numbers):\n    distinct = sorted(set(numbers), reverse=True)\n    result = find_third_largest(numbers)\n    print \"input     :\", numbers\n    print \"distinct  :\", distinct\n    if len(distinct) < 3:\n        print \"note      : fewer than three distinct values, using the largest\"\n    else:\n        print \"top three :\", distinct[:3]\n    print \"answer    :\", result\n    return result\n\n\ndef report(datasets):\n    answers = []\n    for index, numbers in enumerate(datasets, start=1):\n        print \"--- dataset %d ---\" % index\n        answers.append(describe(numbers))\n    return answers\n\n\ndef main():\n    datasets = [\n        [3, 2, 1, 5, 4],\n        [1, 1, 2],\n        [7],\n        [10, 10, 9, 9, 8, 8, 7],\n        [-1, -5, -3, -3, -2],\n    ]\n    answers = report(datasets)\n    print \"=== summary ===\"\n    print \"answers   :\", answers\n    print \"maximum   :\", max(answers)\n    print \"minimum   :\", min(answers)\n\n    raw = \"42, 17, 17, 99, 8\"\n    parsed = parse_line(raw)\n    print \"=== parsed line ===\"\n    print \"raw text  :\", raw\n    describe(parsed)\n\n    try:\n        find_third_largest([1, \"two\", 3])\n    except TypeError as error:\n        print \"rejected  :\", error\n\n    try:\n        find_third_largest([])\n    except ValueError as error:\n        print \"rejected  :\", error\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-42,
-43
+820,
+821
 ],
 "alt_span": [
-42,
-43
+820,
+821
 ]
 },
 {
 "k": 1,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-155,
-157
+919,
+920
 ],
 "alt_span": [
-154,
-155
+917,
+918
 ]
 },
 {
 "k": 2,
-"nat": "{unique_numbers}\")",
-"alt": "%s\" % unique_numbers",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-236,
-254
+1010,
+1011
 ],
 "alt_span": [
-235,
-255
+1007,
+1008
 ]
 },
 {
@@ -42240,12 +41697,12 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-301,
-302
+1201,
+1202
 ],
 "alt_span": [
-302,
-303
+1196,
+1197
 ]
 },
 {
@@ -42253,51 +41710,51 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-394,
-395
+1490,
+1491
 ],
 "alt_span": [
-394,
-395
+1484,
+1485
 ]
 },
 {
 "k": 5,
-"nat": "(f",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-569,
-571
+1542,
+1554
 ],
 "alt_span": [
-568,
-569
+1535,
+1546
 ]
 },
 {
 "k": 6,
-"nat": "(",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-660,
-661
+1581,
+1593
 ],
 "alt_span": [
-660,
-661
+1573,
+1584
 ]
 },
 {
 "k": 7,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-757,
-759
+1691,
+1692
 ],
 "alt_span": [
-756,
-757
+1681,
+1682
 ]
 },
 {
@@ -42305,135 +41762,97 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-901,
-902
+1862,
+1863
 ],
 "alt_span": [
-900,
-901
+1850,
+1851
 ]
 },
 {
 "k": 9,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-980,
-982
+1971,
+1972
 ],
 "alt_span": [
-978,
-979
-]
-},
-{
-"k": 10,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1096,
-1098
-],
-"alt_span": [
-1094,
-1095
-]
-},
-{
-"k": 11,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1233,
-1235
-],
-"alt_span": [
-1231,
-1232
-]
-},
-{
-"k": 12,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1355,
-1357
-],
-"alt_span": [
-1353,
-1354
+1958,
+1959
 ]
 }
 ],
-"k_en": 13,
-"shared_fraction": 0.86,
+"k_en": 10,
+"shared_fraction": 0.963,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-42,
-43
+820,
+821
 ],
 "alt_span": [
-42,
-43
+820,
+821
 ]
 },
 {
 "k": 1,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-82,
-83
+843,
+855
 ],
 "alt_span": [
-82,
-82
+843,
+854
 ]
 },
 {
 "k": 2,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-155,
-157
+878,
+879
 ],
 "alt_span": [
-154,
-155
+877,
+877
 ]
 },
 {
 "k": 3,
-"nat": "{numbers}\")\n    print(f",
-"alt": "%s\" % numbers\n    print ",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-176,
-199
+919,
+920
 ],
 "alt_span": [
-174,
-198
+917,
+918
 ]
 },
 {
 "k": 4,
-"nat": "{unique_numbers}\")",
-"alt": "%s\" % unique_numbers",
+"nat": ")",
+"alt": "",
 "nat_span": [
-236,
-254
+985,
+986
 ],
 "alt_span": [
-235,
-255
+983,
+983
 ]
 },
 {
@@ -42441,155 +41860,155 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-301,
-302
+1010,
+1011
 ],
 "alt_span": [
-302,
-303
+1007,
+1008
 ]
 },
 {
 "k": 6,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-344,
-345
+1038,
+1050
 ],
 "alt_span": [
-345,
-345
+1035,
+1046
 ]
 },
 {
 "k": 7,
-"nat": "(",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-394,
-395
+1071,
+1072
 ],
 "alt_span": [
-394,
-395
+1067,
+1067
 ]
 },
 {
 "k": 8,
-"nat": ")",
-"alt": "",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-427,
-428
+1201,
+1202
 ],
 "alt_span": [
-427,
-427
+1196,
+1197
 ]
 },
 {
 "k": 9,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-569,
-571
+1230,
+1231
 ],
 "alt_span": [
-568,
-569
+1225,
+1225
 ]
 },
 {
 "k": 10,
-"nat": "{largest}\")",
-"alt": "%s\" % largest",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-602,
-613
+1490,
+1491
 ],
 "alt_span": [
-600,
-613
+1484,
+1485
 ]
 },
 {
 "k": 11,
-"nat": "(",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-660,
-661
+1508,
+1520
 ],
 "alt_span": [
-660,
-661
+1502,
+1513
 ]
 },
 {
 "k": 12,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-700,
-701
+1542,
+1554
 ],
 "alt_span": [
-700,
-700
+1535,
+1546
 ]
 },
 {
 "k": 13,
-"nat": "(f",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-757,
-759
+1581,
+1593
 ],
 "alt_span": [
-756,
-757
+1573,
+1584
 ]
 },
 {
 "k": 14,
-"nat": "{third_largest}\")\n        print(",
-"alt": "%s\" % third_largest\n        print ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-798,
-830
+1619,
+1620
 ],
 "alt_span": [
-796,
-830
+1610,
+1610
 ]
 },
 {
 "k": 15,
-"nat": ")",
-"alt": "",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-864,
-865
+1691,
+1692
 ],
 "alt_span": [
-864,
-864
+1681,
+1682
 ]
 },
 {
 "k": 16,
-"nat": "(",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-901,
-902
+1713,
+1725
 ],
 "alt_span": [
-900,
-901
+1703,
+1714
 ]
 },
 {
@@ -42597,159 +42016,73 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-927,
-928
+1743,
+1744
 ],
 "alt_span": [
-926,
-926
+1732,
+1732
 ]
 },
 {
 "k": 18,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-980,
-982
+1862,
+1863
 ],
 "alt_span": [
-978,
-979
+1850,
+1851
 ]
 },
 {
 "k": 19,
-"nat": "{result1}\")\n\nprint(",
-"alt": "%s\" % result1\n\nprint ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-1005,
-1024
+1883,
+1884
 ],
 "alt_span": [
-1002,
-1023
+1871,
+1871
 ]
 },
 {
 "k": 20,
-"nat": ")",
-"alt": "",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-1049,
-1050
+1971,
+1972
 ],
 "alt_span": [
-1048,
-1048
+1958,
+1959
 ]
 },
 {
 "k": 21,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1096,
-1098
-],
-"alt_span": [
-1094,
-1095
-]
-},
-{
-"k": 22,
-"nat": "{result2}\")\n\nprint(",
-"alt": "%s\" % result2\n\nprint ",
-"nat_span": [
-1121,
-1140
-],
-"alt_span": [
-1118,
-1139
-]
-},
-{
-"k": 23,
 "nat": ")",
 "alt": "",
 "nat_span": [
-1189,
-1190
+1992,
+1993
 ],
 "alt_span": [
-1188,
-1188
-]
-},
-{
-"k": 24,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1233,
-1235
-],
-"alt_span": [
-1231,
-1232
-]
-},
-{
-"k": 25,
-"nat": "{result3}\")\n\nprint(",
-"alt": "%s\" % result3\n\nprint ",
-"nat_span": [
-1258,
-1277
-],
-"alt_span": [
-1255,
-1276
-]
-},
-{
-"k": 26,
-"nat": ")",
-"alt": "",
-"nat_span": [
-1315,
-1316
-],
-"alt_span": [
-1314,
-1314
-]
-},
-{
-"k": 27,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1355,
-1357
-],
-"alt_span": [
-1353,
-1354
-]
-},
-{
-"k": 28,
-"nat": "{result4}\")",
-"alt": "%s\" % result4",
-"nat_span": [
-1380,
-1391
-],
-"alt_span": [
-1377,
-1390
+1979,
+1979
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_print__t105",
@@ -43789,98 +43122,98 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def check_website_status(url):\n    print(f\"Attempting to check status for URL: {url}\")\n    print(\"Simulating network request...\")\n    print(\"Processing response...\")\n    dummy_status = '200 OK'\n    print(f\"Simulated status received: {dummy_status}\")\n    print(\"Returning status.\")\n    return dummy_status\n\nurl1 = 'http://example.com'\nprint(f\"--- Checking {url1} ---\")\nstatus1 = check_website_status(url1)\nprint(f\"Result for {url1}: {status1}\")\n\nurl2 = 'https://google.com'\nprint(f\"--- Checking {url2} ---\")\nstatus2 = check_website_status(url2)\nprint(f\"Result for {url2}: {status2}\")\nprint(\"Simulation complete.\")\n",
-"text_alt": "def check_website_status(url):\n    print \"Attempting to check status for URL: %s\" % url\n    print \"Simulating network request...\"\n    print \"Processing response...\"\n    dummy_status = '200 OK'\n    print \"Simulated status received: %s\" % dummy_status\n    print \"Returning status.\"\n    return dummy_status\n\nurl1 = 'http://example.com'\nprint \"--- Checking %s ---\" % url1\nstatus1 = check_website_status(url1)\nprint \"Result for %s: %s\" % (url1, status1)\n\nurl2 = 'https://google.com'\nprint \"--- Checking %s ---\" % url2\nstatus2 = check_website_status(url2)\nprint \"Result for %s: %s\" % (url2, status2)\nprint \"Simulation complete.\"\n",
+"text_nat": "def normalize_url(url):\n    \"\"\"Trim whitespace and add a scheme if the caller omitted it.\"\"\"\n    cleaned = url.strip()\n    if not cleaned:\n        raise ValueError(\"url must not be empty\")\n    if \"://\" not in cleaned:\n        print(\"no scheme given, assuming http:// for\", cleaned)\n        cleaned = \"http://\" + cleaned\n    return cleaned\n\n\ndef split_url(url):\n    \"\"\"Return (scheme, host, path) for an already normalized url.\"\"\"\n    scheme, remainder = url.split(\"://\", 1)\n    if \"/\" in remainder:\n        host, path = remainder.split(\"/\", 1)\n        path = \"/\" + path\n    else:\n        host, path = remainder, \"/\"\n    if not host:\n        raise ValueError(\"url has no host: \" + url)\n    return scheme.lower(), host.lower(), path\n\n\ndef check_website_status(url):\n    \"\"\"Pretend to perform an HTTP request and report the resulting status.\"\"\"\n    target = normalize_url(url)\n    scheme, host, path = split_url(target)\n    print(\"connecting to\", host, \"over\", scheme)\n    print(\"requesting\", path)\n    status = \"200 OK\"\n    print(\"server replied:\", status)\n    return status\n\n\ndef status_code(status):\n    \"\"\"Extract the numeric part of a status line such as '200 OK'.\"\"\"\n    return int(status.split(\" \", 1)[0])\n\n\ndef check_many(urls):\n    \"\"\"Check several sites, collecting results and errors in one mapping.\"\"\"\n    results = {}\n    for url in urls:\n        try:\n            results[url] = check_website_status(url)\n        except ValueError as exc:\n            print(\"skipping invalid entry:\", exc)\n            results[url] = \"000 INVALID\"\n    return results\n\n\ndef report(results):\n    \"\"\"Print a human readable summary and return the number of healthy sites.\"\"\"\n    healthy = 0\n    for url, status in results.items():\n        code = status_code(status)\n        mark = \"ok\" if code == 200 else \"fail\"\n        print(\"{:<28} {:>12}  [{}]\".format(url, status, mark))\n        if code == 200:\n            healthy += 1\n    print(\"healthy:\", healthy, \"of\", len(results))\n    return healthy\n\n\ndef main():\n    sites = [\n        \"http://example.com\",\n        \"https://google.com\",\n        \"example.org/status\",\n        \"   \",\n    ]\n    results = check_many(sites)\n    print(\"-\" * 48)\n    healthy = report(results)\n    if healthy == len(results):\n        print(\"all monitored sites are up\")\n    else:\n        print(\"some entries need attention\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def normalize_url(url):\n    \"\"\"Trim whitespace and add a scheme if the caller omitted it.\"\"\"\n    cleaned = url.strip()\n    if not cleaned:\n        raise ValueError(\"url must not be empty\")\n    if \"://\" not in cleaned:\n        print \"no scheme given, assuming http:// for\", cleaned\n        cleaned = \"http://\" + cleaned\n    return cleaned\n\n\ndef split_url(url):\n    \"\"\"Return (scheme, host, path) for an already normalized url.\"\"\"\n    scheme, remainder = url.split(\"://\", 1)\n    if \"/\" in remainder:\n        host, path = remainder.split(\"/\", 1)\n        path = \"/\" + path\n    else:\n        host, path = remainder, \"/\"\n    if not host:\n        raise ValueError(\"url has no host: \" + url)\n    return scheme.lower(), host.lower(), path\n\n\ndef check_website_status(url):\n    \"\"\"Pretend to perform an HTTP request and report the resulting status.\"\"\"\n    target = normalize_url(url)\n    scheme, host, path = split_url(target)\n    print \"connecting to\", host, \"over\", scheme\n    print \"requesting\", path\n    status = \"200 OK\"\n    print \"server replied:\", status\n    return status\n\n\ndef status_code(status):\n    \"\"\"Extract the numeric part of a status line such as '200 OK'.\"\"\"\n    return int(status.split(\" \", 1)[0])\n\n\ndef check_many(urls):\n    \"\"\"Check several sites, collecting results and errors in one mapping.\"\"\"\n    results = {}\n    for url in urls:\n        try:\n            results[url] = check_website_status(url)\n        except ValueError as exc:\n            print \"skipping invalid entry:\", exc\n            results[url] = \"000 INVALID\"\n    return results\n\n\ndef report(results):\n    \"\"\"Print a human readable summary and return the number of healthy sites.\"\"\"\n    healthy = 0\n    for url, status in results.items():\n        code = status_code(status)\n        mark = \"ok\" if code == 200 else \"fail\"\n        print \"{:<28} {:>12}  [{}]\".format(url, status, mark)\n        if code == 200:\n            healthy += 1\n    print \"healthy:\", healthy, \"of\", len(results)\n    return healthy\n\n\ndef main():\n    sites = [\n        \"http://example.com\",\n        \"https://google.com\",\n        \"example.org/status\",\n        \"   \",\n    ]\n    results = check_many(sites)\n    print \"-\" * 48\n    healthy = report(results)\n    if healthy == len(results):\n        print \"all monitored sites are up\"\n    else:\n        print \"some entries need attention\"\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-40,
-42
+231,
+232
 ],
 "alt_span": [
-40,
-41
+231,
+232
 ]
 },
 {
 "k": 1,
-"nat": ")\n    print(",
-"alt": "\n    print ",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-128,
-140
+926,
+927
 ],
 "alt_span": [
-129,
-140
+925,
+926
 ]
 },
 {
 "k": 2,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-203,
-205
+1027,
+1028
 ],
 "alt_span": [
-202,
-203
+1024,
+1025
 ]
 },
 {
 "k": 3,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-339,
-341
+1466,
+1467
 ],
 "alt_span": [
-338,
-339
+1462,
+1463
 ]
 },
 {
 "k": 4,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-410,
-412
+1814,
+1815
 ],
 "alt_span": [
-410,
-411
+1809,
+1810
 ]
 },
 {
 "k": 5,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-478,
-480
+1922,
+1923
 ],
 "alt_span": [
-483,
-484
+1916,
+1917
 ]
 },
 {
 "k": 6,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-549,
-551
+2163,
+2164
 ],
 "alt_span": [
-555,
-556
+2156,
+2157
 ]
 },
 {
@@ -43888,96 +43221,110 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-588,
-589
+2249,
+2250
 ],
 "alt_span": [
-599,
-600
+2241,
+2242
+]
+},
+{
+"k": 8,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+2303,
+2304
+],
+"alt_span": [
+2294,
+2295
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.793,
+"k_en": 9,
+"shared_fraction": 0.977,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-40,
-42
+231,
+232
 ],
 "alt_span": [
-40,
-41
+231,
+232
 ]
 },
 {
 "k": 1,
-"nat": "{url}\")\n    print(",
-"alt": "%s\" % url\n    print ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-79,
-97
+280,
+281
 ],
 "alt_span": [
-78,
-98
+280,
+280
 ]
 },
 {
 "k": 2,
-"nat": ")\n    print(",
-"alt": "\n    print ",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-128,
-140
+926,
+927
 ],
 "alt_span": [
-129,
-140
+925,
+926
 ]
 },
 {
 "k": 3,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-164,
-165
+964,
+976
 ],
 "alt_span": [
-164,
-164
+963,
+974
 ]
 },
 {
 "k": 4,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-203,
-205
+994,
+995
 ],
 "alt_span": [
-202,
-203
+992,
+992
 ]
 },
 {
 "k": 5,
-"nat": "{dummy_status}\")\n    print(",
-"alt": "%s\" % dummy_status\n    print ",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-233,
-260
+1027,
+1028
 ],
 "alt_span": [
-231,
-260
+1024,
+1025
 ]
 },
 {
@@ -43985,142 +43332,142 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-279,
-280
+1053,
+1054
 ],
 "alt_span": [
-279,
-279
+1050,
+1050
 ]
 },
 {
 "k": 7,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-339,
-341
+1466,
+1467
 ],
 "alt_span": [
-338,
-339
+1462,
+1463
 ]
 },
 {
 "k": 8,
-"nat": "{url1}",
-"alt": "%s",
+"nat": ")",
+"alt": "",
 "nat_span": [
-355,
-361
+1497,
+1498
 ],
 "alt_span": [
-353,
-355
+1493,
+1493
 ]
 },
 {
 "k": 9,
-"nat": ")",
-"alt": " % url1",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-366,
-367
+1814,
+1815
 ],
 "alt_span": [
-360,
-367
+1809,
+1810
 ]
 },
 {
 "k": 10,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-410,
-412
+1862,
+1863
 ],
 "alt_span": [
-410,
-411
+1857,
+1857
 ]
 },
 {
 "k": 11,
-"nat": "{url1}: {status1}\"",
-"alt": "%s: %s\" % (url1, status1",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-424,
-442
+1922,
+1923
 ],
 "alt_span": [
-423,
-447
+1916,
+1917
 ]
 },
 {
 "k": 12,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-478,
-480
+1961,
+1962
 ],
 "alt_span": [
-483,
-484
+1955,
+1955
 ]
 },
 {
 "k": 13,
-"nat": "{url2}",
-"alt": "%s",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-494,
-500
+2163,
+2164
 ],
 "alt_span": [
-498,
-500
+2156,
+2157
 ]
 },
 {
 "k": 14,
 "nat": ")",
-"alt": " % url2",
+"alt": "",
 "nat_span": [
-505,
-506
+2172,
+2173
 ],
 "alt_span": [
-505,
-512
+2165,
+2165
 ]
 },
 {
 "k": 15,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-549,
-551
+2249,
+2250
 ],
 "alt_span": [
-555,
-556
+2241,
+2242
 ]
 },
 {
 "k": 16,
-"nat": "{url2}: {status2}\"",
-"alt": "%s: %s\" % (url2, status2",
+"nat": ")",
+"alt": "",
 "nat_span": [
-563,
-581
+2278,
+2279
 ],
 "alt_span": [
-568,
-592
+2270,
+2270
 ]
 },
 {
@@ -44128,12 +43475,12 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-588,
-589
+2303,
+2304
 ],
 "alt_span": [
-599,
-600
+2294,
+2295
 ]
 },
 {
@@ -44141,16 +43488,21 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-611,
-612
+2333,
+2334
 ],
 "alt_span": [
-622,
-622
+2324,
+2324
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_print__t109",
@@ -52064,46 +51416,46 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def transpose_matrix(matrix):\n    print(\"Starting matrix transposition...\")\n    if not matrix:\n        print(\"Input matrix is empty, returning empty list.\")\n        return []\n\n    rows = len(matrix)\n    cols = len(matrix[0])\n    print(f\"Matrix dimensions: {rows} rows, {cols} columns.\")\n\n    transposed = []\n    print(\"Initializing transposed matrix structure.\")\n    for j in range(cols):\n        new_row = []\n        for i in range(rows):\n            new_row.append(0) # Placeholder\n        transposed.append(new_row)\n    print(\"Placeholder matrix created.\")\n\n    for i in range(rows):\n        print(f\"Processing row {i} of the original matrix.\")\n        for j in range(cols):\n            transposed[j][i] = matrix[i][j]\n            print(f\"  Setting transposed[{j}][{i}] to {matrix[i][j]}.\")\n\n    print(\"Transposition complete.\")\n    print(\"Returning the transposed matrix.\")\n    return transposed\n",
-"text_alt": "def transpose_matrix(matrix):\n    print \"Starting matrix transposition...\"\n    if not matrix:\n        print \"Input matrix is empty, returning empty list.\"\n        return []\n\n    rows = len(matrix)\n    cols = len(matrix[0])\n    print \"Matrix dimensions: %s rows, %s columns.\" % (rows, cols)\n\n    transposed = []\n    print \"Initializing transposed matrix structure.\"\n    for j in range(cols):\n        new_row = []\n        for i in range(rows):\n            new_row.append(0) # Placeholder\n        transposed.append(new_row)\n    print \"Placeholder matrix created.\"\n\n    for i in range(rows):\n        print \"Processing row %s of the original matrix.\" % i\n        for j in range(cols):\n            transposed[j][i] = matrix[i][j]\n            print \"  Setting transposed[%s][%s] to %s.\" % (j, i, matrix[i][j])\n\n    print \"Transposition complete.\"\n    print \"Returning the transposed matrix.\"\n    return transposed\n",
+"text_nat": "def validate_matrix(matrix):\n    \"\"\"Raise ValueError/TypeError if matrix is not a rectangular 2D numeric matrix.\"\"\"\n    if not isinstance(matrix, list):\n        raise TypeError(\"matrix must be a list of lists\")\n    if not matrix:\n        return 0, 0\n    widths = set()\n    for row in matrix:\n        if not isinstance(row, list):\n            raise TypeError(\"each row of matrix must be a list\")\n        for value in row:\n            if isinstance(value, bool) or not isinstance(value, (int, float)):\n                raise TypeError(\"matrix entries must be int or float\")\n        widths.add(len(row))\n    if len(widths) > 1:\n        raise ValueError(\"matrix rows must all have the same length\")\n    return len(matrix), widths.pop()\n\n\ndef transpose_matrix(matrix):\n    \"\"\"Return the transpose of a rectangular 2D matrix as a new list of lists.\"\"\"\n    rows, cols = validate_matrix(matrix)\n    return [[matrix[r][c] for r in range(rows)] for c in range(cols)]\n\n\ndef format_matrix(matrix):\n    \"\"\"Render a matrix as aligned text lines.\"\"\"\n    if not matrix:\n        return \"(empty)\"\n    cells = [[str(value) for value in row] for row in matrix]\n    width = max([len(text) for row in cells for text in row] + [0])\n    return \"\\n\".join(\" \".join(text.rjust(width) for text in row) for row in cells)\n\n\ndef report(matrix):\n    \"\"\"Print a matrix, its transpose and the shape change.\"\"\"\n    rows, cols = validate_matrix(matrix)\n    result = transpose_matrix(matrix)\n    print(\"original ({0}x{1}):\".format(rows, cols))\n    print(format_matrix(matrix))\n    print(\"transposed ({0}x{1}):\".format(cols, rows))\n    print(format_matrix(result))\n    if result and transpose_matrix(result) == matrix:\n        print(\"double transpose restores the original\")\n    print(\"-\" * 32)\n    return result\n\n\ndef main():\n    print(transpose_matrix([[1, 2, 3], [4, 5, 6]]))\n    print(transpose_matrix([[10]]))\n    print(\"=\" * 32)\n\n    samples = [\n        [[1, 2, 3], [4, 5, 6]],\n        [[10]],\n        [[1.5, -2.0], [0.25, 4.0], [7.0, 8.5]],\n        [],\n    ]\n    for sample in samples:\n        report(sample)\n\n    bad_inputs = [[[1, 2], [3]], [[1, \"x\"]], \"not a matrix\"]\n    for bad in bad_inputs:\n        try:\n            transpose_matrix(bad)\n        except (TypeError, ValueError) as exc:\n            print(\"rejected {0!r}: {1}\".format(bad, exc))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def validate_matrix(matrix):\n    \"\"\"Raise ValueError/TypeError if matrix is not a rectangular 2D numeric matrix.\"\"\"\n    if not isinstance(matrix, list):\n        raise TypeError(\"matrix must be a list of lists\")\n    if not matrix:\n        return 0, 0\n    widths = set()\n    for row in matrix:\n        if not isinstance(row, list):\n            raise TypeError(\"each row of matrix must be a list\")\n        for value in row:\n            if isinstance(value, bool) or not isinstance(value, (int, float)):\n                raise TypeError(\"matrix entries must be int or float\")\n        widths.add(len(row))\n    if len(widths) > 1:\n        raise ValueError(\"matrix rows must all have the same length\")\n    return len(matrix), widths.pop()\n\n\ndef transpose_matrix(matrix):\n    \"\"\"Return the transpose of a rectangular 2D matrix as a new list of lists.\"\"\"\n    rows, cols = validate_matrix(matrix)\n    return [[matrix[r][c] for r in range(rows)] for c in range(cols)]\n\n\ndef format_matrix(matrix):\n    \"\"\"Render a matrix as aligned text lines.\"\"\"\n    if not matrix:\n        return \"(empty)\"\n    cells = [[str(value) for value in row] for row in matrix]\n    width = max([len(text) for row in cells for text in row] + [0])\n    return \"\\n\".join(\" \".join(text.rjust(width) for text in row) for row in cells)\n\n\ndef report(matrix):\n    \"\"\"Print a matrix, its transpose and the shape change.\"\"\"\n    rows, cols = validate_matrix(matrix)\n    result = transpose_matrix(matrix)\n    print \"original ({0}x{1}):\".format(rows, cols)\n    print format_matrix(matrix)\n    print \"transposed ({0}x{1}):\".format(cols, rows)\n    print format_matrix(result)\n    if result and transpose_matrix(result) == matrix:\n        print \"double transpose restores the original\"\n    print \"-\" * 32\n    return result\n\n\ndef main():\n    print transpose_matrix([[1, 2, 3], [4, 5, 6]])\n    print transpose_matrix([[10]])\n    print \"=\" * 32\n\n    samples = [\n        [[1, 2, 3], [4, 5, 6]],\n        [[10]],\n        [[1.5, -2.0], [0.25, 4.0], [7.0, 8.5]],\n        [],\n    ]\n    for sample in samples:\n        report(sample)\n\n    bad_inputs = [[[1, 2], [3]], [[1, \"x\"]], \"not a matrix\"]\n    for bad in bad_inputs:\n        try:\n            transpose_matrix(bad)\n        except (TypeError, ValueError) as exc:\n            print \"rejected {0!r}: {1}\".format(bad, exc)\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-39,
-40
+1463,
+1464
 ],
 "alt_span": [
-39,
-40
+1463,
+1464
 ]
 },
 {
 "k": 1,
-"nat": "(",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-108,
-109
+1537,
+1549
 ],
 "alt_span": [
-107,
-108
+1536,
+1547
 ]
 },
 {
 "k": 2,
-"nat": "(f",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-234,
-236
+1591,
+1603
 ],
 "alt_span": [
-232,
-233
+1589,
+1600
 ]
 },
 {
@@ -52111,12 +51463,12 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-317,
-318
+1693,
+1694
 ],
 "alt_span": [
-320,
-321
+1689,
+1690
 ]
 },
 {
@@ -52124,161 +51476,149 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-528,
-529
+1797,
+1798
 ],
 "alt_span": [
-530,
-531
+1791,
+1792
 ]
 },
 {
 "k": 5,
-"nat": "(f",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-600,
-602
+1874,
+1886
 ],
 "alt_span": [
-601,
-602
+1867,
+1878
 ]
 },
 {
 "k": 6,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-739,
-741
-],
-"alt_span": [
-741,
-742
-]
-},
-{
-"k": 7,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-804,
-805
+2277,
+2278
 ],
 "alt_span": [
-813,
-814
+2268,
+2269
 ]
 }
 ],
-"k_en": 8,
-"shared_fraction": 0.877,
+"k_en": 7,
+"shared_fraction": 0.979,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-39,
-40
+1463,
+1464
 ],
 "alt_span": [
-39,
-40
+1463,
+1464
 ]
 },
 {
 "k": 1,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-74,
-75
+1504,
+1516
 ],
 "alt_span": [
-74,
-74
+1504,
+1515
 ]
 },
 {
 "k": 2,
-"nat": "(",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-108,
-109
+1537,
+1549
 ],
 "alt_span": [
-107,
-108
+1536,
+1547
 ]
 },
 {
 "k": 3,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-155,
-156
+1591,
+1603
 ],
 "alt_span": [
-154,
-154
+1589,
+1600
 ]
 },
 {
 "k": 4,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-234,
-236
+1623,
+1624
 ],
 "alt_span": [
-232,
-233
+1620,
+1620
 ]
 },
 {
 "k": 5,
-"nat": "{rows}",
-"alt": "%s",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-256,
-262
+1693,
+1694
 ],
 "alt_span": [
-253,
-255
+1689,
+1690
 ]
 },
 {
 "k": 6,
-"nat": "{cols}",
-"alt": "%s",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-269,
-275
+1734,
+1746
 ],
 "alt_span": [
-262,
-264
+1730,
+1741
 ]
 },
 {
 "k": 7,
-"nat": "",
-"alt": " % (rows, cols",
+"nat": ")",
+"alt": "",
 "nat_span": [
-285,
-285
+1754,
+1755
 ],
 "alt_span": [
-274,
-288
+1749,
+1749
 ]
 },
 {
@@ -52286,38 +51626,38 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-317,
-318
+1797,
+1798
 ],
 "alt_span": [
-320,
-321
+1791,
+1792
 ]
 },
 {
 "k": 9,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-361,
-362
+1838,
+1850
 ],
 "alt_span": [
-364,
-364
+1832,
+1843
 ]
 },
 {
 "k": 10,
-"nat": "(",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-528,
-529
+1874,
+1886
 ],
 "alt_span": [
-530,
-531
+1867,
+1878
 ]
 },
 {
@@ -52325,146 +51665,47 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-558,
-559
+1894,
+1895
 ],
 "alt_span": [
-560,
-560
+1886,
+1886
 ]
 },
 {
 "k": 12,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-600,
-602
+2277,
+2278
 ],
 "alt_span": [
-601,
-602
+2268,
+2269
 ]
 },
 {
 "k": 13,
-"nat": "{i}",
-"alt": "%s",
-"nat_span": [
-618,
-621
-],
-"alt_span": [
-618,
-620
-]
-},
-{
-"k": 14,
-"nat": ")",
-"alt": " % i",
-"nat_span": [
-646,
-647
-],
-"alt_span": [
-645,
-649
-]
-},
-{
-"k": 15,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-739,
-741
-],
-"alt_span": [
-741,
-742
-]
-},
-{
-"k": 16,
-"nat": "{j}][{i}",
-"alt": "%s][%s",
-"nat_span": [
-763,
-771
-],
-"alt_span": [
-764,
-770
-]
-},
-{
-"k": 17,
-"nat": "{",
-"alt": "%s.\" % (j, i, ",
-"nat_span": [
-776,
-777
-],
-"alt_span": [
-775,
-789
-]
-},
-{
-"k": 18,
-"nat": "}.\"",
-"alt": "",
-"nat_span": [
-789,
-792
-],
-"alt_span": [
-801,
-801
-]
-},
-{
-"k": 19,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-804,
-805
-],
-"alt_span": [
-813,
-814
-]
-},
-{
-"k": 20,
-"nat": ")\n    print(",
-"alt": "\n    print ",
-"nat_span": [
-830,
-842
-],
-"alt_span": [
-839,
-850
-]
-},
-{
-"k": 21,
 "nat": ")",
 "alt": "",
 "nat_span": [
-876,
-877
+2316,
+2317
 ],
 "alt_span": [
-884,
-884
+2307,
+2307
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_print__t131",
@@ -68561,431 +67802,6 @@
 "free_filter": true
 },
 {
-"doc_id": "py2_print__t173",
-"family": "py2_print",
-"topic": "Time Since Specific Date",
-"angle": "code",
-"text_es": "Implement `days_since(year, month, day)` which takes integer `year`, `month`, and `day` representing a past date. It should return the number of full days that have passed since that date until today. Use `datetime` module. Example: `days_since(2023, 1, 1)` called on 2023-01-03 should return `2`, `days_since(2022, 12, 31)` called on 2023-01-01 should return `1`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "import datetime\n\ndef days_since(year, month, day):\n    print(\"Starting days_since function.\")\n    past_date = datetime.date(year, month, day)\n    print(f\"Past date created: {past_date}\")\n    today = datetime.date.today()\n    print(f\"Today's date obtained: {today}\")\n    \n    delta = today - past_date\n    print(f\"Time difference calculated: {delta}\")\n    \n    result = delta.days\n    print(f\"Number of days extracted: {result}\")\n    print(\"Calculation complete.\")\n    return result\n\nprint(\"Defining days_since function.\")\nif __name__ == \"__main__\":\n    print(\"Executing example calls.\")\n    \n    # Example 1: Same year, same month, few days apart\n    days1 = days_since(2023, 1, 1) # Assuming today is 2023-01-03\n    print(f\"Days since 2023-01-01: {days1}\") # Should be 2 if today is 2023-01-03\n    \n    # Example 2: Across year boundary\n    days2 = days_since(2022, 12, 31) # Assuming today is 2023-01-01\n    print(f\"Days since 2022-12-31: {days2}\") # Should be 1 if today is 2023-01-01\n    \n    print(\"All examples executed.\")\n",
-"text_alt": "import datetime\n\ndef days_since(year, month, day):\n    print \"Starting days_since function.\"\n    past_date = datetime.date(year, month, day)\n    print \"Past date created: %s\" % past_date\n    today = datetime.date.today()\n    print \"Today's date obtained: %s\" % today\n    \n    delta = today - past_date\n    print \"Time difference calculated: %s\" % delta\n    \n    result = delta.days\n    print \"Number of days extracted: %s\" % result\n    print \"Calculation complete.\"\n    return result\n\nprint \"Defining days_since function.\"\nif __name__ == \"__main__\":\n    print \"Executing example calls.\"\n    \n    # Example 1: Same year, same month, few days apart\n    days1 = days_since(2023, 1, 1) # Assuming today is 2023-01-03\n    print \"Days since 2023-01-01: %s\" % days1 # Should be 2 if today is 2023-01-03\n    \n    # Example 2: Across year boundary\n    days2 = days_since(2022, 12, 31) # Assuming today is 2023-01-01\n    print \"Days since 2022-12-31: %s\" % days2 # Should be 1 if today is 2023-01-01\n    \n    print \"All examples executed.\"\n",
-"opps": [
-{
-"k": 0,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-60,
-61
-],
-"alt_span": [
-60,
-61
-]
-},
-{
-"k": 1,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-151,
-153
-],
-"alt_span": [
-150,
-151
-]
-},
-{
-"k": 2,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-230,
-232
-],
-"alt_span": [
-230,
-231
-]
-},
-{
-"k": 3,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-310,
-312
-],
-"alt_span": [
-311,
-312
-]
-},
-{
-"k": 4,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-389,
-391
-],
-"alt_span": [
-391,
-392
-]
-},
-{
-"k": 5,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-488,
-489
-],
-"alt_span": [
-490,
-491
-]
-},
-{
-"k": 6,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-558,
-559
-],
-"alt_span": [
-559,
-560
-]
-},
-{
-"k": 7,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-722,
-724
-],
-"alt_span": [
-722,
-723
-]
-},
-{
-"k": 8,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-915,
-917
-],
-"alt_span": [
-916,
-917
-]
-},
-{
-"k": 9,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-1002,
-1003
-],
-"alt_span": [
-1004,
-1005
-]
-}
-],
-"k_en": 10,
-"shared_fraction": 0.881,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-60,
-61
-],
-"alt_span": [
-60,
-61
-]
-},
-{
-"k": 1,
-"nat": ")",
-"alt": "",
-"nat_span": [
-92,
-93
-],
-"alt_span": [
-92,
-92
-]
-},
-{
-"k": 2,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-151,
-153
-],
-"alt_span": [
-150,
-151
-]
-},
-{
-"k": 3,
-"nat": "{past_date}\")",
-"alt": "%s\" % past_date",
-"nat_span": [
-173,
-186
-],
-"alt_span": [
-171,
-186
-]
-},
-{
-"k": 4,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-230,
-232
-],
-"alt_span": [
-230,
-231
-]
-},
-{
-"k": 5,
-"nat": "{today}\")",
-"alt": "%s\" % today",
-"nat_span": [
-256,
-265
-],
-"alt_span": [
-255,
-266
-]
-},
-{
-"k": 6,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-310,
-312
-],
-"alt_span": [
-311,
-312
-]
-},
-{
-"k": 7,
-"nat": "{delta}\")",
-"alt": "%s\" % delta",
-"nat_span": [
-341,
-350
-],
-"alt_span": [
-341,
-352
-]
-},
-{
-"k": 8,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-389,
-391
-],
-"alt_span": [
-391,
-392
-]
-},
-{
-"k": 9,
-"nat": "{result}\")\n    print(",
-"alt": "%s\" % result\n    print ",
-"nat_span": [
-418,
-439
-],
-"alt_span": [
-419,
-442
-]
-},
-{
-"k": 10,
-"nat": ")",
-"alt": "",
-"nat_span": [
-462,
-463
-],
-"alt_span": [
-465,
-465
-]
-},
-{
-"k": 11,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-488,
-489
-],
-"alt_span": [
-490,
-491
-]
-},
-{
-"k": 12,
-"nat": ")",
-"alt": "",
-"nat_span": [
-520,
-521
-],
-"alt_span": [
-522,
-522
-]
-},
-{
-"k": 13,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-558,
-559
-],
-"alt_span": [
-559,
-560
-]
-},
-{
-"k": 14,
-"nat": ")",
-"alt": "",
-"nat_span": [
-585,
-586
-],
-"alt_span": [
-586,
-586
-]
-},
-{
-"k": 15,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-722,
-724
-],
-"alt_span": [
-722,
-723
-]
-},
-{
-"k": 16,
-"nat": "{days1}\")",
-"alt": "%s\" % days1",
-"nat_span": [
-748,
-757
-],
-"alt_span": [
-747,
-758
-]
-},
-{
-"k": 17,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-915,
-917
-],
-"alt_span": [
-916,
-917
-]
-},
-{
-"k": 18,
-"nat": "{days2}\")",
-"alt": "%s\" % days2",
-"nat_span": [
-941,
-950
-],
-"alt_span": [
-941,
-952
-]
-},
-{
-"k": 19,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-1002,
-1003
-],
-"alt_span": [
-1004,
-1005
-]
-},
-{
-"k": 20,
-"nat": ")",
-"alt": "",
-"nat_span": [
-1027,
-1028
-],
-"alt_span": [
-1029,
-1029
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py2_print__t174",
 "family": "py2_print",
 "topic": "Parse CSV Line",
@@ -70543,111 +69359,111 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "print(\"--- Starting inventory update script ---\")\n\ndef update_inventory(inventory, item_name, quantity_change):\n    print(f\"Received inventory: {inventory}\")\n    print(f\"Attempting to update item: '{item_name}' with change: {quantity_change}\")\n\n    current_quantity = inventory.get(item_name, 0)\n    print(f\"Current quantity of '{item_name}': {current_quantity}\")\n\n    new_quantity = current_quantity + quantity_change\n    print(f\"Calculated new quantity before check: {new_quantity}\")\n\n    if new_quantity < 0:\n        print(\"New quantity is negative, setting to 0.\")\n        new_quantity = 0\n\n    inventory[item_name] = new_quantity\n    print(f\"Updated quantity of '{item_name}': {inventory[item_name]}\")\n    print(f\"Returning updated inventory: {inventory}\")\n    return inventory\n\nprint(\"--- Function definition complete ---\")\n\n# Example Usage 1\nmy_inventory = {'apple': 10, 'orange': 5}\nprint(\"\\n--- Running example 1 ---\")\nupdated_inv1 = update_inventory(my_inventory, 'apple', 5)\nprint(f\"Final inventory after example 1: {updated_inv1}\")\n\n# Example Usage 2\nmy_inventory2 = {'banana': 8, 'grape': 12}\nprint(\"\\n--- Running example 2 ---\")\nupdated_inv2 = update_inventory(my_inventory2, 'banana', -10)\nprint(f\"Final inventory after example 2: {updated_inv2}\")\n\nprint(\"\\n--- Script finished ---\")\n",
-"text_alt": "print \"--- Starting inventory update script ---\"\n\ndef update_inventory(inventory, item_name, quantity_change):\n    print \"Received inventory: %s\" % inventory\n    print \"Attempting to update item: '%s' with change: %s\" % (item_name, quantity_change)\n\n    current_quantity = inventory.get(item_name, 0)\n    print \"Current quantity of '%s': %s\" % (item_name, current_quantity)\n\n    new_quantity = current_quantity + quantity_change\n    print \"Calculated new quantity before check: %s\" % new_quantity\n\n    if new_quantity < 0:\n        print \"New quantity is negative, setting to 0.\"\n        new_quantity = 0\n\n    inventory[item_name] = new_quantity\n    print \"Updated quantity of '%s': %s\" % (item_name, inventory[item_name])\n    print \"Returning updated inventory: %s\" % inventory\n    return inventory\n\nprint \"--- Function definition complete ---\"\n\n# Example Usage 1\nmy_inventory = {'apple': 10, 'orange': 5}\nprint \"\\n--- Running example 1 ---\"\nupdated_inv1 = update_inventory(my_inventory, 'apple', 5)\nprint \"Final inventory after example 1: %s\" % updated_inv1\n\n# Example Usage 2\nmy_inventory2 = {'banana': 8, 'grape': 12}\nprint \"\\n--- Running example 2 ---\"\nupdated_inv2 = update_inventory(my_inventory2, 'banana', -10)\nprint \"Final inventory after example 2: %s\" % updated_inv2\n\nprint \"\\n--- Script finished ---\"\n",
+"text_nat": "def update_inventory(inventory, item_name, quantity_change):\n    if not isinstance(inventory, dict):\n        raise TypeError(\"inventory must be a dictionary\")\n    if not isinstance(item_name, str) or not item_name:\n        raise ValueError(\"item_name must be a non-empty string\")\n    if not isinstance(quantity_change, int) or isinstance(quantity_change, bool):\n        raise TypeError(\"quantity_change must be an integer\")\n\n    current = inventory.get(item_name, 0)\n    new_quantity = current + quantity_change\n    if new_quantity < 0:\n        new_quantity = 0\n    inventory[item_name] = new_quantity\n    return inventory\n\n\ndef format_line(item_name, quantity):\n    status = \"OUT OF STOCK\" if quantity == 0 else \"low\" if quantity < 5 else \"ok\"\n    return \"{:<12} {:>4}  {}\".format(item_name, quantity, status)\n\n\ndef show_inventory(inventory, title):\n    print(title)\n    print(\"-\" * len(title))\n    for item_name in sorted(inventory):\n        print(format_line(item_name, inventory[item_name]))\n    print(\"total units:\", sum(inventory.values()))\n\n\ndef apply_transactions(inventory, transactions):\n    for item_name, quantity_change in transactions:\n        before = inventory.get(item_name, 0)\n        update_inventory(inventory, item_name, quantity_change)\n        after = inventory[item_name]\n        print(\"{:<12} {:+d}  {} -> {}\".format(item_name, quantity_change, before, after))\n        if after == 0 and before > 0:\n            print(\"  warning: {} is now depleted\".format(item_name))\n    return inventory\n\n\ndef main():\n    stock = {'apple': 10, 'banana': 5, 'cherry': 3}\n    show_inventory(stock, \"Opening stock\")\n\n    deliveries = [('apple', 5), ('durian', 12)]\n    print()\n    print(\"Applying deliveries\")\n    apply_transactions(stock, deliveries)\n\n    sales = [('banana', -10), ('cherry', -1), ('apple', -4)]\n    print()\n    print(\"Applying sales\")\n    apply_transactions(stock, sales)\n\n    print()\n    show_inventory(stock, \"Closing stock\")\n\n    empty = [name for name in sorted(stock) if stock[name] == 0]\n    print()\n    if empty:\n        print(\"Reorder needed for:\", \", \".join(empty))\n    else:\n        print(\"Nothing needs reordering\")\n\n    try:\n        update_inventory(stock, 'apple', 1.5)\n    except TypeError as error:\n        print(\"rejected bad transaction:\", error)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def update_inventory(inventory, item_name, quantity_change):\n    if not isinstance(inventory, dict):\n        raise TypeError(\"inventory must be a dictionary\")\n    if not isinstance(item_name, str) or not item_name:\n        raise ValueError(\"item_name must be a non-empty string\")\n    if not isinstance(quantity_change, int) or isinstance(quantity_change, bool):\n        raise TypeError(\"quantity_change must be an integer\")\n\n    current = inventory.get(item_name, 0)\n    new_quantity = current + quantity_change\n    if new_quantity < 0:\n        new_quantity = 0\n    inventory[item_name] = new_quantity\n    return inventory\n\n\ndef format_line(item_name, quantity):\n    status = \"OUT OF STOCK\" if quantity == 0 else \"low\" if quantity < 5 else \"ok\"\n    return \"{:<12} {:>4}  {}\".format(item_name, quantity, status)\n\n\ndef show_inventory(inventory, title):\n    print title\n    print \"-\" * len(title)\n    for item_name in sorted(inventory):\n        print format_line(item_name, inventory[item_name])\n    print \"total units:\", sum(inventory.values())\n\n\ndef apply_transactions(inventory, transactions):\n    for item_name, quantity_change in transactions:\n        before = inventory.get(item_name, 0)\n        update_inventory(inventory, item_name, quantity_change)\n        after = inventory[item_name]\n        print \"{:<12} {:+d}  {} -> {}\".format(item_name, quantity_change, before, after)\n        if after == 0 and before > 0:\n            print \"  warning: {} is now depleted\".format(item_name)\n    return inventory\n\n\ndef main():\n    stock = {'apple': 10, 'banana': 5, 'cherry': 3}\n    show_inventory(stock, \"Opening stock\")\n\n    deliveries = [('apple', 5), ('durian', 12)]\n    print\n    print \"Applying deliveries\"\n    apply_transactions(stock, deliveries)\n\n    sales = [('banana', -10), ('cherry', -1), ('apple', -4)]\n    print\n    print \"Applying sales\"\n    apply_transactions(stock, sales)\n\n    print\n    show_inventory(stock, \"Closing stock\")\n\n    empty = [name for name in sorted(stock) if stock[name] == 0]\n    print\n    if empty:\n        print \"Reorder needed for:\", \", \".join(empty)\n    else:\n        print \"Nothing needs reordering\"\n\n    try:\n        update_inventory(stock, 'apple', 1.5)\n    except TypeError as error:\n        print \"rejected bad transaction:\", error\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "(",
-"alt": " ",
+"nat": "(title)\n    print(",
+"alt": " title\n    print ",
 "nat_span": [
-5,
-6
+860,
+878
 ],
 "alt_span": [
-5,
-6
+860,
+877
 ]
 },
 {
 "k": 1,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-121,
-123
+949,
+950
 ],
 "alt_span": [
-120,
-121
+947,
+948
 ]
 },
 {
 "k": 2,
-"nat": "{item_name}",
-"alt": "%s",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-198,
-209
+1309,
+1310
 ],
 "alt_span": [
-197,
-199
+1305,
+1306
 ]
 },
 {
 "k": 3,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-305,
-307
+1441,
+1442
 ],
 "alt_span": [
-310,
-311
+1436,
+1437
 ]
 },
 {
 "k": 4,
-"nat": "(f",
-"alt": " ",
+"nat": "()\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-428,
-430
+1681,
+1694
 ],
 "alt_span": [
-438,
-439
+1675,
+1686
 ]
 },
 {
 "k": 5,
-"nat": "(",
-"alt": " ",
+"nat": "()\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-525,
-526
+1830,
+1843
 ],
 "alt_span": [
-536,
-537
+1821,
+1832
 ]
 },
 {
 "k": 6,
-"nat": "(f",
-"alt": " ",
+"nat": "()",
+"alt": "",
 "nat_span": [
-644,
-646
+1908,
+1910
 ],
 "alt_span": [
-654,
-655
+1896,
+1896
 ]
 },
 {
 "k": 7,
-"nat": "(f",
-"alt": " ",
+"nat": "()",
+"alt": "",
 "nat_span": [
-716,
-718
+2029,
+2031
 ],
 "alt_span": [
-731,
-732
+2015,
+2015
 ]
 },
 {
@@ -70655,12 +69471,12 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-789,
-790
+2059,
+2060
 ],
 "alt_span": [
-805,
-806
+2043,
+2044
 ]
 },
 {
@@ -70668,70 +69484,45 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-896,
-897
+2124,
+2125
 ],
 "alt_span": [
-911,
-912
+2107,
+2108
 ]
 },
 {
 "k": 10,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-991,
-993
-],
-"alt_span": [
-1005,
-1006
-]
-},
-{
-"k": 11,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-1111,
-1112
+2253,
+2254
 ],
 "alt_span": [
-1126,
-1127
-]
-},
-{
-"k": 12,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1210,
-1212
-],
-"alt_span": [
-1224,
-1225
+2235,
+2236
 ]
 }
 ],
-"k_en": 13,
-"shared_fraction": 0.855,
+"k_en": 11,
+"shared_fraction": 0.962,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "(",
-"alt": " ",
+"nat": "(title)\n    print(",
+"alt": " title\n    print ",
 "nat_span": [
-5,
-6
+860,
+878
 ],
 "alt_span": [
-5,
-6
+860,
+877
 ]
 },
 {
@@ -70739,142 +69530,142 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-48,
-49
+893,
+894
 ],
 "alt_span": [
-48,
-48
+892,
+892
 ]
 },
 {
 "k": 2,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-121,
-123
+949,
+950
 ],
 "alt_span": [
-120,
-121
+947,
+948
 ]
 },
 {
 "k": 3,
-"nat": "{inventory}\")\n    print(f",
-"alt": "%s\" % inventory\n    print ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-144,
-169
+994,
+1006
 ],
 "alt_span": [
-142,
-168
+992,
+1003
 ]
 },
 {
 "k": 4,
-"nat": "{item_name}",
-"alt": "%s",
+"nat": ")",
+"alt": "",
 "nat_span": [
-198,
-209
+1043,
+1044
 ],
 "alt_span": [
-197,
-199
+1040,
+1040
 ]
 },
 {
 "k": 5,
-"nat": "{quantity_change}\"",
-"alt": "%s\" % (item_name, quantity_change",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-224,
-242
+1309,
+1310
 ],
 "alt_span": [
-214,
-247
+1305,
+1306
 ]
 },
 {
 "k": 6,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-305,
-307
+1384,
+1385
 ],
 "alt_span": [
-310,
-311
+1380,
+1380
 ]
 },
 {
 "k": 7,
-"nat": "{item_name}",
-"alt": "%s",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-329,
-340
+1441,
+1442
 ],
 "alt_span": [
-333,
-335
+1436,
+1437
 ]
 },
 {
 "k": 8,
-"nat": "{current_quantity}\"",
-"alt": "%s\" % (item_name, current_quantity",
+"nat": ")",
+"alt": "",
 "nat_span": [
-343,
-362
+1490,
+1491
 ],
 "alt_span": [
-338,
-372
+1485,
+1485
 ]
 },
 {
 "k": 9,
-"nat": "(f",
-"alt": " ",
+"nat": "()\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-428,
-430
+1681,
+1694
 ],
 "alt_span": [
-438,
-439
+1675,
+1686
 ]
 },
 {
 "k": 10,
-"nat": "{new_quantity}\")",
-"alt": "%s\" % new_quantity",
+"nat": ")",
+"alt": "",
 "nat_span": [
-469,
-485
+1715,
+1716
 ],
 "alt_span": [
-478,
-496
+1707,
+1707
 ]
 },
 {
 "k": 11,
-"nat": "(",
-"alt": " ",
+"nat": "()\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-525,
-526
+1830,
+1843
 ],
 "alt_span": [
-536,
-537
+1821,
+1832
 ]
 },
 {
@@ -70882,90 +69673,90 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-567,
-568
+1859,
+1860
 ],
 "alt_span": [
-578,
-578
+1848,
+1848
 ]
 },
 {
 "k": 13,
-"nat": "(f",
-"alt": " ",
+"nat": "()",
+"alt": "",
 "nat_span": [
-644,
-646
+1908,
+1910
 ],
 "alt_span": [
-654,
-655
+1896,
+1896
 ]
 },
 {
 "k": 14,
-"nat": "{item_name}",
-"alt": "%s",
+"nat": "()",
+"alt": "",
 "nat_span": [
-668,
-679
+2029,
+2031
 ],
 "alt_span": [
-677,
-679
+2015,
+2015
 ]
 },
 {
 "k": 15,
-"nat": "{",
-"alt": "%s\" % (item_name, ",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-682,
-683
+2059,
+2060
 ],
 "alt_span": [
-682,
-700
+2043,
+2044
 ]
 },
 {
 "k": 16,
-"nat": "}\"",
+"nat": ")",
 "alt": "",
 "nat_span": [
-703,
-705
+2099,
+2100
 ],
 "alt_span": [
-720,
-720
+2083,
+2083
 ]
 },
 {
 "k": 17,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-716,
-718
+2124,
+2125
 ],
 "alt_span": [
-731,
-732
+2107,
+2108
 ]
 },
 {
 "k": 18,
-"nat": "{inventory}\")",
-"alt": "%s\" % inventory",
+"nat": ")",
+"alt": "",
 "nat_span": [
-748,
-761
+2151,
+2152
 ],
 "alt_span": [
-762,
-777
+2134,
+2134
 ]
 },
 {
@@ -70973,12 +69764,12 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-789,
-790
+2253,
+2254
 ],
 "alt_span": [
-805,
-806
+2235,
+2236
 ]
 },
 {
@@ -70986,133 +69777,21 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-828,
-829
+2288,
+2289
 ],
 "alt_span": [
-844,
-844
-]
-},
-{
-"k": 21,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-896,
-897
-],
-"alt_span": [
-911,
-912
-]
-},
-{
-"k": 22,
-"nat": ")",
-"alt": "",
-"nat_span": [
-926,
-927
-],
-"alt_span": [
-941,
-941
-]
-},
-{
-"k": 23,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-991,
-993
-],
-"alt_span": [
-1005,
-1006
-]
-},
-{
-"k": 24,
-"nat": "{updated_inv1}\")",
-"alt": "%s\" % updated_inv1",
-"nat_span": [
-1027,
-1043
-],
-"alt_span": [
-1040,
-1058
-]
-},
-{
-"k": 25,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-1111,
-1112
-],
-"alt_span": [
-1126,
-1127
-]
-},
-{
-"k": 26,
-"nat": ")",
-"alt": "",
-"nat_span": [
-1141,
-1142
-],
-"alt_span": [
-1156,
-1156
-]
-},
-{
-"k": 27,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1210,
-1212
-],
-"alt_span": [
-1224,
-1225
-]
-},
-{
-"k": 28,
-"nat": "{updated_inv2}\")\n\nprint(",
-"alt": "%s\" % updated_inv2\n\nprint ",
-"nat_span": [
-1246,
-1270
-],
-"alt_span": [
-1259,
-1285
-]
-},
-{
-"k": 29,
-"nat": ")",
-"alt": "",
-"nat_span": [
-1297,
-1298
-],
-"alt_span": [
-1312,
-1312
+2270,
+2270
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_print__t178",
@@ -77733,33 +76412,33 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "print(\"Starting the list rotation process.\")\n\ndef rotate_list(lst, n):\n    print(f\"Received list: {lst} and rotation value: {n}\")\n    if not lst:\n        print(\"List is empty, returning as is.\")\n        return []\n    \n    list_length = len(lst)\n    print(f\"Length of the list is: {list_length}\")\n    \n    actual_n = n % list_length\n    print(f\"Calculated actual rotation amount: {actual_n}\")\n    \n    if actual_n == 0:\n        print(\"No effective rotation, returning a copy of the original list.\")\n        return list(lst)\n    \n    if actual_n > 0:\n        print(\"Performing right rotation.\")\n        rotated_list = lst[-actual_n:] + lst[:-actual_n]\n    else: # actual_n < 0\n        print(\"Performing left rotation.\")\n        # Convert negative actual_n to its equivalent positive for slicing\n        positive_n = abs(actual_n)\n        rotated_list = lst[positive_n:] + lst[:positive_n]\n        \n    print(f\"Intermediate rotated list: {rotated_list}\")\n    print(\"Rotation complete.\")\n    return rotated_list\n\nprint(\"Function 'rotate_list' defined.\")\n\n# Example 1\nresult1 = rotate_list([1, 2, 3, 4, 5], 2)\nprint(f\"Result for [1, 2, 3, 4, 5], 2: {result1}\")\n\n# Example 2\nresult2 = rotate_list([1, 2, 3], -1)\nprint(f\"Result for [1, 2, 3], -1: {result2}\")\n",
-"text_alt": "print \"Starting the list rotation process.\"\n\ndef rotate_list(lst, n):\n    print \"Received list: %s and rotation value: %s\" % (lst, n)\n    if not lst:\n        print \"List is empty, returning as is.\"\n        return []\n    \n    list_length = len(lst)\n    print \"Length of the list is: %s\" % list_length\n    \n    actual_n = n % list_length\n    print \"Calculated actual rotation amount: %s\" % actual_n\n    \n    if actual_n == 0:\n        print \"No effective rotation, returning a copy of the original list.\"\n        return list(lst)\n    \n    if actual_n > 0:\n        print \"Performing right rotation.\"\n        rotated_list = lst[-actual_n:] + lst[:-actual_n]\n    else: # actual_n < 0\n        print \"Performing left rotation.\"\n        # Convert negative actual_n to its equivalent positive for slicing\n        positive_n = abs(actual_n)\n        rotated_list = lst[positive_n:] + lst[:positive_n]\n        \n    print \"Intermediate rotated list: %s\" % rotated_list\n    print \"Rotation complete.\"\n    return rotated_list\n\nprint \"Function 'rotate_list' defined.\"\n\n# Example 1\nresult1 = rotate_list([1, 2, 3, 4, 5], 2)\nprint \"Result for [1, 2, 3, 4, 5], 2: %s\" % result1\n\n# Example 2\nresult2 = rotate_list([1, 2, 3], -1)\nprint \"Result for [1, 2, 3], -1: %s\" % result2\n",
+"text_nat": "def rotate_list(lst, n):\n    \"\"\"Return a new list with lst rotated n positions right (or left if n < 0).\"\"\"\n    if not isinstance(lst, list):\n        raise TypeError(\"lst must be a list\")\n    if isinstance(n, bool) or not isinstance(n, int):\n        raise TypeError(\"n must be an integer\")\n    if not lst:\n        return []\n    shift = n % len(lst)\n    return lst[-shift:] + lst[:-shift] if shift else list(lst)\n\n\ndef rotation_steps(lst, n):\n    \"\"\"Return the intermediate lists produced by rotating one position at a time.\"\"\"\n    if not lst:\n        return []\n    step = 1 if n >= 0 else -1\n    frames = []\n    current = list(lst)\n    for _ in range(abs(n)):\n        current = rotate_list(current, step)\n        frames.append(current)\n    return frames\n\n\ndef format_rotation(lst, n):\n    \"\"\"Describe a rotation as a single readable line.\"\"\"\n    direction = \"right\" if n >= 0 else \"left\"\n    return \"{} rotated {} by {} -> {}\".format(lst, direction, abs(n), rotate_list(lst, n))\n\n\ndef normalized_shift(lst, n):\n    \"\"\"Smallest non-negative right-shift equivalent to n for this list.\"\"\"\n    if not lst:\n        return 0\n    return n % len(lst)\n\n\ndef report(lst, shifts):\n    print(\"Source list:\", lst)\n    print(\"Length:\", len(lst))\n    for n in shifts:\n        print(\" \", format_rotation(lst, n))\n        equivalent = normalized_shift(lst, n)\n        if equivalent != n:\n            print(\"    equivalent right shift:\", equivalent)\n\n\ndef main():\n    numbers = [1, 2, 3, 4, 5]\n    report(numbers, [2, -1, 0, 5, 7, -12])\n\n    print(\"Original list unchanged:\", numbers)\n\n    print(\"Step-by-step rotation of\", numbers, \"by 3:\")\n    for index, frame in enumerate(rotation_steps(numbers, 3), start=1):\n        print(\"  step\", index, \"->\", frame)\n\n    letters = [\"a\", \"b\", \"c\", \"d\"]\n    print(\"Letters rotated left twice:\", rotate_list(letters, -2))\n\n    print(\"Empty list rotated:\", rotate_list([], 4))\n    print(\"Single element rotated:\", rotate_list([9], -3))\n\n    try:\n        rotate_list([1, 2, 3], 1.5)\n    except TypeError as exc:\n        print(\"Rejected bad shift:\", exc)\n\n    try:\n        rotate_list(\"abc\", 1)\n    except TypeError as exc:\n        print(\"Rejected bad sequence:\", exc)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def rotate_list(lst, n):\n    \"\"\"Return a new list with lst rotated n positions right (or left if n < 0).\"\"\"\n    if not isinstance(lst, list):\n        raise TypeError(\"lst must be a list\")\n    if isinstance(n, bool) or not isinstance(n, int):\n        raise TypeError(\"n must be an integer\")\n    if not lst:\n        return []\n    shift = n % len(lst)\n    return lst[-shift:] + lst[:-shift] if shift else list(lst)\n\n\ndef rotation_steps(lst, n):\n    \"\"\"Return the intermediate lists produced by rotating one position at a time.\"\"\"\n    if not lst:\n        return []\n    step = 1 if n >= 0 else -1\n    frames = []\n    current = list(lst)\n    for _ in range(abs(n)):\n        current = rotate_list(current, step)\n        frames.append(current)\n    return frames\n\n\ndef format_rotation(lst, n):\n    \"\"\"Describe a rotation as a single readable line.\"\"\"\n    direction = \"right\" if n >= 0 else \"left\"\n    return \"{} rotated {} by {} -> {}\".format(lst, direction, abs(n), rotate_list(lst, n))\n\n\ndef normalized_shift(lst, n):\n    \"\"\"Smallest non-negative right-shift equivalent to n for this list.\"\"\"\n    if not lst:\n        return 0\n    return n % len(lst)\n\n\ndef report(lst, shifts):\n    print \"Source list:\", lst\n    print \"Length:\", len(lst)\n    for n in shifts:\n        print \" \", format_rotation(lst, n)\n        equivalent = normalized_shift(lst, n)\n        if equivalent != n:\n            print \"    equivalent right shift:\", equivalent\n\n\ndef main():\n    numbers = [1, 2, 3, 4, 5]\n    report(numbers, [2, -1, 0, 5, 7, -12])\n\n    print \"Original list unchanged:\", numbers\n\n    print \"Step-by-step rotation of\", numbers, \"by 3:\"\n    for index, frame in enumerate(rotation_steps(numbers, 3), start=1):\n        print \"  step\", index, \"->\", frame\n\n    letters = [\"a\", \"b\", \"c\", \"d\"]\n    print \"Letters rotated left twice:\", rotate_list(letters, -2)\n\n    print \"Empty list rotated:\", rotate_list([], 4)\n    print \"Single element rotated:\", rotate_list([9], -3)\n\n    try:\n        rotate_list([1, 2, 3], 1.5)\n    except TypeError as exc:\n        print \"Rejected bad shift:\", exc\n\n    try:\n        rotate_list(\"abc\", 1)\n    except TypeError as exc:\n        print \"Rejected bad sequence:\", exc\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-5,
-6
+1179,
+1180
 ],
 "alt_span": [
-5,
-6
+1179,
+1180
 ]
 },
 {
 "k": 1,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-80,
-82
+1266,
+1267
 ],
 "alt_span": [
-79,
-80
+1264,
+1265
 ]
 },
 {
@@ -77767,38 +76446,38 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-159,
-160
+1388,
+1389
 ],
 "alt_span": [
-163,
-164
+1385,
+1386
 ]
 },
 {
 "k": 3,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-254,
-256
+1529,
+1530
 ],
 "alt_span": [
-257,
-258
+1525,
+1526
 ]
 },
 {
 "k": 4,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-341,
-343
+1709,
+1710
 ],
 "alt_span": [
-345,
-346
+1703,
+1704
 ]
 },
 {
@@ -77806,25 +76485,25 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-432,
-433
+1785,
+1786
 ],
 "alt_span": [
-437,
-438
+1778,
+1779
 ]
 },
 {
 "k": 6,
-"nat": "(",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-562,
-563
+1895,
+1907
 ],
 "alt_span": [
-566,
-567
+1887,
+1898
 ]
 },
 {
@@ -77832,135 +76511,97 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-688,
-689
+2044,
+2045
 ],
 "alt_span": [
-691,
-692
+2034,
+2035
 ]
 },
 {
 "k": 8,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-905,
-907
-],
-"alt_span": [
-907,
-908
-]
-},
-{
-"k": 9,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-1014,
-1015
+2155,
+2156
 ],
 "alt_span": [
-1016,
-1017
-]
-},
-{
-"k": 10,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1110,
-1112
-],
-"alt_span": [
-1111,
-1112
-]
-},
-{
-"k": 11,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1211,
-1213
-],
-"alt_span": [
-1213,
-1214
+2144,
+2145
 ]
 }
 ],
-"k_en": 12,
-"shared_fraction": 0.888,
+"k_en": 9,
+"shared_fraction": 0.973,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-5,
-6
+1179,
+1180
 ],
 "alt_span": [
-5,
-6
+1179,
+1180
 ]
 },
 {
 "k": 1,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-43,
-44
+1199,
+1211
 ],
 "alt_span": [
-43,
-43
+1199,
+1210
 ]
 },
 {
 "k": 2,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-80,
-82
+1229,
+1230
 ],
 "alt_span": [
-79,
-80
+1228,
+1228
 ]
 },
 {
 "k": 3,
-"nat": "{lst}",
-"alt": "%s",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-98,
-103
+1266,
+1267
 ],
 "alt_span": [
-96,
-98
+1264,
+1265
 ]
 },
 {
 "k": 4,
-"nat": "{n}\"",
-"alt": "%s\" % (lst, n",
+"nat": ")",
+"alt": "",
 "nat_span": [
-124,
-128
+1294,
+1295
 ],
 "alt_span": [
-119,
-132
+1292,
+1292
 ]
 },
 {
@@ -77968,12 +76609,12 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-159,
-160
+1388,
+1389
 ],
 "alt_span": [
-163,
-164
+1385,
+1386
 ]
 },
 {
@@ -77981,168 +76622,168 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-193,
-194
+1430,
+1431
 ],
 "alt_span": [
-197,
-197
+1427,
+1427
 ]
 },
 {
 "k": 7,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-254,
-256
+1529,
+1530
 ],
 "alt_span": [
-257,
-258
+1525,
+1526
 ]
 },
 {
 "k": 8,
-"nat": "{list_length}\")",
-"alt": "%s\" % list_length",
+"nat": ")\n\n    print(",
+"alt": "\n\n    print ",
 "nat_span": [
-280,
-295
+1565,
+1578
 ],
 "alt_span": [
-282,
-299
+1561,
+1573
 ]
 },
 {
 "k": 9,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-341,
-343
+1622,
+1623
 ],
 "alt_span": [
-345,
-346
+1617,
+1617
 ]
 },
 {
 "k": 10,
-"nat": "{actual_n}\")",
-"alt": "%s\" % actual_n",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-379,
-391
+1709,
+1710
 ],
 "alt_span": [
-382,
-396
+1703,
+1704
 ]
 },
 {
 "k": 11,
-"nat": "(",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-432,
-433
+1738,
+1739
 ],
 "alt_span": [
-437,
-438
+1732,
+1732
 ]
 },
 {
 "k": 12,
-"nat": ")",
-"alt": "",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-496,
-497
+1785,
+1786
 ],
 "alt_span": [
-501,
-501
+1778,
+1779
 ]
 },
 {
 "k": 13,
-"nat": "(",
-"alt": " ",
+"nat": ")\n\n    print(",
+"alt": "\n\n    print ",
 "nat_span": [
-562,
-563
+1841,
+1854
 ],
 "alt_span": [
-566,
-567
+1834,
+1846
 ]
 },
 {
 "k": 14,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-591,
-592
+1895,
+1907
 ],
 "alt_span": [
-595,
-595
+1887,
+1898
 ]
 },
 {
 "k": 15,
-"nat": "(",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-688,
-689
+1953,
+1954
 ],
 "alt_span": [
-691,
-692
+1944,
+1944
 ]
 },
 {
 "k": 16,
-"nat": ")",
-"alt": "",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-716,
-717
+2044,
+2045
 ],
 "alt_span": [
-719,
-719
+2034,
+2035
 ]
 },
 {
 "k": 17,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-905,
-907
+2071,
+2072
 ],
 "alt_span": [
-907,
-908
+2061,
+2061
 ]
 },
 {
 "k": 18,
-"nat": "{rotated_list}\")\n    print(",
-"alt": "%s\" % rotated_list\n    print ",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-935,
-962
+2155,
+2156
 ],
 "alt_span": [
-936,
-965
+2144,
+2145
 ]
 },
 {
@@ -78150,94 +76791,21 @@
 "nat": ")",
 "alt": "",
 "nat_span": [
-982,
-983
+2185,
+2186
 ],
 "alt_span": [
-985,
-985
-]
-},
-{
-"k": 20,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-1014,
-1015
-],
-"alt_span": [
-1016,
-1017
-]
-},
-{
-"k": 21,
-"nat": ")",
-"alt": "",
-"nat_span": [
-1048,
-1049
-],
-"alt_span": [
-1050,
-1050
-]
-},
-{
-"k": 22,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1110,
-1112
-],
-"alt_span": [
-1111,
-1112
-]
-},
-{
-"k": 23,
-"nat": "{result1}\")",
-"alt": "%s\" % result1",
-"nat_span": [
-1144,
-1155
-],
-"alt_span": [
-1144,
-1157
-]
-},
-{
-"k": 24,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1211,
-1213
-],
-"alt_span": [
-1213,
-1214
-]
-},
-{
-"k": 25,
-"nat": "{result2}\")",
-"alt": "%s\" % result2",
-"nat_span": [
-1240,
-1251
-],
-"alt_span": [
-1241,
-1254
+2174,
+2174
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_print__t194",
@@ -79550,20 +78118,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import itertools\n\ndef generate_permutations(lst):\n    print(\"Starting generate_permutations function.\")\n    if not lst:\n        print(\"Input list is empty.\")\n        return [[]]\n\n    print(f\"Input list received: {lst}\")\n    # Using itertools.permutations as requested\n    all_perms_iterator = itertools.permutations(lst)\n    print(\"Created permutations iterator.\")\n\n    result = []\n    for perm_tuple in all_perms_iterator:\n        print(f\"Processing a permutation: {perm_tuple}\")\n        result.append(list(perm_tuple))\n        print(\"Appended permutation to result.\")\n\n    print(f\"Total permutations found: {len(result)}\")\n    print(\"Finished iterating through permutations.\")\n    return result\n\nprint(\"Defined generate_permutations function.\")\nprint(\"Testing with example 1: [1, 2]\")\noutput1 = generate_permutations([1, 2])\nprint(f\"Result for [1, 2]: {output1}\")\nprint(\"Testing with example 2: ['a']\")\noutput2 = generate_permutations(['a'])\nprint(f\"Result for ['a']: {output2}\")\n",
-"text_alt": "import itertools\n\ndef generate_permutations(lst):\n    print \"Starting generate_permutations function.\"\n    if not lst:\n        print \"Input list is empty.\"\n        return [[]]\n\n    print \"Input list received: %s\" % lst\n    # Using itertools.permutations as requested\n    all_perms_iterator = itertools.permutations(lst)\n    print \"Created permutations iterator.\"\n\n    result = []\n    for perm_tuple in all_perms_iterator:\n        print \"Processing a permutation: %s\" % perm_tuple\n        result.append(list(perm_tuple))\n        print \"Appended permutation to result.\"\n\n    print \"Total permutations found: %s\" % len(result)\n    print \"Finished iterating through permutations.\"\n    return result\n\nprint \"Defined generate_permutations function.\"\nprint \"Testing with example 1: [1, 2]\"\noutput1 = generate_permutations([1, 2])\nprint \"Result for [1, 2]: %s\" % output1\nprint \"Testing with example 2: ['a']\"\noutput2 = generate_permutations(['a'])\nprint \"Result for ['a']: %s\" % output2\n",
+"text_nat": "import itertools\n\n\ndef generate_permutations(lst):\n    \"\"\"Return a list of all orderings of the elements in lst.\"\"\"\n    return [list(perm) for perm in itertools.permutations(lst)]\n\n\ndef count_permutations(lst):\n    \"\"\"Number of permutations of lst, computed without building them.\"\"\"\n    total = 1\n    for factor in range(2, len(lst) + 1):\n        total *= factor\n    return total\n\n\ndef format_permutation(perm):\n    \"\"\"Render a single permutation as a compact tuple-like string.\"\"\"\n    return \"(\" + \", \".join(repr(part) for part in perm) + \")\"\n\n\ndef print_permutations(lst, max_shown=6):\n    \"\"\"Print the permutations of lst, truncating long listings.\"\"\"\n    perms = generate_permutations(lst)\n    print(\"input:\", lst)\n    print(\"permutations:\", len(perms), \"of\", count_permutations(lst), \"expected\")\n    for perm in perms[:max_shown]:\n        print(\"   \", format_permutation(perm))\n    if len(perms) > max_shown:\n        print(\"    ... and\", len(perms) - max_shown, \"more\")\n    return perms\n\n\ndef find_permutation_index(lst, target):\n    \"\"\"Position of target among the generated permutations, or -1.\"\"\"\n    wanted = list(target)\n    for index, perm in enumerate(generate_permutations(lst)):\n        if perm == wanted:\n            return index\n    return -1\n\n\ndef print_permutation_index(lst, target):\n    \"\"\"Report where target sits in the listing of permutations of lst.\"\"\"\n    position = find_permutation_index(lst, target)\n    label = format_permutation(target)\n    if position < 0:\n        print(label, \"is not a permutation of\", lst)\n    else:\n        print(label, \"appears at index\", position)\n    return position\n\n\ndef main():\n    print_permutations([1, 2])\n    print_permutations(['a'])\n    print_permutations([])\n    print_permutations(['x', 'y', 'z', 'w'])\n    print_permutation_index([1, 2, 3], (3, 1, 2))\n    print_permutation_index([1, 2, 3], (3, 3, 1))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import itertools\n\n\ndef generate_permutations(lst):\n    \"\"\"Return a list of all orderings of the elements in lst.\"\"\"\n    return [list(perm) for perm in itertools.permutations(lst)]\n\n\ndef count_permutations(lst):\n    \"\"\"Number of permutations of lst, computed without building them.\"\"\"\n    total = 1\n    for factor in range(2, len(lst) + 1):\n        total *= factor\n    return total\n\n\ndef format_permutation(perm):\n    \"\"\"Render a single permutation as a compact tuple-like string.\"\"\"\n    return \"(\" + \", \".join(repr(part) for part in perm) + \")\"\n\n\ndef print_permutations(lst, max_shown=6):\n    \"\"\"Print the permutations of lst, truncating long listings.\"\"\"\n    perms = generate_permutations(lst)\n    print \"input:\", lst\n    print \"permutations:\", len(perms), \"of\", count_permutations(lst), \"expected\"\n    for perm in perms[:max_shown]:\n        print \"   \", format_permutation(perm)\n    if len(perms) > max_shown:\n        print \"    ... and\", len(perms) - max_shown, \"more\"\n    return perms\n\n\ndef find_permutation_index(lst, target):\n    \"\"\"Position of target among the generated permutations, or -1.\"\"\"\n    wanted = list(target)\n    for index, perm in enumerate(generate_permutations(lst)):\n        if perm == wanted:\n            return index\n    return -1\n\n\ndef print_permutation_index(lst, target):\n    \"\"\"Report where target sits in the listing of permutations of lst.\"\"\"\n    position = find_permutation_index(lst, target)\n    label = format_permutation(target)\n    if position < 0:\n        print label, \"is not a permutation of\", lst\n    else:\n        print label, \"appears at index\", position\n    return position\n\n\ndef main():\n    print_permutations([1, 2])\n    print_permutations(['a'])\n    print_permutations([])\n    print_permutations(['x', 'y', 'z', 'w'])\n    print_permutation_index([1, 2, 3], (3, 1, 2))\n    print_permutation_index([1, 2, 3], (3, 3, 1))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-59,
-60
+704,
+705
 ],
 "alt_span": [
-59,
-60
+704,
+705
 ]
 },
 {
@@ -79571,25 +78139,25 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-133,
-134
+850,
+851
 ],
 "alt_span": [
-132,
-133
+848,
+849
 ]
 },
 {
 "k": 2,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-188,
-190
+928,
+929
 ],
 "alt_span": [
-186,
-187
+925,
+926
 ]
 },
 {
@@ -79597,399 +78165,184 @@
 "nat": "(",
 "alt": " ",
 "nat_span": [
-330,
-331
+1502,
+1503
 ],
 "alt_span": [
-329,
-330
+1498,
+1499
 ]
 },
 {
 "k": 4,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-437,
-439
-],
-"alt_span": [
-435,
-436
-]
-},
-{
-"k": 5,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-534,
-535
+1565,
+1566
 ],
 "alt_span": [
-533,
-534
-]
-},
-{
-"k": 6,
-"nat": "{",
-"alt": "%s\" % ",
-"nat_span": [
-609,
-610
-],
-"alt_span": [
-606,
-612
-]
-},
-{
-"k": 7,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-703,
-704
-],
-"alt_span": [
-701,
-702
-]
-},
-{
-"k": 8,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-832,
-834
-],
-"alt_span": [
-828,
-829
-]
-},
-{
-"k": 9,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-949,
-951
-],
-"alt_span": [
-945,
-946
+1560,
+1561
 ]
 }
 ],
-"k_en": 10,
-"shared_fraction": 0.857,
+"k_en": 5,
+"shared_fraction": 0.982,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-59,
-60
+704,
+705
 ],
 "alt_span": [
-59,
-60
+704,
+705
 ]
 },
 {
 "k": 1,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-102,
-103
+718,
+730
 ],
 "alt_span": [
-102,
-102
+718,
+729
 ]
 },
 {
 "k": 2,
-"nat": "(",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-133,
-134
+800,
+801
 ],
 "alt_span": [
-132,
-133
+799,
+799
 ]
 },
 {
 "k": 3,
-"nat": ")",
-"alt": "",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-156,
-157
+850,
+851
 ],
 "alt_span": [
-155,
-155
+848,
+849
 ]
 },
 {
 "k": 4,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-188,
-190
+881,
+882
 ],
 "alt_span": [
-186,
-187
+879,
+879
 ]
 },
 {
 "k": 5,
-"nat": "{lst}\")",
-"alt": "%s\" % lst",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-212,
-219
+928,
+929
 ],
 "alt_span": [
-209,
-218
+925,
+926
 ]
 },
 {
 "k": 6,
-"nat": "(",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-330,
-331
+974,
+975
 ],
 "alt_span": [
-329,
-330
+971,
+971
 ]
 },
 {
 "k": 7,
-"nat": ")",
-"alt": "",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-363,
-364
+1502,
+1503
 ],
 "alt_span": [
-362,
-362
+1498,
+1499
 ]
 },
 {
 "k": 8,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-437,
-439
+1540,
+1541
 ],
 "alt_span": [
-435,
-436
+1536,
+1536
 ]
 },
 {
 "k": 9,
-"nat": "{perm_tuple}\")",
-"alt": "%s\" % perm_tuple",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-466,
-480
+1565,
+1566
 ],
 "alt_span": [
-463,
-479
+1560,
+1561
 ]
 },
 {
 "k": 10,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-534,
-535
-],
-"alt_span": [
-533,
-534
-]
-},
-{
-"k": 11,
-"nat": ")\n\n    print(f",
-"alt": "\n\n    print ",
-"nat_span": [
-568,
-582
-],
-"alt_span": [
-567,
-579
-]
-},
-{
-"k": 12,
-"nat": "{",
-"alt": "%s\" % ",
-"nat_span": [
-609,
-610
-],
-"alt_span": [
-606,
-612
-]
-},
-{
-"k": 13,
-"nat": "}\")\n    print(",
-"alt": "\n    print ",
-"nat_span": [
-621,
-635
-],
-"alt_span": [
-623,
-634
-]
-},
-{
-"k": 14,
 "nat": ")",
 "alt": "",
 "nat_span": [
-677,
-678
+1601,
+1602
 ],
 "alt_span": [
-676,
-676
-]
-},
-{
-"k": 15,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-703,
-704
-],
-"alt_span": [
-701,
-702
-]
-},
-{
-"k": 16,
-"nat": ")\nprint(",
-"alt": "\nprint ",
-"nat_span": [
-745,
-753
-],
-"alt_span": [
-743,
-750
-]
-},
-{
-"k": 17,
-"nat": ")",
-"alt": "",
-"nat_span": [
-785,
-786
-],
-"alt_span": [
-782,
-782
-]
-},
-{
-"k": 18,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-832,
-834
-],
-"alt_span": [
-828,
-829
-]
-},
-{
-"k": 19,
-"nat": "{output1}\")\nprint(",
-"alt": "%s\" % output1\nprint ",
-"nat_span": [
-854,
-872
-],
-"alt_span": [
-849,
-869
-]
-},
-{
-"k": 20,
-"nat": ")",
-"alt": "",
-"nat_span": [
-903,
-904
-],
-"alt_span": [
-900,
-900
-]
-},
-{
-"k": 21,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-949,
-951
-],
-"alt_span": [
-945,
-946
-]
-},
-{
-"k": 22,
-"nat": "{output2}\")",
-"alt": "%s\" % output2",
-"nat_span": [
-970,
-981
-],
-"alt_span": [
-965,
-978
+1596,
+1596
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_print__t198",
@@ -80001,563 +78354,322 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "print(\"Starting the script...\")\n\ndef find_all_occurrences(text, pattern):\n    print(f\"Searching for pattern '{pattern}' in text '{text}'\")\n    occurrences = []\n    text_length = len(text)\n    pattern_length = len(pattern)\n    print(f\"Text length: {text_length}, Pattern length: {pattern_length}\")\n\n    if pattern_length == 0:\n        print(\"Pattern is empty, returning an empty list.\")\n        return []\n\n    for i in range(text_length - pattern_length + 1):\n        print(f\"Checking index: {i}\")\n        if text[i:i + pattern_length] == pattern:\n            print(f\"Match found at index: {i}\")\n            occurrences.append(i)\n        else:\n            print(f\"No match at index: {i}\")\n\n    print(f\"Finished searching. Found {len(occurrences)} occurrences.\")\n    return occurrences\n\nprint(\"Function 'find_all_occurrences' defined.\")\n\n# Example 1\nprint(\"\\n--- Running example 1 ---\")\nresult1 = find_all_occurrences('ababab', 'aba')\nprint(f\"Result for 'ababab', 'aba': {result1}\")\n\n# Example 2\nprint(\"\\n--- Running example 2 ---\")\nresult2 = find_all_occurrences('hello world', 'o')\nprint(f\"Result for 'hello world', 'o': {result2}\")\n\nprint(\"\\nScript execution complete.\")\n",
-"text_alt": "print \"Starting the script...\"\n\ndef find_all_occurrences(text, pattern):\n    print \"Searching for pattern '%s' in text '%s'\" % (pattern, text)\n    occurrences = []\n    text_length = len(text)\n    pattern_length = len(pattern)\n    print \"Text length: %s, Pattern length: %s\" % (text_length, pattern_length)\n\n    if pattern_length == 0:\n        print \"Pattern is empty, returning an empty list.\"\n        return []\n\n    for i in range(text_length - pattern_length + 1):\n        print \"Checking index: %s\" % i\n        if text[i:i + pattern_length] == pattern:\n            print \"Match found at index: %s\" % i\n            occurrences.append(i)\n        else:\n            print \"No match at index: %s\" % i\n\n    print \"Finished searching. Found %s occurrences.\" % len(occurrences)\n    return occurrences\n\nprint \"Function 'find_all_occurrences' defined.\"\n\n# Example 1\nprint \"\\n--- Running example 1 ---\"\nresult1 = find_all_occurrences('ababab', 'aba')\nprint \"Result for 'ababab', 'aba': %s\" % result1\n\n# Example 2\nprint \"\\n--- Running example 2 ---\"\nresult2 = find_all_occurrences('hello world', 'o')\nprint \"Result for 'hello world', 'o': %s\" % result2\n\nprint \"\\nScript execution complete.\"\n",
+"text_nat": "def _validate(text, pattern):\n    if not isinstance(text, str) or not isinstance(pattern, str):\n        raise TypeError(\"text and pattern must both be strings\")\n    return text, pattern\n\n\ndef build_failure_table(pattern):\n    table = [0] * len(pattern)\n    length = 0\n    for i in range(1, len(pattern)):\n        while length > 0 and pattern[i] != pattern[length]:\n            length = table[length - 1]\n        if pattern[i] == pattern[length]:\n            length += 1\n        table[i] = length\n    return table\n\n\ndef find_all_occurrences(text, pattern):\n    text, pattern = _validate(text, pattern)\n    if not pattern:\n        return []\n    table = build_failure_table(pattern)\n    matches = []\n    length = 0\n    for i, ch in enumerate(text):\n        while length > 0 and ch != pattern[length]:\n            length = table[length - 1]\n        if ch == pattern[length]:\n            length += 1\n        if length == len(pattern):\n            matches.append(i - length + 1)\n            length = table[length - 1]\n    return matches\n\n\ndef highlight(text, indices, width):\n    marks = [\" \"] * len(text)\n    for start in indices:\n        for offset in range(width):\n            marks[start + offset] = \"^\"\n    return \"\".join(marks)\n\n\ndef report(text, pattern):\n    indices = find_all_occurrences(text, pattern)\n    print(\"text    :\", repr(text))\n    print(\"pattern :\", repr(pattern))\n    if not indices:\n        print(\"result  : no occurrences\")\n        return indices\n    print(\"result  :\", indices)\n    print(\"         \", text)\n    print(\"         \", highlight(text, indices, len(pattern)))\n    overlapping = [b for a, b in zip(indices, indices[1:]) if b - a < len(pattern)]\n    if overlapping:\n        print(\"note    : overlapping matches at\", overlapping)\n    return indices\n\n\ndef main():\n    samples = [\n        (\"ababab\", \"aba\"),\n        (\"hello world\", \"o\"),\n        (\"aaaa\", \"aa\"),\n        (\"mississippi\", \"issi\"),\n        (\"abcdef\", \"gh\"),\n    ]\n    total = 0\n    for text, pattern in samples:\n        total += len(report(text, pattern))\n        print(\"-\" * 40)\n    print(\"total matches found:\", total)\n    try:\n        find_all_occurrences(\"abc\", None)\n    except TypeError as err:\n        print(\"rejected bad input:\", err)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def _validate(text, pattern):\n    if not isinstance(text, str) or not isinstance(pattern, str):\n        raise TypeError(\"text and pattern must both be strings\")\n    return text, pattern\n\n\ndef build_failure_table(pattern):\n    table = [0] * len(pattern)\n    length = 0\n    for i in range(1, len(pattern)):\n        while length > 0 and pattern[i] != pattern[length]:\n            length = table[length - 1]\n        if pattern[i] == pattern[length]:\n            length += 1\n        table[i] = length\n    return table\n\n\ndef find_all_occurrences(text, pattern):\n    text, pattern = _validate(text, pattern)\n    if not pattern:\n        return []\n    table = build_failure_table(pattern)\n    matches = []\n    length = 0\n    for i, ch in enumerate(text):\n        while length > 0 and ch != pattern[length]:\n            length = table[length - 1]\n        if ch == pattern[length]:\n            length += 1\n        if length == len(pattern):\n            matches.append(i - length + 1)\n            length = table[length - 1]\n    return matches\n\n\ndef highlight(text, indices, width):\n    marks = [\" \"] * len(text)\n    for start in indices:\n        for offset in range(width):\n            marks[start + offset] = \"^\"\n    return \"\".join(marks)\n\n\ndef report(text, pattern):\n    indices = find_all_occurrences(text, pattern)\n    print \"text    :\", repr(text)\n    print \"pattern :\", repr(pattern)\n    if not indices:\n        print \"result  : no occurrences\"\n        return indices\n    print \"result  :\", indices\n    print \"         \", text\n    print \"         \", highlight(text, indices, len(pattern))\n    overlapping = [b for a, b in zip(indices, indices[1:]) if b - a < len(pattern)]\n    if overlapping:\n        print \"note    : overlapping matches at\", overlapping\n    return indices\n\n\ndef main():\n    samples = [\n        (\"ababab\", \"aba\"),\n        (\"hello world\", \"o\"),\n        (\"aaaa\", \"aa\"),\n        (\"mississippi\", \"issi\"),\n        (\"abcdef\", \"gh\"),\n    ]\n    total = 0\n    for text, pattern in samples:\n        total += len(report(text, pattern))\n        print \"-\" * 40\n    print \"total matches found:\", total\n    try:\n        find_all_occurrences(\"abc\", None)\n    except TypeError as err:\n        print \"rejected bad input:\", err\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-5,
-6
+1316,
+1317
 ],
 "alt_span": [
-5,
-6
+1316,
+1317
 ]
 },
 {
 "k": 1,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-83,
-85
+1413,
+1414
 ],
 "alt_span": [
-82,
-83
+1411,
+1412
 ]
 },
 {
 "k": 2,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-231,
-233
+1474,
+1475
 ],
 "alt_span": [
-235,
-236
+1471,
+1472
 ]
 },
 {
 "k": 3,
-"nat": "(",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-339,
-340
+1524,
+1536
 ],
 "alt_span": [
-348,
-349
+1520,
+1531
 ]
 },
 {
 "k": 4,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-472,
-474
+1706,
+1707
 ],
 "alt_span": [
-480,
-481
+1700,
+1701
 ]
 },
 {
 "k": 5,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-564,
-566
+2056,
+2057
 ],
 "alt_span": [
-573,
-574
+2049,
+2050
 ]
 },
 {
 "k": 6,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-660,
-662
-],
-"alt_span": [
-670,
-671
-]
-},
-{
-"k": 7,
-"nat": "{len(occurrences)}",
-"alt": "%s",
-"nat_span": [
-727,
-745
-],
-"alt_span": [
-737,
-739
-]
-},
-{
-"k": 8,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-790,
-791
+2201,
+2202
 ],
 "alt_span": [
-802,
-803
-]
-},
-{
-"k": 9,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-853,
-854
-],
-"alt_span": [
-864,
-865
-]
-},
-{
-"k": 10,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-938,
-940
-],
-"alt_span": [
-948,
-949
-]
-},
-{
-"k": 11,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-999,
-1000
-],
-"alt_span": [
-1010,
-1011
-]
-},
-{
-"k": 12,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1087,
-1089
-],
-"alt_span": [
-1097,
-1098
+2192,
+2193
 ]
 }
 ],
-"k_en": 13,
-"shared_fraction": 0.848,
+"k_en": 7,
+"shared_fraction": 0.976,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": "(",
 "alt": " ",
 "nat_span": [
-5,
-6
+1316,
+1317
 ],
 "alt_span": [
-5,
-6
+1316,
+1317
 ]
 },
 {
 "k": 1,
-"nat": ")",
-"alt": "",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-30,
-31
+1340,
+1352
 ],
 "alt_span": [
-30,
-30
+1340,
+1351
 ]
 },
 {
 "k": 2,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-83,
-85
+1378,
+1379
 ],
 "alt_span": [
-82,
-83
+1377,
+1377
 ]
 },
 {
 "k": 3,
-"nat": "{pattern}",
-"alt": "%s",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-109,
-118
+1413,
+1414
 ],
 "alt_span": [
-107,
-109
+1411,
+1412
 ]
 },
 {
 "k": 4,
-"nat": "{text}'\"",
-"alt": "%s'\" % (pattern, text",
+"nat": ")",
+"alt": "",
 "nat_span": [
-129,
-137
+1440,
+1441
 ],
 "alt_span": [
-120,
-141
+1438,
+1438
 ]
 },
 {
 "k": 5,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-231,
-233
+1474,
+1475
 ],
 "alt_span": [
-235,
-236
+1471,
+1472
 ]
 },
 {
 "k": 6,
-"nat": "{text_length}",
-"alt": "%s",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-247,
-260
+1495,
+1507
 ],
 "alt_span": [
-250,
-252
+1492,
+1503
 ]
 },
 {
 "k": 7,
-"nat": "{pattern_length}\"",
-"alt": "%s\" % (text_length, pattern_length",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-278,
-295
+1524,
+1536
 ],
 "alt_span": [
-270,
-304
+1520,
+1531
 ]
 },
 {
 "k": 8,
-"nat": "(",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-339,
-340
+1585,
+1586
 ],
 "alt_span": [
-348,
-349
+1580,
+1580
 ]
 },
 {
 "k": 9,
-"nat": ")",
-"alt": "",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-384,
-385
+1706,
+1707
 ],
 "alt_span": [
-393,
-393
+1700,
+1701
 ]
 },
 {
 "k": 10,
-"nat": "(f",
-"alt": " ",
+"nat": ")",
+"alt": "",
 "nat_span": [
-472,
-474
+1754,
+1755
 ],
 "alt_span": [
-480,
-481
+1748,
+1748
 ]
 },
 {
 "k": 11,
-"nat": "{i}\")",
-"alt": "%s\" % i",
+"nat": "(",
+"alt": " ",
 "nat_span": [
-491,
-496
+2056,
+2057
 ],
 "alt_span": [
-498,
-505
+2049,
+2050
 ]
 },
 {
 "k": 12,
-"nat": "(f",
-"alt": " ",
+"nat": ")\n    print(",
+"alt": "\n    print ",
 "nat_span": [
-564,
-566
+2065,
+2077
 ],
 "alt_span": [
-573,
-574
+2058,
+2069
 ]
 },
 {
 "k": 13,
-"nat": "{i}\")",
-"alt": "%s\" % i",
+"nat": ")",
+"alt": "",
 "nat_span": [
-589,
-594
+2106,
+2107
 ],
 "alt_span": [
-597,
-604
+2098,
+2098
 ]
 },
 {
 "k": 14,
-"nat": "(f",
+"nat": "(",
 "alt": " ",
 "nat_span": [
-660,
-662
+2201,
+2202
 ],
 "alt_span": [
-670,
-671
+2192,
+2193
 ]
 },
 {
 "k": 15,
-"nat": "{i}\")\n\n    print(f",
-"alt": "%s\" % i\n\n    print ",
-"nat_span": [
-682,
-700
-],
-"alt_span": [
-691,
-710
-]
-},
-{
-"k": 16,
-"nat": "{len(occurrences)}",
-"alt": "%s",
-"nat_span": [
-727,
-745
-],
-"alt_span": [
-737,
-739
-]
-},
-{
-"k": 17,
-"nat": "",
-"alt": " % len(occurrences",
-"nat_span": [
-759,
-759
-],
-"alt_span": [
-753,
-771
-]
-},
-{
-"k": 18,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-790,
-791
-],
-"alt_span": [
-802,
-803
-]
-},
-{
-"k": 19,
 "nat": ")",
 "alt": "",
 "nat_span": [
-833,
-834
+2228,
+2229
 ],
 "alt_span": [
-845,
-845
-]
-},
-{
-"k": 20,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-853,
-854
-],
-"alt_span": [
-864,
-865
-]
-},
-{
-"k": 21,
-"nat": ")",
-"alt": "",
-"nat_span": [
-883,
-884
-],
-"alt_span": [
-894,
-894
-]
-},
-{
-"k": 22,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-938,
-940
-],
-"alt_span": [
-948,
-949
-]
-},
-{
-"k": 23,
-"nat": "{result1}\")",
-"alt": "%s\" % result1",
-"nat_span": [
-969,
-980
-],
-"alt_span": [
-978,
-991
-]
-},
-{
-"k": 24,
-"nat": "(",
-"alt": " ",
-"nat_span": [
-999,
-1000
-],
-"alt_span": [
-1010,
-1011
-]
-},
-{
-"k": 25,
-"nat": ")",
-"alt": "",
-"nat_span": [
-1029,
-1030
-],
-"alt_span": [
-1040,
-1040
-]
-},
-{
-"k": 26,
-"nat": "(f",
-"alt": " ",
-"nat_span": [
-1087,
-1089
-],
-"alt_span": [
-1097,
-1098
-]
-},
-{
-"k": 27,
-"nat": "{result2}\")\n\nprint(",
-"alt": "%s\" % result2\n\nprint ",
-"nat_span": [
-1121,
-1140
-],
-"alt_span": [
-1130,
-1151
-]
-},
-{
-"k": 28,
-"nat": ")",
-"alt": "",
-"nat_span": [
-1170,
-1171
-],
-"alt_span": [
-1181,
-1181
+2219,
+2219
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "py2_print__t199",
@@ -83867,5 +81979,646 @@
 }
 ],
 "free_filter": true
+},
+{
+"doc_id": "py2_print__t261",
+"family": "py2_print",
+"topic": "Remove Duplicates from List (Any Order)",
+"angle": "code",
+"text_es": "Implement a function that removes duplicate elements from a list. The order of elements in the resulting list does not matter. The function `remove_duplicates_unordered` takes a list. Return a new list with unique elements.\nExample 1: `remove_duplicates_unordered([1, 2, 2, 3, 1, 4])` returns `[1, 2, 3, 4]` (or any permutation).\nExample 2: `remove_duplicates_unordered(['a', 'b', 'a', 'c'])` returns `['a', 'b', 'c']` (or any permutation).",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def remove_duplicates_unordered(items):\n    \"\"\"Return a new list holding each distinct element of `items` exactly once.\"\"\"\n    if not isinstance(items, list):\n        raise TypeError(\"remove_duplicates_unordered expects a list\")\n    seen = set()\n    unhashable = []\n    unique = []\n    for item in items:\n        try:\n            if item in seen:\n                continue\n            seen.add(item)\n        except TypeError:\n            if item in unhashable:\n                continue\n            unhashable.append(item)\n        unique.append(item)\n    return unique\n\n\ndef duplicate_counts(items):\n    \"\"\"Map every repeated element to the number of times it occurs.\"\"\"\n    counts = {}\n    for item in items:\n        key = repr(item)\n        counts[key] = counts.get(key, 0) + 1\n    return {key: n for key, n in counts.items() if n > 1}\n\n\ndef report(items):\n    \"\"\"Print a short before/after summary for one input list.\"\"\"\n    unique = remove_duplicates_unordered(items)\n    print(\"input :\", items)\n    print(\"unique:\", unique)\n    removed = len(items) - len(unique)\n    if removed:\n        print(\"removed\", removed, \"duplicate element(s)\")\n        for key, n in sorted(duplicate_counts(items).items()):\n            print(\"   \", key, \"appeared\", n, \"times\")\n    else:\n        print(\"all elements were already distinct\")\n    return unique\n\n\ndef main():\n    samples = [\n        [1, 2, 2, 3, 1, 4],\n        ['a', 'b', 'a', 'c'],\n        [],\n        [True, 1, 1.0, 2, \"2\"],\n        [[1], [1], [2], (3,), (3,)],\n    ]\n    for sample in samples:\n        report(sample)\n        print(\"-\" * 40)\n\n    total_in = sum(len(sample) for sample in samples)\n    total_out = sum(len(remove_duplicates_unordered(s)) for s in samples)\n    print(\"elements seen    :\", total_in)\n    print(\"elements retained:\", total_out)\n\n    try:\n        remove_duplicates_unordered(\"abc\")\n    except TypeError as exc:\n        print(\"rejected non-list input:\", exc)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def remove_duplicates_unordered(items):\n    \"\"\"Return a new list holding each distinct element of `items` exactly once.\"\"\"\n    if not isinstance(items, list):\n        raise TypeError(\"remove_duplicates_unordered expects a list\")\n    seen = set()\n    unhashable = []\n    unique = []\n    for item in items:\n        try:\n            if item in seen:\n                continue\n            seen.add(item)\n        except TypeError:\n            if item in unhashable:\n                continue\n            unhashable.append(item)\n        unique.append(item)\n    return unique\n\n\ndef duplicate_counts(items):\n    \"\"\"Map every repeated element to the number of times it occurs.\"\"\"\n    counts = {}\n    for item in items:\n        key = repr(item)\n        counts[key] = counts.get(key, 0) + 1\n    return {key: n for key, n in counts.items() if n > 1}\n\n\ndef report(items):\n    \"\"\"Print a short before/after summary for one input list.\"\"\"\n    unique = remove_duplicates_unordered(items)\n    print \"input :\", items\n    print \"unique:\", unique\n    removed = len(items) - len(unique)\n    if removed:\n        print \"removed\", removed, \"duplicate element(s)\"\n        for key, n in sorted(duplicate_counts(items).items()):\n            print \"   \", key, \"appeared\", n, \"times\"\n    else:\n        print \"all elements were already distinct\"\n    return unique\n\n\ndef main():\n    samples = [\n        [1, 2, 2, 3, 1, 4],\n        ['a', 'b', 'a', 'c'],\n        [],\n        [True, 1, 1.0, 2, \"2\"],\n        [[1], [1], [2], (3,), (3,)],\n    ]\n    for sample in samples:\n        report(sample)\n        print \"-\" * 40\n\n    total_in = sum(len(sample) for sample in samples)\n    total_out = sum(len(remove_duplicates_unordered(s)) for s in samples)\n    print \"elements seen    :\", total_in\n    print \"elements retained:\", total_out\n\n    try:\n        remove_duplicates_unordered(\"abc\")\n    except TypeError as exc:\n        print \"rejected non-list input:\", exc\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+979,
+980
+],
+"alt_span": [
+979,
+980
+]
+},
+{
+"k": 1,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1095,
+1096
+],
+"alt_span": [
+1093,
+1094
+]
+},
+{
+"k": 2,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1220,
+1221
+],
+"alt_span": [
+1217,
+1218
+]
+},
+{
+"k": 3,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1280,
+1281
+],
+"alt_span": [
+1276,
+1277
+]
+},
+{
+"k": 4,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1575,
+1576
+],
+"alt_span": [
+1570,
+1571
+]
+},
+{
+"k": 5,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1724,
+1725
+],
+"alt_span": [
+1718,
+1719
+]
+},
+{
+"k": 6,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1895,
+1896
+],
+"alt_span": [
+1887,
+1888
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.974,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+979,
+980
+],
+"alt_span": [
+979,
+980
+]
+},
+{
+"k": 1,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+996,
+1008
+],
+"alt_span": [
+996,
+1007
+]
+},
+{
+"k": 2,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1025,
+1026
+],
+"alt_span": [
+1024,
+1024
+]
+},
+{
+"k": 3,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1095,
+1096
+],
+"alt_span": [
+1093,
+1094
+]
+},
+{
+"k": 4,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1138,
+1139
+],
+"alt_span": [
+1136,
+1136
+]
+},
+{
+"k": 5,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1220,
+1221
+],
+"alt_span": [
+1217,
+1218
+]
+},
+{
+"k": 6,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1255,
+1256
+],
+"alt_span": [
+1252,
+1252
+]
+},
+{
+"k": 7,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1280,
+1281
+],
+"alt_span": [
+1276,
+1277
+]
+},
+{
+"k": 8,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1317,
+1318
+],
+"alt_span": [
+1313,
+1313
+]
+},
+{
+"k": 9,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1575,
+1576
+],
+"alt_span": [
+1570,
+1571
+]
+},
+{
+"k": 10,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1584,
+1585
+],
+"alt_span": [
+1579,
+1579
+]
+},
+{
+"k": 11,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1724,
+1725
+],
+"alt_span": [
+1718,
+1719
+]
+},
+{
+"k": 12,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+1755,
+1767
+],
+"alt_span": [
+1749,
+1760
+]
+},
+{
+"k": 13,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1798,
+1799
+],
+"alt_span": [
+1791,
+1791
+]
+},
+{
+"k": 14,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1895,
+1896
+],
+"alt_span": [
+1887,
+1888
+]
+},
+{
+"k": 15,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1927,
+1928
+],
+"alt_span": [
+1919,
+1919
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
+"doc_id": "py2_print__t262",
+"family": "py2_print",
+"topic": "Calculate Simple Average",
+"angle": "code",
+"text_es": "Implement a function that calculates the simple average (mean) of a list of numbers. The function `calculate_average` takes a list of numbers. If the list is empty, return `0.0`. Return the average as a float.\nExample 1: `calculate_average([1, 2, 3, 4, 5])` returns `3.0`.\nExample 2: `calculate_average([10, 20])` returns `15.0`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def calculate_average(numbers):\n    \"\"\"Return the arithmetic mean of numbers, or 0.0 for an empty list.\"\"\"\n    if not numbers:\n        return 0.0\n    return float(sum(numbers)) / len(numbers)\n\n\ndef parse_numbers(text):\n    \"\"\"Turn a comma or whitespace separated string into a list of floats.\"\"\"\n    cleaned = text.replace(\",\", \" \")\n    values = []\n    for token in cleaned.split():\n        try:\n            values.append(float(token))\n        except ValueError:\n            print(\"Skipping unrecognised value: {!r}\".format(token))\n    return values\n\n\ndef format_average(numbers):\n    \"\"\"Human readable one-line summary of a dataset's average.\"\"\"\n    average = calculate_average(numbers)\n    if not numbers:\n        return \"no data -> average 0.0\"\n    return \"n={} sum={:g} average={:.4g}\".format(len(numbers), sum(numbers), average)\n\n\ndef deviations(numbers):\n    \"\"\"Distance of each value from the average, in input order.\"\"\"\n    average = calculate_average(numbers)\n    return [value - average for value in numbers]\n\n\ndef report(label, numbers):\n    \"\"\"Print a small report for one dataset and return its average.\"\"\"\n    print(\"=== {} ===\".format(label))\n    print(\"values:\", numbers)\n    print(format_average(numbers))\n    for value, delta in zip(numbers, deviations(numbers)):\n        print(\"  {:g} deviates by {:+.3f}\".format(value, delta))\n    return calculate_average(numbers)\n\n\ndef main():\n    averages = []\n    averages.append(report(\"example 1\", [1, 2, 3, 4, 5]))\n    averages.append(report(\"example 2\", [10, 20]))\n    averages.append(report(\"empty\", []))\n\n    raw = \"3.5, 4.5, oops, 8\"\n    print(\"=== parsed input ===\")\n    print(\"raw text:\", raw)\n    parsed = parse_numbers(raw)\n    averages.append(report(\"parsed\", parsed))\n\n    print(\"=== overall ===\")\n    print(\"collected averages:\", averages)\n    print(\"average of averages: {:.4f}\".format(calculate_average(averages)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def calculate_average(numbers):\n    \"\"\"Return the arithmetic mean of numbers, or 0.0 for an empty list.\"\"\"\n    if not numbers:\n        return 0.0\n    return float(sum(numbers)) / len(numbers)\n\n\ndef parse_numbers(text):\n    \"\"\"Turn a comma or whitespace separated string into a list of floats.\"\"\"\n    cleaned = text.replace(\",\", \" \")\n    values = []\n    for token in cleaned.split():\n        try:\n            values.append(float(token))\n        except ValueError:\n            print \"Skipping unrecognised value: {!r}\".format(token)\n    return values\n\n\ndef format_average(numbers):\n    \"\"\"Human readable one-line summary of a dataset's average.\"\"\"\n    average = calculate_average(numbers)\n    if not numbers:\n        return \"no data -> average 0.0\"\n    return \"n={} sum={:g} average={:.4g}\".format(len(numbers), sum(numbers), average)\n\n\ndef deviations(numbers):\n    \"\"\"Distance of each value from the average, in input order.\"\"\"\n    average = calculate_average(numbers)\n    return [value - average for value in numbers]\n\n\ndef report(label, numbers):\n    \"\"\"Print a small report for one dataset and return its average.\"\"\"\n    print \"=== {} ===\".format(label)\n    print \"values:\", numbers\n    print format_average(numbers)\n    for value, delta in zip(numbers, deviations(numbers)):\n        print \"  {:g} deviates by {:+.3f}\".format(value, delta)\n    return calculate_average(numbers)\n\n\ndef main():\n    averages = []\n    averages.append(report(\"example 1\", [1, 2, 3, 4, 5]))\n    averages.append(report(\"example 2\", [10, 20]))\n    averages.append(report(\"empty\", []))\n\n    raw = \"3.5, 4.5, oops, 8\"\n    print \"=== parsed input ===\"\n    print \"raw text:\", raw\n    parsed = parse_numbers(raw)\n    averages.append(report(\"parsed\", parsed))\n\n    print \"=== overall ===\"\n    print \"collected averages:\", averages\n    print \"average of averages: {:.4f}\".format(calculate_average(averages))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+480,
+481
+],
+"alt_span": [
+480,
+481
+]
+},
+{
+"k": 1,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1129,
+1130
+],
+"alt_span": [
+1128,
+1129
+]
+},
+{
+"k": 2,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+1186,
+1198
+],
+"alt_span": [
+1184,
+1195
+]
+},
+{
+"k": 3,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1295,
+1296
+],
+"alt_span": [
+1291,
+1292
+]
+},
+{
+"k": 4,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1607,
+1608
+],
+"alt_span": [
+1602,
+1603
+]
+},
+{
+"k": 5,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1748,
+1749
+],
+"alt_span": [
+1741,
+1742
+]
+},
+{
+"k": 6,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+1809,
+1821
+],
+"alt_span": [
+1801,
+1812
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.973,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+480,
+481
+],
+"alt_span": [
+480,
+481
+]
+},
+{
+"k": 1,
+"nat": ")",
+"alt": "",
+"nat_span": [
+529,
+530
+],
+"alt_span": [
+529,
+529
+]
+},
+{
+"k": 2,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1129,
+1130
+],
+"alt_span": [
+1128,
+1129
+]
+},
+{
+"k": 3,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+1156,
+1168
+],
+"alt_span": [
+1155,
+1166
+]
+},
+{
+"k": 4,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+1186,
+1198
+],
+"alt_span": [
+1184,
+1195
+]
+},
+{
+"k": 5,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1220,
+1221
+],
+"alt_span": [
+1217,
+1217
+]
+},
+{
+"k": 6,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1295,
+1296
+],
+"alt_span": [
+1291,
+1292
+]
+},
+{
+"k": 7,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1344,
+1345
+],
+"alt_span": [
+1340,
+1340
+]
+},
+{
+"k": 8,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1607,
+1608
+],
+"alt_span": [
+1602,
+1603
+]
+},
+{
+"k": 9,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+1630,
+1642
+],
+"alt_span": [
+1625,
+1636
+]
+},
+{
+"k": 10,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1658,
+1659
+],
+"alt_span": [
+1652,
+1652
+]
+},
+{
+"k": 11,
+"nat": "(",
+"alt": " ",
+"nat_span": [
+1748,
+1749
+],
+"alt_span": [
+1741,
+1742
+]
+},
+{
+"k": 12,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+1766,
+1778
+],
+"alt_span": [
+1759,
+1770
+]
+},
+{
+"k": 13,
+"nat": ")\n    print(",
+"alt": "\n    print ",
+"nat_span": [
+1809,
+1821
+],
+"alt_span": [
+1801,
+1812
+]
+},
+{
+"k": 14,
+"nat": ")",
+"alt": "",
+"nat_span": [
+1886,
+1887
+],
+"alt_span": [
+1877,
+1877
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 }
 ]

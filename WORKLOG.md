@@ -9865,3 +9865,48 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   56 unchanged (write L24α2 both .50; read .56 vs .06 unsteered, ceiling .71). prompt_pairs single source: 44,788 prompts, 31,992
   correct (four families' rows recaptured with flags). read_write_map sandbox NOT refit (user: later). Lesson: pandas `df.style`
   is the Styler accessor — use df['style'].
+- 2026-09-21 CORPUS-WIDE PADDING CLEAN-UP of the 52 remaining pool families (user-approved plan; subagent, CPU + OpenRouter, no GPU, nothing
+  committed). AUDIT: `src/sandbox/style_translation/code_padding_audit.py` classifies every pool doc into ONE worst category (1 style leak in
+  a comment / docstring, 2 construct padding in code, 3 filler comment in a comment family, 4 filler wording in an identifier, 5 removable
+  commentary, 6 false positive) -> `results/code_styles/padding_audit.csv`. New guards in `code_build.py`: `LEAK_PATTERNS` + `FAMILY_LEAK_WORDS`
+  + `comment_texts()` + `leak_lines()` (style vocabulary in the code-style sense: stylistic / "the|this|code|naming ... style" / "style
+  requirement|guide|convention" / convention(s) / requirement(s) / consisten* / idiom* / PEP 8 / for the exercise / as required / to satisfy…,
+  plus each family's convention words; comment text only), applied in `finish_pair` and as the sweep check `style_leak`; `padding_lines` now
+  masks string literals and reports every matching pattern per line. Audit on the 52 families with the final patterns: 999 / 176 / 243 / 99 /
+  908 / 1 = 2,426 docs vs the parent's 1,104 / 129 / 271 / 89 / 911 / 3 = 2,507 — deviation from (a) string-literal masking (test data such as
+  "Another example!!" no longer flagged: c6 3 -> 1, c4/c5 shrink), (b) all patterns per line (`for _ in range(1): # Dummy` is c2 not c5),
+  (c) the narrowed "style" sense (honest docstrings "output styles", "clock-style", "Conventional prefix" are not leaks; c1 1,117 -> 999),
+  (d) c4 restricted to identifiers (dummy_/placeholder_/demonstrate_/showcase_). BUILDER: per-document no-count hint `free_occ=True`
+  (`gen_hint(fam, free_occ)`, `free_occ_description` = the family's gen_hint minus its numeric requirement, `FREE_OCC_LENGTH` 40-80,
+  `generate_nat` / `finish_pair` / `build_one` take `free_occ`; records carry `free_occ: True`; `code_free.fifth_frac(fam, rec)` = 85 % for such
+  records, 75 % otherwise; sweep honours it). The family-level >= 8 hint remains the default path. STRIP (category 5, `code_padding_audit.
+  strip_commentary`, `tmp/strip5.py`): flagged whole-line comments deleted / trailing comments cut at the marker identically in both twins,
+  asserting unchanged code lines, parse, re-alignment and IDENTICAL counted opportunities, then both reviewers: 908 docs -> 32 accepted (118
+  comments stripped), 139 strip-rule failures (46 hit in a docstring / block comment, 39 free-filter reject after re-alignment, 27 counted list
+  changed, 24 comment not unique in alt), 737 REVIEW failures (Opus item 6 in 123 of the first 185 verdicts: the old Gemini code itself is padded: never-firing
+  checks, unused helpers) -> all 876 joined the regeneration set. REGENERATION (`tmp/regen_common.py` + `tmp/regen6.py`; Opus 5 generator with
+  the no-count hint, Opus 5 rewrite, reviewers Opus 5 + GPT-5 concurrently per attempt, AND rule, feedback-repair revisions, 4 own rounds then
+  <= 4 unused tasks x 3; 96 workers per driver, 0 HTTP 429 at ~450 concurrent calls; drivers r1-r4 = categories 1-4 split into 4 balanced
+  family groups, s1-s3 = strip failures, d1 = 71 docs whose replacement task id had been claimed by two concurrent drivers (dedup in
+  `tmp/finalize5.py`; lesson: unused-task claims must be global, not per process); ~50 min wall for r1-r4, ~48 for s1-s3, 24 for d1): 2,464
+  regenerations -> 2,210 accepted (499 = 20 % replaced by an unused task), 254 FAILED after all 16 attempts (hex_constants 47, py_join_concat 47,
+  num_separators 37, py_loop_vars 36, py_snake_camel 24, bash_test 16, js_hungarian 15, py_private 11 [0 of 11 accepted], js_camel_snake 5,
+  py_with_open 4, py_abbrev 3, sql_join_style 3, comment_language 2, py_enumerate / comma_space / bash_subst / py_type_hints 1) — list in
+  `tmp/regen6_still_failed.json`; these keep their OLD text. Yield per attempt 18.9 % (fresh 15.7 %, revise 20.8 %; 11,701 attempts) — far
+  below the four-family runs (40 %) because the identifier / whitespace / constant families fail on the REWRITE side: builder_reject 3,202
+  (< 5 counted or twins not consistent), alt does not parse 700; reviewer items (Opus / GPT-5 verdicts citing): 4 inconsistent convention
+  1,721 / 1,526, 5 fake decision 873 / 930, 6 padding 760 / 96, 9 family rule 760 / 707, 10 scope creep 701 / 676, 2 extra change 686 / 601,
+  14 line correspondence 557 / 211, 1 meaning change 432 / 184, 3 invalid 204 / 268, 11 wrong task 73 / 88, 12 too few 70 / 73, 8 rename
+  collision 26 / 29; 6,567 reviews each, agreement both ok 2,132 / both reject 2,862 / only Opus 766 / only GPT-5 807; Opus unparseable 9.
+  COST: regeneration $1,576.98 (Opus 29,861 calls, 61.4 M + 35.9 M tokens = $1,205.19; GPT-5 7,442 calls = $371.80) + strip review $70.06
+  = $1,647. WRITTEN (accepted only): 2,171 docs in 49 families (`tmp/finalize5_changed.json` per family; pool families untouched = js_func_pascal, py_private, sql_keyword_case
+  and the four already-clean families; non-pool families never in scope); backups of all 60 families' pairs / raw / cues / prompts + the three modules in
+  `tmp/backup_pairs5/`. Counted opportunities 86,670 -> 90,975 over the 49 families (`tmp/counted_before_after6.txt`; big movers py_indent
+  1,476 -> 2,406, py_tabs 1,496 -> 2,318, py_enumerate 1,567 -> 2,234, py_type_hints 1,724 -> 2,213; comment_case 2,070 -> 1,677,
+  comment_language 2,074 -> 1,854, py_with_open 1,613 -> 1,403, num_separators 1,579 -> 1,393; min 5 everywhere except the accepted comment
+  residuals). SWEEP (60 families, `tmp/sweep_final_regen6.txt`): padding_line / style_leak hits in pool families = exactly the 254 still-failed
+  docs + js_arrow t041 (`!!result`, category 6); non-pool families early_return / c_braces / css_shorthand / py_bool_prefix untouched and still
+  flagged; other residuals unchanged (`5th>75%` 25 docs, comment_case < 5 x 2, comment_language k0 11 / < 5 1 / 5th 1). CUES + K = 5 PROMPTS
+  rebuilt (qwen25_code) for the 49 families, 97,976 items, `tmp/verify_prompts4.py` OK for 48 (comment_language: the 11 accepted k = 0
+  residuals only). `tmp/prompt_check5.json` = 10 random regenerated docs, k = 1 / 2, both poles. Stale for the GPU refresh: every artefact of the
+  49 changed families (rollouts, logprob, steering vectors + full_k3, read evidence + vectors, read_steer full_k3, prompt_pairs, layers).

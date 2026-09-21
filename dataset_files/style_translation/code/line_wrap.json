@@ -5850,46 +5850,46 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def count_lines_in_file(\n    filepath,\n):\n    with open(\n        filepath,\n        'r',\n        encoding='utf-8',\n        errors='ignore',\n    ) as file:\n        line_count = len(\n            file.readlines(\n                hint=-1,\n            )\n        )\n    return line_count\n\ndef example_usage():\n    # Create a dummy file for testing\n    with open(\n        'temp_test_file.txt',\n        'w',\n        encoding='utf-8',\n    ) as f:\n        f.write(\n            \"Line 1\\n\"\n        )\n        f.write(\n            \"Line 2\\n\"\n        )\n        f.write(\n            \"Line 3\\n\"\n        )\n    \n    # Test the function\n    lines = count_lines_in_file(\n        'temp_test_file.txt',\n    )\n    print(\n        f\"The file has {lines} lines.\"\n    )\n\nif __name__ == \"__main__\":\n    example_usage()\n",
-"text_alt": "def count_lines_in_file(filepath):\n    with open(filepath, 'r', encoding='utf-8', errors='ignore') as file:\n        line_count = len(file.readlines(hint=-1))\n    return line_count\n\ndef example_usage():\n    # Create a dummy file for testing\n    with open('temp_test_file.txt', 'w', encoding='utf-8') as f:\n        f.write(\"Line 1\\n\")\n        f.write(\"Line 2\\n\")\n        f.write(\"Line 3\\n\")\n    \n    # Test the function\n    lines = count_lines_in_file('temp_test_file.txt')\n    print(f\"The file has {lines} lines.\")\n\nif __name__ == \"__main__\":\n    example_usage()\n",
+"text_nat": "import sys\nfrom collections import namedtuple\n\nSummary = namedtuple(\n    \"Summary\",\n    [\"path\", \"lines\", \"words\", \"characters\", \"blank_lines\"]\n)\n\n\ndef count_lines_in_file(filepath):\n    with open(filepath, \"r\", encoding=\"utf-8\", errors=\"replace\") as handle:\n        return sum(1 for _ in handle)\n\n\ndef format_summary_row(\n    path,\n    lines,\n    words,\n    characters,\n    blank_lines,\n    path_width\n):\n    return \"{:<{}}  {:>7}  {:>7}  {:>9}  {:>7}\".format(\n        path,\n        path_width,\n        lines,\n        words,\n        characters,\n        blank_lines\n    )\n\n\ndef summarize_file(filepath):\n    lines = 0\n    words = 0\n    characters = 0\n    blank_lines = 0\n    with open(filepath, \"r\", encoding=\"utf-8\", errors=\"replace\") as handle:\n        for line in handle:\n            lines += 1\n            words += len(line.split())\n            characters += len(line)\n            if not line.strip():\n                blank_lines += 1\n    return Summary(\n        path=filepath,\n        lines=lines,\n        words=words,\n        characters=characters,\n        blank_lines=blank_lines\n    )\n\n\ndef write_report(summaries, stream):\n    path_width = max(len(\"TOTAL\"), *(len(s.path) for s in summaries))\n    rows = []\n    header = format_summary_row(\n        path=\"FILE\",\n        lines=\"lines\",\n        words=\"words\",\n        characters=\"chars\",\n        blank_lines=\"blank\",\n        path_width=path_width\n    )\n    rows.append(header)\n    for summary in summaries:\n        rows.append(\n            format_summary_row(\n                path=summary.path,\n                lines=summary.lines,\n                words=summary.words,\n                characters=summary.characters,\n                blank_lines=summary.blank_lines,\n                path_width=path_width\n            )\n        )\n    total = format_summary_row(\n        path=\"TOTAL\",\n        lines=sum(s.lines for s in summaries),\n        words=sum(s.words for s in summaries),\n        characters=sum(s.characters for s in summaries),\n        blank_lines=sum(s.blank_lines for s in summaries),\n        path_width=path_width\n    )\n    rows.append(total)\n    stream.write(\"\\n\".join(rows) + \"\\n\")\n\n\ndef main(argv):\n    paths = argv[1:]\n    if not paths:\n        sys.stderr.write(\"usage: {} FILE [FILE ...]\\n\".format(argv[0]))\n        return 1\n    write_report(\n        summaries=[summarize_file(path) for path in paths],\n        stream=sys.stdout\n    )\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n",
+"text_alt": "import sys\nfrom collections import namedtuple\n\nSummary = namedtuple(\"Summary\", [\"path\", \"lines\", \"words\", \"characters\", \"blank_lines\"])\n\n\ndef count_lines_in_file(filepath):\n    with open(filepath, \"r\", encoding=\"utf-8\", errors=\"replace\") as handle:\n        return sum(1 for _ in handle)\n\n\ndef format_summary_row(path, lines, words, characters, blank_lines, path_width):\n    return \"{:<{}}  {:>7}  {:>7}  {:>9}  {:>7}\".format(path, path_width, lines, words, characters, blank_lines)\n\n\ndef summarize_file(filepath):\n    lines = 0\n    words = 0\n    characters = 0\n    blank_lines = 0\n    with open(filepath, \"r\", encoding=\"utf-8\", errors=\"replace\") as handle:\n        for line in handle:\n            lines += 1\n            words += len(line.split())\n            characters += len(line)\n            if not line.strip():\n                blank_lines += 1\n    return Summary(path=filepath, lines=lines, words=words, characters=characters, blank_lines=blank_lines)\n\n\ndef write_report(summaries, stream):\n    path_width = max(len(\"TOTAL\"), *(len(s.path) for s in summaries))\n    rows = []\n    header = format_summary_row(path=\"FILE\", lines=\"lines\", words=\"words\", characters=\"chars\", blank_lines=\"blank\", path_width=path_width)\n    rows.append(header)\n    for summary in summaries:\n        rows.append(format_summary_row(path=summary.path, lines=summary.lines, words=summary.words, characters=summary.characters, blank_lines=summary.blank_lines, path_width=path_width))\n    total = format_summary_row(path=\"TOTAL\", lines=sum(s.lines for s in summaries), words=sum(s.words for s in summaries), characters=sum(s.characters for s in summaries), blank_lines=sum(s.blank_lines for s in summaries), path_width=path_width)\n    rows.append(total)\n    stream.write(\"\\n\".join(rows) + \"\\n\")\n\n\ndef main(argv):\n    paths = argv[1:]\n    if not paths:\n        sys.stderr.write(\"usage: {} FILE [FILE ...]\\n\".format(argv[0]))\n        return 1\n    write_report(summaries=[summarize_file(path) for path in paths], stream=sys.stdout)\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n",
 "opps": [
 {
 "k": 0,
-"nat": "\n    filepath,\n",
-"alt": "filepath",
+"nat": "\n    ",
+"alt": "",
 "nat_span": [
-24,
-39
+68,
+73
 ],
 "alt_span": [
-24,
-32
+68,
+68
 ]
 },
 {
 "k": 1,
-"nat": "\n        filepath,\n        ",
-"alt": "filepath, ",
+"nat": "\n    path,\n    lines,\n    words,\n    characters,\n    blank_lines,\n    path_width\n",
+"alt": "path, lines, words, characters, blank_lines, path_width",
 "nat_span": [
-56,
-83
+322,
+403
 ],
 "alt_span": [
-49,
-59
+312,
+367
 ]
 },
 {
 "k": 2,
-"nat": "\n            ",
-"alt": "",
+"nat": "\n        path,\n        path_width,\n        lines,\n        words,\n        characters,\n        blank_lines\n    ",
+"alt": "path, path_width, lines, words, characters, blank_lines",
 "nat_span": [
-179,
-192
+461,
+570
 ],
 "alt_span": [
-133,
-133
+425,
+480
 ]
 },
 {
@@ -5897,51 +5897,51 @@
 "nat": "\n        ",
 "alt": "",
 "nat_span": [
-353,
-362
+958,
+967
 ],
 "alt_span": [
-254,
-254
+868,
+868
 ]
 },
 {
 "k": 4,
-"nat": "\n            ",
+"nat": "\n        ",
 "alt": "",
 "nat_span": [
-451,
-464
+1248,
+1257
 ],
 "alt_span": [
-321,
-321
+1112,
+1112
 ]
 },
 {
 "k": 5,
-"nat": "\n            ",
-"alt": "",
+"nat": "\n            format_summary_row(\n                ",
+"alt": "format_summary_row(",
 "nat_span": [
-501,
-514
+1483,
+1532
 ],
 "alt_span": [
-349,
-349
+1293,
+1312
 ]
 },
 {
 "k": 6,
-"nat": "\n            ",
+"nat": "\n        ",
 "alt": "",
 "nat_span": [
-551,
-564
+1814,
+1823
 ],
 "alt_span": [
-377,
-377
+1492,
+1492
 ]
 },
 {
@@ -5949,149 +5949,137 @@
 "nat": "\n        ",
 "alt": "",
 "nat_span": [
-646,
-655
+2310,
+2319
 ],
 "alt_span": [
-450,
-450
-]
-},
-{
-"k": 8,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-693,
-702
-],
-"alt_span": [
-482,
-482
+1934,
+1934
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.871,
+"k_en": 8,
+"shared_fraction": 0.935,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "\n    filepath,\n",
-"alt": "filepath",
+"nat": "\n    ",
+"alt": "",
 "nat_span": [
-24,
-39
+68,
+73
 ],
 "alt_span": [
-24,
-32
+68,
+68
 ]
 },
 {
 "k": 1,
-"nat": "\n        filepath,\n        ",
-"alt": "filepath, ",
+"nat": "\n    ",
+"alt": " ",
 "nat_span": [
-56,
-83
+83,
+88
 ],
 "alt_span": [
-49,
-59
+78,
+79
 ]
 },
 {
 "k": 2,
-"nat": "\n        ",
-"alt": " ",
+"nat": "\n",
+"alt": "",
 "nat_span": [
-87,
-96
+143,
+144
 ],
 "alt_span": [
-63,
-64
+134,
+134
 ]
 },
 {
 "k": 3,
-"nat": "\n        ",
-"alt": " ",
+"nat": "\n    path,\n    lines,\n    words,\n    characters,\n    blank_lines,\n    path_width\n",
+"alt": "path, lines, words, characters, blank_lines, path_width",
 "nat_span": [
-113,
-122
+322,
+403
 ],
 "alt_span": [
-81,
-82
+312,
+367
 ]
 },
 {
 "k": 4,
-"nat": ",\n    ",
-"alt": "",
+"nat": "\n        path,\n        path_width,\n        lines,\n        words,\n        characters,\n        blank_lines\n    ",
+"alt": "path, path_width, lines, words, characters, blank_lines",
 "nat_span": [
-137,
-143
+461,
+570
 ],
 "alt_span": [
-97,
-97
+425,
+480
 ]
 },
 {
 "k": 5,
-"nat": "\n            ",
+"nat": "\n        ",
 "alt": "",
 "nat_span": [
-179,
-192
+958,
+967
 ],
 "alt_span": [
-133,
-133
+868,
+868
 ]
 },
 {
 "k": 6,
-"nat": "\n                ",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-207,
-224
+981,
+990
 ],
 "alt_span": [
-148,
-148
+882,
+883
 ]
 },
 {
 "k": 7,
-"nat": ",\n            )\n        ",
-"alt": ")",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-231,
-255
+1002,
+1011
 ],
 "alt_span": [
-155,
-156
+895,
+896
 ]
 },
 {
 "k": 8,
 "nat": "\n        ",
-"alt": "",
+"alt": " ",
 "nat_span": [
-353,
-362
+1023,
+1032
 ],
 "alt_span": [
-254,
-254
+908,
+909
 ]
 },
 {
@@ -6099,172 +6087,346 @@
 "nat": "\n        ",
 "alt": " ",
 "nat_span": [
-383,
-392
+1054,
+1063
 ],
 "alt_span": [
-275,
-276
+931,
+932
 ]
 },
 {
 "k": 10,
-"nat": "\n        ",
-"alt": " ",
+"nat": "\n    ",
+"alt": "",
 "nat_span": [
-396,
-405
+1086,
+1091
 ],
 "alt_span": [
-280,
-281
+955,
+955
 ]
 },
 {
 "k": 11,
-"nat": ",\n    ",
+"nat": "\n        ",
 "alt": "",
 "nat_span": [
-421,
-427
+1248,
+1257
 ],
 "alt_span": [
-297,
-297
+1112,
+1112
 ]
 },
 {
 "k": 12,
-"nat": "\n            ",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-451,
-464
+1269,
+1278
 ],
 "alt_span": [
-321,
-321
+1124,
+1125
 ]
 },
 {
 "k": 13,
 "nat": "\n        ",
-"alt": "",
+"alt": " ",
 "nat_span": [
-474,
-483
+1292,
+1301
 ],
 "alt_span": [
-331,
-331
+1139,
+1140
 ]
 },
 {
 "k": 14,
-"nat": "\n            ",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-501,
-514
+1315,
+1324
 ],
 "alt_span": [
-349,
-349
+1154,
+1155
 ]
 },
 {
 "k": 15,
 "nat": "\n        ",
-"alt": "",
+"alt": " ",
 "nat_span": [
-524,
-533
+1343,
+1352
 ],
 "alt_span": [
-359,
-359
+1174,
+1175
 ]
 },
 {
 "k": 16,
-"nat": "\n            ",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-551,
-564
+1372,
+1381
 ],
 "alt_span": [
-377,
-377
+1195,
+1196
 ]
 },
 {
 "k": 17,
-"nat": "\n        ",
+"nat": "\n    ",
 "alt": "",
 "nat_span": [
-574,
-583
+1402,
+1407
 ],
 "alt_span": [
-387,
-387
+1217,
+1217
 ]
 },
 {
 "k": 18,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n            format_summary_row(\n                ",
+"alt": "format_summary_row(",
 "nat_span": [
-646,
-655
+1483,
+1532
 ],
 "alt_span": [
-450,
-450
+1293,
+1312
 ]
 },
 {
 "k": 19,
-"nat": ",\n    ",
-"alt": "",
+"nat": "\n                ",
+"alt": " ",
 "nat_span": [
-675,
-681
+1550,
+1567
 ],
 "alt_span": [
-470,
-470
+1330,
+1331
 ]
 },
 {
 "k": 20,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n                ",
+"alt": " ",
 "nat_span": [
-693,
-702
+1587,
+1604
 ],
 "alt_span": [
-482,
-482
+1351,
+1352
 ]
 },
 {
 "k": 21,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1624,
+1641
+],
+"alt_span": [
+1372,
+1373
+]
+},
+{
+"k": 22,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1671,
+1688
+],
+"alt_span": [
+1403,
+1404
+]
+},
+{
+"k": 23,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1720,
+1737
+],
+"alt_span": [
+1436,
+1437
+]
+},
+{
+"k": 24,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+1758,
+1781
+],
+"alt_span": [
+1458,
+1459
+]
+},
+{
+"k": 25,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+1814,
+1823
+],
+"alt_span": [
+1492,
+1492
+]
+},
+{
+"k": 26,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1836,
+1845
+],
+"alt_span": [
+1505,
+1506
+]
+},
+{
+"k": 27,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1883,
+1892
+],
+"alt_span": [
+1544,
+1545
+]
+},
+{
+"k": 28,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1930,
+1939
+],
+"alt_span": [
+1583,
+1584
+]
+},
+{
+"k": 29,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1987,
+1996
+],
+"alt_span": [
+1632,
+1633
+]
+},
+{
+"k": 30,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+2046,
+2055
+],
+"alt_span": [
+1683,
+1684
+]
+},
+{
+"k": 31,
 "nat": "\n    ",
 "alt": "",
 "nat_span": [
-732,
-737
+2076,
+2081
 ],
 "alt_span": [
-512,
-512
+1705,
+1705
+]
+},
+{
+"k": 32,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+2310,
+2319
+],
+"alt_span": [
+1934,
+1934
+]
+},
+{
+"k": 33,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+2370,
+2379
+],
+"alt_span": [
+1985,
+1986
+]
+},
+{
+"k": 34,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+2396,
+2401
+],
+"alt_span": [
+2003,
+2003
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "line_wrap__t018",
@@ -14536,7 +14698,7 @@
 ],
 "k_en": 8,
 "shared_fraction": 0.863,
-"pass": true,
+"pass": false,
 "verify": null,
 "alt_rule": true,
 "opps_all": [
@@ -17236,322 +17398,206 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def find_second_largest(\n    numbers,\n):\n    unique_numbers = sorted(list(set(numbers)))\n    return unique_numbers[\n        len(\n            unique_numbers,\n        )\n        - 2\n    ]\n\ndef example_usage_function(\n    data,\n    name,\n    is_active,\n    threshold,\n    max_retries,\n):\n    print(\n        f\"Processing {name} with data {data}. Active: {is_active}, Threshold: {threshold}, Max Retries: {max_retries}\",\n    )\n    # This is just a dummy function to demonstrate the Black-style wrapping.\n    return data\n\nresult1 = find_second_largest(\n    [10, 5, 20, 8],\n)\nresult2 = find_second_largest(\n    [1, 1, 5, 5],\n)\n\nprint(\n    result1,\n)\nprint(\n    result2,\n)\n\nexample_usage_function(\n    data=[1, 2, 3],\n    name=\"Test Process\",\n    is_active=True,\n    threshold=0.5,\n    max_retries=3,\n)\n",
-"text_alt": "def find_second_largest(numbers):\n    unique_numbers = sorted(list(set(numbers)))\n    return unique_numbers[len(unique_numbers) - 2]\n\ndef example_usage_function(data, name, is_active, threshold, max_retries):\n    print(f\"Processing {name} with data {data}. Active: {is_active}, Threshold: {threshold}, Max Retries: {max_retries}\")\n    # This is just a dummy function to demonstrate the Black-style wrapping.\n    return data\n\nresult1 = find_second_largest([10, 5, 20, 8])\nresult2 = find_second_largest([1, 1, 5, 5])\n\nprint(result1)\nprint(result2)\n\nexample_usage_function(data=[1, 2, 3], name=\"Test Process\", is_active=True, threshold=0.5, max_retries=3)\n",
+"text_nat": "from typing import Any, Dict, List, Sequence\n\n\ndef find_second_largest(numbers: Sequence[int]) -> int:\n    largest = None\n    second = None\n    for value in numbers:\n        if largest is None or value > largest:\n            second = largest\n            largest = value\n        elif second is None or value > second:\n            second = value\n    if second is None:\n        raise ValueError(\"numbers must contain at least two elements\")\n    return second\n\n\ndef build_summary(\n    label: str,\n    numbers: Sequence[int],\n    largest: int,\n    second: int\n) -> Dict[str, Any]:\n    return dict(\n        label=label,\n        count=len(numbers),\n        distinct=len(set(numbers)),\n        largest=largest,\n        second=second,\n        gap=largest - second\n    )\n\n\ndef format_summary_row(\n    label: Any,\n    count: Any,\n    distinct: Any,\n    largest: Any,\n    second: Any,\n    gap: Any,\n    label_width: int = 18\n) -> str:\n    return \"{:<{}}{:>6}{:>10}{:>9}{:>8}{:>6}\".format(\n        label,\n        label_width,\n        count,\n        distinct,\n        largest,\n        second,\n        gap\n    )\n\n\ndef summarize_datasets(datasets: Dict[str, Sequence[int]]) -> List[Dict[str, Any]]:\n    summaries = []\n    for label, numbers in datasets.items():\n        summaries.append(\n            build_summary(\n                label,\n                numbers,\n                max(numbers),\n                find_second_largest(numbers)\n            )\n        )\n    return summaries\n\n\ndef main() -> None:\n    datasets = dict(\n        mixed=[10, 5, 20, 8],\n        duplicates=[1, 1, 5, 5],\n        negatives=[-4, -9, -1, -1],\n        pair=[7, 42]\n    )\n    header = format_summary_row(\"dataset\", \"n\", \"distinct\", \"max\", \"2nd\", \"gap\")\n    print(header)\n    print(\"-\" * len(header))\n    for summary in summarize_datasets(datasets):\n        print(\n            format_summary_row(\n                label=summary[\"label\"],\n                count=summary[\"count\"],\n                distinct=summary[\"distinct\"],\n                largest=summary[\"largest\"],\n                second=summary[\"second\"],\n                gap=summary[\"gap\"]\n            )\n        )\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "from typing import Any, Dict, List, Sequence\n\n\ndef find_second_largest(numbers: Sequence[int]) -> int:\n    largest = None\n    second = None\n    for value in numbers:\n        if largest is None or value > largest:\n            second = largest\n            largest = value\n        elif second is None or value > second:\n            second = value\n    if second is None:\n        raise ValueError(\"numbers must contain at least two elements\")\n    return second\n\n\ndef build_summary(label: str, numbers: Sequence[int], largest: int, second: int) -> Dict[str, Any]:\n    return dict(label=label, count=len(numbers), distinct=len(set(numbers)), largest=largest, second=second, gap=largest - second)\n\n\ndef format_summary_row(label: Any, count: Any, distinct: Any, largest: Any, second: Any, gap: Any, label_width: int = 18) -> str:\n    return \"{:<{}}{:>6}{:>10}{:>9}{:>8}{:>6}\".format(label, label_width, count, distinct, largest, second, gap)\n\n\ndef summarize_datasets(datasets: Dict[str, Sequence[int]]) -> List[Dict[str, Any]]:\n    summaries = []\n    for label, numbers in datasets.items():\n        summaries.append(build_summary(label, numbers, max(numbers), find_second_largest(numbers)))\n    return summaries\n\n\ndef main() -> None:\n    datasets = dict(mixed=[10, 5, 20, 8], duplicates=[1, 1, 5, 5], negatives=[-4, -9, -1, -1], pair=[7, 42])\n    header = format_summary_row(\"dataset\", \"n\", \"distinct\", \"max\", \"2nd\", \"gap\")\n    print(header)\n    print(\"-\" * len(header))\n    for summary in summarize_datasets(datasets):\n        print(format_summary_row(label=summary[\"label\"], count=summary[\"count\"], distinct=summary[\"distinct\"], largest=summary[\"largest\"], second=summary[\"second\"], gap=summary[\"gap\"]))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "\n    numbers,\n",
-"alt": "numbers",
+"nat": "\n    ",
+"alt": "",
 "nat_span": [
-24,
-38
+476,
+481
 ],
 "alt_span": [
-24,
-31
+476,
+476
 ]
 },
 {
 "k": 1,
-"nat": "\n        len(\n            unique_numbers,\n        )\n        ",
-"alt": "len(unique_numbers) ",
+"nat": "\n        ",
+"alt": "",
 "nat_span": [
-115,
-175
+592,
+601
 ],
 "alt_span": [
-108,
-128
+574,
+574
 ]
 },
 {
 "k": 2,
-"nat": "\n    data,\n    name,\n    is_active,\n    threshold,\n    max_retries,\n",
-"alt": "data, name, is_active, threshold, max_retries",
+"nat": "\n    ",
+"alt": "",
 "nat_span": [
-213,
-281
+786,
+791
 ],
 "alt_span": [
-161,
-206
+714,
+714
 ]
 },
 {
 "k": 3,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n        label,\n        label_width,\n        count,\n        distinct,\n        largest,\n        second,\n        gap\n    ",
+"alt": "label, label_width, count, distinct, largest, second, gap",
 "nat_span": [
-294,
-303
+976,
+1095
 ],
 "alt_span": [
-219,
-219
+874,
+931
 ]
 },
 {
 "k": 4,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n            build_summary(\n                label,\n                numbers,\n                ",
+"alt": "build_summary(label, numbers, ",
 "nat_span": [
-545,
-550
+1271,
+1363
 ],
 "alt_span": [
-455,
-455
+1107,
+1137
 ]
 },
 {
 "k": 5,
-"nat": "\n    ",
+"nat": "\n        ",
 "alt": "",
 "nat_span": [
-598,
-603
+1509,
+1518
 ],
 "alt_span": [
-501,
-501
+1245,
+1245
 ]
 },
 {
 "k": 6,
-"nat": "\n    result1,\n",
-"alt": "result1",
+"nat": "\n            format_summary_row(\n                ",
+"alt": "format_summary_row(",
 "nat_span": [
-626,
-640
+1827,
+1876
 ],
 "alt_span": [
-522,
-529
-]
-},
-{
-"k": 7,
-"nat": "\n    result2,\n",
-"alt": "result2",
-"nat_span": [
-648,
-662
-],
-"alt_span": [
-537,
-544
-]
-},
-{
-"k": 8,
-"nat": "\n    ",
-"alt": "",
-"nat_span": [
-688,
-693
-],
-"alt_span": [
-570,
-570
+1525,
+1544
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.85,
+"k_en": 7,
+"shared_fraction": 0.928,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "\n    numbers,\n",
-"alt": "numbers",
+"nat": "\n    ",
+"alt": "",
 "nat_span": [
-24,
-38
+476,
+481
 ],
 "alt_span": [
-24,
-31
+476,
+476
 ]
 },
 {
 "k": 1,
-"nat": "\n        len(\n            unique_numbers,\n        )\n        ",
-"alt": "len(unique_numbers) ",
+"nat": "\n    ",
+"alt": " ",
 "nat_span": [
-115,
-175
+492,
+497
 ],
 "alt_span": [
-108,
-128
+487,
+488
 ]
 },
 {
 "k": 2,
 "nat": "\n    ",
-"alt": "",
+"alt": " ",
 "nat_span": [
-178,
-183
+520,
+525
 ],
 "alt_span": [
-131,
-131
+511,
+512
 ]
 },
 {
 "k": 3,
-"nat": "\n    data,\n    name,\n    is_active,\n    threshold,\n    max_retries,\n",
-"alt": "data, name, is_active, threshold, max_retries",
+"nat": "\n    ",
+"alt": " ",
 "nat_span": [
-213,
-281
+538,
+543
 ],
 "alt_span": [
-161,
-206
+525,
+526
 ]
 },
 {
 "k": 4,
-"nat": "\n        ",
+"nat": "\n",
 "alt": "",
 "nat_span": [
-294,
-303
+554,
+555
 ],
 "alt_span": [
-219,
-219
+537,
+537
 ]
 },
 {
 "k": 5,
-"nat": ",\n    ",
+"nat": "\n        ",
 "alt": "",
 "nat_span": [
-413,
-419
+592,
+601
 ],
 "alt_span": [
-329,
-329
+574,
+574
 ]
 },
 {
 "k": 6,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-545,
-550
+613,
+622
 ],
 "alt_span": [
-455,
-455
+586,
+587
 ]
 },
 {
 "k": 7,
-"nat": ",\n",
-"alt": "",
-"nat_span": [
-564,
-566
-],
-"alt_span": [
-469,
-469
-]
-},
-{
-"k": 8,
-"nat": "\n    ",
-"alt": "",
-"nat_span": [
-598,
-603
-],
-"alt_span": [
-501,
-501
-]
-},
-{
-"k": 9,
-"nat": ",\n",
-"alt": "",
-"nat_span": [
-615,
-617
-],
-"alt_span": [
-513,
-513
-]
-},
-{
-"k": 10,
-"nat": "\n    result1,\n",
-"alt": "result1",
-"nat_span": [
-626,
-640
-],
-"alt_span": [
-522,
-529
-]
-},
-{
-"k": 11,
-"nat": "\n    result2,\n",
-"alt": "result2",
-"nat_span": [
-648,
-662
-],
-"alt_span": [
-537,
-544
-]
-},
-{
-"k": 12,
-"nat": "\n    ",
-"alt": "",
-"nat_span": [
-688,
-693
-],
-"alt_span": [
-570,
-570
-]
-},
-{
-"k": 13,
-"nat": "\n    ",
+"nat": "\n        ",
 "alt": " ",
 "nat_span": [
-708,
-713
-],
-"alt_span": [
-585,
-586
-]
-},
-{
-"k": 14,
-"nat": "\n    ",
-"alt": " ",
-"nat_span": [
-733,
-738
+641,
+650
 ],
 "alt_span": [
 606,
@@ -17559,16 +17605,107 @@
 ]
 },
 {
+"k": 8,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+677,
+686
+],
+"alt_span": [
+634,
+635
+]
+},
+{
+"k": 9,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+702,
+711
+],
+"alt_span": [
+651,
+652
+]
+},
+{
+"k": 10,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+725,
+734
+],
+"alt_span": [
+666,
+667
+]
+},
+{
+"k": 11,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+754,
+759
+],
+"alt_span": [
+687,
+687
+]
+},
+{
+"k": 12,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+786,
+791
+],
+"alt_span": [
+714,
+714
+]
+},
+{
+"k": 13,
+"nat": "\n    ",
+"alt": " ",
+"nat_span": [
+802,
+807
+],
+"alt_span": [
+725,
+726
+]
+},
+{
+"k": 14,
+"nat": "\n    ",
+"alt": " ",
+"nat_span": [
+818,
+823
+],
+"alt_span": [
+737,
+738
+]
+},
+{
 "k": 15,
 "nat": "\n    ",
 "alt": " ",
 "nat_span": [
-753,
-758
+837,
+842
 ],
 "alt_span": [
-622,
-623
+752,
+753
 ]
 },
 {
@@ -17576,29 +17713,268 @@
 "nat": "\n    ",
 "alt": " ",
 "nat_span": [
-772,
-777
+855,
+860
 ],
 "alt_span": [
-637,
-638
+766,
+767
 ]
 },
 {
 "k": 17,
-"nat": ",\n",
-"alt": "",
+"nat": "\n    ",
+"alt": " ",
 "nat_span": [
-790,
-792
+872,
+877
 ],
 "alt_span": [
-651,
-651
+779,
+780
+]
+},
+{
+"k": 18,
+"nat": "\n    ",
+"alt": " ",
+"nat_span": [
+886,
+891
+],
+"alt_span": [
+789,
+790
+]
+},
+{
+"k": 19,
+"nat": "\n",
+"alt": "",
+"nat_span": [
+912,
+913
+],
+"alt_span": [
+811,
+811
+]
+},
+{
+"k": 20,
+"nat": "\n        label,\n        label_width,\n        count,\n        distinct,\n        largest,\n        second,\n        gap\n    ",
+"alt": "label, label_width, count, distinct, largest, second, gap",
+"nat_span": [
+976,
+1095
+],
+"alt_span": [
+874,
+931
+]
+},
+{
+"k": 21,
+"nat": "\n            build_summary(\n                label,\n                numbers,\n                ",
+"alt": "build_summary(label, numbers, ",
+"nat_span": [
+1271,
+1363
+],
+"alt_span": [
+1107,
+1137
+]
+},
+{
+"k": 22,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1376,
+1393
+],
+"alt_span": [
+1150,
+1151
+]
+},
+{
+"k": 23,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+1421,
+1444
+],
+"alt_span": [
+1179,
+1180
+]
+},
+{
+"k": 24,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+1509,
+1518
+],
+"alt_span": [
+1245,
+1245
+]
+},
+{
+"k": 25,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1539,
+1548
+],
+"alt_span": [
+1266,
+1267
+]
+},
+{
+"k": 26,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1572,
+1581
+],
+"alt_span": [
+1291,
+1292
+]
+},
+{
+"k": 27,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1608,
+1617
+],
+"alt_span": [
+1319,
+1320
+]
+},
+{
+"k": 28,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+1629,
+1634
+],
+"alt_span": [
+1332,
+1332
+]
+},
+{
+"k": 29,
+"nat": "\n            format_summary_row(\n                ",
+"alt": "format_summary_row(",
+"nat_span": [
+1827,
+1876
+],
+"alt_span": [
+1525,
+1544
+]
+},
+{
+"k": 30,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1899,
+1916
+],
+"alt_span": [
+1567,
+1568
+]
+},
+{
+"k": 31,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1939,
+1956
+],
+"alt_span": [
+1591,
+1592
+]
+},
+{
+"k": 32,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1985,
+2002
+],
+"alt_span": [
+1621,
+1622
+]
+},
+{
+"k": 33,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2029,
+2046
+],
+"alt_span": [
+1649,
+1650
+]
+},
+{
+"k": 34,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2071,
+2088
+],
+"alt_span": [
+1675,
+1676
+]
+},
+{
+"k": 35,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+2106,
+2129
+],
+"alt_span": [
+1694,
+1695
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "line_wrap__t049",
@@ -21951,7 +22327,7 @@
 ],
 "k_en": 7,
 "shared_fraction": 0.853,
-"pass": true,
+"pass": false,
 "verify": null,
 "alt_rule": true,
 "opps_all": [
@@ -23747,343 +24123,635 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def char_frequency(\n    text,\n):\n    frequency_map = (\n        {}\n    )\n    for char in text:\n        lower_char = char.lower(\n        )\n        frequency_map[lower_char] = (\n            frequency_map.get(\n                lower_char,\n                0,\n            )\n            + 1\n        )\n    return frequency_map\n\n# Example Usage:\nresult1 = char_frequency(\n    \"hello\",\n)\nresult2 = char_frequency(\n    \"Python\",\n)\nresult3 = char_frequency(\n    \"Programming Is Fun\",\n)\nprint(\n    result1\n)\nprint(\n    result2\n)\nprint(\n    result3\n)\n",
-"text_alt": "def char_frequency(text):\n    frequency_map = ({})\n    for char in text:\n        lower_char = char.lower()\n        frequency_map[lower_char] = (frequency_map.get(lower_char, 0) + 1)\n    return frequency_map\n\n# Example Usage:\nresult1 = char_frequency(\"hello\")\nresult2 = char_frequency(\"Python\")\nresult3 = char_frequency(\"Programming Is Fun\")\nprint(result1)\nprint(result2)\nprint(result3)\n",
+"text_nat": "def char_frequency(text):\n    if not isinstance(text, str):\n        raise TypeError(\n            \"char_frequency() expects a string, got \" + type(text).__name__\n        )\n    frequency_map = {}\n    for character in text.lower():\n        frequency_map[character] = frequency_map.get(character, 0) + 1\n    return frequency_map\n\n\ndef sorted_frequency_entries(\n    frequency_map,\n    order_by_count=True,\n    descending=True,\n    skip_whitespace=False\n):\n    entries = list(frequency_map.items())\n    if skip_whitespace:\n        entries = [item for item in entries if not item[0].isspace()]\n    entries.sort(key=lambda item: item[0])\n    if order_by_count:\n        entries.sort(key=lambda item: item[1], reverse=descending)\n    elif descending:\n        entries.reverse()\n    return entries\n\n\ndef top_characters(frequency_map, limit=3):\n    return sorted_frequency_entries(\n        frequency_map,\n        order_by_count=True,\n        descending=True,\n        skip_whitespace=True\n    )[:limit]\n\n\ndef format_frequency_row(\n    character,\n    count,\n    total_characters,\n    bar_width=20,\n    bar_character=\"#\"\n):\n    share = count / total_characters if total_characters else 0.0\n    label = repr(character) if character.isspace() else character\n    return \"{label:>4}  {count:>4}  {share:>7.1%}  {bar}\".format(\n        label=label,\n        count=count,\n        share=share,\n        bar=bar_character * max(1, round(share * bar_width))\n    )\n\n\ndef format_frequency_report(\n    report_title,\n    frequency_map,\n    entry_limit=3,\n    bar_width=20,\n    underline_character=\"=\"\n):\n    total_characters = sum(frequency_map.values())\n    lines = [report_title]\n    lines.append(underline_character * len(report_title))\n    for character, count in top_characters(frequency_map, limit=entry_limit):\n        lines.append(\n            format_frequency_row(\n                character,\n                count,\n                total_characters,\n                bar_width=bar_width,\n                bar_character=\"*\"\n            )\n        )\n    alphabetical = sorted_frequency_entries(\n        frequency_map,\n        order_by_count=False,\n        descending=False,\n        skip_whitespace=True\n    )\n    lines.append(\"order: \" + \" \".join(item[0] for item in alphabetical))\n    lines.append(\n        \"distinct={0} total={1}\".format(len(frequency_map), total_characters)\n    )\n    return \"\\n\".join(lines)\n\n\ndef main():\n    for sample in (\"hello\", \"Python\", \"Mississippi River\"):\n        print(\n            format_frequency_report(\n                \"Frequencies for {0!r}\".format(sample),\n                char_frequency(sample),\n                entry_limit=4,\n                bar_width=24,\n                underline_character=\"-\"\n            )\n        )\n        print()\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def char_frequency(text):\n    if not isinstance(text, str):\n        raise TypeError(\"char_frequency() expects a string, got \" + type(text).__name__)\n    frequency_map = {}\n    for character in text.lower():\n        frequency_map[character] = frequency_map.get(character, 0) + 1\n    return frequency_map\n\n\ndef sorted_frequency_entries(frequency_map, order_by_count=True, descending=True, skip_whitespace=False):\n    entries = list(frequency_map.items())\n    if skip_whitespace:\n        entries = [item for item in entries if not item[0].isspace()]\n    entries.sort(key=lambda item: item[0])\n    if order_by_count:\n        entries.sort(key=lambda item: item[1], reverse=descending)\n    elif descending:\n        entries.reverse()\n    return entries\n\n\ndef top_characters(frequency_map, limit=3):\n    return sorted_frequency_entries(frequency_map, order_by_count=True, descending=True, skip_whitespace=True)[:limit]\n\n\ndef format_frequency_row(character, count, total_characters, bar_width=20, bar_character=\"#\"):\n    share = count / total_characters if total_characters else 0.0\n    label = repr(character) if character.isspace() else character\n    return \"{label:>4}  {count:>4}  {share:>7.1%}  {bar}\".format(label=label, count=count, share=share, bar=bar_character * max(1, round(share * bar_width)))\n\n\ndef format_frequency_report(report_title, frequency_map, entry_limit=3, bar_width=20, underline_character=\"=\"):\n    total_characters = sum(frequency_map.values())\n    lines = [report_title]\n    lines.append(underline_character * len(report_title))\n    for character, count in top_characters(frequency_map, limit=entry_limit):\n        lines.append(format_frequency_row(character, count, total_characters, bar_width=bar_width, bar_character=\"*\"))\n    alphabetical = sorted_frequency_entries(frequency_map, order_by_count=False, descending=False, skip_whitespace=True)\n    lines.append(\"order: \" + \" \".join(item[0] for item in alphabetical))\n    lines.append(\"distinct={0} total={1}\".format(len(frequency_map), total_characters))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    for sample in (\"hello\", \"Python\", \"Mississippi River\"):\n        print(format_frequency_report(\"Frequencies for {0!r}\".format(sample), char_frequency(sample), entry_limit=4, bar_width=24, underline_character=\"-\"))\n        print()\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "\n    text,\n",
-"alt": "text",
+"nat": "\n            ",
+"alt": "",
 "nat_span": [
-19,
-30
+84,
+97
 ],
 "alt_span": [
-19,
-23
+84,
+84
 ]
 },
 {
 "k": 1,
-"nat": "\n        {}\n    ",
-"alt": "{}",
+"nat": "\n    frequency_map,\n    ",
+"alt": "frequency_map, ",
 "nat_span": [
-54,
-70
+356,
+380
 ],
 "alt_span": [
-47,
-49
+334,
+349
 ]
 },
 {
 "k": 2,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n        frequency_map,\n        ",
+"alt": "frequency_map, ",
 "nat_span": [
-126,
-135
+868,
+900
 ],
 "alt_span": [
-105,
-105
+828,
+843
 ]
 },
 {
 "k": 3,
-"nat": "\n            ",
-"alt": "",
+"nat": "\n    character,\n    count,\n    total_characters,\n    ",
+"alt": "character, count, total_characters, ",
 "nat_span": [
-174,
-187
+1016,
+1069
 ],
 "alt_span": [
-144,
-144
+938,
+974
 ]
 },
 {
 "k": 4,
-"nat": "\n    ",
+"nat": "\n        ",
 "alt": "",
 "nat_span": [
-361,
-366
+1305,
+1314
 ],
 "alt_span": [
-250,
-250
+1205,
+1205
 ]
 },
 {
 "k": 5,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n    report_title,\n    frequency_map,\n    ",
+"alt": "report_title, frequency_map, ",
 "nat_span": [
-402,
-407
+1466,
+1508
 ],
 "alt_span": [
-284,
-284
+1328,
+1357
 ]
 },
 {
 "k": 6,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n            format_frequency_row(\n                character,\n                count,\n                total_characters,\n                ",
+"alt": "format_frequency_row(character, count, total_characters, ",
 "nat_span": [
-444,
-449
+1807,
+1942
 ],
 "alt_span": [
-319,
-319
+1647,
+1704
 ]
 },
 {
 "k": 7,
-"nat": "\n    result1\n",
-"alt": "result1",
+"nat": "\n        frequency_map,\n        ",
+"alt": "frequency_map, ",
 "nat_span": [
-479,
-492
+2065,
+2097
 ],
 "alt_span": [
-347,
-354
+1789,
+1804
 ]
 },
 {
 "k": 8,
-"nat": "\n    result2\n",
-"alt": "result2",
+"nat": "\n        ",
+"alt": "",
 "nat_span": [
-500,
-513
+2270,
+2279
 ],
 "alt_span": [
-362,
-369
+1956,
+1956
 ]
 },
 {
 "k": 9,
-"nat": "\n    result3\n",
-"alt": "result3",
+"nat": "\n            format_frequency_report(\n                ",
+"alt": "format_frequency_report(",
 "nat_span": [
-521,
-534
+2471,
+2525
 ],
 "alt_span": [
-377,
-384
+2143,
+2167
 ]
 }
 ],
 "k_en": 10,
-"shared_fraction": 0.811,
+"shared_fraction": 0.929,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "\n    text,\n",
-"alt": "text",
+"nat": "\n            ",
+"alt": "",
 "nat_span": [
-19,
-30
+84,
+97
 ],
 "alt_span": [
-19,
-23
+84,
+84
 ]
 },
 {
 "k": 1,
-"nat": "\n        {}\n    ",
-"alt": "{}",
+"nat": "\n        ",
+"alt": "",
 "nat_span": [
-54,
-70
+160,
+169
 ],
 "alt_span": [
-47,
-49
+147,
+147
 ]
 },
 {
 "k": 2,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n    frequency_map,\n    ",
+"alt": "frequency_map, ",
 "nat_span": [
-126,
-135
+356,
+380
 ],
 "alt_span": [
-105,
-105
+334,
+349
 ]
 },
 {
 "k": 3,
-"nat": "\n            ",
-"alt": "",
+"nat": "\n    ",
+"alt": " ",
 "nat_span": [
-174,
-187
+400,
+405
 ],
 "alt_span": [
-144,
-144
+369,
+370
 ]
 },
 {
 "k": 4,
-"nat": "\n                lower_char,\n                0,\n            )\n            ",
-"alt": "lower_char, 0) ",
+"nat": "\n    ",
+"alt": " ",
 "nat_span": [
-205,
-279
+421,
+426
 ],
 "alt_span": [
-162,
-177
+386,
+387
 ]
 },
 {
 "k": 5,
-"nat": "\n        ",
+"nat": "\n",
 "alt": "",
 "nat_span": [
-282,
-291
+447,
+448
 ],
 "alt_span": [
-180,
-180
+408,
+408
 ]
 },
 {
 "k": 6,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n        frequency_map,\n        ",
+"alt": "frequency_map, ",
 "nat_span": [
-361,
-366
+868,
+900
 ],
 "alt_span": [
-250,
-250
+828,
+843
 ]
 },
 {
 "k": 7,
-"nat": ",\n",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-373,
-375
+920,
+929
 ],
 "alt_span": [
-257,
-257
+863,
+864
 ]
 },
 {
 "k": 8,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-402,
-407
+945,
+954
 ],
 "alt_span": [
-284,
-284
+880,
+881
 ]
 },
 {
 "k": 9,
-"nat": ",\n",
+"nat": "\n    ",
 "alt": "",
 "nat_span": [
-415,
-417
+974,
+979
 ],
 "alt_span": [
-292,
-292
+901,
+901
 ]
 },
 {
 "k": 10,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n    character,\n    count,\n    total_characters,\n    ",
+"alt": "character, count, total_characters, ",
 "nat_span": [
-444,
-449
+1016,
+1069
 ],
 "alt_span": [
-319,
-319
+938,
+974
 ]
 },
 {
 "k": 11,
-"nat": ",\n",
-"alt": "",
+"nat": "\n    ",
+"alt": " ",
 "nat_span": [
-469,
-471
+1082,
+1087
 ],
 "alt_span": [
-339,
-339
+987,
+988
 ]
 },
 {
 "k": 12,
-"nat": "\n    result1\n",
-"alt": "result1",
+"nat": "\n",
+"alt": "",
 "nat_span": [
-479,
-492
+1104,
+1105
 ],
 "alt_span": [
-347,
-354
+1005,
+1005
 ]
 },
 {
 "k": 13,
-"nat": "\n    result2\n",
-"alt": "result2",
+"nat": "\n        ",
+"alt": "",
 "nat_span": [
-500,
-513
+1305,
+1314
 ],
 "alt_span": [
-362,
-369
+1205,
+1205
 ]
 },
 {
 "k": 14,
-"nat": "\n    result3\n",
-"alt": "result3",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-521,
-534
+1326,
+1335
 ],
 "alt_span": [
-377,
-384
+1217,
+1218
+]
+},
+{
+"k": 15,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1347,
+1356
+],
+"alt_span": [
+1230,
+1231
+]
+},
+{
+"k": 16,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1368,
+1377
+],
+"alt_span": [
+1243,
+1244
+]
+},
+{
+"k": 17,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+1429,
+1434
+],
+"alt_span": [
+1296,
+1296
+]
+},
+{
+"k": 18,
+"nat": "\n    report_title,\n    frequency_map,\n    ",
+"alt": "report_title, frequency_map, ",
+"nat_span": [
+1466,
+1508
+],
+"alt_span": [
+1328,
+1357
+]
+},
+{
+"k": 19,
+"nat": "\n    ",
+"alt": " ",
+"nat_span": [
+1522,
+1527
+],
+"alt_span": [
+1371,
+1372
+]
+},
+{
+"k": 20,
+"nat": "\n    ",
+"alt": " ",
+"nat_span": [
+1540,
+1545
+],
+"alt_span": [
+1385,
+1386
+]
+},
+{
+"k": 21,
+"nat": "\n",
+"alt": "",
+"nat_span": [
+1568,
+1569
+],
+"alt_span": [
+1409,
+1409
+]
+},
+{
+"k": 22,
+"nat": "\n            format_frequency_row(\n                character,\n                count,\n                total_characters,\n                ",
+"alt": "format_frequency_row(character, count, total_characters, ",
+"nat_span": [
+1807,
+1942
+],
+"alt_span": [
+1647,
+1704
+]
+},
+{
+"k": 23,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1962,
+1979
+],
+"alt_span": [
+1724,
+1725
+]
+},
+{
+"k": 24,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+1996,
+2019
+],
+"alt_span": [
+1742,
+1743
+]
+},
+{
+"k": 25,
+"nat": "\n        frequency_map,\n        ",
+"alt": "frequency_map, ",
+"nat_span": [
+2065,
+2097
+],
+"alt_span": [
+1789,
+1804
+]
+},
+{
+"k": 26,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+2118,
+2127
+],
+"alt_span": [
+1825,
+1826
+]
+},
+{
+"k": 27,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+2144,
+2153
+],
+"alt_span": [
+1843,
+1844
+]
+},
+{
+"k": 28,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+2173,
+2178
+],
+"alt_span": [
+1864,
+1864
+]
+},
+{
+"k": 29,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+2270,
+2279
+],
+"alt_span": [
+1956,
+1956
+]
+},
+{
+"k": 30,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+2348,
+2353
+],
+"alt_span": [
+2025,
+2025
+]
+},
+{
+"k": 31,
+"nat": "\n            format_frequency_report(\n                ",
+"alt": "format_frequency_report(",
+"nat_span": [
+2471,
+2525
+],
+"alt_span": [
+2143,
+2167
+]
+},
+{
+"k": 32,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2564,
+2581
+],
+"alt_span": [
+2206,
+2207
+]
+},
+{
+"k": 33,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2604,
+2621
+],
+"alt_span": [
+2230,
+2231
+]
+},
+{
+"k": 34,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2635,
+2652
+],
+"alt_span": [
+2245,
+2246
+]
+},
+{
+"k": 35,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2665,
+2682
+],
+"alt_span": [
+2259,
+2260
+]
+},
+{
+"k": 36,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+2705,
+2728
+],
+"alt_span": [
+2283,
+2284
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "line_wrap__t067",
@@ -26966,7 +27634,7 @@
 ],
 "k_en": 10,
 "shared_fraction": 0.804,
-"pass": true,
+"pass": false,
 "verify": null,
 "alt_rule": true,
 "opps_all": [
@@ -28830,352 +29498,353 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def calculate_product(\n    operand1,\n    operand2,\n    operand3,\n    operand4,\n    operand5,\n):\n    return (\n        operand1\n        * operand2\n        * operand3\n        * operand4\n        * operand5\n    )\n\n\ndef rectangle_area(\n    width,\n    height,\n):\n    return width * height\n\n\ndef get_area_details(\n    rect_width,\n    rect_height,\n    unit=\"cm\",\n    precision=2,\n    description=\"Calculated rectangle area\",\n):\n    area = rectangle_area(\n        width=rect_width,\n        height=rect_height,\n    )\n    formatted_area = round(\n        area,\n        precision,\n    )\n    return (\n        f\"{description}: {formatted_area} square {unit}\"\n    )\n\n\n_dummy_result = calculate_product(\n    operand1=1,\n    operand2=2,\n    operand3=3,\n    operand4=4,\n    operand5=5,\n)\n\n_example1_area = rectangle_area(\n    width=5.0,\n    height=10.0,\n)\n\n_example2_area = rectangle_area(\n    width=2.5,\n    height=4.0,\n)\n\n_detail_string = get_area_details(\n    rect_width=7.5,\n    rect_height=3.2,\n    unit=\"m\",\n    precision=3,\n    description=\"Custom rectangle area\",\n)\n",
-"text_alt": "def calculate_product(operand1, operand2, operand3, operand4, operand5):\n    return (operand1 * operand2 * operand3 * operand4 * operand5)\n\n\ndef rectangle_area(width, height):\n    return width * height\n\n\ndef get_area_details(rect_width, rect_height, unit=\"cm\", precision=2, description=\"Calculated rectangle area\"):\n    area = rectangle_area(width=rect_width, height=rect_height)\n    formatted_area = round(area, precision)\n    return (f\"{description}: {formatted_area} square {unit}\")\n\n\n_dummy_result = calculate_product(operand1=1, operand2=2, operand3=3, operand4=4, operand5=5)\n\n_example1_area = rectangle_area(width=5.0, height=10.0)\n\n_example2_area = rectangle_area(width=2.5, height=4.0)\n\n_detail_string = get_area_details(rect_width=7.5, rect_height=3.2, unit=\"m\", precision=3, description=\"Custom rectangle area\")\n",
+"text_nat": "def _validate_dimension(\n    value,\n    name,\n):\n    if isinstance(value, bool) or not isinstance(value, (int, float)):\n        raise TypeError(\n            \"{} must be a real number, got {!r}\".format(\n                name,\n                value,\n            )\n        )\n    if value < 0:\n        raise ValueError(\n            \"{} must be non-negative, got {}\".format(\n                name,\n                value,\n            )\n        )\n    return float(value)\n\n\ndef rectangle_area(width, height):\n    w = _validate_dimension(\n        width,\n        \"width\",\n    )\n    h = _validate_dimension(\n        height,\n        \"height\",\n    )\n    return w * h\n\n\ndef rectangle_perimeter(width, height):\n    w = _validate_dimension(\n        width,\n        \"width\",\n    )\n    h = _validate_dimension(\n        height,\n        \"height\",\n    )\n    return 2.0 * (w + h)\n\n\ndef format_row(\n    label,\n    width,\n    height,\n    area,\n    perimeter,\n):\n    return \"{:<10} {:>8.2f} {:>8.2f} {:>10.2f} {:>10.2f}\".format(\n        label,\n        width,\n        height,\n        area,\n        perimeter,\n    )\n\n\ndef build_report(specs):\n    header = \"{:<10} {:>8} {:>8} {:>10} {:>10}\".format(\n        \"name\",\n        \"width\",\n        \"height\",\n        \"area\",\n        \"perim\",\n    )\n    lines = [header]\n    for label, width, height in specs:\n        lines.append(\n            format_row(\n                label,\n                width,\n                height,\n                rectangle_area(width, height),\n                rectangle_perimeter(width, height),\n            )\n        )\n    return \"\\n\".join(lines)\n\n\ndef main():\n    specs = [(\"wall\", 5, 10), (\"tile\", 2.5, 4), (\"strip\", 0.5, 12.25)]\n    print(build_report(specs))\n    print(\"total area: {:.2f}\".format(sum(rectangle_area(w, h) for _, w, h in specs)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def _validate_dimension(value, name):\n    if isinstance(value, bool) or not isinstance(value, (int, float)):\n        raise TypeError(\"{} must be a real number, got {!r}\".format(name, value))\n    if value < 0:\n        raise ValueError(\"{} must be non-negative, got {}\".format(name, value))\n    return float(value)\n\n\ndef rectangle_area(width, height):\n    w = _validate_dimension(width, \"width\")\n    h = _validate_dimension(height, \"height\")\n    return w * h\n\n\ndef rectangle_perimeter(width, height):\n    w = _validate_dimension(width, \"width\")\n    h = _validate_dimension(height, \"height\")\n    return 2.0 * (w + h)\n\n\ndef format_row(label, width, height, area, perimeter):\n    return \"{:<10} {:>8.2f} {:>8.2f} {:>10.2f} {:>10.2f}\".format(label, width, height, area, perimeter)\n\n\ndef build_report(specs):\n    header = \"{:<10} {:>8} {:>8} {:>10} {:>10}\".format(\"name\", \"width\", \"height\", \"area\", \"perim\")\n    lines = [header]\n    for label, width, height in specs:\n        lines.append(format_row(label, width, height, rectangle_area(width, height), rectangle_perimeter(width, height)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    specs = [(\"wall\", 5, 10), (\"tile\", 2.5, 4), (\"strip\", 0.5, 12.25)]\n    print(build_report(specs))\n    print(\"total area: {:.2f}\".format(sum(rectangle_area(w, h) for _, w, h in specs)))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "\n    operand1,\n    operand2,\n    operand3,\n    operand4,\n    operand5,\n",
-"alt": "operand1, operand2, operand3, operand4, operand5",
+"nat": "\n    value,\n    name,\n",
+"alt": "value, name",
 "nat_span": [
-22,
-93
+24,
+46
 ],
 "alt_span": [
-22,
-70
+24,
+35
 ]
 },
 {
 "k": 1,
-"nat": "\n        operand1\n        ",
-"alt": "operand1 ",
+"nat": "\n            ",
+"alt": "",
 "nat_span": [
-108,
-134
+144,
+157
 ],
 "alt_span": [
-85,
-94
+133,
+133
 ]
 },
 {
 "k": 2,
-"nat": "\n    width,\n    height,\n",
-"alt": "width, height",
+"nat": "\n            ",
+"alt": "",
 "nat_span": [
-229,
-253
+314,
+327
 ],
 "alt_span": [
-160,
-173
+234,
+234
 ]
 },
 {
 "k": 3,
-"nat": "\n    rect_width,\n    rect_height,\n    ",
-"alt": "rect_width, rect_height, ",
+"nat": "\n        width,\n        ",
+"alt": "width, ",
 "nat_span": [
-305,
-343
+527,
+551
 ],
 "alt_span": [
-225,
-250
+378,
+385
 ]
 },
 {
 "k": 4,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n        height,\n        ",
+"alt": "height, ",
 "nat_span": [
-445,
-454
+594,
+619
 ],
 "alt_span": [
-342,
-342
+422,
+430
 ]
 },
 {
 "k": 5,
-"nat": "\n        area,\n        precision,\n    ",
-"alt": "area, precision",
+"nat": "\n        width,\n        ",
+"alt": "width, ",
 "nat_span": [
-533,
-571
+722,
+746
 ],
 "alt_span": [
-407,
-422
+527,
+534
 ]
 },
 {
 "k": 6,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n        height,\n        ",
+"alt": "height, ",
 "nat_span": [
-585,
-594
+789,
+814
 ],
 "alt_span": [
-436,
-436
+571,
+579
 ]
 },
 {
 "k": 7,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n    label,\n    width,\n    height,\n    area,\n    perimeter,\n",
+"alt": "label, width, height, area, perimeter",
 "nat_span": [
-685,
-690
+872,
+932
 ],
 "alt_span": [
-522,
-522
+631,
+668
 ]
 },
 {
 "k": 8,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n        label,\n        width,\n        height,\n        area,\n        perimeter,\n    ",
+"alt": "label, width, height, area, perimeter",
 "nat_span": [
-801,
-806
+1000,
+1084
 ],
 "alt_span": [
-615,
-615
+736,
+773
 ]
 },
 {
 "k": 9,
-"nat": "\n    ",
+"nat": "\n        ",
 "alt": "",
 "nat_span": [
-869,
-874
+1168,
+1177
 ],
 "alt_span": [
-672,
-672
+857,
+857
 ]
 },
 {
 "k": 10,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n            format_row(\n                label,\n                width,\n                height,\n                ",
+"alt": "format_row(label, width, height, ",
 "nat_span": [
-938,
-943
+1340,
+1451
 ],
 "alt_span": [
-730,
-730
+982,
+1015
 ]
 }
 ],
 "k_en": 11,
-"shared_fraction": 0.807,
+"shared_fraction": 0.898,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "\n    operand1,\n    operand2,\n    operand3,\n    operand4,\n    operand5,\n",
-"alt": "operand1, operand2, operand3, operand4, operand5",
+"nat": "\n    value,\n    name,\n",
+"alt": "value, name",
 "nat_span": [
-22,
-93
+24,
+46
 ],
 "alt_span": [
-22,
-70
+24,
+35
 ]
 },
 {
 "k": 1,
-"nat": "\n        operand1\n        ",
-"alt": "operand1 ",
+"nat": "\n            ",
+"alt": "",
 "nat_span": [
-108,
-134
+144,
+157
 ],
 "alt_span": [
-85,
-94
+133,
+133
 ]
 },
 {
 "k": 2,
-"nat": "\n        ",
-"alt": " ",
+"nat": "\n                name,\n                value,\n            )\n        ",
+"alt": "name, value)",
 "nat_span": [
-144,
-153
+201,
+269
 ],
 "alt_span": [
-104,
-105
+177,
+189
 ]
 },
 {
 "k": 3,
-"nat": "\n        ",
-"alt": " ",
+"nat": "\n            ",
+"alt": "",
 "nat_span": [
-163,
-172
+314,
+327
 ],
 "alt_span": [
-115,
-116
+234,
+234
 ]
 },
 {
 "k": 4,
-"nat": "\n        ",
-"alt": " ",
+"nat": "\n                name,\n                value,\n            )\n        ",
+"alt": "name, value)",
 "nat_span": [
-182,
-191
+368,
+436
 ],
 "alt_span": [
-126,
-127
+275,
+287
 ]
 },
 {
 "k": 5,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n        width,\n        ",
+"alt": "width, ",
 "nat_span": [
-201,
-206
+527,
+551
 ],
 "alt_span": [
-137,
-137
+378,
+385
 ]
 },
 {
 "k": 6,
-"nat": "\n    width,\n    height,\n",
-"alt": "width, height",
+"nat": ",\n    ",
+"alt": "",
 "nat_span": [
-229,
-253
+558,
+564
 ],
 "alt_span": [
-160,
-173
+392,
+392
 ]
 },
 {
 "k": 7,
-"nat": "\n    rect_width,\n    rect_height,\n    ",
-"alt": "rect_width, rect_height, ",
+"nat": "\n        height,\n        ",
+"alt": "height, ",
 "nat_span": [
-305,
-343
+594,
+619
 ],
 "alt_span": [
-225,
-250
+422,
+430
 ]
 },
 {
 "k": 8,
-"nat": "\n    ",
-"alt": " ",
+"nat": ",\n    ",
+"alt": "",
 "nat_span": [
-353,
-358
+627,
+633
 ],
 "alt_span": [
-260,
-261
+438,
+438
 ]
 },
 {
 "k": 9,
-"nat": "\n    ",
-"alt": " ",
+"nat": "\n        width,\n        ",
+"alt": "width, ",
 "nat_span": [
-370,
-375
+722,
+746
 ],
 "alt_span": [
-273,
-274
+527,
+534
 ]
 },
 {
 "k": 10,
-"nat": ",\n",
+"nat": ",\n    ",
 "alt": "",
 "nat_span": [
-414,
-416
+753,
+759
 ],
 "alt_span": [
-313,
-313
+541,
+541
 ]
 },
 {
 "k": 11,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n        height,\n        ",
+"alt": "height, ",
 "nat_span": [
-445,
-454
+789,
+814
 ],
 "alt_span": [
-342,
-342
+571,
+579
 ]
 },
 {
 "k": 12,
-"nat": "\n        ",
-"alt": " ",
+"nat": ",\n    ",
+"alt": "",
 "nat_span": [
-471,
-480
+822,
+828
 ],
 "alt_span": [
-359,
-360
+587,
+587
 ]
 },
 {
 "k": 13,
-"nat": ",\n    ",
-"alt": "",
+"nat": "\n    label,\n    width,\n    height,\n    area,\n    perimeter,\n",
+"alt": "label, width, height, area, perimeter",
 "nat_span": [
-498,
-504
+872,
+932
 ],
 "alt_span": [
-378,
-378
+631,
+668
 ]
 },
 {
 "k": 14,
-"nat": "\n        area,\n        precision,\n    ",
-"alt": "area, precision",
+"nat": "\n        label,\n        width,\n        height,\n        area,\n        perimeter,\n    ",
+"alt": "label, width, height, area, perimeter",
 "nat_span": [
-533,
-571
+1000,
+1084
 ],
 "alt_span": [
-407,
-422
+736,
+773
 ]
 },
 {
@@ -29183,263 +29852,125 @@
 "nat": "\n        ",
 "alt": "",
 "nat_span": [
-585,
-594
+1168,
+1177
 ],
 "alt_span": [
-436,
-436
+857,
+857
 ]
 },
 {
 "k": 16,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-642,
-647
+1184,
+1193
 ],
 "alt_span": [
-484,
-484
+864,
+865
 ]
 },
 {
 "k": 17,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-685,
-690
+1201,
+1210
 ],
 "alt_span": [
-522,
-522
+873,
+874
 ]
 },
 {
 "k": 18,
-"nat": "\n    ",
+"nat": "\n        ",
 "alt": " ",
 "nat_span": [
-701,
-706
+1219,
+1228
 ],
 "alt_span": [
-533,
-534
+883,
+884
 ]
 },
 {
 "k": 19,
-"nat": "\n    ",
+"nat": "\n        ",
 "alt": " ",
 "nat_span": [
-717,
-722
+1235,
+1244
 ],
 "alt_span": [
-545,
-546
+891,
+892
 ]
 },
 {
 "k": 20,
-"nat": "\n    ",
-"alt": " ",
+"nat": ",\n    ",
+"alt": "",
 "nat_span": [
-733,
-738
+1251,
+1257
 ],
 "alt_span": [
-557,
-558
+899,
+899
 ]
 },
 {
 "k": 21,
-"nat": "\n    ",
-"alt": " ",
+"nat": "\n            format_row(\n                label,\n                width,\n                height,\n                ",
+"alt": "format_row(label, width, height, ",
 "nat_span": [
-749,
-754
+1340,
+1451
 ],
 "alt_span": [
-569,
-570
+982,
+1015
 ]
 },
 {
 "k": 22,
-"nat": ",\n",
-"alt": "",
+"nat": "\n                ",
+"alt": " ",
 "nat_span": [
-764,
-766
+1481,
+1498
 ],
 "alt_span": [
-580,
-580
+1045,
+1046
 ]
 },
 {
 "k": 23,
-"nat": "\n    ",
-"alt": "",
+"nat": ",\n            )\n        ",
+"alt": ")",
 "nat_span": [
-801,
-806
+1532,
+1556
 ],
 "alt_span": [
-615,
-615
-]
-},
-{
-"k": 24,
-"nat": "\n    ",
-"alt": " ",
-"nat_span": [
-816,
-821
-],
-"alt_span": [
-625,
-626
-]
-},
-{
-"k": 25,
-"nat": ",\n",
-"alt": "",
-"nat_span": [
-832,
-834
-],
-"alt_span": [
-637,
-637
-]
-},
-{
-"k": 26,
-"nat": "\n    ",
-"alt": "",
-"nat_span": [
-869,
-874
-],
-"alt_span": [
-672,
-672
-]
-},
-{
-"k": 27,
-"nat": "\n    ",
-"alt": " ",
-"nat_span": [
-884,
-889
-],
-"alt_span": [
-682,
-683
-]
-},
-{
-"k": 28,
-"nat": ",\n",
-"alt": "",
-"nat_span": [
-899,
-901
-],
-"alt_span": [
-693,
-693
-]
-},
-{
-"k": 29,
-"nat": "\n    ",
-"alt": "",
-"nat_span": [
-938,
-943
-],
-"alt_span": [
-730,
-730
-]
-},
-{
-"k": 30,
-"nat": "\n    ",
-"alt": " ",
-"nat_span": [
-958,
-963
-],
-"alt_span": [
-745,
-746
-]
-},
-{
-"k": 31,
-"nat": "\n    ",
-"alt": " ",
-"nat_span": [
-979,
-984
-],
-"alt_span": [
-762,
-763
-]
-},
-{
-"k": 32,
-"nat": "\n    ",
-"alt": " ",
-"nat_span": [
-993,
-998
-],
-"alt_span": [
-772,
-773
-]
-},
-{
-"k": 33,
-"nat": "\n    ",
-"alt": " ",
-"nat_span": [
-1010,
-1015
-],
-"alt_span": [
-785,
-786
-]
-},
-{
-"k": 34,
-"nat": ",\n",
-"alt": "",
-"nat_span": [
-1050,
-1052
-],
-"alt_span": [
-821,
-821
+1080,
+1081
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "line_wrap__t080",
@@ -31529,603 +32060,271 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def simulate_stack(\n    stack,\n    operation,\n    item=None,\n):\n    if operation == \"push\":\n        stack.append(item)\n        return stack\n    elif operation == \"pop\":\n        if not stack:\n            return None\n        return stack.pop()\n    else:\n        raise ValueError(\n            \"Invalid operation. Must be 'push' or 'pop'.\",\n        )\n\n\ndef _test_simulate_stack():\n    # Example 1\n    s1 = simulate_stack(\n        [\n            1,\n            2,\n        ],\n        \"push\",\n        3,\n    )\n    assert s1 == [\n        1,\n        2,\n        3,\n    ]\n\n    # Example 2\n    s2_list = [\n        1,\n        2,\n    ]\n    s2_popped = simulate_stack(\n        s2_list,\n        \"pop\",\n    )\n    assert s2_popped == 2\n    assert s2_list == [\n        1,\n    ]\n\n    # Pop from empty\n    s3_popped = simulate_stack(\n        [],\n        \"pop\",\n    )\n    assert s3_popped is None\n\n    # Push multiple\n    s4 = simulate_stack(\n        [],\n        \"push\",\n        \"a\",\n    )\n    s4 = simulate_stack(\n        s4,\n        \"push\",\n        \"b\",\n    )\n    assert s4 == [\n        \"a\",\n        \"b\",\n    ]\n\n    # Mixed operations\n    s5_list = [\n        10,\n    ]\n    simulate_stack(\n        s5_list,\n        \"push\",\n        20,\n    )\n    popped_val = simulate_stack(\n        s5_list,\n        \"pop\",\n    )\n    assert popped_val == 20\n    assert s5_list == [\n        10,\n    ]\n\n\nif __name__ == \"__main__\":\n    _test_simulate_stack()\n",
-"text_alt": "def simulate_stack(stack, operation, item=None):\n    if operation == \"push\":\n        stack.append(item)\n        return stack\n    elif operation == \"pop\":\n        if not stack:\n            return None\n        return stack.pop()\n    else:\n        raise ValueError(\"Invalid operation. Must be 'push' or 'pop'.\")\n\n\ndef _test_simulate_stack():\n    # Example 1\n    s1 = simulate_stack([1, 2], \"push\", 3)\n    assert s1 == [1, 2, 3]\n\n    # Example 2\n    s2_list = [1, 2]\n    s2_popped = simulate_stack(s2_list, \"pop\")\n    assert s2_popped == 2\n    assert s2_list == [1]\n\n    # Pop from empty\n    s3_popped = simulate_stack([], \"pop\")\n    assert s3_popped is None\n\n    # Push multiple\n    s4 = simulate_stack([], \"push\", \"a\")\n    s4 = simulate_stack(s4, \"push\", \"b\")\n    assert s4 == [\"a\", \"b\"]\n\n    # Mixed operations\n    s5_list = [10]\n    simulate_stack(s5_list, \"push\", 20)\n    popped_val = simulate_stack(s5_list, \"pop\")\n    assert popped_val == 20\n    assert s5_list == [10]\n\n\nif __name__ == \"__main__\":\n    _test_simulate_stack()\n",
+"text_nat": "class StackOperationError(ValueError):\n    \"\"\"Raised when a stack request cannot be interpreted.\"\"\"\n\n\ndef validate_request(\n    stack,\n    operation,\n    item,\n):\n    if not isinstance(stack, list):\n        raise StackOperationError(\"stack must be a list\")\n    if operation not in (\"push\", \"pop\"):\n        raise StackOperationError(\"operation must be 'push' or 'pop'\")\n    if operation == \"push\" and item is None:\n        raise StackOperationError(\"push requires an item\")\n\n\ndef simulate_stack(stack, operation, item=None):\n    validate_request(\n        stack,\n        operation,\n        item,\n    )\n    if operation == \"push\":\n        stack.append(item)\n        return stack\n    if not stack:\n        return None\n    return stack.pop()\n\n\ndef format_step(\n    index,\n    operation,\n    item,\n    result,\n    stack,\n):\n    shown = \"-\" if item is None else repr(item)\n    return \"{:>3}  {:<5} {:<6} -> {:<12} {}\".format(\n        index,\n        operation,\n        shown,\n        repr(result),\n        stack,\n    )\n\n\ndef coerce_item(text):\n    try:\n        return int(text)\n    except ValueError:\n        return text\n\n\ndef parse_requests(spec):\n    requests = []\n    for chunk in spec.split(\";\"):\n        parts = chunk.split()\n        item = coerce_item(parts[1]) if len(parts) > 1 else None\n        requests.append((parts[0], item))\n    return requests\n\n\ndef apply_operations(stack, requests):\n    steps = []\n    for index, (operation, item) in enumerate(requests, start=1):\n        result = simulate_stack(stack, operation, item)\n        steps.append(\n            format_step(\n                index,\n                operation,\n                item,\n                result,\n                list(stack),\n            )\n        )\n    return steps\n\n\ndef render_report(\n    title,\n    steps,\n    final_stack,\n    width=60,\n):\n    lines = [title.center(width), \"-\" * width]\n    lines.extend(steps)\n    lines.append(\"-\" * width)\n    lines.append(\"final stack: {}\".format(final_stack))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    stack = [1, 2]\n    requests = parse_requests(\"push 3; pop; pop; push a; pop; pop; pop\")\n    steps = apply_operations(stack, requests)\n    print(\n        render_report(\n            \"STACK SIMULATION\",\n            steps,\n            stack,\n            width=58,\n        )\n    )\n    try:\n        simulate_stack(stack, \"push\")\n    except StackOperationError as error:\n        print(\"rejected: {}\".format(error))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "class StackOperationError(ValueError):\n    \"\"\"Raised when a stack request cannot be interpreted.\"\"\"\n\n\ndef validate_request(stack, operation, item):\n    if not isinstance(stack, list):\n        raise StackOperationError(\"stack must be a list\")\n    if operation not in (\"push\", \"pop\"):\n        raise StackOperationError(\"operation must be 'push' or 'pop'\")\n    if operation == \"push\" and item is None:\n        raise StackOperationError(\"push requires an item\")\n\n\ndef simulate_stack(stack, operation, item=None):\n    validate_request(stack, operation, item)\n    if operation == \"push\":\n        stack.append(item)\n        return stack\n    if not stack:\n        return None\n    return stack.pop()\n\n\ndef format_step(index, operation, item, result, stack):\n    shown = \"-\" if item is None else repr(item)\n    return \"{:>3}  {:<5} {:<6} -> {:<12} {}\".format(index, operation, shown, repr(result), stack)\n\n\ndef coerce_item(text):\n    try:\n        return int(text)\n    except ValueError:\n        return text\n\n\ndef parse_requests(spec):\n    requests = []\n    for chunk in spec.split(\";\"):\n        parts = chunk.split()\n        item = coerce_item(parts[1]) if len(parts) > 1 else None\n        requests.append((parts[0], item))\n    return requests\n\n\ndef apply_operations(stack, requests):\n    steps = []\n    for index, (operation, item) in enumerate(requests, start=1):\n        result = simulate_stack(stack, operation, item)\n        steps.append(format_step(index, operation, item, result, list(stack)))\n    return steps\n\n\ndef render_report(title, steps, final_stack, width=60):\n    lines = [title.center(width), \"-\" * width]\n    lines.extend(steps)\n    lines.append(\"-\" * width)\n    lines.append(\"final stack: {}\".format(final_stack))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    stack = [1, 2]\n    requests = parse_requests(\"push 3; pop; pop; push a; pop; pop; pop\")\n    steps = apply_operations(stack, requests)\n    print(render_report(\"STACK SIMULATION\", steps, stack, width=58))\n    try:\n        simulate_stack(stack, \"push\")\n    except StackOperationError as error:\n        print(\"rejected: {}\".format(error))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "\n    stack,\n    operation,\n    ",
-"alt": "stack, operation, ",
+"nat": "\n    stack,\n    operation,\n    item,\n",
+"alt": "stack, operation, item",
 "nat_span": [
-19,
-50
+123,
+160
 ],
 "alt_span": [
-19,
-37
+123,
+145
 ]
 },
 {
 "k": 1,
-"nat": "\n            ",
-"alt": "",
+"nat": "\n        stack,\n        operation,\n        item,\n    ",
+"alt": "stack, operation, item",
 "nat_span": [
-277,
-290
+545,
+598
 ],
 "alt_span": [
-262,
-262
+530,
+552
 ]
 },
 {
 "k": 2,
-"nat": "\n        [\n            1,\n            2,\n        ],\n        ",
-"alt": "[1, 2], ",
+"nat": "\n    index,\n    operation,\n    item,\n    result,\n    stack,\n",
+"alt": "index, operation, item, result, stack",
 "nat_span": [
-417,
-477
+755,
+815
 ],
 "alt_span": [
-379,
-387
+709,
+746
 ]
 },
 {
 "k": 3,
-"nat": "\n        1,\n        2,\n        3,\n    ",
-"alt": "1, 2, 3",
+"nat": "\n        index,\n        operation,\n        shown,\n        ",
+"alt": "index, operation, shown, ",
 "nat_span": [
-520,
-558
+918,
+976
 ],
 "alt_span": [
-416,
-423
+849,
+874
 ]
 },
 {
 "k": 4,
-"nat": "\n        1,\n        2,\n    ",
-"alt": "1, 2",
+"nat": "\n            format_step(\n                index,\n                operation,\n                item,\n                result,\n                ",
+"alt": "format_step(index, operation, item, result, ",
 "nat_span": [
-592,
-619
+1549,
+1687
 ],
 "alt_span": [
-457,
-461
+1433,
+1477
 ]
 },
 {
 "k": 5,
-"nat": "\n        s2_list,\n        ",
-"alt": "s2_list, ",
+"nat": "\n    title,\n    steps,\n    final_stack,\n    ",
+"alt": "title, steps, final_stack, ",
 "nat_span": [
-652,
-678
+1761,
+1805
 ],
 "alt_span": [
-494,
-503
+1528,
+1555
 ]
 },
 {
 "k": 6,
-"nat": "\n        1,\n    ",
-"alt": "1",
+"nat": "\n        render_report(\n            ",
+"alt": "render_report(",
 "nat_span": [
-740,
-756
+2165,
+2201
 ],
 "alt_span": [
-559,
-560
-]
-},
-{
-"k": 7,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-811,
-820
-],
-"alt_span": [
-615,
-615
-]
-},
-{
-"k": 8,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-919,
-928
-],
-"alt_span": [
-700,
-700
-]
-},
-{
-"k": 9,
-"nat": "\n        s4,\n        ",
-"alt": "s4, ",
-"nat_span": [
-991,
-1012
-],
-"alt_span": [
-741,
-745
-]
-},
-{
-"k": 10,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-1057,
-1066
-],
-"alt_span": [
-776,
-776
-]
-},
-{
-"k": 11,
-"nat": "\n        10,\n    ",
-"alt": "10",
-"nat_span": [
-1129,
-1146
-],
-"alt_span": [
-825,
-827
-]
-},
-{
-"k": 12,
-"nat": "\n        s5_list,\n        ",
-"alt": "s5_list, ",
-"nat_span": [
-1167,
-1193
-],
-"alt_span": [
-848,
-857
-]
-},
-{
-"k": 13,
-"nat": "\n        s5_list,\n        ",
-"alt": "s5_list, ",
-"nat_span": [
-1251,
-1277
-],
-"alt_span": [
-901,
-910
-]
-},
-{
-"k": 14,
-"nat": "\n        10,\n    ",
-"alt": "10",
-"nat_span": [
-1341,
-1358
-],
-"alt_span": [
-968,
-970
+1913,
+1927
 ]
 }
 ],
-"k_en": 15,
-"shared_fraction": 0.844,
+"k_en": 7,
+"shared_fraction": 0.94,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "\n    stack,\n    operation,\n    ",
-"alt": "stack, operation, ",
+"nat": "\n    stack,\n    operation,\n    item,\n",
+"alt": "stack, operation, item",
 "nat_span": [
-19,
-50
+123,
+160
 ],
 "alt_span": [
-19,
-37
+123,
+145
 ]
 },
 {
 "k": 1,
-"nat": ",\n",
-"alt": "",
+"nat": "\n        stack,\n        operation,\n        item,\n    ",
+"alt": "stack, operation, item",
 "nat_span": [
-59,
-61
+545,
+598
 ],
 "alt_span": [
-46,
-46
+530,
+552
 ]
 },
 {
 "k": 2,
-"nat": "\n            ",
-"alt": "",
+"nat": "\n    index,\n    operation,\n    item,\n    result,\n    stack,\n",
+"alt": "index, operation, item, result, stack",
 "nat_span": [
-277,
-290
+755,
+815
 ],
 "alt_span": [
-262,
-262
+709,
+746
 ]
 },
 {
 "k": 3,
-"nat": ",\n        ",
-"alt": "",
+"nat": "\n        index,\n        operation,\n        shown,\n        ",
+"alt": "index, operation, shown, ",
 "nat_span": [
-335,
-345
+918,
+976
 ],
 "alt_span": [
-307,
-307
+849,
+874
 ]
 },
 {
 "k": 4,
-"nat": "\n        [\n            1,\n            2,\n        ],\n        ",
-"alt": "[1, 2], ",
+"nat": "\n        stack,\n    ",
+"alt": " stack",
 "nat_span": [
-417,
-477
+989,
+1009
 ],
 "alt_span": [
-379,
-387
+887,
+893
 ]
 },
 {
 "k": 5,
-"nat": "\n        3,\n    ",
-"alt": " 3",
+"nat": "\n            format_step(\n                index,\n                operation,\n                item,\n                result,\n                ",
+"alt": "format_step(index, operation, item, result, ",
 "nat_span": [
-484,
-500
+1549,
+1687
 ],
 "alt_span": [
-394,
-396
+1433,
+1477
 ]
 },
 {
 "k": 6,
-"nat": "\n        1,\n        2,\n        3,\n    ",
-"alt": "1, 2, 3",
+"nat": ",\n            )\n        ",
+"alt": ")",
 "nat_span": [
-520,
-558
+1698,
+1722
 ],
 "alt_span": [
-416,
-423
+1488,
+1489
 ]
 },
 {
 "k": 7,
-"nat": "\n        1,\n        2,\n    ",
-"alt": "1, 2",
+"nat": "\n    title,\n    steps,\n    final_stack,\n    ",
+"alt": "title, steps, final_stack, ",
 "nat_span": [
-592,
-619
+1761,
+1805
 ],
 "alt_span": [
-457,
-461
+1528,
+1555
 ]
 },
 {
 "k": 8,
-"nat": "\n        s2_list,\n        ",
-"alt": "s2_list, ",
+"nat": ",\n",
+"alt": "",
 "nat_span": [
-652,
-678
+1813,
+1815
 ],
 "alt_span": [
-494,
-503
+1563,
+1563
 ]
 },
 {
 "k": 9,
-"nat": ",\n    ",
-"alt": "",
+"nat": "\n        render_report(\n            ",
+"alt": "render_report(",
 "nat_span": [
-683,
-689
+2165,
+2201
 ],
 "alt_span": [
-508,
-508
+1913,
+1927
 ]
 },
 {
 "k": 10,
-"nat": "\n        1,\n    ",
-"alt": "1",
+"nat": "\n            steps,\n            stack,\n            ",
+"alt": " steps, stack, ",
 "nat_span": [
-740,
-756
+2220,
+2271
 ],
 "alt_span": [
-559,
-560
+1946,
+1961
 ]
 },
 {
 "k": 11,
-"nat": "\n        ",
-"alt": "",
+"nat": ",\n        )\n    ",
+"alt": ")",
 "nat_span": [
-811,
-820
+2279,
+2295
 ],
 "alt_span": [
-615,
-615
-]
-},
-{
-"k": 12,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-823,
-832
-],
-"alt_span": [
-618,
-619
-]
-},
-{
-"k": 13,
-"nat": ",\n    ",
-"alt": "",
-"nat_span": [
-837,
-843
-],
-"alt_span": [
-624,
-624
-]
-},
-{
-"k": 14,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-919,
-928
-],
-"alt_span": [
-700,
-700
-]
-},
-{
-"k": 15,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-931,
-940
-],
-"alt_span": [
-703,
-704
-]
-},
-{
-"k": 16,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-947,
-956
-],
-"alt_span": [
-711,
-712
-]
-},
-{
-"k": 17,
-"nat": ",\n    ",
-"alt": "",
-"nat_span": [
-959,
-965
-],
-"alt_span": [
-715,
-715
-]
-},
-{
-"k": 18,
-"nat": "\n        s4,\n        ",
-"alt": "s4, ",
-"nat_span": [
-991,
-1012
-],
-"alt_span": [
-741,
-745
-]
-},
-{
-"k": 19,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-1019,
-1028
-],
-"alt_span": [
-752,
-753
-]
-},
-{
-"k": 20,
-"nat": ",\n    ",
-"alt": "",
-"nat_span": [
-1031,
-1037
-],
-"alt_span": [
-756,
-756
-]
-},
-{
-"k": 21,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-1057,
-1066
-],
-"alt_span": [
-776,
-776
-]
-},
-{
-"k": 22,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-1070,
-1079
-],
-"alt_span": [
-780,
-781
-]
-},
-{
-"k": 23,
-"nat": ",\n    ",
-"alt": "",
-"nat_span": [
-1082,
-1088
-],
-"alt_span": [
-784,
-784
-]
-},
-{
-"k": 24,
-"nat": "\n        10,\n    ",
-"alt": "10",
-"nat_span": [
-1129,
-1146
-],
-"alt_span": [
-825,
-827
-]
-},
-{
-"k": 25,
-"nat": "\n        s5_list,\n        ",
-"alt": "s5_list, ",
-"nat_span": [
-1167,
-1193
-],
-"alt_span": [
-848,
-857
-]
-},
-{
-"k": 26,
-"nat": "\n        20,\n    ",
-"alt": " 20",
-"nat_span": [
-1200,
-1217
-],
-"alt_span": [
-864,
-867
-]
-},
-{
-"k": 27,
-"nat": "\n        s5_list,\n        ",
-"alt": "s5_list, ",
-"nat_span": [
-1251,
-1277
-],
-"alt_span": [
-901,
-910
-]
-},
-{
-"k": 28,
-"nat": ",\n    ",
-"alt": "",
-"nat_span": [
-1282,
-1288
-],
-"alt_span": [
-915,
-915
-]
-},
-{
-"k": 29,
-"nat": "\n        10,\n    ",
-"alt": "10",
-"nat_span": [
-1341,
-1358
-],
-"alt_span": [
-968,
-970
+1969,
+1970
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "line_wrap__t086",
@@ -40300,144 +40499,145 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def check_website_status(\n    url,\n):\n    \"\"\"\n    Simulates checking the status of a website.\n    Always returns '200 OK' for demonstration purposes.\n    \"\"\"\n    _ = url  # Acknowledge the parameter even if not used\n\n    # This dummy function demonstrates Black-style argument wrapping.\n    # In a real scenario, this would involve network requests.\n    return \"200 OK\"\n\n\ndef _simulate_complex_operation(\n    param1,\n    param2_long_name,\n    another_param_here,\n    final_argument,\n):\n    \"\"\"\n    A dummy function to demonstrate Black-style argument wrapping.\n    \"\"\"\n    print(\n        f\"Simulating operation with: {param1}, {param2_long_name}, \"\n        f\"{another_param_here}, {final_argument}\"\n    )\n\n\nif __name__ == \"__main__\":\n    _simulate_complex_operation(\n        \"value1\",\n        \"value2_for_long_name\",\n        \"another_value\",\n        \"last_one\",\n    )\n\n    status_example1 = check_website_status(\n        \"http://example.com\",\n    )\n    print(f\"Status for http://example.com: {status_example1}\")\n\n    status_example2 = check_website_status(\n        \"https://google.com\",\n    )\n    print(f\"Status for https://google.com: {status_example2}\")\n\n    status_example3 = check_website_status(\n        \"http://nonexistent-domain.xyz\",\n    )\n    print(f\"Status for http://nonexistent-domain.xyz: {status_example3}\")\n",
-"text_alt": "def check_website_status(url):\n    \"\"\"\n    Simulates checking the status of a website.\n    Always returns '200 OK' for demonstration purposes.\n    \"\"\"\n    _ = url  # Acknowledge the parameter even if not used\n\n    # This dummy function demonstrates Black-style argument wrapping.\n    # In a real scenario, this would involve network requests.\n    return \"200 OK\"\n\n\ndef _simulate_complex_operation(param1, param2_long_name, another_param_here, final_argument):\n    \"\"\"\n    A dummy function to demonstrate Black-style argument wrapping.\n    \"\"\"\n    print(f\"Simulating operation with: {param1}, {param2_long_name}, \" f\"{another_param_here}, {final_argument}\")\n\n\nif __name__ == \"__main__\":\n    _simulate_complex_operation(\"value1\", \"value2_for_long_name\", \"another_value\", \"last_one\")\n\n    status_example1 = check_website_status(\"http://example.com\")\n    print(f\"Status for http://example.com: {status_example1}\")\n\n    status_example2 = check_website_status(\"https://google.com\")\n    print(f\"Status for https://google.com: {status_example2}\")\n\n    status_example3 = check_website_status(\"http://nonexistent-domain.xyz\")\n    print(f\"Status for http://nonexistent-domain.xyz: {status_example3}\")\n",
+"text_nat": "def parse_url(url):\n    \"\"\"Split a URL into its scheme, host and path components.\"\"\"\n    text = url.strip()\n    scheme, separator, remainder = text.partition(\"://\")\n    if not separator:\n        return \"\", text.lower(), \"/\"\n    host, slash, path = remainder.partition(\"/\")\n    return scheme.lower(), host.lower(), (\"/\" + path) if slash else \"/\"\n\n\ndef check_website_status(url):\n    \"\"\"Pretend to perform an HTTP request and report the resulting status.\"\"\"\n    return \"200 OK\"\n\n\ndef split_status(status):\n    code_text, _, reason = status.partition(\" \")\n    return int(code_text), reason or \"UNKNOWN\"\n\n\ndef build_record(\n    url,\n    scheme,\n    host,\n    path,\n    code,\n    reason,\n):\n    return dict(\n        url=url,\n        scheme=scheme,\n        host=host,\n        path=path,\n        code=code,\n        reason=reason,\n    )\n\n\ndef inspect(url):\n    scheme, host, path = parse_url(url)\n    code, reason = split_status(check_website_status(url))\n    return build_record(\n        url,\n        scheme,\n        host,\n        path,\n        code,\n        reason,\n    )\n\n\ndef format_row(\n    host,\n    scheme,\n    path,\n    code,\n    reason,\n    host_width,\n):\n    return \"{0:<{5}}  {1:<5}  {2:<12}  {3:>3} {4}\".format(\n        host,\n        scheme,\n        path,\n        code,\n        reason,\n        host_width,\n    )\n\n\ndef render_report(records):\n    host_width = max(len(record[\"host\"]) for record in records)\n    lines = [\n        format_row(\n            \"HOST\",\n            \"PROTO\",\n            \"PATH\",\n            \"###\",\n            \"REASON\",\n            host_width,\n        )\n    ]\n    for record in records:\n        lines.append(\n            format_row(\n                record[\"host\"],\n                record[\"scheme\"],\n                record[\"path\"],\n                record[\"code\"],\n                record[\"reason\"],\n                host_width,\n            )\n        )\n    healthy = sum(1 for record in records if record[\"code\"] == 200)\n    lines.append(\"{0}/{1} sites healthy\".format(healthy, len(records)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    urls = (\"http://example.com\", \"https://google.com\", \"https://docs.python.org/3/library/\")\n    print(render_report([inspect(url) for url in urls]))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def parse_url(url):\n    \"\"\"Split a URL into its scheme, host and path components.\"\"\"\n    text = url.strip()\n    scheme, separator, remainder = text.partition(\"://\")\n    if not separator:\n        return \"\", text.lower(), \"/\"\n    host, slash, path = remainder.partition(\"/\")\n    return scheme.lower(), host.lower(), (\"/\" + path) if slash else \"/\"\n\n\ndef check_website_status(url):\n    \"\"\"Pretend to perform an HTTP request and report the resulting status.\"\"\"\n    return \"200 OK\"\n\n\ndef split_status(status):\n    code_text, _, reason = status.partition(\" \")\n    return int(code_text), reason or \"UNKNOWN\"\n\n\ndef build_record(url, scheme, host, path, code, reason):\n    return dict(url=url, scheme=scheme, host=host, path=path, code=code, reason=reason)\n\n\ndef inspect(url):\n    scheme, host, path = parse_url(url)\n    code, reason = split_status(check_website_status(url))\n    return build_record(url, scheme, host, path, code, reason)\n\n\ndef format_row(host, scheme, path, code, reason, host_width):\n    return \"{0:<{5}}  {1:<5}  {2:<12}  {3:>3} {4}\".format(host, scheme, path, code, reason, host_width)\n\n\ndef render_report(records):\n    host_width = max(len(record[\"host\"]) for record in records)\n    lines = [format_row(\"HOST\", \"PROTO\", \"PATH\", \"###\", \"REASON\", host_width)]\n    for record in records:\n        lines.append(format_row(record[\"host\"], record[\"scheme\"], record[\"path\"], record[\"code\"], record[\"reason\"], host_width))\n    healthy = sum(1 for record in records if record[\"code\"] == 200)\n    lines.append(\"{0}/{1} sites healthy\".format(healthy, len(records)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    urls = (\"http://example.com\", \"https://google.com\", \"https://docs.python.org/3/library/\")\n    print(render_report([inspect(url) for url in urls]))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "\n    url,\n",
-"alt": "url",
+"nat": "\n    url,\n    scheme,\n    host,\n    path,\n    code,\n    reason,\n",
+"alt": "url, scheme, host, path, code, reason",
 "nat_span": [
-25,
-35
+619,
+683
 ],
 "alt_span": [
-25,
-28
+619,
+656
 ]
 },
 {
 "k": 1,
-"nat": "\n    param1,\n    param2_long_name,\n    another_param_here,\n    final_argument,\n",
-"alt": "param1, param2_long_name, another_param_here, final_argument",
+"nat": "\n        ",
+"alt": "",
 "nat_span": [
-404,
-483
+702,
+711
 ],
 "alt_span": [
-397,
-457
+675,
+675
 ]
 },
 {
 "k": 2,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n        url,\n        scheme,\n        host,\n        path,\n        code,\n        reason,\n    ",
+"alt": "url, scheme, host, path, code, reason",
 "nat_span": [
-579,
-588
+972,
+1064
 ],
 "alt_span": [
-553,
-553
+890,
+927
 ]
 },
 {
 "k": 3,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n    host,\n    scheme,\n    path,\n    code,\n    reason,\n    host_width,\n",
+"alt": "host, scheme, path, code, reason, host_width",
 "nat_span": [
-766,
-775
+1083,
+1154
 ],
 "alt_span": [
-718,
-718
+946,
+990
 ]
 },
 {
 "k": 4,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n        host,\n        scheme,\n        path,\n        code,\n        reason,\n        host_width,\n    ",
+"alt": "host, scheme, path, code, reason, host_width",
 "nat_span": [
-912,
-921
+1215,
+1314
 ],
 "alt_span": [
-825,
-825
+1051,
+1095
 ]
 },
 {
 "k": 5,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n        format_row(\n            ",
+"alt": "format_row(",
 "nat_span": [
-1056,
-1065
+1423,
+1456
 ],
 "alt_span": [
-954,
-954
+1204,
+1215
 ]
 },
 {
 "k": 6,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n            format_row(\n                ",
+"alt": "format_row(",
 "nat_span": [
-1200,
-1209
+1634,
+1675
 ],
 "alt_span": [
-1083,
-1083
+1318,
+1329
 ]
 }
 ],
 "k_en": 7,
-"shared_fraction": 0.928,
+"shared_fraction": 0.92,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
 "k": 0,
-"nat": "\n    url,\n",
-"alt": "url",
+"nat": "\n    url,\n    scheme,\n    host,\n    path,\n    code,\n    reason,\n",
+"alt": "url, scheme, host, path, code, reason",
 "nat_span": [
-25,
-35
+619,
+683
 ],
 "alt_span": [
-25,
-28
+619,
+656
 ]
 },
 {
 "k": 1,
-"nat": "\n    param1,\n    param2_long_name,\n    another_param_here,\n    final_argument,\n",
-"alt": "param1, param2_long_name, another_param_here, final_argument",
+"nat": "\n        ",
+"alt": "",
 "nat_span": [
-404,
-483
+702,
+711
 ],
 "alt_span": [
-397,
-457
+675,
+675
 ]
 },
 {
 "k": 2,
 "nat": "\n        ",
-"alt": "",
+"alt": " ",
 "nat_span": [
-579,
-588
+719,
+728
 ],
 "alt_span": [
-553,
-553
+683,
+684
 ]
 },
 {
@@ -40445,38 +40645,38 @@
 "nat": "\n        ",
 "alt": " ",
 "nat_span": [
-648,
-657
+742,
+751
 ],
 "alt_span": [
-613,
-614
+698,
+699
 ]
 },
 {
 "k": 4,
-"nat": "\n    ",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-698,
-703
+761,
+770
 ],
 "alt_span": [
-655,
-655
+709,
+710
 ]
 },
 {
 "k": 5,
 "nat": "\n        ",
-"alt": "",
+"alt": " ",
 "nat_span": [
-766,
-775
+780,
+789
 ],
 "alt_span": [
-718,
-718
+720,
+721
 ]
 },
 {
@@ -40484,133 +40684,229 @@
 "nat": "\n        ",
 "alt": " ",
 "nat_span": [
-784,
-793
+799,
+808
 ],
 "alt_span": [
-727,
-728
+731,
+732
 ]
 },
 {
 "k": 7,
-"nat": "\n        ",
-"alt": " ",
+"nat": ",\n    ",
+"alt": "",
 "nat_span": [
-816,
-825
+821,
+827
 ],
 "alt_span": [
-751,
-752
+745,
+745
 ]
 },
 {
 "k": 8,
-"nat": "\n        ",
-"alt": " ",
+"nat": "\n        url,\n        scheme,\n        host,\n        path,\n        code,\n        reason,\n    ",
+"alt": "url, scheme, host, path, code, reason",
 "nat_span": [
-841,
-850
+972,
+1064
 ],
 "alt_span": [
-768,
-769
+890,
+927
 ]
 },
 {
 "k": 9,
-"nat": ",\n    ",
-"alt": "",
+"nat": "\n    host,\n    scheme,\n    path,\n    code,\n    reason,\n    host_width,\n",
+"alt": "host, scheme, path, code, reason, host_width",
 "nat_span": [
-860,
-866
+1083,
+1154
 ],
 "alt_span": [
-779,
-779
+946,
+990
 ]
 },
 {
 "k": 10,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n        host,\n        scheme,\n        path,\n        code,\n        reason,\n        host_width,\n    ",
+"alt": "host, scheme, path, code, reason, host_width",
 "nat_span": [
-912,
-921
+1215,
+1314
 ],
 "alt_span": [
-825,
-825
+1051,
+1095
 ]
 },
 {
 "k": 11,
-"nat": ",\n    ",
-"alt": "",
+"nat": "\n        format_row(\n            ",
+"alt": "format_row(",
 "nat_span": [
-941,
-947
+1423,
+1456
 ],
 "alt_span": [
-845,
-845
+1204,
+1215
 ]
 },
 {
 "k": 12,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n            ",
+"alt": " ",
 "nat_span": [
-1056,
-1065
+1463,
+1476
 ],
 "alt_span": [
-954,
-954
+1222,
+1223
 ]
 },
 {
 "k": 13,
-"nat": ",\n    ",
-"alt": "",
+"nat": "\n            ",
+"alt": " ",
 "nat_span": [
-1085,
-1091
+1484,
+1497
 ],
 "alt_span": [
-974,
-974
+1231,
+1232
 ]
 },
 {
 "k": 14,
-"nat": "\n        ",
-"alt": "",
+"nat": "\n            ",
+"alt": " ",
 "nat_span": [
-1200,
-1209
+1504,
+1517
 ],
 "alt_span": [
-1083,
-1083
+1239,
+1240
 ]
 },
 {
 "k": 15,
-"nat": ",\n    ",
-"alt": "",
+"nat": "\n            ",
+"alt": " ",
 "nat_span": [
-1240,
-1246
+1523,
+1536
 ],
 "alt_span": [
-1114,
-1114
+1246,
+1247
+]
+},
+{
+"k": 16,
+"nat": "\n            host_width,\n        )\n    ",
+"alt": " host_width)",
+"nat_span": [
+1545,
+1584
+],
+"alt_span": [
+1256,
+1268
+]
+},
+{
+"k": 17,
+"nat": "\n            format_row(\n                ",
+"alt": "format_row(",
+"nat_span": [
+1634,
+1675
+],
+"alt_span": [
+1318,
+1329
+]
+},
+{
+"k": 18,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1690,
+1707
+],
+"alt_span": [
+1344,
+1345
+]
+},
+{
+"k": 19,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1724,
+1741
+],
+"alt_span": [
+1362,
+1363
+]
+},
+{
+"k": 20,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1756,
+1773
+],
+"alt_span": [
+1378,
+1379
+]
+},
+{
+"k": 21,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1788,
+1805
+],
+"alt_span": [
+1394,
+1395
+]
+},
+{
+"k": 22,
+"nat": "\n                host_width,\n            )\n        ",
+"alt": " host_width)",
+"nat_span": [
+1822,
+1873
+],
+"alt_span": [
+1412,
+1424
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "line_wrap__t109",
@@ -43080,7 +43376,7 @@
 ],
 "k_en": 7,
 "shared_fraction": 0.908,
-"pass": true,
+"pass": false,
 "verify": null,
 "alt_rule": true,
 "opps_all": [
@@ -49787,192 +50083,16 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def hex_to_decimal(hex_string):\n    \"\"\"\n    Converts a hexadecimal string to its decimal integer equivalent.\n    \"\"\"\n    return int(\n        hex_string,\n        base=16,\n    )\n\ndef main_conversion_process(\n    initial_hex_value,\n    intermediate_result,\n    final_output_format,\n    debug_mode=False,\n    log_level=\"INFO\",\n):\n    \"\"\"\n    A placeholder function to demonstrate Black formatting.\n    \"\"\"\n    if debug_mode:\n        print(f\"Converting: {initial_hex_value}\")\n    converted = hex_to_decimal(initial_hex_value)\n    return f\"{final_output_format.upper()}: {converted}\"\n\nif __name__ == \"__main__\":\n    result1 = hex_to_decimal(\n        hex_string=\"A\",\n    )\n    print(f\"Result for 'A': {result1}\")\n\n    result2 = hex_to_decimal(\n        hex_string=\"1A\",\n    )\n    print(f\"Result for '1A': {result2}\")\n\n    result3 = hex_to_decimal(\n        hex_string=\"FF\",\n    )\n    print(f\"Result for 'FF': {result3}\")\n\n    demonstration_output = main_conversion_process(\n        initial_hex_value=\"C\",\n        intermediate_result=\"computed\",\n        final_output_format=\"decimal\",\n        debug_mode=True,\n    )\n    print(demonstration_output)\n\n    another_demonstration = main_conversion_process(\n        initial_hex_value=\"20\",\n        intermediate_result=\"processing_step\",\n        final_output_format=\"int\",\n        debug_mode=False,\n        log_level=\"DEBUG\",\n    )\n    print(another_demonstration)\n",
-"text_alt": "def hex_to_decimal(hex_string):\n    \"\"\"\n    Converts a hexadecimal string to its decimal integer equivalent.\n    \"\"\"\n    return int(hex_string, base=16)\n\ndef main_conversion_process(initial_hex_value, intermediate_result, final_output_format, debug_mode=False, log_level=\"INFO\"):\n    \"\"\"\n    A placeholder function to demonstrate Black formatting.\n    \"\"\"\n    if debug_mode:\n        print(f\"Converting: {initial_hex_value}\")\n    converted = hex_to_decimal(initial_hex_value)\n    return f\"{final_output_format.upper()}: {converted}\"\n\nif __name__ == \"__main__\":\n    result1 = hex_to_decimal(hex_string=\"A\")\n    print(f\"Result for 'A': {result1}\")\n\n    result2 = hex_to_decimal(hex_string=\"1A\")\n    print(f\"Result for '1A': {result2}\")\n\n    result3 = hex_to_decimal(hex_string=\"FF\")\n    print(f\"Result for 'FF': {result3}\")\n\n    demonstration_output = main_conversion_process(initial_hex_value=\"C\", intermediate_result=\"computed\", final_output_format=\"decimal\", debug_mode=True)\n    print(demonstration_output)\n\n    another_demonstration = main_conversion_process(initial_hex_value=\"20\", intermediate_result=\"processing_step\", final_output_format=\"int\", debug_mode=False, log_level=\"DEBUG\")\n    print(another_demonstration)\n",
+"text_nat": "HEX_DIGITS = {digit: value for value, digit in enumerate(\"0123456789abcdef\")}\n\n\ndef normalize_hex_string(hex_string):\n    if not isinstance(hex_string, str):\n        raise TypeError(\"hex_string must be a str\")\n    text = hex_string.strip().lower()\n    negative = text.startswith(\"-\")\n    if negative or text.startswith(\"+\"):\n        text = text[1:]\n    if text.startswith(\"0x\"):\n        text = text[2:]\n    if not text:\n        raise ValueError(\"hex_string does not contain any hexadecimal digits\")\n    for index, char in enumerate(text):\n        if char not in HEX_DIGITS:\n            raise ValueError(\n                \"invalid hexadecimal digit {0!r} at position {1} in {2!r}\".format(\n                    char,\n                    index,\n                    hex_string\n                )\n            )\n    return negative, text\n\n\ndef hex_to_decimal(hex_string):\n    negative, digits = normalize_hex_string(hex_string)\n    value = 0\n    for char in digits:\n        value = value * 16 + HEX_DIGITS[char]\n    return -value if negative else value\n\n\ndef format_conversion_row(\n    hexadecimal_text,\n    decimal_value,\n    hexadecimal_column_width,\n    decimal_column_width,\n    column_separator\n):\n    hexadecimal_cell = hexadecimal_text.rjust(hexadecimal_column_width)\n    decimal_cell = str(decimal_value).rjust(decimal_column_width)\n    return column_separator.join([hexadecimal_cell, decimal_cell])\n\n\ndef build_conversion_table(\n    conversion_rows,\n    hexadecimal_header,\n    decimal_header,\n    column_separator,\n    underline_character\n):\n    texts = [text for text, _ in conversion_rows]\n    values = [str(value) for _, value in conversion_rows]\n    hexadecimal_width = max([len(hexadecimal_header)] + [len(t) for t in texts])\n    decimal_width = max([len(decimal_header)] + [len(v) for v in values])\n    header_line = format_conversion_row(\n        hexadecimal_header,\n        decimal_header,\n        hexadecimal_width,\n        decimal_width,\n        column_separator\n    )\n    table_lines = [header_line, underline_character * len(header_line)]\n    for hexadecimal_text, decimal_value in conversion_rows:\n        table_lines.append(\n            format_conversion_row(\n                hexadecimal_text,\n                decimal_value,\n                hexadecimal_width,\n                decimal_width,\n                column_separator\n            )\n        )\n    return table_lines\n\n\ndef main():\n    samples = [\"A\", \"1A\", \"0xff\", \"deadBEEF\", \"-2f\", \"000\", \"7FFF\"]\n    conversion_rows = [(sample, hex_to_decimal(sample)) for sample in samples]\n    report_lines = build_conversion_table(\n        conversion_rows,\n        \"HEXADECIMAL\",\n        \"DECIMAL VALUE\",\n        \" | \",\n        \"-\"\n    )\n    total = sum(value for _, value in conversion_rows)\n    report_lines.append(\"sum of values: {0}\".format(total))\n    print(\"\\n\".join(report_lines))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "HEX_DIGITS = {digit: value for value, digit in enumerate(\"0123456789abcdef\")}\n\n\ndef normalize_hex_string(hex_string):\n    if not isinstance(hex_string, str):\n        raise TypeError(\"hex_string must be a str\")\n    text = hex_string.strip().lower()\n    negative = text.startswith(\"-\")\n    if negative or text.startswith(\"+\"):\n        text = text[1:]\n    if text.startswith(\"0x\"):\n        text = text[2:]\n    if not text:\n        raise ValueError(\"hex_string does not contain any hexadecimal digits\")\n    for index, char in enumerate(text):\n        if char not in HEX_DIGITS:\n            raise ValueError(\"invalid hexadecimal digit {0!r} at position {1} in {2!r}\".format(char, index, hex_string))\n    return negative, text\n\n\ndef hex_to_decimal(hex_string):\n    negative, digits = normalize_hex_string(hex_string)\n    value = 0\n    for char in digits:\n        value = value * 16 + HEX_DIGITS[char]\n    return -value if negative else value\n\n\ndef format_conversion_row(hexadecimal_text, decimal_value, hexadecimal_column_width, decimal_column_width, column_separator):\n    hexadecimal_cell = hexadecimal_text.rjust(hexadecimal_column_width)\n    decimal_cell = str(decimal_value).rjust(decimal_column_width)\n    return column_separator.join([hexadecimal_cell, decimal_cell])\n\n\ndef build_conversion_table(conversion_rows, hexadecimal_header, decimal_header, column_separator, underline_character):\n    texts = [text for text, _ in conversion_rows]\n    values = [str(value) for _, value in conversion_rows]\n    hexadecimal_width = max([len(hexadecimal_header)] + [len(t) for t in texts])\n    decimal_width = max([len(decimal_header)] + [len(v) for v in values])\n    header_line = format_conversion_row(hexadecimal_header, decimal_header, hexadecimal_width, decimal_width, column_separator)\n    table_lines = [header_line, underline_character * len(header_line)]\n    for hexadecimal_text, decimal_value in conversion_rows:\n        table_lines.append(format_conversion_row(hexadecimal_text, decimal_value, hexadecimal_width, decimal_width, column_separator))\n    return table_lines\n\n\ndef main():\n    samples = [\"A\", \"1A\", \"0xff\", \"deadBEEF\", \"-2f\", \"000\", \"7FFF\"]\n    conversion_rows = [(sample, hex_to_decimal(sample)) for sample in samples]\n    report_lines = build_conversion_table(conversion_rows, \"HEXADECIMAL\", \"DECIMAL VALUE\", \" | \", \"-\")\n    total = sum(value for _, value in conversion_rows)\n    report_lines.append(\"sum of values: {0}\".format(total))\n    print(\"\\n\".join(report_lines))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "\n        hex_string,\n        ",
-"alt": "hex_string, ",
-"nat_span": [
-132,
-161
-],
-"alt_span": [
-132,
-144
-]
-},
-{
-"k": 1,
-"nat": "\n    initial_hex_value,\n    intermediate_result,\n    final_output_format,\n    ",
-"alt": "initial_hex_value, intermediate_result, final_output_format, ",
-"nat_span": [
-205,
-283
-],
-"alt_span": [
-182,
-243
-]
-},
-{
-"k": 2,
-"nat": "\n        ",
+"nat": "\n                ",
 "alt": "",
 "nat_span": [
-635,
-644
-],
-"alt_span": [
-589,
-589
-]
-},
-{
-"k": 3,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-736,
-745
-],
-"alt_span": [
-675,
-675
-]
-},
-{
-"k": 4,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-839,
-848
-],
-"alt_span": [
-763,
-763
-]
-},
-{
-"k": 5,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-964,
-973
-],
-"alt_span": [
-873,
-873
-]
-},
-{
-"k": 6,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-1191,
-1200
-],
-"alt_span": [
-1061,
-1061
-]
-}
-],
-"k_en": 7,
-"shared_fraction": 0.906,
-"pass": true,
-"verify": null,
-"alt_rule": true,
-"opps_all": [
-{
-"k": 0,
-"nat": "\n        hex_string,\n        ",
-"alt": "hex_string, ",
-"nat_span": [
-132,
-161
-],
-"alt_span": [
-132,
-144
-]
-},
-{
-"k": 1,
-"nat": ",\n    ",
-"alt": "",
-"nat_span": [
-168,
-174
-],
-"alt_span": [
-151,
-151
-]
-},
-{
-"k": 2,
-"nat": "\n    initial_hex_value,\n    intermediate_result,\n    final_output_format,\n    ",
-"alt": "initial_hex_value, intermediate_result, final_output_format, ",
-"nat_span": [
-205,
-283
-],
-"alt_span": [
-182,
-243
-]
-},
-{
-"k": 3,
-"nat": "\n    ",
-"alt": " ",
-"nat_span": [
-300,
-305
-],
-"alt_span": [
-260,
-261
-]
-},
-{
-"k": 4,
-"nat": ",\n",
-"alt": "",
-"nat_span": [
-321,
-323
-],
-"alt_span": [
-277,
-277
-]
-},
-{
-"k": 5,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-635,
-644
-],
-"alt_span": [
-589,
-589
-]
-},
-{
-"k": 6,
-"nat": ",\n    ",
-"alt": "",
-"nat_span": [
-658,
-664
+603,
+620
 ],
 "alt_span": [
 603,
@@ -49980,202 +50100,228 @@
 ]
 },
 {
-"k": 7,
-"nat": "\n        ",
-"alt": "",
+"k": 1,
+"nat": "\n    hexadecimal_text,\n    decimal_value,\n    hexadecimal_column_width,\n    decimal_column_width,\n    column_separator\n",
+"alt": "hexadecimal_text, decimal_value, hexadecimal_column_width, decimal_column_width, column_separator",
 "nat_span": [
-736,
-745
+1072,
+1191
 ],
 "alt_span": [
-675,
-675
+964,
+1061
+]
+},
+{
+"k": 2,
+"nat": "\n    conversion_rows,\n    hexadecimal_header,\n    decimal_header,\n    column_separator,\n    underline_character\n",
+"alt": "conversion_rows, hexadecimal_header, decimal_header, column_separator, underline_character",
+"nat_span": [
+1428,
+1540
+],
+"alt_span": [
+1298,
+1388
+]
+},
+{
+"k": 3,
+"nat": "\n        hexadecimal_header,\n        decimal_header,\n        hexadecimal_width,\n        decimal_width,\n        column_separator\n    ",
+"alt": "hexadecimal_header, decimal_header, hexadecimal_width, decimal_width, column_separator",
+"nat_span": [
+1846,
+1978
+],
+"alt_span": [
+1694,
+1780
+]
+},
+{
+"k": 4,
+"nat": "\n            format_conversion_row(\n                hexadecimal_text,\n                decimal_value,\n                hexadecimal_width,\n                decimal_width,\n                column_separator\n            )\n        ",
+"alt": "format_conversion_row(hexadecimal_text, decimal_value, hexadecimal_width, decimal_width, column_separator)",
+"nat_span": [
+2139,
+2361
+],
+"alt_span": [
+1941,
+2047
+]
+},
+{
+"k": 5,
+"nat": "\n        conversion_rows,\n        ",
+"alt": "conversion_rows, ",
+"nat_span": [
+2589,
+2623
+],
+"alt_span": [
+2275,
+2292
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.95,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\n                ",
+"alt": "",
+"nat_span": [
+603,
+620
+],
+"alt_span": [
+603,
+603
+]
+},
+{
+"k": 1,
+"nat": "\n                    char,\n                    index,\n                    hex_string\n                )\n            ",
+"alt": "char, index, hex_string)",
+"nat_span": [
+686,
+801
+],
+"alt_span": [
+669,
+693
+]
+},
+{
+"k": 2,
+"nat": "\n    hexadecimal_text,\n    decimal_value,\n    hexadecimal_column_width,\n    decimal_column_width,\n    column_separator\n",
+"alt": "hexadecimal_text, decimal_value, hexadecimal_column_width, decimal_column_width, column_separator",
+"nat_span": [
+1072,
+1191
+],
+"alt_span": [
+964,
+1061
+]
+},
+{
+"k": 3,
+"nat": "\n    conversion_rows,\n    hexadecimal_header,\n    decimal_header,\n    column_separator,\n    underline_character\n",
+"alt": "conversion_rows, hexadecimal_header, decimal_header, column_separator, underline_character",
+"nat_span": [
+1428,
+1540
+],
+"alt_span": [
+1298,
+1388
+]
+},
+{
+"k": 4,
+"nat": "\n        hexadecimal_header,\n        decimal_header,\n        hexadecimal_width,\n        decimal_width,\n        column_separator\n    ",
+"alt": "hexadecimal_header, decimal_header, hexadecimal_width, decimal_width, column_separator",
+"nat_span": [
+1846,
+1978
+],
+"alt_span": [
+1694,
+1780
+]
+},
+{
+"k": 5,
+"nat": "\n            format_conversion_row(\n                hexadecimal_text,\n                decimal_value,\n                hexadecimal_width,\n                decimal_width,\n                column_separator\n            )\n        ",
+"alt": "format_conversion_row(hexadecimal_text, decimal_value, hexadecimal_width, decimal_width, column_separator)",
+"nat_span": [
+2139,
+2361
+],
+"alt_span": [
+1941,
+2047
+]
+},
+{
+"k": 6,
+"nat": "\n        conversion_rows,\n        ",
+"alt": "conversion_rows, ",
+"nat_span": [
+2589,
+2623
+],
+"alt_span": [
+2275,
+2292
+]
+},
+{
+"k": 7,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+2637,
+2646
+],
+"alt_span": [
+2306,
+2307
 ]
 },
 {
 "k": 8,
-"nat": ",\n    ",
-"alt": "",
+"nat": "\n        ",
+"alt": " ",
 "nat_span": [
-760,
-766
+2662,
+2671
 ],
 "alt_span": [
-690,
-690
+2323,
+2324
 ]
 },
 {
 "k": 9,
 "nat": "\n        ",
-"alt": "",
+"alt": " ",
 "nat_span": [
-839,
-848
+2677,
+2686
 ],
 "alt_span": [
-763,
-763
+2330,
+2331
 ]
 },
 {
 "k": 10,
-"nat": ",\n    ",
+"nat": "\n    ",
 "alt": "",
 "nat_span": [
-863,
-869
+2689,
+2694
 ],
 "alt_span": [
-778,
-778
-]
-},
-{
-"k": 11,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-964,
-973
-],
-"alt_span": [
-873,
-873
-]
-},
-{
-"k": 12,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-995,
-1004
-],
-"alt_span": [
-895,
-896
-]
-},
-{
-"k": 13,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-1035,
-1044
-],
-"alt_span": [
-927,
-928
-]
-},
-{
-"k": 14,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-1074,
-1083
-],
-"alt_span": [
-958,
-959
-]
-},
-{
-"k": 15,
-"nat": ",\n    ",
-"alt": "",
-"nat_span": [
-1098,
-1104
-],
-"alt_span": [
-974,
-974
-]
-},
-{
-"k": 16,
-"nat": "\n        ",
-"alt": "",
-"nat_span": [
-1191,
-1200
-],
-"alt_span": [
-1061,
-1061
-]
-},
-{
-"k": 17,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-1223,
-1232
-],
-"alt_span": [
-1084,
-1085
-]
-},
-{
-"k": 18,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-1270,
-1279
-],
-"alt_span": [
-1123,
-1124
-]
-},
-{
-"k": 19,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-1305,
-1314
-],
-"alt_span": [
-1150,
-1151
-]
-},
-{
-"k": 20,
-"nat": "\n        ",
-"alt": " ",
-"nat_span": [
-1331,
-1340
-],
-"alt_span": [
-1168,
-1169
-]
-},
-{
-"k": 21,
-"nat": ",\n    ",
-"alt": "",
-"nat_span": [
-1357,
-1363
-],
-"alt_span": [
-1186,
-1186
+2334,
+2334
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "line_wrap__t136",
@@ -75110,5 +75256,2149 @@
 }
 ],
 "free_filter": true
+},
+{
+"doc_id": "line_wrap__t201",
+"family": "line_wrap",
+"topic": "Merge Two Sorted Lists",
+"angle": "code",
+"text_es": "Write a function `merge_sorted_lists(list1, list2)` that takes two already sorted lists of numbers. It should return a new sorted list containing all elements from both input lists. Example: `merge_sorted_lists([1, 3, 5], [2, 4, 6])` should return `[1, 2, 3, 4, 5, 6]`, `merge_sorted_lists([10], [])` should return `[10]`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "from numbers import Number\n\n\ndef _validate_operand(values, name):\n    if not isinstance(values, (list, tuple)):\n        raise TypeError(\n            \"{name} must be a list or tuple, got {kind}\".format(\n                name=name,\n                kind=type(values).__name__\n            )\n        )\n    for index, value in enumerate(values):\n        if isinstance(value, bool) or not isinstance(value, Number):\n            raise TypeError(\n                \"{name}[{index}] is not a number: {value!r}\".format(\n                    name=name,\n                    index=index,\n                    value=value\n                )\n            )\n    for index in range(len(values) - 1):\n        if values[index] > values[index + 1]:\n            raise ValueError(\n                \"{name} is not sorted: {left} > {right} at index {index}\".format(\n                    name=name,\n                    left=values[index],\n                    right=values[index + 1],\n                    index=index\n                )\n            )\n\n\ndef merge_sorted_lists(list1, list2):\n    _validate_operand(list1, \"list1\")\n    _validate_operand(list2, \"list2\")\n    merged = []\n    left = 0\n    right = 0\n    while left < len(list1) and right < len(list2):\n        if list1[left] <= list2[right]:\n            merged.append(list1[left])\n            left += 1\n        else:\n            merged.append(list2[right])\n            right += 1\n    merged.extend(list1[left:])\n    merged.extend(list2[right:])\n    return merged\n\n\ndef summarize_merge(list1, list2, merged):\n    return dict(\n        left_count=len(list1),\n        right_count=len(list2),\n        total=len(merged),\n        minimum=merged[0] if merged else None,\n        maximum=merged[-1] if merged else None\n    )\n\n\ndef format_merge_report(\n    label,\n    list1,\n    list2,\n    merged,\n    stats\n):\n    header = \"{0}: {1} + {2} -> {3}\".format(label, list1, list2, merged)\n    counts = \"  counts: {left_count} + {right_count} = {total}\".format(**stats)\n    span = \"  range: {minimum} .. {maximum}\".format(**stats)\n    return \"\\n\".join([header, counts, span])\n\n\ndef report_case(label, list1, list2):\n    merged = merge_sorted_lists(list1, list2)\n    return format_merge_report(\n        label=label,\n        list1=list1,\n        list2=list2,\n        merged=merged,\n        stats=summarize_merge(list1, list2, merged)\n    )\n\n\ndef main():\n    print(report_case(\"interleaved\", [1, 3, 5], [2, 4, 6]))\n    print(report_case(\"single value\", [10], []))\n    print(report_case(\"with duplicates\", [1, 2, 2, 9], [2, 3]))\n    print(report_case(\"floats and ints\", [-1.5, 0, 7], [-2, 6.25]))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "from numbers import Number\n\n\ndef _validate_operand(values, name):\n    if not isinstance(values, (list, tuple)):\n        raise TypeError(\"{name} must be a list or tuple, got {kind}\".format(name=name, kind=type(values).__name__))\n    for index, value in enumerate(values):\n        if isinstance(value, bool) or not isinstance(value, Number):\n            raise TypeError(\"{name}[{index}] is not a number: {value!r}\".format(name=name, index=index, value=value))\n    for index in range(len(values) - 1):\n        if values[index] > values[index + 1]:\n            raise ValueError(\"{name} is not sorted: {left} > {right} at index {index}\".format(name=name, left=values[index], right=values[index + 1], index=index))\n\n\ndef merge_sorted_lists(list1, list2):\n    _validate_operand(list1, \"list1\")\n    _validate_operand(list2, \"list2\")\n    merged = []\n    left = 0\n    right = 0\n    while left < len(list1) and right < len(list2):\n        if list1[left] <= list2[right]:\n            merged.append(list1[left])\n            left += 1\n        else:\n            merged.append(list2[right])\n            right += 1\n    merged.extend(list1[left:])\n    merged.extend(list2[right:])\n    return merged\n\n\ndef summarize_merge(list1, list2, merged):\n    return dict(left_count=len(list1), right_count=len(list2), total=len(merged), minimum=merged[0] if merged else None, maximum=merged[-1] if merged else None)\n\n\ndef format_merge_report(label, list1, list2, merged, stats):\n    header = \"{0}: {1} + {2} -> {3}\".format(label, list1, list2, merged)\n    counts = \"  counts: {left_count} + {right_count} = {total}\".format(**stats)\n    span = \"  range: {minimum} .. {maximum}\".format(**stats)\n    return \"\\n\".join([header, counts, span])\n\n\ndef report_case(label, list1, list2):\n    merged = merge_sorted_lists(list1, list2)\n    return format_merge_report(label=label, list1=list1, list2=list2, merged=merged, stats=summarize_merge(list1, list2, merged))\n\n\ndef main():\n    print(report_case(\"interleaved\", [1, 3, 5], [2, 4, 6]))\n    print(report_case(\"single value\", [10], []))\n    print(report_case(\"with duplicates\", [1, 2, 2, 9], [2, 3]))\n    print(report_case(\"floats and ints\", [-1.5, 0, 7], [-2, 6.25]))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+136,
+149
+],
+"alt_span": [
+136,
+136
+]
+},
+{
+"k": 1,
+"nat": "\n                ",
+"alt": "",
+"nat_span": [
+436,
+453
+],
+"alt_span": [
+368,
+368
+]
+},
+{
+"k": 2,
+"nat": "\n                ",
+"alt": "",
+"nat_span": [
+750,
+767
+],
+"alt_span": [
+574,
+574
+]
+},
+{
+"k": 3,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+1546,
+1555
+],
+"alt_span": [
+1242,
+1242
+]
+},
+{
+"k": 4,
+"nat": "\n    label,\n    list1,\n    list2,\n    merged,\n    stats\n",
+"alt": "label, list1, list2, merged, stats",
+"nat_span": [
+1763,
+1819
+],
+"alt_span": [
+1413,
+1447
+]
+},
+{
+"k": 5,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+2198,
+2207
+],
+"alt_span": [
+1826,
+1826
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.959,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+136,
+149
+],
+"alt_span": [
+136,
+136
+]
+},
+{
+"k": 1,
+"nat": "\n                ",
+"alt": "",
+"nat_span": [
+201,
+218
+],
+"alt_span": [
+188,
+188
+]
+},
+{
+"k": 2,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+228,
+245
+],
+"alt_span": [
+198,
+199
+]
+},
+{
+"k": 3,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+271,
+294
+],
+"alt_span": [
+225,
+226
+]
+},
+{
+"k": 4,
+"nat": "\n                ",
+"alt": "",
+"nat_span": [
+436,
+453
+],
+"alt_span": [
+368,
+368
+]
+},
+{
+"k": 5,
+"nat": "\n                    ",
+"alt": "",
+"nat_span": [
+505,
+526
+],
+"alt_span": [
+420,
+420
+]
+},
+{
+"k": 6,
+"nat": "\n                    ",
+"alt": " ",
+"nat_span": [
+536,
+557
+],
+"alt_span": [
+430,
+431
+]
+},
+{
+"k": 7,
+"nat": "\n                    ",
+"alt": " ",
+"nat_span": [
+569,
+590
+],
+"alt_span": [
+443,
+444
+]
+},
+{
+"k": 8,
+"nat": "\n                )\n            ",
+"alt": ")",
+"nat_span": [
+601,
+632
+],
+"alt_span": [
+455,
+456
+]
+},
+{
+"k": 9,
+"nat": "\n                ",
+"alt": "",
+"nat_span": [
+750,
+767
+],
+"alt_span": [
+574,
+574
+]
+},
+{
+"k": 10,
+"nat": "\n                    ",
+"alt": "",
+"nat_span": [
+832,
+853
+],
+"alt_span": [
+639,
+639
+]
+},
+{
+"k": 11,
+"nat": "\n                    ",
+"alt": " ",
+"nat_span": [
+863,
+884
+],
+"alt_span": [
+649,
+650
+]
+},
+{
+"k": 12,
+"nat": "\n                    ",
+"alt": " ",
+"nat_span": [
+903,
+924
+],
+"alt_span": [
+669,
+670
+]
+},
+{
+"k": 13,
+"nat": "\n                    ",
+"alt": " ",
+"nat_span": [
+948,
+969
+],
+"alt_span": [
+694,
+695
+]
+},
+{
+"k": 14,
+"nat": "\n                )\n            ",
+"alt": ")",
+"nat_span": [
+980,
+1011
+],
+"alt_span": [
+706,
+707
+]
+},
+{
+"k": 15,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+1546,
+1555
+],
+"alt_span": [
+1242,
+1242
+]
+},
+{
+"k": 16,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1577,
+1586
+],
+"alt_span": [
+1264,
+1265
+]
+},
+{
+"k": 17,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1609,
+1618
+],
+"alt_span": [
+1288,
+1289
+]
+},
+{
+"k": 18,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1636,
+1645
+],
+"alt_span": [
+1307,
+1308
+]
+},
+{
+"k": 19,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1683,
+1692
+],
+"alt_span": [
+1346,
+1347
+]
+},
+{
+"k": 20,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+1730,
+1735
+],
+"alt_span": [
+1385,
+1385
+]
+},
+{
+"k": 21,
+"nat": "\n    label,\n    list1,\n    list2,\n    merged,\n    stats\n",
+"alt": "label, list1, list2, merged, stats",
+"nat_span": [
+1763,
+1819
+],
+"alt_span": [
+1413,
+1447
+]
+},
+{
+"k": 22,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+2198,
+2207
+],
+"alt_span": [
+1826,
+1826
+]
+},
+{
+"k": 23,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+2219,
+2228
+],
+"alt_span": [
+1838,
+1839
+]
+},
+{
+"k": 24,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+2240,
+2249
+],
+"alt_span": [
+1851,
+1852
+]
+},
+{
+"k": 25,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+2261,
+2270
+],
+"alt_span": [
+1864,
+1865
+]
+},
+{
+"k": 26,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+2284,
+2293
+],
+"alt_span": [
+1879,
+1880
+]
+},
+{
+"k": 27,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+2336,
+2341
+],
+"alt_span": [
+1923,
+1923
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
+"doc_id": "line_wrap__t202",
+"family": "line_wrap",
+"topic": "Word Reversal (Preserve Punctuation)",
+"angle": "code",
+"text_es": "Implement `reverse_words_with_punctuation(sentence)` that takes a string `sentence`. It should reverse the order of words but keep punctuation attached to its word. Example: `reverse_words_with_punctuation('Hello, world!')` should return `'world!, Hello,'`, `reverse_words_with_punctuation('One. Two. Three.')` should return `'Three. Two. One.'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "PUNCTUATION = \".,!?;:'\\\"()[]-…\"\n\n\ndef validate_sentence(sentence):\n    if not isinstance(sentence, str):\n        message = \"sentence must be a str, got {!r}\".format(type(sentence).__name__)\n        raise TypeError(message)\n    return sentence\n\n\ndef split_token(token, punctuation_chars):\n    stripped = token.lstrip(punctuation_chars)\n    lead = token[: len(token) - len(stripped)]\n    core = stripped.rstrip(punctuation_chars)\n    trail = stripped[len(core) :]\n    return lead, core, trail\n\n\ndef tokenize(sentence, punctuation_chars):\n    tokens = []\n    for word in sentence.split():\n        tokens.append(\n            split_token(\n                word,\n                punctuation_chars,\n            ),\n        )\n    return tokens\n\n\ndef recombine(lead, core, own_trail, slot_trail, is_last):\n    if not is_last and slot_trail and slot_trail != own_trail:\n        return lead + core + own_trail + slot_trail\n    return lead + core + own_trail\n\n\ndef reverse_words_with_punctuation(sentence):\n    validate_sentence(sentence)\n    tokens = tokenize(\n        sentence,\n        PUNCTUATION,\n    )\n    slot_trails = [trail for _lead, _core, trail in tokens]\n    moved = list(reversed(tokens))\n    pieces = []\n    for index, (lead, core, trail) in enumerate(moved):\n        pieces.append(\n            recombine(\n                lead,\n                core,\n                trail,\n                slot_trails[index],\n                index == len(moved) - 1,\n            ),\n        )\n    return \" \".join(pieces)\n\n\ndef format_report(original, transformed, word_count, punctuation_count):\n    return \"\\n\".join(\n        [\n            \"input        : {}\".format(original),\n            \"reversed     : {}\".format(transformed),\n            \"words        : {}\".format(word_count),\n            \"punctuation  : {}\".format(punctuation_count),\n        ],\n    )\n\n\ndef main(argv):\n    sentences = argv[1:]\n    if not sentences:\n        sentences = [\"Hello, world!\", \"One. Two. Three.\"]\n    for sentence in sentences:\n        tokens = tokenize(\n            sentence,\n            PUNCTUATION,\n        )\n        marks = sum(len(lead) + len(trail) for lead, _core, trail in tokens)\n        report = format_report(\n            sentence,\n            reverse_words_with_punctuation(sentence),\n            len(tokens),\n            marks,\n        )\n        print(report)\n        print()\n\n\nif __name__ == \"__main__\":\n    import sys\n\n    main(sys.argv)\n",
+"text_alt": "PUNCTUATION = \".,!?;:'\\\"()[]-…\"\n\n\ndef validate_sentence(sentence):\n    if not isinstance(sentence, str):\n        message = \"sentence must be a str, got {!r}\".format(type(sentence).__name__)\n        raise TypeError(message)\n    return sentence\n\n\ndef split_token(token, punctuation_chars):\n    stripped = token.lstrip(punctuation_chars)\n    lead = token[: len(token) - len(stripped)]\n    core = stripped.rstrip(punctuation_chars)\n    trail = stripped[len(core) :]\n    return lead, core, trail\n\n\ndef tokenize(sentence, punctuation_chars):\n    tokens = []\n    for word in sentence.split():\n        tokens.append(split_token(word, punctuation_chars))\n    return tokens\n\n\ndef recombine(lead, core, own_trail, slot_trail, is_last):\n    if not is_last and slot_trail and slot_trail != own_trail:\n        return lead + core + own_trail + slot_trail\n    return lead + core + own_trail\n\n\ndef reverse_words_with_punctuation(sentence):\n    validate_sentence(sentence)\n    tokens = tokenize(sentence, PUNCTUATION)\n    slot_trails = [trail for _lead, _core, trail in tokens]\n    moved = list(reversed(tokens))\n    pieces = []\n    for index, (lead, core, trail) in enumerate(moved):\n        pieces.append(recombine(lead, core, trail, slot_trails[index], index == len(moved) - 1))\n    return \" \".join(pieces)\n\n\ndef format_report(original, transformed, word_count, punctuation_count):\n    return \"\\n\".join([\"input        : {}\".format(original), \"reversed     : {}\".format(transformed), \"words        : {}\".format(word_count), \"punctuation  : {}\".format(punctuation_count)])\n\n\ndef main(argv):\n    sentences = argv[1:]\n    if not sentences:\n        sentences = [\"Hello, world!\", \"One. Two. Three.\"]\n    for sentence in sentences:\n        tokens = tokenize(sentence, PUNCTUATION)\n        marks = sum(len(lead) + len(trail) for lead, _core, trail in tokens)\n        report = format_report(sentence, reverse_words_with_punctuation(sentence), len(tokens), marks)\n        print(report)\n        print()\n\n\nif __name__ == \"__main__\":\n    import sys\n\n    main(sys.argv)\n",
+"opps": [
+{
+"k": 0,
+"nat": "\n            split_token(\n                word,\n                punctuation_chars,\n            ),\n        ",
+"alt": "split_token(word, punctuation_chars)",
+"nat_span": [
+608,
+714
+],
+"alt_span": [
+608,
+644
+]
+},
+{
+"k": 1,
+"nat": "\n        sentence,\n        PUNCTUATION,\n    ",
+"alt": "sentence, PUNCTUATION",
+"nat_span": [
+1047,
+1091
+],
+"alt_span": [
+977,
+998
+]
+},
+{
+"k": 2,
+"nat": "\n            recombine(\n                lead,\n                core,\n                trail,\n                ",
+"alt": "recombine(lead, core, trail, ",
+"nat_span": [
+1282,
+1389
+],
+"alt_span": [
+1189,
+1218
+]
+},
+{
+"k": 3,
+"nat": "\n        [\n            ",
+"alt": "[",
+"nat_span": [
+1599,
+1622
+],
+"alt_span": [
+1388,
+1389
+]
+},
+{
+"k": 4,
+"nat": "\n            sentence,\n            PUNCTUATION,\n        ",
+"alt": "sentence, PUNCTUATION",
+"nat_span": [
+2021,
+2077
+],
+"alt_span": [
+1736,
+1757
+]
+},
+{
+"k": 5,
+"nat": "\n            sentence,\n            ",
+"alt": "sentence, ",
+"nat_span": [
+2187,
+2222
+],
+"alt_span": [
+1867,
+1877
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.942,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\n            split_token(\n                word,\n                punctuation_chars,\n            ),\n        ",
+"alt": "split_token(word, punctuation_chars)",
+"nat_span": [
+608,
+714
+],
+"alt_span": [
+608,
+644
+]
+},
+{
+"k": 1,
+"nat": "\n        sentence,\n        PUNCTUATION,\n    ",
+"alt": "sentence, PUNCTUATION",
+"nat_span": [
+1047,
+1091
+],
+"alt_span": [
+977,
+998
+]
+},
+{
+"k": 2,
+"nat": "\n            recombine(\n                lead,\n                core,\n                trail,\n                ",
+"alt": "recombine(lead, core, trail, ",
+"nat_span": [
+1282,
+1389
+],
+"alt_span": [
+1189,
+1218
+]
+},
+{
+"k": 3,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1408,
+1425
+],
+"alt_span": [
+1237,
+1238
+]
+},
+{
+"k": 4,
+"nat": ",\n            ),\n        ",
+"alt": ")",
+"nat_span": [
+1448,
+1473
+],
+"alt_span": [
+1261,
+1262
+]
+},
+{
+"k": 5,
+"nat": "\n        [\n            ",
+"alt": "[",
+"nat_span": [
+1599,
+1622
+],
+"alt_span": [
+1388,
+1389
+]
+},
+{
+"k": 6,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+1659,
+1672
+],
+"alt_span": [
+1426,
+1427
+]
+},
+{
+"k": 7,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+1712,
+1725
+],
+"alt_span": [
+1467,
+1468
+]
+},
+{
+"k": 8,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+1764,
+1777
+],
+"alt_span": [
+1507,
+1508
+]
+},
+{
+"k": 9,
+"nat": ",\n        ],\n    ",
+"alt": "]",
+"nat_span": [
+1822,
+1839
+],
+"alt_span": [
+1553,
+1554
+]
+},
+{
+"k": 10,
+"nat": "\n            sentence,\n            PUNCTUATION,\n        ",
+"alt": "sentence, PUNCTUATION",
+"nat_span": [
+2021,
+2077
+],
+"alt_span": [
+1736,
+1757
+]
+},
+{
+"k": 11,
+"nat": "\n            sentence,\n            ",
+"alt": "sentence, ",
+"nat_span": [
+2187,
+2222
+],
+"alt_span": [
+1867,
+1877
+]
+},
+{
+"k": 12,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+2263,
+2276
+],
+"alt_span": [
+1918,
+1919
+]
+},
+{
+"k": 13,
+"nat": "\n            marks,\n        ",
+"alt": " marks",
+"nat_span": [
+2288,
+2316
+],
+"alt_span": [
+1931,
+1937
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
+"doc_id": "line_wrap__t204",
+"family": "line_wrap",
+"topic": "Calculate Factorial",
+"angle": "code",
+"text_es": "Write a function `calculate_factorial(n)` that takes a non-negative integer `n`. It should return the factorial of `n`. Use recursion or iteration. Example: `calculate_factorial(5)` should return `120`, `calculate_factorial(0)` should return `1`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "MAX_SUPPORTED_INPUT = 2000\n\n\ndef validate_non_negative_integer(\n    value,\n    parameter_name,\n    maximum\n):\n    if isinstance(value, bool) or not isinstance(value, int):\n        raise TypeError(\n            \"{name} must be an int, got {kind}\".format(\n                name=parameter_name,\n                kind=type(value).__name__\n            )\n        )\n    if value < 0:\n        raise ValueError(\n            \"{name} must be non-negative, got {value}\".format(\n                name=parameter_name,\n                value=value\n            )\n        )\n    if value > maximum:\n        raise ValueError(\n            \"{name}={value} exceeds the supported maximum of {maximum}\".format(\n                name=parameter_name,\n                value=value,\n                maximum=maximum\n            )\n        )\n\n\ndef calculate_factorial(n):\n    validate_non_negative_integer(\n        value=n,\n        parameter_name=\"n\",\n        maximum=MAX_SUPPORTED_INPUT\n    )\n    result = 1\n    for factor in range(2, n + 1):\n        result *= factor\n    return result\n\n\ndef format_table_row(\n    index_cell,\n    value_cell,\n    digits_cell,\n    index_width,\n    value_width,\n    digits_width,\n    separator\n):\n    return separator.join(\n        [\n            index_cell.rjust(index_width),\n            value_cell.rjust(value_width),\n            digits_cell.rjust(digits_width)\n        ]\n    )\n\n\ndef build_factorial_table(\n    start,\n    stop,\n    headers,\n    separator\n):\n    for bound_name, bound in ((\"start\", start), (\"stop\", stop)):\n        validate_non_negative_integer(\n            value=bound,\n            parameter_name=bound_name,\n            maximum=MAX_SUPPORTED_INPUT\n        )\n    if start > stop:\n        raise ValueError(\"start must not be greater than stop\")\n\n    rows = [tuple(headers)]\n    for index in range(start, stop + 1):\n        value = str(calculate_factorial(index))\n        rows.append((str(index), value, str(len(value))))\n\n    widths = []\n    for column in range(3):\n        widths.append(max(len(row[column]) for row in rows))\n\n    lines = []\n    for index_cell, value_cell, digits_cell in rows:\n        lines.append(\n            format_table_row(\n                index_cell=index_cell,\n                value_cell=value_cell,\n                digits_cell=digits_cell,\n                index_width=widths[0],\n                value_width=widths[1],\n                digits_width=widths[2],\n                separator=separator\n            )\n        )\n    return \"\\n\".join(lines)\n\n\ndef main():\n    print(calculate_factorial(5))\n    print(calculate_factorial(0))\n    print(\n        build_factorial_table(\n            start=0,\n            stop=12,\n            headers=(\"n\", \"n!\", \"digits\"),\n            separator=\" | \"\n        )\n    )\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "MAX_SUPPORTED_INPUT = 2000\n\n\ndef validate_non_negative_integer(value, parameter_name, maximum):\n    if isinstance(value, bool) or not isinstance(value, int):\n        raise TypeError(\"{name} must be an int, got {kind}\".format(name=parameter_name, kind=type(value).__name__))\n    if value < 0:\n        raise ValueError(\"{name} must be non-negative, got {value}\".format(name=parameter_name, value=value))\n    if value > maximum:\n        raise ValueError(\"{name}={value} exceeds the supported maximum of {maximum}\".format(name=parameter_name, value=value, maximum=maximum))\n\n\ndef calculate_factorial(n):\n    validate_non_negative_integer(value=n, parameter_name=\"n\", maximum=MAX_SUPPORTED_INPUT)\n    result = 1\n    for factor in range(2, n + 1):\n        result *= factor\n    return result\n\n\ndef format_table_row(index_cell, value_cell, digits_cell, index_width, value_width, digits_width, separator):\n    return separator.join([index_cell.rjust(index_width), value_cell.rjust(value_width), digits_cell.rjust(digits_width)])\n\n\ndef build_factorial_table(start, stop, headers, separator):\n    for bound_name, bound in ((\"start\", start), (\"stop\", stop)):\n        validate_non_negative_integer(value=bound, parameter_name=bound_name, maximum=MAX_SUPPORTED_INPUT)\n    if start > stop:\n        raise ValueError(\"start must not be greater than stop\")\n\n    rows = [tuple(headers)]\n    for index in range(start, stop + 1):\n        value = str(calculate_factorial(index))\n        rows.append((str(index), value, str(len(value))))\n\n    widths = []\n    for column in range(3):\n        widths.append(max(len(row[column]) for row in rows))\n\n    lines = []\n    for index_cell, value_cell, digits_cell in rows:\n        lines.append(format_table_row(index_cell=index_cell, value_cell=value_cell, digits_cell=digits_cell, index_width=widths[0], value_width=widths[1], digits_width=widths[2], separator=separator))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    print(calculate_factorial(5))\n    print(calculate_factorial(0))\n    print(build_factorial_table(start=0, stop=12, headers=(\"n\", \"n!\", \"digits\"), separator=\" | \"))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "\n    value,\n    parameter_name,\n    maximum\n",
+"alt": "value, parameter_name, maximum",
+"nat_span": [
+63,
+107
+],
+"alt_span": [
+63,
+93
+]
+},
+{
+"k": 1,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+196,
+209
+],
+"alt_span": [
+182,
+182
+]
+},
+{
+"k": 2,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+399,
+412
+],
+"alt_span": [
+317,
+317
+]
+},
+{
+"k": 3,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+601,
+614
+],
+"alt_span": [
+451,
+451
+]
+},
+{
+"k": 4,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+868,
+877
+],
+"alt_span": [
+634,
+634
+]
+},
+{
+"k": 5,
+"nat": "\n    index_cell,\n    value_cell,\n    digits_cell,\n    index_width,\n    value_width,\n    digits_width,\n    separator\n",
+"alt": "index_cell, value_cell, digits_cell, index_width, value_width, digits_width, separator",
+"nat_span": [
+1072,
+1188
+],
+"alt_span": [
+808,
+894
+]
+},
+{
+"k": 6,
+"nat": "\n        [\n            ",
+"alt": "[",
+"nat_span": [
+1217,
+1240
+],
+"alt_span": [
+923,
+924
+]
+},
+{
+"k": 7,
+"nat": "\n    start,\n    stop,\n    headers,\n    separator\n",
+"alt": "start, stop, headers, separator",
+"nat_span": [
+1402,
+1451
+],
+"alt_span": [
+1048,
+1079
+]
+},
+{
+"k": 8,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+1557,
+1570
+],
+"alt_span": [
+1185,
+1185
+]
+},
+{
+"k": 9,
+"nat": "\n            format_table_row(\n                ",
+"alt": "format_table_row(",
+"nat_span": [
+2129,
+2176
+],
+"alt_span": [
+1711,
+1728
+]
+},
+{
+"k": 10,
+"nat": "\n        build_factorial_table(\n            ",
+"alt": "build_factorial_table(",
+"nat_span": [
+2577,
+2621
+],
+"alt_span": [
+2011,
+2033
+]
+}
+],
+"k_en": 11,
+"shared_fraction": 0.91,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\n    value,\n    parameter_name,\n    maximum\n",
+"alt": "value, parameter_name, maximum",
+"nat_span": [
+63,
+107
+],
+"alt_span": [
+63,
+93
+]
+},
+{
+"k": 1,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+196,
+209
+],
+"alt_span": [
+182,
+182
+]
+},
+{
+"k": 2,
+"nat": "\n                ",
+"alt": "",
+"nat_span": [
+252,
+269
+],
+"alt_span": [
+225,
+225
+]
+},
+{
+"k": 3,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+289,
+306
+],
+"alt_span": [
+245,
+246
+]
+},
+{
+"k": 4,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+331,
+354
+],
+"alt_span": [
+271,
+272
+]
+},
+{
+"k": 5,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+399,
+412
+],
+"alt_span": [
+317,
+317
+]
+},
+{
+"k": 6,
+"nat": "\n                ",
+"alt": "",
+"nat_span": [
+462,
+479
+],
+"alt_span": [
+367,
+367
+]
+},
+{
+"k": 7,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+499,
+516
+],
+"alt_span": [
+387,
+388
+]
+},
+{
+"k": 8,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+527,
+550
+],
+"alt_span": [
+399,
+400
+]
+},
+{
+"k": 9,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+601,
+614
+],
+"alt_span": [
+451,
+451
+]
+},
+{
+"k": 10,
+"nat": "\n                ",
+"alt": "",
+"nat_span": [
+681,
+698
+],
+"alt_span": [
+518,
+518
+]
+},
+{
+"k": 11,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+718,
+735
+],
+"alt_span": [
+538,
+539
+]
+},
+{
+"k": 12,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+747,
+764
+],
+"alt_span": [
+551,
+552
+]
+},
+{
+"k": 13,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+779,
+802
+],
+"alt_span": [
+567,
+568
+]
+},
+{
+"k": 14,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+868,
+877
+],
+"alt_span": [
+634,
+634
+]
+},
+{
+"k": 15,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+885,
+894
+],
+"alt_span": [
+642,
+643
+]
+},
+{
+"k": 16,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+913,
+922
+],
+"alt_span": [
+662,
+663
+]
+},
+{
+"k": 17,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+949,
+954
+],
+"alt_span": [
+690,
+690
+]
+},
+{
+"k": 18,
+"nat": "\n    index_cell,\n    value_cell,\n    digits_cell,\n    index_width,\n    value_width,\n    digits_width,\n    separator\n",
+"alt": "index_cell, value_cell, digits_cell, index_width, value_width, digits_width, separator",
+"nat_span": [
+1072,
+1188
+],
+"alt_span": [
+808,
+894
+]
+},
+{
+"k": 19,
+"nat": "\n        [\n            ",
+"alt": "[",
+"nat_span": [
+1217,
+1240
+],
+"alt_span": [
+923,
+924
+]
+},
+{
+"k": 20,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+1270,
+1283
+],
+"alt_span": [
+954,
+955
+]
+},
+{
+"k": 21,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+1313,
+1326
+],
+"alt_span": [
+985,
+986
+]
+},
+{
+"k": 22,
+"nat": "\n        ]\n    ",
+"alt": "]",
+"nat_span": [
+1357,
+1372
+],
+"alt_span": [
+1017,
+1018
+]
+},
+{
+"k": 23,
+"nat": "\n    start,\n    stop,\n    headers,\n    separator\n",
+"alt": "start, stop, headers, separator",
+"nat_span": [
+1402,
+1451
+],
+"alt_span": [
+1048,
+1079
+]
+},
+{
+"k": 24,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+1557,
+1570
+],
+"alt_span": [
+1185,
+1185
+]
+},
+{
+"k": 25,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+1582,
+1595
+],
+"alt_span": [
+1197,
+1198
+]
+},
+{
+"k": 26,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+1621,
+1634
+],
+"alt_span": [
+1224,
+1225
+]
+},
+{
+"k": 27,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+1661,
+1670
+],
+"alt_span": [
+1252,
+1252
+]
+},
+{
+"k": 28,
+"nat": "\n            format_table_row(\n                ",
+"alt": "format_table_row(",
+"nat_span": [
+2129,
+2176
+],
+"alt_span": [
+1711,
+1728
+]
+},
+{
+"k": 29,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2198,
+2215
+],
+"alt_span": [
+1750,
+1751
+]
+},
+{
+"k": 30,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2237,
+2254
+],
+"alt_span": [
+1773,
+1774
+]
+},
+{
+"k": 31,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2278,
+2295
+],
+"alt_span": [
+1798,
+1799
+]
+},
+{
+"k": 32,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2317,
+2334
+],
+"alt_span": [
+1821,
+1822
+]
+},
+{
+"k": 33,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2356,
+2373
+],
+"alt_span": [
+1844,
+1845
+]
+},
+{
+"k": 34,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2396,
+2413
+],
+"alt_span": [
+1868,
+1869
+]
+},
+{
+"k": 35,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+2432,
+2455
+],
+"alt_span": [
+1888,
+1889
+]
+},
+{
+"k": 36,
+"nat": "\n        build_factorial_table(\n            ",
+"alt": "build_factorial_table(",
+"nat_span": [
+2577,
+2621
+],
+"alt_span": [
+2011,
+2033
+]
+},
+{
+"k": 37,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+2629,
+2642
+],
+"alt_span": [
+2041,
+2042
+]
+},
+{
+"k": 38,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+2650,
+2663
+],
+"alt_span": [
+2050,
+2051
+]
+},
+{
+"k": 39,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+2693,
+2706
+],
+"alt_span": [
+2081,
+2082
+]
+},
+{
+"k": 40,
+"nat": "\n        )\n    ",
+"alt": ")",
+"nat_span": [
+2721,
+2736
+],
+"alt_span": [
+2097,
+2098
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
+"doc_id": "line_wrap__t205",
+"family": "line_wrap",
+"topic": "Check for Perfect Square",
+"angle": "code",
+"text_es": "Implement `is_perfect_square(n)` that takes a non-negative integer `n`. It should return `True` if `n` is a perfect square, `False` otherwise. Example: `is_perfect_square(9)` should return `True`, `is_perfect_square(10)` should return `False`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "import math\nfrom collections import namedtuple\n\nSquareFacts = namedtuple(\n    \"SquareFacts\",\n    [\"number\", \"is_square\", \"floor_root\", \"gap\", \"next_square\"]\n)\n\n\ndef _require_non_negative_int(\n    value,\n    argument_name,\n    function_name\n):\n    if isinstance(value, bool) or not isinstance(value, int):\n        raise TypeError(\n            \"{}() expects an int for {!r}, got {}\".format(\n                function_name,\n                argument_name,\n                type(value).__name__\n            )\n        )\n    if value < 0:\n        raise ValueError(\n            \"{}() expects {!r} to be non-negative, got {}\".format(\n                function_name,\n                argument_name,\n                value\n            )\n        )\n    return value\n\n\ndef is_perfect_square(n):\n    _require_non_negative_int(\n        n,\n        \"n\",\n        \"is_perfect_square\"\n    )\n    root = math.isqrt(n)\n    return root * root == n\n\n\ndef describe(n):\n    _require_non_negative_int(\n        n,\n        \"n\",\n        \"describe\"\n    )\n    root = math.isqrt(n)\n    return SquareFacts(\n        n,\n        root * root == n,\n        root,\n        n - root * root,\n        (root + 1) * (root + 1)\n    )\n\n\ndef format_report_line(\n    number,\n    is_square,\n    floor_root,\n    gap,\n    next_square,\n    number_width\n):\n    if is_square:\n        detail = \"= {}^2\".format(floor_root)\n    else:\n        detail = \"{}^2 + {}, next square is {}\".format(\n            floor_root,\n            gap,\n            next_square\n        )\n    return \"{:>{width}}  {:<4} {}\".format(\n        number,\n        \"yes\" if is_square else \"no\",\n        detail,\n        width=number_width\n    )\n\n\ndef build_report(numbers, title, separator):\n    width = max((len(str(n)) for n in numbers), default=1)\n    lines = [title, separator * len(title)]\n    for n in numbers:\n        facts = describe(n)\n        lines.append(\n            format_report_line(\n                facts.number,\n                facts.is_square,\n                facts.floor_root,\n                facts.gap,\n                facts.next_square,\n                width\n            )\n        )\n    squares = sum(1 for n in numbers if is_perfect_square(n))\n    lines.append(\n        \"{} of {} values are perfect squares\".format(\n            squares,\n            len(numbers)\n        )\n    )\n    return \"\\n\".join(lines)\n\n\ndef main():\n    print(\n        build_report(\n            [0, 1, 9, 10, 144, 145, 1000000],\n            \"Perfect square report\",\n            \"-\"\n        )\n    )\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import math\nfrom collections import namedtuple\n\nSquareFacts = namedtuple(\"SquareFacts\", [\"number\", \"is_square\", \"floor_root\", \"gap\", \"next_square\"])\n\n\ndef _require_non_negative_int(value, argument_name, function_name):\n    if isinstance(value, bool) or not isinstance(value, int):\n        raise TypeError(\"{}() expects an int for {!r}, got {}\".format(function_name, argument_name, type(value).__name__))\n    if value < 0:\n        raise ValueError(\"{}() expects {!r} to be non-negative, got {}\".format(function_name, argument_name, value))\n    return value\n\n\ndef is_perfect_square(n):\n    _require_non_negative_int(n, \"n\", \"is_perfect_square\")\n    root = math.isqrt(n)\n    return root * root == n\n\n\ndef describe(n):\n    _require_non_negative_int(n, \"n\", \"describe\")\n    root = math.isqrt(n)\n    return SquareFacts(n, root * root == n, root, n - root * root, (root + 1) * (root + 1))\n\n\ndef format_report_line(number, is_square, floor_root, gap, next_square, number_width):\n    if is_square:\n        detail = \"= {}^2\".format(floor_root)\n    else:\n        detail = \"{}^2 + {}, next square is {}\".format(floor_root, gap, next_square)\n    return \"{:>{width}}  {:<4} {}\".format(number, \"yes\" if is_square else \"no\", detail, width=number_width)\n\n\ndef build_report(numbers, title, separator):\n    width = max((len(str(n)) for n in numbers), default=1)\n    lines = [title, separator * len(title)]\n    for n in numbers:\n        facts = describe(n)\n        lines.append(format_report_line(facts.number, facts.is_square, facts.floor_root, facts.gap, facts.next_square, width))\n    squares = sum(1 for n in numbers if is_perfect_square(n))\n    lines.append(\"{} of {} values are perfect squares\".format(squares, len(numbers)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    print(build_report([0, 1, 9, 10, 144, 145, 1000000], \"Perfect square report\", \"-\"))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+73,
+78
+],
+"alt_span": [
+73,
+73
+]
+},
+{
+"k": 1,
+"nat": "\n    value,\n    argument_name,\n    function_name\n",
+"alt": "value, argument_name, function_name",
+"nat_span": [
+191,
+240
+],
+"alt_span": [
+181,
+216
+]
+},
+{
+"k": 2,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+329,
+342
+],
+"alt_span": [
+305,
+305
+]
+},
+{
+"k": 3,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+555,
+568
+],
+"alt_span": [
+447,
+447
+]
+},
+{
+"k": 4,
+"nat": "\n        n,\n        ",
+"alt": "n, ",
+"nat_span": [
+806,
+826
+],
+"alt_span": [
+614,
+617
+]
+},
+{
+"k": 5,
+"nat": "\n        n,\n        ",
+"alt": "n, ",
+"nat_span": [
+967,
+987
+],
+"alt_span": [
+745,
+748
+]
+},
+{
+"k": 6,
+"nat": "\n        n,\n        ",
+"alt": "n, ",
+"nat_span": [
+1065,
+1085
+],
+"alt_span": [
+813,
+816
+]
+},
+{
+"k": 7,
+"nat": "\n    number,\n    is_square,\n    floor_root,\n    gap,\n    next_square,\n    number_width\n",
+"alt": "number, is_square, floor_root, gap, next_square, number_width",
+"nat_span": [
+1205,
+1292
+],
+"alt_span": [
+907,
+968
+]
+},
+{
+"k": 8,
+"nat": "\n            floor_root,\n            gap,\n            next_square\n        ",
+"alt": "floor_root, gap, next_square",
+"nat_span": [
+1423,
+1497
+],
+"alt_span": [
+1099,
+1127
+]
+},
+{
+"k": 9,
+"nat": "\n        number,\n        ",
+"alt": "number, ",
+"nat_span": [
+1541,
+1566
+],
+"alt_span": [
+1171,
+1179
+]
+},
+{
+"k": 10,
+"nat": "\n            format_report_line(\n                ",
+"alt": "format_report_line(",
+"nat_span": [
+1866,
+1915
+],
+"alt_span": [
+1458,
+1477
+]
+},
+{
+"k": 11,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+2183,
+2192
+],
+"alt_span": [
+1643,
+1643
+]
+},
+{
+"k": 12,
+"nat": "\n        build_report(\n            ",
+"alt": "build_report(",
+"nat_span": [
+2352,
+2387
+],
+"alt_span": [
+1764,
+1777
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.907,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+73,
+78
+],
+"alt_span": [
+73,
+73
+]
+},
+{
+"k": 1,
+"nat": "\n    ",
+"alt": " ",
+"nat_span": [
+92,
+97
+],
+"alt_span": [
+87,
+88
+]
+},
+{
+"k": 2,
+"nat": "\n",
+"alt": "",
+"nat_span": [
+156,
+157
+],
+"alt_span": [
+147,
+147
+]
+},
+{
+"k": 3,
+"nat": "\n    value,\n    argument_name,\n    function_name\n",
+"alt": "value, argument_name, function_name",
+"nat_span": [
+191,
+240
+],
+"alt_span": [
+181,
+216
+]
+},
+{
+"k": 4,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+329,
+342
+],
+"alt_span": [
+305,
+305
+]
+},
+{
+"k": 5,
+"nat": "\n                function_name,\n                argument_name,\n                ",
+"alt": "function_name, argument_name, ",
+"nat_span": [
+388,
+467
+],
+"alt_span": [
+351,
+381
+]
+},
+{
+"k": 6,
+"nat": "\n            )\n        ",
+"alt": ")",
+"nat_span": [
+487,
+510
+],
+"alt_span": [
+401,
+402
+]
+},
+{
+"k": 7,
+"nat": "\n            ",
+"alt": "",
+"nat_span": [
+555,
+568
+],
+"alt_span": [
+447,
+447
+]
+},
+{
+"k": 8,
+"nat": "\n                function_name,\n                argument_name,\n                value\n            )\n        ",
+"alt": "function_name, argument_name, value)",
+"nat_span": [
+622,
+729
+],
+"alt_span": [
+501,
+537
+]
+},
+{
+"k": 9,
+"nat": "\n        n,\n        ",
+"alt": "n, ",
+"nat_span": [
+806,
+826
+],
+"alt_span": [
+614,
+617
+]
+},
+{
+"k": 10,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+830,
+839
+],
+"alt_span": [
+621,
+622
+]
+},
+{
+"k": 11,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+858,
+863
+],
+"alt_span": [
+641,
+641
+]
+},
+{
+"k": 12,
+"nat": "\n        n,\n        ",
+"alt": "n, ",
+"nat_span": [
+967,
+987
+],
+"alt_span": [
+745,
+748
+]
+},
+{
+"k": 13,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+991,
+1000
+],
+"alt_span": [
+752,
+753
+]
+},
+{
+"k": 14,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+1010,
+1015
+],
+"alt_span": [
+763,
+763
+]
+},
+{
+"k": 15,
+"nat": "\n        n,\n        ",
+"alt": "n, ",
+"nat_span": [
+1065,
+1085
+],
+"alt_span": [
+813,
+816
+]
+},
+{
+"k": 16,
+"nat": "\n        root,\n        ",
+"alt": " root, ",
+"nat_span": [
+1102,
+1125
+],
+"alt_span": [
+833,
+840
+]
+},
+{
+"k": 17,
+"nat": "\n        ",
+"alt": " ",
+"nat_span": [
+1141,
+1150
+],
+"alt_span": [
+856,
+857
+]
+},
+{
+"k": 18,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+1173,
+1178
+],
+"alt_span": [
+880,
+880
+]
+},
+{
+"k": 19,
+"nat": "\n    number,\n    is_square,\n    floor_root,\n    gap,\n    next_square,\n    number_width\n",
+"alt": "number, is_square, floor_root, gap, next_square, number_width",
+"nat_span": [
+1205,
+1292
+],
+"alt_span": [
+907,
+968
+]
+},
+{
+"k": 20,
+"nat": "\n            floor_root,\n            gap,\n            next_square\n        ",
+"alt": "floor_root, gap, next_square",
+"nat_span": [
+1423,
+1497
+],
+"alt_span": [
+1099,
+1127
+]
+},
+{
+"k": 21,
+"nat": "\n        number,\n        ",
+"alt": "number, ",
+"nat_span": [
+1541,
+1566
+],
+"alt_span": [
+1171,
+1179
+]
+},
+{
+"k": 22,
+"nat": "\n        detail,\n        ",
+"alt": " detail, ",
+"nat_span": [
+1595,
+1620
+],
+"alt_span": [
+1208,
+1217
+]
+},
+{
+"k": 23,
+"nat": "\n    ",
+"alt": "",
+"nat_span": [
+1638,
+1643
+],
+"alt_span": [
+1235,
+1235
+]
+},
+{
+"k": 24,
+"nat": "\n            format_report_line(\n                ",
+"alt": "format_report_line(",
+"nat_span": [
+1866,
+1915
+],
+"alt_span": [
+1458,
+1477
+]
+},
+{
+"k": 25,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1928,
+1945
+],
+"alt_span": [
+1490,
+1491
+]
+},
+{
+"k": 26,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1961,
+1978
+],
+"alt_span": [
+1507,
+1508
+]
+},
+{
+"k": 27,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+1995,
+2012
+],
+"alt_span": [
+1525,
+1526
+]
+},
+{
+"k": 28,
+"nat": "\n                ",
+"alt": " ",
+"nat_span": [
+2022,
+2039
+],
+"alt_span": [
+1536,
+1537
+]
+},
+{
+"k": 29,
+"nat": "\n                width\n            )\n        ",
+"alt": " width)",
+"nat_span": [
+2057,
+2102
+],
+"alt_span": [
+1555,
+1562
+]
+},
+{
+"k": 30,
+"nat": "\n        ",
+"alt": "",
+"nat_span": [
+2183,
+2192
+],
+"alt_span": [
+1643,
+1643
+]
+},
+{
+"k": 31,
+"nat": "\n            squares,\n            ",
+"alt": "squares, ",
+"nat_span": [
+2237,
+2271
+],
+"alt_span": [
+1688,
+1697
+]
+},
+{
+"k": 32,
+"nat": "\n        )\n    ",
+"alt": ")",
+"nat_span": [
+2283,
+2298
+],
+"alt_span": [
+1709,
+1710
+]
+},
+{
+"k": 33,
+"nat": "\n        build_report(\n            ",
+"alt": "build_report(",
+"nat_span": [
+2352,
+2387
+],
+"alt_span": [
+1764,
+1777
+]
+},
+{
+"k": 34,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+2420,
+2433
+],
+"alt_span": [
+1810,
+1811
+]
+},
+{
+"k": 35,
+"nat": "\n            ",
+"alt": " ",
+"nat_span": [
+2457,
+2470
+],
+"alt_span": [
+1835,
+1836
+]
+},
+{
+"k": 36,
+"nat": "\n        )\n    ",
+"alt": ")",
+"nat_span": [
+2473,
+2488
+],
+"alt_span": [
+1839,
+1840
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 }
 ]

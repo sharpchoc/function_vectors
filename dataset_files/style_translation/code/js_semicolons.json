@@ -18382,20 +18382,20 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const groupByProperty = (arr, prop) => {\n  const result = {};\n\n  for (let i = 0; i < arr.length; i++) {\n    const item = arr[i];\n    const key = item[prop];\n\n    if (!result[key]) {\n      result[key] = [];\n    }\n    result[key].push(item);\n  }\n\n  return result;\n};\n\n// Example usage:\nconst data = [\n  { id: 1, type: 'A', value: 10 },\n  { id: 2, type: 'B', value: 20 },\n  { id: 3, type: 'A', value: 30 },\n  { id: 4, type: 'C', value: 40 },\n  { id: 5, type: 'B', value: 50 },\n];\n\nconst groupedByType = groupByProperty(data, 'type');\nconst groupedByValue = groupByProperty(data, 'value'); // Another example of use.\n\n//console.log(groupedByType);\n//console.log(groupedByValue);\n",
-"text_alt": "const groupByProperty = (arr, prop) => {\n  const result = {}\n\n  for (let i = 0; i < arr.length; i++) {\n    const item = arr[i]\n    const key = item[prop]\n\n    if (!result[key]) {\n      result[key] = []\n    }\n    result[key].push(item)\n  }\n\n  return result\n}\n\n// Example usage:\nconst data = [\n  { id: 1, type: 'A', value: 10 },\n  { id: 2, type: 'B', value: 20 },\n  { id: 3, type: 'A', value: 30 },\n  { id: 4, type: 'C', value: 40 },\n  { id: 5, type: 'B', value: 50 },\n]\n\nconst groupedByType = groupByProperty(data, 'type')\nconst groupedByValue = groupByProperty(data, 'value') // Another example of use.\n\n//console.log(groupedByType);\n//console.log(groupedByValue);\n",
+"text_nat": "function groupByProperty(arr, prop) {\n  if (!Array.isArray(arr)) {\n    throw new TypeError('groupByProperty expects an array as its first argument');\n  }\n  if (typeof prop !== 'string' || prop.length === 0) {\n    throw new TypeError('groupByProperty expects a non-empty property name');\n  }\n  const groups = Object.create(null);\n  for (const item of arr) {\n    if (item === null || typeof item !== 'object') {\n      throw new TypeError('every element must be an object');\n    }\n    const key = String(item[prop]);\n    if (!(key in groups)) {\n      groups[key] = [];\n    }\n    groups[key].push(item);\n  }\n  return Object.assign({}, groups);\n}\n\nfunction groupSizes(groups) {\n  const sizes = {};\n  for (const key of Object.keys(groups)) {\n    sizes[key] = groups[key].length;\n  }\n  return sizes;\n}\n\nfunction largestGroup(groups) {\n  let bestKey = null;\n  let bestCount = -1;\n  for (const [key, members] of Object.entries(groups)) {\n    if (members.length > bestCount) {\n      bestKey = key;\n      bestCount = members.length;\n    }\n  }\n  return bestKey === null ? null : { key: bestKey, count: bestCount };\n}\n\nfunction formatGroups(groups, labelProp) {\n  const lines = [];\n  for (const key of Object.keys(groups).sort()) {\n    const labels = groups[key].map((item) => String(item[labelProp]));\n    lines.push(`${key}: ${labels.join(', ')}`);\n  }\n  return lines.join('\\n');\n}\n\nfunction report(arr, prop, labelProp) {\n  const groups = groupByProperty(arr, prop);\n  const biggest = largestGroup(groups);\n  const parts = [formatGroups(groups, labelProp)];\n  parts.push(`sizes: ${JSON.stringify(groupSizes(groups))}`);\n  if (biggest !== null) {\n    parts.push(`largest: ${biggest.key} (${biggest.count})`);\n  }\n  return parts.join('\\n');\n}\n\nfunction main() {\n  const records = [\n    { id: 1, type: 'A' },\n    { id: 2, type: 'B' },\n    { id: 3, type: 'A' },\n    { id: 4, type: 'C' },\n    { id: 5, type: 'B' },\n  ];\n  console.log(JSON.stringify(groupByProperty(records, 'type')));\n  console.log(report(records, 'type', 'id'));\n  try {\n    groupByProperty(records, '');\n  } catch (err) {\n    console.log(`error: ${err.message}`);\n  }\n}\n\nmain();\n",
+"text_alt": "function groupByProperty(arr, prop) {\n  if (!Array.isArray(arr)) {\n    throw new TypeError('groupByProperty expects an array as its first argument')\n  }\n  if (typeof prop !== 'string' || prop.length === 0) {\n    throw new TypeError('groupByProperty expects a non-empty property name')\n  }\n  const groups = Object.create(null)\n  for (const item of arr) {\n    if (item === null || typeof item !== 'object') {\n      throw new TypeError('every element must be an object')\n    }\n    const key = String(item[prop])\n    if (!(key in groups)) {\n      groups[key] = []\n    }\n    groups[key].push(item)\n  }\n  return Object.assign({}, groups)\n}\n\nfunction groupSizes(groups) {\n  const sizes = {}\n  for (const key of Object.keys(groups)) {\n    sizes[key] = groups[key].length\n  }\n  return sizes\n}\n\nfunction largestGroup(groups) {\n  let bestKey = null\n  let bestCount = -1\n  for (const [key, members] of Object.entries(groups)) {\n    if (members.length > bestCount) {\n      bestKey = key\n      bestCount = members.length\n    }\n  }\n  return bestKey === null ? null : { key: bestKey, count: bestCount }\n}\n\nfunction formatGroups(groups, labelProp) {\n  const lines = []\n  for (const key of Object.keys(groups).sort()) {\n    const labels = groups[key].map((item) => String(item[labelProp]))\n    lines.push(`${key}: ${labels.join(', ')}`)\n  }\n  return lines.join('\\n')\n}\n\nfunction report(arr, prop, labelProp) {\n  const groups = groupByProperty(arr, prop)\n  const biggest = largestGroup(groups)\n  const parts = [formatGroups(groups, labelProp)]\n  parts.push(`sizes: ${JSON.stringify(groupSizes(groups))}`)\n  if (biggest !== null) {\n    parts.push(`largest: ${biggest.key} (${biggest.count})`)\n  }\n  return parts.join('\\n')\n}\n\nfunction main() {\n  const records = [\n    { id: 1, type: 'A' },\n    { id: 2, type: 'B' },\n    { id: 3, type: 'A' },\n    { id: 4, type: 'C' },\n    { id: 5, type: 'B' },\n  ]\n  console.log(JSON.stringify(groupByProperty(records, 'type')))\n  console.log(report(records, 'type', 'id'))\n  try {\n    groupByProperty(records, '')\n  } catch (err) {\n    console.log(`error: ${err.message}`)\n  }\n}\n\nmain()\n",
 "opps": [
 {
 "k": 0,
 "nat": ";",
 "alt": "",
 "nat_span": [
-60,
-61
+148,
+149
 ],
 "alt_span": [
-60,
-60
+148,
+148
 ]
 },
 {
@@ -18403,12 +18403,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-127,
-128
+285,
+286
 ],
 "alt_span": [
-126,
-126
+284,
+284
 ]
 },
 {
@@ -18416,12 +18416,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-155,
-156
+327,
+328
 ],
 "alt_span": [
-153,
-153
+325,
+325
 ]
 },
 {
@@ -18429,12 +18429,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-204,
-205
+470,
+471
 ],
 "alt_span": [
-201,
-201
+467,
+467
 ]
 },
 {
@@ -18442,25 +18442,25 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-238,
-239
+512,
+513
 ],
 "alt_span": [
-234,
-234
+508,
+508
 ]
 },
 {
 "k": 5,
-"nat": ";\n};",
-"alt": "\n}",
+"nat": ";",
+"alt": "",
 "nat_span": [
-260,
-264
+564,
+565
 ],
 "alt_span": [
-255,
-257
+559,
+559
 ]
 },
 {
@@ -18468,12 +18468,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-475,
-476
+598,
+599
 ],
 "alt_span": [
-468,
-468
+592,
+592
 ]
 },
 {
@@ -18481,12 +18481,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-529,
-530
+638,
+639
 ],
 "alt_span": [
-521,
-521
+631,
+631
 ]
 },
 {
@@ -18494,31 +18494,331 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-584,
-585
+691,
+692
 ],
 "alt_span": [
-575,
-575
+683,
+683
+]
+},
+{
+"k": 9,
+"nat": ";",
+"alt": "",
+"nat_span": [
+771,
+772
+],
+"alt_span": [
+762,
+762
+]
+},
+{
+"k": 10,
+"nat": ";",
+"alt": "",
+"nat_span": [
+791,
+792
+],
+"alt_span": [
+781,
+781
+]
+},
+{
+"k": 11,
+"nat": ";",
+"alt": "",
+"nat_span": [
+848,
+849
+],
+"alt_span": [
+837,
+837
+]
+},
+{
+"k": 12,
+"nat": ";",
+"alt": "",
+"nat_span": [
+870,
+871
+],
+"alt_span": [
+858,
+858
+]
+},
+{
+"k": 13,
+"nat": ";",
+"alt": "",
+"nat_span": [
+986,
+987
+],
+"alt_span": [
+973,
+973
+]
+},
+{
+"k": 14,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1020,
+1021
+],
+"alt_span": [
+1006,
+1006
+]
+},
+{
+"k": 15,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1101,
+1102
+],
+"alt_span": [
+1086,
+1086
+]
+},
+{
+"k": 16,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1167,
+1168
+],
+"alt_span": [
+1151,
+1151
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1288,
+1289
+],
+"alt_span": [
+1271,
+1271
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1336,
+1337
+],
+"alt_span": [
+1318,
+1318
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1367,
+1368
+],
+"alt_span": [
+1348,
+1348
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1455,
+1456
+],
+"alt_span": [
+1435,
+1435
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1495,
+1496
+],
+"alt_span": [
+1474,
+1474
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1546,
+1547
+],
+"alt_span": [
+1524,
+1524
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1608,
+1609
+],
+"alt_span": [
+1585,
+1585
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1696,
+1697
+],
+"alt_span": [
+1672,
+1672
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1727,
+1728
+],
+"alt_span": [
+1702,
+1702
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1903,
+1904
+],
+"alt_span": [
+1877,
+1877
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1968,
+1969
+],
+"alt_span": [
+1941,
+1941
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2014,
+2015
+],
+"alt_span": [
+1986,
+1986
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2056,
+2057
+],
+"alt_span": [
+2027,
+2027
+]
+},
+{
+"k": 30,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2116,
+2117
+],
+"alt_span": [
+2086,
+2086
+]
+},
+{
+"k": 31,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2131,
+2132
+],
+"alt_span": [
+2100,
+2100
 ]
 }
 ],
-"k_en": 9,
-"shared_fraction": 0.97,
+"k_en": 32,
+"shared_fraction": 0.965,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": ";",
 "alt": "",
 "nat_span": [
-60,
-61
+148,
+149
 ],
 "alt_span": [
-60,
-60
+148,
+148
 ]
 },
 {
@@ -18526,12 +18826,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-127,
-128
+285,
+286
 ],
 "alt_span": [
-126,
-126
+284,
+284
 ]
 },
 {
@@ -18539,12 +18839,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-155,
-156
+327,
+328
 ],
 "alt_span": [
-153,
-153
+325,
+325
 ]
 },
 {
@@ -18552,12 +18852,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-204,
-205
+470,
+471
 ],
 "alt_span": [
-201,
-201
+467,
+467
 ]
 },
 {
@@ -18565,25 +18865,25 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-238,
-239
+512,
+513
 ],
 "alt_span": [
-234,
-234
+508,
+508
 ]
 },
 {
 "k": 5,
-"nat": ";\n};",
-"alt": "\n}",
+"nat": ";",
+"alt": "",
 "nat_span": [
-260,
-264
+564,
+565
 ],
 "alt_span": [
-255,
-257
+559,
+559
 ]
 },
 {
@@ -18591,12 +18891,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-475,
-476
+598,
+599
 ],
 "alt_span": [
-468,
-468
+592,
+592
 ]
 },
 {
@@ -18604,12 +18904,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-529,
-530
+638,
+639
 ],
 "alt_span": [
-521,
-521
+631,
+631
 ]
 },
 {
@@ -18617,16 +18917,320 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-584,
-585
+691,
+692
 ],
 "alt_span": [
-575,
-575
+683,
+683
+]
+},
+{
+"k": 9,
+"nat": ";",
+"alt": "",
+"nat_span": [
+771,
+772
+],
+"alt_span": [
+762,
+762
+]
+},
+{
+"k": 10,
+"nat": ";",
+"alt": "",
+"nat_span": [
+791,
+792
+],
+"alt_span": [
+781,
+781
+]
+},
+{
+"k": 11,
+"nat": ";",
+"alt": "",
+"nat_span": [
+848,
+849
+],
+"alt_span": [
+837,
+837
+]
+},
+{
+"k": 12,
+"nat": ";",
+"alt": "",
+"nat_span": [
+870,
+871
+],
+"alt_span": [
+858,
+858
+]
+},
+{
+"k": 13,
+"nat": ";",
+"alt": "",
+"nat_span": [
+986,
+987
+],
+"alt_span": [
+973,
+973
+]
+},
+{
+"k": 14,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1020,
+1021
+],
+"alt_span": [
+1006,
+1006
+]
+},
+{
+"k": 15,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1101,
+1102
+],
+"alt_span": [
+1086,
+1086
+]
+},
+{
+"k": 16,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1167,
+1168
+],
+"alt_span": [
+1151,
+1151
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1288,
+1289
+],
+"alt_span": [
+1271,
+1271
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1336,
+1337
+],
+"alt_span": [
+1318,
+1318
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1367,
+1368
+],
+"alt_span": [
+1348,
+1348
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1455,
+1456
+],
+"alt_span": [
+1435,
+1435
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1495,
+1496
+],
+"alt_span": [
+1474,
+1474
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1546,
+1547
+],
+"alt_span": [
+1524,
+1524
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1608,
+1609
+],
+"alt_span": [
+1585,
+1585
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1696,
+1697
+],
+"alt_span": [
+1672,
+1672
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1727,
+1728
+],
+"alt_span": [
+1702,
+1702
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1903,
+1904
+],
+"alt_span": [
+1877,
+1877
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1968,
+1969
+],
+"alt_span": [
+1941,
+1941
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2014,
+2015
+],
+"alt_span": [
+1986,
+1986
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2056,
+2057
+],
+"alt_span": [
+2027,
+2027
+]
+},
+{
+"k": 30,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2116,
+2117
+],
+"alt_span": [
+2086,
+2086
+]
+},
+{
+"k": 31,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2131,
+2132
+],
+"alt_span": [
+2100,
+2100
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_semicolons__t066",
@@ -26179,20 +26783,20 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const isPowerOfTwo = (n) => {\n  if (n <= 0) {\n    return false;\n  }\n  while (n % 2 === 0) {\n    n /= 2;\n  }\n  return n === 1;\n};\n// Additional test cases to meet statement count and distribution\nlet result1 = isPowerOfTwo(1);\nlet result2 = isPowerOfTwo(2);\nlet result3 = isPowerOfTwo(4);\nlet result4 = isPowerOfTwo(8);\nlet result5 = isPowerOfTwo(3);\nlet result6 = isPowerOfTwo(6);\nlet result7 = isPowerOfTwo(0);\nlet result8 = isPowerOfTwo(-4);\nlet result9 = isPowerOfTwo(1024);\nlet finalCheck = isPowerOfTwo(1023);\n",
-"text_alt": "const isPowerOfTwo = (n) => {\n  if (n <= 0) {\n    return false\n  }\n  while (n % 2 === 0) {\n    n /= 2\n  }\n  return n === 1\n}\n// Additional test cases to meet statement count and distribution\nlet result1 = isPowerOfTwo(1)\nlet result2 = isPowerOfTwo(2)\nlet result3 = isPowerOfTwo(4)\nlet result4 = isPowerOfTwo(8)\nlet result5 = isPowerOfTwo(3)\nlet result6 = isPowerOfTwo(6)\nlet result7 = isPowerOfTwo(0)\nlet result8 = isPowerOfTwo(-4)\nlet result9 = isPowerOfTwo(1024)\nlet finalCheck = isPowerOfTwo(1023)\n",
+"text_nat": "function isPowerOfTwo(n) {\n  if (!Number.isInteger(n)) {\n    return false;\n  }\n  if (n <= 0) {\n    return false;\n  }\n  let value = n;\n  while (value % 2 === 0) {\n    value = value / 2;\n  }\n  return value === 1;\n}\n\nfunction exponentOfTwo(n) {\n  if (!isPowerOfTwo(n)) {\n    return null;\n  }\n  let exponent = 0;\n  let value = n;\n  while (value > 1) {\n    value = value / 2;\n    exponent += 1;\n  }\n  return exponent;\n}\n\nfunction parseCandidate(text) {\n  const trimmed = String(text).trim();\n  if (!/^[+-]?\\d+$/.test(trimmed)) {\n    throw new Error(`not an integer: \"${text}\"`);\n  }\n  const value = Number(trimmed);\n  if (!Number.isSafeInteger(value)) {\n    throw new Error(`out of safe integer range: \"${text}\"`);\n  }\n  return value;\n}\n\nfunction describe(n) {\n  if (!isPowerOfTwo(n)) {\n    return `${n} -> false`;\n  }\n  return `${n} -> true (2^${exponentOfTwo(n)})`;\n}\n\nfunction report(inputs) {\n  const lines = [];\n  for (const raw of inputs) {\n    try {\n      lines.push(describe(parseCandidate(raw)));\n    } catch (error) {\n      lines.push(`${raw} -> error: ${error.message}`);\n    }\n  }\n  return lines.join(\"\\n\");\n}\n\nfunction main() {\n  const samples = [\"1\", \"3\", \"0\", \"-8\", \"64\", \"1024\", \"1073741824\", \"12884901888\", \"4503599627370496\", \"two\"];\n  console.log(report(samples));\n}\n\nmain();\n\nmodule.exports = { isPowerOfTwo, exponentOfTwo, parseCandidate, describe, report };\n",
+"text_alt": "function isPowerOfTwo(n) {\n  if (!Number.isInteger(n)) {\n    return false\n  }\n  if (n <= 0) {\n    return false\n  }\n  let value = n\n  while (value % 2 === 0) {\n    value = value / 2\n  }\n  return value === 1\n}\n\nfunction exponentOfTwo(n) {\n  if (!isPowerOfTwo(n)) {\n    return null\n  }\n  let exponent = 0\n  let value = n\n  while (value > 1) {\n    value = value / 2\n    exponent += 1\n  }\n  return exponent\n}\n\nfunction parseCandidate(text) {\n  const trimmed = String(text).trim()\n  if (!/^[+-]?\\d+$/.test(trimmed)) {\n    throw new Error(`not an integer: \"${text}\"`)\n  }\n  const value = Number(trimmed)\n  if (!Number.isSafeInteger(value)) {\n    throw new Error(`out of safe integer range: \"${text}\"`)\n  }\n  return value\n}\n\nfunction describe(n) {\n  if (!isPowerOfTwo(n)) {\n    return `${n} -> false`\n  }\n  return `${n} -> true (2^${exponentOfTwo(n)})`\n}\n\nfunction report(inputs) {\n  const lines = []\n  for (const raw of inputs) {\n    try {\n      lines.push(describe(parseCandidate(raw)))\n    } catch (error) {\n      lines.push(`${raw} -> error: ${error.message}`)\n    }\n  }\n  return lines.join(\"\\n\")\n}\n\nfunction main() {\n  const samples = [\"1\", \"3\", \"0\", \"-8\", \"64\", \"1024\", \"1073741824\", \"12884901888\", \"4503599627370496\", \"two\"]\n  console.log(report(samples))\n}\n\nmain()\n\nmodule.exports = { isPowerOfTwo, exponentOfTwo, parseCandidate, describe, report }\n",
 "opps": [
 {
 "k": 0,
 "nat": ";",
 "alt": "",
 "nat_span": [
-62,
-63
+73,
+74
 ],
 "alt_span": [
-62,
-62
+73,
+73
 ]
 },
 {
@@ -26200,25 +26804,25 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-102,
-103
+111,
+112
 ],
 "alt_span": [
-101,
-101
+110,
+110
 ]
 },
 {
 "k": 2,
-"nat": ";\n};",
-"alt": "\n}",
+"nat": ";",
+"alt": "",
 "nat_span": [
-124,
-128
+132,
+133
 ],
 "alt_span": [
-122,
-124
+130,
+130
 ]
 },
 {
@@ -26226,12 +26830,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-224,
-225
+183,
+184
 ],
 "alt_span": [
-220,
-220
+180,
+180
 ]
 },
 {
@@ -26239,12 +26843,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-255,
-256
+209,
+210
 ],
 "alt_span": [
-250,
-250
+205,
+205
 ]
 },
 {
@@ -26252,12 +26856,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-286,
-287
+283,
+284
 ],
 "alt_span": [
-280,
-280
+278,
+278
 ]
 },
 {
@@ -26265,12 +26869,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-317,
-318
+307,
+308
 ],
 "alt_span": [
-310,
-310
+301,
+301
 ]
 },
 {
@@ -26278,12 +26882,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-348,
-349
+324,
+325
 ],
 "alt_span": [
-340,
-340
+317,
+317
 ]
 },
 {
@@ -26291,12 +26895,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-379,
-380
+369,
+370
 ],
 "alt_span": [
-370,
-370
+361,
+361
 ]
 },
 {
@@ -26304,12 +26908,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-410,
-411
+388,
+389
 ],
 "alt_span": [
-400,
-400
+379,
+379
 ]
 },
 {
@@ -26317,12 +26921,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-442,
-443
+411,
+412
 ],
 "alt_span": [
-431,
-431
+401,
+401
 ]
 },
 {
@@ -26330,12 +26934,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-476,
-477
+485,
+486
 ],
 "alt_span": [
-464,
-464
+474,
+474
 ]
 },
 {
@@ -26343,31 +26947,201 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-513,
-514
+572,
+573
 ],
 "alt_span": [
-500,
-500
+560,
+560
+]
+},
+{
+"k": 13,
+"nat": ";",
+"alt": "",
+"nat_span": [
+609,
+610
+],
+"alt_span": [
+596,
+596
+]
+},
+{
+"k": 14,
+"nat": ";",
+"alt": "",
+"nat_span": [
+708,
+709
+],
+"alt_span": [
+694,
+694
+]
+},
+{
+"k": 15,
+"nat": ";",
+"alt": "",
+"nat_span": [
+728,
+729
+],
+"alt_span": [
+713,
+713
+]
+},
+{
+"k": 16,
+"nat": ";",
+"alt": "",
+"nat_span": [
+808,
+809
+],
+"alt_span": [
+792,
+792
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+861,
+862
+],
+"alt_span": [
+844,
+844
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+910,
+911
+],
+"alt_span": [
+892,
+892
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+999,
+1000
+],
+"alt_span": [
+980,
+980
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1076,
+1077
+],
+"alt_span": [
+1056,
+1056
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1113,
+1114
+],
+"alt_span": [
+1092,
+1092
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1245,
+1246
+],
+"alt_span": [
+1223,
+1223
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1277,
+1278
+],
+"alt_span": [
+1254,
+1254
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1288,
+1289
+],
+"alt_span": [
+1264,
+1264
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1373,
+1374
+],
+"alt_span": [
+1348,
+1348
 ]
 }
 ],
-"k_en": 13,
-"shared_fraction": 0.936,
+"k_en": 26,
+"shared_fraction": 0.957,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": ";",
 "alt": "",
 "nat_span": [
-62,
-63
+73,
+74
 ],
 "alt_span": [
-62,
-62
+73,
+73
 ]
 },
 {
@@ -26375,25 +27149,25 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-102,
-103
+111,
+112
 ],
 "alt_span": [
-101,
-101
+110,
+110
 ]
 },
 {
 "k": 2,
-"nat": ";\n};",
-"alt": "\n}",
+"nat": ";",
+"alt": "",
 "nat_span": [
-124,
-128
+132,
+133
 ],
 "alt_span": [
-122,
-124
+130,
+130
 ]
 },
 {
@@ -26401,12 +27175,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-224,
-225
+183,
+184
 ],
 "alt_span": [
-220,
-220
+180,
+180
 ]
 },
 {
@@ -26414,12 +27188,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-255,
-256
+209,
+210
 ],
 "alt_span": [
-250,
-250
+205,
+205
 ]
 },
 {
@@ -26427,12 +27201,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-286,
-287
+283,
+284
 ],
 "alt_span": [
-280,
-280
+278,
+278
 ]
 },
 {
@@ -26440,12 +27214,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-317,
-318
+307,
+308
 ],
 "alt_span": [
-310,
-310
+301,
+301
 ]
 },
 {
@@ -26453,12 +27227,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-348,
-349
+324,
+325
 ],
 "alt_span": [
-340,
-340
+317,
+317
 ]
 },
 {
@@ -26466,12 +27240,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-379,
-380
+369,
+370
 ],
 "alt_span": [
-370,
-370
+361,
+361
 ]
 },
 {
@@ -26479,12 +27253,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-410,
-411
+388,
+389
 ],
 "alt_span": [
-400,
-400
+379,
+379
 ]
 },
 {
@@ -26492,12 +27266,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-442,
-443
+411,
+412
 ],
 "alt_span": [
-431,
-431
+401,
+401
 ]
 },
 {
@@ -26505,12 +27279,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-476,
-477
+485,
+486
 ],
 "alt_span": [
-464,
-464
+474,
+474
 ]
 },
 {
@@ -26518,16 +27292,190 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-513,
-514
+572,
+573
 ],
 "alt_span": [
-500,
-500
+560,
+560
+]
+},
+{
+"k": 13,
+"nat": ";",
+"alt": "",
+"nat_span": [
+609,
+610
+],
+"alt_span": [
+596,
+596
+]
+},
+{
+"k": 14,
+"nat": ";",
+"alt": "",
+"nat_span": [
+708,
+709
+],
+"alt_span": [
+694,
+694
+]
+},
+{
+"k": 15,
+"nat": ";",
+"alt": "",
+"nat_span": [
+728,
+729
+],
+"alt_span": [
+713,
+713
+]
+},
+{
+"k": 16,
+"nat": ";",
+"alt": "",
+"nat_span": [
+808,
+809
+],
+"alt_span": [
+792,
+792
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+861,
+862
+],
+"alt_span": [
+844,
+844
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+910,
+911
+],
+"alt_span": [
+892,
+892
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+999,
+1000
+],
+"alt_span": [
+980,
+980
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1076,
+1077
+],
+"alt_span": [
+1056,
+1056
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1113,
+1114
+],
+"alt_span": [
+1092,
+1092
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1245,
+1246
+],
+"alt_span": [
+1223,
+1223
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1277,
+1278
+],
+"alt_span": [
+1254,
+1254
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1288,
+1289
+],
+"alt_span": [
+1264,
+1264
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1373,
+1374
+],
+"alt_span": [
+1348,
+1348
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_semicolons__t092",
@@ -29026,20 +29974,20 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "var findKthLargest = function(nums, k) {\n    nums.sort((a, b) => b - a); // Sort in descending order;\n    let result = nums[k - 1]; // Access the k-th element (0-indexed);\n    return result; // Return the found element;\n};\n\n// Example usage and tests (not part of the function itself, but demonstrate usage):\nlet example1Nums = [3, 2, 1, 5, 6, 4]; // Declare an array for the first example;\nlet example1K = 2; // Declare k for the first example;\nlet example1Result = findKthLargest(example1Nums, example1K); // Call the function;\nconsole.log(example1Result); // Print the result to the console;\n\nlet example2Nums = [3, 2, 3, 1, 2, 4, 5, 5, 6]; // Declare an array for the second example;\nlet example2K = 4; // Declare k for the second example;\nlet example2Result = findKthLargest(example2Nums, example2K); // Call the function;\nconsole.log(example2Result); // Print the result to the console;\n\nlet example3Nums = [1]; // Another test case;\nlet example3K = 1; // Corresponding k;\nlet example3Result = findKthLargest(example3Nums, example3K); // Function call;\nconsole.log(example3Result); // Output its result;\n",
-"text_alt": "var findKthLargest = function(nums, k) {\n    nums.sort((a, b) => b - a) // Sort in descending order\n    let result = nums[k - 1] // Access the k-th element (0-indexed)\n    return result // Return the found element\n}\n\n// Example usage and tests (not part of the function itself, but demonstrate usage):\nlet example1Nums = [3, 2, 1, 5, 6, 4] // Declare an array for the first example\nlet example1K = 2 // Declare k for the first example\nlet example1Result = findKthLargest(example1Nums, example1K) // Call the function\nconsole.log(example1Result) // Print the result to the console\n\nlet example2Nums = [3, 2, 3, 1, 2, 4, 5, 5, 6] // Declare an array for the second example\nlet example2K = 4 // Declare k for the second example\nlet example2Result = findKthLargest(example2Nums, example2K) // Call the function\nconsole.log(example2Result) // Print the result to the console\n\nlet example3Nums = [1] // Another test case\nlet example3K = 1 // Corresponding k\nlet example3Result = findKthLargest(example3Nums, example3K) // Function call\nconsole.log(example3Result) // Output its result\n",
+"text_nat": "function validateInput(nums, k) {\n  if (!Array.isArray(nums)) {\n    throw new TypeError('nums must be an array');\n  }\n  if (nums.length === 0) {\n    throw new RangeError('nums must not be empty');\n  }\n  if (!Number.isInteger(k)) {\n    throw new TypeError('k must be an integer');\n  }\n  if (k < 1 || k > nums.length) {\n    throw new RangeError(`k must be between 1 and ${nums.length}`);\n  }\n  for (const value of nums) {\n    if (typeof value !== 'number' || Number.isNaN(value)) {\n      throw new TypeError('nums must contain only numbers');\n    }\n  }\n}\n\nfunction swap(arr, i, j) {\n  const tmp = arr[i];\n  arr[i] = arr[j];\n  arr[j] = tmp;\n}\n\nfunction partition(arr, left, right, pivotIndex) {\n  const pivot = arr[pivotIndex];\n  swap(arr, pivotIndex, right);\n  let store = left;\n  for (let i = left; i < right; i += 1) {\n    if (arr[i] > pivot) {\n      swap(arr, i, store);\n      store += 1;\n    }\n  }\n  swap(arr, store, right);\n  return store;\n}\n\nfunction quickSelect(arr, left, right, target) {\n  while (left < right) {\n    const pivotIndex = left + Math.floor(Math.random() * (right - left + 1));\n    const split = partition(arr, left, right, pivotIndex);\n    if (split === target) {\n      return arr[split];\n    }\n    if (target < split) {\n      right = split - 1;\n    } else {\n      left = split + 1;\n    }\n  }\n  return arr[left];\n}\n\nfunction findKthLargest(nums, k) {\n  validateInput(nums, k);\n  const working = nums.slice();\n  return quickSelect(working, 0, working.length - 1, k - 1);\n}\n\nfunction describe(nums, k) {\n  const result = findKthLargest(nums, k);\n  return `findKthLargest([${nums.join(', ')}], ${k}) = ${result}`;\n}\n\nfunction main() {\n  const cases = [\n    [[3, 2, 1, 5, 6, 4], 2],\n    [[3, 2, 3, 1, 2, 4, 5, 5, 6], 4],\n    [[7], 1],\n    [[-1, -5, 0, 2.5, 2.5], 3],\n  ];\n  for (const [nums, k] of cases) {\n    console.log(describe(nums, k));\n  }\n}\n\nmain();\n\nmodule.exports = { findKthLargest, describe };\n",
+"text_alt": "function validateInput(nums, k) {\n  if (!Array.isArray(nums)) {\n    throw new TypeError('nums must be an array')\n  }\n  if (nums.length === 0) {\n    throw new RangeError('nums must not be empty')\n  }\n  if (!Number.isInteger(k)) {\n    throw new TypeError('k must be an integer')\n  }\n  if (k < 1 || k > nums.length) {\n    throw new RangeError(`k must be between 1 and ${nums.length}`)\n  }\n  for (const value of nums) {\n    if (typeof value !== 'number' || Number.isNaN(value)) {\n      throw new TypeError('nums must contain only numbers')\n    }\n  }\n}\n\nfunction swap(arr, i, j) {\n  const tmp = arr[i]\n  arr[i] = arr[j]\n  arr[j] = tmp\n}\n\nfunction partition(arr, left, right, pivotIndex) {\n  const pivot = arr[pivotIndex]\n  swap(arr, pivotIndex, right)\n  let store = left\n  for (let i = left; i < right; i += 1) {\n    if (arr[i] > pivot) {\n      swap(arr, i, store)\n      store += 1\n    }\n  }\n  swap(arr, store, right)\n  return store\n}\n\nfunction quickSelect(arr, left, right, target) {\n  while (left < right) {\n    const pivotIndex = left + Math.floor(Math.random() * (right - left + 1))\n    const split = partition(arr, left, right, pivotIndex)\n    if (split === target) {\n      return arr[split]\n    }\n    if (target < split) {\n      right = split - 1\n    } else {\n      left = split + 1\n    }\n  }\n  return arr[left]\n}\n\nfunction findKthLargest(nums, k) {\n  validateInput(nums, k)\n  const working = nums.slice()\n  return quickSelect(working, 0, working.length - 1, k - 1)\n}\n\nfunction describe(nums, k) {\n  const result = findKthLargest(nums, k)\n  return `findKthLargest([${nums.join(', ')}], ${k}) = ${result}`\n}\n\nfunction main() {\n  const cases = [\n    [[3, 2, 1, 5, 6, 4], 2],\n    [[3, 2, 3, 1, 2, 4, 5, 5, 6], 4],\n    [[7], 1],\n    [[-1, -5, 0, 2.5, 2.5], 3],\n  ]\n  for (const [nums, k] of cases) {\n    console.log(describe(nums, k))\n  }\n}\n\nmain()\n\nmodule.exports = { findKthLargest, describe }\n",
 "opps": [
 {
 "k": 0,
 "nat": ";",
 "alt": "",
 "nat_span": [
-71,
-72
+112,
+113
 ],
 "alt_span": [
-71,
-71
+112,
+112
 ]
 },
 {
@@ -29047,12 +29995,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-130,
-131
+195,
+196
 ],
 "alt_span": [
-128,
-128
+194,
+194
 ]
 },
 {
@@ -29060,12 +30008,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-189,
-190
+278,
+279
 ],
 "alt_span": [
-185,
-185
+276,
+276
 ]
 },
 {
@@ -29073,261 +30021,8 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-346,
-347
-],
-"alt_span": [
-339,
-339
-]
-},
-{
-"k": 4,
-"nat": ";",
-"alt": "",
-"nat_span": [
-408,
-409
-],
-"alt_span": [
-399,
-399
-]
-},
-{
-"k": 5,
-"nat": ";",
-"alt": "",
-"nat_span": [
-506,
-507
-],
-"alt_span": [
-495,
-495
-]
-},
-{
-"k": 6,
-"nat": ";",
-"alt": "",
-"nat_span": [
-557,
-558
-],
-"alt_span": [
-544,
-544
-]
-},
-{
-"k": 7,
-"nat": ";",
-"alt": "",
-"nat_span": [
-642,
-643
-],
-"alt_span": [
-627,
-627
-]
-},
-{
-"k": 8,
-"nat": ";",
-"alt": "",
-"nat_span": [
-705,
-706
-],
-"alt_span": [
-688,
-688
-]
-},
-{
-"k": 9,
-"nat": ";",
-"alt": "",
-"nat_span": [
-804,
-805
-],
-"alt_span": [
-785,
-785
-]
-},
-{
-"k": 10,
-"nat": ";",
-"alt": "",
-"nat_span": [
-855,
-856
-],
-"alt_span": [
-834,
-834
-]
-},
-{
-"k": 11,
-"nat": ";",
-"alt": "",
-"nat_span": [
-916,
-917
-],
-"alt_span": [
-893,
-893
-]
-},
-{
-"k": 12,
-"nat": ";",
-"alt": "",
-"nat_span": [
-957,
-958
-],
-"alt_span": [
-932,
-932
-]
-},
-{
-"k": 13,
-"nat": ";",
-"alt": "",
-"nat_span": [
-1039,
-1040
-],
-"alt_span": [
-1012,
-1012
-]
-},
-{
-"k": 14,
-"nat": ";",
-"alt": "",
-"nat_span": [
-1086,
-1087
-],
-"alt_span": [
-1057,
-1057
-]
-}
-],
-"k_en": 15,
-"shared_fraction": 0.933,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": ";",
-"alt": "",
-"nat_span": [
-71,
-72
-],
-"alt_span": [
-71,
-71
-]
-},
-{
-"k": 1,
-"nat": ";",
-"alt": "",
-"nat_span": [
-100,
-101
-],
-"alt_span": [
-99,
-99
-]
-},
-{
-"k": 2,
-"nat": ";",
-"alt": "",
-"nat_span": [
-130,
-131
-],
-"alt_span": [
-128,
-128
-]
-},
-{
-"k": 3,
-"nat": ";",
-"alt": "",
-"nat_span": [
-170,
-171
-],
-"alt_span": [
-167,
-167
-]
-},
-{
-"k": 4,
-"nat": ";",
-"alt": "",
-"nat_span": [
-189,
-190
-],
-"alt_span": [
-185,
-185
-]
-},
-{
-"k": 5,
-"nat": ";\n};",
-"alt": "\n}",
-"nat_span": [
-218,
-222
-],
-"alt_span": [
-213,
-215
-]
-},
-{
-"k": 6,
-"nat": ";",
-"alt": "",
-"nat_span": [
-346,
-347
-],
-"alt_span": [
-339,
-339
-]
-},
-{
-"k": 7,
-"nat": ";",
-"alt": "",
-"nat_span": [
-389,
-390
+384,
+385
 ],
 "alt_span": [
 381,
@@ -29335,16 +30030,68 @@
 ]
 },
 {
+"k": 4,
+"nat": ";",
+"alt": "",
+"nat_span": [
+539,
+540
+],
+"alt_span": [
+535,
+535
+]
+},
+{
+"k": 5,
+"nat": ";",
+"alt": "",
+"nat_span": [
+601,
+602
+],
+"alt_span": [
+596,
+596
+]
+},
+{
+"k": 6,
+"nat": ";",
+"alt": "",
+"nat_span": [
+620,
+621
+],
+"alt_span": [
+614,
+614
+]
+},
+{
+"k": 7,
+"nat": ";",
+"alt": "",
+"nat_span": [
+636,
+637
+],
+"alt_span": [
+629,
+629
+]
+},
+{
 "k": 8,
 "nat": ";",
 "alt": "",
 "nat_span": [
-408,
-409
+723,
+724
 ],
 "alt_span": [
-399,
-399
+715,
+715
 ]
 },
 {
@@ -29352,12 +30099,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-444,
-445
+755,
+756
 ],
 "alt_span": [
-434,
-434
+746,
+746
 ]
 },
 {
@@ -29365,12 +30112,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-506,
-507
+775,
+776
 ],
 "alt_span": [
-495,
-495
+765,
+765
 ]
 },
 {
@@ -29378,12 +30125,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-528,
-529
+870,
+871
 ],
 "alt_span": [
-516,
-516
+859,
+859
 ]
 },
 {
@@ -29391,12 +30138,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-557,
-558
+888,
+889
 ],
 "alt_span": [
-544,
-544
+876,
+876
 ]
 },
 {
@@ -29404,12 +30151,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-593,
-594
+925,
+926
 ],
 "alt_span": [
-579,
-579
+912,
+912
 ]
 },
 {
@@ -29417,12 +30164,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-642,
-643
+941,
+942
 ],
 "alt_span": [
-627,
-627
+927,
+927
 ]
 },
 {
@@ -29430,12 +30177,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-686,
-687
+1096,
+1097
 ],
 "alt_span": [
-670,
-670
+1081,
+1081
 ]
 },
 {
@@ -29443,12 +30190,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-705,
-706
+1155,
+1156
 ],
 "alt_span": [
-688,
-688
+1139,
+1139
 ]
 },
 {
@@ -29456,12 +30203,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-742,
-743
+1208,
+1209
 ],
 "alt_span": [
-724,
-724
+1191,
+1191
 ]
 },
 {
@@ -29469,12 +30216,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-804,
-805
+1265,
+1266
 ],
 "alt_span": [
-785,
-785
+1247,
+1247
 ]
 },
 {
@@ -29482,12 +30229,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-826,
-827
+1302,
+1303
 ],
 "alt_span": [
-806,
-806
+1283,
+1283
 ]
 },
 {
@@ -29495,12 +30242,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-855,
-856
+1332,
+1333
 ],
 "alt_span": [
-834,
-834
+1312,
+1312
 ]
 },
 {
@@ -29508,12 +30255,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-891,
-892
+1396,
+1397
 ],
 "alt_span": [
-869,
-869
+1375,
+1375
 ]
 },
 {
@@ -29521,12 +30268,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-916,
-917
+1428,
+1429
 ],
 "alt_span": [
-893,
-893
+1406,
+1406
 ]
 },
 {
@@ -29534,12 +30281,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-938,
-939
+1489,
+1490
 ],
 "alt_span": [
-914,
-914
+1466,
+1466
 ]
 },
 {
@@ -29547,12 +30294,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-957,
-958
+1563,
+1564
 ],
 "alt_span": [
-932,
-932
+1539,
+1539
 ]
 },
 {
@@ -29560,12 +30307,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-977,
-978
+1630,
+1631
 ],
 "alt_span": [
-951,
-951
+1605,
+1605
 ]
 },
 {
@@ -29573,12 +30320,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-1039,
-1040
+1787,
+1788
 ],
 "alt_span": [
-1012,
-1012
+1761,
+1761
 ]
 },
 {
@@ -29586,12 +30333,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-1057,
-1058
+1858,
+1859
 ],
 "alt_span": [
-1029,
-1029
+1831,
+1831
 ]
 },
 {
@@ -29599,12 +30346,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-1086,
-1087
+1873,
+1874
 ],
 "alt_span": [
-1057,
-1057
+1845,
+1845
 ]
 },
 {
@@ -29612,16 +30359,418 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-1108,
-1109
+1921,
+1922
 ],
 "alt_span": [
-1078,
-1078
+1892,
+1892
 ]
 }
 ],
-"free_filter": true
+"k_en": 30,
+"shared_fraction": 0.967,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": ";",
+"alt": "",
+"nat_span": [
+112,
+113
+],
+"alt_span": [
+112,
+112
+]
+},
+{
+"k": 1,
+"nat": ";",
+"alt": "",
+"nat_span": [
+195,
+196
+],
+"alt_span": [
+194,
+194
+]
+},
+{
+"k": 2,
+"nat": ";",
+"alt": "",
+"nat_span": [
+278,
+279
+],
+"alt_span": [
+276,
+276
+]
+},
+{
+"k": 3,
+"nat": ";",
+"alt": "",
+"nat_span": [
+384,
+385
+],
+"alt_span": [
+381,
+381
+]
+},
+{
+"k": 4,
+"nat": ";",
+"alt": "",
+"nat_span": [
+539,
+540
+],
+"alt_span": [
+535,
+535
+]
+},
+{
+"k": 5,
+"nat": ";",
+"alt": "",
+"nat_span": [
+601,
+602
+],
+"alt_span": [
+596,
+596
+]
+},
+{
+"k": 6,
+"nat": ";",
+"alt": "",
+"nat_span": [
+620,
+621
+],
+"alt_span": [
+614,
+614
+]
+},
+{
+"k": 7,
+"nat": ";",
+"alt": "",
+"nat_span": [
+636,
+637
+],
+"alt_span": [
+629,
+629
+]
+},
+{
+"k": 8,
+"nat": ";",
+"alt": "",
+"nat_span": [
+723,
+724
+],
+"alt_span": [
+715,
+715
+]
+},
+{
+"k": 9,
+"nat": ";",
+"alt": "",
+"nat_span": [
+755,
+756
+],
+"alt_span": [
+746,
+746
+]
+},
+{
+"k": 10,
+"nat": ";",
+"alt": "",
+"nat_span": [
+775,
+776
+],
+"alt_span": [
+765,
+765
+]
+},
+{
+"k": 11,
+"nat": ";",
+"alt": "",
+"nat_span": [
+870,
+871
+],
+"alt_span": [
+859,
+859
+]
+},
+{
+"k": 12,
+"nat": ";",
+"alt": "",
+"nat_span": [
+888,
+889
+],
+"alt_span": [
+876,
+876
+]
+},
+{
+"k": 13,
+"nat": ";",
+"alt": "",
+"nat_span": [
+925,
+926
+],
+"alt_span": [
+912,
+912
+]
+},
+{
+"k": 14,
+"nat": ";",
+"alt": "",
+"nat_span": [
+941,
+942
+],
+"alt_span": [
+927,
+927
+]
+},
+{
+"k": 15,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1096,
+1097
+],
+"alt_span": [
+1081,
+1081
+]
+},
+{
+"k": 16,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1155,
+1156
+],
+"alt_span": [
+1139,
+1139
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1208,
+1209
+],
+"alt_span": [
+1191,
+1191
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1265,
+1266
+],
+"alt_span": [
+1247,
+1247
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1302,
+1303
+],
+"alt_span": [
+1283,
+1283
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1332,
+1333
+],
+"alt_span": [
+1312,
+1312
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1396,
+1397
+],
+"alt_span": [
+1375,
+1375
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1428,
+1429
+],
+"alt_span": [
+1406,
+1406
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1489,
+1490
+],
+"alt_span": [
+1466,
+1466
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1563,
+1564
+],
+"alt_span": [
+1539,
+1539
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1630,
+1631
+],
+"alt_span": [
+1605,
+1605
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1787,
+1788
+],
+"alt_span": [
+1761,
+1761
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1858,
+1859
+],
+"alt_span": [
+1831,
+1831
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1873,
+1874
+],
+"alt_span": [
+1845,
+1845
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1921,
+1922
+],
+"alt_span": [
+1892,
+1892
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_semicolons__t101",
@@ -33553,20 +34702,20 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "const shortenUrl = (longUrl) => {\n  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';\n  let shortCode = '';\n  const codeLength = 6;\n\n  for (let i = 0; i < codeLength; i++) {\n    const randomIndex = Math.floor(Math.random() * characters.length);\n    shortCode += characters.charAt(randomIndex);\n  };\n\n  // In a real application, we would store longUrl -> shortCode mapping here;\n  // For this task, we just return the generated code;\n  const dummyStorage = {};\n  dummyStorage[shortCode] = longUrl; // Simulate storage for demonstration;\n\n  return shortCode;\n};\n\n// Example usage:\nconst url1 = 'https://example.com/very/long/url/that/needs/shortening/for/demonstration/purposes/only';\nconst short1 = shortenUrl(url1);\nconsole.log(short1); // e.g., 'aBcDeF'\n\nconst url2 = 'https://another.site/with/a/different/path';\nconst short2 = shortenUrl(url2);\nconsole.log(short2); // e.g., 'gHiJkL'\n\nconst url3 = 'http://www.google.com';\nconst short3 = shortenUrl(url3);\nconsole.log(short3); // e.g., 'xYz123'\n",
-"text_alt": "const shortenUrl = (longUrl) => {\n  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'\n  let shortCode = ''\n  const codeLength = 6\n\n  for (let i = 0; i < codeLength; i++) {\n    const randomIndex = Math.floor(Math.random() * characters.length)\n    shortCode += characters.charAt(randomIndex)\n  }\n\n  // In a real application, we would store longUrl -> shortCode mapping here\n  // For this task, we just return the generated code\n  const dummyStorage = {}\n  dummyStorage[shortCode] = longUrl // Simulate storage for demonstration\n\n  return shortCode\n}\n\n// Example usage:\nconst url1 = 'https://example.com/very/long/url/that/needs/shortening/for/demonstration/purposes/only'\nconst short1 = shortenUrl(url1)\nconsole.log(short1) // e.g., 'aBcDeF'\n\nconst url2 = 'https://another.site/with/a/different/path'\nconst short2 = shortenUrl(url2)\nconsole.log(short2) // e.g., 'gHiJkL'\n\nconst url3 = 'http://www.google.com'\nconst short3 = shortenUrl(url3)\nconsole.log(short3) // e.g., 'xYz123'\n",
+"text_nat": "const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';\nconst CODE_LENGTH = 6;\nconst store = new Map();\n\nfunction normalizeUrl(longUrl) {\n  if (typeof longUrl !== 'string') {\n    throw new TypeError('long URL must be a string');\n  }\n  const trimmed = longUrl.trim();\n  if (trimmed === '') {\n    throw new Error('long URL must not be empty');\n  }\n  if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:\\/\\//.test(trimmed)) {\n    throw new Error(`long URL is missing a scheme: ${trimmed}`);\n  }\n  return trimmed;\n}\n\nfunction hashUrl(url) {\n  let hash = 0x811c9dc5;\n  for (let i = 0; i < url.length; i += 1) {\n    hash ^= url.charCodeAt(i);\n    hash = Math.imul(hash, 0x01000193) >>> 0;\n  }\n  return hash;\n}\n\nfunction encodeBase62(value, length) {\n  let remaining = value;\n  let code = '';\n  while (code.length < length) {\n    code = ALPHABET[remaining % ALPHABET.length] + code;\n    remaining = Math.floor(remaining / ALPHABET.length);\n  }\n  return code;\n}\n\nfunction shortenUrl(longUrl) {\n  const url = normalizeUrl(longUrl);\n  const seed = hashUrl(url);\n  const mixed = (seed ^ Math.imul(url.length, 0x9e3779b1)) >>> 0;\n  const code = encodeBase62(mixed, CODE_LENGTH);\n  store.set(code, url);\n  return code;\n}\n\nfunction expandUrl(code) {\n  const url = store.get(code);\n  if (url === undefined) {\n    throw new Error(`unknown short code: ${code}`);\n  }\n  return url;\n}\n\nfunction formatMapping(code) {\n  const target = expandUrl(code);\n  const label = target.length > 40 ? `${target.slice(0, 37)}...` : target;\n  return `${code}  ->  ${label}`;\n}\n\nfunction main() {\n  const inputs = [\n    'https://example.com/very/long/url',\n    'https://another.site/',\n    'http://localhost:8080/docs/index.html?section=intro',\n    'not-a-url',\n  ];\n  for (const input of inputs) {\n    try {\n      const code = shortenUrl(input);\n      console.log(formatMapping(code));\n    } catch (err) {\n      console.log(`skipped: ${err.message}`);\n    }\n  }\n}\n\nmain();\n\nmodule.exports = { shortenUrl, expandUrl, formatMapping };\n",
+"text_alt": "const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'\nconst CODE_LENGTH = 6\nconst store = new Map()\n\nfunction normalizeUrl(longUrl) {\n  if (typeof longUrl !== 'string') {\n    throw new TypeError('long URL must be a string')\n  }\n  const trimmed = longUrl.trim()\n  if (trimmed === '') {\n    throw new Error('long URL must not be empty')\n  }\n  if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:\\/\\//.test(trimmed)) {\n    throw new Error(`long URL is missing a scheme: ${trimmed}`)\n  }\n  return trimmed\n}\n\nfunction hashUrl(url) {\n  let hash = 0x811c9dc5\n  for (let i = 0; i < url.length; i += 1) {\n    hash ^= url.charCodeAt(i)\n    hash = Math.imul(hash, 0x01000193) >>> 0\n  }\n  return hash\n}\n\nfunction encodeBase62(value, length) {\n  let remaining = value\n  let code = ''\n  while (code.length < length) {\n    code = ALPHABET[remaining % ALPHABET.length] + code\n    remaining = Math.floor(remaining / ALPHABET.length)\n  }\n  return code\n}\n\nfunction shortenUrl(longUrl) {\n  const url = normalizeUrl(longUrl)\n  const seed = hashUrl(url)\n  const mixed = (seed ^ Math.imul(url.length, 0x9e3779b1)) >>> 0\n  const code = encodeBase62(mixed, CODE_LENGTH)\n  store.set(code, url)\n  return code\n}\n\nfunction expandUrl(code) {\n  const url = store.get(code)\n  if (url === undefined) {\n    throw new Error(`unknown short code: ${code}`)\n  }\n  return url\n}\n\nfunction formatMapping(code) {\n  const target = expandUrl(code)\n  const label = target.length > 40 ? `${target.slice(0, 37)}...` : target\n  return `${code}  ->  ${label}`\n}\n\nfunction main() {\n  const inputs = [\n    'https://example.com/very/long/url',\n    'https://another.site/',\n    'http://localhost:8080/docs/index.html?section=intro',\n    'not-a-url',\n  ]\n  for (const input of inputs) {\n    try {\n      const code = shortenUrl(input)\n      console.log(formatMapping(code))\n    } catch (err) {\n      console.log(`skipped: ${err.message}`)\n    }\n  }\n}\n\nmain()\n\nmodule.exports = { shortenUrl, expandUrl, formatMapping }\n",
 "opps": [
 {
 "k": 0,
 "nat": ";",
 "alt": "",
 "nat_span": [
-119,
-120
+81,
+82
 ],
 "alt_span": [
-119,
-119
+81,
+81
 ]
 },
 {
@@ -33574,12 +34723,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-141,
-142
+104,
+105
 ],
 "alt_span": [
-140,
-140
+103,
+103
 ]
 },
 {
@@ -33587,12 +34736,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-165,
-166
+129,
+130
 ],
 "alt_span": [
-163,
-163
+127,
+127
 ]
 },
 {
@@ -33600,25 +34749,25 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-278,
-279
+254,
+255
 ],
 "alt_span": [
-275,
-275
+251,
+251
 ]
 },
 {
 "k": 4,
-"nat": ";\n  };",
-"alt": "\n  }",
+"nat": ";",
+"alt": "",
 "nat_span": [
-327,
-333
+292,
+293
 ],
 "alt_span": [
-323,
-327
+288,
+288
 ]
 },
 {
@@ -33626,12 +34775,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-411,
-412
+367,
+368
 ],
 "alt_span": [
-405,
-405
+362,
+362
 ]
 },
 {
@@ -33639,12 +34788,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-466,
-467
+492,
+493
 ],
 "alt_span": [
-459,
-459
+486,
+486
 ]
 },
 {
@@ -33652,12 +34801,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-493,
-494
+514,
+515
 ],
 "alt_span": [
-485,
-485
+507,
+507
 ]
 },
 {
@@ -33665,25 +34814,25 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-530,
-531
+566,
+567
 ],
 "alt_span": [
-521,
-521
+558,
+558
 ]
 },
 {
 "k": 9,
-"nat": ";\n};",
-"alt": "\n}",
+"nat": ";",
+"alt": "",
 "nat_span": [
-590,
-594
+641,
+642
 ],
 "alt_span": [
-579,
-581
+632,
+632
 ]
 },
 {
@@ -33691,12 +34840,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-716,
-717
+687,
+688
 ],
 "alt_span": [
-703,
-703
+677,
+677
 ]
 },
 {
@@ -33704,12 +34853,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-749,
-750
+706,
+707
 ],
 "alt_span": [
-735,
-735
+695,
+695
 ]
 },
 {
@@ -33717,12 +34866,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-770,
-771
+773,
+774
 ],
 "alt_span": [
-755,
-755
+761,
+761
 ]
 },
 {
@@ -33730,12 +34879,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-848,
-849
+790,
+791
 ],
 "alt_span": [
-832,
-832
+777,
+777
 ]
 },
 {
@@ -33743,12 +34892,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-881,
-882
+880,
+881
 ],
 "alt_span": [
-864,
-864
+866,
+866
 ]
 },
 {
@@ -33756,12 +34905,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-902,
-903
+937,
+938
 ],
 "alt_span": [
-884,
-884
+922,
+922
 ]
 },
 {
@@ -33769,8 +34918,8 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-959,
-960
+956,
+957
 ],
 "alt_span": [
 940,
@@ -33782,12 +34931,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-992,
-993
+1027,
+1028
 ],
 "alt_span": [
-972,
-972
+1010,
+1010
 ]
 },
 {
@@ -33795,265 +34944,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-1013,
-1014
+1056,
+1057
 ],
 "alt_span": [
-992,
-992
-]
-}
-],
-"k_en": 19,
-"shared_fraction": 0.944,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": ";",
-"alt": "",
-"nat_span": [
-119,
-120
-],
-"alt_span": [
-119,
-119
-]
-},
-{
-"k": 1,
-"nat": ";",
-"alt": "",
-"nat_span": [
-141,
-142
-],
-"alt_span": [
-140,
-140
-]
-},
-{
-"k": 2,
-"nat": ";",
-"alt": "",
-"nat_span": [
-165,
-166
-],
-"alt_span": [
-163,
-163
-]
-},
-{
-"k": 3,
-"nat": ";",
-"alt": "",
-"nat_span": [
-278,
-279
-],
-"alt_span": [
-275,
-275
-]
-},
-{
-"k": 4,
-"nat": ";\n  };",
-"alt": "\n  }",
-"nat_span": [
-327,
-333
-],
-"alt_span": [
-323,
-327
-]
-},
-{
-"k": 5,
-"nat": ";",
-"alt": "",
-"nat_span": [
-411,
-412
-],
-"alt_span": [
-405,
-405
-]
-},
-{
-"k": 6,
-"nat": ";",
-"alt": "",
-"nat_span": [
-466,
-467
-],
-"alt_span": [
-459,
-459
-]
-},
-{
-"k": 7,
-"nat": ";",
-"alt": "",
-"nat_span": [
-493,
-494
-],
-"alt_span": [
-485,
-485
-]
-},
-{
-"k": 8,
-"nat": ";",
-"alt": "",
-"nat_span": [
-530,
-531
-],
-"alt_span": [
-521,
-521
-]
-},
-{
-"k": 9,
-"nat": ";",
-"alt": "",
-"nat_span": [
-569,
-570
-],
-"alt_span": [
-559,
-559
-]
-},
-{
-"k": 10,
-"nat": ";\n};",
-"alt": "\n}",
-"nat_span": [
-590,
-594
-],
-"alt_span": [
-579,
-581
-]
-},
-{
-"k": 11,
-"nat": ";",
-"alt": "",
-"nat_span": [
-716,
-717
-],
-"alt_span": [
-703,
-703
-]
-},
-{
-"k": 12,
-"nat": ";",
-"alt": "",
-"nat_span": [
-749,
-750
-],
-"alt_span": [
-735,
-735
-]
-},
-{
-"k": 13,
-"nat": ";",
-"alt": "",
-"nat_span": [
-770,
-771
-],
-"alt_span": [
-755,
-755
-]
-},
-{
-"k": 14,
-"nat": ";",
-"alt": "",
-"nat_span": [
-848,
-849
-],
-"alt_span": [
-832,
-832
-]
-},
-{
-"k": 15,
-"nat": ";",
-"alt": "",
-"nat_span": [
-881,
-882
-],
-"alt_span": [
-864,
-864
-]
-},
-{
-"k": 16,
-"nat": ";",
-"alt": "",
-"nat_span": [
-902,
-903
-],
-"alt_span": [
-884,
-884
-]
-},
-{
-"k": 17,
-"nat": ";",
-"alt": "",
-"nat_span": [
-959,
-960
-],
-"alt_span": [
-940,
-940
-]
-},
-{
-"k": 18,
-"nat": ";",
-"alt": "",
-"nat_span": [
-992,
-993
-],
-"alt_span": [
-972,
-972
+1038,
+1038
 ]
 },
 {
@@ -34061,16 +34957,678 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-1013,
-1014
+1122,
+1123
 ],
 "alt_span": [
-992,
-992
+1103,
+1103
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1171,
+1172
+],
+"alt_span": [
+1151,
+1151
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1195,
+1196
+],
+"alt_span": [
+1174,
+1174
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1210,
+1211
+],
+"alt_span": [
+1188,
+1188
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1271,
+1272
+],
+"alt_span": [
+1248,
+1248
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1350,
+1351
+],
+"alt_span": [
+1326,
+1326
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1368,
+1369
+],
+"alt_span": [
+1343,
+1343
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1436,
+1437
+],
+"alt_span": [
+1410,
+1410
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1511,
+1512
+],
+"alt_span": [
+1484,
+1484
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1545,
+1546
+],
+"alt_span": [
+1517,
+1517
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1736,
+1737
+],
+"alt_span": [
+1707,
+1707
+]
+},
+{
+"k": 30,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1816,
+1817
+],
+"alt_span": [
+1786,
+1786
+]
+},
+{
+"k": 31,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1856,
+1857
+],
+"alt_span": [
+1825,
+1825
+]
+},
+{
+"k": 32,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1922,
+1923
+],
+"alt_span": [
+1890,
+1890
+]
+},
+{
+"k": 33,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1943,
+1944
+],
+"alt_span": [
+1910,
+1910
+]
+},
+{
+"k": 34,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2003,
+2004
+],
+"alt_span": [
+1969,
+1969
 ]
 }
 ],
-"free_filter": true
+"k_en": 35,
+"shared_fraction": 0.957,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": ";",
+"alt": "",
+"nat_span": [
+81,
+82
+],
+"alt_span": [
+81,
+81
+]
+},
+{
+"k": 1,
+"nat": ";",
+"alt": "",
+"nat_span": [
+104,
+105
+],
+"alt_span": [
+103,
+103
+]
+},
+{
+"k": 2,
+"nat": ";",
+"alt": "",
+"nat_span": [
+129,
+130
+],
+"alt_span": [
+127,
+127
+]
+},
+{
+"k": 3,
+"nat": ";",
+"alt": "",
+"nat_span": [
+254,
+255
+],
+"alt_span": [
+251,
+251
+]
+},
+{
+"k": 4,
+"nat": ";",
+"alt": "",
+"nat_span": [
+292,
+293
+],
+"alt_span": [
+288,
+288
+]
+},
+{
+"k": 5,
+"nat": ";",
+"alt": "",
+"nat_span": [
+367,
+368
+],
+"alt_span": [
+362,
+362
+]
+},
+{
+"k": 6,
+"nat": ";",
+"alt": "",
+"nat_span": [
+492,
+493
+],
+"alt_span": [
+486,
+486
+]
+},
+{
+"k": 7,
+"nat": ";",
+"alt": "",
+"nat_span": [
+514,
+515
+],
+"alt_span": [
+507,
+507
+]
+},
+{
+"k": 8,
+"nat": ";",
+"alt": "",
+"nat_span": [
+566,
+567
+],
+"alt_span": [
+558,
+558
+]
+},
+{
+"k": 9,
+"nat": ";",
+"alt": "",
+"nat_span": [
+641,
+642
+],
+"alt_span": [
+632,
+632
+]
+},
+{
+"k": 10,
+"nat": ";",
+"alt": "",
+"nat_span": [
+687,
+688
+],
+"alt_span": [
+677,
+677
+]
+},
+{
+"k": 11,
+"nat": ";",
+"alt": "",
+"nat_span": [
+706,
+707
+],
+"alt_span": [
+695,
+695
+]
+},
+{
+"k": 12,
+"nat": ";",
+"alt": "",
+"nat_span": [
+773,
+774
+],
+"alt_span": [
+761,
+761
+]
+},
+{
+"k": 13,
+"nat": ";",
+"alt": "",
+"nat_span": [
+790,
+791
+],
+"alt_span": [
+777,
+777
+]
+},
+{
+"k": 14,
+"nat": ";",
+"alt": "",
+"nat_span": [
+880,
+881
+],
+"alt_span": [
+866,
+866
+]
+},
+{
+"k": 15,
+"nat": ";",
+"alt": "",
+"nat_span": [
+937,
+938
+],
+"alt_span": [
+922,
+922
+]
+},
+{
+"k": 16,
+"nat": ";",
+"alt": "",
+"nat_span": [
+956,
+957
+],
+"alt_span": [
+940,
+940
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1027,
+1028
+],
+"alt_span": [
+1010,
+1010
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1056,
+1057
+],
+"alt_span": [
+1038,
+1038
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1122,
+1123
+],
+"alt_span": [
+1103,
+1103
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1171,
+1172
+],
+"alt_span": [
+1151,
+1151
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1195,
+1196
+],
+"alt_span": [
+1174,
+1174
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1210,
+1211
+],
+"alt_span": [
+1188,
+1188
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1271,
+1272
+],
+"alt_span": [
+1248,
+1248
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1350,
+1351
+],
+"alt_span": [
+1326,
+1326
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1368,
+1369
+],
+"alt_span": [
+1343,
+1343
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1436,
+1437
+],
+"alt_span": [
+1410,
+1410
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1511,
+1512
+],
+"alt_span": [
+1484,
+1484
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1545,
+1546
+],
+"alt_span": [
+1517,
+1517
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1736,
+1737
+],
+"alt_span": [
+1707,
+1707
+]
+},
+{
+"k": 30,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1816,
+1817
+],
+"alt_span": [
+1786,
+1786
+]
+},
+{
+"k": 31,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1856,
+1857
+],
+"alt_span": [
+1825,
+1825
+]
+},
+{
+"k": 32,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1922,
+1923
+],
+"alt_span": [
+1890,
+1890
+]
+},
+{
+"k": 33,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1943,
+1944
+],
+"alt_span": [
+1910,
+1910
+]
+},
+{
+"k": 34,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2003,
+2004
+],
+"alt_span": [
+1969,
+1969
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_semicolons__t115",
@@ -40112,20 +41670,20 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "function checkStock(inventory, itemName, requestedQuantity) {\n  let availableQuantity = inventory[itemName];\n  if (availableQuantity === undefined) {\n    return false;\n  }\n  let isAvailable = availableQuantity >= requestedQuantity;\n  return isAvailable;\n}\n\n// Example 1:\nlet inventory1 = { apple: 10, banana: 5 };\nlet itemName1 = 'apple';\nlet requestedQuantity1 = 7;\nlet result1 = checkStock(inventory1, itemName1, requestedQuantity1);\nconsole.log(result1);\n\n// Example 2:\nlet inventory2 = { apple: 10, banana: 5 };\nlet itemName2 = 'orange';\nlet requestedQuantity2 = 1;\nlet result2 = checkStock(inventory2, itemName2, requestedQuantity2);\nconsole.log(result2);\n\n// Another example:\nlet inventory3 = { milk: 20, bread: 15 };\nlet itemName3 = 'milk';\nlet requestedQuantity3 = 25;\nlet result3 = checkStock(inventory3, itemName3, requestedQuantity3);\nconsole.log(result3);\n\nlet inventory4 = { eggs: 12, cheese: 3 };\nlet itemName4 = 'cheese';\nlet requestedQuantity4 = 2;\nlet result4 = checkStock(inventory4, itemName4, requestedQuantity4);\nconsole.log(result4);\n",
-"text_alt": "function checkStock(inventory, itemName, requestedQuantity) {\n  let availableQuantity = inventory[itemName]\n  if (availableQuantity === undefined) {\n    return false\n  }\n  let isAvailable = availableQuantity >= requestedQuantity\n  return isAvailable\n}\n\n// Example 1:\nlet inventory1 = { apple: 10, banana: 5 }\nlet itemName1 = 'apple'\nlet requestedQuantity1 = 7\nlet result1 = checkStock(inventory1, itemName1, requestedQuantity1)\nconsole.log(result1)\n\n// Example 2:\nlet inventory2 = { apple: 10, banana: 5 }\nlet itemName2 = 'orange'\nlet requestedQuantity2 = 1\nlet result2 = checkStock(inventory2, itemName2, requestedQuantity2)\nconsole.log(result2)\n\n// Another example:\nlet inventory3 = { milk: 20, bread: 15 }\nlet itemName3 = 'milk'\nlet requestedQuantity3 = 25\nlet result3 = checkStock(inventory3, itemName3, requestedQuantity3)\nconsole.log(result3)\n\nlet inventory4 = { eggs: 12, cheese: 3 }\nlet itemName4 = 'cheese'\nlet requestedQuantity4 = 2\nlet result4 = checkStock(inventory4, itemName4, requestedQuantity4)\nconsole.log(result4)\n",
+"text_nat": "function checkStock(inventory, itemName, requestedQuantity) {\n  if (inventory === null || typeof inventory !== 'object') {\n    throw new TypeError('inventory must be an object');\n  }\n  if (typeof itemName !== 'string' || itemName.length === 0) {\n    throw new TypeError('itemName must be a non-empty string');\n  }\n  const quantity = Number(requestedQuantity);\n  if (!Number.isInteger(quantity) || quantity < 0) {\n    throw new RangeError('requestedQuantity must be a non-negative integer');\n  }\n  if (!Object.prototype.hasOwnProperty.call(inventory, itemName)) {\n    return false;\n  }\n  const available = inventory[itemName];\n  if (typeof available !== 'number' || Number.isNaN(available)) {\n    return false;\n  }\n  return available >= quantity;\n}\n\nfunction fulfillOrder(inventory, itemName, requestedQuantity) {\n  if (!checkStock(inventory, itemName, requestedQuantity)) {\n    return false;\n  }\n  inventory[itemName] -= requestedQuantity;\n  return true;\n}\n\nfunction restock(inventory, itemName, amount) {\n  if (!Number.isInteger(amount) || amount <= 0) {\n    throw new RangeError('amount must be a positive integer');\n  }\n  const current = Object.prototype.hasOwnProperty.call(inventory, itemName) ? inventory[itemName] : 0;\n  inventory[itemName] = current + amount;\n  return inventory[itemName];\n}\n\nfunction lowStockItems(inventory, threshold) {\n  const names = Object.keys(inventory);\n  const low = names.filter((name) => !checkStock(inventory, name, threshold));\n  return low.sort();\n}\n\nfunction formatReport(inventory) {\n  const lines = Object.keys(inventory).sort().map((name) => `${name}: ${inventory[name]}`);\n  return lines.join('\\n');\n}\n\nfunction main() {\n  const inventory = { apple: 10, banana: 5 };\n  console.log(checkStock(inventory, 'apple', 7));\n  console.log(checkStock(inventory, 'orange', 1));\n  const orders = [['apple', 7], ['banana', 6], ['orange', 1]];\n  for (const [itemName, quantity] of orders) {\n    const shipped = fulfillOrder(inventory, itemName, quantity);\n    const verdict = shipped ? 'shipped' : 'rejected';\n    console.log(`order ${quantity} x ${itemName} -> ${verdict}`);\n  }\n  restock(inventory, 'orange', 12);\n  restock(inventory, 'apple', 4);\n  console.log(formatReport(inventory));\n  console.log(`low stock (< 6): ${lowStockItems(inventory, 6).join(', ')}`);\n}\n\nmain();\n\nmodule.exports = { checkStock, fulfillOrder, restock, lowStockItems, formatReport };\n",
+"text_alt": "function checkStock(inventory, itemName, requestedQuantity) {\n  if (inventory === null || typeof inventory !== 'object') {\n    throw new TypeError('inventory must be an object')\n  }\n  if (typeof itemName !== 'string' || itemName.length === 0) {\n    throw new TypeError('itemName must be a non-empty string')\n  }\n  const quantity = Number(requestedQuantity)\n  if (!Number.isInteger(quantity) || quantity < 0) {\n    throw new RangeError('requestedQuantity must be a non-negative integer')\n  }\n  if (!Object.prototype.hasOwnProperty.call(inventory, itemName)) {\n    return false\n  }\n  const available = inventory[itemName]\n  if (typeof available !== 'number' || Number.isNaN(available)) {\n    return false\n  }\n  return available >= quantity\n}\n\nfunction fulfillOrder(inventory, itemName, requestedQuantity) {\n  if (!checkStock(inventory, itemName, requestedQuantity)) {\n    return false\n  }\n  inventory[itemName] -= requestedQuantity\n  return true\n}\n\nfunction restock(inventory, itemName, amount) {\n  if (!Number.isInteger(amount) || amount <= 0) {\n    throw new RangeError('amount must be a positive integer')\n  }\n  const current = Object.prototype.hasOwnProperty.call(inventory, itemName) ? inventory[itemName] : 0\n  inventory[itemName] = current + amount\n  return inventory[itemName]\n}\n\nfunction lowStockItems(inventory, threshold) {\n  const names = Object.keys(inventory)\n  const low = names.filter((name) => !checkStock(inventory, name, threshold))\n  return low.sort()\n}\n\nfunction formatReport(inventory) {\n  const lines = Object.keys(inventory).sort().map((name) => `${name}: ${inventory[name]}`)\n  return lines.join('\\n')\n}\n\nfunction main() {\n  const inventory = { apple: 10, banana: 5 }\n  console.log(checkStock(inventory, 'apple', 7))\n  console.log(checkStock(inventory, 'orange', 1))\n  const orders = [['apple', 7], ['banana', 6], ['orange', 1]]\n  for (const [itemName, quantity] of orders) {\n    const shipped = fulfillOrder(inventory, itemName, quantity)\n    const verdict = shipped ? 'shipped' : 'rejected'\n    console.log(`order ${quantity} x ${itemName} -> ${verdict}`)\n  }\n  restock(inventory, 'orange', 12)\n  restock(inventory, 'apple', 4)\n  console.log(formatReport(inventory))\n  console.log(`low stock (< 6): ${lowStockItems(inventory, 6).join(', ')}`)\n}\n\nmain()\n\nmodule.exports = { checkStock, fulfillOrder, restock, lowStockItems, formatReport }\n",
 "opps": [
 {
 "k": 0,
 "nat": ";",
 "alt": "",
 "nat_span": [
-107,
-108
+177,
+178
 ],
 "alt_span": [
-107,
-107
+177,
+177
 ]
 },
 {
@@ -40133,12 +41691,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-166,
-167
+308,
+309
 ],
 "alt_span": [
-165,
-165
+307,
+307
 ]
 },
 {
@@ -40146,12 +41704,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-230,
-231
+358,
+359
 ],
 "alt_span": [
-228,
-228
+356,
+356
 ]
 },
 {
@@ -40159,12 +41717,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-252,
-253
+489,
+490
 ],
 "alt_span": [
-249,
-249
+486,
+486
 ]
 },
 {
@@ -40172,12 +41730,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-312,
-313
+579,
+580
 ],
 "alt_span": [
-308,
-308
+575,
+575
 ]
 },
 {
@@ -40185,12 +41743,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-337,
-338
+624,
+625
 ],
 "alt_span": [
-332,
-332
+619,
+619
 ]
 },
 {
@@ -40198,12 +41756,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-365,
-366
+708,
+709
 ],
 "alt_span": [
-359,
-359
+702,
+702
 ]
 },
 {
@@ -40211,12 +41769,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-434,
-435
+744,
+745
 ],
 "alt_span": [
-427,
-427
+737,
+737
 ]
 },
 {
@@ -40224,12 +41782,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-456,
-457
+890,
+891
 ],
 "alt_span": [
-448,
-448
+882,
+882
 ]
 },
 {
@@ -40237,12 +41795,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-514,
-515
+938,
+939
 ],
 "alt_span": [
-505,
-505
+929,
+929
 ]
 },
 {
@@ -40250,12 +41808,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-540,
-541
+953,
+954
 ],
 "alt_span": [
-530,
-530
+943,
+943
 ]
 },
 {
@@ -40263,12 +41821,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-568,
-569
+1117,
+1118
 ],
 "alt_span": [
-557,
-557
+1106,
+1106
 ]
 },
 {
@@ -40276,12 +41834,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-637,
-638
+1224,
+1225
 ],
 "alt_span": [
-625,
-625
+1212,
+1212
 ]
 },
 {
@@ -40289,12 +41847,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-659,
-660
+1266,
+1267
 ],
 "alt_span": [
-646,
-646
+1253,
+1253
 ]
 },
 {
@@ -40302,12 +41860,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-722,
-723
+1296,
+1297
 ],
 "alt_span": [
-708,
-708
+1282,
+1282
 ]
 },
 {
@@ -40315,12 +41873,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-746,
-747
+1386,
+1387
 ],
 "alt_span": [
-731,
-731
+1371,
+1371
 ]
 },
 {
@@ -40328,12 +41886,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-775,
-776
+1465,
+1466
 ],
 "alt_span": [
-759,
-759
+1449,
+1449
 ]
 },
 {
@@ -40341,12 +41899,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-844,
-845
+1486,
+1487
 ],
 "alt_span": [
-827,
-827
+1469,
+1469
 ]
 },
 {
@@ -40354,12 +41912,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-866,
-867
+1616,
+1617
 ],
 "alt_span": [
-848,
-848
+1598,
+1598
 ]
 },
 {
@@ -40367,12 +41925,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-909,
-910
+1643,
+1644
 ],
 "alt_span": [
-890,
-890
+1624,
+1624
 ]
 },
 {
@@ -40380,12 +41938,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-935,
-936
+1710,
+1711
 ],
 "alt_span": [
-915,
-915
+1690,
+1690
 ]
 },
 {
@@ -40393,12 +41951,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-963,
-964
+1760,
+1761
 ],
 "alt_span": [
-942,
-942
+1739,
+1739
 ]
 },
 {
@@ -40406,12 +41964,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-1032,
-1033
+1811,
+1812
 ],
 "alt_span": [
-1010,
-1010
+1789,
+1789
 ]
 },
 {
@@ -40419,31 +41977,149 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-1054,
-1055
+1874,
+1875
 ],
 "alt_span": [
-1031,
-1031
+1851,
+1851
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1986,
+1987
+],
+"alt_span": [
+1962,
+1962
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2040,
+2041
+],
+"alt_span": [
+2015,
+2015
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2106,
+2107
+],
+"alt_span": [
+2080,
+2080
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2146,
+2147
+],
+"alt_span": [
+2119,
+2119
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2180,
+2181
+],
+"alt_span": [
+2152,
+2152
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2220,
+2221
+],
+"alt_span": [
+2191,
+2191
+]
+},
+{
+"k": 30,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2297,
+2298
+],
+"alt_span": [
+2267,
+2267
+]
+},
+{
+"k": 31,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2308,
+2309
+],
+"alt_span": [
+2277,
+2277
+]
+},
+{
+"k": 32,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2394,
+2395
+],
+"alt_span": [
+2362,
+2362
 ]
 }
 ],
-"k_en": 24,
-"shared_fraction": 0.934,
+"k_en": 33,
+"shared_fraction": 0.963,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
 "nat": ";",
 "alt": "",
 "nat_span": [
-107,
-108
+177,
+178
 ],
 "alt_span": [
-107,
-107
+177,
+177
 ]
 },
 {
@@ -40451,12 +42127,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-166,
-167
+308,
+309
 ],
 "alt_span": [
-165,
-165
+307,
+307
 ]
 },
 {
@@ -40464,12 +42140,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-230,
-231
+358,
+359
 ],
 "alt_span": [
-228,
-228
+356,
+356
 ]
 },
 {
@@ -40477,12 +42153,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-252,
-253
+489,
+490
 ],
 "alt_span": [
-249,
-249
+486,
+486
 ]
 },
 {
@@ -40490,12 +42166,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-312,
-313
+579,
+580
 ],
 "alt_span": [
-308,
-308
+575,
+575
 ]
 },
 {
@@ -40503,12 +42179,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-337,
-338
+624,
+625
 ],
 "alt_span": [
-332,
-332
+619,
+619
 ]
 },
 {
@@ -40516,12 +42192,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-365,
-366
+708,
+709
 ],
 "alt_span": [
-359,
-359
+702,
+702
 ]
 },
 {
@@ -40529,12 +42205,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-434,
-435
+744,
+745
 ],
 "alt_span": [
-427,
-427
+737,
+737
 ]
 },
 {
@@ -40542,12 +42218,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-456,
-457
+890,
+891
 ],
 "alt_span": [
-448,
-448
+882,
+882
 ]
 },
 {
@@ -40555,12 +42231,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-514,
-515
+938,
+939
 ],
 "alt_span": [
-505,
-505
+929,
+929
 ]
 },
 {
@@ -40568,12 +42244,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-540,
-541
+953,
+954
 ],
 "alt_span": [
-530,
-530
+943,
+943
 ]
 },
 {
@@ -40581,12 +42257,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-568,
-569
+1117,
+1118
 ],
 "alt_span": [
-557,
-557
+1106,
+1106
 ]
 },
 {
@@ -40594,12 +42270,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-637,
-638
+1224,
+1225
 ],
 "alt_span": [
-625,
-625
+1212,
+1212
 ]
 },
 {
@@ -40607,12 +42283,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-659,
-660
+1266,
+1267
 ],
 "alt_span": [
-646,
-646
+1253,
+1253
 ]
 },
 {
@@ -40620,12 +42296,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-722,
-723
+1296,
+1297
 ],
 "alt_span": [
-708,
-708
+1282,
+1282
 ]
 },
 {
@@ -40633,12 +42309,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-746,
-747
+1386,
+1387
 ],
 "alt_span": [
-731,
-731
+1371,
+1371
 ]
 },
 {
@@ -40646,12 +42322,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-775,
-776
+1465,
+1466
 ],
 "alt_span": [
-759,
-759
+1449,
+1449
 ]
 },
 {
@@ -40659,12 +42335,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-844,
-845
+1486,
+1487
 ],
 "alt_span": [
-827,
-827
+1469,
+1469
 ]
 },
 {
@@ -40672,12 +42348,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-866,
-867
+1616,
+1617
 ],
 "alt_span": [
-848,
-848
+1598,
+1598
 ]
 },
 {
@@ -40685,12 +42361,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-909,
-910
+1643,
+1644
 ],
 "alt_span": [
-890,
-890
+1624,
+1624
 ]
 },
 {
@@ -40698,12 +42374,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-935,
-936
+1710,
+1711
 ],
 "alt_span": [
-915,
-915
+1690,
+1690
 ]
 },
 {
@@ -40711,12 +42387,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-963,
-964
+1760,
+1761
 ],
 "alt_span": [
-942,
-942
+1739,
+1739
 ]
 },
 {
@@ -40724,12 +42400,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-1032,
-1033
+1811,
+1812
 ],
 "alt_span": [
-1010,
-1010
+1789,
+1789
 ]
 },
 {
@@ -40737,16 +42413,138 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-1054,
-1055
+1874,
+1875
 ],
 "alt_span": [
-1031,
-1031
+1851,
+1851
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1986,
+1987
+],
+"alt_span": [
+1962,
+1962
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2040,
+2041
+],
+"alt_span": [
+2015,
+2015
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2106,
+2107
+],
+"alt_span": [
+2080,
+2080
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2146,
+2147
+],
+"alt_span": [
+2119,
+2119
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2180,
+2181
+],
+"alt_span": [
+2152,
+2152
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2220,
+2221
+],
+"alt_span": [
+2191,
+2191
+]
+},
+{
+"k": 30,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2297,
+2298
+],
+"alt_span": [
+2267,
+2267
+]
+},
+{
+"k": 31,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2308,
+2309
+],
+"alt_span": [
+2277,
+2277
+]
+},
+{
+"k": 32,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2394,
+2395
+],
+"alt_span": [
+2362,
+2362
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_semicolons__t137",
@@ -47343,20 +49141,20 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "function metersToFeet(meters) {\n  const FEET_PER_METER = 3.28084;\n  let feet;\n  \n  if (typeof meters !== 'number') {\n    throw new Error('Input must be a number.');\n  }\n\n  if (meters < 0) {\n    feet = 0; // Or throw an error for negative input, depending on requirements;\n  } else {\n    feet = meters * FEET_PER_METER;\n  }\n\n  return feet;\n}\n\nlet result1 = metersToFeet(1);\nlet result2 = metersToFeet(10);\nlet result3 = metersToFeet(0);\nlet result4 = metersToFeet(-5);\n\nconsole.log(result1);\nconsole.log(result2);\nconsole.log(result3);\nconsole.log(result4);\n",
-"text_alt": "function metersToFeet(meters) {\n  const FEET_PER_METER = 3.28084\n  let feet\n  \n  if (typeof meters !== 'number') {\n    throw new Error('Input must be a number.')\n  }\n\n  if (meters < 0) {\n    feet = 0 // Or throw an error for negative input, depending on requirements\n  } else {\n    feet = meters * FEET_PER_METER\n  }\n\n  return feet\n}\n\nlet result1 = metersToFeet(1)\nlet result2 = metersToFeet(10)\nlet result3 = metersToFeet(0)\nlet result4 = metersToFeet(-5)\n\nconsole.log(result1)\nconsole.log(result2)\nconsole.log(result3)\nconsole.log(result4)\n",
+"text_nat": "const FEET_PER_METER = 3.28084;\n\nfunction metersToFeet(meters) {\n  const value = Number(meters);\n  if (!Number.isFinite(value)) {\n    throw new TypeError(`metersToFeet expects a finite number, received: ${meters}`);\n  }\n  return value * FEET_PER_METER;\n}\n\nfunction feetToMeters(feet) {\n  const value = Number(feet);\n  if (!Number.isFinite(value)) {\n    throw new TypeError(`feetToMeters expects a finite number, received: ${feet}`);\n  }\n  return value / FEET_PER_METER;\n}\n\nfunction roundTo(value, decimals) {\n  const factor = 10 ** decimals;\n  return Math.round(value * factor) / factor;\n}\n\nfunction feetAndInches(meters) {\n  const totalFeet = metersToFeet(meters);\n  const sign = totalFeet < 0 ? -1 : 1;\n  const absolute = Math.abs(totalFeet);\n  let wholeFeet = Math.floor(absolute);\n  let inches = roundTo((absolute - wholeFeet) * 12, 1);\n  if (inches >= 12) {\n    wholeFeet += 1;\n    inches = 0;\n  }\n  return { feet: sign * wholeFeet, inches };\n}\n\nfunction formatConversion(meters) {\n  const feet = metersToFeet(meters);\n  const parts = feetAndInches(meters);\n  const compact = `${parts.feet} ft ${parts.inches} in`;\n  return `${meters} m = ${roundTo(feet, 5)} ft (${compact})`;\n}\n\nfunction conversionTable(values) {\n  if (!Array.isArray(values)) {\n    throw new TypeError('conversionTable expects an array of metre values');\n  }\n  return values.map(formatConversion);\n}\n\nfunction main() {\n  const samples = [1, 10, 0.5, 42, 100];\n  const report = conversionTable(samples);\n  for (const line of report) {\n    console.log(line);\n  }\n  const marathon = 42195;\n  console.log(`A marathon is ${roundTo(metersToFeet(marathon), 2)} feet long.`);\n  const oneMile = 5280;\n  console.log(`One mile is ${roundTo(feetToMeters(oneMile), 3)} metres.`);\n}\n\nmain();\n\nmodule.exports = {\n  metersToFeet,\n  feetToMeters,\n  feetAndInches,\n  formatConversion,\n  conversionTable,\n};\n",
+"text_alt": "const FEET_PER_METER = 3.28084\n\nfunction metersToFeet(meters) {\n  const value = Number(meters)\n  if (!Number.isFinite(value)) {\n    throw new TypeError(`metersToFeet expects a finite number, received: ${meters}`)\n  }\n  return value * FEET_PER_METER\n}\n\nfunction feetToMeters(feet) {\n  const value = Number(feet)\n  if (!Number.isFinite(value)) {\n    throw new TypeError(`feetToMeters expects a finite number, received: ${feet}`)\n  }\n  return value / FEET_PER_METER\n}\n\nfunction roundTo(value, decimals) {\n  const factor = 10 ** decimals\n  return Math.round(value * factor) / factor\n}\n\nfunction feetAndInches(meters) {\n  const totalFeet = metersToFeet(meters)\n  const sign = totalFeet < 0 ? -1 : 1\n  const absolute = Math.abs(totalFeet)\n  let wholeFeet = Math.floor(absolute)\n  let inches = roundTo((absolute - wholeFeet) * 12, 1)\n  if (inches >= 12) {\n    wholeFeet += 1\n    inches = 0\n  }\n  return { feet: sign * wholeFeet, inches }\n}\n\nfunction formatConversion(meters) {\n  const feet = metersToFeet(meters)\n  const parts = feetAndInches(meters)\n  const compact = `${parts.feet} ft ${parts.inches} in`\n  return `${meters} m = ${roundTo(feet, 5)} ft (${compact})`\n}\n\nfunction conversionTable(values) {\n  if (!Array.isArray(values)) {\n    throw new TypeError('conversionTable expects an array of metre values')\n  }\n  return values.map(formatConversion)\n}\n\nfunction main() {\n  const samples = [1, 10, 0.5, 42, 100]\n  const report = conversionTable(samples)\n  for (const line of report) {\n    console.log(line)\n  }\n  const marathon = 42195\n  console.log(`A marathon is ${roundTo(metersToFeet(marathon), 2)} feet long.`)\n  const oneMile = 5280\n  console.log(`One mile is ${roundTo(feetToMeters(oneMile), 3)} metres.`)\n}\n\nmain()\n\nmodule.exports = {\n  metersToFeet,\n  feetToMeters,\n  feetAndInches,\n  formatConversion,\n  conversionTable,\n}\n",
 "opps": [
 {
 "k": 0,
 "nat": ";",
 "alt": "",
 "nat_span": [
-64,
-65
+30,
+31
 ],
 "alt_span": [
-64,
-64
+30,
+30
 ]
 },
 {
@@ -47364,12 +49162,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-76,
-77
+95,
+96
 ],
 "alt_span": [
-75,
-75
+94,
+94
 ]
 },
 {
@@ -47377,12 +49175,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-163,
-164
+214,
+215
 ],
 "alt_span": [
-161,
-161
+212,
+212
 ]
 },
 {
@@ -47390,12 +49188,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-202,
-203
+251,
+252
 ],
 "alt_span": [
-199,
-199
+248,
+248
 ]
 },
 {
@@ -47403,12 +49201,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-317,
-318
+314,
+315
 ],
 "alt_span": [
-312,
-312
+310,
+310
 ]
 },
 {
@@ -47416,12 +49214,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-337,
-338
+431,
+432
 ],
 "alt_span": [
-331,
-331
+426,
+426
 ]
 },
 {
@@ -47429,12 +49227,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-371,
-372
+468,
+469
 ],
 "alt_span": [
-364,
-364
+462,
+462
 ]
 },
 {
@@ -47442,200 +49240,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-403,
-404
-],
-"alt_span": [
-395,
-395
-]
-},
-{
-"k": 8,
-"nat": ";",
-"alt": "",
-"nat_span": [
-434,
-435
-],
-"alt_span": [
-425,
-425
-]
-},
-{
-"k": 9,
-"nat": ";",
-"alt": "",
-"nat_span": [
-466,
-467
-],
-"alt_span": [
-456,
-456
-]
-},
-{
-"k": 10,
-"nat": ";",
-"alt": "",
-"nat_span": [
-489,
-490
-],
-"alt_span": [
-478,
-478
-]
-},
-{
-"k": 11,
-"nat": ";",
-"alt": "",
-"nat_span": [
-511,
-512
-],
-"alt_span": [
-499,
-499
-]
-},
-{
-"k": 12,
-"nat": ";",
-"alt": "",
-"nat_span": [
-533,
-534
-],
-"alt_span": [
-520,
-520
-]
-},
-{
-"k": 13,
-"nat": ";",
-"alt": "",
-"nat_span": [
-555,
-556
-],
-"alt_span": [
-541,
+540,
 541
-]
-}
-],
-"k_en": 14,
-"shared_fraction": 0.931,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": ";",
-"alt": "",
-"nat_span": [
-64,
-65
 ],
 "alt_span": [
-64,
-64
-]
-},
-{
-"k": 1,
-"nat": ";",
-"alt": "",
-"nat_span": [
-76,
-77
-],
-"alt_span": [
-75,
-75
-]
-},
-{
-"k": 2,
-"nat": ";",
-"alt": "",
-"nat_span": [
-163,
-164
-],
-"alt_span": [
-161,
-161
-]
-},
-{
-"k": 3,
-"nat": ";",
-"alt": "",
-"nat_span": [
-202,
-203
-],
-"alt_span": [
-199,
-199
-]
-},
-{
-"k": 4,
-"nat": ";",
-"alt": "",
-"nat_span": [
-270,
-271
-],
-"alt_span": [
-266,
-266
-]
-},
-{
-"k": 5,
-"nat": ";",
-"alt": "",
-"nat_span": [
-317,
-318
-],
-"alt_span": [
-312,
-312
-]
-},
-{
-"k": 6,
-"nat": ";",
-"alt": "",
-"nat_span": [
-337,
-338
-],
-"alt_span": [
-331,
-331
-]
-},
-{
-"k": 7,
-"nat": ";",
-"alt": "",
-"nat_span": [
-371,
-372
-],
-"alt_span": [
-364,
-364
+533,
+533
 ]
 },
 {
@@ -47643,12 +49253,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-403,
-404
+586,
+587
 ],
 "alt_span": [
-395,
-395
+578,
+578
 ]
 },
 {
@@ -47656,12 +49266,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-434,
-435
+664,
+665
 ],
 "alt_span": [
-425,
-425
+655,
+655
 ]
 },
 {
@@ -47669,12 +49279,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-466,
-467
+703,
+704
 ],
 "alt_span": [
-456,
-456
+693,
+693
 ]
 },
 {
@@ -47682,12 +49292,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-489,
-490
+743,
+744
 ],
 "alt_span": [
-478,
-478
+732,
+732
 ]
 },
 {
@@ -47695,12 +49305,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-511,
-512
+783,
+784
 ],
 "alt_span": [
-499,
-499
+771,
+771
 ]
 },
 {
@@ -47708,12 +49318,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-533,
-534
+839,
+840
 ],
 "alt_span": [
-520,
-520
+826,
+826
 ]
 },
 {
@@ -47721,16 +49331,665 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-555,
-556
+881,
+882
 ],
 "alt_span": [
-541,
-541
+867,
+867
+]
+},
+{
+"k": 15,
+"nat": ";",
+"alt": "",
+"nat_span": [
+897,
+898
+],
+"alt_span": [
+882,
+882
+]
+},
+{
+"k": 16,
+"nat": ";",
+"alt": "",
+"nat_span": [
+946,
+947
+],
+"alt_span": [
+930,
+930
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1022,
+1023
+],
+"alt_span": [
+1005,
+1005
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1061,
+1062
+],
+"alt_span": [
+1043,
+1043
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1118,
+1119
+],
+"alt_span": [
+1099,
+1099
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1180,
+1181
+],
+"alt_span": [
+1160,
+1160
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1327,
+1328
+],
+"alt_span": [
+1306,
+1306
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1370,
+1371
+],
+"alt_span": [
+1348,
+1348
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1432,
+1433
+],
+"alt_span": [
+1409,
+1409
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1475,
+1476
+],
+"alt_span": [
+1451,
+1451
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1529,
+1530
+],
+"alt_span": [
+1504,
+1504
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1559,
+1560
+],
+"alt_span": [
+1533,
+1533
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1640,
+1641
+],
+"alt_span": [
+1613,
+1613
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1664,
+1665
+],
+"alt_span": [
+1636,
+1636
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1739,
+1740
+],
+"alt_span": [
+1710,
+1710
+]
+},
+{
+"k": 30,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1750,
+1751
+],
+"alt_span": [
+1720,
+1720
+]
+},
+{
+"k": 31,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1861,
+1862
+],
+"alt_span": [
+1830,
+1830
 ]
 }
 ],
-"free_filter": true
+"k_en": 32,
+"shared_fraction": 0.954,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": ";",
+"alt": "",
+"nat_span": [
+30,
+31
+],
+"alt_span": [
+30,
+30
+]
+},
+{
+"k": 1,
+"nat": ";",
+"alt": "",
+"nat_span": [
+95,
+96
+],
+"alt_span": [
+94,
+94
+]
+},
+{
+"k": 2,
+"nat": ";",
+"alt": "",
+"nat_span": [
+214,
+215
+],
+"alt_span": [
+212,
+212
+]
+},
+{
+"k": 3,
+"nat": ";",
+"alt": "",
+"nat_span": [
+251,
+252
+],
+"alt_span": [
+248,
+248
+]
+},
+{
+"k": 4,
+"nat": ";",
+"alt": "",
+"nat_span": [
+314,
+315
+],
+"alt_span": [
+310,
+310
+]
+},
+{
+"k": 5,
+"nat": ";",
+"alt": "",
+"nat_span": [
+431,
+432
+],
+"alt_span": [
+426,
+426
+]
+},
+{
+"k": 6,
+"nat": ";",
+"alt": "",
+"nat_span": [
+468,
+469
+],
+"alt_span": [
+462,
+462
+]
+},
+{
+"k": 7,
+"nat": ";",
+"alt": "",
+"nat_span": [
+540,
+541
+],
+"alt_span": [
+533,
+533
+]
+},
+{
+"k": 8,
+"nat": ";",
+"alt": "",
+"nat_span": [
+586,
+587
+],
+"alt_span": [
+578,
+578
+]
+},
+{
+"k": 9,
+"nat": ";",
+"alt": "",
+"nat_span": [
+664,
+665
+],
+"alt_span": [
+655,
+655
+]
+},
+{
+"k": 10,
+"nat": ";",
+"alt": "",
+"nat_span": [
+703,
+704
+],
+"alt_span": [
+693,
+693
+]
+},
+{
+"k": 11,
+"nat": ";",
+"alt": "",
+"nat_span": [
+743,
+744
+],
+"alt_span": [
+732,
+732
+]
+},
+{
+"k": 12,
+"nat": ";",
+"alt": "",
+"nat_span": [
+783,
+784
+],
+"alt_span": [
+771,
+771
+]
+},
+{
+"k": 13,
+"nat": ";",
+"alt": "",
+"nat_span": [
+839,
+840
+],
+"alt_span": [
+826,
+826
+]
+},
+{
+"k": 14,
+"nat": ";",
+"alt": "",
+"nat_span": [
+881,
+882
+],
+"alt_span": [
+867,
+867
+]
+},
+{
+"k": 15,
+"nat": ";",
+"alt": "",
+"nat_span": [
+897,
+898
+],
+"alt_span": [
+882,
+882
+]
+},
+{
+"k": 16,
+"nat": ";",
+"alt": "",
+"nat_span": [
+946,
+947
+],
+"alt_span": [
+930,
+930
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1022,
+1023
+],
+"alt_span": [
+1005,
+1005
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1061,
+1062
+],
+"alt_span": [
+1043,
+1043
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1118,
+1119
+],
+"alt_span": [
+1099,
+1099
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1180,
+1181
+],
+"alt_span": [
+1160,
+1160
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1327,
+1328
+],
+"alt_span": [
+1306,
+1306
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1370,
+1371
+],
+"alt_span": [
+1348,
+1348
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1432,
+1433
+],
+"alt_span": [
+1409,
+1409
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1475,
+1476
+],
+"alt_span": [
+1451,
+1451
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1529,
+1530
+],
+"alt_span": [
+1504,
+1504
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1559,
+1560
+],
+"alt_span": [
+1533,
+1533
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1640,
+1641
+],
+"alt_span": [
+1613,
+1613
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1664,
+1665
+],
+"alt_span": [
+1636,
+1636
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1739,
+1740
+],
+"alt_span": [
+1710,
+1710
+]
+},
+{
+"k": 30,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1750,
+1751
+],
+"alt_span": [
+1720,
+1720
+]
+},
+{
+"k": 31,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1861,
+1862
+],
+"alt_span": [
+1830,
+1830
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_semicolons__t159",
@@ -58663,20 +60922,20 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "function truncateString(str, maxLength) {\n  if (str.length <= maxLength) {\n    return str;\n  };\n\n  let truncatedLength = maxLength - 3;\n  if (truncatedLength < 0) {\n    truncatedLength = 0;\n  };\n\n  const truncatedPart = str.substring(0, truncatedLength);\n  const result = truncatedPart + '...';\n  return result;\n};\n\n// Example usage and tests below (not part of the 10+ statements requirement)\n// console.log(truncateString('hello world', 7));\n// console.log(truncateString('short', 10));\n// console.log(truncateString('a very long string that needs truncation', 20));\n// console.log(truncateString('test', 3));\n// console.log(truncateString('test', 0));\n// console.log(truncateString('test', 1));\n",
-"text_alt": "function truncateString(str, maxLength) {\n  if (str.length <= maxLength) {\n    return str\n  }\n\n  let truncatedLength = maxLength - 3\n  if (truncatedLength < 0) {\n    truncatedLength = 0\n  }\n\n  const truncatedPart = str.substring(0, truncatedLength)\n  const result = truncatedPart + '...'\n  return result\n}\n\n// Example usage and tests below (not part of the 10+ statements requirement)\n// console.log(truncateString('hello world', 7));\n// console.log(truncateString('short', 10));\n// console.log(truncateString('a very long string that needs truncation', 20));\n// console.log(truncateString('test', 3));\n// console.log(truncateString('test', 0));\n// console.log(truncateString('test', 1));\n",
+"text_nat": "'use strict';\n\nfunction assertValidInput(str, maxLength) {\n  if (typeof str !== 'string') {\n    throw new TypeError('truncateString: expected a string as first argument');\n  }\n  if (!Number.isInteger(maxLength) || maxLength < 0) {\n    throw new RangeError('truncateString: maxLength must be a non-negative integer');\n  }\n}\n\nfunction trimTrailingSpace(text) {\n  return text.replace(/\\s+$/, '');\n}\n\nfunction truncateString(str, maxLength) {\n  assertValidInput(str, maxLength);\n  if (str.length <= maxLength) {\n    return str;\n  }\n  const window = str.slice(0, maxLength);\n  const lastSpace = window.lastIndexOf(' ');\n  const body = lastSpace > 0 ? window.slice(0, lastSpace) : window;\n  return trimTrailingSpace(body) + '...';\n}\n\nfunction truncateAll(items, maxLength) {\n  return items.map(function (item) {\n    return truncateString(item, maxLength);\n  });\n}\n\nfunction padRight(text, width) {\n  const missing = width - text.length;\n  if (missing <= 0) {\n    return text;\n  }\n  return text + ' '.repeat(missing);\n}\n\nfunction buildReport(items, maxLength) {\n  const truncated = truncateAll(items, maxLength);\n  const widest = items.reduce(function (best, item) {\n    return Math.max(best, item.length);\n  }, 0);\n  const lines = [];\n  for (let i = 0; i < items.length; i += 1) {\n    const original = padRight(items[i], widest);\n    const marker = truncated[i] === items[i] ? 'kept' : 'cut';\n    lines.push(original + ' | ' + padRight(truncated[i], maxLength + 3) + ' | ' + marker);\n  }\n  return lines.join('\\n');\n}\n\nfunction main() {\n  console.log(truncateString('hello world', 7));\n  console.log(truncateString('short', 10));\n  const headlines = [\n    'Local library extends opening hours',\n    'Bridge repairs finished',\n    'Rain expected all weekend',\n    'Census data released today'\n  ];\n  console.log(buildReport(headlines, 18));\n}\n\nmain();\n\nmodule.exports = { truncateString, truncateAll, buildReport };\n",
+"text_alt": "'use strict'\n\nfunction assertValidInput(str, maxLength) {\n  if (typeof str !== 'string') {\n    throw new TypeError('truncateString: expected a string as first argument')\n  }\n  if (!Number.isInteger(maxLength) || maxLength < 0) {\n    throw new RangeError('truncateString: maxLength must be a non-negative integer')\n  }\n}\n\nfunction trimTrailingSpace(text) {\n  return text.replace(/\\s+$/, '')\n}\n\nfunction truncateString(str, maxLength) {\n  assertValidInput(str, maxLength)\n  if (str.length <= maxLength) {\n    return str\n  }\n  const window = str.slice(0, maxLength)\n  const lastSpace = window.lastIndexOf(' ')\n  const body = lastSpace > 0 ? window.slice(0, lastSpace) : window\n  return trimTrailingSpace(body) + '...'\n}\n\nfunction truncateAll(items, maxLength) {\n  return items.map(function (item) {\n    return truncateString(item, maxLength)\n  })\n}\n\nfunction padRight(text, width) {\n  const missing = width - text.length\n  if (missing <= 0) {\n    return text\n  }\n  return text + ' '.repeat(missing)\n}\n\nfunction buildReport(items, maxLength) {\n  const truncated = truncateAll(items, maxLength)\n  const widest = items.reduce(function (best, item) {\n    return Math.max(best, item.length)\n  }, 0)\n  const lines = []\n  for (let i = 0; i < items.length; i += 1) {\n    const original = padRight(items[i], widest)\n    const marker = truncated[i] === items[i] ? 'kept' : 'cut'\n    lines.push(original + ' | ' + padRight(truncated[i], maxLength + 3) + ' | ' + marker)\n  }\n  return lines.join('\\n')\n}\n\nfunction main() {\n  console.log(truncateString('hello world', 7))\n  console.log(truncateString('short', 10))\n  const headlines = [\n    'Local library extends opening hours',\n    'Bridge repairs finished',\n    'Rain expected all weekend',\n    'Census data released today'\n  ]\n  console.log(buildReport(headlines, 18))\n}\n\nmain()\n\nmodule.exports = { truncateString, truncateAll, buildReport }\n",
 "opps": [
 {
 "k": 0,
-"nat": ";\n  };",
-"alt": "\n  }",
+"nat": ";",
+"alt": "",
 "nat_span": [
-89,
-95
+12,
+13
 ],
 "alt_span": [
-89,
-93
+12,
+12
 ]
 },
 {
@@ -58684,25 +60943,25 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-134,
-135
+170,
+171
 ],
 "alt_span": [
-132,
-132
+169,
+169
 ]
 },
 {
 "k": 2,
-"nat": ";\n  };",
-"alt": "\n  }",
+"nat": ";",
+"alt": "",
 "nat_span": [
-188,
-194
+315,
+316
 ],
 "alt_span": [
-185,
-189
+313,
+313
 ]
 },
 {
@@ -58710,12 +60969,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-253,
-254
+392,
+393
 ],
 "alt_span": [
-248,
-248
+389,
+389
 ]
 },
 {
@@ -58723,44 +60982,344 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-293,
-294
+473,
+474
 ],
 "alt_span": [
-287,
-287
+469,
+469
 ]
 },
 {
 "k": 5,
-"nat": ";\n};",
-"alt": "\n}",
+"nat": ";",
+"alt": "",
 "nat_span": [
-310,
-314
+522,
+523
 ],
 "alt_span": [
-303,
-305
+517,
+517
+]
+},
+{
+"k": 6,
+"nat": ";",
+"alt": "",
+"nat_span": [
+568,
+569
+],
+"alt_span": [
+562,
+562
+]
+},
+{
+"k": 7,
+"nat": ";",
+"alt": "",
+"nat_span": [
+613,
+614
+],
+"alt_span": [
+606,
+606
+]
+},
+{
+"k": 8,
+"nat": ";",
+"alt": "",
+"nat_span": [
+681,
+682
+],
+"alt_span": [
+673,
+673
+]
+},
+{
+"k": 9,
+"nat": ";",
+"alt": "",
+"nat_span": [
+723,
+724
+],
+"alt_span": [
+714,
+714
+]
+},
+{
+"k": 10,
+"nat": ";",
+"alt": "",
+"nat_span": [
+848,
+849
+],
+"alt_span": [
+838,
+838
+]
+},
+{
+"k": 11,
+"nat": ";",
+"alt": "",
+"nat_span": [
+854,
+855
+],
+"alt_span": [
+843,
+843
+]
+},
+{
+"k": 12,
+"nat": ";",
+"alt": "",
+"nat_span": [
+929,
+930
+],
+"alt_span": [
+917,
+917
+]
+},
+{
+"k": 13,
+"nat": ";",
+"alt": "",
+"nat_span": [
+968,
+969
+],
+"alt_span": [
+955,
+955
+]
+},
+{
+"k": 14,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1009,
+1010
+],
+"alt_span": [
+995,
+995
+]
+},
+{
+"k": 15,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1104,
+1105
+],
+"alt_span": [
+1089,
+1089
+]
+},
+{
+"k": 16,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1198,
+1199
+],
+"alt_span": [
+1182,
+1182
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1207,
+1208
+],
+"alt_span": [
+1190,
+1190
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1227,
+1228
+],
+"alt_span": [
+1209,
+1209
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1322,
+1323
+],
+"alt_span": [
+1303,
+1303
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1385,
+1386
+],
+"alt_span": [
+1365,
+1365
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1476,
+1477
+],
+"alt_span": [
+1455,
+1455
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1507,
+1508
+],
+"alt_span": [
+1485,
+1485
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1577,
+1578
+],
+"alt_span": [
+1554,
+1554
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1621,
+1622
+],
+"alt_span": [
+1597,
+1597
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1788,
+1789
+],
+"alt_span": [
+1763,
+1763
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1831,
+1832
+],
+"alt_span": [
+1805,
+1805
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1842,
+1843
+],
+"alt_span": [
+1815,
+1815
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1906,
+1907
+],
+"alt_span": [
+1878,
+1878
 ]
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.967,
+"k_en": 29,
+"shared_fraction": 0.961,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
-"nat": ";\n  };",
-"alt": "\n  }",
+"nat": ";",
+"alt": "",
 "nat_span": [
-89,
-95
+12,
+13
 ],
 "alt_span": [
-89,
-93
+12,
+12
 ]
 },
 {
@@ -58768,25 +61327,25 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-134,
-135
+170,
+171
 ],
 "alt_span": [
-132,
-132
+169,
+169
 ]
 },
 {
 "k": 2,
-"nat": ";\n  };",
-"alt": "\n  }",
+"nat": ";",
+"alt": "",
 "nat_span": [
-188,
-194
+315,
+316
 ],
 "alt_span": [
-185,
-189
+313,
+313
 ]
 },
 {
@@ -58794,12 +61353,12 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-253,
-254
+392,
+393
 ],
 "alt_span": [
-248,
-248
+389,
+389
 ]
 },
 {
@@ -58807,29 +61366,333 @@
 "nat": ";",
 "alt": "",
 "nat_span": [
-293,
-294
+473,
+474
 ],
 "alt_span": [
-287,
-287
+469,
+469
 ]
 },
 {
 "k": 5,
-"nat": ";\n};",
-"alt": "\n}",
+"nat": ";",
+"alt": "",
 "nat_span": [
-310,
-314
+522,
+523
 ],
 "alt_span": [
-303,
-305
+517,
+517
+]
+},
+{
+"k": 6,
+"nat": ";",
+"alt": "",
+"nat_span": [
+568,
+569
+],
+"alt_span": [
+562,
+562
+]
+},
+{
+"k": 7,
+"nat": ";",
+"alt": "",
+"nat_span": [
+613,
+614
+],
+"alt_span": [
+606,
+606
+]
+},
+{
+"k": 8,
+"nat": ";",
+"alt": "",
+"nat_span": [
+681,
+682
+],
+"alt_span": [
+673,
+673
+]
+},
+{
+"k": 9,
+"nat": ";",
+"alt": "",
+"nat_span": [
+723,
+724
+],
+"alt_span": [
+714,
+714
+]
+},
+{
+"k": 10,
+"nat": ";",
+"alt": "",
+"nat_span": [
+848,
+849
+],
+"alt_span": [
+838,
+838
+]
+},
+{
+"k": 11,
+"nat": ";",
+"alt": "",
+"nat_span": [
+854,
+855
+],
+"alt_span": [
+843,
+843
+]
+},
+{
+"k": 12,
+"nat": ";",
+"alt": "",
+"nat_span": [
+929,
+930
+],
+"alt_span": [
+917,
+917
+]
+},
+{
+"k": 13,
+"nat": ";",
+"alt": "",
+"nat_span": [
+968,
+969
+],
+"alt_span": [
+955,
+955
+]
+},
+{
+"k": 14,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1009,
+1010
+],
+"alt_span": [
+995,
+995
+]
+},
+{
+"k": 15,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1104,
+1105
+],
+"alt_span": [
+1089,
+1089
+]
+},
+{
+"k": 16,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1198,
+1199
+],
+"alt_span": [
+1182,
+1182
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1207,
+1208
+],
+"alt_span": [
+1190,
+1190
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1227,
+1228
+],
+"alt_span": [
+1209,
+1209
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1322,
+1323
+],
+"alt_span": [
+1303,
+1303
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1385,
+1386
+],
+"alt_span": [
+1365,
+1365
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1476,
+1477
+],
+"alt_span": [
+1455,
+1455
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1507,
+1508
+],
+"alt_span": [
+1485,
+1485
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1577,
+1578
+],
+"alt_span": [
+1554,
+1554
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1621,
+1622
+],
+"alt_span": [
+1597,
+1597
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1788,
+1789
+],
+"alt_span": [
+1763,
+1763
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1831,
+1832
+],
+"alt_span": [
+1805,
+1805
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1842,
+1843
+],
+"alt_span": [
+1815,
+1815
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1906,
+1907
+],
+"alt_span": [
+1878,
+1878
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_semicolons__t195",
@@ -61065,459 +63928,829 @@
 "src": "Task",
 "tgt": "JavaScript"
 },
-"text_nat": "function calculateCompoundInterest(principal, rate, n, years) {\n  let innerTerm = 1 + (rate / n);;\n  let exponent = n * years;;\n  let compoundFactor = Math.pow(innerTerm, exponent);;\n  let finalAmount = principal * compoundFactor;;\n  return finalAmount;;\n}\n\n// Example usage:\n// calculateCompoundInterest(1000, 0.05, 12, 1) should return 1051.1618978817327\nlet result1 = calculateCompoundInterest(1000, 0.05, 12, 1);;\n// calculateCompoundInterest(5000, 0.04, 4, 3) should return 5634.125925390771\nlet result2 = calculateCompoundInterest(5000, 0.04, 4, 3);;\n\n// More test cases to ensure consistency and coverage of the style requirement.\nlet p = 2000;;\nlet r = 0.03;;\nlet num = 6;;\nlet y = 2;;\nlet result3 = calculateCompoundInterest(p, r, num, y);;\nlet anotherPrincipal = 100;;\nlet anotherRate = 0.01;;\nlet anotherN = 1;;\nlet anotherYears = 10;;\nlet result4 = calculateCompoundInterest(anotherPrincipal, anotherRate, anotherN, anotherYears);;\n",
-"text_alt": "function calculateCompoundInterest(principal, rate, n, years) {\n  let innerTerm = 1 + (rate / n)\n  let exponent = n * years\n  let compoundFactor = Math.pow(innerTerm, exponent)\n  let finalAmount = principal * compoundFactor\n  return finalAmount\n}\n\n// Example usage:\n// calculateCompoundInterest(1000, 0.05, 12, 1) should return 1051.1618978817327\nlet result1 = calculateCompoundInterest(1000, 0.05, 12, 1)\n// calculateCompoundInterest(5000, 0.04, 4, 3) should return 5634.125925390771\nlet result2 = calculateCompoundInterest(5000, 0.04, 4, 3)\n\n// More test cases to ensure consistency and coverage of the style requirement.\nlet p = 2000\nlet r = 0.03\nlet num = 6\nlet y = 2\nlet result3 = calculateCompoundInterest(p, r, num, y)\nlet anotherPrincipal = 100\nlet anotherRate = 0.01\nlet anotherN = 1\nlet anotherYears = 10\nlet result4 = calculateCompoundInterest(anotherPrincipal, anotherRate, anotherN, anotherYears)\n",
+"text_nat": "function validatePositive(name, value) {\n  if (typeof value !== \"number\" || Number.isNaN(value)) {\n    throw new TypeError(name + \" must be a number\");\n  }\n  if (value <= 0) {\n    throw new RangeError(name + \" must be greater than zero\");\n  }\n  return value;\n}\n\nfunction calculateCompoundInterest(principal, rate, n, years) {\n  validatePositive(\"principal\", principal);\n  validatePositive(\"compounding frequency\", n);\n  if (typeof rate !== \"number\" || Number.isNaN(rate) || rate < 0) {\n    throw new RangeError(\"rate must be a non-negative number\");\n  }\n  if (typeof years !== \"number\" || Number.isNaN(years) || years < 0) {\n    throw new RangeError(\"years must be a non-negative number\");\n  }\n  return principal * Math.pow(1 + rate / n, n * years);\n}\n\nfunction interestEarned(principal, rate, n, years) {\n  const final = calculateCompoundInterest(principal, rate, n, years);\n  return final - principal;\n}\n\nfunction effectiveAnnualRate(rate, n) {\n  validatePositive(\"compounding frequency\", n);\n  return Math.pow(1 + rate / n, n) - 1;\n}\n\nfunction yearlySchedule(principal, rate, n, years) {\n  const rows = [];\n  for (let year = 1; year <= years; year += 1) {\n    const balance = calculateCompoundInterest(principal, rate, n, year);\n    rows.push({ year: year, balance: balance, earned: balance - principal });\n  }\n  return rows;\n}\n\nfunction formatMoney(amount) {\n  const rounded = Math.round(amount * 100) / 100;\n  return \"$\" + rounded.toFixed(2);\n}\n\nfunction formatPercent(fraction) {\n  return (fraction * 100).toFixed(3) + \"%\";\n}\n\nfunction report(principal, rate, n, years) {\n  const lines = [];\n  const header = formatMoney(principal) + \" at \" + formatPercent(rate) +\n    \" compounded \" + n + \" time(s) per year for \" + years + \" year(s)\";\n  lines.push(header);\n  lines.push(\"  effective annual rate: \" + formatPercent(effectiveAnnualRate(rate, n)));\n  for (const row of yearlySchedule(principal, rate, n, years)) {\n    lines.push(\"  year \" + row.year + \": \" + formatMoney(row.balance) +\n      \" (interest \" + formatMoney(row.earned) + \")\");\n  }\n  lines.push(\"  exact final amount: \" + calculateCompoundInterest(principal, rate, n, years));\n  return lines.join(\"\\n\");\n}\n\nfunction main() {\n  console.log(report(1000, 0.05, 12, 1));\n  console.log(report(5000, 0.04, 4, 3));\n  console.log(\"interest on $2500 over 10 years: \" +\n    formatMoney(interestEarned(2500, 0.07, 1, 10)));\n}\n\nmain();\n\nmodule.exports = {\n  calculateCompoundInterest: calculateCompoundInterest,\n  interestEarned: interestEarned,\n  effectiveAnnualRate: effectiveAnnualRate,\n  yearlySchedule: yearlySchedule,\n  report: report,\n};\n",
+"text_alt": "function validatePositive(name, value) {\n  if (typeof value !== \"number\" || Number.isNaN(value)) {\n    throw new TypeError(name + \" must be a number\")\n  }\n  if (value <= 0) {\n    throw new RangeError(name + \" must be greater than zero\")\n  }\n  return value\n}\n\nfunction calculateCompoundInterest(principal, rate, n, years) {\n  validatePositive(\"principal\", principal)\n  validatePositive(\"compounding frequency\", n)\n  if (typeof rate !== \"number\" || Number.isNaN(rate) || rate < 0) {\n    throw new RangeError(\"rate must be a non-negative number\")\n  }\n  if (typeof years !== \"number\" || Number.isNaN(years) || years < 0) {\n    throw new RangeError(\"years must be a non-negative number\")\n  }\n  return principal * Math.pow(1 + rate / n, n * years)\n}\n\nfunction interestEarned(principal, rate, n, years) {\n  const final = calculateCompoundInterest(principal, rate, n, years)\n  return final - principal\n}\n\nfunction effectiveAnnualRate(rate, n) {\n  validatePositive(\"compounding frequency\", n)\n  return Math.pow(1 + rate / n, n) - 1\n}\n\nfunction yearlySchedule(principal, rate, n, years) {\n  const rows = []\n  for (let year = 1; year <= years; year += 1) {\n    const balance = calculateCompoundInterest(principal, rate, n, year)\n    rows.push({ year: year, balance: balance, earned: balance - principal })\n  }\n  return rows\n}\n\nfunction formatMoney(amount) {\n  const rounded = Math.round(amount * 100) / 100\n  return \"$\" + rounded.toFixed(2)\n}\n\nfunction formatPercent(fraction) {\n  return (fraction * 100).toFixed(3) + \"%\"\n}\n\nfunction report(principal, rate, n, years) {\n  const lines = []\n  const header = formatMoney(principal) + \" at \" + formatPercent(rate) +\n    \" compounded \" + n + \" time(s) per year for \" + years + \" year(s)\"\n  lines.push(header)\n  lines.push(\"  effective annual rate: \" + formatPercent(effectiveAnnualRate(rate, n)))\n  for (const row of yearlySchedule(principal, rate, n, years)) {\n    lines.push(\"  year \" + row.year + \": \" + formatMoney(row.balance) +\n      \" (interest \" + formatMoney(row.earned) + \")\")\n  }\n  lines.push(\"  exact final amount: \" + calculateCompoundInterest(principal, rate, n, years))\n  return lines.join(\"\\n\")\n}\n\nfunction main() {\n  console.log(report(1000, 0.05, 12, 1))\n  console.log(report(5000, 0.04, 4, 3))\n  console.log(\"interest on $2500 over 10 years: \" +\n    formatMoney(interestEarned(2500, 0.07, 1, 10)))\n}\n\nmain()\n\nmodule.exports = {\n  calculateCompoundInterest: calculateCompoundInterest,\n  interestEarned: interestEarned,\n  effectiveAnnualRate: effectiveAnnualRate,\n  yearlySchedule: yearlySchedule,\n  report: report,\n}\n",
 "opps": [
 {
 "k": 0,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-96,
-98
+150,
+151
 ],
 "alt_span": [
-96,
-96
+150,
+150
 ]
 },
 {
 "k": 1,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-125,
-127
+237,
+238
 ],
 "alt_span": [
-123,
-123
+236,
+236
 ]
 },
 {
 "k": 2,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-180,
-182
+257,
+258
 ],
 "alt_span": [
-176,
-176
+255,
+255
 ]
 },
 {
 "k": 3,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-229,
-231
+368,
+369
 ],
 "alt_span": [
-223,
-223
+365,
+365
 ]
 },
 {
 "k": 4,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-252,
-254
+416,
+417
 ],
 "alt_span": [
-244,
-244
+412,
+412
 ]
 },
 {
 "k": 5,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-415,
-417
+548,
+549
 ],
 "alt_span": [
-405,
-405
+543,
+543
 ]
 },
 {
 "k": 6,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-554,
-556
+688,
+689
 ],
 "alt_span": [
-542,
-542
+682,
+682
 ]
 },
 {
 "k": 7,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-650,
-652
+748,
+749
 ],
 "alt_span": [
-636,
-636
+741,
+741
 ]
 },
 {
 "k": 8,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-665,
-667
+874,
+875
 ],
 "alt_span": [
-649,
-649
+866,
+866
 ]
 },
 {
 "k": 9,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-679,
-681
+902,
+903
 ],
 "alt_span": [
-661,
-661
+893,
+893
 ]
 },
 {
 "k": 10,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-691,
-693
+993,
+994
 ],
 "alt_span": [
-671,
-671
+983,
+983
 ]
 },
 {
 "k": 11,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-747,
-749
+1033,
+1034
 ],
 "alt_span": [
-725,
-725
+1022,
+1022
 ]
 },
 {
 "k": 12,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-776,
-778
+1108,
+1109
 ],
 "alt_span": [
-752,
-752
+1096,
+1096
 ]
 },
 {
 "k": 13,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-801,
-803
+1230,
+1231
 ],
 "alt_span": [
-775,
-775
+1217,
+1217
 ]
 },
 {
 "k": 14,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-820,
-822
+1308,
+1309
 ],
 "alt_span": [
-792,
-792
+1294,
+1294
 ]
 },
 {
 "k": 15,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-844,
-846
+1327,
+1328
 ],
 "alt_span": [
-814,
-814
+1312,
+1312
 ]
 },
 {
 "k": 16,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-941,
-943
+1411,
+1412
 ],
 "alt_span": [
-909,
-909
+1395,
+1395
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1446,
+1447
+],
+"alt_span": [
+1429,
+1429
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1528,
+1529
+],
+"alt_span": [
+1510,
+1510
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1596,
+1597
+],
+"alt_span": [
+1577,
+1577
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1741,
+1742
+],
+"alt_span": [
+1721,
+1721
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1763,
+1764
+],
+"alt_span": [
+1742,
+1742
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1852,
+1853
+],
+"alt_span": [
+1830,
+1830
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2043,
+2044
+],
+"alt_span": [
+2020,
+2020
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2142,
+2143
+],
+"alt_span": [
+2118,
+2118
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2169,
+2170
+],
+"alt_span": [
+2144,
+2144
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2232,
+2233
+],
+"alt_span": [
+2206,
+2206
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2273,
+2274
+],
+"alt_span": [
+2246,
+2246
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2378,
+2379
+],
+"alt_span": [
+2350,
+2350
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2389,
+2390
+],
+"alt_span": [
+2360,
+2360
+]
+},
+{
+"k": 30,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2598,
+2599
+],
+"alt_span": [
+2568,
+2568
 ]
 }
 ],
-"k_en": 17,
-"shared_fraction": 0.905,
+"k_en": 31,
+"shared_fraction": 0.97,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "opps_all": [
 {
 "k": 0,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-96,
-98
+150,
+151
 ],
 "alt_span": [
-96,
-96
+150,
+150
 ]
 },
 {
 "k": 1,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-125,
-127
+237,
+238
 ],
 "alt_span": [
-123,
-123
+236,
+236
 ]
 },
 {
 "k": 2,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-180,
-182
+257,
+258
 ],
 "alt_span": [
-176,
-176
+255,
+255
 ]
 },
 {
 "k": 3,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-229,
-231
+368,
+369
 ],
 "alt_span": [
-223,
-223
+365,
+365
 ]
 },
 {
 "k": 4,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-252,
-254
+416,
+417
 ],
 "alt_span": [
-244,
-244
+412,
+412
 ]
 },
 {
 "k": 5,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-415,
-417
+548,
+549
 ],
 "alt_span": [
-405,
-405
+543,
+543
 ]
 },
 {
 "k": 6,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-554,
-556
+688,
+689
 ],
 "alt_span": [
-542,
-542
+682,
+682
 ]
 },
 {
 "k": 7,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-650,
-652
+748,
+749
 ],
 "alt_span": [
-636,
-636
+741,
+741
 ]
 },
 {
 "k": 8,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-665,
-667
+874,
+875
 ],
 "alt_span": [
-649,
-649
+866,
+866
 ]
 },
 {
 "k": 9,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-679,
-681
+902,
+903
 ],
 "alt_span": [
-661,
-661
+893,
+893
 ]
 },
 {
 "k": 10,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-691,
-693
+993,
+994
 ],
 "alt_span": [
-671,
-671
+983,
+983
 ]
 },
 {
 "k": 11,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-747,
-749
+1033,
+1034
 ],
 "alt_span": [
-725,
-725
+1022,
+1022
 ]
 },
 {
 "k": 12,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-776,
-778
+1108,
+1109
 ],
 "alt_span": [
-752,
-752
+1096,
+1096
 ]
 },
 {
 "k": 13,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-801,
-803
+1230,
+1231
 ],
 "alt_span": [
-775,
-775
+1217,
+1217
 ]
 },
 {
 "k": 14,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-820,
-822
+1308,
+1309
 ],
 "alt_span": [
-792,
-792
+1294,
+1294
 ]
 },
 {
 "k": 15,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-844,
-846
+1327,
+1328
 ],
 "alt_span": [
-814,
-814
+1312,
+1312
 ]
 },
 {
 "k": 16,
-"nat": ";;",
+"nat": ";",
 "alt": "",
 "nat_span": [
-941,
-943
+1411,
+1412
 ],
 "alt_span": [
-909,
-909
+1395,
+1395
+]
+},
+{
+"k": 17,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1446,
+1447
+],
+"alt_span": [
+1429,
+1429
+]
+},
+{
+"k": 18,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1528,
+1529
+],
+"alt_span": [
+1510,
+1510
+]
+},
+{
+"k": 19,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1596,
+1597
+],
+"alt_span": [
+1577,
+1577
+]
+},
+{
+"k": 20,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1741,
+1742
+],
+"alt_span": [
+1721,
+1721
+]
+},
+{
+"k": 21,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1763,
+1764
+],
+"alt_span": [
+1742,
+1742
+]
+},
+{
+"k": 22,
+"nat": ";",
+"alt": "",
+"nat_span": [
+1852,
+1853
+],
+"alt_span": [
+1830,
+1830
+]
+},
+{
+"k": 23,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2043,
+2044
+],
+"alt_span": [
+2020,
+2020
+]
+},
+{
+"k": 24,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2142,
+2143
+],
+"alt_span": [
+2118,
+2118
+]
+},
+{
+"k": 25,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2169,
+2170
+],
+"alt_span": [
+2144,
+2144
+]
+},
+{
+"k": 26,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2232,
+2233
+],
+"alt_span": [
+2206,
+2206
+]
+},
+{
+"k": 27,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2273,
+2274
+],
+"alt_span": [
+2246,
+2246
+]
+},
+{
+"k": 28,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2378,
+2379
+],
+"alt_span": [
+2350,
+2350
+]
+},
+{
+"k": 29,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2389,
+2390
+],
+"alt_span": [
+2360,
+2360
+]
+},
+{
+"k": 30,
+"nat": ";",
+"alt": "",
+"nat_span": [
+2598,
+2599
+],
+"alt_span": [
+2568,
+2568
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "js_semicolons__t204",

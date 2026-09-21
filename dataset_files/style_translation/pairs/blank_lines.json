@@ -9,20 +9,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def reverse_string(s):\n  \"\"\"Reverses a given string.\"\"\"\n  return ''.join(reversed(s))\n\n\ndef main():\n  test_cases = [\n      (\"hello\", \"olleh\"),\n      (\"Python\", \"nohtyP\"),\n      (\"\", \"\"),\n      (\"a\", \"a\"),\n      (\"racecar\", \"racecar\")\n  ]\n  run_tests(test_cases)\n\n\ndef run_tests(tests):\n  for input_str, expected_output in tests:\n    actual_output = reverse_string(input_str)\n    print_test_result(input_str, expected_output, actual_output)\n\n\ndef print_test_result(input_str, expected, actual):\n  status = \"PASSED\" if actual == expected else \"FAILED\"\n  print(f\"Input: '{input_str}', Expected: '{expected}', Got: '{actual}' - {status}\")\n\n\ndef get_example_string():\n  return \"example\"\n\n\ndef demonstrate_usage():\n  example = get_example_string()\n  reversed_example = reverse_string(example)\n  print(f\"The string '{example}' reversed is '{reversed_example}'.\")\n\nif __name__ == \"__main__\":\n  main()\n  demonstrate_usage()\n",
-"text_alt": "def reverse_string(s):\n  \"\"\"Reverses a given string.\"\"\"\n  return ''.join(reversed(s))\n\ndef main():\n  test_cases = [\n      (\"hello\", \"olleh\"),\n      (\"Python\", \"nohtyP\"),\n      (\"\", \"\"),\n      (\"a\", \"a\"),\n      (\"racecar\", \"racecar\")\n  ]\n  run_tests(test_cases)\n\ndef run_tests(tests):\n  for input_str, expected_output in tests:\n    actual_output = reverse_string(input_str)\n    print_test_result(input_str, expected_output, actual_output)\n\ndef print_test_result(input_str, expected, actual):\n  status = \"PASSED\" if actual == expected else \"FAILED\"\n  print(f\"Input: '{input_str}', Expected: '{expected}', Got: '{actual}' - {status}\")\n\ndef get_example_string():\n  return \"example\"\n\ndef demonstrate_usage():\n  example = get_example_string()\n  reversed_example = reverse_string(example)\n  print(f\"The string '{example}' reversed is '{reversed_example}'.\")\n\nif __name__ == \"__main__\":\n  main()\n  demonstrate_usage()\n",
+"text_nat": "def reverse_string(s):\n    if not isinstance(s, str):\n        raise TypeError(\"reverse_string expects a string, got %r\" % type(s).__name__)\n    return s[::-1]\n\n\ndef reverse_words(text):\n    return \" \".join(reverse_string(word) for word in text.split(\" \"))\n\n\ndef is_palindrome(s, ignore_case=True):\n    cleaned = \"\".join(ch for ch in s if ch.isalnum())\n    if ignore_case:\n        cleaned = cleaned.lower()\n    return cleaned == reverse_string(cleaned)\n\n\ndef reverse_lines(text):\n    return \"\\n\".join(reverse_string(line) for line in text.splitlines())\n\n\ndef longest_reversible_run(s):\n    best = \"\"\n    current = \"\"\n    for ch in s:\n        if ch.isalnum():\n            current += ch\n        else:\n            current = \"\"\n        if len(current) > len(best):\n            best = current\n    return reverse_string(best)\n\n\ndef describe(s):\n    parts = [\n        \"input:      %r\" % s,\n        \"reversed:   %r\" % reverse_string(s),\n        \"words:      %r\" % reverse_words(s),\n        \"palindrome: %s\" % is_palindrome(s),\n    ]\n    run = longest_reversible_run(s)\n    if run:\n        parts.append(\"run:        %r\" % run)\n    return \"\\n\".join(parts)\n\n\ndef main():\n    samples = [\n        \"hello\",\n        \"Python\",\n        \"A man, a plan, a canal: Panama\",\n        \"never odd or even\",\n    ]\n    for sample in samples:\n        print(describe(sample))\n        print(\"-\" * 40)\n    block = \"first line\\nsecond line\\nthird line\"\n    print(reverse_lines(block))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def reverse_string(s):\n    if not isinstance(s, str):\n        raise TypeError(\"reverse_string expects a string, got %r\" % type(s).__name__)\n    return s[::-1]\n\ndef reverse_words(text):\n    return \" \".join(reverse_string(word) for word in text.split(\" \"))\n\ndef is_palindrome(s, ignore_case=True):\n    cleaned = \"\".join(ch for ch in s if ch.isalnum())\n    if ignore_case:\n        cleaned = cleaned.lower()\n    return cleaned == reverse_string(cleaned)\n\ndef reverse_lines(text):\n    return \"\\n\".join(reverse_string(line) for line in text.splitlines())\n\ndef longest_reversible_run(s):\n    best = \"\"\n    current = \"\"\n    for ch in s:\n        if ch.isalnum():\n            current += ch\n        else:\n            current = \"\"\n        if len(current) > len(best):\n            best = current\n    return reverse_string(best)\n\ndef describe(s):\n    parts = [\n        \"input:      %r\" % s,\n        \"reversed:   %r\" % reverse_string(s),\n        \"words:      %r\" % reverse_words(s),\n        \"palindrome: %s\" % is_palindrome(s),\n    ]\n    run = longest_reversible_run(s)\n    if run:\n        parts.append(\"run:        %r\" % run)\n    return \"\\n\".join(parts)\n\ndef main():\n    samples = [\n        \"hello\",\n        \"Python\",\n        \"A man, a plan, a canal: Panama\",\n        \"never odd or even\",\n    ]\n    for sample in samples:\n        print(describe(sample))\n        print(\"-\" * 40)\n    block = \"first line\\nsecond line\\nthird line\"\n    print(reverse_lines(block))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-85,
-88
+158,
+161
 ],
 "alt_span": [
-85,
-87
+158,
+160
 ]
 },
 {
@@ -30,12 +30,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-261,
-264
+255,
+258
 ],
 "alt_span": [
-260,
-262
+254,
+256
 ]
 },
 {
@@ -43,12 +43,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-439,
-442
+451,
+454
 ],
 "alt_span": [
-437,
-439
+449,
+451
 ]
 },
 {
@@ -56,12 +56,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-634,
-637
+551,
+554
 ],
 "alt_span": [
-631,
-633
+548,
+550
 ]
 },
 {
@@ -69,19 +69,33 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-681,
-684
+818,
+821
 ],
 "alt_span": [
-677,
-679
+814,
+816
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1144,
+1147
+],
+"alt_span": [
+1139,
+1141
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.984,
+"k_en": 6,
+"shared_fraction": 0.989,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -89,12 +103,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-85,
-88
+158,
+161
 ],
 "alt_span": [
-85,
-87
+158,
+160
 ]
 },
 {
@@ -102,12 +116,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-261,
-264
+255,
+258
 ],
 "alt_span": [
-260,
-262
+254,
+256
 ]
 },
 {
@@ -115,12 +129,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-439,
-442
+451,
+454
 ],
 "alt_span": [
-437,
-439
+449,
+451
 ]
 },
 {
@@ -128,12 +142,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-634,
-637
+551,
+554
 ],
 "alt_span": [
-631,
-633
+548,
+550
 ]
 },
 {
@@ -141,16 +155,34 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-681,
-684
+818,
+821
 ],
 "alt_span": [
-677,
-679
+814,
+816
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1144,
+1147
+],
+"alt_span": [
+1139,
+1141
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t002",
@@ -315,20 +347,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def calculate_factorial(n):\n    \"\"\"\n    Computes the factorial of a non-negative integer n.\n    \"\"\"\n    validate_input(n)\n    return compute_factorial_recursive(n)\n\n\ndef validate_input(n):\n    \"\"\"\n    Validates that n is a non-negative integer.\n    \"\"\"\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n\n\ndef compute_factorial_recursive(n):\n    \"\"\"\n    Recursively computes the factorial.\n    \"\"\"\n    if is_base_case(n):\n        return get_base_case_result()\n    return n * compute_factorial_recursive(n - 1)\n\n\ndef is_base_case(n):\n    \"\"\"\n    Checks if n is the base case for factorial computation.\n    \"\"\"\n    return n == 0\n\n\ndef get_base_case_result():\n    \"\"\"\n    Returns the result for the factorial base case.\n    \"\"\"\n    return 1\n\n\ndef main():\n    \"\"\"\n    Main function to demonstrate calculate_factorial.\n    \"\"\"\n    print(f\"Factorial of 5: {calculate_factorial(5)}\")\n    print(f\"Factorial of 0: {calculate_factorial(0)}\")\n    print(f\"Factorial of 1: {calculate_factorial(1)}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "def calculate_factorial(n):\n    \"\"\"\n    Computes the factorial of a non-negative integer n.\n    \"\"\"\n    validate_input(n)\n    return compute_factorial_recursive(n)\n\ndef validate_input(n):\n    \"\"\"\n    Validates that n is a non-negative integer.\n    \"\"\"\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n\ndef compute_factorial_recursive(n):\n    \"\"\"\n    Recursively computes the factorial.\n    \"\"\"\n    if is_base_case(n):\n        return get_base_case_result()\n    return n * compute_factorial_recursive(n - 1)\n\ndef is_base_case(n):\n    \"\"\"\n    Checks if n is the base case for factorial computation.\n    \"\"\"\n    return n == 0\n\ndef get_base_case_result():\n    \"\"\"\n    Returns the result for the factorial base case.\n    \"\"\"\n    return 1\n\ndef main():\n    \"\"\"\n    Main function to demonstrate calculate_factorial.\n    \"\"\"\n    print(f\"Factorial of 5: {calculate_factorial(5)}\")\n    print(f\"Factorial of 0: {calculate_factorial(0)}\")\n    print(f\"Factorial of 1: {calculate_factorial(1)}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "def validate_input(n):\n    if isinstance(n, bool) or not isinstance(n, int):\n        raise TypeError(\"factorial is defined for integers only, got %r\" % (n,))\n    if n < 0:\n        raise ValueError(\"factorial is undefined for negative input %d\" % n)\n    return n\n\n\ndef calculate_factorial(n):\n    validate_input(n)\n    result = 1\n    for factor in range(2, n + 1):\n        result *= factor\n    return result\n\n\ndef digit_sum(value):\n    total = 0\n    for character in str(value):\n        total += int(character)\n    return total\n\n\ndef factorial_sequence(limit):\n    sequence = []\n    running = 1\n    for index in range(limit + 1):\n        if index > 1:\n            running *= index\n        sequence.append(running)\n    return sequence\n\n\ndef format_row(n, value):\n    rendered = str(value)\n    if len(rendered) > 20:\n        rendered = rendered[:17] + \"...\"\n    return \"{:>3}! = {:<20} (digits: {:>3}, digit sum: {:>4})\".format(\n        n, rendered, len(str(value)), digit_sum(value)\n    )\n\n\ndef build_table(limit):\n    lines = []\n    for n, value in enumerate(factorial_sequence(limit)):\n        lines.append(format_row(n, value))\n    return \"\\n\".join(lines)\n\n\ndef parse_limit(argv):\n    if len(argv) < 2:\n        return 12\n    try:\n        limit = int(argv[1])\n    except ValueError:\n        raise SystemExit(\"usage: factorial.py [non-negative integer]\")\n    return validate_input(limit)\n\n\ndef main(argv):\n    limit = parse_limit(argv)\n    print(build_table(limit))\n    print()\n    print(\"calculate_factorial(0) =\", calculate_factorial(0))\n    print(\"calculate_factorial(5) =\", calculate_factorial(5))\n    print(\"calculate_factorial(%d) = %d\" % (limit, calculate_factorial(limit)))\n\n\nif __name__ == \"__main__\":\n    import sys\n\n    main(sys.argv)\n",
+"text_alt": "def validate_input(n):\n    if isinstance(n, bool) or not isinstance(n, int):\n        raise TypeError(\"factorial is defined for integers only, got %r\" % (n,))\n    if n < 0:\n        raise ValueError(\"factorial is undefined for negative input %d\" % n)\n    return n\n\ndef calculate_factorial(n):\n    validate_input(n)\n    result = 1\n    for factor in range(2, n + 1):\n        result *= factor\n    return result\n\ndef digit_sum(value):\n    total = 0\n    for character in str(value):\n        total += int(character)\n    return total\n\ndef factorial_sequence(limit):\n    sequence = []\n    running = 1\n    for index in range(limit + 1):\n        if index > 1:\n            running *= index\n        sequence.append(running)\n    return sequence\n\ndef format_row(n, value):\n    rendered = str(value)\n    if len(rendered) > 20:\n        rendered = rendered[:17] + \"...\"\n    return \"{:>3}! = {:<20} (digits: {:>3}, digit sum: {:>4})\".format(\n        n, rendered, len(str(value)), digit_sum(value)\n    )\n\ndef build_table(limit):\n    lines = []\n    for n, value in enumerate(factorial_sequence(limit)):\n        lines.append(format_row(n, value))\n    return \"\\n\".join(lines)\n\ndef parse_limit(argv):\n    if len(argv) < 2:\n        return 12\n    try:\n        limit = int(argv[1])\n    except ValueError:\n        raise SystemExit(\"usage: factorial.py [non-negative integer]\")\n    return validate_input(limit)\n\ndef main(argv):\n    limit = parse_limit(argv)\n    print(build_table(limit))\n    print()\n    print(\"calculate_factorial(0) =\", calculate_factorial(0))\n    print(\"calculate_factorial(5) =\", calculate_factorial(5))\n    print(\"calculate_factorial(%d) = %d\" % (limit, calculate_factorial(limit)))\n\n\nif __name__ == \"__main__\":\n    import sys\n\n    main(sys.argv)\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-163,
-166
+261,
+264
 ],
 "alt_span": [
-163,
-165
+261,
+263
 ]
 },
 {
@@ -336,12 +368,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-358,
-361
+406,
+409
 ],
 "alt_span": [
-357,
-359
+405,
+407
 ]
 },
 {
@@ -349,12 +381,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-564,
-567
+526,
+529
 ],
 "alt_span": [
-562,
-564
+524,
+526
 ]
 },
 {
@@ -362,12 +394,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-681,
-684
+732,
+735
 ],
 "alt_span": [
-678,
-680
+729,
+731
 ]
 },
 {
@@ -375,19 +407,46 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-792,
-795
+986,
+989
 ],
 "alt_span": [
-788,
-790
+982,
+984
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1156,
+1159
+],
+"alt_span": [
+1151,
+1153
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1386,
+1389
+],
+"alt_span": [
+1380,
+1382
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.986,
+"k_en": 7,
+"shared_fraction": 0.989,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -395,12 +454,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-163,
-166
+261,
+264
 ],
 "alt_span": [
-163,
-165
+261,
+263
 ]
 },
 {
@@ -408,12 +467,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-358,
-361
+406,
+409
 ],
 "alt_span": [
-357,
-359
+405,
+407
 ]
 },
 {
@@ -421,12 +480,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-564,
-567
+526,
+529
 ],
 "alt_span": [
-562,
-564
+524,
+526
 ]
 },
 {
@@ -434,12 +493,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-681,
-684
+732,
+735
 ],
 "alt_span": [
-678,
-680
+729,
+731
 ]
 },
 {
@@ -447,16 +506,47 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-792,
-795
+986,
+989
 ],
 "alt_span": [
-788,
-790
+982,
+984
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1156,
+1159
+],
+"alt_span": [
+1151,
+1153
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1386,
+1389
+],
+"alt_span": [
+1380,
+1382
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t004",
@@ -6259,20 +6349,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def run_length_encode(s):\n    if not s:\n        return \"\"\n\n    encoded_parts = []\n    current_char = s[0]\n    current_count = 1\n    \n    return _process_string(s, encoded_parts, current_char, current_count)\n\n\ndef _process_string(s, encoded_parts, current_char, current_count):\n    for i in range(1, len(s)):\n        if s[i] == current_char:\n            current_count += 1\n        else:\n            _append_encoded_part(encoded_parts, current_char, current_count)\n            current_char = s[i]\n            current_count = 1\n            \n    _append_encoded_part(encoded_parts, current_char, current_count)\n    \n    return _join_parts(encoded_parts)\n\n\ndef _append_encoded_part(parts_list, char, count):\n    parts_list.append(char + str(count))\n\n\ndef _join_parts(parts_list):\n    return \"\".join(parts_list)\n\n\ndef _get_example_input():\n    return \"AAABBC\"\n\n\ndef _get_example_output():\n    return run_length_encode(_get_example_input())\n\n# Example usage (not part of the main function, for demonstration)\n# print(run_length_encode('AAABBC'))\n# print(run_length_encode('A'))\n# print(run_length_encode(''))\n# print(run_length_encode('WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWB'))\n",
-"text_alt": "def run_length_encode(s):\n    if not s:\n        return \"\"\n\n    encoded_parts = []\n    current_char = s[0]\n    current_count = 1\n    \n    return _process_string(s, encoded_parts, current_char, current_count)\n\ndef _process_string(s, encoded_parts, current_char, current_count):\n    for i in range(1, len(s)):\n        if s[i] == current_char:\n            current_count += 1\n        else:\n            _append_encoded_part(encoded_parts, current_char, current_count)\n            current_char = s[i]\n            current_count = 1\n            \n    _append_encoded_part(encoded_parts, current_char, current_count)\n    \n    return _join_parts(encoded_parts)\n\ndef _append_encoded_part(parts_list, char, count):\n    parts_list.append(char + str(count))\n\ndef _join_parts(parts_list):\n    return \"\".join(parts_list)\n\ndef _get_example_input():\n    return \"AAABBC\"\n\ndef _get_example_output():\n    return run_length_encode(_get_example_input())\n\n# Example usage (not part of the main function, for demonstration)\n# print(run_length_encode('AAABBC'))\n# print(run_length_encode('A'))\n# print(run_length_encode(''))\n# print(run_length_encode('WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWB'))\n",
+"text_nat": "def group_runs(s):\n    runs = []\n    for ch in s:\n        if runs and runs[-1][0] == ch:\n            runs[-1] = (ch, runs[-1][1] + 1)\n        else:\n            runs.append((ch, 1))\n    return runs\n\n\ndef run_length_encode(s):\n    if not isinstance(s, str):\n        raise TypeError(\"run_length_encode expects a string\")\n    return \"\".join(\"%s%d\" % (ch, count) for ch, count in group_runs(s))\n\n\ndef parse_encoded(s):\n    runs = []\n    index = 0\n    while index < len(s):\n        ch = s[index]\n        index += 1\n        digits = \"\"\n        while index < len(s) and s[index].isdigit():\n            digits += s[index]\n            index += 1\n        if not digits:\n            raise ValueError(\"missing count for %r at position %d\" % (ch, index - 1))\n        runs.append((ch, int(digits)))\n    return runs\n\n\ndef run_length_decode(s):\n    return \"\".join(ch * count for ch, count in parse_encoded(s))\n\n\ndef compression_ratio(original, encoded):\n    if not original:\n        return 1.0\n    return len(encoded) / len(original)\n\n\ndef describe_runs(s):\n    lines = []\n    for ch, count in group_runs(s):\n        label = \"time\" if count == 1 else \"times\"\n        lines.append(\"  %r repeated %d %s\" % (ch, count, label))\n    return \"\\n\".join(lines)\n\n\ndef report(s):\n    encoded = run_length_encode(s)\n    ratio = compression_ratio(s, encoded)\n    lines = [\"%r -> %r (ratio %.2f)\" % (s, encoded, ratio)]\n    detail = describe_runs(s)\n    if detail:\n        lines.append(detail)\n    lines.append(\"  decodes back to %r\" % run_length_decode(encoded))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    samples = [\n        \"AAABBC\",\n        \"A\",\n        \"\",\n        \"WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWW\",\n        \"aabbaa\",\n    ]\n    for sample in samples:\n        print(report(sample))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def group_runs(s):\n    runs = []\n    for ch in s:\n        if runs and runs[-1][0] == ch:\n            runs[-1] = (ch, runs[-1][1] + 1)\n        else:\n            runs.append((ch, 1))\n    return runs\n\ndef run_length_encode(s):\n    if not isinstance(s, str):\n        raise TypeError(\"run_length_encode expects a string\")\n    return \"\".join(\"%s%d\" % (ch, count) for ch, count in group_runs(s))\n\ndef parse_encoded(s):\n    runs = []\n    index = 0\n    while index < len(s):\n        ch = s[index]\n        index += 1\n        digits = \"\"\n        while index < len(s) and s[index].isdigit():\n            digits += s[index]\n            index += 1\n        if not digits:\n            raise ValueError(\"missing count for %r at position %d\" % (ch, index - 1))\n        runs.append((ch, int(digits)))\n    return runs\n\ndef run_length_decode(s):\n    return \"\".join(ch * count for ch, count in parse_encoded(s))\n\ndef compression_ratio(original, encoded):\n    if not original:\n        return 1.0\n    return len(encoded) / len(original)\n\ndef describe_runs(s):\n    lines = []\n    for ch, count in group_runs(s):\n        label = \"time\" if count == 1 else \"times\"\n        lines.append(\"  %r repeated %d %s\" % (ch, count, label))\n    return \"\\n\".join(lines)\n\ndef report(s):\n    encoded = run_length_encode(s)\n    ratio = compression_ratio(s, encoded)\n    lines = [\"%r -> %r (ratio %.2f)\" % (s, encoded, ratio)]\n    detail = describe_runs(s)\n    if detail:\n        lines.append(detail)\n    lines.append(\"  decodes back to %r\" % run_length_decode(encoded))\n    return \"\\n\".join(lines)\n\ndef main():\n    samples = [\n        \"AAABBC\",\n        \"A\",\n        \"\",\n        \"WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWW\",\n        \"aabbaa\",\n    ]\n    for sample in samples:\n        print(report(sample))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-206,
-209
+196,
+199
 ],
 "alt_span": [
-206,
-208
+196,
+198
 ]
 },
 {
@@ -6280,12 +6370,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-649,
-652
+389,
+392
 ],
 "alt_span": [
-648,
-650
+388,
+390
 ]
 },
 {
@@ -6293,12 +6383,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-743,
-746
+799,
+802
 ],
 "alt_span": [
-741,
-743
+797,
+799
 ]
 },
 {
@@ -6306,12 +6396,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-805,
-808
+892,
+895
 ],
 "alt_span": [
-802,
-804
+889,
+891
 ]
 },
 {
@@ -6319,19 +6409,46 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-853,
-856
+1016,
+1019
 ],
 "alt_span": [
-849,
-851
+1012,
+1014
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1234,
+1237
+],
+"alt_span": [
+1229,
+1231
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1560,
+1563
+],
+"alt_span": [
+1554,
+1556
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.984,
+"k_en": 7,
+"shared_fraction": 0.99,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -6339,12 +6456,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-206,
-209
+196,
+199
 ],
 "alt_span": [
-206,
-208
+196,
+198
 ]
 },
 {
@@ -6352,12 +6469,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-649,
-652
+389,
+392
 ],
 "alt_span": [
-648,
-650
+388,
+390
 ]
 },
 {
@@ -6365,12 +6482,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-743,
-746
+799,
+802
 ],
 "alt_span": [
-741,
-743
+797,
+799
 ]
 },
 {
@@ -6378,12 +6495,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-805,
-808
+892,
+895
 ],
 "alt_span": [
-802,
-804
+889,
+891
 ]
 },
 {
@@ -6391,16 +6508,47 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-853,
-856
+1016,
+1019
 ],
 "alt_span": [
-849,
-851
+1012,
+1014
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1234,
+1237
+],
+"alt_span": [
+1229,
+1231
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1560,
+1563
+],
+"alt_span": [
+1554,
+1556
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t050",
@@ -7800,159 +7948,6 @@
 "alt_span": [
 934,
 936
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "blank_lines__t060",
-"family": "blank_lines",
-"topic": "Image Resizer (Dummy)",
-"angle": "code",
-"text_es": "Create a function `dummy_resize_image(image_data, new_width, new_height)` that simulates image resizing. It takes `image_data` (a string representing image content) and `new_width`, `new_height` (integers) and returns a new string like 'Resized image to WxH: [original_data]'. For example, `dummy_resize_image('img1.png', 100, 200)` should return `'Resized image to 100x200: img1.png'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def _format_dimensions(width, height):\n    return f\"{width}x{height}\"\n\n\ndef _create_resized_string(dimensions_str, original_data):\n    return f\"Resized image to {dimensions_str}: {original_data}\"\n\n\ndef _get_prefix():\n    return \"Resized image to \"\n\n\ndef _get_separator():\n    return \": \"\n\n\ndef _construct_result(prefix, dimensions_str, separator, original_data):\n    return f\"{prefix}{dimensions_str}{separator}{original_data}\"\n\n\ndef dummy_resize_image(image_data, new_width, new_height):\n    dimensions = _format_dimensions(new_width, new_height)\n    prefix = _get_prefix()\n    separator = _get_separator()\n    return _construct_result(prefix, dimensions, separator, image_data)\n",
-"text_alt": "def _format_dimensions(width, height):\n    return f\"{width}x{height}\"\n\ndef _create_resized_string(dimensions_str, original_data):\n    return f\"Resized image to {dimensions_str}: {original_data}\"\n\ndef _get_prefix():\n    return \"Resized image to \"\n\ndef _get_separator():\n    return \": \"\n\ndef _construct_result(prefix, dimensions_str, separator, original_data):\n    return f\"{prefix}{dimensions_str}{separator}{original_data}\"\n\ndef dummy_resize_image(image_data, new_width, new_height):\n    dimensions = _format_dimensions(new_width, new_height)\n    prefix = _get_prefix()\n    separator = _get_separator()\n    return _construct_result(prefix, dimensions, separator, image_data)\n",
-"opps": [
-{
-"k": 0,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-69,
-72
-],
-"alt_span": [
-69,
-71
-]
-},
-{
-"k": 1,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-195,
-198
-],
-"alt_span": [
-194,
-196
-]
-},
-{
-"k": 2,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-247,
-250
-],
-"alt_span": [
-245,
-247
-]
-},
-{
-"k": 3,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-287,
-290
-],
-"alt_span": [
-284,
-286
-]
-},
-{
-"k": 4,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-427,
-430
-],
-"alt_span": [
-423,
-425
-]
-}
-],
-"k_en": 5,
-"shared_fraction": 0.972,
-"pass": true,
-"verify": null,
-"alt_rule": true,
-"opps_all": [
-{
-"k": 0,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-69,
-72
-],
-"alt_span": [
-69,
-71
-]
-},
-{
-"k": 1,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-195,
-198
-],
-"alt_span": [
-194,
-196
-]
-},
-{
-"k": 2,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-247,
-250
-],
-"alt_span": [
-245,
-247
-]
-},
-{
-"k": 3,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-287,
-290
-],
-"alt_span": [
-284,
-286
-]
-},
-{
-"k": 4,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-427,
-430
-],
-"alt_span": [
-423,
-425
 ]
 }
 ],
@@ -11565,20 +11560,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import re\n\n\ndef extract_mentions(text):\n    \"\"\"\n    Extracts all Twitter-style mentions from a given string.\n    \"\"\"\n    mention_patterns = find_mention_patterns(text)\n    mentions = process_patterns(mention_patterns)\n    return mentions\n\n\ndef find_mention_patterns(text):\n    \"\"\"\n    Finds all potential mention patterns in the text using regex.\n    \"\"\"\n    return re.findall(r'@(\\w+)', text)\n\n\ndef process_patterns(patterns):\n    \"\"\"\n    Processes the found patterns (which already exclude '@') into the final list.\n    \"\"\"\n    return [pattern for pattern in patterns if is_valid_mention(pattern)]\n\n\ndef is_valid_mention(mention):\n    \"\"\"\n    Checks if a given string is a valid mention (non-empty).\n    \"\"\"\n    return bool(mention)\n\n\ndef main():\n    \"\"\"\n    Main function to demonstrate the usage of extract_mentions.\n    \"\"\"\n    example1 = 'Hello @user1, how are you @user2?'\n    example2 = 'No mentions here.'\n    example3 = 'Mentions: @test_user, and @another. Also @.'\n\n    print(extract_mentions(example1))\n    print(extract_mentions(example2))\n    print(extract_mentions(example3))\n\n\nif __name__ == '__main__':\n    main()\n",
-"text_alt": "import re\n\ndef extract_mentions(text):\n    \"\"\"\n    Extracts all Twitter-style mentions from a given string.\n    \"\"\"\n    mention_patterns = find_mention_patterns(text)\n    mentions = process_patterns(mention_patterns)\n    return mentions\n\ndef find_mention_patterns(text):\n    \"\"\"\n    Finds all potential mention patterns in the text using regex.\n    \"\"\"\n    return re.findall(r'@(\\w+)', text)\n\ndef process_patterns(patterns):\n    \"\"\"\n    Processes the found patterns (which already exclude '@') into the final list.\n    \"\"\"\n    return [pattern for pattern in patterns if is_valid_mention(pattern)]\n\ndef is_valid_mention(mention):\n    \"\"\"\n    Checks if a given string is a valid mention (non-empty).\n    \"\"\"\n    return bool(mention)\n\ndef main():\n    \"\"\"\n    Main function to demonstrate the usage of extract_mentions.\n    \"\"\"\n    example1 = 'Hello @user1, how are you @user2?'\n    example2 = 'No mentions here.'\n    example3 = 'Mentions: @test_user, and @another. Also @.'\n\n    print(extract_mentions(example1))\n    print(extract_mentions(example2))\n    print(extract_mentions(example3))\n\n\nif __name__ == '__main__':\n    main()\n",
+"text_nat": "import re\nfrom collections import Counter\n\nMENTION_PATTERN = re.compile(r\"(?<![\\w@])@([A-Za-z0-9_]+)\")\n\ndef require_text(text):\n    if not isinstance(text, str):\n        raise TypeError(\"text must be a str, got %s\" % type(text).__name__)\n    return text\n\n\ndef extract_mentions(text):\n    require_text(text)\n    return MENTION_PATTERN.findall(text)\n\n\ndef unique_mentions(text):\n    seen = []\n    lowered = set()\n    for name in extract_mentions(text):\n        key = name.lower()\n        if key not in lowered:\n            lowered.add(key)\n            seen.append(name)\n    return seen\n\n\ndef mention_counts(text):\n    return Counter(name.lower() for name in extract_mentions(text))\n\n\ndef strip_mentions(text):\n    cleaned = MENTION_PATTERN.sub(\"\", require_text(text))\n    return re.sub(r\"\\s{2,}\", \" \", cleaned).strip()\n\n\ndef most_mentioned(text, limit=3):\n    counts = mention_counts(text)\n    ordered = sorted(counts.items(), key=lambda pair: (-pair[1], pair[0]))\n    return ordered[:limit]\n\n\ndef format_report(text):\n    mentions = extract_mentions(text)\n    lines = [\"text: %r\" % text, \"mentions (%d): %s\" % (len(mentions), mentions)]\n    if mentions:\n        lines.append(\"unique: %s\" % unique_mentions(text))\n        top = \", \".join(\"%s x%d\" % (name, hits) for name, hits in most_mentioned(text))\n        lines.append(\"top: %s\" % top)\n        lines.append(\"without mentions: %r\" % strip_mentions(text))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    samples = [\n        \"Hello @user1, how are you @user2?\",\n        \"No mentions here.\",\n        \"@ada cc @grace and @ada again, thanks @Ada!\",\n        \"email a@b.com is not a mention but @b_c_9 is\",\n    ]\n    for sample in samples:\n        print(format_report(sample))\n        print(\"-\" * 40)\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import re\nfrom collections import Counter\n\nMENTION_PATTERN = re.compile(r\"(?<![\\w@])@([A-Za-z0-9_]+)\")\n\ndef require_text(text):\n    if not isinstance(text, str):\n        raise TypeError(\"text must be a str, got %s\" % type(text).__name__)\n    return text\n\ndef extract_mentions(text):\n    require_text(text)\n    return MENTION_PATTERN.findall(text)\n\ndef unique_mentions(text):\n    seen = []\n    lowered = set()\n    for name in extract_mentions(text):\n        key = name.lower()\n        if key not in lowered:\n            lowered.add(key)\n            seen.append(name)\n    return seen\n\ndef mention_counts(text):\n    return Counter(name.lower() for name in extract_mentions(text))\n\ndef strip_mentions(text):\n    cleaned = MENTION_PATTERN.sub(\"\", require_text(text))\n    return re.sub(r\"\\s{2,}\", \" \", cleaned).strip()\n\ndef most_mentioned(text, limit=3):\n    counts = mention_counts(text)\n    ordered = sorted(counts.items(), key=lambda pair: (-pair[1], pair[0]))\n    return ordered[:limit]\n\ndef format_report(text):\n    mentions = extract_mentions(text)\n    lines = [\"text: %r\" % text, \"mentions (%d): %s\" % (len(mentions), mentions)]\n    if mentions:\n        lines.append(\"unique: %s\" % unique_mentions(text))\n        top = \", \".join(\"%s x%d\" % (name, hits) for name, hits in most_mentioned(text))\n        lines.append(\"top: %s\" % top)\n        lines.append(\"without mentions: %r\" % strip_mentions(text))\n    return \"\\n\".join(lines)\n\ndef main():\n    samples = [\n        \"Hello @user1, how are you @user2?\",\n        \"No mentions here.\",\n        \"@ada cc @grace and @ada again, thanks @Ada!\",\n        \"email a@b.com is not a mention but @b_c_9 is\",\n    ]\n    for sample in samples:\n        print(format_report(sample))\n        print(\"-\" * 40)\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-9,
-12
+253,
+256
 ],
 "alt_span": [
-9,
-11
+253,
+255
 ]
 },
 {
@@ -11586,12 +11581,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-237,
-240
+347,
+350
 ],
 "alt_span": [
-236,
-238
+346,
+348
 ]
 },
 {
@@ -11599,12 +11594,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-393,
-396
+583,
+586
 ],
 "alt_span": [
-391,
-393
+581,
+583
 ]
 },
 {
@@ -11612,12 +11607,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-599,
-602
+679,
+682
 ],
 "alt_span": [
-596,
-598
+676,
+678
 ]
 },
 {
@@ -11625,19 +11620,46 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-734,
-737
+816,
+819
 ],
 "alt_span": [
-730,
-732
+812,
+814
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+989,
+992
+],
+"alt_span": [
+984,
+986
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1433,
+1436
+],
+"alt_span": [
+1427,
+1429
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.986,
+"k_en": 7,
+"shared_fraction": 0.99,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -11645,12 +11667,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-9,
-12
+253,
+256
 ],
 "alt_span": [
-9,
-11
+253,
+255
 ]
 },
 {
@@ -11658,12 +11680,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-237,
-240
+347,
+350
 ],
 "alt_span": [
-236,
-238
+346,
+348
 ]
 },
 {
@@ -11671,12 +11693,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-393,
-396
+583,
+586
 ],
 "alt_span": [
-391,
-393
+581,
+583
 ]
 },
 {
@@ -11684,12 +11706,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-599,
-602
+679,
+682
 ],
 "alt_span": [
-596,
-598
+676,
+678
 ]
 },
 {
@@ -11697,16 +11719,47 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-734,
-737
+816,
+819
 ],
 "alt_span": [
-730,
-732
+812,
+814
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+989,
+992
+],
+"alt_span": [
+984,
+986
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1433,
+1436
+],
+"alt_span": [
+1427,
+1429
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t087",
@@ -14143,20 +14196,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def run_length_decode(encoded_string):\n    decoded_parts = []\n    i = 0\n    while i < len(encoded_string):\n        count, char, next_i = parse_segment(encoded_string, i)\n        decoded_parts.append(char * count)\n        i = next_i\n    return assemble_result(decoded_parts)\n\n\ndef parse_segment(s, start_index):\n    count_str = get_count_string(s, start_index)\n    count = int(count_str)\n    char_index = start_index + len(count_str)\n    char = get_character(s, char_index)\n    return count, char, char_index + 1\n\n\ndef get_count_string(s, start_index):\n    count_str = \"\"\n    j = start_index\n    while j < len(s) and s[j].isdigit():\n        count_str += s[j]\n        j += 1\n    return count_str\n\n\ndef get_character(s, char_index):\n    return s[char_index]\n\n\ndef assemble_result(parts):\n    return \"\".join(parts)\n\n\ndef main(): # Not part of the solution, just for demonstration\n    assert run_length_decode('3A2B1C') == 'AAABBC'\n    assert run_length_decode('1X') == 'X'\n    assert run_length_decode('1A1B1C') == 'ABC'\n    assert run_length_decode('10A') == 'AAAAAAAAAA'\n\nif __name__ == '__main__':\n    main()\n",
-"text_alt": "def run_length_decode(encoded_string):\n    decoded_parts = []\n    i = 0\n    while i < len(encoded_string):\n        count, char, next_i = parse_segment(encoded_string, i)\n        decoded_parts.append(char * count)\n        i = next_i\n    return assemble_result(decoded_parts)\n\ndef parse_segment(s, start_index):\n    count_str = get_count_string(s, start_index)\n    count = int(count_str)\n    char_index = start_index + len(count_str)\n    char = get_character(s, char_index)\n    return count, char, char_index + 1\n\ndef get_count_string(s, start_index):\n    count_str = \"\"\n    j = start_index\n    while j < len(s) and s[j].isdigit():\n        count_str += s[j]\n        j += 1\n    return count_str\n\ndef get_character(s, char_index):\n    return s[char_index]\n\ndef assemble_result(parts):\n    return \"\".join(parts)\n\ndef main(): # Not part of the solution, just for demonstration\n    assert run_length_decode('3A2B1C') == 'AAABBC'\n    assert run_length_decode('1X') == 'X'\n    assert run_length_decode('1A1B1C') == 'ABC'\n    assert run_length_decode('10A') == 'AAAAAAAAAA'\n\nif __name__ == '__main__':\n    main()\n",
+"text_nat": "def ensure_text(value):\n    \"\"\"Return the value unchanged, rejecting non-string input.\"\"\"\n    if not isinstance(value, str):\n        raise TypeError(\n            \"encoded input must be a string, not %s\" % type(value).__name__\n        )\n    return value\n\n\ndef strip_whitespace(text):\n    \"\"\"Remove whitespace so encoded data may be wrapped across lines.\"\"\"\n    return \"\".join(character for character in text if not character.isspace())\n\n\ndef split_tokens(text):\n    \"\"\"Split an encoded string into (count_digits, character) pairs.\"\"\"\n    tokens = []\n    digits = \"\"\n    for character in text:\n        if character.isdigit():\n            digits += character\n        else:\n            tokens.append((digits, character))\n            digits = \"\"\n    if digits:\n        raise ValueError(\"dangling count %r at end of input\" % digits)\n    return tokens\n\n\ndef parse_count(digits, character):\n    \"\"\"Turn the digits of one token into a positive repetition count.\"\"\"\n    if not digits:\n        raise ValueError(\"missing count before %r\" % character)\n    count = int(digits)\n    if count == 0:\n        raise ValueError(\"zero-length run for %r\" % character)\n    return count\n\n\ndef expand_run(count, character):\n    \"\"\"Return the run of characters described by one token.\"\"\"\n    return character * count\n\n\ndef decode_tokens(tokens):\n    \"\"\"Join the expansion of every (count_digits, character) pair.\"\"\"\n    pieces = []\n    for digits, character in tokens:\n        count = parse_count(digits, character)\n        pieces.append(expand_run(count, character))\n    return \"\".join(pieces)\n\n\ndef run_length_decode(encoded_string):\n    \"\"\"Decode a run-length encoded string of the form '3A2B1C'.\"\"\"\n    text = strip_whitespace(ensure_text(encoded_string))\n    return decode_tokens(split_tokens(text))\n",
+"text_alt": "def ensure_text(value):\n    \"\"\"Return the value unchanged, rejecting non-string input.\"\"\"\n    if not isinstance(value, str):\n        raise TypeError(\n            \"encoded input must be a string, not %s\" % type(value).__name__\n        )\n    return value\n\ndef strip_whitespace(text):\n    \"\"\"Remove whitespace so encoded data may be wrapped across lines.\"\"\"\n    return \"\".join(character for character in text if not character.isspace())\n\ndef split_tokens(text):\n    \"\"\"Split an encoded string into (count_digits, character) pairs.\"\"\"\n    tokens = []\n    digits = \"\"\n    for character in text:\n        if character.isdigit():\n            digits += character\n        else:\n            tokens.append((digits, character))\n            digits = \"\"\n    if digits:\n        raise ValueError(\"dangling count %r at end of input\" % digits)\n    return tokens\n\ndef parse_count(digits, character):\n    \"\"\"Turn the digits of one token into a positive repetition count.\"\"\"\n    if not digits:\n        raise ValueError(\"missing count before %r\" % character)\n    count = int(digits)\n    if count == 0:\n        raise ValueError(\"zero-length run for %r\" % character)\n    return count\n\ndef expand_run(count, character):\n    \"\"\"Return the run of characters described by one token.\"\"\"\n    return character * count\n\ndef decode_tokens(tokens):\n    \"\"\"Join the expansion of every (count_digits, character) pair.\"\"\"\n    pieces = []\n    for digits, character in tokens:\n        count = parse_count(digits, character)\n        pieces.append(expand_run(count, character))\n    return \"\".join(pieces)\n\ndef run_length_decode(encoded_string):\n    \"\"\"Decode a run-length encoded string of the form '3A2B1C'.\"\"\"\n    text = strip_whitespace(ensure_text(encoded_string))\n    return decode_tokens(split_tokens(text))\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-273,
-276
+252,
+255
 ],
 "alt_span": [
-273,
-275
+252,
+254
 ]
 },
 {
@@ -14164,12 +14217,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-511,
-514
+434,
+437
 ],
 "alt_span": [
-510,
-512
+433,
+435
 ]
 },
 {
@@ -14177,12 +14230,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-693,
-696
+844,
+847
 ],
 "alt_span": [
-691,
-693
+842,
+844
 ]
 },
 {
@@ -14190,12 +14243,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-754,
-757
+1161,
+1164
 ],
 "alt_span": [
-751,
-753
+1158,
+1160
 ]
 },
 {
@@ -14203,19 +14256,33 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-810,
-813
+1289,
+1292
 ],
 "alt_span": [
-806,
-808
+1285,
+1287
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1567,
+1570
+],
+"alt_span": [
+1562,
+1564
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.986,
+"k_en": 6,
+"shared_fraction": 0.99,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -14223,12 +14290,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-273,
-276
+252,
+255
 ],
 "alt_span": [
-273,
-275
+252,
+254
 ]
 },
 {
@@ -14236,12 +14303,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-511,
-514
+434,
+437
 ],
 "alt_span": [
-510,
-512
+433,
+435
 ]
 },
 {
@@ -14249,12 +14316,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-693,
-696
+844,
+847
 ],
 "alt_span": [
-691,
-693
+842,
+844
 ]
 },
 {
@@ -14262,12 +14329,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-754,
-757
+1161,
+1164
 ],
 "alt_span": [
-751,
-753
+1158,
+1160
 ]
 },
 {
@@ -14275,16 +14342,34 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-810,
-813
+1289,
+1292
 ],
 "alt_span": [
-806,
-808
+1285,
+1287
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1567,
+1570
+],
+"alt_span": [
+1562,
+1564
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t106",
@@ -14587,159 +14672,6 @@
 "alt_span": [
 356,
 358
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "blank_lines__t108",
-"family": "blank_lines",
-"topic": "Check Website Status (Dummy)",
-"angle": "code",
-"text_es": "Simulate checking the status of a website. The function `check_website_status(url)` should always return a dummy value of '200 OK'. In a real scenario, this would involve an HTTP request. Input: `url` (str). Output: `status` (str).\nExample 1: `check_website_status('http://example.com')` should return `'200 OK'`.\nExample 2: `check_website_status('https://google.com')` should return `'200 OK'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def check_website_status(url):\n    \"\"\"\n    Simulates checking the status of a website.\n    Always returns '200 OK' for demonstration purposes.\n    \"\"\"\n    return _get_dummy_status_code()\n\n\ndef _get_dummy_status_code():\n    \"\"\"\n    Returns a predefined dummy status code.\n    \"\"\"\n    return \"200 OK\"\n\n\ndef _process_url(url_string):\n    \"\"\"\n    Processes the input URL string (dummy function).\n    \"\"\"\n    _validate_url_format(url_string)\n    return url_string\n\n\ndef _validate_url_format(url_to_validate):\n    \"\"\"\n    Dummy validation for URL format.\n    \"\"\"\n    if not isinstance(url_to_validate, str):\n        raise TypeError(\"URL must be a string.\")\n\n\ndef _log_status(status_message):\n    \"\"\"\n    Logs the status message (dummy logging).\n    \"\"\"\n    print(f\"Status logged: {status_message}\")\n\n\ndef main():\n    \"\"\"\n    Main function to demonstrate usage.\n    \"\"\"\n    url1 = \"http://example.com\"\n    status1 = check_website_status(_process_url(url1))\n    _log_status(status1)\n\n    url2 = \"https://google.com\"\n    status2 = check_website_status(_process_url(url2))\n    _log_status(status2)\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "def check_website_status(url):\n    \"\"\"\n    Simulates checking the status of a website.\n    Always returns '200 OK' for demonstration purposes.\n    \"\"\"\n    return _get_dummy_status_code()\n\ndef _get_dummy_status_code():\n    \"\"\"\n    Returns a predefined dummy status code.\n    \"\"\"\n    return \"200 OK\"\n\ndef _process_url(url_string):\n    \"\"\"\n    Processes the input URL string (dummy function).\n    \"\"\"\n    _validate_url_format(url_string)\n    return url_string\n\ndef _validate_url_format(url_to_validate):\n    \"\"\"\n    Dummy validation for URL format.\n    \"\"\"\n    if not isinstance(url_to_validate, str):\n        raise TypeError(\"URL must be a string.\")\n\ndef _log_status(status_message):\n    \"\"\"\n    Logs the status message (dummy logging).\n    \"\"\"\n    print(f\"Status logged: {status_message}\")\n\ndef main():\n    \"\"\"\n    Main function to demonstrate usage.\n    \"\"\"\n    url1 = \"http://example.com\"\n    status1 = check_website_status(_process_url(url1))\n    _log_status(status1)\n\n    url2 = \"https://google.com\"\n    status2 = check_website_status(_process_url(url2))\n    _log_status(status2)\n\nif __name__ == \"__main__\":\n    main()\n",
-"opps": [
-{
-"k": 0,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-186,
-189
-],
-"alt_span": [
-186,
-188
-]
-},
-{
-"k": 1,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-298,
-301
-],
-"alt_span": [
-297,
-299
-]
-},
-{
-"k": 2,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-458,
-461
-],
-"alt_span": [
-456,
-458
-]
-},
-{
-"k": 3,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-650,
-653
-],
-"alt_span": [
-647,
-649
-]
-},
-{
-"k": 4,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-792,
-795
-],
-"alt_span": [
-788,
-790
-]
-}
-],
-"k_en": 5,
-"shared_fraction": 0.985,
-"pass": true,
-"verify": null,
-"alt_rule": true,
-"opps_all": [
-{
-"k": 0,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-186,
-189
-],
-"alt_span": [
-186,
-188
-]
-},
-{
-"k": 1,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-298,
-301
-],
-"alt_span": [
-297,
-299
-]
-},
-{
-"k": 2,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-458,
-461
-],
-"alt_span": [
-456,
-458
-]
-},
-{
-"k": 3,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-650,
-653
-],
-"alt_span": [
-647,
-649
-]
-},
-{
-"k": 4,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-792,
-795
-],
-"alt_span": [
-788,
-790
 ]
 }
 ],
@@ -15087,20 +15019,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import random\n\n\ndef roll_single_die():\n    return random.randint(1, 6)\n\n\ndef generate_rolls(num_dice):\n    return [roll_single_die() for _ in range(num_dice)]\n\n\ndef calculate_sum(rolls):\n    return sum(rolls)\n\n\ndef validate_input(num_dice):\n    if not isinstance(num_dice, int) or num_dice < 1:\n        raise ValueError(\"Number of dice must be a positive integer.\")\n\n\ndef simulate_dice_sum(num_dice):\n    validate_input(num_dice)\n    rolls = generate_rolls(num_dice)\n    total_sum = calculate_sum(rolls)\n    return total_sum\n\n\ndef main():\n    # Example usage (not part of the core solution, just for demonstration)\n    print(f\"Rolling 1 die: {simulate_dice_sum(1)}\")\n    print(f\"Rolling 3 dice: {simulate_dice_sum(3)}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "import random\n\ndef roll_single_die():\n    return random.randint(1, 6)\n\ndef generate_rolls(num_dice):\n    return [roll_single_die() for _ in range(num_dice)]\n\ndef calculate_sum(rolls):\n    return sum(rolls)\n\ndef validate_input(num_dice):\n    if not isinstance(num_dice, int) or num_dice < 1:\n        raise ValueError(\"Number of dice must be a positive integer.\")\n\ndef simulate_dice_sum(num_dice):\n    validate_input(num_dice)\n    rolls = generate_rolls(num_dice)\n    total_sum = calculate_sum(rolls)\n    return total_sum\n\ndef main():\n    # Example usage (not part of the core solution, just for demonstration)\n    print(f\"Rolling 1 die: {simulate_dice_sum(1)}\")\n    print(f\"Rolling 3 dice: {simulate_dice_sum(3)}\")\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "import random\nfrom collections import Counter\n\n\ndef validate_num_dice(num_dice):\n    if isinstance(num_dice, bool) or not isinstance(num_dice, int):\n        raise TypeError(\"num_dice must be an integer\")\n    if num_dice < 0:\n        raise ValueError(\"num_dice must be non-negative\")\n    return num_dice\n\n\ndef roll_die():\n    return random.randint(1, 6)\n\n\ndef roll_dice(num_dice):\n    return [roll_die() for _ in range(validate_num_dice(num_dice))]\n\n\ndef simulate_dice_sum(num_dice):\n    return sum(roll_dice(num_dice))\n\n\ndef run_trials(num_dice, trials):\n    if trials < 1:\n        raise ValueError(\"trials must be at least 1\")\n    return [simulate_dice_sum(num_dice) for _ in range(trials)]\n\n\ndef summarize(totals):\n    counts = Counter(totals)\n    return {\n        \"trials\": len(totals),\n        \"min\": min(totals),\n        \"max\": max(totals),\n        \"mean\": sum(totals) / len(totals),\n        \"counts\": dict(sorted(counts.items())),\n    }\n\n\ndef expected_mean(num_dice):\n    return validate_num_dice(num_dice) * 3.5\n\n\ndef format_histogram(counts, width=40):\n    peak = max(counts.values())\n    lines = []\n    for total, count in sorted(counts.items()):\n        bar = \"#\" * max(1, round(count * width / peak))\n        lines.append(\"{:>3} | {:<{w}} {}\".format(total, bar, count, w=width))\n    return \"\\n\".join(lines)\n\n\ndef format_report(num_dice, summary):\n    header = \"Rolling {} die/dice, {} trials\".format(num_dice, summary[\"trials\"])\n    stats = \"range {}-{}, mean {:.3f} (expected {:.3f})\".format(\n        summary[\"min\"], summary[\"max\"], summary[\"mean\"], expected_mean(num_dice)\n    )\n    return \"\\n\".join([header, stats, format_histogram(summary[\"counts\"])])\n\n\ndef main():\n    for num_dice in (1, 2, 3):\n        print(\"single roll of {} dice ->\".format(num_dice), simulate_dice_sum(num_dice))\n    for num_dice in (1, 2):\n        totals = run_trials(num_dice, 2000)\n        print(format_report(num_dice, summarize(totals)))\n        print()\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "import random\nfrom collections import Counter\n\ndef validate_num_dice(num_dice):\n    if isinstance(num_dice, bool) or not isinstance(num_dice, int):\n        raise TypeError(\"num_dice must be an integer\")\n    if num_dice < 0:\n        raise ValueError(\"num_dice must be non-negative\")\n    return num_dice\n\ndef roll_die():\n    return random.randint(1, 6)\n\ndef roll_dice(num_dice):\n    return [roll_die() for _ in range(validate_num_dice(num_dice))]\n\ndef simulate_dice_sum(num_dice):\n    return sum(roll_dice(num_dice))\n\ndef run_trials(num_dice, trials):\n    if trials < 1:\n        raise ValueError(\"trials must be at least 1\")\n    return [simulate_dice_sum(num_dice) for _ in range(trials)]\n\ndef summarize(totals):\n    counts = Counter(totals)\n    return {\n        \"trials\": len(totals),\n        \"min\": min(totals),\n        \"max\": max(totals),\n        \"mean\": sum(totals) / len(totals),\n        \"counts\": dict(sorted(counts.items())),\n    }\n\ndef expected_mean(num_dice):\n    return validate_num_dice(num_dice) * 3.5\n\ndef format_histogram(counts, width=40):\n    peak = max(counts.values())\n    lines = []\n    for total, count in sorted(counts.items()):\n        bar = \"#\" * max(1, round(count * width / peak))\n        lines.append(\"{:>3} | {:<{w}} {}\".format(total, bar, count, w=width))\n    return \"\\n\".join(lines)\n\ndef format_report(num_dice, summary):\n    header = \"Rolling {} die/dice, {} trials\".format(num_dice, summary[\"trials\"])\n    stats = \"range {}-{}, mean {:.3f} (expected {:.3f})\".format(\n        summary[\"min\"], summary[\"max\"], summary[\"mean\"], expected_mean(num_dice)\n    )\n    return \"\\n\".join([header, stats, format_histogram(summary[\"counts\"])])\n\ndef main():\n    for num_dice in (1, 2, 3):\n        print(\"single roll of {} dice ->\".format(num_dice), simulate_dice_sum(num_dice))\n    for num_dice in (1, 2):\n        totals = run_trials(num_dice, 2000)\n        print(format_report(num_dice, summarize(totals)))\n        print()\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-13,
-16
+45,
+48
 ],
 "alt_span": [
-13,
-15
+45,
+47
 ]
 },
 {
@@ -15108,12 +15040,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-70,
-73
+302,
+305
 ],
 "alt_span": [
-69,
-71
+301,
+303
 ]
 },
 {
@@ -15121,12 +15053,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-158,
-161
+352,
+355
 ],
 "alt_span": [
-156,
-158
+350,
+352
 ]
 },
 {
@@ -15134,12 +15066,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-208,
-211
+447,
+450
 ],
 "alt_span": [
-205,
-207
+444,
+446
 ]
 },
 {
@@ -15147,12 +15079,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-365,
-368
+518,
+521
 ],
 "alt_span": [
-361,
-363
+514,
+516
 ]
 },
 {
@@ -15160,19 +15092,72 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-524,
-527
+691,
+694
 ],
 "alt_span": [
-519,
-521
+686,
+688
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+942,
+945
+],
+"alt_span": [
+936,
+938
+]
+},
+{
+"k": 7,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1018,
+1021
+],
+"alt_span": [
+1011,
+1013
+]
+},
+{
+"k": 8,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1317,
+1320
+],
+"alt_span": [
+1309,
+1311
+]
+},
+{
+"k": 9,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1666,
+1669
+],
+"alt_span": [
+1657,
+1659
 ]
 }
 ],
-"k_en": 6,
-"shared_fraction": 0.975,
+"k_en": 10,
+"shared_fraction": 0.986,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -15180,12 +15165,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-13,
-16
+45,
+48
 ],
 "alt_span": [
-13,
-15
+45,
+47
 ]
 },
 {
@@ -15193,12 +15178,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-70,
-73
+302,
+305
 ],
 "alt_span": [
-69,
-71
+301,
+303
 ]
 },
 {
@@ -15206,12 +15191,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-158,
-161
+352,
+355
 ],
 "alt_span": [
-156,
-158
+350,
+352
 ]
 },
 {
@@ -15219,12 +15204,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-208,
-211
+447,
+450
 ],
 "alt_span": [
-205,
-207
+444,
+446
 ]
 },
 {
@@ -15232,12 +15217,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-365,
-368
+518,
+521
 ],
 "alt_span": [
-361,
-363
+514,
+516
 ]
 },
 {
@@ -15245,16 +15230,73 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-524,
-527
+691,
+694
 ],
 "alt_span": [
-519,
-521
+686,
+688
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+942,
+945
+],
+"alt_span": [
+936,
+938
+]
+},
+{
+"k": 7,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1018,
+1021
+],
+"alt_span": [
+1011,
+1013
+]
+},
+{
+"k": 8,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1317,
+1320
+],
+"alt_span": [
+1309,
+1311
+]
+},
+{
+"k": 9,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1666,
+1669
+],
+"alt_span": [
+1657,
+1659
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t114",
@@ -15572,20 +15614,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def _calculate_average(pixel):\n    return sum(pixel) // len(pixel)\n\n\ndef _process_row(row):\n    return [_calculate_average(pixel) for pixel in row]\n\n\ndef _create_grayscale_image(image_matrix):\n    return [_process_row(row) for row in image_matrix]\n\n\ndef to_grayscale(image_matrix):\n    return _create_grayscale_image(image_matrix)\n\n\ndef _validate_image_matrix(image_matrix):\n    if not isinstance(image_matrix, list) or not all(isinstance(row, list) for row in image_matrix):\n        raise TypeError(\"image_matrix must be a list of lists.\")\n    if any(not all(isinstance(pixel, list) and len(pixel) == 3 and all(isinstance(c, int) for c in pixel) for pixel in row) for row in image_matrix):\n        raise ValueError(\"Each pixel must be a list of 3 integers.\")\n\n\ndef _apply_validation_and_conversion(image_matrix):\n    _validate_image_matrix(image_matrix)\n    return to_grayscale(image_matrix)\n\n# This final line demonstrates usage but is not part of the core function.\n# For example, to_grayscale([[[255, 0, 0], [0, 255, 0]]]) would yield [[85, 85]].\n",
-"text_alt": "def _calculate_average(pixel):\n    return sum(pixel) // len(pixel)\n\ndef _process_row(row):\n    return [_calculate_average(pixel) for pixel in row]\n\ndef _create_grayscale_image(image_matrix):\n    return [_process_row(row) for row in image_matrix]\n\ndef to_grayscale(image_matrix):\n    return _create_grayscale_image(image_matrix)\n\ndef _validate_image_matrix(image_matrix):\n    if not isinstance(image_matrix, list) or not all(isinstance(row, list) for row in image_matrix):\n        raise TypeError(\"image_matrix must be a list of lists.\")\n    if any(not all(isinstance(pixel, list) and len(pixel) == 3 and all(isinstance(c, int) for c in pixel) for pixel in row) for row in image_matrix):\n        raise ValueError(\"Each pixel must be a list of 3 integers.\")\n\ndef _apply_validation_and_conversion(image_matrix):\n    _validate_image_matrix(image_matrix)\n    return to_grayscale(image_matrix)\n\n# This final line demonstrates usage but is not part of the core function.\n# For example, to_grayscale([[[255, 0, 0], [0, 255, 0]]]) would yield [[85, 85]].\n",
+"text_nat": "def validate_pixel(pixel):\n    if not isinstance(pixel, (list, tuple)) or len(pixel) != 3:\n        raise ValueError(\"each pixel must have exactly three channels: %r\" % (pixel,))\n    for channel in pixel:\n        if not isinstance(channel, int) or isinstance(channel, bool):\n            raise TypeError(\"channel values must be integers: %r\" % (channel,))\n        if channel < 0 or channel > 255:\n            raise ValueError(\"channel out of range 0..255: %d\" % channel)\n    return tuple(pixel)\n\n\ndef validate_image(image_matrix):\n    if not isinstance(image_matrix, (list, tuple)):\n        raise TypeError(\"image must be a list of rows\")\n    widths = set()\n    rows = []\n    for row in image_matrix:\n        if not isinstance(row, (list, tuple)):\n            raise TypeError(\"each row must be a list of pixels\")\n        widths.add(len(row))\n        rows.append([validate_pixel(pixel) for pixel in row])\n    if len(widths) > 1:\n        raise ValueError(\"all rows must have the same width, got %s\" % sorted(widths))\n    return rows\n\n\ndef average_channels(pixel):\n    red, green, blue = pixel\n    return (red + green + blue) // 3\n\n\ndef to_grayscale(image_matrix):\n    rows = validate_image(image_matrix)\n    return [[average_channels(pixel) for pixel in row] for row in rows]\n\n\ndef image_extremes(grayscale_image):\n    values = [value for row in grayscale_image for value in row]\n    if not values:\n        return 0, 0\n    return min(values), max(values)\n\n\ndef render_row(row, ramp=\" .:-=+*#%@\"):\n    darkest, brightest = 0, 255\n    span = brightest - darkest\n    characters = []\n    for value in row:\n        index = value * (len(ramp) - 1) // span\n        characters.append(ramp[index])\n    return \"\".join(characters)\n\n\ndef render_ascii(grayscale_image):\n    return \"\\n\".join(render_row(row) for row in grayscale_image)\n\n\ndef describe(image_matrix):\n    grayscale_image = to_grayscale(image_matrix)\n    low, high = image_extremes(grayscale_image)\n    height = len(grayscale_image)\n    width = len(grayscale_image[0]) if height else 0\n    lines = [\"%dx%d image, luminance range %d..%d\" % (width, height, low, high)]\n    for row in grayscale_image:\n        lines.append(\" \".join(\"%3d\" % value for value in row))\n    art = render_ascii(grayscale_image)\n    if art:\n        lines.append(art)\n    return \"\\n\".join(lines)\n\n\ndef main():\n    samples = [\n        [[[255, 0, 0], [0, 255, 0]]],\n        [[[10, 20, 30]]],\n        [\n            [[0, 0, 0], [64, 64, 64], [128, 128, 128]],\n            [[255, 255, 255], [200, 100, 50], [12, 240, 90]],\n        ],\n    ]\n    for sample in samples:\n        print(to_grayscale(sample))\n        print(describe(sample))\n        print(\"-\" * 20)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def validate_pixel(pixel):\n    if not isinstance(pixel, (list, tuple)) or len(pixel) != 3:\n        raise ValueError(\"each pixel must have exactly three channels: %r\" % (pixel,))\n    for channel in pixel:\n        if not isinstance(channel, int) or isinstance(channel, bool):\n            raise TypeError(\"channel values must be integers: %r\" % (channel,))\n        if channel < 0 or channel > 255:\n            raise ValueError(\"channel out of range 0..255: %d\" % channel)\n    return tuple(pixel)\n\ndef validate_image(image_matrix):\n    if not isinstance(image_matrix, (list, tuple)):\n        raise TypeError(\"image must be a list of rows\")\n    widths = set()\n    rows = []\n    for row in image_matrix:\n        if not isinstance(row, (list, tuple)):\n            raise TypeError(\"each row must be a list of pixels\")\n        widths.add(len(row))\n        rows.append([validate_pixel(pixel) for pixel in row])\n    if len(widths) > 1:\n        raise ValueError(\"all rows must have the same width, got %s\" % sorted(widths))\n    return rows\n\ndef average_channels(pixel):\n    red, green, blue = pixel\n    return (red + green + blue) // 3\n\ndef to_grayscale(image_matrix):\n    rows = validate_image(image_matrix)\n    return [[average_channels(pixel) for pixel in row] for row in rows]\n\ndef image_extremes(grayscale_image):\n    values = [value for row in grayscale_image for value in row]\n    if not values:\n        return 0, 0\n    return min(values), max(values)\n\ndef render_row(row, ramp=\" .:-=+*#%@\"):\n    darkest, brightest = 0, 255\n    span = brightest - darkest\n    characters = []\n    for value in row:\n        index = value * (len(ramp) - 1) // span\n        characters.append(ramp[index])\n    return \"\".join(characters)\n\ndef render_ascii(grayscale_image):\n    return \"\\n\".join(render_row(row) for row in grayscale_image)\n\ndef describe(image_matrix):\n    grayscale_image = to_grayscale(image_matrix)\n    low, high = image_extremes(grayscale_image)\n    height = len(grayscale_image)\n    width = len(grayscale_image[0]) if height else 0\n    lines = [\"%dx%d image, luminance range %d..%d\" % (width, height, low, high)]\n    for row in grayscale_image:\n        lines.append(\" \".join(\"%3d\" % value for value in row))\n    art = render_ascii(grayscale_image)\n    if art:\n        lines.append(art)\n    return \"\\n\".join(lines)\n\ndef main():\n    samples = [\n        [[[255, 0, 0], [0, 255, 0]]],\n        [[[10, 20, 30]]],\n        [\n            [[0, 0, 0], [64, 64, 64], [128, 128, 128]],\n            [[255, 255, 255], [200, 100, 50], [12, 240, 90]],\n        ],\n    ]\n    for sample in samples:\n        print(to_grayscale(sample))\n        print(describe(sample))\n        print(\"-\" * 20)\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-66,
-69
+492,
+495
 ],
 "alt_span": [
-66,
-68
+492,
+494
 ]
 },
 {
@@ -15593,12 +15635,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-147,
-150
+1028,
+1031
 ],
 "alt_span": [
-146,
-148
+1027,
+1029
 ]
 },
 {
@@ -15606,12 +15648,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-247,
-250
+1125,
+1128
 ],
 "alt_span": [
-245,
-247
+1123,
+1125
 ]
 },
 {
@@ -15619,12 +15661,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-330,
-333
+1271,
+1274
 ],
 "alt_span": [
-327,
-329
+1268,
+1270
 ]
 },
 {
@@ -15632,19 +15674,59 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-759,
-762
+1450,
+1453
 ],
 "alt_span": [
-755,
-757
+1446,
+1448
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1715,
+1718
+],
+"alt_span": [
+1710,
+1712
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1817,
+1820
+],
+"alt_span": [
+1811,
+1813
+]
+},
+{
+"k": 7,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+2313,
+2316
+],
+"alt_span": [
+2306,
+2308
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.986,
+"k_en": 8,
+"shared_fraction": 0.992,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -15652,12 +15734,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-66,
-69
+492,
+495
 ],
 "alt_span": [
-66,
-68
+492,
+494
 ]
 },
 {
@@ -15665,12 +15747,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-147,
-150
+1028,
+1031
 ],
 "alt_span": [
-146,
-148
+1027,
+1029
 ]
 },
 {
@@ -15678,12 +15760,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-247,
-250
+1125,
+1128
 ],
 "alt_span": [
-245,
-247
+1123,
+1125
 ]
 },
 {
@@ -15691,12 +15773,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-330,
-333
+1271,
+1274
 ],
 "alt_span": [
-327,
-329
+1268,
+1270
 ]
 },
 {
@@ -15704,16 +15786,60 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-759,
-762
+1450,
+1453
 ],
 "alt_span": [
-755,
-757
+1446,
+1448
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1715,
+1718
+],
+"alt_span": [
+1710,
+1712
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1817,
+1820
+],
+"alt_span": [
+1811,
+1813
+]
+},
+{
+"k": 7,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+2313,
+2316
+],
+"alt_span": [
+2306,
+2308
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t117",
@@ -15725,20 +15851,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def normalize_text(text):\n    return text.lower()\n\n\ndef normalize_keyword(keyword):\n    return keyword.lower()\n\n\ndef split_text_into_words(normalized_text):\n    return normalized_text.split()\n\n\ndef count_occurrences_in_list(words, normalized_keyword):\n    count = 0\n    for word in words:\n        if word == normalized_keyword:\n            count += 1\n    return count\n\n\ndef count_keyword_occurrences(text, keyword):\n    normalized_t = normalize_text(text)\n    normalized_k = normalize_keyword(keyword)\n    words = split_text_into_words(normalized_t)\n    return count_occurrences_in_list(words, normalized_k)\n\n\ndef main():\n    # Example 1\n    print(count_keyword_occurrences('Hello world, hello Python!', 'hello'))\n    # Example 2\n    print(count_keyword_occurrences('Python is fun', 'java'))\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "def normalize_text(text):\n    return text.lower()\n\ndef normalize_keyword(keyword):\n    return keyword.lower()\n\ndef split_text_into_words(normalized_text):\n    return normalized_text.split()\n\ndef count_occurrences_in_list(words, normalized_keyword):\n    count = 0\n    for word in words:\n        if word == normalized_keyword:\n            count += 1\n    return count\n\ndef count_keyword_occurrences(text, keyword):\n    normalized_t = normalize_text(text)\n    normalized_k = normalize_keyword(keyword)\n    words = split_text_into_words(normalized_t)\n    return count_occurrences_in_list(words, normalized_k)\n\ndef main():\n    # Example 1\n    print(count_keyword_occurrences('Hello world, hello Python!', 'hello'))\n    # Example 2\n    print(count_keyword_occurrences('Python is fun', 'java'))\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "import re\nimport sys\n\n\ndef normalize(text):\n    return re.sub(r\"\\s+\", \" \", text.strip().lower())\n\n\ndef validate_inputs(text, keyword):\n    if not isinstance(text, str) or not isinstance(keyword, str):\n        raise TypeError(\"text and keyword must both be strings\")\n    if not keyword.strip():\n        raise ValueError(\"keyword must contain at least one non-space character\")\n\n\ndef build_pattern(keyword):\n    parts = [re.escape(part) for part in normalize(keyword).split(\" \")]\n    return re.compile(r\"\\b\" + r\"\\s+\".join(parts) + r\"\\b\", re.IGNORECASE)\n\n\ndef count_keyword_occurrences(text, keyword):\n    validate_inputs(text, keyword)\n    pattern = build_pattern(keyword)\n    return len(pattern.findall(normalize(text)))\n\n\ndef count_many(text, keywords):\n    return {keyword: count_keyword_occurrences(text, keyword) for keyword in keywords}\n\n\ndef total_words(text):\n    normalized = normalize(text)\n    return len(normalized.split()) if normalized else 0\n\n\ndef density(text, keyword):\n    words = total_words(text)\n    if words == 0:\n        return 0.0\n    return 100.0 * count_keyword_occurrences(text, keyword) / words\n\n\ndef format_row(keyword, count, percent):\n    return \"{:<12} {:>5} {:>7.2f}%\".format(keyword, count, percent)\n\n\ndef build_report(text, keywords):\n    lines = [\"{:<12} {:>5} {:>8}\".format(\"keyword\", \"count\", \"density\")]\n    for keyword, count in sorted(count_many(text, keywords).items(),\n                                 key=lambda item: (-item[1], item[0])):\n        lines.append(format_row(keyword, count, density(text, keyword)))\n    return \"\\n\".join(lines)\n\n\ndef read_text(argv):\n    if len(argv) > 1:\n        with open(argv[1], encoding=\"utf-8\") as handle:\n            return handle.read()\n    return \"Hello world, hello Python! Python is fun, and Python is fast.\"\n\n\ndef main(argv):\n    text = read_text(argv)\n    keywords = argv[2:] or [\"hello\", \"python\", \"java\", \"is fun\"]\n    print(build_report(text, keywords))\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n",
+"text_alt": "import re\nimport sys\n\ndef normalize(text):\n    return re.sub(r\"\\s+\", \" \", text.strip().lower())\n\ndef validate_inputs(text, keyword):\n    if not isinstance(text, str) or not isinstance(keyword, str):\n        raise TypeError(\"text and keyword must both be strings\")\n    if not keyword.strip():\n        raise ValueError(\"keyword must contain at least one non-space character\")\n\ndef build_pattern(keyword):\n    parts = [re.escape(part) for part in normalize(keyword).split(\" \")]\n    return re.compile(r\"\\b\" + r\"\\s+\".join(parts) + r\"\\b\", re.IGNORECASE)\n\ndef count_keyword_occurrences(text, keyword):\n    validate_inputs(text, keyword)\n    pattern = build_pattern(keyword)\n    return len(pattern.findall(normalize(text)))\n\ndef count_many(text, keywords):\n    return {keyword: count_keyword_occurrences(text, keyword) for keyword in keywords}\n\ndef total_words(text):\n    normalized = normalize(text)\n    return len(normalized.split()) if normalized else 0\n\ndef density(text, keyword):\n    words = total_words(text)\n    if words == 0:\n        return 0.0\n    return 100.0 * count_keyword_occurrences(text, keyword) / words\n\ndef format_row(keyword, count, percent):\n    return \"{:<12} {:>5} {:>7.2f}%\".format(keyword, count, percent)\n\ndef build_report(text, keywords):\n    lines = [\"{:<12} {:>5} {:>8}\".format(\"keyword\", \"count\", \"density\")]\n    for keyword, count in sorted(count_many(text, keywords).items(),\n                                 key=lambda item: (-item[1], item[0])):\n        lines.append(format_row(keyword, count, density(text, keyword)))\n    return \"\\n\".join(lines)\n\ndef read_text(argv):\n    if len(argv) > 1:\n        with open(argv[1], encoding=\"utf-8\") as handle:\n            return handle.read()\n    return \"Hello world, hello Python! Python is fun, and Python is fast.\"\n\ndef main(argv):\n    text = read_text(argv)\n    keywords = argv[2:] or [\"hello\", \"python\", \"java\", \"is fun\"]\n    print(build_report(text, keywords))\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv))\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-49,
-52
+20,
+23
 ],
 "alt_span": [
-49,
-51
+20,
+22
 ]
 },
 {
@@ -15746,12 +15872,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-110,
-113
+96,
+99
 ],
 "alt_span": [
-109,
-111
+95,
+97
 ]
 },
 {
@@ -15759,12 +15885,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-191,
-194
+375,
+378
 ],
 "alt_span": [
-189,
-191
+373,
+375
 ]
 },
 {
@@ -15772,12 +15898,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-367,
-370
+550,
+553
 ],
 "alt_span": [
-364,
-366
+547,
+549
 ]
 },
 {
@@ -15785,19 +15911,98 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-607,
-610
+719,
+722
 ],
 "alt_span": [
-603,
-605
+715,
+717
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+840,
+843
+],
+"alt_span": [
+835,
+837
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+954,
+957
+],
+"alt_span": [
+948,
+950
+]
+},
+{
+"k": 7,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1120,
+1123
+],
+"alt_span": [
+1113,
+1115
+]
+},
+{
+"k": 8,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1231,
+1234
+],
+"alt_span": [
+1223,
+1225
+]
+},
+{
+"k": 9,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1582,
+1585
+],
+"alt_span": [
+1573,
+1575
+]
+},
+{
+"k": 10,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1791,
+1794
+],
+"alt_span": [
+1781,
+1783
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.977,
+"k_en": 11,
+"shared_fraction": 0.985,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -15805,12 +16010,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-49,
-52
+20,
+23
 ],
 "alt_span": [
-49,
-51
+20,
+22
 ]
 },
 {
@@ -15818,12 +16023,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-110,
-113
+96,
+99
 ],
 "alt_span": [
-109,
-111
+95,
+97
 ]
 },
 {
@@ -15831,12 +16036,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-191,
-194
+375,
+378
 ],
 "alt_span": [
-189,
-191
+373,
+375
 ]
 },
 {
@@ -15844,12 +16049,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-367,
-370
+550,
+553
 ],
 "alt_span": [
-364,
-366
+547,
+549
 ]
 },
 {
@@ -15857,16 +16062,99 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-607,
-610
+719,
+722
 ],
 "alt_span": [
-603,
-605
+715,
+717
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+840,
+843
+],
+"alt_span": [
+835,
+837
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+954,
+957
+],
+"alt_span": [
+948,
+950
+]
+},
+{
+"k": 7,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1120,
+1123
+],
+"alt_span": [
+1113,
+1115
+]
+},
+{
+"k": 8,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1231,
+1234
+],
+"alt_span": [
+1223,
+1225
+]
+},
+{
+"k": 9,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1582,
+1585
+],
+"alt_span": [
+1573,
+1575
+]
+},
+{
+"k": 10,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1791,
+1794
+],
+"alt_span": [
+1781,
+1783
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t119",
@@ -16337,20 +16625,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def count_char(text, char_to_count):\n    \"\"\"Counts the total occurrences of a specific character in a string.\"\"\"\n    count = 0\n    for char in text:\n        if char == char_to_count:\n            count = increment_count(count)\n    return count\n\n\ndef increment_count(current_count):\n    \"\"\"Increments a given count by one.\"\"\"\n    return current_count + 1\n\n\ndef is_char_match(char1, char2):\n    \"\"\"Checks if two characters are identical.\"\"\"\n    return char1 == char2\n\n\ndef process_string(text_string, target_char):\n    \"\"\"Iterates through a string to find character matches.\"\"\"\n    total = 0\n    for character in text_string:\n        if is_char_match(character, target_char):\n            total = update_total(total)\n    return total\n\n\ndef update_total(current_total):\n    \"\"\"Adds one to the current total.\"\"\"\n    return current_total + 1\n\n\ndef main():\n    \"\"\"Main function to demonstrate char counting.\"\"\"\n    result1 = count_char('banana', 'a')\n    result2 = count_char('Mississippi', 's')\n    # In a real scenario, these results would be used or printed.\n\n    # This is here to satisfy the 6-function requirement with spread out functions.\n    test_string = \"hello world\"\n    char_to_find = \"o\"\n    final_count = process_string(test_string, char_to_find)\n    # print(final_count) # To demonstrate usage\n    pass\n",
-"text_alt": "def count_char(text, char_to_count):\n    \"\"\"Counts the total occurrences of a specific character in a string.\"\"\"\n    count = 0\n    for char in text:\n        if char == char_to_count:\n            count = increment_count(count)\n    return count\n\ndef increment_count(current_count):\n    \"\"\"Increments a given count by one.\"\"\"\n    return current_count + 1\n\ndef is_char_match(char1, char2):\n    \"\"\"Checks if two characters are identical.\"\"\"\n    return char1 == char2\n\ndef process_string(text_string, target_char):\n    \"\"\"Iterates through a string to find character matches.\"\"\"\n    total = 0\n    for character in text_string:\n        if is_char_match(character, target_char):\n            total = update_total(total)\n    return total\n\ndef update_total(current_total):\n    \"\"\"Adds one to the current total.\"\"\"\n    return current_total + 1\n\ndef main():\n    \"\"\"Main function to demonstrate char counting.\"\"\"\n    result1 = count_char('banana', 'a')\n    result2 = count_char('Mississippi', 's')\n    # In a real scenario, these results would be used or printed.\n\n    # This is here to satisfy the 6-function requirement with spread out functions.\n    test_string = \"hello world\"\n    char_to_find = \"o\"\n    final_count = process_string(test_string, char_to_find)\n    # print(final_count) # To demonstrate usage\n    pass\n",
+"text_nat": "def validate_text(text):\n    if not isinstance(text, str):\n        raise TypeError(\"text must be a str, got %s\" % type(text).__name__)\n    return text\n\n\ndef validate_char(char_to_count):\n    if not isinstance(char_to_count, str):\n        raise TypeError(\"char_to_count must be a str\")\n    if len(char_to_count) != 1:\n        raise ValueError(\"char_to_count must be exactly one character\")\n    return char_to_count\n\n\ndef count_char(text, char_to_count):\n    text = validate_text(text)\n    char_to_count = validate_char(char_to_count)\n    total = 0\n    for character in text:\n        if character == char_to_count:\n            total += 1\n    return total\n\n\ndef count_char_ignore_case(text, char_to_count):\n    return count_char(text.lower(), validate_char(char_to_count).lower())\n\n\ndef char_frequencies(text):\n    frequencies = {}\n    for character in validate_text(text):\n        frequencies[character] = frequencies.get(character, 0) + 1\n    return frequencies\n\n\ndef most_common_char(text):\n    frequencies = char_frequencies(text)\n    if not frequencies:\n        return None\n    return max(sorted(frequencies), key=frequencies.get)\n\n\ndef format_report(text, char_to_count):\n    exact = count_char(text, char_to_count)\n    relaxed = count_char_ignore_case(text, char_to_count)\n    lines = [\n        \"text            : %r\" % text,\n        \"character       : %r\" % char_to_count,\n        \"exact matches   : %d\" % exact,\n        \"case-insensitive: %d\" % relaxed,\n    ]\n    top = most_common_char(text)\n    if top is not None:\n        lines.append(\"most common     : %r (%d)\" % (top, count_char(text, top)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    samples = [\n        (\"banana\", \"a\"),\n        (\"Mississippi\", \"s\"),\n        (\"Hello World\", \"o\"),\n        (\"\", \"x\"),\n    ]\n    for text, char_to_count in samples:\n        print(format_report(text, char_to_count))\n        print(\"-\" * 40)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def validate_text(text):\n    if not isinstance(text, str):\n        raise TypeError(\"text must be a str, got %s\" % type(text).__name__)\n    return text\n\ndef validate_char(char_to_count):\n    if not isinstance(char_to_count, str):\n        raise TypeError(\"char_to_count must be a str\")\n    if len(char_to_count) != 1:\n        raise ValueError(\"char_to_count must be exactly one character\")\n    return char_to_count\n\ndef count_char(text, char_to_count):\n    text = validate_text(text)\n    char_to_count = validate_char(char_to_count)\n    total = 0\n    for character in text:\n        if character == char_to_count:\n            total += 1\n    return total\n\ndef count_char_ignore_case(text, char_to_count):\n    return count_char(text.lower(), validate_char(char_to_count).lower())\n\ndef char_frequencies(text):\n    frequencies = {}\n    for character in validate_text(text):\n        frequencies[character] = frequencies.get(character, 0) + 1\n    return frequencies\n\ndef most_common_char(text):\n    frequencies = char_frequencies(text)\n    if not frequencies:\n        return None\n    return max(sorted(frequencies), key=frequencies.get)\n\ndef format_report(text, char_to_count):\n    exact = count_char(text, char_to_count)\n    relaxed = count_char_ignore_case(text, char_to_count)\n    lines = [\n        \"text            : %r\" % text,\n        \"character       : %r\" % char_to_count,\n        \"exact matches   : %d\" % exact,\n        \"case-insensitive: %d\" % relaxed,\n    ]\n    top = most_common_char(text)\n    if top is not None:\n        lines.append(\"most common     : %r (%d)\" % (top, count_char(text, top)))\n    return \"\\n\".join(lines)\n\ndef main():\n    samples = [\n        (\"banana\", \"a\"),\n        (\"Mississippi\", \"s\"),\n        (\"Hello World\", \"o\"),\n        (\"\", \"x\"),\n    ]\n    for text, char_to_count in samples:\n        print(format_report(text, char_to_count))\n        print(\"-\" * 40)\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-242,
-245
+150,
+153
 ],
 "alt_span": [
-242,
-244
+150,
+152
 ]
 },
 {
@@ -16358,12 +16646,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-352,
-355
+413,
+416
 ],
 "alt_span": [
-351,
-353
+412,
+414
 ]
 },
 {
@@ -16371,12 +16659,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-463,
-466
+652,
+655
 ],
 "alt_span": [
-461,
-463
+650,
+652
 ]
 },
 {
@@ -16384,12 +16672,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-729,
-732
+777,
+780
 ],
 "alt_span": [
-726,
-728
+774,
+776
 ]
 },
 {
@@ -16397,19 +16685,46 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-834,
-837
+960,
+963
 ],
 "alt_span": [
-830,
-832
+956,
+958
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1132,
+1135
+],
+"alt_span": [
+1127,
+1129
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1631,
+1634
+],
+"alt_span": [
+1625,
+1627
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.988,
+"k_en": 7,
+"shared_fraction": 0.989,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -16417,12 +16732,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-242,
-245
+150,
+153
 ],
 "alt_span": [
-242,
-244
+150,
+152
 ]
 },
 {
@@ -16430,12 +16745,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-352,
-355
+413,
+416
 ],
 "alt_span": [
-351,
-353
+412,
+414
 ]
 },
 {
@@ -16443,12 +16758,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-463,
-466
+652,
+655
 ],
 "alt_span": [
-461,
-463
+650,
+652
 ]
 },
 {
@@ -16456,12 +16771,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-729,
-732
+777,
+780
 ],
 "alt_span": [
-726,
-728
+774,
+776
 ]
 },
 {
@@ -16469,16 +16784,47 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-834,
-837
+960,
+963
 ],
 "alt_span": [
-830,
-832
+956,
+958
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1132,
+1135
+],
+"alt_span": [
+1127,
+1129
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1631,
+1634
+],
+"alt_span": [
+1625,
+1627
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t123",
@@ -23430,63 +23776,11 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def parse_csv_line(line):\n    \"\"\"Parses a single CSV line into a list of strings.\"\"\"\n    return split_line_by_delimiter(line, ',')\n\n\ndef split_line_by_delimiter(line, delimiter):\n    \"\"\"Splits a string by a given delimiter.\"\"\"\n    return [field.strip() for field in line.split(delimiter)]\n\n\ndef process_csv_data(data_lines):\n    \"\"\"Processes a list of CSV lines.\"\"\"\n    parsed_lines = []\n    for line in data_lines:\n        parsed_lines.append(parse_csv_line(line))\n    return parsed_lines\n\n\ndef get_example_line_one():\n    \"\"\"Returns an example CSV line with no empty fields.\"\"\"\n    return 'apple,banana,cherry'\n\n\ndef get_example_line_two():\n    \"\"\"Returns an example CSV line with an empty field.\"\"\"\n    return 'one,,three'\n\n\ndef demonstrate_parsing():\n    \"\"\"Demonstrates the CSV parsing function.\"\"\"\n    line1 = get_example_line_one()\n    line2 = get_example_line_two()\n\n    print(parse_csv_line(line1))\n    print(parse_csv_line(line2))\n\nif __name__ == '__main__':\n    demonstrate_parsing()\n",
-"text_alt": "def parse_csv_line(line):\n    \"\"\"Parses a single CSV line into a list of strings.\"\"\"\n    return split_line_by_delimiter(line, ',')\n\ndef split_line_by_delimiter(line, delimiter):\n    \"\"\"Splits a string by a given delimiter.\"\"\"\n    return [field.strip() for field in line.split(delimiter)]\n\ndef process_csv_data(data_lines):\n    \"\"\"Processes a list of CSV lines.\"\"\"\n    parsed_lines = []\n    for line in data_lines:\n        parsed_lines.append(parse_csv_line(line))\n    return parsed_lines\n\ndef get_example_line_one():\n    \"\"\"Returns an example CSV line with no empty fields.\"\"\"\n    return 'apple,banana,cherry'\n\ndef get_example_line_two():\n    \"\"\"Returns an example CSV line with an empty field.\"\"\"\n    return 'one,,three'\n\ndef demonstrate_parsing():\n    \"\"\"Demonstrates the CSV parsing function.\"\"\"\n    line1 = get_example_line_one()\n    line2 = get_example_line_two()\n\n    print(parse_csv_line(line1))\n    print(parse_csv_line(line2))\n\nif __name__ == '__main__':\n    demonstrate_parsing()\n",
+"text_nat": "def parse_csv_line(line):\n    fields = []\n    current = []\n    in_quotes = False\n    index = 0\n    while index < len(line):\n        char = line[index]\n        if in_quotes:\n            if char == '\"':\n                if index + 1 < len(line) and line[index + 1] == '\"':\n                    current.append('\"')\n                    index += 1\n                else:\n                    in_quotes = False\n            else:\n                current.append(char)\n        elif char == '\"':\n            in_quotes = True\n        elif char == ',':\n            fields.append(''.join(current))\n            current = []\n        else:\n            current.append(char)\n        index += 1\n    fields.append(''.join(current))\n    return fields\n\n\ndef parse_csv_text(text):\n    return [parse_csv_line(line) for line in text.splitlines() if line]\n\n\ndef normalize_row(row, width):\n    trimmed = [field.strip() for field in row]\n    while len(trimmed) < width:\n        trimmed.append('')\n    return trimmed[:width]\n\n\ndef build_table(text):\n    rows = parse_csv_text(text)\n    if not rows:\n        return [], []\n    header = normalize_row(rows[0], len(rows[0]))\n    body = [normalize_row(row, len(header)) for row in rows[1:]]\n    return header, body\n\n\ndef column_widths(header, body):\n    widths = [len(name) for name in header]\n    for row in body:\n        for position, field in enumerate(row):\n            widths[position] = max(widths[position], len(field))\n    return widths\n\n\ndef format_row(row, widths):\n    return ' | '.join(field.ljust(width) for field, width in zip(row, widths))\n\n\ndef render_table(text):\n    header, body = build_table(text)\n    if not header:\n        return '(no data)'\n    widths = column_widths(header, body)\n    lines = [format_row(header, widths)]\n    lines.append('-+-'.join('-' * width for width in widths))\n    for row in body:\n        lines.append(format_row(row, widths))\n    return '\\n'.join(lines)\n\n\ndef main():\n    sample = '\\n'.join([\n        'fruit,color,notes',\n        'apple,red,\"sweet, crisp\"',\n        'banana,yellow,',\n        'cherry,,small',\n        'plum,purple',\n    ])\n    print(parse_csv_line('apple,banana,cherry'))\n    print(parse_csv_line('one,,three'))\n    print(render_table(sample))\n\n\nif __name__ == '__main__':\n    main()\n",
+"text_alt": "def parse_csv_line(line):\n    fields = []\n    current = []\n    in_quotes = False\n    index = 0\n    while index < len(line):\n        char = line[index]\n        if in_quotes:\n            if char == '\"':\n                if index + 1 < len(line) and line[index + 1] == '\"':\n                    current.append('\"')\n                    index += 1\n                else:\n                    in_quotes = False\n            else:\n                current.append(char)\n        elif char == '\"':\n            in_quotes = True\n        elif char == ',':\n            fields.append(''.join(current))\n            current = []\n        else:\n            current.append(char)\n        index += 1\n    fields.append(''.join(current))\n    return fields\n\ndef parse_csv_text(text):\n    return [parse_csv_line(line) for line in text.splitlines() if line]\n\ndef normalize_row(row, width):\n    trimmed = [field.strip() for field in row]\n    while len(trimmed) < width:\n        trimmed.append('')\n    return trimmed[:width]\n\ndef build_table(text):\n    rows = parse_csv_text(text)\n    if not rows:\n        return [], []\n    header = normalize_row(rows[0], len(rows[0]))\n    body = [normalize_row(row, len(header)) for row in rows[1:]]\n    return header, body\n\ndef column_widths(header, body):\n    widths = [len(name) for name in header]\n    for row in body:\n        for position, field in enumerate(row):\n            widths[position] = max(widths[position], len(field))\n    return widths\n\ndef format_row(row, widths):\n    return ' | '.join(field.ljust(width) for field, width in zip(row, widths))\n\ndef render_table(text):\n    header, body = build_table(text)\n    if not header:\n        return '(no data)'\n    widths = column_widths(header, body)\n    lines = [format_row(header, widths)]\n    lines.append('-+-'.join('-' * width for width in widths))\n    for row in body:\n        lines.append(format_row(row, widths))\n    return '\\n'.join(lines)\n\ndef main():\n    sample = '\\n'.join([\n        'fruit,color,notes',\n        'apple,red,\"sweet, crisp\"',\n        'banana,yellow,',\n        'cherry,,small',\n        'plum,purple',\n    ])\n    print(parse_csv_line('apple,banana,cherry'))\n    print(parse_csv_line('one,,three'))\n    print(render_table(sample))\n\n\nif __name__ == '__main__':\n    main()\n",
 "opps": [
 {
 "k": 0,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-130,
-133
-],
-"alt_span": [
-130,
-132
-]
-},
-{
-"k": 1,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-288,
-291
-],
-"alt_span": [
-287,
-289
-]
-},
-{
-"k": 2,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-489,
-492
-],
-"alt_span": [
-487,
-489
-]
-},
-{
-"k": 3,
-"nat": "\n\n\n",
-"alt": "\n\n",
-"nat_span": [
-612,
-615
-],
-"alt_span": [
-609,
-611
-]
-},
-{
-"k": 4,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
@@ -23494,15 +23788,94 @@
 728
 ],
 "alt_span": [
-721,
-723
+725,
+727
+]
+},
+{
+"k": 1,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+825,
+828
+],
+"alt_span": [
+824,
+826
+]
+},
+{
+"k": 2,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+991,
+994
+],
+"alt_span": [
+989,
+991
+]
+},
+{
+"k": 3,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1226,
+1229
+],
+"alt_span": [
+1223,
+1225
+]
+},
+{
+"k": 4,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1456,
+1459
+],
+"alt_span": [
+1452,
+1454
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1566,
+1569
+],
+"alt_span": [
+1561,
+1563
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1914,
+1917
+],
+"alt_span": [
+1908,
+1910
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.984,
+"k_en": 7,
+"shared_fraction": 0.991,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -23510,12 +23883,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-130,
-133
+725,
+728
 ],
 "alt_span": [
-130,
-132
+725,
+727
 ]
 },
 {
@@ -23523,12 +23896,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-288,
-291
+825,
+828
 ],
 "alt_span": [
-287,
-289
+824,
+826
 ]
 },
 {
@@ -23536,12 +23909,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-489,
-492
+991,
+994
 ],
 "alt_span": [
-487,
-489
+989,
+991
 ]
 },
 {
@@ -23549,12 +23922,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-612,
-615
+1226,
+1229
 ],
 "alt_span": [
-609,
-611
+1223,
+1225
 ]
 },
 {
@@ -23562,16 +23935,47 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-725,
-728
+1456,
+1459
 ],
 "alt_span": [
-721,
-723
+1452,
+1454
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1566,
+1569
+],
+"alt_span": [
+1561,
+1563
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1914,
+1917
+],
+"alt_span": [
+1908,
+1910
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t176",
@@ -27232,20 +27636,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import os\n\ndef _read_file_content(filepath):\n    if not os.path.exists(filepath):\n        return \"\"\n    with open(filepath, 'r') as f:\n        return f.read()\n\n\ndef _split_into_words(text):\n    import re\n    return re.findall(r'[a-zA-Z0-9]+', text)\n\n\ndef _find_longest_word_in_list(words):\n    if not words:\n        return \"\"\n    return max(words, key=len)\n\n\ndef _write_dummy_file(filepath, content):\n    with open(filepath, 'w') as f:\n        f.write(content)\n\n\ndef _cleanup_file(filepath):\n    if os.path.exists(filepath):\n        os.remove(filepath)\n\n\ndef find_longest_word_in_file(filepath):\n    content = _read_file_content(filepath)\n    words = _split_into_words(content)\n    longest_word = _find_longest_word_in_list(words)\n    return longest_word\n",
-"text_alt": "import os\n\ndef _read_file_content(filepath):\n    if not os.path.exists(filepath):\n        return \"\"\n    with open(filepath, 'r') as f:\n        return f.read()\n\ndef _split_into_words(text):\n    import re\n    return re.findall(r'[a-zA-Z0-9]+', text)\n\ndef _find_longest_word_in_list(words):\n    if not words:\n        return \"\"\n    return max(words, key=len)\n\ndef _write_dummy_file(filepath, content):\n    with open(filepath, 'w') as f:\n        f.write(content)\n\ndef _cleanup_file(filepath):\n    if os.path.exists(filepath):\n        os.remove(filepath)\n\ndef find_longest_word_in_file(filepath):\n    content = _read_file_content(filepath)\n    words = _split_into_words(content)\n    longest_word = _find_longest_word_in_list(words)\n    return longest_word\n",
+"text_nat": "SIMULATED_FILES = {\n    'dummy_file.txt': 'apple banana a',\n    'empty.txt': '',\n    'notes.txt': 'The quick brown fox jumps over 1234567 lazy dogs.',\n    'code.txt': 'x1 = compute_total(items); y = x1 ** 2  # version2 build42',\n}\n\n\ndef read_simulated_file(filepath):\n    if filepath not in SIMULATED_FILES:\n        raise FileNotFoundError(filepath)\n    return SIMULATED_FILES[filepath]\n\n\ndef extract_words(text):\n    words = []\n    current = []\n    for char in text:\n        if char.isalnum():\n            current.append(char)\n        elif current:\n            words.append(''.join(current))\n            current = []\n    if current:\n        words.append(''.join(current))\n    return words\n\n\ndef longest_word(words):\n    best = ''\n    for word in words:\n        if len(word) > len(best):\n            best = word\n    return best\n\n\ndef find_longest_word_in_file(filepath):\n    try:\n        text = read_simulated_file(filepath)\n    except FileNotFoundError:\n        return ''\n    return longest_word(extract_words(text))\n\n\ndef word_length_histogram(words):\n    histogram = {}\n    for word in words:\n        histogram[len(word)] = histogram.get(len(word), 0) + 1\n    return histogram\n\n\ndef describe_file(filepath):\n    try:\n        text = read_simulated_file(filepath)\n    except FileNotFoundError:\n        return '{0}: not found'.format(filepath)\n    words = extract_words(text)\n    if not words:\n        return '{0}: empty (no words)'.format(filepath)\n    histogram = word_length_histogram(words)\n    spread = ', '.join(\n        '{0}->{1}'.format(size, histogram[size]) for size in sorted(histogram)\n    )\n    return '{0}: {1} words, longest={2!r}, lengths [{3}]'.format(\n        filepath, len(words), longest_word(words), spread\n    )\n\n\ndef main():\n    for name in ['dummy_file.txt', 'empty.txt', 'notes.txt', 'code.txt', 'gone.txt']:\n        print(describe_file(name))\n    print('answer for dummy_file.txt:', repr(find_longest_word_in_file('dummy_file.txt')))\n    print('answer for empty.txt:', repr(find_longest_word_in_file('empty.txt')))\n\n\nif __name__ == '__main__':\n    main()\n",
+"text_alt": "SIMULATED_FILES = {\n    'dummy_file.txt': 'apple banana a',\n    'empty.txt': '',\n    'notes.txt': 'The quick brown fox jumps over 1234567 lazy dogs.',\n    'code.txt': 'x1 = compute_total(items); y = x1 ** 2  # version2 build42',\n}\n\ndef read_simulated_file(filepath):\n    if filepath not in SIMULATED_FILES:\n        raise FileNotFoundError(filepath)\n    return SIMULATED_FILES[filepath]\n\ndef extract_words(text):\n    words = []\n    current = []\n    for char in text:\n        if char.isalnum():\n            current.append(char)\n        elif current:\n            words.append(''.join(current))\n            current = []\n    if current:\n        words.append(''.join(current))\n    return words\n\ndef longest_word(words):\n    best = ''\n    for word in words:\n        if len(word) > len(best):\n            best = word\n    return best\n\ndef find_longest_word_in_file(filepath):\n    try:\n        text = read_simulated_file(filepath)\n    except FileNotFoundError:\n        return ''\n    return longest_word(extract_words(text))\n\ndef word_length_histogram(words):\n    histogram = {}\n    for word in words:\n        histogram[len(word)] = histogram.get(len(word), 0) + 1\n    return histogram\n\ndef describe_file(filepath):\n    try:\n        text = read_simulated_file(filepath)\n    except FileNotFoundError:\n        return '{0}: not found'.format(filepath)\n    words = extract_words(text)\n    if not words:\n        return '{0}: empty (no words)'.format(filepath)\n    histogram = word_length_histogram(words)\n    spread = ', '.join(\n        '{0}->{1}'.format(size, histogram[size]) for size in sorted(histogram)\n    )\n    return '{0}: {1} words, longest={2!r}, lengths [{3}]'.format(\n        filepath, len(words), longest_word(words), spread\n    )\n\ndef main():\n    for name in ['dummy_file.txt', 'empty.txt', 'notes.txt', 'code.txt', 'gone.txt']:\n        print(describe_file(name))\n    print('answer for dummy_file.txt:', repr(find_longest_word_in_file('dummy_file.txt')))\n    print('answer for empty.txt:', repr(find_longest_word_in_file('empty.txt')))\n\n\nif __name__ == '__main__':\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-158,
-161
+230,
+233
 ],
 "alt_span": [
-158,
-160
+230,
+232
 ]
 },
 {
@@ -27253,12 +27657,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-248,
-251
+386,
+389
 ],
 "alt_span": [
-247,
-249
+385,
+387
 ]
 },
 {
@@ -27266,12 +27670,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-356,
-359
+689,
+692
 ],
 "alt_span": [
-354,
-356
+687,
+689
 ]
 },
 {
@@ -27279,12 +27683,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-460,
-463
+827,
+830
 ],
 "alt_span": [
-457,
-459
+824,
+826
 ]
 },
 {
@@ -27292,19 +27696,46 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-552,
-555
+1017,
+1020
 ],
 "alt_span": [
-548,
-550
+1013,
+1015
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1179,
+1182
+],
+"alt_span": [
+1174,
+1176
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1733,
+1736
+],
+"alt_span": [
+1727,
+1729
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.978,
+"k_en": 7,
+"shared_fraction": 0.99,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -27312,12 +27743,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-158,
-161
+230,
+233
 ],
 "alt_span": [
-158,
-160
+230,
+232
 ]
 },
 {
@@ -27325,12 +27756,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-248,
-251
+386,
+389
 ],
 "alt_span": [
-247,
-249
+385,
+387
 ]
 },
 {
@@ -27338,12 +27769,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-356,
-359
+689,
+692
 ],
 "alt_span": [
-354,
-356
+687,
+689
 ]
 },
 {
@@ -27351,12 +27782,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-460,
-463
+827,
+830
 ],
 "alt_span": [
-457,
-459
+824,
+826
 ]
 },
 {
@@ -27364,16 +27795,47 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-552,
-555
+1017,
+1020
 ],
 "alt_span": [
-548,
-550
+1013,
+1015
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1179,
+1182
+],
+"alt_span": [
+1174,
+1176
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1733,
+1736
+],
+"alt_span": [
+1727,
+1729
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t204",
@@ -29247,20 +29709,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "import collections\n\ndef count_elements(data):\n    return collections.Counter(data)\n\n\ndef find_max_frequency(counts):\n    if not counts:\n        return -1\n    return max(counts.values())\n\n\ndef get_modes_from_counts(counts, max_freq):\n    modes = []\n    for item, freq in counts.items():\n        if freq == max_freq:\n            modes.append(item)\n    return modes\n\n\ndef handle_empty_list(data):\n    return not data\n\n\ndef calculate_mode(data):\n    if handle_empty_list(data):\n        return []\n\n    counts = count_elements(data)\n    max_freq = find_max_frequency(counts)\n    modes = get_modes_from_counts(counts, max_freq)\n    return sorted(modes)  # Sort for consistent output order\n\n\ndef main():\n    print(calculate_mode([1, 2, 2, 3, 3, 3, 4]))\n    print(calculate_mode([1, 1, 2, 2, 3]))\n    print(calculate_mode([]))\n    print(calculate_mode([5]))\n    print(calculate_mode([1, 2, 3, 4]))\n\nif __name__ == \"__main__\":\n    main()\n",
-"text_alt": "import collections\n\ndef count_elements(data):\n    return collections.Counter(data)\n\ndef find_max_frequency(counts):\n    if not counts:\n        return -1\n    return max(counts.values())\n\ndef get_modes_from_counts(counts, max_freq):\n    modes = []\n    for item, freq in counts.items():\n        if freq == max_freq:\n            modes.append(item)\n    return modes\n\ndef handle_empty_list(data):\n    return not data\n\ndef calculate_mode(data):\n    if handle_empty_list(data):\n        return []\n\n    counts = count_elements(data)\n    max_freq = find_max_frequency(counts)\n    modes = get_modes_from_counts(counts, max_freq)\n    return sorted(modes)  # Sort for consistent output order\n\ndef main():\n    print(calculate_mode([1, 2, 2, 3, 3, 3, 4]))\n    print(calculate_mode([1, 1, 2, 2, 3]))\n    print(calculate_mode([]))\n    print(calculate_mode([5]))\n    print(calculate_mode([1, 2, 3, 4]))\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_nat": "def parse_numbers(text):\n    \"\"\"Convert a whitespace/comma separated string into a list of numbers.\"\"\"\n    tokens = [token for token in text.replace(\",\", \" \").split() if token]\n    numbers = []\n    for token in tokens:\n        value = float(token)\n        numbers.append(int(value) if value.is_integer() else value)\n    return numbers\n\n\ndef validate_data(data):\n    \"\"\"Ensure every element is a real number, returning the values as a list.\"\"\"\n    values = list(data)\n    for value in values:\n        if isinstance(value, bool) or not isinstance(value, (int, float)):\n            raise TypeError(\"calculate_mode expects numbers, got %r\" % (value,))\n    return values\n\n\ndef count_frequencies(values):\n    counts = {}\n    for value in values:\n        counts[value] = counts.get(value, 0) + 1\n    return counts\n\n\ndef calculate_mode(data):\n    values = validate_data(data)\n    if not values:\n        return []\n    counts = count_frequencies(values)\n    highest = max(counts.values())\n    return [value for value in counts if counts[value] == highest]\n\n\ndef sorted_modes(data):\n    \"\"\"The modes in ascending order, which makes reporting deterministic.\"\"\"\n    return sorted(calculate_mode(data))\n\n\ndef describe_modes(data):\n    modes = sorted_modes(data)\n    if not modes:\n        return \"no data, so no mode\"\n    counts = count_frequencies(validate_data(data))\n    times = counts[modes[0]]\n    listed = \", \".join(str(mode) for mode in modes)\n    label = \"mode\" if len(modes) == 1 else \"modes\"\n    return \"%s: %s (appearing %d time%s)\" % (label, listed, times, \"\" if times == 1 else \"s\")\n\n\ndef report(datasets):\n    lines = []\n    for dataset in datasets:\n        lines.append(\"%s -> %s\" % (dataset, describe_modes(dataset)))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    datasets = [\n        [1, 2, 2, 3, 3, 3, 4],\n        [1, 1, 2, 2, 3],\n        [],\n        parse_numbers(\"4.5, 4.5, 7, 7, 9\"),\n        parse_numbers(\"10 20 30\"),\n    ]\n    print(report(datasets))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def parse_numbers(text):\n    \"\"\"Convert a whitespace/comma separated string into a list of numbers.\"\"\"\n    tokens = [token for token in text.replace(\",\", \" \").split() if token]\n    numbers = []\n    for token in tokens:\n        value = float(token)\n        numbers.append(int(value) if value.is_integer() else value)\n    return numbers\n\ndef validate_data(data):\n    \"\"\"Ensure every element is a real number, returning the values as a list.\"\"\"\n    values = list(data)\n    for value in values:\n        if isinstance(value, bool) or not isinstance(value, (int, float)):\n            raise TypeError(\"calculate_mode expects numbers, got %r\" % (value,))\n    return values\n\ndef count_frequencies(values):\n    counts = {}\n    for value in values:\n        counts[value] = counts.get(value, 0) + 1\n    return counts\n\ndef calculate_mode(data):\n    values = validate_data(data)\n    if not values:\n        return []\n    counts = count_frequencies(values)\n    highest = max(counts.values())\n    return [value for value in counts if counts[value] == highest]\n\ndef sorted_modes(data):\n    \"\"\"The modes in ascending order, which makes reporting deterministic.\"\"\"\n    return sorted(calculate_mode(data))\n\ndef describe_modes(data):\n    modes = sorted_modes(data)\n    if not modes:\n        return \"no data, so no mode\"\n    counts = count_frequencies(validate_data(data))\n    times = counts[modes[0]]\n    listed = \", \".join(str(mode) for mode in modes)\n    label = \"mode\" if len(modes) == 1 else \"modes\"\n    return \"%s: %s (appearing %d time%s)\" % (label, listed, times, \"\" if times == 1 else \"s\")\n\ndef report(datasets):\n    lines = []\n    for dataset in datasets:\n        lines.append(\"%s -> %s\" % (dataset, describe_modes(dataset)))\n    return \"\\n\".join(lines)\n\ndef main():\n    datasets = [\n        [1, 2, 2, 3, 3, 3, 4],\n        [1, 1, 2, 2, 3],\n        [],\n        parse_numbers(\"4.5, 4.5, 7, 7, 9\"),\n        parse_numbers(\"10 20 30\"),\n    ]\n    print(report(datasets))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-82,
-85
+334,
+337
 ],
 "alt_span": [
-82,
-84
+334,
+336
 ]
 },
 {
@@ -29268,12 +29730,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-185,
-188
+665,
+668
 ],
 "alt_span": [
-184,
-186
+664,
+666
 ]
 },
 {
@@ -29281,12 +29743,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-362,
-365
+806,
+809
 ],
 "alt_span": [
-360,
-362
+804,
+806
 ]
 },
 {
@@ -29294,12 +29756,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-413,
-416
+1045,
+1048
 ],
 "alt_span": [
-410,
-412
+1042,
+1044
 ]
 },
 {
@@ -29307,19 +29769,46 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-681,
-684
+1188,
+1191
 ],
 "alt_span": [
-677,
-679
+1184,
+1186
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1580,
+1583
+],
+"alt_span": [
+1575,
+1577
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1746,
+1749
+],
+"alt_span": [
+1740,
+1742
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.983,
+"k_en": 7,
+"shared_fraction": 0.991,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -29327,12 +29816,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-82,
-85
+334,
+337
 ],
 "alt_span": [
-82,
-84
+334,
+336
 ]
 },
 {
@@ -29340,12 +29829,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-185,
-188
+665,
+668
 ],
 "alt_span": [
-184,
-186
+664,
+666
 ]
 },
 {
@@ -29353,12 +29842,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-362,
-365
+806,
+809
 ],
 "alt_span": [
-360,
-362
+804,
+806
 ]
 },
 {
@@ -29366,12 +29855,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-413,
-416
+1045,
+1048
 ],
 "alt_span": [
-410,
-412
+1042,
+1044
 ]
 },
 {
@@ -29379,16 +29868,47 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-681,
-684
+1188,
+1191
 ],
 "alt_span": [
-677,
-679
+1184,
+1186
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1580,
+1583
+],
+"alt_span": [
+1575,
+1577
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1746,
+1749
+],
+"alt_span": [
+1740,
+1742
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t224",
@@ -30191,20 +30711,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def check_length(passport_number: str) -> bool:\n    \"\"\"Checks if the passport number has the correct length.\"\"\"\n    return len(passport_number) == 9\n\n\ndef check_all_digits(passport_number: str) -> bool:\n    \"\"\"Checks if all characters in the passport number are digits.\"\"\"\n    return passport_number.isdigit()\n\n\ndef validate_format(passport_number: str) -> bool:\n    \"\"\"Combines length and digit checks for basic validation.\"\"\"\n    return check_length(passport_number) and check_all_digits(passport_number)\n\n\ndef is_valid_passport_number(passport_number: str) -> bool:\n    \"\"\"Determines if a given string is a valid passport number.\"\"\"\n    return validate_format(passport_number)\n\n\ndef get_example_true() -> str:\n    \"\"\"Returns an example of a valid passport number.\"\"\"\n    return '123456789'\n\n\ndef get_example_false() -> str:\n    \"\"\"Returns an example of an invalid passport number.\"\"\"\n    return '12345678'\n\n# Example usage (not part of the solution, just for testing)\n# print(is_valid_passport_number(get_example_true()))\n# print(is_valid_passport_number(get_example_false()))\n# print(is_valid_passport_number('abc456789'))\n",
-"text_alt": "def check_length(passport_number: str) -> bool:\n    \"\"\"Checks if the passport number has the correct length.\"\"\"\n    return len(passport_number) == 9\n\ndef check_all_digits(passport_number: str) -> bool:\n    \"\"\"Checks if all characters in the passport number are digits.\"\"\"\n    return passport_number.isdigit()\n\ndef validate_format(passport_number: str) -> bool:\n    \"\"\"Combines length and digit checks for basic validation.\"\"\"\n    return check_length(passport_number) and check_all_digits(passport_number)\n\ndef is_valid_passport_number(passport_number: str) -> bool:\n    \"\"\"Determines if a given string is a valid passport number.\"\"\"\n    return validate_format(passport_number)\n\ndef get_example_true() -> str:\n    \"\"\"Returns an example of a valid passport number.\"\"\"\n    return '123456789'\n\ndef get_example_false() -> str:\n    \"\"\"Returns an example of an invalid passport number.\"\"\"\n    return '12345678'\n\n# Example usage (not part of the solution, just for testing)\n# print(is_valid_passport_number(get_example_true()))\n# print(is_valid_passport_number(get_example_false()))\n# print(is_valid_passport_number('abc456789'))\n",
+"text_nat": "import sys\n\n\nPASSPORT_LENGTH = 9\nDIGITS = \"0123456789\"\n\n\ndef normalize_candidate(raw):\n    \"\"\"Strip surrounding whitespace so user-typed values can be checked.\"\"\"\n    if not isinstance(raw, str):\n        raise TypeError(\"passport number must be given as a string\")\n    return raw.strip()\n\n\ndef is_valid_passport_number(number):\n    \"\"\"Return True when the argument is a string of exactly 9 digits.\"\"\"\n    if not isinstance(number, str):\n        return False\n    if len(number) != PASSPORT_LENGTH:\n        return False\n    return all(character in DIGITS for character in number)\n\n\ndef describe_problem(number):\n    \"\"\"Explain why a normalized candidate was rejected.\"\"\"\n    if len(number) < PASSPORT_LENGTH:\n        return \"too short: {} of {} characters\".format(len(number), PASSPORT_LENGTH)\n    if len(number) > PASSPORT_LENGTH:\n        return \"too long: {} of {} characters\".format(len(number), PASSPORT_LENGTH)\n    bad = sorted({c for c in number if c not in DIGITS})\n    return \"contains non-digit characters: \" + \" \".join(bad)\n\n\ndef validate_batch(candidates):\n    \"\"\"Check many candidates, returning (original, normalized, valid) triples.\"\"\"\n    results = []\n    for candidate in candidates:\n        normalized = normalize_candidate(candidate)\n        results.append((candidate, normalized, is_valid_passport_number(normalized)))\n    return results\n\n\ndef format_line(original, normalized, valid):\n    \"\"\"Render a single validation result as one report line.\"\"\"\n    if valid:\n        return \"{!r}: valid\".format(original)\n    return \"{!r}: invalid ({})\".format(original, describe_problem(normalized))\n\n\ndef format_report(results):\n    \"\"\"Join the per-candidate lines with a summary count.\"\"\"\n    lines = [format_line(*result) for result in results]\n    accepted = sum(1 for result in results if result[2])\n    lines.append(\"{} of {} accepted\".format(accepted, len(results)))\n    return \"\\n\".join(lines)\n\n\ndef read_candidates(argv):\n    \"\"\"Take candidates from the command line, or from stdin when none given.\"\"\"\n    if argv:\n        return argv\n    return [line for line in sys.stdin.read().splitlines() if line.strip()]\n\n\ndef main():\n    candidates = read_candidates(sys.argv[1:])\n    if not candidates:\n        print(\"no passport numbers supplied\")\n        return 1\n    print(format_report(validate_batch(candidates)))\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main())\n",
+"text_alt": "import sys\n\n\nPASSPORT_LENGTH = 9\nDIGITS = \"0123456789\"\n\ndef normalize_candidate(raw):\n    \"\"\"Strip surrounding whitespace so user-typed values can be checked.\"\"\"\n    if not isinstance(raw, str):\n        raise TypeError(\"passport number must be given as a string\")\n    return raw.strip()\n\ndef is_valid_passport_number(number):\n    \"\"\"Return True when the argument is a string of exactly 9 digits.\"\"\"\n    if not isinstance(number, str):\n        return False\n    if len(number) != PASSPORT_LENGTH:\n        return False\n    return all(character in DIGITS for character in number)\n\ndef describe_problem(number):\n    \"\"\"Explain why a normalized candidate was rejected.\"\"\"\n    if len(number) < PASSPORT_LENGTH:\n        return \"too short: {} of {} characters\".format(len(number), PASSPORT_LENGTH)\n    if len(number) > PASSPORT_LENGTH:\n        return \"too long: {} of {} characters\".format(len(number), PASSPORT_LENGTH)\n    bad = sorted({c for c in number if c not in DIGITS})\n    return \"contains non-digit characters: \" + \" \".join(bad)\n\ndef validate_batch(candidates):\n    \"\"\"Check many candidates, returning (original, normalized, valid) triples.\"\"\"\n    results = []\n    for candidate in candidates:\n        normalized = normalize_candidate(candidate)\n        results.append((candidate, normalized, is_valid_passport_number(normalized)))\n    return results\n\ndef format_line(original, normalized, valid):\n    \"\"\"Render a single validation result as one report line.\"\"\"\n    if valid:\n        return \"{!r}: valid\".format(original)\n    return \"{!r}: invalid ({})\".format(original, describe_problem(normalized))\n\ndef format_report(results):\n    \"\"\"Join the per-candidate lines with a summary count.\"\"\"\n    lines = [format_line(*result) for result in results]\n    accepted = sum(1 for result in results if result[2])\n    lines.append(\"{} of {} accepted\".format(accepted, len(results)))\n    return \"\\n\".join(lines)\n\ndef read_candidates(argv):\n    \"\"\"Take candidates from the command line, or from stdin when none given.\"\"\"\n    if argv:\n        return argv\n    return [line for line in sys.stdin.read().splitlines() if line.strip()]\n\ndef main():\n    candidates = read_candidates(sys.argv[1:])\n    if not candidates:\n        print(\"no passport numbers supplied\")\n        return 1\n    print(format_report(validate_batch(candidates)))\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main())\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-148,
-151
+54,
+57
 ],
 "alt_span": [
-148,
-150
+54,
+56
 ]
 },
 {
@@ -30212,12 +30732,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-309,
-312
+287,
+290
 ],
 "alt_span": [
-308,
-310
+286,
+288
 ]
 },
 {
@@ -30225,12 +30745,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-506,
-509
+577,
+580
 ],
 "alt_span": [
-504,
-506
+575,
+577
 ]
 },
 {
@@ -30238,12 +30758,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-679,
-682
+1031,
+1034
 ],
 "alt_span": [
-676,
-678
+1028,
+1030
 ]
 },
 {
@@ -30251,19 +30771,59 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-792,
-795
+1354,
+1357
 ],
 "alt_span": [
-788,
-790
+1350,
+1352
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1605,
+1608
+],
+"alt_span": [
+1600,
+1602
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1907,
+1910
+],
+"alt_span": [
+1901,
+1903
+]
+},
+{
+"k": 7,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+2125,
+2128
+],
+"alt_span": [
+2118,
+2120
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.986,
+"k_en": 8,
+"shared_fraction": 0.99,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -30271,12 +30831,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-148,
-151
+54,
+57
 ],
 "alt_span": [
-148,
-150
+54,
+56
 ]
 },
 {
@@ -30284,12 +30844,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-309,
-312
+287,
+290
 ],
 "alt_span": [
-308,
-310
+286,
+288
 ]
 },
 {
@@ -30297,12 +30857,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-506,
-509
+577,
+580
 ],
 "alt_span": [
-504,
-506
+575,
+577
 ]
 },
 {
@@ -30310,12 +30870,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-679,
-682
+1031,
+1034
 ],
 "alt_span": [
-676,
-678
+1028,
+1030
 ]
 },
 {
@@ -30323,16 +30883,60 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-792,
-795
+1354,
+1357
 ],
 "alt_span": [
-788,
-790
+1350,
+1352
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1605,
+1608
+],
+"alt_span": [
+1600,
+1602
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1907,
+1910
+],
+"alt_span": [
+1901,
+1903
+]
+},
+{
+"k": 7,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+2125,
+2128
+],
+"alt_span": [
+2118,
+2120
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 },
 {
 "doc_id": "blank_lines__t235",
@@ -31262,20 +31866,20 @@
 "src": "Task",
 "tgt": "Python"
 },
-"text_nat": "def calculate_sum_r_is_one(a, n):\n    return a * n\n\n\ndef calculate_sum_r_not_one(a, r, n):\n    return a * (1 - r**n) / (1 - r)\n\n\ndef is_ratio_one(r):\n    return r == 1\n\n\ndef get_geometric_series_sum(a, r, n):\n    if is_ratio_one(r):\n        return calculate_sum_r_is_one(a, n)\n    else:\n        return calculate_sum_r_not_one(a, r, n)\n\n\ndef geometric_series_sum(a, r, n):\n    return get_geometric_series_sum(a, r, n)\n\n\ndef main():\n    # Example 1\n    result1 = geometric_series_sum(1, 2, 3)\n    # Example 2\n    result2 = geometric_series_sum(5, 1, 4)\n\n    # These print statements are only for verification, not part of the core task\n    # print(f\"geometric_series_sum(1, 2, 3) = {result1}\")\n    # print(f\"geometric_series_sum(5, 1, 4) = {result2}\")\n\nmain()\n",
-"text_alt": "def calculate_sum_r_is_one(a, n):\n    return a * n\n\ndef calculate_sum_r_not_one(a, r, n):\n    return a * (1 - r**n) / (1 - r)\n\ndef is_ratio_one(r):\n    return r == 1\n\ndef get_geometric_series_sum(a, r, n):\n    if is_ratio_one(r):\n        return calculate_sum_r_is_one(a, n)\n    else:\n        return calculate_sum_r_not_one(a, r, n)\n\ndef geometric_series_sum(a, r, n):\n    return get_geometric_series_sum(a, r, n)\n\ndef main():\n    # Example 1\n    result1 = geometric_series_sum(1, 2, 3)\n    # Example 2\n    result2 = geometric_series_sum(5, 1, 4)\n\n    # These print statements are only for verification, not part of the core task\n    # print(f\"geometric_series_sum(1, 2, 3) = {result1}\")\n    # print(f\"geometric_series_sum(5, 1, 4) = {result2}\")\n\nmain()\n",
+"text_nat": "def validate_parameters(a, r, n):\n    if not isinstance(n, int) or isinstance(n, bool):\n        raise TypeError(\"n must be an integer number of terms\")\n    if n < 0:\n        raise ValueError(\"n must be non-negative\")\n    for name, value in ((\"a\", a), (\"r\", r)):\n        if not isinstance(value, (int, float)) or isinstance(value, bool):\n            raise TypeError(\"{} must be a real number\".format(name))\n    return a, r, n\n\n\ndef geometric_series_sum(a, r, n):\n    a, r, n = validate_parameters(a, r, n)\n    if n == 0:\n        return 0\n    if r == 1:\n        return a * n\n    return a * (1 - r ** n) / (1 - r) if isinstance(r, float) else a * (1 - r ** n) // (1 - r)\n\n\ndef series_terms(a, r, n):\n    a, r, n = validate_parameters(a, r, n)\n    terms = []\n    current = a\n    for _ in range(n):\n        terms.append(current)\n        current = current * r\n    return terms\n\n\ndef brute_force_sum(a, r, n):\n    return sum(series_terms(a, r, n))\n\n\ndef format_term(value):\n    if isinstance(value, float) and value.is_integer():\n        return str(int(value))\n    return str(value)\n\n\ndef format_series(a, r, n):\n    terms = series_terms(a, r, n)\n    if not terms:\n        return \"0\"\n    return \" + \".join(format_term(term) for term in terms)\n\n\ndef describe(a, r, n):\n    total = geometric_series_sum(a, r, n)\n    expansion = format_series(a, r, n)\n    return \"a={0}, r={1}, n={2}: {3} = {4}\".format(\n        format_term(a), format_term(r), n, expansion, format_term(total)\n    )\n\n\ndef check_consistency(a, r, n):\n    closed = geometric_series_sum(a, r, n)\n    direct = brute_force_sum(a, r, n)\n    return abs(closed - direct) < 1e-9\n\n\ndef main():\n    cases = [(1, 2, 3), (5, 1, 4), (3, 0.5, 4), (2, -3, 5), (7, 4, 0)]\n    for a, r, n in cases:\n        print(describe(a, r, n))\n        if not check_consistency(a, r, n):\n            print(\"  warning: closed form disagrees with term-by-term sum\")\n    try:\n        geometric_series_sum(1, 2, -1)\n    except ValueError as exc:\n        print(\"rejected invalid input: {}\".format(exc))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def validate_parameters(a, r, n):\n    if not isinstance(n, int) or isinstance(n, bool):\n        raise TypeError(\"n must be an integer number of terms\")\n    if n < 0:\n        raise ValueError(\"n must be non-negative\")\n    for name, value in ((\"a\", a), (\"r\", r)):\n        if not isinstance(value, (int, float)) or isinstance(value, bool):\n            raise TypeError(\"{} must be a real number\".format(name))\n    return a, r, n\n\ndef geometric_series_sum(a, r, n):\n    a, r, n = validate_parameters(a, r, n)\n    if n == 0:\n        return 0\n    if r == 1:\n        return a * n\n    return a * (1 - r ** n) / (1 - r) if isinstance(r, float) else a * (1 - r ** n) // (1 - r)\n\ndef series_terms(a, r, n):\n    a, r, n = validate_parameters(a, r, n)\n    terms = []\n    current = a\n    for _ in range(n):\n        terms.append(current)\n        current = current * r\n    return terms\n\ndef brute_force_sum(a, r, n):\n    return sum(series_terms(a, r, n))\n\ndef format_term(value):\n    if isinstance(value, float) and value.is_integer():\n        return str(int(value))\n    return str(value)\n\ndef format_series(a, r, n):\n    terms = series_terms(a, r, n)\n    if not terms:\n        return \"0\"\n    return \" + \".join(format_term(term) for term in terms)\n\ndef describe(a, r, n):\n    total = geometric_series_sum(a, r, n)\n    expansion = format_series(a, r, n)\n    return \"a={0}, r={1}, n={2}: {3} = {4}\".format(\n        format_term(a), format_term(r), n, expansion, format_term(total)\n    )\n\ndef check_consistency(a, r, n):\n    closed = geometric_series_sum(a, r, n)\n    direct = brute_force_sum(a, r, n)\n    return abs(closed - direct) < 1e-9\n\ndef main():\n    cases = [(1, 2, 3), (5, 1, 4), (3, 0.5, 4), (2, -3, 5), (7, 4, 0)]\n    for a, r, n in cases:\n        print(describe(a, r, n))\n        if not check_consistency(a, r, n):\n            print(\"  warning: closed form disagrees with term-by-term sum\")\n    try:\n        geometric_series_sum(1, 2, -1)\n    except ValueError as exc:\n        print(\"rejected invalid input: {}\".format(exc))\n\n\nif __name__ == \"__main__\":\n    main()\n",
 "opps": [
 {
 "k": 0,
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-50,
-53
+424,
+427
 ],
 "alt_span": [
-50,
-52
+424,
+426
 ]
 },
 {
@@ -31283,12 +31887,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-126,
-129
+667,
+670
 ],
 "alt_span": [
-125,
-127
+666,
+668
 ]
 },
 {
@@ -31296,12 +31900,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-167,
-170
+870,
+873
 ],
 "alt_span": [
-165,
-167
+868,
+870
 ]
 },
 {
@@ -31309,12 +31913,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-334,
-337
+940,
+943
 ],
 "alt_span": [
-331,
-333
+937,
+939
 ]
 },
 {
@@ -31322,19 +31926,59 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-416,
-419
+1075,
+1078
 ],
 "alt_span": [
-412,
-414
+1071,
+1073
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1235,
+1238
+],
+"alt_span": [
+1230,
+1232
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1472,
+1475
+],
+"alt_span": [
+1466,
+1468
+]
+},
+{
+"k": 7,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1626,
+1629
+],
+"alt_span": [
+1619,
+1621
 ]
 }
 ],
-"k_en": 5,
-"shared_fraction": 0.982,
+"k_en": 8,
+"shared_fraction": 0.991,
 "pass": true,
 "verify": null,
+"free_occ": true,
 "alt_rule": true,
 "opps_all": [
 {
@@ -31342,12 +31986,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-50,
-53
+424,
+427
 ],
 "alt_span": [
-50,
-52
+424,
+426
 ]
 },
 {
@@ -31355,12 +31999,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-126,
-129
+667,
+670
 ],
 "alt_span": [
-125,
-127
+666,
+668
 ]
 },
 {
@@ -31368,12 +32012,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-167,
-170
+870,
+873
 ],
 "alt_span": [
-165,
-167
+868,
+870
 ]
 },
 {
@@ -31381,12 +32025,12 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-334,
-337
+940,
+943
 ],
 "alt_span": [
-331,
-333
+937,
+939
 ]
 },
 {
@@ -31394,15 +32038,429 @@
 "nat": "\n\n\n",
 "alt": "\n\n",
 "nat_span": [
-416,
-419
+1075,
+1078
 ],
 "alt_span": [
-412,
-414
+1071,
+1073
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1235,
+1238
+],
+"alt_span": [
+1230,
+1232
+]
+},
+{
+"k": 6,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1472,
+1475
+],
+"alt_span": [
+1466,
+1468
+]
+},
+{
+"k": 7,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1626,
+1629
+],
+"alt_span": [
+1619,
+1621
 ]
 }
 ],
-"free_filter": true
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
+"doc_id": "blank_lines__t263",
+"family": "blank_lines",
+"topic": "Convert Binary to Gray Code",
+"angle": "code",
+"text_es": "Implement a function to convert a binary string to its equivalent Gray code string. The function `binary_to_gray` takes a string representing a binary number. Return the Gray code string. Assume input is a valid binary string.\nExample 1: `binary_to_gray('000')` returns `'000'`.\nExample 2: `binary_to_gray('1011')` returns `'1110'`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def validate_binary(text):\n    \"\"\"Return the binary string stripped of surrounding spaces, or raise ValueError.\"\"\"\n    candidate = text.strip()\n    if not candidate:\n        raise ValueError(\"binary string must not be empty\")\n    for position, digit in enumerate(candidate):\n        if digit not in \"01\":\n            raise ValueError(\"invalid digit %r at index %d\" % (digit, position))\n    return candidate\n\n\ndef binary_to_gray(binary):\n    \"\"\"Convert a binary string to the equivalent Gray code string.\"\"\"\n    bits = validate_binary(binary)\n    gray = [bits[0]]\n    for previous, current in zip(bits, bits[1:]):\n        gray.append(\"1\" if previous != current else \"0\")\n    return \"\".join(gray)\n\n\ndef gray_to_binary(gray):\n    \"\"\"Convert a Gray code string back to the binary string it encodes.\"\"\"\n    bits = validate_binary(gray)\n    binary = [bits[0]]\n    for bit in bits[1:]:\n        binary.append(\"1\" if binary[-1] != bit else \"0\")\n    return \"\".join(binary)\n\n\ndef gray_sequence(width):\n    \"\"\"Return the Gray codes of all binary numbers of the given bit width.\"\"\"\n    if width < 1:\n        raise ValueError(\"width must be at least 1\")\n    codes = []\n    for value in range(2 ** width):\n        codes.append(binary_to_gray(format(value, \"0%db\" % width)))\n    return codes\n\n\ndef adjacent_differences(codes):\n    \"\"\"Count the differing bit positions between each pair of neighbouring codes.\"\"\"\n    distances = []\n    for first, second in zip(codes, codes[1:]):\n        distances.append(sum(1 for a, b in zip(first, second) if a != b))\n    return distances\n\n\ndef format_row(binary):\n    \"\"\"Render one 'binary -> gray -> binary' line for the report.\"\"\"\n    gray = binary_to_gray(binary)\n    return \"%s -> %s -> %s\" % (binary.strip(), gray, gray_to_binary(gray))\n\n\ndef main():\n    \"\"\"Print the conversion report for a few samples and a full 3-bit sequence.\"\"\"\n    for sample in (\"000\", \"1011\", \" 1101 \", \"0\"):\n        print(format_row(sample))\n    width = 3\n    codes = gray_sequence(width)\n    print(\"gray sequence of width %d: %s\" % (width, \" \".join(codes)))\n    distances = adjacent_differences(codes)\n    if set(distances) == {1}:\n        print(\"every neighbouring pair differs in exactly one bit\")\n    else:\n        print(\"unexpected distances: %s\" % distances)\n\n\nmain()\n",
+"text_alt": "def validate_binary(text):\n    \"\"\"Return the binary string stripped of surrounding spaces, or raise ValueError.\"\"\"\n    candidate = text.strip()\n    if not candidate:\n        raise ValueError(\"binary string must not be empty\")\n    for position, digit in enumerate(candidate):\n        if digit not in \"01\":\n            raise ValueError(\"invalid digit %r at index %d\" % (digit, position))\n    return candidate\n\ndef binary_to_gray(binary):\n    \"\"\"Convert a binary string to the equivalent Gray code string.\"\"\"\n    bits = validate_binary(binary)\n    gray = [bits[0]]\n    for previous, current in zip(bits, bits[1:]):\n        gray.append(\"1\" if previous != current else \"0\")\n    return \"\".join(gray)\n\ndef gray_to_binary(gray):\n    \"\"\"Convert a Gray code string back to the binary string it encodes.\"\"\"\n    bits = validate_binary(gray)\n    binary = [bits[0]]\n    for bit in bits[1:]:\n        binary.append(\"1\" if binary[-1] != bit else \"0\")\n    return \"\".join(binary)\n\ndef gray_sequence(width):\n    \"\"\"Return the Gray codes of all binary numbers of the given bit width.\"\"\"\n    if width < 1:\n        raise ValueError(\"width must be at least 1\")\n    codes = []\n    for value in range(2 ** width):\n        codes.append(binary_to_gray(format(value, \"0%db\" % width)))\n    return codes\n\ndef adjacent_differences(codes):\n    \"\"\"Count the differing bit positions between each pair of neighbouring codes.\"\"\"\n    distances = []\n    for first, second in zip(codes, codes[1:]):\n        distances.append(sum(1 for a, b in zip(first, second) if a != b))\n    return distances\n\ndef format_row(binary):\n    \"\"\"Render one 'binary -> gray -> binary' line for the report.\"\"\"\n    gray = binary_to_gray(binary)\n    return \"%s -> %s -> %s\" % (binary.strip(), gray, gray_to_binary(gray))\n\ndef main():\n    \"\"\"Print the conversion report for a few samples and a full 3-bit sequence.\"\"\"\n    for sample in (\"000\", \"1011\", \" 1101 \", \"0\"):\n        print(format_row(sample))\n    width = 3\n    codes = gray_sequence(width)\n    print(\"gray sequence of width %d: %s\" % (width, \" \".join(codes)))\n    distances = adjacent_differences(codes)\n    if set(distances) == {1}:\n        print(\"every neighbouring pair differs in exactly one bit\")\n    else:\n        print(\"unexpected distances: %s\" % distances)\n\n\nmain()\n",
+"opps": [
+{
+"k": 0,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+406,
+409
+],
+"alt_span": [
+406,
+408
+]
+},
+{
+"k": 1,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+694,
+697
+],
+"alt_span": [
+693,
+695
+]
+},
+{
+"k": 2,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+962,
+965
+],
+"alt_span": [
+960,
+962
+]
+},
+{
+"k": 3,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1275,
+1278
+],
+"alt_span": [
+1272,
+1274
+]
+},
+{
+"k": 4,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1557,
+1560
+],
+"alt_span": [
+1553,
+1555
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1761,
+1764
+],
+"alt_span": [
+1756,
+1758
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.993,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+406,
+409
+],
+"alt_span": [
+406,
+408
+]
+},
+{
+"k": 1,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+694,
+697
+],
+"alt_span": [
+693,
+695
+]
+},
+{
+"k": 2,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+962,
+965
+],
+"alt_span": [
+960,
+962
+]
+},
+{
+"k": 3,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1275,
+1278
+],
+"alt_span": [
+1272,
+1274
+]
+},
+{
+"k": 4,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1557,
+1560
+],
+"alt_span": [
+1553,
+1555
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1761,
+1764
+],
+"alt_span": [
+1756,
+1758
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
+},
+{
+"doc_id": "blank_lines__t264",
+"family": "blank_lines",
+"topic": "Simulate Coin Flip Streak",
+"angle": "code",
+"text_es": "Simulate a series of coin flips and determine the longest streak of consecutive heads or tails. The function `longest_coin_flip_streak` takes a string representing coin flips (e.g., 'HTTHHHHTT'). Return the length of the longest streak as an integer. An empty string should return 0.\nExample 1: `longest_coin_flip_streak('HHHTTTHHHH')` returns `4`.\nExample 2: `longest_coin_flip_streak('HTHTHT')` returns `1`.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def normalize_flips(flips):\n    \"\"\"Validate the input and return it in upper case.\"\"\"\n    if not isinstance(flips, str):\n        raise TypeError(\"coin flips must be given as a string\")\n    cleaned = flips.strip().upper()\n    invalid = sorted(set(cleaned) - {\"H\", \"T\"})\n    if invalid:\n        raise ValueError(\"unexpected flip symbols: \" + \", \".join(invalid))\n    return cleaned\n\n\ndef iter_streaks(flips):\n    \"\"\"Yield (symbol, length) pairs for each run of identical flips.\"\"\"\n    current = \"\"\n    length = 0\n    for flip in flips:\n        if flip == current:\n            length += 1\n        else:\n            if length:\n                yield current, length\n            current = flip\n            length = 1\n    if length:\n        yield current, length\n\n\ndef longest_coin_flip_streak(flips):\n    \"\"\"Return the length of the longest run of consecutive heads or tails.\"\"\"\n    runs = iter_streaks(normalize_flips(flips))\n    return max((length for _, length in runs), default=0)\n\n\ndef streak_summary(flips):\n    \"\"\"Return the longest streak length per side, keyed by symbol.\"\"\"\n    summary = {\"H\": 0, \"T\": 0}\n    for symbol, length in iter_streaks(normalize_flips(flips)):\n        if length > summary[symbol]:\n            summary[symbol] = length\n    return summary\n\n\ndef simulate_flips(count, seed=None):\n    \"\"\"Produce a pseudo-random flip string of the requested length.\"\"\"\n    import random\n\n    if count < 0:\n        raise ValueError(\"cannot simulate a negative number of flips\")\n    rng = random.Random(seed)\n    return \"\".join(rng.choice(\"HT\") for _ in range(count))\n\n\ndef format_report(flips):\n    \"\"\"Build a one-line human readable report for a flip sequence.\"\"\"\n    summary = streak_summary(flips)\n    overall = longest_coin_flip_streak(flips)\n    shown = flips if flips else \"(no flips)\"\n    return \"{0}: longest={1} heads={2} tails={3}\".format(\n        shown, overall, summary[\"H\"], summary[\"T\"]\n    )\n\n\ndef main():\n    sequences = [\"HHHTTTHHHH\", \"HTHTHT\", \"\", simulate_flips(20, seed=7)]\n    for sequence in sequences:\n        print(format_report(sequence))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def normalize_flips(flips):\n    \"\"\"Validate the input and return it in upper case.\"\"\"\n    if not isinstance(flips, str):\n        raise TypeError(\"coin flips must be given as a string\")\n    cleaned = flips.strip().upper()\n    invalid = sorted(set(cleaned) - {\"H\", \"T\"})\n    if invalid:\n        raise ValueError(\"unexpected flip symbols: \" + \", \".join(invalid))\n    return cleaned\n\ndef iter_streaks(flips):\n    \"\"\"Yield (symbol, length) pairs for each run of identical flips.\"\"\"\n    current = \"\"\n    length = 0\n    for flip in flips:\n        if flip == current:\n            length += 1\n        else:\n            if length:\n                yield current, length\n            current = flip\n            length = 1\n    if length:\n        yield current, length\n\ndef longest_coin_flip_streak(flips):\n    \"\"\"Return the length of the longest run of consecutive heads or tails.\"\"\"\n    runs = iter_streaks(normalize_flips(flips))\n    return max((length for _, length in runs), default=0)\n\ndef streak_summary(flips):\n    \"\"\"Return the longest streak length per side, keyed by symbol.\"\"\"\n    summary = {\"H\": 0, \"T\": 0}\n    for symbol, length in iter_streaks(normalize_flips(flips)):\n        if length > summary[symbol]:\n            summary[symbol] = length\n    return summary\n\ndef simulate_flips(count, seed=None):\n    \"\"\"Produce a pseudo-random flip string of the requested length.\"\"\"\n    import random\n\n    if count < 0:\n        raise ValueError(\"cannot simulate a negative number of flips\")\n    rng = random.Random(seed)\n    return \"\".join(rng.choice(\"HT\") for _ in range(count))\n\ndef format_report(flips):\n    \"\"\"Build a one-line human readable report for a flip sequence.\"\"\"\n    summary = streak_summary(flips)\n    overall = longest_coin_flip_streak(flips)\n    shown = flips if flips else \"(no flips)\"\n    return \"{0}: longest={1} heads={2} tails={3}\".format(\n        shown, overall, summary[\"H\"], summary[\"T\"]\n    )\n\ndef main():\n    sequences = [\"HHHTTTHHHH\", \"HTHTHT\", \"\", simulate_flips(20, seed=7)]\n    for sequence in sequences:\n        print(format_report(sequence))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+378,
+381
+],
+"alt_span": [
+378,
+380
+]
+},
+{
+"k": 1,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+754,
+757
+],
+"alt_span": [
+753,
+755
+]
+},
+{
+"k": 2,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+977,
+980
+],
+"alt_span": [
+975,
+977
+]
+},
+{
+"k": 3,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1264,
+1267
+],
+"alt_span": [
+1261,
+1263
+]
+},
+{
+"k": 4,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1572,
+1575
+],
+"alt_span": [
+1568,
+1570
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1912,
+1915
+],
+"alt_span": [
+1907,
+1909
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.992,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+378,
+381
+],
+"alt_span": [
+378,
+380
+]
+},
+{
+"k": 1,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+754,
+757
+],
+"alt_span": [
+753,
+755
+]
+},
+{
+"k": 2,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+977,
+980
+],
+"alt_span": [
+975,
+977
+]
+},
+{
+"k": 3,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1264,
+1267
+],
+"alt_span": [
+1261,
+1263
+]
+},
+{
+"k": 4,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1572,
+1575
+],
+"alt_span": [
+1568,
+1570
+]
+},
+{
+"k": 5,
+"nat": "\n\n\n",
+"alt": "\n\n",
+"nat_span": [
+1912,
+1915
+],
+"alt_span": [
+1907,
+1909
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+]
 }
 ]
