@@ -9910,3 +9910,37 @@ peak L3 a4=0.44 (51/140 cells >base+2SE), raw L1 a4=0.32; early-layer band, inve
   rebuilt (qwen25_code) for the 49 families, 97,976 items, `tmp/verify_prompts4.py` OK for 48 (comment_language: the 11 accepted k = 0
   residuals only). `tmp/prompt_check5.json` = 10 random regenerated docs, k = 1 / 2, both poles. Stale for the GPU refresh: every artefact of the
   49 changed families (rollouts, logprob, steering vectors + full_k3, read evidence + vectors, read_steer full_k3, prompt_pairs, layers).
+
+### 2026-09-21/22 — Code styles: retry of the 254 still-padded docs (user: "try again with a different approach … a third powerful model … tasks that naturally allow sufficient examples")
+
+**Why the 254 failed before.** (a) Generic task pools (`tasks_<lang>.json`, "Find Max in List") do not naturally need constructs such as hex constants or
+large literals → manufactured code; stripping comments had already been tried on these docs (120 reached review, 115 rejected by BOTH reviewers, item 6
+padding in the code itself). (b) REWRITE side: LLM rewrites of rename / literal families leave one occurrence unconverted or rename string keys.
+(c) NEW BUG FOUND: Anthropic's provider safety filter refuses some rewrites (finish_reason `content_filter`, "violative cyber content" — false positives
+on network-config / bit-level code, e.g. a Varnish VCL generator); `_chat` returned the empty reply as code → empty alt twin → generic `builder_reject`.
+(d) Identifier families: `code_free.harmonise_pinned` keeps every identifier the task text pins (backticks / `name(`) identical in both twins; task
+specs that name many parameters therefore give half-converted twins that reviewers reject as inconsistent.
+
+**What was done.** `tmp/design_tasks7.py`: Gemini 3.1 Pro (third model; neither generator nor reviewer) designs family-tailored tasks from the family
+definition + real reviewer objections → `dataset_files/style_translation/code/tasks_designed_<family>.json` (ids d001.., `designed_by`; `v2` = identifier-family
+specs that pin only ONE single-word entry function, everything else in prose). `tmp/regen7.py`: Opus 5 generator, Opus 5 + GPT-5 reviewers (AND rule), up to
+5 designed tasks x 5 rounds, REWRITE-REPAIR (alt-side-only objections → same natural twin rewritten again with the feedback; `finish_pair(rewrite_notes=)`),
+`code_build.REFUSAL_FALLBACK` (provider refusal → same call on Gemini 3.1 Pro; counted in REJECTS), and exact rule rewrites `code_rule_alt.py`
+(`finish_pair(rule_alt=True)`, records carry `alt_rule`): py_snake_camel (AST-bound names, pinned identifiers kept, f-strings handled, AST-verified) and
+num_separators (tokenizer, AST-verified). Validation of the rules against reviewer-approved pairs: num_separators 104/104 identical, py_snake_camel 7/7
+(6/7 after aligning the keep-list with `_task_code_idents`). NOT enabled: hex_constants rule (17/44 approved pairs also convert constants outside the
+family set) and py_private rule (see below).
+
+**Result.** 228 / 254 fixed (t1 135, t3 67, t4 2, t5 24): num_separators 37/37, hex_constants 47/47, py_loop_vars 36/36, py_snake_camel 24/24, bash_test 16/16,
+py_join_concat 41/47, js_camel_snake 5/5, js_hungarian 6/15, py_private 0/11, others all. Remaining 26 (`tmp/regen7_still_failed.json`): js_hungarian 9
+(renames leak into string literals; pinned parameters stay unprefixed), py_join_concat 6, py_private 11. Sweep: padding_line / style_leak = 0 in every pool
+family except those 26 docs (+ js_arrow t041 `!!result` false positive). Cost of the retry ≈ $420 (Opus 5 + GPT-5) + $9 task design.
+
+**OPEN, needs user decision — py_private family-wide:** in 198 / 200 existing pairs the alternative twin calls `self.__method()` while the definition stays
+`def _method()` (raw rewrite already like that) → AttributeError at run time; the strict reviewers reject exactly this, so no py_private doc can pass under the
+current convention. Nothing changed in that family.
+
+**Downstream refresh (Part B), three waves on RTX PRO 6000 Blackwell pods** (PRO 4500 unavailable in EU-RO-1): wave 1 = 33 changed families without
+failed docs (pods p1–p5), wave 2 = 10 families complete after t1 (q1, q2), wave 3 = bash_test, hex_constants, js_hungarian, py_join_concat, py_loop_vars,
+py_snake_camel (s1–s3); each `logs/code_styles_regen_job.sh` (rollouts k=0..4 + log-probs → judge → write vectors + write steering L24/L26 × α2/4 → read
+vectors + read steering L8 α4 → per-prompt activations); judge `tmp/regen_judge_driver2.py`; stale artefacts in `tmp/stale_regen6`, `tmp/stale_regen7`.
