@@ -1,5 +1,2653 @@
 [
 {
+"doc_id": "py_abbrev__d006",
+"family": "py_abbrev",
+"topic": "Configuration Key-Value Parser",
+"angle": "code",
+"text_es": "Write `parse_settings(lines)` taking a list of strings. Split each line by the first '='. The left side is the setting name, right is the assigned string (stripped of whitespace). If no '=' is found, append an error string (e.g., 'MISSING_EQUALS') to a list of failures. Return a dictionary of parsed settings and the list of error strings. The driver tests `['host=localhost', 'port=80', 'badline']` and prints the output tuple directly without any labels or formatting.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def join_continuations(lines):\n    \"\"\"Merge lines ending in a backslash with the line that follows them.\"\"\"\n    res = []\n    buf = ''\n    for elem in lines:\n        curr = elem.rstrip()\n        if curr.endswith('\\\\'):\n            buf += curr[:-1]\n            continue\n        res.append(buf + curr)\n        buf = ''\n    if buf:\n        res.append(buf)\n    return res\n\n\ndef unquote(val):\n    \"\"\"Strip a matching pair of double quotes; report unbalanced ones.\"\"\"\n    cnt = val.count('\"')\n    if cnt == 2 and val.startswith('\"') and val.endswith('\"'):\n        return val[1:-1], None\n    if cnt % 2:\n        return val, 'UNTERMINATED_QUOTE'\n    return val, None\n\n\ndef format_error(code, num):\n    \"\"\"Build the failure text for a rejected line.\"\"\"\n    return '%s (line %d)' % (code, num)\n\n\ndef parse_settings(lines):\n    cfg = {}\n    err = []\n    for idx, elem in enumerate(join_continuations(lines)):\n        num = idx + 1\n        tmp = elem.strip()\n        if not tmp or tmp.startswith('#') or tmp.startswith(';'):\n            continue\n        pos = tmp.find('=')\n        if pos < 0:\n            err.append(format_error('MISSING_EQUALS', num))\n            continue\n        param = tmp[:pos].strip()\n        if not param:\n            err.append(format_error('MISSING_NAME', num))\n            continue\n        val, msg = unquote(tmp[pos + 1:].strip())\n        if msg is not None:\n            err.append(format_error(msg, num))\n            continue\n        prev = cfg.get(param)\n        if prev is not None and prev != val:\n            err.append(format_error('DUPLICATE_NAME', num))\n        cfg[param] = val\n    return cfg, err\n\n\ndef main():\n    res = parse_settings(['host=localhost', 'port=80', 'badline'])\n    print(res)\n\n\nif __name__ == '__main__':\n    main()\n",
+"text_alt": "def join_continuations(lines):\n    \"\"\"Merge lines ending in a backslash with the line that follows them.\"\"\"\n    result = []\n    buffer = ''\n    for element in lines:\n        current = element.rstrip()\n        if current.endswith('\\\\'):\n            buffer += current[:-1]\n            continue\n        result.append(buffer + current)\n        buffer = ''\n    if buffer:\n        result.append(buffer)\n    return result\n\n\ndef unquote(value):\n    \"\"\"Strip a matching pair of double quotes; report unbalanced ones.\"\"\"\n    count = value.count('\"')\n    if count == 2 and value.startswith('\"') and value.endswith('\"'):\n        return value[1:-1], None\n    if count % 2:\n        return value, 'UNTERMINATED_QUOTE'\n    return value, None\n\n\ndef format_error(code, number):\n    \"\"\"Build the failure text for a rejected line.\"\"\"\n    return '%s (line %d)' % (code, number)\n\n\ndef parse_settings(lines):\n    configuration = {}\n    error = []\n    for index, element in enumerate(join_continuations(lines)):\n        number = index + 1\n        temporary = element.strip()\n        if not temporary or temporary.startswith('#') or temporary.startswith(';'):\n            continue\n        position = temporary.find('=')\n        if position < 0:\n            error.append(format_error('MISSING_EQUALS', number))\n            continue\n        parameter = temporary[:position].strip()\n        if not parameter:\n            error.append(format_error('MISSING_NAME', number))\n            continue\n        value, message = unquote(temporary[position + 1:].strip())\n        if message is not None:\n            error.append(format_error(message, number))\n            continue\n        previous = configuration.get(parameter)\n        if previous is not None and previous != value:\n            error.append(format_error('DUPLICATE_NAME', number))\n        configuration[parameter] = value\n    return configuration, error\n\n\ndef main():\n    result = parse_settings(['host=localhost', 'port=80', 'badline'])\n    print(result)\n\n\nif __name__ == '__main__':\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+112,
+115
+],
+"alt_span": [
+112,
+118
+]
+},
+{
+"k": 1,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+125,
+128
+],
+"alt_span": [
+128,
+134
+]
+},
+{
+"k": 2,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+142,
+146
+],
+"alt_span": [
+148,
+155
+]
+},
+{
+"k": 3,
+"nat": "curr",
+"alt": "current",
+"nat_span": [
+165,
+169
+],
+"alt_span": [
+174,
+181
+]
+},
+{
+"k": 4,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+381,
+384
+],
+"alt_span": [
+429,
+434
+]
+},
+{
+"k": 5,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+465,
+468
+],
+"alt_span": [
+515,
+520
+]
+},
+{
+"k": 6,
+"nat": "num",
+"alt": "number",
+"nat_span": [
+683,
+686
+],
+"alt_span": [
+751,
+757
+]
+},
+{
+"k": 7,
+"nat": "cfg",
+"alt": "configuration",
+"nat_span": [
+816,
+819
+],
+"alt_span": [
+890,
+903
+]
+},
+{
+"k": 8,
+"nat": "err",
+"alt": "error",
+"nat_span": [
+829,
+832
+],
+"alt_span": [
+913,
+918
+]
+},
+{
+"k": 9,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+927,
+930
+],
+"alt_span": [
+1023,
+1032
+]
+},
+{
+"k": 10,
+"nat": "pos",
+"alt": "position",
+"nat_span": [
+1041,
+1044
+],
+"alt_span": [
+1164,
+1172
+]
+},
+{
+"k": 11,
+"nat": "param",
+"alt": "parameter",
+"nat_span": [
+1170,
+1175
+],
+"alt_span": [
+1314,
+1323
+]
+},
+{
+"k": 12,
+"nat": "prev",
+"alt": "previous",
+"nat_span": [
+1451,
+1455
+],
+"alt_span": [
+1649,
+1657
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.887,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+112,
+115
+],
+"alt_span": [
+112,
+118
+]
+},
+{
+"k": 1,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+125,
+128
+],
+"alt_span": [
+128,
+134
+]
+},
+{
+"k": 2,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+142,
+146
+],
+"alt_span": [
+148,
+155
+]
+},
+{
+"k": 3,
+"nat": "curr",
+"alt": "current",
+"nat_span": [
+165,
+169
+],
+"alt_span": [
+174,
+181
+]
+},
+{
+"k": 4,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+172,
+176
+],
+"alt_span": [
+184,
+191
+]
+},
+{
+"k": 5,
+"nat": "curr",
+"alt": "current",
+"nat_span": [
+197,
+201
+],
+"alt_span": [
+212,
+219
+]
+},
+{
+"k": 6,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+230,
+233
+],
+"alt_span": [
+248,
+254
+]
+},
+{
+"k": 7,
+"nat": "curr",
+"alt": "current",
+"nat_span": [
+237,
+241
+],
+"alt_span": [
+258,
+265
+]
+},
+{
+"k": 8,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+276,
+279
+],
+"alt_span": [
+300,
+306
+]
+},
+{
+"k": 9,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+287,
+290
+],
+"alt_span": [
+314,
+320
+]
+},
+{
+"k": 10,
+"nat": "curr)\n        buf",
+"alt": "current)\n        buffer",
+"nat_span": [
+293,
+310
+],
+"alt_span": [
+323,
+346
+]
+},
+{
+"k": 11,
+"nat": "buf:\n        res",
+"alt": "buffer:\n        result",
+"nat_span": [
+323,
+339
+],
+"alt_span": [
+359,
+381
+]
+},
+{
+"k": 12,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+347,
+350
+],
+"alt_span": [
+389,
+395
+]
+},
+{
+"k": 13,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+363,
+366
+],
+"alt_span": [
+408,
+414
+]
+},
+{
+"k": 14,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+381,
+384
+],
+"alt_span": [
+429,
+434
+]
+},
+{
+"k": 15,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+465,
+468
+],
+"alt_span": [
+515,
+520
+]
+},
+{
+"k": 16,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+471,
+474
+],
+"alt_span": [
+523,
+528
+]
+},
+{
+"k": 17,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+493,
+496
+],
+"alt_span": [
+547,
+552
+]
+},
+{
+"k": 18,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+506,
+509
+],
+"alt_span": [
+562,
+567
+]
+},
+{
+"k": 19,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+530,
+533
+],
+"alt_span": [
+588,
+593
+]
+},
+{
+"k": 20,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+564,
+567
+],
+"alt_span": [
+624,
+629
+]
+},
+{
+"k": 21,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+587,
+590
+],
+"alt_span": [
+649,
+654
+]
+},
+{
+"k": 22,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+611,
+614
+],
+"alt_span": [
+675,
+680
+]
+},
+{
+"k": 23,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+648,
+651
+],
+"alt_span": [
+714,
+719
+]
+},
+{
+"k": 24,
+"nat": "num",
+"alt": "number",
+"nat_span": [
+683,
+686
+],
+"alt_span": [
+751,
+757
+]
+},
+{
+"k": 25,
+"nat": "num",
+"alt": "number",
+"nat_span": [
+778,
+781
+],
+"alt_span": [
+849,
+855
+]
+},
+{
+"k": 26,
+"nat": "cfg",
+"alt": "configuration",
+"nat_span": [
+816,
+819
+],
+"alt_span": [
+890,
+903
+]
+},
+{
+"k": 27,
+"nat": "err",
+"alt": "error",
+"nat_span": [
+829,
+832
+],
+"alt_span": [
+913,
+918
+]
+},
+{
+"k": 28,
+"nat": "idx, elem",
+"alt": "index, element",
+"nat_span": [
+846,
+855
+],
+"alt_span": [
+932,
+946
+]
+},
+{
+"k": 29,
+"nat": "num",
+"alt": "number",
+"nat_span": [
+905,
+908
+],
+"alt_span": [
+996,
+1002
+]
+},
+{
+"k": 30,
+"nat": "idx",
+"alt": "index",
+"nat_span": [
+911,
+914
+],
+"alt_span": [
+1005,
+1010
+]
+},
+{
+"k": 31,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+927,
+930
+],
+"alt_span": [
+1023,
+1032
+]
+},
+{
+"k": 32,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+933,
+937
+],
+"alt_span": [
+1035,
+1042
+]
+},
+{
+"k": 33,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+961,
+964
+],
+"alt_span": [
+1066,
+1075
+]
+},
+{
+"k": 34,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+968,
+971
+],
+"alt_span": [
+1079,
+1088
+]
+},
+{
+"k": 35,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+991,
+994
+],
+"alt_span": [
+1108,
+1117
+]
+},
+{
+"k": 36,
+"nat": "pos",
+"alt": "position",
+"nat_span": [
+1041,
+1044
+],
+"alt_span": [
+1164,
+1172
+]
+},
+{
+"k": 37,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+1047,
+1050
+],
+"alt_span": [
+1175,
+1184
+]
+},
+{
+"k": 38,
+"nat": "pos",
+"alt": "position",
+"nat_span": [
+1072,
+1075
+],
+"alt_span": [
+1206,
+1214
+]
+},
+{
+"k": 39,
+"nat": "err",
+"alt": "error",
+"nat_span": [
+1093,
+1096
+],
+"alt_span": [
+1232,
+1237
+]
+},
+{
+"k": 40,
+"nat": "num",
+"alt": "number",
+"nat_span": [
+1135,
+1138
+],
+"alt_span": [
+1276,
+1282
+]
+},
+{
+"k": 41,
+"nat": "param",
+"alt": "parameter",
+"nat_span": [
+1170,
+1175
+],
+"alt_span": [
+1314,
+1323
+]
+},
+{
+"k": 42,
+"nat": "tmp[:pos",
+"alt": "temporary[:position",
+"nat_span": [
+1178,
+1186
+],
+"alt_span": [
+1326,
+1345
+]
+},
+{
+"k": 43,
+"nat": "param:\n            err",
+"alt": "parameter:\n            error",
+"nat_span": [
+1211,
+1233
+],
+"alt_span": [
+1370,
+1398
+]
+},
+{
+"k": 44,
+"nat": "num",
+"alt": "number",
+"nat_span": [
+1270,
+1273
+],
+"alt_span": [
+1435,
+1441
+]
+},
+{
+"k": 45,
+"nat": "val, msg",
+"alt": "value, message",
+"nat_span": [
+1305,
+1313
+],
+"alt_span": [
+1473,
+1487
+]
+},
+{
+"k": 46,
+"nat": "tmp[pos",
+"alt": "temporary[position",
+"nat_span": [
+1324,
+1331
+],
+"alt_span": [
+1498,
+1516
+]
+},
+{
+"k": 47,
+"nat": "msg",
+"alt": "message",
+"nat_span": [
+1358,
+1361
+],
+"alt_span": [
+1543,
+1550
+]
+},
+{
+"k": 48,
+"nat": "err",
+"alt": "error",
+"nat_span": [
+1387,
+1390
+],
+"alt_span": [
+1576,
+1581
+]
+},
+{
+"k": 49,
+"nat": "msg, num",
+"alt": "message, number",
+"nat_span": [
+1411,
+1419
+],
+"alt_span": [
+1602,
+1617
+]
+},
+{
+"k": 50,
+"nat": "prev",
+"alt": "previous",
+"nat_span": [
+1451,
+1455
+],
+"alt_span": [
+1649,
+1657
+]
+},
+{
+"k": 51,
+"nat": "cfg",
+"alt": "configuration",
+"nat_span": [
+1458,
+1461
+],
+"alt_span": [
+1660,
+1673
+]
+},
+{
+"k": 52,
+"nat": "param",
+"alt": "parameter",
+"nat_span": [
+1466,
+1471
+],
+"alt_span": [
+1678,
+1687
+]
+},
+{
+"k": 53,
+"nat": "prev",
+"alt": "previous",
+"nat_span": [
+1484,
+1488
+],
+"alt_span": [
+1700,
+1708
+]
+},
+{
+"k": 54,
+"nat": "prev",
+"alt": "previous",
+"nat_span": [
+1505,
+1509
+],
+"alt_span": [
+1725,
+1733
+]
+},
+{
+"k": 55,
+"nat": "val:\n            err",
+"alt": "value:\n            error",
+"nat_span": [
+1513,
+1533
+],
+"alt_span": [
+1737,
+1761
+]
+},
+{
+"k": 56,
+"nat": "num",
+"alt": "number",
+"nat_span": [
+1572,
+1575
+],
+"alt_span": [
+1800,
+1806
+]
+},
+{
+"k": 57,
+"nat": "cfg[param",
+"alt": "configuration[parameter",
+"nat_span": [
+1586,
+1595
+],
+"alt_span": [
+1817,
+1840
+]
+},
+{
+"k": 58,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+1599,
+1602
+],
+"alt_span": [
+1844,
+1849
+]
+},
+{
+"k": 59,
+"nat": "cfg, err",
+"alt": "configuration, error",
+"nat_span": [
+1614,
+1622
+],
+"alt_span": [
+1861,
+1881
+]
+},
+{
+"k": 60,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+1641,
+1644
+],
+"alt_span": [
+1900,
+1906
+]
+},
+{
+"k": 61,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+1714,
+1717
+],
+"alt_span": [
+1976,
+1982
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "py_abbrev__d008",
+"family": "py_abbrev",
+"topic": "Log Message Filter",
+"angle": "code",
+"text_es": "Write `filter_logs(logs, min_severity, keyword)`. `logs` is a list of dictionaries with 'severity' (int) and 'text' (str). Iterate through the list. If 'severity' is less than `min_severity` or 'keyword' is not in 'text', skip it and increment a drop tally. Otherwise, extract the text, append it to a kept list. Return the kept list and the drop tally. The driver tests an array of 3 log dictionaries and prints the output tuple exactly as returned without formatted strings.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "DEFAULT_CFG = {\"min_severity\": 1, \"keyword\": \"\", \"name\": \"unnamed\"}\n\n\ndef check_entry(elem, idx):\n    \"\"\"Validate one raw log record and return a clean copy of it.\"\"\"\n    if not isinstance(elem, dict):\n        raise TypeError(\"log #\" + str(idx) + \" is not a dictionary\")\n    for param in (\"severity\", \"text\"):\n        if param not in elem:\n            raise KeyError(\"log #\" + str(idx) + \" is missing '\" + param + \"'\")\n    val = elem[\"severity\"]\n    if isinstance(val, bool) or not isinstance(val, int):\n        raise TypeError(\"log #\" + str(idx) + \" has a non-integer severity\")\n    msg = elem[\"text\"]\n    if not isinstance(msg, str):\n        raise TypeError(\"log #\" + str(idx) + \" has a non-string text\")\n    return {\"severity\": val, \"text\": msg}\n\n\ndef sanitize(logs):\n    res = []\n    for idx, elem in enumerate(logs):\n        res.append(check_entry(elem, idx))\n    return res\n\n\ndef filter_logs(logs, min_severity, keyword):\n    kept = []\n    cnt = 0\n    for elem in sanitize(logs):\n        val = elem[\"severity\"]\n        msg = elem[\"text\"]\n        if val < min_severity or keyword not in msg:\n            cnt += 1\n            continue\n        kept.append(msg)\n    return kept, cnt\n\n\ndef build_report(kept, cnt, ctx):\n    buf = [\"source: \" + ctx[\"name\"]]\n    num = len(kept) + cnt\n    for idx, msg in enumerate(kept, start=1):\n        pos = msg.find(ctx[\"keyword\"])\n        tmp = str(idx) + \". \" + msg + \" [hit@\" + str(pos) + \"]\"\n        buf.append(tmp)\n    buf.append(\"kept \" + str(len(kept)) + \" of \" + str(num) +\n               \", dropped \" + str(cnt))\n    return \"\\n\".join(buf)\n\n\ndef main():\n    cfg = dict(DEFAULT_CFG)\n    cfg.update({\"min_severity\": 2, \"keyword\": \"disk\", \"name\": \"node-07\"})\n    logs = [\n        {\"severity\": 3, \"text\": \"disk usage at 91 percent\"},\n        {\"severity\": 1, \"text\": \"disk scrub finished\"},\n        {\"severity\": 4, \"text\": \"cpu temperature high\"},\n    ]\n    try:\n        res = filter_logs(logs, cfg[\"min_severity\"], cfg[\"keyword\"])\n    except (TypeError, KeyError) as err:\n        print(\"input rejected:\", err)\n        return\n    print(res)\n    ctx = {\"name\": cfg[\"name\"], \"keyword\": cfg[\"keyword\"]}\n    print(build_report(res[0], res[1], ctx))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "DEFAULT_CONFIGURATION = {\"min_severity\": 1, \"keyword\": \"\", \"name\": \"unnamed\"}\n\n\ndef check_entry(element, index):\n    \"\"\"Validate one raw log record and return a clean copy of it.\"\"\"\n    if not isinstance(element, dict):\n        raise TypeError(\"log #\" + str(index) + \" is not a dictionary\")\n    for parameter in (\"severity\", \"text\"):\n        if parameter not in element:\n            raise KeyError(\"log #\" + str(index) + \" is missing '\" + parameter + \"'\")\n    value = element[\"severity\"]\n    if isinstance(value, bool) or not isinstance(value, int):\n        raise TypeError(\"log #\" + str(index) + \" has a non-integer severity\")\n    message = element[\"text\"]\n    if not isinstance(message, str):\n        raise TypeError(\"log #\" + str(index) + \" has a non-string text\")\n    return {\"severity\": value, \"text\": message}\n\n\ndef sanitize(logs):\n    result = []\n    for index, element in enumerate(logs):\n        result.append(check_entry(element, index))\n    return result\n\n\ndef filter_logs(logs, min_severity, keyword):\n    kept = []\n    count = 0\n    for element in sanitize(logs):\n        value = element[\"severity\"]\n        message = element[\"text\"]\n        if value < min_severity or keyword not in message:\n            count += 1\n            continue\n        kept.append(message)\n    return kept, count\n\n\ndef build_report(kept, count, context):\n    buffer = [\"source: \" + context[\"name\"]]\n    number = len(kept) + count\n    for index, message in enumerate(kept, start=1):\n        position = message.find(context[\"keyword\"])\n        temporary = str(index) + \". \" + message + \" [hit@\" + str(position) + \"]\"\n        buffer.append(temporary)\n    buffer.append(\"kept \" + str(len(kept)) + \" of \" + str(number) +\n               \", dropped \" + str(count))\n    return \"\\n\".join(buffer)\n\n\ndef main():\n    configuration = dict(DEFAULT_CONFIGURATION)\n    configuration.update({\"min_severity\": 2, \"keyword\": \"disk\", \"name\": \"node-07\"})\n    logs = [\n        {\"severity\": 3, \"text\": \"disk usage at 91 percent\"},\n        {\"severity\": 1, \"text\": \"disk scrub finished\"},\n        {\"severity\": 4, \"text\": \"cpu temperature high\"},\n    ]\n    try:\n        result = filter_logs(logs, configuration[\"min_severity\"], configuration[\"keyword\"])\n    except (TypeError, KeyError) as error:\n        print(\"input rejected:\", error)\n        return\n    print(result)\n    context = {\"name\": configuration[\"name\"], \"keyword\": configuration[\"keyword\"]}\n    print(build_report(result[0], result[1], context))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "DEFAULT_CFG",
+"alt": "DEFAULT_CONFIGURATION",
+"nat_span": [
+0,
+11
+],
+"alt_span": [
+0,
+21
+]
+},
+{
+"k": 1,
+"nat": "elem, idx",
+"alt": "element, index",
+"nat_span": [
+86,
+95
+],
+"alt_span": [
+96,
+110
+]
+},
+{
+"k": 2,
+"nat": "param",
+"alt": "parameter",
+"nat_span": [
+279,
+284
+],
+"alt_span": [
+299,
+308
+]
+},
+{
+"k": 3,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+423,
+426
+],
+"alt_span": [
+460,
+465
+]
+},
+{
+"k": 4,
+"nat": "msg",
+"alt": "message",
+"nat_span": [
+584,
+587
+],
+"alt_span": [
+632,
+639
+]
+},
+{
+"k": 5,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+775,
+778
+],
+"alt_span": [
+842,
+848
+]
+},
+{
+"k": 6,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+946,
+949
+],
+"alt_span": [
+1032,
+1037
+]
+},
+{
+"k": 7,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+1225,
+1228
+],
+"alt_span": [
+1348,
+1354
+]
+},
+{
+"k": 8,
+"nat": "num",
+"alt": "number",
+"nat_span": [
+1262,
+1265
+],
+"alt_span": [
+1392,
+1398
+]
+},
+{
+"k": 9,
+"nat": "pos",
+"alt": "position",
+"nat_span": [
+1338,
+1341
+],
+"alt_span": [
+1479,
+1487
+]
+},
+{
+"k": 10,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+1377,
+1380
+],
+"alt_span": [
+1531,
+1540
+]
+},
+{
+"k": 11,
+"nat": "cfg",
+"alt": "configuration",
+"nat_span": [
+1603,
+1606
+],
+"alt_span": [
+1794,
+1807
+]
+},
+{
+"k": 12,
+"nat": "err",
+"alt": "error",
+"nat_span": [
+2008,
+2011
+],
+"alt_span": [
+2252,
+2257
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.92,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "DEFAULT_CFG",
+"alt": "DEFAULT_CONFIGURATION",
+"nat_span": [
+0,
+11
+],
+"alt_span": [
+0,
+21
+]
+},
+{
+"k": 1,
+"nat": "elem, idx",
+"alt": "element, index",
+"nat_span": [
+86,
+95
+],
+"alt_span": [
+96,
+110
+]
+},
+{
+"k": 2,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+189,
+193
+],
+"alt_span": [
+204,
+211
+]
+},
+{
+"k": 3,
+"nat": "idx",
+"alt": "index",
+"nat_span": [
+240,
+243
+],
+"alt_span": [
+258,
+263
+]
+},
+{
+"k": 4,
+"nat": "param",
+"alt": "parameter",
+"nat_span": [
+279,
+284
+],
+"alt_span": [
+299,
+308
+]
+},
+{
+"k": 5,
+"nat": "param",
+"alt": "parameter",
+"nat_span": [
+321,
+326
+],
+"alt_span": [
+345,
+354
+]
+},
+{
+"k": 6,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+334,
+338
+],
+"alt_span": [
+362,
+369
+]
+},
+{
+"k": 7,
+"nat": "idx",
+"alt": "index",
+"nat_span": [
+381,
+384
+],
+"alt_span": [
+412,
+417
+]
+},
+{
+"k": 8,
+"nat": "param",
+"alt": "parameter",
+"nat_span": [
+406,
+411
+],
+"alt_span": [
+439,
+448
+]
+},
+{
+"k": 9,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+423,
+426
+],
+"alt_span": [
+460,
+465
+]
+},
+{
+"k": 10,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+429,
+433
+],
+"alt_span": [
+468,
+475
+]
+},
+{
+"k": 11,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+464,
+467
+],
+"alt_span": [
+506,
+511
+]
+},
+{
+"k": 12,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+493,
+496
+],
+"alt_span": [
+537,
+542
+]
+},
+{
+"k": 13,
+"nat": "idx",
+"alt": "index",
+"nat_span": [
+542,
+545
+],
+"alt_span": [
+588,
+593
+]
+},
+{
+"k": 14,
+"nat": "msg",
+"alt": "message",
+"nat_span": [
+584,
+587
+],
+"alt_span": [
+632,
+639
+]
+},
+{
+"k": 15,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+590,
+594
+],
+"alt_span": [
+642,
+649
+]
+},
+{
+"k": 16,
+"nat": "msg",
+"alt": "message",
+"nat_span": [
+625,
+628
+],
+"alt_span": [
+680,
+687
+]
+},
+{
+"k": 17,
+"nat": "idx",
+"alt": "index",
+"nat_span": [
+674,
+677
+],
+"alt_span": [
+733,
+738
+]
+},
+{
+"k": 18,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+731,
+734
+],
+"alt_span": [
+792,
+797
+]
+},
+{
+"k": 19,
+"nat": "msg",
+"alt": "message",
+"nat_span": [
+744,
+747
+],
+"alt_span": [
+807,
+814
+]
+},
+{
+"k": 20,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+775,
+778
+],
+"alt_span": [
+842,
+848
+]
+},
+{
+"k": 21,
+"nat": "idx, elem",
+"alt": "index, element",
+"nat_span": [
+792,
+801
+],
+"alt_span": [
+862,
+876
+]
+},
+{
+"k": 22,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+830,
+833
+],
+"alt_span": [
+905,
+911
+]
+},
+{
+"k": 23,
+"nat": "elem, idx",
+"alt": "element, index",
+"nat_span": [
+853,
+862
+],
+"alt_span": [
+931,
+945
+]
+},
+{
+"k": 24,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+876,
+879
+],
+"alt_span": [
+959,
+965
+]
+},
+{
+"k": 25,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+946,
+949
+],
+"alt_span": [
+1032,
+1037
+]
+},
+{
+"k": 26,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+962,
+966
+],
+"alt_span": [
+1050,
+1057
+]
+},
+{
+"k": 27,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+994,
+997
+],
+"alt_span": [
+1085,
+1090
+]
+},
+{
+"k": 28,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+1000,
+1004
+],
+"alt_span": [
+1093,
+1100
+]
+},
+{
+"k": 29,
+"nat": "msg",
+"alt": "message",
+"nat_span": [
+1025,
+1028
+],
+"alt_span": [
+1121,
+1128
+]
+},
+{
+"k": 30,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+1031,
+1035
+],
+"alt_span": [
+1131,
+1138
+]
+},
+{
+"k": 31,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+1055,
+1058
+],
+"alt_span": [
+1158,
+1163
+]
+},
+{
+"k": 32,
+"nat": "msg:\n            cnt",
+"alt": "message:\n            count",
+"nat_span": [
+1092,
+1112
+],
+"alt_span": [
+1197,
+1223
+]
+},
+{
+"k": 33,
+"nat": "msg",
+"alt": "message",
+"nat_span": [
+1159,
+1162
+],
+"alt_span": [
+1270,
+1277
+]
+},
+{
+"k": 34,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+1181,
+1184
+],
+"alt_span": [
+1296,
+1301
+]
+},
+{
+"k": 35,
+"nat": "cnt, ctx",
+"alt": "count, context",
+"nat_span": [
+1210,
+1218
+],
+"alt_span": [
+1327,
+1341
+]
+},
+{
+"k": 36,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+1225,
+1228
+],
+"alt_span": [
+1348,
+1354
+]
+},
+{
+"k": 37,
+"nat": "ctx",
+"alt": "context",
+"nat_span": [
+1245,
+1248
+],
+"alt_span": [
+1371,
+1378
+]
+},
+{
+"k": 38,
+"nat": "num",
+"alt": "number",
+"nat_span": [
+1262,
+1265
+],
+"alt_span": [
+1392,
+1398
+]
+},
+{
+"k": 39,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+1280,
+1283
+],
+"alt_span": [
+1413,
+1418
+]
+},
+{
+"k": 40,
+"nat": "idx, msg",
+"alt": "index, message",
+"nat_span": [
+1292,
+1300
+],
+"alt_span": [
+1427,
+1441
+]
+},
+{
+"k": 41,
+"nat": "pos",
+"alt": "position",
+"nat_span": [
+1338,
+1341
+],
+"alt_span": [
+1479,
+1487
+]
+},
+{
+"k": 42,
+"nat": "msg",
+"alt": "message",
+"nat_span": [
+1344,
+1347
+],
+"alt_span": [
+1490,
+1497
+]
+},
+{
+"k": 43,
+"nat": "ctx",
+"alt": "context",
+"nat_span": [
+1353,
+1356
+],
+"alt_span": [
+1503,
+1510
+]
+},
+{
+"k": 44,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+1377,
+1380
+],
+"alt_span": [
+1531,
+1540
+]
+},
+{
+"k": 45,
+"nat": "idx",
+"alt": "index",
+"nat_span": [
+1387,
+1390
+],
+"alt_span": [
+1547,
+1552
+]
+},
+{
+"k": 46,
+"nat": "msg",
+"alt": "message",
+"nat_span": [
+1401,
+1404
+],
+"alt_span": [
+1563,
+1570
+]
+},
+{
+"k": 47,
+"nat": "pos",
+"alt": "position",
+"nat_span": [
+1422,
+1425
+],
+"alt_span": [
+1588,
+1596
+]
+},
+{
+"k": 48,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+1441,
+1444
+],
+"alt_span": [
+1612,
+1618
+]
+},
+{
+"k": 49,
+"nat": "tmp)\n    buf",
+"alt": "temporary)\n    buffer",
+"nat_span": [
+1452,
+1464
+],
+"alt_span": [
+1626,
+1647
+]
+},
+{
+"k": 50,
+"nat": "num",
+"alt": "number",
+"nat_span": [
+1512,
+1515
+],
+"alt_span": [
+1695,
+1701
+]
+},
+{
+"k": 51,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+1553,
+1556
+],
+"alt_span": [
+1739,
+1744
+]
+},
+{
+"k": 52,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+1580,
+1583
+],
+"alt_span": [
+1768,
+1774
+]
+},
+{
+"k": 53,
+"nat": "cfg",
+"alt": "configuration",
+"nat_span": [
+1603,
+1606
+],
+"alt_span": [
+1794,
+1807
+]
+},
+{
+"k": 54,
+"nat": "DEFAULT_CFG)\n    cfg",
+"alt": "DEFAULT_CONFIGURATION)\n    configuration",
+"nat_span": [
+1614,
+1634
+],
+"alt_span": [
+1815,
+1855
+]
+},
+{
+"k": 55,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+1911,
+1914
+],
+"alt_span": [
+2132,
+2138
+]
+},
+{
+"k": 56,
+"nat": "cfg",
+"alt": "configuration",
+"nat_span": [
+1935,
+1938
+],
+"alt_span": [
+2159,
+2172
+]
+},
+{
+"k": 57,
+"nat": "cfg",
+"alt": "configuration",
+"nat_span": [
+1956,
+1959
+],
+"alt_span": [
+2190,
+2203
+]
+},
+{
+"k": 58,
+"nat": "err",
+"alt": "error",
+"nat_span": [
+2008,
+2011
+],
+"alt_span": [
+2252,
+2257
+]
+},
+{
+"k": 59,
+"nat": "err",
+"alt": "error",
+"nat_span": [
+2046,
+2049
+],
+"alt_span": [
+2292,
+2297
+]
+},
+{
+"k": 60,
+"nat": "res)\n    ctx",
+"alt": "result)\n    context",
+"nat_span": [
+2076,
+2088
+],
+"alt_span": [
+2324,
+2343
+]
+},
+{
+"k": 61,
+"nat": "cfg",
+"alt": "configuration",
+"nat_span": [
+2100,
+2103
+],
+"alt_span": [
+2355,
+2368
+]
+},
+{
+"k": 62,
+"nat": "cfg",
+"alt": "configuration",
+"nat_span": [
+2124,
+2127
+],
+"alt_span": [
+2389,
+2402
+]
+},
+{
+"k": 63,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+2163,
+2166
+],
+"alt_span": [
+2438,
+2444
+]
+},
+{
+"k": 64,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+2171,
+2174
+],
+"alt_span": [
+2449,
+2455
+]
+},
+{
+"k": 65,
+"nat": "ctx",
+"alt": "context",
+"nat_span": [
+2179,
+2182
+],
+"alt_span": [
+2460,
+2467
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "py_abbrev__d009",
+"family": "py_abbrev",
+"topic": "Sliding Window Maximum",
+"angle": "code",
+"text_es": "Write `sliding_maximum(sequence, window)`. Iterate through `sequence`. For each valid window of length `window`, extract the slice. Find its maximum integer. Store it in a results array. Track the starting offset of the window for debugging purposes, saving these offsets in a separate list. Return a tuple of the array of maximums and the list of offsets. The driver tests `[1, 3, -1, -3, 5, 3, 6, 7]` with window `3` and prints the exact result tuple with no additional text.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def _type_msg(param, val):\n    \"\"\"Message describing a value that should have been an int.\"\"\"\n    return \"{} must be an int, got {}\".format(param, type(val).__name__)\n\n\ndef validate(sequence, window):\n    \"\"\"Return a message describing bad input, or None when the input is sane.\"\"\"\n    if isinstance(window, bool) or not isinstance(window, int):\n        return _type_msg(\"window\", window)\n    if window < 1:\n        return \"window must be at least 1, got {}\".format(window)\n    for idx, elem in enumerate(sequence):\n        if isinstance(elem, bool) or not isinstance(elem, int):\n            return \"sequence[{}]: {}\".format(idx, _type_msg(\"element\", elem))\n    if window > len(sequence):\n        return \"window {} exceeds sequence length {}\".format(window, len(sequence))\n    return None\n\n\ndef maximum(buf):\n    \"\"\"Maximum of a non-empty slice, scanned element by element.\"\"\"\n    curr = buf[0]\n    for elem in buf[1:]:\n        if elem > curr:\n            curr = elem\n    return curr\n\n\ndef sliding_maximum(sequence, window):\n    \"\"\"Maximums of every window-long slice, plus the offset of each slice.\"\"\"\n    err = validate(sequence, window)\n    if err is not None:\n        raise ValueError(err)\n\n    buf = list(sequence)\n    cnt = len(buf) - window + 1\n    res = []\n    offsets = []\n    for pos in range(cnt):\n        tmp = buf[pos:pos + window]\n        res.append(maximum(tmp))\n        offsets.append(pos)\n    return res, offsets\n\n\ndef main():\n    res = sliding_maximum([1, 3, -1, -3, 5, 3, 6, 7], 3)\n    print(res)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def _type_message(parameter, value):\n    \"\"\"Message describing a value that should have been an int.\"\"\"\n    return \"{} must be an int, got {}\".format(parameter, type(value).__name__)\n\n\ndef validate(sequence, window):\n    \"\"\"Return a message describing bad input, or None when the input is sane.\"\"\"\n    if isinstance(window, bool) or not isinstance(window, int):\n        return _type_message(\"window\", window)\n    if window < 1:\n        return \"window must be at least 1, got {}\".format(window)\n    for index, element in enumerate(sequence):\n        if isinstance(element, bool) or not isinstance(element, int):\n            return \"sequence[{}]: {}\".format(index, _type_message(\"element\", element))\n    if window > len(sequence):\n        return \"window {} exceeds sequence length {}\".format(window, len(sequence))\n    return None\n\n\ndef maximum(buffer):\n    \"\"\"Maximum of a non-empty slice, scanned element by element.\"\"\"\n    current = buffer[0]\n    for element in buffer[1:]:\n        if element > current:\n            current = element\n    return current\n\n\ndef sliding_maximum(sequence, window):\n    \"\"\"Maximums of every window-long slice, plus the offset of each slice.\"\"\"\n    error = validate(sequence, window)\n    if error is not None:\n        raise ValueError(error)\n\n    buffer = list(sequence)\n    count = len(buffer) - window + 1\n    result = []\n    offsets = []\n    for position in range(count):\n        temporary = buffer[position:position + window]\n        result.append(maximum(temporary))\n        offsets.append(position)\n    return result, offsets\n\n\ndef main():\n    result = sliding_maximum([1, 3, -1, -3, 5, 3, 6, 7], 3)\n    print(result)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "_type_msg(param, val",
+"alt": "_type_message(parameter, value",
+"nat_span": [
+4,
+24
+],
+"alt_span": [
+4,
+34
+]
+},
+{
+"k": 1,
+"nat": "idx, elem",
+"alt": "index, element",
+"nat_span": [
+482,
+491
+],
+"alt_span": [
+502,
+516
+]
+},
+{
+"k": 2,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+803,
+806
+],
+"alt_span": [
+843,
+849
+]
+},
+{
+"k": 3,
+"nat": "curr",
+"alt": "current",
+"nat_span": [
+881,
+885
+],
+"alt_span": [
+924,
+931
+]
+},
+{
+"k": 4,
+"nat": "err",
+"alt": "error",
+"nat_span": [
+1107,
+1110
+],
+"alt_span": [
+1177,
+1182
+]
+},
+{
+"k": 5,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+1224,
+1227
+],
+"alt_span": [
+1303,
+1308
+]
+},
+{
+"k": 6,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+1256,
+1259
+],
+"alt_span": [
+1340,
+1346
+]
+},
+{
+"k": 7,
+"nat": "pos",
+"alt": "position",
+"nat_span": [
+1290,
+1293
+],
+"alt_span": [
+1377,
+1385
+]
+},
+{
+"k": 8,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+1317,
+1320
+],
+"alt_span": [
+1411,
+1420
+]
+}
+],
+"k_en": 9,
+"shared_fraction": 0.931,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "_type_msg(param, val",
+"alt": "_type_message(parameter, value",
+"nat_span": [
+4,
+24
+],
+"alt_span": [
+4,
+34
+]
+},
+{
+"k": 1,
+"nat": "param",
+"alt": "parameter",
+"nat_span": [
+140,
+145
+],
+"alt_span": [
+150,
+159
+]
+},
+{
+"k": 2,
+"nat": "val",
+"alt": "value",
+"nat_span": [
+152,
+155
+],
+"alt_span": [
+166,
+171
+]
+},
+{
+"k": 3,
+"nat": "_type_msg",
+"alt": "_type_message",
+"nat_span": [
+361,
+370
+],
+"alt_span": [
+377,
+390
+]
+},
+{
+"k": 4,
+"nat": "idx, elem",
+"alt": "index, element",
+"nat_span": [
+482,
+491
+],
+"alt_span": [
+502,
+516
+]
+},
+{
+"k": 5,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+538,
+542
+],
+"alt_span": [
+563,
+570
+]
+},
+{
+"k": 6,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+568,
+572
+],
+"alt_span": [
+596,
+603
+]
+},
+{
+"k": 7,
+"nat": "idx, _type_msg",
+"alt": "index, _type_message",
+"nat_span": [
+625,
+639
+],
+"alt_span": [
+656,
+676
+]
+},
+{
+"k": 8,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+651,
+655
+],
+"alt_span": [
+688,
+695
+]
+},
+{
+"k": 9,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+803,
+806
+],
+"alt_span": [
+843,
+849
+]
+},
+{
+"k": 10,
+"nat": "curr",
+"alt": "current",
+"nat_span": [
+881,
+885
+],
+"alt_span": [
+924,
+931
+]
+},
+{
+"k": 11,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+888,
+891
+],
+"alt_span": [
+934,
+940
+]
+},
+{
+"k": 12,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+903,
+907
+],
+"alt_span": [
+952,
+959
+]
+},
+{
+"k": 13,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+911,
+914
+],
+"alt_span": [
+963,
+969
+]
+},
+{
+"k": 14,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+931,
+935
+],
+"alt_span": [
+986,
+993
+]
+},
+{
+"k": 15,
+"nat": "curr:\n            curr",
+"alt": "current:\n            current",
+"nat_span": [
+938,
+960
+],
+"alt_span": [
+996,
+1024
+]
+},
+{
+"k": 16,
+"nat": "elem",
+"alt": "element",
+"nat_span": [
+963,
+967
+],
+"alt_span": [
+1027,
+1034
+]
+},
+{
+"k": 17,
+"nat": "curr",
+"alt": "current",
+"nat_span": [
+979,
+983
+],
+"alt_span": [
+1046,
+1053
+]
+},
+{
+"k": 18,
+"nat": "err",
+"alt": "error",
+"nat_span": [
+1107,
+1110
+],
+"alt_span": [
+1177,
+1182
+]
+},
+{
+"k": 19,
+"nat": "err",
+"alt": "error",
+"nat_span": [
+1147,
+1150
+],
+"alt_span": [
+1219,
+1224
+]
+},
+{
+"k": 20,
+"nat": "err)\n\n    buf",
+"alt": "error)\n\n    buffer",
+"nat_span": [
+1189,
+1202
+],
+"alt_span": [
+1263,
+1281
+]
+},
+{
+"k": 21,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+1224,
+1227
+],
+"alt_span": [
+1303,
+1308
+]
+},
+{
+"k": 22,
+"nat": "buf",
+"alt": "buffer",
+"nat_span": [
+1234,
+1237
+],
+"alt_span": [
+1315,
+1321
+]
+},
+{
+"k": 23,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+1256,
+1259
+],
+"alt_span": [
+1340,
+1346
+]
+},
+{
+"k": 24,
+"nat": "pos",
+"alt": "position",
+"nat_span": [
+1290,
+1293
+],
+"alt_span": [
+1377,
+1385
+]
+},
+{
+"k": 25,
+"nat": "cnt",
+"alt": "count",
+"nat_span": [
+1303,
+1306
+],
+"alt_span": [
+1395,
+1400
+]
+},
+{
+"k": 26,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+1317,
+1320
+],
+"alt_span": [
+1411,
+1420
+]
+},
+{
+"k": 27,
+"nat": "buf[pos:pos",
+"alt": "buffer[position:position",
+"nat_span": [
+1323,
+1334
+],
+"alt_span": [
+1423,
+1447
+]
+},
+{
+"k": 28,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+1353,
+1356
+],
+"alt_span": [
+1466,
+1472
+]
+},
+{
+"k": 29,
+"nat": "tmp",
+"alt": "temporary",
+"nat_span": [
+1372,
+1375
+],
+"alt_span": [
+1488,
+1497
+]
+},
+{
+"k": 30,
+"nat": "pos",
+"alt": "position",
+"nat_span": [
+1401,
+1404
+],
+"alt_span": [
+1523,
+1531
+]
+},
+{
+"k": 31,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+1417,
+1420
+],
+"alt_span": [
+1544,
+1550
+]
+},
+{
+"k": 32,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+1448,
+1451
+],
+"alt_span": [
+1578,
+1584
+]
+},
+{
+"k": 33,
+"nat": "res",
+"alt": "result",
+"nat_span": [
+1511,
+1514
+],
+"alt_span": [
+1644,
+1650
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "py_abbrev__t001",
 "family": "py_abbrev",
 "topic": "Reverse a String",
@@ -33221,704 +35869,6 @@
 "alt_span": [
 1496,
 1510
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_abbrev__t126",
-"family": "py_abbrev",
-"topic": "Check Point in Rectangle",
-"angle": "code",
-"text_es": "Determine if a given point (x, y) lies within a rectangle defined by its bottom-left (x1, y1) and top-right (x2, y2) coordinates. The function `is_point_in_rectangle` should take five arguments: `px` (int), `py` (int), `x1` (int), `y1` (int), `x2` (int), `y2` (int). It should return a boolean. \nExample 1: `is_point_in_rectangle(3, 3, 0, 0, 5, 5)` should return `True`. \nExample 2: `is_point_in_rectangle(6, 2, 0, 0, 5, 5)` should return `False`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def is_point_in_rectangle(px, py, x1, y1, x2, y2):\n    # Determine if px is within the x-range [x1, x2]\n    x_in_range = (px >= x1) and (px <= x2)\n    \n    # Determine if py is within the y-range [y1, y2]\n    y_in_range = (py >= y1) and (py <= y2)\n    \n    # The point is in the rectangle if both x and y are in their respective ranges\n    res = x_in_range and y_in_range\n    return res\n\n# Example 1 test\np_x, p_y = 3, 3\nr_x1, r_y1, r_x2, r_y2 = 0, 0, 5, 5\nval = is_point_in_rectangle(p_x, p_y, r_x1, r_y1, r_x2, r_y2)\n# print(f\"({p_x}, {p_y}) in rectangle ({r_x1},{r_y1})-({r_x2},{r_y2}): {val}\")\n\n# Example 2 test\ncurr_px, curr_py = 6, 2\nprev_x1, prev_y1, prev_x2, prev_y2 = 0, 0, 5, 5\nval = is_point_in_rectangle(curr_px, curr_py, prev_x1, prev_y1, prev_x2, prev_y2)\n# print(f\"({curr_px}, {curr_py}) in rectangle ({prev_x1},{prev_y1})-({prev_x2},{prev_y2}): {val}\")\n\n# Another test case\ntmp_x, tmp_y = -1, 1\ncfg_x1, cfg_y1, cfg_x2, cfg_y2 = 0, 0, 10, 10\nres = is_point_in_rectangle(tmp_x, tmp_y, cfg_x1, cfg_y1, cfg_x2, cfg_y2)\n# print(f\"({tmp_x}, {tmp_y}) in rectangle ({cfg_x1},{cfg_y1})-({cfg_x2},{cfg_y2}): {res}\")\n\ndef check_point_set(points, rect_coords):\n    cnt = 0\n    buf_x1, buf_y1, buf_x2, buf_y2 = rect_coords\n    for idx, elem in enumerate(points):\n        px, py = elem\n        if is_point_in_rectangle(px, py, buf_x1, buf_y1, buf_x2, buf_y2):\n            cnt += 1\n            # msg = f\"Point {idx}: ({px}, {py}) is inside.\"\n            # print(msg)\n        # else:\n            # msg = f\"Point {idx}: ({px}, {py}) is outside.\"\n            # print(msg)\n    return cnt\n\n# Test with a set of points\ntest_points = [(1, 1), (5, 5), (0, 0), (6, 6), (2, 7)]\nrect = (0, 0, 5, 5)\nnum_inside = check_point_set(test_points, rect)\n# print(f\"Total points inside: {num_inside}\")\n",
-"text_alt": "def is_point_in_rectangle(px, py, x1, y1, x2, y2):\n    # Determine if px is within the x-range [x1, x2]\n    x_in_range = (px >= x1) and (px <= x2)\n    \n    # Determine if py is within the y-range [y1, y2]\n    y_in_range = (py >= y1) and (py <= y2)\n    \n    # The point is in the rectangle if both x and y are in their respective ranges\n    result = x_in_range and y_in_range\n    return result\n\n# Example 1 test\np_x, p_y = 3, 3\nr_x1, r_y1, r_x2, r_y2 = 0, 0, 5, 5\nvalue = is_point_in_rectangle(p_x, p_y, r_x1, r_y1, r_x2, r_y2)\n# print(f\"({p_x}, {p_y}) in rectangle ({r_x1},{r_y1})-({r_x2},{r_y2}): {value}\")\n\n# Example 2 test\ncurrent_parameter_x, current_parameter_y = 6, 2\nprevious_x1, previous_y1, previous_x2, previous_y2 = 0, 0, 5, 5\nvalue = is_point_in_rectangle(current_parameter_x, current_parameter_y, previous_x1, previous_y1, previous_x2, previous_y2)\n# print(f\"({current_parameter_x}, {current_parameter_y}) in rectangle ({previous_x1},{previous_y1})-({previous_x2},{previous_y2}): {value}\")\n\n# Another test case\ntemporary_x, temporary_y = -1, 1\nconfiguration_x1, configuration_y1, configuration_x2, configuration_y2 = 0, 0, 10, 10\nresult = is_point_in_rectangle(temporary_x, temporary_y, configuration_x1, configuration_y1, configuration_x2, configuration_y2)\n# print(f\"({temporary_x}, {temporary_y}) in rectangle ({configuration_x1},{configuration_y1})-({configuration_x2},{configuration_y2}): {result}\")\n\ndef check_point_set(points, rect_coords):\n    count = 0\n    buffer_x1, buffer_y1, buffer_x2, buffer_y2 = rect_coords\n    for index, element in enumerate(points):\n        px, py = element\n        if is_point_in_rectangle(px, py, buffer_x1, buffer_y1, buffer_x2, buffer_y2):\n            count += 1\n            # message = f\"Point {index}: ({px}, {py}) is inside.\"\n            # print(message)\n        # else:\n            # message = f\"Point {index}: ({px}, {py}) is outside.\"\n            # print(message)\n    return count\n\n# Test with a set of points\ntest_points = [(1, 1), (5, 5), (0, 0), (6, 6), (2, 7)]\nrect = (0, 0, 5, 5)\nnumber_inside = check_point_set(test_points, rect)\n# print(f\"Total points inside: {number_inside}\")\n",
-"opps": [
-{
-"k": 0,
-"nat": "res",
-"alt": "result",
-"nat_span": [
-340,
-343
-],
-"alt_span": [
-340,
-346
-]
-},
-{
-"k": 1,
-"nat": "val",
-"alt": "value",
-"nat_span": [
-457,
-460
-],
-"alt_span": [
-463,
-468
-]
-},
-{
-"k": 2,
-"nat": "curr_px, curr_py",
-"alt": "current_parameter_x, current_parameter_y",
-"nat_span": [
-616,
-632
-],
-"alt_span": [
-626,
-666
-]
-},
-{
-"k": 3,
-"nat": "prev_x1, prev_y1, prev_x2, prev_y2",
-"alt": "previous_x1, previous_y1, previous_x2, previous_y2",
-"nat_span": [
-640,
-674
-],
-"alt_span": [
-674,
-724
-]
-},
-{
-"k": 4,
-"nat": "tmp_x, tmp_y",
-"alt": "temporary_x, temporary_y",
-"nat_span": [
-890,
-902
-],
-"alt_span": [
-1024,
-1048
-]
-},
-{
-"k": 5,
-"nat": "cfg_x1, cfg_y1, cfg_x2, cfg_y2",
-"alt": "configuration_x1, configuration_y1, configuration_x2, configuration_y2",
-"nat_span": [
-911,
-941
-],
-"alt_span": [
-1057,
-1127
-]
-},
-{
-"k": 6,
-"nat": "cnt",
-"alt": "count",
-"nat_span": [
-1169,
-1172
-],
-"alt_span": [
-1465,
-1470
-]
-},
-{
-"k": 7,
-"nat": "buf_x1, buf_y1, buf_x2, buf_y2",
-"alt": "buffer_x1, buffer_y1, buffer_x2, buffer_y2",
-"nat_span": [
-1181,
-1211
-],
-"alt_span": [
-1479,
-1521
-]
-},
-{
-"k": 8,
-"nat": "idx, elem",
-"alt": "index, element",
-"nat_span": [
-1234,
-1243
-],
-"alt_span": [
-1544,
-1558
-]
-},
-{
-"k": 9,
-"nat": "msg",
-"alt": "message",
-"nat_span": [
-1397,
-1400
-],
-"alt_span": [
-1729,
-1736
-]
-},
-{
-"k": 10,
-"nat": "num_inside",
-"alt": "number_inside",
-"nat_span": [
-1689,
-1699
-],
-"alt_span": [
-2043,
-2056
-]
-}
-],
-"k_en": 11,
-"shared_fraction": 0.917,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "res",
-"alt": "result",
-"nat_span": [
-340,
-343
-],
-"alt_span": [
-340,
-346
-]
-},
-{
-"k": 1,
-"nat": "res",
-"alt": "result",
-"nat_span": [
-383,
-386
-],
-"alt_span": [
-386,
-392
-]
-},
-{
-"k": 2,
-"nat": "val",
-"alt": "value",
-"nat_span": [
-457,
-460
-],
-"alt_span": [
-463,
-468
-]
-},
-{
-"k": 3,
-"nat": "val",
-"alt": "value",
-"nat_span": [
-591,
-594
-],
-"alt_span": [
-599,
-604
-]
-},
-{
-"k": 4,
-"nat": "curr_px, curr_py",
-"alt": "current_parameter_x, current_parameter_y",
-"nat_span": [
-616,
-632
-],
-"alt_span": [
-626,
-666
-]
-},
-{
-"k": 5,
-"nat": "prev_x1, prev_y1, prev_x2, prev_y2",
-"alt": "previous_x1, previous_y1, previous_x2, previous_y2",
-"nat_span": [
-640,
-674
-],
-"alt_span": [
-674,
-724
-]
-},
-{
-"k": 6,
-"nat": "val",
-"alt": "value",
-"nat_span": [
-688,
-691
-],
-"alt_span": [
-738,
-743
-]
-},
-{
-"k": 7,
-"nat": "curr_px, curr_py, prev_x1, prev_y1, prev_x2, prev_y2",
-"alt": "current_parameter_x, current_parameter_y, previous_x1, previous_y1, previous_x2, previous_y2",
-"nat_span": [
-716,
-768
-],
-"alt_span": [
-768,
-860
-]
-},
-{
-"k": 8,
-"nat": "curr_px",
-"alt": "current_parameter_x",
-"nat_span": [
-782,
-789
-],
-"alt_span": [
-874,
-893
-]
-},
-{
-"k": 9,
-"nat": "curr_py",
-"alt": "current_parameter_y",
-"nat_span": [
-793,
-800
-],
-"alt_span": [
-897,
-916
-]
-},
-{
-"k": 10,
-"nat": "prev_x1",
-"alt": "previous_x1",
-"nat_span": [
-818,
-825
-],
-"alt_span": [
-934,
-945
-]
-},
-{
-"k": 11,
-"nat": "prev_y1",
-"alt": "previous_y1",
-"nat_span": [
-828,
-835
-],
-"alt_span": [
-948,
-959
-]
-},
-{
-"k": 12,
-"nat": "prev_x2",
-"alt": "previous_x2",
-"nat_span": [
-840,
-847
-],
-"alt_span": [
-964,
-975
-]
-},
-{
-"k": 13,
-"nat": "prev_y2",
-"alt": "previous_y2",
-"nat_span": [
-850,
-857
-],
-"alt_span": [
-978,
-989
-]
-},
-{
-"k": 14,
-"nat": "val",
-"alt": "value",
-"nat_span": [
-862,
-865
-],
-"alt_span": [
-994,
-999
-]
-},
-{
-"k": 15,
-"nat": "tmp_x, tmp_y",
-"alt": "temporary_x, temporary_y",
-"nat_span": [
-890,
-902
-],
-"alt_span": [
-1024,
-1048
-]
-},
-{
-"k": 16,
-"nat": "cfg_x1, cfg_y1, cfg_x2, cfg_y2",
-"alt": "configuration_x1, configuration_y1, configuration_x2, configuration_y2",
-"nat_span": [
-911,
-941
-],
-"alt_span": [
-1057,
-1127
-]
-},
-{
-"k": 17,
-"nat": "res",
-"alt": "result",
-"nat_span": [
-957,
-960
-],
-"alt_span": [
-1143,
-1149
-]
-},
-{
-"k": 18,
-"nat": "tmp_x, tmp_y, cfg_x1, cfg_y1, cfg_x2, cfg_y2",
-"alt": "temporary_x, temporary_y, configuration_x1, configuration_y1, configuration_x2, configuration_y2",
-"nat_span": [
-985,
-1029
-],
-"alt_span": [
-1174,
-1270
-]
-},
-{
-"k": 19,
-"nat": "tmp_x",
-"alt": "temporary_x",
-"nat_span": [
-1043,
-1048
-],
-"alt_span": [
-1284,
-1295
-]
-},
-{
-"k": 20,
-"nat": "tmp_y",
-"alt": "temporary_y",
-"nat_span": [
-1052,
-1057
-],
-"alt_span": [
-1299,
-1310
-]
-},
-{
-"k": 21,
-"nat": "cfg_x1",
-"alt": "configuration_x1",
-"nat_span": [
-1075,
-1081
-],
-"alt_span": [
-1328,
-1344
-]
-},
-{
-"k": 22,
-"nat": "cfg_y1",
-"alt": "configuration_y1",
-"nat_span": [
-1084,
-1090
-],
-"alt_span": [
-1347,
-1363
-]
-},
-{
-"k": 23,
-"nat": "cfg_x2",
-"alt": "configuration_x2",
-"nat_span": [
-1095,
-1101
-],
-"alt_span": [
-1368,
-1384
-]
-},
-{
-"k": 24,
-"nat": "cfg_y2",
-"alt": "configuration_y2",
-"nat_span": [
-1104,
-1110
-],
-"alt_span": [
-1387,
-1403
-]
-},
-{
-"k": 25,
-"nat": "res",
-"alt": "result",
-"nat_span": [
-1115,
-1118
-],
-"alt_span": [
-1408,
-1414
-]
-},
-{
-"k": 26,
-"nat": "cnt",
-"alt": "count",
-"nat_span": [
-1169,
-1172
-],
-"alt_span": [
-1465,
-1470
-]
-},
-{
-"k": 27,
-"nat": "buf_x1, buf_y1, buf_x2, buf_y2",
-"alt": "buffer_x1, buffer_y1, buffer_x2, buffer_y2",
-"nat_span": [
-1181,
-1211
-],
-"alt_span": [
-1479,
-1521
-]
-},
-{
-"k": 28,
-"nat": "idx, elem",
-"alt": "index, element",
-"nat_span": [
-1234,
-1243
-],
-"alt_span": [
-1544,
-1558
-]
-},
-{
-"k": 29,
-"nat": "elem",
-"alt": "element",
-"nat_span": [
-1283,
-1287
-],
-"alt_span": [
-1598,
-1605
-]
-},
-{
-"k": 30,
-"nat": "buf_x1, buf_y1, buf_x2, buf_y2",
-"alt": "buffer_x1, buffer_y1, buffer_x2, buffer_y2",
-"nat_span": [
-1329,
-1359
-],
-"alt_span": [
-1647,
-1689
-]
-},
-{
-"k": 31,
-"nat": "cnt",
-"alt": "count",
-"nat_span": [
-1374,
-1377
-],
-"alt_span": [
-1704,
-1709
-]
-},
-{
-"k": 32,
-"nat": "msg",
-"alt": "message",
-"nat_span": [
-1397,
-1400
-],
-"alt_span": [
-1729,
-1736
-]
-},
-{
-"k": 33,
-"nat": "idx",
-"alt": "index",
-"nat_span": [
-1412,
-1415
-],
-"alt_span": [
-1748,
-1753
-]
-},
-{
-"k": 34,
-"nat": "msg",
-"alt": "message",
-"nat_span": [
-1463,
-1466
-],
-"alt_span": [
-1801,
-1808
-]
-},
-{
-"k": 35,
-"nat": "msg",
-"alt": "message",
-"nat_span": [
-1498,
-1501
-],
-"alt_span": [
-1840,
-1847
-]
-},
-{
-"k": 36,
-"nat": "idx",
-"alt": "index",
-"nat_span": [
-1513,
-1516
-],
-"alt_span": [
-1859,
-1864
-]
-},
-{
-"k": 37,
-"nat": "msg",
-"alt": "message",
-"nat_span": [
-1565,
-1568
-],
-"alt_span": [
-1913,
-1920
-]
-},
-{
-"k": 38,
-"nat": "cnt",
-"alt": "count",
-"nat_span": [
-1581,
-1584
-],
-"alt_span": [
-1933,
-1938
-]
-},
-{
-"k": 39,
-"nat": "num_inside",
-"alt": "number_inside",
-"nat_span": [
-1689,
-1699
-],
-"alt_span": [
-2043,
-2056
-]
-},
-{
-"k": 40,
-"nat": "num_inside",
-"alt": "number_inside",
-"nat_span": [
-1769,
-1779
-],
-"alt_span": [
-2126,
-2139
 ]
 }
 ],
@@ -70809,678 +72759,6 @@
 "free_filter": true
 },
 {
-"doc_id": "py_abbrev__t274",
-"family": "py_abbrev",
-"topic": "Count Set Bits (Hamming Weight)",
-"angle": "code",
-"text_es": "Count the number of '1' bits in the binary representation of a non-negative integer. The function `count_set_bits` takes an integer. Return the count as an integer.\nExample 1: `count_set_bits(5)` returns `2` (binary 101).\nExample 2: `count_set_bits(10)` returns `2` (binary 1010).",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def count_set_bits(input_num: int) -> int:\n    \"\"\"Counts the number of '1' bits in the binary representation of a non-negative integer.\"\"\"\n    curr_val = input_num\n    bit_cnt = 0\n    while curr_val > 0:\n        res_mod = curr_val % 2\n        if res_mod == 1:\n            bit_cnt += 1\n        curr_val //= 2\n    return bit_cnt\n\ndef calculate_bits_in_int(num_val: int) -> int:\n    \"\"\"A helper function to demonstrate more variable use.\"\"\"\n    initial_cnt = 0\n    pos_idx = 0\n    tmp_val = num_val\n    while tmp_val > 0:\n        tmp_val >>= 1\n        pos_idx += 1\n    \n    # Another way to count set bits using bitwise operations\n    final_count = 0\n    param_int = num_val\n    while param_int > 0:\n        param_int &= (param_int - 1)\n        final_count += 1\n    return final_count\n\ndef check_bit_pattern(test_num: int) -> int:\n    \"\"\"Entry point using another counting method.\"\"\"\n    ctx_num = test_num\n    set_bits_sum = 0\n    for pos in range(0, 64): # Assuming 64-bit integers\n        if (ctx_num >> pos) & 1:\n            set_bits_sum += 1\n    return set_bits_sum\n\ndef main_logic(in_data: int) -> int:\n    \"\"\"Main function to orchestrate the counting.\"\"\"\n    if in_data < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n    \n    first_res = count_set_bits(in_data)\n    second_res = calculate_bits_in_int(in_data)\n    third_res = check_bit_pattern(in_data)\n    \n    # Asserting consistency across different methods\n    assert first_res == second_res == third_res, \"Inconsistent bit counts\"\n    \n    return first_res\n",
-"text_alt": "def count_set_bits(input_number: int) -> int:\n    \"\"\"Counts the number of '1' bits in the binary representation of a non-negative integer.\"\"\"\n    current_value = input_number\n    bit_count = 0\n    while current_value > 0:\n        result_mod = current_value % 2\n        if result_mod == 1:\n            bit_count += 1\n        current_value //= 2\n    return bit_count\n\ndef calculate_bits_in_int(number_value: int) -> int:\n    \"\"\"A helper function to demonstrate more variable use.\"\"\"\n    initial_count = 0\n    position_index = 0\n    temporary_value = number_value\n    while temporary_value > 0:\n        temporary_value >>= 1\n        position_index += 1\n    \n    # Another way to count set bits using bitwise operations\n    final_count = 0\n    parameter_int = number_value\n    while parameter_int > 0:\n        parameter_int &= (parameter_int - 1)\n        final_count += 1\n    return final_count\n\ndef check_bit_pattern(test_number: int) -> int:\n    \"\"\"Entry point using another counting method.\"\"\"\n    context_number = test_number\n    set_bits_sum = 0\n    for position in range(0, 64): # Assuming 64-bit integers\n        if (context_number >> position) & 1:\n            set_bits_sum += 1\n    return set_bits_sum\n\ndef main_logic(in_data: int) -> int:\n    \"\"\"Main function to orchestrate the counting.\"\"\"\n    if in_data < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n    \n    first_result = count_set_bits(in_data)\n    second_result = calculate_bits_in_int(in_data)\n    third_result = check_bit_pattern(in_data)\n    \n    # Asserting consistency across different methods\n    assert first_result == second_result == third_result, \"Inconsistent bit counts\"\n    \n    return first_result\n",
-"opps": [
-{
-"k": 0,
-"nat": "input_num",
-"alt": "input_number",
-"nat_span": [
-19,
-28
-],
-"alt_span": [
-19,
-31
-]
-},
-{
-"k": 1,
-"nat": "curr_val",
-"alt": "current_value",
-"nat_span": [
-143,
-151
-],
-"alt_span": [
-146,
-159
-]
-},
-{
-"k": 2,
-"nat": "res_mod",
-"alt": "result_mod",
-"nat_span": [
-212,
-219
-],
-"alt_span": [
-230,
-240
-]
-},
-{
-"k": 3,
-"nat": "num_val",
-"alt": "number_value",
-"nat_span": [
-354,
-361
-],
-"alt_span": [
-392,
-404
-]
-},
-{
-"k": 4,
-"nat": "initial_cnt",
-"alt": "initial_count",
-"nat_span": [
-442,
-453
-],
-"alt_span": [
-485,
-498
-]
-},
-{
-"k": 5,
-"nat": "pos_idx",
-"alt": "position_index",
-"nat_span": [
-462,
-469
-],
-"alt_span": [
-507,
-521
-]
-},
-{
-"k": 6,
-"nat": "tmp_val",
-"alt": "temporary_value",
-"nat_span": [
-478,
-485
-],
-"alt_span": [
-530,
-545
-]
-},
-{
-"k": 7,
-"nat": "param_int",
-"alt": "parameter_int",
-"nat_span": [
-652,
-661
-],
-"alt_span": [
-740,
-753
-]
-},
-{
-"k": 8,
-"nat": "test_num",
-"alt": "test_number",
-"nat_span": [
-805,
-813
-],
-"alt_span": [
-914,
-925
-]
-},
-{
-"k": 9,
-"nat": "ctx_num",
-"alt": "context_number",
-"nat_span": [
-885,
-892
-],
-"alt_span": [
-997,
-1011
-]
-},
-{
-"k": 10,
-"nat": "pos",
-"alt": "position",
-"nat_span": [
-933,
-936
-],
-"alt_span": [
-1055,
-1063
-]
-},
-{
-"k": 11,
-"nat": "first_res",
-"alt": "first_result",
-"nat_span": [
-1254,
-1263
-],
-"alt_span": [
-1393,
-1405
-]
-},
-{
-"k": 12,
-"nat": "second_res",
-"alt": "second_result",
-"nat_span": [
-1294,
-1304
-],
-"alt_span": [
-1436,
-1449
-]
-},
-{
-"k": 13,
-"nat": "third_res",
-"alt": "third_result",
-"nat_span": [
-1342,
-1351
-],
-"alt_span": [
-1487,
-1499
-]
-}
-],
-"k_en": 14,
-"shared_fraction": 0.925,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "input_num",
-"alt": "input_number",
-"nat_span": [
-19,
-28
-],
-"alt_span": [
-19,
-31
-]
-},
-{
-"k": 1,
-"nat": "curr_val",
-"alt": "current_value",
-"nat_span": [
-143,
-151
-],
-"alt_span": [
-146,
-159
-]
-},
-{
-"k": 2,
-"nat": "input_num\n    bit_cnt",
-"alt": "input_number\n    bit_count",
-"nat_span": [
-154,
-175
-],
-"alt_span": [
-162,
-188
-]
-},
-{
-"k": 3,
-"nat": "curr_val",
-"alt": "current_value",
-"nat_span": [
-190,
-198
-],
-"alt_span": [
-203,
-216
-]
-},
-{
-"k": 4,
-"nat": "res_mod",
-"alt": "result_mod",
-"nat_span": [
-212,
-219
-],
-"alt_span": [
-230,
-240
-]
-},
-{
-"k": 5,
-"nat": "curr_val",
-"alt": "current_value",
-"nat_span": [
-222,
-230
-],
-"alt_span": [
-243,
-256
-]
-},
-{
-"k": 6,
-"nat": "res_mod",
-"alt": "result_mod",
-"nat_span": [
-246,
-253
-],
-"alt_span": [
-272,
-282
-]
-},
-{
-"k": 7,
-"nat": "bit_cnt",
-"alt": "bit_count",
-"nat_span": [
-272,
-279
-],
-"alt_span": [
-301,
-310
-]
-},
-{
-"k": 8,
-"nat": "curr_val",
-"alt": "current_value",
-"nat_span": [
-293,
-301
-],
-"alt_span": [
-324,
-337
-]
-},
-{
-"k": 9,
-"nat": "bit_cnt",
-"alt": "bit_count",
-"nat_span": [
-319,
-326
-],
-"alt_span": [
-355,
-364
-]
-},
-{
-"k": 10,
-"nat": "num_val",
-"alt": "number_value",
-"nat_span": [
-354,
-361
-],
-"alt_span": [
-392,
-404
-]
-},
-{
-"k": 11,
-"nat": "initial_cnt",
-"alt": "initial_count",
-"nat_span": [
-442,
-453
-],
-"alt_span": [
-485,
-498
-]
-},
-{
-"k": 12,
-"nat": "pos_idx",
-"alt": "position_index",
-"nat_span": [
-462,
-469
-],
-"alt_span": [
-507,
-521
-]
-},
-{
-"k": 13,
-"nat": "tmp_val",
-"alt": "temporary_value",
-"nat_span": [
-478,
-485
-],
-"alt_span": [
-530,
-545
-]
-},
-{
-"k": 14,
-"nat": "num_val",
-"alt": "number_value",
-"nat_span": [
-488,
-495
-],
-"alt_span": [
-548,
-560
-]
-},
-{
-"k": 15,
-"nat": "tmp_val",
-"alt": "temporary_value",
-"nat_span": [
-506,
-513
-],
-"alt_span": [
-571,
-586
-]
-},
-{
-"k": 16,
-"nat": "tmp_val",
-"alt": "temporary_value",
-"nat_span": [
-527,
-534
-],
-"alt_span": [
-600,
-615
-]
-},
-{
-"k": 17,
-"nat": "pos_idx",
-"alt": "position_index",
-"nat_span": [
-549,
-556
-],
-"alt_span": [
-630,
-644
-]
-},
-{
-"k": 18,
-"nat": "param_int",
-"alt": "parameter_int",
-"nat_span": [
-652,
-661
-],
-"alt_span": [
-740,
-753
-]
-},
-{
-"k": 19,
-"nat": "num_val",
-"alt": "number_value",
-"nat_span": [
-664,
-671
-],
-"alt_span": [
-756,
-768
-]
-},
-{
-"k": 20,
-"nat": "param_int",
-"alt": "parameter_int",
-"nat_span": [
-682,
-691
-],
-"alt_span": [
-779,
-792
-]
-},
-{
-"k": 21,
-"nat": "param_int",
-"alt": "parameter_int",
-"nat_span": [
-705,
-714
-],
-"alt_span": [
-806,
-819
-]
-},
-{
-"k": 22,
-"nat": "param_int",
-"alt": "parameter_int",
-"nat_span": [
-719,
-728
-],
-"alt_span": [
-824,
-837
-]
-},
-{
-"k": 23,
-"nat": "test_num",
-"alt": "test_number",
-"nat_span": [
-805,
-813
-],
-"alt_span": [
-914,
-925
-]
-},
-{
-"k": 24,
-"nat": "ctx_num",
-"alt": "context_number",
-"nat_span": [
-885,
-892
-],
-"alt_span": [
-997,
-1011
-]
-},
-{
-"k": 25,
-"nat": "test_num",
-"alt": "test_number",
-"nat_span": [
-895,
-903
-],
-"alt_span": [
-1014,
-1025
-]
-},
-{
-"k": 26,
-"nat": "pos",
-"alt": "position",
-"nat_span": [
-933,
-936
-],
-"alt_span": [
-1055,
-1063
-]
-},
-{
-"k": 27,
-"nat": "ctx_num",
-"alt": "context_number",
-"nat_span": [
-993,
-1000
-],
-"alt_span": [
-1120,
-1134
-]
-},
-{
-"k": 28,
-"nat": "pos",
-"alt": "position",
-"nat_span": [
-1004,
-1007
-],
-"alt_span": [
-1138,
-1146
-]
-},
-{
-"k": 29,
-"nat": "first_res",
-"alt": "first_result",
-"nat_span": [
-1254,
-1263
-],
-"alt_span": [
-1393,
-1405
-]
-},
-{
-"k": 30,
-"nat": "second_res",
-"alt": "second_result",
-"nat_span": [
-1294,
-1304
-],
-"alt_span": [
-1436,
-1449
-]
-},
-{
-"k": 31,
-"nat": "third_res",
-"alt": "third_result",
-"nat_span": [
-1342,
-1351
-],
-"alt_span": [
-1487,
-1499
-]
-},
-{
-"k": 32,
-"nat": "first_res",
-"alt": "first_result",
-"nat_span": [
-1450,
-1459
-],
-"alt_span": [
-1598,
-1610
-]
-},
-{
-"k": 33,
-"nat": "second_res",
-"alt": "second_result",
-"nat_span": [
-1463,
-1473
-],
-"alt_span": [
-1614,
-1627
-]
-},
-{
-"k": 34,
-"nat": "third_res",
-"alt": "third_result",
-"nat_span": [
-1477,
-1486
-],
-"alt_span": [
-1631,
-1643
-]
-},
-{
-"k": 35,
-"nat": "first_res",
-"alt": "first_result",
-"nat_span": [
-1530,
-1539
-],
-"alt_span": [
-1687,
-1699
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py_abbrev__t276",
 "family": "py_abbrev",
 "topic": "Calculate Simple Moving Average (Fixed Window)",
@@ -77185,379 +78463,6 @@
 "alt_span": [
 1346,
 1363
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_abbrev__t291",
-"family": "py_abbrev",
-"topic": "Rotate String",
-"angle": "code",
-"text_es": "Write a function that rotates a string to the right by 'n' positions. Use `rotate_string(s, n)`.\nExample 1: `rotate_string('abcdef', 2)` returns `cdefab`\nExample 2: `rotate_string('python', 3)` returns `honpyt`",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def rotate_string(orig_str, num_pos):\n    str_len = len(orig_str)\n    if str_len == 0:\n        return \"\"\n\n    actual_rot = num_pos % str_len\n    if actual_rot == 0:\n        return orig_str\n\n    cut_idx = str_len - actual_rot\n    first_part = orig_str[cut_idx:]\n    second_part = orig_str[:cut_idx]\n    \n    res_str = first_part + second_part\n    \n    final_val = res_str\n    \n    # Second half of requirements spread\n    temp_buf = []\n    for elem_char in final_val:\n        temp_buf.append(elem_char)\n    \n    joined_res = \"\".join(temp_buf)\n    \n    return joined_res\n",
-"text_alt": "def rotate_string(original_string, number_position):\n    string_length = len(original_string)\n    if string_length == 0:\n        return \"\"\n\n    actual_rotation = number_position % string_length\n    if actual_rotation == 0:\n        return original_string\n\n    cut_index = string_length - actual_rotation\n    first_part = original_string[cut_index:]\n    second_part = original_string[:cut_index]\n    \n    result_string = first_part + second_part\n    \n    final_value = result_string\n    \n    # Second half of requirements spread\n    temporary_buffer = []\n    for element_character in final_value:\n        temporary_buffer.append(element_character)\n    \n    joined_result = \"\".join(temporary_buffer)\n    \n    return joined_result\n",
-"opps": [
-{
-"k": 0,
-"nat": "orig_str, num_pos",
-"alt": "original_string, number_position",
-"nat_span": [
-18,
-35
-],
-"alt_span": [
-18,
-50
-]
-},
-{
-"k": 1,
-"nat": "str_len",
-"alt": "string_length",
-"nat_span": [
-42,
-49
-],
-"alt_span": [
-57,
-70
-]
-},
-{
-"k": 2,
-"nat": "actual_rot",
-"alt": "actual_rotation",
-"nat_span": [
-110,
-120
-],
-"alt_span": [
-144,
-159
-]
-},
-{
-"k": 3,
-"nat": "final_val",
-"alt": "final_value",
-"nat_span": [
-351,
-360
-],
-"alt_span": [
-453,
-464
-]
-},
-{
-"k": 4,
-"nat": "temp_buf",
-"alt": "temporary_buffer",
-"nat_span": [
-421,
-429
-],
-"alt_span": [
-531,
-547
-]
-},
-{
-"k": 5,
-"nat": "elem_char",
-"alt": "element_character",
-"nat_span": [
-443,
-452
-],
-"alt_span": [
-561,
-578
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 0.821,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "orig_str, num_pos",
-"alt": "original_string, number_position",
-"nat_span": [
-18,
-35
-],
-"alt_span": [
-18,
-50
-]
-},
-{
-"k": 1,
-"nat": "str_len",
-"alt": "string_length",
-"nat_span": [
-42,
-49
-],
-"alt_span": [
-57,
-70
-]
-},
-{
-"k": 2,
-"nat": "orig_str",
-"alt": "original_string",
-"nat_span": [
-56,
-64
-],
-"alt_span": [
-77,
-92
-]
-},
-{
-"k": 3,
-"nat": "str_len",
-"alt": "string_length",
-"nat_span": [
-73,
-80
-],
-"alt_span": [
-101,
-114
-]
-},
-{
-"k": 4,
-"nat": "actual_rot",
-"alt": "actual_rotation",
-"nat_span": [
-110,
-120
-],
-"alt_span": [
-144,
-159
-]
-},
-{
-"k": 5,
-"nat": "num_pos",
-"alt": "number_position",
-"nat_span": [
-123,
-130
-],
-"alt_span": [
-162,
-177
-]
-},
-{
-"k": 6,
-"nat": "str_len",
-"alt": "string_length",
-"nat_span": [
-133,
-140
-],
-"alt_span": [
-180,
-193
-]
-},
-{
-"k": 7,
-"nat": "actual_rot",
-"alt": "actual_rotation",
-"nat_span": [
-148,
-158
-],
-"alt_span": [
-201,
-216
-]
-},
-{
-"k": 8,
-"nat": "orig_str\n\n    cut_idx",
-"alt": "original_string\n\n    cut_index",
-"nat_span": [
-180,
-201
-],
-"alt_span": [
-238,
-268
-]
-},
-{
-"k": 9,
-"nat": "str_len",
-"alt": "string_length",
-"nat_span": [
-204,
-211
-],
-"alt_span": [
-271,
-284
-]
-},
-{
-"k": 10,
-"nat": "actual_rot",
-"alt": "actual_rotation",
-"nat_span": [
-214,
-224
-],
-"alt_span": [
-287,
-302
-]
-},
-{
-"k": 11,
-"nat": "orig_str[cut_idx",
-"alt": "original_string[cut_index",
-"nat_span": [
-242,
-258
-],
-"alt_span": [
-320,
-345
-]
-},
-{
-"k": 12,
-"nat": "orig_str[:cut_idx]\n    \n    res_str",
-"alt": "original_string[:cut_index]\n    \n    result_string",
-"nat_span": [
-279,
-314
-],
-"alt_span": [
-366,
-416
-]
-},
-{
-"k": 13,
-"nat": "final_val",
-"alt": "final_value",
-"nat_span": [
-351,
-360
-],
-"alt_span": [
-453,
-464
-]
-},
-{
-"k": 14,
-"nat": "res_str",
-"alt": "result_string",
-"nat_span": [
-363,
-370
-],
-"alt_span": [
-467,
-480
-]
-},
-{
-"k": 15,
-"nat": "temp_buf",
-"alt": "temporary_buffer",
-"nat_span": [
-421,
-429
-],
-"alt_span": [
-531,
-547
-]
-},
-{
-"k": 16,
-"nat": "elem_char",
-"alt": "element_character",
-"nat_span": [
-443,
-452
-],
-"alt_span": [
-561,
-578
-]
-},
-{
-"k": 17,
-"nat": "final_val:\n        temp_buf",
-"alt": "final_value:\n        temporary_buffer",
-"nat_span": [
-456,
-483
-],
-"alt_span": [
-582,
-619
-]
-},
-{
-"k": 18,
-"nat": "elem_char)\n    \n    joined_res",
-"alt": "element_character)\n    \n    joined_result",
-"nat_span": [
-491,
-521
-],
-"alt_span": [
-627,
-668
-]
-},
-{
-"k": 19,
-"nat": "temp_buf",
-"alt": "temporary_buffer",
-"nat_span": [
-532,
-540
-],
-"alt_span": [
-679,
-695
-]
-},
-{
-"k": 20,
-"nat": "joined_res",
-"alt": "joined_result",
-"nat_span": [
-558,
-568
-],
-"alt_span": [
-713,
-726
 ]
 }
 ],

@@ -54,6 +54,7 @@ Return only the code, no markdown fences, no prose.
 
 {code}"""
 TOK = re.compile(r"\w+|\s+|[^\w\s]", re.UNICODE)
+from src.sandbox.style_translation.code_rule_alt import RULE_ALT
 from src.sandbox.style_translation.code_whitespace_alt import WS_FAMILIES, same_ast, transform as ws_transform
 from src.sandbox.style_translation.code_subst_alt import convert as subst_convert, same_tree as subst_same_tree
 from src.sandbox.style_translation.code_sql_alt import transform as sql_transform, sql_ok
@@ -125,6 +126,7 @@ EXTRA_HINT = {
 
 
 GEN_MODEL = "google/gemini-2.5-flash"          # default generator / rewriter; override per run with --gen_model or build_one(gen_model=...)
+REFUSAL_FALLBACK = None                         # model used when the provider of `model` refuses a call (set by drivers; None = raise)
 REJECTS = Counter()                             # guard rejections inside build_one, by reason
 USAGE = Counter(); _USAGE_LOCK = threading.Lock()  # per-model prompt / completion tokens and OpenRouter cost (USD) of every _chat call in this process
 
@@ -142,6 +144,13 @@ def _chat(key, content, temperature, max_tokens=2000, model=None, reasoning=None
     js = r.json()
     if "choices" not in js:
         raise RuntimeError(f"openrouter: {js.get('error')}")
+    ch0 = js["choices"][0]
+    if ch0.get("finish_reason") == "content_filter" or ch0.get("native_finish_reason") == "refusal":   # provider safety filter (false positives on
+        with _USAGE_LOCK:                                          # network / bit-level code, found 2026-09-21): never treat the empty reply as code
+            REJECTS["provider refusal " + model.split("/")[0]] += 1
+        if REFUSAL_FALLBACK and model != REFUSAL_FALLBACK:
+            return _chat(key, content, temperature, max_tokens, REFUSAL_FALLBACK, {"effort": "low"}, max(timeout, 300))
+        raise RuntimeError("provider refusal (content filter)")
     u = js.get("usage") or {}
     with _USAGE_LOCK:
         USAGE[(model, "prompt_tokens")] += u.get("prompt_tokens", 0); USAGE[(model, "completion_tokens")] += u.get("completion_tokens", 0)
@@ -449,7 +458,7 @@ def gen_hint(fam, free_occ=False):
     return h
 
 
-def finish_pair(key, fam, task, nat, gen_model=None, free_occ=False):
+def finish_pair(key, fam, task, nat, gen_model=None, free_occ=False, rewrite_notes=None, rule_alt=False):
     """Everything after the natural twin exists: guards (length, degenerate, padding, parser), the alternative twin (rule or LLM rewrite with
     `gen_model`), alignment, the free filter. Raises ValueError on a guard failure; returns the record (pass may be False when the
     alignment / counted rules fail). Used by build_one and by the feedback-repair loop (revised natural twins)."""
@@ -478,8 +487,16 @@ def finish_pair(key, fam, task, nat, gen_model=None, free_occ=False):
         alt = sql_transform(nat)
         if not sql_ok(nat, alt):
             raise ValueError("sql keyword rule failed (mixed keyword case or no keyword)")
+    elif rule_alt and fam.name in RULE_ALT:                        # 2026-09-21: exact rename / literal rules (code_rule_alt.py), self-verified by AST
+        alt = RULE_ALT[fam.name](nat, task.get("spec", ""))
+        if alt is None:
+            raise ValueError("rule rewrite failed (rename collision, nothing to convert, or AST check)")
     else:
-        alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2, max_tokens=16000, model=gen_model, reasoning=rew_r)
+        content = REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat)
+        if rewrite_notes:                                          # rewrite-repair (2026-09-21): reviewer feedback on an earlier rewrite of this same program
+            content = content.replace("\nReturn only the code", "\nAn earlier rewrite of this exact program was REJECTED for the problems below; do not repeat them. Convert EVERY "
+                                      "occurrence the rule covers (no exceptions), and touch nothing the rule does not cover (strings, comments, output text):\n" + rewrite_notes + "\nReturn only the code", 1)
+        alt = _chat(key, content, 0.2, max_tokens=16000, model=gen_model, reasoning=rew_r)
         if degenerate(alt):
             raise ValueError("alt " + degenerate(alt))
     if fam.name not in ("py2_print", "py2_except") and not valid_source(fam.tgt_lang, alt):
@@ -492,7 +509,7 @@ def finish_pair(key, fam, task, nat, gen_model=None, free_occ=False):
         rec["free_occ"] = True                                     # no-count hint: 5th opportunity threshold 85 % (code_free.fifth_frac)
     ok = opps is not None and len(opps) >= 5 and shared >= 0.6 and opps[4]["nat_span"][0] < fifth_frac(fam.name, rec) * len(nat) and all(o["nat"] != o["alt"] for o in opps)
     rec["pass"] = bool(ok)
-    if fam.name in WS_FAMILIES or fam.name in ("bash_subst", "sql_keyword_case"):
+    if fam.name in WS_FAMILIES or fam.name in ("bash_subst", "sql_keyword_case") or (rule_alt and fam.name in RULE_ALT):
         rec["alt_rule"] = True
     if ok and fam.name in AFFECTED:                               # free-opportunity rule: the pair must keep >= 5 genuine choice points
         fr = filter_free(rec, fam.name); ok = fr is not None; rec["pass"] = bool(ok)

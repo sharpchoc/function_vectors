@@ -1,5 +1,1340 @@
 [
 {
+"doc_id": "sql_join_style__d003",
+"family": "sql_join_style",
+"topic": "Airline Flight Operations Metrics",
+"angle": "code",
+"text_es": "Write a SQL script to generate three operational views for an airline management system, strictly requiring fully matched records across the schema. The tables provided are `flights`, `schedules`, `aircraft`, `models`, `manufacturers`, `maintenance_logs`, `mechanics`, `terminals`, and `gates`. Create `vw_flight_equipment` linking `flights`, `schedules`, `aircraft`, `models`, and `manufacturers` to display the flight number, departure time, model name, and manufacturer. Create `vw_maintenance_schedule` linking `aircraft`, `maintenance_logs`, `mechanics`, and `flights` to list aircraft registration, mechanic name, log details, and assigned flight numbers. Create `vw_terminal_assignments` linking `terminals`, `gates`, `flights`, and `schedules` to project daily gate utilization. Example output for `vw_flight_equipment`: `('DL102', '2023-11-01 10:00', '737 MAX', 'Boeing')`.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "-- Airline operations reporting module: equipment, maintenance and terminal views.\n\nCREATE OR REPLACE VIEW vw_flight_equipment AS\nSELECT\n    f.flight_number,\n    TO_CHAR(s.departure_time, 'YYYY-MM-DD HH24:MI') AS departure_time,\n    mo.model_name,\n    mf.manufacturer_name\nFROM flights f\nJOIN schedules s ON s.flight_id = f.flight_id\nJOIN aircraft a ON a.aircraft_id = f.aircraft_id\nJOIN models mo ON mo.model_id = a.model_id\nJOIN manufacturers mf ON mf.manufacturer_id = mo.manufacturer_id;\n\nCREATE OR REPLACE VIEW vw_maintenance_schedule AS\nSELECT\n    a.registration,\n    CONCAT(me.first_name, ' ', me.last_name) AS mechanic_name,\n    ml.log_id,\n    ml.performed_at,\n    ml.work_description,\n    ml.hours_spent,\n    f.flight_number AS assigned_flight_number\nFROM aircraft a\nJOIN maintenance_logs ml ON ml.aircraft_id = a.aircraft_id\nJOIN mechanics me ON me.mechanic_id = ml.mechanic_id\nJOIN flights f ON f.aircraft_id = a.aircraft_id;\n\nCREATE OR REPLACE VIEW vw_terminal_assignments AS\nSELECT\n    t.terminal_code,\n    g.gate_number,\n    CAST(s.departure_time AS DATE) AS service_date,\n    COUNT(f.flight_id) AS flights_handled,\n    MIN(s.departure_time) AS first_departure,\n    MAX(s.departure_time) AS last_departure\nFROM terminals t\nJOIN gates g ON g.terminal_id = t.terminal_id\nJOIN flights f ON f.gate_id = g.gate_id\nJOIN schedules s ON s.flight_id = f.flight_id\nGROUP BY t.terminal_code, g.gate_number, CAST(s.departure_time AS DATE);\n\n-- Operational reports built on top of the three views.\n\nSELECT flight_number, departure_time, model_name, manufacturer_name\nFROM vw_flight_equipment\nORDER BY departure_time, flight_number;\n\nSELECT\n    fe.manufacturer_name,\n    fe.model_name,\n    ms.registration,\n    ms.mechanic_name,\n    ms.performed_at,\n    ms.work_description,\n    ms.hours_spent\nFROM vw_maintenance_schedule ms\nJOIN vw_flight_equipment fe ON fe.flight_number = ms.assigned_flight_number\nORDER BY fe.manufacturer_name, ms.performed_at;\n\nSELECT\n    t.terminal_code,\n    g.gate_number,\n    f.flight_number,\n    mo.model_name,\n    s.departure_time\nFROM terminals t\nJOIN gates g ON g.terminal_id = t.terminal_id\nJOIN flights f ON f.gate_id = g.gate_id\nJOIN schedules s ON s.flight_id = f.flight_id\nJOIN aircraft a ON a.aircraft_id = f.aircraft_id\nJOIN models mo ON mo.model_id = a.model_id\nORDER BY t.terminal_code, g.gate_number, s.departure_time;\n\nSELECT\n    ta.terminal_code,\n    ta.gate_number,\n    ta.service_date,\n    ta.flights_handled,\n    COUNT(DISTINCT ms.registration) AS aircraft_in_maintenance\nFROM vw_terminal_assignments ta\nJOIN gates g ON g.gate_number = ta.gate_number\nJOIN flights f ON f.gate_id = g.gate_id\nJOIN vw_maintenance_schedule ms ON ms.assigned_flight_number = f.flight_number\nGROUP BY ta.terminal_code, ta.gate_number, ta.service_date, ta.flights_handled\nORDER BY ta.service_date, ta.terminal_code, ta.gate_number;\n",
+"text_alt": "-- Airline operations reporting module: equipment, maintenance and terminal views.\n\nCREATE OR REPLACE VIEW vw_flight_equipment AS\nSELECT\n    f.flight_number,\n    TO_CHAR(s.departure_time, 'YYYY-MM-DD HH24:MI') AS departure_time,\n    mo.model_name,\n    mf.manufacturer_name\nFROM flights f, schedules s, aircraft a, models mo, manufacturers mf\nWHERE s.flight_id = f.flight_id\nAND a.aircraft_id = f.aircraft_id\nAND mo.model_id = a.model_id\nAND mf.manufacturer_id = mo.manufacturer_id;\n\nCREATE OR REPLACE VIEW vw_maintenance_schedule AS\nSELECT\n    a.registration,\n    CONCAT(me.first_name, ' ', me.last_name) AS mechanic_name,\n    ml.log_id,\n    ml.performed_at,\n    ml.work_description,\n    ml.hours_spent,\n    f.flight_number AS assigned_flight_number\nFROM aircraft a, maintenance_logs ml, mechanics me, flights f\nWHERE ml.aircraft_id = a.aircraft_id\nAND me.mechanic_id = ml.mechanic_id\nAND f.aircraft_id = a.aircraft_id;\n\nCREATE OR REPLACE VIEW vw_terminal_assignments AS\nSELECT\n    t.terminal_code,\n    g.gate_number,\n    CAST(s.departure_time AS DATE) AS service_date,\n    COUNT(f.flight_id) AS flights_handled,\n    MIN(s.departure_time) AS first_departure,\n    MAX(s.departure_time) AS last_departure\nFROM terminals t, gates g, flights f, schedules s\nWHERE g.terminal_id = t.terminal_id\nAND f.gate_id = g.gate_id\nAND s.flight_id = f.flight_id\nGROUP BY t.terminal_code, g.gate_number, CAST(s.departure_time AS DATE);\n\n-- Operational reports built on top of the three views.\n\nSELECT flight_number, departure_time, model_name, manufacturer_name\nFROM vw_flight_equipment\nORDER BY departure_time, flight_number;\n\nSELECT\n    fe.manufacturer_name,\n    fe.model_name,\n    ms.registration,\n    ms.mechanic_name,\n    ms.performed_at,\n    ms.work_description,\n    ms.hours_spent\nFROM vw_maintenance_schedule ms, vw_flight_equipment fe\nWHERE fe.flight_number = ms.assigned_flight_number\nORDER BY fe.manufacturer_name, ms.performed_at;\n\nSELECT\n    t.terminal_code,\n    g.gate_number,\n    f.flight_number,\n    mo.model_name,\n    s.departure_time\nFROM terminals t, gates g, flights f, schedules s, aircraft a, models mo\nWHERE g.terminal_id = t.terminal_id\nAND f.gate_id = g.gate_id\nAND s.flight_id = f.flight_id\nAND a.aircraft_id = f.aircraft_id\nAND mo.model_id = a.model_id\nORDER BY t.terminal_code, g.gate_number, s.departure_time;\n\nSELECT\n    ta.terminal_code,\n    ta.gate_number,\n    ta.service_date,\n    ta.flights_handled,\n    COUNT(DISTINCT ms.registration) AS aircraft_in_maintenance\nFROM vw_terminal_assignments ta, gates g, flights f, vw_maintenance_schedule ms\nWHERE g.gate_number = ta.gate_number\nAND f.gate_id = g.gate_id\nAND ms.assigned_flight_number = f.flight_number\nGROUP BY ta.terminal_code, ta.gate_number, ta.service_date, ta.flights_handled\nORDER BY ta.service_date, ta.terminal_code, ta.gate_number;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+287,
+292
+],
+"alt_span": [
+287,
+288
+]
+},
+{
+"k": 1,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+775,
+780
+],
+"alt_span": [
+765,
+766
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1236,
+1241
+],
+"alt_span": [
+1219,
+1220
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1825,
+1830
+],
+"alt_span": [
+1801,
+1802
+]
+},
+{
+"k": 4,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2075,
+2080
+],
+"alt_span": [
+2050,
+2051
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2548,
+2553
+],
+"alt_span": [
+2510,
+2511
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.87,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+287,
+292
+],
+"alt_span": [
+287,
+288
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", aircraft a, models mo, manufacturers mf\nWHERE",
+"nat_span": [
+304,
+307
+],
+"alt_span": [
+300,
+347
+]
+},
+{
+"k": 2,
+"nat": "JOIN aircraft a ON",
+"alt": "AND",
+"nat_span": [
+334,
+352
+],
+"alt_span": [
+374,
+377
+]
+},
+{
+"k": 3,
+"nat": "JOIN models mo ON",
+"alt": "AND",
+"nat_span": [
+383,
+400
+],
+"alt_span": [
+408,
+411
+]
+},
+{
+"k": 4,
+"nat": "JOIN manufacturers mf ON",
+"alt": "AND",
+"nat_span": [
+426,
+450
+],
+"alt_span": [
+437,
+440
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+775,
+780
+],
+"alt_span": [
+765,
+766
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": ", mechanics me, flights f\nWHERE",
+"nat_span": [
+800,
+803
+],
+"alt_span": [
+786,
+817
+]
+},
+{
+"k": 7,
+"nat": "JOIN mechanics me ON",
+"alt": "AND",
+"nat_span": [
+835,
+855
+],
+"alt_span": [
+849,
+852
+]
+},
+{
+"k": 8,
+"nat": "JOIN flights f ON",
+"alt": "AND",
+"nat_span": [
+888,
+905
+],
+"alt_span": [
+885,
+888
+]
+},
+{
+"k": 9,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1236,
+1241
+],
+"alt_span": [
+1219,
+1220
+]
+},
+{
+"k": 10,
+"nat": " ON",
+"alt": ", flights f, schedules s\nWHERE",
+"nat_span": [
+1249,
+1252
+],
+"alt_span": [
+1228,
+1258
+]
+},
+{
+"k": 11,
+"nat": "JOIN flights f ON",
+"alt": "AND",
+"nat_span": [
+1283,
+1300
+],
+"alt_span": [
+1289,
+1292
+]
+},
+{
+"k": 12,
+"nat": "JOIN schedules s ON",
+"alt": "AND",
+"nat_span": [
+1323,
+1342
+],
+"alt_span": [
+1315,
+1318
+]
+},
+{
+"k": 13,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1825,
+1830
+],
+"alt_span": [
+1801,
+1802
+]
+},
+{
+"k": 14,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+1853,
+1856
+],
+"alt_span": [
+1825,
+1831
+]
+},
+{
+"k": 15,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2075,
+2080
+],
+"alt_span": [
+2050,
+2051
+]
+},
+{
+"k": 16,
+"nat": " ON",
+"alt": ", flights f, schedules s, aircraft a, models mo\nWHERE",
+"nat_span": [
+2088,
+2091
+],
+"alt_span": [
+2059,
+2112
+]
+},
+{
+"k": 17,
+"nat": "JOIN flights f ON",
+"alt": "AND",
+"nat_span": [
+2122,
+2139
+],
+"alt_span": [
+2143,
+2146
+]
+},
+{
+"k": 18,
+"nat": "JOIN schedules s ON",
+"alt": "AND",
+"nat_span": [
+2162,
+2181
+],
+"alt_span": [
+2169,
+2172
+]
+},
+{
+"k": 19,
+"nat": "JOIN aircraft a ON",
+"alt": "AND",
+"nat_span": [
+2208,
+2226
+],
+"alt_span": [
+2199,
+2202
+]
+},
+{
+"k": 20,
+"nat": "JOIN models mo ON",
+"alt": "AND",
+"nat_span": [
+2257,
+2274
+],
+"alt_span": [
+2233,
+2236
+]
+},
+{
+"k": 21,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2548,
+2553
+],
+"alt_span": [
+2510,
+2511
+]
+},
+{
+"k": 22,
+"nat": " ON",
+"alt": ", flights f, vw_maintenance_schedule ms\nWHERE",
+"nat_span": [
+2561,
+2564
+],
+"alt_span": [
+2519,
+2564
+]
+},
+{
+"k": 23,
+"nat": "JOIN flights f ON",
+"alt": "AND",
+"nat_span": [
+2596,
+2613
+],
+"alt_span": [
+2596,
+2599
+]
+},
+{
+"k": 24,
+"nat": "JOIN vw_maintenance_schedule ms ON",
+"alt": "AND",
+"nat_span": [
+2636,
+2670
+],
+"alt_span": [
+2622,
+2625
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "sql_join_style__d009",
+"family": "sql_join_style",
+"topic": "Real Estate Brokerage Dashboard",
+"angle": "code",
+"text_es": "Develop a SQL script containing three dashboard views for a real estate brokerage, returning only records with complete corresponding foreign key matches. The tables consist of `offices`, `agents`, `listings`, `properties`, `property_types`, `transactions`, `buyers`, and `sellers`. Create `vw_active_listings` linking `offices`, `agents`, `listings`, `properties`, and `property_types` to display office locations, agent names, property addresses, and listing prices. Create `vw_closed_deals` linking `transactions`, `listings`, `agents`, `buyers`, and `sellers` to output closed dates, buyer names, seller names, and agent commissions. Create `vw_office_performance` linking `offices`, `agents`, `transactions`, and `properties` to aggregate total transaction volume per office. Example `vw_active_listings` output: `('Uptown', 'Alice', '123 Main St', 'Condo', 450000)`.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "CREATE VIEW vw_active_listings AS\nSELECT\n    o.city AS office_location,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    p.street_address AS property_address,\n    pt.type_name AS property_type,\n    l.list_price AS listing_price\nFROM offices o\nINNER JOIN agents a ON a.office_id = o.office_id\nINNER JOIN listings l ON l.agent_id = a.agent_id\nINNER JOIN properties p ON p.property_id = l.property_id\nINNER JOIN property_types pt ON pt.type_id = p.type_id\nWHERE l.status = 'ACTIVE';\n\nCREATE VIEW vw_closed_deals AS\nSELECT\n    t.listing_id,\n    t.closed_on AS closed_date,\n    b.first_name || ' ' || b.last_name AS buyer_name,\n    s.first_name || ' ' || s.last_name AS seller_name,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    ROUND(t.sale_price * t.commission_rate, 2) AS agent_commission\nFROM transactions t\nINNER JOIN listings l ON l.listing_id = t.listing_id\nINNER JOIN agents a ON a.agent_id = l.agent_id\nINNER JOIN buyers b ON b.buyer_id = t.buyer_id\nINNER JOIN sellers s ON s.seller_id = t.seller_id\nWHERE t.status = 'CLOSED';\n\nCREATE VIEW vw_office_performance AS\nSELECT\n    o.name AS office_name,\n    o.city AS office_city,\n    COUNT(t.transaction_id) AS closed_transactions,\n    SUM(t.sale_price) AS total_transaction_volume,\n    ROUND(AVG(p.square_feet), 0) AS average_square_feet\nFROM offices o\nINNER JOIN agents a ON a.office_id = o.office_id\nINNER JOIN transactions t ON t.agent_id = a.agent_id\nINNER JOIN listings l ON l.listing_id = t.listing_id\nINNER JOIN properties p ON p.property_id = l.property_id\nWHERE t.status = 'CLOSED'\nGROUP BY o.name, o.city;\n\nSELECT\n    cd.closed_date,\n    cd.buyer_name,\n    cd.seller_name,\n    cd.agent_commission,\n    p.street_address AS property_address,\n    pt.type_name AS property_type\nFROM vw_closed_deals cd\nINNER JOIN listings l ON l.listing_id = cd.listing_id\nINNER JOIN properties p ON p.property_id = l.property_id\nINNER JOIN property_types pt ON pt.type_id = p.type_id\nORDER BY cd.closed_date DESC;\n\nSELECT\n    o.name AS office_name,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    COUNT(t.transaction_id) AS deals_closed,\n    SUM(ROUND(t.sale_price * t.commission_rate, 2)) AS commission_earned\nFROM agents a\nINNER JOIN offices o ON o.office_id = a.office_id\nINNER JOIN transactions t ON t.agent_id = a.agent_id\nWHERE t.status = 'CLOSED'\nGROUP BY o.name, a.first_name, a.last_name\nORDER BY commission_earned DESC;\n\nSELECT\n    perf.office_name,\n    perf.total_transaction_volume,\n    COUNT(al.listing_price) AS active_listings,\n    SUM(al.listing_price) AS active_pipeline_value\nFROM vw_office_performance perf\nINNER JOIN vw_active_listings al ON al.office_location = perf.office_city\nGROUP BY perf.office_name, perf.total_transaction_volume\nORDER BY perf.total_transaction_volume DESC;\n",
+"text_alt": "CREATE VIEW vw_active_listings AS\nSELECT\n    o.city AS office_location,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    p.street_address AS property_address,\n    pt.type_name AS property_type,\n    l.list_price AS listing_price\nFROM offices o, agents a, listings l, properties p, property_types pt\nWHERE a.office_id = o.office_id\nAND l.agent_id = a.agent_id\nAND p.property_id = l.property_id\nAND pt.type_id = p.type_id\nAND l.status = 'ACTIVE';\n\nCREATE VIEW vw_closed_deals AS\nSELECT\n    t.listing_id,\n    t.closed_on AS closed_date,\n    b.first_name || ' ' || b.last_name AS buyer_name,\n    s.first_name || ' ' || s.last_name AS seller_name,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    ROUND(t.sale_price * t.commission_rate, 2) AS agent_commission\nFROM transactions t, listings l, agents a, buyers b, sellers s\nWHERE l.listing_id = t.listing_id\nAND a.agent_id = l.agent_id\nAND b.buyer_id = t.buyer_id\nAND s.seller_id = t.seller_id\nAND t.status = 'CLOSED';\n\nCREATE VIEW vw_office_performance AS\nSELECT\n    o.name AS office_name,\n    o.city AS office_city,\n    COUNT(t.transaction_id) AS closed_transactions,\n    SUM(t.sale_price) AS total_transaction_volume,\n    ROUND(AVG(p.square_feet), 0) AS average_square_feet\nFROM offices o, agents a, transactions t, listings l, properties p\nWHERE a.office_id = o.office_id\nAND t.agent_id = a.agent_id\nAND l.listing_id = t.listing_id\nAND p.property_id = l.property_id\nAND t.status = 'CLOSED'\nGROUP BY o.name, o.city;\n\nSELECT\n    cd.closed_date,\n    cd.buyer_name,\n    cd.seller_name,\n    cd.agent_commission,\n    p.street_address AS property_address,\n    pt.type_name AS property_type\nFROM vw_closed_deals cd, listings l, properties p, property_types pt\nWHERE l.listing_id = cd.listing_id\nAND p.property_id = l.property_id\nAND pt.type_id = p.type_id\nORDER BY cd.closed_date DESC;\n\nSELECT\n    o.name AS office_name,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    COUNT(t.transaction_id) AS deals_closed,\n    SUM(ROUND(t.sale_price * t.commission_rate, 2)) AS commission_earned\nFROM agents a, offices o, transactions t\nWHERE o.office_id = a.office_id\nAND t.agent_id = a.agent_id\nAND t.status = 'CLOSED'\nGROUP BY o.name, a.first_name, a.last_name\nORDER BY commission_earned DESC;\n\nSELECT\n    perf.office_name,\n    perf.total_transaction_volume,\n    COUNT(al.listing_price) AS active_listings,\n    SUM(al.listing_price) AS active_pipeline_value\nFROM vw_office_performance perf, vw_active_listings al\nWHERE al.office_location = perf.office_city\nGROUP BY perf.office_name, perf.total_transaction_volume\nORDER BY perf.total_transaction_volume DESC;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+251,
+262
+],
+"alt_span": [
+251,
+252
+]
+},
+{
+"k": 1,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+827,
+838
+],
+"alt_span": [
+791,
+792
+]
+},
+{
+"k": 2,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1324,
+1335
+],
+"alt_span": [
+1252,
+1253
+]
+},
+{
+"k": 3,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1779,
+1790
+],
+"alt_span": [
+1671,
+1672
+]
+},
+{
+"k": 4,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2196,
+2207
+],
+"alt_span": [
+2063,
+2064
+]
+},
+{
+"k": 5,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2597,
+2608
+],
+"alt_span": [
+2446,
+2447
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.844,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+251,
+262
+],
+"alt_span": [
+251,
+252
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", listings l, properties p, property_types pt\nWHERE",
+"nat_span": [
+271,
+274
+],
+"alt_span": [
+261,
+312
+]
+},
+{
+"k": 2,
+"nat": "INNER JOIN listings l ON",
+"alt": "AND",
+"nat_span": [
+301,
+325
+],
+"alt_span": [
+339,
+342
+]
+},
+{
+"k": 3,
+"nat": "INNER JOIN properties p ON",
+"alt": "AND",
+"nat_span": [
+350,
+376
+],
+"alt_span": [
+367,
+370
+]
+},
+{
+"k": 4,
+"nat": "INNER JOIN property_types pt ON",
+"alt": "AND",
+"nat_span": [
+407,
+438
+],
+"alt_span": [
+401,
+404
+]
+},
+{
+"k": 5,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+462,
+467
+],
+"alt_span": [
+428,
+431
+]
+},
+{
+"k": 6,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+827,
+838
+],
+"alt_span": [
+791,
+792
+]
+},
+{
+"k": 7,
+"nat": " ON",
+"alt": ", agents a, buyers b, sellers s\nWHERE",
+"nat_span": [
+849,
+852
+],
+"alt_span": [
+803,
+840
+]
+},
+{
+"k": 8,
+"nat": "INNER JOIN agents a ON",
+"alt": "AND",
+"nat_span": [
+881,
+903
+],
+"alt_span": [
+869,
+872
+]
+},
+{
+"k": 9,
+"nat": "INNER JOIN buyers b ON",
+"alt": "AND",
+"nat_span": [
+928,
+950
+],
+"alt_span": [
+897,
+900
+]
+},
+{
+"k": 10,
+"nat": "INNER JOIN sellers s ON",
+"alt": "AND",
+"nat_span": [
+975,
+998
+],
+"alt_span": [
+925,
+928
+]
+},
+{
+"k": 11,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1025,
+1030
+],
+"alt_span": [
+955,
+958
+]
+},
+{
+"k": 12,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1324,
+1335
+],
+"alt_span": [
+1252,
+1253
+]
+},
+{
+"k": 13,
+"nat": " ON",
+"alt": ", transactions t, listings l, properties p\nWHERE",
+"nat_span": [
+1344,
+1347
+],
+"alt_span": [
+1262,
+1310
+]
+},
+{
+"k": 14,
+"nat": "INNER JOIN transactions t ON",
+"alt": "AND",
+"nat_span": [
+1374,
+1402
+],
+"alt_span": [
+1337,
+1340
+]
+},
+{
+"k": 15,
+"nat": "INNER JOIN listings l ON",
+"alt": "AND",
+"nat_span": [
+1427,
+1451
+],
+"alt_span": [
+1365,
+1368
+]
+},
+{
+"k": 16,
+"nat": "INNER JOIN properties p ON",
+"alt": "AND",
+"nat_span": [
+1480,
+1506
+],
+"alt_span": [
+1397,
+1400
+]
+},
+{
+"k": 17,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1537,
+1542
+],
+"alt_span": [
+1431,
+1434
+]
+},
+{
+"k": 18,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1779,
+1790
+],
+"alt_span": [
+1671,
+1672
+]
+},
+{
+"k": 19,
+"nat": " ON",
+"alt": ", properties p, property_types pt\nWHERE",
+"nat_span": [
+1801,
+1804
+],
+"alt_span": [
+1683,
+1722
+]
+},
+{
+"k": 20,
+"nat": "INNER JOIN properties p ON",
+"alt": "AND",
+"nat_span": [
+1834,
+1860
+],
+"alt_span": [
+1752,
+1755
+]
+},
+{
+"k": 21,
+"nat": "INNER JOIN property_types pt ON",
+"alt": "AND",
+"nat_span": [
+1891,
+1922
+],
+"alt_span": [
+1786,
+1789
+]
+},
+{
+"k": 22,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2196,
+2207
+],
+"alt_span": [
+2063,
+2064
+]
+},
+{
+"k": 23,
+"nat": " ON",
+"alt": ", transactions t\nWHERE",
+"nat_span": [
+2217,
+2220
+],
+"alt_span": [
+2074,
+2096
+]
+},
+{
+"k": 24,
+"nat": "INNER JOIN transactions t ON",
+"alt": "AND",
+"nat_span": [
+2247,
+2275
+],
+"alt_span": [
+2123,
+2126
+]
+},
+{
+"k": 25,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+2300,
+2305
+],
+"alt_span": [
+2151,
+2154
+]
+},
+{
+"k": 26,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2597,
+2608
+],
+"alt_span": [
+2446,
+2447
+]
+},
+{
+"k": 27,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+2630,
+2633
+],
+"alt_span": [
+2469,
+2475
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "sql_join_style__d010",
+"family": "sql_join_style",
+"topic": "Restaurant Chain Operations",
+"angle": "code",
+"text_es": "Write a SQL script to produce three back-office views for a restaurant chain, stipulating that only records with full matching associations are included. The tables are `menus`, `menu_items`, `recipes`, `ingredients`, `vendors`, `locations`, `managers`, and `deliveries`. Create `vw_menu_costing` linking `menus`, `menu_items`, `recipes`, `ingredients`, and `vendors` to calculate the total ingredient cost per menu item. Create `vw_delivery_tracking` linking `locations`, `managers`, `deliveries`, `vendors`, and `ingredients` to show upcoming deliveries by manager name and vendor. Create `vw_location_offerings` linking `locations`, `menus`, `menu_items`, and `recipes` to list all localized dish offerings. Example `vw_menu_costing` output: `('Dinner', 'Steak Frites', 'Beef Supplier Inc', 12.50)`.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "CREATE TABLE vendors (vendor_id INTEGER PRIMARY KEY, vendor_name VARCHAR(80) NOT NULL);\n\nCREATE TABLE managers (manager_id INTEGER PRIMARY KEY, manager_name VARCHAR(80) NOT NULL);\n\nCREATE TABLE locations (location_id INTEGER PRIMARY KEY, location_name VARCHAR(80) NOT NULL,\n    city VARCHAR(60) NOT NULL, manager_id INTEGER REFERENCES managers (manager_id));\n\nCREATE TABLE menus (menu_id INTEGER PRIMARY KEY, menu_name VARCHAR(60) NOT NULL,\n    location_id INTEGER REFERENCES locations (location_id));\n\nCREATE TABLE recipes (recipe_id INTEGER PRIMARY KEY, recipe_name VARCHAR(80) NOT NULL,\n    prep_minutes INTEGER NOT NULL);\n\nCREATE TABLE menu_items (menu_item_id INTEGER PRIMARY KEY, menu_id INTEGER REFERENCES menus (menu_id),\n    recipe_id INTEGER REFERENCES recipes (recipe_id), item_name VARCHAR(80) NOT NULL,\n    sale_price NUMERIC(8, 2) NOT NULL);\n\nCREATE TABLE ingredients (ingredient_id INTEGER PRIMARY KEY, recipe_id INTEGER REFERENCES recipes (recipe_id),\n    vendor_id INTEGER REFERENCES vendors (vendor_id), ingredient_name VARCHAR(80) NOT NULL,\n    quantity NUMERIC(8, 3) NOT NULL, unit_cost NUMERIC(8, 2) NOT NULL);\n\nCREATE TABLE deliveries (delivery_id INTEGER PRIMARY KEY, location_id INTEGER REFERENCES locations (location_id),\n    vendor_id INTEGER REFERENCES vendors (vendor_id), ingredient_id INTEGER REFERENCES ingredients (ingredient_id),\n    delivery_date DATE NOT NULL, cases_ordered INTEGER NOT NULL);\n\nCREATE VIEW vw_menu_costing AS\nSELECT m.menu_name, mi.item_name, v.vendor_name,\n       ROUND(SUM(i.quantity * i.unit_cost), 2) AS ingredient_cost\nFROM menus AS m\nINNER JOIN menu_items AS mi ON mi.menu_id = m.menu_id\nINNER JOIN recipes AS r ON r.recipe_id = mi.recipe_id\nINNER JOIN ingredients AS i ON i.recipe_id = r.recipe_id\nINNER JOIN vendors AS v ON v.vendor_id = i.vendor_id\nGROUP BY m.menu_name, mi.item_name, v.vendor_name;\n\nCREATE VIEW vw_delivery_tracking AS\nSELECT l.location_name, mg.manager_name, v.vendor_name, i.ingredient_name,\n       d.delivery_date, d.cases_ordered\nFROM locations AS l\nINNER JOIN managers AS mg ON mg.manager_id = l.manager_id\nINNER JOIN deliveries AS d ON d.location_id = l.location_id\nINNER JOIN vendors AS v ON v.vendor_id = d.vendor_id\nINNER JOIN ingredients AS i ON i.ingredient_id = d.ingredient_id\nWHERE d.delivery_date >= CURRENT_DATE;\n\nCREATE VIEW vw_location_offerings AS\nSELECT l.location_name, l.city, m.menu_name, mi.item_name,\n       r.recipe_name, r.prep_minutes, mi.sale_price\nFROM locations AS l\nINNER JOIN menus AS m ON m.location_id = l.location_id\nINNER JOIN menu_items AS mi ON mi.menu_id = m.menu_id\nINNER JOIN recipes AS r ON r.recipe_id = mi.recipe_id;\n\nSELECT o.city, o.location_name, o.item_name, o.sale_price, c.ingredient_cost,\n       ROUND(o.sale_price - c.ingredient_cost, 2) AS margin\nFROM vw_location_offerings AS o\nINNER JOIN vw_menu_costing AS c ON c.menu_name = o.menu_name AND c.item_name = o.item_name\nORDER BY margin DESC;\n\nSELECT v.vendor_name, COUNT(*) AS open_deliveries,\n       SUM(d.cases_ordered * i.unit_cost) AS committed_spend\nFROM deliveries AS d\nINNER JOIN vendors AS v ON v.vendor_id = d.vendor_id\nINNER JOIN ingredients AS i ON i.ingredient_id = d.ingredient_id\nWHERE d.delivery_date >= CURRENT_DATE\nGROUP BY v.vendor_name\nORDER BY committed_spend DESC;\n\nSELECT mg.manager_name, l.location_name, COUNT(DISTINCT m.menu_id) AS menus_offered,\n       COUNT(mi.menu_item_id) AS dishes_offered\nFROM managers AS mg\nINNER JOIN locations AS l ON l.manager_id = mg.manager_id\nINNER JOIN menus AS m ON m.location_id = l.location_id\nINNER JOIN menu_items AS mi ON mi.menu_id = m.menu_id\nGROUP BY mg.manager_name, l.location_name\nORDER BY mg.manager_name, l.location_name;\n\nSELECT location_name, manager_name, vendor_name, ingredient_name, delivery_date, cases_ordered\nFROM vw_delivery_tracking\nORDER BY delivery_date, location_name;\n",
+"text_alt": "CREATE TABLE vendors (vendor_id INTEGER PRIMARY KEY, vendor_name VARCHAR(80) NOT NULL);\n\nCREATE TABLE managers (manager_id INTEGER PRIMARY KEY, manager_name VARCHAR(80) NOT NULL);\n\nCREATE TABLE locations (location_id INTEGER PRIMARY KEY, location_name VARCHAR(80) NOT NULL,\n    city VARCHAR(60) NOT NULL, manager_id INTEGER REFERENCES managers (manager_id));\n\nCREATE TABLE menus (menu_id INTEGER PRIMARY KEY, menu_name VARCHAR(60) NOT NULL,\n    location_id INTEGER REFERENCES locations (location_id));\n\nCREATE TABLE recipes (recipe_id INTEGER PRIMARY KEY, recipe_name VARCHAR(80) NOT NULL,\n    prep_minutes INTEGER NOT NULL);\n\nCREATE TABLE menu_items (menu_item_id INTEGER PRIMARY KEY, menu_id INTEGER REFERENCES menus (menu_id),\n    recipe_id INTEGER REFERENCES recipes (recipe_id), item_name VARCHAR(80) NOT NULL,\n    sale_price NUMERIC(8, 2) NOT NULL);\n\nCREATE TABLE ingredients (ingredient_id INTEGER PRIMARY KEY, recipe_id INTEGER REFERENCES recipes (recipe_id),\n    vendor_id INTEGER REFERENCES vendors (vendor_id), ingredient_name VARCHAR(80) NOT NULL,\n    quantity NUMERIC(8, 3) NOT NULL, unit_cost NUMERIC(8, 2) NOT NULL);\n\nCREATE TABLE deliveries (delivery_id INTEGER PRIMARY KEY, location_id INTEGER REFERENCES locations (location_id),\n    vendor_id INTEGER REFERENCES vendors (vendor_id), ingredient_id INTEGER REFERENCES ingredients (ingredient_id),\n    delivery_date DATE NOT NULL, cases_ordered INTEGER NOT NULL);\n\nCREATE VIEW vw_menu_costing AS\nSELECT m.menu_name, mi.item_name, v.vendor_name,\n       ROUND(SUM(i.quantity * i.unit_cost), 2) AS ingredient_cost\nFROM menus AS m, menu_items AS mi, recipes AS r, ingredients AS i, vendors AS v\nWHERE mi.menu_id = m.menu_id\nAND r.recipe_id = mi.recipe_id\nAND i.recipe_id = r.recipe_id\nAND v.vendor_id = i.vendor_id\nGROUP BY m.menu_name, mi.item_name, v.vendor_name;\n\nCREATE VIEW vw_delivery_tracking AS\nSELECT l.location_name, mg.manager_name, v.vendor_name, i.ingredient_name,\n       d.delivery_date, d.cases_ordered\nFROM locations AS l, managers AS mg, deliveries AS d, vendors AS v, ingredients AS i\nWHERE mg.manager_id = l.manager_id\nAND d.location_id = l.location_id\nAND v.vendor_id = d.vendor_id\nAND i.ingredient_id = d.ingredient_id\nAND d.delivery_date >= CURRENT_DATE;\n\nCREATE VIEW vw_location_offerings AS\nSELECT l.location_name, l.city, m.menu_name, mi.item_name,\n       r.recipe_name, r.prep_minutes, mi.sale_price\nFROM locations AS l, menus AS m, menu_items AS mi, recipes AS r\nWHERE m.location_id = l.location_id\nAND mi.menu_id = m.menu_id\nAND r.recipe_id = mi.recipe_id;\n\nSELECT o.city, o.location_name, o.item_name, o.sale_price, c.ingredient_cost,\n       ROUND(o.sale_price - c.ingredient_cost, 2) AS margin\nFROM vw_location_offerings AS o, vw_menu_costing AS c\nWHERE c.menu_name = o.menu_name AND c.item_name = o.item_name\nORDER BY margin DESC;\n\nSELECT v.vendor_name, COUNT(*) AS open_deliveries,\n       SUM(d.cases_ordered * i.unit_cost) AS committed_spend\nFROM deliveries AS d, vendors AS v, ingredients AS i\nWHERE v.vendor_id = d.vendor_id\nAND i.ingredient_id = d.ingredient_id\nAND d.delivery_date >= CURRENT_DATE\nGROUP BY v.vendor_name\nORDER BY committed_spend DESC;\n\nSELECT mg.manager_name, l.location_name, COUNT(DISTINCT m.menu_id) AS menus_offered,\n       COUNT(mi.menu_item_id) AS dishes_offered\nFROM managers AS mg, locations AS l, menus AS m, menu_items AS mi\nWHERE l.manager_id = mg.manager_id\nAND m.location_id = l.location_id\nAND mi.menu_id = m.menu_id\nGROUP BY mg.manager_name, l.location_name\nORDER BY mg.manager_name, l.location_name;\n\nSELECT location_name, manager_name, vendor_name, ingredient_name, delivery_date, cases_ordered\nFROM vw_delivery_tracking\nORDER BY delivery_date, location_name;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1591,
+1602
+],
+"alt_span": [
+1591,
+1592
+]
+},
+{
+"k": 1,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2032,
+2043
+],
+"alt_span": [
+1998,
+1999
+]
+},
+{
+"k": 2,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2476,
+2487
+],
+"alt_span": [
+2406,
+2407
+]
+},
+{
+"k": 3,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2811,
+2822
+],
+"alt_span": [
+2716,
+2717
+]
+},
+{
+"k": 4,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+3058,
+3069
+],
+"alt_span": [
+2956,
+2957
+]
+},
+{
+"k": 5,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+3422,
+3433
+],
+"alt_span": [
+3302,
+3303
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.875,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1591,
+1602
+],
+"alt_span": [
+1591,
+1592
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", recipes AS r, ingredients AS i, vendors AS v\nWHERE",
+"nat_span": [
+1619,
+1622
+],
+"alt_span": [
+1609,
+1661
+]
+},
+{
+"k": 2,
+"nat": "INNER JOIN recipes AS r ON",
+"alt": "AND",
+"nat_span": [
+1646,
+1672
+],
+"alt_span": [
+1685,
+1688
+]
+},
+{
+"k": 3,
+"nat": "INNER JOIN ingredients AS i ON",
+"alt": "AND",
+"nat_span": [
+1700,
+1730
+],
+"alt_span": [
+1716,
+1719
+]
+},
+{
+"k": 4,
+"nat": "INNER JOIN vendors AS v ON",
+"alt": "AND",
+"nat_span": [
+1757,
+1783
+],
+"alt_span": [
+1746,
+1749
+]
+},
+{
+"k": 5,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2032,
+2043
+],
+"alt_span": [
+1998,
+1999
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": ", deliveries AS d, vendors AS v, ingredients AS i\nWHERE",
+"nat_span": [
+2058,
+2061
+],
+"alt_span": [
+2014,
+2069
+]
+},
+{
+"k": 7,
+"nat": "INNER JOIN deliveries AS d ON",
+"alt": "AND",
+"nat_span": [
+2091,
+2120
+],
+"alt_span": [
+2099,
+2102
+]
+},
+{
+"k": 8,
+"nat": "INNER JOIN vendors AS v ON",
+"alt": "AND",
+"nat_span": [
+2151,
+2177
+],
+"alt_span": [
+2133,
+2136
+]
+},
+{
+"k": 9,
+"nat": "INNER JOIN ingredients AS i ON",
+"alt": "AND",
+"nat_span": [
+2204,
+2234
+],
+"alt_span": [
+2163,
+2166
+]
+},
+{
+"k": 10,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+2269,
+2274
+],
+"alt_span": [
+2201,
+2204
+]
+},
+{
+"k": 11,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2476,
+2487
+],
+"alt_span": [
+2406,
+2407
+]
+},
+{
+"k": 12,
+"nat": " ON",
+"alt": ", menu_items AS mi, recipes AS r\nWHERE",
+"nat_span": [
+2498,
+2501
+],
+"alt_span": [
+2418,
+2456
+]
+},
+{
+"k": 13,
+"nat": "INNER JOIN menu_items AS mi ON",
+"alt": "AND",
+"nat_span": [
+2532,
+2562
+],
+"alt_span": [
+2487,
+2490
+]
+},
+{
+"k": 14,
+"nat": "INNER JOIN recipes AS r ON",
+"alt": "AND",
+"nat_span": [
+2586,
+2612
+],
+"alt_span": [
+2514,
+2517
+]
+},
+{
+"k": 15,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2811,
+2822
+],
+"alt_span": [
+2716,
+2717
+]
+},
+{
+"k": 16,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+2843,
+2846
+],
+"alt_span": [
+2738,
+2744
+]
+},
+{
+"k": 17,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+3058,
+3069
+],
+"alt_span": [
+2956,
+2957
+]
+},
+{
+"k": 18,
+"nat": " ON",
+"alt": ", ingredients AS i\nWHERE",
+"nat_span": [
+3082,
+3085
+],
+"alt_span": [
+2970,
+2994
+]
+},
+{
+"k": 19,
+"nat": "INNER JOIN ingredients AS i ON",
+"alt": "AND",
+"nat_span": [
+3112,
+3142
+],
+"alt_span": [
+3021,
+3024
+]
+},
+{
+"k": 20,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+3177,
+3182
+],
+"alt_span": [
+3059,
+3062
+]
+},
+{
+"k": 21,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+3422,
+3433
+],
+"alt_span": [
+3302,
+3303
+]
+},
+{
+"k": 22,
+"nat": " ON",
+"alt": ", menus AS m, menu_items AS mi\nWHERE",
+"nat_span": [
+3448,
+3451
+],
+"alt_span": [
+3318,
+3354
+]
+},
+{
+"k": 23,
+"nat": "INNER JOIN menus AS m ON",
+"alt": "AND",
+"nat_span": [
+3481,
+3505
+],
+"alt_span": [
+3384,
+3387
+]
+},
+{
+"k": 24,
+"nat": "INNER JOIN menu_items AS mi ON",
+"alt": "AND",
+"nat_span": [
+3536,
+3566
+],
+"alt_span": [
+3418,
+3421
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "sql_join_style__t001",
 "family": "sql_join_style",
 "topic": "Basic Customer Orders",
@@ -66465,548 +67800,6 @@
 "free_filter": true
 },
 {
-"doc_id": "sql_join_style__t138",
-"family": "sql_join_style",
-"topic": "University Department Staff",
-"angle": "code",
-"text_es": "Schema: Departments (dept_id, dept_name), Staff (staff_id, staff_name, dept_id, role, hire_date). Queries: 1. List all staff in a specific department. 2. Find all staff with a particular role. 3. Insert a new staff member into a department. 4. Update a staff member's role. 5. Get the count of staff members per role in each department.",
-"langs": {
-"src": "Task",
-"tgt": "SQL"
-},
-"text_nat": "INSERT INTO Departments (dept_id, dept_name) VALUES (1, 'Sales');\nINSERT INTO Departments (dept_id, dept_name) VALUES (2, 'Marketing');\nINSERT INTO Departments (dept_id, dept_name) VALUES (3, 'Engineering');\n\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (101, 'Alice', 1, 'Manager', '2020-01-15');\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (102, 'Bob', 1, 'Sales Rep', '2021-03-20');\nINSERT INTO Staff (staff_id, staff_id, dept_id, role, hire_date) VALUES (103, 'Charlie', 2, 'Manager', '2019-11-01');\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (104, 'David', 2, 'Coordinator', '2222-07-10');\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (105, 'Eve', 3, 'Engineer', '2023-02-28');\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (106, 'Frank', 3, 'Engineer', '2023-08-01');\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (107, 'Grace', 1, 'Sales Rep', '2022-05-12');\n\n-- Query 1: List all staff in a specific department (e.g., 'Sales')\nSELECT S.staff_name, S.role\nFROM Staff S\nJOIN Departments D ON S.dept_id = D.dept_id\nWHERE D.dept_name = 'Sales';\n\n-- Query 2: Find all staff with a particular role (e.g., 'Manager')\nSELECT S.staff_name, D.dept_name\nFROM Staff S\nJOIN Departments D ON S.dept_id = D.dept_id\nWHERE S.role = 'Manager';\n\n-- Query 3: Insert a new staff member into a department (e.g., 'Marketing')\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date)\nSELECT 108, 'Heidi', D.dept_id, 'Coordinator', '2024-01-01'\nFROM Departments D\nWHERE D.dept_name = 'Marketing';\n\n-- Query 4: Update a staff member's role (e.g., 'Bob' to 'Senior Sales Rep')\nUPDATE Staff\nSET role = 'Senior Sales Rep'\nWHERE staff_name = 'Bob';\n\n-- Query 5: Get the count of staff members per role in each department\nSELECT D.dept_name, S.role, COUNT(S.staff_id) AS staff_count\nFROM Staff S\nJOIN Departments D ON S.dept_id = D.dept_id\nGROUP BY D.dept_name, S.role;\n\n-- Additional single-join queries for style requirement:\n\n-- Get all staff with their department name\nSELECT S.staff_name, D.dept_name\nFROM Staff S JOIN Departments D ON S.dept_id = D.dept_id;\n\n-- List departments and the number of staff in each\nSELECT D.dept_name, COUNT(S.staff_id) AS total_staff\nFROM Departments D JOIN Staff S ON D.dept_id = S.dept_id\nGROUP BY D.dept_name;\n\n-- Find staff hired after a specific date in a particular department\nSELECT S.staff_name, S.hire_date\nFROM Staff S JOIN Departments D ON S.dept_id = D.dept_id\nWHERE S.hire_date > '2022-01-01' AND D.dept_name = 'Sales';\n\n-- Get the department name for a specific staff member\nSELECT D.dept_name\nFROM Staff S JOIN Departments D ON S.dept_id = D.dept_id\nWHERE S.staff_name = 'Alice';\n\n-- List all staff in the 'Engineering' department\nSELECT S.staff_name\nFROM Staff S JOIN Departments D ON S.dept_id = D.dept_id\nWHERE D.dept_name = 'Engineering';\n\n-- Retrieve staff and their department names for roles containing 'Rep'\nSELECT S.staff_name, D.dept_name\nFROM Staff S JOIN Departments D ON S.dept_id = D.dept_id\nWHERE S.role LIKE '%Rep%';\n\n-- Count managers per department\nSELECT D.dept_name, COUNT(S.staff_id) AS manager_count\nFROM Departments D JOIN Staff S ON D.dept_id = S.dept_id\nWHERE S.role = 'Manager'\nGROUP BY D.dept_name;\n\n-- Find departments with more than one staff member\nSELECT D.dept_name\nFROM Departments D JOIN Staff S ON D.dept_id = S.dept_id\nGROUP BY D.dept_name\nHAVING COUNT(S.staff_id) > 1;\n",
-"text_alt": "INSERT INTO Departments (dept_id, dept_name) VALUES (1, 'Sales');\nINSERT INTO Departments (dept_id, dept_name) VALUES (2, 'Marketing');\nINSERT INTO Departments (dept_id, dept_name) VALUES (3, 'Engineering');\n\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (101, 'Alice', 1, 'Manager', '2020-01-15');\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (102, 'Bob', 1, 'Sales Rep', '2021-03-20');\nINSERT INTO Staff (staff_id, staff_id, dept_id, role, hire_date) VALUES (103, 'Charlie', 2, 'Manager', '2019-11-01');\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (104, 'David', 2, 'Coordinator', '2222-07-10');\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (105, 'Eve', 3, 'Engineer', '2023-02-28');\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (106, 'Frank', 3, 'Engineer', '2023-08-01');\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date) VALUES (107, 'Grace', 1, 'Sales Rep', '2022-05-12');\n\n-- Query 1: List all staff in a specific department (e.g., 'Sales')\nSELECT S.staff_name, S.role\nFROM Staff S, Departments D\nWHERE S.dept_id = D.dept_id\nAND D.dept_name = 'Sales';\n\n-- Query 2: Find all staff with a particular role (e.g., 'Manager')\nSELECT S.staff_name, D.dept_name\nFROM Staff S, Departments D\nWHERE S.dept_id = D.dept_id\nAND S.role = 'Manager';\n\n-- Query 3: Insert a new staff member into a department (e.g., 'Marketing')\nINSERT INTO Staff (staff_id, staff_name, dept_id, role, hire_date)\nSELECT 108, 'Heidi', D.dept_id, 'Coordinator', '2024-01-01'\nFROM Departments D\nWHERE D.dept_name = 'Marketing';\n\n-- Query 4: Update a staff member's role (e.g., 'Bob' to 'Senior Sales Rep')\nUPDATE Staff\nSET role = 'Senior Sales Rep'\nWHERE staff_name = 'Bob';\n\n-- Query 5: Get the count of staff members per role in each department\nSELECT D.dept_name, S.role, COUNT(S.staff_id) AS staff_count\nFROM Staff S, Departments D\nWHERE S.dept_id = D.dept_id\nGROUP BY D.dept_name, S.role;\n\n-- Additional single-join queries for style requirement:\n\n-- Get all staff with their department name\nSELECT S.staff_name, D.dept_name\nFROM Staff S, Departments D\nWHERE S.dept_id = D.dept_id;\n\n-- List departments and the number of staff in each\nSELECT D.dept_name, COUNT(S.staff_id) AS total_staff\nFROM Departments D, Staff S\nWHERE D.dept_id = S.dept_id\nGROUP BY D.dept_name;\n\n-- Find staff hired after a specific date in a particular department\nSELECT S.staff_name, S.hire_date\nFROM Staff S, Departments D\nWHERE S.dept_id = D.dept_id\nAND S.hire_date > '2022-01-01' AND D.dept_name = 'Sales';\n\n-- Get the department name for a specific staff member\nSELECT D.dept_name\nFROM Staff S, Departments D\nWHERE S.dept_id = D.dept_id\nAND S.staff_name = 'Alice';\n\n-- List all staff in the 'Engineering' department\nSELECT S.staff_name\nFROM Staff S, Departments D\nWHERE S.dept_id = D.dept_id\nAND D.dept_name = 'Engineering';\n\n-- Retrieve staff and their department names for roles containing 'Rep'\nSELECT S.staff_name, D.dept_name\nFROM Staff S, Departments D\nWHERE S.dept_id = D.dept_id\nAND S.role LIKE '%Rep%';\n\n-- Count managers per department\nSELECT D.dept_name, COUNT(S.staff_id) AS manager_count\nFROM Departments D, Staff S\nWHERE D.dept_id = S.dept_id\nAND S.role = 'Manager'\nGROUP BY D.dept_name;\n\n-- Find departments with more than one staff member\nSELECT D.dept_name\nFROM Departments D, Staff S\nWHERE D.dept_id = S.dept_id\nGROUP BY D.dept_name\nHAVING COUNT(S.staff_id) > 1;\n",
-"opps": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1150,
-1155
-],
-"alt_span": [
-1150,
-1151
-]
-},
-{
-"k": 1,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1338,
-1343
-],
-"alt_span": [
-1335,
-1336
-]
-},
-{
-"k": 2,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1957,
-1962
-],
-"alt_span": [
-1951,
-1952
-]
-},
-{
-"k": 3,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2180,
-2185
-],
-"alt_span": [
-2173,
-2174
-]
-},
-{
-"k": 4,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2350,
-2355
-],
-"alt_span": [
-2342,
-2343
-]
-},
-{
-"k": 5,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2526,
-2531
-],
-"alt_span": [
-2517,
-2518
-]
-},
-{
-"k": 6,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2718,
-2723
-],
-"alt_span": [
-2706,
-2707
-]
-},
-{
-"k": 7,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2876,
-2881
-],
-"alt_span": [
-2861,
-2862
-]
-},
-{
-"k": 8,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-3074,
-3079
-],
-"alt_span": [
-3056,
-3057
-]
-},
-{
-"k": 9,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-3253,
-3258
-],
-"alt_span": [
-3232,
-3233
-]
-},
-{
-"k": 10,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-3429,
-3434
-],
-"alt_span": [
-3405,
-3406
-]
-}
-],
-"k_en": 11,
-"shared_fraction": 0.965,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1150,
-1155
-],
-"alt_span": [
-1150,
-1151
-]
-},
-{
-"k": 1,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1169,
-1172
-],
-"alt_span": [
-1165,
-1171
-]
-},
-{
-"k": 2,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-1195,
-1200
-],
-"alt_span": [
-1194,
-1197
-]
-},
-{
-"k": 3,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1338,
-1343
-],
-"alt_span": [
-1335,
-1336
-]
-},
-{
-"k": 4,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1357,
-1360
-],
-"alt_span": [
-1350,
-1356
-]
-},
-{
-"k": 5,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-1383,
-1388
-],
-"alt_span": [
-1379,
-1382
-]
-},
-{
-"k": 6,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1957,
-1962
-],
-"alt_span": [
-1951,
-1952
-]
-},
-{
-"k": 7,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1976,
-1979
-],
-"alt_span": [
-1966,
-1972
-]
-},
-{
-"k": 8,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2180,
-2185
-],
-"alt_span": [
-2173,
-2174
-]
-},
-{
-"k": 9,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2199,
-2202
-],
-"alt_span": [
-2188,
-2194
-]
-},
-{
-"k": 10,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2350,
-2355
-],
-"alt_span": [
-2342,
-2343
-]
-},
-{
-"k": 11,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2363,
-2366
-],
-"alt_span": [
-2351,
-2357
-]
-},
-{
-"k": 12,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2526,
-2531
-],
-"alt_span": [
-2517,
-2518
-]
-},
-{
-"k": 13,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2545,
-2548
-],
-"alt_span": [
-2532,
-2538
-]
-},
-{
-"k": 14,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2571,
-2576
-],
-"alt_span": [
-2561,
-2564
-]
-},
-{
-"k": 15,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2718,
-2723
-],
-"alt_span": [
-2706,
-2707
-]
-},
-{
-"k": 16,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2737,
-2740
-],
-"alt_span": [
-2721,
-2727
-]
-},
-{
-"k": 17,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2763,
-2768
-],
-"alt_span": [
-2750,
-2753
-]
-},
-{
-"k": 18,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2876,
-2881
-],
-"alt_span": [
-2861,
-2862
-]
-},
-{
-"k": 19,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2895,
-2898
-],
-"alt_span": [
-2876,
-2882
-]
-},
-{
-"k": 20,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2921,
-2926
-],
-"alt_span": [
-2905,
-2908
-]
-},
-{
-"k": 21,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-3074,
-3079
-],
-"alt_span": [
-3056,
-3057
-]
-},
-{
-"k": 22,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-3093,
-3096
-],
-"alt_span": [
-3071,
-3077
-]
-},
-{
-"k": 23,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-3119,
-3124
-],
-"alt_span": [
-3100,
-3103
-]
-},
-{
-"k": 24,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-3253,
-3258
-],
-"alt_span": [
-3232,
-3233
-]
-},
-{
-"k": 25,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-3266,
-3269
-],
-"alt_span": [
-3241,
-3247
-]
-},
-{
-"k": 26,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-3292,
-3297
-],
-"alt_span": [
-3270,
-3273
-]
-},
-{
-"k": 27,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-3429,
-3434
-],
-"alt_span": [
-3405,
-3406
-]
-},
-{
-"k": 28,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-3442,
-3445
-],
-"alt_span": [
-3414,
-3420
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "sql_join_style__t139",
 "family": "sql_join_style",
 "topic": "Project Budget Allocation",
@@ -85487,652 +86280,6 @@
 "free_filter": true
 },
 {
-"doc_id": "sql_join_style__t177",
-"family": "sql_join_style",
-"topic": "University Course Enrollment",
-"angle": "code",
-"text_es": "Schema: Students (student_id INT, first_name VARCHAR, last_name VARCHAR, major VARCHAR), Courses (course_id INT, title VARCHAR, department VARCHAR, credits INT), Enrollments (enrollment_id INT, student_id INT, course_id INT, enrollment_date DATE, grade VARCHAR).\nQueries:\n1. Find all courses a specific student is enrolled in.\n2. List all students enrolled in a particular course.\n3. Enroll a student in a new course.\n4. Update a student's grade for a course.\n5. Count the total credits a student is enrolled in.",
-"langs": {
-"src": "Task",
-"tgt": "SQL"
-},
-"text_nat": "INSERT INTO Students (student_id, first_name, last_name, major) VALUES\n(1, 'Alice', 'Smith', 'Computer Science'),\n(2, 'Bob', 'Johnson', 'Mathematics');\n\nINSERT INTO Courses (course_id, title, department, credits) VALUES\n(101, 'Introduction to SQL', 'Computer Science', 3),\n(102, 'Calculus I', 'Mathematics', 4),\n(103, 'Data Structures', 'Computer Science', 3);\n\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date, grade) VALUES\n(1, 1, 101, '2023-09-01', 'A'),\n(2, 1, 103, '2023-09-01', 'B'),\n(3, 2, 102, '2023-09-05', 'A');\n\n-- 1. Find all courses a specific student is enrolled in (e.g., student_id = 1)\nSELECT C.title, C.department\nFROM Courses AS C\nJOIN Enrollments AS E\nON C.course_id = E.course_id\nWHERE E.student_id = 1;\n\n-- 2. List all students enrolled in a particular course (e.g., course_id = 101)\nSELECT S.first_name, S.last_name\nFROM Students AS S\nJOIN Enrollments AS E\nON S.student_id = E.student_id\nWHERE E.course_id = 101;\n\n-- Another way to get all courses for a specific student, using a different join\nSELECT C.title\nFROM Students AS S\nJOIN Enrollments AS E ON S.student_id = E.student_id\nJOIN Courses AS C ON E.course_id = C.course_id\nWHERE S.first_name = 'Alice';\n\n-- 3. Enroll a student in a new course (e.g., student_id = 2, course_id = 101)\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date, grade)\nVALUES (4, 2, 101, '2023-10-15', NULL);\n\n-- 4. Update a student's grade for a course (e.g., student_id = 2, course_id = 101, grade = 'B+')\nUPDATE Enrollments\nSET grade = 'B+'\nWHERE student_id = 2 AND course_id = 101;\n\n-- 5. Count the total credits a student is enrolled in (e.g., student_id = 1)\nSELECT SUM(C.credits) AS total_credits\nFROM Enrollments AS E\nJOIN Courses AS C\nON E.course_id = C.course_id\nWHERE E.student_id = 1;\n\n-- Another join example: students with their major and all courses they are enrolled in\nSELECT S.first_name, S.major, C.title\nFROM Students AS S\nJOIN Enrollments AS E ON S.student_id = E.student_id\nJOIN Courses AS C ON E.course_id = C.course_id;\n\n-- Yet another join: courses and the departments of students enrolled in them\nSELECT C.title, S.major\nFROM Courses AS C\nJOIN Enrollments AS E ON C.course_id = E.course_id\nJOIN Students AS S ON E.student_id = S.student_id;\n\n-- All enrollments with student names and course titles\nSELECT S.first_name, S.last_name, C.title, E.enrollment_date\nFROM Enrollments AS E\nJOIN Students AS S ON E.student_id = S.student_id\nJOIN Courses AS C ON E.course_id = C.course_id;\n\n-- All courses with their respective departments and credits, joined with enrollments\nSELECT C.title, C.department, C.credits, E.enrollment_date\nFROM Courses AS C\nJOIN Enrollments AS E ON C.course_id = E.course_id;\n\n-- Students and their enrollments\nSELECT S.first_name, E.enrollment_date\nFROM Students AS S\nJOIN Enrollments AS E ON S.student_id = E.student_id;\n\n-- Enrollments and the courses involved\nSELECT E.enrollment_id, C.title\nFROM Enrollments AS E\nJOIN Courses AS C ON E.course_id = C.course_id;\n\n-- All students and their majors\nSELECT S.first_name, S.major\nFROM Students AS S\nLEFT JOIN Enrollments AS E ON S.student_id = E.student_id;\n\n-- All courses and students enrolled\nSELECT C.title, S.first_name\nFROM Courses AS C\nLEFT JOIN Enrollments AS E ON C.course_id = E.course_id\nLEFT JOIN Students AS S ON E.student_id = S.student_id;\n\n-- Courses with their departments\nSELECT C.title, C.department\nFROM Courses AS C\nJOIN Courses AS C2 ON C.department = C2.department;\n",
-"text_alt": "INSERT INTO Students (student_id, first_name, last_name, major) VALUES\n(1, 'Alice', 'Smith', 'Computer Science'),\n(2, 'Bob', 'Johnson', 'Mathematics');\n\nINSERT INTO Courses (course_id, title, department, credits) VALUES\n(101, 'Introduction to SQL', 'Computer Science', 3),\n(102, 'Calculus I', 'Mathematics', 4),\n(103, 'Data Structures', 'Computer Science', 3);\n\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date, grade) VALUES\n(1, 1, 101, '2023-09-01', 'A'),\n(2, 1, 103, '2023-09-01', 'B'),\n(3, 2, 102, '2023-09-05', 'A');\n\n-- 1. Find all courses a specific student is enrolled in (e.g., student_id = 1)\nSELECT C.title, C.department\nFROM Courses AS C, Enrollments AS E\nWHERE C.course_id = E.course_id\nAND E.student_id = 1;\n\n-- 2. List all students enrolled in a particular course (e.g., course_id = 101)\nSELECT S.first_name, S.last_name\nFROM Students AS S, Enrollments AS E\nWHERE S.student_id = E.student_id\nAND E.course_id = 101;\n\n-- Another way to get all courses for a specific student, using a different join\nSELECT C.title\nFROM Students AS S, Enrollments AS E, Courses AS C\nWHERE S.student_id = E.student_id\nAND E.course_id = C.course_id\nAND S.first_name = 'Alice';\n\n-- 3. Enroll a student in a new course (e.g., student_id = 2, course_id = 101)\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date, grade)\nVALUES (4, 2, 101, '2023-10-15', NULL);\n\n-- 4. Update a student's grade for a course (e.g., student_id = 2, course_id = 101, grade = 'B+')\nUPDATE Enrollments\nSET grade = 'B+'\nWHERE student_id = 2 AND course_id = 101;\n\n-- 5. Count the total credits a student is enrolled in (e.g., student_id = 1)\nSELECT SUM(C.credits) AS total_credits\nFROM Enrollments AS E, Courses AS C\nWHERE E.course_id = C.course_id\nAND E.student_id = 1;\n\n-- Another join example: students with their major and all courses they are enrolled in\nSELECT S.first_name, S.major, C.title\nFROM Students AS S, Enrollments AS E, Courses AS C\nWHERE S.student_id = E.student_id\nAND E.course_id = C.course_id;\n\n-- Yet another join: courses and the departments of students enrolled in them\nSELECT C.title, S.major\nFROM Courses AS C, Enrollments AS E, Students AS S\nWHERE C.course_id = E.course_id\nAND E.student_id = S.student_id;\n\n-- All enrollments with student names and course titles\nSELECT S.first_name, S.last_name, C.title, E.enrollment_date\nFROM Enrollments AS E, Students AS S, Courses AS C\nWHERE E.student_id = S.student_id\nAND E.course_id = C.course_id;\n\n-- All courses with their respective departments and credits, joined with enrollments\nSELECT C.title, C.department, C.credits, E.enrollment_date\nFROM Courses AS C, Enrollments AS E\nWHERE C.course_id = E.course_id;\n\n-- Students and their enrollments\nSELECT S.first_name, E.enrollment_date\nFROM Students AS S, Enrollments AS E\nWHERE S.student_id = E.student_id;\n\n-- Enrollments and the courses involved\nSELECT E.enrollment_id, C.title\nFROM Enrollments AS E, Courses AS C\nWHERE E.course_id = C.course_id;\n\n-- All students and their majors\nSELECT S.first_name, S.major\nFROM Students AS S, Enrollments AS E\nWHERE S.student_id = E.student_id;\n\n-- All courses and students enrolled\nSELECT C.title, S.first_name\nFROM Courses AS C, Enrollments AS E, Students AS S\nWHERE C.course_id = E.course_id\nAND E.student_id = S.student_id;\n\n-- Courses with their departments\nSELECT C.title, C.department\nFROM Courses AS C, Courses AS C2\nWHERE C.department = C2.department;\n",
-"opps": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-679,
-684
-],
-"alt_span": [
-679,
-680
-]
-},
-{
-"k": 1,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-887,
-892
-],
-"alt_span": [
-884,
-885
-]
-},
-{
-"k": 2,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1081,
-1086
-],
-"alt_span": [
-1075,
-1076
-]
-},
-{
-"k": 3,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1735,
-1740
-],
-"alt_span": [
-1723,
-1724
-]
-},
-{
-"k": 4,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1952,
-1957
-],
-"alt_span": [
-1937,
-1938
-]
-},
-{
-"k": 5,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2174,
-2179
-],
-"alt_span": [
-2155,
-2156
-]
-},
-{
-"k": 6,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2416,
-2421
-],
-"alt_span": [
-2393,
-2394
-]
-},
-{
-"k": 7,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2678,
-2683
-],
-"alt_span": [
-2651,
-2652
-]
-},
-{
-"k": 8,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2823,
-2828
-],
-"alt_span": [
-2795,
-2796
-]
-},
-{
-"k": 9,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2972,
-2977
-],
-"alt_span": [
-2943,
-2944
-]
-},
-{
-"k": 10,
-"nat": "\nLEFT JOIN",
-"alt": ",",
-"nat_span": [
-3102,
-3112
-],
-"alt_span": [
-3072,
-3073
-]
-},
-{
-"k": 11,
-"nat": "\nLEFT JOIN",
-"alt": ",",
-"nat_span": [
-3246,
-3256
-],
-"alt_span": [
-3210,
-3211
-]
-},
-{
-"k": 12,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-3440,
-3445
-],
-"alt_span": [
-3390,
-3391
-]
-}
-],
-"k_en": 13,
-"shared_fraction": 0.93,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-679,
-684
-],
-"alt_span": [
-679,
-680
-]
-},
-{
-"k": 1,
-"nat": "ON",
-"alt": "WHERE",
-"nat_span": [
-702,
-704
-],
-"alt_span": [
-698,
-703
-]
-},
-{
-"k": 2,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-731,
-736
-],
-"alt_span": [
-730,
-733
-]
-},
-{
-"k": 3,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-887,
-892
-],
-"alt_span": [
-884,
-885
-]
-},
-{
-"k": 4,
-"nat": "ON",
-"alt": "WHERE",
-"nat_span": [
-910,
-912
-],
-"alt_span": [
-903,
-908
-]
-},
-{
-"k": 5,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-941,
-946
-],
-"alt_span": [
-937,
-940
-]
-},
-{
-"k": 6,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1081,
-1086
-],
-"alt_span": [
-1075,
-1076
-]
-},
-{
-"k": 7,
-"nat": " ON",
-"alt": ", Courses AS C\nWHERE",
-"nat_span": [
-1103,
-1106
-],
-"alt_span": [
-1093,
-1113
-]
-},
-{
-"k": 8,
-"nat": "JOIN Courses AS C ON",
-"alt": "AND",
-"nat_span": [
-1135,
-1155
-],
-"alt_span": [
-1142,
-1145
-]
-},
-{
-"k": 9,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-1182,
-1187
-],
-"alt_span": [
-1172,
-1175
-]
-},
-{
-"k": 10,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1735,
-1740
-],
-"alt_span": [
-1723,
-1724
-]
-},
-{
-"k": 11,
-"nat": "ON",
-"alt": "WHERE",
-"nat_span": [
-1754,
-1756
-],
-"alt_span": [
-1738,
-1743
-]
-},
-{
-"k": 12,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-1783,
-1788
-],
-"alt_span": [
-1770,
-1773
-]
-},
-{
-"k": 13,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1952,
-1957
-],
-"alt_span": [
-1937,
-1938
-]
-},
-{
-"k": 14,
-"nat": " ON",
-"alt": ", Courses AS C\nWHERE",
-"nat_span": [
-1974,
-1977
-],
-"alt_span": [
-1955,
-1975
-]
-},
-{
-"k": 15,
-"nat": "JOIN Courses AS C ON",
-"alt": "AND",
-"nat_span": [
-2006,
-2026
-],
-"alt_span": [
-2004,
-2007
-]
-},
-{
-"k": 16,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2174,
-2179
-],
-"alt_span": [
-2155,
-2156
-]
-},
-{
-"k": 17,
-"nat": " ON",
-"alt": ", Students AS S\nWHERE",
-"nat_span": [
-2196,
-2199
-],
-"alt_span": [
-2173,
-2194
-]
-},
-{
-"k": 18,
-"nat": "JOIN Students AS S ON",
-"alt": "AND",
-"nat_span": [
-2226,
-2247
-],
-"alt_span": [
-2221,
-2224
-]
-},
-{
-"k": 19,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2416,
-2421
-],
-"alt_span": [
-2393,
-2394
-]
-},
-{
-"k": 20,
-"nat": " ON",
-"alt": ", Courses AS C\nWHERE",
-"nat_span": [
-2435,
-2438
-],
-"alt_span": [
-2408,
-2428
-]
-},
-{
-"k": 21,
-"nat": "JOIN Courses AS C ON",
-"alt": "AND",
-"nat_span": [
-2467,
-2487
-],
-"alt_span": [
-2457,
-2460
-]
-},
-{
-"k": 22,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2678,
-2683
-],
-"alt_span": [
-2651,
-2652
-]
-},
-{
-"k": 23,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2700,
-2703
-],
-"alt_span": [
-2669,
-2675
-]
-},
-{
-"k": 24,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2823,
-2828
-],
-"alt_span": [
-2795,
-2796
-]
-},
-{
-"k": 25,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2845,
-2848
-],
-"alt_span": [
-2813,
-2819
-]
-},
-{
-"k": 26,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2972,
-2977
-],
-"alt_span": [
-2943,
-2944
-]
-},
-{
-"k": 27,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2990,
-2993
-],
-"alt_span": [
-2957,
-2963
-]
-},
-{
-"k": 28,
-"nat": "\nLEFT JOIN",
-"alt": ",",
-"nat_span": [
-3102,
-3112
-],
-"alt_span": [
-3072,
-3073
-]
-},
-{
-"k": 29,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-3129,
-3132
-],
-"alt_span": [
-3090,
-3096
-]
-},
-{
-"k": 30,
-"nat": "\nLEFT JOIN",
-"alt": ",",
-"nat_span": [
-3246,
-3256
-],
-"alt_span": [
-3210,
-3211
-]
-},
-{
-"k": 31,
-"nat": " ON",
-"alt": ", Students AS S\nWHERE",
-"nat_span": [
-3273,
-3276
-],
-"alt_span": [
-3228,
-3249
-]
-},
-{
-"k": 32,
-"nat": "LEFT JOIN Students AS S ON",
-"alt": "AND",
-"nat_span": [
-3303,
-3329
-],
-"alt_span": [
-3276,
-3279
-]
-},
-{
-"k": 33,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-3440,
-3445
-],
-"alt_span": [
-3390,
-3391
-]
-},
-{
-"k": 34,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-3459,
-3462
-],
-"alt_span": [
-3405,
-3411
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "sql_join_style__t178",
 "family": "sql_join_style",
 "topic": "Movie Database System",
@@ -93329,639 +93476,6 @@
 "alt_span": [
 2696,
 2699
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "sql_join_style__t191",
-"family": "sql_join_style",
-"topic": "Online Learning Platform",
-"angle": "code",
-"text_es": "Schema: Courses (course_id INT, title VARCHAR, instructor VARCHAR, duration_hours INT), Students (student_id INT, name VARCHAR, email VARCHAR), Enrollments (enrollment_id INT, student_id INT, course_id INT, enrollment_date DATE, completion_status VARCHAR).\nQueries:\n1. Find all courses a specific student is enrolled in.\n2. List all students enrolled in a particular course.\n3. Enroll a student in a new course.\n4. Update a student's completion status for a course.\n5. Count the number of enrolled students per course.",
-"langs": {
-"src": "Task",
-"tgt": "SQL"
-},
-"text_nat": "INSERT INTO Courses (course_id, title, instructor, duration_hours) VALUES\n(1, 'Database Basics', 'Dr. Smith', 40),\n(2, 'Web Development', 'Ms. Johnson', 60),\n(3, 'Data Science', 'Prof. Lee', 80);\n\nINSERT INTO Students (student_id, name, email) VALUES\n(101, 'Alice', 'alice@example.com'),\n(102, 'Bob', 'bob@example.com'),\n(103, 'Charlie', 'charlie@example.com');\n\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date, completion_status) VALUES\n(1, 101, 1, '2023-01-15', 'In Progress'),\n(2, 102, 2, '2023-02-01', 'Completed'),\n(3, 101, 2, '2023-02-10', 'In Progress'),\n(4, 103, 1, '2023-03-05', 'In Progress');\n\n-- 1. Find all courses a specific student is enrolled in (e.g., student_id = 101)\nSELECT C.title, C.instructor\nFROM Courses AS C\nJOIN Enrollments AS E\nON C.course_id = E.course_id\nWHERE E.student_id = 101;\n\n-- 2. List all students enrolled in a particular course (e.g., course_id = 1)\nSELECT S.name, S.email\nFROM Students AS S\nJOIN Enrollments AS E\nON S.student_id = E.student_id\nWHERE E.course_id = 1;\n\n-- 3. Enroll a student in a new course (e.g., student 103 in course 3)\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date, completion_status)\nVALUES (5, 103, 3, '2023-04-01', 'Not Started');\n\n-- 4. Update a student's completion status for a course (e.g., student 101 for course 1)\nUPDATE Enrollments\nSET completion_status = 'Completed'\nWHERE student_id = 101 AND course_id = 1;\n\n-- 5. Count the number of enrolled students per course\nSELECT C.title, COUNT(E.student_id) AS num_students_enrolled\nFROM Courses AS C\nJOIN Enrollments AS E\nON C.course_id = E.course_id\nGROUP BY C.title;\n\n-- Additional queries for style requirements\nSELECT E.enrollment_id, S.name\nFROM Enrollments AS E JOIN Students AS S ON E.student_id = S.student_id;\n\nSELECT E.enrollment_id, C.title\nFROM Enrollments AS E JOIN Courses AS C ON E.course_id = C.course_id;\n\nSELECT S.name, E.enrollment_date, C.title\nFROM Students AS S\nJOIN Enrollments AS E ON S.student_id = E.student_id\nJOIN Courses AS C ON E.course_id = C.course_id\nWHERE S.student_id = 101;\n\nSELECT E.completion_status, C.title\nFROM Enrollments AS E JOIN Courses AS C ON E.course_id = C.course_id;\n\nSELECT S.name, S.email\nFROM Students AS S JOIN Enrollments AS E ON S.student_id = E.student_id\nWHERE E.completion_status = 'Completed';\n\nSELECT C.title, C.duration_hours, S.name\nFROM Courses AS C\nJOIN Enrollments AS E ON C.course_id = E.course_id\nJOIN Students AS S ON E.student_id = S.student_id\nWHERE C.duration_hours > 50;\n\nSELECT E.enrollment_date, S.name, C.title\nFROM Enrollments AS E JOIN Students AS S ON E.student_id = S.student_id\nJOIN Courses AS C ON E.course_id = C.course_id\nWHERE E.enrollment_date >= '2023-02-01';\n\nSELECT DISTINCT S.name\nFROM Students AS S JOIN Enrollments AS E ON S.student_id = E.student_id\nWHERE E.completion_status = 'In Progress';\n\nSELECT S.name, C.title, E.completion_status\nFROM Students AS S\nJOIN Enrollments AS E ON S.student_id = E.student_id\nJOIN Courses AS C ON E.course_id = C.course_id\nORDER BY S.name, C.title;\n",
-"text_alt": "INSERT INTO Courses (course_id, title, instructor, duration_hours) VALUES\n(1, 'Database Basics', 'Dr. Smith', 40),\n(2, 'Web Development', 'Ms. Johnson', 60),\n(3, 'Data Science', 'Prof. Lee', 80);\n\nINSERT INTO Students (student_id, name, email) VALUES\n(101, 'Alice', 'alice@example.com'),\n(102, 'Bob', 'bob@example.com'),\n(103, 'Charlie', 'charlie@example.com');\n\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date, completion_status) VALUES\n(1, 101, 1, '2023-01-15', 'In Progress'),\n(2, 102, 2, '2023-02-01', 'Completed'),\n(3, 101, 2, '2023-02-10', 'In Progress'),\n(4, 103, 1, '2023-03-05', 'In Progress');\n\n-- 1. Find all courses a specific student is enrolled in (e.g., student_id = 101)\nSELECT C.title, C.instructor\nFROM Courses AS C, Enrollments AS E\nWHERE C.course_id = E.course_id\nAND E.student_id = 101;\n\n-- 2. List all students enrolled in a particular course (e.g., course_id = 1)\nSELECT S.name, S.email\nFROM Students AS S, Enrollments AS E\nWHERE S.student_id = E.student_id\nAND E.course_id = 1;\n\n-- 3. Enroll a student in a new course (e.g., student 103 in course 3)\nINSERT INTO Enrollments (enrollment_id, student_id, course_id, enrollment_date, completion_status)\nVALUES (5, 103, 3, '2023-04-01', 'Not Started');\n\n-- 4. Update a student's completion status for a course (e.g., student 101 for course 1)\nUPDATE Enrollments\nSET completion_status = 'Completed'\nWHERE student_id = 101 AND course_id = 1;\n\n-- 5. Count the number of enrolled students per course\nSELECT C.title, COUNT(E.student_id) AS num_students_enrolled\nFROM Courses AS C, Enrollments AS E\nWHERE C.course_id = E.course_id\nGROUP BY C.title;\n\n-- Additional queries for style requirements\nSELECT E.enrollment_id, S.name\nFROM Enrollments AS E, Students AS S\nWHERE E.student_id = S.student_id;\n\nSELECT E.enrollment_id, C.title\nFROM Enrollments AS E, Courses AS C\nWHERE E.course_id = C.course_id;\n\nSELECT S.name, E.enrollment_date, C.title\nFROM Students AS S, Enrollments AS E, Courses AS C\nWHERE S.student_id = E.student_id\nAND E.course_id = C.course_id\nAND S.student_id = 101;\n\nSELECT E.completion_status, C.title\nFROM Enrollments AS E, Courses AS C\nWHERE E.course_id = C.course_id;\n\nSELECT S.name, S.email\nFROM Students AS S, Enrollments AS E\nWHERE S.student_id = E.student_id\nAND E.completion_status = 'Completed';\n\nSELECT C.title, C.duration_hours, S.name\nFROM Courses AS C, Enrollments AS E, Students AS S\nWHERE C.course_id = E.course_id\nAND E.student_id = S.student_id\nAND C.duration_hours > 50;\n\nSELECT E.enrollment_date, S.name, C.title\nFROM Enrollments AS E, Students AS S, Courses AS C\nWHERE E.student_id = S.student_id\nAND E.course_id = C.course_id\nAND E.enrollment_date >= '2023-02-01';\n\nSELECT DISTINCT S.name\nFROM Students AS S, Enrollments AS E\nWHERE S.student_id = E.student_id\nAND E.completion_status = 'In Progress';\n\nSELECT S.name, C.title, E.completion_status\nFROM Students AS S, Enrollments AS E, Courses AS C\nWHERE S.student_id = E.student_id\nAND E.course_id = C.course_id\nORDER BY S.name, C.title;\n",
-"opps": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-764,
-769
-],
-"alt_span": [
-764,
-765
-]
-},
-{
-"k": 1,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-962,
-967
-],
-"alt_span": [
-959,
-960
-]
-},
-{
-"k": 2,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1580,
-1585
-],
-"alt_span": [
-1574,
-1575
-]
-},
-{
-"k": 3,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-1748,
-1753
-],
-"alt_span": [
-1741,
-1742
-]
-},
-{
-"k": 4,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-1854,
-1859
-],
-"alt_span": [
-1846,
-1847
-]
-},
-{
-"k": 5,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1964,
-1969
-],
-"alt_span": [
-1955,
-1956
-]
-},
-{
-"k": 6,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2149,
-2154
-],
-"alt_span": [
-2134,
-2135
-]
-},
-{
-"k": 7,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2240,
-2245
-],
-"alt_span": [
-2224,
-2225
-]
-},
-{
-"k": 8,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2394,
-2399
-],
-"alt_span": [
-2375,
-2376
-]
-},
-{
-"k": 9,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2589,
-2594
-],
-"alt_span": [
-2564,
-2565
-]
-},
-{
-"k": 10,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2770,
-2775
-],
-"alt_span": [
-2739,
-2740
-]
-},
-{
-"k": 11,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2930,
-2935
-],
-"alt_span": [
-2896,
-2897
-]
-}
-],
-"k_en": 12,
-"shared_fraction": 0.933,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-764,
-769
-],
-"alt_span": [
-764,
-765
-]
-},
-{
-"k": 1,
-"nat": "ON",
-"alt": "WHERE",
-"nat_span": [
-787,
-789
-],
-"alt_span": [
-783,
-788
-]
-},
-{
-"k": 2,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-816,
-821
-],
-"alt_span": [
-815,
-818
-]
-},
-{
-"k": 3,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-962,
-967
-],
-"alt_span": [
-959,
-960
-]
-},
-{
-"k": 4,
-"nat": "ON",
-"alt": "WHERE",
-"nat_span": [
-985,
-987
-],
-"alt_span": [
-978,
-983
-]
-},
-{
-"k": 5,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-1016,
-1021
-],
-"alt_span": [
-1012,
-1015
-]
-},
-{
-"k": 6,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1580,
-1585
-],
-"alt_span": [
-1574,
-1575
-]
-},
-{
-"k": 7,
-"nat": "ON",
-"alt": "WHERE",
-"nat_span": [
-1603,
-1605
-],
-"alt_span": [
-1593,
-1598
-]
-},
-{
-"k": 8,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-1748,
-1753
-],
-"alt_span": [
-1741,
-1742
-]
-},
-{
-"k": 9,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1767,
-1770
-],
-"alt_span": [
-1756,
-1762
-]
-},
-{
-"k": 10,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-1854,
-1859
-],
-"alt_span": [
-1846,
-1847
-]
-},
-{
-"k": 11,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-1872,
-1875
-],
-"alt_span": [
-1860,
-1866
-]
-},
-{
-"k": 12,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-1964,
-1969
-],
-"alt_span": [
-1955,
-1956
-]
-},
-{
-"k": 13,
-"nat": " ON",
-"alt": ", Courses AS C\nWHERE",
-"nat_span": [
-1986,
-1989
-],
-"alt_span": [
-1973,
-1993
-]
-},
-{
-"k": 14,
-"nat": "JOIN Courses AS C ON",
-"alt": "AND",
-"nat_span": [
-2018,
-2038
-],
-"alt_span": [
-2022,
-2025
-]
-},
-{
-"k": 15,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2065,
-2070
-],
-"alt_span": [
-2052,
-2055
-]
-},
-{
-"k": 16,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2149,
-2154
-],
-"alt_span": [
-2134,
-2135
-]
-},
-{
-"k": 17,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2167,
-2170
-],
-"alt_span": [
-2148,
-2154
-]
-},
-{
-"k": 18,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2240,
-2245
-],
-"alt_span": [
-2224,
-2225
-]
-},
-{
-"k": 19,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2262,
-2265
-],
-"alt_span": [
-2242,
-2248
-]
-},
-{
-"k": 20,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2294,
-2299
-],
-"alt_span": [
-2277,
-2280
-]
-},
-{
-"k": 21,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2394,
-2399
-],
-"alt_span": [
-2375,
-2376
-]
-},
-{
-"k": 22,
-"nat": " ON",
-"alt": ", Students AS S\nWHERE",
-"nat_span": [
-2416,
-2419
-],
-"alt_span": [
-2393,
-2414
-]
-},
-{
-"k": 23,
-"nat": "JOIN Students AS S ON",
-"alt": "AND",
-"nat_span": [
-2446,
-2467
-],
-"alt_span": [
-2441,
-2444
-]
-},
-{
-"k": 24,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2496,
-2501
-],
-"alt_span": [
-2473,
-2476
-]
-},
-{
-"k": 25,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2589,
-2594
-],
-"alt_span": [
-2564,
-2565
-]
-},
-{
-"k": 26,
-"nat": " ON",
-"alt": ", Courses AS C\nWHERE",
-"nat_span": [
-2608,
-2611
-],
-"alt_span": [
-2579,
-2599
-]
-},
-{
-"k": 27,
-"nat": "JOIN Courses AS C ON",
-"alt": "AND",
-"nat_span": [
-2640,
-2660
-],
-"alt_span": [
-2628,
-2631
-]
-},
-{
-"k": 28,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2687,
-2692
-],
-"alt_span": [
-2658,
-2661
-]
-},
-{
-"k": 29,
-"nat": " JOIN",
-"alt": ",",
-"nat_span": [
-2770,
-2775
-],
-"alt_span": [
-2739,
-2740
-]
-},
-{
-"k": 30,
-"nat": " ON",
-"alt": "\nWHERE",
-"nat_span": [
-2792,
-2795
-],
-"alt_span": [
-2757,
-2763
-]
-},
-{
-"k": 31,
-"nat": "WHERE",
-"alt": "AND",
-"nat_span": [
-2824,
-2829
-],
-"alt_span": [
-2792,
-2795
-]
-},
-{
-"k": 32,
-"nat": "\nJOIN",
-"alt": ",",
-"nat_span": [
-2930,
-2935
-],
-"alt_span": [
-2896,
-2897
-]
-},
-{
-"k": 33,
-"nat": " ON",
-"alt": ", Courses AS C\nWHERE",
-"nat_span": [
-2952,
-2955
-],
-"alt_span": [
-2914,
-2934
-]
-},
-{
-"k": 34,
-"nat": "JOIN Courses AS C ON",
-"alt": "AND",
-"nat_span": [
-2984,
-3004
-],
-"alt_span": [
-2963,
-2966
 ]
 }
 ],

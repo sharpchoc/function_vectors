@@ -1,0 +1,80 @@
+[
+ {
+  "id": "d001",
+  "title": "Credit Card Validator",
+  "spec": "Write a Python script with a function `validate_credit_card(number_str)` and a `main()` driver. The function must strip all spaces and dashes from the input. It should first check if the string is entirely numeric and between 13 and 16 digits long. Next, identify the issuer: return 'Visa' if it starts with 4, 'MasterCard' if it starts with 51-55, and 'Amex' if it starts with 34 or 37, returning 'Unknown' otherwise. Finally, implement the Luhn algorithm: reverse the digits, double every second digit, subtract 9 if a doubled value is greater than 9, sum all resulting digits, and verify the total modulo 10 is 0. Return a tuple of `(is_valid_boolean, issuer_string)`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "Vending Machine Change Dispenser",
+  "spec": "Implement a script with `calculate_change(price, paid, inventory)` and a short `main()` function to test it. Convert all inputs to integer cents immediately to avoid floating-point errors. The `inventory` is a dictionary of coin/bill denominations in cents (2000, 1000, 500, 100, 25, 10, 5, 1) to their available quantities. If `paid` is less than `price`, raise a ValueError. Otherwise, iterate from the largest denomination to the smallest, greedily deducting from the inventory and adding to a `change_given` dictionary until the exact change is met. If the inventory lacks the necessary coins to make exact change, raise a RuntimeError. Return the `change_given` dictionary.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "Ten-Pin Bowling Scorer",
+  "spec": "Write a module with `score_bowling(throws)` and a `main()` driver to evaluate a game of ten-pin bowling. The input `throws` is a list of integers representing knocked down pins (0-10) for the entire game. Iterate through exactly 10 frames. If a frame is a strike (10 pins on the first throw), the score for that frame is 10 plus the next two throws. If it is a spare (two throws summing to 10), the score is 10 plus the next one throw. Open frames simply sum the two throws. Ensure the logic properly tracks the index in the throws list, especially for the 10th frame which may have up to 3 throws. Return the final integer score.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "Tax Bracket Calculator",
+  "spec": "Create a script featuring `calculate_income_tax(income, status)` and a `main()` block. First, deduct a standard deduction based on `status`: 12000 for 'single' and 24000 for 'married'. If the resulting taxable income is 0 or less, the tax is 0. Otherwise, apply a progressive tax rate: the first 10,000 of taxable income is taxed at 10%, the next 30,000 at 12%, the next 50,000 at 22%, and any remaining amount at 24%. Finally, if the original gross income exceeds 100,000, add a flat 1,000 high-earner surcharge. Return the final calculated tax as a float.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "RPN Stack Calculator",
+  "spec": "Implement an RPN (Reverse Polish Notation) evaluator `evaluate_rpn(expression)` alongside a `main()` testing function. The input is a space-separated string of numbers and operators. Split the string and process tokens using a list as a stack. If a token is a number, push it as a float. If it is '+', '-', '*', or '/', pop the top two numbers, apply the operation, and push the result, explicitly raising ZeroDivisionError for division by zero. Support three special commands: 'DUP' duplicates the top item, 'SWAP' swaps the top two items, and 'DROP' removes the top item. After processing all tokens, return the single remaining item on the stack.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "Poker Hand Evaluator",
+  "spec": "Write a script containing `evaluate_poker_hand(cards)` and a `main()` function. The input `cards` is a list of 5 strings, like ['10H', 'JH', 'QH', 'KH', 'AH']. Parse the ranks and suits, mapping face cards (J, Q, K, A) to integers 11, 12, 13, and 14. Sort the ranks to easily check for consecutive values (a Straight). Check if all suits are identical (a Flush). Count the frequencies of each rank to identify pairs, three-of-a-kind, or four-of-a-kind. Evaluate these properties to return the highest possible hand ranking string, such as 'Straight Flush', 'Four of a Kind', 'Full House', 'Flush', or 'Pair'.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "Password Strength Analyzer",
+  "spec": "Create a script with `assess_password(password)` and a `main()` testing driver to generate a security score from 0 to 100. Initialize the score at 0. Add 10 points if the length is at least 8, and an additional 10 points if it is 12 or more. Add 15 points each for containing at least one lowercase letter, one uppercase letter, one digit, and one special character. Apply a 20-point penalty if the password consists entirely of letters or entirely of digits. Apply a 15-point penalty if it contains common substrings like '123' or 'password' (case-insensitive). Clamp the final score so it never falls below 0 or exceeds 100, and return it.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "IPv4 Subnet Calculator",
+  "spec": "Write a script with `subnet_info(ip_str, cidr)` and a `main()` block. Parse the IPv4 string into four octets and convert it into a single 32-bit integer. Calculate the 32-bit subnet mask based on the integer `cidr` prefix (e.g., 24). Apply a bitwise AND between the IP and the mask to determine the network address. Apply a bitwise OR between the IP and the inverted mask to calculate the broadcast address. Determine the number of usable hosts, which is 2^(32-cidr) - 2 (handle edge cases where cidr >= 31 by returning 0). Convert the network and broadcast integers back to dot-decimal strings, returning them and the host count in a dictionary.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Text Justification Engine",
+  "spec": "Implement `justify_text(words, max_width)` with a `main()` driver to format paragraphs. Iterate through the words, packing as many as possible into a line without exceeding `max_width` (including at least one space between words). For each completed line except the last, calculate the total missing spaces and distribute them evenly among the gaps between words. If the spaces cannot be divided evenly, distribute the remainder starting from the leftmost gaps. The very last line of the text must be left-justified with single spaces, padded with trailing spaces up to the width. Return a list of the formatted line strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "E-commerce Checkout Pipeline",
+  "spec": "Write a module with `process_checkout(cart_items, state_code)` and a `main()` test function. `cart_items` is a list of dictionaries with keys: 'name', 'price', 'category', and 'quantity'. First, calculate line item totals. If an item's category is 'electronics', apply a 10% discount to it. If the category is 'apparel', apply a 'buy 2 get 1 free' logic to the quantity. Sum the adjusted prices to get a subtotal. Calculate shipping: flat 15.00, but free if the subtotal is over 75.00. Finally, apply state sales tax to the subtotal plus shipping: 8% for 'CA', 7% for 'NY', and 0% for others. Return the rounded final grand total.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "Time Zone Meeting Scheduler",
+  "spec": "Create a script with `find_meeting_slot(utc_hours, participant_offsets)` and a `main()` driver. `utc_hours` is a list of integers (0-23) representing proposed meeting times in UTC. `participant_offsets` is a list of integers representing local time zone offsets (e.g., -8, 0, 9). For every proposed UTC hour, loop through the offsets to calculate the local hour for each participant, wrapping around 24 hours using modulo arithmetic. A meeting slot is considered valid only if the local time for ALL participants falls within standard working hours (9 to 17, inclusive). Return the first valid UTC hour found, or None if no proposed time works.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Chess Knight Minimum Path",
+  "spec": "Implement a module with `knight_moves(start_pos, end_pos)` and a `main()` driver. The inputs are standard algebraic chess notation strings like 'a1' and 'h8'. Convert these strings into (x, y) coordinates where both axes range from 0 to 7. Use a Breadth-First Search (BFS) queue to find the shortest path. Track visited coordinates in a set to avoid infinite loops. In each BFS step, generate all 8 possible L-shaped knight moves, discarding any that fall outside the 0-7 board boundaries. Return the integer representing the minimum number of moves required to reach the destination.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Log File Anomaly Detector",
+  "spec": "Write a script featuring `detect_anomalies(log_lines)` and a `main()` test function. `log_lines` is a list of comma-separated strings: 'timestamp, level, user_id, action' (where timestamp is an integer). Skip any line where the level is 'INFO'. Track sequential 'FAILED' actions per user using a dictionary. If a user hits 3 FAILED actions in a row, generate a 'Brute Force' alert string for them. If a user registers a FAILED action followed by a 'SUCCESS' action, check the timestamps; if the difference is 60 or less, generate a 'Compromised' alert. Return a list of all generated alert strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ }
+]

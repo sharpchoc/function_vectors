@@ -1,0 +1,80 @@
+[
+ {
+  "id": "d001",
+  "title": "System Health CSV Report",
+  "spec": "Write a Bash script `sys_report.sh` that gathers basic hardware and OS metrics and outputs them as a single comma-separated line. The script must take no arguments. It should extract the host name, current kernel release, system uptime in nice format (e.g., from `uptime -p`), the amount of free memory in MB (from `free`), the root partition disk usage percentage (from `df`), the 1-minute load average (from `/proc/loadavg`), the total number of logged-in users, and the current system date and time. Assemble these exactly in that order into a CSV string and print it to standard output. Example Output: `server-01,5.15.0-76-generic,up 2 days 4 hours,4096,45%,0.15,3,2023-10-26 14:30:00`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "Web Server Log Summarizer",
+  "spec": "Implement a Bash script `log_summary.sh` that takes an NGINX access log file path as its first argument. The script must parse the file and print a brief summary report. The report must include the total number of logged requests, the count of unique IP addresses, the single most active IP address, the number of requests made by that most active IP, the count of HTTP errors (status codes 400 or greater), the timestamp of the very first request in the file, the timestamp of the very last request in the file, and the count of unique User-Agent strings. Example run: `./log_summary.sh access.log` outputs a readable summary with lines like `Total Requests: 15000`, `Unique IPs: 432`, `Most Active IP: 192.168.1.50`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "Git Repository Status Reporter",
+  "spec": "Create a Bash script `git_report.sh` meant to be executed at the root of a Git repository. It should extract various metadata about the current repository state and print them in a key-value format. The logic must determine the name of the currently checked-out branch, the absolute path to the repository root directory, the total number of commits in the current branch's history, the total count of uncommitted file changes (modified, added, or deleted), the name of the most recent tag, the configured remote origin URL, the local git configuration's user email, and the count of local branches that have already been merged into the current branch. Example output includes `Current Branch: main`, `Uncommitted Changes: 3`, etc.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "Docker Container Inspection Tool",
+  "spec": "Write a Bash script `inspect_container.sh` that takes a Docker container name as its single argument. It must interact with the Docker CLI to extract and display several specific attributes of the target container. The required attributes are: the full container ID, the underlying image name, the current status (e.g., running or exited), the exact start time, the container's primary IP address, its current memory usage (using docker stats non-streaming), the number of mapped port bindings, and the restart count. The script should format these as a neat list. Example: `./inspect_container.sh web_app` yields `Container ID: a1b2c3d4...`, `Image: nginx:latest`, `Status: running`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "Directory Backup and Validation",
+  "spec": "Develop a Bash script `backup_dir.sh` that accepts a source directory and a destination directory as arguments. The script must package the source directory into a `.tar.gz` archive inside the destination. To provide a thorough audit trail, before archiving, it must calculate and store the current date in `YYYYMMDD` format, the total disk usage size of the source directory, the exact count of files within the source, and the base name of the source directory to form the final archive name. After archiving, it must determine the file size of the resulting archive file, compute the MD5 checksum of the archive, determine the system user who owns the archive file, and find the total disk space available on the destination filesystem. Print all collected metrics to standard output.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "Remote SSL Certificate Inspector",
+  "spec": "Create a Bash script `ssl_check.sh` that queries a given domain name (provided as the first argument) for its SSL/TLS certificate details using `openssl`. The script must extract and display several pieces of information: the raw start date string of the certificate, the raw expiration date string, the start date converted to a Unix epoch timestamp, the expiration date converted to an epoch timestamp, the current system time as an epoch timestamp, the remaining validity in seconds, the remaining validity converted into full days, and the issuing Certificate Authority's name. Example: `./ssl_check.sh example.com` outputs `Issuer: Let's Encrypt Authority X3`, `Days Remaining: 45`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "Local System Account Auditor",
+  "spec": "Write a Bash script `audit_users.sh` to analyze local user accounts by inspecting standard Unix files like `/etc/passwd` and using core system utilities. The script must output the total number of user accounts on the system, find the numeric UID of the `root` user, count how many users have `/bin/bash` set as their default shell, calculate the number of users belonging to the `sudo` group, determine the username of the last person to log into the system, extract the exact time of that last login, count the total number of existing directories inside `/home`, and find the size (in megabytes) of the largest home directory. Output this data in a readable text summary.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "Media File Probe Script",
+  "spec": "Develop a Bash script `probe_media.sh` that extracts technical specifications from a video file using `ffprobe` and core tools. Given a video file path as the first argument, the script must determine the base filename, the file size in bytes using `stat`, the exact duration in seconds, the video stream width in pixels, the video stream height in pixels, the name of the video codec, the name of the audio codec, and the overall bitrate of the file. Assemble these variables and print them formatted as a JSON object. Example output: `{\"filename\": \"test.mp4\", \"size\": 102400, \"duration\": 15.5, \"width\": 1920, \"height\": 1080, \"video_codec\": \"h264\", \"audio_codec\": \"aac\", \"bitrate\": \"500000\"}`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Port Usage Analyzer",
+  "spec": "Create a Bash script `port_analyzer.sh` that takes a network port number as its sole argument and analyzes its usage using standard system commands. The script must identify the Process ID (PID) currently listening on the port, the name of the executable running that process, the username of the account running the process, the total number of network connections to this port, the number of currently 'ESTABLISHED' connections, the number of connections in the 'TIME-WAIT' state, the total number of open files associated with the PID, and the elapsed running time of the process. Print a short report with these exact metrics to standard output.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "Postgres Database Snapshot Wrapper",
+  "spec": "Write a Bash script `pg_snapshot.sh` that performs a logical backup of a local PostgreSQL database provided as the first argument. The script needs to gather operational metadata alongside the backup process. It must fetch the installed PostgreSQL version, the current system timestamp in `YYYYMMDD_HHMMSS` format, the human-readable size of the database before backup (using a `psql` query), and the total number of tables in the `public` schema. It must then run `pg_dump` to create an SQL file. Following the dump, it must retrieve the final file size of the generated `.sql` file, its SHA-256 checksum, compress it with `gzip`, and output the final `.gz` file size. Print a deployment log reporting these data points.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "Build Environment Verifier",
+  "spec": "Implement a Bash script `env_verify.sh` to check the system environment before a complex software build. The script takes no arguments. It must dynamically retrieve and print specific system environment details: the operating system kernel name, the machine architecture, the installed Node.js version (stripping the 'v' prefix), the Python 3 version, the Docker CLI version, the GNU Make version, the total number of available CPU cores (via `nproc`), and the amount of available RAM in megabytes (via `free`). The output should be formatted as shell variable exports, e.g., `OS_KERNEL=\"Linux\"`, `ARCH=\"x86_64\"`, `NODE_VER=\"16.14.0\"`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Dual Directory Comparator",
+  "spec": "Create a Bash script `dir_compare.sh` that takes a source directory and a replica directory as arguments and evaluates how closely they match. The script must gather statistics independently: it needs the total file count of the source directory, the total file count of the replica directory, the disk usage size in KB of the source, and the disk usage size in KB of the replica. It must also find the Unix timestamp of the most recently modified file in the source, the timestamp of the most recently modified file in the replica, the count of files that exist only in the source (missing in replica), and the count of files that exist only in the replica (orphaned). Print a side-by-side comparison to standard output.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Apache Configuration Parser",
+  "spec": "Write a Bash script `parse_httpd.sh` that reads an Apache `httpd.conf` file (passed as the first argument) and extracts key configuration directives. The script must find and output the configured ServerRoot path, the primary port number from the Listen directive, the DocumentRoot path, the total number of `<VirtualHost>` blocks defined in the file, the count of LoadModule directives, the email address set for ServerAdmin, the file path specified for the main ErrorLog, and the defined LogLevel. Ensure that quoted strings (like DocumentRoot paths) have their quotes stripped in the final output. Example run: `./parse_httpd.sh httpd.conf` outputs a clear summary list of these parameters.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ }
+]

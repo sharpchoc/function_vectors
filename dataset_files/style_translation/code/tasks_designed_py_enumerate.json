@@ -1,0 +1,80 @@
+[
+ {
+  "id": "d001",
+  "title": "Subtitle Segment Analyzer",
+  "spec": "Write a module to process subtitle segments. A segment is a string like '00:01 -> 00:05 Hello'. Implement 8 functions that iterate over a list of segment strings: 1) `parse_segments(lines)` yields `(0-based index, text)` for each line. 2) `find_overlaps(segments)` yields the 0-based index of any segment starting before the previous one ends. 3) `renumber_segments(segments)` returns strings prefixed with their 0-based index. 4) `find_long_durations(segments)` yields `(index, segment)` for segments exceeding 5 seconds. 5) `shift_timestamps(segments)` returns `(index, new_segment)` for logging after applying a 1-second offset. 6) `detect_profanity(segments)` returns 0-based indices of segments containing 'bad'. 7) `format_srt(segments)` creates standard SRT blocks, using the sequence index as the block ID. 8) `generate_index_html(segments)` wraps text in `<span id='{index}'>`. For example, given `['00:01 Hello', '00:02 World']`, `renumber_segments` yields `['0: 00:01 Hello', '1: 00:02 World']`. Include a short main block demonstrating these.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "Custom Language Linter",
+  "spec": "Write a linter module for a custom script language. The input is a list of source code lines. Implement 8 distinct check functions that each iterate over the lines and return a list of `(0-based line_number, error_message)` tuples. The checks are: 1) `check_length`: flags lines over 80 characters; 2) `check_trailing_space`: flags lines ending in whitespace; 3) `check_indent`: flags lines not starting with a multiple of 4 spaces; 4) `check_todo`: flags lines containing 'TODO'; 5) `check_consecutive_blank`: flags a blank line if the preceding line was also blank; 6) `check_print`: flags lines containing 'print('; 7) `check_semicolon`: flags non-blank lines not ending in ';'. Finally, 8) `generate_report(lines)` must iterate over the lines to build an HTML string `<div>Line {index}: {line}</div>` for a web viewer. For example, given `['x = 1', 'print(x)']`, `check_print` yields `[(1, 'Line contains print(')]`. Include a small driver to test the module.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "Sensor Data Quality Assessor",
+  "spec": "Design a module to validate a list of hourly temperature readings (floats). Implement 8 functions returning 0-based indices or formatting with them: 1) `find_missing(data)` returns indices where the value is -999.0. 2) `find_spikes(data)` returns indices where a value differs from the previous value by > 10.0. 3) `impute_missing(data)` returns a list of `(index, new_value)` where -999.0 is replaced by the previous valid reading. 4) `moving_average(data)` yields `(index, avg)` for a 3-hour sliding window including the current and two previous indices. 5) `find_plateaus(data)` yields indices where the value matches the preceding two values. 6) `export_csv(data)` yields strings exactly formatted as 'Hour_{index},{value}'. 7) `detect_drift(data, baseline)` returns indices where the value deviates from baseline by > 5. 8) `generate_summary(data)` yields an HTML row for each reading: `<tr id='row_{index}'><td>{value}</td></tr>`. For example, given `[20.0, -999.0]`, `find_missing` returns `[1]`. Provide a main block to run these.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "Vector Polyline Analyzer",
+  "spec": "Create a geometry module to analyze a 2D polyline represented as a list of `(x, y)` tuples. Implement 8 functions that process the path: 1) `calc_segments(path)` yields `(0-based index, length)` for each segment (distance from previous point). 2) `find_sharp_turns(path)` returns indices where the angle between incoming and outgoing segments is > 90 degrees. 3) `bounding_boxes(path)` returns `(index, bbox)` for every 3-point sliding window. 4) `simplify_path(path)` returns indices of points collinear with their immediate neighbors. 5) `export_svg(path)` generates SVG strings with `<circle id='pt_{index}' cx='{x}' cy='{y}'/>`. 6) `export_obj(path)` generates wavefront OBJ vertices with 'v {x} {y} 0' and comments '# vertex {index}'. 7) `find_intersections(path, line)` returns `(index, pt)` for points on a given horizontal line. 8) `closest_points(path, target)` returns `(index, distance)` for all points relative to a target point. For example, given `[(0,0), (10,0)]`, `export_svg` yields `[\"<circle id='pt_0' cx='0' cy='0'/>\", \"<circle id='pt_1' cx='10' cy='0'/>\"]`. Provide a short test driver.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "Portfolio Transaction Log Analyzer",
+  "spec": "Implement an analyzer for a list of string transactions (e.g., 'BUY AAPL 10'). Write 8 functions: 1) `extract_trades(txs, ticker)` returns a list of `(0-based index, tx)` for the given ticker. 2) `find_large_trades(txs)` yields indices of transactions where the quantity is >= 100. 3) `detect_wash_sales(txs)` returns indices of 'SELL' transactions occurring within 3 steps of a 'BUY' for the same ticker. 4) `generate_statement(txs)` formats each as 'Tx_{index}: {tx}'. 5) `calculate_balances(txs)` yields `(index, balance)` after each transaction starting from 10000. 6) `find_invalid_sequences(txs)` yields indices of 'SELL' transactions that make the running position negative. 7) `export_json(txs)` yields dicts `{'id': index, 'action': tx}`. 8) `print_audit_trail(txs)` yields 'Audit [{index}]: {tx}'. For example, given `['BUY AAPL 10', 'SELL AAPL 10']`, `generate_statement` yields `['Tx_0: BUY AAPL 10', 'Tx_1: SELL AAPL 10']`. Add a main section calling these with mock data.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "MIDI Event Sequence Processor",
+  "spec": "Write a module to process a melody represented as a list of dictionaries with 'note' (string) and 'duration' (float). Implement 8 functions: 1) `find_chords(melody)` yields 0-based indices where the current note has duration 0.0 (simultaneous with the next). 2) `find_dissonance(melody)` yields indices where a note is identical to the preceding note. 3) `assign_ids(melody)` returns a new list of dicts with an 'event_id' equal to the 0-based sequence index. 4) `transpose_log(melody)` yields strings formatted as 'Event {index}: {note} shifted'. 5) `find_long_rests(melody)` returns indices where 'note' is 'REST' and duration > 2.0. 6) `quantize_report(melody)` returns `(index, original_dur, rounded_dur)` for each note. 7) `extract_melody_line(melody)` yields `(index, note)` for all non-REST notes. 8) `generate_lilypond(melody)` yields strings '{note}{duration} % ev {index}'. For example, given `[{'note': 'C4', 'duration': 1.0}]`, `generate_lilypond` yields `['C41.0 % ev 0']`. Include a test driver.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "Access Log Anomaly Detector",
+  "spec": "Develop a script for a list of server access logs (strings like '10.0.0.1 GET / 200'). Provide 8 functions: 1) `find_404(logs)` yields `(0-based line_number, log)` for entries with a 404 status. 2) `detect_rapid_requests(logs)` yields indices where the IP matches the immediately preceding log's IP. 3) `find_unauthorized(logs)` returns indices of logs containing '401'. 4) `extract_ips(logs)` yields `(index, ip_address)` for all entries. 5) `format_html_report(logs)` yields `<div id='log_{index}'>{log}</div>`. 6) `find_admin_access(logs)` returns `(index, log)` for paths containing '/admin'. 7) `detect_malformed(logs)` returns indices of lines lacking exactly 3 spaces. 8) `generate_syslog(logs)` yields logs with '[{index}] ' prepended. For example, given `['10.0.0.1 GET / 404']`, `find_404` yields `[(0, '10.0.0.1 GET / 404')]`. Add a driver that exercises these functions.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "Markdown AST Builder",
+  "spec": "Create a parser for a list of strings representing a markdown document. Write 8 functions: 1) `parse_headings(lines)` yields `(0-based line_number, text)` for lines starting with '#'. 2) `find_code_blocks(lines)` returns indices of lines that are exactly '```'. 3) `parse_lists(lines)` yields `(index, text)` for lines starting with '- '. 4) `find_broken_links(lines)` returns line numbers where '[]()' is found. 5) `number_paragraphs(lines)` yields strings with '[{index}] ' prepended if the line contains alphanumeric characters. 6) `extract_todos(lines)` yields `(index, todo_text)` for lines containing 'TODO:'. 7) `find_consecutive_blank(lines)` returns indices of blank lines where the previous line was also blank. 8) `generate_toc(headings)` accepts a list of heading strings and yields '{index}. {text}' for a table of contents. For example, given `['# Title', '- item']`, `parse_headings` yields `[(0, '# Title')]`. Include a simple main execution block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Chess PGN Sequence Validator",
+  "spec": "Write a module to validate a sequence of chess moves in a list of strings (e.g., 'e4', 'Nf3'). Implement 8 functions: 1) `find_captures(moves)` returns 0-based indices of moves containing 'x'. 2) `find_checks(moves)` returns indices of moves containing '+'. 3) `find_castling(moves)` yields `(index, move)` for 'O-O' or 'O-O-O'. 4) `format_move_pairs(moves)` yields '{index}: {move}' for every move to build a raw list. 5) `find_pawn_promotions(moves)` returns indices containing '='. 6) `detect_repetition(moves)` returns indices where the move is identical to the move 4 plies ago. 7) `generate_json(moves)` yields `{\"ply\": index, \"move\": move}` dicts. 8) `find_blunders(moves, engine_evals)` takes a parallel list of float evaluations and yields `(index, move)` where the eval drops by > 2.0 from the previous ply. For example, given `['e4', 'Nf3']`, `format_move_pairs` yields `['0: e4', '1: Nf3']`. Add a short main block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "Genomic Sequence Analyzer",
+  "spec": "Build a DNA sequence analysis tool that takes a string of bases (A, C, G, T) or a list of characters. Implement 8 functions: 1) `find_start_codons(seq)` returns 0-based indices where the slice `seq[i:i+3]` is 'ATG'. 2) `find_stop_codons(seq)` returns indices for 'TAA', 'TAG', or 'TGA'. 3) `find_cpg_islands(seq)` returns indices where 'C' is immediately followed by 'G'. 4) `gc_content_window(seq)` yields `(index, gc_ratio)` for a sliding window of length 5 at each index. 5) `format_fasta(seq)` yields lines formatted as '{index}: {base}'. 6) `find_mutations(seq, ref_seq)` returns `(index, base, ref_base)` where the bases differ. 7) `detect_repeats(seq)` returns indices where the base is identical to the previous 3 bases. 8) `generate_bed(seq)` yields strings 'chr1 {index} {index+1} {base}'. For example, given `'ATGCA'`, `find_start_codons` returns `[0]`. Include a short execution block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "Automated Test Execution Parser",
+  "spec": "Create a parser for test logs represented as a list of dicts: `{'test': 'name', 'status': 'PASS/FAIL', 'duration': float}`. Implement 8 functions: 1) `get_failed_tests(results)` yields `(0-based index, test_name)` for failures. 2) `get_slow_tests(results, threshold)` returns indices where duration > threshold. 3) `find_flaky_tests(results, previous_run)` returns indices where the status differs from the same index in `previous_run`. 4) `generate_junit_xml(results)` yields `<testcase id='{index}' name='{test}' status='{status}'/>`. 5) `print_summary(results)` yields '[{index}] {test}: {status}'. 6) `find_retries(results)` returns indices where the test name matches the previous test name. 7) `detect_performance_regression(results, baseline)` yields `(index, test)` if duration > baseline[index]. 8) `assign_retry_ids(results)` yields dicts `{'retry_id': index, 'test': test}` for all failed tests. For example, given `[{'test': 'A', 'status': 'FAIL', 'duration': 1.0}]`, `get_failed_tests` yields `[(0, 'A')]`. Include a short main block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Network Packet Sequence Analyzer",
+  "spec": "Write an analyzer for a list of captured network packets (dicts with 'src', 'dst', 'size', 'syn', 'ack'). Implement 8 functions: 1) `find_syn_scans(packets)` returns 0-based indices of packets with 'syn' True and 'ack' False. 2) `find_large_payloads(packets)` yields `(index, size)` for packets > 1500 bytes. 3) `detect_retransmissions(packets)` returns indices where 'src', 'dst', and 'size' match the immediately preceding packet. 4) `generate_pcap_text(packets)` yields 'Packet {index}: {src} -> {dst}'. 5) `find_ack_without_syn(packets)` returns indices of 'ack' packets occurring before any 'syn' packet in the entire list. 6) `export_graphviz(packets)` yields 'node_{index} [label=\"{src}\"];'. 7) `detect_port_scans(packets)` returns indices where the 'dst' differs from the previous 3 packets but 'src' is the same. 8) `build_timeline(packets)` yields `(index * 10, src, dst)` assuming 10ms intervals. For example, given `[{'src': 'A', 'dst': 'B', 'size': 64, 'syn': True, 'ack': False}]`, `find_syn_scans` returns `[0]`. Include a test driver.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Video Frame Scene Detector",
+  "spec": "Implement a scene detection module for a list of video frame histograms (represented as lists of integers, where each integer is an average color value for a region). Implement 8 functions: 1) `find_cuts(frames)` returns 0-based indices where the absolute difference between the current and previous frame's first integer exceeds 50. 2) `find_fades(frames)` yields indices where the value decreases for 3 consecutive frames. 3) `extract_keyframes(frames, cuts)` returns a list of frame indices that fall exactly halfway between each pair of cuts. 4) `generate_thumbnails(frames)` yields `(index, frame)` for every 100th frame. 5) `detect_flash(frames)` returns indices of frames > 200 flanked immediately by frames < 50. 6) `export_edl(frames)` yields 'Event {index}: Frame {index}' strings for a basic Edit Decision List. 7) `find_static_scenes(frames)` returns indices where the frame is exactly identical to the previous frame. 8) `calculate_scene_brightness(frames)` yields `(index, frame[0])` for frames formatted for logging. For example, given `[[10], [100], [10]]`, `detect_flash` returns `[1]`. Add a simple main block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ }
+]

@@ -1,0 +1,728 @@
+[
+ {
+  "id": "d001",
+  "title": "System Log Formatter",
+  "spec": "Create a module to format system logs. Write 8 formatting functions: `format_auth_log(timestamp, user, status)`, `format_db_log(timestamp, query, duration_ms)`, `format_req_log(timestamp, method, path, ip)`, `format_err_log(timestamp, code, trace)`, `format_debug_log(timestamp, module, msg)`, `format_warn_log(timestamp, component, msg)`, `format_audit_log(timestamp, user, action)`, and `format_sys_log(timestamp, service, msg)`. Each function must return its arguments joined by a pipe character '|'. Include a driver `main()` function that calls each formatting function with dummy string arguments and prints the results.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "HL7 Health Message Segment Builder",
+  "spec": "Implement a script to build basic HL7 health data segments. Write 8 functions: `build_msh(sender, receiver, msg_id)`, `build_pid(pat_id, first_name, last_name)`, `build_obr(order_id, test_code, date)`, `build_obx(obs_id, value, units, ref_range)`, `build_al1(allergy_type, allergen, severity)`, `build_dg1(diag_code, description, type_str)`, `build_evn(event_type, date, reason)`, and `build_nte(source, comment, type_str)`. Each function must return a list of its parts (starting with the 3-letter segment type, followed by its arguments in order) joined by the pipe character '|'. Provide a `main()` that creates and prints one of each segment.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "Simple SQL Query Generator",
+  "spec": "Write a module to generate raw SQL strings. Implement 8 functions: `build_select(table, columns)` which returns `['SELECT', columns, 'FROM', table]` joined by a space ' '. Implement `build_insert(table, values)` returning `['INSERT INTO', table, 'VALUES', values]` joined by a space. Implement `build_update(table, assignments, condition)` returning `['UPDATE', table, 'SET', assignments, 'WHERE', condition]` joined by a space. Implement `build_delete(table, condition)` returning `['DELETE FROM', table, 'WHERE', condition]` joined by a space. Implement `build_create(table, definitions)` returning `['CREATE TABLE', table, definitions]` joined by a space. Implement `build_drop(table)` returning `['DROP TABLE', table]` joined by a space. Implement `build_alter(table, action)` returning `['ALTER TABLE', table, action]` joined by a space. Implement `build_truncate(table)` returning `['TRUNCATE TABLE', table]` joined by a space. Write a `main()` function demonstrating all eight generators.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "Regex Pattern Assembler",
+  "spec": "Create a library to assemble common regex patterns from user-provided sub-patterns. Write 8 functions: `match_email(user_pat, domain_pat)` returning the two patterns joined by '@'. Write `match_url_simple(proto, host)` returning them joined by '://'. Write `match_phone(country, area, local)` returning the three parts joined by '-'. Write `match_ipv4(oct1, oct2, oct3, oct4)` returning the four parts joined by '\\.'. Write `match_date(year, month, day)` returning the three parts joined by '-'. Write `match_time(hour, minute, second)` returning the three parts joined by ':'. Write `match_datetime(date_pat, time_pat)` returning them joined by 'T'. Write `match_mac(b1, b2, b3, b4, b5, b6)` returning the six parts joined by ':'. Include a `main()` that calls each function with string literal patterns.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "Global Name Formatter",
+  "spec": "Implement a module to format names according to different conventions. Write 8 formatting functions: `western_name(first, middle, last)` returning them joined by a space ' '. Write `eastern_name(last, first)` returning them joined by a space. Write `directory_name(last, first_middle)` returning the last name and the first_middle name joined by ', '. Write `initials(first_init, middle_init, last_init)` returning them joined by a dot '.'. Write `formal_name(title, first, last)` returning them joined by a space. Write `mononym(name, title)` returning them joined by a space. Write `hyphenated_last(last1, last2)` returning them joined by '-'. Write `account_name(last, id_str)` returning them joined by '_'. Provide a `main()` function demonstrating each formatting style with sample strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "Virtual Filesystem Path Builder",
+  "spec": "Create a script to build paths for a custom virtual filesystem. Write 8 functions: `root_path(volume, folder)` returning them joined by ':/'. Write `user_path(home_dir, username)` returning them joined by '/'. Write `config_path(user_dir, app_name)` returning the user dir, '.config', and app name joined by '/'. Write `cache_path(user_dir, app_name)` returning the user dir, '.cache', and app name joined by '/'. Write `log_path(user_dir, app_name)` returning the user dir, '.local', 'log', and app name joined by '/'. Write `temp_path(sys_temp, app_name)` returning them joined by '/'. Write `backup_path(user_dir, app_name, date_str)` returning them joined by '/'. Write `plugin_path(app_path, plugin_name)` returning them joined by '/'. Provide a `main()` that generates and prints each type of path.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "Email MIME Header Generator",
+  "spec": "Write a module to construct raw email headers. Implement 8 functions: `build_address(name, email_in_brackets)` returning them joined by a space ' '. Implement `build_received(host, ip_in_brackets)` returning `['from', host, ip_in_brackets]` joined by a space. Implement `build_content_type(mime_type, charset_str)` returning them joined by '; '. Implement `build_disposition(disposition, filename_str)` returning them joined by '; '. Implement `build_auth_results(server, dkim_str)` returning them joined by '; '. Implement `build_message_id(local, domain)` returning them joined by '@'. Implement `build_cc(addr1, addr2, addr3)` returning them joined by ', '. Implement `build_in_reply_to(id1, id2)` returning them joined by a space ' '. Include a `main()` block to run all 8 functions with test strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "Graphviz DOT Statement Generator",
+  "spec": "Implement a tool to generate Graphviz DOT format statements. Write 8 functions: `directed_edge(node1, node2)` returning them joined by ' -> '. Write `undirected_edge(node1, node2)` returning them joined by ' -- '. Write `node_label(node, label_str)` returning them joined by ' = '. Write `subgraph_decl(name, content_str)` returning `['subgraph', name, '{', content_str, '}']` joined by a space ' '. Write `graph_attr(attr, value_str)` returning them joined by '='. Write `node_style(node, style)` returning `[node, '[style=', style, ']']` joined by an empty string ''. Write `edge_color(n1, n2, color)` returning `[n1, '->', n2, '[color=', color, ']']` joined by an empty string ''. Write `strict_graph(name, content)` returning `['strict graph', name, '{', content, '}']` joined by a space ' '. Provide a `main()` testing each function.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Docker CLI Command Builder",
+  "spec": "Create a script to generate Docker CLI commands. Write 8 functions: `port_mapping(host_port, container_port)` returning them joined by ':'. Write `volume_mapping(host_dir, container_dir)` returning them joined by ':'. Write `env_var(key, value)` returning them joined by '='. Write `image_tag(image_name, tag)` returning them joined by ':'. Write `run_cmd(options, image, command)` returning the sequence `['docker run', options, image, command]` joined by a space ' '. Write `build_cmd(tag, path)` returning `['docker build', '-t', tag, path]` joined by a space ' '. Write `exec_cmd(container, command)` returning `['docker exec', '-it', container, command]` joined by a space. Write `network_alias(net, alias)` returning `['--network', net, '--network-alias', alias]` joined by a space. Include a `main()` that uses these functions.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "Semantic Version String Builder",
+  "spec": "Write a module for constructing Semantic Versioning (SemVer) strings. Implement 8 functions: `build_core(major, minor, patch)` returning the three parts joined by '.'. Implement `build_prerelease(core_version, pre_id)` returning them joined by '-'. Implement `build_build(version, build_meta)` returning them joined by '+'. Implement `build_dependency(package, version)` returning them joined by '@'. Implement `build_range(version1, version2)` returning them joined by ' - '. Implement `build_caret(package, version)` returning `['^', package, '@', version]` joined by an empty string ''. Implement `build_tilde(package, version)` returning `['~', package, '@', version]` joined by an empty string ''. Implement `build_or(range1, range2)` returning the two ranges joined by ' || '. Write a `main()` function testing all builders.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "Simple CSS Rule Generator",
+  "spec": "Implement a generator for inline CSS strings. Write 8 functions: `css_class(name, rules)` returning the sequence `['.', name, ' { ', rules, ' }']` joined by an empty string ''. Write `css_id(name, rules)` returning `['#', name, ' { ', rules, ' }']` joined by an empty string ''. Write `css_prop(property, value)` returning them joined by ': '. Write `css_important(value)` returning `[value, '!important']` joined by a space ' '. Write `css_media_query(condition, rules)` returning `['@media', condition, '{', rules, '}']` joined by a space ' '. Write `css_pseudo(selector, pseudo)` returning them joined by ':'. Write `css_child(parent, child)` returning them joined by ' > '. Write `css_sibling(el1, el2)` returning them joined by ' + '. Add a `main()` function testing all generators.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Publication Code Formatter",
+  "spec": "Create a script to format various publication identification codes. Write 8 functions: `format_isbn13(prefix, group, publisher, title, check)` returning the 5 parts joined by '-'. Write `format_isbn10(group, publisher, title, check)` returning the 4 parts joined by '-'. Write `format_issn(part1, part2)` returning the 2 parts joined by '-'. Write `format_doi(prefix, suffix)` returning the 2 parts joined by '/'. Write `format_sici(issn, chron, enum)` returning the 3 parts joined by '-'. Write `format_upc(mfr, product, check)` returning the 3 parts joined by '-'. Write `format_ismn(prefix, publisher, item, check)` returning the 4 parts joined by '-'. Write `format_isan(root, ep, ver)` returning the 3 parts joined by '-'. Provide a `main()` that invokes each function.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Cron Expression Builder",
+  "spec": "Implement a script to construct crontab file lines. Write 8 functions: `cron_time(minute, hour, dom, month, dow)` returning the 5 time fields joined by a space ' '. Write `cron_env(key, value)` returning the key and value joined by '='. Write `cron_job(time_str, user, command)` returning the time, user, and command joined by a space ' '. Write `cron_redirect(command, log_file)` returning the command and log file joined by ' > '. Write `cron_append(command, log_file)` returning the command and log file joined by ' >> '. Write `cron_mailto(email)` returning `['MAILTO', email]` joined by '='. Write `cron_path(paths_str)` returning `['PATH', paths_str]` joined by '='. Write `cron_shell(shell_bin)` returning `['SHELL', shell_bin]` joined by '='. Write a `main()` to generate a realistic crontab.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d014",
+  "title": "Markdown Table and Link Generator",
+  "spec": "Write a module to generate Markdown formatting. Implement 8 functions: `table_header(col1, col2, col3)` returning the sequence `['', col1, col2, col3, '']` joined by '|'. Implement `table_separator()` returning the sequence `['', '---', '---', '---', '']` joined by '|'. Implement `table_row(val1, val2, val3)` returning the sequence `['', val1, val2, val3, '']` joined by '|'. Implement `image_link(alt_text, url)` returning the sequence `['![', alt_text, '](', url, ')']` joined by an empty string ''. Implement `hyperlink(text, url)` returning the sequence `['[', text, '](', url, ')']` joined by an empty string ''. Implement `bold_text(text)` returning `['**', text, '**']` joined by an empty string ''. Implement `italic_text(text)` returning `['_', text, '_']` joined by an empty string ''. Implement `inline_code(text)` returning `['`', text, '`']` joined by an empty string ''. Include a `main()` function.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d015",
+  "title": "Geo-Coordinate String Formatter",
+  "spec": "Create a tool to format geographical coordinates into standard string representations. Write 8 functions: `point_wkt(lon, lat)` returning the sequence `['POINT(', lon, ' ', lat, ')']` joined by an empty string ''. Write `lat_lon_comma(lat, lon)` returning them joined by ','. Write `bbox_str(min_lon, min_lat, max_lon, max_lat)` returning the 4 values joined by ','. Write `geo_uri(lat, lon)` returning the sequence `['geo:', lat, ',', lon]` joined by an empty string ''. Write `tile_url(z, x, y)` returning the 3 zoom/coordinate parts joined by '/'. Write `linestring_wkt(pt1, pt2, pt3)` returning `['LINESTRING(', pt1, ',', pt2, ',', pt3, ')']` joined by an empty string ''. Write `polygon_wkt(pts_str)` returning `['POLYGON((', pts_str, '))']` joined by an empty string ''. Write `mgrs_str(zone, band, square, easting, northing)` returning the 5 parts joined by an empty string ''. Add a `main()`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d016",
+  "title": "Prometheus Metric String Builder",
+  "spec": "Implement a module to build text-based Prometheus metrics. Write 8 functions: `metric_help(name, help_text)` returning `['# HELP', name, help_text]` joined by a space ' '. Write `metric_type(name, type_str)` returning `['# TYPE', name, type_str]` joined by a space ' '. Write `metric_value(name, value)` returning the name and value joined by a space. Write `metric_labeled(name, labels, value)` returning the sequence `[name, '{', labels, '} ', value]` joined by an empty string ''. Write `label_pair(key, value)` returning the sequence `[key, '=\"', value, '\"']` joined by an empty string ''. Write `labels_list(l1, l2, l3)` returning the 3 label strings joined by ','. Write `metric_timestamp(metric_str, ts)` returning them joined by a space ' '. Write `metric_comment(text)` returning `['#', text]` joined by a space ' '. Provide a `main()` to test them.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d017",
+  "title": "LDAP Distinguished Name Builder",
+  "spec": "Create a script for building LDAP Distinguished Names (DNs). Write 8 functions: `build_cn(name)` returning 'CN' and the name joined by '='. Write `build_ou(unit)` returning 'OU' and the unit joined by '='. Write `build_dc(domain)` returning 'DC' and the domain joined by '='. Write `build_o(org)` returning 'O' and the org joined by '='. Write `build_c(country)` returning 'C' and the country joined by '='. Write `build_uid(uid)` returning 'UID' and the uid joined by '='. Write `build_dn_2(part1, part2)` returning the two parts joined by ','. Write `build_dn_3(part1, part2, part3)` returning the three parts joined by ','. Include a `main()` function to compose a full DN.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d018",
+  "title": "LaTeX Math String Formatter",
+  "spec": "Implement a generator for basic LaTeX math strings. Write 8 functions: `latex_frac(num, den)` returning the sequence `['\\\\frac{', num, '}{', den, '}']` joined by an empty string ''. Write `latex_super(base, exp)` returning the sequence `[base, '^{', exp, '}']` joined by an empty string ''. Write `latex_sub(base, sub)` returning the sequence `[base, '_{', sub, '}']` joined by an empty string ''. Write `latex_int(lower, upper, expr)` returning the sequence `['\\\\int_{', lower, '}^{', upper, '} ', expr]` joined by an empty string ''. Write `latex_sum(lower, upper, expr)` returning the sequence `['\\\\sum_{', lower, '}^{', upper, '} ', expr]` joined by an empty string ''. Write `latex_sqrt(expr)` returning `['\\\\sqrt{', expr, '}']` joined by an empty string ''. Write `latex_limit(var, val, expr)` returning `['\\\\lim_{', var, '\\\\to ', val, '} ', expr]` joined by an empty string ''. Write `latex_vec(name)` returning `['\\\\vec{', name, '}']` joined by an empty string ''. Write a `main()` function.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d019",
+  "title": "Network Address Formatter",
+  "spec": "Create a tool to format network addresses. Write 8 functions: `mac_colon(b1, b2, b3, b4, b5, b6)` returning the 6 bytes joined by ':'. Write `mac_dash(b1, b2, b3, b4, b5, b6)` returning the 6 bytes joined by '-'. Write `ipv4_str(o1, o2, o3, o4)` returning the 4 octets joined by '.'. Write `ipv6_subnet(prefix, cidr)` returning the network prefix and cidr joined by '/'. Write `socket_addr(ip, port)` returning the ip and port joined by ':'. Write `url_host(proto, ip, port)` returning the sequence `[proto, '://', ip, ':', port]` joined by an empty string ''. Write `ipsec_spi(src, dst, spi)` returning the three parts joined by '-'. Write `asn_str(asn_prefix, num)` returning them joined by ':'. Include a `main()`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d020",
+  "title": "EDI X12 Message Segment Builder",
+  "spec": "Implement a script to build EDI X12 data segments. Write 8 functions: `isa_segment(sender, receiver, date, time)` returning the sequence `['ISA', sender, receiver, date, time]` joined by '*'. Write `gs_segment(app_sender, app_recv, date, time)` returning `['GS', app_sender, app_recv, date, time]` joined by '*'. Write `st_segment(doc_type, control_num)` returning `['ST', doc_type, control_num]` joined by '*'. Write `se_segment(segments_count, control_num)` returning `['SE', segments_count, control_num]` joined by '*'. Write `iea_segment(groups_count, control_num)` returning `['IEA', groups_count, control_num]` joined by '*'. Write `bht_segment(struct_code, trans_code, ref_id)` returning `['BHT', struct_code, trans_code, ref_id]` joined by '*'. Write `nm1_segment(entity_id, type_qual, last_name, first_name)` returning `['NM1', entity_id, type_qual, last_name, first_name]` joined by '*'. Write `hl_segment(hl_id, parent_id, level_code)` returning `['HL', hl_id, parent_id, level_code]` joined by '*'. Write a `main()` function.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d021",
+  "title": "CLI Argument String Builder",
+  "spec": "Write a module to construct command-line argument strings for subprocesses. Implement 8 functions: `flag_long(name, val)` returning the sequence `['--', name, '=', val]` joined by an empty string ''. Implement `flag_short(name, val)` returning `['-', name, ' ', val]` joined by an empty string ''. Implement `auth_basic(user, pwd)` returning the user and password joined by ':'. Implement `ssh_dest(user, host)` returning the user and host joined by '@'. Implement `scp_path(dest, path)` returning the destination and path joined by ':'. Implement `jvm_prop(key, val)` returning `['-D', key, '=', val]` joined by an empty string ''. Implement `gcc_lib(dir, lib)` returning `['-L', dir, ' -l', lib]` joined by an empty string ''. Implement `curl_header(key, val)` returning `['-H \"', key, ': ', val, '\"']` joined by an empty string ''. Provide a `main()` testing all builders.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d022",
+  "title": "Bank Account String Formatter",
+  "spec": "Create a module to format bank account identifiers. Write 8 functions: `iban_format(cc, check, bban)` returning the three parts joined by an empty string ''. Write `bban_format(bank, branch, acc)` returning the three parts joined by an empty string ''. Write `sort_code(p1, p2, p3)` returning the three parts joined by '-'. Write `swift_bic(bank, country, loc, branch)` returning the four parts joined by an empty string ''. Write `routing_acc(routing, acc)` returning the two numbers joined by ':'. Write `card_num(g1, g2, g3, g4)` returning the four groups joined by a space ' '. Write `expiry_date(month, year)` returning them joined by '/'. Write `check_routing(transit, inst, acc)` returning the three parts joined by '-'. Include a `main()` function verifying the outputs.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d023",
+  "title": "FFMPEG Filter Graph Builder",
+  "spec": "Implement a script to build FFMPEG filter strings. Write 8 functions: `scale_filter(w, h)` returning the width and height joined by ':'. Write `crop_filter(w, h, x, y)` returning the four parts joined by ':'. Write `pad_filter(w, h, x, y, color)` returning the five parts joined by ':'. Write `fps_filter(fps)` returning 'fps' and the fps value joined by '='. Write `drawtext_filter(font, text, x, y)` returning the sequence `['fontfile=', font, ':text=', text, ':x=', x, ':y=', y]` joined by an empty string ''. Write `overlay_filter(x, y)` returning the sequence `['overlay=', x, ':', y]` joined by an empty string ''. Write `volume_filter(vol)` returning 'volume' and vol joined by '='. Write `rotate_filter(angle)` returning 'rotate' and angle joined by '='. Provide a `main()`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d024",
+  "title": "Chess PGN Move Formatter",
+  "spec": "Create a module to format Portable Game Notation (PGN) chess moves. Write 8 functions: `move_basic(piece, square)` returning the piece and square joined by an empty string ''. Write `move_capture(piece, square)` returning the piece and square joined by 'x'. Write `move_check(move_str)` returning the move_str and '+' joined by an empty string ''. Write `move_mate(move_str)` returning the move_str and '#' joined by an empty string ''. Write `move_promotion(move_str, piece)` returning the move_str and piece joined by '='. Write `game_result(white_score, black_score)` returning the scores joined by '-'. Write `nag_annotation(move_str, nag)` returning the move_str and nag joined by ' '. Write `castling_kingside(symbol1, symbol2)` returning them joined by '-'. Add a `main()` to print sample strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d025",
+  "title": "Financial Trade Message Builder",
+  "spec": "Write a tool to build financial trade strings. Write 8 functions: `ticker_sym(exch, sym)` returning the exchange and symbol joined by ':'. Write `options_sym(sym, date, type_str, strike)` returning the four parts joined by '-'. Write `order_fix_msg(side, qty, sym, price)` returning the four parts joined by '|'. Write `trade_exec(id_str, sym, qty, price)` returning the four parts joined by ','. Write `cancel_req(orig_id, sym)` returning the original ID and symbol joined by ':'. Write `fill_report(exec_id, qty, price)` returning the three parts joined by ';'. Write `alloc_msg(acc, qty, price)` returning the three parts joined by '/'. Write `quote_req(sym, bid, ask)` returning the three parts joined by '-'. Include a `main()` function outputting a mock trade sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d026",
+  "title": "AWS Resource ARN Builder",
+  "spec": "Write a module with functions to generate various AWS ARN strings. Include `build_s3_bucket_arn(partition, bucket_name)`, `build_s3_object_arn(partition, bucket_name, object_key)`, `build_iam_user_arn(partition, account, username)`, `build_iam_role_arn(partition, account, role_name)`, and `build_lambda_arn(partition, region, account, function_name)`. Each ARN consists of fixed segments separated by colons (e.g., `arn:aws:s3:::my_bucket`, `arn:aws:iam::1234:user/bob`). Use string joining on a list of these segments to form the final ARN. Also include a driver function `generate_sample_arns()` that returns a dictionary of these formatted strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d027",
+  "title": "MQTT Topic Name Builder",
+  "spec": "Create an MQTT topic builder for an IoT platform. Define functions to construct topics for different message types: `get_telemetry_topic(tenant, device_id)`, `get_command_topic(tenant, device_id, command_name)`, `get_status_topic(tenant, device_id)`, and `get_alert_topic(tenant, device_id, severity)`. Topics are built by joining components with slashes (e.g., `tenant1/device2/telemetry`). Also create a `get_wildcard_topic(tenant, device_id)` which ends with `#`. Write a main function that instantiates a set of topics for a device.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d028",
+  "title": "SIP URI Generator",
+  "spec": "Implement a module to build SIP (Session Initiation Protocol) URIs. Include functions like `build_basic_sip_uri(user, domain)`, `build_secure_sip_uri(user, domain)`, `build_sip_uri_with_port(user, domain, port)`, `build_sip_uri_with_transport(user, domain, transport)` and `build_full_sip_uri(user, domain, port, transport)`. These functions must assemble parts like the scheme (`sip` or `sips`), user, domain, port, and parameters, using separators like colons, at-signs, and semicolons (e.g., `sips:alice@example.com:5061;transport=tcp`).",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d029",
+  "title": "StatsD Metric Formatter",
+  "spec": "Write a module to format StatsD metric strings. Provide separate functions: `format_counter(metric, value)`, `format_gauge(metric, value)`, `format_timer(metric, value)`, `format_set(metric, value)`, and `format_histogram(metric, value)`. Each metric string is composed of the metric name, a colon, the value, a pipe character, and the metric type (e.g., `c`, `g`, `ms`). Example output: `users.login:1|c`. Assume all inputs are pre-validated strings and assemble the final metric by joining the pieces.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d030",
+  "title": "Ical Event Line Builder",
+  "spec": "Create a generator for individual iCalendar (RFC 5545) property lines. Implement functions for `build_dtstart(date_string, tzid)`, `build_dtend(date_string, tzid)`, `build_organizer(email, cn)`, `build_attendee(email, partstat)`, and `build_summary(text)`. Assemble the property name, parameters (separated by semicolons), and the value (separated by a colon). Example outputs: `DTSTART;TZID=America/New_York:20201010T100000` or `ORGANIZER;CN=John Doe:mailto:john@example.com`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d031",
+  "title": "SVG Path Command Generator",
+  "spec": "Create a library to generate SVG path `d` attribute commands. Write functions `move_to(x, y)`, `line_to(x, y)`, `cubic_bezier(x1, y1, x2, y2, x, y)`, `quad_bezier(x1, y1, x, y)`, and `arc_to(rx, ry, rot, large, sweep, x, y)`. Each function should return a single command string by joining the command letter (M, L, C, Q, A) and its numeric arguments with spaces. Example: `arc_to('10', '10', '0', '0', '1', '50', '50')` produces `A 10 10 0 0 1 50 50`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d032",
+  "title": "OData Query Builder",
+  "spec": "Write an OData v4 URL query string builder. Create functions `build_select(fields_string)`, `build_filter_eq(field, value)`, `build_expand(entity)`, `build_orderby(field, direction)`, and `build_top(n)`. Construct query options by joining the operator and arguments, like `$select=Name,Age` or `$filter=Category eq 'Shoes'`. Provide a main driver that calls these functions to build a list of options, then joins them with `&` to simulate a full query string.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d033",
+  "title": "JMX ObjectName Generator",
+  "spec": "Implement a Java Management Extensions (JMX) ObjectName builder. Functions should include `build_memory_mbean(pool_name)`, `build_gc_mbean(gc_name)`, `build_thread_mbean()`, `build_os_mbean()`, and `build_custom_mbean(domain, prop_key, prop_val)`. ObjectNames consist of a domain and properties joined by specific characters, e.g., `java.lang:type=MemoryPool,name=Metaspace`. Use joining to combine the domain, colon, and the key-value pairs.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d034",
+  "title": "Product SKU Generator",
+  "spec": "Develop a module for generating internal product SKUs. Implement functions for different categories: `generate_electronics_sku(brand, model, color)`, `generate_apparel_sku(gender, type, size, color)`, `generate_food_sku(category, weight, expiration)`, `generate_furniture_sku(type, material, dimensions)`, and `generate_book_sku(publisher, format, genre)`. SKUs are created by joining the uppercase string arguments with hyphens (e.g., `SONY-X900H-BLK`).",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d035",
+  "title": "Redis Connection URI Builder",
+  "spec": "Implement a module to construct Redis Connection URIs. Include functions `build_standalone_uri(host, port, db)`, `build_authenticated_uri(user, password, host, port, db)`, `build_tls_uri(host, port, db)`, `build_unix_socket_uri(path, db)`, and `build_sentinel_uri(host, port, master_name)`. The URIs must be built by joining schemes (`redis://` or `rediss://`), credentials, hostnames, ports, and database indices with appropriate delimiters like colons, at-signs, and slashes.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d036",
+  "title": "ZPL Barcode Command Builder",
+  "spec": "Create a generator for Zebra Programming Language (ZPL) commands used in label printing. Write functions `build_start_format()`, `build_end_format()`, `build_text_field(x, y, font, text)`, `build_barcode_field(x, y, data)`, and `build_qr_code(x, y, data)`. ZPL commands use carets and commas to combine elements, e.g., `^FO50,50^A0N,25,25^FDHello^FS`. Build these strings by joining the respective ZPL tags and position/data arguments.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d037",
+  "title": "Credit Card Track Data Formatter",
+  "spec": "Build a formatter for magnetic stripe credit card track data. Provide functions: `format_track1(pan, name, exp_date, svc_code)`, `format_track2(pan, exp_date, svc_code)`, `format_track3(pan, use_limit, restrict_code)`, and `format_cvv2_request(pan, exp_date, cvv)`. Track 1, for example, looks like `%B12345678^DOE/JOHN^2412101?`. Assemble the sentinels, delimiters (like `^` or `=`), and data fields by joining them sequentially.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d038",
+  "title": "Terraform Resource Block Builder",
+  "spec": "Write a module to generate simple Terraform resource blocks as one-line configuration strings (for simplified parsing). Provide functions: `build_provider_block(name, region)`, `build_aws_instance(name, ami, type)`, `build_aws_s3_bucket(name, bucket_name)`, `build_aws_security_group(name, vpc_id)`, and `build_aws_vpc(name, cidr)`. Construct strings like `resource \"aws_instance\" \"web\" { ami = \"ami-123\" }` by joining the keywords, quotes, and arguments with spaces.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d039",
+  "title": "Datadog Tag Formatter",
+  "spec": "Implement a module to build Datadog metric tags. Write functions `get_host_tags(env, hostname)`, `get_service_tags(env, service, version)`, `get_db_tags(env, db_type, db_name)`, `get_custom_metric_tags(app, feature, status)`, and `get_aws_tags(region, instance_id)`. Each function should return a single string where key-value pairs are joined with colons, and multiple tags are joined with commas (e.g., `env:production,service:billing,version:1.0`).",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d040",
+  "title": "Airline Boarding Pass BCBP Formatter",
+  "spec": "Generate IATA Bar Coded Boarding Pass (BCBP) strings. Write functions `build_passenger_name(last, first)`, `build_flight_info(pnr, origin, dest, carrier, flt_num, date, seat)`, `build_security_data(seq_num, status)`, `build_version_header()`, and `build_full_bcbp(name, flight, security)`. Assemble the fixed-width continuous string by joining the exact padded components. Example sequence joined: `M1DOE/JOHN            E12345...`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d041",
+  "title": "GraphQL Mutation String Builder",
+  "spec": "Create a simple GraphQL mutation generator. Include functions `create_user_mutation(name, email)`, `update_password_mutation(id, new_pass)`, `delete_user_mutation(id)`, `add_product_mutation(title, price)`, and `checkout_mutation(cart_id)`. Each function builds a string like `mutation { createUser(name: \"Alice\", email: \"a@a.com\") { id } }` by joining the fixed mutation shell and the provided argument strings with spaces and curly braces.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d042",
+  "title": "Vimscript Mapping Builder",
+  "spec": "Create a utility to construct Vimscript mapping commands. Include functions `build_normal_map(key, command)`, `build_insert_map(key, command)`, `build_visual_map(key, command)`, `build_leader_map(key, command)`, and `build_plugin_map(plugin, command)`. Each function should return a complete mapping line by joining the mapping type (like `nnoremap`), the trigger key, and the command string with spaces (e.g., `nnoremap <C-p> :Telescope<CR>`).",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d043",
+  "title": "G-Code Command Builder",
+  "spec": "Implement a G-code generator for a CNC machine. Provide functions `linear_move(x, y, z, f)`, `rapid_move(x, y, z)`, `set_spindle_speed(s)`, `tool_change(t)`, and `dwell(p)`. Each command joins a letter (like G, X, Y, Z, F) with its numeric value, and then joins all the terms for that command with spaces, e.g., `G1 X10.5 Y20.0 Z-5.0 F120`. Include a main routine to generate a simple sequence of these joined strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d044",
+  "title": "BIND DNS Record Builder",
+  "spec": "Create a utility to construct BIND DNS zone file records. Include functions `build_soa_record(domain, ns, email, serial)`, `build_a_record(name, ttl, ip)`, `build_mx_record(name, ttl, pref, exchange)`, `build_cname_record(name, ttl, alias)`, and `build_txt_record(name, ttl, text)`. Each function should join the domain/name, TTL, record class (`IN`), record type, and value with spaces. Example: `example.com. 3600 IN A 192.0.2.1`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d045",
+  "title": "RabbitMQ AMQP Routing Key Builder",
+  "spec": "Develop a module to build routing keys for a topic exchange in RabbitMQ. Functions should include `build_user_event_key(action, user_id)`, `build_order_event_key(status, order_id)`, `build_payment_event_key(provider, status, tx_id)`, `build_notification_key(channel, priority)`, and `build_system_log_key(component, level)`. Routing keys are constructed by joining the distinct semantic words with dots, e.g., `user.created.4512` or `order.shipped.9942`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d046",
+  "title": "Lucene Query Builder",
+  "spec": "Write a generator for Apache Lucene search queries. Implement functions `build_term_query(field, term)`, `build_wildcard_query(field, pattern)`, `build_fuzzy_query(field, term, distance)`, `build_range_query(field, start, end)`, and `build_boosted_query(query, boost_factor)`. Construct the queries by joining the field name, a colon, and the search term/pattern (e.g., `title:lucene` or `date:[20020101 TO 20030101]`).",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d047",
+  "title": "Maven POM Dependency Builder",
+  "spec": "Create a script to generate Maven POM XML snippets. Write functions `build_dependency_block(group, artifact, version)`, `build_plugin_block(group, artifact, version)`, `build_property_block(key, value)`, `build_repository_block(id, url)`, and `build_exclusion_block(group, artifact)`. Construct the single-line XML tags by joining the opening tag, the inner text value, and the closing tag (e.g., `<groupId>org.example</groupId>`).",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d048",
+  "title": "HAProxy ACL Rule Builder",
+  "spec": "Create a generator for HAProxy ACL configuration lines. Provide functions `build_path_beg_acl(name, path)`, `build_hdr_sub_acl(name, header, value)`, `build_src_ip_acl(name, ip)`, `build_use_backend_rule(backend, acl_name)`, and `build_http_request_deny(acl_name)`. Configuration rules are constructed by joining tokens with spaces, e.g., `acl is_api path_beg /api` or `use_backend api_servers if is_api`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d049",
+  "title": "SSH Config File Builder",
+  "spec": "Create an SSH client `config` snippet generator. Write functions `build_host_header(alias)`, `build_hostname_directive(address)`, `build_user_directive(user)`, `build_port_directive(port)`, and `build_identity_file_directive(path)`. Directives are formed by joining the directive name (like `HostName` or `User`) and the value with a space. Include a driver that generates these lines for a specific server alias.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d050",
+  "title": "Zookeeper Path Builder",
+  "spec": "Write a module for generating Apache ZooKeeper node paths. Provide functions `build_service_registration_path(service_name, instance_id)`, `build_leader_election_path(cluster_name)`, `build_config_path(app_name, env)`, `build_lock_path(resource_name)`, and `build_worker_task_path(worker_id, task_id)`. Paths must begin with a slash and are built by joining the hierarchical string components with slashes (e.g., `/services/billing/node-1`).",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d051",
+  "title": "NMEA 0183 GPS Sentence Builder",
+  "spec": "Write a module with functions to format standard NMEA 0183 sentences from string arguments. Include 8 distinct functions for different sentences: build_gpgga(time, lat, lat_dir, lon, lon_dir, fix, sats, alt), build_gprmc(time, status, lat, lat_dir, lon, lon_dir, speed, angle, date), build_gpvtg(course_true, course_mag, speed_knots, speed_kph), build_gpgsa(mode1, mode2, sat1, sat2, sat3, pdop, hdop, vdop), build_gpgsv(msg_count, msg_num, sats, sat_info), build_gpgll(lat, lat_dir, lon, lon_dir, time, status), build_gpzda(time, day, month, year, tz_hh, tz_mm), and build_gptxt(id, msg_num, msg_type, text). Each function must return the comma-separated sentence string starting with the sentence type. Example: build_gpvtg(\"054.7\", \"034.4\", \"005.5\", \"010.2\") returns \"$GPVTG,054.7,T,034.4,M,005.5,N,010.2,K\". Do not calculate checksums.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d052",
+  "title": "QR Code Payload Builder",
+  "spec": "Create a module to generate raw payload strings for QR codes across 8 different data types. Implement functions taking string arguments: vcard_name_line(last, first, middle), mecard_payload(name, phone, email), wifi_payload(ssid, password, enc_type, hidden), sms_payload(phone, body), mailto_payload(email, sub, body), geo_payload(lat, lon, alt), event_payload(title, start, end, loc), and phone_payload(number). Each function must construct the standardized format combining parts with specific separators. Examples: wifi_payload(\"MyNet\", \"pass\", \"WPA\", \"false\") joins the key-value pairs with semicolons to return \"WIFI:S:MyNet;T:WPA;P:pass;H:false;;\". geo_payload(\"40.7\", \"-74.0\", \"10\") uses commas to return \"geo:40.7,-74.0,10\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d053",
+  "title": "CEF (Common Event Format) String Generator",
+  "spec": "Write a script to build ArcSight CEF strings for 8 different security event categories. Implement functions taking string parameters: build_auth(time, user, src, outcome), build_fw(src, dst, sport, dport, act), build_ids(sig_id, name, sev, src), build_av(file, hash, status, user), build_dlp(file, rule, act, user), build_vpn(user, src, dur, bytes), build_waf(url, method, attack, act), and build_audit(user, act, res, status). Each string must start with \"CEF:0|Vendor|Product|Version|\" followed by pipe-separated event fields specific to the function. Example: build_fw(\"10.0.0.1\", \"8.8.8.8\", \"54321\", \"53\", \"DROP\") combines these into a single pipe-separated string including the standard prefix.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d054",
+  "title": "HTTP/1.1 Raw Request Builder",
+  "spec": "Write a module to generate raw HTTP/1.1 request strings. Implement 8 functions accepting string parameters: get_req(path, host), post_req(path, host, type, len, body), put_req(path, host, type, len, body), delete_req(path, host), head_req(path, host), options_req(path, host), patch_req(path, host, type, len, body), and trace_req(path, host). Each function must return the exact HTTP request string, separating the request line, headers, and body with carriage return and line feed (\\r\\n), and ending with a blank line if there's no body. Example: get_req(\"/index.html\", \"example.com\") assembles the method, path, protocol, and Host header, joined by \\r\\n, ending with a double \\r\\n.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d055",
+  "title": "ANSI Terminal Escape Sequence Builder",
+  "spec": "Develop a module to build complex ANSI escape sequence strings for terminal UI formatting. Provide 8 functions taking string arguments: rgb_fg(r, g, b, text), rgb_bg(r, g, b, text), cursor_move(row, col), clear_screen(mode), set_title(title), draw_box_chars(tl, tr, bl, br), hyperlink(url, text), and scroll_region(top, bottom). Each function must construct the escape sequence using standard ANSI prefixes (like \\033[) and suffixes, joining the numeric parameters with semicolons where appropriate. Example: rgb_fg(\"255\", \"0\", \"0\", \"Error\") combines the color components to build \"\\033[38;2;255;0;0mError\\033[0m\". cursor_move(\"10\", \"5\") builds \"\\033[10;5H\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d056",
+  "title": "Tmux Status Line Component Builder",
+  "spec": "Write a module to format strings for tmux status line segments. Implement 8 functions with string arguments: session_info(name, windows), active_window(index, name, flags), inactive_window(index, name), battery_status(pct, state), cpu_load(avg1, avg5, avg15), memory_usage(used, total), network_speed(rx, tx), and clock_display(date, time, tz). The functions must build tmux-compatible format strings combining text components, variables, and spaces. Example: cpu_load(\"1.5\", \"2.0\", \"1.8\") joins the averages with spaces and prepends a label to return \"CPU: 1.5 2.0 1.8\". clock_display(\"2023-01-01\", \"12:00\", \"UTC\") returns \"2023-01-01 12:00 UTC\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d057",
+  "title": "Gstreamer Pipeline Element Builder",
+  "spec": "Create a script to construct Gstreamer pipeline string segments for 8 different media operations. Implement functions taking string arguments: file_src(location, blocksize), video_scale(w, h, method), x264_enc(bitrate, preset, tune), audio_convert(fmt, rate), mp4_mux(faststart, streamable), udp_sink(host, port, sync), rtp_h264_pay(mtu, pt), and text_overlay(text, val, hal). Each function builds a space-separated string for that element containing the element name and its key=value properties. Example: x264_enc(\"2048\", \"medium\", \"zerolatency\") returns \"x264enc bitrate=2048 preset=medium tune=zerolatency\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d058",
+  "title": "W3C Trace Context Header Builder",
+  "spec": "Write a utility for building OpenTelemetry W3C Trace Context header strings. Implement 8 functions taking string arguments: build_traceparent(version, trace_id, span_id, flags), build_tracestate(vendor, value), add_tracestate_entry(existing, vendor, value), build_b3_single(trace_id, span_id, sampled), build_b3_multi_traceid(trace_id), build_b3_multi_spanid(span_id), build_jaeger(trace_id, span_id, parent, flags), and build_datadog(trace_id, parent, priority). Each constructs a specific HTTP header value using dashes, commas, or colons as separators depending on the format. Example: build_traceparent(\"00\", \"4bf92f\", \"00f067\", \"01\") combines the parts with dashes to return \"00-4bf92f-00f067-01\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d059",
+  "title": "SDP (Session Description Protocol) Line Builder",
+  "spec": "Create a module to generate raw SDP lines for WebRTC. Write 8 functions accepting string arguments: origin_line(user, sess_id, sess_ver, net_type, addr_type, addr), connection_line(net, addr_type, addr), media_line(type, port, proto, fmt), rtpmap_line(payload, enc, clock, channels), fmtp_line(payload, params), crypto_line(tag, suite, key_params), candidate_line(found, comp, transport, prio, addr, port, type), and bandwidth_line(bw_type, bw). Each constructs the standard string starting with its single letter code (e.g., \"o=\", \"c=\", \"m=\") followed by the space-separated arguments. Example: media_line(\"audio\", \"49170\", \"RTP/AVP\", \"0\") returns \"m=audio 49170 RTP/AVP 0\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d060",
+  "title": "HLS M3U8 Playlist Tag Builder",
+  "spec": "Develop a module for constructing EXT-X tags for HLS M3U8 playlists. Implement 8 functions using string parameters: ext_inf(duration, title), ext_x_stream_inf(bw, res, codecs, path), ext_x_media(type, group, name, uri), ext_x_key(method, uri, iv), ext_x_map(uri, byterange), ext_x_program_date_time(time_str), ext_x_daterange(id, start, duration), and ext_x_session_data(data_id, value). Each function formats the specific tag, joining multiple attributes with commas where required, or separating the tag and value with a colon. Example: ext_x_stream_inf(\"500\", \"1920x1080\", \"avc1\", \"h.m3u8\") returns \"#EXT-X-STREAM-INF:BANDWIDTH=500,RESOLUTION=1920x1080,CODECS=\\\"avc1\\\"\\nh.m3u8\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d061",
+  "title": "PKCS#11 URI Builder",
+  "spec": "Write a utility to construct PKCS#11 URIs identifying cryptographic tokens and objects. Implement 8 functions with string parameters: token_uri(model, mfg, serial, label), object_uri(token, obj, type, cls), key_uri(token, id, type), cert_uri(token, issuer, serial), slot_uri(slot_id, slot_desc), module_uri(name, path), pin_uri(token, source), and full_uri(model, serial, obj, id). Each function formats the \"pkcs11:\" URI schema by appending the provided key-value attribute strings combined with semicolons. Example: object_uri(\"MyToken\", \"MyKey\", \"private\", \"key\") combines the parts to return \"pkcs11:token=MyToken;object=MyKey;type=private;object-type=key\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d062",
+  "title": "YARA Rule Generator",
+  "spec": "Create a module to generate different textual blocks of a YARA rule. Implement 8 functions taking string parameters: rule_header(name, tag1, tag2), meta_author(name, date), meta_desc(desc, version), string_hex(var_name, hex_bytes), string_text(var_name, text, modifiers), condition_all_of(var1, var2, var3), condition_filesize(min_kb, max_kb), and condition_pe_section(sec_name, sec_size). Each constructs the correct syntax using spaces or commas. Examples: string_hex(\"$hex1\", \"4D 5A\") returns \"$hex1 = { 4D 5A }\". condition_all_of(\"$s1\", \"$s2\", \"$s3\") combines the variables to return \"all of ($s1, $s2, $s3)\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d063",
+  "title": "Systemd Unit File Line Builder",
+  "spec": "Write a module to format common configuration lines for systemd service unit files. Implement 8 functions with string arguments: unit_desc(desc, doc_url), unit_after(srv1, srv2, srv3), service_exec(cmd, arg1, arg2), service_restart(policy, sec), service_env(key, val), service_user_group(user, group), install_wanted(target), and timer_cal(spec). Each function returns the configuration line by combining the key, an equals sign, and the space-separated values. Examples: service_exec(\"/bin/py\", \"-u\", \"main.py\") returns \"ExecStart=/bin/py -u main.py\". unit_after(\"net.target\", \"syslog.target\", \"local.target\") returns \"After=net.target syslog.target local.target\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d064",
+  "title": "IPsec IKEv2 Proposal Builder",
+  "spec": "Create a utility to construct IKEv2 proposal strings for strongSwan configurations. Write 8 functions accepting string arguments: encrypt_alg(alg, key_len), integ_alg(alg), dh_group(group), prf_alg(alg), full_proposal(enc, integ, prf, dh), esp_proposal(enc, integ, dh), ah_proposal(integ, dh), and ike_sa_proposal(enc, prf, dh). The proposal functions must assemble the configuration strings using dashes as separators. Example: full_proposal(\"aes256\", \"sha384\", \"prfsha384\", \"modp3072\") combines the four segments to return \"aes256-sha384-prfsha384-modp3072\". ike_sa_proposal(\"aes128\", \"prfsha256\", \"modp2048\") returns \"aes128-prfsha256-modp2048\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d065",
+  "title": "IMAP Command Formatter",
+  "spec": "Write a script to format raw IMAP4rev1 client commands from string arguments. Implement 8 distinct functions: login_cmd(tag, user, password), select_cmd(tag, mailbox), fetch_cmd(tag, seq, items), store_cmd(tag, seq, flag_op, flags), copy_cmd(tag, seq, mailbox), search_cmd(tag, criteria), append_cmd(tag, mailbox, flags, date, size), and uid_fetch_cmd(tag, seq, items). Each function constructs a space-separated IMAP command string. Example: fetch_cmd(\"A03\", \"1:5\", \"(FLAGS BODY.PEEK[])\") joins the arguments with spaces to return \"A03 FETCH 1:5 (FLAGS BODY.PEEK[])\". login_cmd(\"A01\", \"user\", \"pass123\") returns \"A01 LOGIN user pass123\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d066",
+  "title": "CMake Command Builder",
+  "spec": "Develop a module to generate lines of CMake script from string arguments. Write 8 functions: cmake_min(version), proj_decl(name, version, langs), add_exec(name, src1, src2, src3), add_lib(name, type, src1, src2), target_link(name, scope, lib1, lib2), target_inc(name, scope, dir1, dir2), set_prop(target, prop, val), and find_pkg(name, version, req). Each combines the command name and arguments into the standard format, joining multiple sources or libraries with spaces. Example: target_link(\"myapp\", \"PRIVATE\", \"libA\", \"libB\") returns \"target_link_libraries(myapp PRIVATE libA libB)\". add_lib(\"mylib\", \"SHARED\", \"a.c\", \"b.c\") returns \"add_library(mylib SHARED a.c b.c)\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d067",
+  "title": "BGP Community String Builder",
+  "spec": "Create a module to format BGP community attribute strings. Implement 8 functions taking string arguments: std_community(asn, val), ext_route_target(asn, val), ext_route_origin(asn, val), large_community(asn, local_data1, local_data2), link_bw(asn, bw), soo(asn, val), ipv6_ext(ipv6, val), and well_known(name). These functions must construct the standard colon-separated string formats. Example: large_community(\"65000\", \"100\", \"200\") combines the three parts with colons to return \"65000:100:200\". ext_route_target(\"65001\", \"300\") returns \"rt:65001:300\". ipv6_ext(\"2001:db8::1\", \"123\") returns \"2001:db8::1:123\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d068",
+  "title": "InfluxDB Line Protocol Builder",
+  "spec": "Write a script to build data points in InfluxDB Line Protocol format using string arguments. Provide 8 functions: point_int(meas, tag_k, tag_v, field_k, field_v, ts), point_float(meas, tag_k, tag_v, field_k, field_v, ts), point_string(meas, tag_k, tag_v, field_k, field_v, ts), point_boolean(meas, tag_k, tag_v, field_k, field_v, ts), point_two_tags(meas, t1_k, t1_v, t2_k, t2_v, f_k, f_v, ts), point_two_fields(meas, t_k, t_v, f1_k, f1_v, f2_k, f2_v, ts), point_no_tags(meas, f_k, f_v, ts), and point_no_ts(meas, t_k, t_v, f_k, f_v). Each builds the protocol string combining the measurement, tags (comma-separated), fields (comma-separated), and timestamp (space-separated). Example: point_int(\"cpu\", \"host\", \"serverA\", \"usage\", \"85\", \"164099\") returns \"cpu,host=serverA usage=85i 164099\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d069",
+  "title": "JWT String Formatter (Base64 Structure)",
+  "spec": "Create a module that builds the basic structure of JSON Web Tokens and authorization headers using string arguments. Implement 8 functions: build_access_token(hdr, payload, sig), build_refresh_token(hdr, payload, sig), build_id_token(hdr, payload, sig), build_unsigned_token(hdr, payload), auth_bearer_header(token), auth_basic_header(user, pass), dpop_proof_header(token), and oauth_token_response(access, type, expires, refresh). Token builder functions must combine the parts with dots. Header functions combine prefix and token with a space. Example: build_access_token(\"eyJhbG\", \"eyJzdW\", \"SflKxw\") combines the segments to return \"eyJhbG.eyJzdW.SflKxw\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d070",
+  "title": "Varnish VCL Subroutine Builder",
+  "spec": "Write a module to generate common blocks for a Varnish VCL file. Provide 8 functions using string parameters: vcl_backend(name, host, port), acl_block(name, ip1, ip2, ip3), set_req_hdr(hdr, val), unset_req_hdr(hdr), set_beresp_ttl(ttl), return_action(action), synth_resp(status, reason, body), and add_resp_hdr(hdr, val). Each generates a single configuration line or block string. Examples: acl_block(\"local\", \"127.0.0.1\", \"10.0.0.1\", \"192.168.1.1\") joins the IPs with formatting into an ACL block. set_req_hdr(\"X-Forwarded-For\", \"client.ip\") returns \"set req.http.X-Forwarded-For = client.ip;\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d071",
+  "title": "SNort/Suricata Rule Builder",
+  "spec": "Develop a module to format Suricata / Snort Intrusion Detection System (IDS) rules. Implement 8 functions taking string parameters: alert_tcp(src, sport, dst, dport, msg, sid), alert_udp(src, sport, dst, dport, msg, sid), alert_icmp(src, dst, msg, sid), alert_http(src, dst, msg, sid), rule_flow(direction, state), rule_content(content, nocase), rule_pcre(regex), and drop_ip(src, dst, msg, sid). Each function constructs a space-separated rule string using standard IDS syntax. Example: alert_tcp(\"$HOME_NET\", \"any\", \"$EXTERNAL_NET\", \"80\", \"HTTP Traffic\", \"1000001\") returns \"alert tcp $HOME_NET any -> $EXTERNAL_NET 80 (msg:\\\"HTTP Traffic\\\"; sid:1000001;)\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d072",
+  "title": "X11 Window Geometry and State String Builder",
+  "spec": "Create a utility to build string identifiers for X11 / Wayland window manager properties. Write 8 functions accepting string arguments: geom_absolute(w, h, x, y), geom_relative(w, h, x_pct, y_pct), win_title(class_name, instance, title), win_state(max_v, max_h, hidden), win_motif(decor, func, input), win_pid_machine(pid, hostname), xrandr_out(name, mode, rate, pos), and xprop_atom(name, type, val). Each formats these parameters into a specific standard string using plus, cross, or dot separators. Example: geom_absolute(\"800\", \"600\", \"100\", \"50\") combines the values to return \"800x600+100+50\". win_title(\"URxvt\", \"urxvt\", \"Terminal\") returns \"URxvt.urxvt.Terminal\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d073",
+  "title": "BIP32 / BIP44 Derivation Path Builder",
+  "spec": "Write a module to construct BIP44 derivation paths for HD wallets given string arguments. Implement 8 functions for different cryptocurrencies: path_bitcoin(account, change, index), path_ethereum(account, index), path_litecoin(account, change, index), path_dogecoin(account, change, index), path_ripple(account, index), path_cardano(account, change, index), path_solana(account, index), and path_custom(coin_type, account, change, index). The functions must build the standard \"m/purpose'/coin_type'/account'/change/index\" paths by combining the segments with slashes. Example: path_bitcoin(\"0\", \"1\", \"5\") builds \"m/44'/0'/0'/1/5\". path_ethereum(\"0\", \"0\") builds \"m/44'/60'/0'/0/0\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d074",
+  "title": "MIDI SysEx Message Builder",
+  "spec": "Develop a utility to build text hex representations of MIDI messages. Write 8 functions accepting string hex values: note_on(ch, note, vel), note_off(ch, note, vel), control_change(ch, cc, val), program_change(ch, prog), pitch_bend(ch, lsb, msb), channel_pressure(ch, val), poly_pressure(ch, note, val), and sysex_msg(mfg, p1, p2, p3). The functions return a space-separated string of the hex bytes. Example: note_on(\"90\", \"3C\", \"7F\") joins the strings to return \"90 3C 7F\". sysex_msg(\"41\", \"10\", \"42\", \"12\") prepends F0 and appends F7, returning \"F0 41 10 42 12 F7\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d075",
+  "title": "Minecraft RCON Command Builder",
+  "spec": "Create a module to generate RCON server administration commands for a Minecraft server. Implement 8 functions accepting string arguments: give_item(player, item, count), tp_player(player, x, y, z), time_set(time_val), weather_set(type, duration), ban_player(player, reason, duration), kick_player(player, reason), title_show(player, title_text, subtitle_text), and xp_add(player, amount, levels). Each function formats the exact space-separated command string required by the console. Example: give_item(\"Notch\", \"minecraft:diamond\", \"64\") combines the parts to return \"give Notch minecraft:diamond 64\". tp_player(\"Steve\", \"100\", \"50\", \"-200\") returns \"tp Steve 100 50 -200\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d076",
+  "title": "vCard Contact File Generator",
+  "spec": "Build a module to format standard vCard text blocks. Implement exactly 8 formatting functions that take specific fixed parameters and combine them into a single string using appropriate separators: `format_name(last, first, middle, prefix, suffix)` separated by `;`, `format_formatted_name(title, first, last)` separated by ` `, `format_birthday(year, month, day)` separated by `-`, `format_telephone(type_str, country_code, number)` separated by `-`, `format_geo(lat, lon)` separated by `;`, `format_org(company, department, team)` separated by `;`, `format_address(pobox, ext, street, city, state, zip, country)` separated by `;`, and `format_categories(cat1, cat2, cat3)` separated by `, `. Each function must return the combined string directly. Include a brief driver block that demonstrates calling these functions with example data like ('Doe', 'John', 'M', 'Mr', '').",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d077",
+  "title": "ASTM E1381 Protocol Formatter",
+  "spec": "Create a module for medical laboratory data transmission strings. Implement 8 functions that combine fixed parameters into delimited strings: `build_header(sender, receiver, processing_id, version)` separated by `|`, `build_patient_id(facility, mrn, account)` separated by `^`, `build_patient_name(last, first, middle)` separated by `^`, `build_patient_record(seq, pat_id, pat_name, dob, sex)` separated by `|`, `build_test_id(universal, local, local_name)` separated by `^`, `build_order_record(seq, spec_id, test_id, priority)` separated by `|`, `build_result_record(seq, test_id, value, units, flags)` separated by `|`, and `build_timestamp(year, month, day, hour, minute, second)` combined with no separator (empty string). Return the assembled string in each function. Include a short main to test them.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d078",
+  "title": "GEDCOM Genealogy Record Builder",
+  "spec": "Write a script to generate genealogy record lines. Define 8 functions that combine their string arguments into a single output: `format_xref(prefix, id_str)` combined with an empty string, `format_line(level, tag, value)` separated by a space, `format_date(day, month, year)` separated by a space, `format_place(city, county, state, country)` separated by `, `, `format_name(first, middle, last)` separated by a space, `format_family_link(link_type, xref)` separated by a space, `format_version(major, minor, patch)` separated by `.`, and `format_header_info(source, version, char_set)` separated by `\n`. Write a main block that uses sample data (e.g., '12', 'JAN', '1905') to show the outputs.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d079",
+  "title": "BibTeX Reference Builder",
+  "spec": "Develop a script for constructing BibTeX entry components. Provide 8 functions that take arguments and combine them using specific separators: `format_author(first, von, last, jr)` separated by a space, `format_multiple_authors(a1, a2, a3)` separated by ` and `, `format_pages(start, end)` separated by `--`, `format_volume_issue(vol, issue)` separated by `:`, `format_location(city, country)` separated by `, `, `format_date(month, year)` separated by a space, `format_citation_key(author_last, year, word)` combined with an empty string, and `format_keywords(k1, k2, k3)` separated by `, `. Return the resulting strings. Add a short demo execution at the end.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d080",
+  "title": "RTSP Request Builder",
+  "spec": "Implement a builder for Real Time Streaming Protocol (RTSP) requests. Provide 8 functions combining strictly fixed arguments into formatted strings: `build_request_line(method, uri, version)` separated by a space, `build_cseq_line(label, seq_num)` separated by `: `, `build_client_port(min_port, max_port)` separated by `-`, `build_transport_spec(protocol, profile, lower, delivery)` separated by `/`, `build_transport_header(transport, ports)` separated by `;`, `build_session_header(label, session_id, timeout)` separated by `;`, `build_accept_header(type1, type2, type3)` separated by `, `, and `build_public_header(m1, m2, m3, m4)` separated by `, `. The main block should test each function.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d081",
+  "title": "URN Generator",
+  "spec": "Write a module to assemble Uniform Resource Names (URNs). You must implement 8 specific string-combining functions: `build_urn_base(scheme, nid, nss)` separated by `:`, `build_isbn_nss(group, publisher, title, check)` separated by `-`, `build_uuid_nss(time_low, time_mid, time_hi_version, clock_seq, node)` separated by `-`, `build_oid_nss(arc1, arc2, arc3, arc4, arc5)` separated by `.`, `build_mpeg_nss(standard, part, version)` separated by `:`, `build_lex_nss(jurisdiction, type_str, date_str)` separated by `:`, `build_epc_nss(domain, type_str, partition, company, asset)` separated by `.`, and `build_issn_nss(prefix, suffix)` separated by `-`. Return the generated string from each and invoke them in a main block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d082",
+  "title": "CORS Policy Header Builder",
+  "spec": "Create a tool to build Cross-Origin Resource Sharing HTTP headers. Define 8 functions that take discrete strings and combine them: `format_allow_origins(o1, o2, o3)` separated by `, `, `format_allow_methods(m1, m2, m3, m4)` separated by `, `, `format_allow_headers(h1, h2, h3)` separated by `, `, `format_expose_headers(h1, h2, h3)` separated by `, `, `format_cache_control(directive, max_age, s_maxage)` separated by `, `, `format_content_type(mime_type, charset)` separated by `; charset=`, `format_vary(v1, v2, v3)` separated by `, `, and `format_content_disposition(type_str, filename)` separated by `; filename=`. Call the functions with sample arguments in a driver block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d083",
+  "title": "APRS Position Packet Builder",
+  "spec": "Build an amateur radio APRS payload formatter. Implement 8 specific functions that combine variables into formatted strings: `format_lat(deg, min, min_frac, hemisphere)` combined with an empty string, `format_lon(deg, min, min_frac, hemisphere)` combined with an empty string, `format_time_dhm(day, hour, minute, zulu)` combined with an empty string, `format_symbol(table, code)` combined with an empty string, `format_course_speed(course, speed)` separated by `/`, `format_phg(power, height, gain, dir)` combined with an empty string, `format_comment(word1, word2, word3)` separated by a space, and `format_routing(callsign, relay1, relay2)` separated by `,`. Demonstrate functionality in a short main section.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d084",
+  "title": "OBD-II CAN Bus Payload Formatter",
+  "spec": "Create a formatting module for automotive OBD-II messages. Include 8 functions that strictly assemble passed arguments: `format_pid_request(mode, pid, data1, data2)` separated by a space, `format_dtc(char, digit1, digit2, digit3, digit4)` combined with an empty string, `format_vin_segment(wmi, vds, vis)` combined with an empty string, `format_version(major, minor, patch)` separated by `.`, `format_temp_sensor(sensor1, sensor2, sensor3)` separated by a space, `format_fuel_trim(bank1, bank2, bank3)` separated by a space, `format_header(priority, receiver, transmitter)` combined with an empty string, and `format_frame(id_str, dlc, payload_str)` separated by a space. Use realistic hex string examples in a test block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d085",
+  "title": "OpenGraph Meta Tag Builder",
+  "spec": "Write a script that pieces together OpenGraph metadata components. Implement 8 functions that take exact parameter lists and combine them: `build_property_name(prefix, entity, attribute)` separated by `:`, `build_locale(language, territory)` separated by `_`, `build_video_duration(hours, minutes, seconds)` separated by `:`, `build_article_author(first, last)` separated by a space, `build_article_tags(tag1, tag2, tag3, tag4)` separated by `, `, `build_music_song(album, disc, track)` separated by `:`, `build_image_url(scheme, domain, path, file)` separated by `/`, and `build_dimensions(width, height)` separated by `x`. Include a main block showing expected outputs.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d086",
+  "title": "Memcached Text Protocol Command Builder",
+  "spec": "Develop a module to build raw Memcached protocol commands. Provide 8 formatting functions that take strings and combine them: `format_set_cmd(cmd, key, flags, exptime, bytes_len)` separated by a space, `format_get_cmd(cmd, key1, key2, key3)` separated by a space, `format_delete_cmd(cmd, key, noreply)` separated by a space, `format_incr_cmd(cmd, key, value, noreply)` separated by a space, `format_touch_cmd(cmd, key, exptime, noreply)` separated by a space, `format_gat_cmd(cmd, exptime, key1, key2)` separated by a space, `format_stats_cmd(cmd, arg1, arg2)` separated by a space, and `format_response_line(status, reason, value)` separated by a space. Test each string builder in a main function.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d087",
+  "title": "WPA2 Supplicant Network Block Builder",
+  "spec": "Create a configuration block generator for wpa_supplicant. Implement 8 string concatenation functions: `format_bssid(m1, m2, m3, m4, m5, m6)` separated by `:`, `format_key_mgmt(km1, km2, km3)` separated by a space, `format_pairwise(cipher1, cipher2)` separated by a space, `format_group(cipher1, cipher2)` separated by a space, `format_eap(method1, method2)` separated by a space, `format_identity(domain, user)` separated by `\\`, `format_phase2(auth, peap)` separated by a space, and `format_freq_list(f1, f2, f3, f4)` separated by a space. Return the strings directly, and showcase the usage with a short driver script.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d088",
+  "title": "SRT Subtitle Block Generator",
+  "spec": "Write a script to build SubRip (SRT) format parts. You must define exactly 8 functions combining their arguments into single strings: `format_time_component(h, m, s)` separated by `:`, `format_timecode(time_comp, millis)` separated by `,`, `format_arrow(start, end)` separated by ` --> `, `format_position(x, y)` separated by `,`, `format_color_tag(r, g, b)` combined with an empty string, `format_font_tag(face, size, color)` separated by a space, `format_speaker(name, text)` separated by `: `, and `format_lines(l1, l2, l3)` separated by `\n`. The main block must execute each to verify output.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d089",
+  "title": "ISCSI IQN Builder",
+  "spec": "Build a module that generates iSCSI Qualified Names (IQNs). Include 8 formatting functions that take exact sets of parameters and combine them: `format_date_part(year, month)` separated by `-`, `format_domain_auth(tld, domain, subdomain)` separated by `.`, `format_iqn_prefix(type_str, date_part, auth_part)` separated by `.`, `format_subsystem(type_str, id_str)` separated by `-`, `format_full_iqn(prefix, subsystem)` separated by `:`, `format_eui(hex1, hex2, hex3, hex4)` combined with an empty string, `format_naa(hex1, hex2, hex3, hex4, hex5)` combined with an empty string, and `format_portal(ip, port, tag)` separated by `:`. Run them with sample data in a main block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d090",
+  "title": "MT940 SWIFT Message Formatter",
+  "spec": "Write a script to assemble SWIFT bank statement sub-fields. Define 8 functions combining fixed components: `format_tag25(country, bank, account)` combined with an empty string, `format_date(yy, mm, dd)` combined with an empty string, `format_tag60F(dc, date, currency, amount)` combined with an empty string, `format_tag61_amount(currency, amount)` combined with an empty string, `format_tag61_ref(swift, ref)` separated by `//`, `format_tag61(date, entry_date, dc, funds, amount, ref)` combined with an empty string, `format_tag86(info1, info2, info3)` separated by a space, and `format_statement_line(tag, val)` separated by `:`. Include a short demo.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d091",
+  "title": "MGCP Command Builder",
+  "spec": "Create a generator for Media Gateway Control Protocol commands. Ensure you write exactly 8 formatting functions that take parameters and join them: `format_endpoint(local, domain)` separated by `@`, `format_trans_id(verb, tid, endpoint, version)` separated by a space, `format_param_lco(codec1, codec2, codec3)` separated by `, `, `format_param_reqinfo(event1, event2, event3)` separated by `, `, `format_connection_id(id1, id2)` combined with an empty string, `format_sdp_header(v, o, s)` separated by `\n`, `format_telephony_event(e1, e2, e3)` separated by `, `, and `format_command(header, p1, p2)` separated by `\n`. Show their behavior in a test block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d092",
+  "title": "Nagios Plugin Output Formatter",
+  "spec": "Develop a module for rendering Nagios check outputs. Implement 8 formatting functions that piece together strings: `format_perfdata_value(val, uom)` combined with an empty string, `format_perfdata_thresholds(warn, crit, min, max)` separated by `;`, `format_status_line(status, desc)` separated by ` - `, `format_extended_data(line1, line2, line3)` separated by `\n`, `format_html_link(url, text)` combined with an empty string, `format_plugin_output(status_line, perfdata)` separated by ` | `, `format_full_output(output, extended, perfdata2)` separated by `\n`, and `format_host_status(host, state, time)` separated by a space. Include a main method to invoke them.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d093",
+  "title": "DICOM Patient Info String Builder",
+  "spec": "Write a medical DICOM tag stringifier. Define 8 functions that accept distinct pieces of data and combine them: `format_person_name(last, first, middle, prefix, suffix)` separated by `^`, `format_patient_id(issuer, id_str)` separated by `-`, `format_date(yyyy, mm, dd)` combined with an empty string, `format_time(hh, mm, ss)` combined with an empty string, `format_time_frac(time_str, frac)` separated by `.`, `format_datetime(date_str, time_str, offset)` combined with an empty string, `format_study_uid(root, org, machine, timestamp)` separated by `.`, and `format_issuer(local, universal, type_str)` separated by `&`. Call the functions in a short demonstration block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d094",
+  "title": "Subversion (SVN) Authz Rules Builder",
+  "spec": "Create a script for formatting Apache SVN authorization blocks. Implement 8 functions that combine precise sets of strings: `format_group_def(group_name, users_str)` separated by ` = `, `format_user_list(u1, u2, u3, u4)` separated by `, `, `format_section(repo, path)` separated by `:`, `format_rule(principal, perms)` separated by ` = `, `format_alias(alias_name, user)` separated by ` = `, `format_file_blocks(b1, b2, b3)` separated by `\n\n`, `format_repo_path(server, repo, path)` separated by `/`, and `format_permissions(r, w)` combined with an empty string. The script should run a short test for each.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d095",
+  "title": "PromQL Query String Builder",
+  "spec": "Build a module for constructing Prometheus PromQL expressions. Define exactly 8 functions that combine fixed arguments: `format_metric_selector(metric, labels_str)` combined with an empty string, `format_label_match(label, op, value)` combined with an empty string, `format_label_list(match1, match2, match3)` separated by `, `, `format_rate(selector, time_range)` separated by a space, `format_aggregation(op, by_labels, expr)` separated by a space, `format_binary_op(expr1, op, expr2)` separated by a space, `format_offset(expr, time_str)` separated by ` offset `, and `format_subquery(expr, range_str, res_str)` separated by `:`. Execute them sequentially in a test block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d096",
+  "title": "Graphite Metric Path Builder",
+  "spec": "Develop a hierarchical metric path builder. Implement 8 distinct string combining functions: `format_datacenter_host(dc, cluster, host)` separated by `.`, `format_app_metric(app, component, metric)` separated by `.`, `format_statsd_prefix(type_str, metric)` separated by `.`, `format_jmx_path(domain, type_str, name, attr)` separated by `.`, `format_tag(key, value)` separated by `=`, `format_tagged_path(path, tag1, tag2, tag3)` separated by `;`, `format_aggregate_path(func, path1, path2)` separated by `,`, and `format_carbon_relay(relay, shard, node)` separated by `.`. Provide an example block passing sample strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d097",
+  "title": "CoAP URI Builder",
+  "spec": "Write an IoT CoAP resource URI formatter. Create 8 formatting functions that take sets of arguments and combine them into strings: `format_host_port(host, port)` separated by `:`, `format_authority(user, info, host_port)` separated by `@`, `format_path(seg1, seg2, seg3, seg4)` separated by `/`, `format_query_param(k, v)` separated by `=`, `format_query(q1, q2, q3)` separated by `&`, `format_multicast_ipv6(prefix, scope, group)` separated by `:`, `format_proxy_uri(scheme, host_port)` separated by `://`, and `format_accept_options(opt1, opt2, opt3)` separated by `, `. Add a short executable block to verify the formatting.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d098",
+  "title": "WireGuard Config Builder",
+  "spec": "Create a tool to build WireGuard VPN configuration components. Define 8 functions combining multiple strings: `format_address_list(ip1, ip2)` separated by `, `, `format_allowed_ips(ip1, ip2, ip3, ip4)` separated by `, `, `format_endpoint(host, port)` separated by `:`, `format_persistent_keepalive(label, seconds)` separated by ` = `, `format_dns_list(dns1, dns2, dns3)` separated by `, `, `format_key_pair(label, key)` separated by ` = `, `format_mtu(label, mtu)` separated by ` = `, and `format_config_blocks(b1, b2, b3)` separated by `\n\n`. Write a main routine calling all functions to output typical lines.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d099",
+  "title": "OpenTSDB Data Point Builder",
+  "spec": "Build a module that formats data points for OpenTSDB. You must implement exactly 8 specific functions that combine arguments: `format_metric_name(ns, app, metric)` separated by `.`, `format_timestamp(sec, ms)` combined with an empty string, `format_tag(key, value)` separated by `=`, `format_tag_list(t1, t2, t3)` separated by a space, `format_data_point(metric, ts, val, tags_str)` separated by a space, `format_put_command(cmd, dp_str)` separated by a space, `format_query_filter(type_str, tagk, filter_val)` separated by `:`, and `format_query_metric(aggregator, rate, metric)` separated by `:`. Provide a demo main section.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d100",
+  "title": "Kafka Topic & Group Name Formatter",
+  "spec": "Write an organizational script to standardize Apache Kafka identifiers. Provide 8 functions combining their arguments into standard strings: `format_topic_name(env, tenant, domain, event)` separated by `.`, `format_dlq_name(topic, suffix, version)` separated by `-`, `format_consumer_group(env, app, version)` separated by `-`, `format_client_id(app, host, worker_id)` separated by `-`, `format_schema_subject(topic, record_type)` separated by `-`, `format_connect_worker(env, cluster, node)` separated by `-`, `format_connector_name(source, db, table)` separated by `-`, and `format_mirror_maker(source_cluster, target_cluster, topic)` separated by `.`. Verify them in a driver block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d101",
+  "title": "JSONPath Expression Builder",
+  "spec": "Write a module for generating JSONPath expressions from basic string components. Provide exactly 8 formatting functions: `build_root()` returning just `$`; `build_child(parent, child)` returning parent and child separated by a dot; `build_descendant(parent, child)` returning parent and child separated by two dots; `build_index(path, idx)` returning the path followed by the stringified index in brackets; `build_slice(path, start, end)` returning the path followed by start and end separated by a colon inside brackets; `build_filter(path, expr)` appending `[?(` and `)]` around the expr; `build_script(path, script)` appending `[((` and `))]` around the script; and `build_wildcard(path)` appending `.*` to the path. Include a short `main()` to demonstrate creating a full query and printing the result.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d102",
+  "title": "PlantUML Sequence Diagram Syntax Builder",
+  "spec": "Write a Python module to generate lines of a PlantUML sequence diagram. Implement 8 distinct line-formatting functions: `uml_participant(name, alias)` returning the participant keyword, name, 'as', and alias; `uml_message(sender, receiver, text)` returning sender, arrow `->`, receiver, colon, and text; `uml_alt(condition)` returning `alt` followed by the condition; `uml_else(condition)` returning `else` followed by the condition; `uml_note_over(target, text)` returning `note over`, target, colon, and text; `uml_activate(target)` returning `activate` and the target; `uml_deactivate(target)` returning `deactivate` and the target; and `uml_return(text)` returning `return` and the text. All components in a line must be separated by spaces. Include a `main()` block that uses these functions to assemble and print a small diagram.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d103",
+  "title": "Doxygen Comment Block Builder",
+  "spec": "Write a tool to generate Doxygen comment lines for C++ code. Implement 8 text formatting functions: `dox_brief(text)` returns `@brief ` followed by text; `dox_param(name, direction, desc)` returns `@param[direction] name desc` with spaces between them; `dox_return(desc)` returns `@return ` followed by desc; `dox_throws(exception, desc)` returns `@throws exception desc`; `dox_see(ref)` returns `@see ` followed by ref; `dox_note(text)` returns `@note ` followed by text; `dox_warning(text)` returns `@warning ` followed by text; and `dox_deprecated(text)` returns `@deprecated ` followed by text. Each function should return a single string. Write a driver block that calls them all and prints a mock documentation block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d104",
+  "title": "X.509 Certificate Subject Name Builder",
+  "spec": "Write a module that constructs standard X.509 Certificate Subject strings. Define 8 functions for different Relative Distinguished Names (RDNs), each taking a single string value and returning the key and value joined by an equals sign: `rdn_country(val)` uses key `C`; `rdn_organization(val)` uses key `O`; `rdn_org_unit(val)` uses key `OU`; `rdn_common_name(val)` uses key `CN`; `rdn_locality(val)` uses key `L`; `rdn_state(val)` uses key `ST`; `rdn_email(val)` uses key `EMAIL`; and `rdn_domain_component(val)` uses key `DC`. Write a driver that creates a dictionary of sample values, calls the functions, and prints the generated RDNs.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d105",
+  "title": "Makefile Target Rule Generator",
+  "spec": "Develop a script that generates syntactic snippets of a Makefile. Provide exactly 8 formatting functions: `make_target(target, prereqs)` returns target name, a colon, a space, and the prerequisites; `make_command(cmd)` returns a tab character followed by the command; `make_var_assign(name, val)` returns name, space, `=`, space, and val; `make_var_append(name, val)` returns name, space, `+=`, space, and val; `make_include(file)` returns `include ` followed by the file; `make_phony(targets)` returns `.PHONY: ` followed by the targets; `make_comment(text)` returns `# ` followed by text; and `make_export(name, val)` returns `export ` followed by name, `=`, and val. Include a `main()` block that prints a generated Makefile snippet.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d106",
+  "title": "AppArmor Profile Rule Builder",
+  "spec": "Write a Python module to generate Linux AppArmor profile rules. Implement 8 functions that output valid rule strings: `aa_read(path)` returns `path r,`; `aa_write(path)` returns `path w,`; `aa_execute(path)` returns `path ix,`; `aa_deny_read(path)` returns `deny path r,`; `aa_deny_write(path)` returns `deny path w,`; `aa_owner_read(path)` returns `owner path r,`; `aa_owner_write(path)` returns `owner path w,`; and `aa_audit_execute(path)` returns `audit path ix,`. All components must be separated by exactly one space, except the trailing comma which immediately follows the permission. Include a `main()` block that calls each function with a sample path like `/etc/passwd` and prints the output.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d107",
+  "title": "Nginx Location Block Generator",
+  "spec": "Create a tool that builds Nginx configuration statements. Include 8 string-returning functions: `nginx_location(path, exact=False)` returns `location = path {` if exact is True, else `location path {`; `nginx_proxy_pass(url)` returns `proxy_pass url;`; `nginx_set_header(header, val)` returns `proxy_set_header header val;`; `nginx_rewrite(pattern, repl)` returns `rewrite pattern repl;`; `nginx_return(code, text)` returns `return code text;`; `nginx_allow(ip)` returns `allow ip;`; `nginx_deny(ip)` returns `deny ip;`; and `nginx_fastcgi_pass(addr)` returns `fastcgi_pass addr;`. Each function must output exactly one properly spaced string. Write a short `main()` to demonstrate assembling a block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d108",
+  "title": "WebVTT Cue Block Generator",
+  "spec": "Write a WebVTT subtitle formatting module. Define 8 functions to generate WebVTT text components: `vtt_cue_id(identifier)` returns the identifier string unchanged; `vtt_timestamp(start, end)` returns start and end separated by ` --> `; `vtt_style_bold(text)` wraps text inside `<b>` and `</b>`; `vtt_style_italic(text)` wraps text inside `<i>` and `</i>`; `vtt_style_underline(text)` wraps text inside `<u>` and `</u>`; `vtt_voice_span(voice, text)` wraps text inside `<v voice>` and `</v>`; `vtt_class_span(cls, text)` wraps text inside `<c.cls>` and `</c>`; and `vtt_lang_span(lang, text)` wraps text inside `<lang lang>` and `</lang>`. Example: `vtt_timestamp('00:01', '00:02')` -> `00:01 --> 00:02`. Include a driver to print a sample cue.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d109",
+  "title": "Gnuplot Script Command Builder",
+  "spec": "Create a Python module that acts as a Gnuplot script command builder. Implement 8 formatting functions: `gnuplot_title(title)` returning `set title 'title'`; `gnuplot_xlabel(label)` returning `set xlabel 'label'`; `gnuplot_ylabel(label)` returning `set ylabel 'label'`; `gnuplot_xrange(min_val, max_val)` returning `set xrange [min_val:max_val]`; `gnuplot_yrange(min_val, max_val)` returning `set yrange [min_val:max_val]`; `gnuplot_terminal(term, size)` returning `set terminal term size size`; `gnuplot_output(filename)` returning `set output 'filename'`; and `gnuplot_plot(filename, using_cols)` returning `plot 'filename' using using_cols`. Example: `gnuplot_xrange('0', '10')` -> `set xrange [0:10]`. Provide a `main()` block to demonstrate.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d110",
+  "title": "INI Configuration File Section Builder",
+  "spec": "Develop a module to generate lines for an INI configuration file. Implement 8 distinct line-building functions: `ini_section(name)` returns the name enclosed in brackets `[name]`; `ini_key_value(key, value)` returns key and value separated by ` = `; `ini_comment(text)` returns a semicolon `;` followed by a space and text; `ini_inline_comment(key, value, comment)` returns key, ` = `, value, ` ; `, and comment; `ini_array_item(key, value)` returns key, `[] = `, and value; `ini_boolean(key, is_true)` returns key, ` = `, and either `true` or `false` based on the boolean; `ini_include(filename)` returns `%include `, filename; and `ini_macro(name, value)` returns name, ` = `, and value wrapped in `${` and `}`. Include a `main()` to print a sample file layout.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d111",
+  "title": "Iptables Rule String Generator",
+  "spec": "Write a script to build `iptables` rule commands as strings. Define 8 segment functions: `ipt_append(chain)` returns `-A chain`; `ipt_protocol(proto)` returns `-p proto`; `ipt_source(ip)` returns `-s ip`; `ipt_destination(ip)` returns `-d ip`; `ipt_tcp_dport(port)` returns `--dport port`; `ipt_tcp_sport(port)` returns `--sport port`; `ipt_jump(target)` returns `-j target`; and `ipt_match_state(states)` returns `-m state --state states`. A driver should demonstrate chaining these snippets together into a full CLI rule by printing the individual strings sequentially. Example: `ipt_source('192.168.1.1')` -> `-s 192.168.1.1`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d112",
+  "title": "Robot URDF XML Snippet Builder",
+  "spec": "Write a module to generate Unified Robot Description Format (URDF) single-line XML tags. Provide 8 formatting functions: `urdf_link(name)` returns `<link name=\"name\"/>`; `urdf_joint(name, type)` returns `<joint name=\"name\" type=\"type\">`; `urdf_parent(link)` returns `<parent link=\"link\"/>`; `urdf_child(link)` returns `<child link=\"link\"/>`; `urdf_origin(xyz, rpy)` returns `<origin xyz=\"xyz\" rpy=\"rpy\"/>`; `urdf_mass(value)` returns `<mass value=\"value\"/>`; `urdf_box(size)` returns `<box size=\"size\"/>`; and `urdf_cylinder(radius, length)` returns `<cylinder radius=\"radius\" length=\"length\"/>`. All attributes must be properly quoted in the returned string. Include a demonstration block that prints a generated joint description.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d113",
+  "title": "Sieve Email Filtering Script Builder",
+  "spec": "Construct rules for Sieve email filtering scripts. Implement 8 functions that output valid Sieve language statements: `sieve_require(exts)` returns `require [exts];`; `sieve_if_header(header, value)` returns `if header :is \"header\" \"value\" {`; `sieve_elsif_header(header, value)` returns `elsif header :is \"header\" \"value\" {`; `sieve_fileinto(folder)` returns `fileinto \"folder\";`; `sieve_redirect(address)` returns `redirect \"address\";`; `sieve_reject(reason)` returns `reject \"reason\";`; `sieve_addflag(flag)` returns `addflag \"flag\";`; and `sieve_setflag(flag)` returns `setflag \"flag\";`. Create a short driver to piece together and print a sample Sieve block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d114",
+  "title": "Logstash Pipeline Config Builder",
+  "spec": "Generate lines for a Logstash pipeline configuration file. Include 8 functions: `ls_input_beats(port)` returns `beats { port => port }`; `ls_filter_grok(match)` returns `grok { match => { match } }`; `ls_mutate_add(field, val)` returns `mutate { add_field => { \"field\" => \"val\" } }`; `ls_mutate_remove(field)` returns `mutate { remove_field => [ \"field\" ] }`; `ls_date_match(field, format)` returns `date { match => [ \"field\", \"format\" ] }`; `ls_output_es(host, index)` returns `elasticsearch { hosts => [\"host\"] index => \"index\" }`; `ls_if_equals(field, val)` returns `if [field] == \"val\" {`; and `ls_else_if(field, val)` returns `} else if [field] == \"val\" {`. Write a `main()` block to print the strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d115",
+  "title": "Gemfile (Ruby) Dependency Line Builder",
+  "spec": "Build configuration lines for a Ruby `Gemfile`. Write 8 module functions: `gem_source(url)` returns `source 'url'`; `gem_basic(name)` returns `gem 'name'`; `gem_version(name, version)` returns `gem 'name', 'version'`; `gem_github(name, repo)` returns `gem 'name', github: 'repo'`; `gem_branch(name, repo, branch)` returns `gem 'name', github: 'repo', branch: 'branch'`; `gem_group(group_name)` returns `group :group_name do`; `gem_require_false(name)` returns `gem 'name', require: false`; and `gem_path(name, path)` returns `gem 'name', path: 'path'`. Write a short demonstration that generates and prints a valid series of Gemfile declarations.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d116",
+  "title": "Apache Httpd VirtualHost Block Builder",
+  "spec": "Build lines for Apache HTTP Server configurations. Provide exactly 8 functions: `vhost_start(ip, port)` returns `<VirtualHost ip:port>`; `vhost_end()` returns `</VirtualHost>`; `server_name(name)` returns `ServerName name`; `server_alias(alias)` returns `ServerAlias alias`; `document_root(path)` returns `DocumentRoot \"path\"`; `error_log(path)` returns `ErrorLog \"path\"`; `custom_log(path, format)` returns `CustomLog \"path\" format`; and `directory_start(path)` returns `<Directory \"path\">`. Include a `main()` that creates and displays a short mock VirtualHost block by printing these strings sequentially.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d117",
+  "title": "ChordPro Song File Line Generator",
+  "spec": "Generate lines in ChordPro format for sheet music. Implement 8 functions: `cp_title(text)` returns `{title: text}`; `cp_subtitle(text)` returns `{subtitle: text}`; `cp_artist(name)` returns `{artist: name}`; `cp_comment(text)` returns `{comment: text}`; `cp_chorus_start()` returns `{start_of_chorus}`; `cp_chorus_end()` returns `{end_of_chorus}`; `cp_tab_start()` returns `{start_of_tab}`; and `cp_chord_lyric(chord, lyric)` returns the chord surrounded by `[` and `]` followed directly by the lyric. Example: `cp_chord_lyric('G', 'Hello')` -> `[G]Hello`. Show usage by writing a `main()` that prints a 4-line snippet of a song.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d118",
+  "title": "Git Attributes File Line Builder",
+  "spec": "Construct rules for a `.gitattributes` configuration file. Implement 8 formatting functions: `gitattr_text(pattern)` returns `pattern text`; `gitattr_binary(pattern)` returns `pattern -text`; `gitattr_crlf(pattern)` returns `pattern text eol=crlf`; `gitattr_lf(pattern)` returns `pattern text eol=lf`; `gitattr_diff(pattern, driver)` returns `pattern diff=driver`; `gitattr_merge(pattern, driver)` returns `pattern merge=driver`; `gitattr_export_ignore(pattern)` returns `pattern export-ignore`; and `gitattr_linguist_lang(pattern, lang)` returns `pattern linguist-language=lang`. The pattern and attributes must be separated by spaces. Include a `main()` block that uses these to generate and print a sample `.gitattributes` configuration.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d119",
+  "title": "Bicep (Azure) Resource Declaration Builder",
+  "spec": "Generate lines of Azure Bicep code. Implement 8 snippet functions: `bicep_param(name, type)` returns `param name type`; `bicep_param_default(name, type, val)` returns `param name type = val`; `bicep_var(name, val)` returns `var name = val`; `bicep_resource(name, type, api)` returns `resource name 'type@api' = {`; `bicep_location(loc)` returns `location: loc`; `bicep_sku(name)` returns `sku: { name: 'name' }`; `bicep_depends_on(res)` returns `dependsOn: [ res ]`; and `bicep_output(name, type, val)` returns `output name type = val`. Bicep string literals like `'type@api'` should include single quotes in the output. Demonstrate them in a `main()` block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d120",
+  "title": "Wayland Protocol XML Message Builder",
+  "spec": "Construct XML element strings for Wayland protocol definitions. Define 8 generation functions: `wl_interface(name, ver)` returns `<interface name=\"name\" version=\"ver\">`; `wl_request(name)` returns `<request name=\"name\">`; `wl_event(name)` returns `<event name=\"name\">`; `wl_arg(name, type)` returns `<arg name=\"name\" type=\"type\"/>`; `wl_arg_summary(name, type, summary)` returns `<arg name=\"name\" type=\"type\" summary=\"summary\"/>`; `wl_enum(name)` returns `<enum name=\"name\">`; `wl_entry(name, val, summary)` returns `<entry name=\"name\" value=\"val\" summary=\"summary\"/>`; and `wl_description(summary)` returns `<description summary=\"summary\"/>`. Provide a driver that prints out a generated request layout.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d121",
+  "title": "EPP (Extensible Provisioning Protocol) Command Builder",
+  "spec": "Build EPP XML command snippets for domain registration. Define 8 functions mapping inputs to XML: `epp_login_tag(clID)` returns `<login><clID>clID</clID>`; `epp_domain_check(domain)` returns `<domain:check><domain:name>domain</domain:name></domain:check>`; `epp_domain_info(domain)` returns `<domain:info><domain:name>domain</domain:name></domain:info>`; `epp_domain_delete(domain)` returns `<domain:delete><domain:name>domain</domain:name></domain:delete>`; `epp_contact_id(id)` returns `<contact:id>id</contact:id>`; `epp_contact_name(name)` returns `<contact:name>name</contact:name>`; `epp_contact_email(email)` returns `<contact:email>email</contact:email>`; and `epp_clTRID(trid)` returns `<clTRID>trid</clTRID>`. Write a driver block to verify their outputs by printing them to standard output.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ }
+]

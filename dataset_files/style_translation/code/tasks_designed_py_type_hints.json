@@ -1,0 +1,80 @@
+[
+ {
+  "id": "d001",
+  "title": "E-commerce Discount Calculator Pipeline",
+  "spec": "Implement a checkout pricing module with three specific functions. `get_base_discount(customer_loyalty_tier_name)` returns a discount fraction (0.05 for 'bronze', 0.10 for 'silver', 0.15 for 'gold', 0.20 for 'platinum', and 0.0 otherwise). `apply_seasonal_promo(current_cart_total_amount, is_active_holiday_season)` subtracts $15 from the total if the season is active and the total is strictly over $100. `calculate_final_checkout_price(current_cart_total_amount, customer_loyalty_tier_name, is_active_holiday_season)` coordinates these by first applying the loyalty discount to the original total, then applying the seasonal promo to that newly discounted amount, returning the final price rounded to 2 decimals. Provide a small script at the bottom that calculates and prints the final price for a $150.00 cart, 'gold' tier, during a holiday.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "Sensor Data Normalization",
+  "spec": "Write a sensor data cleaning pipeline using three functions. Provide `filter_temperature_outliers(raw_temperature_readings, minimum_valid_temperature, maximum_valid_temperature)` which returns a new list keeping only numeric values within the inclusive bounds. Provide `apply_sensor_calibration(filtered_temperature_readings, calibration_offset_value)` which adds the float offset to each reading in the list. Finally, `generate_final_report(raw_temperature_readings, minimum_valid_temperature, maximum_valid_temperature, calibration_offset_value)` uses the two helpers to process the data and returns a dictionary with 'count' (number of valid readings) and 'average' (mean of calibrated readings, or 0.0 if empty). For example, raw `[70, 72, -999, 75, 105]`, min `0`, max `100`, offset `1.5` yields count: 3, average: 73.83.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "Text Readability Scorer",
+  "spec": "Create a text analysis module to estimate reading difficulty using three functions. `count_syllables(target_english_word, ignore_trailing_e_flag)` counts vowels (a, e, i, o, u, y), optionally subtracting 1 if the flag is true and the word ends with 'e', ensuring a minimum of 1. `calculate_sentence_statistics(raw_paragraph_text, sentence_delimiters_list)` splits text by the provided delimiters (e.g., ['.', '!', '?']) to return a tuple of `(total_sentences, total_words)`. `compute_readability_index(raw_paragraph_text, ignore_trailing_e_flag, sentence_delimiters_list)` orchestrates these to find the totals and returns the float result of: `206.835 - 1.015 * (words / sentences) - 84.6 * (syllables / words)`. Handle empty text gracefully by returning 0.0, and include a driver block with a short sample paragraph.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "Log File Anomaly Detector",
+  "spec": "Build a server log analyzer with three sequential functions. `extract_ip_and_status(single_log_line_string, status_separator_character)` parses a line like '192.168.1.10 - 404' using the given separator and returns a tuple of the IP string and integer status code. `aggregate_error_counts(parsed_log_entries_list, target_error_codes_list)` takes a list of those tuples and returns a dictionary mapping IP addresses to a count of occurrences of the target codes (e.g., [404, 500]). `generate_ip_blocklist(raw_log_lines_list, status_separator_character, target_error_codes_list, maximum_allowed_errors)` orchestrates the parsing and aggregation, returning a sorted list of IPs that strictly exceed the allowed errors threshold. Test the pipeline with 5 sample log lines.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "Recipe Ingredient Scaler",
+  "spec": "Write a recipe scaling module utilizing three functions. Function `calculate_scaling_factor(original_serving_size_count, desired_serving_size_count)` returns the ratio of desired to original as a float. Function `scale_single_ingredient(original_ingredient_amount, scaling_factor_multiplier)` multiplies the amount by the factor, rounding to 2 decimal places. Function `scale_entire_recipe(recipe_ingredients_dictionary, original_serving_size_count, desired_serving_size_count)` takes a dictionary mapping ingredient names to numeric amounts, and uses the helpers to return a new dictionary with scaled amounts. For example, scaling `{'flour': 250, 'sugar': 100}` from 4 servings to 6 servings yields `{'flour': 375.0, 'sugar': 150.0}`. Provide a short demo calling the main function.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "Game Experience Point (XP) System",
+  "spec": "Create a game character progression script with three logic functions. `calculate_base_xp_yield(enemy_level_value, player_level_value, enemy_difficulty_rank)` returns an integer base XP: `(enemy_level_value * 10 * enemy_difficulty_rank) // player_level_value`. `determine_level_ups(current_total_xp, newly_gained_xp)` calculates how many levels are gained, assuming each level requires a flat 1000 XP, returning the integer count of level ups. `apply_combat_results(current_total_xp, current_player_level, enemy_level_value, enemy_difficulty_rank)` coordinates these to calculate gained XP, update total XP, compute level ups, and return a dictionary with keys 'new_total_xp' and 'new_player_level'. Example: Player level 5, total XP 4800 defeats a level 6, rank 2 enemy, yielding 24 XP, resulting in total 4824, level 5.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "Payroll Processing System",
+  "spec": "Implement a payroll calculator. `calculate_gross_pay(hours_worked_this_period, hourly_wage_rate)` returns hours multiplied by wage, ensuring any hours over 40 are paid at 1.5x the wage. `compute_tax_deductions(gross_pay_amount, employee_tax_bracket_percentage)` returns the tax amount as `(gross_pay_amount * employee_tax_bracket_percentage / 100)`. `calculate_final_net_pay(hours_worked_this_period, hourly_wage_rate, employee_tax_bracket_percentage, fixed_benefit_deduction_amount)` computes gross pay, subtracts taxes and the fixed benefit deduction, and returns the final net pay (if the result is negative, return 0.0). Provide a driver block that calculates the net pay for 45 hours worked at $20/hr, with a 15% tax bracket, and $50 in benefits.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "Inventory Reorder Manager",
+  "spec": "Build an inventory management module using three functions. `requires_reorder(current_stock_level, minimum_stock_threshold)` returns True if the stock is exactly at or below the threshold. `calculate_reorder_quantity(current_stock_level, target_maximum_stock_capacity)` returns the integer difference between the target and current stock. `generate_purchase_orders(inventory_status_records, minimum_stock_threshold, target_maximum_stock_capacity)` takes a dictionary mapping item SKUs to their current stock levels, and uses the helpers to return a new dictionary mapping SKUs to the quantity that should be ordered, only including items that actually require reordering. Example: `{'A': 5, 'B': 20}`, threshold 10, max 50 returns `{'A': 45}`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Flight Itinerary Pricer",
+  "spec": "Write a flight pricing module. `calculate_baggage_fees(number_of_checked_bags, weight_of_heaviest_bag_kg)` charges $30 for the first bag, $40 for the second, and $50 for any additional; plus a $25 flat fee if the heaviest bag exceeds 23kg. `calculate_seat_upgrade_cost(seat_class_preference_name, frequent_flyer_status_tier)` returns $0 for 'economy', $50 for 'premium', $200 for 'business', but applies a 50% discount to the upgrade cost if the tier is 'gold' or 'platinum'. `compute_total_itinerary_price(base_ticket_fare_amount, number_of_checked_bags, weight_of_heaviest_bag_kg, seat_class_preference_name, frequent_flyer_status_tier)` sums the base fare, baggage fees, and seat upgrade cost. Provide a short demo executing these functions.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "Fitness Workout Tracker",
+  "spec": "Implement a fitness calorie tracker. `get_exercise_metabolic_equivalent(exercise_type_name_string)` returns standard MET values: 'running' is 9.8, 'cycling' is 7.5, 'swimming' is 8.3, 'walking' is 3.5 (return 1.0 for unknown types). `calculate_calories_burned(exercise_metabolic_equivalent_value, duration_in_minutes, user_weight_kilograms)` uses the formula: `duration_in_minutes * (exercise_metabolic_equivalent_value * 3.5 * user_weight_kilograms) / 200`. `process_workout_session(exercise_type_name_string, duration_in_minutes, user_weight_kilograms)` uses these helpers to compute the burned calories and returns a formatted string like 'Burned 350.5 kcal doing running'. Provide a main block testing two different exercises.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "Stock Portfolio Rebalancer",
+  "spec": "Create a stock portfolio rebalancer. `calculate_current_portfolio_value(asset_holdings_quantities, current_asset_prices)` takes two dicts (ticker to quantity, ticker to price) and returns the total dollar value of the portfolio. `determine_target_value_per_asset(total_portfolio_value_amount, target_allocation_percentages)` takes a total value and a dict of ticker to target percentage (0-100), returning a dict of target dollar values per ticker. `generate_rebalancing_trades(asset_holdings_quantities, current_asset_prices, target_allocation_percentages)` calculates the difference between target values and current values (current quantity * price), returning a dict of dollar amounts to buy (positive) or sell (negative) for each ticker to reach the target allocation.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Network Routing Metric Calculator",
+  "spec": "Build a network route metric calculator inspired by standard routing protocols. `calculate_bandwidth_metric(minimum_path_bandwidth_kbps, reference_bandwidth_kbps)` returns `reference_bandwidth_kbps // minimum_path_bandwidth_kbps` (using floor division). `calculate_delay_metric(total_path_delay_microseconds, delay_scaling_factor)` returns `total_path_delay_microseconds // delay_scaling_factor`. `compute_composite_routing_metric(minimum_path_bandwidth_kbps, reference_bandwidth_kbps, total_path_delay_microseconds, delay_scaling_factor, path_reliability_score)` sums the bandwidth and delay metrics, multiplies by 256, and if reliability (0-255) is under 255, multiplies the result by `(255 / path_reliability_score)` rounded down to the nearest integer. Test with a sample set of parameters.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Library Overdue Fine Calculator",
+  "spec": "Write a library overdue fine calculator. `determine_daily_fine_rate(library_item_category_name)` returns $0.25 for 'book', $1.00 for 'dvd', and $5.00 for 'equipment'. `calculate_raw_fine_amount(days_overdue_count, daily_fine_rate_amount)` multiplies the two numbers, returning 0.0 if days overdue is 0 or negative. `compute_final_capped_fine(library_item_category_name, days_overdue_count, item_replacement_cost_amount)` gets the raw fine using the helpers, and caps it at either $10.00 or the item's replacement cost, whichever is strictly lower. Return the final capped fine as a float. Provide a script at the bottom that calculates a 10-day overdue 'dvd' with a $15.00 replacement cost.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ }
+]

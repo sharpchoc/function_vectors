@@ -1,5 +1,555 @@
 [
 {
+"doc_id": "comma_space__d004",
+"family": "comma_space",
+"topic": "Key-Value Configuration Parsing",
+"angle": "code",
+"text_es": "Write a script that processes configuration lines. Implement `parse_line(line, fallback)` that splits a string by the equals sign (without passing a maxsplit argument). Unpack the split result into `key` and `value` on a single line, returning them as a tuple; if it fails due to unpacking an invalid number of items, catch the exception and return `(line, fallback)`. Implement `apply_setting(config_dict, pair_tuple)` which unpacks a `(key, value)` tuple and assigns it into the dictionary. Implement `get_setting(config_dict, key)` that returns the value. In the main function, initialize an empty dictionary, process the string `\"port=8080\"` passing `False` as the fallback, store the returned tuple, apply it to the dictionary, and print the dictionary.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "DEFAULT_FALLBACK = False\n\nTRUTHY = (\n    \"true\",\n    \"yes\",\n    \"on\",\n)\n\nFALSEY = (\n    \"false\",\n    \"no\",\n    \"off\",\n)\n\n\ndef parse_line(line, fallback):\n    \"\"\"Split a configuration line on '=' and return a (key, value) tuple.\"\"\"\n    try:\n        key, value = line.split(\"=\")\n    except ValueError:\n        return (line, fallback)\n    return (key.strip(), value.strip())\n\n\ndef apply_setting(config_dict, pair_tuple):\n    \"\"\"Unpack a (key, value) tuple and store it in the dictionary.\"\"\"\n    key, value = pair_tuple\n    config_dict[key] = value\n    return config_dict\n\n\ndef get_setting(config_dict, key):\n    \"\"\"Return the stored value for key.\"\"\"\n    return config_dict[key]\n\n\ndef coerce_value(value):\n    \"\"\"Turn a raw configuration string into a bool, an int or the string.\"\"\"\n    if not isinstance(value, str):\n        return value\n    lowered = value.lower()\n    if lowered in TRUTHY:\n        return True\n    if lowered in FALSEY:\n        return False\n    try:\n        return int(value)\n    except ValueError:\n        return value\n\n\ndef load_lines(config_dict, lines):\n    \"\"\"Parse every line and apply the resulting pair to the dictionary.\"\"\"\n    for line in lines:\n        pair = parse_line(line, DEFAULT_FALLBACK)\n        apply_setting(config_dict, pair)\n    return config_dict\n\n\ndef format_report(config_dict, keys):\n    \"\"\"Build a readable listing of the requested keys and coerced values.\"\"\"\n    rows = []\n    for key in keys:\n        raw = get_setting(config_dict, key)\n        rows.append(\"{0:>14} : {1!r}\".format(key, coerce_value(raw)))\n    return \"\\n\".join(rows)\n\n\ndef main():\n    config = {}\n    pair = parse_line(\"port=8080\", False)\n    apply_setting(config, pair)\n    print(config)\n\n    extra_lines = [\n        \"host=localhost\",\n        \"debug=true\",\n        \"retries=3\",\n        \"malformed-line\",\n    ]\n    load_lines(config, extra_lines)\n    print(format_report(config, sorted(config)))\n    port = coerce_value(get_setting(config, \"port\"))\n    print(\"port as int:\", port)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "DEFAULT_FALLBACK = False\n\nTRUTHY = (\n    \"true\",\n    \"yes\",\n    \"on\",\n)\n\nFALSEY = (\n    \"false\",\n    \"no\",\n    \"off\",\n)\n\n\ndef parse_line(line,fallback):\n    \"\"\"Split a configuration line on '=' and return a (key, value) tuple.\"\"\"\n    try:\n        key,value = line.split(\"=\")\n    except ValueError:\n        return (line,fallback)\n    return (key.strip(),value.strip())\n\n\ndef apply_setting(config_dict,pair_tuple):\n    \"\"\"Unpack a (key, value) tuple and store it in the dictionary.\"\"\"\n    key,value = pair_tuple\n    config_dict[key] = value\n    return config_dict\n\n\ndef get_setting(config_dict,key):\n    \"\"\"Return the stored value for key.\"\"\"\n    return config_dict[key]\n\n\ndef coerce_value(value):\n    \"\"\"Turn a raw configuration string into a bool, an int or the string.\"\"\"\n    if not isinstance(value,str):\n        return value\n    lowered = value.lower()\n    if lowered in TRUTHY:\n        return True\n    if lowered in FALSEY:\n        return False\n    try:\n        return int(value)\n    except ValueError:\n        return value\n\n\ndef load_lines(config_dict,lines):\n    \"\"\"Parse every line and apply the resulting pair to the dictionary.\"\"\"\n    for line in lines:\n        pair = parse_line(line,DEFAULT_FALLBACK)\n        apply_setting(config_dict,pair)\n    return config_dict\n\n\ndef format_report(config_dict,keys):\n    \"\"\"Build a readable listing of the requested keys and coerced values.\"\"\"\n    rows = []\n    for key in keys:\n        raw = get_setting(config_dict,key)\n        rows.append(\"{0:>14} : {1!r}\".format(key,coerce_value(raw)))\n    return \"\\n\".join(rows)\n\n\ndef main():\n    config = {}\n    pair = parse_line(\"port=8080\",False)\n    apply_setting(config,pair)\n    print(config)\n\n    extra_lines = [\n        \"host=localhost\",\n        \"debug=true\",\n        \"retries=3\",\n        \"malformed-line\",\n    ]\n    load_lines(config,extra_lines)\n    print(format_report(config,sorted(config)))\n    port = coerce_value(get_setting(config,\"port\"))\n    print(\"port as int:\",port)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": " ",
+"alt": "",
+"nat_span": [
+142,
+143
+],
+"alt_span": [
+142,
+142
+]
+},
+{
+"k": 1,
+"nat": " ",
+"alt": "",
+"nat_span": [
+252,
+253
+],
+"alt_span": [
+251,
+251
+]
+},
+{
+"k": 2,
+"nat": " ",
+"alt": "",
+"nat_span": [
+321,
+322
+],
+"alt_span": [
+319,
+319
+]
+},
+{
+"k": 3,
+"nat": " ",
+"alt": "",
+"nat_span": [
+356,
+357
+],
+"alt_span": [
+353,
+353
+]
+},
+{
+"k": 4,
+"nat": " ",
+"alt": "",
+"nat_span": [
+404,
+405
+],
+"alt_span": [
+400,
+400
+]
+},
+{
+"k": 5,
+"nat": " ",
+"alt": "",
+"nat_span": [
+496,
+497
+],
+"alt_span": [
+491,
+491
+]
+},
+{
+"k": 6,
+"nat": " ",
+"alt": "",
+"nat_span": [
+598,
+599
+],
+"alt_span": [
+592,
+592
+]
+},
+{
+"k": 7,
+"nat": " ",
+"alt": "",
+"nat_span": [
+808,
+809
+],
+"alt_span": [
+801,
+801
+]
+},
+{
+"k": 8,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1065,
+1066
+],
+"alt_span": [
+1057,
+1057
+]
+},
+{
+"k": 9,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1203,
+1204
+],
+"alt_span": [
+1194,
+1194
+]
+},
+{
+"k": 10,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1256,
+1257
+],
+"alt_span": [
+1246,
+1246
+]
+},
+{
+"k": 11,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1318,
+1319
+],
+"alt_span": [
+1307,
+1307
+]
+},
+{
+"k": 12,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1476,
+1477
+],
+"alt_span": [
+1464,
+1464
+]
+},
+{
+"k": 13,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1531,
+1532
+],
+"alt_span": [
+1518,
+1518
+]
+},
+{
+"k": 14,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1643,
+1644
+],
+"alt_span": [
+1629,
+1629
+]
+},
+{
+"k": 15,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1676,
+1677
+],
+"alt_span": [
+1661,
+1661
+]
+},
+{
+"k": 16,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1845,
+1846
+],
+"alt_span": [
+1829,
+1829
+]
+},
+{
+"k": 17,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1890,
+1891
+],
+"alt_span": [
+1873,
+1873
+]
+},
+{
+"k": 18,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1951,
+1952
+],
+"alt_span": [
+1933,
+1933
+]
+},
+{
+"k": 19,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1986,
+1987
+],
+"alt_span": [
+1967,
+1967
+]
+}
+],
+"k_en": 20,
+"shared_fraction": 0.971,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": " ",
+"alt": "",
+"nat_span": [
+142,
+143
+],
+"alt_span": [
+142,
+142
+]
+},
+{
+"k": 1,
+"nat": " ",
+"alt": "",
+"nat_span": [
+252,
+253
+],
+"alt_span": [
+251,
+251
+]
+},
+{
+"k": 2,
+"nat": " ",
+"alt": "",
+"nat_span": [
+321,
+322
+],
+"alt_span": [
+319,
+319
+]
+},
+{
+"k": 3,
+"nat": " ",
+"alt": "",
+"nat_span": [
+356,
+357
+],
+"alt_span": [
+353,
+353
+]
+},
+{
+"k": 4,
+"nat": " ",
+"alt": "",
+"nat_span": [
+404,
+405
+],
+"alt_span": [
+400,
+400
+]
+},
+{
+"k": 5,
+"nat": " ",
+"alt": "",
+"nat_span": [
+496,
+497
+],
+"alt_span": [
+491,
+491
+]
+},
+{
+"k": 6,
+"nat": " ",
+"alt": "",
+"nat_span": [
+598,
+599
+],
+"alt_span": [
+592,
+592
+]
+},
+{
+"k": 7,
+"nat": " ",
+"alt": "",
+"nat_span": [
+808,
+809
+],
+"alt_span": [
+801,
+801
+]
+},
+{
+"k": 8,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1065,
+1066
+],
+"alt_span": [
+1057,
+1057
+]
+},
+{
+"k": 9,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1203,
+1204
+],
+"alt_span": [
+1194,
+1194
+]
+},
+{
+"k": 10,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1256,
+1257
+],
+"alt_span": [
+1246,
+1246
+]
+},
+{
+"k": 11,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1318,
+1319
+],
+"alt_span": [
+1307,
+1307
+]
+},
+{
+"k": 12,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1476,
+1477
+],
+"alt_span": [
+1464,
+1464
+]
+},
+{
+"k": 13,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1531,
+1532
+],
+"alt_span": [
+1518,
+1518
+]
+},
+{
+"k": 14,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1643,
+1644
+],
+"alt_span": [
+1629,
+1629
+]
+},
+{
+"k": 15,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1676,
+1677
+],
+"alt_span": [
+1661,
+1661
+]
+},
+{
+"k": 16,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1845,
+1846
+],
+"alt_span": [
+1829,
+1829
+]
+},
+{
+"k": 17,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1890,
+1891
+],
+"alt_span": [
+1873,
+1873
+]
+},
+{
+"k": 18,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1951,
+1952
+],
+"alt_span": [
+1933,
+1933
+]
+},
+{
+"k": 19,
+"nat": " ",
+"alt": "",
+"nat_span": [
+1986,
+1987
+],
+"alt_span": [
+1967,
+1967
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "comma_space__t001",
 "family": "comma_space",
 "topic": "Reverse a String",
@@ -53216,315 +53766,6 @@
 "alt_span": [
 1723,
 1723
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "comma_space__t108",
-"family": "comma_space",
-"topic": "Check Website Status (Dummy)",
-"angle": "code",
-"text_es": "Simulate checking the status of a website. The function `check_website_status(url)` should always return a dummy value of '200 OK'. In a real scenario, this would involve an HTTP request. Input: `url` (str). Output: `status` (str).\nExample 1: `check_website_status('http://example.com')` should return `'200 OK'`.\nExample 2: `check_website_status('https://google.com')` should return `'200 OK'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def check_website_status(\n    url: str,\n) -> str:\n    # This is a dummy implementation for a website status checker.\n    # In a real-world scenario, this function would perform an actual HTTP request\n    # using libraries like 'requests', 'urllib.request', or similar.\n    # We are simulating a successful response for demonstration purposes.\n\n    # Example of arguments:\n    valid_urls = [\n        'http://example.com',\n        'https://google.com',\n        'http://test.org',\n        'https://api.github.com/users/octocat',\n    ]\n\n    # Another example of arguments:\n    status_codes = [\n        '200 OK',\n        '404 Not Found',\n        '500 Internal Server Error',\n    ]\n\n    # For this exercise, we always return a success status.\n    # The 'url' argument is used for signature compatibility, not actual processing here.\n\n    # This line has several elements separated by commas:\n    dummy_response_parts = ['200', 'OK', 'Success', 'Live', 'Online']\n\n    # Another line with multiple elements:\n    irrelevant_data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\n    # This line also has multiple elements:\n    some_flags = [True, False, True, False, True]\n\n    # A tuple with multiple elements:\n    response_header_tuple = ('Content-Type', 'text/html', 'charset=utf-8')\n\n    # A set with various elements:\n    allowed_methods = {'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'}\n\n    # Dictionary with multiple key-value pairs:\n    metadata = {\n        'version': '1.0',\n        'author': 'Simulator',\n        'date': '2023-10-27',\n        'purpose': 'demonstration',\n    }\n\n    # Another list with several string literals:\n    log_messages = [\n        f\"Checking status for: {url}\",\n        \"Simulating network call...\",\n        \"Returning dummy success.\",\n    ]\n\n    # Another set example:\n    http_protocols = {'HTTP/1.0', 'HTTP/1.1', 'HTTP/2', 'HTTP/3'}\n\n    return '200 OK'\n",
-"text_alt": "def check_website_status(\n    url: str,\n) -> str:\n    # This is a dummy implementation for a website status checker.\n    # In a real-world scenario, this function would perform an actual HTTP request\n    # using libraries like 'requests', 'urllib.request', or similar.\n    # We are simulating a successful response for demonstration purposes.\n\n    # Example of arguments:\n    valid_urls = [\n        'http://example.com',\n        'https://google.com',\n        'http://test.org',\n        'https://api.github.com/users/octocat',\n    ]\n\n    # Another example of arguments:\n    status_codes = [\n        '200 OK',\n        '404 Not Found',\n        '500 Internal Server Error',\n    ]\n\n    # For this exercise, we always return a success status.\n    # The 'url' argument is used for signature compatibility, not actual processing here.\n\n    # This line has several elements separated by commas:\n    dummy_response_parts = ['200','OK','Success','Live','Online']\n\n    # Another line with multiple elements:\n    irrelevant_data = [1,2,3,4,5,6,7,8,9,10]\n\n    # This line also has multiple elements:\n    some_flags = [True,False,True,False,True]\n\n    # A tuple with multiple elements:\n    response_header_tuple = ('Content-Type','text/html','charset=utf-8')\n\n    # A set with various elements:\n    allowed_methods = {'GET','POST','PUT','DELETE','HEAD','OPTIONS'}\n\n    # Dictionary with multiple key-value pairs:\n    metadata = {\n        'version': '1.0',\n        'author': 'Simulator',\n        'date': '2023-10-27',\n        'purpose': 'demonstration',\n    }\n\n    # Another list with several string literals:\n    log_messages = [\n        f\"Checking status for: {url}\",\n        \"Simulating network call...\",\n        \"Returning dummy success.\",\n    ]\n\n    # Another set example:\n    http_protocols = {'HTTP/1.0','HTTP/1.1','HTTP/2','HTTP/3'}\n\n    return '200 OK'\n",
-"opps": [
-{
-"k": 0,
-"nat": " ",
-"alt": "",
-"nat_span": [
-920,
-921
-],
-"alt_span": [
-920,
-920
-]
-},
-{
-"k": 1,
-"nat": " 2, 3, 4, 5, 6, 7, 8, 9, ",
-"alt": "2,3,4,5,6,7,8,9,",
-"nat_span": [
-1025,
-1050
-],
-"alt_span": [
-1021,
-1037
-]
-},
-{
-"k": 2,
-"nat": " False, True, False, ",
-"alt": "False,True,False,",
-"nat_span": [
-1122,
-1143
-],
-"alt_span": [
-1109,
-1126
-]
-},
-{
-"k": 3,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1232,
-1233
-],
-"alt_span": [
-1215,
-1215
-]
-},
-{
-"k": 4,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1328,
-1329
-],
-"alt_span": [
-1309,
-1309
-]
-},
-{
-"k": 5,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1819,
-1820
-],
-"alt_span": [
-1795,
-1795
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 0.961,
-"pass": true,
-"verify": null,
-"alt_rule": true,
-"opps_all": [
-{
-"k": 0,
-"nat": " ",
-"alt": "",
-"nat_span": [
-920,
-921
-],
-"alt_span": [
-920,
-920
-]
-},
-{
-"k": 1,
-"nat": " ",
-"alt": "",
-"nat_span": [
-926,
-927
-],
-"alt_span": [
-925,
-925
-]
-},
-{
-"k": 2,
-"nat": " ",
-"alt": "",
-"nat_span": [
-937,
-938
-],
-"alt_span": [
-935,
-935
-]
-},
-{
-"k": 3,
-"nat": " ",
-"alt": "",
-"nat_span": [
-945,
-946
-],
-"alt_span": [
-942,
-942
-]
-},
-{
-"k": 4,
-"nat": " 2, 3, 4, 5, 6, 7, 8, 9, ",
-"alt": "2,3,4,5,6,7,8,9,",
-"nat_span": [
-1025,
-1050
-],
-"alt_span": [
-1021,
-1037
-]
-},
-{
-"k": 5,
-"nat": " False, True, False, ",
-"alt": "False,True,False,",
-"nat_span": [
-1122,
-1143
-],
-"alt_span": [
-1109,
-1126
-]
-},
-{
-"k": 6,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1232,
-1233
-],
-"alt_span": [
-1215,
-1215
-]
-},
-{
-"k": 7,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1245,
-1246
-],
-"alt_span": [
-1227,
-1227
-]
-},
-{
-"k": 8,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1328,
-1329
-],
-"alt_span": [
-1309,
-1309
-]
-},
-{
-"k": 9,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1336,
-1337
-],
-"alt_span": [
-1316,
-1316
-]
-},
-{
-"k": 10,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1343,
-1344
-],
-"alt_span": [
-1322,
-1322
-]
-},
-{
-"k": 11,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1353,
-1354
-],
-"alt_span": [
-1331,
-1331
-]
-},
-{
-"k": 12,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1361,
-1362
-],
-"alt_span": [
-1338,
-1338
-]
-},
-{
-"k": 13,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1819,
-1820
-],
-"alt_span": [
-1795,
-1795
-]
-},
-{
-"k": 14,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1831,
-1832
-],
-"alt_span": [
-1806,
-1806
-]
-},
-{
-"k": 15,
-"nat": " ",
-"alt": "",
-"nat_span": [
-1841,
-1842
-],
-"alt_span": [
-1815,
-1815
 ]
 }
 ],

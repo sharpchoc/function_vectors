@@ -1,0 +1,80 @@
+[
+ {
+  "id": "d001",
+  "title": "E-commerce Fulfillment Views",
+  "spec": "Write a SQL script that creates three reporting views for an e-commerce fulfillment system using strictly matching records across all linked tables. The schema includes `customers`, `customer_orders`, `order_items`, `products`, `warehouses`, `shipments`, and `carriers`. Create `vw_pending_shipments` to show customer names, order dates, product names, and warehouse locations by combining the first five tables for orders with status 'PENDING'. Create `vw_shipped_revenue` to calculate total revenue per carrier by linking `customer_orders`, `shipments`, `carriers`, `order_items`, and `products` for 'SHIPPED' orders. Finally, create `vw_warehouse_volume` linking `warehouses`, `products`, `order_items`, and `customer_orders` to sum the quantity of items processed per facility. Assume standard `id` primary keys and appropriately named foreign keys (e.g., `product_id`). Example: Querying `vw_pending_shipments` should output rows like `('Alice', '2023-10-01', 'Laptop', 'Warehouse A')`. Querying `vw_shipped_revenue` should return `('FedEx', 4500.00)`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "Healthcare Billing and Analytics",
+  "spec": "Develop a SQL script to define three database views for a hospital billing system, ensuring you only include records that have complete corresponding data across all relations. The tables are `patients`, `appointments`, `doctors`, `departments`, `treatments`, `billing_codes`, and `insurance_claims`. Create `vw_appointment_details` linking `patients`, `appointments`, `doctors`, and `departments` to display patient names, doctor names, and department names. Create `vw_claim_generation` linking `appointments`, `treatments`, `billing_codes`, `insurance_claims`, and `patients` to show the patient name, treatment cost, and claim status. Create `vw_department_revenue` linking `departments`, `doctors`, `appointments`, and `treatments` to sum the treatment costs per department. Example output for `vw_department_revenue` could be `('Cardiology', 150000.00)`. Assume standard relational primary/foreign key pairs throughout.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "Airline Flight Operations Metrics",
+  "spec": "Write a SQL script to generate three operational views for an airline management system, strictly requiring fully matched records across the schema. The tables provided are `flights`, `schedules`, `aircraft`, `models`, `manufacturers`, `maintenance_logs`, `mechanics`, `terminals`, and `gates`. Create `vw_flight_equipment` linking `flights`, `schedules`, `aircraft`, `models`, and `manufacturers` to display the flight number, departure time, model name, and manufacturer. Create `vw_maintenance_schedule` linking `aircraft`, `maintenance_logs`, `mechanics`, and `flights` to list aircraft registration, mechanic name, log details, and assigned flight numbers. Create `vw_terminal_assignments` linking `terminals`, `gates`, `flights`, and `schedules` to project daily gate utilization. Example output for `vw_flight_equipment`: `('DL102', '2023-11-01 10:00', '737 MAX', 'Boeing')`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "University Academic Transcripts",
+  "spec": "Create a SQL script defining three academic reporting views for a university, strictly linking only fully matching records. The schema utilizes `students`, `enrollments`, `sections`, `courses`, `semesters`, `professors`, `departments`, `buildings`, and `rooms`. Create `vw_student_transcripts` connecting `students`, `enrollments`, `sections`, `courses`, and `semesters` to output student names, course titles, grades, and semester names. Create `vw_faculty_load` connecting `professors`, `sections`, `courses`, `departments`, and `buildings` to output professor names, department names, course credits, and building names. Create `vw_room_utilization` connecting `buildings`, `rooms`, `sections`, and `enrollments` to count total enrolled students per room. Example output for `vw_student_transcripts`: `('John Doe', 'Database Systems', 'A', 'Fall 2023')`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "Manufacturing Supply Chain Audit",
+  "spec": "Write a SQL script establishing three supply chain views for a manufacturing plant, enforcing strict relational matching without missing references. The database includes `finished_goods`, `bom_lines`, `components`, `suppliers`, `purchase_orders`, `po_lines`, `receipts`, `warehouses`, and `inspectors`. Create `vw_product_suppliers` linking `finished_goods`, `bom_lines`, `components`, and `suppliers` to map out which supplier provides parts for which final good. Create `vw_pending_receipts` linking `suppliers`, `purchase_orders`, `po_lines`, `components`, and `warehouses` for orders marked 'IN_TRANSIT'. Create `vw_inspection_queue` linking `components`, `receipts`, `warehouses`, and `inspectors` to list recently received parts needing QA. Example output for `vw_product_suppliers`: `('Tractor', 'Engine Block', 'HeavyMetals Inc')`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "Library Management System Reports",
+  "spec": "Design a SQL script that compiles three administrative views for a multi-branch library system, relying exclusively on records with intact relationships across tables. The tables are `members`, `loans`, `book_copies`, `books`, `authors`, `fines`, `branches`, and `publishers`. Create `vw_active_loans` by linking `members`, `loans`, `book_copies`, `books`, and `authors` to output member names, book titles, author names, and due dates. Create `vw_fine_notices` linking `fines`, `loans`, `members`, `book_copies`, and `branches` to aggregate unpaid fines per member per branch. Create `vw_publisher_inventory` linking `branches`, `book_copies`, `books`, and `publishers` to count available copies grouped by publisher and branch. Example `vw_active_loans` output: `('Jane Smith', 'Dune', 'Frank Herbert', '2023-12-01')`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "MMO Game Server Analytics",
+  "spec": "Provide a SQL script to build three analytical views for an MMO game server database, incorporating only records that form complete relational chains. The schema features `accounts`, `characters`, `inventory`, `items`, `item_types`, `guilds`, `realms`, and `zones`. Create `vw_character_loadout` linking `accounts`, `characters`, `inventory`, `items`, and `item_types` to output account emails, character names, and equipped item names with their type. Create `vw_guild_territories` linking `guilds`, `characters`, `realms`, and `zones` to map guild leaders to their current realm and zone. Create `vw_rare_item_owners` linking `items`, `inventory`, `characters`, `accounts`, and `realms` filtered for items with rarity 'LEGENDARY'. Example output for `vw_character_loadout`: `('player@test.com', 'Thor', 'Iron Sword', 'Weapon')`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "Auto Repair Shop Network",
+  "spec": "Construct a SQL script defining three operational views for a network of auto repair shops, processing only entities that completely match across the relations. The database entails `customers`, `vehicles`, `work_orders`, `shops`, `parts_used`, `inventory`, `suppliers`, and `mechanics`. Create `vw_customer_invoices` linking `customers`, `vehicles`, `work_orders`, and `shops` to generate basic invoice headers with shop locations. Create `vw_part_consumption` linking `work_orders`, `parts_used`, `inventory`, `suppliers`, and `mechanics` to track which mechanic used which supplier's parts. Create `vw_mechanic_workload` linking `shops`, `mechanics`, `work_orders`, and `vehicles` to count active work orders per mechanic. Example `vw_customer_invoices` output: `('Bob Jones', 'Ford F150', 'Completed', 'Downtown Auto')`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Real Estate Brokerage Dashboard",
+  "spec": "Develop a SQL script containing three dashboard views for a real estate brokerage, returning only records with complete corresponding foreign key matches. The tables consist of `offices`, `agents`, `listings`, `properties`, `property_types`, `transactions`, `buyers`, and `sellers`. Create `vw_active_listings` linking `offices`, `agents`, `listings`, `properties`, and `property_types` to display office locations, agent names, property addresses, and listing prices. Create `vw_closed_deals` linking `transactions`, `listings`, `agents`, `buyers`, and `sellers` to output closed dates, buyer names, seller names, and agent commissions. Create `vw_office_performance` linking `offices`, `agents`, `transactions`, and `properties` to aggregate total transaction volume per office. Example `vw_active_listings` output: `('Uptown', 'Alice', '123 Main St', 'Condo', 450000)`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "Restaurant Chain Operations",
+  "spec": "Write a SQL script to produce three back-office views for a restaurant chain, stipulating that only records with full matching associations are included. The tables are `menus`, `menu_items`, `recipes`, `ingredients`, `vendors`, `locations`, `managers`, and `deliveries`. Create `vw_menu_costing` linking `menus`, `menu_items`, `recipes`, `ingredients`, and `vendors` to calculate the total ingredient cost per menu item. Create `vw_delivery_tracking` linking `locations`, `managers`, `deliveries`, `vendors`, and `ingredients` to show upcoming deliveries by manager name and vendor. Create `vw_location_offerings` linking `locations`, `menus`, `menu_items`, and `recipes` to list all localized dish offerings. Example `vw_menu_costing` output: `('Dinner', 'Steak Frites', 'Beef Supplier Inc', 12.50)`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "Music Streaming Royalties",
+  "spec": "Create a SQL script defining three financial views for a music streaming platform, keeping only entries that have complete metadata links. The schema spans `users`, `listening_sessions`, `tracks`, `albums`, `artists`, `record_labels`, `payout_rates`, and `countries`. Create `vw_track_streams` linking `users`, `listening_sessions`, `tracks`, `albums`, and `artists` to output user emails, track names, artist names, and play durations. Create `vw_label_payouts` linking `listening_sessions`, `tracks`, `albums`, `record_labels`, and `payout_rates` to calculate total owed royalties per label. Create `vw_regional_tastes` linking `users`, `countries`, `listening_sessions`, and `tracks` to find the most played tracks per country. Example `vw_track_streams` output: `('user1@mail.com', 'Song A', 'Artist B', 215)`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Corporate IT Helpdesk Metrics",
+  "spec": "Design a SQL script to establish three metric views for an IT helpdesk system, strictly restricting results to entries with flawless relational mapping. The tables involved are `employees`, `departments`, `office_locations`, `tickets`, `hardware_assets`, `asset_models`, `technicians`, and `resolutions`. Create `vw_open_tickets` linking `employees`, `departments`, `office_locations`, `tickets`, and `hardware_assets` to display employee names, department names, and assigned hardware for 'OPEN' tickets. Create `vw_hardware_repairs` linking `tickets`, `hardware_assets`, `asset_models`, `technicians`, and `resolutions` to log repair notes against specific asset models. Create `vw_department_incidents` linking `technicians`, `departments`, `tickets`, and `resolutions` to count resolved tickets per department. Example `vw_open_tickets` output: `('John Smith', 'HR', 'NY-Floor2', 'Laptop Issue')`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Local Elections Logistics System",
+  "spec": "Write a SQL script creating three reporting views for a local elections system, evaluating only records that possess complete reference chains across tables. The database contains `voters`, `precincts`, `districts`, `polling_stations`, `votes`, `ballots`, `candidates`, and `parties`. Create `vw_polling_logistics` linking `voters`, `precincts`, `districts`, and `polling_stations` to count registered voters per physical polling station. Create `vw_candidate_results` linking `votes`, `ballots`, `candidates`, `parties`, and `districts` to aggregate total votes per candidate and their party affiliation. Create `vw_precinct_turnout` linking `precincts`, `polling_stations`, `ballots`, and `votes` to calculate the number of cast ballots against the station capacity. Example `vw_candidate_results` output: `('Jane Doe', 'Independent', 'District 9', 14500)`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ }
+]

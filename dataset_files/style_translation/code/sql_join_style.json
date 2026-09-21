@@ -1,5 +1,1340 @@
 [
 {
+"doc_id": "sql_join_style__d003",
+"family": "sql_join_style",
+"topic": "Airline Flight Operations Metrics",
+"angle": "code",
+"text_es": "Write a SQL script to generate three operational views for an airline management system, strictly requiring fully matched records across the schema. The tables provided are `flights`, `schedules`, `aircraft`, `models`, `manufacturers`, `maintenance_logs`, `mechanics`, `terminals`, and `gates`. Create `vw_flight_equipment` linking `flights`, `schedules`, `aircraft`, `models`, and `manufacturers` to display the flight number, departure time, model name, and manufacturer. Create `vw_maintenance_schedule` linking `aircraft`, `maintenance_logs`, `mechanics`, and `flights` to list aircraft registration, mechanic name, log details, and assigned flight numbers. Create `vw_terminal_assignments` linking `terminals`, `gates`, `flights`, and `schedules` to project daily gate utilization. Example output for `vw_flight_equipment`: `('DL102', '2023-11-01 10:00', '737 MAX', 'Boeing')`.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "-- Airline operations reporting module: equipment, maintenance and terminal views.\n\nCREATE OR REPLACE VIEW vw_flight_equipment AS\nSELECT\n    f.flight_number,\n    TO_CHAR(s.departure_time, 'YYYY-MM-DD HH24:MI') AS departure_time,\n    mo.model_name,\n    mf.manufacturer_name\nFROM flights f\nJOIN schedules s ON s.flight_id = f.flight_id\nJOIN aircraft a ON a.aircraft_id = f.aircraft_id\nJOIN models mo ON mo.model_id = a.model_id\nJOIN manufacturers mf ON mf.manufacturer_id = mo.manufacturer_id;\n\nCREATE OR REPLACE VIEW vw_maintenance_schedule AS\nSELECT\n    a.registration,\n    CONCAT(me.first_name, ' ', me.last_name) AS mechanic_name,\n    ml.log_id,\n    ml.performed_at,\n    ml.work_description,\n    ml.hours_spent,\n    f.flight_number AS assigned_flight_number\nFROM aircraft a\nJOIN maintenance_logs ml ON ml.aircraft_id = a.aircraft_id\nJOIN mechanics me ON me.mechanic_id = ml.mechanic_id\nJOIN flights f ON f.aircraft_id = a.aircraft_id;\n\nCREATE OR REPLACE VIEW vw_terminal_assignments AS\nSELECT\n    t.terminal_code,\n    g.gate_number,\n    CAST(s.departure_time AS DATE) AS service_date,\n    COUNT(f.flight_id) AS flights_handled,\n    MIN(s.departure_time) AS first_departure,\n    MAX(s.departure_time) AS last_departure\nFROM terminals t\nJOIN gates g ON g.terminal_id = t.terminal_id\nJOIN flights f ON f.gate_id = g.gate_id\nJOIN schedules s ON s.flight_id = f.flight_id\nGROUP BY t.terminal_code, g.gate_number, CAST(s.departure_time AS DATE);\n\n-- Operational reports built on top of the three views.\n\nSELECT flight_number, departure_time, model_name, manufacturer_name\nFROM vw_flight_equipment\nORDER BY departure_time, flight_number;\n\nSELECT\n    fe.manufacturer_name,\n    fe.model_name,\n    ms.registration,\n    ms.mechanic_name,\n    ms.performed_at,\n    ms.work_description,\n    ms.hours_spent\nFROM vw_maintenance_schedule ms\nJOIN vw_flight_equipment fe ON fe.flight_number = ms.assigned_flight_number\nORDER BY fe.manufacturer_name, ms.performed_at;\n\nSELECT\n    t.terminal_code,\n    g.gate_number,\n    f.flight_number,\n    mo.model_name,\n    s.departure_time\nFROM terminals t\nJOIN gates g ON g.terminal_id = t.terminal_id\nJOIN flights f ON f.gate_id = g.gate_id\nJOIN schedules s ON s.flight_id = f.flight_id\nJOIN aircraft a ON a.aircraft_id = f.aircraft_id\nJOIN models mo ON mo.model_id = a.model_id\nORDER BY t.terminal_code, g.gate_number, s.departure_time;\n\nSELECT\n    ta.terminal_code,\n    ta.gate_number,\n    ta.service_date,\n    ta.flights_handled,\n    COUNT(DISTINCT ms.registration) AS aircraft_in_maintenance\nFROM vw_terminal_assignments ta\nJOIN gates g ON g.gate_number = ta.gate_number\nJOIN flights f ON f.gate_id = g.gate_id\nJOIN vw_maintenance_schedule ms ON ms.assigned_flight_number = f.flight_number\nGROUP BY ta.terminal_code, ta.gate_number, ta.service_date, ta.flights_handled\nORDER BY ta.service_date, ta.terminal_code, ta.gate_number;\n",
+"text_alt": "-- Airline operations reporting module: equipment, maintenance and terminal views.\n\nCREATE OR REPLACE VIEW vw_flight_equipment AS\nSELECT\n    f.flight_number,\n    TO_CHAR(s.departure_time, 'YYYY-MM-DD HH24:MI') AS departure_time,\n    mo.model_name,\n    mf.manufacturer_name\nFROM flights f, schedules s, aircraft a, models mo, manufacturers mf\nWHERE s.flight_id = f.flight_id\nAND a.aircraft_id = f.aircraft_id\nAND mo.model_id = a.model_id\nAND mf.manufacturer_id = mo.manufacturer_id;\n\nCREATE OR REPLACE VIEW vw_maintenance_schedule AS\nSELECT\n    a.registration,\n    CONCAT(me.first_name, ' ', me.last_name) AS mechanic_name,\n    ml.log_id,\n    ml.performed_at,\n    ml.work_description,\n    ml.hours_spent,\n    f.flight_number AS assigned_flight_number\nFROM aircraft a, maintenance_logs ml, mechanics me, flights f\nWHERE ml.aircraft_id = a.aircraft_id\nAND me.mechanic_id = ml.mechanic_id\nAND f.aircraft_id = a.aircraft_id;\n\nCREATE OR REPLACE VIEW vw_terminal_assignments AS\nSELECT\n    t.terminal_code,\n    g.gate_number,\n    CAST(s.departure_time AS DATE) AS service_date,\n    COUNT(f.flight_id) AS flights_handled,\n    MIN(s.departure_time) AS first_departure,\n    MAX(s.departure_time) AS last_departure\nFROM terminals t, gates g, flights f, schedules s\nWHERE g.terminal_id = t.terminal_id\nAND f.gate_id = g.gate_id\nAND s.flight_id = f.flight_id\nGROUP BY t.terminal_code, g.gate_number, CAST(s.departure_time AS DATE);\n\n-- Operational reports built on top of the three views.\n\nSELECT flight_number, departure_time, model_name, manufacturer_name\nFROM vw_flight_equipment\nORDER BY departure_time, flight_number;\n\nSELECT\n    fe.manufacturer_name,\n    fe.model_name,\n    ms.registration,\n    ms.mechanic_name,\n    ms.performed_at,\n    ms.work_description,\n    ms.hours_spent\nFROM vw_maintenance_schedule ms, vw_flight_equipment fe\nWHERE fe.flight_number = ms.assigned_flight_number\nORDER BY fe.manufacturer_name, ms.performed_at;\n\nSELECT\n    t.terminal_code,\n    g.gate_number,\n    f.flight_number,\n    mo.model_name,\n    s.departure_time\nFROM terminals t, gates g, flights f, schedules s, aircraft a, models mo\nWHERE g.terminal_id = t.terminal_id\nAND f.gate_id = g.gate_id\nAND s.flight_id = f.flight_id\nAND a.aircraft_id = f.aircraft_id\nAND mo.model_id = a.model_id\nORDER BY t.terminal_code, g.gate_number, s.departure_time;\n\nSELECT\n    ta.terminal_code,\n    ta.gate_number,\n    ta.service_date,\n    ta.flights_handled,\n    COUNT(DISTINCT ms.registration) AS aircraft_in_maintenance\nFROM vw_terminal_assignments ta, gates g, flights f, vw_maintenance_schedule ms\nWHERE g.gate_number = ta.gate_number\nAND f.gate_id = g.gate_id\nAND ms.assigned_flight_number = f.flight_number\nGROUP BY ta.terminal_code, ta.gate_number, ta.service_date, ta.flights_handled\nORDER BY ta.service_date, ta.terminal_code, ta.gate_number;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+287,
+292
+],
+"alt_span": [
+287,
+288
+]
+},
+{
+"k": 1,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+775,
+780
+],
+"alt_span": [
+765,
+766
+]
+},
+{
+"k": 2,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1236,
+1241
+],
+"alt_span": [
+1219,
+1220
+]
+},
+{
+"k": 3,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1825,
+1830
+],
+"alt_span": [
+1801,
+1802
+]
+},
+{
+"k": 4,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2075,
+2080
+],
+"alt_span": [
+2050,
+2051
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2548,
+2553
+],
+"alt_span": [
+2510,
+2511
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.87,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+287,
+292
+],
+"alt_span": [
+287,
+288
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", aircraft a, models mo, manufacturers mf\nWHERE",
+"nat_span": [
+304,
+307
+],
+"alt_span": [
+300,
+347
+]
+},
+{
+"k": 2,
+"nat": "JOIN aircraft a ON",
+"alt": "AND",
+"nat_span": [
+334,
+352
+],
+"alt_span": [
+374,
+377
+]
+},
+{
+"k": 3,
+"nat": "JOIN models mo ON",
+"alt": "AND",
+"nat_span": [
+383,
+400
+],
+"alt_span": [
+408,
+411
+]
+},
+{
+"k": 4,
+"nat": "JOIN manufacturers mf ON",
+"alt": "AND",
+"nat_span": [
+426,
+450
+],
+"alt_span": [
+437,
+440
+]
+},
+{
+"k": 5,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+775,
+780
+],
+"alt_span": [
+765,
+766
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": ", mechanics me, flights f\nWHERE",
+"nat_span": [
+800,
+803
+],
+"alt_span": [
+786,
+817
+]
+},
+{
+"k": 7,
+"nat": "JOIN mechanics me ON",
+"alt": "AND",
+"nat_span": [
+835,
+855
+],
+"alt_span": [
+849,
+852
+]
+},
+{
+"k": 8,
+"nat": "JOIN flights f ON",
+"alt": "AND",
+"nat_span": [
+888,
+905
+],
+"alt_span": [
+885,
+888
+]
+},
+{
+"k": 9,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1236,
+1241
+],
+"alt_span": [
+1219,
+1220
+]
+},
+{
+"k": 10,
+"nat": " ON",
+"alt": ", flights f, schedules s\nWHERE",
+"nat_span": [
+1249,
+1252
+],
+"alt_span": [
+1228,
+1258
+]
+},
+{
+"k": 11,
+"nat": "JOIN flights f ON",
+"alt": "AND",
+"nat_span": [
+1283,
+1300
+],
+"alt_span": [
+1289,
+1292
+]
+},
+{
+"k": 12,
+"nat": "JOIN schedules s ON",
+"alt": "AND",
+"nat_span": [
+1323,
+1342
+],
+"alt_span": [
+1315,
+1318
+]
+},
+{
+"k": 13,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+1825,
+1830
+],
+"alt_span": [
+1801,
+1802
+]
+},
+{
+"k": 14,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+1853,
+1856
+],
+"alt_span": [
+1825,
+1831
+]
+},
+{
+"k": 15,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2075,
+2080
+],
+"alt_span": [
+2050,
+2051
+]
+},
+{
+"k": 16,
+"nat": " ON",
+"alt": ", flights f, schedules s, aircraft a, models mo\nWHERE",
+"nat_span": [
+2088,
+2091
+],
+"alt_span": [
+2059,
+2112
+]
+},
+{
+"k": 17,
+"nat": "JOIN flights f ON",
+"alt": "AND",
+"nat_span": [
+2122,
+2139
+],
+"alt_span": [
+2143,
+2146
+]
+},
+{
+"k": 18,
+"nat": "JOIN schedules s ON",
+"alt": "AND",
+"nat_span": [
+2162,
+2181
+],
+"alt_span": [
+2169,
+2172
+]
+},
+{
+"k": 19,
+"nat": "JOIN aircraft a ON",
+"alt": "AND",
+"nat_span": [
+2208,
+2226
+],
+"alt_span": [
+2199,
+2202
+]
+},
+{
+"k": 20,
+"nat": "JOIN models mo ON",
+"alt": "AND",
+"nat_span": [
+2257,
+2274
+],
+"alt_span": [
+2233,
+2236
+]
+},
+{
+"k": 21,
+"nat": "\nJOIN",
+"alt": ",",
+"nat_span": [
+2548,
+2553
+],
+"alt_span": [
+2510,
+2511
+]
+},
+{
+"k": 22,
+"nat": " ON",
+"alt": ", flights f, vw_maintenance_schedule ms\nWHERE",
+"nat_span": [
+2561,
+2564
+],
+"alt_span": [
+2519,
+2564
+]
+},
+{
+"k": 23,
+"nat": "JOIN flights f ON",
+"alt": "AND",
+"nat_span": [
+2596,
+2613
+],
+"alt_span": [
+2596,
+2599
+]
+},
+{
+"k": 24,
+"nat": "JOIN vw_maintenance_schedule ms ON",
+"alt": "AND",
+"nat_span": [
+2636,
+2670
+],
+"alt_span": [
+2622,
+2625
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "sql_join_style__d009",
+"family": "sql_join_style",
+"topic": "Real Estate Brokerage Dashboard",
+"angle": "code",
+"text_es": "Develop a SQL script containing three dashboard views for a real estate brokerage, returning only records with complete corresponding foreign key matches. The tables consist of `offices`, `agents`, `listings`, `properties`, `property_types`, `transactions`, `buyers`, and `sellers`. Create `vw_active_listings` linking `offices`, `agents`, `listings`, `properties`, and `property_types` to display office locations, agent names, property addresses, and listing prices. Create `vw_closed_deals` linking `transactions`, `listings`, `agents`, `buyers`, and `sellers` to output closed dates, buyer names, seller names, and agent commissions. Create `vw_office_performance` linking `offices`, `agents`, `transactions`, and `properties` to aggregate total transaction volume per office. Example `vw_active_listings` output: `('Uptown', 'Alice', '123 Main St', 'Condo', 450000)`.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "CREATE VIEW vw_active_listings AS\nSELECT\n    o.city AS office_location,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    p.street_address AS property_address,\n    pt.type_name AS property_type,\n    l.list_price AS listing_price\nFROM offices o\nINNER JOIN agents a ON a.office_id = o.office_id\nINNER JOIN listings l ON l.agent_id = a.agent_id\nINNER JOIN properties p ON p.property_id = l.property_id\nINNER JOIN property_types pt ON pt.type_id = p.type_id\nWHERE l.status = 'ACTIVE';\n\nCREATE VIEW vw_closed_deals AS\nSELECT\n    t.listing_id,\n    t.closed_on AS closed_date,\n    b.first_name || ' ' || b.last_name AS buyer_name,\n    s.first_name || ' ' || s.last_name AS seller_name,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    ROUND(t.sale_price * t.commission_rate, 2) AS agent_commission\nFROM transactions t\nINNER JOIN listings l ON l.listing_id = t.listing_id\nINNER JOIN agents a ON a.agent_id = l.agent_id\nINNER JOIN buyers b ON b.buyer_id = t.buyer_id\nINNER JOIN sellers s ON s.seller_id = t.seller_id\nWHERE t.status = 'CLOSED';\n\nCREATE VIEW vw_office_performance AS\nSELECT\n    o.name AS office_name,\n    o.city AS office_city,\n    COUNT(t.transaction_id) AS closed_transactions,\n    SUM(t.sale_price) AS total_transaction_volume,\n    ROUND(AVG(p.square_feet), 0) AS average_square_feet\nFROM offices o\nINNER JOIN agents a ON a.office_id = o.office_id\nINNER JOIN transactions t ON t.agent_id = a.agent_id\nINNER JOIN listings l ON l.listing_id = t.listing_id\nINNER JOIN properties p ON p.property_id = l.property_id\nWHERE t.status = 'CLOSED'\nGROUP BY o.name, o.city;\n\nSELECT\n    cd.closed_date,\n    cd.buyer_name,\n    cd.seller_name,\n    cd.agent_commission,\n    p.street_address AS property_address,\n    pt.type_name AS property_type\nFROM vw_closed_deals cd\nINNER JOIN listings l ON l.listing_id = cd.listing_id\nINNER JOIN properties p ON p.property_id = l.property_id\nINNER JOIN property_types pt ON pt.type_id = p.type_id\nORDER BY cd.closed_date DESC;\n\nSELECT\n    o.name AS office_name,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    COUNT(t.transaction_id) AS deals_closed,\n    SUM(ROUND(t.sale_price * t.commission_rate, 2)) AS commission_earned\nFROM agents a\nINNER JOIN offices o ON o.office_id = a.office_id\nINNER JOIN transactions t ON t.agent_id = a.agent_id\nWHERE t.status = 'CLOSED'\nGROUP BY o.name, a.first_name, a.last_name\nORDER BY commission_earned DESC;\n\nSELECT\n    perf.office_name,\n    perf.total_transaction_volume,\n    COUNT(al.listing_price) AS active_listings,\n    SUM(al.listing_price) AS active_pipeline_value\nFROM vw_office_performance perf\nINNER JOIN vw_active_listings al ON al.office_location = perf.office_city\nGROUP BY perf.office_name, perf.total_transaction_volume\nORDER BY perf.total_transaction_volume DESC;\n",
+"text_alt": "CREATE VIEW vw_active_listings AS\nSELECT\n    o.city AS office_location,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    p.street_address AS property_address,\n    pt.type_name AS property_type,\n    l.list_price AS listing_price\nFROM offices o, agents a, listings l, properties p, property_types pt\nWHERE a.office_id = o.office_id\nAND l.agent_id = a.agent_id\nAND p.property_id = l.property_id\nAND pt.type_id = p.type_id\nAND l.status = 'ACTIVE';\n\nCREATE VIEW vw_closed_deals AS\nSELECT\n    t.listing_id,\n    t.closed_on AS closed_date,\n    b.first_name || ' ' || b.last_name AS buyer_name,\n    s.first_name || ' ' || s.last_name AS seller_name,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    ROUND(t.sale_price * t.commission_rate, 2) AS agent_commission\nFROM transactions t, listings l, agents a, buyers b, sellers s\nWHERE l.listing_id = t.listing_id\nAND a.agent_id = l.agent_id\nAND b.buyer_id = t.buyer_id\nAND s.seller_id = t.seller_id\nAND t.status = 'CLOSED';\n\nCREATE VIEW vw_office_performance AS\nSELECT\n    o.name AS office_name,\n    o.city AS office_city,\n    COUNT(t.transaction_id) AS closed_transactions,\n    SUM(t.sale_price) AS total_transaction_volume,\n    ROUND(AVG(p.square_feet), 0) AS average_square_feet\nFROM offices o, agents a, transactions t, listings l, properties p\nWHERE a.office_id = o.office_id\nAND t.agent_id = a.agent_id\nAND l.listing_id = t.listing_id\nAND p.property_id = l.property_id\nAND t.status = 'CLOSED'\nGROUP BY o.name, o.city;\n\nSELECT\n    cd.closed_date,\n    cd.buyer_name,\n    cd.seller_name,\n    cd.agent_commission,\n    p.street_address AS property_address,\n    pt.type_name AS property_type\nFROM vw_closed_deals cd, listings l, properties p, property_types pt\nWHERE l.listing_id = cd.listing_id\nAND p.property_id = l.property_id\nAND pt.type_id = p.type_id\nORDER BY cd.closed_date DESC;\n\nSELECT\n    o.name AS office_name,\n    a.first_name || ' ' || a.last_name AS agent_name,\n    COUNT(t.transaction_id) AS deals_closed,\n    SUM(ROUND(t.sale_price * t.commission_rate, 2)) AS commission_earned\nFROM agents a, offices o, transactions t\nWHERE o.office_id = a.office_id\nAND t.agent_id = a.agent_id\nAND t.status = 'CLOSED'\nGROUP BY o.name, a.first_name, a.last_name\nORDER BY commission_earned DESC;\n\nSELECT\n    perf.office_name,\n    perf.total_transaction_volume,\n    COUNT(al.listing_price) AS active_listings,\n    SUM(al.listing_price) AS active_pipeline_value\nFROM vw_office_performance perf, vw_active_listings al\nWHERE al.office_location = perf.office_city\nGROUP BY perf.office_name, perf.total_transaction_volume\nORDER BY perf.total_transaction_volume DESC;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+251,
+262
+],
+"alt_span": [
+251,
+252
+]
+},
+{
+"k": 1,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+827,
+838
+],
+"alt_span": [
+791,
+792
+]
+},
+{
+"k": 2,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1324,
+1335
+],
+"alt_span": [
+1252,
+1253
+]
+},
+{
+"k": 3,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1779,
+1790
+],
+"alt_span": [
+1671,
+1672
+]
+},
+{
+"k": 4,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2196,
+2207
+],
+"alt_span": [
+2063,
+2064
+]
+},
+{
+"k": 5,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2597,
+2608
+],
+"alt_span": [
+2446,
+2447
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.844,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+251,
+262
+],
+"alt_span": [
+251,
+252
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", listings l, properties p, property_types pt\nWHERE",
+"nat_span": [
+271,
+274
+],
+"alt_span": [
+261,
+312
+]
+},
+{
+"k": 2,
+"nat": "INNER JOIN listings l ON",
+"alt": "AND",
+"nat_span": [
+301,
+325
+],
+"alt_span": [
+339,
+342
+]
+},
+{
+"k": 3,
+"nat": "INNER JOIN properties p ON",
+"alt": "AND",
+"nat_span": [
+350,
+376
+],
+"alt_span": [
+367,
+370
+]
+},
+{
+"k": 4,
+"nat": "INNER JOIN property_types pt ON",
+"alt": "AND",
+"nat_span": [
+407,
+438
+],
+"alt_span": [
+401,
+404
+]
+},
+{
+"k": 5,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+462,
+467
+],
+"alt_span": [
+428,
+431
+]
+},
+{
+"k": 6,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+827,
+838
+],
+"alt_span": [
+791,
+792
+]
+},
+{
+"k": 7,
+"nat": " ON",
+"alt": ", agents a, buyers b, sellers s\nWHERE",
+"nat_span": [
+849,
+852
+],
+"alt_span": [
+803,
+840
+]
+},
+{
+"k": 8,
+"nat": "INNER JOIN agents a ON",
+"alt": "AND",
+"nat_span": [
+881,
+903
+],
+"alt_span": [
+869,
+872
+]
+},
+{
+"k": 9,
+"nat": "INNER JOIN buyers b ON",
+"alt": "AND",
+"nat_span": [
+928,
+950
+],
+"alt_span": [
+897,
+900
+]
+},
+{
+"k": 10,
+"nat": "INNER JOIN sellers s ON",
+"alt": "AND",
+"nat_span": [
+975,
+998
+],
+"alt_span": [
+925,
+928
+]
+},
+{
+"k": 11,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1025,
+1030
+],
+"alt_span": [
+955,
+958
+]
+},
+{
+"k": 12,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1324,
+1335
+],
+"alt_span": [
+1252,
+1253
+]
+},
+{
+"k": 13,
+"nat": " ON",
+"alt": ", transactions t, listings l, properties p\nWHERE",
+"nat_span": [
+1344,
+1347
+],
+"alt_span": [
+1262,
+1310
+]
+},
+{
+"k": 14,
+"nat": "INNER JOIN transactions t ON",
+"alt": "AND",
+"nat_span": [
+1374,
+1402
+],
+"alt_span": [
+1337,
+1340
+]
+},
+{
+"k": 15,
+"nat": "INNER JOIN listings l ON",
+"alt": "AND",
+"nat_span": [
+1427,
+1451
+],
+"alt_span": [
+1365,
+1368
+]
+},
+{
+"k": 16,
+"nat": "INNER JOIN properties p ON",
+"alt": "AND",
+"nat_span": [
+1480,
+1506
+],
+"alt_span": [
+1397,
+1400
+]
+},
+{
+"k": 17,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+1537,
+1542
+],
+"alt_span": [
+1431,
+1434
+]
+},
+{
+"k": 18,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1779,
+1790
+],
+"alt_span": [
+1671,
+1672
+]
+},
+{
+"k": 19,
+"nat": " ON",
+"alt": ", properties p, property_types pt\nWHERE",
+"nat_span": [
+1801,
+1804
+],
+"alt_span": [
+1683,
+1722
+]
+},
+{
+"k": 20,
+"nat": "INNER JOIN properties p ON",
+"alt": "AND",
+"nat_span": [
+1834,
+1860
+],
+"alt_span": [
+1752,
+1755
+]
+},
+{
+"k": 21,
+"nat": "INNER JOIN property_types pt ON",
+"alt": "AND",
+"nat_span": [
+1891,
+1922
+],
+"alt_span": [
+1786,
+1789
+]
+},
+{
+"k": 22,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2196,
+2207
+],
+"alt_span": [
+2063,
+2064
+]
+},
+{
+"k": 23,
+"nat": " ON",
+"alt": ", transactions t\nWHERE",
+"nat_span": [
+2217,
+2220
+],
+"alt_span": [
+2074,
+2096
+]
+},
+{
+"k": 24,
+"nat": "INNER JOIN transactions t ON",
+"alt": "AND",
+"nat_span": [
+2247,
+2275
+],
+"alt_span": [
+2123,
+2126
+]
+},
+{
+"k": 25,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+2300,
+2305
+],
+"alt_span": [
+2151,
+2154
+]
+},
+{
+"k": 26,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2597,
+2608
+],
+"alt_span": [
+2446,
+2447
+]
+},
+{
+"k": 27,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+2630,
+2633
+],
+"alt_span": [
+2469,
+2475
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "sql_join_style__d010",
+"family": "sql_join_style",
+"topic": "Restaurant Chain Operations",
+"angle": "code",
+"text_es": "Write a SQL script to produce three back-office views for a restaurant chain, stipulating that only records with full matching associations are included. The tables are `menus`, `menu_items`, `recipes`, `ingredients`, `vendors`, `locations`, `managers`, and `deliveries`. Create `vw_menu_costing` linking `menus`, `menu_items`, `recipes`, `ingredients`, and `vendors` to calculate the total ingredient cost per menu item. Create `vw_delivery_tracking` linking `locations`, `managers`, `deliveries`, `vendors`, and `ingredients` to show upcoming deliveries by manager name and vendor. Create `vw_location_offerings` linking `locations`, `menus`, `menu_items`, and `recipes` to list all localized dish offerings. Example `vw_menu_costing` output: `('Dinner', 'Steak Frites', 'Beef Supplier Inc', 12.50)`.",
+"langs": {
+"src": "Task",
+"tgt": "SQL"
+},
+"text_nat": "CREATE TABLE vendors (vendor_id INTEGER PRIMARY KEY, vendor_name VARCHAR(80) NOT NULL);\n\nCREATE TABLE managers (manager_id INTEGER PRIMARY KEY, manager_name VARCHAR(80) NOT NULL);\n\nCREATE TABLE locations (location_id INTEGER PRIMARY KEY, location_name VARCHAR(80) NOT NULL,\n    city VARCHAR(60) NOT NULL, manager_id INTEGER REFERENCES managers (manager_id));\n\nCREATE TABLE menus (menu_id INTEGER PRIMARY KEY, menu_name VARCHAR(60) NOT NULL,\n    location_id INTEGER REFERENCES locations (location_id));\n\nCREATE TABLE recipes (recipe_id INTEGER PRIMARY KEY, recipe_name VARCHAR(80) NOT NULL,\n    prep_minutes INTEGER NOT NULL);\n\nCREATE TABLE menu_items (menu_item_id INTEGER PRIMARY KEY, menu_id INTEGER REFERENCES menus (menu_id),\n    recipe_id INTEGER REFERENCES recipes (recipe_id), item_name VARCHAR(80) NOT NULL,\n    sale_price NUMERIC(8, 2) NOT NULL);\n\nCREATE TABLE ingredients (ingredient_id INTEGER PRIMARY KEY, recipe_id INTEGER REFERENCES recipes (recipe_id),\n    vendor_id INTEGER REFERENCES vendors (vendor_id), ingredient_name VARCHAR(80) NOT NULL,\n    quantity NUMERIC(8, 3) NOT NULL, unit_cost NUMERIC(8, 2) NOT NULL);\n\nCREATE TABLE deliveries (delivery_id INTEGER PRIMARY KEY, location_id INTEGER REFERENCES locations (location_id),\n    vendor_id INTEGER REFERENCES vendors (vendor_id), ingredient_id INTEGER REFERENCES ingredients (ingredient_id),\n    delivery_date DATE NOT NULL, cases_ordered INTEGER NOT NULL);\n\nCREATE VIEW vw_menu_costing AS\nSELECT m.menu_name, mi.item_name, v.vendor_name,\n       ROUND(SUM(i.quantity * i.unit_cost), 2) AS ingredient_cost\nFROM menus AS m\nINNER JOIN menu_items AS mi ON mi.menu_id = m.menu_id\nINNER JOIN recipes AS r ON r.recipe_id = mi.recipe_id\nINNER JOIN ingredients AS i ON i.recipe_id = r.recipe_id\nINNER JOIN vendors AS v ON v.vendor_id = i.vendor_id\nGROUP BY m.menu_name, mi.item_name, v.vendor_name;\n\nCREATE VIEW vw_delivery_tracking AS\nSELECT l.location_name, mg.manager_name, v.vendor_name, i.ingredient_name,\n       d.delivery_date, d.cases_ordered\nFROM locations AS l\nINNER JOIN managers AS mg ON mg.manager_id = l.manager_id\nINNER JOIN deliveries AS d ON d.location_id = l.location_id\nINNER JOIN vendors AS v ON v.vendor_id = d.vendor_id\nINNER JOIN ingredients AS i ON i.ingredient_id = d.ingredient_id\nWHERE d.delivery_date >= CURRENT_DATE;\n\nCREATE VIEW vw_location_offerings AS\nSELECT l.location_name, l.city, m.menu_name, mi.item_name,\n       r.recipe_name, r.prep_minutes, mi.sale_price\nFROM locations AS l\nINNER JOIN menus AS m ON m.location_id = l.location_id\nINNER JOIN menu_items AS mi ON mi.menu_id = m.menu_id\nINNER JOIN recipes AS r ON r.recipe_id = mi.recipe_id;\n\nSELECT o.city, o.location_name, o.item_name, o.sale_price, c.ingredient_cost,\n       ROUND(o.sale_price - c.ingredient_cost, 2) AS margin\nFROM vw_location_offerings AS o\nINNER JOIN vw_menu_costing AS c ON c.menu_name = o.menu_name AND c.item_name = o.item_name\nORDER BY margin DESC;\n\nSELECT v.vendor_name, COUNT(*) AS open_deliveries,\n       SUM(d.cases_ordered * i.unit_cost) AS committed_spend\nFROM deliveries AS d\nINNER JOIN vendors AS v ON v.vendor_id = d.vendor_id\nINNER JOIN ingredients AS i ON i.ingredient_id = d.ingredient_id\nWHERE d.delivery_date >= CURRENT_DATE\nGROUP BY v.vendor_name\nORDER BY committed_spend DESC;\n\nSELECT mg.manager_name, l.location_name, COUNT(DISTINCT m.menu_id) AS menus_offered,\n       COUNT(mi.menu_item_id) AS dishes_offered\nFROM managers AS mg\nINNER JOIN locations AS l ON l.manager_id = mg.manager_id\nINNER JOIN menus AS m ON m.location_id = l.location_id\nINNER JOIN menu_items AS mi ON mi.menu_id = m.menu_id\nGROUP BY mg.manager_name, l.location_name\nORDER BY mg.manager_name, l.location_name;\n\nSELECT location_name, manager_name, vendor_name, ingredient_name, delivery_date, cases_ordered\nFROM vw_delivery_tracking\nORDER BY delivery_date, location_name;\n",
+"text_alt": "CREATE TABLE vendors (vendor_id INTEGER PRIMARY KEY, vendor_name VARCHAR(80) NOT NULL);\n\nCREATE TABLE managers (manager_id INTEGER PRIMARY KEY, manager_name VARCHAR(80) NOT NULL);\n\nCREATE TABLE locations (location_id INTEGER PRIMARY KEY, location_name VARCHAR(80) NOT NULL,\n    city VARCHAR(60) NOT NULL, manager_id INTEGER REFERENCES managers (manager_id));\n\nCREATE TABLE menus (menu_id INTEGER PRIMARY KEY, menu_name VARCHAR(60) NOT NULL,\n    location_id INTEGER REFERENCES locations (location_id));\n\nCREATE TABLE recipes (recipe_id INTEGER PRIMARY KEY, recipe_name VARCHAR(80) NOT NULL,\n    prep_minutes INTEGER NOT NULL);\n\nCREATE TABLE menu_items (menu_item_id INTEGER PRIMARY KEY, menu_id INTEGER REFERENCES menus (menu_id),\n    recipe_id INTEGER REFERENCES recipes (recipe_id), item_name VARCHAR(80) NOT NULL,\n    sale_price NUMERIC(8, 2) NOT NULL);\n\nCREATE TABLE ingredients (ingredient_id INTEGER PRIMARY KEY, recipe_id INTEGER REFERENCES recipes (recipe_id),\n    vendor_id INTEGER REFERENCES vendors (vendor_id), ingredient_name VARCHAR(80) NOT NULL,\n    quantity NUMERIC(8, 3) NOT NULL, unit_cost NUMERIC(8, 2) NOT NULL);\n\nCREATE TABLE deliveries (delivery_id INTEGER PRIMARY KEY, location_id INTEGER REFERENCES locations (location_id),\n    vendor_id INTEGER REFERENCES vendors (vendor_id), ingredient_id INTEGER REFERENCES ingredients (ingredient_id),\n    delivery_date DATE NOT NULL, cases_ordered INTEGER NOT NULL);\n\nCREATE VIEW vw_menu_costing AS\nSELECT m.menu_name, mi.item_name, v.vendor_name,\n       ROUND(SUM(i.quantity * i.unit_cost), 2) AS ingredient_cost\nFROM menus AS m, menu_items AS mi, recipes AS r, ingredients AS i, vendors AS v\nWHERE mi.menu_id = m.menu_id\nAND r.recipe_id = mi.recipe_id\nAND i.recipe_id = r.recipe_id\nAND v.vendor_id = i.vendor_id\nGROUP BY m.menu_name, mi.item_name, v.vendor_name;\n\nCREATE VIEW vw_delivery_tracking AS\nSELECT l.location_name, mg.manager_name, v.vendor_name, i.ingredient_name,\n       d.delivery_date, d.cases_ordered\nFROM locations AS l, managers AS mg, deliveries AS d, vendors AS v, ingredients AS i\nWHERE mg.manager_id = l.manager_id\nAND d.location_id = l.location_id\nAND v.vendor_id = d.vendor_id\nAND i.ingredient_id = d.ingredient_id\nAND d.delivery_date >= CURRENT_DATE;\n\nCREATE VIEW vw_location_offerings AS\nSELECT l.location_name, l.city, m.menu_name, mi.item_name,\n       r.recipe_name, r.prep_minutes, mi.sale_price\nFROM locations AS l, menus AS m, menu_items AS mi, recipes AS r\nWHERE m.location_id = l.location_id\nAND mi.menu_id = m.menu_id\nAND r.recipe_id = mi.recipe_id;\n\nSELECT o.city, o.location_name, o.item_name, o.sale_price, c.ingredient_cost,\n       ROUND(o.sale_price - c.ingredient_cost, 2) AS margin\nFROM vw_location_offerings AS o, vw_menu_costing AS c\nWHERE c.menu_name = o.menu_name AND c.item_name = o.item_name\nORDER BY margin DESC;\n\nSELECT v.vendor_name, COUNT(*) AS open_deliveries,\n       SUM(d.cases_ordered * i.unit_cost) AS committed_spend\nFROM deliveries AS d, vendors AS v, ingredients AS i\nWHERE v.vendor_id = d.vendor_id\nAND i.ingredient_id = d.ingredient_id\nAND d.delivery_date >= CURRENT_DATE\nGROUP BY v.vendor_name\nORDER BY committed_spend DESC;\n\nSELECT mg.manager_name, l.location_name, COUNT(DISTINCT m.menu_id) AS menus_offered,\n       COUNT(mi.menu_item_id) AS dishes_offered\nFROM managers AS mg, locations AS l, menus AS m, menu_items AS mi\nWHERE l.manager_id = mg.manager_id\nAND m.location_id = l.location_id\nAND mi.menu_id = m.menu_id\nGROUP BY mg.manager_name, l.location_name\nORDER BY mg.manager_name, l.location_name;\n\nSELECT location_name, manager_name, vendor_name, ingredient_name, delivery_date, cases_ordered\nFROM vw_delivery_tracking\nORDER BY delivery_date, location_name;\n",
+"opps": [
+{
+"k": 0,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1591,
+1602
+],
+"alt_span": [
+1591,
+1592
+]
+},
+{
+"k": 1,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2032,
+2043
+],
+"alt_span": [
+1998,
+1999
+]
+},
+{
+"k": 2,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2476,
+2487
+],
+"alt_span": [
+2406,
+2407
+]
+},
+{
+"k": 3,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2811,
+2822
+],
+"alt_span": [
+2716,
+2717
+]
+},
+{
+"k": 4,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+3058,
+3069
+],
+"alt_span": [
+2956,
+2957
+]
+},
+{
+"k": 5,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+3422,
+3433
+],
+"alt_span": [
+3302,
+3303
+]
+}
+],
+"k_en": 6,
+"shared_fraction": 0.875,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+1591,
+1602
+],
+"alt_span": [
+1591,
+1592
+]
+},
+{
+"k": 1,
+"nat": " ON",
+"alt": ", recipes AS r, ingredients AS i, vendors AS v\nWHERE",
+"nat_span": [
+1619,
+1622
+],
+"alt_span": [
+1609,
+1661
+]
+},
+{
+"k": 2,
+"nat": "INNER JOIN recipes AS r ON",
+"alt": "AND",
+"nat_span": [
+1646,
+1672
+],
+"alt_span": [
+1685,
+1688
+]
+},
+{
+"k": 3,
+"nat": "INNER JOIN ingredients AS i ON",
+"alt": "AND",
+"nat_span": [
+1700,
+1730
+],
+"alt_span": [
+1716,
+1719
+]
+},
+{
+"k": 4,
+"nat": "INNER JOIN vendors AS v ON",
+"alt": "AND",
+"nat_span": [
+1757,
+1783
+],
+"alt_span": [
+1746,
+1749
+]
+},
+{
+"k": 5,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2032,
+2043
+],
+"alt_span": [
+1998,
+1999
+]
+},
+{
+"k": 6,
+"nat": " ON",
+"alt": ", deliveries AS d, vendors AS v, ingredients AS i\nWHERE",
+"nat_span": [
+2058,
+2061
+],
+"alt_span": [
+2014,
+2069
+]
+},
+{
+"k": 7,
+"nat": "INNER JOIN deliveries AS d ON",
+"alt": "AND",
+"nat_span": [
+2091,
+2120
+],
+"alt_span": [
+2099,
+2102
+]
+},
+{
+"k": 8,
+"nat": "INNER JOIN vendors AS v ON",
+"alt": "AND",
+"nat_span": [
+2151,
+2177
+],
+"alt_span": [
+2133,
+2136
+]
+},
+{
+"k": 9,
+"nat": "INNER JOIN ingredients AS i ON",
+"alt": "AND",
+"nat_span": [
+2204,
+2234
+],
+"alt_span": [
+2163,
+2166
+]
+},
+{
+"k": 10,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+2269,
+2274
+],
+"alt_span": [
+2201,
+2204
+]
+},
+{
+"k": 11,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2476,
+2487
+],
+"alt_span": [
+2406,
+2407
+]
+},
+{
+"k": 12,
+"nat": " ON",
+"alt": ", menu_items AS mi, recipes AS r\nWHERE",
+"nat_span": [
+2498,
+2501
+],
+"alt_span": [
+2418,
+2456
+]
+},
+{
+"k": 13,
+"nat": "INNER JOIN menu_items AS mi ON",
+"alt": "AND",
+"nat_span": [
+2532,
+2562
+],
+"alt_span": [
+2487,
+2490
+]
+},
+{
+"k": 14,
+"nat": "INNER JOIN recipes AS r ON",
+"alt": "AND",
+"nat_span": [
+2586,
+2612
+],
+"alt_span": [
+2514,
+2517
+]
+},
+{
+"k": 15,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+2811,
+2822
+],
+"alt_span": [
+2716,
+2717
+]
+},
+{
+"k": 16,
+"nat": " ON",
+"alt": "\nWHERE",
+"nat_span": [
+2843,
+2846
+],
+"alt_span": [
+2738,
+2744
+]
+},
+{
+"k": 17,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+3058,
+3069
+],
+"alt_span": [
+2956,
+2957
+]
+},
+{
+"k": 18,
+"nat": " ON",
+"alt": ", ingredients AS i\nWHERE",
+"nat_span": [
+3082,
+3085
+],
+"alt_span": [
+2970,
+2994
+]
+},
+{
+"k": 19,
+"nat": "INNER JOIN ingredients AS i ON",
+"alt": "AND",
+"nat_span": [
+3112,
+3142
+],
+"alt_span": [
+3021,
+3024
+]
+},
+{
+"k": 20,
+"nat": "WHERE",
+"alt": "AND",
+"nat_span": [
+3177,
+3182
+],
+"alt_span": [
+3059,
+3062
+]
+},
+{
+"k": 21,
+"nat": "\nINNER JOIN",
+"alt": ",",
+"nat_span": [
+3422,
+3433
+],
+"alt_span": [
+3302,
+3303
+]
+},
+{
+"k": 22,
+"nat": " ON",
+"alt": ", menus AS m, menu_items AS mi\nWHERE",
+"nat_span": [
+3448,
+3451
+],
+"alt_span": [
+3318,
+3354
+]
+},
+{
+"k": 23,
+"nat": "INNER JOIN menus AS m ON",
+"alt": "AND",
+"nat_span": [
+3481,
+3505
+],
+"alt_span": [
+3384,
+3387
+]
+},
+{
+"k": 24,
+"nat": "INNER JOIN menu_items AS mi ON",
+"alt": "AND",
+"nat_span": [
+3536,
+3566
+],
+"alt_span": [
+3418,
+3421
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "sql_join_style__t001",
 "family": "sql_join_style",
 "topic": "Basic Customer Orders",
@@ -67979,7 +69314,7 @@
 ],
 "k_en": 11,
 "shared_fraction": 0.965,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -87769,7 +89104,7 @@
 ],
 "k_en": 13,
 "shared_fraction": 0.93,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -95604,7 +96939,7 @@
 ],
 "k_en": 12,
 "shared_fraction": 0.933,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {

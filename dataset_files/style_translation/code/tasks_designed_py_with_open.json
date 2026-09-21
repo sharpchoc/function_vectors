@@ -1,0 +1,80 @@
+[
+ {
+  "id": "d001",
+  "title": "Static Site Generator",
+  "spec": "Write a module `site_builder.py` with two functions. `load_templates()` must read the textual contents of 'header.html', 'footer.html', and 'sidebar.html', returning a tuple of these three strings in that exact order. `build_pages(header, footer, sidebar)` must read the strings from 'index.md' and 'about.md'. For each markdown string, sandwich its content between the header and footer template strings, and write the result to 'index.html' and 'about.html' respectively. Finally, `build_pages` must write a basic XML string containing the two html filenames to 'sitemap.xml'. Provide a short main block that calls `load_templates()` and passes the tuple to `build_pages()`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "Game Save Manager",
+  "spec": "Write a script `save_manager.py` to handle game state. Implement `load_save_data()` to read the full text from 'stats.json', 'inventory.json', and 'quests.json', returning all three strings as a tuple. Implement `create_backup(stats_text, inv_text, quests_text)` which takes these three strings and writes them out to 'stats_bak.json', 'inventory_bak.json', and 'quests_bak.json' respectively. Lastly, implement `log_backup_event(timestamp)` which writes the timestamp string to both 'backup.log' and 'sync.log'. Add a short main block that calls these functions with a dummy timestamp '2023-10-01 12:00:00'.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "ML Dataset Prep",
+  "spec": "Write `dataset_prep.py` with two functions. `load_raw_data()` reads the string contents of four files: 'train_X.csv', 'train_Y.csv', 'test_X.csv', and 'test_Y.csv', returning them as a tuple of four strings. `write_processed_data(train_x, train_y, test_x, test_y)` converts each string to uppercase (simulating a processing step) and writes the upper-cased strings individually to 'norm_train_X.csv', 'norm_train_Y.csv', 'norm_test_X.csv', and 'norm_test_Y.csv' respectively. Example: if `load_raw_data()` reads 'a,b,c' from 'train_X.csv', `write_processed_data` writes 'A,B,C' to 'norm_train_X.csv'. Provide a small driver calling both functions.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "System Log Aggregator",
+  "spec": "Write `log_aggregator.py` featuring `gather_system_logs()` which extracts the entire text from 'syslog.log', 'auth.log', 'kern.log', and 'dmesg.log', returning these four strings as a tuple. Implement `write_summaries(sys_str, auth_str, kern_str, dmesg_str)` which takes these four strings, counts the number of lines in each, and writes a single line like 'Lines: 15' to 'summary_sys.txt', 'summary_auth.txt', 'summary_kern.txt', and 'summary_dmesg.txt' respectively. Include a driver block that executes `gather_system_logs` and passes the results to `write_summaries`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "Configuration Merger",
+  "spec": "Write a module `config_merger.py`. Define `read_defaults()` to read the contents of 'default_db.ini' and 'default_web.ini', returning them as a tuple of two strings. Define `read_overrides()` to read 'custom_db.ini' and 'custom_web.ini', returning them as a tuple. Define `write_merged(def_db, def_web, cust_db, cust_web)` which concatenates the default and custom strings for the database configuration with a newline, and writes the result to 'merged_db.ini'. It does the same for the web configuration, writing to 'merged_web.ini'. It must then write the string 'Merge completed' to both 'merge.log' and 'audit.log'. Run these functions in a main block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "Codebase Metrics Analyzer",
+  "spec": "Create `metrics_analyzer.py`. Implement `read_source_files()` to read the entire text from 'app.py', 'utils.py', and 'models.py', returning a tuple of three strings. Implement `read_test_files()` to read 'test_app.py' and 'test_utils.py', returning a tuple of two strings. Implement `export_metrics(app, utils, models, test_app, test_utils)` which calculates the total combined string length of the three source files and writes that number as a string to 'src_loc.txt'. It writes the total string length of the two test files to 'test_loc.txt', and writes a JSON-formatted string `{\"status\": \"success\"}` to 'report.json'. Include a driver block calling these sequentially.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "Document Compiler",
+  "spec": "Write a script `doc_compiler.py` with `load_frontmatter()` that reads the text from 'title.txt', 'abstract.txt', and 'authors.txt', returning them as a tuple of three strings. Implement `load_chapters()` that reads 'chapter1.txt', 'chapter2.txt', and 'chapter3.txt', also returning a tuple of three strings. Write `compile_manuscript(title, abstract, authors, ch1, ch2, ch3)` that joins all six strings together with a newline character and writes the combined string to 'draft.txt'. It should also write the string '{\"compiled\": true}' to 'metadata.json'. Provide a brief main block to run the pipeline.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "Asset Bundler",
+  "spec": "Create a script `asset_bundler.py`. Implement `read_styles()` to read the text of 'reset.css', 'layout.css', and 'theme.css', returning the three strings as a tuple. Implement `read_scripts()` to read 'core.js' and 'ui.js', returning the two strings as a tuple. Implement `build_assets(reset, layout, theme, core, ui)` which concatenates the three style strings and writes them to 'bundle.css'. It must concatenate the two script strings and write them to 'bundle.js'. Finally, it writes the string '{\"version\": \"1.0\"}' to 'manifest.json'. Include a main block that uses all three functions.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Invoice Processor",
+  "spec": "Develop `invoice_processor.py`. Write `load_invoices()` which reads the textual content from 'inv_01.csv', 'inv_02.csv', and 'inv_03.csv', returning them as a tuple of three strings. Write `load_receipts()` which reads 'rec_01.csv' and 'rec_02.csv', returning them as a tuple of two strings. Write `generate_ledgers(i1, i2, i3, r1, r2)` which joins the three invoice strings with a newline and writes the result to 'accounts_payable.csv'. It joins the two receipt strings and writes them to 'reconciled.csv'. It must also write the string 'Ledger generated' to 'audit_trail.txt'. Call these functions in a main sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "Weather Data Aggregator",
+  "spec": "Develop `weather_aggregator.py`. Define `read_temperature_data()` to read the contents of 'temp_north.dat', 'temp_south.dat', and 'temp_east.dat', returning them as a tuple of three strings. Define `read_precipitation_data()` to read 'rain_north.dat' and 'rain_south.dat', returning them as a tuple of two strings. Implement `export_forecast(tn, ts, te, rn, rs)` which joins the 'tn' and 'rn' strings, writing the result to 'forecast_north.txt'. It must join 'ts' and 'rs', writing the result to 'forecast_south.txt'. Finally, write the string 'Aggregation complete' to 'aggregator.log'. Provide a main block to tie everything together.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "CI/CD Artifact Gatherer",
+  "spec": "Write `artifact_gatherer.py` with `read_build_logs()` that extracts the full string content of 'build_stdout.log' and 'build_stderr.log', returning them in a tuple. Create `read_test_results()` to read 'unit_tests.xml' and 'integration_tests.xml', returning them in a tuple. Create `write_deploy_package(stdout, stderr, unit, intg)` that takes these strings but writes out the deploy artifacts: write 'Release v2' to 'release_notes.txt', write '2.0.0' to 'version_bump.txt', write 'bash deploy' to 'deploy_hook.sh', and write '{}' to 'notify.json' to simulate writing out the package payload. Add a small execution block calling these functions.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Localization Sync Tool",
+  "spec": "Write `loc_sync.py`. Implement `read_source_langs()` to read the text of 'en.json', 'fr.json', and 'es.json', returning them as a tuple of three strings. Implement `read_meta()` to read 'keys.txt' and 'schema.json', returning them as a tuple of two strings. Implement `write_sync_output(en, fr, es, keys, schema)` which concatenates the three language strings and writes them to 'merged.json'. It must write the `keys` string to 'missing_keys.txt' and the `schema` string to 'sync_report.log'. Include a driver block that chains these function calls.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Bio-Informatics Sequence Parser",
+  "spec": "Create a script `sequence_parser.py`. Define `read_fasta()` to read the entire contents of 'sample1.fasta', 'sample2.fasta', and 'sample3.fasta', returning a tuple of three strings. Define `read_gff()` to read the text of 'genes.gff' and 'repeats.gff', returning a tuple of two strings. Define `write_results(s1, s2, s3, g1, g2)` which concatenates the three FASTA strings and writes to 'alignment.out', concatenates the two GFF strings and writes to 'mutations.tsv', and writes the string 'Run finished' to 'report.txt'. Add a short main block that orchestrates the execution of these three functions.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ }
+]

@@ -1,0 +1,260 @@
+[
+ {
+  "id": "d001",
+  "title": "System Backup Pre-flight Checker",
+  "spec": "Write a script `backup_preflight.sh` to validate backup parameters. It takes three positional arguments: source_dir, dest_dir, and backup_name. Evaluate the following rules in order, printing a specific error and exiting with 1 if a check fails. If source_dir is missing, print 'Missing source'. If source_dir is not an existing directory, print 'Invalid source directory'. If source_dir is not readable, print 'Source unreadable'. If dest_dir is missing, print 'Missing destination'. If dest_dir is not an existing directory, print 'Invalid dest directory'. If dest_dir is not writable, print 'Destination unwritable'. If backup_name is missing, print 'Missing backup name'. Next, check if the environment variable `BACKUP_USER` is empty; if so, print 'BACKUP_USER not set'. Finally, if the file `/tmp/backup.lock` exists, print 'Backup already in progress'. If all pass, print 'Pre-flight OK' and exit 0.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "User Account Provisioning Validator",
+  "spec": "Write a script `validate_user_env.sh` that accepts a username and a shell path. Validate inputs sequentially, exiting with 1 and printing an exact message upon the first failure. If username is empty, print 'No username'. If the user config file `/etc/users/$1.conf` exists, print 'User exists'. If shell path is empty, print 'No shell'. If shell path is not executable, print 'Invalid shell'. If the script is not run by root (check if EUID does not equal 0 using standard integer comparison), print 'Must be root'. If the `SKEL_DIR` environment variable is empty, print 'Skel var missing'. If the directory specified by `SKEL_DIR` does not exist, print 'Skel missing'. If it is not readable, print 'Skel unreadable'. If all validations succeed, output 'Ready to provision' and exit 0.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "CI/CD Build Environment Checker",
+  "spec": "Write a function `check_build_env()` that takes a project path and a build type ('debug' or 'release'). Perform a series of checks, returning 1 with a specific error if any fail. If the project path is empty, echo 'Path required'. If the project path is not a directory, echo 'Path not a directory'. If a `Makefile` is not found as a regular file in the project path, echo 'Makefile missing'. If the `Makefile` is not readable, echo 'Makefile unreadable'. If the build type is empty, echo 'Type missing'. If the build type equals 'test', echo 'Test builds disabled'. If the `CC` environment variable is empty, echo 'Compiler not set'. If the directory `/tmp/build_out` does not exist, echo 'Output missing'. If `/tmp/build_out` is not writable, echo 'Output unwritable'. If the file `build.lock` exists in the current directory, echo 'Build locked'. Return 0 if successful.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "Log Rotation Utility Validator",
+  "spec": "Write a script `validate_log_rotation.sh` that validates parameters for a log rotation tool. It accepts a log file path and a max size in megabytes. Evaluate conditions one by one, exiting with status 1 on failure. If the log file path is empty, output 'Log path empty'. If the log file does not exist, output 'Log file missing'. If the log file is not a regular file, output 'Not a regular file'. If the log file is not writable, output 'Log file unwritable'. If the max size argument is missing, output 'Size missing'. If the max size is less than 1 (using integer comparison), output 'Size too small'. If the `/var/log/archive` directory does not exist, output 'Archive dir missing'. If the archive directory is not writable, output 'Archive unwritable'. On success, output 'Validation passed' and exit 0.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "Web Server Configuration Pre-check",
+  "spec": "Write a script `check_web_config.sh` taking a config file path and a document root path. Validate them sequentially, printing an error and exiting with 2 on failure. If the config file path is empty, print 'Config path missing'. If the config file is not a regular file, print 'Config not found'. If the config file is not readable, print 'Config unreadable'. If the document root path is empty, print 'Doc root missing'. If the document root is not a directory, print 'Doc root invalid'. If the document root is not readable, print 'Doc root unreadable'. Check if `SSL_CERT_PATH` is set in the environment; if empty, print 'SSL cert missing'. If the file pointed to by `SSL_CERT_PATH` is not readable, print 'SSL cert unreadable'. If all clear, print 'Config OK' and exit 0.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "Service Daemon Health Assessor",
+  "spec": "Write a function `assess_daemon_health()` that monitors a hypothetical service. It accepts a PID file path and a log file path. Perform sequential checks, echoing an error and returning 1 on the first failure. If the PID file path is empty, echo 'PID path not provided'. If the PID file does not exist, echo 'Service stopped'. If the PID file is not readable, echo 'PID file unreadable'. If the log file path is empty, echo 'Log path not provided'. If the log file does not exist, echo 'Log missing'. If the log file size is 0 (use the appropriate file test), echo 'Log is empty'. If the environment variable `SERVICE_TIMEOUT` is empty, echo 'Timeout undefined'. If the value of `SERVICE_TIMEOUT` is greater than 60, echo 'Timeout too high'. Return 0 if all is well.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "Database Migration Pre-requisite Checker",
+  "spec": "Write a script `check_db_migration.sh` that receives a schema file and a target database name. Check conditions one by one and exit 1 with a message on failure. If schema file is not provided, output 'No schema file'. If schema file does not exist, output 'Schema file missing'. If schema file is not readable, output 'Schema not readable'. If target database name is empty, output 'No database name'. If target database name equals 'system', output 'Cannot migrate system db'. If the `DB_PASSWORD` environment variable is empty, output 'No password set'. If the directory `/var/lib/migrations` does not exist, output 'Migrations dir missing'. If `/var/lib/migrations` is not writable, output 'Migrations dir unwritable'. Print 'Ready' and exit 0 otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "File Sync Environment Validator",
+  "spec": "Write a script `sync_env_check.sh` that validates parameters for remote file synchronization. It takes a local directory, a remote alias, and an SSH key file. Abort with exit code 1 and a specific error on any failure. If local directory is not provided, print 'Local dir empty'. If local directory is not an existing directory, print 'Local dir invalid'. If local directory is not readable, print 'Local dir unreadable'. If remote alias is not provided, print 'Remote alias missing'. If SSH key file is not provided, print 'Key file empty'. If SSH key file is not a regular file, print 'Key file missing'. If SSH key file is not readable, print 'Key file unreadable'. If the `SYNC_LOG` environment variable is empty, print 'Log var missing'. Output 'Sync env ok' on success.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Software Package Pre-installation Checks",
+  "spec": "Write a function `pre_install_check()` that takes a package name and a target installation directory. Check conditions sequentially, echoing a reason and returning 1 on failure. If package name is empty, echo 'Package name required'. If target directory is empty, echo 'Target directory required'. If target directory is not an existing directory, echo 'Target is not a dir'. If target directory is not writable, echo 'Target is read-only'. If a file named `install.lock` exists in the target directory, echo 'Installation locked'. If the `PKG_CACHE` environment variable is empty, echo 'Cache not configured'. If the cache directory specified by `PKG_CACHE` does not exist, echo 'Cache missing'. If the cache directory is not readable, echo 'Cache unreadable'. Return 0 if successful.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "Container Deployment Validator",
+  "spec": "Write a script `validate_deployment.sh` that takes an image name and a deployment tag. Validate conditions one by one, exiting with 1 on the first failure. If image name is empty, output 'Image name missing'. If deployment tag is empty, output 'Tag missing'. If deployment tag equals 'latest', output 'Cannot deploy latest'. If the file `docker-compose.yml` does not exist in the current directory, output 'Compose file missing'. If `docker-compose.yml` is not readable, output 'Compose file unreadable'. If the `DOCKER_HOST` environment variable is empty, output 'Docker host not set'. If the directory `/var/log/containers` does not exist, output 'Log dir missing'. If the log directory is not writable, output 'Log dir unwritable'. On success, exit 0 and output 'Validation complete'.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "Network Interface Config Validator",
+  "spec": "Write a script `check_nic_config.sh` taking an interface name and a config file path. Perform checks sequentially, exiting with 1 and a specific error on failure. If interface name is not provided, print 'Interface missing'. If config file path is not provided, print 'Config path missing'. If config file does not exist, print 'Config file not found'. If config file is not readable, print 'Config file unreadable'. If config file is not a regular file, print 'Not a regular file'. If interface name equals 'lo', print 'Loopback not allowed'. If the directory `/etc/network` is not a directory, print 'Network dir missing'. If `/etc/network` is not writable, print 'Network dir read-only'. Output 'Interface OK' if all checks pass.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Machine Learning Dataset Verifier",
+  "spec": "Write a function `verify_dataset()` taking a dataset directory and a metadata file path. Validate them sequentially, returning 1 with an error message on failure. If dataset directory is not provided, echo 'Dataset dir missing'. If dataset directory is not a directory, echo 'Dataset dir invalid'. If dataset directory is not readable, echo 'Dataset dir unreadable'. If metadata file is not provided, echo 'Metadata missing'. If metadata file is not a regular file, echo 'Metadata invalid'. If metadata file is not readable, echo 'Metadata unreadable'. If the `DATA_SPLIT` environment variable is empty, echo 'Data split not set'. If `DATA_SPLIT` equals 'test', echo 'Cannot verify test split'. Return 0 if successful.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Nightly Batch Job Pre-checker",
+  "spec": "Write a script `batch_precheck.sh` that accepts a job name and an input file path. Exit with 1 and print a specific message upon the first failing check. If job name is empty, print 'No job name'. If input file path is empty, print 'No input file'. If input file does not exist, print 'Input missing'. If input file is empty (size 0), print 'Input is empty'. If input file is not readable, print 'Input unreadable'. If the `/tmp/batch` directory does not exist, print 'Batch dir missing'. If the batch directory is not writable, print 'Batch dir unwritable'. If the environment variable `MAX_THREADS` is empty, print 'Threads not configured'. Print 'Batch ready' and exit 0 otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d014",
+  "title": "Automated Certificate Renewal Validator",
+  "spec": "Write a script `cert_renewal_check.sh` taking a domain name and a webroot path. Check conditions in order, exiting 1 with an error message on failure. If domain name is empty, output 'Domain missing'. If webroot path is empty, output 'Webroot missing'. If webroot is not a directory, output 'Webroot invalid'. If webroot is not writable, output 'Webroot unwritable'. If the `LETSENCRYPT_DIR` environment variable is empty, output 'LE dir missing'. If the directory specified by `LETSENCRYPT_DIR` does not exist, output 'LE dir invalid'. If a file named `renewal.lock` exists in `/var/run`, output 'Renewal in progress'. If the domain name equals 'localhost', output 'Cannot renew localhost'. On success, output 'Renewal pre-check passed'.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d015",
+  "title": "Audio Transcoding Queue Validator",
+  "spec": "Write a function `validate_transcode_job()` accepting an input audio file and an output directory. Perform sequential validations, echoing an error and returning 1 on failure. If input file is missing, echo 'Input missing'. If input file does not exist, echo 'Input not found'. If input file is not readable, echo 'Input unreadable'. If input file size is 0 (use the appropriate file test), echo 'Input empty'. If output directory is missing, echo 'Output dir missing'. If output directory is not a directory, echo 'Output dir invalid'. If output directory is not writable, echo 'Output dir unwritable'. If the environment variable `FFMPEG_BIN` is empty, echo 'FFmpeg path not set'. Return 0 on success.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d016",
+  "title": "Cloud Storage Upload Pre-flight",
+  "spec": "Write a script `upload_preflight.sh` that takes a file to upload and a bucket name. Evaluate conditions sequentially, exiting 1 with an error message if any fail. If file path is empty, print 'File path missing'. If file does not exist, print 'File missing'. If file is not a regular file, print 'Not a regular file'. If file is not readable, print 'File unreadable'. If bucket name is empty, print 'Bucket name missing'. If the `AWS_ACCESS_KEY_ID` environment variable is empty, print 'Access key missing'. If the `AWS_SECRET_ACCESS_KEY` environment variable is empty, print 'Secret key missing'. If the file `~/.aws/config` does not exist, print 'AWS config missing'. Output 'Ready for upload' and exit 0 otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d017",
+  "title": "Vulnerability Scanner Readiness Check",
+  "spec": "Write a script `scanner_ready.sh` taking a target IP and a report output directory. Validate inputs in order, printing an exact message and exiting with 1 upon failure. If target IP is empty, print 'Target IP missing'. If report directory is empty, print 'Report dir missing'. If report directory is not an existing directory, print 'Report dir invalid'. If report directory is not writable, print 'Report dir unwritable'. If a file named `scan.pid` exists in the report directory, print 'Scan already running'. If the `SCANNER_PLUGINS` environment variable is empty, print 'Plugins dir not set'. If the directory specified by `SCANNER_PLUGINS` does not exist, print 'Plugins dir missing'. If it is not readable, print 'Plugins dir unreadable'. Print 'Scanner ready' on success.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d018",
+  "title": "Game Server Startup Assessor",
+  "spec": "Write a function `assess_game_server()` that takes a world name and a config file path. Perform checks sequentially, echoing a specific error and returning 1 on failure. If world name is not provided, echo 'World name empty'. If world name equals 'default', echo 'Cannot use default world'. If config file is not provided, echo 'Config empty'. If config file does not exist, echo 'Config missing'. If config file is not readable, echo 'Config unreadable'. If the `/opt/game/mods` directory does not exist, echo 'Mods dir missing'. If the mods directory is not readable, echo 'Mods dir unreadable'. If the `SERVER_RAM` variable is empty, echo 'RAM not set'. Return 0 if all pass.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d019",
+  "title": "Firmware Update Validator",
+  "spec": "Write a script `check_firmware_update.sh` taking a firmware binary file and a device identifier. Validate conditions sequentially, exiting 1 with a message on failure. If binary file path is empty, output 'Binary missing'. If binary file does not exist, output 'Binary not found'. If binary file is not a regular file, output 'Binary invalid'. If binary file is not readable, output 'Binary unreadable'. If device identifier is empty, output 'Device ID missing'. If device identifier equals '0000', output 'Invalid Device ID'. If the directory `/mnt/usb` does not exist, output 'USB not mounted'. If `/mnt/usb` is not writable, output 'USB unwritable'. On success, output 'Update ready'.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d020",
+  "title": "VPN Connection Pre-check",
+  "spec": "Write a script `vpn_precheck.sh` accepting a profile name and a credentials file path. Check conditions in order, exiting with 1 and a specific message if any fail. If profile name is missing, print 'Profile missing'. If credentials file is missing, print 'Credentials missing'. If credentials file does not exist, print 'Credentials not found'. If credentials file is not a regular file, print 'Credentials invalid'. If credentials file is not readable, print 'Credentials unreadable'. If the directory `/etc/openvpn` is not a directory, print 'OpenVPN dir missing'. If the `/etc/openvpn` directory is not readable, print 'OpenVPN dir unreadable'. If the `VPN_LOG_LEVEL` environment variable is empty, print 'Log level not set'. Print 'VPN ready' if all checks succeed.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d021",
+  "title": "Log Parser Initialization Check",
+  "spec": "Write a function `init_log_parser()` that takes an access log file and an output summary file. Perform checks sequentially, echoing an error and returning 1 on failure. If access log is not provided, echo 'Access log missing'. If access log does not exist, echo 'Access log not found'. If access log is not readable, echo 'Access log unreadable'. If access log is empty (size 0), echo 'Access log is empty'. If output summary file is not provided, echo 'Summary file missing'. If the directory `/var/reports` does not exist, echo 'Reports dir missing'. If `/var/reports` is not writable, echo 'Reports dir unwritable'. If the `PARSER_FORMAT` environment variable is empty, echo 'Format not set'. Return 0 otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d022",
+  "title": "Cache Clearing Utility Pre-check",
+  "spec": "Write a script `cache_clear_check.sh` that takes a cache directory and a user ID. Validate conditions sequentially, exiting 1 with a message on failure. If cache directory is empty, output 'Cache dir missing'. If cache directory does not exist, output 'Cache dir not found'. If cache directory is not a directory, output 'Not a directory'. If cache directory is not writable, output 'Cache dir unwritable'. If user ID is empty, output 'User ID missing'. If user ID equals 'root', output 'Cannot clear root cache'. If the `REDIS_HOST` environment variable is empty, output 'Redis host missing'. If the file `/tmp/cache.lock` exists, output 'Cache is locked'. Output 'Ready to clear' on success.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d023",
+  "title": "Code Linter Environment Assessor",
+  "spec": "Write a script `lint_env_assessor.sh` taking a source directory and a rules file. Check conditions one by one, exiting with 1 and an error on failure. If source directory is not provided, print 'Source dir missing'. If source directory does not exist, print 'Source dir not found'. If source directory is not a directory, print 'Source dir invalid'. If source directory is not readable, print 'Source dir unreadable'. If rules file is not provided, print 'Rules file missing'. If rules file does not exist, print 'Rules file not found'. If rules file is not readable, print 'Rules file unreadable'. If the `LINT_STRICT` environment variable is empty, print 'Strict mode not set'. Print 'Linter ready' on success.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d024",
+  "title": "Mail Server Queue Processor Checker",
+  "spec": "Write a function `check_mail_queue()` accepting a queue directory and a quarantine directory. Validate sequentially, echoing an error and returning 1 on failure. If queue directory is missing, echo 'Queue dir missing'. If queue directory does not exist, echo 'Queue dir not found'. If queue directory is not a directory, echo 'Queue dir invalid'. If queue directory is not readable, echo 'Queue dir unreadable'. If quarantine directory is missing, echo 'Quarantine dir missing'. If quarantine directory does not exist, echo 'Quarantine dir not found'. If quarantine directory is not a directory, echo 'Quarantine dir invalid'. If quarantine directory is not writable, echo 'Quarantine dir unwritable'. Return 0 if all checks pass.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d025",
+  "title": "SSL Certificate Generator Pre-check",
+  "spec": "Write a script `ssl_gen_precheck.sh` that takes a private key path and a certificate signing request (CSR) path. Validate them sequentially, exiting 1 with a specific message on failure. If private key path is empty, output 'Key path missing'. If private key file does not exist, output 'Key file not found'. If private key file is not a regular file, output 'Key file invalid'. If private key file is not readable, output 'Key file unreadable'. If CSR path is empty, output 'CSR path missing'. If CSR file does not exist, output 'CSR file not found'. If CSR file is not a regular file, output 'CSR file invalid'. If CSR file is not readable, output 'CSR file unreadable'. On success, output 'SSL gen ready' and exit 0.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d026",
+  "title": "Build Artifact Cleaner",
+  "spec": "Write a Bash script `clean_artifacts.sh` that removes old build artifacts. It accepts two positional arguments: a target directory and an age threshold in days. Verify that the target directory argument is provided. Check if the target directory exists. Check if the target is indeed a directory. Check that the age threshold is greater than 0. Check if the environment variable `CLEANUP_LOG` is non-empty; if so, verify that the log file's parent directory is writable. Iterate through the target directory. For each item, check if it is a regular file. Check if it is a symlink (skip if it is). Check if its size is greater than zero before processing. Example: `./clean_artifacts.sh /build/libs 7` removes files older than 7 days and outputs \"Cleaned 4 files\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d027",
+  "title": "CSV Data Importer",
+  "spec": "Create a Bash module `csv_importer.sh` with a function `import_csv` taking an input CSV file and an output directory. The function must verify that the input file argument is provided. Check that the CSV file is readable. Check that the output directory argument is provided. Check that the output directory exists. Check that the output directory is writable. Before processing, check if a lock file `import.lock` already exists in the output directory to prevent concurrent runs. Loop through each line (skipping the header) and extract the status column. Check if the status string equals \"ACTIVE\". Also, verify that the row's ID field is not empty. If all conditions are met, append the row to a `valid.csv` file. Example: `import_csv data.csv /out` produces `/out/valid.csv` containing only active rows with valid IDs.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d028",
+  "title": "Dotfile Symlink Manager",
+  "spec": "Write a Bash script `link_dotfiles.sh` that symlinks configuration files from a source repository to the user's home directory. The script must check if the source directory argument is provided. Check if the source directory exists. Read an environment variable `DOTFILES_FORCE`; check if it equals \"1\". Iterate through items in the source directory. For each item, verify it is a regular file. Check if it is readable. In the home directory, check if a target with the same name already exists. If it does, check if it is already a symlink. Check if a backup directory `~/.backup` exists, creating it if not. If the target exists and is not a symlink, check if `DOTFILES_FORCE` equals \"1\" to allow overwriting. Example: `./link_dotfiles.sh ~/.dotfiles` symlinks files and reports \"Linked 5 files\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d029",
+  "title": "Git Hook Pre-commit Linter",
+  "spec": "Implement a Bash script `pre_commit.sh` that acts as a git pre-commit hook. The script must first verify it is running inside a git repository by checking if `.git` is a directory. Check if the environment variable `SKIP_LINT` equals \"true\", exiting early if so. Get the list of staged files. For each file, check if the file actually exists to handle deletions. Check if the file is executable; if so, skip it. Verify that the file size is greater than zero. Extract the file extension and check if it equals \"sh\". Check if the `shellcheck` command exists in the system PATH before attempting to run it. Example: running `./pre_commit.sh` on a repo with a staged script containing syntax errors will fail the commit and print the errors.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d030",
+  "title": "Image Thumbnail Generator",
+  "spec": "Create a Bash script `make_thumbs.sh` that takes a source directory of images and a destination directory for thumbnails. Validate that the source directory argument is provided. Check if the source directory exists. Check if the source directory is readable. Check if the destination directory exists. Check if the `convert` utility is executable in the system path. Iterate through the files in the source directory. For each file, verify it is a regular file. Extract the extension and check if it equals \"jpg\". Check if a file with the same name already exists in the destination directory to avoid duplicate work. Example: `./make_thumbs.sh img/ thumbs/` generates thumbnails for all JPGs.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d031",
+  "title": "System Resource Alert Monitor",
+  "spec": "Write a Bash script `res_monitor.sh` to monitor CPU usage and alert if it exceeds a threshold. Check if the threshold argument is provided. Verify the threshold argument is greater than 0. Check if a `/var/log/monitor.log` file exists. Check if the log file is writable. Check if the environment variable `ALERT_EMAIL` is non-empty. Read the current CPU load. Check if the current load is greater than the threshold. If an alert needs to be sent, check if a lockfile `/tmp/alert.lock` already exists to prevent spamming. If it exists, check if the find command's result string for checking lockfile age is not empty. Example: `./res_monitor.sh 80` logs a warning and emails if load > 80 and no recent lock exists.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d032",
+  "title": "Static Website Generator",
+  "spec": "Develop a Bash script `build_site.sh` that compiles text files into HTML. Verify that the input directory argument is provided. Verify that the output directory argument is provided. Check if the input directory exists as a valid directory. Check if a template file `layout.html` exists in the current directory. Check if the template is readable. Check if the output directory exists. Check if the output directory is writable. Iterate over the input files. For each item, verify it is a regular file. Check if the file size is greater than zero. Extract the extension and check if it equals \"txt\". Example: `./build_site.sh content/ public/` compiles all non-empty TXT files using `layout.html`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d033",
+  "title": "Podcast Episode Downloader",
+  "spec": "Write a Bash script `sync_podcasts.sh` that takes a text file containing podcast episode URLs and a download directory. Verify the URL list file argument is provided. Verify the URL list file exists. Check if the list is a regular file. Check if the download directory exists. Check if the `wget` command is executable in the environment. Loop through the URLs in the file. For each URL, check if the URL string is not empty. Extract the filename from the URL. Check if the file already exists in the download directory. If it exists, check if the file size is greater than zero. Check if an environment variable `DRY_RUN` equals \"1\". Example: `./sync_podcasts.sh urls.txt /downloads` downloads missing episodes.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d034",
+  "title": "Database Snapshot Archiver",
+  "spec": "Create a Bash module `db_archiver.sh` containing a function `archive_dumps`. It takes a source directory of `.sql` files and a target archive directory. The function must verify that the source directory argument is provided. Check that the source directory exists. Check that the source directory has read permissions. Check if the target directory exists. Check if the target directory is writable. Check if the `gzip` utility is executable. Iterate over the files in the source directory. For each file, check if it is a regular file. Check if its size is greater than zero. Extract the filename and check if the extension equals \"sql\". Check if the compressed version of the file already exists in the target directory to avoid re-compressing. Example: `archive_dumps /db/dumps /backup/archives` compresses and moves all valid SQL files.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d035",
+  "title": "Python Virtualenv Bootstrapper",
+  "spec": "Implement a Bash script `setup_venv.sh` to initialize a Python virtual environment. Check if the target directory argument is provided. Check if the target directory already exists. Verify that the `python3` command is executable. Check if a `requirements.txt` file exists in the current directory. Check if the requirements file is readable. Check if the environment variable `OFFLINE_MODE` equals \"true\". After attempting to create the venv, check if the activation script `bin/activate` exists inside the target directory. Check if the pip installation exit code equals 0. Example: `./setup_venv.sh .venv` creates a virtual environment and installs dependencies if the requirements file is present.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d036",
+  "title": "Application Log Aggregator",
+  "spec": "Write a Bash script `aggregate_logs.sh` that collects log files from worker nodes into a central directory. Verify that the base directory argument is provided. Verify that the central directory argument is provided. Check if the base directory exists. Check if the central directory exists. Check if the central directory is writable. Loop through the items in the base directory. For each item, check if it is a directory. Inside each node directory, check if a file named `app.log` exists. Check if the log file is a regular file. Check if the log file is readable. Check if the destination central log file already exists. Example: `./aggregate_logs.sh /nodes /central` copies readable `app.log` files from each node to `/central/nodeX.log`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d037",
+  "title": "Firewall Rule Exporter",
+  "spec": "Create a Bash script `export_fw.sh` to backup iptables rules. Check if the backup directory argument is provided. Check if the backup directory exists. Check if the backup directory is writable. Check if the `iptables-save` command is executable. Check if an environment variable `AUTO_COMMIT` is not empty. Run the dump to a temporary file, then check if the temporary file's size is greater than zero. Check if a previous backup file `latest.rules` exists in the backup directory. If it exists, compare the two files and check if the `diff` command exit status equals 1. Example: `./export_fw.sh /backups/firewall` creates a new backup if the rules have changed.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d038",
+  "title": "Temporary Workspace Sweeper",
+  "spec": "Develop a Bash script `sweep_temp.sh` that deletes temporary files from a specific workspace. Validate that the workspace directory argument is provided. Verify that the workspace directory exists. Check if the workspace is readable. To prevent catastrophes, check if the workspace directory path equals `/` and exit if so. Check if the path equals `/tmp` and exit if so. Check if the age threshold argument is provided, and verify it is greater than 0. Loop through the files in the directory. Check if each item is a regular file. Check if the item is a symlink (skip symlinks to avoid deleting targets). Example: `./sweep_temp.sh /var/app/workspace 60` safely removes regular files older than 60 minutes.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d039",
+  "title": "Music Library Organizer",
+  "spec": "Write a Bash script `organize_music.sh` to move unorganized audio files into target folders based on artist name provided via a sidecar text file. Check that the source directory argument is given. Check that the destination directory argument is given. Check if the source directory exists. Check if the destination directory exists. Check if the destination directory is writable. Loop through files in the source directory. For each file, check if it is a regular file. Extract the extension and check if it equals \"mp3\". Check if a corresponding `.txt` sidecar file exists. Read the artist name and check if the artist string is not empty. Check if the destination audio file already exists. Example: `./organize_music.sh /downloads /music` moves `song.mp3` to `/music/ArtistName/song.mp3`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d040",
+  "title": "SSH Key Distributor",
+  "spec": "Implement a Bash script `distribute_keys.sh` that copies a public key to a list of servers. Check if the key file argument is provided. Check if the key file exists. Check if the key file is readable. Check if the server list file exists. Check if the server list is a regular file. Check if the `ssh-copy-id` command is executable. Iterate over each line in the server list. Check if the line is not empty (ignoring blank lines). Check if the line does not equal \"localhost\". Attempt a ping to the server and check if the ping exit code equals 0. Check if the environment variable `VERBOSE` equals \"1\", echoing progress if so. Example: `./distribute_keys.sh ~/.ssh/id_rsa.pub servers.txt` installs the key on all reachable servers.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d041",
+  "title": "Stale Container Cleanup",
+  "spec": "Create a Bash module `container_cleanup.sh` with a function `clean_stale` that removes exited containers. Verify that the target status argument is provided. Check if the `docker` command is executable. Check if the environment variable `DOCKER_HOST` is not empty. Check if a `.dockerignore` file exists in the current directory. Check if the ignore file is readable. Fetch the list of containers. For each container, verify the extracted status string equals the provided status argument. Next, check if the container's age is greater than or equal to the minimum age argument. Check if the container name is not empty. Check if the `FORCE_CLEAN` environment variable equals \"true\". Example: `clean_stale exited 24` removes all containers that exited more than 24 hours ago.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d042",
+  "title": "Configuration Template Renderer",
+  "spec": "Write a Bash script `render_config.sh` that replaces environment variables in a template file and writes to an output file. Verify that the template file argument is provided and non-empty. Verify that the output file argument is provided and non-empty. Check if the template file exists. Check if it is a regular file. Check if the template is readable. Check if the output file already exists. If it does, check if it is writable. Check if the environment variable `ENV_MODE` is not empty. Check if `ENV_MODE` equals \"production\". Read the template line by line. Check if a line is not empty before processing. Example: `./render_config.sh config.tpl config.conf` generates the final configuration file based on the current environment.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d043",
+  "title": "File Integrity Verifier",
+  "spec": "Develop a Bash script `verify_integrity.sh` that checks files against a list of SHA256 hashes. Check if the hash file argument is provided. Check if the target directory argument is provided. Check if the hash file exists. Check if the hash file is readable. Check if the target directory exists. Check if the target directory is readable. Check if the `sha256sum` utility is executable. Read the hash file line by line. For each entry, check if the extracted filename is not empty. Check if the target file exists in the target directory. Check if the target file is a regular file. Compute the hash and check if the computed hash equals the expected hash. Example: `./verify_integrity.sh hashes.txt /var/www` verifies the integrity of files and reports any mismatches.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ }
+]

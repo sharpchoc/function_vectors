@@ -1,5 +1,5857 @@
 [
 {
+"doc_id": "js_camel_snake__d003",
+"family": "js_camel_snake",
+"topic": "Physics Bouncing Ball Simulation",
+"angle": "code",
+"text_es": "Write a script to simulate a bouncing ball in a physics engine. Create a function `simulate bouncing ball` that takes an `initial drop height`, a `bounce restitution multiplier`, and a `minimum threshold height`. If the `bounce restitution multiplier` is out of bounds (less than 0 or >= 1), return an array of three zeros. Track the `total distance traveled`, the `current peak height`, the `total bounce count`, and the `maximum peak height` reached. While the `current peak height` is greater than the `minimum threshold height`, add the `current peak height` to the `total distance traveled` (falling). Multiply the `current peak height` by the `bounce restitution multiplier` to get the `new rebound height`. Add the `new rebound height` to the `total distance traveled` (rising), assign the `new rebound height` to the `current peak height`, and increment the `total bounce count`. Return an array containing the `total distance traveled`, `total bounce count`, and `maximum peak height`. Call the function with 10, 0.75, 1, and print the array.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function simulateBouncingBall(initialDropHeight, bounceRestitutionMultiplier, minimumThresholdHeight) {\n  if (bounceRestitutionMultiplier < 0 || bounceRestitutionMultiplier >= 1) {\n    return [0, 0, 0];\n  }\n\n  let totalDistanceTraveled = 0;\n  let currentPeakHeight = initialDropHeight;\n  let totalBounceCount = 0;\n  const maximumPeakHeight = initialDropHeight;\n\n  while (currentPeakHeight > minimumThresholdHeight) {\n    totalDistanceTraveled += currentPeakHeight;\n    const newReboundHeight = currentPeakHeight * bounceRestitutionMultiplier;\n    totalDistanceTraveled += newReboundHeight;\n    currentPeakHeight = newReboundHeight;\n    totalBounceCount += 1;\n  }\n\n  return [totalDistanceTraveled, totalBounceCount, maximumPeakHeight];\n}\n\nfunction validateSimulationInputs(initialDropHeight, minimumThresholdHeight) {\n  if (!Number.isFinite(initialDropHeight) || initialDropHeight <= 0) {\n    throw new RangeError('The drop height must be a positive finite number');\n  }\n  if (!Number.isFinite(minimumThresholdHeight) || minimumThresholdHeight <= 0) {\n    throw new RangeError('The threshold height must be a positive finite number');\n  }\n}\n\nfunction runBounceSimulation(initialDropHeight, bounceRestitutionMultiplier, minimumThresholdHeight) {\n  validateSimulationInputs(initialDropHeight, minimumThresholdHeight);\n  return simulateBouncingBall(initialDropHeight, bounceRestitutionMultiplier, minimumThresholdHeight);\n}\n\nfunction formatSimulationReport(simulationResult, bounceRestitutionMultiplier) {\n  const [totalDistanceTraveled, totalBounceCount, maximumPeakHeight] = simulationResult;\n  if (totalBounceCount === 0) {\n    return `No bounces simulated (restitution ${bounceRestitutionMultiplier} rejected or ball at rest).`;\n  }\n  const roundedDistance = Math.round(totalDistanceTraveled * 1000) / 1000;\n  const averageBounceDistance = Math.round((totalDistanceTraveled / totalBounceCount) * 1000) / 1000;\n  const reportLines = [\n    `Restitution multiplier: ${bounceRestitutionMultiplier}`,\n    `Total distance traveled: ${roundedDistance}`,\n    `Total bounce count: ${totalBounceCount}`,\n    `Maximum peak height: ${maximumPeakHeight}`,\n    `Average distance per bounce: ${averageBounceDistance}`\n  ];\n  return reportLines.join('\\n');\n}\n\nfunction mainDriver() {\n  const initialDropHeight = 10;\n  const bounceRestitutionMultiplier = 0.75;\n  const minimumThresholdHeight = 1;\n\n  const simulationResult = runBounceSimulation(\n    initialDropHeight,\n    bounceRestitutionMultiplier,\n    minimumThresholdHeight\n  );\n\n  console.log(simulationResult);\n  console.log(formatSimulationReport(simulationResult, bounceRestitutionMultiplier));\n}\n\nmainDriver();\n",
+"text_alt": "function simulate_bouncing_ball(initial_drop_height, bounce_restitution_multiplier, minimum_threshold_height) {\n  if (bounce_restitution_multiplier < 0 || bounce_restitution_multiplier >= 1) {\n    return [0, 0, 0];\n  }\n\n  let total_distance_traveled = 0;\n  let current_peak_height = initial_drop_height;\n  let total_bounce_count = 0;\n  const maximum_peak_height = initial_drop_height;\n\n  while (current_peak_height > minimum_threshold_height) {\n    total_distance_traveled += current_peak_height;\n    const new_rebound_height = current_peak_height * bounce_restitution_multiplier;\n    total_distance_traveled += new_rebound_height;\n    current_peak_height = new_rebound_height;\n    total_bounce_count += 1;\n  }\n\n  return [total_distance_traveled, total_bounce_count, maximum_peak_height];\n}\n\nfunction validate_simulation_inputs(initial_drop_height, minimum_threshold_height) {\n  if (!Number.isFinite(initial_drop_height) || initial_drop_height <= 0) {\n    throw new RangeError('The drop height must be a positive finite number');\n  }\n  if (!Number.isFinite(minimum_threshold_height) || minimum_threshold_height <= 0) {\n    throw new RangeError('The threshold height must be a positive finite number');\n  }\n}\n\nfunction run_bounce_simulation(initial_drop_height, bounce_restitution_multiplier, minimum_threshold_height) {\n  validate_simulation_inputs(initial_drop_height, minimum_threshold_height);\n  return simulate_bouncing_ball(initial_drop_height, bounce_restitution_multiplier, minimum_threshold_height);\n}\n\nfunction format_simulation_report(simulation_result, bounce_restitution_multiplier) {\n  const [total_distance_traveled, total_bounce_count, maximum_peak_height] = simulation_result;\n  if (total_bounce_count === 0) {\n    return `No bounces simulated (restitution ${bounce_restitution_multiplier} rejected or ball at rest).`;\n  }\n  const rounded_distance = Math.round(total_distance_traveled * 1000) / 1000;\n  const average_bounce_distance = Math.round((total_distance_traveled / total_bounce_count) * 1000) / 1000;\n  const report_lines = [\n    `Restitution multiplier: ${bounce_restitution_multiplier}`,\n    `Total distance traveled: ${rounded_distance}`,\n    `Total bounce count: ${total_bounce_count}`,\n    `Maximum peak height: ${maximum_peak_height}`,\n    `Average distance per bounce: ${average_bounce_distance}`\n  ];\n  return report_lines.join('\\n');\n}\n\nfunction main_driver() {\n  const initial_drop_height = 10;\n  const bounce_restitution_multiplier = 0.75;\n  const minimum_threshold_height = 1;\n\n  const simulation_result = run_bounce_simulation(\n    initial_drop_height,\n    bounce_restitution_multiplier,\n    minimum_threshold_height\n  );\n\n  console.log(simulation_result);\n  console.log(format_simulation_report(simulation_result, bounce_restitution_multiplier));\n}\n\nmain_driver();\n",
+"opps": [
+{
+"k": 0,
+"nat": "simulateBouncingBall(initialDropHeight, bounceRestitutionMultiplier, minimumThresholdHeight",
+"alt": "simulate_bouncing_ball(initial_drop_height, bounce_restitution_multiplier, minimum_threshold_height",
+"nat_span": [
+9,
+100
+],
+"alt_span": [
+9,
+108
+]
+},
+{
+"k": 1,
+"nat": "totalDistanceTraveled",
+"alt": "total_distance_traveled",
+"nat_span": [
+214,
+235
+],
+"alt_span": [
+226,
+249
+]
+},
+{
+"k": 2,
+"nat": "currentPeakHeight",
+"alt": "current_peak_height",
+"nat_span": [
+247,
+264
+],
+"alt_span": [
+261,
+280
+]
+},
+{
+"k": 3,
+"nat": "totalBounceCount",
+"alt": "total_bounce_count",
+"nat_span": [
+292,
+308
+],
+"alt_span": [
+310,
+328
+]
+},
+{
+"k": 4,
+"nat": "maximumPeakHeight",
+"alt": "maximum_peak_height",
+"nat_span": [
+322,
+339
+],
+"alt_span": [
+342,
+361
+]
+},
+{
+"k": 5,
+"nat": "newReboundHeight",
+"alt": "new_rebound_height",
+"nat_span": [
+475,
+491
+],
+"alt_span": [
+507,
+525
+]
+},
+{
+"k": 6,
+"nat": "roundedDistance",
+"alt": "rounded_distance",
+"nat_span": [
+1741,
+1756
+],
+"alt_span": [
+1847,
+1863
+]
+},
+{
+"k": 7,
+"nat": "averageBounceDistance",
+"alt": "average_bounce_distance",
+"nat_span": [
+1816,
+1837
+],
+"alt_span": [
+1925,
+1948
+]
+},
+{
+"k": 8,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1918,
+1929
+],
+"alt_span": [
+2033,
+2045
+]
+},
+{
+"k": 9,
+"nat": "mainDriver",
+"alt": "main_driver",
+"nat_span": [
+2253,
+2263
+],
+"alt_span": [
+2379,
+2390
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.874,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "simulateBouncingBall(initialDropHeight, bounceRestitutionMultiplier, minimumThresholdHeight",
+"alt": "simulate_bouncing_ball(initial_drop_height, bounce_restitution_multiplier, minimum_threshold_height",
+"nat_span": [
+9,
+100
+],
+"alt_span": [
+9,
+108
+]
+},
+{
+"k": 1,
+"nat": "bounceRestitutionMultiplier",
+"alt": "bounce_restitution_multiplier",
+"nat_span": [
+110,
+137
+],
+"alt_span": [
+118,
+147
+]
+},
+{
+"k": 2,
+"nat": "bounceRestitutionMultiplier",
+"alt": "bounce_restitution_multiplier",
+"nat_span": [
+145,
+172
+],
+"alt_span": [
+155,
+184
+]
+},
+{
+"k": 3,
+"nat": "totalDistanceTraveled",
+"alt": "total_distance_traveled",
+"nat_span": [
+214,
+235
+],
+"alt_span": [
+226,
+249
+]
+},
+{
+"k": 4,
+"nat": "currentPeakHeight",
+"alt": "current_peak_height",
+"nat_span": [
+247,
+264
+],
+"alt_span": [
+261,
+280
+]
+},
+{
+"k": 5,
+"nat": "initialDropHeight",
+"alt": "initial_drop_height",
+"nat_span": [
+267,
+284
+],
+"alt_span": [
+283,
+302
+]
+},
+{
+"k": 6,
+"nat": "totalBounceCount",
+"alt": "total_bounce_count",
+"nat_span": [
+292,
+308
+],
+"alt_span": [
+310,
+328
+]
+},
+{
+"k": 7,
+"nat": "maximumPeakHeight",
+"alt": "maximum_peak_height",
+"nat_span": [
+322,
+339
+],
+"alt_span": [
+342,
+361
+]
+},
+{
+"k": 8,
+"nat": "initialDropHeight",
+"alt": "initial_drop_height",
+"nat_span": [
+342,
+359
+],
+"alt_span": [
+364,
+383
+]
+},
+{
+"k": 9,
+"nat": "currentPeakHeight",
+"alt": "current_peak_height",
+"nat_span": [
+371,
+388
+],
+"alt_span": [
+395,
+414
+]
+},
+{
+"k": 10,
+"nat": "minimumThresholdHeight",
+"alt": "minimum_threshold_height",
+"nat_span": [
+391,
+413
+],
+"alt_span": [
+417,
+441
+]
+},
+{
+"k": 11,
+"nat": "totalDistanceTraveled",
+"alt": "total_distance_traveled",
+"nat_span": [
+421,
+442
+],
+"alt_span": [
+449,
+472
+]
+},
+{
+"k": 12,
+"nat": "currentPeakHeight",
+"alt": "current_peak_height",
+"nat_span": [
+446,
+463
+],
+"alt_span": [
+476,
+495
+]
+},
+{
+"k": 13,
+"nat": "newReboundHeight",
+"alt": "new_rebound_height",
+"nat_span": [
+475,
+491
+],
+"alt_span": [
+507,
+525
+]
+},
+{
+"k": 14,
+"nat": "currentPeakHeight",
+"alt": "current_peak_height",
+"nat_span": [
+494,
+511
+],
+"alt_span": [
+528,
+547
+]
+},
+{
+"k": 15,
+"nat": "bounceRestitutionMultiplier;\n    totalDistanceTraveled",
+"alt": "bounce_restitution_multiplier;\n    total_distance_traveled",
+"nat_span": [
+514,
+568
+],
+"alt_span": [
+550,
+608
+]
+},
+{
+"k": 16,
+"nat": "newReboundHeight;\n    currentPeakHeight",
+"alt": "new_rebound_height;\n    current_peak_height",
+"nat_span": [
+572,
+611
+],
+"alt_span": [
+612,
+655
+]
+},
+{
+"k": 17,
+"nat": "newReboundHeight;\n    totalBounceCount",
+"alt": "new_rebound_height;\n    total_bounce_count",
+"nat_span": [
+614,
+652
+],
+"alt_span": [
+658,
+700
+]
+},
+{
+"k": 18,
+"nat": "totalDistanceTraveled, totalBounceCount, maximumPeakHeight",
+"alt": "total_distance_traveled, total_bounce_count, maximum_peak_height",
+"nat_span": [
+674,
+732
+],
+"alt_span": [
+722,
+786
+]
+},
+{
+"k": 19,
+"nat": "validateSimulationInputs(initialDropHeight, minimumThresholdHeight",
+"alt": "validate_simulation_inputs(initial_drop_height, minimum_threshold_height",
+"nat_span": [
+747,
+813
+],
+"alt_span": [
+801,
+873
+]
+},
+{
+"k": 20,
+"nat": "initialDropHeight",
+"alt": "initial_drop_height",
+"nat_span": [
+840,
+857
+],
+"alt_span": [
+900,
+919
+]
+},
+{
+"k": 21,
+"nat": "initialDropHeight",
+"alt": "initial_drop_height",
+"nat_span": [
+862,
+879
+],
+"alt_span": [
+924,
+943
+]
+},
+{
+"k": 22,
+"nat": "minimumThresholdHeight",
+"alt": "minimum_threshold_height",
+"nat_span": [
+993,
+1015
+],
+"alt_span": [
+1057,
+1081
+]
+},
+{
+"k": 23,
+"nat": "minimumThresholdHeight",
+"alt": "minimum_threshold_height",
+"nat_span": [
+1020,
+1042
+],
+"alt_span": [
+1086,
+1110
+]
+},
+{
+"k": 24,
+"nat": "runBounceSimulation(initialDropHeight, bounceRestitutionMultiplier, minimumThresholdHeight",
+"alt": "run_bounce_simulation(initial_drop_height, bounce_restitution_multiplier, minimum_threshold_height",
+"nat_span": [
+1150,
+1240
+],
+"alt_span": [
+1218,
+1316
+]
+},
+{
+"k": 25,
+"nat": "validateSimulationInputs(initialDropHeight, minimumThresholdHeight",
+"alt": "validate_simulation_inputs(initial_drop_height, minimum_threshold_height",
+"nat_span": [
+1246,
+1312
+],
+"alt_span": [
+1322,
+1394
+]
+},
+{
+"k": 26,
+"nat": "simulateBouncingBall(initialDropHeight, bounceRestitutionMultiplier, minimumThresholdHeight",
+"alt": "simulate_bouncing_ball(initial_drop_height, bounce_restitution_multiplier, minimum_threshold_height",
+"nat_span": [
+1324,
+1415
+],
+"alt_span": [
+1406,
+1505
+]
+},
+{
+"k": 27,
+"nat": "formatSimulationReport(simulationResult, bounceRestitutionMultiplier",
+"alt": "format_simulation_report(simulation_result, bounce_restitution_multiplier",
+"nat_span": [
+1430,
+1498
+],
+"alt_span": [
+1520,
+1593
+]
+},
+{
+"k": 28,
+"nat": "totalDistanceTraveled, totalBounceCount, maximumPeakHeight",
+"alt": "total_distance_traveled, total_bounce_count, maximum_peak_height",
+"nat_span": [
+1511,
+1569
+],
+"alt_span": [
+1606,
+1670
+]
+},
+{
+"k": 29,
+"nat": "simulationResult",
+"alt": "simulation_result",
+"nat_span": [
+1573,
+1589
+],
+"alt_span": [
+1674,
+1691
+]
+},
+{
+"k": 30,
+"nat": "totalBounceCount",
+"alt": "total_bounce_count",
+"nat_span": [
+1597,
+1613
+],
+"alt_span": [
+1699,
+1717
+]
+},
+{
+"k": 31,
+"nat": "bounceRestitutionMultiplier",
+"alt": "bounce_restitution_multiplier",
+"nat_span": [
+1671,
+1698
+],
+"alt_span": [
+1775,
+1804
+]
+},
+{
+"k": 32,
+"nat": "roundedDistance",
+"alt": "rounded_distance",
+"nat_span": [
+1741,
+1756
+],
+"alt_span": [
+1847,
+1863
+]
+},
+{
+"k": 33,
+"nat": "totalDistanceTraveled",
+"alt": "total_distance_traveled",
+"nat_span": [
+1770,
+1791
+],
+"alt_span": [
+1877,
+1900
+]
+},
+{
+"k": 34,
+"nat": "averageBounceDistance",
+"alt": "average_bounce_distance",
+"nat_span": [
+1816,
+1837
+],
+"alt_span": [
+1925,
+1948
+]
+},
+{
+"k": 35,
+"nat": "totalDistanceTraveled",
+"alt": "total_distance_traveled",
+"nat_span": [
+1852,
+1873
+],
+"alt_span": [
+1963,
+1986
+]
+},
+{
+"k": 36,
+"nat": "totalBounceCount",
+"alt": "total_bounce_count",
+"nat_span": [
+1876,
+1892
+],
+"alt_span": [
+1989,
+2007
+]
+},
+{
+"k": 37,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+1918,
+1929
+],
+"alt_span": [
+2033,
+2045
+]
+},
+{
+"k": 38,
+"nat": "bounceRestitutionMultiplier",
+"alt": "bounce_restitution_multiplier",
+"nat_span": [
+1965,
+1992
+],
+"alt_span": [
+2081,
+2110
+]
+},
+{
+"k": 39,
+"nat": "roundedDistance",
+"alt": "rounded_distance",
+"nat_span": [
+2028,
+2043
+],
+"alt_span": [
+2146,
+2162
+]
+},
+{
+"k": 40,
+"nat": "totalBounceCount",
+"alt": "total_bounce_count",
+"nat_span": [
+2074,
+2090
+],
+"alt_span": [
+2193,
+2211
+]
+},
+{
+"k": 41,
+"nat": "maximumPeakHeight",
+"alt": "maximum_peak_height",
+"nat_span": [
+2122,
+2139
+],
+"alt_span": [
+2243,
+2262
+]
+},
+{
+"k": 42,
+"nat": "averageBounceDistance",
+"alt": "average_bounce_distance",
+"nat_span": [
+2179,
+2200
+],
+"alt_span": [
+2302,
+2325
+]
+},
+{
+"k": 43,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+2217,
+2228
+],
+"alt_span": [
+2342,
+2354
+]
+},
+{
+"k": 44,
+"nat": "mainDriver",
+"alt": "main_driver",
+"nat_span": [
+2253,
+2263
+],
+"alt_span": [
+2379,
+2390
+]
+},
+{
+"k": 45,
+"nat": "initialDropHeight",
+"alt": "initial_drop_height",
+"nat_span": [
+2276,
+2293
+],
+"alt_span": [
+2403,
+2422
+]
+},
+{
+"k": 46,
+"nat": "bounceRestitutionMultiplier",
+"alt": "bounce_restitution_multiplier",
+"nat_span": [
+2308,
+2335
+],
+"alt_span": [
+2437,
+2466
+]
+},
+{
+"k": 47,
+"nat": "minimumThresholdHeight",
+"alt": "minimum_threshold_height",
+"nat_span": [
+2352,
+2374
+],
+"alt_span": [
+2483,
+2507
+]
+},
+{
+"k": 48,
+"nat": "simulationResult",
+"alt": "simulation_result",
+"nat_span": [
+2389,
+2405
+],
+"alt_span": [
+2522,
+2539
+]
+},
+{
+"k": 49,
+"nat": "runBounceSimulation(\n    initialDropHeight,\n    bounceRestitutionMultiplier,\n    minimumThresholdHeight",
+"alt": "run_bounce_simulation(\n    initial_drop_height,\n    bounce_restitution_multiplier,\n    minimum_threshold_height",
+"nat_span": [
+2408,
+2511
+],
+"alt_span": [
+2542,
+2653
+]
+},
+{
+"k": 50,
+"nat": "simulationResult",
+"alt": "simulation_result",
+"nat_span": [
+2532,
+2548
+],
+"alt_span": [
+2674,
+2691
+]
+},
+{
+"k": 51,
+"nat": "formatSimulationReport(simulationResult, bounceRestitutionMultiplier",
+"alt": "format_simulation_report(simulation_result, bounce_restitution_multiplier",
+"nat_span": [
+2565,
+2633
+],
+"alt_span": [
+2708,
+2781
+]
+},
+{
+"k": 52,
+"nat": "mainDriver",
+"alt": "main_driver",
+"nat_span": [
+2640,
+2650
+],
+"alt_span": [
+2788,
+2799
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "js_camel_snake__d004",
+"family": "js_camel_snake",
+"topic": "Moving Average Filter",
+"angle": "code",
+"text_es": "Write a script to apply a moving average filter to numerical data. Create a function `smooth data array` that takes a `raw data array` and an integer `sliding window size`. If the `sliding window size` is even, increment it by 1. Track a `filtered result array`. Iterate through each index of the `raw data array`. For each position, calculate the `window start index` (clamped to 0) and the `window end index` (clamped to array length minus 1). Loop from the start to end indices to calculate the `current window sum`. Divide this by the number of elements in the window (the `actual window length`) to get the `local average value`. Push it into the `filtered result array`. After the main loop, calculate the `overall average value` of the entire `filtered result array`. Return an array containing the `filtered result array` and the `overall average value`. Include a main block that processes `[2, 4, 6, 8, 10]` with window size 3 and prints.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function validateRawData(rawDataArray) {\n  if (!Array.isArray(rawDataArray) || rawDataArray.length === 0) {\n    throw new TypeError('input series must be a non-empty array of numbers');\n  }\n  rawDataArray.forEach(function (candidateValue, valueIndex) {\n    if (typeof candidateValue !== 'number' || !Number.isFinite(candidateValue)) {\n      throw new TypeError('value at index ' + valueIndex + ' is not a finite number');\n    }\n  });\n}\n\nfunction normalizeWindowSize(requestedWindowSize) {\n  const truncatedWindowSize = Math.trunc(requestedWindowSize);\n  if (!Number.isFinite(truncatedWindowSize) || truncatedWindowSize < 1) {\n    throw new RangeError('window size must be a positive integer');\n  }\n  return truncatedWindowSize % 2 === 0 ? truncatedWindowSize + 1 : truncatedWindowSize;\n}\n\nfunction smoothDataArray(rawDataArray, slidingWindowSize) {\n  validateRawData(rawDataArray);\n  const effectiveWindowSize = normalizeWindowSize(slidingWindowSize);\n  const halfWindowSpan = (effectiveWindowSize - 1) / 2;\n  const lastValidIndex = rawDataArray.length - 1;\n  const filteredResultArray = [];\n\n  for (let currentIndex = 0; currentIndex <= lastValidIndex; currentIndex += 1) {\n    const windowStartIndex = Math.max(0, currentIndex - halfWindowSpan);\n    const windowEndIndex = Math.min(lastValidIndex, currentIndex + halfWindowSpan);\n    let currentWindowSum = 0;\n    for (let scanIndex = windowStartIndex; scanIndex <= windowEndIndex; scanIndex += 1) {\n      currentWindowSum += rawDataArray[scanIndex];\n    }\n    const actualWindowLength = windowEndIndex - windowStartIndex + 1;\n    const localAverageValue = currentWindowSum / actualWindowLength;\n    filteredResultArray.push(localAverageValue);\n  }\n\n  const filteredTotalSum = filteredResultArray.reduce(function (runningSum, smoothedValue) {\n    return runningSum + smoothedValue;\n  }, 0);\n  const overallAverageValue = filteredTotalSum / filteredResultArray.length;\n\n  return [filteredResultArray, overallAverageValue];\n}\n\nfunction formatNumberList(numberList, decimalPlaces) {\n  return numberList\n    .map(function (numericValue) {\n      return numericValue.toFixed(decimalPlaces);\n    })\n    .join(', ');\n}\n\nfunction buildSmoothingReport(rawDataArray, slidingWindowSize) {\n  const [filteredResultArray, overallAverageValue] = smoothDataArray(rawDataArray, slidingWindowSize);\n  const reportLines = [\n    'input series      : [' + formatNumberList(rawDataArray, 2) + ']',\n    'requested window  : ' + slidingWindowSize,\n    'effective window  : ' + normalizeWindowSize(slidingWindowSize),\n    'smoothed series   : [' + formatNumberList(filteredResultArray, 4) + ']',\n    'overall average   : ' + overallAverageValue.toFixed(4)\n  ];\n  return reportLines.join('\\n');\n}\n\nfunction main() {\n  const sampleDataArray = [2, 4, 6, 8, 10];\n  const sampleWindowSize = 3;\n  console.log(buildSmoothingReport(sampleDataArray, sampleWindowSize));\n}\n\nmain();\n",
+"text_alt": "function validate_raw_data(raw_data_array) {\n  if (!Array.isArray(raw_data_array) || raw_data_array.length === 0) {\n    throw new TypeError('input series must be a non-empty array of numbers');\n  }\n  raw_data_array.forEach(function (candidate_value, value_index) {\n    if (typeof candidate_value !== 'number' || !Number.isFinite(candidate_value)) {\n      throw new TypeError('value at index ' + value_index + ' is not a finite number');\n    }\n  });\n}\n\nfunction normalize_window_size(requested_window_size) {\n  const truncated_window_size = Math.trunc(requested_window_size);\n  if (!Number.isFinite(truncated_window_size) || truncated_window_size < 1) {\n    throw new RangeError('window size must be a positive integer');\n  }\n  return truncated_window_size % 2 === 0 ? truncated_window_size + 1 : truncated_window_size;\n}\n\nfunction smooth_data_array(raw_data_array, sliding_window_size) {\n  validate_raw_data(raw_data_array);\n  const effective_window_size = normalize_window_size(sliding_window_size);\n  const half_window_span = (effective_window_size - 1) / 2;\n  const last_valid_index = raw_data_array.length - 1;\n  const filtered_result_array = [];\n\n  for (let current_index = 0; current_index <= last_valid_index; current_index += 1) {\n    const window_start_index = Math.max(0, current_index - half_window_span);\n    const window_end_index = Math.min(last_valid_index, current_index + half_window_span);\n    let current_window_sum = 0;\n    for (let scan_index = window_start_index; scan_index <= window_end_index; scan_index += 1) {\n      current_window_sum += raw_data_array[scan_index];\n    }\n    const actual_window_length = window_end_index - window_start_index + 1;\n    const local_average_value = current_window_sum / actual_window_length;\n    filtered_result_array.push(local_average_value);\n  }\n\n  const filtered_total_sum = filtered_result_array.reduce(function (running_sum, smoothed_value) {\n    return running_sum + smoothed_value;\n  }, 0);\n  const overall_average_value = filtered_total_sum / filtered_result_array.length;\n\n  return [filtered_result_array, overall_average_value];\n}\n\nfunction format_number_list(number_list, decimal_places) {\n  return number_list\n    .map(function (numeric_value) {\n      return numeric_value.toFixed(decimal_places);\n    })\n    .join(', ');\n}\n\nfunction build_smoothing_report(raw_data_array, sliding_window_size) {\n  const [filtered_result_array, overall_average_value] = smooth_data_array(raw_data_array, sliding_window_size);\n  const report_lines = [\n    'input series      : [' + format_number_list(raw_data_array, 2) + ']',\n    'requested window  : ' + sliding_window_size,\n    'effective window  : ' + normalize_window_size(sliding_window_size),\n    'smoothed series   : [' + format_number_list(filtered_result_array, 4) + ']',\n    'overall average   : ' + overall_average_value.toFixed(4)\n  ];\n  return report_lines.join('\\n');\n}\n\nfunction main() {\n  const sample_data_array = [2, 4, 6, 8, 10];\n  const sample_window_size = 3;\n  console.log(build_smoothing_report(sample_data_array, sample_window_size));\n}\n\nmain();\n",
+"opps": [
+{
+"k": 0,
+"nat": "validateRawData(rawDataArray",
+"alt": "validate_raw_data(raw_data_array",
+"nat_span": [
+9,
+37
+],
+"alt_span": [
+9,
+41
+]
+},
+{
+"k": 1,
+"nat": "candidateValue, valueIndex",
+"alt": "candidate_value, value_index",
+"nat_span": [
+223,
+249
+],
+"alt_span": [
+233,
+261
+]
+},
+{
+"k": 2,
+"nat": "normalizeWindowSize(requestedWindowSize",
+"alt": "normalize_window_size(requested_window_size",
+"nat_span": [
+446,
+485
+],
+"alt_span": [
+461,
+504
+]
+},
+{
+"k": 3,
+"nat": "truncatedWindowSize",
+"alt": "truncated_window_size",
+"nat_span": [
+497,
+516
+],
+"alt_span": [
+516,
+537
+]
+},
+{
+"k": 4,
+"nat": "effectiveWindowSize",
+"alt": "effective_window_size",
+"nat_span": [
+890,
+909
+],
+"alt_span": [
+933,
+954
+]
+},
+{
+"k": 5,
+"nat": "halfWindowSpan",
+"alt": "half_window_span",
+"nat_span": [
+960,
+974
+],
+"alt_span": [
+1009,
+1025
+]
+},
+{
+"k": 6,
+"nat": "lastValidIndex",
+"alt": "last_valid_index",
+"nat_span": [
+1016,
+1030
+],
+"alt_span": [
+1069,
+1085
+]
+},
+{
+"k": 7,
+"nat": "filteredResultArray",
+"alt": "filtered_result_array",
+"nat_span": [
+1066,
+1085
+],
+"alt_span": [
+1123,
+1144
+]
+},
+{
+"k": 8,
+"nat": "currentIndex",
+"alt": "current_index",
+"nat_span": [
+1104,
+1116
+],
+"alt_span": [
+1163,
+1176
+]
+},
+{
+"k": 9,
+"nat": "windowStartIndex",
+"alt": "window_start_index",
+"nat_span": [
+1185,
+1201
+],
+"alt_span": [
+1249,
+1267
+]
+},
+{
+"k": 10,
+"nat": "windowEndIndex",
+"alt": "window_end_index",
+"nat_span": [
+1258,
+1272
+],
+"alt_span": [
+1327,
+1343
+]
+},
+{
+"k": 11,
+"nat": "currentWindowSum",
+"alt": "current_window_sum",
+"nat_span": [
+1340,
+1356
+],
+"alt_span": [
+1416,
+1434
+]
+},
+{
+"k": 12,
+"nat": "scanIndex",
+"alt": "scan_index",
+"nat_span": [
+1375,
+1384
+],
+"alt_span": [
+1453,
+1463
+]
+},
+{
+"k": 13,
+"nat": "actualWindowLength",
+"alt": "actual_window_length",
+"nat_span": [
+1519,
+1537
+],
+"alt_span": [
+1609,
+1629
+]
+},
+{
+"k": 14,
+"nat": "localAverageValue",
+"alt": "local_average_value",
+"nat_span": [
+1589,
+1606
+],
+"alt_span": [
+1685,
+1704
+]
+},
+{
+"k": 15,
+"nat": "filteredTotalSum",
+"alt": "filtered_total_sum",
+"nat_span": [
+1710,
+1726
+],
+"alt_span": [
+1816,
+1834
+]
+},
+{
+"k": 16,
+"nat": "runningSum, smoothedValue",
+"alt": "running_sum, smoothed_value",
+"nat_span": [
+1766,
+1791
+],
+"alt_span": [
+1876,
+1903
+]
+},
+{
+"k": 17,
+"nat": "overallAverageValue",
+"alt": "overall_average_value",
+"nat_span": [
+1851,
+1870
+],
+"alt_span": [
+1965,
+1986
+]
+},
+{
+"k": 18,
+"nat": "formatNumberList(numberList, decimalPlaces",
+"alt": "format_number_list(number_list, decimal_places",
+"nat_span": [
+1986,
+2028
+],
+"alt_span": [
+2110,
+2156
+]
+},
+{
+"k": 19,
+"nat": "numericValue",
+"alt": "numeric_value",
+"nat_span": [
+2071,
+2083
+],
+"alt_span": [
+2200,
+2213
+]
+},
+{
+"k": 20,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+2340,
+2351
+],
+"alt_span": [
+2488,
+2500
+]
+},
+{
+"k": 21,
+"nat": "sampleDataArray",
+"alt": "sample_data_array",
+"nat_span": [
+2749,
+2764
+],
+"alt_span": [
+2915,
+2932
+]
+},
+{
+"k": 22,
+"nat": "sampleWindowSize",
+"alt": "sample_window_size",
+"nat_span": [
+2793,
+2809
+],
+"alt_span": [
+2961,
+2979
+]
+}
+],
+"k_en": 23,
+"shared_fraction": 0.879,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "validateRawData(rawDataArray",
+"alt": "validate_raw_data(raw_data_array",
+"nat_span": [
+9,
+37
+],
+"alt_span": [
+9,
+41
+]
+},
+{
+"k": 1,
+"nat": "rawDataArray",
+"alt": "raw_data_array",
+"nat_span": [
+62,
+74
+],
+"alt_span": [
+66,
+80
+]
+},
+{
+"k": 2,
+"nat": "rawDataArray",
+"alt": "raw_data_array",
+"nat_span": [
+79,
+91
+],
+"alt_span": [
+85,
+99
+]
+},
+{
+"k": 3,
+"nat": "rawDataArray",
+"alt": "raw_data_array",
+"nat_span": [
+192,
+204
+],
+"alt_span": [
+200,
+214
+]
+},
+{
+"k": 4,
+"nat": "candidateValue, valueIndex",
+"alt": "candidate_value, value_index",
+"nat_span": [
+223,
+249
+],
+"alt_span": [
+233,
+261
+]
+},
+{
+"k": 5,
+"nat": "candidateValue",
+"alt": "candidate_value",
+"nat_span": [
+268,
+282
+],
+"alt_span": [
+280,
+295
+]
+},
+{
+"k": 6,
+"nat": "candidateValue",
+"alt": "candidate_value",
+"nat_span": [
+316,
+330
+],
+"alt_span": [
+329,
+344
+]
+},
+{
+"k": 7,
+"nat": "valueIndex",
+"alt": "value_index",
+"nat_span": [
+381,
+391
+],
+"alt_span": [
+395,
+406
+]
+},
+{
+"k": 8,
+"nat": "normalizeWindowSize(requestedWindowSize",
+"alt": "normalize_window_size(requested_window_size",
+"nat_span": [
+446,
+485
+],
+"alt_span": [
+461,
+504
+]
+},
+{
+"k": 9,
+"nat": "truncatedWindowSize",
+"alt": "truncated_window_size",
+"nat_span": [
+497,
+516
+],
+"alt_span": [
+516,
+537
+]
+},
+{
+"k": 10,
+"nat": "requestedWindowSize",
+"alt": "requested_window_size",
+"nat_span": [
+530,
+549
+],
+"alt_span": [
+551,
+572
+]
+},
+{
+"k": 11,
+"nat": "truncatedWindowSize",
+"alt": "truncated_window_size",
+"nat_span": [
+575,
+594
+],
+"alt_span": [
+598,
+619
+]
+},
+{
+"k": 12,
+"nat": "truncatedWindowSize",
+"alt": "truncated_window_size",
+"nat_span": [
+599,
+618
+],
+"alt_span": [
+624,
+645
+]
+},
+{
+"k": 13,
+"nat": "truncatedWindowSize",
+"alt": "truncated_window_size",
+"nat_span": [
+707,
+726
+],
+"alt_span": [
+734,
+755
+]
+},
+{
+"k": 14,
+"nat": "truncatedWindowSize",
+"alt": "truncated_window_size",
+"nat_span": [
+739,
+758
+],
+"alt_span": [
+768,
+789
+]
+},
+{
+"k": 15,
+"nat": "truncatedWindowSize",
+"alt": "truncated_window_size",
+"nat_span": [
+765,
+784
+],
+"alt_span": [
+796,
+817
+]
+},
+{
+"k": 16,
+"nat": "smoothDataArray(rawDataArray, slidingWindowSize",
+"alt": "smooth_data_array(raw_data_array, sliding_window_size",
+"nat_span": [
+798,
+845
+],
+"alt_span": [
+831,
+884
+]
+},
+{
+"k": 17,
+"nat": "validateRawData(rawDataArray",
+"alt": "validate_raw_data(raw_data_array",
+"nat_span": [
+851,
+879
+],
+"alt_span": [
+890,
+922
+]
+},
+{
+"k": 18,
+"nat": "effectiveWindowSize",
+"alt": "effective_window_size",
+"nat_span": [
+890,
+909
+],
+"alt_span": [
+933,
+954
+]
+},
+{
+"k": 19,
+"nat": "normalizeWindowSize(slidingWindowSize",
+"alt": "normalize_window_size(sliding_window_size",
+"nat_span": [
+912,
+949
+],
+"alt_span": [
+957,
+998
+]
+},
+{
+"k": 20,
+"nat": "halfWindowSpan",
+"alt": "half_window_span",
+"nat_span": [
+960,
+974
+],
+"alt_span": [
+1009,
+1025
+]
+},
+{
+"k": 21,
+"nat": "effectiveWindowSize",
+"alt": "effective_window_size",
+"nat_span": [
+978,
+997
+],
+"alt_span": [
+1029,
+1050
+]
+},
+{
+"k": 22,
+"nat": "lastValidIndex",
+"alt": "last_valid_index",
+"nat_span": [
+1016,
+1030
+],
+"alt_span": [
+1069,
+1085
+]
+},
+{
+"k": 23,
+"nat": "rawDataArray",
+"alt": "raw_data_array",
+"nat_span": [
+1033,
+1045
+],
+"alt_span": [
+1088,
+1102
+]
+},
+{
+"k": 24,
+"nat": "filteredResultArray",
+"alt": "filtered_result_array",
+"nat_span": [
+1066,
+1085
+],
+"alt_span": [
+1123,
+1144
+]
+},
+{
+"k": 25,
+"nat": "currentIndex",
+"alt": "current_index",
+"nat_span": [
+1104,
+1116
+],
+"alt_span": [
+1163,
+1176
+]
+},
+{
+"k": 26,
+"nat": "currentIndex",
+"alt": "current_index",
+"nat_span": [
+1122,
+1134
+],
+"alt_span": [
+1182,
+1195
+]
+},
+{
+"k": 27,
+"nat": "lastValidIndex; currentIndex",
+"alt": "last_valid_index; current_index",
+"nat_span": [
+1138,
+1166
+],
+"alt_span": [
+1199,
+1230
+]
+},
+{
+"k": 28,
+"nat": "windowStartIndex",
+"alt": "window_start_index",
+"nat_span": [
+1185,
+1201
+],
+"alt_span": [
+1249,
+1267
+]
+},
+{
+"k": 29,
+"nat": "currentIndex",
+"alt": "current_index",
+"nat_span": [
+1216,
+1228
+],
+"alt_span": [
+1282,
+1295
+]
+},
+{
+"k": 30,
+"nat": "halfWindowSpan",
+"alt": "half_window_span",
+"nat_span": [
+1231,
+1245
+],
+"alt_span": [
+1298,
+1314
+]
+},
+{
+"k": 31,
+"nat": "windowEndIndex",
+"alt": "window_end_index",
+"nat_span": [
+1258,
+1272
+],
+"alt_span": [
+1327,
+1343
+]
+},
+{
+"k": 32,
+"nat": "lastValidIndex, currentIndex",
+"alt": "last_valid_index, current_index",
+"nat_span": [
+1284,
+1312
+],
+"alt_span": [
+1355,
+1386
+]
+},
+{
+"k": 33,
+"nat": "halfWindowSpan",
+"alt": "half_window_span",
+"nat_span": [
+1315,
+1329
+],
+"alt_span": [
+1389,
+1405
+]
+},
+{
+"k": 34,
+"nat": "currentWindowSum",
+"alt": "current_window_sum",
+"nat_span": [
+1340,
+1356
+],
+"alt_span": [
+1416,
+1434
+]
+},
+{
+"k": 35,
+"nat": "scanIndex",
+"alt": "scan_index",
+"nat_span": [
+1375,
+1384
+],
+"alt_span": [
+1453,
+1463
+]
+},
+{
+"k": 36,
+"nat": "windowStartIndex; scanIndex",
+"alt": "window_start_index; scan_index",
+"nat_span": [
+1387,
+1414
+],
+"alt_span": [
+1466,
+1496
+]
+},
+{
+"k": 37,
+"nat": "windowEndIndex; scanIndex",
+"alt": "window_end_index; scan_index",
+"nat_span": [
+1418,
+1443
+],
+"alt_span": [
+1500,
+1528
+]
+},
+{
+"k": 38,
+"nat": "currentWindowSum",
+"alt": "current_window_sum",
+"nat_span": [
+1458,
+1474
+],
+"alt_span": [
+1543,
+1561
+]
+},
+{
+"k": 39,
+"nat": "rawDataArray[scanIndex",
+"alt": "raw_data_array[scan_index",
+"nat_span": [
+1478,
+1500
+],
+"alt_span": [
+1565,
+1590
+]
+},
+{
+"k": 40,
+"nat": "actualWindowLength",
+"alt": "actual_window_length",
+"nat_span": [
+1519,
+1537
+],
+"alt_span": [
+1609,
+1629
+]
+},
+{
+"k": 41,
+"nat": "windowEndIndex",
+"alt": "window_end_index",
+"nat_span": [
+1540,
+1554
+],
+"alt_span": [
+1632,
+1648
+]
+},
+{
+"k": 42,
+"nat": "windowStartIndex",
+"alt": "window_start_index",
+"nat_span": [
+1557,
+1573
+],
+"alt_span": [
+1651,
+1669
+]
+},
+{
+"k": 43,
+"nat": "localAverageValue",
+"alt": "local_average_value",
+"nat_span": [
+1589,
+1606
+],
+"alt_span": [
+1685,
+1704
+]
+},
+{
+"k": 44,
+"nat": "currentWindowSum",
+"alt": "current_window_sum",
+"nat_span": [
+1609,
+1625
+],
+"alt_span": [
+1707,
+1725
+]
+},
+{
+"k": 45,
+"nat": "actualWindowLength;\n    filteredResultArray",
+"alt": "actual_window_length;\n    filtered_result_array",
+"nat_span": [
+1628,
+1671
+],
+"alt_span": [
+1728,
+1775
+]
+},
+{
+"k": 46,
+"nat": "localAverageValue",
+"alt": "local_average_value",
+"nat_span": [
+1677,
+1694
+],
+"alt_span": [
+1781,
+1800
+]
+},
+{
+"k": 47,
+"nat": "filteredTotalSum",
+"alt": "filtered_total_sum",
+"nat_span": [
+1710,
+1726
+],
+"alt_span": [
+1816,
+1834
+]
+},
+{
+"k": 48,
+"nat": "filteredResultArray",
+"alt": "filtered_result_array",
+"nat_span": [
+1729,
+1748
+],
+"alt_span": [
+1837,
+1858
+]
+},
+{
+"k": 49,
+"nat": "runningSum, smoothedValue",
+"alt": "running_sum, smoothed_value",
+"nat_span": [
+1766,
+1791
+],
+"alt_span": [
+1876,
+1903
+]
+},
+{
+"k": 50,
+"nat": "runningSum",
+"alt": "running_sum",
+"nat_span": [
+1806,
+1816
+],
+"alt_span": [
+1918,
+1929
+]
+},
+{
+"k": 51,
+"nat": "smoothedValue",
+"alt": "smoothed_value",
+"nat_span": [
+1819,
+1832
+],
+"alt_span": [
+1932,
+1946
+]
+},
+{
+"k": 52,
+"nat": "overallAverageValue",
+"alt": "overall_average_value",
+"nat_span": [
+1851,
+1870
+],
+"alt_span": [
+1965,
+1986
+]
+},
+{
+"k": 53,
+"nat": "filteredTotalSum",
+"alt": "filtered_total_sum",
+"nat_span": [
+1873,
+1889
+],
+"alt_span": [
+1989,
+2007
+]
+},
+{
+"k": 54,
+"nat": "filteredResultArray",
+"alt": "filtered_result_array",
+"nat_span": [
+1892,
+1911
+],
+"alt_span": [
+2010,
+2031
+]
+},
+{
+"k": 55,
+"nat": "filteredResultArray, overallAverageValue",
+"alt": "filtered_result_array, overall_average_value",
+"nat_span": [
+1931,
+1971
+],
+"alt_span": [
+2051,
+2095
+]
+},
+{
+"k": 56,
+"nat": "formatNumberList(numberList, decimalPlaces",
+"alt": "format_number_list(number_list, decimal_places",
+"nat_span": [
+1986,
+2028
+],
+"alt_span": [
+2110,
+2156
+]
+},
+{
+"k": 57,
+"nat": "numberList",
+"alt": "number_list",
+"nat_span": [
+2041,
+2051
+],
+"alt_span": [
+2169,
+2180
+]
+},
+{
+"k": 58,
+"nat": "numericValue",
+"alt": "numeric_value",
+"nat_span": [
+2071,
+2083
+],
+"alt_span": [
+2200,
+2213
+]
+},
+{
+"k": 59,
+"nat": "numericValue",
+"alt": "numeric_value",
+"nat_span": [
+2100,
+2112
+],
+"alt_span": [
+2230,
+2243
+]
+},
+{
+"k": 60,
+"nat": "decimalPlaces",
+"alt": "decimal_places",
+"nat_span": [
+2121,
+2134
+],
+"alt_span": [
+2252,
+2266
+]
+},
+{
+"k": 61,
+"nat": "buildSmoothingReport(rawDataArray, slidingWindowSize",
+"alt": "build_smoothing_report(raw_data_array, sliding_window_size",
+"nat_span": [
+2173,
+2225
+],
+"alt_span": [
+2305,
+2363
+]
+},
+{
+"k": 62,
+"nat": "filteredResultArray, overallAverageValue",
+"alt": "filtered_result_array, overall_average_value",
+"nat_span": [
+2238,
+2278
+],
+"alt_span": [
+2376,
+2420
+]
+},
+{
+"k": 63,
+"nat": "smoothDataArray(rawDataArray, slidingWindowSize",
+"alt": "smooth_data_array(raw_data_array, sliding_window_size",
+"nat_span": [
+2282,
+2329
+],
+"alt_span": [
+2424,
+2477
+]
+},
+{
+"k": 64,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+2340,
+2351
+],
+"alt_span": [
+2488,
+2500
+]
+},
+{
+"k": 65,
+"nat": "formatNumberList(rawDataArray",
+"alt": "format_number_list(raw_data_array",
+"nat_span": [
+2386,
+2415
+],
+"alt_span": [
+2535,
+2568
+]
+},
+{
+"k": 66,
+"nat": "slidingWindowSize",
+"alt": "sliding_window_size",
+"nat_span": [
+2456,
+2473
+],
+"alt_span": [
+2609,
+2628
+]
+},
+{
+"k": 67,
+"nat": "normalizeWindowSize(slidingWindowSize",
+"alt": "normalize_window_size(sliding_window_size",
+"nat_span": [
+2504,
+2541
+],
+"alt_span": [
+2659,
+2700
+]
+},
+{
+"k": 68,
+"nat": "formatNumberList(filteredResultArray",
+"alt": "format_number_list(filtered_result_array",
+"nat_span": [
+2574,
+2610
+],
+"alt_span": [
+2733,
+2773
+]
+},
+{
+"k": 69,
+"nat": "overallAverageValue",
+"alt": "overall_average_value",
+"nat_span": [
+2651,
+2670
+],
+"alt_span": [
+2814,
+2835
+]
+},
+{
+"k": 70,
+"nat": "reportLines",
+"alt": "report_lines",
+"nat_span": [
+2696,
+2707
+],
+"alt_span": [
+2861,
+2873
+]
+},
+{
+"k": 71,
+"nat": "sampleDataArray",
+"alt": "sample_data_array",
+"nat_span": [
+2749,
+2764
+],
+"alt_span": [
+2915,
+2932
+]
+},
+{
+"k": 72,
+"nat": "sampleWindowSize",
+"alt": "sample_window_size",
+"nat_span": [
+2793,
+2809
+],
+"alt_span": [
+2961,
+2979
+]
+},
+{
+"k": 73,
+"nat": "buildSmoothingReport(sampleDataArray, sampleWindowSize",
+"alt": "build_smoothing_report(sample_data_array, sample_window_size",
+"nat_span": [
+2829,
+2883
+],
+"alt_span": [
+2999,
+3059
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "js_camel_snake__d006",
+"family": "js_camel_snake",
+"topic": "Parking Garage Fee",
+"angle": "code",
+"text_es": "Write a script to calculate parking fees. Create a function `calculate parking fee` taking an `entry hour number`, an `exit hour number`, a `base flat rate`, an `hourly extra rate`, and a `maximum daily cap`. Track the `adjusted exit hour`, initialized to the exit hour. If it's less than the entry hour, add 24 to the `adjusted exit hour`. Calculate the `total parked hours`. If it is zero, set it to 24. Calculate the `preliminary total fee` as the `base flat rate` plus the `hourly extra rate` multiplied by the `total parked hours`. If the `total parked hours` is greater than 12, add an `extended stay surcharge` of 10 to the `preliminary total fee`. Finally, compare the `preliminary total fee` to the `maximum daily cap`, storing the smaller value in `final approved fee`. Return the `final approved fee`. Include a main block with entry 18, exit 2, base 5, hourly 2, max 20, and print.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function validateHourNumber(hourNumber, hourLabel) {\n  if (!Number.isInteger(hourNumber) || hourNumber < 0 || hourNumber > 23) {\n    throw new RangeError(`${hourLabel} must be an integer hour between 0 and 23`);\n  }\n  return hourNumber;\n}\n\nfunction validateRateValue(rateValue, rateLabel) {\n  if (typeof rateValue !== 'number' || Number.isNaN(rateValue) || rateValue < 0) {\n    throw new RangeError(`${rateLabel} must be a non-negative number`);\n  }\n  return rateValue;\n}\n\nfunction calculateParkingFee(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap) {\n  validateHourNumber(entryHourNumber, 'entry hour');\n  validateHourNumber(exitHourNumber, 'exit hour');\n  validateRateValue(baseFlatRate, 'flat rate');\n  validateRateValue(hourlyExtraRate, 'hourly extra rate');\n  validateRateValue(maximumDailyCap, 'daily cap');\n\n  let adjustedExitHour = exitHourNumber;\n  if (adjustedExitHour < entryHourNumber) {\n    adjustedExitHour += 24;\n  }\n\n  let totalParkedHours = adjustedExitHour - entryHourNumber;\n  if (totalParkedHours === 0) {\n    totalParkedHours = 24;\n  }\n\n  let preliminaryTotalFee = baseFlatRate + hourlyExtraRate * totalParkedHours;\n  if (totalParkedHours > 12) {\n    const extendedStaySurcharge = 10;\n    preliminaryTotalFee += extendedStaySurcharge;\n  }\n\n  const finalApprovedFee = Math.min(preliminaryTotalFee, maximumDailyCap);\n  return finalApprovedFee;\n}\n\nfunction formatHourLabel(hourNumber) {\n  const paddedHour = String(hourNumber).padStart(2, '0');\n  return `${paddedHour}:00`;\n}\n\nfunction formatCurrencyAmount(amountValue) {\n  return `$${amountValue.toFixed(2)}`;\n}\n\nfunction buildParkingReceipt(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap) {\n  const approvedFee = calculateParkingFee(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap);\n  const uncappedFee = baseFlatRate + hourlyExtraRate * 24 + 10;\n  const capWasApplied = approvedFee === maximumDailyCap && maximumDailyCap < uncappedFee;\n  const receiptLines = [\n    `Entry: ${formatHourLabel(entryHourNumber)}`,\n    `Exit:  ${formatHourLabel(exitHourNumber)}`,\n    `Flat rate: ${formatCurrencyAmount(baseFlatRate)}`,\n    `Hourly extra: ${formatCurrencyAmount(hourlyExtraRate)}`,\n    `Amount due: ${formatCurrencyAmount(approvedFee)}`\n  ];\n  if (capWasApplied) {\n    receiptLines.push(`Daily cap of ${formatCurrencyAmount(maximumDailyCap)} applied.`);\n  }\n  return receiptLines.join('\\n');\n}\n\nfunction runParkingDriver() {\n  const entryHourNumber = 18;\n  const exitHourNumber = 2;\n  const baseFlatRate = 5;\n  const hourlyExtraRate = 2;\n  const maximumDailyCap = 20;\n  const chargedFee = calculateParkingFee(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap);\n  console.log(chargedFee);\n  console.log(buildParkingReceipt(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap));\n}\n\nrunParkingDriver();\n",
+"text_alt": "function validate_hour_number(hour_number, hour_label) {\n  if (!Number.isInteger(hour_number) || hour_number < 0 || hour_number > 23) {\n    throw new RangeError(`${hour_label} must be an integer hour between 0 and 23`);\n  }\n  return hour_number;\n}\n\nfunction validate_rate_value(rate_value, rate_label) {\n  if (typeof rate_value !== 'number' || Number.isNaN(rate_value) || rate_value < 0) {\n    throw new RangeError(`${rate_label} must be a non-negative number`);\n  }\n  return rate_value;\n}\n\nfunction calculate_parking_fee(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap) {\n  validate_hour_number(entry_hour_number, 'entry hour');\n  validate_hour_number(exit_hour_number, 'exit hour');\n  validate_rate_value(base_flat_rate, 'flat rate');\n  validate_rate_value(hourly_extra_rate, 'hourly extra rate');\n  validate_rate_value(maximum_daily_cap, 'daily cap');\n\n  let adjusted_exit_hour = exit_hour_number;\n  if (adjusted_exit_hour < entry_hour_number) {\n    adjusted_exit_hour += 24;\n  }\n\n  let total_parked_hours = adjusted_exit_hour - entry_hour_number;\n  if (total_parked_hours === 0) {\n    total_parked_hours = 24;\n  }\n\n  let preliminary_total_fee = base_flat_rate + hourly_extra_rate * total_parked_hours;\n  if (total_parked_hours > 12) {\n    const extended_stay_surcharge = 10;\n    preliminary_total_fee += extended_stay_surcharge;\n  }\n\n  const final_approved_fee = Math.min(preliminary_total_fee, maximum_daily_cap);\n  return final_approved_fee;\n}\n\nfunction format_hour_label(hour_number) {\n  const padded_hour = String(hour_number).padStart(2, '0');\n  return `${padded_hour}:00`;\n}\n\nfunction format_currency_amount(amount_value) {\n  return `$${amount_value.toFixed(2)}`;\n}\n\nfunction build_parking_receipt(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap) {\n  const approved_fee = calculate_parking_fee(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap);\n  const uncapped_fee = base_flat_rate + hourly_extra_rate * 24 + 10;\n  const cap_was_applied = approved_fee === maximum_daily_cap && maximum_daily_cap < uncapped_fee;\n  const receipt_lines = [\n    `Entry: ${format_hour_label(entry_hour_number)}`,\n    `Exit:  ${format_hour_label(exit_hour_number)}`,\n    `Flat rate: ${format_currency_amount(base_flat_rate)}`,\n    `Hourly extra: ${format_currency_amount(hourly_extra_rate)}`,\n    `Amount due: ${format_currency_amount(approved_fee)}`\n  ];\n  if (cap_was_applied) {\n    receipt_lines.push(`Daily cap of ${format_currency_amount(maximum_daily_cap)} applied.`);\n  }\n  return receipt_lines.join('\\n');\n}\n\nfunction run_parking_driver() {\n  const entry_hour_number = 18;\n  const exit_hour_number = 2;\n  const base_flat_rate = 5;\n  const hourly_extra_rate = 2;\n  const maximum_daily_cap = 20;\n  const charged_fee = calculate_parking_fee(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap);\n  console.log(charged_fee);\n  console.log(build_parking_receipt(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap));\n}\n\nrun_parking_driver();\n",
+"opps": [
+{
+"k": 0,
+"nat": "validateHourNumber(hourNumber, hourLabel",
+"alt": "validate_hour_number(hour_number, hour_label",
+"nat_span": [
+9,
+49
+],
+"alt_span": [
+9,
+53
+]
+},
+{
+"k": 1,
+"nat": "validateRateValue(rateValue, rateLabel",
+"alt": "validate_rate_value(rate_value, rate_label",
+"nat_span": [
+249,
+287
+],
+"alt_span": [
+258,
+300
+]
+},
+{
+"k": 2,
+"nat": "calculateParkingFee(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap",
+"alt": "calculate_parking_fee(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap",
+"nat_span": [
+482,
+581
+],
+"alt_span": [
+500,
+611
+]
+},
+{
+"k": 3,
+"nat": "adjustedExitHour",
+"alt": "adjusted_exit_hour",
+"nat_span": [
+854,
+870
+],
+"alt_span": [
+904,
+922
+]
+},
+{
+"k": 4,
+"nat": "totalParkedHours",
+"alt": "total_parked_hours",
+"nat_span": [
+972,
+988
+],
+"alt_span": [
+1032,
+1050
+]
+},
+{
+"k": 5,
+"nat": "preliminaryTotalFee",
+"alt": "preliminary_total_fee",
+"nat_span": [
+1097,
+1116
+],
+"alt_span": [
+1167,
+1188
+]
+},
+{
+"k": 6,
+"nat": "extendedStaySurcharge",
+"alt": "extended_stay_surcharge",
+"nat_span": [
+1211,
+1232
+],
+"alt_span": [
+1291,
+1314
+]
+},
+{
+"k": 7,
+"nat": "finalApprovedFee",
+"alt": "final_approved_fee",
+"nat_span": [
+1302,
+1318
+],
+"alt_span": [
+1388,
+1406
+]
+},
+{
+"k": 8,
+"nat": "paddedHour",
+"alt": "padded_hour",
+"nat_span": [
+1446,
+1456
+],
+"alt_span": [
+1543,
+1554
+]
+},
+{
+"k": 9,
+"nat": "formatCurrencyAmount(amountValue",
+"alt": "format_currency_amount(amount_value",
+"nat_span": [
+1537,
+1569
+],
+"alt_span": [
+1637,
+1672
+]
+},
+{
+"k": 10,
+"nat": "approvedFee",
+"alt": "approved_fee",
+"nat_span": [
+1735,
+1746
+],
+"alt_span": [
+1851,
+1863
+]
+},
+{
+"k": 11,
+"nat": "uncappedFee",
+"alt": "uncapped_fee",
+"nat_span": [
+1859,
+1870
+],
+"alt_span": [
+1988,
+2000
+]
+},
+{
+"k": 12,
+"nat": "capWasApplied",
+"alt": "cap_was_applied",
+"nat_span": [
+1923,
+1936
+],
+"alt_span": [
+2057,
+2072
+]
+},
+{
+"k": 13,
+"nat": "receiptLines",
+"alt": "receipt_lines",
+"nat_span": [
+2013,
+2025
+],
+"alt_span": [
+2155,
+2168
+]
+},
+{
+"k": 14,
+"nat": "runParkingDriver",
+"alt": "run_parking_driver",
+"nat_span": [
+2469,
+2485
+],
+"alt_span": [
+2639,
+2657
+]
+},
+{
+"k": 15,
+"nat": "chargedFee",
+"alt": "charged_fee",
+"nat_span": [
+2641,
+2651
+],
+"alt_span": [
+2823,
+2834
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.852,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "validateHourNumber(hourNumber, hourLabel",
+"alt": "validate_hour_number(hour_number, hour_label",
+"nat_span": [
+9,
+49
+],
+"alt_span": [
+9,
+53
+]
+},
+{
+"k": 1,
+"nat": "hourNumber",
+"alt": "hour_number",
+"nat_span": [
+77,
+87
+],
+"alt_span": [
+81,
+92
+]
+},
+{
+"k": 2,
+"nat": "hourNumber",
+"alt": "hour_number",
+"nat_span": [
+92,
+102
+],
+"alt_span": [
+97,
+108
+]
+},
+{
+"k": 3,
+"nat": "hourNumber",
+"alt": "hour_number",
+"nat_span": [
+110,
+120
+],
+"alt_span": [
+116,
+127
+]
+},
+{
+"k": 4,
+"nat": "hourLabel",
+"alt": "hour_label",
+"nat_span": [
+157,
+166
+],
+"alt_span": [
+164,
+174
+]
+},
+{
+"k": 5,
+"nat": "hourNumber",
+"alt": "hour_number",
+"nat_span": [
+225,
+235
+],
+"alt_span": [
+233,
+244
+]
+},
+{
+"k": 6,
+"nat": "validateRateValue(rateValue, rateLabel",
+"alt": "validate_rate_value(rate_value, rate_label",
+"nat_span": [
+249,
+287
+],
+"alt_span": [
+258,
+300
+]
+},
+{
+"k": 7,
+"nat": "rateValue",
+"alt": "rate_value",
+"nat_span": [
+304,
+313
+],
+"alt_span": [
+317,
+327
+]
+},
+{
+"k": 8,
+"nat": "rateValue",
+"alt": "rate_value",
+"nat_span": [
+343,
+352
+],
+"alt_span": [
+357,
+367
+]
+},
+{
+"k": 9,
+"nat": "rateValue",
+"alt": "rate_value",
+"nat_span": [
+357,
+366
+],
+"alt_span": [
+372,
+382
+]
+},
+{
+"k": 10,
+"nat": "rateLabel",
+"alt": "rate_label",
+"nat_span": [
+402,
+411
+],
+"alt_span": [
+418,
+428
+]
+},
+{
+"k": 11,
+"nat": "rateValue",
+"alt": "rate_value",
+"nat_span": [
+459,
+468
+],
+"alt_span": [
+476,
+486
+]
+},
+{
+"k": 12,
+"nat": "calculateParkingFee(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap",
+"alt": "calculate_parking_fee(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap",
+"nat_span": [
+482,
+581
+],
+"alt_span": [
+500,
+611
+]
+},
+{
+"k": 13,
+"nat": "validateHourNumber(entryHourNumber",
+"alt": "validate_hour_number(entry_hour_number",
+"nat_span": [
+587,
+621
+],
+"alt_span": [
+617,
+655
+]
+},
+{
+"k": 14,
+"nat": "validateHourNumber(exitHourNumber",
+"alt": "validate_hour_number(exit_hour_number",
+"nat_span": [
+640,
+673
+],
+"alt_span": [
+674,
+711
+]
+},
+{
+"k": 15,
+"nat": "validateRateValue(baseFlatRate",
+"alt": "validate_rate_value(base_flat_rate",
+"nat_span": [
+691,
+721
+],
+"alt_span": [
+729,
+763
+]
+},
+{
+"k": 16,
+"nat": "validateRateValue(hourlyExtraRate",
+"alt": "validate_rate_value(hourly_extra_rate",
+"nat_span": [
+739,
+772
+],
+"alt_span": [
+781,
+818
+]
+},
+{
+"k": 17,
+"nat": "validateRateValue(maximumDailyCap",
+"alt": "validate_rate_value(maximum_daily_cap",
+"nat_span": [
+798,
+831
+],
+"alt_span": [
+844,
+881
+]
+},
+{
+"k": 18,
+"nat": "adjustedExitHour",
+"alt": "adjusted_exit_hour",
+"nat_span": [
+854,
+870
+],
+"alt_span": [
+904,
+922
+]
+},
+{
+"k": 19,
+"nat": "exitHourNumber",
+"alt": "exit_hour_number",
+"nat_span": [
+873,
+887
+],
+"alt_span": [
+925,
+941
+]
+},
+{
+"k": 20,
+"nat": "adjustedExitHour",
+"alt": "adjusted_exit_hour",
+"nat_span": [
+895,
+911
+],
+"alt_span": [
+949,
+967
+]
+},
+{
+"k": 21,
+"nat": "entryHourNumber",
+"alt": "entry_hour_number",
+"nat_span": [
+914,
+929
+],
+"alt_span": [
+970,
+987
+]
+},
+{
+"k": 22,
+"nat": "adjustedExitHour",
+"alt": "adjusted_exit_hour",
+"nat_span": [
+937,
+953
+],
+"alt_span": [
+995,
+1013
+]
+},
+{
+"k": 23,
+"nat": "totalParkedHours",
+"alt": "total_parked_hours",
+"nat_span": [
+972,
+988
+],
+"alt_span": [
+1032,
+1050
+]
+},
+{
+"k": 24,
+"nat": "adjustedExitHour",
+"alt": "adjusted_exit_hour",
+"nat_span": [
+991,
+1007
+],
+"alt_span": [
+1053,
+1071
+]
+},
+{
+"k": 25,
+"nat": "entryHourNumber",
+"alt": "entry_hour_number",
+"nat_span": [
+1010,
+1025
+],
+"alt_span": [
+1074,
+1091
+]
+},
+{
+"k": 26,
+"nat": "totalParkedHours",
+"alt": "total_parked_hours",
+"nat_span": [
+1033,
+1049
+],
+"alt_span": [
+1099,
+1117
+]
+},
+{
+"k": 27,
+"nat": "totalParkedHours",
+"alt": "total_parked_hours",
+"nat_span": [
+1063,
+1079
+],
+"alt_span": [
+1131,
+1149
+]
+},
+{
+"k": 28,
+"nat": "preliminaryTotalFee",
+"alt": "preliminary_total_fee",
+"nat_span": [
+1097,
+1116
+],
+"alt_span": [
+1167,
+1188
+]
+},
+{
+"k": 29,
+"nat": "baseFlatRate",
+"alt": "base_flat_rate",
+"nat_span": [
+1119,
+1131
+],
+"alt_span": [
+1191,
+1205
+]
+},
+{
+"k": 30,
+"nat": "hourlyExtraRate",
+"alt": "hourly_extra_rate",
+"nat_span": [
+1134,
+1149
+],
+"alt_span": [
+1208,
+1225
+]
+},
+{
+"k": 31,
+"nat": "totalParkedHours",
+"alt": "total_parked_hours",
+"nat_span": [
+1152,
+1168
+],
+"alt_span": [
+1228,
+1246
+]
+},
+{
+"k": 32,
+"nat": "totalParkedHours",
+"alt": "total_parked_hours",
+"nat_span": [
+1176,
+1192
+],
+"alt_span": [
+1254,
+1272
+]
+},
+{
+"k": 33,
+"nat": "extendedStaySurcharge",
+"alt": "extended_stay_surcharge",
+"nat_span": [
+1211,
+1232
+],
+"alt_span": [
+1291,
+1314
+]
+},
+{
+"k": 34,
+"nat": "preliminaryTotalFee",
+"alt": "preliminary_total_fee",
+"nat_span": [
+1243,
+1262
+],
+"alt_span": [
+1325,
+1346
+]
+},
+{
+"k": 35,
+"nat": "extendedStaySurcharge",
+"alt": "extended_stay_surcharge",
+"nat_span": [
+1266,
+1287
+],
+"alt_span": [
+1350,
+1373
+]
+},
+{
+"k": 36,
+"nat": "finalApprovedFee",
+"alt": "final_approved_fee",
+"nat_span": [
+1302,
+1318
+],
+"alt_span": [
+1388,
+1406
+]
+},
+{
+"k": 37,
+"nat": "preliminaryTotalFee, maximumDailyCap",
+"alt": "preliminary_total_fee, maximum_daily_cap",
+"nat_span": [
+1330,
+1366
+],
+"alt_span": [
+1418,
+1458
+]
+},
+{
+"k": 38,
+"nat": "finalApprovedFee",
+"alt": "final_approved_fee",
+"nat_span": [
+1378,
+1394
+],
+"alt_span": [
+1470,
+1488
+]
+},
+{
+"k": 39,
+"nat": "formatHourLabel(hourNumber",
+"alt": "format_hour_label(hour_number",
+"nat_span": [
+1408,
+1434
+],
+"alt_span": [
+1502,
+1531
+]
+},
+{
+"k": 40,
+"nat": "paddedHour",
+"alt": "padded_hour",
+"nat_span": [
+1446,
+1456
+],
+"alt_span": [
+1543,
+1554
+]
+},
+{
+"k": 41,
+"nat": "hourNumber",
+"alt": "hour_number",
+"nat_span": [
+1466,
+1476
+],
+"alt_span": [
+1564,
+1575
+]
+},
+{
+"k": 42,
+"nat": "paddedHour",
+"alt": "padded_hour",
+"nat_span": [
+1508,
+1518
+],
+"alt_span": [
+1607,
+1618
+]
+},
+{
+"k": 43,
+"nat": "formatCurrencyAmount(amountValue",
+"alt": "format_currency_amount(amount_value",
+"nat_span": [
+1537,
+1569
+],
+"alt_span": [
+1637,
+1672
+]
+},
+{
+"k": 44,
+"nat": "amountValue",
+"alt": "amount_value",
+"nat_span": [
+1586,
+1597
+],
+"alt_span": [
+1689,
+1701
+]
+},
+{
+"k": 45,
+"nat": "buildParkingReceipt(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap",
+"alt": "build_parking_receipt(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap",
+"nat_span": [
+1624,
+1723
+],
+"alt_span": [
+1728,
+1839
+]
+},
+{
+"k": 46,
+"nat": "approvedFee",
+"alt": "approved_fee",
+"nat_span": [
+1735,
+1746
+],
+"alt_span": [
+1851,
+1863
+]
+},
+{
+"k": 47,
+"nat": "calculateParkingFee(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap",
+"alt": "calculate_parking_fee(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap",
+"nat_span": [
+1749,
+1848
+],
+"alt_span": [
+1866,
+1977
+]
+},
+{
+"k": 48,
+"nat": "uncappedFee",
+"alt": "uncapped_fee",
+"nat_span": [
+1859,
+1870
+],
+"alt_span": [
+1988,
+2000
+]
+},
+{
+"k": 49,
+"nat": "baseFlatRate",
+"alt": "base_flat_rate",
+"nat_span": [
+1873,
+1885
+],
+"alt_span": [
+2003,
+2017
+]
+},
+{
+"k": 50,
+"nat": "hourlyExtraRate",
+"alt": "hourly_extra_rate",
+"nat_span": [
+1888,
+1903
+],
+"alt_span": [
+2020,
+2037
+]
+},
+{
+"k": 51,
+"nat": "capWasApplied",
+"alt": "cap_was_applied",
+"nat_span": [
+1923,
+1936
+],
+"alt_span": [
+2057,
+2072
+]
+},
+{
+"k": 52,
+"nat": "approvedFee",
+"alt": "approved_fee",
+"nat_span": [
+1939,
+1950
+],
+"alt_span": [
+2075,
+2087
+]
+},
+{
+"k": 53,
+"nat": "maximumDailyCap",
+"alt": "maximum_daily_cap",
+"nat_span": [
+1955,
+1970
+],
+"alt_span": [
+2092,
+2109
+]
+},
+{
+"k": 54,
+"nat": "maximumDailyCap",
+"alt": "maximum_daily_cap",
+"nat_span": [
+1974,
+1989
+],
+"alt_span": [
+2113,
+2130
+]
+},
+{
+"k": 55,
+"nat": "uncappedFee",
+"alt": "uncapped_fee",
+"nat_span": [
+1992,
+2003
+],
+"alt_span": [
+2133,
+2145
+]
+},
+{
+"k": 56,
+"nat": "receiptLines",
+"alt": "receipt_lines",
+"nat_span": [
+2013,
+2025
+],
+"alt_span": [
+2155,
+2168
+]
+},
+{
+"k": 57,
+"nat": "formatHourLabel(entryHourNumber",
+"alt": "format_hour_label(entry_hour_number",
+"nat_span": [
+2044,
+2075
+],
+"alt_span": [
+2187,
+2222
+]
+},
+{
+"k": 58,
+"nat": "formatHourLabel(exitHourNumber",
+"alt": "format_hour_label(exit_hour_number",
+"nat_span": [
+2094,
+2124
+],
+"alt_span": [
+2241,
+2275
+]
+},
+{
+"k": 59,
+"nat": "formatCurrencyAmount(baseFlatRate",
+"alt": "format_currency_amount(base_flat_rate",
+"nat_span": [
+2147,
+2180
+],
+"alt_span": [
+2298,
+2335
+]
+},
+{
+"k": 60,
+"nat": "formatCurrencyAmount(hourlyExtraRate",
+"alt": "format_currency_amount(hourly_extra_rate",
+"nat_span": [
+2206,
+2242
+],
+"alt_span": [
+2361,
+2401
+]
+},
+{
+"k": 61,
+"nat": "formatCurrencyAmount(approvedFee",
+"alt": "format_currency_amount(approved_fee",
+"nat_span": [
+2266,
+2298
+],
+"alt_span": [
+2425,
+2460
+]
+},
+{
+"k": 62,
+"nat": "capWasApplied",
+"alt": "cap_was_applied",
+"nat_span": [
+2313,
+2326
+],
+"alt_span": [
+2475,
+2490
+]
+},
+{
+"k": 63,
+"nat": "receiptLines",
+"alt": "receipt_lines",
+"nat_span": [
+2334,
+2346
+],
+"alt_span": [
+2498,
+2511
+]
+},
+{
+"k": 64,
+"nat": "formatCurrencyAmount(maximumDailyCap",
+"alt": "format_currency_amount(maximum_daily_cap",
+"nat_span": [
+2368,
+2404
+],
+"alt_span": [
+2533,
+2573
+]
+},
+{
+"k": 65,
+"nat": "receiptLines",
+"alt": "receipt_lines",
+"nat_span": [
+2432,
+2444
+],
+"alt_span": [
+2601,
+2614
+]
+},
+{
+"k": 66,
+"nat": "runParkingDriver",
+"alt": "run_parking_driver",
+"nat_span": [
+2469,
+2485
+],
+"alt_span": [
+2639,
+2657
+]
+},
+{
+"k": 67,
+"nat": "entryHourNumber",
+"alt": "entry_hour_number",
+"nat_span": [
+2498,
+2513
+],
+"alt_span": [
+2670,
+2687
+]
+},
+{
+"k": 68,
+"nat": "exitHourNumber",
+"alt": "exit_hour_number",
+"nat_span": [
+2528,
+2542
+],
+"alt_span": [
+2702,
+2718
+]
+},
+{
+"k": 69,
+"nat": "baseFlatRate",
+"alt": "base_flat_rate",
+"nat_span": [
+2556,
+2568
+],
+"alt_span": [
+2732,
+2746
+]
+},
+{
+"k": 70,
+"nat": "hourlyExtraRate",
+"alt": "hourly_extra_rate",
+"nat_span": [
+2582,
+2597
+],
+"alt_span": [
+2760,
+2777
+]
+},
+{
+"k": 71,
+"nat": "maximumDailyCap",
+"alt": "maximum_daily_cap",
+"nat_span": [
+2611,
+2626
+],
+"alt_span": [
+2791,
+2808
+]
+},
+{
+"k": 72,
+"nat": "chargedFee",
+"alt": "charged_fee",
+"nat_span": [
+2641,
+2651
+],
+"alt_span": [
+2823,
+2834
+]
+},
+{
+"k": 73,
+"nat": "calculateParkingFee(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap",
+"alt": "calculate_parking_fee(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap",
+"nat_span": [
+2654,
+2753
+],
+"alt_span": [
+2837,
+2948
+]
+},
+{
+"k": 74,
+"nat": "chargedFee",
+"alt": "charged_fee",
+"nat_span": [
+2770,
+2780
+],
+"alt_span": [
+2965,
+2976
+]
+},
+{
+"k": 75,
+"nat": "buildParkingReceipt(entryHourNumber, exitHourNumber, baseFlatRate, hourlyExtraRate, maximumDailyCap",
+"alt": "build_parking_receipt(entry_hour_number, exit_hour_number, base_flat_rate, hourly_extra_rate, maximum_daily_cap",
+"nat_span": [
+2797,
+2896
+],
+"alt_span": [
+2993,
+3104
+]
+},
+{
+"k": 76,
+"nat": "runParkingDriver",
+"alt": "run_parking_driver",
+"nat_span": [
+2903,
+2919
+],
+"alt_span": [
+3111,
+3129
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "js_camel_snake__d009",
+"family": "js_camel_snake",
+"topic": "Digital Time Converter",
+"angle": "code",
+"text_es": "Write a script to convert total seconds into a clock readout. Create a function `convert seconds to clock` taking an integer `total raw seconds`. Track the `total elapsed days` by dividing by 86400 (floored). Track the `remaining seconds after days` using modulo. Calculate the `full elapsed hours` by dividing this remainder by 3600 (floored). Calculate the `remaining seconds after hours` using modulo. Calculate the `full elapsed minutes` by dividing the remainder by 60 (floored). Calculate the `final leftover seconds` using modulo 60. Convert the hours, minutes, and seconds to strings, storing them in `padded hours string`, `padded minutes string`, and `padded seconds string`, adding a leading zero if below 10. Concatenate them with colons to form the `base clock string`. If `total elapsed days` is greater than 0, prepend it to form the `final clock string` (e.g., '1 days, 02:05:05'). Return the `final clock string`. Call with 90065 and print.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function padWithLeadingZero(numericValue) {\n  return numericValue < 10 ? '0' + numericValue : String(numericValue);\n}\n\nfunction validateRawSeconds(totalRawSeconds) {\n  if (typeof totalRawSeconds !== 'number' || !Number.isFinite(totalRawSeconds)) {\n    throw new TypeError('the seconds count must be a finite number');\n  }\n  if (!Number.isInteger(totalRawSeconds)) {\n    throw new RangeError('the seconds count must be a whole number');\n  }\n  if (totalRawSeconds < 0) {\n    throw new RangeError('the seconds count must not be negative');\n  }\n  return totalRawSeconds;\n}\n\nfunction convertSecondsToClock(totalRawSeconds) {\n  const validatedRawSeconds = validateRawSeconds(totalRawSeconds);\n\n  const totalElapsedDays = Math.floor(validatedRawSeconds / 86400);\n  const remainingSecondsAfterDays = validatedRawSeconds % 86400;\n\n  const fullElapsedHours = Math.floor(remainingSecondsAfterDays / 3600);\n  const remainingSecondsAfterHours = remainingSecondsAfterDays % 3600;\n\n  const fullElapsedMinutes = Math.floor(remainingSecondsAfterHours / 60);\n  const finalLeftoverSeconds = remainingSecondsAfterHours % 60;\n\n  const paddedHoursString = padWithLeadingZero(fullElapsedHours);\n  const paddedMinutesString = padWithLeadingZero(fullElapsedMinutes);\n  const paddedSecondsString = padWithLeadingZero(finalLeftoverSeconds);\n\n  const baseClockString = paddedHoursString + ':' + paddedMinutesString + ':' + paddedSecondsString;\n\n  let finalClockString = baseClockString;\n  if (totalElapsedDays > 0) {\n    finalClockString = totalElapsedDays + ' days, ' + baseClockString;\n  }\n\n  return finalClockString;\n}\n\nfunction parseSecondsArgument(rawArgumentText) {\n  const trimmedArgumentText = String(rawArgumentText).trim();\n  const parsedSecondsValue = Number(trimmedArgumentText);\n  if (trimmedArgumentText === '' || Number.isNaN(parsedSecondsValue)) {\n    throw new TypeError('cannot parse \"' + rawArgumentText + '\" as a seconds count');\n  }\n  return parsedSecondsValue;\n}\n\nfunction buildClockReport(secondsInputList) {\n  return secondsInputList\n    .map(function (secondsInputItem) {\n      const parsedSecondsValue = parseSecondsArgument(secondsInputItem);\n      const renderedClockString = convertSecondsToClock(parsedSecondsValue);\n      return parsedSecondsValue + ' -> ' + renderedClockString;\n    })\n    .join('\\n');\n}\n\nfunction runMain() {\n  const commandLineSeconds = process.argv.slice(2);\n  if (commandLineSeconds.length > 0) {\n    console.log(buildClockReport(commandLineSeconds));\n    return;\n  }\n  console.log(convertSecondsToClock(90065));\n}\n\nrunMain();\n",
+"text_alt": "function pad_with_leading_zero(numeric_value) {\n  return numeric_value < 10 ? '0' + numeric_value : String(numeric_value);\n}\n\nfunction validate_raw_seconds(total_raw_seconds) {\n  if (typeof total_raw_seconds !== 'number' || !Number.isFinite(total_raw_seconds)) {\n    throw new TypeError('the seconds count must be a finite number');\n  }\n  if (!Number.isInteger(total_raw_seconds)) {\n    throw new RangeError('the seconds count must be a whole number');\n  }\n  if (total_raw_seconds < 0) {\n    throw new RangeError('the seconds count must not be negative');\n  }\n  return total_raw_seconds;\n}\n\nfunction convert_seconds_to_clock(total_raw_seconds) {\n  const validated_raw_seconds = validate_raw_seconds(total_raw_seconds);\n\n  const total_elapsed_days = Math.floor(validated_raw_seconds / 86400);\n  const remaining_seconds_after_days = validated_raw_seconds % 86400;\n\n  const full_elapsed_hours = Math.floor(remaining_seconds_after_days / 3600);\n  const remaining_seconds_after_hours = remaining_seconds_after_days % 3600;\n\n  const full_elapsed_minutes = Math.floor(remaining_seconds_after_hours / 60);\n  const final_leftover_seconds = remaining_seconds_after_hours % 60;\n\n  const padded_hours_string = pad_with_leading_zero(full_elapsed_hours);\n  const padded_minutes_string = pad_with_leading_zero(full_elapsed_minutes);\n  const padded_seconds_string = pad_with_leading_zero(final_leftover_seconds);\n\n  const base_clock_string = padded_hours_string + ':' + padded_minutes_string + ':' + padded_seconds_string;\n\n  let final_clock_string = base_clock_string;\n  if (total_elapsed_days > 0) {\n    final_clock_string = total_elapsed_days + ' days, ' + base_clock_string;\n  }\n\n  return final_clock_string;\n}\n\nfunction parse_seconds_argument(raw_argument_text) {\n  const trimmed_argument_text = String(raw_argument_text).trim();\n  const parsed_seconds_value = Number(trimmed_argument_text);\n  if (trimmed_argument_text === '' || Number.isNaN(parsed_seconds_value)) {\n    throw new TypeError('cannot parse \"' + raw_argument_text + '\" as a seconds count');\n  }\n  return parsed_seconds_value;\n}\n\nfunction build_clock_report(seconds_input_list) {\n  return seconds_input_list\n    .map(function (seconds_input_item) {\n      const parsed_seconds_value = parse_seconds_argument(seconds_input_item);\n      const rendered_clock_string = convert_seconds_to_clock(parsed_seconds_value);\n      return parsed_seconds_value + ' -> ' + rendered_clock_string;\n    })\n    .join('\\n');\n}\n\nfunction run_main() {\n  const command_line_seconds = process.argv.slice(2);\n  if (command_line_seconds.length > 0) {\n    console.log(build_clock_report(command_line_seconds));\n    return;\n  }\n  console.log(convert_seconds_to_clock(90065));\n}\n\nrun_main();\n",
+"opps": [
+{
+"k": 0,
+"nat": "padWithLeadingZero(numericValue",
+"alt": "pad_with_leading_zero(numeric_value",
+"nat_span": [
+9,
+40
+],
+"alt_span": [
+9,
+44
+]
+},
+{
+"k": 1,
+"nat": "validateRawSeconds(totalRawSeconds",
+"alt": "validate_raw_seconds(total_raw_seconds",
+"nat_span": [
+128,
+162
+],
+"alt_span": [
+135,
+173
+]
+},
+{
+"k": 2,
+"nat": "validatedRawSeconds",
+"alt": "validated_raw_seconds",
+"nat_span": [
+628,
+647
+],
+"alt_span": [
+654,
+675
+]
+},
+{
+"k": 3,
+"nat": "totalElapsedDays",
+"alt": "total_elapsed_days",
+"nat_span": [
+696,
+712
+],
+"alt_span": [
+728,
+746
+]
+},
+{
+"k": 4,
+"nat": "remainingSecondsAfterDays",
+"alt": "remaining_seconds_after_days",
+"nat_span": [
+764,
+789
+],
+"alt_span": [
+800,
+828
+]
+},
+{
+"k": 5,
+"nat": "fullElapsedHours",
+"alt": "full_elapsed_hours",
+"nat_span": [
+830,
+846
+],
+"alt_span": [
+871,
+889
+]
+},
+{
+"k": 6,
+"nat": "remainingSecondsAfterHours",
+"alt": "remaining_seconds_after_hours",
+"nat_span": [
+903,
+929
+],
+"alt_span": [
+949,
+978
+]
+},
+{
+"k": 7,
+"nat": "fullElapsedMinutes",
+"alt": "full_elapsed_minutes",
+"nat_span": [
+975,
+993
+],
+"alt_span": [
+1027,
+1047
+]
+},
+{
+"k": 8,
+"nat": "finalLeftoverSeconds",
+"alt": "final_leftover_seconds",
+"nat_span": [
+1049,
+1069
+],
+"alt_span": [
+1106,
+1128
+]
+},
+{
+"k": 9,
+"nat": "paddedHoursString",
+"alt": "padded_hours_string",
+"nat_span": [
+1114,
+1131
+],
+"alt_span": [
+1176,
+1195
+]
+},
+{
+"k": 10,
+"nat": "paddedMinutesString",
+"alt": "padded_minutes_string",
+"nat_span": [
+1180,
+1199
+],
+"alt_span": [
+1249,
+1270
+]
+},
+{
+"k": 11,
+"nat": "paddedSecondsString",
+"alt": "padded_seconds_string",
+"nat_span": [
+1250,
+1269
+],
+"alt_span": [
+1326,
+1347
+]
+},
+{
+"k": 12,
+"nat": "baseClockString",
+"alt": "base_clock_string",
+"nat_span": [
+1323,
+1338
+],
+"alt_span": [
+1406,
+1423
+]
+},
+{
+"k": 13,
+"nat": "finalClockString",
+"alt": "final_clock_string",
+"nat_span": [
+1423,
+1439
+],
+"alt_span": [
+1514,
+1532
+]
+},
+{
+"k": 14,
+"nat": "parseSecondsArgument(rawArgumentText",
+"alt": "parse_seconds_argument(raw_argument_text",
+"nat_span": [
+1604,
+1640
+],
+"alt_span": [
+1709,
+1749
+]
+},
+{
+"k": 15,
+"nat": "trimmedArgumentText",
+"alt": "trimmed_argument_text",
+"nat_span": [
+1652,
+1671
+],
+"alt_span": [
+1761,
+1782
+]
+},
+{
+"k": 16,
+"nat": "parsedSecondsValue",
+"alt": "parsed_seconds_value",
+"nat_span": [
+1714,
+1732
+],
+"alt_span": [
+1827,
+1847
+]
+},
+{
+"k": 17,
+"nat": "buildClockReport(secondsInputList",
+"alt": "build_clock_report(seconds_input_list",
+"nat_span": [
+1967,
+2000
+],
+"alt_span": [
+2092,
+2129
+]
+},
+{
+"k": 18,
+"nat": "secondsInputItem",
+"alt": "seconds_input_item",
+"nat_span": [
+2049,
+2065
+],
+"alt_span": [
+2180,
+2198
+]
+},
+{
+"k": 19,
+"nat": "renderedClockString",
+"alt": "rendered_clock_string",
+"nat_span": [
+2154,
+2173
+],
+"alt_span": [
+2293,
+2314
+]
+},
+{
+"k": 20,
+"nat": "runMain",
+"alt": "run_main",
+"nat_span": [
+2319,
+2326
+],
+"alt_span": [
+2469,
+2477
+]
+},
+{
+"k": 21,
+"nat": "commandLineSeconds",
+"alt": "command_line_seconds",
+"nat_span": [
+2339,
+2357
+],
+"alt_span": [
+2490,
+2510
+]
+}
+],
+"k_en": 22,
+"shared_fraction": 0.885,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "padWithLeadingZero(numericValue",
+"alt": "pad_with_leading_zero(numeric_value",
+"nat_span": [
+9,
+40
+],
+"alt_span": [
+9,
+44
+]
+},
+{
+"k": 1,
+"nat": "numericValue",
+"alt": "numeric_value",
+"nat_span": [
+53,
+65
+],
+"alt_span": [
+57,
+70
+]
+},
+{
+"k": 2,
+"nat": "numericValue",
+"alt": "numeric_value",
+"nat_span": [
+79,
+91
+],
+"alt_span": [
+84,
+97
+]
+},
+{
+"k": 3,
+"nat": "numericValue",
+"alt": "numeric_value",
+"nat_span": [
+101,
+113
+],
+"alt_span": [
+107,
+120
+]
+},
+{
+"k": 4,
+"nat": "validateRawSeconds(totalRawSeconds",
+"alt": "validate_raw_seconds(total_raw_seconds",
+"nat_span": [
+128,
+162
+],
+"alt_span": [
+135,
+173
+]
+},
+{
+"k": 5,
+"nat": "totalRawSeconds",
+"alt": "total_raw_seconds",
+"nat_span": [
+179,
+194
+],
+"alt_span": [
+190,
+207
+]
+},
+{
+"k": 6,
+"nat": "totalRawSeconds",
+"alt": "total_raw_seconds",
+"nat_span": [
+228,
+243
+],
+"alt_span": [
+241,
+258
+]
+},
+{
+"k": 7,
+"nat": "totalRawSeconds",
+"alt": "total_raw_seconds",
+"nat_span": [
+346,
+361
+],
+"alt_span": [
+361,
+378
+]
+},
+{
+"k": 8,
+"nat": "totalRawSeconds",
+"alt": "total_raw_seconds",
+"nat_span": [
+446,
+461
+],
+"alt_span": [
+463,
+480
+]
+},
+{
+"k": 9,
+"nat": "totalRawSeconds",
+"alt": "total_raw_seconds",
+"nat_span": [
+550,
+565
+],
+"alt_span": [
+569,
+586
+]
+},
+{
+"k": 10,
+"nat": "convertSecondsToClock(totalRawSeconds",
+"alt": "convert_seconds_to_clock(total_raw_seconds",
+"nat_span": [
+579,
+616
+],
+"alt_span": [
+600,
+642
+]
+},
+{
+"k": 11,
+"nat": "validatedRawSeconds",
+"alt": "validated_raw_seconds",
+"nat_span": [
+628,
+647
+],
+"alt_span": [
+654,
+675
+]
+},
+{
+"k": 12,
+"nat": "validateRawSeconds(totalRawSeconds",
+"alt": "validate_raw_seconds(total_raw_seconds",
+"nat_span": [
+650,
+684
+],
+"alt_span": [
+678,
+716
+]
+},
+{
+"k": 13,
+"nat": "totalElapsedDays",
+"alt": "total_elapsed_days",
+"nat_span": [
+696,
+712
+],
+"alt_span": [
+728,
+746
+]
+},
+{
+"k": 14,
+"nat": "validatedRawSeconds",
+"alt": "validated_raw_seconds",
+"nat_span": [
+726,
+745
+],
+"alt_span": [
+760,
+781
+]
+},
+{
+"k": 15,
+"nat": "remainingSecondsAfterDays",
+"alt": "remaining_seconds_after_days",
+"nat_span": [
+764,
+789
+],
+"alt_span": [
+800,
+828
+]
+},
+{
+"k": 16,
+"nat": "validatedRawSeconds",
+"alt": "validated_raw_seconds",
+"nat_span": [
+792,
+811
+],
+"alt_span": [
+831,
+852
+]
+},
+{
+"k": 17,
+"nat": "fullElapsedHours",
+"alt": "full_elapsed_hours",
+"nat_span": [
+830,
+846
+],
+"alt_span": [
+871,
+889
+]
+},
+{
+"k": 18,
+"nat": "remainingSecondsAfterDays",
+"alt": "remaining_seconds_after_days",
+"nat_span": [
+860,
+885
+],
+"alt_span": [
+903,
+931
+]
+},
+{
+"k": 19,
+"nat": "remainingSecondsAfterHours",
+"alt": "remaining_seconds_after_hours",
+"nat_span": [
+903,
+929
+],
+"alt_span": [
+949,
+978
+]
+},
+{
+"k": 20,
+"nat": "remainingSecondsAfterDays",
+"alt": "remaining_seconds_after_days",
+"nat_span": [
+932,
+957
+],
+"alt_span": [
+981,
+1009
+]
+},
+{
+"k": 21,
+"nat": "fullElapsedMinutes",
+"alt": "full_elapsed_minutes",
+"nat_span": [
+975,
+993
+],
+"alt_span": [
+1027,
+1047
+]
+},
+{
+"k": 22,
+"nat": "remainingSecondsAfterHours",
+"alt": "remaining_seconds_after_hours",
+"nat_span": [
+1007,
+1033
+],
+"alt_span": [
+1061,
+1090
+]
+},
+{
+"k": 23,
+"nat": "finalLeftoverSeconds",
+"alt": "final_leftover_seconds",
+"nat_span": [
+1049,
+1069
+],
+"alt_span": [
+1106,
+1128
+]
+},
+{
+"k": 24,
+"nat": "remainingSecondsAfterHours",
+"alt": "remaining_seconds_after_hours",
+"nat_span": [
+1072,
+1098
+],
+"alt_span": [
+1131,
+1160
+]
+},
+{
+"k": 25,
+"nat": "paddedHoursString",
+"alt": "padded_hours_string",
+"nat_span": [
+1114,
+1131
+],
+"alt_span": [
+1176,
+1195
+]
+},
+{
+"k": 26,
+"nat": "padWithLeadingZero(fullElapsedHours",
+"alt": "pad_with_leading_zero(full_elapsed_hours",
+"nat_span": [
+1134,
+1169
+],
+"alt_span": [
+1198,
+1238
+]
+},
+{
+"k": 27,
+"nat": "paddedMinutesString",
+"alt": "padded_minutes_string",
+"nat_span": [
+1180,
+1199
+],
+"alt_span": [
+1249,
+1270
+]
+},
+{
+"k": 28,
+"nat": "padWithLeadingZero(fullElapsedMinutes",
+"alt": "pad_with_leading_zero(full_elapsed_minutes",
+"nat_span": [
+1202,
+1239
+],
+"alt_span": [
+1273,
+1315
+]
+},
+{
+"k": 29,
+"nat": "paddedSecondsString",
+"alt": "padded_seconds_string",
+"nat_span": [
+1250,
+1269
+],
+"alt_span": [
+1326,
+1347
+]
+},
+{
+"k": 30,
+"nat": "padWithLeadingZero(finalLeftoverSeconds",
+"alt": "pad_with_leading_zero(final_leftover_seconds",
+"nat_span": [
+1272,
+1311
+],
+"alt_span": [
+1350,
+1394
+]
+},
+{
+"k": 31,
+"nat": "baseClockString",
+"alt": "base_clock_string",
+"nat_span": [
+1323,
+1338
+],
+"alt_span": [
+1406,
+1423
+]
+},
+{
+"k": 32,
+"nat": "paddedHoursString",
+"alt": "padded_hours_string",
+"nat_span": [
+1341,
+1358
+],
+"alt_span": [
+1426,
+1445
+]
+},
+{
+"k": 33,
+"nat": "paddedMinutesString",
+"alt": "padded_minutes_string",
+"nat_span": [
+1367,
+1386
+],
+"alt_span": [
+1454,
+1475
+]
+},
+{
+"k": 34,
+"nat": "paddedSecondsString",
+"alt": "padded_seconds_string",
+"nat_span": [
+1395,
+1414
+],
+"alt_span": [
+1484,
+1505
+]
+},
+{
+"k": 35,
+"nat": "finalClockString",
+"alt": "final_clock_string",
+"nat_span": [
+1423,
+1439
+],
+"alt_span": [
+1514,
+1532
+]
+},
+{
+"k": 36,
+"nat": "baseClockString",
+"alt": "base_clock_string",
+"nat_span": [
+1442,
+1457
+],
+"alt_span": [
+1535,
+1552
+]
+},
+{
+"k": 37,
+"nat": "totalElapsedDays",
+"alt": "total_elapsed_days",
+"nat_span": [
+1465,
+1481
+],
+"alt_span": [
+1560,
+1578
+]
+},
+{
+"k": 38,
+"nat": "finalClockString",
+"alt": "final_clock_string",
+"nat_span": [
+1493,
+1509
+],
+"alt_span": [
+1590,
+1608
+]
+},
+{
+"k": 39,
+"nat": "totalElapsedDays",
+"alt": "total_elapsed_days",
+"nat_span": [
+1512,
+1528
+],
+"alt_span": [
+1611,
+1629
+]
+},
+{
+"k": 40,
+"nat": "baseClockString",
+"alt": "base_clock_string",
+"nat_span": [
+1543,
+1558
+],
+"alt_span": [
+1644,
+1661
+]
+},
+{
+"k": 41,
+"nat": "finalClockString",
+"alt": "final_clock_string",
+"nat_span": [
+1574,
+1590
+],
+"alt_span": [
+1677,
+1695
+]
+},
+{
+"k": 42,
+"nat": "parseSecondsArgument(rawArgumentText",
+"alt": "parse_seconds_argument(raw_argument_text",
+"nat_span": [
+1604,
+1640
+],
+"alt_span": [
+1709,
+1749
+]
+},
+{
+"k": 43,
+"nat": "trimmedArgumentText",
+"alt": "trimmed_argument_text",
+"nat_span": [
+1652,
+1671
+],
+"alt_span": [
+1761,
+1782
+]
+},
+{
+"k": 44,
+"nat": "rawArgumentText",
+"alt": "raw_argument_text",
+"nat_span": [
+1681,
+1696
+],
+"alt_span": [
+1792,
+1809
+]
+},
+{
+"k": 45,
+"nat": "parsedSecondsValue",
+"alt": "parsed_seconds_value",
+"nat_span": [
+1714,
+1732
+],
+"alt_span": [
+1827,
+1847
+]
+},
+{
+"k": 46,
+"nat": "trimmedArgumentText",
+"alt": "trimmed_argument_text",
+"nat_span": [
+1742,
+1761
+],
+"alt_span": [
+1857,
+1878
+]
+},
+{
+"k": 47,
+"nat": "trimmedArgumentText",
+"alt": "trimmed_argument_text",
+"nat_span": [
+1770,
+1789
+],
+"alt_span": [
+1887,
+1908
+]
+},
+{
+"k": 48,
+"nat": "parsedSecondsValue",
+"alt": "parsed_seconds_value",
+"nat_span": [
+1813,
+1831
+],
+"alt_span": [
+1932,
+1952
+]
+},
+{
+"k": 49,
+"nat": "rawArgumentText",
+"alt": "raw_argument_text",
+"nat_span": [
+1879,
+1894
+],
+"alt_span": [
+2000,
+2017
+]
+},
+{
+"k": 50,
+"nat": "parsedSecondsValue",
+"alt": "parsed_seconds_value",
+"nat_span": [
+1935,
+1953
+],
+"alt_span": [
+2058,
+2078
+]
+},
+{
+"k": 51,
+"nat": "buildClockReport(secondsInputList",
+"alt": "build_clock_report(seconds_input_list",
+"nat_span": [
+1967,
+2000
+],
+"alt_span": [
+2092,
+2129
+]
+},
+{
+"k": 52,
+"nat": "secondsInputList",
+"alt": "seconds_input_list",
+"nat_span": [
+2013,
+2029
+],
+"alt_span": [
+2142,
+2160
+]
+},
+{
+"k": 53,
+"nat": "secondsInputItem",
+"alt": "seconds_input_item",
+"nat_span": [
+2049,
+2065
+],
+"alt_span": [
+2180,
+2198
+]
+},
+{
+"k": 54,
+"nat": "parsedSecondsValue",
+"alt": "parsed_seconds_value",
+"nat_span": [
+2081,
+2099
+],
+"alt_span": [
+2214,
+2234
+]
+},
+{
+"k": 55,
+"nat": "parseSecondsArgument(secondsInputItem",
+"alt": "parse_seconds_argument(seconds_input_item",
+"nat_span": [
+2102,
+2139
+],
+"alt_span": [
+2237,
+2278
+]
+},
+{
+"k": 56,
+"nat": "renderedClockString",
+"alt": "rendered_clock_string",
+"nat_span": [
+2154,
+2173
+],
+"alt_span": [
+2293,
+2314
+]
+},
+{
+"k": 57,
+"nat": "convertSecondsToClock(parsedSecondsValue",
+"alt": "convert_seconds_to_clock(parsed_seconds_value",
+"nat_span": [
+2176,
+2216
+],
+"alt_span": [
+2317,
+2362
+]
+},
+{
+"k": 58,
+"nat": "parsedSecondsValue",
+"alt": "parsed_seconds_value",
+"nat_span": [
+2232,
+2250
+],
+"alt_span": [
+2378,
+2398
+]
+},
+{
+"k": 59,
+"nat": "renderedClockString",
+"alt": "rendered_clock_string",
+"nat_span": [
+2262,
+2281
+],
+"alt_span": [
+2410,
+2431
+]
+},
+{
+"k": 60,
+"nat": "runMain",
+"alt": "run_main",
+"nat_span": [
+2319,
+2326
+],
+"alt_span": [
+2469,
+2477
+]
+},
+{
+"k": 61,
+"nat": "commandLineSeconds",
+"alt": "command_line_seconds",
+"nat_span": [
+2339,
+2357
+],
+"alt_span": [
+2490,
+2510
+]
+},
+{
+"k": 62,
+"nat": "commandLineSeconds",
+"alt": "command_line_seconds",
+"nat_span": [
+2389,
+2407
+],
+"alt_span": [
+2542,
+2562
+]
+},
+{
+"k": 63,
+"nat": "buildClockReport(commandLineSeconds",
+"alt": "build_clock_report(command_line_seconds",
+"nat_span": [
+2438,
+2473
+],
+"alt_span": [
+2593,
+2632
+]
+},
+{
+"k": 64,
+"nat": "convertSecondsToClock",
+"alt": "convert_seconds_to_clock",
+"nat_span": [
+2507,
+2528
+],
+"alt_span": [
+2666,
+2690
+]
+},
+{
+"k": 65,
+"nat": "runMain",
+"alt": "run_main",
+"nat_span": [
+2541,
+2548
+],
+"alt_span": [
+2703,
+2711
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "js_camel_snake__d010",
+"family": "js_camel_snake",
+"topic": "Rectangle Intersection Detection",
+"angle": "code",
+"text_es": "Write a script to detect screen rectangle overlaps. Create a function `check rectangle intersection` taking 8 parameters: `first rect x`, `first rect y`, `first rect width`, `first rect height`, and the corresponding 4 for a second rectangle. If any width or height is negative or zero, return 0. Calculate the `first right edge` and `first bottom edge`. Calculate the `second right edge` and `second bottom edge`. Evaluate a `has horizontal overlap` boolean by checking if `first right edge` > `second rect x` AND `first rect x` < `second right edge`. Evaluate a `has vertical overlap` boolean similarly for y-axes. If both are true, calculate the `overlap region width` (minimum of right edges minus maximum of left edges) and `overlap region height`. Calculate and return the `overlap region area`. If they do not intersect, return 0. Include a main block that tests an overlapping pair and prints the area.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function checkRectangleIntersection(\n  firstRectX,\n  firstRectY,\n  firstRectWidth,\n  firstRectHeight,\n  secondRectX,\n  secondRectY,\n  secondRectWidth,\n  secondRectHeight\n) {\n  if (firstRectWidth <= 0 || firstRectHeight <= 0) {\n    return 0;\n  }\n  if (secondRectWidth <= 0 || secondRectHeight <= 0) {\n    return 0;\n  }\n\n  const firstRightEdge = firstRectX + firstRectWidth;\n  const firstBottomEdge = firstRectY + firstRectHeight;\n  const secondRightEdge = secondRectX + secondRectWidth;\n  const secondBottomEdge = secondRectY + secondRectHeight;\n\n  const hasHorizontalOverlap =\n    firstRightEdge > secondRectX && firstRectX < secondRightEdge;\n  const hasVerticalOverlap =\n    firstBottomEdge > secondRectY && firstRectY < secondBottomEdge;\n\n  if (hasHorizontalOverlap && hasVerticalOverlap) {\n    const overlapRegionWidth =\n      Math.min(firstRightEdge, secondRightEdge) - Math.max(firstRectX, secondRectX);\n    const overlapRegionHeight =\n      Math.min(firstBottomEdge, secondBottomEdge) - Math.max(firstRectY, secondRectY);\n    const overlapRegionArea = overlapRegionWidth * overlapRegionHeight;\n    return overlapRegionArea;\n  }\n\n  return 0;\n}\n\nfunction intersectRectangleObjects(firstRectangle, secondRectangle) {\n  return checkRectangleIntersection(\n    firstRectangle.x,\n    firstRectangle.y,\n    firstRectangle.width,\n    firstRectangle.height,\n    secondRectangle.x,\n    secondRectangle.y,\n    secondRectangle.width,\n    secondRectangle.height\n  );\n}\n\nfunction formatRectangleLabel(screenRectangle) {\n  const rightEdgeValue = screenRectangle.x + screenRectangle.width;\n  const bottomEdgeValue = screenRectangle.y + screenRectangle.height;\n  return `[(${screenRectangle.x},${screenRectangle.y}) -> (${rightEdgeValue},${bottomEdgeValue})]`;\n}\n\nfunction buildOverlapReport(firstRectangle, secondRectangle) {\n  const overlapArea = intersectRectangleObjects(firstRectangle, secondRectangle);\n  const firstLabel = formatRectangleLabel(firstRectangle);\n  const secondLabel = formatRectangleLabel(secondRectangle);\n  const verdictText = overlapArea > 0 ? \"overlap\" : \"no overlap\";\n  return `${firstLabel} vs ${secondLabel}: ${verdictText}, area = ${overlapArea}`;\n}\n\nfunction runOverlapDemo() {\n  const primaryWindowRect = { x: 10, y: 20, width: 120, height: 90 };\n  const secondaryWindowRect = { x: 70, y: 50, width: 100, height: 100 };\n\n  console.log(buildOverlapReport(primaryWindowRect, secondaryWindowRect));\n}\n\nrunOverlapDemo();\n",
+"text_alt": "function check_rectangle_intersection(\n  first_rect_x,\n  first_rect_y,\n  first_rect_width,\n  first_rect_height,\n  second_rect_x,\n  second_rect_y,\n  second_rect_width,\n  second_rect_height\n) {\n  if (first_rect_width <= 0 || first_rect_height <= 0) {\n    return 0;\n  }\n  if (second_rect_width <= 0 || second_rect_height <= 0) {\n    return 0;\n  }\n\n  const first_right_edge = first_rect_x + first_rect_width;\n  const first_bottom_edge = first_rect_y + first_rect_height;\n  const second_right_edge = second_rect_x + second_rect_width;\n  const second_bottom_edge = second_rect_y + second_rect_height;\n\n  const has_horizontal_overlap =\n    first_right_edge > second_rect_x && first_rect_x < second_right_edge;\n  const has_vertical_overlap =\n    first_bottom_edge > second_rect_y && first_rect_y < second_bottom_edge;\n\n  if (has_horizontal_overlap && has_vertical_overlap) {\n    const overlap_region_width =\n      Math.min(first_right_edge, second_right_edge) - Math.max(first_rect_x, second_rect_x);\n    const overlap_region_height =\n      Math.min(first_bottom_edge, second_bottom_edge) - Math.max(first_rect_y, second_rect_y);\n    const overlap_region_area = overlap_region_width * overlap_region_height;\n    return overlap_region_area;\n  }\n\n  return 0;\n}\n\nfunction intersect_rectangle_objects(first_rectangle, second_rectangle) {\n  return check_rectangle_intersection(\n    first_rectangle.x,\n    first_rectangle.y,\n    first_rectangle.width,\n    first_rectangle.height,\n    second_rectangle.x,\n    second_rectangle.y,\n    second_rectangle.width,\n    second_rectangle.height\n  );\n}\n\nfunction format_rectangle_label(screen_rectangle) {\n  const right_edge_value = screen_rectangle.x + screen_rectangle.width;\n  const bottom_edge_value = screen_rectangle.y + screen_rectangle.height;\n  return `[(${screen_rectangle.x},${screen_rectangle.y}) -> (${right_edge_value},${bottom_edge_value})]`;\n}\n\nfunction build_overlap_report(first_rectangle, second_rectangle) {\n  const overlap_area = intersect_rectangle_objects(first_rectangle, second_rectangle);\n  const first_label = format_rectangle_label(first_rectangle);\n  const second_label = format_rectangle_label(second_rectangle);\n  const verdict_text = overlap_area > 0 ? \"overlap\" : \"no overlap\";\n  return `${first_label} vs ${second_label}: ${verdict_text}, area = ${overlap_area}`;\n}\n\nfunction run_overlap_demo() {\n  const primary_window_rect = { x: 10, y: 20, width: 120, height: 90 };\n  const secondary_window_rect = { x: 70, y: 50, width: 100, height: 100 };\n\n  console.log(build_overlap_report(primary_window_rect, secondary_window_rect));\n}\n\nrun_overlap_demo();\n",
+"opps": [
+{
+"k": 0,
+"nat": "checkRectangleIntersection(\n  firstRectX,\n  firstRectY,\n  firstRectWidth,\n  firstRectHeight,\n  secondRectX,\n  secondRectY,\n  secondRectWidth,\n  secondRectHeight",
+"alt": "check_rectangle_intersection(\n  first_rect_x,\n  first_rect_y,\n  first_rect_width,\n  first_rect_height,\n  second_rect_x,\n  second_rect_y,\n  second_rect_width,\n  second_rect_height",
+"nat_span": [
+9,
+169
+],
+"alt_span": [
+9,
+187
+]
+},
+{
+"k": 1,
+"nat": "firstRightEdge",
+"alt": "first_right_edge",
+"nat_span": [
+327,
+341
+],
+"alt_span": [
+353,
+369
+]
+},
+{
+"k": 2,
+"nat": "firstBottomEdge",
+"alt": "first_bottom_edge",
+"nat_span": [
+381,
+396
+],
+"alt_span": [
+413,
+430
+]
+},
+{
+"k": 3,
+"nat": "secondRightEdge",
+"alt": "second_right_edge",
+"nat_span": [
+437,
+452
+],
+"alt_span": [
+475,
+492
+]
+},
+{
+"k": 4,
+"nat": "secondBottomEdge",
+"alt": "second_bottom_edge",
+"nat_span": [
+494,
+510
+],
+"alt_span": [
+538,
+556
+]
+},
+{
+"k": 5,
+"nat": "hasHorizontalOverlap",
+"alt": "has_horizontal_overlap",
+"nat_span": [
+554,
+574
+],
+"alt_span": [
+604,
+626
+]
+},
+{
+"k": 6,
+"nat": "hasVerticalOverlap",
+"alt": "has_vertical_overlap",
+"nat_span": [
+651,
+669
+],
+"alt_span": [
+711,
+731
+]
+},
+{
+"k": 7,
+"nat": "overlapRegionWidth",
+"alt": "overlap_region_width",
+"nat_span": [
+803,
+821
+],
+"alt_span": [
+877,
+897
+]
+},
+{
+"k": 8,
+"nat": "overlapRegionHeight",
+"alt": "overlap_region_height",
+"nat_span": [
+919,
+938
+],
+"alt_span": [
+1003,
+1024
+]
+},
+{
+"k": 9,
+"nat": "overlapRegionArea",
+"alt": "overlap_region_area",
+"nat_span": [
+1038,
+1055
+],
+"alt_span": [
+1132,
+1151
+]
+},
+{
+"k": 10,
+"nat": "intersectRectangleObjects(firstRectangle, secondRectangle",
+"alt": "intersect_rectangle_objects(first_rectangle, second_rectangle",
+"nat_span": [
+1159,
+1216
+],
+"alt_span": [
+1261,
+1322
+]
+},
+{
+"k": 11,
+"nat": "formatRectangleLabel(screenRectangle",
+"alt": "format_rectangle_label(screen_rectangle",
+"nat_span": [
+1471,
+1507
+],
+"alt_span": [
+1587,
+1626
+]
+},
+{
+"k": 12,
+"nat": "rightEdgeValue",
+"alt": "right_edge_value",
+"nat_span": [
+1519,
+1533
+],
+"alt_span": [
+1638,
+1654
+]
+},
+{
+"k": 13,
+"nat": "bottomEdgeValue",
+"alt": "bottom_edge_value",
+"nat_span": [
+1587,
+1602
+],
+"alt_span": [
+1710,
+1727
+]
+},
+{
+"k": 14,
+"nat": "overlapArea",
+"alt": "overlap_area",
+"nat_span": [
+1823,
+1834
+],
+"alt_span": [
+1960,
+1972
+]
+},
+{
+"k": 15,
+"nat": "firstLabel",
+"alt": "first_label",
+"nat_span": [
+1905,
+1915
+],
+"alt_span": [
+2047,
+2058
+]
+},
+{
+"k": 16,
+"nat": "secondLabel",
+"alt": "second_label",
+"nat_span": [
+1964,
+1975
+],
+"alt_span": [
+2110,
+2122
+]
+},
+{
+"k": 17,
+"nat": "verdictText",
+"alt": "verdict_text",
+"nat_span": [
+2025,
+2036
+],
+"alt_span": [
+2175,
+2187
+]
+},
+{
+"k": 18,
+"nat": "runOverlapDemo",
+"alt": "run_overlap_demo",
+"nat_span": [
+2178,
+2192
+],
+"alt_span": [
+2334,
+2350
+]
+},
+{
+"k": 19,
+"nat": "primaryWindowRect",
+"alt": "primary_window_rect",
+"nat_span": [
+2205,
+2222
+],
+"alt_span": [
+2363,
+2382
+]
+},
+{
+"k": 20,
+"nat": "secondaryWindowRect",
+"alt": "secondary_window_rect",
+"nat_span": [
+2275,
+2294
+],
+"alt_span": [
+2435,
+2456
+]
+}
+],
+"k_en": 21,
+"shared_fraction": 0.842,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "checkRectangleIntersection(\n  firstRectX,\n  firstRectY,\n  firstRectWidth,\n  firstRectHeight,\n  secondRectX,\n  secondRectY,\n  secondRectWidth,\n  secondRectHeight",
+"alt": "check_rectangle_intersection(\n  first_rect_x,\n  first_rect_y,\n  first_rect_width,\n  first_rect_height,\n  second_rect_x,\n  second_rect_y,\n  second_rect_width,\n  second_rect_height",
+"nat_span": [
+9,
+169
+],
+"alt_span": [
+9,
+187
+]
+},
+{
+"k": 1,
+"nat": "firstRectWidth",
+"alt": "first_rect_width",
+"nat_span": [
+180,
+194
+],
+"alt_span": [
+198,
+214
+]
+},
+{
+"k": 2,
+"nat": "firstRectHeight",
+"alt": "first_rect_height",
+"nat_span": [
+203,
+218
+],
+"alt_span": [
+223,
+240
+]
+},
+{
+"k": 3,
+"nat": "secondRectWidth",
+"alt": "second_rect_width",
+"nat_span": [
+251,
+266
+],
+"alt_span": [
+273,
+290
+]
+},
+{
+"k": 4,
+"nat": "secondRectHeight",
+"alt": "second_rect_height",
+"nat_span": [
+275,
+291
+],
+"alt_span": [
+299,
+317
+]
+},
+{
+"k": 5,
+"nat": "firstRightEdge",
+"alt": "first_right_edge",
+"nat_span": [
+327,
+341
+],
+"alt_span": [
+353,
+369
+]
+},
+{
+"k": 6,
+"nat": "firstRectX",
+"alt": "first_rect_x",
+"nat_span": [
+344,
+354
+],
+"alt_span": [
+372,
+384
+]
+},
+{
+"k": 7,
+"nat": "firstRectWidth",
+"alt": "first_rect_width",
+"nat_span": [
+357,
+371
+],
+"alt_span": [
+387,
+403
+]
+},
+{
+"k": 8,
+"nat": "firstBottomEdge",
+"alt": "first_bottom_edge",
+"nat_span": [
+381,
+396
+],
+"alt_span": [
+413,
+430
+]
+},
+{
+"k": 9,
+"nat": "firstRectY",
+"alt": "first_rect_y",
+"nat_span": [
+399,
+409
+],
+"alt_span": [
+433,
+445
+]
+},
+{
+"k": 10,
+"nat": "firstRectHeight",
+"alt": "first_rect_height",
+"nat_span": [
+412,
+427
+],
+"alt_span": [
+448,
+465
+]
+},
+{
+"k": 11,
+"nat": "secondRightEdge",
+"alt": "second_right_edge",
+"nat_span": [
+437,
+452
+],
+"alt_span": [
+475,
+492
+]
+},
+{
+"k": 12,
+"nat": "secondRectX",
+"alt": "second_rect_x",
+"nat_span": [
+455,
+466
+],
+"alt_span": [
+495,
+508
+]
+},
+{
+"k": 13,
+"nat": "secondRectWidth",
+"alt": "second_rect_width",
+"nat_span": [
+469,
+484
+],
+"alt_span": [
+511,
+528
+]
+},
+{
+"k": 14,
+"nat": "secondBottomEdge",
+"alt": "second_bottom_edge",
+"nat_span": [
+494,
+510
+],
+"alt_span": [
+538,
+556
+]
+},
+{
+"k": 15,
+"nat": "secondRectY",
+"alt": "second_rect_y",
+"nat_span": [
+513,
+524
+],
+"alt_span": [
+559,
+572
+]
+},
+{
+"k": 16,
+"nat": "secondRectHeight",
+"alt": "second_rect_height",
+"nat_span": [
+527,
+543
+],
+"alt_span": [
+575,
+593
+]
+},
+{
+"k": 17,
+"nat": "hasHorizontalOverlap",
+"alt": "has_horizontal_overlap",
+"nat_span": [
+554,
+574
+],
+"alt_span": [
+604,
+626
+]
+},
+{
+"k": 18,
+"nat": "firstRightEdge",
+"alt": "first_right_edge",
+"nat_span": [
+581,
+595
+],
+"alt_span": [
+633,
+649
+]
+},
+{
+"k": 19,
+"nat": "secondRectX",
+"alt": "second_rect_x",
+"nat_span": [
+598,
+609
+],
+"alt_span": [
+652,
+665
+]
+},
+{
+"k": 20,
+"nat": "firstRectX",
+"alt": "first_rect_x",
+"nat_span": [
+613,
+623
+],
+"alt_span": [
+669,
+681
+]
+},
+{
+"k": 21,
+"nat": "secondRightEdge",
+"alt": "second_right_edge",
+"nat_span": [
+626,
+641
+],
+"alt_span": [
+684,
+701
+]
+},
+{
+"k": 22,
+"nat": "hasVerticalOverlap",
+"alt": "has_vertical_overlap",
+"nat_span": [
+651,
+669
+],
+"alt_span": [
+711,
+731
+]
+},
+{
+"k": 23,
+"nat": "firstBottomEdge",
+"alt": "first_bottom_edge",
+"nat_span": [
+676,
+691
+],
+"alt_span": [
+738,
+755
+]
+},
+{
+"k": 24,
+"nat": "secondRectY",
+"alt": "second_rect_y",
+"nat_span": [
+694,
+705
+],
+"alt_span": [
+758,
+771
+]
+},
+{
+"k": 25,
+"nat": "firstRectY",
+"alt": "first_rect_y",
+"nat_span": [
+709,
+719
+],
+"alt_span": [
+775,
+787
+]
+},
+{
+"k": 26,
+"nat": "secondBottomEdge",
+"alt": "second_bottom_edge",
+"nat_span": [
+722,
+738
+],
+"alt_span": [
+790,
+808
+]
+},
+{
+"k": 27,
+"nat": "hasHorizontalOverlap",
+"alt": "has_horizontal_overlap",
+"nat_span": [
+747,
+767
+],
+"alt_span": [
+817,
+839
+]
+},
+{
+"k": 28,
+"nat": "hasVerticalOverlap",
+"alt": "has_vertical_overlap",
+"nat_span": [
+771,
+789
+],
+"alt_span": [
+843,
+863
+]
+},
+{
+"k": 29,
+"nat": "overlapRegionWidth",
+"alt": "overlap_region_width",
+"nat_span": [
+803,
+821
+],
+"alt_span": [
+877,
+897
+]
+},
+{
+"k": 30,
+"nat": "firstRightEdge, secondRightEdge",
+"alt": "first_right_edge, second_right_edge",
+"nat_span": [
+839,
+870
+],
+"alt_span": [
+915,
+950
+]
+},
+{
+"k": 31,
+"nat": "firstRectX, secondRectX",
+"alt": "first_rect_x, second_rect_x",
+"nat_span": [
+883,
+906
+],
+"alt_span": [
+963,
+990
+]
+},
+{
+"k": 32,
+"nat": "overlapRegionHeight",
+"alt": "overlap_region_height",
+"nat_span": [
+919,
+938
+],
+"alt_span": [
+1003,
+1024
+]
+},
+{
+"k": 33,
+"nat": "firstBottomEdge, secondBottomEdge",
+"alt": "first_bottom_edge, second_bottom_edge",
+"nat_span": [
+956,
+989
+],
+"alt_span": [
+1042,
+1079
+]
+},
+{
+"k": 34,
+"nat": "firstRectY, secondRectY",
+"alt": "first_rect_y, second_rect_y",
+"nat_span": [
+1002,
+1025
+],
+"alt_span": [
+1092,
+1119
+]
+},
+{
+"k": 35,
+"nat": "overlapRegionArea",
+"alt": "overlap_region_area",
+"nat_span": [
+1038,
+1055
+],
+"alt_span": [
+1132,
+1151
+]
+},
+{
+"k": 36,
+"nat": "overlapRegionWidth",
+"alt": "overlap_region_width",
+"nat_span": [
+1058,
+1076
+],
+"alt_span": [
+1154,
+1174
+]
+},
+{
+"k": 37,
+"nat": "overlapRegionHeight",
+"alt": "overlap_region_height",
+"nat_span": [
+1079,
+1098
+],
+"alt_span": [
+1177,
+1198
+]
+},
+{
+"k": 38,
+"nat": "overlapRegionArea",
+"alt": "overlap_region_area",
+"nat_span": [
+1111,
+1128
+],
+"alt_span": [
+1211,
+1230
+]
+},
+{
+"k": 39,
+"nat": "intersectRectangleObjects(firstRectangle, secondRectangle",
+"alt": "intersect_rectangle_objects(first_rectangle, second_rectangle",
+"nat_span": [
+1159,
+1216
+],
+"alt_span": [
+1261,
+1322
+]
+},
+{
+"k": 40,
+"nat": "checkRectangleIntersection(\n    firstRectangle",
+"alt": "check_rectangle_intersection(\n    first_rectangle",
+"nat_span": [
+1229,
+1275
+],
+"alt_span": [
+1335,
+1384
+]
+},
+{
+"k": 41,
+"nat": "firstRectangle",
+"alt": "first_rectangle",
+"nat_span": [
+1283,
+1297
+],
+"alt_span": [
+1392,
+1407
+]
+},
+{
+"k": 42,
+"nat": "firstRectangle",
+"alt": "first_rectangle",
+"nat_span": [
+1305,
+1319
+],
+"alt_span": [
+1415,
+1430
+]
+},
+{
+"k": 43,
+"nat": "firstRectangle",
+"alt": "first_rectangle",
+"nat_span": [
+1331,
+1345
+],
+"alt_span": [
+1442,
+1457
+]
+},
+{
+"k": 44,
+"nat": "secondRectangle",
+"alt": "second_rectangle",
+"nat_span": [
+1358,
+1373
+],
+"alt_span": [
+1470,
+1486
+]
+},
+{
+"k": 45,
+"nat": "secondRectangle",
+"alt": "second_rectangle",
+"nat_span": [
+1381,
+1396
+],
+"alt_span": [
+1494,
+1510
+]
+},
+{
+"k": 46,
+"nat": "secondRectangle",
+"alt": "second_rectangle",
+"nat_span": [
+1404,
+1419
+],
+"alt_span": [
+1518,
+1534
+]
+},
+{
+"k": 47,
+"nat": "secondRectangle",
+"alt": "second_rectangle",
+"nat_span": [
+1431,
+1446
+],
+"alt_span": [
+1546,
+1562
+]
+},
+{
+"k": 48,
+"nat": "formatRectangleLabel(screenRectangle",
+"alt": "format_rectangle_label(screen_rectangle",
+"nat_span": [
+1471,
+1507
+],
+"alt_span": [
+1587,
+1626
+]
+},
+{
+"k": 49,
+"nat": "rightEdgeValue",
+"alt": "right_edge_value",
+"nat_span": [
+1519,
+1533
+],
+"alt_span": [
+1638,
+1654
+]
+},
+{
+"k": 50,
+"nat": "screenRectangle",
+"alt": "screen_rectangle",
+"nat_span": [
+1536,
+1551
+],
+"alt_span": [
+1657,
+1673
+]
+},
+{
+"k": 51,
+"nat": "screenRectangle",
+"alt": "screen_rectangle",
+"nat_span": [
+1556,
+1571
+],
+"alt_span": [
+1678,
+1694
+]
+},
+{
+"k": 52,
+"nat": "bottomEdgeValue",
+"alt": "bottom_edge_value",
+"nat_span": [
+1587,
+1602
+],
+"alt_span": [
+1710,
+1727
+]
+},
+{
+"k": 53,
+"nat": "screenRectangle",
+"alt": "screen_rectangle",
+"nat_span": [
+1605,
+1620
+],
+"alt_span": [
+1730,
+1746
+]
+},
+{
+"k": 54,
+"nat": "screenRectangle",
+"alt": "screen_rectangle",
+"nat_span": [
+1625,
+1640
+],
+"alt_span": [
+1751,
+1767
+]
+},
+{
+"k": 55,
+"nat": "screenRectangle",
+"alt": "screen_rectangle",
+"nat_span": [
+1663,
+1678
+],
+"alt_span": [
+1790,
+1806
+]
+},
+{
+"k": 56,
+"nat": "screenRectangle",
+"alt": "screen_rectangle",
+"nat_span": [
+1684,
+1699
+],
+"alt_span": [
+1812,
+1828
+]
+},
+{
+"k": 57,
+"nat": "rightEdgeValue",
+"alt": "right_edge_value",
+"nat_span": [
+1710,
+1724
+],
+"alt_span": [
+1839,
+1855
+]
+},
+{
+"k": 58,
+"nat": "bottomEdgeValue",
+"alt": "bottom_edge_value",
+"nat_span": [
+1728,
+1743
+],
+"alt_span": [
+1859,
+1876
+]
+},
+{
+"k": 59,
+"nat": "buildOverlapReport(firstRectangle, secondRectangle",
+"alt": "build_overlap_report(first_rectangle, second_rectangle",
+"nat_span": [
+1761,
+1811
+],
+"alt_span": [
+1894,
+1948
+]
+},
+{
+"k": 60,
+"nat": "overlapArea",
+"alt": "overlap_area",
+"nat_span": [
+1823,
+1834
+],
+"alt_span": [
+1960,
+1972
+]
+},
+{
+"k": 61,
+"nat": "intersectRectangleObjects(firstRectangle, secondRectangle",
+"alt": "intersect_rectangle_objects(first_rectangle, second_rectangle",
+"nat_span": [
+1837,
+1894
+],
+"alt_span": [
+1975,
+2036
+]
+},
+{
+"k": 62,
+"nat": "firstLabel",
+"alt": "first_label",
+"nat_span": [
+1905,
+1915
+],
+"alt_span": [
+2047,
+2058
+]
+},
+{
+"k": 63,
+"nat": "formatRectangleLabel(firstRectangle",
+"alt": "format_rectangle_label(first_rectangle",
+"nat_span": [
+1918,
+1953
+],
+"alt_span": [
+2061,
+2099
+]
+},
+{
+"k": 64,
+"nat": "secondLabel",
+"alt": "second_label",
+"nat_span": [
+1964,
+1975
+],
+"alt_span": [
+2110,
+2122
+]
+},
+{
+"k": 65,
+"nat": "formatRectangleLabel(secondRectangle",
+"alt": "format_rectangle_label(second_rectangle",
+"nat_span": [
+1978,
+2014
+],
+"alt_span": [
+2125,
+2164
+]
+},
+{
+"k": 66,
+"nat": "verdictText",
+"alt": "verdict_text",
+"nat_span": [
+2025,
+2036
+],
+"alt_span": [
+2175,
+2187
+]
+},
+{
+"k": 67,
+"nat": "overlapArea",
+"alt": "overlap_area",
+"nat_span": [
+2039,
+2050
+],
+"alt_span": [
+2190,
+2202
+]
+},
+{
+"k": 68,
+"nat": "firstLabel",
+"alt": "first_label",
+"nat_span": [
+2095,
+2105
+],
+"alt_span": [
+2247,
+2258
+]
+},
+{
+"k": 69,
+"nat": "secondLabel",
+"alt": "second_label",
+"nat_span": [
+2112,
+2123
+],
+"alt_span": [
+2265,
+2277
+]
+},
+{
+"k": 70,
+"nat": "verdictText",
+"alt": "verdict_text",
+"nat_span": [
+2128,
+2139
+],
+"alt_span": [
+2282,
+2294
+]
+},
+{
+"k": 71,
+"nat": "overlapArea",
+"alt": "overlap_area",
+"nat_span": [
+2151,
+2162
+],
+"alt_span": [
+2306,
+2318
+]
+},
+{
+"k": 72,
+"nat": "runOverlapDemo",
+"alt": "run_overlap_demo",
+"nat_span": [
+2178,
+2192
+],
+"alt_span": [
+2334,
+2350
+]
+},
+{
+"k": 73,
+"nat": "primaryWindowRect",
+"alt": "primary_window_rect",
+"nat_span": [
+2205,
+2222
+],
+"alt_span": [
+2363,
+2382
+]
+},
+{
+"k": 74,
+"nat": "secondaryWindowRect",
+"alt": "secondary_window_rect",
+"nat_span": [
+2275,
+2294
+],
+"alt_span": [
+2435,
+2456
+]
+},
+{
+"k": 75,
+"nat": "buildOverlapReport(primaryWindowRect, secondaryWindowRect",
+"alt": "build_overlap_report(primary_window_rect, secondary_window_rect",
+"nat_span": [
+2355,
+2412
+],
+"alt_span": [
+2517,
+2580
+]
+},
+{
+"k": 76,
+"nat": "runOverlapDemo",
+"alt": "run_overlap_demo",
+"nat_span": [
+2419,
+2433
+],
+"alt_span": [
+2587,
+2603
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "js_camel_snake__t001",
 "family": "js_camel_snake",
 "topic": "Reverse a String",
@@ -17496,483 +23348,6 @@
 "alt_span": [
 810,
 850
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "js_camel_snake__t042",
-"family": "js_camel_snake",
-"topic": "Sum of Digits",
-"angle": "code",
-"text_es": "Create a function `sumDigits(num)` that calculates the sum of the digits of a given non-negative integer. Input is an integer, output is an integer. Example: `sumDigits(123)` should return `6`, `sumDigits(905)` should return `14`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "const sumDigits = (inputNumber) => {\n  let digitSumAccumulator = 0;\n  let workingNumber = Math.abs(inputNumber);\n\n  while (workingNumber > 0) {\n    const lastDigitValue = workingNumber % 10;\n    digitSumAccumulator += lastDigitValue;\n    workingNumber = Math.floor(workingNumber / 10);\n  }\n\n  return digitSumAccumulator;\n};\n\nconst calculateAndDisplay = (someNumber) => {\n  const resultOfCalculation = sumDigits(someNumber);\n  console.log(`The sum of digits for ${someNumber} is: ${resultOfCalculation}`);\n  return resultOfCalculation;\n};\n\n// Example usage demonstrating multiWordVariableNames\nconst firstTestNumber = 123;\nconst secondTestNumber = 905;\nconst thirdTestNumber = 7;\nconst largeNumberExample = 987654321;\n\ncalculateAndDisplay(firstTestNumber);\ncalculateAndDisplay(secondTestNumber);\ncalculateAndDisplay(thirdTestNumber);\ncalculateAndDisplay(largeNumberExample);\ncalculateAndDisplay(0);\ncalculateAndDisplay(-456); // Handles negative input correctly due to Math.abs\n",
-"text_alt": "const sumDigits = (input_number) => {\n  let digit_sum_accumulator = 0;\n  let working_number = Math.abs(input_number);\n\n  while (working_number > 0) {\n    const last_digit_value = working_number % 10;\n    digit_sum_accumulator += last_digit_value;\n    working_number = Math.floor(working_number / 10);\n  }\n\n  return digit_sum_accumulator;\n};\n\nconst calculateAndDisplay = (some_number) => {\n  const result_of_calculation = sumDigits(some_number);\n  console.log(`The sum of digits for ${some_number} is: ${result_of_calculation}`);\n  return result_of_calculation;\n};\n\n// Example usage demonstrating multiWordVariableNames\nconst first_test_number = 123;\nconst second_test_number = 905;\nconst third_test_number = 7;\nconst large_number_example = 987654321;\n\ncalculateAndDisplay(first_test_number);\ncalculateAndDisplay(second_test_number);\ncalculateAndDisplay(third_test_number);\ncalculateAndDisplay(large_number_example);\ncalculateAndDisplay(0);\ncalculateAndDisplay(-456); // Handles negative input correctly due to Math.abs\n",
-"opps": [
-{
-"k": 0,
-"nat": "inputNumber",
-"alt": "input_number",
-"nat_span": [
-19,
-30
-],
-"alt_span": [
-19,
-31
-]
-},
-{
-"k": 1,
-"nat": "digitSumAccumulator",
-"alt": "digit_sum_accumulator",
-"nat_span": [
-43,
-62
-],
-"alt_span": [
-44,
-65
-]
-},
-{
-"k": 2,
-"nat": "workingNumber",
-"alt": "working_number",
-"nat_span": [
-74,
-87
-],
-"alt_span": [
-77,
-91
-]
-},
-{
-"k": 3,
-"nat": "lastDigitValue",
-"alt": "last_digit_value",
-"nat_span": [
-154,
-168
-],
-"alt_span": [
-160,
-176
-]
-},
-{
-"k": 4,
-"nat": "someNumber",
-"alt": "some_number",
-"nat_span": [
-354,
-364
-],
-"alt_span": [
-371,
-382
-]
-},
-{
-"k": 5,
-"nat": "resultOfCalculation",
-"alt": "result_of_calculation",
-"nat_span": [
-379,
-398
-],
-"alt_span": [
-397,
-418
-]
-},
-{
-"k": 6,
-"nat": "firstTestNumber",
-"alt": "first_test_number",
-"nat_span": [
-599,
-614
-],
-"alt_span": [
-625,
-642
-]
-},
-{
-"k": 7,
-"nat": "secondTestNumber",
-"alt": "second_test_number",
-"nat_span": [
-628,
-644
-],
-"alt_span": [
-656,
-674
-]
-},
-{
-"k": 8,
-"nat": "thirdTestNumber",
-"alt": "third_test_number",
-"nat_span": [
-658,
-673
-],
-"alt_span": [
-688,
-705
-]
-},
-{
-"k": 9,
-"nat": "largeNumberExample",
-"alt": "large_number_example",
-"nat_span": [
-685,
-703
-],
-"alt_span": [
-717,
-737
-]
-}
-],
-"k_en": 10,
-"shared_fraction": 0.902,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "inputNumber",
-"alt": "input_number",
-"nat_span": [
-19,
-30
-],
-"alt_span": [
-19,
-31
-]
-},
-{
-"k": 1,
-"nat": "digitSumAccumulator",
-"alt": "digit_sum_accumulator",
-"nat_span": [
-43,
-62
-],
-"alt_span": [
-44,
-65
-]
-},
-{
-"k": 2,
-"nat": "workingNumber",
-"alt": "working_number",
-"nat_span": [
-74,
-87
-],
-"alt_span": [
-77,
-91
-]
-},
-{
-"k": 3,
-"nat": "inputNumber",
-"alt": "input_number",
-"nat_span": [
-99,
-110
-],
-"alt_span": [
-103,
-115
-]
-},
-{
-"k": 4,
-"nat": "workingNumber",
-"alt": "working_number",
-"nat_span": [
-123,
-136
-],
-"alt_span": [
-128,
-142
-]
-},
-{
-"k": 5,
-"nat": "lastDigitValue",
-"alt": "last_digit_value",
-"nat_span": [
-154,
-168
-],
-"alt_span": [
-160,
-176
-]
-},
-{
-"k": 6,
-"nat": "workingNumber",
-"alt": "working_number",
-"nat_span": [
-171,
-184
-],
-"alt_span": [
-179,
-193
-]
-},
-{
-"k": 7,
-"nat": "digitSumAccumulator",
-"alt": "digit_sum_accumulator",
-"nat_span": [
-195,
-214
-],
-"alt_span": [
-204,
-225
-]
-},
-{
-"k": 8,
-"nat": "lastDigitValue;\n    workingNumber",
-"alt": "last_digit_value;\n    working_number",
-"nat_span": [
-218,
-251
-],
-"alt_span": [
-229,
-265
-]
-},
-{
-"k": 9,
-"nat": "workingNumber",
-"alt": "working_number",
-"nat_span": [
-265,
-278
-],
-"alt_span": [
-279,
-293
-]
-},
-{
-"k": 10,
-"nat": "digitSumAccumulator",
-"alt": "digit_sum_accumulator",
-"nat_span": [
-300,
-319
-],
-"alt_span": [
-315,
-336
-]
-},
-{
-"k": 11,
-"nat": "someNumber",
-"alt": "some_number",
-"nat_span": [
-354,
-364
-],
-"alt_span": [
-371,
-382
-]
-},
-{
-"k": 12,
-"nat": "resultOfCalculation",
-"alt": "result_of_calculation",
-"nat_span": [
-379,
-398
-],
-"alt_span": [
-397,
-418
-]
-},
-{
-"k": 13,
-"nat": "someNumber",
-"alt": "some_number",
-"nat_span": [
-411,
-421
-],
-"alt_span": [
-431,
-442
-]
-},
-{
-"k": 14,
-"nat": "someNumber",
-"alt": "some_number",
-"nat_span": [
-463,
-473
-],
-"alt_span": [
-484,
-495
-]
-},
-{
-"k": 15,
-"nat": "resultOfCalculation",
-"alt": "result_of_calculation",
-"nat_span": [
-481,
-500
-],
-"alt_span": [
-503,
-524
-]
-},
-{
-"k": 16,
-"nat": "resultOfCalculation",
-"alt": "result_of_calculation",
-"nat_span": [
-514,
-533
-],
-"alt_span": [
-538,
-559
-]
-},
-{
-"k": 17,
-"nat": "firstTestNumber",
-"alt": "first_test_number",
-"nat_span": [
-599,
-614
-],
-"alt_span": [
-625,
-642
-]
-},
-{
-"k": 18,
-"nat": "secondTestNumber",
-"alt": "second_test_number",
-"nat_span": [
-628,
-644
-],
-"alt_span": [
-656,
-674
-]
-},
-{
-"k": 19,
-"nat": "thirdTestNumber",
-"alt": "third_test_number",
-"nat_span": [
-658,
-673
-],
-"alt_span": [
-688,
-705
-]
-},
-{
-"k": 20,
-"nat": "largeNumberExample",
-"alt": "large_number_example",
-"nat_span": [
-685,
-703
-],
-"alt_span": [
-717,
-737
-]
-},
-{
-"k": 21,
-"nat": "firstTestNumber",
-"alt": "first_test_number",
-"nat_span": [
-738,
-753
-],
-"alt_span": [
-772,
-789
-]
-},
-{
-"k": 22,
-"nat": "secondTestNumber",
-"alt": "second_test_number",
-"nat_span": [
-776,
-792
-],
-"alt_span": [
-812,
-830
-]
-},
-{
-"k": 23,
-"nat": "thirdTestNumber",
-"alt": "third_test_number",
-"nat_span": [
-815,
-830
-],
-"alt_span": [
-853,
-870
-]
-},
-{
-"k": 24,
-"nat": "largeNumberExample",
-"alt": "large_number_example",
-"nat_span": [
-853,
-871
-],
-"alt_span": [
-893,
-913
 ]
 }
 ],
@@ -38106,522 +43481,6 @@
 "alt_span": [
 1101,
 1114
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "js_camel_snake__t093",
-"family": "js_camel_snake",
-"topic": "Calculate Hamming Distance",
-"angle": "code",
-"text_es": "Given two integers, calculate the Hamming distance. The Hamming distance between two integers is the number of positions at which the corresponding bits are different. The inputs are two integers, and the output is an integer. Implement `hammingDistance(x, y)`. Example: `hammingDistance(1, 4)` (001 vs 100) should return `2`, and `hammingDistance(3, 1)` (011 vs 001) should return `1`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "function hammingDistance(firstInteger, secondInteger) {\n  let xorResult = firstInteger ^ secondInteger;\n  let differingBitsCount = 0;\n\n  while (xorResult !== 0) {\n    xorResult &= (xorResult - 1);\n    differingBitsCount++;\n  }\n\n  return differingBitsCount;\n}\n\nfunction calculateHammingDistance(inputX, inputY) {\n  return hammingDistance(inputX, inputY);\n}\n\nconst firstTestNumber = 1;\nconst secondTestNumber = 4;\nconst distanceForFirstPair = calculateHammingDistance(firstTestNumber, secondTestNumber);\n\nconst anotherInputInteger = 3;\nconst yetAnotherInputInteger = 1;\nconst distanceForSecondPair = calculateHammingDistance(anotherInputInteger, yetAnotherInputInteger);\n\nconst finalResultOne = distanceForFirstPair;\nconst finalResultTwo = distanceForSecondPair;\n\n// Example usage (not part of the function itself, for demonstration)\n// console.log(finalResultOne); // Expected: 2\n// console.log(finalResultTwo); // Expected: 1\n",
-"text_alt": "function hammingDistance(first_integer, second_integer) {\n  let xor_result = first_integer ^ second_integer;\n  let differing_bits_count = 0;\n\n  while (xor_result !== 0) {\n    xor_result &= (xor_result - 1);\n    differing_bits_count++;\n  }\n\n  return differing_bits_count;\n}\n\nfunction calculate_hamming_distance(input_x, input_y) {\n  return hammingDistance(input_x, input_y);\n}\n\nconst first_test_number = 1;\nconst second_test_number = 4;\nconst distance_for_first_pair = calculate_hamming_distance(first_test_number, second_test_number);\n\nconst another_input_integer = 3;\nconst yet_another_input_integer = 1;\nconst distance_for_second_pair = calculate_hamming_distance(another_input_integer, yet_another_input_integer);\n\nconst final_result_one = distance_for_first_pair;\nconst final_result_two = distance_for_second_pair;\n\n// Example usage (not part of the function itself, for demonstration)\n// console.log(final_result_one); // Expected: 2\n// console.log(final_result_two); // Expected: 1\n",
-"opps": [
-{
-"k": 0,
-"nat": "firstInteger, secondInteger",
-"alt": "first_integer, second_integer",
-"nat_span": [
-25,
-52
-],
-"alt_span": [
-25,
-54
-]
-},
-{
-"k": 1,
-"nat": "xorResult",
-"alt": "xor_result",
-"nat_span": [
-62,
-71
-],
-"alt_span": [
-64,
-74
-]
-},
-{
-"k": 2,
-"nat": "differingBitsCount",
-"alt": "differing_bits_count",
-"nat_span": [
-110,
-128
-],
-"alt_span": [
-115,
-135
-]
-},
-{
-"k": 3,
-"nat": "calculateHammingDistance(inputX, inputY",
-"alt": "calculate_hamming_distance(input_x, input_y",
-"nat_span": [
-269,
-308
-],
-"alt_span": [
-283,
-326
-]
-},
-{
-"k": 4,
-"nat": "firstTestNumber",
-"alt": "first_test_number",
-"nat_span": [
-363,
-378
-],
-"alt_span": [
-383,
-400
-]
-},
-{
-"k": 5,
-"nat": "secondTestNumber",
-"alt": "second_test_number",
-"nat_span": [
-390,
-406
-],
-"alt_span": [
-412,
-430
-]
-},
-{
-"k": 6,
-"nat": "distanceForFirstPair",
-"alt": "distance_for_first_pair",
-"nat_span": [
-418,
-438
-],
-"alt_span": [
-442,
-465
-]
-},
-{
-"k": 7,
-"nat": "anotherInputInteger",
-"alt": "another_input_integer",
-"nat_span": [
-509,
-528
-],
-"alt_span": [
-542,
-563
-]
-},
-{
-"k": 8,
-"nat": "yetAnotherInputInteger",
-"alt": "yet_another_input_integer",
-"nat_span": [
-540,
-562
-],
-"alt_span": [
-575,
-600
-]
-},
-{
-"k": 9,
-"nat": "distanceForSecondPair",
-"alt": "distance_for_second_pair",
-"nat_span": [
-574,
-595
-],
-"alt_span": [
-612,
-636
-]
-},
-{
-"k": 10,
-"nat": "finalResultOne",
-"alt": "final_result_one",
-"nat_span": [
-676,
-690
-],
-"alt_span": [
-724,
-740
-]
-},
-{
-"k": 11,
-"nat": "finalResultTwo",
-"alt": "final_result_two",
-"nat_span": [
-721,
-735
-],
-"alt_span": [
-774,
-790
-]
-}
-],
-"k_en": 12,
-"shared_fraction": 0.863,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "firstInteger, secondInteger",
-"alt": "first_integer, second_integer",
-"nat_span": [
-25,
-52
-],
-"alt_span": [
-25,
-54
-]
-},
-{
-"k": 1,
-"nat": "xorResult",
-"alt": "xor_result",
-"nat_span": [
-62,
-71
-],
-"alt_span": [
-64,
-74
-]
-},
-{
-"k": 2,
-"nat": "firstInteger",
-"alt": "first_integer",
-"nat_span": [
-74,
-86
-],
-"alt_span": [
-77,
-90
-]
-},
-{
-"k": 3,
-"nat": "secondInteger",
-"alt": "second_integer",
-"nat_span": [
-89,
-102
-],
-"alt_span": [
-93,
-107
-]
-},
-{
-"k": 4,
-"nat": "differingBitsCount",
-"alt": "differing_bits_count",
-"nat_span": [
-110,
-128
-],
-"alt_span": [
-115,
-135
-]
-},
-{
-"k": 5,
-"nat": "xorResult",
-"alt": "xor_result",
-"nat_span": [
-144,
-153
-],
-"alt_span": [
-151,
-161
-]
-},
-{
-"k": 6,
-"nat": "xorResult",
-"alt": "xor_result",
-"nat_span": [
-167,
-176
-],
-"alt_span": [
-175,
-185
-]
-},
-{
-"k": 7,
-"nat": "xorResult",
-"alt": "xor_result",
-"nat_span": [
-181,
-190
-],
-"alt_span": [
-190,
-200
-]
-},
-{
-"k": 8,
-"nat": "differingBitsCount",
-"alt": "differing_bits_count",
-"nat_span": [
-201,
-219
-],
-"alt_span": [
-211,
-231
-]
-},
-{
-"k": 9,
-"nat": "differingBitsCount",
-"alt": "differing_bits_count",
-"nat_span": [
-237,
-255
-],
-"alt_span": [
-249,
-269
-]
-},
-{
-"k": 10,
-"nat": "calculateHammingDistance(inputX, inputY",
-"alt": "calculate_hamming_distance(input_x, input_y",
-"nat_span": [
-269,
-308
-],
-"alt_span": [
-283,
-326
-]
-},
-{
-"k": 11,
-"nat": "inputX, inputY",
-"alt": "input_x, input_y",
-"nat_span": [
-337,
-351
-],
-"alt_span": [
-355,
-371
-]
-},
-{
-"k": 12,
-"nat": "firstTestNumber",
-"alt": "first_test_number",
-"nat_span": [
-363,
-378
-],
-"alt_span": [
-383,
-400
-]
-},
-{
-"k": 13,
-"nat": "secondTestNumber",
-"alt": "second_test_number",
-"nat_span": [
-390,
-406
-],
-"alt_span": [
-412,
-430
-]
-},
-{
-"k": 14,
-"nat": "distanceForFirstPair",
-"alt": "distance_for_first_pair",
-"nat_span": [
-418,
-438
-],
-"alt_span": [
-442,
-465
-]
-},
-{
-"k": 15,
-"nat": "calculateHammingDistance(firstTestNumber, secondTestNumber",
-"alt": "calculate_hamming_distance(first_test_number, second_test_number",
-"nat_span": [
-441,
-499
-],
-"alt_span": [
-468,
-532
-]
-},
-{
-"k": 16,
-"nat": "anotherInputInteger",
-"alt": "another_input_integer",
-"nat_span": [
-509,
-528
-],
-"alt_span": [
-542,
-563
-]
-},
-{
-"k": 17,
-"nat": "yetAnotherInputInteger",
-"alt": "yet_another_input_integer",
-"nat_span": [
-540,
-562
-],
-"alt_span": [
-575,
-600
-]
-},
-{
-"k": 18,
-"nat": "distanceForSecondPair",
-"alt": "distance_for_second_pair",
-"nat_span": [
-574,
-595
-],
-"alt_span": [
-612,
-636
-]
-},
-{
-"k": 19,
-"nat": "calculateHammingDistance(anotherInputInteger, yetAnotherInputInteger",
-"alt": "calculate_hamming_distance(another_input_integer, yet_another_input_integer",
-"nat_span": [
-598,
-666
-],
-"alt_span": [
-639,
-714
-]
-},
-{
-"k": 20,
-"nat": "finalResultOne",
-"alt": "final_result_one",
-"nat_span": [
-676,
-690
-],
-"alt_span": [
-724,
-740
-]
-},
-{
-"k": 21,
-"nat": "distanceForFirstPair",
-"alt": "distance_for_first_pair",
-"nat_span": [
-693,
-713
-],
-"alt_span": [
-743,
-766
-]
-},
-{
-"k": 22,
-"nat": "finalResultTwo",
-"alt": "final_result_two",
-"nat_span": [
-721,
-735
-],
-"alt_span": [
-774,
-790
-]
-},
-{
-"k": 23,
-"nat": "distanceForSecondPair",
-"alt": "distance_for_second_pair",
-"nat_span": [
-738,
-759
-],
-"alt_span": [
-793,
-817
-]
-},
-{
-"k": 24,
-"nat": "finalResultOne",
-"alt": "final_result_one",
-"nat_span": [
-847,
-861
-],
-"alt_span": [
-905,
-921
-]
-},
-{
-"k": 25,
-"nat": "finalResultTwo",
-"alt": "final_result_two",
-"nat_span": [
-894,
-908
-],
-"alt_span": [
-954,
-970
 ]
 }
 ],
@@ -67068,431 +71927,6 @@
 "free_filter": true
 },
 {
-"doc_id": "js_camel_snake__t174",
-"family": "js_camel_snake",
-"topic": "Validate Simple Password Strength",
-"angle": "code",
-"text_es": "Create a function that validates a password string for basic strength: at least 8 characters long and contains at least one uppercase letter and one number. \nFunction signature: `isValidPassword(password)`.\nExample 1: `isValidPassword('Password123')` should return `true`.\nExample 2: `isValidPassword('password')` should return `false`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "const isValidPassword = (passwordString) => {\n  const minimumLengthRequirement = 8;\n  const hasUpperCaseLetter = /[A-Z]/.test(passwordString);\n  const containsAtLeastOneNumber = /\\d/.test(passwordString);\n  const meetsLengthCondition = passwordString.length >= minimumLengthRequirement;\n\n  if (meetsLengthCondition && hasUpperCaseLetter && containsAtLeastOneNumber) {\n    return true;\n  } else {\n    return false;\n  }\n};\n\nconst firstTestPassword = 'Password123';\nconst secondTestPassword = 'password';\n\nconst isFirstPasswordValid = isValidPassword(firstTestPassword);\nconst isSecondPasswordValid = isValidPassword(secondTestPassword);\n\n// For demonstration, you could log these:\n// console.log(`'${firstTestPassword}' is valid: ${isFirstPasswordValid}`);\n// console.log(`'${secondTestPassword}' is valid: ${isSecondPasswordValid}`);\n",
-"text_alt": "const isValidPassword = (password_string) => {\n  const minimum_length_requirement = 8;\n  const has_upper_case_letter = /[A-Z]/.test(password_string);\n  const contains_at_least_one_number = /\\d/.test(password_string);\n  const meets_length_condition = password_string.length >= minimum_length_requirement;\n\n  if (meets_length_condition && has_upper_case_letter && contains_at_least_one_number) {\n    return true;\n  } else {\n    return false;\n  }\n};\n\nconst first_test_password = 'Password123';\nconst second_test_password = 'password';\n\nconst is_first_password_valid = isValidPassword(first_test_password);\nconst is_second_password_valid = isValidPassword(second_test_password);\n\n// For demonstration, you could log these:\n// console.log(`'${first_test_password}' is valid: ${is_first_password_valid}`);\n// console.log(`'${second_test_password}' is valid: ${is_second_password_valid}`);\n",
-"opps": [
-{
-"k": 0,
-"nat": "passwordString",
-"alt": "password_string",
-"nat_span": [
-25,
-39
-],
-"alt_span": [
-25,
-40
-]
-},
-{
-"k": 1,
-"nat": "minimumLengthRequirement",
-"alt": "minimum_length_requirement",
-"nat_span": [
-54,
-78
-],
-"alt_span": [
-55,
-81
-]
-},
-{
-"k": 2,
-"nat": "hasUpperCaseLetter",
-"alt": "has_upper_case_letter",
-"nat_span": [
-92,
-110
-],
-"alt_span": [
-95,
-116
-]
-},
-{
-"k": 3,
-"nat": "containsAtLeastOneNumber",
-"alt": "contains_at_least_one_number",
-"nat_span": [
-151,
-175
-],
-"alt_span": [
-158,
-186
-]
-},
-{
-"k": 4,
-"nat": "meetsLengthCondition",
-"alt": "meets_length_condition",
-"nat_span": [
-213,
-233
-],
-"alt_span": [
-225,
-247
-]
-},
-{
-"k": 5,
-"nat": "firstTestPassword",
-"alt": "first_test_password",
-"nat_span": [
-428,
-445
-],
-"alt_span": [
-454,
-473
-]
-},
-{
-"k": 6,
-"nat": "secondTestPassword",
-"alt": "second_test_password",
-"nat_span": [
-469,
-487
-],
-"alt_span": [
-497,
-517
-]
-},
-{
-"k": 7,
-"nat": "isFirstPasswordValid",
-"alt": "is_first_password_valid",
-"nat_span": [
-509,
-529
-],
-"alt_span": [
-539,
-562
-]
-},
-{
-"k": 8,
-"nat": "isSecondPasswordValid",
-"alt": "is_second_password_valid",
-"nat_span": [
-574,
-595
-],
-"alt_span": [
-609,
-633
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 0.906,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "passwordString",
-"alt": "password_string",
-"nat_span": [
-25,
-39
-],
-"alt_span": [
-25,
-40
-]
-},
-{
-"k": 1,
-"nat": "minimumLengthRequirement",
-"alt": "minimum_length_requirement",
-"nat_span": [
-54,
-78
-],
-"alt_span": [
-55,
-81
-]
-},
-{
-"k": 2,
-"nat": "hasUpperCaseLetter",
-"alt": "has_upper_case_letter",
-"nat_span": [
-92,
-110
-],
-"alt_span": [
-95,
-116
-]
-},
-{
-"k": 3,
-"nat": "passwordString",
-"alt": "password_string",
-"nat_span": [
-126,
-140
-],
-"alt_span": [
-132,
-147
-]
-},
-{
-"k": 4,
-"nat": "containsAtLeastOneNumber",
-"alt": "contains_at_least_one_number",
-"nat_span": [
-151,
-175
-],
-"alt_span": [
-158,
-186
-]
-},
-{
-"k": 5,
-"nat": "passwordString",
-"alt": "password_string",
-"nat_span": [
-188,
-202
-],
-"alt_span": [
-199,
-214
-]
-},
-{
-"k": 6,
-"nat": "meetsLengthCondition",
-"alt": "meets_length_condition",
-"nat_span": [
-213,
-233
-],
-"alt_span": [
-225,
-247
-]
-},
-{
-"k": 7,
-"nat": "passwordString",
-"alt": "password_string",
-"nat_span": [
-236,
-250
-],
-"alt_span": [
-250,
-265
-]
-},
-{
-"k": 8,
-"nat": "minimumLengthRequirement",
-"alt": "minimum_length_requirement",
-"nat_span": [
-261,
-285
-],
-"alt_span": [
-276,
-302
-]
-},
-{
-"k": 9,
-"nat": "meetsLengthCondition",
-"alt": "meets_length_condition",
-"nat_span": [
-294,
-314
-],
-"alt_span": [
-311,
-333
-]
-},
-{
-"k": 10,
-"nat": "hasUpperCaseLetter",
-"alt": "has_upper_case_letter",
-"nat_span": [
-318,
-336
-],
-"alt_span": [
-337,
-358
-]
-},
-{
-"k": 11,
-"nat": "containsAtLeastOneNumber",
-"alt": "contains_at_least_one_number",
-"nat_span": [
-340,
-364
-],
-"alt_span": [
-362,
-390
-]
-},
-{
-"k": 12,
-"nat": "firstTestPassword",
-"alt": "first_test_password",
-"nat_span": [
-428,
-445
-],
-"alt_span": [
-454,
-473
-]
-},
-{
-"k": 13,
-"nat": "secondTestPassword",
-"alt": "second_test_password",
-"nat_span": [
-469,
-487
-],
-"alt_span": [
-497,
-517
-]
-},
-{
-"k": 14,
-"nat": "isFirstPasswordValid",
-"alt": "is_first_password_valid",
-"nat_span": [
-509,
-529
-],
-"alt_span": [
-539,
-562
-]
-},
-{
-"k": 15,
-"nat": "firstTestPassword",
-"alt": "first_test_password",
-"nat_span": [
-548,
-565
-],
-"alt_span": [
-581,
-600
-]
-},
-{
-"k": 16,
-"nat": "isSecondPasswordValid",
-"alt": "is_second_password_valid",
-"nat_span": [
-574,
-595
-],
-"alt_span": [
-609,
-633
-]
-},
-{
-"k": 17,
-"nat": "secondTestPassword",
-"alt": "second_test_password",
-"nat_span": [
-614,
-632
-],
-"alt_span": [
-652,
-672
-]
-},
-{
-"k": 18,
-"nat": "firstTestPassword",
-"alt": "first_test_password",
-"nat_span": [
-698,
-715
-],
-"alt_span": [
-738,
-757
-]
-},
-{
-"k": 19,
-"nat": "isFirstPasswordValid",
-"alt": "is_first_password_valid",
-"nat_span": [
-730,
-750
-],
-"alt_span": [
-772,
-795
-]
-},
-{
-"k": 20,
-"nat": "secondTestPassword",
-"alt": "second_test_password",
-"nat_span": [
-774,
-792
-],
-"alt_span": [
-819,
-839
-]
-},
-{
-"k": 21,
-"nat": "isSecondPasswordValid",
-"alt": "is_second_password_valid",
-"nat_span": [
-807,
-828
-],
-"alt_span": [
-854,
-878
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "js_camel_snake__t175",
 "family": "js_camel_snake",
 "topic": "Calculate Elapsed Time in Minutes",
@@ -72626,353 +77060,6 @@
 "alt_span": [
 701,
 717
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "js_camel_snake__t187",
-"family": "js_camel_snake",
-"topic": "Calculate Factorial",
-"angle": "code",
-"text_es": "Create a function that calculates the factorial of a non-negative integer. The function should return a number. Implement `calculateFactorial(n)`.\nExample: `calculateFactorial(5)` should return `120`.\nExample: `calculateFactorial(0)` should return `1`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "function calculateFactorial(inputNumber) {\n  if (inputNumber < 0) {\n    throw new Error(\"Negative numbers do not have a factorial.\");\n  }\n  let currentProduct = 1;\n  for (let currentIteration = 2; currentIteration <= inputNumber; currentIteration++) {\n    currentProduct *= currentIteration;\n  }\n  return currentProduct;\n}\n\nfunction processAndDisplayFactorial(valueToProcess) {\n  const factorialResult = calculateFactorial(valueToProcess);\n  console.log(`The factorial of ${valueToProcess} is ${factorialResult}.`);\n}\n\n// Example usage demonstrating the functionality\nprocessAndDisplayFactorial(5);\nprocessAndDisplayFactorial(0);\nprocessAndDisplayFactorial(7);\nprocessAndDisplayFactorial(1);\nprocessAndDisplayFactorial(10);\n// processAndDisplayFactorial(-3); // This would throw an error as expected for negative inputs.\n",
-"text_alt": "function calculateFactorial(input_number) {\n  if (input_number < 0) {\n    throw new Error(\"Negative numbers do not have a factorial.\");\n  }\n  let current_product = 1;\n  for (let current_iteration = 2; current_iteration <= input_number; current_iteration++) {\n    current_product *= current_iteration;\n  }\n  return current_product;\n}\n\nfunction process_and_display_factorial(value_to_process) {\n  const factorial_result = calculateFactorial(value_to_process);\n  console.log(`The factorial of ${value_to_process} is ${factorial_result}.`);\n}\n\n// Example usage demonstrating the functionality\nprocess_and_display_factorial(5);\nprocess_and_display_factorial(0);\nprocess_and_display_factorial(7);\nprocess_and_display_factorial(1);\nprocess_and_display_factorial(10);\n// process_and_display_factorial(-3); // This would throw an error as expected for negative inputs.\n",
-"opps": [
-{
-"k": 0,
-"nat": "inputNumber",
-"alt": "input_number",
-"nat_span": [
-28,
-39
-],
-"alt_span": [
-28,
-40
-]
-},
-{
-"k": 1,
-"nat": "currentProduct",
-"alt": "current_product",
-"nat_span": [
-144,
-158
-],
-"alt_span": [
-146,
-161
-]
-},
-{
-"k": 2,
-"nat": "currentIteration",
-"alt": "current_iteration",
-"nat_span": [
-175,
-191
-],
-"alt_span": [
-178,
-195
-]
-},
-{
-"k": 3,
-"nat": "processAndDisplayFactorial(valueToProcess",
-"alt": "process_and_display_factorial(value_to_process",
-"nat_span": [
-333,
-374
-],
-"alt_span": [
-343,
-389
-]
-},
-{
-"k": 4,
-"nat": "factorialResult",
-"alt": "factorial_result",
-"nat_span": [
-386,
-401
-],
-"alt_span": [
-401,
-417
-]
-}
-],
-"k_en": 5,
-"shared_fraction": 0.904,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "inputNumber",
-"alt": "input_number",
-"nat_span": [
-28,
-39
-],
-"alt_span": [
-28,
-40
-]
-},
-{
-"k": 1,
-"nat": "inputNumber",
-"alt": "input_number",
-"nat_span": [
-49,
-60
-],
-"alt_span": [
-50,
-62
-]
-},
-{
-"k": 2,
-"nat": "currentProduct",
-"alt": "current_product",
-"nat_span": [
-144,
-158
-],
-"alt_span": [
-146,
-161
-]
-},
-{
-"k": 3,
-"nat": "currentIteration",
-"alt": "current_iteration",
-"nat_span": [
-175,
-191
-],
-"alt_span": [
-178,
-195
-]
-},
-{
-"k": 4,
-"nat": "currentIteration",
-"alt": "current_iteration",
-"nat_span": [
-197,
-213
-],
-"alt_span": [
-201,
-218
-]
-},
-{
-"k": 5,
-"nat": "inputNumber; currentIteration",
-"alt": "input_number; current_iteration",
-"nat_span": [
-217,
-246
-],
-"alt_span": [
-222,
-253
-]
-},
-{
-"k": 6,
-"nat": "currentProduct",
-"alt": "current_product",
-"nat_span": [
-256,
-270
-],
-"alt_span": [
-263,
-278
-]
-},
-{
-"k": 7,
-"nat": "currentIteration",
-"alt": "current_iteration",
-"nat_span": [
-274,
-290
-],
-"alt_span": [
-282,
-299
-]
-},
-{
-"k": 8,
-"nat": "currentProduct",
-"alt": "current_product",
-"nat_span": [
-305,
-319
-],
-"alt_span": [
-314,
-329
-]
-},
-{
-"k": 9,
-"nat": "processAndDisplayFactorial(valueToProcess",
-"alt": "process_and_display_factorial(value_to_process",
-"nat_span": [
-333,
-374
-],
-"alt_span": [
-343,
-389
-]
-},
-{
-"k": 10,
-"nat": "factorialResult",
-"alt": "factorial_result",
-"nat_span": [
-386,
-401
-],
-"alt_span": [
-401,
-417
-]
-},
-{
-"k": 11,
-"nat": "valueToProcess",
-"alt": "value_to_process",
-"nat_span": [
-423,
-437
-],
-"alt_span": [
-439,
-455
-]
-},
-{
-"k": 12,
-"nat": "valueToProcess",
-"alt": "value_to_process",
-"nat_span": [
-474,
-488
-],
-"alt_span": [
-492,
-508
-]
-},
-{
-"k": 13,
-"nat": "factorialResult",
-"alt": "factorial_result",
-"nat_span": [
-495,
-510
-],
-"alt_span": [
-515,
-531
-]
-},
-{
-"k": 14,
-"nat": "processAndDisplayFactorial",
-"alt": "process_and_display_factorial",
-"nat_span": [
-568,
-594
-],
-"alt_span": [
-589,
-618
-]
-},
-{
-"k": 15,
-"nat": "processAndDisplayFactorial",
-"alt": "process_and_display_factorial",
-"nat_span": [
-599,
-625
-],
-"alt_span": [
-623,
-652
-]
-},
-{
-"k": 16,
-"nat": "processAndDisplayFactorial",
-"alt": "process_and_display_factorial",
-"nat_span": [
-630,
-656
-],
-"alt_span": [
-657,
-686
-]
-},
-{
-"k": 17,
-"nat": "processAndDisplayFactorial",
-"alt": "process_and_display_factorial",
-"nat_span": [
-661,
-687
-],
-"alt_span": [
-691,
-720
-]
-},
-{
-"k": 18,
-"nat": "processAndDisplayFactorial",
-"alt": "process_and_display_factorial",
-"nat_span": [
-692,
-718
-],
-"alt_span": [
-725,
-754
-]
-},
-{
-"k": 19,
-"nat": "processAndDisplayFactorial",
-"alt": "process_and_display_factorial",
-"nat_span": [
-727,
-753
-],
-"alt_span": [
-763,
-792
 ]
 }
 ],
@@ -84154,639 +88241,6 @@
 "alt_span": [
 1029,
 1050
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "js_camel_snake__t216",
-"family": "js_camel_snake",
-"topic": "Filter Array of Objects by Value",
-"angle": "code",
-"text_es": "Implement a function that filters an array of objects, keeping only those where a specific property matches a given value. The function should return a new array of objects. Implement `filterByProperty(arr, prop, value)`.\nExample: `filterByProperty([{id:1, type:'A'}, {id:2, type:'B'}], 'type', 'A')` should return `[{id:1, type:'A'}]`.\nExample: `filterByProperty([{name:'Alice'}, {name:'Bob'}], 'name', 'Charlie')` should return `[]`.",
-"langs": {
-"src": "Task",
-"tgt": "JavaScript"
-},
-"text_nat": "const filterByObjectProperty = (inputArrayOfObjects, targetPropertyKey, requiredPropertyValue) => {\n  const matchingElementsCollection = []; // multi-word variable name 1\n\n  for (let currentObjectItem of inputArrayOfObjects) { // multi-word variable name 2\n    const currentObjectPropertyValue = currentObjectItem[targetPropertyKey]; // multi-word variable name 3\n    if (currentObjectPropertyValue === requiredPropertyValue) { // multi-word variable name 4\n      matchingElementsCollection.push(currentObjectItem);\n    }\n  }\n\n  const finalFilteredResults = matchingElementsCollection; // multi-word variable name 5\n  return finalFilteredResults;\n};\n\nconst filterBySpecificProperty = (dataArray, propertyToMatch, desiredMatchValue) => { // multi-word function name 1, multi-word parameter names 1, 2\n  const resultsAccumulator = []; // multi-word variable name 6\n  for (const itemElement of dataArray) { // multi-word variable name 7\n    if (itemElement[propertyToMatch] === desiredMatchValue) { // multi-word variable name 8\n      resultsAccumulator.push(itemElement);\n    }\n  }\n  return resultsAccumulator;\n};\n\n// Example usage demonstrating both function names and consistent camelCase:\n// The task asked for filterByProperty, so let's make that an alias or a direct implementation.\nconst filterByProperty = (initialDataList, searchPropertyIdentifier, desiredSearchValue) => { // multi-word parameter names 3, 4\n  const filteredOutputArray = initialDataList.filter(singleItemEntry => { // multi-word variable name 9, multi-word parameter name 5\n    const itemEntryProperty = singleItemEntry[searchPropertyIdentifier]; // multi-word variable name 10\n    return itemEntryProperty === desiredSearchValue;\n  });\n  return filteredOutputArray;\n};\n",
-"text_alt": "const filter_by_object_property = (input_array_of_objects, target_property_key, required_property_value) => {\n  const matching_elements_collection = []; // multi-word variable name 1\n\n  for (let current_object_item of input_array_of_objects) { // multi-word variable name 2\n    const current_object_property_value = current_object_item[target_property_key]; // multi-word variable name 3\n    if (current_object_property_value === required_property_value) { // multi-word variable name 4\n      matching_elements_collection.push(current_object_item);\n    }\n  }\n\n  const final_filtered_results = matching_elements_collection; // multi-word variable name 5\n  return final_filtered_results;\n};\n\nconst filter_by_specific_property = (data_array, property_to_match, desired_match_value) => { // multi-word function name 1, multi-word parameter names 1, 2\n  const results_accumulator = []; // multi-word variable name 6\n  for (const item_element of data_array) { // multi-word variable name 7\n    if (item_element[property_to_match] === desired_match_value) { // multi-word variable name 8\n      results_accumulator.push(item_element);\n    }\n  }\n  return results_accumulator;\n};\n\n// Example usage demonstrating both function names and consistent camelCase:\n// The task asked for filterByProperty, so let's make that an alias or a direct implementation.\nconst filterByProperty = (initial_data_list, search_property_identifier, desired_search_value) => { // multi-word parameter names 3, 4\n  const filtered_output_array = initial_data_list.filter(single_item_entry => { // multi-word variable name 9, multi-word parameter name 5\n    const item_entry_property = single_item_entry[search_property_identifier]; // multi-word variable name 10\n    return item_entry_property === desired_search_value;\n  });\n  return filtered_output_array;\n};\n",
-"opps": [
-{
-"k": 0,
-"nat": "filterByObjectProperty",
-"alt": "filter_by_object_property",
-"nat_span": [
-6,
-28
-],
-"alt_span": [
-6,
-31
-]
-},
-{
-"k": 1,
-"nat": "inputArrayOfObjects, targetPropertyKey, requiredPropertyValue",
-"alt": "input_array_of_objects, target_property_key, required_property_value",
-"nat_span": [
-32,
-93
-],
-"alt_span": [
-35,
-103
-]
-},
-{
-"k": 2,
-"nat": "matchingElementsCollection",
-"alt": "matching_elements_collection",
-"nat_span": [
-108,
-134
-],
-"alt_span": [
-118,
-146
-]
-},
-{
-"k": 3,
-"nat": "currentObjectItem",
-"alt": "current_object_item",
-"nat_span": [
-183,
-200
-],
-"alt_span": [
-195,
-214
-]
-},
-{
-"k": 4,
-"nat": "currentObjectPropertyValue",
-"alt": "current_object_property_value",
-"nat_span": [
-267,
-293
-],
-"alt_span": [
-284,
-313
-]
-},
-{
-"k": 5,
-"nat": "finalFilteredResults",
-"alt": "final_filtered_results",
-"nat_span": [
-535,
-555
-],
-"alt_span": [
-568,
-590
-]
-},
-{
-"k": 6,
-"nat": "filterBySpecificProperty",
-"alt": "filter_by_specific_property",
-"nat_span": [
-657,
-681
-],
-"alt_span": [
-696,
-723
-]
-},
-{
-"k": 7,
-"nat": "dataArray, propertyToMatch, desiredMatchValue",
-"alt": "data_array, property_to_match, desired_match_value",
-"nat_span": [
-685,
-730
-],
-"alt_span": [
-727,
-777
-]
-},
-{
-"k": 8,
-"nat": "resultsAccumulator",
-"alt": "results_accumulator",
-"nat_span": [
-808,
-826
-],
-"alt_span": [
-855,
-874
-]
-},
-{
-"k": 9,
-"nat": "itemElement",
-"alt": "item_element",
-"nat_span": [
-876,
-887
-],
-"alt_span": [
-924,
-936
-]
-},
-{
-"k": 10,
-"nat": "initialDataList, searchPropertyIdentifier, desiredSearchValue",
-"alt": "initial_data_list, search_property_identifier, desired_search_value",
-"nat_span": [
-1312,
-1373
-],
-"alt_span": [
-1370,
-1437
-]
-},
-{
-"k": 11,
-"nat": "filteredOutputArray",
-"alt": "filtered_output_array",
-"nat_span": [
-1423,
-1442
-],
-"alt_span": [
-1487,
-1508
-]
-},
-{
-"k": 12,
-"nat": "singleItemEntry",
-"alt": "single_item_entry",
-"nat_span": [
-1468,
-1483
-],
-"alt_span": [
-1536,
-1553
-]
-},
-{
-"k": 13,
-"nat": "itemEntryProperty",
-"alt": "item_entry_property",
-"nat_span": [
-1558,
-1575
-],
-"alt_span": [
-1628,
-1647
-]
-}
-],
-"k_en": 14,
-"shared_fraction": 0.916,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "filterByObjectProperty",
-"alt": "filter_by_object_property",
-"nat_span": [
-6,
-28
-],
-"alt_span": [
-6,
-31
-]
-},
-{
-"k": 1,
-"nat": "inputArrayOfObjects, targetPropertyKey, requiredPropertyValue",
-"alt": "input_array_of_objects, target_property_key, required_property_value",
-"nat_span": [
-32,
-93
-],
-"alt_span": [
-35,
-103
-]
-},
-{
-"k": 2,
-"nat": "matchingElementsCollection",
-"alt": "matching_elements_collection",
-"nat_span": [
-108,
-134
-],
-"alt_span": [
-118,
-146
-]
-},
-{
-"k": 3,
-"nat": "currentObjectItem",
-"alt": "current_object_item",
-"nat_span": [
-183,
-200
-],
-"alt_span": [
-195,
-214
-]
-},
-{
-"k": 4,
-"nat": "inputArrayOfObjects",
-"alt": "input_array_of_objects",
-"nat_span": [
-204,
-223
-],
-"alt_span": [
-218,
-240
-]
-},
-{
-"k": 5,
-"nat": "currentObjectPropertyValue",
-"alt": "current_object_property_value",
-"nat_span": [
-267,
-293
-],
-"alt_span": [
-284,
-313
-]
-},
-{
-"k": 6,
-"nat": "currentObjectItem[targetPropertyKey",
-"alt": "current_object_item[target_property_key",
-"nat_span": [
-296,
-331
-],
-"alt_span": [
-316,
-355
-]
-},
-{
-"k": 7,
-"nat": "currentObjectPropertyValue",
-"alt": "current_object_property_value",
-"nat_span": [
-372,
-398
-],
-"alt_span": [
-396,
-425
-]
-},
-{
-"k": 8,
-"nat": "requiredPropertyValue",
-"alt": "required_property_value",
-"nat_span": [
-403,
-424
-],
-"alt_span": [
-430,
-453
-]
-},
-{
-"k": 9,
-"nat": "matchingElementsCollection",
-"alt": "matching_elements_collection",
-"nat_span": [
-464,
-490
-],
-"alt_span": [
-493,
-521
-]
-},
-{
-"k": 10,
-"nat": "currentObjectItem",
-"alt": "current_object_item",
-"nat_span": [
-496,
-513
-],
-"alt_span": [
-527,
-546
-]
-},
-{
-"k": 11,
-"nat": "finalFilteredResults",
-"alt": "final_filtered_results",
-"nat_span": [
-535,
-555
-],
-"alt_span": [
-568,
-590
-]
-},
-{
-"k": 12,
-"nat": "matchingElementsCollection",
-"alt": "matching_elements_collection",
-"nat_span": [
-558,
-584
-],
-"alt_span": [
-593,
-621
-]
-},
-{
-"k": 13,
-"nat": "finalFilteredResults",
-"alt": "final_filtered_results",
-"nat_span": [
-625,
-645
-],
-"alt_span": [
-662,
-684
-]
-},
-{
-"k": 14,
-"nat": "filterBySpecificProperty",
-"alt": "filter_by_specific_property",
-"nat_span": [
-657,
-681
-],
-"alt_span": [
-696,
-723
-]
-},
-{
-"k": 15,
-"nat": "dataArray, propertyToMatch, desiredMatchValue",
-"alt": "data_array, property_to_match, desired_match_value",
-"nat_span": [
-685,
-730
-],
-"alt_span": [
-727,
-777
-]
-},
-{
-"k": 16,
-"nat": "resultsAccumulator",
-"alt": "results_accumulator",
-"nat_span": [
-808,
-826
-],
-"alt_span": [
-855,
-874
-]
-},
-{
-"k": 17,
-"nat": "itemElement",
-"alt": "item_element",
-"nat_span": [
-876,
-887
-],
-"alt_span": [
-924,
-936
-]
-},
-{
-"k": 18,
-"nat": "dataArray",
-"alt": "data_array",
-"nat_span": [
-891,
-900
-],
-"alt_span": [
-940,
-950
-]
-},
-{
-"k": 19,
-"nat": "itemElement[propertyToMatch",
-"alt": "item_element[property_to_match",
-"nat_span": [
-942,
-969
-],
-"alt_span": [
-992,
-1022
-]
-},
-{
-"k": 20,
-"nat": "desiredMatchValue",
-"alt": "desired_match_value",
-"nat_span": [
-975,
-992
-],
-"alt_span": [
-1028,
-1047
-]
-},
-{
-"k": 21,
-"nat": "resultsAccumulator",
-"alt": "results_accumulator",
-"nat_span": [
-1032,
-1050
-],
-"alt_span": [
-1087,
-1106
-]
-},
-{
-"k": 22,
-"nat": "itemElement",
-"alt": "item_element",
-"nat_span": [
-1056,
-1067
-],
-"alt_span": [
-1112,
-1124
-]
-},
-{
-"k": 23,
-"nat": "resultsAccumulator",
-"alt": "results_accumulator",
-"nat_span": [
-1089,
-1107
-],
-"alt_span": [
-1146,
-1165
-]
-},
-{
-"k": 24,
-"nat": "initialDataList, searchPropertyIdentifier, desiredSearchValue",
-"alt": "initial_data_list, search_property_identifier, desired_search_value",
-"nat_span": [
-1312,
-1373
-],
-"alt_span": [
-1370,
-1437
-]
-},
-{
-"k": 25,
-"nat": "filteredOutputArray",
-"alt": "filtered_output_array",
-"nat_span": [
-1423,
-1442
-],
-"alt_span": [
-1487,
-1508
-]
-},
-{
-"k": 26,
-"nat": "initialDataList",
-"alt": "initial_data_list",
-"nat_span": [
-1445,
-1460
-],
-"alt_span": [
-1511,
-1528
-]
-},
-{
-"k": 27,
-"nat": "singleItemEntry",
-"alt": "single_item_entry",
-"nat_span": [
-1468,
-1483
-],
-"alt_span": [
-1536,
-1553
-]
-},
-{
-"k": 28,
-"nat": "itemEntryProperty",
-"alt": "item_entry_property",
-"nat_span": [
-1558,
-1575
-],
-"alt_span": [
-1628,
-1647
-]
-},
-{
-"k": 29,
-"nat": "singleItemEntry[searchPropertyIdentifier",
-"alt": "single_item_entry[search_property_identifier",
-"nat_span": [
-1578,
-1618
-],
-"alt_span": [
-1650,
-1694
-]
-},
-{
-"k": 30,
-"nat": "itemEntryProperty",
-"alt": "item_entry_property",
-"nat_span": [
-1663,
-1680
-],
-"alt_span": [
-1739,
-1758
-]
-},
-{
-"k": 31,
-"nat": "desiredSearchValue",
-"alt": "desired_search_value",
-"nat_span": [
-1685,
-1703
-],
-"alt_span": [
-1763,
-1783
-]
-},
-{
-"k": 32,
-"nat": "filteredOutputArray",
-"alt": "filtered_output_array",
-"nat_span": [
-1720,
-1739
-],
-"alt_span": [
-1800,
-1821
 ]
 }
 ],

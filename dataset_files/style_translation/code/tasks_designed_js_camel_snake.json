@@ -1,0 +1,92 @@
+[
+ {
+  "id": "d001",
+  "title": "Temperature Streak Analyzer",
+  "spec": "Write a script to analyze an array of daily temperatures. Create a function `analyze temperatures` that takes a `temperature array` and a `target threshold` integer. First, check if the `temperature array` is empty; if so, return an array of three zeros. Track the `total evaluated days` (count of days strictly greater than the threshold overall), the `current sequence length` (for contiguous days above the threshold), the `max sequence length` found so far, the `current sequence sum`, and the `best sequence sum`. Iterate through the array. When a sequence of days above the threshold ends, if the `current sequence length` is greater than the `max sequence length`, update the `max sequence length` and set the `best sequence sum` to the `current sequence sum`. Return an array of three integers: the `max sequence length`, the `best sequence sum`, and the `total evaluated days`. Include a main block that creates a test array and threshold, calls the function, and prints the result.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "Pagination Window Calculator",
+  "spec": "Write a script to calculate pagination links for a data grid. Create a function `calculate pagination` that takes three integers: the `current page number`, the `total page count`, and a `display window size`. Subtract half of the `display window size` (floored) from the `current page number` to get a tentative `first visible page`. If it is less than 1, clamp it to 1. Calculate the `last visible page` by adding the `display window size` minus 1 to the `first visible page`. If the `last visible page` exceeds the `total page count`, clamp it. Track the `left omitted count` (pages before the first visible) and `right omitted count` (pages after the last visible). Also compute a `has previous page` boolean (true if `first visible page` > 1) and a `has next page` boolean. Return an object with exactly six single-word keys: `start`, `end`, `left`, `right`, `prev`, and `next`, assigning the respective calculated variables. Include a main block calling the function with (7, 20, 5) and printing the output.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "Physics Bouncing Ball Simulation",
+  "spec": "Write a script to simulate a bouncing ball in a physics engine. Create a function `simulate bouncing ball` that takes an `initial drop height`, a `bounce restitution multiplier`, and a `minimum threshold height`. If the `bounce restitution multiplier` is out of bounds (less than 0 or >= 1), return an array of three zeros. Track the `total distance traveled`, the `current peak height`, the `total bounce count`, and the `maximum peak height` reached. While the `current peak height` is greater than the `minimum threshold height`, add the `current peak height` to the `total distance traveled` (falling). Multiply the `current peak height` by the `bounce restitution multiplier` to get the `new rebound height`. Add the `new rebound height` to the `total distance traveled` (rising), assign the `new rebound height` to the `current peak height`, and increment the `total bounce count`. Return an array containing the `total distance traveled`, `total bounce count`, and `maximum peak height`. Call the function with 10, 0.75, 1, and print the array.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "Moving Average Filter",
+  "spec": "Write a script to apply a moving average filter to numerical data. Create a function `smooth data array` that takes a `raw data array` and an integer `sliding window size`. If the `sliding window size` is even, increment it by 1. Track a `filtered result array`. Iterate through each index of the `raw data array`. For each position, calculate the `window start index` (clamped to 0) and the `window end index` (clamped to array length minus 1). Loop from the start to end indices to calculate the `current window sum`. Divide this by the number of elements in the window (the `actual window length`) to get the `local average value`. Push it into the `filtered result array`. After the main loop, calculate the `overall average value` of the entire `filtered result array`. Return an array containing the `filtered result array` and the `overall average value`. Include a main block that processes `[2, 4, 6, 8, 10]` with window size 3 and prints.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "Order Bill Calculator",
+  "spec": "Write a script to compute an order bill. Create a function `compute order bill` that takes an `item prices array`, a matching `exempt items array` of booleans, a `discount percentage rate`, and a `state tax rate`. Iterate over the prices. Track a `tax exempt subtotal` and a `taxable subtotal`. If the corresponding exempt boolean is true, add the price to the `tax exempt subtotal`, otherwise to the `taxable subtotal`. Calculate the `gross subtotal amount` by adding both. Apply the `discount percentage rate` proportionally to both subtotals to calculate the `discounted exempt amount` and `discounted taxable amount`. Apply the `state tax rate` only to the `discounted taxable amount` to get the `applicable tax amount`. The `final total price` is the sum of the two discounted amounts and the tax. Return an array: `gross subtotal amount`, `applicable tax amount`, and `final total price`. Call it with test data and print.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "Parking Garage Fee",
+  "spec": "Write a script to calculate parking fees. Create a function `calculate parking fee` taking an `entry hour number`, an `exit hour number`, a `base flat rate`, an `hourly extra rate`, and a `maximum daily cap`. Track the `adjusted exit hour`, initialized to the exit hour. If it's less than the entry hour, add 24 to the `adjusted exit hour`. Calculate the `total parked hours`. If it is zero, set it to 24. Calculate the `preliminary total fee` as the `base flat rate` plus the `hourly extra rate` multiplied by the `total parked hours`. If the `total parked hours` is greater than 12, add an `extended stay surcharge` of 10 to the `preliminary total fee`. Finally, compare the `preliminary total fee` to the `maximum daily cap`, storing the smaller value in `final approved fee`. Return the `final approved fee`. Include a main block with entry 18, exit 2, base 5, hourly 2, max 20, and print.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "String Word Capitalizer",
+  "spec": "Write a script to apply sentence formatting. Create a function `format sentence case` taking a `raw input sentence` string and an `excluded words array`. Trim leading/trailing spaces from the `raw input sentence`. If empty, return an empty string. Split the sentence into a `word tokens array`. Track a `capitalized word count`. Iterate over the tokens. Track the `current word index` and the `lowercased word version`. If the index is 0, or if the `lowercased word version` is not in the `excluded words array`, create a `capitalized word version` by uppercasing the first letter, increment the `capitalized word count`, and replace the token. Join the tokens into a `final formatted string`. If the `capitalized word count` is 0, return the string `'NONE'`. Otherwise, return the `final formatted string`. Call it with a sample sentence and print.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "Inventory Reorder Planner",
+  "spec": "Write a script to plan warehouse inventory reorders. Create a function `plan inventory reorder` taking a `current stock array`, a `minimum safe threshold`, and a `standard batch size`. Track the `total items ordered`, the `total batches required`, and the `most critical item index` (the index of the item with the largest stock deficit). Track the `largest deficit found` (initialized to 0). Iterate through the `current stock array`. If a value is below the `minimum safe threshold`, calculate the `inventory deficit amount`. If it exceeds the `largest deficit found`, update both the maximum deficit tracker and the `most critical item index`. Determine the `needed batch count` by dividing the `inventory deficit amount` by the `standard batch size` (rounded up). Calculate the `actual reorder quantity` (batches times batch size). Add these to the total trackers. Return an array of the three trackers. Run with test data and print.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Digital Time Converter",
+  "spec": "Write a script to convert total seconds into a clock readout. Create a function `convert seconds to clock` taking an integer `total raw seconds`. Track the `total elapsed days` by dividing by 86400 (floored). Track the `remaining seconds after days` using modulo. Calculate the `full elapsed hours` by dividing this remainder by 3600 (floored). Calculate the `remaining seconds after hours` using modulo. Calculate the `full elapsed minutes` by dividing the remainder by 60 (floored). Calculate the `final leftover seconds` using modulo 60. Convert the hours, minutes, and seconds to strings, storing them in `padded hours string`, `padded minutes string`, and `padded seconds string`, adding a leading zero if below 10. Concatenate them with colons to form the `base clock string`. If `total elapsed days` is greater than 0, prepend it to form the `final clock string` (e.g., '1 days, 02:05:05'). Return the `final clock string`. Call with 90065 and print.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "Rectangle Intersection Detection",
+  "spec": "Write a script to detect screen rectangle overlaps. Create a function `check rectangle intersection` taking 8 parameters: `first rect x`, `first rect y`, `first rect width`, `first rect height`, and the corresponding 4 for a second rectangle. If any width or height is negative or zero, return 0. Calculate the `first right edge` and `first bottom edge`. Calculate the `second right edge` and `second bottom edge`. Evaluate a `has horizontal overlap` boolean by checking if `first right edge` > `second rect x` AND `first rect x` < `second right edge`. Evaluate a `has vertical overlap` boolean similarly for y-axes. If both are true, calculate the `overlap region width` (minimum of right edges minus maximum of left edges) and `overlap region height`. Calculate and return the `overlap region area`. If they do not intersect, return 0. Include a main block that tests an overlapping pair and prints the area.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "ATM Withdrawal Dispenser",
+  "spec": "Write a script to simulate an ATM cash withdrawal. Create a function `dispense atm cash` taking a `requested withdrawal amount` and an `available denominations array`. Track the `remaining withdrawal balance`, a `total bills dispensed` counter, and a `dispensed counts array`. Loop over the `available denominations array`. Calculate the `maximum fitting bills` that go into the `remaining withdrawal balance` (floored division). Cap the `maximum fitting bills` at a `maximum stack limit` of 20. Calculate the `deducted subtotal value` by multiplying the denomination by the capped count. Subtract this from the `remaining withdrawal balance`. Add the count to the `total bills dispensed` and push it to the `dispensed counts array`. If the loop finishes and the `remaining withdrawal balance` is not zero, return an array containing `[-1]`. Otherwise, return an array with `total bills dispensed` followed by the elements of the `dispensed counts array`. Call with test values and print.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Voting Tally System",
+  "spec": "Write a script to tally election votes. Create a function `tally election votes` taking a `cast votes array` of candidate name strings. Create an `invalid votes array` containing `'NONE'` and `'VOID'`. Track a `total rejected votes` counter, the `highest vote count` seen so far, the `leading candidate name`, and create a `vote tally map` (a plain object for mapping). Iterate through the `cast votes array`. Extract the `current candidate name`. If it is included in the `invalid votes array`, increment the `total rejected votes` and continue. Otherwise, initialize or increment its count in the `vote tally map`. Retrieve the `updated candidate score`. If this score is strictly greater than the `highest vote count`, update both the `highest vote count` and the `leading candidate name`. Return an array of three elements: the `leading candidate name`, the `highest vote count`, and the `total rejected votes`. Run with a test array and print.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Mortgage Payment Calculator",
+  "spec": "Write a script to calculate mortgage details. Create a function `calculate mortgage payment` taking the `principal loan amount`, the `annual interest rate`, and the `loan term years`. Calculate the `monthly interest rate` by dividing the annual rate by 12. Calculate the `total payment periods` by multiplying the years by 12. Calculate the `compounding multiplier factor` using `(1 + monthly interest rate) ** total payment periods`. Compute the `base monthly payment` as `principal loan amount` times `monthly interest rate` times the factor, divided by (factor - 1). Create a `formatted monthly payment` string rounded to two decimals. Calculate the `total lifetime interest` paid (`base monthly payment` times `total payment periods` minus `principal loan amount`). Return an object with strictly two single-word keys: `payment` (the formatted string) and `interest` (the `total lifetime interest` rounded to two decimals). Run with 200000, 0.05, 30 and print.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d014",
+  "title": "Sensor Data Anomaly Detector",
+  "spec": "Write a script to detect anomalies in sensor data. Create a function `detect sensor anomalies` taking a `sensor readings array`, a `baseline average value`, and a `maximum allowed variance`. Track the `total anomalies detected`, the `largest deviation observed`, and a `sudden spike count`. Iterate over the readings. Extract the `current reading value`. Calculate the `absolute difference magnitude` against the `baseline average value`. If it exceeds the `maximum allowed variance`, increment the `total anomalies detected`. If it exceeds the `largest deviation observed`, update it. Additionally, if the index is >= 2, calculate a `rolling average value` of the current and previous two readings; if the `current reading value` differs from this rolling average by more than the variance, increment the `sudden spike count`. Return an array containing the three tracking variables. Call with test data and print.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d015",
+  "title": "Run-Length Encoder",
+  "spec": "Write a script to perform run-length encoding. Create a function `compress string runs` taking a `raw input string`. Evaluate the `input string length`. If 0, return an empty string. Track the `current tracked character` (initialized to the first character), the `current repetition count` (initialized to 0), and the `final compressed output` string. Loop up to the `input string length`. Extract the `loop character value` at the index. If it equals the `current tracked character`, increment the `current repetition count`. If it differs, or if the `current repetition count` reaches 9 (to chunk long runs), append the `current tracked character` and the `current repetition count` to the `final compressed output`. Then, if it differed, assign the `loop character value` to the `current tracked character` and set the count to 1; if it was just a chunking reset, set the count to 0. After the loop, append any remaining character and count. Return the `final compressed output`. Run with `'aaabbbbbbbbbbc'` and print.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ }
+]

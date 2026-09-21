@@ -1,5 +1,620 @@
 [
 {
+"doc_id": "bash_subst__d004",
+"family": "bash_subst",
+"topic": "Docker Container Inspection Tool",
+"angle": "code",
+"text_es": "Write a Bash script `inspect_container.sh` that takes a Docker container name as its single argument. It must interact with the Docker CLI to extract and display several specific attributes of the target container. The required attributes are: the full container ID, the underlying image name, the current status (e.g., running or exited), the exact start time, the container's primary IP address, its current memory usage (using docker stats non-streaming), the number of mapped port bindings, and the restart count. The script should format these as a neat list. Example: `./inspect_container.sh web_app` yields `Container ID: a1b2c3d4...`, `Image: nginx:latest`, `Status: running`.",
+"langs": {
+"src": "Task",
+"tgt": "Bash"
+},
+"text_nat": "#!/usr/bin/env bash\n# inspect_container.sh — report key attributes of a Docker container.\n\nset -u\n\nusage() {\n    local self\n    self=$(basename \"$0\")\n    echo \"Usage: $self <container-name>\" >&2\n    exit 2\n}\n\nrequire_docker() {\n    if ! command -v docker >/dev/null 2>&1; then\n        echo \"Error: docker CLI not found in PATH.\" >&2\n        exit 1\n    fi\n}\n\ncontainer_exists() {\n    local name=$1 found\n    found=$(docker ps -a --filter \"name=^/${name}$\" --format '{{.Names}}')\n    [[ -n $found ]]\n}\n\ninspect_field() {\n    local name=$1 template=$2 value\n    value=$(docker inspect --format \"$template\" \"$name\" 2>/dev/null)\n    if [[ -z $value || $value == \"<no value>\" ]]; then\n        echo \"unknown\"\n    else\n        echo \"$value\"\n    fi\n}\n\nprimary_ip() {\n    local name=$1 ip\n    ip=$(inspect_field \"$name\" '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}')\n    ip=${ip%% *}\n    echo \"${ip:-none}\"\n}\n\nmemory_usage() {\n    local name=$1 raw\n    raw=$(docker stats --no-stream --format '{{.MemUsage}}' \"$name\" 2>/dev/null)\n    echo \"${raw:-n/a}\"\n}\n\nport_binding_count() {\n    local name=$1 bindings\n    bindings=$(inspect_field \"$name\" '{{range $p, $conf := .NetworkSettings.Ports}}{{if $conf}}{{$p}} {{end}}{{end}}')\n    if [[ $bindings == \"unknown\" ]]; then\n        echo 0\n    else\n        wc -w <<<\"$bindings\"\n    fi\n}\n\nformat_start_time() {\n    local name=$1 stamp\n    stamp=$(inspect_field \"$name\" '{{.State.StartedAt}}')\n    date -d \"$stamp\" '+%Y-%m-%d %H:%M:%S %Z' 2>/dev/null || echo \"$stamp\"\n}\n\nmain() {\n    [[ $# -eq 1 ]] || usage\n    local name=$1\n    require_docker\n    if ! container_exists \"$name\"; then\n        echo \"Error: no such container: $name\" >&2\n        exit 1\n    fi\n\n    printf 'Container ID: %s\\n' \"$(inspect_field \"$name\" '{{.Id}}')\"\n    printf 'Image: %s\\n' \"$(inspect_field \"$name\" '{{.Config.Image}}')\"\n    printf 'Status: %s\\n' \"$(inspect_field \"$name\" '{{.State.Status}}')\"\n    printf 'Started At: %s\\n' \"$(format_start_time \"$name\")\"\n    printf 'IP Address: %s\\n' \"$(primary_ip \"$name\")\"\n    printf 'Memory Usage: %s\\n' \"$(memory_usage \"$name\")\"\n    printf 'Port Bindings: %s\\n' \"$(port_binding_count \"$name\")\"\n    printf 'Restart Count: %s\\n' \"$(inspect_field \"$name\" '{{.RestartCount}}')\"\n}\n\nmain \"$@\"\n",
+"text_alt": "#!/usr/bin/env bash\n# inspect_container.sh — report key attributes of a Docker container.\n\nset -u\n\nusage() {\n    local self\n    self=`basename \"$0\"`\n    echo \"Usage: $self <container-name>\" >&2\n    exit 2\n}\n\nrequire_docker() {\n    if ! command -v docker >/dev/null 2>&1; then\n        echo \"Error: docker CLI not found in PATH.\" >&2\n        exit 1\n    fi\n}\n\ncontainer_exists() {\n    local name=$1 found\n    found=`docker ps -a --filter \"name=^/${name}$\" --format '{{.Names}}'`\n    [[ -n $found ]]\n}\n\ninspect_field() {\n    local name=$1 template=$2 value\n    value=`docker inspect --format \"$template\" \"$name\" 2>/dev/null`\n    if [[ -z $value || $value == \"<no value>\" ]]; then\n        echo \"unknown\"\n    else\n        echo \"$value\"\n    fi\n}\n\nprimary_ip() {\n    local name=$1 ip\n    ip=`inspect_field \"$name\" '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}'`\n    ip=${ip%% *}\n    echo \"${ip:-none}\"\n}\n\nmemory_usage() {\n    local name=$1 raw\n    raw=`docker stats --no-stream --format '{{.MemUsage}}' \"$name\" 2>/dev/null`\n    echo \"${raw:-n/a}\"\n}\n\nport_binding_count() {\n    local name=$1 bindings\n    bindings=`inspect_field \"$name\" '{{range $p, $conf := .NetworkSettings.Ports}}{{if $conf}}{{$p}} {{end}}{{end}}'`\n    if [[ $bindings == \"unknown\" ]]; then\n        echo 0\n    else\n        wc -w <<<\"$bindings\"\n    fi\n}\n\nformat_start_time() {\n    local name=$1 stamp\n    stamp=`inspect_field \"$name\" '{{.State.StartedAt}}'`\n    date -d \"$stamp\" '+%Y-%m-%d %H:%M:%S %Z' 2>/dev/null || echo \"$stamp\"\n}\n\nmain() {\n    [[ $# -eq 1 ]] || usage\n    local name=$1\n    require_docker\n    if ! container_exists \"$name\"; then\n        echo \"Error: no such container: $name\" >&2\n        exit 1\n    fi\n\n    printf 'Container ID: %s\\n' \"`inspect_field \"$name\" '{{.Id}}'`\"\n    printf 'Image: %s\\n' \"`inspect_field \"$name\" '{{.Config.Image}}'`\"\n    printf 'Status: %s\\n' \"`inspect_field \"$name\" '{{.State.Status}}'`\"\n    printf 'Started At: %s\\n' \"`format_start_time \"$name\"`\"\n    printf 'IP Address: %s\\n' \"`primary_ip \"$name\"`\"\n    printf 'Memory Usage: %s\\n' \"`memory_usage \"$name\"`\"\n    printf 'Port Bindings: %s\\n' \"`port_binding_count \"$name\"`\"\n    printf 'Restart Count: %s\\n' \"`inspect_field \"$name\" '{{.RestartCount}}'`\"\n}\n\nmain \"$@\"\n",
+"opps": [
+{
+"k": 0,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+133,
+135
+],
+"alt_span": [
+133,
+134
+]
+},
+{
+"k": 1,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+413,
+415
+],
+"alt_span": [
+412,
+413
+]
+},
+{
+"k": 2,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+565,
+567
+],
+"alt_span": [
+563,
+564
+]
+},
+{
+"k": 3,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+786,
+788
+],
+"alt_span": [
+783,
+784
+]
+},
+{
+"k": 4,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+961,
+963
+],
+"alt_span": [
+957,
+958
+]
+},
+{
+"k": 5,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1123,
+1125
+],
+"alt_span": [
+1118,
+1119
+]
+},
+{
+"k": 6,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1390,
+1392
+],
+"alt_span": [
+1384,
+1385
+]
+},
+{
+"k": 7,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1736,
+1738
+],
+"alt_span": [
+1729,
+1730
+]
+},
+{
+"k": 8,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1798,
+1800
+],
+"alt_span": [
+1790,
+1791
+]
+},
+{
+"k": 9,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1871,
+1873
+],
+"alt_span": [
+1862,
+1863
+]
+},
+{
+"k": 10,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1948,
+1950
+],
+"alt_span": [
+1938,
+1939
+]
+},
+{
+"k": 11,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+2009,
+2011
+],
+"alt_span": [
+1998,
+1999
+]
+},
+{
+"k": 12,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+2065,
+2067
+],
+"alt_span": [
+2053,
+2054
+]
+},
+{
+"k": 13,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+2124,
+2126
+],
+"alt_span": [
+2111,
+2112
+]
+},
+{
+"k": 14,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+2189,
+2191
+],
+"alt_span": [
+2175,
+2176
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 0.955,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"alt_rule": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+133,
+135
+],
+"alt_span": [
+133,
+134
+]
+},
+{
+"k": 1,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+148,
+149
+],
+"alt_span": [
+147,
+148
+]
+},
+{
+"k": 2,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+413,
+415
+],
+"alt_span": [
+412,
+413
+]
+},
+{
+"k": 3,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+476,
+477
+],
+"alt_span": [
+474,
+475
+]
+},
+{
+"k": 4,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+565,
+567
+],
+"alt_span": [
+563,
+564
+]
+},
+{
+"k": 5,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+622,
+623
+],
+"alt_span": [
+619,
+620
+]
+},
+{
+"k": 6,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+786,
+788
+],
+"alt_span": [
+783,
+784
+]
+},
+{
+"k": 7,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+869,
+870
+],
+"alt_span": [
+865,
+866
+]
+},
+{
+"k": 8,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+961,
+963
+],
+"alt_span": [
+957,
+958
+]
+},
+{
+"k": 9,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+1032,
+1033
+],
+"alt_span": [
+1027,
+1028
+]
+},
+{
+"k": 10,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1123,
+1125
+],
+"alt_span": [
+1118,
+1119
+]
+},
+{
+"k": 11,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+1227,
+1228
+],
+"alt_span": [
+1221,
+1222
+]
+},
+{
+"k": 12,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1390,
+1392
+],
+"alt_span": [
+1384,
+1385
+]
+},
+{
+"k": 13,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+1436,
+1437
+],
+"alt_span": [
+1429,
+1430
+]
+},
+{
+"k": 14,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1736,
+1738
+],
+"alt_span": [
+1729,
+1730
+]
+},
+{
+"k": 15,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+1769,
+1770
+],
+"alt_span": [
+1761,
+1762
+]
+},
+{
+"k": 16,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1798,
+1800
+],
+"alt_span": [
+1790,
+1791
+]
+},
+{
+"k": 17,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+1841,
+1842
+],
+"alt_span": [
+1832,
+1833
+]
+},
+{
+"k": 18,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1871,
+1873
+],
+"alt_span": [
+1862,
+1863
+]
+},
+{
+"k": 19,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+1914,
+1915
+],
+"alt_span": [
+1904,
+1905
+]
+},
+{
+"k": 20,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+1948,
+1950
+],
+"alt_span": [
+1938,
+1939
+]
+},
+{
+"k": 21,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+1975,
+1976
+],
+"alt_span": [
+1964,
+1965
+]
+},
+{
+"k": 22,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+2009,
+2011
+],
+"alt_span": [
+1998,
+1999
+]
+},
+{
+"k": 23,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+2029,
+2030
+],
+"alt_span": [
+2017,
+2018
+]
+},
+{
+"k": 24,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+2065,
+2067
+],
+"alt_span": [
+2053,
+2054
+]
+},
+{
+"k": 25,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+2087,
+2088
+],
+"alt_span": [
+2074,
+2075
+]
+},
+{
+"k": 26,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+2124,
+2126
+],
+"alt_span": [
+2111,
+2112
+]
+},
+{
+"k": 27,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+2152,
+2153
+],
+"alt_span": [
+2138,
+2139
+]
+},
+{
+"k": 28,
+"nat": "$(",
+"alt": "`",
+"nat_span": [
+2189,
+2191
+],
+"alt_span": [
+2175,
+2176
+]
+},
+{
+"k": 29,
+"nat": ")",
+"alt": "`",
+"nat_span": [
+2232,
+2233
+],
+"alt_span": [
+2217,
+2218
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "bash_subst__t001",
 "family": "bash_subst",
 "topic": "Count Lines in a File",
@@ -50326,7 +50941,7 @@
 ],
 "k_en": 9,
 "shared_fraction": 0.9,
-"pass": true,
+"pass": false,
 "verify": null,
 "alt_rule": true,
 "opps_all": [

@@ -1,5 +1,424 @@
 [
 {
+"doc_id": "py_type_hints__d004",
+"family": "py_type_hints",
+"topic": "Log File Anomaly Detector",
+"angle": "code",
+"text_es": "Build a server log analyzer with three sequential functions. `extract_ip_and_status(single_log_line_string, status_separator_character)` parses a line like '192.168.1.10 - 404' using the given separator and returns a tuple of the IP string and integer status code. `aggregate_error_counts(parsed_log_entries_list, target_error_codes_list)` takes a list of those tuples and returns a dictionary mapping IP addresses to a count of occurrences of the target codes (e.g., [404, 500]). `generate_ip_blocklist(raw_log_lines_list, status_separator_character, target_error_codes_list, maximum_allowed_errors)` orchestrates the parsing and aggregation, returning a sorted list of IPs that strictly exceed the allowed errors threshold. Test the pipeline with 5 sample log lines.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def extract_ip_and_status(\n    single_log_line_string: str,\n    status_separator_character: str,\n) -> tuple[str, int]:\n    \"\"\"Split a line such as '192.168.1.10 - 404' into its IP and status code.\"\"\"\n    if len(status_separator_character) != 1:\n        raise ValueError(\"the status separator must be a single character\")\n    fields = single_log_line_string.split(status_separator_character)\n    if len(fields) < 2:\n        raise ValueError(\"log line %r lacks the separator %r\" % (single_log_line_string, status_separator_character))\n    status_text = fields[-1].strip()\n    if not status_text.isdigit():\n        raise ValueError(\"status %r is not numeric\" % status_text)\n    return fields[0].strip(), int(status_text)\n\n\ndef aggregate_error_counts(\n    parsed_log_entries_list: list[tuple[str, int]],\n    target_error_codes_list: list[int],\n) -> dict[str, int]:\n    \"\"\"Count, per IP, how many of its entries carry one of the target status codes.\"\"\"\n    watched_codes = frozenset(target_error_codes_list)\n    error_counts = {}\n    for ip_address, status_code in parsed_log_entries_list:\n        error_counts[ip_address] = error_counts.get(ip_address, 0) + (1 if status_code in watched_codes else 0)\n    return error_counts\n\n\ndef generate_ip_blocklist(\n    raw_log_lines_list: list[str],\n    status_separator_character: str,\n    target_error_codes_list: list[int],\n    maximum_allowed_errors: int,\n) -> list[str]:\n    \"\"\"Parse every line, aggregate the errors and return the offending IPs, sorted.\"\"\"\n    if maximum_allowed_errors < 0:\n        raise ValueError(\"the error threshold cannot be negative\")\n    parsed_entries = [\n        extract_ip_and_status(line, status_separator_character)\n        for line in raw_log_lines_list\n        if line.strip()\n    ]\n    error_counts = aggregate_error_counts(parsed_entries, target_error_codes_list)\n    return sorted(\n        ip_address\n        for ip_address, count in error_counts.items()\n        if count > maximum_allowed_errors\n    )\n\n\ndef format_blocklist_report(\n    blocked_ip_addresses: list[str],\n    maximum_allowed_errors: int,\n) -> str:\n    \"\"\"Render a short human-readable summary of the blocklist.\"\"\"\n    headline = \"IPs with more than %d error(s): %d\" % (maximum_allowed_errors, len(blocked_ip_addresses))\n    if not blocked_ip_addresses:\n        return headline\n    body = \"\\n\".join(\"  - \" + ip_address for ip_address in blocked_ip_addresses)\n    return headline + \"\\n\" + body\n\n\ndef main() -> None:\n    sample_log_lines = [\n        \"192.168.1.10 - 404\",\n        \"192.168.1.10 - 500\",\n        \"10.0.0.7 - 200\",\n        \"192.168.1.10 - 404\",\n        \"10.0.0.7 - 500\",\n    ]\n    separator = \"-\"\n    watched_codes = [404, 500]\n    threshold = 1\n    counts = aggregate_error_counts(\n        [extract_ip_and_status(line, separator) for line in sample_log_lines],\n        watched_codes,\n    )\n    for ip_address in sorted(counts):\n        print(\"%-14s %d error(s)\" % (ip_address, counts[ip_address]))\n    blocklist = generate_ip_blocklist(sample_log_lines, separator, watched_codes, threshold)\n    print(format_blocklist_report(blocklist, threshold))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def extract_ip_and_status(\n    single_log_line_string,\n    status_separator_character,\n):\n    \"\"\"Split a line such as '192.168.1.10 - 404' into its IP and status code.\"\"\"\n    if len(status_separator_character) != 1:\n        raise ValueError(\"the status separator must be a single character\")\n    fields = single_log_line_string.split(status_separator_character)\n    if len(fields) < 2:\n        raise ValueError(\"log line %r lacks the separator %r\" % (single_log_line_string, status_separator_character))\n    status_text = fields[-1].strip()\n    if not status_text.isdigit():\n        raise ValueError(\"status %r is not numeric\" % status_text)\n    return fields[0].strip(), int(status_text)\n\n\ndef aggregate_error_counts(\n    parsed_log_entries_list,\n    target_error_codes_list,\n):\n    \"\"\"Count, per IP, how many of its entries carry one of the target status codes.\"\"\"\n    watched_codes = frozenset(target_error_codes_list)\n    error_counts = {}\n    for ip_address, status_code in parsed_log_entries_list:\n        error_counts[ip_address] = error_counts.get(ip_address, 0) + (1 if status_code in watched_codes else 0)\n    return error_counts\n\n\ndef generate_ip_blocklist(\n    raw_log_lines_list,\n    status_separator_character,\n    target_error_codes_list,\n    maximum_allowed_errors,\n):\n    \"\"\"Parse every line, aggregate the errors and return the offending IPs, sorted.\"\"\"\n    if maximum_allowed_errors < 0:\n        raise ValueError(\"the error threshold cannot be negative\")\n    parsed_entries = [\n        extract_ip_and_status(line, status_separator_character)\n        for line in raw_log_lines_list\n        if line.strip()\n    ]\n    error_counts = aggregate_error_counts(parsed_entries, target_error_codes_list)\n    return sorted(\n        ip_address\n        for ip_address, count in error_counts.items()\n        if count > maximum_allowed_errors\n    )\n\n\ndef format_blocklist_report(\n    blocked_ip_addresses,\n    maximum_allowed_errors,\n):\n    \"\"\"Render a short human-readable summary of the blocklist.\"\"\"\n    headline = \"IPs with more than %d error(s): %d\" % (maximum_allowed_errors, len(blocked_ip_addresses))\n    if not blocked_ip_addresses:\n        return headline\n    body = \"\\n\".join(\"  - \" + ip_address for ip_address in blocked_ip_addresses)\n    return headline + \"\\n\" + body\n\n\ndef main():\n    sample_log_lines = [\n        \"192.168.1.10 - 404\",\n        \"192.168.1.10 - 500\",\n        \"10.0.0.7 - 200\",\n        \"192.168.1.10 - 404\",\n        \"10.0.0.7 - 500\",\n    ]\n    separator = \"-\"\n    watched_codes = [404, 500]\n    threshold = 1\n    counts = aggregate_error_counts(\n        [extract_ip_and_status(line, separator) for line in sample_log_lines],\n        watched_codes,\n    )\n    for ip_address in sorted(counts):\n        print(\"%-14s %d error(s)\" % (ip_address, counts[ip_address]))\n    blocklist = generate_ip_blocklist(sample_log_lines, separator, watched_codes, threshold)\n    print(format_blocklist_report(blocklist, threshold))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+53,
+58
+],
+"alt_span": [
+53,
+53
+]
+},
+{
+"k": 1,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+90,
+95
+],
+"alt_span": [
+85,
+85
+]
+},
+{
+"k": 2,
+"nat": " -> tuple[str, int]",
+"alt": "",
+"nat_span": [
+98,
+117
+],
+"alt_span": [
+88,
+88
+]
+},
+{
+"k": 3,
+"nat": ": list[tuple[str, int]]",
+"alt": "",
+"nat_span": [
+775,
+798
+],
+"alt_span": [
+746,
+746
+]
+},
+{
+"k": 4,
+"nat": ": list[int]",
+"alt": "",
+"nat_span": [
+827,
+838
+],
+"alt_span": [
+775,
+775
+]
+},
+{
+"k": 5,
+"nat": " -> dict[str, int]",
+"alt": "",
+"nat_span": [
+841,
+859
+],
+"alt_span": [
+778,
+778
+]
+},
+{
+"k": 6,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+1272,
+1283
+],
+"alt_span": [
+1191,
+1191
+]
+},
+{
+"k": 7,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+1315,
+1320
+],
+"alt_span": [
+1223,
+1223
+]
+},
+{
+"k": 8,
+"nat": ": list[int]",
+"alt": "",
+"nat_span": [
+1349,
+1360
+],
+"alt_span": [
+1252,
+1252
+]
+},
+{
+"k": 9,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1388,
+1393
+],
+"alt_span": [
+1280,
+1280
+]
+},
+{
+"k": 10,
+"nat": " -> list[str]",
+"alt": "",
+"nat_span": [
+1396,
+1409
+],
+"alt_span": [
+1283,
+1283
+]
+},
+{
+"k": 11,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+2034,
+2045
+],
+"alt_span": [
+1908,
+1908
+]
+},
+{
+"k": 12,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+2073,
+2078
+],
+"alt_span": [
+1936,
+1936
+]
+},
+{
+"k": 13,
+"nat": " -> str",
+"alt": "",
+"nat_span": [
+2081,
+2088
+],
+"alt_span": [
+1939,
+1939
+]
+},
+{
+"k": 14,
+"nat": " -> None",
+"alt": "",
+"nat_span": [
+2446,
+2454
+],
+"alt_span": [
+2297,
+2297
+]
+}
+],
+"k_en": 15,
+"shared_fraction": 0.904,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+53,
+58
+],
+"alt_span": [
+53,
+53
+]
+},
+{
+"k": 1,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+90,
+95
+],
+"alt_span": [
+85,
+85
+]
+},
+{
+"k": 2,
+"nat": " -> tuple[str, int]",
+"alt": "",
+"nat_span": [
+98,
+117
+],
+"alt_span": [
+88,
+88
+]
+},
+{
+"k": 3,
+"nat": ": list[tuple[str, int]]",
+"alt": "",
+"nat_span": [
+775,
+798
+],
+"alt_span": [
+746,
+746
+]
+},
+{
+"k": 4,
+"nat": ": list[int]",
+"alt": "",
+"nat_span": [
+827,
+838
+],
+"alt_span": [
+775,
+775
+]
+},
+{
+"k": 5,
+"nat": " -> dict[str, int]",
+"alt": "",
+"nat_span": [
+841,
+859
+],
+"alt_span": [
+778,
+778
+]
+},
+{
+"k": 6,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+1272,
+1283
+],
+"alt_span": [
+1191,
+1191
+]
+},
+{
+"k": 7,
+"nat": ": str",
+"alt": "",
+"nat_span": [
+1315,
+1320
+],
+"alt_span": [
+1223,
+1223
+]
+},
+{
+"k": 8,
+"nat": ": list[int]",
+"alt": "",
+"nat_span": [
+1349,
+1360
+],
+"alt_span": [
+1252,
+1252
+]
+},
+{
+"k": 9,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+1388,
+1393
+],
+"alt_span": [
+1280,
+1280
+]
+},
+{
+"k": 10,
+"nat": " -> list[str]",
+"alt": "",
+"nat_span": [
+1396,
+1409
+],
+"alt_span": [
+1283,
+1283
+]
+},
+{
+"k": 11,
+"nat": ": list[str]",
+"alt": "",
+"nat_span": [
+2034,
+2045
+],
+"alt_span": [
+1908,
+1908
+]
+},
+{
+"k": 12,
+"nat": ": int",
+"alt": "",
+"nat_span": [
+2073,
+2078
+],
+"alt_span": [
+1936,
+1936
+]
+},
+{
+"k": 13,
+"nat": " -> str",
+"alt": "",
+"nat_span": [
+2081,
+2088
+],
+"alt_span": [
+1939,
+1939
+]
+},
+{
+"k": 14,
+"nat": " -> None",
+"alt": "",
+"nat_span": [
+2446,
+2454
+],
+"alt_span": [
+2297,
+2297
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "py_type_hints__t001",
 "family": "py_type_hints",
 "topic": "Reverse a String",
@@ -58941,7 +59360,7 @@
 ],
 "k_en": 15,
 "shared_fraction": 0.85,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {

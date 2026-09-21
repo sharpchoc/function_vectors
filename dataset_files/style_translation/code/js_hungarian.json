@@ -1,5 +1,6289 @@
 [
 {
+"doc_id": "js_hungarian__d029",
+"family": "js_hungarian",
+"topic": "Warehouse Restock Calculator",
+"angle": "code",
+"text_es": "Write a small module for warehouse restocking. Include a helper `getProjectedStock` taking current stock (number) and an array of pending deliveries (numbers), returning their combined sum. The main function `calculateRestock` accepts a product ID (string), deliveries array, current stock, reorder level (number), and a discontinued flag (boolean). If the discontinued flag is true, immediately return an object with `id`, `needsOrder` as false, and `amount` as 0. Otherwise, compute the projected stock via the helper. If the projected stock is less than the reorder level, the order amount should be the difference plus an extra 20% buffer (rounded up). If not, the amount is 0. Return an object with keys `id`, `needsOrder`, and `amount`. Provide a driver function `testRestock` testing `'A123', [50, 20], 100, 200, false`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function getProjectedStock(currentStock, pendingDeliveries) {\n  const deliveryTotal = pendingDeliveries.reduce((runningTotal, delivery) => runningTotal + delivery, 0);\n  return currentStock + deliveryTotal;\n}\n\nfunction calculateRestock(productId, pendingDeliveries, currentStock, reorderLevel, isDiscontinued) {\n  if (isDiscontinued) {\n    return { id: productId, needsOrder: false, amount: 0 };\n  }\n\n  const projectedStock = getProjectedStock(currentStock, pendingDeliveries);\n  const isBelowReorderLevel = projectedStock < reorderLevel;\n  let orderAmount = 0;\n\n  if (isBelowReorderLevel) {\n    const shortfall = reorderLevel - projectedStock;\n    const bufferFactor = 1.2;\n    orderAmount = Math.ceil(shortfall * bufferFactor);\n  }\n\n  return { id: productId, needsOrder: isBelowReorderLevel, amount: orderAmount };\n}\n\nfunction validateInputs(productId, pendingDeliveries, currentStock, reorderLevel) {\n  const problems = [];\n\n  if (typeof productId !== 'string' || productId.trim() === '') {\n    problems.push('product id must be a non-empty string');\n  }\n  const hasValidDeliveries = Array.isArray(pendingDeliveries)\n    && pendingDeliveries.every((delivery) => typeof delivery === 'number' && Number.isFinite(delivery));\n  if (!hasValidDeliveries) {\n    problems.push('deliveries must be an array of finite numbers');\n  }\n  if (typeof currentStock !== 'number' || currentStock < 0) {\n    problems.push('current stock must be a non-negative number');\n  }\n  if (typeof reorderLevel !== 'number' || reorderLevel < 0) {\n    problems.push('reorder level must be a non-negative number');\n  }\n\n  return problems;\n}\n\nfunction formatRestockReport(restockResult) {\n  const headline = `Product ${restockResult.id}`;\n  if (!restockResult.needsOrder) {\n    return `${headline}: no order required`;\n  }\n  const unitLabel = restockResult.amount === 1 ? 'unit' : 'units';\n  return `${headline}: order ${restockResult.amount} ${unitLabel}`;\n}\n\nfunction testRestock() {\n  const productId = 'A123';\n  const pendingDeliveries = [50, 20];\n  const currentStock = 100;\n  const reorderLevel = 200;\n  const isDiscontinued = false;\n\n  const problems = validateInputs(productId, pendingDeliveries, currentStock, reorderLevel);\n  if (problems.length > 0) {\n    throw new Error(`Invalid restock input: ${problems.join('; ')}`);\n  }\n\n  const restockResult = calculateRestock(productId, pendingDeliveries, currentStock, reorderLevel, isDiscontinued);\n  console.log(formatRestockReport(restockResult));\n  return restockResult;\n}\n\nmodule.exports = { getProjectedStock, calculateRestock, validateInputs, formatRestockReport, testRestock };\n\ntestRestock();\n",
+"text_alt": "function getProjectedStock(nCurrentStock, arrPendingDeliveries) {\n  const nDeliveryTotal = arrPendingDeliveries.reduce((nRunningTotal, nDelivery) => nRunningTotal + nDelivery, 0);\n  return nCurrentStock + nDeliveryTotal;\n}\n\nfunction calculateRestock(strProductId, arrPendingDeliveries, nCurrentStock, nReorderLevel, bIsDiscontinued) {\n  if (bIsDiscontinued) {\n    return { id: strProductId, needsOrder: false, amount: 0 };\n  }\n\n  const nProjectedStock = getProjectedStock(nCurrentStock, arrPendingDeliveries);\n  const bIsBelowReorderLevel = nProjectedStock < nReorderLevel;\n  let nOrderAmount = 0;\n\n  if (bIsBelowReorderLevel) {\n    const nShortfall = nReorderLevel - nProjectedStock;\n    const nBufferFactor = 1.2;\n    nOrderAmount = Math.ceil(nShortfall * nBufferFactor);\n  }\n\n  return { id: strProductId, needsOrder: bIsBelowReorderLevel, amount: nOrderAmount };\n}\n\nfunction validateInputs(strProductId, arrPendingDeliveries, nCurrentStock, nReorderLevel) {\n  const arrProblems = [];\n\n  if (typeof strProductId !== 'string' || strProductId.trim() === '') {\n    arrProblems.push('product id must be a non-empty string');\n  }\n  const bHasValidDeliveries = Array.isArray(arrPendingDeliveries)\n    && arrPendingDeliveries.every((nDelivery) => typeof nDelivery === 'number' && Number.isFinite(nDelivery));\n  if (!bHasValidDeliveries) {\n    arrProblems.push('deliveries must be an array of finite numbers');\n  }\n  if (typeof nCurrentStock !== 'number' || nCurrentStock < 0) {\n    arrProblems.push('current stock must be a non-negative number');\n  }\n  if (typeof nReorderLevel !== 'number' || nReorderLevel < 0) {\n    arrProblems.push('reorder level must be a non-negative number');\n  }\n\n  return arrProblems;\n}\n\nfunction formatRestockReport(objRestockResult) {\n  const strHeadline = `Product ${objRestockResult.id}`;\n  if (!objRestockResult.needsOrder) {\n    return `${strHeadline}: no order required`;\n  }\n  const strUnitLabel = objRestockResult.amount === 1 ? 'unit' : 'units';\n  return `${strHeadline}: order ${objRestockResult.amount} ${strUnitLabel}`;\n}\n\nfunction testRestock() {\n  const strProductId = 'A123';\n  const arrPendingDeliveries = [50, 20];\n  const nCurrentStock = 100;\n  const nReorderLevel = 200;\n  const bIsDiscontinued = false;\n\n  const arrProblems = validateInputs(strProductId, arrPendingDeliveries, nCurrentStock, nReorderLevel);\n  if (arrProblems.length > 0) {\n    throw new Error(`Invalid restock input: ${arrProblems.join('; ')}`);\n  }\n\n  const objRestockResult = calculateRestock(strProductId, arrPendingDeliveries, nCurrentStock, nReorderLevel, bIsDiscontinued);\n  console.log(formatRestockReport(objRestockResult));\n  return objRestockResult;\n}\n\nmodule.exports = { getProjectedStock, calculateRestock, validateInputs, formatRestockReport, testRestock };\n\ntestRestock();\n",
+"opps": [
+{
+"k": 0,
+"nat": "currentStock, pendingDeliveries",
+"alt": "nCurrentStock, arrPendingDeliveries",
+"nat_span": [
+27,
+58
+],
+"alt_span": [
+27,
+62
+]
+},
+{
+"k": 1,
+"nat": "deliveryTotal",
+"alt": "nDeliveryTotal",
+"nat_span": [
+70,
+83
+],
+"alt_span": [
+74,
+88
+]
+},
+{
+"k": 2,
+"nat": "runningTotal, delivery",
+"alt": "nRunningTotal, nDelivery",
+"nat_span": [
+112,
+134
+],
+"alt_span": [
+120,
+144
+]
+},
+{
+"k": 3,
+"nat": "projectedStock",
+"alt": "nProjectedStock",
+"nat_span": [
+409,
+423
+],
+"alt_span": [
+436,
+451
+]
+},
+{
+"k": 4,
+"nat": "isBelowReorderLevel",
+"alt": "bIsBelowReorderLevel",
+"nat_span": [
+486,
+505
+],
+"alt_span": [
+518,
+538
+]
+},
+{
+"k": 5,
+"nat": "orderAmount",
+"alt": "nOrderAmount",
+"nat_span": [
+545,
+556
+],
+"alt_span": [
+580,
+592
+]
+},
+{
+"k": 6,
+"nat": "shortfall",
+"alt": "nShortfall",
+"nat_span": [
+602,
+611
+],
+"alt_span": [
+639,
+649
+]
+},
+{
+"k": 7,
+"nat": "bufferFactor",
+"alt": "nBufferFactor",
+"nat_span": [
+655,
+667
+],
+"alt_span": [
+695,
+708
+]
+},
+{
+"k": 8,
+"nat": "problems",
+"alt": "arrProblems",
+"nat_span": [
+912,
+920
+],
+"alt_span": [
+969,
+980
+]
+},
+{
+"k": 9,
+"nat": "hasValidDeliveries",
+"alt": "bHasValidDeliveries",
+"nat_span": [
+1066,
+1084
+],
+"alt_span": [
+1135,
+1154
+]
+},
+{
+"k": 10,
+"nat": "restockResult",
+"alt": "objRestockResult",
+"nat_span": [
+1642,
+1655
+],
+"alt_span": [
+1738,
+1754
+]
+},
+{
+"k": 11,
+"nat": "headline",
+"alt": "strHeadline",
+"nat_span": [
+1667,
+1675
+],
+"alt_span": [
+1766,
+1777
+]
+},
+{
+"k": 12,
+"nat": "unitLabel",
+"alt": "strUnitLabel",
+"nat_span": [
+1801,
+1810
+],
+"alt_span": [
+1912,
+1924
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.893,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "currentStock, pendingDeliveries",
+"alt": "nCurrentStock, arrPendingDeliveries",
+"nat_span": [
+27,
+58
+],
+"alt_span": [
+27,
+62
+]
+},
+{
+"k": 1,
+"nat": "deliveryTotal",
+"alt": "nDeliveryTotal",
+"nat_span": [
+70,
+83
+],
+"alt_span": [
+74,
+88
+]
+},
+{
+"k": 2,
+"nat": "pendingDeliveries",
+"alt": "arrPendingDeliveries",
+"nat_span": [
+86,
+103
+],
+"alt_span": [
+91,
+111
+]
+},
+{
+"k": 3,
+"nat": "runningTotal, delivery",
+"alt": "nRunningTotal, nDelivery",
+"nat_span": [
+112,
+134
+],
+"alt_span": [
+120,
+144
+]
+},
+{
+"k": 4,
+"nat": "runningTotal",
+"alt": "nRunningTotal",
+"nat_span": [
+139,
+151
+],
+"alt_span": [
+149,
+162
+]
+},
+{
+"k": 5,
+"nat": "delivery",
+"alt": "nDelivery",
+"nat_span": [
+154,
+162
+],
+"alt_span": [
+165,
+174
+]
+},
+{
+"k": 6,
+"nat": "currentStock",
+"alt": "nCurrentStock",
+"nat_span": [
+177,
+189
+],
+"alt_span": [
+189,
+202
+]
+},
+{
+"k": 7,
+"nat": "deliveryTotal",
+"alt": "nDeliveryTotal",
+"nat_span": [
+192,
+205
+],
+"alt_span": [
+205,
+219
+]
+},
+{
+"k": 8,
+"nat": "productId, pendingDeliveries, currentStock, reorderLevel, isDiscontinued",
+"alt": "strProductId, arrPendingDeliveries, nCurrentStock, nReorderLevel, bIsDiscontinued",
+"nat_span": [
+236,
+308
+],
+"alt_span": [
+250,
+331
+]
+},
+{
+"k": 9,
+"nat": "isDiscontinued",
+"alt": "bIsDiscontinued",
+"nat_span": [
+318,
+332
+],
+"alt_span": [
+341,
+356
+]
+},
+{
+"k": 10,
+"nat": "productId",
+"alt": "strProductId",
+"nat_span": [
+353,
+362
+],
+"alt_span": [
+377,
+389
+]
+},
+{
+"k": 11,
+"nat": "projectedStock",
+"alt": "nProjectedStock",
+"nat_span": [
+409,
+423
+],
+"alt_span": [
+436,
+451
+]
+},
+{
+"k": 12,
+"nat": "currentStock, pendingDeliveries",
+"alt": "nCurrentStock, arrPendingDeliveries",
+"nat_span": [
+444,
+475
+],
+"alt_span": [
+472,
+507
+]
+},
+{
+"k": 13,
+"nat": "isBelowReorderLevel",
+"alt": "bIsBelowReorderLevel",
+"nat_span": [
+486,
+505
+],
+"alt_span": [
+518,
+538
+]
+},
+{
+"k": 14,
+"nat": "projectedStock",
+"alt": "nProjectedStock",
+"nat_span": [
+508,
+522
+],
+"alt_span": [
+541,
+556
+]
+},
+{
+"k": 15,
+"nat": "reorderLevel",
+"alt": "nReorderLevel",
+"nat_span": [
+525,
+537
+],
+"alt_span": [
+559,
+572
+]
+},
+{
+"k": 16,
+"nat": "orderAmount",
+"alt": "nOrderAmount",
+"nat_span": [
+545,
+556
+],
+"alt_span": [
+580,
+592
+]
+},
+{
+"k": 17,
+"nat": "isBelowReorderLevel",
+"alt": "bIsBelowReorderLevel",
+"nat_span": [
+569,
+588
+],
+"alt_span": [
+605,
+625
+]
+},
+{
+"k": 18,
+"nat": "shortfall",
+"alt": "nShortfall",
+"nat_span": [
+602,
+611
+],
+"alt_span": [
+639,
+649
+]
+},
+{
+"k": 19,
+"nat": "reorderLevel",
+"alt": "nReorderLevel",
+"nat_span": [
+614,
+626
+],
+"alt_span": [
+652,
+665
+]
+},
+{
+"k": 20,
+"nat": "projectedStock",
+"alt": "nProjectedStock",
+"nat_span": [
+629,
+643
+],
+"alt_span": [
+668,
+683
+]
+},
+{
+"k": 21,
+"nat": "bufferFactor",
+"alt": "nBufferFactor",
+"nat_span": [
+655,
+667
+],
+"alt_span": [
+695,
+708
+]
+},
+{
+"k": 22,
+"nat": "orderAmount",
+"alt": "nOrderAmount",
+"nat_span": [
+679,
+690
+],
+"alt_span": [
+720,
+732
+]
+},
+{
+"k": 23,
+"nat": "shortfall",
+"alt": "nShortfall",
+"nat_span": [
+703,
+712
+],
+"alt_span": [
+745,
+755
+]
+},
+{
+"k": 24,
+"nat": "bufferFactor",
+"alt": "nBufferFactor",
+"nat_span": [
+715,
+727
+],
+"alt_span": [
+758,
+771
+]
+},
+{
+"k": 25,
+"nat": "productId",
+"alt": "strProductId",
+"nat_span": [
+750,
+759
+],
+"alt_span": [
+794,
+806
+]
+},
+{
+"k": 26,
+"nat": "isBelowReorderLevel",
+"alt": "bIsBelowReorderLevel",
+"nat_span": [
+773,
+792
+],
+"alt_span": [
+820,
+840
+]
+},
+{
+"k": 27,
+"nat": "orderAmount",
+"alt": "nOrderAmount",
+"nat_span": [
+802,
+813
+],
+"alt_span": [
+850,
+862
+]
+},
+{
+"k": 28,
+"nat": "productId, pendingDeliveries, currentStock, reorderLevel",
+"alt": "strProductId, arrPendingDeliveries, nCurrentStock, nReorderLevel",
+"nat_span": [
+844,
+900
+],
+"alt_span": [
+893,
+957
+]
+},
+{
+"k": 29,
+"nat": "problems",
+"alt": "arrProblems",
+"nat_span": [
+912,
+920
+],
+"alt_span": [
+969,
+980
+]
+},
+{
+"k": 30,
+"nat": "productId",
+"alt": "strProductId",
+"nat_span": [
+941,
+950
+],
+"alt_span": [
+1001,
+1013
+]
+},
+{
+"k": 31,
+"nat": "productId",
+"alt": "strProductId",
+"nat_span": [
+967,
+976
+],
+"alt_span": [
+1030,
+1042
+]
+},
+{
+"k": 32,
+"nat": "problems",
+"alt": "arrProblems",
+"nat_span": [
+998,
+1006
+],
+"alt_span": [
+1064,
+1075
+]
+},
+{
+"k": 33,
+"nat": "hasValidDeliveries",
+"alt": "bHasValidDeliveries",
+"nat_span": [
+1066,
+1084
+],
+"alt_span": [
+1135,
+1154
+]
+},
+{
+"k": 34,
+"nat": "pendingDeliveries",
+"alt": "arrPendingDeliveries",
+"nat_span": [
+1101,
+1118
+],
+"alt_span": [
+1171,
+1191
+]
+},
+{
+"k": 35,
+"nat": "pendingDeliveries",
+"alt": "arrPendingDeliveries",
+"nat_span": [
+1127,
+1144
+],
+"alt_span": [
+1200,
+1220
+]
+},
+{
+"k": 36,
+"nat": "delivery",
+"alt": "nDelivery",
+"nat_span": [
+1152,
+1160
+],
+"alt_span": [
+1228,
+1237
+]
+},
+{
+"k": 37,
+"nat": "delivery",
+"alt": "nDelivery",
+"nat_span": [
+1172,
+1180
+],
+"alt_span": [
+1249,
+1258
+]
+},
+{
+"k": 38,
+"nat": "delivery",
+"alt": "nDelivery",
+"nat_span": [
+1213,
+1221
+],
+"alt_span": [
+1291,
+1300
+]
+},
+{
+"k": 39,
+"nat": "hasValidDeliveries",
+"alt": "bHasValidDeliveries",
+"nat_span": [
+1232,
+1250
+],
+"alt_span": [
+1311,
+1330
+]
+},
+{
+"k": 40,
+"nat": "problems",
+"alt": "arrProblems",
+"nat_span": [
+1258,
+1266
+],
+"alt_span": [
+1338,
+1349
+]
+},
+{
+"k": 41,
+"nat": "currentStock",
+"alt": "nCurrentStock",
+"nat_span": [
+1339,
+1351
+],
+"alt_span": [
+1422,
+1435
+]
+},
+{
+"k": 42,
+"nat": "currentStock",
+"alt": "nCurrentStock",
+"nat_span": [
+1368,
+1380
+],
+"alt_span": [
+1452,
+1465
+]
+},
+{
+"k": 43,
+"nat": "problems",
+"alt": "arrProblems",
+"nat_span": [
+1392,
+1400
+],
+"alt_span": [
+1477,
+1488
+]
+},
+{
+"k": 44,
+"nat": "reorderLevel",
+"alt": "nReorderLevel",
+"nat_span": [
+1471,
+1483
+],
+"alt_span": [
+1559,
+1572
+]
+},
+{
+"k": 45,
+"nat": "reorderLevel",
+"alt": "nReorderLevel",
+"nat_span": [
+1500,
+1512
+],
+"alt_span": [
+1589,
+1602
+]
+},
+{
+"k": 46,
+"nat": "problems",
+"alt": "arrProblems",
+"nat_span": [
+1524,
+1532
+],
+"alt_span": [
+1614,
+1625
+]
+},
+{
+"k": 47,
+"nat": "problems",
+"alt": "arrProblems",
+"nat_span": [
+1600,
+1608
+],
+"alt_span": [
+1693,
+1704
+]
+},
+{
+"k": 48,
+"nat": "restockResult",
+"alt": "objRestockResult",
+"nat_span": [
+1642,
+1655
+],
+"alt_span": [
+1738,
+1754
+]
+},
+{
+"k": 49,
+"nat": "headline",
+"alt": "strHeadline",
+"nat_span": [
+1667,
+1675
+],
+"alt_span": [
+1766,
+1777
+]
+},
+{
+"k": 50,
+"nat": "restockResult",
+"alt": "objRestockResult",
+"nat_span": [
+1689,
+1702
+],
+"alt_span": [
+1791,
+1807
+]
+},
+{
+"k": 51,
+"nat": "restockResult",
+"alt": "objRestockResult",
+"nat_span": [
+1716,
+1729
+],
+"alt_span": [
+1821,
+1837
+]
+},
+{
+"k": 52,
+"nat": "headline",
+"alt": "strHeadline",
+"nat_span": [
+1758,
+1766
+],
+"alt_span": [
+1866,
+1877
+]
+},
+{
+"k": 53,
+"nat": "unitLabel",
+"alt": "strUnitLabel",
+"nat_span": [
+1801,
+1810
+],
+"alt_span": [
+1912,
+1924
+]
+},
+{
+"k": 54,
+"nat": "restockResult",
+"alt": "objRestockResult",
+"nat_span": [
+1813,
+1826
+],
+"alt_span": [
+1927,
+1943
+]
+},
+{
+"k": 55,
+"nat": "headline",
+"alt": "strHeadline",
+"nat_span": [
+1872,
+1880
+],
+"alt_span": [
+1989,
+2000
+]
+},
+{
+"k": 56,
+"nat": "restockResult",
+"alt": "objRestockResult",
+"nat_span": [
+1891,
+1904
+],
+"alt_span": [
+2011,
+2027
+]
+},
+{
+"k": 57,
+"nat": "unitLabel",
+"alt": "strUnitLabel",
+"nat_span": [
+1915,
+1924
+],
+"alt_span": [
+2038,
+2050
+]
+},
+{
+"k": 58,
+"nat": "productId",
+"alt": "strProductId",
+"nat_span": [
+1964,
+1973
+],
+"alt_span": [
+2090,
+2102
+]
+},
+{
+"k": 59,
+"nat": "pendingDeliveries",
+"alt": "arrPendingDeliveries",
+"nat_span": [
+1992,
+2009
+],
+"alt_span": [
+2121,
+2141
+]
+},
+{
+"k": 60,
+"nat": "currentStock",
+"alt": "nCurrentStock",
+"nat_span": [
+2030,
+2042
+],
+"alt_span": [
+2162,
+2175
+]
+},
+{
+"k": 61,
+"nat": "reorderLevel",
+"alt": "nReorderLevel",
+"nat_span": [
+2058,
+2070
+],
+"alt_span": [
+2191,
+2204
+]
+},
+{
+"k": 62,
+"nat": "isDiscontinued",
+"alt": "bIsDiscontinued",
+"nat_span": [
+2086,
+2100
+],
+"alt_span": [
+2220,
+2235
+]
+},
+{
+"k": 63,
+"nat": "problems",
+"alt": "arrProblems",
+"nat_span": [
+2119,
+2127
+],
+"alt_span": [
+2254,
+2265
+]
+},
+{
+"k": 64,
+"nat": "productId, pendingDeliveries, currentStock, reorderLevel",
+"alt": "strProductId, arrPendingDeliveries, nCurrentStock, nReorderLevel",
+"nat_span": [
+2145,
+2201
+],
+"alt_span": [
+2283,
+2347
+]
+},
+{
+"k": 65,
+"nat": "problems",
+"alt": "arrProblems",
+"nat_span": [
+2210,
+2218
+],
+"alt_span": [
+2356,
+2367
+]
+},
+{
+"k": 66,
+"nat": "problems",
+"alt": "arrProblems",
+"nat_span": [
+2279,
+2287
+],
+"alt_span": [
+2428,
+2439
+]
+},
+{
+"k": 67,
+"nat": "restockResult",
+"alt": "objRestockResult",
+"nat_span": [
+2316,
+2329
+],
+"alt_span": [
+2468,
+2484
+]
+},
+{
+"k": 68,
+"nat": "productId, pendingDeliveries, currentStock, reorderLevel, isDiscontinued",
+"alt": "strProductId, arrPendingDeliveries, nCurrentStock, nReorderLevel, bIsDiscontinued",
+"nat_span": [
+2349,
+2421
+],
+"alt_span": [
+2504,
+2585
+]
+},
+{
+"k": 69,
+"nat": "restockResult",
+"alt": "objRestockResult",
+"nat_span": [
+2458,
+2471
+],
+"alt_span": [
+2622,
+2638
+]
+},
+{
+"k": 70,
+"nat": "restockResult",
+"alt": "objRestockResult",
+"nat_span": [
+2484,
+2497
+],
+"alt_span": [
+2651,
+2667
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "js_hungarian__d030",
+"family": "js_hungarian",
+"topic": "Subscription Tier Evaluator",
+"angle": "code",
+"text_es": "Write a small module for subscription evaluation. Include a helper `getAverageUsage` taking an array of monthly hours (numbers) and returning the average (return 0 if the array is empty). The main function `evaluateSubscription` takes a plan name (string), usage array, student flag (boolean), and base rate (number). Use the helper to get average usage. An upgrade is recommended if the average is greater than 100 and the plan name is 'basic'. Calculate the final rate by applying a 20% discount to the base rate if the student flag is true. Return an object with keys `plan`, `upgrade`, `rate`, and `review` (where review is true if the average usage is exactly 0). Provide a driver function `checkUser` testing `'basic', [110, 120, 95], true, 15`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function getAverageUsage(monthlyHours) {\n  if (!Array.isArray(monthlyHours) || monthlyHours.length === 0) {\n    return 0;\n  }\n  let hoursTotal = 0;\n  for (const monthValue of monthlyHours) {\n    hoursTotal += monthValue;\n  }\n  return hoursTotal / monthlyHours.length;\n}\n\nfunction evaluateSubscription(planName, usageHours, isStudent, baseRate) {\n  const averageUsage = getAverageUsage(usageHours);\n  const isBasicPlan = planName === 'basic';\n  const upgradeRecommended = averageUsage > 100 && isBasicPlan;\n\n  let finalRate = baseRate;\n  if (isStudent) {\n    const studentDiscount = 0.2;\n    finalRate = baseRate * (1 - studentDiscount);\n  }\n\n  const needsReview = averageUsage === 0;\n\n  return {\n    plan: planName,\n    upgrade: upgradeRecommended,\n    rate: finalRate,\n    review: needsReview\n  };\n}\n\nfunction formatResult(result, usageHours) {\n  const averageUsage = getAverageUsage(usageHours);\n  const rateLabel = result.rate.toFixed(2);\n  const averageLabel = averageUsage.toFixed(1);\n  const upgradeLabel = result.upgrade ? 'recommended' : 'not needed';\n  const reviewLabel = result.review ? ' (manual review required)' : '';\n\n  const lines = [\n    `Plan: ${result.plan}`,\n    `Average monthly usage: ${averageLabel} h`,\n    `Upgrade: ${upgradeLabel}`,\n    `Rate: ${rateLabel}${reviewLabel}`\n  ];\n  return lines.join('\\n');\n}\n\nfunction checkUser() {\n  const planName = 'basic';\n  const usageHours = [110, 120, 95];\n  const isStudent = true;\n  const baseRate = 15;\n\n  const result = evaluateSubscription(planName, usageHours, isStudent, baseRate);\n  const report = formatResult(result, usageHours);\n  console.log(report);\n  return result;\n}\n\nmodule.exports = {\n  getAverageUsage,\n  evaluateSubscription,\n  formatResult,\n  checkUser\n};\n\ncheckUser();\n",
+"text_alt": "function getAverageUsage(arrMonthlyHours) {\n  if (!Array.isArray(arrMonthlyHours) || arrMonthlyHours.length === 0) {\n    return 0;\n  }\n  let nHoursTotal = 0;\n  for (const nMonthValue of arrMonthlyHours) {\n    nHoursTotal += nMonthValue;\n  }\n  return nHoursTotal / arrMonthlyHours.length;\n}\n\nfunction evaluateSubscription(strPlanName, arrUsageHours, bIsStudent, nBaseRate) {\n  const nAverageUsage = getAverageUsage(arrUsageHours);\n  const bIsBasicPlan = strPlanName === 'basic';\n  const bUpgradeRecommended = nAverageUsage > 100 && bIsBasicPlan;\n\n  let nFinalRate = nBaseRate;\n  if (bIsStudent) {\n    const nStudentDiscount = 0.2;\n    nFinalRate = nBaseRate * (1 - nStudentDiscount);\n  }\n\n  const bNeedsReview = nAverageUsage === 0;\n\n  return {\n    plan: strPlanName,\n    upgrade: bUpgradeRecommended,\n    rate: nFinalRate,\n    review: bNeedsReview\n  };\n}\n\nfunction formatResult(objResult, arrUsageHours) {\n  const nAverageUsage = getAverageUsage(arrUsageHours);\n  const strRateLabel = objResult.rate.toFixed(2);\n  const strAverageLabel = nAverageUsage.toFixed(1);\n  const strUpgradeLabel = objResult.upgrade ? 'recommended' : 'not needed';\n  const strReviewLabel = objResult.review ? ' (manual review required)' : '';\n\n  const arrLines = [\n    `Plan: ${objResult.plan}`,\n    `Average monthly usage: ${strAverageLabel} h`,\n    `Upgrade: ${strUpgradeLabel}`,\n    `Rate: ${strRateLabel}${strReviewLabel}`\n  ];\n  return arrLines.join('\\n');\n}\n\nfunction checkUser() {\n  const strPlanName = 'basic';\n  const arrUsageHours = [110, 120, 95];\n  const bIsStudent = true;\n  const nBaseRate = 15;\n\n  const objResult = evaluateSubscription(strPlanName, arrUsageHours, bIsStudent, nBaseRate);\n  const strReport = formatResult(objResult, arrUsageHours);\n  console.log(strReport);\n  return objResult;\n}\n\nmodule.exports = {\n  getAverageUsage,\n  evaluateSubscription,\n  formatResult,\n  checkUser\n};\n\ncheckUser();\n",
+"opps": [
+{
+"k": 0,
+"nat": "monthlyHours",
+"alt": "arrMonthlyHours",
+"nat_span": [
+25,
+37
+],
+"alt_span": [
+25,
+40
+]
+},
+{
+"k": 1,
+"nat": "hoursTotal",
+"alt": "nHoursTotal",
+"nat_span": [
+132,
+142
+],
+"alt_span": [
+141,
+152
+]
+},
+{
+"k": 2,
+"nat": "monthValue",
+"alt": "nMonthValue",
+"nat_span": [
+161,
+171
+],
+"alt_span": [
+171,
+182
+]
+},
+{
+"k": 3,
+"nat": "planName, usageHours, isStudent, baseRate",
+"alt": "strPlanName, arrUsageHours, bIsStudent, nBaseRate",
+"nat_span": [
+301,
+342
+],
+"alt_span": [
+321,
+370
+]
+},
+{
+"k": 4,
+"nat": "averageUsage",
+"alt": "nAverageUsage",
+"nat_span": [
+354,
+366
+],
+"alt_span": [
+382,
+395
+]
+},
+{
+"k": 5,
+"nat": "isBasicPlan",
+"alt": "bIsBasicPlan",
+"nat_span": [
+406,
+417
+],
+"alt_span": [
+438,
+450
+]
+},
+{
+"k": 6,
+"nat": "upgradeRecommended",
+"alt": "bUpgradeRecommended",
+"nat_span": [
+450,
+468
+],
+"alt_span": [
+486,
+505
+]
+},
+{
+"k": 7,
+"nat": "finalRate",
+"alt": "nFinalRate",
+"nat_span": [
+513,
+522
+],
+"alt_span": [
+552,
+562
+]
+},
+{
+"k": 8,
+"nat": "studentDiscount",
+"alt": "nStudentDiscount",
+"nat_span": [
+564,
+579
+],
+"alt_span": [
+606,
+622
+]
+},
+{
+"k": 9,
+"nat": "needsReview",
+"alt": "bNeedsReview",
+"nat_span": [
+650,
+661
+],
+"alt_span": [
+696,
+708
+]
+},
+{
+"k": 10,
+"nat": "rateLabel",
+"alt": "strRateLabel",
+"nat_span": [
+906,
+915
+],
+"alt_span": [
+970,
+982
+]
+},
+{
+"k": 11,
+"nat": "averageLabel",
+"alt": "strAverageLabel",
+"nat_span": [
+950,
+962
+],
+"alt_span": [
+1020,
+1035
+]
+},
+{
+"k": 12,
+"nat": "upgradeLabel",
+"alt": "strUpgradeLabel",
+"nat_span": [
+998,
+1010
+],
+"alt_span": [
+1072,
+1087
+]
+},
+{
+"k": 13,
+"nat": "reviewLabel",
+"alt": "strReviewLabel",
+"nat_span": [
+1068,
+1079
+],
+"alt_span": [
+1148,
+1162
+]
+},
+{
+"k": 14,
+"nat": "lines",
+"alt": "arrLines",
+"nat_span": [
+1141,
+1146
+],
+"alt_span": [
+1227,
+1235
+]
+},
+{
+"k": 15,
+"nat": "report",
+"alt": "strReport",
+"nat_span": [
+1561,
+1567
+],
+"alt_span": [
+1687,
+1696
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.882,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "monthlyHours",
+"alt": "arrMonthlyHours",
+"nat_span": [
+25,
+37
+],
+"alt_span": [
+25,
+40
+]
+},
+{
+"k": 1,
+"nat": "monthlyHours",
+"alt": "arrMonthlyHours",
+"nat_span": [
+62,
+74
+],
+"alt_span": [
+65,
+80
+]
+},
+{
+"k": 2,
+"nat": "monthlyHours",
+"alt": "arrMonthlyHours",
+"nat_span": [
+79,
+91
+],
+"alt_span": [
+85,
+100
+]
+},
+{
+"k": 3,
+"nat": "hoursTotal",
+"alt": "nHoursTotal",
+"nat_span": [
+132,
+142
+],
+"alt_span": [
+141,
+152
+]
+},
+{
+"k": 4,
+"nat": "monthValue",
+"alt": "nMonthValue",
+"nat_span": [
+161,
+171
+],
+"alt_span": [
+171,
+182
+]
+},
+{
+"k": 5,
+"nat": "monthlyHours",
+"alt": "arrMonthlyHours",
+"nat_span": [
+175,
+187
+],
+"alt_span": [
+186,
+201
+]
+},
+{
+"k": 6,
+"nat": "hoursTotal",
+"alt": "nHoursTotal",
+"nat_span": [
+195,
+205
+],
+"alt_span": [
+209,
+220
+]
+},
+{
+"k": 7,
+"nat": "monthValue",
+"alt": "nMonthValue",
+"nat_span": [
+209,
+219
+],
+"alt_span": [
+224,
+235
+]
+},
+{
+"k": 8,
+"nat": "hoursTotal",
+"alt": "nHoursTotal",
+"nat_span": [
+234,
+244
+],
+"alt_span": [
+250,
+261
+]
+},
+{
+"k": 9,
+"nat": "monthlyHours",
+"alt": "arrMonthlyHours",
+"nat_span": [
+247,
+259
+],
+"alt_span": [
+264,
+279
+]
+},
+{
+"k": 10,
+"nat": "planName, usageHours, isStudent, baseRate",
+"alt": "strPlanName, arrUsageHours, bIsStudent, nBaseRate",
+"nat_span": [
+301,
+342
+],
+"alt_span": [
+321,
+370
+]
+},
+{
+"k": 11,
+"nat": "averageUsage",
+"alt": "nAverageUsage",
+"nat_span": [
+354,
+366
+],
+"alt_span": [
+382,
+395
+]
+},
+{
+"k": 12,
+"nat": "usageHours",
+"alt": "arrUsageHours",
+"nat_span": [
+385,
+395
+],
+"alt_span": [
+414,
+427
+]
+},
+{
+"k": 13,
+"nat": "isBasicPlan",
+"alt": "bIsBasicPlan",
+"nat_span": [
+406,
+417
+],
+"alt_span": [
+438,
+450
+]
+},
+{
+"k": 14,
+"nat": "planName",
+"alt": "strPlanName",
+"nat_span": [
+420,
+428
+],
+"alt_span": [
+453,
+464
+]
+},
+{
+"k": 15,
+"nat": "upgradeRecommended",
+"alt": "bUpgradeRecommended",
+"nat_span": [
+450,
+468
+],
+"alt_span": [
+486,
+505
+]
+},
+{
+"k": 16,
+"nat": "averageUsage",
+"alt": "nAverageUsage",
+"nat_span": [
+471,
+483
+],
+"alt_span": [
+508,
+521
+]
+},
+{
+"k": 17,
+"nat": "isBasicPlan",
+"alt": "bIsBasicPlan",
+"nat_span": [
+493,
+504
+],
+"alt_span": [
+531,
+543
+]
+},
+{
+"k": 18,
+"nat": "finalRate",
+"alt": "nFinalRate",
+"nat_span": [
+513,
+522
+],
+"alt_span": [
+552,
+562
+]
+},
+{
+"k": 19,
+"nat": "baseRate",
+"alt": "nBaseRate",
+"nat_span": [
+525,
+533
+],
+"alt_span": [
+565,
+574
+]
+},
+{
+"k": 20,
+"nat": "isStudent",
+"alt": "bIsStudent",
+"nat_span": [
+541,
+550
+],
+"alt_span": [
+582,
+592
+]
+},
+{
+"k": 21,
+"nat": "studentDiscount",
+"alt": "nStudentDiscount",
+"nat_span": [
+564,
+579
+],
+"alt_span": [
+606,
+622
+]
+},
+{
+"k": 22,
+"nat": "finalRate",
+"alt": "nFinalRate",
+"nat_span": [
+591,
+600
+],
+"alt_span": [
+634,
+644
+]
+},
+{
+"k": 23,
+"nat": "baseRate",
+"alt": "nBaseRate",
+"nat_span": [
+603,
+611
+],
+"alt_span": [
+647,
+656
+]
+},
+{
+"k": 24,
+"nat": "studentDiscount",
+"alt": "nStudentDiscount",
+"nat_span": [
+619,
+634
+],
+"alt_span": [
+664,
+680
+]
+},
+{
+"k": 25,
+"nat": "needsReview",
+"alt": "bNeedsReview",
+"nat_span": [
+650,
+661
+],
+"alt_span": [
+696,
+708
+]
+},
+{
+"k": 26,
+"nat": "averageUsage",
+"alt": "nAverageUsage",
+"nat_span": [
+664,
+676
+],
+"alt_span": [
+711,
+724
+]
+},
+{
+"k": 27,
+"nat": "planName",
+"alt": "strPlanName",
+"nat_span": [
+706,
+714
+],
+"alt_span": [
+754,
+765
+]
+},
+{
+"k": 28,
+"nat": "upgradeRecommended",
+"alt": "bUpgradeRecommended",
+"nat_span": [
+729,
+747
+],
+"alt_span": [
+780,
+799
+]
+},
+{
+"k": 29,
+"nat": "finalRate",
+"alt": "nFinalRate",
+"nat_span": [
+759,
+768
+],
+"alt_span": [
+811,
+821
+]
+},
+{
+"k": 30,
+"nat": "needsReview",
+"alt": "bNeedsReview",
+"nat_span": [
+782,
+793
+],
+"alt_span": [
+835,
+847
+]
+},
+{
+"k": 31,
+"nat": "result, usageHours",
+"alt": "objResult, arrUsageHours",
+"nat_span": [
+824,
+842
+],
+"alt_span": [
+878,
+902
+]
+},
+{
+"k": 32,
+"nat": "averageUsage",
+"alt": "nAverageUsage",
+"nat_span": [
+854,
+866
+],
+"alt_span": [
+914,
+927
+]
+},
+{
+"k": 33,
+"nat": "usageHours",
+"alt": "arrUsageHours",
+"nat_span": [
+885,
+895
+],
+"alt_span": [
+946,
+959
+]
+},
+{
+"k": 34,
+"nat": "rateLabel",
+"alt": "strRateLabel",
+"nat_span": [
+906,
+915
+],
+"alt_span": [
+970,
+982
+]
+},
+{
+"k": 35,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+918,
+924
+],
+"alt_span": [
+985,
+994
+]
+},
+{
+"k": 36,
+"nat": "averageLabel",
+"alt": "strAverageLabel",
+"nat_span": [
+950,
+962
+],
+"alt_span": [
+1020,
+1035
+]
+},
+{
+"k": 37,
+"nat": "averageUsage",
+"alt": "nAverageUsage",
+"nat_span": [
+965,
+977
+],
+"alt_span": [
+1038,
+1051
+]
+},
+{
+"k": 38,
+"nat": "upgradeLabel",
+"alt": "strUpgradeLabel",
+"nat_span": [
+998,
+1010
+],
+"alt_span": [
+1072,
+1087
+]
+},
+{
+"k": 39,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1013,
+1019
+],
+"alt_span": [
+1090,
+1099
+]
+},
+{
+"k": 40,
+"nat": "reviewLabel",
+"alt": "strReviewLabel",
+"nat_span": [
+1068,
+1079
+],
+"alt_span": [
+1148,
+1162
+]
+},
+{
+"k": 41,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1082,
+1088
+],
+"alt_span": [
+1165,
+1174
+]
+},
+{
+"k": 42,
+"nat": "lines",
+"alt": "arrLines",
+"nat_span": [
+1141,
+1146
+],
+"alt_span": [
+1227,
+1235
+]
+},
+{
+"k": 43,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1164,
+1170
+],
+"alt_span": [
+1253,
+1262
+]
+},
+{
+"k": 44,
+"nat": "averageLabel",
+"alt": "strAverageLabel",
+"nat_span": [
+1209,
+1221
+],
+"alt_span": [
+1301,
+1316
+]
+},
+{
+"k": 45,
+"nat": "upgradeLabel",
+"alt": "strUpgradeLabel",
+"nat_span": [
+1243,
+1255
+],
+"alt_span": [
+1338,
+1353
+]
+},
+{
+"k": 46,
+"nat": "rateLabel",
+"alt": "strRateLabel",
+"nat_span": [
+1272,
+1281
+],
+"alt_span": [
+1370,
+1382
+]
+},
+{
+"k": 47,
+"nat": "reviewLabel",
+"alt": "strReviewLabel",
+"nat_span": [
+1284,
+1295
+],
+"alt_span": [
+1385,
+1399
+]
+},
+{
+"k": 48,
+"nat": "lines",
+"alt": "arrLines",
+"nat_span": [
+1312,
+1317
+],
+"alt_span": [
+1416,
+1424
+]
+},
+{
+"k": 49,
+"nat": "planName",
+"alt": "strPlanName",
+"nat_span": [
+1364,
+1372
+],
+"alt_span": [
+1471,
+1482
+]
+},
+{
+"k": 50,
+"nat": "usageHours",
+"alt": "arrUsageHours",
+"nat_span": [
+1392,
+1402
+],
+"alt_span": [
+1502,
+1515
+]
+},
+{
+"k": 51,
+"nat": "isStudent",
+"alt": "bIsStudent",
+"nat_span": [
+1429,
+1438
+],
+"alt_span": [
+1542,
+1552
+]
+},
+{
+"k": 52,
+"nat": "baseRate",
+"alt": "nBaseRate",
+"nat_span": [
+1455,
+1463
+],
+"alt_span": [
+1569,
+1578
+]
+},
+{
+"k": 53,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1479,
+1485
+],
+"alt_span": [
+1594,
+1603
+]
+},
+{
+"k": 54,
+"nat": "planName, usageHours, isStudent, baseRate",
+"alt": "strPlanName, arrUsageHours, bIsStudent, nBaseRate",
+"nat_span": [
+1509,
+1550
+],
+"alt_span": [
+1627,
+1676
+]
+},
+{
+"k": 55,
+"nat": "report",
+"alt": "strReport",
+"nat_span": [
+1561,
+1567
+],
+"alt_span": [
+1687,
+1696
+]
+},
+{
+"k": 56,
+"nat": "result, usageHours",
+"alt": "objResult, arrUsageHours",
+"nat_span": [
+1583,
+1601
+],
+"alt_span": [
+1712,
+1736
+]
+},
+{
+"k": 57,
+"nat": "report",
+"alt": "strReport",
+"nat_span": [
+1618,
+1624
+],
+"alt_span": [
+1753,
+1762
+]
+},
+{
+"k": 58,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1636,
+1642
+],
+"alt_span": [
+1774,
+1783
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "js_hungarian__d033",
+"family": "js_hungarian",
+"topic": "Parking Garage Fee",
+"angle": "code",
+"text_es": "Write a small module for parking fees. Include a helper `calculateVehicleFee` taking parked hours (number), hourly rate (number), and vehicle type (string). It computes hours multiplied by the rate, and multiplies the result by 1.5 if the vehicle type is 'truck'. The main function `calculateFleetParking` accepts an array of parked hours (numbers), vehicle type, hourly rate, and a monthly pass flag (boolean). It sums the individual vehicle fees using the helper. If the pass flag is true, cap the total fee at 100. Check if any vehicle stayed longer than 24 hours to set a penalty flag. Return an object with keys `type`, `total`, and `penalty`. Provide a driver function `runParking` testing `[5, 12, 26], 'truck', 3, true`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "const TRUCK_MULTIPLIER = 1.5;\nconst PASS_CAP = 100;\nconst LONG_STAY_HOURS = 24;\n\nfunction calculateVehicleFee(parkedHours, hourlyRate, vehicleType) {\n  const baseFee = parkedHours * hourlyRate;\n  const isTruck = vehicleType === 'truck';\n  return isTruck ? baseFee * TRUCK_MULTIPLIER : baseFee;\n}\n\nfunction calculateFleetParking(parkedHoursList, vehicleType, hourlyRate, hasMonthlyPass) {\n  if (!Array.isArray(parkedHoursList)) {\n    throw new TypeError('parking hours must be supplied as an array');\n  }\n  if (typeof hourlyRate !== 'number' || Number.isNaN(hourlyRate) || hourlyRate < 0) {\n    throw new RangeError('the rate per hour must be a non-negative number');\n  }\n\n  let runningTotal = 0;\n  let hasPenalty = false;\n\n  for (const parkedHours of parkedHoursList) {\n    if (typeof parkedHours !== 'number' || Number.isNaN(parkedHours) || parkedHours < 0) {\n      throw new RangeError('each stay length must be a non-negative number');\n    }\n    runningTotal += calculateVehicleFee(parkedHours, hourlyRate, vehicleType);\n    if (parkedHours > LONG_STAY_HOURS) {\n      hasPenalty = true;\n    }\n  }\n\n  if (hasMonthlyPass && runningTotal > PASS_CAP) {\n    runningTotal = PASS_CAP;\n  }\n\n  return { type: vehicleType, total: runningTotal, penalty: hasPenalty };\n}\n\nfunction formatParkingReport(summary, parkedHoursList) {\n  const vehicleCount = parkedHoursList.length;\n  const totalHours = parkedHoursList.reduce(\n    (hoursSoFar, vehicleHours) => hoursSoFar + vehicleHours,\n    0\n  );\n  const amountDue = summary.total.toFixed(2);\n  const penaltyNote = summary.penalty ? 'penalty: yes' : 'penalty: no';\n  const headline = `${vehicleCount} ${summary.type}(s), ${totalHours}h parked`;\n  return `${headline} -> due ${amountDue} (${penaltyNote})`;\n}\n\nfunction runParking() {\n  const parkedHoursList = [5, 12, 26];\n  const vehicleType = 'truck';\n  const hourlyRate = 3;\n  const hasMonthlyPass = true;\n\n  const summary = calculateFleetParking(parkedHoursList, vehicleType, hourlyRate, hasMonthlyPass);\n  const reportLine = formatParkingReport(summary, parkedHoursList);\n  console.log(reportLine);\n  return summary;\n}\n\nmodule.exports = {\n  calculateVehicleFee,\n  calculateFleetParking,\n  formatParkingReport,\n  runParking\n};\n",
+"text_alt": "const TRUCK_MULTIPLIER = 1.5;\nconst PASS_CAP = 100;\nconst LONG_STAY_HOURS = 24;\n\nfunction calculateVehicleFee(nParkedHours, nHourlyRate, strVehicleType) {\n  const nBaseFee = nParkedHours * nHourlyRate;\n  const bIsTruck = strVehicleType === 'truck';\n  return bIsTruck ? nBaseFee * TRUCK_MULTIPLIER : nBaseFee;\n}\n\nfunction calculateFleetParking(arrParkedHoursList, strVehicleType, nHourlyRate, bHasMonthlyPass) {\n  if (!Array.isArray(arrParkedHoursList)) {\n    throw new TypeError('parking hours must be supplied as an array');\n  }\n  if (typeof nHourlyRate !== 'number' || Number.isNaN(nHourlyRate) || nHourlyRate < 0) {\n    throw new RangeError('the rate per hour must be a non-negative number');\n  }\n\n  let nRunningTotal = 0;\n  let bHasPenalty = false;\n\n  for (const nParkedHours of arrParkedHoursList) {\n    if (typeof nParkedHours !== 'number' || Number.isNaN(nParkedHours) || nParkedHours < 0) {\n      throw new RangeError('each stay length must be a non-negative number');\n    }\n    nRunningTotal += calculateVehicleFee(nParkedHours, nHourlyRate, strVehicleType);\n    if (nParkedHours > LONG_STAY_HOURS) {\n      bHasPenalty = true;\n    }\n  }\n\n  if (bHasMonthlyPass && nRunningTotal > PASS_CAP) {\n    nRunningTotal = PASS_CAP;\n  }\n\n  return { type: strVehicleType, total: nRunningTotal, penalty: bHasPenalty };\n}\n\nfunction formatParkingReport(objSummary, arrParkedHoursList) {\n  const nVehicleCount = arrParkedHoursList.length;\n  const nTotalHours = arrParkedHoursList.reduce(\n    (nHoursSoFar, nVehicleHours) => nHoursSoFar + nVehicleHours,\n    0\n  );\n  const strAmountDue = objSummary.total.toFixed(2);\n  const strPenaltyNote = objSummary.penalty ? 'penalty: yes' : 'penalty: no';\n  const strHeadline = `${nVehicleCount} ${objSummary.type}(s), ${nTotalHours}h parked`;\n  return `${strHeadline} -> due ${strAmountDue} (${strPenaltyNote})`;\n}\n\nfunction runParking() {\n  const arrParkedHoursList = [5, 12, 26];\n  const strVehicleType = 'truck';\n  const nHourlyRate = 3;\n  const bHasMonthlyPass = true;\n\n  const objSummary = calculateFleetParking(arrParkedHoursList, strVehicleType, nHourlyRate, bHasMonthlyPass);\n  const strReportLine = formatParkingReport(objSummary, arrParkedHoursList);\n  console.log(strReportLine);\n  return objSummary;\n}\n\nmodule.exports = {\n  calculateVehicleFee,\n  calculateFleetParking,\n  formatParkingReport,\n  runParking\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "parkedHours, hourlyRate, vehicleType",
+"alt": "nParkedHours, nHourlyRate, strVehicleType",
+"nat_span": [
+110,
+146
+],
+"alt_span": [
+110,
+151
+]
+},
+{
+"k": 1,
+"nat": "baseFee",
+"alt": "nBaseFee",
+"nat_span": [
+158,
+165
+],
+"alt_span": [
+163,
+171
+]
+},
+{
+"k": 2,
+"nat": "isTruck",
+"alt": "bIsTruck",
+"nat_span": [
+202,
+209
+],
+"alt_span": [
+210,
+218
+]
+},
+{
+"k": 3,
+"nat": "runningTotal",
+"alt": "nRunningTotal",
+"nat_span": [
+678,
+690
+],
+"alt_span": [
+707,
+720
+]
+},
+{
+"k": 4,
+"nat": "hasPenalty",
+"alt": "bHasPenalty",
+"nat_span": [
+702,
+712
+],
+"alt_span": [
+732,
+743
+]
+},
+{
+"k": 5,
+"nat": "vehicleCount",
+"alt": "nVehicleCount",
+"nat_span": [
+1328,
+1340
+],
+"alt_span": [
+1388,
+1401
+]
+},
+{
+"k": 6,
+"nat": "totalHours",
+"alt": "nTotalHours",
+"nat_span": [
+1375,
+1385
+],
+"alt_span": [
+1439,
+1450
+]
+},
+{
+"k": 7,
+"nat": "hoursSoFar, vehicleHours",
+"alt": "nHoursSoFar, nVehicleHours",
+"nat_span": [
+1417,
+1441
+],
+"alt_span": [
+1485,
+1511
+]
+},
+{
+"k": 8,
+"nat": "amountDue",
+"alt": "strAmountDue",
+"nat_span": [
+1492,
+1501
+],
+"alt_span": [
+1564,
+1576
+]
+},
+{
+"k": 9,
+"nat": "penaltyNote",
+"alt": "strPenaltyNote",
+"nat_span": [
+1538,
+1549
+],
+"alt_span": [
+1616,
+1630
+]
+},
+{
+"k": 10,
+"nat": "headline",
+"alt": "strHeadline",
+"nat_span": [
+1610,
+1618
+],
+"alt_span": [
+1694,
+1705
+]
+},
+{
+"k": 11,
+"nat": "reportLine",
+"alt": "strReportLine",
+"nat_span": [
+2003,
+2013
+],
+"alt_span": [
+2123,
+2136
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.896,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "parkedHours, hourlyRate, vehicleType",
+"alt": "nParkedHours, nHourlyRate, strVehicleType",
+"nat_span": [
+110,
+146
+],
+"alt_span": [
+110,
+151
+]
+},
+{
+"k": 1,
+"nat": "baseFee",
+"alt": "nBaseFee",
+"nat_span": [
+158,
+165
+],
+"alt_span": [
+163,
+171
+]
+},
+{
+"k": 2,
+"nat": "parkedHours",
+"alt": "nParkedHours",
+"nat_span": [
+168,
+179
+],
+"alt_span": [
+174,
+186
+]
+},
+{
+"k": 3,
+"nat": "hourlyRate",
+"alt": "nHourlyRate",
+"nat_span": [
+182,
+192
+],
+"alt_span": [
+189,
+200
+]
+},
+{
+"k": 4,
+"nat": "isTruck",
+"alt": "bIsTruck",
+"nat_span": [
+202,
+209
+],
+"alt_span": [
+210,
+218
+]
+},
+{
+"k": 5,
+"nat": "vehicleType",
+"alt": "strVehicleType",
+"nat_span": [
+212,
+223
+],
+"alt_span": [
+221,
+235
+]
+},
+{
+"k": 6,
+"nat": "isTruck",
+"alt": "bIsTruck",
+"nat_span": [
+246,
+253
+],
+"alt_span": [
+258,
+266
+]
+},
+{
+"k": 7,
+"nat": "baseFee",
+"alt": "nBaseFee",
+"nat_span": [
+256,
+263
+],
+"alt_span": [
+269,
+277
+]
+},
+{
+"k": 8,
+"nat": "baseFee",
+"alt": "nBaseFee",
+"nat_span": [
+285,
+292
+],
+"alt_span": [
+299,
+307
+]
+},
+{
+"k": 9,
+"nat": "parkedHoursList, vehicleType, hourlyRate, hasMonthlyPass",
+"alt": "arrParkedHoursList, strVehicleType, nHourlyRate, bHasMonthlyPass",
+"nat_span": [
+328,
+384
+],
+"alt_span": [
+343,
+407
+]
+},
+{
+"k": 10,
+"nat": "parkedHoursList",
+"alt": "arrParkedHoursList",
+"nat_span": [
+409,
+424
+],
+"alt_span": [
+432,
+450
+]
+},
+{
+"k": 11,
+"nat": "hourlyRate",
+"alt": "nHourlyRate",
+"nat_span": [
+517,
+527
+],
+"alt_span": [
+543,
+554
+]
+},
+{
+"k": 12,
+"nat": "hourlyRate",
+"alt": "nHourlyRate",
+"nat_span": [
+557,
+567
+],
+"alt_span": [
+584,
+595
+]
+},
+{
+"k": 13,
+"nat": "hourlyRate",
+"alt": "nHourlyRate",
+"nat_span": [
+572,
+582
+],
+"alt_span": [
+600,
+611
+]
+},
+{
+"k": 14,
+"nat": "runningTotal",
+"alt": "nRunningTotal",
+"nat_span": [
+678,
+690
+],
+"alt_span": [
+707,
+720
+]
+},
+{
+"k": 15,
+"nat": "hasPenalty",
+"alt": "bHasPenalty",
+"nat_span": [
+702,
+712
+],
+"alt_span": [
+732,
+743
+]
+},
+{
+"k": 16,
+"nat": "parkedHours",
+"alt": "nParkedHours",
+"nat_span": [
+736,
+747
+],
+"alt_span": [
+767,
+779
+]
+},
+{
+"k": 17,
+"nat": "parkedHoursList",
+"alt": "arrParkedHoursList",
+"nat_span": [
+751,
+766
+],
+"alt_span": [
+783,
+801
+]
+},
+{
+"k": 18,
+"nat": "parkedHours",
+"alt": "nParkedHours",
+"nat_span": [
+785,
+796
+],
+"alt_span": [
+820,
+832
+]
+},
+{
+"k": 19,
+"nat": "parkedHours",
+"alt": "nParkedHours",
+"nat_span": [
+826,
+837
+],
+"alt_span": [
+862,
+874
+]
+},
+{
+"k": 20,
+"nat": "parkedHours",
+"alt": "nParkedHours",
+"nat_span": [
+842,
+853
+],
+"alt_span": [
+879,
+891
+]
+},
+{
+"k": 21,
+"nat": "runningTotal",
+"alt": "nRunningTotal",
+"nat_span": [
+949,
+961
+],
+"alt_span": [
+987,
+1000
+]
+},
+{
+"k": 22,
+"nat": "parkedHours, hourlyRate, vehicleType",
+"alt": "nParkedHours, nHourlyRate, strVehicleType",
+"nat_span": [
+985,
+1021
+],
+"alt_span": [
+1024,
+1065
+]
+},
+{
+"k": 23,
+"nat": "parkedHours",
+"alt": "nParkedHours",
+"nat_span": [
+1032,
+1043
+],
+"alt_span": [
+1076,
+1088
+]
+},
+{
+"k": 24,
+"nat": "hasPenalty",
+"alt": "bHasPenalty",
+"nat_span": [
+1071,
+1081
+],
+"alt_span": [
+1116,
+1127
+]
+},
+{
+"k": 25,
+"nat": "hasMonthlyPass",
+"alt": "bHasMonthlyPass",
+"nat_span": [
+1107,
+1121
+],
+"alt_span": [
+1153,
+1168
+]
+},
+{
+"k": 26,
+"nat": "runningTotal",
+"alt": "nRunningTotal",
+"nat_span": [
+1125,
+1137
+],
+"alt_span": [
+1172,
+1185
+]
+},
+{
+"k": 27,
+"nat": "runningTotal",
+"alt": "nRunningTotal",
+"nat_span": [
+1156,
+1168
+],
+"alt_span": [
+1204,
+1217
+]
+},
+{
+"k": 28,
+"nat": "vehicleType",
+"alt": "strVehicleType",
+"nat_span": [
+1203,
+1214
+],
+"alt_span": [
+1252,
+1266
+]
+},
+{
+"k": 29,
+"nat": "runningTotal",
+"alt": "nRunningTotal",
+"nat_span": [
+1223,
+1235
+],
+"alt_span": [
+1275,
+1288
+]
+},
+{
+"k": 30,
+"nat": "hasPenalty",
+"alt": "bHasPenalty",
+"nat_span": [
+1246,
+1256
+],
+"alt_span": [
+1299,
+1310
+]
+},
+{
+"k": 31,
+"nat": "summary, parkedHoursList",
+"alt": "objSummary, arrParkedHoursList",
+"nat_span": [
+1292,
+1316
+],
+"alt_span": [
+1346,
+1376
+]
+},
+{
+"k": 32,
+"nat": "vehicleCount",
+"alt": "nVehicleCount",
+"nat_span": [
+1328,
+1340
+],
+"alt_span": [
+1388,
+1401
+]
+},
+{
+"k": 33,
+"nat": "parkedHoursList",
+"alt": "arrParkedHoursList",
+"nat_span": [
+1343,
+1358
+],
+"alt_span": [
+1404,
+1422
+]
+},
+{
+"k": 34,
+"nat": "totalHours",
+"alt": "nTotalHours",
+"nat_span": [
+1375,
+1385
+],
+"alt_span": [
+1439,
+1450
+]
+},
+{
+"k": 35,
+"nat": "parkedHoursList",
+"alt": "arrParkedHoursList",
+"nat_span": [
+1388,
+1403
+],
+"alt_span": [
+1453,
+1471
+]
+},
+{
+"k": 36,
+"nat": "hoursSoFar, vehicleHours",
+"alt": "nHoursSoFar, nVehicleHours",
+"nat_span": [
+1417,
+1441
+],
+"alt_span": [
+1485,
+1511
+]
+},
+{
+"k": 37,
+"nat": "hoursSoFar",
+"alt": "nHoursSoFar",
+"nat_span": [
+1446,
+1456
+],
+"alt_span": [
+1516,
+1527
+]
+},
+{
+"k": 38,
+"nat": "vehicleHours",
+"alt": "nVehicleHours",
+"nat_span": [
+1459,
+1471
+],
+"alt_span": [
+1530,
+1543
+]
+},
+{
+"k": 39,
+"nat": "amountDue",
+"alt": "strAmountDue",
+"nat_span": [
+1492,
+1501
+],
+"alt_span": [
+1564,
+1576
+]
+},
+{
+"k": 40,
+"nat": "summary",
+"alt": "objSummary",
+"nat_span": [
+1504,
+1511
+],
+"alt_span": [
+1579,
+1589
+]
+},
+{
+"k": 41,
+"nat": "penaltyNote",
+"alt": "strPenaltyNote",
+"nat_span": [
+1538,
+1549
+],
+"alt_span": [
+1616,
+1630
+]
+},
+{
+"k": 42,
+"nat": "summary",
+"alt": "objSummary",
+"nat_span": [
+1552,
+1559
+],
+"alt_span": [
+1633,
+1643
+]
+},
+{
+"k": 43,
+"nat": "headline",
+"alt": "strHeadline",
+"nat_span": [
+1610,
+1618
+],
+"alt_span": [
+1694,
+1705
+]
+},
+{
+"k": 44,
+"nat": "vehicleCount",
+"alt": "nVehicleCount",
+"nat_span": [
+1624,
+1636
+],
+"alt_span": [
+1711,
+1724
+]
+},
+{
+"k": 45,
+"nat": "summary",
+"alt": "objSummary",
+"nat_span": [
+1640,
+1647
+],
+"alt_span": [
+1728,
+1738
+]
+},
+{
+"k": 46,
+"nat": "totalHours",
+"alt": "nTotalHours",
+"nat_span": [
+1660,
+1670
+],
+"alt_span": [
+1751,
+1762
+]
+},
+{
+"k": 47,
+"nat": "headline",
+"alt": "strHeadline",
+"nat_span": [
+1694,
+1702
+],
+"alt_span": [
+1786,
+1797
+]
+},
+{
+"k": 48,
+"nat": "amountDue",
+"alt": "strAmountDue",
+"nat_span": [
+1713,
+1722
+],
+"alt_span": [
+1808,
+1820
+]
+},
+{
+"k": 49,
+"nat": "penaltyNote",
+"alt": "strPenaltyNote",
+"nat_span": [
+1727,
+1738
+],
+"alt_span": [
+1825,
+1839
+]
+},
+{
+"k": 50,
+"nat": "parkedHoursList",
+"alt": "arrParkedHoursList",
+"nat_span": [
+1778,
+1793
+],
+"alt_span": [
+1879,
+1897
+]
+},
+{
+"k": 51,
+"nat": "vehicleType",
+"alt": "strVehicleType",
+"nat_span": [
+1817,
+1828
+],
+"alt_span": [
+1921,
+1935
+]
+},
+{
+"k": 52,
+"nat": "hourlyRate",
+"alt": "nHourlyRate",
+"nat_span": [
+1848,
+1858
+],
+"alt_span": [
+1955,
+1966
+]
+},
+{
+"k": 53,
+"nat": "hasMonthlyPass",
+"alt": "bHasMonthlyPass",
+"nat_span": [
+1872,
+1886
+],
+"alt_span": [
+1980,
+1995
+]
+},
+{
+"k": 54,
+"nat": "summary",
+"alt": "objSummary",
+"nat_span": [
+1904,
+1911
+],
+"alt_span": [
+2013,
+2023
+]
+},
+{
+"k": 55,
+"nat": "parkedHoursList, vehicleType, hourlyRate, hasMonthlyPass",
+"alt": "arrParkedHoursList, strVehicleType, nHourlyRate, bHasMonthlyPass",
+"nat_span": [
+1936,
+1992
+],
+"alt_span": [
+2048,
+2112
+]
+},
+{
+"k": 56,
+"nat": "reportLine",
+"alt": "strReportLine",
+"nat_span": [
+2003,
+2013
+],
+"alt_span": [
+2123,
+2136
+]
+},
+{
+"k": 57,
+"nat": "summary, parkedHoursList",
+"alt": "objSummary, arrParkedHoursList",
+"nat_span": [
+2036,
+2060
+],
+"alt_span": [
+2159,
+2189
+]
+},
+{
+"k": 58,
+"nat": "reportLine",
+"alt": "strReportLine",
+"nat_span": [
+2077,
+2087
+],
+"alt_span": [
+2206,
+2219
+]
+},
+{
+"k": 59,
+"nat": "summary",
+"alt": "objSummary",
+"nat_span": [
+2099,
+2106
+],
+"alt_span": [
+2231,
+2241
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "js_hungarian__d038",
+"family": "js_hungarian",
+"topic": "Bandwidth Quota Manager",
+"angle": "code",
+"text_es": "Write a small module for bandwidth quotas. Include a helper `getEffectiveQuota` taking a user tier (string) and base quota (number), returning twice the base quota if the tier is 'premium', otherwise returning the base. The main function `manageBandwidth` accepts the user tier, an array of downloads in MB (numbers), rollover flag (boolean), and a monthly quota (number). Sum the downloads. If the rollover flag is true, subtract 500 from the sum (minimum 0). Compare this adjusted sum to the effective quota retrieved from the helper. Return an object with keys `tier`, `exceeded` (true if adjusted sum > effective quota), and `remaining` (effective quota minus adjusted sum, minimum 0). Provide a driver function `testBandwidth` testing `'premium', [200, 1500, 800], true, 2000`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function getEffectiveQuota(userTier, baseQuota) {\n  const isPremium = userTier === 'premium';\n  return isPremium ? baseQuota * 2 : baseQuota;\n}\n\nfunction sumDownloads(downloadList) {\n  let totalUsed = 0;\n  for (const chunkSize of downloadList) {\n    if (typeof chunkSize !== 'number' || !Number.isFinite(chunkSize)) {\n      throw new TypeError('each download must be a finite number of MB');\n    }\n    totalUsed += chunkSize;\n  }\n  return totalUsed;\n}\n\nfunction applyRollover(totalUsed, rolloverFlag) {\n  const rolloverCredit = 500;\n  if (!rolloverFlag) {\n    return totalUsed;\n  }\n  const adjustedSum = totalUsed - rolloverCredit;\n  return adjustedSum < 0 ? 0 : adjustedSum;\n}\n\nfunction manageBandwidth(userTier, downloadList, rolloverFlag, monthlyQuota) {\n  if (typeof userTier !== 'string' || userTier.length === 0) {\n    throw new TypeError('the user tier must be a non-empty string');\n  }\n  if (!Array.isArray(downloadList)) {\n    throw new TypeError('the download list must be an array of MB values');\n  }\n  if (typeof monthlyQuota !== 'number' || monthlyQuota < 0) {\n    throw new RangeError('the monthly quota must be a non-negative number');\n  }\n\n  const normalizedTier = userTier.trim().toLowerCase();\n  const totalUsed = sumDownloads(downloadList);\n  const adjustedSum = applyRollover(totalUsed, Boolean(rolloverFlag));\n  const effectiveQuota = getEffectiveQuota(normalizedTier, monthlyQuota);\n  const hasExceeded = adjustedSum > effectiveQuota;\n  const leftOver = effectiveQuota - adjustedSum;\n\n  return {\n    tier: normalizedTier,\n    exceeded: hasExceeded,\n    remaining: leftOver < 0 ? 0 : leftOver\n  };\n}\n\nfunction formatReport(usageResult) {\n  const statusLabel = usageResult.exceeded ? 'OVER QUOTA' : 'within quota';\n  const remainingText = `${usageResult.remaining.toFixed(1)} MB left`;\n  return `[${usageResult.tier}] ${statusLabel} - ${remainingText}`;\n}\n\nfunction testBandwidth() {\n  const sampleTier = 'premium';\n  const sampleDownloads = [200, 1500, 800];\n  const useRollover = true;\n  const baseMonthlyQuota = 2000;\n\n  const usageResult = manageBandwidth(sampleTier, sampleDownloads, useRollover, baseMonthlyQuota);\n  console.log(formatReport(usageResult));\n  return usageResult;\n}\n\nmodule.exports = { getEffectiveQuota, manageBandwidth, formatReport, testBandwidth };\n\nif (require.main === module) {\n  testBandwidth();\n}\n",
+"text_alt": "function getEffectiveQuota(strUserTier, nBaseQuota) {\n  const bIsPremium = strUserTier === 'premium';\n  return bIsPremium ? nBaseQuota * 2 : nBaseQuota;\n}\n\nfunction sumDownloads(arrDownloadList) {\n  let nTotalUsed = 0;\n  for (const nChunkSize of arrDownloadList) {\n    if (typeof nChunkSize !== 'number' || !Number.isFinite(nChunkSize)) {\n      throw new TypeError('each download must be a finite number of MB');\n    }\n    nTotalUsed += nChunkSize;\n  }\n  return nTotalUsed;\n}\n\nfunction applyRollover(nTotalUsed, bRolloverFlag) {\n  const nRolloverCredit = 500;\n  if (!bRolloverFlag) {\n    return nTotalUsed;\n  }\n  const nAdjustedSum = nTotalUsed - nRolloverCredit;\n  return nAdjustedSum < 0 ? 0 : nAdjustedSum;\n}\n\nfunction manageBandwidth(strUserTier, arrDownloadList, bRolloverFlag, nMonthlyQuota) {\n  if (typeof strUserTier !== 'string' || strUserTier.length === 0) {\n    throw new TypeError('the user tier must be a non-empty string');\n  }\n  if (!Array.isArray(arrDownloadList)) {\n    throw new TypeError('the download list must be an array of MB values');\n  }\n  if (typeof nMonthlyQuota !== 'number' || nMonthlyQuota < 0) {\n    throw new RangeError('the monthly quota must be a non-negative number');\n  }\n\n  const strNormalizedTier = strUserTier.trim().toLowerCase();\n  const nTotalUsed = sumDownloads(arrDownloadList);\n  const nAdjustedSum = applyRollover(nTotalUsed, Boolean(bRolloverFlag));\n  const nEffectiveQuota = getEffectiveQuota(strNormalizedTier, nMonthlyQuota);\n  const bHasExceeded = nAdjustedSum > nEffectiveQuota;\n  const nLeftOver = nEffectiveQuota - nAdjustedSum;\n\n  return {\n    tier: strNormalizedTier,\n    exceeded: bHasExceeded,\n    remaining: nLeftOver < 0 ? 0 : nLeftOver\n  };\n}\n\nfunction formatReport(objUsageResult) {\n  const strStatusLabel = objUsageResult.exceeded ? 'OVER QUOTA' : 'within quota';\n  const strRemainingText = `${objUsageResult.remaining.toFixed(1)} MB left`;\n  return `[${objUsageResult.tier}] ${strStatusLabel} - ${strRemainingText}`;\n}\n\nfunction testBandwidth() {\n  const strSampleTier = 'premium';\n  const arrSampleDownloads = [200, 1500, 800];\n  const bUseRollover = true;\n  const nBaseMonthlyQuota = 2000;\n\n  const objUsageResult = manageBandwidth(strSampleTier, arrSampleDownloads, bUseRollover, nBaseMonthlyQuota);\n  console.log(formatReport(objUsageResult));\n  return objUsageResult;\n}\n\nmodule.exports = { getEffectiveQuota, manageBandwidth, formatReport, testBandwidth };\n\nif (require.main === module) {\n  testBandwidth();\n}\n",
+"opps": [
+{
+"k": 0,
+"nat": "userTier, baseQuota",
+"alt": "strUserTier, nBaseQuota",
+"nat_span": [
+27,
+46
+],
+"alt_span": [
+27,
+50
+]
+},
+{
+"k": 1,
+"nat": "isPremium",
+"alt": "bIsPremium",
+"nat_span": [
+58,
+67
+],
+"alt_span": [
+62,
+72
+]
+},
+{
+"k": 2,
+"nat": "downloadList",
+"alt": "arrDownloadList",
+"nat_span": [
+167,
+179
+],
+"alt_span": [
+178,
+193
+]
+},
+{
+"k": 3,
+"nat": "totalUsed",
+"alt": "nTotalUsed",
+"nat_span": [
+189,
+198
+],
+"alt_span": [
+203,
+213
+]
+},
+{
+"k": 4,
+"nat": "chunkSize",
+"alt": "nChunkSize",
+"nat_span": [
+217,
+226
+],
+"alt_span": [
+232,
+242
+]
+},
+{
+"k": 5,
+"nat": "rolloverCredit",
+"alt": "nRolloverCredit",
+"nat_span": [
+511,
+525
+],
+"alt_span": [
+537,
+552
+]
+},
+{
+"k": 6,
+"nat": "adjustedSum",
+"alt": "nAdjustedSum",
+"nat_span": [
+590,
+601
+],
+"alt_span": [
+619,
+631
+]
+},
+{
+"k": 7,
+"nat": "normalizedTier",
+"alt": "strNormalizedTier",
+"nat_span": [
+1164,
+1178
+],
+"alt_span": [
+1217,
+1234
+]
+},
+{
+"k": 8,
+"nat": "effectiveQuota",
+"alt": "nEffectiveQuota",
+"nat_span": [
+1339,
+1353
+],
+"alt_span": [
+1405,
+1420
+]
+},
+{
+"k": 9,
+"nat": "hasExceeded",
+"alt": "bHasExceeded",
+"nat_span": [
+1413,
+1424
+],
+"alt_span": [
+1484,
+1496
+]
+},
+{
+"k": 10,
+"nat": "leftOver",
+"alt": "nLeftOver",
+"nat_span": [
+1465,
+1473
+],
+"alt_span": [
+1539,
+1548
+]
+},
+{
+"k": 11,
+"nat": "usageResult",
+"alt": "objUsageResult",
+"nat_span": [
+1644,
+1655
+],
+"alt_span": [
+1727,
+1741
+]
+},
+{
+"k": 12,
+"nat": "statusLabel",
+"alt": "strStatusLabel",
+"nat_span": [
+1667,
+1678
+],
+"alt_span": [
+1753,
+1767
+]
+},
+{
+"k": 13,
+"nat": "remainingText",
+"alt": "strRemainingText",
+"nat_span": [
+1743,
+1756
+],
+"alt_span": [
+1835,
+1851
+]
+},
+{
+"k": 14,
+"nat": "sampleTier",
+"alt": "strSampleTier",
+"nat_span": [
+1912,
+1922
+],
+"alt_span": [
+2019,
+2032
+]
+},
+{
+"k": 15,
+"nat": "sampleDownloads",
+"alt": "arrSampleDownloads",
+"nat_span": [
+1944,
+1959
+],
+"alt_span": [
+2054,
+2072
+]
+},
+{
+"k": 16,
+"nat": "useRollover",
+"alt": "bUseRollover",
+"nat_span": [
+1988,
+1999
+],
+"alt_span": [
+2101,
+2113
+]
+},
+{
+"k": 17,
+"nat": "baseMonthlyQuota",
+"alt": "nBaseMonthlyQuota",
+"nat_span": [
+2016,
+2032
+],
+"alt_span": [
+2130,
+2147
+]
+}
+],
+"k_en": 18,
+"shared_fraction": 0.903,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "userTier, baseQuota",
+"alt": "strUserTier, nBaseQuota",
+"nat_span": [
+27,
+46
+],
+"alt_span": [
+27,
+50
+]
+},
+{
+"k": 1,
+"nat": "isPremium",
+"alt": "bIsPremium",
+"nat_span": [
+58,
+67
+],
+"alt_span": [
+62,
+72
+]
+},
+{
+"k": 2,
+"nat": "userTier",
+"alt": "strUserTier",
+"nat_span": [
+70,
+78
+],
+"alt_span": [
+75,
+86
+]
+},
+{
+"k": 3,
+"nat": "isPremium",
+"alt": "bIsPremium",
+"nat_span": [
+103,
+112
+],
+"alt_span": [
+111,
+121
+]
+},
+{
+"k": 4,
+"nat": "baseQuota",
+"alt": "nBaseQuota",
+"nat_span": [
+115,
+124
+],
+"alt_span": [
+124,
+134
+]
+},
+{
+"k": 5,
+"nat": "baseQuota",
+"alt": "nBaseQuota",
+"nat_span": [
+131,
+140
+],
+"alt_span": [
+141,
+151
+]
+},
+{
+"k": 6,
+"nat": "downloadList",
+"alt": "arrDownloadList",
+"nat_span": [
+167,
+179
+],
+"alt_span": [
+178,
+193
+]
+},
+{
+"k": 7,
+"nat": "totalUsed",
+"alt": "nTotalUsed",
+"nat_span": [
+189,
+198
+],
+"alt_span": [
+203,
+213
+]
+},
+{
+"k": 8,
+"nat": "chunkSize",
+"alt": "nChunkSize",
+"nat_span": [
+217,
+226
+],
+"alt_span": [
+232,
+242
+]
+},
+{
+"k": 9,
+"nat": "downloadList",
+"alt": "arrDownloadList",
+"nat_span": [
+230,
+242
+],
+"alt_span": [
+246,
+261
+]
+},
+{
+"k": 10,
+"nat": "chunkSize",
+"alt": "nChunkSize",
+"nat_span": [
+261,
+270
+],
+"alt_span": [
+280,
+290
+]
+},
+{
+"k": 11,
+"nat": "chunkSize",
+"alt": "nChunkSize",
+"nat_span": [
+304,
+313
+],
+"alt_span": [
+324,
+334
+]
+},
+{
+"k": 12,
+"nat": "totalUsed",
+"alt": "nTotalUsed",
+"nat_span": [
+402,
+411
+],
+"alt_span": [
+423,
+433
+]
+},
+{
+"k": 13,
+"nat": "chunkSize",
+"alt": "nChunkSize",
+"nat_span": [
+415,
+424
+],
+"alt_span": [
+437,
+447
+]
+},
+{
+"k": 14,
+"nat": "totalUsed",
+"alt": "nTotalUsed",
+"nat_span": [
+439,
+448
+],
+"alt_span": [
+462,
+472
+]
+},
+{
+"k": 15,
+"nat": "totalUsed, rolloverFlag",
+"alt": "nTotalUsed, bRolloverFlag",
+"nat_span": [
+476,
+499
+],
+"alt_span": [
+500,
+525
+]
+},
+{
+"k": 16,
+"nat": "rolloverCredit",
+"alt": "nRolloverCredit",
+"nat_span": [
+511,
+525
+],
+"alt_span": [
+537,
+552
+]
+},
+{
+"k": 17,
+"nat": "rolloverFlag",
+"alt": "bRolloverFlag",
+"nat_span": [
+540,
+552
+],
+"alt_span": [
+567,
+580
+]
+},
+{
+"k": 18,
+"nat": "totalUsed",
+"alt": "nTotalUsed",
+"nat_span": [
+567,
+576
+],
+"alt_span": [
+595,
+605
+]
+},
+{
+"k": 19,
+"nat": "adjustedSum",
+"alt": "nAdjustedSum",
+"nat_span": [
+590,
+601
+],
+"alt_span": [
+619,
+631
+]
+},
+{
+"k": 20,
+"nat": "totalUsed",
+"alt": "nTotalUsed",
+"nat_span": [
+604,
+613
+],
+"alt_span": [
+634,
+644
+]
+},
+{
+"k": 21,
+"nat": "rolloverCredit",
+"alt": "nRolloverCredit",
+"nat_span": [
+616,
+630
+],
+"alt_span": [
+647,
+662
+]
+},
+{
+"k": 22,
+"nat": "adjustedSum",
+"alt": "nAdjustedSum",
+"nat_span": [
+641,
+652
+],
+"alt_span": [
+673,
+685
+]
+},
+{
+"k": 23,
+"nat": "adjustedSum",
+"alt": "nAdjustedSum",
+"nat_span": [
+663,
+674
+],
+"alt_span": [
+696,
+708
+]
+},
+{
+"k": 24,
+"nat": "userTier, downloadList, rolloverFlag, monthlyQuota",
+"alt": "strUserTier, arrDownloadList, bRolloverFlag, nMonthlyQuota",
+"nat_span": [
+704,
+754
+],
+"alt_span": [
+738,
+796
+]
+},
+{
+"k": 25,
+"nat": "userTier",
+"alt": "strUserTier",
+"nat_span": [
+771,
+779
+],
+"alt_span": [
+813,
+824
+]
+},
+{
+"k": 26,
+"nat": "userTier",
+"alt": "strUserTier",
+"nat_span": [
+796,
+804
+],
+"alt_span": [
+841,
+852
+]
+},
+{
+"k": 27,
+"nat": "downloadList",
+"alt": "arrDownloadList",
+"nat_span": [
+915,
+927
+],
+"alt_span": [
+963,
+978
+]
+},
+{
+"k": 28,
+"nat": "monthlyQuota",
+"alt": "nMonthlyQuota",
+"nat_span": [
+1025,
+1037
+],
+"alt_span": [
+1076,
+1089
+]
+},
+{
+"k": 29,
+"nat": "monthlyQuota",
+"alt": "nMonthlyQuota",
+"nat_span": [
+1054,
+1066
+],
+"alt_span": [
+1106,
+1119
+]
+},
+{
+"k": 30,
+"nat": "normalizedTier",
+"alt": "strNormalizedTier",
+"nat_span": [
+1164,
+1178
+],
+"alt_span": [
+1217,
+1234
+]
+},
+{
+"k": 31,
+"nat": "userTier",
+"alt": "strUserTier",
+"nat_span": [
+1181,
+1189
+],
+"alt_span": [
+1237,
+1248
+]
+},
+{
+"k": 32,
+"nat": "totalUsed",
+"alt": "nTotalUsed",
+"nat_span": [
+1220,
+1229
+],
+"alt_span": [
+1279,
+1289
+]
+},
+{
+"k": 33,
+"nat": "downloadList",
+"alt": "arrDownloadList",
+"nat_span": [
+1245,
+1257
+],
+"alt_span": [
+1305,
+1320
+]
+},
+{
+"k": 34,
+"nat": "adjustedSum",
+"alt": "nAdjustedSum",
+"nat_span": [
+1268,
+1279
+],
+"alt_span": [
+1331,
+1343
+]
+},
+{
+"k": 35,
+"nat": "totalUsed",
+"alt": "nTotalUsed",
+"nat_span": [
+1296,
+1305
+],
+"alt_span": [
+1360,
+1370
+]
+},
+{
+"k": 36,
+"nat": "rolloverFlag",
+"alt": "bRolloverFlag",
+"nat_span": [
+1315,
+1327
+],
+"alt_span": [
+1380,
+1393
+]
+},
+{
+"k": 37,
+"nat": "effectiveQuota",
+"alt": "nEffectiveQuota",
+"nat_span": [
+1339,
+1353
+],
+"alt_span": [
+1405,
+1420
+]
+},
+{
+"k": 38,
+"nat": "normalizedTier, monthlyQuota",
+"alt": "strNormalizedTier, nMonthlyQuota",
+"nat_span": [
+1374,
+1402
+],
+"alt_span": [
+1441,
+1473
+]
+},
+{
+"k": 39,
+"nat": "hasExceeded",
+"alt": "bHasExceeded",
+"nat_span": [
+1413,
+1424
+],
+"alt_span": [
+1484,
+1496
+]
+},
+{
+"k": 40,
+"nat": "adjustedSum",
+"alt": "nAdjustedSum",
+"nat_span": [
+1427,
+1438
+],
+"alt_span": [
+1499,
+1511
+]
+},
+{
+"k": 41,
+"nat": "effectiveQuota",
+"alt": "nEffectiveQuota",
+"nat_span": [
+1441,
+1455
+],
+"alt_span": [
+1514,
+1529
+]
+},
+{
+"k": 42,
+"nat": "leftOver",
+"alt": "nLeftOver",
+"nat_span": [
+1465,
+1473
+],
+"alt_span": [
+1539,
+1548
+]
+},
+{
+"k": 43,
+"nat": "effectiveQuota",
+"alt": "nEffectiveQuota",
+"nat_span": [
+1476,
+1490
+],
+"alt_span": [
+1551,
+1566
+]
+},
+{
+"k": 44,
+"nat": "adjustedSum",
+"alt": "nAdjustedSum",
+"nat_span": [
+1493,
+1504
+],
+"alt_span": [
+1569,
+1581
+]
+},
+{
+"k": 45,
+"nat": "normalizedTier",
+"alt": "strNormalizedTier",
+"nat_span": [
+1528,
+1542
+],
+"alt_span": [
+1605,
+1622
+]
+},
+{
+"k": 46,
+"nat": "hasExceeded",
+"alt": "bHasExceeded",
+"nat_span": [
+1558,
+1569
+],
+"alt_span": [
+1638,
+1650
+]
+},
+{
+"k": 47,
+"nat": "leftOver",
+"alt": "nLeftOver",
+"nat_span": [
+1586,
+1594
+],
+"alt_span": [
+1667,
+1676
+]
+},
+{
+"k": 48,
+"nat": "leftOver",
+"alt": "nLeftOver",
+"nat_span": [
+1605,
+1613
+],
+"alt_span": [
+1687,
+1696
+]
+},
+{
+"k": 49,
+"nat": "usageResult",
+"alt": "objUsageResult",
+"nat_span": [
+1644,
+1655
+],
+"alt_span": [
+1727,
+1741
+]
+},
+{
+"k": 50,
+"nat": "statusLabel",
+"alt": "strStatusLabel",
+"nat_span": [
+1667,
+1678
+],
+"alt_span": [
+1753,
+1767
+]
+},
+{
+"k": 51,
+"nat": "usageResult",
+"alt": "objUsageResult",
+"nat_span": [
+1681,
+1692
+],
+"alt_span": [
+1770,
+1784
+]
+},
+{
+"k": 52,
+"nat": "remainingText",
+"alt": "strRemainingText",
+"nat_span": [
+1743,
+1756
+],
+"alt_span": [
+1835,
+1851
+]
+},
+{
+"k": 53,
+"nat": "usageResult",
+"alt": "objUsageResult",
+"nat_span": [
+1762,
+1773
+],
+"alt_span": [
+1857,
+1871
+]
+},
+{
+"k": 54,
+"nat": "usageResult",
+"alt": "objUsageResult",
+"nat_span": [
+1819,
+1830
+],
+"alt_span": [
+1917,
+1931
+]
+},
+{
+"k": 55,
+"nat": "statusLabel",
+"alt": "strStatusLabel",
+"nat_span": [
+1840,
+1851
+],
+"alt_span": [
+1941,
+1955
+]
+},
+{
+"k": 56,
+"nat": "remainingText",
+"alt": "strRemainingText",
+"nat_span": [
+1857,
+1870
+],
+"alt_span": [
+1961,
+1977
+]
+},
+{
+"k": 57,
+"nat": "sampleTier",
+"alt": "strSampleTier",
+"nat_span": [
+1912,
+1922
+],
+"alt_span": [
+2019,
+2032
+]
+},
+{
+"k": 58,
+"nat": "sampleDownloads",
+"alt": "arrSampleDownloads",
+"nat_span": [
+1944,
+1959
+],
+"alt_span": [
+2054,
+2072
+]
+},
+{
+"k": 59,
+"nat": "useRollover",
+"alt": "bUseRollover",
+"nat_span": [
+1988,
+1999
+],
+"alt_span": [
+2101,
+2113
+]
+},
+{
+"k": 60,
+"nat": "baseMonthlyQuota",
+"alt": "nBaseMonthlyQuota",
+"nat_span": [
+2016,
+2032
+],
+"alt_span": [
+2130,
+2147
+]
+},
+{
+"k": 61,
+"nat": "usageResult",
+"alt": "objUsageResult",
+"nat_span": [
+2050,
+2061
+],
+"alt_span": [
+2165,
+2179
+]
+},
+{
+"k": 62,
+"nat": "sampleTier, sampleDownloads, useRollover, baseMonthlyQuota",
+"alt": "strSampleTier, arrSampleDownloads, bUseRollover, nBaseMonthlyQuota",
+"nat_span": [
+2080,
+2138
+],
+"alt_span": [
+2198,
+2264
+]
+},
+{
+"k": 63,
+"nat": "usageResult",
+"alt": "objUsageResult",
+"nat_span": [
+2168,
+2179
+],
+"alt_span": [
+2294,
+2308
+]
+},
+{
+"k": 64,
+"nat": "usageResult",
+"alt": "objUsageResult",
+"nat_span": [
+2192,
+2203
+],
+"alt_span": [
+2321,
+2335
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "js_hungarian__d039",
+"family": "js_hungarian",
+"topic": "Flight Luggage Checker",
+"angle": "code",
+"text_es": "Write a small module for luggage fees. Include a helper `getAllowedWeight` taking a base max weight (number) and a frequent flyer flag (boolean), returning the base weight plus 10 if the flag is true, otherwise just the base weight. The main function `checkLuggage` accepts a ticket class (string), array of bag weights (numbers), frequent flyer flag, and a base weight. Using the helper, count how many bags exceed the allowed weight. Calculate fees: free bags are 1 for 'economy' and 2 for 'business'; extra bags cost 50 each. Overweight bags add an extra 30 each. Return an object with keys `class`, `valid` (true if no single bag exceeds 32), `fees`, and `overweight`. Provide a driver function `runLuggageCheck` passing `'economy', [25, 30, 15], true, 20`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function getAllowedWeight(baseWeight, isFrequentFlyer) {\n  const bonusWeight = isFrequentFlyer ? 10 : 0;\n  return baseWeight + bonusWeight;\n}\n\nfunction getFreeBagCount(ticketClass) {\n  const normalizedClass = String(ticketClass).trim().toLowerCase();\n  if (normalizedClass === 'business') {\n    return 2;\n  }\n  return 1;\n}\n\nfunction checkLuggage(ticketClass, bagWeights, isFrequentFlyer, baseWeight) {\n  const allowedWeight = getAllowedWeight(baseWeight, isFrequentFlyer);\n  const freeBagCount = getFreeBagCount(ticketClass);\n  const hardLimit = 32;\n\n  let overweightCount = 0;\n  let isValid = true;\n\n  for (const bagWeight of bagWeights) {\n    if (bagWeight > allowedWeight) {\n      overweightCount += 1;\n    }\n    if (bagWeight > hardLimit) {\n      isValid = false;\n    }\n  }\n\n  const extraBagCount = Math.max(0, bagWeights.length - freeBagCount);\n  const extraBagFee = extraBagCount * 50;\n  const overweightFee = overweightCount * 30;\n\n  return {\n    class: ticketClass,\n    valid: isValid,\n    fees: extraBagFee + overweightFee,\n    overweight: overweightCount\n  };\n}\n\nfunction formatLuggageReport(result, bagWeights) {\n  const bagList = bagWeights.map((bagWeight) => `${bagWeight}kg`).join(', ');\n  const statusText = result.valid ? 'accepted' : 'rejected (bag over 32kg)';\n  const reportLines = [\n    `Class: ${result.class}`,\n    `Bags: ${bagList || 'none'}`,\n    `Overweight bags: ${result.overweight}`,\n    `Fees: $${result.fees}`,\n    `Status: ${statusText}`\n  ];\n  return reportLines.join('\\n');\n}\n\nfunction runLuggageCheck() {\n  const ticketClass = 'economy';\n  const bagWeights = [25, 30, 15];\n  const isFrequentFlyer = true;\n  const baseWeight = 20;\n\n  const result = checkLuggage(ticketClass, bagWeights, isFrequentFlyer, baseWeight);\n  console.log(formatLuggageReport(result, bagWeights));\n  return result;\n}\n\nrunLuggageCheck();\n\nmodule.exports = {\n  getAllowedWeight,\n  getFreeBagCount,\n  checkLuggage,\n  formatLuggageReport,\n  runLuggageCheck\n};\n",
+"text_alt": "function getAllowedWeight(nBaseWeight, bIsFrequentFlyer) {\n  const nBonusWeight = bIsFrequentFlyer ? 10 : 0;\n  return nBaseWeight + nBonusWeight;\n}\n\nfunction getFreeBagCount(strTicketClass) {\n  const strNormalizedClass = String(strTicketClass).trim().toLowerCase();\n  if (strNormalizedClass === 'business') {\n    return 2;\n  }\n  return 1;\n}\n\nfunction checkLuggage(strTicketClass, arrBagWeights, bIsFrequentFlyer, nBaseWeight) {\n  const nAllowedWeight = getAllowedWeight(nBaseWeight, bIsFrequentFlyer);\n  const nFreeBagCount = getFreeBagCount(strTicketClass);\n  const nHardLimit = 32;\n\n  let nOverweightCount = 0;\n  let bIsValid = true;\n\n  for (const nBagWeight of arrBagWeights) {\n    if (nBagWeight > nAllowedWeight) {\n      nOverweightCount += 1;\n    }\n    if (nBagWeight > nHardLimit) {\n      bIsValid = false;\n    }\n  }\n\n  const nExtraBagCount = Math.max(0, arrBagWeights.length - nFreeBagCount);\n  const nExtraBagFee = nExtraBagCount * 50;\n  const nOverweightFee = nOverweightCount * 30;\n\n  return {\n    class: strTicketClass,\n    valid: bIsValid,\n    fees: nExtraBagFee + nOverweightFee,\n    overweight: nOverweightCount\n  };\n}\n\nfunction formatLuggageReport(objResult, arrBagWeights) {\n  const strBagList = arrBagWeights.map((nBagWeight) => `${nBagWeight}kg`).join(', ');\n  const strStatusText = objResult.valid ? 'accepted' : 'rejected (bag over 32kg)';\n  const arrReportLines = [\n    `Class: ${objResult.class}`,\n    `Bags: ${strBagList || 'none'}`,\n    `Overweight bags: ${objResult.overweight}`,\n    `Fees: $${objResult.fees}`,\n    `Status: ${strStatusText}`\n  ];\n  return arrReportLines.join('\\n');\n}\n\nfunction runLuggageCheck() {\n  const strTicketClass = 'economy';\n  const arrBagWeights = [25, 30, 15];\n  const bIsFrequentFlyer = true;\n  const nBaseWeight = 20;\n\n  const objResult = checkLuggage(strTicketClass, arrBagWeights, bIsFrequentFlyer, nBaseWeight);\n  console.log(formatLuggageReport(objResult, arrBagWeights));\n  return objResult;\n}\n\nrunLuggageCheck();\n\nmodule.exports = {\n  getAllowedWeight,\n  getFreeBagCount,\n  checkLuggage,\n  formatLuggageReport,\n  runLuggageCheck\n};\n",
+"opps": [
+{
+"k": 0,
+"nat": "baseWeight, isFrequentFlyer",
+"alt": "nBaseWeight, bIsFrequentFlyer",
+"nat_span": [
+26,
+53
+],
+"alt_span": [
+26,
+55
+]
+},
+{
+"k": 1,
+"nat": "bonusWeight",
+"alt": "nBonusWeight",
+"nat_span": [
+65,
+76
+],
+"alt_span": [
+67,
+79
+]
+},
+{
+"k": 2,
+"nat": "ticketClass",
+"alt": "strTicketClass",
+"nat_span": [
+168,
+179
+],
+"alt_span": [
+174,
+188
+]
+},
+{
+"k": 3,
+"nat": "normalizedClass",
+"alt": "strNormalizedClass",
+"nat_span": [
+191,
+206
+],
+"alt_span": [
+200,
+218
+]
+},
+{
+"k": 4,
+"nat": "allowedWeight",
+"alt": "nAllowedWeight",
+"nat_span": [
+410,
+423
+],
+"alt_span": [
+436,
+450
+]
+},
+{
+"k": 5,
+"nat": "freeBagCount",
+"alt": "nFreeBagCount",
+"nat_span": [
+481,
+493
+],
+"alt_span": [
+510,
+523
+]
+},
+{
+"k": 6,
+"nat": "hardLimit",
+"alt": "nHardLimit",
+"nat_span": [
+534,
+543
+],
+"alt_span": [
+567,
+577
+]
+},
+{
+"k": 7,
+"nat": "overweightCount",
+"alt": "nOverweightCount",
+"nat_span": [
+557,
+572
+],
+"alt_span": [
+591,
+607
+]
+},
+{
+"k": 8,
+"nat": "isValid",
+"alt": "bIsValid",
+"nat_span": [
+584,
+591
+],
+"alt_span": [
+619,
+627
+]
+},
+{
+"k": 9,
+"nat": "bagWeight",
+"alt": "nBagWeight",
+"nat_span": [
+614,
+623
+],
+"alt_span": [
+650,
+660
+]
+},
+{
+"k": 10,
+"nat": "extraBagCount",
+"alt": "nExtraBagCount",
+"nat_span": [
+787,
+800
+],
+"alt_span": [
+833,
+847
+]
+},
+{
+"k": 11,
+"nat": "extraBagFee",
+"alt": "nExtraBagFee",
+"nat_span": [
+858,
+869
+],
+"alt_span": [
+909,
+921
+]
+},
+{
+"k": 12,
+"nat": "overweightFee",
+"alt": "nOverweightFee",
+"nat_span": [
+900,
+913
+],
+"alt_span": [
+953,
+967
+]
+},
+{
+"k": 13,
+"nat": "bagList",
+"alt": "strBagList",
+"nat_span": [
+1132,
+1139
+],
+"alt_span": [
+1200,
+1210
+]
+},
+{
+"k": 14,
+"nat": "statusText",
+"alt": "strStatusText",
+"nat_span": [
+1210,
+1220
+],
+"alt_span": [
+1286,
+1299
+]
+},
+{
+"k": 15,
+"nat": "reportLines",
+"alt": "arrReportLines",
+"nat_span": [
+1287,
+1298
+],
+"alt_span": [
+1369,
+1383
+]
+}
+],
+"k_en": 16,
+"shared_fraction": 0.888,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "baseWeight, isFrequentFlyer",
+"alt": "nBaseWeight, bIsFrequentFlyer",
+"nat_span": [
+26,
+53
+],
+"alt_span": [
+26,
+55
+]
+},
+{
+"k": 1,
+"nat": "bonusWeight",
+"alt": "nBonusWeight",
+"nat_span": [
+65,
+76
+],
+"alt_span": [
+67,
+79
+]
+},
+{
+"k": 2,
+"nat": "isFrequentFlyer",
+"alt": "bIsFrequentFlyer",
+"nat_span": [
+79,
+94
+],
+"alt_span": [
+82,
+98
+]
+},
+{
+"k": 3,
+"nat": "baseWeight",
+"alt": "nBaseWeight",
+"nat_span": [
+114,
+124
+],
+"alt_span": [
+118,
+129
+]
+},
+{
+"k": 4,
+"nat": "bonusWeight",
+"alt": "nBonusWeight",
+"nat_span": [
+127,
+138
+],
+"alt_span": [
+132,
+144
+]
+},
+{
+"k": 5,
+"nat": "ticketClass",
+"alt": "strTicketClass",
+"nat_span": [
+168,
+179
+],
+"alt_span": [
+174,
+188
+]
+},
+{
+"k": 6,
+"nat": "normalizedClass",
+"alt": "strNormalizedClass",
+"nat_span": [
+191,
+206
+],
+"alt_span": [
+200,
+218
+]
+},
+{
+"k": 7,
+"nat": "ticketClass",
+"alt": "strTicketClass",
+"nat_span": [
+216,
+227
+],
+"alt_span": [
+228,
+242
+]
+},
+{
+"k": 8,
+"nat": "normalizedClass",
+"alt": "strNormalizedClass",
+"nat_span": [
+257,
+272
+],
+"alt_span": [
+272,
+290
+]
+},
+{
+"k": 9,
+"nat": "ticketClass, bagWeights, isFrequentFlyer, baseWeight",
+"alt": "strTicketClass, arrBagWeights, bIsFrequentFlyer, nBaseWeight",
+"nat_span": [
+346,
+398
+],
+"alt_span": [
+364,
+424
+]
+},
+{
+"k": 10,
+"nat": "allowedWeight",
+"alt": "nAllowedWeight",
+"nat_span": [
+410,
+423
+],
+"alt_span": [
+436,
+450
+]
+},
+{
+"k": 11,
+"nat": "baseWeight, isFrequentFlyer",
+"alt": "nBaseWeight, bIsFrequentFlyer",
+"nat_span": [
+443,
+470
+],
+"alt_span": [
+470,
+499
+]
+},
+{
+"k": 12,
+"nat": "freeBagCount",
+"alt": "nFreeBagCount",
+"nat_span": [
+481,
+493
+],
+"alt_span": [
+510,
+523
+]
+},
+{
+"k": 13,
+"nat": "ticketClass",
+"alt": "strTicketClass",
+"nat_span": [
+512,
+523
+],
+"alt_span": [
+542,
+556
+]
+},
+{
+"k": 14,
+"nat": "hardLimit",
+"alt": "nHardLimit",
+"nat_span": [
+534,
+543
+],
+"alt_span": [
+567,
+577
+]
+},
+{
+"k": 15,
+"nat": "overweightCount",
+"alt": "nOverweightCount",
+"nat_span": [
+557,
+572
+],
+"alt_span": [
+591,
+607
+]
+},
+{
+"k": 16,
+"nat": "isValid",
+"alt": "bIsValid",
+"nat_span": [
+584,
+591
+],
+"alt_span": [
+619,
+627
+]
+},
+{
+"k": 17,
+"nat": "bagWeight",
+"alt": "nBagWeight",
+"nat_span": [
+614,
+623
+],
+"alt_span": [
+650,
+660
+]
+},
+{
+"k": 18,
+"nat": "bagWeights",
+"alt": "arrBagWeights",
+"nat_span": [
+627,
+637
+],
+"alt_span": [
+664,
+677
+]
+},
+{
+"k": 19,
+"nat": "bagWeight",
+"alt": "nBagWeight",
+"nat_span": [
+649,
+658
+],
+"alt_span": [
+689,
+699
+]
+},
+{
+"k": 20,
+"nat": "allowedWeight",
+"alt": "nAllowedWeight",
+"nat_span": [
+661,
+674
+],
+"alt_span": [
+702,
+716
+]
+},
+{
+"k": 21,
+"nat": "overweightCount",
+"alt": "nOverweightCount",
+"nat_span": [
+684,
+699
+],
+"alt_span": [
+726,
+742
+]
+},
+{
+"k": 22,
+"nat": "bagWeight",
+"alt": "nBagWeight",
+"nat_span": [
+720,
+729
+],
+"alt_span": [
+763,
+773
+]
+},
+{
+"k": 23,
+"nat": "hardLimit",
+"alt": "nHardLimit",
+"nat_span": [
+732,
+741
+],
+"alt_span": [
+776,
+786
+]
+},
+{
+"k": 24,
+"nat": "isValid",
+"alt": "bIsValid",
+"nat_span": [
+751,
+758
+],
+"alt_span": [
+796,
+804
+]
+},
+{
+"k": 25,
+"nat": "extraBagCount",
+"alt": "nExtraBagCount",
+"nat_span": [
+787,
+800
+],
+"alt_span": [
+833,
+847
+]
+},
+{
+"k": 26,
+"nat": "bagWeights",
+"alt": "arrBagWeights",
+"nat_span": [
+815,
+825
+],
+"alt_span": [
+862,
+875
+]
+},
+{
+"k": 27,
+"nat": "freeBagCount",
+"alt": "nFreeBagCount",
+"nat_span": [
+835,
+847
+],
+"alt_span": [
+885,
+898
+]
+},
+{
+"k": 28,
+"nat": "extraBagFee",
+"alt": "nExtraBagFee",
+"nat_span": [
+858,
+869
+],
+"alt_span": [
+909,
+921
+]
+},
+{
+"k": 29,
+"nat": "extraBagCount",
+"alt": "nExtraBagCount",
+"nat_span": [
+872,
+885
+],
+"alt_span": [
+924,
+938
+]
+},
+{
+"k": 30,
+"nat": "overweightFee",
+"alt": "nOverweightFee",
+"nat_span": [
+900,
+913
+],
+"alt_span": [
+953,
+967
+]
+},
+{
+"k": 31,
+"nat": "overweightCount",
+"alt": "nOverweightCount",
+"nat_span": [
+916,
+931
+],
+"alt_span": [
+970,
+986
+]
+},
+{
+"k": 32,
+"nat": "ticketClass",
+"alt": "strTicketClass",
+"nat_span": [
+961,
+972
+],
+"alt_span": [
+1016,
+1030
+]
+},
+{
+"k": 33,
+"nat": "isValid",
+"alt": "bIsValid",
+"nat_span": [
+985,
+992
+],
+"alt_span": [
+1043,
+1051
+]
+},
+{
+"k": 34,
+"nat": "extraBagFee",
+"alt": "nExtraBagFee",
+"nat_span": [
+1004,
+1015
+],
+"alt_span": [
+1063,
+1075
+]
+},
+{
+"k": 35,
+"nat": "overweightFee",
+"alt": "nOverweightFee",
+"nat_span": [
+1018,
+1031
+],
+"alt_span": [
+1078,
+1092
+]
+},
+{
+"k": 36,
+"nat": "overweightCount",
+"alt": "nOverweightCount",
+"nat_span": [
+1049,
+1064
+],
+"alt_span": [
+1110,
+1126
+]
+},
+{
+"k": 37,
+"nat": "result, bagWeights",
+"alt": "objResult, arrBagWeights",
+"nat_span": [
+1102,
+1120
+],
+"alt_span": [
+1164,
+1188
+]
+},
+{
+"k": 38,
+"nat": "bagList",
+"alt": "strBagList",
+"nat_span": [
+1132,
+1139
+],
+"alt_span": [
+1200,
+1210
+]
+},
+{
+"k": 39,
+"nat": "bagWeights",
+"alt": "arrBagWeights",
+"nat_span": [
+1142,
+1152
+],
+"alt_span": [
+1213,
+1226
+]
+},
+{
+"k": 40,
+"nat": "bagWeight",
+"alt": "nBagWeight",
+"nat_span": [
+1158,
+1167
+],
+"alt_span": [
+1232,
+1242
+]
+},
+{
+"k": 41,
+"nat": "bagWeight",
+"alt": "nBagWeight",
+"nat_span": [
+1175,
+1184
+],
+"alt_span": [
+1250,
+1260
+]
+},
+{
+"k": 42,
+"nat": "statusText",
+"alt": "strStatusText",
+"nat_span": [
+1210,
+1220
+],
+"alt_span": [
+1286,
+1299
+]
+},
+{
+"k": 43,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1223,
+1229
+],
+"alt_span": [
+1302,
+1311
+]
+},
+{
+"k": 44,
+"nat": "reportLines",
+"alt": "arrReportLines",
+"nat_span": [
+1287,
+1298
+],
+"alt_span": [
+1369,
+1383
+]
+},
+{
+"k": 45,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1317,
+1323
+],
+"alt_span": [
+1402,
+1411
+]
+},
+{
+"k": 46,
+"nat": "bagList",
+"alt": "strBagList",
+"nat_span": [
+1346,
+1353
+],
+"alt_span": [
+1434,
+1444
+]
+},
+{
+"k": 47,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1391,
+1397
+],
+"alt_span": [
+1482,
+1491
+]
+},
+{
+"k": 48,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1426,
+1432
+],
+"alt_span": [
+1520,
+1529
+]
+},
+{
+"k": 49,
+"nat": "statusText",
+"alt": "strStatusText",
+"nat_span": [
+1456,
+1466
+],
+"alt_span": [
+1553,
+1566
+]
+},
+{
+"k": 50,
+"nat": "reportLines",
+"alt": "arrReportLines",
+"nat_span": [
+1483,
+1494
+],
+"alt_span": [
+1583,
+1597
+]
+},
+{
+"k": 51,
+"nat": "ticketClass",
+"alt": "strTicketClass",
+"nat_span": [
+1547,
+1558
+],
+"alt_span": [
+1650,
+1664
+]
+},
+{
+"k": 52,
+"nat": "bagWeights",
+"alt": "arrBagWeights",
+"nat_span": [
+1580,
+1590
+],
+"alt_span": [
+1686,
+1699
+]
+},
+{
+"k": 53,
+"nat": "isFrequentFlyer",
+"alt": "bIsFrequentFlyer",
+"nat_span": [
+1615,
+1630
+],
+"alt_span": [
+1724,
+1740
+]
+},
+{
+"k": 54,
+"nat": "baseWeight",
+"alt": "nBaseWeight",
+"nat_span": [
+1647,
+1657
+],
+"alt_span": [
+1757,
+1768
+]
+},
+{
+"k": 55,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1673,
+1679
+],
+"alt_span": [
+1784,
+1793
+]
+},
+{
+"k": 56,
+"nat": "ticketClass, bagWeights, isFrequentFlyer, baseWeight",
+"alt": "strTicketClass, arrBagWeights, bIsFrequentFlyer, nBaseWeight",
+"nat_span": [
+1695,
+1747
+],
+"alt_span": [
+1809,
+1869
+]
+},
+{
+"k": 57,
+"nat": "result, bagWeights",
+"alt": "objResult, arrBagWeights",
+"nat_span": [
+1784,
+1802
+],
+"alt_span": [
+1906,
+1930
+]
+},
+{
+"k": 58,
+"nat": "result",
+"alt": "objResult",
+"nat_span": [
+1815,
+1821
+],
+"alt_span": [
+1943,
+1952
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "js_hungarian__d040",
+"family": "js_hungarian",
+"topic": "Smart Home Energy Optimizer",
+"angle": "code",
+"text_es": "Write a small module for home energy. Include a helper `getNetUsage` taking an array of device usages (numbers), an away flag (boolean), and solar output (number). It sums the usages, but skips any individual device usage over 100 if the away flag is true. It returns the sum minus the solar output (minimum 0). The main function `optimizeEnergy` takes a time of use (string), usages array, away flag, and solar output. It retrieves the net usage from the helper. The base cost is the net usage multiplied by 0.15, but this cost is multiplied by 2 if the time of use is 'peak'. Return an object with keys `time`, `away`, `net`, and `cost`. Provide a driver function `testEnergy` testing `'peak', [50, 150, 200, 30], true, 100`.",
+"langs": {
+"src": "Task",
+"tgt": "JavaScript"
+},
+"text_nat": "function getNetUsage(deviceUsages, isAway, solarOutput) {\n  let totalUsage = 0;\n  for (const deviceUsage of deviceUsages) {\n    const isHighDrain = deviceUsage > 100;\n    if (isAway && isHighDrain) {\n      continue;\n    }\n    totalUsage += deviceUsage;\n  }\n  const netUsage = totalUsage - solarOutput;\n  return netUsage > 0 ? netUsage : 0;\n}\n\nfunction optimizeEnergy(timeOfUse, deviceUsages, isAway, solarOutput) {\n  const netUsage = getNetUsage(deviceUsages, isAway, solarOutput);\n  const isPeakWindow = timeOfUse === 'peak';\n  let energyCost = netUsage * 0.15;\n  if (isPeakWindow) {\n    energyCost = energyCost * 2;\n  }\n  return {\n    time: timeOfUse,\n    away: isAway,\n    net: netUsage,\n    cost: energyCost\n  };\n}\n\nfunction describeSkippedDevices(deviceUsages, isAway) {\n  const skippedDevices = [];\n  if (!isAway) {\n    return skippedDevices;\n  }\n  deviceUsages.forEach(function (deviceUsage, deviceIndex) {\n    if (deviceUsage > 100) {\n      skippedDevices.push('device' + deviceIndex + '@' + deviceUsage + 'kWh');\n    }\n  });\n  return skippedDevices;\n}\n\nfunction formatReport(energyPlan, skippedDevices) {\n  const costLabel = '$' + energyPlan.cost.toFixed(2);\n  const awayLabel = energyPlan.away ? 'away' : 'home';\n  const headerLine = 'Window: ' + energyPlan.time + ' (' + awayLabel + ')';\n  const usageLine = 'Net usage: ' + energyPlan.net + ' kWh -> ' + costLabel;\n  const reportLines = [headerLine, usageLine];\n  if (skippedDevices.length > 0) {\n    reportLines.push('Throttled: ' + skippedDevices.join(', '));\n  } else {\n    reportLines.push('Throttled: none');\n  }\n  return reportLines.join('\\n');\n}\n\nfunction testEnergy() {\n  const timeOfUse = 'peak';\n  const deviceUsages = [50, 150, 200, 30];\n  const isAway = true;\n  const solarOutput = 100;\n  const energyPlan = optimizeEnergy(timeOfUse, deviceUsages, isAway, solarOutput);\n  const skippedDevices = describeSkippedDevices(deviceUsages, isAway);\n  console.log(formatReport(energyPlan, skippedDevices));\n  return energyPlan;\n}\n\nmodule.exports = { getNetUsage, optimizeEnergy, describeSkippedDevices, formatReport, testEnergy };\n\ntestEnergy();\n",
+"text_alt": "function getNetUsage(arrDeviceUsages, bIsAway, nSolarOutput) {\n  let nTotalUsage = 0;\n  for (const nDeviceUsage of arrDeviceUsages) {\n    const bIsHighDrain = nDeviceUsage > 100;\n    if (bIsAway && bIsHighDrain) {\n      continue;\n    }\n    nTotalUsage += nDeviceUsage;\n  }\n  const nNetUsage = nTotalUsage - nSolarOutput;\n  return nNetUsage > 0 ? nNetUsage : 0;\n}\n\nfunction optimizeEnergy(strTimeOfUse, arrDeviceUsages, bIsAway, nSolarOutput) {\n  const nNetUsage = getNetUsage(arrDeviceUsages, bIsAway, nSolarOutput);\n  const bIsPeakWindow = strTimeOfUse === 'peak';\n  let nEnergyCost = nNetUsage * 0.15;\n  if (bIsPeakWindow) {\n    nEnergyCost = nEnergyCost * 2;\n  }\n  return {\n    time: strTimeOfUse,\n    away: bIsAway,\n    net: nNetUsage,\n    cost: nEnergyCost\n  };\n}\n\nfunction describeSkippedDevices(arrDeviceUsages, bIsAway) {\n  const arrSkippedDevices = [];\n  if (!bIsAway) {\n    return arrSkippedDevices;\n  }\n  arrDeviceUsages.forEach(function (nDeviceUsage, nDeviceIndex) {\n    if (nDeviceUsage > 100) {\n      arrSkippedDevices.push('device' + nDeviceIndex + '@' + nDeviceUsage + 'kWh');\n    }\n  });\n  return arrSkippedDevices;\n}\n\nfunction formatReport(objEnergyPlan, arrSkippedDevices) {\n  const strCostLabel = '$' + objEnergyPlan.cost.toFixed(2);\n  const strAwayLabel = objEnergyPlan.away ? 'away' : 'home';\n  const strHeaderLine = 'Window: ' + objEnergyPlan.time + ' (' + strAwayLabel + ')';\n  const strUsageLine = 'Net usage: ' + objEnergyPlan.net + ' kWh -> ' + strCostLabel;\n  const arrReportLines = [strHeaderLine, strUsageLine];\n  if (arrSkippedDevices.length > 0) {\n    arrReportLines.push('Throttled: ' + arrSkippedDevices.join(', '));\n  } else {\n    arrReportLines.push('Throttled: none');\n  }\n  return arrReportLines.join('\\n');\n}\n\nfunction testEnergy() {\n  const strTimeOfUse = 'peak';\n  const arrDeviceUsages = [50, 150, 200, 30];\n  const bIsAway = true;\n  const nSolarOutput = 100;\n  const objEnergyPlan = optimizeEnergy(strTimeOfUse, arrDeviceUsages, bIsAway, nSolarOutput);\n  const arrSkippedDevices = describeSkippedDevices(arrDeviceUsages, bIsAway);\n  console.log(formatReport(objEnergyPlan, arrSkippedDevices));\n  return objEnergyPlan;\n}\n\nmodule.exports = { getNetUsage, optimizeEnergy, describeSkippedDevices, formatReport, testEnergy };\n\ntestEnergy();\n",
+"opps": [
+{
+"k": 0,
+"nat": "deviceUsages, isAway, solarOutput",
+"alt": "arrDeviceUsages, bIsAway, nSolarOutput",
+"nat_span": [
+21,
+54
+],
+"alt_span": [
+21,
+59
+]
+},
+{
+"k": 1,
+"nat": "totalUsage",
+"alt": "nTotalUsage",
+"nat_span": [
+64,
+74
+],
+"alt_span": [
+69,
+80
+]
+},
+{
+"k": 2,
+"nat": "deviceUsage",
+"alt": "nDeviceUsage",
+"nat_span": [
+93,
+104
+],
+"alt_span": [
+99,
+111
+]
+},
+{
+"k": 3,
+"nat": "isHighDrain",
+"alt": "bIsHighDrain",
+"nat_span": [
+134,
+145
+],
+"alt_span": [
+144,
+156
+]
+},
+{
+"k": 4,
+"nat": "netUsage",
+"alt": "nNetUsage",
+"nat_span": [
+265,
+273
+],
+"alt_span": [
+281,
+290
+]
+},
+{
+"k": 5,
+"nat": "isPeakWindow",
+"alt": "bIsPeakWindow",
+"nat_span": [
+490,
+502
+],
+"alt_span": [
+525,
+538
+]
+},
+{
+"k": 6,
+"nat": "energyCost",
+"alt": "nEnergyCost",
+"nat_span": [
+533,
+543
+],
+"alt_span": [
+572,
+583
+]
+},
+{
+"k": 7,
+"nat": "skippedDevices",
+"alt": "arrSkippedDevices",
+"nat_span": [
+784,
+798
+],
+"alt_span": [
+838,
+855
+]
+},
+{
+"k": 8,
+"nat": "costLabel",
+"alt": "strCostLabel",
+"nat_span": [
+1122,
+1131
+],
+"alt_span": [
+1203,
+1215
+]
+},
+{
+"k": 9,
+"nat": "awayLabel",
+"alt": "strAwayLabel",
+"nat_span": [
+1176,
+1185
+],
+"alt_span": [
+1263,
+1275
+]
+},
+{
+"k": 10,
+"nat": "headerLine",
+"alt": "strHeaderLine",
+"nat_span": [
+1231,
+1241
+],
+"alt_span": [
+1324,
+1337
+]
+},
+{
+"k": 11,
+"nat": "usageLine",
+"alt": "strUsageLine",
+"nat_span": [
+1307,
+1316
+],
+"alt_span": [
+1409,
+1421
+]
+},
+{
+"k": 12,
+"nat": "reportLines",
+"alt": "arrReportLines",
+"nat_span": [
+1384,
+1395
+],
+"alt_span": [
+1495,
+1509
+]
+}
+],
+"k_en": 13,
+"shared_fraction": 0.88,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "deviceUsages, isAway, solarOutput",
+"alt": "arrDeviceUsages, bIsAway, nSolarOutput",
+"nat_span": [
+21,
+54
+],
+"alt_span": [
+21,
+59
+]
+},
+{
+"k": 1,
+"nat": "totalUsage",
+"alt": "nTotalUsage",
+"nat_span": [
+64,
+74
+],
+"alt_span": [
+69,
+80
+]
+},
+{
+"k": 2,
+"nat": "deviceUsage",
+"alt": "nDeviceUsage",
+"nat_span": [
+93,
+104
+],
+"alt_span": [
+99,
+111
+]
+},
+{
+"k": 3,
+"nat": "deviceUsages",
+"alt": "arrDeviceUsages",
+"nat_span": [
+108,
+120
+],
+"alt_span": [
+115,
+130
+]
+},
+{
+"k": 4,
+"nat": "isHighDrain",
+"alt": "bIsHighDrain",
+"nat_span": [
+134,
+145
+],
+"alt_span": [
+144,
+156
+]
+},
+{
+"k": 5,
+"nat": "deviceUsage",
+"alt": "nDeviceUsage",
+"nat_span": [
+148,
+159
+],
+"alt_span": [
+159,
+171
+]
+},
+{
+"k": 6,
+"nat": "isAway",
+"alt": "bIsAway",
+"nat_span": [
+175,
+181
+],
+"alt_span": [
+187,
+194
+]
+},
+{
+"k": 7,
+"nat": "isHighDrain",
+"alt": "bIsHighDrain",
+"nat_span": [
+185,
+196
+],
+"alt_span": [
+198,
+210
+]
+},
+{
+"k": 8,
+"nat": "totalUsage",
+"alt": "nTotalUsage",
+"nat_span": [
+226,
+236
+],
+"alt_span": [
+240,
+251
+]
+},
+{
+"k": 9,
+"nat": "deviceUsage",
+"alt": "nDeviceUsage",
+"nat_span": [
+240,
+251
+],
+"alt_span": [
+255,
+267
+]
+},
+{
+"k": 10,
+"nat": "netUsage",
+"alt": "nNetUsage",
+"nat_span": [
+265,
+273
+],
+"alt_span": [
+281,
+290
+]
+},
+{
+"k": 11,
+"nat": "totalUsage",
+"alt": "nTotalUsage",
+"nat_span": [
+276,
+286
+],
+"alt_span": [
+293,
+304
+]
+},
+{
+"k": 12,
+"nat": "solarOutput",
+"alt": "nSolarOutput",
+"nat_span": [
+289,
+300
+],
+"alt_span": [
+307,
+319
+]
+},
+{
+"k": 13,
+"nat": "netUsage",
+"alt": "nNetUsage",
+"nat_span": [
+311,
+319
+],
+"alt_span": [
+330,
+339
+]
+},
+{
+"k": 14,
+"nat": "netUsage",
+"alt": "nNetUsage",
+"nat_span": [
+326,
+334
+],
+"alt_span": [
+346,
+355
+]
+},
+{
+"k": 15,
+"nat": "timeOfUse, deviceUsages, isAway, solarOutput",
+"alt": "strTimeOfUse, arrDeviceUsages, bIsAway, nSolarOutput",
+"nat_span": [
+367,
+411
+],
+"alt_span": [
+388,
+440
+]
+},
+{
+"k": 16,
+"nat": "netUsage",
+"alt": "nNetUsage",
+"nat_span": [
+423,
+431
+],
+"alt_span": [
+452,
+461
+]
+},
+{
+"k": 17,
+"nat": "deviceUsages, isAway, solarOutput",
+"alt": "arrDeviceUsages, bIsAway, nSolarOutput",
+"nat_span": [
+446,
+479
+],
+"alt_span": [
+476,
+514
+]
+},
+{
+"k": 18,
+"nat": "isPeakWindow",
+"alt": "bIsPeakWindow",
+"nat_span": [
+490,
+502
+],
+"alt_span": [
+525,
+538
+]
+},
+{
+"k": 19,
+"nat": "timeOfUse",
+"alt": "strTimeOfUse",
+"nat_span": [
+505,
+514
+],
+"alt_span": [
+541,
+553
+]
+},
+{
+"k": 20,
+"nat": "energyCost",
+"alt": "nEnergyCost",
+"nat_span": [
+533,
+543
+],
+"alt_span": [
+572,
+583
+]
+},
+{
+"k": 21,
+"nat": "netUsage",
+"alt": "nNetUsage",
+"nat_span": [
+546,
+554
+],
+"alt_span": [
+586,
+595
+]
+},
+{
+"k": 22,
+"nat": "isPeakWindow",
+"alt": "bIsPeakWindow",
+"nat_span": [
+569,
+581
+],
+"alt_span": [
+610,
+623
+]
+},
+{
+"k": 23,
+"nat": "energyCost",
+"alt": "nEnergyCost",
+"nat_span": [
+589,
+599
+],
+"alt_span": [
+631,
+642
+]
+},
+{
+"k": 24,
+"nat": "energyCost",
+"alt": "nEnergyCost",
+"nat_span": [
+602,
+612
+],
+"alt_span": [
+645,
+656
+]
+},
+{
+"k": 25,
+"nat": "timeOfUse",
+"alt": "strTimeOfUse",
+"nat_span": [
+643,
+652
+],
+"alt_span": [
+687,
+699
+]
+},
+{
+"k": 26,
+"nat": "isAway",
+"alt": "bIsAway",
+"nat_span": [
+664,
+670
+],
+"alt_span": [
+711,
+718
+]
+},
+{
+"k": 27,
+"nat": "netUsage",
+"alt": "nNetUsage",
+"nat_span": [
+681,
+689
+],
+"alt_span": [
+729,
+738
+]
+},
+{
+"k": 28,
+"nat": "energyCost",
+"alt": "nEnergyCost",
+"nat_span": [
+701,
+711
+],
+"alt_span": [
+750,
+761
+]
+},
+{
+"k": 29,
+"nat": "deviceUsages, isAway",
+"alt": "arrDeviceUsages, bIsAway",
+"nat_span": [
+752,
+772
+],
+"alt_span": [
+802,
+826
+]
+},
+{
+"k": 30,
+"nat": "skippedDevices",
+"alt": "arrSkippedDevices",
+"nat_span": [
+784,
+798
+],
+"alt_span": [
+838,
+855
+]
+},
+{
+"k": 31,
+"nat": "isAway",
+"alt": "bIsAway",
+"nat_span": [
+812,
+818
+],
+"alt_span": [
+869,
+876
+]
+},
+{
+"k": 32,
+"nat": "skippedDevices",
+"alt": "arrSkippedDevices",
+"nat_span": [
+833,
+847
+],
+"alt_span": [
+891,
+908
+]
+},
+{
+"k": 33,
+"nat": "deviceUsages",
+"alt": "arrDeviceUsages",
+"nat_span": [
+855,
+867
+],
+"alt_span": [
+916,
+931
+]
+},
+{
+"k": 34,
+"nat": "deviceUsage, deviceIndex",
+"alt": "nDeviceUsage, nDeviceIndex",
+"nat_span": [
+886,
+910
+],
+"alt_span": [
+950,
+976
+]
+},
+{
+"k": 35,
+"nat": "deviceUsage",
+"alt": "nDeviceUsage",
+"nat_span": [
+922,
+933
+],
+"alt_span": [
+988,
+1000
+]
+},
+{
+"k": 36,
+"nat": "skippedDevices",
+"alt": "arrSkippedDevices",
+"nat_span": [
+949,
+963
+],
+"alt_span": [
+1016,
+1033
+]
+},
+{
+"k": 37,
+"nat": "deviceIndex",
+"alt": "nDeviceIndex",
+"nat_span": [
+980,
+991
+],
+"alt_span": [
+1050,
+1062
+]
+},
+{
+"k": 38,
+"nat": "deviceUsage",
+"alt": "nDeviceUsage",
+"nat_span": [
+1000,
+1011
+],
+"alt_span": [
+1071,
+1083
+]
+},
+{
+"k": 39,
+"nat": "skippedDevices",
+"alt": "arrSkippedDevices",
+"nat_span": [
+1043,
+1057
+],
+"alt_span": [
+1115,
+1132
+]
+},
+{
+"k": 40,
+"nat": "energyPlan, skippedDevices",
+"alt": "objEnergyPlan, arrSkippedDevices",
+"nat_span": [
+1084,
+1110
+],
+"alt_span": [
+1159,
+1191
+]
+},
+{
+"k": 41,
+"nat": "costLabel",
+"alt": "strCostLabel",
+"nat_span": [
+1122,
+1131
+],
+"alt_span": [
+1203,
+1215
+]
+},
+{
+"k": 42,
+"nat": "energyPlan",
+"alt": "objEnergyPlan",
+"nat_span": [
+1140,
+1150
+],
+"alt_span": [
+1224,
+1237
+]
+},
+{
+"k": 43,
+"nat": "awayLabel",
+"alt": "strAwayLabel",
+"nat_span": [
+1176,
+1185
+],
+"alt_span": [
+1263,
+1275
+]
+},
+{
+"k": 44,
+"nat": "energyPlan",
+"alt": "objEnergyPlan",
+"nat_span": [
+1188,
+1198
+],
+"alt_span": [
+1278,
+1291
+]
+},
+{
+"k": 45,
+"nat": "headerLine",
+"alt": "strHeaderLine",
+"nat_span": [
+1231,
+1241
+],
+"alt_span": [
+1324,
+1337
+]
+},
+{
+"k": 46,
+"nat": "energyPlan",
+"alt": "objEnergyPlan",
+"nat_span": [
+1257,
+1267
+],
+"alt_span": [
+1353,
+1366
+]
+},
+{
+"k": 47,
+"nat": "awayLabel",
+"alt": "strAwayLabel",
+"nat_span": [
+1282,
+1291
+],
+"alt_span": [
+1381,
+1393
+]
+},
+{
+"k": 48,
+"nat": "usageLine",
+"alt": "strUsageLine",
+"nat_span": [
+1307,
+1316
+],
+"alt_span": [
+1409,
+1421
+]
+},
+{
+"k": 49,
+"nat": "energyPlan",
+"alt": "objEnergyPlan",
+"nat_span": [
+1335,
+1345
+],
+"alt_span": [
+1440,
+1453
+]
+},
+{
+"k": 50,
+"nat": "costLabel",
+"alt": "strCostLabel",
+"nat_span": [
+1365,
+1374
+],
+"alt_span": [
+1473,
+1485
+]
+},
+{
+"k": 51,
+"nat": "reportLines",
+"alt": "arrReportLines",
+"nat_span": [
+1384,
+1395
+],
+"alt_span": [
+1495,
+1509
+]
+},
+{
+"k": 52,
+"nat": "headerLine, usageLine",
+"alt": "strHeaderLine, strUsageLine",
+"nat_span": [
+1399,
+1420
+],
+"alt_span": [
+1513,
+1540
+]
+},
+{
+"k": 53,
+"nat": "skippedDevices",
+"alt": "arrSkippedDevices",
+"nat_span": [
+1429,
+1443
+],
+"alt_span": [
+1549,
+1566
+]
+},
+{
+"k": 54,
+"nat": "reportLines",
+"alt": "arrReportLines",
+"nat_span": [
+1462,
+1473
+],
+"alt_span": [
+1585,
+1599
+]
+},
+{
+"k": 55,
+"nat": "skippedDevices",
+"alt": "arrSkippedDevices",
+"nat_span": [
+1495,
+1509
+],
+"alt_span": [
+1621,
+1638
+]
+},
+{
+"k": 56,
+"nat": "reportLines",
+"alt": "arrReportLines",
+"nat_span": [
+1538,
+1549
+],
+"alt_span": [
+1667,
+1681
+]
+},
+{
+"k": 57,
+"nat": "reportLines",
+"alt": "arrReportLines",
+"nat_span": [
+1588,
+1599
+],
+"alt_span": [
+1720,
+1734
+]
+},
+{
+"k": 58,
+"nat": "timeOfUse",
+"alt": "strTimeOfUse",
+"nat_span": [
+1647,
+1656
+],
+"alt_span": [
+1782,
+1794
+]
+},
+{
+"k": 59,
+"nat": "deviceUsages",
+"alt": "arrDeviceUsages",
+"nat_span": [
+1675,
+1687
+],
+"alt_span": [
+1813,
+1828
+]
+},
+{
+"k": 60,
+"nat": "isAway",
+"alt": "bIsAway",
+"nat_span": [
+1718,
+1724
+],
+"alt_span": [
+1859,
+1866
+]
+},
+{
+"k": 61,
+"nat": "solarOutput",
+"alt": "nSolarOutput",
+"nat_span": [
+1741,
+1752
+],
+"alt_span": [
+1883,
+1895
+]
+},
+{
+"k": 62,
+"nat": "energyPlan",
+"alt": "objEnergyPlan",
+"nat_span": [
+1768,
+1778
+],
+"alt_span": [
+1911,
+1924
+]
+},
+{
+"k": 63,
+"nat": "timeOfUse, deviceUsages, isAway, solarOutput",
+"alt": "strTimeOfUse, arrDeviceUsages, bIsAway, nSolarOutput",
+"nat_span": [
+1796,
+1840
+],
+"alt_span": [
+1942,
+1994
+]
+},
+{
+"k": 64,
+"nat": "skippedDevices",
+"alt": "arrSkippedDevices",
+"nat_span": [
+1851,
+1865
+],
+"alt_span": [
+2005,
+2022
+]
+},
+{
+"k": 65,
+"nat": "deviceUsages, isAway",
+"alt": "arrDeviceUsages, bIsAway",
+"nat_span": [
+1891,
+1911
+],
+"alt_span": [
+2048,
+2072
+]
+},
+{
+"k": 66,
+"nat": "energyPlan, skippedDevices",
+"alt": "objEnergyPlan, arrSkippedDevices",
+"nat_span": [
+1941,
+1967
+],
+"alt_span": [
+2102,
+2134
+]
+},
+{
+"k": 67,
+"nat": "energyPlan",
+"alt": "objEnergyPlan",
+"nat_span": [
+1980,
+1990
+],
+"alt_span": [
+2147,
+2160
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "js_hungarian__t001",
 "family": "js_hungarian",
 "topic": "Reverse a String",
@@ -12716,7 +19000,7 @@
 ],
 "k_en": 11,
 "shared_fraction": 0.908,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -13774,7 +20058,7 @@
 ],
 "k_en": 12,
 "shared_fraction": 0.909,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -23396,7 +29680,7 @@
 ],
 "k_en": 9,
 "shared_fraction": 0.903,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -40607,7 +46891,7 @@
 ],
 "k_en": 11,
 "shared_fraction": 0.919,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -90821,7 +97105,7 @@
 ],
 "k_en": 11,
 "shared_fraction": 0.888,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {
@@ -94520,7 +100804,7 @@
 ],
 "k_en": 13,
 "shared_fraction": 0.888,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {

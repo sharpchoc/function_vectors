@@ -1,5 +1,635 @@
 [
 {
+"doc_id": "comment_language__d003",
+"family": "comment_language",
+"topic": "Ten-Pin Bowling Scorer",
+"angle": "code",
+"text_es": "Write a module with `score_bowling(throws)` and a `main()` driver to evaluate a game of ten-pin bowling. The input `throws` is a list of integers representing knocked down pins (0-10) for the entire game. Iterate through exactly 10 frames. If a frame is a strike (10 pins on the first throw), the score for that frame is 10 plus the next two throws. If it is a spare (two throws summing to 10), the score is 10 plus the next one throw. Open frames simply sum the two throws. Ensure the logic properly tracks the index in the throws list, especially for the 10th frame which may have up to 3 throws. Return the final integer score.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def validate_throws(throws):\n    # every roll is a pin count, so it has to be a small non-negative integer\n    if not isinstance(throws, (list, tuple)):\n        raise TypeError(\"throws must be a list of integers\")\n    for value in throws:\n        if not isinstance(value, int) or isinstance(value, bool):\n            raise TypeError(\"throws must contain plain integers\")\n        if value < 0 or value > 10:\n            raise ValueError(\"each throw must knock down between 0 and 10 pins\")\n    return list(throws)\n\n\ndef frame_scores(throws):\n    # ten per-frame scores let a report show the breakdown as well as the total\n    rolls = validate_throws(throws)\n    scores = []\n    index = 0\n    for frame in range(10):\n        # a frame needs at least one roll of its own before any bonus rolls\n        if index >= len(rolls):\n            raise ValueError(\"not enough throws to complete frame %d\" % (frame + 1))\n        first = rolls[index]\n        if first == 10:\n            # a strike closes the frame with one roll and scores the next two\n            bonus = rolls[index + 1:index + 3]\n            if len(bonus) < 2:\n                raise ValueError(\"missing bonus throws after strike in frame %d\" % (frame + 1))\n            scores.append(10 + sum(bonus))\n            index += 1\n            continue\n        if index + 1 >= len(rolls):\n            raise ValueError(\"frame %d is missing its second throw\" % (frame + 1))\n        second = rolls[index + 1]\n        # two rolls of an open frame cannot exceed the ten standing pins\n        if first + second > 10:\n            raise ValueError(\"frame %d knocks down more than 10 pins\" % (frame + 1))\n        if first + second == 10:\n            # a spare adds a single extra roll on top of the ten pins\n            if index + 2 >= len(rolls):\n                raise ValueError(\"missing bonus throw after spare in frame %d\" % (frame + 1))\n            scores.append(10 + rolls[index + 2])\n        else:\n            scores.append(first + second)\n        index += 2\n    return scores\n\n\ndef score_bowling(throws):\n    return sum(frame_scores(throws))\n\n\ndef format_scorecard(throws):\n    scores = frame_scores(throws)\n    lines = []\n    running = 0\n    for number, value in enumerate(scores, start=1):\n        # the running total is what a real scorecard prints in each box\n        running += value\n        lines.append(\"Frame %2d: %3d  (total %3d)\" % (number, value, running))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    games = {\n        \"perfect game\": [10] * 12,\n        \"all spares\": [5] * 21,\n        \"gutter game\": [0] * 20,\n        \"mixed game\": [1, 4, 4, 5, 6, 4, 5, 5, 10, 0, 1, 7, 3, 6, 4, 10, 2, 8, 6],\n    }\n    for name, throws in games.items():\n        print(name)\n        print(format_scorecard(throws))\n        print(\"Final score: %d\\n\" % score_bowling(throws))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def validate_throws(throws):\n    # cada tirada es un número de bolos, así que tiene que ser un entero pequeño no negativo\n    if not isinstance(throws, (list, tuple)):\n        raise TypeError(\"throws must be a list of integers\")\n    for value in throws:\n        if not isinstance(value, int) or isinstance(value, bool):\n            raise TypeError(\"throws must contain plain integers\")\n        if value < 0 or value > 10:\n            raise ValueError(\"each throw must knock down between 0 and 10 pins\")\n    return list(throws)\n\n\ndef frame_scores(throws):\n    # diez puntuaciones por turno permiten que un informe muestre el desglose además del total\n    rolls = validate_throws(throws)\n    scores = []\n    index = 0\n    for frame in range(10):\n        # un turno necesita al menos una tirada propia antes de cualquier tirada de bonificación\n        if index >= len(rolls):\n            raise ValueError(\"not enough throws to complete frame %d\" % (frame + 1))\n        first = rolls[index]\n        if first == 10:\n            # un pleno cierra el turno con una sola tirada y suma las dos siguientes\n            bonus = rolls[index + 1:index + 3]\n            if len(bonus) < 2:\n                raise ValueError(\"missing bonus throws after strike in frame %d\" % (frame + 1))\n            scores.append(10 + sum(bonus))\n            index += 1\n            continue\n        if index + 1 >= len(rolls):\n            raise ValueError(\"frame %d is missing its second throw\" % (frame + 1))\n        second = rolls[index + 1]\n        # dos tiradas de un turno abierto no pueden superar los diez bolos en pie\n        if first + second > 10:\n            raise ValueError(\"frame %d knocks down more than 10 pins\" % (frame + 1))\n        if first + second == 10:\n            # un semipleno añade una única tirada extra sobre los diez bolos\n            if index + 2 >= len(rolls):\n                raise ValueError(\"missing bonus throw after spare in frame %d\" % (frame + 1))\n            scores.append(10 + rolls[index + 2])\n        else:\n            scores.append(first + second)\n        index += 2\n    return scores\n\n\ndef score_bowling(throws):\n    return sum(frame_scores(throws))\n\n\ndef format_scorecard(throws):\n    scores = frame_scores(throws)\n    lines = []\n    running = 0\n    for number, value in enumerate(scores, start=1):\n        # el total acumulado es lo que una tarjeta de puntuación real imprime en cada casilla\n        running += value\n        lines.append(\"Frame %2d: %3d  (total %3d)\" % (number, value, running))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    games = {\n        \"perfect game\": [10] * 12,\n        \"all spares\": [5] * 21,\n        \"gutter game\": [0] * 20,\n        \"mixed game\": [1, 4, 4, 5, 6, 4, 5, 5, 10, 0, 1, 7, 3, 6, 4, 10, 2, 8, 6],\n    }\n    for name, throws in games.items():\n        print(name)\n        print(format_scorecard(throws))\n        print(\"Final score: %d\\n\" % score_bowling(throws))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"nat": "every roll is a pin count, so it has to be a small non-negative integer",
+"alt": "cada tirada es un número de bolos, así que tiene que ser un entero pequeño no negativo",
+"nat_span": [
+35,
+106
+],
+"alt_span": [
+35,
+121
+],
+"k": 0
+},
+{
+"nat": "ten per-frame scores let a report show the breakdown as well as the",
+"alt": "diez puntuaciones por turno permiten que un informe muestre el desglose además del",
+"nat_span": [
+546,
+613
+],
+"alt_span": [
+561,
+643
+],
+"k": 1
+},
+{
+"nat": "a frame needs at least one roll of its own before any bonus rolls",
+"alt": "un turno necesita al menos una tirada propia antes de cualquier tirada de bonificación",
+"nat_span": [
+724,
+789
+],
+"alt_span": [
+754,
+840
+],
+"k": 2
+},
+{
+"nat": "a strike closes the frame with one roll and scores the next two",
+"alt": "un pleno cierra el turno con una sola tirada y suma las dos siguientes",
+"nat_span": [
+974,
+1037
+],
+"alt_span": [
+1025,
+1095
+],
+"k": 3
+},
+{
+"nat": "two rolls of an open frame cannot exceed the ten standing pins",
+"alt": "dos tiradas de un turno abierto no pueden superar los diez bolos en pie",
+"nat_span": [
+1462,
+1524
+],
+"alt_span": [
+1520,
+1591
+],
+"k": 4
+},
+{
+"nat": "a spare adds a single extra roll on top of the ten pins",
+"alt": "un semipleno añade una única tirada extra sobre los diez bolos",
+"nat_span": [
+1689,
+1744
+],
+"alt_span": [
+1756,
+1818
+],
+"k": 5
+},
+{
+"nat": "the running total is what a real scorecard prints in each box",
+"alt": "el total acumulado es lo que una tarjeta de puntuación real imprime en cada casilla",
+"nat_span": [
+2247,
+2308
+],
+"alt_span": [
+2321,
+2404
+],
+"k": 6
+}
+],
+"k_en": 7,
+"shared_fraction": 0.909,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "every roll is a pin count, so it has to be a small non-negative integer",
+"alt": "cada tirada es un número de bolos, así que tiene que ser un entero pequeño no negativo",
+"nat_span": [
+35,
+106
+],
+"alt_span": [
+35,
+121
+]
+},
+{
+"k": 1,
+"nat": "ten per-frame scores let a report show the breakdown as well as the",
+"alt": "diez puntuaciones por turno permiten que un informe muestre el desglose además del",
+"nat_span": [
+546,
+613
+],
+"alt_span": [
+561,
+643
+]
+},
+{
+"k": 2,
+"nat": "a frame needs at least one roll of its own before any bonus rolls",
+"alt": "un turno necesita al menos una tirada propia antes de cualquier tirada de bonificación",
+"nat_span": [
+724,
+789
+],
+"alt_span": [
+754,
+840
+]
+},
+{
+"k": 3,
+"nat": "a strike closes the frame with one roll and scores the next two",
+"alt": "un pleno cierra el turno con una sola tirada y suma las dos siguientes",
+"nat_span": [
+974,
+1037
+],
+"alt_span": [
+1025,
+1095
+]
+},
+{
+"k": 4,
+"nat": "two rolls of an open frame cannot exceed the ten standing pins",
+"alt": "dos tiradas de un turno abierto no pueden superar los diez bolos en pie",
+"nat_span": [
+1462,
+1524
+],
+"alt_span": [
+1520,
+1591
+]
+},
+{
+"k": 5,
+"nat": "a spare adds a single",
+"alt": "un semipleno añade una única tirada",
+"nat_span": [
+1689,
+1710
+],
+"alt_span": [
+1756,
+1791
+]
+},
+{
+"k": 6,
+"nat": "roll on top of the ten pins",
+"alt": "sobre los diez bolos",
+"nat_span": [
+1717,
+1744
+],
+"alt_span": [
+1798,
+1818
+]
+},
+{
+"k": 7,
+"nat": "the running",
+"alt": "el",
+"nat_span": [
+2247,
+2258
+],
+"alt_span": [
+2321,
+2323
+]
+},
+{
+"k": 8,
+"nat": "is what a",
+"alt": "acumulado es lo que una tarjeta de puntuación",
+"nat_span": [
+2265,
+2274
+],
+"alt_span": [
+2330,
+2375
+]
+},
+{
+"k": 9,
+"nat": "scorecard prints in each box",
+"alt": "imprime en cada casilla",
+"nat_span": [
+2280,
+2308
+],
+"alt_span": [
+2381,
+2404
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "comment_language__d008",
+"family": "comment_language",
+"topic": "IPv4 Subnet Calculator",
+"angle": "code",
+"text_es": "Write a script with `subnet_info(ip_str, cidr)` and a `main()` block. Parse the IPv4 string into four octets and convert it into a single 32-bit integer. Calculate the 32-bit subnet mask based on the integer `cidr` prefix (e.g., 24). Apply a bitwise AND between the IP and the mask to determine the network address. Apply a bitwise OR between the IP and the inverted mask to calculate the broadcast address. Determine the number of usable hosts, which is 2^(32-cidr) - 2 (handle edge cases where cidr >= 31 by returning 0). Convert the network and broadcast integers back to dot-decimal strings, returning them and the host count in a dictionary.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def parse_ipv4(ip_str):\n    # Split on dots first; anything other than four parts is not an IPv4 literal\n    parts = ip_str.strip().split(\".\")\n    if len(parts) != 4:\n        raise ValueError(\"IPv4 address must have exactly four octets: %r\" % ip_str)\n    octets = []\n    for part in parts:\n        # Reject empty fields and things like \"1e2\" or \"+7\" that int() would tolerate\n        if not part.isdigit():\n            raise ValueError(\"Octet %r is not a decimal number\" % part)\n        value = int(part)\n        if value > 255:\n            raise ValueError(\"Octet %d is out of the 0-255 range\" % value)\n        octets.append(value)\n    return octets\n\n\ndef ip_to_int(ip_str):\n    result = 0\n    for octet in parse_ipv4(ip_str):\n        # Shift the accumulator one byte to the left, then drop the octet in\n        result = (result << 8) | octet\n    return result\n\n\ndef int_to_ip(value):\n    # Peel off one byte at a time, most significant byte first\n    return \".\".join(str((value >> shift) & 0xFF) for shift in (24, 16, 8, 0))\n\n\ndef cidr_to_mask(cidr):\n    if not 0 <= cidr <= 32:\n        raise ValueError(\"CIDR prefix must be between 0 and 32, got %d\" % cidr)\n    if cidr == 0:\n        # A /0 mask is all zeros; the shift below would push bits out of the 32-bit window\n        return 0\n    return (0xFFFFFFFF << (32 - cidr)) & 0xFFFFFFFF\n\n\ndef usable_hosts(cidr):\n    # /31 (point-to-point) and /32 (single host) have no usable host range by the classic rule\n    if cidr >= 31:\n        return 0\n    return (1 << (32 - cidr)) - 2\n\n\ndef subnet_info(ip_str, cidr):\n    ip_int = ip_to_int(ip_str)\n    mask = cidr_to_mask(cidr)\n    # AND with the mask clears every host bit, leaving the network address\n    network = ip_int & mask\n    # OR with the inverted mask sets every host bit, leaving the broadcast address\n    broadcast = ip_int | (~mask & 0xFFFFFFFF)\n    return {\n        \"network\": int_to_ip(network),\n        \"broadcast\": int_to_ip(broadcast),\n        \"hosts\": usable_hosts(cidr),\n    }\n\n\ndef format_report(ip_str, cidr, info):\n    header = \"%s/%d\" % (ip_str, cidr)\n    lines = [header]\n    for label in (\"network\", \"broadcast\", \"hosts\"):\n        # Pad the labels so the three values line up under the header\n        lines.append(\"  %-10s %s\" % (label + \":\", info[label]))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    queries = [\n        (\"192.168.1.130\", 24),\n        (\"10.0.5.77\", 20),\n        (\"172.16.0.1\", 31),\n        (\"8.8.8.8\", 32),\n        (\"203.0.113.9\", 0),\n    ]\n    for ip_str, cidr in queries:\n        info = subnet_info(ip_str, cidr)\n        print(format_report(ip_str, cidr, info))\n        print()\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "def parse_ipv4(ip_str):\n    # Primero dividir por puntos; cualquier cosa distinta de cuatro partes no es un literal IPv4\n    parts = ip_str.strip().split(\".\")\n    if len(parts) != 4:\n        raise ValueError(\"IPv4 address must have exactly four octets: %r\" % ip_str)\n    octets = []\n    for part in parts:\n        # Rechazar campos vacíos y cosas como \"1e2\" o \"+7\" que int() toleraría\n        if not part.isdigit():\n            raise ValueError(\"Octet %r is not a decimal number\" % part)\n        value = int(part)\n        if value > 255:\n            raise ValueError(\"Octet %d is out of the 0-255 range\" % value)\n        octets.append(value)\n    return octets\n\n\ndef ip_to_int(ip_str):\n    result = 0\n    for octet in parse_ipv4(ip_str):\n        # Desplazar el acumulador un byte a la izquierda, luego insertar el octeto\n        result = (result << 8) | octet\n    return result\n\n\ndef int_to_ip(value):\n    # Extraer un byte a la vez, empezando por el byte más significativo\n    return \".\".join(str((value >> shift) & 0xFF) for shift in (24, 16, 8, 0))\n\n\ndef cidr_to_mask(cidr):\n    if not 0 <= cidr <= 32:\n        raise ValueError(\"CIDR prefix must be between 0 and 32, got %d\" % cidr)\n    if cidr == 0:\n        # Una máscara /0 es todo ceros; el desplazamiento de abajo empujaría los bits fuera de la ventana de 32 bits\n        return 0\n    return (0xFFFFFFFF << (32 - cidr)) & 0xFFFFFFFF\n\n\ndef usable_hosts(cidr):\n    # /31 (punto a punto) y /32 (host único) no tienen rango de hosts utilizables según la regla clásica\n    if cidr >= 31:\n        return 0\n    return (1 << (32 - cidr)) - 2\n\n\ndef subnet_info(ip_str, cidr):\n    ip_int = ip_to_int(ip_str)\n    mask = cidr_to_mask(cidr)\n    # El AND con la máscara borra todos los bits de host, dejando la dirección de red\n    network = ip_int & mask\n    # El OR con la máscara invertida activa todos los bits de host, dejando la dirección de broadcast\n    broadcast = ip_int | (~mask & 0xFFFFFFFF)\n    return {\n        \"network\": int_to_ip(network),\n        \"broadcast\": int_to_ip(broadcast),\n        \"hosts\": usable_hosts(cidr),\n    }\n\n\ndef format_report(ip_str, cidr, info):\n    header = \"%s/%d\" % (ip_str, cidr)\n    lines = [header]\n    for label in (\"network\", \"broadcast\", \"hosts\"):\n        # Rellenar las etiquetas para que los tres valores queden alineados bajo el encabezado\n        lines.append(\"  %-10s %s\" % (label + \":\", info[label]))\n    return \"\\n\".join(lines)\n\n\ndef main():\n    queries = [\n        (\"192.168.1.130\", 24),\n        (\"10.0.5.77\", 20),\n        (\"172.16.0.1\", 31),\n        (\"8.8.8.8\", 32),\n        (\"203.0.113.9\", 0),\n    ]\n    for ip_str, cidr in queries:\n        info = subnet_info(ip_str, cidr)\n        print(format_report(ip_str, cidr, info))\n        print()\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"nat": "Split on dots first; anything other than four parts is not an IPv4 literal",
+"alt": "Primero dividir por puntos; cualquier cosa distinta de cuatro partes no es un literal IPv4",
+"nat_span": [
+30,
+104
+],
+"alt_span": [
+30,
+120
+],
+"k": 0
+},
+{
+"nat": "Reject empty fields and things like \"1e2\" or \"+7\" that int() would tolerate",
+"alt": "Rechazar campos vacíos y cosas como \"1e2\" o \"+7\" que int() toleraría",
+"nat_span": [
+300,
+375
+],
+"alt_span": [
+316,
+384
+],
+"k": 1
+},
+{
+"nat": "Shift the accumulator one byte to the left, then drop the octet in",
+"alt": "Desplazar el acumulador un byte a la izquierda, luego insertar el octeto",
+"nat_span": [
+738,
+804
+],
+"alt_span": [
+747,
+819
+],
+"k": 2
+},
+{
+"nat": "Peel off one byte at a time, most significant byte first",
+"alt": "Extraer un byte a la vez, empezando por el byte más significativo",
+"nat_span": [
+892,
+948
+],
+"alt_span": [
+907,
+972
+],
+"k": 3
+},
+{
+"nat": "A /0 mask is all zeros; the shift below would push bits out of the 32-bit window",
+"alt": "Una máscara /0 es todo ceros; el desplazamiento de abajo empujaría los bits fuera de la ventana de 32 bits",
+"nat_span": [
+1189,
+1269
+],
+"alt_span": [
+1213,
+1319
+],
+"k": 4
+},
+{
+"nat": "AND with the mask clears every host bit, leaving the network address",
+"alt": "El AND con la máscara borra todos los bits de host, dejando la dirección de red",
+"nat_span": [
+1630,
+1698
+],
+"alt_span": [
+1690,
+1769
+],
+"k": 5
+},
+{
+"nat": "OR with the inverted mask sets every host bit, leaving the broadcast address",
+"alt": "El OR con la máscara invertida activa todos los bits de host, dejando la dirección de broadcast",
+"nat_span": [
+1733,
+1809
+],
+"alt_span": [
+1804,
+1899
+],
+"k": 6
+},
+{
+"nat": "Pad the labels so the three values line up under the header",
+"alt": "Rellenar las etiquetas para que los tres valores queden alineados bajo el encabezado",
+"nat_span": [
+2156,
+2215
+],
+"alt_span": [
+2246,
+2330
+],
+"k": 7
+}
+],
+"k_en": 8,
+"shared_fraction": 0.889,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "Split on dots first; anything other than four parts is not an IPv4 literal",
+"alt": "Primero dividir por puntos; cualquier cosa distinta de cuatro partes no es un literal IPv4",
+"nat_span": [
+30,
+104
+],
+"alt_span": [
+30,
+120
+]
+},
+{
+"k": 1,
+"nat": "Reject empty fields and things like",
+"alt": "Rechazar campos vacíos y cosas como",
+"nat_span": [
+300,
+335
+],
+"alt_span": [
+316,
+351
+]
+},
+{
+"k": 2,
+"nat": "or",
+"alt": "o",
+"nat_span": [
+342,
+344
+],
+"alt_span": [
+358,
+359
+]
+},
+{
+"k": 3,
+"nat": "that",
+"alt": "que",
+"nat_span": [
+350,
+354
+],
+"alt_span": [
+365,
+368
+]
+},
+{
+"k": 4,
+"nat": "would tolerate",
+"alt": "toleraría",
+"nat_span": [
+361,
+375
+],
+"alt_span": [
+375,
+384
+]
+},
+{
+"k": 5,
+"nat": "Shift the accumulator one",
+"alt": "Desplazar el acumulador un",
+"nat_span": [
+738,
+763
+],
+"alt_span": [
+747,
+773
+]
+},
+{
+"k": 6,
+"nat": "to the left, then drop the octet in",
+"alt": "a la izquierda, luego insertar el octeto",
+"nat_span": [
+769,
+804
+],
+"alt_span": [
+779,
+819
+]
+},
+{
+"k": 7,
+"nat": "Peel off one",
+"alt": "Extraer un",
+"nat_span": [
+892,
+904
+],
+"alt_span": [
+907,
+917
+]
+},
+{
+"k": 8,
+"nat": "at a time, most significant",
+"alt": "a la vez, empezando por el",
+"nat_span": [
+910,
+937
+],
+"alt_span": [
+923,
+949
+]
+},
+{
+"k": 9,
+"nat": "first",
+"alt": "más significativo",
+"nat_span": [
+943,
+948
+],
+"alt_span": [
+955,
+972
+]
+},
+{
+"k": 10,
+"nat": "A",
+"alt": "Una máscara",
+"nat_span": [
+1189,
+1190
+],
+"alt_span": [
+1213,
+1224
+]
+},
+{
+"k": 11,
+"nat": "mask is all zeros; the shift below would push",
+"alt": "es todo ceros; el desplazamiento de abajo empujaría los",
+"nat_span": [
+1194,
+1239
+],
+"alt_span": [
+1228,
+1283
+]
+},
+{
+"k": 12,
+"nat": "out of the 32-bit window",
+"alt": "fuera de la ventana de 32 bits",
+"nat_span": [
+1245,
+1269
+],
+"alt_span": [
+1289,
+1319
+]
+},
+{
+"k": 13,
+"nat": "point-to-point) and",
+"alt": "punto a punto) y",
+"nat_span": [
+1376,
+1395
+],
+"alt_span": [
+1426,
+1442
+]
+},
+{
+"k": 14,
+"nat": "single host) have",
+"alt": "host único)",
+"nat_span": [
+1401,
+1418
+],
+"alt_span": [
+1448,
+1459
+]
+},
+{
+"k": 15,
+"nat": "usable host range by the classic rule",
+"alt": "tienen rango de hosts utilizables según la regla clásica",
+"nat_span": [
+1422,
+1459
+],
+"alt_span": [
+1463,
+1519
+]
+},
+{
+"k": 16,
+"nat": "AND with the mask clears every host bit, leaving the network address",
+"alt": "El AND con la máscara borra todos los bits de host, dejando la dirección de red",
+"nat_span": [
+1630,
+1698
+],
+"alt_span": [
+1690,
+1769
+]
+},
+{
+"k": 17,
+"nat": "OR with the inverted mask sets every host bit, leaving the broadcast address",
+"alt": "El OR con la máscara invertida activa todos los bits de host, dejando la dirección de broadcast",
+"nat_span": [
+1733,
+1809
+],
+"alt_span": [
+1804,
+1899
+]
+},
+{
+"k": 18,
+"nat": "Pad the labels so the three values line up under the header",
+"alt": "Rellenar las etiquetas para que los tres valores queden alineados bajo el encabezado",
+"nat_span": [
+2156,
+2215
+],
+"alt_span": [
+2246,
+2330
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "comment_language__t001",
 "family": "comment_language",
 "topic": "Reverse a String",
@@ -6199,483 +6829,6 @@
 "alt_span": [
 592,
 618
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "comment_language__t024",
-"family": "comment_language",
-"topic": "Date Formatter",
-"angle": "code",
-"text_es": "Create a function `format_date(year, month, day)` that takes integers for year, month, and day and returns a formatted date string in 'YYYY-MM-DD' format. Use f-strings for formatting with zero-padding. For example, `format_date(2023, 7, 15)` should return `'2023-07-15'`, and `format_date(2020, 1, 1)` should return `'2020-01-01'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def format_date(year, month, day):\n    # This function formats a date into 'YYYY-MM-DD' string format.\n    # It takes three integer arguments: year, month, and day.\n\n    # Convert the year integer to a string.\n    year_str = str(year)\n    # Use an f-string to zero-pad the month to two digits.\n    month_str = f\"{month:02d}\"\n    # Use an f-string to zero-pad the day to two digits.\n    day_str = f\"{day:02d}\"\n\n    # Construct the final formatted date string using f-strings.\n    formatted_date = f\"{year_str}-{month_str}-{day_str}\"\n    # The result is a string in 'YYYY-MM-DD' format.\n    return formatted_date\n\n# Example usage 1: Typical date\n# Testing with a standard date\ndate1 = format_date(2023, 7, 15)\n# Example usage 2: Single-digit month and day\n# Testing with single-digit month and day to check padding\ndate2 = format_date(2020, 1, 1)\n\n# The function ensures consistent date string formatting.\n# The use of f-strings makes the formatting concise and readable.\n",
-"text_alt": "def format_date(year, month, day):\n    # Esta función formatea una fecha en el formato de cadena 'YYYY-MM-DD'.\n    # Toma tres argumentos enteros: año, mes y día.\n\n    # Convierte el entero del año a una cadena.\n    year_str = str(year)\n    # Usa una f-string para rellenar el mes con ceros a dos dígitos.\n    month_str = f\"{month:02d}\"\n    # Usa una f-string para rellenar el día con ceros a dos dígitos.\n    day_str = f\"{day:02d}\"\n\n    # Construye la cadena de fecha formateada final usando f-strings.\n    formatted_date = f\"{year_str}-{month_str}-{day_str}\"\n    # El resultado es una cadena en formato 'YYYY-MM-DD'.\n    return formatted_date\n\n# Ejemplo de uso 1: Fecha típica\n# Probando con una fecha estándar\ndate1 = format_date(2023, 7, 15)\n# Ejemplo de uso 2: Mes y día de un solo dígito\n# Probando con mes y día de un solo dígito para verificar el relleno\ndate2 = format_date(2020, 1, 1)\n\n# La función asegura un formato de cadena de fecha consistente.\n# El uso de f-strings hace que el formato sea conciso y legible.\n",
-"opps": [
-{
-"nat": "This function formats a date into 'YYYY-MM-DD' string format",
-"alt": "Esta función formatea una fecha en el formato de cadena 'YYYY-MM-DD'",
-"nat_span": [
-41,
-101
-],
-"alt_span": [
-41,
-109
-],
-"k": 0
-},
-{
-"nat": "It takes three integer arguments: year, month, and day",
-"alt": "Toma tres argumentos enteros: año, mes y día",
-"nat_span": [
-109,
-163
-],
-"alt_span": [
-117,
-161
-],
-"k": 1
-},
-{
-"nat": "Convert the year integer to a string",
-"alt": "Convierte el entero del año a una cadena",
-"nat_span": [
-172,
-208
-],
-"alt_span": [
-170,
-210
-],
-"k": 2
-},
-{
-"nat": "Use an f-string to zero-pad the month to two digits",
-"alt": "Usa una f-string para rellenar el mes con ceros a dos dígitos",
-"nat_span": [
-241,
-292
-],
-"alt_span": [
-243,
-304
-],
-"k": 3
-},
-{
-"nat": "Use an f-string to zero-pad the day to two digits",
-"alt": "Usa una f-string para rellenar el día con ceros a dos dígitos",
-"nat_span": [
-331,
-380
-],
-"alt_span": [
-343,
-404
-],
-"k": 4
-},
-{
-"nat": "Construct the final formatted date string using",
-"alt": "Construye la cadena de fecha formateada final usando",
-"nat_span": [
-416,
-463
-],
-"alt_span": [
-440,
-492
-],
-"k": 5
-},
-{
-"nat": "The result is a string in 'YYYY-MM-DD' format",
-"alt": "El resultado es una cadena en formato 'YYYY-MM-DD'",
-"nat_span": [
-538,
-583
-],
-"alt_span": [
-567,
-617
-],
-"k": 6
-},
-{
-"nat": "Example usage 1: Typical date",
-"alt": "Ejemplo de uso 1: Fecha típica",
-"nat_span": [
-614,
-643
-],
-"alt_span": [
-648,
-678
-],
-"k": 7
-},
-{
-"nat": "Testing with a standard date",
-"alt": "Probando con una fecha estándar",
-"nat_span": [
-646,
-674
-],
-"alt_span": [
-681,
-712
-],
-"k": 8
-},
-{
-"nat": "Example usage 2: Single-digit month and day",
-"alt": "Ejemplo de uso 2: Mes y día de un solo dígito",
-"nat_span": [
-710,
-753
-],
-"alt_span": [
-748,
-793
-],
-"k": 9
-},
-{
-"nat": "Testing with single-digit month and day to check padding",
-"alt": "Probando con mes y día de un solo dígito para verificar el relleno",
-"nat_span": [
-756,
-812
-],
-"alt_span": [
-796,
-862
-],
-"k": 10
-},
-{
-"nat": "The function ensures consistent date string formatting",
-"alt": "La función asegura un formato de cadena de fecha consistente",
-"nat_span": [
-848,
-902
-],
-"alt_span": [
-898,
-958
-],
-"k": 11
-},
-{
-"nat": "The use of f-strings makes the formatting concise and readable",
-"alt": "El uso de f-strings hace que el formato sea conciso y legible",
-"nat_span": [
-906,
-968
-],
-"alt_span": [
-962,
-1023
-],
-"k": 12
-}
-],
-"k_en": 13,
-"shared_fraction": 0.709,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "This function formats a date into",
-"alt": "Esta función formatea una fecha en el formato de cadena",
-"nat_span": [
-41,
-74
-],
-"alt_span": [
-41,
-96
-]
-},
-{
-"k": 1,
-"nat": " string format",
-"alt": "",
-"nat_span": [
-87,
-101
-],
-"alt_span": [
-109,
-109
-]
-},
-{
-"k": 2,
-"nat": "It takes three integer arguments: year, month, and day",
-"alt": "Toma tres argumentos enteros: año, mes y día",
-"nat_span": [
-109,
-163
-],
-"alt_span": [
-117,
-161
-]
-},
-{
-"k": 3,
-"nat": "Convert the year integer to",
-"alt": "Convierte el entero del año",
-"nat_span": [
-172,
-199
-],
-"alt_span": [
-170,
-197
-]
-},
-{
-"k": 4,
-"nat": "string",
-"alt": "una cadena",
-"nat_span": [
-202,
-208
-],
-"alt_span": [
-200,
-210
-]
-},
-{
-"k": 5,
-"nat": "Use an",
-"alt": "Usa una",
-"nat_span": [
-241,
-247
-],
-"alt_span": [
-243,
-250
-]
-},
-{
-"k": 6,
-"nat": "to zero-pad the month to two digits",
-"alt": "para rellenar el mes con ceros a dos dígitos",
-"nat_span": [
-257,
-292
-],
-"alt_span": [
-260,
-304
-]
-},
-{
-"k": 7,
-"nat": "Use an",
-"alt": "Usa una",
-"nat_span": [
-331,
-337
-],
-"alt_span": [
-343,
-350
-]
-},
-{
-"k": 8,
-"nat": "to zero-pad the day to two digits",
-"alt": "para rellenar el día con ceros a dos dígitos",
-"nat_span": [
-347,
-380
-],
-"alt_span": [
-360,
-404
-]
-},
-{
-"k": 9,
-"nat": "Construct the",
-"alt": "Construye la cadena de fecha formateada",
-"nat_span": [
-416,
-429
-],
-"alt_span": [
-440,
-479
-]
-},
-{
-"k": 10,
-"nat": "formatted date string using",
-"alt": "usando",
-"nat_span": [
-436,
-463
-],
-"alt_span": [
-486,
-492
-]
-},
-{
-"k": 11,
-"nat": "The result is a string in",
-"alt": "El resultado es una cadena en formato",
-"nat_span": [
-538,
-563
-],
-"alt_span": [
-567,
-604
-]
-},
-{
-"k": 12,
-"nat": " format",
-"alt": "",
-"nat_span": [
-576,
-583
-],
-"alt_span": [
-617,
-617
-]
-},
-{
-"k": 13,
-"nat": "Example usage",
-"alt": "Ejemplo de uso",
-"nat_span": [
-614,
-627
-],
-"alt_span": [
-648,
-662
-]
-},
-{
-"k": 14,
-"nat": "Typical date",
-"alt": "Fecha típica",
-"nat_span": [
-631,
-643
-],
-"alt_span": [
-666,
-678
-]
-},
-{
-"k": 15,
-"nat": "Testing with a standard date",
-"alt": "Probando con una fecha estándar",
-"nat_span": [
-646,
-674
-],
-"alt_span": [
-681,
-712
-]
-},
-{
-"k": 16,
-"nat": "Example usage",
-"alt": "Ejemplo de uso",
-"nat_span": [
-710,
-723
-],
-"alt_span": [
-748,
-762
-]
-},
-{
-"k": 17,
-"nat": "Single-digit month and day",
-"alt": "Mes y día de un solo dígito",
-"nat_span": [
-727,
-753
-],
-"alt_span": [
-766,
-793
-]
-},
-{
-"k": 18,
-"nat": "Testing with single-digit month and day to check padding",
-"alt": "Probando con mes y día de un solo dígito para verificar el relleno",
-"nat_span": [
-756,
-812
-],
-"alt_span": [
-796,
-862
-]
-},
-{
-"k": 19,
-"nat": "The function ensures consistent date string formatting",
-"alt": "La función asegura un formato de cadena de fecha consistente",
-"nat_span": [
-848,
-902
-],
-"alt_span": [
-898,
-958
-]
-},
-{
-"k": 20,
-"nat": "The use of",
-"alt": "El uso de",
-"nat_span": [
-906,
-916
-],
-"alt_span": [
-962,
-971
-]
-},
-{
-"k": 21,
-"nat": "makes the formatting concise and readable",
-"alt": "hace que el formato sea conciso y legible",
-"nat_span": [
-927,
-968
-],
-"alt_span": [
-982,
-1023
 ]
 }
 ],
@@ -30366,470 +30519,6 @@
 "alt_span": [
 1329,
 1331
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "comment_language__t108",
-"family": "comment_language",
-"topic": "Check Website Status (Dummy)",
-"angle": "code",
-"text_es": "Simulate checking the status of a website. The function `check_website_status(url)` should always return a dummy value of '200 OK'. In a real scenario, this would involve an HTTP request. Input: `url` (str). Output: `status` (str).\nExample 1: `check_website_status('http://example.com')` should return `'200 OK'`.\nExample 2: `check_website_status('https://google.com')` should return `'200 OK'`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def check_website_status(url: str) -> str:\n    \"\"\"\n    Simulates checking the status of a website.\n\n    Args:\n        url: The URL of the website to check (string). This parameter is currently unused.\n\n    Returns:\n        A string representing the simulated HTTP status code and message.\n    \"\"\"\n    # This line defines the expected successful status.\n    successful_status_code = \"200 OK\"\n\n    # In a real-world scenario, we would perform an actual HTTP request here.\n    # For example, using the 'requests' library:\n    # try:\n    #     response = requests.get(url, timeout=5)\n    #     return f\"{response.status_code} {response.reason}\"\n    # except requests.exceptions.RequestException as e:\n    #     return f\"Error: {e}\"\n\n    # For this exercise, we are explicitly returning a dummy value.\n    # This simulates a successful connection without actual network interaction.\n    # The 'url' parameter is included for signature compatibility.\n    # This is a fixed return value as per the task requirements.\n    return successful_status_code\n\n# Example usage of the function below.\n# Calling the function with an example URL.\nstatus1 = check_website_status('http://example.com')\n# Printing the result for the first example.\nprint(f\"Status of http://example.com: {status1}\")\n\n# Calling the function with another example URL.\nstatus2 = check_website_status('https://google.com')\n# Printing the result for the second example.\nprint(f\"Status of https://google.com: {status2}\")\n",
-"text_alt": "def check_website_status(url: str) -> str:\n    \"\"\"\n    Simula la verificación del estado de un sitio web.\n\n    Args:\n        url: La URL del sitio web a verificar (cadena). Este parámetro no se utiliza actualmente.\n\n    Returns:\n        Una cadena que representa el código de estado HTTP simulado y el mensaje.\n    \"\"\"\n    # Esta línea define el estado exitoso esperado.\n    successful_status_code = \"200 OK\"\n\n    # En un escenario del mundo real, realizaríamos una solicitud HTTP real aquí.\n    # Por ejemplo, usando la biblioteca 'requests':\n    # try:\n    #     response = requests.get(url, timeout=5)\n    #     return f\"{response.status_code} {response.reason}\"\n    # except requests.exceptions.RequestException as e:\n    #     return f\"Error: {e}\"\n\n    # Para este ejercicio, estamos devolviendo explícitamente un valor ficticio.\n    # Esto simula una conexión exitosa sin interacción de red real.\n    # El parámetro 'url' se incluye para compatibilidad de firma.\n    # Este es un valor de retorno fijo según los requisitos de la tarea.\n    return successful_status_code\n\n# Ejemplo de uso de la función a continuación.\n# Llamando a la función con una URL de ejemplo.\nstatus1 = check_website_status('http://example.com')\n# Imprimiendo el resultado para el primer ejemplo.\nprint(f\"Status of http://example.com: {status1}\")\n\n# Llamando a la función con otra URL de ejemplo.\nstatus2 = check_website_status('https://google.com')\n# Imprimiendo el resultado para el segundo ejemplo.\nprint(f\"Status of https://google.com: {status2}\")\n",
-"opps": [
-{
-"nat": "Simulates checking the status of a website",
-"alt": "Simula la verificación del estado de un sitio web",
-"nat_span": [
-55,
-97
-],
-"alt_span": [
-55,
-104
-],
-"k": 0
-},
-{
-"nat": "This line defines the expected successful status",
-"alt": "Esta línea define el estado exitoso esperado",
-"nat_span": [
-303,
-351
-],
-"alt_span": [
-325,
-369
-],
-"k": 1
-},
-{
-"nat": "In a real-world scenario, we would perform an actual HTTP request here",
-"alt": "En un escenario del mundo real, realizaríamos una solicitud HTTP real aquí",
-"nat_span": [
-398,
-468
-],
-"alt_span": [
-416,
-490
-],
-"k": 2
-},
-{
-"nat": "For example, using the 'requests' library",
-"alt": "Por ejemplo, usando la biblioteca 'requests'",
-"nat_span": [
-476,
-517
-],
-"alt_span": [
-498,
-542
-],
-"k": 3
-},
-{
-"nat": "For this exercise, we are explicitly returning a dummy value",
-"alt": "Para este ejercicio, estamos devolviendo explícitamente un valor ficticio",
-"nat_span": [
-735,
-795
-],
-"alt_span": [
-760,
-833
-],
-"k": 4
-},
-{
-"nat": "This simulates a successful connection without actual network interaction",
-"alt": "Esto simula una conexión exitosa sin interacción de red real",
-"nat_span": [
-803,
-876
-],
-"alt_span": [
-841,
-901
-],
-"k": 5
-},
-{
-"nat": "The 'url' parameter is included for signature compatibility",
-"alt": "El parámetro 'url' se incluye para compatibilidad de firma",
-"nat_span": [
-884,
-943
-],
-"alt_span": [
-909,
-967
-],
-"k": 6
-},
-{
-"nat": "This is a fixed return value as per the task requirements",
-"alt": "Este es un valor de retorno fijo según los requisitos de la tarea",
-"nat_span": [
-951,
-1008
-],
-"alt_span": [
-975,
-1040
-],
-"k": 7
-},
-{
-"nat": "Example usage of the function below",
-"alt": "Ejemplo de uso de la función a continuación",
-"nat_span": [
-1047,
-1082
-],
-"alt_span": [
-1079,
-1122
-],
-"k": 8
-},
-{
-"nat": "Calling the function with an example URL",
-"alt": "Llamando a la función con una URL de ejemplo",
-"nat_span": [
-1086,
-1126
-],
-"alt_span": [
-1126,
-1170
-],
-"k": 9
-},
-{
-"nat": "Printing the result for the first example",
-"alt": "Imprimiendo el resultado para el primer ejemplo",
-"nat_span": [
-1183,
-1224
-],
-"alt_span": [
-1227,
-1274
-],
-"k": 10
-},
-{
-"nat": "Calling the function with another example URL",
-"alt": "Llamando a la función con otra URL de ejemplo",
-"nat_span": [
-1279,
-1324
-],
-"alt_span": [
-1329,
-1374
-],
-"k": 11
-},
-{
-"nat": "Printing the result for the second example",
-"alt": "Imprimiendo el resultado para el segundo ejemplo",
-"nat_span": [
-1381,
-1423
-],
-"alt_span": [
-1431,
-1479
-],
-"k": 12
-}
-],
-"k_en": 13,
-"shared_fraction": 0.75,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "Simulates checking the status of a website",
-"alt": "Simula la verificación del estado de un sitio web",
-"nat_span": [
-55,
-97
-],
-"alt_span": [
-55,
-104
-]
-},
-{
-"k": 1,
-"nat": "The",
-"alt": "La",
-"nat_span": [
-123,
-126
-],
-"alt_span": [
-130,
-132
-]
-},
-{
-"k": 2,
-"nat": "of the website to check (string",
-"alt": "del sitio web a verificar (cadena",
-"nat_span": [
-131,
-162
-],
-"alt_span": [
-137,
-170
-]
-},
-{
-"k": 3,
-"nat": "This parameter is currently unused",
-"alt": "Este parámetro no se utiliza actualmente",
-"nat_span": [
-165,
-199
-],
-"alt_span": [
-173,
-213
-]
-},
-{
-"k": 4,
-"nat": "A string representing the simulated",
-"alt": "Una cadena que representa el código de estado",
-"nat_span": [
-223,
-258
-],
-"alt_span": [
-237,
-282
-]
-},
-{
-"k": 5,
-"nat": "status code and message",
-"alt": "simulado y el mensaje",
-"nat_span": [
-264,
-287
-],
-"alt_span": [
-288,
-309
-]
-},
-{
-"k": 6,
-"nat": "This line defines the expected successful status",
-"alt": "Esta línea define el estado exitoso esperado",
-"nat_span": [
-303,
-351
-],
-"alt_span": [
-325,
-369
-]
-},
-{
-"k": 7,
-"nat": "In a real-world scenario, we would perform an actual",
-"alt": "En un escenario del mundo real, realizaríamos una solicitud",
-"nat_span": [
-398,
-450
-],
-"alt_span": [
-416,
-475
-]
-},
-{
-"k": 8,
-"nat": "request here",
-"alt": "real aquí",
-"nat_span": [
-456,
-468
-],
-"alt_span": [
-481,
-490
-]
-},
-{
-"k": 9,
-"nat": "For example, using the",
-"alt": "Por ejemplo, usando la biblioteca",
-"nat_span": [
-476,
-498
-],
-"alt_span": [
-498,
-531
-]
-},
-{
-"k": 10,
-"nat": " library",
-"alt": "",
-"nat_span": [
-509,
-517
-],
-"alt_span": [
-542,
-542
-]
-},
-{
-"k": 11,
-"nat": "For this exercise, we are explicitly returning a dummy value",
-"alt": "Para este ejercicio, estamos devolviendo explícitamente un valor ficticio",
-"nat_span": [
-735,
-795
-],
-"alt_span": [
-760,
-833
-]
-},
-{
-"k": 12,
-"nat": "This simulates a successful connection without actual network interaction",
-"alt": "Esto simula una conexión exitosa sin interacción de red real",
-"nat_span": [
-803,
-876
-],
-"alt_span": [
-841,
-901
-]
-},
-{
-"k": 13,
-"nat": "The",
-"alt": "El parámetro",
-"nat_span": [
-884,
-887
-],
-"alt_span": [
-909,
-921
-]
-},
-{
-"k": 14,
-"nat": "parameter is included for signature compatibility",
-"alt": "se incluye para compatibilidad de firma",
-"nat_span": [
-894,
-943
-],
-"alt_span": [
-928,
-967
-]
-},
-{
-"k": 15,
-"nat": "This is a fixed return value as per the task requirements",
-"alt": "Este es un valor de retorno fijo según los requisitos de la tarea",
-"nat_span": [
-951,
-1008
-],
-"alt_span": [
-975,
-1040
-]
-},
-{
-"k": 16,
-"nat": "Example usage of the function below",
-"alt": "Ejemplo de uso de la función a continuación",
-"nat_span": [
-1047,
-1082
-],
-"alt_span": [
-1079,
-1122
-]
-},
-{
-"k": 17,
-"nat": "Calling the function with an example URL",
-"alt": "Llamando a la función con una URL de ejemplo",
-"nat_span": [
-1086,
-1126
-],
-"alt_span": [
-1126,
-1170
-]
-},
-{
-"k": 18,
-"nat": "Printing the result for the first example",
-"alt": "Imprimiendo el resultado para el primer ejemplo",
-"nat_span": [
-1183,
-1224
-],
-"alt_span": [
-1227,
-1274
-]
-},
-{
-"k": 19,
-"nat": "Calling the function with another example URL",
-"alt": "Llamando a la función con otra URL de ejemplo",
-"nat_span": [
-1279,
-1324
-],
-"alt_span": [
-1329,
-1374
-]
-},
-{
-"k": 20,
-"nat": "Printing the result for the second example",
-"alt": "Imprimiendo el resultado para el segundo ejemplo",
-"nat_span": [
-1381,
-1423
-],
-"alt_span": [
-1431,
-1479
 ]
 }
 ],

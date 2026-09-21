@@ -1,0 +1,419 @@
+[
+ {
+  "id": "d001",
+  "title": "TTL Cache Manager",
+  "spec": "Implement a class `TTLCache` that provides a key-value store where entries expire after a specified duration. The constructor `__init__(self, capacity: int)` initializes the cache. The method `put(self, key: str, value: int, ttl: int, current_time: int)` inserts or updates a key with the given time-to-live. The method `get(self, key: str, current_time: int) -> int` returns the value if the key exists and has not expired, or -1 if missing/expired. The method `cleanup(self, current_time: int)` removes all expired keys to free up capacity. If a `put` exceeds capacity after cleanup, the oldest inserted key is removed. Example: `cache.put(\"A\", 100, 5, 0)` followed by `cache.get(\"A\", 6)` returns -1.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "Token Bucket Rate Limiter",
+  "spec": "Write a class `TokenBucket` for API rate limiting using the token bucket algorithm. The constructor `__init__(self, capacity: int, refill_rate: float)` sets the maximum tokens and tokens added per second. The method `consume(self, tokens: int, current_time: float) -> bool` checks if the requested number of tokens is available. It first updates the available tokens based on the time elapsed since the last call, capping at `capacity`. If enough tokens are available, it deducts them and returns True; otherwise, it returns False without deducting. Example: capacity 10 and rate 1.0, initially full; `consume(10, 0.0)` returns True, `consume(1, 0.5)` returns False, `consume(1, 1.0)` returns True.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "Text Editor Gap Buffer",
+  "spec": "Implement a class `GapBuffer` that simulates a text editor's cursor and content management. The constructor `__init__(self)` initializes empty left and right segments. The method `insert(self, text: str)` appends characters to the end of the left segment. The method `delete(self, count: int)` removes up to `count` characters from the end of the left segment. The method `move_cursor_left(self, count: int)` shifts up to `count` characters from the end of the left segment to the beginning of the right segment. The method `move_cursor_right(self, count: int)` shifts up to `count` characters from the right segment to the left. The method `get_text(self) -> str` returns the concatenated text from both segments. Example: `insert(\"hello\")`, `move_cursor_left(2)`, `insert(\"X\")` -> `get_text()` returns \"helXlo\".",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "Moving Window Statistics",
+  "spec": "Create a class `MovingStats` that maintains streaming statistics over a sliding window of a fixed size. The constructor `__init__(self, window_size: int)` initializes the window limits. The method `add(self, value: float)` adds a new value; if the window is full, the oldest value is evicted. The class must internally track the running sum and the running sum of squares to avoid recalculating from scratch. The method `get_mean(self) -> float` returns the average of the current values, or 0.0 if empty. The method `get_variance(self) -> float` returns the population variance (mean of squares minus square of mean), or 0.0 if empty. Example: `add(2.0)`, `add(4.0)` yields a mean of 3.0 and variance of 1.0.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "Circular Ring Buffer",
+  "spec": "Design a class `RingBuffer` representing a fixed-size circular queue backed by a pre-allocated array. The constructor `__init__(self, capacity: int)` initializes the array with None and sets up tracking pointers. The method `enqueue(self, item: int) -> bool` adds an item at the tail if the buffer is not full, returning True, or returns False if full. The method `dequeue(self) -> int` removes and returns the item at the head, or raises a ValueError if empty. The methods `is_empty(self) -> bool` and `is_full(self) -> bool` return the current queue state based on the element count. Example: capacity 2, `enqueue(1)`, `enqueue(2)` -> True; `enqueue(3)` -> False; `dequeue()` -> 1.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "Stack Virtual Machine",
+  "spec": "Implement a class `StackVM` that executes simple operations on a stack-based memory model. The constructor `__init__(self)` initializes an empty variables dictionary, an empty data stack, and a program counter. The method `load(self, program: list[str])` loads a sequence of string instructions. The method `run(self) -> int` executes instructions starting from index 0 until the program terminates, returning the top of the stack (or 0 if empty). Instructions are: \"PUSH <num>\", \"ADD\" (pops two numbers, pushes sum), \"MUL\" (pops two, pushes product), \"STORE <var>\" (pops value, saves to variables dict), \"LOAD <var>\" (pushes value from variables). The program counter must increment properly after each operation. Example: `load([\"PUSH 5\", \"PUSH 3\", \"ADD\"])` followed by `run()` returns 8.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "Subscription Billing Tracker",
+  "spec": "Create a class `SubscriptionTracker` to manage a user's service usage and billing cycle. The constructor `__init__(self, daily_rate: float)` sets the fixed cost per active day. The method `record_usage(self, days: int)` adds to the accumulated active days. The method `add_charge(self, amount: float)` adds a one-time fee to the pending balance. The method `generate_invoice(self) -> float` calculates the total due (`daily_rate` multiplied by accumulated days, plus one-time fees), resets the accumulated days and pending fees to zero, and returns the total. The method `get_current_owed(self) -> float` returns the total due without resetting any counters. Example: rate 2.0, `record_usage(5)`, `add_charge(10.0)` -> `generate_invoice()` returns 20.0.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "Undo/Redo Text Editor",
+  "spec": "Write a class `TextEditor` that manages text state with full undo and redo functionality. The constructor `__init__(self)` initializes an empty string and two empty stacks for undo and redo history. The method `type_text(self, text: str)` appends text to the current string, pushes the previous string onto the undo stack, and clears the redo stack. The method `backspace(self, count: int)` removes `count` characters from the end, saves the prior state to the undo stack, and clears redo. The method `undo(self)` restores the state from the undo stack and pushes the current state to the redo stack. The method `redo(self)` restores from the redo stack and pushes to the undo stack. The method `read(self) -> str` returns the current text. Example: `type_text(\"abc\")`, `undo()` yields `read() == \"\"`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Bank Account Ledger",
+  "spec": "Implement a class `BankLedger` to handle account transactions while enforcing overdraft limits. The constructor `__init__(self, overdraft_limit: float)` initializes the balance to 0.0 and stores the negative limit. The method `deposit(self, amount: float, date: str)` increases the balance and appends a tuple `(date, \"DEPOSIT\", amount)` to the transaction history. The method `withdraw(self, amount: float, date: str) -> bool` checks if the balance minus the amount is at or above the negative `overdraft_limit`. If so, it updates the balance, logs `(date, \"WITHDRAW\", amount)`, and returns True; otherwise, it returns False and logs nothing. The method `get_statement(self) -> list` returns the full history. Example: limit 50, `withdraw(60, \"2023-01-01\")` returns False.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "Vending Machine Controller",
+  "spec": "Design a class `VendingMachine` to manage inventory, pricing, and sales. The constructor `__init__(self)` initializes empty dictionaries for prices and stock, and variables for the current session's inserted coins and total machine revenue. The method `add_item(self, code: str, price: int, quantity: int)` adds or updates an item's price and stock. The method `insert_coin(self, amount: int)` adds the amount to the current session balance. The method `buy_item(self, code: str) -> int` checks if the item has stock > 0 and current balance >= price; if successful, it decreases stock, adds the price to total revenue, deducts it from the session balance, and returns the remaining change (clearing the session). The method `refund(self) -> int` returns the inserted coins and resets the session balance to 0. Example: `insert_coin(100)`, `buy_item(\"A\")` costing 75 returns 25.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "Game Server Matchmaker",
+  "spec": "Design a class `Matchmaker` that groups queuing players into multiplayer game sessions. The constructor `__init__(self, team_size: int)` sets the required players per team and initializes an empty waiting queue and an empty list of active matches. The method `add_player(self, player_name: str)` appends a player to the waiting queue. If the queue length reaches `team_size * 2`, it automatically dequeues the first `team_size * 2` players, splits them into two equal teams, and appends a tuple `(team_A, team_B)` to the active matches list. The method `get_waiting_count(self) -> int` returns the number of players still in the queue. The method `get_active_matches(self) -> list` returns all created match tuples. The method `clear_queue(self)` completely empties the waiting queue.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Simple Order Matcher",
+  "spec": "Create a class `OrderMatcher` to process buy and sell limit orders for a single asset. The constructor `__init__(self)` initializes lists for pending buys and sells, and a list of executed trades. The method `add_order(self, side: str, price: float, quantity: int)` accepts side \"BUY\" or \"SELL\", stores the order, and immediately triggers matching logic. The matching logic repeatedly finds the highest price BUY and lowest price SELL; if BUY price >= SELL price, it executes a trade at the SELL price for the minimum of the two quantities, updating both orders' remaining quantities. Fully filled orders are removed from the pending lists. The method `get_trades(self) -> list` returns a list of tuples `(price, executed_quantity)`. Example: BUY 10 @ 100, SELL 5 @ 90 produces a trade of 5 @ 90.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Multipart File Downloader",
+  "spec": "Implement a class `MultipartDownloader` to manage out-of-order chunks of a downloaded file. The constructor `__init__(self, total_size: int, chunk_size: int)` sets the parameters and initializes a bytearray for the file data, a set of received chunk indices, and a total received bytes counter. The method `receive_chunk(self, chunk_index: int, data: bytes)` writes the data to the correct offset (`chunk_index * chunk_size`) if the chunk hasn't been received yet. It marks the chunk as received and adds the length of the data to the received bytes counter. The method `is_complete(self) -> bool` returns True when the total received bytes equal the `total_size`. The method `get_file(self) -> bytes` returns the fully assembled file. Example: A 100-byte file receives chunk 0 (50 bytes) and chunk 1 (50 bytes) to become complete.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d014",
+  "title": "Data Pagination Controller",
+  "spec": "Design a class `Paginator` to navigate a large dataset sequentially. The constructor `__init__(self, data: list, page_size: int)` stores the dataset and page size, and sets the current page index to 0. The method `get_current_page(self) -> list` returns the slice of the dataset corresponding to the current page index. The method `next_page(self) -> bool` advances the page index by 1 and returns True if there is a subsequent page; if already on the last page, it does nothing and returns False. The method `prev_page(self) -> bool` decrements the page index if it is greater than 0, returning True, otherwise False. The method `get_total_pages(self) -> int` calculates and returns the ceiling of the dataset's length divided by the page size.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d015",
+  "title": "Tic-Tac-Toe State Manager",
+  "spec": "Create a class `TicTacToe` to manage the state and progression of a 3x3 game board. The constructor `__init__(self)` creates a 3x3 grid initialized with empty strings, sets the current player to \"X\", and initializes a move counter to 0. The method `play(self, row: int, col: int) -> str` places the current player's mark if the specified cell is empty, and increments the move counter. After placing the mark, it checks for a winning row, column, or diagonal; if found, it returns \"X wins\" or \"O wins\". If the move counter reaches 9 without a winner, it returns \"Draw\". Otherwise, it swaps the current player and returns \"Next\". The method `get_current_player(self) -> str` returns whose turn it currently is.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d016",
+  "title": "Event Emitter",
+  "spec": "Write a class `EventEmitter` to manage a publish-subscribe event system. The constructor `__init__(self)` initializes a dictionary mapping event string names to lists of callback functions, and a global counter for total emitted events. The method `on(self, event: str, callback: callable)` appends the callback to the specific event's list. The method `off(self, event: str, callback: callable)` removes the callback from the event's list if it exists. The method `emit(self, event: str, *args, **kwargs)` invokes all callbacks registered for the event in the order they were added, passing the arguments to them, and increments the global emitted counter. The method `clear(self, event: str)` drops all callbacks for that event. The method `get_emit_count(self) -> int` returns the total number of events emitted.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d017",
+  "title": "Connection Pool Manager",
+  "spec": "Implement a class `ConnectionPool` to manage a limited set of reusable database connection identifiers. The constructor `__init__(self, max_connections: int)` initializes a set of available connection IDs (e.g., strings \"conn-1\" to \"conn-N\") and an empty set of in-use connection IDs. The method `acquire(self) -> str` moves a connection ID from the available set to the in-use set and returns it; if none are available, it raises a RuntimeError. The method `release(self, conn_id: str)` moves the specified connection back to the available set; if the ID is invalid or already available, it raises a ValueError. The method `get_stats(self) -> dict` returns a dictionary with keys \"available\" and \"in_use\" mapped to their respective counts, and \"max\" mapped to `max_connections`. Example: `acquire()` returns \"conn-1\", moving it to in-use.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d018",
+  "title": "Blackjack Dealer",
+  "spec": "Design a class `BlackjackDealer` to manage drawing from a shoe of multiple playing card decks. The constructor `__init__(self, num_decks: int)` generates a list of cards (where each deck has ranks 2-10, J, Q, K, A repeated 4 times) and initializes a dealt card counter and a shuffle counter to 0. The method `shuffle(self, seed: int)` shuffles the remaining undealt cards in the list using the provided seed for reproducibility, leaving the already dealt cards at the beginning untouched, and increments the shuffle counter. The method `deal_card(self) -> str` returns the next undealt card from the list and increments the dealt counter. If no cards remain, it raises an IndexError. The method `remaining_cards(self) -> int` returns how many cards are left to deal.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d019",
+  "title": "Batching Log Aggregator",
+  "spec": "Create a class `LogAggregator` to collect log messages and flush them in discrete batches. The constructor `__init__(self, batch_size: int)` initializes an empty list of pending logs and a dictionary mapping string log levels to lifetime integer counts. The method `log(self, level: str, message: str) -> list` appends the formatted string \"[LEVEL] message\" to the pending log list and increments the lifetime counter for that level. If the number of pending logs reaches `batch_size`, it flushes by returning the current list of logs and resetting the pending list to empty; otherwise, it returns an empty list. The method `force_flush(self) -> list` returns all pending logs and clears the pending list regardless of size. The method `get_counts(self) -> dict` returns the lifetime counts of logs by level.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d020",
+  "title": "Flight Seat Booker",
+  "spec": "Write a class `FlightBooking` to manage passenger seat reservations on a commercial flight. The constructor `__init__(self, num_rows: int, seats_per_row: int)` initializes a 2D boolean grid represented by a list of lists (False for available, True for booked), and a counter for total booked seats. The method `book_seat(self, row: int, seat: int) -> bool` checks if the seat coordinates are valid and available; if so, it marks the seat as True, increments the booked counter, and returns True, otherwise returning False. The method `cancel_seat(self, row: int, seat: int) -> bool` marks a booked seat as False, decrements the counter, and returns True (returning False if invalid or not booked). The method `get_occupancy_rate(self) -> float` returns the ratio of booked seats to total capacity.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d021",
+  "title": "Virtual Pet State Machine",
+  "spec": "Implement a class `VirtualPet` tracking a simulated pet's internal needs via a state machine. The constructor `__init__(self)` initializes hunger, energy, and happiness to 50 (where all stats must always be clamped between 0 and 100). The method `feed(self)` decreases hunger by 20 and increases energy by 5. The method `play(self)` increases happiness by 20, increases hunger by 10, and decreases energy by 15. The method `sleep(self)` increases energy by 30 and increases hunger by 10. The method `tick(self)` simulates the passage of time by increasing hunger by 5 and decreasing happiness by 5. The method `get_status(self) -> dict` returns the current stats, ensuring all clamping rules have been enforced after any action.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d022",
+  "title": "Traffic Light Controller",
+  "spec": "Design a class `TrafficLight` that strictly cycles through Red, Green, and Yellow phases over time. The constructor `__init__(self, red_sec: int, green_sec: int, yellow_sec: int)` stores the durations for each state, starts the light in the \"RED\" state, and initializes an internal timer at 0. The method `pass_time(self, seconds: int)` increments the timer by the given amount. While the timer exceeds the current state's duration, it continuously subtracts the duration from the timer and transitions to the next state (RED -> GREEN -> YELLOW -> RED) to properly handle large time jumps. The method `current_state(self) -> str` returns the current light color. The method `time_until_green(self) -> int` calculates and returns the remaining seconds until the light transitions to green based on the current state and timer.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d023",
+  "title": "Priority Task Queue",
+  "spec": "Create a class `TaskQueue` to manage pending execution jobs based on priority and age. The constructor `__init__(self)` initializes an empty list of tasks and a monotonically increasing counter for task IDs to preserve insertion order for ties. The method `add_task(self, name: str, priority: int)` assigns the next unique ID from the counter, and stores the task tuple in the list. The method `execute_next(self) -> str` finds the task with the highest priority (largest integer). If priorities are equal, it breaks the tie by picking the task with the lowest task ID (oldest inserted); it then removes this task from the list and returns its name. If the queue is empty, `execute_next` returns None. The method `clear(self)` empties the queue.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d024",
+  "title": "Simple JSON Tokenizer",
+  "spec": "Write a class `JSONLexer` that sequentially tokenizes a simplified JSON string. The constructor `__init__(self, text: str)` stores the input string and sets a position cursor integer to 0. The method `next_token(self) -> str` advances the cursor past any whitespace characters. It then reads and returns the next valid token: a string literal (enclosed in double quotes), a number (consecutive digits), or single-character structural tokens like '{', '}', '[', ']', ':', and ',', updating the cursor to the end of the matched token. If the cursor reaches the end of the string, it returns `None`. The method `has_more(self) -> bool` returns True if any non-whitespace characters remain after the current cursor position. Example: `{\"a\": 1}` produces `{`, `\"a\"`, `:`, `1`, `}`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d025",
+  "title": "Simple Consistent Hash Ring",
+  "spec": "Implement a class `HashRing` for distributing cached keys evenly across server nodes. The constructor `__init__(self, replicas: int)` sets the number of virtual nodes per physical node and initializes a dictionary mapping integer hashes to node names, alongside a strictly sorted list of these hash keys. The method `add_node(self, node_name: str)` generates `replicas` number of hashes for the node (using Python's built-in `hash(node_name + str(i))`), adds them to the dictionary, and maintains the list of keys in sorted order. The method `remove_node(self, node_name: str)` removes all virtual node entries for that physical node from both the dictionary and the sorted list. The method `get_node(self, key: str) -> str` hashes the input key, finds the first hash in the sorted list greater than or equal to the key's hash, and returns the corresponding node (wrapping around to the first node if the hash exceeds all keys).",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d026",
+  "title": "Elevator Controller",
+  "spec": "Write an `Elevator` class to simulate a building elevator. The constructor takes `top_floor` and sets the current floor to 1, the direction to 0 (1 for up, -1 for down), and initializes an empty set of requested floors. Implement `request(floor)` which adds a valid floor (between 1 and `top_floor`) to the requests. Implement `step()` which moves the elevator one floor in its current direction. If the elevator is idle (direction 0) but there are requests, it should find the nearest requested floor (using absolute distance) and set its direction towards it (1 or -1). After moving, if the new floor is in the requests, remove it from the requests and set the direction back to 0. Implement `get_state()` returning a tuple of `(current_floor, direction, sorted_list_of_requests)`. Include a short driver block under `if __name__ == '__main__':` to instantiate and test the elevator.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d027",
+  "title": "Coffee Machine Controller",
+  "spec": "Write a `CoffeeMachine` class to track ingredients and waste. The constructor takes no arguments but initializes water (0 ml), beans (0 g), milk (0 ml), and a waste bin counter (0 pucks). Implement `fill(water, beans, milk)` to add to the current reserves. Implement `empty_waste()` to reset the waste bin to 0. Implement `brew(drink_type)` for 'espresso' (30ml water, 15g beans), 'americano' (120ml water, 15g beans), and 'latte' (30ml water, 15g beans, 100ml milk). If the waste bin has 10 or more pucks, raise a `ValueError` with \"Empty waste\". If ingredients are strictly less than required, raise a `ValueError` with \"Insufficient ingredients\". Otherwise, deduct the ingredients, increment the waste bin by 1, and return `{drink_type} ready`. Provide a small driver block at the end to demonstrate filling and brewing.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d028",
+  "title": "Browser History Simulator",
+  "spec": "Write a `BrowserHistory` class that simulates tab navigation. The constructor takes a `homepage` URL string, setting it as the current page, and initializes empty back and forward history stacks. Implement `visit(url)` which pushes the current page to the back stack, sets the new URL as current, and fully clears the forward stack. Implement `back(steps)` which moves back by up to `steps` pages (pushing the current and skipped pages to the forward stack), returning the new current URL. Implement `forward(steps)` which moves forward by up to `steps` pages (pushing to the back stack), returning the new current URL. Implement `current()` to return the active URL. Include a short main block with an example sequence of visits and stack navigations.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d029",
+  "title": "Loyalty Program Tracker",
+  "spec": "Write a `LoyaltyProgram` class to manage customer points and tiers. The constructor initializes an empty state for tracking current balances, lifetime accumulated points, and tiers. Implement `add_points(customer_id, points)` which adds points to a customer's current balance and their lifetime total. Update their tier: if their lifetime points reach 5000 or more, their tier becomes 'Platinum'; if 1000 to 4999, 'Gold'; otherwise it remains 'Silver'. Implement `redeem(customer_id, points)` which deducts points from the current balance and returns True if they have enough; otherwise returns False without altering the balance (redeeming never reduces lifetime points). Implement `get_status(customer_id)` returning a tuple `(current_balance, tier)`. Defaults for unknown customers: 0 balance, 'Silver'. Include a short example usage block.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d030",
+  "title": "Digital Thermostat",
+  "spec": "Write a `Thermostat` class for an HVAC system. The constructor takes a `target_temp` (float) and initializes the current temperature to 72.0, HVAC mode to 'off', and fan mode to 'auto'. Implement `set_target(temp)` and `set_fan(mode)`. Implement `sensor_update(current_temp)` which updates the internal current temperature and evaluates the HVAC mode: if the current temperature is at least 2.0 degrees above the target, the mode becomes 'cool'. If it is at least 2.0 degrees below the target, the mode becomes 'heat'. If the current temperature is within 0.5 degrees of the target (inclusive), the mode switches to 'off'. Implement `get_state()` returning a dictionary with string keys 'temp', 'target', 'hvac', and 'fan' mapped to their respective internal values. Include a driver block demonstrating a temperature swing.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d031",
+  "title": "Parking Garage Manager",
+  "spec": "Write a `ParkingGarage` class. The constructor takes `total_spots` and `hourly_rate`, maintaining the number of available spots, a mapping of license plates to entry hours, and the total collected revenue. Implement `enter(plate, entry_hour)`: if spots are available and the plate isn't already parked, record the entry, decrease available spots, and return True; otherwise return False. Implement `exit(plate, exit_hour)`: if the plate is parked and `exit_hour >= entry_hour`, calculate the fee as `(exit_hour - entry_hour) * hourly_rate`, remove the plate, increase available spots, add the fee to the revenue, and return the fee. If the plate is not parked or the times are invalid, return None. Implement `get_stats()` returning `(available_spots, total_revenue)`. Include a simple usage example at the bottom of the script.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d032",
+  "title": "Drone Delivery Router",
+  "spec": "Write a function `simulate(commands)` that models a delivery drone's route. Encapsulate the logic in a custom class. The class must internally track its current x and y coordinates, battery percentage starting at one hundred, current payload weight, and total distance traveled. It must use internal helper routines to compute the Manhattan distance between points, calculate battery drain based on distance plus payload weight, and verify if the battery allows a proposed move. The function processes a list of instructions where each is a tuple such as the word pickup followed by an integer, the word move followed by two integers, or just the word drop. If a move requires more battery than available, the drone stays in place and ignores the move. Return a tuple of the final coordinates, remaining battery, and total distance. Example input: a list containing a move to zero and four, a pickup of two, a move to three and four, and a drop, should return a tuple of coordinates three and four, battery eighty nine, and distance seven.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d033",
+  "title": "Library Checkout System",
+  "spec": "Write a function `library(transactions)` that processes book borrowings. Encapsulate the logic in a custom class that internally tracks the current day as an integer, a catalog of available books, active loans mapping user names to due dates, and accumulated late fees per user. The class needs internal helper routines to advance the day, calculate overdue penalties at one coin per day late, and check if a user is barred from borrowing due to having three active loans. The function processes a list of tuples representing actions: the word add and a title, the word borrow with user and title, the word return with user and title, or the word wait and an integer of days. Return a list of tuples containing user names and their total accumulated fees. Example: adding dune, alice borrowing dune, waiting ten days, and alice returning dune returns a list with a tuple of alice and three, assuming a loan period of seven days.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d034",
+  "title": "Robot Vacuum Navigator",
+  "spec": "Write a function `vacuum(commands)` that models a cleaning robot. Use a custom class that internally tracks the room boundaries, the current x and y position, the current facing direction as a compass point, the battery level starting at fifty, and a set of cleaned coordinate points. It should use internal helper routines to update the facing direction on turns, compute the next forward coordinate, and deduct battery power for moving and cleaning. The function accepts a list of string commands such as forward, turn left, turn right, and clean. If a forward move would hit a wall or if battery drops to zero, subsequent commands are ignored. Return a tuple containing the final position, remaining battery, and total unique spots cleaned. Example: a room of size ten by ten, starting at zero zero facing north, processing forward, clean, turn right, forward, and clean returns a tuple of position one one, battery forty five, and two spots cleaned.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d035",
+  "title": "Bowling Score Calculator",
+  "spec": "Write a function `bowling(rolls)` that calculates a ten pin bowling score. Encapsulate the logic in a custom class that internally tracks the current frame number, the rolls within the current frame, a history of all frame scores, and flags for active strikes or spares. The class needs internal helper routines to determine if a frame is complete, apply bonus points to previous strikes or spares, and advance the frame counter. The function receives a list of integers representing the pins knocked down in each roll. Return the total score after all rolls are processed. Example input: ten, seven, three, four, and five should process a strike then a spare then an open frame, returning a total score of forty three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d036",
+  "title": "ATM Cash Dispenser",
+  "spec": "Write a function `atm(requests)` that handles cash withdrawals. Encapsulate the logic in a custom class that internally tracks the available bills in denominations of twenty, fifty, and one hundred, the daily withdrawal total for each account, and a list of locked accounts. The class must use internal helper routines to determine the optimal mix of bills to dispense, verify daily limits are not exceeded, and flag an account for locking if three invalid requests are made. The function processes a list of tuples containing the word withdraw, an account name, and an amount. If an account is locked or exceeds its five hundred limit, the request is denied. Return a list of dispensed bill totals for each successful transaction. Example: withdrawing one hundred and twenty for bob returns a list containing one hundred and twenty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d037",
+  "title": "Solar Panel Inverter",
+  "spec": "Write a function `solar(updates)` that manages household energy distribution. Encapsulate the logic in a custom class that internally tracks the battery charge level up to a thousand units, the total energy drawn from the grid, the total energy fed to the grid, and the current sunlight intensity. The class should use internal helper routines to route excess solar power to the battery, calculate when to draw from the grid if demand exceeds solar and battery supply, and discharge the battery. The function processes a list of tuples containing sunlight level and household consumption. Return a tuple of final battery charge, total grid draw, and total grid feed. Example: five hundred sunlight and two hundred consumption, followed by one hundred sunlight and six hundred consumption, starting with empty battery, returns a tuple of one hundred, two hundred, and zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d038",
+  "title": "Submarine Ballast System",
+  "spec": "Write a function `submarine(commands)` that manages diving depth. Use a custom class that internally tracks the target depth, the current volume of compressed air, the port ballast water volume, and the starboard ballast water volume. The class requires internal helper routines to calculate buoyancy changes, move water between port and starboard to maintain trim, and consume air to blow ballast out. The function takes a list of tuples such as the word dive and meters, surface and meters, or trim with side and amount. It returns a tuple of the final depth, remaining compressed air, and a boolean indicating if the ship is balanced. Example: starting at surface with one hundred air, diving fifty meters and trimming port by ten returns fifty, ninety, and false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d039",
+  "title": "Freight Train Loader",
+  "spec": "Write a function `freight(manifest)` that builds a train consist. Encapsulate the logic in a custom class that internally tracks the list of attached cars, the total weight of the train, the locomotive pulling capacity, and the current station. Internal helper routines must evaluate if adding a car exceeds capacity, calculate weight distribution, and remove cars matching a destination station. The function processes a list of tuples such as the word attach with weight and destination, or arrive with a station name. Return a tuple of the final number of attached cars and their combined weight. Example: attach fifty for chicago, attach sixty for boston, and arrive at chicago returns one car and sixty weight.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d040",
+  "title": "E-commerce Shopping Cart",
+  "spec": "Write a function `cart(actions)` that manages a customer checkout. Encapsulate the logic in a custom class that internally tracks the items in the basket, their quantities, an active discount percentage, and the applicable tax rate. Internal helper routines are required to sum the subtotal of items, apply the discount if valid, compute the tax on the discounted amount, and handle stock limits. The function processes a list of tuples like the word add with item name, quantity, and price, the word discount with a percentage, and the word remove with item name and quantity. Return the final calculated total cost as a float. Example: adding two shirts at twenty each and a ten percent discount returns thirty six assuming zero tax.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d041",
+  "title": "Factory Assembly Line",
+  "spec": "Write a function `assembly(events)` that monitors production. Use a custom class that internally tracks the number of successful widgets, the number of defective widgets, the machine temperature, and the current operator shift. Internal helper routines should increase machine heat per widget, trigger a cooling cycle if temperature exceeds a threshold, and categorize widgets as defective if produced while overheated. The function takes a list of integers representing the raw material quality of each widget. Return a tuple of successful widgets, defective widgets, and final temperature. Example: input of five, six, two, eight, and nine starting at temperature zero with heat increase of ten per widget might return three successful, two defective, and twenty degrees depending on the threshold.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d042",
+  "title": "Paint Mixing Dispenser",
+  "spec": "Write a function `mixer(requests)` that creates custom paint colors. Encapsulate the logic in a custom class that internally tracks the volume of cyan, magenta, yellow, and black pigments, along with a base white volume. Internal helper routines must calculate the required drops of each pigment for a requested shade, deduct the volumes from the reservoirs, and verify sufficient inventory before dispensing. The function processes a list of tuples like the word mix followed by drops of cyan, magenta, yellow, and black. Return a tuple of the remaining volumes for the four main pigments. Example: starting with one hundred of each, mixing ten, twenty, zero, and five returns ninety, eighty, one hundred, and ninety five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d043",
+  "title": "Coffee Roaster Controller",
+  "spec": "Write a function `roaster(steps)` that models coffee bean roasting. Encapsulate the logic in a custom class that internally tracks the batch size of green beans, the current drum temperature, the elapsed roasting time, and the cooling tray status. Internal helper routines are needed to apply heat increments, simulate time passing, check if the beans have reached the first crack temperature, and transfer beans to the cooling tray. The function processes a list of tuples like the word heat and degrees, wait and minutes, and the word drop. Return a string indicating the final roast level such as light, medium, or burnt. Example: heating by two hundred, waiting ten, and dropping returns medium.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d044",
+  "title": "Blockchain Node Validator",
+  "spec": "Write a function `validator(blocks)` that models a ledger node. Use a custom class that internally tracks the current block height, a ledger of account balances, a pool of pending transactions, and the total transaction fees collected. Internal helper routines must verify that a sender has sufficient balance, deduct the transaction amount and fee, and package pending transactions into a new block. The function takes a list of tuples representing transactions: the word send with sender, receiver, amount, and fee, or the word mine. Return a list of tuples containing account names and their final balances. Example: starting with alice having fifty, alice sending bob ten with a fee of one, then mining, returns a list where alice has thirty nine and bob has ten.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d045",
+  "title": "Cargo Ship Stowage",
+  "spec": "Write a function `stowage(operations)` that manages shipping containers. Encapsulate the logic in a custom class that internally tracks the available deck slots, the total weight on the port side, the total weight on the starboard side, and a list of hazardous containers. Internal helper routines must ensure weight difference between sides stays within limits, locate a specific container for removal, and verify hazardous containers are spaced apart. The function processes a list of tuples like the word load with identifier, weight, side, and hazardous status, or the word unload with identifier. Return a boolean indicating if the ship remained balanced throughout all operations. Example: loading a ten weight container on port and a ten weight container on starboard returns true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d046",
+  "title": "Ski Lift Operator",
+  "spec": "Write a function `skilift(conditions)` that manages mountain transport. Encapsulate the logic in a custom class that internally tracks the number of active chairs, passengers on each chair, the current wind speed, and the motor operating mode. Internal helper routines are required to evaluate wind safety, shift the chairs forward by one position, unload passengers at the top, and switch the motor to slow mode if winds are high. The function processes a list of tuples like the word wind and speed, or the word load and passengers. Return the total number of passengers successfully dropped at the top. Example: loading four, wind at ten, and loading two returns six after enough cycles.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d047",
+  "title": "Toll Booth Collector",
+  "spec": "Write a function `tollbooth(vehicles)` that processes highway payments. Use a custom class that internally tracks the total cash collected, the list of scanned electronic passes, the count of toll violators, and the physical barrier position. Internal helper routines must calculate the toll based on the number of vehicle axles, open and close the barrier, and log a license plate if a vehicle drives through without paying. The function receives a list of tuples like the word cash with axles and amount, the word pass with axles and tag, or the word run with axles and plate. Return a tuple of total revenue and the number of violators. Example: cash for two axles at five dollars and a run for four axles returns five dollars and one violator.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d048",
+  "title": "Airport Baggage Sorter",
+  "spec": "Write a function `sorter(bags)` that routes luggage. Encapsulate the logic in a custom class that internally tracks the destination bins, the current conveyor belt speed, the count of mishandled bags, and a log of scanned barcodes. Internal helper routines must decode the barcode to find the flight number, allocate the bag to the correct destination bin, and adjust belt speed if too many bags arrive at once. The function takes a list of tuples like the word scan with flight number and weight, or the word delay and minutes. Return a list of tuples pairing flight numbers with their total baggage weight. Example: scanning two bags for flight one weighing twenty and fifteen returns flight one with thirty five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d049",
+  "title": "Bakery Recipe Scaler",
+  "spec": "Write a function `baker(orders)` that manages dough preparation. Use a custom class that internally tracks the bulk flour inventory, the yeast supply, water volume, and a list of requested bread types. Internal helper routines must calculate the ingredient ratios for different breads, scale the recipe based on the order quantity, and deduct the used ingredients from the bulk inventory. The function processes a list of tuples like the word restock with ingredient and amount, or the word bake with bread type and loaves. Return a tuple of the remaining flour, yeast, and water. Example: restocking flour with one thousand and baking two sourdough loaves returns eight hundred flour, zero yeast, and zero water.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d050",
+  "title": "Amusement Park Ride",
+  "spec": "Write a function `ride(events)` that operates a roller coaster. Encapsulate the logic in a custom class that internally tracks the current waiting queue, the passengers currently seated on the train, the restraint lock status, and the ride cycle count. Internal helper routines must group passengers to fill rows, verify that all restraints are locked before dispatch, and clear the train when the cycle completes. The function receives a list of tuples like the word arrive and group size, the word lock, and the word dispatch. Return the total number of passengers who completed the ride. Example: arrivals of four and two, a lock, and a dispatch returns six.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d051",
+  "title": "Restaurant Table Manager",
+  "spec": "Write a function `restaurant(parties)` that seats diners. Use a custom class that internally tracks the available tables and their capacities, the current waitlist of parties, the revenue from seated parties, and the time elapsed. Internal helper routines must find the smallest table that fits a party, calculate the expected dining duration, and clear tables when their time is up. The function takes a list of tuples like the word arrive with party name and size, the word tick and minutes, or the word order with party name and amount. Return the total revenue generated and the number of parties still on the waitlist. Example: arrival of smith size four, an order for smith of one hundred, and a tick of sixty returns one hundred revenue and zero waiting.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d052",
+  "title": "Plant Nursery Monitor",
+  "spec": "Write a function `nursery(readings)` that tends to seedlings. Encapsulate the logic in a custom class that internally tracks the soil moisture levels for different plant trays, the ambient greenhouse humidity, the reservoir water level, and the growth stage of the plants. Internal helper routines must determine if a tray needs watering based on its specific threshold, dispense water from the reservoir, and record the growth progress. The function processes a list of tuples like the word moisture with tray name and level, the word humidity and level, and the word fill and amount. Return a list of trays that are critically dry because the reservoir was empty. Example: moisture for tray A at ten with a fill of zero returns a list containing tray A.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d053",
+  "title": "Escape Room Controller",
+  "spec": "Write a function `escaperoom(actions)` that tracks puzzle progress. Use a custom class that internally tracks the time remaining, the status of three distinct locks, the sequence of entered codes, and the final door status. Internal helper routines must validate a given code against the solution, unlock the corresponding lock if correct, deduct penalty time for wrong guesses, and check if all locks are open to release the door. The function processes a list of tuples like the word guess and code, the word hint, or the word wait and minutes. Return a boolean indicating if the room was successfully escaped before time ran out. Example: guessing one two three four and five six seven eight returns false if the third lock remains closed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d054",
+  "title": "Data Center Cooling",
+  "spec": "Write a function `cooling(sensors)` that manages server temperatures. Encapsulate the logic in a custom class that internally tracks the temperature of multiple server racks, the fan speeds, the overall power consumption of the cooling unit, and the ambient room temperature. Internal helper routines must calculate the required fan speed for a given heat level, increase power consumption when fans spin faster, and trigger an emergency shutdown if a rack exceeds critical limits. The function takes a list of tuples like the word temp with rack name and degrees, or the word ambient and degrees. Return the total cooling power consumed. Example: temp for rack one at eighty and rack two at sixty returns fifteen hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d055",
+  "title": "Smart Streetlight Grid",
+  "spec": "Write a function `streetlights(events)` that optimizes city lighting. Encapsulate the logic in a custom class that internally tracks the ambient light level, a map of active pedestrians, the brightness state of each pole, and the energy saved. Internal helper routines must determine if a pole should turn on based on nearby pedestrians, adjust brightness based on ambient light, and calculate energy used versus a baseline. The function receives a list of tuples like the word ambient and level, the word pedestrian and pole identifier, or the word clear and pole identifier. Return the total energy saved over the given events. Example: ambient at fifty and pedestrian at pole five returns twenty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d056",
+  "title": "Fitness Center Access",
+  "spec": "Write a function `gym(swipes)` that manages member entry. Encapsulate the logic in a custom class that internally tracks registered members, their membership tier, the current facility capacity, and a log of denied entries. Internal helper routines must check if the member's tier allows access at the current time, verify the gym is not at maximum capacity, and record the entry or denial. The function processes a list of tuples like the word register with name and tier, the word enter with name and hour, and the word leave with name. Return the number of denied entries. Example: registering bob as basic and bob entering at hour eighteen returns one if basic tier cannot enter during peak hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d057",
+  "title": "Sailing Autopilot Controller",
+  "spec": "A function navigate(instructions) initializes a sailboat autopilot class and processes a sequence of movements. The autopilot maintains the current heading degrees, wind angle degrees, and rudder position. The system needs private internal helpers to calculate the shortest turn angle between two headings, to adjust the rudder based on the turn severity, and to clamp degrees between zero and three hundred fifty nine. When processing a list of tuples containing target heading and wind angle, it updates its internal state. If the wind angle is within thirty degrees of the target heading, it enters a tacking state requiring wider rudder swings. Return a list of resulting rudder angles for each instruction.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d058",
+  "title": "Text RPG Combat Engine",
+  "spec": "A function fight(actions) initializes a character simulator class and processes a sequence of combat events. The character has health initialized to one hundred, maximum stamina at fifty, current stamina, and an armor rating of five. It processes a sequence of incoming action tuples containing action type and a numeric value. Action types are attack, block, or rest. The simulator requires hidden internal logic to calculate damage mitigation based on armor, to deduce stamina drain for blocking, and to check if death has occurred. An attack reduces health after mitigation, a block reduces stamina but prevents the next attack damage, and a rest restores stamina. Return a tuple of final health and final stamina.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d059",
+  "title": "Network Router Simulator",
+  "spec": "A function route(packets) creates a router simulator class and processes incoming network traffic. The router maintains a routing table mapping destination addresses to port numbers, a queue of pending packets, and a count of dropped packets. Each packet is a tuple of source, destination, and time to live. The system needs internal routines to decrement the time to live, to check if a destination exists in the routing table, and to process the queue. Packets with zero time to live or unknown destinations are dropped. Returns a tuple of successfully routed packet counts and dropped packet counts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d060",
+  "title": "Smart Sprinkler System",
+  "spec": "A function irrigate(sensors) creates a landscape controller class and evaluates environmental data. It tracks the soil moisture percentage for three zones, the current weather forecast, and a baseline watering duration. The input is a list of tuples providing the zone identifier, current moisture reading, and a rain probability percentage. The system must use internal helper routines to determine if the moisture is below the critical threshold of thirty percent, to scale the watering duration inversely against the rain probability, and to update the internal moisture levels after watering. Return a list of calculated watering durations for each input event.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d061",
+  "title": "Margin Account Calculator",
+  "spec": "A function evaluate(trades) initializes a brokerage account class and processes financial transactions. The account holds a cash balance, a list of owned stock tickers with quantities, and a total loan balance. The input is a list of trade tuples containing an action like buy or sell, a ticker, a quantity, and a price. Internal mechanisms must validate if enough buying power exists, compute the required maintenance margin which is twenty five percent of the stock value, and check for margin calls. If a purchase exceeds cash, the loan balance increases. Return a tuple containing the final cash balance, loan balance, and a boolean indicating if a margin call is active.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d062",
+  "title": "Radio Telescope Aligner",
+  "spec": "A function align(targets) initializes an observatory tracker class and moves a celestial dish. It stores the current azimuth degrees, elevation degrees, and the temperature of the rotation motors. The input is a list of target tuples providing the desired azimuth and elevation. The system relies on internal logic to calculate the spherical degree differences, to simulate motor heat generation proportional to the movement distance, and to trigger a cooldown cycle if motor temperature exceeds ninety degrees. Return a list of actual completion times for each movement, where one degree of movement takes one second and a cooldown takes thirty seconds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d063",
+  "title": "Synthesizer Voice Envelope",
+  "spec": "A function synthesize(events) initializes an envelope generator class and processes musical notes. It tracks the current amplitude level, the active stage which can be idle, attack, decay, sustain, or release, and the sample rate. The input is a list of note events like press or release along with a duration in milliseconds. Internal operations are required to advance the amplitude based on the current stage slope, to transition between stages when amplitude thresholds are met, and to calculate the step delta per millisecond. Return a list of final amplitude values sampled at the end of each event duration.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d064",
+  "title": "File Synchronizer",
+  "spec": "A function synchronize(operations) sets up a remote sync agent class and processes local file changes. It maintains a representation of a remote file system using paths and timestamps, a count of bytes transferred, and an error log. The input is a list of operations representing local file changes, containing the action like create or modify or delete, the file path, and a new timestamp. The system needs secluded helpers to verify if a path exists remotely, to compare timestamps to decide if an update is newer, and to simulate the byte transfer. Return a tuple with the total bytes transferred and the number of skipped operations.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ }
+]

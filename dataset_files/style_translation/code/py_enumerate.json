@@ -1,5 +1,554 @@
 [
 {
+"doc_id": "py_enumerate__d009",
+"family": "py_enumerate",
+"topic": "Chess PGN Sequence Validator",
+"angle": "code",
+"text_es": "Write a module to validate a sequence of chess moves in a list of strings (e.g., 'e4', 'Nf3'). Implement 8 functions: 1) `find_captures(moves)` returns 0-based indices of moves containing 'x'. 2) `find_checks(moves)` returns indices of moves containing '+'. 3) `find_castling(moves)` yields `(index, move)` for 'O-O' or 'O-O-O'. 4) `format_move_pairs(moves)` yields '{index}: {move}' for every move to build a raw list. 5) `find_pawn_promotions(moves)` returns indices containing '='. 6) `detect_repetition(moves)` returns indices where the move is identical to the move 4 plies ago. 7) `generate_json(moves)` yields `{\"ply\": index, \"move\": move}` dicts. 8) `find_blunders(moves, engine_evals)` takes a parallel list of float evaluations and yields `(index, move)` where the eval drops by > 2.0 from the previous ply. For example, given `['e4', 'Nf3']`, `format_move_pairs` yields `['0: e4', '1: Nf3']`. Add a short main block.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def find_captures(moves):\n    \"\"\"Indices of moves that capture material.\"\"\"\n    return [i for i, move in enumerate(moves) if \"x\" in move]\n\n\ndef find_checks(moves):\n    \"\"\"Indices of moves that deliver check or mate.\"\"\"\n    return [i for i, move in enumerate(moves) if \"+\" in move or \"#\" in move]\n\n\ndef find_castling(moves):\n    \"\"\"Yield (index, move) for king-side or queen-side castling.\"\"\"\n    for i, move in enumerate(moves):\n        if move.rstrip(\"+#\") in (\"O-O\", \"O-O-O\"):\n            yield i, move\n\n\ndef format_move_pairs(moves):\n    \"\"\"Yield '{index}: {move}' for every ply.\"\"\"\n    for i, move in enumerate(moves):\n        yield \"{0}: {1}\".format(i, move)\n\n\ndef find_pawn_promotions(moves):\n    \"\"\"Indices of moves promoting a pawn.\"\"\"\n    return [i for i, move in enumerate(moves) if \"=\" in move]\n\n\ndef detect_repetition(moves):\n    \"\"\"Indices where a move repeats the same side's move from two full turns ago.\"\"\"\n    repeats = []\n    for i, move in enumerate(moves):\n        if i >= 4 and moves[i - 4] == move:\n            repeats.append(i)\n    return repeats\n\n\ndef generate_json(moves):\n    \"\"\"Yield one JSON-ready record per ply.\"\"\"\n    for i, move in enumerate(moves):\n        yield {\"ply\": i, \"move\": move}\n\n\ndef find_blunders(moves, engine_evals):\n    \"\"\"Yield (index, move) where the evaluation drops by more than 2.0 pawns.\"\"\"\n    if len(engine_evals) != len(moves):\n        raise ValueError(\"engine_evals must be parallel to moves\")\n    for i, move in enumerate(moves):\n        if i and engine_evals[i - 1] - engine_evals[i] > 2.0:\n            yield i, move\n\n\ndef report(moves, engine_evals):\n    \"\"\"Build a human-readable summary of the move sequence.\"\"\"\n    lines = list(format_move_pairs(moves))\n    lines.append(\"captures: \" + str(find_captures(moves)))\n    lines.append(\"checks: \" + str(find_checks(moves)))\n    lines.append(\"promotions: \" + str(find_pawn_promotions(moves)))\n    lines.append(\"repetitions: \" + str(detect_repetition(moves)))\n    for index, move in find_castling(moves):\n        lines.append(\"castling at ply {0}: {1}\".format(index, move))\n    for index, move in find_blunders(moves, engine_evals):\n        lines.append(\"blunder at ply {0}: {1}\".format(index, move))\n    return \"\\n\".join(lines)\n\n\nif __name__ == \"__main__\":\n    game = [\"e4\", \"e5\", \"Nf3\", \"Nc6\", \"Bb5\", \"a6\", \"Bxc6\", \"dxc6\",\n            \"O-O\", \"Nf6\", \"Nc3\", \"Bg4\", \"h3\", \"Bxf3\", \"Qxf3\", \"Qd7\"]\n    evals = [0.2, 0.1, 0.3, 0.2, 0.3, 0.2, 0.4, 0.3,\n             0.5, 0.4, 0.5, 0.4, 0.6, -2.1, 0.7, 0.6]\n    print(report(game, evals))\n    for record in generate_json(game[:4]):\n        print(record)\n",
+"text_alt": "def find_captures(moves):\n    \"\"\"Indices of moves that capture material.\"\"\"\n    return [i for i in range(len(moves)) if \"x\" in moves[i]]\n\n\ndef find_checks(moves):\n    \"\"\"Indices of moves that deliver check or mate.\"\"\"\n    return [i for i in range(len(moves)) if \"+\" in moves[i] or \"#\" in moves[i]]\n\n\ndef find_castling(moves):\n    \"\"\"Yield (index, move) for king-side or queen-side castling.\"\"\"\n    for i in range(len(moves)):\n        if moves[i].rstrip(\"+#\") in (\"O-O\", \"O-O-O\"):\n            yield i, moves[i]\n\n\ndef format_move_pairs(moves):\n    \"\"\"Yield '{index}: {move}' for every ply.\"\"\"\n    for i in range(len(moves)):\n        yield \"{0}: {1}\".format(i, moves[i])\n\n\ndef find_pawn_promotions(moves):\n    \"\"\"Indices of moves promoting a pawn.\"\"\"\n    return [i for i in range(len(moves)) if \"=\" in moves[i]]\n\n\ndef detect_repetition(moves):\n    \"\"\"Indices where a move repeats the same side's move from two full turns ago.\"\"\"\n    repeats = []\n    for i in range(len(moves)):\n        if i >= 4 and moves[i - 4] == moves[i]:\n            repeats.append(i)\n    return repeats\n\n\ndef generate_json(moves):\n    \"\"\"Yield one JSON-ready record per ply.\"\"\"\n    for i in range(len(moves)):\n        yield {\"ply\": i, \"move\": moves[i]}\n\n\ndef find_blunders(moves, engine_evals):\n    \"\"\"Yield (index, move) where the evaluation drops by more than 2.0 pawns.\"\"\"\n    if len(engine_evals) != len(moves):\n        raise ValueError(\"engine_evals must be parallel to moves\")\n    for i in range(len(moves)):\n        if i and engine_evals[i - 1] - engine_evals[i] > 2.0:\n            yield i, moves[i]\n\n\ndef report(moves, engine_evals):\n    \"\"\"Build a human-readable summary of the move sequence.\"\"\"\n    lines = list(format_move_pairs(moves))\n    lines.append(\"captures: \" + str(find_captures(moves)))\n    lines.append(\"checks: \" + str(find_checks(moves)))\n    lines.append(\"promotions: \" + str(find_pawn_promotions(moves)))\n    lines.append(\"repetitions: \" + str(detect_repetition(moves)))\n    for index, move in find_castling(moves):\n        lines.append(\"castling at ply {0}: {1}\".format(index, move))\n    for index, move in find_blunders(moves, engine_evals):\n        lines.append(\"blunder at ply {0}: {1}\".format(index, move))\n    return \"\\n\".join(lines)\n\n\nif __name__ == \"__main__\":\n    game = [\"e4\", \"e5\", \"Nf3\", \"Nc6\", \"Bb5\", \"a6\", \"Bxc6\", \"dxc6\",\n            \"O-O\", \"Nf6\", \"Nc3\", \"Bg4\", \"h3\", \"Bxf3\", \"Qxf3\", \"Qd7\"]\n    evals = [0.2, 0.1, 0.3, 0.2, 0.3, 0.2, 0.4, 0.3,\n             0.5, 0.4, 0.5, 0.4, 0.6, -2.1, 0.7, 0.6]\n    print(report(game, evals))\n    for record in generate_json(game[:4]):\n        print(record)\n",
+"opps": [
+{
+"k": 0,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+95,
+101
+],
+"alt_span": [
+95,
+95
+]
+},
+{
+"k": 1,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+238,
+244
+],
+"alt_span": [
+237,
+237
+]
+},
+{
+"k": 2,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+401,
+407
+],
+"alt_span": [
+403,
+403
+]
+},
+{
+"k": 3,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+440,
+444
+],
+"alt_span": [
+437,
+445
+]
+},
+{
+"k": 4,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+500,
+504
+],
+"alt_span": [
+501,
+509
+]
+},
+{
+"k": 5,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+595,
+601
+],
+"alt_span": [
+600,
+600
+]
+},
+{
+"k": 6,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+658,
+662
+],
+"alt_span": [
+658,
+666
+]
+},
+{
+"k": 7,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+763,
+769
+],
+"alt_span": [
+767,
+767
+]
+},
+{
+"k": 8,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+949,
+955
+],
+"alt_span": [
+952,
+952
+]
+},
+{
+"k": 9,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+1015,
+1019
+],
+"alt_span": [
+1013,
+1021
+]
+},
+{
+"k": 10,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+1154,
+1160
+],
+"alt_span": [
+1156,
+1156
+]
+},
+{
+"k": 11,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+1215,
+1219
+],
+"alt_span": [
+1212,
+1220
+]
+},
+{
+"k": 12,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+1460,
+1466
+],
+"alt_span": [
+1461,
+1461
+]
+},
+{
+"k": 13,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+1571,
+1575
+],
+"alt_span": [
+1567,
+1575
+]
+}
+],
+"k_en": 14,
+"shared_fraction": 0.962,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+95,
+101
+],
+"alt_span": [
+95,
+95
+]
+},
+{
+"k": 1,
+"nat": "enumerate(moves",
+"alt": "range(len(moves)",
+"nat_span": [
+105,
+120
+],
+"alt_span": [
+99,
+115
+]
+},
+{
+"k": 2,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+132,
+136
+],
+"alt_span": [
+127,
+135
+]
+},
+{
+"k": 3,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+238,
+244
+],
+"alt_span": [
+237,
+237
+]
+},
+{
+"k": 4,
+"nat": "enumerate(moves",
+"alt": "range(len(moves)",
+"nat_span": [
+248,
+263
+],
+"alt_span": [
+241,
+257
+]
+},
+{
+"k": 5,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+275,
+279
+],
+"alt_span": [
+269,
+277
+]
+},
+{
+"k": 6,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+290,
+294
+],
+"alt_span": [
+288,
+296
+]
+},
+{
+"k": 7,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+401,
+407
+],
+"alt_span": [
+403,
+403
+]
+},
+{
+"k": 8,
+"nat": "enumerate(moves",
+"alt": "range(len(moves)",
+"nat_span": [
+411,
+426
+],
+"alt_span": [
+407,
+423
+]
+},
+{
+"k": 9,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+440,
+444
+],
+"alt_span": [
+437,
+445
+]
+},
+{
+"k": 10,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+500,
+504
+],
+"alt_span": [
+501,
+509
+]
+},
+{
+"k": 11,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+595,
+601
+],
+"alt_span": [
+600,
+600
+]
+},
+{
+"k": 12,
+"nat": "enumerate(moves",
+"alt": "range(len(moves)",
+"nat_span": [
+605,
+620
+],
+"alt_span": [
+604,
+620
+]
+},
+{
+"k": 13,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+658,
+662
+],
+"alt_span": [
+658,
+666
+]
+},
+{
+"k": 14,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+763,
+769
+],
+"alt_span": [
+767,
+767
+]
+},
+{
+"k": 15,
+"nat": "enumerate(moves",
+"alt": "range(len(moves)",
+"nat_span": [
+773,
+788
+],
+"alt_span": [
+771,
+787
+]
+},
+{
+"k": 16,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+800,
+804
+],
+"alt_span": [
+799,
+807
+]
+},
+{
+"k": 17,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+949,
+955
+],
+"alt_span": [
+952,
+952
+]
+},
+{
+"k": 18,
+"nat": "enumerate(moves",
+"alt": "range(len(moves)",
+"nat_span": [
+959,
+974
+],
+"alt_span": [
+956,
+972
+]
+},
+{
+"k": 19,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+1015,
+1019
+],
+"alt_span": [
+1013,
+1021
+]
+},
+{
+"k": 20,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+1154,
+1160
+],
+"alt_span": [
+1156,
+1156
+]
+},
+{
+"k": 21,
+"nat": "enumerate(moves",
+"alt": "range(len(moves)",
+"nat_span": [
+1164,
+1179
+],
+"alt_span": [
+1160,
+1176
+]
+},
+{
+"k": 22,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+1215,
+1219
+],
+"alt_span": [
+1212,
+1220
+]
+},
+{
+"k": 23,
+"nat": ", move",
+"alt": "",
+"nat_span": [
+1460,
+1466
+],
+"alt_span": [
+1461,
+1461
+]
+},
+{
+"k": 24,
+"nat": "enumerate(moves",
+"alt": "range(len(moves)",
+"nat_span": [
+1470,
+1485
+],
+"alt_span": [
+1465,
+1481
+]
+},
+{
+"k": 25,
+"nat": "move",
+"alt": "moves[i]",
+"nat_span": [
+1571,
+1575
+],
+"alt_span": [
+1567,
+1575
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "py_enumerate__t001",
 "family": "py_enumerate",
 "topic": "Reverse a String",
@@ -86981,7 +87530,7 @@
 ],
 "k_en": 7,
 "shared_fraction": 0.894,
-"pass": true,
+"pass": false,
 "verify": null,
 "opps_all": [
 {

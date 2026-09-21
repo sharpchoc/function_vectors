@@ -1,0 +1,549 @@
+[
+ {
+  "id": "d001",
+  "title": "Log Error Extractor",
+  "spec": "Implement a module to analyze server access logs. Create a helper function `isCriticalError(logLine)` that returns a boolean indicating if the string contains the exact substring 'FATAL' or 'PANIC'. Create a main function `processLogs(logLines, maxErrors)` that accepts an array of string log lines and a numeric threshold. It should iterate through the array, counting critical errors using the helper, and collect the valid non-critical lines into a new array. If the critical error count exceeds the numeric threshold, the function should return an empty array and a boolean flag set to true to indicate a system halt. Otherwise, return the collected array of valid strings and a false boolean flag. Include a short driver script that defines an array of 5 sample log lines, calls the main function, and logs the returned data structure.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d002",
+  "title": "Cart Discount Calculator",
+  "spec": "Design a module to calculate final shopping cart totals. Write a helper function `isEligibleForDiscount(price, minimumThreshold)` that returns a boolean true if the numeric price is strictly greater than the numeric threshold. Write a main function `calculateTotal(cartPrices, taxRate, applyVipDiscount)` that takes an array of numeric prices, a numeric tax multiplier, and a boolean VIP flag. The function should compute the subtotal, apply a 10 percent discount on individual items that meet a numeric threshold of 50 (using the helper), and if the VIP boolean is true, subtract an additional fixed numeric amount of 15 from the final summed total. Apply the tax rate to the final result and return the total number. Provide a driver script with a sample array of 4 prices and numeric constants to demonstrate a run.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d003",
+  "title": "Sensor Data Outlier Remover",
+  "spec": "Write a module to clean up noisy temperature sensor data. Include a helper function `isValidReading(reading, minVal, maxVal)` that returns a boolean evaluating whether the numeric reading falls inclusively between the minimum and maximum numeric bounds. The main function `filterSensorData(readings, lowerBound, upperBound)` should accept an array of numeric readings and the two numeric boundaries. It must iterate through the array, using the helper to test each reading, and push valid numbers into a newly allocated array while maintaining a separate numeric counter for rejected readings. The function returns an object containing the cleaned array of numbers and the numeric count of rejected items. Append a driver block that passes a sample array of 6 readings to the main function.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d004",
+  "title": "Password Policy Enforcer",
+  "spec": "Create a module that enforces a company password policy. Write a helper function `hasSpecialCharacter(text)` that returns a boolean indicating if the string contains any of the characters '@', '#', or '$'. Write a second helper `isLongEnough(text, minLength)` that returns a boolean comparing the string's length to the numeric minimum. The main function `filterValidPasswords(passwords, requiredLength)` should process an array of strings, using both helpers to determine validity. Valid strings should be collected into a new array. Return an object containing the array of approved strings and a numeric count of the rejected passwords. Include a short driver script that tests an array of 5 varied password strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d005",
+  "title": "Event Overlap Detector",
+  "spec": "Implement a module to detect scheduling conflicts in calendar events. Create a helper function `checkOverlap(startA, endA, startB, endB)` that takes four numeric timestamps and returns a boolean indicating if the two time ranges overlap. The main function `findConflicts(eventStarts, eventEnds)` accepts two parallel arrays of numeric timestamps representing the start and end times of meetings. It should compare every unique pair of events using the helper function. If an overlap is found, it should immediately set a boolean conflict flag to true, count the total number of overlapping pairs, and return an object with the boolean flag and the numeric count. Include a driver that defines two arrays of 4 timestamps and logs the output of the main function.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d006",
+  "title": "Recipe Scaler",
+  "spec": "Write a module to scale recipe ingredient quantities for different serving sizes. Write a helper function `scaleQuantity(amount, factor)` that multiplies a numeric amount by a numeric scaling factor and returns the result. Create a main function `adjustRecipe(ingredients, quantities, originalServings, targetServings)` that takes an array of string ingredient names, a parallel array of numeric quantities, and two numeric values for the serving sizes. It should first calculate the numeric ratio (target divided by original). If the ratio is exactly 1, return the original quantities array immediately (checked via a boolean condition). Otherwise, map the quantities array using the helper function to scale each item. Return an object containing the array of strings and the new array of scaled numbers. Include a driver block that tests 3 ingredients.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d007",
+  "title": "Pagination Metadata Generator",
+  "spec": "Design a module to generate pagination navigation data for a data table. Write a helper function `calculateTotalPages(totalItems, itemsPerPage)` that returns the ceiling of the division of the two numbers. Write a main function `getPaginationMetadata(totalItems, itemsPerPage, currentPage)` that uses the helper to find the total pages. It should calculate two boolean variables: one indicating if a previous page exists (current page > 1) and another if a next page exists (current page < total pages). It must also generate an array of numbers containing the immediate page numbers to display (current page, minus 1 if applicable, and plus 1 if applicable, constrained by boundaries). Return an object with the three calculated numbers, the two booleans, and the array. Include a driver script with sample inputs.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d008",
+  "title": "File Extension Grouper",
+  "spec": "Create a module to analyze file uploads by their extensions. Write a helper function `extractExtension(filename)` that returns the string portion after the last dot in the string, or an empty string if no dot exists. The main function `summarizeFiles(filenames, allowNoExtension)` takes an array of string filenames and a boolean flag. It should iterate over the array, determine the extension using the helper, and build an array of unique string extensions found. Keep a numeric count of how many files were processed. If a file has no extension and the boolean flag is false, skip processing it. Return an object containing the unique extensions array and the numeric count. Provide a driver block that tests an array of 6 varied filenames.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d009",
+  "title": "Vending Machine Change",
+  "spec": "Implement a module to calculate change for a vending machine transaction. Write a helper `isValidPayment(amountPaid, itemCost)` that returns a boolean checking if the numeric paid amount is greater than or equal to the numeric cost. The main function `calculateChange(amountPaid, itemCost, availableCoins)` receives the two numbers and an array of available coin denominations (numbers sorted in descending order). It first uses the helper to check payment validity; if false, it returns an empty array. Otherwise, it calculates the numeric difference (change due). It loops through the coin array, subtracting the largest possible coins from the remaining change due, keeping a numeric tally of the coins dispensed, and pushing them into a new array. Return the array of dispensed coins. Include a driver script with sample constants.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d010",
+  "title": "Library Fine Calculator",
+  "spec": "Write a module to process library fines for overdue returns. Write a helper function `calculateFine(daysOverdue, dailyRate)` that multiplies the two numbers, but returns 0 if `daysOverdue` is less than or equal to 0. The main function `processReturns(daysOverdueArray, dailyRate, isForgivenessDay)` takes an array of numeric overdue days, a numeric rate, and a boolean flag. If the boolean flag is true, it should immediately return an object with a total fine of 0 and an empty array. Otherwise, it should map over the array using the helper, summing up the total numeric fine. Any item with a fine greater than 0 should have its index (number) pushed to an array of penalized accounts. Return the total fine and the array of penalized indices. Add a driver block testing 4 overdue values.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d011",
+  "title": "URL Query String Builder",
+  "spec": "Design a module to construct URL query strings from arrays of keys and values. Write a helper `isValidParam(value)` that returns a boolean true if the string value is neither null nor empty. The main function `buildQueryString(keys, values, includePrefix)` accepts two parallel arrays of strings and a boolean flag. It should iterate through the arrays, using the helper to check each value. If valid, format it as 'key=value' and push it to a new array. After processing, join the array of formatted strings with an ampersand. If the boolean flag is true and the final string has a length greater than 0, prepend a question mark string. Return the final string and the numeric count of valid parameters. Include a sample driver script with 3 key-value pairs.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d012",
+  "title": "Flight Itinerary Validator",
+  "spec": "Create a flight itinerary validation module. Write a helper function `isValidAirportCode(code)` that returns a boolean confirming the string is exactly 3 characters long. The main function `validateItinerary(airportCodes, isDomestic)` takes an array of string airport codes and a boolean flag. It should iterate through the array using the helper to check each code, keeping a numeric count of invalid codes. It must also verify that the array length is at least 2. Set a boolean variable `isValidRoute` to true if the array length is sufficient and the numeric invalid count is exactly 0. Return an object with the boolean route validity, the numeric count of total stops (array length), and an array of the invalid string codes found. Add a driver script testing a 4-stop itinerary.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d013",
+  "title": "Playlist Duration Calculator",
+  "spec": "Implement a module to compute total music playlist durations. Write a helper function `formatSecondsToMinutes(totalSeconds)` that converts a numeric value of seconds into a formatted string (e.g., passing 125 returns '2:05'). The main function `analyzePlaylist(songDurations, addCrossfade)` accepts an array of numeric durations in seconds and a boolean flag. It loops through the array to sum the total seconds. If the boolean flag is true and there is more than one song, subtract 2 seconds (numeric) for each transition (number of songs minus one). Finally, it calls the helper to get the formatted string. Return an object containing the formatted string, the final numeric total in seconds, and a boolean indicating if the total exceeds 3600 seconds. Provide a short driver script with an array of durations.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d014",
+  "title": "Text Word Filter",
+  "spec": "Write a module to filter out short words from a list of text tokens. Create a helper function `isWordLongEnough(word, minLength)` that returns a boolean indicating if the string's length meets or exceeds the numeric minimum. The main function `filterTokens(words, minLength, toLowercase)` takes an array of string tokens, a numeric threshold, and a boolean flag. Iterate over the array. If the boolean flag is true, convert each string to lowercase. Pass each word and the threshold to the helper. If it returns true, push the word to a new array. Keep a numeric count of the discarded words. Return an object with the newly populated array of strings and the numeric discarded count. Add a driver script with 6 sample words.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d015",
+  "title": "Markdown Task Parser",
+  "spec": "Design a module to analyze markdown-style to-do lists. Write a helper function `isTaskCompleted(line)` that returns a boolean true if the string starts with the exact substring '[x]'. The main function `parseTaskList(taskLines, includeCompleted)` takes an array of string tasks and a boolean flag. It initializes two numeric counters for completed and pending tasks. Iterate over the array and use the helper to evaluate each string. Increment the respective numeric counter. If the string is completed and the boolean flag is false, do not include it in the results. Otherwise, push the string into an array of filtered tasks. Return an object containing the array of strings and both numeric counters. Include a driver block testing 4 markdown strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d016",
+  "title": "Email Bounce Filter",
+  "spec": "Create a module to filter out bounced email addresses. Write a helper function `extractDomain(email)` that splits a string by the '@' character and returns the second part as a string. The main function `cleanMailingList(emails, bouncedDomains, strictMode)` takes two arrays of strings (emails and domains) and a boolean flag. Iterate through the emails array, using the helper to get the domain. Check if the bounced array includes this domain string. If the boolean strict mode is true, also reject domains ending in '.test'. Collect valid emails into a new array and maintain a numeric counter of bounced emails. Return an object with the valid array of strings and the numeric bounce count. Test with a driver script using 5 emails.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d017",
+  "title": "Temperature Trend Analyzer",
+  "spec": "Implement a module to analyze consecutive temperature readings. Write a helper function `isIncreasing(prevTemp, currentTemp)` that returns a boolean true if the current numeric temperature is strictly greater than the previous numeric temperature. The main function `analyzeTrends(temperatures, ignoreSmallChanges)` takes an array of numeric temperatures and a boolean flag. It iterates over the array, using the helper to compare adjacent numbers. If the boolean flag is true, treat increases of less than 0.5 degrees as non-increasing. Calculate the numeric length of the longest consecutive increasing streak. Collect the starting numeric values of each streak into an array. Return an object with the maximum streak number and the array of streak start values. Provide a driver block with an array of 7 temperatures.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d018",
+  "title": "Heart Rate Zones Categorizer",
+  "spec": "Write a module to categorize workout heart rate data. Create a helper function `isCardioZone(bpm)` that returns a boolean true if the numeric beats-per-minute is between 120 and 150 inclusive. The main function `processWorkout(heartRates, targetZoneBpm)` takes an array of numeric heart rates and a numeric target threshold. It initializes two numeric counters: one for cardio zone entries and one for high-intensity entries. Iterate through the array. Use the helper to determine if the rate is in the cardio zone, which updates the cardio counter. If a reading exceeds the numeric target threshold, update the high-intensity counter and push it to an array of peak string alerts (e.g., formatting the number into a string). Return an object with the two numeric counters and the array of alert strings. Include a driver script testing 8 numeric readings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d019",
+  "title": "Meeting Room Allocator",
+  "spec": "Design a module to allocate meeting rooms based on capacity. Write a helper function `isRoomSuitable(capacity, attendees)` that returns a boolean true if the numeric capacity is greater than or equal to the numeric attendees count. The main function `findAvailableRooms(roomCapacities, attendees, requireBuffer)` takes an array of numeric room capacities, a numeric attendee count, and a boolean flag. If the boolean flag is true, add a numeric buffer of 2 to the required attendee count before checking. Iterate through the array using the helper to evaluate each room. Push the numeric index of each suitable room into an array. Track the smallest suitable numeric capacity found. Return an object with the array of available indices and the smallest capacity number. Test with a driver script defining 5 rooms.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d020",
+  "title": "CSV Row Filter",
+  "spec": "Create a module to filter lines from a CSV file based on a specific column value. Write a helper `parseCsvRow(rowString)` that splits a comma-separated string and returns an array of strings. The main function `filterCsv(rows, targetColumnIndex, targetValue)` takes an array of string rows, a numeric column index, and a string target value. It iterates through the array of strings, calling the helper to get the columns. It sets a boolean variable to true if the column at the numeric index exactly matches the string target value. If the boolean is true, the original row string is added to a new array. Maintain a numeric counter for matched rows. Return the array of matched strings and the numeric count. Include a driver with 4 sample strings.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d021",
+  "title": "Shopping List Merger",
+  "spec": "Implement a module to combine two grocery shopping lists. Write a helper function `isDuplicate(item, list)` that takes a string item and an array of strings, returning a boolean true if the array already includes the exact string. The main function `mergeLists(primaryList, secondaryList, skipDuplicates)` takes two arrays of strings and a boolean flag. It should start with a copy of the primary array. Then, iterate over the secondary array. For each string, use the helper to check for duplication. If the boolean flag is true and the item is a duplicate, skip it; otherwise, push it to the main array. Track a numeric count of how many items were added from the secondary list. Return an object containing the final array of strings and the numeric additions count. Test with a driver script using two 3-item arrays.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d022",
+  "title": "Coupon Code Validator",
+  "spec": "Write a module to validate and process promotional discount codes. Create a helper function `isCodeExpired(currentDay, expiryDay)` that returns a boolean comparing two numeric day values (true if current is greater than expiry). The main function `processCoupons(enteredCodes, validCode, currentDay, expiryDay)` takes an array of string entered codes, a string representing the master valid code, and two numeric days. It loops over the array of strings. For each, it checks if it exactly matches the master string. It uses the helper to set a boolean indicating if the promotion has expired. Collect any matching, unexpired string codes into a new array of accepted codes. Keep a numeric count of rejected attempts. Return an object with the array of accepted strings and the numeric rejected count. Add a driver script to test 3 codes.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d023",
+  "title": "Bowling Frame Counter",
+  "spec": "Design a module to calculate scores for a simplified bowling game. Write a helper function `isStrike(pinsDown)` that returns a boolean true if the numeric pins count equals exactly 10. The main function `calculateScore(rolls, isFinalFrame)` takes an array of numeric rolls (pins knocked down) and a boolean flag. It iterates through the array to sum the numeric scores. If the helper returns true for a roll, immediately add a numeric bonus of 5 to the total score. If the boolean flag is true, add an additional numeric bonus of 10 at the end. Collect the numeric score of each roll that resulted in a strike into a separate array. Return an object with the final numeric total and the array of strike values. Include a driver script simulating 5 rolls.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d024",
+  "title": "Inventory Stock Alert",
+  "spec": "Create an inventory management module to track low-stock items. Write a helper function `needsRestock(currentStock, minimumThreshold)` that returns a boolean true if the numeric current stock falls below the numeric threshold. The main function `checkInventory(itemNames, stockLevels, globalThreshold)` accepts an array of string item names, a parallel array of numeric stock levels, and a numeric global threshold. It iterates through the stock array, using the helper to check each numeric value against the threshold. If the helper returns true, the corresponding string from the names array is pushed into a new array of reorder alerts. Keep a numeric tally of items that have exactly zero stock. Return an object with the array of alert strings and the zero-stock numeric count. Provide a short driver with 4 items.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d025",
+  "title": "Game Score Tracker",
+  "spec": "Implement a module to summarize the results of a multiplayer match. Write a helper function `isWinningScore(score, passingScore)` that returns a boolean true if the numeric score meets or exceeds the numeric passing threshold. The main function `evaluateMatch(playerNames, scores, passingScore)` accepts an array of string player names, a parallel array of numeric scores, and a numeric passing score. It loops over the scores array, evaluating each with the helper. It constructs a new array of strings containing only the names of players who achieved a winning score. It calculates the numeric average of all scores. Set a boolean flag `wasHighScoringMatch` to true if the numeric average exceeds the passing threshold. Return an object containing the array of winner strings, the numeric average, and the boolean flag. Add a driver script testing 3 players.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d026",
+  "title": "Movie Ticket Pricing Module",
+  "spec": "Write a small module for movie ticket pricing. Include a helper function `calculateTicketPrice` that takes a single age (number), day of week (string), and 3D flag (boolean). The base ticket price is 15, but if the day is 'Tuesday', it becomes 12. Deduct 5 for children under 12, and deduct 4 for seniors 65 and older. Add 4 to the final price if the movie is 3D. The main function `calculateGroupCost` takes an array of ages (numbers), day of week (string), 3D flag (boolean), and a movie title (string). It should loop through the ages, compute the individual prices using the helper, sum them up for a total cost, and return an object with keys `title`, `day`, `total`, and `is3D`. Provide a driver function `runMoviePricing` that tests the module by passing `[10, 35, 70], 'Tuesday', true, 'Avatar'` and returns the resulting object.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d027",
+  "title": "Credit Card Statement Analyzer",
+  "spec": "Write a small module for credit card statements. Include a helper `isValidTransaction` taking a transaction amount (number), account status (string), and fraud flag (boolean). It returns false if the status is 'frozen' and the amount is less than 0, or if the fraud flag is true and the amount is less than -500; otherwise, it returns true. The main function `analyzeStatement` takes an array of transactions, account status, credit limit (number), and a fraud flag. It filters the transactions using the helper, sums the valid transactions, calculates the available credit (credit limit plus the sum), and returns an object with keys `status`, `available`, and `overLimit` (where overLimit is true if available credit is less than 0). Provide a driver function `processStatements` that calls the main function with `[-100, -600, 200], 'active', 1000, true` and returns the result.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d028",
+  "title": "Customer Loyalty Points",
+  "spec": "Write a small module for loyalty points. Include a helper `calculateBonus` that takes a purchase amount (number) and a campaign category (string). It returns a flat 100 points if the category is 'electronics' and the amount is strictly greater than 500, else it returns 0. The main function `calculateLoyaltyPoints` accepts an array of purchases, campaign category, premium flag (boolean), and current points (number). It sums the floored values of the purchases to get base points, multiplies the base points by 1.5 if the premium flag is true, adds the bonus for each purchase using the helper, adds everything to current points, and returns an object with keys `category`, `newTotal`, and `bonusAwarded` (true if any bonus was greater than 0). Provide a driver function `runLoyalty` that passes `[50, 600, 200], 'electronics', true, 1000` and returns the object.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d029",
+  "title": "Warehouse Restock Calculator",
+  "spec": "Write a small module for warehouse restocking. Include a helper `getProjectedStock` taking current stock (number) and an array of pending deliveries (numbers), returning their combined sum. The main function `calculateRestock` accepts a product ID (string), deliveries array, current stock, reorder level (number), and a discontinued flag (boolean). If the discontinued flag is true, immediately return an object with `id`, `needsOrder` as false, and `amount` as 0. Otherwise, compute the projected stock via the helper. If the projected stock is less than the reorder level, the order amount should be the difference plus an extra 20% buffer (rounded up). If not, the amount is 0. Return an object with keys `id`, `needsOrder`, and `amount`. Provide a driver function `testRestock` testing `'A123', [50, 20], 100, 200, false`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d030",
+  "title": "Subscription Tier Evaluator",
+  "spec": "Write a small module for subscription evaluation. Include a helper `getAverageUsage` taking an array of monthly hours (numbers) and returning the average (return 0 if the array is empty). The main function `evaluateSubscription` takes a plan name (string), usage array, student flag (boolean), and base rate (number). Use the helper to get average usage. An upgrade is recommended if the average is greater than 100 and the plan name is 'basic'. Calculate the final rate by applying a 20% discount to the base rate if the student flag is true. Return an object with keys `plan`, `upgrade`, `rate`, and `review` (where review is true if the average usage is exactly 0). Provide a driver function `checkUser` testing `'basic', [110, 120, 95], true, 15`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d031",
+  "title": "Fitness Challenge Tracker",
+  "spec": "Write a small module for a fitness challenge. Include a helper `getAdjustedGoal` taking a step goal (number) and a smart watch flag (boolean). It returns the goal reduced by 10% if the flag is true, otherwise the original goal. The main function `trackFitness` accepts an array of daily steps (numbers), participant name (string), goal, and smart watch flag. It iterates over the array to count how many days the steps meet or exceed the adjusted goal (using the helper), finds the maximum single-day steps in the array, and returns an object with keys `name`, `daysMet`, `winner`, and `max` (winner is true if days met is 5 or more). Provide a driver function `runFitnessTracking` passing `[10000, 8000, 12000, 9000, 11000, 10500, 9500], 'Alice', 10000, true`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d032",
+  "title": "Restaurant Tip Calculator",
+  "spec": "Write a small module for restaurant tips. Include a helper `getTipPercentage` taking a service level (string) returning 0.20 for 'excellent', 0.15 for 'good', and 0.10 for 'poor' (or any unrecognized string). The main function `calculateRestaurantBill` takes an array of item prices (numbers), service level, holiday flag (boolean), and tax rate (number). It sums the item prices to determine the subtotal. If the holiday flag is true, a 10% surcharge is added to the subtotal. The tax is calculated on the subtotal. The tip uses the helper percentage applied to the original subtotal. Add them all together for the final sum. Return an object with keys `service`, `total`, and `pricey` (true if the final sum is greater than 100). Provide a driver function `testBill` testing `[25, 30, 15], 'excellent', true, 0.08`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d033",
+  "title": "Parking Garage Fee",
+  "spec": "Write a small module for parking fees. Include a helper `calculateVehicleFee` taking parked hours (number), hourly rate (number), and vehicle type (string). It computes hours multiplied by the rate, and multiplies the result by 1.5 if the vehicle type is 'truck'. The main function `calculateFleetParking` accepts an array of parked hours (numbers), vehicle type, hourly rate, and a monthly pass flag (boolean). It sums the individual vehicle fees using the helper. If the pass flag is true, cap the total fee at 100. Check if any vehicle stayed longer than 24 hours to set a penalty flag. Return an object with keys `type`, `total`, and `penalty`. Provide a driver function `runParking` testing `[5, 12, 26], 'truck', 3, true`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d034",
+  "title": "Hotel Room Booker",
+  "spec": "Write a small module for hotel booking. Include a helper `getValidRooms` taking an array of room capacities (numbers) and a group size (number), returning a filtered array of capacities that are greater than or equal to the group size. The main function `bookHotelRoom` accepts room capacities, season (string), group size, and a breakfast flag (boolean). It uses the helper to find valid rooms. If the filtered array is empty, return an object with keys `season`, `found` (false), and `price` (0). Find the minimum capacity among the valid rooms. The base price is 100, plus 50 if the season is 'peak', plus 20 per person (using group size) if the breakfast flag is true. Return an object with keys `season`, `found` (true), and `price`. Provide a driver function `testBooking` passing `[2, 4, 6], 'peak', 3, true`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d035",
+  "title": "Book Readability Score",
+  "spec": "Write a small module for book readability. Include a helper `getMaxAverage` taking a genre (string) and an illustrated flag (boolean). It returns 10 for 'children', 25 for 'academic', and 15 otherwise, adding 2 to the limit if the illustrated flag is true. The main function `scoreReadability` accepts an array of sentence word counts (numbers), genre, illustrated flag, and target age (number). It calculates the actual average word count from the array, retrieves the maximum allowed average from the helper, and returns an object with keys `genre`, `average`, and `appropriate` (where appropriate is true if the actual average is less than or equal to the allowed maximum). Provide a driver function `runScoring` testing `[8, 12, 9, 15, 10], 'children', true, 8`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d036",
+  "title": "Ride Share Fare Estimator",
+  "spec": "Write a small module for ride sharing. Include a helper `getAverageSurge` taking an array of surge multipliers (numbers) and returning their average. The main function `estimateRideFare` accepts a distance (number), surge array, time of day (string), carpool flag (boolean), and base fare (number). It calculates the average surge using the helper. The preliminary fare is calculated as the base fare plus distance multiplied by 1.5, with the entire sum multiplied by the average surge. Add 5 to the fare if the time of day is 'rush'. Discount the fare by 30% if the carpool flag is true. Return an object with keys `time`, `fare`, and `premium` (where premium is true if the final fare is greater than 50). Provide a driver function `testFare` testing `15, [1.0, 1.2, 1.4], 'rush', true, 10`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d037",
+  "title": "Plant Watering Schedule",
+  "spec": "Write a small module for plant watering. Include a helper `getAdjustedInterval` taking an array of recent temperatures (numbers) and an indoor flag (boolean). It averages the temperatures; the base interval is 7 days. Subtract 2 days if the average temperature is greater than 80. Add 3 days if the indoor flag is true. Return the final interval. The main function `scheduleWatering` takes a plant species (string), temperatures array, indoor flag, and days since watered (number). It gets the adjusted interval from the helper. Return an object with keys `species`, `needsWater` (true if days since watered is greater than or equal to the adjusted interval), and `overdue` (the difference, minimum 0). Provide a driver function `runWatering` testing `'Fern', [75, 82, 85, 79], true, 8`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d038",
+  "title": "Bandwidth Quota Manager",
+  "spec": "Write a small module for bandwidth quotas. Include a helper `getEffectiveQuota` taking a user tier (string) and base quota (number), returning twice the base quota if the tier is 'premium', otherwise returning the base. The main function `manageBandwidth` accepts the user tier, an array of downloads in MB (numbers), rollover flag (boolean), and a monthly quota (number). Sum the downloads. If the rollover flag is true, subtract 500 from the sum (minimum 0). Compare this adjusted sum to the effective quota retrieved from the helper. Return an object with keys `tier`, `exceeded` (true if adjusted sum > effective quota), and `remaining` (effective quota minus adjusted sum, minimum 0). Provide a driver function `testBandwidth` testing `'premium', [200, 1500, 800], true, 2000`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d039",
+  "title": "Flight Luggage Checker",
+  "spec": "Write a small module for luggage fees. Include a helper `getAllowedWeight` taking a base max weight (number) and a frequent flyer flag (boolean), returning the base weight plus 10 if the flag is true, otherwise just the base weight. The main function `checkLuggage` accepts a ticket class (string), array of bag weights (numbers), frequent flyer flag, and a base weight. Using the helper, count how many bags exceed the allowed weight. Calculate fees: free bags are 1 for 'economy' and 2 for 'business'; extra bags cost 50 each. Overweight bags add an extra 30 each. Return an object with keys `class`, `valid` (true if no single bag exceeds 32), `fees`, and `overweight`. Provide a driver function `runLuggageCheck` passing `'economy', [25, 30, 15], true, 20`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d040",
+  "title": "Smart Home Energy Optimizer",
+  "spec": "Write a small module for home energy. Include a helper `getNetUsage` taking an array of device usages (numbers), an away flag (boolean), and solar output (number). It sums the usages, but skips any individual device usage over 100 if the away flag is true. It returns the sum minus the solar output (minimum 0). The main function `optimizeEnergy` takes a time of use (string), usages array, away flag, and solar output. It retrieves the net usage from the helper. The base cost is the net usage multiplied by 0.15, but this cost is multiplied by 2 if the time of use is 'peak'. Return an object with keys `time`, `away`, `net`, and `cost`. Provide a driver function `testEnergy` testing `'peak', [50, 150, 200, 30], true, 100`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d041",
+  "title": "Pet Diet Calculator",
+  "spec": "Write a small module for pet diets. Include a helper `getBaseCalories` taking a pet type (string) and weight (number), returning the weight multiplied by 30, plus an extra 50 if the type is 'dog' or an extra 20 if the type is 'cat'. The main function `calculatePetDiet` takes the pet type, an array of active hours (numbers), a neutered flag (boolean), and the pet weight. It fetches the base calories from the helper and averages the active hours. It adds 20% to the total calories if the average active hours exceed 2, and then subtracts 10% from the total if the neutered flag is true. Return an object with keys `type`, `calories`, and `highlyActive` (true if average active hours > 2). Provide a driver function `testDiet` testing `'dog', [1.5, 2.5, 3.0], true, 15`.",
+  "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d042",
+  "title": "Train Ticket Fare",
+  "spec": "Write a function `fare(passengers, peak)` that calculates the total cost of a train journey. The first parameter is a list of passenger ages and the second is a boolean indicating if it is peak travel time. The base fare is fifty dollars. If the passenger is under twelve, they travel for free. If they are over sixty five, they get a fifty percent discount. If it is peak time, all paying passengers incur a five dollar surcharge. The function must return a list containing the total revenue as a number, the count of free passengers as a number, and a boolean indicating if the total revenue exceeded two hundred dollars. For example, given a list containing eight, thirty, and seventy, and a false peak time, it should return a list with seventy five, one, and false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d043",
+  "title": "Ski Resort Lift Passes",
+  "spec": "Write a function `passes(skiers, days)` to calculate the total revenue from lift tickets. The first parameter is a list of ages for each skier and the second parameter is the number of days they will ski. A standard daily pass costs eighty dollars. Skiers under eighteen pay forty dollars, and seniors over seventy pay sixty dollars. For trips lasting three or more days, a ten percent discount is applied to the final total. The function should return a list containing the final total cost as a number, a string that says either target met or target missed depending on whether the total is over five hundred dollars, and a boolean indicating if any child passes were sold. Example input of a list containing twelve and forty, for four days, would return a list with four hundred thirty two, target missed, and true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d044",
+  "title": "Online Course Progress",
+  "spec": "Create a function `certify(modules, threshold)` that determines if a student passes a course. The first parameter is a list of completion percentages for each module, and the second is the minimum passing score. The student must have an average completion percentage equal to or greater than the threshold. Also, no single module can have a score below fifty. If the list is empty, the student automatically fails. The function must return a list containing a boolean representing whether the student passed, the calculated average score as a number rounded down to the nearest integer, and a string message saying either pass or fail. Example input of a list containing eighty, ninety, and sixty, with a threshold of seventy, returns a list with true, seventy six, and pass.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d045",
+  "title": "Car Rental Billing",
+  "spec": "Implement a function `bill(rentals, rate)` to calculate the total amount due for a fleet of rental cars. The first parameter is a list of integers representing the number of miles driven for each car, and the second is the daily rental rate in dollars. Each rental is assumed to be for exactly one day. The base charge is the daily rate. If a car is driven over one hundred miles, an extra charge of twenty five cents per additional mile is added. If a car is driven less than ten miles, a string status of underused is assigned to it, otherwise normal is used. Return a list containing the sum of all charges as a number, the number of underused cars as a number, and a boolean indicating if any car exceeded two hundred miles.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d046",
+  "title": "Marathon Pacing",
+  "spec": "Write a function `pace(splits, distance)` to analyze a runner performance. The first parameter is a list of times in minutes for each completed mile, and the second is the total race distance in miles as a whole number. Calculate the average pace of the completed miles. If the runner has finished the race, which means the length of the list equals the total distance, predict their final time simply as the sum of all splits. If they have not finished, predict their final time by multiplying their current average pace by the total distance. Return a list containing a boolean for whether the race is finished, the predicted final time as a number rounded to one decimal place, and a string saying either on track or too slow depending on if the predicted time is strictly under two hundred forty minutes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d047",
+  "title": "Cafe Free Drink Counter",
+  "spec": "Design a function `rewards(stamps, price)` to process loyalty cards. The first parameter is a list of stamp counts for different customers, and the second is the price of a standard coffee. For every ten stamps a customer has, they earn one free coffee, and the remaining stamps are ignored for this calculation. Calculate the total number of free coffees given out across all customers, and the total value of these free coffees by multiplying the count by the price. The function must return a list containing the total number of free coffees as a number, the total retail value as a number, and a boolean indicating if the shop gave away more than fifty dollars worth of free drinks.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d048",
+  "title": "Solar Panel Output",
+  "spec": "Create a function `energy(readings, efficiency)` to evaluate solar panel performance. The first parameter is a list of daily sunlight hours recorded over a week, and the second is a panel efficiency rating between zero and one. Each hour of sunlight generates three hundred watts of base energy before efficiency is applied. Multiply the base energy by the efficiency rating to get the daily output. Find the total weekly output and the number of days where the output exceeded one thousand watts. Return a list containing the total weekly output as a number, the count of highly productive days as a number, and a string classifying the week as excellent if the total exceeds ten thousand watts, or average otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d049",
+  "title": "Card Game Penalties",
+  "spec": "Implement a function `score(players, penalty)` to calculate final scores for a card game. The first parameter is a list of base scores for each player, and the second is a fixed penalty deduction amount. For each player, subtract the penalty from their base score. However, a score cannot drop below zero, so any negative result should become zero. Determine the highest score among all players and count how many players ended up with exactly zero points. The function must return a list containing the highest score as a number, the number of zero score players as a number, and a boolean evaluating to true if the highest score is strictly greater than fifty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d050",
+  "title": "Freight Shipping Cost",
+  "spec": "Write a function `freight(shipments, distance)` to compute delivery costs. The first parameter is a list of package weights in kilograms, and the second is the delivery distance in kilometers. The base cost for each package is ten dollars. Add two dollars for every kilogram over five kilograms on a per package basis. For the entire trip, a fuel surcharge of five cents per kilometer is added to the grand total of all package costs. If the total weight of all packages exceeds one hundred kilograms, apply a ten percent discount to the package total before adding the fuel surcharge. Return a list containing the final grand total as a number, the total weight as a number, and a string reading heavy load if the weight exceeded the hundred kilogram threshold, or normal otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d051",
+  "title": "Gym Membership Billing",
+  "spec": "Create a function `membership(members, base)` to process monthly gym fees. The first parameter is a list of personal training sessions each member booked this month, and the second is the base monthly membership fee in dollars. Each personal training session costs an additional forty dollars. If a member books five or more sessions, they receive a twenty dollar discount on their total bill. Calculate the total revenue generated from all members. Find the number of members who booked zero training sessions. Return a list containing the total revenue as a number, the count of members with zero sessions as a number, and a boolean indicating if the total revenue surpasses one thousand dollars.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d052",
+  "title": "Bicycle Race Standings",
+  "spec": "Design a function `standings(riders, limit)` to evaluate race results. The first parameter is a list of finish times in minutes for various cyclists, and the second is the time limit for qualification. Any rider whose time is strictly greater than the limit is disqualified and excluded from the average calculation. Calculate the average finish time of all qualified riders. Determine how many riders were disqualified. Return a list containing the average qualified time as a number rounded down to the nearest integer, the number of disqualified riders as a number, and a string labeled fast race if the average is under one hundred minutes, or standard race otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d053",
+  "title": "Property Tax Calculator",
+  "spec": "Write a function `tax(properties, rate)` to assess annual taxes for a neighborhood. The first parameter is a list of property valuations in dollars, and the second is the base tax rate as a decimal. For each property, multiply its valuation by the tax rate. If a property is valued at strictly less than one hundred thousand dollars, it receives a flat tax deduction of five hundred dollars, but its tax cannot go below zero. Calculate the total tax collected from all properties. Find the number of properties that paid exactly zero tax. The function must return a list containing the total tax collected as a number, the zero tax count as a number, and a boolean indicating whether more than ten thousand dollars was collected overall.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d054",
+  "title": "Theme Park Wait Times",
+  "spec": "Create a function `wait(rides, capacity)` to analyze amusement park congestion. The first parameter is a list of people currently in line for various rides, and the second is the hourly capacity which is the same for all rides. Calculate the estimated wait time in minutes for each ride by dividing the people in line by the hourly capacity and multiplying by sixty. Count how many rides have a wait time strictly exceeding ninety minutes. Calculate the total number of people waiting across the entire park. Return a list containing the total people waiting as a number, the count of rides with long waits as a number, and a string alerting operators with the word critical if any ride exceeds one hundred twenty minutes, or manageable otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d055",
+  "title": "Bakery Order Fulfiller",
+  "spec": "Implement a function `bake(orders, inventory)` to determine if a bakery can fulfill its cake requests. The first parameter is a list representing the number of cups of flour required for each cake order, and the second is the total cups of flour currently in stock. Iterate through the orders and subtract the required flour from the inventory. If an order requires more flour than is left, it cannot be baked and is skipped. Count how many cakes are successfully baked and how much flour remains at the end. Return a list containing the number of baked cakes as a number, the remaining flour as a number, and a boolean evaluating to true if all orders in the list were successfully fulfilled.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d056",
+  "title": "Audio Length Analyzer",
+  "spec": "Design a function `filter(episodes, minimum)` to process audio files for a playlist. The first parameter is a list of episode durations in minutes, and the second is the minimum acceptable duration. Episodes shorter than the minimum are discarded. For the remaining episodes, sum their durations to find the total playlist length. Count how many episodes were discarded. Return a list containing the total playlist length as a number, the count of discarded episodes as a number, and a string stating long playlist if the total length exceeds three hundred minutes, or short playlist if it does not.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d057",
+  "title": "Cloud Storage Quota",
+  "spec": "Write a function `storage(users, limit)` to audit server space usage. The first parameter is a list of gigabytes used by different accounts, and the second is the maximum allowed gigabytes per account. Calculate the total gigabytes used across all accounts. Identify how many accounts have strictly exceeded the limit. For every account over the limit, calculate the excess amount and sum these up to find the total excess storage. The function must return a list containing the total used storage as a number, the number of violating accounts as a number, and a boolean indicating if the total excess storage is greater than fifty gigabytes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d058",
+  "title": "Gardening Fertilizer Calculator",
+  "spec": "Create a function `fertilize(plots, ratio)` to plan garden maintenance. The first parameter is a list of plot areas in square meters, and the second is the amount of fertilizer in kilograms required per square meter. Multiply each plot area by the ratio to find the required fertilizer for that plot. Calculate the total amount of fertilizer needed for all plots combined. Count how many individual plots require strictly more than ten kilograms of fertilizer. Return a list containing the total fertilizer needed as a number, the count of large plots as a number, and a string labeled heavy order if the total fertilizer exceeds one hundred kilograms, or standard order otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d059",
+  "title": "Trivia Game Grader",
+  "spec": "Implement a function `grade(answers, hints)` to score a quiz session. The first parameter is a list of booleans indicating if each question was answered correctly, and the second is the total number of hints used during the game. Each correct answer is worth ten points. Each hint used deducts three points from the final score, but the final score cannot go below zero. Count the total number of correct answers. The function should return a list containing the final score as a number, the count of correct answers as a number, and a string evaluating to perfect if all answers were correct and zero hints were used, or normal otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d060",
+  "title": "Commuter Toll Estimator",
+  "spec": "Design a function `toll(crossings, pass)` to calculate a driver monthly bridge expenses. The first parameter is a list of integers representing the number of axles on the vehicle for each bridge crossing, and the second is a boolean indicating if the driver has an electronic toll pass. A two axle vehicle costs four dollars per crossing, while any vehicle with more than two axles costs four dollars plus an extra two dollars per additional axle. If the driver has an electronic pass, they get a flat one dollar discount on every single crossing. Calculate the total monthly cost and count how many times a vehicle with more than two axles crossed. Return a list containing the total cost as a number, the heavy vehicle crossing count as a number, and a boolean indicating if the total cost surpassed one hundred dollars.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d061",
+  "title": "Aquarium Tank Maintenance",
+  "spec": "Write a function `maintain(tanks, threshold)` to monitor water quality. The first parameter is a list of nitrate levels in parts per million for various fish tanks, and the second is the safety threshold. Any tank with a nitrate level strictly greater than the threshold needs an immediate water change. Calculate the average nitrate level across all tanks. Count how many tanks require a water change. Return a list containing the average nitrate level as a number rounded down to the nearest integer, the number of tanks needing changes as a number, and a string reading emergency if more than half of the tanks need changes, or stable otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d062",
+  "title": "Typing Speed Test",
+  "spec": "Create a function `typing(tests, time)` to evaluate a student keyboard skills. The first parameter is a list of character counts typed in several different attempts, and the second is the duration of each attempt in minutes. For each attempt, calculate the gross words per minute by dividing the character count by five, and then dividing by the time. Find the highest words per minute achieved across all attempts. Count how many attempts resulted in a speed strictly greater than forty words per minute. The function must return a list containing the highest speed as a number, the count of fast attempts as a number, and a boolean evaluating to true if the highest speed exceeded sixty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d063",
+  "title": "Dog Daycare Capacity",
+  "spec": "Implement a function `daycare(dogs, staff)` to evaluate staffing requirements. The first parameter is a list of dog weights in pounds currently at the facility, and the second is the number of staff members on duty. Dogs weighing strictly under thirty pounds require one staffing point, while dogs weighing thirty pounds or more require two staffing points. Calculate the total staffing points required for all dogs. Each staff member can handle up to ten staffing points. Count how many large dogs are present. Return a list containing the total required points as a number, the large dog count as a number, and a string labeled understaffed if the required points exceed the capacity provided by the staff, or adequate otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d064",
+  "title": "Concert Ticket Scalper",
+  "spec": "Design a function `audit(purchases, limit)` to flag suspicious online transactions. The first parameter is a list of ticket quantities bought in consecutive orders, and the second is the maximum allowed tickets per order. Count how many orders strictly exceed the allowed limit. Also calculate the total number of tickets sold across all orders. If an order exceeds the limit, the excess tickets are considered voided and should not be added to the valid total sold. Return a list containing the valid total tickets sold as a number, the count of suspicious orders as a number, and a boolean indicating if the total valid tickets sold is strictly less than fifty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d065",
+  "title": "Museum Group Admission",
+  "spec": "Write a function `admission(visitors, exhibit)` to calculate group entry fees. The first parameter is a list of booleans where true represents a student and false represents an adult, and the second is a boolean indicating if the group wants access to the special exhibit. Standard adult admission is fifteen dollars, while student admission is ten dollars. If they want the special exhibit, an extra five dollars is added to every ticket regardless of type. Calculate the total cost for the group. Count the total number of students. The function should return a list containing the total group cost as a number, the number of students as a number, and a string reading large group if the list contains more than ten visitors, or small group otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d066",
+  "title": "Snowplow Route Planner",
+  "spec": "Create a function `plow(routes, mileage)` to estimate fuel needs for winter maintenance. The first parameter is a list of road lengths in miles that need to be plowed, and the second is the truck fuel efficiency in miles per gallon. For each road, the truck must drive down and back, so the plowed distance is twice the road length. Divide the total plowed distance of all routes by the mileage to find the required gallons of fuel. Count how many individual routes are strictly longer than ten miles in base length. The function must return a list containing the total fuel required as a number rounded up to the nearest whole number, the count of long routes as a number, and a boolean evaluating to true if the total fuel required exceeds fifty gallons.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d067",
+  "title": "Student Grade Ranker",
+  "spec": "Write a function `rank(records)` that processes a list of student records. Each record in the list is a list containing the student name as a string, their test score as a number, and a boolean indicating if they completed all assignments. Return a list of names of students who scored above eighty and completed all assignments. Example input: [[\"Alice\", 85, true], [\"Bob\", 90, false]]. Example output: [\"Alice\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d068",
+  "title": "Job Applicant Screener",
+  "spec": "Write a function `screen(applicants)` that filters a list of applicant records. Each applicant record is a list with the applicant name as a string, their years of experience as a number, and a boolean indicating if they have a university degree. Return a list of names of applicants who have at least five years of experience, or have a university degree and at least two years of experience. Example input: [[\"John\", 3, true], [\"Mary\", 6, false]]. Example output: [\"John\", \"Mary\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d069",
+  "title": "Server Ping Analyzer",
+  "spec": "Write a function `analyze(pings)` that evaluates a list of server ping records. Each record is a list containing a server name as a string, a ping time in milliseconds as a number, and a boolean indicating if the server is a primary node. Return a list of server names that have a ping time greater than one hundred milliseconds and are primary nodes. Example input: [[\"Web1\", 150, true], [\"DB1\", 200, false]]. Example output: [\"Web1\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d070",
+  "title": "Library Book Filter",
+  "spec": "Write a function `library(books)` that processes a list of book records. Each record is a list containing the title as a string, the quantity in stock as a number, and a boolean true if it is a physical copy. Return a list of titles for physical copies that have fewer than five items in stock. Example input: [[\"Dune\", 2, true], [\"1984\", 10, true]]. Example output: [\"Dune\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d071",
+  "title": "Pantry Restock Planner",
+  "spec": "Write a function `pantry(items)` that evaluates a list of ingredient records. Each record is a list containing the ingredient name as a string, the required amount as a number, and a boolean true if it is already in the cupboard. Return a list of ingredient names that are not in the cupboard and have a required amount greater than zero. Example input: [[\"Flour\", 2, false], [\"Sugar\", 1, true]]. Example output: [\"Flour\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d072",
+  "title": "Task Dependency Checker",
+  "spec": "Write a function `estimate(tasks)` that calculates time for a list of task records. Each task is a list containing the task name as a string, the estimated hours to complete as a number, and a boolean indicating if it is already finished. Return the total number of hours required to complete all unfinished tasks. Example input: [[\"Design\", 4, true], [\"Code\", 10, false]]. Example output: 10.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d073",
+  "title": "Gym Exercise Burn",
+  "spec": "Write a function `burn(workouts)` that processes a list of workout sessions. Each session is a list containing the activity name as a string, the duration in minutes as a number, and a boolean true if it was high intensity. Return the total calories burned across all sessions, calculated as five calories per minute for normal intensity, and ten calories per minute for high intensity. Example input: [[\"Yoga\", 30, false], [\"Sprint\", 15, true]]. Example output: 300.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d074",
+  "title": "Fraudulent Transaction Detector",
+  "spec": "Write a function `fraud(transactions)` that evaluates a list of transaction records. Each record is a list containing the account name as a string, the transaction amount as a number, and a boolean indicating if it originated from a foreign country. Return a list of account names where the transaction amount is over one thousand, or the amount is over five hundred and originated from a foreign country. Example input: [[\"AcctA\", 600, true], [\"AcctB\", 200, false]]. Example output: [\"AcctA\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d075",
+  "title": "Project Milestone Tracker",
+  "spec": "Write a function `milestones(projects)` that evaluates a list of project milestones. Each milestone is a list containing the milestone name as a string, the number of days overdue as a number, and a boolean indicating if it blocks other teams. Return the name of the milestone that is blocking other teams and has the highest number of days overdue. If no blocking milestones are overdue, return an empty string. Example input: [[\"Beta\", 5, true], [\"Launch\", 10, false]]. Example output: \"Beta\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d076",
+  "title": "Coffee Bean Roaster",
+  "spec": "Write a function `roast(beans)` that processes a list of coffee batches. Each batch is a list containing the origin country as a string, the weight in kilograms as a number, and a boolean indicating if it is a dark roast. Return the total weight of dark roast batches that exceed ten kilograms in weight. Example input: [[\"Colombia\", 15, true], [\"Ethiopia\", 12, false]]. Example output: 15.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d077",
+  "title": "Network Port Scanner",
+  "spec": "Write a function `ports(scans)` that processes a list of port scan results. Each result is a list containing the service name as a string, the port number as a number, and a boolean indicating if the port responded. Return a list of service names where the port responded and the port number is less than one thousand and twenty four. Example input: [[\"HTTP\", 80, true], [\"Custom\", 8080, true]]. Example output: [\"HTTP\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d078",
+  "title": "Device Battery Monitor",
+  "spec": "Write a function `battery(devices)` that evaluates a list of connected devices. Each device is a list containing the device name as a string, the current battery percentage as a number, and a boolean indicating if it is plugged in. Return a list of device names whose battery percentage is below fifteen and are not currently plugged in. Example input: [[\"Phone\", 10, false], [\"Tablet\", 12, true]]. Example output: [\"Phone\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d079",
+  "title": "Spacecraft Diagnostics",
+  "spec": "Write a function `diagnostics(systems)` that checks a list of system status reports. Each report is a list containing the system name as a string, the number of recorded faults as a number, and a boolean indicating if the system is mission critical. Return a list of names for mission critical systems that have at least one recorded fault. Example input: [[\"Engine\", 2, true], [\"Lights\", 5, false]]. Example output: [\"Engine\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d080",
+  "title": "Real Estate Finder",
+  "spec": "Write a function `houses(properties)` that evaluates a list of property listings. Each listing is a list containing the neighborhood name as a string, the asking price as a number, and a boolean indicating if it includes a garage. Return a list of neighborhood names where the property includes a garage and the asking price is under three hundred thousand. Example input: [[\"Downtown\", 250000, true], [\"Uptown\", 400000, true]]. Example output: [\"Downtown\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d081",
+  "title": "Grocery Expiration Checker",
+  "spec": "Write a function `expired(groceries)` that processes a list of grocery items. Each item is a list containing the item name as a string, the number of days until it expires as a number, and a boolean indicating if it is a dairy product. Return a list of item names that are dairy products and expire in two days or fewer. Example input: [[\"Milk\", 1, true], [\"Bread\", 5, false]]. Example output: [\"Milk\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d082",
+  "title": "Bridge Weight Checker",
+  "spec": "Write a function `weigh(vehicles)` that processes a list of vehicle crossings. Each crossing is a list containing the license plate as a string, the vehicle weight in tons as a number, and a boolean indicating if it is a commercial truck. Return a list of license plates for commercial trucks that exceed a weight of twenty tons. Example input: [[\"ABC\", 15, true], [\"XYZ\", 25, true]]. Example output: [\"XYZ\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d083",
+  "title": "Software License Auditor",
+  "spec": "Write a function `licenses(installations)` that evaluates a list of software installations. Each installation is a list containing the software name as a string, the number of active users as a number, and a boolean indicating if a paid license is required. Return the total number of active users across all software that requires a paid license. Example input: [[\"Editor\", 10, false], [\"Database\", 50, true]]. Example output: 50.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d084",
+  "title": "Patient Triage Sorter",
+  "spec": "Write a function `triage(patients)` that processes a list of waiting room patients. Each patient is a list containing their name as a string, their self reported pain scale from one to ten as a number, and a boolean indicating if they have difficulty breathing. Return a list of names of patients who report a pain scale of eight or higher, or who have difficulty breathing. Example input: [[\"Sam\", 9, false], [\"Alex\", 4, true]]. Example output: [\"Sam\", \"Alex\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ }
+]
