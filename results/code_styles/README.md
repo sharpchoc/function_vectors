@@ -27,3 +27,6 @@ then `analyze.py --model qwen25_code`, `code_cutoff.py --model qwen25_code`, `lo
 
 - 2026-09-19: py_not_in, rust_question, py_is_none, float_literals regenerated without padding (Opus 5 + dual review); all their
   downstream artefacts and the results here were rebuilt; `explainer/` lists every family; `read_write_map/sandbox` is not yet refit.
+
+## Update 2026-09-22 — corpus-wide padding clean-up refreshed
+All numbers here were recomputed after the corpus-wide padding clean-up (2,438 of 2,464 flagged documents regenerated with Opus 5 + Opus 5/GPT-5 review; 49 families changed; 26 documents still flagged: js_hungarian 9, py_join_concat 6, py_private 11). Pool is now 55 / 60: py_ternary dropped (k = 4 natural pole .375 → .27, below the cutoff). Before/after per family: `results/code_styles/padding_regen_before_after.csv`, pooled: `padding_regen_before_after_pooled.csv` (55 pool families: k = 4 .726 → .719; write L24 α2 .508 → .543; read L8 α4 .569 → .581). The 10-family hyperparameter sweeps (sweep10) were NOT re-run and predate the clean-up. The read→write map sandbox was NOT refit (user will instruct).

@@ -9944,3 +9944,10 @@ current convention. Nothing changed in that family.
 failed docs (pods p1–p5), wave 2 = 10 families complete after t1 (q1, q2), wave 3 = bash_test, hex_constants, js_hungarian, py_join_concat, py_loop_vars,
 py_snake_camel (s1–s3); each `logs/code_styles_regen_job.sh` (rollouts k=0..4 + log-probs → judge → write vectors + write steering L24/L26 × α2/4 → read
 vectors + read steering L8 α4 → per-prompt activations); judge `tmp/regen_judge_driver2.py`; stale artefacts in `tmp/stale_regen6`, `tmp/stale_regen7`.
+
+**2026-09-22 Part B complete.** All 49 changed families refreshed (3 waves, 10 pods, all terminated by id; standby map_5 kept). 0 unjudged; prompt_pairs single
+source 44,788 prompts / 31,730 correct (56 families). Analyses rerun (analyze, code_cutoff, logprob_analyze, read_features_summary, write_full_analyze,
+read_full_analyze, explainer). **POOL CHANGE: 55 / 60 — py_ternary dropped** (k4 nat .375 → .27). 55 pool families before → after: k=0 .275 → .285, k=4 .726 → .719,
+write L24 α2 .508 → .543 (unsteered .275 → .281), read L8 α4 .569 → .581 (unsteered .061 → .062, real 3-shot .713 → .711). Largest k=4 drops: py_abbrev −.15,
+comment_language −.13, comment_case −.12, py_comprehension −.10; gains: py_with_open +.10. Tables: `results/code_styles/padding_regen_before_after{,_pooled}.csv`.
+sweep10 hyperparameter sweeps not re-run; read→write map sandbox not refit.

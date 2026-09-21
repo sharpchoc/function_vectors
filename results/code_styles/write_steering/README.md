@@ -18,3 +18,6 @@ Grading identical to step-3 rollouts. See DECISIONS.md 2026-09-17 / 2026-09-18.
   (`write_full_analyze.py`). No cell selected (user decision): `by_cell.csv` gives the four means; `full.csv` per family/cell;
   `success_grid.png` (families × cells with unsteered and k = 4 references), `gain_by_family.png`, `steer_vs_k4.png`.
   Means over 56 families, both directions: unsteered .27, L24α2 .50, L24α4 .50, L26α2 .49, L26α4 .43, k = 4 in context .72.
+
+## Update 2026-09-22 — corpus-wide padding clean-up refreshed
+All numbers here were recomputed after the corpus-wide padding clean-up (2,438 of 2,464 flagged documents regenerated with Opus 5 + Opus 5/GPT-5 review; 49 families changed; 26 documents still flagged: js_hungarian 9, py_join_concat 6, py_private 11). Pool is now 55 / 60: py_ternary dropped (k = 4 natural pole .375 → .27, below the cutoff). Before/after per family: `results/code_styles/padding_regen_before_after.csv`, pooled: `padding_regen_before_after_pooled.csv` (55 pool families: k = 4 .726 → .719; write L24 α2 .508 → .543; read L8 α4 .569 → .581). The 10-family hyperparameter sweeps (sweep10) were NOT re-run and predate the clean-up. The read→write map sandbox was NOT refit (user will instruct).
