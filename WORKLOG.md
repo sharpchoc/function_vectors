@@ -10021,3 +10021,48 @@ load_model, get_decoder_block, --stage combine), `ablate_fv_cue6.py` (--model_na
 NEW `qwen25_port_checks.py` (gates). Orchestration: `logs/qwen25_fv/port/` (port_env.sh, port_chain.sh, dispatch.sh,
 pods.py; orchestrator pod + 10 RTX PRO 4500 workers). Artifacts: `artifacts/qwen25_fv/`.
 **Commands / findings / next:** filled in on completion (see per-study entries below).
+
+## 2026-09-22 — Qwen2.5 port, Study A: FV-direction ablation at the final cue token — DONE
+**Status:** DONE. **Owner:** Claude Code bg agent, main tree.
+**What:** `ablate_fv_cue6.py` on Qwen2.5-7B-Instruct, 96 tasks × 150 prompts (52 for next_in_group/next_in_period),
+u_A = unit 140-head FV (`ext_steerability_qwen25_96` selection + per-task means.pt), {own, cf} × {zero, mean} ×
+{L9to27, L0to27}, in-run seed-matched `real6_baseline` / `real1_baseline` + new in-run `zero_shot` condition
+(GPT-J took these from the sixshot_dummy CSV). Grand means: `artifacts/qwen25_fv/FV_ablation/grand_mean_cue{6,1}.pt`
+(equal-task-weighted, 96 tasks). cf pairs: `artifacts/qwen25_fv/cf_task_pairs.json`.
+**Commands:** `logs/qwen25_fv/port/port_chain.sh {gmA6,gmA1,evalA6,evalA1}` on RTX PRO 4500 workers (2/1/4/1 shards,
+`--token_budget 12000 --batch_cap 16`, ~10 min per shard — Qwen prompts are ~76 tokens at 6-shot), `combineA.sh`,
+`plotA.sh` (`plot_fv_ablation.py --base_csv none`, `plot_fv_ablation_shots.py`).
+**Findings (mean over 96 tasks, L9to27; L0to27 within ±0.01):**
+6-shot: unablated .798 | own zero .056 | own mean .739 | cf zero .543 | cf mean .797 | 0-shot .009.
+1-shot: unablated .476 | own zero .014 | own mean .353 | cf zero .202 | cf mean .469.
+Zero-ablation reproduces the GPT-J picture (own .056 vs cf .543; GPT-J .013 vs .476): removing the task's own FV
+direction at the cue kills the 6-shot answer, the counterfactual direction costs far less. DIFFERENCE vs GPT-J:
+own-FV MEAN-ablation barely hurts on Qwen (.739 vs .798; GPT-J .242 vs .639) — the grand-mean projection along u_A
+restores almost everything, i.e. on Qwen the task-specific part of the cue residual's component along its own FV
+direction is small relative to the shared (generic) component (mean cos(v_A, v_generic) = .79 across the 96 FVs).
+**Files:** results/qwen25_fv/FV_ablation/{summary.csv, per_task_acc.csv, cf_pairs.csv, summary_1shot.csv,
+per_task_acc_1shot.csv, headline_bars.png, by_task_dots.png, headline_bars_by_shots.png}; artifacts
+artifacts/qwen25_fv/FV_ablation/{cue_means, cue_means_1shot, eval, eval_1shot}/.
+**Next:** none for this study. **Blockers:** none.
+
+## 2026-09-22 — Qwen2.5 port, Study C: task-unique read-feature ablation (û_A, L11–13) — DONE
+**Status:** DONE. **Owner:** Claude Code bg agent, main tree.
+**What:** `build_meanresid_taskunique.py --layers 11 12 13 --svd_ref none --skip_l67` on
+`artifacts/qwen25_read/label_resid_means` (96 tasks) → `artifacts/qwen25_fv/bottom_up_ablation/bankA/`
+(median ‖u_A‖ 30.0, ‖c‖ 32.5 — on Qwen the carrier is only about as large as the task-unique part; GPT-J 47 vs 28).
+`ablate_readdir_pc5.py` (rank-1 û_A projected out at every demo target token entering every block, zero and mean
+ablation, own vs cf û_A; verify_ablation gate passed in every process) with the token-weighted label-token grand mean
+`artifacts/qwen25_fv/pc50_ablation/grand_mean96.pt` (239,293 label tokens). Baselines = Study A's in-run zero_shot /
+real{1,6}_baseline (same prompts, same readout).
+**Commands:** `port_chain.sh {gmC,meanresid}` (3 shards each), `combineC.sh`, `plotC.sh`
+(new `plot_taskunique_meanresid_ablation.py --baselines fv_ablation:...`).
+**Findings (mean over 96 tasks):**
+6-shot: unablated .798 | own û_A mean .205 / zero .211 | cf û_A mean .754 / zero .748 | 0-shot .009.
+1-shot: unablated .476 | own .171 / .181 | cf .452 / .452.
+Near-perfect double dissociation, as on GPT-J (6-shot own .132 vs cf .632 from .630): one task-unique direction at
+the demonstration target tokens is necessary for in-context learning of that task and irrelevant to other tasks.
+Mean and zero ablation coincide (û_A ⟂ carrier), as on GPT-J.
+**Files:** results/qwen25_fv/read_feature_ablation/{cf_task_pairs.csv, task_unique_meanresid/{per_task_acc.csv,
+aggregate_bars.png, aggregate_bars_full.png, per_task_bars_{1,6}shot.png}}; artifacts
+artifacts/qwen25_fv/bottom_up_ablation/{bankA/, bankA_meanresid_top1/n{6,1}shot/}, pc50_ablation/.
+**Next:** none. **Blockers:** none.

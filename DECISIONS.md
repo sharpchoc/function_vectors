@@ -1,5 +1,32 @@
 # DECISIONS
 
+## 2026-09-22 — Qwen2.5-7B port of the four remaining read/write-feature studies (user decisions)
+
+- **Scope:** `results/qwen25_fv/` gets the four claims it lacked — FV (write-feature) ablation,
+  read-feature ablation, read-injection → write-feature formation, FV presence vs accuracy — with
+  the GPT-J methodology unchanged (same scripts, parameterised; only model, layers, dims, pool).
+  Pool = the 96-task pruned split (77/19), FV = the 140-head `ext_steerability_qwen25_96` selection.
+- **Read band for the task-unique direction:** û_A = unit mean of the carrier-removed **L11–13**
+  label-token means (Qwen read-steering peak L12 ± 1; GPT-J used {5,6,7} around its L6 peak). The
+  steering vector s_A = c + u_A uses the same band. Only the û_A rows are ported — the rank-1 raw
+  m̂_A row and the attention-mask control of the GPT-J Appendix D table are NOT.
+- **No a-priori write / presence layer.** The presence capture stores all 28 block outputs; the
+  headline layer quoted in tables and figures (Studies B and D) is the layer where the 6-shot
+  mean cos(cue residual, v̂_A) profile peaks, written to `write_feature_and_model_accuracy/headline_layer.txt`
+  and stated wherever a number is quoted. The GPT-J band variants (max/mean over L9–20) stay for
+  comparability. (The read→write ridge's best read layer, L20–22, is a read-side quantity and is
+  NOT a write layer.)
+- **Counterfactual pairing:** the 68 tasks shared with the 69-pool keep their GPT-J family tags;
+  the 28 new tasks were tagged by a Haiku subagent with the make_cf_task_pairs.py prompt (the
+  8 tags Haiku assigned differently for shared tasks were discarded). Same seeded different-family
+  sampling over the sorted 96-task list → `artifacts/qwen25_fv/cf_task_pairs.json`.
+- **Baselines:** Qwen has no sixshot_dummy CSV, so the FV-ablation eval carries in-run, seed-matched
+  `zero_shot` (0-demo prompt) and `real{n}_baseline` conditions; the read-ablation plots read those
+  (same prompts, same T=1 readout) — the analogue of GPT-J copying its baselines from another run.
+- **Compute pattern (user request):** a cheap orchestrator GPU pod on the shared volume runs every
+  CPU-side step and dispatches sharded, resumable chains to a fleet of RTX PRO 4500 workers
+  (`logs/qwen25_fv/port/`). Never touch pods this session did not create.
+
 ## 2026-09-03 — Task-unique part of the read feature = mean of the carrier-removed L5–7 residuals (user decision)
 
 - For each ℓ ∈ {5,6,7}: $\hat c(\ell)$ = unit cross-task mean of $m_A(\ell)$ (shared
