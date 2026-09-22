@@ -495,7 +495,7 @@ def propagate_renames(rec, fam):
     """Identifier families: the Gemini rewrite sometimes renames an identifier's uses but not its definition (or the reverse), leaving the
     alt twin referencing undefined names. Derive the per-identifier renaming nat -> alt from the diff opportunities (one identifier on each
     side, not task-pinned) and apply it to EVERY whole-word occurrence in the natural code; re-align to get the full opportunity list.
-    py_private renames attributes in their dotted form only. Returns a new record (text_alt, opps rebuilt) or the input if nothing to map."""
+    py_private renames attributes in their dotted form plus their definitions (2026-09-22). Returns a new record (text_alt, opps rebuilt) or the input if nothing to map."""
     if fam not in IDENT_FAMILIES:
         return rec
     from src.sandbox.style_translation.code_build import align
@@ -513,6 +513,8 @@ def propagate_renames(rec, fam):
         pat = (r"\." + re.escape(x) + r"(?![A-Za-z0-9_])") if fam == "py_private" else (r"(?<![A-Za-z0-9_])" + re.escape(x) + r"(?![A-Za-z0-9_])")
         rep = ("." + mapping[x]) if fam == "py_private" else mapping[x]
         alt = re.sub(pat, rep, alt)
+        if fam == "py_private":                                    # 2026-09-22: definitions and class-level assignments too (def _x( / _x = / _x:)
+            alt = re.sub(r"(?<![A-Za-z0-9_.])" + re.escape(x) + r"(?=\s*[=(:])", mapping[x], alt)
     opps, shared = align(nat, alt)
     if opps is None or not opps:
         return rec

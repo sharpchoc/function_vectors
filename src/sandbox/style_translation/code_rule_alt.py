@@ -4,7 +4,7 @@ missed). Each rule applies the family's stated rewrite to EVERY covered occurren
 it returns None when it cannot guarantee that, and the caller rejects the natural twin. Only used when finish_pair(rule_alt=True).
     py_snake_camel : multi-word snake_case names BOUND in the file (functions, parameters, variables, self-attributes, methods) -> camelCase
     num_separators : every decimal integer literal of >= 4 digits -> underscore thousands separators
-    py_private     : single-underscore attributes / methods of classes -> double underscore (declines if used outside the class)
+    py_private     : underscore-prefixed private members of classes -> bare names at definition and every use (redefined 2026-09-22)
     hex_constants  : JavaScript integer literals from the family's constant set -> hexadecimal (0xFF style)"""
 import ast, io, re, tokenize
 
@@ -169,8 +169,9 @@ def num_separators(nat, spec=""):
 
 
 def py_private(nat, spec=""):
-    """self._x / cls._x attributes and _methods defined in a class -> double underscore, at every use INSIDE classes. Declines when such a
-    name is accessed outside a class body (name mangling would break the program) or when nothing is covered."""
+    """py_private (redefined 2026-09-22): every single-underscore private member bound in a class (self._x stores, def _m, class-level _c)
+    loses its leading underscore at the definition and at EVERY use (dotted, f-strings included). Declines on a rename collision
+    (the bare name already exists as an attribute/name in the file), dynamic attribute access, or when the AST check fails."""
     try:
         tree = ast.parse(nat)
     except SyntaxError:
@@ -187,38 +188,49 @@ def py_private(nat, spec=""):
     fixed = set(re.findall(r"[A-Za-z_]\w*", spec or "")); priv -= fixed
     if not priv:
         return None
-    inside = set()
-    for c in ast.walk(tree):
+    bare = {x[1:] for x in priv}
+    taken = {n.attr for n in ast.walk(tree) if isinstance(n, ast.Attribute)}          # an attribute of that bare name already exists
+    for c in ast.walk(tree):                                                            # or a method / class-level name of that bare name
         if isinstance(c, ast.ClassDef):
-            inside |= {id(n) for n in ast.walk(c)}
-    for n in ast.walk(tree):                                       # any use outside a class body -> mangling would break it
-        if id(n) not in inside and ((isinstance(n, ast.Attribute) and n.attr in priv) or (isinstance(n, ast.Name) and n.id in priv)):
-            return None
-    if any(re.search(r"getattr|setattr|hasattr|__dict__|vars\(", nat) for _ in [0]):
+            taken |= {b.name for b in c.body if isinstance(b, (ast.FunctionDef, ast.AsyncFunctionDef))}
+            taken |= {t.id for b in c.body if isinstance(b, (ast.Assign, ast.AnnAssign)) for t in (b.targets if isinstance(b, ast.Assign) else [b.target]) if isinstance(t, ast.Name)}
+    if bare & taken or re.search(r"getattr|setattr|hasattr|__dict__|vars\(", nat):
         return None
-    lines = nat.splitlines(keepends=True); edits = []
+    lines = nat.splitlines(keepends=True); off = [0]
+    for ln in lines: off.append(off[-1] + len(ln))
+    pos = lambda rc: off[rc[0] - 1] + rc[1]
+    edits = []                                                     # absolute-offset edits (multi-line f-strings included)
+    rx = r"(?<![\w])(" + "|".join(map(re.escape, sorted(priv, key=len, reverse=True))) + r")(?![\w])"
     for t in tokenize.generate_tokens(io.StringIO(nat).readline):
         if t.type == tokenize.NAME and t.string in priv:
-            edits.append((t.start[0], t.start[1], t.end[1], "_" + t.string))
-        elif t.type == tokenize.STRING and re.match(r"^[rRbB]*[fF][rRbB]*['\"]", t.string) and t.start[0] == t.end[0]:
-            new = re.sub(r"(?<!\{)\{([^{}]+)\}(?!\})", lambda m: "{" + re.sub(r"(?<![\w])(" + "|".join(map(re.escape, sorted(priv, key=len, reverse=True))) + r")(?![\w])", lambda q: "_" + q.group(1), m.group(1)) + "}", t.string)
-            if new != t.string: edits.append((t.start[0], t.start[1], t.end[1], new))
-    for r, c0, c1, x in sorted(edits, reverse=True):
-        lines[r - 1] = lines[r - 1][:c0] + x + lines[r - 1][c1:]
-    alt = "".join(lines)
+            edits.append((pos(t.start), pos(t.end), t.string[1:]))
+        elif t.type == tokenize.STRING and re.match(r"^[rRbB]*[fF][rRbB]*['\"]", t.string):
+            new = re.sub(r"(?<!\{)\{([^{}]+)\}(?!\})", lambda m: "{" + re.sub(rx, lambda q: q.group(1)[1:], m.group(1)) + "}", t.string, flags=re.S)
+            if new != t.string: edits.append((pos(t.start), pos(t.end), new))
+    alt = nat
+    for s0, s1, x in sorted(edits, reverse=True):
+        alt = alt[:s0] + x + alt[s1:]
     class R(ast.NodeTransformer):
         def visit_Attribute(self, n):
             self.generic_visit(n)
-            if n.attr in priv: n.attr = "_" + n.attr
+            if n.attr in priv: n.attr = n.attr[1:]
             return n
         def visit_Name(self, n):
-            if n.id in priv: n.id = "_" + n.id
+            if n.id in priv: n.id = n.id[1:]
             return n
         def visit_FunctionDef(self, n):
             self.generic_visit(n)
-            if n.name in priv: n.name = "_" + n.name
+            if n.name in priv: n.name = n.name[1:]
             return n
         visit_AsyncFunctionDef = visit_FunctionDef
+        def visit_arg(self, n):                                    # a parameter that shares a private name is renamed with it
+            self.generic_visit(n)
+            if n.arg in priv: n.arg = n.arg[1:]
+            return n
+        def visit_keyword(self, n):
+            self.generic_visit(n)
+            if n.arg in priv: n.arg = n.arg[1:]
+            return n
     try:
         ok = ast.dump(R().visit(ast.parse(nat))) == ast.dump(ast.parse(alt))
     except SyntaxError:
@@ -249,5 +261,5 @@ def hex_constants(nat, spec=""):
 
 
 # hex_constants is NOT enabled: 17 of 44 reviewer-approved pairs also convert constants outside the family set, so the set-only rule does not reproduce the accepted data
-# py_private is NOT enabled either: it differs from all 168 existing pairs (they leave method definitions single-underscore), and no reviewer-approved pair exists to validate against
-RULE_ALT = {"py_snake_camel": snake_to_camel, "num_separators": num_separators}
+RULE_ALT = {"py_snake_camel": snake_to_camel, "num_separators": num_separators, "py_private": py_private}
+ALWAYS_RULE = {"py_private"}                     # families whose alternative twin is ALWAYS derived by rule (never an LLM rewrite)

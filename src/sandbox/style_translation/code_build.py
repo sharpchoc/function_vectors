@@ -54,7 +54,7 @@ Return only the code, no markdown fences, no prose.
 
 {code}"""
 TOK = re.compile(r"\w+|\s+|[^\w\s]", re.UNICODE)
-from src.sandbox.style_translation.code_rule_alt import RULE_ALT
+from src.sandbox.style_translation.code_rule_alt import RULE_ALT, ALWAYS_RULE
 from src.sandbox.style_translation.code_whitespace_alt import WS_FAMILIES, same_ast, transform as ws_transform
 from src.sandbox.style_translation.code_subst_alt import convert as subst_convert, same_tree as subst_same_tree
 from src.sandbox.style_translation.code_sql_alt import transform as sql_transform, sql_ok
@@ -487,7 +487,7 @@ def finish_pair(key, fam, task, nat, gen_model=None, free_occ=False, rewrite_not
         alt = sql_transform(nat)
         if not sql_ok(nat, alt):
             raise ValueError("sql keyword rule failed (mixed keyword case or no keyword)")
-    elif rule_alt and fam.name in RULE_ALT:                        # 2026-09-21: exact rename / literal rules (code_rule_alt.py), self-verified by AST
+    elif (rule_alt or fam.name in ALWAYS_RULE) and fam.name in RULE_ALT:                        # 2026-09-21: exact rename / literal rules (code_rule_alt.py), self-verified by AST
         alt = RULE_ALT[fam.name](nat, task.get("spec", ""))
         if alt is None:
             raise ValueError("rule rewrite failed (rename collision, nothing to convert, or AST check)")
@@ -509,7 +509,7 @@ def finish_pair(key, fam, task, nat, gen_model=None, free_occ=False, rewrite_not
         rec["free_occ"] = True                                     # no-count hint: 5th opportunity threshold 85 % (code_free.fifth_frac)
     ok = opps is not None and len(opps) >= 5 and shared >= 0.6 and opps[4]["nat_span"][0] < fifth_frac(fam.name, rec) * len(nat) and all(o["nat"] != o["alt"] for o in opps)
     rec["pass"] = bool(ok)
-    if fam.name in WS_FAMILIES or fam.name in ("bash_subst", "sql_keyword_case") or (rule_alt and fam.name in RULE_ALT):
+    if fam.name in WS_FAMILIES or fam.name in ("bash_subst", "sql_keyword_case") or ((rule_alt or fam.name in ALWAYS_RULE) and fam.name in RULE_ALT):
         rec["alt_rule"] = True
     if ok and fam.name in AFFECTED:                               # free-opportunity rule: the pair must keep >= 5 genuine choice points
         fr = filter_free(rec, fam.name); ok = fr is not None; rec["pass"] = bool(ok)

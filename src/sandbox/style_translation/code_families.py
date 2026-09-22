@@ -62,10 +62,12 @@ CODE_SPECS = [
   "define at least 5 small classes with multi-word PascalCase names (OrderItem, PriceRule) and instantiate each",
   "rename every class from PascalCase to snake_case (OrderItem -> order_item) at definition and every use; change nothing else",
   r"\bclass\s+[A-Z]\w*\b|\b[A-Z][a-z]+[A-Z]\w*\(", r"\bclass\s+[a-z]+_\w*\b|\b[a-z]+_[a-z]\w*\(", "PascalCase vs snake_case class names"),
- ("py_private", "Python", "single-underscore private attributes", "double-underscore private attributes",
+ # py_private redefined 2026-09-22 (USER DECISION, option 2): the old alternative pole (double underscore) was invalid Python in 198/200 pairs
+ # (calls mangled, definitions not); the alternative is now "no underscore prefix", derived by rule (code_rule_alt.py_private, AST-verified).
+ ("py_private", "Python", "underscore-prefixed private members", "no underscore prefix on private members",
   "write a class with at least 8 private attributes/methods prefixed with a single underscore (self._cache, self._load())",
-  "change every single-underscore private attribute/method prefix to a double underscore (self._cache -> self.__cache); change nothing else",
-  r"self\._[a-z]", r"self\.__[a-z]", "single vs double underscore private members"),
+  "remove the leading underscore from every single-underscore private attribute/method name, at its definition and every use (self._cache -> self.cache, def _load -> def load); change nothing else",
+  r"(?:self|cls)\._[a-z]|\bdef _[a-z]", r"(?:self|cls)\.[a-z]|\bdef [a-z]", "underscore-prefixed vs plain private members"),
  ("py_bool_prefix", "Python", "is_/has_ boolean names", "bare boolean names",
   "use at least 8 boolean variables/parameters named with an is_/has_/can_/should_ prefix (is_valid, has_items)",
   "remove the is_/has_/can_/should_ prefix from every boolean name (is_valid -> valid, has_items -> items) at every occurrence; change nothing else",
