@@ -9962,7 +9962,7 @@ AST-verified rule `code_rule_alt.py_private` (`ALWAYS_RULE`; pinned identifiers 
 Same 200 documents: 181 natural twins kept with re-derived alternatives, 19 regenerated (padding/leak guards or < 5 counted under the new rule;
 Opus 5 + dual review, 19/19 accepted, ≈ $10). Sweep 0 issues; cues ` self` 2073 / ` def` 806; prompts verified. GPU refresh (pod regen8_v1, terminated)
 for py_private + py_join_concat (the latter's first job had failed: evidence was computed before move_stale — order fixed). Analyses rerun: pool 55/60
-unchanged (py_private k4 nat .41 / alt .42 — old definition .76/.66; write L24 α2 .41, read L8 α4 .41 vs 3-shot .37); py_join_concat k4 .72/.62,
+unchanged (py_private k4 nat .41 / alt .42 — old definition .44/.40; write L24 α2 .41 vs old .31, read L8 α4 .41 vs old .29; 3-shot .37 vs old .42); py_join_concat k4 .72/.62,
 write .56, read .44. Pooled 55: k4 .719 → .718, write .543 → .545, read .581 → .584. prompt_pairs 44,788 / 31,704 correct; 0 unjudged.
 Residual flagged docs now 10 (js_hungarian 9, py_join_concat 1). NOTE: standby pod map_5 (37jojnsoek8pdj) no longer exists (RunPod API: pod null);
 not terminated by any of this session's watchers (they act only on their own recorded ids) — a new pod is needed for the map regressions.
