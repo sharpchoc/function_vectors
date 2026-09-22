@@ -43,10 +43,10 @@ LABELS = {"zero_shot": "0-shot (no demos)", "real": "n-shot, unablated",
           "cf_zero": "cf-task-FV zero-ablated", "cf_mean": "cf-task-FV mean-ablated"}
 
 
-def load(n_shots, tasks, base):
-    evald = ABL / ("eval" if n_shots == 6 else f"eval_{n_shots}shot")
+def load(n_shots, tasks, zs, abl):
+    evald = abl / ("eval" if n_shots == 6 else f"eval_{n_shots}shot")
     d = {t: json.load(open(evald / f"{t}.json")) for t in tasks}
-    acc = {"zero_shot": np.array([float(base[t]["zero_shot"]) for t in tasks]),
+    acc = {"zero_shot": np.array([zs[t] for t in tasks]),
            "real": np.array([d[t]["conditions"][f"real{n_shots}_baseline"]["acc"]
                              for t in tasks])}
     for c in CONDS[2:]:
@@ -55,20 +55,36 @@ def load(n_shots, tasks, base):
 
 
 def main():
+    global OUT
     ap = argparse.ArgumentParser()
     ap.add_argument("--shots", nargs="+", type=int, default=[6, 1])
+    # Qwen2.5 port (2026-09-22): same summary on another model's eval JSONs; defaults = GPT-J.
+    ap.add_argument("--abl_root", type=Path, default=ABL)
+    ap.add_argument("--out_dir", type=Path, default=OUT)
+    ap.add_argument("--split_path", type=Path,
+                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
+    ap.add_argument("--base_csv", type=str, default=str(BASE_CSV),
+                    help="sixshot_dummy per-task CSV for the 0-shot floor; 'none' = the "
+                         "in-run zero_shot condition of the 6-shot eval JSONs (Qwen port)")
+    ap.add_argument("--model_label", default="GPT-J-6B")
     args = ap.parse_args()
-    split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
+    OUT = args.out_dir
+    split = json.load(open(args.split_path))
     group = {t: "train" for t in split["train_tasks"]}
     group.update({t: "heldout" for t in split["heldout_tasks"]})
-    base = {r["task"]: r for r in csv.DictReader(open(BASE_CSV))}
     tasks = sorted(group)
+    if args.base_csv != "none":
+        base = {r["task"]: r for r in csv.DictReader(open(args.base_csv))}
+        zs = {t: float(base[t]["zero_shot"]) for t in tasks}
+    else:
+        zs = {t: json.load(open(args.abl_root / "eval" / f"{t}.json"))["conditions"]["zero_shot"]["acc"]
+              for t in tasks}
     grp = np.array([group[t] for t in tasks])
     OUT.mkdir(parents=True, exist_ok=True)
 
     per_shot = {}
     for n in args.shots:
-        d, acc = load(n, tasks, base)
+        d, acc = load(n, tasks, zs, args.abl_root)
         per_shot[n] = acc
         if n == 6:
             continue   # 6-shot CSVs already written by plot_fv_ablation.py
@@ -109,7 +125,7 @@ def main():
         label_bars(ax, bars, fontsize=8.5)
         ax.set_xticks(x, ["0-shot", f"{n}-shot", "own\nzero", "own\nmean", "cf\nzero", "cf\nmean"])
         ax.set_title(f"{n}-shot prompts")
-    axes[0, 0].set_ylabel(f"mean T=1 exact-match accuracy ({len(tasks)} tasks, 150 prompts)")
+    axes[0, 0].set_ylabel(f"mean T=1 exact-match accuracy ({len(tasks)} tasks, {args.model_label})")
     handles = [plt.Rectangle((0, 0), 1, 1, color=COLORS[c],
                              hatch="//" if c.startswith("cf_") else None, ec="white")
                for c in CONDS]

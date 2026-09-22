@@ -38,27 +38,39 @@ _ap.add_argument("--n_shots", type=int, default=6, choices=(1, 6),
                  help="which capture to summarise: 6 (original) or the 1-shot variant")
 _ap.add_argument("--variant", default="mean", choices=("mean", "ctop1", "meanresid"),
                  help="mean = α·m_A(L6) at L6 (original); ctop1 = α·u_A (carrier + n_A v1) at L0")
+# Qwen2.5 port (2026-09-22): same summary on another model's captures; defaults = GPT-J.
+_ap.add_argument("--ar", type=Path, default=None, help="capture dir (default: GPT-J per variant)")
+_ap.add_argument("--out", type=Path, default=None, help="results dir (default: GPT-J per variant)")
+_ap.add_argument("--layer", type=int, default=13, help="headline readout layer (GPT-J 13)")
+_ap.add_argument("--split_path", type=Path,
+                 default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
+_ap.add_argument("--model_label", default="GPT-J-6B")
+_ap.add_argument("--read_layer_label", default="L6",
+                 help="label of the injected read feature's layer (mean variant; Qwen L12)")
+_ap.add_argument("--band_label", default="L5–7",
+                 help="read band of the task-unique part (meanresid variant; Qwen L11–13)")
 _args = _ap.parse_args()
 _NS = _args.n_shots
 _SUF = "" if _NS == 6 else "_1shot"
 _CT = _args.variant in ("ctop1", "meanresid")
 _MR = _args.variant == "meanresid"
-AR = ARTIFACTS_ROOT / "69_task_run" / ((("meanresid" if _MR else "ctop1") + "_effect_on_write" if _CT else
+AR = _args.ar or ARTIFACTS_ROOT / "69_task_run" / ((("meanresid" if _MR else "ctop1") + "_effect_on_write" if _CT else
                                         "mean_read_steering_effect_on_write") + _SUF)
-OUT = TASK69_RUN_DIR / "read_write_relationship" / ((("meanresid" if _MR else "ctop1") if _CT else "bottom_up") + _SUF)
-_VEC = (("α·s_A (carrier + task-unique part u_A, L5–7) added at L0 to" if _MR else "α·u_A (carrier + n_A·v_1, L5–7) added at L0 to") if _CT else
-        "α·(task mean L6 target activation) added at")
+OUT = _args.out or TASK69_RUN_DIR / "read_write_relationship" / ((("meanresid" if _MR else "ctop1") if _CT else "bottom_up") + _SUF)
+_VEC = ((f"α·s_A (carrier + task-unique part u_A, {_args.band_label}) added at L0 to" if _MR else f"α·u_A (carrier + n_A·v_1, {_args.band_label}) added at L0 to") if _CT else
+        f"α·(task mean {_args.read_layer_label} target activation) added at")
 SCAF = (f"6-shot dummy-'_' prompt; {_VEC} all six "
         "target slots" if _NS == 6 else
         f"1-shot dummy-'_' prompt; {_VEC} the single "
         "target slot")
-LAYER = 13
+LAYER = _args.layer
+MODEL_LABEL = _args.model_label
 SURFACE, INK, INK2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e4e3df"
 BLUE, ORANGE = "#2a78d6", "#eb6834"   # task FV / generic FV — validated adjacent pair
 
 
 def main():
-    split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
+    split = json.load(open(_args.split_path))
     group = {t: "train" for t in split["train_tasks"]}
     group.update({t: "heldout" for t in split["heldout_tasks"]})
     tasks = sorted(t for t in group if (AR / f"{t}.pt").exists())
@@ -68,11 +80,13 @@ def main():
     d0 = torch.load(AR / f"{tasks[0]}.pt", map_location="cpu", weights_only=False)
     alphas = list(d0["alphas"])
     grp = np.array([group[t] for t in tasks])
+    n_layers = int(d0["cos_task"].shape[2])
+    n_prompts = int(d0["n_prompts"])
 
-    # per task: mean over prompts -> (n_alpha,) at LAYER, and (n_alpha, 28) for the profile
+    # per task: mean over prompts -> (n_alpha,) at LAYER, and (n_alpha, n_layers) for the profile
     keys = ("cos_task", "cos_gen", "proj_task", "proj_gen")
     at_layer = {k: np.zeros((len(tasks), len(alphas))) for k in keys}
-    profile = np.zeros((len(tasks), len(alphas), 28))
+    profile = np.zeros((len(tasks), len(alphas), n_layers))
     for ti, t in enumerate(tasks):
         d = torch.load(AR / f"{t}.pt", map_location="cpu", weights_only=False)
         for k in keys:
@@ -153,9 +167,9 @@ def main():
         for s in ("left", "bottom"):
             ax.spines[s].set_color(GRID)
         ax.legend(fontsize=10, frameon=False, loc="upper left")
-        fig.text(0.005, 0.005, f"GPT-J-6B, {len(tasks)} tasks. {SCAF}; readout = "
+        fig.text(0.005, 0.005, f"{MODEL_LABEL}, {len(tasks)} tasks. {SCAF}; readout = "
                  f"layer {LAYER} residual at the final cue token. One point per task "
-                 f"(mean over its 150 prompts); line = mean over tasks.",
+                 f"(mean over its {n_prompts} prompts); line = mean over tasks.",
                  fontsize=8.5, color=INK2, ha="left", va="bottom", wrap=True)
         fig.tight_layout(rect=(0, 0.05, 1, 1))
         fig.savefig(OUT / fname, bbox_inches="tight", facecolor=SURFACE)
@@ -200,7 +214,7 @@ def main():
         ax.spines[s].set_visible(False)
     for s in ("left", "bottom"):
         ax.spines[s].set_color(GRID)
-    fig.text(0.005, 0.005, f"GPT-J-6B, {len(tasks)} tasks. {SCAF}; readout = "
+    fig.text(0.005, 0.005, f"{MODEL_LABEL}, {len(tasks)} tasks. {SCAF}; readout = "
              f"layer {LAYER} residual at the final cue token. Zero at α=0 by construction; "
              f"positive means the representation gained MORE task-specific than generic "
              f"alignment. One point per task; line = mean over tasks.",
@@ -270,7 +284,7 @@ def main():
     for ai, a in enumerate(alphas):
         if a == 0:
             continue
-        ax.plot(range(28), dprof[:, ai, :].mean(axis=0), "o-", ms=3.5, lw=1.8,
+        ax.plot(range(n_layers), dprof[:, ai, :].mean(axis=0), "o-", ms=3.5, lw=1.8,
                 color=shades[(ai - 1) % len(shades)], label=f"α = {a}")
     ax.axvline(LAYER, color=INK2, ls=":", lw=1.1)
     ax.text(LAYER + 0.4, ax.get_ylim()[1] * 0.92, f"L{LAYER}\n(headline)", fontsize=9,
@@ -280,7 +294,7 @@ def main():
     ax.set_ylabel("change in cos(cue activation, task FV)", fontsize=11.5, color=INK2)
     ax.set_title("Where the injected target-slot signal shows up at the cue token",
                  fontsize=14, fontweight="bold", color=INK, loc="left", pad=12)
-    ax.set_xticks(range(0, 28, 2))
+    ax.set_xticks(range(0, n_layers, 2))
     ax.tick_params(colors=INK2)
     ax.grid(True, color=GRID, lw=0.9, zorder=0)
     ax.set_axisbelow(True)
@@ -291,6 +305,13 @@ def main():
     ax.legend(fontsize=10, frameon=False)
     fig.tight_layout()
     fig.savefig(OUT / "layer_profile.png", bbox_inches="tight", facecolor=SURFACE)
+    # absolute cos(cue, task FV) by layer per alpha (raw, not delta) — for the layer choice
+    with open(OUT / "layer_profile.csv", "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["layer"] + [f"cos_task_a{a}" for a in alphas] + [f"d_cos_task_a{a}" for a in alphas])
+        for l in range(n_layers):
+            w.writerow([l] + [round(float(profile[:, ai, l].mean()), 5) for ai in range(len(alphas))]
+                       + [round(float(dprof[:, ai, l].mean()), 5) for ai in range(len(alphas))])
     print(f"wrote {OUT}")
 
 

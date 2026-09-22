@@ -51,19 +51,15 @@ for p in (_BOOT, _BOOT / "src"):
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
 from src.utils.prompt_utils import get_token_meta_labels, word_pairs_to_prompt_data
 from src.sandbox.ext_steerability.ablate_pc50_labeltokens import (
-    Ablator, LABEL_RE, batches_by_len)
+    Ablator, LABEL_RE, MIN_PROMPTS, batches_by_len, load_model)
+from src.utils.model_utils import get_decoder_block
 
 
-def load_model_eager(model_dir):
+def load_model_eager(model_dir, model_name=None):
     """pc50's load_model + attn_implementation='eager': transformers 4.49 GPT-J otherwise
-    dispatches to GPTJSdpaAttention, whose forward never calls the patched _attn."""
-    from transformers import AutoModelForCausalLM, AutoTokenizer
-    md = model_dir or sorted(Path("/workspace/.cache/huggingface/hub/"
-                                  "models--EleutherAI--gpt-j-6b/snapshots").glob("*"))[-1]
-    tok = AutoTokenizer.from_pretrained(md)
-    tok.pad_token = tok.eos_token
-    model = AutoModelForCausalLM.from_pretrained(
-        md, torch_dtype=torch.float16, attn_implementation="eager").cuda().eval()
+    dispatches to GPTJSdpaAttention, whose forward never calls the patched _attn.
+    model_name != None selects a non-GPT-J HF model (bf16; Qwen2.5 port)."""
+    model, tok = load_model(model_dir, model_name, attn_implementation="eager")
     assert model.config._attn_implementation == "eager", model.config._attn_implementation
     return model, tok
 
@@ -160,7 +156,7 @@ def prep_task_nshot(task, prompts_root, tok, n_shots):
     demo-label token positions, gold string, gold token length. Asserts the prompt string
     is byte-identical to the sixshot_dummy_steer.py f-string construction (baseline reuse)."""
     recs = json.load(open(prompts_root / task / "train_prompts.json"))
-    assert len(recs) == 150
+    assert len(recs) >= MIN_PROMPTS, f"{task}: only {len(recs)} prompts"
     out = []
     for rec in recs:
         demos = rec["demos"][:n_shots]
@@ -257,9 +253,10 @@ def verify_ablation(model, ab, tok, items, V, mproj, budget, cap, layer=10):
         h = args[0] if args else kwargs["hidden_states"]
         if ab.mask is not None and h.shape[1] == ab.mask.shape[1]:
             got["proj"] = (h[ab.mask].float() @ V[0])
+            got["hnorm"] = h[ab.mask].float().norm(dim=-1).mean()
         return None
 
-    handle = model.transformer.h[layer].register_forward_pre_hook(probe, with_kwargs=True)
+    handle = get_decoder_block(model, layer).register_forward_pre_hook(probe, with_kwargs=True)
     b = batches_by_len(items, budget, cap)[0][:4]
     ids, att, mask, _ = make_batch(items, b, tok)
     ab.V, ab.mproj, ab.mask = V, mproj, mask
@@ -270,9 +267,15 @@ def verify_ablation(model, ab, tok, items, V, mproj, budget, cap, layer=10):
     proj = got["proj"]
     want = 0.0 if mproj is None else float(mproj[layer] @ V[0])
     dev = float((proj - want).abs().max())
-    assert dev < 0.05, f"ablation residue at L{layer}: max |proj-{want:.3f}| = {dev:.4f}"
+    # 0.05 absolute (GPT-J fp16). bf16 residuals (eps 7.8e-3) at norms in the hundreds can
+    # round the stored projection by more than that without any bug, so the gate is the
+    # larger of the absolute tolerance and 4 eps * mean residual norm.
+    hnorm = float(got.get("hnorm", 0.0))
+    eps = torch.finfo(next(model.parameters()).dtype).eps
+    tol = max(0.05, 4 * eps * hnorm)
+    assert dev < tol, f"ablation residue at L{layer}: max |proj-{want:.3f}| = {dev:.4f} (tol {tol:.3f})"
     print(f"verify_ablation OK (L{layer}, {'mean' if mproj is not None else 'zero'}): "
-          f"target {want:.3f}, max dev {dev:.1e}", flush=True)
+          f"target {want:.3f}, max dev {dev:.1e} (tol {tol:.3f}, mean ||h|| {hnorm:.1f})", flush=True)
 # ------------------------------------------------------------------------------------------------
 
 

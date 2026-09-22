@@ -44,6 +44,7 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
+from src.utils.model_utils import get_decoder_block
 try:
     from src.sandbox.ext_steerability.steer_read_dir_1shot import load_model, batches_by_len
 except ModuleNotFoundError:  # staged copy outside the repo tree
@@ -92,7 +93,7 @@ class Injector:
         self.vec = None
         self.mask = None
         self.layers = list(layers)
-        self.handles = [model.transformer.h[l].register_forward_hook(self._hook)
+        self.handles = [get_decoder_block(model, l).register_forward_hook(self._hook)
                         for l in self.layers]
 
     def _hook(self, module, args, output):
@@ -117,7 +118,7 @@ def build_items(task, prompts_root, tok):
     assert len(anchor_id) == 1
     anchor_id = anchor_id[0]
     recs = json.load(open(prompts_root / task / "train_prompts.json"))
-    assert len(recs) == 150
+    assert len(recs) >= 40, f"{task}: only {len(recs)} prompts"   # 150 (GPT-J); 52 for 2 Qwen tasks
     items = []
     for rec in recs:
         q = str(rec["query"]["input"])
@@ -127,9 +128,15 @@ def build_items(task, prompts_root, tok):
         assert demo_inp != q
         pre = f"Q: {demo_inp}\nA:"
         ids = tok(f"{pre} _\n\nQ: {q}\nA:").input_ids
-        inj_idx = ids.index(anchor_id)
-        assert inj_idx == len(tok(pre).input_ids), \
-            f"{task}: ' _' not directly after the demo cue ({inj_idx})"
+        # structural slot index (GPT-J: equals ids.index(' _'), asserted in the original;
+        # Qwen2.5 fuses " _\n\n" into one token so the anchor search would fail).
+        inj_idx = len(tok(pre).input_ids)
+        if ids[inj_idx] == anchor_id:
+            assert inj_idx == ids.index(anchor_id), \
+                f"{task}: ' _' not directly after the demo cue ({inj_idx})"
+        else:
+            assert "_" in tok.convert_ids_to_tokens([ids[inj_idx]])[0], \
+                f"{task}: token at structural index {inj_idx} is not a ' _' slot"
         items.append({"ids": ids, "inj_idx": inj_idx, "gold": gold,
                       "gold_len": len(tok(" " + gold).input_ids)})
     return items

@@ -44,6 +44,14 @@ CHAT_TEMPLATE_TRANSFER_DIR = RESULTS_ROOT / "chat_template_transfer"
 # GPT-J 69-task pipeline (competence screen → pooled sparse head selection → train/heldout
 # steering eval) on base-sampling Q:/A: prompts. Sibling of chat_template_transfer.
 QWEN25_FV_DIR = RESULTS_ROOT / "qwen25_fv"
+# Qwen2.5 port of the 69_task_run read/write-feature studies (2026-09-22): FV ablation,
+# read-feature ablation, read->write relationship, write-feature presence vs accuracy.
+QWEN25_FV_ARTIFACTS_DIR = ARTIFACTS_ROOT / "qwen25_fv"        # port intermediates (gitignored)
+QWEN25_READ_ARTIFACTS_DIR = ARTIFACTS_ROOT / "qwen25_read"    # existing read-line captures
+QWEN25_SELECTION_ROOT = ARTIFACTS_ROOT / "sandbox" / "ext_steerability_qwen25_96"  # 140-head FV
+QWEN25_SPLIT = REPO_ROOT / "task_splits" / "qwen25_ext_steerable_96_prunedfail.json"
+QWEN25_PROMPTS = REPO_ROOT / "dataset_files" / "isolation_prompts_ext_qwen25"
+QWEN25_MODEL = "Qwen/Qwen2.5-7B-Instruct"
 
 # Live new research branch (2026-09-01): free-form style-property extension of the
 # read/write-feature line (evidence/cue sites in free text, GPT-J,
@@ -66,6 +74,8 @@ GENERAL_DIR = EXPLORATORY_ROOT / "general"
 __all__ = [
     "REPO_ROOT", "ARTIFACTS_ROOT", "RESULTS_ROOT", "LOGS_ROOT",
     "TASK69_RUN_DIR", "STEERING_COMPARISON_DIR", "CHAT_TEMPLATE_TRANSFER_DIR", "QWEN25_FV_DIR",
+    "QWEN25_FV_ARTIFACTS_DIR", "QWEN25_READ_ARTIFACTS_DIR", "QWEN25_SELECTION_ROOT",
+    "QWEN25_SPLIT", "QWEN25_PROMPTS", "QWEN25_MODEL",
     "STYLE_PROPERTIES_DIR", "STYLE_TRANSLATION_DATA", "STYLE_TRANSLATION_RESULTS", "STYLE_FREE_TEXT_RESULTS", "EXPLORATORY_ROOT",
     "AMBIGUOUS_DIR", "LABEL_GEOMETRY_DIR", "FV_FORMATION_DIR", "GENERAL_DIR",
 ]

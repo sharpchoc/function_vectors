@@ -17,6 +17,7 @@ Outputs (RESULTS/69_task_run/write_feature_and_model_accuracy/per_prompt/):
 import argparse
 import csv
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -32,8 +33,10 @@ for p in (REPO_ROOT, REPO_ROOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
 
-LAYERS = list(range(9, 21))
+LAYERS = list(range(9, 21))      # overwritten from the npz files at run time
 N_SHOTS = list(range(0, 7))
+N_TASKS_LABEL = "69"
+N_PROMPTS_LABEL = "150"
 
 
 def parse_args():
@@ -41,31 +44,46 @@ def parse_args():
     p.add_argument("--in_root", type=Path, default=ARTIFACTS_ROOT / "69_task_run" / "presence_vs_acc")
     p.add_argument("--out_dir", type=Path,
                    default=TASK69_RUN_DIR / "write_feature_and_model_accuracy" / "per_prompt")
-    p.add_argument("--variants", nargs="+", default=["L13", "meanL9-20"])
+    p.add_argument("--variants", nargs="+", default=["L13", "meanL9-20"],
+                   help="L<layer> or meanL<lo>-<hi> (band mean per prompt)")
     p.add_argument("--window", type=float, default=0.05, help="half-width of the sliding cos window")
     p.add_argument("--seed", type=int, default=0)
+    # Qwen2.5 port (2026-09-22)
+    p.add_argument("--split_path", type=Path,
+                   default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     return p.parse_args()
 
 
-def load_all(in_root):
-    split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
+def load_all(in_root, split_path):
+    """Returns tasks, groups, and flat per-point arrays (prompt counts may differ per task)."""
+    global LAYERS
+    split = json.load(open(split_path))
     group_of = {t: "train" for t in split["train_tasks"]}
     group_of.update({t: "heldout" for t in split["heldout_tasks"]})
     tasks = sorted(group_of)
-    cos = np.zeros((len(tasks), len(N_SHOTS), 150, len(LAYERS)), np.float32)
-    match = np.zeros((len(tasks), len(N_SHOTS), 150), bool)
+    cos_l, match_l, tidx_l, n_l, p_l = [], [], [], [], []
     for ti, t in enumerate(tasks):
         d = np.load(in_root / f"{t}.npz")
+        if ti == 0:
+            LAYERS = [int(l) for l in d["layers"]]
         assert list(d["layers"]) == LAYERS and list(d["n_shots"]) == N_SHOTS
-        cos[ti], match[ti] = d["cos"], d["match"]
-    return tasks, np.array([group_of[t] for t in tasks]), cos, match
+        c, m = d["cos"], d["match"]                       # (7, P, nL), (7, P)
+        P = m.shape[1]
+        cos_l.append(c.reshape(-1, c.shape[-1])); match_l.append(m.reshape(-1))
+        tidx_l.append(np.full(m.size, ti)); n_l.append(np.repeat(N_SHOTS, P))
+        p_l.append(np.tile(np.arange(P), len(N_SHOTS)))
+    return (tasks, np.array([group_of[t] for t in tasks]), np.concatenate(cos_l),
+            np.concatenate(match_l), np.concatenate(tidx_l), np.concatenate(n_l), np.concatenate(p_l))
 
 
 def variant_x(cos, variant):
     if variant.startswith("L") and variant[1:].isdigit():
         return cos[..., LAYERS.index(int(variant[1:]))]
-    if variant == "meanL9-20":
-        return cos.mean(axis=-1)
+    m = re.fullmatch(r"meanL(\d+)-(\d+)", variant)
+    if m:
+        lo, hi = int(m.group(1)), int(m.group(2))
+        idx = [LAYERS.index(l) for l in range(lo, hi + 1) if l in LAYERS]
+        return cos[..., idx].mean(axis=-1)
     raise ValueError(variant)
 
 
@@ -100,7 +118,7 @@ def scatter(x, y, n_of, label, out_path, with_rate, window, rng, rows):
     ax.set_yticks([0, 1], ["0 (wrong)", "1 (correct)"])
     ax.set_ylim(-0.12, 1.12)
     ax.set_title(f"FV presence vs per-prompt correctness @ {label}\n"
-                 f"69 tasks × n=0..6 × 150 prompts = {x.size:,} points; "
+                 f"{N_TASKS_LABEL} tasks × n=0..6 × {N_PROMPTS_LABEL} prompts = {x.size:,} points; "
                  f"pooled point-biserial r={r_all:+.2f}, ρ={rho_all:+.2f}", fontsize=10.5)
     leg = ax.legend(fontsize=8, title="shot count (per-n point-biserial r)", loc="center left",
                     bbox_to_anchor=(0.01, 0.5), markerscale=4, framealpha=0.9)
@@ -124,15 +142,14 @@ def scatter(x, y, n_of, label, out_path, with_rate, window, rng, rows):
 
 
 def main():
+    global N_TASKS_LABEL, N_PROMPTS_LABEL
     args = parse_args()
     rng = np.random.default_rng(args.seed)
-    tasks, groups, cos, match = load_all(args.in_root)
+    tasks, groups, cos, match, task_idx, n_of, p_idx = load_all(args.in_root, args.split_path)
+    N_TASKS_LABEL = str(len(tasks))
+    N_PROMPTS_LABEL = "≤150" if (p_idx.max() + 1) == 150 and match.size != len(tasks) * 7 * 150 else str(p_idx.max() + 1)
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    T, N, P = match.shape
-    task_idx = np.broadcast_to(np.arange(T)[:, None, None], (T, N, P)).ravel()
-    n_of = np.broadcast_to(np.array(N_SHOTS)[None, :, None], (T, N, P)).ravel()
-    p_idx = np.broadcast_to(np.arange(P)[None, None, :], (T, N, P)).ravel()
-    y = match.ravel().astype(float)
+    y = match.astype(float)
     rows = [["variant", "n_shots", "n_points", "pointbiserial_r", "spearman_rho"]]
     for variant in args.variants:
         x = variant_x(cos, variant).ravel().astype(float)

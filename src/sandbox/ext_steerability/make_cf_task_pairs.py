@@ -15,6 +15,7 @@ Output:
 Self-checks: every task appears exactly once as A; no pair shares a family; every
 family has >= 2 members outside itself to draw from.
 """
+import argparse
 import csv
 import json
 import sys
@@ -48,9 +49,9 @@ def stable_rng(*parts):
     return np.random.default_rng(zlib.crc32("::".join(map(str, parts)).encode()))
 
 
-def task_examples(task, k=3):
-    recs = json.load(open(REPO_ROOT / "dataset_files" / "isolation_prompts_ext" / task
-                          / "train_prompts.json"))
+def task_examples(task, k=3, prompts_root=None):
+    prompts_root = prompts_root or REPO_ROOT / "dataset_files" / "isolation_prompts_ext"
+    recs = json.load(open(prompts_root / task / "train_prompts.json"))
     demos = recs[0]["demos"][:k]
     return [(str(d["input"]), str(d["output"])) for d in demos]
 
@@ -90,10 +91,36 @@ def ask_llm(tasks):
 
 
 def main():
+    global SPLIT, OUT_JSON, OUT_CSV, MODEL
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    # Qwen2.5 port (2026-09-22): same pairing rule on another pool; families supplied
+    # from a JSON (GPT-J tags reused for shared tasks + Haiku tags for the new ones).
+    ap.add_argument("--split_path", type=Path, default=SPLIT)
+    ap.add_argument("--prompts_root", type=Path,
+                    default=REPO_ROOT / "dataset_files" / "isolation_prompts_ext")
+    ap.add_argument("--out_json", type=Path, default=OUT_JSON)
+    ap.add_argument("--out_csv", type=Path, default=OUT_CSV)
+    ap.add_argument("--families_json", type=Path, default=None,
+                    help="{task: family} (or {'families': {...}}) — skips the LLM call")
+    ap.add_argument("--model_label", type=str, default=None,
+                    help="provenance string stored as 'model' when --families_json is used")
+    args = ap.parse_args()
+    SPLIT, OUT_JSON, OUT_CSV = args.split_path, args.out_json, args.out_csv
     split = json.load(open(SPLIT))
     tasks = sorted(split["train_tasks"] + split["heldout_tasks"])
-    assert len(tasks) == 69
-    fam = ask_llm(tasks)
+    if args.families_json is not None:
+        fam = json.load(open(args.families_json))
+        fam = fam.get("families", fam)
+        missing = [t for t in tasks if t not in fam]
+        bad = {t: f for t, f in fam.items() if f not in FAMILIES}
+        assert not missing, f"families_json omits tasks: {missing}"
+        assert not bad, f"unknown families: {bad}"
+        fam = {t: fam[t] for t in tasks}
+        MODEL = args.model_label or f"families from {args.families_json.name}"
+    else:
+        assert len(tasks) == 69
+        fam = ask_llm(tasks)
 
     from collections import Counter
     counts = Counter(fam.values())

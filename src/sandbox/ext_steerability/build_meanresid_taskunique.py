@@ -55,9 +55,22 @@ def load_bank_b(tasks):
 
 
 def main():
+    global RM, BA, SPLIT, LAYERS
     ap = argparse.ArgumentParser()
     ap.add_argument("--bank", choices=("a", "b"), default="a")
+    # Qwen2.5 port (2026-09-22): same construction on another model's captures / read band.
+    ap.add_argument("--rm_root", type=Path, default=RM, help="label_resid_means dir")
+    ap.add_argument("--out_dir", type=Path, default=BA, help="bankA output dir")
+    ap.add_argument("--split_path", type=Path, default=SPLIT)
+    ap.add_argument("--layers", type=int, nargs="+", default=list(LAYERS),
+                    help="read band averaged into u_A (GPT-J 5 6 7; Qwen 11 12 13)")
+    ap.add_argument("--svd_ref", type=str, default=None,
+                    help="SVD top-1 bases for the cos_to_svd_v1 diagnostic (default "
+                         "<out_dir>/L5to7_top1_bases.pt); 'none' skips it")
+    ap.add_argument("--skip_l67", action="store_true",
+                    help="skip the w_A = 0.5*(m_A(6)+m_A(7)) + u_A variant (GPT-J-only)")
     args = ap.parse_args()
+    RM, BA, SPLIT, LAYERS = args.rm_root, args.out_dir, args.split_path, tuple(args.layers)
     split = json.load(open(SPLIT))
     tasks = sorted(split["train_tasks"] + split["heldout_tasks"])
     if args.bank == "b":
@@ -81,10 +94,11 @@ def main():
         return
     X = torch.stack([torch.load(RM / f"{t}.pt", map_location="cpu",
                                 weights_only=False)["resid_means"][list(LAYERS)].double()
-                     for t in tasks])                                # (69, 3, d)
-    M67 = torch.stack([torch.load(RM / f"{t}.pt", map_location="cpu",
-                                  weights_only=False)["resid_means"][[6, 7]].double().mean(0)
-                       for t in tasks])                              # (69, d) own L6/7 mean
+                     for t in tasks])                                # (n_tasks, |band|, d)
+    M67 = None if args.skip_l67 else torch.stack(
+        [torch.load(RM / f"{t}.pt", map_location="cpu",
+                    weights_only=False)["resid_means"][[6, 7]].double().mean(0)
+         for t in tasks])                                            # (n_tasks, d) own L6/7 mean
     cd = X.mean(0)
     cd = cd / cd.norm(dim=1, keepdim=True)                           # per-layer carrier dirs
     R = X - (X * cd).sum(-1, keepdim=True) * cd                      # carrier projected out
@@ -92,16 +106,19 @@ def main():
     mbar = X.mean(dim=1)
     c = mbar.mean(0)                                                 # layer-averaged carrier
 
-    svd = torch.load(BA / "L5to7_top1_bases.pt", map_location="cpu", weights_only=False)["tasks"]
+    svd_path = (BA / "L5to7_top1_bases.pt") if args.svd_ref is None else args.svd_ref
+    svd = (None if str(svd_path) == "none" else
+           torch.load(svd_path, map_location="cpu", weights_only=False)["tasks"])
     bases, vecs, wvecs, swap, cs, un = {}, {}, {}, {}, [], []
     for i, t in enumerate(tasks):
         u = U[i]
         uh = u / u.norm()
-        wv = M67[i] + u
-        wvecs[t] = {"vec": wv.float(), "u_norm": round(float(u.norm()), 3),
-                    "base_norm": round(float(M67[i].norm()), 3), "vec_norm": round(float(wv.norm()), 3)}
+        if M67 is not None:
+            wv = M67[i] + u
+            wvecs[t] = {"vec": wv.float(), "u_norm": round(float(u.norm()), 3),
+                        "base_norm": round(float(M67[i].norm()), 3), "vec_norm": round(float(wv.norm()), 3)}
         swap[t] = {"V": uh.float().unsqueeze(0), "s": torch.tensor([float(u.norm())])}
-        cos_svd = float(abs(uh @ svd[t]["V"][0].double()))
+        cos_svd = float(abs(uh @ svd[t]["V"][0].double())) if svd is not None else float("nan")
         bases[t] = {"V": uh.float().unsqueeze(0), "norm_u": round(float(u.norm()), 3),
                     "cos_to_svd_v1": round(cos_svd, 4),
                     "max_carrier_cos": round(float((uh @ cd.T).abs().max()), 4)}
@@ -111,23 +128,26 @@ def main():
                    "vec_norm": round(float(vec.norm()), 3)}
         cs.append(cos_svd); un.append(float(u.norm()))
     BA.mkdir(parents=True, exist_ok=True)
+    band = f"L{LAYERS[0]}-{LAYERS[-1]}"
     torch.save({"tasks": bases, "rank": 1, "layers": list(LAYERS), "source": "label_resid_means",
-                "note": "unit direction of the mean carrier-removed L5-7 residual (no SVD)"},
+                "note": f"unit direction of the mean carrier-removed {band} residual (no SVD)"},
                BA / "meanresid_top1_bases.pt")
     torch.save({"tasks": vecs, "carrier": c.float(),
                 "definition": "c + u_A, u_A = mean_l [m_A(l) - <m_A(l),c_hat(l)> c_hat(l)], "
-                              "l in 5..7; c = 69-task mean of the L5-7 mean read feature"},
+                              f"l in {band}; c = {len(tasks)}-task mean of the {band} mean read feature"},
                BA / "carrier_plus_meanresid_vectors.pt")
-    torch.save({"tasks": wvecs, "definition": "0.5*(m_A(6)+m_A(7)) + u_A (own L6/7 mean plus "
-                "the mean carrier-removed L5-7 residual); bank a"}, BA / "l67_plus_meanresid_vectors.pt")
+    if M67 is not None:
+        torch.save({"tasks": wvecs, "definition": "0.5*(m_A(6)+m_A(7)) + u_A (own L6/7 mean plus "
+                    "the mean carrier-removed L5-7 residual); bank a"}, BA / "l67_plus_meanresid_vectors.pt")
     torch.save({"tasks": swap, "rank": 1, "layers": list(LAYERS), "source": "label_resid_means",
                 "note": "V = u_hat_A, s = ||u_A||: steer_taskunique_svd.py swaps in alpha*u_A"},
                BA / "meanresid_swap_bases.pt")
     cs, un = torch.tensor(cs), torch.tensor(un)
     print(f"wrote meanresid_top1_bases.pt + carrier_plus_meanresid_vectors.pt + "
-          f"l67_plus_meanresid_vectors.pt + meanresid_swap_bases.pt ({len(tasks)} tasks)")
+          f"{'l67_plus_meanresid_vectors.pt + ' if M67 is not None else ''}"
+          f"meanresid_swap_bases.pt ({len(tasks)} tasks, band {band})")
     print(f"|cos(u_hat, svd v1)|: median {cs.median():.4f} min {cs.min():.4f} | ||u_A||: median "
-          f"{un.median():.2f} (n_A median was 28.2) | ||c|| {float(c.norm()):.2f}")
+          f"{un.median():.2f} (GPT-J n_A median was 28.2) | ||c|| {float(c.norm()):.2f}")
 
 
 if __name__ == "__main__":

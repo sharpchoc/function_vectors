@@ -17,6 +17,7 @@ Outputs (TASK69_RUN_DIR/write_feature_and_model_accuracy/baseline_subtracted/):
 """
 import argparse
 import csv
+import json
 import sys
 from pathlib import Path
 
@@ -30,9 +31,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 for p in (REPO_ROOT, REPO_ROOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
-from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
+from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 
-LAYERS = list(range(9, 21))
+LAYERS = list(range(9, 21))      # overwritten from the npz files at run time
 N_SHOTS = list(range(0, 7))
 L13 = LAYERS.index(13)
 YLABEL = "n-shot accuracy (T=1 sampled exact match)"
@@ -45,6 +46,12 @@ def parse_args():
                    help="original capture; supplies `match` (accuracy) for the same prompts")
     p.add_argument("--out_dir", type=Path,
                    default=TASK69_RUN_DIR / "write_feature_and_model_accuracy" / "baseline_subtracted")
+    # Qwen2.5 port (2026-09-22): headline layer / band / pool as arguments; defaults = GPT-J.
+    p.add_argument("--split_path", type=Path,
+                   default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
+    p.add_argument("--headline_layer", type=int, default=13)
+    p.add_argument("--band", type=str, default="9-20")
+    p.add_argument("--model_label", default="GPT-J-6B")
     return p.parse_args()
 
 
@@ -81,9 +88,20 @@ def scatter_fig(x_tn, acc_tn, groups, variant, xlabel, title, out_path):
 
 
 def main():
+    global LAYERS, L13
     args = parse_args()
-    files = sorted(args.gm_root.glob("*.npz"))
-    assert len(files) == 69, f"expected 69 task files in {args.gm_root}, found {len(files)}"
+    split = json.load(open(args.split_path))
+    split_tasks = sorted(split["train_tasks"] + split["heldout_tasks"])
+    files = [args.gm_root / f"{t}.npz" for t in split_tasks]
+    missing = [f.stem for f in files if not f.exists()]
+    assert not missing, f"missing {len(missing)} task files in {args.gm_root}: {missing[:5]}"
+    LAYERS = [int(l) for l in np.load(files[0], allow_pickle=False)["layers"]]
+    HL = args.headline_layer
+    L13 = LAYERS.index(HL)
+    lo, hi = (int(x) for x in args.band.split("-"))
+    band_idx = [LAYERS.index(l) for l in range(lo, hi + 1) if l in LAYERS]
+    band_lab = f"L{LAYERS[band_idx[0]]}–{LAYERS[band_idx[-1]]}"
+    T = len(files)
     tasks, groups = [], []
     own_l13, gm_l13, d_l13, d_band, accs = [], [], [], [], []
     for f in files:
@@ -93,26 +111,26 @@ def main():
         assert list(a["n_shots"]) == N_SHOTS and str(a["group"]) == str(z["group"])
         tasks.append(f.stem)
         groups.append(str(z["group"]))
-        co, cg = z["cos_own"], z["cos_gm"]                 # (7, 150, 12)
+        co, cg = z["cos_own"], z["cos_gm"]                 # (7, N, n_layers)
         d = co - cg
         own_l13.append(co[:, :, L13].mean(axis=1))        # (7,)
         gm_l13.append(cg[:, :, L13].mean(axis=1))
         d_l13.append(d[:, :, L13].mean(axis=1))
-        d_band.append(d.mean(axis=2).mean(axis=1))        # per-prompt mean over L9..20 -> (7,)
+        d_band.append(d[:, :, band_idx].mean(axis=2).mean(axis=1))   # per-prompt mean over band -> (7,)
         accs.append(a["match"].mean(axis=1))              # (7,)
     own_l13, gm_l13, d_l13, d_band, accs = map(np.stack, (own_l13, gm_l13, d_l13, d_band, accs))
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    xl_delta = "cos(z, v̂_A) − cos(z, v̂_gm) at the query cue, L13 (mean over 150 prompts)"
+    xl_delta = f"cos(z, v̂_A) − cos(z, v̂_gm) at the query cue, L{HL} (mean over prompts)"
     variants = [
-        ("L13_minus_gm", d_l13, xl_delta,
-         "FV presence above generic-FV baseline vs accuracy @ L13 (69 tasks × n=0..6)"),
-        ("L13_cos_gm", gm_l13,
-         "cos(z, v̂_gm) at the query cue, L13 (mean over 150 prompts)",
-         "Generic-FV presence vs accuracy @ L13 (69 tasks × n=0..6)"),
-        ("meanL9-20_minus_gm", d_band,
-         "cos(z, v̂_A) − cos(z, v̂_gm) at the query cue, mean over L9–20 (mean over 150 prompts)",
-         "FV presence above generic-FV baseline vs accuracy, mean over L9–20 (69 tasks × n=0..6)"),
+        (f"L{HL}_minus_gm", d_l13, xl_delta,
+         f"FV presence above generic-FV baseline vs accuracy @ L{HL} ({T} tasks × n=0..6, {args.model_label})"),
+        (f"L{HL}_cos_gm", gm_l13,
+         f"cos(z, v̂_gm) at the query cue, L{HL} (mean over prompts)",
+         f"Generic-FV presence vs accuracy @ L{HL} ({T} tasks × n=0..6, {args.model_label})"),
+        (f"mean{band_lab.replace('–', '-')}_minus_gm", d_band,
+         f"cos(z, v̂_A) − cos(z, v̂_gm) at the query cue, mean over {band_lab} (mean over prompts)",
+         f"FV presence above generic-FV baseline vs accuracy, mean over {band_lab} ({T} tasks × n=0..6, {args.model_label})"),
     ]
     rows = []
     for stem, x_tn, xlabel, title in variants:
@@ -124,10 +142,10 @@ def main():
         w.writerow(["variant", "n_shots", "spearman_rho", "spearman_p", "pearson_r", "pearson_p"])
         for v, n, rho, rp, r, pp in rows:
             w.writerow([v, n, f"{rho:.4f}", f"{rp:.3e}", f"{r:.4f}", f"{pp:.3e}"])
-    with open(args.out_dir / "presence_gm_L13.csv", "w", newline="") as f:
+    with open(args.out_dir / f"presence_gm_L{HL}.csv", "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["task", "group", "n_shots", "mean_cos_own_L13", "mean_cos_gm_L13",
-                    "mean_delta_cos_L13", "acc"])
+        w.writerow(["task", "group", "n_shots", f"mean_cos_own_L{HL}", f"mean_cos_gm_L{HL}",
+                    f"mean_delta_cos_L{HL}", "acc"])
         for ti, t in enumerate(tasks):
             for ni, n in enumerate(N_SHOTS):
                 w.writerow([t, groups[ti], n, f"{own_l13[ti, ni]:.4f}", f"{gm_l13[ti, ni]:.4f}",
@@ -141,8 +159,8 @@ def main():
     print(f"wrote {args.out_dir} ({len(variants)} figures, 2 csv)")
     for stem, *_ in variants:
         print(line(stem))
-    print(f"cos_gm @L13 (task means) range {gm_l13.min():+.3f} .. {gm_l13.max():+.3f}; "
-          f"delta_cos @L13 range {d_l13.min():+.3f} .. {d_l13.max():+.3f}")
+    print(f"cos_gm @L{HL} (task means) range {gm_l13.min():+.3f} .. {gm_l13.max():+.3f}; "
+          f"delta_cos @L{HL} range {d_l13.min():+.3f} .. {d_l13.max():+.3f}")
 
 
 if __name__ == "__main__":

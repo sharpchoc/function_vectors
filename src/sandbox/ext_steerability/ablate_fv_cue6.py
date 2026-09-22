@@ -40,19 +40,32 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
+from src.utils.model_utils import get_decoder_block
 try:
     from src.sandbox.ext_steerability.ablate_pc50_labeltokens import (
-        load_model, batches_by_len, N_LAYERS, D)
+        load_model, batches_by_len, model_dims, N_LAYERS, D)
     from src.sandbox.ext_steerability.sixshot_dummy_steer import build_items_6shot
     from src.sandbox.isolation_upper_bound.run_task import build_contributions_single
 except ModuleNotFoundError:  # staged copy outside the repo tree
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from ablate_pc50_labeltokens import load_model, batches_by_len, N_LAYERS, D
+    from ablate_pc50_labeltokens import load_model, batches_by_len, model_dims, N_LAYERS, D
     from sixshot_dummy_steer import build_items_6shot
     from run_task import build_contributions_single
 
-MODEL_CFG = {"n_layers": N_LAYERS, "n_heads": 16, "resid_dim": D}
-LAYER_CFGS = {"L9to27": tuple(range(9, N_LAYERS)), "L0to27": tuple(range(N_LAYERS))}
+LAYER_CFG_NAMES = ("L9to27", "L0to27")
+
+
+def model_cfg(model):
+    """{n_layers, n_heads, resid_dim} for build_contributions_single (GPT-J: 28/16/4096;
+    Qwen2.5-7B: 28/28/3584)."""
+    n, d, h = model_dims(model)
+    return {"n_layers": n, "n_heads": h, "resid_dim": d}
+
+
+def layer_cfgs(n_layers):
+    """The two layer clamps of the study; both models have 28 blocks so the names hold."""
+    assert n_layers == 28, f"layer-clamp names assume 28 blocks, model has {n_layers}"
+    return {"L9to27": tuple(range(9, n_layers)), "L0to27": tuple(range(n_layers))}
 
 
 def parse_args():
@@ -74,25 +87,35 @@ def parse_args():
     p.add_argument("--split_path", type=Path,
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_dir", type=Path, default=None)
+    p.add_argument("--model_name", default=None,
+                   help="HF id for a non-GPT-J model (Qwen2.5 port, bf16); default GPT-J-6B")
     p.add_argument("--token_budget", type=int, default=24000)
     p.add_argument("--batch_cap", type=int, default=48)
     p.add_argument("--with_baseline", action="store_true",
                    help="also run an unablated 'real6_baseline' condition (seed-exact "
                         "reproduction of sixshot_dummy_steer's real6_baseline; smoke checks)")
+    p.add_argument("--with_zero_shot", action="store_true",
+                   help="also run an unablated 'zero_shot' condition on the 0-demo prompts "
+                        "'Q: {query}\\nA:' (same queries/readout; in-run zero-shot floor for "
+                        "models without a stored sixshot_dummy baseline CSV)")
+    p.add_argument("--min_prompts", type=int, default=40,
+                   help="per-task prompt-count gate (150 for GPT-J; 52 for two Qwen tasks)")
+    p.add_argument("--max_tasks", type=int, default=None, help="cap tasks (smoke tests)")
     p.add_argument("--shard_idx", type=int, default=0)
     p.add_argument("--shard_n", type=int, default=1)
     p.add_argument("--n_shots", type=int, default=6,
                    help="demos per prompt (first N of each record); 6 = original study")
-    p.add_argument("--layer_cfgs", nargs="+", default=list(LAYER_CFGS),
-                   choices=list(LAYER_CFGS), help="layer clamps to run")
+    p.add_argument("--layer_cfgs", nargs="+", default=list(LAYER_CFG_NAMES),
+                   choices=list(LAYER_CFG_NAMES), help="layer clamps to run")
     return p.parse_args()
 
 
-def build_items_nshot(task, prompts_root, tok, n_shots):
+def build_items_nshot(task, prompts_root, tok, n_shots, min_prompts=40):
     """True-label N-shot prompts in the sixshot_dummy_steer format (first N demos of each
-    of the 150 records). Identical to build_items_6shot(real_labels=True) at N=6."""
+    of the 150 records). Identical to build_items_6shot(real_labels=True) at N=6.
+    N=0 gives the zero-shot prompt 'Q: {query}\\nA:'."""
     recs = json.load(open(prompts_root / task / "train_prompts.json"))
-    assert len(recs) == 150
+    assert len(recs) >= min_prompts, f"{task}: only {len(recs)} prompts"
     items = []
     for rec in recs:
         q = str(rec["query"]["input"])
@@ -114,7 +137,7 @@ def build_items_nshot(task, prompts_root, tok, n_shots):
 def build_items(task, args, tok):
     if args.n_shots == 6:
         return build_items_6shot(task, args.prompts_root, tok, real_labels=True)
-    return build_items_nshot(task, args.prompts_root, tok, args.n_shots)
+    return build_items_nshot(task, args.prompts_root, tok, args.n_shots, args.min_prompts)
 
 
 def sfx(args, six, other):
@@ -128,13 +151,14 @@ class FVAblator:
     length matches the armed mask (prefill). Also doubles as the cue-mean capturer."""
 
     def __init__(self, model):
+        self.n_layers, self.d, _ = model_dims(model)
         self.u = None          # (D,) fp32 cuda, unit norm
-        self.mproj = None      # (N_LAYERS, D) fp32 cuda ((m_l.u)u rows) or None (zero op)
+        self.mproj = None      # (n_layers, D) fp32 cuda ((m_l.u)u rows) or None (zero op)
         self.layers = None     # frozenset of block indices
         self.mask = None       # (B, L) bool cuda
-        self.capture = None    # dict(sums (N_LAYERS, D) fp64, count int) when capturing
-        self.handles = [model.transformer.h[l].register_forward_pre_hook(
-            self._make(l), with_kwargs=True) for l in range(N_LAYERS)]
+        self.capture = None    # dict(sums (n_layers, D) fp64, count int) when capturing
+        self.handles = [get_decoder_block(model, l).register_forward_pre_hook(
+            self._make(l), with_kwargs=True) for l in range(self.n_layers)]
 
     def _make(self, l):
         def hook(module, args, kwargs):
@@ -167,7 +191,9 @@ class FVAblator:
 def unit_fv(task, args, model, sel_flat):
     means = torch.load(args.means_root / task / "means.pt", map_location="cpu",
                        weights_only=False)
-    C = build_contributions_single(means["head_means"], model, MODEL_CFG)
+    C = build_contributions_single(means["head_means"], model, model_cfg(model))
+    assert int(sel_flat.max()) < C.shape[0], \
+        f"selection index {int(sel_flat.max())} out of range for {C.shape[0]} heads"
     v = C[sel_flat.to(C.device)].sum(dim=0).float()
     return v / v.norm(), float(v.norm())
 
@@ -182,7 +208,7 @@ def run_means(args, model, tok, tasks):
             print(f"means {task}: exists, skip", flush=True)
             continue
         items = build_items(task, args, tok)
-        cap = {"sums": torch.zeros(N_LAYERS, D, dtype=torch.float64), "count": 0}
+        cap = {"sums": torch.zeros(ab.n_layers, ab.d, dtype=torch.float64), "count": 0}
         ab.capture = cap
         for b in batches_by_len(items, args.token_budget, args.batch_cap):
             lens = [len(items[i]["ids"]) for i in b]
@@ -211,14 +237,14 @@ def run_combine(args, tasks_all):
     for t in tasks_all:
         d = torch.load(args.out_root / sfx(args, "cue_means", "cue_means_{n}shot") / f"{t}.pt",
                        map_location="cpu", weights_only=False)
-        assert d["n_prompts"] == 150, f"{t}: {d['n_prompts']} prompts"
+        assert d["n_prompts"] >= args.min_prompts, f"{t}: {d['n_prompts']} prompts"
         per.append(d["mean"].double())
     gm = torch.stack(per).mean(dim=0).float()
     out = args.out_root / f"grand_mean_cue{args.n_shots}.pt"
     torch.save({"mean": gm, "n_tasks": len(tasks_all), "n_shots": args.n_shots,
                 "definition": "equal-task-weighted grand mean of block-input residuals at "
-                              f"the final cue token of the 150 {args.n_shots}-shot prompts, "
-                              "all 69 tasks (train+heldout)"}, out)
+                              f"the final cue token of the {args.n_shots}-shot prompts, "
+                              f"all {len(tasks_all)} tasks (train+heldout)"}, out)
     print(f"combined {len(tasks_all)} tasks -> {out}")
 
 
@@ -251,36 +277,43 @@ def run_eval(args, model, tok, tasks, group):
                "definition": "remove rank-1 FV component at final cue token, prefill, "
                              "blocks in layer clamp; mean op adds back grand-mean proj",
                "selection_path": str(args.selection_path),
-               "grand_mean": f"{gm_path.name} (equal-task-weighted, 69 tasks)",
+               "model_name": args.model_name or "EleutherAI/gpt-j-6b",
+               "grand_mean": f"{gm_path.name} (equal-task-weighted, {len(group)} tasks)",
                "conditions": {}}
 
+        # each condition carries its own prompt list: the ablation/baseline conditions use
+        # the n-shot items; the optional zero_shot floor uses the 0-demo prompts (same queries)
         conds = []
+        if args.with_zero_shot:
+            zs_items = build_items_nshot(task, args.prompts_root, tok, 0, args.min_prompts)
+            assert [it["gold"] for it in zs_items] == [it["gold"] for it in items]
+            conds.append(("zero_shot", None, None, None, zs_items))
         if args.with_baseline:
-            conds.append((f"real{args.n_shots}_baseline", None, None, None))
+            conds.append((f"real{args.n_shots}_baseline", None, None, None, items))
         for cfg in args.layer_cfgs:
-            layers = LAYER_CFGS[cfg]
+            layers = layer_cfgs(ab.n_layers)[cfg]
             for who, u in (("own", u_own), ("cf", u_cf)):
-                mproj = torch.outer(gm @ u, u)           # (N_LAYERS, D)
-                conds.append((f"{who}_zero_{cfg}", u, None, layers))
-                conds.append((f"{who}_mean_{cfg}", u, mproj, layers))
+                mproj = torch.outer(gm @ u, u)           # (n_layers, D)
+                conds.append((f"{who}_zero_{cfg}", u, None, layers, items))
+                conds.append((f"{who}_mean_{cfg}", u, mproj, layers, items))
 
-        for cname, u, mproj, layers in conds:
+        for cname, u, mproj, layers, citems in conds:
             ab.u, ab.mproj = u, mproj
             ab.layers = None if layers is None else frozenset(layers)
-            preds = [None] * len(items)
-            for bi, b in enumerate(batches_by_len(items, args.token_budget, args.batch_cap)):
-                lens = [len(items[i]["ids"]) for i in b]
+            preds = [None] * len(citems)
+            for bi, b in enumerate(batches_by_len(citems, args.token_budget, args.batch_cap)):
+                lens = [len(citems[i]["ids"]) for i in b]
                 L = max(lens)
                 ids = torch.full((len(b), L), tok.eos_token_id, dtype=torch.long)
                 att = torch.zeros(len(b), L, dtype=torch.long)
                 mask = torch.zeros(len(b), L, dtype=torch.bool)
                 for r, i in enumerate(b):   # LEFT padding for generation
                     n = lens[r]; off = L - n
-                    ids[r, off:] = torch.tensor(items[i]["ids"])
+                    ids[r, off:] = torch.tensor(citems[i]["ids"])
                     att[r, off:] = 1
                     mask[r, L - 1] = True   # final cue token
                 ab.mask = mask.cuda()
-                max_new = min(max(items[i]["gold_len"] for i in b) + 3, 16)
+                max_new = min(max(citems[i]["gold_len"] for i in b) + 3, 16)
                 torch.manual_seed(zlib.crc32(f"{task}|{cname}|{bi}".encode()))
                 with torch.no_grad():
                     gen = model.generate(input_ids=ids.cuda(), attention_mask=att.cuda(),
@@ -291,7 +324,7 @@ def run_eval(args, model, tok, tasks, group):
                 for r, i in enumerate(b):
                     preds[i] = tok.decode(gen[r, L:], skip_special_tokens=True).split("\n")[0].strip()
             ab.u = ab.mproj = ab.layers = None
-            acc = float(np.mean([p == it["gold"] for p, it in zip(preds, items)]))
+            acc = float(np.mean([p == it["gold"] for p, it in zip(preds, citems)]))
             res["conditions"][cname] = {"acc": round(acc, 4), "preds": preds}
             print(f"{task} | {cname}: acc={acc:.3f}", flush=True)
         res["golds"] = [it["gold"] for it in items]
@@ -307,10 +340,12 @@ def main():
     group.update({t: "heldout" for t in split["heldout_tasks"]})
     tasks_all = sorted(group)
     tasks = tasks_all[args.shard_idx::args.shard_n]
+    if args.max_tasks:
+        tasks = tasks[:args.max_tasks]
     if args.stage == "combine":
         run_combine(args, tasks_all)
         return
-    model, tok = load_model(args.model_dir)
+    model, tok = load_model(args.model_dir, args.model_name)
     if args.stage == "means":
         run_means(args, model, tok, tasks)
     else:

@@ -35,8 +35,16 @@ from src.utils.paths import ARTIFACTS_ROOT  # noqa: E402
 from src.utils.prompt_utils import create_prompt  # noqa: E402
 
 N_SHOTS = list(range(0, 7))
-LAYERS = list(range(9, 21))
+LAYERS = list(range(9, 21))      # GPT-J default band; --layers overrides (Qwen port: 0-27)
 MAX_NEW_TOKENS = 12
+
+
+def parse_layers(s):
+    """'9-20' -> [9..20]; '0,3,13' -> [0,3,13]."""
+    if "-" in s:
+        lo, hi = (int(x) for x in s.split("-"))
+        return list(range(lo, hi + 1))
+    return [int(x) for x in s.split(",")]
 
 
 def parse_args():
@@ -47,6 +55,15 @@ def parse_args():
     p.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "69_task_run" / "perprompt_fvs")
     p.add_argument("--out_root", type=Path, default=ARTIFACTS_ROOT / "69_task_run" / "presence_vs_acc")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
+    p.add_argument("--split_path", type=Path,
+                   default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
+    p.add_argument("--layers", type=str, default="9-20",
+                   help="block-output layers to capture, 'lo-hi' or comma list (GPT-J 9-20)")
+    p.add_argument("--min_prompts", type=int, default=150,
+                   help="per-task prompt-count gate (150 GPT-J; 40 for the Qwen pool)")
+    p.add_argument("--print_layer", type=int, default=13)
+    p.add_argument("--token_budget", type=int, default=6000)
+    p.add_argument("--batch_cap", type=int, default=64)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--capture_batch", type=int, default=16)
     return p.parse_args()
@@ -54,6 +71,7 @@ def parse_args():
 
 def main():
     args = parse_args()
+    LAYERS = parse_layers(args.layers)
     set_seed(args.seed)
     model, tokenizer, cfg = load_gpt_model_and_tokenizer(args.model_name)
     model.eval()
@@ -61,8 +79,9 @@ def main():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     hooks = [cfg["layer_hook_names"][l] for l in LAYERS]
+    pl = LAYERS.index(args.print_layer) if args.print_layer in LAYERS else len(LAYERS) - 1
     args.out_root.mkdir(parents=True, exist_ok=True)
-    split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
+    split = json.load(open(args.split_path))
     group_of = {t: "train" for t in split["train_tasks"]}
     group_of.update({t: "heldout" for t in split["heldout_tasks"]})
 
@@ -77,9 +96,10 @@ def main():
         v_hat = (v / v.norm()).float().to(model.device)
 
         recs = load_records(args, task, "train_prompts")
-        assert len(recs) == 150
-        cos_out = np.zeros((len(N_SHOTS), 150, len(LAYERS)), dtype=np.float32)
-        match_out = np.zeros((len(N_SHOTS), 150), dtype=bool)
+        assert len(recs) >= args.min_prompts, f"{task}: only {len(recs)} prompts"
+        N = len(recs)
+        cos_out = np.zeros((len(N_SHOTS), N, len(LAYERS)), dtype=np.float32)
+        match_out = np.zeros((len(N_SHOTS), N), dtype=bool)
 
         for ni, n in enumerate(N_SHOTS):
             sents, golds = [], []
@@ -91,12 +111,12 @@ def main():
                 sents.append(sent)
                 golds.append(str(r["query"]["output"]).strip())
             tok_lens = [len(tokenizer(s).input_ids) for s in sents]
-            order = sorted(range(150), key=lambda i: tok_lens[i])
+            order = sorted(range(N), key=lambda i: tok_lens[i])
 
             # --- (a) cos capture: right-padded forward, cue = last real token ---
             tokenizer.padding_side = "right"
-            bsz = auto_batch(max(tok_lens), 6000, 64)
-            for start in range(0, 150, bsz):
+            bsz = auto_batch(max(tok_lens), args.token_budget, args.batch_cap)
+            for start in range(0, N, bsz):
                 idx = order[start:start + bsz]
                 enc = tokenizer([sents[i] for i in idx], return_tensors="pt", padding=True)
                 enc = {k: v_.to(model.device) for k, v_ in enc.items()}
@@ -116,7 +136,7 @@ def main():
 
             # --- (b) sampled generation: left-padded, repo nshot convention ---
             tokenizer.padding_side = "left"
-            for start in range(0, 150, bsz):
+            for start in range(0, N, bsz):
                 idx = order[start:start + bsz]
                 enc = tokenizer([sents[i] for i in idx], return_tensors="pt", padding=True)
                 enc = {k: v_.to(model.device) for k, v_ in enc.items()}
@@ -131,7 +151,7 @@ def main():
                     pred = text.split("\n")[0].strip()
                     match_out[ni, i] = (pred == golds[i])
             print(f"[{task}] n={n} acc={match_out[ni].mean():.3f} "
-                  f"cosL13={cos_out[ni, :, LAYERS.index(13)].mean():.3f}", flush=True)
+                  f"cosL{LAYERS[pl]}={cos_out[ni, :, pl].mean():.3f}", flush=True)
 
         np.savez(out, cos=cos_out, match=match_out, layers=np.array(LAYERS),
                  n_shots=np.array(N_SHOTS), group=group_of[task])

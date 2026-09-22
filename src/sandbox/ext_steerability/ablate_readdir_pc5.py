@@ -55,6 +55,8 @@ def parse_args():
     p.add_argument("--split_path", type=Path,
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_dir", type=Path, default=None)
+    p.add_argument("--model_name", default=None,
+                   help="HF id for a non-GPT-J model (Qwen2.5 port); default GPT-J-6B")
     p.add_argument("--token_budget", type=int, default=11000)
     p.add_argument("--batch_cap", type=int, default=16)
     p.add_argument("--out_sub", type=str, default="pc5",
@@ -86,9 +88,9 @@ def main():
             assert b["cos_pc1_mean"] >= 0.98, \
                 f"{t}: PC1 drifted from mean ({b['cos_pc1_mean']:.3f})"
     grand = torch.load(args.grand_mean_path, map_location="cpu",
-                       weights_only=False)["mean"].float().cuda()   # (28, 4096)
+                       weights_only=False)["mean"].float().cuda()   # (n_layers, d)
 
-    model, tok = load_model_eager(args.model_dir)
+    model, tok = load_model_eager(args.model_dir, args.model_name)
     ab = Ablator(model)
     tok.padding_side = "left"
     outdir = args.out_root / args.out_sub / f"n{args.n_shots}shot"
@@ -122,6 +124,7 @@ def main():
         if res is None:
             res = {"task": task, "n_shots": args.n_shots, "cf_task": pairs[task],
                    "rank": int(V_own.shape[0]), "bases_path": str(args.bases_path),
+                   "model_name": args.model_name or "EleutherAI/gpt-j-6b",
                    "n_prompts": len(items), "conditions": {},
                    "golds": [it["gold"] for it in items]}
         for cname in todo:

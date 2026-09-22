@@ -38,16 +38,32 @@ for p in (_BOOT, _BOOT / "src"):
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
 from src.utils.prompt_utils import get_token_meta_labels, word_pairs_to_prompt_data
+from src.utils.model_utils import get_decoder_block
 
 BRACKETS = ("cosine_M", "dot_M", "cosine_perhead", "dot_perhead")
 LABEL_RE = re.compile(r"^demonstration_\d+_label_token$")
-N_LAYERS, D = 28, 4096
+N_LAYERS, D = 28, 4096          # GPT-J constants (kept for legacy imports); use model_dims()
+MIN_PROMPTS = 40                # per-task prompt count gate (150 for GPT-J; 52 for two Qwen tasks)
+
+
+def model_dims(model):
+    """(n_layers, d_model, n_heads) from the HF config (GPT-J or Qwen2-style names)."""
+    c = model.config
+    n_layers = getattr(c, "num_hidden_layers", None) or getattr(c, "n_layer")
+    d = getattr(c, "hidden_size", None) or getattr(c, "n_embd")
+    n_heads = getattr(c, "num_attention_heads", None) or getattr(c, "n_head")
+    return int(n_layers), int(d), int(n_heads)
 
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--stage", required=True, choices=("means", "eval"))
+    p.add_argument("--stage", required=True, choices=("means", "combine", "eval"))
+    p.add_argument("--model_name", default=None,
+                   help="HF id for non-GPT-J models (e.g. Qwen/Qwen2.5-7B-Instruct, bf16); "
+                        "default: the GPT-J-6B snapshot (fp16)")
+    p.add_argument("--grand_mean_name", default="grand_mean.pt",
+                   help="--stage combine: output file name under --out_root")
     p.add_argument("--prompts_root", type=Path,
                    default=REPO_ROOT / "dataset_files" / "isolation_prompts_ext")
     p.add_argument("--pc_path", type=Path,
@@ -66,21 +82,31 @@ def parse_args():
     return p.parse_args()
 
 
-def load_model(model_dir):
+def load_model(model_dir, model_name=None, attn_implementation=None):
+    """GPT-J-6B fp16 from the local snapshot (default), or any HF causal LM by id in bf16
+    (Qwen2.5 port). `attn_implementation` is passed through when given."""
     from transformers import AutoModelForCausalLM, AutoTokenizer
-    md = model_dir or sorted(Path("/workspace/.cache/huggingface/hub/"
-                                  "models--EleutherAI--gpt-j-6b/snapshots").glob("*"))[-1]
-    tok = AutoTokenizer.from_pretrained(md)
+    extra = {} if attn_implementation is None else {"attn_implementation": attn_implementation}
+    if model_name is None or "gpt-j" in str(model_name).lower():
+        md = model_dir or sorted(Path("/workspace/.cache/huggingface/hub/"
+                                      "models--EleutherAI--gpt-j-6b/snapshots").glob("*"))[-1]
+        tok = AutoTokenizer.from_pretrained(md)
+        tok.pad_token = tok.eos_token
+        model = AutoModelForCausalLM.from_pretrained(md, torch_dtype=torch.float16,
+                                                     **extra).cuda().eval()
+        return model, tok
+    tok = AutoTokenizer.from_pretrained(model_name)
     tok.pad_token = tok.eos_token
-    model = AutoModelForCausalLM.from_pretrained(md, torch_dtype=torch.float16).cuda().eval()
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16,
+                                                 **extra).cuda().eval()
     return model, tok
 
 
 def prep_task(task, prompts_root, tok):
-    """Tokenize the 150 clean prompts; return list of dicts with ids, label-token positions,
-    gold string, gold token length."""
+    """Tokenize the clean 10-shot prompts (150 per task; >= MIN_PROMPTS); return list of dicts
+    with ids, label-token positions, gold string, gold token length."""
     recs = json.load(open(prompts_root / task / "train_prompts.json"))
-    assert len(recs) == 150
+    assert len(recs) >= MIN_PROMPTS, f"{task}: only {len(recs)} prompts"
     out = []
     for rec in recs:
         # str-cast everything: number tasks store ints, which break tokenize_labels;
@@ -125,12 +151,13 @@ class Ablator:
     Active only when the sequence length matches the armed mask (prefill)."""
 
     def __init__(self, model):
-        self.V = None          # (50, D) fp32 cuda
-        self.mproj = None      # (N_LAYERS, D) fp32 cuda or None (zero mode)
+        self.n_layers, self.d, _ = model_dims(model)
+        self.V = None          # (k, D) fp32 cuda
+        self.mproj = None      # (n_layers, D) fp32 cuda or None (zero mode)
         self.mask = None       # (B, L) bool cuda
-        self.capture = None    # dict(sums (N_LAYERS, D) fp64, count int) when capturing
-        self.handles = [model.transformer.h[l].register_forward_pre_hook(
-            self._make(l), with_kwargs=True) for l in range(N_LAYERS)]
+        self.capture = None    # dict(sums (n_layers, D) fp64, count int) when capturing
+        self.handles = [get_decoder_block(model, l).register_forward_pre_hook(
+            self._make(l), with_kwargs=True) for l in range(self.n_layers)]
 
     def _make(self, l):
         def hook(module, args, kwargs):
@@ -169,7 +196,7 @@ def run_means(args, model, tok, tasks):
             print(f"means {task}: exists, skip", flush=True)
             continue
         items = prep_task(task, args.prompts_root, tok)
-        cap = {"sums": torch.zeros(N_LAYERS, D, dtype=torch.float64), "count": 0}
+        cap = {"sums": torch.zeros(ab.n_layers, ab.d, dtype=torch.float64), "count": 0}
         ab.capture = cap
         for b in batches_by_len(items, args.token_budget, args.batch_cap):
             lens = [len(items[i]["ids"]) for i in b]
@@ -243,13 +270,35 @@ def run_eval(args, model, tok, tasks):
     print("eval done", flush=True)
 
 
+def run_combine(args, tasks_all):
+    """Token-weighted grand mean of demo-label-token block inputs over --task_set (the
+    GPT-J grand_mean69.pt was combined the same way, inline). No model needed."""
+    sums, count, n_tasks = None, 0, 0
+    for t in tasks_all:
+        d = torch.load(args.out_root / "label_means" / f"{t}.pt", map_location="cpu",
+                       weights_only=False)
+        sums = d["sums"].double() if sums is None else sums + d["sums"].double()
+        count += int(d["count"]); n_tasks += 1
+    assert count > 0
+    out = args.out_root / args.grand_mean_name
+    torch.save({"mean": (sums / count).float(), "n_label_tokens": count, "n_tasks": n_tasks,
+                "task_set": args.task_set,
+                "definition": "token-weighted grand mean of block-input residuals at every "
+                              f"demo-label token of the clean 10-shot prompts, {n_tasks} tasks "
+                              f"({args.task_set})"}, out)
+    print(f"combined {n_tasks} tasks, {count} label tokens -> {out}")
+
+
 def main():
     args = parse_args()
     split = json.load(open(args.split_path))
     pool = {"train": split["train_tasks"], "heldout": split["heldout_tasks"],
             "all": split["train_tasks"] + split["heldout_tasks"]}[args.task_set]
     tasks = sorted(pool)[args.shard_idx::args.shard_n]
-    model, tok = load_model(args.model_dir)
+    if args.stage == "combine":
+        run_combine(args, sorted(pool))
+        return
+    model, tok = load_model(args.model_dir, args.model_name)
     if args.stage == "means":
         run_means(args, model, tok, tasks)
     else:

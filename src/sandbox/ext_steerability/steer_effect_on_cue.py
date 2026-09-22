@@ -33,19 +33,23 @@ for p in (_BOOT, _BOOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 from src.utils.paths import ARTIFACTS_ROOT, REPO_ROOT
+from src.utils.model_utils import get_decoder_block
 try:
     from src.sandbox.ext_steerability.steer_read_dir_1shot import load_model, batches_by_len
     from src.sandbox.ext_steerability.steer_read_dir_methods import Injector, build_items
     from src.sandbox.ext_steerability.sixshot_dummy_steer import build_items_6shot
+    from src.sandbox.ext_steerability.ablate_pc50_labeltokens import (
+        load_model as load_model_generic, model_dims)
 except ModuleNotFoundError:  # staged copy outside the repo tree
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from steer_read_dir_1shot import load_model, batches_by_len
     from steer_read_dir_methods import Injector, build_items
     from sixshot_dummy_steer import build_items_6shot
+    from ablate_pc50_labeltokens import load_model as load_model_generic, model_dims
 
 ALPHAS = (0.0, 0.5, 1.0, 2.0, 4.0)
 INJECT_LAYER = 6   # default; overridden by --inject_layer
-N_LAYERS = 28
+N_LAYERS = 28      # GPT-J; the actual values come from model_dims(model) at run time
 D_MODEL = 4096
 
 
@@ -70,6 +74,10 @@ def parse_args():
     p.add_argument("--split_path", type=Path,
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_dir", type=Path, default=None)
+    p.add_argument("--model_name", default=None,
+                   help="HF id for a non-GPT-J model (Qwen2.5 port, bf16); default GPT-J-6B")
+    p.add_argument("--print_layer", type=int, default=13,
+                   help="layer reported in the progress print (GPT-J headline L13)")
     p.add_argument("--token_budget", type=int, default=9000)
     p.add_argument("--batch_cap", type=int, default=12)
     p.add_argument("--shard_idx", type=int, default=0)
@@ -81,10 +89,11 @@ class CueReader:
     """Forward hooks on every block: stash the hidden state at each row's final token."""
 
     def __init__(self, model):
+        self.n_layers, self.d, _ = model_dims(model)
         self.last_idx = None      # (B,) long cuda
-        self.buf = None           # (B, 28, D) fp32 cuda
-        self.handles = [model.transformer.h[l].register_forward_hook(self._make(l))
-                        for l in range(N_LAYERS)]
+        self.buf = None           # (B, n_layers, D) fp32 cuda
+        self.handles = [get_decoder_block(model, l).register_forward_hook(self._make(l))
+                        for l in range(self.n_layers)]
 
     def _make(self, l):
         def hook(module, args, output):
@@ -120,7 +129,10 @@ def main():
     print(f"{len(tasks)} tasks on this shard | ||v_generic||={v_generic.norm():.2f} | "
           f"mean cos(v_task, v_generic)={mean_cos:.3f}", flush=True)
 
-    model, tok = load_model(args.model_dir)
+    if args.model_name is None:
+        model, tok = load_model(args.model_dir)                      # GPT-J path, unchanged
+    else:
+        model, tok = load_model_generic(args.model_dir, args.model_name)
     tok.padding_side = "left"
     global INJECT_LAYER
     if args.inject_layer is not None:
@@ -129,6 +141,8 @@ def main():
              if args.vectors_path else None)
     inj = Injector(model, [INJECT_LAYER])
     reader = CueReader(model)
+    n_layers, d_model = reader.n_layers, reader.d
+    PL = args.print_layer
     vg = v_generic.cuda()
     vg_hat = vg / vg.norm()
 
@@ -151,7 +165,7 @@ def main():
         vt = fvs[task].cuda()
         vt_hat = vt / vt.norm()
         n = len(items)
-        res = {k: torch.zeros(len(ALPHAS), n, N_LAYERS)
+        res = {k: torch.zeros(len(ALPHAS), n, n_layers)
                for k in ("cos_task", "cos_gen", "proj_task", "proj_gen")}
 
         for ai, a in enumerate(ALPHAS):
@@ -172,7 +186,7 @@ def main():
                 inj.mask = mask.cuda()
                 # left-padded, so every row's final real token is the last column
                 reader.last_idx = torch.full((len(b),), L - 1, device="cuda", dtype=torch.long)
-                reader.buf = torch.zeros(len(b), N_LAYERS, D_MODEL, device="cuda")
+                reader.buf = torch.zeros(len(b), n_layers, d_model, device="cuda")
                 with torch.no_grad():
                     model(input_ids=ids.cuda(), attention_mask=att.cuda(), use_cache=False)
                 acts = reader.buf
@@ -187,15 +201,16 @@ def main():
                     res["cos_gen"][ai, i] = cg[r].cpu()
                     res["proj_task"][ai, i] = pt[r].cpu()
                     res["proj_gen"][ai, i] = pg[r].cpu()
-            print(f"{task} | alpha={a}: L13 cos_task={res['cos_task'][ai, :, 13].mean():.4f} "
-                  f"cos_gen={res['cos_gen'][ai, :, 13].mean():.4f} "
-                  f"proj_task={res['proj_task'][ai, :, 13].mean():.2f}", flush=True)
+            print(f"{task} | alpha={a}: L{PL} cos_task={res['cos_task'][ai, :, PL].mean():.4f} "
+                  f"cos_gen={res['cos_gen'][ai, :, PL].mean():.4f} "
+                  f"proj_task={res['proj_task'][ai, :, PL].mean():.2f}", flush=True)
         inj.vec = None
         res.update({"task": task, "group": group[task], "alphas": list(ALPHAS),
                     "inject_layer": INJECT_LAYER, "n_prompts": n, "n_shots": args.n_shots,
                     "norm_v_task": float(vt.norm()), "norm_v_generic": float(vg.norm()),
                     "norm_m": float(m.norm()),
-                    "site": "final prompt token (query cue), all 28 block outputs",
+                    "model_name": args.model_name or "EleutherAI/gpt-j-6b",
+                    "site": f"final prompt token (query cue), all {n_layers} block outputs",
                     "vectors_path": str(args.vectors_path) if args.vectors_path else None})
         torch.save(res, out_path)
     print("shard done", flush=True)

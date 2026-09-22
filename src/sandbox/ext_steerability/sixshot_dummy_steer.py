@@ -60,6 +60,12 @@ def parse_args():
     return p.parse_args()
 
 
+def is_dummy_slot(tok, tid, under):
+    """True if token id `tid` is the dummy-label slot: the ' _' token itself (GPT-J) or a
+    token that fuses ' _' with the following newlines (Qwen2.5: 'Ġ_ĊĊ')."""
+    return tid == under or "_" in tok.convert_ids_to_tokens([tid])[0]
+
+
 def build_items_6shot(task, prompts_root, tok, real_labels):
     """6-shot scaffold; dummy '_' labels (real_labels=False) or true labels (True).
     Returns items with all-'_' injection indices for the dummy variant."""
@@ -67,7 +73,7 @@ def build_items_6shot(task, prompts_root, tok, real_labels):
     assert len(under) == 1
     under = under[0]
     recs = json.load(open(prompts_root / task / "train_prompts.json"))
-    assert len(recs) == 150
+    assert len(recs) >= 40, f"{task}: only {len(recs)} prompts"   # 150 (GPT-J); 52 for 2 Qwen tasks
     items = []
     for rec in recs:
         q = str(rec["query"]["input"])
@@ -95,8 +101,10 @@ def build_items_6shot(task, prompts_root, tok, real_labels):
             for d in demos:
                 prefix += f"Q: {str(d['input'])}\nA:"
                 idx = len(tok(prefix).input_ids)
-                assert ids[idx] == under, \
-                    f"{task}: token at structural index {idx} is not ' _'"
+                # GPT-J: the slot is exactly the ' _' token. Qwen2.5 fuses " _\n\n" into
+                # one token ('Ġ_ĊĊ'), so the slot is the fused token at the same index.
+                assert is_dummy_slot(tok, ids[idx], under), \
+                    f"{task}: token at structural index {idx} is not a ' _' slot"
                 inj.append(idx)
                 prefix += " _\n\n"
             assert len(inj) == N_SHOTS

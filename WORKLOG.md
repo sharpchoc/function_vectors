@@ -10002,3 +10002,22 @@ false positives on approved docs); scorer fixes (`scorer_fix_report.md`: float_l
 reviewer objections + Py2 / bash notes. Driver `regen8.py`: 2 candidates in parallel → free checks → best → GPT-5 → one revision → next
 task (≤ 3). Pilot (5 families × 20): 88/100 accepted, 47 % first attempt, $0.42 per accepted doc; py_join_concat 8/20 (LLM-rewrite family);
 141/473 Opus generations refused by the provider filter → Gemini fallback. Full run: 6 drivers × 100 workers on 7,479 docs.
+
+## 2026-09-22 — Qwen2.5-7B port of the 4 missing read/write-feature claims (FV ablation, read-feature ablation, read→write relationship, FV presence vs accuracy)
+**Status:** IN PROGRESS. **Owner:** Claude Code bg agent, main tree (no worktree, per DECISIONS 2026-08-28).
+**What:** `results/qwen25_fv/` had 3 of the 7 GPT-J claims (FV steering generalisation, read-feature steering, read→write
+linear map). Porting the other four with IDENTICAL methodology (user request): only model / layers / dims / pool change.
+Pool = 96-task pruned split (77/19), 140-head selection (`ext_steerability_qwen25_96/pooled_sparse`), existing captures
+`artifacts/qwen25_read/{label_resid_means,perprompt_fvs}`. USER DECISIONS (this session): read band for û_A = L11–13
+(Qwen read-steering peak L12; GPT-J {5,6,7}); û_A rows only (no rank-1 raw / attention-mask control); no a-priori
+write layer — capture all 28 layers, headline = peak of the 6-shot presence profile; cf families = GPT-J tags for the
+68 shared tasks + Haiku-subagent tags (same prompt as make_cf_task_pairs.py) for the 28 new tasks.
+**Code:** GPT-J scripts parameterised (defaults unchanged): `ablate_pc50_labeltokens.py` (model_dims, generic
+load_model, get_decoder_block, --stage combine), `ablate_fv_cue6.py` (--model_name, in-run --with_zero_shot),
+`ablate_readdir_labeltokens.py` helpers, `ablate_readdir_pc5.py`, `build_meanresid_taskunique.py` (--layers/--rm_root),
+`sixshot_dummy_steer.py` + `steer_read_dir_methods.py` (fused ' _\n\n' slot), `steer_effect_on_cue.py`,
+`capture_69_presence_vs_acc.py` / `capture_69_presence_gm.py` (--layers 0-27), `make_cf_task_pairs.py`
+(--families_json), plot scripts (paths/layers as args), NEW `plot_taskunique_meanresid_ablation.py`,
+NEW `qwen25_port_checks.py` (gates). Orchestration: `logs/qwen25_fv/port/` (port_env.sh, port_chain.sh, dispatch.sh,
+pods.py; orchestrator pod + 10 RTX PRO 4500 workers). Artifacts: `artifacts/qwen25_fv/`.
+**Commands / findings / next:** filled in on completion (see per-study entries below).

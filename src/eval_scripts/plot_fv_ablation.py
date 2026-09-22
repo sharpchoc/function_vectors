@@ -11,6 +11,7 @@ Writes to results/69_task_run/FV_ablation/:
   by_task_dots.png   per-task breakdown, same conditions, one panel per layer clamp
   summary.csv, per_task_acc.csv, cf_pairs.csv
 """
+import argparse
 import csv
 import json
 import sys
@@ -43,8 +44,26 @@ LABELS = {"zero_shot": "0-shot (no demos)", "real_6shot": "6-shot, unablated",
           "cf_zero": "6-shot, cf-task-FV zero-ablated", "cf_mean": "6-shot, cf-task-FV mean-ablated"}
 
 
+def parse_args():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    # Qwen2.5 port (2026-09-22): same summary on another model's eval JSONs; defaults = GPT-J.
+    ap.add_argument("--eval_root", type=Path, default=EVAL)
+    ap.add_argument("--out_dir", type=Path, default=OUT)
+    ap.add_argument("--split_path", type=Path,
+                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
+    ap.add_argument("--base_csv", type=str, default=str(BASE_CSV),
+                    help="sixshot_dummy per-task CSV (zero_shot floor + real_6shot fallback); "
+                         "'none' = take both from the eval JSONs' in-run zero_shot / "
+                         "real6_baseline conditions (Qwen port)")
+    ap.add_argument("--model_label", default="GPT-J-6B")
+    return ap.parse_args()
+
+
 def main():
-    split = json.load(open(REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json"))
+    args = parse_args()
+    EVAL, OUT = args.eval_root, args.out_dir
+    split = json.load(open(args.split_path))
     group = {t: "train" for t in split["train_tasks"]}
     group.update({t: "heldout" for t in split["heldout_tasks"]})
     tasks = sorted(t for t in group if (EVAL / f"{t}.json").exists())
@@ -53,18 +72,23 @@ def main():
         print(f"WARNING: missing {len(missing)}: {missing[:5]}")
     d = {t: json.load(open(EVAL / f"{t}.json")) for t in tasks}
     grp = np.array([group[t] for t in tasks])
+    n_prompts = max(d[t]["n_prompts"] for t in tasks)
 
-    base = {}
-    with open(BASE_CSV) as f:
-        for row in csv.DictReader(f):
-            base[row["task"]] = row
-    # 6-shot baseline: prefer the in-run seed-matched real6_baseline; fall back to the
-    # sixshot_dummy CSV (same protocol, different run -> small fp/sampling offset)
-    acc = {"zero_shot": np.array([float(base[t]["zero_shot"]) for t in tasks]),
-           "real_6shot": np.array(
-               [d[t]["conditions"]["real6_baseline"]["acc"]
-                if "real6_baseline" in d[t]["conditions"]
-                else float(base[t]["real_6shot"]) for t in tasks])}
+    if args.base_csv != "none":
+        base = {}
+        with open(args.base_csv) as f:
+            for row in csv.DictReader(f):
+                base[row["task"]] = row
+        # 6-shot baseline: prefer the in-run seed-matched real6_baseline; fall back to the
+        # sixshot_dummy CSV (same protocol, different run -> small fp/sampling offset)
+        acc = {"zero_shot": np.array([float(base[t]["zero_shot"]) for t in tasks]),
+               "real_6shot": np.array(
+                   [d[t]["conditions"]["real6_baseline"]["acc"]
+                    if "real6_baseline" in d[t]["conditions"]
+                    else float(base[t]["real_6shot"]) for t in tasks])}
+    else:
+        acc = {"zero_shot": np.array([d[t]["conditions"]["zero_shot"]["acc"] for t in tasks]),
+               "real_6shot": np.array([d[t]["conditions"]["real6_baseline"]["acc"] for t in tasks])}
     for cfg in CFGS:
         for who in ("own", "cf"):
             for op in ("zero", "mean"):
@@ -126,14 +150,14 @@ def main():
         ax.set_title(CFG_TITLES[cfg], fontsize=10)
         ax.grid(alpha=0.25, axis="y")
         ax.set_ylim(0, 1)
-    axes[0].set_ylabel(f"mean T=1 exact-match accuracy ({len(tasks)} tasks, 150 prompts)")
+    axes[0].set_ylabel(f"mean T=1 exact-match accuracy ({len(tasks)} tasks, {n_prompts} prompts)")
     handles = [plt.Rectangle((0, 0), 1, 1, color=COLORS[c],
                              hatch="//" if c.startswith("cf_") else None,
                              ec="white") for c in CONDS]
     fig.legend(handles, [LABELS[c] for c in CONDS], fontsize=7.6, ncol=3,
                loc="upper center", bbox_to_anchor=(0.5, 0.02))
-    fig.suptitle("FV-direction ablation at the final cue token (6-shot prompts, 69 tasks)",
-                 fontsize=11)
+    fig.suptitle(f"FV-direction ablation at the final cue token (6-shot prompts, {len(tasks)} tasks, "
+                 f"{args.model_label})", fontsize=11)
     fig.tight_layout(rect=(0, 0.04, 1, 1))
     fig.savefig(OUT / "headline_bars.png", bbox_inches="tight")
 
@@ -160,7 +184,7 @@ def main():
         ax.grid(alpha=0.2, axis="x")
         ax.set_xlabel("T=1 exact-match accuracy")
     axes[0].legend(fontsize=6.4, loc="lower right")
-    fig.suptitle("FV cue-token ablation by task (sorted by 6-shot baseline; * = held-out)",
+    fig.suptitle(f"FV cue-token ablation by task, {args.model_label} (sorted by 6-shot baseline; * = held-out)",
                  fontsize=11)
     fig.tight_layout(rect=(0, 0, 1, 0.985))
     fig.savefig(OUT / "by_task_dots.png", bbox_inches="tight")

@@ -42,9 +42,16 @@ from src.utils.paths import ARTIFACTS_ROOT  # noqa: E402
 from src.utils.prompt_utils import create_prompt  # noqa: E402
 
 N_SHOTS = list(range(0, 7))
-LAYERS = list(range(9, 21))
-L13_IDX = LAYERS.index(13)
+LAYERS = list(range(9, 21))      # GPT-J default band; --layers overrides (Qwen port: 0-27)
+L13_IDX = LAYERS.index(13)       # GPT-J headline layer; --headline_layer overrides
 SANITY_TOL = 1e-2
+
+
+def parse_layers(s):
+    if "-" in s:
+        lo, hi = (int(x) for x in s.split("-"))
+        return list(range(lo, hi + 1))
+    return [int(x) for x in s.split(",")]
 
 
 def parse_args():
@@ -59,27 +66,36 @@ def parse_args():
     p.add_argument("--split", type=Path,
                    default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
     p.add_argument("--model_name", type=str, default="EleutherAI/gpt-j-6b")
+    p.add_argument("--layers", type=str, default="9-20",
+                   help="block-output layers to capture, 'lo-hi' or comma list (GPT-J 9-20)")
+    p.add_argument("--headline_layer", type=int, default=13,
+                   help="layer whose raw cue activation is stored (cue_L<layer>)")
+    p.add_argument("--min_prompts", type=int, default=150)
+    p.add_argument("--token_budget", type=int, default=6000)
+    p.add_argument("--batch_cap", type=int, default=64)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--capture_batch", type=int, default=16)
     return p.parse_args()
 
 
 def task_fv(fv_root: Path, task: str) -> torch.Tensor:
-    """v_A = mean over the 150 per-prompt FVs, double precision (as in the original capture)."""
+    """v_A = mean over the task's per-prompt FVs, double precision (as in the original capture)."""
     pp = torch.load(fv_root / f"{task}.pt", map_location="cpu", weights_only=False)
     fv = pp["fv"]
-    assert fv.shape == (150, 4096), (task, fv.shape)
+    assert fv.ndim == 2 and fv.shape[0] >= 40, (task, fv.shape)
     return fv.double().mean(dim=0)
 
 
 def generic_fv(fv_root: Path, all_tasks) -> torch.Tensor:
-    """v_gm = equal-task-weighted mean over all 69 task FVs v_A (double precision)."""
-    assert len(all_tasks) == 69, len(all_tasks)
+    """v_gm = equal-task-weighted mean over all task FVs v_A (double precision)."""
     return torch.stack([task_fv(fv_root, t) for t in all_tasks]).mean(dim=0)
 
 
 def main():
+    global LAYERS, L13_IDX
     args = parse_args()
+    LAYERS = parse_layers(args.layers)
+    L13_IDX = LAYERS.index(args.headline_layer)
     set_seed(args.seed)
     split = json.load(open(args.split))
     group_of = {t: "train" for t in split["train_tasks"]}
@@ -110,10 +126,11 @@ def main():
         print(f"[{task}] cos(v_hat_A, v_hat_gm) = {float(v_hat @ v_hat_gm):.3f}", flush=True)
 
         recs = load_records(args, task, "train_prompts")
-        assert len(recs) == 150
-        cos_own = np.zeros((len(N_SHOTS), 150, len(LAYERS)), dtype=np.float32)
-        cos_gm = np.zeros((len(N_SHOTS), 150, len(LAYERS)), dtype=np.float32)
-        cue_l13 = np.zeros((len(N_SHOTS), 150, 4096), dtype=np.float16)
+        assert len(recs) >= args.min_prompts, f"{task}: only {len(recs)} prompts"
+        N = len(recs)
+        cos_own = np.zeros((len(N_SHOTS), N, len(LAYERS)), dtype=np.float32)
+        cos_gm = np.zeros((len(N_SHOTS), N, len(LAYERS)), dtype=np.float32)
+        cue_l13 = np.zeros((len(N_SHOTS), N, v_hat.shape[0]), dtype=np.float16)
 
         for ni, n in enumerate(N_SHOTS):
             sents = []
@@ -124,12 +141,12 @@ def main():
                 assert sent.rstrip().endswith("A:")
                 sents.append(sent)
             tok_lens = [len(tokenizer(s).input_ids) for s in sents]
-            order = sorted(range(150), key=lambda i: tok_lens[i])
+            order = sorted(range(N), key=lambda i: tok_lens[i])
 
             # right-padded forward, cue = last real token (identical to the original part (a))
             tokenizer.padding_side = "right"
-            bsz = auto_batch(max(tok_lens), 6000, 64)
-            for start in range(0, 150, bsz):
+            bsz = auto_batch(max(tok_lens), args.token_budget, args.batch_cap)
+            for start in range(0, N, bsz):
                 idx = order[start:start + bsz]
                 enc = tokenizer([sents[i] for i in idx], return_tensors="pt", padding=True)
                 enc = {k: v_.to(model.device) for k, v_ in enc.items()}
@@ -151,8 +168,8 @@ def main():
                         cos_gm[ni, i, li] = c_gm[bi]
                         if cue_np is not None:
                             cue_l13[ni, i] = cue_np[bi]
-            print(f"[{task}] n={n} cos_own@L13={cos_own[ni, :, L13_IDX].mean():.3f} "
-                  f"cos_gm@L13={cos_gm[ni, :, L13_IDX].mean():.3f} "
+            print(f"[{task}] n={n} cos_own@L{LAYERS[L13_IDX]}={cos_own[ni, :, L13_IDX].mean():.3f} "
+                  f"cos_gm@L{LAYERS[L13_IDX]}={cos_gm[ni, :, L13_IDX].mean():.3f} "
                   f"delta={(cos_own[ni, :, L13_IDX] - cos_gm[ni, :, L13_IDX]).mean():.3f}", flush=True)
 
         # --- sanity check against the original capture ---
@@ -164,7 +181,9 @@ def main():
             raise RuntimeError(f"[{task}] sanity check FAILED: max abs diff {max_diff:.3e} "
                                f">= {SANITY_TOL}; stop and investigate")
 
-        np.savez(out, cos_own=cos_own, cos_gm=cos_gm, cue_L13=cue_l13,
+        np.savez(out, cos_own=cos_own, cos_gm=cos_gm,
+                 **{f"cue_L{LAYERS[L13_IDX]}": cue_l13},   # cue_L13 for GPT-J (unchanged key)
+                 headline_layer=np.int64(LAYERS[L13_IDX]),
                  layers=np.array(LAYERS), n_shots=np.array(N_SHOTS), group=group_of[task],
                  sanity_max_abs_diff=np.float32(max_diff))
         print(f"[{task}] done", flush=True)

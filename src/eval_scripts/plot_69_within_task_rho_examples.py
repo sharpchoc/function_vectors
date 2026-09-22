@@ -9,6 +9,7 @@ connected in n order. Data = diagnostics_per_task.csv (meanL9-20 presence varian
 
 Output: results/69_task_run/write_feature_and_model_accuracy/within_task_rho_examples.png
 """
+import argparse
 import csv
 import sys
 from pathlib import Path
@@ -30,7 +31,23 @@ TASKS = ["adjective_to_adverb", "english-french", "french_noun_gender"]
 TITLES = {"adjective_to_adverb": "perfect", "english-french": "median; a held-out task",
           "french_noun_gender": "worst of 69"}
 
+# Qwen2.5 port (2026-09-22): --src / --tasks auto (max, median, min within-task rho)
+_ap = argparse.ArgumentParser()
+_ap.add_argument("--src", type=Path, default=SRC)
+_ap.add_argument("--tasks", nargs="+", default=TASKS, help="three task names, or 'auto'")
+_ap.add_argument("--band_label", default="L9–20")
+_args = _ap.parse_args()
+SRC = _args.src
 rows = {r["task"]: r for r in csv.DictReader(open(SRC / "diagnostics_per_task.csv"))}
+if _args.tasks == ["auto"]:
+    ordered = sorted(rows, key=lambda t: float(rows[t]["within_task_rho"]))
+    TASKS = [ordered[-1], ordered[len(ordered) // 2], ordered[0]]
+    TITLES = {TASKS[0]: "best", TASKS[1]: "median", TASKS[2]: f"worst of {len(rows)}"}
+    for t in TASKS:
+        if rows[t]["group"] == "heldout":
+            TITLES[t] += "; a held-out task"
+else:
+    TASKS = _args.tasks
 
 fig, axes = plt.subplots(1, 3, figsize=(12.6, 4.0), sharey=True)
 for ax, t in zip(axes, TASKS):
@@ -44,7 +61,7 @@ for ax, t in zip(axes, TASKS):
         ax.annotate(f"n={n}", (pres[n], acc[n]), textcoords="offset points",
                     xytext=(7, -3), color=C.note)
     ax.set_title(f"{t}\n$\\rho$ = {float(r['within_task_rho']):.3f}  ({TITLES[t]})")
-    ax.set_xlabel("FV presence (mean cos, L9–20)")
+    ax.set_xlabel(f"FV presence (mean cos, {_args.band_label})")
     ax.xaxis.set_major_locator(MaxNLocator(nbins=5))
     ax.grid(True, axis="both")
 axes[0].set_ylabel("sampled exact-match accuracy")

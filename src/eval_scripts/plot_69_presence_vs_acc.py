@@ -14,6 +14,7 @@ Outputs (RESULTS/69_task_run/FV_location/presence_vs_accuracy/):
   correlation_summary.csv    Spearman + Pearson per (variant, n)
 """
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -27,13 +28,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 for p in (REPO_ROOT, REPO_ROOT / "src"):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
-from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR  # noqa: E402
+from src.utils.paths import ARTIFACTS_ROOT, TASK69_RUN_DIR, REPO_ROOT  # noqa: E402
 from utils.paper_style import apply_paper_style, C, label_bars  # noqa: E402,F401
 
 apply_paper_style()
 
-LAYERS = list(range(9, 21))
+LAYERS = list(range(9, 21))      # GPT-J capture band; overwritten from the npz files at run time
 N_SHOTS = list(range(0, 7))
+N_TASKS_LABEL = "69"
 
 
 def parse_args():
@@ -41,6 +43,18 @@ def parse_args():
     p.add_argument("--in_root", type=Path, default=ARTIFACTS_ROOT / "69_task_run" / "presence_vs_acc")
     p.add_argument("--out_dir", type=Path,
                    default=TASK69_RUN_DIR / "write_feature_and_model_accuracy")
+    # Qwen2.5 port (2026-09-22): captures may hold all 28 layers; the GPT-J band (9-20)
+    # variants are still reported, per-layer scatters are restricted with --plot_layers,
+    # and the headline layer (peak of the 6-shot presence profile) is written to
+    # headline_layer.txt. Defaults reproduce the GPT-J outputs.
+    p.add_argument("--split_path", type=Path,
+                   default=REPO_ROOT / "task_splits" / "extended_steerable_69_prunedfail.json")
+    p.add_argument("--band", type=str, default="9-20",
+                   help="layer band for the maxL/meanL variants (GPT-J 9-20)")
+    p.add_argument("--plot_layers", type=str, default="all",
+                   help="'all' = scatter/binned figure per captured layer (GPT-J), "
+                        "'headline' = only the headline layer, or a comma list")
+    p.add_argument("--model_label", default="GPT-J-6B")
     return p.parse_args()
 
 
@@ -64,7 +78,7 @@ def scatter_fig(x_tn, acc_tn, groups, label, out_path):
     rows.append((label, "pooled", rho_all, p_all, r_all, rp_all))
     ax.set_xlabel(f"FV presence   cos(z, v_A) at the query cue @ {label}")
     ax.set_ylabel("sampled exact-match accuracy (temperature 1.0)")
-    ax.set_title(f"FV presence vs accuracy @ {label} — 69 tasks × n=0..6 "
+    ax.set_title(f"FV presence vs accuracy @ {label} — {N_TASKS_LABEL} tasks × n=0..6 "
                  f"({x_all.size} points)\npooled Spearman ρ={rho_all:+.2f} "
                  f"(p={p_all:.1e}), Pearson r={r_all:+.2f}   "
                  "[circles = train, triangles = held-out]")
@@ -111,7 +125,7 @@ def binned_fig(x_tn, acc_tn, label, out_path, width=0.10, anchor=0.05):
                   f"(buckets of {width:g})")
     ax.set_ylabel("sampled exact-match accuracy (temperature 1.0)")
     ax.set_title(f"Accuracy vs FV presence, bucketed @ {label}\n"
-                 f"all 69 tasks × n=0..6 pooled; point-level Spearman ρ={rho:+.2f} "
+                 f"all {N_TASKS_LABEL} tasks × n=0..6 pooled; point-level Spearman ρ={rho:+.2f} "
                  f"(p={p:.1e})")
     ax.set_ylim(-0.03, 1.03)
     ax.legend(loc="upper left")
@@ -122,9 +136,18 @@ def binned_fig(x_tn, acc_tn, label, out_path, width=0.10, anchor=0.05):
 
 
 def main():
+    global LAYERS, N_TASKS_LABEL
     args = parse_args()
-    files = sorted(args.in_root.glob("*.npz"))
-    assert len(files) == 69, f"expected 69 task files, found {len(files)}"
+    split = json.load(open(args.split_path))
+    split_tasks = sorted(split["train_tasks"] + split["heldout_tasks"])
+    files = [args.in_root / f"{t}.npz" for t in split_tasks]
+    missing = [f.stem for f in files if not f.exists()]
+    assert not missing, f"missing {len(missing)} task files: {missing[:5]}"
+    N_TASKS_LABEL = str(len(files))
+    LAYERS = [int(l) for l in np.load(files[0], allow_pickle=False)["layers"]]
+    lo, hi = (int(x) for x in args.band.split("-"))
+    band_idx = [LAYERS.index(l) for l in range(lo, hi + 1) if l in LAYERS]
+    band_lab = f"L{LAYERS[band_idx[0]]}-{LAYERS[band_idx[-1]]}"
     tasks, groups, cos_means, accs = [], [], [], []
     cos_max_means, cos_avg_means = [], []
     for f in files:
@@ -132,12 +155,13 @@ def main():
         assert list(z["layers"]) == LAYERS and list(z["n_shots"]) == N_SHOTS
         tasks.append(f.stem)
         groups.append(str(z["group"]))
-        cos = z["cos"]                                    # (7, 150, 12)
-        cos_means.append(cos.mean(axis=1))                # (7, 12)
-        cos_max_means.append(cos.max(axis=2).mean(axis=1))    # per-prompt max -> (7,)
-        cos_avg_means.append(cos.mean(axis=2).mean(axis=1))   # per-prompt mean -> (7,)
+        cos = z["cos"]                                    # (7, N, n_layers)
+        cos_means.append(cos.mean(axis=1))                # (7, n_layers)
+        cb = cos[:, :, band_idx]
+        cos_max_means.append(cb.max(axis=2).mean(axis=1))    # per-prompt max over band -> (7,)
+        cos_avg_means.append(cb.mean(axis=2).mean(axis=1))   # per-prompt mean over band -> (7,)
         accs.append(z["match"].mean(axis=1))              # (7,)
-    cos_means = np.stack(cos_means)                       # (T, 7, 12)
+    cos_means = np.stack(cos_means)                       # (T, 7, n_layers)
     cos_max_means, cos_avg_means = np.stack(cos_max_means), np.stack(cos_avg_means)
     accs = np.stack(accs)                                 # (T, 7)
 
@@ -145,14 +169,52 @@ def main():
     np.savez(args.out_dir / "presence_vs_acc.npz",
              cos_by_layer=cos_means, cos_maxL=cos_max_means, cos_meanL=cos_avg_means,
              acc=accs, tasks=np.array(tasks), groups=np.array(groups),
-             layers=np.array(LAYERS), n_shots=np.array(N_SHOTS))
+             layers=np.array(LAYERS), n_shots=np.array(N_SHOTS), band=band_lab)
 
+    # presence profile by layer (mean over tasks, per n) + headline layer = argmax at n=6
+    prof = cos_means.mean(axis=0)                         # (7, n_layers)
+    headline = LAYERS[int(np.argmax(prof[N_SHOTS.index(6)]))]
+    (args.out_dir / "headline_layer.txt").write_text(f"{headline}\n")
+    with open(args.out_dir / "presence_by_layer.csv", "w") as f:
+        f.write("layer," + ",".join(f"mean_cos_n{n}" for n in N_SHOTS) + "\n")
+        for li, l in enumerate(LAYERS):
+            f.write(f"{l}," + ",".join(f"{prof[ni, li]:.4f}" for ni in range(len(N_SHOTS))) + "\n")
+    fig, ax = plt.subplots(figsize=(8.5, 4.8))
+    cmap = plt.get_cmap("viridis")
+    for ni, n in enumerate(N_SHOTS):
+        ax.plot(LAYERS, prof[ni], "o-", ms=3.5, lw=1.5, color=cmap(ni / (len(N_SHOTS) - 1)), label=f"n={n}")
+    ax.axvline(headline, color="0.4", ls=":", lw=1.2)
+    ax.text(headline + 0.3, ax.get_ylim()[1] * 0.95, f"L{headline}\n(6-shot peak)", fontsize=9, va="top", color="0.3")
+    ax.set_xlabel("layer (block output) of the cue-token readout")
+    ax.set_ylabel("mean cos(z, v̂_A) at the query cue")
+    ax.set_title(f"FV presence profile by layer, {args.model_label} ({len(tasks)} tasks; mean over tasks and prompts)")
+    ax.legend(title="shot count", fontsize=8, ncol=2)
+    ax.grid(True)
+    fig.tight_layout()
+    fig.savefig(args.out_dir / "presence_by_layer.png")
+    plt.close(fig)
+    print(f"headline layer (argmax of 6-shot mean presence): L{headline}  "
+          f"profile n=6: " + " ".join(f"L{l}:{prof[6, li]:.3f}" for li, l in enumerate(LAYERS)))
+
+    if args.plot_layers == "all":
+        plot_layers = list(LAYERS)
+    elif args.plot_layers == "headline":
+        plot_layers = [headline]
+    else:
+        plot_layers = [int(x) for x in args.plot_layers.split(",")]
     all_rows, bin_rows = [], []
-    variants = [(f"L{l}", cos_means[:, :, li], f"L{l}") for li, l in enumerate(LAYERS)]
-    variants += [("maxL9-20", cos_max_means, "maxL"), ("meanL9-20", cos_avg_means, "meanL")]
-    for label, x_tn, stem in variants:
-        all_rows += scatter_fig(x_tn, accs, groups, label, args.out_dir / f"scatter_{stem}.png")
-        bin_rows += binned_fig(x_tn, accs, label, args.out_dir / f"binned_{stem}.png")
+    variants = [(f"L{l}", cos_means[:, :, li], f"L{l}", l in plot_layers) for li, l in enumerate(LAYERS)]
+    variants += [(f"max{band_lab}", cos_max_means, "maxL", True), (f"mean{band_lab}", cos_avg_means, "meanL", True)]
+    for label, x_tn, stem, do_plot in variants:
+        if do_plot:
+            all_rows += scatter_fig(x_tn, accs, groups, label, args.out_dir / f"scatter_{stem}.png")
+            bin_rows += binned_fig(x_tn, accs, label, args.out_dir / f"binned_{stem}.png")
+        else:   # correlations only (no figure) for the non-plotted layers
+            for ni, n in enumerate(N_SHOTS):
+                rho, rho_p = spearmanr(x_tn[:, ni], accs[:, ni]); r, r_p = pearsonr(x_tn[:, ni], accs[:, ni])
+                all_rows.append((label, n, rho, rho_p, r, r_p))
+            rho, rho_p = spearmanr(x_tn.ravel(), accs.ravel()); r, r_p = pearsonr(x_tn.ravel(), accs.ravel())
+            all_rows.append((label, "pooled", rho, rho_p, r, r_p))
 
     with open(args.out_dir / "correlation_summary.csv", "w") as f:
         f.write("variant,n_shots,spearman_rho,spearman_p,pearson_r,pearson_p\n")

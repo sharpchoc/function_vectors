@@ -39,8 +39,10 @@ def parse_args():
     p.add_argument("--res_dir", type=Path,
                    default=TASK69_RUN_DIR / "write_feature_and_model_accuracy")
     p.add_argument("--fv_root", type=Path, default=ARTIFACTS_ROOT / "69_task_run" / "perprompt_fvs")
-    p.add_argument("--features_csv", type=Path,
-                   default=RESULTS_ROOT / "sandbox" / "ext_steerability" / "failing_analysis_features.csv")
+    p.add_argument("--features_csv", type=str,
+                   default=str(RESULTS_ROOT / "sandbox" / "ext_steerability" / "failing_analysis_features.csv"),
+                   help="'none' skips section C (GPT-J-tokenizer features do not transfer)")
+    p.add_argument("--model_label", default="GPT-J-6B")
     return p.parse_args()
 
 
@@ -64,15 +66,17 @@ def main():
     tasks = [str(t) for t in Z["tasks"]]
     groups = [str(g) for g in Z["groups"]]
     acc, cos_mean = Z["acc"], Z["cos_meanL"]
+    T = len(tasks)
+    band = str(Z["band"]) if "band" in Z.files else "L9-20"
     out = []
 
     def emit(line=""):
         print(line, flush=True)
         out.append(line)
 
-    emit("=== presence-vs-accuracy diagnostics (69 tasks, meanL9-20 presence) ===")
+    emit(f"=== presence-vs-accuracy diagnostics ({T} tasks, mean{band} presence, {args.model_label}) ===")
     emit()
-    emit(f"A. n=0 floor: {(acc[:, 0] > 0).sum()}/69 tasks non-zero, max {acc[:, 0].max():.3f}, "
+    emit(f"A. n=0 floor: {(acc[:, 0] > 0).sum()}/{T} tasks non-zero, max {acc[:, 0].max():.3f}, "
          f"mean {acc[:, 0].mean():.4f}  -> the n=0 panel is a floor, its rho is not meaningful")
     emit()
 
@@ -84,7 +88,7 @@ def main():
     cos_gm = fvs @ gm / np.linalg.norm(fvs, axis=1)
     fv_norm = np.linalg.norm(fvs, axis=1)
 
-    emit("B. shared-mean control (Spearman across 69 tasks):")
+    emit(f"B. shared-mean control (Spearman across {T} tasks):")
     emit("   n | rho(presence,acc) | rho(cos_gm,acc) | rho(cos_gm,presence) | partial(presence,acc|cos_gm)")
     for n in range(7):
         emit(f"   {n} |      {spearmanr(cos_mean[:, n], acc[:, n]).statistic:+.3f}        |"
@@ -96,17 +100,20 @@ def main():
     emit("   -> the shared component does NOT explain the negative relation")
     emit()
 
-    feat = {r["task"]: r for r in csv.DictReader(open(args.features_csv))}
-    idx = np.array([i for i, t in enumerate(tasks) if t in feat])
-    cols = {f: np.array([float(feat[tasks[i]][f]) for i in idx]) for f in FEATURES}
-    emit(f"C. a-priori task features ({len(idx)}/69 tasks with stored features), at n=6:")
-    for f in FEATURES:
-        emit(f"   {f:14s} rho(feat,presence)={spearmanr(cols[f], cos_mean[idx, 6]).statistic:+.3f}  "
-             f"rho(feat,acc)={spearmanr(cols[f], acc[idx, 6]).statistic:+.3f}")
-    emit("   partial rho(presence, acc) controlling for all four:")
-    emit("   " + " ".join(f"n={n}:{partial_rho(cos_mean[idx, n], acc[idx, n], list(cols.values())):+.3f}"
-                          for n in range(2, 7)))
-    emit("   -> weakens the negative relation but does not remove it")
+    if args.features_csv != "none":
+        feat = {r["task"]: r for r in csv.DictReader(open(args.features_csv))}
+        idx = np.array([i for i, t in enumerate(tasks) if t in feat])
+        cols = {f: np.array([float(feat[tasks[i]][f]) for i in idx]) for f in FEATURES}
+        emit(f"C. a-priori task features ({len(idx)}/{T} tasks with stored features), at n=6:")
+        for f in FEATURES:
+            emit(f"   {f:14s} rho(feat,presence)={spearmanr(cols[f], cos_mean[idx, 6]).statistic:+.3f}  "
+                 f"rho(feat,acc)={spearmanr(cols[f], acc[idx, 6]).statistic:+.3f}")
+        emit("   partial rho(presence, acc) controlling for all four:")
+        emit("   " + " ".join(f"n={n}:{partial_rho(cos_mean[idx, n], acc[idx, n], list(cols.values())):+.3f}"
+                              for n in range(2, 7)))
+        emit("   -> weakens the negative relation but does not remove it")
+    else:
+        emit("C. a-priori task features: skipped (no feature table for this model)")
     emit()
 
     wr = np.array([spearmanr(cos_mean[i], acc[i]).statistic for i in range(len(tasks))])
@@ -114,6 +121,23 @@ def main():
          f"positive in {(wr > 0).sum()}/{len(tasks)} tasks")
     emit("   -> adding demos raises presence AND accuracy together in every task;")
     emit("      the negative sign is purely a BETWEEN-task effect at fixed n")
+    emit()
+
+    # E. within-task rho per presence variant (every captured layer + band max/mean)
+    layers = [int(l) for l in Z["layers"]]
+    cbl = Z["cos_by_layer"]                                # (T, 7, n_layers)
+    var_rows = []
+    for li, l in enumerate(layers):
+        r = np.array([spearmanr(cbl[i, :, li], acc[i]).statistic for i in range(T)])
+        var_rows.append((f"L{l}", float(np.nanmedian(r)), int((r > 0).sum()), T))
+    for name, arr in ((f"max{band}", Z["cos_maxL"]), (f"mean{band}", Z["cos_meanL"])):
+        r = np.array([spearmanr(arr[i], acc[i]).statistic for i in range(T)])
+        var_rows.append((name, float(np.nanmedian(r)), int((r > 0).sum()), T))
+    with open(args.res_dir / "within_task_rho_by_variant.csv", "w") as f:
+        f.write("variant,median_within_task_rho,n_positive,n_tasks\n")
+        for v, m, npos, nt in var_rows:
+            f.write(f"{v},{m:.4f},{npos},{nt}\n")
+    emit("E. within-task rho by variant: " + "  ".join(f"{v}:{m:+.3f}({npos}/{nt})" for v, m, npos, nt in var_rows))
 
     (args.res_dir / "diagnostics.txt").write_text("\n".join(out) + "\n")
     with open(args.res_dir / "diagnostics_per_task.csv", "w") as f:
