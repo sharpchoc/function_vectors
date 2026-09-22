@@ -2063,3 +2063,10 @@ mean over them, so per-family results must be read with that in mind.
   The ≥ 8 hint stays for the other families. The other 52 pool families still trip `padding_line` in 2,281 documents — open.
 - Task pools whose specs do not naturally need the construct cannot yield honest documents with many occurrences; the honest count
   of `not in` is ~5 per document. Prefer tasks that inherently need the construct when new families are built.
+
+## 2026-09-23 — code-style corpus: GPT-5 is the sole document judge; regen8 pipeline is the standard
+- Reviewer: GPT-5 only (Opus 5 + GPT-5 with an AND rule was too strict; user decision). Automatic guards carry the padding burden: padding_lines,
+  leak_lines, pyflakes unused/undefined names, JS unused declarations, sandboxed run of the natural twin, string-literal equality (`code_static_checks.py`).
+- Alternative twins come from exact, validated rules wherever one exists (`code_rule_alt.py` + `code_rules_a/b/c.py`, 37 families); a declining rule
+  falls back to the LLM rewrite and is counted. Tasks come from the designed pools (`tasks_designed_<family>.json`); the generic pools are retired for code.
+- Lesson: task reservations across parallel drivers must exclude every accepted-but-unmerged id (regen8 collision bug).

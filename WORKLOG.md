@@ -10132,3 +10132,17 @@ m_A(L6) at L6), `meanresid` = α·s_A = α·(c + u_A) (L11–13 band) added at L
 headline_proj.png}; artifacts artifacts/qwen25_fv/{mean_read_steering_effect_on_write{,_1shot},
 meanresid_effect_on_write{,_1shot}}/.
 **Next:** none. **Blockers:** none.
+
+**2026-09-23 — regen8 COMPLETE + full refresh.** Regeneration: pilot 88/100; drivers f1–f6 (7,479 docs) + recovery pass l1 (1,120: my task-reservation
+bug had let two old docs claim the same new id, 1,055 accepted records discarded; fixed: reservations now exclude every accepted-but-unmerged id) + final
+pass l2 (280) → 7,271 / 7,567 usable (96 %); js_hungarian excluded (user decision), 127 failed all attempts. GPT-5 sole judge (USER DECISION 2026-09-23;
+the Opus+GPT-5 AND rule was judged too strict). Anthropic provider filter refused ~30 % of generation calls → Gemini 3.1 Pro fallback. Cost of the
+regeneration ≈ $3,900 (Opus 5 + GPT-5 + Gemini), task design ≈ $110, strict review ≈ $670. All merged (finalize8, 48 families changed), sweep clean
+(only js_hungarian residue), prompts/evidence rebuilt. Refresh: wave 1 (22 fams, pods w1–w3 → refresh9 x1–x3 after an OOM from running stage B on the
+same GPU as stage A) then all 48 changed families on pods z1–z6 (`code_styles_stageAB_job.sh`: rollouts → logprob → prompt_pairs → judge → vectors →
+write/read steering); all pods terminated; 0 unjudged; prompt_pairs 40,800 prompts / 31,023 correct (flags patched by fix_pair_flags.py). Scorer fixes:
+comment_case cue-anchored, py_abbrev any new mapped identifier (rescore_records.py). Analyses rerun: POOL 51 / 57 (py_abbrev dropped, k4 .30); pooled
+51: k0 .288 → .295, k4 .726 → .761, write L24 α2 .543 → .547, read L8 α4 .582 → .586, 3-shot ref .719 → .759. Largest k4 drops: c_comment_style .77 → .52,
+comment_language .45 → .30 (the model now often writes code instead of the next comment — genuine, not scoring), sql_keyword_case .92 → .78,
+py_builtin_generics .90 → .79; gains: blank_lines .50 → .83, comment_case .50 → .77, py_const_naming .64 → .86, php_array .53 → .75. Not re-run: sweep10,
+read→write map, causal test (await user). Page: https://claude.ai/artifact/TFCWKWjHzFt2nNW4qUEF17
