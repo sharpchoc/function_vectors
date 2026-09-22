@@ -9966,3 +9966,8 @@ unchanged (py_private k4 nat .41 / alt .42 — old definition .44/.40; write L24
 write .56, read .44. Pooled 55: k4 .719 → .718, write .543 → .545, read .581 → .584. prompt_pairs 44,788 / 31,704 correct; 0 unjudged.
 Residual flagged docs now 10 (js_hungarian 9, py_join_concat 1). NOTE: standby pod map_5 (37jojnsoek8pdj) no longer exists (RunPod API: pod null);
 not terminated by any of this session's watchers (they act only on their own recorded ids) — a new pod is needed for the map regressions.
+
+**2026-09-22 — read→write map on the cleaned data.** All earlier sandbox runs (v1–v9, models too) moved to `read_write_map/sandbox/sep_18_runs/`
+(their prompts contained padded documents and the invalid py_private definition). New `sandbox/v1_pairdiff_unitnorm_clean/` = v7 recipe on the
+cleaned activations, split test18 (= test19 minus py_ternary): λ 10, LOFO R² .088; centroid-diff R² .186 / .263 (test / train mean), cos .465
+(old v7: .175 / .248, .44). Pod map_6 created and terminated after the fit.
