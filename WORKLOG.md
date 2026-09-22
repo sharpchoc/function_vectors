@@ -9971,3 +9971,16 @@ not terminated by any of this session's watchers (they act only on their own rec
 (their prompts contained padded documents and the invalid py_private definition). New `sandbox/v1_pairdiff_unitnorm_clean/` = v7 recipe on the
 cleaned activations, split test18 (= test19 minus py_ternary): λ 10, LOFO R² .088; centroid-diff R² .186 / .263 (test / train mean), cos .465
 (old v7: .175 / .248, .44). Pod map_6 created and terminated after the fit.
+
+**2026-09-22 — read→write causal test (user request; `results/code_styles/read_causal/`).** `read_causal.py` (+ `read_causal_analyze.py`,
+job `logs/code_styles_read_causal_job.sh`, pods causal_c1/c2 terminated): −α·r (L8 read feature) at every evidence token of the 40 held-out k = 3
+natural-context prompts per family, cue residual at layers 20..28 vs unsteered and vs the same document's alt-context prompt (counterfactual).
+L24: dircos .55/.66/.72/.69/.58 at α .5/1/2/4/8; fraction of the counterfactual shift along the write feature .16/.48/.82/1.02/.92; alt first-token
+top-1 .04 → .66 (α 2) vs .10 with real alt demonstrations. 48/55 families dircos ≥ .5 at α 2. No controls run (user decision; --controls available;
+24 families' files from the first launch already contain the other-family and random-direction control arms + layers 1..19, unused).
+**Audit 9** (fork subagent, read-only, `tmp/audit9/REPORT.md`, $17): mechanical checks clean; NEW: trailing_commas contaminated on both poles
+(single-line tuple-making commas in 43 nat twins; 92 alt twins keep a trailing comma), scorer mislabels float_literals 16 % / trailing_commas 11 % /
+py_abbrev 9 % / operator_spaces 6 %, js_semicolons 12 % unscorable; py_private 8 alt twins NameError (propagate_renames misses a plain use of a
+renamed parameter); py2_except 190/200 alt twins valid in no Python (Py2 except + f-strings), py2_iter 15, py2_print 6; bash_test 16 alt twins
+`[ =~ ]`; py_builtin_generics 5 `Dict(...)` calls; unconverted occurrences (py_join_concat 32, py_loop_vars 9, sql_join_style 41 LEFT JOIN);
+strict-reviewer sample of never-reviewed docs: 11/204 accepted (padding 40 %, wrong task 8 %, invalid 5 %). Awaiting user decisions.
