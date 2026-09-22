@@ -25,7 +25,10 @@ return super switch this throw try typeof var void while with yield async await 
 Array String Number Boolean Date RegExp Error Map Set Promise parseInt parseFloat isNaN require module exports length push pop log""".split())
 LEX_FAMILIES = {"py_abbrev", "py_bool_prefix"}
 CTX_FAMILIES = {"py_snake_camel", "js_camel_snake", "py_const_naming", "py_class_naming", "js_hungarian", "py_loop_vars", "hex_constants",
-                "js_func_pascal", "py_literal_ctor", "py_indent", "float_literals", "trailing_commas", "operator_spaces", "js_semicolons"} | LEX_FAMILIES
+                "js_func_pascal", "py_literal_ctor", "py_indent", "float_literals", "trailing_commas", "operator_spaces", "js_semicolons", "comment_case"} | LEX_FAMILIES
+# scorer fixes 2026-09-23 (regen8 wave 1): comment_case is cue-anchored (the `#` opener is the cue, so the case of the first letter of the
+# tail decides); py_abbrev decides on the first NEW identifier that carries an abbreviation / full-word part (plurals included) or a lexicon
+# label, not only on the very first new identifier.
 # scorer fixes 2026-09-22 (audit 9, G7): cue-anchored decisions for float_literals (the digits before the cue belong to the literal),
 # trailing_commas (only the FIRST closer after the cue decides), operator_spaces (the character before the cue + string masking),
 # js_semicolons (the first statement line after the cue; `}` lines are no decision), py_abbrev (only the first new identifier decides).
@@ -124,17 +127,23 @@ def decide_code(fam, prompt_text, seg_prefix, tail, next_nat, next_alt, lexicon=
         code = strip_literals(seg[:160], js=True)
         mn, ma = re.search(r";\s*\n", code), re.search(r"[^;{}\s]\s*\n", code)
         return "nat" if mn and (ma is None or mn.start() <= ma.start()) else ("alt" if ma else None)
-    if fam == "py_abbrev":                                      # only the first new identifier decides (its parts: abbreviation vs full word, else the lexicon)
-        names = new_identifiers(seg, seg_prefix, known, js)
-        if not names:
-            return None
-        n = names[0]; parts = set(re.split(r"_+", n.lower())) | {n}
-        if parts & ABBR:
-            return "nat"
-        if parts & FULL:
-            return "alt"
-        lab = (lexicon or {}).get(fam, {}).get(n)
-        return lab if lab in ("nat", "alt") else None
+    if fam == "comment_case":                                   # the cue is the comment opener `#`: the first letter of the comment text decides
+        if last_line.rstrip().endswith("#"):
+            m = re.match(r"[ \t]*([A-Za-z])", tail)
+            return ("nat" if m.group(1).isupper() else "alt") if m else None
+        m = re.search(r"#[ \t]+([A-Za-z])", seg[:160])
+        return ("nat" if m.group(1).isupper() else "alt") if m else None
+    if fam == "py_abbrev":                                      # the first NEW identifier with an abbreviation / full-word part (plurals too) or a lexicon label decides
+        for n in new_identifiers(seg, seg_prefix, known, js, limit=400):
+            parts = set(re.split(r"_+", n.lower())) | {n}; parts |= {x[:-1] for x in parts if x.endswith("s")}
+            if parts & ABBR:
+                return "nat"
+            if parts & FULL:
+                return "alt"
+            lab = (lexicon or {}).get(fam, {}).get(n)
+            if lab in ("nat", "alt"):
+                return lab
+        return None
     if fam == "py_indent":                                      # the cue is the ':\n' that opens a block: the new block is one level deeper than the line before
         lines = [l for l in prompt_text.split("\n") if l.strip()]
         if not lines or not lines[-1].rstrip().endswith(":"):
