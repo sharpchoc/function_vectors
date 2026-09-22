@@ -9984,3 +9984,8 @@ py_abbrev 9 % / operator_spaces 6 %, js_semicolons 12 % unscorable; py_private 8
 renamed parameter); py2_except 190/200 alt twins valid in no Python (Py2 except + f-strings), py2_iter 15, py2_print 6; bash_test 16 alt twins
 `[ =~ ]`; py_builtin_generics 5 `Dict(...)` calls; unconverted occurrences (py_join_concat 32, py_loop_vars 9, sql_join_style 41 LEFT JOIN);
 strict-reviewer sample of never-reviewed docs: 11/204 accepted (padding 40 %, wrong task 8 %, invalid 5 %). Awaiting user decisions.
+
+**2026-09-22 — strict review of all never-reviewed pool docs** (`results/code_styles/strict_review/`, scripts `review10.py` / `review10_analyze.py` copied to
+src/sandbox/style_translation): 7,856 docs, Opus 5 + GPT-5 AND rule; accepted 367 (4.7 %). Both cite padding 48 %, fake decision 13 %, wrong task 7 %,
+inconsistent 6 %, invalid 2.7 %. 18 families at 0 % acceptance. OpenRouter credits ran out mid-run (402 → 3,375 docs redone after top-up; new 7-day key).
+Audit 9 report copied to `results/code_styles/audit_2026-09-22_REPORT.md`. Awaiting user decision on regeneration.
