@@ -1,0 +1,1563 @@
+[
+ {
+  "id": "d001",
+  "title": "Bowling Score Calculator",
+  "spec": "Compute the score of a standard bowling game from an array of pin counts. Iterate through the array frame by frame for ten frames. Check if the current roll is a strike, which scores ten plus the next two rolls. If not, check if the frame is a spare, which scores ten plus the next single roll. Otherwise, add the two rolls of the open frame. Advance the index appropriately based on whether a strike was rolled. Return the total accumulated score. Example input array 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10 returns 300.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d002",
+  "title": "Run Length Encoding Roundtrip",
+  "spec": "Perform run length encoding and decoding on an array of integers. First, implement a helper to compress the input by iterating through the sequence and replacing consecutive identical values with a count and the value itself. Second, implement a helper to decompress such encoded sequences by repeating values according to their counts. The main entry point should take the raw array, compress it, then decompress it back, and return the final restored array. Example input 5, 5, 2 returns 5, 5, 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d003",
+  "title": "Vending Machine Change",
+  "spec": "Process a purchase using a fixed inventory of coin denominations. Create a small state holding the available counts of coins with values two hundred, one hundred, fifty, twenty, ten, five, two, and one. The item price is always one hundred twenty five. Calculate the required change from the payment. Iterate through denominations from largest to smallest, dispensing coins only if they are in stock. Deduct dispensed coins from the inventory. Return an array of the dispensed coin values. Example input 200 returns 50, 20, 5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d004",
+  "title": "Poker Hand Evaluator",
+  "spec": "Determine the rank of a five card poker hand. The hand is an array of strings combining values and suits. Parse the values into integers and group by suit. Sort the cards by numeric value. Create a helper to check for a flush, meaning all suits are identical. Create another helper to check for a straight, meaning values are consecutive. Identify sets like pairs, three of a kind, or four of a kind using a tally. Return a number from one for high card to nine for straight flush. Example input five consecutive hearts returns 9.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d005",
+  "title": "Roman Numeral Roundtrip",
+  "spec": "Convert an integer to a Roman numeral and then back to an integer. Write a helper to translate numbers into strings using the standard subtractive forms like four and nine, iterating through a list of values and symbols. Write another helper to parse strings back into numbers by looping through the characters and subtracting when a smaller numeral precedes a larger one. The main routine should take an integer, convert it to a Roman string, parse it back, and return the final integer. Example input 10 returns 10.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d006",
+  "title": "Pascal's Triangle Generator",
+  "spec": "Generate and format Pascal's triangle. Build the triangle as an array of arrays of integers, where each interior number is the sum of the two directly above it in the previous row. Write a formatting helper that converts each row into a string of numbers separated by spaces. The helper must center each row by padding it with leading spaces based on the maximum width calculated from the bottom row. Join the lines with newline characters and return the block. Example input 3 returns a centered text block of three lines.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d007",
+  "title": "Matrix Transposition and Multiplication",
+  "spec": "Perform matrix operations on a two dimensional array of numbers. Write a transpose helper that swaps the rows and columns of a grid by creating a new array of arrays. Write a multiply helper that calculates the dot product of rows and columns to multiply two matrices together, nesting three loops to compute the sums. The main entry point should take a matrix, transpose it, and then multiply the original matrix by the transposed matrix. Return the resulting product grid. Example input a two by two grid returns a new two by two grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d008",
+  "title": "Game of Life Simulation",
+  "spec": "Compute the next state of a cellular automaton grid. The input grid is an array of arrays containing ones and zeros. Write a helper to count the number of live neighbors for any given cell, checking all eight adjacent horizontal, vertical, and diagonal positions while handling boundary conditions safely. Iterate over every cell in the grid. Apply the survival rules to create a new grid where cells are born with three neighbors and survive with two or three. Return the fully updated grid. Example input a three by three grid returns its next state.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d009",
+  "title": "Maze Solver BFS",
+  "spec": "Find the shortest path through a rectangular grid. The grid contains numbers where zero is an open path and one is a wall. Start at the top left coordinate and target the bottom right. Maintain a queue of current positions and path lengths. Mark visited cells in a separate structure to avoid infinite loops. In a loop, dequeue the front element and check adjacent cells up, down, left, and right, enqueueing valid unvisited paths. Return the number of steps, or negative one if completely blocked. Example an empty three by three grid returns 4.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d010",
+  "title": "Text Line Justification",
+  "spec": "Format a long string into a block of text with a maximum line width of twenty characters. Split the text into individual words. Build lines by adding words one by one, keeping track of the current line length. If adding a word exceeds the twenty character limit, finalize the current line and start a new one. For finalized lines, pad the spaces between words evenly from left to right so the line exactly hits the width limit. Return an array of formatted line strings. Example input a short phrase returns single padded string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d011",
+  "title": "Sudoku Grid Validator",
+  "spec": "Determine if a nine by nine grid of numbers is a valid completed puzzle. The board is an array of arrays containing integers from one to nine. Write helpers to extract a specific row, a specific column, and a specific three by three subgrid as flat arrays. For each extracted group, verify that it contains exactly nine unique digits by using a frequency count. Loop through all nine rows, columns, and subgrids, failing immediately if any check is invalid. Return true if all checks pass, otherwise false. Example input a valid grid returns true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d012",
+  "title": "Binary Search Tree Construction",
+  "spec": "Build a binary search tree from an array of numbers and return its sorted contents. Define a tree node structure using objects with value, left child, and right child properties. Iterate through the input array. For each number, start at the root and navigate downwards to insert it at the correct leaf position based on less than or greater than comparisons. After fully building the tree, perform a recursive in order traversal to collect the values sequentially. Return the final sorted array. Example input 5, 3, 7 returns 3, 5, 7.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d013",
+  "title": "Merge Sort Algorithm",
+  "spec": "Sort an array of strings using the classic merge sort algorithm. Create a recursive function that divides the array into two equal halves until the sub arrays have a length of one or zero. Create a merging helper that takes two sorted arrays and combines them by repeatedly comparing their first elements, removing the smaller one, and adding it to a result array. Once one array is empty, append the remainder of the other. The main function returns the fully sorted array. Example input cherry, apple, banana returns apple, banana, cherry.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d014",
+  "title": "URL Query String Manipulator",
+  "spec": "Parse a web address query string, add a parameter, and reconstruct it. Create a helper to extract key value pairs after the question mark, splitting by ampersands and then by equals signs. The parser must replace plus signs with spaces. Create a second helper to take an array of pairs, combine the strings properly, join them with equals signs and ampersands, and prepend a question mark. The main function should parse the input query, append a new pair for page equals two, and return the newly built query string. Example input search?q=cats returns ?q=cats&page=2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d015",
+  "title": "Anagram Grouper",
+  "spec": "Process a list of words to find groups of anagrams. Iterate through the input array of strings. For each string, convert it to lowercase, split it into characters, sort them alphabetically, and join them back to create a unique signature. Use a map or object to accumulate words into arrays matching these signatures. Once all words are processed, iterate through the collected sets and filter out any that contain only a single word. Sort the remaining groups by size in descending order. Return the resulting array of arrays. Example input cat, act, dog returns array containing cat and act.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d016",
+  "title": "Spell Checker with Edit Distance",
+  "spec": "Suggest a correction for a misspelled word based on an internal list of valid terms. Implement the Levenshtein distance algorithm using a two dimensional distance matrix to compute the minimum edit distance between two strings, considering insertions, deletions, and substitutions. Define a fixed array of ten valid dictionary words. Iterate through the valid terms and calculate the exact edit distance to the input word. Keep track of the term with the absolute minimum distance. Return the closest matching valid term. Example input speling returns spelling.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d017",
+  "title": "Vigenere Cipher Engine",
+  "spec": "Encrypt a text using the Vigenere cipher technique. Define a fixed keyword secret within the function. Write a helper to shift a single alphabet letter by a given number of positions, preserving its uppercase or lowercase nature and wrapping from z back to a. Iterate through the characters of the message. For each letter, determine its shift amount from the alphabetical index of the corresponding letter in the repeatedly cycled keyword. Leave any spaces or punctuation untouched. Return the fully encrypted string. Example input hello returns a shifted string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d018",
+  "title": "Dijkstra Network Routing",
+  "spec": "Find the shortest path cost from node zero to node four in a small network. The input is an array of connections, each being an array of three numbers representing source, destination, and weight. Build an adjacency map representation of the network. Maintain a list of minimum costs to each node, initialized to infinity except for node zero which is zero. Keep a set of unvisited nodes. Repeatedly pick the unvisited node with the lowest cost, update the costs to its neighbors, and mark it visited. Return the minimum cost to node four. Example input single link returns weight.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d019",
+  "title": "Tic Tac Toe Simulator",
+  "spec": "Simulate a game of naughts and crosses on a three by three board. The input is an array of integers from zero to eight representing sequential moves. Start with an empty board array and the current player as x. Iterate over the moves, placing the current player symbol at the given index and swapping players. After each individual move, check all eight possible winning rows, columns, and diagonals for three identical symbols. If a winner is found immediately return their symbol. If the board fills with no winner, return draw. Example input a winning sequence returns x.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d020",
+  "title": "Credit Card Luhn Validator",
+  "spec": "Calculate the final check digit for a partial identification number using the Luhn formula. The input is a string of digits missing its final check number. Append a zero to the end to simulate the full length. Iterate from the rightmost digit to the left. Double the numerical value of every second digit. If the doubled value is greater than nine, subtract nine from it. Sum all these processed numerical values together. Find the difference between this sum and the next multiple of ten to determine the correct check digit. Return the final complete number string. Example input 12345 returns 123455.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d021",
+  "title": "Infix to Postfix Calculator",
+  "spec": "Evaluate a mathematical expression presented in standard infix notation. Implement a tokenization helper to split the string into numbers and basic arithmetic operators. Convert the infix tokens to postfix notation using a stack for operators to handle basic precedence of multiplication over addition. Evaluate the resulting postfix sequence by iterating through it, pushing numbers to a stack, and applying operations to the top two elements when an operator is encountered. Return the final numeric result from the stack. Example input 3 plus 4 multiply 2 returns 11.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d022",
+  "title": "Interval Merger and Measurer",
+  "spec": "Calculate the total length of covered segments from an array of overlapping numerical ranges. Each input range is an array of two numbers. Sort the ranges by their starting values. Iterate through them, maintaining an active current range. Merge overlapping consecutive ranges by extending the active end point to the maximum of both. Once a gap is found where the next start is greater than the active end, finalize the active range and begin a new one. Sum the differences between the start and end of each distinct finalized segment. Return the total sum. Example input overlapping ranges returns combined length.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d023",
+  "title": "Base64 Encoder Roundtrip",
+  "spec": "Translate a regular string to base sixty four and back. Write an encoding helper that translates characters to their integer codes, groups them into chunks of three, and extracts four six bit segments using bitwise operations. Map these to the standard sixty four character alphabet, adding equals signs for padding if the text length is not a multiple of three. Write a decoding helper that reverses this completely to recreate the original bytes. The main function should encode the input, decode the result, and return the final restored string. Example input hello returns hello.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d024",
+  "title": "Deep Array Flattening",
+  "spec": "Manipulate a deeply nested structure of arrays and numbers. Write a recursive helper to fully flatten the input into a single level array of numbers, completely disregarding how deep the original sub arrays are nested. Write a separate simple helper that reverses the order of elements in a one dimensional array by swapping elements from the outside in. The entry point must take the complex nested input, apply the flatten helper, apply the reverse helper to the result, and return the final modified sequence. Example input deeply nested numbers returns them flat and reversed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d025",
+  "title": "Calendar Days Generator",
+  "spec": "Generate basic calendar information for a given year. Create a helper to determine if the year is a leap year to appropriately set February to twenty nine days instead of twenty eight. Create a helper using a standard algorithm to calculate the day of the week for the first of January of that year. Loop through all twelve months in a main sequence, keeping a running tally of days to compute the starting weekday index of each subsequent month. Return an array of twelve integers representing the starting weekday of each month. Example input 2000 returns twelve integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d026",
+  "title": "HTML Tag Matcher",
+  "spec": "The function `validate(document)` receives a string containing simple markup with opening and closing tags enclosed in angle brackets. It must iterate through the string character by character, extracting tag names and ignoring all other text. It pushes opening tag names to a stack and pops them to compare when a closing tag is found. It should return a boolean indicating if all tags match correctly and the stack is empty at the end. For example, given an input of a paragraph with a bold tag inside, it should return true, but if an italic tag is closed before a bold tag, it should return false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d027",
+  "title": "Simple JSON Stringifier",
+  "spec": "The function `stringify(value)` takes a nested value which can be a number, a boolean, a string, a list of these, or a dictionary mapping string keys to these values. It must recursively build and return a valid string representation of the data without using any built-in parsing or formatting methods. Lists should be enclosed in square brackets and dictionaries in curly braces, with items separated by commas. String values and dictionary keys must be wrapped in double quotes. For example, passing a list containing a number and a string should return a string with the bracketed and quoted representation.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d028",
+  "title": "Markdown to HTML Converter",
+  "spec": "The function `render(markdown)` takes a string containing multiple lines of text formatted with simple markdown and converts it to basic hypertext markup. Lines starting with one to six hash characters followed by a space should be converted to corresponding header tags. Text wrapped in double asterisks should be converted to bold tags, and text wrapped in single asterisks to emphasis tags. Empty lines should be treated as paragraph separators, wrapping blocks of continuous text in paragraph tags. The function returns the final concatenated hypertext string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d029",
+  "title": "LZW Dictionary Compressor",
+  "spec": "The function `compress(text)` implements a basic dictionary-based compression algorithm. It takes a single string of uppercase characters. It initializes a dictionary with all twenty-six single letters mapped to their numerical index from one to twenty-six. It then reads the input character by character, building the longest possible sequence that already exists in the dictionary. When a sequence is found that is not in the dictionary, it outputs the numerical code for the known prefix, adds the new sequence to the dictionary with the next available code, and starts a new sequence with the final character. The function returns a list of numerical output codes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d030",
+  "title": "LRU Cache Simulation",
+  "spec": "The function `simulate(operations, capacity)` simulates a least recently used caching system. It takes a list of operations where each operation is a list containing either the word put followed by a number key and a number value, or the word get followed by a number key. The cache has a maximum number of items it can hold, specified by the second parameter. When the cache is full and a new item is added, the least recently used item must be removed. The function should process all operations and return a list of numbers representing the results of all get operations, returning negative one for misses.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d031",
+  "title": "Regex Pattern Matcher",
+  "spec": "The function `match(pattern, text)` implements a simple pattern matcher that supports dot for any single character and asterisk for zero or more of the preceding element. It should recursively or dynamically check if the entire text string conforms to the provided pattern string. The implementation must process the string character by character, explicitly handling the base cases of empty patterns or strings. Because an asterisk can match multiple characters or none at all, the logic must explore multiple branching paths. The function returns a boolean true if the text fully matches the pattern, and false otherwise.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d032",
+  "title": "Topological Graph Sorter",
+  "spec": "The function `sort(edges)` takes a list of directed connections, where each connection is a list of two numbers representing a source node and a destination node. It must construct a graph adjacency list and calculate the incoming edge count for every unique node. Using a queue, it should repeatedly remove nodes with zero incoming edges, appending them to a result list and decreasing the incoming edge count for their neighbors. If all nodes are successfully ordered, it returns the list of sorted nodes; otherwise, if a cycle is detected and some nodes remain, it returns an empty list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d033",
+  "title": "Directory Size Calculator",
+  "spec": "The function `measure(directory)` calculates the total size of files within a hierarchical folder structure. The input is a nested dictionary where each key is a folder or file name, and the value is either a number representing the file size or another dictionary representing a subfolder. It must traverse the entire tree recursively, maintaining a running total of the file counts and sizes found at all levels. The function returns a list containing the total number of files followed by the total size in bytes. For example, a folder containing a file of size ten and a subfolder with a file of size twenty should return a count of two and a total size of thirty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d034",
+  "title": "Stock Profit Maximizer",
+  "spec": "The function `maximize(prices)` calculates the maximum profit achievable from buying and selling a single asset multiple times over a sequence of days. It takes a list of daily prices as numbers. The rule is that you can buy and sell as many times as you want, but you must sell before buying again. The logic should iterate through the prices, adding up all positive differences between consecutive days. The function returns the total accumulated profit as a number. For example, prices going up steadily over five days should yield the difference between the last and first day.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d035",
+  "title": "Consistent Hashing Ring",
+  "spec": "The function `balance(nodes, keys)` simulates distributing data across a circle of storage servers. The first parameter is a list of node names, and the second is a list of data strings. It computes a numeric hash for each string by summing the product of each character code and a prime number multiplier. It places the nodes on a hypothetical ring by taking the hash modulo one thousand. It then hashes each data string to find its position on the ring. The data is assigned to the first node encountered by moving forward along the ring, wrapping around to zero if necessary. The function returns a list of lists, pairing each data string with its assigned node name.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d036",
+  "title": "Prefix Tree Autocomplete",
+  "spec": "The function `complete(words, prefix)` builds a prefix tree from a given list of lowercase text strings and then finds all strings that start with a specific target string. First, it must iterate over the words, inserting each character into nested dictionaries and marking the end of valid words. Then, it navigates the tree using the characters of the target string. If the path exists, it performs a depth-first search from that node to collect and return an alphabetically sorted list of all valid words extending from that prefix.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d037",
+  "title": "Text Diff Utility",
+  "spec": "The function `compare(original, updated)` compares two lists of strings and generates a simple sequence of changes needed to transform the first list into the second. It should iterate through both lists using dynamic programming to find the longest common subsequence to anchor the matching lines. Unmatched lines from the first list are marked as deletions, and unmatched lines from the second list are marked as additions. The function returns a list of lists, where each inner list contains a string indicating the operation type such as add, remove, or keep, followed by the text line itself.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d038",
+  "title": "Convex Hull Gift Wrapping",
+  "spec": "The function `enclose(points)` computes the boundary points enclosing a set of two-dimensional coordinates using the gift wrapping algorithm. The input is a list of lists, where each inner list contains an x and y number. It first finds the leftmost coordinate to serve as the starting anchor. Then, it iteratively finds the next coordinate that makes the widest counterclockwise turn compared to all other candidates, repeating this process until the hull closes back to the start. The function returns the list of boundary coordinates in counterclockwise order.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d039",
+  "title": "Polygon Area Shoelace",
+  "spec": "The function `calculate(vertices)` computes the area of a simple two-dimensional shape using the shoelace formula. The input is a list of coordinates where each coordinate is a list of two numbers representing x and y. The logic must iterate through the sequence of coordinates, multiplying the x value of the current point by the y value of the next point, and subtracting the product of the current y and the next x. The sequence must wrap around from the last coordinate back to the first. The function returns the absolute value of the total sum divided by two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d040",
+  "title": "RGB to HSL Converter",
+  "spec": "The function `convert(colors)` transforms a list of colors from the red, green, and blue color space to the hue, saturation, and lightness color space. The input is a list of lists, where each inner list contains three numbers between zero and two hundred fifty-five. For each color, it calculates the maximum and minimum among the three components to determine the lightness and saturation percentages. It then calculates the hue angle based on which color component is the maximum. The function returns a new list of lists containing the converted values rounded to the nearest integer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d041",
+  "title": "Elo Rating Calculator",
+  "spec": "The function `rank(matches)` updates player ratings based on a history of head-to-head games using the standard chess rating formula. The input is a list of matches, where each match is a list containing the names of the winning and losing players as strings. It maintains a dictionary tracking each player's score, starting everyone at a baseline of twelve hundred points. For each match, it calculates the expected win probability for both competitors and adjusts their scores using a fixed sensitivity multiplier of thirty-two. The function returns a list of lists pairing player names with their final rounded ratings, sorted from highest to lowest.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d042",
+  "title": "Math Expression Tokenizer",
+  "spec": "The function `tokenize(expression)` breaks down a string containing a mathematical formula into its fundamental components. It scans the string character by character to group consecutive digits and decimal points into single number tokens. Alphabetic characters should be grouped into function or variable name tokens. Parentheses, commas, and arithmetic operators should be recognized as individual symbols, while all whitespace must be ignored. The function returns a list of strings representing the sequential tokens. For example, a sum of a number and a variable wrapped in parentheses yields five distinct tokens.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d043",
+  "title": "Quadtree Spatial Index",
+  "spec": "The function `insert(points)` builds a spatial division tree to organize a set of two-dimensional points. The tree starts with a single boundary covering a large fixed grid of one hundred by one hundred units. As points, which are represented as lists of two numbers, are added, any region exceeding a capacity of four points must subdivide into four equal quadrants and redistribute its contents. The function iterates through the input list, placing each point in the appropriate leaf node. It returns a nested list structure representing the hierarchy of regions and the points they contain.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d044",
+  "title": "Dynamic Programming Knapsack",
+  "spec": "The function `pack(items, capacity)` determines the maximum value that can be accumulated by selecting a subset of items without exceeding a weight limit. The first parameter is a list of available items, where each item is a list containing two numbers: its weight and its value. The second parameter is the total allowed weight. It should use dynamic programming to build a table of optimal values for every weight from zero up to the limit. The function iterates through each item and each possible weight capacity to populate this table, ultimately returning the highest achievable value as a number.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d045",
+  "title": "Ray Casting Polygon Collision",
+  "spec": "The function `test(point, polygon)` determines whether a specific coordinate lies strictly inside a given boundary. The first parameter is a list of two numbers for the target coordinate, and the second is a list of lists representing the consecutive vertices of the shape. It simulates drawing a horizontal line to the right from the target coordinate and counts how many boundary segments this line crosses. Special care must be taken to handle vertices that align exactly with the horizontal ray to avoid counting a single intersection twice. The function returns a boolean indicating true if the intersection count is odd, and false if it is even.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d046",
+  "title": "Bounding Box Intersection",
+  "spec": "The function `detect(boxes)` identifies overlapping rectangular regions in a two-dimensional space. The input is a list of rectangles, where each rectangle is a list of four numbers: the minimum x, minimum y, maximum x, and maximum y coordinates. The logic must compare every unique pair of rectangles to check if their horizontal and vertical spans intersect. If a pair overlaps on both axes simultaneously, they are considered colliding. The function returns a list of lists, where each inner list contains the zero-based index positions of two intersecting rectangles.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d047",
+  "title": "Rabin Karp Substring Search",
+  "spec": "The function `search(text, pattern)` finds all starting positions of a short pattern within a longer text using a rolling hash approach. It computes an initial numeric hash for the pattern and for the first window of the text of the same length, using a simple prime number multiplier for each character code. It then slides the window one character at a time across the text, updating the text hash by subtracting the exiting character's value and adding the entering character's value. When the hashes match, it verifies the actual substring characters. It returns a list of matching numerical index positions.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d048",
+  "title": "Moving Average Crossover",
+  "spec": "The function `analyze(prices, short, long)` detects trading signals by analyzing two rolling averages over a sequence of numbers. The first parameter is a list of daily prices, followed by two numbers representing the short and long window sizes. It calculates the moving averages for both windows at each day where enough prior data exists. When the shorter average crosses above the longer average, it records a buy signal for that day. When it crosses below, it records a sell signal. The function returns a list of lists containing the day index and the signal type as a lowercase string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d049",
+  "title": "IPv4 Subnet Calculator",
+  "spec": "The function `subnet(address, prefix)` calculates the network boundary details for a given internet protocol address and routing prefix. The first parameter is a string of four numbers separated by dots, and the second is a number between zero and thirty-two. It should first split the address by dots and shift the numerical components into a single thirty-two bit integer. Using the prefix, it determines the subnet mask and applies bitwise operations to find the network address and the broadcast address. The function then extracts each eight bit segment to format these two boundaries back into dot notation strings, returning them as a list of two strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d050",
+  "title": "PageRank Link Analysis",
+  "spec": "The function `score(pages, links)` computes the importance of nodes in a network using a simplified link analysis algorithm. The first parameter is a list of webpage names, and the second is a list of directed links represented as pairs of source and destination names. It initializes every page with an equal score of one. Over ten iterations, it updates the scores by distributing the current score of each page evenly among its outgoing links, while applying a dampening factor of eighty-five percent and adding a baseline score. The function returns a list of lists pairing page names with their final rounded scores.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d051",
+  "title": "Morse Code Translator",
+  "spec": "Convert a text message into morse code audio timings to simulate playback. Accept a string and return a list of integers representing durations in time units. A dot is one unit, a dash is three units, the gap between symbols in a letter is one unit, the gap between letters is three units, and the gap between words is seven units. Ignore any characters that are not standard letters or numbers. Example: input SOS returns one, one, one, one, one, three, one, three, one, three, three, one, one, one, one, one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d052",
+  "title": "Pagination Window Calculator",
+  "spec": "Compute the visible page numbers for a graphical pagination component. The `paginate(parameters)` function receives a list containing the current page number, total pages, and the number of siblings to show on each side. The output must be a list of page numbers, using negative one to represent an ellipsis gap. Always include the first and last pages in the output sequence. Example: if the current page is five, total is ten, and boundary is one, return one, negative one, four, five, six, negative one, ten.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d053",
+  "title": "Word Wrap Processor",
+  "spec": "Break a continuous string of text into multiple lines such that no line exceeds a maximum character limit. The `wrap(text, limit)` function must split the text by spaces and add words to the current line until adding another word would exceed the maximum limit. If a single word is longer than the limit, place it on its own line and continue. Return a list of the resulting text lines. Example: wrapping the quick brown fox with a limit of ten yields two strings, the quick, and brown fox.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d054",
+  "title": "ASCII Histogram Generator",
+  "spec": "Generate a horizontal text based bar chart from a series of data frequencies. The `chart(frequencies)` function takes a list of non negative integers and returns a list of strings representing the horizontal bars. Scale the bars proportionally so the maximum value uses exactly twenty hash characters. If the maximum value is zero, all bars should be empty strings, and proportional lengths must be rounded to the nearest integer. Example: input ten and five returns a string of twenty hashes and a string of ten hashes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d055",
+  "title": "English Pluralizer",
+  "spec": "Convert a list of standard English words into their plural forms based on basic spelling rules. The `pluralize(words)` function accepts a list of lowercase strings and returns a list of the modified strings. If a word ends in s, x, z, ch, or sh, append es to the end. If it ends in a consonant followed by y, drop the y and append ies. Otherwise, just append a single s. Example: input box and cherry returns boxes and cherries.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d056",
+  "title": "Barcode Checksum Calculator",
+  "spec": "Calculate the validating check digit for a twelve digit commercial barcode. The `checksum(digits)` function takes a string of exactly twelve numeric characters and returns the single integer check digit. Multiply the digits in even positions by three and the digits in odd positions by one, treating the very first digit as position one. Sum all these products and find the remainder when divided by ten, then subtract this remainder from ten, converting a final ten to zero. Example: input four zero zero six three eight one three three three nine three returns one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d057",
+  "title": "Chemical Element Counter",
+  "spec": "Count the total number of atoms for each element in a basic chemical formula string. The `tally(formula)` function receives a string of uppercase letters optionally followed by lowercase letters and digits. Parse the string to identify each chemical element symbol and its adjacent quantity, defaulting to one if no number is present. Return a list of pairs grouping each element symbol with its total integer count. Example: input water returns h two and o one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d058",
+  "title": "Password Strength Rater",
+  "spec": "Score a list of passwords on a scale from zero to four based on their character composition. The `evaluate(passwords)` function accepts a list of strings and returns a list of integers. Add one point for each condition met: length of at least eight characters, contains an uppercase letter, contains a lowercase letter, and contains a digit. If the string contains any non alphanumeric character, add an additional point, but cap the total maximum score at four. Example: input password and Password one exclamation returns one and four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d059",
+  "title": "Text Data Anonymizer",
+  "spec": "Replace sensitive personal information in a list of text documents with generic placeholders. The `redact(documents)` function accepts a list of strings and scans each one for nine consecutive digits, which act as social security numbers, and sequences containing an at symbol surrounded by non space characters. Replace the numeric sequences with the word REDACTED and the email addresses with the word EMAIL. Return the list of modified strings. Example: input contact admin at test dot com returns contact EMAIL.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d060",
+  "title": "Minesweeper Clue Generator",
+  "spec": "Calculate the number of adjacent mines for every empty cell in a rectangular grid. The `reveal(grid)` function accepts a list of lists of strings where a bomb is represented by an asterisk and empty space by a dash. Return a new grid of the same dimensions where each dash is replaced by a string containing the integer count of bombs in all eight adjacent cells. If the count is zero, leave it as a dash. Example: a horizontal grid with an asterisk and a dash returns an asterisk and a one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d061",
+  "title": "Linear Color Gradient",
+  "spec": "Generate a smooth transition between two colors over a specified number of steps. The `blend(endpoints)` function takes a list containing two lists of three integers representing red, green, and blue values, followed by an integer for the total number of required steps. Return a list of color lists representing the full sequence. Calculate the intermediate colors using linear interpolation, rounding each color channel to the nearest whole number. Example: blending pure black and pure white in three steps returns black, middle gray, and white.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d062",
+  "title": "Soundex Encoder",
+  "spec": "Convert a list of names into their phonetic codes using the standard historical indexing algorithm. The `soundex(names)` function accepts a list of strings and returns a list of four character strings. Retain the first letter uppercase and map subsequent consonants to digits based on their phonetic categories, dropping all vowels and w or h. Do not encode adjacent consonants with the same digit, and pad with zeros or truncate to ensure exactly four characters. Example: input Robert and Rupert both return R one six three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d063",
+  "title": "Flight Path Builder",
+  "spec": "Reconstruct a continuous travel route from a shuffled set of flight boarding passes. The `connect(tickets)` function accepts a list of pairs where each pair contains an origin airport code and a destination airport code. Find the starting airport which appears only as an origin, then trace the destinations sequentially to form a single continuous trip. Return the list of airport codes visited in consecutive order. Example: input pairs jfk to lhr and sfo to jfk returns sfo, jfk, lhr.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d064",
+  "title": "Syllable Estimator",
+  "spec": "Estimate the number of syllables in a list of English words using heuristic vowel counting rules. The `count(words)` function receives a list of alphabetic strings and returns a list of integer counts. Count the number of vowel groups consisting of one or more adjacent vowels, treating the letter y as a vowel. Subtract one if the word ends with a silent e, but ensure the final syllable count never falls below one. Example: input apple and banana returns two and three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d065",
+  "title": "Semantic Version Sorter",
+  "spec": "Order a list of software version strings from oldest to newest. The `sort(versions)` function accepts a list of strings containing integers separated by periods. Split each string into its numeric components and compare them from left to right numerically, treating them as integers rather than text. If one version has more components and all preceding components are equal, the longer one is considered newer. Example: input one point ten and one point two returns one point two followed by one point ten.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d066",
+  "title": "Domino Chain Validator",
+  "spec": "Determine if a sequence of domino tiles forms a valid continuous chain according to standard tabletop rules. The `verify(tiles)` function takes a list of pairs of integers where each pair represents the two numeric halves of a domino. Check if the second number of each domino exactly matches the first number of the immediately following domino. If any adjacent tiles do not match, return false, otherwise return true if the entire sequence connects. Example: input pairs one and two followed by two and five returns true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d067",
+  "title": "Pig Latin Converter",
+  "spec": "Transform a list of sentences into a playful language variation. The `translate(sentences)` function accepts a list of strings and returns the modified strings. For each word, if it begins with a cluster of consonants, move those consonants to the end and append the letters ay. If it begins with a vowel, simply append the letters way to the end of the word. Preserve spaces and assume all inputs are lowercase with no punctuation. Example: input hello world returns ellohay orldway.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d068",
+  "title": "Absolute Path Resolver",
+  "spec": "Simplify a list of raw directory paths by resolving all relative navigation elements. The `resolve(paths)` function accepts a list of strings containing folder names separated by slashes. Split the path and process each segment, ignoring empty segments and single dots. For double dots, remove the previously added segment if one exists in the current hierarchy. Join the remaining segments back together with slashes, always starting with a single leading slash. Example: input a slash b slash double dot slash c returns slash a slash c.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d069",
+  "title": "Rainwater Retention Calculator",
+  "spec": "Calculate the total units of water that can be trapped after a rainstorm between terrain blocks. The `measure(elevations)` function accepts a list of non negative integers representing the solid height of terrain at each horizontal index. Determine the maximum height to the left and right of each position, and find the minimum of these two boundary values. Subtract the terrain height from this minimum to find the trapped water, summing these amounts. Example: input two, zero, two returns two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d070",
+  "title": "Stylesheet Minifier",
+  "spec": "Compress a basic stylesheet string by removing unnecessary whitespace and formatting characters. The `minify(styles)` function receives a single string of rules and returns the compressed string. Remove all line breaks and tab characters, then eliminate spaces immediately preceding and following braces, colons, and semicolons. Also remove any block comments enclosed in slash asterisk and asterisk slash. Example: input body space brace color colon red brace returns body brace color colon red brace.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d071",
+  "title": "Phone Pad Combinations",
+  "spec": "Generate all possible alphabetical letter combinations that a given string of phone digits could represent. The `combinations(digits)` function accepts a string containing digits from two to nine and returns a list of strings. Use the standard modern telephone mapping where two is a, b, c and nine is w, x, y, z. Combine the possible letters for each digit sequentially to form complete sequences. Example: input two three returns ad, ae, af, bd, be, bf, cd, ce, cf.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d072",
+  "title": "Missing Sequence Term",
+  "spec": "Identify the single missing number in a sequence that is supposed to form a strict arithmetic progression. The `find(sequence)` function takes a list of integers of at least length three. Calculate the expected step size by comparing the difference between the first and last elements divided by the length of the list. Iterate through the list to find the adjacent pair that does not match this step size and return the missing integer between them. Example: input two, four, eight returns six.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d073",
+  "title": "Ledger Balance Calculator",
+  "spec": "Compute the final financial balance and flag any overdraft incidents from a list of account activities. The `reconcile(transactions)` function receives a list of amounts where positive numbers are deposits and negative numbers are withdrawals. Start with a balance of zero and add each transaction sequentially. If the balance falls below zero at any point, record an overdraft fee of thirty five being subtracted. Return a pair containing the final balance and the total count of fees charged. Example: input ten and negative twenty returns negative forty five and one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d074",
+  "title": "Batch Temperature Converter",
+  "spec": "Transform a list of temperature readings between celsius and fahrenheit scales. The `convert(temperatures)` function accepts a list of pairs containing a numerical value and a single character scale indicator, either c or f. For each pair, calculate the opposite temperature using the standard formulas of multiplying by nine fifths or five ninths, rounding to one decimal place. Return a list of pairs in the identical format with the updated values and scales. Example: input zero c and thirty two f returns thirty two f and zero c.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d075",
+  "title": "Bipartite Graph Validator",
+  "spec": "Determine if an undirected graph can be colored using exactly two colors such that no adjacent nodes share a color. The `validate(edges)` function receives a list of edges where each edge is a pair of integer node identifiers. Build an adjacency structure and perform a traversal, assigning alternating colors to each connected level. If any connected neighbor already has the same color as the current node, return false. Return true if the entire graph is successfully colored. Example: a cyclic square of four nodes returns true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d076",
+  "title": "Tennis Match Score Tracker",
+  "spec": "Write a function `score(points)` that takes a list of strings where each string is the name of the player who won the point, either player one or player two. The function should return a list of string descriptions representing the current game score after each point. The scoring follows standard tennis rules where points progress from zero to fifteen, thirty, and forty. If both players reach forty, the score is deuce. After deuce, a player gains an advantage, and if they win the next point, they win the game. If the trailing player wins the point, the score returns to deuce. Example: passing a list of four player one wins should return a list of scores ending with player one wins game.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d077",
+  "title": "Circular Buffer Simulation",
+  "spec": "Write a function `simulate(commands)` that manages a fixed size queue of integers. The input is a list of lists where each inner list contains a string command and optionally an integer. The commands can be push to add an item to the buffer, pop to remove the oldest item, or resize to change the capacity. When pushing to a full buffer, the oldest item is overwritten. The buffer starts with a capacity of five. The function must return a list of integers representing the items that were popped or lost due to overwriting, in the exact order they were removed. Example: pushing six items in sequence should result in the first item being returned as overwritten.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d078",
+  "title": "Deterministic Weighted Sampler",
+  "spec": "Write a function `sample(weights, randoms)` that takes a list of integer weights for various categories and a list of floating point numbers between zero and one. For each floating point number, select a category index using the weights. First, calculate the total sum of all weights. Then, multiply the floating point number by the total sum to find a target value. Iterate through the weights, accumulating their sum, until the accumulated sum is strictly greater than the target value, and select that index. Return a list of selected indices. Example: given weights of ten and ninety, and a random of zero point zero five, it should return index zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d079",
+  "title": "Subtitle Time Synchronizer",
+  "spec": "Write a function `synchronize(subtitles, shift)` that takes a list of subtitle records and an integer representing milliseconds to shift the timestamps. Each subtitle record is a list containing a start time string, an end time string, and the subtitle text. The time format is hours, minutes, seconds, and milliseconds separated by colons and commas. The function must parse these times, add the shift in milliseconds which can be negative, and format them back to the original string format, handling rollovers for seconds, minutes, and hours. Return a list of updated subtitle records. Example: shifting a one second timestamp by negative five hundred milliseconds should yield a zero point five second timestamp.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d080",
+  "title": "Simple Cron Schedule Parser",
+  "spec": "Write a function `parse(expression)` that takes a string containing five space separated fields representing minute, hour, day of month, month, and day of week. Each field can be an asterisk meaning all, a single number, or a comma separated list of numbers. The function must return a list of five lists, where each inner list contains all the matching integers for that field in sorted ascending order. Minutes range from zero to fifty nine, hours from zero to twenty three, days from one to thirty one, months from one to twelve, and weekdays from zero to six. Example: passing an asterisk for the minute field returns a list of sixty integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d081",
+  "title": "Elevator Route Scheduler",
+  "spec": "Write a function `route(calls, current)` that calculates the most efficient order of floors for an elevator to visit. The inputs are a list of integer floor requests and an integer starting floor. The elevator always moves in its current direction as long as there are remaining requests in that direction before reversing. If it starts moving up, it visits all higher requested floors in ascending order, then reverses to visit any lower requested floors in descending order. Return a list of integers representing the sequence of visited floors. Example: from floor five with calls for two, seven, and nine, it should return seven, nine, then two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d082",
+  "title": "ASCII Text Table Generator",
+  "spec": "Write a function `format(rows)` that takes a list of lists of strings representing tabular data. The function must calculate the maximum character width for each column. It then generates an output string where each cell is padded with spaces to match the column width, separated by vertical bar characters. The first row is the header, which must be followed by a separator line of dash characters and plus signs at the intersections. Return a single string with newline characters separating the rows. Example: passing a two by two grid of short words should return a neatly aligned text grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d083",
+  "title": "Software Dependency Resolver",
+  "spec": "Write a function `resolve(packages)` that takes a list of lists representing software modules and their requirements. Each inner list has a string module name followed by zero or more string names of modules it depends on. The function must perform a topological sort to determine a valid installation order. If a circular dependency is detected, it must return an empty list. Otherwise, it should return a list of string module names in an order such that every module appears only after all of its dependencies have been listed. Example: if module alpha depends on beta, the result must list beta before alpha.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d084",
+  "title": "Spatial Geohash Encoder",
+  "spec": "Write a function `encode(latitude, longitude, precision)` that converts geographic coordinates into a string hash. The latitude ranges from negative ninety to ninety, and the longitude from negative one hundred eighty to one hundred eighty. The process alternates between bisecting the longitude and latitude ranges, adding a one bit if the value is in the upper half and a zero bit if in the lower half. The bits are grouped into fives and mapped to a specific thirty two character alphabet. The function should return a string of the specified precision length. Example: the coordinates zero and zero with precision one should return a specific single letter string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d085",
+  "title": "Minimal Template Engine",
+  "spec": "Write a function `render(template, context)` that replaces variables in a text string. The template is a string containing placeholders surrounded by double curly braces. The context is a list of lists, where each inner list contains a string variable name and its corresponding string value. The function must find all placeholders in the template, look up the variable name in the context ignoring any surrounding whitespace, and substitute the value. If a variable is not found in the context, leave the placeholder unchanged. Return the final modified string. Example: replacing name with Alice in a greeting template should produce hello Alice.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d086",
+  "title": "Server Log Summarizer",
+  "spec": "Write a function `summarize(logs)` that processes a list of string log lines. Each line contains a date, a time, a log level, and a message. The function must extract lines where the level is error or warning. It should group these messages by the hour of the day they occurred. The function returns a list of lists, where each inner list represents an hour from zero to twenty three, containing the count of errors and the count of warnings in that hour. Ignore hours with no errors or warnings. Example: a list of two errors at three in the morning should return an entry for hour three with two errors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d087",
+  "title": "Hexagonal Grid Distances",
+  "spec": "Write a function `distance(points)` that takes a list of lists where each inner list contains three integers representing the cubic coordinates of a hexagon on a grid. The coordinates represent three axes on a cubic plane, and their sum must always be zero. The function must calculate the distance from the first hexagon in the list to every other hexagon in the list. The distance between two cubic coordinates is half the sum of the absolute differences of their individual components. Return a list of integer distances. Example: the distance between the origin and a neighbor with coordinates one, zero, and negative one is one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d088",
+  "title": "Cart Discount Evaluator",
+  "spec": "Write a function `evaluate(items, rules)` that calculates the final price of a shopping cart. The items parameter is a list of lists containing a string product category, a string item name, and a numeric price. The rules parameter is a list of lists containing a string category and a numeric percentage discount. The function must apply the highest applicable percentage discount to each item based on its category. If an item has no matching rule, it receives no discount. Sum the discounted prices of all items and return the total numeric cost rounded to two decimal places. Example: a ten dollar item with a twenty percent discount rule contributes eight dollars to the total.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d089",
+  "title": "Two Dimensional Heatmap",
+  "spec": "Write a function `generate(points, size)` that creates a text based heatmap. The points parameter is a list of lists containing horizontal and vertical integer coordinates. The size parameter is an integer defining the width and height of the square grid. The function must count how many points fall into each cell of the grid. It then maps these counts to a character scale: a space for zero, a dot for one, a dash for two, and an asterisk for three or more. Return a list of strings representing the rows of the heatmap from top to bottom. Example: a point at zero zero on a size two grid places an asterisk or dot in the top left corner.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d090",
+  "title": "Musical Scale Generator",
+  "spec": "Write a function `build(root, intervals)` that generates a sequence of musical notes. The root is a string representing the starting note, such as C or F sharp. The intervals is a list of integers representing semitone steps between consecutive notes. The twelve standard notes are C, C sharp, D, D sharp, E, F, F sharp, G, G sharp, A, A sharp, and B. The function must start at the root note and apply each interval in sequence to find the next note, wrapping around the twelve note list as needed. Return a list of string notes. Example: starting at C with intervals of two and two yields C, D, and E.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d091",
+  "title": "Flat Token Tree Builder",
+  "spec": "Write a function `build(tokens)` that converts a sequential list of tags into a nested list structure. Each token in the input list is a string. If a token starts with an open angle bracket and ends with a close angle bracket, it is an opening tag. If it starts with an open angle bracket followed by a slash, it is a closing tag. Any other string is text content. The function must build a nested structure where each node is a list containing the string tag name followed by its text content or child nodes. Return the single root node list. Example: an opening tag, text, and a closing tag should return a list with the tag name and text.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d092",
+  "title": "Round Robin Match Scheduler",
+  "spec": "Write a function `schedule(teams)` that generates a tournament fixture list. The input is a list of string team names. If the number of teams is odd, append a dummy team called bye to make it even. The function must generate rounds where each team plays exactly one match per round. To form the rounds, keep the first team fixed in its position and rotate the remaining teams clockwise. Return a list of rounds, where each round is a list of match pairs, and each pair is a list of two string team names. Example: four teams will produce three rounds of two matches each.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d093",
+  "title": "Bouncing Ball Kinematics",
+  "spec": "Write a function `simulate(height, bounce, window)` that models a dropping ball. The height parameter is a floating point number for the initial drop. The bounce parameter is a fraction between zero and one representing how much height is retained after each bounce. The window parameter is the height of an observer looking out a window. The function must simulate the ball dropping and bouncing back up, counting how many times the ball passes in front of the observer. The ball only passes the window if its current peak height is strictly greater than the window height. Return the integer count of passes. Example: dropping from ten with a high bounce past a window of one yields multiple passes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d094",
+  "title": "DNA to Protein Translator",
+  "spec": "Write a function `translate(sequence)` that converts a string of DNA nucleotides into a sequence of amino acids. The function must scan the DNA string for the start codon which is the sequence adenine uracil guanine. Once found, it reads the sequence in chunks of three characters. Each group of three characters translates to a specific single character amino acid. The translation stops when one of the three stop codons is encountered. Return a list of string amino acid characters. If no start codon is found or the sequence ends prematurely, stop translating. Example: a sequence starting with the start codon followed by a stop codon returns a single start amino acid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d095",
+  "title": "Warehouse Order Allocator",
+  "spec": "Write a function `allocate(order, warehouses)` that determines the best way to fulfill a customer request. The order parameter is a list of lists containing a string item name and integer quantity needed. The warehouses parameter is a list of lists, each containing a string warehouse name and its inventory represented as lists of item names and quantities. The function must iterate through the warehouses in order and subtract available quantities to fulfill the order. Return a list of allocations, where each allocation is a list containing the warehouse name and the items and quantities taken from it. Example: an order for five apples can be split across two warehouses.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d096",
+  "title": "Markdown Table Extractor",
+  "spec": "Write a function `extract(document)` that parses tabular data from a text string. The document contains multiple lines of text, some of which form a markdown style table. A table row starts and ends with a vertical bar character, and cells are separated by vertical bars. The function must locate all contiguous blocks of table rows. It must discard the separator row which contains dashes, strip leading and trailing whitespace from each cell, and return a list of tables. Each table is a list of rows, and each row is a list of string cell values. Example: parsing a small table returns a list with one table containing lists of cleaned cell strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d097",
+  "title": "Polynomial Derivative Evaluator",
+  "spec": "Write a function `evaluate(coefficients, point)` that calculates the derivative of a polynomial at a given position. The coefficients list contains numbers representing the terms of the polynomial from lowest degree to highest degree. For instance, the first number is the constant term, the second is the multiplier for the linear term, the third for the quadratic term, and so on. The function must first compute the derivative polynomial by multiplying each coefficient by its exponent and shifting them down one degree. Then, it substitutes the given point into the new derivative polynomial to find the slope. Return the resulting numeric value. Example: for coefficients of one, two, and three at point two, the result is fourteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d098",
+  "title": "Network Message Framer",
+  "spec": "Write a function `frame(messages)` that encodes a list of string payloads into a single contiguous byte stream represented as a list of integers. For each string message in the input, the function must convert the characters to their numerical character codes. It then prepends a two byte header to each message indicating the length of the payload in bytes. The first byte of the header is the length divided by two hundred fifty six, and the second byte is the remainder. The function must concatenate all these headers and payloads into one flat list of integers and return it. Example: a single letter message will result in a list with three integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d099",
+  "title": "Bank Statement Reconciler",
+  "spec": "Write a function `reconcile(transactions, balance)` that rebuilds an account ledger. The transactions parameter is a list of lists containing a string date, a string type which is either credit or debit, and a numeric amount. The balance parameter is the final ending amount. The function must work backwards chronologically through the transactions to calculate the running balance after each event. For a debit, it adds the amount to find the previous balance, and for a credit, it subtracts. Return a list of ledger entries, each being a list with the date, type, amount, and the calculated running balance. Example: starting from a hundred dollars and reversing a ten dollar debit yields a previous balance of one hundred ten.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d100",
+  "title": "Sensor Exponential Smoothing",
+  "spec": "Write a function `smooth(readings, factor)` that applies an exponential moving average to a sequence of noisy measurements. The readings parameter is a list of floating point numbers. The factor is a fraction between zero and one that dictates how much weight is given to the most recent observation versus the historical average. The first smoothed value is exactly equal to the first reading. Each subsequent smoothed value is the current reading multiplied by the factor, plus the previous smoothed value multiplied by one minus the factor. Return a list of smoothed floating point numbers. Example: constant readings return the same constant values.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d101",
+  "title": "Traffic Light Sequencer",
+  "spec": "`sequence(events)` receives an array of integer timestamps and returns an array of color strings representing traffic light states at those times. The light starts red at time zero, stays red for thirty seconds, turns green for forty five seconds, turns yellow for five seconds, and then repeats the cycle. Return an array of colors corresponding to each given timestamp. For example given an array of ten, eighty, and ninety the output should be red, green, and yellow.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d102",
+  "title": "Payroll Overtime Calculator",
+  "spec": "`payroll(hours)` receives an array of numbers representing hours worked each day in a single week. Compute the total weekly pay based on a base rate of twenty per hour. Standard hours are up to eight per day and forty per week. Any hours over eight in a single day are paid at time and a half. Any hours over forty in the week that have not already been paid at a daily premium are also paid at time and a half. Return the total pay as a number. For example given eight, ten, eight, eight, and eight the total should be eight hundred and sixty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d103",
+  "title": "Recipe Portion Scaler",
+  "spec": "`scale(recipe, multiplier)` takes an array of arrays where each inner array contains an ingredient name and its numeric quantity, along with a numeric multiplier. Multiply each quantity by the multiplier. If the new quantity is a whole number, keep it as an integer. Otherwise round it to two decimal places. Return a new array of arrays with the updated quantities. For example given flour and two with a multiplier of two and a half, the result is flour and five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d104",
+  "title": "File Permission Decoder",
+  "spec": "`decode(octal)` takes a three digit string representing standard octal file permissions. Convert the octal string into a nine character symbolic string consisting of the letters r for read, w for write, x for execute, or a dash for missing permissions. The first digit maps to user, the second to group, and the third to others. For example a string of seven five four should return a string with r, w, x, r, dash, x, r, dash, dash all concatenated together.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d105",
+  "title": "Library Fine Calculator",
+  "spec": "`fines(returns)` takes an array of return records where each record is an array containing a book category, an expected return day as an integer, and an actual return day. Categories are either regular, children, or reference. Regular books cost ten cents per day late. Children books cost five cents per day late. Reference books cost fifty cents per day late. The maximum fine per book is five dollars, except for reference books which have no limit. Calculate the total fine in cents. For example given regular, day ten, day twelve, the fine is twenty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d106",
+  "title": "Coffee Roasting Profiler",
+  "spec": "`roast(temperatures)` takes an array of integer temperature readings taken every minute during a coffee roasting process. Identify the minute when the first crack occurs, which is defined as the first time the temperature increases by more than fifteen degrees in a single minute and exceeds three hundred and eighty degrees. Also identify the maximum temperature reached. Return an array with the first crack minute and the maximum temperature. If no first crack occurs return zero for the minute. For example given temperatures of three hundred, three hundred and fifty, and three hundred and ninety, the result is minute two and three hundred and ninety.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d107",
+  "title": "Boarding Pass Sorter",
+  "spec": "`sort(passes)` receives an array of flight legs, where each leg is an array of two strings representing departure and arrival city names. The legs are out of order but form a single continuous journey. Reconstruct the correct sequence of cities from the start of the trip to the final destination by finding the city that is only a departure and chaining the destinations. Return a flat array of city names in the order visited. For example given paris to rome and london to paris, the output is london, paris, rome.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d108",
+  "title": "Discount Code Generator",
+  "spec": "`generate(names)` takes an array of customer name strings and returns an array of unique discount codes. To create a code, take the first three letters of the name converted to uppercase, append the length of the name, and then append a two digit sequential number starting at zero one. If the name is shorter than three letters, pad it with the letter X. For example, given john and ann, the output should be JOH four zero one and ANN three zero two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d109",
+  "title": "Irrigation Schedule Planner",
+  "spec": "`water(plants)` takes an array of plant requirements where each requirement is an array containing a plant name, watering frequency in days, and gallons of water needed. Given a thirty day month starting on day one, calculate the total gallons of water required for the entire month. Plants are watered on the first day and every frequency days thereafter up to day thirty. Return the total gallons needed as a number. For example given tomato, three days, two gallons, the plant is watered ten times taking twenty gallons.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d110",
+  "title": "Mountain Hike Elevation Profile",
+  "spec": "`profile(elevations)` takes an array of integer altitude readings taken along a hiking trail. Calculate the total elevation gain and total elevation loss. A gain is any positive difference between consecutive readings, and a loss is any negative difference. Return an array of two numbers containing the total gain and total loss. For example given heights of one hundred, one hundred and fifty, one hundred and twenty, and two hundred, the gain is one hundred and thirty and the loss is thirty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d111",
+  "title": "Vowel Shift Cipher",
+  "spec": "`shift(text)` takes a string and shifts all its vowels forward to the next vowel in the standard alphabetical sequence. The letter a becomes e, e becomes i, i becomes o, o becomes u, and u wraps around to a. Consonants, spaces, and punctuation remain unchanged. Preserve the original case of the vowels. Return the modified string. For example given hello world, the output should be hillo wurld.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d112",
+  "title": "Gym Membership Attendance",
+  "spec": "`attendance(visits)` takes an array of visit arrays, where each inner array contains a member identifier and a day of the year from one to three hundred and sixty five. Count how many unique days each member visited the gym. Return an array of arrays where each contains the member identifier and their unique visit count, sorted in descending order of visits. For example given member one on day ten and member one on day ten again, the count for member one is one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d113",
+  "title": "Parking Garage Ticket Valuator",
+  "spec": "`parking(tickets)` takes an array of arrays containing a vehicle type and hours parked. A car costs two dollars for the first hour and one dollar for each additional hour, up to a maximum of twelve dollars. A motorcycle costs one dollar per hour with no maximum. A bus costs five dollars per hour. Calculate the total revenue generated from all tickets. Return the total as a number. For example given a car for five hours and a bus for two hours, the revenue is sixteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d114",
+  "title": "Baking Recipe Converter",
+  "spec": "`convert(ingredients)` accepts an array of strings detailing dry ingredient measurements in cups, such as two cups flour or half cup sugar. Parse each string to extract the quantity as a number and the ingredient name. Convert the cups to grams using standard weights where one cup of flour is one hundred and twenty grams and one cup of sugar is two hundred grams. If an ingredient is unknown, assume one hundred and fifty grams per cup. Return an array of strings formatted as the calculated grams followed by the ingredient name.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d115",
+  "title": "Swimming Race Split Times",
+  "spec": "`splits(times)` takes an array of cumulative time integers in seconds recorded at every fifty meter turn of a swimming race. Calculate the split time for each fifty meter segment, which is the time elapsed since the previous turn. Find the fastest split time and the average of all split times. Return an array containing the fastest split and the average split rounded to one decimal place. For example given thirty, sixty two, and ninety, the splits are thirty, thirty two, and twenty eight, with twenty eight being the fastest.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d116",
+  "title": "Cryptocoin Portfolio Value",
+  "spec": "`portfolio(holdings, prices)` takes an array of coin amounts and an array of current prices, both ordered by the same arbitrary index. Calculate the total value of the portfolio. Identify the single index that contributes the highest monetary value to the portfolio. Return an array containing the total portfolio value and the index of the most valuable holding. For example given amounts of two and ten, and prices of fifty and five, the total is one hundred and fifty and the best index is zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d117",
+  "title": "Bowling Alley Lane Assigner",
+  "spec": "`assign(groups)` takes an array of integer group sizes. The alley has lanes that can hold up to six people each. Assign groups to lanes such that groups are kept together. If a group has more than six people, split them into the minimum number of lanes required, distributing them as evenly as possible. Return the total number of lanes needed for all groups. For example given group sizes of four, eight, and two, the output is four lanes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d118",
+  "title": "Bakery Inventory Order",
+  "spec": "`restock(inventory, thresholds)` takes an array of current stock levels and an array of minimum required stock levels for various items in the same order. For any item where the current stock is strictly below the minimum threshold, calculate an order quantity to bring the stock exactly up to the threshold. If stock is at or above the threshold, order zero. Return an array of order quantities. For example given current stock of ten and twenty and thresholds of fifteen and fifteen, order five and zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d119",
+  "title": "Video Game High Scores",
+  "spec": "`highscores(scores, limit)` takes an array of player scores and a numeric limit. Filter out any scores below one thousand points as they do not qualify. Sort the remaining scores in strictly descending order. Keep only the top scores up to the given limit. If there are fewer qualifying scores than the limit, return all of them. Return the final array of high scores. For example given five hundred, two thousand, and three thousand with a limit of one, the result is three thousand.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d120",
+  "title": "Restaurant Seating Arrangement",
+  "spec": "`seating(parties, tables)` takes an array of arriving party sizes and an array of available table capacities. Both arrays contain integers. Iterate through the parties sequentially and attempt to seat each one at the smallest available table that can fit them. If seated, remove that table from availability. If a party cannot be seated, skip them and continue with the next party. Return the number of parties that successfully received a table. For example given parties of two, five, and four, and tables of four and two, two parties are seated.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d121",
+  "title": "Concert Ticket Pricing Tier",
+  "spec": "`pricing(days)` takes an array of integers representing the number of days until a concert for various ticket purchases. The base price is fifty. If purchased more than thirty days in advance, apply a twenty percent discount. If purchased between ten and thirty days inclusive, apply the base price. If purchased less than ten days in advance, add a ten percent premium. Return an array of final ticket prices. For example given days of forty, twenty, and five, return forty, fifty, and fifty five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d122",
+  "title": "Daily Step Goal Streaks",
+  "spec": "`streaks(steps)` takes an array of daily step counts. A daily goal is defined as ten thousand steps. Find the length of the longest consecutive sequence of days where the step goal was met or exceeded. Also calculate the total number of days the goal was met. Return an array with the maximum streak length and the total number of goal days. For example given nine thousand, eleven thousand, twelve thousand, and eight thousand, the longest streak is two and total goal days is two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d123",
+  "title": "Plant Growth Simulation",
+  "spec": "`growth(initial, conditions)` takes a starting plant height in centimeters and an array of daily condition strings which are either sunny, cloudy, or rainy. On a sunny day, the plant grows by two centimeters. On a cloudy day, it grows by one centimeter. On a rainy day, it shrinks by half a centimeter due to overwatering. The plant cannot shrink below zero height. Return the final height of the plant after processing all days. For example given an initial height of five and days of sunny and rainy, the final height is six and a half.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d124",
+  "title": "Language Flashcard Review",
+  "spec": "`review(cards, ratings)` takes an array of card identifiers and an array of integer ratings from one to five, given by a user for each card. Cards rated one or two are scheduled for review tomorrow. Cards rated three are scheduled in three days. Cards rated four or five are scheduled in seven days. Return an array of arrays where each inner array contains the card identifier and its next review interval in days. For example given an A card with rating two and a B card with rating five, return A in one day and B in seven days.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d125",
+  "title": "Public Transit Fare Capping",
+  "spec": "`fare(trips)` takes an array of zone distance integers for bus trips taken in a single day. A trip costs two units per zone distance. The daily maximum total fare is capped at fifteen units. Calculate the cost for each trip sequentially. If adding a trip normal cost would exceed the daily cap, the trip only costs the remaining amount up to the cap, and subsequent trips cost zero. Return an array of the actual costs charged for each trip. For example given zones of three, two, and four, the costs are six, four, and five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d126",
+  "title": "Train Route Time Estimator",
+  "spec": "Write a function `estimate(stops, speeds)` that calculates the total transit time for a train journey. The first parameter is a list of distances between stations in miles, and the second is a list of corresponding train speeds in miles per hour. Calculate the travel time for each segment. Add an overhead of five minutes for each station stop, excluding the first departure and final arrival. Return a list containing two numbers: the total journey time in minutes rounded to the nearest integer, and the maximum speed reached during the trip. For example, inputs of [10, 20] and [60, 60] should output [35, 60] since the travel times are ten and twenty minutes, with one five-minute stop in between.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d127",
+  "title": "Cinema Seat Reservation",
+  "spec": "Create a function `reserve(rows, requests)` to assign cinema seating. The first parameter is the number of rows in the theater, where each row always has ten seats. The second parameter is a list of integers representing the number of tickets requested by different groups. Iterate through the requests and attempt to place each group in the lowest numbered row that has enough consecutive empty seats. If a group is placed, mark those seats as occupied. If no single row can fit the group, skip them. Return a list of lists, where each inner list contains the row index and the starting seat index for a successfully placed group, in the order of their requests. For five rows and requests of [3, 8], the output should be [[0, 0], [0, 3]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d128",
+  "title": "Art Gallery Wall Space Allocator",
+  "spec": "Implement a function `allocate(paintings, width)` to determine how many artworks can fit on a gallery wall. The first parameter is a list of painting widths in inches, and the second is the total available wall width. The paintings must be hung in the exact order provided. Each painting requires a minimum gap of six inches from the previous one, though the first painting does not need a gap before it. Keep adding paintings one by one until the next painting along with its required gap cannot fit in the remaining space. Return a list containing two values: the total number of paintings successfully placed and the remaining unused wall width in inches. For paintings of [20, 30, 40] and a width of 60, the output is [2, 4].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d129",
+  "title": "Bicycle Assembly Time Tracker",
+  "spec": "Design a function `assemble(tasks, workers)` to simulate factory production times. The first parameter is a list of task durations in minutes, and the second is the integer number of available workers. Assume all workers start idle at minute zero. Assign each task in the provided order to the worker who will become available the earliest. Track the completion time for every worker as they take on tasks. The total time required to complete all assembly tasks is the maximum completion time across all workers. Return this maximum time. For task times of [10, 20, 15] and two workers, the first worker gets the ten-minute task, the second gets the twenty-minute task, and the first worker then takes the fifteen-minute task, resulting in an output of 25.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d130",
+  "title": "Book Chapter Word Counter",
+  "spec": "Write a function `count(pages, rate)` that estimates the total word count of a printed book. The first parameter is the total number of pages, and the second is the average number of words per page. First, calculate the basic total by multiplying the two parameters. Then, adjust for special sections: assume the first three pages are introductory and only contain half the average words each. Assume the last two pages are an index and contain double the average words each. Apply these adjustments to the total. If the book has fewer than five pages, apply the introductory rule to all pages and ignore the index rule. Return the final estimated word count rounded down to the nearest whole number. For ten pages and a rate of two hundred, the output is 2100.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d131",
+  "title": "Solar Panel Energy Output",
+  "spec": "Create a function `predict(sunlight, efficiency)` to calculate solar power generation. The first parameter is a list of daily sunlight hours over a period, and the second is the base panel efficiency as a decimal. For each day, multiply the sunlight hours by the efficiency and a standard factor of two hundred fifty watts. However, if a day has less than four hours of sunlight, the efficiency for that specific day is temporarily reduced by ten percent of its base value before calculation. Accumulate the total energy generated across all days in watts, convert it to kilowatts by dividing by one thousand, and return the value rounded to two decimal places. For sunlight of [3, 5] and an efficiency of 0.20, the output is 0.38.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d132",
+  "title": "Wildlife Camera Trap Filter",
+  "spec": "Implement a function `filter(detections, threshold)` to count animal movement events from sensor data. The first parameter is a list of detection probabilities represented as decimals, and the second is the minimum probability threshold. First, discard any individual detections that fall below the threshold. Then, analyze the remaining valid detections to find bursts of activity. A burst is defined as three or more valid detections that occur consecutively in the original timeline without being interrupted by a low-probability detection. Group these consecutive valid detections into a single event. Return the total number of such grouped events. For detections of [0.9, 0.8, 0.9, 0.1, 0.9] and a threshold of 0.5, the output is 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d133",
+  "title": "Hotel Room Cleaning Scheduler",
+  "spec": "Design a function `schedule(rooms, staff)` to divide cleaning duties. The first parameter is a list of room dirtiness levels represented as integers from one to three, and the second is the number of available cleaning staff. A level one room requires fifteen minutes to clean, a level two requires thirty minutes, and a level three requires forty-five minutes. Distribute the rooms among the staff one by one in a strictly round-robin fashion, returning to the first staff member after the last one gets a room. Calculate the total cleaning time assigned to each staff member. Return the maximum time any single staff member is scheduled to work. For rooms of [1, 2, 3] and two staff, the output is 60.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d134",
+  "title": "Astronaut Oxygen Consumption",
+  "spec": "Write a function `calculate(activities, capacity)` to monitor life support reserves during a spacewalk. The first parameter is a list of activity intensity levels given as the words light, medium, or heavy. The second parameter is the starting oxygen capacity in liters. Each activity lasts for exactly ten minutes. Light activity consumes two liters per minute, medium consumes four, and heavy consumes seven. Subtract the required oxygen for each activity in sequence. If the remaining oxygen capacity falls below ten liters during or after any activity, immediately abort the spacewalk and return the number of fully completed activities. If all activities finish safely, return the remaining oxygen capacity. For activities of [light, heavy] and a capacity of 100, the output is 10.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d135",
+  "title": "Cargo Ship Container Weight",
+  "spec": "Create a function `balance(containers, limit)` to organize loading stacks on a vessel. The first parameter is a list of individual container weights, and the second is the maximum allowable weight for a single stack. You must try to place containers onto stacks in the exact order they appear in the list. Place the current container onto the first existing stack that can accommodate its weight without exceeding the limit. If no existing stack has enough remaining capacity, start a new stack with this container. Return the total number of stacks created to hold all the containers. For weights of [50, 40, 30, 20] and a limit of 60, the first stack holds 50, the second holds 40 and 20, and the third holds 30, so the output is 3.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d136",
+  "title": "Ski Resort Lift Ticket Pricing",
+  "spec": "Implement a function `price(ages, day)` to calculate the total cost for a group of skiers. The first parameter is a list of skier ages, and the second is the day of the week as an integer from one for monday to seven for sunday. The base price for a ticket is fifty. Children under twelve pay half the base price, while seniors over sixty-five pay seventy-five percent of the base price. Everyone else pays the full base price. If the day is a weekend (six or seven), add a twenty percent surcharge to each person's calculated ticket price. Sum all the individual ticket costs and return the total for the group. For ages of [10, 40] on day six, the child pays thirty and the adult pays sixty, making the output 90.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d137",
+  "title": "Farm Irrigation Water Usage",
+  "spec": "Design a function `irrigate(crops, rainfall)` to manage water pumping for an agricultural field. The first parameter is a list of the required water volume per crop in gallons, and the second is the recent rainfall volume in gallons. Subtract the rainfall from each crop's required volume. If the result is zero or negative, that crop needs no additional irrigation. For crops that still need water, add a ten percent evaporation overhead to their remaining requirement to determine the actual water that must be pumped. Sum the pumped water required across all crops and return the total rounded up to the nearest whole integer. For crops of [100, 50, 200] and rainfall of 75, the output is 165.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d138",
+  "title": "Courier Package Delivery Distance",
+  "spec": "Write a function `route(deliveries, start)` to simulate a delivery path. The first parameter is a list of destination locations, where each location is a list of two numbers representing x and y coordinates. The second parameter is the starting coordinate list. From the current position, always deliver to the nearest unvisited location next, measuring distance using the Manhattan method (the sum of absolute differences in x and y coordinates). If there is a tie in distance, pick the location that appears first in the original list. Calculate the total distance traveled to visit all locations and then return to the starting coordinate. For deliveries of [[1, 1], [2, 2]] and a start of [0, 0], the output is 8.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d139",
+  "title": "Vinyl Record Track Playtime",
+  "spec": "Create a function `measure(tracks, speed)` to determine the physical runtime of an audio record. The first parameter is a list of individual track durations in seconds, and the second is a playback speed multiplier as a decimal. Divide each track's duration by the speed multiplier to get its adjusted runtime. Between every pair of consecutive tracks, there is a two-second gap of physical silence on the record, which is unaffected by the playback speed. Sum the adjusted track durations and all the silent gaps. Return a list of two integers representing the total runtime in minutes and the remaining seconds, both rounded down. For tracks of [120, 120] and a speed of 1.5, the output is [2, 42].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d140",
+  "title": "Rocket Launch Countdown Checklist",
+  "spec": "Implement a function `verify(systems, threshold)` to evaluate automated pre-flight checks. The first parameter is a list of system readiness scores from zero to one hundred, and the second is the minimum required score. Generally, if any system scores below the threshold, the launch must be aborted. However, there is one exception: if exactly one system is below the threshold but is within five points of it, and the average score of all other systems is at least ninety, it is classified as a minor anomaly and the launch can proceed. Return the string go if the launch proceeds, or the string abort if it cannot. For systems of [95, 92, 86] and a threshold of 90, the output is go.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d141",
+  "title": "Ice Cream Shop Flavor Combinations",
+  "spec": "Design a function `combine(flavors, scoops)` to find all possible dessert bowls. The first parameter is a list of available flavor strings, and the second is the integer number of scoops requested. Generate all unique combinations of the requested number of scoops using the available flavors. The order of scoops in the bowl does not matter, and the same flavor can be selected multiple times. Calculate the total number of unique bowl combinations possible. To avoid excessive computation, if the requested number of scoops is greater than four, simply return zero. For flavors of vanilla and chocolate with two scoops, the possible bowls are two vanilla, two chocolate, or one of each, so the output is 3.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d142",
+  "title": "Wind Turbine Rotation Counter",
+  "spec": "Write a function `spin(speeds, hours)` to estimate power generation cycles. The first parameter is a list of wind speeds in miles per hour recorded over equal time intervals, and the second is the total observation time in hours. Divide the total hours equally among the speed recordings to find the duration of each interval in minutes. A turbine remains stationary if the wind is below eight miles per hour. Between eight and twenty-five inclusive, it spins at a steady fifteen revolutions per minute. Above twenty-five, the safety brakes engage and it does not spin at all. Multiply the appropriate revolutions per minute by the minutes in each interval and return the sum. For speeds of [5, 10, 30] over three hours, the output is 900.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d143",
+  "title": "Chess Tournament Point Standings",
+  "spec": "Create a function `rank(results, players)` to process match outcomes. The first parameter is a list of game results, where each result is a list containing the first player's index, the second player's index, and the outcome for the first player (one for a win, zero for a loss, zero point five for a draw). The second parameter is the total number of players. Allocate points for both players in each game: a win is one point, a draw is half a point, and a loss is zero. Accumulate the total points for all players. Return a list of player indices sorted by their total points from highest to lowest. In the event of a tie, the player with the lower numerical index should appear first. For results of [[0, 1, 1], [1, 2, 0.5]] and 3 players, the output is [0, 1, 2].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d144",
+  "title": "Submarine Sonar Ping Delay",
+  "spec": "Implement a function `depth(pings, salinity)` to map the ocean floor. The first parameter is a list of acoustic round-trip times in seconds, and the second is the local water salinity as a percentage. The baseline speed of sound in water is fifteen hundred meters per second. For every one percent of salinity above thirty-five, the speed of sound increases by three meters per second. Calculate the adjusted speed of sound. Multiply this speed by half of each round-trip time to determine the distance to the bottom for that ping. Return a list of calculated depths rounded to the nearest integer. For pings of [2, 4] and a salinity of 40, the output is [1515, 3030].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d145",
+  "title": "Archery Target Score Calculator",
+  "spec": "Design a function `score(distances, width)` to evaluate a shooter's accuracy. The first parameter is a list of arrow distances from the exact center in centimeters, and the second is the width of a single scoring ring in centimeters. The target consists of ten concentric rings. The innermost ring awards ten points, and the score decreases by one for each subsequent ring moving outward. Determine an arrow's score by dividing its distance by the ring width, rounding down to find the ring index, and subtracting that from ten. If the calculated score drops below zero, the arrow missed completely and scores zero. Sum the points for all arrows and return the total. For distances of [1.5, 4.0, 25.0] and a width of 2, the output is 18.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d146",
+  "title": "Pottery Kiln Temperature Profile",
+  "spec": "Write a function `fire(stages, ambient)` to calculate the time required for ceramics firing. The first parameter is a list of target temperatures in degrees, and the second is the starting ambient temperature. The kiln heats up at a maximum rate of one hundred degrees per hour, and naturally cools down at fifty degrees per hour. For each target in the sequence, calculate the hours required to transition to it from the previous temperature, using either the heating or cooling rate. Once a target temperature is reached, it must be held constant for exactly two hours before moving to the next. Return the total time required for the entire firing sequence in hours. For stages of [200, 100] and an ambient of 0, the output is 8.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d147",
+  "title": "Tea Steeping Blend Ratios",
+  "spec": "Create a function `blend(teas, target)` to formulate custom beverage mixtures. The first parameter is a list of individual tea strength ratings from one to five, and the second is the desired average strength. Evaluate all possible pairs of two different teas from the list to see if their combined average strength exactly matches the target. Return the total count of valid pairs. A pair formed by the same strength values located at different index positions in the original list is considered a distinct, unique pair. Order within the pair does not matter, so checking the first and third tea is the same as the third and first. For teas of [1, 3, 5, 3] and a target of 3, the pairs at indices zero and two, and indices one and three both work, so the output is 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d148",
+  "title": "Aquarium Water Cleaning Capacity",
+  "spec": "Implement a function `clean(tanks, flow)` to check life support limits for fish tanks. The first parameter is a list of tank volumes in gallons, and the second is the main pump flow rate in gallons per hour. A healthy environment requires the entire volume of a tank to be cycled through the cleaning system four times a day. Calculate the daily filtering requirement for each tank and sum them up. If the total required volume exceeds the system's daily capacity (the hourly flow rate multiplied by twenty-four), return the maximum number of whole tanks that can be safely maintained, prioritizing the smallest tanks first. If the system can handle all of them, return the total number of tanks. For tanks of [10, 20, 30] and a flow of 5, the output is 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d149",
+  "title": "Beehive Honey Production",
+  "spec": "Design a function `harvest(hives, weather)` to simulate apiary yields. The first parameter is a list of bee populations per hive, and the second is a list of weather conditions represented by the words sunny, cloudy, or rain. Sum the total number of bees across all hives. A sunny day yields one gram of honey per one hundred bees. A cloudy day yields half a gram per one hundred bees. Rainy days yield absolutely nothing and instead force the bees to consume one gram per five hundred bees from the existing reserves. Starting with zero reserves, calculate the net honey produced over the given days. If the final result is negative, return zero. For hives of [1000, 2000] and weather of sunny then rain, the output is 24.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d150",
+  "title": "Theme Park Ride Queue Time",
+  "spec": "Write a function `queue(arrivals, capacity)` to analyze waiting lines. The first parameter is a list of new guests arriving at the ride each consecutive minute, and the second is the maximum number of guests the ride can process per minute. Maintain a running total of the waiting line. At the start of each minute, add the arriving guests to the line, and then remove up to the ride's capacity. Record the number of guests left waiting at the very end of each minute. Continue processing minutes even after arrivals stop until the line is completely empty. Return a list containing two numbers: the maximum line length observed at the end of any minute, and the total minutes it took to empty the line completely. For arrivals of [10, 5, 0] and a capacity of 6, the output is [4, 3].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d151",
+  "title": "Greenhouse Climate Controller",
+  "spec": "Write a function `control(temperatures)` that takes a list of daily temperature readings in celsius. For each reading, if it is below fifteen, add one to a heater activation count. If it is above twenty five, add one to a fan activation count. If it is exactly twenty, add one to a perfect day count. Return a list of three numbers representing the total heater activations, fan activations, and perfect days in that order. For example, given an input of 10, 20, 30, the output should be 1, 1, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d152",
+  "title": "Freight Train Loading Planner",
+  "spec": "Create a function `plan(weights)` that accepts a list of cargo crate weights. A train car can hold a maximum of one hundred units of weight. The function must iterate through the crates and pack them into cars one by one. If adding a crate exceeds the one hundred limit, a new car must be started. Return the total number of train cars needed. For example, given 50, 60, 40, 30, the output should be 3.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d153",
+  "title": "Grocery Store Queue Simulator",
+  "spec": "Implement a function `queue(customers)` that receives a list of item counts for customers in line. A cashier takes one minute to scan each item and an extra two minutes per customer for payment. Calculate the total time until the last customer leaves the store. Also, count how many customers have more than fifteen items. Return a list containing the total time and the count of large baskets. For example, given 10, 20, the output should be 34, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d154",
+  "title": "Planet Gravity Orbital Velocity",
+  "spec": "Write a function `orbit(masses)` that takes a list of planet masses. For each mass, multiply it by the gravitational constant of six point six seven, then divide by a standard radius of ten thousand, and finally take the square root to find the orbital velocity. If the velocity is greater than fifty, classify it as fast by adding it to a fast list. Otherwise, add it to a slow list. Return a list containing the number of fast planets and slow planets. For example, given 1000000, 1000, the output should be 1, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d155",
+  "title": "Podcast Episode Download Tracker",
+  "spec": "Provide a function `track(downloads)` that accepts a list of daily download counts for a podcast. Find the maximum downloads in a single day, the minimum downloads, and the total sum of all downloads. Calculate the average by dividing the sum by the number of days. Return a list containing the maximum, minimum, and average rounded down to the nearest integer. For example, given 100, 200, 300, the output should be 300, 100, 200.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d156",
+  "title": "Smartphone Battery Life Estimator",
+  "spec": "Create a function `estimate(percentages)` that takes a list of battery drain percentages for various apps used throughout the day. Start with a battery level of one hundred. Subtract each percentage one by one. If the battery level drops to twenty or below, trigger a low battery warning by incrementing a warning counter. If the battery level reaches zero or below, stop processing and set the level to zero. Return a list containing the final battery level and the total number of warnings triggered. For example, given 30, 60, 15, the output should be 0, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d157",
+  "title": "Marathon Runner Pacing Strategy",
+  "spec": "Write a function `pace(splits)` that processes a list of kilometer split times in minutes. A runner wants to maintain a target pace of five minutes per kilometer. Count how many splits are strictly less than five minutes, which are considered fast. Count how many splits are exactly five minutes, which are on pace. Count how many are strictly greater than five minutes, which are slow. Return a list containing the fast count, on pace count, and slow count. For example, given 4, 5, 6, 4, the output should be 2, 1, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d158",
+  "title": "Ebook Chapter Reading Time",
+  "spec": "Implement a function `read(words)` that accepts a list where each number represents the word count of a chapter. An average reader reads two hundred and fifty words per minute. For each chapter, calculate the reading time in minutes by dividing the word count by two hundred and fifty and rounding up to the nearest whole number. Sum these chapter times to find the total reading time. Return the total reading time in minutes. For example, given 250, 501, the output should be 4.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d159",
+  "title": "Sushi Conveyor Belt Billing",
+  "spec": "Provide a function `bill(plates)` that calculates the total cost of a sushi meal based on a list of plate color codes. A code of one means a red plate costing three. A code of two means a blue plate costing four. A code of three means a gold plate costing six. Iterate through the plates and sum the costs. If the total number of plates is ten or more, apply a discount of five to the final sum. Return the final calculated cost. For example, given 1, 2, 3, the output should be 13.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d160",
+  "title": "Drone Flight Path Distance",
+  "spec": "Create a function `distance(movements)` that takes a list of distances flown by a drone in a single direction. The drone starts at a base position of zero. Each positive number represents flying forward, while each negative number represents flying backward. Keep track of the current position relative to the base. Also, keep track of the maximum distance the drone ever reaches away from the base, either forward or backward. Return a list containing the final position and the maximum absolute distance from the base. For example, given 10, -15, 2, the output should be -3, 15.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d161",
+  "title": "Aquarium Fish Feeding Schedule",
+  "spec": "Write a function `feed(fishes)` that determines the total amount of food needed for an aquarium. The input is a list of fish sizes where one is small, two is medium, and three is large. A small fish needs two pellets, a medium fish needs five pellets, and a large fish needs ten pellets. Sum the total pellets required. Furthermore, for every complete set of five fish regardless of size, add three extra pellets to account for waste. Return the grand total of pellets. For example, given 1, 2, 3, 1, 1, the output should be 24.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d162",
+  "title": "Smart Home Lighting Automation",
+  "spec": "Implement a function `light(movements)` that receives a list of numbers representing minutes since the last movement in a room. If the minutes are less than five, the lights should remain on at one hundred percent brightness. If the minutes are between five and fifteen inclusive, the lights dim to fifty percent brightness. If the minutes are greater than fifteen, the lights turn off completely, represented as zero percent. Return a list of brightness percentages corresponding to each input time. For example, given 2, 10, 20, the output should be 100, 50, 0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d163",
+  "title": "Brewery Fermentation Temperature",
+  "spec": "Provide a function `ferment(temperatures)` that monitors a list of hourly temperature readings for a beer fermentation tank. The ideal temperature is between eighteen and twenty two inclusive. Count how many hours the temperature was strictly below eighteen, which is too cold. Count how many hours it was strictly above twenty two, which is too hot. If the too hot count exceeds three, the batch is ruined. Return a list with the cold count, the hot count, and a one if the batch is ruined or a zero if it is safe. For example, given 17, 23, 24, 25, 26, the output should be 1, 4, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d164",
+  "title": "Bicycle Gear Ratio Analyzer",
+  "spec": "Create a function `gear(teeth)` that accepts a list of numbers alternating between front chainring teeth and rear cog teeth. For each pair, calculate the gear ratio by dividing the front teeth by the rear teeth. Round the ratio down to the nearest whole number. If the rounded ratio is three or more, classify it as a hard gear by incrementing a counter. If it is one or less, classify it as an easy gear. Return a list containing the hard gear count and the easy gear count. For example, given 50, 15, 30, 30, the output should be 1, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d165",
+  "title": "Telescope Viewing Schedule",
+  "spec": "Write a function `schedule(clouds)` that takes a list of cloud cover percentages for consecutive nights. A night is considered excellent for viewing if the cloud cover is less than ten percent. It is acceptable if the cloud cover is between ten and thirty percent inclusive. It is poor if the cloud cover is above thirty percent. Find the longest consecutive streak of excellent nights. Also, count the total number of acceptable nights. Return a list containing the longest excellent streak and the total acceptable count. For example, given 5, 5, 15, 40, 5, the output should be 2, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d166",
+  "title": "Spacecraft Thruster Fuel Usage",
+  "spec": "Implement a function `thrust(durations)` that receives a list of thruster burn durations in seconds. A main thruster burn consumes ten units of fuel per second. A maneuvering thruster burn, indicated by a negative duration, consumes three units of fuel per second. Calculate the absolute duration for maneuvering burns. Sum the total fuel consumed by all burns. Additionally, count the total number of maneuvering burns. Return a list with the total fuel used and the count of maneuvering burns. For example, given 5, -10, 2, the output should be 100, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d167",
+  "title": "Pizza Delivery Route Optimizer",
+  "spec": "Provide a function `route(distances)` that evaluates a list of distances in miles between delivery stops. The delivery driver starts at the shop and goes to each stop in order. The delivery car can travel twenty miles on a single gallon of gas. Calculate the total distance traveled by summing the list. Divide the total distance by twenty to find the gallons of gas required, and round this amount up to the nearest whole number. Return a list containing the total distance and the gallons of gas needed. For example, given 10, 15, 8, the output should be 33, 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d168",
+  "title": "Sailing Regatta Scoring System",
+  "spec": "Create a function `score(finishes)` that accepts a list of finishing positions for a sailboat in a series of races. In this system, first place receives one point, second receives two points, and so on. A position of zero indicates a disqualification and is penalized with twenty points. Sum all the points to find the total score. Find the worst finish, which is the highest point value including disqualifications, and subtract it from the total score to drop the worst race. Return the final adjusted score. For example, given 1, 2, 0, 4, the output should be 7.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d169",
+  "title": "Roller Coaster Velocity Calculator",
+  "spec": "Write a function `velocity(drops)` that calculates the speed at the bottom of various roller coaster drops. The input is a list of drop heights in meters. For each height, calculate the velocity by multiplying the height by twice the gravity constant of nine point eight, and then taking the square root. Ignore any negative heights, treating them as zero velocity. Sum all the valid velocities and round the final sum down to the nearest integer. Return this total velocity sum. For example, given 20, 10, the output should be 33.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d170",
+  "title": "Bread Dough Hydration Ratio",
+  "spec": "Implement a function `hydration(ingredients)` that receives a list of weights in grams, alternating between flour weight and water weight for different dough batches. For each batch, calculate the hydration percentage by dividing the water weight by the flour weight and multiplying by one hundred. Round the percentage to the nearest whole number. If the percentage is above seventy five, increment a high hydration counter. Return the total count of high hydration batches. For example, given 1000, 800, 500, 300, the output should be 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d171",
+  "title": "Escape Room Time Penalty",
+  "spec": "Provide a function `escape(actions)` that calculates the final completion time of an escape room. The input is a list where positive numbers represent the minutes spent solving a puzzle, and a value of negative one represents a hint requested. Each hint adds a five minute penalty. Sum all the puzzle times. Count the hints, multiply by five, and add to the total. If the total is less than sixty, the team wins. Return a list with the final time and a one for a win or a zero for a loss. For example, given 20, -1, 30, the output should be 55, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d172",
+  "title": "Elevator Passenger Weight Limit",
+  "spec": "Create a function `elevator(weights)` that processes a list of passenger weights waiting for an elevator. The elevator has a maximum weight limit of eight hundred. Iterate through the list and add each weight to a current load. If adding the next passenger exceeds eight hundred, the elevator departs, a trip counter is incremented, and the current load resets to that passenger's weight. After all passengers are processed, increment the trip counter one last time for the final load if it is greater than zero. Return the total number of trips. For example, given 300, 400, 200, 500, the output should be 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d173",
+  "title": "Scuba Diving Decompression Stops",
+  "spec": "Write a function `scuba(depths)` that determines the total mandatory decompression stop time for a dive. The input is a list of maximum depths reached during different dives. If a depth is less than or equal to ten, no stop is needed. If a depth is between eleven and twenty inclusive, a three minute stop is required. If a depth is greater than twenty, a ten minute stop is required. Sum the total stop times across all dives. Count how many dives required the ten minute stop. Return a list with the total stop time and the deep dive count. For example, given 9, 15, 25, the output should be 13, 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d174",
+  "title": "Coffee Machine Descaling Alert",
+  "spec": "Implement a function `descale(coffees)` that tracks the usage of a coffee machine to trigger maintenance. The input is a list of coffee sizes brewed, where one is a small cup, two is a medium cup, and three is a large cup. A small cup adds ten units of scale buildup, a medium adds twenty, and a large adds thirty. Keep a running total of the scale buildup. Whenever the buildup reaches or exceeds five hundred, increment a descaling alert counter and reduce the buildup by five hundred. Return the number of alerts triggered. For example, given a list of fifty ones, the output should be 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d175",
+  "title": "Radio Station Playlist Scheduler",
+  "spec": "Provide a function `playlist(songs)` that takes a list of song durations in seconds. A radio hour has exactly three thousand six hundred seconds available. Iterate through the songs and add their durations to a current hour block. When a song would push the current block over three thousand six hundred, close the block, increment an hour counter, and start a new block with that song. Continue until all songs are scheduled. If there are any songs in the final block, count it as an additional hour. Return the total hours required to play all songs. For example, given 2000, 2000, the output should be 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d176",
+  "title": "Carpet Cleaning Estimator",
+  "spec": "Write a function `estimate(rooms)` that calculates the total cost to clean carpets. The input is a list of room details, where each item is a list containing the room type, length in feet, width in feet, and a boolean indicating whether it has heavy stains. The standard cleaning rate is thirty five cents per square foot. Hallway types are charged at twenty cents per square foot. If a room has heavy stains, double the area charge for that specific room. If the total calculated area across all rooms exceeds five hundred square feet, apply a ten percent discount to the total area charges. Finally, add a fifty dollar base service fee to the final total. Return the final cost rounded to two decimal places. For example, an input of [[\"hallway\", 10, 5, false], [\"bedroom\", 20, 20, true]] returns 340.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d177",
+  "title": "Typing Performance Evaluator",
+  "spec": "Write a function `evaluate(sessions)` that processes a list of typing test results. Each item in the input list is a list containing the total minutes typed, total keystrokes, and the number of uncorrected errors. To find the gross words per minute, divide the total keystrokes by five, then divide by the total minutes. To find the net words per minute, subtract the uncorrected errors from the gross words per minute before dividing by minutes. If the net words per minute is less than zero, treat it as zero. The overall accuracy is the net words divided by the gross words, multiplied by one hundred. Return a list containing the highest net words per minute across all sessions rounded to the nearest integer, and the average accuracy across all sessions rounded to one decimal place. For example, giving [[5, 1000, 10], [2, 500, 5]] yields [48, 95.0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d178",
+  "title": "Yarn Yardage Calculator",
+  "spec": "Write a function `calculate(projects)` that determines the total amount of yarn needed for various knitting tasks. The input is a list of lists, where each inner list represents a project and contains the pattern yardage requirement, the primary color percentage, and the secondary color percentage as integers from zero to one hundred. Convert these percentages into actual yards for both the primary and secondary colors for each project. Add a ten percent buffer to the primary color yardage and a fifteen percent buffer to the secondary color yardage for safety. A standard skein holds two hundred ten yards. Calculate how many full skeins are required for the primary color and the secondary color across all projects combined, rounding up to the nearest whole skein for each color. Return a list of two integers representing the total primary skeins and total secondary skeins. For example, an input of [[1000, 80, 20]] returns [5, 2].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d179",
+  "title": "Tree Yield Estimator",
+  "spec": "Write a function `harvest(trees)` that predicts the total apple harvest. The input is a list of lists, where each inner list provides the tree age in years, the trunk diameter in inches, and the health status which is an integer from one to ten. A tree produces zero apples if it is under four years old. For older trees, the base yield is twenty apples per year of age plus five apples per inch of trunk diameter. Multiply this base yield by the health status divided by ten. If the tree is older than twenty years, reduce the final yield for that tree by fifteen percent due to aging. Sum the expected apples from all trees and return the total rounded down to the nearest whole apple. For example, an input of [[5, 10, 8], [3, 5, 9]] returns 120.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d180",
+  "title": "Paint Coverage Estimator",
+  "spec": "Write a function `gallons(walls)` that determines the volume of paint required for a room. The input is a list of lists, where each sublist represents a wall and contains its width in feet, height in feet, and the total area of any windows and doors on that wall in square feet. Calculate the paintable area for each wall by multiplying the width and height, then subtracting the unpaintable area. If the paintable area is less than zero, treat it as zero. Sum the paintable area of all walls. A single gallon of paint covers exactly three hundred fifty square feet. The room requires two coats of paint. Return the number of gallons needed as an integer, rounding up to the next whole gallon. For example, an input of [[10, 8, 15], [12, 8, 20]] returns 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d181",
+  "title": "Kayak Rental Revenue",
+  "spec": "Write a function `revenue(rentals)` that processes a list of boat rental durations. The input is a list of lists, where each inner list contains the group size, the rental duration in hours, and a boolean indicating whether they rented premium kayaks. The standard cost is twenty dollars per hour per person. Premium kayaks cost an additional ten dollars per hour per person. If a group rents for four hours or more, they receive a twenty percent discount on their entire fee. If the group size is five or larger, apply an additional flat fifty dollar group discount after any duration discount. The total fee for a group cannot fall below zero. Return the total revenue across all rentals rounded to the nearest dollar. For example, an input of [[2, 2, false], [6, 5, true]] returns 710.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d182",
+  "title": "Drone Flight Predictor",
+  "spec": "Write a function `predict(flights)` that estimates battery life for drone missions. The input is a list of lists, each containing the battery capacity in milliamp hours, the payload weight in grams, and the average wind speed in knots. The base flight time in minutes is the battery capacity divided by one hundred. Subtract two minutes for every fifty grams of payload weight. For wind speed, reduce the remaining flight time by five percent for every knot above ten knots. If the wind speed is twenty knots or higher, the flight time is immediately reduced to zero for safety reasons. Return a list of the estimated flight times in minutes for each mission, rounded to one decimal place. For example, an input of [[5000, 200, 12], [4000, 0, 25]] returns [37.8, 0.0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d183",
+  "title": "Rock Climbing Grade Converter",
+  "spec": "Write a function `convert(climbs)` that translates climbing difficulty grades. The input is a list of integers representing the suffix of American climbing grades, where an input of nine means the grade is five point nine. For inputs from one to four, the European equivalent is four a. Inputs five and six map to four b. Inputs seven and eight map to five a, and nine maps to five c. For inputs ten and above, the European grade increases sequentially. Ten is six a, eleven is six b, twelve is six c, thirteen is seven a, and fourteen is seven b. Any input below one or above fourteen should map to unknown. Return a list of the translated European grade strings, where the numbers and letters are combined without spaces, in the same order as the input. For example, giving [8, 10, 15] yields [\"5a\", \"6a\", \"unknown\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d184",
+  "title": "Aquarium Salt Mix",
+  "spec": "Write a function `prepare(tanks)` that calculates how much marine salt is needed for a set of aquariums. The input is a list of lists, each detailing a tank volume in gallons, current specific gravity, and target specific gravity. Both gravities are numbers like one point zero two zero. To raise the specific gravity by zero point zero zero one units in one gallon of water requires exactly one half cup of salt mix. If the current gravity is already equal to or greater than the target gravity, zero cups are needed. Calculate the total cups of salt required for each tank and return a list of these amounts, rounded to one decimal place. For example, giving [[20, 1.020, 1.025], [10, 1.026, 1.025]] yields [50.0, 0.0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d185",
+  "title": "Perfume Blending Ratio",
+  "spec": "Write a function `blend(recipes)` that calculates the volumes of ingredients needed to make artisan perfumes. The input is a list of lists, where each inner list contains the desired total volume in milliliters, the concentration percentage of the fragrance oil, and a boolean indicating if it is an alcohol free blend. The volume of fragrance oil is the total volume multiplied by the concentration percentage divided by one hundred. If the blend is alcohol free, the remaining volume is entirely distilled water. Otherwise, the remaining volume consists of ninety percent perfumers alcohol and ten percent distilled water. Return a list of lists, where each inner list contains the required milliliters of fragrance oil, alcohol, and water, in that order, each rounded to two decimal places. For example, an input of [[100, 20, false], [50, 10, true]] returns [[20.0, 72.0, 8.0], [5.0, 0.0, 45.0]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d186",
+  "title": "Woodworking Board Feet",
+  "spec": "Write a function `measure(lumber)` that calculates the total board feet and cost for a woodworking project. The input is a list of lists, where each item contains the thickness in inches, width in inches, length in feet, and the price per board foot. One board foot is defined as a piece of wood one inch thick, twelve inches wide, and one foot long. To find the board feet of a piece, multiply thickness, width, and length, then divide by twelve. If the thickness is less than one inch, it is treated as exactly one inch for the calculation. Multiply the board feet by the price to get the cost of that piece. Return a list containing the total board feet across all pieces and the total cost, both rounded to two decimal places. For example, an input of [[2, 6, 8, 5.0], [0.5, 12, 4, 3.0]] returns [12.0, 52.0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d187",
+  "title": "Watch Accuracy Tracker",
+  "spec": "Write a function `accuracy(logs)` that determines the overall timekeeping performance of mechanical watches. The input is a list of lists, where each inner list contains daily deviations in seconds, such as negative two or plus five. For each watch, calculate the average daily deviation and the maximum single day variance, which is the difference between the highest and lowest deviations in that list. A watch is considered certified if its average deviation is between negative four and plus six seconds inclusive, and its maximum variance is ten seconds or less. Count how many watches meet this certification standard and calculate the average deviation of only the certified watches. Return a list containing the count of certified watches and their average deviation rounded to one decimal place. For example, an input of [[-2, 1, 0], [-10, 5, 8]] returns [1, -0.3].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d188",
+  "title": "Hot Air Balloon Lift",
+  "spec": "Write a function `lift(balloons)` that estimates the lifting capacity of hot air balloons. The input is a list of lists, where each item contains the envelope volume in cubic meters, the outside air temperature in celsius, and the air temperature inside the envelope in celsius. The density of air in kilograms per cubic meter is calculated as three hundred fifty three divided by the temperature in kelvin. Convert both celsius temperatures to kelvin by adding two hundred seventy three point one five. Find the density of the outside air and the inside air. The lifting force in kilograms is the volume multiplied by the difference between the outside air density and the inside air density. Subtract the basket weight of two hundred kilograms from this lift to find the payload capacity. Return a list of payload capacities rounded to the nearest integer, replacing any negative capacities with zero. For example, giving [[2500, 15, 100], [2000, 25, 80]] yields [498, 168].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d189",
+  "title": "Camera Depth of Field",
+  "spec": "Write a function `depth(shots)` that calculates the hyperfocal distance and near focus limit for photography shots. The input is a list of lists, where each item contains the focal length in millimeters, the f stop number, and the subject distance in meters. First, calculate the hyperfocal distance in meters by squaring the focal length, dividing by the product of the f stop and a circle of confusion of zero point zero three, and finally dividing by one thousand to convert to meters. Next, calculate the near focus limit by multiplying the hyperfocal distance by the subject distance, and dividing that by the sum of the hyperfocal distance and the subject distance. Return a list of lists containing the hyperfocal distance and near focus limit for each shot, rounded to two decimal places. For example, giving [[50, 8, 5], [35, 4, 10]] yields [[10.42, 3.38], [10.21, 5.05]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d190",
+  "title": "Telescope Magnification",
+  "spec": "Write a function `magnification(setups)` that computes the viewing properties of astronomical telescopes. The input is a list of lists, each containing the telescope focal length, the eyepiece focal length, and the objective lens aperture in millimeters. Calculate the base magnification by dividing the telescope focal length by the eyepiece focal length. The maximum useful magnification for a telescope is twice its aperture. If the base magnification exceeds the maximum useful magnification, record the string blurry. Otherwise, record the string sharp. The true field of view in degrees is fifty divided by the base magnification. Return a list of lists, where each inner list has the string representing image quality and the true field of view rounded to two decimal places. For example, giving [[1000, 10, 130], [2000, 5, 100]] yields [[\"sharp\", 0.5], [\"blurry\", 0.13]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d191",
+  "title": "Snow Plow Route Distance",
+  "spec": "Write a function `plow(routes)` that computes the total distance a snow plow must travel. The input is a list of lists, where each inner list represents a street and contains the street length in miles, the number of lanes, and a boolean indicating if it is a priority route. The plow clears one lane per pass, so a street requires a number of passes equal to its lanes. The driven distance for a street is its length multiplied by the number of passes. If a street is a priority route, it requires an extra salting pass after plowing, which adds one extra pass of distance equal to its length. Additionally, every street requires a turnaround distance of zero point two miles at the end of every pass. Sum the total driven distance for all streets and return it rounded to one decimal place. For example, giving [[2, 2, false], [1.5, 3, true]] yields 11.2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d192",
+  "title": "Carpet Loom Weaving Time",
+  "spec": "Write a function `weave(orders)` that estimates the time required to manufacture woven rugs. The input is a list of lists, each containing the rug width in centimeters, the rug length in centimeters, and the thread count per square centimeter. First, calculate the total area of the rug. Then multiply the area by the thread count to find the total number of stitches. A standard loom weaves at a speed of five hundred stitches per minute. For rugs with a thread count higher than fifty, the loom speed is reduced to three hundred stitches per minute to prevent thread breakage. Calculate the time in hours required for each rug by dividing the total stitches by the weaving speed, then dividing by sixty. Return a list of times in hours rounded to two decimal places. For example, giving [[100, 150, 40], [200, 200, 60]] yields [20.0, 133.33].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d193",
+  "title": "Espresso Extraction Yield",
+  "spec": "Write a function `extraction(shots)` that calculates the quality of espresso extractions. The input is a list of lists, where each item contains the dry ground coffee weight in grams, the liquid espresso yield in grams, and the total brew time in seconds. First, find the brew ratio by dividing the liquid yield by the dry weight. An ideal ratio is between one point eight and two point two. Next, estimate the extraction percentage by multiplying the brew ratio by the brew time, then dividing by twenty five. If the extraction percentage is below eighteen, the shot is under extracted. If it is above twenty two, it is over extracted. Otherwise it is optimal. Return a list of strings categorizing each shot as under, optimal, or over. For example, giving [[18, 36, 25], [20, 60, 35]] yields [\"optimal\", \"over\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d194",
+  "title": "Wind Chime Resonator",
+  "spec": "Write a function `chime(tubes)` that calculates the resonant frequencies of wind chime pipes. The input is a list of lengths in meters for a set of metal tubes. The speed of sound in the metal is five thousand one hundred meters per second. The fundamental frequency of a tube open at both ends is the speed of sound divided by twice the length. However, the tubes are suspended at a node located twenty two point four percent from the top. Because of this mounting point, the effective frequency is lowered by five percent. Calculate the adjusted frequency for each tube. Filter out any frequencies that are above human hearing, which is twenty thousand hertz. Return a list of the valid frequencies rounded to the nearest integer. For example, giving [0.5, 0.1, 0.05] yields [4845].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d195",
+  "title": "Soil Fertilizer Calculator",
+  "spec": "Write a function `fertilize(zones)` that determines the amount of nitrogen, phosphorus, and potassium required for different garden zones. The input is a list of lists, where each inner list contains the zone area in square meters and the recommended nitrogen, phosphorus, and potassium application rates in grams per square meter. A standard fertilizer mix is sold in bags containing exactly one thousand grams. To find the bags needed for a specific nutrient, multiply the zone area by the application rate, and divide by one thousand, rounding up to the next whole bag. Calculate the total bags needed for nitrogen, for phosphorus, and for potassium across all zones combined. Return a list of three integers representing the total bags of each nutrient required in that order. For example, giving [[50, 10, 5, 20], [100, 15, 0, 10]] yields [2, 1, 2].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d196",
+  "title": "Parachute Descent Rate",
+  "spec": "Write a function `descent(jumpers)` that calculates the landing speed of skydivers using round parachutes. The input is a list of lists, where each item contains the mass of the skydiver in kilograms and the diameter of the parachute in meters. First, calculate the area of the parachute by squaring the radius and multiplying by three point one four one five nine. The drag force must equal the force of gravity, which is the mass multiplied by nine point eight. The descent rate squared is equal to the drag force divided by the product of zero point five, the air density of one point two two five, the drag coefficient of one point five, and the parachute area. Calculate the square root of this value to find the descent speed in meters per second. Return a list of descent speeds rounded to two decimal places. For example, giving [[80, 8], [100, 10]] yields [4.12, 3.68].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d197",
+  "title": "Cable Spool Length Estimator",
+  "spec": "Write a function `spools(reels)` that estimates the total length of wire on cylindrical spools. The input is a list of lists, each containing the outer radius of the wire mass in inches, the core radius of the spool in inches, the spool width in inches, and the wire diameter in inches. Find the number of layers by subtracting the core radius from the outer radius and dividing by the wire diameter. Find the number of wraps per layer by dividing the spool width by the wire diameter. The total number of wraps is the layers multiplied by the wraps per layer. The average radius of a wrap is the sum of the outer and core radii divided by two. Multiply the total wraps by the average radius and by twice pi, which is three point one four one five nine, to get the total length in inches. Divide by twelve to get feet. Return a list of lengths in feet rounded to one decimal place. For example, giving [[10, 4, 5, 0.5], [12, 6, 10, 1]] yields [439.8, 282.7].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d198",
+  "title": "Fencing Material Estimator",
+  "spec": "Write a function `fencing(yards)` that calculates the wooden posts and pickets needed to build fences. The input is a list of lists, where each sublist contains the yard perimeter in feet and the desired space between pickets in inches. Pickets are exactly four inches wide. To find the number of pickets, convert the perimeter to inches, then divide by the sum of the picket width and the picket spacing, rounding up to the next whole number. Wooden posts are required every eight feet along the perimeter, plus one extra post to close the loop. Therefore, divide the perimeter by eight, round up, and add one. Return a list of lists containing the number of posts and pickets for each yard. For example, giving [[80, 2], [40, 1]] yields [[11, 160], [6, 96]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d199",
+  "title": "Hydropower Generation Predictor",
+  "spec": "Write a function `hydro(dams)` that calculates the electrical power generated by hydroelectric dams. The input is a list of lists, where each inner list contains the water flow rate in cubic meters per second, the effective head height in meters, and the turbine efficiency as a decimal between zero and one. The power generated in megawatts is the product of the flow rate, the head height, the efficiency, the density of water which is one thousand, and gravity which is nine point eight, all divided by one million. If the head height is less than ten meters, the generator cannot operate and the power output is zero. Return a list of the power outputs in megawatts for each dam, rounded to two decimal places. For example, giving [[50, 20, 0.85], [10, 5, 0.9]] yields [8.33, 0.0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d200",
+  "title": "Sauna Heat Requirement",
+  "spec": "Write a function `sauna(rooms)` that computes the heater power required for different sauna cabins. The input is a list of lists, each containing the length, width, and height of the cabin in meters, and a boolean indicating if the sauna is located outdoors. First, calculate the basic volume of the room. For every square meter of glass or uninsulated wall, you would normally add one point two cubic meters to the volume, but assume for this calculation a flat uninsulated penalty of three extra cubic meters for all rooms. The required heater power is one kilowatt for every cubic meter of adjusted volume. If the sauna is outdoors, multiply the total required power by one point five to account for heat loss. Return a list of required heater powers in kilowatts, rounded up to the nearest whole integer. For example, giving [[2, 2, 2, false], [2, 2, 2, true]] yields [11, 17].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d201",
+  "title": "Dartboard Score Evaluator",
+  "spec": "Calculates total score from a list of strings representing dart throws using the entry function `score(throws)`. The input strings indicate the ring and the segment number, such as double twenty or outer bullseye. The logic handles single, double, and triple point values for segments one through twenty. It tracks if a player busts their score in a standard zero out game format by checking if the remaining score drops below zero or equals exactly one. It returns a list of remaining scores after each throw. Example inputs like triple twenty, single five, and outer bullseye would yield scores decreasing accordingly.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d202",
+  "title": "Restaurant Bill Splitter",
+  "spec": "Divides a restaurant bill among friends based on the base cost of their specific meals through the function `split(items)`. The inputs include the total tax amount, the tip percentage, and a list of individual meal prices. It applies the tax proportionally based on each person share of the food subtotal. The tip is then calculated on top of the food and tax combined. Returns a list of final amounts each person owes rounded to two decimal places.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d203",
+  "title": "Knitting Pattern Row Tracker",
+  "spec": "Parses a sequence of knit and purl instructions represented by a string of single characters via `knit(pattern)`. It calculates the total number of stitches and identifies the number of rows based on turn instructions. The logic counts how many times a specific alternating stitch motif appears in the entire fabric. It returns a list containing the row count, total stitches, and motif occurrences. An input string representing fifty stitches and three turns will return four rows and fifty stitches.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d204",
+  "title": "Recipe Ingredient Substitution Engine",
+  "spec": "Takes a list of ingredients and their volume amounts to replace specific allergens with safe alternatives using `substitute(recipe)`. For example, it replaces dairy milk with oat milk using a one to one ratio, but wheat flour requires one and a half times the amount of almond flour. The logic adjusts the liquid content up or down depending on the dry substitutions made. It returns a list of formatted strings describing the new ingredient amounts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d205",
+  "title": "Optical Prism Refraction Angle",
+  "spec": "Calculates the exit angle of light rays passing through a triangular glass prism using `refract(angles)`. The inputs are the incidence angles of the light rays entering the first glass surface. The logic uses the refractive index of the glass and the ambient air medium, applying refraction laws at both the entry and exit boundaries. It handles total internal reflection if the angle exceeds the critical threshold by returning zero for that ray. It outputs a list of final exit angles in degrees.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d206",
+  "title": "Board Game Dice Probability",
+  "spec": "Simulates throwing multiple polyhedral dice with different numbers of sides via `chance(dice)`. The input is a list of side counts for each die being rolled. The logic calculates the expected average value and the maximum possible total of the roll. It also counts how many combinations of maximum rolls exist if rolling all dice simultaneously. It returns a list containing the expected value, the maximum total, and the number of critical success combinations.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d207",
+  "title": "Braille Character Translator",
+  "spec": "Converts standard alphabetical text into a simplified representation of six dot braille cells using `braille(text)`. The input is a single continuous string of letters. The logic maps each letter to a sequence of raised and flat dots represented by binary digits. It handles capitalization by inserting a specific uppercase indicator cell before the capitalized letter. The output is a list of six digit strings representing the braille cells for the entire message.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d208",
+  "title": "Pet Calorie Requirement Calculator",
+  "spec": "Determines the daily caloric needs for different animals based on their species, weight in kilograms, and activity level with `feed(pets)`. The input is a list of animal profiles containing these three traits. The logic calculates the resting energy requirement using an exponential formula based on body mass. It adjusts this baseline energy up or down depending on whether the animal is highly active, senior, or needs to lose weight. It returns a list of integer calorie counts for each animal.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d209",
+  "title": "Train Fare Zone Pricer",
+  "spec": "Calculates the cost of railway journeys across different concentric city transit zones via `fare(trips)`. The input is a list of trip itineraries, each containing a starting zone, an ending zone, and a rush hour indicator flag. The base price increases for every zone boundary crossed during the trip. The logic applies a price multiplier if the journey occurs during specified morning or evening rush hours. The output is a list of ticket prices for each journey.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d210",
+  "title": "Houseplant Watering Schedule",
+  "spec": "Generates a calendar of watering days for various indoor plants over a thirty day period using `water(plants)`. The input is a list of plants with their required watering interval in days. The logic schedules the first watering on day one and adds subsequent days based on the interval. If a scheduled watering falls on a weekend day, the logic moves the watering task forward to the following weekday to accommodate office environments. It returns a list of watering days for each plant.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d211",
+  "title": "Guitar Chord Fingering Chart",
+  "spec": "Translates common musical chord names into a sequence of fret numbers for a standard tuned six string guitar with `fret(chords)`. The input is a list of chord names like major, minor, or dominant seventh. The logic references the intervals of the chord to determine which strings should be played open and which require holding down a fret. It indicates muted strings with a negative one and identifies the lowest sounding bass note string. It returns a list of fret configurations for each chord.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d212",
+  "title": "Watercolor Pigment Mixer",
+  "spec": "Determines the final hue resulting from combining varying volumes of primary color liquid paints using `mix(colors)`. The input is a list of volumes for red, yellow, and blue paint components. The logic calculates the total volume and determines the proportion of each primary color in the final mixture. It classifies the resulting shade as a warm tone, a cool tone, or a neutral brown based on which primary color dominates the ratio. It outputs a list containing the total volume and the tone classification.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d213",
+  "title": "Cassette Tape Side Allocator",
+  "spec": "Distributes a list of audio track lengths evenly across the two sides of an analog cassette tape via `record(tracks)`. The input is a list of track durations in seconds. The logic fills the first side sequentially until adding the next track would exceed the maximum playing time of thirty minutes. The remaining tracks are then allocated to the second side. It ensures neither side exceeds the limit and calculates the amount of blank silence left at the end of each side. It returns a list containing the total track time for both sides.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d214",
+  "title": "Laundry Washing Cycle Estimator",
+  "spec": "Calculates the total time required to wash different loads of laundry using `wash(loads)`. The input is a list of laundry loads specifying the fabric type, the water temperature, and the soil level. The base cycle time is modified by increasing the duration for heavily soiled clothes and extending the rinse cycle for cold water washes. The logic adds an extra ten minutes if a heavy duty spin cycle is required for thick fabrics like towels. It returns a list of total washing minutes for each load.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d215",
+  "title": "Aromatherapy Diffuser Blend Optimizer",
+  "spec": "Calculates the number of drops needed for different aromatic oils to achieve a specific atmospheric scent profile with `diffuse(oils)`. The input is a list of target intensities for top, middle, and base notes. The logic balances the notes according to a traditional perfumery ratio of three to five to two. It scales the total calculated drops up or down to perfectly match the maximum water tank capacity of the diffuser. It returns a list of drop counts for each note category.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d216",
+  "title": "Origami Fold Difficulty Rater",
+  "spec": "Analyzes a sequence of paper folding steps to determine the overall complexity of an origami model via `fold(instructions)`. The input is a list of fold types such as valley, mountain, squash, and petal folds. The logic assigns point values to each fold type, with complex reverse and squash folds scoring higher than simple valley folds. It aggregates the points to classify the model into a difficulty tier ranging from beginner to advanced. It outputs the total score and the classification tier.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d217",
+  "title": "Keyboard Typing Heatmap",
+  "spec": "Tracks the frequency of individual key presses from a sample of typed text to evaluate finger workload using `heatmap(keystrokes)`. The input is a string of lowercase letters representing the typed text. The logic groups the letter frequencies by finger assignment on a standard qwerty keyboard layout. It identifies which finger performs the most work and calculates the workload ratio between the left hand and the right hand. It returns a list containing the most used finger name and the left to right hand ratio.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d218",
+  "title": "Bread Proofing Time Adjustment",
+  "spec": "Adjusts the recommended rising time for yeast doughs based on the ambient room temperature with `proof(doughs)`. The input is a list of dough types, their standard proofing time at room temperature, and the actual kitchen temperature in degrees. The logic increases the resting duration by fifteen percent for every degree below the standard temperature and decreases it by ten percent for every degree above. It ensures the time does not fall below a minimum threshold. It returns a list of adjusted proofing times in minutes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d219",
+  "title": "Bicycle Suspension Sag Pressure",
+  "spec": "Calculates the optimal air pressure for a mountain bike shock absorber based on the rider weight and riding style using `sag(riders)`. The input is a list of rider weights in kilograms and their style preference like cross country or downhill. The logic determines a baseline pressure equal to twice the rider weight. It adjusts this baseline to achieve twenty percent suspension compression for cross country and thirty percent for downhill riding. It returns a list of recommended pressure values.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d220",
+  "title": "Ski Waxing Temperature Guide",
+  "spec": "Recommends the appropriate type of glide wax for snow skis based on the forecasted air temperature and snow humidity via `wax(conditions)`. The input is a list of daily weather conditions including temperature and humidity percentage. The logic assigns a hard blue wax for temperatures well below freezing, a violet wax for near freezing, and a soft yellow wax for warm wet slush. It adds a special fluorinated additive if the humidity exceeds eighty percent. It outputs a list of wax colors and additive flags.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d221",
+  "title": "Camera Exposure Value Pairing",
+  "spec": "Calculates the optimal combination of aperture and shutter speed for different lighting situations using `expose(scenes)`. The input is a list of scene brightness values. The logic uses a base exposure equation to determine a matching pair of settings. It prioritizes a fast shutter speed to freeze motion if the brightness value is high, and opens the aperture wider if the scene is dimly lit. It returns a list of shutter speed fractions and aperture decimal numbers for each scene.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d222",
+  "title": "Backpacking Tent Weight Distributor",
+  "spec": "Divides the individual parts of a camping tent among a group of hikers to ensure an even distribution of weight with `carry(components)`. The input is a list of tent parts with their weights and a list of available backpack capacities. The logic sorts the components from heaviest to lightest, assigning the heavy poles and fabric body to the person with the most capacity. It allocates the lighter stakes and rainfly to the remaining hikers. It returns a list of total weights carried by each hiker.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d223",
+  "title": "Juggling Cascade Pattern Validator",
+  "spec": "Analyzes a sequence of juggling throw heights to verify if it forms a valid continuous pattern using `juggle(throws)`. The input is a list of integer heights representing how many beats each object stays in the air. The logic calculates the exact landing beat for each throw by adding the height to the throw index. It checks that no two objects land in the same hand at the same time by using a modulo operation on the total number of objects. It returns a list of landing times and a boolean indicating if the pattern is valid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ }
+]

@@ -88,5 +88,1461 @@
   "title": "Run-Length Encoder",
   "spec": "Write a script to perform run-length encoding. Create a function `compress string runs` taking a `raw input string`. Evaluate the `input string length`. If 0, return an empty string. Track the `current tracked character` (initialized to the first character), the `current repetition count` (initialized to 0), and the `final compressed output` string. Loop up to the `input string length`. Extract the `loop character value` at the index. If it equals the `current tracked character`, increment the `current repetition count`. If it differs, or if the `current repetition count` reaches 9 (to chunk long runs), append the `current tracked character` and the `current repetition count` to the `final compressed output`. Then, if it differed, assign the `loop character value` to the `current tracked character` and set the count to 1; if it was just a chunking reset, set the count to 0. After the loop, append any remaining character and count. Return the `final compressed output`. Run with `'aaabbbbbbbbbbc'` and print.",
   "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d016",
+  "title": "Train Fare Calculator",
+  "spec": "Implement `fare(trips)` to calculate the total cost of a commuter journey. The input is an array of trips, where each trip is a two-element array containing the distance in miles as a number and a boolean flag for peak hours. The base rate for any trip is two dollars plus fifty cents per mile. If the trip occurs during peak hours, add a twenty percent surcharge to that specific trip's cost. Track the cumulative total across all trips. If the daily total exceeds fifteen dollars, cap the final result at fifteen. Return the final calculated total as a number. For example, given an array with a five mile peak trip and a ten mile off-peak trip, the output should reflect the capped daily maximum.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d017",
+  "title": "Poker Hand Evaluator",
+  "spec": "Write `evaluate(cards)` to determine the strength of a five-card hand. The input is an array of five strings, each containing a value and a suit character. Parse the strings to separate values and suits. Count the frequencies of each card value to identify pairs, three of a kind, or four of a kind. Check if all suits are identical to detect a flush. Convert face cards to numeric equivalents to check if the values form a sequential straight. Return a descriptive string identifying the highest rank achieved, such as flush, straight, full house, or high card. For example, five cards of the same suit should yield the flush string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d018",
+  "title": "Text Word Wrapper",
+  "spec": "Create `format(text, width)` to break a long string into multiple lines based on a maximum line width. The inputs are a single long string and an integer maximum width. Split the text into individual words based on spaces. Iterate through the words, accumulating them into a current line buffer until adding the next word would exceed the maximum width. When the limit is reached, push the current buffer to a results array and start a new line. If a single word is longer than the width, it must occupy its own line. Return an array of formatted line strings. For example, a short sentence restricted to ten characters will split into an array of smaller string chunks.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d019",
+  "title": "Bowling Score Calculator",
+  "spec": "Implement `score(rolls)` to compute the final score of a standard ten-frame bowling game. The input is an array of integers representing the number of pins knocked down on each roll. Iterate through the rolls frame by frame. Track strikes, which occur when ten pins are knocked down on the first roll of a frame, and award a bonus equal to the next two rolls. Track spares, which occur when ten pins are cleared in two rolls, and award a bonus equal to the next single roll. Accumulate the total score across exactly ten frames and return the final integer sum. For example, an array of twelve tens should return three hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d020",
+  "title": "Chess Board Coordinates",
+  "spec": "Design `moves(position)` to calculate all valid ending squares for a knight chess piece in a single turn. The input is a two-character string representing a starting square, utilizing files a through h and ranks one through eight. The knight moves two squares in one cardinal direction and one square orthogonally. Generate all eight mathematical destination coordinates based on these offset rules. Filter out any resulting coordinates that fall outside the eight by eight grid boundaries. Return an array of valid destination strings sorted alphabetically. For example, a starting position at the board corner will return only two valid coordinate strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d021",
+  "title": "Customer Loyalty Points",
+  "spec": "Write `loyalty(purchases)` to calculate reward points earned from a list of transactions. The input is an array of numbers representing purchase amounts in dollars. Customers earn one point for every dollar spent over fifty dollars in a single transaction, and an additional two points for every dollar spent over one hundred dollars in that same transaction. Iterate through the list, calculating the eligible bonus points for each individual purchase. Accumulate these values and return the total integer points earned. For example, a single purchase of one hundred twenty dollars should yield ninety total points.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d022",
+  "title": "Simple Markdown Parser",
+  "spec": "Implement `parse(lines)` to convert an array of plain text lines into structural HTML strings. Iterate through the input array. If a line begins with a hash symbol followed by a space, wrap the remaining text in header tags. If a line begins with an asterisk and a space, wrap it in list item tags, and ensure all sequential list items are grouped within a single surrounding unordered list tag block. Any other non-empty line should be wrapped in paragraph tags. Return a single joined string of the resulting HTML structure. For example, an input with a hash header and two asterisk items should output the matching tags combined.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d023",
+  "title": "Substring Anagram Finder",
+  "spec": "Create `find(source, target)` to locate all starting indices in a long string where a substring forms an anagram of a shorter target string. The inputs are a long source string and a short target string. Calculate the character frequencies of the target string. Use a sliding window approach to traverse the source string, keeping track of the character frequencies within the current window of the same length as the target. Whenever the frequencies match exactly, record the starting index of the window. Return an array of these integer starting indices. For example, searching for a three letter word in a repeating pattern will yield multiple matching integer indices.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d024",
+  "title": "Website Breadcrumb Builder",
+  "spec": "Implement `build(paths)` to generate a breadcrumb navigation trail for a website. The input is an array of URL segment strings. Start the output with a home label linked to a root slash. For each segment in the array, capitalize the first letter and replace any hyphens with spaces to create a human readable label. Construct the cumulative URL path by joining all segments up to the current one with forward slashes. Push each generated step to a results array. Return an array of two-element arrays, where each inner array contains the readable label and its corresponding full path. For example, inputs of store and new-items will produce three sequential navigation steps.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d025",
+  "title": "Sudoku Row Validator",
+  "spec": "Write `verify(grid)` to check if the rows of a logic puzzle are structurally valid. The input is a nine by nine grid of integers represented as a two dimensional array. Iterate through each row and isolate the numbers one through nine. Ensure that each number appears exactly once, ignoring any zero values which represent empty spaces. If any duplicates are found within a single row, the row is invalid. Return a boolean value indicating whether all rows pass the duplication check. For example, a grid containing a row with two fives should return false, whereas a grid with unique non-zero values per row should return true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d026",
+  "title": "Elevator Floor Scheduler",
+  "spec": "Design `schedule(requests, start)` to simulate an elevator servicing multiple floor calls. The inputs are an array of requested floor integers and an initial starting floor integer. The elevator always travels to the closest requested floor first. If two requests are equidistant, it prefers to move upwards. Remove serviced floors from the pending list and accumulate the total floors traveled. Continue this process until all requests are handled. Return a two-element array containing the ordered array of visited floors and the total travel distance. For example, starting at floor five with requests for two and six will visit six first, then two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d027",
+  "title": "Credit Card Validator",
+  "spec": "Implement `validate(digits)` to verify a sequence of numbers using a modulo ten checksum algorithm. The input is an array of single-digit integers. Working from right to left, double the value of every second digit starting from the second rightmost. If this doubling results in a number strictly greater than nine, subtract nine from that product. Sum all the modified and unmodified digits together. If the final accumulated sum modulo ten equals zero, the sequence is valid. Return a boolean indicating validity. For example, a sequence designed to sum to forty will return true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d028",
+  "title": "Time Slot Overlap",
+  "spec": "Create `overlap(meetings)` to consolidate a schedule by merging overlapping appointments. The input is an array of arrays, where each inner array contains two integers representing a start time and an end time in minutes. Sort the entire schedule based on the start times. Iterate through the sorted list, checking if the start time of the current appointment is less than or equal to the end time of the previously merged appointment. If it overlaps or touches, extend the end time of the previous appointment to encompass both. Otherwise, add the current appointment as a new discrete block. Return the condensed array of interval arrays.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d029",
+  "title": "Vending Machine Change",
+  "spec": "Write `change(price, paid)` to calculate the coins returned by a machine after a purchase. The inputs are the item cost and the amount provided, both in integer cents. Calculate the total difference to return. Determine the breakdown of coins using quarters, dimes, nickels, and pennies, always utilizing the largest possible coin denomination first before moving to smaller ones. Track the quantity of each coin type dispensed. Return an array of exactly four integers representing the counts of quarters, dimes, nickels, and pennies respectively. For example, a difference of forty-one cents returns one quarter, one dime, one nickel, and one penny.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d030",
+  "title": "Recipe Scaling Calculator",
+  "spec": "Implement `scale(ingredients, factor)` to adjust the quantities of a recipe for different serving sizes. The inputs are an array of arrays representing the original recipe and a numeric scaling factor. Each inner array contains a string name and a numeric quantity. Iterate over the ingredients, multiplying each original quantity by the scaling factor. Check if the newly calculated quantity is a whole number. If it is, keep it as an integer, otherwise round the value to exactly two decimal places. Return a new array of arrays containing the updated numeric quantities alongside their original names.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d031",
+  "title": "IP Address Defanger",
+  "spec": "Create `defang(address)` to sanitize a network address string for safe display. The input is a string representing a standard four-part network address separated by periods. First, validate that the string contains exactly four segments and that every segment consists only of numeric digits. If the input fails validation, return a string reading invalid. If valid, replace all standard periods with a string consisting of an opening bracket, a period, and a closing bracket. Return the newly formatted safety string. For example, an input with four ones separated by periods will result in the ones separated by the bracketed periods.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d032",
+  "title": "DNA Strand Compliment",
+  "spec": "Design `complement(strand)` to generate the matching opposite sequence for a genetic string. The input is a string of characters representing genetic bases. Iterate through the sequence and swap every base with its biological pair: swap A with T, swap T with A, swap C with G, and swap G with C. If any unrecognized character is encountered, skip it entirely and do not include it in the result. After forming the complete paired sequence, reverse the order of the entire string to represent the proper biological orientation. Return the final reversed string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d033",
+  "title": "File Path Normalizer",
+  "spec": "Write `normalize(path)` to resolve a raw string path into its shortest absolute form. The input is a string containing forward slashes, directory names, single dots, and double dots. Split the string by the slashes. Iterate over the segments. Ignore empty segments and single dots, as they indicate the current directory. When encountering a double dot, remove the most recently added valid directory segment from your tracking stack to simulate moving up one level. Finally, join the remaining segments in the stack with forward slashes, ensuring a leading slash is prepended. Return the resolved absolute path string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d034",
+  "title": "Email Domain Extractor",
+  "spec": "Implement `extract(emails)` to determine the frequency of host platforms in a contact list. The input is an array of strings representing email addresses. For each string, locate the at-symbol and extract the domain portion that follows it. Convert this domain portion to lowercase to ensure consistency. Count the occurrences of each unique lowercase domain across the entire list. Finally, build a result structure and sort it descending based on the frequency counts. Return an array of two-element arrays, where each inner array contains the domain string and its integer count. For example, three emails from the same host will yield a count of three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d035",
+  "title": "Palindrome Sentence Checker",
+  "spec": "Create `check(sentence)` to determine if a phrase reads the same forwards and backwards. The input is a plain string. Iterate through the characters, discarding any spaces, punctuation marks, or special symbols, retaining only alphabetical letters and numerical digits. Convert all retained alphabetical letters to lowercase. Compare the characters at the beginning of the cleaned sequence with those at the end, moving progressively toward the middle. If any mirrored pair of characters fails to match, the sequence is not a palindrome. Return a boolean indicating the final result.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d036",
+  "title": "Roman Numeral Converter",
+  "spec": "Design `convert(number)` to translate a modern integer into its historical symbolic equivalent. The input is an integer ranging from one to three thousand nine hundred ninety-nine. Establish the standard mappings of values to symbol strings, including subtractive combinations like four and nine. Iterate through these mappings from highest value to lowest. While the remaining integer is greater than or equal to the current mapping value, append the corresponding symbol string to a result buffer and subtract the value from the remaining integer. Return the final accumulated string. For example, an input of nine outputs the corresponding two-character subtractive string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d037",
+  "title": "Log File Filter",
+  "spec": "Write `filter(logs, level)` to extract specific diagnostic messages from system output. The inputs are an array of raw log strings and a target severity string. Each log string begins with a bracketed timestamp, followed by a space, followed by a severity level surrounded by brackets, followed by a colon and the actual message. Iterate through the array and parse each string to isolate the severity level and the message payload. If the parsed severity level exactly matches the target severity string, add the isolated message payload to a results array. Return the final array of filtered message strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d038",
+  "title": "Tournament Match Bracket",
+  "spec": "Implement `bracket(teams)` to generate the first round matchups for a competition. The input is an array of string team names. Check the total number of participants. If the count is odd, push a string reading bye into the array to ensure an even number. Pair the first team in the list with the last team, the second team with the second to last team, and continue moving inward until all teams are assigned. Accumulate these scheduled pairings. Return an array of two-element arrays, where each inner array represents a scheduled match. For example, an input of five teams will produce three match arrays.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d039",
+  "title": "Matrix Transposer",
+  "spec": "Create `transpose(grid)` to flip a two dimensional numerical layout over its main diagonal. The input is an array of arrays representing a grid of integers, where all inner arrays are of identical length. Construct a new grid where the rows of the original layout become the columns of the new layout, and the original columns become the new rows. Iterate through the row and column indices of the original grid to correctly map each integer to its transposed coordinate location. Return the newly constructed two dimensional array. For example, a two by three layout will return a three by two layout.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d040",
+  "title": "Password Strength Scorer",
+  "spec": "Write `assess(password)` to evaluate the security level of a user secret. The input is a single string. Begin with a base score of zero. Increment the score by one point for each of the following criteria met: the length is at least eight characters, it contains at least one uppercase alphabetical character, it contains at least one lowercase alphabetical character, it contains at least one numerical digit, and it contains at least one non-alphanumeric special symbol. Accumulate the final tally. Return the total integer score, which will range from zero to five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d041",
+  "title": "Water Bill Calculator",
+  "spec": "Write a function `bill(usage)` that computes a monthly water bill. The input is an array of daily water usage in gallons. The monthly charge is a base fee of fifteen dollars, plus a tiered usage cost. The first thousand gallons cost two cents per gallon. The next thousand gallons cost three cents per gallon. Any usage above two thousand gallons costs five cents per gallon. Sum the total usage across all days, calculate the cost based on the tiers, and add the base fee. Return the final total cost in dollars as a number. For example, if the input is an array of thirty elements all equal to fifty, the total usage is fifteen hundred gallons, costing twenty dollars for the first tier and fifteen dollars for the second, plus the base fee, returning fifty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d042",
+  "title": "Library Fine Calculator",
+  "spec": "Write a function `assess(records)` to calculate library overdue fines. The input is an array of pairs, where each pair contains the number of days a book is overdue and an integer representing the book category: one for standard, two for reference, three for media. Fines are calculated per item: standard items are twenty cents per day, reference are fifty cents per day, and media are one dollar per day. If any item is more than thirty days overdue, its individual fine is capped at ten dollars. Sum the fines for all items and return the total fine as a number. For example, an input of pairs five and one, and thirty-five and three would result in one dollar for the first and ten dollars for the second, returning eleven.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d043",
+  "title": "Employee Shift Wage",
+  "spec": "Write a function `payroll(shifts)` that calculates the total weekly wage for an employee. The input is an array of triples, where each triple contains hours worked, the hourly base rate, and a flag indicating if it was a weekend shift (one for yes, zero for no). Regular pay applies up to eight hours per shift. Any hours beyond eight in a single shift are paid at one and a half times the base rate. If the shift is on a weekend, an additional flat bonus of twenty dollars is added to that shift. Calculate the total pay across all shifts and return it. For example, a shift of ten hours at ten dollars on a weekday yields eighty for regular and thirty for overtime, returning one hundred and ten.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d044",
+  "title": "Step Tracker Stats",
+  "spec": "Write a function `stats(steps)` that processes an array of daily step counts. It must calculate and return a two-element array containing the longest streak of consecutive days meeting a ten thousand step goal, and the integer average of steps on days where at least five thousand steps were taken. If no days meet the five thousand step threshold, the average should be zero. For example, given the counts twelve thousand, eleven thousand, four thousand, and fourteen thousand, the longest streak of ten thousand is two, and the valid average is the sum of twelve, eleven, and fourteen thousand divided by three, returning two and twelve thousand three hundred thirty-three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d045",
+  "title": "Delivery Route Distance",
+  "spec": "Write a function `route(points)` to calculate the total Manhattan distance of a delivery path. The input is an array of coordinate pairs representing locations on a grid. The path always starts at the origin zero zero, visits each point in the array in order, and then returns to the origin. The distance between any two points is the absolute difference of their x coordinates plus the absolute difference of their y coordinates. Calculate the sum of all segment distances and return the total distance. For example, if the input has a single point three and four, the distance from origin is seven, and returning is seven, so the function returns fourteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d046",
+  "title": "Typing Speed Test",
+  "spec": "Write a function `score(words)` that evaluates a typing test. The input is an array of pairs, where the first element is the target word and the second element is the typed word. A typed word is correct only if it exactly matches the target word. Calculate the total number of characters in all correctly typed words. The typing speed in words per minute is this total character count divided by five, then divided by a fixed test duration of two minutes. Return a two-element array with the integer words per minute and the percentage of correctly typed words rounded to the nearest integer. For example, if four out of five words are typed correctly totaling forty characters, it returns four words per minute and eighty percent accuracy.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d047",
+  "title": "Stock Profit Analyzer",
+  "spec": "Write a function `analyze(prices)` to find key metrics from a sequence of daily stock prices. The input is an array of daily prices. The function must return a two-element array containing the maximum single transaction profit and the maximum drawdown. The profit is the largest difference found by subtracting an earlier price from a later price. The drawdown is the largest difference found by subtracting a later price from an earlier price. If no profit can be made, it is zero. For example, given prices ten, twelve, eight, and fifteen, the maximum profit is seven from eight to fifteen, and the maximum drawdown is four from twelve to eight, so it returns seven and four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d048",
+  "title": "Discount Applicator",
+  "spec": "Write a function `checkout(items)` that calculates the total cost of a shopping cart after applying category specific discounts. The input is an array of pairs, where each pair is an item price and a category code (one for electronics, two for clothing, three for groceries). Groceries get no discount. Clothing gets a ten percent discount. Electronics get a twenty percent discount, but only if the item price is over one hundred dollars. Calculate the discounted price for each item, sum them up, and return the total rounded down to the nearest integer. For example, an input of fifty and two, one hundred fifty and one, and twenty and three returns forty-five plus one hundred twenty plus twenty, totaling one hundred eighty-five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d049",
+  "title": "Cinema Seating Allocator",
+  "spec": "Write a function `allocate(row, needed)` that finds a sequence of consecutive empty seats in a single movie theater row. The first parameter is an array of zeroes representing empty seats and ones representing occupied seats. The second parameter is the number of adjacent seats required. The function must scan the row and return the starting index of the first sequence of empty seats that is long enough. If no such sequence exists, return negative one. For example, if the row is one, zero, zero, one, zero, zero, zero, one and three seats are needed, the first valid block starts at index four, so the function returns four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d050",
+  "title": "Grocery List Compiler",
+  "spec": "Write a function `compile(list)` that aggregates items in a grocery list. The input is an array of pairs, where the first element is the item name as a string and the second is the integer quantity. The function must combine all entries with the same name, summing their quantities. It then should sort the unique items alphabetically by name and return a flat array where each name is immediately followed by its total quantity. For example, given an input of apple and two, banana and one, and apple and three, the function should return apple, five, banana, one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d051",
+  "title": "Text Readability Score",
+  "spec": "Write a function `readability(text)` that estimates how difficult a text is to read. The input is a single string of lowercase words separated by single spaces, with periods representing the end of sentences. Count the total number of words, the total number of characters excluding spaces and periods, and the total number of sentences. The score is calculated as five times the average characters per word, plus two times the average words per sentence. Return the score rounded to the nearest integer. For example, a text of ten words, fifty characters, and two sentences will have an average word length of five and an average sentence length of five, resulting in a score of thirty-five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d052",
+  "title": "Movie Rating Aggregator",
+  "spec": "Write a function `aggregate(ratings)` to calculate a trimmed average of audience scores. The input is an array of integer ratings from one to one hundred. If the array has fewer than three ratings, return the arithmetic average of all ratings. Otherwise, discard exactly one lowest rating and exactly one highest rating from the array, and compute the arithmetic average of the remaining ratings. Return the final average rounded down to the nearest integer. For example, given the ratings ninety, eighty, ninety-five, and seventy, the function removes seventy and ninety-five, averaging ninety and eighty to return eighty-five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d053",
+  "title": "Solar Panel Energy Output",
+  "spec": "Write a function `solar(conditions)` that estimates daily energy production for a solar array. The input is an array of triples representing hourly data: sunlight intensity from zero to ten, temperature in Celsius, and a cloud cover flag (one for cloudy, zero for clear). Base production is intensity multiplied by fifty. If the temperature exceeds thirty degrees, base production is reduced by ten percent for that hour due to heat inefficiency. If it is cloudy, the final production for that hour is halved. Sum the energy produced across all hours and return the integer total. For example, one hour with intensity eight, temp thirty-five, and cloudy yields four hundred, reduced to three hundred sixty, halved to one hundred eighty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d054",
+  "title": "Gym Membership Fee",
+  "spec": "Write a function `membership(visits)` that calculates a monthly gym bill. The input is an array of integers representing the tier of each fitness class attended by a member: one for basic, two for premium, and three for elite. The gym charges a base monthly fee of thirty dollars. Basic classes cost five dollars each, premium cost ten, and elite cost twenty. If the member attends ten or more classes in total, a fifteen percent discount is applied to the total class fees, but not to the base fee. Sum the base fee and the adjusted class fees, returning the integer total. For example, five basic classes and five premium classes cost seventy-five, discounted to sixty-three, plus thirty returns ninety-three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d055",
+  "title": "Flight Baggage Fee",
+  "spec": "Write a function `baggage(bags)` that calculates airline luggage fees. The input is an array of triples, where each triple contains the weight in kilograms, length in centimeters, and width in centimeters of a piece of luggage. The first bag is free if it weighs under twenty kilos; otherwise it incurs a flat fifty dollar overweight fee. Each additional bag costs forty dollars as a base fee, plus another fifty dollars if it exceeds twenty kilos. Moreover, if any bag has a combined length and width exceeding one hundred fifty centimeters, an oversize penalty of thirty dollars is added. Return the total fees for all bags. For example, two bags weighing twenty-five kilos each, with normal dimensions, will cost fifty for the first, and ninety for the second, totaling one hundred forty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d056",
+  "title": "Plant Watering Schedule",
+  "spec": "Write a function `irrigate(plants)` that determines how much water is needed for a greenhouse. The input is an array of triples, each representing a plant's daily requirement: base water volume in milliliters, days since last watered, and an exposure code (one for shade, two for partial sun, three for full sun). The required volume for a plant is the base volume multiplied by the days since last watered. If the plant is in full sun, the required volume increases by twenty percent. If in shade, it decreases by ten percent. Sum the required volumes for all plants, rounding down the total to the nearest integer, and return it. For example, a base of one hundred, two days ago, in full sun yields two hundred forty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d057",
+  "title": "Video Game Level Score",
+  "spec": "Write a function `evaluate(actions)` that computes a player's final score for a game level. The input is an array of pairs, where the first element is the action code (one for enemy defeated, two for item collected, three for damage taken) and the second is the associated value. Enemies grant one hundred times their value in points. Items grant fifty times their value. Damage taken subtracts twenty times the value. The level starts with a base score of five hundred. If the final score would drop below zero, it is capped at zero. Calculate and return the final score. For example, a base of five hundred, an item worth ten, and damage worth forty results in five hundred plus five hundred minus eight hundred, returning two hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d058",
+  "title": "Heat Index Calculator",
+  "spec": "Write a function `heat(weather)` that calculates perceived temperatures. The input is an array of pairs, where each pair contains the actual temperature in Fahrenheit and the relative humidity as a percentage. The heat index is calculated only if the temperature is eighty degrees or higher. The formula is the temperature plus twenty percent of the humidity above fifty percent. If humidity is fifty or below, or temperature is under eighty, the heat index equals the actual temperature. Return a flat array of the calculated heat indices rounded to the nearest integer. For example, eighty degrees and seventy percent humidity yields a heat index of eighty-four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d059",
+  "title": "Book Shelf Organizer",
+  "spec": "Write a function `shelve(books)` to determine the number of shelves needed for a collection of books. The input is an array of pairs, where each pair represents the thickness and height of a book in centimeters. A shelf has a maximum width of ninety centimeters and can only hold books that are less than thirty centimeters tall. Books thirty centimeters or taller must be ignored as they require special display. Accumulate the thickness of the valid books. Whenever the accumulated thickness exceeds the ninety centimeter limit, a new shelf is started with the current book. Return the total number of shelves required. For example, four valid books of twenty-five centimeters each will require two shelves.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d060",
+  "title": "Coffee Shop Roaster",
+  "spec": "Write a function `roast(batches)` that calculates the final weight of roasted coffee beans. The input is an array of pairs, where each pair is the green bean weight in pounds and the roast type code (one for light, two for medium, three for dark). Light roasts lose twelve percent of their weight during roasting. Medium roasts lose fifteen percent, and dark roasts lose twenty percent. Calculate the roasted weight for each batch, sum them all together, and return the total rounded to the nearest integer. For example, one hundred pounds of light and one hundred pounds of dark will result in eighty-eight plus eighty, returning one hundred sixty-eight.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d061",
+  "title": "Ski Resort Pass Pricer",
+  "spec": "Write a function `passes(skiers)` that computes the total cost for a group of ski lift tickets. The input is an array of pairs, each containing a skier's age and the number of days they will ski. The daily base rate is eighty dollars for adults. Children under twelve pay forty dollars a day, and seniors sixty-five and over pay fifty dollars a day. If a skier is skiing for three or more days, they receive a ten percent discount on their personal total. Calculate the individual cost for each skier, sum the costs, and return the final integer total. For example, a ten year old skiing four days pays one hundred sixty minus sixteen, which is one hundred forty-four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d062",
+  "title": "Car Wash Profit",
+  "spec": "Write a function `wash(services)` that calculates the net profit for a day at a car wash. The input is an array of pairs, where each pair contains a service code (one for basic wash, two for premium wash, three for detail) and the number of vehicles processed. A basic wash charges ten dollars and costs three dollars in supplies. A premium wash charges twenty and costs five in supplies. A detail charges fifty and costs fifteen in supplies. Calculate the total revenue and total supply costs across all services, subtract the costs from the revenue, and return the profit. For example, five basic washes and one detail yield a revenue of one hundred and costs of thirty, returning seventy.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d063",
+  "title": "Marathon Pace Converter",
+  "spec": "Write a function `pace(times)` that converts marathon finish times into average minutes per mile. The input is an array of pairs, where each pair contains the finish time hours and minutes. A marathon is exactly twenty-six point two miles. For each runner, convert their total time into minutes, divide by twenty-six point two to find the pace, and round to the nearest whole minute. Return a flat array of these rounded paces. For example, a finish time of four hours and twenty-two minutes is two hundred sixty-two minutes, which divided by twenty-six point two gives exactly ten, so the array includes ten.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d064",
+  "title": "Music Playlist Duration",
+  "spec": "Write a function `playlist(tracks)` that calculates the total playback time of a music mix in seconds. The input is an array of pairs, where each pair is the track length in seconds and a transition flag (one for crossfade, zero for gap). Each track is played in order. If a track has the crossfade flag set to one, its last five seconds overlap with the first five seconds of the next track, effectively reducing the total playlist duration by five seconds. The last track never has a crossfade applied after it. Sum the lengths and subtract the appropriate overlap time, returning the total duration. For example, three tracks of sixty seconds each with two crossfades will total one hundred seventy seconds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d065",
+  "title": "Courier Package Stacker",
+  "spec": "Write a function `stack(packages)` that determines how many loading pallets are needed for a sequence of boxes. The input is an array of box weights in kilograms. A pallet can hold a maximum of five hundred kilograms. You must load boxes onto a pallet one by one in the order they appear in the array. If adding the next box would exceed the five hundred kilogram limit, the current pallet is finalized and a new pallet is started with that box. If any single box weighs more than five hundred kilograms, it requires its own dedicated pallet. Return the total number of pallets used. For example, weights of three hundred, two hundred fifty, and four hundred require three pallets.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d066",
+  "title": "Battery Discharge Estimator",
+  "spec": "Write a function `estimate(usage)` to calculate battery depletion. The input is an array of arrays representing usage periods, where each inner array contains current draw in amps and duration in minutes. Starting with a base battery capacity of 100 amp hours, calculate each period's consumed capacity by multiplying amps by the duration in hours. If the current draw exceeds 50 amps, apply a 20 percent efficiency loss factor, meaning that period consumes 1.2 times its normal capacity. Subtract each period's consumption from the remaining capacity and return the final remaining capacity, or zero if it falls below zero. For example, given [[40, 60], [60, 30]], the periods consume 40 and 36 amp hours respectively, leaving 24 amp hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d067",
+  "title": "Train Schedule Delays",
+  "spec": "Create a function `evaluate(times)` that analyzes train punctuality. The input is an array of arrays, where each inner array contains the scheduled departure time and the actual departure time in minutes from midnight. Calculate the delay in minutes for each train by subtracting the scheduled time from the actual time. A train is considered on time if the delay is under 5 minutes, severely delayed if it is 60 minutes or more, and just delayed otherwise. Return an array of three numbers representing the counts of on time, delayed, and severely delayed trains respectively. For example, given [[600, 600], [700, 715], [800, 890]], the function should return [1, 1, 1].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d068",
+  "title": "Greenhouse Temperature Adjuster",
+  "spec": "Implement `adjust(readings)` to maintain greenhouse climates. The input is an array of numbers representing hourly temperature readings in degrees. Calculate the average of the last three readings in the array to compare against a target temperature of 72 degrees. If the average is strictly above 75, return an array containing the string \"cool\" and the number of degrees needed to reach the target. If the average is strictly below 68, return an array with \"heat\" and the required degree difference. Otherwise, return an array with \"maintain\" and zero. For example, given [70, 78, 80, 82], the average of the last three is 80, so the output should be [\"cool\", 8].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d069",
+  "title": "Courier Bonus Calculator",
+  "spec": "Write `calculate(deliveries)` to compute courier pay based on trip distances. The input is an array of numbers representing the distance in miles for each delivery. The base pay per delivery is 5 dollars, but if a delivery distance is strictly over 10 miles, an additional 2 dollar distance bonus applies to that trip. After calculating the total pay for all deliveries, add a 50 dollar volume bonus to the final accumulated payout if the total number of deliveries is strictly greater than 15. Return the total payout in dollars. For example, if the input array contains 16 deliveries of 5 miles each, the total is 16 times 5 plus the 50 dollar bonus, returning 130.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d070",
+  "title": "Traffic Light Timing",
+  "spec": "Implement a function `optimize(cars)` to adjust green light durations. The input is an array of numbers representing the count of cars waiting at an intersection during various cycles. The baseline green light time is 30 seconds. For every full group of 5 cars waiting above a baseline threshold of 10 cars, add 5 seconds to the green light time, up to a maximum duration of 60 seconds. Calculate the adjusted green light time for each cycle, then return the average green light time across all cycles, rounded down to the nearest integer. For example, given [5, 15, 25], the adjusted times are 30, 35, and 45, resulting in an average of 36 seconds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d071",
+  "title": "Cable Car Capacity",
+  "spec": "Write a function `evaluate(groups)` to manage passenger boarding for a tourist ride. The input is an array of numbers representing the sizes of tourist groups waiting in line. A cable car can hold a maximum of 12 passengers, and groups must board together. If a group cannot completely fit into the current cable car alongside previously boarded groups, the car departs and a new empty car is brought in for that group. Iterate through the groups to determine how many cable cars are needed to transport everyone, assuming the first group always starts in an empty car. Return the total number of cable cars dispatched. For example, given [4, 5, 5, 2], the first car takes 4 and 5, while the second car takes the remaining 5 and 2, returning 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d072",
+  "title": "Freelance Tax Estimator",
+  "spec": "Create a function `estimate(records)` to calculate estimated taxes for a freelancer. The input is an array of arrays, where each inner array contains a monthly income amount and a monthly expense amount. The net profit is calculated as the total income across all months minus the total expenses. If the net profit is strictly greater than zero, the tax is 20 percent of the profit if it falls under 50000, and 30 percent if it is 50000 or more. If the net profit is zero or negative, the tax is simply zero. Return an array of two numbers containing the net profit and the estimated tax. For example, given [[6000, 2000], [4000, 1000]], the net profit is 7000 and the tax is 1400, returning [7000, 1400].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d073",
+  "title": "Scuba Dive Planner",
+  "spec": "Develop a function `plan(depths)` to calculate the required air for a diving trip. The input is an array of numbers representing the planned depth in meters for a series of dives. Each meter of depth consumes 2 units of air, and a standard safety stop required for every dive uses an additional 50 units. If the depth is strictly greater than 18 meters, it is considered a deep dive, incurring a penalty of 30 extra units of air and requiring a second safety stop that consumes another 50 units. Calculate and sum the total air required for all dives in the array. Return the total air units. For example, given depths of [10, 20], the first dive needs 70 units and the second needs 170 units, returning 240.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d074",
+  "title": "Printing Press Ink Cost",
+  "spec": "Implement `compute(jobs)` to determine the cost of print jobs at a shop. The input is an array of arrays, where each inner array contains the number of color pages and the number of black and white pages for a specific print job. Black and white pages cost 5 cents each, while color pages cost 15 cents each. If a single print job contains strictly more than 100 total pages, apply a 10 percent discount to the calculated cost of that specific job. Sum the final costs of all jobs and return the total cost in dollars. For example, given [[50, 60], [10, 20]], the first job costs 10.50 minus a 1.05 discount, and the second job costs 2.50, making the final return 11.95.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d075",
+  "title": "Server Load Balancer",
+  "spec": "Write a function `balance(requests)` to analyze server distribution. The input is an array of numbers representing incoming request loads. Distribute these requests sequentially across 4 available servers using a round robin approach, accumulating the total load for each server. If any server's total load strictly exceeds 1000, return the total number of overloaded servers. If no server exceeds a load of 1000, return the maximum total load handled by any single server. For example, given [300, 400, 500, 200, 800], the servers get 1100, 400, 500, and 200, so it returns 1 because exactly one server is overloaded.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d076",
+  "title": "Exam Grade Curve",
+  "spec": "Create a function `curve(scores)` to adjust exam results. The input is an array of raw exam scores provided as numbers. Find the highest score in the array, and if it is strictly less than 100, calculate the point difference needed to make the highest score exactly 100. Add this point difference to all scores in the array to create a curved grade. If any curved score ends up strictly exceeding 100 due to these bonus points, cap it at 100. Return an array of the final curved scores. For example, given [80, 90, 85], the highest is 90 so the difference is 10, meaning the output should be [90, 100, 95].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d077",
+  "title": "Wi-Fi Signal Strength",
+  "spec": "Implement a function `evaluate(signals)` to classify network connections. The input is an array of negative numbers representing signal strengths in decibels. Iterate through the array and count how many signals fall into three distinct categories. A signal is excellent if it is greater than or equal to negative 50, good if it is less than negative 50 but greater than or equal to negative 70, and poor if it is strictly less than negative 70. Return an array of three numbers representing the respective counts of excellent, good, and poor signals. For example, given [-45, -60, -80, -40], the function should return [2, 1, 1].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d078",
+  "title": "Laundry Cycle Chooser",
+  "spec": "Write `choose(loads)` to calculate the total time required for a series of laundry loads. The input is an array of arrays, where each inner array contains a string indicating the fabric type and a number representing the load weight in pounds. Determine the base cycle time based on the fabric: cotton takes 45 minutes, synthetic takes 30 minutes, and delicate takes 20 minutes. If the weight of the load is strictly greater than 10 pounds, add an extra 15 minutes to the cycle time for that specific load. Sum the total laundry time for all loads and return the total time in minutes. For example, given [[\"cotton\", 12], [\"delicate\", 5]], the first load takes 60 minutes and the second takes 20, returning 80.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d079",
+  "title": "Hotel Room Cleaner",
+  "spec": "Develop a function `schedule(rooms)` to manage hotel housekeeping. The input is an array of strings representing the status of hotel rooms, which can be dirty, checkout, or occupied. A dirty room requires a standard clean taking 15 minutes, a checkout room requires a deep clean taking 30 minutes, and an occupied room is skipped taking 0 minutes. Calculate the total cleaning time required and count the total number of rooms that were actually cleaned. Return an array containing the total time in minutes followed by the number of cleaned rooms. For example, given [\"dirty\", \"occupied\", \"checkout\"], the function should return [45, 2].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d080",
+  "title": "Aquarium Filter Monitor",
+  "spec": "Create a function `monitor(turbidity)` to track water quality in an aquarium. The input is an array of numbers representing daily turbidity levels. The filter requires changing if the turbidity level strictly exceeds 10 for three consecutive days, or if any single daily reading strictly exceeds 25. Iterate through the readings, and if either of these conditions is met during the period, immediately return the string \"change\". If the entire array is processed without meeting these conditions, return the string \"normal\". For example, given [5, 12, 14, 11, 8], there are three consecutive days over 10, so the function returns \"change\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d081",
+  "title": "Drone Flight Range",
+  "spec": "Implement a function `calculate(winds)` to estimate how far a drone can fly. The input is an array of numbers representing wind speeds in miles per hour for consecutive kilometers of a planned flight path. The drone starts with 100 percent battery, and under normal conditions, flying one kilometer consumes 5 percent battery. If the wind speed for a kilometer is strictly greater than 15, the drone consumes 10 percent battery for that specific kilometer. Determine how many full kilometers the drone can complete before its battery reaches exactly 10 percent or drops below it. Return the number of completed kilometers. For example, given [10, 20, 10, 20, 10], the battery drops by 5, 10, 5, 10, and 5, leaving 65 percent, so it completes 5 kilometers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d082",
+  "title": "Typing Error Corrector",
+  "spec": "Write a function `correct(words)` to fix basic capitalization in a sequence of text. The input is an array of strings representing typed words. Iterate through the array and capitalize the first letter of any word that starts with a lowercase letter if the immediately preceding word ends with a period. The first word in the array should also be capitalized if it starts with a lowercase letter. Keep track of how many words were modified during this process. Return an array containing two elements: the array of corrected words and the total count of corrections made. For example, given [\"hello.\", \"world\"], it should return [[\"Hello.\", \"World\"], 2].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d083",
+  "title": "Paint Gallon Estimator",
+  "spec": "Develop a function `estimate(walls)` to calculate paint requirements for a room. The input is an array of arrays, where each inner array contains two numbers representing the width and height of a wall in feet. Calculate the square footage for each wall by multiplying width and height, then find the total square footage of all walls. Every wall requires two coats of paint, meaning the total coverage needed is twice the total square footage. One gallon of paint covers exactly 400 square feet. Determine the total number of full gallons needed by dividing the coverage needed by 400 and rounding up to the nearest whole number, then return that value. For example, given [[10, 10], [20, 10]], the coverage needed is 600, so it returns 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d084",
+  "title": "Beehive Honey Yield",
+  "spec": "Create `predict(hives)` to estimate honey production for a farm. The input is an array of numbers representing the bee population in thousands for various hives. For each hive, the base yield is 10 pounds of honey per 10 thousand bees. If a hive has a population strictly greater than 50 thousand bees, they become highly efficient, yielding 15 pounds per 10 thousand bees for that entire hive. If a hive has fewer than 20 thousand bees, it yields zero pounds. Calculate and sum the total expected honey yield across all hives, then return the total yield in pounds. For example, given [10, 30, 60], the yields are 0, 30, and 90, returning 120.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d085",
+  "title": "Campground Fee Calculator",
+  "spec": "Implement a function `charge(stays)` to process campground billing. The input is an array of arrays, where each inner array contains the number of nights requested as a number, and a boolean indicating whether an electrical hookup is required. The base rate for a site is 20 dollars per night, and an electrical hookup adds an extra 5 dollars per night to that stay. If a stay is for 7 nights or longer, apply a 10 percent discount to the total cost of that specific stay. Calculate the final cost for each stay and return the sum of all revenues. For example, given [[3, false], [10, true]], the first costs 60, the second costs 250 minus 25 for a total of 225, returning 285.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d086",
+  "title": "Bumper Car Energy",
+  "spec": "Write a function `simulate(impacts)` to track a bumper car's energy levels. The input is an array of numbers representing the relative speed of successive impacts. The bumper car starts with 100 units of energy, and for each impact, the energy decreases by exactly half of the impact speed. If the car's energy drops strictly below 20 units, it enters a slow mode where subsequent impacts only drain energy by a quarter of the impact speed. If the energy drops below zero at any point, it remains at zero. Return the final energy of the car after all impacts. For example, given [100, 70, 20], the first impact drains 50 leaving 50, the second drains 35 leaving 15, and the third drains 5 due to slow mode, returning 10.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d087",
+  "title": "Ice Cream Stand Profit",
+  "spec": "Develop a function `calculate(data)` to analyze daily profits for an ice cream stand. The input is an array of arrays, where each inner array contains the number of cones sold and the daily high temperature in degrees. Every cone sells for 3 dollars and has a base manufacturing cost of 1 dollar. If the daily temperature strictly exceeds 90 degrees, an additional cooling cost of 50 cents per cone is added to the manufacturing cost for that day. Calculate the total profit, which is revenue minus costs, across all days in the input array. Return the total profit in dollars. For example, given [[100, 85], [100, 95]], the profit for the first day is 200, and for the second day is 150, returning 350.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d088",
+  "title": "Concert Ticket Scaler",
+  "spec": "Create a function `price(purchases)` to calculate ticket revenues for a concert. The input is an array of numbers representing the days remaining until the concert at the time each ticket was purchased. The base price for a single ticket is 50 dollars. If a ticket is purchased more than 30 days in advance, an early bird discount reduces the price by 10 dollars. If it is purchased 7 days or less in advance, a last minute premium increases the price by 25 dollars. Calculate the final price for each ticket and return the total revenue generated from all purchases. For example, given [40, 15, 2], the prices are 40, 50, and 75, returning 165.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d089",
+  "title": "Workout Energy Calculator",
+  "spec": "Implement `evaluate(activities)` to calculate energy expenditure from workouts. The input is an array of arrays, where each inner array contains an activity name as a string and its duration in minutes as a number. Running burns 10 calories per minute, cycling burns 8 calories per minute, and walking burns 5 calories per minute. Any activity that lasts strictly longer than 45 minutes burns an additional flat bonus of 50 calories due to endurance requirements. Calculate the calories burned for each activity and return the total calories burned overall. For example, given [[\"running\", 30], [\"walking\", 60]], the first burns 300 and the second burns 300 plus 50, returning 650.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d090",
+  "title": "Office Printer Queue",
+  "spec": "Write a function `process(jobs)` to manage printer paper reloads in an office. The input is an array of numbers representing the page counts of various print jobs in the queue. The printer starts with a full tray of 500 sheets of paper. Iterate through the jobs, subtracting the required pages from the printer's supply. If a single job requires more pages than are currently in the tray, the printer must be reloaded to exactly 500 sheets before printing that job. Keep a count of how many times the printer had to be reloaded, and return the total number of reloads. For example, given [300, 400, 100], the first uses 300 leaving 200, the second triggers a reload to 500 and uses 400 leaving 100, and the third uses 100, returning 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d091",
+  "title": "Space Probe Telemetry Analyzer",
+  "spec": "A space probe sends back a list of signal strengths as numbers. The function `telemetry(signals)` analyzes this list. Discard signals below ten as noise. For the valid signals, calculate the overall average. Then, find the longest consecutive streak of signals that are at least ten percent higher than this average. Return an array of three numbers: the count of valid signals, the integer part of the average, and the length of the maximum streak. For example, given the list ten, twelve, five, twenty, twenty two, twenty four, ten, the valid signals are ten, twelve, twenty, twenty two, twenty four, ten. The average is sixteen. The streak of signals above seventeen point six is twenty, twenty two, twenty four, which is length three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d092",
+  "title": "Stage Race Energetics",
+  "spec": "A cyclist rides through a race divided into stages, given as a list of distances in kilometers. The function `pedal(stages)` computes the total energy expended and the overall time. For each stage, if the distance is less than twenty kilometers, the speed is thirty kilometers per hour and the energy cost is fifty calories per kilometer. If twenty or more, the speed drops to twenty five kilometers per hour and the cost increases to sixty five calories per kilometer due to fatigue. The function should also count how many stages were ridden at the slower speed. Return a list of three numbers: total hours taken rounded to two decimal places, total calories burned, and the slow stage count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d093",
+  "title": "Restaurant Gratuity Splitter",
+  "spec": "A restaurant pools tips and distributes them based on hours worked, with a bonus for long shifts. The function `gratuity(shifts, pool)` takes a list of hours worked by each server and the total tip pool. First, calculate the total adjusted hours: standard hours plus an extra half hour for every hour worked over six hours by a single server. Then, determine the tip value per adjusted hour. Finally, calculate each server's share by multiplying their adjusted hours by the hourly tip value, rounding down to the nearest whole number. Return a list of the integer tip amounts in the same order as the input shifts. Example: given shifts four and eight, and a pool of one hundred, adjusted hours are four and nine. Tip per hour is roughly seven point six nine. Shares are thirty and sixty nine.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d094",
+  "title": "Quarterly Interest Projection",
+  "spec": "A bank customer makes a series of deposits at the start of each quarter, represented by a list of amounts. The function `project(deposits, rate)` calculates the final balance after all quarters have passed, given the annual interest rate as a decimal. Each quarter, the new deposit is added to the balance, and then the entire balance earns interest at one fourth of the annual rate. An annual maintenance fee of fifteen is deducted at the end of every fourth quarter after interest is applied. Accumulate the total maintenance fees paid over the entire period. Return a list containing the final balance truncated to an integer and the total fees paid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d095",
+  "title": "Fertilizer Yield Estimator",
+  "spec": "A farmer evaluates different plots of land, provided as a list of pairs where each pair contains the plot area in acres and the pounds of fertilizer applied. The function `harvest(plots)` estimates the total crop yield in bushels and identifies the most efficient plot. The yield for a plot is its area multiplied by forty, plus the fertilizer amount multiplied by one point five, capped at a maximum of sixty bushels per acre. Efficiency is the yield divided by the fertilizer used. Return an array with the total estimated yield across all plots rounded down, and the one based index of the most efficient plot. If multiple tie for efficiency, use the first one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d096",
+  "title": "Wind Turbine Power Generation",
+  "spec": "A wind farm generates power based on hourly wind speeds in meters per second, provided as a list. The function `generate(winds)` computes the total megawatts produced over the period. For each hour, if the wind is below four or above twenty five, the turbine produces zero megawatts to prevent damage or due to lack of wind. If the wind is between four and twelve inclusive, the power is the wind speed multiplied by zero point five. If between thirteen and twenty five inclusive, it operates at a maximum capacity of six megawatts. Also count how many hours the turbine operated at maximum capacity. Return a list of three numbers: total megawatts, shut down hours, and maximum capacity hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d097",
+  "title": "Solar Flare Intensity Tracker",
+  "spec": "An observatory records solar flare intensities over several days, given as a list of integers. The function `flares(intensities)` analyzes the activity level. It must find the peak intensity, the total number of flares exceeding an intensity of fifty, and calculate a threat score. The threat score starts at zero and increases by the intensity value for every flare above fifty, but successive flares above fifty add a multiplier effect: the second consecutive adds double its value, the third triple, and so on. A flare of fifty or below resets the consecutive multiplier to one. Return a list with the peak intensity, high intensity count, and total threat score.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d098",
+  "title": "Highway Toll Assessor",
+  "spec": "A highway toll plaza calculates fees based on vehicle size. The function `tolls(vehicles)` processes a list of vehicles, where each vehicle is a list containing its number of axles and its weight in tons. The base toll is two per axle. If the weight exceeds ten tons, a heavy surcharge of five is added. If a vehicle has more than four axles and weighs over twenty tons, it is classified as oversized and charged double the total calculated fee. Accumulate the total revenue for all vehicles and count how many were oversized. Return an array with total revenue and the oversized count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d099",
+  "title": "Podcast Sponsor Revenue",
+  "spec": "A podcaster earns sponsor money based on episode downloads. The function `sponsor(downloads, rate)` takes a list of download counts for episodes and a base rate per thousand downloads. For any episode under ten thousand downloads, the creator earns nothing. For episodes between ten thousand and fifty thousand inclusive, they earn the base rate per thousand. For episodes over fifty thousand, the first fifty thousand earn the base rate, and any downloads above that earn one and a half times the base rate. Calculate the earnings for each episode, sum them up, and round down to the nearest integer. Return the total earnings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d100",
+  "title": "Orbital Payload Packer",
+  "spec": "A space agency is packing a rocket with scientific instruments. The function `launch(items, capacity)` takes a list of item weights and the maximum weight capacity of the rocket. It iterates through the items in order, adding each to the payload if it fits within the remaining capacity. If an item is too heavy, it is skipped and left behind. The function must track the total weight loaded, the number of items successfully packed, and the number of skipped items. Return a list containing the total weight loaded, the count of packed items, and the count of skipped items.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d101",
+  "title": "Textile Mill Yarn Demand",
+  "spec": "A textile mill produces various knitted patterns. The function `knit(patterns, multiplier)` receives a list of base yarn lengths required for different designs and a production multiplier. For each pattern, the total yarn needed is the base length multiplied by the multiplier. If the total for a pattern exceeds five hundred meters, it requires an industrial spool, adding a fifty meter waste allowance. Count how many industrial spools are needed, and sum the total yarn required across all patterns including waste. Additionally, find the maximum yarn length required by any single pattern after multiplication. Return a list containing the total yarn length, the industrial spool count, and the maximum single pattern length.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d102",
+  "title": "Sleep Cycle Phase Tracker",
+  "spec": "A fitness tracker records a user's sleep phases as a list of durations in minutes. The phases alternate strictly between light sleep and deep sleep, starting with light sleep. The function `sleep(minutes)` calculates the total time spent in each phase. A healthy sleep cycle requires at least twenty percent of the total sleep time to be deep sleep, and the total sleep time must be at least four hundred twenty minutes. The function should return an array with three values: total light sleep minutes, total deep sleep minutes, and a one if the healthy sleep criteria are met, or a zero if they are not.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d103",
+  "title": "Maritime Cargo Routing",
+  "spec": "A cargo ship travels between ports, with distances provided as a list of nautical miles. The function `voyage(legs, fuel)` determines if the ship can complete the journey with the initial fuel given in tons. The ship consumes fuel at a base rate of zero point two tons per mile. However, for any single leg longer than five hundred miles, the ship can cruise at a steady speed, reducing the consumption rate to zero point one five tons per mile for that entire leg. Deduct the fuel used for each leg. If the fuel drops below zero at any point, the ship is stranded. Return a list with a one if it finishes the route or zero if stranded, and the remaining fuel rounded down.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d104",
+  "title": "Assembly Line Quality Control",
+  "spec": "A factory produces widgets in batches. The function `inspect(batches, limit)` reviews a list where each element is the number of defects found in a batch. The maximum acceptable defect limit is provided. A batch passes if its defects are less than or equal to the limit. If a batch fails, it is discarded. If three consecutive batches fail, the assembly line is immediately halted, and no further batches are processed. The function must calculate the total number of passing batches and the total defects among those passing batches. Return a list of two numbers: the count of passing batches and the sum of defects in them.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d105",
+  "title": "Marine Tank Salinity",
+  "spec": "An aquarium maintains several tanks requiring specific salt concentrations. The function `salinity(tanks)` processes a list of tanks, where each tank is a list containing its water volume in liters and desired salinity in grams per liter. For each tank, calculate the required salt by multiplying volume and salinity. If the volume is over five hundred liters, a five percent efficiency loss in mixing occurs, requiring five percent more salt for that tank. Sum the total required salt across all tanks. Additionally, count how many tanks require more than one thousand grams of salt. Return an array containing the total salt rounded to the nearest whole number and the count of large salt requirements.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d106",
+  "title": "Winter Snowfall Aggregator",
+  "spec": "A ski resort tracks daily snow accumulation. The function `snowfall(daily)` takes a list of daily snowfall measurements in inches. It needs to calculate the total snowfall for the season and find the longest consecutive streak of days where it snowed at least one inch. If a day has less than one inch, it does not count towards a streak. Additionally, determine the number of heavy snow days, defined as days with more than six inches. Return an array containing the total snowfall sum, the maximum streak of snow days, and the count of heavy snow days.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d107",
+  "title": "Rescue Chopper Range",
+  "spec": "A search and rescue helicopter executes a series of missions. The function `rescue(missions, fuel)` accepts a list of mission flight times in minutes and an initial fuel amount in gallons. Flying consumes two gallons of fuel per minute. Using the hoist at a rescue site consumes a flat five gallons per mission. The helicopter aborts remaining missions and returns to base if the required fuel for the next mission exceeds its current tank. It must always retain a twenty gallon reserve. The function should return an array with the number of completed missions and the final remaining fuel.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d108",
+  "title": "Highway Speed Enforcement",
+  "spec": "A traffic camera records passing vehicle speeds. The function `enforce(speeds, limit)` evaluates a list of speeds against a posted speed limit. Vehicles going at or below the limit are ignored. If a vehicle exceeds the limit by one to nine miles per hour, they receive a warning. If they exceed it by ten to nineteen miles per hour, they receive a fifty dollar fine. Exceeding by twenty or more results in a two hundred dollar fine. Calculate the total fine revenue collected and the number of warnings issued. Return an array containing the total revenue and the warning count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d109",
+  "title": "Race Hydration Planner",
+  "spec": "A marathon organizer needs to stock water at hydration stations. The function `hydrate(stations, runners)` takes the number of stations and the total number of runners. At the first station, every runner is expected to take one cup of water. At each subsequent station, the number of runners taking water decreases by ten percent from the previous station due to dropouts and runners skipping stations, rounded down to the nearest whole runner. Each cup holds eight ounces of water. Calculate the total ounces of water required across all stations. Also count how many stations had fewer than ten runners taking water. Return a list containing the total volume in ounces and the count of low traffic stations.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d110",
+  "title": "Morning Paper Subscriptions",
+  "spec": "A newspaper agency calculates daily revenue from different delivery routes. The function `deliver(routes)` takes a list of subscriber counts for each route. The base price of a newspaper is two dollars. For any route with more than fifty subscribers, a bulk discount applies, lowering the price to one dollar and fifty cents per paper for that entire route. However, delivering to routes with fewer than ten subscribers incurs a flat five dollar delivery surcharge per route. Sum the total revenue across all routes. Return the final daily revenue rounded down to an integer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d111",
+  "title": "Harbor Ferry Capacity",
+  "spec": "A car ferry has a maximum weight capacity of five thousand kilograms and a maximum deck space of twenty meters. The function `ferry(vehicles)` takes a list of waiting vehicles, where each vehicle is a list containing its weight and its length. It loads vehicles one by one in order until either the weight limit or space limit would be exceeded by the next vehicle. The remaining vehicles are left at the dock. Calculate the total weight loaded and count how many vehicles were left behind. Return an array containing the loaded weight and the left behind count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d112",
+  "title": "HVAC Climate Control",
+  "spec": "A smart thermostat records room temperatures every hour, provided as a list. The function `regulate(temperatures, target)` determines how long the cooling system runs. For each hour, if the room temperature is above the target, the system runs for fifteen minutes for every degree of difference. If the temperature is at or below the target, the system stays off. The system consumes two kilowatts per hour of running time. Calculate the total running time in minutes and the total energy consumed in kilowatts. Return an array with total minutes and total kilowatts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d113",
+  "title": "Trail Elevation Effort",
+  "spec": "A hiker records their elevation at various checkpoints along a trail. The function `hike(elevations)` takes a list of these elevation numbers. It calculates an effort score based on elevation changes between consecutive checkpoints. Climbing uphill adds two points to the effort score for every unit of elevation gained. Going downhill provides a slight recovery, subtracting one point for every unit of elevation lost, but the overall effort score can never drop below zero. Walking on flat terrain adds zero point five points per checkpoint. Return the final effort score rounded down to the nearest integer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d114",
+  "title": "Wildfire Spread Simulation",
+  "spec": "A forestry department simulates the spread of a wildfire. The function `contain(winds)` takes a list of daily wind speeds. The fire starts at a size of ten acres. Each day, if the wind speed is below five, the fire grows by two acres. If the wind is between five and fifteen, it grows by ten percent of its current size. If the wind exceeds fifteen, it grows by twenty five percent of its current size. A fire retardant drop is executed on any day the fire size exceeds one hundred acres, instantly reducing its size by half at the end of that day. Also count the number of days a retardant drop was executed. Return a list with the final fire size truncated to a whole number and the retardant drop count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d115",
+  "title": "Rollercoaster Queue Simulator",
+  "spec": "A rollercoaster operator manages a line of waiting guests. The function `queue(groups)` takes a list where each element is the size of a group of friends who want to ride together. The rollercoaster train seats a maximum of eight people. The operator loads groups into the train in order. If a group fits in the remaining seats of the current train, they board. If not, the train departs partially full, and that group waits for the next train, which arrives empty. Calculate the total number of trains dispatched to serve all groups. Also calculate the total number of individuals who boarded across all trains. Return an array containing the total train count and the total guests seated.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d116",
+  "title": "Escape Room Score Tracker",
+  "spec": "The entry function is `score(events)`. An array of arrays is provided, where each inner array represents an event with puzzle difficulty, seconds elapsed, and hints requested. For each event, compute the base challenge points by multiplying the puzzle difficulty by twenty. Determine the time penalty by dividing seconds elapsed by thirty, rounding down to the nearest integer. Calculate the hint deduction by multiplying hints requested by five. Subtract the time penalty and hint deduction from the base challenge points to find the event net score. If the event net score falls below zero, reset it to zero. Sum these scores across all events and return the accumulated total score. Example: given an input of [[5, 120, 1], [3, 300, 2]], the output should be 76.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d117",
+  "title": "Roller Derby Point Tally",
+  "spec": "The entry function is `tally(jams)`. The input is an array of arrays, each detailing a single jam with initial passes, lap passes, lead jammer status as a boolean, and blocker penalties. Determine the lap points by multiplying lap passes by four. The lead jammer bonus is five points if the lead jammer status is true, otherwise zero. Calculate the penalty deduction by multiplying blocker penalties by two. The jam total points are the lap points plus the lead jammer bonus minus the penalty deduction. If the jam total points are negative, treat them as zero. Return the match final tally by adding all jam total points. Example: an input of [[0, 3, true, 2], [1, 1, false, 0]] yields a result of 17.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d118",
+  "title": "Concrete Mix Water Volume",
+  "spec": "The entry function is `hydrate(batches)`. The input consists of an array of arrays, where each inner array provides the dry cement mass in kilograms, the ambient humidity percentage, and the required slump index. For each batch, calculate the base water requirement by multiplying the dry cement mass by zero point four. Determine the humidity evaporation offset by multiplying the ambient humidity percentage by two; if the ambient humidity percentage exceeds fifty, the offset is negative, otherwise it is positive. Find the target mixture volume by adding the humidity evaporation offset to the base water requirement, then adding the required slump index multiplied by five. Accumulate these values to find the overall project water volume needed and return it rounded down to the nearest integer. Example: given [[100, 60, 3], [50, 40, 2]], the output is 83.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d119",
+  "title": "Telescope Magnification Viewer",
+  "spec": "The entry function is `magnify(lenses)`. You receive an array of arrays representing different optical setups, each containing the primary mirror aperture in millimeters, the focal ratio, and the eyepiece focal length in millimeters. First, compute the objective focal length by multiplying the primary mirror aperture by the focal ratio. Next, determine the viewing magnification by dividing the objective focal length by the eyepiece focal length, rounding down to the nearest integer. Keep track of the highest magnification achieved across all provided setups. Return this maximum viewing power. Example: for an input of [[150, 6, 10], [200, 5, 25]], the output is 90.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d120",
+  "title": "Stage Rigging Load Verifier",
+  "spec": "The entry function is `verify(trusses)`. The input is an array of arrays for stage trusses, containing maximum weight capacity, quantity of spotlight fixtures, weight per spotlight, quantity of audio speakers, and weight per speaker. For each truss, calculate the total lighting weight by multiplying the quantity of spotlight fixtures by the weight per spotlight. Calculate the total audio weight by multiplying the quantity of audio speakers by the weight per speaker. The combined equipment weight is the sum of the total lighting weight and total audio weight. Add a twenty percent safety margin to the combined equipment weight. If this final safety load exceeds the maximum weight capacity for any truss, return false immediately. If all trusses can safely support their loads, return true. Example: an input of [[500, 10, 15, 2, 50], [200, 4, 15, 0, 0]] evaluates to true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d121",
+  "title": "Cacao Bean Fermentation",
+  "spec": "The entry function is `ferment(batches)`. An array of arrays is supplied, each representing a batch of cacao with initial raw mass in kilograms, natural moisture percentage, and target fermentation days. Calculate the moisture weight loss by multiplying the initial raw mass by the natural moisture percentage divided by one hundred. Determine the fermentation mass loss by multiplying the target fermentation days by zero point zero two, then multiplying that factor by the initial raw mass. The final dried mass is the initial raw mass minus both the moisture weight loss and the fermentation mass loss. Return an array containing the final dried mass for each batch, rounded down to the nearest integer. Example: with an input of [[100, 15, 5], [200, 10, 7]], the result is [75, 152].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d122",
+  "title": "Server Rack Heat Evaluator",
+  "spec": "The entry function is `evaluate(racks)`. You are given an array of arrays, where each inner array describes a server rack with the total server count, the average watts per server, and the cooling unit threshold in watts. Compute the base heat output by multiplying the total server count by the average watts per server. Calculate the operating overhead factor by taking fifteen percent of the base heat output. The total thermal load is the sum of the base heat output and the operating overhead factor. If the total thermal load exceeds the cooling unit threshold, return the zero based index of that rack. If all racks are adequately cooled, return negative one. Example: inputting [[10, 500, 7000], [20, 400, 9000]] yields 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d123",
+  "title": "Robot Vacuum Battery Drain",
+  "spec": "The entry function is `clean(rooms)`. The input is an array of arrays representing rooms to clean, including floor area in square meters, carpet thickness in millimeters, and furniture obstacle count. Calculate the base travel energy by multiplying the floor area by two. Determine the carpet resistance drain by multiplying the carpet thickness by three. Find the obstacle navigation cost by multiplying the furniture obstacle count by five. The room total energy is the sum of these three factors. Subtract the room total energy from a starting battery capacity of one hundred. Return an array of remaining battery capacities after each independent room cleaning, with negative values floored to zero. Example: given [[20, 5, 4], [10, 0, 2]], the output is [25, 70].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d124",
+  "title": "Ski Jump Flight Distance",
+  "spec": "The entry function is `jump(skiers)`. An array of arrays provides data for ski jumpers, containing takeoff velocity in meters per second, ramp launch angle in degrees, and headwind velocity in meters per second. Compute the kinetic base distance by squaring the takeoff velocity and dividing by ten. Calculate the angle lift bonus by multiplying the ramp launch angle by one point five. Determine the headwind glide extension by multiplying the headwind velocity by three. The total flight distance is the sum of the kinetic base distance, angle lift bonus, and headwind glide extension. Return an array of total flight distances rounded down to the nearest integer. Example: given [[25, 11, 2], [20, 10, -1]], the expected output is [85, 52].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d125",
+  "title": "Hydroponic Nutrient Balance",
+  "spec": "The entry function is `balance(reservoirs)`. The input is an array of arrays for hydroponic tanks, containing the potential hydrogen level, nutrient solution temperature in degrees celsius, electrical conductivity reading, and dissolved oxygen percentage. A reservoir is considered perfectly balanced if the potential hydrogen level is between five point five and six point five inclusive, the nutrient solution temperature is between eighteen and twenty-four inclusive, the electrical conductivity reading is between one point two and two point zero inclusive, and the dissolved oxygen percentage is greater than eighty. Count how many reservoirs meet all four conditions simultaneously to determine the overall healthy system count. Return this total number of balanced reservoirs. Example: for [[6.0, 20, 1.5, 85], [7.0, 25, 2.5, 90]], the output is 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d126",
+  "title": "Perfume Batch Mixer",
+  "spec": "The entry function is `mix(ingredients, multiplier)`. You are provided an array of arrays detailing fragrance components with their base fluid drams and wholesale discount threshold, along with a production multiplier integer. Calculate the scaled component volume by multiplying the base fluid drams by the production multiplier. Check if the scaled component volume is greater than or equal to the wholesale discount threshold; if it is, calculate the bulk reduction savings by taking twelve percent of the scaled component volume and subtract it. Return an array of the final adjusted component volumes, rounding each down to the nearest integer. Example: an input of [[50, 200], [10, 100]] and a multiplier of 4 results in [176, 40].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d127",
+  "title": "Mountain Bike Gear Ratio",
+  "spec": "The entry function is `gears(combinations)`. The input array of arrays lists possible bicycle drivetrain setups, each with the front chainring teeth count, the rear cassette cog teeth count, and the rear wheel circumference in inches. Determine the mechanical gear ratio by dividing the front chainring teeth count by the rear cassette cog teeth count. Calculate the pedaling development distance by multiplying the mechanical gear ratio by the rear wheel circumference. Return an array of the pedaling development distances, each rounded down to the nearest integer. Example: given [[32, 16, 29], [30, 50, 27]], the output is [58, 16].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d128",
+  "title": "Submarine Buoyancy State",
+  "spec": "The entry function is `buoyancy(vessels)`. An array of arrays represents different submersibles, providing the hull displacement volume in cubic meters, the total dry mass in kilograms, and the surrounding water density in kilograms per cubic meter. Compute the upward buoyant force by multiplying the hull displacement volume by the surrounding water density. Identify the downward gravity force, which equals the total dry mass. If the upward buoyant force exceeds the downward gravity force by more than five hundred, the state is floating. If the downward gravity force exceeds the upward buoyant force by more than five hundred, the state is sinking. Otherwise, it is neutrally buoyant. Return an array of integers representing states: one for floating, negative one for sinking, zero for neutral. Example: input [[10, 10000, 1025], [10, 11000, 1000]] yields [1, -1].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d129",
+  "title": "HOA Rule Violation Penalty",
+  "spec": "The entry function is `penalize(violations)`. The input is an array of arrays representing community inspections, each containing the overdue days count, the severity level integer, and the prior warning count. If the overdue days count is less than or equal to seven, the base citation fee is zero. Otherwise, calculate the time discrepancy by subtracting seven from the overdue days count. The base citation fee is the time discrepancy multiplied by the severity level integer. If the prior warning count is greater than zero, apply a repeat offender multiplier by multiplying the base citation fee by the prior warning count plus one. Return an array of the final calculated fees. Example: given [[10, 50, 1], [5, 100, 0]], the result is [300, 0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d130",
+  "title": "Software License Tier Pricing",
+  "spec": "The entry function is `price(clients)`. You are given an array of arrays of enterprise clients, each with the total user seats, the base price per seat, and an enterprise support boolean. Calculate the initial contract subtotal by multiplying the total user seats by the base price per seat. If the total user seats are fifty or greater, calculate the volume discount amount by taking fifteen percent of the initial contract subtotal and subtracting it. If the enterprise support boolean is true, calculate the premium support fee by adding an additional twenty percent of the current running total to the total. Return an array of the final contract prices rounded down to the nearest integer. Example: for [[60, 20, true], [20, 15, false]], the output is [1224, 300].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d131",
+  "title": "Rocket Fuel Stage Requirement",
+  "spec": "The entry function is `fuel(stages)`. The input array of arrays details rocket sections, containing the empty structural mass in kilograms, the satellite payload mass in kilograms, the required delta velocity in meters per second, and the engine exhaust velocity in meters per second. Compute the initial static mass by adding the empty structural mass and the satellite payload mass. Determine the maneuver mass ratio by dividing the required delta velocity by the engine exhaust velocity. Calculate the required propellant mass by multiplying the initial static mass by the maneuver mass ratio, and then multiplying by a constant factor of one point five. Return an array of required propellant masses rounded down to the nearest integer. Example: inputting [[1000, 500, 3000, 3000], [500, 200, 2000, 4000]] yields [2250, 525].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d132",
+  "title": "Rowing Regatta Split Times",
+  "spec": "The entry function is `splits(crews)`. An array of arrays provides race strategies for rowing teams, including the target completion time in minutes, a negative split strategy boolean, and the standard penalty seconds. If the negative split strategy boolean is true, calculate the first half segment by taking fifty two percent of the target completion time, and the second half segment by taking forty eight percent. If false, divide the target completion time equally so both segments are fifty percent. Add the standard penalty seconds to both the first half segment and the second half segment to determine the final adjusted times. Return an array of arrays containing the two final adjusted times. Example: given [[200, true, 5], [180, false, 0]], the output is [[109, 101], [90, 90]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d133",
+  "title": "Theme Park Fast Pass Scheduler",
+  "spec": "The entry function is `schedule(guests)`. The input is an array of arrays detailing visitor groups, each containing the base wait time in minutes, the group size integer, and a VIP status boolean. Compute the crowd delay factor by multiplying the group size integer by two. The estimated wait time is the base wait time plus the crowd delay factor. If the VIP status boolean is true, reduce the estimated wait time by fifty percent. If the estimated wait time exceeds one hundred and twenty minutes, cap it at one hundred and twenty. Return an array of the final scheduled wait times. Example: given [[60, 4, true], [115, 5, false]], the output is [34, 120].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d134",
+  "title": "Currency Arbitrage Finder",
+  "spec": "The entry function is `arbitrage(paths)`. An array of arrays is provided representing cyclic trades, containing the starting capital amount, the first exchange rate, the second exchange rate, and the third exchange rate. Calculate the intermediate capital by multiplying the starting capital amount by the first exchange rate. Compute the secondary capital by multiplying the intermediate capital by the second exchange rate. Find the final returned capital by multiplying the secondary capital by the third exchange rate. Determine the gross profit margin by subtracting the starting capital amount from the final returned capital. If the gross profit margin is less than zero, treat it as zero. Return an array of profits rounded down to the nearest integer. Example: input [[100, 1.2, 0.9, 1.0]], output is [8].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d135",
+  "title": "Telegraph Morse Code Speed",
+  "spec": "The entry function is `speed(transmissions)`. The input array of arrays details operator tests, with the total dots and dashes sent, the number of misinterpreted signals, and the transmission duration in seconds. Calculate the gross transmission volume by dividing the total dots and dashes sent by five. Determine the net transmission volume by subtracting the number of misinterpreted signals from the gross transmission volume. Find the elapsed time in minutes by dividing the transmission duration in seconds by sixty. The final signaling speed is the net transmission volume divided by the elapsed time in minutes. If negative, reset it to zero. Return an array of the final signaling speeds rounded down to the nearest integer. Example: [[250, 5, 60], [300, 10, 120]] yields [45, 25].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d136",
+  "title": "Solar Eclipse Shadow Duration",
+  "spec": "The entry function is `eclipse(locations)`. You receive an array of arrays for viewing sites, containing the umbral shadow diameter in kilometers, the shadow transit speed in kilometers per second, and the site distance from the path centerline in kilometers. Determine the centerline maximum duration by dividing the umbral shadow diameter by the shadow transit speed. Calculate the off axis penalty by multiplying the site distance from the path centerline by two. The effective viewing duration is the centerline maximum duration minus the off axis penalty. If the effective viewing duration falls below zero, the site misses totality and the duration is zero. Return an array of effective viewing durations. Example: for [[200, 1, 10], [100, 2, 60]], the output is [180, 0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d137",
+  "title": "Escape Velocity Estimator",
+  "spec": "The entry function is `escape(planets)`. The input is an array of arrays representing celestial bodies, containing the planetary mass in earth masses, the planetary radius in earth radii, and a core density multiplier. Calculate the adjusted planetary mass by multiplying the planetary mass by the core density multiplier. Determine the gravitational pull ratio by dividing the adjusted planetary mass by the planetary radius. If the gravitational pull ratio is less than zero point one, the estimated escape velocity is zero. Otherwise, compute the estimated escape velocity by multiplying the gravitational pull ratio by eleven point two. Return an array of the estimated escape velocities rounded down to the nearest integer. Example: given [[1, 1, 1], [0.01, 0.5, 2]], the output is [11, 0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d138",
+  "title": "Archery Tournament Wind Adjustment",
+  "spec": "The entry function is `aim(shots)`. The input array of arrays details target attempts, with the target distance in meters, the lateral wind speed in meters per second, and the bow draw weight in pounds. Compute the base wind drift by multiplying the target distance by the lateral wind speed. Determine the draw weight compensation by dividing the bow draw weight by ten. The final aim offset is the base wind drift divided by the draw weight compensation. Return an array of final aim offsets, rounding each down to the nearest integer. Example: given [[70, 5, 50], [50, 3, 30]], the output is [70, 50].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d139",
+  "title": "Snowplow Street Clearing Time",
+  "spec": "The entry function is `plow(streets)`. You are given an array of arrays representing city streets, each containing the street length in kilometers, the snow accumulation depth in centimeters, and the number of parked cars. Calculate the base clearing time by multiplying the street length by five. Determine the heavy snow penalty by taking the snow accumulation depth and subtracting ten; if the result is positive, multiply it by two and add it to the time, otherwise add zero. Calculate the parked car delay by multiplying the number of parked cars by one. The total plowing time is the sum of the base clearing time, heavy snow penalty, and parked car delay. Return an array of total plowing times. Example: for [[10, 15, 3], [5, 5, 10]], the output is [63, 35].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d140",
+  "title": "Crane Lift Safety Check",
+  "spec": "The entry function is `lift(loads)`. An array of arrays represents construction lifts, with the payload weight in tons, the crane boom length in meters, and the operating wind speed in kilometers per hour. Calculate the mechanical boom moment by multiplying the payload weight by the crane boom length. Determine the wind stress factor by multiplying the crane boom length by the operating wind speed divided by ten. The combined structural stress is the sum of the mechanical boom moment and the wind stress factor. If the combined structural stress is strictly greater than one hundred, the lift is unsafe. Return an array of boolean values where true indicates the lift is safe and false indicates it is unsafe. Example: given [[5, 15, 20], [2, 10, 5]], the output is [false, true].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d141",
+  "title": "Darts Match Scorer",
+  "spec": "Write a function `score(throws)` that calculates the score of a darts match. The input is an array of objects representing throws, each with a region (number from 1 to 20, or 25 for the bullseye) and a ring (a string that is single, double, or triple). If the ring is double, the score is the region multiplied by 2. If triple, the region multiplied by 3. If the region is 25, single is 25 points and double is 50 points (triple is not valid for 25 and counts as zero). Keep a running total. If a player hits a triple, check if the immediately preceding throw was also a triple; if so, add a consecutive bonus of 10 points. Finally, if the total score exceeds 301, the player busts, and their score for the match becomes 0. Return the final total score as a number. Example: a triple 20 followed by a triple 20 yields 60 + 60 + 10 = 130.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d142",
+  "title": "Pottery Kiln Temperature Controller",
+  "spec": "Write a function `ramp(phases)` that models a firing schedule for a pottery kiln. The input is an array of objects representing phases, each with a target (temperature in degrees), duration (minutes to reach target), and hold (minutes to stay at target). Assume the kiln starts at a room temperature of 70 degrees. For each phase, calculate the heating rate in degrees per minute. Keep track of the total firing time in minutes and the maximum temperature reached. Classify the overall firing speed based on the highest heating rate found in any phase: if it is under 5, it is slow; if it is 5 to 15, it is medium; if it is over 15, it is fast. Return an array containing the total firing time, the maximum temperature, and the speed classification string. Example: target 200, duration 60, hold 10 results in time 70, max temp 200, rate 2.16 (slow).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d143",
+  "title": "Language Flashcard Spaced Repetition",
+  "spec": "Write a function `review(cards, day)` to update a deck of flashcards. The input cards is an array of objects, each with a word (string), level (number), and last (the day number it was last reviewed). The day is a number representing the current day. A card is due for review if the current day minus its last review day is greater than or equal to its level squared. When a card is reviewed, its level increases by one and its last review day updates to the current day. If a card reaches level 5, it is considered graduated and will never be reviewed again. Separate the reviewed cards into two arrays: one for words that graduated today, and one for words that were reviewed but have not yet graduated. Return an array containing these two arrays of strings, both sorted alphabetically.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d144",
+  "title": "Pet Feeding Schedule Tracker",
+  "spec": "Write a function `feed(pets, stock)` to manage daily animal feeding. The input pets is an array of objects with species (string), weight (pounds), and age (years). The stock is the total ounces of food available. The daily base food required for an animal is its weight multiplied by 2 if it is under 1 year old, its weight multiplied by 1.5 if it is between 1 and 5 years old inclusive, and its weight multiplied by 1.2 if over 5. Cats require a 20 percent increase to this base amount, while dogs require a 10 percent increase. Deduct the total daily food needed for each pet from the stock one by one in the order they appear. If the stock runs out before a pet is fully fed, stop feeding. Return an array containing the number of pets fully fed and the remaining stock rounded to one decimal place.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d145",
+  "title": "Bread Dough Rising Calculator",
+  "spec": "Write a function `proof(doughs)` to find the time needed for bread doughs to rise. The input is an array of objects, each with flour (grams), water (grams), yeast (grams), and temperature (Fahrenheit). The base rising time for any dough is 120 minutes. Adjust this base time: subtract 5 minutes for every degree the temperature is above 70, and add 5 minutes for every degree below 70. Subtract 10 minutes for every gram of yeast exceeding 5 grams. Calculate the dough hydration as water divided by flour; if hydration is above 0.7, the dough is wet, so subtract 15 minutes. Find the rising time for each dough and determine the minimum time across all doughs. If any calculated time drops below 30 minutes, treat it as 30 minutes. Return the minimum rising time as a single number.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d146",
+  "title": "Drone Delivery Battery Optimizer",
+  "spec": "Write a function `deliver(packages)` that estimates the battery requirements for a fleet of drones. The input packages is an array of objects, each having distance (miles), weight (pounds), and priority (boolean). The base battery cost per mile is 5 units. Each pound of weight adds 2 units to the cost per mile. Priority packages incur a flat penalty of 15 battery units to account for rapid takeoff speed. Calculate the total battery cost for each package. Sort the packages by their calculated cost in ascending order, but ensure that all priority packages are placed before non-priority packages regardless of their cost. Return an array of the calculated battery costs in this newly sorted order.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d147",
+  "title": "Aquarium Lighting Simulator",
+  "spec": "Write a function `illuminate(corals)` that computes the health of a coral reef tank. The input corals is an array of objects with depth (inches), type (string), and health (number from 1 to 10). The light intensity at the surface is 1000 units. The light decreases by 50 units for every inch of depth. Stony corals require at least 500 light units to survive, while soft corals require at least 200. For each coral, check the light reaching its depth. If the received light is below its requirement, its health decreases by 1. If the received light is more than 200 units above its requirement, its health increases by 1, up to a maximum of 10. Return the sum of all coral health values after these adjustments.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d148",
+  "title": "Birdhouse Wood Cutting Optimizer",
+  "spec": "Write a function `cut(boards, plans)` to minimize waste when building birdhouses. The input boards is an array of available wood lengths in inches. The plans is an array of required piece lengths in inches. Sort the plans from longest to shortest. For each required piece, search the boards array for the shortest board that can accommodate it. A board can accommodate a piece if its length is greater than or equal to the piece length plus a 1-inch allowance for saw blade waste (unless the piece exactly matches the board length, in which case no allowance is needed). Once a board is chosen, subtract the piece length and the waste allowance from its length. If a piece cannot fit on any board, increment a failure counter. Return the total number of failures.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d149",
+  "title": "Board Game Turn Order Sorter",
+  "spec": "Write a function `sort(players)` to determine the seating and team arrangements for a board game night. The input players is an array of objects with name, age, experience (years), and roll (number). First, determine the individual turn order by sorting the players. The primary sorting criterion is the roll, in descending order. If there is a tie, sort by experience in ascending order, so newer players go first. If still tied, sort by age in ascending order, so younger players go first. Finally, resolve any remaining ties alphabetically by name. After sorting, assign the players to teams of two by pairing the first and second player, the third and fourth, and so on. Return an array of arrays, where each inner array contains the names of two teammates.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d150",
+  "title": "Guitar String Tension Calculator",
+  "spec": "Write a function `tension(strings)` that analyzes the forces on a guitar neck. The input strings is an array of objects, each with weight (mass per unit length), scale (length in inches), and frequency (hertz). The physical tension of a string is calculated as its weight multiplied by the square of its scale length, multiplied by the square of its frequency, and finally divided by the constant 386.4. Calculate the individual tension for each string in the array. Determine the total tension of all strings combined and identify the highest individual string tension. Return an array containing exactly two numbers: the total combined tension and the maximum individual tension, both rounded to the nearest whole number.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d151",
+  "title": "Sailboat Wind Tacking Estimator",
+  "spec": "Write a function `tack(route)` to estimate the duration of a sailing trip. The input route is an array of legs, each represented by an object with distance (miles), heading (degrees), and wind (degrees). If the absolute difference between the heading and the wind direction is less than 45 degrees, the boat is sailing too close to the wind and must tack. Tacking increases the effective distance of that leg by 40 percent and restricts the boat speed to 5 miles per hour. For all other angles, the boat can sail directly on course at a speed of 8 miles per hour. Calculate the travel time for each leg by dividing the effective distance by the speed. Sum the times for all legs and return the total hours rounded to one decimal place.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d152",
+  "title": "Audiobook Pacing Calculator",
+  "spec": "Write a function `pace(chapters, speed)` to compute the total playback duration of an audiobook. The input chapters is an array of word counts (numbers). The speed is a number representing the narrator's speaking rate in words per minute. For each chapter, calculate the base listening time in minutes by dividing the word count by the speed. Add a mandatory 5-minute break for any chapter longer than 5000 words to rest the narrator's voice. Conversely, add a 1-minute pause for any chapter shorter than 1000 words. Sum the durations of all chapters to find the total time in minutes. Convert this total time into hours and remaining minutes. Return an array containing the total hours (as an integer) and the remaining minutes (rounded down to the nearest integer).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d153",
+  "title": "Paintball Team Flag Capture Scorer",
+  "spec": "Write a function `capture(matches)` to calculate the tournament score for a paintball team. The input matches is an array of objects, each containing eliminations (number), captured (boolean), and time (minutes spent). A team scores 5 points for every elimination. If the team captured the flag, they earn a massive 50-point bonus, plus a speed bonus of 2 points for every minute remaining in the standard 15-minute time limit (calculated as 15 minus time). If they did not capture the flag, they lose 10 points from their match score, but a match score cannot drop below zero. Sum the final scores across all matches. Return the aggregate tournament score as a number.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d154",
+  "title": "Geocaching Waypoint Distance Tracker",
+  "spec": "Write a function `navigate(waypoints)` to measure the hiking distance of a geocache trail. The input waypoints is an array of objects, each with north (coordinate) and east (coordinate). Starting from the first waypoint, calculate the straight-line distance to the next waypoint using the Pythagorean theorem on the differences between the north coordinates and the east coordinates. Keep a running total of the distance traveled from start to finish. If any single leg of the journey has a distance greater than 100 units, add a terrain fatigue penalty of 10 extra units to the total distance. Return the final adjusted total distance rounded to the nearest whole number.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d155",
+  "title": "Rock Climbing Route Difficulty Aggregator",
+  "spec": "Write a function `grade(pitches)` to evaluate the overall challenge of a multi-pitch rock climb. The input pitches is an array of objects with steepness (degrees), holds (number), and length (meters). Each pitch receives a base score equal to its length. If the steepness exceeds 90 degrees, add 2 points to the base score for every degree over 90. Multiply this score by 10 and then divide by the number of holds; if the pitch has zero holds, divide by 1 instead to avoid errors. The overall route difficulty is determined by taking the highest score among all pitches and adding one tenth of the sum of the scores of all the other pitches. Return the overall route difficulty rounded down to the nearest integer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d156",
+  "title": "Microscope Cell Counter",
+  "spec": "Write a function `count(grid)` to analyze biological samples. The input grid is a two-dimensional array of strings, where an asterisk represents a live cell and a dash represents empty space. Iterate through the grid to evaluate each cell. A cell is considered active if it is surrounded by at least three other live cells directly above, below, left, or right (diagonal neighbors do not count). A cell is dormant if it has fewer than three orthogonal neighbors. Cells on the very edge of the grid are exposed and always considered dormant. Count the total number of active cells and dormant cells across the entire grid. Return an array containing the active cell count followed by the dormant cell count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d157",
+  "title": "Geothermal Pump Flow Rate",
+  "spec": "Write a function `pump(wells)` to calculate the energy output of a geothermal plant. The input wells is an array of objects, each with depth (meters), temperature (Celsius), and pressure (bar). The base flow rate for a well is its pressure multiplied by 10. Since pumping from deep underground requires energy, subtract 0.5 from the flow rate for every meter of depth. If the water temperature is above 100 degrees, the steam provides a natural lift, adding a 20 percent bonus to the flow rate. If the calculated flow rate falls below zero, set it to zero. Sum the flow rates of all wells. Return an array containing the total flow rate across all wells and a count of how many wells have an individual flow rate greater than 50.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d158",
+  "title": "Cheese Aging Humidity Monitor",
+  "spec": "Write a function `age(readings)` to ensure quality control in a cheese cave. The input readings is an array of numbers representing daily humidity percentages. The ideal humidity is 85 percent. If a daily reading falls below 80 percent or rises above 90 percent, it is flagged as an extreme violation. Count consecutive days of extreme violations. If the cave experiences three or more consecutive extreme days at any point, the entire batch of cheese is ruined. Calculate the average humidity over the entire period. Return an array containing a boolean (true if the batch is ruined, false otherwise) and the average humidity rounded to one decimal place.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d159",
+  "title": "Kombucha Fermentation Tracker",
+  "spec": "Write a function `ferment(batches)` to classify the taste profiles of kombucha brews. The input batches is an array of objects with sugar (grams), tea (milliliters), and days (number). The initial sugar concentration is the sugar divided by the tea. During fermentation, the culture consumes 0.005 of this concentration per day. Calculate the final concentration after the specified number of days. If the final concentration is above 0.05, the batch is classified as sweet. If it is between 0.02 and 0.05 inclusive, it is perfect. If it drops below 0.02, it has turned sour. Keep a count of each classification. Return an array of three numbers representing the counts of sweet, perfect, and sour batches, in that exact order.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d160",
+  "title": "Hot Air Balloon Lift Capacity",
+  "spec": "Write a function `lift(balloons, payload)` to determine if a balloon festival flight can launch safely. The input balloons is an array of objects with volume (cubic meters) and envelope (weight of the fabric in kilograms). The payload is a single number representing the total weight of the basket and passengers in kilograms. Each cubic meter of balloon volume generates 0.25 kilograms of gross lift. The net lift for a single balloon is its gross lift minus its envelope weight. Sum the net lift of all balloons in the array. If the total net lift is strictly greater than the payload, calculate the safety margin percentage (the total net lift minus the payload, divided by the payload, multiplied by 100). If the balloons cannot lift the payload, return negative one. Otherwise, return the safety margin rounded to the nearest integer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d161",
+  "title": "Ship Hull Barnacle Cleaner",
+  "spec": "Write a function `clean(sections)` to schedule an underwater cleaning drone. The input sections is an array of objects, each with area (square meters), density (barnacles per square meter), and curved (boolean). The base cleaning time is 2 minutes per square meter. Each barnacle per square meter adds an additional 0.5 minutes to the area's base cleaning rate. If the section is curved, the total time required for that section is multiplied by 1.5 due to navigational difficulties. Sum the time required for all sections. The drone can operate for exactly 120 minutes before it must return to the surface for a battery swap, which takes 30 minutes. Calculate the total time to finish the job, including all necessary battery swaps. Return the total elapsed time in minutes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d162",
+  "title": "Ice Skating Routine Jump Scorer",
+  "spec": "Write a function `skate(jumps)` to score a figure skating program. The input jumps is an array of objects, each with rotations (number), landed (boolean), and flow (number from 1 to 5). The base value of any jump is calculated as 2 raised to the power of its rotations. If the skater did not land the jump (fell), this base value is cut in half. The flow score represents the grade of execution: subtract 2 from the value if flow is 1, subtract 1 if flow is 2, make no change if flow is 3, add 1 if flow is 4, and add 2 if flow is 5. Calculate the final score for each jump and sum them. If the total sum has a decimal, round it down to the nearest whole number. Return the total score.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d163",
+  "title": "Trampoline Park Waiver Tracker",
+  "spec": "Write a function `verify(visitors, activity)` to check admission rules at a trampoline park. The input visitors is an array of objects with age (number), signed (boolean), and guardian (boolean). The activity is a string that can be dodgeball, foam, or main. To jump anywhere, a visitor must have a signed waiver. If they are under 18, they also need a guardian present. Furthermore, dodgeball requires visitors to be 12 or older, foam requires them to be strictly under 15, and main has no age restriction for the activity itself. Evaluate each visitor against both the general waiver rules and the specific activity rules. Tally how many visitors are cleared to jump, how many are rejected for missing waivers or guardians, and how many are rejected solely due to activity age limits. Return an array of these three tallies.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d164",
+  "title": "Sandcastle Structural Integrity Scorer",
+  "spec": "Write a function `build(layers)` to judge a sandcastle building contest. The input layers is an array of objects, ordered from bottom to top, each with width (inches), height (inches), and moisture (percentage number). For structural stability, each layer must be strictly narrower than the layer immediately beneath it. If a layer is wider or equal in width to the one below it, a collapse penalty of 10 points is applied. The ideal sand moisture is 20 percent; calculate the absolute difference between the layer's moisture and 20, and subtract 1 point from the layer's base score for every percent of difference. A layer's base score is its width multiplied by its height. Sum the adjusted scores of all layers and subtract any accumulated collapse penalties. Return the final structure score.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d165",
+  "title": "Carousel Horse Rotation Speed",
+  "spec": "Write a function `spin(horses, duration)` to analyze the physics of a carnival ride. The input horses is an array of objects with distance (from the center in meters) and weight (kilograms). The duration is a time in seconds. The carousel completes one full rotation every 15 seconds, so its angular velocity is 2 times pi divided by 15. The linear speed of a horse is the angular velocity multiplied by its distance from the center. The centrifugal force experienced by a rider on the horse is the horse's weight multiplied by the square of its linear speed, divided by its distance from the center. Determine the maximum centrifugal force among all the horses and calculate the total distance traveled by the outermost horse over the given duration. Return an array with the maximum force and the outer distance, both rounded to one decimal place.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d166",
+  "title": "Spacecraft Reentry Path",
+  "spec": "Write a function `reentry(telemetry)` that evaluates a series of altitude and velocity readings to determine if a spacecraft is approaching at a safe angle. The telemetry input is an array of arrays, where each inner array contains altitude in kilometers, velocity in meters per second, and atmospheric density. Calculate the descent rate between consecutive readings. If the descent rate exceeds a critical threshold based on the density, flag it as steep. The function should calculate the average thermal load using a standard multiplier against the square of the velocity and the current density. Return an array containing the maximum thermal load experienced, the total number of steep descent segments, and a boolean indicating if the trajectory remains within the safe structural limit. Example: given an array with readings like one hundred kilometers, seven thousand meters per second, and a density of point zero one, it should return an array such as two thousand, zero, and true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d167",
+  "title": "Metropolitan Taxi Fare Assessor",
+  "spec": "Write a function `fare(trips)` that processes a list of passenger journeys to compute total daily revenue. Each trip is an array containing the starting zone number, ending zone number, travel time in minutes, and distance in miles. The base charge is five dollars. For trips crossing into zone one, an additional congestion fee of three dollars applies. Calculate the distance cost at two dollars per mile and the time cost at fifty cents per minute. If the distance cost plus the time cost is less than the base charge, the total cost defaults to the base charge. Add any applicable congestion fees after this check. The function should return a list containing the total revenue collected, the maximum single fare, and the number of trips that incurred a congestion fee. For example, given a trip starting in zone two, ending in zone one, taking ten minutes for three miles, the fare would be base charge plus distance and time plus congestion, returning a final total for that trip in the array.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d168",
+  "title": "Vineyard Irrigation Scheduler",
+  "spec": "Write a function `irrigate(sensors)` that processes moisture readings from different field sectors to determine the total water required. The input is a list of arrays, each holding the sector identifier, the current moisture level percentage, the target moisture percentage, and the sector area in acres. For each sector, find the moisture deficit by subtracting the current level from the target. If the deficit is less than five percent, no water is needed for that sector. Otherwise, calculate the water volume required by multiplying the deficit percentage by the area and a constant absorption factor of three hundred gallons per acre percent. Return an array containing the total water volume needed across all sectors, the identifier of the sector with the largest deficit, and the average deficit percentage among sectors that need watering. Example: an input with sector one, current moisture thirty, target forty, and area ten would yield a deficit of ten, needing three thousand gallons.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d169",
+  "title": "Thrill Ride Maintenance Tracker",
+  "spec": "Write a function `inspect(logs)` that evaluates daily operation records of a theme park ride to determine its maintenance needs. The logs input is an array of arrays, where each inner array contains the number of dispatch cycles, the average dispatch interval in seconds, and the number of fault warnings triggered. First, calculate the total operating time by multiplying the cycles by the dispatch interval. If a day has more than five fault warnings, consider it a high stress day. Accumulate the total cycles and total operating time. If the total cycles exceed ten thousand, or if there are three or more high stress days, a major overhaul is required. Otherwise, if total cycles exceed five thousand, a routine check is needed. Return an array with the recommended action as a string such as overhaul, routine, or none, followed by the total cycles, and the number of high stress days.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d170",
+  "title": "Ale Fermentation Monitor",
+  "spec": "Write a function `ferment(readings)` that monitors temperature logs from a brewing vat to track the fermentation quality. The input is an array of arrays containing the hour mark, the measured temperature in celsius, and the yeast activity metric. The ideal temperature range is between eighteen and twenty two degrees. Calculate the temperature deviation for any reading outside this range. If a reading is above twenty four degrees, the batch risks off flavors. Sum the product of the temperature deviation and the yeast activity metric for all out of bounds readings to find the total stress factor. The function should return an array with the total stress factor, the highest recorded temperature, and the number of hours the temperature exceeded twenty four degrees. For example, a reading at hour two with twenty five degrees and activity of ten gives a stress factor of thirty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d171",
+  "title": "Agricultural Drone Coverage",
+  "spec": "Write a function `spray(flights)` that calculates pesticide application statistics from agricultural drone flight data. The input is a list of arrays, each providing the flight duration in minutes, the flow rate in liters per minute, and the field area covered in hectares. For each flight, compute the total volume sprayed by multiplying duration by flow rate. Calculate the application density as total volume divided by the field area. The optimal density is between fifteen and twenty liters per hectare. Count the number of flights where the density is below optimal, representing under sprayed areas, and above optimal, representing over sprayed areas. Return an array with the total volume of pesticide used, the number of under sprayed flights, and the number of over sprayed flights. An example flight of twenty minutes, two liters per minute, covering two hectares yields forty liters total and a density of twenty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d172",
+  "title": "Runway Landing Coordinator",
+  "spec": "Write a function `landings(requests)` that processes a sequence of incoming flight landing requests to calculate delays and runway utilization. The input is an array of arrays, each containing the flight number, the scheduled arrival time in minutes from midnight, and the required runway occupancy time in minutes. Air traffic control requires a minimum separation of three minutes between any plane clearing the runway and the next plane landing. For each request, calculate the actual landing time based on the clearance of the previous flight plus the separation time, or the scheduled time if the runway is free. Calculate the delay for each flight as the actual landing time minus the scheduled arrival time. Return an array containing the maximum delay experienced by any flight, the total idle time of the runway between the first and last landing, and the final minute the runway is occupied.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d173",
+  "title": "Ore Conveyor Belt Analyzer",
+  "spec": "Write a function `convey(segments)` that assesses the load and stress on a mining conveyor system over a shift. The input is an array of arrays, where each represents a time segment and contains the mass of ore loaded in tons and the belt speed in meters per second. Calculate the flow rate for each segment by multiplying the mass by the speed. If the flow rate exceeds fifty ton meters per second, flag the segment as overloaded. Find the total mass transported across all segments. Calculate the average flow rate for the entire shift. The function must return an array with the total mass of ore, the number of overloaded segments, and the maximum flow rate recorded. For example, a segment with thirty tons and a speed of two meters per second has a flow rate of sixty, triggering an overload flag.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d174",
+  "title": "Planetary Alignment Detector",
+  "spec": "Write a function `align(planets)` that evaluates the orbital positions of several celestial bodies to find alignments. The input is an array of arrays, each containing the body identifier, its orbital radius in astronomical units, and its current angle in degrees. Two bodies are considered aligned if the absolute difference in their angles is less than five degrees, or greater than three hundred fifty five degrees. Compare every unique pair of bodies to check for alignment. For each aligned pair, calculate the gravitational resonance as the inverse of the sum of their orbital radii. Sum the resonance values for all aligned pairs. Return an array containing the total number of alignments found, the total gravitational resonance rounded to two decimal places, and a boolean indicating if more than three alignments occurred simultaneously.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d175",
+  "title": "Volcanic Activity Predictor",
+  "spec": "Write a function `erupt(seismic)` that evaluates earthquake swarms and gas emissions to assess eruption risk. The input is an array of arrays representing daily measurements, each containing the number of tremors, the average tremor magnitude, and the sulfur dioxide emission in tons. Calculate a daily risk score by multiplying the tremor count by the average magnitude, then adding a tenth of the sulfur emission. If the risk score rises for three consecutive days, the system should trigger a warning state. Keep track of the highest daily risk score and count how many days the emission exceeded five hundred tons. Return an array with a boolean representing if a warning was triggered, the maximum risk score, and the count of high emission days. An example day with fifty tremors, magnitude two, and four hundred tons of gas yields a risk score of one hundred forty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d176",
+  "title": "Gallery Crowd Manager",
+  "spec": "Write a function `crowd(zones)` that calculates visitor density and flow across different rooms in an art museum. The input is a list of arrays, each containing the room identifier, current visitor count, the maximum capacity, and the room floor area in square meters. For each room, determine the crowding percentage by dividing the visitor count by the capacity. If the percentage exceeds eighty percent, the room is restricted. Calculate the average space per person by dividing the floor area by the visitor count. Accumulate the total number of visitors in the museum. Return an array containing the total visitor count, the number of restricted rooms, and the lowest average space per person found among all rooms. For example, a room with eighty people, capacity of one hundred, and area of two hundred square meters is at eighty percent and gives two point five square meters per person.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d177",
+  "title": "Warehouse Pallet Stacker",
+  "spec": "Write a function `stack(pallets)` that evaluates incoming freight to determine optimal placement and identify overweight loads. The input is an array of arrays, each holding the pallet identifier, its weight in kilograms, and its height in centimeters. The storage racks have a maximum weight limit of one thousand kilograms and a maximum height clearance of two hundred centimeters. For each pallet, check if it exceeds either the weight or height limit. If it does, count it as a rejected pallet. For accepted pallets, sum the total weight and total height. Calculate the storage efficiency by dividing the total accepted weight by the total accepted height. Return an array with the total accepted weight, the number of rejected pallets, and the storage efficiency. An input pallet weighing five hundred kilos and standing one hundred centimeters is accepted, adding to the totals.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d178",
+  "title": "Charging Station Queue",
+  "spec": "Write a function `charge(vehicles)` that simulates a queue of electric cars at a fast charging hub. The input is an array of arrays, each containing the arrival time in minutes from opening, the current battery percentage, and the target battery percentage. The charger adds one percent of battery per minute. For each car, calculate the charging duration as the difference between the target and current percentage. The charger can only serve one car at a time. Calculate the start time for each car, which is either its arrival time or the departure time of the previous car, whichever is later. Determine the wait time for each car as the start time minus the arrival time. Return an array containing the maximum wait time experienced, the total time the charger was active, and the final departure time of the last car.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d179",
+  "title": "Ward Occupancy Forecaster",
+  "spec": "Write a function `ward(patients)` that processes hospital admission and discharge data to track available beds. The input is an array of arrays, each representing a day and containing the initial bed count, the number of new admissions, and the number of planned discharges. For each day, calculate the final occupancy by adding admissions and subtracting discharges from the starting count. If the occupancy exceeds the maximum ward capacity of two hundred beds, flag the day as an overflow day. Calculate the daily utilization rate as the occupancy divided by the maximum capacity. Track the highest utilization rate across the period. Return an array with the total number of overflow days, the average occupancy across all days, and the highest utilization rate. An initial count of one hundred ninety, with twenty admissions and five discharges gives an occupancy of two hundred five, triggering an overflow.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d180",
+  "title": "River Dam Flood Gates",
+  "spec": "Write a function `flood(measurements)` that determines when to open spillways on a river dam based on water levels and inflow rates. The input is an array of arrays, where each contains the hour, the water level in meters, and the upstream flow rate in cubic meters per second. The safe water level is fifty meters. For every meter above the safe level, one flood gate must be opened. Additionally, if the flow rate exceeds five thousand cubic meters per second, an extra emergency gate must be opened. Calculate the number of open gates for each hour. Track the highest number of gates opened simultaneously and sum the total hours where at least one emergency gate was active. Return an array containing the maximum gates open at any time, the number of emergency hours, and the average water level over the period.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d181",
+  "title": "Observatory Dome Tracker",
+  "spec": "Write a function `dome(targets)` that calculates the rotation and elevation adjustments required for a telescope dome to track celestial objects. The input is an array of arrays, each containing the target azimuth in degrees, the target elevation in degrees, and the observation duration in minutes. The dome starts at zero degrees azimuth and ninety degrees elevation. For each target, calculate the shortest rotation needed to reach the new azimuth, keeping in mind that azimuth wraps around at three hundred sixty degrees. Calculate the absolute elevation change as well. Add the time spent moving, assuming the dome rotates two degrees per second and changes elevation at one degree per second. Return an array with the total observation duration, the total time spent moving the dome in seconds, and the final azimuth position.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d182",
+  "title": "Auditorium Acoustics Analyzer",
+  "spec": "Write a function `acoustics(materials)` that estimates the reverberation time of a concert hall based on surface treatments. The input is an array of arrays, each providing the surface area in square meters and the sound absorption coefficient of a specific material used in the hall. The room volume is fixed at ten thousand cubic meters. For each material, calculate the equivalent absorption area by multiplying the surface area by the absorption coefficient. Sum these values to find the total acoustic absorption of the room. Use the standard reverberation formula, multiplying the volume by a constant zero point one six one and dividing by the total absorption. Return an array containing the total absorption area, the calculated reverberation time in seconds, and the number of materials with a coefficient greater than zero point five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d183",
+  "title": "Pasture Rotation Manager",
+  "spec": "Write a function `graze(pastures)` that evaluates field conditions to schedule herd movements and prevent overgrazing. The input is an array of arrays, each containing the pasture identifier, the grass height in centimeters, and the soil recovery days since last grazed. A pasture is ready for grazing if the grass height is at least fifteen centimeters and the recovery days are greater than twenty. For each ready pasture, calculate the grazing capacity by multiplying the grass height above ten centimeters by fifty animal units. Track the pasture with the highest grazing capacity. Return an array with the total number of ready pastures, the identifier of the pasture with the highest capacity, and the total grazing capacity available. For example, a pasture with grass height twenty and recovery twenty five gives a capacity of five hundred units.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d184",
+  "title": "Hydro Power Flow Optimizer",
+  "spec": "Write a function `hydro(turbines)` that calculates power generation and identifies maintenance needs for a hydroelectric plant. The input is an array of arrays, each representing a turbine and containing the water head height in meters, the flow rate in cubic meters per second, and the turbine efficiency percentage. Calculate the power output for each turbine by multiplying the head height, flow rate, efficiency, and the gravity constant nine point eight. If a turbine generates less than five megawatts despite a flow rate over ten cubic meters per second, flag it for maintenance. Sum the power output of all turbines. Return an array containing the total power generated in megawatts, the number of turbines needing maintenance, and the highest efficiency percentage recorded among all turbines.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d185",
+  "title": "Smart Home Energy Tracker",
+  "spec": "Write a function `lighting(rooms)` that analyzes daily usage logs of smart light bulbs to estimate energy costs. The input is an array of arrays, each containing the room name, the total minutes the lights were on, the number of bulbs, and the wattage per bulb. For each room, calculate the total watt hours by multiplying the minutes, bulbs, and wattage, then dividing by sixty. Convert this to kilowatt hours. The electricity rate is fifteen cents per kilowatt hour. Calculate the daily cost for each room. Identify the room with the highest energy consumption. Return an array with the total cost across all rooms, the name of the room with the highest consumption, and the average daily minutes of usage per room. For example, a room with one hundred twenty minutes, two bulbs, and ten watts uses forty watt hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d186",
+  "title": "Satellite Orbit Decay",
+  "spec": "Write a function `decay(telemetry)` that processes atmospheric drag data to estimate how quickly a satellite is losing altitude. The input is a list of arrays, each providing the day number, the average solar flux index, and the measured altitude drop in meters. For each day, calculate the predicted drop by multiplying the solar flux index by a baseline drag factor of zero point zero five. Compare the measured drop to the predicted drop. If the measured drop is more than twenty percent higher than predicted, record it as an anomalous drag event. Sum the total altitude drop over the given period. Determine the average daily drop. Return an array containing the total altitude drop, the number of anomalous drag events, and the largest single day drop recorded.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d187",
+  "title": "Blood Inventory Matcher",
+  "spec": "Write a function `blood(donations)` that evaluates the available units of blood against hospital requests to find shortages. The input is an array of arrays, each containing the blood type as a string, the current inventory in units, and the requested amount in units. For each blood type, calculate the net surplus or deficit by subtracting the requested amount from the inventory. If the deficit is greater than zero, an emergency drive must be scheduled for that type. Calculate the total requested units across all blood types and the total current inventory. Return an array containing the number of types requiring an emergency drive, the total deficit amount summing only the negative balances, and a boolean indicating if the total inventory can cover the total requests regardless of type matching.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d188",
+  "title": "Glacier Calving Tracker",
+  "spec": "Write a function `iceberg(fragments)` that calculates the mass loss of ice fragments drifting into warmer waters. The input is an array of arrays, each containing the fragment length in meters, width in meters, height in meters, and the surrounding water temperature in celsius. The initial mass of each fragment is calculated by multiplying its volume by the density of ice, nine hundred kilograms per cubic meter. The daily melt rate percentage is calculated as the water temperature multiplied by zero point five. Determine the mass lost in one day for each fragment. Sum the total mass lost across all fragments. Return an array containing the total initial mass of all fragments, the total mass lost in one day, and the number of fragments that lost more than one thousand kilograms.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d189",
+  "title": "Cruise Cabin Optimizer",
+  "spec": "Write a function `cruise(bookings)` that processes passenger party sizes to assign appropriate staterooms and calculate occupancy rates. The input is an array of arrays, each containing the booking reference, the number of adults, and the number of children. A standard cabin holds up to two people, a family cabin holds up to four, and a suite holds up to six. For each booking, determine the smallest cabin type that can fit the entire party. If a party has more than six people, they require multiple suites, calculated by dividing the party size by six and rounding up. Count the total number of each cabin type needed. Return an array containing the total number of passengers, the number of family cabins assigned, and the number of multiple suite bookings required.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d190",
+  "title": "Wind Turbine Aero Dynamics",
+  "spec": "Write a function `windmill(blades)` that evaluates structural stress on turbine blades under varying wind conditions. The input is an array of arrays, each containing the wind speed in meters per second, the blade pitch angle in degrees, and the measured vibration frequency in hertz. The expected vibration is calculated by multiplying the wind speed by a constant one point two and subtracting the pitch angle. Find the difference between the measured vibration and the expected vibration. If the absolute difference exceeds five hertz, it indicates a potential micro fracture. Calculate the maximum measured vibration across all conditions. Return an array containing the number of potential micro fractures detected, the highest measured vibration frequency, and the average wind speed from the input data.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d191",
+  "title": "Astronaut Bone Density Tracker",
+  "spec": "The entry point `analyze(records, threshold)`. The records input is a list of objects containing month and density. The logic must iterate through the records to find distinct periods of continuous density decline. A decline period ends when the density increases or remains the same compared to the previous month. Calculate the total percentage drop for each decline period relative to the density at the beginning of that specific decline. Keep track of the maximum percentage drop across all decline periods. Additionally, count how many individual decline periods have a total percentage drop strictly greater than the given threshold. Return an array containing the maximum percentage drop rounded to two decimal places, and the count of severe declines.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d192",
+  "title": "Vinyl Record Pressing Flaws",
+  "spec": "The entry point `inspect(timestamps, limit)`. The timestamps input is a sorted list of audio defect times in seconds, and the limit is the maximum gap in seconds that connects defects into a single cluster. Group consecutive timestamps into clusters where the time difference between adjacent defects is less than or equal to the limit. For each cluster, calculate its duration by subtracting the first timestamp from the last timestamp in that cluster. Determine the maximum cluster duration among all identified clusters. Also, count how many clusters contain more than three distinct defect timestamps. Return a list containing the total number of clusters, the maximum cluster duration, and the count of large clusters.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d193",
+  "title": "Deep Sea Submersible Pressure",
+  "spec": "The entry point `evaluate(readings, danger)`. The readings input is a list of depth values in meters recorded every minute. The danger parameter is a depth threshold above which the submersible is in a high stress zone. Calculate the ambient pressure for each reading, which increases by 1 atmosphere for every 10 meters of depth, plus 1 atmosphere for the surface. Identify continuous segments of time where the submersible remains strictly deeper than the danger threshold. Find the total number of minutes spent in these danger zones across the entire dive. Also determine the highest single pressure value recorded during any of the danger zone segments. Return a list with the total dangerous minutes and the peak pressure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d194",
+  "title": "Meteor Shower Peak Finder",
+  "spec": "The entry point `locate(counts, window)`. The counts input is a chronological list of meteor observations per minute. The window parameter defines the duration of the observation period in minutes. Traverse the counts list to find all possible continuous segments that match the window length. For each segment, calculate the total number of meteors observed and the average meteors per minute. Identify the segment with the highest total meteor count. If multiple segments tie for the highest total, choose the one that occurs first. Return a list containing the starting minute index of this peak segment, the highest total count, and the average meteors per minute rounded to one decimal place.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d195",
+  "title": "Coral Reef Bleaching Estimator",
+  "spec": "The entry point `assess(temperatures, critical)`. The temperatures input is a list of daily average water temperatures. The critical parameter represents the temperature above which coral bleaching occurs. Scan the list to find continuous periods where the temperature strictly exceeds the critical threshold. For each period of consecutive days above the threshold, calculate the cumulative heat stress by summing the difference between the daily temperature and the critical threshold. Determine the longest duration in days of any single bleaching period. Also, find the maximum cumulative heat stress reached in any single period. Return a list with the longest duration and the maximum heat stress rounded to one decimal place.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d196",
+  "title": "Avalanche Risk Assessor",
+  "spec": "The entry point `score(layers, angle)`. The layers input is a list of objects representing snow layers, containing depth and stability. The angle is the slope steepness in degrees. Iterate through the layers from top to bottom, calculating a cumulative weight based on each layer depth. A critical failure point occurs where a layer stability is below 5 and the cumulative weight above it exceeds 20. For each such point, calculate a localized risk multiplier by multiplying the depth of the weak layer by the slope angle. Find the sum of all localized risk multipliers. Base risk is 50 if the slope angle is between 30 and 45, otherwise 10. Return the sum of the base risk and the total localized risk multipliers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d197",
+  "title": "Bicycle Frame Stress Test",
+  "spec": "The entry point `simulate(forces, limit)`. The forces list contains daily peak force applied to the frame, and the limit is the material fatigue threshold. Track the structural integrity of the frame, starting at 100 percent. For each daily force, if the force is less than half the limit, integrity drops by 0.1 percent. If the force is between half the limit and the limit, integrity drops by 1 percent. If the force exceeds the limit, subtract a fatigue penalty equal to the force minus the limit, divided by 10. Continue accumulating these drops until the integrity falls below zero. Return a list containing the number of days the frame survived and the final integrity value rounded to two decimals.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d198",
+  "title": "Parachute Deployment Altitude",
+  "spec": "The entry point `calculate(altitudes, resistance)`. The altitudes input is a list of recorded heights during a freefall. The resistance parameter is a multiplier that reduces descent speed. Calculate the descent velocity between each consecutive height recording, assuming they are taken 1 second apart. Apply the resistance multiplier to each calculated velocity. Identify the moment terminal velocity is reached, which is when the adjusted descent velocity changes by less than 1 meter per second compared to the previous second. Once terminal velocity is reached, the parachute should deploy if the altitude falls below a critical safety height of 1000 meters. Track the lowest altitude recorded before terminal velocity was established, and the exact altitude of deployment. Return a list with the deployment altitude and the calculated terminal velocity.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d199",
+  "title": "Kelp Forest Growth Rate",
+  "spec": "The entry point `project(fronds, sunlight)`. The fronds input is a list of initial kelp heights in centimeters, and sunlight is the daily hours of solar exposure. For each kelp frond, simulate its growth over 30 days. Base daily growth is 2 centimeters. If sunlight is greater than 10 hours, add a bonus of 1 centimeter. However, as a frond grows taller than 50 centimeters, its growth rate decreases by 10 percent due to surface crowding. Calculate the final height of each frond after the 30 day period. Determine the average final height of all fronds and count how many fronds exceeded 60 centimeters. Return a list with the average height rounded down and the count of tall fronds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d200",
+  "title": "Tsunami Wave Propagation",
+  "spec": "The entry point `predict(depths, magnitude)`. The depths input is a list of ocean floor depths along the wave path, each representing a 10 kilometer segment. Calculate the wave speed for each segment by multiplying the depth by gravity, which is 9.8, and taking the square root. The travel time for a segment in seconds is the segment distance of 10000 meters divided by this speed. For each segment, the wave height increases as the depth decreases, using a multiplier derived from the magnitude divided by the square root of the depth. Sum the travel times across all segments and find the maximum wave height. Return a list containing total travel time in minutes and the maximum wave height.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d201",
+  "title": "Fossil Carbon Dating",
+  "spec": "The entry point `date(samples, halflife)`. The samples input is a list of objects containing isotope and proportion. The proportion represents the remaining amount of the radioactive element as a decimal between 0 and 1. For each sample, calculate its estimated age by taking the natural logarithm of the proportion, dividing it by the natural logarithm of 2, and multiplying by negative one, then multiplying by the halflife. Next, compute a margin of error which is 5 percent of the calculated age plus 50 years. Find the oldest sample and the average age of all samples. Return a list containing the oldest age, its corresponding margin of error, and the average age, all rounded to the nearest integer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d202",
+  "title": "Glider Thermal Updraft",
+  "spec": "The entry point `soar(thermals, weight)`. The thermals input is a list of updraft strengths in meters per second. The glider starts at an altitude of 500 meters. For each thermal, the glider spends exactly 60 seconds circling. The actual climb rate is the thermal strength minus a sink rate, which is calculated as the weight divided by 150. If the actual climb rate is negative, the glider loses altitude. Update the glider altitude after each thermal. If the altitude ever drops below 200 meters, the flight ends immediately. Track the maximum altitude reached during the entire flight and the final altitude. Return a list containing the maximum altitude and the final altitude rounded to one decimal point.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d203",
+  "title": "Seismograph Tremor Isolator",
+  "spec": "The entry point `isolate(amplitudes, noise)`. The amplitudes input is a chronological sequence of seismic readings. The noise parameter is the background vibration level. An active tremor event starts when an amplitude exceeds the noise level by at least 50 percent. The event ends when the amplitude drops back below the noise level for 3 consecutive readings. For each isolated tremor event, calculate its peak intensity, which is the highest amplitude recorded during the event. Count the total number of distinct events and find the sum of all peak intensities. Return a list containing the event count and the sum of peak intensities.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d204",
+  "title": "Geode Crystal Yield",
+  "spec": "The entry point `extract(geodes, concentration)`. The geodes input is a list of object items containing volume and duration. The concentration is a mineral density multiplier. For each geode, calculate the base crystal weight by multiplying the volume by the concentration. If the duration is greater than 100 days, large crystals form, increasing the weight by 25 percent. If the duration is under 20 days, the weight is reduced by 15 percent due to poor crystallization. Accumulate the total expected crystal weight across all geodes. Also determine the average weight per geode. Return a list with the total weight and the average weight, both rounded to two decimal places.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d205",
+  "title": "Helicopter Rotor Lift",
+  "spec": "The entry point `compute(blades, density)`. The blades input is a list of objects containing length and rpm. The density is the air density value. For each blade configuration, calculate the tip speed by multiplying the length by the rpm and then by 0.1047 to convert to radians per second. The lift generated by a single blade is the square of the tip speed multiplied by the air density, and then scaled by a constant factor of 0.05. Multiply this by 4 to simulate a standard four-blade rotor system. Find the configuration that generates the maximum total lift. Return a list containing the highest total lift and the average lift across all configurations rounded to integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d206",
+  "title": "Maple Syrup Boiling",
+  "spec": "The entry point `boil(batches, target)`. The batches input is a list of objects containing volume and sugar. The target is the desired final sugar percentage, usually around 66. For each batch, calculate the final syrup volume by multiplying the volume by the initial sugar, then dividing by the target percentage. The amount of water to evaporate is the initial volume minus the final syrup volume. The boiling time in hours is the evaporated water volume divided by an evaporation rate of 15 liters per hour. Calculate the total boiling time for all batches and the total final syrup volume. Return a list with total hours and total syrup volume.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d207",
+  "title": "Caving Oxygen Monitor",
+  "spec": "The entry point `monitor(sections, consumption)`. The sections input is a list of cave segments containing length and airflow. The consumption is the oxygen usage rate of the team per hour. For each segment, calculate the transit time by dividing the length by a walking speed of 400 meters per hour. The available oxygen in a segment is proportional to its airflow multiplied by 10. If the available oxygen is less than the team consumption for that transit time, the segment is considered an anoxic hazard. Accumulate the total transit time and count the number of hazard segments. Return a list containing the total transit time in hours and the hazard count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d208",
+  "title": "Optical Prism Dispersion",
+  "spec": "The entry point `refract(angles, index)`. The angles input is a list of incident light angles in degrees. The index is a base refractive index of the glass. For each angle, convert it to radians. Calculate the refraction angle for red light using the base index minus 0.02, and for blue light using the base index plus 0.02, applying the sine ratio where the outside medium is 1. The separation angle is the absolute difference between the red and blue refraction angles in degrees. Determine the maximum separation angle among all incident angles and the average separation angle. Return a list with the maximum separation and the average separation rounded to three decimal places.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d209",
+  "title": "Bonsai Tree Pruning Schedule",
+  "spec": "The entry point `schedule(trees, shape)`. The trees input is a list of objects containing growth and density. The shape is the target aesthetic index. For each tree, calculate the optimal pruning interval in weeks by dividing the target shape index by the product of its growth and density. If the calculated interval is less than 2 weeks, set it to 2 weeks to avoid stressing the tree. If it is greater than 12 weeks, cap it at 12 weeks. Count how many trees require pruning more frequently than every 4 weeks. Calculate the average pruning interval across all trees. Return a list with the average interval and the high-maintenance tree count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d210",
+  "title": "Radio Telescope Signal Amplifier",
+  "spec": "The entry point `amplify(signals, noise)`. The signals input is a list of faint radio frequency readings. Iterate through the signals to apply an amplification curve. If a reading is below the noise threshold, it is considered static and set to zero. If it exceeds the noise, subtract the noise, multiply the remainder by an amplification factor of 2.5, and apply a high-pass filter cap of 1000. Identify any continuous sequences of non-zero amplified signals. Calculate the total energy of the longest continuous sequence by summing its values. Return a list containing the total energy of the longest sequence and the highest single amplified signal value.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d211",
+  "title": "Snowboard Halfpipe Amplitude",
+  "spec": "The entry point `estimate(runs, friction)`. The runs input is a list of initial drop-in speeds. The friction is a speed reduction multiplier between 0 and 1. For each run, the speed at the bottom of the pipe is the drop-in speed multiplied by the friction factor. As the snowboarder travels up the opposite transition wall, calculate the vertical amplitude above the lip. The amplitude is the square of the bottom speed divided by 19.6, minus a fixed wall height of 4 meters. If the result is negative, the amplitude is zero. Find the maximum amplitude achieved across all runs and count how many runs resulted in an amplitude greater than 2 meters. Return a list with the maximum amplitude and the high-air count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d212",
+  "title": "Sourdough Starter Activity",
+  "spec": "The entry point `track(volumes, time)`. The volumes input is a list of consecutive volume measurements of the starter taken at equal time intervals. The time parameter is the hours between each measurement. Find the initial volume, which is the first element in the list. For each subsequent measurement, calculate the expansion ratio by dividing the volume by the initial volume. Identify the peak ratio reached during the fermentation process and the total elapsed time from the start until this peak was first achieved. Count how many measurements showed a ratio strictly greater than 2.0. Return a list containing the peak ratio, the time to peak in hours, and the count of highly active measurements.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d213",
+  "title": "Volleyball Serve Trajectory",
+  "spec": "The entry point `serve(strikes, net)`. The strikes input is a list of objects containing speed and angle. The net parameter is the height of the net in meters. For each strike, assume a starting height of 2.5 meters. Convert the angle from degrees to radians. Calculate the horizontal distance traveled when the ball reaches the net, which is 9 meters away. The time to reach the net is 9 divided by the horizontal velocity. Calculate the vertical height of the ball at this time, accounting for gravity at 9.8 meters per second squared. A serve clears the net if its height is strictly greater than the net height. Count the successful clears and find the maximum clearance margin. Return a list with the success count and maximum margin.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d214",
+  "title": "Windshield Wiper Motor",
+  "spec": "The entry point `wipe(conditions, vehicle)`. The conditions input is a list of rain intensities from 1 to 10. The vehicle parameter is the speed of the car. For each rain intensity, calculate a base wipe frequency in cycles per minute by multiplying the intensity by 5. Add a speed modifier: if the vehicle speed exceeds 80, add 10 cycles; if it exceeds 120, add 20 cycles. However, the wipe frequency is mechanically limited to a maximum of 75 cycles per minute. Calculate the average wipe frequency across all given rain conditions. Also identify the longest consecutive streak of conditions that maxed out the wiper motor at 75 cycles. Return a list with the average frequency and the max out streak length.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d215",
+  "title": "Artillery Shell Trajectory",
+  "spec": "The entry point `fire(shots, wind)`. The shots input is a list of objects containing velocity and elevation. The wind parameter is a headwind speed reduction. For each shot, convert the elevation from degrees to radians. The effective initial velocity is the given velocity minus the wind resistance. Calculate the horizontal and vertical components of the effective velocity. The time of flight is twice the vertical velocity divided by gravity at 9.8. The total horizontal range is the horizontal velocity multiplied by the time of flight. Determine the maximum range achieved among all shots and the highest peak altitude, which is the square of the vertical velocity divided by 19.6. Return a list with max range and peak altitude rounded to the nearest integer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d216",
+  "title": "Origami Crease Stress",
+  "spec": "Calculate the cumulative structural stress on a sheet of paper given a sequence of folds. Implement `fold(instructions)` where the parameter is a list of lists, and each inner list contains a string for the fold type, a number for the fold length, and a number for the paper layer thickness. A mountain fold adds two units of base stress, while a valley fold adds one unit. Multiply the base stress by the layer thickness to find the applied stress. If the fold length is greater than ten centimeters, add an extra penalty of five units to that applied stress. Return the total accumulated stress across the entire sequence. Example: given an input list containing one fold with mountain, twelve, and three, the output should be eleven.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d217",
+  "title": "Fencing Match Scorer",
+  "spec": "Evaluate a series of exchanges to determine the final score of a match. Implement `fence(exchanges)` where the parameter is a list of lists, each containing a string for fencer one action, a string for fencer two action, and a number for the priority advantage. First determine the priority action, which is the action of the fencer whose number matches the priority advantage. A hit action awards one base point, while a parry action awards zero points. If the priority action is a riposte, it awards two points. The calculated points are only added to the score of the fencer with the priority advantage. Return a list of two numbers representing the final score for fencer one and fencer two respectively. Example: given an input list containing one exchange of riposte, hit, and one, the output should be a list containing two and zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d218",
+  "title": "Kite Flying Tension",
+  "spec": "Determine the maximum aerodynamic tension on a string during a flying session. Implement `fly(conditions)` where the parameter is a list of lists, each representing a moment and containing wind speed, kite surface area, and tail length. The base lift is calculated by multiplying the wind speed by the surface area. The tail drag is computed by multiplying the tail length by two point five. The net tension for a given moment is the base lift minus the tail drag, with a minimum possible net tension of zero. Find the net tension for each moment and return the highest net tension recorded across the session. Example: given a moment with wind speed twelve, area three, and tail length four, the output should be twenty six.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d219",
+  "title": "Calligraphy Ink Usage",
+  "spec": "Estimate the total volume of pigment required to complete a calligraphy piece. Implement `write(strokes)` where the parameter is a list of lists, each containing brush pressure, stroke length, and a string for the paper texture. The basic ink volume per stroke is determined by multiplying the brush pressure by the stroke length. If the paper texture is rough, multiply the basic volume by one point five to get the adjusted volume, otherwise the adjusted volume is the basic volume. If the brush pressure exceeds five units, a splatter penalty of two extra units is added to the adjusted volume. Calculate the final volume for each stroke and return the total sum of ink volume required. Example: given pressure six, length three, and smooth texture, the output should be twenty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d220",
+  "title": "Tap Dance Rhythm",
+  "spec": "Assess the rhythmic precision and difficulty of a dance routine. Implement `tap(beats)` where the input is a list of lists, each containing a string for step type, a number for timing gap in seconds, a number for step complexity, and a boolean indicating if a stumble occurred. A shuffle step is perfect if its timing gap is less than zero point five. A flap step is perfect if the timing gap is strictly less than zero point three. Any other step requires a gap of exactly zero point four to be perfect. If a step is perfect, multiply its step complexity by two to get the base step score; otherwise the base step score equals the step complexity. If a stumble occurred, subtract one from the base step score. Return the total accumulated score for the routine. Example: given a step with shuffle, zero point four, three, and false, the output should be six.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d221",
+  "title": "Mushroom Foraging Yield",
+  "spec": "Calculate the expected harvest from various woodland locations. Implement `forage(spots)` where the parameter is a list of lists, each containing a number for humidity level, a number for oak tree count, and a number for soil acidity. The base yield is determined by multiplying the oak tree count by three. If the humidity level is above eighty, a humidity multiplier of two is applied to the base yield; otherwise the multiplier is one. This gives the adjusted yield. If the soil acidity is strictly greater than seven, subtract two units from the adjusted yield due to poor conditions. If the final yield for a location drops below zero, treat it as zero. Return the total mushroom yield summed across all spots. Example: given humidity eighty five, oak count four, and acidity six, the output should be twenty four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d222",
+  "title": "Juggling Pattern Tracker",
+  "spec": "Estimate the total duration of an aerial prop manipulation sequence. Implement `juggle(throws)` where the parameter is a list of lists, each containing a number for throw height, a boolean for hand crossing, and a number for prop weight. The base duration for each action is the throw height multiplied by zero point four. If the hand crossing boolean is true, a crossing penalty of zero point one seconds is added. If the prop weight is greater than five, a weight penalty of zero point two seconds is also added. Add any applicable penalties to the base duration to find the total throw time. Return the cumulative time for the entire sequence. Example: given a sequence with one throw of height three, true for crossing, and weight six, the output should be one point five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d223",
+  "title": "Harmonica Tab Translator",
+  "spec": "Convert a sequence of musical breathing instructions into numerical pitch values. Implement `play(tabs)` where the input is a list of lists, each containing a number for the hole number, a string for the breath direction, and a boolean for whether the slide button is pressed. If the breath direction is draw, the pitch modifier is negative one; if it is blow, the pitch modifier is positive one. The base pitch is calculated by multiplying the hole number by the pitch modifier. If the slide button is pressed, add zero point five to the base pitch to get the final pitch. Return a list of all the final pitch values in order. Example: given hole four, draw direction, and true for the button, the output list should contain negative three point five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]

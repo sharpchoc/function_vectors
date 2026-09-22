@@ -76,5 +76,1475 @@
   "title": "Matrix Subgrid Extractor",
   "spec": "Write `extract_subgrid(matrix, start_r, start_c, size)`. Iterate over a range of length `size` for rows and columns starting at `start_r` and `start_c`. Use modulo arithmetic against the matrix dimensions to wrap around if indices go out of bounds. Extract the item at the wrapped coordinate and append to a flat output list. Return the list and the total number of items extracted. The driver tests a 3x3 matrix, start `(1, 2)`, size `3`, and prints the returned tuple without any formatting.",
   "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d014",
+  "title": "Telemetry Stream Parser",
+  "spec": "Write a function parse(stream) that receives a sequence of integers representing sensor readings. Scan the sequence using an advancing position index. Whenever a sequence starts with the integer two hundred fifty five, read the next number as the expected count of payload bytes. Extract exactly that many subsequent elements into a temporary buffer list. If the sequence ends prematurely, record an error message in a context list and stop. Otherwise, append the buffer to a final result list. Return a tuple of all successfully extracted payload lists and the context list of errors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d015",
+  "title": "Markdown Blockquote Extractor",
+  "spec": "Write a function extract(lines) that takes a list of strings and extracts contiguous blockquote sections. Iterate through the elements using a position index. A blockquote line begins with a greater than symbol followed by a space. Strip this prefix to get the text value. Maintain a temporary buffer for lines belonging to the current quote. When a line does not start with the prefix, finalize the previous lines into a single text block, append to a result list, and clear the buffer. Return the result list containing all formed blockquote strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d016",
+  "title": "URL Query String Parser",
+  "spec": "Write a function parse(query) that converts a web address query string into a list of tuples. Traverse the string characters using a position index. Keep a temporary buffer for the characters of the current segment. When an equals sign is found, switch the parsing context to reading the right hand side value. When an ampersand is found, save the completed key and value to a result collection, reset the buffer, and restore the context. Return a tuple containing the result collection and the total count of parsed pairs.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d017",
+  "title": "LZ77 Decompressor",
+  "spec": "Write a function decompress(data) that processes a list of items. Maintain a result sequence for the output. Iterate through each element in the collection using an index. If the element is a single number, append its value directly to the result. If the element is a tuple of two numbers, the first parameter tells you how many steps to look back at previous items, and the second parameter is the count of items to copy. Copy the specified values from the previous position into a temporary buffer, then extend the result. Return the final decompressed sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d018",
+  "title": "String Template Substituter",
+  "spec": "Write a function substitute(template, configuration) that takes a string and a dictionary mapping string keys to substitution values. Scan through the template character by character using a position index. When an opening curly brace is found, collect characters into a temporary buffer until a closing curly brace is encountered. Use this collected string to look up the replacement value from the configuration context. If missing, generate an error message string and use that instead. Append the chosen value to a result sequence. Return the fully processed string and a count of errors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d019",
+  "title": "Diff Sequence Generator",
+  "spec": "Write a function compare(original, revised) that takes two lists of strings and produces edit instructions. Use two position indexes to track your location in both sequences. Retrieve the current element from both lists. If their values match, record a keep action in a result list and advance both. If they differ, look ahead to see if the revised element appears in subsequent original items. Record an insert or delete message accordingly in a temporary buffer before transferring it to the result. Keep a count of total edits. Return the result list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d020",
+  "title": "Lexical Token Scanner",
+  "spec": "Write a function tokenize(source) that splits a math expression string into logical units. Step through the characters tracking your position index. When you see a digit, gather it and following digits into a temporary buffer string, convert to a number value, and save to a result list. When you see operators, save them as well. Maintain a context state to know if the previous element was a number. Track a count of the total units processed. Return a tuple containing the result list and the count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d021",
+  "title": "Virtual Stack Machine",
+  "spec": "Write a function execute(instructions) that evaluates a list of string commands on a numeric stack context. Step through each element command using an index. If it is a number, convert its value to an integer and push it onto a temporary buffer. If the command is an operator, pop the top two values, apply the operation, and push the result back. If an operator lacks enough parameters on the stack, construct an error message, record it, and ignore the operation. Keep a count of successful operations. Return the final top value and the list of error messages.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d022",
+  "title": "Byte Pair Expander",
+  "spec": "Write a function expand(sequence, configuration) that takes a list of strings and a dictionary of expansion rules. Pass over the sequence elements repeatedly. In each pass, maintain a temporary buffer for the new list. Examine the previous and current element using a position index. If the pair matches a rule in the configuration, replace them by inserting the mapped value into the buffer. Keep a count of replacements in the current pass. Stop when a pass finishes with a count of zero. Return the final result sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d023",
+  "title": "CSV Line Splitter",
+  "spec": "Write a function split(line) that parses a comma separated string that may contain quoted sections. Process the characters sequentially using an index. Maintain a boolean context state indicating if you are currently inside quotes. If a comma is found and the context is false, finalize the temporary buffer characters into a string value, add it to a result list, and clear the buffer. Otherwise, add the current element character to the buffer. Keep a count of fields extracted. Return the list of result values.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d024",
+  "title": "Time Series Smoother",
+  "spec": "Write a function smooth(readings, configuration) that applies a moving average to a list of float numbers. The second parameter provides a maximum difference threshold. For each current element in the sequence, compare its value to the immediately previous accepted value. If the difference exceeds the threshold parameter, create a warning message, increment a skipped count, and ignore the number. Otherwise, calculate the average, store it in a temporary variable, and append it to the result list. Return a tuple of the smoothed result sequence and the skipped count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d025",
+  "title": "B-Tree Node Splitter Simulator",
+  "spec": "Write a function divide(elements) that simulates splitting an overfull database node. The input is a sorted list of integer numbers. Find the middle position index by dividing the total count by two. Extract the value at this position to serve as the new parent. Gather all previous elements before the index into a left temporary buffer, and all elements after into a right buffer. Append both buffers to a nested result list. Return a tuple containing the left buffer, the middle value, and the right buffer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d026",
+  "title": "HTML Tag Stripper",
+  "spec": "Write a function strip(markup) that removes all tags from a hypertext string. Traverse the characters using a position index. Maintain a boolean context indicating if you are inside a tag. When an opening angle bracket is seen, change the context and do not copy the current element. When a closing bracket is seen, restore the context. Only when outside a tag, append the element to a temporary buffer. Join the buffer into a final string value and save it to the result. Keep a count of complete tags removed. Return the result string and the count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d027",
+  "title": "Moving Median Filter",
+  "spec": "Write a function filter(samples, configuration) that computes a rolling median over a list of numbers. The configuration parameter is an integer representing the window size. Step through the list using an index. For each position, slice the most recent previous and current elements up to the window size into a temporary buffer. Sort this buffer to find the middle value. Append this median value to a result collection. Track a count of how many times the median was strictly greater than ten. Return the result sequence and the count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d028",
+  "title": "Terminal Escape Sequencer",
+  "spec": "Write a function clean(output) that removes terminal color codes from a string. The codes start with character twenty seven followed by an open bracket. Scan the text keeping track of your position index. If you detect this sequence, enter a skipping context. Remain in this context until the current element is a letter between a and z. Once found, exit the context. Append all characters outside the context to a temporary buffer. Form the final string value and return it as the result, along with a count of skipped codes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d029",
+  "title": "Duplicate Element Collapser",
+  "spec": "Write a function collapse(items) that reduces a list of string elements by grouping identical consecutive values. Iterate through the sequence using an index. Maintain a reference to the previous element and a running count of how many times its value has been seen in a row. If the current element matches, increment the count. If it differs, append a tuple of the previous value and its count to a result list, then update the tracking variables. Use a temporary buffer to format a log message for each group. Return the result list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d030",
+  "title": "Dictionary Path Resolver",
+  "spec": "Write a function resolve(document, configuration) that retrieves a nested value from a dictionary using a dot separated string parameter. Split the parameter string by dots to get a list of elements. Maintain a reference to the current dictionary context. Loop through each element using an index. If the element exists in the context, update the reference to point to the nested content. If missing, write an error message to a temporary buffer and immediately return a tuple of none and the buffer. If all are found, return the final retrieved result value.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d031",
+  "title": "Serial Frame Extractor",
+  "spec": "Write a function extract(stream) that processes a list of number elements representing bytes. The data uses the value one hundred and twenty six as a frame boundary. Scan through the sequence using a position index. When you see a boundary, switch your context and start recording subsequent numbers into a temporary buffer list. When you see the next boundary, append the buffer to a result collection, and clear the buffer. Track the total count of successfully extracted numbers. Return a tuple of the result collection and the total count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d032",
+  "title": "Graph Breadth Traversal",
+  "spec": "Write a function traverse(graph, configuration) that performs a level order exploration. The configuration parameter provides the starting node name. Maintain a temporary buffer queue of nodes to visit, and a context set of names already seen. Loop until the buffer is empty. Remove the current element from the front. If it hasn't been recorded, append its value to a result sequence. Retrieve its neighbor elements. For each neighbor not in the context, add it to the context and push it to the buffer. Return the result sequence and a count of visited nodes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d033",
+  "title": "Calendar Grid Generator",
+  "spec": "Write a function generate(days, configuration) that creates a month layout. The first parameter is the total days, and the configuration sets the starting weekday from zero to six. Create an empty result list. Maintain a temporary buffer for the current week. First, fill the buffer with zero for each position before the starting weekday. Then, loop an index from one up to the total days. Append each day number value to the buffer. When the buffer reaches seven elements, append it to the result and reset. Return the result layout.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d034",
+  "title": "Debounce Event Stream",
+  "spec": "Write a function debounce(events, configuration) that filters rapid successive signals. The configuration parameter is a time threshold float. Set up a result collection. Iterate over the event elements using an index. Keep a record of the timestamp value of the previous accepted event. For each current element, subtract the previous timestamp from its timestamp. If this difference exceeds the parameter, append the element to the result and update the previous timestamp. Otherwise, log an error message to a temporary buffer. Return the filtered result collection and a count of accepted events.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d035",
+  "title": "Polynomial Evaluator",
+  "spec": "Write a function evaluate(coefficients, configuration) that calculates the value of a function at a specific location. The first parameter is a list of numerical elements starting from the constant term. The configuration provides the location number. Establish a running result starting at zero and a multiplier temporary value starting at one. Loop through each element using an index position. Multiply it by the temporary value, add to the result, and then update the temporary value by multiplying it by the configuration number. Track a count of terms evaluated. Return the final result.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d036",
+  "title": "Line Wrap Formatter",
+  "spec": "Write a function format(words, configuration) that arranges text into lines of a maximum length. The configuration parameter is an integer limit. Maintain a temporary buffer for the current line and a count of its characters. Loop over the word elements using an index. If adding the next element plus a space exceeds the limit, join the buffer into a single string value, append it to a result collection, and reset the buffer with just the new element. Otherwise, append the element to the buffer and update the count. Return the result collection.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d037",
+  "title": "Markov Text Generator",
+  "spec": "Write a function generate(transitions, configuration) that produces a sequence of words. The configuration parameter is a dictionary with the starting word and desired length. Create a result list initially containing the start word. Set a tracking variable to the current element. Loop an index position until the result reaches the length count. Look up the current element in the transitions context. If found, pick the first value from its list, append to the result, and update the current element. If missing, write an error message to a temporary buffer and break. Return the result.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d038",
+  "title": "Pagination Range Calculator",
+  "spec": "Write a function paginate(current, total, configuration) that determines which page numbers to display. The configuration parameter sets the surround span. Calculate the lower bound position by subtracting the span from the current page, and the upper bound by adding it. Loop an index from the lower bound to the upper bound inclusive. In each step, if the index is valid between one and total, append its value to a temporary buffer. If the lower bound is greater than one, insert a negative one element at the start to indicate a gap message. Return the buffer as the final result sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d039",
+  "title": "Environment Variable Validator",
+  "spec": "Write a function `validate(env, rules)` that takes a dictionary of application settings and a dictionary of rules. Each rule maps a setting name to a string representing the expected type, either integer or boolean. The function should iterate through the rules. For each setting, extract its data from the settings dictionary. If it is missing, create a failure note string and continue. If the type is integer, try to convert it; catch exceptions and store a failure note string. If boolean, check if the lowercase text is true or false. Keep track of how many settings were successfully processed. Build a dictionary of parsed outputs. Return a tuple of the valid outputs, a list of failure notes, and the total processed. Example: validate({\"port\": \"8080\", \"debug\": \"true\"}, {\"port\": \"integer\", \"debug\": \"boolean\"}) returns ({\"port\": 8080, \"debug\": True}, [], 2).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d040",
+  "title": "Fixed Size Queue",
+  "spec": "Write a function `simulate(actions, size)` that simulates a circular queue. The first argument is a list of operations, where each is a tuple of an action string, either push or pop, and an optional integer. Initialize a list of the given size with empty slots, and pointers for the front and back. When pushing, if the queue is not full, place the item at the back location, update the location using modulo arithmetic, and increase a size tracker. When popping, if not empty, read the item at the front, clear the slot, update the front location, and decrease the tracker. If full on push or empty on pop, record an issue string. Return a tuple containing the list of popped items, the final queue state, and the list of issue strings. Example: simulate([(\"push\", 5), (\"push\", 10), (\"pop\", None)], 3) returns ([5], [None, 10, None], []).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d041",
+  "title": "JSON Validation Engine",
+  "spec": "Write a function `verify(data, schema)` that ensures a dictionary matches a structural blueprint. The blueprint maps keys to expected string types like text, integer, or list. Create an empty dictionary for the final approved layout and a list for issues. Loop over the blueprint items. Grab the target from the data dictionary. If absent, record a string noting the missing key. If present, check its type. For lists, iterate over the contents and verify they are all strings. If a type mismatch occurs, record an issue string. Maintain a tally of how many checks passed. Store valid items in the final layout. Return a tuple with the approved layout, the list of issue strings, and the tally of passed checks. Example: verify({\"name\": \"Alice\", \"age\": 30}, {\"name\": \"text\", \"age\": \"integer\"}) returns ({\"name\": \"Alice\", \"age\": 30}, [], 2).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d042",
+  "title": "Interpolation Engine",
+  "spec": "Write a function `interpolate(template, bindings)` that replaces placeholders in a string. The template contains words wrapped in curly braces. Create a list to accumulate the final characters. Use an integer pointer to scan the template. When an opening brace is found, save its location, then scan forward to find the closing brace. Extract the inner word, look it up in the bindings dictionary, and append the replacement data to your list. If the word is missing, append a fallback string and record a warning string. If it is not a brace, copy the character directly. Keep a count of replacements. Return a tuple of the fully joined string, the count, and a list of warning strings. Example: interpolate(\"Hello {name}\", {\"name\": \"Bob\"}) returns (\"Hello Bob\", 1, []).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d043",
+  "title": "Audio Signal Smoother",
+  "spec": "Write a function `smooth(samples, threshold)` that removes spikes from a list of numbers. Iterate over the sequence. For each number, compare it to the one just before it. If the absolute difference exceeds the given threshold, clamp the new number so it is exactly the threshold away from the older one. Store the adjusted number in a fresh sequence. Keep a tally of how many numbers were modified. Use a holding variable for the last processed number to use for the next comparison, initializing it with the first number. If a number is negative, record an anomaly string. Return a tuple of the smoothed sequence, the tally of modifications, and a list of anomaly strings. Example: smooth([10, 12, 25, 13], 5) returns ([10, 12, 17, 13], 1, []).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d044",
+  "title": "Retry Logic Simulator",
+  "spec": "Write a function `execute(tasks, settings)` that simulates attempting operations. The first argument is a list of tuples, each with a string name and an integer failure rate. The settings dictionary contains max attempts and a backoff multiplier. Loop through the tuples. For each, simulate attempts against the failure rate. Keep an environment dictionary tracking the wait time. If an attempt fails, append a warning string to a log, multiply the wait time, and try again. If it passes, append a success string and move to the next operation. Track the total operations finished. Return a tuple of the log list, the number of successes, and the final environment dictionary. Example: execute([(\"upload\", 0)], {\"max\": 3, \"backoff\": 2}) returns ([\"upload success\"], 1, {\"wait\": 1}).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d045",
+  "title": "Command Line Argument Parser",
+  "spec": "Write a function `parse(arguments, flags)` that processes a list of string inputs. The flags dictionary maps valid flag strings like dash-v to expected input counts. Scan the inputs using an integer pointer. If the string starts with a dash, check if it is in the flags dictionary. If not, record an issue string. If it is, fetch its required input count. Look ahead by that amount to gather the associated strings into a temporary tuple. Advance the pointer. If there are not enough strings left, record an issue string. Keep a tally of successfully parsed flags. Return a dictionary of parsed flags to their tuples, a list of issue strings, and the tally. Example: parse([\"-v\", \"-f\", \"file.txt\"], {\"-v\": 0, \"-f\": 1}) returns ({\"-v\": (), \"-f\": (\"file.txt\",)}, [], 2).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d046",
+  "title": "Game Object Updater",
+  "spec": "Write a function `update(objects, delta)` that updates physics states for a list of dictionaries. Each dictionary has horizontal and vertical coordinates, velocities, and a bounce factor. Create a fresh list for the updated states. Loop over the dictionaries. Calculate the new horizontal coordinate by adding the velocity multiplied by the time slice. If the new coordinate falls outside zero to one hundred, reverse the horizontal velocity, multiply it by the bounce factor, and clamp the coordinate. Create a fresh dictionary holding these newly calculated numbers. Count how many total bounces occurred. If a velocity exceeds fifty, record a speed warning string. Return a tuple of the new list, the bounce tally, and warning strings. Example: update([{\"x\": 95, \"y\": 10, \"vx\": 10, \"vy\": 0, \"bounce\": -1}], 1) returns ([{\"x\": 100, \"y\": 10, \"vx\": -10, \"vy\": 0, \"bounce\": -1}], 1, []).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d047",
+  "title": "Simple Markdown Parser",
+  "spec": "Write a function `render(lines)` that converts a list of text strings into basic HTML tags. Process each string in sequence. Maintain a string tracking the active block type. If the string starts with an asterisk, we need a list item. If the active block was a paragraph, close it and open an unordered list. Extract the text after the asterisk, wrap it in list item tags, and append to a temporary buffer list. If the string is plain text, close any active list and start a paragraph. If the string is empty, close the active block and set it to none. Keep track of how many tags were created. Return the joined HTML string and the tally. Example: render([\"* item\", \"text\"]) returns (\"<ul><li>item</li></ul><p>text</p>\", 4).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d048",
+  "title": "Text File Paginator",
+  "spec": "Write a function `paginate(words, limits)` where limits is a dictionary mapping max lines and max characters. Build pages of text. Use a master list to hold the final pages, and a temporary list for the active line. Iterate over the words. If adding the word exceeds the character limit for the active line, join the line list into a string, append it to a page buffer list, and reset the active line. If the page buffer reaches the maximum lines limit, append it to the master list and clear it. At the end, flush any remaining text into the output. Keep a counter of total pages. Return a tuple of the master list and the final counter. Example: paginate([\"hello\", \"world\"], {\"lines\": 5, \"chars\": 10}) returns ([[\"hello world\"]], 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d049",
+  "title": "Data Link Framer",
+  "spec": "Write a function `frame(payloads, settings)` that encapsulates raw byte lists into transmission sequences. The settings dictionary contains a sync byte and an escape byte. For each byte list, start a fresh buffer sequence with the sync byte. Iterate through the bytes. If a byte equals the sync byte or the escape byte, append the escape byte before appending the data byte. Calculate a checksum by running an exclusive or operation across all original bytes, and append this final byte. Keep track of how many escape operations were performed. If a payload is empty, record a diagnostic string. Return the master list of sequences, the tally of escapes, and diagnostic strings. Example: frame([[10, 20]], {\"sync\": 255, \"escape\": 254}) returns ([[255, 10, 20, 30]], 0, []).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d050",
+  "title": "Settings Merger",
+  "spec": "Write a function `merge(base, overrides)` that takes two nested dictionaries representing system settings. Create a fresh dictionary for the output. Iterate through the keys and items in the base dictionary. If a key is present in the overrides dictionary and both contain nested dictionaries, recursively call the function and store the returned dictionary. If the key exists in overrides and is a simple string or integer, use the new data. Otherwise, retain the base data. Keep a counter of how many keys were overridden. If a type mismatch occurs between base and override, record a warning string. Return a tuple of the unified dictionary, the counter, and the warning strings. Example: merge({\"a\": 1}, {\"a\": 2}) returns ({\"a\": 2}, 1, []).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d051",
+  "title": "Sensor Anomaly Detector",
+  "spec": "Write a function `analyze(readings, window)` that scans a list of numbers for spikes. Iterate through the list using an integer pointer. Extract a slice of numbers representing the trailing window. If the slice has fewer items than the required size, skip to the next number. Calculate the average of the slice. If the new number is more than twice the average, record a string noting the exact difference. Maintain a variable holding the last seen normal number to replace anomalies in a cleaned output list. Return a tuple of the cleaned list, the list of warning strings, and the total anomalies found. Example: analyze([2, 2, 2, 10], 3) returns ([2, 2, 2, 2], [\"spike difference 8.0\"], 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d052",
+  "title": "Hexadecimal Sequence Expander",
+  "spec": "Write a function `expand(sequence)` that takes a list of strings, each containing a two-character hex code and an integer multiplier. Initialize an empty list for the output. Loop over each string. Unpack the code and the multiplier. If the multiplier is zero, append a warning string to a secondary list and skip. If the multiplier is negative, record an error string and use its absolute equivalent. Multiply the code by the adjusted integer and extend a temporary list. Append the temporary list contents to the main output. Track the total length of the generated list. Return a tuple of the expanded list, the tally of generated elements, and the issue strings. Example: expand([(\"AA\", 3), (\"BB\", 0)]) returns ([\"AA\", \"AA\", \"AA\"], 3, [\"skipped BB\"]).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d053",
+  "title": "Instruction Set Simulator",
+  "spec": "Write a function `simulate(instructions, inputs)` that runs a list of operations on a small memory space. The memory space is a dictionary initialized from the inputs dictionary. Loop through the operations, which are tuples containing a string command and two string targets. Maintain an integer pointer for the active operation. If the command is add, read the two targets from memory, sum them, and store them back. If jump, change the pointer to the integer stored in the target. If a target is missing, record a failure string and halt. Track how many operations execute. Return a tuple of the final memory dictionary, the tally of executions, and any failure string. Example: simulate([(\"add\", \"a\", \"b\")], {\"a\": 1, \"b\": 2}) returns ({\"a\": 3, \"b\": 2}, 1, \"\").",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d054",
+  "title": "Delimited Text Projector",
+  "spec": "Write a function `project(lines, headers)` that extracts specific columns from a list of comma-separated strings. The headers argument is a list of desired column strings. The first string in the input list contains the column names. Split it to build a dictionary mapping column names to integer locations. Create a fresh list for the output. Loop over the remaining strings. Split each into data parts. Create a temporary list to hold the selected parts. Iterate over the headers, fetch the correct location, and retrieve the part. If out of bounds, record a warning string. Join the extracted parts with commas. Return a tuple of the output list and warning strings. Example: project([\"a,b\", \"1,2\"], [\"b\"]) returns ([\"2\"], []).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d055",
+  "title": "Dictionary Coder Pipeline",
+  "spec": "Write a function `encode(symbols)` that implements a simple text compression step. Create a dictionary mapping single characters to integer codes. Initialize an active string with the first character of the input. Create a list for the output codes. Loop over the remaining characters. Combine the active string and the new character into a sequence. If the sequence is in the dictionary, update the active string to the sequence. If not, append the integer code for the active string to the output list, add the sequence to the dictionary with the next available integer, and reset the active string. Keep a tally of dictionary additions. Return a tuple of the output list and the tally. Example: encode(\"AB\") returns ([65, 66], 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d056",
+  "title": "Schedule Conflict Resolver",
+  "spec": "Write a function `resolve(intervals)` that merges overlapping time periods. The input is a list of tuples, each with a start and end integer. Sort the list by the start integers. Create an output list and initialize it with the first period. Loop through the remaining periods. Compare the active period start to the end of the last period in the output list. If it starts before or at the same time the last one ends, there is an overlap. Update the end of the last period to be the maximum of the two end times. Otherwise, append the active period to the output list. Keep a tally of merges. Return the final output list and the merge tally. Example: resolve([(1, 3), (2, 4)]) returns ([(1, 4)], 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d057",
+  "title": "Nested Structure Flattener",
+  "spec": "Write a function `flatten(hierarchy, limit)` that takes a nested list of strings and an integer depth cap. We need a master list to hold the final strings and a temporary queue initialized with tuples of the input list and a starting depth of zero. Process the queue while it has items. Remove the first tuple. Iterate through the items in the sequence. If the item is a string, append it to the master list. If it is a list, check the depth. If the depth is below the cap, add it to the queue with the depth incremented by one. If it exceeds the cap, append a warning string to a separate tracker. Return a tuple of the flattened list, the warning tracker, and the total strings processed. Example: flatten([[\"a\", \"b\"], \"c\"], 1) returns ([\"a\", \"b\", \"c\"], [], 3).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d058",
+  "title": "Access Log Analyzer",
+  "spec": "Write a function `analyze(records, targets)` that processes raw server log strings. The targets argument is a list of interesting status codes. Iterate through the strings. Find the location of the first quote mark and the closing quote mark to extract the requested path sequence. Extract the integer status code that immediately follows. If the status code matches one of the targets, store the path in a dictionary, counting how many times it appears. If a string does not have quote marks, record a failure string and skip it. Keep a tally of total matched lines. Return a tuple of the path dictionary, the tally, and a list of failure strings. Example: analyze(['GET \"index.html\" 200'], [200]) returns ({\"index.html\": 1}, 1, []).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d059",
+  "title": "Substring Pattern Matcher",
+  "spec": "Write a function `match(text, pattern)` that finds all occurrences of a smaller string within a larger one. Iterate through the main text using an integer pointer. At each location, slice a temporary string of the same length as the pattern. Compare the two strings character by character. Maintain a dictionary to store the start pointer mapping to the matched string. If a character does not match, record a diagnostic string detailing the expected and found characters, and break the inner comparison. If the whole pattern matches, add it to the dictionary and increase a success counter. Return a tuple of the dictionary, the success counter, and a list of diagnostic strings. Example: match(\"ababa\", \"aba\") returns ({0: \"aba\", 2: \"aba\"}, 2, [\"expected b found a\"]).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d060",
+  "title": "State Machine Validator",
+  "spec": "Write a function `validate(transitions, sequence)` that verifies a series of state changes. The transitions dictionary maps a state string to a list of allowed next states. Set the active state to the first string in the sequence. Initialize a tally of valid steps. Loop through the remaining strings. Check if the string exists in the allowed list for the active state. If it does not, generate an error string containing the active and failed state, append it to an issue list, and halt the loop. If it does, update the active state to this new one and increment the tally. Track the last visited state before any failure. Return a tuple of the tally, the issue list, and the last visited state. Example: validate({\"start\": [\"run\"]}, [\"start\", \"run\"]) returns (1, [], \"run\").",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d061",
+  "title": "Term Frequency Calculator",
+  "spec": "Write a function `calculate(documents, keywords)` that evaluates how often specific words appear in text blocks. The keywords is a list of target strings. Create a master list to hold dictionaries for each text block. Iterate through the text blocks. For each, create a fresh dictionary mapping each keyword to an integer zero. Split the text into individual words. Loop over the words. If a word is found in the keywords, retrieve its integer tally from the dictionary, add one, and store the new integer. Track the highest tally found in the active text block. Append the dictionary to the master list. Return a tuple of the master list and the overall highest tally across all blocks. Example: calculate([\"apple banana apple\"], [\"apple\"]) returns ([{\"apple\": 2}], 2).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d062",
+  "title": "Mathematical Expression Parser",
+  "spec": "Write a function `parse(expression)` that converts a math string into a list of components. Iterate through the string using an integer pointer. If the character is a digit, start a temporary list, append it, and scan forward as long as subsequent characters are digits. Join the list into a single string, convert to a floating point number, and add to an output sequence. If the character is a basic operator, directly append its string representation. If an unknown character is found, generate a failure string with its location and append it to an issue list. Keep a count of total components found. Return a tuple of the output sequence, the count, and the issue list. Example: parse(\"12+3\") returns ([12.0, \"+\", 3.0], 3, []).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d063",
+  "title": "Symmetric Substring Finder",
+  "spec": "Write a function `extract(text, minimum)` that finds palindromes within a string that meet a size threshold. Iterate over every possible starting location using a numeric pointer. For each start, iterate over every possible ending location. Slice the characters between these bounds to form a temporary sequence. Reverse this sequence and compare it to the original slice. If they match and the length is greater than or equal to the threshold, append the sequence to a results list. Keep track of the longest matching sequence found. If the length is zero, record a diagnostic string. Return a tuple of the results list, the longest sequence, and any diagnostic strings. Example: extract(\"aba\", 3) returns ([\"aba\"], \"aba\", []).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d064",
+  "title": "Circular Buffer Tracker",
+  "spec": "Write a function `track(events)` to manage data. Events is a list of integers. Maintain a fixed size array of length five, initially filled with zeros. Iterate through the events. Before placing an element, check if it is negative; if so, record a warning sentence in a separate sequence and skip it. Otherwise, place the value into the array at the current position and advance the position. If the position reaches five, wrap it back to zero and increment an overwrite counter. After processing all elements, check if the overwrite counter is greater than zero, and return a tuple containing the overwrite counter, the array contents, and the warning sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d065",
+  "title": "Simple Protocol Decoder",
+  "spec": "Write a function `decode(stream)` to parse messages. Stream is a string of comma separated parts. The first part of a message is the type, followed by parameters. Valid types are one, two, or three, representing how many following values belong to it. Iterate through the sequence using a numerical position. For each message, extract the correct amount of elements into a temporary sequence. If the sequence ends before all parameters are extracted, record an error string stating the missing amount. Validate that all extracted parameters are purely alphabetical, recording a failure sentence if not. Return a tuple of two lists: successfully decoded messages and error strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d066",
+  "title": "Configuration Linter",
+  "spec": "Write a function `lint(lines)` to check a file. Lines is a list of strings representing a text file. Iterate through the lines, maintaining a line counter. A line starting with a bracket starts a new section context. A line containing an equals sign is a parameter assignment. Any other non-empty line is an error. Keep track of the current section context. Check if the value after the equals sign is empty. Collect error sentences for any invalid lines or empty values, specifying the line counter, the current context, and the problem. Return a list of all collected error strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d067",
+  "title": "Consecutive Value Smoother",
+  "spec": "Write a function `smooth(measurements)` to process data. Measurements is a list of floating point numbers. Iterate through the list. For each element, if it is the first, just keep it. For subsequent elements, calculate the absolute difference between the current number and the previous one. If the difference is greater than ten, replace the current number with a temporary average of the previous and the next number, assuming the next exists; if it does not exist, use only the previous. Store the smoothed values in a new sequence and count how many replacements were made. Return a tuple containing the replacement count and the new sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d068",
+  "title": "Duplicate Alert Deduplicator",
+  "spec": "Write a function `deduplicate(alerts)` to filter warnings. Alerts is a list of strings. Maintain a sequence of unique alerts and a count of how many times the most recent alert was suppressed. Iterate through the items. If the current item is exactly the same as the previous item, increment the suppression count. If it is different, append the previous item and its suppression count as a formatted sentence to the result sequence, reset the count to zero, and update the previous item. Also check if the alert contains the word urgent; if so, append an immediate warning string to the sequence. Return the sequence of formatted sentences.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d069",
+  "title": "Workflow Pipeline Executor",
+  "spec": "Write a function `execute(steps)` to run a virtual machine. Steps is a list of integer pairs, where the first number is an operation code and the second is a parameter. Maintain a state number starting at zero. Process each pair in order. Code one adds the parameter to the state. Code two multiplies the state by the parameter. Code three stores the state in a temporary holding area. Code four restores the state from the holding area. If an unknown code is encountered, generate an error sentence. Keep track of the state at each step by appending it to a history list. Return a tuple of the history list and any error sentences.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d070",
+  "title": "Paged Data Iterator",
+  "spec": "Write a function `paginate(items)` to split lists. Items is a list of strings. Create a sequence of pages where each page contains exactly three elements, but the last page might have fewer. Do not use slicing. Instead, use an index to traverse the items, appending each element to a temporary buffer. When the buffer reaches a size of three, transfer its contents to the result list and clear the buffer. Maintain a count of total pages created. If there are remaining elements in the buffer after the loop, add them to the result list as well and increment the page count. Return a tuple of the total page count and the list of pages.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d071",
+  "title": "Template Placeholder Resolver",
+  "spec": "Write a function `resolve(template)` to format strings. Template is a string with placeholders marked by curly braces containing a single digit from zero to nine. Create a configuration mapping where zero maps to apple, one to banana, and two to cherry. Iterate over the characters. When an open brace is encountered, read the next character as an index, and check if it is in the configuration mapping. If valid, append the corresponding word to a result sequence. If invalid, append an error string and skip the closing brace. If not inside a placeholder, append the character as is. Join the result sequence into a final string and return it.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d072",
+  "title": "Simple State Undo Stack",
+  "spec": "Write a function `process(commands)` to simulate an editor. Commands is a list of strings, each being add, undo, or redo. Maintain a main list of strings representing the document history, starting with one element called start. Maintain an integer representing the current position in the document history. When an add is encountered, append a new string based on the current position, increment the position, and truncate any future history that might exist. Undo decrements the position if it is greater than zero. Redo increments the position if it is less than the length of the document list minus one. Return the sequence up to the current history position.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d073",
+  "title": "Exponential Retry Calculator",
+  "spec": "Write a function `calculate(attempts)` to find backoff times. Attempts is an integer representing the number of times a network request failed. Calculate a series of wait times. Iterate from zero up to the number of attempts. For each step, calculate the wait time as two raised to the power of the current step. If this calculated value exceeds thirty, cap it at thirty. Add each wait time to a list. Keep a running sum of all wait times in a temporary variable. If the sum exceeds one hundred, stop adding more wait times and record an error string. Return a tuple containing the total sum, the wait time list, and the error string if any.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d074",
+  "title": "Database Schema Type Checker",
+  "spec": "Write a function `check(columns)` to validate definitions. Columns is a list of tuples containing a column name and a string type. Iterate through the columns. If the type is not integer, text, or boolean, record an error sentence with the column name. If the type is text, check if the column name ends with a string indicating an identifier, and if so, record a warning sentence. Keep track of how many valid columns were processed. Store valid columns in a temporary sequence. Return a tuple with the valid count, the temporary sequence, and the error and warning sentences.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d075",
+  "title": "Job Batch Grouper",
+  "spec": "Write a function `group(jobs)` to pack work. Jobs is a list of integers representing job sizes. Maintain a maximum capacity parameter set to one hundred. Traverse the jobs and add each valid size to a temporary buffer. Discard sizes larger than the capacity and record an error string for each. Keep a running total of the sizes in the buffer. When adding the current job would exceed the capacity, transfer the current buffer to a result list, clear the buffer, and reset the running total before adding the job. Return the list of grouped batches and the error strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d076",
+  "title": "Tag Matching Validator",
+  "spec": "Write a function `match(sequence)` to parse syntax. Sequence is a list of strings representing start and end tags, like open-a, close-a. Traverse the sequence. When an open tag is found, push it to a temporary stack. When a close tag is found, check if the stack is empty or if the open tag suffix does not match the close tag suffix. If either is true, return a failure sentence. If the loop finishes and the stack is not empty, return a failure sentence. Otherwise, return a success sentence.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d077",
+  "title": "Board State Scorer",
+  "spec": "Write a function `score(grid)` to evaluate a game. Grid is a list of lists of integers representing a game board. Iterate over every row index and column index. For each cell, examine its value. If the value is greater than zero, look at the previous row and the previous column, if they exist. If the element in the previous row same column is equal to the current element, add one to a running count. Do the same for the previous column same row. If the value is negative, record an error string with its position and ignore it. Return a tuple with the final count and the errors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d078",
+  "title": "Key Value Pair Extractor",
+  "spec": "Write a function `extract(text)` to parse custom data. Text is a string with pairs separated by semicolons, and keys and values separated by colons. Iterate through the string character by character. Maintain a mode indicating whether you are reading a key or a value. Append characters to a temporary string. When a colon is found, save the temporary string as the key and clear it. When a semicolon is found, save the temporary string as the value, check if the key is empty, and if so record an error string. Otherwise add the pair to a result list. Return the valid pairs and errors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d079",
+  "title": "Quote Block Extractor",
+  "spec": "Write a function `extract(lines)` to find citations. Lines is a list of strings. Create an empty result list and an empty temporary string buffer. Iterate over each line. If a line starts with a greater-than sign, it is part of a quote. Remove the sign and append the rest of the line to the temporary buffer. If a line does not start with the sign, check if the buffer has content. If it does, add the buffer to the result list as a complete quote and clear the buffer. Maintain a count of total quotes extracted. Return a tuple of the total count and the result list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d080",
+  "title": "Product Inventory Categorizer",
+  "spec": "Write a function `categorize(products)` to sort items. Products is a list of tuples containing a price and a string category. Define a premium threshold of fifty. Iterate through the products. For each item, compare its price to the threshold. If it is lower, increment a budget count. If it is equal or higher, format the price and category into a single string and append it to a list of premium items. If the category is empty, record an error string and skip the item. Return a tuple containing the budget count, the premium strings, and the error strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d081",
+  "title": "Version Bump Validator",
+  "spec": "Write a function `validate(versions)` to check releases. Versions is a list of string tuples, each containing a major, minor, and patch number. Iterate through the list. Maintain a variable for the previous version. Compare the current version to the previous one. A valid bump increases exactly one of the numbers by one, and resets any subsequent numbers to zero. If the transition is invalid, append an error string containing both the previous and current values to an error list. Update the previous variable. Return the list of error strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d082",
+  "title": "Simple Text Centerer",
+  "spec": "Write a function `center(words)` to format output. Words is a list of strings. The target line length is twenty characters. Process each word. Calculate the amount of padding needed by subtracting the word length from twenty. If the word is longer than twenty, keep it as is and record a warning string. Otherwise, divide the padding by two, rounding down for the left side and taking the remainder for the right side. Construct a new string with spaces on both sides of the word using a temporary variable. Append this to a list of centered strings. Return the list and the warnings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d083",
+  "title": "Password Strength Evaluator",
+  "spec": "Write a function `evaluate(passwords)` to measure security. Passwords is a list of strings. For each string, start with a score of zero. Check if the length is at least eight characters; if so, add one to the score. Check if it contains at least one digit; if so, add one to the score. Check if it contains an uppercase letter; if so, add one to the score. If the score is less than two, create a string indicating a weak password and the current score. Otherwise, create a string indicating a strong password. Add these strings to a result list. Return the list of evaluation strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d084",
+  "title": "Path Normalization Stack",
+  "spec": "Write a function `normalize(path)` to resolve directories. Path is a string representing a file system path with slashes. Split the string by slashes into parts. Create an empty list to act as a temporary buffer. Iterate through each part. If the part is empty or a single dot, ignore it. If the part is two dots, check if the buffer is not empty. If so, remove the most recently added element from the buffer. Otherwise, append the part to the buffer. If the part contains invalid characters like asterisks, record an error string. After checking all parts, join the remaining elements in the buffer. Return the joined string and errors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d085",
+  "title": "Simple Prefix Evaluator",
+  "spec": "Write a function `evaluate(tokens)` to do math. Tokens is a list of strings representing numbers or the operators plus and minus in prefix notation. Read the list from right to left using a reverse index. When a number is found, convert it to an integer and push it to a temporary list. When an operator is found, pop the top two numbers from the temporary list, perform the addition or subtraction, and push the outcome back. If there are not enough numbers, record an error string. Continue until all elements are processed. Return the final remaining number and any errors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d086",
+  "title": "Sensor Threshold Alarmer",
+  "spec": "Write a function `alarm(readings)` to monitor devices. Readings is a list of integers representing sensor data. Define a high threshold configuration of ninety and a low threshold of ten. Iterate through the readings. Maintain a count of consecutive out of bounds values. If a reading is above the high threshold or below the low threshold, increment the count. If it is within bounds, reset the count to zero. If the count reaches three, generate a warning string containing the current reading and reset the count. If a reading is exactly zero, generate a fatal error string. Return the lists of warnings and errors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d087",
+  "title": "Template Variable Finder",
+  "spec": "Write a function `find(document)` to locate fields. Document is a string containing variables wrapped in double square brackets. Traverse the string using a character index. Look for two opening brackets. When found, record the start position and move forward until two closing brackets are found. Extract the characters between them into a temporary variable. Remove any leading or trailing whitespace from this temporary variable. Add the cleaned name to a result list. Update the index to continue searching after the closing brackets. If opening brackets are found without closing ones, record an error string. Return the list of found names and errors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d088",
+  "title": "Custom Barcode Checksum Evaluator",
+  "spec": "Write a function `checksum(digits)` to verify codes. Digits is a list of integers between zero and nine. Iterate through the digits. Maintain a running sum and an index. If the index is even, multiply the digit by three and add to the sum. If the index is odd, just add the digit to the sum. After processing all elements, take the remainder of the sum divided by ten. Subtract this remainder from ten, unless the remainder is zero, in which case the result is zero. If any digit is outside the zero to nine range, record an error string and skip it. Return a tuple of the final result and the error strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d089",
+  "title": "Binary File Hex Dumper",
+  "spec": "`dump(data, width)`\nGiven a list of integers representing bytes and an integer width. Format the bytes into a list of strings, where each string represents a row. Each row must start with the starting byte offset as a four digit hexadecimal string, followed by a space, and then the space separated hexadecimal string representations of the bytes up to the given width. If the data is exhausted before the width is reached, pad the remaining spaces with dashes. Return the list of formatted strings. Example: given integers sixty five and sixty six with width four, return a row starting with zero zero zero zero followed by four one and four two and dashes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d090",
+  "title": "Dependency Graph Resolver",
+  "spec": "`resolve(dependencies)`\nGiven a list of tuples where each tuple contains a string representing a target task and a string representing a prerequisite task. Compute a valid execution order of the target tasks. Start by finding tasks that have no prerequisites. As each task is executed, remove it from the prerequisites of other tasks, freeing them to be executed. If there is a circular dependency where no tasks can be freed but tasks remain, return a list containing the string error. Otherwise, return the list of string tasks in the order they should be executed. Example: given A requires B and B requires C, return C, B, A.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d091",
+  "title": "Music Playlist Shuffler",
+  "spec": "`shuffle(tracks, seed)`\nGiven a list of string track names and an integer seed. Implement a deterministic shuffle using a linear congruential generator based on the seed. For each position in the list from the end down to the first, compute a pseudo random index between zero and the current position inclusive using the seed, and swap the elements at the current position and the random index. Update the seed by multiplying it by a constant and adding another constant. Return the shuffled list of strings. Example: given tracks A, B, C and seed five, return a predictably reordered list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d092",
+  "title": "Stock Trade Matcher",
+  "spec": "`match(orders)`\nGiven a list of tuples containing an integer timestamp, a string type being either buy or sell, and an integer price. Match buy orders with sell orders if the buy price is greater than or equal to the sell price. Iterate through the orders, attempting to match each new order with the earliest unmatched order of the opposite type that satisfies the price condition. When a match is found, record a tuple of the buy timestamp and sell timestamp. Return a list of these matched tuples. Example: given a buy at ten and a sell at nine, return their timestamps.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d093",
+  "title": "Sparse Matrix Compression",
+  "spec": "`compress(grid)`\nGiven a list of lists of integers representing a two dimensional grid. Iterate through the grid row by row. For each non zero integer found, record a tuple containing the row index, the column index, and the integer itself. Return a list of these tuples. Example: given a two by two grid with a five at the second row and second column, return a list containing a tuple of one, one, and five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d094",
+  "title": "Dialog Thread Reconstructor",
+  "spec": "`reconstruct(messages)`\nGiven a list of tuples where each tuple contains three strings representing a context topic, a sender name, and a text payload. Group the tuples into a list of lists, where each inner list contains only the text payloads for a specific context topic, preserving the original order. Exclude any tuple where the sender name is exactly the string system. Return the list of lists. Example: given two messages for topic math and one for topic science, return a list with two lists of payloads.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d095",
+  "title": "MIDI Note Synthesizer",
+  "spec": "`synthesize(events)`\nGiven a list of tuples containing an integer time offset, a string event type being note on or note off, and an integer note pitch. Simulate playing the notes by computing the total duration each note was held. Maintain the current time by adding the time offset of each event to a running total. When a note off event occurs for a currently playing note, compute the difference between the current time and the time the note started, and add this duration to a total for that pitch. Return a list of tuples containing the note pitch and its total duration. Example: given note on at zero for pitch sixty, and note off at ten for pitch sixty, return a tuple of sixty and ten.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d096",
+  "title": "Chess Algebraic Notation Reader",
+  "spec": "`read(moves)`\nGiven a list of strings representing chess moves in algebraic notation. Parse each move to extract the piece type, the destination square, and whether it was a capture. A move starting with a capital letter indicates the piece, otherwise it is a pawn. An x indicates a capture. The last two characters are the destination file and rank. Return a list of tuples containing the string piece, a boolean for capture, and the string destination. Example: given Nxe5 and e4, return Knight, true, e5 and Pawn, false, e4.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d097",
+  "title": "Markdown Table Formatter",
+  "spec": "`tabularize(rows)`\nGiven a list of lists of strings representing cells in a table. Compute the maximum character width for each column across all rows. Create a formatted text table where each cell is padded with spaces to match the maximum width of its column. Separate columns with a vertical bar. Insert a separator row after the first row consisting of dashes matching the column widths and vertical bars. Return a list of strings representing the formatted table lines. Example: given two rows of strings, return aligned rows with a dashed separator.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d098",
+  "title": "Gene Sequence Aligner",
+  "spec": "`compare(sequences)`\nGiven a list of strings representing DNA sequences containing characters A, C, G, and T. Find the longest common prefix among all sequences. Then, for each sequence, compute the number of mutations needed to transform the remaining suffix of the sequence into a target suffix of all A characters. A mutation is defined as any character mismatch. Return a tuple containing the string common prefix and a list of integer mutation counts for each sequence. Example: given ACG and ACT, return AC and a list of one and one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d099",
+  "title": "Binary Search Tree Insertion",
+  "spec": "`build(numbers)`\nGiven a list of unique integers. Construct a binary search tree where each node is represented as a list of three elements: the integer, the left child list, and the right child list. An empty child is represented by an empty list. Insert each integer from the input list into the tree following standard binary search rules. Return the root node list. Example: given two, one, three, return a list with two, a list with one and two empty lists, and a list with three and two empty lists.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d100",
+  "title": "Recipe Ingredient Scaler",
+  "spec": "`scale(recipe, multiplier)`\nGiven a list of tuples containing a string ingredient name, a float quantity, and a string unit, along with a float multiplier. Scale each quantity by the multiplier. If the scaled quantity in ounces exceeds sixteen, convert it to pounds by dividing by sixteen and update the unit to pounds. If a quantity in cups is less than one fourth, convert it to tablespoons by multiplying by sixteen and update the unit. Return the list of scaled and converted tuples. Example: given eight ounces and multiplier three, return one point five pounds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d101",
+  "title": "Bowling Score Calculator",
+  "spec": "`score(rolls)`\nGiven a list of integers representing the number of pins knocked down in each roll of a bowling game. Calculate the total score. Iterate through the rolls frame by frame for ten frames. A strike is ten pins in one roll, and its score includes the next two rolls. A spare is ten pins in two rolls, and its score includes the next roll. Open frames just sum the two rolls. Return the total integer score. Example: given twelve tens, return three hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d102",
+  "title": "In-place Array Rotation",
+  "spec": "`rotate(items, steps)`\nGiven a list of integers and an integer number of steps. Rotate the elements of the list to the right by the number of steps. The rotation must wrap around, so elements shifted off the end appear at the beginning. If the number of steps is greater than the length of the list, compute the effective steps. Return the rotated list of integers. Example: given one, two, three, four, five and two steps, return four, five, one, two, three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d103",
+  "title": "Breadcrumb Trail Builder",
+  "spec": "`breadcrumb(path, aliases)`\nGiven a string representing a file path separated by forward slashes, and a list of tuples mapping specific folder names to readable alias strings. Split the path into its components. For each component, build the cumulative path string up to that point. If the component matches a folder name in the aliases, use the readable alias string instead for the display name. Return a list of tuples containing the cumulative path and the display name. Example: given root and user, return root and its alias.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d104",
+  "title": "Anagram Grouping",
+  "spec": "`group(words)`\nGiven a list of string words consisting of lowercase letters. Group the words that are exact anagrams of each other into inner lists. Two words are anagrams if they contain the exact same letters in any order. The order of groups in the result does not matter, but the words inside each group should remain in their original relative order. Return a list of lists of strings. Example: given eat, tea, and bat, return one list with eat and tea, and another list with bat.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d105",
+  "title": "Document Index Inverter",
+  "spec": "`invert(documents)`\nGiven a list of tuples containing an integer document identifier and a string of text. Tokenize the text into lowercase words by splitting on spaces. Build an inverted index mapping each unique word to a list of integer document identifiers where the word appears. Ensure the list of document identifiers for each word is sorted in ascending order and contains no duplicates. Return a list of tuples, where each tuple contains a word and its list of identifiers, sorted alphabetically by the word. Example: given document one with text hello world, return hello with one and world with one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d106",
+  "title": "Robot Navigation Mapper",
+  "spec": "`navigate(commands)`\nGiven a list of string commands such as forward, left, and right. Track the coordinates and facing direction of a robot starting at zero zero facing north. Forward increases the coordinate in the current facing direction by one unit. Left and right change the facing direction by ninety degrees. Record the coordinate after every forward command. If the robot visits the same coordinate twice, immediately return a list containing just that coordinate tuple. Otherwise, return the list of all visited coordinate tuples. Example: given forward, right, forward, return zero one and one one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d107",
+  "title": "Job Shop Scheduler",
+  "spec": "`schedule(jobs)`\nGiven a list of tuples containing an integer job identifier, an integer processing time, and an integer deadline. Sort the jobs to minimize the number of missed deadlines by ordering them primarily by deadline ascending, and secondarily by processing time ascending. Simulate the execution by accumulating the total processing time. If the accumulated time at the end of a job exceeds its deadline, record the job identifier as late. Return a list of the late integer job identifiers. Example: given a job needing ten minutes with a five minute deadline, return its identifier.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d108",
+  "title": "Simple Physics Collision Detection",
+  "spec": "`collide(particles)`\nGiven a list of tuples where each tuple contains an integer x coordinate, an integer y coordinate, and an integer radius. Compare every unique pair of tuples to calculate the euclidean distance between their centers. If this distance is strictly less than the sum of their radii, they are colliding. Return a list of tuples, where each tuple contains the indices of the colliding pair. Example: given two particles at the same location, return a tuple of zero and one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d109",
+  "title": "Billiard Ball Trajectory",
+  "spec": "`bounce(dimensions, start, vector, steps)`\nGiven a tuple of two integers for table width and height, a tuple for start coordinates, a tuple for velocity vector, and an integer number of steps. Simulate the movement of the ball step by step. If the ball hits a table edge, its velocity in that dimension is reversed. Record the coordinates at each step. Return a list of coordinate tuples representing the trajectory. Example: given table ten by ten, start zero zero, vector one one, return one one, two two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d110",
+  "title": "Survey Result Aggregator",
+  "spec": "`aggregate(responses)`\nGiven a list of lists of integers, where each inner list represents a user survey response with scores from one to five for a fixed set of questions. A score of zero means the user skipped the question. Calculate the average score for each question position, ignoring the zero scores. If a question was skipped by everyone, its average is zero. Return a list of float averages. Example: given two responses with scores five zero and three four, return four point zero and four point zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d111",
+  "title": "Image Histogram Equalization",
+  "spec": "`equalize(image)`\nGiven a list of lists of integers representing pixel intensities from zero to two hundred fifty five. Compute the frequency of each intensity across all lists. Calculate the cumulative sum of these frequencies. Create a new list of lists of integers where each original pixel intensity is replaced by its normalized cumulative frequency mapped to the zero to two hundred fifty five range. Return the new list of lists. Example: given a grid of all tens, return a grid of all two hundred fifty fives.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d112",
+  "title": "Morse Code Translator",
+  "spec": "`translate(signals)`\nGiven a list of integers representing signal durations. Positive integers represent tone durations and negative integers represent silence durations. A tone of one is a dot, and three is a dash. A silence of negative one separates parts of a letter, negative three separates letters, and negative seven separates words. Convert the sequences of dots and dashes into string letters using standard morse rules. Return the string translation. Example: given one, negative one, one, return the letter I.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d113",
+  "title": "Merge Conflict Detector",
+  "spec": "`detect(ancestor, first, second)`\nGiven three lists of strings representing lines of text from an ancestor file, a first modified file, and a second modified file. All lists have the exact same length. Compare the lists line by line. If a line in the first file and the second file both differ from the ancestor file and also differ from each other, it is a conflict. Return a list of tuples containing the integer line index, the first file string, and the second file string. Example: given ancestor A, first B, second C, return a tuple of zero, B, C.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d114",
+  "title": "Subtitle Block Parser",
+  "spec": "Write a function `subtitles(text)` that parses a multiline string representing video subtitles. Each block has an integer sequence number, a time range arrow string, and lines of dialog text. The function must iterate through each element, keeping track of the line index, a temporary buffer for the dialog, and the current sequence number. It should use a configuration parameter for maximum line length, generate an error message if a time range is malformed, and maintain a count of successfully parsed blocks. Store the parsed data in a context object or dictionary and return the final result list of tuples. Example: given \"1\\n00:00:01,000 --> 00:00:02,000\\nHello\", return [(1, 1000, 2000, \"Hello\")].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d115",
+  "title": "Point Cloud Clustering",
+  "spec": "Implement a clustering algorithm in `kmeans(points)` for a list of two-dimensional coordinate tuples. The process runs for a maximum number of iterations, tracked by an iteration count. It must assign each point element to the closest center, keeping track of the current centers and the previous centers to check for convergence. Use a temporary list to sum the coordinates for each cluster, calculate the error distance value for each point, and maintain the position index of the assigned cluster. Return the final result list of cluster centers. Example: given [(1.0, 1.0), (1.1, 1.1), (5.0, 5.0), (5.1, 5.1)], return [(1.05, 1.05), (5.05, 5.05)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d116",
+  "title": "Elevation Rain Trapping",
+  "spec": "Calculate the total volume of water that can be trapped in an elevation map using `trap(heights)`. The logic must determine the trapped water at each position by tracking the maximum height value seen from the left and the right sides. Use variables for the current index, the previous peak height, a temporary water calculation for each element, and a buffer array to store the left maximums. Accumulate the trapped water into a total count and return the final integer result. Example: given [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1], return 6.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d117",
+  "title": "Grid Island Counter",
+  "spec": "Find the size of each contiguous island of positive integers in a two-dimensional grid with `components(grid)`. Iterating through every position index, upon finding a positive element, perform a breadth-first search to discover the entire island. Keep track of the current cell coordinates, a temporary buffer acting as a queue for unvisited cells, the previous cell to prevent backtracking, and the count of cells in the current island. Log a debug message if an invalid coordinate is encountered, and append the size value to a result list. Return the sorted list of sizes. Example: given [[1, 1, 0], [0, 0, 2], [0, 3, 3]], return [2, 2].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d118",
+  "title": "Pattern Wildcard Matcher",
+  "spec": "Implement a wildcard matching function `wildcard(string)` where asterisks match zero or more characters. The function takes a single string containing a pattern and a text separated by a space. It must track the position index in the pattern, the current position in the text, the index of the previous asterisk, and a temporary fallback position in the text. Evaluate the character value at each element, updating the context state. If a mismatch occurs without an active asterisk, generate an error message or return false. Return a boolean result indicating a perfect match. Example: given \"a*b* axyzb\", return true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d119",
+  "title": "Web Page Ranker",
+  "spec": "Compute relative importance scores for nodes in a directed graph using `pagerank(links)`. The input is a list of tuples representing directed hyperlinks. The logic must track the current score for each element and update it iteratively based on a configuration parameter for the damping factor. During each step, track the previous scores, the count of outgoing links for each node, and use a temporary buffer to accumulate the new fractional score value distributed to neighbors. Return a result list of tuples with the node name and its rounded score. Example: given [(\"A\", \"B\"), (\"B\", \"A\")], return [(\"A\", 1.0), (\"B\", 1.0)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d120",
+  "title": "User Rating Predictor",
+  "spec": "Predict missing movie ratings for a target user with `recommend(ratings)`. Iterate through the ratings to find previous users who rated the same movies. Calculate a similarity value based on the rating differences, using a configuration context to set similarity thresholds. Track the current movie element, the position index of the user in the database, a temporary list of matching scores, and the count of overlapping ratings. If no matches are found, print an error message. Return the result list of recommended movie identifiers. Example: given [(\"Alice\", \"Movie1\", 5), (\"Bob\", \"Movie1\", 4), (\"Bob\", \"Movie2\", 5)], targeting \"Alice\" via internal setup, return [\"Movie2\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d121",
+  "title": "Point Cloud Boundary",
+  "spec": "Compute the outer boundary polygon for a set of two-dimensional coordinate points using a directional scan in `graham(points)`. Sort the points by polar angle and process each element sequentially. The algorithm must use a temporary buffer stack to track the boundary vertices, checking if the current point, the previous point in the stack, and the point before that form a counter-clockwise turn. Calculate the cross product value, maintain the position index in the sorted array, and keep a count of discarded points. Return the final result list of coordinate tuples. Example: given [(0, 0), (2, 2), (0, 2), (2, 0), (1, 1)], return [(0, 0), (2, 0), (2, 2), (0, 2)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d122",
+  "title": "Polyline Decimator",
+  "spec": "Reduce the number of vertices in a segmented line using a recursive algorithm in `simplify(points)`. Find the point element farthest from the line segment connecting the first and last points. Track the start and end position index, the temporary maximum distance value, and the current point being evaluated. If the distance exceeds a given tolerance parameter from the context, split the list and simplify both halves. Keep a count of removed vertices and log a message if the input is too short. Return the simplified result list of coordinates. Example: given [(0, 0), (1, 0.1), (2, 0)], with a tolerance parameter of 0.5, return [(0, 0), (2, 0)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d123",
+  "title": "Sequence Delta Encoder",
+  "spec": "Compress a list of integers by storing the difference between consecutive elements using `delta(data)`. The function must iterate through the sequence, tracking the previous integer value, the current integer, and calculating the temporary difference. Use a configuration parameter to define the maximum allowed difference; if exceeded, insert an escape code and store the raw value. Maintain the current position index in the output buffer and a count of how many escapes were used. If the data is empty, yield an error message. Return a tuple containing the escape count and the result list. Example: given [10, 12, 15, 100, 102], return (1, [10, 2, 3, 255, 100, 2]).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d124",
+  "title": "Capacity Bin Packer",
+  "spec": "Distribute a list of integer item weights into containers with a fixed maximum capacity parameter using `binpack(weights)`. Iterate through each item element and attempt to place it into the first available container in a temporary buffer. Track the current remaining capacity value for each bin, the position index of the item, and the previous bin accessed to optimize searching. Maintain a count of total containers opened, and output a status message if an item exceeds the total capacity of an empty bin. Return the final result list of packed containers. Example: given weights [4, 8, 1, 4, 2, 1] and capacity 10, return [[4, 1, 4, 1], [8, 2]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d125",
+  "title": "Prefix Suggestion Tree",
+  "spec": "Build a character tree structure in `autocomplete(words)` from a string of comma-separated vocabulary words, followed by a semicolon and a target prefix string. Insert each word element by iterating through its characters, tracking the current node in the nested dictionary context, and the position index within the word. To find suggestions, traverse to the prefix node, then use a temporary buffer to perform a depth-first search, keeping track of the previous characters. Maintain a count of matches and return the result list of completed vocabulary words. Example: given \"apple,applet,banana;app\", return [\"apple\", \"applet\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d126",
+  "title": "Rectangular Area Union",
+  "spec": "Calculate the total unified area covered by a set of axis-aligned rectangles using `overlap(rectangles)`. Extract all vertical edges and sort them by their horizontal position. Use a sweep line approach, tracking the active set of overlapping intervals in a temporary buffer, the previous horizontal coordinate, and the current vertical span value. For each edge element, update the interval context, maintain the position index of the sweep line, and accumulate the area into a result variable. Keep a count of processed edges and return the total integer area. Example: given [(0, 0, 2, 2), (1, 1, 3, 3)], return 7.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d127",
+  "title": "Dependency Graph Sorter",
+  "spec": "Order a set of tasks in `toposort(edges)` such that every task appears after all of its prerequisites. Build an adjacency list and compute the incoming edge count for every distinct element. Maintain a temporary buffer queue of tasks with an incoming count of zero. Process the queue by tracking the current task, looking up its neighbors in the graph context, and decrementing their incoming edge value. If the final sorted position index doesn't match the total number of tasks, generate an error message indicating a cyclic dependency. Return the sorted result list. Example: given [(\"wash\", \"dry\"), (\"sort\", \"wash\")], return [\"sort\", \"wash\", \"dry\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d128",
+  "title": "Hidden State Decoder",
+  "spec": "Determine the most likely sequence of hidden states given observed events using `viterbi(observations)`. The logic must compute the maximum likelihood of reaching each state at every step index. Track the current state, the previous state, the temporary path probabilities, and the highest probability value at each step. Store backpointers in a context buffer to reconstruct the optimal sequence. Maintain a count of processed observations, and if an unknown observation element occurs, log a warning message. Return the decoded result sequence. Example: given \"walk,shop,clean\", return [\"Rainy\", \"Sunny\", \"Rainy\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d129",
+  "title": "Grid Line Rasterizer",
+  "spec": "Generate the coordinates of the pixels that form a straight line between two points on a grid with `bresenham(endpoints)`. The algorithm must use integer arithmetic to track the accumulated error value as it steps along the longest axis. Manage the current coordinate, the previous coordinate, the directional step parameter, and a temporary variable for axis swapping if the slope is steep. Keep a count of the pixels generated and append each coordinate element to an output buffer. Return the final result list of points. Example: given [(0, 0), (2, 2)], return [(0, 0), (1, 1), (2, 2)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d130",
+  "title": "Dictionary String Compressor",
+  "spec": "Compress an input string in `lzw(text)` by replacing repeated substrings with integer indices from a dynamically growing dictionary context. Scan the input, tracking the longest matching current sequence, the previous sequence, the character position index, and a temporary combined string element. When a combined string is not found, output the dictionary value of the previous sequence, add the new combination to the dictionary, and update the current sequence. Use a configuration parameter for the maximum dictionary size, maintaining a count of entries, and return the compressed result buffer. Example: given \"ABABABA\", return [65, 66, 256, 258].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d131",
+  "title": "Frequency Tree Builder",
+  "spec": "Construct an optimal prefix code tree based on the occurrence frequencies of different symbols using `huffman(frequencies)`. Repeatedly select the two elements with the lowest frequencies, combining them into a new internal node. Track the current nodes being merged, their position index in the sorted list, and the combined frequency value. Traverse the final tree context using a temporary string buffer to generate the binary codes, and log a message upon completion. Return the resulting dictionary mapping characters to binary strings. Example: given [(\"A\", 5), (\"B\", 2), (\"C\", 2)], return {\"A\": \"0\", \"B\": \"10\", \"C\": \"11\"}.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d132",
+  "title": "String Edit Distance",
+  "spec": "Calculate the minimum number of single-character changes required to turn one word into another using `edit(strings)`. The input is a single string containing two words separated by a comma. Build a two-dimensional scoring context, iterating over the characters. Maintain the current row buffer, the previous row buffer, the position index of the first string, and the index of the second string element. Compute the temporary cost value of substitution versus deletion or insertion, keeping a count of operations. Return the integer result representing the edit distance. Example: given \"kitten,sitting\", return 3.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d133",
+  "title": "Trajectory Integrator",
+  "spec": "Simulate the path of a moving object using numerical integration in `runge(equation)`. The logic approximates the next position using a weighted average of four simulated slopes at the current step. Track the current time, the previous state value, temporary slope calculations, the integration step parameter from the simulation context, and the iteration count. If the position index exceeds a safe boundary, output an error message and halt. Append each new coordinate element to a storage buffer, and return the final trajectory result list. Example: given initial conditions (0.0, 1.0, 0.2), return [(0.0, 1.0), (0.1, 1.105), (0.2, 1.221)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d134",
+  "title": "Visibility Raycaster",
+  "spec": "Determine the distance to the nearest obstacle in various directions from a central origin point using `raycast(scene)`. For a series of angles, project a ray and find the closest intersection point with any wall element in the scene context. Track the current angle parameter, the previous closest distance value, the temporary intersection coordinate, the index of the wall segment, and a count of rays processed. If a ray hits nothing, assign a default maximum distance. Store each computed distance in an output buffer and return the final result array. Example: given a wall at [(2, -2), (2, 2)] and rays at 0 and 90 degrees, return [2.0, 100.0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d135",
+  "title": "Curve Interpolator",
+  "spec": "Generate a smooth curve through a sequence of control points using recursive linear interpolation in `bezier(control)`. For a fractional parameter ranging from zero to one, repeatedly interpolate between adjacent points until a single point remains. Track the current set of points, the previous iteration's points, the temporary calculated coordinate element, the position index of the interpolation step, and the interpolated coordinate value. Maintain a context buffer of the final curve points, keep a count of the segments generated, and return the result list. Example: given [(0, 0), (0, 1), (1, 1)] and parameter 0.5, return [(0.25, 0.75)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d136",
+  "title": "Sequence Probability Evaluator",
+  "spec": "Calculate the total probability of observing a specific sequence of events given a state machine's transition rates using `forward(sequence)`. Maintain the probabilities of being in any state at the current time step index. Update them by summing the products of the previous state probabilities, the transition parameter, and the emission value. Keep track of the current state, a temporary sum accumulator for each element, and the configuration context for the model. If a probability drops to zero, log a debug message. Return the final floating-point result probability. Example: given [\"heads\", \"tails\", \"heads\"], return 0.125.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d137",
+  "title": "Node Hash Ring",
+  "spec": "Distribute data keys across a dynamic set of storage servers using a circular hash space in `ring(nodes)`. Map each server to multiple points on the ring by hashing combinations of the server name and a replica index. Track the current server element, the temporary hash value, the configuration parameter for replica counts, the position index on the ring, and the previous node checked. For each key, find the first server with a hash greater than or equal to the key's hash. Maintain a count of assigned keys and return the result assignment dictionary. Example: given nodes [\"ServerA\", \"ServerB\"] and keys [\"User1\", \"User2\"], return [(\"User1\", \"ServerB\"), (\"User2\", \"ServerA\")].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d138",
+  "title": "Target Value Controller",
+  "spec": "Simulate a feedback loop mechanism that adjusts a control variable to reach a desired setpoint over time using `pid(targets)`. Iterate through the target elements, simulating several time steps for each. Calculate an error value as the difference between the target and the current measured position. Track the temporary integral of past errors, the derivative of the previous error, the current output, the tuning parameters from the system context, and the iteration index count. Output a warning message if the control signal saturates. Return the result buffer of measured values. Example: given targets [10, 10, 20], return [5.5, 8.2, 15.1].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d139",
+  "title": "Conveyor Belt Sorter",
+  "spec": "Models a warehouse conveyor belt separating packages. The input is a list of package weight integers. A configuration dictionary defines the threshold parameters for three destination bins: light, medium, and heavy. Iterate through each element in the sequence, keeping track of its index position. Evaluate the current value against the thresholds to determine the correct bin, adding it to a temporary buffer for that bin. If a weight is negative or zero, it is invalid; increment an error count and create a warning message string. Return a result tuple containing the three lists of integers and a list of all accumulated messages.\n\n`sort(packages)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d140",
+  "title": "Subscription Billing Cycle",
+  "spec": "Processes a list of user account tuples, each containing a user string, an active boolean, and a monthly rate integer. A parameter dictates the tax rate to apply. Iterate over each element in the list. Maintain a count of active subscriptions. For each active user, calculate the current charge, format an invoice message string, and add it to a temporary buffer. If a user is inactive, skip billing but record their position index in a separate list. Return a result tuple containing the total revenue number, the buffer of invoice messages, and the list of inactive indices.\n\n`bill(users)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d141",
+  "title": "Coffee Machine Simulator",
+  "spec": "Simulates an automated coffee maker by processing an input list of order strings. A context dictionary tracks the current levels of water, milk, and beans. Iterate through each element in the sequence. Check if the context has sufficient values for the requested drink parameters. If yes, deduct the amounts and append a success message to a temporary buffer. If an ingredient is missing, log an error message and record the index position of the failed order. Return a result tuple containing the remaining context numbers and the buffer of message strings.\n\n`brew(orders)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d142",
+  "title": "Financial Transaction Validator",
+  "spec": "Processes a list of transaction tuples, where each contains an account string, an amount integer, and a timestamp string. A context object provides the starting balance values for accounts. Iterate through each element, keeping track of the previous timestamp to ensure chronological order. If a transaction amount exceeds the current balance, skip it, increment an error count, and generate a failure message. Otherwise, update the balance parameter. Return a result tuple containing the final account balances and a buffer list of all generated messages.\n\n`validate(transactions)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d143",
+  "title": "Traffic Light Intersection Simulator",
+  "spec": "Models a traffic intersection over a series of time steps. The input is a list of arriving car numbers per minute. A configuration provides the duration parameters for green and red lights. Iterate through each element in the sequence. Maintain the current state of the light and the number of cars in the queue. For each time step, calculate how many cars depart and update the queue value in a temporary buffer. Keep track of the previous queue length to find the maximum, and return a result tuple of the total cars passed and the maximum queue value observed.\n\n`simulate(events)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d144",
+  "title": "Printer Ink Level Tracker",
+  "spec": "Tracks the ink usage of a color printer. The input is a list of page tuples, each holding coverage values for cyan, magenta, yellow, and black. A configuration defines the starting ink level parameters. Iterate through each element, keeping track of the page index position. Subtract the current page's coverage from the ink values. If any color drops below zero, halt the process, increment an error count, and formulate an alert message. Return a result tuple containing the number of successfully printed pages and a temporary buffer of the remaining ink values.\n\n`process(pages)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d145",
+  "title": "Library Book Checkout",
+  "spec": "Manages a library circulation desk. The input is a list of patron request tuples, each with a patron identifier and a book identifier. A context dictionary provides the availability status and parameters of the books. Iterate through each element, checking its index position. If the current book value is available, update its status and add it to a temporary buffer of successful checkouts. If a patron exceeds their checkout limit, generate a denial message and increment a warning count. Return a result tuple containing the buffer of allowed books and a list of warning messages.\n\n`checkout(requests)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d146",
+  "title": "Meeting Room Scheduler",
+  "spec": "Manages room reservations for an office. The input is a list of booking tuples containing start hour, end hour, and room strings. A context structure tracks the currently booked hour values for each room. Iterate through each element in the sequence. Check if the current parameters overlap with any previous reservation. If the time is clear, add the booking to a temporary buffer and increment a success count. If there is a conflict, format an error message, log the index position, and return a result tuple containing the number of successful bookings and the buffer of error messages.\n\n`schedule(bookings)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d147",
+  "title": "Robot Assembly Line Tracker",
+  "spec": "Simulates a robotic arm assembling widgets. The input is a list of operation strings. A configuration defines the required parameter sequence of operations. Iterate through each element, maintaining the current assembly phase and checking against the previous step. If an operation is valid, add it to a temporary buffer. If an operation occurs out of sequence, generate a defect message, record the error position index, and reset the buffer. Return a result tuple of the completed count and the list of defect messages.\n\n`track(operations)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d148",
+  "title": "Customer Loyalty Rewards",
+  "spec": "Calculates points for a retail loyalty program. The input is a list of purchase values. A configuration object specifies the points multiplier parameter. Iterate over each element in the sequence, keeping track of its index position. Calculate the earned points and accumulate them in a temporary buffer. If a purchase exceeds a specific threshold, apply a bonus and increment a bonus count; if invalid, create a warning message. Return a result tuple of the final points number and the buffer of warning messages.\n\n`reward(purchases)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d149",
+  "title": "Elevator Control Dispatcher",
+  "spec": "Simulates a single elevator servicing a building. The input is a list of tuples with timestamp, starting floor, and destination floor numbers. A parameter dictates the travel time per floor. Iterate through each element, keeping track of the current floor and the previous timestamp. Calculate the time value to service the request and update the total time in a temporary buffer. If a request goes to an invalid floor, generate an error message and increment a failure count. Return a result tuple of the final floor position, the elapsed time value, and a list of error messages.\n\n`dispatch(requests)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d150",
+  "title": "DNS Query Resolver",
+  "spec": "Models a simplified domain name resolution process. The input is a list of domain strings. A context dictionary maps domains to address values, and another provides alias parameters. Iterate through each element, following the alias chain to find the current canonical domain, updating a step count. If the count exceeds a limit, format a timeout message, log the query index position, and break. Otherwise, append the resolved address to a temporary buffer. Return a result tuple containing the buffer of addresses and a list of timeout messages.\n\n`resolve(queries)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d151",
+  "title": "Vending Machine Change Dispenser",
+  "spec": "Processes a series of item purchases. The input is a list of tuples containing cost and payment values. A context dictionary tracks the number of available coins. Iterate through each element, keeping track of its index position. Calculate the required change value and use the context parameters to build a list of coins in a temporary buffer. If exact change is impossible, generate a failure message and increment an error count. Return a result tuple of the final coin context values and the buffer of successful change lists.\n\n`dispense(transactions)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d152",
+  "title": "Network Port Scanner",
+  "spec": "Analyzes a list of port status tuples, each holding a port number and a state string. A configuration specifies the minimum block parameter to register an open range. Iterate through each element. If the current state is open, add the port value to a temporary buffer. If it is closed, check if the buffer size meets the parameter, then clear it. Track the previous port to ensure they are contiguous, generating a warning message if a gap is detected. Return a result tuple of the identified block lists and the count of warnings.\n\n`scan(ports)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d153",
+  "title": "Train Ticket Pricing",
+  "spec": "Calculates fares for a commuter railway. The input is a list of passenger trip tuples with start and end station numbers. A configuration matrix holds the cost parameters between stations. Iterate through each element, keeping track of its index position. Retrieve the current fare value and add it to a temporary buffer. If a trip spans more than five stations, apply a discount and increment a promo count; if invalid, generate an error message. Return a result tuple containing the total revenue value and the buffer of individual fares.\n\n`price(trips)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d154",
+  "title": "Temperature Trend Analyzer",
+  "spec": "Processes a list of daily temperature values. A parameter dictates the minimum temperature to consider valid. Iterate through each element, comparing the current reading to the previous one to find increasing sequences. Store the lengths of these sequences in a temporary buffer. If a reading is invalid, generate a warning message, record its index position, and increment an error count. Return a result tuple containing the maximum sequence number found, the buffer of all sequence lengths, and the list of warning messages.\n\n`analyze(readings)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d155",
+  "title": "Flight Baggage Allowance",
+  "spec": "Processes luggage weights for airline passengers. The input is a list of bag weight values. A configuration object sets the standard limit and the fee parameters. Iterate through each element, keeping track of the bag index position. If the current weight exceeds the limit, calculate the fee, add it to a temporary buffer, and increment an overage count. If a weight is negative, formulate an error message. Return a result tuple containing the total fee number, the count of heavy bags, and a list of error messages.\n\n`check(bags)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d156",
+  "title": "Concert Seating Assigner",
+  "spec": "Allocates seats in a single theater row. The input is a list of party size numbers. A configuration specifies the total capacity parameter. Iterate through each element, maintaining the current available capacity value. If the group fits, subtract their size, record their starting seat position index in a temporary buffer, and update the previous allocated seat. If they do not fit, generate a waitlist message and increment a skipped count. Return a result tuple of the seated positions buffer and the list of waitlist messages.\n\n`assign(groups)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d157",
+  "title": "Golf Scorecard Tracker",
+  "spec": "Computes a final golf score from a list of stroke numbers per hole. A context sequence provides the par value parameter for each hole. Iterate through each element, matching it to its corresponding par index. Compare the current strokes to par to determine the outcome, adding a descriptive message string to a temporary buffer. Keep track of the total score value. If a score is invalid, increment an error count. Return a result tuple containing the total strokes number, the final relative value, and the buffer of descriptive messages.\n\n`score(holes)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d158",
+  "title": "Run-Walk Interval Timer",
+  "spec": "Computes a workout schedule based on a list of activity strings. A configuration dictionary defines the duration parameter for each type. Iterate through each element in the sequence, keeping track of its index position. Accumulate the current elapsed time value. For each interval, format an announcement message string and add it to a temporary buffer. Maintain separate counts for total running and walking time. Return a result tuple containing the buffer of announcement messages and the number of total running seconds.\n\n`time(intervals)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d159",
+  "title": "Bank Interest Calculator",
+  "spec": "Evaluates a list of daily account balance values. A configuration rule sets the interest rate parameter and a minimum threshold. Iterate through each element, comparing the current balance to the previous one. If it meets the threshold, calculate the interest value and add it to a temporary buffer. If it falls below, deduct a fee and increment a penalty count. Log a warning message with the day index for any deductions. Return a result tuple of the final net number and the buffer of warning messages.\n\n`calculate(balances)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d160",
+  "title": "Daily Calorie Tracker",
+  "spec": "Analyzes a person's food intake over a day. The input is a list of meal tuples containing name strings and calorie numbers. A configuration sets the daily goal parameter. Iterate through each element, tracking the meal index position. Add the current calories to a running total value, and store each processed meal in a temporary buffer. If the total surpasses the goal, generate an alert message; keep track of the previous highest meal to find the maximum. Return a result tuple of the total calories number and the list of alert messages.\n\n`monitor(meals)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d161",
+  "title": "Bibliography Reference Formatter",
+  "spec": "Processes a list of citation tuples containing author, year, and title values. A style parameter dictates the formatting rules. Iterate through each element, keeping track of its index position. Construct a formatted string based on the current data and append it to a temporary buffer. If any citation is missing an author, use a placeholder, increment an error count, and generate an issue message. Ensure the previous author is checked for sorting validation. Return a result tuple of the formatted buffer and the list of issue messages.\n\n`format(citations)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d162",
+  "title": "Video Rental Fee Calculator",
+  "spec": "Processes a list of rental return tuples with title strings, days late numbers, and format strings. A configuration specifies the daily penalty parameter for each format. Iterate through each element. Multiply the days late by the current rate to find the fee value, accumulating it in a temporary buffer. If a movie is excessively late, increment a lost count and generate a surcharge message, recording its index position. Return a result tuple containing the total fee number and the buffer of surcharge messages.\n\n`assess(returns)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d163",
+  "title": "Fitness Step Counter",
+  "spec": "Processes data from a pedometer. The input is a list of numbers representing steps taken in ten-minute blocks. A configuration sets a daily goal parameter. Iterate through each element, adding the current steps to a total value. Keep track of the previous interval to find the maximum. If an interval has zero steps, increment an inactivity count; if positive, reset it and add to a temporary buffer of active streaks. Generate a congratulatory message if the goal is met, returning a result tuple of the total step number and the active streaks buffer.\n\n`count(intervals)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d164",
+  "title": "Textile Weaving Pattern Generator",
+  "spec": "Create a function that simulates a loom weaving a fabric. The entry function `weave(threads, pattern)` takes a string of thread colors and a list of numerical over and under rules. Iterate through the threads to generate rows of fabric. Keep track of the loop index and compare the current thread color to the previous thread color to apply a visual border if they match. Accumulate the output row by row using a temporary collection before adding it to the final output list. The logic should accept a settings dictionary containing a tension parameter that skips every nth thread. If a color is unsupported, log a warning text and skip it. Count the total number of successful rows and return the final woven layout. For instance, providing a sequence of three red threads and a tension rule of two results in two successful woven lines.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d165",
+  "title": "Soil Strata Layer Analysis",
+  "spec": "Develop a tool to evaluate geological soil layers from a drilling core. The entry function `analyze(samples, depths)` accepts a list of soil type descriptions and a corresponding list of depth measurements. Step through the layers and track the depth position. Compare the current layer type with the previous layer to identify transition zones. Use a settings object to provide minimum mineral thresholds. If the change in mineral concentration exceeds the threshold, calculate a temporary difference metric and append the findings to an output collection. Whenever an unexpected hollow zone is encountered, generate a warning note. Return the processed list of significant geological transitions. For example, processing sand and clay layers at depths of ten and twenty meters yields a transition record at twenty meters.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d166",
+  "title": "Astronomical Star Tracking Alignment",
+  "spec": "Write a routine to correct the alignment of a telescope based on a reference star field. The entry function `align(stars, offsets)` receives a list of observed star coordinates and a list of expected focal deviations. Iterate over the sequence using a numeric index. For each step, calculate the distance between the current observed star and the previous reference star. The function should use a dictionary of operational limits to determine if the calculated deviation falls within an acceptable range. Store intermediate trigonometric calculations in a short-lived variable. If the deviation is too large, record a failure note. Return a collection of the corrected celestial coordinates. Providing two coordinates and a small deviation limit might output the same two coordinates properly adjusted.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d167",
+  "title": "Dietary Meal Plan Balancer",
+  "spec": "Design a meal planning algorithm that groups individual dishes into daily menus that meet nutritional goals. The entry function `balance(meals, targets)` receives a list of meal items and a dictionary of macronutrient goals. Traverse the items, keeping track of the position index, and add each current meal to a daily collection sequence. Sum the caloric metric for the day. If the daily total exceeds the specified dietary limit, capture an alert text and start a new daily sequence. Maintain a running tally of successful days. Return the compiled sequence of daily meal plans. If given three heavy meals and a standard daily limit, the output will split them across two separate days.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d168",
+  "title": "Greenhouse Climate Control Sequencer",
+  "spec": "Implement a control system for a botanical greenhouse. The entry function `regulate(readings, limits)` takes a chronological list of temperature sensor inputs and a dictionary of environmental bounds. Iterate over the inputs to process each individual sensor event. Compare the current temperature reading against the previous reading to determine if the climate is warming or cooling. Using the provided boundaries, decide whether to engage or disable the heating system. Store the active state in a tracking variable. Whenever a state change occurs, formulate a command text to dispatch to the hardware and add it to an action log. Return the complete history of system actions. For a drop from twenty degrees to fifteen degrees, the result is an activation command for the heater.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d169",
+  "title": "Archaeological Artifact Catalog Grid",
+  "spec": "Build a spatial organizer for excavated historical fragments. The entry function `catalog(fragments, grid)` processes a list of discovered items and a two dimensional sector map. For each artifact, extract its spatial coordinate and estimated historical age. Determine which sector of the map it belongs to and store it in a regional grouping collection. Use a dictionary representing the excavation site background to adjust the age estimate. Keep a running tally of the total items processed. If an item falls entirely outside the map boundaries, produce a rejection text. Return the compiled registry of all sorted artifacts. An input of a pottery shard at coordinates five and five will place it in the central grid sector.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d170",
+  "title": "Choreography Step Sequence Mirror",
+  "spec": "Write a routine that reflects a dance choreography horizontally across a stage. The entry function `mirror(steps, stage)` requires a list of movement instructions and a tuple containing the stage dimensions. Iterate through the movements while tracking the sequence position. For each motion, calculate the opposite lateral direction. Evaluate the current movement against the previous movement to ensure the physical transition is possible without exceeding the stage width limit. Accumulate the modified movements in a temporary sequence list. If a step forces the dancer off stage, record an out of bounds note. Return the finalized mirrored choreography. A step moving two units left becomes a step moving two units right in the final sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d171",
+  "title": "Vinyl Record Groove Geometry Calculator",
+  "spec": "Create an algorithm that calculates the physical cutting path for a vinyl record. The entry function `groove(audio, properties)` processes a list of audio amplitude peaks and a dictionary of physical disc characteristics. Iterate over the peaks to compute the radial placement of the cutting head. Calculate the required groove width for the current amplitude and compare it to the previous width to prevent overlap. Use the rotation speed factor to adjust the spiral angle. Gather the calculated coordinate pairs in a staging collection. Count the total number of rotations generated and return the finalized array of cutting points. An input of three steady amplitude peaks produces three evenly spaced radial coordinates.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d172",
+  "title": "Paint Mixing Recipe Adjuster",
+  "spec": "Develop a color matching tool for a hardware store paint dispenser. The entry function `mix(colors, target)` receives a list of available base pigments and a tuple representing the desired final color. Step through the available pigments and evaluate the current base against the desired hue. Calculate a temporary combined color ratio by adding a specific weight of the pigment. Keep a running total of the dispensed volume. If the combination exceeds the maximum can capacity, generate an overflow warning text. Adjust the individual pigment weights until they align with the goal and return the sequence of final required volumes. Mixing pure blue and pure yellow to target green will output equal weight volumes for both.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d173",
+  "title": "Coral Reef Bleaching Survey Processor",
+  "spec": "Process marine biology data to track coral health over time. The entry function `survey(transects, thresholds)` processes a list of underwater photographic records and a dictionary of health criteria. Loop through the records to extract the geographical location and the observed pigmentation. Compare the current pigmentation level to the previous historical record to determine the rate of decay. Evaluate this change against the provided environmental criteria. Accumulate the critical decay events in an output registry. Count the total number of affected regions and return the comprehensive health report. A record showing a drop from vibrant green to pale white will trigger an entry in the output registry.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d174",
+  "title": "Typography Kerning Pair Generator",
+  "spec": "Design a tool that calculates character spacing adjustments for a custom typeface. The entry function `kern(characters, fonts)` takes a string of alphabetical glyphs and a dictionary of typographical metrics. Traverse the text step by step. Look at the current character and the preceding character to evaluate their physical overlap. Calculate the optimal distance based on a spacing factor provided in the metrics. Store the generated pairs and their corresponding spacing adjustments in an intermediate collection. If an unrecognized glyph is encountered, emit a missing character note. Return the finalized sequence of spacing rules. For an input string of AV, the output sequence will include a negative spacing adjustment to bring them closer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d175",
+  "title": "Braille Translation Formatter",
+  "spec": "Implement a converter that translates standard text into embossed tactile reading material. The entry function `translate(text, rules)` accepts a string of prose and a mapping of character substitutions. Process the text character by character to retrieve the corresponding six dot matrix. Maintain a staging list to assemble these matrices into a full line of tactile output. Monitor the physical page width limit to trigger a line break when the capacity is reached. Keep track of the total number of lines generated. If a symbol lacks a tactile equivalent, produce a diagnostic text. Return the organized pages of translated lines. Converting the word hello produces five tactile matrices arranged in a single output line.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d176",
+  "title": "Seismic Wave Anomaly Detector",
+  "spec": "Build an analysis function for a geological monitoring station to find earthquake precursors. The entry function `detect(waves, baseline)` receives a chronological sequence of vibration measurements and a dictionary of baseline expectations. Iterate through the timeline using a numeric loop counter. Compare the current vibration amplitude with the preceding measurement to calculate a sudden change metric. Check this temporary difference against a sensitivity limit from the expectations dictionary. If the threshold is breached, record the timestamp and magnitude in an alert collection. Count the total number of significant tremors and return the compiled alert history. A sudden jump from an amplitude of two to nine will add a tremor warning to the final list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d177",
+  "title": "Freight Train Car Yard Shunter",
+  "spec": "Create a logistics algorithm to sort rolling stock in a railway classification yard. The entry function `shunt(cars, tracks)` uses a list of incoming freight cars and a dictionary describing the available sidings. Process each car individually by extracting its final destination. Evaluate the current track layout to determine the optimal siding for placement. Use a holding area sequence to temporarily store cars that need to be reordered. If a siding exceeds its physical capacity, log a derailment risk warning. Maintain a tally of successfully sorted cars and return the final arrangement of all sidings. Routing three coal cars and one lumber car will result in two separated track lists in the final arrangement.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d178",
+  "title": "Irrigation Sprinkler Coverage Overlap",
+  "spec": "Design a coverage calculator for an agricultural water delivery system. The entry function `irrigate(sprinklers, field)` takes a list of sprinkler locations and a tuple defining the dimensions of the farm plot. Traverse the locations to extract the coordinate center and the spray radius. Calculate the wetted footprint for the current sprinkler and compare it to the previously calculated footprints to find overlapping zones. Store the localized saturation levels in an intermediate grid matrix. Use an absorption rate multiplier to adjust the final volume. If a sector receives too much water, generate a flooding alert text. Return the complete field saturation map. Two adjacent sprinklers with large radii will yield an output map showing a heavily saturated overlapping center.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d179",
+  "title": "Geocache Route Waypoint Validator",
+  "spec": "Develop a pathfinding checker for a recreational treasure hunting application. The entry function `validate(waypoints, terrain)` processes a list of sequential geographic coordinates and a dictionary of map details. Iterate over the route steps. Compare the current geographic point with the preceding point to calculate the travel distance and elevation change. Evaluate these metrics against a difficulty threshold to ensure the path is safe for beginners. Accumulate the approved segments into a validated route collection. If a gap between points is impassable, capture a safety warning text. Return the sequence of verified path segments. An input of three flat coordinates produces a single continuous verified path.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d180",
+  "title": "Bakery Dough Resting Scheduler",
+  "spec": "Write a time management routine for a commercial kitchen producing artisan bread. The entry function `schedule(batches, timetable)` accepts a list of prepared dough mixtures and a dictionary of fermentation requirements. Loop through the mixtures and extract the required resting duration. Calculate a temporary completion timestamp based on the starting clock. Compare the current mixture requirements with the previously scheduled items to avoid oven bottlenecks. Maintain a sequential registry of when each item will be ready to bake. If the schedule pushes a baking time past closing hours, emit an overtime notice. Return the completed daily baking itinerary. A mixture requiring two hours and one requiring three hours will result in two staggered baking slots in the itinerary.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d181",
+  "title": "Hive Honeycomb Cell Populator",
+  "spec": "Implement a simulation modeling how bees store resources in a geometric hive structure. The entry function `populate(cells, nectar)` receives a list of available hexagonal chambers and a total available resource volume. Traverse the available chambers, tracking the spatial coordinate of each one. For each chamber, check the saturation of the preceding neighboring chamber to ensure resources are clustered together. Distribute a specific quantity of resources into the current chamber and subtract it from the total. Store the individual chamber statuses in an intermediate collection. Count how many chambers were completely filled and return the final structural layout. Distributing fifty units of nectar across chambers holding ten units each yields five filled chambers in the layout.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d182",
+  "title": "Optical Lens Ray Tracing Simulator",
+  "spec": "Create a physics calculator that follows beams of light traveling through curved glass. The entry function `trace(rays, lenses)` processes a list of incoming light trajectories and a sequence of glass properties. For each light beam, track its spatial coordinate and traveling angle. Calculate a temporary shifted angle when the beam intersects with a glass surface, utilizing the optical density property. Store the step by step trajectory in a path history collection. If a beam is completely reflected internally, generate an event note and halt its progression. Count the number of beams that successfully pass through and return their final paths. A beam hitting a flat lens at a straight angle will output a straight path sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d183",
+  "title": "Perfume Fragrance Note Blending",
+  "spec": "Design a formulation algorithm for an apothecary creating custom scents. The entry function `blend(notes, profile)` requires a list of aromatic ingredients and a target scent profile dictionary. Step through the ingredients to evaluate their classification as top, heart, or base scents. Calculate the evaporation impact of the current ingredient using a volatility metric. Compare it to the previously added ingredient to ensure the olfactory transition is smooth. Accumulate the balanced ingredients in a finalized mixture collection. If the combined intensity exceeds a pleasant threshold, log a masking error text. Return the sequence of finalized proportions. Combining rose and vanilla ingredients will produce a list of calculated volume ratios for both.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d184",
+  "title": "Escape Room Puzzle Reset Checklist",
+  "spec": "Develop an automated verification tool for an interactive entertainment venue. The entry function `reset(props, room)` receives a list of interactive objects and a dictionary defining the initial room configuration. Iterate through the objects to check their spatial location and operational status. Compare the current status of the object against the required starting status. If they do not match, formulate a corrective action text and store it in an instruction sequence. Keep a running tally of how many objects require human intervention. Return the comprehensive list of required reset actions. Finding an unlocked padlock when it should be locked outputs an instruction to lock the padlock.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d185",
+  "title": "Elevator Counterweight Balancer",
+  "spec": "Write an engineering simulation for the mechanical load on a vertical transport system. The entry function `balance(floors, physics)` uses a sequential list of passenger requests and a dictionary of mechanical specifications. Process the requests by tracking the floor destination and the estimated passenger mass. Calculate a temporary cable tension metric based on the distance between the current floor and the preceding floor. Gather the calculated load profiles in a staging collection. If the required lifting force exceeds the motor limits, produce a structural warning text. Return the finalized sequence of tension calculations. A trip from floor one to floor ten with full passenger weight yields a high tension sequence output.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d186",
+  "title": "Calligraphy Brush Stroke Pathing",
+  "spec": "Implement a digital rendering routine that translates mouse movements into realistic ink strokes. The entry function `stroke(points, style)` accepts a sequence of spatial coordinates and a dictionary of stylistic brush properties. Traverse the sequence, keeping track of the position. Calculate the travel speed by comparing the current coordinate with the previous coordinate. Use this speed and a flow rate metric to determine the applied ink pressure. Store the calculated thickness for each segment in an output sequence. If the movement is too rapid, log a skipping warning. Count the total individual segments drawn and return the complete stroke geometry. Drawing a slow straight line results in an output sequence of thick consistent line segments.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d187",
+  "title": "Aquarium Water Chemistry Titrator",
+  "spec": "Create an automated dosing calculator for maintaining a large marine fish tank. The entry function `titrate(readings, baseline)` takes a series of chemical sensor measurements and a dictionary of ideal aquatic conditions. Loop through the measurements to extract the acidity level. Calculate the temporary chemical offset between the current measurement and the ideal baseline. Accumulate the required neutralizing additive amounts in a chronological staging sequence. If the acidity fluctuates too wildly between readings, generate a severe toxicity alert. Count the number of corrective doses administered and return the sequence of chemical adjustments. A measurement slightly below the ideal baseline will output a small calculated dosage of neutralizer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d188",
+  "title": "Wind Turbine Yaw Angle Controller",
+  "spec": "Design a tracking system that aligns a renewable energy generator with incoming breezes. The entry function `yaw(winds, mechanics)` accepts a chronological list of meteorological directions and a dictionary of hardware constraints. Iterate over the directional data. Compare the new incoming direction with the preceding generator orientation to calculate a temporary required rotation. Apply a rotational speed limit to ensure the mechanical stress remains low. Build a sequence of motor instructions and store them in an output collection. If the wind speed exceeds the safety threshold, emit a braking command text. Return the complete sequence of alignment instructions. A shift in wind from north to east produces an output instruction sequence to rotate the generator ninety degrees.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d189",
+  "title": "Industrial Loom Tension Monitor",
+  "spec": "`analyze(readings)`\nThe function takes a sequence of tension measurements and a configuration mapping for thread types. It must process each element in order while keeping a buffer of the last five measurements to compute a rolling average. Track the previous average and the current average value. If the difference between the current value and the previous value exceeds a tolerance parameter from the configuration, generate an alert message and increment a count of total errors. Use a temporary variable to clamp the value to the maximum allowed tension before storing it in the result. Return a tuple containing the sequence of smoothed values and the total error count. For example, given an input sequence of 10, 12, 50, 11 and a tolerance of 20, the output should be the sequence 10, 12, 12, 11 along with an error count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d190",
+  "title": "Hydroponic Nutrient Doser",
+  "spec": "`dose(measurements)`\nThe function takes a sequence of chemical sensor readings and a context mapping for the water reservoir. Process each reading element in order, keeping a buffer of recent values to filter out sensor noise. Compare the previous reading and the current reading. If the current reading drops below a threshold parameter defined in the context, calculate the required nutrient volume. If the calculated volume causes an overflow error based on maximum capacity, create a warning message and increment a warning count. Return the final list of dose volumes along with the warning count. For example, given readings of 5, 5, 1, 5 and a threshold of 3, the output should be the sequence 0, 0, 10, 0 where 10 is the added volume, and a count of 1 warning if it exceeded capacity.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d191",
+  "title": "Voice Over IP Packet Restorer",
+  "spec": "`conceal(samples)`\nThe function takes a sequence of digital audio amplitude levels and a configuration mapping. Process each amplitude element sequentially. If a value is negative one, it indicates a lost packet. Maintain a buffer of the last three valid levels to estimate any missing value by taking their average. Track the previous valid level and the current level to ensure the estimated value does not create a sudden auditory jump. If the jump exceeds a smoothing parameter, adjust the value using a temporary variable and increment an error count, generating a dropped packet message. Return the corrected sequence of levels and the error count. For example, given an input of 120, 125, negative 1, 130 and a smoothing limit of 10, the output should be the sequence 120, 125, 125, 130 and a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d192",
+  "title": "CNC Milling Path Optimizer",
+  "spec": "`optimize(coordinates)`\nThe function takes a sequence of coordinate pairs and a context mapping containing machine limits. Process each coordinate element to smooth the mechanical cutting path. Track the previous position and the current position while keeping a buffer of recent movements to detect sharp angles. If the angle between the previous position and the current position violates a safety parameter from the context, replace it with a temporary intermediate point. Count the total number of intermediate points added and generate a reroute message for each. Return the final list of optimized coordinates and the insertion count. For example, given coordinates 0 and 0, then 10 and 0, then 10 and 10 with a sharp angle limit, it should insert 10 and 5, returning the four coordinates and a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d193",
+  "title": "Karaoke Lyric Synchronizer",
+  "spec": "`synchronize(syllables)`\nThe function takes a sequence of timing pairs and a configuration mapping with tempo details. Each element contains a word and its timestamp. Process the elements in order to ensure no overlaps occur on screen. Track the previous timestamp and the current timestamp value. If the current timestamp is earlier than the previous one, use a temporary variable to shift it forward by a spacing parameter. Maintain a buffer of the synchronized lines and if a line exceeds a length limit, generate a warning message and increment a modification count. Return the adjusted sequence and the count. For example, given times 10 and 9 with a spacing of 2, the output should adjust the second time to 12 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d194",
+  "title": "Sonar Bathymetry Smoother",
+  "spec": "`smooth(depths)`\nThe function takes a sequence of underwater depth measurements and a context mapping for the scanning equipment. Process each depth element sequentially, keeping a buffer of the last four depths to identify acoustic spikes. Track the previous depth and the current depth value. If the absolute difference between the current depth and the previous depth is greater than a noise parameter, flag it as an anomaly. Increment an error count, generate a spike message, and replace the anomalous value with the previous valid depth using a temporary variable. Return the smoothed depth list and the error count. For example, given depths of 100, 102, 250, 103 and a noise limit of 50, the output should be the sequence 100, 102, 102, 103 and a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d195",
+  "title": "Keyboard Macro Replayer",
+  "spec": "`replay(events)`\nThe function takes a sequence of keystroke delay pairs and a configuration mapping. Process each event element to simulate natural typing. Maintain a buffer of active modifier keys. Track the previous delay and the current delay. If the current delay is suspiciously short compared to a human typing parameter, increase the delay value. If the modified delay exceeds a maximum timeout, generate a dropped key message and increment a dropped count. Use a temporary variable to hold the scaled delay before applying it to the result list. Return the final list of adjusted delays and the dropped count. For example, given delays of 200, 300, 5, 250 and a human limit of 50, the output should replace the 5 with 50 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d196",
+  "title": "Protein Folding Angle Validator",
+  "spec": "`validate(angles)`\nThe function takes a sequence of molecular angles and a context mapping containing structural limits. Evaluate each angle element sequentially to verify the protein chain. Track the previous angle and the current angle, using a buffer to store sets of three consecutive angles for secondary structure identification. If the difference between the current angle and the previous angle falls outside a valid physical parameter, increment a violation count and record an error message. Apply a temporary correction to clamp the angle to the nearest valid value before appending it to the result. Return the sequence of corrected angles and the violation count. For example, given angles 45, 50, 180, 55 and a physical limit jump of 30, it should correct the 180 to 80 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d197",
+  "title": "Logistics Warehouse Route Packer",
+  "spec": "`route(orders)`\nThe function takes a sequence of aisle locations and a configuration mapping of warehouse zones. Process each location element to optimize the physical picking path. Track the previous position and the current position. If moving from the previous position to the current position requires crossing a restricted zone parameter, add a detour location to a buffer. Keep a count of the total number of detours. If the number of detours exceeds an efficiency limit, generate a reroute message. Return the complete list of visited locations and the detour count. For example, given locations 1, 2, 9, 3 and a restricted crossing at 5, the output should insert a detour at 4, returning 1, 2, 4, 9, 3 and a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d198",
+  "title": "Astrophotography Image Stacker",
+  "spec": "`stack(images)`\nThe function takes a sequence of brightness values for a single pixel across multiple exposures and a context mapping. Process each brightness element to remove cosmic ray artifacts. Track the previous average and the current value while maintaining a buffer of valid brightness values. If the current value exceeds the previous average by a threshold parameter, consider it an artifact and increment an error count while generating a rejection message. For artifacts, use a temporary variable to substitute the median of the buffer into the result sequence. Return the final averaged brightness results and the error count. For example, given brightness values of 10, 11, 255, 12 and a threshold of 100, the output should replace 255 with 11 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d199",
+  "title": "Smart Home Presence Tracker",
+  "spec": "`track(events)`\nThe function takes a sequence of motion sensor triggers and a configuration mapping of the house layout. Process each trigger element in chronological order while maintaining a buffer of recently active rooms. Track the previous room and the current room position. If the physical transition between the previous room and the current room is impossible based on a distance parameter, increment an anomaly count and generate a suspicious activity message. Use a temporary state to hold the corrected location based on the buffer before appending it. Return the sequence of corrected locations and the anomaly count. For example, given rooms 1, 2, 9, 2 and a max distance of 1, the output should replace the 9 with 2 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d200",
+  "title": "Ice Core Climate Proxy Analyzer",
+  "spec": "`analyze(bubbles)`\nThe function takes a sequence of gas concentration measurements from an ice core and a context mapping. Process each measurement element from the top of the core to the bottom. Track the previous concentration and the current concentration, keeping a buffer of the last ten measurements to compute a rolling baseline. If the current value deviates from the baseline by more than a sensitivity parameter, flag it as a historical climate event. Increment an event count, log a discovery message, and store the event index in a temporary list. Return the list of identified event values and the total count. For example, given concentrations 400, 405, 800, 410 and a sensitivity of 200, the output should isolate the 800 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d201",
+  "title": "Drone Flight Path Validator",
+  "spec": "`verify(waypoints)`\nThe function takes a sequence of altitude coordinates and a configuration mapping of airspace restrictions. Evaluate each coordinate element to ensure safe autonomous flight. Track the previous position and the current position while maintaining a buffer of recent altitudes to calculate ascent rates. If the climb rate between the previous position and the current position exceeds a motor capability parameter, increment a warning count and generate a steep climb message. Use a temporary variable to calculate a safer intermediate altitude and insert it into the result sequence. Return the adjusted flight path and the warning count. For example, given altitudes 100, 110, 500, 120 and a max climb of 50, the output should insert 160 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d202",
+  "title": "Dot Matrix Printer Rasterizer",
+  "spec": "`rasterize(shapes)`\nThe function takes a sequence of graphic drawing instructions and a context mapping of printer capabilities. Process each instruction element to generate hardware pin firing patterns. Track the previous print head position and the current position, maintaining a buffer of active ink dots for the current line. If the distance to the current position requires moving the head faster than a maximum speed parameter, increment a skipped dot count and generate a smeared ink message. Use a temporary array to store the scaled rasterized line before finalizing it. Return the sequence of line patterns and the skipped count. For example, given target positions 5, 10, 100, 15 and a max speed of 20, the output should clamp the 100 to 30 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d203",
+  "title": "Heart Rate Variability Monitor",
+  "spec": "`monitor(beats)`\nThe function takes a sequence of millisecond intervals between heartbeats and a configuration mapping. Process each interval element to detect arrhythmias in the patient. Track the previous interval and the current interval, keeping a buffer of normal intervals to establish a resting baseline. If the difference between the current value and the previous value exceeds a medical tolerance parameter, increment an irregularity count and create a warning message. If the current interval is completely invalid, use a temporary value derived from the buffer to fill the gap. Return the cleaned sequence of intervals and the irregularity count. For example, given intervals 800, 810, 200, 805 and a tolerance of 400, the output should replace 200 with 810 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d204",
+  "title": "Teleprompter Scroll Speed Adjuster",
+  "spec": "`adjust(script)`\nThe function takes a sequence of spoken words and a context mapping containing presenter preferences. Evaluate each word element to calculate the ideal display duration on screen. Track the previous word length and the current word length value, keeping a buffer of the upcoming sentence to anticipate pauses. If the current word indicates a sentence break, apply a pause parameter to extend the duration. If the calculated duration causes a scrolling error, increment a stutter count and generate a pacing message. Use a temporary variable to hold the finalized duration. Return the sequence of display durations and the stutter count. For example, given four words where the third is a sentence end, it might return durations of 1, 1, 3, 1 and a stutter count of 0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d205",
+  "title": "Volcanic Ash Fall Predictor",
+  "spec": "`predict(vectors)`\nThe function takes a sequence of wind direction vectors and a configuration mapping of atmospheric conditions. Process each vector element to model ash particle dispersion in the sky. Track the previous particle position and the current position, maintaining a buffer of altitude layers. If the shift from the previous position to the current position is altered by a strong wind shear parameter, increment a dispersion count and generate a severe weather message. Use a temporary coordinate to represent the shifted particle before appending it to the result path. Return the final list of predicted ash locations and the dispersion count. For example, given vector shifts of 2, 3, 20, 2 and a shear limit of 10, the output should cap the 20 at 10 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d206",
+  "title": "Cocktail Mixer Dispenser",
+  "spec": "`dispense(orders)`\nThe function takes a sequence of liquid ingredient requests and a context mapping of bottle locations. Process each request element to command the robotic pouring mechanism. Track the previous liquid type and the current liquid type, keeping a buffer of recently poured ingredients to manage the mixing order. If switching from the previous liquid to the current liquid requires a rinse cycle defined by a sanitation parameter, increment a delay count and output a rinse required message. Use a temporary variable to track the total volume poured for the current drink. Return the final sequence of pour commands and the delay count. For example, if milk is followed by juice and requires a rinse, the output sequence should insert a rinse command and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d207",
+  "title": "Radio Telescope Interference Filter",
+  "spec": "`filter(signals)`\nThe function takes a sequence of electromagnetic frequencies and a configuration mapping of known satellite bands. Process each frequency element to clean the deep space observation data. Track the previous frequency amplitude and the current amplitude, maintaining a buffer of quiet background readings. If the current value spikes above the background by a critical parameter, classify it as terrestrial interference. Increment an interference count, generate an exclusion message, and use a temporary substitution from the buffer to replace the spike. Return the filtered signal data and the interference count. For example, given amplitudes of 1420, 1421, 5000, 1420 and a background limit of 2000, the output should replace 5000 with 1421 and return a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d208",
+  "title": "Autonomous Lawn Mower Coverage",
+  "spec": "`mow(commands)`\nThe function takes a sequence of directional movements and a context mapping of garden boundaries. Process each movement element to track the cut grass area. Track the previous grid position and the current grid position, maintaining a buffer of recently visited cells. If the proposed path from the previous position to the current position intersects a restricted parameter like a flowerbed, increment an obstacle count and create an evasion message. Use a temporary coordinate to backtrack the mower to the previous safe cell. Return the final sequence of safe movements and the obstacle count. For example, moving forward, forward, into a flowerbed, then left, should be corrected to forward, forward, backward, left with a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d209",
+  "title": "License Plate OCR Corrector",
+  "spec": "`correct(plates)`\nThe function takes a sequence of raw character strings and a configuration mapping of regional plate formats. Evaluate each string element to fix optical misreads from the traffic camera. Track the previous character type and the current character type, maintaining a buffer of confident character reads. If the transition between the previous character and the current character violates a standard pattern parameter, increment a correction count and generate an uncertainty message. Use a temporary string to assemble the fixed license plate using substitutions from the context mapping. Return the list of corrected strings and the correction count. For example, if a letter is expected but a number 8 is found, it replaces it with the letter B, returning the corrected plates and a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d210",
+  "title": "Automated Knitting Stitch Generator",
+  "spec": "`knit(colors)`\nThe function takes a sequence of yarn color codes and a context mapping of needle configurations. Process each color element to generate mechanical stitches for the garment. Track the previous yarn color and the current yarn color, keeping a buffer of the current row of stitches. If a color change from the previous yarn to the current yarn requires more than three empty needles based on a tension parameter, increment a dropped stitch count and output a manual tie message. Use a temporary sequence to insert locking stitches before continuing the pattern. Return the final list of mechanical instructions and the dropped stitch count. For example, transitioning between distant colors might insert a tie instruction, returning the modified sequence and a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d211",
+  "title": "Electronic Toll Collection Auditor",
+  "spec": "`audit(records)`\nThe function takes a sequence of vehicle transponder reads and a configuration mapping of toll plaza locations. Process each read element to ensure billing accuracy. Track the previous plaza location and the current plaza location, maintaining a buffer of recent vehicle passages. If the travel time between the previous location and the current location is shorter than a physical speed parameter, increment an anomaly count and generate a ghost vehicle message. Use a temporary record to flag the discrepancy for human review instead of billing it. Return the audited sequence of valid records and the anomaly count. For example, if two reads are 5 minutes apart but 60 miles away, it flags the second read and returns a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d212",
+  "title": "Hydroelectric Dam Spillway Controller",
+  "spec": "`regulate(readings)`\nThe function takes a sequence of water level measurements and a context mapping of structural limits. Evaluate each measurement element to adjust the spillway gates safely. Track the previous water level and the current water level, keeping a buffer of recent inflow rates. If the rise between the previous value and the current value exceeds an emergency parameter, increment an alert count and broadcast a flood warning message. Use a temporary variable to calculate the required gate opening percentage to stabilize the reservoir. Return the sequence of gate commands and the alert count. For example, a sudden jump in water levels might output an emergency open command instead of a normal open command, with a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d213",
+  "title": "Stage Lighting DMX Crossfader",
+  "spec": "`crossfade(scenes)`\nThe function takes a sequence of lighting intensity levels and a configuration mapping of fixture capabilities. Process each level element to create smooth theatrical transitions. Track the previous intensity and the current intensity value, maintaining a buffer of intermediate fade steps. If the jump between the previous value and the current value is faster than a hardware parameter allows, increment a snap count and generate a choppy fade message. Use a temporary variable to interpolate a missing step and insert it into the result. Return the sequence of smooth lighting values and the snap count. For example, jumping from intensity 10 to 100 with a max jump of 50 should insert a step at 55, returning the smoothed sequence and a count of 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d214",
+  "title": "Syslog Chunk Assembler",
+  "spec": "Write a function `assemble(chunks)` that reconstructs split textual logs. Each chunk is a tuple containing an identifier, a sequence position, a total chunk count, and a text payload. The logic must group chunks by their identifier into an internal holding area. Once the received chunk count matches the expected total, join the payloads in order of their sequence position to form the complete payload. If any sequence position is missing or out of bounds when the final chunk arrives, yield an invalid payload notification instead. Return a list of tuples containing the identifier and the reconstructed text.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d215",
+  "title": "Sensor Calibration Validator",
+  "spec": "Write a function `calibrate(readings, baseline)` that adjusts a sequence of raw atmospheric sensor measurements. The baseline provides a dictionary mapping altitude ranges to expected numeric thresholds. For each item in the input, track the prior reading and the newly arriving reading to compute the difference. If the difference exceeds the threshold for the given altitude, discard the reading and record a specific failure description. Otherwise, retain it in an active window and calculate a rolling average using the last five valid measurements. The function should return a tuple containing the list of smoothed measurements and a list of failure strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d216",
+  "title": "Video Frame Synchronizer",
+  "spec": "Write a function `synchronize(frames, offset)` that realigns a sequence of video timing events. Each event is a tuple containing an original timestamp, a visual scene identifier, and a list of internal settings. The logic must shift the timestamp by the provided offset. If the shifted timestamp falls below zero, cap it at zero and append a warning string to a dedicated log list. As you iterate, maintain a pointer to track the recently processed scene identifier to detect scene changes. Return a tuple containing the realigned events, the total count of scene changes, and the list of generated warnings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d217",
+  "title": "Packet Routing Simulator",
+  "spec": "Write a function `route(packets, layout)` that processes data movement through a simulated network. The layout maps node names to lists of connected neighbors. Each packet is a tuple containing a destination node, a maximum hop limit, and a text payload. The function must iterate through the packets, checking if a path exists from a designated starting node to the destination. Maintain a history of visited nodes to prevent cycles. If the destination is reached within the hop limit, append a success string to the final output list, otherwise append an unreachable notification. Return the list of routing outcomes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d218",
+  "title": "BBCode Formatting Parser",
+  "spec": "Write a function `parse(text)` that processes a string containing custom formatting tags like bold and italic enclosed in square brackets. The logic must iterate through the text character by character, maintaining a state indicator to know if it is currently inside a tag or reading normal text. When a tag starts, accumulate the characters into a temporary holding area until the closing bracket is found, then push the tag name to a nested hierarchy stack. If a closing tag is encountered, verify that it matches the most recently opened tag on the stack. Return a tuple containing the plain extracted text without tags and a boolean indicating whether the entire hierarchy was perfectly balanced.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d219",
+  "title": "Kiln Temperature Profiler",
+  "spec": "Write a function `profile(temperatures, stages)` that evaluates a series of thermal readings against expected heating phases. The stages input defines a list of target heat levels and the allowed variance for each phase. The function must iterate through the incoming readings, comparing each one to the active phase target. If a reading stays within the allowed variance for five consecutive checks, advance the active phase to the next one in the sequence. Keep a tally of any readings that fall outside the variance and generate an alert string if this tally exceeds three during a single phase. Return a tuple containing the number of successfully completed phases and a list of any generated alerts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d220",
+  "title": "Voice Activity Detector",
+  "spec": "Write a function `detect(samples, threshold)` that identifies spoken words in a continuous stream of audio amplitudes. The function must process the sequence of amplitudes, maintaining a running sum of the last ten absolute numeric intensities. If this moving sum crosses above the threshold, mark the start of a speech segment. Continue accumulating amplitudes into a dedicated holding array until the sum drops below the threshold for twenty consecutive steps, indicating silence. Once silence is confirmed, finalize the segment, reset the holding array, and append the segment to an output list. Return the list of all isolated speech segments.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d221",
+  "title": "Automated Forklift Navigator",
+  "spec": "Write a function `navigate(commands, obstacles)` that traces the movement of a warehouse vehicle on a two dimensional grid. The vehicle starts at the origin facing north. The commands are single letters representing forward movement, left turns, or right turns. For every forward movement, compute the anticipated new coordinates based on the active facing direction. If the new coordinates exist in the provided list of obstacles, halt movement and record a collision notification string. Otherwise, update the tracked coordinates and continue. Return a tuple containing the final resting coordinates and a list of any collision strings encountered.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d222",
+  "title": "Hardware Register Simulator",
+  "spec": "Write a function `execute(instructions, registers)` that models a simple central processing unit. The instructions are tuples containing an operation name, a destination identifier, and a source identifier. For each instruction, load the appropriate numeric content from the registers based on the source identifier. Perform the requested mathematical operation using the newly loaded content and the existing content at the destination. If an operation attempts to divide by zero, catch the fault, create an explanatory string, and skip to the next instruction. Otherwise, store the updated numeric content back into the correct destination register. Return a tuple containing the finalized registers and a list of fault strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d223",
+  "title": "Protein Sequence Motif Matcher",
+  "spec": "Write a function `match(sequence, motif)` that scans a long chain of amino acids for a specific overlapping pattern. The motif includes both exact character requirements and wildcard slots that accept any character. The function must slide a viewing window across the main sequence, one step at a time. At each step, compare the characters in the window against the motif, skipping the wildcard slots. If all exact characters align perfectly, save the starting index of the window to a results list. Keep track of the longest contiguous stretch of characters that successfully matched before a failure occurred. Return a tuple containing the list of successful starting indices and the length of the longest partial match.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]

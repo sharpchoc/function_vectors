@@ -895,5 +895,628 @@
   "spec": "Write a function `compare(original, revised)` that analyzes changes between two documents. Both inputs are arrays of strings representing individual lines. Compare the elements sequentially. If the lines are identical, record the line with a status of unchanged. If a line is present in the first array but not in the second, record it as deleted. If a line appears in the second array but not the first, record it as added. Keep track of current positions in both arrays and look ahead up to three lines to resynchronize after an addition or deletion. Return an array of arrays containing a status string and the line content string.",
   "designed_by": "google/gemini-3.1-pro-preview",
   "v2": true
+ },
+ {
+  "id": "d135",
+  "title": "Email Thread Unroller",
+  "spec": "Write a function `unroll` that takes an array of formatted email strings. Each string starts with a depth indicator formed by a series of greater than symbols, followed by a space, and then the message text. Structure the code as a small module with separate helper functions for extracting the depth and text, and for checking the direct reply status. The main function must count the number of greater than symbols to determine the reply depth. It should skip any message that contains the word unsubscribe in lowercase. For the remaining messages, keep track of whether the message is a direct reply, which is true if the depth is exactly one. Return an array of arrays, where each inner array contains the extracted message text, the numerical depth, and a boolean indicating if it is a direct reply. Example input: an array containing greater than symbol hello, and greater than greater than symbol hi there. Expected output: an array containing an inner array with hello, one, true, and another inner array with hi there, two, false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d136",
+  "title": "Sensor Calibration Checker",
+  "spec": "Write a function `calibrate` that takes an array of numerical sensor readings and a text string representing the sensor model. Structure the solution as a small module with helper functions for filtering readings and computing averages. The main process must iterate through the readings and discard any negative values. It calculates the average of the valid readings using a helper. It then determines if the sensor is reliable, which is true if the average is between ninety and one hundred and ten inclusive, and the sensor model string starts with the letters cal. Return an array containing the average as a number, the reliability status as a boolean, and a status string which is either passed or failed based on the reliability. Example input: an array of ninety five, negative ten, one hundred, and the model string calibration unit. Expected output: an array with ninety seven point five, true, and passed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d137",
+  "title": "Paint Mixture Optimizer",
+  "spec": "Write a function `optimize` that takes an array of paint color ratios as numbers, and a string representing the target color name. Use a modular approach with separate helper functions to apply loss factors and sum volumes. The main logic loops through the ratios and applies a loss factor by multiplying each ratio by zero point nine. It calculates the total volume of the adjusted ratios. A boolean flag should be set to true if the total volume exceeds fifty. If the total volume is sufficient, append the word ready to the target color name; otherwise, append the word insufficient. Return an array containing the new string, the total volume number, and the boolean flag. Example input: an array of twenty, thirty, ten, and the string blue. Expected output: an array with blue ready, fifty four, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d138",
+  "title": "Conveyor Belt Sorter",
+  "spec": "Write a function `sort` that receives an array of item weights and a string for the destination zone. Implement this as a small module with helper functions for isolating heavy items and determining the load status. The process iterates over the weights, isolating those that are heavier than twenty. For these heavy items, it sums their weights and counts how many there are. It defines a boolean variable indicating if the conveyor is overloaded, which is true if the sum is greater than two hundred or the count is greater than five. The destination string is modified by appending either blocked or active based on the overloaded status. The function returns an array with the modified destination string, the total heavy weight, and the overloaded boolean. Example input: array of ten, twenty five, thirty, and the string north. Expected output: array with north active, fifty five, false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d139",
+  "title": "Invoice Reminder Generator",
+  "spec": "Write a function `remind` that accepts an array of past due amounts as numbers and a string representing the client name. Divide the work into helper functions for summing amounts and constructing messages. The main function must calculate the total past due amount by summing all positive numbers in the array. It computes a boolean status representing whether the account is suspended, which is true if the total is over five hundred. If suspended, it constructs a warning message combining the client name and the phrase account locked; otherwise it combines the client name and please pay. Return an array containing the constructed message string, the total amount as a number, and the suspension boolean. Example input: array of one hundred, two hundred, and the string alpha corp. Expected output: array with alpha corp please pay, three hundred, false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d140",
+  "title": "Classroom Attendance Grader",
+  "spec": "Write a function `grade` that takes an array of daily attendance minutes as numbers and a string for the student identifier. Create a small module with helper functions for filtering valid days and calculating averages. The logic should filter out any days where the attendance was less than ten minutes. The remaining valid minutes are averaged. A boolean variable is created to represent perfect standing, which is true if the average is at least forty five. The student identifier string is appended with either honors or standard based on this standing. The function should return an array holding the modified student identifier string, the calculated average number, and the perfect standing boolean. Example input: array of fifty, five, forty, and the string student a. Expected output: array with student a honors, forty five, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d141",
+  "title": "Crop Yield Forecaster",
+  "spec": "Write a function `forecast` that takes an array of weekly rainfall measurements in millimeters and a string denoting the crop type. Organize the solution using helper functions for data cleaning and condition evaluation. The algorithm removes any rainfall values that are exactly zero. It then calculates the sum of the remaining rainfall. A boolean indicator should be evaluated to true if the total rainfall is between one hundred and two hundred. The crop type string is updated by appending the word optimal if the indicator is true, or sub-optimal if false. Return an array containing the updated crop string, the total rainfall number, and the boolean indicator. Example input: array of fifty, zero, sixty, and the string wheat. Expected output: array with wheat optimal, one hundred ten, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d142",
+  "title": "Shipment Tracker Validations",
+  "spec": "Write a function `validate` that takes an array of transit times in hours and a string containing the courier code. Build a modular script with helpers for filtering anomalies and computing delays. The function ignores any transit times over one hundred hours as anomalies. It sums the valid transit times to find the total journey duration. A boolean is declared to track if the delivery is delayed, which becomes true if the total duration is greater than forty eight hours. Depending on the delayed status, the courier code string is concatenated with either late or on time. Return an array containing the final courier string, the total duration number, and the delayed boolean. Example input: array of twenty, thirty, one hundred fifty, and the string fast track. Expected output: array with fast track late, fifty, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d143",
+  "title": "Network Signal Strength Processor",
+  "spec": "Write a function `process` that takes an array of signal strengths and a string indicating the router model. Break the logic down into helper functions for filtering noise and finding the maximum value. The routine should filter the strengths to keep only values above ten. It then determines the maximum signal strength from the filtered valid list. It defines a boolean showing if the connection is excellent, which evaluates to true if the maximum strength is above eighty. The router model string gets the suffix pro added if the connection is excellent, or basic otherwise. The function returns an array with the updated model string, the maximum strength number, and the excellent connection boolean. Example input: array of five, fifty, eighty five, and the string net core. Expected output: array with net core pro, eighty five, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d144",
+  "title": "Payroll Bonus Distributor",
+  "spec": "Write a function `distribute` that takes an array of employee performance scores as numbers and a string for the department name. Structure the code as a small module with separate functions to filter scores and format department names. The logic filters out scores below fifty. It calculates the total bonus pool by multiplying the length of the filtered scores array by one hundred. A boolean variable checks if the department is a high achiever, which is true if the bonus pool exceeds five hundred. The department name string is updated by adding a star suffix if the department is a high achiever. Return an array containing the updated department string, the bonus pool number, and the high achiever boolean. Example input: array of sixty, forty, seventy, and the string sales. Expected output: array with sales, two hundred, false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d145",
+  "title": "Wind Turbine Output Evaluator",
+  "spec": "Write a function `evaluate` that accepts an array of daily megawatt outputs and a string for the turbine location. Use small helper functions to handle filtering and peak detection. The function discards any outputs that are below five. It finds the highest output value among the valid days. A boolean is created to represent peak efficiency, which is true if the highest output is greater than fifty. The location string is modified by appending the phrase peak mode if the efficiency is true, or normal mode otherwise. Return an array with the modified location string, the highest output number, and the boolean flag. Example input: array of two, ten, sixty, and the string north hill. Expected output: array with north hill peak mode, sixty, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d146",
+  "title": "Application Memory Profiler",
+  "spec": "Write a function `profile` that takes an array of memory usage samples in megabytes and a string representing the process name. Create a modular script with helpers for filtering out low memory samples and calculating averages. The function filters out samples that are less than ten megabytes. It computes the average of the valid memory samples. A boolean memory leak warning is set to true if the average is above one thousand megabytes. The process name string is prepended with the word warning if the leak warning is true, or stable otherwise. Return an array containing the prepended process string, the average memory number, and the warning boolean. Example input: array of five, two thousand, two thousand, and the string background worker. Expected output: array with warning background worker, two thousand, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d147",
+  "title": "Delivery Route Distance Calculator",
+  "spec": "Write a function `calculate` that receives an array of segment distances in miles and a string for the driver name. Design the solution with separate helper functions for data validation and distance aggregation. The function removes any distances that are negative, assuming they are logged errors. It then calculates the total distance of all valid segments. A boolean indicating a long haul is evaluated to true if the total distance is fifty or more. The driver name string has the word local or long appended depending on the long haul boolean. The function returns an array containing the updated driver string, the total distance number, and the long haul boolean. Example input: array of twenty, negative five, thirty, and the string john. Expected output: array with john long, fifty, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d148",
+  "title": "Fasting Period Tracker",
+  "spec": "Write a function `track` that takes an array of fasting hours over a week and a string for the participant name. Break the procedure into smaller helper functions for validating fasting periods and assessing ketosis state. The routine should exclude any periods less than twelve hours. It sums the remaining valid hours to find the total deep fasting time. A boolean indicating ketosis achieved is set to true if the total time is over forty hours. The participant name string is extended by adding the word success if ketosis is achieved, or try again otherwise. Return an array with the extended participant string, the total fasting number, and the ketosis boolean. Example input: array of ten, sixteen, eighteen, and the string alice. Expected output: array with alice try again, thirty four, false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d149",
+  "title": "Website Click Traffic Analyzer",
+  "spec": "Write a function `analyze` that receives an array of hourly click counts and a string for the webpage path. Use a modular approach with specific helper functions to clean the data and find peak hours. The algorithm filters out hours with zero clicks. It finds the maximum clicks in a single hour from the remaining data. A boolean representing a viral trend is set to true if the maximum clicks exceed one thousand. The webpage path string is wrapped in exclamation marks if the viral trend is true. The function returns an array with the modified path string, the maximum click number, and the viral trend boolean. Example input: array of zero, five hundred, twelve hundred, and the string home page. Expected output: array with exclamation home page exclamation, twelve hundred, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d150",
+  "title": "Solar Flare Intensity Processor",
+  "spec": "Write a function `process` that takes an array of flare intensity numbers and a string for the satellite identifier. Organize the code into a small module using helpers for filtering data and computing safe averages. The function drops any intensity below fifty. It averages the remaining high intensity values. A boolean danger alert is set to true if the average is above two hundred. The satellite identifier string is updated by appending safe or danger based on the alert boolean. Return an array containing the new satellite string, the average intensity number, and the danger alert boolean. Example input: array of twenty, one hundred, three hundred, and the string sat one. Expected output: array with sat one safe, two hundred, false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d151",
+  "title": "Ferris Wheel Load Balancer",
+  "spec": "Write a function `balance` that accepts an array of passenger weights and a string for the cabin color. Implement this requirement using helper functions for filtering lightweight cargo and summarizing the total weight. The function filters out weights below twenty. It calculates the total weight of the valid passengers. A boolean representing capacity reached is set to true if the total weight is over three hundred. The cabin color string is modified by adding the word full if capacity is reached, or boarding otherwise. Return an array with the updated cabin string, the total weight number, and the capacity boolean. Example input: array of fifteen, one hundred, two hundred ten, and the string red. Expected output: array with red full, three hundred ten, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d152",
+  "title": "Sound Wave Peak Detector",
+  "spec": "Write a function `detect` that takes an array of decibel measurements and a string for the audio track name. Compose a modular solution using helpers for extracting valid noise ranges and isolating the peak level. The algorithm filters out any measurements below thirty decibels as background noise. It identifies the peak decibel level from the remaining measurements. A boolean indicating hearing damage risk is evaluated to true if the peak is above eighty five decibels. The track name string gets the word loud appended if the risk is true. Return an array containing the modified track string, the peak decibel number, and the risk boolean. Example input: array of twenty, seventy, ninety, and the string rock song. Expected output: array with rock song loud, ninety, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d153",
+  "title": "Online Multiplayer Matchmaker",
+  "spec": "Write a function `matchmake` that receives an array of player skill ratings as numbers and a string for the server region. Construct a small module with separate functions to process ratings and determine the lobby type. The logic discards any skill ratings below one thousand. It calculates the average skill rating of the valid players. A boolean indicating a competitive lobby is set to true if the average is greater than two thousand. The region string is updated by prepending the word ranked if it is a competitive lobby, or casual otherwise. The function returns an array with the updated region string, the average rating number, and the competitive boolean. Example input: array of five hundred, fifteen hundred, twenty five hundred, and the string europe. Expected output: array with casual europe, two thousand, false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d154",
+  "title": "Video Streaming Buffering",
+  "spec": "Write a function `buffer` that accepts an array of download speeds in kilobits per second and a string for the video resolution. Create helper functions to handle the speed filtering and minimum speed identification. The routine filters out speeds less than one hundred. It determines the minimum download speed from the valid speeds. A boolean representing smooth playback is set to true if the minimum speed is at least five hundred. The resolution string is appended with either hd ready or buffering based on the smooth playback boolean. Return an array containing the appended resolution string, the minimum speed number, and the playback boolean. Example input: array of fifty, six hundred, eight hundred, and the string ten eighty p. Expected output: array with ten eighty p hd ready, six hundred, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d155",
+  "title": "Athlete Heart Recovery Rate",
+  "spec": "Write a function `recover` that takes an array of heart rate beats per minute taken at one minute intervals and a string for the athlete name. Build the solution using separate helper functions for data cleansing and calculating the recovery drop. The function filters out any rates below sixty. It calculates the drop between the first valid rate and the last valid rate. A boolean indicating excellent recovery is set to true if the drop is greater than thirty beats. The athlete name string is updated by adding the phrase fit or improving depending on the recovery boolean. The function returns an array with the updated athlete string, the calculated drop number, and the recovery boolean. Example input: array of fifty, one hundred fifty, one hundred, and the string david. Expected output: array with david fit, fifty, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d156",
+  "title": "Remote Server Uptime Evaluator",
+  "spec": "Write a function `evaluate` that receives an array of daily uptime percentages as numbers and a string for the data center name. Structure the logic into small helper functions to handle filtering downtime and averaging uptime. The algorithm ignores any days with exactly zero percent uptime. It computes the average uptime from the remaining days. A boolean indicating a reliable server is set to true if the average is ninety nine or higher. The data center string is modified by appending premium if the server is reliable, or standard otherwise. Return an array with the modified data center string, the average uptime number, and the reliable boolean. Example input: array of zero, ninety nine, ninety nine, and the string east coast. Expected output: array with east coast premium, ninety nine, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d157",
+  "title": "Sailing Regatta Wind Analyzer",
+  "spec": "Write a function `analyze` that accepts an array of wind speeds in knots and a string for the boat class. Organize the code with helper functions for cleaning wind data and identifying the maximum gust. The logic removes any wind speeds under five knots as negligible. It finds the maximum wind speed from the valid entries. A boolean representing a gale warning is set to true if the maximum speed exceeds thirty knots. The boat class string is prepended with the word warning if the gale warning is true, or clear otherwise. Return an array containing the prepended boat string, the maximum wind speed number, and the gale warning boolean. Example input: array of two, twenty, thirty five, and the string catamaran. Expected output: array with warning catamaran, thirty five, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d158",
+  "title": "Code Repository Commit Counter",
+  "spec": "Write a function `count` that takes an array of daily commit counts as numbers and a string for the developer username. Split the logic into smaller helper functions for removing inactive days and summing the commits. The routine filters out weekend days represented by zero commits. It calculates the total number of commits from the valid days. A boolean indicating highly active is set to true if the total commits are fifty or more. The username string is updated by adding the suffix pro if the highly active boolean is true. The function returns an array with the updated username string, the total commit number, and the highly active boolean. Example input: array of zero, ten, twenty, twenty five, and the string coder nine. Expected output: array with coder nine pro, fifty five, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d159",
+  "title": "Ceramic Tile Glaze Checker",
+  "spec": "Write a function `check` that receives an array of glaze thickness measurements in millimeters and a string for the tile pattern. Formulate the script as a module with helper functions for extracting valid measurements and calculating the mean. The algorithm discards any measurements that are exactly zero. It averages the remaining thickness values. A boolean indicating pass quality is set to true if the average is between two and four inclusive. The tile pattern string is appended with either approved or rejected based on the pass quality boolean. Return an array containing the appended pattern string, the average thickness number, and the pass quality boolean. Example input: array of zero, three, five, and the string mosaic. Expected output: array with mosaic approved, four, true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d160",
+  "title": "Anagram Group Size Analyzer",
+  "spec": "Write a function called `analyze(words, threshold)`. The function should find all groups of words that are anagrams of each other. It must return an array containing two numbers: the number of anagram groups that have a size greater than or equal to the threshold, and the size of the largest anagram group. For example, given [\"bat\", \"tab\", \"cat\", \"act\", \"mac\"] and threshold 2, the output should be [2, 2].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d161",
+  "title": "Pallet Weight Balancer",
+  "spec": "Implement a function called `balance(cargo, limit)`. Each item is an array with an identifier string and a weight number. The items must be placed onto pallets sequentially. An item is added to the current pallet if its weight does not cause the pallet's total weight to exceed the limit. If it does, a new pallet is started with this item. The function must return an array containing two numbers: the total number of pallets used, and the weight of the heaviest pallet. For example, given [[\"box1\", 40], [\"box2\", 50], [\"box3\", 20]] and limit 80, the output is [2, 70].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d162",
+  "title": "Municipal Election Tally",
+  "spec": "Write a function called `tally(ballots)`. Each ballot is an array containing a candidate name string, a district name string, and a validity boolean. If the validity is false, the ballot is discarded. The function must count the valid votes for each candidate across all districts. It should return an array containing two elements: the name of the winning candidate as a string (resolving ties alphabetically), and the total number of valid votes cast across the entire election. For example, given [[\"Smith\", \"North\", true], [\"Jones\", \"South\", false], [\"Smith\", \"South\", true]], the output is [\"Smith\", 2].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d163",
+  "title": "Bus Route Passengers",
+  "spec": "Create a function called `simulate(stops, capacity)`. Each stop event is an array with a stop name string, a number of boarding passengers, and a number of departing passengers. The bus starts empty. At each stop, departing passengers leave first, then boarding passengers enter, but only up to the bus capacity. Any boarding passengers who cannot fit are left behind. The function must return an array of two elements: the total number of passengers left behind across all stops, and the highest number of passengers on the bus at any point. For example, given [[\"Main\", 5, 0], [\"Oak\", 3, 2]] and capacity 5, the output is [1, 5].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d164",
+  "title": "Traffic Intersection Flow",
+  "spec": "Write a function called `analyze(counts)`. A congestion period is defined as consecutive minutes where the vehicle count is strictly greater than fifty. A quiet period is consecutive minutes where the count is twenty or less. The function must find the longest congestion period and the longest quiet period. It should return an array containing two elements: a boolean indicating whether the longest congestion period is strictly longer than the longest quiet period, and a number representing the highest single-minute vehicle count recorded. For example, given [10, 15, 60, 70, 55, 12, 10], the output is [true, 70].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d165",
+  "title": "Manuscript Dialogue Counter",
+  "spec": "Implement a function called `analyze(manuscript)`. Dialogue is defined as any text enclosed in double quotes. The function must extract all dialogue snippets, ignoring the surrounding text. It should calculate the number of words in each dialogue snippet, treating any continuous sequence of alphabetical letters as a word. The function must return an array containing two numbers: the total number of dialogue snippets found, and the maximum word count among all snippets. For example, given the text 'He said, \"Hello there!\" and she replied, \"Hi!\"', the output is [2, 2].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d166",
+  "title": "Retail Sales Spikes",
+  "spec": "Create a function called `detect(sales)`. A sales spike is defined as a day where the sales number is strictly greater than the sales on both the preceding and following days. The magnitude of a spike is its sales number minus the average of the sales on the preceding and following days. The first and last days cannot be spikes. The function must return an array of two numbers: the total count of spikes, and the highest magnitude among all spikes rounded to the nearest integer. If there are no spikes, return [0, 0]. For example, given [100, 200, 150, 300, 100], the output is [2, 175].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d167",
+  "title": "Laboratory Reagent Tracker",
+  "spec": "Write a function called `track(reagents, margin)`. Each record is an array with three elements: a chemical name string, the current volume in milliliters (a number), and the average daily usage in milliliters (a number). The function should determine how many full days each chemical will last. A chemical is critically low if its days remaining is strictly less than the safety margin. The function must return an array containing two things: a boolean being true if any chemical is critically low, and an array of the names of the critically low chemicals, sorted alphabetically. For example, given [[\"Acid\", 100, 30], [\"Base\", 500, 10]] and margin 5, the output is [true, [\"Acid\"]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d168",
+  "title": "Volunteer Participation Tracker",
+  "spec": "Implement a function called `evaluate(logs)`. Each log is an array containing a volunteer name string, a role string, and a number representing hours worked in that session. A volunteer is considered highly active if they have logged at least one session with more than four hours, or if their total hours across all sessions exceed ten. The function must aggregate the logs by volunteer name. It should return an array with two elements: the number of highly active volunteers, and an array of their names sorted alphabetically. For example, given [[\"Alice\", \"Guide\", 3], [\"Bob\", \"Setup\", 5], [\"Alice\", \"Cleanup\", 8]], the output is [2, [\"Alice\", \"Bob\"]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d169",
+  "title": "Memory Block Allocator",
+  "spec": "Write a function called `allocate(blocks, requests)`. Each process request must be placed in the first memory block that has enough remaining capacity to fit it. When a process is placed, the block's capacity decreases by the request size. If no block can fit a process, the process is skipped. The function must return an array of two numbers: the total number of skipped processes, and the sum of the remaining capacity across all blocks after allocations. For example, given blocks [10, 15] and requests [8, 12, 5], the output is [1, 5].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d170",
+  "title": "IP Address Subnet Grouping",
+  "spec": "Create a function called `group(addresses)`. Each valid IP address consists of four numbers separated by dots. The function should extract the first three numbers (the subnet) of each valid IP address. An IP is invalid if it does not have exactly four parts or if any part is not numeric. The function must count occurrences of each subnet. It must return an array containing two elements: a boolean indicating if any subnet appears more than twice, and an array of the unique valid subnets sorted by their frequency in descending order, with alphabetical order for ties. For example, given \"192.168.1.10, 192.168.1.20, 10.0.0.1\", the output is [false, [\"192.168.1\", \"10.0.0\"]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d171",
+  "title": "Wind Speed Gust Detector",
+  "spec": "Implement a function called `detect(records, baseline)`. Each record is an array with a station identifier string, a sustained wind number, and a peak gust number. A station is reporting a dangerous gust if its peak gust exceeds the baseline speed and is also more than fifty percent higher than its sustained wind. The function must return an array containing two elements: the number of stations reporting dangerous gusts, and an array of their station identifiers sorted alphabetically. For example, given [[\"StationA\", 20, 35], [\"StationB\", 30, 40]] and baseline 30, the output is [1, [\"StationA\"]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d172",
+  "title": "Museum Gallery Visitors",
+  "spec": "Write a function called `calculate(visitors)`. The museum breaks its day into viewing periods of four hours each. The first four numbers belong to period one, the next four to period two, and so on. If the array length is not a multiple of four, the last period is considered partial. The function should calculate the total visitors for each period. It must return an array of two numbers: the maximum visitor total achieved in any complete four-hour period, and the total visitor count from any partial period. For example, given an array of six numbers all being 10, the output is [40, 20].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d173",
+  "title": "Board Game Tile Advancement",
+  "spec": "Create a function called `simulate(cards, length)`. A player starts at tile zero. For each card drawn, if the number is prime, the player moves forward by that amount. If the number is composite, the player moves backward by one tile (but cannot drop below tile zero). The number one is neither prime nor composite, so the player does not move. If the player's position reaches or exceeds the board length, they finish the track. The function must return an array of two elements: a boolean that is true if the player finished the track, and a number representing the total number of cards drawn before finishing or running out of cards. For example, given [4, 5, 6, 7] and length 10, the output is [true, 4].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d174",
+  "title": "Customer Support Ticket Transfers",
+  "spec": "Implement a function called `trace(logs)`. Each log is an array containing a ticket identifier string and a department name string representing where the ticket was routed. The function should group the routing history for each ticket. A resolved-on-first-contact ticket is one that was routed to exactly one department. The function must return an array containing two things: the number of tickets resolved on first contact, and an array of the names of the departments that received at least one ticket as its very first routing, with duplicates removed and sorted alphabetically. For example, given [[\"T1\", \"Billing\"], [\"T2\", \"Tech\"], [\"T1\", \"Escalation\"]], the output is [1, [\"Billing\", \"Tech\"]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d175",
+  "title": "Telescope Star Image Stacking",
+  "spec": "Write a function called `filter(measurements, limit)`. The function first calculates the average of all measurements. Any measurement whose absolute difference from this average is strictly greater than the deviation limit is considered an anomaly. The function should create a new array discarding the anomalies. It must return an array of two numbers: the number of discarded anomalies, and the new average of the remaining clean measurements rounded down to the nearest whole number. For example, given [10, 12, 11, 50, 9] and limit 15, the output is [1, 10].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d176",
+  "title": "University Course Prerequisites",
+  "spec": "Create a function called `sequence(attempts)`. Each attempt is an array with three elements: a course code string, a credits number, and a prerequisite course code string (or an empty string if none). A course is successfully enrolled if its prerequisite has already been successfully enrolled earlier in the array, or if it has no prerequisite. The function must aggregate the total credits of all successfully enrolled courses. It should return an array containing two elements: a boolean indicating if any enrollment attempt failed due to a missing prerequisite, and the total credits of successfully enrolled courses. For example, given [[\"MATH1\", 3, \"\"], [\"PHYS2\", 4, \"PHYS1\"], [\"MATH2\", 3, \"MATH1\"]], the output is [true, 6].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d177",
+  "title": "Laboratory Equipment Usage",
+  "spec": "Implement a function called `summarize(logs)`. Each log is an array containing an equipment name string, a start hour number, and an end hour number (both integers from zero to twenty-four). The function must calculate the total hours each piece of equipment was used, assuming no overlapping logs for the same equipment. It should return an array containing two elements: the name of the equipment with the most total hours (resolving ties alphabetically), and a number representing the total usage hours across all equipment. For example, given [[\"Microscope\", 9, 11], [\"Centrifuge\", 13, 15], [\"Microscope\", 14, 15]], the output is [\"Microscope\", 5].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d178",
+  "title": "Submarine Depth Ping",
+  "spec": "Write a function called `survey(echoes)`. Each echo is an array containing a coordinate string, a transmission time number, and a reception time number. The depth at a coordinate is calculated as the difference between reception and transmission times, multiplied by a sound speed of seven hundred and fifty. The function must process all echoes to find the deepest point. It should return an array of two elements: a boolean indicating if any depth exceeded ten thousand, and the coordinate string of the deepest location (ties broken alphabetically). For example, given [[\"A1\", 0, 10], [\"B2\", 5, 25]], the output is [true, \"B2\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d179",
+  "title": "Broadband Outage Rebates",
+  "spec": "Create a function called `evaluate(outages, threshold)`. Each record is an array containing a customer account string, an outage start time number, and an outage end time number. The duration of an outage is the end time minus the start time. A customer is eligible for a rebate if any single outage duration is strictly greater than the threshold. The function must find all eligible customers. It should return an array with two elements: a boolean that is true if there is at least one eligible customer, and an array of the eligible customer accounts sorted alphabetically, without duplicates. For example, given [[\"C1\", 10, 50], [\"C2\", 100, 110]] and threshold 20, the output is [true, [\"C1\"]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d180",
+  "title": "Software Feature Prioritization",
+  "spec": "Implement a function called `optimize(proposals, capacity)`. Each proposal is an array with a feature name string, an estimated hours number, and an impact score number. The function should sort the proposals by impact score from highest to lowest. It must then simulate selecting proposals in that order until the remaining capacity cannot accommodate the hours of the next proposal, at which point the selection process stops immediately. The function must return an array of two elements: the number of features successfully selected, and the remaining unused capacity hours. For example, given [[\"Chat\", 30, 10], [\"Export\", 20, 20], [\"Search\", 50, 30]] and capacity 60, the output is [1, 10].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d181",
+  "title": "Power Grid Voltage Drops",
+  "spec": "Write a function called `monitor(voltages, threshold)`. The grid is considered unstable if there are three consecutive measurements strictly below the minimum threshold. The function must simulate monitoring the grid sequentially and count how many times it becomes unstable. Once instability is detected, the counter increments, the sequence resets, and the next three consecutive low measurements trigger another instability event. The function should return an array containing three elements: a boolean indicating if the grid ever experienced two or more instability events, the total count of instability events, and the lowest voltage measurement recorded overall. For example, given [220, 200, 200, 200, 230, 190, 190, 190, 190] and threshold 210, the output is [true, 2, 190].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d182",
+  "title": "Wardrobe Costume Penalties",
+  "spec": "Create a function called `assess(returns, fee)`. Each record is an array containing a character name string, a days kept number, and a fabric condition string (clean, worn, or torn). The basic charge is the days kept multiplied by the daily fee. If the condition is torn, a flat repair penalty of seventy-five is added to the charge for that costume. The function must return an array of two elements: a boolean indicating whether any costume was returned torn, and a number representing the total collected charges including penalties across all costumes. For example, given [[\"Hero\", 3, \"clean\"], [\"Villain\", 2, \"torn\"]] and fee 10, the output is [true, 125].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d183",
+  "title": "Fishery Catch Quotas",
+  "spec": "Implement a function called `estimate(reports)`. Each report is an array containing a species name string, a number of nets cast, and an average catch per net number. The total catch for a report is the nets cast multiplied by the average catch. The function must aggregate the total catch for each unique species. It should return an array containing two elements: the species name string that yielded the highest overall catch (ties resolved alphabetically), and the total catch amount across all species. For example, given [[\"Salmon\", 10, 5], [\"Tuna\", 20, 2], [\"Salmon\", 5, 5]], the output is [\"Salmon\", 115].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d184",
+  "title": "Magazine Print Runs",
+  "spec": "Write a function called `calculate(batches)`. Each batch is an array containing a region name string, a count of active subscribers as a number, and a count of promotional copies as a number. The total required copies for a region is active subscribers plus promotional copies. The printing press requires the total copies per region to be a multiple of fifty; any partial batch must be rounded up to the next multiple of fifty. The function must return an array of two numbers: the total number of printed copies across all regions, and the total number of surplus copies (printed copies minus required copies). For example, given [[\"North\", 120, 10], [\"South\", 40, 5]], the output is [200, 25].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d185",
+  "title": "Astronomy Exoplanet Filter",
+  "spec": "Write an entry function `evaluate` that filters habitable planets. The input is an array of arrays, where each inner array contains a star name string, a planet name string, a distance number, and a boolean indicating if liquid water is present. Create a helper function to determine the habitability of a single planet based on its distance and water presence. A planet is considered habitable if its distance is between zero point eight and one point five inclusive, and the water boolean is true. Iterate through all systems using the helper. Build and return an array containing only the names of the habitable planets. Include a short driver to demonstrate with a sample array.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d186",
+  "title": "Podcast Episode Queue",
+  "spec": "Write an entry function `queue` that calculates total remaining listen time. The input is an array of arrays, where each inner array provides an episode title string, a duration in minutes as a number, and a boolean indicating if it has already been played. Create a helper function that calculates the adjusted duration for a single episode. Skip any episodes where the played boolean is true. For the remaining episodes, if the title contains the word sponsor in lowercase, subtract two minutes from its duration. Maintain a running total of the duration. Return the final total as a single number. Include a short driver to demonstrate with sample inputs.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d187",
+  "title": "Boarding Pass Validator",
+  "spec": "Write an entry function `validate` that filters valid flight passes. The input is an array of barcode strings. Create a helper function to check if an individual barcode string meets the valid criteria. A barcode is considered valid if it starts with the uppercase letter F, has a length of exactly twelve characters, and ends with a digit greater than zero. Iterate through the array and check each string using the helper. Keep a count of how many barcodes are valid, and store the first valid barcode found. Return an array containing the total count of valid passes as a number, followed by the first valid barcode string. Include a short driver to demonstrate.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d188",
+  "title": "Wildlife Camera Trap",
+  "spec": "Write an entry function `countSightings` that aggregates animal observations. The input is an array of arrays, where each inner array holds a species name string, an observation count number, and a boolean for night vision mode. Delegate the calculation of an individual observation adjusted count to a helper function. If night vision is true and the species is either raccoon or panther, double the observation count for that entry. Sum the total number of animals observed across all entries. Also, track if any panthers were seen at all using a boolean flag. Return an array where the first element is the total animal count and the second element is the boolean flag for panthers. Include a driver to demonstrate.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d189",
+  "title": "Drone Battery Estimator",
+  "spec": "Write an entry function `estimate` that calculates battery drain for a drone. The input is an array of arrays, each representing a flight plan with a distance in meters as a number, a wind speed number, and a boolean for a heavy payload. Use a helper function to compute the battery drain for a single flight plan. The base drain is the distance divided by ten. If the wind speed is greater than fifteen, add twenty to the drain. Finally, if the heavy payload boolean is true, multiply the current drain by one point five. Sum the drain across all missions. Return the total drain rounded down to the nearest integer. Include a short driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d190",
+  "title": "Hydroponic Nutrient Mixer",
+  "spec": "Write an entry function `mix` that calculates nutrient drops for indoor farming. The input is an array of arrays, where each contains a tank identifier string, a volume in liters as a number, and a boolean indicating if blooming nutrients are needed. Create a helper function to determine the exact number of nutrient drops for one tank. Standard tanks need two drops per liter, while tanks needing blooming nutrients require three drops per liter. Accumulate the total drops across all tanks. Track the identifier of the tank that requires the highest number of drops. Return an array with the total drops number and the highest tank identifier string. Include a driver to demonstrate.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d191",
+  "title": "Subway Fare Capper",
+  "spec": "Write an entry function `calculateFares` that computes weekly transit costs. The input is an array of arrays, where each trip has a zone string, a distance number, and a boolean for peak hours. Extract the cost calculation for a single trip into a helper function. The base cost of any trip is two. If the trip occurs during peak hours, add one to the cost. If the zone is exactly the word suburban, add another one. Maintain a running total of the costs. If the accumulated total exceeds thirty five at any point, cap it at thirty five and ignore further costs. Return the final total cost as a single number. Include a short driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d192",
+  "title": "Vinyl Record Appraiser",
+  "spec": "Write an entry function `appraise` that values a record collection. The input is an array of arrays, each providing a title string, an age in years as a number, and a boolean for mint condition. Use a helper function to determine the financial value of a single record. The base value of every record is ten. Add one to the value for every year of its age. If the mint condition boolean is true, double the total value of that specific record. Maintain a list of titles for records whose final calculated value is strictly greater than fifty. Return an array containing only these high value title strings. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d193",
+  "title": "Mountain Bike Setup",
+  "spec": "Write an entry function `tune` that determines suspension pressures. The input is an array of arrays, each containing a rider name string, a weight in pounds as a number, and a boolean for an aggressive riding style. Create a helper function to calculate the precise suspension pressure for an individual rider. To calculate the pressure, multiply the weight by zero point six. If the aggressive boolean is true, add fifteen to that pressure. Keep a count of how many riders require a pressure greater than one hundred fifty. Also, track the highest calculated pressure overall. Return an array containing the high pressure count and the highest pressure number. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d194",
+  "title": "Barista Tip Distributor",
+  "spec": "Write an entry function `distribute` that splits a fixed tip pool. The input is an array of arrays, each with a staff name string, hours worked as a number, and a boolean indicating if they are a manager. Managers do not receive tips. Use a helper function to compute the eligible hours for a single staff member, returning zero for managers. Sum the total valid hours worked by all non managers. The total tip pool is exactly two hundred. For each non manager, their share is their hours divided by the total non manager hours, multiplied by the tip pool. Return an array of arrays, where each inner array holds the staff name string and their tip amount number rounded down. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d195",
+  "title": "Meteor Shower Predictor",
+  "spec": "Write an entry function `predict` that finds the best meteor viewing spot. The input is an array of arrays, each providing a region name string, an hourly meteor count number, and a boolean indicating if the skies are clear. Create a helper function to evaluate if an individual observation qualifies as a major event. Discard any observations where the clear skies boolean is false. Among the remaining, find the region with the highest hourly count. If that maximum count is greater than fifty, the helper should classify it as a major event. Return an array containing the top region name string, its meteor count number, and the major event boolean flag. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d196",
+  "title": "Language Flashcard Scheduler",
+  "spec": "Write an entry function `schedule` that determines review intervals. The input is an array of arrays, each holding a vocabulary word string, a current streak number, and a boolean indicating if the last guess was correct. Use a helper function to process a single flashcard and return its updated streak and next review day. For each card, if the correct boolean is true, add one to the streak; if false, set the streak to zero. Calculate the next review time in days by multiplying the updated streak by two, then adding one. Build and return an array of arrays, where each inner array contains the word string and its next review time number. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d197",
+  "title": "Board Game Victory Points",
+  "spec": "Write an entry function `tally` that calculates final scores. The input is an array of arrays, each representing a player with a name string, a gold coin count number, and a boolean indicating if they control the capital city. Delegate the victory point calculation for a single player to a helper function. A player receives one victory point for every three gold coins, rounded down. If they control the capital, add five bonus points to their score. Track the highest score and the name of the player who achieved it. Return an array containing the winning player name string and their final score number. Include a short driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d198",
+  "title": "Electric Vehicle Route Planner",
+  "spec": "Write an entry function `plan` that filters charging stops. The input is an array of arrays, each providing a city name string, a distance from the start in miles as a number, and a boolean for fast charging capability. Create a helper function to evaluate if the distance and charging capabilities make a station a valid stop. The vehicle can travel a maximum of two hundred miles between stops. Iterate through the stations. Add a station to your selected route only if the distance from the previously selected station exceeds one hundred fifty miles, or if the fast charging boolean is true and the distance is at least one hundred miles. Return an array of the selected city name strings. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d199",
+  "title": "Scuba Dive Decompression",
+  "spec": "Write an entry function `dive` that calculates safety penalties. The input is an array of arrays, each containing a diver name string, a maximum depth in meters as a number, and a boolean indicating if nitrox gas was used. Use a helper function to calculate the penalty minutes for a single dive log. The standard safe depth limit is thirty meters. If nitrox was used, the safe limit becomes forty meters. If a diver exceeds their respective limit, calculate penalty minutes by subtracting the limit from their depth and multiplying by two. Build a list of names of divers who accrued any penalty minutes. Return this array of name strings. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d200",
+  "title": "Wedding Guest Seating",
+  "spec": "Write an entry function `seat` that calculates table requirements. The input is an array of arrays, each holding a family name string, a guest count number, and a boolean indicating if a high chair is needed. Create a helper function to process a single family response and extract their guest and high chair counts. Sum the total guest count across all responses. Also, count the total number of high chairs required by incrementing a counter whenever the boolean is true. A standard table seats exactly eight guests. Calculate the minimum number of tables needed to seat the total guest count. Return an array containing the total guest count, the table count, and the high chair count. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d201",
+  "title": "Rock Climbing Grade Converter",
+  "spec": "Write an entry function `convert` that categorizes climbing paths. The input is an array of arrays, where each route provides a mountain name string, a difficulty level number, and a boolean for an indoor wall. Delegate the categorization of a single climbing route to a helper function. If the indoor boolean is true, subtract one from the difficulty level. Categorize the route: if the adjusted difficulty is greater than ten, the category is the string hard; otherwise, it is the string easy. Build and return an array of arrays, where each inner array contains the mountain name string and its category string. Include a short driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d202",
+  "title": "Antique Coin Valuator",
+  "spec": "Write an entry function `appraiseCoins` that evaluates a collection. The input is an array of arrays, each with a metal type string, an age in years as a number, and a boolean indicating a rare mint mark. Use a helper function to calculate the adjusted value of a single antique coin. If the metal is the word gold, the base value is one hundred; if the word silver, the base is twenty; otherwise it is ten. Add half the age to this base value. If the rare mint boolean is true, multiply the calculated value by three. Accumulate the values of all coins. Return the total integer value, rounding down if necessary. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d203",
+  "title": "Home Brewing Fermentation",
+  "spec": "Write an entry function `ferment` that filters successful brews. The input is an array of arrays, each holding a beer name string, a starting gravity number, and a boolean indicating if active yeast was added. Create a helper function to compute the alcohol content of a single beer batch. If the yeast boolean is false, the alcohol content is zero. If true, calculate the alcohol content by subtracting ten from the starting gravity and dividing the result by five. Create a list that only includes the names of beers with a calculated alcohol content strictly greater than three. Return this array of name strings. Include a short driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d204",
+  "title": "Fencing Tournament Bracket",
+  "spec": "Write an entry function `rank` that determines tournament standings. The input is an array of arrays, each providing a fencer name string, a bout wins number, and a boolean for a red card penalty. Extract the final score calculation for an individual fencer into a helper function. Calculate each fencer score by multiplying their bout wins by five. If the red card boolean is true, subtract three from their score. Track the maximum score found. Iterate through the array to find the fencer with the highest score. Return an array containing the name string of the top fencer and their highest score number. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d205",
+  "title": "Orchard Harvest Forecaster",
+  "spec": "Write an entry function `forecast` that estimates apple production. The input is an array of arrays, each containing a variety string, an age in years as a number, and a boolean for late frost exposure. Use a helper function to estimate the apple yield for a single tree. The base yield for any tree is fifty apples. If the tree is older than five years, add ten apples for every year above five. If the frost boolean is true, divide the total yield for that tree in half. Accumulate the total apples across all trees. Track the variety string of the tree with the highest yield. Return an array containing the total apple count rounded down, and the top variety string. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d206",
+  "title": "Tabletop RPG Loot Generator",
+  "spec": "Write an entry function `loot` that generates adventure rewards. The input is an array of arrays, each holding a monster name string, a danger level number, and a boolean indicating a boss fight. Create a helper function to determine the gold reward for a single encounter. For each encounter, the base gold earned is the danger level multiplied by ten. If the boss boolean is true, double the gold for that encounter and append the string diamond to a gem collection list. Accumulate the total gold across all encounters. Return an array containing the total gold number as the first element and the array of gem strings as the second element. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d207",
+  "title": "Skeet Shooting Scorer",
+  "spec": "Write an entry function `score` that evaluates competitor performance. The input is an array of arrays, each providing a competitor name string, a targets hit number, and a boolean for hitting the golden clay. Delegate the score calculation for an individual competitor to a helper function. The base score is equal to the targets hit. If the golden clay boolean is true, add five bonus points to the score. Count how many competitors achieve a total score of twenty five or higher, classifying them as masters. Find the highest score overall. Return an array containing the count of masters and the highest score number. Include a short driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d208",
+  "title": "Bird Watching Checklist",
+  "spec": "Write an entry function `watch` that tallies species observations. The input is an array of arrays, each containing a bird name string, a quantity observed number, and a boolean for an endangered species. Use a helper function to process a single sighting. Maintain a critical count and a common count. If the endangered boolean is true, add the quantity to the critical count and append the bird name to a protected list. If false, add the quantity to the common count. Return an array containing the critical count number, the common count number, and the array of protected bird name strings. Include a short driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d209",
+  "title": "Pottery Kiln Manager",
+  "spec": "Write an entry function `fire` that manages firing schedules. The input is an array of arrays, each providing an artist name string, a thickness in millimeters as a number, and a boolean for a glazed finish. Create a helper function to compute the firing time for a single pottery piece. Calculate the firing time for each piece by multiplying the thickness by ten. If the glazed boolean is true, add thirty minutes to that piece time. Accumulate the total firing time across all pieces. If the total time exceeds five hundred minutes, set a split batch boolean to true, otherwise set it to false. Return an array containing the total time number and the split batch boolean. Include a driver.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d210",
+  "title": "Textile Loom Pattern Parser",
+  "spec": "Write `analyze(rows)` to process an array of strings where each string represents a row of woven threads. The function must calculate the total number of thread characters across all rows and determine if the pattern is vertically symmetric by checking if the array of rows reads exactly the same forwards and backwards. It should also identify the longest continuous sequence of identical threads in any single row. Return an array containing the total thread count, a boolean indicating vertical symmetry, and the length of the longest continuous identical thread sequence. For example, providing an array with two identical rows returns their combined length, true for symmetry, and the max repeating thread count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d211",
+  "title": "Cassette Tape Compiler",
+  "spec": "Implement `compile(durations, limit)` to organize an array of song durations in seconds onto a two-sided audio cassette. The function must assign tracks to side A consecutively until adding the next track would exceed the maximum side limit in seconds, and then assign the remaining tracks to side B. If side B also exceeds the limit, those excess tracks are discarded. Return an array containing the number of tracks successfully placed on side A, the number placed on side B, and a boolean indicating whether any tracks had to be discarded. For example, if the limit is eighteen hundred seconds and the total durations exceed thirty six hundred seconds, the boolean will be true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d212",
+  "title": "Meteorological Drought Scorer",
+  "spec": "Create `score(measurements)` to analyze an array of daily rainfall numbers in millimeters. The function must iterate through the days to find the longest consecutive streak of days where the rainfall was exactly zero. It should also calculate the average rainfall for all days that had at least some rain. Return an array containing the length of the longest dry streak as a number, a boolean indicating if this dry streak lasted for more than fourteen days, and the average rainfall of the wet days rounded down to the nearest integer. If there are no wet days, the average should be zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d213",
+  "title": "Vintage Arcade High Score Table",
+  "spec": "Write `update(scores, candidate)` to manage a leaderboard where the first argument is an array of strings combining player initials and their score separated by a space, and the second argument is a new score entry string formatted the same way. The function must parse the scores, add the new candidate, and sort them in descending numerical order of the score value. It must then keep only the top ten entries. Return an array containing the number of scores now on the board, a boolean indicating if the candidate made it into the top three, and the initials of the player in first place as a string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d214",
+  "title": "Ice Cream Parlor Flavors",
+  "spec": "Implement `fulfill(available, requested)` where both inputs are arrays of strings representing ice cream flavors. The function must check if every flavor in the requested array is present in the available array. It should count how many requested flavors are currently out of stock and identify the very first requested flavor that cannot be served. Return an array containing a boolean indicating if the entire order can be successfully fulfilled, the numerical count of out of stock scoops, and the string name of the first missing flavor, or an empty string if all are available.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d215",
+  "title": "Beehive Honey Yield",
+  "spec": "Create `harvest(frames, threshold)` to evaluate an array of honeycomb frame weights in ounces. The function must count how many frames meet or exceed the given minimum extraction threshold and calculate the total weight of these ready frames. Any frame below the threshold is ignored. The function must also determine the weight of the heaviest single frame that is ready for extraction. Return an array containing the total count of ready frames, the combined weight of these ready frames, a boolean indicating if the total extractable weight reaches the commercial goal of five hundred ounces, and the highest single frame weight.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d216",
+  "title": "Art Gallery Wall Hanger",
+  "spec": "Write `hang(widths, capacity)` to place paintings on a wall where the first argument is an array of painting widths and the second is the total wall capacity. The function must greedily add paintings from left to right. Each painting requires its width plus a mandatory five unit gap on its right side. However, the final painting hung on the wall does not require this gap. The function must stop adding paintings when the next one cannot fit. Return an array containing the number of paintings successfully hung, the total capacity utilized including the necessary gaps, and a boolean indicating whether the entire collection was successfully placed on the wall.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d217",
+  "title": "Glassblowing Furnace Monitor",
+  "spec": "Implement `monitor(readings, target)` to evaluate an array of temperature numbers against a target temperature. The function must scan the array to find the maximum temperature reached and the minimum temperature reached. It also must determine if the temperature ever remained continuously outside a ten degree tolerance window from the target for three or more consecutive readings. Return an array containing the highest temperature recorded, the lowest temperature recorded, and a boolean flag that is true only if the continuous out of bounds condition was met.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d218",
+  "title": "Bookbinding Signature Compiler",
+  "spec": "Create `bind(pages, size)` to process a total page count and a signature size. The function must determine how many complete folded signatures can be created by dividing the total pages by the signature size. It then identifies the number of leftover loose pages. The function must also check if these leftover pages make up exactly half of a signature size. Additionally, calculate the total number of paper sheets required, knowing that each full signature uses a number of sheets equal to its size divided by four, and any loose pages require one sheet for every four pages rounded up. Return an array containing the integer number of full signatures, the number of leftover pages, a boolean indicating if a perfect half-signature can be formed, and the total sheets required.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d219",
+  "title": "Radio Broadcast Scheduler",
+  "spec": "Write `schedule(segments, breaktime)` to fit an array of audio segment durations into a commercial break limit. The function must add segments in their original order until the next segment would cause the total time to strictly exceed the breaktime limit. It should count how many segments are successfully scheduled and calculate the unused time remaining in the break. Return an array containing the number of scheduled segments, the remaining break time in seconds, and a boolean indicating if the breaktime was filled perfectly with zero seconds to spare.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d220",
+  "title": "Chess Match Organizer",
+  "spec": "Implement `bracket(players)` to organize an array of player name strings into the first round of a tournament. The function must pair up players sequentially so the first plays the second, the third plays the fourth, and so on. It must compile an array of match strings formatted with the two names separated by the word versus. If there is an odd number of players, the very last player in the array receives a bye and is not paired. Return an array containing the array of match strings, a boolean indicating if a bye was awarded to any player, and the string name of the player who received the bye, or an empty string if everyone was paired.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d221",
+  "title": "Perfume Blending Recipe",
+  "spec": "Create `blend(ingredients, target)` where the first argument is an array of strings each containing a scent note and a volume in milliliters separated by a colon, and the second is a target scent string. The function must calculate the total volume of all ingredients combined by parsing the numeric parts. It must also calculate the total volume specifically for the target scent. Return an array containing the overall volume of the blend, the volume of the target scent, and a boolean indicating if the target scent makes up strictly more than half of the entire mixture.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d222",
+  "title": "Embroidery Stitch Counter",
+  "spec": "Write `stitch(sequences)` to analyze an array of pattern strings where every character represents a stitch type. The function must count the total occurrences of the cross stitch character, represented by a lowercase x, across all sequences. It must also check each sequence to see if any contains more than ten consecutive identical characters of any type. Return an array containing the total count of cross stitches, the index number of the first sequence that violates the consecutive character rule, and a boolean indicating if all sequences are valid and free of violations. If no violation is found, the index should be negative one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d223",
+  "title": "Forestry Timber Estimator",
+  "spec": "Implement `estimate(trees, girth)` to process an array of tree diameter measurements. The function must count how many trees have a diameter strictly greater than the provided minimum girth. It must then calculate the average diameter of only those qualifying trees. Additionally, track the largest diameter found among all trees in the array. Finally, it must determine if the qualifying trees make up a viable harvest, which requires at least ten qualifying trees and their average diameter to be over fifty. Return an array containing the count of harvestable trees, their average diameter rounded to the nearest whole number, the overall maximum diameter, and a boolean indicating if the lot is a viable harvest.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]

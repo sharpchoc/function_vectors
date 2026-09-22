@@ -1,0 +1,1563 @@
+[
+ {
+  "id": "d001",
+  "title": "Robot Navigator",
+  "spec": "Write a function `navigate(commands)` that evaluates a series of instructions for a machine on a flat grid. The machine begins at coordinates zero zero facing north and must maintain its current location and orientation internally using a custom blueprint structure. The blueprint needs dedicated actions to turn left, turn right, move forward by a given distance, and report the current coordinates. The main function should process a list of tuples containing an action word and an integer amount, update the machine state accordingly, and finally return a tuple of two numbers for the horizontal and vertical position. For example, providing the list [(\"move\", 3), (\"right\", 0), (\"move\", 4)] should result in the tuple (4, 3).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d002",
+  "title": "Bank Account",
+  "spec": "Write a function `process(transactions)` that calculates the final balance of a ledger. You must build a custom blueprint representing the ledger that tracks the current balance starting at zero and the total number of operations performed. Include distinct actions within the blueprint to add funds, remove funds, apply a service fee which deducts two units plus one unit for every operation performed so far, and retrieve the final balance. The entry function should read a list of tuples containing an action string and a numeric value, direct them to the appropriate blueprint actions, and return the final balance. For example, processing [(\"add\", 100), (\"remove\", 20), (\"fee\", 0)] should return 75 because the fee after two operations is four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d003",
+  "title": "Virtual Pet",
+  "spec": "Write a function `simulate(actions)` that tracks the well being of a digital creature. Create a custom structure to hold the creature state with starting values of ten for energy and zero for hunger. The structure must define actions to feed the creature which decreases hunger by three, sleep which increases energy by five, play which consumes four energy and increases hunger by two, and report the current stats. If energy drops below zero, it resets to zero, and if hunger exceeds ten, it caps at ten. The entry routine processes a list of action words and returns a tuple of the final energy and hunger. Given the list [\"play\", \"play\", \"feed\", \"sleep\"], the result should be (7, 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d004",
+  "title": "Vending Machine",
+  "spec": "Write a function `vend(requests)` that computes the final collected revenue of a dispenser. Implement a custom structure that tracks the current inserted coins and the total successful sales revenue. Include actions to insert a coin, request a product which costs fifty cents, cancel the transaction, and report the total revenue. If a product is requested and the inserted amount is at least fifty, increase the total revenue by fifty, deduct fifty from the inserted amount, and clear the remaining inserted balance as change. The cancel action simply clears the inserted balance. The main function should step through a list of tuples containing a command and an amount, invoke the matching structure actions, and return the total revenue. Example input [(\"insert\", 25), (\"insert\", 25), (\"request\", 0), (\"insert\", 10), (\"cancel\", 0)] yields 50.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d005",
+  "title": "Loyalty Program",
+  "spec": "Write a function `reward(events)` that determines the final status tier of a customer. Construct a specialized object to store accumulated points starting at zero and a tier level starting at zero. The object must provide actions to earn points, spend points, an internal check to update the tier, and a summary action to return the tier and points. Earning points adds the given amount, while spending points deducts the amount only if the balance is sufficient. The internal check promotes the tier by one for every full thousand points currently held, resetting the balance to the remainder. Process a list of tuples with an action and an integer amount, and return the final tier and leftover points as a tuple. Input [(\"earn\", 1500), (\"spend\", 200), (\"earn\", 800)] should return (2, 100).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d006",
+  "title": "Thermostat",
+  "spec": "Write a function `regulate(readings)` that finds the total minutes a heater remains active. Form a custom object representing the climate controller that stores a target temperature of seventy, the current status of the heater as off, and a counter for active minutes. Create actions to adjust the target temperature, to receive a new current temperature reading, and to report the total active minutes. When receiving a reading, if it is lower than the target by three or more degrees, turn the heater on; if it is higher than or equal to the target, turn it off. If the heater is on during a reading, increment the active minutes counter. Process a list of tuples containing an action string and a number, and return the total active minutes. Example list [(\"reading\", 65), (\"reading\", 68), (\"target\", 65), (\"reading\", 65)] returns 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d007",
+  "title": "Library",
+  "spec": "Write a function `manage(events)` that reports the number of available reading materials in a local collection. Design an object to manage the inventory which tracks a list of available titles and a list of loaned titles. The object must define specific actions to donate a new title to the available list, borrow an existing title moving it to the loaned list if available, return a title moving it back to available, and count the available items. The main routine will iterate over a list of tuples containing an action string and a title string. After applying all instructions, return the count of items in the available list. Using [(\"donate\", \"dune\"), (\"donate\", \"emma\"), (\"borrow\", \"dune\"), (\"return\", \"dune\")] returns 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d008",
+  "title": "Fitness Tracker",
+  "spec": "Write a function `track(workouts)` that totals the calories burned in a week. Build a custom fitness profile object containing a base metabolic rate of twelve hundred and a daily calorie counter starting at zero. Define object actions to log cardiovascular exercise which adds ten calories per minute, and weightlifting which adds five calories per minute. Add an action to end the day which adds the base metabolic rate to the daily total, accumulates it to a weekly grand total, and resets the daily counter. Provide a final action to report the weekly grand total. The main function should loop over a list of tuples with an exercise type and duration in minutes, and return the grand total. Inputting [(\"cardio\", 30), (\"weights\", 20), (\"end\", 0)] yields 1600.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d009",
+  "title": "Parking Garage",
+  "spec": "Write a function `operate(arrivals)` that computes the peak occupancy of a car facility. Create a management object holding a maximum capacity of fifty, a current vehicle count of zero, and a historical maximum count of zero. Implement actions to admit a vehicle which increases the count if capacity allows and updates the historical maximum, to release a vehicle which decreases the count if greater than zero, and to retrieve the historical maximum. The entry routine processes a list of action words like admit or release and returns the historical maximum. For the sequence [\"admit\", \"admit\", \"release\", \"admit\", \"admit\"], the result is 3.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d010",
+  "title": "Task Scheduler",
+  "spec": "Write a function `schedule(commands)` that outputs the count of unfinished jobs. Construct an object representing a job list that holds a sequence of pending jobs and a sequence of completed jobs. Provide actions to add a new job to the pending sequence, to complete a job by shifting it to the completed sequence, to clear all completed jobs, and to count the pending jobs. Process a list of tuples containing a command and a job name. Return the integer length of the pending sequence at the end. For [(\"add\", \"sweep\"), (\"add\", \"wash\"), (\"complete\", \"sweep\")], the answer is 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d011",
+  "title": "Shopping Cart",
+  "spec": "Write a function `checkout(items)` that calculates the final cost of groceries. Create an object for the cart that maintains a total cost starting at zero and a boolean flag for a bulk discount. Implement actions to add an item with a given price, remove an item with a given price, apply a coupon which sets the discount flag to true, and return the final calculated cost. Add an action to finalize the transaction which applies a ten percent reduction to the total if the discount flag is true and the total is above one hundred. Process a sequence of tuples with an action and a value, and return the final computed number. Example [(\"add\", 50), (\"add\", 70), (\"coupon\", 0), (\"remove\", 50), (\"add\", 100), (\"finalize\", 0)] should return 153.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d012",
+  "title": "Water Tracker",
+  "spec": "Write a function `hydrate(logs)` that determines the final soil moisture level of a garden. Model a plant container object that stores a moisture level of twenty and a health score of one hundred. Create actions to water the plant increasing moisture by fifteen, to pass a day which drops moisture by five, and to report the health score. During the pass day action, if moisture falls below ten or rises above fifty, reduce the health score by ten. The main routine receives a list of simple strings like water or wait, applies them to the container, and returns the final health score. Using [\"water\", \"wait\", \"water\", \"water\", \"water\", \"wait\"] should return 90.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d013",
+  "title": "Text RPG Character",
+  "spec": "Write a function `adventure(events)` that evaluates the survival of a hero. Create a hero object that tracks health starting at fifty, gold starting at zero, and armor starting at five. Provide actions to take damage which reduces health by the damage amount minus the armor value if positive, to heal which adds twenty health up to the maximum of fifty, to loot which adds ten gold, and to report health and gold. Process a list of tuples containing an action and a value representing the encounters. Return a tuple of final health and gold. If health drops to zero or below, further commands are ignored. For [(\"loot\", 0), (\"damage\", 30), (\"heal\", 0), (\"damage\", 40)], the result is (15, 10).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d014",
+  "title": "Coffee Maker",
+  "spec": "Write a function `brew(steps)` that simulates a beverage machine. Construct a machine object that tracks internal water level and coffee bean level, both starting at zero. Implement actions to add water by a given amount, add beans by a given amount, make coffee, and report total cups brewed. Making coffee requires twenty units of water and ten units of beans; if sufficient, it deducts these amounts and adds one to a lifetime cups brewed counter. Process a list of tuple instructions containing an action and an amount, and return the total cups brewed. Inputting [(\"water\", 50), (\"beans\", 30), (\"make\", 0), (\"make\", 0)] returns 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d015",
+  "title": "Music Playlist",
+  "spec": "Write a function `play(actions)` that identifies the currently active track. Create a media player object that stores a list of track names, an integer index for the active track starting at zero, and a repeating flag set to false. Include actions to queue a new track to the list, skip to the next track, toggle the repeat mode, and report the active track name. When skipping, if the index reaches the end of the list and repeat is true, it wraps around to zero; otherwise it stays at the last track. Process a list of tuples with an action and a track name string, and return the string name of the active track. Given [(\"queue\", \"intro\"), (\"queue\", \"chorus\"), (\"skip\", \"\"), (\"toggle\", \"\"), (\"skip\", \"\")], the result is \"intro\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d016",
+  "title": "Elevator Simulator",
+  "spec": "Write a function `transport(requests)` that returns the total floors traveled by a lift. Design a lift object that maintains the current floor starting at zero and a total distance traveled starting at zero. Implement actions to call the lift to a specific floor, to open the doors, and to report the total distance. Calling the lift calculates the absolute difference between the current floor and the requested floor, adds it to the total distance, and updates the current floor. Process a list of integer floor requests in order and return the total distance. Example [5, 2, 8] returns 14.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d017",
+  "title": "Battery Manager",
+  "spec": "Write a function `power(usage)` that computes the remaining charge of a device. Model a battery object with a capacity of one hundred and a current charge of one hundred. Provide actions to charge the battery by a percentage up to the capacity, to drain it by a percentage down to zero, and to report the current charge. Add a special action to activate power saving mode which halves all subsequent drain amounts. The main routine receives a list of tuples containing a command and a number, processes them through the object, and returns the final charge. Using [(\"drain\", 40), (\"save\", 0), (\"drain\", 20), (\"charge\", 10)] returns 60.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d018",
+  "title": "Scoreboard",
+  "spec": "Write a function `score(plays)` that reveals the winning team points. Formulate a scoreboard object that tracks points for a home team and an away team, both starting at zero. Create actions to add a normal basket worth two points to a specified team, a long basket worth three points, a free throw worth one point, and to determine the highest score. The entry function reads a list of tuples containing the team name and the play type, updates the scoreboard, and returns the highest score as an integer. For [(\"home\", \"long\"), (\"away\", \"normal\"), (\"home\", \"free\")], the result is 4.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d019",
+  "title": "Printer Spooler",
+  "spec": "Write a function `spool(jobs)` that returns the total pages successfully produced. Design a printer object that tracks ink level starting at one hundred, paper count starting at fifty, and total pages printed starting at zero. Implement an action to supply paper adding a given amount, an action to print a document of a given page length, and an action to report total pages. Each printed page consumes one unit of ink and one unit of paper. If a document requires more resources than available, it prints nothing. The main routine processes a list of integer page counts to print, and returns the total pages printed. Example [30, 25, 10] returns 30.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d020",
+  "title": "Spaceship Fuel",
+  "spec": "Write a function `fly(maneuvers)` that determines if a vessel reaches its destination. Create a vessel object tracking fuel starting at one hundred and distance traveled starting at zero. Define actions to thrust which consumes ten fuel and adds twenty distance, to cruise which consumes five fuel and adds ten distance, to harvest which adds fifteen fuel, and to verify if the distance is at least one hundred. If an action attempts to consume more fuel than is available, it is skipped entirely. Process a sequence of these action strings and return true if the final distance is at least one hundred, otherwise false. Using [\"thrust\", \"thrust\", \"harvest\", \"cruise\", \"thrust\"] returns false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d021",
+  "title": "Oven Temperature",
+  "spec": "Write a function `bake(adjustments)` that calculates the average temperature over a period. Construct an oven object containing a current heat level starting at three hundred and a list of recorded temperatures. Provide actions to increase heat by a given amount, decrease heat by a given amount, record the current heat to the list, and calculate the average temperature. Process a list of tuples containing an action string and a numeric value. Finally, calculate and return the integer average of all recorded temperatures. Example [(\"up\", 50), (\"record\", 0), (\"down\", 100), (\"record\", 0)] returns 300.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d022",
+  "title": "Traffic Light",
+  "spec": "Write a function `traffic(ticks)` that counts the number of cars that pass an intersection. Create a signal object that tracks its current color starting at red and a count of passed cars. Implement a cycle action that changes the color from red to green, green to yellow, and yellow to red. Implement an approach action that takes a number of cars; if the color is green, all cars pass and add to the count, if yellow only one car passes, and if red zero cars pass. Add an action to report the total passed cars. Process a list of tuples containing an action string and a car count, and return the total passed cars. Inputting [(\"approach\", 5), (\"cycle\", 0), (\"approach\", 5), (\"cycle\", 0), (\"approach\", 2)] returns 6.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d023",
+  "title": "Inventory Ledger",
+  "spec": "Write a function `stock(changes)` that reports the total value of warehouse goods. Model an inventory object that maintains a physical count starting at zero and an average unit cost starting at zero. Add actions to receive stock which takes a quantity and a total cost to recalculate the average unit cost, to ship stock which reduces the physical count, and to compute the total inventory value. Process a list of tuples containing an action string, a quantity, and a cost if applicable. Return the final total value which is the count multiplied by the average unit cost. Using [(\"receive\", 10, 100), (\"ship\", 4, 0), (\"receive\", 4, 80)] returns 140.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d024",
+  "title": "Movie Theater",
+  "spec": "Write a function `screen(patrons)` that computes total ticket sales. Design a theater object that tracks total seats starting at forty, seats sold starting at zero, and revenue starting at zero. Implement actions to sell a standard ticket for ten dollars, sell a premium ticket for fifteen dollars, process a refund for a given amount, and report final revenue. Each sale decreases available seats and increases revenue, but if no seats are available, the sale is ignored. Process a list of tuples with an action string and an amount, and return the final revenue. Given [(\"standard\", 0), (\"premium\", 0), (\"refund\", 10), (\"standard\", 0)] the output is 25.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d025",
+  "title": "Assembly Line",
+  "spec": "Write a function `assemble(operations)` that counts completely built units. Create a factory object that tracks raw materials starting at zero, a finished goods counter starting at zero, and a defect counter starting at zero. Include actions to restock materials by a given amount, to build a unit which requires three materials, and to audit the factory returning finished goods and defects. If a build action is called with insufficient materials, it increments the defect counter. The entry function reads a sequence of tuples containing an action and an amount, and returns a tuple of finished goods and defects. For [(\"restock\", 5), (\"build\", 0), (\"build\", 0), (\"restock\", 2), (\"build\", 0)] the result is (2, 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d026",
+  "title": "Toll Booth",
+  "spec": "Write a system to manage a highway toll plaza. The plaza starts with zero revenue and tracks the number of standard cars and heavy trucks processed. Implement the entry point `toll(events)` that processes a list of strings representing events, like car, truck, or shift. Cars add two dollars to revenue and trucks add five dollars. During a shift change, the plaza resets its vehicle counts to zero but keeps the running total of revenue. Return a list of total revenue and the current count of vehicles processed in the active shift. Example: inputting car, truck, shift, car results in a revenue of nine and one vehicle processed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d027",
+  "title": "Smart Greenhouse",
+  "spec": "Simulate a greenhouse monitoring system that tracks temperature and soil moisture. The system initializes with a temperature of twenty degrees and moisture of fifty percent. Create `greenhouse(readings)` to process a list of integer readings. Positive numbers increase temperature and drop moisture by that amount, while negative numbers decrease temperature and increase moisture by their absolute value. After each reading, if temperature exceeds thirty, a cooling fan activates and reduces temperature by five. If moisture drops below thirty, a sprinkler adds ten to moisture. Process all readings and return the final temperature and moisture as a list. Example: processing ten, five, negative ten returns a temperature of twenty and moisture of forty five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d028",
+  "title": "Spaceport Docking",
+  "spec": "Manage a spaceport with a capacity of five docking bays. The system starts with all bays empty and zero total credits earned. The function `spaceport(requests)` receives a list of integers representing ship sizes requesting to dock. Ships of size one take one bay and pay ten credits, while ships of size two take two bays and pay twenty credits. If there are not enough empty bays for a ship, it is rejected and departs. The spaceport also receives zero values, representing departures that free up exactly one bay each. Process the requests and return a list of credits earned and currently occupied bays. Example: processing one, two, zero, two returns fifty credits and four occupied bays.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d029",
+  "title": "Farm Crop Manager",
+  "spec": "Track the growth and yield of a digital farm. The farm starts with zero stored food, zero planted seeds, and zero days of growth. Write `harvest(cycles)` to process a list of string commands like plant, wait, or reap. Planting adds ten seeds to the ground and resets the growth days to zero. Waiting increases the growth days by one. Reaping harvests the crops only if they have grown for at least three days, adding two units of food for each planted seed to the storage, and clearing the ground. Reaping too early yields nothing and clears the ground anyway. Return the total stored food after all cycles. Example: processing plant, wait, wait, wait, reap yields twenty food.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d030",
+  "title": "Train Ticket Inspector",
+  "spec": "Simulate a train ticket inspector checking passengers. The inspector keeps a tally of valid tickets seen, fines issued, and total fine revenue collected. Implement `inspect(passengers)` which takes a list of numbers indicating ticket status: one means a valid ticket, zero means no ticket, and negative one means a forged ticket. Valid tickets increase the ticket count by one. No ticket results in a fine of fifty, and a forged ticket results in a fine of one hundred plus immediate removal, which is tallied separately. Return a list containing valid tickets, total fine revenue, and forged tickets found. Example: given one, zero, negative one, one, the result is two, one hundred fifty, and one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d031",
+  "title": "Weather Station Logger",
+  "spec": "Model a remote weather station that logs temperature readings. The station maintains a running total of all readings, the count of readings, and the highest and lowest temperatures observed so far. It initializes with no readings. Provide `weather(measurements)` to process a list of decimal numbers, updating the sum, count, maximum, and minimum. If a reading is exactly zero, the station initiates a recalibration and ignores that specific reading entirely. After processing all measurements, calculate the average temperature. Return a list of the minimum, maximum, and average. Example: processing ten, twenty, zero, thirty gives a minimum of ten, maximum of thirty, and average of twenty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d032",
+  "title": "Restaurant Table Manager",
+  "spec": "Create a seating system for a restaurant that has ten available tables. The restaurant tracks seated guests, total served guests, and available tables. Write `restaurant(parties)` which receives a list of integers. Positive numbers represent arriving parties of that size, and negative numbers represent departing parties. Arriving parties take up one table regardless of size, decreasing available tables and increasing seated guests. If no tables are available, the party leaves immediately. Departing parties free up one table, reduce seated guests, and add their absolute size to the total served guests. Return a list of total served guests and currently available tables. Example: processing four, two, negative four leaves four total served and nine tables available.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d033",
+  "title": "Aquarium Filter System",
+  "spec": "Simulate an aquarium filter that maintains water quality. The filter has a cleanliness level starting at one hundred and a stored waste capacity starting at zero. Implement `aquarium(pollutants)` to process a list of integers representing pollution events. Each event decreases cleanliness by the integer value and increases stored waste by the same amount. After each event, if cleanliness drops below fifty, the filter enters a cleaning cycle, consuming twenty units of stored waste and restoring cleanliness to ninety. If stored waste ever exceeds one hundred, the system fails and stops processing entirely. Return the final cleanliness and stored waste as a list. Example: processing thirty, thirty, ten results in ninety cleanliness and forty stored waste.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d034",
+  "title": "Ski Resort Lift",
+  "spec": "Track the operations of a ski resort chairlift. The lift tracks total trips made, total skiers transported, and current wind speed starting at zero. Create `skilift(skiers)` to process a list of integers. Positive integers represent a group of skiers waiting. Negative one represents a strong wind event setting wind speed to fifty, and negative two represents calm wind setting it to ten. If a group arrives and wind speed is below forty, the lift takes as many trips as needed to transport them, fitting up to four skiers per trip. Each trip increments the trip count, and all transported skiers are added to the total. If wind is forty or higher, the group is ignored. Return total trips and total skiers. Example: processing negative two, five, negative one, three yields two trips and five skiers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d035",
+  "title": "Cargo Ship Loader",
+  "spec": "Manage a cargo ship that holds containers up to a maximum weight limit of one thousand. The ship tracks its current total weight and the number of containers loaded. Write `cargoship(containers)` to process a list of weights for incoming containers. If adding a container would exceed the maximum weight, the container is skipped and added to a separate rejected count. For every five containers successfully loaded, the crew takes a mandatory rest break which consumes a flat twenty weight units of ship supplies, reducing the current total weight. Return a list containing loaded containers, current total weight, and rejected containers. Example: processing two hundred, two hundred, two hundred, two hundred, two hundred, two hundred returns five loaded, nine hundred eighty weight, and one rejected.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d036",
+  "title": "Pizza Delivery Tracker",
+  "spec": "Model a pizza delivery driver tracking their shift. The driver starts with twenty dollars, zero miles driven, and zero completed deliveries. Provide `delivery(orders)` to process a list of integers representing the one way distance of each delivery in miles. For each delivery, the miles driven increases by the distance. The driver collects a tip equal to half the distance of the delivery. If the total miles driven reaches or exceeds fifty, the driver stops to refuel, spending fifteen dollars from their collected tips and float, and resetting the miles driven to zero. Return a list of the final cash amount and completed deliveries. Example: processing ten, twenty, thirty returns thirty five dollars and three deliveries.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d037",
+  "title": "Escape Room Controller",
+  "spec": "Simulate the progression of an escape room game. The room starts with sixty minutes on the clock, zero hints used, and three puzzles remaining. Write `escaperoom(actions)` to process a list of strings like clue, solve, or mistake. A clue reduces the clock by five minutes and increases hints used. A solve reduces puzzles remaining by one. A mistake imposes a penalty, reducing the clock by ten minutes. If the clock falls to zero or below, the game ends in failure immediately, ignoring further actions. If puzzles remaining hits zero, the game is won and ignores further actions. Return a list of puzzles remaining and time left. Example: clue, solve, mistake, solve, solve returns zero puzzles and forty five minutes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d038",
+  "title": "Magic Spell Book",
+  "spec": "Model a wizard using a spell book. The wizard starts with one hundred mana points and zero experience points. Implement `spellbook(casts)` to process a list of integers representing the mana cost of attempted spells. If the wizard has enough mana, the spell is cast, deducting the mana cost and adding ten experience points. If they lack enough mana, the spell fails, they lose five mana points from exhaustion, and gain no experience. For every fifty experience points gained, the wizard levels up, instantly restoring their mana to one hundred. Return the final mana and experience points as a list. Example: processing forty, forty, forty returns ninety five mana and one hundred experience.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d039",
+  "title": "Airport Baggage Carousel",
+  "spec": "Track the status of an airport baggage carousel. The carousel has a capacity of twenty bags and starts empty. It tracks total bags processed and unclaimed bags removed. Provide `baggage(items)` to receive a sequence of integers where positive numbers represent bags arriving from a flight, and negative numbers represent passengers claiming their bags. Arriving bags are added to the carousel. If adding bags exceeds capacity, the excess bags are sent to an unclaimed storage area, increasing the unclaimed count. Claiming bags removes them from the carousel, but cannot drop the carousel count below zero. Return the number of bags on the carousel and the unclaimed count. Example: processing fifteen, ten, negative five returns fifteen on the carousel and five unclaimed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d040",
+  "title": "Smart Home Security",
+  "spec": "Simulate a smart home alarm system. The system has three states: disarmed, armed away, and armed stay, starting as disarmed. It tracks the number of times the alarm has triggered. Create `security(events)` to process a list of strings like arm away, arm stay, disarm, motion, or door. Motion triggers the alarm only if the state is armed away. Door triggers the alarm if the state is armed away or armed stay. Disarm clears any triggered state and returns to disarmed. Triggering the alarm increments the trigger count. Return the final state of the system and the total trigger count as a list. Example: arm stay, motion, door, disarm returns disarmed and one trigger.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d041",
+  "title": "Hotel Room Service",
+  "spec": "Manage a hotel room service queue. The kitchen tracks pending orders, total revenue, and available chefs, starting with three chefs. Implement `roomservice(requests)` to receive a list of integers where positive numbers are meal prices to be prepared, and zero represents a chef finishing an order. When a meal request arrives, if a chef is available, the chef is assigned to it, reducing available chefs and adding the price to revenue. If no chef is available, the order is added to a pending queue. When a chef finishes, they become available again, and immediately take the next order from the pending queue if one exists. Return the total revenue and the number of orders left in the pending queue. Example: twenty, thirty, fifteen, forty returns sixty five revenue and one pending order.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d042",
+  "title": "Beehive Monitor",
+  "spec": "Model the daily activity of a beehive. The hive starts with a population of one thousand bees and zero ounces of honey. Write `beehive(days)` to process a list of integers representing the daily weather quality from one to ten. On days with quality above five, the population increases by ten percent, and the bees gather honey equal to the new population divided by one hundred. On days with quality five or below, no honey is gathered, and the population decreases by fifty as bees die of natural causes. If the population ever drops below five hundred, they immediately consume ten ounces of stored honey to survive. Return a list of final population and honey. Example: processing eight, four, nine returns one thousand one hundred forty four bees and twenty one ounces of honey.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d043",
+  "title": "Theme Park Ride",
+  "spec": "Simulate a roller coaster dispatch system. The coaster has a train that holds eight people. The system tracks total dispatches and total riders. Provide `themepark(groups)` to process a list of integers representing arriving groups of people. It attempts to load groups into the train. If a group fits, they board. If a group exceeds the remaining seats, the train is dispatched with its current riders, incrementing the dispatch count and total riders, and the new group boards the empty train. After all groups are processed, any partially filled train is dispatched automatically. Return total dispatches and total riders as a list. Example: processing four, three, five yields two dispatches and twelve riders.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d044",
+  "title": "Submarine Ballast Controller",
+  "spec": "Track the depth and air pressure of a submarine. The submarine starts at depth zero and air pressure of one hundred. Create `submarine(commands)` to receive a list of integers representing dive commands. Positive integers pump water into the ballast, increasing depth by that amount and decreasing air pressure by half that amount. Negative integers blow water out, decreasing depth by their absolute value and decreasing air pressure by their absolute value. If air pressure drops to ten or below, an emergency surface is triggered, setting depth immediately to zero and ending the simulation. Return the final depth and air pressure. Example: processing forty, negative twenty, eighty returns zero depth and ten pressure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d045",
+  "title": "Art Gallery Auction",
+  "spec": "Manage an ongoing art auction for a single painting. The auction starts with a base price of one hundred and tracks the current highest bid and the total number of valid bids. Implement `auction(bids)` to process a list of integers representing incoming bids. A bid is valid only if it is strictly greater than the current highest bid. Valid bids update the highest bid and increment the bid count. If a bid is exactly double the current highest bid before the update, the crowd goes wild, and the auctioneer adds a ten percent premium to the highest bid immediately after accepting it. Return a list of the final highest bid and the valid bid count. Example: processing one hundred fifty, one hundred forty, three hundred returns three hundred thirty and two bids.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d046",
+  "title": "Bowling Lane Scorer",
+  "spec": "Simulate a simplified bowling lane. The lane tracks the current score and the number of pins currently standing, starting at ten. Write `bowling(rolls)` to process a list of integers representing the number of pins knocked down per roll. For each roll, the knocked down pins are added to the score, and subtracted from the standing pins. If standing pins reach zero, it is a strike or spare, an extra five bonus points are added to the score, and the standing pins reset to ten. If the standing pins do not reach zero, they just carry over to the next roll, but reset to ten every two rolls anyway. Return the final score. Example: processing five, five, three, four returns twenty two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d047",
+  "title": "Drone Delivery Dispatcher",
+  "spec": "Model a delivery drone managing its battery. The drone starts with one hundred percent battery and zero packages delivered. Provide `drone(flights)` to receive a list of integers representing one way flight distances. Each unit of one way distance consumes one percent battery, so a delivery costs double the distance for the round trip. If the drone has enough battery for the round trip, it makes the delivery, increments its count, and deducts the battery. If not, it skips the delivery entirely and fully recharges to one hundred percent instead. Return packages delivered and final battery. Example: processing twenty, thirty, ten returns two delivered and one hundred battery.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d048",
+  "title": "Donut Fryer Manager",
+  "spec": "Track a donut fryer producing pastries. The shop starts with zero donuts fried and an oil temperature of three hundred. Create `fryer(batches)` to receive a list of integers representing batch sizes. For each batch, the fryer cooks the donuts, adding the batch size to the total fried. However, frying a batch reduces the oil temperature by ten degrees. If the temperature reaches two hundred eighty or below after a batch, the chef pauses to reheat the oil back to three hundred before frying the next batch. During reheating, one donut from the total fried is eaten by the chef as a taste test. Return a list of total donuts fried and final temperature. Example: processing ten, ten, ten returns twenty nine donuts and two hundred ninety degrees.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d049",
+  "title": "Wildlife Camera Trap",
+  "spec": "Simulate a motion activated wildlife camera. The camera starts with a memory capacity for fifty photos and battery for one hundred activations. Implement `cameratrap(movements)` to process a list of integers representing movement sizes. A size of one is a small animal, taking one photo. A size of two is a large animal, taking three photos. A size of zero is wind, taking no photos but still consuming battery. Every activation reduces battery by one. If memory reaches zero or battery reaches zero, the camera shuts down and ignores further movements. Return the number of photos taken and remaining battery as a list. Example: processing one, two, zero, two returns seven photos and ninety six battery.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d050",
+  "title": "Car Wash Bay",
+  "spec": "Manage an automated car wash bay. The bay starts with fifteen units of soap and tracks total revenue. Write `carwash(vehicles)` to process a list of integers representing vehicle types: one for a sedan, two for a truck. A sedan consumes five units of soap and adds ten to revenue. A truck consumes ten units of soap and adds fifteen to revenue. Before washing, if the soap level is insufficient for the vehicle, the bay undergoes a refill, adding fifty units of soap and deducting five from revenue as a cost, then processes the vehicle. Return a list of final soap level and total revenue. Example: processing two, two, two, two, two, two returns five soap and eighty five revenue.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d051",
+  "title": "Wind Turbine Controller",
+  "spec": "Write a class for a turbine and a class for a wind farm. The turbine tracks its blade pitch, rotor speed, and brake status. It can adjust pitch based on wind speed, apply brakes if wind exceeds twenty meters per second, and calculate power output based on rotor speed. The farm manages multiple turbines, sums their power, and can trigger an emergency stop for all. Provide the entry function `evaluate(conditions)` that takes a list of wind speeds and returns a list of total power outputs for each step after updating the farm. For example, inputs of ten, twenty five, and five should return standard power, zero power due to braking, and low power.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d052",
+  "title": "Chess Tournament Clock",
+  "spec": "Create a dual timer that tracks seconds remaining for white and black players, an active player indicator, and a delay penalty. It needs actions to start a turn, end a turn which subtracts the elapsed seconds and adds a penalty if they took longer than ten seconds, and check for a flag fall if time reaches zero. The timer starts with a specified number of seconds for each. Provide the entry function `time(moves)` that takes a list of turn durations and returns a string indicating the winner or if it is still ongoing. Example: taking durations five, twelve, and eight with a starting time of twenty seconds returns white wins.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d053",
+  "title": "Telescope Shutter System",
+  "spec": "Model an observatory dome with a rotation angle, a shutter opening percentage, and a weather sensor. The dome can rotate to match a target angle by finding the shortest path, open or close the shutter in increments of twenty percent, and force an emergency close if the sensor detects rain. Provide the entry function `observe(commands)` that takes a list of actions such as rotate or rain and returns a tuple of the final angle and shutter status. Example: starting at zero degrees closed, a command to rotate to three hundred and open fully results in three hundred and one hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d054",
+  "title": "Scuba Dive Computer",
+  "spec": "Track a diver's current depth, accumulated nitrogen level, and time underwater. The computer updates every minute, increasing nitrogen based on the depth multiplier and decreasing it if close to the surface. It triggers a decompression warning if nitrogen exceeds one hundred units and enforces a safety stop countdown when ascending from deep water. Provide the entry function `monitor(depths)` that takes a list of depths for each minute and returns a tuple of the final nitrogen level and a boolean indicating if a warning was triggered.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d055",
+  "title": "Conveyor Belt Sushi",
+  "spec": "Represent a rotating sushi belt that tracks a list of plates with their colors and a customer tally. Plates advance along the belt by one position every tick. Customers can remove a plate at their specific position, adding the cost associated with the plate color to their running total. Green plates cost two, red plates cost three. Provide the entry function `tally(actions)` that accepts a list of plate additions and customer grabs, updating the belt state accordingly, and returns the final bill for the customer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d056",
+  "title": "Metal Detector Sweeper",
+  "spec": "Build a metal detector state tracker with adjustable sensitivity, battery life, and a list of found treasures. Searching a plot consumes battery and detects items if their metallic density is greater than the inverse of the sensitivity. If a target is found, it is added to the pouch and a beep is recorded. Recharging restores the battery to one hundred percent. Provide the entry function `sweep(terrain)` that takes a list of target densities and returns the count of found items and remaining battery. High density items are found even on low sensitivity.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d057",
+  "title": "Arcade Claw Machine",
+  "spec": "Simulate a claw machine with horizontal position, depth, vertical drop level, and claw grip strength. Moving the joystick alters the horizontal and depth coordinates within a ten by ten grid. Pressing drop lowers the claw, which successfully grabs a prize if the coordinates match a prize location and a random grip check succeeds based on a set strength threshold. Provide the entry function `play(inputs)` that takes a list of movement and drop commands, returning the number of prizes won.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d058",
+  "title": "Hamster Maze Runner",
+  "spec": "Model a hamster exploring a maze with stamina, a pouch for treats, and current coordinates. Moving up, down, left, or right reduces stamina by one. Finding a sunflower seed adds it to the pouch and restores five stamina. If stamina reaches zero, the hamster falls asleep and ignores further commands. Provide the entry function `navigate(path)` that takes a list of directional movements and a list of seed locations, returning the final coordinates and the number of collected seeds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d059",
+  "title": "Printing Press Ink",
+  "spec": "Manage a color printer containing levels for cyan, magenta, yellow, and black ink, alongside a waste tank. Printing a page consumes specific amounts of each color depending on the page type, such as grayscale or full photo. A cleaning cycle reduces all colors by five units and increases the waste tank by twenty. If any color is empty or the waste is full, printing halts. Provide the entry function `publish(pages)` that takes a list of page types and returns the number of successfully printed pages before stopping.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d060",
+  "title": "Lighthouse Controller",
+  "spec": "Design a lighthouse tracking rotation speed, lamp intensity, and a fog horn status. Daytime mode turns off the lamp and horn while slowing rotation. Nighttime turns on the lamp and restores rotation speed. If fog is detected, the horn sounds every rotation. The lamp burns out after fifty rotations and must be replaced. Provide the entry function `operate(events)` that processes a sequence of weather and time changes, returning the total number of horn blasts and whether the lamp needs replacement at the end.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d061",
+  "title": "Sailboat Rigging",
+  "spec": "Track a sailboat with a main sail angle, jib tension, and a heel angle representing the tilt of the boat. Wind gusts alter the heel angle depending on how tight the sails are pulled. The captain can ease the sails to reduce tilt or tighten them to gain speed. If the tilt exceeds forty five degrees, the boat capsizes and speed becomes zero permanently. Provide the entry function `sail(gusts)` that takes a list of wind strengths and crew adjustments, returning the final distance traveled and capsize status.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d062",
+  "title": "Perfume Synthesizer",
+  "spec": "Simulate a perfume mixing vat that records the volume of base notes, top notes, and alcohol. Adding ingredients increases the respective volumes. The vat has a stirrer that can operate at low or high speeds. High speed blends faster but evaporates ten percent of the alcohol per minute. The ideal perfume has a specific ratio of base to top to alcohol. Provide the entry function `blend(drops)` that takes a list of additions and stirring durations, returning the final volumes and a boolean if the ideal ratio is met.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d063",
+  "title": "Rock Climbing Belay",
+  "spec": "Model a belay device tracking climber height, rope slack, and friction mode. When the climber ascends, rope slack increases unless the belayer pulls it in. If the climber falls, they drop a distance equal to twice the slack before the rope catches, and if the friction mode is disengaged, they drop an additional five meters. Provide the entry function `climb(movements)` that processes a sequence of upward moves, slack adjustments, and falls, returning the climber's final height and the total distance fallen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d064",
+  "title": "Telescope Spectrometer",
+  "spec": "Manage a spectrometer with a sensor temperature, an exposure time, and an array of accumulated photon counts. The sensor cools over time, reducing dark current noise. Taking an exposure adds signal plus noise proportional to the temperature. A calibration frame subtracts the current noise baseline. Provide the entry function `analyze(exposures)` that processes time delays for cooling, calibrations, and observations, returning the final cleaned photon total for the brightest pixel.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d065",
+  "title": "Seismograph Pendulum",
+  "spec": "Simulate a seismograph with a suspended mass tracking its horizontal and vertical displacement, along with a dampening factor. Ground tremors apply force to the mass, swinging it outwards. The dampening factor slowly returns the mass to the center over time. If the displacement exceeds a threshold, an earthquake event is logged. Provide the entry function `record(tremors)` that takes a sequence of tremor intensities and quiet periods, returning the number of logged earthquakes and the final displacement distance.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d066",
+  "title": "Paintball Marker",
+  "spec": "Track a paintball marker with a hopper holding fifty paintballs, an air pressure tank, and a safety catch. Firing a shot reduces the hopper by one and drops air pressure. If fired too rapidly, there is a ten percent chance a paintball breaks in the barrel, reducing accuracy until a cleaning swab is used. Provide the entry function `skirmish(actions)` that takes a list of trigger pulls, reloads, and cleans, returning the number of successfully fired accurate shots.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d067",
+  "title": "Ski Waxer",
+  "spec": "Manage a ski tuning bench tracking the iron temperature, the applied wax type, and the number of scraping passes. The iron must heat up to the correct melting point for the chosen wax, which varies for cold or warm snow. Applying wax when the iron is too cold fails, and too hot burns the base. Scraping removes excess wax, requiring three passes for a perfect finish. Provide the entry function `prepare(conditions)` that processes heating, waxing, and scraping steps, returning a string describing the final base quality.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d068",
+  "title": "Pottery Kiln",
+  "spec": "Model a kiln tracking its internal temperature, a target ramp rate, and a current firing phase. The kiln heats up by increasing temperature each hour according to the ramp rate, holds steady during a soak phase, and cools down slowly. Opening the door while above two hundred degrees causes the pottery to crack from thermal shock. Provide the entry function `fire(schedule)` that takes a list of hourly instructions and returns the final temperature and a boolean indicating if the pottery survived intact.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d069",
+  "title": "Bakery Dough Proofing",
+  "spec": "Create a proofing box tracking humidity, air temperature, and the volume of a batch of dough. The dough doubles in size every hour if the temperature is between seventy and eighty degrees and humidity is high. If humidity drops, a crust forms and volume growth stops. The baker can add steam or adjust the thermostat. Provide the entry function `proof(environment)` that processes a sequence of hours with environment adjustments, returning the final dough volume multiplier and crust status.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d070",
+  "title": "Vinyl Record Player",
+  "spec": "Track a turntable with a rotation speed, a tonearm position from the edge to the center, and a stylus wear indicator. Starting the platter spins it at thirty three or forty five revolutions per minute. Dropping the tonearm plays music and advances its position inward. Playing dusty records increases stylus wear rapidly, leading to skipped tracks if wear is too high. Provide the entry function `spin(commands)` that takes speed changes, plays, and cleaning actions, returning the final tonearm position and wear level.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d071",
+  "title": "Potion Cauldron",
+  "spec": "Model a cauldron with a liquid volume, a heat level, and a magical potency score. Adding ingredients increases volume and changes potency based on the current heat. Stirring clockwise stabilizes the potion, while counterclockwise increases volatility. If volatility exceeds a limit, the potion boils over, halving the volume and zeroing the potency. Provide the entry function `brew(steps)` that processes ingredients, stirring directions, and heat changes, returning the final volume and potency.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d072",
+  "title": "Snowplow Blade",
+  "spec": "Simulate a snowplow tracking its blade height, blade angle, and a salt spreader reservoir. Lowering the blade clears snow but slows the truck down. Angling the blade throws snow to the side; if not angled, snow builds up and forces a stop. Deploying salt melts ice but consumes the reservoir. Provide the entry function `plow(road)` that takes a list of road segments with snow and ice amounts, along with plow adjustments, returning the total cleared distance and remaining salt.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d073",
+  "title": "Typewriter Carriage",
+  "spec": "Manage a typewriter tracking the current horizontal column, vertical line number, and a bell ringer. Typing a character advances the column. When within five spaces of the right margin, a bell chimes. Hitting the return key resets the column to the left margin and advances the line number. Provide the entry function `typewrite(text)` that processes a sequence of character counts and returns, returning the final line number and the number of times the bell chimed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d074",
+  "title": "Yo-yo Trick State",
+  "spec": "Track a yo-yo with a string tension, spin velocity, and a mount state such as trapeze or breakaway. Throwing the yo-yo starts the spin. Performing string tricks increases tension and slowly drains velocity. If velocity drops below ten, the yo-yo dies and stops spinning. A bind return brings it back to the hand if it is spinning fast enough. Provide the entry function `freestyle(moves)` that takes a list of tricks and returns a boolean if the routine finished with a successful catch.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d075",
+  "title": "Bonsai Tree Pruner",
+  "spec": "Model a bonsai tree tracking its branch count, leaf density, and a stress level. Watering and fertilizing during spring increases branches and leaves. Pruning removes branches and reduces stress if done in winter, but increases stress if done in summer. If stress reaches a critical point, the tree drops half its leaves. Provide the entry function `cultivate(seasons)` that processes a sequence of seasonal actions and weather events, returning the final branch count and leaf density.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d076",
+  "title": "Air Purifier Monitor",
+  "spec": "Model an air purifier that maintains its fan speed, filter health, and air quality index. The initial fan speed is one, filter health is one hundred, and air quality is zero. Provide methods to handle three actions. A detect action takes a new air quality index; if it is under twenty, the fan speed becomes one; if between twenty and fifty inclusive, it becomes two; and if strictly over fifty, it becomes three. A run action takes a number of hours and decreases the filter health by the fan speed multiplied by the hours, stopping at a minimum of zero. A replace action takes no arguments and resets the filter health to one hundred. The entry function `simulate(actions)` takes a list of tuples, each containing an action string and an integer value, creates the purifier, applies each action in order, and returns a tuple of the final filter health and fan speed. Example: passing a list with detect sixty and run five yields eighty-five and three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d077",
+  "title": "Bicycle Gear Transmission",
+  "spec": "Model a bicycle transmission that tracks a front gear and a rear gear. Both gears start at one. The front gear has a maximum of three, and the rear gear has a maximum of seven. Provide methods for shifting and pedaling. Shifting up or down on the front or rear gear changes its value by one, but neither gear can go below one or above its maximum. A pedal action takes no value but calculates the distance traveled in that moment, which is the front gear multiplied by three, plus the rear gear. The entry function `pedal(actions)` takes a list of action strings, creates the transmission, and processes each action. Valid strings are up front, down front, up rear, down rear, and pedal. It accumulates the total distance traveled across all pedal actions. Return a tuple of the total distance traveled and another tuple containing the final front and rear gears.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d078",
+  "title": "Microscope Stage Controller",
+  "spec": "Model a microscope stage that tracks its horizontal position, vertical position, magnification, and focus level. The horizontal and vertical positions start at zero, magnification starts at ten, and focus starts at zero. Provide methods for moving, magnifying, and focusing. Moving takes a direction string of either horizontal or vertical and an integer amount, adding the amount to the respective position. Every time a position changes, the focus level drops by the absolute value of the movement amount. Magnifying sets the magnification to a given integer, which cannot go below one. Focusing sets the focus level directly to a given integer. The entry function `examine(movements)` takes a list of tuples containing an action string and a value. It instantiates the stage, applies the movements in sequence, and returns a tuple of the final horizontal, vertical, magnification, and focus values.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d079",
+  "title": "Cash Register Drawer",
+  "spec": "Model a cash register drawer that tracks a cash balance starting at fifty and a sales count starting at zero. Provide methods for sales, refunds, and deposits. A sale method takes an amount, adds it to the cash balance, and increases the sales count by one. A refund method takes an amount, subtracts it from the cash balance, and decreases the sales count by one; however, if the refund would drop the cash balance below zero, the transaction is rejected entirely and nothing changes. A deposit method adds an amount to the cash balance without altering the sales count. The entry function `transact(operations)` takes a list of tuples, each with an operation string and an integer amount, processes them using the drawer model, and returns a tuple of the final cash balance and sales count. Example: a sale of twenty followed by a refund of eighty leaves the balance at seventy and count at one, because the refund is rejected.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d080",
+  "title": "Guitar Amplifier Stack",
+  "spec": "Model a guitar amplifier that tracks settings for volume, treble, and bass, all initialized to five, along with an overdrive boolean starting as false and a wear counter starting at zero. Provide methods to adjust these settings. Methods for volume, treble, and bass take a target value and set the respective attribute, keeping it bounded strictly between zero and ten inclusive. An overdrive method takes an integer, setting the overdrive state to true if the integer is one, and false otherwise. Every time any of these four adjustment methods is called, the wear counter increases by one. The entry function `play(adjustments)` takes a list of tuples with a control string and a target integer. It creates the amplifier, applies each adjustment by calling the appropriate method, and returns a tuple containing the final volume, treble, bass, overdrive state, and wear counter.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d081",
+  "title": "Power Loom Mechanism",
+  "spec": "Model a power loom that tracks a thread count initialized to one thousand, a pattern index starting at zero, and a woven cloth length starting at zero. Provide methods to manage the loom. A thread method takes an amount and adds it to the thread count. A pattern method sets the pattern index to the provided value. A weave method takes a number of rows; for each row, it attempts to consume an amount of thread equal to the pattern index plus one. If enough thread is available, it decreases the thread count and increases the cloth length by one. If there is not enough thread, weaving stops immediately for that specific command. The entry function `weave(actions)` receives a list of tuples containing a command string and an integer, runs them through the loom, and returns a tuple of the final cloth length and remaining thread count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d082",
+  "title": "Bookbinding Press Machine",
+  "spec": "Model a book press that tracks applied pressure starting at fifty, glue temperature starting at one hundred, and a total of books bound starting at zero. Provide methods to adjust settings and press books. A pressure method and a temperature method each simply set their respective attribute to the provided integer. A press method takes a batch size integer; a binding is only successful if the current pressure is strictly above forty and the temperature is strictly above ninety. If successful, the total books bound increases by the batch size, and the pressure drops by the batch size as the machine loosens. If conditions are not met, nothing changes. The entry function `bind(batches)` receives a list of tuples with a command string and an integer value, processes them sequentially, and returns a tuple of the final books bound and the final pressure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d083",
+  "title": "Street Sweeper Truck",
+  "spec": "Model a street sweeper that tracks a water tank level starting at one hundred, a brush speed starting at zero, and a debris collected total starting at zero. Provide methods to fill, adjust speed, and drive. A fill method adds a given amount to the water tank. A speed method sets the brush speed. A drive method takes a distance integer; for each unit of distance, it normally collects debris equal to the brush speed and consumes two units of water. If the water tank reaches zero, driving continues to collect debris but at half the rate using integer division, and water stays at zero. The entry function `sweep(routes)` processes a list of tuples containing an action string and an integer, driving or adjusting the sweeper accordingly, and returns a tuple of the total debris collected and the remaining water tank level.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d084",
+  "title": "Solar Panel Array Manager",
+  "spec": "Model a solar panel array that maintains its tilt angle starting at zero, a dirt level starting at zero, and total generated energy starting at zero. Provide methods to tilt, gather dust, generate power, and clean. The tilt method changes the angle by a given amount, keeping it clamped between minus ninety and ninety. The dust method increases the dirt level by a given amount. The sun method takes a light intensity. If the absolute angle is exactly zero, energy increases by the intensity. If the absolute angle is between one and forty-five inclusive, energy increases by half the intensity using integer division. If the absolute angle is strictly greater than forty-five, energy increases by a quarter of the intensity using integer division. In all cases, subtract the dirt level from the initial calculated increase, and if the final result is negative, add zero to the total energy instead. The clean method resets the dirt level to zero. The entry function `generate(events)` takes a list of tuples with an action string and an integer, applies them, and returns the total generated energy.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d085",
+  "title": "Pinball Arcade Bumper",
+  "spec": "Model a bumper in a pinball machine that tracks a score multiplier starting at one, an active state starting as false, and a total accumulated score starting at zero. Provide methods to change state and register hits. An activate method sets the active state to true, and a deactivate method sets it to false. An upgrade method adds one to the multiplier. A hit method registers a collision; if the bumper is active, it adds ten times the multiplier to the total score. If the bumper is not active, a hit only adds one to the total score. The entry function `bounce(hits)` takes a list of command strings, instantiates the bumper, processes each command in order, and returns the final total score. Example: a sequence of hit, activate, upgrade, and hit yields an initial one point, then twenty points, for a total of twenty-one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d086",
+  "title": "Electric Scooter Rental",
+  "spec": "Model an electric scooter that tracks its battery charge starting at one hundred, a locked state starting as true, and total distance traveled starting at zero. Provide methods to unlock, lock, charge, and drive. The unlock method takes a pin code; if the code is exactly one two three four, the scooter becomes unlocked. The lock method sets the locked state to true. The charge method adds a given amount to the battery, capping the maximum battery at one hundred. The drive method takes a requested distance. If the scooter is unlocked, it travels up to the requested distance or until the battery runs out, whichever comes first. Each unit of distance traveled consumes one unit of battery. Total distance increases by the actual distance traveled. The entry function `ride(actions)` takes a list of tuples with an action string and an integer value, executes them on the scooter, and returns a tuple of the final distance traveled and battery charge.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d087",
+  "title": "Digital Voting Machine",
+  "spec": "Model a voting machine that tracks a paper roll length starting at one thousand and a total vote count starting at zero. It also tracks specific votes for a yes option and a no option, both starting at zero. Provide methods to cast yes, cast no, void a ballot, and replace the paper. A yes vote adds one to both the yes count and total count, and decreases paper length by ten. A no vote adds one to the no count and total count, and decreases paper length by ten. A void action just decreases paper length by ten without counting any votes. A replace action resets the paper length to one thousand. If the paper length is strictly less than ten, attempts to vote or void do nothing at all. The entry function `vote(ballots)` takes a list of action strings, processes them, and returns a tuple of the yes count, no count, and remaining paper length.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d088",
+  "title": "Professional Fireworks Launcher",
+  "spec": "Model a fireworks launcher that tracks a safety lock starting as true, a fuse delay starting at five, and a total count of launched fireworks starting at zero. Provide methods to manipulate the launcher. An unlock method sets the safety lock to false, while a lock method sets it to true. A delay method sets the fuse delay to a provided integer. A fire method takes a quantity integer; if the safety is false, it increases the launched count by the quantity and returns a list containing the string boom repeated exactly quantity times. If the safety is true, it returns an empty list. The entry function `launch(sequence)` takes a list of tuples with an action string and an integer, applies them to the launcher, and accumulates all returned boom strings into a single master list. It returns a tuple of the total launched count and this master list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d089",
+  "title": "Mechanical Cuckoo Clock",
+  "spec": "Model a mechanical cuckoo clock that tracks total minutes passed starting at zero, a bird visible state starting as false, and a total chime count starting at zero. Provide methods to advance time and reset the bird. The chime count is always considered to be the total minutes passed divided by sixty, using integer division. An advance method takes an integer of minutes and adds it to the total minutes passed. Whenever an advance causes the calculated chime count to be strictly higher than it was immediately before the advance, the bird visible state becomes true and the chime count updates to the new calculated value. A reset method takes no arguments and pushes the bird back inside, setting the visible state to false. The entry function `tick(events)` takes a list of integers representing minutes passed, with a special case where a negative one means the user activates the reset method instead of advancing time. It applies these events and returns a tuple of the final chime count and bird visible state.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d090",
+  "title": "Archery Range Target Track",
+  "spec": "Model an archery target track that maintains a target distance starting at ten, a bullseye count starting at zero, and a total arrows shot count starting at zero. Provide methods to move the target, register a shot, and reset scores. The move method sets the target distance to a given value, strictly bounded to remain between five and fifty inclusive. The shoot method takes an accuracy score from zero to one hundred; it always increases the total arrows count by one. If the accuracy score is strictly greater than the current distance plus fifty, the shot is a bullseye and the bullseye count increases by one. The reset method changes both the bullseye count and total arrows count back to zero. The entry function `shoot(arrows)` processes a list of tuples containing an action string and an integer, applies the actions, and returns a tuple of the final bullseye count and total arrows shot.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d091",
+  "title": "Swimming Pool Diving Board",
+  "spec": "Model a diving board that tracks a fulcrum position starting at zero, a bounce count starting at zero, and a broken state starting as false. Provide methods to adjust the fulcrum and perform a jump. The adjust method changes the fulcrum position by adding a given value, but the overall position is clamped to remain between zero and ten inclusive. The jump method takes a diver weight integer. If the weight multiplied by the fulcrum position is strictly greater than five hundred, the board's broken state becomes true. If the board does not break, the bounce count increases by one. If the board is already broken, calling adjust or jump has no effect whatsoever. The entry function `dive(jumps)` receives a list of tuples with an action string and an integer value, executes the sequence, and returns a tuple of the final bounce count and the broken state boolean.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d092",
+  "title": "Helicopter Rotor Assembly",
+  "spec": "Model a helicopter rotor system that tracks blade pitch starting at zero, rotational speed starting at zero, and an engine temperature starting at fifty. Provide methods to adjust pitch, apply throttle, and run over time. The pitch method sets the blade pitch, constrained to be between zero and ten inclusive. The throttle method adds a given value to the speed, capping the maximum speed at one hundred. The run method takes a time integer in minutes; the engine temperature increases by the product of speed, pitch, and time, divided by one hundred using integer division. If the temperature ever exceeds one hundred, the speed immediately drops to zero due to an automatic safety shutoff. The entry function `fly(inputs)` takes a list of tuples with an action string and an integer, processes them in order, and returns a tuple of the final speed and temperature.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d093",
+  "title": "Soft Serve Ice Cream Machine",
+  "spec": "Model an ice cream machine that tracks a mix level starting at one hundred, a freezing cylinder temperature starting at twenty, and a total servings count starting at zero. Provide methods to cool, refill, and serve. The cool method takes a number of minutes and decreases the temperature by twice that amount of minutes, stopping at a hard minimum temperature of negative ten. The refill method adds a given amount to the mix level. The serve method takes a portion size integer; if the temperature is strictly below zero and the mix level is greater than or equal to the portion size, the mix level decreases by the portion size and the total servings count increases by one. If these conditions are not met, the serve attempt fails and nothing changes. The entry function `dispense(orders)` takes a list of tuples with an action string and an integer, applies them, and returns a tuple of the total servings count and remaining mix level.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d094",
+  "title": "Hot Air Balloon Navigator",
+  "spec": "Model a hot air balloon that tracks burner fuel starting at fifty, altitude starting at zero, and horizontal distance starting at zero. Provide methods to burn fuel, cool the envelope, and drift. The burn method takes an amount; it consumes that much fuel and increases altitude by the consumed amount multiplied by ten. If the requested amount is greater than the available fuel, it only burns what is left. The cool method takes a value and decreases altitude by that value, preventing the altitude from ever dropping below zero. The drift method takes a wind speed; it increases the horizontal distance by the wind speed multiplied by the altitude, divided by one hundred using integer division. The entry function `navigate(commands)` takes a list of tuples containing an action string and an integer, runs the balloon model, and returns a tuple of the final altitude and horizontal distance.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d095",
+  "title": "Heavy Duty Plumbing Valve",
+  "spec": "Model a heavy duty plumbing valve that tracks internal pressure starting at fifty, an open state starting as false, and total water volume passed starting at zero. Provide methods to toggle, pressurize, and run water. The toggle method flips the open state to its logical opposite. The pressurize method adds a given value to the internal pressure, capping it at a strict maximum of one hundred. The run method takes a duration in seconds; if the valve is currently open, the total volume passed increases by the duration multiplied by the current pressure. Regardless of the open state, running the system causes the internal pressure to drop by the duration, down to a minimum pressure of zero. The entry function `flow(commands)` processes a list of tuples with an action string and an integer, manipulating the valve accordingly, and returns the total water volume passed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d096",
+  "title": "Debate Tournament Timer",
+  "spec": "Model a debate timer that tracks a current speaker integer starting at one, a time total for speaker one starting at zero, and a time total for speaker two starting at zero. It also tracks a penalty flag starting as false. Provide methods to switch speakers and record speaking time. A switch method simply changes the current speaker from one to two, or from two to one. A speak method takes a duration integer and adds it to the time total of whichever speaker is currently active. If either speaker's time total is strictly greater than one hundred at the end of a speak action, the penalty flag is set to true. The entry function `debate(turns)` takes a list of tuples with an action string and an integer. For switch actions, the integer is ignored. It processes the turns sequentially and returns a tuple containing speaker one's time, speaker two's time, and the penalty flag boolean.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d097",
+  "title": "Radio Transmission Tower",
+  "spec": "Model a radio broadcasting tower that maintains a frequency starting at ninety, a transmission volume starting at five, and a total listeners count starting at zero. Provide methods to tune, adjust volume, and transmit. The tune method changes the frequency by adding a given value; while the frequency is strictly below eighty, repeatedly add thirty to it, and while it is strictly above one hundred ten, repeatedly subtract thirty from it. The adjust method changes the volume by a given value, keeping it bounded strictly between zero and ten inclusive. The transmit method takes an estimated audience size; it increases the listeners count by the audience size multiplied by the volume. If the frequency is exactly one hundred, the transmission is perfectly clear and adds an extra fifty listeners. The entry function `broadcast(signals)` processes a list of tuples with an action string and an integer, and returns the final listeners count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d098",
+  "title": "Construction Cement Mixer",
+  "spec": "Model a cement mixer that tracks a drum rotation speed starting at zero, a wetness level starting at zero, and a readiness state starting as false. Provide methods to add water, spin the drum, and tumble the mixture. The water method adds a given amount to the wetness level. The spin method directly sets the rotation speed to a given integer. The tumble method simulates time passing; if the rotation speed is strictly greater than ten and the wetness level is between forty and sixty inclusive, the readiness state becomes true. If the wetness is outside that specific range, tumbling ruins the mix and readiness becomes false. If the speed is ten or lower, readiness does not change at all. The entry function `mix(stages)` takes a list of tuples with an action string and an integer, processes the stages, and returns the final readiness boolean.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d099",
+  "title": "Mechanical Camera Lens",
+  "spec": "Model a mechanical camera lens that tracks a focal length starting at fifty, an aperture size starting at four, and a count of successful exposures starting at zero. Provide methods to zoom, adjust aperture, and snap a picture. The zoom method adds a given value to the focal length, enforcing a minimum length of twenty and a maximum of two hundred. The aperture method directly sets the aperture size, enforcing a minimum of one and a maximum of twenty-two. The snap method takes an available light level integer; if the light level divided by the aperture size using integer division is strictly greater than ten, it results in a good exposure and the exposure count increases by one. Otherwise, the shot fails and the count is completely unchanged. The entry function `photograph(settings)` takes a list of tuples with an action string and an integer, applies them to the lens, and returns the exposure count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d100",
+  "title": "Artisan Glassblower Pipe",
+  "spec": "Model a glassblowing pipe that tracks glass temperature starting at one thousand, air volume starting at zero, and shape stability starting at true. Provide methods to heat, blow air, and shape. The heat method increases the temperature by a given amount. The blow method adds a given amount to the air volume. The shape method simulates time spent manipulating the glass, taking a duration integer; the temperature drops by the duration multiplied by ten. If an attempt to shape happens when the temperature is strictly below eight hundred, the glass cracks and the shape stability becomes false. If the air volume ever strictly exceeds fifty during a blow action, the glass bursts and shape stability also becomes false. The entry function `blow(actions)` takes a list of tuples with an action string and an integer, processes them, and returns a tuple of the final air volume, temperature, and stability boolean.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d101",
+  "title": "Planetary Surface Rover",
+  "spec": "Write a system to track a planetary rover. The rover starts at origin zero zero facing north, with a battery level of one hundred and an empty sample manifest. It has actions to move forward by a given distance, turn ninety degrees left or right, gather a soil sample of a specific weight, and recharge. Moving consumes one battery unit per distance unit, while gathering a sample consumes five battery units and adds the weight to the total collected. If the battery is insufficient for an action, the rover does nothing for that step. The main entry point `navigate(commands)` receives a list of tuples containing an action string and an integer value, processes them in sequence, and returns a tuple of final horizontal position, vertical position, and total sample weight. Example input: move ten, gather three, turn one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d102",
+  "title": "Text Editor Buffer",
+  "spec": "Simulate a simple line based text buffer. The buffer maintains a list of strings and a current cursor line index starting at zero. Operations include inserting a new line at the cursor, deleting the current line, moving the cursor up or down by a specific number of lines, and replacing the current line text. If moving the cursor exceeds the buffer boundaries, it clamps to the top or bottom, and inserting pushes the current and subsequent lines down. Deleting the only remaining line leaves a single empty string. The entry point `edit(operations)` takes a list of instruction tuples consisting of an operation name and a string or integer argument, applies them to a new buffer, and returns the final text as a single string joined by newlines. Example input: insert hello, insert world, move up one, delete.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d103",
+  "title": "Emergency Triage Queue",
+  "spec": "Model a hospital emergency room queue. The queue manages patients waiting for care, categorized by severity from one to five, where one is most critical. Patients arrive with a severity and an estimated treatment duration, or the system can advance time by a given number of minutes, reducing the remaining treatment time of the currently seen patient. If the current patient finishes, the system immediately admits the waiting patient with the highest severity, breaking ties by the longest waiting time. The main function `triage(arrivals)` accepts a list of events which are either patient arrivals represented by severity and duration, or time advancements in minutes. It returns the number of patients still waiting and the severity of the currently treated patient, or zero if no patient is being treated.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d104",
+  "title": "Cloud Load Balancer",
+  "spec": "Create a cloud server load balancer manager. The system maintains three servers, each starting with zero active connections and a maximum capacity of ten. When a new request arrives, it is routed to the server with the lowest current connections, breaking ties by picking the server with the lowest numerical identifier. If all servers are at maximum capacity, the request is dropped and counted as a failure. The system can also receive completion signals for a specific server, decreasing its active connection count by one down to a minimum of zero. The entry function `distribute(requests)` processes a list of strings, where each string is either a new request or a completion signal for a specific server identifier. It returns a tuple containing the dropped request count and a list of active connections for servers zero, one, and two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d105",
+  "title": "Airline Flight Roster",
+  "spec": "Implement a flight passenger manager. The flight has a maximum capacity of fifty economy seats and ten first class seats. Passengers can book an economy seat, book a first class seat, or cancel their booking, but if a class is full, the booking fails. The system must also support upgrading an existing economy passenger to first class, which succeeds only if first class has available seats and the passenger holds an economy ticket. The flight keeps track of total revenue, where economy costs two hundred, first class costs five hundred, upgrades add three hundred, and cancellations refund the full amount. The entry function `book(transactions)` processes a list of tuples containing an action name, passenger name, and ticket type. It returns the final revenue and the number of available economy seats.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d106",
+  "title": "Postal Center Sorter",
+  "spec": "Simulate a postal sorting center. The center has three regional bins: east for zip codes starting with zero to three, central for four to six, and west for seven to nine, and tracks the total weight of parcels in each. Each parcel has a destination zip code and a weight, and there is a processing limit of fifty total weight units per day. If adding a parcel exceeds the daily weight limit across all bins, it is held back in a backlog queue. A new day action resets the daily weight accumulator and processes as many backlog parcels as possible before taking new ones. The entry function `process(parcels)` takes a list of parcel tuples with zip code and weight, interspersed with new day signals. It returns a tuple of the three bin weights and the number of parcels left in the backlog.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d107",
+  "title": "RPG Character Inventory",
+  "spec": "Design a character inventory system. The inventory has a maximum of twenty slots and tracks the current gold pieces. Items can be added to take up one slot each, and if the inventory is full, new items are discarded. Items can be sold, which removes them from the slots and adds their value to the gold total, or dropped, which removes them without gaining gold. A player can equip one weapon and one armor piece from their inventory, freeing up the slots they occupied, and if an item is already equipped in that slot, it is returned to the inventory. The entry function `manage(actions)` receives a sequence of action tuples indicating the action, item type, and value. It returns the final gold amount and the number of filled inventory slots.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d108",
+  "title": "Hydroelectric Dam Control",
+  "spec": "Model a hydroelectric dam system. The dam tracks its reservoir water level in meters starting at fifty, total generated power in megawatts starting at zero, and whether the spillway gates are open or closed. Rain events add a specific amount to the water level. Every hour, if the water level is above forty, the turbines run, consuming two meters of water and generating ten megawatts. If the level exceeds eighty, the spillway gates automatically open to prevent overflow, releasing five meters of water per hour without generating power, and they close automatically when the level drops below sixty. The main function `operate(events)` accepts a list of integers representing rain amounts per hour. It returns the final water level, the total power generated, and a boolean indicating if the gates are open.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d109",
+  "title": "Podcast Application Player",
+  "spec": "Create a podcast player manager. The player maintains a playlist of episode strings and tracks the current episode index and playback timestamp in seconds. Playback commands advance the timestamp by a given number of seconds, and if the timestamp reaches or exceeds three thousand seconds, the current episode ends, the timestamp resets to zero, and the player advances to the next episode. The user can also skip to the next episode manually or jump backwards by fifteen seconds, which clamps the timestamp to zero. The entry function `listen(commands)` processes a list of tuples containing a command string and an optional integer argument. It returns the name of the currently playing episode and the current timestamp, or a string saying finished if the playlist is exhausted.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d110",
+  "title": "Ferris Wheel Operator",
+  "spec": "Simulate a Ferris wheel with eight gondolas indexed zero to seven. Each gondola holds up to four people, and the wheel tracks its current bottom position, initially gondola zero. Actions include loading a specific number of people into the bottom gondola, rejecting any excess people beyond the capacity of four, and rotating the wheel by one position to advance the bottom gondola index. A complete revolution tracking variable increments every time gondola zero returns to the bottom. Unloading removes all people from the current bottom gondola and adds them to a total served counter. The entry function `run(actions)` takes a list of actions and returns the total served people and the number of complete revolutions.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d111",
+  "title": "Vehicle Dashboard",
+  "spec": "Model a vehicle dashboard. The vehicle tracks its current speed in kilometers per hour, total distance traveled, and fuel level in liters starting at fifty. When the engine is turned on, the driver can accelerate to increase speed by ten, or brake to decrease speed by ten down to zero, with each acceleration consuming one liter of fuel. If fuel reaches zero, the engine turns off and speed drops to zero. A cruise command maintains the current speed and adds the speed value to the total distance, consuming fuel equal to the speed divided by ten. The main function `drive(inputs)` takes a list of command strings like start, stop, accelerate, brake, or cruise. It returns the total distance traveled and the remaining fuel level.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d112",
+  "title": "Ride Sharing Dispatcher",
+  "spec": "Implement a ride sharing dispatcher. The system tracks three drivers, each with a current location on a one dimensional road starting at zero, ten, and twenty respectively, and tracks their total earned fares. When a passenger requests a ride from a start coordinate to a destination coordinate, the system assigns the driver who is currently closest to the start coordinate, breaking ties in favor of the driver with the lower identifier. The chosen driver moves to the start coordinate, then to the destination, and earns a fare equal to the distance between start and destination. The entry function `dispatch(requests)` processes a list of passenger request tuples containing start and destination coordinates. It returns a list of the final coordinates of all three drivers and a list of their total earned fares.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d113",
+  "title": "Subscription Biller",
+  "spec": "Simulate a subscription billing system. A user account has a tier of basic or premium, a status of active or paused, and a balance of outstanding charges starting at zero. Basic costs ten per month and premium costs twenty, and each month, if the account is active, the tier cost is added to the balance. The user can upgrade to premium, downgrade to basic, pause the account, resume the account, or make a payment of a specific amount to reduce the balance. If the balance ever exceeds fifty after monthly charges, the account is automatically paused due to non payment. The entry function `bill(months)` receives a list of monthly event lists, where each event list contains actions taken before the monthly billing runs. It returns the final balance and the final status of the account.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d114",
+  "title": "Radar Tracking Array",
+  "spec": "Design a radar tracking system. The system maintains a collection of tracked airborne objects, each identified by a unique integer, along with their current altitude and distance from the radar. When a scan detects an object, if it is new, it is added to the tracker, and if it already exists, its altitude and distance are updated. The threat level is calculated as altitude divided by distance, and if this exceeds ten, the system issues an alert by incrementing a global alert counter. Objects that are not detected for three consecutive scans are considered lost and removed from the tracker. The entry function `scan(signals)` processes a list of scans, where each scan is a list of detected object tuples with identifier, altitude, and distance. It returns the total number of alerts issued and the number of currently tracked objects.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d115",
+  "title": "Digital Asset Wallet",
+  "spec": "Create a digital asset wallet simulator. The wallet holds a primary coin balance and a collection of secondary tokens, and every transaction requires a network fee of one primary coin. The user can receive primary coins or tokens without paying a fee, but sending tokens deducts the token amount and the primary coin fee. Swapping tokens exchanges a given amount of one token for another at a one to one ratio, consuming the fee. If the primary balance is too low to cover the fee, or if a transaction attempts to send or swap more tokens than available, the transaction fails entirely. The main function `transact(operations)` accepts an initial primary coin balance and a list of operation tuples containing action, asset name, amount, and an optional second asset. It returns the final primary coin balance and the final balance of a token named star.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d116",
+  "title": "Cash Dispenser Machine",
+  "spec": "Model a cash machine that holds a physical inventory of twenty, fifty, and hundred denomination bills, initially stocked with ten of each. A user inserts a card with a known account balance and can request a withdrawal of a specific amount. The machine attempts to dispense the amount using the largest bills possible, and if the machine lacks the exact bills to make the requested amount or the user balance is insufficient, the withdrawal is rejected. If successful, the user balance and the machine inventory are updated accordingly. The user can also deposit bills, increasing their balance and the machine inventory. The entry function `dispense(transactions)` takes an initial user balance and a list of action tuples containing the action type and an amount or list of deposited bills. It returns the final user balance and the total count of bills remaining in the machine.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d117",
+  "title": "Factory Sorting Conveyor",
+  "spec": "Implement a factory sorting mechanism. A conveyor belt moves items, each having a weight and a color, past three robotic arms: one for red items, one for blue items, and a heavy lifter. The heavy lifter intercepts any item weighing more than fifty units regardless of color and places it in a bulk bin, otherwise the red arm picks red items and the blue arm picks blue items. Any other colors or items that the arms miss fall off the end into a reject bin. The red and blue arms require a cool down of one step after picking an item, meaning they cannot pick an item on the very next conveyor step. The main function `sort(items)` processes a list of item tuples containing color and weight. It returns the count of items in the bulk bin, red bin, blue bin, and reject bin.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d118",
+  "title": "Playing Card Deck",
+  "spec": "Simulate a simple card drawing game. The deck contains integers from one to fifty in order, and a hand holds up to five cards. The player can draw a card from the top of the deck to their hand, and if the hand is full, the drawn card is immediately placed in a discard pile. The player can also play the highest card from their hand, adding its value to their score and moving it to the discard pile. If the deck runs out, a shuffle action takes all cards from the discard pile, reverses their order, and makes them the new deck. The entry function `play(moves)` accepts a list of player moves as strings like draw, play, or shuffle. It returns the player score and the number of cards remaining in the deck.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d119",
+  "title": "Deep Space Probe",
+  "spec": "Write a controller for a deep space probe operating on a two dimensional grid. The probe starts at coordinates zero zero facing east and has a solar panel that collects one energy unit every time it moves. Moving forward one space consumes two energy units, turning left or right consumes one energy unit, and performing a scan of its current sector consumes five energy units while adding the sector coordinates to a discovered list. If energy drops to zero, the probe enters sleep mode and ignores all commands until it receives a special wait command, which restores ten energy. The probe starts with twenty energy. The entry function `explore(commands)` takes a list of command strings. It returns the final energy level and the number of sectors scanned.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d120",
+  "title": "Railway Switch Yard",
+  "spec": "Model a railway switching yard. The yard has a main incoming track and three holding tracks numbered one, two, and three. Trains arrive on the main track with a destination code and a car count, and the switch operator routes the train to a holding track. Track one holds up to twenty cars, track two holds thirty, and track three holds ten. If a routed train exceeds the remaining car capacity of the chosen track, it is instead sent to a bypass track. The yard can also dispatch a train from a holding track, completely emptying that track and freeing its capacity. The entry function `route(instructions)` processes a list of instructions, which are either arrivals with destination, car count, and target track, or dispatches with the track number. It returns the total number of cars sent to the bypass track and the remaining capacity of track two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d121",
+  "title": "Freight Delivery Truck",
+  "spec": "Simulate a freight delivery truck. The truck has a cargo capacity of five thousand kilograms and a fuel tank of one hundred gallons, starting fully fueled at the depot. The truck loads packages with destinations and weights, and if loading a package exceeds the weight capacity, it is left at the depot. The truck travels to destinations, consuming one gallon of fuel per mile. Upon reaching a destination, all packages for that destination are unloaded, freeing up weight capacity. If the truck lacks enough fuel to reach the next destination, it stops and calls for a tow. The entry function `deliver(manifest)` receives a list of loading actions containing destination and weight, and travel actions containing destination and distance in miles. It returns the total weight of unloaded packages and the remaining fuel.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d122",
+  "title": "Museum Tour Group",
+  "spec": "Create a system to manage a museum tour group. The tour guide starts with a group of zero visitors in the lobby, and visitors can join or leave the group at any time. The guide moves the group through various rooms: the lobby, the ancient history hall, the art gallery, and the science wing. The ancient history hall allows twenty people, the art gallery allows fifteen, and the science wing allows thirty. If the guide tries to move the group into a room and the group size exceeds the room occupancy, they must wait in the current room until enough visitors leave. The tour earns a tip of one dollar per person every time they successfully enter a new room. The main function `tour(events)` accepts a list of events like join count, leave count, or move to room. It returns the total tips earned and the final room the group is in.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d123",
+  "title": "Mountain Cable Car",
+  "spec": "Design a mountain cable car system. There are two stations called base and summit, and the cable car holds up to forty passengers, starting at the base station. Passengers arrive at either station and join a waiting queue. When the cable car departs, it boards as many waiting passengers as possible up to its capacity from its current station, and travels to the other station. Upon arrival, all boarded passengers exit, completing a trip that takes fifteen minutes. The system tracks the current time in minutes, starting at zero. The entry function `transport(schedule)` processes a list of events which are either passenger arrivals at a specific station with a number of people, or dispatch commands. It returns the total number of passengers transported and the number of people left waiting at the base station queue.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d124",
+  "title": "Strategy Board Game",
+  "spec": "Implement the logic for a simplified strategy board game. Two players, black and white, start with ten pieces each, and the board has five zones. Each turn, a player can deploy pieces to a zone or attack an opponent in a zone. Deploying adds pieces from the player reserve to the zone. Attacking compares the number of pieces the attacker and defender have in the zone; if the attacker has more pieces, the defender loses all pieces in that zone and the attacker loses half of their attacking pieces, rounded down. If the defender has equal or more pieces, the attack fails and the attacker loses all pieces in the zone. The entry function `battle(turns)` takes a list of turn tuples containing player color, action, zone, and amount. It returns the final total number of surviving pieces on the board for black and for white.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d125",
+  "title": "Predator Prey Grid",
+  "spec": "Model a simple predator and prey ecosystem on a one dimensional grid of ten cells. Cells can be empty, or hold a plant, a herbivore, or a carnivore. Plants grow in empty cells automatically every three cycles. Herbivores eat plants, gaining one energy point, and move to an adjacent cell if possible. Carnivores eat herbivores, gaining two energy points, and move. If an animal goes three cycles without eating, it dies and its cell becomes empty, and animals cannot move beyond the boundaries of the grid. The main function `simulate(cycles)` initializes a specific grid state and processes a number of simulated time cycles. Given a list of initial placements containing index and entity type, it runs the cycles and returns a count of surviving herbivores and carnivores.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d126",
+  "title": "Gymnasium Access Control",
+  "spec": "A class manages a member's facility access, maintaining their current membership status, remaining guest passes, and outstanding balance. A method processes a facility check in, denying entry if the balance exceeds fifty dollars or if the status is inactive, otherwise recording a successful visit. Another method adds a charge to the balance for purchasing drinks or towels. A third method handles guest admissions, deducting from the remaining guest passes if available or adding a twenty dollar fee to the balance if none remain. The entry function `process(actions)` processes a list of action tuples containing the action type and an optional value, and returns a tuple of the final balance, remaining passes, and total successful visits. For example, processing a check in, a charge of ten, and a guest admission returns a balance of ten, four guest passes, and one visit.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d127",
+  "title": "Commercial Washing Machine",
+  "spec": "A class controls a heavy duty laundromat washer by tracking the door lock status, current water temperature, remaining detergent ounces, and drum rotation speed. A method handles adding detergent, increasing the supply up to a maximum of thirty ounces. A second method sets the cycle mode, locking the door, setting the water temperature to cold, warm, or hot based on the fabric requirement, and engaging the drum at a specific rotation speed. A third method advances the timer, stopping the drum and unlocking the door when finished. The entry function `wash(cycles)` receives a list of instruction tuples and executes them in sequence, returning a list of the final machine states after each step. For example, adding ten detergent and starting a warm cycle results in the state showing ten ounces, a locked door, and warm water.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d128",
+  "title": "Campsite Ledger",
+  "spec": "A class represents a wilderness campsite booking by maintaining the current occupant name, the number of nights reserved, the fire pit rental status, and the damage deposit amount. A booking method assigns the camper name, sets the nights, and clears any previous damage flags. Another method extends the stay by adding nights to the current reservation. A third method flags property damage, which nullifies the damage deposit and records an eviction notice. The entry function `manage(requests)` evaluates a list of request strings and their corresponding integer arguments, applying them to the campsite and returning a summary sentence of the current occupant, total nights, and deposit status. For example, booking for three nights and extending by two results in a summary stating the site is occupied for five nights with a full deposit.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d129",
+  "title": "Filament Extruder Head",
+  "spec": "A class models a three dimensional printer nozzle by tracking its current temperature, the loaded filament material, the nozzle position on the horizontal axis, and the amount of plastic extruded. A heating method increases the temperature to match the required melting point of the loaded material. A movement method updates the nozzle position and, if the temperature is high enough, adds to the total extruded plastic based on the distance moved. A cooling method drops the temperature back to ambient levels to prevent burning. The entry function `fabricate(commands)` accepts a list of command tuples to change material, heat, move, or cool, and returns the final temperature, position, and total extruded volume. For example, heating up and moving ten units results in a positive extrusion volume and a new position.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d130",
+  "title": "Plasma Donation Cooler",
+  "spec": "A class manages a medical storage cooler by tracking the internal temperature, the current inventory count of plasma bags, the alert buzzer status, and the door open duration. An insertion method adds to the inventory and briefly increases the internal temperature by two degrees. A monitoring method checks if the temperature exceeds negative ten degrees or if the door has been open for more than five minutes, activating the alert buzzer if true. A maintenance method resets the buzzer and rapidly cools the internal temperature back to negative twenty degrees. The entry function `refrigerate(events)` reads a sequence of event types and numeric values, applies them to the cooler, and returns the final inventory count and buzzer status. For example, adding three bags and leaving the door open for six minutes returns an inventory of three with an active alert buzzer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d131",
+  "title": "Industrial Citrus Press",
+  "spec": "A class operates a large scale fruit press by keeping track of the hydraulic pressure setting, the total gallons of juice extracted, the pulp bin capacity, and the safety guard status. A preparation method engages the safety guard and sets the pressure based on the fruit type, using high pressure for grapefruits and low for tangerines. A pressing method extracts juice, adding to the total gallons and increasing the pulp bin fill level. A cleaning method disengages the guard, resets the pressure, and empties the pulp bin. The entry function `juice(batches)` applies a sequence of batch descriptions to the press and returns the total gallons extracted and the final pulp bin level. For example, pressing a batch of grapefruits and then emptying the bin returns the juice volume and a zero pulp level.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d132",
+  "title": "Craft Beer Fermenter",
+  "spec": "A class monitors a brewery vessel by recording the current specific gravity of the liquid, the ambient cooling jacket temperature, the internal carbon dioxide pressure, and the yeast activity level. A pitching method introduces yeast, increasing the activity level and dropping the cooling jacket temperature to a baseline. A daily reading method simulates the passage of time by decreasing the specific gravity, increasing the internal pressure, and altering the yeast activity. A venting method releases excess carbon dioxide pressure once it reaches a critical safety threshold. The entry function `ferment(stages)` processes a list of daily action codes, updating the vessel state, and returns the final specific gravity and pressure readings. For example, pitching yeast followed by three daily readings results in a lower specific gravity and increased pressure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d133",
+  "title": "Passenger Ferry Ramp",
+  "spec": "A class controls a vehicle boarding ramp for a harbor ferry by maintaining the ramp elevation angle, the securing latch status, the hydraulic fluid level, and the count of loaded vehicles. A deployment method lowers the elevation angle to zero degrees and disengages the securing latch. A boarding method increments the vehicle count and slightly depletes the hydraulic fluid level as the ramp adjusts to the shifting weight. A stowage method raises the ramp back to ninety degrees and engages the securing latch for departure. The entry function `board(operations)` receives a list of operation codes to deploy, board, or stow, and returns the final vehicle count, latch status, and elevation angle. For example, deploying the ramp and boarding five vehicles returns a count of five, an open latch, and a zero degree angle.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d134",
+  "title": "Ice Resurfacing Tractor",
+  "spec": "A class simulates a skating rink maintenance vehicle by tracking the fresh water tank volume, the snow collection bin level, the cutting blade depth, and the battery charge. A calibration method sets the blade depth based on the roughness of the ice and ensures the battery has sufficient charge to begin. A driving method simulates completing a lap around the rink, which uses water to smooth the surface, fills the snow bin with shaved ice, and drains battery power. A dumping method empties the snow collection bin and refills the water tank. The entry function `resurface(laps)` evaluates a list of lap instructions and maintenance actions, returning the remaining battery charge, water volume, and snow bin level. For example, driving two laps and then dumping the snow returns a full water tank, an empty snow bin, and a depleted battery charge.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d135",
+  "title": "Open Pit Excavator",
+  "spec": "A class represents a heavy mining shovel by tracking the diesel fuel level, the current bucket payload weight, the engine operating temperature, and the total tons moved. A digging method scoops material, adding weight to the bucket and raising the engine temperature slightly. A dumping method empties the bucket into a haul truck, adding the payload to the total tons moved and consuming diesel fuel. A resting method allows the engine temperature to return to normal and refuels the diesel tank if it is critically low. The entry function `excavate(shifts)` applies a sequence of shift commands to the shovel and returns the total tons moved and the final engine temperature. For example, digging twice, dumping, and resting results in a recorded payload transfer and a normal engine temperature.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d136",
+  "title": "Overnight Train Sleeper",
+  "spec": "A class manages a luxury railway sleeper car by keeping track of the berth status, the morning tea requirement, the dining car tab, and the attendant call button. A boarding method marks the berth as occupied, flags it for morning tea, and opens a new dining car tab. A dining method adds meal costs to the dining car tab when the passenger orders food. A service method clears the tea flag and resets the attendant call button after the conductor visits. The entry function `accommodate(demands)` processes a series of passenger actions and staff visits, returning the final dining car tab and call button status. For example, boarding followed by two meals and an attendant visit results in a positive tab and a reset call button.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d137",
+  "title": "Planetarium Projector System",
+  "spec": "A class operates a star projector by maintaining the current lens focus, the light bulb intensity, the rotation speed of the star sphere, and the cooling fan status. A startup method sets the light bulb intensity to maximum, engages the cooling fan, and initializes the lens focus to a default wide angle. A transition method adjusts the rotation speed and refines the lens focus to highlight specific constellations. A shutdown method turns off the bulb, stops the rotation, and keeps the fan running for a brief cooldown period before stopping it. The entry function `project(shows)` takes a list of show commands, applies them to the projector, and returns the final lens focus, bulb intensity, and fan status. For example, starting up and transitioning to a fast rotation returns a wide focus, maximum intensity, and an active fan.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d138",
+  "title": "Laser Skirmish Vest",
+  "spec": "A class models a wearable gaming vest by tracking the player health points, the team color assignment, the remaining ammunition, and the vibration motor state. An initialization method sets the team color, provides full health points, and grants a starting supply of ammunition. A firing method decreases the remaining ammunition and triggers a brief vibration if the shot is successful. A receiving method reduces the health points when hit by an opponent and activates a sustained vibration, deactivating the vest entirely if health reaches zero. The entry function `play(hits)` reads a sequence of game events, updates the vest accordingly, and returns a tuple of the final health points and ammunition count. For example, initializing a red team vest, firing twice, and receiving one hit returns reduced health and slightly depleted ammunition.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d139",
+  "title": "Blast Furnace Blower",
+  "spec": "A class monitors an industrial metallurgy blower by recording the current airflow rate, the target core temperature, the emergency bypass status, and the total oxygen delivered. An adjustment method changes the airflow rate based on incoming temperature data, blowing harder if the core is too cold and restricting if it becomes too hot. A delivery method updates the total oxygen delivered based on the current airflow over a time interval. A safety method engages the emergency bypass and sets the airflow rate to zero if the temperature exceeds critical structural limits. The entry function `smelt(readings)` processes a list of temperature readings, adjusting the blower for each, and returns the total oxygen delivered and the emergency bypass status. For example, processing three normal readings and one critical spike results in halted airflow and an active bypass.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d140",
+  "title": "Recovery Vehicle Winch",
+  "spec": "A class operates a tow truck cable system by tracking the unspooled cable length, the attached load weight, the drum brake status, and the motor temperature. A release method disengages the drum brake and increases the unspooled cable length to reach a stranded vehicle. A hooking method secures the vehicle by updating the attached load weight and engaging the drum brake. A pulling method reels in the cable, decreasing its length while significantly raising the motor temperature based on the load weight. The entry function `tow(pulls)` accepts a sequence of winching operations, applies them to the system, and returns the final cable length and motor temperature. For example, releasing fifty units of cable, hooking a heavy load, and pulling twenty units returns a length of thirty and an elevated temperature.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d141",
+  "title": "Indoor Rowing Machine",
+  "spec": "A class simulates an exercise ergometer by maintaining the magnetic resistance level, the accumulated distance, the current stroke rate, and the estimated calories burned. A setup method configures the resistance level based on the user preference and resets the distance and calories to zero. A pulling method processes individual strokes, adding to the accumulated distance and calculating calories burned based on the resistance and stroke intensity. A pacing method adjusts the current stroke rate based on the time elapsed between recent pulls. The entry function `row(strokes)` evaluates a list of stroke intensities and time intervals, returning the total distance and calories burned. For example, completing a setup and twenty vigorous pulls results in a high calorie count and significant distance covered.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d142",
+  "title": "Casino Slot Reel",
+  "spec": "A class represents a mechanical gambling device by tracking the current jackpot pool, the displayed symbols on the payline, the internal coin hopper balance, and the payout multiplier. A wager method accepts a bet, adding it to the jackpot pool and increasing the hopper balance. A spinning method randomizes the displayed symbols and calculates a potential win based on matching items and the current multiplier. A payout method dispenses coins from the hopper if a win occurs and resets the jackpot pool if the grand prize is hit. The entry function `spin(wagers)` takes a list of betting amounts and spin outcomes, updates the machine state, and returns the final hopper balance and jackpot pool. For example, placing three wagers and hitting a minor payout returns a slightly lower hopper balance and a growing jackpot.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d143",
+  "title": "Tower Crane Boom",
+  "spec": "A class controls a construction lifting machine by tracking the hook elevation, the trolley position along the arm, the suspended payload mass, and the wind speed warning flag. A lifting method raises or lowers the hook elevation, checking that the payload mass does not exceed the safe lifting limit. A traversing method moves the trolley closer to or further from the central mast, adjusting the safe lifting limit based on the distance. A weather method updates the wind speed warning flag, halting all movement if the wind is too strong. The entry function `hoist(movements)` processes a sequence of movement directives and weather updates, returning the final hook elevation and trolley position. For example, lifting a moderate payload and traversing outwards during calm weather returns the new vertical and horizontal coordinates.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d144",
+  "title": "Bascule Bridge Mechanism",
+  "spec": "A class manages a movable river crossing by tracking the span elevation angle, the road barrier status, the marine traffic queue, and the structural lock engagement. A halting method closes the road barriers to vehicle traffic and disengages the structural locks. A raising method increases the span elevation angle to allow marine vessels to pass and decrements the marine traffic queue as boats clear the area. A lowering method returns the span to a zero degree angle, engages the structural locks, and opens the road barriers. The entry function `operate(signals)` interprets a list of traffic signals, updating the bridge state, and returns the final elevation angle and marine traffic queue size. For example, halting traffic, raising the bridge for two waiting boats, and lowering it returns a zero angle and an empty queue.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d145",
+  "title": "Wool Spinning Wheel",
+  "spec": "A class models a traditional textile tool by tracking the spindle rotation speed, the tension of the drive band, the accumulated yarn yardage, and the bobbin fill level. A pedaling method increases the spindle rotation speed and consumes raw wool to add to the yarn yardage. A tensioning method tightens or loosens the drive band, which adjusts how quickly the spun yarn is wound onto the bobbin. A winding method transfers the accumulated yarn to the bobbin, increasing its fill level and stopping the process if the bobbin becomes completely full. The entry function `weave(steps)` evaluates a sequence of pedaling, tensioning, and winding actions, returning the final yarn yardage and bobbin fill level. For example, fast pedaling with high tension quickly produces and stores yarn, resulting in a partially full bobbin.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d146",
+  "title": "Canopy Tour Braking System",
+  "spec": "A class monitors a zip line safety mechanism by recording the rider velocity, the brake pad wear percentage, the cable tension, and the arrival platform status. A launching method sets the initial rider velocity and increases the cable tension based on the weight of the person. A braking method applies friction, rapidly decreasing the rider velocity while increasing the brake pad wear percentage. A resetting method clears the arrival platform and restores the cable tension to its resting baseline. The entry function `descend(riders)` processes a list of rider weights and braking durations, applying them to the system, and returns the final brake pad wear and cable tension. For example, launching a heavy rider and applying a long brake duration results in high brake wear and a safe arrival.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d147",
+  "title": "Commercial Truck Tire Monitor",
+  "spec": "A class tracks a long haul vehicle sensor system by maintaining the current internal air pressure, the tread temperature, the total mileage driven, and the slow leak warning flag. A driving method adds to the total mileage, slightly increases the tread temperature, and simulates normal air pressure loss over long distances. A resting method allows the tread temperature to cool down to ambient levels. A diagnostic method evaluates the pressure drop over time, setting the slow leak warning flag if the loss exceeds a safety threshold. The entry function `monitor(journeys)` accepts a sequence of driving distances and resting periods, updating the tire state, and returns the final air pressure and warning flag status. For example, driving a long distance without resting triggers a temperature spike and potentially a leak warning.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d148",
+  "title": "Reverse Osmosis Purifier",
+  "spec": "A class controls a water desalination unit by tracking the intake salinity level, the membrane pressure gauge, the fresh water output volume, and the filter backwash requirement. A pumping method applies high pressure to the membrane and extracts fresh water, increasing the output volume based on the pressure applied. A sensing method updates the intake salinity level, which requires the system to adjust the membrane pressure to maintain efficiency. A flushing method performs a filter backwash, cleaning the membrane and resetting the backwash requirement flag. The entry function `purify(intervals)` processes a sequence of operation cycles and maintenance triggers, returning the total fresh water output and the final membrane pressure. For example, processing high salinity water requires higher pressure and frequent flushing to maintain fresh water output.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d149",
+  "title": "Hardware Store Paint Mixer",
+  "spec": "A class operates a custom color dispensing machine by keeping track of the white base paint volume, the levels of red, blue, and yellow colorant, and the current mixing nozzle status. A base method loads a specific volume of white paint into the mixing can. A tinting method dispenses precise fractions of the primary colorants into the can, deducting from their respective storage levels. A blending method engages the mixing nozzle to combine the ingredients, then flags the nozzle as requiring a cleaning cycle. The entry function `tint(formulas)` takes a list of color formulas, processes them sequentially, and returns the remaining colorant levels and the total cans mixed. For example, loading a base and tinting with equal parts red and blue produces a purple mix and slightly depletes the respective colorants.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d150",
+  "title": "Vintage Neon Transformer",
+  "spec": "A class manages a classic electrical sign by tracking the input voltage, the internal gas pressure, the tube temperature, and the flickering state. A powering method supplies input voltage, which excites the gas and slowly raises the tube temperature. A dimming method reduces the voltage, allowing the temperature to fall but potentially triggering the flickering state if the voltage drops too low. A fault method detects if the tube temperature exceeds a safe maximum, completely cutting the voltage to prevent shattered glass. The entry function `illuminate(patterns)` interprets a list of lighting pattern commands, applying them to the sign, and returns the final tube temperature and flickering state. For example, applying high voltage for a long duration followed by a sharp drop results in a high temperature and a flickering sign.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d151",
+  "title": "Bread Toaster Controller",
+  "spec": "The entry function is `toast(actions)`. Create a toaster object with a brownness dial starting at three, a lever state initially up, and a crumb tray holding zero grams. Create a separate heating element object that tracks its current temperature and whether it is active. When receiving a push action, the lever goes down and the heating element activates. A dial action followed by a number sets the dial to that level. A pop action deactivates the heating element, moves the lever up, and adds crumbs equal to the dial level multiplied by two. A clean action resets the crumbs to zero. Process a list of actions and return a tuple with the final lever state, the active status of the heater, and total crumbs. Example input: [\"push\", \"dial 5\", \"pop\"]. Output: (\"up\", False, 10).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d152",
+  "title": "Geothermal Heat Pump",
+  "spec": "The entry function is `regulate(readings)`. Build a pump system that manages a ground loop and an indoor fan. The ground loop maintains a fluid pressure initially at fifty and a valve status initially closed. The fan tracks its speed initially zero. For each temperature reading in the input list, if the reading is below sixty, open the ground loop valve, increase the pressure by ten, and set the fan speed to high. If the reading is above seventy, close the valve, decrease the pressure by five, and set the fan speed to medium. For readings in between, close the valve and set the fan speed to low. The ground loop pressure must never exceed eighty or drop below twenty. Return a list of tuples representing the valve status, pressure, and fan speed after each reading. Example input: [55, 75]. Output: [(\"open\", 60, \"high\"), (\"closed\", 55, \"medium\")].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d153",
+  "title": "Maple Syrup Evaporator",
+  "spec": "The entry function is `boil(steps)`. Construct an evaporator system containing a main pan and a sap reservoir. The reservoir holds an initial volume of one hundred. The main pan tracks its temperature starting at sixty and sugar concentration starting at two. Process a sequence of text steps. A heat step increases temperature by thirty and, if temperature is at or above two hundred, increases sugar concentration by ten. A fill step subtracts fifteen from the reservoir volume and decreases temperature by ten. A draw step reduces the concentration by fifty if it is above fifty. Return a tuple containing the final reservoir volume, pan temperature, and sugar concentration. Example input: [\"heat\", \"heat\", \"heat\", \"heat\", \"heat\"]. Output: (100, 210, 12).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d154",
+  "title": "Bouncy Castle Monitor",
+  "spec": "The entry function is `monitor(events)`. Manage a bouncy castle and an air blower. The castle tracks current kids starting at zero and a seam stress level starting at zero. The air blower has a power level starting at normal and an overheat flag initially false. Process a list of events. An enter event adds one to kids and increases stress by five. An exit event reduces kids by one and decreases stress by three. A bounce event increases stress by ten. After each event, update the air blower: if stress exceeds fifty, set power to high and overheat to true; if stress is between thirty and fifty, set power to medium and overheat to false; otherwise set it to normal and false. Return the final kid count, stress level, and blower power. Example input: [\"enter\", \"enter\", \"bounce\"]. Output: (2, 20, \"normal\").",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d155",
+  "title": "Cheese Cave Humidifier",
+  "spec": "The entry function is `condition(measurements)`. Create a humidifier object and a ventilation fan object to maintain a cheese cave. The humidifier starts at a water level of one hundred and is initially off. The fan starts at zero speed. Iterate through a list of humidity measurements. If a measurement is below eighty, turn the humidifier on, consume five units of water, and set fan speed to low. If a measurement is above ninety, turn the humidifier off and set the fan speed to high to dry the air. If between eighty and ninety, turn the humidifier off and set fan speed to low. If water level hits zero, the humidifier cannot turn on. Return the final water level, humidifier state, and fan speed. Example input: [70, 95, 85]. Output: (95, False, \"low\").",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d156",
+  "title": "Go Kart Track Timing",
+  "spec": "The entry function is `race(laps)`. Track the state of a go kart and its current race session. The kart tracks its fuel level starting at ten and tire wear starting at zero. The session tracks the fastest lap time initially nine hundred ninety nine and total laps completed initially zero. Process a list of lap times. For each time, increase tire wear by two and decrease fuel by one. If tire wear exceeds ten, add five seconds to the lap time. If the adjusted lap time is less than the fastest lap, update the fastest lap. If fuel reaches zero, stop processing further laps. Return a tuple of total laps completed, the fastest lap time, fuel remaining, and tire wear. Example input: [40, 38, 42]. Output: (3, 38, 7, 6).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d157",
+  "title": "Hot Tub Sanitizer",
+  "spec": "The entry function is `sanitize(actions)`. Model a hot tub with a chlorine dispenser and a filter cycle. The hot tub tracks its cleanliness initially one hundred and its water volume initially five hundred. The dispenser tracks its chemical reserve initially fifty. Process a sequence of actions. A bathe action reduces cleanliness by twenty and removes two from water volume. A shock action reduces chemical reserve by ten and increases cleanliness to one hundred. A filter action increases cleanliness by ten without using chemicals. Cleanliness cannot exceed one hundred. If chemical reserve is too low for a shock, the action is ignored. Return the final cleanliness, chemical reserve, and water volume. Example input: [\"bathe\", \"bathe\", \"shock\", \"filter\"]. Output: (100, 40, 496).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d158",
+  "title": "Forklift Hydraulic Lift",
+  "spec": "The entry function is `operate(commands)`. Simulate a forklift with a mast and a set of forks. The mast tracks its tilt angle starting at zero and a max weight limit of two thousand. The forks track their current height starting at zero and current load weight starting at zero. For a lift command with a number, increase the height by that number if it does not exceed forty. For a lower command with a number, decrease the height by that amount, not going below zero. A load command with a weight adds it to the current load only if height is zero and total weight is within the max limit. A tilt command with a number changes the tilt angle between negative five and fifteen. Return the final height, load weight, and tilt angle. Example input: [\"tilt 5\", \"load 1000\", \"lift 20\"]. Output: (20, 1000, 5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d159",
+  "title": "Paper Shredder Motor",
+  "spec": "The entry function is `shred(batches)`. Create a shredder with a motor and a bin. The motor tracks its temperature starting at seventy and its operational status starting at idle. The bin tracks its capacity initially zero and a maximum of one hundred. Process a list of page counts. For each count, if the motor temperature exceeds one hundred twenty or the bin capacity plus count exceeds one hundred, change status to error and stop processing. Otherwise, set status to running, add the count to the bin, and increase motor temperature by the count divided by two. After every batch, simulate a cooldown by dropping temperature by five, but not below seventy. Return the final motor status, temperature, and bin capacity. Example input: [20, 40]. Output: (\"running\", 90, 60).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d160",
+  "title": "Rainwater Harvesting Tank",
+  "spec": "The entry function is `collect(weather)`. Model a harvesting system comprising a collection roof and a storage tank. The roof tracks its debris level initially zero. The tank tracks its water volume initially zero and an overflow count initially zero. Process a list of weather events. A dry event increases debris level by one. A rain event with an amount washes all debris away; if debris was above three, the water is discarded. Otherwise, the amount multiplied by ten is added to the tank. If tank volume exceeds one thousand, cap it at one thousand and increment the overflow count by one. Return the final water volume, debris level, and overflow count. Example input: [\"dry\", \"dry\", \"rain 5\", \"dry\", \"rain 10\"]. Output: (150, 0, 0).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d161",
+  "title": "Skateboard Vert Ramp",
+  "spec": "The entry function is `score(tricks)`. Manage a skateboard run and a judging panel. The run tracks consecutive landed tricks initially zero and a base score initially zero. The panel tracks the highest single trick score initially zero. Process a list of trick definitions, each being a base value and a landed boolean. If the trick is landed, increase the consecutive count by one, calculate the trick score as base value plus five for each consecutive trick prior to this one, add to base score, and update the highest trick score if applicable. If not landed, reset consecutive count to zero and add zero to base score. Return the total score, highest single trick score, and final consecutive count. Example input: [[10, True], [20, True], [15, False]]. Output: (35, 25, 0).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d162",
+  "title": "Olive Oil Press",
+  "spec": "The entry function is `press(batches)`. Simulate an olive press with a grinding stone and a decanter. The stone tracks its speed initially zero and total run time initially zero. The decanter tracks collected oil ounces initially zero and is full initially false. Process a list of batch weights. For each weight, if it is less than five, ignore it. Otherwise, increase stone speed to five hundred, add the weight to total run time, and extract oil equal to weight times two. Add the extracted oil to collected ounces. After processing all batches, if collected ounces exceed one hundred, set full to true. Return the final stone speed, total run time, collected oil, and full status. Example input: [10, 3, 20]. Output: (500, 30, 60, False).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d163",
+  "title": "Soap Extrusion Press",
+  "spec": "The entry function is `extrude(commands)`. Model a soap press with a hopper and an extrusion die. The hopper holds raw soap initially fifty units. The die tracks current shape initially round and heat level initially low. Process commands. A shape command followed by a word changes the die shape. A heat command followed by a word changes the heat level. A press command followed by a number attempts to extrude that many soap bars. Each bar requires two units of raw soap. If the hopper lacks enough soap, extrude as many as possible. If heat level is low, each pressed bar takes three units of soap instead. Return the final hopper amount, total bars extruded, and final die shape. Example input: [\"heat high\", \"shape square\", \"press 10\"]. Output: (30, 10, \"square\").",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d164",
+  "title": "Bungee Jump Cord Tracker",
+  "spec": "The entry function is `jump(weights)`. Track a bungee cord and a jump log. The cord has a base elasticity initially one hundred, a wear counter initially zero, and a maximum weight limit of three hundred. The log stores total successful jumps initially zero. Iterate over a list of jumper weights. If a weight exceeds the max limit, the jump is rejected. Otherwise, process the jump: increase total jumps by one, increase wear by the weight divided by fifty, and reduce elasticity by one for every five points of wear. If elasticity drops below fifty, the cord is retired and no more jumps are processed. Return the total successful jumps, final elasticity, and final wear counter. Example input: [150, 200]. Output: (2, 99, 7).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d165",
+  "title": "Paint Drying Booth",
+  "spec": "The entry function is `dry(items)`. Create a booth with a heater and an exhaust fan. The heater tracks its temperature initially seventy. The exhaust fan tracks its speed initially zero. Process a list of items where each is a paint type and thickness. For enamel, set heater to one hundred and fan to fifty. For acrylic, set heater to eighty and fan to twenty. For each unit of thickness above ten, add two to the heater temperature and one to the fan speed. Calculate the drying time as temperature plus fan speed divided by two. Sum the drying times for all items. Return the total drying time, final heater temperature, and final fan speed. Example input: [[\"enamel\", 12], [\"acrylic\", 5]]. Output: (128, 80, 20).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d166",
+  "title": "Food Truck Griddle",
+  "spec": "The entry function is `cook(orders)`. Manage a food truck with a flat top griddle and a tip jar. The griddle tracks its temperature initially three hundred and clean status initially true. The tip jar holds money initially zero. For each order, which consists of a burger count and a complexity rating, increase griddle temperature by the burger count multiplied by five. If temperature exceeds three hundred fifty, two burgers burn and are discarded from the order. Serve the remaining burgers, adding five to the tip jar for each. If complexity rating is above five, set clean status to false. Return the final tip jar money, griddle temperature, and clean status. Example input: [[3, 4], [10, 6]]. Output: (55, 365, False).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d167",
+  "title": "Cotton Candy Spinner",
+  "spec": "The entry function is `spin(adjustments)`. Create a cotton candy system with a spinner head and a heat element. The head tracks its speed initially zero and total sugar processed initially zero. The heat element tracks its temperature initially zero. Process a list of tuples containing speed change, heat change, and duration. For each adjustment, add the speed change to the current speed, ensuring it remains between zero and fifteen. Add the heat change to the temperature, bounded between zero and twelve. Add to the total sugar processed the product of the current speed and duration. Return the final speed, final temperature, and total sugar. Example input: [[5, 2, 10], [-2, -1, 5]]. Output: (3, 1, 65).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d168",
+  "title": "Sailplane Tow Release",
+  "spec": "The entry function is `tow(phases)`. Model a glider towing mechanism comprising a tow hook and a tension sensor. The hook is initially closed. The tension sensor tracks peak tension initially zero and current tension initially zero. Process a list of phase tension changes. For each change, add it to the current tension. If current tension goes below zero, set it to zero. If current tension exceeds peak tension, update peak tension. If current tension ever exceeds five hundred, the tow hook automatically opens for safety. If a phase change is exactly nine hundred ninety nine, manually open the hook. Once the hook is open, subsequent phases are ignored and current tension drops to zero. Return the hook status as boolean where true is open, peak tension, and final current tension. Example input: [100, 50, 400, 50]. Output: (True, 550, 0).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d169",
+  "title": "Billiards Coin Mechanism",
+  "spec": "The entry function is `unlock(coins)`. Manage a pool table coin chute and a ball release trapdoor. The coin chute tracks collected quarters initially zero and requires four quarters to unlock. The trapdoor tracks its state initially closed and total game count initially zero. Process a list of inserted coin values. For each quarter value of twenty five, add one to the collected quarters. If a dime or nickel is inserted, it is rejected and ignored. When collected quarters reaches four, the trapdoor state becomes open, total game count increases by one, and collected quarters resets to zero. If a pull action is in the list, it closes the trapdoor if it was open. Return the total game count, collected quarters, and trapdoor state. Example input: [25, 10, 25, 25, 25, \"pull\", 25]. Output: (1, 1, \"closed\").",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d170",
+  "title": "Rain Gutter Cleaner",
+  "spec": "The entry function is `clean(sections)`. Simulate a gutter sweeping robot with a drive track and a cleaning brush. The drive track tracks total distance initially zero and battery level initially one hundred. The brush tracks dirt collected initially zero and is currently active. For each section length and dirt amount, if battery level is above zero, move the track by the section length, decreasing battery by the length divided by two. If the track moves, the brush collects the dirt, adding it to dirt collected and decreasing battery by dirt amount divided by five. If battery drops to or below zero, set active to false and stop. Return total distance, dirt collected, and battery level. Example input: [[10, 20], [20, 10]]. Output: (30, 30, 81).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d171",
+  "title": "Violin String Tuner",
+  "spec": "The entry function is `tune(actions)`. Model a violin pegbox and a single string. The pegbox tracks gear wear initially zero and a slip threshold initially fifty. The string tracks current pitch initially four hundred and tension initially ten. Process a sequence of actions. A tighten action increases tension by two and pitch by five. A loosen action decreases tension by one and pitch by three. A play action increases gear wear by one. If gear wear exceeds the slip threshold, any subsequent tighten action instead reduces pitch by ten and tension by five due to slipping. Return the final pitch, tension, and gear wear. Example input: [\"tighten\", \"play\", \"tighten\"]. Output: (410, 14, 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d172",
+  "title": "Cheese Vat Coagulator",
+  "spec": "The entry function is `coagulate(steps)`. Create a cheese vat and an agitator. The vat tracks milk volume initially five hundred, rennet added initially false, and curd firmness initially zero. The agitator tracks its speed initially zero. Process steps. A stir step with a speed sets the agitator speed. A rennet step sets rennet added to true. A wait step with a time increases curd firmness by the time multiplied by two, but only if rennet is added and agitator speed is zero. If agitator speed is greater than zero while waiting with rennet, firmness decreases by the time. Return final curd firmness, agitator speed, and rennet status. Example input: [\"rennet\", \"stir 0\", \"wait 10\", \"stir 5\"]. Output: (20, 5, True).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d173",
+  "title": "Player Piano Tracker",
+  "spec": "The entry function is `play(perforations)`. Simulate a player piano with a foot pump bellows and a pneumatic reading bar. The bellows track air pressure initially fifty. The reading bar tracks notes struck initially zero and total paper scrolled initially zero. Process a sequence of paper advancement steps. A step is an integer representing the number of holes. For each step, if air pressure is greater than the number of holes, subtract the holes from air pressure, increase notes struck by the holes, and add one to paper scrolled. If air pressure is insufficient, a pump action automatically occurs, adding forty to air pressure without scrolling the paper, and then the step is retried. A zero hole step adds twenty to air pressure. Return notes struck, paper scrolled, and air pressure. Example input: [2, 5, 0, 4]. Output: (11, 3, 59).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d174",
+  "title": "Rock Crusher Mechanism",
+  "spec": "The entry function is `crush(rocks)`. Manage a jaw crusher and a conveyor belt. The jaw crusher tracks its wear level initially zero and current gap size initially five. The conveyor tracks tons processed initially zero. Process a list of rock sizes. If a rock size is larger than the gap size plus ten, it jams; increase wear level by five and ignore the rock. Otherwise, the rock is crushed, adding its size to tons processed, and increasing wear level by one. If wear level exceeds fifty, the gap size increases to eight. Return tons processed, wear level, and gap size. Example input: [12, 20, 8]. Output: (20, 6, 5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d175",
+  "title": "Parachute Deployment Altimeter",
+  "spec": "The entry function is `fall(readings)`. Build a skydiving altimeter containing a barometer and a deployment switch. The barometer tracks current altitude initially ten thousand and descent rate initially zero. The switch tracks deployment status initially false and reserve deployed initially false. Process a list of altitude readings. For each reading, calculate descent rate as previous altitude minus current altitude, then update current altitude. If descent rate exceeds one hundred and current altitude is below three thousand, set deployment status to true. If current altitude falls below one thousand and descent rate still exceeds fifty, set reserve deployed to true. Return deployment status, reserve deployed, and final descent rate. Example input: [9000, 5000, 2000]. Output: (True, False, 3000).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d176",
+  "title": "Telegraph Relay Station",
+  "spec": "Write a simulation of a telegraph relay station tracking incoming electrical pulses. The station manages multiple lines, each maintaining its own buffer of dots and dashes, current word, and list of completed words. A pulse can be short, long, or a pause. Short pulses add a dot, long pulses add a dash, and pauses resolve the current buffer into a letter and append it to the current word. A long pause resolves the word. The main system routes pulses to the correct line based on an integer identifier. Return a list of completed sentences for each line. Example: sending a sequence of shorts and longs to line one produces the letter a. Entry function: `relay(pulses)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d177",
+  "title": "Mechanical Metronome",
+  "spec": "Model a mechanical metronome with a spring tension and a sliding pendulum weight. The metronome holds a current tempo in beats per minute, determined by the weight position, and a stored spring energy level. Winding adds a specific amount of energy to the spring. Moving the weight up decreases the tempo, while moving it down increases the tempo. Ticking consumes energy proportional to the tempo and produces a tick sound. If energy is depleted, the metronome stops. The system should process a sequence of actions like wind, move weight, and tick, returning a count of successful ticks. Example: winding ten units and ticking at a high tempo might produce fewer ticks than at a low tempo. Entry function: `tick(actions)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d178",
+  "title": "Antikythera Gear Calculator",
+  "spec": "Simulate an ancient geared calculator predicting astronomical positions. The main drive wheel tracks its rotational angle and connects to several smaller gear trains representing the sun, the moon, and the eclipse cycle. Turning the main drive by a specified number of teeth causes the connected gears to rotate according to their specific gear ratios. The moon gear train includes a mechanical pin and slot that slightly accelerates and decelerates its motion to simulate an elliptical orbit. Process a sequence of turns applied to the main drive and return the final angular positions of all celestial indicators. Example: advancing the drive by one full year completes one solar rotation but multiple lunar rotations. Entry function: `antikythera(turns)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d179",
+  "title": "Analog Synthesizer Oscillator",
+  "spec": "Simulate an analog synthesizer with independent voltage controlled oscillators and a mixer. Each oscillator maintains a frequency, a waveform shape like square or triangle, and a current phase angle. Advancing time steps updates the phase angle of each oscillator based on its frequency and calculates the current voltage output. The mixer combines the voltages from all active oscillators, applying a volume multiplier. Process a list of control signals to change frequencies or mute oscillators over time, and output a list of final mixed voltage values for each time step. Example: mixing two oscillators at slightly different frequencies produces a beating wave output. Entry function: `synthesize(signals)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d180",
+  "title": "Pneumatic Tube Dispatch",
+  "spec": "Design a pneumatic tube message system with a central pressure pump and several destination stations. The pump maintains a vacuum pressure that regenerates over time but drops sharply when a capsule is sent. Each station holds a queue of outgoing capsules waiting for sufficient pressure. During each time step, the system regenerates a fixed amount of pressure. If a station has a waiting capsule and the pump pressure is above the required threshold, the capsule is dispatched, reducing the pressure. Process a timeline of capsules arriving at stations and return a list of dispatch times for each capsule. Example: a high arrival rate causes delays due to low pressure. Entry function: `dispatch(events)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d181",
+  "title": "Mechanical Music Box",
+  "spec": "Simulate a mechanical music box containing a rotating pinned cylinder and a tuned metal comb. The comb consists of multiple teeth, each representing a different musical note and having a specific fatigue level. The cylinder stores a sequence of pins that pluck specific teeth at specific rotational angles. Advancing the mechanism rotates the cylinder one step, plucking the corresponding teeth. Plucking a tooth increases its fatigue, and if fatigue exceeds a threshold, the tooth breaks and no longer sounds. Given a layout of pins and a number of rotations, return the sequence of notes that successfully sound. Example: playing the same note repeatedly may cause it to break. Entry function: `play(rotations)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d182",
+  "title": "Diving Bell Compressor",
+  "spec": "Model a diving bell system with a surface air compressor and an underwater bell chamber. The compressor tracks its motor temperature and pumping rate. The bell tracks its depth, internal air pressure, and breathable oxygen ratio. Lowering the bell increases external water pressure, requiring the compressor to pump more air to equalize. Pumping air restores oxygen but raises the compressor temperature. If the compressor overheats, it must rest, causing oxygen in the bell to slowly deplete. Process a sequence of depth changes and rest periods, returning a list of oxygen levels at each step. Example: descending too fast overworks the compressor and reduces air quality. Entry function: `dive(events)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d183",
+  "title": "Hot Metal Typesetter",
+  "spec": "Create a simulation of a mechanical typesetting machine that manages a magazine of letter matrices and a crucible of molten lead. The magazine tracks the count of available brass molds for each letter of the alphabet. Pressing a key drops a mold into the assembly line. When a line is complete, the casting mechanism pours lead from the crucible to form a solid text slug, consuming lead mass, and then the molds are returned to the magazine. If a letter is out of stock or lead is depleted, the line fails. Given a sequence of words to type, return the successfully cast lines. Example: typing the same letter too many times without casting exhausts the magazine. Entry function: `typeset(words)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d184",
+  "title": "Theater Stage Rigging",
+  "spec": "Manage a theater stage rigging system with multiple lifting lines and a counterweight arbor. Each lifting line connects to a scenery piece with a specific weight and tracks its height above the stage. The arbor holds iron weights that can be added or removed. To move a scenery piece, the arbor weight must exactly match the scenery weight, otherwise the movement fails due to imbalance. Process a sequence of stage cues that specify adding weights, removing weights, and pulling specific lines up or down. Return the final heights of all scenery pieces. Example: lifting a heavy backdrop requires loading the arbor first. Entry function: `rigging(cues)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d185",
+  "title": "Vintage Jukebox Selector",
+  "spec": "Simulate a classic jukebox mechanism comprising a coin accumulator and a rotating record carousel. The accumulator tracks inserted coins and converts them into song credits based on pricing tiers. The carousel holds records in numbered slots and tracks its current rotational position. When a song is selected, the system checks for available credits. If a credit is available, it is consumed, the carousel rotates to the shortest path to the target slot, and the record plays. Process a series of coin insertions and song selections, returning the total rotational distance the carousel traveled. Example: selecting a sequence of adjacent slots minimizes travel distance. Entry function: `jukebox(actions)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d186",
+  "title": "Papermaking Pulp Vat",
+  "spec": "Model a hand papermaking process with a pulp vat and a molding frame. The vat tracks total water volume and grams of cellulose fiber. The frame tracks the accumulated fiber thickness. Adding raw materials increases the vat contents. Dipping the frame extracts a specific volume of the mixture, removing both water and fiber from the vat, and deposits the fiber onto the frame to form a sheet. The thickness of the sheet depends on the fiber concentration in the vat at the moment of the dip. Given a sequence of adding materials and dipping, return a list of sheet thicknesses produced. Example: repeated dipping without replenishing yields progressively thinner sheets. Entry function: `papermill(steps)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d187",
+  "title": "Mechanical Sorting Centrifuge",
+  "spec": "Design a simulation of an industrial centrifuge used to separate mixed materials. The system includes a motor tracking revolutions per minute and a spinning drum holding particles with different mass values. Engaging the motor increases the speed incrementally. As speed increases, particles are ejected from the drum based on their mass thresholds, with heavier particles ejecting at lower speeds. Applying the brake reduces speed. Process a list of commands to load particles, accelerate, and decelerate, and return a list indicating the speed at which each particle was ejected. Example: a slow acceleration safely separates heavy elements first. Entry function: `centrifuge(commands)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d188",
+  "title": "Glassblowing Annealing Lehr",
+  "spec": "Simulate a glass annealing lehr oven that slowly cools blown glass to prevent shattering. The lehr consists of several sequential temperature zones and a moving conveyor belt. Each glass piece tracks its current temperature, structural stress level, and position on the belt. As the belt advances, pieces move between zones and their temperature approaches the zone temperature. Rapid temperature drops increase structural stress. If stress exceeds a critical limit, the piece shatters and is removed. Process a list of initial glass pieces passing through defined zone temperatures and return the count of surviving pieces. Example: a steep temperature gradient causes all pieces to shatter. Entry function: `anneal(batches)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d189",
+  "title": "Sundial Shadow Calculator",
+  "spec": "Create a simulation of a sundial gnomon casting shadows based on solar positioning. The sundial maintains its geographic latitude and the height of its central pointer. The sun tracker component calculates the solar elevation and azimuth angles given a day of the year and an hour of the day. The sundial uses these angles to compute the length and compass direction of the resulting shadow. If the sun is below the horizon, no shadow is cast. For a given list of days and hours, return a sequence of calculated shadow lengths. Example: noon in summer produces the shortest shadow length. Entry function: `sundial(times)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d190",
+  "title": "Mechanical Combination Safe",
+  "spec": "Model a rotary combination lock mechanism with three internal wheel tumblers and a central spindle. The spindle tracks its current rotational angle. Turning the dial engages the first tumbler, which then catches the second, and finally the third, updating their respective angles based on rotation direction and distance. The lock opens only if the three tumblers match a secret sequence of angles. Process a list of turning actions specifying direction and degrees, and then an attempt to pull the handle. Return true if the safe opens, false otherwise. Example: alternating directions correctly aligns the tumblers to open the lock. Entry function: `unlock(turns)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d191",
+  "title": "Trebuchet Counterweight",
+  "spec": "Simulate a medieval trebuchet tracking a hinged throwing arm, a counterweight box, and a sling holding a projectile. The counterweight box tracks its loaded mass. The arm tracks its pivot ratio. When released, the potential energy of the falling counterweight transfers to the sling, calculating a launch velocity based on the projectile mass and the arm ratio. Loading stones increases the counterweight mass. Firing launches the projectile and records its travel distance. Process a sequence of loading counterweights, loading projectiles, and firing, returning the distances achieved. Example: a massive counterweight with a light projectile yields a massive distance. Entry function: `siege(commands)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d192",
+  "title": "Candle Dipping Carousel",
+  "spec": "Manage a traditional candle making carousel that rotates multiple hanging wicks over a vat of hot wax. The carousel tracks its current rotational position and an array of wicks, each with a current wax thickness and core temperature. The vat maintains its liquid wax level. Rotating the carousel advances the position. Dipping submerges the current wick, consuming wax from the vat and increasing the wick thickness, provided the wick has cooled sufficiently since its last dip. If dipped while too hot, the wax melts off instead. Process a sequence of rotations, delays, and dips, returning the final thickness of each candle. Example: spacing dips with delays builds thickness properly. Entry function: `candle(operations)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d193",
+  "title": "Steamboat Paddlewheel",
+  "spec": "Simulate a river steamboat managing a wood fired boiler and a massive paddlewheel. The boiler tracks its internal steam pressure and wood inventory. Adding wood and stoking the fire increases steam pressure. The paddlewheel uses steam pressure to rotate, consuming the steam and generating forward thrust. The river provides a constant opposing current drag. The boat tracks its overall distance traveled along the river. Process a timeline of stoking the fire, releasing steam to the wheel, and coasting, returning the total distance traveled. Example: releasing steam without sufficient pressure results in the river pushing the boat backwards. Entry function: `navigate(intervals)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d194",
+  "title": "Water Clock Clepsydra",
+  "spec": "Model an ancient water clock consisting of an upper reservoir, a drip valve, and a lower measuring basin. The upper reservoir tracks its water volume, which affects the internal water pressure. The drip valve has an adjustable opening size. Water drips into the lower basin at a rate determined by both the valve size and the upper reservoir pressure. The lower basin contains a float that rises with the water level, tracking the elapsed time. Process a sequence of valve adjustments and time intervals, returning the final estimated time reading from the lower basin. Example: as the upper reservoir empties, the drip rate slows down, causing the clock to lose time. Entry function: `clepsydra(events)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d195",
+  "title": "Astrolabe Navigator",
+  "spec": "Model an antique astrolabe instrument used for celestial navigation. The instrument consists of a stationary base plate calibrated for a specific latitude and a rotating celestial sphere net. The net tracks the angular positions of several bright stars. Rotating the net aligns a selected star with an observed altitude angle on the base plate, allowing the user to read off the estimated local solar time. Process a sequence of star sightings, rotating the net to match the observed altitude for each, and return the calculated local time for each observation. Example: observing the dog star at its peak altitude yields midnight. Entry function: `astrolabe(sightings)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d196",
+  "title": "Clockwork Automaton",
+  "spec": "Simulate an antique clockwork automaton figure driven by a mainspring and a cylinder of mechanical cams. The mainspring tracks its wound tension level. The cylinder features multiple tracks of cams, each triggering a different limb movement. Winding the spring increases tension. Releasing the brake allows the cylinder to rotate, consuming tension for each degree of rotation and triggering limb movements when a cam is encountered. Process a sequence of winding operations and running intervals, returning a list of the sequential movements performed. Example: a fully wound spring plays out the entire cylinder sequence of arm waves and head nods. Entry function: `animate(winds)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d197",
+  "title": "Hand Crank Phonograph",
+  "spec": "Design a simulation of an early cylinder phonograph featuring a hand crank, a tension spring, and an acoustic sound box. The spring stores rotational energy. The crank adds energy to the spring up to a maximum limit. The sound box tracks its position along a wax cylinder containing audio grooves. Releasing the spring rotates the cylinder, consuming energy and advancing the sound box position to read out audio samples. If the spring depletes, playback stops prematurely. Process a sequence of cranking amounts and playback durations, returning the extracted audio samples. Example: insufficient cranking cuts the song off halfway. Entry function: `phonograph(actions)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d198",
+  "title": "Grain Mill Waterwheel",
+  "spec": "Model a traditional watermill managing a sluice gate, a waterwheel, and two grinding stones. The sluice gate controls the volume of water hitting the wheel, tracking its open percentage. The waterwheel converts water volume into rotational speed. The grinding stones process raw grain from a hopper into flour at a rate directly proportional to the rotational speed, wearing down the stones over time. Worn stones produce less flour per rotation. Process a sequence of sluice gate adjustments and grain dumps, returning the total pounds of flour produced. Example: opening the gate fully grinds grain rapidly but accelerates stone wear. Entry function: `mill(flows)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d199",
+  "title": "Telegraph Tape Puncher",
+  "spec": "Simulate a mechanical paper tape punch machine used for telegraphy. The machine tracks a continuous strip of paper, the current lengthwise position, and a set of five piercing pins. For each letter typed on the keyboard, a specific combination of pins activates to punch holes across the width of the tape, and the paper advances one step. The machine tracks the total length of paper consumed and the pattern of holes at each position. Given a string of letters, look up the pin combinations and return the sequence of punched hole arrays along with the total paper length used. Example: typing a short word punches a sequence of distinct five bit binary patterns. Entry function: `punch(messages)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d200",
+  "title": "Photographic Enlarger",
+  "spec": "Create a simulation of a darkroom photographic enlarger tracking a halogen bulb, a focus lens, and light sensitive paper. The bulb maintains a temperature and emits light intensity based on its wattage. The lens tracks an aperture setting that restricts the light passing through. Leaving the bulb on exposes the paper, increasing its darkness level, but heats up the bulb. If the bulb exceeds a safe temperature, it damages the negative. Turning the bulb off allows it to cool. Process a sequence of aperture adjustments and exposure durations, returning the final darkness level of the paper or an error if damaged. Example: long exposures require cooling intervals between them to prevent damage. Entry function: `enlarge(exposures)`",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d201",
+  "title": "Shipping Network Hub",
+  "spec": "Write a function `simulate(manifest)` that models a freight routing network. The logic requires creating a central dispatch entity and multiple warehouse entities. The dispatch entity tracks all registered warehouses and handles the insertion of incoming boxes based on their destination tag. Each warehouse entity maintains a list of stored boxes and a maximum capacity limit. If a warehouse is full, the dispatch entity must hold the box in a secondary overflow queue. The function takes a list of string tuples representing box identifiers and destination warehouse names. It returns a list of integer pairs showing the final count of boxes in each warehouse and the count in the overflow queue.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d202",
+  "title": "Software Bug Tracker",
+  "spec": "Develop a function `triage(issues)` that processes a list of software defects. Implement a main project tracking entity that manages individual defect entities and programmer entities. Each defect entity tracks its urgency level, a brief description, and its resolution status. Each programmer entity keeps a list of currently assigned defects and a maximum workload limit. The tracking entity iterates through incoming defects and assigns them to the programmer with the lowest current workload, provided they have not reached their limit. The function takes a list of string tuples describing incoming defects and their urgency, and returns a list of programmer names with their total assigned defect counts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d203",
+  "title": "Real Estate Agency",
+  "spec": "Create a function `evaluate(listings)` that manages a housing market simulation. The architecture must include an agency entity, broker entities, and property entities. Property entities store their base price, neighborhood zone, and sale status. Broker entities maintain a sales quota and a list of active properties they represent. The agency entity receives a sequence of property listings, creates the property entities, and assigns them in an alternating round robin fashion to three available brokers. If a property is marked as a luxury zone, its base price gets an automatic percentage increase before assignment. The function processes a list of price and zone tuples, applies the assignments, and returns the total projected revenue for each broker.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d204",
+  "title": "Zoo Habitat Organizer",
+  "spec": "Design a function `allocate(animals)` to distribute incoming creatures into appropriate wildlife sanctuaries. The system relies on a main park entity that holds several enclosure entities. Each enclosure entity is strictly defined by a climate type, a current resident count, and a strict capacity limit. The park entity receives requests to house new creatures, verifies their required climate, and places them into the first enclosure that matches the climate and has available space. If no space exists across any matching enclosures, the creature is rejected. The function accepts a list of creature names and their preferred climates, and returns the final number of residents in each enclosure along with a count of rejected creatures.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d205",
+  "title": "Galactic Mining Fleet",
+  "spec": "Implement a function `mine(targets)` that simulates a deep space resource extraction operation. You must build a command entity that controls multiple extractor vessel entities. Each vessel entity tracks its cargo hold capacity, current mineral load, and fuel reserves. The command entity reviews a list of asteroid coordinates and dispatches the vessel with the highest current fuel reserves to extract minerals. Extracting minerals increases the vessel load and decreases its fuel by fixed amounts. Once a vessel is full, it cannot be dispatched until the command entity unloads it. The function takes a list of integers representing extraction yields and returns a sequence of the final cargo loads of all vessels.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d206",
+  "title": "Judicial Court Docket",
+  "spec": "Write a function `schedule(cases)` that assigns legal disputes to available magistrates. The logic requires a central courthouse entity that oversees magistrate entities and dispute entities. Each magistrate entity has a specific expertise area and a maximum daily hours limit. Dispute entities track their required time block and subject matter. The courthouse attempts to match each incoming dispute to a magistrate who shares the required expertise and has enough remaining daily hours to handle the time block. If a match is found, the magistrate hours are reduced accordingly. The input is a list of tuples containing the dispute subject and duration, and the output is the number of successfully scheduled disputes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d207",
+  "title": "Film Studio Production",
+  "spec": "Create a function `produce(scripts)` that organizes shooting schedules for a movie lot. Build a studio entity that manages soundstage entities and filming crew entities. Soundstage entities record their square footage and current booking status. Filming crew entities track their personnel count and their required filming days. The studio evaluates each script request, assigns a crew entity, and searches for an available soundstage that is large enough for the personnel count. Once assigned, the soundstage booking status flips to occupied. The input provides a list of required personnel counts and days for various scripts, and the output must be a list of soundstage occupancy states after all requests are processed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d208",
+  "title": "Botanical Garden Irrigation",
+  "spec": "Design a function `water(readings)` that controls a greenhouse moisture system. The structure needs a central controller entity that monitors several sector entities. Each sector entity contains its own threshold value, a current soil moisture level, and a valve status flag. The central controller updates the moisture level of each sector based on incoming sensor data. If a sector level drops below its designated threshold, the sector entity must flip its valve status flag to true to begin irrigation, otherwise it resets to false. The function receives a list of lists, where each inner list contains moisture readings for a specific sector, and returns a list of final valve status flags for all sectors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d209",
+  "title": "Drone Swarm Mapping",
+  "spec": "Implement a function `survey(grid)` that coordinates autonomous flying units over a terrain layout. Establish a central command entity that directs multiple autonomous flyer entities. Each flyer entity stores its current battery life, its assigned altitude, and a list of scanned coordinates. The command entity processes a sequence of target coordinates and assigns each one to a flyer entity that has enough battery life remaining to reach the location. Traveling to a coordinate and scanning it depletes the battery by a set rate. The function takes a list of integer coordinate pairs and returns the total number of unique coordinates successfully scanned by the entire group.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d210",
+  "title": "Tsunami Warning Buoys",
+  "spec": "Write a function `monitor(waves)` that processes ocean pressure changes to predict anomalies. The model consists of a network entity that aggregates data from multiple floating sensor entities. Each sensor entity maintains a baseline pressure value and a danger threshold. The network entity feeds incoming pressure updates to the respective sensors. When a sensor receives an update, it checks the difference against its baseline; if the difference exceeds the danger threshold, the sensor generates a localized warning signal. The network entity collects these signals and counts them. The function takes a list of pressure readings and returns the total number of warning signals generated across all sensors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d211",
+  "title": "Subway Network Routing",
+  "spec": "Create a function `dispatch(events)` that simulates an underground rail system. The implementation requires a transit authority entity overseeing multiple rail route entities. Each rail route entity manages a fleet of carriage entities and maintains a total delay counter. Carriage entities track their current station index and passenger load. The transit authority processes passenger boarding and track obstacle events. Boarding events increase a carriage load, while track obstacle events increase the delay counter of the specific rail route entity. The function accepts a list of passenger counts and obstacle time penalties, and returns the delay counter for each rail route after processing the sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d212",
+  "title": "Catering Banquet Setup",
+  "spec": "Design a function `seat(roster)` that arranges attendees at a large dining function. The simulation needs a coordinator entity that creates and manages round dining surface entities. Each dining surface entity has a fixed seating capacity and a designated dietary restriction category. The coordinator entity processes a list of attendee entities, each having a name and a dietary preference. The coordinator attempts to place each attendee at a dining surface that matches their preference and has an open seat. If placed, the surface capacity is reduced by one. The function takes a list of attendee preference strings and returns the number of empty seats remaining at each dining surface.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d213",
+  "title": "Patient Pharmacy Dispenser",
+  "spec": "Implement a function `dispense(prescriptions)` that manages medication delivery in a clinic. The design must feature a central dispensary entity, several care unit entities, and individual receiver entities. A receiver entity tracks its required dosage amount and current health status. A care unit entity groups multiple receivers and keeps a tally of fulfilled deliveries. The central dispensary validates incoming medication requests against available inventory and sends them to the appropriate care unit. If inventory permits, the care unit applies the dosage to the receiver, improving their health status. The function processes a list of dosage integers and returns a list showing the final health status of all receivers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d214",
+  "title": "Medieval Castle Defense",
+  "spec": "Write a function `defend(assaults)` that simulates a siege scenario. Create a stronghold entity that coordinates several perimeter wall entities. Each wall entity controls a group of defender entities and tracks its structural integrity. Defender entities store their arrow supply and accuracy rating. The stronghold evaluates incoming assault waves, determining which wall entity is targeted. The targeted wall orders its defenders to expend arrows to repel the assault, lowering their supply. If a wall runs out of arrows across all its defenders, its structural integrity takes damage. The function accepts a list of targeted wall indices and assault strengths, returning the remaining structural integrity of each wall.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d215",
+  "title": "Wizard Dueling Tournament",
+  "spec": "Create a function `compete(matches)` that models a magical school competition. The system involves an organizer entity overseeing faction entities and participant entities. Each participant entity has a skill rating and an energy level. Faction entities aggregate the scores of their respective participants. The organizer pairs participants for a challenge based on incoming match data. During a challenge, the participant with the higher skill rating wins and gains points for their faction, while both lose energy. If a participant has zero energy, they automatically forfeit. The function processes a list of challenge pairings and returns the final accumulated score for each faction entity.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d216",
+  "title": "Corporate Hierarchy Planner",
+  "spec": "Design a function `restructure(budgets)` that handles internal financial allocations. You must implement a corporate entity that contains multiple division entities. Each division entity manages a roster of staff entities and an operating fund. Staff entities maintain their base salary and a performance multiplier. The corporate entity distributes incoming financial packages to the divisions based on their current operating fund deficits. The divisions then iterate through their staff, applying a salary increase calculated from the performance multiplier, which reduces the division operating fund. The input is a list of monetary amounts, and the output is the final operating fund balance for each division.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d217",
+  "title": "University Course Registration",
+  "spec": "Implement a function `enroll(requests)` that automates a college sign up period. The logic requires a central admin entity, subject area entities, and class entities. Each class entity has a maximum roster size and a list of enrolled student identifiers. Subject area entities group related class entities. The admin entity receives sign up attempts containing a student identifier and a target class code. It routes the attempt to the relevant subject area, which attempts to add the student to the class. If the roster size is at maximum, the attempt is rejected. The function takes a list of student and class code pairs and returns the number of successful additions.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d218",
+  "title": "Internet Router Simulation",
+  "spec": "Write a function `route(traffic)` that models data transmission across digital pathways. The structure needs a central internetwork entity that maintains a collection of gateway entities. Each gateway entity possesses a routing dictionary and a buffer queue for holding transmission fragments. A transmission fragment entity stores its source, destination, and payload data. The internetwork entity injects fragments into the appropriate initial gateway. Gateways then inspect the destination and forward the fragment to the next gateway found in their routing dictionary, updating their buffer queue. The input is a list of destination and payload string tuples, and the output is the final size of the buffer queue at the ultimate destination gateway.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d219",
+  "title": "Space Station Power Grid",
+  "spec": "Create a function `balance(fluctuations)` that regulates electricity distribution in an orbital facility. The architecture must include a central grid entity, generator entities, and habitation sector entities. Each generator entity produces a set wattage, while habitation sector entities consume wattage based on their active life support tier. The central grid collects total produced wattage and attempts to satisfy the consumption demands of all habitation sectors. If total demand exceeds production, the grid instructs sectors to lower their life support tier to conserve electricity. The function processes a list of integers representing temporary drops in generator output and returns the final active life support tier of each sector.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d220",
+  "title": "Multiplayer Arena Team Manager",
+  "spec": "Design a function `resolve(actions)` that resolves a virtual combat scenario. Implement an arena entity that holds two opposing group entities. Each group entity consists of several champion entities. A champion entity tracks its current health, attack power, and defense rating. The arena entity interprets a sequence of attack commands, determining the attacking champion and the receiving champion. The receiving champion reduces its health by an amount equal to the attack power minus its defense rating. If health falls below zero, the champion is marked as defeated. The input provides a list of attacker and target index pairs, and the output is the count of surviving champions in each group.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d221",
+  "title": "Financial Portfolio Manager",
+  "spec": "Implement a function `trade(orders)` that processes equity market transactions. Create a main wealth tracker entity that oversees multiple account entities. Each account entity holds a cash balance and a collection of holding entities. A holding entity records a ticker symbol and the number of shares owned. The wealth tracker processes buy and sell instructions by finding the appropriate account entity and updating its cash balance and holding share counts based on a fixed transaction price. If an account lacks sufficient cash for a buy instruction, the transaction is skipped. The function takes a list of ticker symbols, transaction types, and share quantities, returning the final cash balance of all accounts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d222",
+  "title": "Pharmaceutical Compounding Lab",
+  "spec": "Write a function `synthesize(formulas)` that models a chemical preparation workflow. The system requires a main facility entity that manages worker entities and mixture entities. Each worker entity tracks its safety certification level and current hourly shift. A mixture entity requires a specific safety level to handle and tracks its completion status. The facility assigns incoming mixture requirements to an available worker entity whose safety certification meets or exceeds the requirement. Once assigned, the worker hourly shift increases and the mixture completion status becomes true. The input is a list of integers representing required safety levels, and the output is a list of shift hours for each worker.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d223",
+  "title": "Concert Hall Acoustics",
+  "spec": "Create a function `calibrate(sounds)` that adjusts audio equipment for a live performance space. The architecture involves a building entity, several seating zone entities, and audio sensor entities. Each audio sensor entity records a base volume and a clarity metric. A seating zone entity contains multiple audio sensors and calculates an average volume. The building entity iterates over incoming volume spikes, sending them to the specified seating zone, which updates its audio sensors by increasing their base volume. If a sensor base volume exceeds a safe threshold, its clarity metric degrades. The function processes a list of zone identifiers and volume spike integers, returning the average clarity metric for each seating zone.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ }
+]

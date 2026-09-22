@@ -1,0 +1,1563 @@
+[
+ {
+  "id": "d001",
+  "title": "Readability Analyzer",
+  "spec": "Write a module to analyze the reading level of text paragraphs, exposing a main function `analyze(text)`. The input is a single long string of English text. The logic must split the text into sentences by looking for periods, exclamation marks, or question marks, and count them. It must also split the text into words and determine the number of syllables in each word by counting contiguous vowel groups while ignoring trailing silent vowels. Combine the sentence count, word count, and syllable count using the standard reading ease formula. Return a tuple containing the total word count and the numeric reading ease score. Example input: \"Hello there. How are you today?\" Example output: (6, 95.2).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d002",
+  "title": "Tenpin Bowling Scorer",
+  "spec": "Create a module to calculate scores for a tenpin bowling game with an entry function `score(rolls)`. The input is a list of integer pin counts for a sequence of rolls. The program needs to group the rolls into ten frames, identifying strikes when a ten is rolled on the first attempt of a frame, and spares when two attempts in a frame sum to ten. It must calculate the score for each frame by adding the base pins and any bonus pins from subsequent rolls according to standard bowling rules. Finally, tally the total score across all frames. Return the integer total score. Example input: [10, 7, 3, 9, 0, 10, 10, 8, 2, 7, 3, 10, 10, 10, 8, 2]. Example output: 195.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d003",
+  "title": "Recipe Portion Scaler",
+  "spec": "Develop a module to scale recipe ingredients for different serving sizes using the entry point `scale(recipe, factor)`. The first input is a list of tuples containing an ingredient name, a numeric amount, and a unit of measurement. The second input is a numeric multiplier. The logic should first multiply the numeric amount of each ingredient by the scaling multiplier. Then, it must normalize the units, converting small measurements into larger standard equivalents if they exceed certain thresholds, such as turning three teaspoons into one tablespoon or sixteen tablespoons into one cup. Return a list of tuples with the ingredient name, the new adjusted amount, and the updated unit. Example input: [(\"salt\", 2.0, \"teaspoon\")], 2.5. Example output: [(\"salt\", 1.66, \"tablespoon\")].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d004",
+  "title": "Poker Hand Ranker",
+  "spec": "Implement a poker hand evaluation tool with the main function `rank(hands)`. The input is a list of hands, where each hand is a list of five strings representing playing cards with a rank and a suit. The logic must parse the cards to extract their numeric ranks and suits, sorting them by rank. It then needs to identify if all cards share the same suit to detect flushes, and check if the ranks form a contiguous sequence to detect straights. Further, it must count frequencies of each rank to identify pairs, three of a kind, or four of a kind. Return a list of integer scores representing the absolute strength of each hand. Example input: [[\"2H\", \"3H\", \"4H\", \"5H\", \"6H\"]]. Example output: [8].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d005",
+  "title": "Planetary Weight Calculator",
+  "spec": "Build a utility to calculate the weight of an object on various planets using a primary function `weigh(masses)`. The input is a list of numeric mass values in kilograms. The logic must determine the surface gravity of each standard planet based on known planetary mass and radius constants. It then needs to apply the universal gravitational formula to convert the input mass into weight in newtons for each specific environment. A separate processing step should aggregate these results across the solar system. Return a list of lists containing the computed weights in newtons for each mass across the eight standard planets. Example input: [100]. Example output: [[370.0, 887.0, 980.0, 371.0, 2479.0, 1044.0, 869.0, 1115.0]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d006",
+  "title": "Shopping Cart Calculator",
+  "spec": "Write a module to compute the final price of an online shopping cart via the function `checkout(items, tax)`. The first input is a list of tuples containing a product name, a base price, and a boolean indicating whether the item is taxable. The second input is a decimal tax rate. The logic must first calculate the total cost of all items without any extra fees. It then needs to apply the tax rate exclusively to the items flagged as taxable, rounding the tax to two decimal places. Finally, it must determine a shipping fee based on the total pre-tax cost, waiving shipping completely if the order exceeds fifty dollars, otherwise adding a flat fee of five dollars. Return the final total cost as a single decimal number. Example input: [(\"book\", 20.0, False), (\"toy\", 15.0, True)], 0.1. Example output: 41.5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d007",
+  "title": "Baseball Stats Aggregator",
+  "spec": "Create a statistics compiler for baseball players with the main function `aggregate(games)`. The input is a list of lists, where each inner list represents a game and contains tuples of plate appearance outcomes like walk, single, out, or home run. The module should filter out plate appearances that do not count as official at bats, such as walks or sacrifices. It must calculate the total number of hits by summing singles, doubles, triples, and home runs, and determine total bases by weighting these hit types from one to four respectively. Using these aggregated values, compute the player batting average as hits divided by official at bats, and the slugging percentage as total bases divided by official at bats. Return a tuple containing the batting average and slugging percentage rounded to three decimal places. Example input: [[(\"single\", 1), (\"out\", 1)], [(\"home run\", 1), (\"walk\", 1)]]. Example output: (0.667, 1.667).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d008",
+  "title": "Net Salary Estimator",
+  "spec": "Develop a payroll calculation module anchored by the function `estimate(salaries)`. The input is a list of annual gross salary figures. The logic must process each salary by first deducting a standard fixed allowance to find the taxable income. It then needs to apply a progressive tax bracket system, where the first fifty thousand is taxed at ten percent, the next fifty thousand at twenty percent, and anything above one hundred thousand at thirty percent. Finally, it should subtract the total calculated tax from the original gross salary to determine the net take home pay. Return a list of net salaries corresponding to the inputs. Example input: [50000, 120000]. Example output: [43000, 89000].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d009",
+  "title": "DNA to Protein Translator",
+  "spec": "Implement a bioinformatics module to process genetic sequences using the entry function `translate(dna)`. The input is a string of nucleotide letters representing a DNA sequence. The logic must first transcribe the DNA sequence into RNA by replacing all instances of the thymine letter with the uracil letter. It then needs to divide the RNA sequence into groups of three consecutive letters, representing codons. Finally, it must map each valid codon to its corresponding single letter amino acid using the standard genetic code table, ignoring any trailing partial codons. Return a single string of the resulting amino acid sequence. Example input: \"ATGCGT\". Example output: \"MR\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d010",
+  "title": "Maze Path Validator",
+  "spec": "Write a module to verify if a given series of moves successfully navigates a grid maze, starting with the function `validate(grid, path)`. The first input is a list of strings representing rows of a maze, where empty spaces, walls, a start point, and an end point are marked by specific characters. The second input is a list of directional words like up, down, left, and right. The logic must locate the starting coordinates within the grid. It should then simulate the moves step by step, ensuring no move goes out of bounds or into a wall. If a move is invalid, or if the final position does not match the end point, the sequence is considered invalid. Return a boolean indicating whether the path successfully reaches the end. Example input: [\"S.\", \".E\"], [\"right\", \"down\"]. Example output: True.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d011",
+  "title": "Portfolio Performance Analyzer",
+  "spec": "Build a financial tracking utility with the main function `analyze(trades)`. The input is a list of tuples detailing stock transactions, containing the ticker symbol, the number of shares, the purchase price, and the current market price. The program must first group the transactions by ticker symbol to find the total shares and total investment cost for each distinct stock. It then needs to calculate the current market value for each stock position by multiplying the accumulated shares by the current price. Finally, it should determine the percentage return for each stock by comparing the current value against the initial investment. Return a list of tuples with the ticker symbol and the percentage return rounded to one decimal place. Example input: [(\"AAPL\", 10, 150.0, 165.0)]. Example output: [(\"AAPL\", 10.0)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d012",
+  "title": "Weather Data Smoother",
+  "spec": "Create a module to process and clean up noisy temperature sensor data using the function `smooth(readings)`. The input is a list of numeric temperature readings taken at hourly intervals. The logic must first identify and filter out any extreme outlier values that fall outside a physically realistic range of negative fifty to plus fifty degrees. It then needs to fill in any missing data points by linearly interpolating between the nearest valid before and after readings. Finally, it should apply a simple moving average window of three hours to smooth out the minor fluctuations in the cleaned data. Return a list of the smoothed temperature values. Example input: [10.0, 200.0, 14.0, 16.0]. Example output: [10.0, 12.0, 14.0, 15.0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d013",
+  "title": "Geocache Distance Tracker",
+  "spec": "Develop a module to compute the total distance of a geocaching route with the entry function `track(waypoints)`. The input is a list of tuples containing the latitude and longitude coordinates of visited locations in decimal degrees. The logic must iterate through consecutive pairs of coordinates to calculate the great circle distance between them. To do this accurately, it must implement the mathematical haversine formula to determine the distance in kilometers across the spherical surface of the earth. Finally, accumulate these individual segment distances to find the total journey length. Return the total distance as a numeric value rounded to two decimal places. Example input: [(0.0, 0.0), (0.0, 1.0)]. Example output: 111.32.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d014",
+  "title": "Text Word Wrapper",
+  "spec": "Implement a text formatting tool with the main function `wrap(text, width)`. The first input is a long string of unformatted prose, and the second is an integer representing the maximum line width. The logic must first tokenize the input text into a sequence of individual words by splitting on whitespace. It then needs to assemble these words into lines, adding one word at a time and ensuring that the inclusion of a new word and its preceding space does not exceed the allowed width limit. If the limit would be exceeded, the current line is finalized and a new line is started. Return a list of strings representing the formatted lines. Example input: \"The quick brown fox\", 10. Example output: [\"The quick\", \"brown fox\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d015",
+  "title": "Smart Playlist Shuffler",
+  "spec": "Write a module to intelligently shuffle music tracks using the function `shuffle(tracks)`. The input is a list of tuples, each containing a song title, an artist name, and a genre. The program must first group the songs by genre to ensure variety. It then needs to interleave the tracks by selecting one song from each genre in a round robin fashion until all songs have been placed into a new sequence. Furthermore, it must check the final sequence and, if any adjacent songs share the exact same artist, swap one with the subsequent track to prevent consecutive songs by the same creator. Return the newly ordered list of song tuples. Example input: [(\"Song A\", \"Artist X\", \"Pop\"), (\"Song B\", \"Artist Y\", \"Rock\")]. Example output: [(\"Song A\", \"Artist X\", \"Pop\"), (\"Song B\", \"Artist Y\", \"Rock\")].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d016",
+  "title": "Vigenere Cipher Encoder",
+  "spec": "Create a cryptography module to encrypt plain text messages using the entry function `encode(message, keyword)`. The first input is a string of alphabetic characters to be encrypted, and the second is a repeating keyword string. The logic must first sanitize both inputs by removing any spaces or punctuation and converting all letters to uppercase. It then needs to generate a keystream by repeating the keyword until it matches the length of the sanitized message. Finally, it must shift each letter of the message forward in the alphabet by the corresponding letter in the keystream, wrapping around past the letter Z if necessary. Return the final encrypted string. Example input: \"hello\", \"key\". Example output: \"RIJVS\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d017",
+  "title": "Roman Numeral Calculator",
+  "spec": "Build a utility to perform addition on Roman numerals via the function `calculate(numerals)`. The input is a list of strings representing valid Roman numerals. The logic must first convert each Roman numeral string into its equivalent decimal integer by iterating through the characters and subtracting smaller values that precede larger ones. It then needs to sum all the resulting decimal integers together. Finally, it must convert this total integer sum back into a properly formatted Roman numeral string using the largest possible symbols from thousands down to ones. Return the final string result. Example input: [\"XIV\", \"LX\"]. Example output: \"LXXIV\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d018",
+  "title": "Train Route Planner",
+  "spec": "Develop a public transit routing module anchored by the function `route(stations, origin, destination)`. The first input is a list of tuples representing direct train connections between pairs of station names along with the travel time in minutes. The second and third inputs are strings for the starting and ending stations. The logic must build an adjacency structure from the connection data to represent the transit network. It then needs to apply a shortest path search algorithm to find the quickest route from the origin to the destination, keeping track of the cumulative travel time and the sequence of stops. Return a tuple containing the total travel time and a list of station names on the optimal path. Example input: [(\"A\", \"B\", 10), (\"B\", \"C\", 15)], \"A\", \"C\". Example output: (25, [\"A\", \"B\", \"C\"]).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d019",
+  "title": "Global Meeting Scheduler",
+  "spec": "Write a scheduling utility to find overlapping business hours across multiple time zones using the function `schedule(offsets)`. The input is a list of integer offsets from coordinated universal time representing the locations of different participants. The logic must determine the local business hours for each offset, defined strictly as nine to seventeen on a twenty four hour clock. It then needs to convert these local availability windows back into coordinated universal time to find common overlapping periods. If an overlapping window exists where all participants are within their local business hours, extract the start and end times. Return a tuple of the universal start and end hours, or an empty tuple if no such overlap exists. Example input: [0, -5]. Example output: (14, 17).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d020",
+  "title": "Sudoku Solution Validator",
+  "spec": "Implement a module to verify the correctness of a completed four by four grid puzzle using the entry function `validate(board)`. The input is a list of four lists, each containing four integers ranging from one to four. The logic must first verify that every horizontal row contains exactly the numbers one through four without any duplicates. It then needs to transpose the board to ensure the same unique sequence applies vertically in the columns. Finally, it must extract each of the four smaller two by two subgrids and validate that they also contain no duplicate digits. Return a boolean true if all checks pass, otherwise false. Example input: [[1, 2, 3, 4], [3, 4, 1, 2], [2, 1, 4, 3], [4, 3, 2, 1]]. Example output: True.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d021",
+  "title": "Knight Move Generator",
+  "spec": "Create a module to determine all valid destinations for a chess knight piece with the main function `generate(position)`. The input is a string representing a starting square on a chessboard, such as a file letter and a rank number. The logic must parse this string into numerical grid coordinates from one to eight. It then needs to calculate all eight potential landing spots based on the distinctive L-shaped movement pattern of the knight. The program must filter out any calculated coordinates that fall off the edges of the standard eight by eight board. Finally, it should convert the valid numerical coordinates back into standard chess notation strings. Return a sorted list of reachable squares. Example input: \"d4\". Example output: [\"b3\", \"b5\", \"c2\", \"c6\", \"e2\", \"e6\", \"f3\", \"f5\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d022",
+  "title": "Image Edge Detector",
+  "spec": "Build a simple image processing module to detect edges via the function `detect(pixels)`. The input is a two dimensional list of integers representing the grayscale pixel intensities of an image. The logic must create an empty output grid of the same dimensions to hold the new pixel values. It then needs to iterate over the interior pixels and apply a specific three by three cross convolution mask, multiplying neighboring pixel values by corresponding weights to find local differences. The resulting value must be clamped to stay within the valid zero to two hundred fifty five integer range. Return the new two dimensional list of processed pixels. Example input: [[10, 10, 10], [10, 100, 10], [10, 10, 10]]. Example output: [[0, 0, 0], [0, 90, 0], [0, 0, 0]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d023",
+  "title": "Markdown HTML Compiler",
+  "spec": "Develop a text conversion utility anchored by the function `compile(lines)`. The input is a list of strings containing basic markdown formatting. The logic must process each line to identify structural markers, converting lines that start with one to six hashes into corresponding HTML heading tags. It then needs to search the text for paired asterisks, replacing them with bold emphasis tags. Unmarked consecutive lines should be grouped together and wrapped in standard paragraph tags. Return a single joined string of the resulting web markup. Example input: [\"# Hello\", \"This is *bold*\"]. Example output: \"<h1>Hello</h1>\\n<p>This is <b>bold</b></p>\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d024",
+  "title": "Inventory Restock Manager",
+  "spec": "Write a module to handle store inventory updates using the function `update(inventory, shipments)`. The first input is a list of tuples representing current stock, containing item names, current quantities, and restock thresholds. The second input is a list of incoming shipments, consisting of item names and received quantities. The logic must first process all shipments to add the received quantities to the corresponding items in the current stock. It then needs to compare the updated quantities against the restock thresholds for every item. If any item falls below its specific threshold after all updates, it must be flagged for reordering. Return a list of string names for the items that need to be reordered. Example input: [(\"apples\", 10, 15)], [(\"apples\", 2)]. Example output: [\"apples\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d025",
+  "title": "Event Conflict Detector",
+  "spec": "Implement a scheduling module to identify overlapping calendar appointments with the main function `detect(events)`. The input is a list of tuples containing an event name, a start time, and an end time, where times are integers representing minutes from midnight. The logic must first sort all the events chronologically based on their starting times. It then needs to iterate through the sorted list, comparing the end time of the current event with the start time of the subsequent event. If an overlap is detected where the next event begins before the current one finishes, the pair of conflicting event names must be recorded. Return a list of tuples containing the names of any conflicting event pairs. Example input: [(\"A\", 100, 200), (\"B\", 150, 250)]. Example output: [(\"A\", \"B\")].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d026",
+  "title": "Chess Move Validator",
+  "spec": "Write a program with an entry function `calculate(board)` that evaluates potential moves on a simplified chessboard. The input is a list of strings representing piece positions. You must implement helper routines to verify horizontal moves for rooks, diagonal moves for bishops, and L shaped moves for knights. The main routine should use these helpers to return a list of all valid destination squares for a given piece. Example input could be a rook at column zero row zero and output would be a list of all other squares in that same column and row.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d027",
+  "title": "Tax Bracket Calculator",
+  "spec": "Design a module with an entry function `assess(income)` to compute total income tax based on progressive brackets. Create helper routines to calculate federal tax based on a standard tiered percentage system, determine state tax with a flat rate, and apply standard deductions. The main routine will process a single number representing gross income and return a tuple of federal tax, state tax, and net income after taxes. An input of fifty thousand should return the computed federal amount, state amount, and the remaining income.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d028",
+  "title": "String Metric Calculator",
+  "spec": "Develop a module with an entry function `compare(strings)` that calculates similarity scores between pairs of text. You need to implement separate routines to compute the edit distance, the overlap coefficient, and the count of matching characters at the same positions. The main routine should take a list of two strings and return a list of three numbers representing the scores from these three routines. For an input of kitten and sitting, the output should be three numbers representing the respective similarity metrics.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d029",
+  "title": "Color Space Converter",
+  "spec": "Build a tool with an entry function `convert(colors)` that translates color values between different representations. Include helper routines to translate red green blue values to hue saturation lightness, and another to translate hue saturation lightness back to red green blue. The main routine should accept a list of tuples containing three numbers and a format label, process each using the appropriate helper, and return a list of converted tuples. For example, converting pure red from the first format should yield a hue of zero, saturation of one, and lightness of zero point five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d030",
+  "title": "Fraction Arithmetic Evaluator",
+  "spec": "Create a math utility with an entry function `evaluate(expressions)` that processes operations on fractions. You must write helper routines to find the greatest common divisor of two integers, add two fractions, multiply two fractions, and simplify a fraction to its lowest terms. The main routine takes a list of lists where each inner list contains four integers representing two fractions and a string indicating either addition or multiplication. It should return a list of simplified fractions as two item tuples. Example input of one half and one third to add should return five sixths.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d031",
+  "title": "Competitor Rating Updater",
+  "spec": "Write a rating system with an entry function `update(matches)` that adjusts player scores after a tournament. Implement helper routines to calculate the expected win probability between two ratings and to compute the new rating for a player based on their actual match result. The main routine accepts a list of matches where each match is a tuple of two current player ratings and an integer indicating the winner. It returns a list of updated rating tuples for each match. A match between a player with twelve hundred and a player with a thousand where the first wins should output their adjusted scores.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d032",
+  "title": "Graph Shortest Path",
+  "spec": "Design a networking tool with an entry function `traverse(graph)` that finds the quickest route between nodes. You must implement helper routines to find all unvisited neighbors of a current node, to select the unvisited node with the smallest known distance, and to reconstruct the path from the destination back to the source using a tracking structure. The main routine takes an adjacency matrix and a start and end index, and returns a list of integers representing the sequence of nodes in the shortest path. For a simple line graph of three nodes, going from zero to two should return the sequence zero, one, two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d033",
+  "title": "Document Tag Sanitizer",
+  "spec": "Develop a text processor with an entry function `sanitize(document)` that removes dangerous formatting from markup strings. Create helper routines to strip script elements completely, to remove all style attributes from remaining tags, and to convert basic character entities like ampersands into their literal text equivalents. The main routine applies these steps sequentially to the input string and returns the cleaned text. Given a string with a bold tag and a javascript alert, the output should contain only the bold tag and the plain text.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d034",
+  "title": "Data Payload Minimizer",
+  "spec": "Build a text utility with an entry function `minify(payload)` that reduces the size of formatted data strings. Include helper routines to strip unnecessary whitespace outside of textual values, to remove redundant trailing zeros from decimal numbers, and to strip newline characters entirely. The main routine takes a heavily indented string of structured data and returns the most compact single line equivalent. For an input string spanning multiple lines with extra spaces around colons, it should return a dense string with all superfluous spacing removed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d035",
+  "title": "Date Difference Calculator",
+  "spec": "Write a calendar utility with an entry function `measure(dates)` that computes the exact number of days between two calendar points. Implement helper routines to determine if a year is a leap year, to count the days in a given month of a specific year, and to convert a full date into a total number of days since a fixed epoch. The main routine receives two tuples of year, month, and day, and returns the absolute integer difference in days between them. Passing the first of january and the tenth of january of the same year should return nine.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d036",
+  "title": "Word Anagram Grouper",
+  "spec": "Create a text analyzer with an entry function `group(words)` that clusters terms containing the exact same characters. You need helper routines to count the frequency of each letter in a string, to generate a unique string signature based on those sorted frequencies, and to insert a word into a grouped collection. The main routine takes a list of strings and returns a list of lists where each inner list contains words that are anagrams of each other. An input list containing tea, eat, and bat should return two lists, one with tea and eat, and another with bat.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d037",
+  "title": "Shape Collision Detector",
+  "spec": "Design a graphics utility with an entry function `collide(shapes)` that determines if two two dimensional objects overlap. Write helper routines to check if two circles intersect using their radii and center points, to check if two axis aligned rectangles overlap, and to check if a single point lies within a given circle. The main routine takes two shape descriptions consisting of a type name and coordinate values, and returns a boolean indicating if they touch or overlap. An input of two circles at the same origin should return true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d038",
+  "title": "Password Strength Checker",
+  "spec": "Develop a security module with an entry function `evaluate(passwords)` that scores the resilience of secret phrases. Include helper routines to assess the length of the string, to check for the presence of both upper and lower case letters as well as numbers, and to verify the phrase does not contain common sequential patterns like abc or one two three. The main routine accepts a list of strings and returns a list of integer scores from zero to three for each string based on how many criteria it passes. A short string of lowercase letters should return a score of zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d039",
+  "title": "Measurement Unit Converter",
+  "spec": "Build a conversion tool with an entry function `translate(measurements)` that standardizes various physical quantities. Create helper routines to convert temperatures from fahrenheit to celsius, to convert distances from miles to kilometers, and to convert weights from pounds to kilograms. The main routine takes a list of tuples where each tuple contains a number and a category label, and returns a list of the converted numbers. An input of thirty two degrees temperature should return zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d040",
+  "title": "Telegraph Code Translator",
+  "spec": "Write a communication utility with an entry function `process(messages)` that converts between plain text and dots and dashes. Implement helper routines to translate a single alphabetical letter into its dash and dot equivalent, to translate a sequence of dashes and dots back into a single letter, and to handle the spacing between words. The main routine takes a string and a boolean flag indicating the direction of translation, returning the fully translated string. Passing the letters s o s should return three dots, three dashes, and three dots.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d041",
+  "title": "File Permission Parser",
+  "spec": "Design a system administration tool with an entry function `parse(permissions)` that interprets access rights. You must write helper routines to convert a three digit octal number into a string of read write and execute symbols, to convert a nine character symbolic string back into a three digit octal number, and to validate that an input string only contains valid permission characters. The main routine takes a list of strings in either format and returns a list of the opposite format. An input of seven seven seven should return nine consecutive letters for read write and execute.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d042",
+  "title": "Global Time Converter",
+  "spec": "Develop a scheduling module with an entry function `shift(events)` that adjusts meeting hours across different regions. Create helper routines to parse a time string into hours and minutes, to add or subtract a given number of hours handling the transition past midnight, and to format the resulting hours and minutes back into a standard time string. The main routine receives a list of times and an integer offset, returning a list of adjusted time strings. An input of twenty three hours and an offset of two should return one hour.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d043",
+  "title": "Basic Statistics Calculator",
+  "spec": "Build a mathematical module with an entry function `analyze(numbers)` that computes descriptive metrics for datasets. You need helper routines to calculate the arithmetic mean of a sequence, to find the middle value of a sorted sequence, and to compute the variance by averaging the squared differences from the mean. The main routine takes a list of floating point values and returns a three item tuple containing the mean, median, and variance. Passing a list of one, two, and three should return a mean of two, a median of two, and a variance of roughly zero point six.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d044",
+  "title": "Network Subnet Calculator",
+  "spec": "Create a networking script with an entry function `calculate(addresses)` that determines routing boundaries. Implement helper routines to convert a numeric prefix length into a dotted decimal subnet mask, to apply a mask to an address to find the base network identifier, and to calculate the maximum number of usable hosts for a given prefix. The main routine takes a list of strings combining an address and a prefix length, and returns a list of tuples containing the network identifier and the host capacity. An input with a prefix of twenty four should return a capacity of two hundred fifty four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d045",
+  "title": "Grid Game Evaluator",
+  "spec": "Write a game logic module with an entry function `judge(board)` that determines the outcome of a three by three grid. Include helper routines to check all horizontal rows for a sequence of identical marks, to check all vertical columns for a winner, and to check both primary diagonals. The main routine accepts a flat list of nine characters and uses the helpers to return the winning character or a tie indicator. An input with three crosses in the first three positions should return a cross.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d046",
+  "title": "Simple Pattern Matcher",
+  "spec": "Design a text searching tool with an entry function `match(strings)` that supports basic wildcard characters. Write helper routines to check if a single character matches a literal or a dot wildcard, to handle a sequence followed by a star which allows zero or more repetitions, and to recursively check the remainder of a string against a pattern. The main routine takes a text string and a pattern string, returning a boolean indicating if the entire text matches the pattern. An input of an empty string and a pattern of a star should return true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d047",
+  "title": "Logic Tree Evaluator",
+  "spec": "Develop a prediction module with an entry function `predict(nodes)` that navigates a structured set of rules. Implement helper routines to evaluate a numerical condition at a branch, to select the left or right child path based on the condition result, and to extract the final conclusion when a terminal endpoint is reached. The main routine takes a nested list representing the tree and a list of numerical features, returning the final predicted number. Passing a single endpoint with a value of five should return five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d048",
+  "title": "Content Pagination Generator",
+  "spec": "Build a display utility with an entry function `paginate(items)` that divides a large list into smaller viewing chunks. Create helper routines to calculate the total number of chunks required given a chunk size, to extract the specific slice of items for a requested chunk number, and to determine the preceding and succeeding chunk numbers. The main routine takes a list of items, a target chunk number, and a chunk size, returning a tuple of the items in that chunk and the adjacent chunk numbers. Requesting the second chunk of size two from a list of five items should return the third and fourth items.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d049",
+  "title": "Matrix Transformation Utility",
+  "spec": "Write a linear algebra module with an entry function `transform(matrices)` that applies structural changes to two dimensional arrays. You must implement helper routines to swap the rows and columns of an array, to reverse the order of elements in each row, and to multiply every element by a given scalar number. The main routine accepts a list of lists representing a numerical array and a string command, returning the modified array. An input of a two by two array and a command to scale by two should return an array where all original numbers are doubled.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d050",
+  "title": "Document Link Extractor",
+  "spec": "Create a parsing script with an entry function `extract(document)` that identifies and isolates destination addresses from markup text. Include helper routines to find the starting index of an anchor tag, to locate the address attribute within that tag, and to extract the exact string between the quotes of that attribute. The main routine processes a large text string sequentially, using the helpers to return a list of all identified destination addresses. Given a text containing one anchor tag pointing to a secure website, it should return a list containing just that website address.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d051",
+  "title": "Spacecraft Orbit Propagator",
+  "spec": "Write a simulation entry point `propagate(state)` that updates the position and velocity of a satellite. The input is a list of six floats representing three dimensional position and three dimensional velocity. Implement a helper function to calculate the gravitational acceleration vector based on position and the standard gravitational parameter of earth, which is three point nine eight times ten to the fourteenth. Implement another helper to calculate atmospheric drag based on the velocity vector, using a drag coefficient of zero point zero zero two. A third helper should apply these accelerations to update the position and velocity for a time step of one second. The entry function must call the updater ten times in a loop and return the final six element list. Providing a position of seven million, zero, zero and velocity of zero, eight thousand, zero should return the updated orbital parameters after ten seconds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d052",
+  "title": "Thermal Transfer Model",
+  "spec": "Create an evaluation function `transfer(parameters)` that computes the total heat loss from a building over time. The input is a list containing the indoor temperature, outdoor temperature, wall surface area, and time elapsed in hours. Implement a helper function to calculate conductive heat loss using a fixed thermal conductivity of zero point zero four, wall thickness of zero point two meters, area, and temperature difference. Create another helper to compute convective heat loss using a convection coefficient of ten and the same area and temperature difference. A third helper must sum these rates to find the total energy lost over the specified hours. The main function returns this total energy in joules. For example, an indoor temperature of twenty, outdoor temperature of zero, area of fifty, and time of one hour yields roughly a hundred and eighty million joules.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d053",
+  "title": "Pipe Fluid Flow Solver",
+  "spec": "Provide a calculation function `flow(properties)` that determines the pressure drop in a cylindrical pipe. The input is a list of four numbers: pipe length, pipe diameter, fluid velocity, and fluid density. Write a helper function to calculate the Reynolds number using a fixed dynamic viscosity of zero point zero zero one. Write a second helper function to determine the friction factor, returning zero point zero six four divided by the Reynolds number if it is below two thousand, and zero point zero two otherwise. A third helper function must use the Darcy Weisbach equation to compute the final pressure drop based on length, diameter, velocity, density, and friction factor. The entry function returns this pressure drop as a single float. Given length ten, diameter zero point one, velocity two, and density one thousand, the output should be the corresponding pressure drop in pascals.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d054",
+  "title": "Solar Panel Yield Estimator",
+  "spec": "Implement an estimation function `estimate(conditions)` that predicts the daily energy output of a solar installation. The input is a list containing the peak sun hours, average temperature in celsius, and panel area in square meters. Create a helper function to calculate the temperature efficiency penalty, which reduces the base efficiency of twenty percent by zero point five percent for every degree above twenty five celsius. Write another helper to compute the raw solar irradiance captured based on area, assuming one thousand watts per square meter, multiplied by the peak sun hours. A third helper should apply the adjusted efficiency to the raw irradiance to get the final energy output. The main function should return this total daily energy in watt hours. For an input of five hours, thirty degrees, and ten square meters, it returns the adjusted output.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d055",
+  "title": "Circuit Resistive Network",
+  "spec": "Develop a solver function `analyze(components)` that calculates the total equivalent resistance and total current of a direct current circuit. The input is a list of three resistor values in ohms and a source voltage. Implement a helper function that calculates the equivalent resistance of two resistors connected in parallel. Implement a second helper that calculates the equivalent resistance of resistors connected in series. A third helper should evaluate the specific topology where the first two resistors are in parallel, and that combination is in series with the third resistor. The main function calculates the total current using Ohm's law by dividing the voltage by the total resistance, and returns a tuple of total resistance and total current. Given resistors ten, ten, and five, with voltage twenty, it returns ten ohms and two amperes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d056",
+  "title": "Population Dynamics Predictor",
+  "spec": "Construct a prediction function `simulate(demographics)` that projects the population of a city after five years. The input is a list of three integers: initial population, annual birth rate per thousand, and annual death rate per thousand. Develop a helper function to calculate the total number of births in a single year based on the current population. Develop another helper function to calculate the total number of deaths in a single year. A third helper function should determine the net migration, adding five hundred people if the population is under fifty thousand, and subtracting two hundred if it is over one hundred thousand. The entry function loops for five years, updating the population using these helpers, and returns the final integer population. An initial population of ten thousand with birth rate twenty and death rate ten will yield a steadily growing population.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d057",
+  "title": "Epidemic Spread Tracker",
+  "spec": "Write a tracking function `outbreak(initial)` that simulates the spread of a virus using a basic compartmental model. The input is a list of three numbers: susceptible individuals, infected individuals, and recovered individuals. Create a helper function to compute new infections per day by multiplying susceptible, infected, and a transmission rate of zero point zero zero one. Create a second helper to compute recoveries per day by multiplying the infected count by a recovery rate of zero point one. A third helper should take the current counts, apply the new infections and recoveries, and return the updated counts for the next day. The main function runs this daily update for fourteen days and returns the final three counts as a tuple. Given one thousand susceptible, ten infected, and zero recovered, it returns the state after two weeks.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d058",
+  "title": "Crop Yield Forecaster",
+  "spec": "Implement a forecasting function `forecast(weather)` that estimates the harvest weight of a wheat field. The input is a list of three values: average monthly rainfall in millimeters, average temperature in celsius, and soil nitrogen level. Write a helper function to calculate the water multiplier, which is one point zero if rainfall is between fifty and one hundred, and zero point eight otherwise. Write another helper to compute the temperature multiplier, giving a bonus of twenty percent if the temperature is exactly twenty two degrees. A third helper should combine these multipliers with a base yield of five thousand kilograms, adding ten kilograms for every unit of soil nitrogen. The entry function returns the final estimated yield. Inputting sixty millimeters, twenty degrees, and fifty nitrogen units returns the base yield plus nitrogen bonus unmodified by temperature or water penalties.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d059",
+  "title": "Elevator Control Logic",
+  "spec": "Create an automation function `route(requests)` that determines the total time an elevator takes to clear a queue of floors. The input is a list of requested floor numbers. Write a helper function to calculate the travel time between two floors, assuming two seconds per floor. Write a second helper function to calculate the waiting time at a floor, which is a constant five seconds for doors opening and closing. A third helper should simulate moving from the current floor to the next requested floor, adding both the travel and waiting times. The entry function starts at floor zero, processes each requested floor in the order given using the helpers, and returns the total elapsed time in seconds. For an input of floors three, one, and five, the elevator travels up to three, down to one, and up to five, returning the total time accumulated.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d060",
+  "title": "Traffic Light Optimizer",
+  "spec": "Develop a timing function `optimize(traffic)` that calculates the optimal green light duration for an intersection. The input is a list of two integers representing the number of queued cars in the north south direction and the east west direction. Implement a helper function to estimate the clearance time for a given number of cars, allocating three seconds per car plus a flat two seconds reaction time. Implement another helper function to determine if a direction qualifies for a priority extension, returning true if the queue has more than twenty cars. A third helper computes the final green time for a direction by taking the clearance time and adding five seconds if it has priority. The main function uses these helpers to return a tuple of green light times for the two directions. Given ten cars and twenty five cars, it returns thirty two seconds and eighty two seconds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d061",
+  "title": "Flight Trajectory Calculator",
+  "spec": "Write a navigation function `navigate(conditions)` that computes the estimated time of arrival and fuel burned for a commercial flight. The input is a list containing the distance in kilometers, cruise speed in kilometers per hour, headwind in kilometers per hour, and base fuel consumption rate. Create a helper function to calculate the ground speed by subtracting the headwind from the cruise speed. Create a second helper to compute the total flight duration in hours using the distance and ground speed. A third helper function should calculate the total fuel burned, multiplying the duration by the consumption rate, and adding a ten percent penalty if the headwind exceeds fifty kilometers per hour. The main function returns a tuple of flight hours and total fuel. For a thousand kilometers, speed five hundred, headwind zero, and rate two thousand, it returns two hours and four thousand fuel.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d062",
+  "title": "Retail Discount Calculator",
+  "spec": "Implement a pricing function `checkout(basket)` that computes the final cost of a list of item prices. The input is a list of floating point prices. Write a helper function to calculate the bulk discount, returning a ten percent deduction if the total sum of prices is over one hundred dollars. Write another helper function to apply a luxury tax, adding five percent to any individual item price that is strictly greater than fifty dollars. A third helper function should process an individual item, applying the luxury tax if applicable, and return the adjusted price. The main function maps the item helper over the basket, sums the results, applies the bulk discount to the total using the first helper, and returns the final float rounded to two decimal places. Given prices of twenty, sixty, and thirty, it returns the final discounted and taxed total.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d063",
+  "title": "Mortgage Amortization Schedule",
+  "spec": "Provide a financial function `amortize(loan)` that calculates the remaining balance of a mortgage after twelve months of payments. The input is a list containing the principal amount, annual interest rate as a decimal, and the fixed monthly payment. Write a helper function to calculate the monthly interest charge by dividing the annual rate by twelve and multiplying by the current principal. Write a second helper function to determine the principal reduction for a month by subtracting the interest charge from the monthly payment. A third helper function should update the principal by applying the reduction, ensuring the principal does not drop below zero. The entry function loops this monthly update twelve times and returns the remaining principal. For a one hundred thousand principal, zero point zero five rate, and one thousand payment, it returns the balance after one year.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d064",
+  "title": "RSA Key Generator",
+  "spec": "Create a cryptographic function `generate(primes)` that computes a public and private key pair from two prime numbers. The input is a list of two distinct prime numbers. Implement a helper function to calculate the modulus, which is the product of the two primes. Implement a second helper to compute Euler's totient function for the primes, which is the product of each prime minus one. A third helper function should find the modular multiplicative inverse of a fixed public exponent, usually sixty five thousand five hundred thirty seven, modulo the totient, which acts as the private key exponent. The main function uses these helpers to return a tuple containing the public key tuple of exponent and modulus, and the private key tuple of private exponent and modulus. For inputs eleven and thirteen, using public exponent seven, it returns the corresponding key pairs.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d065",
+  "title": "Audio Envelope Generator",
+  "spec": "Develop a synthesis function `envelope(parameters)` that generates an amplitude curve for a synthesizer note. The input is a list of four values in milliseconds: attack time, decay time, sustain level as a fraction, and release time. Write a helper function to generate the attack segment, which is a list of ten amplitude values linearly increasing from zero to one over the attack time. Write a second helper to generate the decay segment, stepping down from one to the sustain level in ten increments. A third helper should generate the release segment, fading from the sustain level to zero in ten increments. The main function concatenates these three lists into a single continuous amplitude curve of thirty values and returns it. Given one hundred, fifty, zero point five, and two hundred, it outputs the thirty stage volume multiplier list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d066",
+  "title": "Ray Tracing Sphere Intersection",
+  "spec": "Implement a rendering function `intersect(geometry)` that determines if a light ray hits a three dimensional sphere. The input is a list of seven numbers: the three coordinates of the ray origin, the three components of the ray direction vector, and the sphere radius. The sphere is always centered at the origin. Write a helper function to calculate the dot product of two three dimensional vectors. Write a second helper function to calculate the discriminant of the quadratic equation representing the intersection, using the dot products of the ray origin and direction. A third helper should evaluate the discriminant; if it is negative, there is no intersection, otherwise it calculates the nearest intersection distance. The entry function returns this distance as a float, or negative one if it misses. A ray from zero, zero, five pointing straight down towards a sphere of radius two returns an intersection distance of three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d067",
+  "title": "Particle Kinematics Simulator",
+  "spec": "Construct a physics function `collide(particles)` that calculates the final velocities of two particles after an elastic collision. The input is a list of four numbers: mass of the first particle, initial velocity of the first particle, mass of the second particle, and initial velocity of the second particle. Write a helper function to compute the total momentum of the system. Write another helper function to compute the total kinetic energy of the system. A third helper function should use the one dimensional elastic collision formulas to calculate the new velocity of a given particle based on both masses and initial velocities. The main function calls this third helper for each particle and returns a tuple of their final velocities. For masses two and three, and velocities ten and zero, it returns the final velocities conserving both momentum and energy.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d068",
+  "title": "Greenhouse Gas Emission Calculator",
+  "spec": "Provide an environmental function `assess(activities)` that calculates a company's total carbon footprint in kilograms of carbon dioxide. The input is a list containing electricity used in kilowatt hours, kilometers driven, and kilograms of waste produced. Implement a helper function to calculate electricity emissions by multiplying usage by zero point four. Implement a second helper to calculate transport emissions, multiplying distance by zero point two. A third helper should calculate waste emissions, multiplying waste weight by one point five, and applying a fifty percent reduction if the waste exceeds one thousand kilograms due to bulk recycling mandates. The entry function sums the results of these three helpers and returns the total emissions. For ten thousand kilowatt hours, five thousand kilometers, and five hundred kilograms of waste, it returns the total footprint.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d069",
+  "title": "Wind Turbine Power Curve",
+  "spec": "Create an energy function `predict(wind)` that calculates the power output of a wind turbine over several hours. The input is a list of wind speeds in meters per second for consecutive hours. Write a helper function to check if a given wind speed is within the operational range, which is between a cut in speed of three and a cut out speed of twenty five. Write another helper to calculate the power output for a valid wind speed, which is a constant coefficient of zero point five times the wind speed cubed. A third helper evaluates a single wind speed, returning zero if it is outside the operational range, or the calculated power capped at a maximum generator capacity of two thousand. The main function applies this logic to each wind speed in the list and returns a list of power outputs. Given speeds of two, ten, and thirty, it returns zero, five hundred, and zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d070",
+  "title": "Brewing Fermentation Tracker",
+  "spec": "Develop a monitoring function `ferment(readings)` that estimates the current alcohol by volume of a batch of beer. The input is a list containing the original specific gravity, the current specific gravity, and the fermentation temperature in celsius. Implement a helper function to calculate the raw alcohol percentage by subtracting the current gravity from the original gravity and multiplying by one hundred and thirty one point two five. Implement a second helper function to calculate a temperature correction factor, adding zero point one to the raw percentage if the temperature is above twenty degrees. A third helper should check if fermentation is complete, returning true if the current gravity is below one point zero one zero. The entry function returns a tuple containing the boolean completion status and the corrected alcohol percentage. For one point zero five zero, one point zero zero eight, and twenty two degrees, it returns true and the adjusted percentage.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d071",
+  "title": "Fitness Workout Calorie Estimator",
+  "spec": "Write a health function `burn(stats)` that calculates the calories expended during a workout. The input is a list containing the person's weight in kilograms, workout duration in minutes, and average heart rate. Create a helper function to calculate the basal metabolic rate equivalent for the duration based solely on weight, multiplying weight by zero point zero one seven five and then by the duration. Create another helper to calculate an intensity multiplier, which is one point zero for a heart rate under one hundred, and one point five for anything higher. A third helper combines these by multiplying the basal rate by the intensity multiplier to get the total calories burned. The main function returns this total as an integer. For a weight of seventy, duration of sixty, and heart rate of one hundred twenty, it returns the total calories.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d072",
+  "title": "Ocean Tide Height Predictor",
+  "spec": "Implement a marine function `tide(time)` that calculates the water level at a specific coastal location. The input is a single float representing hours since midnight. Write a helper function to calculate the primary lunar tidal component, which is a cosine wave with an amplitude of two meters and a period of twelve point four hours. Write a second helper function to calculate the solar tidal component, which is a cosine wave with an amplitude of zero point five meters and a period of twenty four hours. A third helper function should calculate the effect of local geography, which adds a constant mean sea level offset of one point five meters. The entry function sums the lunar component, solar component, and mean sea level at the given hour, and returns the total water height. Given an input of six hours, it returns the computed tidal height.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d073",
+  "title": "Camera Exposure Calculator",
+  "spec": "Provide a photography function `expose(settings)` that determines the required ISO speed for a perfectly exposed photograph. The input is a list containing the lens aperture f-number, the shutter speed in seconds, and the scene luminance in lux. Implement a helper function to calculate the exposure value from the luminance, which multiplies the luminance by a constant calibration factor of zero point three. Implement a second helper function to calculate the geometric exposure value of the camera settings, which is the aperture squared divided by the shutter speed. A third helper function computes the required ISO by dividing the geometric exposure by the luminance exposure and multiplying by one hundred. The main function returns this ISO value rounded to the nearest integer. For an aperture of two point eight, shutter speed of zero point zero one, and luminance of four hundred, it returns the required ISO.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d074",
+  "title": "Drone Battery Endurance",
+  "spec": "Construct an aviation function `endurance(drone)` that calculates the maximum flight time of an unmanned aerial vehicle. The input is a list of three numbers: battery capacity in milliamp hours, base motor current draw in milliamps, and payload weight in grams. Write a helper function to compute the extra current draw caused by the payload, adding ten milliamps for every gram of weight. Write another helper to calculate the total current draw by summing the base draw and the payload penalty. A third helper function should calculate the flight time in minutes by dividing the battery capacity by the total current draw and multiplying by sixty. The entry function evaluates these steps and returns the flight time. An input of five thousand capacity, two thousand base draw, and fifty grams of payload returns the maximum minutes it can stay airborne.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d075",
+  "title": "Seismograph Epicenter Locator",
+  "spec": "Create a geology function `locate(stations)` that determines the distance to an earthquake epicenter based on seismic wave arrival times. The input is a list of two numbers: the arrival time of the primary wave and the arrival time of the secondary wave, both in seconds from a reference point. Develop a helper function to calculate the time difference between the two arrivals. Develop a second helper function to compute the distance based on the time difference, multiplying the difference by a standard rule of thumb of eight kilometers per second. A third helper should categorize the severity based on distance, returning the string local if the distance is under one hundred kilometers, and regional otherwise. The main function uses the helpers to return a tuple of the calculated distance and the severity string. For arrivals at ten and fifteen seconds, it returns forty kilometers and local.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d076",
+  "title": "Telescope Optics Evaluator",
+  "spec": "Write a script to analyze a telescope setup with an entry function `evaluate(aperture, focal, eyepiece, field)`. The inputs are objective aperture in millimeters, objective focal length in millimeters, eyepiece focal length in millimeters, and eyepiece apparent field of view in degrees. For modularity, implement separate helper functions for each property. The first helper computes the magnification by dividing objective focal length by eyepiece focal length. The second helper computes the exit pupil by dividing aperture by magnification. The third helper computes the true field of view by dividing apparent field by magnification. The entry function calls these helpers and returns a tuple of the three values rounded to two decimal places. Example: evaluating 150, 750, 25, 50 should return 30.0, 5.0, 1.67.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d077",
+  "title": "Bicycle Gearing Analyzer",
+  "spec": "Write a script to calculate bicycle gearing metrics with the main function `analyze(chainring, cog, wheel, cadence)`. The inputs are number of chainring teeth, number of cog teeth, wheel diameter in millimeters, and rider cadence in revolutions per minute. Organize the logic by creating independent helper functions for each metric. One helper should compute the gear ratio by dividing chainring teeth by cog teeth. Another helper should compute the development distance in meters per pedal stroke by multiplying the ratio by the wheel circumference. A third helper should calculate the speed in kilometers per hour using the development and cadence. The main function delegates to these helpers and returns a list containing the ratio, development, and speed, all rounded to one decimal place. Example: analyzing 50, 15, 700, 90 should return 3.3, 7.3, 39.4.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d078",
+  "title": "Bearing Load Capacity",
+  "spec": "Develop an engineering utility using the entry function `evaluate(diameter, width, speed, load)`. The inputs are bearing internal diameter in millimeters, bearing width in millimeters, rotational speed in revolutions per minute, and radial load in newtons. Structure the solution with distinct helper functions. Write a helper to calculate the dynamic load rating by multiplying the diameter and width by a material constant of fifty. Write another helper to determine the equivalent dynamic bearing load, applying a factor of one point five if the speed exceeds one thousand revolutions per minute. Write a final helper to compute the basic rating life in millions of revolutions using the cube of the ratio between the load rating and equivalent load. The entry function returns a tuple containing the load rating, equivalent load, and rating life rounded to one decimal place. Example: evaluating 50, 20, 1500, 10000 should return 50000.0, 15000.0, 37.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d079",
+  "title": "Scuba Dive Planner",
+  "spec": "Create a simplified dive planning tool starting with the function `plan(depth, time, rate, consumption)`. The inputs represent dive depth in meters, bottom time in minutes, ascent rate in meters per minute, and surface air consumption in liters per minute. The tool must be divided into specific helper functions. One helper must calculate the absolute pressure at a given depth in atmospheres assuming fresh water. Another helper should estimate the air volume consumed over a duration based on pressure and consumption rate. A third helper computes the ascent time required to reach the surface. The entry function coordinates these to find the bottom air used and the ascent air used at average pressure, returning a tuple with total air consumed and ascent time rounded to one decimal place. Example: planning 20, 30, 10, 15 should return 1410.0, 2.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d080",
+  "title": "Ski Jumping Scorer",
+  "spec": "Build a scoring system for a ski jump competition with the function `score(distance, kpoint, style, wind)`. The inputs are jump distance in meters, the construction point of the hill in meters, a list of five style judge scores out of twenty, and a wind compensation modifier. Break the logic into dedicated scoring functions. Create a helper to calculate distance points by starting with sixty points and adding or subtracting two points for each meter the jump falls beyond or short of the construction point. Create another helper to evaluate style by discarding the highest and lowest scores from the list and summing the remaining three. The main function sums the results of these helpers along with the wind modifier. Return the final score rounded to one decimal place. Example: scoring 125, 120, list of 18, 18.5, 17.5, 18, 19, and -5.5 should return 119.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d081",
+  "title": "Photography Depth Field",
+  "spec": "Write an optical calculator with the entry function `calculate(focal, aperture, distance, confusion)`. The inputs are lens focal length in millimeters, aperture f-number, focus distance in millimeters, and circle of confusion in millimeters. Delegate the math to individual helper functions. One function must compute the hyperfocal distance by squaring the focal length and dividing by the product of aperture and confusion. Another function must calculate the near focus limit using the hyperfocal distance, subject distance, and focal length. A third function determines the far focus limit using the same parameters, returning zero if the denominator is less than or equal to zero to indicate infinity. The entry function returns a tuple of hyperfocal distance, near limit, and far limit rounded to the nearest whole number. Example: calculating 50, 8, 5000, 0.03 should return 10417, 3409, 9434.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d082",
+  "title": "Aquarium Dosing Estimator",
+  "spec": "Create a tool to balance aquarium chemistry using the function `dose(volume, current, target, concentration)`. The inputs are tank volume in liters, current parameter level in parts per million, desired target level in parts per million, and the supplement concentration in milligrams per milliliter. Use distinct helper functions for the calculation steps. Implement a helper to calculate the total element deficit by subtracting the current level from the target level and ensuring it is not negative. Implement another helper to compute the total required mass of the element by multiplying the deficit by the tank volume. A third helper determines the volume of supplement liquid needed by dividing the total mass by the supplement concentration. The main function returns the required supplement volume in milliliters rounded to one decimal place. Example: dosing 200, 400, 450, 50 should return 200.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d083",
+  "title": "Loan Risk Assessor",
+  "spec": "Write a financial tool using the entry function `evaluate(income, debt, credit, amount)`. The inputs are monthly income, monthly debt payments, credit score, and requested loan amount. Separate the evaluation into specific helper functions. Write a helper to determine the debt to income ratio by dividing debt by income. Write a second helper that calculates a risk multiplier based on the credit score, where a score of eight hundred or above gives a multiplier of one, and every fifty points below adds a tenth to the multiplier. Write a third helper that computes the maximum approved amount by taking one third of the annual income and dividing by the risk multiplier. The entry function checks if the requested amount is valid and the debt ratio is below forty percent, returning a tuple of true and the maximum amount, or false and zero. Example: evaluating 6000, 1500, 750, 15000 should return true and 21818.18.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d084",
+  "title": "Woodworking Cut Optimizer",
+  "spec": "Implement a lumber estimator with the function `optimize(length, width, thickness, cuts)`. The inputs are board length in inches, width in inches, thickness in inches, and a list of requested cut lengths in inches. Structure the process with clear helper functions. The first helper must calculate the total board feet of the original lumber by multiplying the dimensions and dividing by one hundred forty four. The second helper iterates through the requested cuts to find how many can be yielded from the board length, assuming an eighth of an inch kerf loss for each cut. The third helper computes the percentage of waste from the remaining uncut length. The entry function returns a tuple containing the board feet, number of successful cuts, and waste percentage rounded to two decimal places. Example: optimizing 96, 6, 2, list of 30 should yield 8.0, 3, 5.86.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d085",
+  "title": "Meat Smoking Timer",
+  "spec": "Design a barbecue planning assistant starting with the function `plan(weight, temperature, meat, done)`. The inputs are meat weight in pounds, smoker temperature in fahrenheit, meat type as a string, and target internal temperature. Use helper functions for different timing phases. One helper estimates a base cook time in minutes, which is sixty times the weight for pork and forty times for beef, then reduces it by ten percent if the smoker is above two hundred fifty degrees. Another helper determines the wrap time, calculated as two thirds of the total estimated cook time. A final helper adds a resting period of forty five minutes to the total cook time. The main function returns a list with the total cook time, wrap time, and total wait time including rest, rounded to the nearest integer. Example: planning 10, 275, pork, 203 should return 540, 360, 585.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d086",
+  "title": "Radio Propagation Estimator",
+  "spec": "Develop a tool for wireless networking with the entry function `estimate(distance, frequency, gain, loss)`. The inputs are link distance in kilometers, frequency in gigahertz, combined antenna gain in decibels, and cable loss in decibels. The script must utilize modular helper functions. One helper calculates the free space path loss using the formula involving twenty times the logarithm base ten of both distance and frequency, plus ninety two point four five. Another helper computes the received signal level margin by subtracting the path loss and cable loss from the antenna gain. A third helper computes the first Fresnel zone radius at the midpoint in meters using the distance and frequency. The main function returns a tuple of the path loss, signal margin, and Fresnel radius rounded to two decimal places. Example: estimating 10, 5, 20, 2 should return 126.43, -108.43, 12.25.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d087",
+  "title": "HVAC Load Calculator",
+  "spec": "Write a thermal estimator with the function `calculate(area, occupants, appliances, climate)`. The inputs are room area in square meters, number of occupants, total wattage of appliances, and a climate factor between one and five. The logic must be divided into specific helper functions. Provide a helper to determine the baseline heat load by multiplying the area by one hundred and the climate factor. Provide a helper to compute the human heat contribution by assigning one hundred thirty watts per occupant. Provide a final helper to convert total watts to british thermal units per hour by multiplying by three point four one two. The main function adds the baseline, human contribution, and appliance wattage, and returns the total watts and total thermal units rounded to the nearest integer. Example: calculating 50, 4, 1000, 2 should return 11520, 39306.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d088",
+  "title": "Hydroelectric Power Estimator",
+  "spec": "Create a green energy tool using the function `estimate(head, flow, efficiency, hours)`. The inputs are water head height in meters, flow rate in cubic meters per second, turbine efficiency as a decimal, and daily operating hours. Rely on distinct helper functions for the physical and financial estimates. One helper calculates the mechanical power in kilowatts by multiplying the head, flow, efficiency, gravity nine point eight one, and water density of one thousand, then dividing by one thousand. Another helper determines the daily energy production in kilowatt hours by multiplying the power by the operating hours. A third helper estimates the annual revenue assuming a fixed price of ten cents per kilowatt hour. The entry function returns a list of the power, daily energy, and annual revenue rounded to one decimal place. Example: estimating 50, 2, 0.85, 24 should return 833.8, 20012.4, 730452.6.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d089",
+  "title": "Acoustic Room Modes",
+  "spec": "Design a sound studio utility with the main function `analyze(length, width, height, speed)`. The inputs are room length, width, and height in meters, and the speed of sound in meters per second. Create distinct helper functions to handle the acoustics math. The first helper calculates the fundamental axial modes for any given dimension by dividing the speed of sound by twice the dimension. The second helper calculates the first tangential mode for a plane by taking the square root of the sum of the squares of two axial frequencies. The main function uses these to find the three axial frequencies and the floor tangential frequency, then identifies the lowest frequency among them. Return a tuple containing the three axial frequencies, the tangential frequency, and the lowest overall frequency, rounded to one decimal place. Example: analyzing 5, 4, 3, 343 should return 34.3, 42.9, 57.2, 54.9, 34.3.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d090",
+  "title": "Golf Handicap Tracker",
+  "spec": "Write a sports ranking system starting with the function `compute(score, rating, slope, par)`. The inputs are a player gross score, the course rating, the course slope difficulty, and the course par. Abstract the calculations into independent helper functions. Create one helper to compute a score differential by subtracting the rating from a score, multiplying by one hundred thirteen, and dividing by the slope. Create a second helper to calculate an adjusted gross score by capping any score exceeding par plus five to exactly par plus five. The main function uses these to find the differential of the original score, and then the differential of the adjusted gross score. Return a tuple of the original differential and the adjusted differential rounded to one decimal place. Example: computing 95, 71.5, 125, 72 should return 21.2, 21.2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d091",
+  "title": "Textile Weave Generator",
+  "spec": "Create a loom pattern utility with the function `generate(warp, weft, shafts, treadles)`. The inputs are total warp threads, total weft picks, number of harness shafts, and number of treadles. Divide the pattern generation into distinct helper functions. One helper generates a threading sequence by assigning each warp thread sequentially to a shaft from one to the number of shafts, wrapping back to one. Another helper creates a tie up pattern assuming a basic twill where each treadle connects to two adjacent shafts. A third helper computes the treadling sequence by assigning each weft pick sequentially to a treadle. The main function runs these and returns a tuple containing the last warp shaft used, the first tie up pair for treadle one, and the last treadle used. Example: generating 20, 30, 4, 4 should return 4, tuple of 1 and 2, 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d092",
+  "title": "Battery Charge Profile",
+  "spec": "Implement an energy storage tool using the entry function `profile(capacity, current, voltage, limit)`. The inputs are battery capacity in amp hours, charging current in amps, nominal voltage, and the maximum safe voltage limit. Break the calculation into helper functions. The first helper computes the constant current duration by assuming it charges up to eighty percent capacity at the given current. The second helper calculates the constant voltage duration assuming the remaining twenty percent takes twice as long proportionally due to current tapering. A third helper calculates the total energy delivered in watt hours using the nominal voltage for the first phase and the maximum limit for the second phase. The main function returns the constant current time, constant voltage time, and total energy rounded to two decimal places. Example: profiling 100, 20, 12, 14.4 should return 4.0, 2.0, 1536.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d093",
+  "title": "Cryptography Frequency Analyzer",
+  "spec": "Write a cipher breaking aid with the function `analyze(text, language, threshold, shift)`. The inputs are a string of encrypted text, a target language string, a float for the expected index of coincidence, and an integer shift value. Organize the analysis into separate helper functions. One helper must filter the text to include only alphabetic characters and convert them to lowercase. Another helper counts the occurrences of each letter and calculates the actual index of coincidence for the text. A third helper applies a caesar shift backward using the provided shift value to decode the text. The entry function returns a list containing the filtered length, the computed index of coincidence rounded to three decimal places, and the first five characters of the decoded string. Example: analyzing string of khoor zruog, english, 0.065, 3 should return 10, 0.089, hello.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d094",
+  "title": "Beehive Health Monitor",
+  "spec": "Develop an apiary analysis tool starting with the function `monitor(temperature, humidity, frequency, season)`. The inputs are internal hive temperature in celsius, relative humidity percentage, audio frequency in hertz, and season as a string. Implement a separate helper function for evaluating each sensor metric. The temperature helper checks if it falls outside the optimal range of thirty two to thirty six degrees, returning a ten point penalty if so. The humidity helper checks if humidity exceeds sixty percent during winter or eighty percent otherwise, returning a five point penalty. The acoustic helper checks if the frequency is above three hundred hertz, returning a twenty point penalty for swarming intent. The main function sums the penalties and returns a tuple containing a boolean indicating if the hive is safe meaning zero penalties, and the total penalty score. Example: monitoring 34, 50, 250, summer should return true, 0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d095",
+  "title": "Sailing Handicap Calculator",
+  "spec": "Create a regatta scoring script using the main function `score(elapsed, yardstick, laps, wind)`. The inputs are elapsed time in seconds, the boat yardstick rating, number of completed laps, and wind speed in knots. Use modular helper functions to perform the adjustments. Create a helper that calculates the base corrected time by dividing the elapsed time by the yardstick and multiplying by one thousand. Create another helper that scales the corrected time up proportionally to estimate a three lap time if the race was shortened to fewer than three laps. Create a third helper that applies a heavy weather adjustment, reducing the time by five percent if wind exceeds twenty knots. The entry function chains these adjustments and returns the final adjusted time rounded to the nearest integer. Example: scoring 3600, 110, 3, 15 should return 3273.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d096",
+  "title": "Soil Texture Classifier",
+  "spec": "Write an agricultural utility with the entry function `classify(sand, silt, clay, organic)`. The inputs are percentages of sand, silt, clay, and organic matter. Define separate helper functions to handle the logic. The first helper validates that the sum of sand, silt, and clay is exactly one hundred, returning a boolean. The second helper determines the basic soil texture string; if clay exceeds forty percent it returns clay, or if sand exceeds eighty percent it returns loamy sand, otherwise loam. The third helper calculates the water retention capacity by adding two points of capacity for every percent of organic matter to a base of twenty. The main function returns a list with the texture classification and the retention capacity, or an error string if validation fails. Example: classifying 20, 30, 50, 5 should return clay, 30.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d097",
+  "title": "Coffee Roasting Evaluator",
+  "spec": "Develop a bean analysis tool starting with the function `evaluate(green, roasted, duration, crack)`. The inputs are green bean weight in grams, roasted weight in grams, total roast duration in seconds, and first crack time in seconds. Separate the logic into individual helper functions. One helper calculates the weight loss percentage by finding the difference between green and roasted, dividing by green, and multiplying by one hundred. Another helper computes the development time ratio by subtracting the crack time from the duration and dividing the result by the total duration. A final helper estimates the roast level string based on the ratio, labeling it light if below zero point two, medium if up to zero point two five, and dark otherwise. The entry function returns a tuple with the loss percentage, development ratio, and roast level. Example: evaluating 1000, 850, 720, 540 should return 15.0, 0.25, medium.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d098",
+  "title": "Harmograph Curve Generator",
+  "spec": "Create a geometric drawing script with the function `generate(frequency, decay, amplitude, phase)`. The inputs are frequency multiplier, decay rate, initial amplitude, and phase shift in radians. Write helper functions to handle the mathematical steps. One helper computes the current displacement at a given time by multiplying the amplitude by the exponential of negative decay times time, and then by the sine of frequency times time plus phase. Another helper iterates over a time range from zero to ten seconds in steps of one second, calling the displacement helper and accumulating the results into a list. A third helper finds the maximum absolute displacement from that list. The main function returns a tuple of the displacement list rounded to two decimal places and the maximum value. Example: generating 1.0, 0.1, 100, 0.0 should return a list of values and the maximum.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d099",
+  "title": "Blood Pressure Analyzer",
+  "spec": "Write a cardiology assessment script using the entry function `analyze(systolic, diastolic, heart, age)`. The inputs are systolic pressure, diastolic pressure, resting heart rate, and patient age. Use separate helper functions to calculate the metrics. The first helper computes the pulse pressure by subtracting diastolic from systolic, and then calculates the mean arterial pressure by adding one third of the pulse pressure to the diastolic value. The second helper determines the risk category string by checking if systolic is above one hundred forty or diastolic is above ninety, labeling it high, otherwise normal. The third helper calculates the maximum heart rate by subtracting age from two hundred twenty, and finds the percentage of this maximum represented by the resting rate. The main function returns a tuple containing mean arterial pressure, risk category, and heart rate percentage rounded to one decimal place. Example: analyzing 120, 80, 60, 40 should return 93.3, normal, 33.3.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d100",
+  "title": "Paint Coverage Estimator",
+  "spec": "Implement a home improvement tool with the function `estimate(length, width, height, coats)`. The inputs are room length, width, and height in meters, and the number of paint coats desired. Separate the computations into dedicated helper functions. The first helper calculates the total wall surface area by adding the perimeter of the room multiplied by the height, then subtracting a fixed ten square meters for doors and windows. The second helper calculates the required volume of paint in liters by dividing the surface area by a coverage rate of twelve square meters per liter, and multiplying by the number of coats. The third helper calculates the total cost assuming each liter costs fifteen dollars, adding a ten percent buffer for waste. The main function returns the wall area, required liters, and total cost rounded to one decimal place. Example: estimating 5, 4, 3, 2 should return 44.0, 7.3, 121.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d101",
+  "title": "Archery Match Scorer",
+  "spec": "Write a program to calculate the final scores for an archery tournament using the entry point `score(matches)`. The input is a list of matches where each match is a list of ends, and each end is a list of three arrow values from zero to ten. The logic must determine the total score for each archer, count the number of tens, and count the number of perfect inner rings denoted by an upper case X. Calculate the average score per arrow across the entire match. Return a list of tuples containing the total score, the ten count, the inner ring count, and the average arrow score. For example, an input of an inner ring, a ten, and a nine yields a score of twenty nine, two tens, one inner ring, and an average of nine point six.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d102",
+  "title": "Sourdough Hydration Calculator",
+  "spec": "Create a tool to determine the hydration percentage of bread recipes using the entry function `hydrate(ingredients)`. The input is a list of tuples containing the ingredient name, the amount in grams, and the type which can be flour, liquid, or starter. The hydration is the total liquid divided by the total flour. Assume the starter is exactly half flour and half liquid by weight. Sum the total flour including the flour from the starter, sum the total liquid including the liquid from the starter, and compute the final percentage rounded to one decimal place. Return the flour total, liquid total, and the percentage. For an input of four hundred grams flour, three hundred grams water, and one hundred grams starter, the result is four hundred fifty grams flour, three hundred fifty grams water, and seventy seven point seven percent.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d103",
+  "title": "Typography Line Spacing Tool",
+  "spec": "Determine the optimal line height and paragraph spacing for web typography using the function `typeset(paragraphs)`. The input is a list of tuples detailing font size in pixels, a line height multiplier, and the number of characters in the paragraph. The logic must calculate the line height as font size multiplied by the multiplier. The paragraph spacing is the line height multiplied by one point five if the character count exceeds two hundred, or one point two otherwise. Return a list of tuples containing the calculated line height and paragraph spacing rounded to the nearest pixel. For a font size of sixteen, a multiplier of one point five, and three hundred characters, it yields twenty four for line height and thirty six for paragraph spacing.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d104",
+  "title": "Board Game Point Counter",
+  "spec": "Calculate the final score for an agricultural board game using the entry point `tally(farms)`. The input is a list of lists where each inner list represents a farm category containing the number of sheep, wild boars, cattle, and empty spaces. A player earns one point per animal, but loses three points for every empty space. Furthermore, a bonus of five points is awarded if the player has at least one of every animal type. The logic must sum the animal points, subtract the penalty for empty spaces, and add the variety bonus if applicable. Return a list of the final integer scores for each farm. For example, two sheep, one boar, one cow, and one empty space results in a score of six.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d105",
+  "title": "Perfume Blend Proportions",
+  "spec": "Calculate the volume of fragrance oils needed for a perfume batch using the function `formulate(batches)`. The input is a list of tuples containing the target total volume in milliliters, the desired concentration percentage, and a ratio of top, heart, and base notes. The total fragrance oil volume is the target volume multiplied by the concentration percentage. The logic must then divide this fragrance oil volume among the top, heart, and base notes according to their given integer ratios. Return a list of tuples providing the milliliters of top, heart, and base note oils, and the milliliters of carrier alcohol needed to complete the total volume. For a hundred milliliter bottle at twenty percent concentration with a two to two to one ratio, it yields eight, eight, and four for the notes, and eighty for the alcohol.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d106",
+  "title": "Ice Skating Score Evaluator",
+  "spec": "Evaluate the final standings for a figure skating competition using the function `evaluate(routines)`. The input is a list of tuples containing the skater name, a list of technical element scores, a list of program component scores, and an integer for fall deductions. The logic must drop the highest and lowest score from both the technical elements and program components before summing them. Add the adjusted technical sum to the adjusted component sum, then subtract one point for every fall deduction to find the total score. Return a list of skater names and their final total scores sorted in descending order. For example, five technical scores of six and five component scores of six with one deduction results in a total of thirty five points.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d107",
+  "title": "Submarine Buoyancy Analyzer",
+  "spec": "Determine the neutral buoyancy ballast requirements for submarines using the entry point `submerge(vessels)`. The input is a list of tuples containing the hull volume in cubic meters, the dry mass in kilograms, and the current water density in kilograms per cubic meter. The logic must calculate the mass of the displaced water by multiplying volume by water density. To achieve neutral buoyancy, the total mass must equal the displaced water mass. Calculate the required ballast water by subtracting the dry mass from the displaced water mass. Return a list of required ballast masses in kilograms, capped at zero if the dry mass already exceeds the displaced mass. For a ten cubic meter volume, an eight thousand kilogram mass, and a water density of one thousand, the required ballast is two thousand kilograms.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d108",
+  "title": "Video Streaming Bitrate Optimizer",
+  "spec": "Recommend the target streaming bitrate for video files using the function `optimize(videos)`. The input is a list of tuples containing the video width, height, frames per second, and a complexity multiplier ranging from zero point five to two point zero. The base bitrate is calculated by multiplying width, height, and frames per second, then dividing by a constant of fourteen thousand. The logic must multiply this base bitrate by the complexity multiplier to find the final target bitrate in kilobits per second. If the target exceeds six thousand, cap it at six thousand to save bandwidth. Return a list of the final integer bitrates. For a width of nineteen twenty, height of ten eighty, thirty frames, and a complexity of one, the bitrate is four thousand four hundred forty four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d109",
+  "title": "Typing Speed Test Grader",
+  "spec": "Calculate the net typing speed and accuracy for a group of students using the entry point `grade(tests)`. The input is a list of tuples containing the total number of typed characters, the number of uncorrected errors, and the elapsed time in minutes. The logic must first find the gross words per minute by dividing the total characters by five, then dividing by the minutes. Next, subtract the number of errors divided by the minutes to find the net words per minute. Calculate the accuracy as the correct characters divided by the total characters, expressed as a percentage. Return a list of tuples with the net words per minute and the accuracy rounded to one decimal place. For two hundred characters, two errors, and one minute, the net speed is thirty eight and accuracy is ninety five percent.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d110",
+  "title": "Roller Coaster G-Force Evaluator",
+  "spec": "Analyze the vertical forces experienced by riders on a roller coaster track using the function `analyze(segments)`. The input is a list of track segments, each defined by a tuple of velocity in meters per second, the loop radius in meters, and whether the segment is at the top or bottom of a loop. The centripetal acceleration is velocity squared divided by the radius. At the bottom of a loop, the total force in gees is the centripetal acceleration divided by nine point eight, plus one. At the top of a loop, it is the centripetal acceleration divided by nine point eight, minus one. Return a list of the forces experienced in gees rounded to two decimal places. For a velocity of twenty, a radius of twenty, and a bottom position, the result is three point zero four gees.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d111",
+  "title": "Vinyl Record Playtime Predictor",
+  "spec": "Estimate the maximum audio duration that can fit on phonograph records using the function `predict(records)`. The input is a list of tuples specifying the rotational speed in revolutions per minute, the outer recorded radius in millimeters, and the inner recorded radius in millimeters, along with the groove spacing in millimeters per revolution. The total number of revolutions is the outer radius minus the inner radius, divided by the groove spacing. The logic must divide the total revolutions by the rotational speed to find the playtime in minutes. Return a list of durations in minutes and seconds, formatted as a string with a colon. For thirty three revolutions per minute, an outer radius of one hundred forty, an inner radius of sixty, and a spacing of zero point one, the duration is twenty four minutes and fourteen seconds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d112",
+  "title": "Package Courier Fee Calculator",
+  "spec": "Calculate the shipping cost for various parcels using the entry point `quote(parcels)`. The input is a list of tuples containing the package weight in kilograms, the delivery distance in kilometers, and a boolean indicating whether expedited shipping is requested. The base cost is five dollars plus two dollars per kilogram. A distance surcharge of ten cents per kilometer is added to the base cost. If expedited shipping is true, multiply the entire subtotal by one point five. The logic must apply a ten percent discount if the final price exceeds fifty dollars. Return a list of final prices rounded to two decimal places. A two kilogram package travelling one hundred kilometers with no expedition costs nineteen dollars.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d113",
+  "title": "Wi-Fi Signal Attenuation Model",
+  "spec": "Estimate the received wireless signal strength in various rooms using the function `model(paths)`. The input is a list of tuples containing the initial transmitter power in decibels, the distance in meters, and the number of solid walls intersecting the path. The free space path loss is twenty times the base ten logarithm of the distance, plus forty. Each solid wall introduces an additional drop of three decibels. The logic must subtract the path loss and the wall losses from the initial transmitter power to find the received signal strength. If the result is below negative eighty five, consider the signal dropped. Return a list of the final signal strengths, substituting the word disconnected for dropped signals. An initial power of twenty, a distance of ten, and two walls yields a signal of negative forty six.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d114",
+  "title": "Car Dealership Commission Tracker",
+  "spec": "Compute the monthly sales commissions for auto dealers using the function `commission(sales)`. The input is a list of lists, where each inner list represents a salesperson's sold vehicles, with each vehicle given as a tuple of the profit margin and a boolean indicating if a trade in was involved. The base commission is twenty percent of the profit margin. If a trade in was involved, an extra flat bonus of one hundred dollars is added. Furthermore, if a salesperson sells more than five vehicles in a month, apply a volume bonus of five hundred dollars to their total. Return a list of the total commissions for each salesperson. Selling six cars, each with a thousand dollar profit and no trade ins, yields a total commission of seventeen hundred dollars.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d115",
+  "title": "Asteroid Impact Energy Estimator",
+  "spec": "Estimate the kinetic energy released during a meteorite collision using the function `impact(asteroids)`. The input is a list of tuples containing the asteroid diameter in meters, its density in kilograms per cubic meter, and its impact velocity in kilometers per second. The logic must first calculate the volume assuming a perfect sphere, then multiply by the density to find the total mass. The kinetic energy in joules is one half times the mass times the square of the velocity in meters per second. Convert this energy into megatons of trinitrotoluene, where one megaton equals four point one eight four times ten to the power of fifteen joules. Return a list of impact energies in megatons rounded to three decimal places. A ten meter asteroid with a density of three thousand and a velocity of twenty kilometers per second yields about zero point one eight megatons.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d116",
+  "title": "Escape Room Score Calculator",
+  "spec": "Calculate the final leader board scores for escape room teams using the function `score(teams)`. The input is a list of tuples containing the team name, the completion time in minutes, the number of hints used, and the number of secondary puzzles solved. The starting score is one thousand points. The logic must deduct ten points for every minute taken, deduct fifty points for every hint requested, and add twenty five points for every secondary puzzle solved. If the time exceeds sixty minutes, the team fails and their score becomes zero regardless of other factors. Return a list of team names and their final scores, sorted from highest score to lowest. A team finishing in forty five minutes with one hint and two extra puzzles earns five hundred fifty points.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d117",
+  "title": "Plant Watering Scheduler",
+  "spec": "Determine the next watering day for a greenhouse collection using the entry point `schedule(plants)`. The input is a list of tuples containing the plant species, the baseline watering frequency in days, the current daily average temperature in Celsius, and a boolean indicating if it is in direct sunlight. The logic must adjust the frequency by subtracting one day if the temperature exceeds twenty five degrees, and subtracting another day if the plant receives direct sunlight. The minimum watering frequency is one day. Add this adjusted frequency to a provided constant representing today as an integer day of the year. Return a list of tuples with the plant species and the integer day of the year for the next watering. A plant with a five day baseline, thirty degrees, and direct sunlight will be watered in three days.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d118",
+  "title": "Satellite Latency Estimator",
+  "spec": "Calculate the round trip communication delay for orbital satellites using the function `estimate(links)`. The input is a list of tuples detailing the altitude of the satellite in kilometers, the ground station processing delay in milliseconds, and the satellite processing delay in milliseconds. The physical distance the signal must travel is twice the altitude for an up and down link, and this must be doubled for a full round trip. The propagation delay is the total distance divided by the speed of light, which is three hundred thousand kilometers per second, converted to milliseconds. The total latency is the propagation delay plus both processing delays. Return a list of total latencies rounded to the nearest millisecond. For an altitude of thirty six thousand kilometers and ten milliseconds of total processing delay, the latency is four hundred ninety milliseconds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d119",
+  "title": "Paintball Match Scorer",
+  "spec": "Compute the match results for a paintball tournament using the entry point `tally(matches)`. The input is a list of tuples containing the team identifier, the number of opposing players eliminated, the number of flag captures, and the seconds remaining on the clock when they finished. A team receives five points for each elimination and fifty points for a flag capture. If a team captures the flag, they also receive a time bonus of one point for every ten seconds remaining on the clock. If a team has zero flag captures, they receive no time bonus. Return a list of tuples mapping the team identifier to their final score. A team with ten eliminations, one capture, and one hundred seconds remaining scores one hundred ten points.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d120",
+  "title": "Water Purification Dosing",
+  "spec": "Determine the amount of chlorine required to sanitize drinking water using the function `purify(sources)`. The input is a list of tuples containing the water volume in liters, the turbidity level on a scale of one to ten, and the current water temperature in Celsius. The base requirement is two milligrams of chlorine per liter. The logic must double the base requirement if the turbidity is above five, as cloudy water needs more sanitizer. Furthermore, if the temperature is below ten degrees Celsius, increase the total requirement by twenty percent due to slower chemical reactions. Return a list of required chlorine doses in milligrams. One hundred liters with a turbidity of six and a temperature of eight degrees requires four hundred eighty milligrams of chlorine.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d121",
+  "title": "Dartboard Cricket Scorer",
+  "spec": "Calculate the points scored in a game of cricket darts using the entry point `darts(throws)`. The input is a list of tuples containing the player name, the target number hit from fifteen to twenty including the bullseye, and the multiplier which is one for a single, two for a double, or three for a triple. A player must hit a target three times to open it before they can score points on subsequent hits. The logic must track the hit counts for each target per player, and once a target has more than three hits, multiply the excess hits by the target value to calculate the score, treating the bullseye as twenty five. Return a list of tuples with the player name and their total accumulated points. Hitting twenty four times yields twenty points.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d122",
+  "title": "Gymnastics Meet Evaluator",
+  "spec": "Calculate the all around scores for a gymnastics competition using the function `score(routines)`. The input is a list of lists, where each inner list holds a gymnast's performances represented as tuples of the difficulty value and an array of five execution scores from judges. The logic must discard the highest and lowest execution scores, average the remaining three, and add this average to the difficulty value to obtain the apparatus score. Subtract a neutral deduction of zero point one for any out of bounds penalties provided as a separate integer. Return a list of the final all around scores for each gymnast by summing their apparatus scores, rounded to three decimal places. A difficulty of five point zero and execution scores of eight point zero across the board yields thirteen point zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d123",
+  "title": "Trampoline Park Capacity Tracker",
+  "spec": "Determine the available jumping slots in different zones of a trampoline park using the function `allocate(zones)`. The input is a list of tuples containing the zone name, the square footage of the zone, the number of currently active jumpers, and a boolean indicating if a private party is booked. The maximum capacity of a zone is one jumper per fifty square feet. If a private party is booked, the zone is closed to the public and the available slots are zero regardless of current occupancy. Otherwise, the logic must subtract the active jumpers from the maximum capacity to find the available slots. Return a list of tuples with the zone name and the number of open slots. A two thousand square foot zone with ten jumpers and no party has thirty open slots.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d124",
+  "title": "Music Festival Stage Schedule",
+  "spec": "Calculate the start and end times for bands performing at a music festival using the function `schedule(bands)`. The input is a list of tuples containing the band name, the set length in minutes, and the required setup time in minutes. The festival begins exactly at noon, represented as zero minutes. The logic must schedule each band sequentially, where a band's start time is the previous band's end time plus the current band's setup time. Convert the start and end times into a twenty four hour clock format expressed as a string like fourteen thirty. Return a list of tuples with the band name, their formatted start time, and their formatted end time. A sixty minute set with a fifteen minute setup starting at noon ends at thirteen fifteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d125",
+  "title": "Ski Resort Lift Ticket Pricing",
+  "spec": "Compute the daily lift ticket price for guests at a winter resort using the entry point `price(guests)`. The input is a list of tuples containing the guest age, the day of the week as an integer from one to seven, and a boolean indicating if it is a holiday. The base adult ticket price is one hundred dollars. The logic must apply a fifty percent discount for children under twelve and a thirty percent discount for seniors over sixty five. If the day is a weekend, add a surcharge of twenty dollars to the base price before discounts. If it is a holiday, ignore the weekend surcharge and instead add a forty dollar flat fee to the final discounted price. Return a list of final ticket prices. A ten year old skiing on a non holiday Tuesday pays fifty dollars.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d126",
+  "title": "Fantasy Combat Simulator",
+  "spec": "The function combat(battles) takes a list of lists where each inner list has the attacker attack power, defender defense power, weapon damage, and a twenty-sided die roll. Calculate the damage for each battle by adding the die roll to the attack power and comparing it to the defense power. If the attack total is less than or equal to the defense, the damage is zero. If it exceeds the defense, the damage equals the weapon damage multiplied by the difference between the attack total and the defense power. A die roll of twenty always hits and doubles the final damage, while a die roll of one always misses and deals zero damage. Return a list of integers representing the final damage for each battle. For example, given [[10, 12, 5, 15]], return [65].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d127",
+  "title": "Restaurant Tip Calculator",
+  "spec": "The function distribute(shifts) takes a list of tuples representing employees, where each tuple contains an employee role, hours worked, and individual sales. The rules dictate that bartenders get two points per hour, bussers get one point per hour, and servers get three points per hour. A tip pool is formed by taking five percent of the total sales across all servers and bartenders. The total tip pool is then divided by the total accumulated points of all eligible staff to find the value of a single point. Finally, each employee receives their points multiplied by the point value. Return a list of final tip amounts rounded to two decimal places in the same order as the input. For example, given [(\"server\", 8, 1000), (\"busser\", 8, 0)], return [37.5, 12.5].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d128",
+  "title": "Flight Luggage Surcharger",
+  "spec": "The function luggage(bags) evaluates a list of passenger bags where each bag is a tuple of length, width, height, and weight in kilograms. Standard bags must be under one hundred fifty eight centimeters in total dimensions and under twenty three kilograms. A bag exceeding the size limit incurs a fifty dollar oversize fee. A bag weighing between twenty three and thirty two kilograms incurs a forty dollar overweight fee, while a bag strictly over thirty two kilograms incurs a one hundred dollar heavy fee. If a bag is both oversized and overweight, an additional twenty dollar handling penalty applies. Return a list of total fees for each bag. For example, given [(80, 50, 30, 25)], return [110].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d129",
+  "title": "Marathon Pace Calculator",
+  "spec": "The function splits(target) takes a total marathon target time in minutes and calculates kilometer split times for forty two kilometers. A flat pacing strategy divides the time equally. However, this tool must apply a negative split strategy where the first twenty one kilometers are paced two percent slower than the average pace, and the remaining twenty one kilometers are paced two percent faster than the average pace. The extra two hundred meters at the end is run at a sprint pace which is five percent faster than the average pace. Return a tuple containing three values representing the pace in seconds per kilometer for the first half, the second half, and the final sprint, all rounded to the nearest integer. For example, for a target of two hundred forty minutes, return (348, 334, 324).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d130",
+  "title": "Aquaponics Ammonia Tracker",
+  "spec": "The function ammonia(measurements) processes a list of daily water tests, each containing temperature in celsius, potential hydrogen level, and total ammonia nitrogen in milligrams per liter. The toxic un-ionized ammonia fraction is calculated by first finding the acid dissociation constant which depends on temperature, and then using the potential hydrogen level to find the fraction. Specifically, the constant is zero point zero nine zero one eight plus twenty seven twenty nine point ninety two divided by the temperature in kelvin. The fraction is one divided by ten to the power of the constant minus the potential hydrogen level, plus one. Multiply this fraction by the total ammonia nitrogen to get the toxic concentration. Return a list of boolean values, true if the toxic concentration exceeds zero point zero five milligrams per liter, and false otherwise. For example, given [(25, 8.0, 2.0)], return [True].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d131",
+  "title": "Pizza Dough Scaler",
+  "spec": "The function recipe(requirements) takes a list of integers representing the desired weight of pizza dough balls in grams. First, calculate the total dough weight by summing the balls and adding a five percent waste buffer. The fixed baker percentages are one hundred percent flour, sixty five percent water, two point five percent salt, and zero point eight percent yeast, summing to one hundred sixty eight point three. Find the flour weight by dividing the total dough weight by one point six eight three, and then calculate the other ingredients using their respective percentages against this flour weight. Return a tuple of four integers representing the grams of flour, water, salt, and yeast, all rounded to the nearest whole number. For example, given [250, 250, 250, 250], the total with buffer is one thousand fifty, returning (624, 406, 16, 5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d132",
+  "title": "Freight Train Consist Builder",
+  "spec": "The function train(cars) organizes a list of rail cars where each car is a tuple of its type and its weight in tons. To ensure safe pulling dynamics, heavy cars must be placed at the front of the train and empty cars at the rear. Sort the cars primarily by their loaded status, putting cars over fifty tons first, then empty cars under thirty tons last, and medium cars in the middle. Within each weight category, maintain the original sequence of the cars. Additionally, calculate the total required locomotive power by multiplying the total train weight by two point five horsepower per ton, adding a ten percent safety margin. Return a tuple containing the sorted list of cars and the required horsepower as an integer. For example, given [(\"box\", 20), (\"tank\", 80)], return ([(\"tank\", 80), (\"box\", 20)], 275).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d133",
+  "title": "Hotel Room Upgrade Assessor",
+  "spec": "The function upgrade(guests) takes a list of guest tuples containing their loyalty tier, nights staying, and current room type. An upgrade is granted if the loyalty tier is platinum, or if the tier is gold and the stay is strictly less than three nights. Silver guests never receive an upgrade regardless of stay length. However, if the current room type is already a suite, no further upgrade is possible for any tier. Return a list of strings for each guest, with either their new upgraded room type which is always a suite, or their original room type if no upgrade was granted. For example, given [(\"gold\", 2, \"standard\"), (\"platinum\", 5, \"suite\")], return [\"suite\", \"suite\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d134",
+  "title": "Baking Sugar Replacement Calculator",
+  "spec": "The function sweeten(ingredients) adjusts a list of recipe components, each given as a tuple of ingredient name and amount in grams. When white sugar is encountered, it must be replaced with a blend of honey and stevia. For every one hundred grams of white sugar, substitute seventy five grams of honey and one gram of stevia. Because honey adds liquid, reduce the first liquid ingredient found, such as milk or water, by fifteen grams for every one hundred grams of white sugar replaced, but do not let the liquid amount drop below zero. Leave all other ingredients unchanged. Return the modified list of ingredients. For example, given [(\"white sugar\", 200), (\"milk\", 100), (\"flour\", 300)], return [(\"honey\", 150), (\"stevia\", 2), (\"milk\", 70), (\"flour\", 300)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d135",
+  "title": "Theme Park Express Pass Allocator",
+  "spec": "The function express(requests) handles a list of ride requests where each request is a tuple of the ride name, standard wait time in minutes, and express queue size. The base allowance is ten percent of the ride capacity, which is fixed at forty for all rides. If the standard wait time exceeds sixty minutes, the express allowance is reduced by half to prioritize the regular line. However, if the express queue size is larger than twenty, the allowance is increased by five to clear the backlog. Return a list of integers representing the final number of express guests to admit for each request, ensuring the number never falls below zero or exceeds the current express queue size. For example, given [(\"coaster\", 90, 25)], return [7].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d136",
+  "title": "Music Royalty Distributor",
+  "spec": "The function royalties(streams) calculates payouts based on a list of tracks, where each track is a tuple of the stream count, the artist rate, and the producer rate. The total revenue for a track is generated at a rate of zero point zero zero four dollars per stream. The artist payout is the total revenue multiplied by their specific rate, and the producer payout is the revenue multiplied by their rate. A fixed platform fee of one dollar is deducted from the remaining revenue, which is then assigned to the songwriter. If the remaining revenue is less than the platform fee, the songwriter receives zero. Return a list of tuples containing the artist payout, producer payout, and songwriter payout, all rounded to two decimal places. For example, given [(1000, 0.4, 0.2)], return [(1.6, 0.8, 0.6)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d137",
+  "title": "Space Station Solar Alignment",
+  "spec": "The function align(positions) processes a list of orbital data points, each a tuple of the space station orbital angle in degrees and the sun declination angle in degrees. The optimal solar panel rotation angle is calculated by subtracting the sun declination from the station orbital angle. If the result is negative, add three hundred sixty degrees to normalize it. However, if the station orbital angle is between one hundred eighty and three hundred sixty degrees, the station is in the shadow of the earth, and the panels should be parked at a zero degree angle to conserve turning energy. Return a list of the final panel angles for each data point. For example, given [(45, 15), (200, 10)], return [30, 0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d138",
+  "title": "Farm Irrigation Planner",
+  "spec": "The function irrigate(fields) evaluates a list of farm plots, each containing the crop type, current soil moisture percentage, and predicted rainfall in millimeters. The target moisture is forty percent for corn and thirty percent for wheat. If the current moisture is greater than or equal to the target, no irrigation is needed. Otherwise, calculate the required water by applying ten millimeters for every one percent of moisture deficit, and then subtract the predicted rainfall. If the rainfall completely covers the need, the required irrigation becomes zero. Return a list of integers representing the final millimeters of water to apply for each field. For example, given [(\"corn\", 30, 20), (\"wheat\", 35, 0)], return [80, 0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d139",
+  "title": "Courier Route Balancer",
+  "spec": "The function balance(packages) takes a list of delivery items, each a tuple of destination zone and weight in kilograms. Packages must be distributed between driver one and driver two to keep the total assigned weight difference as small as possible. Sort the packages by weight in descending order, and iterate through the list to assign each package to the driver who currently has the lesser total weight. If both drivers have the exact same total weight, assign the package to driver one. Return a tuple of two lists containing the assigned packages for driver one and driver two respectively. For example, given [(\"north\", 10), (\"south\", 5), (\"east\", 7)], return ([(\"north\", 10)], [(\"east\", 7), (\"south\", 5)]).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d140",
+  "title": "Campground Reservation Validator",
+  "spec": "The function reserve(requests) processes a list of booking attempts where each attempt is a tuple of arrival day of the year, departure day, and campsite number. A booking is only valid if the departure day is strictly greater than the arrival day. Furthermore, peak season runs from day one hundred fifty to day two hundred forty inclusive, and any stay starting in this window requires a minimum duration of three nights. Finally, a request is rejected if its dates overlap with any previously accepted reservation for the identical campsite number. An arrival on the same day as a previous departure is not an overlap. Return a list of boolean values representing whether each request in the sequence was accepted. For example, given [(160, 162, 1), (160, 165, 2), (163, 166, 2)], return [False, True, True].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d141",
+  "title": "Dog Show Scoring Aggregator",
+  "spec": "The function rank(scores) takes a list of participant tuples, each containing a dog name, a breed difficulty multiplier, and a list of five integer scores from judges. To find the final score for a dog, first remove the highest and lowest scores from the judges list. Then calculate the average of the remaining three scores. Multiply this average by the breed difficulty multiplier to get the final score. If any dog has fewer than five judge scores, their final score is automatically zero. Return a list of tuples containing the dog name and their final score rounded to one decimal place, sorted in descending order by the final score. For example, given [(\"Rover\", 1.5, [5, 6, 7, 8, 9])], return [(\"Rover\", 10.5)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d142",
+  "title": "Vintage Car Valuation Tool",
+  "spec": "The function value(cars) evaluates a list of antique vehicles where each vehicle is a tuple of the base model price, the condition grade from one to five, and the percentage of original parts. The valuation starts at the base price and is modified by condition, subtracting forty percent for grade one, subtracting twenty percent for grade two, adding twenty percent for grade four, and adding fifty percent for grade five. After applying this condition modifier, a flat penalty of five thousand dollars is deducted if the original parts percentage is below seventy. Alternatively, if the original parts percentage is exactly one hundred, a bonus of ten thousand dollars is added. Return a list of the final valuations as integers. For example, given [(50000, 5, 100)], return [85000].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d143",
+  "title": "Library Fine Calculator",
+  "spec": "The function fines(returns) processes a list of returned items, each a tuple of the item type, the number of days overdue, and the item replacement cost. Books incur a fine of twenty five cents per day, DVDs are one dollar per day, and magazines are ten cents per day. A grace period of two days applies to all items, meaning fines only start accumulating on the third overdue day. The total accrued fine for any single item is capped and cannot exceed its replacement cost. If the days overdue is negative or zero, the fine is zero. Return a list of float values representing the calculated fine for each item. For example, given [(\"book\", 5, 20.0), (\"DVD\", 1, 15.0)], return [0.75, 0.0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d144",
+  "title": "Snowplow Route Prioritizer",
+  "spec": "The function plow(streets) takes a list of road segments, each a tuple of the street name, snow depth in inches, and a priority class which is either emergency, main, or residential. The priority score determines the plowing order and is calculated by multiplying the snow depth by a class weight. Emergency routes have a weight of five, main routes have a weight of three, and residential routes have a weight of one. Any street with a snow depth under two inches receives a score of zero and is excluded from the plowing schedule. Sort the remaining streets in descending order of their priority score, and return a list of the street names in that order. For example, given [(\"Oak St\", 4, \"residential\"), (\"Elm St\", 3, \"emergency\"), (\"Pine St\", 1, \"main\")], return [\"Elm St\", \"Oak St\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d145",
+  "title": "Bakery Inventory Projector",
+  "spec": "The function project(days) estimates the required baked goods for a list of upcoming days. Each day is represented as a tuple of the day of the week, the average daily customer count, and a boolean flag indicating if there is a local festival. The base required croissants are half the customer count, and muffins are one third of the customer count. On weekends, meaning Saturday or Sunday, base demand increases by twenty percent for both items. If a local festival is occurring, add a flat fifty extra croissants and thirty extra muffins to the final calculation. Return a list of tuples containing the final estimated croissants and muffins, rounded up to the nearest whole integer. For example, given [(\"Sunday\", 300, True)], return [(230, 150)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d146",
+  "title": "Plant Fertilizer Dosing System",
+  "spec": "The function dose(plants) processes a list of greenhouse plants where each plant is a tuple of the species, growth stage, and pot volume in liters. The base fertilizer dosage is five milliliters per liter of pot volume. This base is multiplied by one point five for the vegetative stage, two point zero for the flowering stage, and zero point five for the seedling stage. Because ferns are sensitive, any final calculated dosage for a fern species must be cut in half regardless of its growth stage. Return a list of float values representing the total milliliters of fertilizer required for each plant. For example, given [(\"tomato\", \"flowering\", 10), (\"fern\", \"vegetative\", 5)], return [100.0, 18.75].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d147",
+  "title": "Bicycle Spoke Length Calculator",
+  "spec": "The function spokes(wheels) calculates the required spoke length for a list of wheels. Each wheel is a tuple containing the effective rim diameter, the hub flange diameter, and the lacing angle in radians. The rim radius is half the rim diameter, and the hub radius is half the hub diameter. The required spoke length is the square root of the sum of the squared rim radius and the squared hub radius, minus twice the product of the two radii and the cosine of the lacing angle. Since spokes stretch under tension, subtract one millimeter from the final calculated length. Return a list of lengths rounded to one decimal place. For example, given [(600, 50, 1.0472)], return [287.3].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d148",
+  "title": "Cable Car Tension Evaluator",
+  "spec": "The function tension(cars) evaluates the structural safety of an aerial tramway given a list of cable car tuples. Each tuple contains the car weight in kilograms, the passenger count, and the wind speed in meters per second. The base tension is the car weight plus seventy five kilograms per passenger. If the wind speed exceeds fifteen meters per second, an additional aerodynamic load of fifty kilograms per meter per second of wind over the fifteen limit is added to the tension. Finally, if the total tension exceeds five thousand kilograms, the system engages an emergency brake which increases the final effective tension by twenty percent due to abrupt deceleration forces. Return a list of the final tension values for each car. For example, given [(2000, 20, 10), (2000, 40, 20)], return [3500.0, 6300.0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d149",
+  "title": "Movie Set Lighting Calculator",
+  "spec": "The function illuminate(scenes) determines the number of lighting fixtures needed for camera setups. Each scene is a tuple of the target illuminance in lux, the area in square meters, the fixture luminous efficacy in lumens per watt, and a boolean indicating if it is a night shoot. A standard fixture consumes five hundred watts, so the lumens per fixture is the efficacy multiplied by five hundred. Find the total required lumens by multiplying the target illuminance by the area, and divide this by the lumens per fixture, rounding up to the nearest whole integer. If it is a night shoot, add two additional fixtures for background fill lighting. Return a list of final fixture counts. For example, given [(1000, 50, 80, True)], return [15].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d150",
+  "title": "Craft Beer Bitterness Calculator",
+  "spec": "The function bitterness(batches) calculates the International Bitterness Units for a list of brewing batches. Each batch tuple contains the batch volume in liters, the original gravity of the wort, and a list of hop additions, where each addition is a tuple of hop weight in grams, alpha acid percentage, and boiling time in minutes. The utilization factor is zero point three for boil times over fifty minutes, zero point two for times between thirty and fifty minutes inclusive, and zero point one for times under thirty minutes. The bitterness for one addition is its weight multiplied by the alpha acid percentage and the utilization factor, multiplied by ten, all divided by the batch volume. Sum the bitterness for all hop additions in a batch, and if the original gravity exceeds one point zero five zero, multiply the batch total by zero point nine to account for reduced extraction. Return a list of final bitterness units rounded to the nearest integer. For example, given [(20, 1.060, [(50, 5.0, 60)])], return [34].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d151",
+  "title": "Gemstone Valuation Model",
+  "spec": "Write a program to appraise precious stones by implementing the entry function `evaluate(gemstones)`. The input is a list of tuples containing carat weight, color grade index, clarity grade index, and cut quality score. Break this calculation down into separate helper steps: first find the carat base value, then determine the combined color and clarity multiplier, and finally apply the cut quality bonus. Calculate these three components for each stone and sum them for the final appraisal. Return a list of total values. For example, a two carat stone with perfect indices might yield a base of ten thousand and a final value of fifteen thousand.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d152",
+  "title": "Pottery Kiln Firing Schedule",
+  "spec": "Create a tool to plan ceramic firing times using the function `schedule(pieces, thickness)`. The inputs are a list of clay type heat tolerances and a maximum piece thickness in millimeters. Separate the logic into determining the safe heating rate based on thickness, finding the peak target temperature for the most delicate clay type, and calculating the required hold time at the peak temperature. Combine these phases into a total firing duration. Return the total hours required for the entire firing sequence. An input of porcelain pieces with a ten millimeter thickness should return roughly twelve hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d153",
+  "title": "Glassblowing Annealing Timer",
+  "spec": "Design a calculator to prevent thermal shock in glass artwork through the function `anneal(thickness, composition)`. The inputs are the maximum glass thickness and a numeric index representing the glass mixture. Use distinct calculations to find the initial soaking time required for the thickness, the slow cooling rate dictated by the composition, and the fast cooling duration to reach room temperature safely. Return the total hours required for the entire cooling process. A piece fifty millimeters thick with a standard mixture should yield a twenty hour annealing cycle.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d154",
+  "title": "Cheesemaking Curd Moisture Predictor",
+  "spec": "Build a model to estimate the final water content of cheese curds by implementing `predict(temperature, duration, acidity)`. The inputs are the cooking temperature, stirring duration in minutes, and the final acidity level. The logic should independently calculate the initial moisture loss from the cooking temperature, determine the stirring reduction factor, and compute the final acidity adjustment. Combine these to find the estimated final moisture percentage. Return this final percentage as a float. A batch cooked at forty degrees for thirty minutes with high acidity might yield forty five percent moisture.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d155",
+  "title": "Kite Aerodynamic Lift Calculator",
+  "spec": "Develop a utility to evaluate kite flying dynamics using the function `lift(area, velocity, wind)`. The inputs are the kite surface area, its optimal design wind speed, and the actual current wind speed. Separate the process into finding the base aerodynamic force from the area, determining the efficiency drop when actual wind deviates from the design speed, and computing the final vertical lift force. Return the total lift force in newtons. A two square meter kite in optimal wind should return about fifty newtons of lift.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d156",
+  "title": "Candle Burning Time Estimator",
+  "spec": "Write a script to predict how long a custom candle will last by providing the function `estimate(weight, wick, wax)`. The inputs are the total wax weight in grams, wick thickness in millimeters, and a wax material density index. Break the logic into finding the base consumption rate from the wax type, adjusting the rate using a multiplier derived from the wick thickness, and dividing the total weight by this final rate. Return the total burning time in hours. A two hundred gram soy wax candle with a standard wick should output approximately forty hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d157",
+  "title": "Hot Air Balloon Buoyancy Tracker",
+  "spec": "Create a physics calculator for balloon flights via the function `buoyancy(volume, ambient, internal)`. The inputs are the envelope volume in cubic meters, the outside air temperature, and the heated inside air temperature. Use separate steps to calculate the outside air density, the inside air density, and the resulting lift force derived from the difference in mass. Return the maximum payload weight allowed in kilograms. A standard balloon volume with an internal temperature of one hundred degrees should support around eight hundred kilograms.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d158",
+  "title": "Soapmaking Saponification Calculator",
+  "spec": "Implement a tool to formulate soap recipes using the function `saponify(oils, concentration)`. The inputs are a list of oil weights in grams and the desired lye concentration percentage. Independently compute the raw lye requirement for the specific oil blend, calculate the water discount factor based on the concentration, and find the final liquid weight required for mixing. Return a tuple containing the required amounts of dry lye and water. One thousand grams of olive oil at a thirty percent concentration should return around one hundred thirty grams of lye and three hundred grams of water.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d159",
+  "title": "Parachute Descent Rate Calculator",
+  "spec": "Design an aerospace utility to determine landing speeds by writing `descent(mass, diameter, altitude)`. The inputs are the payload mass in kilograms, canopy diameter in meters, and deployment altitude. Separate the calculation into finding the canopy drag area, determining the thinner air density at the given altitude, and solving for the terminal velocity of the falling payload. Return the descent speed in meters per second. A hundred kilogram payload with a ten meter canopy deployed at one thousand meters should descend at roughly five meters per second.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d160",
+  "title": "Wind Chime Resonance Frequencies",
+  "spec": "Develop an acoustic calculator for instrument making via the function `resonate(lengths, material)`. The inputs are a list of tube lengths in centimeters and a material density constant. Break the logic down into determining the speed of sound for the specific metal, calculating the fundamental frequency for each length, and finding the first overtone frequency for each tube. Return a list of tuples, each containing the fundamental and overtone frequency. A thirty centimeter aluminum tube should return a primary frequency near four hundred hertz.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d161",
+  "title": "Fountain Spray Height Calculator",
+  "spec": "Write a program to design water features by implementing the function `spray(pressure, nozzle, angle)`. The inputs are the pump pressure in kilopascals, nozzle diameter in millimeters, and the mounting angle in degrees. Use distinct steps to calculate the water exit velocity, isolate the vertical velocity component using the angle, and compute the maximum height reached against gravity. Return the maximum spray height in meters. A high pressure pump angled at forty five degrees should produce a spray height of roughly five meters.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d162",
+  "title": "Sundial Shadow Length Analyzer",
+  "spec": "Create a tool to help position garden sundials using the function `shadow(latitude, day, hour)`. The inputs are geographic latitude, day of the year, and hour of the day in military time. Separate the problem into calculating the solar declination for the specific day, finding the solar elevation angle using the latitude and hour, and computing the length of a shadow cast by a standard one meter vertical stick. Return the shadow length in meters. At noon on the summer solstice at forty degrees latitude, the shadow should be quite short.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d163",
+  "title": "Juggling Cascade Simulator",
+  "spec": "Build a physics model for circus performers via the function `cascade(props, height, dwell)`. The inputs are the number of objects, maximum throwing height in meters, and the time a hand holds an object in seconds. Independently calculate the air time derived from the throwing height, determine the total cycle time for one prop, and compute the required throwing rhythm to keep all props in the air. Return the time interval between throws in seconds. Juggling five balls to a height of one meter requires throws every split second.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d164",
+  "title": "Surfboard Volume Calculator",
+  "spec": "Implement a volume estimator for surfboard shaping by writing `volume(length, width, thickness)`. The inputs are the overall board length, maximum width, and center thickness in inches. Break the volume estimation into finding the base rectangular block volume, applying a foil reduction factor based on the length to thickness ratio, and applying a rail taper reduction based on the width. Return the estimated board volume in liters. A shortboard measuring seventy inches long should return a volume around thirty liters.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d165",
+  "title": "Equestrian Dressage Scorer",
+  "spec": "Design a competition grading tool using the function `score(movements, errors)`. The inputs are a list of raw scores for individual riding movements and the total course error deductions. Separate the scoring into summing the raw movement points, applying a double coefficient multiplier for complex movements, and deducting points for the total course errors. Return the final percentage score relative to the maximum possible points. A flawless ride with high marks should return a percentage in the upper eighties.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d166",
+  "title": "Typewriter Ribbon Usage Predictor",
+  "spec": "Develop a script to estimate vintage office supplies via `usage(characters, spacing, length)`. The inputs are the total character count of a manuscript, a line spacing multiplier, and the total ribbon length in meters. Use separate calculations for the linear distance consumed by typed characters, the extra mechanical advancement triggered by carriage returns, and the total number of ribbon passes required. Return the percentage of total ribbon capacity consumed. A ten thousand character document on a standard ribbon might consume twenty percent of its lifespan.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d167",
+  "title": "Maple Syrup Boiling Tracker",
+  "spec": "Write a calculator for sugar makers by implementing the function `boil(sap, sugar, target)`. The inputs are the initial sap volume in liters, the initial sugar percentage, and the target syrup percentage. Independently compute the total sugar mass present in the initial sap, determine the required final volume to achieve the target percentage, and calculate the exact amount of water that must be boiled off. Return the volume of water to evaporate in liters. Forty liters of raw sap usually requires boiling off thirty nine liters of water.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d168",
+  "title": "Fireworks Display Synchronizer",
+  "spec": "Create a choreography tool for pyrotechnics using `synchronize(shells, distance)`. The inputs are a list of shell burst altitudes and the audience viewing distance in meters. Break the synchronization into calculating the visual travel delay for the shell to reach its burst height, computing the acoustic delay for the sound to reach the audience, and determining the adjusted launch time needed for simultaneous visual and audio impact. Return a list of adjusted launch delays in seconds. Higher shells will need slightly different timing than lower ones to sound synchronized.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d169",
+  "title": "Bookbinding Paper Grain Analyzer",
+  "spec": "Build a utility to help craft traditional books via the function `grain(pages, dimensions, fold)`. The inputs are the number of pages, sheet dimensions in centimeters, and a fold direction index. Separate the analysis into determining the primary grain direction from the dimensions, calculating the fold resistance factor when folding against the grain, and computing the required pressing time to flatten the book signatures. Return the required pressing time in hours. A thick book folded against the grain might require forty eight hours in the press.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d170",
+  "title": "Mushroom Foraging Yield Estimator",
+  "spec": "Implement an ecological prediction model by writing `forage(area, humidity, temperature)`. The inputs are the forest area size in hectares, average relative humidity percentage, and average daily temperature. Use distinct steps to calculate the base fruiting potential of the area, apply a moisture multiplier based on the humidity, and apply a thermal stress reduction if the temperature is outside the ideal range. Return the estimated harvest weight in kilograms. High humidity and mild temperatures in a large forest should yield a bountiful harvest.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d171",
+  "title": "Origami Crease Pattern Evaluator",
+  "spec": "Design a structural analysis tool for paper folding using the function `crease(folds, intersections, layers)`. The inputs are the total number of folds, number of overlapping crease intersections, and the maximum stacked paper layers. Independently calculate the base structural weakness from the total folds, compute the stress penalty for every intersection, and evaluate the tearing probability based on the stacked layers. Return the overall probability of paper failure as a percentage. A complex model with many thick intersections might have a high failure rate.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d172",
+  "title": "Observatory Target Scheduler",
+  "spec": "Develop a telescope time allocation tool via the function `schedule(targets, horizon, duration)`. The inputs are a list of celestial target maximum elevations, a minimum horizon viewing angle, and the required observation duration in hours. Break the scheduling down into filtering out targets that never clear the horizon, calculating the available viewing window for the valid targets, and determining how many full duration slots can fit into each window. Return a list of total available slots per valid target. Targets high in the sky will yield multiple observation slots.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d173",
+  "title": "Suspension Bridge Weight Distribution",
+  "spec": "Write a civil engineering script for load balancing by implementing `distribute(cables, load, span)`. The inputs are the number of vertical support cables, the total deck load in tons, and the total bridge span in meters. Separate the analysis into calculating the uniform base tension per cable, applying an edge multiplier for cables near the ends of the span, and computing the maximum vertical sag allowed under the total load. Return the maximum tension on the edge cables and the sag distance. A heavily loaded bridge will show significantly higher tension at the abutments.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d174",
+  "title": "Murder Mystery Clue Distributor",
+  "spec": "Create a logic puzzle generator using the function `distribute(players, clues, rooms)`. The inputs are the number of players, total available clue cards, and number of rooms to search. Use distinct calculations to find the minimum clues required per player to solve their individual puzzle, determine how many decoy clues should be hidden per room to confuse them, and calculate the leftover floating clues that can be freely hidden elsewhere. Return a tuple of required player clues, decoy clues per room, and floating clues. A game with eight players and fifty clues needs careful distribution.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d175",
+  "title": "Laser Tag Scoring System",
+  "spec": "Build an arena ranking calculator by writing the function `score(hits, accuracy, survival)`. The inputs are the number of successful hits on opponents, shot accuracy percentage, and survival time in minutes. Independently compute the base points derived from the raw hits, determine the accuracy bonus multiplier, and calculate the survival bonus based on the total minutes lasted without being deactivated. Combine these for the final total match score and return it. A highly accurate player who survives the whole round should achieve a top tier score.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d176",
+  "title": "Meteor Shower Predictor",
+  "spec": "The main function `predict(showers)` accepts a list of tuples containing a shower name, a start day of the year, an end day, and a zenithal hourly rate. The solution must use dedicated helper functions for its distinct steps. One helper must calculate the peak day by finding the exact midpoint between the start and end days, rounding down. Another helper must estimate the visibility quality by multiplying the hourly rate by the fraction of the peak day divided by three hundred and sixty five. A third helper must categorize the shower as excellent if the quality exceeds fifty, good if over twenty, and poor otherwise. The entry function coordinates these helpers and returns a list of tuples with the shower name, the peak day, and the category. For example an input of Earthgrazer, 100, 110, 80 returns Earthgrazer, 105, poor.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d177",
+  "title": "Tsunami Arrival Estimator",
+  "spec": "The entry function `estimate(earthquakes)` takes a list of lists where each inner list contains a distance in kilometers from the shore and a depth in kilometers. The implementation must delegate its steps to separate helper functions. One helper computes the wave speed by taking the square root of the depth multiplied by nine point eight, then multiplying by three point six for kilometers per hour. Another helper determines the travel time by dividing the distance by the wave speed. The main function applies these helpers to each record and returns a list of travel times in hours rounded to two decimal places. For an earthquake at one thousand kilometers distance and four kilometers depth, the returned time is one point four zero hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d178",
+  "title": "Titration Curve Analyzer",
+  "spec": "The entry function `analyze(points)` receives a list of tuples representing titration data, where each tuple holds a volume of titrant added and a corresponding ph value. The logic must be divided into dedicated helper functions. The first helper computes the first derivative for adjacent points as the change in ph divided by the change in volume. A second helper identifies the equivalence point by finding the volume where this derivative reaches its maximum. A third helper determines if the acid is strong or weak based solely on the starting ph being less than three. The entry function coordinates these and returns a tuple of the equivalence volume and the acid strength category string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d179",
+  "title": "Concrete Mix Proportioner",
+  "spec": "The main function `proportion(requirements)` processes a list of target compressive strengths in megapascals. The process must use distinct helper functions for each material calculation. One helper estimates the water to cement ratio by dividing twenty seven by the strength, capping the ratio at zero point six. A second helper calculates the cement content by dividing a standard water content of one hundred and ninety kilograms by this ratio. A third helper determines the aggregate volume by subtracting the water and cement volumes from a total cubic meter. The entry function returns a list of tuples containing the cement mass and aggregate mass for each target, rounded to one decimal place.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d180",
+  "title": "Helicopter Hover Performance",
+  "spec": "The primary function `evaluate(helicopters)` accepts a list of tuples containing a rotor diameter in meters and a weight in newtons. The solution should organize the math into specific helper functions. One helper calculates the disc area as pi times the square of the rotor radius. Another helper determines the induced velocity by taking the square root of the weight divided by twice the air density of one point two two five times the disc area. A third helper calculates the ideal power required by multiplying the weight by the induced velocity. The entry function returns a list of power values in kilowatts rounded to one decimal place.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d181",
+  "title": "Ocean Wave Energy Predictor",
+  "spec": "The main function `forecast(waves)` takes a list of wave observations, where each observation is a tuple of significant wave height in meters and wave energy period in seconds. The logic must rely on smaller helper functions. One helper calculates the wave power flux per meter of wave crest by multiplying the squared height by the period and then by zero point four nine. Another helper categorizes this energy potential as high if the flux is above thirty, moderate if between ten and thirty, and low if under ten. The entry function processes the list and returns a sequence of the category strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d182",
+  "title": "Pallet Loading Optimizer",
+  "spec": "The entry function `pack(boxes)` accepts a list of tuples containing an item count, a package length, a package width, and a package height in millimeters. The system must break down the loading logic into separate helper functions. The first helper calculates the base area of a package by multiplying its length and width. A second helper determines the maximum number of items per layer by dividing a standard pallet area of one million two hundred thousand square millimeters by the package area. A third helper calculates the total layers possible without exceeding a total height of one thousand five hundred millimeters. The main function coordinates these to return a list of total packages that fit on each pallet.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d183",
+  "title": "Macroeconomic Indicator Aggregator",
+  "spec": "The function `aggregate(economies)` processes a list of tuples containing an inflation rate, an unemployment rate, and a gross domestic product growth rate. The solution must employ separate helper functions for its metrics. One helper calculates a misery index by adding the inflation and unemployment rates. Another helper computes an economic health score by subtracting the misery index from the growth rate multiplied by two. A final helper classifies the economy as expanding if the score is positive and contracting if negative. The entry function maps over the input to return a list of these classification strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d184",
+  "title": "Syllable Stress Analyzer",
+  "spec": "The entry function `analyze(words)` takes a list of phonetic transcriptions where syllables are separated by hyphens and primary stress is marked with an apostrophe. The implementation must use individual helper functions for the text processing. One helper counts the total number of syllables by tallying the hyphens plus one. Another helper identifies the numerical index of the stressed syllable by locating the apostrophe. A third helper determines the stress pattern as ultimate, penultimate, or antepenultimate based on the total syllables and the stress position. The main function returns a list of these stress patterns.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d185",
+  "title": "Melody Transposition Tool",
+  "spec": "The function `transpose(melodies)` receives a list of tuples, each containing a sequence of integer pitch classes and a shift interval in semitones. The tool must separate the logic into helper functions. The first helper transposes a single pitch class by adding the shift interval and applying modulo twelve. A second helper analyzes a transposed sequence to return true if it contains a pitch class difference of four from the root, identifying it as major. A third helper checks for a difference of three for minor. The entry function returns a list of strings labeling each transposed melody as major or minor.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d186",
+  "title": "Emergency Room Triage Assessor",
+  "spec": "The main function `triage(patients)` accepts a list of tuples containing heart rate, respiratory rate, and a pain scale value. The solution must structure the assessment using helper functions. One helper computes a vital sign score by adding a point if heart rate exceeds one hundred and another if respiratory rate exceeds twenty. A second helper assesses pain, adding two points if the scale is above seven. A third helper translates the total score into a priority of immediate for three or more points, urgent for one or two, and non urgent for zero. The entry function returns a list of these priority strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d187",
+  "title": "Greenhouse Humidity Controller",
+  "spec": "The entry function `regulate(sensors)` takes a list of tuples holding the current temperature in celsius and the relative humidity percentage. The code must rely on helper functions for the thermodynamic calculations. One helper computes the saturation vapor pressure from the temperature. Another helper calculates the actual vapor pressure by multiplying the saturation pressure by the humidity fraction. A third helper determines the humidity deficit and returns a command string, outputting mist if the deficit is above one kilopascal, vent if below zero point two, and monitor otherwise. The entry function aggregates these commands into a list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d188",
+  "title": "Fingerprint Minutiae Matcher",
+  "spec": "The function `match(prints)` processes a list of pairs of fingerprint data, where each print is a list of coordinate tuples for ridge endings. The routine must be broken down into specific helper functions. One helper calculates the euclidean spatial distance between two coordinate tuples. Another helper compares all points between two prints to count how many pairs fall within a tolerance radius of two units. A third helper evaluates this count, returning true if at least twelve points match, and false otherwise. The entry function executes these steps and returns a list of boolean match outcomes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d189",
+  "title": "Tennis Match Tracker",
+  "spec": "The entry function `score(rallies)` receives a list of lists of strings representing point winners in a standard tennis game. The logic must be divided into dedicated helper functions. One helper translates numerical point counts into standard tennis terminology like zero, fifteen, thirty, and forty. A second helper evaluates if the score has reached a deuce state where both players have at least three points and are tied. A third helper determines post deuce outcomes, assigning advantage or declaring a game winner based on point margins. The main function processes each rally and returns a list of final game outcome strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d190",
+  "title": "Hurricane Category Predictor",
+  "spec": "The main function `predict(storms)` accepts a list of tuples containing sustained wind speeds in knots and central pressure values in millibars. The solution must employ separate helper functions for the analysis. One helper converts the wind speed to kilometers per hour by multiplying by one point eight five two. Another helper uses this converted speed to determine the category on the saffir simpson scale, from one to five. A third helper checks if the pressure is below nine hundred twenty millibars, returning a boolean extreme intensity flag. The entry function returns a list of tuples containing the integer category and the boolean flag.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d191",
+  "title": "Forest Fire Spread Estimator",
+  "spec": "The function `estimate(conditions)` processes a list of tuples containing wind speed in kilometers per hour, slope steepness in degrees, and fuel moisture percentage. The logic must use a distinct helper function for each environmental factor. The first helper calculates a wind factor by squaring the wind speed and dividing by ten. The second helper computes a slope factor by multiplying the slope by two. The third helper determines a moisture penalty by taking the inverse of the moisture percentage fraction. The main function combines these by adding the wind and slope factors, multiplying by the moisture penalty, and returning a list of spread rates rounded to the nearest integer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d192",
+  "title": "Toll Road Biller",
+  "spec": "The entry function `bill(trips)` takes a list of tuples consisting of a vehicle type string, a distance traveled in kilometers, and a peak hour boolean flag. The billing logic must be implemented via individual helper functions. One helper assigns a base rate per kilometer of ten cents for cars, twenty cents for trucks, and fifteen cents for vans. A second helper multiplies this rate by the distance to find the base fee. A third helper applies a fifty percent surcharge to the base fee if the travel occurred during peak hours. The entry function coordinates these and returns a list of final monetary charges rounded to two decimals.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d193",
+  "title": "Real Estate Rental Yield Calculator",
+  "spec": "The main function `calculate(properties)` receives a list of tuples detailing a property purchase price, a monthly rental income, and annual maintenance costs. The calculation must be spread across several helper functions. One helper converts the monthly rent to an annual rental income by multiplying by twelve. A second helper determines the net operating income by subtracting the maintenance costs from this annual income. A third helper calculates the gross rental yield percentage by dividing the net operating income by the purchase price and multiplying by one hundred. The entry function returns a list of yield percentages rounded to two decimal places.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d194",
+  "title": "Spiral Staircase Dimensioner",
+  "spec": "The function `dimension(staircases)` processes a list of tuples containing a total floor to floor height and an available circular radius in millimeters. The geometry must be handled by specific helper functions. One helper calculates the required number of steps by dividing the total height by an ideal riser height of one hundred and ninety millimeters, rounding up. Another helper computes the exact riser height by dividing the total height by the step count. A third helper determines the tread depth by dividing the available circumference by the step count. The main function returns a list of tuples with the step count, riser height, and tread depth.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d195",
+  "title": "Chocolate Tempering Profiler",
+  "spec": "The entry function `profile(batches)` takes a list of tuples containing three temperature readings in celsius taken over the phases of chocolate tempering. The assessment must be structured using helper functions for each phase. The first helper checks if the initial melting phase reached at least forty five degrees. The second helper verifies if the cooling phase dropped to exactly twenty seven degrees. The third helper checks if the working phase brought the temperature back up to thirty one degrees. The main function uses these helpers to determine if all phases passed, returning a list of strings tagging each batch as properly tempered or poorly tempered.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d196",
+  "title": "Garment Pattern Grader",
+  "spec": "The main function `grade(measurements)` processes a list of tuples with base garment dimensions including chest circumference, waist circumference, and back length in inches. The grading process must rely on helper functions. One helper scales the measurements for the next size up by adding two inches to the chest and waist, and half an inch to the back length. Another helper converts a given inch measurement to centimeters by multiplying by two point five four. A third helper calculates a fabric area estimate by multiplying the graded chest and back length. The entry function returns a list of tuples with the graded chest in centimeters and the fabric estimate.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d197",
+  "title": "Standardized Test Grader",
+  "spec": "The function `grade(exams)` accepts a list of tuples containing a count of correct answers and a count of incorrect answers for a multiple choice test. The scoring logic must be broken into separate helper functions. One helper calculates a raw score by granting one point for each correct answer and deducting a quarter point for each incorrect answer. A second helper converts this to a standard score by adding a base of four hundred and multiplying the raw score by ten. A third helper assigns a letter grade based on the standard score thresholds. The entry function returns a list of tuples with the standard scores and letter grades.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d198",
+  "title": "Robotic Arm Reach Calculator",
+  "spec": "The entry function `calculate(arms)` receives a list of tuples containing three segment lengths and three joint angles in degrees. The kinematics must be solved using helper functions. One helper converts an angle in degrees to radians. A second helper computes the horizontal and vertical extensions of a single segment using trigonometric sine and cosine functions. The main function iteratively applies these helpers to sum the horizontal and vertical components of all segments, finding the final tip coordinates. It returns a list of these coordinate tuples rounded to two decimal places.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d199",
+  "title": "Mineral Hardness Classifier",
+  "spec": "The main function `classify(minerals)` processes a list of tuples containing a scratch test result integer and a specific gravity float. The logic must be separated into small helper functions. One helper uses the scratch test result to directly output the estimated mohs hardness scale value. Another helper calculates a density factor by dividing the specific gravity by the hardness. A third helper categorizes the mineral as a gemstone if the hardness is above seven, an industrial mineral if between four and seven, and a soft mineral otherwise. The entry function coordinates these and returns a list of tuples with the density factor and the category string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d200",
+  "title": "Open Pit Mine Excavation Estimator",
+  "spec": "The entry function `estimate(pits)` takes a list of tuples containing circular mine parameters including a surface diameter in meters, a bottom diameter in meters, and a depth in meters. The extraction logic must be modularized using helper functions. One helper calculates the total volume of excavated material using the mathematical formula for a frustum of a cone. A second helper estimates the mass of the extracted ore by multiplying this volume by a rock density of two point seven. A third helper calculates the total truckloads needed by dividing the mass by a capacity of three hundred. The main function returns a list of total truckload integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d201",
+  "title": "Aircraft Weight Balance Evaluator",
+  "spec": "Calculate if an aircraft is within its center of gravity limits. Write a single entry function `balance(manifest, empty)` where the first input is a list of tuples containing station position and item mass, and the second is a tuple of empty aircraft mass and empty center of gravity position. The logic must determine the total mass and the new center of gravity by summing the moments. Then evaluate if the mass is below the maximum takeoff mass of one thousand two hundred and the center of gravity falls between fifteen and twenty five inclusive. Return a tuple containing the final mass, the final center of gravity, and a boolean indicating if it is safe for flight. Example: given a manifest of (10, 50) and (30, 100), and an empty of (800, 20), the return is (950, 20.526, True).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d202",
+  "title": "Pharmacokinetics Elimination Calculator",
+  "spec": "Estimate the remaining drug concentration in a patient over time. Write an entry function `metabolize(dose, half)` where the first parameter is the initial dose in milligrams and the second is the biological half life in hours. The logic must calculate the elimination rate constant from the half life, and then compute the concentration at zero, four, eight, and twelve hours. Also determine the time required to reach a safe threshold of five milligrams. Return a list of the four concentration values and the time to reach the threshold. Example: given an initial dose of 100 and a half life of 6, it returns a list of 100.0, 63.0, 39.7, 25.0 and a time of 25.9 hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d203",
+  "title": "Solar Eclipse Transit Timer",
+  "spec": "Calculate the duration of totality for a solar eclipse at a specific observation point. Write an entry function `eclipse(diameter, velocity)` where the first is the moon shadow diameter in kilometers and the second is the shadow ground velocity in kilometers per second. Calculate the baseline duration by dividing the diameter by the velocity. Then apply a correction factor for the observer distance from the center of the path: subtract five percent of the baseline duration for every ten kilometers away from the center line, assuming a fixed observer offset of twenty kilometers. Return the baseline duration and the corrected duration in seconds. Example: given a shadow diameter of 150 and velocity of 0.8, the baseline is 187.5 seconds, and the offset reduces it by ten percent to 168.75 seconds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d204",
+  "title": "Fiber Optic Attenuation Estimator",
+  "spec": "Estimate the total signal loss in a fiber optic cable run. Write an entry function `attenuate(length, splices)` where the first is the cable length in kilometers and the second is the number of mechanical splices. The logic must compute the intrinsic cable loss at a rate of zero point two decibels per kilometer. Then calculate the splice loss at zero point three decibels per splice. A connector loss of zero point seven five decibels must be added for each of the two ends. Return a tuple containing the intrinsic loss, the splice loss, and the total system attenuation. Example: given a length of 50 and 4 splices, the results are 10.0, 1.2, and 12.7 decibels.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d205",
+  "title": "Windbreak Tree Shelterbelt",
+  "spec": "Determine the protective dimensions of a tree shelterbelt planted to reduce wind erosion. Write an entry function `shelter(height, density)` where the first is the average tree height in meters and the second is the foliage density given as a percentage. The protected leeward distance is calculated by multiplying the tree height by ten. The wind speed reduction factor is equal to the foliage density multiplied by zero point eight. Determine the effective protected area per linear meter of the shelterbelt by multiplying the protected distance by the wind speed reduction factor. Return the protected distance and the effective area. Example: given a height of 15 and density of 60, the protected distance is 150, the reduction factor is 48.0, and the effective area is 7200.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d206",
+  "title": "Mountain Bike Suspension Sag",
+  "spec": "Evaluate the suspension sag for a mountain bike based on rider weight. Write an entry function `sag(weight, travel)` where the first is the rider weight in kilograms and the second is the total suspension travel in millimeters. The system assumes a spring rate of five kilograms per millimeter. Calculate the raw displacement by dividing the weight by the spring rate. Find the sag percentage by dividing the displacement by the total travel and multiplying by one hundred. Determine if the setup is optimal, which requires the percentage to be strictly between twenty and thirty. Return the displacement, the percentage, and the optimal status. Example: given weight 80 and travel 120, return (16.0, 13.3, False).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d207",
+  "title": "Pneumatic Cylinder Force Evaluator",
+  "spec": "Calculate the extension and retraction forces of a pneumatic air cylinder. Write an entry function `force(pressure, dimensions)` where the first is the operating air pressure in bar and the second is a tuple of the bore diameter and the rod diameter in millimeters. First, convert the pressure from bar to megapascals by dividing by ten. Next, calculate the bore area and the annular area, which is the bore area minus the rod area, using the formula pi times radius squared. Finally, calculate the extension force by multiplying the bore area by the pressure in megapascals, and the retraction force by multiplying the annular area by the pressure. Return both forces in newtons. Example: given 6 bar and diameters of (50, 20), calculate the respective extending and retracting forces in newtons.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d208",
+  "title": "Climbing Route Difficulty Grader",
+  "spec": "Assign a difficulty grade to an indoor climbing route based on its holds and wall angle. Write an entry function `grade(holds, angle)` where the first is the number of holds and the second is the wall overhang angle in degrees. The base difficulty starts at five. Add two to the difficulty if the wall angle exceeds twenty degrees. Subtract one for every ten holds present on the route, as more holds make it easier. The final difficulty must be clamped to a minimum of one and a maximum of ten. Return the calculated difficulty score. Example: given 25 holds and an angle of 30, the base 5 plus 2 minus 2 yields a difficulty of 5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d209",
+  "title": "Welding Heat Input Calculator",
+  "spec": "Estimate the heat input and cooling time for an arc welding process. Write an entry function `weld(current, voltage)` where the first is the welding current in amperes and the second is the arc voltage. Assume a constant travel speed of five millimeters per second and a thermal efficiency factor of zero point eight. First, calculate the arc power by multiplying current by voltage. Then calculate the heat input per millimeter by multiplying the power by the efficiency factor, and dividing by the travel speed. Finally, determine the cooling time from eight hundred to five hundred degrees Celsius by dividing the heat input by fifty. Return the heat input and the cooling time. Example: given a current of 150 and voltage of 20, the power is 3000, heat input is 480, and cooling time is 9.6 seconds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d210",
+  "title": "Ski Lift Cable Sag Estimator",
+  "spec": "Calculate the sag of a ski lift cable between two support towers. Write an entry function `cable(span, tension)` where the first is the horizontal distance between towers in meters and the second is the cable tension in newtons. Assume the cable has a uniform weight of forty newtons per meter. Determine the total weight of the suspended cable by multiplying the span by the linear weight. Next, approximate the midpoint sag by multiplying the weight per meter by the square of the span, then dividing by eight times the tension. Return the total cable weight and the midpoint sag in meters. Example: given a span of 100 and a tension of 20000, the weight is 4000 and the sag is 2.5 meters.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d211",
+  "title": "Olive Oil Extraction Yield",
+  "spec": "Calculate the expected yield of extra virgin olive oil from a harvest batch. Write an entry function `press(mass, moisture)` where the first is the mass of harvested olives in kilograms and the second is the moisture content percentage. First, determine the dry mass by subtracting the moisture percentage from one hundred, dividing by one hundred, and multiplying by the total mass. Assume the dry mass contains twenty five percent extractable oil. Calculate the oil volume in liters knowing that olive oil has a density of zero point nine kilograms per liter. Return the dry mass and the expected oil volume. Example: given 1000 kilograms of olives with 60 percent moisture, the dry mass is 400, giving 100 kilograms of oil, which is 111.1 liters.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d212",
+  "title": "Hydronic Heating Flow Calculator",
+  "spec": "Determine the required water flow rate to heat a set of rooms. Write an entry function `flow(loads, drop)` where the first is a list of heat loads for different rooms in watts and the second is the temperature drop across the radiators in degrees Celsius. Calculate the total heat load by summing the list. Determine the required total mass flow rate of water by dividing the total heat load by the product of the temperature drop and the specific heat capacity of water, which is four thousand one hundred eighty four. Convert this flow rate to liters per minute by multiplying by sixty. Return the total load and the flow rate in liters per minute. Example: given loads of 1000 and 1500, and a drop of 10, the total load is 2500 and the flow rate is 0.358 liters per minute.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d213",
+  "title": "Sailboat Capsize Screening Formula",
+  "spec": "Evaluate the capsize risk of a sailboat based on its dimensions. Write an entry function `stability(beam, displacement)` where the first is the beam width in feet and the second is the boat displacement in pounds. First, convert the displacement into cubic feet of seawater by dividing by sixty four. Then calculate the capsize screening value by dividing the beam by the cube root of the displacement volume. A value less than two indicates a boat suitable for offshore sailing. Return the calculated screening value and a boolean indicating if it is offshore capable. Example: given a beam of 10 and displacement of 10000, the volume is 156.25 and the screening value is 1.85, so it is capable.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d214",
+  "title": "Compost Carbon Nitrogen Ratio",
+  "spec": "Calculate the overall carbon to nitrogen ratio for a compost pile. Write an entry function `compost(greens, browns)` where both inputs are masses in kilograms. The first input represents green materials which have a carbon to nitrogen ratio of fifteen to one and a moisture content of eighty percent. The second input represents brown materials with a ratio of fifty to one and moisture of ten percent. Calculate the dry mass of each component, then determine the total carbon and total nitrogen contributions assuming total parts sum to the ratio plus one. Return the overall carbon to nitrogen ratio of the combined pile. Example: given 10 kilograms of greens and 5 kilograms of browns, compute and return the resulting blended ratio as a float.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d215",
+  "title": "Film Development Time Adjuster",
+  "spec": "Adjust the baseline development time for photographic film based on temperature and push processing. Write an entry function `develop(base, temperature)` where the first is the baseline time at twenty degrees Celsius in minutes, and the second is the actual chemical temperature. For every degree above twenty, decrease the time by five percent of the baseline. For every degree below twenty, increase it by five percent. Then apply a push process adjustment that adds two minutes to the time. Return the final adjusted development time. Example: given a base time of 10 and a temperature of 22, the time decreases by 1 minute, plus 2 for pushing, resulting in 11 minutes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d216",
+  "title": "Pasture Grazing Capacity",
+  "spec": "Estimate how many days a pasture can support a herd of livestock. Write an entry function `graze(area, intake)` where the first is the pasture area in hectares and the second is the daily forage intake per animal in kilograms. Assume the pasture yields two thousand kilograms of usable dry matter per hectare. Calculate the total available forage by multiplying the area by the yield. Then determine the number of grazing days for a standard herd of fifty animals by dividing the total forage by the product of the intake and the herd size. Return the total forage and the grazing days. Example: given an area of 5 and an intake of 12, the total forage is 10000 and grazing days is 16.6.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d217",
+  "title": "Ultrasonic Flaw Detection",
+  "spec": "Evaluate the depth and size of a structural flaw using ultrasonic testing. Write an entry function `scan(time, amplitude)` where the first is the echo return time in microseconds and the second is the echo signal amplitude as a percentage. First calculate the depth of the flaw knowing the speed of sound in steel is five thousand nine hundred meters per second; the distance is the speed multiplied by half the return time, converting microseconds to seconds. Next evaluate the severity of the flaw: if the amplitude exceeds fifty percent, the flaw is considered critical. Return the flaw depth in millimeters and a boolean indicating if it is critical. Example: given a time of 10 and amplitude of 60, the depth is 29.5 millimeters and it is critical.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d218",
+  "title": "Indoor Arena Air Purifier",
+  "spec": "Calculate the number of air purification units required for an indoor sports arena. Write an entry function `purify(volume, attendees)` where the first is the interior volume of the arena in cubic meters and the second is the expected number of people. The base air circulation requirement is two volume changes per hour. Each attendee adds an additional requirement of zero point five cubic meters per hour. Calculate the total required airflow by summing these two requirements. Determine the number of purification units needed by dividing the total airflow by the capacity of a standard unit, which is two thousand cubic meters per hour, rounded up to the nearest whole number. Return the total airflow and the unit count. Example: given a volume of 50000 and 1000 attendees, the base is 100000, plus 500 makes 100500, requiring 51 units.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d219",
+  "title": "Snowmobile Track Flotation",
+  "spec": "Evaluate the deep snow flotation of a snowmobile based on track dimensions and rider weight. Write an entry function `float(weight, dimensions)` where the first is the combined weight of the snowmobile and rider in kilograms and the second is a tuple containing the track width and length in centimeters. First, calculate the track footprint area in square centimeters. Then, convert the total weight to a force in newtons by multiplying by nine point eight. Calculate the ground pressure by dividing the force by the footprint area. Determine if the setup is suitable for deep powder, which requires a pressure below zero point zero five newtons per square centimeter. Return the footprint area, the pressure, and the suitability boolean. Example: given weight 250 and dimensions (40, 350), the area is 14000, force is 2450, pressure is 0.175, returning False.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d220",
+  "title": "Saffron Yield Estimator",
+  "spec": "Estimate the harvest labor and final dried spice mass for a saffron crop. Write an entry function `harvest(flowers, workers)` where the first is the total number of harvested crocus flowers and the second is the number of available workers. Assume each flower yields three stigmas, and it takes one hundred fifty stigmas to produce one gram of fresh saffron. The dried saffron mass is twenty percent of the fresh mass. Calculate the time required to process the flowers assuming one worker can process two thousand flowers per hour. Return the dried saffron mass in grams and the total processing time in hours. Example: given 30000 flowers and 5 workers, the dried mass is 120.0 grams and it takes 3.0 hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d221",
+  "title": "Koi Pond Filtration Capacity",
+  "spec": "Assess if a mechanical and biological filtration system can support a koi pond. Write an entry function `pond(volume, koi)` where the first is the pond volume in gallons and the second is the number of adult koi fish. Each adult koi requires two hundred fifty gallons of water to remain healthy. The filter must be able to turn over the entire pond volume one point five times per hour. Calculate the minimum required pump flow rate in gallons per hour. Then determine if the pond volume is large enough to support the number of koi. Return the required pump flow rate and a boolean for the volume check. Example: given a volume of 2000 and 6 koi, the flow rate is 3000 and the volume is sufficient since 6 times 250 is 1500.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d222",
+  "title": "Microscope Resolution Calculator",
+  "spec": "Evaluate the total magnification and resolving power of a compound microscope. Write an entry function `resolve(objective, eyepiece)` where the first is a tuple of the objective lens magnification and numerical aperture, and the second is the eyepiece magnification. First calculate the total magnification by multiplying the objective and eyepiece magnifications. Then calculate the resolving power in nanometers using the Rayleigh criterion, assuming a light wavelength of five hundred fifty nanometers. The resolving power is zero point six one times the wavelength, divided by the numerical aperture. Return the total magnification and the resolving power. Example: given an objective of (40, 0.65) and an eyepiece of 10, return (400, 516.15).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d223",
+  "title": "Rocket Stage Delta Velocity",
+  "spec": "Calculate the change in velocity for a single rocket stage using the Tsiolkovsky equation. Write an entry function `stage(mass, empty)` where the first is the total initial mass in kilograms and the second is the dry empty mass in kilograms. Assume a constant specific impulse of three hundred seconds and a standard gravity of nine point eight one meters per second squared. Compute the exhaust velocity by multiplying specific impulse by gravity. Then compute the delta velocity by multiplying the exhaust velocity by the natural logarithm of the ratio of initial mass to dry mass. Return the exhaust velocity and the delta velocity. Example: given mass 5000 and empty 1000, ratio is 5, exhaust is 2943, delta velocity is 4736.5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ }
+]

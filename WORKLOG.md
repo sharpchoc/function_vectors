@@ -9989,3 +9989,16 @@ strict-reviewer sample of never-reviewed docs: 11/204 accepted (padding 40 %, wr
 src/sandbox/style_translation): 7,856 docs, Opus 5 + GPT-5 AND rule; accepted 367 (4.7 %). Both cite padding 48 %, fake decision 13 %, wrong task 7 %,
 inconsistent 6 %, invalid 2.7 %. 18 families at 0 % acceptance. OpenRouter credits ran out mid-run (402 → 3,375 docs redone after top-up; new 7-day key).
 Audit 9 report copied to `results/code_styles/audit_2026-09-22_REPORT.md`. Awaiting user decision on regeneration.
+
+**2026-09-22/23 — regen8: corpus-wide regeneration of the 7,567 docs failing the strict review (approved plan; USER DECISIONS: GPT-5 sole
+reviewer, Opus 5 generator, all failing docs + trailing_commas in full, pilot with auto-continue ≥ 40 %).** Archive of the pre-regen8 state:
+`dataset_files/style_translation/code/archive/2026-09-22_pre_regen8/` (commit 261165e0). Part 0: exact alternative-twin rules for 34 more
+families (`code_rules_a/b/c.py`, validated against reviewer-approved pairs, reports in `results/code_styles/regen8/rules_report_*.md`; all
+ENABLE; hex_constants set-only; bash_test excludes regex/glob/&& tests; a declining rule falls back to the LLM rewrite, counted); designed
+tasks for all 55 families (Gemini 3.1 Pro v2 prompt, 12,259 tasks, ≈ $110); static pre-checks `code_static_checks.py` (pyflakes unused /
+undefined, JS unused declarations, sandboxed run of the natural twin — only programming errors count —, string-literal equality; 1.6 %
+false positives on approved docs); scorer fixes (`scorer_fix_report.md`: float_literals mislabels 16 % → 0.8 %, js_semicolons unscorable
+12 % → 0, operator_spaces 5.9 → 1.0, py_abbrev 8.7 → 3.5; trailing_commas is a data problem); generation prompt + the family's real
+reviewer objections + Py2 / bash notes. Driver `regen8.py`: 2 candidates in parallel → free checks → best → GPT-5 → one revision → next
+task (≤ 3). Pilot (5 families × 20): 88/100 accepted, 47 % first attempt, $0.42 per accepted doc; py_join_concat 8/20 (LLM-rewrite family);
+141/473 Opus generations refused by the provider filter → Gemini fallback. Full run: 6 drivers × 100 workers on 7,479 docs.

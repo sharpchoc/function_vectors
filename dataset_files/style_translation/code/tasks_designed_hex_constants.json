@@ -724,5 +724,705 @@
   "title": "Warehouse Inventory Barcode Generator",
   "spec": "Develop a barcode parameters generator for warehouse inventory items. The system must process an item array and halt if the total items exceed 65535. Divide the items into processing batches of exactly 1024. The output barcode image width must be constrained to 256 pixels, and the quiet zone margin must be exactly 16 pixels. The height of the bars should be set to either 32 or 64 pixels based on the density setting. Calculate a checksum string by applying modulo 128 to the item identifier. The printer's DPI limit setting must be capped at 255, and the maximum metadata payload size per barcode is 4096 bytes.",
   "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d122",
+  "title": "Virtual Display Buffer Flusher",
+  "spec": "Write a function `flush(buffer)` where the input is an array of integers. To enforce legacy controller limits, clamp any color component exceeding 255, and treat brightness levels above 128 as high intensity. The display requires scanlines exactly 1024 pixels long, with memory offsets restricted to 65535. Divide the buffer into blocks of 256 bytes for transfer, allocate cache lines of size 64, and simulate interrupts every 16 and 32 scanlines. The final payload must be padded with empty elements until its length reaches 4096. Return the padded array; for example, providing an array containing an overly large value returns an array of size 4096 starting with 255 followed by empty elements.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d123",
+  "title": "Audio Sample Normalizer Limits",
+  "spec": "Write a function `normalize(samples)` taking an array of numbers. Validate audio clips by clipping any sample value exceeding 65535, and split the audio into chunks of 4096 samples for the processing window. The baseline threshold for silence is an amplitude of 128, and a peak above 255 triggers the dynamic range compressor. Downsample the stream by taking every 16 or 32 samples depending on the operating mode. Data packets must be grouped in frames of 1024 bytes, interleaved into blocks of 256, and aligned to a boundary of 64. Return a list of valid frame counts and the filtered array; for example, an array of a single huge number returns a frame count and an array containing only 65535.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d124",
+  "title": "Network Packet Header Inspector",
+  "spec": "Write a function `inspect(packet)` where the input is an array of integer bytes. A valid packet requires the length field to be under 65535, capping the payload size at 4096 bytes and the window size at 1024. Trigger alerts if the priority bit 128 is set, or if the urgent pointer exceeds 255. Group data segments into 256 byte segments and shift the sequence number by 64 each time. A connection timeout occurs after 32 seconds, and the retry limit is set to 16 attempts. Return an array of extracted segment payloads; for example, an input with a length over 65535 returns an empty array, while a valid short payload returns the parsed segments.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d125",
+  "title": "Tiny Filesystem Allocator Constraints",
+  "spec": "Write a function `allocate(inodes)` taking an array of file sizes. The file system uses a block size of 4096 bytes and a maximum file size of 65535 bytes per block map. Directory entries are limited to 255 characters, an inode requires exactly 256 bytes of space, and free space scans occur in chunks of 1024 blocks. A small file optimization kicks in for sizes under 64 bytes, padding smaller allocations to boundaries of 16 or 32, and reserving 128 blocks for emergency recovery. Return an array of assigned block start addresses; for example, file sizes larger than 65535 are skipped, while normal sizes return their aligned block assignments.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d126",
+  "title": "Serial Port Sensor Calibrator",
+  "spec": "Write a function `calibrate(readings)` taking an array of raw sensor values. Ensure the sensor maximum reading is bounded at 65535, and drop any noise values that fall below a baseline of 16. Group the stream into windows of 1024 samples, apply a median filter to chunks of 32 readings, and smooth anomalies over 64 samples. If an error code equals 255, the sensor is reset, allocating a memory buffer of 4096 slots for historical trends and applying a calibration offset by multiplying by 128 and dividing by 256. Return the array of smoothed values; for example, an input containing a massive reading has that reading clipped to 65535, while readings below 16 are removed entirely.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d127",
+  "title": "Cryptographic Hash Padding Rules",
+  "spec": "Write a function `pad(message)` taking an array of byte values. The hashing algorithm requires the total length to be a multiple of 1024 bytes, achieved by appending a marker byte of 128 followed by empty bytes. The maximum message length is 65535 blocks, each 4096 bytes long, and the internal state matrix uses 256 rounds of mixing. During mixing, bytes are shifted by 16 or 32 bits and XORed with an initialization chunk of 64 bytes, raising a warning if the final checksum is less than 255. Return the fully padded byte array; for example, a short message array is padded with 128 and empty bytes up to 1024 elements.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d128",
+  "title": "Satellite Telemetry Data Slicer",
+  "spec": "Write a function `slice(stream)` where the input is an array of raw integers. The telemetry frames are strictly 4096 bytes in size, extracting a high resolution image payload capped at 65535 pixels. A checksum validation occurs every 1024 bytes, isolating internal blocks of 256 bytes, and masking lower bits to check for control signals with value 128 or 64. A synchronization sequence happens when the byte equals 255, processing redundant channels in batches of 16 and 32. Return an array of valid payload segments; for example, a stream containing 255 triggers synchronization and returns the payload, otherwise it returns empty segments.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d129",
+  "title": "Virtual Machine Page Table Mapper",
+  "spec": "Write a function `map(addresses)` taking an array of virtual addresses. The memory management unit uses a page size of 4096 bytes, supporting a maximum physical space of 65535 pages and directories requiring 256 bytes each. The operating system reserves the first 1024 pages, evicts 64 pages at a time during swap, and aligns the stack pointer to 16 or 32 byte boundaries. A special debug flag is set if an address ends in 255, and read permissions are granted by adding 128. Return the translated physical addresses; for example, an address ending in 255 triggers debug logging and returns its mapped location.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d130",
+  "title": "Radar Signal Processor Windowing",
+  "spec": "Write a function `process(signals)` taking an array of integer amplitudes. The processor identifies targets using an analysis window of 4096 points, capping the maximum allowable amplitude to 65535 to prevent overflow. Background noise is gated out if it falls below 64 or 32, and signal peaks are detected when the derivative exceeds 255 or 128. The data buffer is divided into subframes of 1024 and 256 samples, with a phase alignment step shifting the signals by 16 positions. Return an array of detected target distances; for example, a signal array containing a very large amplitude is clipped to 65535, and noise below 32 is ignored.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d131",
+  "title": "Retro Joystick Input Multiplexer",
+  "spec": "Write a function `multiplex(events)` taking an array of raw input codes. Action buttons are assigned to bitmasks 16 and 32, directional pads trigger 64 and 128, and a combined state might equal 255. The history log tracks up to 1024 recent inputs, while analog coordinates are normalized to 256 but clamped at a raw limit of 65535. A rumble feedback packet is exactly 4096 bytes in length. Return an array of parsed button states; for example, pressing an action button yields 16 or 32 in the parsed state array, and out of bounds analog inputs are clamped at 65535.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d132",
+  "title": "IoT Temperature Data Aggregator",
+  "spec": "Write a function `aggregate(temperatures)` taking an array of integers. Remote nodes transmit data payloads of up to 4096 bytes, rejecting any anomalous reading exceeding 65535. The local cache stores a maximum of 1024 records, addressing sensor nodes up to 255 within sub networks of exactly 256 devices. If the battery level drops below 64 or 32 a low power alert is triggered, while sleep intervals are 16 minutes and critical alerts fire if variance exceeds 128. Return a list of aggregated averages; for example, an anomalous temperature exceeding the maximum is rejected, and valid readings are averaged and returned.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d133",
+  "title": "Industrial Robot Arm Path Planner",
+  "spec": "Write a function `plan(coordinates)` taking an array of position numbers. The control system limits maximum joint rotation steps to 65535, operating in a workspace bounded by a cube of 4096 millimeters on each side. The motion is broken into segments of 1024 interpolation points, restricting speeds if the distance to an obstacle is less than 255 or 128. The motor controller expects commands formatted in packets of 256 bytes, calculating avoidance vectors with precision of 64 or 32 bits every 16 milliseconds. Return an array of planned movement steps; for example, a target coordinate that is too large is limited to 65535, and distances below 128 trigger the safety speed limit.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d134",
+  "title": "Synthesizer Oscillator Waveform Generator",
+  "spec": "Write a function `generate(frequencies)` taking an array of numbers. The output is a digital waveform buffer of size 4096, created by dividing the fundamental frequency by 16 and 32 to create sub oscillators. The wave table lookup uses an index wrapping at 1024, constraining the maximum amplitude to 65535 to prevent clipping. A distortion effect applies soft clipping when the signal exceeds 255, processing low pass filters in chunks of 256 samples with resonance scaled by 128 and decay stages of 64 milliseconds. Return the generated wave table array; for example, an input frequency produces an array of exactly 4096 samples with amplitudes bounded by 65535.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d135",
+  "title": "Medical Imaging Contrast Enhancer",
+  "spec": "Write a function `enhance(pixels)` taking an array of grayscale values. The scanning device limits maximum brightness to 65535, applying histogram equalization over bins of size 4096. A contrast stretching operation expands values falling between 128 and 255, splitting the image into processing tiles of 256 elements. A sharpening filter matrix of size 16 or 32 is convoluted over the edges, and background artifacts smaller than 64 pixels are removed to produce a report of 1024 words. Return the enhanced pixel array; for example, an image with extreme brightness has those pixels clamped to 65535, and small artifacts are cleared.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d136",
+  "title": "Smart Grid Power Demand Forecaster",
+  "spec": "Write a function `forecast(consumptions)` taking an array of wattage integers. The maximum capacity of a substation is 65535 kilowatts, analyzing load trends over a timeframe of 4096 minutes across 1024 local nodes. The system triggers load shedding if a sector exceeds a threshold of 255, estimating baseline power usage at 128 and keeping a reserve of 64 for emergencies. Transformer telemetry is reported in batches of 256 records, polling every 16 or 32 seconds depending on demand severity. Return the forecasted consumption array; for example, an immense forecasted demand is capped at 65535, and usage above 255 triggers a shed status in the return array.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d137",
+  "title": "Video Game Particle Physics Engine",
+  "spec": "Write a function `simulate(particles)` taking an array of numbers representing positions. The physics grid handles a maximum of 65535 active entities, performing spatial hashing using a cell size of 4096. Collision detection evaluates pairs within a radius of 128 or 255, while a wind force of 64 pushes particles horizontally and gravity applies a downward pull scaled by 32. Culling removes particles falling below a depth of 1024, applies velocity damping in fractions of 256, and steps forward in increments of 16 milliseconds. Return the updated particle positions; for example, particles falling below depth 1024 are excluded from the returned array.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d138",
+  "title": "High Speed Trading Ticker Parser",
+  "spec": "Write a function `parse(feed)` taking an array of integer message codes. The exchange defines a maximum price multiplier of 65535, processing orders in bulk arrays of 4096 elements with valid sequence numbers wrapping at 1024. An anomaly flag is set if volume jumps by a factor of 256, and short selling is restricted for risk codes above 128 or 255. The moving average is calculated over 64 ticks, with a fast average over 32, expecting a connection heartbeat every 16 milliseconds. Return the parsed order records; for example, an extreme price multiplier is capped to 65535, and a sudden volume spike sets the anomaly flag.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d139",
+  "title": "Automated Warehouse Conveyor Router",
+  "spec": "Write a function `route(packages)` taking an array of destination codes. The routing table supports up to 65535 unique bins, managing a main conveyor loop of 4096 meters with sorting stations every 1024 meters. A package is heavy if its weight exceeds 255, and fragile if the code exactly matches 128. Small parcels weighing under 64 or 32 are diverted to a secondary line, limiting delivery truck batches to 256 packages and scanning barcodes every 16 milliseconds. Return the calculated routing paths; for example, a package destination over 65535 is marked invalid, and an excessive weight flags it as heavy in the route list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d140",
+  "title": "Bioinformatics DNA Sequencer Aligner",
+  "spec": "Write a function `align(sequences)` taking an array of integer encoded base pairs. The reference genome is mapped into chunks of 65535 bases, searching for exact matches of length 4096. A scoring matrix applies a penalty of 255 for gaps and 128 for mismatches, while a perfect match yields a score of 1024. The reading frame shifts in increments of 256 to cover the sequence, flagging short tandem repeats of length 16, 32, and 64 for secondary analysis. Return the list of alignment scores; for example, a sequence matching perfectly returns a score of 1024, while one mismatch reduces the score by 128.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d141",
+  "title": "Astronomical Star Catalog Filter",
+  "spec": "Write a function `filter(stars)` taking an array of brightness integers. The catalog indexes objects with a maximum luminosity value of 65535, segmenting the sky into 4096 coordinate sectors. A deep space cluster requires at least 1024 adjacent stars, masking background radiation if it measures below 128 or 255. The telescope aperture captures light in buckets of 256 photons, identifying pulsar frequencies by analyzing periods of 16, 32, and 64 milliseconds. Return the filtered list of star coordinates; for example, a star luminosity exceeding limits is clamped at 65535, and sectors with fewer than 1024 stars are excluded from the output.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d142",
+  "title": "Geological Seismic Activity Detector",
+  "spec": "Write a function `detect(vibrations)` taking an array of tremor amplitudes. The maximum Richter scale equivalent magnitude is capped at 65535, processing the continuous stream in windows of 4096 samples. A major event is logged if the peak amplitude crosses 1024, while minor foreshocks are recorded if they exceed 128 or 255. The noise floor is established by averaging the lowest 64 and 32 readings, flushing data blocks to storage every 256 seconds at a sampling rate of 16 hertz. Return the detected event timestamps; for example, a massive amplitude is capped at 65535, and peaks over 1024 return a major event flag.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d143",
+  "title": "Autonomous Drone Flight Stabilizer",
+  "spec": "Write a function `stabilize(gyroscopes)` taking an array of pitch and roll numbers. The motor controller accepts maximum thrust values of 65535, storing flight logs in blocks of 4096 bytes and sending telemetry updates in packets of 1024. If the tilt angle exceeds 255, an emergency hover mode is activated, whereas normal corrections use proportional gains of 128 and derivative gains of 64. Battery voltage is monitored with a resolution of 256 steps, making small trim adjustments using increments of 16 and 32. Return the calculated motor thrust commands; for example, an excessive thrust is reduced to 65535, and an extreme tilt triggers hover commands.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d144",
+  "title": "Legacy Database Index Rebuilder",
+  "spec": "Write a function `rebuild(keys)` taking an array of integer primary keys. The database engine enforces a maximum table size of 65535 records, using a B-tree node size of 4096 bytes and splitting nodes when they contain more than 1024 entries. A deleted record marker is identified by the value 255, computing hashes using a prime multiplier of 128 and a modulo of 256. Index fragmentation is severe if there are more than 64 or 32 empty slots, optimizing search paths by aligning to 16 bytes. Return the optimized array of index nodes; for example, keys up to 65535 are indexed, and nodes exceeding 1024 entries are split into two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d145",
+  "title": "Fleet Management Mileage Tracker",
+  "spec": "Write a function `track(odometers)` taking an array of integer distance readings. The system tracks a maximum total distance of 65535 kilometers per trip, processing central updates in batches of 4096 records. A maintenance alert is triggered when a vehicle reaches 1024 hours of operation, and speeding violations are logged if the velocity exceeds 255 or 128 kilometers per hour. The daily log file allocates 256 bytes per vehicle, classifying short trips of 16, 32, or 64 kilometers as local deliveries. Return the processed array of vehicle logs; for example, trip distances over 65535 are capped, and speeds over 255 flag a critical violation.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d146",
+  "title": "Optical Character Recognition Segmenter",
+  "spec": "Write a function `segment(pixels)` taking an array of grayscale image data. The document size limit is bounded by a height of 65535 pixels, scanning the image in horizontal bands of 4096 pixels wide. A text bounding box must have a minimum width of 1024, processing ink densities bounded by thresholds of 255 for black and 128 for dark gray. White space is identified by continuous runs of 256 blank pixels, isolating individual characters into grids of 16, 32, or 64 pixels. Return the array of segmented character bounding boxes; for example, an overly large image height is clamped at 65535, and runs of 256 blanks split the text regions.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d147",
+  "title": "Network Switch Port Monitor",
+  "spec": "Write a network monitoring module centered around a main function `analyze(packets)`. Takes an array of arrays representing raw network packets. A packet is valid if the source port is less than or equal to 65535, the destination port is less than or equal to 65535, and the payload size is exactly 1024 bytes. The time to live field must not exceed 255 and the hop count must be strictly less than 128. If the packet is valid, calculate a routing score by taking the payload size modulo 256 and adding it to the window size, which is capped at 4096. Any packet with a priority flag greater than 16 or a fragment offset larger than 32 is immediately discarded. Returns an array of routing scores for valid packets. Example: an input with a valid payload of size 1024 and routing window 400 yields a score.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d148",
+  "title": "Embedded Display Color Quantizer",
+  "spec": "Create an image processing tool with an entry function `quantize(pixels)`. Processes an array of color definitions where each color is a sub array of numeric values. Validates that each color channel value is bounded between zero and 255. The transparency value must be less than 128 to be considered visible. The display hardware requires the total number of processed pixels to not exceed 65535, and processes them in batches of exactly 1024. If the number of visible colors is greater than 256, the image is too complex and the batch is rejected. Additionally, the horizontal grid position must be a multiple of 16 and the vertical position a multiple of 32. Any image memory exceeding 4096 units triggers a fallback mode. Returns a list of processed batch totals. Example: an array of pixels within bounds returns a numeric batch total.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d149",
+  "title": "Digital Piano MIDI Event Parser",
+  "spec": "Implement a musical event processor using the function `parse(events)`. Reads an array of raw musical event arrays. A valid note event must have a velocity value that is strictly less than 128. The channel number assigned to the event must be less than 16. The synthesizer supports a maximum pitch bend integer of 65535. Filter out any sustain pedal events that have a duration exceeding 1024 milliseconds. The polyphony engine can handle at most 32 simultaneous notes, and discards any beyond this limit. The volume envelope has a maximum level of 255, and the soundbank index is calculated using modulo 256. Memory allocation for the sequence must stay under 4096 bytes. Returns an array of processed note frequencies. Example: providing a note array with valid limits returns the parsed frequencies.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d150",
+  "title": "Minimal Virtual CPU Executor",
+  "spec": "Build a processor simulation tool using the function `execute(instructions)`. Simulates execution of a virtual processor given an array of numeric instruction codes. Validates that the total program size does not exceed 65535 bytes. The instruction pointer must be aligned to a multiple of 16. Each memory page consists of exactly 4096 bytes, and the stack pointer is initialized to 1024. The maximum allowed value in any generic register is 255. When accessing the lookup table, the index is bounded by taking the value modulo 256. If a branching instruction jumps forward by more than 128 steps, or if the history buffer exceeds 32 entries, it raises a fault. Returns a list of final register states. Example: a short array of valid numerical operations returns the executed state numbers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d151",
+  "title": "Floppy Disk Sector Reader",
+  "spec": "Develop a legacy storage parser driven by the function `extract(sectors)`. Extracts data from an array of raw disk sectors. Ensures that the total number of sectors does not surpass 65535. Each valid sector must contain a data payload of exactly 1024 bytes. The redundancy check value in the header must not exceed 255. To find the correct allocation table index, the logical block address is calculated modulo 256. If the boot flag is greater than 16 or the active partition identifier is larger than 32, the sector is marked as corrupted. The maximum allowed contiguous block size is 4096 bytes, and any hidden track metadata beyond 128 bytes is truncated. Returns an array of extracted payload sizes. Example: valid disk sector arrays return their payload lengths as integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d152",
+  "title": "Encrypted Vault Metadata Parser",
+  "spec": "Write a secure vault analyzer utilizing the function `unlock(records)`. Validates an array of vault record arrays. The parser must reject any record where the access identifier exceeds 65535. The encryption block size must be exactly 16 bytes, and the initialization vector length must be exactly 32 bytes. Any file attachment size larger than 4096 bytes is skipped. The padding applied to the secret key must be bounded by a modulo of 256. Each entry has a checksum that cannot surpass 255. The iteration counter for the key derivation function starts at 1024. If the nested directory depth is greater than 128, the record is considered malformed and discarded. Returns an array of validated identifier numbers. Example: providing a valid vault record array returns the access identifiers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d153",
+  "title": "Oscilloscope Trace Downsampler",
+  "spec": "Create a signal processing module centered on the function `downsample(signals)`. Downsamples an array of numeric signal readings for screen rendering. It verifies that the absolute amplitude of any signal does not exceed 65535. The drawing buffer accepts arrays with a maximum size of 1024 points. To fit on the display grid, horizontal coordinates are scaled by dividing by 16, and vertical limits are restricted to 32 divisions. A pixel color intensity is clamped to 255, and the color palette index is computed modulo 256. Any burst interference longer than 128 milliseconds is smoothed out. The total rendering memory per trace must remain below 4096 units. Returns a list of smoothed numerical points. Example: raw signal readings return their downsampled coordinates.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d154",
+  "title": "Wireless Sensor Mesh Router",
+  "spec": "Implement an internet of things router using the function `route(messages)`. Processes an array of incoming sensor message arrays. Each message must originate from a network address smaller than 65535. The battery level indicator is restricted to a maximum of 255. To ensure fair airtime, any payload longer than 128 bytes is dropped. The message sequencing number rolls over using modulo 256. A valid message must be encrypted with a key size of exactly 32 bytes and an authentication tag of 16 bytes. The routing table cache has a strict size limit of 1024 entries, and the total bandwidth allowance for a single node is capped at 4096 bytes per minute. Returns an array of successfully routed message counts. Example: a series of sensor message lists returns the counts of processed valid messages.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d155",
+  "title": "Isometric Tile Map Renderer",
+  "spec": "Build a graphics engine helper utilizing the function `render(layers)`. Evaluates an array of tile map layer arrays. A valid layer cannot contain more than 65535 tiles. The width of every tile must be 32 pixels and the height must be 16 pixels. The transparency mask for a tile is clamped at 255, and the texture atlas index is determined by taking the tile identifier modulo 256. The maximum supported elevation for a dimensional block is 128 units. Memory allocated for a single chunk of tiles is constrained to 4096 bytes, and the view distance is capped at 1024 units. Returns an array of processed tile coordinates. Example: processing a small map layer returns the translated tile screen coordinates as numbers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d156",
+  "title": "Mobile Network Usage Tracker",
+  "spec": "Develop a billing calculator driven by the function `track(sessions)`. Analyzes an array of mobile data session arrays. The customer account number must be below 65535 to be valid. The usage amount is billed in increments of 1024 kilobytes, and any single download exceeding 4096 kilobytes is flagged for review. The connection strength is measured on a scale capped at 255. The assigned cellular tower identifier is hashed using a modulo of 256. If the session duration is less than 16 seconds or the packet loss rate is higher than 32, the session is ignored as a glitch. Sessions with more than 128 reconnect attempts are permanently blocked. Returns a list of total billed increments per valid session. Example: inputting an array of data usage statistics returns the computed billing increments.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d157",
+  "title": "Hardware GPIO Pin Multiplexer",
+  "spec": "Write a microcontroller input handler using the function `multiplex(signals)`. Reads an array of input signal arrays from hardware pins. The total cycle count must not exceed 65535. The analog value read from any pin is bounded by 255. The pin mapping table wraps around using a modulo of 256. Any signal frequency higher than 1024 hertz triggers an interrupt, and the direct memory access buffer must not exceed 4096 bytes. The debounce timer is set to 16 milliseconds, and the pulse width modulation resolution is restricted to 32 steps. If the background noise level goes above 128, a calibration sequence is requested. Returns an array of cleaned digital states. Example: an array of analog reads returns the debounced digital output integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d158",
+  "title": "Digital Publication Document Parser",
+  "spec": "Create a reading application parser centered on the function `format(chapters)`. Processes an array of chapter text content arrays. A valid book must have a total word count below 65535 per section. The maximum length of a paragraph is capped at 1024 characters, and any embedded image data must not exceed 4096 bytes. The font size styling cannot exceed 128 points. The color intensity of the text must be no greater than 255. Page numbering is formatted with a sequence wrapped by modulo 256. The indentation margin is strictly 16 pixels, and the line height must not surpass 32 pixels. Returns a list of processed text lengths. Example: providing raw chapter text lists returns their formatted character counts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d159",
+  "title": "Aviation Radar Blip Tracker",
+  "spec": "Implement a flight tracking module utilizing the function `detect(scans)`. Filters an array of raw radar scan arrays. A valid blip must have an altitude measurement under 65535 feet. The distance from the origin is capped at 1024 nautical miles. The system discards blips with an estimated speed greater than 4096 knots. The returning signal strength must not surpass 255, and the assigned transponder code is verified by computing it modulo 256. The angular resolution operates in increments of 16 degrees, while the elevation sweep uses steps of 32 degrees. Any target stationary for more than 128 sweeps is marked as clutter. Returns an array of verified target altitudes. Example: an array of radar sweep measurements returns the valid altitudes as integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d160",
+  "title": "Classic Arcade Sprite Renderer",
+  "spec": "Build a retro graphics engine driven by the function `draw(sprites)`. Renders an array of game sprite coordinate arrays. The system only supports a maximum screen resolution score of 65535. The coordinate plane memory is partitioned into blocks of 4096 bytes. The horizontal drawing limit is 1024 pixels. A sprite color index is strictly bounded at 255, and the palette bank is selected using a modulo of 256. Character bounding boxes must be exactly 16 pixels wide and 32 pixels high. If the animation frame duration exceeds 128 milliseconds, the frame is dropped to maintain game speed. Returns a list of active sprite count integers. Example: inputting a sequence of sprite positions yields the active count numbers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d161",
+  "title": "Fingerprint Minutiae Feature Extractor",
+  "spec": "Develop a biometric security tool using the function `extract(scans)`. Evaluates an array of scanned biometric feature arrays. The total number of recognized minutiae points must not exceed 65535. The scanner hardware outputs a raw grid where values are clamped to 255. The orientation angle of a ridge is calculated using modulo 256. The extraction algorithm filters out false positives by dropping areas smaller than 16 pixels or larger than 32 pixels. The secure matching buffer has a strict memory constraint of 4096 bytes, and the template size must exactly match 1024 bytes. Any pressure reading above 128 triggers a calibration fault. Returns a list of validated feature counts. Example: an array of biometric scans returns the number of valid minutiae found.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d162",
+  "title": "Warehouse Drone Path Optimizer",
+  "spec": "Write an automated logistics tracker centered around the function `navigate(waypoints)`. Optimizes an array of flight waypoint arrays for warehouse drones. The maximum internal flight distance allowed per trip is 65535 meters. The battery capacity is strictly bounded at 1024 units, and the total weight carried must remain under 4096 grams. The drone operating speed cannot exceed 255, and the navigation heading is adjusted via modulo 256. To avoid collisions, the proximity threshold is set to 16 meters, and the clearance height is mandated at 32 meters. If the temperature of the motors exceeds 128 degrees, the route is immediately aborted. Returns a list of optimized flight distance integers. Example: an array of warehouse coordinates returns the safe flight distances.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d163",
+  "title": "Edge Device Tensor Quantizer",
+  "spec": "Create a machine learning helper utilizing the function `quantize(tensors)`. Processes an array of tensor value arrays for a low power edge device. The tensor total element size must be below 65535. The quantization process limits the maximum node magnitude to 255. The memory stride for tensor reshaping is computed using modulo 256. To fit in the cache, the batch size is set to 16, and the filter dimensions are bounded at 32. The output buffer allocation cannot exceed 4096 bytes, and the vocabulary size for embedding is strictly 1024. If the gradient error is greater than 128, the tensor is discarded. Returns an array of processed tensor lengths. Example: inputting raw tensor data returns the lengths of the quantized numerical arrays.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d164",
+  "title": "Deep Space Probe Telemetry Decoder",
+  "spec": "Implement an aerospace communications module using the function `decode(frames)`. Decodes an array of telemetry frame arrays received from a space probe. The maximum transmission sequence number is 65535. Each data frame must be exactly 1024 bytes long. The main antenna buffer size is limited to 4096 bytes. The error correction checksum cannot exceed 255, and the packet identifier is extracted using modulo 256. The synchronization header must be 16 bits long, while the payload terminator is 32 bits long. Any frame experiencing a signal delay over 128 seconds is rejected. Returns a list of valid decoded payload values. Example: a series of space telemetry arrays returns the extracted numerical measurements.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d165",
+  "title": "PostScript Typeface Outline Scaler",
+  "spec": "Build a typography rendering engine driven by the function `scale(curves)`. Scales an array of vector curve arrays for font rendering. The absolute coordinate system has a maximum bound of 65535 units. The font rasterizer limits the path complexity to 1024 nodes per glyph. The hinting instruction memory is restricted to 4096 bytes. The contrast stroke weight must not exceed 255, and the glyph index is accessed using modulo 256. A valid curve requires control points separated by at least 16 units, and the stem width must be exactly 32 units. Any bounding box overflow beyond 128 units triggers an error. Returns an array of scaled coordinate integers. Example: providing an array of bezier curves returns the adjusted point values.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d166",
+  "title": "Molecular Dynamics Collision Tracker",
+  "spec": "Develop a scientific simulation tool using the function `track(particles)`. Simulates collisions based on an array of particle state arrays. The simulation space volume is capped at 65535 cubic units. The maximum number of active interactions tracked is 1024. The spatial grid divides the environment into chunks of 4096 cells. The atomic charge value must not exceed 255, and the species identifier wraps using a modulo of 256. The short range repulsion force kicks in at a distance of 16 nanometers, and the attraction force cuts off at 32 nanometers. If the kinetic energy of a particle goes above 128, it is considered unstable. Returns an array of collision force calculations. Example: an array of particle positions returns the computed force numbers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d167",
+  "title": "High Frequency Market Data Filter",
+  "spec": "Write a financial data processor centered around the function `filter(quotes)`. Processes an array of stock quote arrays from a raw market feed. The transaction identifier must be below 65535 to be valid. The order book depth cannot exceed 1024 levels, and the volume aggregation buffer is capped at 4096 bytes. The trade condition code must be a number less than or equal to 255, and the exchange identifier is found by taking the routing code modulo 256. The maximum allowed bid ask spread is 16 cents, and the lot size must be exactly 32 shares. Any quote delayed by more than 128 milliseconds is ignored. Returns a list of accepted transaction prices. Example: submitting a batch of trade data yields the valid execution prices as integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d168",
+  "title": "Remote Anemometer Wind Data Logger",
+  "spec": "Create a meteorological station module utilizing the function `log(readings)`. Evaluates an array of wind reading arrays from remote sensors. The absolute timestamp of a reading must not surpass 65535. The internal storage can hold a maximum of 1024 daily entries, and the archived block size is strictly 4096 bytes. The peak gust speed is capped at a sensor limit of 255, and the directional degree is calculated via modulo 256. The minimum sampling interval is 16 seconds, and the averaging window spans 32 seconds. If the battery voltage drops and the error code exceeds 128, logging halts. Returns an array of valid average wind speeds. Example: a series of raw sensor inputs returns the average speeds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d169",
+  "title": "Gimbal Stabilization Feedback Controller",
+  "spec": "Implement a drone camera adjustment tool using the function `stabilize(sensors)`. Adjusts camera position based on an array of gyroscope and accelerometer arrays. The raw pitch angle reading cannot exceed 65535. The error correction history buffer is restricted to 1024 entries, and the motor step allocation uses exactly 4096 units. The maximum motor torque is clamped at 255, and the rotation phase is computed using modulo 256. The dampening coefficient is scaled by dividing by 16, and the acceleration limit is exactly 32. Any vibration frequency exceeding 128 hertz is discarded as resonance. Returns an array of computed motor commands. Example: passing raw inertial measurements returns the stabilization command integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d170",
+  "title": "Substation Power Flow Analyzer",
+  "spec": "Build an electrical grid monitor driven by the function `analyze(measurements)`. Monitors an array of voltage and current arrays from a power grid substation. The total phase angle must be below 65535. The sampling rate is set to 1024 samples per cycle, and the data transmission payload is limited to 4096 bytes. The harmonic distortion factor must not exceed 255, and the phase index is verified via modulo 256. The relay trip threshold is 16 amps, and the transformer cooling fan activates at 32 degrees. If the baseline noise exceeds 128 units, the reading is flagged as inaccurate. Returns a list of validated power consumption totals. Example: an array of grid measurements returns the calculated power usages as numbers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d171",
+  "title": "Robotic Arm Welding Trajectory Validator",
+  "spec": "Develop an industrial automation controller using the function `validate(paths)`. Checks an array of robotic arm movement arrays. The coordinate boundary for the workspace is 65535 millimeters. The memory for the motion planning queue is 1024 entries, and the safety envelope buffer takes up 4096 bytes. The maximum speed of the end effector is clamped at 255, and the joint angle offset is calculated via modulo 256. The welding laser pulse duration is 16 milliseconds, and the cool down period is 32 milliseconds. Any deviation from the planned path greater than 128 micrometers halts the operation. Returns an array of approved trajectory durations. Example: an array of planned arm movements returns their approved timing durations.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d172",
+  "title": "Hardware Page Table Constructor",
+  "spec": "Write a function `map(requests)`. Each request provides a physical address and requested bytes. Divide the address space into pages of 4096 bytes and calculate the byte offset within the page. If the request size exceeds 1024 bytes, flag it as a large allocation. Limit the maximum physical address evaluated to 65535. Assign a protection level using bitwise flags where read is 16, write is 32, execute is 64, and supervisor is 128. Cap the maximum accumulated protection mask to 255 and restrict the total generated mappings to a maximum of 256 entries. Return a list of mappings containing the page index, offset, large flag, and protection mask. Example input is a list of pairs like address and size, returning a list of corresponding mapping records.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d173",
+  "title": "Custom IPv4 Subnet Segmenter",
+  "spec": "Write a function `subnet(networks)`. For each network definition, validate the routing octets to ensure none exceed 255 and the total routing bits are exactly 32. Calculate the host capacity by subtracting the subnet size from 256 where applicable. The system manages routing up to a maximum concurrent port limit of 65535, with reserved system ports falling below 1024. For packet defaults, assign a default time to live of 64 and a fallback priority masking bit of 128. Reject any routing prefix shorter than 16 bits and reject any configuration that requires maintaining more than 4096 active route entries. Return a list of validated network summaries containing the parsed base address and available host count. Example input is a list of strings like ten dot zero dot zero dot zero slash twenty four, and the output is a list of parsed capacities.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d174",
+  "title": "Chiptune Sound Tracker Envelope Generator",
+  "spec": "Write a function `envelope(notes)`. Each note triggers an attack decay sustain release cycle. The maximum frequency supported by the tracker is 65535 hertz. Calculate the volume scaling capped at a maximum amplitude of 255. Process the audio in buffer sizes of exactly 1024 samples per frame. For the attack phase, limit the rate of change to 128 steps, and for decay use 64 steps. Pitch bend events apply a maximum deviation of 4096 units. Scale the sustain floor by 32 and ensure the minimum step interpolation does not drop below 16. Ensure the total number of synthesized notes per track does not exceed 256. Return a list of generated audio frame properties per note. Example inputs include a base frequency and duration, returning the sequenced frame boundaries.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d175",
+  "title": "ANSI Terminal True Color Downgrader",
+  "spec": "Write a function `downgrade(colors)`. Given a list of true color red green blue values, constrain each channel to a maximum of 255. Convert the colors into an indexed format supporting up to 256 terminal colors. Map extreme high intensity values to a block starting at 128. For standard compatibility, preserve the original 16 foreground ansi codes. A specific fallback range is reserved at index 64 for grey scales. Total console scrollback buffers are limited to 4096 lines, while line characters should not exceed a horizontal buffer of 1024. Restrict the maximum color temperature shift to 32 units and limit the total color palette namespace to a maximum identifier of 65535. Return the downsampled terminal color codes and configuration metadata. Example inputs are red green blue integer arrays, returning terminal initialization instructions.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d176",
+  "title": "Linear Feedback Shift Register Keystream Generator",
+  "spec": "Write a function `keystream(seeds)`. Produce a stream of pseudo random bytes using a shift register mechanism. For each initial seed, mask the upper bound to 65535 to fit a standard hardware register. During each shift, apply tap masks at bit positions corresponding to 128, 64, 32, and 16 to determine the feedback bit. Accumulate the bits into bytes and cap each output byte at 255. Reject any initial seed array containing more than 256 elements. Generate the stream in blocks of exactly 1024 bytes to match standard encryption block interfaces. The total maximum generated payload must not exceed 4096 bytes per session. Return a sequence of generated byte blocks. Example input is an array of integer seeds, and the output is a list of byte value arrays.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d177",
+  "title": "Vintage Disk Controller BIOS Simulator",
+  "spec": "Write a function `read(requests)`. Process logical block addresses by translating them into cylinder head sector geometry. The simulated disk has exactly 1024 cylinders, 256 sectors per cylinder grouping, and 16 heads. Each track contains 64 sectors. Determine the physical cluster address assuming a modern cluster size of 4096 bytes. Reject any logical block address that exceeds the legacy controller limit of 65535. For direct memory access transfers, the maximum sector count per request is 255, and the system requires a baseline timing delay of 128 cycles per transfer boundary. Pad operations shorter than 32 bytes with zeros. Return a list of translated geometry records and cycle counts. Example inputs are integer block addresses, yielding cylinder and head coordinates.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d178",
+  "title": "Binary Texture Asset Header Decoder",
+  "spec": "Write a function `decode(buffer)`. Extract image dimensions and properties from a sequence of raw integers. Ensure the initial marker matches the required header value of 65535. Constrain the extracted width and height so they do not exceed 4096 pixels. Parse the color table which consists of exactly 256 palette entries. Apply a transparency mask of 255 to the alpha channel data and apply a baseline luminance threshold of 128 for dark pixel rejection. The texture is divided into rendering blocks of 64 by 32 pixels. The system supports up to 16 mipmap levels for distant rendering and caps the internal cache size at 1024 kilobytes. Return the parsed texture dimensions and block counts. Input is an array of raw integers representing the file, outputting the extracted property dimensions.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d179",
+  "title": "Web Socket Frame Payload Unmasker",
+  "spec": "Write a function `unmask(frames)`. Process a stream of data frames sent by a client. Extract the first byte and apply a bitwise check against 128 to determine if the payload is masked. Isolate control opcodes that begin at 16 and text opcodes at 32. If the indicated length requires an extended payload length, read the extended length which can reach up to 65535. The maximum allowed payload size for a single frame is 4096 bytes, and the server processes data in chunks of exactly 1024 bytes. Verify that individual byte values do not exceed 255 before applying the unmasking key. Ensure the maximum number of fragmented chunks is limited to 64 and limit the sequence processing window to 256 active connections. Return the decoded byte sequences. Inputs are arrays of integer byte values, returning the unmasked integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d180",
+  "title": "Thermal Printer Bitmap Spooler",
+  "spec": "Write a function `spool(commands)`. Convert drawing commands into a rasterized format suitable for a legacy thermal receipt printer. The printer has a maximum line width of 256 pixels and accepts darkness intensity levels up to 255. Accept a default margin spacing of 128 dots per inch. Divide the print job into vertical bands of 64 dots to prevent overheating. The buffer can hold a maximum of 4096 bytes before requiring a flush command. For text mode, characters are placed on a grid with a standard height of 32 pixels and width of 16 pixels. Add a delay equivalent to 1024 milliseconds after every full buffer flush. Ensure the total command count never surpasses the firmware limit of 65535. Return the sequence of rasterized bytes and timing delays. Example input is a list of shape and text directives, outputting the scheduled byte payloads.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d181",
+  "title": "Stage Laser Projector Controller",
+  "spec": "Write a function `project(shapes)`. Convert abstract shapes into laser galvanometer coordinates and color commands. The drawing space is bounded by a maximum coordinate of 65535 on both axes. Map intensity values ranging from zero to 255 for the red green and blue laser diodes. The hardware command queue accepts exactly 4096 instructions per frame. Set the drawing speed limit to 1024 points per second to avoid hardware damage. Utilize predefined color palette indices including basic white at 16, warning red at 32, safe green at 64, and vivid blue at 128. If the shape complexity exceeds 256 points, simplify the geometry. Return the list of hardware drawing instructions. Input is a sequence of coordinate geometries, returning the low level point and color instructions.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d182",
+  "title": "Network Packet Checksum Engine",
+  "spec": "Write a function `checksum(payloads)`. Calculate a custom verification hash for a sequence of network data payloads. Initialize the accumulator with a starting seed of 65535. For each data segment, process the bytes in overlapping blocks of 1024. If a byte value exceeds 128, apply a bitwise operation masking it with 255 to prevent overflow. Shift the accumulator by steps of 16 and 32 bits based on the payload position. Any payload exceeding a length of 4096 bytes must be split. The algorithm demands a trailing padding sequence of exactly 64 null bytes. Limit the final output sequence length to 256 elements. Return the array of calculated verification integers. Example inputs are integer byte arrays, returning the resulting checksums.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d183",
+  "title": "Huffman Tree Frequency Builder",
+  "spec": "Write a function `compress(frequencies)`. Construct an encoding tree based on the occurrence rates of different symbols. The total number of distinct symbols is capped at exactly 256. Filter out any symbol with an occurrence rate exceeding the maximum allowed threshold of 65535. Allocate a memory pool of 4096 nodes to store the branches of the tree. When sorting the initial priorities, chunk the data into segments of 64 items for stable processing. If the total input data size is less than 1024 bytes, apply a minimal padding routine using a base weight of 16. Distribute the final encoded bitstream into blocks of 32 bytes and assign a heavy weight of 128 to the root node marker. Validate that the maximum depth of the resulting tree does not exceed 255 levels. Return the tree layout and encoded chunks. Input is a list of symbol counts, outputting the compressed tree configuration.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d184",
+  "title": "Embedded System Watchdog Timer Config",
+  "spec": "Write a function `configure(intervals)`. Generate configuration sequences for a hardware watchdog timer based on requested timeout intervals. The hardware counter operates up to a maximum limit of 65535 before triggering a system reset. Set the warning interrupt threshold at exactly 4096 ticks prior to the final reset. The base clock frequency operates at 1024 ticks per second. Apply a clock prescaler dividing the input frequency by 256. The control register uses specific bit masks for operations where the enable bit is 16, the interrupt flag is 32, the clear flag is 64, and the freeze mode is 128. Validate that the combined control byte never exceeds 255. Return the sequence of register writes to configure the timer. Inputs are requested milliseconds, returning the sequence of register integer values.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d185",
+  "title": "Speech Synthesis Formant Generator",
+  "spec": "Write a function `synthesize(phonemes)`. Generate artificial speech waveforms based on a sequence of phonetic inputs. The audio is rendered at a low fidelity sample rate of 4096 hertz. Constrain the output waveform amplitude to a maximum value of 65535 to avoid clipping the digital to analog converter. Process the audio stream in blocks of exactly 1024 samples. Modulate the fundamental frequency ensuring it stays below a maximum pitch value of 255. Apply distinct frequency bandpass filters centered at 16, 32, 64, and 128 hertz for different vocal tract resonances. Map the resulting noise components into an envelope limited to exactly 256 discrete volume steps. Return the generated audio sample arrays. Input is a sequence of phoneme identifiers, returning arrays of integer audio samples.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d186",
+  "title": "Camera RAW Image Demosaicer",
+  "spec": "Write a function `demosaic(sensor)`. Convert raw bayer pattern pixel data into a viewable color image. The processing pipeline supports sensor resolutions up to a maximum width of 4096 pixels. The raw pixel values correspond to a wide dynamic range capped at 65535. Calibrate the black level offset by subtracting exactly 256 from every pixel. For highlight recovery, apply a gain multiplier of 1024 to the green channel. Divide the image into processing macroblocks of 64 pixels by 32 pixels to optimize cache locality. Downsample the preview thumbnail using a grid stride of 16. After color correction, clamp the final color channel outputs to a maximum of 255. If the average brightness is below 128, activate the noise reduction pass. Return the processed color image arrays. Inputs are raw pixel rows, returning standard red green blue arrays.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d187",
+  "title": "Tape Drive Backup Indexer",
+  "spec": "Write a function `index(records)`. Parse the metadata headers from a sequential tape backup archive. Read the archive in fixed blocks of exactly 4096 bytes. The catalog can track a maximum of 65535 distinct files per volume. Each file entry spans a fixed record length of 1024 bytes. Verify that the file name string length does not exceed 255 characters to maintain compatibility with older systems. The file permission attributes use specific flags where read only is 16, hidden is 32, system is 64, and archived is 128. Ensure that the total directory depth is limited to a maximum of 256 levels. Return the list of parsed file names and their corresponding attribute masks. Input is a stream of raw bytes, returning a list of extracted file metadata structures.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d188",
+  "title": "Marine Sonar Depth Parser",
+  "spec": "Write a function `parse(pings)`. Process a stream of raw sonar echo messages to extract depth and fish location data. Validate each message by calculating an exclusive or checksum and ensuring the result is masked to exactly 255. The maximum readable depth of the hardware is 65535 centimeters. Allocate an incoming message buffer of 4096 bytes. The device transmits at a baseline speed of 1024 pings per minute. Discard any erroneous readings that suggest a water temperature below 16 or above 32 degrees celsius. Extract the bottom density value located exactly at byte offset 64, and the signal strength at offset 128. Track the number of consecutive valid pings up to a maximum run of 256. Return the extracted depth and density profiles. Input is an array of raw ping bytes, returning validated sonar data arrays.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d189",
+  "title": "Barcode Scanner Wedge Emulation",
+  "spec": "Write a function `emulate(scans)`. Convert raw barcode reader timing signals into simulated keyboard keystrokes. Accumulate the incoming signal durations into a processing buffer of 4096 bytes. Discard any barcode payload that exceeds a maximum character length of 255. Insert a timing delay of 1024 milliseconds between consecutive virtual keystrokes to ensure the host operating system registers them. The internal stroke counter rolls over after reaching exactly 65535 scans. Map the start and stop characters to internal keycodes using 16 and 32 respectively. If a special function code is detected, emit the extended modifier key mapped to 64, or the shift modifier mapped to 128. Ensure the translation table has a strict limit of 256 entries. Return the sequence of simulated keyboard events. Input is an array of timing durations, returning the translated keystroke identifiers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d190",
+  "title": "Volcanic Ash Sensor Array",
+  "spec": "Write a function `analyze(samples)`. Process environmental particulate readings from a remote volcanic monitoring station. The sensor measures airborne ash concentration with a maximum saturation point of 65535 parts per million. Filter the air flow telemetry by applying a moving average over a window of 4096 milliseconds. Normalize the atmospheric density readings against a baseline sea level pressure of 1024 millibars. Validate the optical sensor calibration to ensure baseline transparency is completely clear at 255. Categorize the hazard levels using discrete threshold flags where minor is 16, moderate is 32, severe is 64, and extreme is 128. Discard noise artifacts by dropping any anomalous sample chunk smaller than 256 bytes. Return the processed air quality timeline. Input is raw sensor voltage readings, returning categorized hazard levels and densities.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d191",
+  "title": "Telescope Equatorial Mount Tracker",
+  "spec": "Write a function `track(coordinates)`. Calculate the pulse sequences required to drive the stepper motors of an astronomical telescope mount. The right ascension and declination motors require exactly 65535 steps to complete one full revolution. Limit the maximum slewing velocity to 4096 steps per second to prevent skipping. Implement a smooth acceleration curve that ramps up by 1024 steps per second squared. Ensure the base tracking speed never falls below 255 steps per minute. Configure the driver microstepping resolution dynamically, selecting between 16, 32, 64, or 128 subdivisions based on the desired observation magnification. Cap the total internal movement queue at exactly 256 scheduled instructions. Return the sequence of motor pulse timings. Inputs are target celestial coordinates, returning timing delays for the motor drivers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d192",
+  "title": "Chess Bitboard Move Generator",
+  "spec": "Write a function `generate(positions)`. Calculate all valid moves for sliding pieces on a chess bitboard representation. The board consists of exactly 64 squares represented as integer bits. Isolate the rank and file attacks by masking the bitboard with 255. Calculate diagonal shifts using offsets of 16 and 32 bits to traverse the board effectively. Assign an evaluation penalty to moves that expose the king, capping the maximum negative score at 65535. Maintain a transposition table with a maximum capacity of 4096 entries to cache previously evaluated positions. Limit the move history stack to 1024 plies. Cap the maximum number of analyzed branching nodes at 256 per second, and reserve an evaluation bonus of 128 points for capturing high value targets. Return the list of generated bitboard moves. Input is the current board state integer array, returning valid destination masks.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d193",
+  "title": "Electrocardiogram Arrhythmia Detector",
+  "spec": "Write a function `detect(signals)`. Analyze a continuous stream of electrical heart signals to identify irregular rhythms. Process the incoming data sampled exactly at 256 hertz. Cap the maximum detectable heart rate at 255 beats per minute to ignore obvious sensor noise. Store the recent waveform data in a sliding window buffer of 4096 samples. The analog to digital converter outputs raw millivolt measurements reaching a peak amplitude of 65535. Flag potential arrhythmias if the interval between peaks deviates by more than 16, 32, or 64 milliseconds consecutively. Apply a high pass filter utilizing a cutoff frequency of 128 hertz to eliminate baseline wander. Trigger a critical alert if the total number of dropped beats exceeds 1024 within a single session. Return the detected events and filtered pulse rates. Inputs are integer millivolt arrays, returning identified health events.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d194",
+  "title": "Blu Ray Transport Stream Demultiplexer",
+  "spec": "Write a function `demultiplex(stream)`. Extract video and audio payloads from a continuous digital media transport stream. Parse the data in fixed packet lengths of exactly 256 bytes. Ensure the payload size within each packet does not exceed 255 bytes. Identify the stream type using the packet identifier which can range up to a maximum of 65535. Allocate a processing buffer capable of holding exactly 4096 bytes of consecutive data. Distinguish between different frame types using adaptation field flags set at 16, 32, 64, and 128. If the stream encounters synchronization errors, initiate a recovery scan analyzing the next 1024 bytes. Return the separated audio and video payload arrays. Input is a sequence of multiplexed bytes, returning the isolated media streams.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d195",
+  "title": "Hotel Room Keycard Encoder",
+  "spec": "Write a function `encode(guests)`. Generate the binary payload necessary to write secure access credentials onto magnetic hotel keycards. The hotel utilizes an internal room numbering system that reaches up to 65535. Calculate the checkout expiration timer, capping the maximum allowable stay duration at 4096 hours. Limit the guest name string to exactly 255 characters to fit within the track data constraints. The keycard memory is organized into exactly 256 sectors. Assign specific access privileges using bitwise indicators where pool access is 16, gym is 32, parking is 64, and lounge is 128. Validate that the cryptographic signature seed does not exceed a length of 1024 bits. Return the compiled binary data blocks. Input is a list of guest reservation details, outputting the encoded magnetic track bytes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d196",
+  "title": "Thermal Imaging Camera Calibrator",
+  "spec": "Write a function `calibrate(frames)`. Process raw thermal sensor data to map temperature readings into a visual color spectrum. The sensor captures a maximum heat intensity value of 65535. Normalize the image rows which have a fixed width of exactly 256 pixels. Limit the internal memory allocation to a frame buffer of 4096 bytes. Apply a dead pixel correction threshold by averaging surrounding pixels if the variance exceeds 1024 units. Map the processed temperatures to a visual heat palette containing 255 discrete color bands. Utilize specific diagnostic bit masks to flag sensor health, where under voltage is 16, over temperature is 32, communication error is 64, and calibration required is 128. Return the normalized image palette indices. Inputs are arrays of raw thermal intensities, returning the calculated color map integers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d197",
+  "title": "Theme Park Queue Planner",
+  "spec": "Simulate a theme park ride dispatch with `simulate(queues)`. The function takes a list of queue wait times in minutes. Reject times above 255. Cap daily total visitors at 65535. The main ride has an absolute limit of 4096 riders per hour. Within an hour, it groups people into batches of 32, using up to 16 ride vehicles. Express riders bypass up to 128 regular spots. If the queue length exceeds 1024, trigger surge pricing. Apply a standard wait threshold of 64 minutes to calculate satisfaction. Normalize the final satisfaction score by multiplying by 256. For example, inputs [30, 45] returns 7680.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d198",
+  "title": "Medieval RPG Combat Calculator",
+  "spec": "Write `calculate(stats)` to resolve a combat round in a medieval fantasy game. The input is a list of player attributes. Cap the player level at 255 and maximum attack damage at 65535. If attacking a boss, verify its health does not exceed 4096. A magic attack costs mana, drawn from a maximum mana pool of 1024. Subtract a base defense of 16 and a magic resistance of 32 from the incoming damage. Limit stamina drain to a maximum of 128 per swing. Calculate the experience gained by multiplying the final damage by 256. Discard attacks if the player carries more than 64 inventory items due to encumbrance. For example, inputs [50, 100] returns 12800.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d199",
+  "title": "Skyscraper Elevator Manager",
+  "spec": "Implement `dispatch(calls)` to simulate elevator movements. The function processes a list of requested floor numbers. The building has a maximum of 64 floors. Ignore requests if the elevator weight exceeds the maximum capacity of 4096 pounds or drops below the minimum load of 16 pounds. The elevator moves at a speed of 32 feet per second. Return to the ground floor if idle for more than 128 seconds. Track maintenance by throwing a warning if cable cycles exceed 65535 or operating hours exceed 1024. Multiply the total distance traveled by 256 to estimate power consumption. Ignore the run if sensor error logs exceed 255. For example, inputs [5, 10] returns 3840.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d200",
+  "title": "Newspaper Printing Press Controller",
+  "spec": "Create `print(pages)` to validate daily newspaper layout constraints. The input is a list of article word counts. Reject any publication if the total document length exceeds 65535 characters or if a single text buffer exceeds 4096 characters. A valid layout must have a maximum page width of 1024 pixels, a standard column width of 128 pixels, and side margins of 64 pixels. Text formatting requires a minimum font size of 16 points and a fixed line height of 32 pixels. Ensure all ink saturation color values do not exceed 255. Multiply the final calculated height by 256 to account for screen resolution dot density. For example, inputs [100, 200] returns 76800.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d201",
+  "title": "Recycling Plant Glass Sorter",
+  "spec": "Develop `sort(glass)` to organize recyclable materials on an assembly line. The input is a list of item weights. Discard items with a weight under 16 ounces. The sorting bins can hold a maximum of 64 items, and the main storage warehouse holds up to 4096 items. Limit the conveyor belt speed to 32 meters per minute and halt if the motor temperature exceeds 128 degrees. The system flags an alert if the daily quota of 1024 items is not met. Assign a batch identifier to each valid item, capping the maximum serial value at 65535. Multiply the accepted item count by 256 to estimate hourly revenue. Stop processing immediately if the consecutive defect count reaches 255. For example, inputs [20, 25] returns 512.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d202",
+  "title": "Hydroponic Greenhouse Controller",
+  "spec": "Write `regulate(sensors)` to manage a smart greenhouse. The function receives a list of environmental readings. Ensure the main water tank does not drop below its maximum volume of 1024 liters and the total plant count does not exceed 4096. Maintain a minimum humidity of 16 percent and a baseline temperature of 32 degrees. Keep the irrigation water pressure strictly at 64 units. Add nutrient solution if the mix ratio falls below 128 parts per million. Cap the artificial sunlight intensity at 255. Trigger a maintenance flag if the water pump surpasses 65535 cycles. Calculate the daily water loss by multiplying the temperature variance by 256. For example, inputs [40, 45] returns 2560.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d203",
+  "title": "Pottery Kiln Firing Simulator",
+  "spec": "Implement `fire(clay)` to simulate temperature curves for baking ceramics. The input is a list of raw clay weights. The maximum allowed kiln internal volume is 4096 cubic inches, supporting up to 1024 stacked pieces. The minimum preheating time is restricted to 16 minutes, and the tool uses 32 discrete steps for calculating the heating gradient. The application stores exactly 64 steps of thermal history. Restrict the maximum cooling fan speed to 128 revolutions per minute. Ensure all localized temperature zones are capped against a maximum value of 255 degrees. Prevent memory overflow by capping the total lifetime firing cycles at 65535. Multiply the total batch weight by 256 to compute fuel consumption. For example, inputs [10, 15] returns 6400.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d204",
+  "title": "Freight Train Cargo Distribution",
+  "spec": "Write `route(deliveries)` to plan a freight train schedule. The function evaluates a list of cargo weights. A valid train configuration must not exceed the maximum load of 4096 tons. The train operates with up to 16 locomotives pulling a maximum of 32 cargo cars. Top speed is restricted to 64 miles per hour, with a maximum fuel tank capacity of 128 gallons. Discard deliveries if the destination station identifier is greater than 255. Ensure the route does not exceed a track length of 1024 miles. Cap the maximum projected revenue per trip at 65535 dollars. Multiply the number of stops by 256 to estimate total delay time. For example, inputs [200, 300] returns 512.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d205",
+  "title": "Deep Sea Submersible Camera Pilot",
+  "spec": "Create `pilot(coordinates)` to position a robotic submarine camera. The function processes a list of depth shifts. Validate that the camera sensor uses a pixel array width of exactly 4096 and references a visual catalog limited to 1024 marine species. The mechanical arm requires a joint tension of 16 units and a base movement speed of 32 units. The positioning motor moves in discrete increments of 64 steps. Set the maximum camera exposure time to 128 seconds. Cap the detected bioluminescence brightness at a maximum value of 255. Ignore targets whose distance exceeds 65535 millimeters. Multiply the final focus adjustment by 256 to align the tracking gears. For example, inputs [10, 20] returns 7680.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d206",
+  "title": "Restaurant Kitchen Order Manager",
+  "spec": "Design `cook(orders)` to manage meal preparation in a busy kitchen. The function accepts a list of meal prep times. The restaurant employs a maximum of 16 chefs who can cook up to 32 different menu items. The dining room has a seating capacity of 64 patrons. Discard any order that requires a prep time exceeding 128 minutes or contains a spice level rating over 255. Ensure the kitchen inventory does not drop below the safety stock of 1024 units and that no single meal exceeds 4096 calories. Alert the manager if the monthly revenue target of 65535 dollars is met. Multiply the number of fulfilled orders by 256 to calculate the final ingredient cost estimate. For example, inputs [15, 20] returns 512.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d207",
+  "title": "Commercial Airliner Autopilot Constraints",
+  "spec": "Implement `navigate(waypoints)` to guide an aircraft through a designated flight path. The function processes a list of altitude change requests. Restrict the maximum cruising altitude to 4096 meters and ensure total distance traveled never exceeds 65535 nautical miles. The plane relies on a fuel reserve of 1024 gallons and a maximum auxiliary oxygen supply of 128 hours. The vessel carries exactly 32 crew members and an emergency raft capacity limited to 64 passengers. Emit exactly 16 radar pings per minute to map the surroundings. Trigger an emergency descent protocol if cabin pressure drops below 255 units. Multiply the total flight time by 256 to calculate the engine wear factor. For example, inputs [100, 200] returns 76800.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d208",
+  "title": "Avalanche Risk Assessment Model",
+  "spec": "Write `assess(snowpack)` to evaluate avalanche risks on a mountain face. The function takes a list of snow depth measurements. The monitored sector covers a maximum elevation of 4096 meters and a total surface area of 65535 square meters. Limit the internal memory to 1024 historical records. The model calculates instability if the wind speed exceeds 16 knots or if the temperature rises above 32 degrees. The base snow layer must be at least 64 centimeters thick. Discard data if the slope angle is greater than 128 degrees. Cap the danger index at a maximum value of 255. Multiply the total high risk zones by 256 to calculate the final evacuation priority score. For example, inputs [50, 100] returns 512.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d209",
+  "title": "City Traffic Light Controller",
+  "spec": "Develop `regulate(intersections)` to manage traffic flow across a city grid. The input is a list of vehicle queue lengths. The system oversees a grid size of 1024 blocks. Cap the daily traffic violations recorded at 4096 and trigger a service ticket if maintenance hours exceed 65535. Set the pedestrian crossing timer to 16 seconds and the standard green light duration to 32 seconds. Ensure the yellow light duration does not exceed 64 cycles. Detect approaching vehicles using a sensor range of 128 meters. Ignore readings if a single lane reports a car count over 255, assuming a sensor fault. Multiply the total waiting vehicles by 256 to compute the overall congestion score. For example, inputs [10, 15] returns 6400.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d210",
+  "title": "Marathon Runner Pacing Calculator",
+  "spec": "Create `analyze(splits)` to process running data from a marathon race. The function evaluates a list of mile times in seconds. The runner aims for a weekly training goal of 1024 active minutes. Trigger a hydration alert when the daily calorie burn surpasses 4096 calories. Track progress up to a maximum lifetime running distance of 65535 miles. The coach expects the runner to train for 16 hours a month with a minimum resting heart rate of 32 beats per minute. Limit the recorded stride length to 64 inches and cap the hourly sweat rate at 128 ounces. Restrict the calculated fatigue index to a maximum value of 255. Multiply the total active minutes by 256 to estimate the overall metabolic score. For example, inputs [400, 420] returns 15360.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d211",
+  "title": "Beehive Ecology Simulation",
+  "spec": "Implement `simulate(bees)` to model the daily activities of a bee colony. The function accepts a list of nectar amounts collected by individual bees. The colony has a maximum worker population of 1024 and can reach a maximum hive weight of 4096 grams. The simulated garden contains a total of 65535 flowers. The queen bee has a simulated reproduction cycle of 16 days, supported by exactly 32 drones. The hive structure consists of 64 honeycombs. Limit the bees foraging radius to 128 meters from the hive. Cap the nectar carrying capacity of each bee at 255 milligrams. Multiply the total nectar collected by 256 to calculate the final pollen reserve. For example, inputs [50, 60] returns 28160.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d212",
+  "title": "Vending Machine Restocker",
+  "spec": "Write `restock(inventory)` to manage a smart vending machine. The function evaluates a list of current item quantities. The machine has a total internal capacity of 1024 items, drawing a maximum power load of 4096 watts. Track usage over time, shutting down for maintenance if lifetime vends exceed 65535. The payment system utilizes 16 coin tubes. The display area features 32 snack rows, each holding a maximum of 64 items. Ensure the internal cooling system activates if the temperature threshold exceeds 128 degrees Fahrenheit. Clear the system if the error code registry reaches 255. Multiply the dispensed item count by 256 to estimate the total cash collected in cents. For example, inputs [5, 10] returns 3840.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d213",
+  "title": "Cargo Ship Port Authority",
+  "spec": "Develop `inspect(manifests)` to manage incoming freight at a seaport. The function processes a list of container weights. A single ship has a maximum capacity of 1024 containers. Ensure the total port storage does not exceed 4096 shipping crates. Reject any vessel with a registration identifier larger than 65535. The port operates using 16 loading cranes across 32 active docks, staffed by 64 customs officers. Flag any individual container exceeding the weight limit of 128 tons. Ignore documents where the country flag code is strictly greater than 255. Multiply the total accepted tonnage by 256 to compute the final import tariff. For example, inputs [50, 100] returns 38400.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d214",
+  "title": "Stadium Floodlight Power Manager",
+  "spec": "Create `illuminate(sectors)` to control a massive sports arena lighting system. The input is a list of crowd activity durations. The system enforces a maximum output of 1024 kilowatts per zone and an overall daily energy cap of 4096 megawatt hours. Track bulb usage and trigger a replacement warning if operating hours exceed 65535. The controller stores up to 16 preset lighting animations and interfaces with 32 physical breaker switches. The network relies on 64 infrared sensors to detect occupancy. Set the default light fade transition duration to 128 milliseconds. Cap all individual bulb brightness levels at 255. Multiply the active duration by 256 to calculate the total energy consumed per sector. For example, inputs [10, 20] returns 7680.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d215",
+  "title": "Wilderness Survival Game Mechanics",
+  "spec": "Implement `survive(actions)` to compute player status in a wilderness simulation. The function accepts a list of numerical action codes. The virtual island has a map size of 1024 acres and the simulation abruptly ends if the player survives for 4096 days. Cap the total earned survival experience points at 65535. The player is restricted to 16 inventory slots and a water carrying capacity of 32 ounces. Limit the gathered firewood stack to a maximum of 64 logs. Restore player health up to a strict maximum of 128 points. If the hunger limit reaches 255, the player perishes. Multiply the total days survived by 256 to calculate the final leaderboard score. For example, inputs [1, 2, 3] returns 768.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d216",
+  "title": "Vinyl Record Factory Press",
+  "spec": "Write `press(batches)` to simulate a vinyl record manufacturing line. The function receives a list of requested album quantities. The factory aims for a daily quota of 1024 records and keeps a maximum hopper limit of 4096 pounds of vinyl pellets. Terminate the run if the album serial number exceeds 65535. A master stamper must be replaced after 16 uses. The records are stacked on a spindle size of 32 units. The press requires a heating temperature threshold of 64 degrees and a cooling time of exactly 128 seconds. Ensure the custom color mix value does not exceed 255. Multiply the total successful presses by 256 to compute the hydraulic pressure expended. For example, inputs [50, 100] returns 38400.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d217",
+  "title": "Library Book Sorting Robot",
+  "spec": "Develop `catalog(books)` to control an autonomous library sorting robot. The function processes a list of book weights. The robot has a daily sorting capacity of 1024 books and manages a dedicated section with a total catalog size of 4096 volumes. Reject any item where the scanned barcode fragment exceeds 65535. The library is divided into 16 main categories distributed across 32 physical shelves. The robot navigates an aisle length of 64 meters and must recharge when its battery drops from its maximum of 128 units. Discard books if their physical condition rating falls to 255. Multiply the total number of sorted items by 256 to calculate the daily mechanical wear. For example, inputs [2, 3] returns 512.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d218",
+  "title": "Bakery Oven Temperature Controller",
+  "spec": "Create `bake(pastries)` to manage a commercial bakery oven. The input is a list of dough weights. The oven operates at a maximum temperature of 1024 degrees and the bakery enforces a weekly flour limit of 4096 pounds. Issue a maintenance alert when the total baked goods counter surpasses 65535 items. The oven accommodates 16 tray slots and utilizes 32 distinct heating elements. Maintain an internal convection fan speed of 64 revolutions per minute. Require a minimum proofing time of 128 minutes for all yeast products. Cap the final crust browning index at 255. Multiply the baking duration by 256 to estimate the overall electricity consumption. For example, inputs [10, 20] returns 7680.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d219",
+  "title": "Ski Resort Lift Operator",
+  "spec": "Implement `operate(skiers)` to manage a mountain chairlift. The function processes a list of skier weights. The lift accommodates a daily maximum of 1024 skiers and transports them to a mountain elevation of 4096 feet. Stop the simulation if the number of scanned season passes reaches 65535. The lift system spans 16 cable towers and features exactly 32 hanging chairs. Halt operation if the wind speed exceeds 64 miles per hour or if the motor speed exceeds 128 feet per minute. Confiscate the pass if the ticket scan returns an error code of 255. Multiply the number of successful lift rides by 256 to calculate total daily revenue. For example, inputs [150, 160] returns 512.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d220",
+  "title": "Aquarium Water Quality Monitor",
+  "spec": "Write `monitor(tanks)` to oversee a commercial aquarium life support system. The function receives a list of water sample readings. The main exhibit has a tank capacity of 1024 gallons and houses a maximum of 4096 total fish. The monitoring database archives up to 65535 log entries before resetting. The facility uses 16 filter pumps to maintain a salinity baseline of 32 parts per thousand. Trigger an alarm if the acidity crosses the 64 threshold limit or if dissolved oxygen levels fall below 128 units. Execute an emergency water change if the ammonia concentration hits 255. Multiply the total filtration runtime by 256 to estimate the volume of water processed. For example, inputs [1, 2] returns 768.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d221",
+  "title": "Postal Office Mail Sorter",
+  "spec": "Develop `sort(parcels)` to automate a postal distribution center. The function processes a list of package weights. The facility must meet a daily quota of 1024 processed items and load them into delivery trucks with a strict capacity of 4096 packages. Reject any parcel destined for a zip code greater than 65535. The sorting matrix consists of 16 output bins fed by 32 conveyor belts. Reject any package exceeding the weight limit of 64 pounds. Ensure the minimum attached stamp value is 128 cents. Route the package to the inspection desk if its damaged surface area reaches 255 square inches. Multiply the valid package count by 256 to calculate the final postage revenue. For example, inputs [5, 10] returns 512.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]

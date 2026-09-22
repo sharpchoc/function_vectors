@@ -1,0 +1,1563 @@
+[
+ {
+  "id": "d001",
+  "title": "Custom Log Parser",
+  "spec": "Write a function `parse(line)` to parse a custom log format where components are separated by vertical bars. Extract the first part as a timestamp and parse it into an integer, then extract the second part as a severity level and ensure it matches the word error or warning. Extract the third part as an error code and parse it into an integer, followed by the fourth part as the module name. Finally, extract the fifth part as a message length and parse it as an integer. Return a tuple containing the timestamp, severity, code, module name, and message length. If any part is missing or fails to parse as a number, propagation should naturally halt and return an error. Example input: \"162000|error|404|network|25\". Output: (162000, \"error\", 404, \"network\", 25).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d002",
+  "title": "Virtual Machine Command Decoder",
+  "spec": "Write a function `execute(command)` to parse a strict virtual machine command string separated by spaces. Retrieve the first word and ensure it is the word execute, then retrieve the second word and parse it as an integer for the target register. Retrieve the third word and parse it as an integer for the base address, and retrieve the fourth word and parse it as an integer for the offset. Retrieve the fifth word and parse it as an integer for the loop count limit, and retrieve the sixth word and parse it as a floating point number for the scaling factor. Return a tuple of all five parsed numbers, ensuring any missing arguments or failing number conversions immediately halt and propagate a failure. Example input: \"execute 4 1024 16 100 1.5\". Output: (4, 1024, 16, 100, 1.5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d003",
+  "title": "Structured Binary Sequence Reader",
+  "spec": "Write a function `decode(sequence)` to read a structured binary sequence from a string of numbers separated by spaces. Retrieve the first number as a magic byte and verify it equals forty two, then retrieve the second number as a version and verify it equals one. Retrieve the third number as a payload length, and retrieve the fourth number as a payload data item. Retrieve the fifth number as a second payload data item, then retrieve the sixth number as a checksum. Calculate the sum of the two payload numbers and verify it matches the checksum. Return a tuple of the two payload items, halting and propagating a failure if any numbers are missing or verifications fail. Example input: \"42 1 2 10 20 30\". Output: (10, 20).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d004",
+  "title": "Database Connection String Parser",
+  "spec": "Write a function `connect(uri)` to parse a strict database connection string where segments are separated by commas. Obtain the first segment and verify it equals the word postgres, then obtain the second segment and parse it as an integer representing the port. Obtain the third segment as the username, then obtain the fourth segment as the password length, parse it as an integer, and verify it is greater than seven. Obtain the fifth segment as the database name, and the sixth segment as a timeout value parsed as a floating point number. Return a tuple of the port, username, password length, database name, and timeout, propagating errors if any step fails. Example input: \"postgres,5432,admin,12,sales,30.5\". Output: (5432, \"admin\", 12, \"sales\", 30.5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d005",
+  "title": "Product CSV Row Ingester",
+  "spec": "Write a function `ingest(row)` to process a single strict row of comma separated values representing a product. Pull the first item and parse it as an integer for the identifier, then pull the second item and parse it as a floating point number for the price. Pull the third item and parse it as an integer for the stock quantity, then pull the fourth item as the category name. Pull the fifth item and parse it as a boolean for the active status, then pull the sixth item and parse it as an integer for the warehouse section. Return a tuple containing all six parsed values, halting and propagating failure if any item is missing or fails to parse. Example input: \"105,19.99,50,tools,true,4\". Output: (105, 19.99, 50, \"tools\", true, 4).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d006",
+  "title": "Semantic Version Splitter",
+  "spec": "Write a function `version(text)` to parse a strict semantic versioning string. The text is first separated by a hyphen to split the main version from the build tag. Take the first part and split it by periods to form a sequence, retrieving the first component and parsing it as an integer major version. Retrieve the second component and parse it as an integer minor version, then retrieve the third component and parse it as an integer patch version. Take the build tag from the initial split and ensure it starts with the word build. Return a tuple of the major, minor, patch, and build tag, propagating errors if components are missing or fail to parse. Example input: \"2.14.7-build99\". Output: (2, 14, 7, \"build99\").",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d007",
+  "title": "File System Path Resolver",
+  "spec": "Write a function `resolve(path)` to resolve a simulated file system path string separated by slashes. Split the path by slashes, retrieve the first segment, and ensure it equals the word root. Retrieve the second segment as the user directory, the third segment as the project name, the fourth segment as the folder name, and the fifth segment as the file name. Retrieve the sixth segment and parse it as an integer representing the expected file size, then retrieve the seventh segment and parse it as an integer representing the permissions mask. Return a tuple of all these extracted and parsed components, failing early if the path is too short or numbers are invalid. Example input: \"root/admin/website/src/index/1024/777\". Output: (\"root\", \"admin\", \"website\", \"src\", \"index\", 1024, 777).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d008",
+  "title": "Strict Datetime Parser",
+  "spec": "Write a function `datetime(string)` to parse a strict custom date and time format. Split the text by the letter T to separate date and time, then take the date half and split it by hyphens. Retrieve the first part and parse it as an integer year, the second part as an integer month, and the third part as an integer day. Take the time half and split it by colons, retrieving the first part as an integer hour, the second part as an integer minute, and the third part as an integer second. Return a tuple of year, month, day, hour, minute, and second, propagating failures if any string operations or number parses fail. Example input: \"2023-10-31T23:59:01\". Output: (2023, 10, 31, 23, 59, 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d009",
+  "title": "Custom Hexadecimal Decoder",
+  "spec": "Write a function `unbase(encoded)` to decode a custom hexadecimal data format containing pairs of characters separated by colons. Split the text by colons to get an iterator of pairs, and retrieve the first pair to parse as a hexadecimal integer representing a header type. Retrieve the second pair and parse it as a hexadecimal integer representing a length, then retrieve the third pair and parse it as a hexadecimal integer representing a checksum. Retrieve the fourth pair and parse it as a hexadecimal integer representing a status code. Return a tuple of the header type, length, checksum, and status code. Halt and propagate failure if any segment is missing or fails to parse as a hexadecimal integer. Example input: \"A1:0F:FF:00\". Output: (161, 15, 255, 0).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d010",
+  "title": "Network Routing Rule Parser",
+  "spec": "Write a function `route(packet)` to process a strict network routing string separated by spaces. Get the first word and ensure it is the word route, then get the second word and parse it as an integer network identifier. Get the third word and parse it as an integer subnet mask, then get the fourth word as the gateway address. Get the fifth word and parse it as an integer metric, get the sixth word as the interface name, and get the seventh word and parse it as an integer representing the time to live. Return a tuple of all parsed components, propagating any missing value or integer parsing errors. Example input: \"route 192 24 gateway 10 eth0 64\". Output: (192, 24, \"gateway\", 10, \"eth0\", 64).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d011",
+  "title": "Sparse Matrix Element Parser",
+  "spec": "Write a function `transform(matrix)` to read a sparse matrix format from a string separated by spaces. Get the first item and parse it as an integer row count, then get the second item and parse it as an integer column count. Get the third item and parse it as an integer element count, then get the fourth item and parse it as an integer for the first element row index. Get the fifth item and parse it as an integer for the first element column index, and get the sixth item and parse it as a floating point number for the first element value. Return a tuple of the row count, column count, element count, and the details of the first element, handling any parsing errors. Example input: \"100 100 5 10 20 3.14\". Output: (100, 100, 5, 10, 20, 3.14).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d012",
+  "title": "Employee Record Validator",
+  "spec": "Write a function `validate(record)` to validate an employee record string separated by pipes. Retrieve the first segment as the department code, then retrieve the second segment and parse it as an integer employee identifier. Retrieve the third segment as the first name, the fourth segment as the last name, and the fifth segment parsed as an integer age. Retrieve the sixth segment and parse it as an integer salary, then retrieve the seventh segment and parse it as an integer years of service. Return a tuple of all these values, halting if any segment is missing or fails integer parsing. Example input: \"ENG|1024|Jane|Doe|35|120000|5\". Output: (\"ENG\", 1024, \"Jane\", \"Doe\", 35, 120000, 5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d013",
+  "title": "Verbose Chess Move Parser",
+  "spec": "Write a function `chess(move)` to parse a verbose chess move string separated by underscores. Retrieve the first segment and ensure it equals the word move, then retrieve the second segment as the piece name. Retrieve the third segment as the starting file letter, and retrieve the fourth segment and parse it as an integer for the starting rank. Retrieve the fifth segment as the destination file letter, retrieve the sixth segment and parse it as an integer for the destination rank, and retrieve the seventh segment and parse it as an integer for the move number. Return a tuple of the piece, start file, start rank, end file, end rank, and move number, stopping early on any failure. Example input: \"move_knight_g_1_f_3_12\". Output: (\"knight\", \"g\", 1, \"f\", 3, 12).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d014",
+  "title": "Bytecode Assembly Parser",
+  "spec": "Write a function `assemble(source)` to assemble a single line of assembly code separated by commas. Retrieve the first item as the operation code, then retrieve the second item and parse it as an integer for the destination register. Retrieve the third item and parse it as an integer for the first source register, and retrieve the fourth item and parse it as an integer for the second source register. Retrieve the fifth item and parse it as an integer for the shift amount, and retrieve the sixth item and parse it as an integer for the condition flags. Return a tuple of all components, naturally propagating any missing elements or failed parses. Example input: \"ADD,1,2,3,0,1\". Output: (\"ADD\", 1, 2, 3, 0, 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d015",
+  "title": "Morse Code Audio Timings",
+  "spec": "Write a function `morse(timings)` to parse an audio timing string for morse code separated by spaces. Retrieve the first word and parse it as an integer duration for the first signal, then retrieve the second word and parse it as an integer duration for the first pause. Retrieve the third word and parse it as an integer duration for the second signal, then retrieve the fourth word and parse it as an integer duration for the second pause. Retrieve the fifth word and parse it as an integer duration for the third signal, and retrieve the sixth word and parse it as an integer duration for the third pause. Return a tuple of all six integers, returning an error if there are not enough words or if any fail to parse. Example input: \"300 100 100 100 300 700\". Output: (300, 100, 100, 100, 300, 700).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d016",
+  "title": "Strict Geolocation Parser",
+  "spec": "Write a function `locate(coords)` to parse a strict geographic coordinate string separated by semicolons. Retrieve the first part and parse it as a floating point number for latitude, then retrieve the second part and parse it as a floating point number for longitude. Retrieve the third part and parse it as a floating point number for altitude, then retrieve the fourth part and parse it as a floating point number for accuracy. Retrieve the fifth part and parse it as a floating point number for heading, and retrieve the sixth part and parse it as a floating point number for speed. Return a tuple of all six numbers, gracefully failing if parts are missing or invalid. Example input: \"37.7749;-122.4194;15.5;5.0;180.0;12.5\". Output: (37.7749, -122.4194, 15.5, 5.0, 180.0, 12.5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d017",
+  "title": "DNS Resource Record Parser",
+  "spec": "Write a function `dns(packet)` to process a text representation of a network record separated by spaces. Retrieve the first token as the domain name, then retrieve the second token and parse it as an integer for the record type. Retrieve the third token and parse it as an integer for the class code, and retrieve the fourth token and parse it as an integer for the time to live. Retrieve the fifth token and parse it as an integer for the data length, retrieve the sixth token as the data payload, and retrieve the seventh token and parse it as an integer for the checksum. Return a tuple of all seven components, halting execution on any parsing error. Example input: \"example.com 1 1 3600 4 192 255\". Output: (\"example.com\", 1, 1, 3600, 4, \"192\", 255).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d018",
+  "title": "Color Format String Converter",
+  "spec": "Write a function `convert(hex)` to parse a strict color profile string separated by dashes. Retrieve the first part as the profile name, then retrieve the second part and parse it as an integer for the red channel. Retrieve the third part and parse it as an integer for the green channel, and retrieve the fourth part and parse it as an integer for the blue channel. Retrieve the fifth part and parse it as a floating point number for the alpha transparency, and retrieve the sixth part and parse it as an integer for the color space identifier. Return a tuple of all six extracted values, letting parsing failures naturally propagate. Example input: \"sRGB-255-128-64-1.0-9\". Output: (\"sRGB\", 255, 128, 64, 1.0, 9).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d019",
+  "title": "Cryptographic Token Verifier",
+  "spec": "Write a function `verify(payload)` to verify a simulated cryptographic token string separated by periods. Retrieve the first segment as the algorithm name, then retrieve the second segment and parse it as an integer for the token type. Retrieve the third segment as the issuer name, then retrieve the fourth segment and parse it as an integer for the expiration timestamp. Retrieve the fifth segment and parse it as an integer for the issued at timestamp, retrieve the sixth segment as the signature string, and retrieve the seventh segment and parse it as an integer for the key identifier. Return a tuple of all components, returning early if any parsing step fails. Example input: \"HS256.4.admin.1700000000.1600000000.abcd.99\". Output: (\"HS256\", 4, \"admin\", 1700000000, 1600000000, \"abcd\", 99).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d020",
+  "title": "Recipe Ingredient Scaler",
+  "spec": "Write a function `scale(recipe)` to process a strict recipe scaling instruction string separated by colons. Retrieve the first part as the recipe name, then retrieve the second part and parse it as an integer for the original servings. Retrieve the third part and parse it as an integer for the target servings, and retrieve the fourth part and parse it as a floating point number for the first ingredient amount. Retrieve the fifth part and parse it as a floating point number for the second ingredient amount, and retrieve the sixth part and parse it as a floating point number for the third ingredient amount. Return a tuple of the name and all five numbers, halting if the format is invalid. Example input: \"cake:4:8:200.0:100.5:50.0\". Output: (\"cake\", 4, 8, 200.0, 100.5, 50.0).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d021",
+  "title": "Vehicle Telemetry Extractor",
+  "spec": "Write a function `extract(telemetry)` to extract data from a vehicle telemetry string separated by commas. Retrieve the first token and parse it as an integer for the vehicle identifier, then retrieve the second token and parse it as an integer for the timestamp. Retrieve the third token and parse it as a floating point number for the engine temperature, and retrieve the fourth token and parse it as a floating point number for the oil pressure. Retrieve the fifth token and parse it as an integer for the engine speed, and retrieve the sixth token and parse it as a floating point number for the vehicle speed. Return a tuple of all six numbers, propagating any data extraction or conversion errors. Example input: \"42,169000,95.5,40.2,3000,65.5\". Output: (42, 169000, 95.5, 40.2, 3000, 65.5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d022",
+  "title": "Prefix Expression Evaluator",
+  "spec": "Write a function `evaluate(expression)` to evaluate a simple prefix mathematical expression provided as a sequence of space separated words. Retrieve the first word as the operation which must be either add or subtract, then retrieve the second word and parse it as a floating point number for the first operand. Retrieve the third word and parse it as a floating point number for the second operand, and retrieve the fourth word and parse it as a floating point number for the third operand. Retrieve the fifth word and parse it as a floating point number for the fourth operand, and retrieve the sixth word and parse it as a floating point number for the fifth operand. Return a tuple of the operation and the five numbers, halting if the string is incomplete or parsing fails. Example input: \"add 1.1 2.2 3.3 4.4 5.5\". Output: (\"add\", 1.1, 2.2, 3.3, 4.4, 5.5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d023",
+  "title": "Mock Archive Header Unpacker",
+  "spec": "Write a function `unpack(archive)` to read headers from a mock archive string separated by vertical bars. Retrieve the first section and ensure it is the word archive, then retrieve the second section and parse it as an integer for the version. Retrieve the third section and parse it as an integer for the total files count, and retrieve the fourth section and parse it as an integer for the uncompressed size. Retrieve the fifth section and parse it as an integer for the compressed size, and retrieve the sixth section and parse it as an integer for the dictionary size. Return a tuple of all the numbers, handling any missing fields or parse errors. Example input: \"archive|2|15|10240|5120|4096\". Output: (2, 15, 10240, 5120, 4096).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d024",
+  "title": "Hardware Configuration Parser",
+  "spec": "Write a function `configure(settings)` to parse a strict hardware configuration string separated by equal signs. Retrieve the first part as the device name, then retrieve the second part and parse it as an integer for the baud rate. Retrieve the third part and parse it as an integer for the data bits, and retrieve the fourth part and parse it as an integer for the stop bits. Retrieve the fifth part and parse it as an integer for the parity mode, and retrieve the sixth part and parse it as an integer for the flow control mode. Return a tuple of the device name and the five integers, propagating failures smoothly. Example input: \"ttyS0=9600=8=1=0=1\". Output: (\"ttyS0\", 9600, 8, 1, 0, 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d025",
+  "title": "Server Metrics Analyzer",
+  "spec": "Write a function `analyze(metrics)` to analyze a strict server metrics string separated by spaces. Retrieve the first token as the server hostname, then retrieve the second token and parse it as a floating point number for the processor usage percentage. Retrieve the third token and parse it as a floating point number for the memory usage percentage, and retrieve the fourth token and parse it as an integer for the active connections count. Retrieve the fifth token and parse it as an integer for the network bytes sent, and retrieve the sixth token and parse it as an integer for the network bytes received. Return a tuple containing the hostname, the two floats, and the three integers, exiting early if the format is invalid. Example input: \"web01 45.5 80.2 1500 1048576 2097152\". Output: (\"web01\", 45.5, 80.2, 1500, 1048576, 2097152).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d026",
+  "title": "Grid Robot Navigator",
+  "spec": "The entry point is `navigate(instructions)`. The instructions are provided as a single text block where each line represents a movement. The logic must read each line, split it into parts by spaces, extract the direction letter, and extract the integer distance. Both part extraction and number conversion can fail, which should immediately halt processing. If a movement leads to negative coordinates, it also fails. Returns the final horizontal and vertical coordinates as a pair. Example input: \"R 5 \\n D 3 \\n L 2\". Example output: pair of 3 and 3.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d027",
+  "title": "Account Balance Ledger",
+  "spec": "The entry point is `reconcile(transactions)`. Processes a text log of banking events to update accounts. Each event is a text line consisting of an action word, an account identifier number, and a decimal amount separated by spaces. The logic must separate the line, extract these three pieces, convert the identifier to an integer, and convert the amount to a decimal. It then applies the amount to a running total for that account. Any missing line parts or unreadable numbers should halt processing and return a failure. Example input: \"deposit 101 50.0 \\n withdraw 101 20.0\". Example output: total for account one zero one is 30.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d028",
+  "title": "Postfix Calculator Simulation",
+  "spec": "The entry point is `evaluate(expression)`. Solves a math expression given in reverse polish notation as a single text sequence. The logic processes each segment separated by spaces. If a segment is a number, it attempts to convert it and place it onto a list. If it is a mathematical operator like plus or times, the logic removes the last two numbers from the list, performs the calculation, and puts the result back. Attempting to remove numbers from an empty list or encountering an unknown operator must immediately cause a failure. Example input: \"3 4 + 2 *\". Example output: 14.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d029",
+  "title": "Playing Card Scorer",
+  "spec": "The entry point is `score(hand)`. Evaluates a text string containing five playing cards separated by spaces. The logic must inspect each card segment, separating it into a single rank character and a single suit character. It must convert the rank into a numerical value from two to fourteen, failing if the character is unrecognized. It also fails if any suit is an invalid letter. Finally, it sums the numerical values of all five cards and returns the total. Example input: \"9H TJ QC KD AS\". Example output: 55.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d030",
+  "title": "Package Registry Resolver",
+  "spec": "The entry point is `resolve(packages)`. Takes a text list of required software packages and a main catalog text block. Each line in the catalog contains a package name, a version number, and a file size in kilobytes. The logic must search the catalog for each required package. When found, it extracts the version and size, converts the size to an integer, and verifies the version is not zero. It sums the file sizes of all required packages. If any package is missing, lacks a size, or fails conversion, the entire process stops. Example input: list containing \"core\" and \"utils\", catalog \"core 1 50 \\n utils 2 30\". Example output: 80.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d031",
+  "title": "Tenpin Bowling Scorer",
+  "spec": "The entry point is `tally(rolls)`. Calculates the final score of a bowling game given a text sequence of numbers separated by dashes. The logic must process the sequence to represent ten frames. For each frame, it extracts the next number. If it is a ten, it represents a strike and requires extracting the two subsequent numbers for bonus points. Otherwise, it extracts a second number for the frame, checking that their sum does not exceed ten. Any missing numbers before ten frames are completed must return a failure. Example input: \"10-7-3-9-0-10-0-8-8-2-0-6-10-10-10-8-1\". Example output: 167.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d032",
+  "title": "Vector Graphic Scaler",
+  "spec": "The entry point is `scale(path)`. Modifies a drawing path text by multiplying all coordinates by a fixed scale factor of two. The path consists of drawing commands where each line starts with a single letter followed by horizontal and vertical coordinate numbers. The logic must separate the line by spaces, keep the command letter, extract both numbers, convert them to decimal formats, multiply each by two, and reconstruct the text line. If any line is incomplete or contains invalid numbers, it yields a failure. Example input: \"M 10 20 \\n L 15 25\". Example output: \"M 20 40 \\n L 30 50\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d033",
+  "title": "Rail Network Router",
+  "spec": "The entry point is `route(stations)`. Determines the total distance of a train journey. The input is a single text string of station names separated by commas. The logic must examine each consecutive pair of stations. For each pair, it searches a provided schedule text block where each line contains a start station, an end station, and a distance in miles. It extracts the distance, converts it to an integer, and adds it to a running total. If a required connection is missing from the schedule or the distance is unreadable, it fails. Example input: \"North,Central,South\". Example output: total distance integer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d034",
+  "title": "Investment Portfolio Adjuster",
+  "spec": "The entry point is `adjust(trades)`. Processes a text block of buy and sell instructions for a stock account. Each line holds an action word, a stock ticker symbol, a quantity, and a unit price separated by spaces. The logic must isolate these four pieces, convert the quantity to a whole number, and convert the price to a decimal. It deducts funds for buys and adds funds for sells, updating a starting cash balance. If the text format is broken, fields are missing, or the balance turns negative, it halts and reports an error. Example input: \"buy AAPL 10 150.0\". Example output: negative 1500.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d035",
+  "title": "Genetic Sequence Translator",
+  "spec": "The entry point is `translate(sequence)`. Converts a text string of genetic bases into a chain of amino acids. The logic must step through the sequence in chunks of three characters. For each chunk, it verifies that it only contains valid base letters. It then uses a predefined translation text mapping to find the corresponding amino acid name. If a chunk length is not exactly three, contains invalid letters, or cannot be found in the mapping, the process returns a failure. Example input: \"AUGGCCUAA\". Example output: list containing \"Methionine\", \"Alanine\", \"Stop\".",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d036",
+  "title": "Building Elevator Simulator",
+  "spec": "The entry point is `simulate(requests)`. Simulates an elevator serving requested floors provided as a text string of numbers separated by spaces. The logic must extract each word, convert it into an integer, and verify the floor is between ground and the top level of fifty. It calculates the difference between the current floor and the requested floor, adding this to a total travel time where each floor takes two seconds. A failure occurs if a word is missing, is not a valid number, or falls outside the building limits. Example input: \"5 2 10\". Example output: 34 seconds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d037",
+  "title": "Automation Rule Engine",
+  "spec": "The entry point is `trigger(rules)`. Evaluates conditional rules for a smart house. The rules are given as a text block where each line dictates a sensor name, a comparison word like greater or lesser, and a threshold value. The logic splits the line, finds the corresponding sensor reading in an environmental state text, converts both the reading and the threshold to decimals, and performs the comparison. If any rule line lacks three parts, a number is unreadable, or a sensor is missing, it returns an error. Example input: \"temp greater 20.0\". Example output: true or false.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d038",
+  "title": "Bitmap Image Shrinker",
+  "spec": "The entry point is `shrink(pixels)`. Downsamples a simple image represented as a text block of numbers. Each line contains a row index, a column index, and a color intensity from zero to two hundred fifty five. The logic extracts these three values, converting them to integers. It ensures indices are within expected bounds and groups every four adjacent pixels into a block, calculating their average intensity. The process stops and fails if any line is incomplete, missing spaces, or contains non numerical data. Example input: \"0 0 10 \\n 0 1 20 \\n 1 0 30 \\n 1 1 40\". Example output: single averaged intensity of 25.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d039",
+  "title": "Melody Track Synthesizer",
+  "spec": "The entry point is `synthesize(notes)`. Processes a musical track defined by a text string. Each section separated by a bar symbol contains a pitch note, an octave number, and a duration in milliseconds. The logic must split the string by bars, then split each section by spaces to extract the three components. It converts the octave and duration to integers, calculates the sound frequency based on the pitch and octave, and sums the total track duration. Any missing component or bad number formatting results in an immediate failure. Example input: \"C 4 500 | D 4 500\". Example output: total duration of 1000.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d040",
+  "title": "Molecular Weight Calculator",
+  "spec": "The entry point is `weigh(formula)`. Computes the mass of a chemical compound from its text formula. The formula is provided as pairs of element symbols and single digit counts separated by spaces. The logic iterates over each pair, extracts the symbol and the count character, and converts the count to a number. It then looks up the atomic mass for the symbol from a standard reference text, multiplies it by the count, and adds it to an overall sum. Missing symbols, missing spaces, or invalid counts cause a failure. Example input: \"H 2 O 1\". Example output: roughly 18.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d041",
+  "title": "Processor Pipeline Simulator",
+  "spec": "The entry point is `pipeline(instructions)`. Simulates a central processing unit executing a sequence of text instructions. Each line holds an operation code, a source register number, and a destination register number. The logic must split the line, extract the three parts, and convert the register references to integers. It then reads the value from the simulated source register, performs the indicated mathematical operation, and writes the new value into the destination register. Missing fields, invalid formats, or out of bounds registers trigger an error. Example input: \"add 1 2 \\n sub 2 3\". Example output: array of updated registers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d042",
+  "title": "Distributed Ledger Validator",
+  "spec": "The entry point is `validate(block)`. Verifies a simulated digital ledger block provided as text. The first line contains the previous block identifier, the second line is a timestamp, and subsequent lines are transfers with a sender, receiver, and amount separated by commas. The logic must extract the first two lines and convert the timestamp to a numeric format. It then iterates through the transfers, extracting the three fields, converting the amount to an integer, and checking that the sender has sufficient funds before updating balances. Any missing line or invalid amount fails the block. Example input: block text with two transfers. Example output: true if valid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d043",
+  "title": "Warehouse Order Fulfiller",
+  "spec": "The entry point is `fulfill(order)`. Processes a customer request against a warehouse inventory. The order is a text block where lines consist of an item code and a requested quantity. The logic separates each line by spaces, extracts the item code, and converts the quantity to an integer. It checks the inventory text to find the item, extracts its available stock, converts that to an integer, and verifies the stock is sufficient. If formatting is incorrect, parts are missing, or stock is too low, the process returns an error. Example input: \"widget 50 \\n gadget 10\". Example output: remaining total stock.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d044",
+  "title": "Electronic Mail Inspector",
+  "spec": "The entry point is `inspect(headers)`. Analyzes the routing information of a message. The input is a text block where each line starts with a field name, a colon, and the field value. The logic must iterate over the lines, divide them at the colon, and extract both sides. It specifically looks for the sender address, recipient address, and routing date. It verifies that addresses contain an at symbol and converts the date string into a numerical timestamp. Missing mandatory fields, lack of colons, or malformed dates result in failure. Example input: \"From: a@b.com \\n To: c@d.com \\n Date: 2023\". Example output: extracted fields.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d045",
+  "title": "Flight Connection Finder",
+  "spec": "The entry point is `connect(flights)`. Determines the total duration of a multi leg air journey. The input is a text sequence of flight segments separated by commas. Each segment contains a flight code, departure hour, and arrival hour separated by spaces. The logic splits the sequence, then splits each segment to extract the three parts. It converts the departure and arrival hours to numbers, calculates the flight time, and verifies the departure is after the previous arrival. Any invalid time, missing hour, or incorrect formatting fails the check. Example input: \"FL1 8 10, FL2 11 14\". Example output: total duration of 5 hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d046",
+  "title": "Sports League Updater",
+  "spec": "The entry point is `update(matches)`. Processes weekly game results to update team points. The input is a text block where each line contains a home team, an away team, a home score, and an away score separated by commas. The logic splits each line into its four parts, extracting the names and converting the scores to integers. It then updates a provided league table, adding three points for a win and one for a draw. If a line is missing parts, a score is not a number, or a team is missing from the table, it fails. Example input: \"Lions,Tigers,2,1\". Example output: updated points tally.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d047",
+  "title": "Fluid Dynamics Simulator",
+  "spec": "The entry point is `flow(pipes)`. Calculates pressure drop across a series of connected water channels. The input is a text block where each line represents a pipe with an identifier, a length, and a friction factor. The logic must extract the three components from each line, converting the length and friction to decimals. It computes the pressure loss for each pipe by multiplying the length by the friction, subtracting it from a starting pressure. If the pressure drops below zero, a line is incomplete, or a number is unreadable, it returns a failure. Example input: \"pipeA 10.0 0.5 \\n pipeB 5.0 0.2\". Example output: remaining pressure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d048",
+  "title": "Land Survey Plotter",
+  "spec": "The entry point is `plot(measurements)`. Traces property boundaries from field readings. The input is a text block where lines contain a compass bearing in degrees and a distance in meters separated by a space. The logic splits the line, extracts the two parts, and converts them to decimal numbers. It applies basic math to calculate the change in northern and eastern directions, updating a running position coordinate. The process halts and returns an error if a line is missing a part or contains invalid numerical characters. Example input: \"90.0 100.0 \\n 180.0 50.0\". Example output: final coordinate pair.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d049",
+  "title": "Theater Seat Reserver",
+  "spec": "The entry point is `reserve(requests)`. Processes ticket bookings for a venue. The requests are a single text string of seat codes separated by spaces. The logic must examine each code, split it into a single letter row and a trailing integer seat number, and convert the number. It checks a venue layout text to ensure the row exists and the seat number is within the capacity of that row. If a seat is out of bounds, a number fails conversion, or the code format is invalid, the entire booking fails. Example input: \"A5 B12 C1\". Example output: list of confirmed coordinates.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d050",
+  "title": "Library Catalog Importer",
+  "spec": "The entry point is `import(records)`. Reads a text file of book information. Each line contains a standard book number, a publication year, and a shelf code separated by vertical bars. The logic must split the line by the bar character, extract the three fields, and convert the year to an integer. It validates that the standard number is exactly thirteen characters long and that the shelf code exists in a provided master list. Any failure in splitting, conversion, or missing validations immediately aborts the import. Example input: \"1234567890123 | 2020 | FICTION\". Example output: count of successful imports.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d051",
+  "title": "Planetary Orbit Calculator",
+  "spec": "The entry `simulate(data)` takes a single text string containing a celestial system state. Split the string by semicolons and extract exactly seven sequential parts, returning an error if any are missing. Convert the second and third parts into floating point masses, and the fourth through seventh parts into coordinate numbers. Calculate the euclidean distance between the two bodies, returning an error if it is exactly zero. Calculate the gravitational force using the masses and distance. Return the first part, which is the identifier, alongside the calculated force.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d052",
+  "title": "Fantasy Roleplay Combat",
+  "spec": "The entry `fight(scenario)` processes a string representing a physical attack. Split the string by commas and extract exactly four sequential parts representing an attacker name, defender name, weapon type, and base damage, returning an error if any are missing. Convert the base damage into an integer. Look up the attacker in a provided dictionary to get a strength multiplier. Look up the defender in another dictionary to get an armor rating. Look up the weapon in a third dictionary to get an armor penetration value. Calculate effective armor by subtracting penetration from armor, returning an error if this goes below zero, and compute the final damage.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d053",
+  "title": "Virtual Directory Traverser",
+  "spec": "The entry `locate(path)` traverses a nested folder structure given a slash separated string. Split the string and extract exactly five sequential directory names, returning an error if the path is too short. For each name in order, look it up in a nested dictionary to get the next level directory. After successfully finding the fifth directory, look up a special metadata key within it. Parse that metadata string into an integer representing access permissions and return it.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d054",
+  "title": "Supply Chain Tracer",
+  "spec": "The entry `trace(barcode)` tracks a product through a warehouse network. Split the dash separated barcode and extract exactly four sequential parts, returning an error if any are missing. Look up the first part in a network directory to find its region. Look up the region to find the transit hub. Look up the transit hub to find the delivery status. Parse the delivery status into an integer day of the year and return it.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d055",
+  "title": "Cryptographic Key Deriver",
+  "spec": "The entry `derive(seed)` processes a seed string to generate a secure token. Split the seed by hyphens and extract exactly four sequential parts representing a salt, round count, algorithm, and base string, returning an error if any are missing. Parse the round count into a number. Look up the algorithm in a provided dictionary to get a security multiplier. Find the byte index of a special target character in the base string. Slice the base string from that index to the end and return it along with the multiplier.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d056",
+  "title": "Digital Circuit Simulator",
+  "spec": "The entry `evaluate(netlist)` calculates the output of a multi stage logic gate layout. Split a space separated string and extract exactly four sequential parts representing gate one, gate two, gate three, and an input signal, returning an error if any are missing. Look up the input signal in a state table to get its truth value. Look up each of the three gates by name in a component registry to get their logical operations. Apply gate one to the input, then gate two to that result, then gate three to the final result, returning an error if any operation is undefined.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d057",
+  "title": "Spacecraft Docking Sequence",
+  "spec": "The entry `dock(telemetry)` validates a ship approach vector. Split a colon separated string and extract exactly five sequential parts, returning an error if any are missing. Parse the last four parts into floating point numbers representing speed, yaw, pitch, and roll. Look up the first part in a station map to get the bay structure. Ensure the approach speed is below the maximum allowed speed for that bay. Ensure the yaw, pitch, and roll are within the strict alignment tolerances of the bay, returning an error if any check fails, and yield the bay name if successful.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d058",
+  "title": "Automated Cocktail Mixer",
+  "spec": "The entry `pour(order)` processes a drink request string. Split it by underscores and extract exactly four sequential parts representing a glass, base spirit, modifier, and garnish, returning an error if any are missing. Look up the glass in an inventory to get its volume capacity. Look up the base spirit to get its alcohol content. Look up the modifier to get its sweetness level. Look up the garnish to get its unit cost. Calculate the final drink cost and alcohol percentage, returning an error if the glass capacity is too small for the standard pour.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d059",
+  "title": "Smart Contract Executor",
+  "spec": "The entry `transact(payload)` processes a blockchain transaction. Split it by commas and extract exactly four sequential parts representing sender, receiver, amount, and fee, returning an error if any are missing. Parse the amount and fee into integers. Look up the sender in a ledger dictionary to get their current balance. Look up the receiver to get their active status. Subtract the fee from the sender balance, then subtract the amount, returning an error if either subtraction underflows. Add the amount to the receiver balance and return the new balances.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d060",
+  "title": "Constellation Star Map",
+  "spec": "The entry `chart(observation)` maps a sequence of star sightings. Split the input by pipes and extract exactly six sequential star identifiers, returning an error if any are missing. For each identifier in sequence, look it up in an astronomical catalog to get its coordinate pair. Calculate the euclidean distance between the first and second star, the second and third, and so on up to the sixth. Sum these five distances and return the total distance.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d061",
+  "title": "Payroll Tax Calculator",
+  "spec": "The entry `assess(employee)` calculates net pay from a record. Split the record by tabs and extract exactly four sequential parts representing an identifier, gross pay, state code, and marital status, returning an error if any are missing. Parse the gross pay into a floating point number. Look up the state code in a tax bracket table to get the base rate. Look up the marital status in an exemption table to get a deduction amount. Subtract the deduction from the gross pay, returning an error if it goes below zero, and multiply by the tax rate to find the withholding.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d062",
+  "title": "Online Checkout Flow",
+  "spec": "The entry `checkout(session)` processes a shopping cart string. Split by semicolons and extract exactly four sequential parts representing a user, item, quantity, and discount code, returning an error if any are missing. Parse the quantity into an integer. Look up the user in a database to get their shipping zone. Look up the shipping zone to get the delivery cost. Look up the item to get its unit price. Look up the discount code to get a percentage off. Calculate the final total and return it.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d063",
+  "title": "Job Queue Scheduler",
+  "spec": "The entry `assign(task)` schedules a compute job. Split a colon separated task string and extract exactly four sequential parts representing priority, required memory, required cores, and a worker pool name, returning an error if any are missing. Parse the memory and cores into integers. Look up the worker pool in a cluster directory to get a list of active nodes. Extract the very first node from this list. Look up the node in a metrics table to get its available memory and cores, returning an error if it does not have enough resources for the task.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d064",
+  "title": "Drone Waypoint Navigator",
+  "spec": "The entry `navigate(flightplan)` verifies a drone path string. Split it by commas and extract exactly four sequential parts representing starting altitude, cruising altitude, destination coordinate, and battery level, returning an error if any are missing. Parse the altitudes and battery level into numbers. Look up the destination in an airspace map to get restricted zones. Return an error if the cruising altitude is not strictly above the restricted zone limit. Calculate the required energy for the trip, returning an error if the battery level is insufficient.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d065",
+  "title": "Music Theory Transposer",
+  "spec": "The entry `transpose(chord)` shifts a musical chord up by a specific interval. Split a dash separated string and extract exactly four sequential parts representing a root note, a chord quality, an added extension, and an interval step, returning an error if any are missing. Parse the interval step into an integer. Look up the root note in a chromatic scale to get its index. Look up the chord quality in a structure table to get the major or minor intervals. Look up the added extension in a modifier table to get the final flavor. Apply these intervals to the new transposed root index to find the final notes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d066",
+  "title": "Assembly Line Bottleneck",
+  "spec": "The entry `measure(factory)` calculates the throughput of a sequential manufacturing process. Split a pipe separated string and extract exactly five sequential parts representing an initial raw material count and four machine identifiers, returning an error if any are missing. Parse the material count into an integer. Look up the first machine in a specifications table to get its yield percentage, and apply it to the count. Repeat this lookup and yield application for the second, third, and fourth machines in sequence, returning the final finished product count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d067",
+  "title": "Hotel Booking System",
+  "spec": "The entry `book(request)` processes a booking string. Split it by hashes and extract exactly four sequential parts representing a guest name, room type, check in day, and check out day, returning an error if any are missing. Parse the two days into integers. Look up the room type in a property map to get the daily rate. Look up the check in day in a seasonal calendar to get a price multiplier. Subtract check in from check out, returning an error if the duration is zero or negative. Multiply duration by the daily rate and the seasonal multiplier.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d068",
+  "title": "Traffic Light Controller",
+  "spec": "The entry `cycle(intersection)` determines the next state of a traffic intersection. Split a comma separated string and extract exactly four sequential parts representing current state, waiting cars north, waiting cars east, and time elapsed, returning an error if any are missing. Parse the last three values into integers. Look up the current state in a state machine dictionary to get the minimum wait time and the maximum wait time. Return an error if the time elapsed is less than the minimum wait time. Look up the next state in a transition table based on the waiting cars and return it.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d069",
+  "title": "Genealogy Tree Walker",
+  "spec": "The entry `trace(descendant)` traces a maternal lineage string. Split the input by spaces and extract exactly five sequential person identifiers, returning an error if any are missing. Look up the first person in a registry to find their mother, returning an error if it does not match the second identifier. Look up the second person to find their mother, returning an error if it does not match the third identifier. Continue this lookup and verification process for the fourth and fifth identifiers. Look up the final person to get their birth year, parsing it into an integer.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d070",
+  "title": "Coffee Roasting Profile",
+  "spec": "The entry `roast(profile)` executes a roasting temperature profile. Split a slash separated string and extract exactly four sequential parts representing a bean origin, target temperature, development time, and fan speed, returning an error if any are missing. Parse the last three parts into numbers. Look up the bean origin in a database to get its moisture content. Look up a heat curve formula based on the origin to get the slope. Apply the slope, moisture, and target temperature to determine the drop time, returning an error if the time exceeds the maximum allowed limits.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d071",
+  "title": "Typography Font Metrics",
+  "spec": "The entry `typeset(glyph)` calculates the bounding box for a character layout. Split a colon separated string and extract exactly four sequential parts representing a font family, a character code, a point size, and a weight, returning an error if any are missing. Parse the point size into a floating point number. Look up the font family in a system registry to get a metrics table. Look up the weight in that table to get a specific face. Look up the character code in the face to get its advance width and kerning offset, returning the multiplied totals.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d072",
+  "title": "Escape Room Progression",
+  "spec": "The entry `unlock(action)` validates a player action in a puzzle game. Split a dash separated string and extract exactly four sequential parts representing a player inventory item, a room object, a hidden compartment, and a resulting clue, returning an error if any are missing. Look up the inventory item in a database to get its interaction type. Look up the room object to get its required interaction, returning an error if they do not match. Look up the hidden compartment to get its combination lock state. Look up the resulting clue in a translation table to get a readable text.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d073",
+  "title": "Protocol Handshake Integrator",
+  "spec": "The entry `handshake(packet)` verifies a network connection initiation. Split a pipe separated string and extract exactly four sequential parts representing a magic word, a protocol version, a cipher suite, and a client nonce, returning an error if any are missing. Parse the version into an integer. Look up the magic word in a header table to get a validation flag, returning an error if it is false. Look up the protocol version to get the minimum key length. Look up the cipher suite to get its provided key length, returning an error if it fails to meet the minimum requirement.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d074",
+  "title": "Diet Plan Generator",
+  "spec": "The entry `plan(profile)` calculates daily macronutrients. Split a comma separated string and extract exactly five sequential parts representing age, weight, height, activity level, and goal, returning an error if any are missing. Parse the first three parts into integers. Look up the activity level in a multiplier table to get a floating point value. Look up the goal in a modifier table to get a calorie offset. Calculate the base metabolic rate using the age, weight, and height, multiply by the activity factor, and add the offset to get the final target.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d075",
+  "title": "Logistics Route Optimizer",
+  "spec": "The entry `route(delivery)` calculates the optimal path for a delivery truck. Split a semicolon separated string and extract exactly four sequential parts representing a depot, a first stop, a second stop, and a third stop, returning an error if any are missing. Look up the depot in a city grid to get its coordinates. Look up the first stop to get its coordinates, calculating the distance from the depot. Look up the second stop, calculating its distance from the first. Look up the third stop, calculating its distance from the second, and sum the three distances.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d076",
+  "title": "Structural Load Calculator",
+  "spec": "`calculate(factors)` accepts a tuple of five text strings. Parse the five strings into integers representing base weight, live load, wind stress, material strength, and safety margin. You must combine these using strict checked arithmetic, returning an error on any overflow or division by zero. Sequentially: add base weight and live load; multiply the sum by wind stress; divide the product by material strength; subtract the safety margin from the quotient; multiply this difference by the base weight; add the live load; and finally divide by the safety margin. Return the final integer result. Example: inputs of \"100\", \"50\", \"2\", \"10\", and \"5\" yield an output of 510.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d077",
+  "title": "Thermal Insulation Evaluator",
+  "spec": "`evaluate(parameters)` receives a tuple of five text strings. Parse them into integers representing core temperature, ambient temperature, wall thickness, thermal conductivity, and exposure time. You must compute a heat loss metric using strict checked arithmetic to prevent overflow or division by zero, returning an error if any such fault occurs. Sequentially: subtract ambient temperature from core temperature; multiply the difference by wall thickness; divide the product by thermal conductivity; add the exposure time to the quotient; multiply the sum by the ambient temperature; subtract the core temperature; and divide by the wall thickness. Return the final computed integer. Example: inputs of \"100\", \"20\", \"5\", \"2\", and \"10\" yield an output of 820.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d078",
+  "title": "Atmospheric Pressure Altimeter",
+  "spec": "`estimate(readings)` receives a tuple of five text strings. Parse these into integers representing base pressure, current pressure, temperature offset, lapse rate, and calibration constant. You must determine an altitude metric using strict checked arithmetic, returning an error on any overflow or division by zero. Sequentially: subtract current pressure from base pressure; multiply the result by temperature offset; divide by the lapse rate; add the calibration constant; multiply by the current pressure; subtract the temperature offset; and divide by the calibration constant. Return the final estimated integer. Example: inputs of \"100\", \"90\", \"5\", \"2\", and \"10\" produce an output of 314.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d079",
+  "title": "Battery Degradation Forecaster",
+  "spec": "`forecast(metrics)` takes a tuple of five text strings. Parse them into integers representing initial capacity, current charge, cycle count, heat exposure, and recovery factor. Calculate a battery health score using strict checked arithmetic, halting with an error if any step causes overflow, underflow, or division by zero. Sequentially: subtract current charge from initial capacity; multiply the difference by cycle count; divide by the recovery factor; add the heat exposure; multiply by the recovery factor; subtract the cycle count; and divide by the current charge. Return the final integer score. Example: inputs of \"5000\", \"4800\", \"300\", \"50\", and \"10\" produce an output of 12.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d080",
+  "title": "Crop Yield Estimator",
+  "spec": "`estimate(variables)` processes a tuple of five text strings. Parse them into integers representing planted area, rainfall amount, fertilizer applied, pest damage, and soil quality. Calculate an expected yield using strict checked arithmetic to prevent overflow or division by zero, returning an error on any such failure. Sequentially: add planted area and rainfall amount; multiply by soil quality; divide by pest damage; subtract the fertilizer applied; multiply by the planted area; add the pest damage; and divide by the soil quality. Return the final yield as an integer. Example: inputs of \"50\", \"20\", \"10\", \"5\", and \"8\" produce an output of 638.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d081",
+  "title": "Factory Output Scheduler",
+  "spec": "`schedule(factors)` takes a tuple of five text strings. Parse them into integers representing machine count, shift hours, worker efficiency, maintenance downtime, and target quota. You must compute a scheduling index using strict checked arithmetic, returning an error if any calculation results in overflow or division by zero. Sequentially: multiply machine count by shift hours; add worker efficiency; divide by maintenance downtime; subtract the target quota; multiply by worker efficiency; add maintenance downtime; and divide by machine count. Return the final calculated index. Example: inputs of \"10\", \"8\", \"90\", \"5\", and \"20\" yield an output of 126.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d082",
+  "title": "Freight Cargo Router",
+  "spec": "`route(parameters)` expects a tuple of five text strings. Parse them into integers representing distance, vehicle speed, fuel capacity, cargo weight, and traffic delay. Determine a transit score using strict checked arithmetic, ensuring you return an error on any overflow or division by zero. Sequentially: divide distance by vehicle speed; add traffic delay; multiply by cargo weight; divide by fuel capacity; subtract vehicle speed; multiply by traffic delay; and add the fuel capacity. Return the transit score as an integer. Example: inputs of \"600\", \"50\", \"100\", \"500\", and \"5\" result in an output of 275.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d083",
+  "title": "Network Bandwidth Allocator",
+  "spec": "`allocate(metrics)` receives a tuple of five text strings. Parse them into integers representing total capacity, active users, background noise, priority streams, and buffer size. Compute a bandwidth limit using strict checked arithmetic, returning an error on overflow or division by zero. Sequentially: subtract background noise from total capacity; divide by active users; multiply by priority streams; add buffer size; multiply by active users; subtract priority streams; and divide by buffer size. Return the final integer limit. Example: inputs of \"1000\", \"20\", \"200\", \"4\", and \"50\" yield an output of 83.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d084",
+  "title": "Server Cooling Modulator",
+  "spec": "`modulate(readings)` accepts a tuple of five text strings. Parse them into integers representing cpu temperature, ambient room temperature, fan base speed, thermal resistance, and cooling coefficient. Calculate an adjustment delta using strict checked arithmetic, returning an error on any overflow or division by zero. Sequentially: subtract ambient room temperature from cpu temperature; multiply by thermal resistance; divide by the cooling coefficient; add fan base speed; multiply by the cooling coefficient; subtract thermal resistance; and divide by ambient room temperature. Output the final integer delta. Example: inputs of \"85\", \"25\", \"1000\", \"4\", and \"2\" give an output of 89.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d085",
+  "title": "Hydroelectric Flow Controller",
+  "spec": "`control(sensors)` processes a tuple of five text strings. Parse them into integers representing reservoir volume, gate aperture, water pressure, seasonal rainfall, and turbine capacity. Determine a flow rate adjustment using strict checked arithmetic, failing with an error if overflow or division by zero occurs. Sequentially: multiply gate aperture by water pressure; add seasonal rainfall; divide by turbine capacity; subtract water pressure; multiply by turbine capacity; add the reservoir volume; and divide by gate aperture. Return the final integer adjustment. Example: inputs of \"5000\", \"10\", \"5\", \"100\", and \"20\" evaluate to 504.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d086",
+  "title": "Pandemic Spread Modeler",
+  "spec": "`model(data)` accepts a tuple of five text strings. Parse them into integers representing population size, initial cases, transmission rate, recovery days, and isolation factor. Compute a projected peak using strict checked arithmetic to avoid overflow and division by zero, returning an error upon failure. Sequentially: multiply initial cases by transmission rate; add population size; divide by isolation factor; subtract recovery days; multiply by isolation factor; add transmission rate; and divide by recovery days. Return the final integer projection. Example: inputs of \"100000\", \"50\", \"4\", \"14\", and \"2\" yield an output of 7155.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d087",
+  "title": "Seismic Tremor Evaluator",
+  "spec": "`evaluate(metrics)` takes a tuple of five text strings. Parse them into integers representing primary wave speed, secondary wave speed, distance, bedrock density, and fault depth. Calculate a severity index using strict checked arithmetic, returning an error if overflow or division by zero happens. Sequentially: subtract secondary wave speed from primary wave speed; multiply by distance; divide by fault depth; add bedrock density; multiply by secondary wave speed; subtract primary wave speed; and divide by bedrock density. Output the final integer severity index. Example: inputs of \"6000\", \"3500\", \"50\", \"3\", and \"10\" produce an output of 14584833.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d088",
+  "title": "Traffic Congestion Predictor",
+  "spec": "`predict(conditions)` expects a tuple of five text strings. Parse them into integers representing total vehicles, road lanes, accident count, weather penalty, and speed limit. Compute a delay metric using strict checked arithmetic, returning an error for any overflow or division by zero. Sequentially: divide total vehicles by road lanes; multiply by weather penalty; add accident count; divide by speed limit; multiply by weather penalty; subtract road lanes; and add speed limit. Output the integer delay metric. Example: inputs of \"2000\", \"4\", \"2\", \"3\", and \"60\" yield an output of 131.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d089",
+  "title": "Submarine Dive Calculator",
+  "spec": "`calculate(parameters)` processes a tuple of five text strings. Parse them into integers representing target depth, hull strength, water density, descent angle, and ballast weight. Compute a safety envelope using strict checked arithmetic, ensuring an error is returned on any overflow or division by zero. Sequentially: multiply target depth by water density; subtract ballast weight; divide by hull strength; add descent angle; multiply by hull strength; subtract water density; and divide by descent angle. Return the computed integer envelope. Example: inputs of \"500\", \"20\", \"10\", \"15\", and \"1000\" evaluate to 286.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d090",
+  "title": "Furnace Smelting Optimizer",
+  "spec": "`optimize(factors)` accepts a tuple of five text strings. Parse them into integers representing ore mass, carbon content, blast temperature, airflow rate, and slag ratio. Determine a refining time using strict checked arithmetic, returning an error if overflow or division by zero occurs. Sequentially: multiply ore mass by carbon content; add blast temperature; divide by airflow rate; subtract slag ratio; multiply by airflow rate; add slag ratio; and divide by carbon content. Output the integer refining time. Example: inputs of \"1000\", \"5\", \"1200\", \"50\", and \"10\" give an output of 1142.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d091",
+  "title": "Wind Tunnel Aerodynamics",
+  "spec": "`test(variables)` takes a tuple of five text strings. Parse them into integers representing tunnel speed, object frontal area, drag coefficient, air viscosity, and mount tension. Calculate a stress load using strict checked arithmetic, stopping with an error on overflow or division by zero. Sequentially: multiply tunnel speed by object frontal area; divide by drag coefficient; add mount tension; multiply by air viscosity; subtract tunnel speed; add drag coefficient; and divide by air viscosity. Return the final integer stress load. Example: inputs of \"300\", \"15\", \"3\", \"2\", and \"50\" produce an output of 1401.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d092",
+  "title": "Greenhouse Climate Regulator",
+  "spec": "`regulate(sensors)` expects a tuple of five text strings. Parse them into integers representing internal temperature, target temperature, humidity level, sunlight intensity, and vent position. Determine an actuator setting using strict checked arithmetic, returning an error upon any overflow or division by zero. Sequentially: subtract target temperature from internal temperature; multiply by humidity level; divide by vent position; add sunlight intensity; multiply by vent position; subtract humidity level; and divide by sunlight intensity. Output the integer actuator setting. Example: inputs of \"35\", \"25\", \"60\", \"80\", and \"4\" yield an output of 10.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d093",
+  "title": "Retail Demand Forecaster",
+  "spec": "`forecast(metrics)` receives a tuple of five text strings. Parse them into integers representing historical sales, current inventory, marketing spend, seasonality factor, and competitor price. Compute a stock order quantity using strict checked arithmetic, returning an error on overflow or division by zero. Sequentially: multiply historical sales by seasonality factor; subtract current inventory; divide by competitor price; add marketing spend; multiply by competitor price; subtract seasonality factor; and divide by marketing spend. Output the integer stock order quantity. Example: inputs of \"500\", \"100\", \"50\", \"4\", and \"20\" result in an output of 57.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d094",
+  "title": "Spacecraft Propellant Calibrator",
+  "spec": "`calibrate(readings)` processes a tuple of five text strings. Parse them into integers representing main tank volume, reserve volume, burn rate, specific impulse, and payload mass. Calculate an injection vector using strict checked arithmetic, halting with an error if overflow or division by zero occurs. Sequentially: add main tank volume and reserve volume; multiply by specific impulse; divide by payload mass; subtract burn rate; multiply by payload mass; add burn rate; and divide by specific impulse. Return the integer injection vector. Example: inputs of \"8000\", \"2000\", \"500\", \"300\", and \"150\" evaluate to 9751.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d095",
+  "title": "Bridge Fatigue Assessor",
+  "spec": "`assess(variables)` accepts a tuple of five text strings. Parse them into integers representing daily crossings, average vehicle weight, span length, steel age, and vibration frequency. Compute a wear index using strict checked arithmetic, returning an error for any overflow or division by zero. Sequentially: multiply daily crossings by average vehicle weight; divide by span length; add steel age; multiply by vibration frequency; subtract average vehicle weight; add span length; and divide by steel age. Output the integer wear index. Example: inputs of \"1000\", \"3\", \"50\", \"20\", and \"5\" produce an output of 22.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d096",
+  "title": "Livestock Feed Rationer",
+  "spec": "`ration(inputs)` takes a tuple of five text strings. Parse them into integers representing herd size, average weight, grazing hours, supplement calories, and activity modifier. Determine a feed volume using strict checked arithmetic, failing with an error if overflow or division by zero happens. Sequentially: multiply herd size by average weight; divide by grazing hours; add supplement calories; multiply by activity modifier; subtract average weight; add grazing hours; and divide by supplement calories. Output the integer feed volume. Example: inputs of \"50\", \"400\", \"8\", \"100\", and \"2\" give an output of 48.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d097",
+  "title": "Data Center Power Balancer",
+  "spec": "`balance(metrics)` expects a tuple of five text strings. Parse them into integers representing active racks, power draw, cooling capacity, UPS charge, and redundancy factor. Calculate a stable load limit using strict checked arithmetic, ensuring an error is returned on overflow or division by zero. Sequentially: multiply active racks by power draw; subtract UPS charge; divide by cooling capacity; add redundancy factor; multiply by cooling capacity; subtract active racks; and divide by redundancy factor. Return the computed integer load limit. Example: inputs of \"40\", \"500\", \"300\", \"2000\", and \"4\" yield an output of 4790.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d098",
+  "title": "Ocean Buoy Wave Tracker",
+  "spec": "`track(readings)` processes a tuple of five text strings. Parse them into integers representing swell height, period length, wind speed, tidal drift, and depth offset. Determine a kinetic energy score using strict checked arithmetic, stopping with an error on overflow or division by zero. Sequentially: multiply swell height by period length; add wind speed; divide by tidal drift; subtract depth offset; multiply by tidal drift; add period length; and divide by wind speed. Output the integer kinetic energy score. Example: inputs of \"12\", \"8\", \"25\", \"3\", and \"5\" give an output of 4.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d099",
+  "title": "Aircraft Takeoff Calibrator",
+  "spec": "`calibrate(variables)` receives a tuple of five text strings. Parse them into integers representing runway length, aircraft mass, headwind speed, engine thrust, and flap setting. Compute a thrust modifier using strict checked arithmetic, returning an error on overflow or division by zero. Sequentially: multiply aircraft mass by flap setting; divide by headwind speed; add engine thrust; multiply by headwind speed; subtract runway length; add aircraft mass; and divide by flap setting. Return the final integer thrust modifier. Example: inputs of \"3000\", \"500\", \"20\", \"4000\", and \"15\" evaluate to 5666.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d100",
+  "title": "Pharmaceutical Dosage Mapper",
+  "spec": "`map(factors)` accepts a tuple of five text strings. Parse them into integers representing patient weight, drug half life, concentration target, metabolic rate, and tablet size. Calculate an optimal dosage using strict checked arithmetic, ensuring you return an error on overflow or division by zero. Sequentially: multiply patient weight by concentration target; divide by metabolic rate; add drug half life; multiply by metabolic rate; subtract patient weight; add concentration target; and divide by tablet size. Output the integer optimal dosage. Example: inputs of \"80\", \"12\", \"5\", \"4\", and \"10\" produce an output of 37.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d101",
+  "title": "Weather Station Packet Decoder",
+  "spec": "The function sequentially reads eight separate chunks from a byte slice. It reads two bytes for a facility code. It reads two bytes for a sensor identifier. It reads four bytes for a timestamp. It reads two bytes for a temperature reading. It reads two bytes for humidity. It reads four bytes for atmospheric pressure. It reads two bytes for an error code. Finally, it reads one byte for a termination marker. All multi byte reads should be treated as big endian integers. If any read goes past the end of the input, the function returns a failure. It returns a tuple of the eight extracted numbers. Entry function: `decode(bytes)`. For example, given a slice of exactly nineteen bytes, it returns a tuple of the eight integers. Given a slice of five bytes, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d102",
+  "title": "Bank Ledger Transaction Validator",
+  "spec": "The function takes a text string representing a bank transfer. It separates the text by the pipe character. It sequentially parses eight distinct segments into integers. The first is a transaction identifier. The second is an account number. The third is a routing number. The fourth is a transfer amount. The fifth is a currency code represented as a numeric index. The sixth is a branch identifier. The seventh is a teller number. The eighth is a security checksum. If any segment is missing or fails to parse as an integer, it returns a failure. It returns a tuple of the eight integers. Entry function: `validate(transfer)`. For example, given the text 1|2|3|4|5|6|7|8, it returns a tuple of those eight numbers. Given the text 1|2|3, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d103",
+  "title": "Dietary Macronutrient Tabulator",
+  "spec": "The function takes a comma separated text string of nutritional data. It splits the string by commas. It sequentially parses eight segments as floating point numbers. The first segment is the serving size in grams. The second is total calories. The third is grams of fat. The fourth is grams of saturated fat. The fifth is milligrams of cholesterol. The sixth is milligrams of sodium. The seventh is grams of carbohydrates. The eighth is grams of protein. If the string contains fewer than eight segments or if any segment cannot be parsed as a float, it returns a failure. It returns a tuple of the eight parsed numbers. Entry function: `tabulate(nutrition)`. For example, given 100.0,250.5,10.0,2.0,5.0,300.0,20.0,15.0, it returns a tuple of those eight floats. Given an empty string, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d104",
+  "title": "Factory Worker Shift Formatter",
+  "spec": "The function receives a text string describing a work shift. It divides the string using semicolons. It sequentially parses eight integer values from the divided pieces. The first value is the worker identifier number. The second is the facility code. The third is the starting hour. The fourth is the starting minute. The fifth is the ending hour. The sixth is the ending minute. The seventh is the mandatory break duration in minutes. The eighth is the manager identifier number. If the string lacks eight pieces or if any parsing operation fails, the function returns a failure. It returns a tuple of the eight parsed integers. Entry function: `schedule(shift)`. For example, given 101;5;8;30;17;0;60;9, it returns the tuple (101, 5, 8, 30, 17, 0, 60, 9). Given invalid text like 101;five;8, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d105",
+  "title": "Microcontroller Opcode Disassembler",
+  "spec": "The function processes a text string containing a single assembly instruction. It separates the text by spaces. It parses the first piece as an integer representing the operation code. It parses the second piece as an integer for the first source register. It parses the third piece as an integer for the second source register. It parses the fourth piece as an integer for the destination register. It parses the fifth piece as an integer for an immediate value. It parses the sixth piece as an integer for a memory offset. It parses the seventh piece as an integer for a shift amount. It parses the eighth piece as an integer for condition flags. If any piece is absent or fails to parse, it returns a failure. It returns a tuple of the eight integers. Entry function: `disassemble(instruction)`. For example, given 1 2 3 4 5 6 7 8, it returns the tuple (1, 2, 3, 4, 5, 6, 7, 8). Given 1 2, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d106",
+  "title": "Secure Messaging Frame Unpacker",
+  "spec": "The function takes a slice of bytes representing a network message. It reads eight distinct numeric fields by sequentially advancing through the slice. It reads one byte for the protocol version. It reads two bytes for the payload size. It reads four bytes for a sequence number. It reads four bytes for a sender identification. It reads four bytes for a recipient identification. It reads four bytes for a session token. It reads eight bytes for a timestamp. It reads two bytes for a checksum. All multi byte integers are read in big endian order. If the slice does not contain enough bytes for any of these operations, it returns a failure. It returns a tuple of the eight extracted numbers. Entry function: `unpack(frame)`. For example, given a slice of exactly twenty nine bytes, it extracts the fields and returns them as a tuple. Given ten bytes, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d107",
+  "title": "Deep Space Probe Telemetry Decoder",
+  "spec": "The function receives a list of integers representing raw telemetry data. It creates an iterator to sequentially retrieve eight values. The first value is a sync marker. The second is a frame counter. The third is an engine temperature reading. The fourth is a radiation level. The fifth is a battery voltage. The sixth is a solar panel current. The seventh is an antenna alignment angle. The eighth is an error correction code. If the iterator is exhausted before all eight values are read, the function returns a failure. It returns a tuple of the eight telemetry values. Entry function: `analyze(telemetry)`. For example, given a list containing 42, 1, 100, 5, 12, 3, 90, 255, it returns those eight integers as a tuple. Given a list of three integers, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d108",
+  "title": "Wilderness Landmark Waypoint Parser",
+  "spec": "The function takes a text string representing a trail waypoint. It splits the string by slashes. It sequentially parses eight numerical segments from the split string. The first segment is parsed as an integer for latitude degrees. The second as a float for latitude minutes. The third as an integer for longitude degrees. The fourth as a float for longitude minutes. The fifth as an integer for elevation in meters. The sixth as an integer for a terrain difficulty rating. The seventh as an integer for a visual prominence score. The eighth as an integer for the landmark category code. If any segment is missing or fails to parse, it returns a failure. It returns a tuple of the eight parsed numbers. Entry function: `locate(waypoint)`. For example, given 45/30.5/120/15.2/1000/3/5/1, it returns the tuple (45, 30.5, 120, 15.2, 1000, 3, 5, 1). Given 45/30.5, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d109",
+  "title": "Console Game Save State Loader",
+  "spec": "The function takes a text string containing a character profile. It separates the string using colons. It sequentially parses eight integer values from the string parts. The first value represents the character level. The second represents accumulated experience points. The third represents current health. The fourth represents maximum health. The fifth represents magic points. The sixth represents physical strength. The seventh represents magical intelligence. The eighth represents available gold coins. If the text has fewer than eight parts or if any part is not a valid integer, the function returns a failure. It returns a tuple containing these eight integers. Entry function: `load(profile)`. For example, given 10:5000:100:100:50:15:12:1000, it returns a tuple of those integers. Given an invalid format like 10:5000:abc, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d110",
+  "title": "Academic Publication Record Parser",
+  "spec": "The function processes a text string containing a thesis record. It splits the string by asterisks. It sequentially reads and parses eight integer segments. The first segment is a university identification code. The second is a publication year. The third is a volume number. The fourth is an issue number. The fifth is a starting page number. The sixth is an ending page number. The seventh is a citation count. The eighth is a digital object identifier suffix. If any segment is missing or fails to parse as an integer, it returns a failure. It returns a tuple of the eight parsed integers. Entry function: `catalog(record)`. For example, given 99*2023*15*4*100*120*45*789, it returns the tuple (99, 2023, 15, 4, 100, 120, 45, 789). Given 99*2023, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d111",
+  "title": "Residential Property Listing Appraiser",
+  "spec": "The function receives a text string describing a residential property. It splits the string using commas. It sequentially reads and parses eight numeric fields. The first is parsed as an integer for the property identification number. The second is parsed as an integer for the lot size in square meters. The third is parsed as an integer for the interior living space. The fourth is parsed as an integer for the number of bedrooms. The fifth is parsed as a float for the number of bathrooms. The sixth is parsed as an integer for the year of construction. The seventh is parsed as an integer for the garage car capacity. The eighth is parsed as a float for the current market value. If any parsing step fails or if segments are missing, it returns a failure. It returns a tuple of the eight parsed numbers. Entry function: `appraise(listing)`. For example, given 1001,500,200,4,2.5,1995,2,450000.0, it returns the corresponding tuple. Given missing fields, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d112",
+  "title": "Internet Protocol Header Inspector",
+  "spec": "The function takes a text string representing a packet header configuration. It splits the string by dashes. It reads and parses eight sequential integer pieces. The first piece is the protocol version number. The second is the header length. The third is the type of service. The fourth is the total packet length. The fifth is the packet identification tag. The sixth is the fragment offset value. The seventh is the time to live. The eighth is the protocol identification number. If any piece is absent or cannot be parsed as an integer, it returns a failure. It returns a tuple of the eight extracted integers. Entry function: `inspect(header)`. For example, given 4-5-0-1500-12345-0-64-6, it returns the tuple (4, 5, 0, 1500, 12345, 0, 64, 6). Given 4-5-0, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d113",
+  "title": "Chained Data Table Lookup Tracer",
+  "spec": "The function takes a starting integer index and a list of eight lists of integers. It uses the starting index to retrieve a value from the first list. It uses that retrieved value as an index to retrieve a value from the second list. It repeats this process, using each retrieved value as the index into the next list, sequentially passing through the third, fourth, fifth, sixth, seventh, and eighth lists. If at any step an index is out of bounds and a value cannot be retrieved, the function returns a failure. It returns the final retrieved integer from the eighth list. Entry function: `trace(index, tables)`. For example, given a starting index of zero and lists where each lists first element is zero, it returns zero. Given an index that exceeds the bounds of any list, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d114",
+  "title": "Sequential Arithmetic Operation Calculator",
+  "spec": "The function takes an initial integer value. It performs a sequence of eight checked mathematical operations, ensuring no overflow, underflow, or division by zero occurs. It first adds one hundred to the value. It then multiplies the result by four. It subtracts twenty five. It divides the result by three. It adds fifty. It multiplies by two. It subtracts fifteen. Finally, it divides by five. If any of these eight operations encounters an arithmetic error, the function returns a failure. It returns the final computed integer. Entry function: `compute(value)`. For example, given an input of ten, it successfully computes the chain and returns eighty five. Given an input that causes an overflow during multiplication, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d115",
+  "title": "Hierarchical Key Value Store Resolver",
+  "spec": "The function takes a string key and a list of string pairs representing a nested dictionary. It searches the list for the initial key to find a corresponding second string. It then treats this second string as a new key and searches the list again to find a third string. It repeats this exact lookup process six more times, forming a continuous chain of eight sequential lookups. If at any step the current key is not found in the list, the function returns a failure. It returns the final string found at the very end of the chain. Entry function: `resolve(key, directory)`. For example, given a valid continuous chain of mappings, it returns the final target string. If a mapping is broken halfway through, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d116",
+  "title": "Autonomous Submersible Track Decoder",
+  "spec": "The function receives a mutable reference to a slice of bytes representing a navigational track. It sequentially reads eight separate numeric values by advancing a position tracker. It reads one byte for a command code. It reads four bytes for a little endian integer representing an x coordinate. It reads four bytes for a y coordinate. It reads four bytes for a z depth coordinate. It reads four bytes for a forward velocity. It reads four bytes for a pitch angle. It reads four bytes for a yaw angle. It reads four bytes for a roll angle. If the slice does not contain enough bytes to complete any read, the function returns a failure. It returns a tuple of the eight extracted numbers. Entry function: `extract(buffer)`. For example, given a slice of twenty nine bytes, it correctly extracts the values and returns a tuple. Given twenty bytes, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d117",
+  "title": "Astronomical Event Timestamp Decoder",
+  "spec": "The function takes a string of digits representing a highly precise astronomical observation time. It extracts eight sequential substrings and parses each as an integer. It extracts the first four characters for the year. It extracts the next two for the month. It extracts the next two for the day. It extracts the next two for the hour. It extracts the next two for the minute. It extracts the next two for the second. It extracts the next three characters for the millisecond. It extracts the final three characters for the microsecond. If the string is too short, or if any substring fails to parse into an integer, it returns a failure. It returns a tuple of the eight parsed time components. Entry function: `timestamp(digits)`. For example, given the string 20231015143045123456, it returns the tuple (2023, 10, 15, 14, 30, 45, 123, 456). Given a string that is too short, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d118",
+  "title": "Safe Geometric Area Calculator",
+  "spec": "The function takes a list of integers representing dimensions of four rectangular regions. It sequentially retrieves the first eight integers from the list. It computes the area of the first region by multiplying the first and second integers using checked arithmetic. It computes the area of the second region by multiplying the third and fourth integers. It computes the area of the third region by multiplying the fifth and sixth integers. It computes the area of the fourth region by multiplying the seventh and eighth integers. It then uses checked addition to sequentially sum these four areas into a total. If the list contains fewer than eight items or if any multiplication or addition overflows, it returns a failure. It returns the total calculated area. Entry function: `layout(dimensions)`. For example, given the list of integers two, three, four, five, one, one, two, two, it computes the total area and returns thirty one. Given a list of two items, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d119",
+  "title": "Peripheral Device Register Parser",
+  "spec": "The function takes a text string representing hardware register configurations. It splits the string by the pipe character. It sequentially parses eight hexadecimal integer values from the separated pieces. The first piece represents the control register. The second represents the status register. The third represents the interrupt mask. The fourth represents the clock divider. The fifth represents the transmit buffer address. The sixth represents the receive buffer address. The seventh represents the timeout threshold. The eighth represents the error flags mask. If any piece is missing or cannot be parsed as a hexadecimal integer, the function returns a failure. It returns a tuple of the eight integer values. Entry function: `configure(settings)`. For example, given FF|1A|00|02|1000|2000|FF|01, it returns a tuple of the parsed decimal equivalents. Given a string with missing parts, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d120",
+  "title": "Archival Compression Sequence Decoder",
+  "spec": "The function processes a string of comma separated compression tokens. It splits the string by commas. It sequentially retrieves and parses eight tokens into integers. The first token is a block sequence number. The second is a dictionary size. The third is a sliding window offset. The fourth is a match length. The fifth is a literal byte count. The sixth is a backward reference distance. The seventh is a huffman tree index. The eighth is a block checksum. If the string contains fewer than eight tokens or if any parsing step fails, it returns a failure. It returns a tuple of the eight parsed components. Entry function: `decompress(sequence)`. For example, given 1,4096,128,10,256,50,3,999, it returns the tuple (1, 4096, 128, 10, 256, 50, 3, 999). Given invalid data, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d121",
+  "title": "Mortgage Amortization Step Simulator",
+  "spec": "The function takes an integer representing an initial mortgage principal balance. It performs a sequence of eight checked arithmetic operations to simulate two months of payment processing. For the first month, it multiplies the balance by an interest rate of five, divides the result by one hundred, adds this to the balance, and then subtracts a fixed payment of five hundred. It then repeats these exact four operations, multiply, divide, add, and subtract, for the second month. All arithmetic must be checked to prevent overflow, underflow, or division by zero. If any calculation fails, it returns a failure. It returns the final balance as an integer. Entry function: `amortize(balance)`. For example, given ten thousand, it correctly computes the sequence and returns nine thousand nine hundred five. Given a balance that causes underflow, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d122",
+  "title": "Board Game Piece Value Aggregator",
+  "spec": "The function evaluates a player position score given a starting integer value. It performs eight consecutive mathematical modifications using checked arithmetic. It adds nine hundred for a captured opponent queen. It adds five hundred for a captured rook. It adds three hundred for a captured bishop. It adds three hundred for a captured knight. It subtracts nine hundred for a lost friendly queen. It subtracts five hundred for a lost friendly rook. It subtracts three hundred for a lost friendly bishop. It subtracts three hundred for a lost friendly knight. If any addition or subtraction operation overflows or underflows, it returns a failure. It returns the final aggregated score. Entry function: `evaluate(score)`. For example, given a starting score of one thousand, it performs all the additions and subtractions and returns one thousand. Given a score near integer maximum, it may return a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d123",
+  "title": "Multimedia Container Header Parser",
+  "spec": "The function accepts a slice of bytes representing the start of a multimedia file. It sequentially extracts eight numeric fields by reading specific byte lengths and converting them to integers. It reads four bytes for a container signature. It reads four bytes for a header size. It reads four bytes for a codec format identifier. It reads four bytes for a stream count. It reads four bytes for a primary track index. It reads two bytes for an audio channel count. It reads two bytes for a video frame rate. It reads four bytes for a sample frequency. If the slice does not contain enough bytes to perform any of these reads, it returns a failure. It returns a tuple of the eight extracted numbers. Entry function: `probe(header)`. For example, given a slice of twenty eight bytes, it parses them successfully and returns a tuple. Given a slice of five bytes, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d124",
+  "title": "Digital Image Pixel Intensity Filter",
+  "spec": "The function applies a fixed series of arithmetic transformations to a single integer representing a pixel intensity. It performs eight sequential operations using checked arithmetic to prevent any overflow or underflow. It first multiplies the value by three. It then adds forty five. It divides the result by two. It subtracts fifteen. It multiplies by four. It adds thirty. It divides by three. Finally, it subtracts ten. If any mathematical operation fails due to limits, the function returns a failure. It returns the final transformed integer value. Entry function: `filter(pixel)`. For example, given ten, it performs the chain of calculations and returns thirty. Given an excessively large pixel value, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d125",
+  "title": "Quadrilateral Coordinate Shape Plotter",
+  "spec": "The function processes a text string defining a four sided polygon. It separates the string by spaces. It sequentially parses eight segments into integers representing coordinate pairs. The first piece is the first x coordinate. The second piece is the first y coordinate. The third piece is the second x coordinate. The fourth piece is the second y coordinate. The fifth and sixth pieces are the third coordinate pair. The seventh and eighth pieces are the fourth coordinate pair. If the text has fewer than eight pieces or if any parsing fails, it returns a failure. It returns a tuple of the eight integer coordinates. Entry function: `plot(polygon)`. For example, given 0 0 10 0 10 10 0 10, it returns the tuple (0, 0, 10, 0, 10, 10, 0, 10). Given 0 0 10, it returns a failure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d126",
+  "title": "Schedule Block Parser",
+  "spec": "A plain text schedule string has blocks separated by pipes. Each block has a year, a month, a day, and a list of hour intervals separated by commas, all separated by dashes. An hour interval is two integers separated by a colon. The entry function `schedule(text)` should compute the total hours scheduled across all blocks. If any part of the string is malformed, missing, or fails to parse as a positive integer, the function must yield an error or empty result. Example input 2023-10-Monday-9:17,18:20|2023-11-Tuesday-10:15 outputs thirteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d127",
+  "title": "Identity Document Validator",
+  "spec": "An identity document string consists of six segments separated by tildes. The segments are a three letter code, a birth year, a birth month, a country code, a biometric hash, and a checksum. The entry function `validate(document)` should return the age based on the year two thousand twenty four, plus the checksum. It must extract every segment, ensure it is present, and ensure the birth year, birth month, biometric hash, and checksum parse correctly as integers, failing if any segment is missing or invalid. Example input ABC~1990~12~US~123456~8 outputs forty two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d128",
+  "title": "Polygon Drawing Analyzer",
+  "spec": "A string contains instructions to draw polygons, separated by semicolons. Each instruction starts with the shape name, a color code, a layer number, and coordinates separated by commas, all separated by colons. A coordinate is two integers joined by an at symbol. The entry function `calculate(instructions)` must compute the total area of all valid triangles on layer one. For each instruction, it must extract the properties, parse the layer number, and if it is a triangle, extract exactly three coordinates, parse their integers, and compute the area. If any instruction is malformed or has unparseable numbers, the entire process must halt and return nothing. Example input triangle:red:1:0@0,4@0,0@3;square:blue:2:1@1 outputs six.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d129",
+  "title": "Chemical Isotope Analyzer",
+  "spec": "A chemical mixture string specifies substances separated by plus signs. Each substance consists of an element code, an isotope number, a purity percentage, a toxicity score, and a weight in grams, all separated by dashes. The entry function `analyze(mixture)` computes the total pure weight of the mixture for elements with an isotope number of twelve. It must split the mixture, extract the five fields, and parse the isotope, purity, toxicity, and weight as integers. Any missing separator or failed number conversion should immediately terminate the calculation with an error. Example input Fe-12-90-5-100+Cu-14-80-2-50 outputs ninety.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d130",
+  "title": "Dice Roll Aggregator",
+  "spec": "A sequence of dice rolls is given as a string separated by spaces. Each roll is formatted as a player identifier, the number of dice, the letter d, the number of sides, an operator, and a modifier, all separated by underscores. The entry function `roll(expression)` computes the maximum possible sum of all rolls for player one. It needs to split each roll into its six components, and convert the player identifier, number of dice, sides, and modifier into integers. Any malformed string, missing part, or invalid integer should cause the function to fail completely. Example input 1_2_d_6_plus_3 2_1_d_20_minus_1 outputs fifteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d131",
+  "title": "Fitness Workout Aggregator",
+  "spec": "A workout string contains exercises separated by slashes. Each exercise has a day, a category, a name, a difficulty rating, and sets separated by commas, all joined by colons. Each set is weight in kilograms and reps joined by an x. The entry function `volume(log)` computes the total weight lifted across all exercises with a difficulty rating of five. It must parse the string by splitting exercises, extracting the first four properties, parsing the difficulty, splitting the sets, and parsing both weight and reps as integers for each set. If the string format is broken or numbers fail to parse, the extraction must abort and return empty. Example input Monday:legs:squat:5:100x5,100x5/Tuesday:arms:bench:3:80x8 outputs one thousand.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d132",
+  "title": "Stock Trading Net Flow",
+  "spec": "A trading history string lists transactions separated by commas. Each transaction contains a day, a broker identifier, a ticker symbol, an action, a quantity, and a price, all separated by underscores. The entry function `profit(history)` calculates the net cash flow from these trades. For each transaction, it must isolate the six components, verify the action is buy or sell, and convert the day, broker identifier, quantity, and price to integers. Any missing fields or invalid numbers must cause the entire calculation to return an error. Example input 1_101_AAPL_buy_10_150,2_102_MSFT_sell_5_300 outputs zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d133",
+  "title": "Bakery Supply Inventory",
+  "spec": "A baker needs to process a supply delivery string where items are separated by semicolons. Each item has a supplier code, a priority level, a category, an item name, a batch count, and a units per batch number, joined by colons. The entry function `inventory(delivery)` calculates the total number of individual units delivered for priority one items. It must extract the six parts of each item, ensure the category is valid, and parse the supplier code, priority level, batch count, and units per batch as numbers. If any part of the string is incomplete or contains non numeric values where expected, the function should return nothing. Example input 99:1:flour:wheat:10:5;88:2:sugar:white:2:20 outputs fifty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d134",
+  "title": "Smart Home Sensor Average",
+  "spec": "A smart home sensor string contains readings separated by hash symbols. Each reading has a home network identifier, a room name, a sensor type, a battery level, a reading value, and a timestamp, separated by dashes. The entry function `average(readings)` calculates the average reading value for all temperature sensors on network one. It must iterate through the readings, extract the six segments, identify if the sensor is temperature, and parse the network identifier, battery level, reading, and timestamp as integers. If any segment is missing or fails to parse, it must halt and return an error. Example input 1-kitchen-temp-90-22-1600#2-living-light-80-1-1605#1-bedroom-temp-95-20-1610 outputs twenty one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d135",
+  "title": "Music Playlist Duration",
+  "spec": "A text based music playlist contains tracks separated by pipes. Each track consists of an era code, a genre code, an artist, an album, a track length in seconds, and a rating out of ten, separated by tildes. The entry function `duration(playlist)` computes the total length of all tracks that belong to era ninety and have a rating of at least eight. It must split the tracks, extract the six components, and parse the era, genre code, length, and rating into integers. Any missing information or invalid number format should cause the function to fail. Example input 90~1~Queen~Night~354~9|80~2~Beatles~Abbey~180~7 outputs three hundred fifty four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d136",
+  "title": "Grid Message Decoder",
+  "spec": "A coded string consists of grid coordinates separated by spaces. Each coordinate specifies a sector number, a row index, a column index, a frequency, and a shift integer, all joined by colons. The entry function `decode(message)` sums all the shift integers for coordinates in sector five where both the row and column are even numbers. It must isolate the five components and parse them all as integers. If any component is missing or fails to parse, the function must terminate and return an error. Example input 5:2:4:100:10 6:1:3:50:5 5:4:4:200:20 outputs thirty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d137",
+  "title": "Restaurant Meal Biller",
+  "spec": "A food order string lists meals separated by ampersands. Each meal contains a waiter identifier, a table number, a category, a dish name, a spice level, and a price, separated by dashes. The entry function `bill(order)` calculates the total price of all meals with a spice level greater than three served by waiter seven. It must break down each meal into its six parts and parse the waiter identifier, table number, spice level, and price as integers. If the string is malformed or any number is invalid, the entire order processing must fail. Example input 7-12-main-curry-5-15&7-12-side-rice-1-5 outputs fifteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d138",
+  "title": "Mechanical Gear Train Ratio",
+  "spec": "A gear train sequence is a string of gear descriptions separated by arrows. Each description has a manufacturer code, a part number, a material type, a tooth count, a width, and a radius in millimeters, separated by colons. The entry function `ratio(train)` computes the sum of the radii for all steel gears made by manufacturer three. It must split the sequence, extract the six properties of each gear, and parse the manufacturer code, part number, tooth count, width, and radius as numbers. Any structural flaw in the string or unparseable number must immediately return an error. Example input 3:101:steel:40:5:20->4:102:brass:20:4:10->3:103:steel:60:5:30 outputs fifty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d139",
+  "title": "Medical Prescription Tracker",
+  "spec": "A prescription string contains medications separated by exclamation marks. Each medication has a doctor identifier, a patient identifier, a drug name, a dosage in milligrams, a frequency per day, and a duration in days, separated by slashes. The entry function `total(prescriptions)` calculates the total milligrams consumed over the entire duration for all medications prescribed to patient forty two. It must parse the six segments, ensuring the doctor identifier, patient identifier, dosage, frequency, and duration can be converted to integers. If any piece is missing or invalid, it must abort and return empty. Example input 1/42/aspirin/500/2/5!2/42/vitamin/100/1/30 outputs eight thousand.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d140",
+  "title": "Chat Log Bandwidth",
+  "spec": "A chat log string contains messages separated by pipes. Each line starts with a server region code, a timestamp, a user identifier, a channel identifier, an encryption flag, and the message length, all separated by commas. The entry function `bandwidth(log)` sums the message lengths for a specific channel identifier of forty two on server region one. It must extract the six fields from each message and parse the region code, timestamp, user identifier, channel identifier, and message length as numbers. If any message is incomplete or contains invalid numbers, the function must fail. Example input 1,1000,99,42,true,150|2,1005,88,10,false,20|1,1010,77,42,true,50 outputs two hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d141",
+  "title": "Train Departure Counter",
+  "spec": "A departure board string lists trains separated by semicolons. Each train entry has a carrier code, a destination, a track number, a platform number, a departure hour, and a departure minute, joined by underscores. The entry function `departures(board)` counts how many trains leave after twelve hours on carrier code five. It must extract the six parts of each entry and convert the carrier code, track, platform, hour, and minute into integers. Any formatting error or non numeric time value must result in an empty return. Example input 5_london_1_3_14_30;6_paris_2_1_9_15;5_rome_3_4_18_00 outputs two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d142",
+  "title": "Archery Tournament Scorer",
+  "spec": "An archery result string contains ends separated by spaces. Each end consists of a tournament identifier, an archer identifier, a distance in meters, and three arrow scores, all separated by commas. The entry function `score(results)` calculates the total score for all arrows shot from fifty meters in tournament one. It must break down each end, extract the six components, and parse all of them as numbers. If the string lacks any component or has unparseable numbers, it must return an error. Example input 1,101,50,9,10,8 2,102,70,10,10,10 outputs twenty seven.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d143",
+  "title": "Vineyard Grape Harvest Analyzer",
+  "spec": "A grape harvest string contains batches separated by pipes. Each batch has a vineyard block, a variety code, a color, a sugar content level, a weight in kilograms, and an acidity percentage, separated by dashes. The entry function `harvest(log)` computes the total weight of all batches in vineyard block three that have an acidity percentage below fifteen. It must extract the six segments of each batch and parse the vineyard block, variety code, sugar content, weight, and acidity as integers. Any missing data or invalid number must cause the process to halt and return nothing. Example input 3-10-red-5-500-12|4-11-white-4-600-18|3-12-red-5-400-10 outputs nine hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d144",
+  "title": "Book Printing Paper Counter",
+  "spec": "A printing job string lists books separated by asterisks. Each book has a publisher code, a series identifier, a title, a page count, a paper weight, and a binding type code, separated by colons. The entry function `paper(jobs)` calculates the total pages for all books from publisher code ten with a paper weight of eighty. It must isolate the six details for each book and parse the publisher code, series identifier, page count, paper weight, and binding code as integers. If any detail is missing or a number is invalid, the function must fail entirely. Example input 10:1:dune:500:80:1*11:2:hobbit:300:90:2*10:3:foundation:400:80:1 outputs nine hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d145",
+  "title": "Woodworking Volume Aggregator",
+  "spec": "A woodworking project string contains cut instructions separated by semicolons. Each instruction has a blueprint stage, a part number, a wood type, a thickness, a width, and a length in millimeters, separated by an x. The entry function `wood(project)` calculates the total volume of all oak pieces in blueprint stage two. It must extract the six properties and parse the blueprint stage, part number, thickness, width, and length as integers. If any property is missing or fails to parse, it must return an error. Example input 2x1xoakx20x100x500;3x2xpinex15x50x200;2x3xoakx10x50x100 outputs one million fifty thousand.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d146",
+  "title": "Antique Coin Appraiser",
+  "spec": "A coin collection string lists coins separated by spaces. Each coin has an owner identifier, an origin country, a minting year, a face value, a rarity index, and a condition grade, separated by dots. The entry function `value(collection)` sums the face value of all coins minted before the year nineteen hundred belonging to owner five. It must parse the six segments, converting the owner identifier, year, face value, rarity index, and condition grade to integers. Any incomplete coin entry or invalid number must halt the evaluation and return empty. Example input 5.uk.1850.5.9.8 6.us.1920.10.5.6 5.fr.1790.20.8.4 outputs twenty five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d147",
+  "title": "Solar Array Power Aggregator",
+  "spec": "A solar array string contains panel readings separated by commas. Each reading has a site block, a string index, a panel identifier, a voltage, a current, and an efficiency percentage, separated by dashes. The entry function `power(array)` calculates the total power which is voltage times current for panels operating above eighty percent efficiency in site block one. It must extract all six pieces of data and parse the site block, string index, identifier, voltage, current, and efficiency as numbers. If the string format is invalid or numbers cannot be parsed, the function must fail. Example input 1-1-1-12-5-85,2-1-2-10-4-70,1-2-3-12-6-90 outputs one hundred thirty two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d148",
+  "title": "Aquarium Water Safety",
+  "spec": "An aquarium test string lists water samples separated by pipes. Each sample has a facility sector, a technician identifier, a tank name, a ph level multiplied by ten, an ammonia level, and a nitrate level, joined by underscores. The entry function `safety(tests)` sums the nitrate levels for all tanks in facility sector four that have a ph level of exactly seventy. It must extract the six parts of each sample and parse the facility sector, technician identifier, ph level, ammonia, and nitrate as integers. Any missing part or invalid number must cause the process to abort with an error. Example input 4_99_reef_70_0_10|5_88_fresh_65_1_20|4_77_kelp_70_0_15 outputs twenty five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d149",
+  "title": "Marathon Split Effort",
+  "spec": "A marathon split string contains runner records separated by exclamation marks. Each record has a wave number, a bib number, a runner alias, a checkpoint distance, a time in minutes, and a heart rate, separated by colons. The entry function `effort(splits)` calculates the average heart rate for all records at the twenty kilometer checkpoint in wave one. It must parse the six fields, ensuring the wave number, bib number, distance, time, and heart rate are valid integers. If any record is malformed or contains non numeric data, the function must return an error. Example input 1:101:john:20:90:150!2:102:mary:10:45:140!1:103:jane:20:85:160 outputs one hundred fifty five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d150",
+  "title": "Telescope Observation Brightness",
+  "spec": "An observation log string contains celestial bodies separated by ampersands. Each body has an observer identifier, a sector quadrant, a classification, a right ascension integer, a declination integer, and a brightness magnitude, separated by tildes. The entry function `brightness(log)` sums the brightness magnitudes of all bodies classified as stars in sector quadrant three. It must extract the six elements and parse the observer identifier, sector quadrant, ascension, declination, and brightness as numbers. If any element is absent or a number fails to parse, it must return nothing. Example input 99~3~star~15~30~5&88~4~planet~10~20~2&77~3~star~45~60~3 outputs eight.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d151",
+  "title": "Astronaut Suit Sensor Data Analyzer",
+  "spec": "Write an entry function `analyze(telemetry)` taking a single text string containing lines of sensor data. Each line has eight fields separated by semicolons: a suit identifier which is an integer, temperature as a float, heart rate as an integer, pressure as a float, battery percentage as an integer, oxygen level as a float, step count as an integer, and radiation level as a float. Process each line by summing the four floating point values to create a safety score. The function returns a list of safety scores, or a text error message if any field is missing or fails to convert to the expected numeric type. Example input \"10;20.5;80;5.5;50;98.0;1000;0.5\" returns a list containing 124.5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d152",
+  "title": "Satellite Constellation Orbit Config",
+  "spec": "Write an entry function `configure(orbits)` taking a text string with multiple lines. Each line is a comma separated list of eight values: satellite identifier as integer, altitude as float, maneuver count as integer, inclination as float, status code as integer, eccentricity as float, payload type as integer, and right ascension as float. Calculate the sum of the four floating point parameters for each line. Return a list of the sums, or a string error if any part is missing or cannot be interpreted as the correct numeric type. Example input \"42,400.5,3,51.5,1,0.25,9,120.0\" returns a list containing 572.25.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d153",
+  "title": "Cybersecurity Event Log Correlator",
+  "spec": "Write an entry function `correlate(logs)` taking a text string of pipe separated lines. Each line has eight fields: timestamp as integer, threat severity as float, source address as integer, packet size as float, destination port as integer, connection duration as float, protocol identifier as integer, and payload entropy as float. The function calculates a risk metric for each line by summing the four float values. It returns a list of risk metrics, or a string error if any line is malformed or contains invalid numbers. Example input \"162000|2.5|10|1500.0|443|12.5|6|7.5\" returns a list with 1522.5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d154",
+  "title": "Underwater Cable Fault Locator",
+  "spec": "Write an entry function `locate(reflections)` taking a text string of colon separated lines. Each line contains eight fields: segment identifier as integer, transit time as float, sensor node as integer, attenuation as float, amplifier index as integer, frequency as float, power status as integer, and dispersion as float. Calculate a fault index for each line by summing the four float fields. Return a list of fault indices, or a text error if parsing any field fails. Example input \"1:10.5:2:0.5:3:100.0:4:0.25\" returns a list with 111.25.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d155",
+  "title": "Vintage Arcade High Score Decoder",
+  "spec": "Write an entry function `decode(scores)` taking a text string of space separated lines. Each line has eight fields: machine identifier as integer, player score as float, level reached as integer, multiplier as float, lives remaining as integer, play duration as float, enemies defeated as integer, and accuracy as float. Calculate a total adjusted score for each line by summing the four float fields. Return a list of total adjusted scores, or an error text if any field is missing or invalid. Example input \"1 5000.0 5 1.5 3 60.0 100 95.5\" returns a list with 5157.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d156",
+  "title": "Radio Astronomy Interferometer Calibrator",
+  "spec": "Write an entry function `calibrate(baselines)` taking a text string of comma separated lines. Each line represents baseline data with eight fields: antenna one as integer, baseline length as float, antenna two as integer, delay as float, observation mode as integer, phase shift as float, status code as integer, and amplitude response as float. Calculate a calibration metric for each line by summing the four floats. Return a list of calibration metrics or an error string if any field cannot be parsed. Example input \"1,150.0,2,0.5,3,45.0,1,0.5\" returns a list with 196.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d157",
+  "title": "Bicycle Race Power Meter Profiler",
+  "spec": "Write an entry function `profile(intervals)` taking a text string of semicolon separated lines. Each line has eight fields: rider identifier as integer, average power as float, lap number as integer, normalized power as float, heart rate as integer, cadence as float, gear ratio as integer, and speed as float. The function extracts these fields, calculating a performance index by summing the four floating point values. It returns a list of these indices or a string error if any field cannot be interpreted properly or is missing. Example input \"12;250.5;3;270.0;150;90.5;5;35.0\" returns a list containing 646.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d158",
+  "title": "Geological Soil Sample Profiler",
+  "spec": "Write an entry function `evaluate(samples)` taking a text string with comma separated lines. Each line contains eight fields: borehole as integer, depth as float, stratum index as integer, moisture content as float, sample rating as integer, density as float, collector code as integer, and carbon content as float. Sum the four floating point numbers for each line to compute a layer score. Return a list of scores or a text error if any value is missing or fails to parse as the correct numeric type. Example input \"101,15.5,2,4.5,5,2.5,99,1.5\" returns a list containing 24.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d159",
+  "title": "Meteorological Radiosonde Telemetry",
+  "spec": "Write an entry function `analyze(telemetry)` taking a pipe separated text string of balloon readings. Each line holds eight fields: balloon as integer, altitude as float, sensor as integer, temperature as float, battery as integer, humidity as float, channel as integer, and wind speed as float. Compute a weather metric by summing the four floats on each line. Return a list of these metrics, or an error text if any field parsing fails or is omitted. Example input \"42|1200.5|1|15.5|90|45.5|3|12.5\" returns a list containing 1274.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d160",
+  "title": "Industrial Robot Joint Kinematics",
+  "spec": "Write an entry function `kinematics(commands)` taking a space separated text string. Each line has eight fields: arm as integer, base angle as float, joint one as integer, shoulder angle as float, joint two as integer, elbow angle as float, effector as integer, and wrist angle as float. The function calculates a pose checksum by summing the four angle floats. It returns a list of checksums, or a text error if any line is incomplete or fields do not parse to the designated numeric types. Example input \"1 45.0 2 90.5 3 -30.0 4 15.5\" returns a list containing 121.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d161",
+  "title": "Brewery Fermentation Batch Monitor",
+  "spec": "Write an entry function `monitor(batches)` taking a colon separated text string. Each line contains eight fields: tank as integer, current gravity as float, recipe as integer, temperature as float, yeast strain as integer, acidity as float, operator as integer, and dissolved oxygen as float. Compute a batch status value by summing the four float values. Return a list of status values, or an error message if parsing any part of the input fails. Example input \"5:1.5:12:20.5:3:4.5:8:8.5\" returns a list with 35.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d162",
+  "title": "Deep Sea Submersible Navigation",
+  "spec": "Write an entry function `navigate(waypoints)` taking a comma separated text string of coordinates. Each line has eight fields: dive as integer, latitude as float, pilot as integer, longitude as float, sector as integer, depth as float, mission as integer, and heading as float. Calculate a trajectory sum by adding the four floating point values. Return a list of the trajectory sums or an error string if a field is invalid or absent. Example input \"7,45.5,2,-12.5,4,2050.5,1,180.0\" returns a list containing 2263.5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d163",
+  "title": "Rocket Engine Test Stand Telemetry",
+  "spec": "Write an entry function `process(tests)` taking a semicolon separated text string. Each line represents a sensor reading with eight fields: test as integer, thrust as float, engine as integer, chamber pressure as float, pad as integer, fuel flow as float, operator as integer, and oxidizer flow as float. Compute a performance aggregate by summing the four floats. Return a list of these aggregates, or a text error if any field is structurally or numerically invalid. Example input \"10;450.5;2;15.5;3;8.5;9;12.5\" returns a list containing 487.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d164",
+  "title": "Ski Resort Lift Pass Validator",
+  "spec": "Write an entry function `validate(scans)` taking a pipe separated text string. Each line contains eight fields: gate as integer, card balance as float, resort as integer, ticket price as float, patron as integer, discount rate as float, season as integer, and refund amount as float. Determine a transaction total by summing the four floats. Return a list of transaction totals, or a descriptive error if there is any failure converting the text to numbers. Example input \"4|50.5|1|120.0|999|0.5|2023|0.0\" returns a list containing 171.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d165",
+  "title": "Wildlife Tracking Collar Decoder",
+  "spec": "Write an entry function `decode(pings)` taking a space separated text string. Each line holds eight fields: animal as integer, latitude as float, species as integer, longitude as float, zone as integer, temperature as float, battery as integer, and activity level as float. Evaluate a movement score by summing the four floats. Return a list of scores or a text error if any value fails to parse as the correct numeric type. Example input \"42 35.5 1 -110.5 3 38.5 80 12.5\" returns a list containing -24.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d166",
+  "title": "Tectonic Plate Movement Sensor",
+  "spec": "Write an entry function `measure(strain)` taking a comma separated text string. Each line contains eight fields: station as integer, displacement as float, fault as integer, sheer stress as float, array as integer, temperature as float, epoch as integer, and compression as float. Calculate a movement magnitude by summing the four float fields. Return a list of movement magnitudes, or a string error if any field is missing or cannot be interpreted numerically. Example input \"101,2.5,4,14.5,2,22.5,999,1.5\" returns a list containing 41.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d167",
+  "title": "Smart City Waste Bin Monitor",
+  "spec": "Write an entry function `monitor(bins)` taking a colon separated text string. Each line holds eight fields: bin as integer, fill level as float, district as integer, weight as float, route as integer, temperature as float, battery as integer, and odor index as float. Calculate an urgency score by summing the four float values. Return a list of urgency scores or an error string if there is a parsing failure for any field. Example input \"1:75.5:2:12.5:3:25.5:90:5.5\" returns a list containing 119.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d168",
+  "title": "Drone Swarm Formation Planner",
+  "spec": "Write an entry function `plan(offsets)` taking a semicolon separated text string. Each line provides eight fields: drone as integer, x offset as float, squadron as integer, y offset as float, leader as integer, z offset as float, formation as integer, and velocity as float. Compute a spatial footprint by summing the four floating point numbers. Return a list of spatial footprints, or an error text if any component is invalid or omitted. Example input \"4;10.5;1;20.5;9;30.5;2;5.5\" returns a list containing 67.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d169",
+  "title": "Nuclear Reactor Coolant Flow",
+  "spec": "Write an entry function `inspect(loops)` taking a pipe separated text string. Each line describes eight fields: loop as integer, pressure as float, pump as integer, temperature as float, valve as integer, flow rate as float, sensor as integer, and radiation as float. Calculate a stress factor by summing the four float values. Return a list of stress factors, or an error message if parsing any segment fails. Example input \"1|150.5|2|280.5|3|45.5|4|0.5\" returns a list containing 477.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d170",
+  "title": "Racing Sailboat Aerodynamics",
+  "spec": "Write an entry function `evaluate(sensors)` taking a space separated text string. Each line has eight fields: mast as integer, wind speed as float, hull as integer, heel angle as float, sail as integer, trim angle as float, race as integer, and boat speed as float. Calculate a dynamic pressure index by summing the four floats. Return a list of these indices or a string error if a field fails numeric conversion or is missing. Example input \"1 15.5 2 10.5 3 5.5 4 12.5\" returns a list containing 44.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d171",
+  "title": "Commercial Bakery Oven Profiler",
+  "spec": "Write an entry function `profile(zones)` taking a comma separated text string. Each line consists of eight fields: zone as integer, top heat as float, tray as integer, bottom heat as float, rack as integer, humidity as float, batch as integer, and fan speed as float. Compute a baking index by summing the four floating point values. Return a list of indices, or a text error if any piece of data cannot be correctly interpreted as its respective numeric type. Example input \"1,200.5,2,210.5,3,45.5,4,80.5\" returns a list containing 537.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d172",
+  "title": "Intensive Care Patient Monitor",
+  "spec": "Write an entry function `observe(vitals)` taking a colon separated text string. Each line records eight fields: bed as integer, heart rate as float, ward as integer, blood pressure as float, machine as integer, oxygen saturation as float, nurse as integer, and temperature as float. Determine a critical index by summing the four floats. Return a list of indices, or an error text if any field cannot be parsed or is incomplete. Example input \"12:85.5:2:120.5:3:98.5:4:37.5\" returns a list containing 342.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d173",
+  "title": "High Speed Rail Track Inspector",
+  "spec": "Write an entry function `inspect(tracks)` taking a semicolon separated text string. Each line lists eight fields: segment as integer, vibration as float, rail as integer, gauge as float, tie as integer, alignment as float, crew as integer, and cant as float. Calculate a track wear indicator by summing the four float values. Return a list of indicators, or an error string if a field is absent or malformed. Example input \"10;5.5;2;1435.5;3;0.5;4;2.5\" returns a list containing 1444.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d174",
+  "title": "Volcanic Gas Emission Analyzer",
+  "spec": "Write an entry function `analyze(plumes)` taking a pipe separated text string. Each line contains eight fields: vent as integer, sulfur dioxide as float, crater as integer, carbon dioxide as float, probe as integer, hydrogen sulfide as float, station as integer, and water vapor as float. Compute a toxicity index by summing the four float concentrations. Return a list of indices, or a text error if there is any failure parsing the line into the specific numeric fields. Example input \"1|45.5|2|400.5|3|10.5|4|1000.5\" returns a list containing 1457.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d175",
+  "title": "Fossil Excavation Grid Mapper",
+  "spec": "Write an entry function `map(grids)` taking a space separated text string. Each line details eight fields: square as integer, easting as float, trench as integer, northing as float, sector as integer, depth as float, worker as integer, and preservation score as float. Sum the four floating point values to create a location summary. Return a list of these summaries, or an error string if any data fails to interpret as the proper numerical type. Example input \"5 120.5 2 340.5 1 5.5 8 9.5\" returns a list containing 476.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d176",
+  "title": "Exoplanet Atmosphere Profile",
+  "spec": "Write an analyzer for alien atmosphere data strings. The entry function `evaluate(data)` receives a single comma separated text line. Extract exactly eight values in order: temperature, pressure, wind speed, humidity, gas concentration, altitude, density, and ion levels. Convert the first four to integers and the last four to floating point numbers. Calculate a habitability score by adding the temperature and pressure, then multiplying by the density, returning the final number. If any conversion fails, or if the string lacks enough parts, return an error or absent value. Example input: 290,1,15,40,0.2,150.5,1.2,0.05 yields 349.16.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d177",
+  "title": "Hieroglyph Translation Alignment",
+  "spec": "Process a text line containing ancient symbols separated by spaces. The function `align(symbols)` must extract eight specific numeric glyph values in sequence: the dynasty epoch, scribe index, temple region, tribute amount, grain units, livestock count, gold weight, and silver purity. All eight elements must be parsed as positive integers. Compute the total kingdom wealth by multiplying the tribute amount by the grain units, adding the livestock count, and dividing by the scribe index. If the text is malformed, missing elements, or any number cannot be parsed, halt and return nothing. Example input: 18 2 4 100 50 200 15 99 yields a wealth of 2600.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d178",
+  "title": "Quantum Qubit Entanglement Config",
+  "spec": "Read a space delimited text string to set up a quantum processor. The function `configure(states)` takes this string and must read eight precise fields: qubit identifier, gate type, target index, phase angle, amplitude, rotation, spin state, and parity check. The identifier, target, and parity must be extracted as integers, while the other five must be parsed as floating point numbers. Calculate the entanglement coherence by multiplying the phase angle by the amplitude and subtracting the rotation. Return this coherence value. Any failure to read or convert a value should immediately abort the process. Example input: 0 1 2 3.14 0.5 1.5 0.5 1 yields 0.07.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d179",
+  "title": "Corporate Ownership Chain Resolver",
+  "spec": "Trace a nested ownership string separated by semicolons. The function `resolve(chain)` receives a string representing a corporate structure and must extract eight numerical fields in order: subsidiary id, parent id, holding company id, revenue, tax rate, employee count, asset value, and liability cost. Parse the three identifiers and employee count as integers, and the remaining financial figures as floating point numbers. Compute the net worth by subtracting the liability cost from the asset value, then multiply by the tax rate. Return this final figure. Reject the input entirely if any parsing step fails. Example input: 101;202;303;1000.5;0.2;50;5000.0;1000.0 yields 800.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d180",
+  "title": "Bank Vault Time Lock Decoder",
+  "spec": "Decode a colon separated combination string to disengage a vault. The function `unlock(combination)` needs to extract exactly eight components: day of month, hour, minute, first pin part, second pin part, rotation degrees, alignment offset, and torque pressure. Convert all eight components into integers. The safe opens if you can compute a security key by adding the two pin parts, multiplying by the rotation, and subtracting the alignment offset. Return this security key. If the string format is incorrect or any part is not a valid integer, the unlocking fails. Example input: 15:14:30:12:34:90:5:10 yields 4135.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d181",
+  "title": "Catapult Trajectory Calibrator",
+  "spec": "Analyze a siege engine firing parameter string separated by dashes. The function `aim(parameters)` must sequentially pull out eight values: tension force, payload mass, wind speed, launch angle, ground elevation, target distance, humidity percentage, and air density. Parse the tension, mass, and distance as integers, and the other five as floating point numbers. Determine the impact force by dividing the tension by the mass, then multiplying by the wind speed and launch angle. Return this impact metric. Abort the calculation if any value is missing or invalid. Example input: 5000-50-12.5-45.0-10.5-300-60.0-1.2 yields 56250.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d182",
+  "title": "Spelunking Expedition Route Mapper",
+  "spec": "Process a comma delimited log of a cave system passage. The function `map(caves)` must read eight distinct measurements in order: passage depth, tunnel width, segment length, downward slope, oxygen level, ambient temperature, humidity, and rock hardness. Parse depth, width, and length as integers, and the remaining five as decimal numbers. Evaluate the traversal difficulty by multiplying the depth by the slope, adding the length, and dividing by the rock hardness. Return the difficulty score. If any measurement is unreadable or missing, the mapping fails. Example input: 120,5,300,15.5,19.5,14.2,85.0,7.5 yields 288.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d183",
+  "title": "Starship Manifest Verifier",
+  "spec": "Validate a semicolon separated cargo manifest line for space travel. The function `verify(manifest)` must extract eight critical fields: cargo weight, container volume, hazard class, destination sector, origin sector, crew complement, fuel required, and insurance value. Convert the hazard class, sectors, and crew complement into integers, and the other four into floating point numbers. Calculate the transit risk by multiplying the weight by the hazard class and dividing by the crew complement. Return the risk assessment. Discard the manifest by returning nothing if any field fails to convert. Example input: 4500.0;200.5;3;7;1;15;10000.0;50000.0 yields 900.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d184",
+  "title": "Coral Reef Bleaching Tracker",
+  "spec": "Assess reef health from a space delimited survey report. The function `assess(survey)` must pull eight readings from the text: polyp count, water temperature, acidity level, salinity, algae density, sunlight depth, current speed, and oxygen saturation. Parse the polyp count and sunlight depth as integers, and the rest as floating point numbers. Compute a health index by dividing the polyp count by the acidity level, then subtracting the water temperature. Return this numerical index. The assessment must halt and yield no result if any reading is malformed. Example input: 5000 28.5 8.0 35.0 400.5 15 2.5 95.0 yields 596.5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d185",
+  "title": "Snowpack Stability Analyzer",
+  "spec": "Predict avalanche danger using a pipe separated weather report string. The function `predict(conditions)` expects exactly eight fields: total snow depth, fresh snowfall, wind speed, slope angle, temperature gradient, density profile, aspect direction, and crystal size. Parse depth, snowfall, and aspect as integers, with the remaining five fields as floating point numbers. Calculate the hazard score by multiplying the fresh snowfall by the slope angle, then adding the wind speed. Return this hazard score. Reject the entire report if parsing any field causes an error. Example input: 250|30|45.5|38.0|-5.5|300.0|180|2.5 yields 1185.5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d186",
+  "title": "Magnetic Levitation Stabilizer",
+  "spec": "Calibrate a high speed transit car using a comma separated sensor string. The function `stabilize(readings)` must read eight telemetry values: forward velocity, track clearance, magnetic flux, current draw, coil temperature, lateral drift, vertical oscillation, and braking force. Parse the velocity, clearance, and current draw as integers, and the other five values as decimal numbers. Determine the stability margin by multiplying the clearance by the magnetic flux, and dividing by the lateral drift. Return the calculated margin. The calibration fails immediately if any sensor value cannot be processed. Example input: 450,15,2.4,800,75.5,0.8,1.1,5000.0 yields 45.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d187",
+  "title": "Gene Editing Target Sequence",
+  "spec": "Analyze a dash delimited string of genetic modification parameters. The function `splice(parameters)` extracts eight specific metrics: locus index, strand length, mismatch tolerance, off target score, cleavage efficiency, insertion size, deletion size, and guanine cytosine content. Parse the locus, strand length, insertion, and deletion sizes as integers, and the other four metrics as floats. Evaluate the viability by adding the insertion and deletion sizes, multiplying by the cleavage efficiency, and subtracting the mismatch tolerance. Return this viability score. Halt and return nothing if the string does not contain all eight valid numbers. Example input: 1054-300-1.5-0.05-85.0-12-4-45.5 yields 1358.5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d188",
+  "title": "Neural Interface Calibrator",
+  "spec": "Process a space delimited string of brain implant diagnostics. The function `calibrate(diagnostics)` must read eight sequential fields: operating voltage, tissue impedance, pulse width, firing frequency, active channel count, signal to noise ratio, packet error rate, and battery level. Parse the pulse width, frequency, and channel count as integers, and the rest as floating point numbers. Calculate the network resonance by multiplying the frequency by the active channel count, then dividing by the tissue impedance. Return the resonance value. If any value is unreadable, the calibration procedure must abort. Example input: 1.2 500.0 200 60 128 25.5 0.01 98.5 yields 15.36.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d189",
+  "title": "Geothermal Vent Monitor",
+  "spec": "Evaluate an underwater thermal vent using a colon separated data string. The function `monitor(vent)` must isolate eight measurements: fluid flow rate, mineral content, core temperature, pressure, viscosity, acoustic resonance, trench depth, and vent radius. Parse the flow rate, depth, and radius as integers, and the remaining five measurements as floating point numbers. Compute the energy yield by multiplying the flow rate by the core temperature, and dividing by the pressure. Return the final energy yield. The monitoring process fails if any of the eight fields cannot be parsed. Example input: 500:45.5:350.0:200.0:1.5:440.0:2500:4 yields 875.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d190",
+  "title": "Antique Chronometer Restorer",
+  "spec": "Assess a mechanical clock using a comma delimited string of physical measurements. The function `restore(measurements)` reads eight values in order: mainspring tension, pendulum length, gear teeth count, escapement friction, balance wheel mass, lubrication level, pivot wear, and dial alignment. Parse gear teeth count and dial alignment as integers, and the other six as decimal numbers. Determine the timekeeping accuracy score by dividing the pendulum length by the escapement friction, then multiplying by the gear teeth count. Return this accuracy score. The assessment stops and returns an empty result if any value is missing or invalid. Example input: 8.5,45.0,120,0.5,15.2,85.0,0.1,360 yields 10800.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d191",
+  "title": "Hydroponic Nutrient Dispenser",
+  "spec": "Formulate a plant food recipe from a pipe separated string of chemical concentrations. The function `dispense(recipe)` must extract eight specific elemental values: nitrogen, phosphorus, potassium, calcium, magnesium, sulfur, iron, and zinc. Convert nitrogen, phosphorus, and potassium into integers, and the remaining five elements into floating point numbers. Calculate the growth multiplier by multiplying the nitrogen by the calcium, and adding the magnesium. Return the resulting multiplier. Discard the entire recipe if any chemical concentration fails to parse. Example input: 15|10|10|4.5|2.0|1.5|0.5|0.1 yields 69.5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d192",
+  "title": "Maritime Ballast Optimizer",
+  "spec": "Balance a cargo vessel based on a semicolon separated string of draft and load metrics. The function `balance(metrics)` must read eight distinct values: forward draft, aft draft, list angle, metacentric height, cargo weight, fuel weight, fresh water weight, and ballast capacity. Parse forward draft, aft draft, and list angle as integers, and the other five values as floats. Compute the stability moment by subtracting the forward draft from the aft draft, multiplying by the cargo weight, and dividing by the metacentric height. Return this stability moment. The balancing fails if any metric is invalid. Example input: 8;10;2;1.5;15000.0;500.0;200.0;4000.0 yields 20000.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d193",
+  "title": "Hologram Projection Matrix",
+  "spec": "Configure a three dimensional display using a dash delimited string of optical settings. The function `project(settings)` pulls out eight numerical parameters: red laser power, green laser power, blue laser power, focal length, mirror tilt, interference pattern index, refresh rate, and resolution scale. Parse the three laser powers and refresh rate as integers, and the remaining four parameters as floating point numbers. Calculate the brightness intensity by adding the three laser powers, multiplying by the resolution scale, and dividing by the focal length. Return the calculated intensity. Abort the configuration if any setting cannot be successfully converted. Example input: 200-250-150-50.0-15.5-3.14-120-2.0 yields 24.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d194",
+  "title": "Apiary Swarm Acoustic Analyzer",
+  "spec": "Monitor beehive activity using a comma separated string of audio analysis metrics. The function `analyze(audio)` extracts eight specific data points: buzz frequency, amplitude, queen piping count, drone chorusing score, worker flight rate, internal temperature, humidity, and brood comb mass. Parse frequency, piping count, and flight rate as integers, and the other five points as floats. Determine the swarm readiness index by multiplying the flight rate by the amplitude, then adding the internal temperature. Return this readiness index. If any audio metric is absent or malformed, return no result. Example input: 250,1.5,3,45.0,120,34.5,65.0,12.5 yields 214.5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d195",
+  "title": "Ice Core Paleoclimate Decoder",
+  "spec": "Analyze an ancient climate sample represented by a space delimited string. The function `decode(samples)` reads eight sequential layer metrics: carbon dioxide parts per million, methane levels, nitrous oxide, oxygen eighteen isotope ratio, deuterium ratio, dust particulate mass, ash layer thickness, and depth segment. Parse the depth, carbon dioxide, and methane as integers, and the other five metrics as decimal numbers. Calculate the atmospheric density score by multiplying the carbon dioxide by the oxygen eighteen ratio, and subtracting the dust particulate mass. Return the density score. The analysis stops and fails if any metric cannot be parsed. Example input: 280 700 270.5 -10.5 -50.2 15.0 2.5 1500 yields -2955.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d196",
+  "title": "Robotic Sail Trim Adjuster",
+  "spec": "Optimize an autonomous boat's rigging using a colon separated string of sensor data. The function `trim(sensors)` extracts eight readings: wind direction angle, true wind speed, boat speed, compass heading, mainsail sheet tension, jib sheet tension, vang tension, and rudder angle. Parse the wind direction, heading, and rudder angle as integers, and the other five as floats. Compute the efficiency ratio by multiplying the true wind speed by the boat speed, and dividing by the mainsail sheet tension. Return this efficiency ratio. If the string format is bad or a number is unreadable, the adjustment must fail. Example input: 45:15.5:8.0:90:120.0:80.5:40.0:5 yields 1.0333333.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d197",
+  "title": "Tokamak Plasma Confinement Tuner",
+  "spec": "Adjust a fusion reactor's parameters using a comma delimited configuration string. The function `tune(plasma)` must read eight distinct values: magnetic field strength, plasma current, electron density, ion temperature, confinement time, major radius, minor radius, and input power. Parse the plasma current and electron density as integers, and the other six values as floating point numbers. Calculate the fusion triple product by multiplying the electron density, ion temperature, and confinement time together. Return this final product. Reject the configuration entirely if any value is missing or invalid. Example input: 5.5,15000000,10,150.0,2.5,6.2,2.0,50.0 yields 3750.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d198",
+  "title": "Fiber Optic Signal Attenuator",
+  "spec": "Evaluate network cable degradation via a pipe separated string of physical properties. The function `attenuate(splice)` extracts eight measurements: core diameter mismatch, numerical aperture, refractive index, lateral offset, angular misalignment, gap distance, light wavelength, and base splice loss. Parse the wavelength and lateral offset as integers, and the other six as decimal numbers. Determine the signal quality by dividing the numerical aperture by the core diameter mismatch, and subtracting the angular misalignment. Return this signal quality value. If any measurement fails to parse, return an error. Example input: 0.5|0.25|1.45|2|1.5|0.1|1550|0.02 yields -1.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d199",
+  "title": "Bionic Appendage Synchronizer",
+  "spec": "Synchronize a prosthetic arm using a space separated string of real time telemetry. The function `synchronize(telemetry)` reads eight fields: elbow torque, wrist rotation angle, finger grip force, tactile feedback intensity, motor temperature, battery voltage, nerve impulse rate, and communication latency. Parse the wrist rotation, impulse rate, and latency as integers, and the remaining five fields as floats. Compute the responsiveness score by multiplying the nerve impulse rate by the finger grip force, and dividing by the latency. Return this score. The synchronization aborts if any telemetry field is invalid. Example input: 15.5 90 25.0 5.5 38.0 24.5 120 15 yields 200.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d200",
+  "title": "Powered Exoskeleton Balancer",
+  "spec": "Maintain upright posture using a dash delimited string of suit sensor values. The function `assist(posture)` extracts eight metrics: hip joint angle, knee flex angle, ankle torque, payload mass, center of gravity x axis, center of gravity y axis, gyroscope pitch, and gyroscope roll. Parse the hip angle, knee flex, and gyroscope pitch as integers, and the other five metrics as floating point numbers. Calculate the stability compensation by adding the hip angle and knee flex, multiplying by the payload mass, and dividing by the ankle torque. Return this compensation value. If the sensor string cannot be fully parsed, the process must fail and return nothing. Example input: 15-30-45.0-80.0-0.5-0.2-5-2.5 yields 80.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d201",
+  "title": "Ancient Pottery Kiln Logs",
+  "spec": "Write a function `pottery(log)` that processes ancient pottery firing data. The input is a single text string containing multiple lines. Each line contains seven values separated by a pipe symbol: firing phase, clay type, target temperature, hold duration in minutes, airflow rate, humidity percentage, and cooling hours. The function must extract the fields and parse the temperature, duration, airflow, humidity, and cooling hours as whole numbers. If any line is incomplete or contains invalid numbers, the function must immediately return nothing. Otherwise, return an optional whole number representing the sum of the hold durations for all lines where the clay type is the word terracotta. Example input: phase|terracotta|800|40|5|20|12. Output: 40.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d202",
+  "title": "Apple Orchard Harvest",
+  "spec": "Write a function `orchard(harvest)` that processes apple picking records. The input is a string of lines, where each line represents a harvested tree. Each line has seven values separated by a comma: tree identifier, apple variety, apples picked, average apple weight in grams, insect bite count, picking hour, and picking minute. The function must extract these segments and parse the last five values as integers. If any line is malformed or any number fails to parse, the function must completely fail and return nothing. If successful, return an optional integer containing the total number of apples picked from trees of the fuji variety. Example input: A1,fuji,50,100,2,10,30. Output: 50.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d203",
+  "title": "Glacier Ice Core Samples",
+  "spec": "Write a function `glacier(samples)` that evaluates ice core drilling logs. The input is a text string containing multiple lines. Each line consists of seven fields separated by a semicolon: location name, ice color, drilling depth, carbon dioxide level, methane level, dust concentration, and estimated age in years. Extract these pieces and parse the depth, carbon dioxide, methane, dust, and age as integers. The function must abort and return nothing if any line is missing fields or has unparseable integers. For a successful parse of all lines, return an optional integer that sums the carbon dioxide levels for all lines where the ice color is clear. Example input: site A;clear;150;280;800;15;10000. Output: 280.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d204",
+  "title": "Knitting Machine Instructions",
+  "spec": "Write a function `knitting(pattern)` that decodes a sequence of knitting steps. The input is a string with one step per line. Each line contains seven items separated by a colon: row identifier, stitch style, needle size, yarn color, tension level, repeat count, and rest time. Retrieve each item and parse the needle size, tension, repeat count, and rest time as integers. If a line is improperly formatted or a number is invalid, the function must halt and return nothing. On full success, return an optional integer summing the repeat counts for all steps where the stitch style is the word purl. Example input: row five:purl:4:blue:3:10:5. Output: 10.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d205",
+  "title": "Falcon Hunting Flights",
+  "spec": "Write a function `falconry(flights)` that aggregates bird flight statistics. The text input contains multiple lines, each representing a single flight with seven fields separated by a dash: bird name, prey type, wind speed, flight altitude, dive speed, flight duration in minutes, and resting time. Isolate each field and parse the wind speed, altitude, dive speed, duration, and resting time as whole numbers. Should any line lack the required fields or contain invalid numbers, the function must return nothing. When all lines are valid, return an optional integer representing the total flight duration for flights where the prey type is the word hare. Example input: apollo-hare-15-200-80-12-30. Output: 12.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d206",
+  "title": "Cheese Cave Aging Monitor",
+  "spec": "Write a function `cheese(wheels)` that checks the aging progress of cheese batches. The input text has one line per batch. Each line contains seven values separated by a comma: batch identifier, milk origin, cave humidity percentage, cave temperature, aging days, mold coverage percentage, and turning frequency. Extract all parts and parse the humidity, temperature, aging days, mold coverage, and turning frequency as integers. The function must return nothing immediately if any line is incomplete or contains non-numeric values. Otherwise, return an optional integer representing the sum of aging days for all batches where the milk origin is goat. Example input: batch seven,goat,85,55,120,40,7. Output: 120.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d207",
+  "title": "Sword Forging Strikes",
+  "spec": "Write a function `blacksmith(forging)` that reviews hammer strike logs for sword making. The input is a multi-line string. Every line has seven items delimited by a pipe character: weapon identifier, metal type, heating minutes, strike force, anvil angle, fold count, and cooling liquid volume. Separate the items and parse the heating minutes, strike force, anvil angle, fold count, and liquid volume as integers. The function must fail and return nothing if a line is malformed or an integer parse fails. If completely successful, return an optional integer summing the strike force for all lines where the metal type is steel. Example input: sword one|steel|15|200|45|10|5. Output: 200.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d208",
+  "title": "Juggling Performance Sequence",
+  "spec": "Write a function `juggling(routine)` that calculates statistics from a juggling act. The input string contains several lines, each detailing a single trick. A line consists of seven fields separated by a semicolon: trick name, prop type, throw height in inches, spin count, hand transfer speed, catch delay, and drop penalty points. Split the line and parse the height, spins, transfer speed, catch delay, and drop penalty as integers. Any missing field or invalid number must cause the function to return nothing. If all lines parse successfully, return an optional integer total of the spin counts for all tricks using the ball prop type. Example input: cascade;ball;30;2;15;5;0. Output: 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d209",
+  "title": "Fragrance Mixing Formula",
+  "spec": "Write a function `perfume(blend)` that analyzes a custom fragrance recipe. The input string holds one mixing step per line. Each line has seven elements separated by a colon: step name, essential oil, top note drops, middle note drops, base note drops, alcohol volume, and resting days. Read each element and parse the three drop counts, the alcohol volume, and the resting days as integers. If any line is invalid or parsing fails, return nothing. When all lines are valid, return an optional integer totaling the base note drops across all steps where the essential oil is rose. Example input: step one:rose:10:5:8:50:14. Output: 8.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d210",
+  "title": "Loom Weaving Sequence",
+  "spec": "Write a function `tapestry(weaving)` that parses instructions for a mechanical loom. The input is a string containing multiple lines. Every line contains seven values separated by a dash: row identifier, thread color, shuttle speed, pattern index, row length, tension setting, and error margin. Extract the fields and parse the speed, pattern index, length, tension, and error margin as whole numbers. The function must immediately return nothing if a line does not conform or parsing fails. For a completely valid input, return an optional integer that adds up the row lengths for all rows where the thread color is gold. Example input: row ten-gold-120-4-50-6-2. Output: 50.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d211",
+  "title": "Brush Stroke Path Data",
+  "spec": "Write a function `calligraphy(strokes)` that processes digital brush movements. The input text contains one stroke per line. Each line is made of seven fields separated by a comma: stroke identifier, ink color, brush size, start horizontal coordinate, start vertical coordinate, curve radius, and pressure level. Separate each field and parse the size, both coordinates, radius, and pressure as integers. If any field is missing or cannot be parsed as a number, the function must return nothing. On complete success, return an optional integer summing the pressure levels for all strokes where the ink color is black. Example input: stroke five,black,10,150,200,45,80. Output: 80.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d212",
+  "title": "Bonsai Tree Shaping Schedule",
+  "spec": "Write a function `bonsai(pruning)` that aggregates tree care operations. The text input has multiple lines, each with seven items delimited by a pipe character: branch identifier, cut style, wire thickness, bending force, healing days, foliage removed in grams, and rest weeks. Retrieve all items and parse the thickness, force, healing days, foliage, and rest weeks as integers. The function must halt and return nothing if it encounters a bad line or invalid number. If successful, return an optional integer summing the foliage removed for all lines where the cut style is pinch. Example input: branch two|pinch|3|15|30|10|4. Output: 10.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d213",
+  "title": "Pyrotechnic Show Sequence",
+  "spec": "Write a function `fireworks(display)` that verifies a firework launch sequence. The multi-line input string contains seven values per line separated by a semicolon: launch tube, visual effect, shell size, burst altitude, fuse delay, blast radius, and sound decibel. Isolate the fields and parse the shell size, altitude, fuse delay, radius, and decibel as integers. The function must fail entirely and return nothing if any line is incomplete or contains non-integers. For valid inputs, return an optional integer totaling the burst altitudes for all lines where the visual effect is peony. Example input: tube four;peony;6;400;3;150;110. Output: 400.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d214",
+  "title": "Mechanical Watch Assembly",
+  "spec": "Write a function `clockwork(gears)` that evaluates watch mechanism components. The input string contains one component per line. Each line has seven elements separated by a colon: component name, material, gear teeth count, pinion radius, escapement angle, spring tension, and friction coefficient. Extract the elements and parse the teeth count, pinion radius, angle, tension, and friction as whole numbers. Should any line be improperly formatted or contain invalid digits, the function must return nothing. Otherwise, return an optional integer summing the gear teeth count for all components made of brass. Example input: mainspring:brass:60:12:45:80:5. Output: 60.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d215",
+  "title": "Fantasy Potion Brewing",
+  "spec": "Write a function `potions(cauldron)` that analyzes a potion recipe. The input string features one brewing step per line. Each line consists of seven parts separated by a dash: step name, ingredient, stir count, heat level, simmer minutes, magic potency, and cooling time. Isolate each part and parse the stir count, heat level, simmer minutes, potency, and cooling time as integers. The function must immediately return nothing if any line is missing parts or has unparseable numbers. When all lines are correct, return an optional integer totaling the simmer minutes for steps where the ingredient is mint. Example input: step three-mint-10-80-15-50-5. Output: 15.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d216",
+  "title": "Kite Aerodynamic Testing",
+  "spec": "Write a function `kite(flying)` that processes kite test flights. The text input contains multiple lines, each representing a flight interval with seven fields separated by a comma: interval identifier, wind direction, wind speed, string length, tension force, pitch angle, and flight altitude. Separate each field and parse the wind speed, string length, tension, pitch, and altitude as integers. The function must return nothing if it finds an incomplete line or a non-numeric value. For a fully valid input, return an optional integer summing the tension force for all intervals where the wind direction is north. Example input: interval one,north,15,100,45,30,80. Output: 45.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d217",
+  "title": "Marble Carving Tool Paths",
+  "spec": "Write a function `sculpture(chiseling)` that reviews automated carving instructions. The input string contains multiple lines. Every line contains seven values separated by a pipe symbol: instruction identifier, tool shape, drill depth, approach angle, feed rate, water coolant volume, and surface finish rating. Extract the values and parse the depth, angle, feed rate, coolant volume, and finish rating as integers. If any line is incorrectly formatted or a number fails to parse, return nothing. On complete success, return an optional integer totaling the drill depth for all instructions where the tool shape is flat. Example input: step two|flat|20|45|10|50|8. Output: 20.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d218",
+  "title": "Fencing Match Actions",
+  "spec": "Write a function `fencing(bouts)` that calculates statistics from fencing matches. The input text has one action per line. Each line is composed of seven items separated by a semicolon: action identifier, technique, advance steps, lunge speed, parry angle, touch zone, and recovery time. Split the line and parse the advance steps, lunge speed, parry angle, touch zone, and recovery time as integers. The function must abort and return nothing if a line is missing items or contains invalid numbers. If successful, return an optional integer summing the advance steps for all actions where the technique is riposte. Example input: action four;riposte;3;15;45;2;1. Output: 3.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d219",
+  "title": "Cigar Rolling Instructions",
+  "spec": "Write a function `cigar(rolling)` that processes tobacco assembly logs. The input string contains multiple lines, each with seven fields separated by a colon: batch identifier, wrapper leaf, filler weight in grams, moisture level, ring gauge, overall length, and pressing time. Retrieve the fields and parse the filler weight, moisture, ring gauge, length, and pressing time as integers. Any missing field or invalid number must cause the function to return nothing. When all lines are valid, return an optional integer representing the total filler weight for batches where the wrapper leaf is maduro. Example input: batch nine:maduro:150:70:52:6:45. Output: 150.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d220",
+  "title": "Whitewater Canoe Navigation",
+  "spec": "Write a function `canoe(rapids)` that evaluates river navigation telemetry. The input string contains one reading per line. Each line consists of seven elements separated by a dash: reading identifier, river hazard, water flow rate, rock distance, paddle stroke count, lean angle, and boat speed. Isolate the elements and parse the flow rate, rock distance, stroke count, lean angle, and speed as integers. The function must fail and return nothing if a line is malformed or an integer parse fails. For fully correct inputs, return an optional integer summing the paddle stroke count for readings where the hazard is eddy. Example input: reading six-eddy-200-15-4-30-10. Output: 4.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d221",
+  "title": "Glassblowing Shaping Steps",
+  "spec": "Write a function `glassblowing(furnace)` that summarizes glass creation logs. The text input features one step per line with seven values separated by a comma: step identifier, glass color, gather size, pipe rotation speed, blow pressure, glory hole time, and anneal temperature. Separate each value and parse the gather size, rotation speed, pressure, glory hole time, and anneal temperature as integers. Should any line lack fields or contain invalid numbers, the function must return nothing. On success, return an optional integer totaling the glory hole time for all steps where the glass color is blue. Example input: step one,blue,5,30,12,45,900. Output: 45.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d222",
+  "title": "Harp String Tension Calibration",
+  "spec": "Write a function `harp(tuning)` that analyzes instrument tuning data. The input is a multi-line string. Every line has seven items delimited by a pipe character: string identifier, musical note, pedal position, tension pounds, frequency hertz, thickness, and age in months. Extract the items and parse the pedal position, tension, frequency, thickness, and age as integers. The function must return nothing immediately if a line is incomplete or contains non-numeric values. Otherwise, return an optional integer representing the sum of the tension pounds for all strings where the musical note is c. Example input: string four|c|1|40|261|2|12. Output: 40.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d223",
+  "title": "Classic Barbershop Service",
+  "spec": "Write a function `barber(shaves)` that reviews shaving service records. The input string contains several lines, each detailing a customer session. A line consists of seven fields separated by a semicolon: customer identifier, beard type, towel temperature, blade sharpness, lather volume, stroke angle, and shave duration. Split the line and parse the towel temperature, blade sharpness, lather volume, stroke angle, and duration as integers. Any missing field or invalid number must cause the function to return nothing. If all lines parse successfully, return an optional integer totaling the shave duration for sessions where the beard type is coarse. Example input: customer ten;coarse;110;9;50;35;15. Output: 15.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ }
+]

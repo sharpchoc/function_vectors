@@ -556,5 +556,915 @@
   "title": "Sparse Table for Range Minimum Query (RMQ)",
   "spec": "Implement a Sparse Table to answer Range Minimum Queries efficiently. Write a class `SparseTable` initialized with an array of numbers. In the constructor, iterate through the array to populate the first column of the 2D Sparse Table matrix. Then, fill the remaining table column by column; for each interval length (power of 2), iterate through the valid array positions to compute the minimum values from the previously computed intervals. Provide a `query(left, right)` method, and include a driver that iterates through a list of predefined range queries to extract and print their minimums.",
   "designed_by": "google/gemini-3.1-pro-preview"
+ },
+ {
+  "id": "d094",
+  "title": "Crossword Word Extractor",
+  "spec": "Write a function `extract(grid)` that takes a two-dimensional list of characters representing a crossword grid. Spaces represent empty cells or walls. Find and return a list of all horizontal and vertical words that are two or more characters long. Scan each row from left to right to build horizontal words, breaking at spaces. Scan each column from top to bottom to build vertical words, also breaking at spaces. For example, a row containing the characters C, A, T, space, D, O, G yields two words.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d095",
+  "title": "Prime Factorization of Sequence",
+  "spec": "Write a function `factorize(numbers)` that takes a list of integers. Find the maximum value in the input list. Build a boolean list representing a prime sieve up to that maximum value. Then, create a result list of lists. For each integer in the input sequence, check all prime numbers from the sieve up to that integer. If a prime divides the integer, repeatedly divide it to count the multiplicity, and append the prime and its multiplicity as a tuple to the sublist for that integer. Return the list of sublists.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d096",
+  "title": "Word Search Solver",
+  "spec": "Write a function `search(grid, words)` that takes a two-dimensional list of characters and a list of target string words. For each target word, scan the grid to find its starting position. You must check all eight directions (horizontal, vertical, and diagonals) from every cell. If a word is found, record a tuple of its starting row, starting column, and the direction steps for the row and column. Return a list of these tuples in the order of the target words.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d097",
+  "title": "Grayscale Histogram Equalization",
+  "spec": "Write a function `equalize(image)` that takes a two-dimensional list of integers between zero and two hundred fifty-five, representing a grayscale image. Compute the frequency of each pixel value. Then, compute the cumulative distribution function (a running sum of the frequencies). Normalize the cumulative distribution by dividing by the total number of pixels and multiplying by two hundred fifty-five, rounding down to an integer. Finally, create and return a new two-dimensional list where each original pixel value is replaced by its normalized cumulative value.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d098",
+  "title": "Multi-Channel Moving Average",
+  "spec": "Write a function `smooth(signals, window)` where the first parameter is a list of lists of floats (multiple signal channels) and the second is an integer window size. For each signal channel, compute the simple moving average. The result for a channel should be a new list where each element is the average of the values in the sliding window of the given size. Skip any windows that do not have enough elements. Return a list of lists containing the smoothed channels.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d099",
+  "title": "ASCII Art Scaler",
+  "spec": "Write a function `scale(art, horizontal, vertical)` that takes a list of strings representing an image, and two integers for horizontal and vertical scaling factors. Create a new list of strings where each character in the original strings is repeated horizontally the specified number of times. Furthermore, each row of the scaled characters must be repeated vertically the specified number of times. Return the newly constructed list of strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d100",
+  "title": "Multi-Channel Linear Interpolation",
+  "spec": "Write a function `interpolate(channels)` that takes a list of lists of floats. Each inner list represents a time series where missing values are denoted by negative one. Iterate through each channel to find missing values. When one or more missing values are found, locate the nearest valid values before and after the gap. Replace the missing values with a linear interpolation between the two valid boundaries. If the gap is at the very beginning or end, just duplicate the nearest valid value. Return the modified list of channels.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d101",
+  "title": "K-Nearest Neighbors Classification",
+  "spec": "Write a function `predict(train, labels, test, count)` where the first parameter is a list of data points (lists of floats), the second is a list of string labels for the training data, the third is a list of test points, and the fourth is an integer count. For each test point, calculate the squared Euclidean distance to all training points. Keep track of the distances and their corresponding labels. Find the labels of the training points with the smallest distances, and assign the most frequent label to the test point. Return a list of predicted labels.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d102",
+  "title": "Connect Four Winner Evaluator",
+  "spec": "Write a function `evaluate(board)` that takes a list of six lists, each containing seven integers. The integers are zero for empty, one for player one, and two for player two. Check the entire board to see if either player has four consecutive pieces horizontally, vertically, or diagonally. You must check both left-to-right and right-to-left diagonals. Return the winning player's integer, or zero if no player has formed a line of four.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d103",
+  "title": "Document N-Gram Similarity",
+  "spec": "Write a function `plagiarism(documents, length)` that takes a list of documents (where each document is a list of string words) and an integer for the sequence length. For each document, generate all contiguous sub-sequences of words of the given length. Then, compute the Jaccard similarity between every possible unique pair of documents based on their generated sequences. The Jaccard similarity is the number of shared sequences divided by the total unique sequences in both documents. Return a list of tuples containing the two document indices and their similarity float.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d104",
+  "title": "Magic Square Verification",
+  "spec": "Write a function `verify(square)` that takes a two-dimensional list of integers. Determine if it is a valid magic square. First, check that all numbers from one up to the square of the dimension are present exactly once. Then, calculate the sum of the first row to use as a target. Check that the sum of every row, the sum of every column, the sum of the main diagonal, and the sum of the anti-diagonal all equal the target sum. Return a boolean indicating if it is a valid magic square.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d105",
+  "title": "Forest Fire Simulation",
+  "spec": "Write a function `simulate(grid, steps)` that takes a two-dimensional list of integers (zero for empty, one for tree, two for burning) and an integer for the number of time steps. In each step, a burning tree becomes empty space. A tree catches fire if at least one of its eight immediate neighbors is burning. Empty spaces remain empty. Simulate the grid for the given number of steps, creating a new grid for each step based on the previous one. Return the final grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d106",
+  "title": "Grid Box Blur",
+  "spec": "Write a function `blur(grid, radius)` that takes a two-dimensional list of floats and an integer radius. Create a new grid of the same dimensions. For each cell in the original grid, compute the average of all elements within the square bounding box defined by the given radius (inclusive) centered at that cell. Be sure to clamp the bounding box to the edges of the grid so that you do not access out-of-bounds indices. Return the new smoothed grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d107",
+  "title": "Distance Field Generation",
+  "spec": "Write a function `field(grid)` that takes a two-dimensional list of integers where zero represents empty space and one represents an obstacle. Generate a new grid of the same dimensions containing the Manhattan distance from each empty space to the nearest obstacle. For every cell in the input grid, if it is an obstacle, its distance is zero. If it is empty, calculate the absolute row and column differences to all obstacles and find the minimum distance. Return the two-dimensional list of distances.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d108",
+  "title": "Backtracking Sudoku Solver",
+  "spec": "Write a function `solve(board)` that takes a nine by nine grid of integers where empty cells are represented by zeros. Find the first empty cell, and try placing digits from one to nine. For each digit, check if it already exists in the same row, the same column, or the corresponding three by three subgrid. If it is valid, place the digit and recursively call the function. If a placement leads to a dead end, reset the cell to zero. Return the solved board, or an empty list if no solution exists.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d109",
+  "title": "Spatial 2D Histogram",
+  "spec": "Write a function `histogram(points, bins, maximum)` that takes a list of pairs of floats representing coordinates, an integer number of bins for each axis, and a float representing the maximum coordinate value. Create a two-dimensional grid of zeros sized according to the number of bins. Iterate through the coordinates, calculate the appropriate bin index for the horizontal and vertical axes by scaling the value relative to the maximum, and increment the count in that bin. Apply a three by three moving average over the bin counts, and return the smoothed matrix.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d110",
+  "title": "Greedy Word Justification",
+  "spec": "Write a function `justify(words, width)` that takes a list of string words and an integer line width. Pack the words into lines such that adding another word would exceed the width. For each line except the last, distribute extra spaces evenly between the words. If the spaces cannot be divided evenly, add the remainder to the leftmost gaps. For the last line, separate words by a single space and pad the end with spaces until it reaches the specified width. Return a list of the justified strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d111",
+  "title": "K-Medoids Update Step",
+  "spec": "Write a function `medoids(points, indices)` that takes a list of data points (each a list of floats) and a list of integer indices representing current medoids. For each data point, calculate the distance to all current medoids and assign the point to the nearest one, forming clusters. Then, for each cluster, calculate the sum of distances from every point in the cluster to every other point in the cluster. Select the point with the lowest sum as the new medoid for that cluster. Return the updated list of medoid indices.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d112",
+  "title": "Rectangle Union Area Grid",
+  "spec": "Write a function `area(rectangles)` that takes a list of tuples containing four integers (minimum x, minimum y, maximum x, maximum y). Find the overall maximum x and maximum y across all rectangles to determine the bounds. Create a two-dimensional boolean grid initialized to false, covering from zero to the maximum bounds. For each rectangle, iterate through its horizontal and vertical ranges and set the corresponding grid cells to true. Finally, count and return the total number of true cells in the grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d113",
+  "title": "Max Pooling Downsampling",
+  "spec": "Write a function `pool(image, size)` that takes a two-dimensional list of floats and an integer size. Perform max pooling on the image by dividing it into non-overlapping square blocks of the given size. For each block, find the maximum float value. Construct and return a new two-dimensional list containing these maximum values, effectively reducing the spatial dimensions of the input. If the image dimensions are not perfectly divisible by the size, discard the remaining edge pixels.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d114",
+  "title": "Fuzzy 2D Pattern Match",
+  "spec": "Write a function `match(text, pattern, tolerance)` that takes two two-dimensional lists of characters (a large text grid and a smaller pattern grid) and an integer tolerance. Check every possible starting row and column in the text grid where the pattern can fully fit. For each position, compare the characters of the pattern against the underlying characters in the text grid. Count the number of differing characters. If the count of mismatches is less than or equal to the tolerance, add a tuple of the starting row and column to a list. Return the list of matches.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d115",
+  "title": "Tensor Addition and Slicing",
+  "spec": "Write a function `tensorops(first, second)` that takes two three-dimensional lists of integers with identical dimensions. First, create a new three-dimensional list representing the element-wise sum of the two inputs. Then, for each two-dimensional slice along the first dimension of the summed structure, find the maximum integer present in that slice. Append the maximums of each slice into a flat list. Return a tuple containing the three-dimensional sum and the one-dimensional list of maximums.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d116",
+  "title": "Graph Connected Components",
+  "spec": "Write a function `components(matrix)` that takes a two-dimensional list of integers representing the adjacency matrix of an undirected graph. Find all connected components using breadth-first search. Maintain a boolean list to track which nodes have been explored. Iterate through every node; if it has not been explored, initialize a queue with it and build a new component list. While the queue is active, explore its neighbors by checking the adjacency matrix and add unvisited connected nodes to the queue. Return a list of lists containing the node indices of each component.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d117",
+  "title": "Sierpinski Carpet Fractal",
+  "spec": "Write a function `carpet(order)` that takes an integer order and generates a Sierpinski carpet. The dimensions of the carpet will be three raised to the power of the order. Create a two-dimensional list of characters initialized to the hash symbol. Iterate over every row and column index. For each cell, check its coordinates recursively by examining the modulo three of both the row and column. If both are one, change the cell to a space. Divide the row and column by three and repeat the check until they become zero. Return the grid as a list of strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d118",
+  "title": "Minesweeper Safe Cell Deduction",
+  "spec": "Write a function `deduce(board)` that takes a two-dimensional list of integers representing a partially revealed Minesweeper board. Known cells show the count of adjacent mines, while unrevealed cells hold negative one. Scan the board to find numbered cells. For each numbered cell, count its immediate unrevealed neighbors and its flagged neighbors (where you assume you have somehow marked known mines with negative two). If the count of unrevealed neighbors equals the cell's number minus the flagged mines, mark all those unrevealed neighbors as mines. If the cell's number equals the flagged mines, mark all remaining unrevealed neighbors as safe (negative three). Return the modified board.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d119",
+  "title": "Bounding Box Intersection Over Union",
+  "spec": "A list of bounding boxes is provided, where each box is a list of four numbers representing its top left column, top left row, width, and height. Create a square grid of dimensions equal to the number of boxes. Fill the grid such that the value at each row and column is the intersection over union ratio of the corresponding pair of boxes. The area of intersection must be computed by determining the overlapping rectangular region. If the two boxes do not overlap, their intersection is zero. After building the entire grid, iterate through each row to find the maximum overlap ratio for each box, completely ignoring the self comparison on the diagonal. Return a list containing these maximum ratios for each box. Example: Input is [[0, 0, 10, 10], [5, 5, 10, 10]]. Output is [0.142857, 0.142857].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d120",
+  "title": "Undirected Graph Triangle Counter",
+  "spec": "An adjacency matrix of an undirected graph without self loops is given as a square two-dimensional list of integers, containing zeros and ones. Calculate the total number of unique triangles in the graph. A triangle is a set of three distinct vertices where every pair of vertices is connected by an edge. Because the order of vertices does not matter, each triangle should be counted exactly once. Return the total triangle count as an integer. Iterate through all possible combinations of three vertices using three nested loops to check for the presence of the three required edges. Example: Input is [[0, 1, 1, 0], [1, 0, 1, 1], [1, 1, 0, 1], [0, 1, 1, 0]]. Output is 2.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d121",
+  "title": "Grid Morphological Dilation",
+  "spec": "An image is represented as a two-dimensional list of integers containing only zeros and ones. Apply morphological dilation using a three by three plus shaped structuring element. Create a new grid of the same dimensions filled with zeros. Iterate through the rows and columns of the original grid. For every cell, if its value is one, set the corresponding cell in the new grid and its immediate top, bottom, left, and right neighbors to one, provided those neighbors fall within the grid boundaries. Return the new dilated grid. Ensure the original grid is not modified during the process. Example: Input is [[0, 0, 0], [0, 1, 0], [0, 0, 0]]. Output is [[0, 1, 0], [1, 1, 1], [0, 1, 0]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d122",
+  "title": "Playfair Cipher Key Grid",
+  "spec": "A plain text key string containing only uppercase letters is provided. Construct a five by five grid of letters for a Playfair cipher. First, iterate over the characters of the key, adding each unique letter to a sequence, treating the letter J as if it were I. Then, iterate through the standard uppercase alphabet from A to Z, adding any letter not already in the sequence, again skipping J. Populate a five by five two-dimensional list with the collected twenty-five letters row by row using nested loops. Finally, iterate through the rows of the grid to concatenate the letters into a list of five strings. Return this list of strings. Example: Input is \"HELLO\". Output is [\"HELOA\", \"BCDFG\", \"IKMNP\", \"QRSTU\", \"VWXYZ\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d123",
+  "title": "Voxel Grid Center of Mass",
+  "spec": "A three-dimensional list of integers representing a volumetric grid is provided. A value of one indicates mass, and zero indicates empty space. Calculate the center of mass of the grid. Iterate through the depth, rows, and columns using nested loops to find all cells with mass. Accumulate the respective depth, row, and column indices. Divide the accumulated sums by the total number of mass cells to find the average coordinates. Return a list of three floats representing the depth, row, and column of the center of mass. If there is no mass, return three zeros. Example: Input is [[[1, 0], [0, 0]], [[0, 0], [0, 1]]]. Output is [0.5, 0.5, 0.5].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d124",
+  "title": "Jigsaw Puzzle Edge Matcher",
+  "spec": "A list of puzzle pieces is given, where each piece is a two-dimensional list of integers representing an image patch. Find all pairs of pieces where the rightmost column of the first piece exactly matches the leftmost column of the second piece. Compare every piece against every other piece using nested loops over their indices, excluding self comparisons. For each pair, iterate row by row to check if the edge elements are identical. Collect the zero-based indices of matching pairs into a list of two element tuples. Return the list of matches. Example: Input is [[[1, 2], [3, 4]], [[2, 5], [4, 6]]]. Output is [(0, 1)].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d125",
+  "title": "Sequence Dot Plot with Window",
+  "spec": "A list containing exactly two string sequences is provided. Generate a dot plot matrix to visualize regions of similarity. Create a two-dimensional list of booleans where the number of rows equals the length of the first sequence and the number of columns equals the length of the second sequence. Iterate through the indices of both sequences. A cell should be set to true if the three character substring starting at that row index in the first sequence exactly matches the three character substring starting at that column index in the second sequence. If either sequence does not have three characters remaining from a position, set the cell to false. Return the boolean grid. Example: Input is [\"ABCA\", \"BCA\"]. Output is [[False, False, False], [True, False, False], [False, False, False], [False, False, False]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d126",
+  "title": "Grayscale Image Dithering",
+  "spec": "A two-dimensional list of integers representing a grayscale image with values from zero to two hundred fifty-five is given. Apply a simplified error diffusion dithering. Iterate through the grid row by row and column by column using numeric indices. For each pixel, quantize its value to zero if it is less than one hundred twenty-eight, and two hundred fifty-five otherwise. The quantization error is the original pixel value minus the quantized value. Distribute half of this error, using integer division, to the right neighbor and half to the bottom neighbor, modifying them in place if those neighbors exist. Return the modified image. Example: Input is [[130, 50], [60, 200]]. Output is [[255, 0], [0, 255]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d127",
+  "title": "Bivariate Polynomial Grid Evaluation",
+  "spec": "A list containing an integer width, an integer height, and a list of polynomial terms is provided. Each term is a list containing an integer power for the horizontal axis, an integer power for the vertical axis, and a float coefficient. Create a grid with the specified height and width. Iterate through each row and column coordinate, and compute the value of the polynomial by iterating through the terms, calculating the column coordinate raised to its power multiplied by the row coordinate raised to its power multiplied by the coefficient. Sum these term values for the cell. After evaluating the entire grid, iterate through all rows and columns a second time to find the maximum value present, and a third time to divide every element by this maximum value, normalizing the grid. Return the normalized two-dimensional grid. Example: Input is [2, 2, [[1, 0, 2.0], [0, 1, 3.0]]]. Output is [[0.0, 0.4], [0.6, 1.0]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d128",
+  "title": "Multi Dimensional Distance Matrix",
+  "spec": "A list of points is provided, where each point is a list of floating point coordinates in a multi-dimensional space. Calculate the all pairs squared Euclidean distance matrix. Create a square two-dimensional list of dimensions equal to the number of points. Iterate through every pair of points using two nested loops over their indices. For each pair, iterate through their coordinate dimensions to sum the squared differences between corresponding coordinates. Store this sum in the distance matrix at the corresponding row and column. Return the final square distance matrix. Example: Input is [[0.0, 0.0], [3.0, 4.0]]. Output is [[0.0, 25.0], [25.0, 0.0]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d129",
+  "title": "Histogram of Block Gradients",
+  "spec": "A two-dimensional list of integers representing pixel gradient angles in degrees is given. Divide the image into non-overlapping two by two blocks. Iterate through the image rows and columns in steps of two. For each block, create a histogram of angles with four bins. The first bin is for angles from zero to eighty-nine, the second for ninety to one hundred seventy-nine, the third for one hundred eighty to two hundred sixty-nine, and the fourth for two hundred seventy to three hundred fifty-nine. Iterate through the four cells within the current block to tally the angles into the bins. Return a two-dimensional list of the blocks where each block is represented by its four bin histogram list. Example: Input is [[45, 100], [200, 300]]. Output is [[[1, 1, 1, 1]]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d130",
+  "title": "Board Game Valid Moves",
+  "spec": "An eight by eight board for a Reversi like game is provided as a two-dimensional list of integers where zero is empty, one is black, and two is white. Find all valid moves for the black player. Iterate through every row and column index on the board. If a cell is empty, check all eight directions horizontally, vertically, and diagonally. A move is valid if in at least one direction, there is a sequence of one or more white pieces followed immediately by a black piece. If the cell is valid, add a list containing its row and column to a list of moves. Return the list of valid moves. Example: Input is a board with 1 at row 3 column 4 and row 4 column 3, 2 at row 3 column 3 and row 4 column 4, and 0 elsewhere. Output is [[2, 3], [3, 2], [4, 5], [5, 4]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d131",
+  "title": "Discrete Voronoi Diagram",
+  "spec": "A list containing an integer grid width, an integer grid height, and a list of site coordinates is provided. Each site coordinate is a list containing its column and row. Construct a discrete Voronoi diagram as a two-dimensional list of integers. Iterate through every row and column in the grid. For each cell, determine which site is closest using the Manhattan distance. Iterate through all sites by index to find the minimum distance. If there is a tie, choose the site that appears first in the list. Assign the zero-based index of the closest site to the cell. Return the resulting two-dimensional list. Example: Input is [3, 3, [[0, 0], [2, 2]]]. Output is [[0, 0, 0], [0, 0, 1], [0, 1, 1]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d132",
+  "title": "Block Matrix Transpose",
+  "spec": "A square two-dimensional list of integers whose dimension is a multiple of two is provided. Perform a block transposition of two by two blocks. Create a new grid of the same dimensions. Iterate through the original matrix in steps of two for both rows and columns to process each block. Move the entire two by two block at the current block row and block column to the transposed block position at the corresponding block column and block row. Inside the block, iterate through its local rows and columns to copy the four elements preserving their local arrangement. Return the new block transposed matrix. Example: Input is [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]. Output is [[1, 2, 9, 10], [5, 6, 13, 14], [3, 4, 11, 12], [7, 8, 15, 16]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d133",
+  "title": "Gaussian Kernel Grid",
+  "spec": "An odd integer representing the size of a kernel is provided. Generate a two-dimensional list of floating point numbers representing a Gaussian kernel. Iterate through all rows and columns using numeric indices. Calculate the center coordinate, and for each cell, calculate its row and column offset from the center. Compute the cell value as the mathematical constant e raised to the power of negative half the sum of the squared row offset and squared column offset. After filling the grid, iterate through all rows and columns again to sum all elements, and then a third time to divide each cell by the sum to normalize the kernel. Return the normalized grid. Example: Input is 3. Output is [[0.075, 0.124, 0.075], [0.124, 0.204, 0.124], [0.075, 0.124, 0.075]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d134",
+  "title": "Image Patch Extraction",
+  "spec": "A list containing a two-dimensional list of integers representing an image, an integer patch height, and an integer patch width is provided. Extract all possible non-overlapping patches of the specified dimensions starting from the top left corner. Create a list to hold the patches. Iterate through the image rows using a step equal to the patch height. Within that loop, iterate through the image columns using a step equal to the patch width. Check if a full patch can be extracted without exceeding the image boundaries. If so, create a new two-dimensional list for the patch by iterating through the local rows and columns, copying the corresponding pixel values, and append this patch to the list of patches. Return the flat list of patches. Example: Input is [[[1, 2, 3], [4, 5, 6], [7, 8, 9]], 2, 2]. Output is [[[1, 2], [4, 5]]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d135",
+  "title": "Signal Autocorrelation Lags",
+  "spec": "A one-dimensional list of floating point numbers representing a signal is provided. Calculate its unnormalized autocorrelation for a set of time lags. Iterate through lag values from zero up to the length of the signal minus one. For each lag, iterate through the signal indices from zero up to the length minus the lag minus one. Multiply the signal value at the current index by the signal value at the index plus the lag, and accumulate this product. Store the accumulated product for each lag in a new list. Finally, iterate through this list of results by index and divide every element by the first element, which represents the zero lag, to normalize the values. Return the normalized list of autocorrelation values. Example: Input is [1.0, 2.0, 3.0]. Output is [1.0, 0.571428, 0.214285].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d136",
+  "title": "Grid Component Labeling",
+  "spec": "A two-dimensional list of integers containing zeros and ones is provided. Apply a simplified two pass connected component labeling for four connectivity. In the first pass, iterate through the grid row by row and column by column. When a one is found, if its left and top neighbors are zero or out of bounds, assign a new incrementing label starting from two. If only one neighbor has a label, copy it. If both have labels, copy the smaller one and record an equivalence between the two labels in a list. In the second pass, iterate through the grid rows and columns again and replace any label with its smallest equivalent label using the recorded equivalences. Return the labeled grid. Example: Input is [[1, 0, 1], [1, 1, 1], [0, 0, 1]]. Output is [[2, 0, 2], [2, 2, 2], [0, 0, 2]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d137",
+  "title": "Matrix Pattern Finder",
+  "spec": "A list containing a large two-dimensional list of integers and a smaller three by three two-dimensional list of integers is provided. Find all locations where the smaller matrix perfectly matches a subgrid of the larger matrix. Iterate through the rows and columns of the large matrix to establish a top left anchor point. For each anchor, iterate through the three rows and three columns of the pattern. Compare the pattern elements to the corresponding elements in the large matrix offset by the anchor coordinates. If all nine elements match, add a list containing the anchor row and column to a results list. Return the results list. Example: Input is [[[1, 2, 3], [4, 5, 6], [7, 8, 9]], [[1, 2, 3], [4, 5, 6], [7, 8, 9]]]. Output is [[0, 0]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d138",
+  "title": "Sequence Transition Matrix",
+  "spec": "A list of string sequences made of uppercase letters is provided. Construct a transition matrix of character pairs. First, identify all unique characters present across all sequences, sort them alphabetically, and create a square two-dimensional list of integers initialized to zero, with dimensions equal to the number of unique characters. Then, iterate through the list of sequences using a numeric index. For each sequence, iterate through its character indices from zero to the length minus two. Find the corresponding row index for the current character and the column index for the next character in the sorted unique characters list. Increment the count in the transition matrix at that row and column. Return a list containing the sorted unique characters and the transition matrix. Example: Input is [\"ABA\", \"BCA\"]. Output is [[\"A\", \"B\", \"C\"], [[0, 1, 0], [1, 0, 1], [1, 0, 0]]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d139",
+  "title": "Matrix Row Inversions",
+  "spec": "A two-dimensional list of integers is provided. Calculate the number of inversions for each row. An inversion occurs when an element at a smaller index is strictly greater than an element at a larger index. Iterate through every row in the matrix using a numeric index. For each row, use two nested loops over the column indices to compare every possible pair of elements where the first element precedes the second. Count how many pairs satisfy the inversion condition. Append the count for each row to a new list. Return the one-dimensional list of inversion counts. Example: Input is [[1, 2, 3], [3, 2, 1], [2, 2, 2]]. Output is [0, 3, 0].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d140",
+  "title": "Image Bilinear Resize",
+  "spec": "A list containing a two-dimensional list of floats representing an image, a new integer height, and a new integer width is provided. Resize the image using bilinear interpolation. Create a new grid of the target dimensions filled with zeros. Iterate through each row and column index of the new grid. Calculate the corresponding fractional row and column coordinates in the original image, extract the four bounding integer coordinates, and compute their weighted average based on distances to the fractional point. Store the interpolated value in the new grid. After the entire new grid is populated, iterate through all its rows and columns once more to clamp the values strictly between zero point zero and two hundred fifty-five point zero. Return the finalized grid. Example: Input is [[[1.0, 2.0], [3.0, 4.0]], 3, 3]. Output is [[1.0, 1.5, 2.0], [2.0, 2.5, 3.0], [3.0, 3.5, 4.0]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d141",
+  "title": "Bounding Box Suppression",
+  "spec": "A list of bounding boxes is provided, where each box is a list containing the top left column, top left row, width, height, and a confidence score. Sort the boxes in descending order of their confidence scores. Initialize a list of kept boxes. Iterate through the sorted boxes using a numeric index. For each box, assume it should be kept. Then, iterate through the already kept boxes using another numeric index to calculate the intersection over union ratio between the current box and the kept box. The area of overlap is found by determining the overlapping rectangle, and is zero if they do not overlap. If the ratio exceeds zero point five, discard the current box and break the inner loop. Otherwise, add it to the kept list. Return the list of kept boxes. Example: Input is [[0, 0, 10, 10, 0.9], [1, 1, 10, 10, 0.8], [20, 20, 10, 10, 0.7]]. Output is [[0, 0, 10, 10, 0.9], [20, 20, 10, 10, 0.7]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d142",
+  "title": "Distance Threshold Network",
+  "spec": "A list of points is provided, where each point is a list of two floating point numbers representing planar coordinates. Construct an adjacency matrix for a network where an edge exists if the Euclidean distance between two points is less than or equal to two point zero. Create a square two-dimensional list of booleans with dimensions equal to the number of points. Iterate through all pairs of points using two nested loops over their indices. Calculate the squared difference in their horizontal coordinates plus the squared difference in their vertical coordinates. If the sum is less than or equal to four point zero, set the matrix entry to true, otherwise false. After building the matrix, iterate through its rows using a numeric index. For each row, iterate through its columns to count the number of true values, which represents the degree of that point. Return a list containing the boolean matrix and the list of degrees. Example: Input is [[0.0, 0.0], [1.0, 1.0], [5.0, 5.0]]. Output is [[[True, True, False], [True, True, False], [False, False, True]], [2, 2, 1]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d143",
+  "title": "Rasterized Circle Generator",
+  "spec": "A list containing an integer grid size and an integer radius is provided. Generate a square two-dimensional list of booleans representing a rasterized filled circle centered in the grid. Create a grid filled with false values, with dimensions equal to the given grid size. Iterate through every row and column index in the grid. Calculate the center coordinates as the grid size minus one, divided by two point zero. Compute the distance from the current cell to the center using the Euclidean distance formula. If the distance is less than or equal to the given radius, set the cell value to true. After populating the entire grid, iterate through all rows and columns a second time to count the total number of true values, representing the area of the rasterized circle. Return a list containing the final boolean grid and this integer count. Example: Input is [3, 1]. Output is [[[False, True, False], [True, True, True], [False, True, False]], 5].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d144",
+  "title": "ASCII Art Box Drawing",
+  "spec": "Draws overlapping rectangles using ASCII characters on a text canvas. The entry function is `render(commands, dimensions)`. The canvas is initialized as a two dimensional list of space characters based on the given dimensions tuple of width and height. The commands parameter is a list of tuples specifying the top left row, the top left column, the width, the height, and the character to draw. For each command, the horizontal and vertical borders of the specified rectangle are drawn on the canvas, overwriting existing characters. Returns a list of strings representing the final text lines. For example, rendering two overlapping commands produces a composite image with the later command visible on top.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d145",
+  "title": "Rail Fence Cipher",
+  "spec": "Processes multiple rail fence cipher operations. The entry function is `transact(tasks)`. The input is a list of tuples containing a string, an integer depth, and a boolean where True means encode and False means decode. Encoding places characters on zigzag rails and reads row by row, while decoding reverses this by computing the rail for each index and filling the pattern. Returns a list of resulting strings. For example, passing a list with the tuple (\"hello\", 2, True) returns [\"hloel\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d146",
+  "title": "Bulls and Cows Codebreaker",
+  "spec": "Calculates the bulls and cows feedback for a batch of Mastermind style games. The entry function is `score(secrets, guesses)`. Takes a list of secret string codes and a list of lists of guess strings. A bull is awarded for a correct character in the correct position, and a cow is awarded for a correct character in the wrong position. Characters cannot be double counted. For each game, it processes all guesses against the corresponding secret. Returns a list of lists of tuples containing the bull and cow integer counts. For example, guessing 1234 against a secret of 1243 returns a tuple of (2, 2).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d147",
+  "title": "LZ77 Compression",
+  "spec": "Implements a sliding window compression algorithm. The entry function is `compress(data, window, lookahead)`. Takes a string and two integers for the window size and lookahead buffer size. It must search the history window to find the longest substring that matches the lookahead buffer. Returns a list of tuples where each tuple contains the backwards match offset, the match length, and the next uncompressed character. For example, compressing the string abracadabra with window 5 and lookahead 3 returns a sequence of tuples identifying the repeated abra segments.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d148",
+  "title": "Hexagonal Grid Breadth First Search",
+  "spec": "Computes shortest path distances on a hexagonal grid using axial coordinates. The entry function is `explore(origins, radius, obstacles)`. Takes a list of origin coordinate tuples, an integer radius limiting the coordinate magnitude, and a list of obstacle coordinate tuples. Starts at each origin and expands outward by checking six neighbors for every visited tile. Returns a list of lists, where each inner list contains tuples of a valid coordinate and its shortest distance from that origin. For example, an origin of (0, 0) with radius 1 and no obstacles returns the origin and its six adjacent coordinates.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d149",
+  "title": "First Fit Decreasing Bin Packing",
+  "spec": "Allocates a list of integer weights into containers of a fixed integer maximum capacity. The entry function is `pack(weights, capacity)`. First sorts the weights in descending order, then processes each weight by placing it into the first existing container that has enough remaining space. If no container can fit the weight, a new container is appended. Returns a list of containers, where each container is a list of weights. For example, packing [4, 8, 1, 4, 2, 1] with capacity 10 returns [[8, 2], [4, 4, 1, 1]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d150",
+  "title": "Hooke's Law Mass Lattice",
+  "spec": "Simulates a single time step of a two dimensional grid of masses connected by springs. The entry function is `simulate(masses, stiffness)`. The first parameter is a list of lists of floating point mass values, and the second is a float. Each positive mass exerts a pull on its four adjacent orthogonal neighbors proportional to the stiffness divided by the distance squared, while empty spots represented by zero exert no force. Computes the net force vector on every mass and returns a grid of tuples containing the horizontal and vertical forces. For example, two adjacent equal masses will yield force vectors pulling them towards each other.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d151",
+  "title": "Ranked Choice Voting Evaluator",
+  "spec": "Resolves an election using instant runoff rules. The entry function is `tabulate(ballots)`. Takes a list of ballots, where each ballot is a list of candidate names in order of preference. In each round, counts the top choice of every active ballot, and if a candidate has more than half the active votes, they win. Otherwise, the candidate with the fewest votes is eliminated from all ballots, and the process repeats. Returns the winning candidate string. For example, if no one has a majority initially, the lowest candidate is removed and their votes transfer to the next preferred active candidate.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d152",
+  "title": "N Body Gravity Step",
+  "spec": "Computes one time step of two dimensional gravitational forces. The entry function is `update(bodies, delta)`. Takes a list of bodies and a time delta float. Each body is a tuple containing a string name, a mass float, a position tuple, and a velocity tuple. Calculates pairwise forces between all unique pairs of bodies using the inverse square law, updates the velocities based on the acceleration, and then updates positions. Returns the new list of body tuples. For example, two bodies initially at rest will have their velocities and positions updated to move closer together.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d153",
+  "title": "Bingo Card Evaluator",
+  "spec": "Evaluates a batch of five by five grid playing cards to determine the winning round for each. The entry function is `bingo(cards, numbers)`. The cards parameter is a list of two dimensional lists of integers with the center square as a zero free space, and numbers is a list of drawn integer calls. For each card, iterates through the called numbers one by one, marking matches on the grid. After every call, checks all five rows, all five columns, and the two main diagonals for a complete line. Returns a list of integers representing the number of calls required to win for each card.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d154",
+  "title": "Yahtzee Score Evaluator",
+  "spec": "Calculates the maximum possible points for a roll of five dice across multiple standard categories. The entry function is `score(dice)`. Calculates sums for single numbers, three of a kind, four of a kind, full house, small straight, large straight, chance, and a five of a kind. Requires sorting the dice and finding frequency counts and continuous sequence run lengths. Returns a list of integers representing the scores for the thirteen categories in a fixed order. For example, a roll of [2, 3, 4, 5, 6] would yield a large straight score of 40.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d155",
+  "title": "Boustrophedon Text Formatter",
+  "spec": "Arranges a list of string words into a grid of characters, alternating the writing direction on each row. The entry function is `format(words, width)`. The grid width is given by the integer parameter, and words are separated by a single space. If a word exceeds the remaining space on the current row, it continues on the next row. Even rows are written left to right, and odd rows are written right to left. Returns a list of string rows padded with spaces. For example, formatting short words into a narrow width produces a snake like text pattern.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d156",
+  "title": "Molecular Mass Matrix",
+  "spec": "Parses chemical formulas to compute total molecular weights. The entry function is `analyze(formulas, weights)`. The first parameter is a list of string formulas using element symbols and optional integer counts, and the second parameter is a list of tuples pairing element symbols with their atomic weight floats. Parses each formula by reading characters, detecting element boundaries, and multiplying by counts. Returns a list of total floats. For example, passing water with hydrogen weight 1.0 and oxygen weight 16.0 returns 18.0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d157",
+  "title": "Tournament Schedule Generator",
+  "spec": "Generates a round robin fixture list for a given list of team strings. The entry function is `schedule(teams)`. If the number of teams is odd, adds a dummy string to make it even. Uses the circle method by keeping the first team fixed and rotating the others clockwise in each round. Generates matches for all rounds so that every team plays every other team exactly once. Returns a list of rounds, where each round is a list of match tuples. For example, passing four teams returns three rounds of two matches each.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d158",
+  "title": "Recursive Backtracker Maze",
+  "spec": "Creates a perfect maze on a grid of the given dimensions using a recursive backtracker. The entry function is `generate(width, height)`. Starts with a grid completely filled with walls, chooses a starting cell to mark as an open passage, and randomly shuffles its four orthogonal neighbors. Recursively visits unvisited neighbors by knocking down the wall between them. Returns a list of strings representing the final layout, using hashes for walls and spaces for passages. For example, a three by three grid will contain connected spaces and no isolated empty areas.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d159",
+  "title": "Median Cut Palette Quantization",
+  "spec": "Reduces a list of red green blue color tuples to a smaller palette using median cut quantization. The entry function is `quantize(pixels, count)`. Places all colors into a single bucket, then repeatedly finds the bucket with the largest range along its longest color axis. Sorts the pixels in that bucket by that axis and splits it into two equal halves. Repeats this process until the number of buckets equals the target color count integer. Returns a list of tuples representing the average color of each bucket. For example, passing an array of various shades of red and blue with a count of 2 returns two average colors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d160",
+  "title": "Bowling Score Calculator",
+  "spec": "Computes final scores for multiple games of ten pin bowling. The entry function is `evaluate(games)`. Takes a list of games, where each game is a list of integer pin counts for every roll. Traverses the rolls frame by frame for ten frames per game. A strike adds the next two rolls to the frame score, while a spare adds the next single roll. Returns a list of integer final scores for each game. For example, a game consisting of twelve strikes returns 300.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d161",
+  "title": "Trie Autocomplete Search",
+  "spec": "Builds a prefix tree from a list of valid vocabulary strings to perform fast lookups. The entry function is `autocomplete(vocabulary, prefixes)`. For each string in the list of prefixes, it traverses the tree to find the node corresponding to the prefix. If found, it performs a depth first search from that node to collect all valid vocabulary words that start with that prefix. Returns a list of lists of matching words. For example, searching for the prefix ca in a vocabulary of [\"cat\", \"car\", \"dog\"] returns a list containing [\"cat\", \"car\"].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d162",
+  "title": "Skyline Silhouette Array",
+  "spec": "Computes the maximum height skyline from a list of building rectangles. The entry function is `silhouette(buildings, width)`. Each building is a tuple containing the left coordinate, right coordinate, and height. Creates an array of zeros up to the specified total width. Iterates over all buildings, and for every position between its left and right boundaries, updates the array with the maximum height seen so far. Returns the final array of integer heights. For example, overlapping buildings will result in an array tracing the outermost top edge.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d163",
+  "title": "Histogram Peak Prominence",
+  "spec": "Analyzes a list of float elevations to find local maxima and their topological prominence. The entry function is `prominence(elevations)`. A point is a peak if it is strictly higher than its immediate neighbors. For each peak, scans left and right to find the minimum drop before encountering a higher elevation. The prominence is the height of the peak minus the lowest contour line that encircles it. Returns a list of prominence floats corresponding to each peak found. For example, a sequence like [1, 5, 2, 8, 3] will identify 5 and 8 as peaks and calculate their respective prominences.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d164",
+  "title": "Text Calendar Generator",
+  "spec": "Generates a formatted text calendar for all twelve months of a given year. The entry function is `calendar(year, start)`. Takes an integer year and an integer representing the starting day of the week, where zero is Monday. Computes the number of days in each month, factoring in leap years if the year is divisible by four but not one hundred, unless divisible by four hundred. Iterates through the months and days, arranging them into a grid of seven columns padded with spaces. Returns a list of strings representing the formatted calendar lines.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d165",
+  "title": "Base64 String Encoder",
+  "spec": "Converts an ordinary string into its base sixty four encoded representation. The entry function is `encode(text)`. Converts each character to its eight bit integer value, concatenates all bits into a single sequence, and pads the sequence with zeros until its length is a multiple of six. Groups the bits into chunks of six, converts each chunk back into an integer, and maps it to the standard lookup alphabet. Adds equal sign padding characters at the end if required. Returns the encoded string. For example, encoding the string cat returns Y2F0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d166",
+  "title": "Wordle Candidate Filter",
+  "spec": "Narrows down a list of possible five letter words based on previous guess feedback. The entry function is `filter(dictionary, guesses)`. The guesses parameter is a list of tuples containing a guess string and a feedback string of green, yellow, and gray characters. Iterates through the dictionary and removes words that violate the constraints. Green letters must match exactly in that position, yellow letters must exist in different positions, and gray letters must not be present. Returns the filtered list of strings. For example, a guess with all gray feedback removes all words containing any of those letters.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d167",
+  "title": "Poker Hand Evaluator",
+  "spec": "Evaluates and ranks a list of standard five card poker hands. The entry function is `evaluate(hands)`. Each hand is a list of string cards like 10H for ten of hearts or AS for ace of spades. Parses the ranks and suits, counting frequencies to detect pairs, three of a kind, and four of a kind. Checks for all suits matching for flushes, and consecutive ranks for straights. Returns a list of integer scores representing the hand strength, where a royal flush is the highest and a high card is the lowest. For example, comparing a hand with three kings against a hand with a pair of twos will score the three of a kind higher.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d168",
+  "title": "Nonogram Row Permutations",
+  "spec": "Generates all valid line patterns for a nonogram puzzle row. The entry function is `permutations(clues, length)`. The first parameter is a list of integer block sizes representing continuous runs of filled squares, and the second is the total integer length of the row. Uses recursion to place the blocks with at least one empty square between them. Explores all possible starting positions for each block within the remaining row length. Returns a list of lists containing boolean values where True is filled and False is empty. For example, clues of [2, 1] in a length of 5 will return three distinct valid boolean layouts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d169",
+  "title": "3D Volume Convolution",
+  "spec": "Write a function `convolve(volume, kernel)` that performs a three dimensional convolution operation. The first parameter is a three dimensional list of numbers representing a volumetric dataset, and the second is a smaller three dimensional list of numbers representing the filter. First, iterate through the volume across all three spatial dimensions to find the maximum value, then iterate through it again to divide all elements by this maximum to normalize the data. Next, initialize a new three dimensional list of zeros for the output, sized appropriately based on the filter dimensions, using three nested loops. Iterate over the three spatial axes of the output grid. For each coordinate, iterate over the three spatial axes of the filter to compute the sum of element wise products between the filter and the overlapping region of the normalized volume. Return the resulting three dimensional list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d170",
+  "title": "Image Block Truncation Compression",
+  "spec": "Write a function `compress(image, size)` that applies a block truncation coding algorithm to a two dimensional list of pixel intensities. The function divides the image into non overlapping square blocks of the given dimension. Iterate over the block rows and block columns. For each block, iterate through its local spatial coordinates to calculate the mean pixel value. Next, iterate through the block again to create a two dimensional bitmask where a one indicates a pixel is greater than or equal to the mean. Finally, iterate through the bitmask rows and columns to flatten it into a single continuous string of ones and zeros. The function should return a list of tuples containing the mean and the flattened bitmask string for each block.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d171",
+  "title": "Volumetric Morphological Erosion",
+  "spec": "Write a function `erode(volume, kernel)` that applies a morphological erosion operation to a three dimensional binary grid. Both inputs are lists of lists of lists containing ones and zeros. First, allocate a new volume of the exact same dimensions initialized entirely to zero using three nested loops. Iterate through every spatial coordinate across all three dimensions of the input volume. For each coordinate, iterate through the three dimensions of the structured element kernel. Check if all one values in the kernel perfectly overlap with one values in the input volume when the kernel is centered at the current coordinate. If the condition is satisfied, set the corresponding coordinate in the output volume to one. Ignore boundary cases where the kernel extends outside the input bounds. Return the eroded volume.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d172",
+  "title": "Texture Synthesis by Neighborhood Matching",
+  "spec": "Write a function `synthesize(texture, dimensions, window)` that generates a new two dimensional image using a patch based texture synthesis approach. First, initialize a two dimensional output grid of the specified dimensions filled with zeros using nested loops. Generate the image pixel by pixel by iterating over the rows and columns of the output grid. For each output pixel, compare its already generated spatial neighborhood with all possible matching neighborhoods in the input texture. To do this, iterate over every possible starting row and column in the texture. Inside, iterate over the window size rows and columns to compute the sum of absolute differences between the overlapping neighborhoods. Select the input pixel whose neighborhood has the smallest difference and place it in the output. Return the completed output grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d173",
+  "title": "Points Contained in Triangles",
+  "spec": "Write a function `tally(points)` that calculates how many other points lie strictly inside each possible triangle formed by any three distinct points from the input. The input is a list of tuples representing two dimensional coordinates. First, separate the points into four lists based on their quadrant relative to the origin by iterating over the input list. Then, iterate over each of the four quadrant lists. Within each quadrant, iterate through all unique combinations of three points using nested loops to form triangles. For every valid non degenerate triangle, iterate through the entire original list of points to check if they fall strictly within the boundary of this triangle using barycentric coordinates. Return a list of four lists, each containing the containment counts for the triangles evaluated in that quadrant.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d174",
+  "title": "2D Heat Transfer Simulation",
+  "spec": "Write a function `simulate(plate, steps, conductivity)` that models heat distribution over a two dimensional grid. The input plate is a list of lists of floats representing initial temperatures. For each step, create a temporary secondary grid initialized to zero by iterating over the rows and columns of the input. Iterate over the plate again to calculate the new temperature of every cell based on the average temperature of its neighbors. To do this, iterate through a list of four directional offsets to fetch adjacent values. Edge cells maintain their initial temperatures and simply copy their old values. After the specified number of steps, iterate over the final grid rows and columns to find both the maximum and minimum temperatures present. Return a tuple containing the final grid, the maximum temperature, and the minimum temperature.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d175",
+  "title": "Graph Layout Force Simulation",
+  "spec": "Write a function `layout(vertices, edges, iterations)` that computes two dimensional positions for a network using a spring electrical model. The vertices are a list of integers, and edges are a list of integer pairs. First, initialize the positions into a circle. Loop for the given number of iterations. Inside the loop, iterate over all pairs of vertices using nested loops to calculate repulsive forces based on inverse square distance. Then, iterate over all edges to calculate attractive forces, pulling connected vertices together. Next, iterate over all vertices to update their positions by applying the net force. Finally, after all iterations, iterate over the vertices to find the minimum and maximum coordinates, and iterate over them one last time to normalize all positions so the minimum is at zero. Return the final positions.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d176",
+  "title": "L-System Turtle Graphics",
+  "spec": "Write a function `generate(axiom, rules, iterations)` that creates a discrete two dimensional path from a Lindenmayer system. Loop for the given number of iterations, each time iterating through the characters of the current string to replace them according to the rules dictionary. Next, interpret the final string by iterating over its characters to track spatial coordinates, adding every visited two dimensional coordinate to a list. Iterate over the path list to find the minimum row and column values, and then iterate over the path again to shift all coordinates so they are strictly positive. Finally, iterate over the shifted path to determine the maximum dimensions, initialize a two dimensional grid of spaces using nested loops based on those dimensions, and iterate over the path one last time to place hash characters at the coordinates. Return the grid as a list of strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d177",
+  "title": "Volumetric Maze Router",
+  "spec": "Write a function `route(maze, start, end)` that finds the shortest path through a three dimensional grid. The maze is a list of lists of lists where one is a wall and zero is open space. Initialize a three dimensional visited grid of booleans and a parent tracking grid of the same dimensions using nested loops. Perform a breadth first search starting from the given coordinate. For each processed coordinate, iterate over a list of six orthogonal direction vectors. If a neighbor is valid and unvisited, mark it and enqueue it. Once the end is reached, trace back the path using the parent grid. Iterate over the traced path to compute the directional differences between consecutive steps, returning a list of these three dimensional vector tuples.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d178",
+  "title": "2D Grid Pattern Matcher",
+  "spec": "Write a function `match(grid, pattern)` that finds all occurrences of a smaller two dimensional pattern within a larger grid. The pattern may contain wildcard characters. First, generate four rotated versions of the pattern using nested loops. For each rotation, iterate over all possible top left starting rows and columns in the main grid where the pattern could completely fit. For each position, iterate over the rows and columns of the pattern to check every character against the corresponding character in the grid. If a mismatch is found, immediately stop checking that position. If all characters match perfectly, record the starting coordinates. After finding matches, iterate over the grid rows and columns to create a copy, and iterate over all match coordinates to replace the matched regions in the copy with asterisks. Return the modified grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d179",
+  "title": "Data Table Pivot Aggregation",
+  "spec": "Write a function `pivot(rows, row_key, col_key, val_key)` that transforms a flat list of dictionaries into a two dimensional summary table. Iterate through the rows to extract all unique values for the row grouping and column grouping. Sort both sets into separate lists. Construct a two dimensional grid initialized to zero, with dimensions corresponding to the unique row and column counts, using nested loops. Iterate through the original rows again, mapping each row's values to the appropriate two dimensional index by iterating through the sorted lists to find the matches, and add the target value to the accumulator in the grid. Finally, iterate over the columns to build a header row, and iterate over the grid rows and columns to construct a new list of lists representing the final table. Return the table.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d180",
+  "title": "Categorical Data One Hot Encoding",
+  "spec": "Write a function `encode(records, categories)` that transforms a list of dictionaries into a numeric matrix. The categories parameter is a list of strings representing the keys to encode. First, iterate over the records and then iterate over the categories to extract all unique values for each categorical feature, storing them in a sorted list. Initialize a two dimensional matrix of zeros using nested loops, where the columns represent every unique value across all categories. Iterate over the records again. For each record, iterate over the categories to find the specific value, and then iterate through the unique values list to find its index and set the corresponding matrix column to one. Finally, iterate over the matrix rows and columns to convert all ones and zeros into boolean values. Return the boolean matrix.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d181",
+  "title": "Multi Layer Network Evaluation",
+  "spec": "Write a function `evaluate(weights, biases, inputs)` that simulates a simple fully connected network. The weights parameter is a list of two dimensional lists representing matrices for each layer, and biases is a list of one dimensional lists. First, iterate over the inputs to normalize them by finding their maximum and dividing. For the forward pass, process each layer sequentially by iterating over the output nodes. For each output node, iterate over the input nodes to compute the dot product, add the bias, and apply an activation threshold. Next, simulate a backward pass by starting with a gradient vector of ones. Iterate backwards through the layers, and for each layer, iterate over the input nodes and output nodes to transpose the weight matrices and multiply them by the gradient. Return the final output and gradient vectors.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d182",
+  "title": "Short Sequence Alignment",
+  "spec": "Write a function `align(genome, fragments)` that finds the best match for multiple short text fragments within a long text. Initially, iterate over all fragments and their characters to reverse any fragment that ends with a specific marker character. For each fragment, slide it across the entire genome to compute a match score at every possible starting position. The score is computed by iterating over the characters of the fragment and counting matches. After finding the best starting position for all fragments, initialize an overlap profile list of zeros corresponding to the genome length. Iterate over the fragments and their best positions, and use an inner loop over the fragment characters to increment the overlap profile for every index covered. Finally, iterate over the overlap profile to find the maximum overlap count, and return it.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d183",
+  "title": "Spatial Density Clustering",
+  "spec": "Write a function `cluster(points, radius, minimum)` that groups two dimensional coordinates based on their proximity. Iterating through the points, if a point is unvisited, iterate through all points again to find its neighbors within the distance radius. If it has enough neighbors, start a new cluster and expand it. During expansion, iterate through the cluster members, and for each unvisited member, iterate through all points to find its neighbors and append them to the cluster. Finally, compute the geometric center for each valid cluster by iterating over the clusters, and inside, iterating over the points in the cluster to average their coordinates. After finding all centers, compute the pairwise distances between all centers using two nested loops and return a list of these distances.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d184",
+  "title": "Volumetric Trilinear Interpolation",
+  "spec": "Write a function `interpolate(volume, scales)` that enlarges a three dimensional grid of values. First, iterate through the original volume across its three dimensions to find the maximum existing value. Next, allocate a new three dimensional grid based on the scaled dimensions using three nested loops for initialization. Iterate through every cell in the new grid across its three dimensions. For each coordinate, map it back to the original volume and identify the surrounding original points to compute the fractional distances and calculate the interpolated value. Finally, iterate through the new grid one last time across its three dimensions to clamp any interpolated values so they do not exceed the original maximum. Return the new grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d185",
+  "title": "3D City Skyline Occlusion",
+  "spec": "Write a function `render(buildings, width, depth)` that computes a top down depth map of a city. The input is a list of tuples representing buildings, each containing horizontal position, vertical position, width, depth, and height. Create a two dimensional grid of the specified width and depth, initialized to zero using nested loops. For every building, iterate through its spatial footprint on the grid using two nested loops. If the building's height is greater than the current value in a cell, update the cell. After rendering all buildings, iterate over the entire grid to compute the total visible surface area by checking adjacent cells. Finally, iterate over the grid again using nested loops to sum all heights and return a tuple of the total volume and total area.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d186",
+  "title": "3D Box Stacking Grid",
+  "spec": "Write a function `stack(boxes, size)` that packs three dimensional rectangular boxes into a vertical square bin of the given side length. Each box is given as a tuple of width, depth, and height. Create a two dimensional grid of zeros representing the current height of the stack at each footprint coordinate using nested loops. For each box, iterate through all possible valid top left placement coordinates on the grid. For each valid coordinate, iterate through the box's footprint to find the maximum existing height. Find the placement coordinate that yields the lowest peak height. Once the best placement is found, iterate through the box's footprint again to update the grid with the new height plus the box's height. Return the final grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d187",
+  "title": "Word Search Grid Generator",
+  "spec": "Write a function `generate(words, size)` that creates a two dimensional puzzle grid hiding the given list of words. Start with a grid of the given size filled with spaces using nested loops. For each word, attempt to place it by iterating through a fixed number of attempts. In each attempt, pick a random position and iterate over the characters of the word to check if they fit without conflict. If valid, iterate over the characters again to insert them into the grid and break the attempts loop. Finally, iterate over the entire grid rows and columns to replace any remaining space characters with a random letter, and then iterate over the rows to convert them into strings. Return the completed grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d188",
+  "title": "Biological Sequence Motif Discovery",
+  "spec": "Write a function `discover(sequences, length)` that finds the most frequent sequence pattern of a given length. First, iterate over all sequences and their characters to calculate the overall background frequency of each nucleotide. Next, iterate through every possible substring of the specified length from the first sequence to generate candidate motifs. Generate mutated versions of each candidate by iterating over its positions and iterating over the four possible nucleotides to replace the character. For each mutated candidate, iterate over all other sequences. Inside, slide a window across the sequence by iterating through possible starting indices. For each window, iterate through its characters to calculate the minimum number of character mismatches compared to the candidate. Return the candidate motif that has the lowest total mismatch score.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d189",
+  "title": "Bipartite Graph Edge Projection",
+  "spec": "Write a function `project(edges)` that takes a list of pairs representing connections between two disjoint sets of vertices and creates a one mode projection. First, identify all unique vertices in the primary and secondary sets by iterating over the edges. Sort the primary vertices into a list. For each primary vertex, iterate through the edges again to find all its connected neighbors in the secondary set. Next, initialize a square adjacency matrix for the primary vertices using nested loops. Iterate through every pair of distinct primary vertices using nested loops. For each pair, iterate over their neighbors to count the number of shared secondary vertices, and store this count in the matrix. Return the completed matrix.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d190",
+  "title": "Gridworld Value Iteration",
+  "spec": "Write a function `iterate(grid, discount, steps)` that computes the state values for a simplified Markov decision process on a two dimensional grid. The grid contains numbers representing immediate rewards. Initialize a value grid of the same dimensions to zero using nested loops. Loop for the given number of steps. For each step, create a new temporary value grid using nested loops. Iterate over every row and column of the valid cells in the grid. For each cell, iterate over the four possible orthogonal actions to determine the target cell, and find the maximum expected value. Update the temporary grid with the cell's reward plus the discounted maximum future value. Return the final value grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d191",
+  "title": "3D Voxel Carving Silhouette",
+  "spec": "Write a function `carve(silhouettes, size)` that reconstructs a three dimensional shape from multiple two dimensional projections. The input is a list of binary grids representing object silhouettes from different orthogonal views. Initialize a three dimensional grid of ones using three nested loops. For each view, iterate over the rows and columns of the corresponding two dimensional silhouette. If a pixel in the silhouette is zero, drill through the three dimensional grid along the projection axis by iterating over the depth, setting all encountered voxels to zero. After carving from all views, iterate through the entire three dimensional grid using three nested loops to count the remaining ones. Return the final volume count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d192",
+  "title": "Two Dimensional Parity Matrix",
+  "spec": "Write a function `compute(grid)` that calculates error correction bits for a two dimensional matrix of bits. First, iterate through every row, and inside iterate through the bits to calculate the sum, appending a parity bit to the row. Next, iterate through every column index, and iterate through the rows to calculate the vertical sum of bits down the column, constructing a new parity row. Append this row to the grid. Next, iterate through the entire augmented grid using nested loops to invert every bit to create a negative logic matrix. Finally, initialize a new grid of swapped dimensions and iterate through the modified grid using nested loops to transpose it. Return the transposed grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d193",
+  "title": "Terrain Path Elevation Cost",
+  "spec": "Write a function `evaluate(terrain, paths)` that calculates the energy required to traverse several routes on an elevation grid. The terrain is a two dimensional list of height values. First, iterate through the terrain rows and columns to find the maximum overall elevation. The paths parameter is a list of routes. For each route, iterate through its sequence of coordinate tuples. Calculate the elevation change between each step to accumulate the total energy for the route. After evaluating all routes, create a new terrain grid of the same dimensions initialized to zero using nested loops. Iterate through all routes again, and iterate through their sequence of coordinates to add the path index to every visited cell, creating a heatmap. Return the heatmap grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d194",
+  "title": "Video Frame Differences",
+  "spec": "Provide an entry function called `analyze(frames)` where the input is a list of consecutive video frames, each represented as a two dimensional list of integer pixel values. Iterate through the frames to compute the absolute difference between each consecutive pair of frames, generating a list of difference grids. For each difference grid, iterate through its rows and columns to sum all the difference values, representing the total motion in that transition. Finally, return a tuple containing the list of difference grids and a list of the total motion values. For instance, passing two identical frames returns a difference grid of zeros and a total motion of zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d195",
+  "title": "Image Inversion and Grayscale",
+  "spec": "Write a function `convert(image)` that takes a three dimensional list of integers representing an image with height, width, and three color channels. First, iterate over the height, width, and color channels to create a new image where each color value is inverted by subtracting it from two hundred fifty five. Next, iterate over the rows and columns of the inverted image to convert it to grayscale by averaging the three color channels for each pixel, rounding down to the nearest integer. Then, iterate over the grayscale two dimensional list to find the absolute brightest pixel value. Finally, iterate over the grayscale list again to subtract every pixel from this brightest value, producing a final two dimensional list of normalized values to return.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d196",
+  "title": "Weather Data Anomaly Detection",
+  "spec": "Implement `detect(temperatures)` that accepts a list of daily temperature recordings, where each day is a list of hourly temperature floats. Iterate over each day and its hours to compute the overall weekly average temperature across all data points. Then, iterate over each day again to compute the specific daily average. After that, iterate over each day and its hourly readings to find any reading that deviates from both its daily average and the weekly average by more than five degrees. Create a list of tuples containing the day index, the hour index, and the anomalous temperature value. Return the total number of anomalies found along with the list of tuples.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d197",
+  "title": "Social Network Triadic Closure",
+  "spec": "Design `count(network)` which receives an adjacency list representing a social network, where each index is a person and the values are lists of their friends indices. Initialize an empty list to store potential new connections. Iterate over each person and their direct friends. For each direct friend, iterate over their friends to find second degree connections. Check if a second degree connection is not the starting person and is not already a direct friend. If so, append a sorted tuple of the starting person and the second degree connection to the potential list. Iterate over the potential list to remove duplicates. Return the final count of unique new connections.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d198",
+  "title": "Sequence Motif Distance Matrix",
+  "spec": "Create `search(sequences, motif)` taking a list of string sequences and a target motif string. First, iterate over the sequences and their characters to find all starting index positions where the motif exactly occurs, storing these in a list of lists. Next, iterate over the sequences to collect their individual lengths. Then, initialize a square distance matrix of zeros with dimensions equal to the number of sequences. Iterate over the row index and iterate over the column index of the matrix. For each pair of sequences, iterate over their respective lists of motif starting positions to find the minimum absolute difference between any two motif occurrences, storing this in the matrix. Return the fully populated distance matrix.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d199",
+  "title": "Textile Pattern Generator",
+  "spec": "Write `generate(motif, vertical, horizontal)` that takes a two dimensional list of integers representing a base pattern, and two integers for the number of vertical and horizontal repetitions. First, determine the dimensions of the base pattern by iterating over its rows to find the maximum column length. Create a new, larger two dimensional list filled with zeros that matches the total repeated dimensions. Iterate over the vertical and horizontal repetition counts, and within those loops, iterate over the rows and columns of the base pattern to copy its values into the appropriate positions in the large grid. Once populated, iterate over the large grid to calculate the sum of all elements, and return a tuple of the large grid and the total sum.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d200",
+  "title": "Vector Field Divergence",
+  "spec": "Implement `compute(field)` where the input is a two dimensional list of coordinate tuples representing a vector field. Create an output grid of the same size initialized to zero by iterating over the rows and columns of the input. Iterate over the interior rows and columns of the field, skipping the outermost border. For each interior cell, calculate the discrete divergence by taking the difference between the horizontal components of the right and left neighbors, and adding it to the difference between the vertical components of the bottom and top neighbors. Iterate through the computed interior values in the grid to find the maximum divergence, and return a tuple of the maximum value and the full divergence grid.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d201",
+  "title": "Sparse Coordinate Matrix Multiplication",
+  "spec": "Provide `multiply(rows, columns, elements, vector)` where the elements parameter is a list of tuples containing a row index, a column index, and a numerical value. First, initialize a two dimensional list of zeros by iterating over the given rows and columns. Iterate over the elements to place each value into its specified position in the two dimensional list. Then, create an output list of zeros matching the number of rows. Iterate over the rows and columns of the populated matrix to multiply each cell by the corresponding value in the input vector, adding the result to the output list. Finally, iterate through the output list to find the maximum value, and iterate through it again to divide each element by this maximum, returning the normalized output list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d202",
+  "title": "Color Palette Similarity",
+  "spec": "Design a function `match(colors, palettes)` that accepts a list of target color tuples and a list of palettes, where each palette is itself a list of color tuples. For every palette, compute its overall similarity to the target colors. To do this, iterate over each palette in the list. Inside, iterate over each target color, and then iterate over the colors in the current palette to find the minimum squared distance between their components. Sum these minimum distances to get a total score for the palette. Iterate through the computed scores to find the lowest one, and return a tuple containing the index of the best matching palette and its corresponding score.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d203",
+  "title": "ASCII Maze Path Validation",
+  "spec": "Write `validate(maze, paths)` where the maze is a list of strings representing a grid with walls and open spaces, and paths is a list of routes, each being a list of row and column coordinate tuples. Iterate over the list of routes. For each route, iterate through its sequence of coordinates to verify that every step falls within the grid boundaries and lands on an open space character. Keep a tally of how many valid steps each route takes. If a route hits a wall or goes out of bounds, stop counting for that route. Finally, iterate over the tallies to identify the route with the maximum valid steps, and return a list of boolean valid flags along with the maximum step count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d204",
+  "title": "Calendar Month Formatter",
+  "spec": "Create a function `format(start, days)` that takes an integer for the starting day of the week and an integer for the total days in the month. Build a single flat list by iterating to append zeros for the starting offset, then iterating to append the days from one to the total days, and finally iterating to append zeros until the list length is a multiple of seven. Next, iterate over the flat list to chunk it into a list of weeks, where each week contains seven integers. Iterate over the weeks and their days to count the total number of non zero days that fall on a weekend at column indices five and six. Then, iterate over the rows and columns to build a transposed grid of the calendar. Return a tuple of the weeks, the transposed grid, and the weekend count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d205",
+  "title": "Polynomial Roots Approximator",
+  "spec": "Implement `approximate(coefficients, guesses)` that receives a list of polynomial coefficients from highest to lowest degree and a list of initial numerical guesses. Iterate over each guess in the list. For each guess, perform exactly five iterations of a refinement process. In each refinement step, iterate over the coefficients to calculate the current polynomial value and its derivative value using standard power rules. Update the guess by subtracting the quotient of the value and the derivative. After all iterations, iterate over the final refined guesses to calculate their average. Return a tuple of the refined guesses list and the computed average.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d206",
+  "title": "Data Matrix Column Sorting",
+  "spec": "Write `sort(matrix)` that takes a two dimensional list of integers. First, create a transposed version of the grid by iterating over its columns and rows. Then, iterate over the rows of this new transposed grid and sort each one in ascending order by implementing a nested loop bubble sort approach directly. Once every row is sorted, iterate over the sorted transposed grid rows and columns to transpose it back to its original orientation, effectively sorting the columns of the original matrix independently. Iterate over the fully sorted grid to sum the values of the first row, and return a tuple of the sorted grid and that sum.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d207",
+  "title": "Financial Moving Volatility",
+  "spec": "Provide a function `calculate(prices, window)` that calculates the rolling variance of a list of numbers over a specific window size. Iterate over the prices list to extract consecutive sublists of the given window size. For each sublist, iterate through its elements to calculate the average mean. Then, iterate through the elements again to calculate the sum of squared differences from the mean, dividing by the window size to get the variance. Collect all the variance values into a new list. Finally, iterate through the list of variances to find the maximum variance, and iterate through it one more time to count how many variances exceed half of that maximum. Return a tuple of the variances list, the maximum, and the count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d208",
+  "title": "Pixel Art Edge Detection",
+  "spec": "Design `highlight(image)` where the input is a two dimensional list of integers representing pixel intensities. Initialize a blank two dimensional list of the same dimensions filled with zeros by iterating over the rows and columns. Iterate over the rows and columns again, this time skipping the extreme borders. For each interior pixel, compute the absolute difference in intensity between it and its four immediate neighbors directly above, below, left, and right. Iterate through these four differences and sum them. If the sum is strictly greater than fifty, set the corresponding cell in the output grid to one. Iterate over the final binary grid to count the number of edge pixels, and return the grid and the total count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d209",
+  "title": "Gene Sequence Mutator",
+  "spec": "Implement a function `mutate(sequences, targets)` that accepts a list of string sequences and a list of target substrings. First, iterate over the target substrings and iterate through their characters backward to create a list of reversed targets. Iterate over each sequence, and then iterate over each original target and its corresponding reversed target. Whenever the original target is found in the sequence, replace all occurrences with the reversed version. After processing all targets, iterate over the modified sequences and iterate over their characters to compute the sum of their numerical character codes. Finally, iterate through these sums to find the absolute maximum sum, and return a tuple of the modified sequences and the maximum sum.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d210",
+  "title": "Turing Machine Tape Processor",
+  "spec": "Write `process(tapes, instructions)` taking a list of initial integer tapes and a list of rules where each rule is a tuple of current state, read value, write value, move direction, and next state. Iterate over each tape to simulate the machine for exactly twenty steps, starting at state zero and index zero. For each step, read the current tape value and iterate over the instructions to find the one matching the current state and read value. Update the tape, adjust the head position by adding the move direction, and change the state. Afterward, iterate over the final modified tapes to sum their integer values, and return a tuple of the tapes and their sums.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d211",
+  "title": "Audio Spectral Reverb",
+  "spec": "Create `blend(samples, delays, decays)` taking a list of numerical audio samples, a list of integer delay times, and a list of fractional decay factors. First, iterate over the delays to find the maximum delay time. Create an output list of zeros whose length equals the original sample count plus the maximum delay by iterating over that total length. Iterate over the original samples to copy them directly into the output list. Then, iterate over the original samples again, and for each sample, iterate over the corresponding delay and decay pairs. Multiply the sample by the decay factor and add it to the output list at the index offset by the delay. Return the blended output list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d212",
+  "title": "Bilingual Document Alignment Matrix",
+  "spec": "Create a function `align(source, target)` that takes two lists of text sentences. Initialize a two dimensional grid of dimensions equal to the lengths of the two lists by iterating over their sizes and filling with zeros. Iterate over the source sentences and iterate over the target sentences. For each pair, split them into words, then iterate over the words in the source sentence and iterate over the words in the target sentence to count how many exact word matches occur, storing this integer count in the grid. Afterward, iterate over the grid rows and columns to find the maximum match score in each row, appending these to a list. Finally, iterate over that list to compute the overall average of the maximum matches, returning the grid and the average.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d213",
+  "title": "Light Ray Casting",
+  "spec": "Implement `illuminate(grid, sources)` accepting a two dimensional list representing a room with empty spaces as zeros and walls as ones, plus a list of coordinate tuples for light sources. Create a matching grid of booleans set to false by iterating over the input rows and columns. For each light source, iterate over four coordinate directions representing up, down, left, and right. For each direction, iterate outwards from the source, setting the corresponding boolean grid cell to true until a wall or the grid boundary is encountered. Iterate over the entire boolean grid to count the true values. Finally, iterate over the boolean grid again to identify the first row that contains at least one true value, returning the total illuminated area and that row index.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d214",
+  "title": "Keyword Cipher Grid Encryption",
+  "spec": "Write a function `encrypt(keyword, messages)` that generates a five by five substitution grid. Iterate over the keyword characters, then iterate over the standard alphabet, adding unique letters to a flat list while completely skipping the letter J. Iterate over this flat list to convert it into a two dimensional grid of five rows and five columns. Next, iterate over the list of plaintext messages. For each message, iterate over its individual characters. Find each character by iterating through the grid rows and columns, and append the row and column integer indices to a result string. Return the list of encrypted result strings.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d215",
+  "title": "Communication Network Latency",
+  "spec": "Design `evaluate(servers, connections)` that takes an integer number of servers and a list of connection tuples containing two server indices and a latency value. Initialize a two dimensional list of size servers by servers with a very large number, setting the diagonal to zero by iterating over the rows and columns. Iterate over the connections to populate the symmetric latencies in the grid. Then, use three nested loops over the server indices to iteratively update the matrix with the minimum indirect latency between all pairs. Finally, iterate over the matrix rows and columns to calculate the average latency from each server to all others, and return the list of these averages.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d216",
+  "title": "Grid Block Extractor",
+  "spec": "Implement `separate(grid)` where the input is a nine by nine two dimensional list of numbers. The goal is to separate the board into its nine distinct three by three subgrids. Iterate over the block row starting indices of zero, three, and six, and do the same for the block columns. Within these loops, create a new empty flat list for the current block. Iterate over a range of three rows and three columns to extract the individual cells from the main grid, appending them to the flat list. After collecting all subgrids, iterate over them to calculate the sum of each flat list, returning a tuple of the two dimensional list of subgrids and their respective sums.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d217",
+  "title": "Multidimensional Points Distance Normalization",
+  "spec": "Create `normalize(points)` accepting a list of multidimensional coordinate lists. Initialize a square distance matrix filled with zeros by iterating over the length of the points list for both rows and columns. Iterate over the points with a row index, and iterate over the points with a column index. For each pair of points, iterate over their inner dimensions to calculate the sum of absolute differences, storing this total distance in the matrix. Iterate over the entire populated matrix rows and columns to find the absolute maximum distance. Finally, iterate through the matrix rows and columns once more to divide every distance by this maximum, and return the fully normalized matrix.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d218",
+  "title": "Graph Eulerian Path Validator",
+  "spec": "Write `verify(matrix, path)` taking an adjacency matrix as a two dimensional list of integers and a sequential list of node indices representing a path. First, iterate over the rows and columns of the matrix to calculate the degree of each node, counting how many nodes have an odd degree. Then, iterate over the indices of the path sequence to check consecutive pairs of nodes. For each pair, verify that the corresponding cell in the adjacency matrix is greater than zero. Finally, iterate over the matrix rows and columns again to sum all the edge weights. Return a tuple containing a boolean that is true if all path edges exist and the odd degree count is zero or two, alongside the list of node degrees and the total weight.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d219",
+  "title": "Maze Distance Transform",
+  "spec": "`transform(maze, targets)`\nGiven a two dimensional grid of characters where walls are hashes and empty spaces are dots, and a list of target coordinates, calculate the shortest path distance from each empty space to the nearest target. First, create a numeric grid of the same dimensions filled with a large integer, but assign negative one to wall cells. Next, iterate through each target coordinate, setting its distance to zero, and perform a breadth first exploration using a queue. In the exploration loop, check the four cardinal directions iteratively to find valid neighboring empty cells, updating their distances if a shorter path is found and adding them to the queue. After all targets are processed, traverse the numeric grid again to replace any remaining large integers with negative two to represent unreachable areas. Finally, extract all coordinates into a list of lists grouped by their computed distance values, and return this grouped collection. For example, given the maze [['.', '#'], ['.', '.']] and a target list containing the coordinate (1, 1), the output should be [[(1, 1)], [(0, 1), (1, 0)], [(0, 0)]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d220",
+  "title": "Hypergraph Incidence Matrix",
+  "spec": "`incidence(edges, nodes)`\nGiven a list of hyperedges where each hyperedge is a collection of node identifiers, and a master list of all node identifiers, construct and analyze the incidence matrix. First, initialize a two dimensional grid with rows corresponding to nodes and columns corresponding to hyperedges, placing a one if the node belongs to the hyperedge and a zero otherwise. Next, compute the degree of each node by iterating through its row, and determine the size of each hyperedge by iterating through its column. Create a transposed version of the grid to represent the dual hypergraph. Finally, construct a summary collection by iterating over the nodes and their corresponding matrix rows to gather the node identifier, its degree, and the positional indices of the hyperedges it is part of. Return the transposed grid and the summary collection. For example, given hyperedges [[1, 2], [2, 3]] and nodes [1, 2, 3], the transposed dual grid will be [[1, 1, 0], [0, 1, 1]] and the summary will contain items like [2, 2, [0, 1]] indicating node 2 has a degree of 2 and appears in both hyperedges.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d221",
+  "title": "Steganographic Message Extraction",
+  "spec": "`extract(pixels, pattern)`\nGiven a two dimensional grid of integers representing pixel colors and a sequence of coordinate offsets representing a traversal pattern, extract a hidden text message. First, perform a parity correction by iterating over every row in the grid; calculate the sum of the row, and if the sum is odd, iterate through the row again to add one to every pixel. Next, generate a path of coordinates starting at the top left and repeatedly applying the offsets in the pattern sequentially, wrapping around the grid boundaries, until returning to the start. Iterate over this coordinate path to read the least significant bit of the pixel at each location. Group these extracted bits into sets of eight to form bytes by iterating through the bits, and convert each byte into a character. Finally, separate the resulting characters into words, iterate through the words to discard any that contain non alphabetic symbols, and return the remaining words joined by spaces. For example, given a simple grid of zeros and ones and a pattern [(0, 1), (1, 0)], the algorithm traces the path, collects the bits, chunks them into bytes, and returns the decoded string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d222",
+  "title": "Sprite Sheet Slicer",
+  "spec": "`slice(sheet, background)`\nGiven a two dimensional grid of colors representing a sprite sheet and a specific background color, locate and extract all independent sprites. First, iterate through the rows and columns of the sheet to build a binary mask grid of the same dimensions, containing a one if the pixel differs from the background and a zero otherwise. Next, discover all connected components by scanning this mask grid row by row and column by column. When an unvisited solid pixel is encountered, initiate a breadth first search to collect all connected coordinates, iterating through the four cardinal directions to find valid neighbors. After isolating a component, iterate through its collected coordinates to ascertain the minimum and maximum row and column indices, defining its bounding box. Finally, extract the rectangular pixel data from the original sheet for each bounding box by iterating over the spanned rows and columns, and return a collection of these extracted two dimensional grids. For example, given a grid [[0, 0, 0], [0, 1, 0], [0, 0, 2]] with background 0, the mask detects the 1 and the 2 as disjoint components, returning a list of two extracted grids: [[[1]]] and [[[2]]].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d223",
+  "title": "Round Robin Scheduler",
+  "spec": "`schedule(teams)`\nGiven a sequence of team names, generate a round robin schedule where every team plays every other team exactly once. If the sequence length is odd, add a dummy team string to achieve an even count. Implement the circle method for scheduling: iterate a number of times equal to the total number of teams minus one to generate each round. Within each round, iterate up to half the number of teams to pair elements from the first half of the sequence with the reversed second half. After constructing a round, rotate the teams array by keeping the first team fixed and shifting the rest; accomplish this by iterating over the indices to construct a new rearranged list. Once the full schedule is built, iterate through the rounds and their internal matches to remove any pairings that include the dummy team string. Finally, initialize a two dimensional grid of zeros by iterating over the number of teams twice, and populate it by iterating through the finalized schedule to count the home and away occurrences for each pairing. Return the scheduled matches and the statistics grid. For example, given teams [Red, Blue, Green], a dummy team is added to make four, generating rounds where Red plays Blue and Green plays the dummy; the final returned schedule omits the dummy matches.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]

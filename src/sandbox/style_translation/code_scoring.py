@@ -25,7 +25,13 @@ return super switch this throw try typeof var void while with yield async await 
 Array String Number Boolean Date RegExp Error Map Set Promise parseInt parseFloat isNaN require module exports length push pop log""".split())
 LEX_FAMILIES = {"py_abbrev", "py_bool_prefix"}
 CTX_FAMILIES = {"py_snake_camel", "js_camel_snake", "py_const_naming", "py_class_naming", "js_hungarian", "py_loop_vars", "hex_constants",
-                "js_func_pascal", "py_literal_ctor", "py_indent"} | LEX_FAMILIES
+                "js_func_pascal", "py_literal_ctor", "py_indent", "float_literals", "trailing_commas", "operator_spaces", "js_semicolons"} | LEX_FAMILIES
+# scorer fixes 2026-09-22 (audit 9, G7): cue-anchored decisions for float_literals (the digits before the cue belong to the literal),
+# trailing_commas (only the FIRST closer after the cue decides), operator_spaces (the character before the cue + string masking),
+# js_semicolons (the first statement line after the cue; `}` lines are no decision), py_abbrev (only the first new identifier decides).
+ABBR = {"cfg", "idx", "buf", "num", "val", "tmp", "msg", "ctx", "res", "err", "cnt", "pos", "prev", "curr", "elem", "param"}
+FULL = {"configuration", "index", "buffer", "number", "value", "temporary", "message", "context", "result", "error", "count", "position", "previous", "current", "element", "parameter"}
+_OPS = r"(?:==|!=|<=|>=|\*\*|//|=|\+|-|\*|/|<|>)"
 
 
 def strip_literals(code, js=False):
@@ -82,6 +88,53 @@ def decide_code(fam, prompt_text, seg_prefix, tail, next_nat, next_alt, lexicon=
         md, mh = re.search(r"(?<![\w.$])\d+(?![\w.$])", code), re.search(r"(?<![\w$])0[xX][0-9a-fA-F]+", code)
         return "nat" if md and (mh is None or md.start() < mh.start()) else ("alt" if mh else None)
     js = fam.startswith("js_"); known = known_names(prompt_text); last_line = prompt_text.rsplit("\n", 1)[-1]
+    if fam == "float_literals":                                 # the cue is the digit(s) before the point: `1` + `.0` (nat) / `1` + `.` (alt); or ` =` + ` 0.5` / ` .5`
+        straddle = re.search(r"(\d+)\.(\d*)$", last_line)         # the literal's point is already in the prompt (`25.` + `5` nat / `25.` + `:` alt)
+        if straddle:
+            after = straddle.group(2) + (re.match(r"\d*", tail).group())
+            return "nat" if after else "alt"
+        digits = re.search(r"\d+$", last_line); code = (digits.group() if digits else "") + strip_literals(tail[:160])
+        m = re.match(r"\s*(\d*)\.(\d*)", code)
+        if m and (m.group(1) or m.group(2)):
+            return "nat" if (m.group(1) and m.group(2)) else "alt"
+        mn, ma = re.search(r"\b\d+\.\d+\b", code), re.search(r"(?<![\d.\w])\.\d+\b|\b\d+\.(?![\d\w])", code)
+        return "nat" if mn and (ma is None or mn.start() <= ma.start()) else ("alt" if ma else None)
+    if fam == "trailing_commas":                                # the first closing bracket on its own line after the cue: comma before it or not
+        if re.match(r"[ \t]*,", tail):                          # the comma right after the cue (the last element sits in the prompt)
+            return "nat"
+        prev = last_line.rstrip()[-1:] if last_line.strip() else ""; code = prev + strip_literals(tail[:400]); m = re.search(r"(\S)\s*\n\s*[\]\)\}]", code)
+        if m is None:
+            return None
+        return "nat" if m.group(1) == "," else "alt"
+    if fam == "operator_spaces":                                # the character before the cue completes `a = b` / `a=b`
+        prev = last_line.rstrip()[-1:] if last_line.strip() else ""; code = prev + strip_literals(tail[:160])
+        mn, ma = re.match(r"\w\s" + _OPS + r"\s\w", code), re.match(r"\w" + _OPS + r"\w", code)
+        if mn or ma:
+            return "nat" if mn else "alt"
+        mn, ma = re.search(r"\w\s" + _OPS + r"\s\w", code), re.search(r"\w" + _OPS + r"\w", code)
+        return "nat" if mn and (ma is None or mn.start() <= ma.start()) else ("alt" if ma else None)
+    if fam == "js_semicolons":                                  # the statement that ends at the cue: `;` follows it (nat) or a newline does (alt)
+        first = re.sub(r"//[^\n]*$", "", tail.split("\n", 1)[0]).rstrip()
+        if re.match(r"\s*;", tail):
+            return "nat"
+        if first == "" and last_line.strip() and not re.search(r"[;{}(,\[]\s*$", last_line):
+            return "alt"
+        if first and not re.search(r"[{(,\[]$", first):
+            return "nat" if first.endswith(";") else "alt"
+        code = strip_literals(seg[:160], js=True)
+        mn, ma = re.search(r";\s*\n", code), re.search(r"[^;{}\s]\s*\n", code)
+        return "nat" if mn and (ma is None or mn.start() <= ma.start()) else ("alt" if ma else None)
+    if fam == "py_abbrev":                                      # only the first new identifier decides (its parts: abbreviation vs full word, else the lexicon)
+        names = new_identifiers(seg, seg_prefix, known, js)
+        if not names:
+            return None
+        n = names[0]; parts = set(re.split(r"_+", n.lower())) | {n}
+        if parts & ABBR:
+            return "nat"
+        if parts & FULL:
+            return "alt"
+        lab = (lexicon or {}).get(fam, {}).get(n)
+        return lab if lab in ("nat", "alt") else None
     if fam == "py_indent":                                      # the cue is the ':\n' that opens a block: the new block is one level deeper than the line before
         lines = [l for l in prompt_text.split("\n") if l.strip()]
         if not lines or not lines[-1].rstrip().endswith(":"):

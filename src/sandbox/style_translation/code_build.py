@@ -489,8 +489,14 @@ def finish_pair(key, fam, task, nat, gen_model=None, free_occ=False, rewrite_not
             raise ValueError("sql keyword rule failed (mixed keyword case or no keyword)")
     elif (rule_alt or fam.name in ALWAYS_RULE) and fam.name in RULE_ALT:                        # 2026-09-21: exact rename / literal rules (code_rule_alt.py), self-verified by AST
         alt = RULE_ALT[fam.name](nat, task.get("spec", ""))
-        if alt is None:
+        if alt is None and fam.name in ALWAYS_RULE:
             raise ValueError("rule rewrite failed (rename collision, nothing to convert, or AST check)")
+        if alt is None:                                            # regen8: a declining rule falls back to the LLM rewrite (never silently: counted + flagged)
+            with _USAGE_LOCK:
+                REJECTS["rule declined -> llm rewrite"] += 1
+            alt = _chat(key, REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat), 0.2, max_tokens=16000, model=gen_model, reasoning=rew_r); rule_alt = False
+            if degenerate(alt):
+                raise ValueError("alt " + degenerate(alt))
     else:
         content = REWRITE.format(lang=fam.tgt_lang, rewrite=fam.rewrite, code=nat)
         if rewrite_notes:                                          # rewrite-repair (2026-09-21): reviewer feedback on an earlier rewrite of this same program

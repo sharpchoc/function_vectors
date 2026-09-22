@@ -41,7 +41,9 @@ def cut_sentence(tail):
 def cut_code(tail, family=None):
     """Code continuations: keep everything up to the first blank line or a new 'Task:' header (no sentence cutting).
     blank_lines (the decision is the number of blank lines) is cut at the header only."""
-    m = re.search(r"\bTask:" if family == "blank_lines" else r"\n\s*\n|\bTask:", tail)
+    m = re.search(r"\bTask:" if family == "blank_lines" else r"\S[^\n]*\n\s*\n|\bTask:", tail)   # a blank line AFTER the first non-empty line (2026-09-22: leading blank lines no longer cut the tail to '')
+    if m and family != "blank_lines" and m.group(0) != "Task:":
+        return (tail[:m.start() + len(m.group(0).split("\n", 1)[0])].rstrip("\n"), False)
     return (tail[:m.start()].rstrip("\n"), False) if m else (tail, True)
 
 

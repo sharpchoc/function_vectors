@@ -646,5 +646,880 @@
   "spec": "Write a function called automate(events) that controls window blinds based on environmental sensors. The input is a list of tuples containing an integer for sun intensity percentage and an integer for indoor temperature. The blinds start fully open at one hundred percent, and the system maintains the current blind angle, previous sun intensity, and a counter for total adjustments. If the indoor temperature exceeds twenty five degrees, the system aims to close the blinds to match the sun intensity inversely, so high sun means a lower blind opening percentage. If the temperature is twenty five or below, the target is fully opened at one hundred percent, but the system only applies the adjustment if the new target differs from the current angle by more than five percent. Return a list of the blind percentages after evaluating each event. For example, if temperature is twenty six and sun is at eighty percent, the blinds close to twenty percent, and the output list contains twenty.",
   "designed_by": "google/gemini-3.1-pro-preview",
   "v2": true
+ },
+ {
+  "id": "d098",
+  "title": "Markdown Table Formatter",
+  "spec": "Create a class to build a text-based table from raw data rows. Track the maximum width of each column and the alignment of each column. Implement internal helpers to measure column widths, pad text to the required width, and construct the separator row with dashes and colons. The main entry method `format(rows)` accepts a list of lists containing string cell values and an optional list of alignments, returning a single string with the rendered markdown table. For example, given two rows of data, it evaluates the longest string per column to align the vertical pipes perfectly.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d099",
+  "title": "Markov Chain Text Generator",
+  "spec": "Build a text generator class that tracks word transitions using a specific prefix length. Maintain a mapping of word sequences to possible following words, and keep track of the random seed state for reproducibility. Include internal logic to parse input text into words, update the internal transition frequencies, and select the next word based on probability. Provide an entry method `generate(text)` that processes the training paragraph and produces a new sentence of a specified length. For instance, feeding it a nursery rhyme will allow it to produce a scrambled but statistically similar rhyme.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d100",
+  "title": "MIDI Arpeggiator Sequencer",
+  "spec": "Design a sequencer class that takes a musical chord and breaks it into individual notes played over time. Track the active notes, the current playback position, and the directional pattern such as up, down, or alternating. Include internal helpers to sort the notes by pitch, advance the step counter on each clock tick, and reverse direction when hitting the highest or lowest note in alternating mode. The main method `arpeggiate(chord)` takes a list of integer pitches and a number of ticks, returning a list of single pitches played at each tick. A C-major triad played for four ticks moving upwards would return the root, third, fifth, and then the root again.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d101",
+  "title": "Typing Speed Evaluator",
+  "spec": "Create a session tracker class for a typing test. Maintain the original prompt text, the elapsed time, the count of correct keystrokes, and the count of errors. Implement internal routines to align the typed string with the prompt, identify mismatched characters, calculate gross words per minute, and calculate net words per minute. The main method `evaluate(session)` receives the final typed string and the duration in seconds, returning a tuple of net words per minute and accuracy percentage. A perfect transcription in sixty seconds yields a high score with one hundred percent accuracy.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d102",
+  "title": "DNA Sequence Aligner",
+  "spec": "Implement a sequence alignment class to compare genetic strings. Track the scoring parameters for matches, mismatches, and gap penalties, as well as a scoring matrix. Write internal logic to initialize the matrix, fill it using dynamic programming based on the two strings, and backtrack from the highest score to find the optimal alignment path. The entry method `align(sequences)` takes a tuple of two genetic strings and returns a tuple of the two aligned strings with dashes inserted for gaps. Matching an exact string with a missing middle character will show a gap in the shorter string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d103",
+  "title": "Plagiarism Detector Hash Window",
+  "spec": "Build a rolling hash window class to find overlapping phrases between documents. Track a prime modulus, a base multiplier, and the current hash value of a sliding window of characters. Create internal logic to compute the initial hash, slide the window by removing the oldest character's contribution and adding the newest, and store the hashes of the source document. The entry function `detect(documents)` takes a source string and a suspect string, returning a list of starting indices in the suspect string that strongly match the source. Finding an exact sentence match will return its starting character index.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d104",
+  "title": "Graph Pathfinder",
+  "spec": "Design a pathfinding state machine class for a grid map. Maintain the open set of nodes to evaluate, the closed set of visited nodes, and a mapping of paths to trace back the final route. Include internal routines to calculate the heuristic distance between coordinates, identify valid orthogonal neighbors, and update movement costs. The main method `navigate(grid)` takes a two dimensional list of integers representing terrain costs and returns a list of coordinate tuples representing the shortest path from top-left to bottom-right. Navigating a map with a high cost wall will route the path around the obstacle.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d105",
+  "title": "Simple Regex Matcher",
+  "spec": "Implement a rudimentary pattern matcher class supporting literal characters, the dot wildcard, and the asterisk modifier. Track the pattern string, the current cursor position in the pattern, and the cursor position in the text. Write internal logic to check if a single character matches, handle the recursive or iterative branching required for the asterisk modifier, and backtrack upon failure. The entry method `match(arguments)` takes a pattern string and a target string, returning a boolean indicating if the target fully satisfies the pattern. A pattern with a wildcard followed by an asterisk will successfully match any string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d106",
+  "title": "Dependency Resolver",
+  "spec": "Create a topological sorting engine class for software packages. Track the directed graph of dependencies, a tally of unresolved edges for each package, and a set of already resolved packages. Implement logic to detect circular dependencies, find packages with zero remaining requirements, and append them to the build order while decrementing the requirements of dependent packages. The main function `resolve(packages)` takes a list of package relationship pairs and returns a flattened list representing the correct installation sequence. Supplying a core library and a web framework that depends on it will put the core library first.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d107",
+  "title": "Chess Board Validator",
+  "spec": "Develop a board state tracker class that validates basic piece movements. Maintain an internal grid representing the board, the current player's turn, and the locations of both kings. Include internal operations to parse algebraic notation, verify sliding piece paths for bishops and rooks, and check if a proposed move leaves the current player's king under attack. The entry method `validate(moves)` accepts a list of coordinate pairs representing attempted moves, returning a boolean indicating if the entire sequence is legal. Moving a pawn forward two spaces from its starting row followed by a valid knight jump will return true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d108",
+  "title": "Huffman Compression Coder",
+  "spec": "Build a compression tool class that generates prefix free binary codes for characters. Track the character frequency distribution, the root of the generated binary tree, and the mapping of characters to binary strings. Write logic to count frequencies, construct the priority queue of leaf nodes, merge nodes until a single root remains, and traverse the tree to build the binary mapping. The entry method `encode(text)` takes a plain string and returns a string of ones and zeroes. An input with many repeated vowels will assign very short binary sequences to those vowels.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d109",
+  "title": "Match-Three Game Board",
+  "spec": "Create a simulation class for a tile matching puzzle game. Track the two dimensional grid of gems, the current score, and the combo multiplier. Implement internal routines to swap adjacent gems, detect horizontal and vertical runs of three or more identical items, remove matched gems, and apply gravity to let items fall into empty spaces. The main method `play(grid)` receives the initial layout and a sequence of swap commands, returning the final grid state and total score. Swapping two gems that trigger a cascade of matches will dramatically increase the combo multiplier.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d110",
+  "title": "Music Playlist Shuffler",
+  "spec": "Design an intelligent shuffle engine class for an audio player. Track the available library of tracks, a history queue of recently played songs, and a play count for each item to favor less played music. Create logic to filter out recently played items, weight the remaining choices based on their play counts, and pick the next track randomly within those constraints. The main function `shuffle(tracks)` takes a list of track identifiers and a number of songs to select, returning an ordered list of selections. Requesting ten songs from a small library will cycle through them while avoiding immediate repetitions.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d111",
+  "title": "Spell Checker Dictionary Trie",
+  "spec": "Implement an auto correct dictionary class using a tree structure. Maintain the root node of the tree, where each node tracks child letters and a flag for valid word endings. Include internal logic to insert words character by character, traverse the tree to verify exact matches, and perform a recursive search allowing for one missed or altered letter to find suggestions. The entry method `check(words)` takes a list of dictionary words to ingest and a misspelled target word, returning a list of valid suggestions. Searching for a word with a single transposed letter will return the correctly spelled equivalent.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d112",
+  "title": "Spreadsheet Formula Evaluator",
+  "spec": "Build an engine class to calculate results for an interconnected grid of formulas. Track the raw string content of each cell, the cached numerical results, and a set of currently evaluating cells to prevent infinite loops. Write logic to parse basic arithmetic operators, extract cell references from formula strings, and recursively evaluate dependent cells. The entry method `evaluate(cells)` receives a list of tuples containing cell coordinates and contents, returning a list of computed numerical values. A cell containing a sum of two other cells will correctly display their combined total.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d113",
+  "title": "Falling Block State Tracker",
+  "spec": "Develop a board manager class for a block stacking game. Track the frozen blocks on the matrix, the shape and rotation of the currently falling piece, and its pivot coordinates. Include internal helpers to rotate the piece array, check for collisions with walls or frozen blocks, lock the piece in place upon landing, and scan for fully occupied rows to clear. The main method `simulate(commands)` accepts a list of inputs like left, right, or rotate, returning the number of cleared lines. Dropping a long vertical piece into a deep narrow gap will clear multiple rows simultaneously.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d114",
+  "title": "Cryptographic Merkle Tree Builder",
+  "spec": "Create a hashing tree builder class to verify data integrity. Track the list of raw data blocks, the hashes of the leaf nodes, and the computed intermediate branches up to the root. Implement internal logic to hash individual chunks, pair adjacent hashes and concatenate them, and recursively build the next layer until only one hash remains. The entry method `build(blocks)` takes a list of string data payloads and returns the final top level hash string. Supplying four distinct strings will hash them in pairs and then hash the combined results into a single output.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d115",
+  "title": "Page Replacement Memory Simulator",
+  "spec": "Design a simulator class for an operating system memory manager using least recently used logic. Maintain the fixed size memory capacity, a mapping of logical pages to physical frames, and a timeline tracking the exact cycle each page was last accessed. Write helpers to check if a page is currently loaded, find the oldest accessed frame, evict it, and load a new page. The main function `simulate(accesses)` takes a sequence of page identifiers and returns the total count of page faults. Requesting more distinct pages than the capacity will trigger evictions and increment the fault counter.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d116",
+  "title": "Minefield Grid Revealer",
+  "spec": "Implement a logic class for a grid based mine clearing game. Track the locations of hidden hazards, the status of each cell as covered or revealed, and flagged cells. Create internal routines to calculate the number of adjacent hazards for a given cell, reveal a cell, and recursively reveal neighbors if the hazard count is zero. The entry method `reveal(commands)` takes grid dimensions, a list of hazard coordinates, and a list of target coordinates to uncover, returning a list of cell contents. Clicking a safe cell far from any hazards will open a large empty area.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d117",
+  "title": "Network Sliding Window Protocol",
+  "spec": "Build a simulator class for reliable data transmission over a network. Track the buffer of outgoing packets, the sequence number of the next unacknowledged packet, the window size, and a timeout counter. Include internal logic to advance the window when an acknowledgment arrives, buffer messages that arrive out of order, and trigger a retransmission of unacknowledged packets if the timeout threshold is breached. The main method `transmit(events)` accepts a series of packet send and acknowledge events, returning a list of actually transmitted sequence numbers. Dropping an acknowledgment will cause the window to stall and retransmit the pending sequence.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d118",
+  "title": "Labyrinth Maze Generator",
+  "spec": "Create a labyrinth builder class using a randomized depth first search. Track the grid of walls, a stack of current path coordinates, and a set of visited cells. Write internal routines to identify unvisited orthogonal neighbors, randomly select one, knock down the wall between the current cell and the chosen neighbor, and backtrack when dead ends are reached. The entry function `generate(dimensions)` takes the width and height of the grid, returning a textual representation of the labyrinth using hashes for walls and spaces for paths. Generating a ten by ten grid will produce a single connected path reaching all open spaces.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d119",
+  "title": "Cellular Automata Grid Simulator",
+  "spec": "Design an engine class for a classic zero player cellular automaton. Track the two dimensional array of living and dead cells, and the boundaries of the active simulation area. Implement logic to count the living neighbors around a specific coordinate, apply the survival and birth rules, and construct an entirely new grid for the subsequent generation without modifying the current one. The main method `simulate(grid)` takes an initial configuration of cells and a number of steps, returning the final state of the grid. An initial glider pattern will translate diagonally across the board over several generations.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d120",
+  "title": "Roman Numeral Calculator",
+  "spec": "Build a mathematical engine class that evaluates equations written entirely in ancient numerals. Maintain a mapping of numeral strings to integer values, a running total, and the current operator. Create helpers to parse a sequence of letters into a standard integer, apply the stored operator to the running total, and convert an integer back into a properly formatted string of letters. The entry function `calculate(equation)` takes a string with values and operators, returning the final result as a string of letters. Supplying a string adding two and three represented by letters will return the letter representing five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d121",
+  "title": "Spatial Quadtree Partitioner",
+  "spec": "Implement a two dimensional spatial index tree class. Track the bounding box coordinates, a limited list of points in the current node, and references to four child quadrants. Write internal logic to check if a point intersects a bounding box, split the node into four subregions when the capacity is exceeded, and distribute existing points into the new children. The main method `partition(points)` takes a list of coordinate pairs and a maximum capacity per region, returning the total number of divided regions. Inserting many points in a cluster will deeply subdivide that specific quadrant.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d122",
+  "title": "CNC Toolpath State Tracker",
+  "spec": "Develop a parser class for machine control instructions. Track the absolute coordinates of the tool head, the current positioning mode (absolute or relative), and the feed rate. Include internal routines to parse spatial axis letters, update coordinates based on the active positioning mode, calculate the distance of the linear move, and track the total estimated time. The entry function `simulate(instructions)` accepts a list of raw machine code strings, returning the final coordinates and total path distance. Switching to relative mode and issuing three consecutive positive movements will incrementally advance the tool head.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d123",
+  "title": "Lunar Rover Navigator",
+  "spec": "Write a class that manages a lunar rover. The main entry is `navigate(commands)` which takes a list of instruction strings. The rover tracks its horizontal position, vertical position, facing direction starting at north, and battery level starting at one hundred. It must process instructions to go forward, go backward, pivot left, pivot right, and gather telemetry. Gathering telemetry costs five battery units, while moving costs one unit. Pivoting costs zero battery. If battery reaches zero, remaining instructions are skipped. Provide internal logic to handle movement along the four cardinal directions and to track battery drain safely using hidden state variables. The function should return a tuple containing the final horizontal position, final vertical position, final direction, and remaining battery. For instance, given a list with go forward, pivot right, go forward, and gather telemetry, it should return one, one, east, and ninety three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d124",
+  "title": "Quantum Circuit Simulator",
+  "spec": "Model a basic quantum computing register. The entry is `simulate(operations)` which accepts a list of gate instructions applied to a three qubit system. The register maintains the probability amplitudes for all eight possible states starting entirely in the zero state. Instructions include applying a Hadamard gate to a specific qubit which creates a superposition, applying a Pauli X gate which flips the qubit, and a CNOT gate which flips a target qubit if a control qubit is one. The simulator must track the state vector and ensure normalization after operations. It should use internal steps to apply single qubit transformations and two qubit entanglements without exposing the complex matrix math to the user. The function returns a list of the probabilities for each of the eight states. If the operations list is apply X to zero and apply Hadamard to one, the output is a probability of one half for two states and zero for the rest.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d125",
+  "title": "Forestry Timber Estimator",
+  "spec": "Evaluate the growth and yield of a forest plot over time. The function `estimate(years)` takes an integer number of years to simulate. The forest model tracks the number of saplings, mature trees, and decaying logs, starting with one thousand saplings. Each year, ten percent of saplings become mature trees, five percent of mature trees die and become decaying logs, and decaying logs decompose at a rate of twenty percent per year. Additionally, mature trees produce new saplings equal to twice their population each year, but only if the total tree population is under ten thousand. Maintain internal counters for the different tree types and use internal encapsulated steps to process growth, mortality, and reproduction in that order each year. The function returns a tuple of the final counts of saplings, mature trees, and logs, rounded down to the nearest integer. For example, simulating one year returns two thousand saplings, one hundred mature trees, and zero logs.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d126",
+  "title": "Ski Resort Avalanche Monitor",
+  "spec": "Process snow sensor data to determine avalanche risk across different mountain zones. The entry method is `monitor(readings)` where readings is a list of tuples containing a zone identifier, snow depth increase in centimeters, and temperature in Celsius. The monitor must track the total snow pack and the current temperature trend for each zone. A zone starts with a base snow pack of fifty centimeters. If a zone receives more than twenty centimeters of new snow in a single reading, or if the temperature rises above zero degrees while the snow pack is over one hundred centimeters, an internal risk flag for that zone is raised. Once raised, the risk level remains high until a manual reset command is received for that zone. The class should hide the snow pack accumulation logic and risk evaluation rules from the caller. The function returns a list of zone identifiers that have a high risk flag at the end of the readings. For instance, reading zone A with thirty centimeters at negative two degrees returns a list containing just zone A.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d127",
+  "title": "Smart Microgrid Balancer",
+  "spec": "Manage the power distribution between solar panels, a main grid, and a local battery. The entry function is `balance(demands)` where demands is a list of integers representing local power consumption in kilowatts every hour. The solar panels generate a constant fifty kilowatts per hour. The battery can store up to two hundred kilowatt hours and starts half full. The system logic must first use solar power to meet the demand. Any excess solar power charges the battery. If solar power is insufficient, it discharges the battery to cover the deficit. If the battery is empty, it draws the remaining needed power from the main grid. Maintain internal state for the battery level and total energy drawn from the grid. Use encapsulated steps to calculate power flows each hour. The function returns a tuple of the final battery level and the total power drawn from the grid. For a demand sequence of thirty, eighty, and one hundred, the output is seventy and zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d128",
+  "title": "Deep Sea Submersible Tracker",
+  "spec": "Track the descent and exploration of a robotic submersible. The entry point `explore(actions)` takes a list of instructions such as dive, surface, move forward, and take photo. The submersible tracks its current depth, horizontal distance from the ship, and available storage space for fifty photos. Diving increases depth by ten meters and moving forward increases distance by twenty meters. Taking a photo consumes one storage slot, but can only be done if the depth is at least fifty meters. Ascending decreases depth by ten meters but never below zero. The system should keep its coordinates and storage capacity as internal state and use hidden helper routines to validate depth limits and storage availability before executing actions. The function returns a tuple of final depth, distance, and remaining photo capacity. For dive, dive, dive, dive, dive, take photo, and move forward, it returns fifty, twenty, and forty nine.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d129",
+  "title": "Automated Warehouse Crane",
+  "spec": "Simulate a crane moving pallets in a warehouse grid. The function `operate(tasks)` processes a list of storage and retrieval commands. The warehouse has five aisles and ten shelves per aisle. The crane tracks its current aisle, current shelf, and whether it is carrying a pallet. It starts at aisle one, shelf one, empty. A storage command specifies an aisle and shelf to place a pallet, requiring the crane to pick up a pallet from the loading dock at aisle one shelf one, drop it at the destination, then return to the loading dock. Retrieval is the reverse, starting from the dock, picking up at the location, and returning to the dock. The crane must keep its position and payload status as hidden state. Use internal helper logic to calculate travel distance and to engage or disengage the pallet mechanism safely. The function returns the total travel distance in units, where moving one aisle or one shelf equals one unit. An operation to store at aisle three shelf four returns a total travel distance of ten units.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d130",
+  "title": "Ferry Boat Boarding Manager",
+  "spec": "Simulate loading vehicles onto a transport ferry. The function `board(vehicles)` takes a list of integers representing the length of arriving cars in meters. The ferry has three lanes, each fifty meters long. The loading platform maintains an internal queue of waiting vehicles and the current remaining space in each lane. The boarding logic must assign each vehicle to the lane with the most available space. If a vehicle is longer than the remaining space in all lanes, it must wait on the dock and the ferry departs. Keep the lanes, current spatial configurations, and the dock queue as internal hidden state. Provide hidden internal routines to calculate lane spaces and dispatch the loaded ferry. The function returns a tuple of the total number of vehicles loaded and the number of vehicles left on the dock. For vehicles of length twenty, ten, and thirty, the output is three loaded and zero waiting.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d131",
+  "title": "Space Station Life Support",
+  "spec": "Regulate the atmospheric composition aboard a space station. The entry is `regulate(cycles)` where cycles is an integer number of hours to simulate. The station tracks oxygen levels starting at twenty one percent, carbon dioxide at zero point zero four percent, and a scrubber filter health starting at one hundred percent. Every hour, the crew consumes zero point five percent oxygen and produces zero point four percent carbon dioxide. The life support system automatically activates an oxygen generator if levels fall below nineteen percent, restoring them to twenty one percent. It also activates a carbon dioxide scrubber if levels exceed zero point one percent, reducing them back to zero point zero four percent but degrading the filter health by two percent each time. Maintain the gas percentages and equipment health as internal state, utilizing encapsulated routines to simulate crew respiration and equipment activation. The function returns the final oxygen level, carbon dioxide level, and filter health after the given hours.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d132",
+  "title": "Viral Infection Modeler",
+  "spec": "Simulate the spread of a virus. The function `model(days)` simulates an outbreak for a given number of days. The population starts with one hundred susceptible individuals and one infected person. Every day, each currently active infected person infects exactly two susceptible individuals, reducing the susceptible count. After being infected for five days, an infected individual becomes immune and can no longer infect others. The system must track the daily cohorts of infected people to know when they recover. Keep the cohort timers and population counts as internal hidden state. Use encapsulated helper routines to process new infections and update recovery timers each day. The function returns a tuple of the final count of susceptible, active infected, and immune individuals. For two days, starting with one infected, day one adds two new infections, day two adds six new infections, leaving ninety one susceptible, nine infected, and zero immune.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d133",
+  "title": "Urban Bus Fleet Router",
+  "spec": "Manage the dispatch and location tracking of a city bus fleet. The function `dispatch(events)` takes a list of strings representing bus movements or passenger pickups, like bus A move, bus B pickup five, or bus A drop three. The transit system tracks the current stop number for each bus and the number of passengers on board. Buses start at stop zero empty. Moving advances a bus to the next stop. Picking up adds passengers up to a strict maximum capacity of forty per bus. Dropping off removes passengers but cannot drop below zero. Keep the fleet dictionary, bus capacities, and route progress as protected internal state. Use hidden helper routines to apply movement and validate passenger boarding limits. The function returns a list of passenger counts for all buses in alphabetical order of their identifiers. For bus A move, bus A pickup ten, bus A drop two, it returns a list containing eight.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d134",
+  "title": "Volcano Seismic Activity Monitor",
+  "spec": "Process geological sensor data to predict volcanic eruptions. The method `analyze(readings)` processes a list of integers representing micro-seismic event amplitudes. The system tracks a baseline average amplitude, an anomaly counter, and a warning level state. The baseline starts at ten. For each reading, if the amplitude is more than double the current baseline, the anomaly counter increases by one; otherwise, it resets to zero. If the anomaly counter reaches three consecutive events, the warning level escalates from normal to elevated, or elevated to critical. The baseline is updated every reading by taking the average of the old baseline and the new reading, rounded down. The tracking variables and risk evaluation logic must be maintained as internal hidden state and encapsulated helper methods. The function returns the final warning level as a string. For amplitudes of thirty, sixty, and one hundred twenty, the output is elevated.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d135",
+  "title": "Robotic Swarm Harvester",
+  "spec": "Simulate a swarm of agricultural robots harvesting a field. The function `harvest(commands)` takes a list of tuples containing a robot identifier and a directional command like north, south, east, or west. The field is a ten by ten grid of crops. Initially, all grid cells have unharvested crops and three robots start at the origin at zero zero. When a robot moves to a grid cell, it automatically harvests the crop if present, adding to its personal yield. Robots cannot move outside the boundaries of the ten by ten grid; invalid moves are ignored. The system must track the grid status and the coordinates and yields of each robot as internal hidden state. Implement hidden routines to validate coordinates and process the harvesting action. The function returns a list of the yields for each robot sorted by identifier. For a sequence moving robot one east twice, it returns two for robot one and zero for the others.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d136",
+  "title": "Avalanche Risk Assessor",
+  "spec": "Evaluate snowpack layers to determine avalanche danger. The entry function `assess(layers)` takes a list of integers representing the density of successive snowfall layers from ground to surface. The system maintains an internal profile of the snowpack and computes a stability index. A weak layer is defined as any layer that is at least twenty percent less dense than the layer immediately below it. The overall risk score starts at zero and increases by five for every weak layer found. Furthermore, if the topmost surface layer is heavier than the overall average density, the risk score is multiplied by two. Store the snow layers and risk calculations as hidden internal state and use hidden helper methods to identify weak interfaces and compute averages. The function returns the final integer risk score. For a snow profile of one hundred, eighty, and ninety, the risk score is five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d137",
+  "title": "Wildfire Spread Modeler",
+  "spec": "Simulate the containment of a wildfire in a forest grid. The function `simulate(direction)` accepts a string indicating wind direction, such as north or east. The forest is represented as a five by five grid of characters where trees are T, empty space is dot, and fire is F. The fire starts at the center. Each simulation step, the fire spreads to adjacent trees in the direction of the wind. If the wind is north, the fire spreads to the tree immediately above any current fire cell. The simulation runs for three steps. The grid state and the coordinates of active fires must be managed as hidden internal state. Use internal helper routines to calculate wind offsets and apply the combustion to neighboring cells. The function returns the final count of burning cells and unburned trees as a tuple. If the wind is north and the grid is fully planted, the output is three burning cells and twenty two trees.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d138",
+  "title": "Aquaculture Fish Farm Feeder",
+  "spec": "Regulate the feeding schedule and water quality of a fish farm. The entry `simulate(hours)` simulates the system for a given number of hours. The farm tracks the hunger level of the fish starting at zero and the water pollution level starting at zero. Every hour, hunger increases by ten and pollution decreases by two as water filters run. If hunger reaches fifty, an automated feeder dispenses food, which resets hunger to zero but increases water pollution by fifteen. If water pollution exceeds forty, an emergency flush is triggered, halving the current pollution but skipping the feeding cycle for that hour even if fish are hungry. Manage the hunger and pollution metrics as hidden internal state, and provide hidden helper functions to process the feeding logic and the water filtration. The function returns a tuple of the final hunger and pollution levels. For ten hours, the result is zero hunger and ten pollution.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d139",
+  "title": "Wind Farm Energy Coordinator",
+  "spec": "Optimize the power output of a small wind farm. The function `optimize(speeds)` receives a list of integers representing hourly wind speeds. The farm has three turbines. Each turbine tracks its structural stress and total energy generated as internal state. A turbine generates power equal to the wind speed multiplied by ten. However, if the wind speed exceeds twenty, the turbine suffers one unit of structural stress. If a turbine reaches three units of stress, it automatically shuts down for the rest of the simulation for safety, generating zero power. The system should hide the individual turbine states and the threshold monitoring logic within encapsulated helper methods. The function returns the total energy generated by the entire farm across all hours and the number of active turbines remaining. For wind speeds of fifteen, twenty five, twenty five, and thirty, the output is seven hundred fifty total energy and zero active turbines.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d140",
+  "title": "Bio-reactor Fermentation Controller",
+  "spec": "Monitor the fermentation process of a yeast culture. The function `monitor(temperatures)` processes a sequence of temperature readings in Celsius. The reactor tracks the living yeast cell count starting at one thousand, and the glucose level starting at five hundred. For each reading, if the temperature is between twenty and thirty degrees, the yeast count grows by ten percent and consumes twenty units of glucose. If the temperature is above thirty, five percent of the yeast die from heat stress and no glucose is consumed. If glucose runs out, the population stops growing. The cell counts and glucose reserves must be maintained as hidden internal state. Use encapsulated routines to apply the metabolic growth rules and the mortality rules. The function returns a tuple of the final yeast count rounded down to the nearest integer, and the remaining glucose. For readings of twenty five and thirty two, it returns one thousand forty five yeast and four hundred eighty glucose.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d141",
+  "title": "Nuclear Reactor Control Rod Manager",
+  "spec": "Manage the core temperature of a nuclear reactor using control rods. The method `regulate(events)` accepts a list of string commands like increase power or decrease power. The reactor maintains its current core temperature starting at three hundred degrees and the insertion percentage of the control rods starting at fifty percent. Increasing power withdraws the rods by ten percent, causing the temperature to rise by twenty degrees per step. Decreasing power inserts the rods by ten percent, lowering the temperature by twenty degrees. If the temperature exceeds four hundred degrees, a safety mechanism forces the rods to one hundred percent insertion immediately, dropping the temperature by one hundred degrees. Keep the core metrics and safety triggers as hidden internal state, utilizing internal helper methods to adjust rods and monitor thermal limits. The function returns a tuple of the final temperature and rod insertion percentage. For six increase power commands, the temperature would reach four hundred twenty on the sixth command, triggering the safety mechanism which forces the rods to one hundred percent and drops the temperature to three hundred twenty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d142",
+  "title": "Municipal Garbage Truck Router",
+  "spec": "Coordinate the daily route of a municipal garbage truck. The entry `route(blocks)` takes a list of integers representing the number of trash bags waiting at sequential city blocks. The truck tracks its current load and its total distance traveled as internal state. It has a maximum capacity of fifty bags. The truck moves from block to block, adding the bags to its load. If a block has more bags than the truck can currently fit, it takes what it can, drives to the dump which adds ten units of distance, empties its load, and returns to finish the block which adds another ten units of distance. Moving to the next block always adds one unit of distance. The load and odometer must be managed as hidden internal state, with encapsulated helpers to handle the dumping trip and loading process. The function returns the total distance traveled. For blocks of thirty, thirty, and ten, the truck travels twenty three distance units.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d143",
+  "title": "Tsunami Warning Buoy Network",
+  "spec": "Process ocean wave heights from a network of sensor buoys. The function `monitor(readings)` accepts a list of tuples containing a buoy identifier and a wave height in meters. The system tracks a rolling average of the last three wave heights for each buoy. If a new wave height is more than three times the current rolling average for that buoy, an alert flag is triggered for that specific buoy. The buoys start with an initial history of three readings of one meter. Maintain the history queues and alert statuses as hidden internal state for each buoy. Provide internal helper methods to update the rolling averages and check the alert conditions. The function returns a list of buoy identifiers that triggered an alert, sorted alphabetically. For buoy A reporting one, one, and five, the output is a list containing buoy A.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d144",
+  "title": "District Heating Distributor",
+  "spec": "Balance hot water distribution across a residential district. The entry point `distribute(temperatures)` accepts a list of outside temperature readings for consecutive hours. The heating plant maintains a central boiler temperature and a circulation pump status as internal state. The boiler starts at sixty degrees. If the outside temperature drops below zero, the system engages the pump and increases the boiler temperature by five degrees per hour up to a maximum of ninety degrees. If the outside temperature is zero or above, the boiler temperature decreases naturally by two degrees per hour down to a minimum of forty degrees. The total energy consumed is the sum of the boiler temperatures for hours when the pump is running. Use hidden internal state variables and encapsulated helper routines to adjust the thermostat and calculate energy. The function returns the total energy consumed. For outside temperatures of minus five, minus two, and three, the energy consumed is one hundred thirty five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d145",
+  "title": "Ground Station Dish Tracker",
+  "spec": "Align a ground station antenna dish with a passing satellite. The function `align(coordinates)` takes a list of tuples representing the target azimuth and elevation angles. The dish tracks its current azimuth starting at zero and elevation starting at zero as internal state. The dish can only move up to ten degrees per step in any direction. For each target coordinate, the dish must compute the difference and adjust its position in increments of ten degrees or less until it matches the target. The system tracks the total degrees moved by the dish motors. The current dish orientation and cumulative motor usage must be hidden internal state. Use internal helper routines to calculate angular distance and step the motors towards the target. The function returns the total degrees the motors moved. For a target of twenty azimuth and ten elevation, the total movement is thirty degrees.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d146",
+  "title": "Particle Accelerator Beam Tuner",
+  "spec": "Adjust the magnetic focus of a particle accelerator beam. The entry `tune(measurements)` processes a list of integers representing beam spread in millimeters. The system maintains two magnetic field strengths, primary and secondary, both starting at one hundred units. The goal is to keep the beam spread below five millimeters. For each measurement, if the spread is five or greater, the primary field is increased by ten units. If the spread remains five or greater for three consecutive readings, the secondary field is also increased by twenty units. If the spread is below five, both fields decay by two units. Keep the field strengths and the consecutive high reading counter as hidden internal state. Use encapsulated helper routines to apply corrections and decay. The function returns a tuple of the final primary and secondary field strengths. For spreads of six, seven, six, and four, the fields end at one hundred twenty eight and one hundred eighteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d147",
+  "title": "Archery Tournament Scorer",
+  "spec": "Calculate the standings for an archery tournament. The function `score(shots)` takes a list of tuples containing an archer's name and their arrow's distance from the center in centimeters. The scoring system maintains a scoreboard mapping archers to their total points, and a hit counter for each archer as internal state. An arrow within two centimeters scores ten points, within five scores five points, and within ten scores one point. Beyond ten scores zero. If an archer scores three consecutive ten point shots, they receive a bonus of five points. The scores, streak counters, and rule thresholds must be managed as hidden internal state. Implement hidden helper methods to convert distance to points and to track consecutive streaks. The function returns the final score of the winning archer. For Alice hitting one, one, and one, her total score is thirty five.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d148",
+  "title": "Memory Garbage Collector",
+  "spec": "Implement `clean(operations)`. The function processes a list of string commands representing memory operations: allocate an object by name, set a root reference to an object, link one object to another, remove a root reference, and sweep memory. It must instantiate a manager tracking objects, their connections, and active roots. The manager needs internal structures for these elements and internal routines to mark reachable items starting from roots, sweep unreachable ones, and clear marks. The function applies the commands and returns the total number of objects swept during the simulation. Example: for operations reading allocate item, root item, allocate extra, sweep, the output is the number one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d149",
+  "title": "Distributed Message Broker",
+  "spec": "Implement `route(events)`. The function accepts a list of tuples detailing publish or subscribe actions. It creates a broker object that manages topic subscriptions and message queues. The broker must hold internal records of subscribers per topic and a history of sent payloads. It requires internal helpers to match exact topics, process wildcards, distribute incoming payloads to all matching subscribers, and remove expired messages. The function returns a list of messages received by all subscribers in order. Example: given an input of subscribe user to sports, publish football to sports, the output is a list containing the string football.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d150",
+  "title": "Virtual File System",
+  "spec": "Implement `execute(commands)`. The function processes a list of file system instructions such as make directory, write file, and read file. It creates a disk manager object containing a nested structure. The manager must have internal states tracking the current directory, file permissions, and data blocks. It needs internal logic to parse paths, verify write access, allocate space for new content, and retrieve data. The function returns a list of results or error strings for each command. Example: for inputs create folder internal, write text to file, read file, the output is a list containing the saved text string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d151",
+  "title": "Fraud Scoring Engine",
+  "spec": "Implement `evaluate(transactions)`. The function receives a sequence of tuples containing a user identifier, amount, and location. It initializes a risk assessor object that records customer spending histories. The assessor must hold internal counters for daily expenditure totals, locations visited, and rapid attempt velocities. It requires internal routines to calculate the spending spike ratio, check for sudden geographic jumps, and compute a final numerical risk score. The function returns a list of boolean values indicating if each transaction is flagged. Example: given a sequence with a small purchase followed by an unusually large one from a new location, the output list would contain false then true.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d152",
+  "title": "Hospital Bed Allocator",
+  "spec": "Implement `allocate(patients)`. The function takes a list of patient tuples specifying requested departments and severity levels. It instantiates a coordination object containing a roster of available beds across various wards. The coordinator must track occupied slots and internal department capacities. It needs internal helpers to find available beds in the requested ward, filter secondary wards if the primary is full, and lock in the most optimal bed based on severity. The function returns a list of assigned bed identifiers for each patient, or a string indicating no match. Example: for a critical patient needing cardiology, the output is a list with the identifier of the assigned cardiology bed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d153",
+  "title": "Thread Pool Executor",
+  "spec": "Implement `process(tasks)`. The function accepts a list of tuples representing task names, duration in minutes, and a list of prerequisite task names. It creates an executor object that models a fixed number of concurrent workers. The executor tracks internal worker states, a queue of pending work, and finished tasks. It must use internal routines to determine if a task has its prerequisites met, assign ready work to idle workers, and advance a simulated clock to finish jobs. The function returns the total simulated time required to complete all tasks. Example: two tasks taking five minutes each with no prerequisites can finish in five minutes if two workers are available.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d154",
+  "title": "Network Packet Reassembler",
+  "spec": "Implement `assemble(packets)`. The function receives a list of tuples containing connection identifiers, sequence numbers, and text fragments. It uses a session manager object to organize fragments. The manager must maintain internal lists for out of order fragments and counters for expected sequences per connection. It requires internal helpers to merge overlapping fragments, detect when a sequence is contiguous, and flush completed buffers. The function returns a list of fully assembled text strings for each connection. Example: receiving part two then part one of a message results in the combined message string.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d155",
+  "title": "Supply Chain Forecaster",
+  "spec": "Implement `predict(sales)`. The function takes a list of daily sales quantities and supplier delays in days. It creates an inventory planner object holding current stock and lead times. The planner must store internal records of past daily sales and seasonal multipliers. It needs internal calculations to compute an exponential moving average, project future stock needs during lead times, and determine necessary reorder quantities. The function returns a list of suggested order amounts for each day. Example: consistently high sales with a long delay will output appropriately large order suggestions.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d156",
+  "title": "Trading Strategy Backtester",
+  "spec": "Implement `backtest(prices)`. The function processes a list of numerical stock prices over time. It initializes a simulator object with a starting cash balance and position counter. The simulator keeps internal records of moving averages, average entry prices, and accumulated transaction fees. It must use internal functions to update averages, evaluate crossover conditions for buying or selling, and execute trades while updating cash balances. The function returns the final portfolio value after processing all prices. Example: given a steadily trending price series, the output is the final numerical value of cash and stock combined.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d157",
+  "title": "Version Control Engine",
+  "spec": "Implement `commit(changes)`. The function accepts a list of tuples containing file names and string contents. It builds a version control object that tracks a working directory. The tracker holds internal mappings of file contents to identifiers, a graph of previous commits, and the current active branch name. It requires internal logic to hash file contents, detect differences between the working area and the last commit, and generate a new commit identifier. The function returns a list of generated commit hashes. Example: adding a file and committing produces a unique hash string in the output list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d158",
+  "title": "E-commerce Recommendation Engine",
+  "spec": "Implement `recommend(activities)`. The function takes a list of tuples indicating a user, an action like view or buy, and a product. It uses a profiling object that aggregates interactions. The profiler maintains internal matrices of item co-occurrences and user histories. It needs internal routines to update product affinities based on views, filter out previously purchased items, and score remaining products. The function returns a list of the top recommended product for each user. Example: a user viewing a phone and buying a charger will receive a recommendation for a phone case.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d159",
+  "title": "DNS Zone Manager",
+  "spec": "Implement `resolve(queries)`. The function processes a list of domain registration commands and lookup requests. It creates a registry object that structures domains hierarchically. The registry must track internal time to live values, alias pointers, and record types. It uses internal helpers to split domain names by periods, traverse the internal tree structure, resolve aliases to final addresses, and apply wildcard entries if exact matches fail. The function returns a list of resolved addresses or missing indicators for each query. Example: registering an address and querying it returns the address string in a list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d160",
+  "title": "Insurance Premium Calculator",
+  "spec": "Implement `quote(profiles)`. The function evaluates a list of tuples containing driver age, vehicle safety rating, and accident history count. It creates an underwriting object that stores base pricing rates. The underwriter keeps internal tables of age multipliers and penalty factors. It requires internal calculations to assess vehicle safety discounts, apply accident penalties, and compound various multipliers into a final price. The function returns a list of calculated numerical premiums for each profile. Example: a young driver with accidents will result in a much higher numerical premium than an older driver with none.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d161",
+  "title": "BTree Node Splitter",
+  "spec": "Implement `insert(values)`. The function takes a list of numerical values to store in a structured index. It manages a tree object that starts with a single root block and a maximum capacity of three elements. The tree holds internal lists of sorted elements and connections to child blocks. It needs internal routines to locate the correct insertion point, detect when a block exceeds its capacity, split the block into two halves, and promote the middle element to a parent block. The function returns the list of elements present in the root block after all insertions. Example: inserting the numbers one through five will output a root block containing the number three.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d162",
+  "title": "Ride Sharing Dispatcher",
+  "spec": "Implement `dispatch(requests)`. The function accepts a list of rider coordinates and available driver coordinates. It uses a fleet manager object that tracks driver locations and passenger wait times. The manager maintains internal states for driver availability and regional demand metrics. It requires internal helpers to calculate grid distances, apply surge pricing multipliers based on demand, and find the closest available driver for each request. The function returns a list of matched driver coordinates and estimated trip costs. Example: a rider near an available driver will output that driver coordinates and a standard cost.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d163",
+  "title": "Sensor Anomaly Detector",
+  "spec": "Implement `monitor(readings)`. The function processes a list of numerical sensor measurements. It instantiates an analyzer object that tracks a rolling window of the last ten values. The analyzer maintains internal baseline averages, counters for consecutive abnormal readings, and variance records. It needs internal mathematical routines to compute standard deviations, apply smoothing filters to ignore minor noise, and trigger alerts when readings deviate significantly. The function returns a list of indices where anomalies were detected. Example: a sequence of steady readings followed by a massive spike outputs the index of the spike.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d164",
+  "title": "Database Transaction Logger",
+  "spec": "Implement `transact(operations)`. The function takes a sequence of database commands grouped by transaction identifiers. It creates a recovery manager object simulating a write ahead log. The manager tracks internal active transactions, written changes, and committed sequences. It must use internal helpers to append entries to a log list, apply changes to a simulated key value store, and perform rollbacks if an abort command is encountered. The function returns a list of values from the simulated store based on requested read commands. Example: writing a value and aborting returns an empty or previous value on read.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d165",
+  "title": "Spaceport Docking Bay Manager",
+  "spec": "Implement `dock(arrivals)`. The function handles a list of incoming spacecraft with sizes and arrival times. It initializes a spaceport object with a limited number of small and large docking bays. The spaceport must store internal schedules, busy periods, and maintenance flags. It requires internal routines to assign appropriately sized bays, queue vessels when bays are full, and trigger mandatory cleaning intervals after departures. The function returns a list of assigned bay numbers and wait times for each arrival. Example: an arrival when all bays are full outputs a wait time greater than zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d166",
+  "title": "Online Multiplayer Leaderboard",
+  "spec": "Implement `rank(scores)`. The function receives a sequence of player match results including points gained or lost. It builds a standings object that aggregates total points. The standings manager keeps internal histories of peak ratings, win streaks, and tier boundaries. It uses internal helpers to update player totals, apply streak bonuses, recalculate percentile rankings across the population, and determine tier promotions. The function returns a list of tier names for each player after processing the feed. Example: a player winning multiple matches sequentially outputs a high tier name like diamond.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d167",
+  "title": "Digital Audio Equalizer",
+  "spec": "Implement `equalize(samples)`. The function takes a sequence of audio amplitude measurements. It uses a processor object that divides the signal into imaginary low, mid, and high frequency bands based on amplitude patterns. The processor maintains internal gain settings, maximum volume limits, and history buffers for smoothing transitions. It requires internal functions to apply specific multipliers to different bands, compress peaks that exceed limits, and blend changes to prevent audio artifacts. The function returns a new list of adjusted numerical amplitude values. Example: input amplitudes exceeding the limit will be output as compressed values below the limit.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d168",
+  "title": "Cruise Ship Cabin Pricer",
+  "spec": "Implement `price(bookings)`. The function evaluates a list of reservation requests specifying days until departure. It creates a revenue object that tracks total capacity and booked cabins. The revenue manager holds internal booking velocity metrics, base prices, and target occupancy curves. It needs internal calculations to assess current demand compared to targets, increase prices when reservations outpace expectations, and apply discounts as the departure date nears if rooms remain empty. The function returns a list of numerical prices offered to each request. Example: early bookings get a low price, but a sudden rush of requests outputs increasingly higher prices.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d169",
+  "title": "Steel Mill Furnace Manager",
+  "spec": "Implement `smelt(temperatures)`. The function processes a sequence of numerical temperature targets for metal forging. It instantiates a controller object simulating a furnace. The controller tracks internal ambient temperatures, heating element power levels, and safety thresholds. It requires internal logic to calculate heating rates, adjust power delivery to slowly reach targets without overshooting, and trigger emergency cooling if limits are exceeded. The function returns a list of simulated ambient temperatures at each step. Example: a target of a thousand degrees outputs a gradually increasing sequence of numbers.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d170",
+  "title": "Text Search Indexer",
+  "spec": "Implement `index(documents)`. The function takes a list of text passages. It builds an engine object that maps individual words to the passage indices containing them. The engine maintains internal lists of ignored common words, passage counts, and term frequencies. It uses internal helpers to split text into words, remove punctuation, reduce words to lowercase, and calculate inverse document frequency scores. The function returns a list of top matching passage indices when provided a query string at the end of the input list. Example: searching for a rare word outputs the index of the single passage containing it.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d171",
+  "title": "Compiler Lexical Analyzer",
+  "spec": "Implement `tokenize(source)`. The function reads a single string of simulated source code. It creates a scanner object converting the text into symbols. The scanner tracks internal cursor positions, current line numbers, and accumulated characters. It needs internal routines to advance the cursor, skip over empty spaces, identify continuous numeric sequences, and recognize multi character operators like equals signs. The function returns a list of symbol types as strings. Example: a string with a number and a plus sign outputs a list containing number and operator.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d172",
+  "title": "Multiplayer Game Physics Engine",
+  "spec": "Implement `animate(frames)`. The function processes a list of initial coordinates and velocities for moving objects. It initializes a world object containing the objects and grid dimensions. The world maintains internal spatial grids to optimize checks, friction coefficients, and bounding box dimensions. It requires internal mathematics to detect overlaps between object boundaries, resolve collisions by swapping velocity vectors, and apply environmental drag over discrete time steps. The function returns a list of final coordinates for all objects after ten time steps. Example: two objects moving towards each other will output coordinates indicating they bounced apart.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d173",
+  "title": "Aquarium Chemical Doser",
+  "spec": "Create a class representing an aquarium doser. It maintains internal state for current ph level, current calcium level, and a log of recent doses. It has private helper methods to calculate required buffer volume based on ph deficit and required calcium volume based on calcium deficit. The class takes an initial ph and calcium level. The entry function `dose(readings)` takes a list of tuples containing new ph and calcium readings. For each reading, update the internal levels, use the private helpers to calculate buffer and calcium doses if the levels drop below target values of 8.1 for ph and 400 for calcium. Each buffer dose raises ph by 0.1 per unit, and calcium dose raises calcium by 10 per unit. Return a list of tuples containing the buffer and calcium amounts dosed for each reading.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d174",
+  "title": "Telescope Dew Heater Controller",
+  "spec": "Write a class to control a telescope dew heater. It keeps internal state for ambient temperature, relative humidity, and lens temperature. It relies on internal helper methods to calculate the dew point from ambient temperature and humidity, and to determine the required heater power percentage based on the difference between the lens temperature and the dew point. The entry function `regulate(sensors)` processes a list of tuples containing ambient temperature, humidity, and lens temperature over time. For each interval, update the internal variables, use the internal methods to find the dew point and necessary power, and return a list of heater power percentages. If the lens temperature is safely 2 degrees above the dew point, power should be 0.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d175",
+  "title": "Beehive Swarm Predictor",
+  "spec": "Implement a class that predicts beehive swarming based on acoustic frequencies and internal temperature. The class maintains internal records of a rolling average frequency, a rolling average temperature, and a warning threshold score. It uses internal helper functions to update the rolling averages given new data, and to compute a risk factor which increases if the frequency rises above 250 hertz while temperature exceeds 35 degrees. The entry function `predict(samples)` accepts a list of tuples providing frequency and temperature readings. For each sample, it updates the internal state, calculates the internal risk factor, and if the score exceeds a threshold of 10, resets the score and appends a swarm warning boolean to the output. Return a list of boolean values indicating whether a swarm is imminent for each sample step.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d176",
+  "title": "Robotic Milking Station",
+  "spec": "Build a class for a robotic milking station that tracks an individual cow. It maintains private variables for the cow identifier, total milk collected today, and the time since the last milking. It needs internal helper methods to verify if the cow is eligible for milking based on the elapsed time being greater than 4 hours, and to calculate a collection rate penalty if milked too frequently. The entry function `milk(visits)` takes a list of numbers representing hours elapsed since the last visit for a series of attempts by the cow. For each visit, update the internal time tracker, check eligibility using the internal method, and if eligible, add a standard yield of 12 liters adjusted by the internal penalty method to the total. Return a list of collected milk volumes for each visit.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d177",
+  "title": "Poultry Egg Incubator",
+  "spec": "Create a class for a poultry egg incubator. It stores internal state variables for the current day of incubation, turning frequency, and a hatch mode flag. It requires private helper methods to determine if the eggs should be turned based on the day, and to transition the incubator into hatch mode when the day reaches 18, which stops turning and increases humidity. The entry function `incubate(days)` takes a list of numbers representing hours passed. For each interval, increment the internal day counter, use the internal methods to check if a turn is required and to update the hatch mode. Return a list of string statuses for each interval, which is either turning, resting, or hatching, based on the internal state and helper evaluations.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d178",
+  "title": "Sourdough Starter Predictor",
+  "spec": "Write a class to model a sourdough starter. It manages private state for current weight, hydration level, and peak volume time. It features internal helper functions to calculate the required flour and water amounts for a feeding based on a one to one to one ratio, and to estimate hours until peak volume based on the ambient temperature. The entry function `feed(temperatures)` accepts a list of ambient temperature readings over successive feeding cycles. For each temperature, update internal values, calculate the feeding amounts, and estimate the peak time using the internal methods. Return a list of tuples containing the flour amount, water amount, and estimated peak hours for each feeding cycle.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d179",
+  "title": "Ceramics Kiln Firing Schedule",
+  "spec": "Implement a class representing a kiln firing schedule. It holds private state for the current temperature, target peak temperature, and a heating rate in degrees per hour. It should have private helper methods to calculate the temperature increase for a given time interval, and to determine if the kiln has reached the soaking phase where temperature is held constant. The entry function `fire(intervals)` takes a list of numbers representing elapsed hours. For each interval, invoke the internal methods to calculate the temperature change, update the internal current temperature, and check if the soaking phase is active. Return a list of temperatures at the end of each interval.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d180",
+  "title": "Automotive Paint Drying Booth",
+  "spec": "Design a class that controls an automotive paint drying booth. It tracks internal variables for the current stage, which starts as flash off, elapsed time in the current stage, and solvent concentration. It uses private helper methods to check if the time requirement for the current stage has been met, and to transition to the next stage from flash off to bake, and then to cool down. The entry function `dry(minutes)` processes a list of time increments. For each increment, add to the internal elapsed time, update solvent concentration, and use the internal methods to check for and execute stage transitions. Return a list of the active stage names as plain strings after each time increment.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d181",
+  "title": "Grain Silo Aeration Manager",
+  "spec": "Create a class to manage aeration fans in a grain silo. It maintains private state for internal grain temperature, grain moisture content, and fan operational status. It contains internal helper methods to calculate the equilibrium moisture content based on external air conditions, and to decide whether turning on the fans will cool or dry the grain beneficially. The entry function `aerate(conditions)` takes a list of tuples containing external temperature and external humidity. For each reading, use the internal helper to find the equilibrium point, compare it against the internal state to update the fan status, and adjust the internal grain temperature slightly towards the external temperature if fans are on. Return a list of boolean values representing the fan status for each reading.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d182",
+  "title": "Cheese Aging Cave Monitor",
+  "spec": "Write a class that models the environment of a cheese aging cave. It keeps private variables for the cheese rind thickness, internal humidity, and a count of days since the last rind washing. It relies on internal helper functions to calculate rind growth rate based on humidity, and to determine if a washing is required when the rind thickness exceeds 5 millimeters or days since wash exceeds 7. The entry function `age(humidities)` accepts a list of daily average humidity readings. For each day, update the internal days since wash, adjust rind thickness using the internal growth rate method, and if the internal wash check method returns true, reset the days and reduce rind thickness. Return a list of rind thicknesses at the end of each day.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d183",
+  "title": "Charcuterie Curing Chamber",
+  "spec": "Build a class for a meat curing chamber. It maintains private state for the starting weight of the meat, current weight, and target weight loss percentage. It uses internal helper methods to calculate the current weight loss percentage, and to adjust the chamber humidity target based on how fast the meat is drying to prevent case hardening. The entry function `cure(weights)` takes a list of daily weight measurements. For each measurement, update the internal current weight, calculate the loss percentage using the internal method, and determine the new humidity target with the other internal method. Return a list of tuples containing the loss percentage and humidity target for each day.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d184",
+  "title": "Hydroelectric Penstock Valve",
+  "spec": "Implement a class to control a hydroelectric penstock valve. It keeps internal state for the current valve opening percentage, water pressure, and target flow rate. It features private helper methods to calculate the actual flow rate based on pressure and valve opening, and to compute the required valve adjustment step to reach the target flow rate safely. The entry function `adjust(pressures)` accepts a list of incoming water pressure readings. For each reading, update the internal pressure, use the internal methods to check the current flow rate and the necessary adjustment step, and modify the internal valve opening accordingly. Return a list of actual flow rates achieved after each adjustment.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d185",
+  "title": "Hydraulic Cider Press",
+  "spec": "Create a class for an automated hydraulic cider press. It tracks internal variables for the current applied pressure, maximum pressure limit, and juice extracted so far. It needs private helper methods to calculate the extraction rate based on the current pressure, and to determine if the pressure should be increased by 1 bar if the extraction rate drops below a minimum threshold. The entry function `press(durations)` takes a list of minute durations for each pressing phase. For each phase, use the internal methods to calculate juice yield for that duration, update the total extracted, and check if pressure needs to be increased up to the maximum limit. Return a list of total juice extracted at the end of each phase.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d186",
+  "title": "Maple Syrup Evaporator",
+  "spec": "Write a class representing a maple syrup evaporator. It holds private state for the sap volume in the pan, the sugar concentration in brix, and the heat intensity. It includes internal helper methods to calculate the evaporation rate given the heat intensity, and to determine the new sugar concentration as water evaporates. The entry function `evaporate(heats)` accepts a list of heat intensity levels applied over hourly intervals. For each hour, update the internal heat state, use the internal methods to find the volume of water lost and update the internal volume and sugar concentration. When concentration reaches 66 brix, syrup is drawn off and the internal volume is reduced. Return a list of drawn off syrup volumes for each hour.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d187",
+  "title": "Aerobic Compost Bioreactor",
+  "spec": "Design a class to monitor an aerobic compost bioreactor. It maintains private variables for internal core temperature, oxygen level, and rotation count. It provides private helper methods to calculate the metabolic heat generation based on oxygen and temperature, and to determine if the drum needs to rotate to aerate the mix when oxygen drops below 10 percent. The entry function `process(temperatures)` takes a list of ambient temperatures over successive hours. For each hour, use the internal method to calculate heat generation, update the internal core temperature, and if the aeration helper returns true, increment the rotation count and reset the internal oxygen level. Return a list of core temperatures for each hour.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d188",
+  "title": "Mushroom Fruiting Chamber",
+  "spec": "Implement a class for a mushroom fruiting environment. It stores internal state for carbon dioxide concentration, humidity, and the number of flush cycles completed. It has private helper methods to calculate the carbon dioxide buildup over time, and to trigger a fresh air exchange if concentration exceeds 800 parts per million, which lowers the gas but also reduces humidity. The entry function `fruit(hours)` accepts a list of time intervals in hours. For each interval, increase the internal carbon dioxide using the buildup helper, and if the air exchange helper indicates a need, update the internal states to reflect the exchange. Return a list of tuples with the resulting carbon dioxide and humidity levels for each interval.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d189",
+  "title": "Leather Tanning Drum Controller",
+  "spec": "Build a class to control a leather tanning drum. It keeps private variables for chemical saturation, mechanical action time, and resting time. It requires internal helper functions to compute the chemical absorption rate based on mechanical action, and to verify if a resting period is mandatory after 2 hours of continuous action. The entry function `tan(cycles)` takes a list of boolean values indicating whether mechanical rotation is active for that hour. For each cycle, update the internal action and resting timers, use the internal methods to calculate absorption, and enforce rest if the helper indicates it is needed by ignoring the active rotation request. Return a list of chemical saturation levels after each cycle.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d190",
+  "title": "Olive Oil Centrifuge Separator",
+  "spec": "Create a class for an olive oil decanter centrifuge. It tracks private state for paste temperature, rotation speed, and oil yield efficiency. It includes private helper methods to determine the optimal rotation speed based on the paste temperature, and to calculate the yield efficiency based on the difference between current speed and optimal speed. The entry function `separate(temperatures)` accepts a list of incoming olive paste temperatures. For each temperature reading, update the internal temperature, use the internal helper to find the optimal speed, adjust the internal rotation speed towards it, and calculate the yield efficiency with the other helper. Return a list of yield efficiencies for each batch.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d191",
+  "title": "Glass Annealing Lehr",
+  "spec": "Write a class to control a glass annealing lehr tunnel. It manages private variables for the zone temperature, glass stress level, and belt speed. It relies on internal helper methods to calculate the cooling rate based on belt speed, and to determine the residual stress relieved in the current zone based on the cooling rate. The entry function `anneal(speeds)` takes a list of belt speed settings for successive zones. For each zone, update the internal belt speed, calculate the cooling rate using the internal method, and update the internal glass stress level by subtracting the relieved stress calculated by the second helper. Return a list of residual stress levels as the glass exits each zone.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d192",
+  "title": "Seed Germination Chamber",
+  "spec": "Design a class for a seed germination chamber. It maintains private state for the light status, internal moisture level, and accumulated degree days. It provides internal helper functions to calculate the daily degree days from the average temperature, and to determine if a watering cycle is needed based on the moisture level dropping below 40 percent. The entry function `germinate(temperatures)` takes a list of average daily temperatures. For each day, use the internal helper to add to the accumulated degree days, decrease the internal moisture slightly, check if watering is required using the second helper, and restore internal moisture if true. Return a list of accumulated degree days for each day.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d193",
+  "title": "Smokehouse Burner Controller",
+  "spec": "Implement a class for an automated smokehouse. It keeps private variables for the internal meat temperature, smoke density, and wood chip hopper level. It features private helper methods to calculate the required burner intensity based on the meat temperature deficit, and to determine wood chip consumption based on the burner intensity and target smoke density. The entry function `smoke(readings)` accepts a list of current meat temperature readings over time. For each reading, update internal state, compute the burner intensity using the internal method, and reduce the internal hopper level by the consumption amount calculated by the other helper method. Return a list of remaining wood chip hopper levels.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d194",
+  "title": "Snowmaking Gun Controller",
+  "spec": "Build a class to operate a resort snowmaking gun. It stores private state for water pressure, air pressure, and nozzle freezing risk. It requires internal helper methods to calculate the wet bulb temperature from ambient conditions, and to determine the optimal water to air ratio based on the wet bulb temperature. The entry function `snow(conditions)` takes a list of tuples containing ambient temperature and humidity. For each reading, use the internal method to find the wet bulb temperature, compute the optimal pressure ratio with the second helper, and adjust the internal water and air pressures to match this ratio. Return a list of tuples containing the adjusted water and air pressures.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d195",
+  "title": "Scuba Rebreather Monitor",
+  "spec": "Create a class for a closed circuit scuba rebreather monitor. It tracks private variables for the oxygen partial pressure, diluent gas remaining, and scrubber efficiency. It includes internal helper methods to calculate the oxygen consumption rate based on depth, and to determine if a diluent flush is necessary when oxygen partial pressure spikes above 1.6 atmospheres. The entry function `monitor(depths)` accepts a list of depth readings in meters. For each reading, calculate oxygen consumption using the internal helper, update the internal oxygen partial pressure, and check if a flush is needed with the second helper, which consumes internal diluent gas and normalizes oxygen. Return a list of boolean values indicating whether a flush occurred for each reading.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d196",
+  "title": "Anesthesia Vaporizer Controller",
+  "spec": "Write a class representing a medical anesthesia vaporizer. It manages private state for the liquid anesthetic volume, carrier gas flow rate, and patient weight. It uses private helper functions to calculate the required anesthetic concentration based on the patient weight, and to compute the evaporation rate based on the carrier gas flow and required concentration. The entry function `vaporize(flows)` takes a list of carrier gas flow rates adjusted by an anesthesiologist. For each adjustment, update the internal flow rate, determine the target concentration with the internal helper, calculate the liquid evaporated using the second helper, and deduct it from the internal volume. Return a list of remaining liquid volumes.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d197",
+  "title": "Neon Glass Bending Tracker",
+  "spec": "Design a class that tracks the state of glass tubing for neon sign bending. It keeps private variables for the glass temperature, current bend angle, and internal gas pressure. It provides internal helper methods to calculate the pliability score from the glass temperature, and to determine the pressure loss per degree of bending. The entry function `bend(actions)` accepts a list of tuples containing a heating duration in seconds and a bend angle increment. For each action, increase internal temperature based on heating duration, calculate pliability with the internal helper, increment the internal bend angle if pliability is sufficient, and deduct pressure using the second helper. Return a list of current bend angles after each action.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d198",
+  "title": "Bounding Box Merger",
+  "spec": "Implement a function `cluster(boxes)` that takes a list of four-element tuples representing the left, top, right, and bottom coordinates of text bounding boxes. The logic must find all boxes that overlap or are separated by a distance less than ten units in either dimension and combine them into a single larger bounding box enclosing all members. The process must repeat until no more boxes can be merged. Return a list of the final merged bounding box tuples sorted by their top coordinate. For example, giving a box from zero to ten and another from twelve to twenty should merge them into a single box from zero to twenty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d199",
+  "title": "Knitting Pattern Expander",
+  "spec": "Provide an entry point `expand(pattern)` that processes a string of knitting instructions consisting of plain stitches, purl stitches, and groups of stitches enclosed in parentheses followed by a multiplier. The logic must parse the string, recursively multiplying any bracketed sequences by their associated number. Track the current row length to ensure it never exceeds one hundred stitches, raising an error if it does. Output a flat list of individual stitch strings representing the full expanded row. For example, passing a purl and a group of two plain stitches multiplied by three should yield a list with one purl and six plain stitches.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d200",
+  "title": "Geocaching Route Planner",
+  "spec": "Create a function `plan(caches)` that calculates an optimal sequence of visits to hidden locations represented as a list of coordinate tuples. The algorithm must start at the origin and repeatedly select the closest unvisited location until ten locations are visited or the list is exhausted. It must maintain a running total of the distance traveled, adding a fixed penalty distance of five units each time an elevation change occurs between consecutive points. Return a tuple containing the ordered list of visited coordinates and the total calculated distance. Passing three points in a straight line should return those points in order with their geometric distance.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d201",
+  "title": "Boarding Pass Parser",
+  "spec": "Write a function `decode(strip)` that interprets a long string of alphanumeric characters representing a flight boarding pass. The logic must read the first two characters to determine the airline, the next four for the flight number, and then scan forward to locate a slash character dividing the passenger name fields. It must validate that the total length of the strip is exactly sixty characters, padding with spaces if necessary before processing. Output a tuple containing the airline, flight number as an integer, and the formatted passenger name. A sample string starting with two letters and four numbers followed by a name should extract those exact components.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d202",
+  "title": "Tape Recorder Simulator",
+  "spec": "Develop a function `simulate(commands)` that tracks the state of a magnetic tape machine given a sequence of action strings like play, record, rewind, and stop. The tape has a maximum capacity of ninety units, and the logic must track the current spool position and the content recorded on the tape as a list of strings. Fast forwarding or rewinding moves the position by ten units per command, while playing or recording moves it by one unit per word. Return a list of strings representing the audio played back during any play commands. For example, recording three words and rewinding followed by play should output those three words.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d203",
+  "title": "Aquarium Filter Simulator",
+  "spec": "Implement an entry function `filter(hours)` that models water quality in a fish tank over time. The tank starts with high levels of ammonia, nitrites, and particulate matter. The logic must step through each hour, first passing the water through a mechanical sponge that removes ten percent of particulates, then a biological medium that converts twenty percent of ammonia to nitrites and fifteen percent of nitrites to nitrates. The system must also add a small constant amount of new ammonia every hour to simulate fish waste. Return a list of three numbers representing the final concentrations of ammonia, nitrites, and nitrates. Simulating five hours should show decreased ammonia and increased nitrates.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d204",
+  "title": "Embroidery Stitch Generator",
+  "spec": "Create a function `fill(outline)` that converts a list of boundary coordinate tuples into a dense sequence of zig-zag filling stitches. The logic must determine the bounding box of the shape and scan horizontally across it in steps of two units, calculating the intersections of the horizontal scan lines with the outline segments. It must generate a list of alternating left and right coordinate tuples to form a continuous zig-zag path filling the interior of the shape. Return the final list of stitch coordinates. Passing a simple square should result in a list of points alternating back and forth across its width from top to bottom.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d205",
+  "title": "Origami Crease Simulator",
+  "spec": "Write a function `fold(instructions)` that models folding a square piece of paper originally spanning from zero to one hundred in both dimensions. The instructions are a list of tuples detailing a fold line starting and ending coordinates, along with a direction. The logic must mirror all current paper boundary vertices across the fold line, discarding the original points on the folded side to simulate layers stacking. After applying all folds, compute the bounding box of the resulting polygon. Output a tuple of the final width and height of the folded shape. Folding the paper exactly in half once should return a width of fifty and a height of one hundred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d206",
+  "title": "Gear Ratio Calculator",
+  "spec": "Implement `calculate(gears)` to determine the final rotation speed and direction of a clockwork mechanism. The input is a list of integers representing the number of teeth on consecutive meshed gears. The logic must iterate through the gears, maintaining the current rotational velocity and tracking the reversal of direction with each mesh. It must also handle compound gears if represented by a nested tuple of two integers, meaning they share an axle and rotate at the same speed. Return a tuple with the final gear speed as a float and an integer representing direction. Passing a ten tooth gear driving a twenty tooth gear should output half the speed in the opposite direction.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d207",
+  "title": "Sundial Shadow Projector",
+  "spec": "Provide a function `cast(parameters)` that takes a tuple of latitude, day of the year, and a list of hours. The logic must calculate the sun declination angle based on the day of the year, then for each hour compute the solar altitude and azimuth angles. It must use these angles to determine the length and compass bearing of a shadow cast by a vertical stick of length ten units on a flat horizontal surface. If the sun is below the horizon, the shadow length should be recorded as zero. Return a list of tuples containing the shadow length and bearing for each hour. Midday in summer should yield a short shadow pointing north or south depending on the hemisphere.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d208",
+  "title": "Harp Pedal Adjuster",
+  "spec": "Create `pluck(sequence)` to determine the exact musical notes produced by a concert harp. The harp has seven pedals corresponding to the notes of the scale, each able to be set to flat, natural, or sharp positions. The logic must maintain the state of all seven pedals and parse a sequence of commands that either change a specific pedal position or pluck a specific string. When a string is plucked, the system must apply the current pedal modifier for that note to determine the final pitch. Return a list of the modified notes played. Changing the first pedal to sharp and plucking the first string should output the sharp version of that note.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d209",
+  "title": "Braille Embosser",
+  "spec": "Develop a function `emboss(text)` that translates standard characters into a layout of braille cells on a grid. The logic must parse the text, inserting a special capital indicator cell before any uppercase letters and converting numbers into a number sign cell followed by the corresponding letter cells. It must maintain a line position and automatically wrap to a new line when the horizontal limit of thirty cells is reached. Return a list of strings where each string represents a row of braille cells using a six-character binary string format for each cell. A short sentence should translate into a matching sequence of dot patterns correctly wrapped.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d210",
+  "title": "Morse Code Blinker",
+  "spec": "Write an entry function `flash(message)` that converts a text string into a sequence of timing durations for a signaling lamp. The logic must map each letter to its dot and dash equivalent, then convert these into on and off time values. A dot is one time unit on, a dash is three units on, the space between parts of the same letter is one unit off, between letters is three units off, and between words is seven units off. The system must filter out unsupported punctuation before translation. Return a list of integers where positive numbers indicate duration on and negative numbers indicate duration off. The word hi should produce short positive and negative pulses separated by appropriate gaps.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d211",
+  "title": "Vinyl Groove Spacer",
+  "spec": "Implement a function `cut(audio)` that calculates the radial distance of a spiral groove from the center of a record over time. The input is a list of amplitude values representing the sound volume. The logic must start at an outer radius and slowly decrease the radius with each step, increasing the step size when the amplitude is high to prevent adjacent grooves from overlapping, and keeping a minimum step size during quiet parts. It must keep track of the total rotation angle and the remaining disc space, stopping if the center label radius is reached. Return a list of radius values for each full rotation. High amplitudes should result in fewer total rotations fitting on the disc.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d212",
+  "title": "Typewriter Simulator",
+  "spec": "Provide an entry point `type(keystrokes)` to process a list of character commands including normal letters, spaces, backspaces, and line feeds. The logic must maintain a virtual paper grid, tracking the current row and column of the print head. A backspace decreases the column without erasing, allowing subsequent characters to overstrike the existing ones by appending them to the grid cell. A line feed advances the row and resets the column to zero. Return a list of strings representing the final printed lines, where overstruck characters are joined together in brackets. Typing a letter, a backspace, and a different letter should yield a single position containing both letters.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d213",
+  "title": "Hot Air Balloon Controller",
+  "spec": "Create a function `fly(actions)` that simulates the vertical motion of a hot air balloon given a sequence of burner blasts and vent openings. The logic must maintain internal variables for envelope temperature, ambient temperature, vertical velocity, and altitude. Burner blasts increase the envelope temperature, which generates upward buoyant acceleration, while the envelope constantly cools over time toward ambient. Venting rapidly decreases the temperature. The system must update the velocity and altitude step by step, preventing altitude from dropping below ground level. Output the maximum altitude reached during the flight. A series of long blasts should result in a high peak altitude.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d214",
+  "title": "Lighthouse Flasher",
+  "spec": "Write `rotate(panels)` to model the light signature of a lighthouse seen by a distant observer. The input is a list of lens panel types that make up a circular rotating assembly, where each panel can be a bullseye lens, a colored glass pane, or a blank plate. The logic must step through time as the assembly rotates at a fixed speed, calculating when a lens sweeps past the observer line of sight to produce a bright flash, or when a colored pane changes the light hue. It must maintain the rotational angle and map it to the observer bearing. Return a list of flash events with their exact time and color. A bullseye followed by a red pane should output a white flash then a steady red light.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d215",
+  "title": "Film Projector Drive",
+  "spec": "Implement `crank(milliseconds)` to trace the state of a movie projector mechanism over a given duration. The mechanism consists of a continuously rotating drive pin that engages a slotted wheel to pull the film down one frame at a time, while a rotary shutter blocks the light during the pull-down phase. The logic must calculate the angular position of the drive pin for every millisecond, determining whether the slotted wheel is stationary or moving. It must synchronize the shutter position to ensure the light is only open when the film is completely still. Return the total number of frames successfully projected. Running for one second at standard speed should output twenty four frames.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d216",
+  "title": "Sonar Echo Simulator",
+  "spec": "Provide a function `sound(obstacles)` that processes a list of underwater target distances and their relative sizes. The logic must simulate a sonar pulse traveling outward at a constant speed of sound, tracking the time it takes to reach each obstacle and bounce back. It must calculate the strength of the returning echo, which degrades based on the total distance traveled and the size of the target. The system must sort the returning echoes by their arrival time and filter out any that fall below a minimum detectable threshold. Return a list of tuples containing the arrival time and echo strength. A large close target should yield a quick, strong return.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d217",
+  "title": "Kite Tension Simulator",
+  "spec": "Develop an entry function `test(gusts)` that models the mechanical stress on a kite string during a windy day. The input is a sequence of wind speed values over time. The logic must track the current altitude and angle of the kite, which increase when wind speed rises and decrease during lulls. It must calculate the aerodynamic drag and lift forces at each time step, translating these into tension on the string based on its length and the kite surface area. The system must record the tension at each step and snap the string if it exceeds a critical limit. Return the highest tension recorded before the simulation ends or the string breaks. A sudden massive gust should return the breaking strain limit.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d218",
+  "title": "Boomerang Flight Simulator",
+  "spec": "Create a function `throw(parameters)` that calculates the returning path of a boomerang based on initial velocity, spin rate, and wind speed. The logic must simulate the flight in discrete time steps, tracking the two dimensional coordinates, heading, and remaining rotational energy. It must apply an aerodynamic turning force that curves the heading proportionately to the current spin rate and velocity, while gradually reducing the velocity and spin due to drag. The simulation stops when the altitude hits zero. Return a list of the coordinates at each step. A proper set of inputs should produce a list of points that trace a circular path back towards the origin.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d219",
+  "title": "Yo-yo State Tracker",
+  "spec": "Write an entry point `play(moves)` to track the physical state of a yo-yo during a string trick routine. The yo-yo has properties for spin speed, string wrap length, and mount state. The logic must process commands like throw, bind, mount, and dismount. A throw unwinds the string and starts the spin; a mount adds a layer of friction that slowly decreases spin speed; a bind rewinds the string only if the spin is sufficiently high. The system must validate that moves are possible from the current state, raising an error if a bind is attempted while the yo-yo is stationary. Output a string describing the final state, such as spinning on string or returned to hand.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d220",
+  "title": "Abacus Simulator",
+  "spec": "Implement a function `compute(operations)` that simulates adding and subtracting numbers on a traditional bead abacus. The logic must represent the abacus as a series of columns, each tracking the position of one upper bead and four lower beads. To add or subtract, the system must parse the input numbers digit by digit, moving the required beads in each column. It must handle carry-over and borrow operations naturally by shifting beads in the adjacent higher column when a lower column overflows or underflows. After processing all operations, read the final positions of the beads. Return the resulting total as an integer. Adding five and seven should trigger a carry and result in twelve.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d221",
+  "title": "Pinball Bumper Simulator",
+  "spec": "Provide an entry `launch(actions)` that tracks a ball traversing a pinball table. The table contains several stationary circular bumpers and two flippers at the bottom. The logic must update the ball position and velocity in small time steps, applying a constant downward acceleration for gravity. It must detect collisions with bumpers, which reflect the ball and add a fixed velocity boost. The input actions specify exact times when the left or right flipper is activated, which will strike the ball upward if it is within their hit zones. Return the total number of bumper hits before the ball falls below the bottom of the table. Good flipper timing should keep the ball in play and accumulate multiple hits.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d222",
+  "title": "Fountain Choreography",
+  "spec": "Create `spray(sequence)` to model the arcs of water droplets shot from a programmable fountain nozzle. The input sequence defines changes to the nozzle tilt angle and water pressure at specific times. The logic must simulate the emission of a water droplet every tenth of a second, assigning it an initial velocity vector based on the current angle and pressure. It must track the parabolic trajectory of every droplet in the air, applying gravity until it hits the ground. The system must record the maximum height achieved by any droplet and the furthest horizontal distance reached. Output a tuple of these two maximum values. A high pressure vertical shot should maximize height but have zero horizontal distance.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]

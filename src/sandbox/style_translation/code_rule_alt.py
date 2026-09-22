@@ -263,3 +263,14 @@ def hex_constants(nat, spec=""):
 # hex_constants is NOT enabled: 17 of 44 reviewer-approved pairs also convert constants outside the family set, so the set-only rule does not reproduce the accepted data
 RULE_ALT = {"py_snake_camel": snake_to_camel, "num_separators": num_separators, "py_private": py_private}
 ALWAYS_RULE = {"py_private"}                     # families whose alternative twin is ALWAYS derived by rule (never an LLM rewrite)
+# regen8 (2026-09-22): validated rule modules for further families (tmp/rules8/report_*.md). A rule that returns None falls back to the
+# LLM rewrite in finish_pair (recorded as alt_rule False) unless the family is in ALWAYS_RULE.
+for _mod in ("code_rules_a", "code_rules_b", "code_rules_c"):
+    try:
+        _m = __import__(f"src.sandbox.style_translation.{_mod}", fromlist=["RULES"])
+        for _f, _fn in getattr(_m, "RULES", {}).items():
+            if _f in getattr(_m, "DISABLED", ()):
+                continue
+            RULE_ALT.setdefault(_f, _fn)
+    except ImportError:
+        pass                     # families whose alternative twin is ALWAYS derived by rule (never an LLM rewrite)
