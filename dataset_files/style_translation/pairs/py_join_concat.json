@@ -26994,6 +26994,2517 @@
 "task_designed_by": "google/gemini-3.1-pro-preview"
 },
 {
+"doc_id": "py_join_concat__d122",
+"family": "py_join_concat",
+"topic": "Courier Shipping Label Generator",
+"angle": "code",
+"text_es": "Write a module with an entry function `label(records)` that processes logistics data. The module must contain four separate formatting functions. The first formats the origin by combining warehouse, dock, and bay strings separated by hyphens. The second formats the destination by combining receiver name, city, and region separated by pipes. The third formats the package details combining weight, unit, and class separated by spaces. The fourth formats the routing combining prefix, sequence, and check digit separated by spaces. The main function iterates over a list of records where each record is a tuple of twelve strings corresponding to these fields in order. For each record, it calls the four helper functions and directly generates four additional combinations: the warehouse and prefix separated by a slash, the dock and sequence separated by a slash, the bay and check digit separated by a slash, and the receiver name and weight separated by a colon. Return a list of tuples containing the eight strings per record. Example input: one record with strings a, b, c, d, e, f, g, h, i, j, k, l. Output includes a-b-c for origin and d|e|f for destination.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "def format_origin(warehouse, dock, bay):\n    return '-'.join([warehouse, dock, bay])\n\ndef format_destination(receiver, city, region):\n    return '|'.join([receiver, city, region])\n\ndef format_package(weight, unit, pkt_class):\n    return ' '.join([weight, unit, pkt_class])\n\ndef format_routing(prefix, sequence, check_digit):\n    return ' '.join([prefix, sequence, check_digit])\n\ndef validate_record(record):\n    if len(record) != 12:\n        raise ValueError('record must contain exactly twelve fields')\n    for field in record:\n        if not isinstance(field, str):\n            raise TypeError('record fields must be strings')\n\ndef label(records):\n    results = []\n    for record in records:\n        validate_record(record)\n\n        warehouse, dock, bay = record[0], record[1], record[2]\n        receiver, city, region = record[3], record[4], record[5]\n        weight, unit, pkt_class = record[6], record[7], record[8]\n        prefix, sequence, check_digit = record[9], record[10], record[11]\n\n        origin_str = format_origin(warehouse, dock, bay)\n        dest_str = format_destination(receiver, city, region)\n        pkg_str = format_package(weight, unit, pkt_class)\n        route_str = format_routing(prefix, sequence, check_digit)\n\n        wh_prefix = '/'.join([warehouse, prefix])\n        dock_seq = '/'.join([dock, sequence])\n        bay_check = '/'.join([bay, check_digit])\n        recv_weight = ':'.join([receiver, weight])\n\n        results.append((\n            origin_str,\n            dest_str,\n            pkg_str,\n            route_str,\n            wh_prefix,\n            dock_seq,\n            bay_check,\n            recv_weight\n        ))\n\n    return results\n\nif __name__ == '__main__':\n    sample_records = [\n        ('W1', 'D2', 'B3', 'CorpA', 'NY', 'NE', '15', 'kg', 'Haz', 'PRX', '123', '9'),\n        ('W2', 'D1', 'B1', 'IncB', 'LA', 'SW', '2', 'lb', 'Std', 'PRY', '456', '2')\n    ]\n    for entry in label(sample_records):\n        print(', '.join(entry))\n",
+"text_alt": "def format_origin(warehouse, dock, bay):\n    return warehouse + '-' + dock + '-' + bay\n\ndef format_destination(receiver, city, region):\n    return receiver + '|' + city + '|' + region\n\ndef format_package(weight, unit, pkt_class):\n    return weight + ' ' + unit + ' ' + pkt_class\n\ndef format_routing(prefix, sequence, check_digit):\n    return prefix + ' ' + sequence + ' ' + check_digit\n\ndef validate_record(record):\n    if len(record) != 12:\n        raise ValueError('record must contain exactly twelve fields')\n    for field in record:\n        if not isinstance(field, str):\n            raise TypeError('record fields must be strings')\n\ndef label(records):\n    results = []\n    for record in records:\n        validate_record(record)\n\n        warehouse, dock, bay = record[0], record[1], record[2]\n        receiver, city, region = record[3], record[4], record[5]\n        weight, unit, pkt_class = record[6], record[7], record[8]\n        prefix, sequence, check_digit = record[9], record[10], record[11]\n\n        origin_str = format_origin(warehouse, dock, bay)\n        dest_str = format_destination(receiver, city, region)\n        pkg_str = format_package(weight, unit, pkt_class)\n        route_str = format_routing(prefix, sequence, check_digit)\n\n        wh_prefix = warehouse + '/' + prefix\n        dock_seq = dock + '/' + sequence\n        bay_check = bay + '/' + check_digit\n        recv_weight = receiver + ':' + weight\n\n        results.append((\n            origin_str,\n            dest_str,\n            pkg_str,\n            route_str,\n            wh_prefix,\n            dock_seq,\n            bay_check,\n            recv_weight\n        ))\n\n    return results\n\nif __name__ == '__main__':\n    sample_records = [\n        ('W1', 'D2', 'B3', 'CorpA', 'NY', 'NE', '15', 'kg', 'Haz', 'PRX', '123', '9'),\n        ('W2', 'D1', 'B1', 'IncB', 'LA', 'SW', '2', 'lb', 'Std', 'PRY', '456', '2')\n    ]\n    for entry in label(sample_records):\n        print(entry[0] + ', ' + entry[1] + ', ' + entry[2] + ', ' + entry[3] + ', ' + entry[4] + ', ' + entry[5] + ', ' + entry[6] + ', ' + entry[7])\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "warehouse + ",
+"nat_span": [
+52,
+52
+],
+"alt_span": [
+52,
+64
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "receiver + ",
+"nat_span": [
+145,
+145
+],
+"alt_span": [
+147,
+158
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "weight + ",
+"nat_span": [
+237,
+237
+],
+"alt_span": [
+241,
+250
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "prefix + ",
+"nat_span": [
+336,
+336
+],
+"alt_span": [
+342,
+351
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "warehouse + ",
+"nat_span": [
+1260,
+1260
+],
+"alt_span": [
+1268,
+1280
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "dock + ",
+"nat_span": [
+1309,
+1309
+],
+"alt_span": [
+1312,
+1319
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "bay + ",
+"nat_span": [
+1356,
+1356
+],
+"alt_span": [
+1354,
+1360
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "receiver + ",
+"nat_span": [
+1407,
+1407
+],
+"alt_span": [
+1400,
+1411
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "entry[0] + ",
+"nat_span": [
+1957,
+1957
+],
+"alt_span": [
+1945,
+1956
+]
+}
+],
+"k_en": 9,
+"shared_fraction": 0.895,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "warehouse + ",
+"nat_span": [
+52,
+52
+],
+"alt_span": [
+52,
+64
+]
+},
+{
+"k": 1,
+"nat": ".join([warehouse, dock, bay])",
+"alt": " + dock + '-' + bay",
+"nat_span": [
+55,
+84
+],
+"alt_span": [
+67,
+86
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "receiver + ",
+"nat_span": [
+145,
+145
+],
+"alt_span": [
+147,
+158
+]
+},
+{
+"k": 3,
+"nat": ".join([receiver, city, region])",
+"alt": " + city + '|' + region",
+"nat_span": [
+148,
+179
+],
+"alt_span": [
+161,
+183
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "weight + ",
+"nat_span": [
+237,
+237
+],
+"alt_span": [
+241,
+250
+]
+},
+{
+"k": 5,
+"nat": ".join([weight, unit, pkt_class])",
+"alt": " + unit + ' ' + pkt_class",
+"nat_span": [
+240,
+272
+],
+"alt_span": [
+253,
+278
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "prefix + ",
+"nat_span": [
+336,
+336
+],
+"alt_span": [
+342,
+351
+]
+},
+{
+"k": 7,
+"nat": ".join([prefix, sequence, check_digit])",
+"alt": " + sequence + ' ' + check_digit",
+"nat_span": [
+339,
+377
+],
+"alt_span": [
+354,
+385
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "warehouse + ",
+"nat_span": [
+1260,
+1260
+],
+"alt_span": [
+1268,
+1280
+]
+},
+{
+"k": 9,
+"nat": ".join([warehouse, prefix])",
+"alt": " + prefix",
+"nat_span": [
+1263,
+1289
+],
+"alt_span": [
+1283,
+1292
+]
+},
+{
+"k": 10,
+"nat": "",
+"alt": "dock + ",
+"nat_span": [
+1309,
+1309
+],
+"alt_span": [
+1312,
+1319
+]
+},
+{
+"k": 11,
+"nat": ".join([dock, sequence])",
+"alt": " + sequence",
+"nat_span": [
+1312,
+1335
+],
+"alt_span": [
+1322,
+1333
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "bay + ",
+"nat_span": [
+1356,
+1356
+],
+"alt_span": [
+1354,
+1360
+]
+},
+{
+"k": 13,
+"nat": ".join([bay, check_digit])",
+"alt": " + check_digit",
+"nat_span": [
+1359,
+1384
+],
+"alt_span": [
+1363,
+1377
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "receiver + ",
+"nat_span": [
+1407,
+1407
+],
+"alt_span": [
+1400,
+1411
+]
+},
+{
+"k": 15,
+"nat": ".join([receiver, weight])",
+"alt": " + weight",
+"nat_span": [
+1410,
+1435
+],
+"alt_span": [
+1414,
+1423
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "entry[0] + ",
+"nat_span": [
+1957,
+1957
+],
+"alt_span": [
+1945,
+1956
+]
+},
+{
+"k": 17,
+"nat": ".join(entry)",
+"alt": " + entry[1] + ', ' + entry[2] + ', ' + entry[3] + ', ' + entry[4] + ', ' + entry[5] + ', ' + entry[6] + ', ' + entry[7]",
+"nat_span": [
+1961,
+1973
+],
+"alt_span": [
+1960,
+2079
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "py_join_concat__d144",
+"family": "py_join_concat",
+"topic": "Culinary Recipe Formatter",
+"angle": "code",
+"text_es": "Write a module with an entry function `recipe(formulas)` that processes cooking data. The module must contain four separate formatting functions. The first formats the background by combining course, cuisine, and season strings separated by dashes. The second formats the timing by combining prep time, cook time, and rest time separated by colons. The third formats the ingredients combining flour, sugar, and butter separated by slashes. The fourth formats the method combining technique, tool, and vessel separated by hyphens. The main function iterates over a list of formulas where each formula is a tuple of twelve strings corresponding to these fields in order. For each formula, it calls the four helper functions and directly generates four additional combinations: course and prep time separated by a space, cuisine and cook time separated by a space, season and rest time separated by a space, and flour and technique separated by a plus. Return a list of tuples containing the eight strings per formula. Example input: one record with strings a, b, c, d, e, f, g, h, i, j, k, l. Output includes a-b-c for the first helper and d:e:f for the second.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "FIELDS = (\n    \"course\", \"cuisine\", \"season\",\n    \"prep_time\", \"cook_time\", \"rest_time\",\n    \"flour\", \"sugar\", \"butter\",\n    \"technique\", \"tool\", \"vessel\",\n)\n\nLABELS = (\"background\", \"timing\", \"ingredients\", \"method\",\n          \"course/prep\", \"cuisine/cook\", \"season/rest\", \"flour/technique\")\n\n\ndef format_background(course, cuisine, season):\n    return ''.join([course, '-', cuisine, '-', season])\n\n\ndef format_timing(prep_time, cook_time, rest_time):\n    return ''.join([prep_time, ':', cook_time, ':', rest_time])\n\n\ndef format_ingredients(flour, sugar, butter):\n    return ''.join([flour, '/', sugar, '/', butter])\n\n\ndef format_method(technique, tool, vessel):\n    return ''.join([technique, '-', tool, '-', vessel])\n\n\ndef validate(formula):\n    if len(formula) != len(FIELDS):\n        raise ValueError(''.join([\n            \"formula needs \", str(len(FIELDS)), \" fields, got \", str(len(formula)),\n        ]))\n    for name, value in zip(FIELDS, formula):\n        if not value.strip():\n            raise ValueError(''.join([\"field \", name, \" is blank\"]))\n\n\ndef recipe(formulas):\n    results = []\n    for formula in formulas:\n        validate(formula)\n        (course, cuisine, season, prep_time, cook_time, rest_time,\n         flour, sugar, butter, technique, tool, vessel) = formula\n        results.append((\n            format_background(course, cuisine, season),\n            format_timing(prep_time, cook_time, rest_time),\n            format_ingredients(flour, sugar, butter),\n            format_method(technique, tool, vessel),\n            ''.join([course, ' ', prep_time]),\n            ''.join([cuisine, ' ', cook_time]),\n            ''.join([season, ' ', rest_time]),\n            ''.join([flour, '+', technique]),\n        ))\n    return results\n\n\ndef report(rows):\n    lines = []\n    for index, row in enumerate(rows, start=1):\n        lines.append(''.join([\"formula \", str(index), \":\"]))\n        for label, value in zip(LABELS, row):\n            lines.append(''.join([\"  \", label, \" = \", value]))\n    return lines\n\n\ndef main():\n    formulas = [\n        (\"a\", \"b\", \"c\", \"d\", \"e\", \"f\", \"g\", \"h\", \"i\", \"j\", \"k\", \"l\"),\n        (\"dessert\", \"french\", \"autumn\", \"15m\", \"40m\", \"10m\",\n         \"rye\", \"cane\", \"salted\", \"folding\", \"whisk\", \"tart pan\"),\n    ]\n    for line in report(recipe(formulas)):\n        print(line)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "FIELDS = (\n    \"course\", \"cuisine\", \"season\",\n    \"prep_time\", \"cook_time\", \"rest_time\",\n    \"flour\", \"sugar\", \"butter\",\n    \"technique\", \"tool\", \"vessel\",\n)\n\nLABELS = (\"background\", \"timing\", \"ingredients\", \"method\",\n          \"course/prep\", \"cuisine/cook\", \"season/rest\", \"flour/technique\")\n\n\ndef format_background(course, cuisine, season):\n    return course + '-' + cuisine + '-' + season\n\n\ndef format_timing(prep_time, cook_time, rest_time):\n    return prep_time + ':' + cook_time + ':' + rest_time\n\n\ndef format_ingredients(flour, sugar, butter):\n    return flour + '/' + sugar + '/' + butter\n\n\ndef format_method(technique, tool, vessel):\n    return technique + '-' + tool + '-' + vessel\n\n\ndef validate(formula):\n    if len(formula) != len(FIELDS):\n        raise ValueError(\n            \"formula needs \" + str(len(FIELDS)) + \" fields, got \" + str(len(formula))\n        )\n    for name, value in zip(FIELDS, formula):\n        if not value.strip():\n            raise ValueError(\"field \" + name + \" is blank\")\n\n\ndef recipe(formulas):\n    results = []\n    for formula in formulas:\n        validate(formula)\n        (course, cuisine, season, prep_time, cook_time, rest_time,\n         flour, sugar, butter, technique, tool, vessel) = formula\n        results.append((\n            format_background(course, cuisine, season),\n            format_timing(prep_time, cook_time, rest_time),\n            format_ingredients(flour, sugar, butter),\n            format_method(technique, tool, vessel),\n            course + ' ' + prep_time,\n            cuisine + ' ' + cook_time,\n            season + ' ' + rest_time,\n            flour + '+' + technique,\n        ))\n    return results\n\n\ndef report(rows):\n    lines = []\n    for index, row in enumerate(rows, start=1):\n        lines.append(\"formula \" + str(index) + \":\")\n        for label, value in zip(LABELS, row):\n            lines.append(\"  \" + label + \" = \" + value)\n    return lines\n\n\ndef main():\n    formulas = [\n        (\"a\", \"b\", \"c\", \"d\", \"e\", \"f\", \"g\", \"h\", \"i\", \"j\", \"k\", \"l\"),\n        (\"dessert\", \"french\", \"autumn\", \"15m\", \"40m\", \"10m\",\n         \"rye\", \"cane\", \"salted\", \"folding\", \"whisk\", \"tart pan\"),\n    ]\n    for line in report(recipe(formulas)):\n        print(line)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "''.join([course,",
+"alt": "course +",
+"nat_span": [
+354,
+370
+],
+"alt_span": [
+354,
+362
+]
+},
+{
+"k": 1,
+"nat": "''.join([prep_time,",
+"alt": "prep_time +",
+"nat_span": [
+464,
+483
+],
+"alt_span": [
+457,
+468
+]
+},
+{
+"k": 2,
+"nat": "''.join([flour,",
+"alt": "flour +",
+"nat_span": [
+576,
+591
+],
+"alt_span": [
+562,
+569
+]
+},
+{
+"k": 3,
+"nat": "''.join([technique,",
+"alt": "technique +",
+"nat_span": [
+675,
+694
+],
+"alt_span": [
+654,
+665
+]
+},
+{
+"k": 4,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+806,
+815
+],
+"alt_span": [
+778,
+778
+]
+},
+{
+"k": 5,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+844,
+845
+],
+"alt_span": [
+807,
+809
+]
+},
+{
+"k": 6,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+1016,
+1025
+],
+"alt_span": [
+979,
+979
+]
+},
+{
+"k": 7,
+"nat": "''.join([course,",
+"alt": "course +",
+"nat_span": [
+1544,
+1560
+],
+"alt_span": [
+1498,
+1506
+]
+},
+{
+"k": 8,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+1854,
+1863
+],
+"alt_span": [
+1772,
+1772
+]
+},
+{
+"k": 9,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+1965,
+1974
+],
+"alt_span": [
+1874,
+1874
+]
+}
+],
+"k_en": 10,
+"shared_fraction": 0.858,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "''.join([course,",
+"alt": "course +",
+"nat_span": [
+354,
+370
+],
+"alt_span": [
+354,
+362
+]
+},
+{
+"k": 1,
+"nat": ", cuisine,",
+"alt": " + cuisine +",
+"nat_span": [
+374,
+384
+],
+"alt_span": [
+366,
+378
+]
+},
+{
+"k": 2,
+"nat": ", season])",
+"alt": " + season",
+"nat_span": [
+388,
+398
+],
+"alt_span": [
+382,
+391
+]
+},
+{
+"k": 3,
+"nat": "''.join([prep_time,",
+"alt": "prep_time +",
+"nat_span": [
+464,
+483
+],
+"alt_span": [
+457,
+468
+]
+},
+{
+"k": 4,
+"nat": ", cook_time,",
+"alt": " + cook_time +",
+"nat_span": [
+487,
+499
+],
+"alt_span": [
+472,
+486
+]
+},
+{
+"k": 5,
+"nat": ", rest_time])",
+"alt": " + rest_time",
+"nat_span": [
+503,
+516
+],
+"alt_span": [
+490,
+502
+]
+},
+{
+"k": 6,
+"nat": "''.join([flour,",
+"alt": "flour +",
+"nat_span": [
+576,
+591
+],
+"alt_span": [
+562,
+569
+]
+},
+{
+"k": 7,
+"nat": ", sugar,",
+"alt": " + sugar +",
+"nat_span": [
+595,
+603
+],
+"alt_span": [
+573,
+583
+]
+},
+{
+"k": 8,
+"nat": ", butter])",
+"alt": " + butter",
+"nat_span": [
+607,
+617
+],
+"alt_span": [
+587,
+596
+]
+},
+{
+"k": 9,
+"nat": "''.join([technique,",
+"alt": "technique +",
+"nat_span": [
+675,
+694
+],
+"alt_span": [
+654,
+665
+]
+},
+{
+"k": 10,
+"nat": ", tool,",
+"alt": " + tool +",
+"nat_span": [
+698,
+705
+],
+"alt_span": [
+669,
+678
+]
+},
+{
+"k": 11,
+"nat": ", vessel])",
+"alt": " + vessel",
+"nat_span": [
+709,
+719
+],
+"alt_span": [
+682,
+691
+]
+},
+{
+"k": 12,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+806,
+815
+],
+"alt_span": [
+778,
+778
+]
+},
+{
+"k": 13,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+844,
+845
+],
+"alt_span": [
+807,
+809
+]
+},
+{
+"k": 14,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+862,
+863
+],
+"alt_span": [
+826,
+828
+]
+},
+{
+"k": 15,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+879,
+880
+],
+"alt_span": [
+844,
+846
+]
+},
+{
+"k": 16,
+"nat": ",\n        ])",
+"alt": "\n        ",
+"nat_span": [
+898,
+910
+],
+"alt_span": [
+864,
+873
+]
+},
+{
+"k": 17,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+1016,
+1025
+],
+"alt_span": [
+979,
+979
+]
+},
+{
+"k": 18,
+"nat": ", name,",
+"alt": " + name +",
+"nat_span": [
+1033,
+1040
+],
+"alt_span": [
+987,
+996
+]
+},
+{
+"k": 19,
+"nat": "])",
+"alt": "",
+"nat_span": [
+1052,
+1054
+],
+"alt_span": [
+1008,
+1008
+]
+},
+{
+"k": 20,
+"nat": "''.join([course,",
+"alt": "course +",
+"nat_span": [
+1544,
+1560
+],
+"alt_span": [
+1498,
+1506
+]
+},
+{
+"k": 21,
+"nat": ", prep_time]),\n            ''.join([cuisine,",
+"alt": " + prep_time,\n            cuisine +",
+"nat_span": [
+1564,
+1608
+],
+"alt_span": [
+1510,
+1545
+]
+},
+{
+"k": 22,
+"nat": ", cook_time]),\n            ''.join([season,",
+"alt": " + cook_time,\n            season +",
+"nat_span": [
+1612,
+1655
+],
+"alt_span": [
+1549,
+1583
+]
+},
+{
+"k": 23,
+"nat": ", rest_time]),\n            ''.join([flour,",
+"alt": " + rest_time,\n            flour +",
+"nat_span": [
+1659,
+1701
+],
+"alt_span": [
+1587,
+1620
+]
+},
+{
+"k": 24,
+"nat": ", technique])",
+"alt": " + technique",
+"nat_span": [
+1705,
+1718
+],
+"alt_span": [
+1624,
+1636
+]
+},
+{
+"k": 25,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+1854,
+1863
+],
+"alt_span": [
+1772,
+1772
+]
+},
+{
+"k": 26,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+1873,
+1874
+],
+"alt_span": [
+1782,
+1784
+]
+},
+{
+"k": 27,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+1885,
+1886
+],
+"alt_span": [
+1795,
+1797
+]
+},
+{
+"k": 28,
+"nat": "])",
+"alt": "",
+"nat_span": [
+1890,
+1892
+],
+"alt_span": [
+1801,
+1801
+]
+},
+{
+"k": 29,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+1965,
+1974
+],
+"alt_span": [
+1874,
+1874
+]
+},
+{
+"k": 30,
+"nat": ", label,",
+"alt": " + label +",
+"nat_span": [
+1978,
+1986
+],
+"alt_span": [
+1878,
+1888
+]
+},
+{
+"k": 31,
+"nat": ", value])",
+"alt": " + value",
+"nat_span": [
+1992,
+2001
+],
+"alt_span": [
+1894,
+1902
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "py_join_concat__d145",
+"family": "py_join_concat",
+"topic": "Athletic Score Sheet Formatter",
+"angle": "code",
+"text_es": "Write a module with an entry function `gymnastics(scores)` that processes competition data. The module must contain four separate formatting functions. The first formats the athlete by combining gymnast last name, first name, and team strings separated by spaces. The second formats the events by combining vault, bars, and beam separated by hyphens. The third formats the judging combining judge one, judge two, and judge three separated by commas. The fourth formats the venue combining meet name, city, and state separated by dashes. The main function iterates over a list of scores where each score is a tuple of twelve strings corresponding to these fields in order. For each score, it calls the four helper functions and directly generates four additional combinations: gymnast last name and vault separated by a colon, first name and bars separated by a colon, team and beam separated by a colon, and meet name and judge one separated by a plus. Return a list of tuples containing the eight strings per score. Example input: one record with strings a, b, c, d, e, f, g, h, i, j, k, l. Output includes a b c for the first helper and d-e-f for the second.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "FIELD_NAMES = (\n    \"gymnast_last\", \"gymnast_first\", \"team\",\n    \"vault\", \"bars\", \"beam\",\n    \"judge_one\", \"judge_two\", \"judge_three\",\n    \"meet_name\", \"city\", \"state\",\n)\n\n\ndef format_athlete(last, first, team):\n    return ' '.join([last, first, team])\n\n\ndef format_events(vault, bars, beam):\n    return '-'.join([vault, bars, beam])\n\n\ndef format_judging(judge_one, judge_two, judge_three):\n    return ','.join([judge_one, judge_two, judge_three])\n\n\ndef format_venue(meet_name, city, state):\n    return '--'.join([meet_name, city, state])\n\n\ndef validate(index, score):\n    if len(score) != len(FIELD_NAMES):\n        raise ValueError(f\"record {index}: expected {len(FIELD_NAMES)} fields, got {len(score)}\")\n    for name, value in zip(FIELD_NAMES, score):\n        if not value.strip():\n            raise ValueError(f\"record {index}: field {name} is empty\")\n\n\ndef gymnastics(scores):\n    results = []\n    for index, score in enumerate(scores):\n        validate(index, score)\n        (last, first, team, vault, bars, beam,\n         judge_one, judge_two, judge_three, meet_name, city, state) = score\n        results.append((\n            format_athlete(last, first, team),\n            format_events(vault, bars, beam),\n            format_judging(judge_one, judge_two, judge_three),\n            format_venue(meet_name, city, state),\n            ':'.join([last, vault]),\n            ':'.join([first, bars]),\n            ':'.join([team, beam]),\n            '+'.join([meet_name, judge_one]),\n        ))\n    return results\n\n\ndef report(results):\n    lines = []\n    for row in results:\n        (athlete, events, judging, venue,\n         last_vault, first_bars, team_beam, meet_judge) = row\n        lines.append(' | '.join([athlete, venue]))\n        lines.append(f\"  events {events} scored by {judging}\")\n        lines.append(f\"  pairs: {'  '.join([last_vault, first_bars, team_beam, meet_judge])}\")\n    return lines\n\n\ndef main():\n    scores = [\n        (\"a\", \"b\", \"c\", \"d\", \"e\", \"f\", \"g\", \"h\", \"i\", \"j\", \"k\", \"l\"),\n        (\"Biles\", \"Simone\", \"WCC\", \"15.8\", \"14.2\", \"14.9\",\n         \"Kim\", \"Lopez\", \"Novak\", \"Nationals\", \"Fort Worth\", \"TX\"),\n    ]\n    for line in report(gymnastics(scores)):\n        print(line)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "FIELD_NAMES = (\n    \"gymnast_last\", \"gymnast_first\", \"team\",\n    \"vault\", \"bars\", \"beam\",\n    \"judge_one\", \"judge_two\", \"judge_three\",\n    \"meet_name\", \"city\", \"state\",\n)\n\n\ndef format_athlete(last, first, team):\n    return last + ' ' + first + ' ' + team\n\n\ndef format_events(vault, bars, beam):\n    return vault + '-' + bars + '-' + beam\n\n\ndef format_judging(judge_one, judge_two, judge_three):\n    return judge_one + ',' + judge_two + ',' + judge_three\n\n\ndef format_venue(meet_name, city, state):\n    return meet_name + '--' + city + '--' + state\n\n\ndef validate(index, score):\n    if len(score) != len(FIELD_NAMES):\n        raise ValueError(f\"record {index}: expected {len(FIELD_NAMES)} fields, got {len(score)}\")\n    for name, value in zip(FIELD_NAMES, score):\n        if not value.strip():\n            raise ValueError(f\"record {index}: field {name} is empty\")\n\n\ndef gymnastics(scores):\n    results = []\n    for index, score in enumerate(scores):\n        validate(index, score)\n        (last, first, team, vault, bars, beam,\n         judge_one, judge_two, judge_three, meet_name, city, state) = score\n        results.append((\n            format_athlete(last, first, team),\n            format_events(vault, bars, beam),\n            format_judging(judge_one, judge_two, judge_three),\n            format_venue(meet_name, city, state),\n            last + ':' + vault,\n            first + ':' + bars,\n            team + ':' + beam,\n            meet_name + '+' + judge_one,\n        ))\n    return results\n\n\ndef report(results):\n    lines = []\n    for row in results:\n        (athlete, events, judging, venue,\n         last_vault, first_bars, team_beam, meet_judge) = row\n        lines.append(athlete + ' | ' + venue)\n        lines.append(f\"  events {events} scored by {judging}\")\n        lines.append(f\"  pairs: {last_vault + '  ' + first_bars + '  ' + team_beam + '  ' + meet_judge}\")\n    return lines\n\n\ndef main():\n    scores = [\n        (\"a\", \"b\", \"c\", \"d\", \"e\", \"f\", \"g\", \"h\", \"i\", \"j\", \"k\", \"l\"),\n        (\"Biles\", \"Simone\", \"WCC\", \"15.8\", \"14.2\", \"14.9\",\n         \"Kim\", \"Lopez\", \"Novak\", \"Nationals\", \"Fort Worth\", \"TX\"),\n    ]\n    for line in report(gymnastics(scores)):\n        print(line)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "",
+"alt": "last + ",
+"nat_span": [
+223,
+223
+],
+"alt_span": [
+223,
+230
+]
+},
+{
+"k": 1,
+"nat": "",
+"alt": "vault + ",
+"nat_span": [
+304,
+304
+],
+"alt_span": [
+306,
+314
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "judge_one + ",
+"nat_span": [
+402,
+402
+],
+"alt_span": [
+406,
+418
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "meet_name + ",
+"nat_span": [
+503,
+503
+],
+"alt_span": [
+509,
+521
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "last + ",
+"nat_span": [
+1338,
+1338
+],
+"alt_span": [
+1347,
+1354
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "athlete + ",
+"nat_span": [
+1699,
+1699
+],
+"alt_span": [
+1688,
+1698
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "last_vault + ",
+"nat_span": [
+1825,
+1825
+],
+"alt_span": [
+1809,
+1822
+]
+}
+],
+"k_en": 7,
+"shared_fraction": 0.898,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "",
+"alt": "last + ",
+"nat_span": [
+223,
+223
+],
+"alt_span": [
+223,
+230
+]
+},
+{
+"k": 1,
+"nat": ".join([last, first, team])",
+"alt": " + first + ' ' + team",
+"nat_span": [
+226,
+252
+],
+"alt_span": [
+233,
+254
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "vault + ",
+"nat_span": [
+304,
+304
+],
+"alt_span": [
+306,
+314
+]
+},
+{
+"k": 3,
+"nat": ".join([vault, bars, beam])",
+"alt": " + bars + '-' + beam",
+"nat_span": [
+307,
+333
+],
+"alt_span": [
+317,
+337
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "judge_one + ",
+"nat_span": [
+402,
+402
+],
+"alt_span": [
+406,
+418
+]
+},
+{
+"k": 5,
+"nat": ".join([judge_one, judge_two, judge_three])",
+"alt": " + judge_two + ',' + judge_three",
+"nat_span": [
+405,
+447
+],
+"alt_span": [
+421,
+453
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "meet_name + ",
+"nat_span": [
+503,
+503
+],
+"alt_span": [
+509,
+521
+]
+},
+{
+"k": 7,
+"nat": ".join([meet_name, city, state])",
+"alt": " + city + '--' + state",
+"nat_span": [
+507,
+538
+],
+"alt_span": [
+525,
+547
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "last + ",
+"nat_span": [
+1338,
+1338
+],
+"alt_span": [
+1347,
+1354
+]
+},
+{
+"k": 9,
+"nat": ".join([last, vault]),\n            ",
+"alt": " + vault,\n            first + ",
+"nat_span": [
+1341,
+1375
+],
+"alt_span": [
+1357,
+1387
+]
+},
+{
+"k": 10,
+"nat": ".join([first, bars]),\n            ",
+"alt": " + bars,\n            team + ",
+"nat_span": [
+1378,
+1412
+],
+"alt_span": [
+1390,
+1418
+]
+},
+{
+"k": 11,
+"nat": ".join([team, beam]),\n            ",
+"alt": " + beam,\n            meet_name + ",
+"nat_span": [
+1415,
+1448
+],
+"alt_span": [
+1421,
+1454
+]
+},
+{
+"k": 12,
+"nat": ".join([meet_name, judge_one])",
+"alt": " + judge_one",
+"nat_span": [
+1451,
+1480
+],
+"alt_span": [
+1457,
+1469
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "athlete + ",
+"nat_span": [
+1699,
+1699
+],
+"alt_span": [
+1688,
+1698
+]
+},
+{
+"k": 14,
+"nat": ".join([athlete, venue])",
+"alt": " + venue",
+"nat_span": [
+1704,
+1727
+],
+"alt_span": [
+1703,
+1711
+]
+},
+{
+"k": 15,
+"nat": "",
+"alt": "last_vault + ",
+"nat_span": [
+1825,
+1825
+],
+"alt_span": [
+1809,
+1822
+]
+},
+{
+"k": 16,
+"nat": ".join([last_vault, first_bars, team_beam, meet_judge])",
+"alt": " + first_bars + '  ' + team_beam + '  ' + meet_judge",
+"nat_span": [
+1829,
+1883
+],
+"alt_span": [
+1826,
+1878
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "py_join_concat__d152",
+"family": "py_join_concat",
+"topic": "Textile Fabric Weave String",
+"angle": "code",
+"text_es": "Write a function `textile(bolts)` to format catalog strings for fabric rolls. The input is a list of tuples with nine elements: mill name, weave style, dye lot, warp fiber, warp thickness, weft fiber, weft thickness, finish treatment, roll width. For each tuple, build a source block by combining the mill name, weave style, and dye lot separated by a hyphen. Build a yarn block by combining the warp fiber, warp thickness, and weft fiber separated by a slash. Build a spec block by combining the weft thickness, finish treatment, and roll width separated by an underscore. Build a base bolt code by combining the source block, yarn block, and spec block separated by a space. If the weave style is plain, use the base bolt code. If the weave style is jacquard, build a luxury prefix by combining the word premium, the mill name, and the weave style separated by a colon. Build a combined pattern block by combining the dye lot, warp fiber, and warp thickness separated by an ampersand. Build a special finish by combining the weft fiber, weft thickness, and finish treatment separated by a plus sign. Build the jacquard code by combining the luxury prefix, the combined pattern block, the special finish, and the base bolt code separated by a vertical bar. Return the list of bolt codes.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "FIELDS = (\n    \"mill\", \"weave\", \"dye_lot\", \"warp_fiber\", \"warp_thickness\",\n    \"weft_fiber\", \"weft_thickness\", \"finish\", \"width\",\n)\n\n\ndef _validate(bolt, index):\n    if len(bolt) != 9:\n        raise ValueError(''.join([\"bolt \", str(index), \" needs 9 fields, got \", str(len(bolt))]))\n    for name, value in zip(FIELDS, bolt):\n        if not str(value).strip():\n            raise ValueError(''.join([\"bolt \", str(index), \" has an empty field: \", name]))\n\n\ndef _base_code(bolt):\n    mill, weave, dye_lot, warp_fiber, warp_th, weft_fiber, weft_th, finish, width = bolt\n    source_block = '-'.join([mill, weave, dye_lot])\n    yarn_block = '/'.join([warp_fiber, warp_th, weft_fiber])\n    spec_block = '_'.join([weft_th, finish, width])\n    return ' '.join([source_block, yarn_block, spec_block])\n\n\ndef _jacquard_code(bolt, base):\n    mill, weave, dye_lot, warp_fiber, warp_th, weft_fiber, weft_th, finish = bolt[:8]\n    luxury_prefix = ':'.join([\"premium\", mill, weave])\n    pattern_block = '&'.join([dye_lot, warp_fiber, warp_th])\n    special_finish = '+'.join([weft_fiber, weft_th, finish])\n    return '|'.join([luxury_prefix, pattern_block, special_finish, base])\n\n\ndef textile(bolts):\n    codes = []\n    for index, bolt in enumerate(bolts):\n        _validate(bolt, index)\n        normalized = tuple(str(field).strip() for field in bolt)\n        base = _base_code(normalized)\n        if normalized[1].lower() == \"jacquard\":\n            codes.append(_jacquard_code(normalized, base))\n        else:\n            codes.append(base)\n    return codes\n\n\ndef catalog_lines(bolts):\n    codes = textile(bolts)\n    lines = [\"FABRIC CATALOG\", '=' * 14]\n    for bolt, code in zip(bolts, codes):\n        header = ', '.join([str(bolt[0]), str(bolt[1]), str(bolt[8])])\n        lines.append(''.join([\"* \", header]))\n        lines.append(''.join([\"    \", code]))\n    lines.append(''.join([\"total bolts: \", str(len(codes))]))\n    return lines\n\n\ndef main():\n    bolts = [\n        (\"Ashford\", \"plain\", \"DL204\", \"cotton\", \"40s\", \"cotton\", \"30s\", \"mercerized\", \"150cm\"),\n        (\"Belmont\", \"jacquard\", \"DL771\", \"silk\", \"20d\", \"viscose\", \"75d\", \"calendered\", \"140cm\"),\n        (\"Corvale\", \"twill\", \"DL018\", \"wool\", \"2/28\", \"wool\", \"2/28\", \"fulled\", \"160cm\"),\n    ]\n    for line in catalog_lines(bolts):\n        print(line)\n    widest = max(bolts, key=lambda bolt: int(bolt[8].rstrip(\"cm\")))\n    print(' '.join([\"widest bolt:\", widest[0], widest[8]]))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "FIELDS = (\n    \"mill\", \"weave\", \"dye_lot\", \"warp_fiber\", \"warp_thickness\",\n    \"weft_fiber\", \"weft_thickness\", \"finish\", \"width\",\n)\n\n\ndef _validate(bolt, index):\n    if len(bolt) != 9:\n        raise ValueError(\"bolt \" + str(index) + \" needs 9 fields, got \" + str(len(bolt)))\n    for name, value in zip(FIELDS, bolt):\n        if not str(value).strip():\n            raise ValueError(\"bolt \" + str(index) + \" has an empty field: \" + name)\n\n\ndef _base_code(bolt):\n    mill, weave, dye_lot, warp_fiber, warp_th, weft_fiber, weft_th, finish, width = bolt\n    source_block = mill + '-' + weave + '-' + dye_lot\n    yarn_block = warp_fiber + '/' + warp_th + '/' + weft_fiber\n    spec_block = weft_th + '_' + finish + '_' + width\n    return source_block + ' ' + yarn_block + ' ' + spec_block\n\n\ndef _jacquard_code(bolt, base):\n    mill, weave, dye_lot, warp_fiber, warp_th, weft_fiber, weft_th, finish = bolt[:8]\n    luxury_prefix = \"premium\" + ':' + mill + ':' + weave\n    pattern_block = dye_lot + '&' + warp_fiber + '&' + warp_th\n    special_finish = weft_fiber + '+' + weft_th + '+' + finish\n    return luxury_prefix + '|' + pattern_block + '|' + special_finish + '|' + base\n\n\ndef textile(bolts):\n    codes = []\n    for index, bolt in enumerate(bolts):\n        _validate(bolt, index)\n        normalized = tuple(str(field).strip() for field in bolt)\n        base = _base_code(normalized)\n        if normalized[1].lower() == \"jacquard\":\n            codes.append(_jacquard_code(normalized, base))\n        else:\n            codes.append(base)\n    return codes\n\n\ndef catalog_lines(bolts):\n    codes = textile(bolts)\n    lines = [\"FABRIC CATALOG\", '=' * 14]\n    for bolt, code in zip(bolts, codes):\n        header = str(bolt[0]) + ', ' + str(bolt[1]) + ', ' + str(bolt[8])\n        lines.append(\"* \" + header)\n        lines.append(\"    \" + code)\n    lines.append(\"total bolts: \" + str(len(codes)))\n    return lines\n\n\ndef main():\n    bolts = [\n        (\"Ashford\", \"plain\", \"DL204\", \"cotton\", \"40s\", \"cotton\", \"30s\", \"mercerized\", \"150cm\"),\n        (\"Belmont\", \"jacquard\", \"DL771\", \"silk\", \"20d\", \"viscose\", \"75d\", \"calendered\", \"140cm\"),\n        (\"Corvale\", \"twill\", \"DL018\", \"wool\", \"2/28\", \"wool\", \"2/28\", \"fulled\", \"160cm\"),\n    ]\n    for line in catalog_lines(bolts):\n        print(line)\n    widest = max(bolts, key=lambda bolt: int(bolt[8].rstrip(\"cm\")))\n    print(\"widest bolt:\" + ' ' + widest[0] + ' ' + widest[8])\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+210,
+219
+],
+"alt_span": [
+210,
+210
+]
+},
+{
+"k": 1,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+389,
+398
+],
+"alt_span": [
+381,
+381
+]
+},
+{
+"k": 2,
+"nat": "",
+"alt": "mill + ",
+"nat_span": [
+584,
+584
+],
+"alt_span": [
+568,
+575
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "warp_fiber + ",
+"nat_span": [
+634,
+634
+],
+"alt_span": [
+620,
+633
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "weft_th + ",
+"nat_span": [
+695,
+695
+],
+"alt_span": [
+683,
+693
+]
+},
+{
+"k": 5,
+"nat": "",
+"alt": "\"premium\" + ",
+"nat_span": [
+930,
+930
+],
+"alt_span": [
+922,
+934
+]
+},
+{
+"k": 6,
+"nat": "",
+"alt": "dye_lot + ",
+"nat_span": [
+985,
+985
+],
+"alt_span": [
+979,
+989
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "weft_fiber + ",
+"nat_span": [
+1047,
+1047
+],
+"alt_span": [
+1043,
+1056
+]
+},
+{
+"k": 8,
+"nat": "', '.join([",
+"alt": "",
+"nat_span": [
+1696,
+1707
+],
+"alt_span": [
+1703,
+1703
+]
+},
+{
+"k": 9,
+"nat": "''.join([\"* \", header]))\n        lines.append(''.join([",
+"alt": "",
+"nat_span": [
+1771,
+1826
+],
+"alt_span": [
+1817,
+1817
+]
+},
+{
+"k": 10,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+1859,
+1868
+],
+"alt_span": [
+1849,
+1849
+]
+},
+{
+"k": 11,
+"nat": "' '.join([",
+"alt": "",
+"nat_span": [
+2375,
+2385
+],
+"alt_span": [
+2355,
+2355
+]
+}
+],
+"k_en": 12,
+"shared_fraction": 0.842,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+210,
+219
+],
+"alt_span": [
+210,
+210
+]
+},
+{
+"k": 1,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+226,
+227
+],
+"alt_span": [
+217,
+219
+]
+},
+{
+"k": 2,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+238,
+239
+],
+"alt_span": [
+230,
+232
+]
+},
+{
+"k": 3,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+263,
+264
+],
+"alt_span": [
+256,
+258
+]
+},
+{
+"k": 4,
+"nat": ")]",
+"alt": "",
+"nat_span": [
+278,
+280
+],
+"alt_span": [
+272,
+272
+]
+},
+{
+"k": 5,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+389,
+398
+],
+"alt_span": [
+381,
+381
+]
+},
+{
+"k": 6,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+405,
+406
+],
+"alt_span": [
+388,
+390
+]
+},
+{
+"k": 7,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+417,
+418
+],
+"alt_span": [
+401,
+403
+]
+},
+{
+"k": 8,
+"nat": ", name])",
+"alt": " + name",
+"nat_span": [
+442,
+450
+],
+"alt_span": [
+427,
+434
+]
+},
+{
+"k": 9,
+"nat": "",
+"alt": "mill + ",
+"nat_span": [
+584,
+584
+],
+"alt_span": [
+568,
+575
+]
+},
+{
+"k": 10,
+"nat": ".join([mill, weave, dye_lot])",
+"alt": " + weave + '-' + dye_lot",
+"nat_span": [
+587,
+616
+],
+"alt_span": [
+578,
+602
+]
+},
+{
+"k": 11,
+"nat": "",
+"alt": "warp_fiber + ",
+"nat_span": [
+634,
+634
+],
+"alt_span": [
+620,
+633
+]
+},
+{
+"k": 12,
+"nat": ".join([warp_fiber, warp_th, weft_fiber])",
+"alt": " + warp_th + '/' + weft_fiber",
+"nat_span": [
+637,
+677
+],
+"alt_span": [
+636,
+665
+]
+},
+{
+"k": 13,
+"nat": "",
+"alt": "weft_th + ",
+"nat_span": [
+695,
+695
+],
+"alt_span": [
+683,
+693
+]
+},
+{
+"k": 14,
+"nat": ".join([weft_th, finish, width])\n    return",
+"alt": " + finish + '_' + width\n    return source_block +",
+"nat_span": [
+698,
+740
+],
+"alt_span": [
+696,
+745
+]
+},
+{
+"k": 15,
+"nat": ".join([source_block, yarn_block, spec_block])",
+"alt": " + yarn_block + ' ' + spec_block",
+"nat_span": [
+744,
+789
+],
+"alt_span": [
+749,
+781
+]
+},
+{
+"k": 16,
+"nat": "",
+"alt": "\"premium\" + ",
+"nat_span": [
+930,
+930
+],
+"alt_span": [
+922,
+934
+]
+},
+{
+"k": 17,
+"nat": ".join([\"premium\", mill, weave])",
+"alt": " + mill + ':' + weave",
+"nat_span": [
+933,
+964
+],
+"alt_span": [
+937,
+958
+]
+},
+{
+"k": 18,
+"nat": "",
+"alt": "dye_lot + ",
+"nat_span": [
+985,
+985
+],
+"alt_span": [
+979,
+989
+]
+},
+{
+"k": 19,
+"nat": ".join([dye_lot, warp_fiber, warp_th])",
+"alt": " + warp_fiber + '&' + warp_th",
+"nat_span": [
+988,
+1025
+],
+"alt_span": [
+992,
+1021
+]
+},
+{
+"k": 20,
+"nat": "",
+"alt": "weft_fiber + ",
+"nat_span": [
+1047,
+1047
+],
+"alt_span": [
+1043,
+1056
+]
+},
+{
+"k": 21,
+"nat": ".join([weft_fiber, weft_th, finish])\n    return",
+"alt": " + weft_th + '+' + finish\n    return luxury_prefix +",
+"nat_span": [
+1050,
+1097
+],
+"alt_span": [
+1059,
+1111
+]
+},
+{
+"k": 22,
+"nat": ".join([luxury_prefix, pattern_block, special_finish, base])",
+"alt": " + pattern_block + '|' + special_finish + '|' + base",
+"nat_span": [
+1101,
+1160
+],
+"alt_span": [
+1115,
+1167
+]
+},
+{
+"k": 23,
+"nat": "', '.join([",
+"alt": "",
+"nat_span": [
+1696,
+1707
+],
+"alt_span": [
+1703,
+1703
+]
+},
+{
+"k": 24,
+"nat": ",",
+"alt": " + ', ' +",
+"nat_span": [
+1719,
+1720
+],
+"alt_span": [
+1715,
+1724
+]
+},
+{
+"k": 25,
+"nat": ",",
+"alt": " + ', ' +",
+"nat_span": [
+1733,
+1734
+],
+"alt_span": [
+1737,
+1746
+]
+},
+{
+"k": 26,
+"nat": "]",
+"alt": "\n        lines.append(\"* \" + header",
+"nat_span": [
+1747,
+1748
+],
+"alt_span": [
+1759,
+1794
+]
+},
+{
+"k": 27,
+"nat": "''.join([\"* \", header]))\n        lines.append(''.join([",
+"alt": "",
+"nat_span": [
+1771,
+1826
+],
+"alt_span": [
+1817,
+1817
+]
+},
+{
+"k": 28,
+"nat": ", code])",
+"alt": " + code",
+"nat_span": [
+1832,
+1840
+],
+"alt_span": [
+1823,
+1830
+]
+},
+{
+"k": 29,
+"nat": "''.join([",
+"alt": "",
+"nat_span": [
+1859,
+1868
+],
+"alt_span": [
+1849,
+1849
+]
+},
+{
+"k": 30,
+"nat": ",",
+"alt": " +",
+"nat_span": [
+1883,
+1884
+],
+"alt_span": [
+1864,
+1866
+]
+},
+{
+"k": 31,
+"nat": ")]",
+"alt": "",
+"nat_span": [
+1899,
+1901
+],
+"alt_span": [
+1881,
+1881
+]
+},
+{
+"k": 32,
+"nat": "' '.join([",
+"alt": "",
+"nat_span": [
+2375,
+2385
+],
+"alt_span": [
+2355,
+2355
+]
+},
+{
+"k": 33,
+"nat": ",",
+"alt": " + ' ' +",
+"nat_span": [
+2399,
+2400
+],
+"alt_span": [
+2369,
+2377
+]
+},
+{
+"k": 34,
+"nat": ",",
+"alt": " + ' ' +",
+"nat_span": [
+2410,
+2411
+],
+"alt_span": [
+2387,
+2395
+]
+},
+{
+"k": 35,
+"nat": "])",
+"alt": "",
+"nat_span": [
+2421,
+2423
+],
+"alt_span": [
+2405,
+2405
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
+"doc_id": "py_join_concat__d163",
+"family": "py_join_concat",
+"topic": "Caving Expedition Survey Formatter",
+"angle": "code",
+"text_es": "Write a function `speleology(surveys)` to document subterranean mapping points. The input is a list of tuples with nine elements: cave system, entrance name, survey date, survey station, compass bearing, inclination angle, passage width, passage height, geology type. For each tuple, build a surface block by combining the cave system, entrance name, and survey date separated by a hyphen. Build a vector block by combining the survey station, compass bearing, and inclination angle separated by a colon. Build an environment block by combining the passage width, passage height, and geology type separated by a slash. Build a base survey string by combining the surface block, vector block, and environment block separated by a space. If the passage width is wide, finalize with the base survey string. If the passage width is narrow, build a squeeze prefix by combining the word crawl, the cave system, and the entrance name separated by an underscore. Build a hazard middle by combining the survey date, survey station, and compass bearing separated by a plus sign. Build a deep block by combining the inclination angle, passage width, and passage height separated by an x character. Build the crawl string by combining the squeeze prefix, the hazard middle, the deep block, and the base survey string separated by a vertical bar. Return all logged strings.",
+"langs": {
+"src": "Task",
+"tgt": "Python"
+},
+"text_nat": "WIDE_THRESHOLD = 1.0\n\nFIELD_NAMES = (\n    \"cave system\", \"entrance name\", \"survey date\", \"survey station\",\n    \"compass bearing\", \"inclination angle\", \"passage width\",\n    \"passage height\", \"geology type\",\n)\n\n\ndef _blocks(survey):\n    system, entrance, date, station, bearing, angle, width, height, geology = survey\n    surface = '-'.join([str(system), str(entrance), str(date)])\n    vector = ':'.join([str(station), str(bearing), str(angle)])\n    environment = '/'.join([str(width), str(height), str(geology)])\n    return surface, vector, environment\n\n\ndef _width_in_metres(width):\n    text = str(width).strip().lower()\n    number_text = \"\"\n    for char in text:\n        if char.isdigit() or char in \".-\":\n            number_text += char\n        else:\n            break\n    if not number_text.strip(\".-\"):\n        raise ValueError(\"unrecognised passage width: %s\" % text)\n    number = float(number_text)\n    if text.endswith(\"cm\"):\n        return number / 100.0\n    return number\n\n\ndef _validate(survey, index):\n    if len(survey) != 9:\n        raise ValueError(\"survey %d has %d fields, expected 9\" % (index, len(survey)))\n    for name, value in zip(FIELD_NAMES, survey):\n        if not str(value).strip():\n            raise ValueError(\"survey %d has an empty %s\" % (index, name))\n\n\ndef speleology(surveys):\n    logged = []\n    for index, survey in enumerate(surveys, start=1):\n        _validate(survey, index)\n        system, entrance, date, station, bearing, angle, width, height, geology = survey\n        surface, vector, environment = _blocks(survey)\n        base = ' '.join([surface, vector, environment])\n        if _width_in_metres(width) >= WIDE_THRESHOLD:\n            logged.append(base)\n            continue\n        squeeze = '_'.join([\"crawl\", str(system), str(entrance)])\n        hazard = '+'.join([str(date), str(station), str(bearing)])\n        deep = 'x'.join([str(angle), str(width), str(height)])\n        logged.append('|'.join([squeeze, hazard, deep, base]))\n    return logged\n\n\ndef format_report(surveys):\n    lines = []\n    for number, (survey, entry) in enumerate(zip(surveys, speleology(surveys)), start=1):\n        label = ', '.join([str(number), str(survey[0]), str(survey[3])])\n        lines.append(\"[%s] %s\" % (label, entry))\n    return lines\n\n\ndef main():\n    surveys = [\n        (\"Mendip Master\", \"Swildon's Hole\", \"2024-03-11\", \"ST12\", \"047\", \"-12\",\n         \"2.4m\", \"3.1m\", \"limestone\"),\n        (\"Mendip Master\", \"Priddy Sink\", \"2024-03-12\", \"ST19\", \"132\", \"-31\",\n         \"40cm\", \"0.6m\", \"mudstone\"),\n        (\"Dachstein\", \"Eishohle\", \"2024-07-02\", \"DA07\", \"265\", \"+04\",\n         \"0.8m\", \"1.2m\", \"dolomite\"),\n        (\"Dachstein\", \"Windloch\", \"2024-07-05\", \"DA22\", \"310\", \"-08\",\n         \"5.0m\", \"12.0m\", \"dolomite\"),\n    ]\n    for line in format_report(surveys):\n        print(line)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"text_alt": "WIDE_THRESHOLD = 1.0\n\nFIELD_NAMES = (\n    \"cave system\", \"entrance name\", \"survey date\", \"survey station\",\n    \"compass bearing\", \"inclination angle\", \"passage width\",\n    \"passage height\", \"geology type\",\n)\n\n\ndef _blocks(survey):\n    system, entrance, date, station, bearing, angle, width, height, geology = survey\n    surface = str(system) + '-' + str(entrance) + '-' + str(date)\n    vector = str(station) + ':' + str(bearing) + ':' + str(angle)\n    environment = str(width) + '/' + str(height) + '/' + str(geology)\n    return surface, vector, environment\n\n\ndef _width_in_metres(width):\n    text = str(width).strip().lower()\n    number_text = \"\"\n    for char in text:\n        if char.isdigit() or char in \".-\":\n            number_text += char\n        else:\n            break\n    if not number_text.strip(\".-\"):\n        raise ValueError(\"unrecognised passage width: %s\" % text)\n    number = float(number_text)\n    if text.endswith(\"cm\"):\n        return number / 100.0\n    return number\n\n\ndef _validate(survey, index):\n    if len(survey) != 9:\n        raise ValueError(\"survey %d has %d fields, expected 9\" % (index, len(survey)))\n    for name, value in zip(FIELD_NAMES, survey):\n        if not str(value).strip():\n            raise ValueError(\"survey %d has an empty %s\" % (index, name))\n\n\ndef speleology(surveys):\n    logged = []\n    for index, survey in enumerate(surveys, start=1):\n        _validate(survey, index)\n        system, entrance, date, station, bearing, angle, width, height, geology = survey\n        surface, vector, environment = _blocks(survey)\n        base = surface + ' ' + vector + ' ' + environment\n        if _width_in_metres(width) >= WIDE_THRESHOLD:\n            logged.append(base)\n            continue\n        squeeze = \"crawl\" + '_' + str(system) + '_' + str(entrance)\n        hazard = str(date) + '+' + str(station) + '+' + str(bearing)\n        deep = str(angle) + 'x' + str(width) + 'x' + str(height)\n        logged.append(squeeze + '|' + hazard + '|' + deep + '|' + base)\n    return logged\n\n\ndef format_report(surveys):\n    lines = []\n    for number, (survey, entry) in enumerate(zip(surveys, speleology(surveys)), start=1):\n        label = str(number) + ', ' + str(survey[0]) + ', ' + str(survey[3])\n        lines.append(\"[%s] %s\" % (label, entry))\n    return lines\n\n\ndef main():\n    surveys = [\n        (\"Mendip Master\", \"Swildon's Hole\", \"2024-03-11\", \"ST12\", \"047\", \"-12\",\n         \"2.4m\", \"3.1m\", \"limestone\"),\n        (\"Mendip Master\", \"Priddy Sink\", \"2024-03-12\", \"ST19\", \"132\", \"-31\",\n         \"40cm\", \"0.6m\", \"mudstone\"),\n        (\"Dachstein\", \"Eishohle\", \"2024-07-02\", \"DA07\", \"265\", \"+04\",\n         \"0.8m\", \"1.2m\", \"dolomite\"),\n        (\"Dachstein\", \"Windloch\", \"2024-07-05\", \"DA22\", \"310\", \"-08\",\n         \"5.0m\", \"12.0m\", \"dolomite\"),\n    ]\n    for line in format_report(surveys):\n        print(line)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+"opps": [
+{
+"k": 0,
+"nat": "'-'.join([",
+"alt": "",
+"nat_span": [
+330,
+340
+],
+"alt_span": [
+330,
+330
+]
+},
+{
+"k": 1,
+"nat": "':'.join([",
+"alt": "",
+"nat_span": [
+393,
+403
+],
+"alt_span": [
+395,
+395
+]
+},
+{
+"k": 2,
+"nat": "'/'.join([",
+"alt": "",
+"nat_span": [
+462,
+472
+],
+"alt_span": [
+466,
+466
+]
+},
+{
+"k": 3,
+"nat": "",
+"alt": "surface + ",
+"nat_span": [
+1572,
+1572
+],
+"alt_span": [
+1578,
+1588
+]
+},
+{
+"k": 4,
+"nat": "",
+"alt": "\"crawl\" + ",
+"nat_span": [
+1738,
+1738
+],
+"alt_span": [
+1746,
+1756
+]
+},
+{
+"k": 5,
+"nat": "'+'.join([",
+"alt": "",
+"nat_span": [
+1803,
+1813
+],
+"alt_span": [
+1813,
+1813
+]
+},
+{
+"k": 6,
+"nat": "'x'.join([",
+"alt": "",
+"nat_span": [
+1868,
+1878
+],
+"alt_span": [
+1880,
+1880
+]
+},
+{
+"k": 7,
+"nat": "",
+"alt": "squeeze + ",
+"nat_span": [
+1938,
+1938
+],
+"alt_span": [
+1952,
+1962
+]
+},
+{
+"k": 8,
+"nat": "",
+"alt": "str(number) + ",
+"nat_span": [
+2148,
+2148
+],
+"alt_span": [
+2171,
+2185
+]
+}
+],
+"k_en": 9,
+"shared_fraction": 0.915,
+"pass": true,
+"verify": null,
+"free_occ": true,
+"opps_all": [
+{
+"k": 0,
+"nat": "'-'.join([",
+"alt": "",
+"nat_span": [
+330,
+340
+],
+"alt_span": [
+330,
+330
+]
+},
+{
+"k": 1,
+"nat": ",",
+"alt": " + '-' +",
+"nat_span": [
+351,
+352
+],
+"alt_span": [
+341,
+349
+]
+},
+{
+"k": 2,
+"nat": ",",
+"alt": " + '-' +",
+"nat_span": [
+366,
+367
+],
+"alt_span": [
+363,
+371
+]
+},
+{
+"k": 3,
+"nat": ")]",
+"alt": "",
+"nat_span": [
+376,
+378
+],
+"alt_span": [
+380,
+380
+]
+},
+{
+"k": 4,
+"nat": "':'.join([",
+"alt": "",
+"nat_span": [
+393,
+403
+],
+"alt_span": [
+395,
+395
+]
+},
+{
+"k": 5,
+"nat": ",",
+"alt": " + ':' +",
+"nat_span": [
+415,
+416
+],
+"alt_span": [
+407,
+415
+]
+},
+{
+"k": 6,
+"nat": ",",
+"alt": " + ':' +",
+"nat_span": [
+429,
+430
+],
+"alt_span": [
+428,
+436
+]
+},
+{
+"k": 7,
+"nat": ")]",
+"alt": "",
+"nat_span": [
+440,
+442
+],
+"alt_span": [
+446,
+446
+]
+},
+{
+"k": 8,
+"nat": "'/'.join([",
+"alt": "",
+"nat_span": [
+462,
+472
+],
+"alt_span": [
+466,
+466
+]
+},
+{
+"k": 9,
+"nat": ",",
+"alt": " + '/' +",
+"nat_span": [
+482,
+483
+],
+"alt_span": [
+476,
+484
+]
+},
+{
+"k": 10,
+"nat": ",",
+"alt": " + '/' +",
+"nat_span": [
+495,
+496
+],
+"alt_span": [
+496,
+504
+]
+},
+{
+"k": 11,
+"nat": ")]",
+"alt": "",
+"nat_span": [
+508,
+510
+],
+"alt_span": [
+516,
+516
+]
+},
+{
+"k": 12,
+"nat": "",
+"alt": "surface + ",
+"nat_span": [
+1572,
+1572
+],
+"alt_span": [
+1578,
+1588
+]
+},
+{
+"k": 13,
+"nat": ".join([surface, vector, environment])",
+"alt": " + vector + ' ' + environment",
+"nat_span": [
+1575,
+1612
+],
+"alt_span": [
+1591,
+1620
+]
+},
+{
+"k": 14,
+"nat": "",
+"alt": "\"crawl\" + ",
+"nat_span": [
+1738,
+1738
+],
+"alt_span": [
+1746,
+1756
+]
+},
+{
+"k": 15,
+"nat": ".join([\"crawl\",",
+"alt": " +",
+"nat_span": [
+1741,
+1756
+],
+"alt_span": [
+1759,
+1761
+]
+},
+{
+"k": 16,
+"nat": ",",
+"alt": " + '_' +",
+"nat_span": [
+1768,
+1769
+],
+"alt_span": [
+1773,
+1781
+]
+},
+{
+"k": 17,
+"nat": ")]",
+"alt": "",
+"nat_span": [
+1782,
+1784
+],
+"alt_span": [
+1794,
+1794
+]
+},
+{
+"k": 18,
+"nat": "'+'.join([",
+"alt": "",
+"nat_span": [
+1803,
+1813
+],
+"alt_span": [
+1813,
+1813
+]
+},
+{
+"k": 19,
+"nat": ",",
+"alt": " + '+' +",
+"nat_span": [
+1822,
+1823
+],
+"alt_span": [
+1822,
+1830
+]
+},
+{
+"k": 20,
+"nat": ",",
+"alt": " + '+' +",
+"nat_span": [
+1836,
+1837
+],
+"alt_span": [
+1843,
+1851
+]
+},
+{
+"k": 21,
+"nat": ")]",
+"alt": "",
+"nat_span": [
+1849,
+1851
+],
+"alt_span": [
+1863,
+1863
+]
+},
+{
+"k": 22,
+"nat": "'x'.join([",
+"alt": "",
+"nat_span": [
+1868,
+1878
+],
+"alt_span": [
+1880,
+1880
+]
+},
+{
+"k": 23,
+"nat": ",",
+"alt": " + 'x' +",
+"nat_span": [
+1888,
+1889
+],
+"alt_span": [
+1890,
+1898
+]
+},
+{
+"k": 24,
+"nat": ",",
+"alt": " + 'x' +",
+"nat_span": [
+1900,
+1901
+],
+"alt_span": [
+1909,
+1917
+]
+},
+{
+"k": 25,
+"nat": ")]",
+"alt": "",
+"nat_span": [
+1912,
+1914
+],
+"alt_span": [
+1928,
+1928
+]
+},
+{
+"k": 26,
+"nat": "",
+"alt": "squeeze + ",
+"nat_span": [
+1938,
+1938
+],
+"alt_span": [
+1952,
+1962
+]
+},
+{
+"k": 27,
+"nat": ".join([squeeze, hazard, deep, base])",
+"alt": " + hazard + '|' + deep + '|' + base",
+"nat_span": [
+1941,
+1977
+],
+"alt_span": [
+1965,
+2000
+]
+},
+{
+"k": 28,
+"nat": "",
+"alt": "str(number) + ",
+"nat_span": [
+2148,
+2148
+],
+"alt_span": [
+2171,
+2185
+]
+},
+{
+"k": 29,
+"nat": ".join([str(number),",
+"alt": " +",
+"nat_span": [
+2152,
+2171
+],
+"alt_span": [
+2189,
+2191
+]
+},
+{
+"k": 30,
+"nat": ",",
+"alt": " + ', ' +",
+"nat_span": [
+2186,
+2187
+],
+"alt_span": [
+2206,
+2215
+]
+},
+{
+"k": 31,
+"nat": "])",
+"alt": "",
+"nat_span": [
+2200,
+2202
+],
+"alt_span": [
+2228,
+2228
+]
+}
+],
+"free_filter": true,
+"gen_model": "anthropic/claude-opus-5",
+"reviewed_by": [
+"anthropic/claude-opus-5",
+"openai/gpt-5"
+],
+"task_designed_by": "google/gemini-3.1-pro-preview"
+},
+{
 "doc_id": "py_join_concat__t002",
 "family": "py_join_concat",
 "topic": "Count Vowels",
@@ -51509,522 +54020,6 @@
 "free_filter": true
 },
 {
-"doc_id": "py_join_concat__t078",
-"family": "py_join_concat",
-"topic": "Harmonic Mean",
-"angle": "code",
-"text_es": "Calculate the harmonic mean of a list of positive numbers. The harmonic mean is the reciprocal of the arithmetic mean of the reciprocals. The function `harmonic_mean(numbers)` should return the calculated mean. Input: `numbers` (list of float). Output: `mean_value` (float).\nExample 1: `harmonic_mean([1, 2, 4])` should return `1.7142857142857142`.\nExample 2: `harmonic_mean([10, 10, 10])` should return `10.0`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "import math\n\ndef harmonic_mean(numbers: list[float]) -> float:\n    if not numbers:\n        return 0.0\n\n    # Validate input: ensure all numbers are positive\n    invalid_numbers = [num for num in numbers if num <= 0]\n    if invalid_numbers:\n        error_message_parts = [\"All numbers must be positive. Found non-positive values:\",\n                               \", \".join(map(str, invalid_numbers))]\n        raise ValueError(\" \".join(error_message_parts))\n\n    reciprocals = [1 / num for num in numbers]\n    \n    reciprocal_sum_parts = [\"Calculating sum of reciprocals for numbers:\",\n                            \", \".join(map(str, numbers))]\n    print(\" \".join(reciprocal_sum_parts))\n\n    sum_of_reciprocals = sum(reciprocals)\n    \n    number_of_elements = len(numbers)\n    \n    arithmetic_mean_of_reciprocals = sum_of_reciprocals / number_of_elements\n    \n    result_calculation_parts = [\"Sum:\", str(sum_of_reciprocals),\n                                \"Count:\", str(number_of_elements)]\n    intermediate_message = \" \".join(result_calculation_parts)\n    print(intermediate_message)\n\n    if arithmetic_mean_of_reciprocals == 0:\n        division_error_parts = [\"Arithmetic mean of reciprocals is zero.\",\n                                \"Cannot compute harmonic mean.\"]\n        raise ZeroDivisionError(\" \".join(division_error_parts))\n\n    harmonic_mean_value = 1 / arithmetic_mean_of_reciprocals\n    \n    final_output_parts = [\"The harmonic mean of\",\n                          \", \".join(map(str, numbers)),\n                          \"is\", str(harmonic_mean_value)]\n    print(\" \".join(final_output_parts))\n\n    return harmonic_mean_value\n\nif __name__ == '__main__':\n    # Example 1\n    example1_input = [1, 2, 4]\n    example1_output_message = \" \".join([\"Example 1 Input:\", \", \".join(map(str, example1_input))])\n    print(example1_output_message)\n    result1 = harmonic_mean(example1_input)\n    \n    # Example 2\n    example2_input = [10, 10, 10]\n    example2_output_message = \" \".join([\"Example 2 Input:\", \", \".join(map(str, example2_input))])\n    print(example2_output_message)\n    result2 = harmonic_mean(example2_input)\n\n    # Test with an invalid input\n    try:\n        invalid_input = [1, -2, 3]\n        invalid_input_message = \" \".join([\"Testing invalid input:\", \", \".join(map(str, invalid_input))])\n        print(invalid_input_message)\n        harmonic_mean(invalid_input)\n    except ValueError as e:\n        print(\" \".join([\"Caught expected error:\", str(e)]))\n\n    # Test with empty list\n    try:\n        empty_list_message = \" \".join([\"Testing empty list:\", \"[]\"])\n        print(empty_list_message)\n        result_empty = harmonic_mean([])\n        print(\" \".join([\"Harmonic mean of empty list:\", str(result_empty)]))\n    except Exception as e:\n        print(\" \".join([\"Caught unexpected error for empty list:\", str(e)]))\n",
-"text_alt": "import math\n\ndef harmonic_mean(numbers: list[float]) -> float:\n    if not numbers:\n        return 0.0\n\n    # Validate input: ensure all numbers are positive\n    invalid_numbers = [num for num in numbers if num <= 0]\n    if invalid_numbers:\n        error_message_parts = [\"All numbers must be positive. Found non-positive values:\",\n                               \", \".join(map(str, invalid_numbers))]\n        raise ValueError(\" \" + error_message_parts[0] + \" \" + error_message_parts[1])\n\n    reciprocals = [1 / num for num in numbers]\n    \n    reciprocal_sum_parts = [\"Calculating sum of reciprocals for numbers:\",\n                            \", \".join(map(str, numbers))]\n    print(\" \" + reciprocal_sum_parts[0] + \" \" + reciprocal_sum_parts[1])\n\n    sum_of_reciprocals = sum(reciprocals)\n    \n    number_of_elements = len(numbers)\n    \n    arithmetic_mean_of_reciprocals = sum_of_reciprocals / number_of_elements\n    \n    result_calculation_parts = [\"Sum:\", str(sum_of_reciprocals),\n                                \"Count:\", str(number_of_elements)]\n    intermediate_message = \" \" + result_calculation_parts[0] + \" \" + result_calculation_parts[1] + \" \" + result_calculation_parts[2] + \" \" + result_calculation_parts[3]\n    print(intermediate_message)\n\n    if arithmetic_mean_of_reciprocals == 0:\n        division_error_parts = [\"Arithmetic mean of reciprocals is zero.\",\n                                \"Cannot compute harmonic mean.\"]\n        raise ZeroDivisionError(\" \" + division_error_parts[0] + \" \" + division_error_parts[1])\n\n    harmonic_mean_value = 1 / arithmetic_mean_of_reciprocals\n    \n    final_output_parts = [\"The harmonic mean of\",\n                          \", \".join(map(str, numbers)),\n                          \"is\", str(harmonic_mean_value)]\n    print(\" \" + final_output_parts[0] + \" \" + final_output_parts[1] + \" \" + final_output_parts[2] + \" \" + final_output_parts[3])\n\n    return harmonic_mean_value\n\nif __name__ == '__main__':\n    # Example 1\n    example1_input = [1, 2, 4]\n    example1_output_message = \" \" + \"Example 1 Input:\" + \" \" + \", \".join(map(str, example1_input))\n    print(example1_output_message)\n    result1 = harmonic_mean(example1_input)\n    \n    # Example 2\n    example2_input = [10, 10, 10]\n    example2_output_message = \" \" + \"Example 2 Input:\" + \" \" + \", \".join(map(str, example2_input))\n    print(example2_output_message)\n    result2 = harmonic_mean(example2_input)\n\n    # Test with an invalid input\n    try:\n        invalid_input = [1, -2, 3]\n        invalid_input_message = \" \" + \"Testing invalid input:\" + \" \" + \", \".join(map(str, invalid_input))\n        print(invalid_input_message)\n        harmonic_mean(invalid_input)\n    except ValueError as e:\n        print(\" \" + \"Caught expected error:\" + \" \" + str(e))\n\n    # Test with empty list\n    try:\n        empty_list_message = \" \" + \"Testing empty list:\" + \" \" + \"[]\"\n        print(empty_list_message)\n        result_empty = harmonic_mean([])\n        print(\" \" + \"Harmonic mean of empty list:\" + \" \" + str(result_empty))\n    except Exception as e:\n        print(\" \" + \"Caught unexpected error for empty list:\" + \" \" + str(e))\n",
-"opps": [
-{
-"k": 0,
-"nat": ".join(error_message_parts)",
-"alt": " + error_message_parts[0] + \" \" + error_message_parts[1]",
-"nat_span": [
-428,
-454
-],
-"alt_span": [
-428,
-484
-]
-},
-{
-"k": 1,
-"nat": ".join(reciprocal_sum_parts)",
-"alt": " + reciprocal_sum_parts[0] + \" \" + reciprocal_sum_parts[1]",
-"nat_span": [
-655,
-682
-],
-"alt_span": [
-685,
-743
-]
-},
-{
-"k": 2,
-"nat": ".join(result_calculation_parts)",
-"alt": " + result_calculation_parts[0] + \" \" + result_calculation_parts[1] + \" \" + result_calculation_parts[2] + \" \" + result_calculation_parts[3]",
-"nat_span": [
-1019,
-1050
-],
-"alt_span": [
-1080,
-1218
-]
-},
-{
-"k": 3,
-"nat": ".join(division_error_parts)",
-"alt": " + division_error_parts[0] + \" \" + division_error_parts[1]",
-"nat_span": [
-1303,
-1330
-],
-"alt_span": [
-1471,
-1529
-]
-},
-{
-"k": 4,
-"nat": ".join(final_output_parts)",
-"alt": " + final_output_parts[0] + \" \" + final_output_parts[1] + \" \" + final_output_parts[2] + \" \" + final_output_parts[3]",
-"nat_span": [
-1576,
-1601
-],
-"alt_span": [
-1775,
-1889
-]
-},
-{
-"k": 5,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-1743,
-1750
-],
-"alt_span": [
-2031,
-2034
-]
-},
-{
-"k": 6,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-1975,
-1982
-],
-"alt_span": [
-2264,
-2267
-]
-},
-{
-"k": 7,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-2232,
-2239
-],
-"alt_span": [
-2522,
-2525
-]
-},
-{
-"k": 8,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-2421,
-2428
-],
-"alt_span": [
-2712,
-2715
-]
-},
-{
-"k": 9,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-2533,
-2540
-],
-"alt_span": [
-2825,
-2828
-]
-},
-{
-"k": 10,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-2662,
-2669
-],
-"alt_span": [
-2955,
-2958
-]
-},
-{
-"k": 11,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-2766,
-2773
-],
-"alt_span": [
-3060,
-3063
-]
-}
-],
-"k_en": 12,
-"shared_fraction": 0.915,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": ".join(error_message_parts)",
-"alt": " + error_message_parts[0] + \" \" + error_message_parts[1]",
-"nat_span": [
-428,
-454
-],
-"alt_span": [
-428,
-484
-]
-},
-{
-"k": 1,
-"nat": ".join(reciprocal_sum_parts)",
-"alt": " + reciprocal_sum_parts[0] + \" \" + reciprocal_sum_parts[1]",
-"nat_span": [
-655,
-682
-],
-"alt_span": [
-685,
-743
-]
-},
-{
-"k": 2,
-"nat": ".join(result_calculation_parts)",
-"alt": " + result_calculation_parts[0] + \" \" + result_calculation_parts[1] + \" \" + result_calculation_parts[2] + \" \" + result_calculation_parts[3]",
-"nat_span": [
-1019,
-1050
-],
-"alt_span": [
-1080,
-1218
-]
-},
-{
-"k": 3,
-"nat": ".join(division_error_parts)",
-"alt": " + division_error_parts[0] + \" \" + division_error_parts[1]",
-"nat_span": [
-1303,
-1330
-],
-"alt_span": [
-1471,
-1529
-]
-},
-{
-"k": 4,
-"nat": ".join(final_output_parts)",
-"alt": " + final_output_parts[0] + \" \" + final_output_parts[1] + \" \" + final_output_parts[2] + \" \" + final_output_parts[3]",
-"nat_span": [
-1576,
-1601
-],
-"alt_span": [
-1775,
-1889
-]
-},
-{
-"k": 5,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-1743,
-1750
-],
-"alt_span": [
-2031,
-2034
-]
-},
-{
-"k": 6,
-"nat": ",",
-"alt": " + \" \" +",
-"nat_span": [
-1768,
-1769
-],
-"alt_span": [
-2052,
-2060
-]
-},
-{
-"k": 7,
-"nat": ")]",
-"alt": "",
-"nat_span": [
-1804,
-1806
-],
-"alt_span": [
-2095,
-2095
-]
-},
-{
-"k": 8,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-1975,
-1982
-],
-"alt_span": [
-2264,
-2267
-]
-},
-{
-"k": 9,
-"nat": ",",
-"alt": " + \" \" +",
-"nat_span": [
-2000,
-2001
-],
-"alt_span": [
-2285,
-2293
-]
-},
-{
-"k": 10,
-"nat": ")]",
-"alt": "",
-"nat_span": [
-2036,
-2038
-],
-"alt_span": [
-2328,
-2328
-]
-},
-{
-"k": 11,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-2232,
-2239
-],
-"alt_span": [
-2522,
-2525
-]
-},
-{
-"k": 12,
-"nat": ",",
-"alt": " + \" \" +",
-"nat_span": [
-2263,
-2264
-],
-"alt_span": [
-2549,
-2557
-]
-},
-{
-"k": 13,
-"nat": ")]",
-"alt": "",
-"nat_span": [
-2298,
-2300
-],
-"alt_span": [
-2591,
-2591
-]
-},
-{
-"k": 14,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-2421,
-2428
-],
-"alt_span": [
-2712,
-2715
-]
-},
-{
-"k": 15,
-"nat": ",",
-"alt": " + \" \" +",
-"nat_span": [
-2452,
-2453
-],
-"alt_span": [
-2739,
-2747
-]
-},
-{
-"k": 16,
-"nat": ")]",
-"alt": "",
-"nat_span": [
-2459,
-2461
-],
-"alt_span": [
-2753,
-2753
-]
-},
-{
-"k": 17,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-2533,
-2540
-],
-"alt_span": [
-2825,
-2828
-]
-},
-{
-"k": 18,
-"nat": ",",
-"alt": " + \" \" +",
-"nat_span": [
-2561,
-2562
-],
-"alt_span": [
-2849,
-2857
-]
-},
-{
-"k": 19,
-"nat": "])",
-"alt": "",
-"nat_span": [
-2567,
-2569
-],
-"alt_span": [
-2862,
-2862
-]
-},
-{
-"k": 20,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-2662,
-2669
-],
-"alt_span": [
-2955,
-2958
-]
-},
-{
-"k": 21,
-"nat": ",",
-"alt": " + \" \" +",
-"nat_span": [
-2699,
-2700
-],
-"alt_span": [
-2988,
-2996
-]
-},
-{
-"k": 22,
-"nat": ")]",
-"alt": "",
-"nat_span": [
-2717,
-2719
-],
-"alt_span": [
-3013,
-3013
-]
-},
-{
-"k": 23,
-"nat": ".join([",
-"alt": " + ",
-"nat_span": [
-2766,
-2773
-],
-"alt_span": [
-3060,
-3063
-]
-},
-{
-"k": 24,
-"nat": ",",
-"alt": " + \" \" +",
-"nat_span": [
-2814,
-2815
-],
-"alt_span": [
-3104,
-3112
-]
-},
-{
-"k": 25,
-"nat": "])",
-"alt": "",
-"nat_span": [
-2822,
-2824
-],
-"alt_span": [
-3119,
-3119
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py_join_concat__t079",
 "family": "py_join_concat",
 "topic": "Area of a Rectangle",
@@ -56593,366 +58588,6 @@
 "alt_span": [
 2671,
 2693
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_join_concat__t092",
-"family": "py_join_concat",
-"topic": "Check All Characters Unique",
-"angle": "code",
-"text_es": "Determine if all characters in a given string are unique (case-sensitive). The function `has_unique_chars(text)` should return a boolean. Input: `text` (str). Output: `is_unique` (bool).\nExample 1: `has_unique_chars('abcde')` should return `True`.\nExample 2: `has_unique_chars('hello')` should return `False`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def has_unique_chars(text):\n    seen_chars = set()\n    current_char_list = []\n    \n    # Building an informative message for an empty string scenario.\n    initial_message_parts = ['Starting', 'unique', 'character', 'check.']\n    initial_message = ' '.join(initial_message_parts)\n\n    for char_index, char in enumerate(text):\n        current_char_list.append(char)\n        \n        # Another join for logging or debugging purposes.\n        processing_message_parts = ['Processing', 'character', str(char_index), ':', char]\n        processing_message = ' '.join(processing_message_parts)\n        \n        if char in seen_chars:\n            # Constructing a descriptive return message for non-unique case.\n            duplicate_info_parts = ['Duplicate', 'found', 'at', 'index', str(char_index), ':', char]\n            duplicate_info = ' '.join(duplicate_info_parts)\n            return False\n        seen_chars.add(char)\n\n    # Constructing a success message.\n    unique_message_parts = ['All', 'characters', 'are', 'unique.']\n    unique_message = ' '.join(unique_message_parts)\n    \n    # Another example of join, perhaps for a final log entry.\n    final_state_parts = ['Final', 'unique', 'set', 'size:', str(len(seen_chars))]\n    final_state_log = ', '.join(final_state_parts)\n\n    # Yet another join, showing all characters processed.\n    all_chars_processed = ''.join(current_char_list)\n    \n    # A more complex join, combining several pieces of information.\n    summary_parts = ['Processed:', all_chars_processed, 'Unique count:', str(len(seen_chars))]\n    summary_output = ' | '.join(summary_parts)\n\n    # One more join example, perhaps for an internal check or assertion.\n    internal_check = ''.join(['Expected', 'length', ':', str(len(text)), 'Actual', 'unique', ':', str(len(seen_chars))])\n\n    # A final join for clarity if logging were enabled.\n    return_status_parts = ['Function', 'returning', 'True']\n    return_status_log = ' '.join(return_status_parts)\n\n    return True\n",
-"text_alt": "def has_unique_chars(text):\n    seen_chars = set()\n    current_char_list = []\n    \n    # Building an informative message for an empty string scenario.\n    initial_message_parts = ['Starting', 'unique', 'character', 'check.']\n    initial_message = initial_message_parts[0] + ' ' + initial_message_parts[1] + ' ' + initial_message_parts[2] + ' ' + initial_message_parts[3]\n\n    for char_index, char in enumerate(text):\n        current_char_list.append(char)\n        \n        # Another join for logging or debugging purposes.\n        processing_message_parts = ['Processing', 'character', str(char_index), ':', char]\n        processing_message = processing_message_parts[0] + ' ' + processing_message_parts[1] + ' ' + processing_message_parts[2] + ' ' + processing_message_parts[3] + ' ' + processing_message_parts[4]\n        \n        if char in seen_chars:\n            # Constructing a descriptive return message for non-unique case.\n            duplicate_info_parts = ['Duplicate', 'found', 'at', 'index', str(char_index), ':', char]\n            duplicate_info = duplicate_info_parts[0] + ' ' + duplicate_info_parts[1] + ' ' + duplicate_info_parts[2] + ' ' + duplicate_info_parts[3] + ' ' + duplicate_info_parts[4] + ' ' + duplicate_info_parts[5]\n            return False\n        seen_chars.add(char)\n\n    # Constructing a success message.\n    unique_message_parts = ['All', 'characters', 'are', 'unique.']\n    unique_message = unique_message_parts[0] + ' ' + unique_message_parts[1] + ' ' + unique_message_parts[2] + ' ' + unique_message_parts[3]\n    \n    # Another example of join, perhaps for a final log entry.\n    final_state_parts = ['Final', 'unique', 'set', 'size:', str(len(seen_chars))]\n    final_state_log = final_state_parts[0] + ', ' + final_state_parts[1] + ', ' + final_state_parts[2] + ', ' + final_state_parts[3] + ', ' + final_state_parts[4]\n\n    # Yet another join, showing all characters processed.\n    all_chars_processed = ''\n    for part in current_char_list:\n        all_chars_processed += part\n    \n    # A more complex join, combining several pieces of information.\n    summary_parts = ['Processed:', all_chars_processed, 'Unique count:', str(len(seen_chars))]\n    summary_output = summary_parts[0] + ' | ' + summary_parts[1] + ' | ' + summary_parts[2] + ' | ' + summary_parts[3]\n\n    # One more join example, perhaps for an internal check or assertion.\n    internal_check = ''\n    for part in ['Expected', 'length', ':', str(len(text)), 'Actual', 'unique', ':', str(len(seen_chars))]:\n        internal_check += part\n\n    # A final join for clarity if logging were enabled.\n    return_status_parts = ['Function', 'returning', 'True']\n    return_status_log = return_status_parts[0] + ' ' + return_status_parts[1] + ' ' + return_status_parts[2]\n\n    return True\n",
-"opps": [
-{
-"k": 0,
-"nat": "",
-"alt": "initial_message_parts[0] + ",
-"nat_span": [
-247,
-247
-],
-"alt_span": [
-247,
-274
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "processing_message_parts[0] + ",
-"nat_span": [
-551,
-551
-],
-"alt_span": [
-643,
-673
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "duplicate_info_parts[0] + ",
-"nat_span": [
-833,
-833
-],
-"alt_span": [
-1062,
-1088
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "unique_message_parts[0] + ",
-"nat_span": [
-1045,
-1045
-],
-"alt_span": [
-1427,
-1453
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "final_state_parts[0] + ",
-"nat_span": [
-1247,
-1247
-],
-"alt_span": [
-1718,
-1741
-]
-},
-{
-"k": 5,
-"nat": ".join(current_char_list)",
-"alt": "\n    for part in current_char_list:\n        all_chars_processed += part",
-"nat_span": [
-1363,
-1387
-],
-"alt_span": [
-1946,
-2017
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "summary_parts[0] + ",
-"nat_span": [
-1577,
-1577
-],
-"alt_span": [
-2207,
-2226
-]
-},
-{
-"k": 7,
-"nat": ".join(",
-"alt": "\n    for part in ",
-"nat_span": [
-1700,
-1706
-],
-"alt_span": [
-2402,
-2419
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "return_status_parts[0] + ",
-"nat_span": [
-1939,
-1939
-],
-"alt_span": [
-2683,
-2708
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 0.942,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "",
-"alt": "initial_message_parts[0] + ",
-"nat_span": [
-247,
-247
-],
-"alt_span": [
-247,
-274
-]
-},
-{
-"k": 1,
-"nat": ".join(initial_message_parts)",
-"alt": " + initial_message_parts[1] + ' ' + initial_message_parts[2] + ' ' + initial_message_parts[3]",
-"nat_span": [
-250,
-278
-],
-"alt_span": [
-277,
-370
-]
-},
-{
-"k": 2,
-"nat": "",
-"alt": "processing_message_parts[0] + ",
-"nat_span": [
-551,
-551
-],
-"alt_span": [
-643,
-673
-]
-},
-{
-"k": 3,
-"nat": ".join(processing_message_parts)",
-"alt": " + processing_message_parts[1] + ' ' + processing_message_parts[2] + ' ' + processing_message_parts[3] + ' ' + processing_message_parts[4]",
-"nat_span": [
-554,
-585
-],
-"alt_span": [
-676,
-814
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "duplicate_info_parts[0] + ",
-"nat_span": [
-833,
-833
-],
-"alt_span": [
-1062,
-1088
-]
-},
-{
-"k": 5,
-"nat": ".join(duplicate_info_parts)",
-"alt": " + duplicate_info_parts[1] + ' ' + duplicate_info_parts[2] + ' ' + duplicate_info_parts[3] + ' ' + duplicate_info_parts[4] + ' ' + duplicate_info_parts[5]",
-"nat_span": [
-836,
-863
-],
-"alt_span": [
-1091,
-1245
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "unique_message_parts[0] + ",
-"nat_span": [
-1045,
-1045
-],
-"alt_span": [
-1427,
-1453
-]
-},
-{
-"k": 7,
-"nat": ".join(unique_message_parts)",
-"alt": " + unique_message_parts[1] + ' ' + unique_message_parts[2] + ' ' + unique_message_parts[3]",
-"nat_span": [
-1048,
-1075
-],
-"alt_span": [
-1456,
-1546
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "final_state_parts[0] + ",
-"nat_span": [
-1247,
-1247
-],
-"alt_span": [
-1718,
-1741
-]
-},
-{
-"k": 9,
-"nat": ".join(final_state_parts)",
-"alt": " + final_state_parts[1] + ', ' + final_state_parts[2] + ', ' + final_state_parts[3] + ', ' + final_state_parts[4]",
-"nat_span": [
-1251,
-1275
-],
-"alt_span": [
-1745,
-1858
-]
-},
-{
-"k": 10,
-"nat": ".join(current_char_list)",
-"alt": "\n    for part in current_char_list:\n        all_chars_processed += part",
-"nat_span": [
-1363,
-1387
-],
-"alt_span": [
-1946,
-2017
-]
-},
-{
-"k": 11,
-"nat": "",
-"alt": "summary_parts[0] + ",
-"nat_span": [
-1577,
-1577
-],
-"alt_span": [
-2207,
-2226
-]
-},
-{
-"k": 12,
-"nat": ".join(summary_parts)",
-"alt": " + summary_parts[1] + ' | ' + summary_parts[2] + ' | ' + summary_parts[3]",
-"nat_span": [
-1582,
-1602
-],
-"alt_span": [
-2231,
-2304
-]
-},
-{
-"k": 13,
-"nat": ".join(",
-"alt": "\n    for part in ",
-"nat_span": [
-1700,
-1706
-],
-"alt_span": [
-2402,
-2419
-]
-},
-{
-"k": 14,
-"nat": ")",
-"alt": ":\n        internal_check += part",
-"nat_span": [
-1796,
-1797
-],
-"alt_span": [
-2509,
-2541
-]
-},
-{
-"k": 15,
-"nat": "",
-"alt": "return_status_parts[0] + ",
-"nat_span": [
-1939,
-1939
-],
-"alt_span": [
-2683,
-2708
-]
-},
-{
-"k": 16,
-"nat": ".join(return_status_parts)",
-"alt": " + return_status_parts[1] + ' ' + return_status_parts[2]",
-"nat_span": [
-1942,
-1968
-],
-"alt_span": [
-2711,
-2767
 ]
 }
 ],
@@ -75226,587 +76861,6 @@
 "free_filter": true
 },
 {
-"doc_id": "py_join_concat__t154",
-"family": "py_join_concat",
-"topic": "Find the Mode of a List",
-"angle": "code",
-"text_es": "Find the mode (most frequent element) in a list of numbers. If there are multiple modes, return any one of them. The function `find_mode` should take one argument: `numbers` (list of int/float). It should return an int or float. \nExample 1: `find_mode([1, 2, 2, 3, 3, 3, 4])` should return `3`. \nExample 2: `find_mode([1, 1, 2, 2, 3])` could return `1` or `2`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "import collections\n\ndef find_mode(numbers):\n    if not numbers:\n        return None\n\n    counts = collections.defaultdict(int)\n\n    for num in numbers:\n        counts[num] += 1\n\n    max_count = -1\n    mode = None\n\n    keys_list = list(counts.keys())\n    # Example 1 of .join string construction\n    joined_keys = ', '.join(map(str, keys_list))\n\n    values_list = list(counts.values())\n    # Example 2 of .join string construction\n    joined_values = ' '.join(map(str, values_list))\n\n    # Example 3 of .join string construction\n    status_msg_start = ''.join(['Starting', ' mode', ' search...'])\n\n    for num, count in counts.items():\n        # Example 4 of .join string construction\n        current_item_info = ''.join(['Checking: ', str(num), ' with count: ', str(count)])\n\n        if count > max_count:\n            max_count = count\n            mode = num\n\n    # Example 5 of .join string construction\n    final_message_part1 = ' '.join(['Mode', 'finding', 'complete.'])\n    # Example 6 of .join string construction\n    final_message_part2 = ''.join(['The', ' result', ' is: ', str(mode)])\n    # Example 7 of .join string construction\n    combined_message = ' '.join([final_message_part1, final_message_part2])\n\n    # Example 8 of .join string construction\n    mode_summary = '-'.join(['Mode', str(mode), 'Count', str(max_count)])\n    # Example 9 of .join string construction\n    data_summary = ', '.join(['Elements processed:', str(len(numbers)), 'Unique:', str(len(counts))])\n    # Example 10 of .join string construction\n    return_info = ': '.join(['Returning', str(mode)])\n    return mode\n",
-"text_alt": "import collections\n\ndef find_mode(numbers):\n    if not numbers:\n        return None\n\n    counts = collections.defaultdict(int)\n\n    for num in numbers:\n        counts[num] += 1\n\n    max_count = -1\n    mode = None\n\n    keys_list = list(counts.keys())\n    # Example 1 of .join string construction\n    joined_keys = str(str(list(map(str, keys_list))[0]) + ', ' + str(list(map(str, keys_list))[1]) + ', ' + str(list(map(str, keys_list))[2])) if len(list(map(str, keys_list))) > 2 else (str(list(map(str, keys_list))[0]) + ', ' + str(list(map(str, keys_list))[1]) if len(list(map(str, keys_list))) > 1 else (str(list(map(str, keys_list))[0]) if len(list(map(str, keys_list))) > 0 else ''))\n\n    values_list = list(counts.values())\n    # Example 2 of .join string construction\n    joined_values = str(str(list(map(str, values_list))[0]) + ' ' + str(list(map(str, values_list))[1]) + ' ' + str(list(map(str, values_list))[2])) if len(list(map(str, values_list))) > 2 else (str(list(map(str, values_list))[0]) + ' ' + str(list(map(str, values_list))[1]) if len(list(map(str, values_list))) > 1 else (str(list(map(str, values_list))[0]) if len(list(map(str, values_list))) > 0 else ''))\n\n    # Example 3 of .join string construction\n    status_msg_start = 'Starting' + ' mode' + ' search...'\n\n    for num, count in counts.items():\n        # Example 4 of .join string construction\n        current_item_info = 'Checking: ' + str(num) + ' with count: ' + str(count)\n\n    if not counts:\n        return None\n\n    max_count = -1\n    mode = None\n\n    for num, count in counts.items():\n        if count > max_count:\n            max_count = count\n            mode = num\n\n    # Example 5 of .join string construction\n    final_message_part1 = 'Mode' + ' ' + 'finding' + ' ' + 'complete.'\n    # Example 6 of .join string construction\n    final_message_part2 = 'The' + ' result' + ' is: ' + str(mode)\n    # Example 7 of .join string construction\n    combined_message = final_message_part1 + ' ' + final_message_part2\n\n    # Example 8 of .join string construction\n    mode_summary = 'Mode' + '-' + str(mode) + '-' + 'Count' + '-' + str(max_count)\n    # Example 9 of .join string construction\n    data_summary = 'Elements processed:' + ', ' + str(len(numbers)) + ', ' + 'Unique:' + ', ' + str(len(counts))\n    # Example 10 of .join string construction\n    return_info = 'Returning' + ': ' + str(mode)\n    return mode\n",
-"opps": [
-{
-"k": 0,
-"nat": "', '.join",
-"alt": "str(str(list",
-"nat_span": [
-313,
-322
-],
-"alt_span": [
-313,
-325
-]
-},
-{
-"k": 1,
-"nat": "' '.join",
-"alt": "str(str(list",
-"nat_span": [
-450,
-458
-],
-"alt_span": [
-791,
-803
-]
-},
-{
-"k": 2,
-"nat": "'.join(['Starting',",
-"alt": "Starting' +",
-"nat_span": [
-552,
-571
-],
-"alt_span": [
-1248,
-1259
-]
-},
-{
-"k": 3,
-"nat": "'.join(['",
-"alt": "",
-"nat_span": [
-713,
-722
-],
-"alt_span": [
-1400,
-1400
-]
-},
-{
-"k": 4,
-"nat": " '.join(['Mode',",
-"alt": "Mode' + ' ' +",
-"nat_span": [
-932,
-948
-],
-"alt_span": [
-1725,
-1738
-]
-},
-{
-"k": 5,
-"nat": "'.join(['The',",
-"alt": "The' +",
-"nat_span": [
-1046,
-1060
-],
-"alt_span": [
-1841,
-1847
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "final_message_part1 + ",
-"nat_span": [
-1161,
-1161
-],
-"alt_span": [
-1948,
-1970
-]
-},
-{
-"k": 7,
-"nat": "-'.join(['Mode',",
-"alt": "Mode' + '-' +",
-"nat_span": [
-1280,
-1296
-],
-"alt_span": [
-2062,
-2075
-]
-},
-{
-"k": 8,
-"nat": ", '.join(['",
-"alt": "",
-"nat_span": [
-1399,
-1410
-],
-"alt_span": [
-2190,
-2190
-]
-},
-{
-"k": 9,
-"nat": "",
-"alt": "Returning' + '",
-"nat_span": [
-1546,
-1546
-],
-"alt_span": [
-2348,
-2362
-]
-}
-],
-"k_en": 10,
-"shared_fraction": 0.839,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "', '.join",
-"alt": "str(str(list",
-"nat_span": [
-313,
-322
-],
-"alt_span": [
-313,
-325
-]
-},
-{
-"k": 1,
-"nat": "",
-"alt": "))[0]) + ', ' + str(list(map(str, keys_list))[1]) + ', ' + str(list(map(str, keys_list))[2])) if len(list(map(str, keys_list))) > 2 else (str(list(map(str, keys_list))[0]) + ', ' + str(list(map(str, keys_list))[1]) if len(list(map(str, keys_list))) > 1 else (str(list(map(str, keys_list))[0]) if len(list(map(str, keys_list))) > 0 else ''",
-"nat_span": [
-341,
-341
-],
-"alt_span": [
-344,
-682
-]
-},
-{
-"k": 2,
-"nat": "' '.join",
-"alt": "str(str(list",
-"nat_span": [
-450,
-458
-],
-"alt_span": [
-791,
-803
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "))[0]) + ' ' + str(list(map(str, values_list))[1]) + ' ' + str(list(map(str, values_list))[2])) if len(list(map(str, values_list))) > 2 else (str(list(map(str, values_list))[0]) + ' ' + str(list(map(str, values_list))[1]) if len(list(map(str, values_list))) > 1 else (str(list(map(str, values_list))[0]) if len(list(map(str, values_list))) > 0 else ''",
-"nat_span": [
-479,
-479
-],
-"alt_span": [
-824,
-1175
-]
-},
-{
-"k": 4,
-"nat": "'.join(['Starting',",
-"alt": "Starting' +",
-"nat_span": [
-552,
-571
-],
-"alt_span": [
-1248,
-1259
-]
-},
-{
-"k": 5,
-"nat": ",",
-"alt": " +",
-"nat_span": [
-579,
-580
-],
-"alt_span": [
-1267,
-1269
-]
-},
-{
-"k": 6,
-"nat": "])",
-"alt": "",
-"nat_span": [
-593,
-595
-],
-"alt_span": [
-1282,
-1282
-]
-},
-{
-"k": 7,
-"nat": "'.join(['",
-"alt": "",
-"nat_span": [
-713,
-722
-],
-"alt_span": [
-1400,
-1400
-]
-},
-{
-"k": 8,
-"nat": ",",
-"alt": " +",
-"nat_span": [
-733,
-734
-],
-"alt_span": [
-1411,
-1413
-]
-},
-{
-"k": 9,
-"nat": ",",
-"alt": " +",
-"nat_span": [
-743,
-744
-],
-"alt_span": [
-1422,
-1424
-]
-},
-{
-"k": 10,
-"nat": ",",
-"alt": " +",
-"nat_span": [
-760,
-761
-],
-"alt_span": [
-1440,
-1442
-]
-},
-{
-"k": 11,
-"nat": "])\n\n        ",
-"alt": "\n\n    if not counts:\n        return None\n\n    max_count = -1\n    mode = None\n\n    for num, count in counts.items():\n        ",
-"nat_span": [
-772,
-784
-],
-"alt_span": [
-1453,
-1577
-]
-},
-{
-"k": 12,
-"nat": " '.join(['Mode',",
-"alt": "Mode' + ' ' +",
-"nat_span": [
-932,
-948
-],
-"alt_span": [
-1725,
-1738
-]
-},
-{
-"k": 13,
-"nat": ",",
-"alt": " + ' ' +",
-"nat_span": [
-958,
-959
-],
-"alt_span": [
-1748,
-1756
-]
-},
-{
-"k": 14,
-"nat": "])",
-"alt": "",
-"nat_span": [
-971,
-973
-],
-"alt_span": [
-1768,
-1768
-]
-},
-{
-"k": 15,
-"nat": "'.join(['The',",
-"alt": "The' +",
-"nat_span": [
-1046,
-1060
-],
-"alt_span": [
-1841,
-1847
-]
-},
-{
-"k": 16,
-"nat": ",",
-"alt": " +",
-"nat_span": [
-1070,
-1071
-],
-"alt_span": [
-1857,
-1859
-]
-},
-{
-"k": 17,
-"nat": ",",
-"alt": " +",
-"nat_span": [
-1079,
-1080
-],
-"alt_span": [
-1867,
-1869
-]
-},
-{
-"k": 18,
-"nat": ")]",
-"alt": "",
-"nat_span": [
-1089,
-1091
-],
-"alt_span": [
-1878,
-1878
-]
-},
-{
-"k": 19,
-"nat": "",
-"alt": "final_message_part1 + ",
-"nat_span": [
-1161,
-1161
-],
-"alt_span": [
-1948,
-1970
-]
-},
-{
-"k": 20,
-"nat": ".join([final_message_part1, final_message_part2])",
-"alt": " + final_message_part2",
-"nat_span": [
-1164,
-1213
-],
-"alt_span": [
-1973,
-1995
-]
-},
-{
-"k": 21,
-"nat": "-'.join(['Mode',",
-"alt": "Mode' + '-' +",
-"nat_span": [
-1280,
-1296
-],
-"alt_span": [
-2062,
-2075
-]
-},
-{
-"k": 22,
-"nat": ",",
-"alt": " + '-' +",
-"nat_span": [
-1306,
-1307
-],
-"alt_span": [
-2085,
-2093
-]
-},
-{
-"k": 23,
-"nat": ",",
-"alt": " + '-' +",
-"nat_span": [
-1315,
-1316
-],
-"alt_span": [
-2101,
-2109
-]
-},
-{
-"k": 24,
-"nat": ")]",
-"alt": "",
-"nat_span": [
-1330,
-1332
-],
-"alt_span": [
-2123,
-2123
-]
-},
-{
-"k": 25,
-"nat": ", '.join(['",
-"alt": "",
-"nat_span": [
-1399,
-1410
-],
-"alt_span": [
-2190,
-2190
-]
-},
-{
-"k": 26,
-"nat": ",",
-"alt": " + ', ' +",
-"nat_span": [
-1430,
-1431
-],
-"alt_span": [
-2210,
-2219
-]
-},
-{
-"k": 27,
-"nat": ",",
-"alt": " + ', ' +",
-"nat_span": [
-1449,
-1450
-],
-"alt_span": [
-2237,
-2246
-]
-},
-{
-"k": 28,
-"nat": ",",
-"alt": " + ', ' +",
-"nat_span": [
-1460,
-1461
-],
-"alt_span": [
-2256,
-2265
-]
-},
-{
-"k": 29,
-"nat": ")]",
-"alt": "",
-"nat_span": [
-1477,
-1479
-],
-"alt_span": [
-2281,
-2281
-]
-},
-{
-"k": 30,
-"nat": "",
-"alt": "Returning' + '",
-"nat_span": [
-1546,
-1546
-],
-"alt_span": [
-2348,
-2362
-]
-},
-{
-"k": 31,
-"nat": ".join(['Returning',",
-"alt": " +",
-"nat_span": [
-1549,
-1568
-],
-"alt_span": [
-2365,
-2367
-]
-},
-{
-"k": 32,
-"nat": ")]",
-"alt": "",
-"nat_span": [
-1577,
-1579
-],
-"alt_span": [
-2376,
-2376
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py_join_concat__t155",
 "family": "py_join_concat",
 "topic": "Calculate Simple Moving Average",
@@ -84133,262 +85187,6 @@
 "free_filter": true
 },
 {
-"doc_id": "py_join_concat__t184",
-"family": "py_join_concat",
-"topic": "Validate Email Format (Basic)",
-"angle": "code",
-"text_es": "Implement `is_valid_email(email_string)` that takes a string. It should return `True` if the string looks like a basic email (contains exactly one '@', and at least one '.' after '@'). Otherwise, return `False`. Example: `is_valid_email('test@example.com')` should return `True`, `is_valid_email('test@example')` should return `False`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def is_valid_email(email_string):\n    parts = list(email_string)\n    if not parts:\n        return False\n\n    if '@' not in email_string:\n        return False\n    if email_string.count('@') != 1:\n        return False\n\n    at_index = email_string.find('@')\n    domain_part = email_string[at_index + 1:]\n\n    if not domain_part:\n        return False\n\n    domain_parts_list = list(domain_part)\n    if not domain_parts_list:\n        return False\n\n    if '.' not in domain_part:\n        return False\n\n    dot_index = domain_part.find('.')\n    first_part_domain = ''.join([domain_part[i] for i in range(dot_index)])\n    second_part_domain = ''.join(domain_part[dot_index + 1:])\n\n    if not first_part_domain or not second_part_domain:\n        return False\n\n    local_part = ''.join(email_string[:at_index])\n    if not local_part:\n        return False\n\n    all_chars = list(email_string)\n    if not all_chars:\n        return False\n\n    print_message_parts = ['Checking', email_string, 'for validity...']\n    print(' '.join(print_message_parts))\n\n    valid_chars = set('abcdefghijklmnopqrstuvwxyz0123456789.-_@')\n    for char in all_chars:\n        if char not in valid_chars:\n            error_msg_parts = ['Invalid', 'character', f\"'{char}'\", 'found.']\n            print(' '.join(error_msg_parts))\n            return False\n\n    success_msg_parts = ['Email', 'format', 'looks', 'good.']\n    print(' '.join(success_msg_parts))\n    return True\n\n# Example Usage (not part of the function, but for testing)\n# print(is_valid_email('test@example.com'))\n# print(is_valid_email('test@example'))\n# print(is_valid_email('testexample.com'))\n# print(is_valid_email('test@.com'))\n# print(is_valid_email('test@example.'))\n# print(is_valid_email('@example.com'))\n# print(is_valid_email(''))\n# print(is_valid_email('a@b.c'))\n# print(is_valid_email('user_name.test@sub.domain.co'))\n# print(is_valid_email('user@domain-name.com'))\n# print(is_valid_email('user@domain@name.com'))\n# print(is_valid_email('user@domain!name.com'))\n",
-"text_alt": "def is_valid_email(email_string):\n    parts = list(email_string)\n    if not parts:\n        return False\n\n    if '@' not in email_string:\n        return False\n    if email_string.count('@') != 1:\n        return False\n\n    at_index = email_string.find('@')\n    domain_part = email_string[at_index + 1:]\n\n    if not domain_part:\n        return False\n\n    domain_parts_list = list(domain_part)\n    if not domain_parts_list:\n        return False\n\n    if '.' not in domain_part:\n        return False\n\n    dot_index = domain_part.find('.')\n    first_part_domain = ''\n    for i in range(dot_index):\n        first_part_domain = first_part_domain + domain_part[i]\n    second_part_domain = ''\n    for char in domain_part[dot_index + 1:]:\n        second_part_domain = second_part_domain + char\n\n    if not first_part_domain or not second_part_domain:\n        return False\n\n    local_part = ''\n    for char in email_string[:at_index]:\n        local_part = local_part + char\n    if not local_part:\n        return False\n\n    all_chars = list(email_string)\n    if not all_chars:\n        return False\n\n    print_message_parts = ['Checking', email_string, 'for validity...']\n    print(print_message_parts[0] + ' ' + print_message_parts[1] + ' ' + print_message_parts[2])\n\n    valid_chars = set('abcdefghijklmnopqrstuvwxyz0123456789.-_@')\n    for char in all_chars:\n        if char not in valid_chars:\n            error_msg_parts = ['Invalid', 'character', f\"'{char}'\", 'found.']\n            print(error_msg_parts[0] + ' ' + error_msg_parts[1] + ' ' + error_msg_parts[2] + ' ' + error_msg_parts[3])\n            return False\n\n    success_msg_parts = ['Email', 'format', 'looks', 'good.']\n    print(success_msg_parts[0] + ' ' + success_msg_parts[1] + ' ' + success_msg_parts[2] + ' ' + success_msg_parts[3])\n    return True\n\n# Example Usage (not part of the function, but for testing)\n# print(is_valid_email('test@example.com'))\n# print(is_valid_email('test@example'))\n# print(is_valid_email('testexample.com'))\n# print(is_valid_email('test@.com'))\n# print(is_valid_email('test@example.'))\n# print(is_valid_email('@example.com'))\n# print(is_valid_email(''))\n# print(is_valid_email('a@b.c'))\n# print(is_valid_email('user_name.test@sub.domain.co'))\n# print(is_valid_email('user@domain-name.com'))\n# print(is_valid_email('user@domain@name.com'))\n# print(is_valid_email('user@domain!name.com'))\n",
-"opps": [
-{
-"k": 0,
-"nat": ".join([domain_part[i] ",
-"alt": "\n    ",
-"nat_span": [
-559,
-581
-],
-"alt_span": [
-559,
-564
-]
-},
-{
-"k": 1,
-"nat": ".join(",
-"alt": "\n    for char in ",
-"nat_span": [
-636,
-642
-],
-"alt_span": [
-681,
-698
-]
-},
-{
-"k": 2,
-"nat": ".join(",
-"alt": "\n    for char in ",
-"nat_span": [
-769,
-775
-],
-"alt_span": [
-880,
-897
-]
-},
-{
-"k": 3,
-"nat": "",
-"alt": "print_message_parts[0] + ",
-"nat_span": [
-1006,
-1006
-],
-"alt_span": [
-1167,
-1192
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": "error_msg_parts[0] + ",
-"nat_span": [
-1263,
-1263
-],
-"alt_span": [
-1479,
-1500
-]
-},
-{
-"k": 5,
-"nat": "",
-"alt": "success_msg_parts[0] + ",
-"nat_span": [
-1388,
-1388
-],
-"alt_span": [
-1678,
-1701
-]
-}
-],
-"k_en": 6,
-"shared_fraction": 0.953,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": ".join([domain_part[i] ",
-"alt": "\n    ",
-"nat_span": [
-559,
-581
-],
-"alt_span": [
-559,
-564
-]
-},
-{
-"k": 1,
-"nat": "])",
-"alt": ":\n        first_part_domain = first_part_domain + domain_part[i]",
-"nat_span": [
-606,
-608
-],
-"alt_span": [
-589,
-653
-]
-},
-{
-"k": 2,
-"nat": ".join(",
-"alt": "\n    for char in ",
-"nat_span": [
-636,
-642
-],
-"alt_span": [
-681,
-698
-]
-},
-{
-"k": 3,
-"nat": ")",
-"alt": ":\n        second_part_domain = second_part_domain + char",
-"nat_span": [
-669,
-670
-],
-"alt_span": [
-725,
-781
-]
-},
-{
-"k": 4,
-"nat": ".join(",
-"alt": "\n    for char in ",
-"nat_span": [
-769,
-775
-],
-"alt_span": [
-880,
-897
-]
-},
-{
-"k": 5,
-"nat": ")",
-"alt": ":\n        local_part = local_part + char",
-"nat_span": [
-798,
-799
-],
-"alt_span": [
-920,
-960
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": "print_message_parts[0] + ",
-"nat_span": [
-1006,
-1006
-],
-"alt_span": [
-1167,
-1192
-]
-},
-{
-"k": 7,
-"nat": ".join(print_message_parts)",
-"alt": " + print_message_parts[1] + ' ' + print_message_parts[2]",
-"nat_span": [
-1009,
-1035
-],
-"alt_span": [
-1195,
-1251
-]
-},
-{
-"k": 8,
-"nat": "",
-"alt": "error_msg_parts[0] + ",
-"nat_span": [
-1263,
-1263
-],
-"alt_span": [
-1479,
-1500
-]
-},
-{
-"k": 9,
-"nat": ".join(error_msg_parts)",
-"alt": " + error_msg_parts[1] + ' ' + error_msg_parts[2] + ' ' + error_msg_parts[3]",
-"nat_span": [
-1266,
-1288
-],
-"alt_span": [
-1503,
-1578
-]
-},
-{
-"k": 10,
-"nat": "",
-"alt": "success_msg_parts[0] + ",
-"nat_span": [
-1388,
-1388
-],
-"alt_span": [
-1678,
-1701
-]
-},
-{
-"k": 11,
-"nat": ".join(success_msg_parts)",
-"alt": " + success_msg_parts[1] + ' ' + success_msg_parts[2] + ' ' + success_msg_parts[3]",
-"nat_span": [
-1391,
-1415
-],
-"alt_span": [
-1704,
-1785
-]
-}
-],
-"free_filter": true
-},
-{
 "doc_id": "py_join_concat__t186",
 "family": "py_join_concat",
 "topic": "Convert Base-10 to Base-N",
@@ -86469,431 +87267,6 @@
 "alt_span": [
 1138,
 1215
-]
-}
-],
-"free_filter": true
-},
-{
-"doc_id": "py_join_concat__t194",
-"family": "py_join_concat",
-"topic": "Find Common Keys in Dictionaries",
-"angle": "code",
-"text_es": "Implement `common_keys(dict1, dict2)` that takes two dictionaries. It should return a set containing keys that are present in both dictionaries. Example: `common_keys({'a':1, 'b':2}, {'b':3, 'c':4})` should return `{'b'}`, `common_keys({'x':1}, {'y':2})` should return `set()`.",
-"langs": {
-"src": "Task",
-"tgt": "Python"
-},
-"text_nat": "def common_keys(dict1, dict2):\n    keys1 = set(dict1.keys())\n    keys2 = set(dict2.keys())\n\n    # Find the intersection of the two sets of keys\n    common = keys1.intersection(keys2)\n\n    # Example of joining strings, not directly related to the task logic but fulfilling style requirement\n    separator = ', '\n    info_message_part1 = 'Processing'\n    info_message_part2 = 'dictionaries'\n    current_status = ''.join([info_message_part1, ' ', info_message_part2, ' for common keys.'])\n    \n    # Another example of string joining\n    dict1_keys_str = separator.join(sorted(dict1.keys()))\n    \n    # Yet another string join example\n    dict2_keys_str = separator.join(sorted(dict2.keys()))\n\n    # A string showing the processed dictionaries\n    processed_dicts_str = ''.join(['Dict1 keys: {', dict1_keys_str, '}, Dict2 keys: {', dict2_keys_str, '}'])\n\n    # More string joining, spread through the solution\n    initial_status_msg = ''.join(['Starting key comparison between two input dictionaries.'])\n\n    # Building a result summary message\n    if common:\n        common_keys_str = separator.join(sorted(list(common)))\n        result_message = ''.join(['Common keys found: {', common_keys_str, '}'])\n    else:\n        result_message = ''.join(['No common keys were found.'])\n\n    # Final status message, fulfilling the style requirement again\n    final_status = ''.join(['Comparison complete. Returning the set of common keys.'])\n\n    return common\n",
-"text_alt": "def common_keys(dict1, dict2):\n    keys1 = set(dict1.keys())\n    keys2 = set(dict2.keys())\n\n    # Find the intersection of the two sets of keys\n    common = keys1.intersection(keys2)\n\n    # Example of joining strings, not directly related to the task logic but fulfilling style requirement\n    separator = ', '\n    info_message_part1 = 'Processing'\n    info_message_part2 = 'dictionaries'\n    current_status = info_message_part1 + ' ' + info_message_part2 + ' for common keys.'\n    \n    # Another example of string joining\n    dict1_keys_str = ''\n    for i, key in enumerate(sorted(dict1.keys())):\n        if i > 0:\n            dict1_keys_str += separator\n        dict1_keys_str += key\n    \n    # Yet another string join example\n    dict2_keys_str = ''\n    for i, key in enumerate(sorted(dict2.keys())):\n        if i > 0:\n            dict2_keys_str += separator\n        dict2_keys_str += key\n\n    # A string showing the processed dictionaries\n    processed_dicts_str = 'Dict1 keys: {' + dict1_keys_str + '}, Dict2 keys: {' + dict2_keys_str + '}'\n\n    # More string joining, spread through the solution\n    initial_status_msg = 'Starting key comparison between two input dictionaries.'\n\n    # Building a result summary message\n    if common:\n        common_keys_str = ''\n        for i, key in enumerate(sorted(list(common))):\n            if i > 0:\n                common_keys_str += separator\n            common_keys_str += key\n        result_message = 'Common keys found: {' + common_keys_str + '}'\n    else:\n        result_message = 'No common keys were found.'\n\n    # Final status message, fulfilling the style requirement again\n    final_status = 'Comparison complete. Returning the set of common keys.'\n\n    return common\n",
-"opps": [
-{
-"k": 0,
-"nat": "''.join([info_message_part1,",
-"alt": "info_message_part1 +",
-"nat_span": [
-410,
-438
-],
-"alt_span": [
-410,
-430
-]
-},
-{
-"k": 1,
-"nat": "separator.join",
-"alt": "''\n    for i, key in enumerate",
-"nat_span": [
-552,
-566
-],
-"alt_span": [
-544,
-574
-]
-},
-{
-"k": 2,
-"nat": "separator.join",
-"alt": "''\n    for i, key in enumerate",
-"nat_span": [
-653,
-667
-],
-"alt_span": [
-750,
-780
-]
-},
-{
-"k": 3,
-"nat": "'.join(['",
-"alt": "",
-"nat_span": [
-768,
-777
-],
-"alt_span": [
-970,
-970
-]
-},
-{
-"k": 4,
-"nat": "'.join(['",
-"alt": "",
-"nat_span": [
-933,
-942
-],
-"alt_span": [
-1128,
-1128
-]
-},
-{
-"k": 5,
-"nat": "separator.join",
-"alt": "''\n        for i, key in enumerate",
-"nat_span": [
-1083,
-1097
-],
-"alt_span": [
-1267,
-1301
-]
-},
-{
-"k": 6,
-"nat": "''.join([",
-"alt": "",
-"nat_span": [
-1145,
-1154
-],
-"alt_span": [
-1452,
-1452
-]
-},
-{
-"k": 7,
-"nat": "''.join([",
-"alt": "",
-"nat_span": [
-1236,
-1245
-],
-"alt_span": [
-1534,
-1534
-]
-},
-{
-"k": 8,
-"nat": "'.join(['",
-"alt": "",
-"nat_span": [
-1364,
-1373
-],
-"alt_span": [
-1651,
-1651
-]
-}
-],
-"k_en": 9,
-"shared_fraction": 0.86,
-"pass": true,
-"verify": null,
-"opps_all": [
-{
-"k": 0,
-"nat": "''.join([info_message_part1,",
-"alt": "info_message_part1 +",
-"nat_span": [
-410,
-438
-],
-"alt_span": [
-410,
-430
-]
-},
-{
-"k": 1,
-"nat": ", info_message_part2,",
-"alt": " + info_message_part2 +",
-"nat_span": [
-442,
-463
-],
-"alt_span": [
-434,
-457
-]
-},
-{
-"k": 2,
-"nat": "])",
-"alt": "",
-"nat_span": [
-483,
-485
-],
-"alt_span": [
-477,
-477
-]
-},
-{
-"k": 3,
-"nat": "separator.join",
-"alt": "''\n    for i, key in enumerate",
-"nat_span": [
-552,
-566
-],
-"alt_span": [
-544,
-574
-]
-},
-{
-"k": 4,
-"nat": "",
-"alt": ":\n        if i > 0:\n            dict1_keys_str += separator\n        dict1_keys_str += key",
-"nat_span": [
-588,
-588
-],
-"alt_span": [
-596,
-685
-]
-},
-{
-"k": 5,
-"nat": "separator.join",
-"alt": "''\n    for i, key in enumerate",
-"nat_span": [
-653,
-667
-],
-"alt_span": [
-750,
-780
-]
-},
-{
-"k": 6,
-"nat": "",
-"alt": ":\n        if i > 0:\n            dict2_keys_str += separator\n        dict2_keys_str += key",
-"nat_span": [
-689,
-689
-],
-"alt_span": [
-802,
-891
-]
-},
-{
-"k": 7,
-"nat": "'.join(['",
-"alt": "",
-"nat_span": [
-768,
-777
-],
-"alt_span": [
-970,
-970
-]
-},
-{
-"k": 8,
-"nat": ", dict1_keys_str,",
-"alt": " + dict1_keys_str +",
-"nat_span": [
-791,
-808
-],
-"alt_span": [
-984,
-1003
-]
-},
-{
-"k": 9,
-"nat": ", dict2_keys_str,",
-"alt": " + dict2_keys_str +",
-"nat_span": [
-827,
-844
-],
-"alt_span": [
-1022,
-1041
-]
-},
-{
-"k": 10,
-"nat": "])",
-"alt": "",
-"nat_span": [
-848,
-850
-],
-"alt_span": [
-1045,
-1045
-]
-},
-{
-"k": 11,
-"nat": "'.join(['",
-"alt": "",
-"nat_span": [
-933,
-942
-],
-"alt_span": [
-1128,
-1128
-]
-},
-{
-"k": 12,
-"nat": "])",
-"alt": "",
-"nat_span": [
-998,
-1000
-],
-"alt_span": [
-1184,
-1184
-]
-},
-{
-"k": 13,
-"nat": "separator.join",
-"alt": "''\n        for i, key in enumerate",
-"nat_span": [
-1083,
-1097
-],
-"alt_span": [
-1267,
-1301
-]
-},
-{
-"k": 14,
-"nat": "",
-"alt": ":\n            if i > 0:\n                common_keys_str += separator\n            common_keys_str += key",
-"nat_span": [
-1119,
-1119
-],
-"alt_span": [
-1323,
-1426
-]
-},
-{
-"k": 15,
-"nat": "''.join([",
-"alt": "",
-"nat_span": [
-1145,
-1154
-],
-"alt_span": [
-1452,
-1452
-]
-},
-{
-"k": 16,
-"nat": ", common_keys_str,",
-"alt": " + common_keys_str +",
-"nat_span": [
-1176,
-1194
-],
-"alt_span": [
-1474,
-1494
-]
-},
-{
-"k": 17,
-"nat": "])",
-"alt": "",
-"nat_span": [
-1198,
-1200
-],
-"alt_span": [
-1498,
-1498
-]
-},
-{
-"k": 18,
-"nat": "''.join([",
-"alt": "",
-"nat_span": [
-1236,
-1245
-],
-"alt_span": [
-1534,
-1534
-]
-},
-{
-"k": 19,
-"nat": "])",
-"alt": "",
-"nat_span": [
-1273,
-1275
-],
-"alt_span": [
-1562,
-1562
-]
-},
-{
-"k": 20,
-"nat": "'.join(['",
-"alt": "",
-"nat_span": [
-1364,
-1373
-],
-"alt_span": [
-1651,
-1651
-]
-},
-{
-"k": 21,
-"nat": "])",
-"alt": "",
-"nat_span": [
-1428,
-1430
-],
-"alt_span": [
-1706,
-1706
 ]
 }
 ],

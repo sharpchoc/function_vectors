@@ -415,5 +415,236 @@
   "spec": "A function synchronize(operations) sets up a remote sync agent class and processes local file changes. It maintains a representation of a remote file system using paths and timestamps, a count of bytes transferred, and an error log. The input is a list of operations representing local file changes, containing the action like create or modify or delete, the file path, and a new timestamp. The system needs secluded helpers to verify if a path exists remotely, to compare timestamps to decide if an update is newer, and to simulate the byte transfer. Return a tuple with the total bytes transferred and the number of skipped operations.",
   "designed_by": "google/gemini-3.1-pro-preview",
   "v2": true
+ },
+ {
+  "id": "d065",
+  "title": "Warehouse Stock Allocator",
+  "spec": "Write a class that manages warehouse inventory and order fulfillment. The class must keep track of current stock quantities, pending reservations for items, a list of orders on backorder, and a running tally of successfully fulfilled requests. It should expose a single entry point `process(requests)` that accepts a list of incoming orders. Each order is represented as a tuple containing the item name, the requested quantity, and a boolean flag indicating if backordering is permitted. For each order, if the available stock is sufficient, reduce the stock and add the quantity to the pending reservations. If the stock is insufficient and backordering is allowed, append the order to the backorder list; otherwise, simply ignore it. The function should return a tuple consisting of the total number of fulfilled orders and the total number of backordered orders. For example, passing an order for ten apples with backordering allowed, when only five are in stock, will increase the backorder count.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d066",
+  "title": "Public Library Fines Tracker",
+  "spec": "Create a class to oversee library book borrowing and late fees. The internal state must maintain a catalogue of available book titles, a record of books currently borrowed by each user, the accumulated late fees for each user, and a daily fine amount. The main interface is `process(events)`, which takes a list of daily activities. Each activity is a tuple containing an action type, a user name, and either a book title or a number of days. If the action is a borrow operation, remove the book from the available catalogue and add it to the user's borrowed list. If it is a return operation, move the book back to the available catalogue. If it is a time advance operation, increase the late fees for every user currently holding books by multiplying the number of days passed by the daily fine amount. Return the total accumulated late fees across all users at the end of the event sequence. For example, if a user borrows a book and three days pass with a daily fine of two dollars, their accumulated fee becomes six dollars.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d067",
+  "title": "Online Auction Platform",
+  "spec": "Design a class that operates an online auction system. It needs to track active bids, the current highest bid for each item, a comprehensive history of all bids, and a specific reserve price for each item. Expose a single method `evaluate(bids)` that receives a sequence of new offers. Each offer provides the bidder name, the item name, and the monetary amount bid. When an offer is evaluated, check if the amount exceeds both the current highest bid for that item and its reserve price. If it does, update the current highest bid, record the bidder as the leading candidate, and append the offer details to the bid history. If the offer is too low, it is discarded. After processing all offers, return a list containing the names of the winning bidders and their final bid amounts for all items that successfully met their reserve prices. For instance, a bid of fifty dollars on an item with a reserve of forty dollars will become the winning bid if no higher offers are made.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d068",
+  "title": "Call Center Queue Simulator",
+  "spec": "Write a class that simulates a customer support call center. The class should retain state for the number of available agents, a queue of waiting callers, the total number of successfully handled calls, and the cumulative waiting time of all callers. Implement the function `simulate(ticks)` where the input is a list of integers representing new incoming calls during consecutive time intervals. During each interval, first add the new incoming calls to the waiting queue. Then, if there are available agents and callers waiting, assign callers to agents by decrementing the available agents and removing callers from the queue, while incrementing the handled calls tally. Any callers left in the queue have their individual waiting times increased by one. For simplicity, assume agents never become available again once assigned. The function must return a tuple containing the total handled calls and the cumulative waiting time. For example, passing intervals with three new calls when only two agents are available will result in one caller waiting, increasing the cumulative wait time by one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d069",
+  "title": "Hotel Room Booking System",
+  "spec": "Implement a class that manages hotel reservations and room availability. The system must store the total available rooms grouped by room type, the current guest assignments, a schedule of rooms undergoing maintenance, and the total revenue generated. The primary method is `reserve(bookings)` which processes a list of guest requests. Each request includes the guest name, the desired room type, the number of nights, and the price per night. If a room of the desired type is available, assign it to the guest, deduct it from the available pool, and add the total cost for the stay to the hotel revenue. Immediately after the stay, the room is placed into the maintenance schedule and cannot be booked by subsequent requests in the same batch. If no room is available, the request is skipped. Return the total revenue generated and a list of the names of guests who successfully secured a room. For example, two requests for a single available suite will generate revenue for only the first request and return a list containing only the first guest's name.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d070",
+  "title": "Cloud Resource Provisioner",
+  "spec": "Create a class that simulates allocating resources in a cloud environment. The internal state should track the available processor cores, the available system memory, a collection of currently active containers, and a log of tasks that failed to start. Provide a method `allocate(tasks)` that takes a list of deployment requests. Each request provides a unique task identifier, the required processor cores, and the required memory. For each request, check if the available processor and memory meet or exceed the requirements. If they do, subtract the requested resources from the available pools and store the task details in the active containers collection. If the resources are insufficient, append the task identifier to the failure log. The system does not free resources in this simulation. Return a tuple containing the number of active containers and the complete list of failed task identifiers. For example, attempting to allocate a five-core task on a system with only four available cores will return zero active containers and a failure list containing that task identifier.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d071",
+  "title": "Freelance Time Tracker",
+  "spec": "Design a class for a freelancer to track billable hours and generate invoices. The class needs to store active project names along with their hourly rates, the logged hours per project, the unbilled monetary amounts for each, and a cumulative total of all earned income. The main entry point is `invoice(entries)`, accepting a sequence of daily work logs. Each log provides a project name and the number of hours worked. When an entry is processed, add the hours to the project record. Next, calculate the unbilled amount by multiplying the accumulated hours by the project hourly rate. If the accumulated hours for that project reach or exceed forty hours, the unbilled amount is added to the cumulative total earned, and the project hours and unbilled amount are reset to zero to simulate issuing an invoice. Return the cumulative total earned income after all entries are processed. For example, logging exactly forty hours on a project paying twenty dollars an hour will return an earned income of eight hundred dollars.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d072",
+  "title": "Train Ticketing System",
+  "spec": "Write a class to handle seat reservations on a passenger train. The state must encompass the total number of unassigned seats, a mapping of passenger names to their booked seat counts, a waiting list for passengers who could not get seats, and a tally of all cancellations. The main method is `process(requests)` which handles a stream of passenger actions. Each action specifies whether it is a booking or a cancellation, followed by the passenger name and the number of seats. For a booking, if enough unassigned seats are available, decrease the unassigned count and record the passenger booking; otherwise, add the passenger and their requested seat count to the waiting list. For a cancellation, increase the unassigned seats, remove the passenger from the booked mapping, and increment the cancellation tally. After a cancellation, the system does not automatically reassign seats to the waiting list. Return a tuple of the remaining unassigned seats and the total cancellation tally. For example, booking five seats when ten are unassigned leaves five remaining, and a subsequent cancellation of two seats changes the remaining to seven and the cancellation tally to one.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d073",
+  "title": "Pizza Delivery Dispatcher",
+  "spec": "Implement a class that dispatches drivers for a pizza delivery service. The system tracks the number of idle drivers, a collection of ongoing deliveries with their remaining distances, a counter for completed deliveries, and the accumulated delivery fees. Expose the method `dispatch(orders)` to process a sequence of incoming delivery requests. Each order consists of a unique order identifier, a distance value representing delivery time, and a monetary fee. As each order comes in, if an idle driver is available, decrease the idle driver count, add the order to the ongoing deliveries collection with its distance, and add the fee to the accumulated total. If a special order identifier meaning time has passed is encountered, decrease the remaining distance of all ongoing deliveries by one. Any ongoing delivery that reaches a distance of zero is removed, the driver becomes idle again, and the completed delivery counter is incremented. Return the total completed deliveries and the accumulated fees. For instance, an order with a distance of two will complete after two time tick events, incrementing the completed count and adding its fee to the accumulated total.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d074",
+  "title": "Batch Payroll Calculator",
+  "spec": "Design a class that computes payroll for a small business. The class must maintain a record of the base hourly wage for each employee, the accumulated overtime hours, a fixed tax rate percentage, and a running total of all net money paid out. The core method is `process(timesheets)` which receives a list of weekly work records. Each record contains an employee name and the total hours worked that week. For each record, calculate the regular pay for up to forty hours using the base wage. Any hours beyond forty are considered overtime and paid at one and a half times the base wage, and these extra hours should also be added to the accumulated overtime record. Calculate the gross pay, deduct the tax rate percentage, and add the resulting net pay to the running total paid out. Return a list of the net pay amounts for each processed record in the order they were received. For example, an employee earning ten dollars an hour who works fifty hours with a ten percent tax rate will return a net pay of four hundred ninety-five dollars in the output list.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d075",
+  "title": "Movie Theater Seating Manager",
+  "spec": "Create a class to handle seat assignments in a movie theater auditorium. The state should store the total rows and columns of seats, a collection of currently occupied seat coordinates, a counter for total tickets sold, and a list of group names that could not be accommodated together. Provide a method `book(groups)` that accepts incoming group reservations. Each reservation provides a group name and the number of people in the group. For each group, search row by row to find a sequence of consecutive empty seats that can fit the entire group. If such a sequence is found, mark those seat coordinates as occupied and increase the total tickets sold counter by the group size. If no single row has enough consecutive empty seats for the group, they are turned away, and their group name is added to the unaccommodated list. Return the total tickets sold and the count of groups that were turned away. For example, if a group of five requests seats but the largest contiguous empty block in any row is four, the method returns zero tickets sold and one group turned away.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d076",
+  "title": "Printing Queue Spooler",
+  "spec": "Write a class that manages a networked printer spooler. The class state needs to track the current ink levels, the remaining paper count, a queue of waiting print jobs, and a history of successfully printed document names. The main entry point is `spool(jobs)` which processes a list of new print requests. Each request provides a document name, a number of pages, and a boolean indicating whether it requires color printing. A color job consumes two units of ink per page, while a standard job consumes one unit per page. Both consume one sheet of paper per page. For each job, check if the printer has sufficient ink and paper. If it does, deduct the required amounts, and append the document name to the print history. If it does not, place the job into the waiting queue. The method must return a tuple containing the number of remaining paper sheets and the number of jobs currently sitting in the waiting queue. For example, a request for a ten page color document when only fifteen ink units remain will result in the job being placed in the waiting queue, leaving the paper count unchanged.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d077",
+  "title": "Cryptocurrency Wallet Tracker",
+  "spec": "Implement a class representing a digital wallet ledger. It must maintain the current available balance, a collection of pending outgoing transfers, a pool of blocked funds reserved for those transfers, and a chronological history of all completed transactions. Expose a method `execute(commands)` that takes a sequence of financial actions. Each action specifies an operation type, an amount, and a transaction identifier. If the operation is a deposit, simply increase the available balance and add the identifier to the history. If it is a transfer initiation, verify that the available balance is sufficient; if so, deduct the amount from the available balance, add it to the blocked funds pool, and record the identifier in the pending collection. If the operation is a transfer resolution, locate the identifier in the pending collection, remove it, subtract the amount from the blocked funds, and append the identifier to the history. Return the final available balance and the total amount currently held in the blocked funds pool. For example, depositing one hundred and initiating a transfer of forty will result in an available balance of sixty and a blocked pool of forty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d078",
+  "title": "Car Rental Agency",
+  "spec": "Design a class to operate a car rental agency fleet. The state needs to track the inventory of available vehicles categorized by size, a record of vehicles currently rented out mapped to customer names, a cumulative total of rental revenue, and a separate damage deposit pool. Implement the function `rent(actions)` to process customer interactions. Each interaction includes an activity type, a customer name, a vehicle size, the number of days, and a daily rate. If the activity is renting, check if the requested vehicle size is in the inventory. If available, decrement the inventory, record the customer and vehicle size, and add the product of days and daily rate to the cumulative revenue. If the activity is returning, remove the customer record, increment the vehicle inventory, and if the days parameter is greater than zero, treat it as a damage penalty and add that amount to the damage deposit pool. Return the total rental revenue and the damage deposit pool. For instance, renting a vehicle for three days at fifty per day and returning it with a twenty damage penalty will return one hundred fifty in revenue and twenty in the deposit pool.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d079",
+  "title": "Software Bug Tracker",
+  "spec": "Create a class that manages software defect reports and assignments. The internal state must store a collection of unresolved defects and their severity levels, a mapping of developer names to the defect identifiers they are assigned to, a counter for resolved defects, and a list of critical alert messages. Expose the method `manage(events)` which processes an ordered list of tracker updates. Each update consists of an action type, a defect identifier, and either a severity number or a developer name. When a report action arrives, add the defect and its severity to the unresolved collection; if the severity is five, also append a warning string to the critical alerts list. When an assign action arrives, link the defect to the developer in the mapping. When a resolve action arrives, remove the defect from the unresolved collection, remove its developer assignment, and increment the resolved defects counter. Return the total number of resolved defects and the list of critical alerts. For example, reporting a defect with a severity of five and subsequently resolving it will return one resolved defect and a list containing one critical warning.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d080",
+  "title": "Grocery Inventory System",
+  "spec": "Write a class that controls retail store inventory. The class should track the quantities of items on the display shelves, the quantities of items in the backstock warehouse, a unique set of items that trigger low stock alerts, and a tally of total lifetime sales revenue. Provide a method `update(sales)` that takes a list of purchased items at the register. Each sale specifies the item name, the quantity bought, and the unit price. For each sale, subtract the quantity from the display shelves and add the total monetary value to the lifetime sales revenue. After each sale, if the display shelf quantity for that item falls below five units, attempt to restock it by moving up to twenty units from the backstock warehouse to the display shelves. If the backstock warehouse quantity for that item then drops below twenty units, add the item name to the low stock alerts set. Return the total lifetime sales revenue and the number of distinct items in the low stock alerts set. For example, selling forty units of an item priced at two dollars will add eighty to the revenue and, if the warehouse is depleted, add one item to the alerts set.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d081",
+  "title": "Airport Gate Scheduler",
+  "spec": "Design a class to handle airplane gate assignments at a terminal. The state must encompass a set of available gate identifiers, a mapping of occupied gates to the remaining time their assigned planes will stay, a counter for total successfully boarded planes, and a waiting queue for delayed flights. The main method is `schedule(flights)` which processes a timeline of aviation events. Each event is a tuple containing a flight identifier and an integer representing duration. If the flight identifier is a special text indicating a time tick, decrement the remaining time for all occupied gates; any gate whose time reaches zero becomes available again, and the boarded planes counter increases by one. If the event is an arriving flight, check for an available gate. If one exists, assign the flight to the gate with its duration and remove the gate from the available set. Otherwise, append the flight identifier to the delayed queue. Return the successfully boarded counter and the length of the delayed queue. For example, if two flights arrive but only one gate is available, the method will assign the first flight, add the second to the delayed queue, and return zero boarded with one delayed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d082",
+  "title": "Online Course Enrollment",
+  "spec": "Implement a class that manages student registrations for virtual classes. The internal state should maintain the maximum student capacity for each course, a mapping of course names to lists of enrolled student names, a separate waiting list for each course, and a running total of tuition fees collected. The core function `enroll(requests)` processes a batch of registration forms. Each form includes a student name, a course name, a tuition fee amount, and an action type. If the action is an enrollment, check if the current enrolled count is below the maximum capacity. If there is room, add the student to the enrolled list and add the fee to the tuition total; if the class is full, append the student to the waiting list instead. If the action is a drop, remove the student from the enrolled list and do not refund the tuition. The system does not automatically fill dropped seats from the waiting list. Return the total tuition collected and the number of students on the waiting list for all courses combined. For instance, if three students enroll in a course with a capacity of two for one hundred dollars each, the return is two hundred dollars collected and one student waitlisted.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d083",
+  "title": "Pharmacy Prescription Filler",
+  "spec": "Create a class to manage a pharmacy dispensing system. The state needs to track the inventory counts of various medications, a mapping of patient names to their fulfilled medication histories, a chronological log of all processed orders, and a list of rejected order alerts for controlled substances. Expose a method `dispense(orders)` that processes daily prescription requests. Each order provides a patient name, a medication name, a requested quantity, and a boolean indicating if the drug is a controlled substance. For each order, first check if it is a controlled substance with a quantity greater than thirty; if so, deny it and append a warning to the rejected alerts list. If it passes this check, verify if the medication inventory has sufficient stock. If it does, subtract the quantity from inventory, append the medication to the patient's fulfilled history, and record the medication name in the chronological log. Return the total number of orders in the chronological log and the list of rejected alerts. For example, requesting forty units of a controlled substance will be denied, returning zero logged orders and a list containing one rejected alert.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d084",
+  "title": "Job Board Matcher",
+  "spec": "Write a class that pairs job seekers with open employment positions. The class state must retain a collection of active candidate profiles containing their individual skill names, a collection of open job postings containing required skill names and placement fees, a counter for successful placements, and the cumulative total of earned placement fees. The method `match(actions)` processes a stream of new platform activity. Each activity specifies an entity type, a name, a list of skills, and a fee amount. When a job activity arrives, store it in the open postings. When a candidate activity arrives, store it in the active profiles. After any new activity is added, iterate through all open job postings and candidate profiles. If a candidate possesses every skill required by a job, remove both the candidate and the job from their respective collections, increment the successful placements counter, and add the job placement fee to the cumulative total. Return the placements counter and total earned fees. For example, a candidate with programming skills matching a job that pays a five hundred dollar fee will return one placement and five hundred dollars earned.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d085",
+  "title": "Supermarket Rewards Program",
+  "spec": "Design a class that tracks customer reward points for a supermarket. The state should maintain a mapping of customer names to their current point balances, a mapping of customer names to their current tier levels, a list of special reward bonuses claimed, and a running tally of all points ever issued. Implement `process(purchases)` to handle daily store transactions. Each transaction includes a customer name and a monetary purchase amount. For each purchase, calculate the base points by multiplying the monetary amount by ten. Check the customer's current tier level; if they have reached the top tier, multiply the base points by an additional one and a half. Add the calculated points to the customer balance and the lifetime issued tally. If the customer's new balance surpasses one thousand points, upgrade their tier to the middle level. If it surpasses five thousand, upgrade to the top tier and append their name to the reward bonuses claimed list. Return the running tally of all points and the list of reward bonuses. For example, a customer purchasing goods worth six hundred dollars will accumulate six thousand points, triggering top tier status and returning a list containing one reward bonus.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d086",
+  "title": "Pet Boarding Kennel",
+  "spec": "Create a class to manage reservations at an animal boarding facility. The internal state must store the total number of available small cages, the total number of available large cages, a registry of current boarded pets mapping their names to their cage types, a cumulative counter of total days animals have stayed, and a tally of all monetary fees billed. The main method `board(records)` handles a sequence of daily customer arrivals and departures. Each record contains an activity type, a pet name, a size category, and an integer representing days stayed. For an arrival, check the size category; if a corresponding cage is available, decrement the available cage count and add the pet to the registry. For a departure, look up the pet in the registry, increment the appropriate available cage count, remove the pet from the registry, add the days stayed to the cumulative counter, and add the product of days stayed and the size-specific daily rate to the billed fees tally. Return the total days stayed and the total fees billed. For example, boarding a small pet for two days at twenty per day will return two total days and forty billed fees upon departure.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d087",
+  "title": "Microchip Quality Inspector",
+  "spec": "Implement a class to monitor defect rates on a microchip production line. The class state should track the total number of items inspected, a collection mapping different defect categories to their occurrence counts, a queue of item identifiers requiring rework, and a list of item identifiers that passed inspection perfectly. Expose a method `inspect(batches)` that receives a sequence of quality assurance results. Each result is a tuple of an item identifier and a defect category text. Increment the total items inspected for every result. If the defect category indicates no defect, append the item identifier to the passed inspection list. If a defect is present, increment the occurrence count for that specific defect category and append the item identifier to the rework queue. If any single defect category reaches a count of ten, immediately halt processing the remaining batch and return early. Return a tuple containing the number of items that passed inspection and the total number of items currently sitting in the rework queue. For example, passing three items and finding defects in two others will return three passed items and a rework queue size of two.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d088",
+  "title": "Real Estate Property Manager",
+  "spec": "Write a class that handles financial operations for rental properties. The state must maintain a mapping of property identifiers to their monthly rent amounts, a mapping of tenant names to their occupied property identifiers, a pooled monetary fund of collected rent, and a chronological log of all maintenance repair requests. Provide the method `manage(events)` to process a list of monthly interactions. Each interaction includes an action type, an identifier or tenant name, and a monetary cost. If the action is a rent payment, locate the property identifier associated with the tenant, find its monthly rent amount, and add it to the pooled monetary fund. If the action is a maintenance repair, deduct the monetary cost from the pooled monetary fund and append the property identifier to the chronological log of repair requests. The pooled fund is permitted to drop into negative numbers if repairs exceed collected rent. Return the final amount in the pooled monetary fund and the total count of maintenance requests logged. For example, collecting one thousand in rent and paying two hundred for a repair will leave eight hundred in the fund and one logged request.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d089",
+  "title": "Shipping Logistics Router",
+  "spec": "Design a class that directs packages through a courier network. The state should store the maximum package capacity for various regional hubs, a mapping of regional hubs to their current package counts, a list of package identifiers currently in transit between hubs, and a counter for total successfully delivered packages. The primary entry point is `route(shipments)` which processes a sequence of package movements. Each movement specifies an event type, a package identifier, a hub name, and a package size. If the event is a dispatch, check if adding the package size to the hub's current package count would exceed its maximum capacity. If it fits, increase the hub's current count; if it overflows the capacity, append the package identifier to the in transit list instead. If the event is a final delivery, decrease the hub's current package count by the package size and increment the total successfully delivered counter. Return the total successfully delivered counter and the number of packages currently in transit. For example, dispatching a package that exceeds hub capacity will place it in transit, resulting in zero delivered and one in transit.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d090",
+  "title": "Spacecraft Telemetry Tracker",
+  "spec": "Write a function called track(readings) that takes a list of tuples containing a sensor name string, a timestamp integer, and a numerical value. The system must process each reading by storing it in a rolling history limited to five values per sensor. When a sensor accumulates five readings, the system calculates its moving average. If a new reading deviates by more than twenty percent from the current moving average, it is flagged as an anomaly. Maintain an internal state of all histories and a list of detected anomalies. Return a list of strings detailing the anomalies, formatted as the sensor name followed by the anomalous value. For example, given inputs with a sensor named alpha reading ten for five consecutive timestamps, then a reading of fifteen, the output should be a list containing the string alpha anomaly at fifteen.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d091",
+  "title": "Video Playback Buffer",
+  "spec": "Write a function called stream(commands) that manages a video playback buffer. The input is a list of commands which are either tuples to add data with an integer byte size, or string commands to play a frame which consumes fifty bytes. The buffer has a maximum capacity of five hundred bytes and a minimum threshold of two hundred bytes to start playing. The system starts in a buffering state; when the internal data reaches the threshold, the state changes to playing, and if data drops below fifty bytes, it reverts to buffering. Excess added data is capped at capacity, and playing from an empty buffer is ignored. Return a list of state strings indicating either buffering or playing after processing each command. For example, adding one hundred bytes twice changes state from buffering to playing, outputting a list containing buffering followed by playing.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d092",
+  "title": "Chat Moderation Bot",
+  "spec": "Write a function called moderate(messages) that takes a list of tuples containing a username and a message string. Inspect each message for forbidden words like spam, scam, and hack, maintaining an internal tally of strikes for each user. If a message contains a forbidden word, the user receives one strike, and upon reaching three strikes, the user is permanently banned and their subsequent messages are completely ignored. The system also tracks the total number of filtered messages across all users. Return a list of action strings for each message in order, using allowed, warned, or blocked. For instance, if the input has three scam messages from alice, the output list will strictly contain warned, warned, blocked.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d093",
+  "title": "Food Truck Queue",
+  "spec": "Write a function called serve(actions) that manages a food preparation queue. The input is a list of actions where each is either a tuple containing a customer name and a preparation time in minutes, or an integer representing elapsed time. The truck prepares one order at a time, maintaining a queue of waiting customers, an active order with its remaining time, and a list of completed orders. When time elapses, the remaining time of the active order is reduced, and if it finishes, the next order begins immediately using any remaining elapsed time from that step. Return a list of customer names whose orders have been completed, in the order they finished. For example, if bob orders with ten minutes, and a time advance of twelve minutes occurs, bob finishes, and the output list contains bob.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d094",
+  "title": "Bicycle Gear Shifter",
+  "spec": "Write a function called ride(commands) that simulates a bicycle gear shifting system. The input is a list of string commands exactly matching front up, front down, rear up, or rear down. The bicycle has three front chainrings and seven rear cogs, starting at position one for both. The system must prevent shifts that go beyond the available gears by silently ignoring them, while tracking the cumulative mechanical wear metric that increases by one on rear shifts and by two on front shifts. Return a list of float numbers representing the current gear ratio, defined as the front gear position divided by the rear gear position, calculated after each command and rounded to two decimal places. For example, starting at gear one for both, a shift up front changes the front gear to position two, outputting a list containing two point zero.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d095",
+  "title": "Weather Station Processor",
+  "spec": "Write a function called process(measurements) that takes a list of tuples containing an integer representing the hour and a float representing the temperature. The system maintains the active hour, a running sum of temperatures for that hour, and a count of readings. When a reading arrives for a different hour, the system finalizes the active hour by calculating its average temperature, stores it, and resets the running sum and count for the new hour. Keep track of the absolute highest and lowest temperatures observed across all readings, and ensure the final hour is also processed at the end of the input. Return a list of the finalized hourly average temperatures. For example, inputs of hour one with twenty degrees and hour one with twenty two degrees, followed by hour two with nineteen degrees, will output a list containing twenty one point zero for the first hour.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d096",
+  "title": "Hydroponic Nutrient Dispenser",
+  "spec": "Write a function called dispense(readings) that takes a list of tuples containing a float for water acidity and an integer for nutrient concentration. The system targets an acidity level of exactly six point zero and a nutrient level of five hundred, maintaining an inventory of acid and fertilizer that both start at one thousand units. If acidity is above six point five, it attempts to dispense acid, consuming ten inventory units, and if nutrients fall below four hundred, it dispenses fertilizer, consuming twenty units. Track the total number of correction cycles, and skip actions if an inventory is too low to dispense the required amount. Return a list of strings for each reading, summarizing the actions taken, such as dispensed acid, dispensed fertilizer, or dispensed acid and dispensed fertilizer. For example, an input with acidity seven and nutrients three hundred outputs a list containing the string dispensed acid and dispensed fertilizer, reducing both inventories.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d097",
+  "title": "Smart Home Blinds",
+  "spec": "Write a function called automate(events) that controls window blinds based on environmental sensors. The input is a list of tuples containing an integer for sun intensity percentage and an integer for indoor temperature. The blinds start fully open at one hundred percent, and the system maintains the current blind angle, previous sun intensity, and a counter for total adjustments. If the indoor temperature exceeds twenty five degrees, the system aims to close the blinds to match the sun intensity inversely, so high sun means a lower blind opening percentage. If the temperature is twenty five or below, the target is fully opened at one hundred percent, but the system only applies the adjustment if the new target differs from the current angle by more than five percent. Return a list of the blind percentages after evaluating each event. For example, if temperature is twenty six and sun is at eighty percent, the blinds close to twenty percent, and the output list contains twenty.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]
