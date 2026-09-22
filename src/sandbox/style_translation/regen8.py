@@ -94,7 +94,7 @@ def main():
         stat['gen'] += N_CAND
         ok = [x for x in cands if x[0] is not None and not x[1]]
         for c, rs, fb, nat in cands:
-            if rs: log.append([task['id'], 1, 'fresh', rs])
+            if rs: log.append([task['id'], 1, 'fresh', rs]); stat.update('rej:' + x for x in rs)
         if ok:
             c, rs, fb, nat = max(ok, key=lambda x: score(x[0]))
         else:                                                        # no candidate passed the free checks: revise the better one once
@@ -140,10 +140,11 @@ def main():
     with ThreadPoolExecutor(args.workers) as ex:
         for fu in as_completed([ex.submit(work, d) for d in docs]):
             r = fu.result(); results.append(r); per_fam[r['fam']]['ok'] += r['ok']; per_fam[r['fam']]['first'] += r['first']; per_fam[r['fam']]['n'] += 1
-            if len(results) % 25 == 0 or args.pilot:
+            if len(results) % 10 == 0 or args.pilot:
                 ok = sum(x['ok'] for x in results); first = sum(x['first'] for x in results)
                 cost = sum(v for (m, k), v in CB.USAGE.items() if k == 'cost')
-                print(f"[{len(results)}/{len(docs)} {int(time.time() - t_start)}s] ok {ok} ({ok / len(results):.0%}) first-attempt {first} ({first / len(results):.0%}) | gens {stat['gen']} reviews {stat['review']} | ${cost:.0f} (${cost / max(ok, 1):.2f}/accepted)", flush=True)
+                rej = ', '.join(f'{k[4:]} {v}' for k, v in stat.most_common() if k.startswith('rej:'))[:160]
+                print(f"[{len(results)}/{len(docs)} {int(time.time() - t_start)}s] ok {ok} ({ok / len(results):.0%}) first-attempt {first} ({first / len(results):.0%}) | gens {stat['gen']} reviews {stat['review']} | ${cost:.0f} (${cost / max(ok, 1):.2f}/accepted) | rejections: {rej}", flush=True)
     usage = {f'{m}/{k}': (round(v, 2) if k == 'cost' else v) for (m, k), v in sorted(CB.USAGE.items())}
     ok = sum(x['ok'] for x in results); first = sum(x['first'] for x in results)
     json.dump({'results': results, 'usage': usage, 'builder_rejects': dict(CB.REJECTS), 'per_family': {f: dict(c) for f, c in per_fam.items()}, 'secs': round(time.time() - t_start)}, open(f'{TMP}/regen8/{args.suffix}_log.json', 'w'), indent=1)

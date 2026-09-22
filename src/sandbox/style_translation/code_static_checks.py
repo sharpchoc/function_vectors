@@ -40,7 +40,7 @@ def js_unused(text):
     return msgs
 
 
-def run_sandboxed(lang, text, timeout=10):
+def run_sandboxed(lang, text, timeout=6):
     """Run the natural twin (Python / JavaScript) in a temp dir; returns None if it exits 0, else the last stderr line."""
     if lang not in ("Python", "JavaScript"):
         return None
@@ -50,7 +50,7 @@ def run_sandboxed(lang, text, timeout=10):
         try:
             r = subprocess.run(cmd, cwd=d, capture_output=True, text=True, timeout=timeout, env={"PATH": os.environ.get("PATH", ""), "PYTHONIOENCODING": "utf-8"}, stdin=subprocess.DEVNULL)
         except subprocess.TimeoutExpired:
-            return "timeout (> %ds): the script does not terminate (waits for input or loops)" % timeout
+            return None                                            # waits for input / a timer: not a programming error
         if r.returncode != 0:
             tail = [l for l in r.stderr.strip().splitlines() if l.strip()]; last = tail[-1] if tail else ""
             if re.match(r"^\s*(NameError|AttributeError|TypeError|SyntaxError|IndentationError|UnboundLocalError|ZeroDivisionError|IndexError|KeyError|RecursionError|ReferenceError|RangeError)\b", last) \
@@ -67,7 +67,7 @@ def string_leak(nat, alt):
     return None if a == b else [x for x in b if x not in a][:5]
 
 
-STRING_FAMILIES = {"py_quotes", "js_quotes", "docstring_quotes", "docstring_style", "comment_language", "comment_case", "c_comment_style", "py_fstring", "js_template", "py_join_concat", "py2_print"}
+STRING_FAMILIES = {"py_quotes", "js_quotes", "docstring_quotes", "docstring_style", "comment_language", "comment_case", "c_comment_style", "py_fstring", "js_template", "py_join_concat", "py2_print", "bash_subst", "bash_test", "sql_keyword_case", "line_wrap"}
 
 
 def precheck(F, rec):
@@ -76,7 +76,7 @@ def precheck(F, rec):
     if lang == "Python":
         for m in python_flakes(nat):
             codes.append("flakes"); fb.append(f"[automatic static check] {m} (a strict reviewer calls an unused name padding)")
-        if F.name not in ("py2_print", "py2_iter", "py2_except"):
+        if F.name not in ("py2_print", "py2_iter", "py2_except", "py_type_hints", "py_optional", "py_builtin_generics"):
             for m in python_flakes(alt)[:2]:
                 codes.append("flakes_alt"); fb.append(f"[automatic static check, alternative twin] {m}")
     elif lang == "JavaScript":

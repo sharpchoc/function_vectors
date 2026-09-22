@@ -1521,5 +1521,306 @@
   "spec": "Create `spray(sequence)` to model the arcs of water droplets shot from a programmable fountain nozzle. The input sequence defines changes to the nozzle tilt angle and water pressure at specific times. The logic must simulate the emission of a water droplet every tenth of a second, assigning it an initial velocity vector based on the current angle and pressure. It must track the parabolic trajectory of every droplet in the air, applying gravity until it hits the ground. The system must record the maximum height achieved by any droplet and the furthest horizontal distance reached. Output a tuple of these two maximum values. A high pressure vertical shot should maximize height but have zero horizontal distance.",
   "designed_by": "google/gemini-3.1-pro-preview",
   "v2": true
+ },
+ {
+  "id": "d223",
+  "title": "Potion Brewing Cauldron",
+  "spec": "The entry function `brew(ingredients)` takes a list of strings representing ingredients added one by one. The cauldron starts with zero volume, a temperature of twenty degrees, and zero toxicity. Adding fireweed increases volume by one and temperature by fifty. Adding icecap increases volume by one and decreases temperature by twenty. Adding snake venom increases volume by one and toxicity by five. If the temperature goes above one hundred degrees, the liquid boils and volume decreases by one, while toxicity increases by two. If temperature drops below zero, it freezes and toxicity resets to zero. The function returns a list of three numbers representing final volume, temperature, and toxicity. Example: ['fireweed', 'fireweed', 'icecap'] returns [3, 100, 2].",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d224",
+  "title": "Photographic Film Developer",
+  "spec": "The entry function `develop(steps)` takes a list of numbers representing minutes spent in the chemical bath. The bath starts with a concentration of one hundred percent and a temperature of twenty degrees. Each minute spent in the bath reduces concentration by two percent. If the bath temperature is below twenty five, it naturally warms up by one degree per minute of use. If the concentration drops below fifty percent, development becomes uneven and a quality penalty score increases by one for every subsequent minute used. If a step is zero minutes, the bath rests and cools down by two degrees without losing concentration. Returns the final quality penalty score. Example: [30, 5] returns 5.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d225",
+  "title": "Steam Engine Governor",
+  "spec": "The entry function `govern(pressures)` takes a list of numbers representing furnace heat levels applied per cycle. The engine starts with zero steam pressure, a valve position of zero, and zero speed. Each heat level adds to the steam pressure. If pressure exceeds one hundred, the governor automatically opens the valve by adding ten to its position, which vents twenty units of pressure immediately. The engine speed increases by the current pressure minus the valve position. If speed exceeds five hundred, an overspeed warning counter increments, and the valve opens completely to fifty, venting all pressure to zero. Returns a tuple of final speed and the warning count. Example: [50, 80, 90] returns (130, 0).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d226",
+  "title": "Hot Tub Controller",
+  "spec": "The entry function `regulate(events)` takes a list of strings such as enter, leave, heat, or cool. The tub starts empty of users, with the pump off, and a water temperature of thirty degrees. When a user enters, the pump turns on automatically and temperature drops by one degree. When a user leaves, if no users remain, the pump turns off. The heat command increases temperature by five degrees. If the pump is off, the heat command cannot increase the temperature above thirty five degrees for safety. The cool command drops the temperature by two degrees. Returns a tuple of the final temperature and pump status as a boolean. Example: ['enter', 'heat', 'heat'] returns (40, True).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d227",
+  "title": "Ice Cream Churner",
+  "spec": "The entry function `churn(actions)` takes a list of strings representing actions. Start with a viscosity of zero, a drum temperature of zero, and motor speed of ten. The action freeze lowers temperature by five. The action spin increases viscosity by two if temperature is below negative ten, otherwise viscosity drops by one. The action thicken increases motor speed by five but warms the drum by two degrees. If motor speed goes over twenty and viscosity is above ten, the motor overheats and speed drops to zero. Return a tuple of final viscosity and motor speed. Example: ['freeze', 'freeze', 'freeze', 'spin', 'spin', 'thicken'] returns (4, 15).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d228",
+  "title": "Printing Press Ink Controller",
+  "spec": "The entry function `press(pages)` takes a list of numbers representing the color density of each page. Starts with an ink reservoir of one thousand, roller speed of zero, and a page count of zero. Each page printed consumes ink equal to its color density. The roller speed increases by one for each page. If the roller speed reaches ten, friction heats the ink, evaporating five extra units of ink per page. If the reservoir drops below two hundred, the press enters eco mode, halving the ink consumed per page rounded down. Returns a tuple of the remaining ink and final roller speed. Example: [100, 100, 100] returns (700, 3).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d229",
+  "title": "Paintball Marker Firing Mechanism",
+  "spec": "The entry function `fire(triggers)` takes a list of booleans where true means a trigger pull. Starts with a gas pressure of three thousand, hopper count of two hundred, and barrel heat of zero. Each true trigger pull consumes one paintball from the hopper and fifty units of gas pressure, while increasing barrel heat by five. If pressure drops below one thousand, a trigger pull consumes no paintballs and only vents ten pressure. If barrel heat exceeds fifty, the marker jams and ignores the next two trigger pulls, while cooling down by twenty degrees per ignored pull. Returns a tuple of remaining paintballs and pressure. Example: [True, True, True] returns (197, 2850).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d230",
+  "title": "Cotton Candy Machine",
+  "spec": "The entry function `spin(sugar)` takes a list of numbers representing grams of sugar added per minute. Starts with spinner heat at zero, sugar reserve at zero, and total fluff produced at zero. Each minute, the added sugar goes into the reserve. Then, spinner heat increases by ten. If spinner heat is at least fifty, the machine converts up to twenty grams of sugar reserve into total fluff, cooling the spinner by five for every ten grams converted. If heat reaches one hundred, the sugar burns, emptying the reserve and dropping heat to zero. Returns the total fluff produced. Example: [30, 30, 30, 30, 30] returns 80.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d231",
+  "title": "Perfume Distillation Still",
+  "spec": "The entry function `distill(hours)` takes a list of numbers representing the duration of heating phases in hours. Starts with a boiler pressure of ten, temperature of ninety, and residue buildup of zero. Each hour of heating decreases pressure by one and temperature by one. Between phases, the still rests and recovers for ten hours, increasing pressure by five and temperature by five, up to a maximum of fifteen and ninety five respectively. However, every hour heated adds one to residue buildup. If residue buildup exceeds five, recovery only adds two to pressure and temperature instead of five. Returns a tuple of final pressure and temperature. Example: [5, 5] returns (15, 95).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d232",
+  "title": "Microscope Stage Calibrator",
+  "spec": "The entry function `calibrate(movements)` takes a list of strings representing directional nudges like up, down, left, right. Starts with horizontal position zero, vertical position zero, and tracking rate of one. Up increases vertical position by the tracking rate, down decreases it. Right increases horizontal position by the tracking rate, left decreases it. If three consecutive horizontal movements occur in the same direction, the tracking rate doubles. A movement in a new direction resets the tracking rate to one. If vertical position exceeds ninety, it gets capped at ninety. Returns a tuple of the horizontal and vertical positions. Example: ['up', 'up', 'right'] returns (1, 2).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d233",
+  "title": "Water Purification Reverse Osmosis",
+  "spec": "The entry function `purify(cycles)` takes a list of numbers representing liters of source water to process per cycle. Starts with a membrane health of one hundred, filter capacity of five hundred, and pure water tank at zero. Processing each liter uses one unit of filter capacity and yields half a liter of pure water. If filter capacity reaches zero, processing continues but membrane health drops by one per liter processed, and the yield drops to a quarter liter. If membrane health drops below fifty, the system halts and processes no more water. Returns a tuple of pure water tank volume and membrane health. Example: [100, 100] returns (100.0, 100).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d234",
+  "title": "Metal Detector Discriminator",
+  "spec": "The entry function `sweep(signals)` takes a list of numbers representing magnetic signal strengths. Starts with a base threshold of fifty, battery level of one hundred, and a count of found targets at zero. Each signal costs one battery level. If a signal is above the threshold, it is considered a target and added to the count. If three signals in a row are below the threshold, the device assumes heavy mineralization and raises the threshold by ten to compensate. If battery drops below twenty, the device lowers its scanning power, halving all incoming signal strengths before checking against the threshold. Returns the number of found targets. Example: [60, 40, 30, 20, 70] returns 1.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d235",
+  "title": "Hovercraft Lift Fan",
+  "spec": "The entry function `hover(commands)` takes a list of strings representing throttle commands up, down, or coast. Starts with fan speed zero, skirt pressure zero, and battery at one hundred. Throttle up increases fan speed by ten and consumes five battery. Throttle down decreases fan speed by ten and consumes two battery. Coast does not change speed but consumes one battery. Skirt pressure always becomes equal to half the fan speed. If skirt pressure goes above forty, a relief valve opens, dropping fan speed by twenty instantly to prevent damage. If battery reaches zero, speed goes to zero. Returns a tuple of final fan speed and skirt pressure. Example: ['up', 'up', 'up'] returns (30, 15).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d236",
+  "title": "Tank Turret Traverse Motor",
+  "spec": "The entry function `traverse(commands)` takes a list of strings: elevate, depress, rotate, lock. Starts with elevation zero, angle zero, locked status zero, and hydraulic pressure at fifty. Elevate increases elevation by ten, up to a max of fifty. Depress decreases elevation by ten, minimum zero. Rotate increases angle by ninety degrees, wrapping around at three hundred sixty. Lock sets the locked status to one. Any action uses one hydraulic pressure. If pressure is below ten, the motor enters low power mode where elevate and depress only change elevation by five. You can only rotate if elevation is at least twenty and locked status is zero. Returns a tuple of elevation, angle, and hydraulic pressure. Example: ['elevate', 'elevate', 'rotate', 'lock'] returns (20, 90, 46).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d237",
+  "title": "Drawbridge Winch Controller",
+  "spec": "The entry function `operate(signals)` takes a list of strings: open, close, lock, unlock. Starts with angle zero, locked status true, and tension zero. An open signal increases the angle by fifteen degrees, but only if the bridge is unlocked. A close signal decreases the angle by fifteen degrees, minimum zero. If an open signal is received while locked, the angle does not change but cable tension increases by ten. If tension exceeds twenty, the winch jams and ignores all future open and close signals until a maintenance reset which happens automatically after three ignored signals. Returns a tuple of angle and tension. Example: ['open', 'open', 'unlock', 'open'] returns (15, 20).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d238",
+  "title": "Suspension Bridge Cable Tuner",
+  "spec": "The entry function `tune(loads)` takes a list of numbers representing vehicle weights entering the span. Starts with cable stretch zero, tensioner speed ten, and stress alerts zero. Each load adds its weight to the cable stretch. If total stretch exceeds one thousand, the tensioner speed reduces by five to compensate. If the speed drops to zero or below, a stress alert is recorded, and the system automatically rejects the last added load, restoring the stretch and resetting speed to five. Returns a tuple of total stretch and stress alerts. Example: [500, 600, 200] returns (1100, 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d239",
+  "title": "Rock Tumbler Polisher",
+  "spec": "The entry function `tumble(days)` takes a list of numbers representing hours run per day. Starts with grit stage one, drum speed thirty, and rock smoothness zero. Each hour run adds one to rock smoothness. At the end of each day, if the daily hours exceeded ten, the drum speed drops by two due to belt wear. When rock smoothness reaches fifty, the grit stage automatically advances by one and smoothness resets to zero. If the grit stage reaches four, the tumbler is done and any further hours have no effect. Returns a tuple of final grit stage and drum speed. Example: [12, 12, 12, 12, 12] returns (2, 20).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d240",
+  "title": "Tobacco Leaf Curing Barn",
+  "spec": "The entry function `cure(readings)` takes a list of numbers representing ambient humidity readings every hour. Starts with leaf moisture fifty, heater power zero, and venting status false. If humidity is above sixty, heater power increases by ten, up to a maximum of one hundred. If humidity is below forty, venting status becomes true, otherwise false. Each hour, leaf moisture drops by an amount equal to the heater power divided by twenty. If venting is true, leaf moisture drops by an additional two units. If moisture drops below ten, the curing is complete and moisture stays at ten. Returns a tuple of final moisture and heater power. Example: [70, 70] returns (48.5, 20).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d241",
+  "title": "Electric Scooter Battery Manager",
+  "spec": "The entry function `ride(demands)` takes a list of numbers representing power demands per minute. Starts with battery capacity one thousand, temperature twenty, and eco mode false. Each minute, the demand is subtracted from capacity. If demand is over fifty, temperature increases by five. If temperature exceeds forty, eco mode engages. While in eco mode, actual power drawn is capped at thirty, regardless of demand, and temperature drops by two each minute. Eco mode turns off when temperature falls below thirty. Returns a tuple of remaining capacity and final temperature. Example: [60, 60, 60, 60, 60] returns (740, 45).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d242",
+  "title": "Popcorn Popper Temperature Tracker",
+  "spec": "The entry function `pop(intervals)` takes a list of numbers representing seconds the heating element is on. Starts with kettle heat twenty, kernel count one hundred, and popped volume zero. For each interval, kettle heat increases by the number of seconds. Once kettle heat exceeds one hundred, every ten additional units of heat pops five kernels, turning them into fifty units of popped volume, and removing them from the kernel count. If kettle heat goes above two hundred, any remaining kernels burn, kernel count becomes zero, and no more popped volume can be created. Returns a tuple of popped volume and remaining kernels. Example: [90, 20] returns (150, 85).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d243",
+  "title": "Wave Pool Generator",
+  "spec": "The entry function `surge(pulses)` takes a list of numbers representing pump activation durations. Starts with flow rate zero, motor wear zero, and a synchronized mode set to false. Each pulse adds its duration to the flow rate. If a pulse is exactly five, it is considered a perfect rhythm and switches the system to synchronized mode. In synchronized mode, every pulse adds double its duration to the flow rate. However, any pulse longer than ten increases motor wear by one. If motor wear reaches three, the system forces a shutdown, zeroing the flow rate and exiting synchronized mode. Returns a tuple of flow rate and motor wear. Example: [5, 6, 11] returns (39, 1).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d244",
+  "title": "Fog Machine Fluid Pump",
+  "spec": "The entry function `fog(cues)` takes a list of strings: blast, trickle, wait. Starts with fluid level five hundred, heater temp two hundred, and a clogged state false. A blast consumes fifty fluid and drops heater temp by twenty. A trickle consumes ten fluid and drops temp by five. A wait consumes no fluid and raises temp by thirty, up to a max of two hundred. If heater temp drops below one hundred, the machine cannot vaporize fluid, causing it to clog; the clogged state becomes true. Once clogged, blasts and trickles consume no fluid and only lower temp by five until a wait clears the clog by heating back above one hundred fifty. Returns a tuple of fluid level and clogged state. Example: ['blast', 'blast', 'blast', 'blast', 'blast', 'blast'] returns (200, True).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d245",
+  "title": "Arcade Ticket Shredder",
+  "spec": "The entry function `shred(tickets)` takes a list of numbers representing ticket lengths inserted. Starts with bin capacity two hundred, points awarded zero, and a jammed state false. A value of twenty five represents a standard ticket. If a standard ticket is inserted, points awarded goes up by twenty five, capacity drops by one. If a ticket of length ten is inserted, the shredder becomes jammed. While jammed, all tickets are rejected and do not increase points or use capacity. A length of fifty represents a clearing tool, which un-jams the shredder and removes fifty from points awarded as a penalty. Returns a tuple of remaining capacity and total points. Example: [25, 10, 25, 50, 25] returns (198, 0).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d246",
+  "title": "Automatic Dog Ball Launcher",
+  "spec": "The entry function `launch(distances)` takes a list of numbers representing the desired throw distance in meters. Starts with spring tension zero, balls loaded five, and battery one hundred. To throw, the spring tension increases to match the desired distance, consuming battery equal to half the distance. If battery is too low to reach the desired distance, it uses all remaining battery and sets the tension to double that amount. Once tension is set, one ball is subtracted from loaded, and tension resets to zero. If zero balls are loaded, the machine ignores the command and beeps, consuming one battery. Returns a tuple of balls loaded and remaining battery. Example: [40, 40, 40] returns (2, 40).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d247",
+  "title": "Treadmill Motor Controller",
+  "spec": "The entry function `run(adjustments)` takes a list of strings: faster, slower, higher, lower. Starts with belt speed zero, incline zero, and total calories zero. Faster increases belt speed by two, max twelve. Slower decreases belt speed by two, min zero. Higher increases incline by one, max fifteen. Lower decreases incline by one, min zero. For every command processed, total calories burned increases by the current belt speed plus half the current incline. If belt speed is zero, no calories are burned regardless of incline. Returns a tuple of belt speed, incline, and calories. Example: ['faster', 'higher', 'faster', 'slower'] returns (2, 1, 11.5).",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d248",
+  "title": "Vintage Cipher Machine",
+  "spec": "Write a main function `encrypt(rotors)` that instantiates a custom class to simulate a rotor based substitution cipher. The class must maintain internal state for three spinning wheels. When the function passes a message to the class, the class should process it character by character, utilizing internal helper methods to increment the wheel positions, map the letter forward through three shifting stages based on the current wheel integers, reflect it using a fixed alphabet reversal, and map it backward. The main function should return the final encrypted phrase.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d249",
+  "title": "Automated Cocktail Mixer",
+  "spec": "Create an entry function `mix(requests)` that initializes a drink dispenser class and processes a list of requested drink names. The class must keep internal volume levels for spirit, mixer, and syrup, alongside a boolean flag for cup presence. For each request, the class should rely on hidden routines to verify sufficient liquid inventory, actuate the dispensing valves which deducts the required volumes, and agitate the mixture. The function should return a list of boolean results indicating which requests were successfully fulfilled.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d250",
+  "title": "Mail Sorting Conveyor",
+  "spec": "Write a function `sort(weights)` that uses a custom class to model a mail sorting belt. The class must store internal tallies for accepted parcels, rejected parcels, and current motor speed. As the function passes the list of package weights to the class, the class must use private methods to determine if a weight exceeds the fifty unit limit, compute the correct bin destination based on weight categories, and adjust the motor speed downward if heavy items appear consecutively. Return a tuple of final accepted and rejected counts from the class.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d251",
+  "title": "Paper Mill Pulp Beater",
+  "spec": "Implement a function `beat(minutes)` that instantiates a pulp processing class to run for a given duration. The class should track internal variables for water percentage, average fiber length, and blade height. During the processing loop, the class must call internal operations to lower the blades by one unit per minute, inject water to maintain a minimum ninety percent moisture level, and chop the fibers which reduces their length based on the current blade height. The function returns the final fiber length.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d252",
+  "title": "Deep Fryer Oil Vat",
+  "spec": "Write a function `fry(durations)` that processes a list of cooking times using a custom deep fryer class. The class must maintain internal states for oil temperature, heater activity, accumulated usage time, and basket position. For each cooking time, the class must execute internal steps to preheat the oil to three hundred fifty degrees, lower the basket, increment the usage timer, raise the basket, and disable the heater. If usage exceeds one hundred minutes, a hidden maintenance routine must reset the oil. Return the total elapsed operational time.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d253",
+  "title": "Observatory Dome Rotator",
+  "spec": "Create a function `align(azimuths)` that directs a telescope dome class to a series of sky coordinates. The class starts at zero degrees and tracks motor temperature and shutter status internally. For each target, the class must use hidden procedures to calculate the shortest rotational path clockwise or counterclockwise, engage the rotation motor while adding heat for each degree moved, pause to cool if temperature exceeds eighty degrees, and finally open the viewing shutter. The function should return the total operational time taken.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d254",
+  "title": "Automated Book Binder",
+  "spec": "Design a function `bind(count)` that manufactures a batch of books by instantiating a binding assembly class. The class holds internal registers for glue temperature, cover stock, and error state. To process the batch, it must execute hidden procedures for each book to heat the glue to optimal viscosity, apply glue to the spine, attach the outer cover while decrementing stock, and verify physical alignment. The function should return the number of successfully bound books before stock ran out or errors occurred.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d255",
+  "title": "Escalator Motor Drive",
+  "spec": "Write a function `regulate(loads)` that regulates an escalator class over discrete time steps based on passenger load weights. The class keeps internal variables for step velocity, motor torque, and a consecutive empty step counter. For each load, the class uses internal calculators to apply an acceleration profile for increasing weights, engage a braking routine if weight drops abruptly, and decrement velocity to a crawl if the empty counter exceeds five steps. Return a list of recorded speeds.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d256",
+  "title": "Antique Clock Pendulum",
+  "spec": "Implement an entry function `tick(seconds)` that drives a mechanical grandfather clock class for a given duration. The class internally monitors the mainspring tension, the pendulum swing angle, and the time. Each second, it must utilize internal mechanics to release a burst of spring energy, apply air resistance friction to the swing angle, and advance the gears if the swing crosses the center point. A hidden routine should rewind the spring when tension drops below ten. Return the final spring tension.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d257",
+  "title": "Vinyl Record Press",
+  "spec": "Write a function `press(weights)` that manufactures records using a custom pressing machine class. The class stores internal parameters for hydraulic pressure, plate heat, and a clamp locking status. For each desired record weight, the class coordinates several hidden phases: a warming phase to bring plates to one hundred sixty degrees, a compression phase that scales hydraulic pressure to the target weight, a holding phase for twenty seconds, and a cooling water injection phase. Return the total manufacturing time for all records.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d258",
+  "title": "Pottery Wheel Speed Governor",
+  "spec": "Create a function `spin(pressures)` that models a ceramic throwing session using a motorized wheel class. The class keeps internal state for rotation speed, motor strain, and clay structural integrity. For each pedal pressure input, the wheel must execute internal logic to adjust rotation speed, calculate the centrifugal force pulling on the clay, and apply a stabilizing counter force. If rotation exceeds a dynamically calculated safe threshold, the clay collapses. Return a boolean indicating if the pot survived.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d259",
+  "title": "Cotton Gin Separator",
+  "spec": "Design a function `separate(volumes)` that processes batches of raw cotton using a custom separator class. The class maintains internal counters for raw hopper volume, clean lint, discarded seeds, and saw speed. For each batch, the class must invoke internal steps to rev the saw motor, tease the fibers which converts the raw volume into lint and seeds at a fixed ratio, and clear the mesh screens of accumulated debris. Return a tuple containing the total lint and seed counts.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d260",
+  "title": "Vintage Film Splicer",
+  "spec": "Write a function `splice(edits)` that cuts and joins cinematic film using a splicer class. The class tracks the current frame index, remaining splicing tape, and cutting blade sharpness internally. For each target edit frame in the sequence, the class uses hidden operations to advance the reel, trigger the guillotine blade to cut which slightly degrades blade sharpness, and apply a strip of joining tape. If tape depletes, it must safely halt operations. Return the total number of successful edits.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d261",
+  "title": "Submarine Torpedo Tube",
+  "spec": "Implement a function `launch(commands)` that executes a series of launch instructions using a torpedo tube class. The class holds internal statuses for inner door state, outer door state, tube water level, and equalization pressure. Each launch command must orchestrate strictly ordered internal routines: lock the inner door, flood the chamber, equalize pressure with the ocean depth, open the outer door, and expel the payload. Return a count of how many launches successfully completed all internal stages without aborting.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d262",
+  "title": "Laser Tag Arena Scorer",
+  "spec": "Create a function `score(events)` that processes match events using a dedicated arena class. The class maintains internal tracking for player health, points, and base control zones. For each event, the class triggers internal evaluators to confirm the target has remaining health, deduct damage based on the tag location, award points to the attacker, and verify if a base control threshold was reached to award team bonus points. Return a list of the final scores for the two competing teams.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d263",
+  "title": "Combine Harvester Monitor",
+  "spec": "Write a function `harvest(yields)` that tracks crop collection using a combine harvester class. The class internally monitors grain tank fill level, threshing drum speed, and separation fan speed. For each crop yield data point, the class must invoke private routines to increase the grain tank volume, adjust the drum speed upward if the yield inflow spikes rapidly, and engage the separation fan to clear excess chaff. Return a tuple of the final collected grain amount and the highest recorded drum speed.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d264",
+  "title": "Industrial Pasta Extruder",
+  "spec": "Design a function `extrude(lengths)` that produces noodles using a factory extruder class. The class internally tracks dough viscosity, die temperature, and remaining batch size. For each requested noodle length, the class utilizes internal steps to heat the die to prevent sticking, press the dough through the template which depletes the overall batch size, and trigger the slicing blade once the extruded amount matches the target. Return the total count of successfully sized noodles produced before the dough ran out.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
+ },
+ {
+  "id": "d265",
+  "title": "Mechanical Loom Weaver",
+  "spec": "Write an entry function `weave(rows)` that operates an industrial textile weaving machine class. The class internally tracks warp thread tension, shuttle position, and current fabric length. For the given number of rows, the class must coordinate several hidden actions per row: raising the alternate warp threads, firing the horizontal shuttle across the shed, and beating the new thread into place with a reed. Each internal action updates the tension dynamically and adds to the length. Return the final length of the woven cloth.",
+  "designed_by": "google/gemini-3.1-pro-preview",
+  "v2": true
  }
 ]
