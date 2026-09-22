@@ -1,0 +1,23 @@
+=== presence-vs-accuracy diagnostics (96 tasks, meanL9-20 presence, Qwen2.5-7B-Instruct) ===
+
+A. n=0 floor: 15/96 tasks non-zero, max 0.653, mean 0.0088  -> the n=0 panel is a floor, its rho is not meaningful
+
+B. shared-mean control (Spearman across 96 tasks):
+   n | rho(presence,acc) | rho(cos_gm,acc) | rho(cos_gm,presence) | partial(presence,acc|cos_gm)
+   0 |      +0.069        |     +0.072       |        +0.589         |           +0.033
+   1 |      +0.206        |     +0.080       |        +0.608         |           +0.199
+   2 |      -0.054        |     +0.014       |        +0.590         |           -0.077
+   3 |      -0.124        |     +0.028       |        +0.573         |           -0.170
+   4 |      -0.196        |     +0.051       |        +0.570         |           -0.274
+   5 |      -0.184        |     +0.048       |        +0.569         |           -0.258
+   6 |      -0.243        |     +0.028       |        +0.561         |           -0.313
+   cos(v_A, grand mean) range 0.67-0.90; rho(||v_A||, presence@6) = -0.338
+   -> the shared component does NOT explain the negative relation
+
+C. a-priori task features: skipped (no feature table for this model)
+
+D. WITHIN-task across n=0..6 (paired): median rho = +0.847, positive in 82/96 tasks
+   -> adding demos raises presence AND accuracy together in every task;
+      the negative sign is purely a BETWEEN-task effect at fixed n
+
+E. within-task rho by variant: L0:-0.861(1/96)  L1:-0.937(2/96)  L2:-0.117(34/96)  L3:+0.933(95/96)  L4:-0.464(11/96)  L5:+0.937(95/96)  L6:+0.946(95/96)  L7:+0.937(95/96)  L8:+0.829(85/96)  L9:+0.793(80/96)  L10:+0.622(75/96)  L11:+0.368(66/96)  L12:+0.718(75/96)  L13:+0.429(62/96)  L14:+0.870(82/96)  L15:+0.813(81/96)  L16:+0.857(92/96)  L17:+0.852(91/96)  L18:+0.789(83/96)  L19:+0.851(90/96)  L20:+0.888(94/96)  L21:+0.893(94/96)  L22:+0.893(93/96)  L23:+0.870(89/96)  L24:+0.847(83/96)  L25:+0.843(79/96)  L26:+0.673(69/96)  L27:+0.502(67/96)  maxL9-20:+0.861(93/96)  meanL9-20:+0.847(82/96)

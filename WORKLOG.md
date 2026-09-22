@@ -10004,7 +10004,7 @@ task (≤ 3). Pilot (5 families × 20): 88/100 accepted, 47 % first attempt, $0.
 141/473 Opus generations refused by the provider filter → Gemini fallback. Full run: 6 drivers × 100 workers on 7,479 docs.
 
 ## 2026-09-22 — Qwen2.5-7B port of the 4 missing read/write-feature claims (FV ablation, read-feature ablation, read→write relationship, FV presence vs accuracy)
-**Status:** IN PROGRESS. **Owner:** Claude Code bg agent, main tree (no worktree, per DECISIONS 2026-08-28).
+**Status:** DONE (all four studies; per-study entries below). **Owner:** Claude Code bg agent, main tree (no worktree, per DECISIONS 2026-08-28).
 **What:** `results/qwen25_fv/` had 3 of the 7 GPT-J claims (FV steering generalisation, read-feature steering, read→write
 linear map). Porting the other four with IDENTICAL methodology (user request): only model / layers / dims / pool change.
 Pool = 96-task pruned split (77/19), 140-head selection (`ext_steerability_qwen25_96/pooled_sparse`), existing captures
@@ -10020,7 +10020,18 @@ load_model, get_decoder_block, --stage combine), `ablate_fv_cue6.py` (--model_na
 (--families_json), plot scripts (paths/layers as args), NEW `plot_taskunique_meanresid_ablation.py`,
 NEW `qwen25_port_checks.py` (gates). Orchestration: `logs/qwen25_fv/port/` (port_env.sh, port_chain.sh, dispatch.sh,
 pods.py; orchestrator pod + 10 RTX PRO 4500 workers). Artifacts: `artifacts/qwen25_fv/`.
-**Commands / findings / next:** filled in on completion (see per-study entries below).
+**Gates (all passed, `qwen25_port_checks.py`):** assets 96/96; prompt byte-equality of the three prompt builders
+over 56,816 comparisons (n ∈ {0,1,6,10}); dummy-slot gate; cos(unit FV from means.pt + 140-head selection, mean
+per-prompt FV) = 1.000 for all 96 tasks (‖v_A‖ median 88.9); W_O linearity rel. dev 2e-3; verify_ablation in every
+read-ablation process; GPT-J regression: re-running the modified plot scripts with default arguments reproduces the
+committed GPT-J CSVs byte-for-byte (the extra files they now write — presence_by_layer, headline_layer.txt,
+layer_profile.csv — were discarded from the GPT-J bucket).
+**Compute:** orchestrator RTX PRO 4000 Blackwell (005agvmhabx6ut) + 10 RTX PRO 4500 workers, ~1 h wall clock,
+~7 GPU-hours total (Qwen prompts are short: 6-shot ≈ 76 tokens); all pods terminated at the end.
+**Findings:** see the four per-study entries below and `results/qwen25_fv/README.md` (Qwen vs GPT-J table).
+**Next:** user review of the headline-layer choice (L24 plateau) and of the Qwen-specific deviations (own-FV
+mean-ablation is nearly harmless on Qwen; between-task presence/accuracy correlation is positive at L24, negative
+in the L9–20 band). **Blockers:** none.
 
 ## 2026-09-22 — Qwen2.5 port, Study A: FV-direction ablation at the final cue token — DONE
 **Status:** DONE. **Owner:** Claude Code bg agent, main tree.
@@ -10065,4 +10076,59 @@ Mean and zero ablation coincide (û_A ⟂ carrier), as on GPT-J.
 **Files:** results/qwen25_fv/read_feature_ablation/{cf_task_pairs.csv, task_unique_meanresid/{per_task_acc.csv,
 aggregate_bars.png, aggregate_bars_full.png, per_task_bars_{1,6}shot.png}}; artifacts
 artifacts/qwen25_fv/bottom_up_ablation/{bankA/, bankA_meanresid_top1/n{6,1}shot/}, pc50_ablation/.
+**Next:** none. **Blockers:** none.
+
+## 2026-09-22 — Qwen2.5 port, Study B: write-feature presence vs model accuracy — DONE
+**Status:** DONE. **Owner:** Claude Code bg agent, main tree.
+**What:** `capture_69_presence_vs_acc.py --layers 0-27` (n = 0..6 truncations of the fixed prompts, cos(z_ℓ, v̂_A) at
+the query cue at every block output + in-run T=1 sampled accuracy) and `capture_69_presence_gm.py` (cos to the
+generic FV v̂_gm, cue activation stored at the headline layer) on all 96 tasks; v̂_A = unit mean of the per-prompt
+140-head FVs (`artifacts/qwen25_read/perprompt_fvs`). Plots: `plot_69_presence_vs_acc.py --band 9-20 --plot_layers
+headline`, `diag_69_presence_vs_acc.py --features_csv none` (+ new section E), `plot_69_presence_perprompt.py`,
+`plot_69_presence_gm.py`, `plot_69_within_task_rho_examples.py --tasks auto`.
+**Headline layer (USER RULE, this session): L24** = argmax of the 6-shot mean-presence profile
+(`presence_by_layer.{csv,png}`, `headline_layer.txt`): the profile rises from L9 (.31) to a broad plateau L20–26
+(.47–.50; L24 .497) and collapses at L27 (.15, pre-final-norm). NOTE: applied to GPT-J's 9–20 capture the same rule
+does NOT give L13 — the GPT-J 6-shot profile peaks at L15 (see the GPT-J numbers recorded below); L13 was chosen
+there on other grounds (densest selected heads L12–15). GPT-J 6-shot mean presence by layer (rule re-run on the
+committed GPT-J capture, files not kept): L9 .373 L10 .347 L11 .353 L12 .387 L13 .425 L14 .399 L15 .430 L16 .413
+L17 .398 L18 .389 L19 .371 L20 .360 — L13 and L15 tie within .005, so on GPT-J the rule and the quoted layer
+agree to within noise; on Qwen the plateau is L20–26. The L9–20 band variants are reported for comparability.
+**Findings (96 tasks):**
+- WITHIN task (paired n = 0..6): median Spearman ρ = +0.85 at L24 (83/96 positive), +0.89 at L20–22 (94/96),
+  +0.85 for the L9–20 band mean (82/96) — presence and accuracy rise together as demos are added, as on GPT-J
+  (.96, 69/69). `within_task_rho_by_variant.csv` has every layer.
+- BETWEEN tasks at fixed n: layer-dependent. At the headline L24 the fixed-n Spearman ρ is POSITIVE at every n
+  (+.17 … +.48; pooled +.44, Pearson +.49). In the GPT-J band (mean L9–20, and at L13/L20) it turns negative for
+  n ≥ 2 (n=6: −.24 / −.30 / −.27) — the GPT-J Simpson pattern reappears there, but not at the layer where the FV
+  is most present. Shared-mean control (B): partial ρ | cos_gm unchanged (n=6 −.31 for the band mean), so the
+  generic component does not explain the negative band-mean relation. Generic-FV-subtracted presence at L24
+  (`baseline_subtracted/`): pooled ρ +.37 / r +.54; per-n ρ negative for n ≥ 2 (−.02 … −.23).
+- Per prompt (`per_prompt/`): point-biserial r = +.33 at L24 (pooled over 96 × 7 × ≤150 prompts), +.20 for the
+  band mean.
+**Files:** results/qwen25_fv/write_feature_and_model_accuracy/{presence_vs_acc.npz, presence_by_layer.{csv,png},
+headline_layer.txt, correlation_summary.csv (all 28 layers + max/mean L9–20), binned_summary.csv,
+scatter_/binned_{L24,maxL,meanL}.png, diagnostics.txt, diagnostics_per_task.csv, within_task_rho_by_variant.csv,
+within_task_rho_examples.png, baseline_subtracted/{presence_gm_L24.csv, correlation_summary.csv, 3 png},
+per_prompt/}; artifacts artifacts/qwen25_fv/presence_vs_acc{,_gm}/.
+**Next:** none. **Blockers:** none.
+
+## 2026-09-22 — Qwen2.5 port, Study D: read-feature injection forms the write feature at the cue — DONE
+**Status:** DONE. **Owner:** Claude Code bg agent, main tree.
+**What:** `steer_effect_on_cue.py` on the 6-shot and 1-shot dummy-'_' scaffolds (Qwen fuses " _\n\n" into one
+token; injection at the fused slot), 96 tasks, α ∈ {0, .5, 1, 2, 4}, no generation, cue residual read at all 28
+block outputs; two variants as on GPT-J: `bottom_up` = α·m_A(L12) (raw L12 label-token mean) added at L12 (GPT-J:
+m_A(L6) at L6), `meanresid` = α·s_A = α·(c + u_A) (L11–13 band) added at L0 (GPT-J: L5–7 at L0). Readout layer
+= the Study-B headline L24; `layer_profile.{png,csv}` give all layers. Plots: `plot_steer_effect_on_cue.py --layer 24`.
+**Findings (mean over 96 tasks, cos(cue residual at L24, v̂_A)):**
+- bottom_up 6-shot: .388 (α=0) → .418 / .470 / .502 / .497 (α = .5/1/2/4); task-specific excess over the generic FV
+  +.076 at α=2, positive on 96/96 tasks. 1-shot: .391 → .480 (α=2).
+- meanresid 6-shot: .388 → .425 / .469 / .475 / .477; excess +.072 at α=2 (93/96). 1-shot: .391 → .454 (α=2).
+- Layer profile: Δcos is exactly 0 up to the injection layer (L12), rises from L13, peaks at L22 (+.135 at α=2)
+  and stays ≈ +.11 through L24–25 — the injected read signal reaches the cue where the write feature is most
+  present. GPT-J for comparison: bottom_up .183 → .365 (α=2), meanresid .183 → .424, at L13.
+**Files:** results/qwen25_fv/read_write_relationship/{bottom_up, bottom_up_1shot, meanresid, meanresid_1shot}/
+{summary.csv, per_task.csv, layer_profile.{png,csv}, headline_cos{,_absolute,_task_vs_generic,_taskspecific}.png,
+headline_proj.png}; artifacts artifacts/qwen25_fv/{mean_read_steering_effect_on_write{,_1shot},
+meanresid_effect_on_write{,_1shot}}/.
 **Next:** none. **Blockers:** none.

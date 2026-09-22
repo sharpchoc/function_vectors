@@ -184,7 +184,9 @@ def main():
     for ni, n in enumerate(N_SHOTS):
         ax.plot(LAYERS, prof[ni], "o-", ms=3.5, lw=1.5, color=cmap(ni / (len(N_SHOTS) - 1)), label=f"n={n}")
     ax.axvline(headline, color="0.4", ls=":", lw=1.2)
-    ax.text(headline + 0.3, ax.get_ylim()[1] * 0.95, f"L{headline}\n(6-shot peak)", fontsize=9, va="top", color="0.3")
+    y0, y1 = ax.get_ylim()
+    ax.text(headline - 0.3, y0 + 0.03 * (y1 - y0), f"L{headline}\n(6-shot peak)", fontsize=9, va="bottom",
+            ha="right", color="0.3")
     ax.set_xlabel("layer (block output) of the cue-token readout")
     ax.set_ylabel("mean cos(z, v̂_A) at the query cue")
     ax.set_title(f"FV presence profile by layer, {args.model_label} ({len(tasks)} tasks; mean over tasks and prompts)")
